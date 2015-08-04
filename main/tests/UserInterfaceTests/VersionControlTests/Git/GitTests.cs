@@ -35,7 +35,7 @@ namespace UserInterfaceTests
 	public class GitTests : VCSBase
 	{
 		[Test]
-		[TestCase ("git@github.com:mono/jurassic.git", TestName = "TestGitSSHClone", Description = "Clone Git repo over SSH")]
+		[TestCase ("git@github.com:mono/jurassic.git", TestName = "TestGitSSHClone", Description = "Clone Git repo over SSH", IgnoreReason = "Asks for password")]
 		[TestCase ("https://github.com/mono/jurassic.git", TestName = "TestGitHTTPSClone", Description = "Clone Git repo over HTTPS")]
 		public void TestGitClone (string url)
 		{

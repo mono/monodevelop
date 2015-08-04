@@ -29,6 +29,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core;
 using System.IO;
 using System.Xml;
+using System;
 
 namespace UserInterfaceTests
 {
@@ -60,7 +61,7 @@ namespace UserInterfaceTests
 				Version = "105.0.1",
 				IsPreRelease = true
 			}, TakeScreenShot);
-			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.DefaultWorkbench").Property ("TabControl.CurrentTab.Text", "readme.txt"));
+			WaitForNuGetReadmeOpened ();
 		}
 
 		[Test]
@@ -73,7 +74,7 @@ namespace UserInterfaceTests
 				Version = "105.0.1",
 				IsPreRelease = true
 			}, TakeScreenShot);
-			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.DefaultWorkbench").Property ("TabControl.CurrentTab.Text", "readme.txt"));
+			WaitForNuGetReadmeOpened ();
 			Session.ExecuteCommand (FileCommands.CloseFile);
 			Session.WaitForElement (IdeQuery.TextArea);
 			TakeScreenShot ("About-To-Update-Package");
@@ -82,7 +83,37 @@ namespace UserInterfaceTests
 				Version = "105.1.0",
 				IsPreRelease = true
 			}, TakeScreenShot);
-			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.DefaultWorkbench").Property ("TabControl.CurrentTab.Text", "readme.txt"));
+			WaitForNuGetReadmeOpened ();
+		}
+
+		[Test]
+		[Description ("When readme.txt from a package has already been opened, adding same package to another project should not open readme.txt")]
+		public void TestDontOpenReadmeOpenedInOther ()
+		{
+			var packageInfo = new NuGetPackageOptions {
+				PackageName = "RestSharp",
+				Version = "105.0.1",
+				IsPreRelease = true
+			};
+
+			var projectDetails = CreateProject ();
+			NuGetController.AddPackage (packageInfo);
+			WaitForNuGetReadmeOpened ();
+			Session.ExecuteCommand (FileCommands.CloseFile);
+
+			var pclTemplateOptions = new TemplateSelectionOptions {
+				CategoryRoot = "Other",
+				Category = ".NET",
+				TemplateKindRoot = "General",
+				TemplateKind = "Library"
+			};
+			var pclProjectDetails = ProjectDetails.ToExistingSolution (projectDetails.SolutionName,
+				GenerateProjectName (pclTemplateOptions.TemplateKind));
+			CreateProject (pclTemplateOptions, pclProjectDetails);
+
+			Session.ClickElement (SolutionExplorerController.GetProjectQuery (projectDetails.SolutionName, pclProjectDetails.ProjectName));
+			NuGetController.AddPackage (packageInfo);
+			Assert.Throws<TimeoutException> (WaitForNuGetReadmeOpened);
 		}
 
 		[Test]
@@ -182,6 +213,11 @@ namespace UserInterfaceTests
 			Session.WaitForElement (IdeQuery.TextArea);
 			FoldersToClean.Add (projectDetails.SolutionLocation);
 			return projectDetails;
+		}
+
+		void WaitForNuGetReadmeOpened ()
+		{
+			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.DefaultWorkbench").Property ("TabControl.CurrentTab.Text", "readme.txt"));
 		}
 	}
 }

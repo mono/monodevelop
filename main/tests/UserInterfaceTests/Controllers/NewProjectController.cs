@@ -85,10 +85,10 @@ namespace UserInterfaceTests
 		public bool SetProjectName (string projectName, bool addToExistingSolution)
 		{
 			Func<AppQuery, AppQuery> projectNameTextBox = c => c.Textfield ().Marked ("projectNameTextBox");
-			if (addToExistingSolution) {
-				return Session.Query (c => projectNameTextBox (c).Sensitivity (false)).Length > 0;
+			if (addToExistingSolution && Session.Query (c => projectNameTextBox (c).Sensitivity (false)).Length > 0) {
+				return Session.Query (c => projectNameTextBox (c).Text (projectName)).Length > 0;
 			}
-			return Session.EnterText (c => projectNameTextBox (c), projectName);
+			return Session.EnterText (projectNameTextBox, projectName);
 		}
 
 		public bool SetSolutionName (string solutionName, bool addToExistingSolution)
