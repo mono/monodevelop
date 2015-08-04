@@ -140,8 +140,8 @@ namespace ICSharpCode.PackageManagement
 
 		void ReportPowerShellScriptWarning ()
 		{
-			string message = GettextCatalog.GetString ("{0} Package contains PowerShell scripts which will not be run.", GetPackageId ());
-			packageManagementEvents.OnPackageOperationMessageLogged (MessageLevel.Warning, message);
+			string message = GettextCatalog.GetString ("WARNING: {0} Package contains PowerShell scripts which will not be run.", GetPackageId ());
+			packageManagementEvents.OnPackageOperationMessageLogged (MessageLevel.Info, message);
 		}
 
 		void CheckLicenses ()
