@@ -4,6 +4,35 @@ open System.IO
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.Ide.Editor
 
+module Option =
+  let inline getOrElse f o = 
+    match o with
+    | Some v -> v
+    | _      -> f()
+
+  let inline tryCast<'T> (o: obj): 'T option = 
+    match o with
+    | null -> None
+    | :? 'T as a -> Some a
+    | _ -> None
+
+  /// Convert string into Option string where null and String.Empty result in None
+  let inline ofString (s:string) =
+    if String.isNullOrEmpty s then None
+    else Some s
+
+  /// Some(Some x) -> Some x | None -> None
+  let inline flatten x =
+    match x with
+    | Some x -> x
+    | None -> None
+
+  /// Gets the option if Some x, otherwise try to get another value
+  let inline orTry f =
+    function
+    | Some x -> Some x
+    | None -> f()
+
 [<AutoOpen>]
 module FSharpSymbolExt =
   type FSharpSymbol with
@@ -30,9 +59,9 @@ module FSharpSymbolExt =
 
   type FSharpEntity with
       member x.TryGetFullName() =
-        match Option.attempt (fun _ -> x.TryFullName) with
-        | Some x -> x
-        | None -> Some (String.Join(".", x.AccessPath, x.DisplayName))
+        Option.attempt (fun _ -> x.TryFullName)
+        |> Option.flatten
+        |> Option.orTry (fun _ -> Option.attempt (fun _ -> String.Join(".", x.AccessPath, x.DisplayName)))
 
 [<AutoOpen>]
 module FrameworkExt =
@@ -65,19 +94,3 @@ module FrameworkExt =
           member x.Dispose() =
             this.RemoveHandler(handler) }
 
-module Option =
-  let getOrElse f o = 
-    match o with
-    | Some v -> v
-    | _      -> f()
-
-  let tryCast<'T> (o: obj): 'T option = 
-    match o with
-    | null -> None
-    | :? 'T as a -> Some a
-    | _ -> None
-
-  /// Convert string into Option string where null and String.Empty result in None
-  let ofString (s:string) =
-    if String.isNullOrEmpty s then None
-    else Some s

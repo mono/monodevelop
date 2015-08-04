@@ -118,7 +118,12 @@ type ParseAndCheckResults private (infoOpt: (FSharpCheckFileResults * FSharpPars
         match Parsing.findLongIdents(col, lineStr) with 
         | None -> return None
         | Some(colu, identIsland) ->
-            return! checkResults.GetSymbolUseAtLocation(line, colu, lineStr, identIsland) }
+            try
+              let! symbolUse = checkResults.GetSymbolUseAtLocation(line, colu, lineStr, identIsland)
+              return symbolUse
+            with ex ->
+              Debug.WriteLine("Error at: GetSymbolUseAtLocation: {0}", ex)
+              return None }
 
     member x.GetMethodsAsSymbols(line, col, lineStr) =
       async {
@@ -299,9 +304,30 @@ type LanguageService(dirtyNotify) =
           entry
       | None, cache ->
           Debug.WriteLine ("LanguageService: GetProjectCheckerOptions: Generating ProjectOptions for {0}", Path.GetFileName(projFilename))
-          let opts = checker.GetProjectOptionsFromProjectFile(projFilename, properties)
-          projectInfoCache := cache.Add (key, opts)
-          opts)
+
+          let filename = Path.Combine(Reflection.Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName, "CompilerService.exe")
+          let processName = 
+            if Environment.runningOnMono then "mono" else filename
+          
+          let arguments = 
+            if Environment.runningOnMono then sprintf "%s --project %s" filename projFilename else sprintf "--project %s" projFilename
+          try
+            use proc =
+              let startInfo = ProcessStartInfo(processName, arguments, RedirectStandardError = false, RedirectStandardOutput = true, 
+                                               RedirectStandardInput = true, UseShellExecute = false, CreateNoWindow = true)
+
+              new Process(EnableRaisingEvents = true, StartInfo = startInfo)
+
+            let started = proc.Start()
+            let exited = proc.WaitForExit(ServiceSettings.maximumTimeout)
+            let binarySer =  Nessos.FsPickler.FsPickler.CreateBinary()
+            let optsNew = binarySer.Deserialize<FSharpProjectOptions>(proc.StandardOutput.BaseStream)
+
+            //let opts = checker.GetProjectOptionsFromProjectFile(projFilename, properties)
+            projectInfoCache := cache.Add (key, optsNew)
+            optsNew
+          with ex -> Debug.WriteLine("LanguageService: GetProjectCheckerOptions Exception: {0}", ex.ToString())
+                     reraise())
 
     // Print contents of check option for debugging purposes
     // Debug.WriteLine(sprintf "GetProjectCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
