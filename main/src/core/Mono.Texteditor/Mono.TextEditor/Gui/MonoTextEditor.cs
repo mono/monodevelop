@@ -73,9 +73,11 @@ namespace Mono.TextEditor
 			: this (doc, options, new SimpleEditMode ())
 		{
 		}
+		Thread uiThread;
 
 		public MonoTextEditor (TextDocument doc, ITextEditorOptions options, EditMode initialMode) 
 		{
+			uiThread = Thread.CurrentThread;
 			GtkWorkarounds.FixContainerLeak (this);
 			WidgetFlags |= WidgetFlags.NoWindow;
 			LayoutCache = new LayoutCache (this);
@@ -98,6 +100,14 @@ namespace Mono.TextEditor
 					}
 				};
 			}
+		}
+
+		internal bool IsUIThread { get { return Thread.CurrentThread != uiThread; } }
+
+		internal void CheckUIThread ()
+		{
+			if (Thread.CurrentThread != uiThread)
+				throw new InvalidOperationException ("Not executed on UI thread.");
 		}
 
 		public new void GrabFocus ()

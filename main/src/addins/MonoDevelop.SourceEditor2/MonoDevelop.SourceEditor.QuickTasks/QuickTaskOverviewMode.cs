@@ -38,6 +38,8 @@ using Xwt.Drawing;
 using MonoDevelop.Ide.Editor.Extension;
 using Microsoft.CodeAnalysis;
 using Mono.TextEditor;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
@@ -74,23 +76,23 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		}
 
 		//TODO: find a way to look these up from the theme
-		static readonly Cairo.Color win81Background = new Cairo.Color (240/255d, 240/255d, 240/255d);
-		static readonly Cairo.Color win81Slider = new Cairo.Color (205/255d, 205/255d, 205/255d);
-		static readonly Cairo.Color win81SliderPrelight = new Cairo.Color (166/255d, 166/255d, 166/255d);
-		static readonly Cairo.Color win81SliderActive = new Cairo.Color (96/255d, 96/255d, 96/255d);
+		static readonly Cairo.Color win81Background = new Cairo.Color (240 / 255d, 240 / 255d, 240 / 255d);
+		static readonly Cairo.Color win81Slider = new Cairo.Color (205 / 255d, 205 / 255d, 205 / 255d);
+		static readonly Cairo.Color win81SliderPrelight = new Cairo.Color (166 / 255d, 166 / 255d, 166 / 255d);
+		static readonly Cairo.Color win81SliderActive = new Cairo.Color (96 / 255d, 96 / 255d, 96 / 255d);
 
-		readonly int barPadding = MonoDevelop.Core.Platform.IsWindows? 1 : 3;
+		readonly int barPadding = MonoDevelop.Core.Platform.IsWindows ? 1 : 3;
 
 		readonly QuickTaskStrip parentStrip;
 		protected readonly Adjustment vadjustment;
 		TextViewMargin textViewMargin;
 		int caretLine = -1;
-		
+
 		public Mono.TextEditor.MonoTextEditor TextEditor {
 			get;
 			private set;
 		}
-		
+
 		public IEnumerable<QuickTask> AllTasks {
 			get {
 				return parentStrip.AllTasks;
@@ -102,7 +104,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				return parentStrip.AllUsages;
 			}
 		}
-		
+
 		public QuickTaskOverviewMode (QuickTaskStrip parent)
 		{
 			this.parentStrip = parent;
@@ -115,7 +117,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			parentStrip.TaskProviderUpdated += RedrawOnUpdate;
 			TextEditor = parent.TextEditor;
 			caret = TextEditor.Caret;
-//			caret.PositionChanged += CaretPositionChanged;
+			//			caret.PositionChanged += CaretPositionChanged;
 			TextEditor.HighlightSearchPatternChanged += RedrawOnUpdate;
 			textViewMargin = TextEditor.TextViewMargin;
 			textViewMargin.SearchRegionsUpdated += RedrawOnUpdate;
@@ -125,13 +127,13 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			TextEditor.HighlightSearchPatternChanged += HandleHighlightSearchPatternChanged;
 			HasTooltip = true;
 
-			fadeInStage.ActorStep += delegate(Actor<QuickTaskOverviewMode> actor) {
+			fadeInStage.ActorStep += delegate (Actor<QuickTaskOverviewMode> actor) {
 				barColorValue = actor.Percent;
 				return true;
 			};
 			fadeInStage.Iteration += (sender, e) => QueueDraw ();
 
-			fadeOutStage.ActorStep += delegate(Actor<QuickTaskOverviewMode> actor) {
+			fadeOutStage.ActorStep += delegate (Actor<QuickTaskOverviewMode> actor) {
 				barColorValue = 1 - actor.Percent;
 				return true;
 			};
@@ -149,7 +151,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			yPositionCache.Clear ();
 		}
-		
+
 		void CaretPositionChanged (object sender, EventArgs e)
 		{
 			var line = caret.Line;
@@ -158,9 +160,15 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				QueueDraw ();
 			}
 		}
-		
+
 		protected override void OnDestroyed ()
 		{
+			if (backgroundSurface != null) {
+				backgroundSurface.Dispose ();
+				backgroundSurface = null;
+			}
+
+			DestroyIndicatorSurface ();
 			CancelFadeInTimeout ();
 			RemovePreviewPopupTimeout ();
 			DestroyPreviewWindow ();
@@ -178,15 +186,23 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			textViewMargin.MainSearchResultChanged -= RedrawOnUpdate;
 			textViewMargin = null;
 			parentStrip.TaskProviderUpdated -= RedrawOnUpdate;
-			
+
 			vadjustment.ValueChanged -= RedrawOnVAdjustmentChange;
 			vadjustment.Changed -= RedrawOnVAdjustmentChange;
 			base.OnDestroyed ();
 		}
-		
+
+		void DestroyIndicatorSurface ()
+		{
+			if (indicatorSurface != null) {
+				indicatorSurface.Dispose ();
+				indicatorSurface = null;
+			}
+		}
+
 		void RedrawOnUpdate (object sender, EventArgs e)
 		{
-			QueueDraw ();
+			DrawIndicatorSurface ();
 		}
 
 		void RedrawOnVAdjustmentChange (object sender, EventArgs e)
@@ -200,7 +216,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			return y < IndicatorHeight;
 		}
-		
+
 		internal Mono.TextEditor.CodeSegmentPreviewWindow previewWindow;
 
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
@@ -219,7 +235,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 			if ((evnt.State & buttonMask & ModifierType.ShiftMask) == ModifierType.ShiftMask) {
 				int line = YToLine (evnt.Y);
-				
+
 				line = Math.Max (1, line - 2);
 				int lastLine = Math.Min (TextEditor.LineCount, line + 5);
 				var start = TextEditor.GetLine (line);
@@ -228,7 +244,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					return base.OnMotionNotifyEvent (evnt);
 				}
 				var showSegment = new Mono.TextEditor.TextSegment (start.Offset, end.Offset + end.Length - start.Offset);
-				
+
 				if (previewWindow != null) {
 					previewWindow.SetSegment (showSegment, false);
 					PositionPreviewWindow ((int)evnt.Y);
@@ -353,13 +369,14 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				QueueDraw ();
 			}
 		}
-		
-		class PreviewPopup {
-			
+
+		class PreviewPopup
+		{
+
 			QuickTaskOverviewMode strip;
 			Mono.TextEditor.TextSegment segment;
 			int w, y;
-			
+
 			public PreviewPopup (QuickTaskOverviewMode strip, Mono.TextEditor.TextSegment segment, int w, int y)
 			{
 				this.strip = strip;
@@ -367,7 +384,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				this.w = w;
 				this.y = y;
 			}
-			
+
 			public bool Run ()
 			{
 				strip.previewWindow = new Mono.TextEditor.CodeSegmentPreviewWindow (strip.TextEditor, true, segment, w, -1, false);
@@ -376,29 +393,29 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				strip.PositionPreviewWindow (y);
 				return false;
 			}
-			
+
 		}
-		
+
 		uint previewPopupTimeout = 0;
-		
+
 		void PositionPreviewWindow (int my)
 		{
 			int ox, oy;
 			GdkWindow.GetOrigin (out ox, out oy);
-			
+
 			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtPoint (ox, oy));
-			
+
 			var alloc = previewWindow.Allocation;
 			int x = ox - 4 - alloc.Width;
 			if (x < geometry.Left)
 				x = ox + parentStrip.Allocation.Width + 4;
-			
+
 			int y = oy + my - alloc.Height / 2;
 			y = Math.Max (geometry.Top, Math.Min (y, geometry.Bottom));
-			
+
 			previewWindow.Move (x, y);
 		}
-		
+
 		void RemovePreviewPopupTimeout ()
 		{
 			if (previewPopupTimeout != 0) {
@@ -406,7 +423,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				previewPopupTimeout = 0;
 			}
 		}
-		
+
 		void DestroyPreviewWindow ()
 		{
 			if (previewWindow != null) {
@@ -422,7 +439,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			if (fadeTimeOutHandler == 0)
 				return;
-			GLib.Source.Remove (fadeTimeOutHandler); 
+			GLib.Source.Remove (fadeTimeOutHandler);
 			fadeTimeOutHandler = 0;
 		}
 
@@ -461,14 +478,14 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
 		{
 			isPointerInside = false;
-			if (!IsInGrab ()) 
+			if (!IsInGrab ())
 				StartFadeOutAnimation ();
 			RemovePreviewPopupTimeout ();
 			DestroyPreviewWindow ();
 
 			return base.OnLeaveNotifyEvent (evnt);
 		}
-		
+
 		Cairo.Color GetBarColor (DiagnosticSeverity severity)
 		{
 			var style = this.TextEditor.ColorStyle;
@@ -488,12 +505,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			}
 		}
 
-		protected virtual double IndicatorHeight  {
+		protected virtual double IndicatorHeight {
 			get {
 				return MonoDevelop.Core.Platform.IsWindows ? Allocation.Width : 3 + 8 + 3;
 			}
 		}
-		
+
 		protected virtual void MovePosition (double y)
 		{
 			double position = ((y - IndicatorHeight) / (Allocation.Height - IndicatorHeight)) * vadjustment.Upper - vadjustment.PageSize / 2;
@@ -559,10 +576,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		void MoveToTask (QuickTask task)
 		{
-//			var loc = new DocumentLocation (
-//				Math.Max (DocumentLocation.MinLine, task.Location.Line),
-//				Math.Max (DocumentLocation.MinColumn, task.Location.Column)
-//			);
+			//			var loc = new DocumentLocation (
+			//				Math.Max (DocumentLocation.MinLine, task.Location.Line),
+			//				Math.Max (DocumentLocation.MinColumn, task.Location.Column)
+			//			);
 			caret.Offset = task.Location;
 			TextEditor.CenterToCaret ();
 			TextEditor.StartCaretPulseAnimation ();
@@ -614,26 +631,26 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
-			requisition.Width = MonoDevelop.Core.Platform.IsWindows? 17 : 15;
+			requisition.Width = MonoDevelop.Core.Platform.IsWindows ? 17 : 15;
 		}
-		
+
 		double LineToY (int logicalLine)
 		{
 			var h = Allocation.Height - IndicatorHeight;
 			var p = TextEditor.LocationToPoint (logicalLine, 1, true).Y;
-			var q = Math.Max (TextEditor.GetTextEditorData ().TotalHeight, TextEditor.Allocation.Height) 
+			var q = Math.Max (TextEditor.GetTextEditorData ().TotalHeight, TextEditor.Allocation.Height)
 				+ TextEditor.Allocation.Height
 				- TextEditor.LineHeight;
 
-			return IndicatorHeight  + h * p / q;
+			return IndicatorHeight + h * p / q;
 		}
-		
+
 		int YToLine (double y)
 		{
 			var line = 0.5 + (y - IndicatorHeight) / (Allocation.Height - IndicatorHeight) * (double)(TextEditor.GetTextEditorData ().VisibleLineCount);
 			return TextEditor.GetTextEditorData ().VisualToLogicalLine ((int)line);
 		}
-		
+
 		protected void DrawCaret (Cairo.Context cr)
 		{
 			if (TextEditor.ColorStyle == null || caretLine < 0)
@@ -657,12 +674,15 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			return y;
 		}
 
-		protected DiagnosticSeverity DrawQuickTasks (Cairo.Context cr)
+		protected void DrawQuickTasks (Cairo.Context cr, IEnumerator<Usage> allUsages, IEnumerator<QuickTask> allTasks, ref bool nextStep, ref DiagnosticSeverity severity, HashSet<int> lineCache, CancellationToken token)
 		{
-			DiagnosticSeverity severity = DiagnosticSeverity.Hidden;
-
-			foreach (var usage in AllUsages) {
-				double y = GetYPosition (TextEditor.OffsetToLineNumber (usage.Offset));
+			if (allUsages.MoveNext ()) {
+				var usage = allUsages.Current;
+				token.ThrowIfCancellationRequested ();
+				int y = (int)GetYPosition (TextEditor.OffsetToLineNumber (usage.Offset));
+				if (lineCache.Contains (y))
+					return;
+				lineCache.Add (y);
 				var usageColor = TextEditor.ColorStyle.PlainText.Foreground;
 				usageColor.A = 0.4;
 				HslColor color;
@@ -676,29 +696,30 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					color = usageColor;
 				}
 				color.L = 0.5;
-				cr.Color = color;
+				cr.SetSourceColor (color);
 				cr.MoveTo (0, y - 3);
 				cr.LineTo (5, y);
 				cr.LineTo (0, y + 3);
 				cr.LineTo (0, y - 3);
 				cr.ClosePath ();
 				cr.Fill ();
-			}
-
-			HashSet<int> set = new HashSet<int> ();
-			foreach (var task in AllTasks) {
+			} else if (allTasks.MoveNext ()) {
+				var task = allTasks.Current;
+				token.ThrowIfCancellationRequested ();
 				int y = (int)GetYPosition (TextEditor.OffsetToLineNumber (task.Location));
-				if (set.Contains (y))
-					continue;
-				set.Add (y);
+				if (lineCache.Contains (y))
+					return;
+				lineCache.Add (y);
 				cr.SetSourceColor (GetBarColor (task.Severity));
 				cr.Rectangle (0, y - 1, Allocation.Width, 2);
 				cr.Fill ();
 				severity = task.Severity;
+
+			} else {
+				nextStep = true;
 			}
-			return severity;
 		}
-		
+
 		protected void DrawLeftBorder (Cairo.Context cr)
 		{
 			cr.MoveTo (0.5, 0);
@@ -725,7 +746,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 			x = MonoDevelop.Core.Platform.IsWindows ? 0 : 1 + barPadding;
 			var adjUpper = vadjustment.Upper;
-			var allocH = alloc.Height - (int) IndicatorHeight;
+			var allocH = alloc.Height - (int)IndicatorHeight;
 			y = IndicatorHeight + Math.Round (allocH * vadjustment.Value / adjUpper);
 			w = MonoDevelop.Core.Platform.IsWindows ? alloc.Width : 8;
 			const int minBarHeight = 16;
@@ -739,7 +760,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		protected virtual void DrawBar (Cairo.Context cr)
 		{
-			if (vadjustment == null || vadjustment.Upper <= vadjustment.PageSize) 
+			if (vadjustment == null || vadjustment.Upper <= vadjustment.PageSize)
 				return;
 
 			double x, y, w, h;
@@ -759,7 +780,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				//compute new color such that it will produce same color when blended with bg
 				c = AddAlpha (win81Background, c, 0.5d);
 			} else {
-				var brightness = HslColor.Brightness (TextEditor.ColorStyle.PlainText.Background); 
+				var brightness = HslColor.Brightness (TextEditor.ColorStyle.PlainText.Background);
 				c = new Cairo.Color (1 - brightness, 1 - brightness, 1 - brightness, barColorValue * (barAlphaMax - barAlphaMin) + barAlphaMin);
 			}
 			cr.SetSourceColor (c);
@@ -781,75 +802,216 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			return (c0 * a0 - cb * ab * (1 - aa)) / aa;
 		}
 
-		protected void DrawSearchResults (Cairo.Context cr)
+
+		protected void DrawSearchResults (Cairo.Context cr, IEnumerator<TextSegment> searchResults, ref bool nextStep, CancellationToken token)
 		{
-			foreach (var region in TextEditor.TextViewMargin.SearchResults) {
-				int line = TextEditor.OffsetToLineNumber (region.Offset);
-				double y = GetYPosition (line);
-				bool isMainSelection = false;
-				if (!TextEditor.TextViewMargin.MainSearchResult.IsInvalid)
-					isMainSelection = region.Offset == TextEditor.TextViewMargin.MainSearchResult.Offset;
-				cr.SetSourceColor (isMainSelection ? TextEditor.ColorStyle.SearchResultMain.Color : TextEditor.ColorStyle.SearchResult.Color);
-				cr.Rectangle (barPadding, Math.Round (y) - 1, Allocation.Width - barPadding * 2, 2);
-				cr.Fill ();
+			if (!searchResults.MoveNext ()) {
+				nextStep = true;
+				return;
 			}
+			var region = searchResults.Current;
+			token.ThrowIfCancellationRequested ();
+			int line = TextEditor.OffsetToLineNumber (region.Offset);
+			double y = GetYPosition (line);
+			bool isMainSelection = false;
+			if (!TextEditor.TextViewMargin.MainSearchResult.IsInvalid)
+				isMainSelection = region.Offset == TextEditor.TextViewMargin.MainSearchResult.Offset;
+			cr.SetSourceColor (isMainSelection ? TextEditor.ColorStyle.SearchResultMain.Color : TextEditor.ColorStyle.SearchResult.Color);
+			cr.Rectangle (barPadding, Math.Round (y) - 1, Allocation.Width - barPadding * 2, 2);
+			cr.Fill ();
 		}
-		
+
+		SurfaceWrapper backgroundSurface, indicatorSurface;
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
 			if (TextEditor == null)
 				return true;
-			//using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
-			//	cr.LineWidth = 1;
-			//	cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				
-			//	if (TextEditor.ColorStyle != null) {
-			//		if (MonoDevelop.Core.Platform.IsWindows) {
-			//			using (var pattern = new Cairo.SolidPattern (win81Background)) {
-			//				cr.SetSource (pattern);
-			//			}
-			//		} else {
-			//			var col = TextEditor.ColorStyle.PlainText.Background.ToXwtColor();
-			//			col.Light *= 0.948;
-			//			using (var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0)) {
-			//				grad.AddColorStop (0, col.ToCairoColor ());
-			//				grad.AddColorStop (0.7, TextEditor.ColorStyle.PlainText.Background);
-			//				grad.AddColorStop (1, col.ToCairoColor ());
-			//				cr.SetSource (grad);
-			//			}
-			//			/*
-			//			var col = new Cairo.Color (229 / 255.0, 229 / 255.0, 229 / 255.0);
-			//			using (var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0)) {
-			//				grad.AddColorStop (0, col);
-			//				grad.AddColorStop (0.5, new Cairo.Color (1, 1, 1));
-			//				grad.AddColorStop (1, col);
-			//				cr.SetSource (grad);
-			//			}*/
-			//		}
-			//	}
-			//	cr.Fill ();
 
-			//	if (TextEditor == null)
-			//		return true;
-				
-			//	if (TextEditor.HighlightSearchPattern) {
-			//		DrawSearchResults (cr);
-			//		DrawSearchIndicator (cr);
-			//	} else {
-			//		if (!Debugger.DebuggingService.IsDebugging) {
-			//			var severity = DrawQuickTasks (cr);
-			//			DrawIndicator (cr, severity);
-			//		}
-			//	}
-			//	DrawCaret (cr);
+			using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
+				var allocation = Allocation;
+				if (indicatorSurface != null) {
+					cr.SetSourceSurface (indicatorSurface.Surface, 0, 0);
+					cr.Paint ();
+				} else {
+					CachedDraw (cr,
+					            ref backgroundSurface,
+					            allocation,
+					            draw: (c, o) => DrawBackground (c, allocation));
+				}
+				if (TextEditor == null)
+					return true;
 
-			//	if (QuickTaskStrip.MergeScrollBarAndQuickTasks)
-			//		DrawBar (cr);
-			//	DrawLeftBorder (cr);
-			//}
-			
+				DrawCaret (cr);
+
+				if (QuickTaskStrip.MergeScrollBarAndQuickTasks)
+					DrawBar (cr);
+			}
+
 			return true;
 		}
+
+		CancellationTokenSource src = new CancellationTokenSource ();
+
+		class IdleUpdater
+		{
+			readonly QuickTaskOverviewMode mode;
+			readonly CancellationToken token;
+			SurfaceWrapper surface;
+			Cairo.Context cr;
+			Gdk.Rectangle allocation;
+
+			public IdleUpdater (QuickTaskOverviewMode mode, System.Threading.CancellationToken token)
+			{
+				this.mode = mode;
+				this.token = token;
+			}
+
+			public void Start ()
+			{
+				allocation = mode.Allocation;
+				using (var similiar = CairoHelper.Create (IdeApp.Workbench.RootWindow.GdkWindow))
+					surface = new SurfaceWrapper (similiar, allocation.Width, allocation.Height);
+
+				searchResults = mode.TextEditor.TextViewMargin.SearchResults.GetEnumerator ();
+				allUsages = mode.AllUsages.GetEnumerator ();
+				allTasks = mode.AllTasks.GetEnumerator ();
+				cr = new Cairo.Context (surface.Surface);
+				GLib.Idle.Add (RunHandler);
+			}
+
+			int drawingStep;
+			DiagnosticSeverity severity = DiagnosticSeverity.Hidden;
+			IEnumerator<TextSegment> searchResults;
+			IEnumerator<Usage> allUsages;
+			IEnumerator<QuickTask> allTasks;
+
+			bool RunHandler ()
+			{
+				if (token.IsCancellationRequested) {
+					cr.Dispose ();
+					surface.Dispose ();
+					return false;
+				}
+				var lineCache = new HashSet<int> ();
+				bool nextStep = false;
+				switch (drawingStep) {
+				case 0:
+                	CachedDraw (cr, ref mode.backgroundSurface, allocation, draw: (c, o) => mode.DrawBackground (c, allocation));
+					drawingStep++;
+					return true;
+				case 1:
+					for (int i = 0; i < 10 && !nextStep; i++) {
+						if (mode.TextEditor.HighlightSearchPattern) {
+							mode.DrawSearchResults (cr, searchResults, ref nextStep, token);
+						} else {
+							if (!Debugger.DebuggingService.IsDebugging) {
+								mode.DrawQuickTasks (cr, allUsages, allTasks, ref nextStep, ref severity, lineCache, token);
+							}
+						}
+
+						if (mode.TextEditor.HighlightSearchPattern) {
+							mode.DrawSearchResults (cr, searchResults, ref nextStep, token);
+						} else {
+							if (!Debugger.DebuggingService.IsDebugging) {
+								mode.DrawQuickTasks (cr, allUsages, allTasks, ref nextStep, ref severity, lineCache, token);
+							}
+						}
+					}
+					if (nextStep)
+						drawingStep++;
+					return true;
+				case 2:
+					if (mode.TextEditor.HighlightSearchPattern) {
+						mode.DrawSearchIndicator (cr);
+					} else {
+						if (!Debugger.DebuggingService.IsDebugging) {
+							mode.DrawIndicator (cr, severity);
+						}
+					}
+
+					if (mode.TextEditor.HighlightSearchPattern) {
+						mode.DrawSearchIndicator (cr);
+					} else {
+						if (!Debugger.DebuggingService.IsDebugging) {
+							mode.DrawIndicator (cr, severity);
+						}
+					}
+					drawingStep++;
+					return true;
+				default:
+					cr.Dispose ();
+					mode.DestroyIndicatorSurface ();
+					mode.indicatorSurface = surface;
+					mode.QueueDraw ();
+					return false;
+				}
+			}
+		}
+
+		void DrawIndicatorSurface()
+		{
+			var allocation = Allocation;
+			if (allocation.Width <= 0)
+				return;
+			src.Cancel ();
+			src = new CancellationTokenSource ();
+			new IdleUpdater (this, src.Token).Start ();
+		}
+
+		/// TODO: CairoExtensions.CachedDraw seems not to work correctly for me.
+		public static void CachedDraw (Cairo.Context self, ref SurfaceWrapper surface, Gdk.Rectangle region, object parameters = null, float opacity = 1.0f, Action<Cairo.Context, float> draw = null, double? forceScale = null)
+		{
+			double displayScale = forceScale.HasValue ? forceScale.Value : QuartzSurface.GetRetinaScale (self);
+			int targetWidth = (int) (region.Width * displayScale);
+			int targetHeight = (int) (region.Height * displayScale);
+
+			bool redraw = false;
+			if (surface == null || surface.Width != targetWidth || surface.Height != targetHeight) {
+				if (surface != null)
+					surface.Dispose ();
+				surface = new SurfaceWrapper (self, targetWidth, targetHeight);
+				redraw = true;
+			} else if ((surface.Data == null && parameters != null) || (surface.Data != null && !surface.Data.Equals (parameters))) {
+				redraw = true;
+			}
+
+
+			if (redraw) {
+				surface.Data = parameters;
+				using (var context = new Cairo.Context (surface.Surface)) {
+					draw(context, 1.0f);
+				}
+			}
+
+			self.Save ();
+			self.SetSourceSurface (surface.Surface, 0, 0);
+			self.Paint ();
+			self.Restore ();
+		}
+
+		void DrawBackground (Cairo.Context cr, Gdk.Rectangle allocation)
+		{
+			cr.LineWidth = 1;
+			cr.Rectangle (0, 0, allocation.Width, allocation.Height);
+
+			if (TextEditor.ColorStyle != null) {
+				if (MonoDevelop.Core.Platform.IsWindows) {
+					using (var pattern = new Cairo.SolidPattern (win81Background)) {
+						cr.SetSource (pattern);
+					}
+				} else {
+					var col = TextEditor.ColorStyle.PlainText.Background.ToXwtColor ();
+					col.Light *= 0.948;
+					using (var grad = new Cairo.LinearGradient (0, 0, allocation.Width, 0)) {
+						grad.AddColorStop (0, col.ToCairoColor ());
+						grad.AddColorStop (0.7, TextEditor.ColorStyle.PlainText.Background);
+						grad.AddColorStop (1, col.ToCairoColor ());
+						cr.SetSource (grad);
+					}
+				}
+			}
+			cr.Fill ();
+			DrawLeftBorder (cr);
+		}
 	}
-	
 }

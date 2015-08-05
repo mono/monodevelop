@@ -808,6 +808,7 @@ namespace Mono.TextEditor
 		
 		public LayoutWrapper CreateLinePartLayout (ISyntaxMode mode, DocumentLine line, int logicalRulerColumn, int offset, int length, int selectionStart, int selectionEnd)
 		{
+			textEditor.CheckUIThread ();
 			bool containsPreedit = textEditor.ContainsPreedit (offset, length);
 			LayoutDescriptor descriptor;
 			if (!containsPreedit && layoutDict.TryGetValue (line, out descriptor)) {
@@ -1010,6 +1011,7 @@ namespace Mono.TextEditor
 		{
 			if (line == null)
 				return;
+			textEditor.CheckUIThread ();
 			LayoutDescriptor descriptor;
 			if (layoutDict.TryGetValue (line, out descriptor)) {
 				descriptor.Dispose ();
@@ -1024,6 +1026,7 @@ namespace Mono.TextEditor
 
 		internal void DisposeLayoutDict ()
 		{
+			textEditor.CheckUIThread ();
 			foreach (LayoutDescriptor descr in layoutDict.Values) {
 				descr.Dispose ();
 			}
