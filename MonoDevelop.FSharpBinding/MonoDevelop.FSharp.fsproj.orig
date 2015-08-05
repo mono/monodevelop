@@ -108,6 +108,9 @@
     <EmbeddedResource Include="FSharpStylePolicy.xml" />
     <EmbeddedResource Include="FSharpBinding.addin.xml" />
     <None Include="paket.references" />
+    <None Include="CompilerService.exe.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="pango-sharp"/>
