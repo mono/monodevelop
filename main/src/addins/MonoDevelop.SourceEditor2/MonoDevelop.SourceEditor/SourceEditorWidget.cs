@@ -1355,42 +1355,6 @@ namespace MonoDevelop.SourceEditor
 		}
 	
 		#endregion
-		
-		#region IQuickTaskProvider implementation
-		List<QuickTask> tasks = new List<QuickTask> ();
-
-		public event EventHandler TasksUpdated;
-
-		protected virtual void OnTasksUpdated (EventArgs e)
-		{
-			EventHandler handler = this.TasksUpdated;
-			if (handler != null)
-				handler (this, e);
-		}
-		
-		public IEnumerable<QuickTask> QuickTasks {
-			get {
-				return tasks;
-			}
-		}
-		
-		async void UpdateQuickTasks (ParsedDocument doc)
-		{
-			tasks.Clear ();
-			if (doc != null) {
-				foreach (var cmt in await doc.GetTagCommentsAsync()) {
-					var newTask = new QuickTask (cmt.Text, textEditor.LocationToOffset (cmt.Region.Begin.Line, cmt.Region.Begin.Column), DiagnosticSeverity.Info);
-					tasks.Add (newTask);
-				}
-			
-				foreach (var error in await doc.GetErrorsAsync()) {
-					var newTask = new QuickTask (error.Message, textEditor.LocationToOffset (error.Region.Begin.Line, error.Region.Begin.Column), error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Error ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning);
-					tasks.Add (newTask);
-				}
-			}
-			OnTasksUpdated (EventArgs.Empty);
-		}
-		#endregion
 
 		internal void NextIssue ()
 		{

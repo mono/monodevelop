@@ -159,8 +159,7 @@ namespace MonoDevelop.Ide.Editor
 		void HandleDocumentParsed (object sender, EventArgs e)
 		{
 			var ctx = (DocumentContext)sender;
-			src.Cancel ();
-			src = new CancellationTokenSource ();
+			CancelDocumentParsedUpdate ();
 			var token = src.Token;
 			Task.Run (() => {
 				try {
@@ -171,6 +170,12 @@ namespace MonoDevelop.Ide.Editor
 					// ignore
 				}
 			}, token);
+		}
+
+		void CancelDocumentParsedUpdate ()
+		{
+			src.Cancel ();
+			src = new CancellationTokenSource ();
 		}
 
 		#region Error handling
@@ -584,6 +589,7 @@ namespace MonoDevelop.Ide.Editor
 			if (isDisposed)
 				return;
 			isDisposed = true;
+			CancelDocumentParsedUpdate ();
 			textEditorImpl.DirtyChanged -= HandleDirtyChanged;
 			textEditor.MimeTypeChanged -= UpdateTextEditorOptions;
 			textEditor.TextChanged -= HandleTextChanged;
