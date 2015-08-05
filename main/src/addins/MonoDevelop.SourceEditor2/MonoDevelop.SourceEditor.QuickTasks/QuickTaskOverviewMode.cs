@@ -713,8 +713,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				cr.SetSourceColor (GetBarColor (task.Severity));
 				cr.Rectangle (0, y - 1, Allocation.Width, 2);
 				cr.Fill ();
-				severity = task.Severity;
-
+				if (task.Severity == DiagnosticSeverity.Error)
+					severity = DiagnosticSeverity.Error;
+				else if (task.Severity == DiagnosticSeverity.Warning && severity != DiagnosticSeverity.Error)
+					severity = DiagnosticSeverity.Warning;
 			} else {
 				nextStep = true;
 			}
