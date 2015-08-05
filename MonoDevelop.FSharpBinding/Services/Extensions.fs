@@ -63,6 +63,14 @@ module FSharpSymbolExt =
         |> Option.flatten
         |> Option.orTry (fun _ -> Option.attempt (fun _ -> String.Join(".", x.AccessPath, x.DisplayName)))
 
+      member x.TryGetFullNameWithUnderScoreTypes() =
+        try
+          let name = String.Join(".", x.AccessPath, x.DisplayName)
+          if x.GenericParameters.Count > 0 then
+            Some (name + "<" + String.concat "," (x.GenericParameters |> Seq.map (fun gp -> gp.DisplayName)) + ">")
+          else Some name
+        with _ -> None
+
 [<AutoOpen>]
 module FrameworkExt =
   type Path with

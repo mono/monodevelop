@@ -195,7 +195,10 @@ module ExtendedPatterns =
                     else
                         if not symbol.IsModuleValueOrMember then ClosureOrNestedFunction symbol
                         else Function symbol                       
-                | Some _fullType -> Val symbol
+                | Some _fullType -> 
+                  if symbol.IsOperatorOrActivePattern then
+                    if symbolUse.IsFromPattern then Pattern symbol else Operator symbol
+                  else Val symbol 
                 | None -> Unknown
         | _ -> Unknown
 
@@ -251,7 +254,7 @@ type ToolTips =
 [<AutoOpen>]
 module internal Highlight =
     type HighlightType =
-    | Symbol | Keyword | UserType | Number
+    | Symbol | Brackets | Keyword | UserType | Number
 
     let getColourScheme () =
         Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme.Value)
@@ -265,6 +268,7 @@ module internal Highlight =
         let cs = getColourScheme ()
         match t with
         | Symbol -> hl s cs.KeywordOperators
+        | Brackets -> hl s cs.PunctuationForBrackets
         | Keyword -> hl s cs.KeywordTypes
         | UserType -> hl s cs.UserTypes
         | Number -> hl s cs.Number
@@ -446,14 +450,23 @@ module SymbolTooltips =
             "   " + asType Keyword "delegate" + " of\n" + invokerSig
                                  
         let typeDisplay =
-            let basicName = modifier + asType Keyword typeName ++ asType UserType fse.DisplayName
+            let name =
+              if fse.GenericParameters.Count > 0 then
+                let p = fse.GenericParameters |> Seq.map (fun gp -> gp.DisplayName) |> String.concat ","
+                asType UserType fse.DisplayName + asType Brackets (escapeText "<") + asType UserType p + asType Brackets (escapeText ">")
+              else asType UserType fse.DisplayName
+
+            let basicName = modifier + asType Keyword typeName ++ name
             //TODO: add generic constraint display
-            basicName 
+            if fse.IsFSharpAbbreviation then
+              basicName ++ asType Brackets "=" ++ asType Keyword (fse.AbbreviatedType.Format displayContext)
+            else
+              basicName 
 
         let fullName =
-            match fse.TryGetFullName () with
-            | Some fullname -> "\n\nFull name: " + fullname
-            | None -> "\n\nFull name: " + fse.QualifiedName
+            match fse.TryGetFullNameWithUnderScoreTypes() with
+            | Some fullname -> "\n\n<small>Full name: " + escapeText fullname + "</small>"
+            | None -> "\n\n<small>Full name: " + fse.QualifiedName + "</small>"
 
         match fse.IsFSharpUnion, fse.IsEnum, fse.IsDelegate with
         | true, false, false -> typeDisplay + uniontip () + fullName
