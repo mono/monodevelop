@@ -685,11 +685,14 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				cr.Fill ();
 			}
 
+			HashSet<int> set = new HashSet<int> ();
 			foreach (var task in AllTasks) {
-				double y = GetYPosition (TextEditor.OffsetToLineNumber (task.Location));
-
+				int y = (int)GetYPosition (TextEditor.OffsetToLineNumber (task.Location));
+				if (set.Contains (y))
+					continue;
+				set.Add (y);
 				cr.SetSourceColor (GetBarColor (task.Severity));
-				cr.Rectangle (0, Math.Round (y) - 1, Allocation.Width, 2);
+				cr.Rectangle (0, y - 1, Allocation.Width, 2);
 				cr.Fill ();
 				severity = task.Severity;
 			}
@@ -796,54 +799,54 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			if (TextEditor == null)
 				return true;
-			using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
-				cr.LineWidth = 1;
-				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+			//using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
+			//	cr.LineWidth = 1;
+			//	cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 				
-				if (TextEditor.ColorStyle != null) {
-					if (MonoDevelop.Core.Platform.IsWindows) {
-						using (var pattern = new Cairo.SolidPattern (win81Background)) {
-							cr.SetSource (pattern);
-						}
-					} else {
-						var col = TextEditor.ColorStyle.PlainText.Background.ToXwtColor();
-						col.Light *= 0.948;
-						using (var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0)) {
-							grad.AddColorStop (0, col.ToCairoColor ());
-							grad.AddColorStop (0.7, TextEditor.ColorStyle.PlainText.Background);
-							grad.AddColorStop (1, col.ToCairoColor ());
-							cr.SetSource (grad);
-						}
-						/*
-						var col = new Cairo.Color (229 / 255.0, 229 / 255.0, 229 / 255.0);
-						using (var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0)) {
-							grad.AddColorStop (0, col);
-							grad.AddColorStop (0.5, new Cairo.Color (1, 1, 1));
-							grad.AddColorStop (1, col);
-							cr.SetSource (grad);
-						}*/
-					}
-				}
-				cr.Fill ();
+			//	if (TextEditor.ColorStyle != null) {
+			//		if (MonoDevelop.Core.Platform.IsWindows) {
+			//			using (var pattern = new Cairo.SolidPattern (win81Background)) {
+			//				cr.SetSource (pattern);
+			//			}
+			//		} else {
+			//			var col = TextEditor.ColorStyle.PlainText.Background.ToXwtColor();
+			//			col.Light *= 0.948;
+			//			using (var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0)) {
+			//				grad.AddColorStop (0, col.ToCairoColor ());
+			//				grad.AddColorStop (0.7, TextEditor.ColorStyle.PlainText.Background);
+			//				grad.AddColorStop (1, col.ToCairoColor ());
+			//				cr.SetSource (grad);
+			//			}
+			//			/*
+			//			var col = new Cairo.Color (229 / 255.0, 229 / 255.0, 229 / 255.0);
+			//			using (var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0)) {
+			//				grad.AddColorStop (0, col);
+			//				grad.AddColorStop (0.5, new Cairo.Color (1, 1, 1));
+			//				grad.AddColorStop (1, col);
+			//				cr.SetSource (grad);
+			//			}*/
+			//		}
+			//	}
+			//	cr.Fill ();
 
-				if (TextEditor == null)
-					return true;
+			//	if (TextEditor == null)
+			//		return true;
 				
-				if (TextEditor.HighlightSearchPattern) {
-					DrawSearchResults (cr);
-					DrawSearchIndicator (cr);
-				} else {
-					if (!Debugger.DebuggingService.IsDebugging) {
-						var severity = DrawQuickTasks (cr);
-						DrawIndicator (cr, severity);
-					}
-				}
-				DrawCaret (cr);
+			//	if (TextEditor.HighlightSearchPattern) {
+			//		DrawSearchResults (cr);
+			//		DrawSearchIndicator (cr);
+			//	} else {
+			//		if (!Debugger.DebuggingService.IsDebugging) {
+			//			var severity = DrawQuickTasks (cr);
+			//			DrawIndicator (cr, severity);
+			//		}
+			//	}
+			//	DrawCaret (cr);
 
-				if (QuickTaskStrip.MergeScrollBarAndQuickTasks)
-					DrawBar (cr);
-				DrawLeftBorder (cr);
-			}
+			//	if (QuickTaskStrip.MergeScrollBarAndQuickTasks)
+			//		DrawBar (cr);
+			//	DrawLeftBorder (cr);
+			//}
 			
 			return true;
 		}

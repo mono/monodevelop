@@ -73,14 +73,17 @@ namespace MonoDevelop.CSharp.Parser
 		public override Task<IReadOnlyList<Comment>> GetCommentsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (comments == null) {
-				lock (commentLock) {
-					if (comments == null) {
-						var visitor = new CommentVisitor (cancellationToken);
-						if (Unit != null)
-							visitor.Visit (Unit.GetRoot (cancellationToken));
-						comments = visitor.Comments;
+				return Task.Run (delegate {
+					lock (commentLock) {
+						if (comments == null) {
+							var visitor = new CommentVisitor (cancellationToken);
+							if (Unit != null)
+								visitor.Visit (Unit.GetRoot (cancellationToken));
+							comments = visitor.Comments;
+						}
 					}
-				}
+					return comments;
+				});
 			}
 			return Task.FromResult (comments);
 		}
@@ -200,18 +203,21 @@ namespace MonoDevelop.CSharp.Parser
 		public override Task<IReadOnlyList<Tag>> GetTagCommentsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (tags == null) {
-				lock (tagLock) {
-					if (tags == null) {
-						var visitor = new SemanticTagVisitor (cancellationToken);
-						if (Unit != null) {
-							try {
-								visitor.Visit (Unit.GetRoot (cancellationToken));
-							} catch {
+				return Task.Run (delegate {
+					lock (tagLock) {
+						if (tags == null) {
+							var visitor = new SemanticTagVisitor (cancellationToken);
+							if (Unit != null) {
+								try {
+									visitor.Visit (Unit.GetRoot (cancellationToken));
+								} catch {
+								}
 							}
+							tags = visitor.Tags;
 						}
-						tags = visitor.Tags;
+						return tags;
 					}
-				}
+				});
 			}
 			return Task.FromResult (tags);
 		}
@@ -278,10 +284,13 @@ namespace MonoDevelop.CSharp.Parser
 		public override Task<IReadOnlyList<FoldingRegion>> GetFoldingsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (foldings == null) {
-				lock (foldingLock) {
-					if (foldings == null) 
-						foldings = GenerateFoldings (cancellationToken).ToList ();
-				}
+				return Task.Run (delegate {
+					lock (foldingLock) {
+						if (foldings == null)
+							foldings = GenerateFoldings (cancellationToken).ToList ();
+					}
+					return foldings;
+				});
 			}
 
 			return Task.FromResult (foldings);
@@ -423,22 +432,25 @@ namespace MonoDevelop.CSharp.Parser
 				return Task.FromResult (emptyErrors);
 			
 			if (errors == null) {
-				lock (errorLock) {
-					if (errors == null) {
-						try {
-							errors = model
-								.GetDiagnostics (null, cancellationToken)
-								.Where (diag => diag.Severity == DiagnosticSeverity.Error || diag.Severity == DiagnosticSeverity.Warning)
-								.Select ((Diagnostic diag) => new Error (GetErrorType (diag.Severity), diag.Id, diag.GetMessage (), GetRegion (diag)) { Tag = diag })
-								.ToList ();
-						} catch (OperationCanceledException) {
-							errors = emptyErrors;
-						} catch (Exception e) {
-							LoggingService.LogError ("Error while getting diagnostics.", e);
-							errors = emptyErrors;
+				return Task.Run (delegate {
+					lock (errorLock) {
+						if (errors == null) {
+							try {
+								errors = model
+									.GetDiagnostics (null, cancellationToken)
+									.Where (diag => diag.Severity == DiagnosticSeverity.Error || diag.Severity == DiagnosticSeverity.Warning)
+									.Select ((Diagnostic diag) => new Error (GetErrorType (diag.Severity), diag.Id, diag.GetMessage (), GetRegion (diag)) { Tag = diag })
+									.ToList ();
+							} catch (OperationCanceledException) {
+								errors = emptyErrors;
+							} catch (Exception e) {
+								LoggingService.LogError ("Error while getting diagnostics.", e);
+								errors = emptyErrors;
+							}
 						}
 					}
-				}
+					return errors;
+				});
 			}
 			return Task.FromResult (errors);
 		}
