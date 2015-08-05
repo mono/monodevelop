@@ -105,10 +105,7 @@ module TooltipsXml =
                           if i > 0 then summary.AppendLine() |> ignore
                           summary.AppendFormat( "{0}: {1}", exceptionType, element.Value) |> ignore)
 
-            if summary.Length > 0 then summary.ToString()
-            //If theres nothing in the StringBuilder then there's either no summary or exception elements,
-            //or something went wrong, simply return the str escaped rather than nothing.
-            else GLib.Markup.EscapeText str
+            summary.ToString()
         //if the tooltip contains invalid xml return the str escaped
         with exn ->
             LoggingService.LogError("Error in Tooltip parsing:\n" + exn.ToString())
