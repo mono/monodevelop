@@ -84,7 +84,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			}
 		}
 
-		Dictionary<DocumentLine, HighlightingSegmentTree> lineSegments = new Dictionary<DocumentLine, HighlightingSegmentTree> ();
+		Queue<Tuple<DocumentLine, HighlightingSegmentTree>> lineSegments = new Queue<Tuple<DocumentLine, HighlightingSegmentTree>> ();
 
 		public SemanticHighlightingSyntaxMode (ExtensibleTextEditor editor, ISyntaxMode syntaxMode, SemanticHighlighting semanticHighlighting)
 		{
@@ -120,7 +120,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 				return;
 			foreach (var kv in lineSegments) {
 				try {
-					kv.Value.RemoveListener ();
+					kv.Item2.RemoveListener ();
 				} catch (Exception) {
 				}
 			}
@@ -147,6 +147,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		class CSharpChunkParser : ChunkParser
 		{
+			const int MaximumCachedLineSegments = 200;
 			SemanticHighlightingSyntaxMode semanticMode;
 
 			int lineNumber;
@@ -162,20 +163,26 @@ namespace MonoDevelop.SourceEditor.Wrappers
 					base.AddRealChunk (chunk);
 					return;
 				}
-				int endLoc = -1;
 				StyledTreeSegment treeseg = null;
 
 				try {
-					HighlightingSegmentTree tree;
-					if (!semanticMode.lineSegments.TryGetValue (line, out tree)) {
-						tree = new HighlightingSegmentTree ();
-						tree.InstallListener (semanticMode.Document); 
-						foreach (var seg in semanticMode.semanticHighlighting.GetColoredSegments (new MonoDevelop.Core.Text.TextSegment (line.Offset, line.Length))) {
-							tree.AddStyle (seg, seg.ColorStyleKey);
+					var tree = semanticMode.lineSegments.FirstOrDefault (t => t.Item1 == line);
+					if (tree == null) {
+						tree = Tuple.Create (line, new HighlightingSegmentTree ());
+						tree.Item2.InstallListener (semanticMode.Document); 
+						int lineOffset = line.Offset;
+						foreach (var seg in semanticMode.semanticHighlighting.GetColoredSegments (new MonoDevelop.Core.Text.TextSegment (lineOffset, line.Length))) {
+							tree.Item2.AddStyle (seg, seg.ColorStyleKey);
 						}
-						semanticMode.lineSegments[line] = tree;
+						while (semanticMode.lineSegments.Count > MaximumCachedLineSegments) {
+							var removed = semanticMode.lineSegments.Dequeue ();
+							try {
+								removed.Item2.RemoveListener ();
+							} catch (Exception) { }
+						}
+						semanticMode.lineSegments.Enqueue (tree);
 					}
-					treeseg = tree.GetSegmentsOverlapping (chunk).FirstOrDefault (s => s.Offset < chunk.EndOffset && s.EndOffset > chunk.Offset);
+					treeseg = tree.Item2.GetSegmentsOverlapping (chunk).FirstOrDefault (s => s.Offset < chunk.EndOffset && s.EndOffset > chunk.Offset);
 				} catch (Exception e) {
 					Console.WriteLine ("Error in semantic highlighting: " + e);
 				}
