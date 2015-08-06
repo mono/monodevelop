@@ -14,23 +14,16 @@ type Arguments =
 
 [<EntryPoint>]
 let main argv =
-  // build the argument parser
   try
     let parser = UnionArgParser.Create<Arguments>()
-
     let results = parser.Parse argv
     let projectFile = results.GetResult(<@ Project @>)
-
     let checker = FSharpChecker.Create()
-   
     let fsharpProjectOptions = checker.GetProjectOptionsFromProjectFile(projectFile)
-
-    let json = FsPickler.CreateBinary()
+    let pickler = FsPickler.CreateBinary()
     let outstream = Console.OpenStandardOutput()
-    json.Serialize(outstream, fsharpProjectOptions)
+    pickler.Serialize(outstream, fsharpProjectOptions)
+    0
   with ex ->
     Console.Out.WriteLine(ex)
-
-  0 // return an integer exit code
-
-
+    1
