@@ -436,8 +436,7 @@ namespace Mono.TextEditor
 				if (node.count == 1)
 					return node;
 			}
-			Debug.Assert (lineNumber == node.GetLineNumber (), lineNumber + " should match node line number " + node.GetLineNumber () + " (max: " + tree.Root.totalCount + ")");
-			
+
 			InsertAfter (node, new HeightNode () {
 				count = node.count - 1,
 				height = (node.count - 1) * editor.LineHeight,
