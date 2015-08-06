@@ -167,7 +167,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				backgroundSurface.Dispose ();
 				backgroundSurface = null;
 			}
-
+			RemoveIndicatorIdleHandler ();
+			DestroyIndicatorSwapSurface ();
 			DestroyIndicatorSurface ();
 			CancelFadeInTimeout ();
 			RemovePreviewPopupTimeout ();
@@ -197,6 +198,14 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			if (indicatorSurface != null) {
 				indicatorSurface.Dispose ();
 				indicatorSurface = null;
+			}
+		}
+
+		void DestroyIndicatorSwapSurface ()
+		{
+			if (swapIndicatorSurface != null) {
+				swapIndicatorSurface.Dispose ();
+				swapIndicatorSurface = null;
 			}
 		}
 
@@ -674,11 +683,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			return y;
 		}
 
-		protected void DrawQuickTasks (Cairo.Context cr, IEnumerator<Usage> allUsages, IEnumerator<QuickTask> allTasks, ref bool nextStep, ref DiagnosticSeverity severity, HashSet<int> lineCache, CancellationToken token)
+		protected void DrawQuickTasks (Cairo.Context cr, IEnumerator<Usage> allUsages, IEnumerator<QuickTask> allTasks, ref bool nextStep, ref DiagnosticSeverity severity, HashSet<int> lineCache)
 		{
 			if (allUsages.MoveNext ()) {
 				var usage = allUsages.Current;
-				token.ThrowIfCancellationRequested ();
 				int y = (int)GetYPosition (TextEditor.OffsetToLineNumber (usage.Offset));
 				if (lineCache.Contains (y))
 					return;
@@ -705,7 +713,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				cr.Fill ();
 			} else if (allTasks.MoveNext ()) {
 				var task = allTasks.Current;
-				token.ThrowIfCancellationRequested ();
 				int y = (int)GetYPosition (TextEditor.OffsetToLineNumber (task.Location));
 				if (lineCache.Contains (y))
 					return;
@@ -740,6 +747,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			yPositionCache.Clear ();
 			base.OnSizeAllocated (allocation);
+			DrawIndicatorSurface (0);
 		}
 
 		void GetBarDimensions (out double x, out double y, out double w, out double h)
@@ -805,14 +813,13 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		}
 
 
-		protected void DrawSearchResults (Cairo.Context cr, IEnumerator<TextSegment> searchResults, ref bool nextStep, CancellationToken token)
+		protected void DrawSearchResults (Cairo.Context cr, IEnumerator<TextSegment> searchResults, ref bool nextStep)
 		{
 			if (!searchResults.MoveNext ()) {
 				nextStep = true;
 				return;
 			}
 			var region = searchResults.Current;
-			token.ThrowIfCancellationRequested ();
 			int line = TextEditor.OffsetToLineNumber (region.Offset);
 			double y = GetYPosition (line);
 			bool isMainSelection = false;
@@ -823,7 +830,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			cr.Fill ();
 		}
 
-		SurfaceWrapper backgroundSurface, indicatorSurface;
+		SurfaceWrapper backgroundSurface, indicatorSurface, swapIndicatorSurface;
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
 			if (TextEditor == null)
@@ -871,8 +878,19 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			public void Start ()
 			{
 				allocation = mode.Allocation;
-				using (var similiar = CairoHelper.Create (IdeApp.Workbench.RootWindow.GdkWindow))
-					surface = new SurfaceWrapper (similiar, allocation.Width, allocation.Height);
+				var swapSurface = mode.swapIndicatorSurface;
+				if (swapSurface != null) {
+					if (swapSurface.Width == allocation.Width && swapSurface.Height == allocation.Height) {
+						surface = swapSurface;
+					} else {
+						mode.DestroyIndicatorSwapSurface ();
+					}
+				}
+
+				if (surface == null) {
+					using (var similiar = CairoHelper.Create (IdeApp.Workbench.RootWindow.GdkWindow))
+						surface = new SurfaceWrapper (similiar, allocation.Width, allocation.Height);
+				}
 
 				searchResults = mode.TextEditor.TextViewMargin.SearchResults.GetEnumerator ();
 				allUsages = mode.AllUsages.GetEnumerator ();
@@ -889,9 +907,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 			bool RunHandler ()
 			{
+				tokenExit:
 				if (token.IsCancellationRequested) {
 					cr.Dispose ();
-					surface.Dispose ();
+					// if the surface was newly created dispose it otherwise it'll leak.
+					if (surface != mode.swapIndicatorSurface)
+						surface.Dispose ();
 					return false;
 				}
 				var lineCache = new HashSet<int> ();
@@ -903,19 +924,21 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					return true;
 				case 1:
 					for (int i = 0; i < 10 && !nextStep; i++) {
+						if (token.IsCancellationRequested)
+							goto tokenExit;
 						if (mode.TextEditor.HighlightSearchPattern) {
-							mode.DrawSearchResults (cr, searchResults, ref nextStep, token);
+							mode.DrawSearchResults (cr, searchResults, ref nextStep);
 						} else {
 							if (!Debugger.DebuggingService.IsDebugging) {
-								mode.DrawQuickTasks (cr, allUsages, allTasks, ref nextStep, ref severity, lineCache, token);
+								mode.DrawQuickTasks (cr, allUsages, allTasks, ref nextStep, ref severity, lineCache);
 							}
 						}
 
 						if (mode.TextEditor.HighlightSearchPattern) {
-							mode.DrawSearchResults (cr, searchResults, ref nextStep, token);
+							mode.DrawSearchResults (cr, searchResults, ref nextStep);
 						} else {
 							if (!Debugger.DebuggingService.IsDebugging) {
-								mode.DrawQuickTasks (cr, allUsages, allTasks, ref nextStep, ref severity, lineCache, token);
+								mode.DrawQuickTasks (cr, allUsages, allTasks, ref nextStep, ref severity, lineCache);
 							}
 						}
 					}
@@ -942,22 +965,42 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					return true;
 				default:
 					cr.Dispose ();
-					mode.DestroyIndicatorSurface ();
+					var tmp = mode.indicatorSurface;
 					mode.indicatorSurface = surface;
+					mode.swapIndicatorSurface = tmp;
 					mode.QueueDraw ();
 					return false;
 				}
 			}
 		}
 
-		void DrawIndicatorSurface()
+		uint indicatorIdleTimout;
+		void DrawIndicatorSurface(uint timeout = 250)
 		{
-			var allocation = Allocation;
-			if (allocation.Width <= 0)
-				return;
-			src.Cancel ();
-			src = new CancellationTokenSource ();
-			new IdleUpdater (this, src.Token).Start ();
+			RemoveIndicatorIdleHandler ();
+			GLib.TimeoutHandler timeoutHandler = delegate {
+				indicatorIdleTimout = 0;
+				if (!IsRealized)
+					return false;
+				var allocation = Allocation;
+				src.Cancel ();
+				src = new CancellationTokenSource ();
+				new IdleUpdater (this, src.Token).Start ();
+				return false;
+			};
+			if (timeout == 0) {
+				timeoutHandler ();
+			} else {
+				indicatorIdleTimout = GLib.Timeout.Add (timeout, timeoutHandler);
+			}
+		}
+
+		void RemoveIndicatorIdleHandler ()
+		{
+			if (indicatorIdleTimout > 0) {
+				GLib.Source.Remove (indicatorIdleTimout);
+				indicatorIdleTimout = 0;
+			}
 		}
 
 		/// TODO: CairoExtensions.CachedDraw seems not to work correctly for me.
@@ -985,10 +1028,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				}
 			}
 
-			self.Save ();
 			self.SetSourceSurface (surface.Surface, 0, 0);
 			self.Paint ();
-			self.Restore ();
 		}
 
 		void DrawBackground (Cairo.Context cr, Gdk.Rectangle allocation)
@@ -1000,6 +1041,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				if (MonoDevelop.Core.Platform.IsWindows) {
 					using (var pattern = new Cairo.SolidPattern (win81Background)) {
 						cr.SetSource (pattern);
+						cr.Fill ();
 					}
 				} else {
 					var col = TextEditor.ColorStyle.PlainText.Background.ToXwtColor ();
@@ -1009,10 +1051,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 						grad.AddColorStop (0.7, TextEditor.ColorStyle.PlainText.Background);
 						grad.AddColorStop (1, col.ToCairoColor ());
 						cr.SetSource (grad);
+						cr.Fill ();
 					}
 				}
 			}
-			cr.Fill ();
 			DrawLeftBorder (cr);
 		}
 	}

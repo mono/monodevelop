@@ -34,12 +34,13 @@ using MonoDevelop.Core;
 using System.Diagnostics.CodeAnalysis;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
 	public abstract class UsageProviderEditorExtension : TextEditorExtension
 	{
-		public abstract IEnumerable<Usage> Usages {
+		public abstract ImmutableArray<Usage> Usages {
 			get;
 		}
 
@@ -182,8 +183,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 		void ClearQuickTasks ()
 		{
 			//UsagesSegments.Clear ();
-			if (usages.Count > 0) {
-				usages.Clear ();
+			if (usages.Length > 0) {
+				usages = ImmutableArray<Usage>.Empty;
 				OnUsagesUpdated (EventArgs.Empty);
 			}
 		}
@@ -209,10 +210,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			RemoveMarkers ();
 			var lineNumbers = new HashSet<int> ();
-			usages.Clear ();
+			usages = ImmutableArray<Usage>.Empty;
 			var editor = Editor;
 			if (editor != null /*&& editor.TextViewMargin != null*/) {
 				if (references != null) {
+					var builder = ImmutableArray<Usage>.Empty.ToBuilder ();
 					foreach (var r in references) {
 						if (r == null)
 							continue;
@@ -221,12 +223,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 						if (end > editor.Length)
 							continue;
 						var usage = new Usage (TextSegment.FromBounds (start, end), r.ReferenceUsageType);
-						usages.Add (usage);
+						builder.Add (usage);
 						var marker = TextMarkerFactory.CreateUsageMarker (editor, usage);
 						markers.Add (marker);
 						lineNumbers.Add (editor.OffsetToLineNumber (start));
 						editor.AddMarker (marker);
 					}
+					usages = builder.ToImmutable ();
 				}
 			}
 			OnUsagesUpdated (EventArgs.Empty);
@@ -234,8 +237,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		#region IUsageProvider implementation
 
-		readonly List<Usage> usages = new List<Usage> ();
-		public override IEnumerable<Usage> Usages {
+		ImmutableArray<Usage> usages = ImmutableArray<Usage>.Empty;
+		public override ImmutableArray<Usage> Usages {
 			get {
 				return usages;
 			}

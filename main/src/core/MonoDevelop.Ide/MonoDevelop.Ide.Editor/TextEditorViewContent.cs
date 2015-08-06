@@ -47,6 +47,7 @@ using System.Threading;
 using Microsoft.CodeAnalysis;
 using Gdk;
 using MonoDevelop.Ide.CodeFormatting;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -852,7 +853,7 @@ namespace MonoDevelop.Ide.Editor
 		#endregion
 	
 		#region IQuickTaskProvider implementation
-		List<QuickTask> tasks = new List<QuickTask> ();
+		ImmutableArray<QuickTask> tasks = ImmutableArray<QuickTask>.Empty;
 
 		public event EventHandler TasksUpdated;
 
@@ -863,7 +864,7 @@ namespace MonoDevelop.Ide.Editor
 				handler (this, e);
 		}
 
-		public IEnumerable<QuickTask> QuickTasks {
+		public ImmutableArray<QuickTask> QuickTasks {
 			get {
 				return tasks;
 			}
@@ -873,7 +874,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (isDisposed)
 				return;
-			var newTasks = new List<QuickTask> ();
+			var newTasks = ImmutableArray<QuickTask>.Empty.ToBuilder ();
 			if (doc != null) {
 				foreach (var cmt in await doc.GetTagCommentsAsync(token).ConfigureAwait (false)) {
 					var newTask = new QuickTask (cmt.Text, textEditor.LocationToOffset (cmt.Region.Begin.Line, cmt.Region.Begin.Column), DiagnosticSeverity.Info);
@@ -888,7 +889,7 @@ namespace MonoDevelop.Ide.Editor
 			Application.Invoke (delegate {
 				if (token.IsCancellationRequested || isDisposed)
 					return;
-				tasks = newTasks;
+				tasks = newTasks.ToImmutable ();
 				OnTasksUpdated (EventArgs.Empty);
 			});
 		}
