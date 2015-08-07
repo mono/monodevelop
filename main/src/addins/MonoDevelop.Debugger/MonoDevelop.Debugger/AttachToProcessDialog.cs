@@ -151,7 +151,7 @@ namespace MonoDevelop.Debugger
 			FillList ();
 		}
 
-		protected virtual void OnRowActivated (object o, Gtk.RowActivatedArgs args)
+		void OnRowActivated (object o, Gtk.RowActivatedArgs args)
 		{
 			Respond (Gtk.ResponseType.Ok);
 		}
