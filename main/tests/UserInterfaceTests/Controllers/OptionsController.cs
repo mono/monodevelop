@@ -29,46 +29,64 @@ using MonoDevelop.Ide.Commands;
 
 namespace UserInterfaceTests
 {
-	public class ProjectOptionsController
+	public class ProjectOptionsController : OptionsController
 	{
-		static AutoTestClientSession Session {
-			get { return TestService.Session; }
-		}
+		readonly static Func<AppQuery, AppQuery> windowQuery = c => c.Window ().Marked ("MonoDevelop.Ide.Projects.ProjectOptionsDialog");
 
-		Action<string> takeScreenshot;
-
-		public ProjectOptionsController (Action<string> takeScreenshot = null)
-		{
-			this.takeScreenshot = takeScreenshot ?? delegate { };
-		}
+		public ProjectOptionsController (Action<string> takeScreenshot = null) : base (windowQuery, takeScreenshot) { }
 
 		public void OpenProjectOptions ()
 		{
 			Session.Query (IdeQuery.TextArea);
 			Session.ExecuteCommand (ProjectCommands.ProjectOptions);
-			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Projects.ProjectOptionsDialog"));
-			takeScreenshot ("Opened-ProjectOptionsDialog");
+			Session.WaitForElement (windowQuery);
+			TakeScreenshot ("Opened-ProjectOptionsDialog");
+		}
+	}
+
+	public class PreferencesController : OptionsController
+	{
+		readonly static Func<AppQuery, AppQuery> windowQuery = c => c.Window ().Marked ("Preferences");
+
+		public PreferencesController (Action<string> takeScreenshot = null) : base (windowQuery, takeScreenshot) {}
+
+		public void Open ()
+		{
+			Session.ExecuteCommand (EditCommands.MonodevelopPreferences);
+			Session.WaitForElement (windowQuery);
+			TakeScreenshot ("Opened-Preferences-Window");
+		}
+	}
+
+	public abstract class OptionsController
+	{
+		protected static AutoTestClientSession Session {
+			get { return TestService.Session; }
 		}
 
-		public void OpenSolutionOptions ()
+		protected Action<string> TakeScreenshot;
+		readonly Func<AppQuery, AppQuery> windowQuery;
+
+		protected OptionsController (Func<AppQuery, AppQuery> windowQuery, Action<string> takeScreenshot = null)
 		{
-			throw new NotImplementedException ();
+			this.windowQuery = windowQuery;
+			TakeScreenshot = takeScreenshot ?? delegate { };
 		}
 
 		public void SelectPane (string name)
 		{
-			Session.SelectElement (c => c.Window ().Marked ("MonoDevelop.Ide.Projects.ProjectOptionsDialog").Children ().Marked (
+			Session.SelectElement (c => windowQuery (c).Children ().Marked (
 				"__gtksharp_16_MonoDevelop_Components_HeaderBox").Children ().TreeView ().Model ().Children ().Property ("Label", name));
 		}
 
 		public void ClickOK ()
 		{
-			Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.Ide.Projects.ProjectOptionsDialog").Children ().Button ().Text ("OK"));
+			Session.ClickElement (c => windowQuery (c).Children ().Button ().Text ("OK"));
 		}
 
 		public void ClickCancel ()
 		{
-			Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.Ide.Projects.ProjectOptionsDialog").Children ().Button ().Text ("Cancel"));
+			Session.ClickElement (c => windowQuery (c).Children ().Button ().Text ("Cancel"));
 		}
 	}
 }
