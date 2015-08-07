@@ -51,6 +51,7 @@ namespace MonoDevelop.Debugger
 			tree.Model = store;
 			tree.AppendColumn ("PID", new Gtk.CellRendererText (), "text", 1);
 			tree.AppendColumn ("Process Name", new Gtk.CellRendererText (), "text", 2);
+			tree.RowActivated += OnRowActivated;
 
 			state = new TreeViewState (tree, 1);
 
