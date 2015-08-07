@@ -152,7 +152,7 @@ type FSharpParameterHintingData (name, meth : FSharpMethodGroupItem(*, symbol:FS
           let text10L = text10L |> Array.mapi (fun i x -> if i = currentParameter then "<b>" + x + "</b>" else x)
           textL.[0] + "(" + String.Join(",", text10L) + ")" + text11
 
-        let tooltipInfo = TooltipInformation(SummaryMarkup = description, SignatureMarkup = heading, FooterMarkup = paramDescription)
+        let tooltipInfo = TooltipInformation(SummaryMarkup = description, SignatureMarkup = String.wrapText heading 80, FooterMarkup = paramDescription)
         return tooltipInfo }, cancellationToken = cancel)
 
 
