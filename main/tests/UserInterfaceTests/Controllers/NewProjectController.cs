@@ -38,6 +38,8 @@ namespace UserInterfaceTests
 		}
 
 		Func<AppQuery, AppQuery> previewTree = (c) => c.TreeView ().Marked ("folderTreeView").Model ("folderTreeStore__NodeName");
+		Func<AppQuery, AppQuery> templateCategoriesQuery = c => c.TreeView ().Marked ("templateCategoriesTreeView").Model ("templateCategoriesListStore__Name");
+		Func<AppQuery, AppQuery> templatesQuery = c => c.TreeView ().Marked ("templatesTreeView").Model ("templateListStore__Name");
 
 		public void Open ()
 		{
@@ -54,12 +56,14 @@ namespace UserInterfaceTests
 
 		public bool SelectTemplateType (string categoryRoot, string category)
 		{
-			return Session.SelectElement (c => c.TreeView ().Marked ("templateCategoriesTreeView").Model ("templateCategoriesListStore__Name").Contains (categoryRoot).NextSiblings ().Text (category));
+			return Session.SelectElement (c => templateCategoriesQuery (c).Contains (categoryRoot).NextSiblings ().Text (category))
+				&& Session.WaitForElement (c => templateCategoriesQuery (c).Contains (categoryRoot).NextSiblings ().Text (category).Selected ()).Length > 0;
 		}
 
 		public bool SelectTemplate (string kindRoot, string kind)
 		{
-			return Session.SelectElement (c => c.TreeView ().Marked ("templatesTreeView").Model ("templateListStore__Name").Contains (kindRoot).NextSiblings ().Text (kind));
+			return Session.SelectElement (c => templatesQuery (c).Contains (kindRoot).NextSiblings ().Text (kind))
+				&& Session.WaitForElement (c => templatesQuery (c).Contains (kindRoot).NextSiblings ().Text (kind).Selected ()).Length > 0;
 		}
 
 		public bool Next ()
