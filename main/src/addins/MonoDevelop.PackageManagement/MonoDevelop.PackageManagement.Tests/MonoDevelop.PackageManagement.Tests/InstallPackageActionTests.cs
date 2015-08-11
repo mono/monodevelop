@@ -484,7 +484,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void Execute_PackageBeingInstalledHasPowerShellScripts_WarningAboutPowerShellScriptsIsLogged ()
+		public void Execute_PackageBeingInstalledHasPowerShellScripts_MessageAboutPowerShellScriptsIsLogged ()
 		{
 			CreateAction ();
 			FakePackage expectedPackage = fakeProject.FakeSourceRepository.AddFakePackageWithVersion ("Test", "1.0");
@@ -493,16 +493,16 @@ namespace MonoDevelop.PackageManagement.Tests
 			action.PackageId = expectedPackage.Id;
 			action.PackageVersion = expectedPackage.Version;
 			fakeProject.FakeInstallOperations.Add (operation);
-			string messageLogged = null;
+			var messagesLogged = new List<string> ();
 			packageManagementEvents.PackageOperationMessageLogged += (sender, e) => {
-				if (e.Message.Level == MessageLevel.Warning) {
-					messageLogged = e.Message.ToString ();
+				if (e.Message.Level == MessageLevel.Info) {
+					messagesLogged.Add (e.Message.ToString ());
 				}
 			};
 
 			action.Execute ();
 
-			Assert.AreEqual ("Test Package contains PowerShell scripts which will not be run.", messageLogged);
+			Assert.That (messagesLogged, Contains.Item ("WARNING: Test Package contains PowerShell scripts which will not be run."));
 		}
 
 		[Test]

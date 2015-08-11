@@ -86,6 +86,11 @@ namespace UserInterfaceTests
 		[TearDown]
 		public virtual void Teardown ()
 		{
+			var testStatus = TestContext.CurrentContext.Result.Status;
+			if (testStatus != TestStatus.Passed) {
+				TakeScreenShot (string.Format("{0}-Test-Failed", TestContext.CurrentContext.Test.Name));
+			}
+
 			File.WriteAllText (Path.Combine (memoryUsageFolder, TestContext.CurrentContext.Test.FullName),
 			                   JsonConvert.SerializeObject (Session.MemoryStats, Formatting.Indented));
 
@@ -93,7 +98,7 @@ namespace UserInterfaceTests
 			TestService.EndSession ();
 
 			OnCleanUp ();
-			if (TestContext.CurrentContext.Result.Status == TestStatus.Passed) {
+			if (testStatus == TestStatus.Passed) {
 				if (Directory.Exists (currentTestResultFolder))
 					Directory.Delete (currentTestResultFolder, true);
 			}

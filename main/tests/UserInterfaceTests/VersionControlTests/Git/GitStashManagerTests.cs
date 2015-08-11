@@ -37,6 +37,7 @@ namespace UserInterfaceTests
 	public class GitStashManagerTests : GitBase
 	{
 		[Test]
+		[Description ("Create a project with git, commit changes. Make changes and stash. Remove stash from Stash Manager")]
 		public void GitRemoveStashTest ()
 		{
 			CreateProjectAndCommitAndStash ();
@@ -48,6 +49,7 @@ namespace UserInterfaceTests
 		}
 
 		[Test]
+		[Description ("Create a project with git, commit changes. Make changes and stash. Apply and Remove stash from Stash Manager")]
 		public void GitApplyAndRemoveStashTest ()
 		{
 			CreateProjectAndCommitAndStash ();
@@ -65,6 +67,7 @@ namespace UserInterfaceTests
 		}
 
 		[Test]
+		[Description ("Create a project with git, commit changes. Make changes and stash. Apply stash from Stash Manager")]
 		public void GitApplyStashTest ()
 		{
 			CreateProjectAndCommitAndStash ();
@@ -79,6 +82,7 @@ namespace UserInterfaceTests
 		}
 
 		[Test]
+		[Description ("Create a project with git, commit changes. Make changes and stash. Convert stash to branch from Stash Manager")]
 		public void GitStashConvertToBranchTest ()
 		{
 			CreateProjectAndCommitAndStash ();

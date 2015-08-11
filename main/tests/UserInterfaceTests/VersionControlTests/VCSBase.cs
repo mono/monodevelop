@@ -91,11 +91,7 @@ namespace UserInterfaceTests
 			Session.EnterText (c => c.Window ().Marked ("MonoDevelop.VersionControl.Dialogs.CommitDialog").Children ().TextView ().Marked ("textview"), commitMsg);
 			TakeScreenShot ("Commit-Msg-Entered");
 			Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Dialogs.CommitDialog").Children ().Button ().Marked ("buttonCommit"), false);
-			try {
-				Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog"));
-				TakeScreenShot ("Git-User-Not-Configured");
-				EnterGitUserConfig ("John Doe", "john.doe@example.com");
-			} catch (TimeoutException e) { }
+			CheckIfNameEmailNeeded ();
 			Ide.WaitForStatusMessage (new[] {"Commit operation completed."});
 			TakeScreenShot ("Commit-Completed");
 		}
@@ -149,6 +145,15 @@ namespace UserInterfaceTests
 			TakeScreenShot ("Inserted-Newline-SaveAll-Called");
 
 			return "Entered new blank line";
+		}
+
+		protected void CheckIfNameEmailNeeded ()
+		{
+			try {
+				Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog"));
+				TakeScreenShot ("Git-User-Not-Configured");
+				EnterGitUserConfig ("John Doe", "john.doe@example.com");
+			} catch (TimeoutException e) { }
 		}
 
 		protected override void OnBuildTemplate (int buildTimeoutInSecs = 180)
