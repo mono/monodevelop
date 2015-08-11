@@ -34,7 +34,6 @@
     <DefineConstants>
     </DefineConstants>
   </PropertyGroup>
-  <Import Project="..\.paket\paket.targets" />
   <ItemGroup>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core" />
@@ -47,6 +46,7 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+  <Import Project="..\.paket\paket.targets" />
   <ItemGroup>
     <None Include="paket.references" />
     <None Include="app.config" />
