@@ -83,30 +83,30 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			PackageSources.Add (valuePair);
 		}
 
-		public Dictionary<string, KeyValuePair<string, string>> SavedSectionValues =
-			new Dictionary<string, KeyValuePair<string, string>> ();
+		public Dictionary<string, SettingValue> SavedSectionValues =
+			new Dictionary<string, SettingValue> ();
 
 		public void SetValue (string section, string key, string value)
 		{
 			SavedSectionValues.Remove (section);
-			SavedSectionValues.Add (section, new KeyValuePair<string, string> (key, value));
+			SavedSectionValues.Add (section, new SettingValue (key, value, false));
 		}
 
-		public KeyValuePair<string, string> GetValuePassedToSetValueForActivePackageSourceSection ()
+		public SettingValue GetValuePassedToSetValueForActivePackageSourceSection ()
 		{
 			return SavedSectionValues [RegisteredPackageSourceSettings.ActivePackageSourceSectionName];
 		}
 
-		public void SetValues (string section, IList<KeyValuePair<string, string>> values)
+		public void SetValues (string section, IList<SettingValue> values)
 		{
 			SavedSectionValueLists.Remove (section);
 			SavedSectionValueLists.Add (section, values);
 		}
 
-		public Dictionary<string, IList<KeyValuePair<string, string>>> SavedSectionValueLists
-			= new Dictionary<string, IList<KeyValuePair<string, string>>> ();
+		public Dictionary<string, IList<SettingValue>> SavedSectionValueLists
+			= new Dictionary<string, IList<SettingValue>> ();
 
-		public IList<KeyValuePair<string, string>> GetValuesPassedToSetValuesForPackageSourcesSection ()
+		public IList<SettingValue> GetValuesPassedToSetValuesForPackageSourcesSection ()
 		{
 			return SavedSectionValueLists [PackageSourcesSectionName];
 		}
@@ -184,7 +184,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			DisabledPackageSources.Add (setting);
 		}
 
-		public IList<KeyValuePair<string, string>> GetValuesPassedToSetValuesForDisabledPackageSourcesSection ()
+		public IList<SettingValue> GetValuesPassedToSetValuesForDisabledPackageSourcesSection ()
 		{
 			return SavedSectionValueLists [DisabledPackageSourcesSectionName];
 		}
@@ -202,7 +202,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			Sections.Add ("packageRestore", items);
 		}
 
-		public KeyValuePair<string, string> GetValuePassedToSetValueForPackageRestoreSection ()
+		public SettingValue GetValuePassedToSetValueForPackageRestoreSection ()
 		{
 			return SavedSectionValues ["packageRestore"];
 		}
@@ -218,6 +218,16 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			var items = new List<SettingValue> ();
 			items.Add (new SettingValue ("repositoryPath", fullPath, false));
 			Sections.Add (ConfigSectionName, items);
+		}
+
+		public Dictionary<string, IList<SettingValue>> SectionsUpdated =
+			new Dictionary<string, IList<SettingValue>> ();
+
+		public void UpdateSections (string section, IList<SettingValue> values)
+		{
+			SectionsUpdated.Remove (section);
+			SectionsUpdated.Add (section, values);
+			SetValues (section, values);
 		}
 	}
 }
