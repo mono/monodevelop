@@ -1,5 +1,5 @@
 ﻿//
-// GtkNotebookResult.cs
+// SelectedOperation.cs
 //
 // Author:
 //       Manish Sinha <manish.sinha@xamarin.com>
@@ -24,56 +24,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using Gtk;
 using System.Collections.Generic;
 
-namespace MonoDevelop.Components.AutoTest.Results
+namespace MonoDevelop.Components.AutoTest.Operations
 {
-	public class GtkNotebookResult : GtkWidgetResult
+	public class SelectedOperation : Operation
 	{
-		Notebook noteBook;
-		Label toBeSelectedLabel;
-		int toBeSelected = -1;
-
-		public GtkNotebookResult (Widget notebookWidget) : base (notebookWidget)
+		public override List<AppResult> Execute (List<AppResult> resultSet)
 		{
-			noteBook = notebookWidget as Notebook;
+			List<AppResult> newResultSet = new List<AppResult> ();
+
+			foreach (var result in resultSet) {
+				AppResult newResult = result.Selected ();
+				if (newResult != null) {
+					newResultSet.Add (newResult);
+				}
+			}
+
+			return newResultSet;
 		}
 
 		public override string ToString ()
 		{
-			return String.Format ("{0} - {1} - {2} - {3}, - {4} - Tab: {5}", noteBook, noteBook.Allocation, noteBook.Name, noteBook.GetType ().FullName, noteBook.Toplevel.Name, toBeSelected);
-		}
-
-		public override AppResult Text (string text, bool exact)
-		{
-			for (int i = 0; i < noteBook.NPages; i++) {
-				var iTab = noteBook.GetNthPage (i);
-				var label = noteBook.GetTabLabelText (iTab);
-				if (CheckForText (label, text, exact)) {
-					toBeSelectedLabel = noteBook.GetTabLabel (iTab) as Label;
-					toBeSelected = i;
-					return this;
-				}
-			}
-			return null;
-		}
-
-		public override AppResult Selected ()
-		{
-			if (base.Selected () != null) {
-				return noteBook.CurrentPage == toBeSelected ? this : null;
-			}
-			return null;
-		}
-
-		public override bool Select ()
-		{
-			if (toBeSelected >= 0) {
-				noteBook.CurrentPage = toBeSelected;
-				return true;
-			}
-			return false;
+			return string.Format ("Selected ()");
 		}
 	}
 }

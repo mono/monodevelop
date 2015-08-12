@@ -49,6 +49,7 @@ namespace UserInterfaceTests
 				TemplateKind = templateName
 			};
 			CreateBuildProject (templateOptions, EmptyAction);
+			IsTemplateSelected (templateOptions);
 		}
 	}
 }

@@ -92,6 +92,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
+		public override AppResult Selected ()
+		{
+			return null;
+		}
+
 		public override AppResult CheckType (Type desiredType)
 		{
 			if (ResultObject.GetType () == desiredType || ResultObject.GetType ().IsSubclassOf (desiredType)) {

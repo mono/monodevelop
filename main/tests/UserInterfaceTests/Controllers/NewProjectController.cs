@@ -28,6 +28,7 @@ using MonoDevelop.Components.AutoTest;
 using MonoDevelop.Ide.Commands;
 using NUnit.Framework;
 using System.Threading;
+using System.Linq;
 
 namespace UserInterfaceTests
 {
@@ -37,29 +38,60 @@ namespace UserInterfaceTests
 			get { return TestService.Session; }
 		}
 
-		Func<AppQuery, AppQuery> previewTree = (c) => c.TreeView ().Marked ("folderTreeView").Model ("folderTreeStore__NodeName");
+		Func<AppQuery, AppQuery> previewTree = c => c.TreeView ().Marked ("folderTreeView").Model ("folderTreeStore__NodeName");
+		Func<AppQuery, AppQuery> templateCategoriesQuery = c => c.TreeView ().Marked ("templateCategoriesTreeView").Model ("templateCategoriesListStore__Name");
+		Func<AppQuery, AppQuery> templatesQuery = c => c.TreeView ().Marked ("templatesTreeView").Model ("templateListStore__Name");
 
 		public void Open ()
 		{
 			Session.ExecuteCommand (FileCommands.NewProject);
-			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Projects.GtkNewProjectDialogBackend"));
+			WaitForOpen ();
 		}
 
 		public void Open (string addToSolutionName)
 		{
 			SolutionExplorerController.SelectSolution (addToSolutionName);
 			Session.ExecuteCommand (ProjectCommands.AddNewProject);
-			Session.WaitForElement (c => c.Window ().Marked ("New Project"));
+			WaitForOpen ();
+		}
+
+		public void WaitForOpen ()
+		{
+			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Projects.GtkNewProjectDialogBackend"));
+		}
+
+		public void Select (TemplateSelectionOptions templateOptions)
+		{
+			SelectTemplateType (templateOptions.CategoryRoot, templateOptions.Category);
+			SelectTemplate (templateOptions.TemplateKindRoot, templateOptions.TemplateKind);
+		}
+
+		public bool IsSelected  (TemplateSelectionOptions templateOptions)
+		{
+			return Session.SelectElement (templateCategoriesQuery) && IsTemplateTypeSelected (templateOptions.CategoryRoot, templateOptions.Category)
+				&& Session.SelectElement (templatesQuery) && IsTemplateSelected (templateOptions.TemplateKindRoot, templateOptions.TemplateKind);
 		}
 
 		public bool SelectTemplateType (string categoryRoot, string category)
 		{
-			return Session.SelectElement (c => c.TreeView ().Marked ("templateCategoriesTreeView").Model ("templateCategoriesListStore__Name").Contains (categoryRoot).NextSiblings ().Text (category));
+			return Session.SelectElement (c => templateCategoriesQuery (c).Contains (categoryRoot).NextSiblings ().Text (category))
+				&& IsTemplateTypeSelected (categoryRoot, category);
 		}
 
 		public bool SelectTemplate (string kindRoot, string kind)
 		{
-			return Session.SelectElement (c => c.TreeView ().Marked ("templatesTreeView").Model ("templateListStore__Name").Contains (kindRoot).NextSiblings ().Text (kind));
+			return Session.SelectElement (c => templatesQuery (c).Contains (kindRoot).NextSiblings ().Text (kind))
+				&& IsTemplateSelected (kindRoot, kind);
+		}
+
+		public bool IsTemplateTypeSelected (string categoryRoot, string category)
+		{
+			return Session.WaitForElement (c => templateCategoriesQuery (c).Contains (categoryRoot).NextSiblings ().Text (category).Selected ()).Any ();
+		}
+
+		public bool IsTemplateSelected (string kindRoot, string kind)
+		{
+			return Session.WaitForElement (c => templatesQuery (c).Contains (kindRoot).NextSiblings ().Text (kind).Selected ()).Any ();
 		}
 
 		public bool Next ()

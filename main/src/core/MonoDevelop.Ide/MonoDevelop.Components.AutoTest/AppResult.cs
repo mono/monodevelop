@@ -50,6 +50,7 @@ namespace MonoDevelop.Components.AutoTest
 		// Operations
 		public abstract AppResult Marked (string mark);
 		public abstract AppResult CheckType (Type desiredType);
+		public abstract AppResult Selected ();
 		public abstract AppResult Text (string text, bool exact);
 		public abstract AppResult Model (string column);
 		public abstract AppResult Property (string propertyName, object value);

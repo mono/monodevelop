@@ -53,6 +53,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
+		public override AppResult Selected ()
+		{
+			return null;
+		}
+
 		public override AppResult CheckType (Type desiredType)
 		{
 			return null;
