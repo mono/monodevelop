@@ -115,10 +115,9 @@ namespace MonoDevelop.DesignerSupport
 		
 		protected virtual Attribute[] GetCustomAttributes (string propertyName)
 		{
-			if (IsReadOnly (propertyName))
-				return new Attribute[] { ReadOnlyAttribute.Yes };
-			else
-				return null;
+			return IsReadOnly (propertyName) ? new Attribute[] {
+				ReadOnlyAttribute.Yes
+			} : null;
 		}
 		
 		protected virtual bool IsReadOnly (string propertyName)
@@ -129,8 +128,8 @@ namespace MonoDevelop.DesignerSupport
 	
 	class CustomProperty: PropertyDescriptor
 	{
-		PropertyDescriptor prop;
-		Attribute[] customAtts;
+		readonly PropertyDescriptor prop;
+		readonly Attribute[] customAtts;
 		
 		public CustomProperty (PropertyDescriptor prop, Attribute[] customAtts): base (prop)
 		{

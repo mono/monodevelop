@@ -374,6 +374,7 @@
     <Compile Include="MonoDevelop.PackageManagement\DotNetProjectReferenceEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\LocalCopyReferenceMaintainer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DotNetSolutionEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\DotNetProjectImportEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

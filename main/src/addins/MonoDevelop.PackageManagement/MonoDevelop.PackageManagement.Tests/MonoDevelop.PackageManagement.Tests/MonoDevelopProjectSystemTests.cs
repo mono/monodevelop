@@ -1133,17 +1133,24 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void RemoveImport_ImportAlreadyAddedToBottomOfProject_ProjectBuilderIsDisposed ()
+		public void RemoveImport_ImportAlreadyAddedToBottomOfProject_ImportRemovedEventIsFired ()
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject\MyProject.csproj");
 			CreateProjectSystem (project);
 			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets".ToNativePath ();
 			projectSystem.AddImport (targetPath, ProjectImportLocation.Bottom);
+			const string expectedImportRemoved = @"..\packages\Foo.0.1\build\Foo.targets";
+			DotNetProjectImportEventArgs eventArgs = null;
+			projectSystem.PackageManagementEvents.ImportRemoved += (sender, e) => {
+				eventArgs = e;
+			};
 
 			projectSystem.RemoveImport (targetPath);
 
-			AssertImportRemoved (@"..\packages\Foo.0.1\build\Foo.targets");
-			Assert.IsTrue (project.IsProjectBuilderDisposed);
+			AssertImportRemoved (expectedImportRemoved);
+			Assert.IsFalse (project.IsProjectBuilderDisposed);
+			Assert.AreEqual (project, eventArgs.Project);
+			Assert.AreEqual (expectedImportRemoved, eventArgs.Import);
 		}
 
 		[Test]
