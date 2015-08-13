@@ -11,6 +11,7 @@ open MonoDevelop
 open MonoDevelop.Core
 open MonoDevelop.Debugger
 open MonoDevelop.Ide
+open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Gui.Content
@@ -168,7 +169,7 @@ type FSharpTextEditorCompletion() =
   let mutable lastCharDottedInto = false
          
   let compilerIdentifiers =
-    let icon = MonoDevelop.Ide.Gui.Stock.Literal
+    let icon = Stock.Literal
     let compilerIdentifierCategory = Category "Compiler Identifiers"
     [ CompletionData("__LINE__", icon,
                         "Evaluates to the current line number, considering <tt>#line</tt> directives.",
@@ -185,7 +186,7 @@ type FSharpTextEditorCompletion() =
 
   // Until we build some functionality around a reversing tokenizer that detect this and other contexts
   // A crude detection of being inside an auto property decl: member val Foo = 10 with get,$ set
-  let isAnAutoProperty (_editor: Editor.TextEditor) _offset =
+  let isAnAutoProperty (_editor: TextEditor) _offset =
     false
   //TODO
   //  let lastStart = editor.FindPrevWordOffset(offset)
@@ -208,27 +209,27 @@ type FSharpTextEditorCompletion() =
 
     let symbolToIcon (symbolUse:FSharpSymbolUse) = 
       match symbolUse with
-      | ActivePatternCase _ -> MonoDevelop.Ide.Gui.Stock.Enum
-      | Field _ -> MonoDevelop.Ide.Gui.Stock.Field
+      | ActivePatternCase _ -> Stock.Enum
+      | Field _ -> Stock.Field
       | UnionCase _ -> IconId("md-type")
-      | Class _ -> MonoDevelop.Ide.Gui.Stock.Class
-      | Delegate _ -> MonoDevelop.Ide.Gui.Stock.Delegate
-      | Constructor _  -> MonoDevelop.Ide.Gui.Stock.Method
-      | Event _ -> MonoDevelop.Ide.Gui.Stock.Event
-      | Property _ -> MonoDevelop.Ide.Gui.Stock.Property
+      | Class _ -> Stock.Class
+      | Delegate _ -> Stock.Delegate
+      | Constructor _  -> Stock.Method
+      | Event _ -> Stock.Event
+      | Property _ -> Stock.Property
       | Function _ -> IconId("md-fs-field")
       | Operator _ -> IconId("md-fs-field")
       | ClosureOrNestedFunction _ -> IconId("md-fs-field")
-      | Val _ -> MonoDevelop.Ide.Gui.Stock.Field
-      | Enum _ -> MonoDevelop.Ide.Gui.Stock.Enum
-      | Interface _ -> MonoDevelop.Ide.Gui.Stock.Interface
+      | Val _ -> Stock.Field
+      | Enum _ -> Stock.Enum
+      | Interface _ -> Stock.Interface
       | Module _ -> IconId("md-module")
-      | Namespace _ -> MonoDevelop.Ide.Gui.Stock.NameSpace
-      | Record _ -> MonoDevelop.Ide.Gui.Stock.Class
+      | Namespace _ -> Stock.NameSpace
+      | Record _ -> Stock.Class
       | Union _ -> IconId("md-type")
-      | ValueType _ -> MonoDevelop.Ide.Gui.Stock.Struct
+      | ValueType _ -> Stock.Struct
       | CorePatterns.Entity _ -> IconId("md-type")
-      | _ -> MonoDevelop.Ide.Gui.Stock.Event
+      | _ -> Stock.Event
 
     let tryGetCategory (symbolUse : FSharpSymbolUse) =
       let category =
@@ -291,7 +292,7 @@ type FSharpTextEditorCompletion() =
     symbols |> List.map symbolToCompletionData
 
 
-  let codeCompletionCommandImpl(editor:Editor.TextEditor, documentContext:Editor.DocumentContext, context:CodeCompletionContext, allowAnyStale, dottedInto, ctrlSpace, completionChar) =
+  let codeCompletionCommandImpl(editor:TextEditor, documentContext:DocumentContext, context:CodeCompletionContext, allowAnyStale, dottedInto, ctrlSpace, completionChar) =
     async {
       let result = CompletionDataList()
       let fileName = documentContext.Name
@@ -312,7 +313,7 @@ type FSharpTextEditorCompletion() =
               result.AddRange data
           | None -> ()
       with
-      | :? System.Threading.Tasks.TaskCanceledException -> ()
+      | :? Threading.Tasks.TaskCanceledException -> ()
       | e ->
           LoggingService.LogError ("FSharpTextEditorCompletion, An error occured in CodeCompletionCommandImpl", e)
           () //TODOresult.Add(FSharpErrorCompletionData(e))
@@ -329,19 +330,19 @@ type FSharpTextEditorCompletion() =
       return result :> ICompletionDataList }
 
 
-  let isCurrentTokenInvalid (editor:Editor.TextEditor) (documentContext:Editor.DocumentContext) (context:CodeCompletionContext) =
+  let isCurrentTokenInvalid (editor:TextEditor) (parsedDocument:TypeSystem.ParsedDocument) project offset =
     try
-      let line, col, lineStr = editor.GetLineInfoFromOffset context.TriggerOffset
+      let line, col, lineStr = editor.GetLineInfoFromOffset offset
       let filepath = (editor.FileName.ToString())
-      let defines = CompilerArguments.getDefineSymbols filepath (documentContext.Project |> Option.ofNull)
+      let defines = CompilerArguments.getDefineSymbols filepath (project |> Option.ofNull)
 
       let quickLine = 
         maybe { 
-          let! parsedDoc = documentContext.ParsedDocument |> Option.ofNull
+          let! parsedDoc = parsedDocument |> Option.ofNull
           let! fsparsedDoc = parsedDoc |> Option.tryCast<FSharpParsedDocument>
           let! tokenisedLines = fsparsedDoc.Tokens
           let (Tokens.TokenisedLine(_lineNo, _lineOffset, _tokens, state)) = tokenisedLines.[line-1]
-          let linedetail = Seq.singleton (Tokens.LineDetail(line, context.TriggerOffset, lineStr))
+          let linedetail = Seq.singleton (Tokens.LineDetail(line, offset, lineStr))
           return Tokens.getTokensWithInitialState state linedetail filepath defines }
 
       let isTokenAtOffset col t = col-1 >= t.LeftColumn && col-1 <= t.RightColumn
@@ -484,7 +485,7 @@ type FSharpTextEditorCompletion() =
     // Note, however, that this is just an approximation - for example no re-typecheck is enforced here: (abc + def).PPP.
     let computation = 
       async {
-        if isCurrentTokenInvalid x.Editor x.DocumentContext context then return null else
+        if isCurrentTokenInvalid x.Editor x.DocumentContext.ParsedDocument x.DocumentContext.Project context.TriggerOffset then return null else
         
         let allowAnyStale = 
           match completionChar with 
@@ -504,7 +505,7 @@ type FSharpTextEditorCompletion() =
     let completionIsDot = completionChar = '.'
     Async.StartAsTask(
       async {
-        if isCurrentTokenInvalid x.Editor x.DocumentContext context then return null
+        if isCurrentTokenInvalid x.Editor x.DocumentContext.ParsedDocument x.DocumentContext.Project context.TriggerOffset then return null
         else return! codeCompletionCommandImpl(x.Editor, x.DocumentContext,context, true, completionIsDot, true, completionChar) } )
 
   // Returns the index of the parameter where the cursor is currently positioned.
