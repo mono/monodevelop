@@ -35,10 +35,11 @@ namespace UserInterfaceTests
 		readonly string dotNetCategory = ".NET";
 
 		[Test]
-		[TestCase ("Console Project", BeforeBuildAction.None, TestName = "TestCreateBuildConsoleProject")]
-		[TestCase ("Gtk# 2.0 Project", BeforeBuildAction.None, TestName = "TestCreateBuildGtkSharp20Project")]
-		[TestCase ("Library", BeforeBuildAction.None, TestName = "TestCreateBuildLibrary")]
-		[TestCase ("NUnit Library Project", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestCreateBuildNUnitLibraryProject")]
+		[TestCase ("Console Project", BeforeBuildAction.None, TestName = "TestCreateBuildConsoleProject", Description = "Create and build C# Console Project")]
+		[TestCase ("Gtk# 2.0 Project", BeforeBuildAction.None, TestName = "TestCreateBuildGtkSharp20Project", Description = "Create and build a GTK#2 Project")]
+		[TestCase ("Library", BeforeBuildAction.None, TestName = "TestCreateBuildLibrary", Description = "Create and build a Library Project")]
+		[TestCase ("NUnit Library Project", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestCreateBuildNUnitLibraryProject",
+			Description = "Create and build NUnit Library Project")]
 		public void RunDotNetTests (string templateName, BeforeBuildAction beforeBuild)
 		{
 			var templateOptions = new TemplateSelectionOptions {
@@ -48,6 +49,7 @@ namespace UserInterfaceTests
 				TemplateKind = templateName
 			};
 			CreateBuildProject (templateOptions, beforeBuild.GetAction ());
+			IsTemplateSelected (templateOptions);
 		}
 	}
 }

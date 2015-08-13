@@ -1,10 +1,10 @@
 ﻿//
-// FilePathExtensions.cs
+// DotNetProjectImportEventArgs.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,28 +25,19 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core;
-using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public static class FilePathExtensions
+	public class DotNetProjectImportEventArgs : EventArgs
 	{
-		public static bool IsPackagesConfigFileName (this FilePath filePath)
+		public DotNetProjectImportEventArgs (IDotNetProject project, string import)
 		{
-			if (filePath == null) {
-				return false;
-			}
-
-			return Constants.PackageReferenceFile.Equals (filePath.FileName, StringComparison.OrdinalIgnoreCase) ||
-				IsProjectSpecificPackagesConfigFile (filePath.FileName);
+			Project = project;
+			Import = import;
 		}
 
-		static bool IsProjectSpecificPackagesConfigFile (FilePath filePath)
-		{
-			return filePath.Extension.Equals (".config", StringComparison.OrdinalIgnoreCase) &&
-				filePath.FileNameWithoutExtension.StartsWith ("packages.", StringComparison.OrdinalIgnoreCase);
-		}
+		public IDotNetProject Project { get; private set; }
+		public string Import { get; private set; }
 	}
 }
 

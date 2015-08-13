@@ -1798,7 +1798,9 @@ namespace MonoDevelop.Ide
 					
 					try {
 						if (!dialogShown || !applyToAll) {
-							if (MessageService.RunCustomDialog (addExternalDialog) == (int) Gtk.ResponseType.Cancel) {
+							int response = MessageService.RunCustomDialog (addExternalDialog);
+							// A dialog emits DeleteEvent rather than Cancel in response to Escape being pressed
+							if (response == (int) Gtk.ResponseType.Cancel || response == (int) Gtk.ResponseType.DeleteEvent) {
 								project.Files.AddRange (newFileList.Where (f => f != null));
 								return newFileList;
 							}

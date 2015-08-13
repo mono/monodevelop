@@ -159,7 +159,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void CheckDisconnected ()
 		{
-			if (engine.CheckDisconnected ()) {
+			if (engine != null && engine.CheckDisconnected ()) {
 				if (Disconnected != null)
 					Disconnected (this, EventArgs.Empty);
 			}

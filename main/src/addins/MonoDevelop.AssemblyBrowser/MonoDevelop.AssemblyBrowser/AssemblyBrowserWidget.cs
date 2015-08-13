@@ -1189,20 +1189,24 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public void Open (string url, AssemblyLoader currentAssembly = null)
 		{
-			ITreeNavigator nav = SearchMember (url);
-			if (definitions == null) // we've been disposed
-				return;
-			if (nav != null)
-				return;
-			try {
-				if (currentAssembly != null) {
-					OpenFromAssembly (url, currentAssembly);
-				} else {
-					OpenFromAssemblyNames (url);
-				}
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while opening the assembly browser with id:" + url, e); 
-			}
+			Task.WhenAll (this.definitions.Select (d => d.LoadingTask).ToArray ()).ContinueWith (d => {
+				Application.Invoke (delegate {
+					ITreeNavigator nav = SearchMember (url);
+					if (definitions == null) // we've been disposed
+						return;
+					if (nav != null)
+						return;
+					try {
+						if (currentAssembly != null) {
+							OpenFromAssembly (url, currentAssembly);
+						} else {
+							OpenFromAssemblyNames (url);
+						}
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while opening the assembly browser with id:" + url, e);
+					}
+				});
+			});
 		}
 
 		void OpenFromAssembly (string url, AssemblyLoader currentAssembly)
@@ -1456,7 +1460,7 @@ namespace MonoDevelop.AssemblyBrowser
 			result = new AssemblyLoader (this, fileName);
 			
 			definitions.Add (result);
-			result.LoadingTask.ContinueWith (delegate {
+			result.LoadingTask = result.LoadingTask.ContinueWith (task => {
 				Application.Invoke (delegate {
 					if (definitions == null)
 						return;
@@ -1474,8 +1478,9 @@ namespace MonoDevelop.AssemblyBrowser
 						LoggingService.LogError ("Error while adding assembly to the assembly list", e);
 					}
 				});
+				return task.Result;
 			}
-			);
+			                                                     );
 			return result;
 		}
 		

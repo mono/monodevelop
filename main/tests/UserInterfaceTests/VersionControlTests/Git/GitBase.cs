@@ -31,6 +31,8 @@ namespace UserInterfaceTests
 {
 	public abstract class GitBase : VCSBase
 	{
+		static string notString = "not";
+
 		#region Git Repository Configuration
 
 		#region Remotes
@@ -38,6 +40,15 @@ namespace UserInterfaceTests
 		Func<AppQuery, AppQuery> remoteTreeName = c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__Name");
 		Func<AppQuery, AppQuery> remoteTreeUrl = c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__Url");
 		Func<AppQuery, AppQuery> remoteTreeFullName = c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__FullName");
+
+		protected void AssertRemotesButtonSensitivity (bool editSensitivity, bool removeSensitivity, bool trackSensitivity, bool fetchSensitivity)
+		{
+			AssertButtonSensitivity ("Add", true);
+			AssertButtonSensitivity ("Edit", editSensitivity);
+			AssertButtonSensitivity ("Remove", removeSensitivity);
+			AssertButtonSensitivity ("Track in Local Branch", trackSensitivity);
+			AssertButtonSensitivity ("Fetch", fetchSensitivity);
+		}
 
 		protected void SelectRemote (string remoteName, string remoteUrl = null)
 		{
@@ -67,10 +78,15 @@ namespace UserInterfaceTests
 			Assert.IsTrue (Session.ClickElement (c => IdeQuery.GitConfigurationDialog (c).Children ().Button ().Marked ("buttonFetch")));
 			TakeScreenShot ("Fetch-Remote");
 
+			SelectRemoteBranch (remoteName);
+		}
+
+		protected void SelectRemoteBranch (string remoteName, string remoteBranchName = null)
+		{
 			Session.ClickElement (c => remoteTreeName (c).Contains (remoteName));
-			Assert.IsNotEmpty (Session.Query (c => remoteTreeFullName (c).Contains (remoteName+"/")));
-			Assert.IsTrue (Session.SelectElement (c => remoteTreeFullName (c).Contains (remoteName+"/").Index (0)));
-			TakeScreenShot ("First-Remote-Branch-Selected");
+			Assert.IsNotEmpty (Session.Query (c => remoteTreeFullName (c).Contains (remoteName+"/"+remoteBranchName)));
+			Assert.IsTrue (Session.SelectElement (c => remoteTreeFullName (c).Contains (remoteName+"/"+remoteBranchName).Index (0)));
+			TakeScreenShot (string.Format ("{0}-Remote-Branch-Selected", remoteBranchName ?? "First"));
 		}
 
 		void AddEditRemote (string buttonName, string newRemoteName, string remoteUrl, string remotePushUrl)
@@ -107,9 +123,77 @@ namespace UserInterfaceTests
 
 		#endregion
 
+		#region Tags
+
+		Func<AppQuery, AppQuery> tagTreeName = c => c.TreeView ().Marked ("listTags").Model ("storeTags__Name");
+
+		protected void AssertTagsButtonSensitivity (bool pushSensitivity, bool deleteSensitivity)
+		{
+			AssertButtonSensitivity ("New", true);
+			AssertButtonSensitivity ("Push", pushSensitivity);
+			AssertButtonSensitivity ("Delete", deleteSensitivity);
+		}
+
+		protected void SelectTag (string tagName)
+		{
+			Session.WaitForElement (c => tagTreeName (c).Text (tagName));
+			Assert.IsTrue (Session.SelectElement (c => tagTreeName (c).Text (tagName)), "Failed to select tag: "+tagName);
+			TakeScreenShot (string.Format ("{0}-Tag-Selected", tagName));
+		}
+
+		protected void DeleteTag (string tagName)
+		{
+			SelectTag (tagName);
+			Assert.IsTrue ((Session.ClickElement (c => IdeQuery.GitConfigurationDialog (c).Children ().Button ().Marked ("buttonRemoveTag"))));
+			Session.WaitForNoElement (c => tagTreeName (c).Text (tagName));
+		}
+
+		protected void AddNewTag (string tagName, string tagMessage = null, string commitMsg = null)
+		{
+			Session.ClickElement (c => IdeQuery.GitConfigurationDialog (c).Children ().Button ().Marked ("buttonAddTag"), false);
+			Session.WaitForElement (c => c.Window ().Marked ("Select a revision"));
+
+			Session.EnterText (c => c.Window ().Marked ("Select a revision").Children ().Textfield ().Index (0), tagName);
+			Session.WaitForElement (c => c.Window ().Marked ("Select a revision").Children ().Textfield ().Index (0).Text (tagName));
+			TakeScreenShot ("Tag-Name-Entered");
+
+			if (!string.IsNullOrEmpty (tagMessage)) {
+				Session.EnterText (c => c.Window ().Marked ("Select a revision").Children ().Textfield ().Index (1), tagMessage);
+				Session.WaitForElement (c => c.Window ().Marked ("Select a revision").Children ().Textfield ().Index (1).Text (tagMessage));
+				TakeScreenShot ("Tag-Message-Entered");
+			}
+
+			Func<AppQuery, AppQuery> revisionsTreeView = c => c.Window ().Marked ("Select a revision").Children ().TreeView ().Index (0).Model ().Children ();
+			if (!string.IsNullOrEmpty (commitMsg)) {
+				Session.SelectElement (c => revisionsTreeView (c).Text (commitMsg));
+			} else {
+				Session.SelectElement (c => revisionsTreeView (c).Index (0));
+			}
+			TakeScreenShot ("Commit-Message-Selected");
+
+			Session.ClickElement (c => c.Window ().Marked ("Select a revision").Children ().Button ().Text ("Ok"));
+			try {
+				Session.WaitForElement (IdeQuery.GitConfigurationDialog);
+				TakeScreenShot ("Git-User-Not-Configured");
+				EnterGitUserConfig ("John Doe", "john.doe@example.com");
+			} catch (TimeoutException e) { }
+			Session.WaitForElement (c => IdeQuery.GitConfigurationDialog (c));
+			TakeScreenShot ("Ok-Clicked");
+		}
+
+		#endregion
+
 		#region Branches
 
 		Func<AppQuery, AppQuery> branchDisplayName = c => c.TreeView ().Marked ("listBranches").Model ("storeBranches__DisplayName");
+
+		protected void AssertBranchesButtonSensitivity (bool editSensitivity, bool deleteSensitivity, bool switchSensitivity)
+		{
+			AssertButtonSensitivity ("New", true);
+			AssertButtonSensitivity ("Edit", editSensitivity);
+			AssertButtonSensitivity ("Delete", deleteSensitivity);
+			AssertButtonSensitivity ("Switch to Branch", switchSensitivity);
+		}
 
 		protected void CreateNewBranch (string newBranchName)
 		{
@@ -145,14 +229,8 @@ namespace UserInterfaceTests
 		{
 			SelectBranch (branchName);
 			TakeScreenShot (string.Format ("{0}-Branch-Selected", branchName));
-			Session.ClickElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Button ().Marked ("buttonSetDefaultBranch"), false);
-
-			try {
-				Session.WaitForElement (IdeQuery.GitConfigurationDialog);
-				TakeScreenShot ("Git-User-Not-Configured");
-				EnterGitUserConfig ("John Doe", "john.doe@example.com");
-			} catch (TimeoutException e) { }
-
+			Session.ClickElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Button ().Text ("Switch to Branch"), false);
+			CheckIfNameEmailNeeded ();
 			Assert.IsTrue (IsBranchSwitched (branchName));
 			TakeScreenShot (string.Format ("Switched-To-{0}", branchName));
 		}
@@ -180,7 +258,12 @@ namespace UserInterfaceTests
 
 		protected bool IsBranchSwitched (string branchName)
 		{
-			return Session.SelectElement (c => branchDisplayName (c).Text ("<b>" + branchName + "</b>"));
+			try {
+				Session.WaitForElement (c => branchDisplayName (c).Text ("<b>" + branchName + "</b>"));
+				return true;
+			} catch (TimeoutException) {
+				return false;
+			}
 		}
 
 		#endregion
@@ -197,7 +280,14 @@ namespace UserInterfaceTests
 		protected void CloseRepositoryConfiguration ()
 		{
 			Session.ClickElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Button ().Marked ("buttonOk"));
+			TakeScreenShot ("Git-Repository-Configuration-Closed");
 			Session.WaitForNoElement (IdeQuery.GitConfigurationDialog);
+		}
+
+		protected void AssertButtonSensitivity (string buttonLabel, bool sensitivity)
+		{
+			Assert.IsNotEmpty (Session.Query (c => c.Button ().Text (buttonLabel).Sensitivity (sensitivity)),
+				string.Format ("{0} button is {1} enabled", buttonLabel, sensitivity ? notString : string.Empty));
 		}
 
 		#endregion

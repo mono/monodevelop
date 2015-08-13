@@ -54,6 +54,7 @@ namespace ICSharpCode.PackageManagement
 		event EventHandler<PackageRestoredEventArgs> PackageRestored;
 		event EventHandler<DotNetProjectReferenceEventArgs> ReferenceAdding;
 		event EventHandler<DotNetProjectReferenceEventArgs> ReferenceRemoving;
+		event EventHandler<DotNetProjectImportEventArgs> ImportRemoved;
 
 		void OnPackageOperationsStarting();
 		void OnPackageOperationsFinished();
@@ -72,6 +73,7 @@ namespace ICSharpCode.PackageManagement
 		void OnPackageRestored (IPackage package);
 		void OnReferenceAdding (ProjectReference reference);
 		void OnReferenceRemoving (ProjectReference reference);
+		void OnImportRemoved (IDotNetProject project, string import);
 
 		[Obsolete]
 		void OnParentPackageInstalled (IPackage package, IPackageManagementProject project);

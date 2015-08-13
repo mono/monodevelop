@@ -105,16 +105,20 @@ namespace UserInterfaceTests
 			ProjectDetails projectDetails, GitOptions gitOptions = null, object miscOptions = null)
 		{
 			var newProject = new NewProjectController ();
-			newProject.Open ();
+
+			if (projectDetails.AddProjectToExistingSolution)
+				newProject.Open (projectDetails.SolutionName);
+			else
+				newProject.Open ();
 			TakeScreenShot ("Open");
 
 			OnSelectTemplate (newProject, templateOptions);
 
 			OnEnterTemplateSpecificOptions (newProject, projectDetails.ProjectName, miscOptions);
-
+			
 			OnEnterProjectDetails (newProject, projectDetails, gitOptions, miscOptions);
 
-			OnClickCreate (newProject);
+			OnClickCreate (newProject, projectDetails);
 
 			FoldersToClean.Add (projectDetails.SolutionLocation);
 		}
@@ -144,12 +148,12 @@ namespace UserInterfaceTests
 		protected virtual void OnEnterProjectDetails (NewProjectController newProject, ProjectDetails projectDetails,
 			GitOptions gitOptions = null, object miscOptions = null)
 		{
-			if (!newProject.SetProjectName (projectDetails.ProjectName)) {
+			if (!newProject.SetProjectName (projectDetails.ProjectName, projectDetails.AddProjectToExistingSolution)) {
 				throw new CreateProjectException (string.Format ("Failed at entering ProjectName as '{0}'", projectDetails.ProjectName));
 			}
 
 			if (!string.IsNullOrEmpty (projectDetails.SolutionName)) {
-				if (!newProject.SetSolutionName (projectDetails.SolutionName)) {
+				if (!newProject.SetSolutionName (projectDetails.SolutionName, projectDetails.AddProjectToExistingSolution)) {
 					throw new CreateProjectException (string.Format ("Failed at entering SolutionName as '{0}'", projectDetails.SolutionName));
 				}
 			}
@@ -164,7 +168,7 @@ namespace UserInterfaceTests
 				throw new CreateProjectException (string.Format ("Failed at entering ProjectInSolution as '{0}'", projectDetails.ProjectInSolution));
 			}
 
-			if (gitOptions != null) {
+			if (gitOptions != null && !projectDetails.AddProjectToExistingSolution) {
 				if (!newProject.UseGit (gitOptions)) {
 					throw new CreateProjectException (string.Format ("Failed at setting Git as - '{0}'", gitOptions));
 				}
@@ -173,9 +177,12 @@ namespace UserInterfaceTests
 			TakeScreenShot ("AfterProjectDetailsFilled");
 		}
 
-		protected virtual void OnClickCreate (NewProjectController newProject)
+		protected virtual void OnClickCreate (NewProjectController newProject, ProjectDetails projectDetails)
 		{
-			Session.RunAndWaitForTimer (() => newProject.Create (), "Ide.Shell.SolutionOpened");
+			if (projectDetails.AddProjectToExistingSolution)
+				newProject.Create ();
+			else
+				Session.RunAndWaitForTimer (() => newProject.Create (), "Ide.Shell.SolutionOpened");
 		}
 
 		protected virtual void OnBuildTemplate (int buildTimeoutInSecs = 180)
@@ -187,6 +194,20 @@ namespace UserInterfaceTests
 				TakeScreenShot ("AfterBuildFailed");
 				Assert.Fail (e.ToString ());
 			}
+		}
+
+		protected void IsTemplateSelected (TemplateSelectionOptions templateOptions, string addToExistingSolution = null)
+		{
+			var newProject = new NewProjectController ();
+			try {
+				newProject.WaitForOpen ();
+			} catch (TimeoutException) {
+				if (!string.IsNullOrEmpty (addToExistingSolution))
+					newProject.Open (addToExistingSolution);
+				else
+					newProject.Open ();
+			}
+			newProject.IsSelected (templateOptions);
 		}
 	}
 }

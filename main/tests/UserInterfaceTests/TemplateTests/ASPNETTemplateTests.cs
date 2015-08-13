@@ -36,13 +36,20 @@ namespace UserInterfaceTests
 		readonly string aspCategory = "ASP.NET";
 
 		[Test]
-		[TestCase ("Empty ASP.NET MVC Project", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestEmptyASPMVCProject")]
-		[TestCase ("Empty ASP.NET Project", BeforeBuildAction.None, TestName = "TestEmptyASPProject")]
-		[TestCase ("ASP.NET MVC Project", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestASPMVCProject")]
-		[TestCase ("ASP.NET MVC Project with Unit Tests", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestASPMVCProjectWithUnitTests")]
-		[TestCase ("ASP.NET MVC Razor Project", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestASPMVCMazorProject")]
-		[TestCase ("ASP.NET MVC Razor Project with Unit Tests", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestASPMVCMazorProjectWithUnitTests")]
-		[TestCase ("ASP.NET Project", BeforeBuildAction.None, TestName = "TestASPProject")]
+		[TestCase ("Empty ASP.NET MVC Project", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestEmptyASPMVCProject",
+			Description = "Create and build Empty ASP.NET MVC Project")]
+		[TestCase ("Empty ASP.NET Project", BeforeBuildAction.None, TestName = "TestEmptyASPProject",
+			Description = "Create and build Empty ASP.NET MVC Project")]
+		[TestCase ("ASP.NET MVC Project", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestASPMVCProject",
+			Description = "Create and build ASP.NET MVC Project")]
+		[TestCase ("ASP.NET MVC Project with Unit Tests", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestASPMVCProjectWithUnitTests",
+			Description = "Create and build ASP.NET MVC Project with Unit Tests")]
+		[TestCase ("ASP.NET MVC Razor Project", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestASPMVCMazorProject",
+			Description = "Create and build ASP.NET MVC Razor Project")]
+		[TestCase ("ASP.NET MVC Razor Project with Unit Tests", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestASPMVCMazorProjectWithUnitTests",
+			Description = "Create and build \"ASP.NET MVC Razor Project with Unit Tests")]
+		[TestCase ("ASP.NET Project", BeforeBuildAction.None, TestName = "TestASPProject",
+			Description = "Create and build ASP.NET Project")]
 		public void RunASPTest (string templateName, BeforeBuildAction beforeBuild)
 		{
 			var templateOptions = new TemplateSelectionOptions {
@@ -52,6 +59,7 @@ namespace UserInterfaceTests
 				TemplateKind = templateName
 			};
 			CreateBuildProject (templateOptions, beforeBuild.GetAction ());
+			IsTemplateSelected (templateOptions);
 		}
 	}
 }
