@@ -60,10 +60,10 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 		
-		readonly Lazy<IUnresolvedAssembly> unresolvedAssembly;
+		IUnresolvedAssembly unresolvedAssembly;
 		public IUnresolvedAssembly UnresolvedAssembly {
 			get {
-				return unresolvedAssembly.Value;
+				return unresolvedAssembly;
 			}
 		}
 		
@@ -77,25 +77,18 @@ namespace MonoDevelop.AssemblyBrowser
 			this.FileName = fileName;
 			if (!File.Exists (fileName))
 				throw new ArgumentException ("File doesn't exist.", "fileName");
-			this.assemblyLoaderTask = Task.Factory.StartNew<AssemblyDefinition> (() => {
+			this.assemblyLoaderTask = Task.Run (() => {
 				try {
-					return AssemblyDefinition.ReadAssembly (FileName, new ReaderParameters {
+					var asm = AssemblyDefinition.ReadAssembly (FileName, new ReaderParameters {
 						AssemblyResolver = this
 					});
+					unresolvedAssembly = widget.CecilLoader.LoadAssembly (asm);
+					return asm;
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while reading assembly " + FileName, e);
 					return null;
 				}
 			}, src.Token);
-			
-			this.unresolvedAssembly = new Lazy<IUnresolvedAssembly> (delegate {
-				try {
-					return widget.CecilLoader.LoadAssembly (Assembly);
-				} catch (Exception e) {
-					LoggingService.LogError ("Error while loading assembly", e);
-					return new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedAssembly (FileName);
-				}
-			});
 		}
 		
 		#region IAssemblyResolver implementation

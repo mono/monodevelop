@@ -6,10 +6,9 @@
   </configuration>
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
-    <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll" />
     <widget-library name="../../../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll" />
-    <widget-library name="../../../../build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll" />
+    <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../build/AddIns/DisplayBindings/AssemblyBrowser/MonoDevelop.AssemblyBrowser.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget" design-size="702 482">
@@ -31,7 +30,6 @@
     </action-group>
     <property name="MemberName" />
     <property name="Visible">False</property>
-    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox1">
         <property name="MemberName" />
@@ -63,10 +61,12 @@
                     <property name="CurrentPage">0</property>
                     <property name="ShowBorder">False</property>
                     <child>
-                      <widget class="MonoDevelop.Components.CompactScrolledWindow" id="documentationScrolledWindow">
+                      <widget class="Gtk.HBox" id="documentationScrolledWindow">
                         <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="ShowBorderLine">False</property>
+                        <property name="Spacing">6</property>
+                        <child>
+                          <placeholder />
+                        </child>
                       </widget>
                     </child>
                     <child>
