@@ -290,6 +290,89 @@ type FSharpTextEditorCompletion() =
 
     symbols |> List.map symbolToCompletionData
 
+
+  let codeCompletionCommandImpl(editor:Editor.TextEditor, documentContext:Editor.DocumentContext, context:CodeCompletionContext, allowAnyStale, dottedInto, ctrlSpace, completionChar) =
+    async {
+      let result = CompletionDataList()
+      let fileName = documentContext.Name
+      try
+        // Try to get typed information from LanguageService (with the specified timeout)
+        let stale = if allowAnyStale then AllowStaleResults.MatchingFileName else AllowStaleResults.MatchingSource
+        let projectFile = documentContext.Project |> function null -> fileName | project -> project.FileName.ToString()
+        let! typedParseResults = MDLanguageService.Instance.GetTypedParseResultWithTimeout(projectFile, fileName, editor.Text, stale, ServiceSettings.blockingTimeout)
+
+        match typedParseResults with
+        | None       -> () //TODOresult.Add(FSharpTryAgainMemberCompletionData())
+        | Some tyRes ->
+          // Get declarations and generate list for MonoDevelop
+          let line, col, lineStr = editor.GetLineInfoFromOffset context.TriggerOffset
+          match tyRes.GetDeclarationSymbols(line, col, lineStr) with
+          | Some (symbols, _residue) ->
+              let data = getCompletionData symbols
+              result.AddRange data
+          | None -> ()
+      with
+      | :? System.Threading.Tasks.TaskCanceledException -> ()
+      | e ->
+          LoggingService.LogError ("FSharpTextEditorCompletion, An error occured in CodeCompletionCommandImpl", e)
+          () //TODOresult.Add(FSharpErrorCompletionData(e))
+      
+      if completionChar = '.' then lastCharDottedInto <- dottedInto
+      else
+        // Add the code templates and compiler generated identifiers if the completion char is not '.'
+        CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-fsharp", result)
+        result.AddRange compilerIdentifiers
+        result.AddRange keywordCompletionData
+      //If we are forcing completion ensure that AutoCompleteUniqueMatch is set
+      if ctrlSpace then
+        result.AutoCompleteUniqueMatch <- true
+      return result :> ICompletionDataList }
+
+
+  let isCurrentTokenInvalid (editor:Editor.TextEditor) (documentContext:Editor.DocumentContext) (context:CodeCompletionContext) =
+    try
+      let line, col, lineStr = editor.GetLineInfoFromOffset context.TriggerOffset
+      let filepath = (editor.FileName.ToString())
+      let defines = CompilerArguments.getDefineSymbols filepath (documentContext.Project |> Option.ofNull)
+
+      let quickLine = 
+        maybe { 
+          let! parsedDoc = documentContext.ParsedDocument |> Option.ofNull
+          let! fsparsedDoc = parsedDoc |> Option.tryCast<FSharpParsedDocument>
+          let! tokenisedLines = fsparsedDoc.Tokens
+          let (Tokens.TokenisedLine(_lineNo, _lineOffset, _tokens, state)) = tokenisedLines.[line-1]
+          let linedetail = Seq.singleton (Tokens.LineDetail(line, context.TriggerOffset, lineStr))
+          return Tokens.getTokensWithInitialState state linedetail filepath defines }
+
+      let isTokenAtOffset col t = col-1 >= t.LeftColumn && col-1 <= t.RightColumn
+
+      let caretToken = 
+        match quickLine with
+        | Some line ->
+          //we have a line
+          match line with
+          | [single] ->
+            let (Tokens.TokenisedLine(_lineNumber, _offset, lineTokens, _state)) = single
+            lineTokens |> List.tryFind (isTokenAtOffset col)
+          | _ -> None //should only be one
+        | None ->
+          let lineDetails =
+            [ for i in 1..line do
+                let line = editor.GetLine(i)
+                yield Tokens.LineDetail(line.LineNumber, line.Offset, editor.GetTextAt(line.Offset, line.Length)) ]
+          let tokens = Tokens.getTokens lineDetails filepath defines
+          let (Tokens.TokenisedLine(_lineNumber, _offset, lineTokens, _state)) = tokens.[line-1]
+          lineTokens |> List.tryFind (isTokenAtOffset col)
+
+      let isTokenInvalid = 
+        match caretToken with
+        | Some token -> token.ColorClass = FSharpTokenColorKind.Comment ||
+                        token.ColorClass = FSharpTokenColorKind.String ||
+                        token.ColorClass = FSharpTokenColorKind.Text
+        | None -> true
+      isTokenInvalid
+    with ex -> true
+
   //only used for testing
   member x.Initialize(editor, context) =
     x.DocumentContext <- context
@@ -398,64 +481,31 @@ type FSharpTextEditorCompletion() =
     // Because of this, we like to force re-typechecking in those situations where '.' is pressed AND when expression typings are highly 
     // likely to be useful. The most common example of this is where a character to the left of the '.' is not a letter. This catches 
     // situations like (abc + def).
-    // Note, however, that this is just an approximation - for example no re-typecheck is enforced here:
-    //      (abc + def).PPP.
-    
-    let allowAnyStale = 
-      match completionChar with 
-      | '.' -> 
-          let docText = x.Editor.Text
-          if docText = null then true else
-          let offset = context.TriggerOffset
-          offset > 1 && Char.IsLetter (docText.[offset-2])
-      | _ -> true
+    // Note, however, that this is just an approximation - for example no re-typecheck is enforced here: (abc + def).PPP.
+    let computation = 
+      async {
+        if isCurrentTokenInvalid x.Editor x.DocumentContext context then return null else
+        
+        let allowAnyStale = 
+          match completionChar with 
+          | '.' -> 
+              let docText = x.Editor.Text
+              if docText = null then true else
+              let offset = context.TriggerOffset
+              offset > 1 && Char.IsLetter (docText.[offset-2])
+          | _ -> true 
 
-    LoggingService.LogInfo("allowAnyStale = {0}", allowAnyStale)
-    x.CodeCompletionCommandImpl(context, allowAnyStale, token, true, false, completionChar)
+        return! codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, allowAnyStale, true, false, completionChar) }
+    Async.StartAsTask (computation =computation, cancellationToken = token)
 
   /// Completion was triggered explicitly using Ctrl+Space or by the function above  
   override x.CodeCompletionCommand(context) =
     let completionChar = x.Editor.GetCharAt(context.TriggerOffset - 1)
     let completionIsDot = completionChar = '.'
-    x.CodeCompletionCommandImpl(context, true, Async.DefaultCancellationToken, completionIsDot, true, completionChar)
-
-  member x.CodeCompletionCommandImpl(context, allowAnyStale, token, dottedInto, ctrlSpace, completionChar) =
-    Async.StartAsTask (cancellationToken = token, computation = async {
-    let result = CompletionDataList()
-    let fileName = x.DocumentContext.Name
-    try
-      // Try to get typed information from LanguageService (with the specified timeout)
-      let stale = if allowAnyStale then AllowStaleResults.MatchingFileName else AllowStaleResults.MatchingSource
-      let projectFile = x.DocumentContext.Project |> function null -> fileName | project -> project.FileName.ToString()
-      let! typedParseResults = MDLanguageService.Instance.GetTypedParseResultWithTimeout(projectFile, fileName, x.Editor.Text, stale, ServiceSettings.blockingTimeout)
-
-      match typedParseResults with
-      | None       -> () //TODOresult.Add(FSharpTryAgainMemberCompletionData())
-      | Some tyRes ->
-        // Get declarations and generate list for MonoDevelop
-        let line, col, lineStr = x.Editor.GetLineInfoFromOffset context.TriggerOffset
-        match tyRes.GetDeclarationSymbols(line, col, lineStr) with
-        | Some (symbols, _residue) ->
-            let data = getCompletionData symbols
-            result.AddRange data
-        | None -> ()
-    with
-    | :? System.Threading.Tasks.TaskCanceledException -> ()
-    | e ->
-        LoggingService.LogError ("FSharpTextEditorCompletion, An error occured in CodeCompletionCommandImpl", e)
-        () //TODOresult.Add(FSharpErrorCompletionData(e))
-    
-    if completionChar = '.' then lastCharDottedInto <- dottedInto
-    else
-      // Add the code templates and compiler generated identifiers if the completion char is not '.'
-      CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-fsharp", result)
-      result.AddRange compilerIdentifiers
-      result.AddRange keywordCompletionData
-    //If we are forcing completion ensure that AutoCompleteUniqueMatch is set
-    if ctrlSpace then
-      result.AutoCompleteUniqueMatch <- true
-    return result :> ICompletionDataList})
-
+    Async.StartAsTask(
+      async {
+        if isCurrentTokenInvalid x.Editor x.DocumentContext context then return null
+        else return! codeCompletionCommandImpl(x.Editor, x.DocumentContext,context, true, completionIsDot, true, completionChar) } )
 
   // Returns the index of the parameter where the cursor is currently positioned.
   // -1 means the cursor is outside the method parameter list

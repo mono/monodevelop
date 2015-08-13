@@ -14,6 +14,7 @@ open System.Threading
 
 type FSharpParsedDocument(fileName) = 
     inherit DefaultParsedDocument(fileName)
+    member val Tokens = None with get,set
 
 // An instance of this type is created by MonoDevelop (as defined in the .xml for the AddIn) 
 type FSharpParser() = 
@@ -86,6 +87,19 @@ type FSharpParser() =
                 | Some results ->                                                                     
                   results.GetErrors()
                   |> Option.iter (Array.map formatError >> doc.AddRange)
+
+                  //Try creating tokens
+                  try
+                    let readOnlyDoc = MonoDevelop.Ide.Editor.TextEditorFactory.CreateNewReadonlyDocument (parseOptions.Content, fileName)
+                    let lineDetails =
+                      [ for i in 1..readOnlyDoc.LineCount do
+                          let line = readOnlyDoc.GetLine(i)
+                          yield Tokens.LineDetail(line.LineNumber, line.Offset, readOnlyDoc.GetTextAt(line.Offset, line.Length)) ]
+                    let defines = CompilerArguments.getDefineSymbols filePath (proj |> Option.ofNull)
+                    let tokens = Tokens.getTokens lineDetails filePath defines
+                    doc.Tokens <- Some(tokens)
+                  with ex ->
+                    LoggingService.LogWarning ("FSharpParser: Couldn't update toekn information", ex)
 
                   //Set code folding regions, GetNavigationItems may throw in some situations
                   try 

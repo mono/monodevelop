@@ -291,56 +291,10 @@ module Keywords =
                        |> Option.fill scheme.KeywordTypes
         | None -> scheme.KeywordTypes
 
-module Tokens =
-    let (|CollapsableToken|_|) (token:FSharpTokenInfo) =
-        match token.ColorClass with
-        | FSharpTokenColorKind.String
-        | FSharpTokenColorKind.Comment
-        | FSharpTokenColorKind.InactiveCode -> Some token
-        | _ -> None
-
-    let isSameType (token1:FSharpTokenInfo) (token2:FSharpTokenInfo) =
-      token1.ColorClass = token2.ColorClass
-
-    let mergeTokens newest oldest =
-      {oldest with RightColumn = newest.RightColumn;FullMatchedLength = oldest.FullMatchedLength + newest.RightColumn - newest.LeftColumn}
-
-    let getTokens lineDetails filename defines = 
-      [|let state = ref 0L
-        let sourceTok = SourceTokenizer(defines, filename)
-        for lineNumber, lineOffset, lineText in lineDetails do
-          let tokenizer = sourceTok.CreateLineTokenizer(lineText)
-          let rec parseLine lastToken =
-              [ match tokenizer.ScanToken(!state) with
-                | Some(tok), nstate ->
-                    state := nstate
-                    match tok, lastToken with
-                    | CollapsableToken _, None ->
-                       yield! parseLine (Some tok)
-                    | _ , None ->
-                       yield tok
-                       yield! parseLine None
-                    | CollapsableToken newToken, Some lastToken ->
-                      if isSameType newToken lastToken then
-                         yield! parseLine (Some(mergeTokens tok lastToken))
-                      else yield lastToken
-                           yield! parseLine(Some newToken)
-                    | _, Some lastToken ->
-                       yield lastToken
-                       yield tok
-                       yield! parseLine None
-
-                | None, nstate ->
-                   state := nstate
-                   match lastToken with
-                   | Some other -> yield other
-                   | _ -> ()]
-          yield lineNumber, lineOffset, parseLine None |]
-
 type FSharpSyntaxMode(editor, context) =
     inherit MonoDevelop.Ide.Editor.Highlighting.SemanticHighlighting(editor, context)
 
-    let mutable segments = [||]
+    let mutable segments = None
 
     let makeChunk symbolsInFile colourisations lineNumber lineOffset (style: ColorScheme) (token: FSharpTokenInfo) =
         let symbol =
@@ -389,30 +343,40 @@ type FSharpSyntaxMode(editor, context) =
         seg
 
     override x.DocumentParsed () =
-        let localParsedDocument = context.ParsedDocument
-        if localParsedDocument <> null then
-            let parseAndCheckResults = localParsedDocument.Ast |> Option.tryCast<ParseAndCheckResults>
-            match parseAndCheckResults with
-            | Some pd ->
-                let symbolsInFile =
-                    try Async.RunSynchronously (pd.GetAllUsesOfAllSymbolsInFile(), ServiceSettings.maximumTimeout)
-                    with _ -> None 
-                let colourisations = pd.GetExtraColorizations ()
-                let lineDetails = editor.GetLines() |> Seq.map (fun line -> line.LineNumber, line.Offset, editor.GetLineText line)
-                let defines =
-                  CompilerArguments.getDefineSymbols context.Name (context.Project |> Option.ofNull)
-                                    
-                let processedTokens =
-                    let style = getColourScheme ()
-                    let ttt = Tokens.getTokens lineDetails context.Name defines
-                    ttt |> Array.map (fun (lineNumber, lineOffset, chunks) -> chunks |> List.map (makeChunk symbolsInFile colourisations lineNumber lineOffset style))
-                segments <- processedTokens
-                Gtk.Application.Invoke (fun _ _ -> x.NotifySemanticHighlightingUpdate())
-            | None -> ()
+      let processedTokens = 
+        maybe {
+          let! localParsedDocument = context.ParsedDocument |> Option.ofNull
+          let! pd = localParsedDocument |> Option.tryCast<FSharpParsedDocument>
+          let! checkResults = pd.Ast |> Option.tryCast<ParseAndCheckResults>
+          let symbolsInFile =
+              try Async.RunSynchronously (checkResults.GetAllUsesOfAllSymbolsInFile(), ServiceSettings.maximumTimeout)
+              with _ -> None 
+          let colourisations = checkResults.GetExtraColorizations ()
+          let lineDetails =
+            editor.GetLines()
+            |> Seq.map (fun line -> Tokens.LineDetail(line.LineNumber, line.Offset, editor.GetLineText line))
+          let defines =
+            CompilerArguments.getDefineSymbols context.Name (context.Project |> Option.ofNull)
+                              
+          let processedTokens =
+            let style = getColourScheme ()
+            let tokens =
+              match pd.Tokens with
+              | Some t -> t
+              | None -> Tokens.getTokens lineDetails context.Name defines
+
+            tokens
+            |> List.map (fun (Tokens.TokenisedLine(lineNumber, lineOffset, chunks, _state)) ->
+                           chunks |> List.map (makeChunk symbolsInFile colourisations lineNumber lineOffset style)) |> Array.ofList
+          return processedTokens }
+      processedTokens
+      |> Option.iter (fun _ -> segments <- processedTokens
+                               Gtk.Application.Invoke (fun _ _ -> x.NotifySemanticHighlightingUpdate()))
 
     override x.GetColoredSegments (segment) =
-        let line = editor.GetLineByOffset segment.Offset
-        let lineNumber = line.LineNumber
-        if segments.Length >= lineNumber
-        then segments.[lineNumber-1] |> List.toSeq
-        else Seq.empty
+      let line = editor.GetLineByOffset segment.Offset
+      let lineNumber = line.LineNumber
+      match segments with
+      | Some segments when segments.Length >= lineNumber ->
+        segments.[lineNumber-1] |> List.toSeq
+      | _ -> Seq.empty
