@@ -38,13 +38,29 @@ type FSharpTooltipProvider() =
         let fileName = doc.FileName.FullPath.ToString()
         let projectFileName = context.Project |> function null -> fileName | project -> project.FileName.ToString()
         
-        if not <| MDLanguageService.SupportedFileName fileName then null else
+        if not (MDLanguageService.SupportedFileName fileName) then null else
 
         let docText = editor.Text
         if docText = null || offset >= docText.Length || offset < 0 then null else
 
         let line, col, lineStr = editor.GetLineInfoFromOffset offset
 
+        let caretToken = 
+            maybe {
+              let! pd = Option.tryCast<FSharpParsedDocument> context.ParsedDocument
+              let! tokens = pd.Tokens
+              let (Tokens.TokenisedLine(_lineNumber, _offset, lineTokens, _state)) = tokens.[line-1]
+              return! lineTokens |> List.tryFind (fun t -> col >= t.LeftColumn && col <= t.RightColumn) }
+
+        let isTokenInvalid = 
+          match caretToken with
+          | Some token -> token.ColorClass = FSharpTokenColorKind.Comment ||
+                          token.ColorClass = FSharpTokenColorKind.String ||
+                          token.ColorClass = FSharpTokenColorKind.Text
+          | None -> true
+
+        if isTokenInvalid then null else 
+        
         let tryKeyword =
            let ident = Parsing.findLongIdents(col, lineStr)
            match ident with
