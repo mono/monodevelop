@@ -179,6 +179,7 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\NRefactoryStock.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\HelpExtensions.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserNavigationPoint.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

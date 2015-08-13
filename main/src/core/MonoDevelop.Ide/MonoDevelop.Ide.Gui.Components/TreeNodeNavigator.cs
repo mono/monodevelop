@@ -142,7 +142,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			public void ScrollToNode ()
 			{
-				tree.ScrollToCell (store.GetPath (currentIter), pad.CompleteColumn, true, 0, 0);
+				tree.ScrollToCell (store.GetPath (currentIter), pad.CompleteColumn, true, 0, -1);
 			}
 
 			public bool MoveToRoot ()

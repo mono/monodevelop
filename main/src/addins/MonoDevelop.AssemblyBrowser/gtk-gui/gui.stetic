@@ -12,22 +12,7 @@
     <widget-library name="../../../../build/AddIns/DisplayBindings/AssemblyBrowser/MonoDevelop.AssemblyBrowser.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget" design-size="702 482">
-    <action-group name="Default">
-      <action id="NavigateBackwardAction">
-        <property name="Type">Action</property>
-        <property name="Label" translatable="yes">Navigate backward</property>
-        <property name="ShortLabel" translatable="yes">Navigate backward</property>
-        <property name="StockId">gtk-go-back</property>
-        <signal name="Activated" handler="OnNavigateBackwardActionActivated" />
-      </action>
-      <action id="NavigateForwardAction">
-        <property name="Type">Action</property>
-        <property name="Label" translatable="yes">Navigate forward</property>
-        <property name="ShortLabel" translatable="yes">Navigate forward</property>
-        <property name="StockId">gtk-go-forward</property>
-        <signal name="Activated" handler="OnNavigateForwardActionActivated" />
-      </action>
-    </action-group>
+    <action-group name="Default" />
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>

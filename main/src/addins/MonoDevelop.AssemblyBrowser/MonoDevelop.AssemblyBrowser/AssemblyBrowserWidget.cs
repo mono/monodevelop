@@ -51,6 +51,8 @@ using MonoDevelop.Components;
 using System.Threading.Tasks;
 using System.Threading;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Navigation;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -58,8 +60,6 @@ namespace MonoDevelop.AssemblyBrowser
 	[System.ComponentModel.ToolboxItem(true)]
 	partial class AssemblyBrowserWidget : Gtk.Bin
 	{
-		Gtk.Button buttonBack;
-		Gtk.Button buttonForeward;
 		Gtk.ComboBox comboboxVisibilty;
 		MonoDevelop.Components.SearchEntry searchentry1;
 		Gtk.ComboBox languageCombobox;
@@ -165,19 +165,13 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			this.Build ();
 
-			buttonBack = new Gtk.Button (ImageService.GetImage ("md-breadcrumb-prev", Gtk.IconSize.Menu));
-			buttonBack.Clicked += OnNavigateBackwardActionActivated;
-
-			buttonForeward = new Gtk.Button (ImageService.GetImage ("md-breadcrumb-next", Gtk.IconSize.Menu));
-			buttonForeward.Clicked += OnNavigateForwardActionActivated;
-
 			comboboxVisibilty = ComboBox.NewText ();
 			comboboxVisibilty.InsertText (0, GettextCatalog.GetString ("Only public members"));
 			comboboxVisibilty.InsertText (1, GettextCatalog.GetString ("All members"));
-			comboboxVisibilty.Active = 0;
+			comboboxVisibilty.Active = 0; 
 			comboboxVisibilty.Changed += delegate {
 				TreeView.PublicApiOnly = comboboxVisibilty.Active == 0;
-				FillInspectLabel ();
+				FillInspectLabel (); 
 			};
 
 			searchentry1 = new MonoDevelop.Components.SearchEntry ();
@@ -292,12 +286,6 @@ namespace MonoDevelop.AssemblyBrowser
 
 		internal void SetToolbar (DocumentToolbar toolbar)
 		{
-			toolbar.Add (buttonBack);
-
-			toolbar.Add (buttonForeward);
-
-			toolbar.Add (new VSeparator ());
-
 			Gtk.Label la = new Label (GettextCatalog.GetString ("Visibility"));
 			toolbar.Add (la);
 
@@ -375,20 +363,20 @@ namespace MonoDevelop.AssemblyBrowser
 			TreeView.GrabFocus ();
 		}
 		
-		ITreeNavigator SearchMember (IUnresolvedEntity member)
+		ITreeNavigator SearchMember (IUnresolvedEntity member, bool expandNode = true)
 		{
-			return SearchMember (GetIdString (member));
+			return SearchMember (GetIdString (member), expandNode);
 		}
 			
-		ITreeNavigator SearchMember (string helpUrl)
+		ITreeNavigator SearchMember (string helpUrl, bool expandNode = true)
 		{
-			var nav = SearchMember (TreeView.GetRootNode (), helpUrl);
+			var nav = SearchMember (TreeView.GetRootNode (), helpUrl, expandNode);
 			if (nav != null)
 				return nav;
 			// Constructor may be a generated default without implementation.
 			var ctorIdx = helpUrl.IndexOf (".#ctor", StringComparison.Ordinal);
 			if (helpUrl.StartsWith ("M:", StringComparison.Ordinal) && ctorIdx > 0) {
-				return SearchMember ("T" + helpUrl.Substring (1, ctorIdx - 1));
+				return SearchMember ("T" + helpUrl.Substring (1, ctorIdx - 1), expandNode);
 			}
 			return null;
 		}
@@ -588,7 +576,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return false;
 		}
 		
-		ITreeNavigator SearchMember (ITreeNavigator nav, string helpUrl)
+		ITreeNavigator SearchMember (ITreeNavigator nav, string helpUrl, bool expandNode = true)
 		{
 			if (nav == null)
 				return null;
@@ -597,13 +585,18 @@ namespace MonoDevelop.AssemblyBrowser
 				if (IsMatch (nav, helpUrl, searchType)) {
 					inspectEditor.ClearSelection ();
 					nav.ExpandToNode ();
-					nav.Selected = nav.Expanded = true;
-					nav.ScrollToNode ();
+					if (expandNode) {
+						nav.Selected = nav.Expanded = true;
+						nav.ScrollToNode ();
+					} else {
+						nav.Selected = true;
+						nav.ScrollToNode ();
+					}
 					return nav;
 				}
 				if (!SkipChildren (nav, helpUrl, searchType) && nav.HasChildren ()) {
 					nav.MoveToFirstChild ();
-					ITreeNavigator result = SearchMember (nav, helpUrl);
+					ITreeNavigator result = SearchMember (nav, helpUrl, expandNode);
 					if (result != null)
 						return result;
 					
@@ -613,7 +606,7 @@ namespace MonoDevelop.AssemblyBrowser
 					try {
 						if (nav.DataItem is TypeDefinition && PublicApiOnly) {
 							nav.MoveToFirstChild ();
-							result = SearchMember (nav, helpUrl);
+							result = SearchMember (nav, helpUrl, expandNode);
 							if (result != null)
 								return result;
 							nav.MoveToParent ();
@@ -1215,11 +1208,12 @@ namespace MonoDevelop.AssemblyBrowser
 			this.hpaned1.Position = Math.Min (350, this.Allocation.Width * 2 / 3);
 		}
 		
-		internal void Open (string url, AssemblyLoader currentAssembly = null)
+		internal void Open (string url, AssemblyLoader currentAssembly = null, bool expandNode = true)
 		{
 			Task.WhenAll (this.definitions.Select (d => d.LoadingTask).ToArray ()).ContinueWith (d => {
 				Application.Invoke (delegate {
-					ITreeNavigator nav = SearchMember (url);
+					suspendNavigation = false;
+					ITreeNavigator nav = SearchMember (url, expandNode);
 					if (definitions == null) // we've been disposed
 						return;
 					if (nav != null)
@@ -1237,7 +1231,7 @@ namespace MonoDevelop.AssemblyBrowser
 			});
 		}
 
-		async void OpenFromAssembly (string url, AssemblyLoader currentAssembly)
+		async void OpenFromAssembly (string url, AssemblyLoader currentAssembly, bool expandNode = true)
 		{
 			var cecilObject = loader.GetCecilObject (currentAssembly.UnresolvedAssembly);
 			if (cecilObject == null)
@@ -1262,7 +1256,7 @@ namespace MonoDevelop.AssemblyBrowser
 					if (definitions == null) // disposed
 						return;
 					Application.Invoke (delegate {
-						var nav = SearchMember (url);
+						var nav = SearchMember (url, expandNode);
 						if (nav == null) {
 							if (++i == references.Count)
 								LoggingService.LogError ("Assembly browser: Can't find: " + url + ".");
@@ -1416,15 +1410,6 @@ namespace MonoDevelop.AssemblyBrowser
 //			this.searchEntry.Changed -= SearchEntryhandleChanged;
 			this.searchTreeview.RowActivated -= SearchTreeviewhandleRowActivated;
 			hpaned1.ExposeEvent -= HPaneExpose;
-			if (NavigateBackwardAction != null) {
-				this.NavigateBackwardAction.Dispose ();
-				this.NavigateBackwardAction = null;
-			}
-
-			if (NavigateForwardAction != null) {
-				this.NavigateForwardAction.Dispose ();
-				this.NavigateForwardAction = null;
-			}
 			base.OnDestroyed ();
 		}
 		
@@ -1538,60 +1523,46 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 
 		//MonoDevelop.Components.RoundedFrame popupWidgetFrame;
-	
+
 		#region NavigationHistory
-		Stack<ITreeNavigator> navigationBackwardHistory = new Stack<ITreeNavigator> ();
-		Stack<ITreeNavigator> navigationForwardHistory = new Stack<ITreeNavigator> ();
-		ITreeNavigator currentItem = null;
-		bool inNavigationOperation = false;
+		internal bool suspendNavigation;
 		void HandleCursorChanged (object sender, EventArgs e)
 		{
-			if (!inNavigationOperation) {
-				if (currentItem != null)
-					navigationBackwardHistory.Push (currentItem);
-				currentItem = TreeView.GetSelectedNode ();
-				ActiveMember = currentItem.DataItem as IEntity;
-				navigationForwardHistory.Clear ();
+			if (!suspendNavigation) {
+				var selectedEntity = TreeView.GetSelectedNode ()?.DataItem as IUnresolvedEntity;
+				if (selectedEntity != null)
+					NavigationHistoryService.LogActiveDocument ();
 			}
 			notebook1.Page = 0;
-			UpdateNavigationActions ();
 			CreateOutput ();
 		}
-		
-		void UpdateNavigationActions ()
+
+		public NavigationPoint BuildNavigationPoint ()
 		{
-			if (buttonBack != null) {
-				buttonBack.Sensitive = navigationBackwardHistory.Count != 0;
-				buttonForeward.Sensitive = navigationForwardHistory.Count != 0;
-			}
-		}
-		
-		protected virtual void OnNavigateBackwardActionActivated (object sender, System.EventArgs e)
-		{
-			if (navigationBackwardHistory.Count == 0)
-				return;
-			inNavigationOperation = true;
-			ITreeNavigator item = navigationBackwardHistory.Pop ();
-			item.Selected = true;
-			navigationForwardHistory.Push (currentItem);
-			currentItem = item;
-			inNavigationOperation = false;
-			UpdateNavigationActions ();
-		}
-	
-		protected virtual void OnNavigateForwardActionActivated (object sender, System.EventArgs e)
-		{
-			if (navigationForwardHistory.Count == 0)
-				return;
-			inNavigationOperation = true;
-			ITreeNavigator item = navigationForwardHistory.Pop ();
-			item.Selected = true;
-			navigationBackwardHistory.Push (currentItem);
-			currentItem = item;
-			inNavigationOperation = false;
-			UpdateNavigationActions ();
+			var selectedEntity = TreeView.GetSelectedNode ()?.DataItem as IUnresolvedEntity;
+			if (selectedEntity == null)
+				return null;
+			return new AssemblyBrowserNavigationPoint (definitions, GetIdString (selectedEntity));
 		}
 		#endregion
+
+		internal void EnsureDefinitionsLoaded (List<AssemblyLoader> definitions)
+		{
+			if (definitions == null)
+				throw new ArgumentNullException (nameof (definitions));
+			foreach (var def in definitions) {
+				if (!this.definitions.Contains (def)) {
+					this.definitions.Add (def);
+					Application.Invoke (delegate {
+						if (definitions.Count + projects.Count == 1) {
+							TreeView.LoadTree (def.LoadingTask.Result);
+						} else {
+							TreeView.AddChild (def.LoadingTask.Result);
+						}
+					});
+				}
+			}
+		}
 	}
 }
 

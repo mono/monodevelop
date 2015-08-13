@@ -6,10 +6,6 @@ namespace MonoDevelop.AssemblyBrowser
 	{
 		private global::Gtk.UIManager UIManager;
 
-		private global::Gtk.Action NavigateBackwardAction;
-
-		private global::Gtk.Action NavigateForwardAction;
-
 		private global::Gtk.VBox vbox1;
 
 		private global::Gtk.HPaned hpaned1;
@@ -35,12 +31,6 @@ namespace MonoDevelop.AssemblyBrowser
 			Stetic.BinContainer w1 = global::Stetic.BinContainer.Attach(this);
 			this.UIManager = new global::Gtk.UIManager();
 			global::Gtk.ActionGroup w2 = new global::Gtk.ActionGroup("Default");
-			this.NavigateBackwardAction = new global::Gtk.Action("NavigateBackwardAction", global::Mono.Unix.Catalog.GetString("Navigate backward"), null, "gtk-go-back");
-			this.NavigateBackwardAction.ShortLabel = global::Mono.Unix.Catalog.GetString("Navigate backward");
-			w2.Add(this.NavigateBackwardAction, null);
-			this.NavigateForwardAction = new global::Gtk.Action("NavigateForwardAction", global::Mono.Unix.Catalog.GetString("Navigate forward"), null, "gtk-go-forward");
-			this.NavigateForwardAction.ShortLabel = global::Mono.Unix.Catalog.GetString("Navigate forward");
-			w2.Add(this.NavigateForwardAction, null);
 			this.UIManager.InsertActionGroup(w2, 0);
 			this.Name = "MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget";
 			// Container child MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.Gtk.Container+ContainerChild
@@ -107,8 +97,6 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			w1.SetUiManager(UIManager);
 			this.Hide();
-			this.NavigateBackwardAction.Activated += new global::System.EventHandler(this.OnNavigateBackwardActionActivated);
-			this.NavigateForwardAction.Activated += new global::System.EventHandler(this.OnNavigateForwardActionActivated);
 		}
 	}
 }
