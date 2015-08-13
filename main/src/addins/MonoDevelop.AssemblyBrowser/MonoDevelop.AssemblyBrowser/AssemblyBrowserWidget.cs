@@ -168,9 +168,10 @@ namespace MonoDevelop.AssemblyBrowser
 			comboboxVisibilty = ComboBox.NewText ();
 			comboboxVisibilty.InsertText (0, GettextCatalog.GetString ("Only public members"));
 			comboboxVisibilty.InsertText (1, GettextCatalog.GetString ("All members"));
-			comboboxVisibilty.Active = 0; 
+			comboboxVisibilty.Active = Math.Min (1, Math.Max (0, PropertyService.Get ("AssemblyBrowser.MemberSelection", 0)));
 			comboboxVisibilty.Changed += delegate {
 				TreeView.PublicApiOnly = comboboxVisibilty.Active == 0;
+				PropertyService.Set ("AssemblyBrowser.MemberSelection", comboboxVisibilty.Active);
 				FillInspectLabel (); 
 			};
 
@@ -183,13 +184,14 @@ namespace MonoDevelop.AssemblyBrowser
 			searchentry1.InnerEntry.Changed += SearchEntryhandleChanged;
 
 			CheckMenuItem checkMenuItem = this.searchentry1.AddFilterOption (0, GettextCatalog.GetString ("Types"));
-			checkMenuItem.Active = true;
+			checkMenuItem.Active = PropertyService.Get ("AssemblyBrowser.SearchMemberState", true);
 			checkMenuItem.Toggled += delegate {
 				if (checkMenuItem.Active) {
 					searchMode = AssemblyBrowserWidget.SearchMode.Type;
 					CreateColumns ();
 					StartSearch ();
 				}
+				PropertyService.Set ("AssemblyBrowser.SearchMemberState", checkMenuItem.Active);
 			};
 			
 			CheckMenuItem checkMenuItem1 = this.searchentry1.AddFilterOption (1, GettextCatalog.GetString ("Members"));
@@ -205,7 +207,7 @@ namespace MonoDevelop.AssemblyBrowser
 			languageCombobox.AppendText (GettextCatalog.GetString ("Summary"));
 			languageCombobox.AppendText (GettextCatalog.GetString ("IL"));
 			languageCombobox.AppendText (GettextCatalog.GetString ("C#"));
-			languageCombobox.Active = Math.Min (0, PropertyService.Get ("AssemblyBrowser.Language", 0));
+			languageCombobox.Active = Math.Min (2, Math.Max (0, PropertyService.Get ("AssemblyBrowser.Language", 0)));
 			languageCombobox.Changed += LanguageComboboxhandleChanged;
 
 			loader = new CecilLoader (true);
