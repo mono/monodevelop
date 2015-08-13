@@ -209,5 +209,14 @@ namespace ICSharpCode.PackageManagement
 				ReferenceAdding (this, new DotNetProjectReferenceEventArgs (reference));
 			}
 		}
+
+		public event EventHandler<DotNetProjectImportEventArgs> ImportRemoved;
+
+		public void OnImportRemoved (IDotNetProject project, string import)
+		{
+			if (ImportRemoved != null) {
+				ImportRemoved (this, new DotNetProjectImportEventArgs (project, import));
+			}
+		}
 	}
 }
