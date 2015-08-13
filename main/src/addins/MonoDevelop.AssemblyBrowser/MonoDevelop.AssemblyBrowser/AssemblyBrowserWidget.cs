@@ -56,6 +56,11 @@ using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.AssemblyBrowser
 {
+	enum SearchMemberState {
+		TypesAndMembers,
+		Types,
+		Members
+	}
 	[System.ComponentModel.Category("MonoDevelop.AssemblyBrowser")]
 	[System.ComponentModel.ToolboxItem(true)]
 	partial class AssemblyBrowserWidget : Gtk.Bin
@@ -180,27 +185,47 @@ namespace MonoDevelop.AssemblyBrowser
 			searchentry1.HasFrame = true;
 			searchentry1.WidthRequest = 200;
 			searchentry1.Visible = true;
-			searchentry1.EmptyMessage = GettextCatalog.GetString ("Search for types or members");
+			UpdateSearchEntryMessage ();
 			searchentry1.InnerEntry.Changed += SearchEntryhandleChanged;
 
-			CheckMenuItem checkMenuItem = this.searchentry1.AddFilterOption (0, GettextCatalog.GetString ("Types"));
-			checkMenuItem.Active = PropertyService.Get ("AssemblyBrowser.SearchMemberState", true);
+			CheckMenuItem checkMenuItem = this.searchentry1.AddFilterOption (0, GettextCatalog.GetString ("Types and Members"));
+			checkMenuItem.Active = PropertyService.Get ("AssemblyBrowser.SearchMemberState", SearchMemberState.TypesAndMembers) == SearchMemberState.TypesAndMembers;
 			checkMenuItem.Toggled += delegate {
 				if (checkMenuItem.Active) {
+					searchMode = AssemblyBrowserWidget.SearchMode.TypeAndMembers;
+					CreateColumns ();
+					StartSearch ();
+				}
+				if (checkMenuItem.Active)
+					PropertyService.Set ("AssemblyBrowser.SearchMemberState", SearchMemberState.TypesAndMembers);
+				UpdateSearchEntryMessage ();
+			};
+
+			CheckMenuItem checkMenuItem2 = this.searchentry1.AddFilterOption (0, GettextCatalog.GetString ("Types"));
+			checkMenuItem2.Active = PropertyService.Get ("AssemblyBrowser.SearchMemberState", SearchMemberState.TypesAndMembers) == SearchMemberState.Types;
+			checkMenuItem2.Toggled += delegate {
+				if (checkMenuItem2.Active) {
 					searchMode = AssemblyBrowserWidget.SearchMode.Type;
 					CreateColumns ();
 					StartSearch ();
 				}
-				PropertyService.Set ("AssemblyBrowser.SearchMemberState", checkMenuItem.Active);
+				if (checkMenuItem.Active)
+					PropertyService.Set ("AssemblyBrowser.SearchMemberState", SearchMemberState.Types);
+				UpdateSearchEntryMessage ();
 			};
 			
 			CheckMenuItem checkMenuItem1 = this.searchentry1.AddFilterOption (1, GettextCatalog.GetString ("Members"));
+			checkMenuItem.Active = PropertyService.Get ("AssemblyBrowser.SearchMemberState", SearchMemberState.TypesAndMembers) == SearchMemberState.Members;
 			checkMenuItem1.Toggled += delegate {
 				if (checkMenuItem1.Active) {
 					searchMode = AssemblyBrowserWidget.SearchMode.Member;
 					CreateColumns ();
 					StartSearch ();
 				}
+				if (checkMenuItem.Active)
+					PropertyService.Set ("AssemblyBrowser.SearchMemberState", SearchMemberState.Members);
+				UpdateSearchEntryMessage ();
+
 			};
 
 			languageCombobox = Gtk.ComboBox.NewText ();
@@ -284,6 +309,24 @@ namespace MonoDevelop.AssemblyBrowser
 			this.searchTreeview.RowActivated += SearchTreeviewhandleRowActivated;
 			this.notebook1.ShowTabs = false;
 			this.ShowAll ();
+		}
+
+		void UpdateSearchEntryMessage ()
+		{
+			switch (PropertyService.Get ("AssemblyBrowser.SearchMemberState", SearchMemberState.TypesAndMembers)) {
+			case SearchMemberState.TypesAndMembers:
+				searchentry1.EmptyMessage = GettextCatalog.GetString ("Search for types and members");
+				break;
+			case SearchMemberState.Types:
+				searchentry1.EmptyMessage = GettextCatalog.GetString ("Search for types");
+				break;
+			case SearchMemberState.Members:
+				searchentry1.EmptyMessage = GettextCatalog.GetString ("Search for members");
+				break;
+			default:
+				throw new ArgumentOutOfRangeException ();
+			}
+
 		}
 
 		internal void SetToolbar (DocumentToolbar toolbar)
@@ -625,7 +668,8 @@ namespace MonoDevelop.AssemblyBrowser
 			Type   = 0,
 			Member = 1,
 			Disassembler = 2,
-			Decompiler = 3
+			Decompiler = 3,
+			TypeAndMembers = 4
 		}
 		
 		SearchMode searchMode = SearchMode.Type;
@@ -658,6 +702,23 @@ namespace MonoDevelop.AssemblyBrowser
 				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Assembly"), new Gtk.CellRendererText (), "text", 3);
 				col.Resizable = true;
 				searchTreeview.Model = memberListStore;
+				break;
+			case SearchMode.TypeAndMembers:
+				col = new TreeViewColumn ();
+				col.Title = GettextCatalog.GetString ("Results");
+				crp = new CellRendererImage ();
+				crt = new Gtk.CellRendererText ();
+				col.PackStart (crp, false);
+				col.PackStart (crt, true);
+				col.AddAttribute (crp, "image", 0);
+				col.AddAttribute (crt, "text", 1);
+				searchTreeview.AppendColumn (col);
+				col.Resizable = true;
+				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Parent"), new Gtk.CellRendererText (), "text", 2);
+				col.Resizable = true;
+				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Assembly"), new Gtk.CellRendererText (), "text", 3);
+				col.Resizable = true;
+				searchTreeview.Model = typeListStore;
 				break;
 			case SearchMode.Type:
 				col = new TreeViewColumn ();
@@ -705,6 +766,9 @@ namespace MonoDevelop.AssemblyBrowser
 				break;
 			case SearchMode.Type:
 				IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching type..."));
+				break;
+				case SearchMode.TypeAndMembers:
+		       	IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching types and members..."));
 				break;
 			}
 			memberListStore.Clear ();
@@ -863,6 +927,46 @@ namespace MonoDevelop.AssemblyBrowser
 						}
 					});
 					
+					break;
+				case SearchMode.TypeAndMembers:
+					var typeDict2 = new Dictionary<AssemblyLoader, List<IUnresolvedEntity>> ();
+					foreach (var unit in this.definitions) {
+						var typeList = new List<IUnresolvedEntity> ();
+						foreach (var type in unit.UnresolvedAssembly.TopLevelTypeDefinitions) {
+							if (worker.CancellationPending)
+								return;
+							if (!type.IsPublic && publicOnly)
+								continue;
+							if (type.FullName.ToUpper ().IndexOf (pattern) >= 0)
+								typeList.Add (type);
+							foreach (var member in type.Members) {
+								if (worker.CancellationPending)
+									return;
+								if (!member.IsPublic && publicOnly)
+									continue;
+								if (member.Name.ToUpper ().Contains (pattern)) {
+										typeList.Add (member);
+								}
+							}
+
+						}
+						typeDict2 [unit] = typeList;
+					}
+
+					Gtk.Application.Invoke (delegate {
+						foreach (var kv in typeDict2) {
+							foreach (var type in kv.Value) {
+								if (worker.CancellationPending)
+									return;
+								typeListStore.AppendValues (ImageService.GetIcon (type.GetStockIcon (), Gtk.IconSize.Menu),
+								                        type.Name,
+								                        type.Namespace,
+								                        kv.Key.Assembly.FullName,
+								                        type);
+							}
+						}
+					});
+
 					break;
 				}
 			} finally {
