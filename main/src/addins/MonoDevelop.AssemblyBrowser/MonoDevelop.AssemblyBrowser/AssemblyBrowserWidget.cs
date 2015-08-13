@@ -129,6 +129,38 @@ namespace MonoDevelop.AssemblyBrowser
 			return referencedSegment.Reference.ToString ();
 		}
 
+		class FastNonInterningProvider : InterningProvider
+		{
+			Dictionary<string, string> stringDict = new Dictionary<string, string>();
+
+			public override string Intern (string text)
+			{
+				if (text == null)
+					return null;
+
+				string output;
+				if (stringDict.TryGetValue(text, out output))
+					return output;
+				stringDict [text] = text;
+				return text;
+			}
+
+			public override ISupportsInterning Intern (ISupportsInterning obj)
+			{
+				return obj;
+			}
+
+			public override IList<T> InternList<T>(IList<T> list)
+			{
+				return list;
+			}
+
+			public override object InternValue (object obj)
+			{
+				return obj;
+			}
+		}
+
 		public AssemblyBrowserWidget ()
 		{
 			this.Build ();
@@ -183,6 +215,7 @@ namespace MonoDevelop.AssemblyBrowser
 			languageCombobox.Changed += LanguageComboboxhandleChanged;
 
 			loader = new CecilLoader (true);
+			loader.InterningProvider = new FastNonInterningProvider ();
 			loader.IncludeInternalMembers = true;
 			TreeView = new AssemblyBrowserTreeView (new NodeBuilder[] { 
 				new ErrorNodeBuilder (),
