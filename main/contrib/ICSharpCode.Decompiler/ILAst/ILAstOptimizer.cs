@@ -24,6 +24,7 @@ using ICSharpCode.Decompiler.FlowAnalysis;
 using ICSharpCode.NRefactory.Utils;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Mono.CSharp;
 
 namespace ICSharpCode.Decompiler.ILAst
 {

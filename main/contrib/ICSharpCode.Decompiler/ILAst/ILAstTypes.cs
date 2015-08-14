@@ -27,6 +27,7 @@ using ICSharpCode.Decompiler.Disassembler;
 using ICSharpCode.NRefactory.Utils;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Mono.CSharp;
 using Cecil = Mono.Cecil;
 
 namespace ICSharpCode.Decompiler.ILAst
