@@ -1976,6 +1976,10 @@ namespace Mono.TextEditor
 			return new SnapshotDocument (this);
 		}
 
+		public void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
+		{
+			buffer.CopyTo (sourceIndex, destination, destinationIndex, count); 
+		}
 		#endregion
 	}
 	

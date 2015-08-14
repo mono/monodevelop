@@ -781,6 +781,12 @@ namespace MonoDevelop.Ide.Editor
 			ReadOnlyTextDocument.WriteTextTo (writer, offset, length);
 		}
 
+		/// <inheritdoc/>
+		public void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
+		{
+			ReadOnlyTextDocument.CopyTo (sourceIndex, destination, destinationIndex, count); 
+		}
+
 		public void ScrollTo (int offset)
 		{
 			textEditorImpl.ScrollTo (offset);

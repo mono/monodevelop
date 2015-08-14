@@ -164,6 +164,22 @@ namespace MonoDevelop.Ide.Editor
 			var test = CreateTextSource (txt);
 			Assert.AreEqual (txt.Substring (1, txt.Length - 2), test.GetTextBetween (1, txt.Length - 1));
 		}
+
+		[Test]
+		public void TestCopyTo()
+		{
+			const string txt = "test";
+			var test = CreateTextSource (txt);
+			char[] dest_whole = new char[txt.Length];
+			test.CopyTo (0, dest_whole, 0, dest_whole.Length);
+			Assert.AreEqual (txt, new string(dest_whole));
+
+			char[] dest = new char[2];
+			for (int i = 0; i < txt.Length - dest.Length; i++) {
+				test.CopyTo (i, dest, 0, dest.Length);
+				Assert.AreEqual (txt.Substring (i, dest.Length), new string (dest));
+			}
+		}
 	}
 }
 

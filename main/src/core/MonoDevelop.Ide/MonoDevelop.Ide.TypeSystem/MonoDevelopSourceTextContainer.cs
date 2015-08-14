@@ -111,11 +111,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		#region implemented abstract members of SourceText
 		public override void CopyTo (int sourceIndex, char[] destination, int destinationIndex, int count)
 		{
-			while (count --> 0) {
-				destination[destinationIndex++] = doc.GetCharAt (sourceIndex++);
-			}
+			doc.CopyTo (sourceIndex, destination, destinationIndex, count);
 		}
-		
+
 		public override int Length {
 			get {
 				return doc.Length;

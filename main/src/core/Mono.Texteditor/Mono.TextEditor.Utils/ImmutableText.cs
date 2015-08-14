@@ -265,7 +265,7 @@ namespace Mono.TextEditor.Utils
 				throw new ArgumentOutOfRangeException (nameof (startIndex), startIndex, "0 <= startIndex <= " + Length.ToString (CultureInfo.InvariantCulture));
 			}
 			if (length < 0 || startIndex + length > Length) {
-				throw new ArgumentOutOfRangeException (nameof (length), length, "0 <= length, startIndex(" + startIndex + ")+length <= " + Length.ToString (CultureInfo.InvariantCulture));
+				throw new ArgumentOutOfRangeException (nameof (length), length, "0 <= length, startIndex(" + startIndex + ")+length(" + length + ") <= " + Length.ToString (CultureInfo.InvariantCulture));
 			}
 		}
 

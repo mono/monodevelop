@@ -408,6 +408,13 @@ namespace MonoDevelop.Ide.Editor.Util
 		{
 			return new StringTextSource (Text.Substring (offset, length));
 		}
+
+		/// <inheritdoc/>
+		public void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
+		{
+			textSource.CopyTo (sourceIndex, destination, destinationIndex, count); 
+		}
+
 		#endregion
 
 	}

@@ -173,6 +173,11 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			}
 		}
 
+		/// <inheritdoc/>
+		public void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
+		{
+			snapshot.CopyTo (sourceIndex, destination, destinationIndex, count); 
+		}
 		#endregion
 	}
 }

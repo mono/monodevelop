@@ -61,6 +61,9 @@ namespace Mono.TextEditor.Utils
 		{
 			if (immutableText == null)
 				return 0;
+			count = System.Math.Min (this.index + count, immutableText.Length) - this.index;
+			if (count <= 0)
+				return  0;
 			immutableText.CopyTo (this.index, buffer, index, count);
 			this.index += count;
 			return count;

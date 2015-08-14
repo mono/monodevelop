@@ -169,5 +169,11 @@ namespace MonoDevelop.Core.Text
 				throw new ArgumentNullException ("writer");
 			writer.Write (text.Substring (offset, length));
 		}
+
+		/// <inheritdoc/>
+		public void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
+		{
+			text.CopyTo (sourceIndex, destination, destinationIndex, count); 
+		}
 	}
 }

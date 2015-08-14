@@ -383,6 +383,13 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		{
 			return new ImmutableTextTextSource (document.GetImmutableText (offset, length), document.Encoding, document.UseBom);
 		}
+
+		/// <inheritdoc/>
+		public void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
+		{
+			document.CopyTo (sourceIndex, destination, destinationIndex, count); 
+		}
+
 		#endregion
 	}
 }

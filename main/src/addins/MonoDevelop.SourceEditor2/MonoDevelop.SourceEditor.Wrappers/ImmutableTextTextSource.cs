@@ -120,6 +120,12 @@ namespace MonoDevelop.SourceEditor.Wrappers
 				return immutableText.ToString ();
 			}
 		}
+
+		/// <inheritdoc/>
+		void ITextSource.CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
+		{
+			immutableText.CopyTo (sourceIndex, destination, destinationIndex, count); 
+		}
 		#endregion
 	}
 }

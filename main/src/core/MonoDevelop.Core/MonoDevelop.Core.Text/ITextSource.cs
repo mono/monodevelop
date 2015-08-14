@@ -114,6 +114,15 @@ namespace MonoDevelop.Core.Text
 		void WriteTextTo (TextWriter writer, int offset, int length);
 
 		/// <summary>
+		/// Copies text from the source index to a destination array at destinationIndex.
+		/// </summary>
+		/// <param name="sourceIndex">The start offset copied from.</param>
+		/// <param name="destination">The destination array copied to.</param>
+		/// <param name="destinationIndex">The destination index copied to.</param>
+		/// <param name="count">The number of characters to be copied.</param>
+		void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count);
+
+		/// <summary>
 		/// Creates an immutable snapshot of this text source.
 		/// Unlike all other methods in this interface, this method is thread-safe.
 		/// </summary>
