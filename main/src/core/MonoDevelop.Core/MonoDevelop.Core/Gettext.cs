@@ -43,6 +43,8 @@ namespace MonoDevelop.Core
 		[DllImport ("kernel32.dll", SetLastError = true)]
 		static extern int SetThreadUILanguage (int LangId);
 
+		const int LOCALE_CUSTOM_UNSPECIFIED = 4096;
+
 		static GettextCatalog ()
 		{
 			mainThread = Thread.CurrentThread;
@@ -59,7 +61,7 @@ namespace MonoDevelop.Core
 					if (ci.IsNeutralCulture) {
 						// We need a non-neutral culture
 						foreach (CultureInfo c in CultureInfo.GetCultures (CultureTypes.AllCultures & ~CultureTypes.NeutralCultures))
-							if (c.Parent != null && c.Parent.Name == ci.Name) {
+							if (c.Parent != null && c.Parent.Name == ci.Name && c.LCID != LOCALE_CUSTOM_UNSPECIFIED) {
 								ci = c;
 								break;
 							}
