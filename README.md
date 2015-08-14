@@ -43,6 +43,17 @@ If not, install the F# Language Binding via the AddIn manager.
 
 ### Build on Mac/Linux:
 
+Currently this repo is built against the `roslyn` branch of monodevelop and is actually referenced in the submodules via main/external/fsharbinding.  One of the easiest ways of building is to clone monodevelop and work in the submodule directly:
+
+```bash
+git clone git@github.com:mono/monodevelop -b roslyn --recursive
+cd monodevelop
+./configure --profile=mac
+make
+```
+
+To configure and compile the addin seperatly then the following commands can be executed from the addin directory (/main/external/fsharpbining if cloning as part of monodevelop)
+
 ```bash
 ./configure.sh 
 make 
