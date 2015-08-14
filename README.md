@@ -1,7 +1,5 @@
 # F# Language Support for MonoDevelop / Xamarin Studio
 
-[![Join the chat at https://gitter.im/fsharp/xamarin-monodevelop-fsharp-addin](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fsharp/xamarin-monodevelop-fsharp-addin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 This project contains advanced editing support for the F# addin in MonoDevelop and Xamarin Studio](monodevelop/README.md)
 
 ##Features
