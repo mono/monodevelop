@@ -339,7 +339,6 @@ namespace MonoDevelop.CSharp
 						AddTypeToMemberList (type);
 					}
 				}
-
 				memberList.Sort ((x, y) => {
 					var result = String.Compare (GetName (x), GetName (y), StringComparison.OrdinalIgnoreCase);
 					if (result == 0)
@@ -395,7 +394,6 @@ namespace MonoDevelop.CSharp
 						return sb.ToString ();
 					}
 				}
-				
 				var accessor = node as AccessorDeclarationSyntax;
 				if (accessor != null) {
 					if (accessor.Kind () == SyntaxKind.GetAccessorDeclaration)
@@ -410,9 +408,17 @@ namespace MonoDevelop.CSharp
 				}
 				if (node is OperatorDeclarationSyntax)
 					return "operator";
+				if (node is PropertyDeclarationSyntax)
+					return ((PropertyDeclarationSyntax)node).Identifier.ToString ();
+				if (node is MethodDeclarationSyntax)
+					return ((MethodDeclarationSyntax)node).Identifier.ToString ();
+				if (node is ConstructorDeclarationSyntax)
+					return ((ConstructorDeclarationSyntax)node).Identifier.ToString ();
+				if (node is DestructorDeclarationSyntax)
+					return ((DestructorDeclarationSyntax)node).Identifier.ToString ();
+				if (node is BaseTypeDeclarationSyntax)
+					return ((BaseTypeDeclarationSyntax)node).Identifier.ToString ();
 
-				if (node is MemberDeclarationSyntax)
-					return ((MemberDeclarationSyntax)node).ToString ();
 //				if (node is fixeds) {
 //					return ((FixedVariableInitializer)node).Name;
 //				}
