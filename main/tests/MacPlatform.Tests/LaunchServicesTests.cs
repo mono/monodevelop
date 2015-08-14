@@ -25,17 +25,26 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.MacInterop;
+using MonoDevelop.MacIntegration;
 using NUnit.Framework;
 
 namespace MacPlatform.Tests
 {
 	public class LaunchServicesTests
 	{
-		[Ignore ("The LaunchServices are not used anywhere in the code")]
+		MacPlatformService platformService;
+
+		public LaunchServicesTests ()
+		{
+			platformService = new MacPlatformService ();
+		}
+
+		[Ignore ("OpenApplication doesn't work")]
 		[Test]
 		public void TestLaunchProcess ()
 		{
-			LaunchServices.OpenApplication ("/Applications/Calculator.app");
+			int pid = LaunchServices.OpenApplication ("/Applications/Calculator.app");
+			Assert.Greater (-1, pid);
 		}
 	}
 }

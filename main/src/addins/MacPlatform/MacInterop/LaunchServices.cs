@@ -27,7 +27,10 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
+
+using MonoDevelop.Core;
 using Foundation;
+using AppKit;
 
 namespace MonoDevelop.MacInterop
 {
@@ -95,68 +98,29 @@ namespace MonoDevelop.MacInterop
 		[DllImport (APP_SERVICES)]
 		static extern OSStatus LSOpenApplication (ref LSApplicationParameters appParams, out ProcessSerialNumber psn);
 		
-		public static ProcessSerialNumber OpenApplication (string application)
+		public static int OpenApplication (string application)
 		{
 			return OpenApplication (new ApplicationStartInfo (application));
 		}
 
 		// This function can be replaced by NSWorkspace.LaunchApplication but it currently doesn't work
 		// https://bugzilla.xamarin.com/show_bug.cgi?id=32540
-		public static ProcessSerialNumber OpenApplication (ApplicationStartInfo application)
+		public static int OpenApplication (ApplicationStartInfo application)
 		{
 			if (application == null)
 				throw new ArgumentNullException ("application");
-			
+
 			if (string.IsNullOrEmpty (application.Application) || !System.IO.Directory.Exists (application.Application))
 				throw new ArgumentException ("Application is not valid");
-			
-			var appParams = new LSApplicationParameters ();
-			if (application.NewInstance)
-				appParams.flags |= LSLaunchFlags.NewInstance;
-			if (application.Async)
-				appParams.flags |= LSLaunchFlags.Async;
-			
-			NSArray argv = null;
-			if (application.Args != null && application.Args.Length > 0) {
-				var args = application.Args;
-				NSObject[] arr = new NSObject[args.Length];
-				for (int i = 0; i < args.Length; i++)
-					arr[i] = new NSString (args[i]);
-				argv = NSArray.FromNSObjects (arr);
-				appParams.argv = argv.Handle;
-			}
-			
-			NSDictionary dict = null;
-			if (application.Environment.Count > 0) {
-				dict = new NSMutableDictionary ();
-				foreach (var kvp in application.Environment)
-					dict.SetValueForKey (new NSString (kvp.Value), new NSString (kvp.Key));
-				appParams.environment = dict.Handle;
-			}
-			
-			var cfUrl = global::CoreFoundation.CFUrl.FromFile (application.Application);
-			ProcessSerialNumber psn;
-			
-			try {
-				appParams.application = Marshal.AllocHGlobal (Marshal.SizeOf (typeof (FSRef)));
-			
-				if (!CoreFoundation.CFURLGetFSRef (cfUrl.Handle, appParams.application))
-					throw new Exception ("Could not create FSRef from CFUrl");
-				
-				var status = LSOpenApplication (ref appParams, out psn);
-				if (status != OSStatus.Ok)
-					throw new LaunchServicesException ((int)status);
-			} finally {
-				if (appParams.application != IntPtr.Zero)
-					Marshal.FreeHGlobal (appParams.application);
-				appParams.application = IntPtr.Zero;
-				if (dict != null)
-					dict.Dispose (); //also ensures the NSDictionary is kept alive for the params
-				if (argv != null)
-					argv.Dispose (); //also ensures the NSArray is kept alive for the params
-			}
-			
-			return psn;
+
+			LoggingService.LogError ("OpenApplication will not work until BXC #32540 is fixed");
+			/*
+			NSUrl appUrl = NSUrl.FromFilename (application.Application);
+			NSRunningApplication app = NSWorkspace.SharedWorkspace.LaunchApplication (appUrl, 0, new NSDictionary (), null);
+
+			return app.ProcessIdentifier;
+			*/
+			return -1;
 		}
 		
 		struct LSApplicationParameters
