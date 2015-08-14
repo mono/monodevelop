@@ -1001,7 +1001,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 			NextLineIndent.PopWhile(IndentType.Continuation);
 			
 
-			if (Engine.options.GetOption(CSharpFormattingOptions.IndentSwitchCaseSection))
+			if (Engine.options.GetOption(CSharpFormattingOptions.IndentSwitchSection))
 			{
 				NextLineIndent.Push(IndentType.Block);
 			}
