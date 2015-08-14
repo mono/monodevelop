@@ -64,7 +64,6 @@ For reference on Mac the locally installed addin is at the following location:  
 ### Build on Windows (builds and installs the Debug version into Xamarin Studio - adjust as needed)
 
 ```dos
-cd monodevelop
 configure.bat
 build-and-install-debug.bat
 ```
