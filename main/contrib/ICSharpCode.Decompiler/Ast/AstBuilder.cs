@@ -176,14 +176,19 @@ namespace ICSharpCode.Decompiler.Ast
 				RunTransformations();
 			
 			syntaxTree.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = true });
-			var outputFormatter = new TextTokenWriter(output) { FoldBraces = context.Settings.FoldBraces };
+			var outputFormatter = new TextTokenWriter(output, context) { FoldBraces = context.Settings.FoldBraces };
 			var formattingPolicy = context.Settings.CSharpFormattingOptions;
 			syntaxTree.AcceptVisitor(new CSharpOutputVisitor(outputFormatter, formattingPolicy));
 		}
 		
 		public void AddAssembly(AssemblyDefinition assemblyDefinition, bool onlyAssemblyLevel = false)
 		{
-			if (assemblyDefinition.Name.Version != null) {
+			AddAssembly(assemblyDefinition.MainModule, onlyAssemblyLevel);
+		}
+		
+		public void AddAssembly(ModuleDefinition moduleDefinition, bool onlyAssemblyLevel = false)
+		{
+			if (moduleDefinition.Assembly != null && moduleDefinition.Assembly.Name.Version != null) {
 				syntaxTree.AddChild(
 					new AttributeSection {
 						AttributeTarget = "assembly",
@@ -192,22 +197,24 @@ namespace ICSharpCode.Decompiler.Ast
 								Type = new SimpleType("AssemblyVersion")
 									.WithAnnotation(new TypeReference(
 										"System.Reflection", "AssemblyVersionAttribute",
-										assemblyDefinition.MainModule, assemblyDefinition.MainModule.TypeSystem.Corlib)),
+										moduleDefinition, moduleDefinition.TypeSystem.Corlib)),
 								Arguments = {
-									new PrimitiveExpression(assemblyDefinition.Name.Version.ToString())
+									new PrimitiveExpression(moduleDefinition.Assembly.Name.Version.ToString())
 								}
 							}
 						}
 					}, EntityDeclaration.AttributeRole);
 			}
 			
-			ConvertCustomAttributes(syntaxTree, assemblyDefinition, "assembly");
-			ConvertSecurityAttributes(syntaxTree, assemblyDefinition, "assembly");
-			ConvertCustomAttributes(syntaxTree, assemblyDefinition.MainModule, "module");
-			AddTypeForwarderAttributes(syntaxTree, assemblyDefinition.MainModule, "assembly");
+			if (moduleDefinition.Assembly != null) {
+				ConvertCustomAttributes(syntaxTree, moduleDefinition.Assembly, "assembly");
+				ConvertSecurityAttributes(syntaxTree, moduleDefinition.Assembly, "assembly");
+			}
+			ConvertCustomAttributes(syntaxTree, moduleDefinition, "module");
+			AddTypeForwarderAttributes(syntaxTree, moduleDefinition, "assembly");
 			
 			if (!onlyAssemblyLevel) {
-				foreach (TypeDefinition typeDef in assemblyDefinition.MainModule.Types) {
+				foreach (TypeDefinition typeDef in moduleDefinition.Types) {
 					// Skip the <Module> class
 					if (typeDef.Name == "<Module>") continue;
 					// Skip any hidden types
@@ -330,19 +337,22 @@ namespace ICSharpCode.Decompiler.Ast
 			if (typeDef.IsEnum) {
 				long expectedEnumMemberValue = 0;
 				bool forcePrintingInitializers = IsFlagsEnum(typeDef);
+				TypeCode baseType = TypeCode.Int32;
 				foreach (FieldDefinition field in typeDef.Fields) {
 					if (!field.IsStatic) {
 						// the value__ field
 						if (field.FieldType != typeDef.Module.TypeSystem.Int32) {
 							astType.AddChild(ConvertType(field.FieldType), Roles.BaseType);
+							baseType = TypeAnalysis.GetTypeCode(field.FieldType);
 						}
 					} else {
 						EnumMemberDeclaration enumMember = new EnumMemberDeclaration();
+						ConvertCustomAttributes(enumMember, field);
 						enumMember.AddAnnotation(field);
 						enumMember.Name = CleanName(field.Name);
 						long memberValue = (long)CSharpPrimitiveCast.Cast(TypeCode.Int64, field.Constant, false);
 						if (forcePrintingInitializers || memberValue != expectedEnumMemberValue) {
-							enumMember.AddChild(new PrimitiveExpression(field.Constant), EnumMemberDeclaration.InitializerRole);
+							enumMember.AddChild(new PrimitiveExpression(CSharpPrimitiveCast.Cast(baseType, field.Constant, false)), EnumMemberDeclaration.InitializerRole);
 						}
 						expectedEnumMemberValue = memberValue + 1;
 						astType.AddChild(enumMember, Roles.TypeMemberRole);
