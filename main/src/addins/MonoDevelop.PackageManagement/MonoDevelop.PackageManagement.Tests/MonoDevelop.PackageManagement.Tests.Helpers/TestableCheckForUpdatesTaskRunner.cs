@@ -25,35 +25,31 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Ide;
-using MonoDevelop.PackageManagement.Tests.Helpers;
 
-namespace MonoDevelop.PackageManagement.Tests
+namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
 	public class TestableCheckForUpdatesTaskRunner : CheckForUpdatesTaskRunner
 	{
-		public TestableCheckForUpdatesTaskRunner (
-			ITaskFactory taskFactory,
-			IPackageManagementProgressMonitorFactory progressMonitorFactory,
-			IPackageManagementEvents packageManagementEvents)
-			: base (taskFactory, progressMonitorFactory, packageManagementEvents)
+		public List<string> LoggedErrorMessages = new List<string> ();
+		public List<Exception> LoggedExceptions = new List<Exception> ();
+
+		public TestableCheckForUpdatesTaskRunner (ITaskFactory taskFactory)
+			: base (taskFactory)
 		{
 		}
-
-		protected override CheckForUpdatesProgressMonitor CreateProgressMonitor (
-			IPackageManagementProgressMonitorFactory progressMonitorFactory,
-			IPackageManagementEvents packageManagementEvents)
-		{
-			ProgressMonitorCreated = new TestableCheckForUpdatesProgressMonitor (progressMonitorFactory, packageManagementEvents);
-			return ProgressMonitorCreated;
-		}
-
-		public TestableCheckForUpdatesProgressMonitor ProgressMonitorCreated { get; set; }
 
 		protected override void GuiBackgroundDispatch (MessageHandler handler)
 		{
 			handler.Invoke ();
+		}
+
+		protected override void LogError (string message, Exception ex)
+		{
+			LoggedErrorMessages.Add (message);
+			LoggedExceptions.Add (ex);
 		}
 	}
 }
