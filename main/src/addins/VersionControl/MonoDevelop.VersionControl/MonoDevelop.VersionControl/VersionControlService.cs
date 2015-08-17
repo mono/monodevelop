@@ -210,26 +210,26 @@ namespace MonoDevelop.VersionControl
 			
 			return repo;
 		}
-		
+
 		public static Repository GetRepositoryReference (string path, string id)
 		{
 			VersionControlSystem detectedVCS = null;
-			FilePath shortestPath = FilePath.Null;
+			FilePath bestMatch = FilePath.Null;
 
 			foreach (VersionControlSystem vcs in GetVersionControlSystems ()) {
 				var newPath = vcs.GetRepositoryPath (path, id);
 				if (!newPath.IsNullOrEmpty) {
-					if (string.IsNullOrEmpty (shortestPath)) {
-						shortestPath = newPath;
+					// Check whether we have no match or if a new match is found with a longer path.
+					if (bestMatch.IsNullOrEmpty) {
+						bestMatch = newPath;
 						detectedVCS = vcs;
-					} else if (shortestPath.CompareTo (newPath) <= 0) {
-						// They are guaranteed to be on the same path segments, so choose by path length.
-						shortestPath = newPath;
+					} else if (bestMatch.CompareTo (newPath) <= 0) {
+						bestMatch = newPath;
 						detectedVCS = vcs;
 					}
 				}
 			}
-			return detectedVCS == null ? null : detectedVCS.GetRepositoryReference (shortestPath, id);
+			return detectedVCS == null ? null : detectedVCS.GetRepositoryReference (bestMatch, id);
 
 		}
 		
