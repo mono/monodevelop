@@ -55,6 +55,10 @@ namespace MonoDevelop.Ide.CodeFormatting
 			Document doc;
 			var formatter = GetFormatter (out doc);
 			info.Enabled = formatter != null && formatter.SupportsOnTheFlyFormatting;
+
+			if (formatter != null && formatter.SupportsPartialDocumentFormatting && doc.Editor.IsSomethingSelected) {
+				info.Text = GettextCatalog.GetString ("_Format Selection");
+			}
 		}
 		
 		protected override void Run (object tool)
