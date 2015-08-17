@@ -46,6 +46,8 @@ namespace MonoDevelop.VersionControl.Git
 		public bool AgentUsed { get; set; }
 		public int KeyUsed { get; set; }
 		public bool NativePasswordUsed { get; set; }
+		public Dictionary<string, int> KeyForUrl = new Dictionary<string, int> ();
+		public Dictionary<string, bool> AgentForUrl = new Dictionary<string, bool> ();
 
 		public GitCredentialsState ()
 		{
@@ -57,8 +59,6 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		// Gather keys on initialize.
 		static readonly List<string> Keys = new List<string> ();
-		static readonly Dictionary<string, int> KeyForUrl = new Dictionary<string, int> ();
-		static readonly Dictionary<string, bool> AgentForUrl = new Dictionary<string, bool> ();
 
 		static Dictionary<GitCredentialsType, GitCredentialsState> credState = new Dictionary<GitCredentialsType, GitCredentialsState> ();
 
@@ -107,8 +107,8 @@ namespace MonoDevelop.VersionControl.Git
 				// Try ssh-agent on Linux.
 				if (!Platform.IsWindows && !state.AgentUsed) {
 					bool agentUsable;
-					if (!AgentForUrl.TryGetValue (url, out agentUsable))
-						AgentForUrl [url] = agentUsable = true;
+					if (!state.AgentForUrl.TryGetValue (url, out agentUsable))
+						state.AgentForUrl [url] = agentUsable = true;
 
 					if (agentUsable) {
 						state.AgentUsed = true;
@@ -119,7 +119,7 @@ namespace MonoDevelop.VersionControl.Git
 				}
 
 				int key;
-				if (!KeyForUrl.TryGetValue (url, out key)) {
+				if (!state.KeyForUrl.TryGetValue (url, out key)) {
 					if (state.KeyUsed + 1 < Keys.Count)
 						state.KeyUsed++;
 					else {
@@ -221,10 +221,11 @@ namespace MonoDevelop.VersionControl.Git
 
 			var url = state.UrlUsed;
 			var key = state.KeyUsed;
+
 			state.NativePasswordUsed = false;
 
 			if (!string.IsNullOrEmpty (url) && key != -1)
-				KeyForUrl [url] = key;
+				state.KeyForUrl [url] = key;
 
 			Cleanup (state);
 		}
@@ -235,8 +236,8 @@ namespace MonoDevelop.VersionControl.Git
 			if (!credState.TryGetValue (type, out state))
 				return;
 
-			if (!string.IsNullOrEmpty (state.UrlUsed) && AgentForUrl.ContainsKey (state.UrlUsed))
-				AgentForUrl [state.UrlUsed] &= !state.AgentUsed;
+			if (!string.IsNullOrEmpty (state.UrlUsed) && state.AgentForUrl.ContainsKey (state.UrlUsed))
+				state.AgentForUrl [state.UrlUsed] &= !state.AgentUsed;
 
 			Cleanup (state);
 		}
