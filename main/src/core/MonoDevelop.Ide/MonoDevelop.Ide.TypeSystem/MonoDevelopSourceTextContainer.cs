@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			public override LinePosition GetLinePosition (int position)
 			{
 				var loc = textDoc.OffsetToLocation (position);
-				return new LinePosition (loc.Line, loc.Column - 1);
+				return new LinePosition (loc.Line - 1, loc.Column - 1);
 			}
 
 			public override int IndexOf (int position)
