@@ -261,12 +261,6 @@
     <EmbeddedResource Include="icons\lightning-16%402x.png">
       <LogicalName>lightning-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\exception-48.png">
-      <LogicalName>exception-48.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\exception-48%402x.png">
-      <LogicalName>exception-48@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\gutter-breakpoint-15.png">
       <LogicalName>gutter-breakpoint-15.png</LogicalName>
     </EmbeddedResource>
@@ -320,6 +314,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\stack-pointer-16%402x.png">
       <LogicalName>stack-pointer-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\toolbar-icon.png">
+      <LogicalName>toolbar-icon.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\toolbar-icon%402x.png">
+      <LogicalName>toolbar-icon@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' != 'DebugMac' AND '$(Configuration)' != 'ReleaseMac' ">
