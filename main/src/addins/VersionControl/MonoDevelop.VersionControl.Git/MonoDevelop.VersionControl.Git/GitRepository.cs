@@ -615,13 +615,13 @@ namespace MonoDevelop.VersionControl.Git
 						GitCredentials.StoreCredentials (credType);
 						retry = false;
 					} catch (LibGit2SharpException e) {
+						GitCredentials.InvalidateCredentials (credType);
+
 						if (!tfsSession.Disposed) {
 							retry = true;
 							tfsSession.Dispose ();
 							continue;
 						}
-
-						GitCredentials.InvalidateCredentials (credType);
 
 						string message;
 						// TODO: Remove me once https://github.com/libgit2/libgit2/pull/3137 goes in.
