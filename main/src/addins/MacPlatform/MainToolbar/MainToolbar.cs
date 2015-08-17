@@ -213,6 +213,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (bar.Window == null)
 					return;
 
+				// We're getting notified about all windows in the application (for example, NSPopovers) that change size when really we only care about
+				// the window the bar is in.
+				if (notif.Object != bar.Window)
+					return;
+
 				double maxSize = Math.Round (bar.Window.Frame.Width * 0.30f);
 				double minSize = Math.Round (bar.Window.Frame.Width * 0.25f);
 				item.MinSize = new CGSize ((nfloat)Math.Max (280, minSize), 22);
