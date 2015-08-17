@@ -70,6 +70,8 @@ namespace MonoDevelop.VersionControl.Git
 
 		public override void Dispose ()
 		{
+			base.Dispose ();
+
 			if (VersionControlSystem != null)
 				((GitVersionControl)VersionControlSystem).UnregisterRepo (this);
 
@@ -77,7 +79,6 @@ namespace MonoDevelop.VersionControl.Git
 				RootRepository.Dispose ();
 			foreach (var rep in cachedSubmodules)
 				rep.Item2.Dispose ();
-			base.Dispose ();
 		}
 
 		public override string[] SupportedProtocols {
