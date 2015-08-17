@@ -179,9 +179,6 @@
 			defaultHandler = "MonoDevelop.Ide.CodeFormatting.FormatBufferHandler"
 			_label = "_Format Document"
 			macShortcut = "Control|I" />
-	<Command id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatSelection"
-			defaultHandler = "MonoDevelop.Ide.CodeFormatting.FormatSelectionHandler"
-			_label = "_Format Selection" />
 	</Category>
 
 	<!-- ProjectCommands -->

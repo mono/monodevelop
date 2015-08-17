@@ -71,7 +71,6 @@
 		
 		<ItemSet id = "Format" _label = "_Format">
 			<CommandItem id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer" />
-			<CommandItem id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatSelection" />
 			<SeparatorItem id ="FormatSeparator" /> 
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" />
