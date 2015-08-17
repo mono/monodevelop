@@ -220,6 +220,8 @@ namespace MonoDevelop.VersionControl
 				var newPath = vcs.GetRepositoryPath (path, id);
 				if (!newPath.IsNullOrEmpty) {
 					// Check whether we have no match or if a new match is found with a longer path.
+					// TODO: If the repo root is not the same as the repo reference, ask user for input.
+					// TODO: If we have two version control directories in the same place, ask user for input.
 					if (bestMatch.IsNullOrEmpty) {
 						bestMatch = newPath;
 						detectedVCS = vcs;
