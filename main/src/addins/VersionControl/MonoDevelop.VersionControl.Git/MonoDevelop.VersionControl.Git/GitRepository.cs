@@ -71,6 +71,8 @@ namespace MonoDevelop.VersionControl.Git
 
 		public override void Dispose ()
 		{
+			base.Dispose ();
+
 			if (VersionControlSystem != null)
 				((GitVersionControl)VersionControlSystem).UnregisterRepo (this);
 
@@ -78,7 +80,6 @@ namespace MonoDevelop.VersionControl.Git
 				RootRepository.Dispose ();
 			foreach (var rep in cachedSubmodules)
 				rep.Item2.Dispose ();
-			base.Dispose ();
 		}
 
 		public override string[] SupportedProtocols {
@@ -320,9 +321,8 @@ namespace MonoDevelop.VersionControl.Git
 			IEnumerable<Commit> commits = repository.Commits;
 			if (localFile.CanonicalPath != RootPath.CanonicalPath.ResolveLinks ()) {
 				var localPath = repository.ToGitPath (localFile);
-				commits = commits.Where (c => c.Parents.Count () == 1 && c.Tree [localPath] != null &&
-					(c.Parents.FirstOrDefault ().Tree [localPath] == null ||
-					c.Tree [localPath].Target.Id != c.Parents.FirstOrDefault ().Tree [localPath].Target.Id));
+				commits = commits.Where (c => c.Tree [localPath] != null && !c.Parents.Any () ||
+					(c.Parents.Count () == 1 && (c.Parents.First ().Tree [localPath] == null || c.Tree [localPath].Target.Id != c.Parents.First ().Tree [localPath].Target.Id)));
 			}
 
 			foreach (var commit in commits.TakeWhile (c => c != sinceRev)) {
@@ -560,18 +560,16 @@ namespace MonoDevelop.VersionControl.Git
 
 			RootRepository.Branches.Update (RootRepository.Branches ["master"], branch => branch.TrackedBranch = "refs/remotes/origin/master");
 
-			RetryUntilSuccess (monitor, delegate {
-				RootRepository.Network.Push (RootRepository.Head, new PushOptions {
-					OnPushStatusError = delegate (PushStatusError e) {
-						RootRepository.Dispose ();
-						RootRepository = null;
-						if (RootPath.Combine (".git").IsDirectory)
-							Directory.Delete (RootPath.Combine (".git"), true);
-						throw new VersionControlException (e.Message);
-					},
-					CredentialsProvider = GitCredentials.TryGet
-				});
-			});
+			RetryUntilSuccess (monitor, credType => RootRepository.Network.Push (RootRepository.Head, new PushOptions {
+				OnPushStatusError = delegate (PushStatusError e) {
+					RootRepository.Dispose ();
+					RootRepository = null;
+					if (RootPath.Combine (".git").IsDirectory)
+						Directory.Delete (RootPath.Combine (".git"), true);
+					throw new VersionControlException (e.Message);
+				},
+				CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType)
+			}));
 
 			return this;
 		}
@@ -596,34 +594,35 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.EndTask ();
 		}
 
-		static void RetryUntilSuccess (ProgressMonitor monitor, Action func)
+		static void RetryUntilSuccess (IProgressMonitor monitor, Action<GitCredentialsType> func)
 		{
 			bool retry;
 			using (var tfsSession = new TfsSmartSession ()) {
 				do {
+					var credType = tfsSession.Disposed ? GitCredentialsType.Normal : GitCredentialsType.Tfs;
 					try {
-						func ();
-						GitCredentials.StoreCredentials ();
+						func (credType);
+						GitCredentials.StoreCredentials (credType);
 						retry = false;
 					} catch (AuthenticationException) {
-						GitCredentials.InvalidateCredentials ();
+						GitCredentials.InvalidateCredentials (credType);
 						retry = true;
 					} catch (VersionControlException e) {
-						GitCredentials.InvalidateCredentials ();
+						GitCredentials.InvalidateCredentials (credType);
 						if (monitor != null)
 							monitor.ReportError (e.Message, null);
 						retry = false;
 					} catch (UserCancelledException) {
-						GitCredentials.StoreCredentials ();
+						GitCredentials.StoreCredentials (credType);
 						retry = false;
 					} catch (LibGit2SharpException e) {
+						GitCredentials.InvalidateCredentials (credType);
+
 						if (!tfsSession.Disposed) {
 							retry = true;
 							tfsSession.Dispose ();
 							continue;
 						}
-
-						GitCredentials.InvalidateCredentials ();
 
 						string message;
 						// TODO: Remove me once https://github.com/libgit2/libgit2/pull/3137 goes in.
@@ -646,12 +645,10 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Fetching from '{0}'", remote));
 			int progress = 0;
-			RetryUntilSuccess (monitor, delegate {
-				RootRepository.Fetch (remote, new FetchOptions {
-					CredentialsProvider = GitCredentials.TryGet,
-					OnTransferProgress = (tp) => OnTransferProgress (tp, monitor, ref progress),
-				});
-			});
+			RetryUntilSuccess (monitor, credType => RootRepository.Fetch (remote, new FetchOptions {
+				CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType),
+				OnTransferProgress = tp => OnTransferProgress (tp, monitor, ref progress),
+			}));
 			monitor.Step (1);
 		}
 
@@ -886,9 +883,9 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			int transferProgress = 0;
 			int checkoutProgress = 0;
-			RetryUntilSuccess (monitor, delegate {
+			RetryUntilSuccess (monitor, credType => {
 				RootPath = LibGit2Sharp.Repository.Clone (Url, targetLocalPath, new CloneOptions {
-					CredentialsProvider = GitCredentials.TryGet,
+					CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType),
 
 					OnTransferProgress = (tp) => OnTransferProgress (tp, monitor, ref transferProgress),
 					OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref checkoutProgress),
@@ -1104,10 +1101,10 @@ namespace MonoDevelop.VersionControl.Git
 				RootRepository.Branches.Update (branch, b => b.TrackedBranch = "refs/remotes/" + remote + "/" + remoteBranch);
 			}
 
-			RetryUntilSuccess (monitor, () =>
+			RetryUntilSuccess (monitor, credType =>
 				RootRepository.Network.Push (RootRepository.Network.Remotes [remote], "refs/heads/" + remoteBranch, new PushOptions {
 					OnPushStatusError = pushStatusErrors => success = false,
-					CredentialsProvider = GitCredentials.TryGet
+					CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType)
 				})
 			);
 
@@ -1226,11 +1223,9 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void PushTag (string name)
 		{
-			RetryUntilSuccess (null, delegate {
-				RootRepository.Network.Push (RootRepository.Network.Remotes [GetCurrentRemote ()], "refs/tags/" + name + ":refs/tags/" + name, new PushOptions {
-					CredentialsProvider = GitCredentials.TryGet,
-				});
-			});
+			RetryUntilSuccess (null, credType => RootRepository.Network.Push (RootRepository.Network.Remotes [GetCurrentRemote ()], "refs/tags/" + name + ":refs/tags/" + name, new PushOptions {
+				CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType),
+			}));
 		}
 
 		public IEnumerable<string> GetRemoteBranches (string remoteName)

@@ -38,8 +38,8 @@ namespace UserInterfaceTests
 	{
 		string currentWorkingDirectory;
 		string testResultFolder;
-		string memoryUsageFolder;
 		string currentTestResultFolder;
+		string currentTestResultScreenshotFolder;
 
 		int testScreenshotIndex;
 
@@ -63,18 +63,14 @@ namespace UserInterfaceTests
 		public virtual void FixtureSetup ()
 		{
 			testResultFolder = Path.Combine (currentWorkingDirectory, "TestResults");
-			memoryUsageFolder = Path.Combine (testResultFolder, "MemoryUsage");
-			if (!Directory.Exists (memoryUsageFolder))
-				Directory.CreateDirectory (memoryUsageFolder);
 		}
 
 		[SetUp]
 		public virtual void SetUp ()
 		{
-			SetupTestResultFolder (TestContext.CurrentContext.Test.FullName);
-			var currentXSIdeLog = Path.Combine (currentTestResultFolder,string.Format ("{0}.Ide.log", TestContext.CurrentContext.Test.FullName) );
-			Environment.SetEnvironmentVariable ("MONODEVELOP_LOG_FILE", currentXSIdeLog);
-			Environment.SetEnvironmentVariable ("MONODEVELOP_FILE_LOG_LEVEL", "UpToInfo");
+			SetupTestResultFolder ();
+			SetupScreenshotsFolder ();
+			SetupIdeLogFolder ();
 
 			var mdProfile = Util.CreateTmpDir ();
 			TestService.StartSession (MonoDevelopBinPath, mdProfile);
@@ -91,7 +87,7 @@ namespace UserInterfaceTests
 				TakeScreenShot (string.Format("{0}-Test-Failed", TestContext.CurrentContext.Test.Name));
 			}
 
-			File.WriteAllText (Path.Combine (memoryUsageFolder, TestContext.CurrentContext.Test.FullName),
+			File.WriteAllText (Path.Combine (currentTestResultFolder, "MemoryUsage.json"),
 			                   JsonConvert.SerializeObject (Session.MemoryStats, Formatting.Indented));
 
 			Ide.CloseAll ();
@@ -99,24 +95,39 @@ namespace UserInterfaceTests
 
 			OnCleanUp ();
 			if (testStatus == TestStatus.Passed) {
-				if (Directory.Exists (currentTestResultFolder))
-					Directory.Delete (currentTestResultFolder, true);
+				if (Directory.Exists (currentTestResultScreenshotFolder))
+					Directory.Delete (currentTestResultScreenshotFolder, true);
 			}
 		}
 
-		void SetupTestResultFolder (string testName)
+		void SetupTestResultFolder ()
 		{
-			testScreenshotIndex = 1;
-			currentTestResultFolder = Path.Combine (testResultFolder, testName);
+			currentTestResultFolder = Path.Combine (testResultFolder, TestContext.CurrentContext.Test.FullName);
 			if (Directory.Exists (currentTestResultFolder))
 				Directory.Delete (currentTestResultFolder, true);
 			Directory.CreateDirectory (currentTestResultFolder);
 		}
 
+		void SetupScreenshotsFolder ()
+		{
+			testScreenshotIndex = 1;
+			currentTestResultScreenshotFolder = Path.Combine (currentTestResultFolder, "Screenshots");
+			if (Directory.Exists (currentTestResultScreenshotFolder))
+				Directory.Delete (currentTestResultScreenshotFolder, true);
+			Directory.CreateDirectory (currentTestResultScreenshotFolder);
+		}
+
+		void SetupIdeLogFolder ()
+		{
+			var currentXSIdeLog = Path.Combine (currentTestResultFolder, string.Format ("{0}.Ide.log", TestContext.CurrentContext.Test.FullName));
+			Environment.SetEnvironmentVariable ("MONODEVELOP_LOG_FILE", currentXSIdeLog);
+			Environment.SetEnvironmentVariable ("MONODEVELOP_FILE_LOG_LEVEL", "UpToInfo");
+		}
+
 		protected void TakeScreenShot (string stepName)
 		{
 			stepName = string.Format ("{0:D3}-{1}", testScreenshotIndex++, stepName);
-			var screenshotPath = Path.Combine (currentTestResultFolder, stepName) + ".png";
+			var screenshotPath = Path.Combine (currentTestResultScreenshotFolder, stepName) + ".png";
 			Session.TakeScreenshot (screenshotPath);
 		}
 
