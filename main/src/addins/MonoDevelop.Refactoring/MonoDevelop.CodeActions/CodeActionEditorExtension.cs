@@ -498,8 +498,6 @@ namespace MonoDevelop.CodeActions
 
 		void PopulateFixes (FixMenuDescriptor menu, ref int items)
 		{
-			if (!RefactoringService.ShowFixes)
-				return;
 			int mnemonic = 1;
 			bool gotImportantFix = false, addedSeparator = false;
 			foreach (var fix_ in GetCurrentFixes ().CodeFixActions.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix (i.CodeAction), (int)0, GetUsage (i.CodeAction.EquivalenceKey)))) {

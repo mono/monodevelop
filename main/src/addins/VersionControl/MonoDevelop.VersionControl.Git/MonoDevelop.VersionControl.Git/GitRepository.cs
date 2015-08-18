@@ -594,7 +594,7 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.EndTask ();
 		}
 
-		static void RetryUntilSuccess (IProgressMonitor monitor, Action<GitCredentialsType> func)
+		static void RetryUntilSuccess (ProgressMonitor monitor, Action<GitCredentialsType> func)
 		{
 			bool retry;
 			using (var tfsSession = new TfsSmartSession ()) {

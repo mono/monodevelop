@@ -117,8 +117,6 @@ namespace MonoDevelop.AnalysisCore
 				((System.Action)dataItem) ();
 				return;
 			}
-			if (!RefactoringService.CheckUserSettings ())
-				return;
 			var action = dataItem as IAnalysisFixAction;
 			if (action != null) {
 				action.Fix (); 
