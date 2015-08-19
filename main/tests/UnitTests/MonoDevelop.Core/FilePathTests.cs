@@ -171,6 +171,16 @@ namespace MonoDevelop.Core
 			Assert.AreNotSame (FilePath.GetInvalidPathChars (), FilePath.GetInvalidPathChars ());
 		}
 
+		[Test]
+		public void TestResolveLinks ()
+		{
+			// TODO: Check that it resolves links, but for 64bitness we just need to check it runs ok
+			string pathname = "asdf.txt";
+			FilePath path = new FilePath (pathname);
+			path.ResolveLinks ();
+
+			Assert.AreEqual (pathname, (string)path);
+		}
 		// TODO: more tests
 	}
 }
