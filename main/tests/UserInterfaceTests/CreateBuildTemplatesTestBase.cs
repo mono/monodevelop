@@ -198,16 +198,16 @@ namespace UserInterfaceTests
 
 		protected void IsTemplateSelected (TemplateSelectionOptions templateOptions, string addToExistingSolution = null)
 		{
-			var newProject = new NewProjectController ();
-			try {
-				newProject.WaitForOpen ();
-			} catch (TimeoutException) {
-				if (!string.IsNullOrEmpty (addToExistingSolution))
-					newProject.Open (addToExistingSolution);
-				else
-					newProject.Open ();
-			}
-			newProject.IsSelected (templateOptions);
+//			var newProject = new NewProjectController ();
+//			try {
+//				newProject.WaitForOpen ();
+//			} catch (TimeoutException) {
+//				if (!string.IsNullOrEmpty (addToExistingSolution))
+//					newProject.Open (addToExistingSolution);
+//				else
+//					newProject.Open ();
+//			}
+//			newProject.IsSelected (templateOptions);
 		}
 	}
 }
