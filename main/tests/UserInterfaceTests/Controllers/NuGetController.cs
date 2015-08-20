@@ -70,7 +70,15 @@ namespace UserInterfaceTests
 			var nuget = new NuGetController (takeScreenshot, isUpdate);
 			nuget.Open ();
 			nuget.EnterSearchText (packageOptions.PackageName, packageOptions.Version, packageOptions.IsPreRelease);
-			nuget.SelectResultByPackageName (packageOptions.PackageName, packageOptions.Version);
+			for (int i = 0; i < packageOptions.RetryCount; i++) {
+				try {
+					nuget.SelectResultByPackageName (packageOptions.PackageName, packageOptions.Version);
+					break;
+				} catch (NuGetException) {
+					if (i == packageOptions.RetryCount - 1)
+						throw;
+				}
+			}
 			nuget.ClickAdd ();
 			Session.WaitForNoElement (nugetWindow);
 			takeScreenshot ("NuGet-Update-Is-"+isUpdate);
@@ -134,7 +142,7 @@ namespace UserInterfaceTests
 					return;
 			}
 			takeScreenshot ("Package-Failed-To-Be-Found");
-			Assert.Fail ("No package '{0}' with version: '{1}' found", packageName, version);
+			throw new NuGetException (string.Format ("No package '{0}' with version: '{1}' found", packageName, version));
 		}
 
 		public void ClickAdd ()

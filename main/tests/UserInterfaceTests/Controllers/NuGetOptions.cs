@@ -30,11 +30,18 @@ namespace UserInterfaceTests
 {
 	public class NuGetPackageOptions
 	{
+		public NuGetPackageOptions ()
+		{
+			RetryCount = 3;
+		}
+
 		public string PackageName { get; set;}
 
 		public string Version { get; set;}
 
 		public bool IsPreRelease { get; set;}
+
+		public int RetryCount { get; set;}
 	}
 
 	public enum NuGetOperations
