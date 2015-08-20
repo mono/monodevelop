@@ -1,7 +1,5 @@
 # F# Language Support for MonoDevelop / Xamarin Studio
 
-[![Join the chat at https://gitter.im/fsharp/xamarin-monodevelop-fsharp-addin](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fsharp/xamarin-monodevelop-fsharp-addin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 This project contains advanced editing support for the F# addin in MonoDevelop and Xamarin Studio](monodevelop/README.md)
 
 ##Features
@@ -43,22 +41,26 @@ If not, install the F# Language Binding via the AddIn manager.
 
 ### Building and installing from scratch
 
-Normally you should get the binding from the repository. If you want to build and install it yourself and develop it, try this:
-
 ### Build on Mac/Linux:
 
-First get nuget.exe and install the required nuget packages:
-
-Now make:
+Currently this repo is built against the `roslyn` branch of monodevelop and is actually referenced in the submodules via main/external/fsharbinding.  One of the easiest ways of building is to clone monodevelop and work in the submodule directly:
 
 ```bash
+git clone git@github.com:mono/monodevelop -b roslyn --recursive
 cd monodevelop
+./configure --profile=mac
+make
+```
+
+To configure and compile the addin seperatly then the following commands can be executed from the addin directory (/main/external/fsharpbining if cloning as part of monodevelop)
+
+```bash
 ./configure.sh 
 make 
 make install
 ```
 
-If Monodevelop is installed in an unusual prefix you will need to invoke `configure.sh` with e.g. `--prefix=/path/to/prefix/lib/monodevelop`. Use `./configure.sh --help` to see a list of the paths searched by default.
+If MonoDevelop is installed in an unusual prefix you will need to invoke `configure.sh` with e.g. `--prefix=/path/to/prefix/lib/monodevelop`. Use `./configure.sh --help` to see a list of the paths searched by default.
 
 If you subsequently make changes to the add-in, you will need to `make install` again and restart MonoDevelop/Xamarin Studio. 
 
@@ -66,12 +68,11 @@ The first time you `make install` the AddIn you'll override Xamarin's official o
 
 **Note:**  One thing to check is the the version specified in `configure.fsx` is higher than the pre-installed version, if it's not then the local addin will not be loaded.   
 
-For reference on Mac the addin is installed locally at the following location:  ```/Users/<username>/Library/Application Support/XamarinStudio-6.0/LocalInstall/Addins/fsharpbinding/<version>```
+For reference on Mac the locally installed addin is at the following location:  ```/Users/<username>/Library/Application Support/XamarinStudio-6.0/LocalInstall/Addins/fsharpbinding/<version>```
 
 ### Build on Windows (builds and installs the Debug version into Xamarin Studio - adjust as needed)
 
 ```dos
-cd monodevelop
 configure.bat
 build-and-install-debug.bat
 ```
@@ -80,7 +81,7 @@ If you subsequently make changes to the add-in, you will need to `build-and-inst
 
 ### Can't get it to work?  
 
-Don't give up! Add an issue to [the issue tracker](https://github.com/FSharp/xamarin-monodevelop-fsharp-addin/issues). Your issue will be seen by the developers.
+Don't give up! Add an issue to [bugzilla](https://bugzilla.xamarin.com/enter_bug.cgi?product=Xamarin%20Studio) using F# addin as the component name. Your issue will be seen by the developers.
 
 ### Notes for Developers
 
@@ -98,8 +99,6 @@ To check things are working try a few different things somewhat at random:
   - Check there are type tips showing when you move the mouse over code identifiers
   - Load an existing .fsproj (e.g. see MonoDevelop.FSharpBinding/tests/projects/...) and check if completion works etc.
   - Run xbuild on a few .fsproj (this is nothing to do with the binding, it is just fsharp/fsharp)
-
-There are a couple of known issues, see https://github.com/fsharp/xamarin-monodevelop-fsharp-addin/issues.
 
 On Windows, the configuration creates the file `MonoDevelop.FSharpBinding\MonoDevelop.FSharp.windows.fsproj`. 
 Be aware that this is not the original file, which is `MonoDevelop.FSharp.fsproj.orig`. The windows file is 
@@ -136,7 +135,7 @@ You can start Xamarin Studio or MonoDevelop under the debugger using the normal 
 ### Notes for People Preparing Releases
 
 Note the MonoDevelop/Xamarin Studio developers have incorporated the binding into all releases 
-of MonoDevelop and Xamarin Studio. 
+of MonoDevelop and Xamarin Studio. This section remains for reference.
 
 The MonoDevelop Addin mechanism can be hard to easily find information for so here are a couple of links to help get a better understanding.  
 
@@ -155,4 +154,4 @@ The pack file goes under pack/...
 
 The build is performed against the installed MonoDevelop or Xamarin Studio on your machine. 
 
-For more information about F# see [The F# Software Foundation](http://fsharp.org). Join [The F# Open Source Group](http://fsharp.github.com). We use [github](https://github.com/fsharp/xamarin-monodevelop-fsharp-addin/) for tracking work items and suggestions.
+For more information about F# see [The F# Software Foundation](http://fsharp.org). Join [The F# Open Source Group](http://fsharp.github.com). 
