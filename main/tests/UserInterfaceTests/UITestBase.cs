@@ -82,22 +82,33 @@ namespace UserInterfaceTests
 		[TearDown]
 		public virtual void Teardown ()
 		{
-			var testStatus = TestContext.CurrentContext.Result.Status;
-			if (testStatus != TestStatus.Passed) {
-				TakeScreenShot (string.Format("{0}-Test-Failed", TestContext.CurrentContext.Test.Name));
+			try {
+				ValidateIdeLogMessages ();
+			} finally {
+				var testStatus = TestContext.CurrentContext.Result.Status;
+				if (testStatus != TestStatus.Passed) {
+					TakeScreenShot (string.Format ("{0}-Test-Failed", TestContext.CurrentContext.Test.Name));
+				}
+
+				File.WriteAllText (Path.Combine (currentTestResultFolder, "MemoryUsage.json"),
+					JsonConvert.SerializeObject (Session.MemoryStats, Formatting.Indented));
+
+				Ide.CloseAll ();
+				TestService.EndSession ();
+
+				OnCleanUp ();
+				if (testStatus == TestStatus.Passed) {
+					if (Directory.Exists (currentTestResultScreenshotFolder))
+						Directory.Delete (currentTestResultScreenshotFolder, true);
+				}
 			}
+		}
 
-			File.WriteAllText (Path.Combine (currentTestResultFolder, "MemoryUsage.json"),
-			                   JsonConvert.SerializeObject (Session.MemoryStats, Formatting.Indented));
-
-			Ide.CloseAll ();
-			TestService.EndSession ();
-
-			OnCleanUp ();
-			if (testStatus == TestStatus.Passed) {
-				if (Directory.Exists (currentTestResultScreenshotFolder))
-					Directory.Delete (currentTestResultScreenshotFolder, true);
-			}
+		static void ValidateIdeLogMessages ()
+		{
+			var readIdeLog = File.ReadAllText (Environment.GetEnvironmentVariable ("MONODEVELOP_LOG_FILE"));
+			Assert.IsFalse (readIdeLog.Contains ("Gtk-Critical: void gtk_container_remove(GtkContainer , GtkWidget )"),
+				"'Gtk-Critical: void gtk_container_remove' detected");
 		}
 
 		void SetupTestResultFolder ()
