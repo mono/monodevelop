@@ -175,7 +175,6 @@
     <Compile Include="MonoDevelop.CodeIssues\Runner\JobStatus.cs" />
     <Compile Include="MonoDevelop.CodeIssues\ProjectGroupingProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\FileGroupingProvider.cs" />
-    <Compile Include="MonoDevelop.Refactoring\ToggleRefactoringEnabledHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

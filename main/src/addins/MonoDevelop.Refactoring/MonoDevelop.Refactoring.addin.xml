@@ -117,10 +117,6 @@
 					_label = "Export C# Code Rules to a File" 
 					_description = "Generates an HTML file that contains a list of all code rules"
 					/>
-		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.ToggleRefactoringAvailability"
-				defaultHandler = "MonoDevelop.Refactoring.ToggleRefactoringEnabledHandler"
-		         type = "check"
-				_label = "Enable refactorings"/> 
 		</Category>
 	</Extension>
 	
@@ -185,16 +181,6 @@
 <!--			<Rule _name="Naming Conventions" input="CompilationUnit" 
 				func="MonoDevelop.AnalysisCore.Rules.NamingConventions.ClassNaming" />-->
 		</Category>
-	</Extension>
-
-
-	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad">
-		<Condition id="ItemType" value="Solution">
-			<CommandItem
-				id="MonoDevelop.Refactoring.RefactoryCommands.ToggleRefactoringAvailability"
-				insertafter="PropertiesSectionStart"
-				insertbefore="PropertiesSectionEnd" />
-		</Condition>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/AnalysisCore/FixHandlers">
