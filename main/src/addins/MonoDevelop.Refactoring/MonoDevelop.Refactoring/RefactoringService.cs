@@ -303,7 +303,6 @@ namespace MonoDevelop.Refactoring
 				IdeApp.ProjectOperations.CurrentSelectedSolution.UserProperties.HasValue (EnableRefactorings);
 			if (!hasRefactoringSettings) {
 				var useRefactoringsButton     = new AlertButton (GettextCatalog.GetString("Use refactorings on this solution"));
-				var disableRefactoringsButton = new AlertButton (GettextCatalog.GetString("Disable refactorings on this solution"));
 				var text = GettextCatalog.GetString (
 @"WARNING: The Xamarin Studio refactoring operations do not yet support C# 6.
 
@@ -313,7 +312,6 @@ to ""."", a simple dereference, which can cause unexpected NullReferenceExceptio
 ");
 				var message = new QuestionMessage (text);
 				message.Buttons.Add (useRefactoringsButton);
-				message.Buttons.Add (disableRefactoringsButton);
 				message.Buttons.Add (AlertButton.Cancel);
 				message.Icon = Gtk.Stock.DialogWarning;
 				message.DefaultButton = 2;
