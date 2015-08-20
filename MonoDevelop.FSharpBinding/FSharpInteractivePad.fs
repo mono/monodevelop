@@ -40,11 +40,13 @@ type KillIntent =
 
 type FSharpInteractivePad() as this =
   inherit MonoDevelop.Ide.Gui.AbstractPadContent()
-  let view = new ConsoleView()
+  let view = new FSharpConsoleView()
+
+  do view.InitialiseEvents()
   let mutable killIntent = NoIntent
   let mutable isPrompting = false
   let mutable activeDoc : IDisposable option = None
-  
+
   let isInsideFSharpFile () = 
     if IdeApp.Workbench.ActiveDocument = null ||
        IdeApp.Workbench.ActiveDocument.FileName.FileName = null then false
@@ -110,13 +112,13 @@ type FSharpInteractivePad() as this =
     getCorrectDirectory()
     |> Option.iter (fun path -> sendCommand ("#silentCd @\"" + path + "\";;") )
     
-  let consoleInputHandler (cie : ConsoleInputEventArgs) = 
+  let consoleInputHandler (cie:string) = 
     if isPrompting then 
       isPrompting <- false
       session := None
       sendCommand ""
-    elif cie.Text.EndsWith(";;") then 
-      sendCommand cie.Text
+    elif cie.EndsWith(";;") then 
+      sendCommand cie
   
   /// Make path absolute using the specified 'root' path if it is not already
   let makeAbsolute root (path:string) = 

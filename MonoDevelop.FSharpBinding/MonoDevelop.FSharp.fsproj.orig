@@ -79,6 +79,7 @@
     <Compile Include="Services\CompilerArguments.fs" />
     <Compile Include="Services\MDLanguageService.fs" />
     <Compile Include="Services\CompilerService.fs" />
+    <Compile Include="Services\FSharpConsoleView.fs" />
     <Compile Include="Services\InteractiveSession.fs" />
     <Compile Include="Services\NRefactory.fs" />
     <Compile Include="Services\FSharpIndentationTracker.fs" />
