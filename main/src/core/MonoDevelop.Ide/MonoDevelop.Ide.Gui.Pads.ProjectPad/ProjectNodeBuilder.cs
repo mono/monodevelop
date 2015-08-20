@@ -208,6 +208,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 		void AddFile (ProjectFile file, Project project)
 		{
+			if (!file.Visible || file.Flags.HasFlag (ProjectItemFlags.Hidden))
+				return;
+			
 			ITreeBuilder tb = Context.GetTreeBuilder ();
 			
 			if (file.DependsOnFile != null) {

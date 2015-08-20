@@ -90,6 +90,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			{
 				string dir;
 
+				if (!file.Visible || file.Flags.HasFlag (ProjectItemFlags.Hidden))
+					continue;
+				
 				if (file.Subtype != Subtype.Directory) {
 					if (file.DependsOnFile != null)
 						continue;
@@ -130,6 +133,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			foreach (var file in project.Files) {
 				FilePath path;
 
+				if (!file.Visible || file.Flags.HasFlag (ProjectItemFlags.Hidden))
+					continue;
 				if (file.Subtype != Subtype.Directory)
 					path = file.IsLink ? project.BaseDirectory.Combine (file.ProjectVirtualPath) : file.FilePath;
 				else
