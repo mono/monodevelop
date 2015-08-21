@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		#region GTK
 		public static KeyDescriptor FromGtk (Gdk.Key key, char ch, Gdk.ModifierType state)
 		{
-			return new KeyDescriptor (ConvertKey (key), ch, ConvertModifiers (state), key);
+			return new KeyDescriptor (ConvertKey (key), ch, ConvertModifiers (state), Tuple.Create (key, state));
 		}
 
 		static SpecialKey ConvertKey (Gdk.Key key)

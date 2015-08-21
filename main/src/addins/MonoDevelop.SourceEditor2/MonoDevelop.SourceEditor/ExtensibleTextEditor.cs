@@ -95,24 +95,6 @@ namespace MonoDevelop.SourceEditor
 			Document.SyntaxMode = new SemanticHighlightingSyntaxMode (this, Document.SyntaxMode, semanticHighlighting);
 		}
 
-		static Gdk.ModifierType ConvertModifiers (ModifierKeys s)
-		{
-			Gdk.ModifierType m = Gdk.ModifierType.None;
-			if ((s & ModifierKeys.Shift) != 0) {
-				m |= Gdk.ModifierType.ShiftMask;
-				if ((s & ModifierKeys.Command) != 0)
-					m |= Gdk.ModifierType.MetaMask;
-			} else {
-				if ((s & ModifierKeys.Command) != 0)
-					m |= Gdk.ModifierType.Mod2Mask;
-			}
-			if ((s & ModifierKeys.Control) != 0)
-				m |= Gdk.ModifierType.ControlMask;
-			if ((s & ModifierKeys.Alt) != 0)
-				m |= Gdk.ModifierType.Mod1Mask;
-			return m;
-		}
-
 		class LastEditorExtension : TextEditorExtension
 		{
 			readonly ExtensibleTextEditor ext;
@@ -125,7 +107,8 @@ namespace MonoDevelop.SourceEditor
 			
 			public override bool KeyPress (KeyDescriptor descriptor)
 			{
-				ext.SimulateKeyPress ((Gdk.Key)descriptor.NativeKeyChar, (uint)descriptor.KeyChar, ConvertModifiers (descriptor.ModifierKeys));
+				var native =(Tuple<Gdk.Key, Gdk.ModifierType>)descriptor.NativeKeyChar;
+				ext.SimulateKeyPress (native.Item1, (uint)descriptor.KeyChar, native.Item2);
 				if (descriptor.SpecialKey == SpecialKey.Escape)
 					return true;
 				return false;
