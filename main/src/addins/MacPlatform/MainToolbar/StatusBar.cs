@@ -360,7 +360,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			foreach (var item in Layer.Sublayers) {
 				if (item.Name != null && item.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)) {
 					var icon = layerToStatus [item.Name];
-					RemoveTrackingArea (icon.TrackingArea);
+					if (icon.TrackingArea != null)
+						RemoveTrackingArea (icon.TrackingArea);
 
 					right -= item.Bounds.Width + 6;
 					item.Frame = new CGRect (right, 3, item.Bounds.Width, item.Bounds.Height);
@@ -383,27 +384,17 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		long statusCounter;
 		public StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)
 		{
-			nfloat right = layerToStatus.Count == 0 ?
-				Layer.Frame.Width :
-				Layer.Sublayers.Last (i => i.Name != null && i.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)).Frame.Left;
-
-			right -= (nfloat)pixbuf.Width + 6;
 			var layer = CALayer.Create ();
 			layer.Name = StatusIconPrefixId + (++statusCounter);
 			layer.Bounds = new CGRect (0, 0, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
-			layer.Frame = new CGRect (right, 3, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
-
-			var area = new NSTrackingArea (layer.Frame, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInKeyWindow, this, null);
-			AddTrackingArea (area);
-
-			var statusIcon = new StatusIcon (this, layer, area) {
+			var statusIcon = new StatusIcon (this, layer, null) {
 				Image = pixbuf,
 			};
 			layerToStatus [layer.Name] = statusIcon;
 
 			Layer.AddSublayer (layer);
 
-			textField.SetFrameSize (new CGSize (right - 6 - textField.Frame.Left, Frame.Height));
+			RepositionStatusLayers ();
 
 			return statusIcon;
 		}
