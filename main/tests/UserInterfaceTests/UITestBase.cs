@@ -30,6 +30,7 @@ using MonoDevelop.Components.AutoTest;
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace UserInterfaceTests
 {
@@ -83,6 +84,9 @@ namespace UserInterfaceTests
 		public virtual void Teardown ()
 		{
 			try {
+				if (Session.Query (c => c.Marked ("Xamarin Update")).Any ()) {
+					Assert.Inconclusive ("Xamarin Update is blocking the application focus");
+				}
 				ValidateIdeLogMessages ();
 			} finally {
 				var testStatus = TestContext.CurrentContext.Result.Status;
