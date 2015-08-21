@@ -125,7 +125,7 @@ namespace MonoDevelop.SourceEditor
 			
 			public override bool KeyPress (KeyDescriptor descriptor)
 			{
-				ext.SimulateKeyPress ((Gdk.Key)descriptor.SpecialKey, (uint)descriptor.KeyChar, ConvertModifiers (descriptor.ModifierKeys));
+				ext.SimulateKeyPress ((Gdk.Key)descriptor.NativeKeyChar, (uint)descriptor.KeyChar, ConvertModifiers (descriptor.ModifierKeys));
 				if (descriptor.SpecialKey == SpecialKey.Escape)
 					return true;
 				return false;
