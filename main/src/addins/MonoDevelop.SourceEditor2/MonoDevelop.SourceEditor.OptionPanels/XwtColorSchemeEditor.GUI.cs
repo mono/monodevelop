@@ -53,9 +53,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		LabeledColorButton colorbuttonPrimary = new LabeledColorButton ("Primary");
 		LabeledColorButton colorbuttonSecondary = new LabeledColorButton ("Secondary");
 		LabeledColorButton colorbuttonBorder = new LabeledColorButton ("Border");
-		ToggleButton togglebuttonBold = new ToggleButton (ImageService.GetIcon (Stock.BoldIcon).WithSize (Xwt.IconSize.Medium)){ Style = ButtonStyle.Flat };
-		ToggleButton togglebuttonItalic = new ToggleButton (ImageService.GetIcon (Stock.ItalicIcon).WithSize (Xwt.IconSize.Medium)){ Style = ButtonStyle.Flat };
-		ToggleButton buttonFormat = new ToggleButton (ImageService.GetIcon (Stock.ColorPickerIcon).WithSize (Xwt.IconSize.Medium)){ Style = ButtonStyle.Flat };
+		ToggleButton togglebuttonBold = new ToggleButton ("Bold"); //ImageService.GetIcon (Stock.BoldIcon).WithSize (Xwt.IconSize.Medium)){ Style = ButtonStyle.Flat };
+		ToggleButton togglebuttonItalic = new ToggleButton ("Italic"); //ImageService.GetIcon (Stock.ItalicIcon).WithSize (Xwt.IconSize.Medium)){ Style = ButtonStyle.Flat };
+		ToggleButton buttonFormat = new ToggleButton ("Color Picker"); //ImageService.GetIcon (Stock.ColorPickerIcon).WithSize (Xwt.IconSize.Medium)){ Style = ButtonStyle.Flat };
 		TextEntry entryName = new TextEntry ();
 		TextEntry entryDescription = new TextEntry ();
 		SearchTextEntry searchEntry = new SearchTextEntry (){ PlaceholderText = "Type here..." };
