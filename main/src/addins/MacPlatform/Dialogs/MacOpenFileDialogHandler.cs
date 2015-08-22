@@ -163,12 +163,15 @@ namespace MonoDevelop.MacIntegration
 						
 						//re-center the accessory view in its parent, Cocoa does this for us initially and after
 						//resizing the window, but we need to do it again after altering its layout
-						var superFrame = box.View.Superview.Frame;
-						var frame = box.View.Frame;
-						//not sure why it's ceiling, but this matches the Cocoa layout
-						frame.X = (float)Math.Ceiling ((superFrame.Width - frame.Width) / 2);
-						frame.Y = (float)Math.Ceiling ((superFrame.Height - frame.Height) / 2);
-						box.View.Frame = frame;
+						var superView = box.View.Superview;
+						if (superView != null) {
+							var superFrame = superView.Frame;
+							var frame = box.View.Frame;
+							//not sure why it's ceiling, but this matches the Cocoa layout
+							frame.X = (float)Math.Ceiling ((superFrame.Width - frame.Width) / 2);
+							frame.Y = (float)Math.Ceiling ((superFrame.Height - frame.Height) / 2);
+							box.View.Frame = frame;
+						}
 					} 
 					if (encodingSelector != null)
 						encodingSelector.Enabled = !slnViewerSelected;
