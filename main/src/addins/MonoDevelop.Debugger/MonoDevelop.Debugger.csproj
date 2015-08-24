@@ -321,6 +321,12 @@
     <EmbeddedResource Include="icons\toolbar-icon%402x.png">
       <LogicalName>toolbar-icon@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\exception-outline-16.png">
+      <LogicalName>exception-outline-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\exception-outline-16%402x.png">
+      <LogicalName>exception-outline-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' != 'DebugMac' AND '$(Configuration)' != 'ReleaseMac' ">
     <EmbeddedResource Include="icons\pause-16.png">
