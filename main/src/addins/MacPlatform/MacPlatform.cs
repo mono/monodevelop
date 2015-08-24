@@ -326,73 +326,82 @@ namespace MonoDevelop.MacIntegration
 
 		void GlobalSetup ()
 		{
-			var appDelegate = (Xwt.Mac.AppDelegate)NSApplication.SharedApplication.Delegate;
 			//FIXME: should we remove these when finalizing?
 			try {
-				appDelegate.Terminating += delegate (object sender, Xwt.Mac.TerminationEventArgs e)
+				ApplicationEvents.Quit += delegate (object sender, ApplicationQuitEventArgs e)
 				{
 					// We can only attempt to quit safely if all windows are GTK windows and not modal
 					if (!IsModalDialogRunning ()) {
-						e.Reply = IdeApp.Exit () ? NSApplicationTerminateReply.Now : NSApplicationTerminateReply.Cancel;
+						e.UserCancelled = !IdeApp.Exit ();
+						e.Handled = true;
 						return;
 					}
 
 					// When a modal dialog is running, things are much harder. We can't just shut down MD behind the
 					// dialog, and aborting the dialog may not be appropriate.
 					//
-					// There's NSTerminateLater but it stops the main CFRunLoop and enters a special runloop mode,
-					// not sure how that would interact with GTK+.
+					// There's NSTerminateLater but I'm not sure how to access it from carbon, maybe
+					// we need to swizzle methods into the app's NSApplicationDelegate.
+					// Also, it stops the main CFRunLoop and enters a special runloop mode, not sure how that would
+					// interact with GTK+.
 
 					// For now, just bounce
 					NSApplication.SharedApplication.RequestUserAttention (NSRequestUserAttentionType.CriticalRequest);
 					// and abort the quit.
-					e.Reply = NSApplicationTerminateReply.Cancel;
+					e.UserCancelled = true;
+					e.Handled = true;
 				};
 
-				appDelegate.Unhidden += delegate (object sender, EventArgs e) {
+				ApplicationEvents.Reopen += delegate (object sender, ApplicationEventArgs e) {
 					if (IdeApp.Workbench != null && IdeApp.Workbench.RootWindow != null) {
 						IdeApp.Workbench.RootWindow.Deiconify ();
 						IdeApp.Workbench.RootWindow.Visible = true;
 
 						IdeApp.Workbench.RootWindow.Present ();
+						e.Handled = true;
 					}
 				};
 
-				appDelegate.OpenFilesRequest += delegate (object sender, Xwt.Mac.OpenFilesEventArgs e) {
+				ApplicationEvents.OpenDocuments += delegate (object sender, ApplicationDocumentEventArgs e) {
 					//OpenFiles may pump the mainloop, but can't do that from an AppleEvent, so use a brief timeout
 					GLib.Timeout.Add (10, delegate {
-						IdeApp.OpenFiles (e.Filenames.Select (
-							filename => new FileOpenInformation (filename, null, 1, 1, OpenDocumentOptions.DefaultInternal))
+						IdeApp.OpenFiles (e.Documents.Select (
+							doc => new FileOpenInformation (doc.Key, doc.Value, 1, OpenDocumentOptions.DefaultInternal))
 						);
 						return false;
 					});
+					e.Handled = true;
 				};
 
-				appDelegate.OpenUrl += (sender, e) => GLib.Timeout.Add (10, delegate {
-					FileOpenInformation foi;
-					// Open files via the monodevelop:// URI scheme, compatible with the
-					// common TextMate scheme: http://blog.macromates.com/2007/the-textmate-url-scheme/
-					try {
-						var uri = new Uri (e.Url);
-						if (uri.Host != "open")
-							return false;
-						var qs = System.Web.HttpUtility.ParseQueryString (uri.Query);
-						var fileUri = new Uri (qs ["file"]);
-						int line, column;
-						if (!Int32.TryParse (qs ["line"], out line))
-							line = 1;
-						if (!Int32.TryParse (qs ["column"], out column))
-							column = 1;
-						foi = new FileOpenInformation (Uri.UnescapeDataString (fileUri.AbsolutePath), null, line, column, OpenDocumentOptions.DefaultInternal);
-					} catch (Exception ex) {
-						LoggingService.LogError ("Invalid TextMate URI: " + e.Url, ex);
+				ApplicationEvents.OpenUrls += delegate (object sender, ApplicationUrlEventArgs e) {
+					GLib.Timeout.Add (10, delegate {
+						// Open files via the monodevelop:// URI scheme, compatible with the
+						// common TextMate scheme: http://blog.macromates.com/2007/the-textmate-url-scheme/
+						IdeApp.OpenFiles (e.Urls.Select (url => {
+							try {
+								var uri = new Uri (url);
+								if (uri.Host != "open")
+									return null;
+
+								var qs = System.Web.HttpUtility.ParseQueryString (uri.Query);
+								var fileUri = new Uri (qs ["file"]);
+
+								int line, column;
+								if (!Int32.TryParse (qs ["line"], out line))
+									line = 1;
+								if (!Int32.TryParse (qs ["column"], out column))
+									column = 1;
+
+								return new FileOpenInformation (Uri.UnescapeDataString(fileUri.AbsolutePath),
+									line, column, OpenDocumentOptions.DefaultInternal);
+							} catch (Exception ex) {
+								LoggingService.LogError ("Invalid TextMate URI: " + url, ex);
+								return null;
+							}
+						}).Where (foi => foi != null));
 						return false;
-					}
-					IdeApp.OpenFiles (new[] {
-						foi
 					});
-					return false;
-				});
+				};
 
 				//if not running inside an app bundle (at dev time), need to do some additional setup
 				if (NSBundle.MainBundle.InfoDictionary ["CFBundleIdentifier"] == null) {
