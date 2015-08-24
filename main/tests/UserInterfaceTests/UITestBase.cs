@@ -78,13 +78,18 @@ namespace UserInterfaceTests
 			TestService.Session.DebugObject = new UITestDebug ();
 
 			FoldersToClean.Add (mdProfile);
+
+			Session.WaitForElement (IdeQuery.DefaultWorkbench);
+			TakeScreenShot ("Application-Started");
+			CloseIfXamarinUpdateOpen ();
+			TakeScreenShot ("Application-Ready");
 		}
 
 		[TearDown]
 		public virtual void Teardown ()
 		{
 			try {
-				if (Session.Query (c => c.Marked ("Xamarin Update")).Any ()) {
+				if (Session.Query (IdeQuery.XamarinUpdate).Any ()) {
 					Assert.Inconclusive ("Xamarin Update is blocking the application focus");
 				}
 				ValidateIdeLogMessages ();
@@ -113,6 +118,18 @@ namespace UserInterfaceTests
 			var readIdeLog = File.ReadAllText (Environment.GetEnvironmentVariable ("MONODEVELOP_LOG_FILE"));
 			Assert.IsFalse (readIdeLog.Contains ("Gtk-Critical: void gtk_container_remove(GtkContainer , GtkWidget )"),
 				"'Gtk-Critical: void gtk_container_remove' detected");
+		}
+
+		protected void CloseIfXamarinUpdateOpen ()
+		{
+			try {
+				Session.WaitForElement (IdeQuery.XamarinUpdate, 10 * 1000);
+				TakeScreenShot ("Xamarin-Update-Opened");
+				Session.ClickElement (c => IdeQuery.XamarinUpdate (c).Children ().Button ().Text ("Close"));
+			}
+			catch (TimeoutException) {
+				TestService.Session.DebugObject.Debug ("Xamarin Update did not open");
+			}
 		}
 
 		void SetupTestResultFolder ()
