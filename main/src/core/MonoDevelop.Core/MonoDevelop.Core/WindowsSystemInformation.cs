@@ -24,45 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Runtime.InteropServices;
 
 namespace MonoDevelop.Core
 {
 	class WindowsSystemInformation : SystemInformation
 	{
-		static readonly Version version;
-
-		// RTL_OSVERSIONINFOEXW has more information.
-		unsafe struct PRTL_OSVERSIONINFOW
-		{
-			public UIntPtr dwOSVersionInfoSize;
-			public UIntPtr dwMajorVersion;
-			public UIntPtr dwMinorVersion;
-			public UIntPtr dwBuildNumber;
-			public UIntPtr dwPlatformId;
-			public fixed char szCSDVersion[128];
-		};
-
-		[DllImport("ntdll.dll")]
-		static extern int RtlGetVersion(ref PRTL_OSVERSIONINFOW version);
-
-		static WindowsSystemInformation ()
-		{
-			var osVersion = new PRTL_OSVERSIONINFOW ();
-			osVersion.dwOSVersionInfoSize = new UIntPtr ((uint)Marshal.SizeOf (osVersion));
-			RtlGetVersion (ref osVersion);
-
-			version = new Version ((int)(uint)osVersion.dwMajorVersion, (int)(uint)osVersion.dwMinorVersion, (int)(uint)osVersion.dwBuildNumber);
-		}
-
-		public static Version OsVersion {
-			get { return version; }
-		}
-
 		internal override void AppendOperatingSystem (System.Text.StringBuilder sb)
 		{
 			sb.Append ("\tWindows ");
-			sb.Append (version.ToString ());
+			sb.Append (Environment.OSVersion.Version.ToString ());
 			if (IntPtr.Size == 8 || Environment.GetEnvironmentVariable ("PROCESSOR_ARCHITEW6432") != null)
 				sb.Append (" (64-bit)");
 			sb.AppendLine ();
