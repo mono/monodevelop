@@ -306,10 +306,7 @@ namespace MonoDevelop.Refactoring
 				var text = GettextCatalog.GetString (
 @"WARNING: The Xamarin Studio refactoring operations do not yet support C# 6.
 
-You may continue to use refactoring operations with C# 6, however you should check the results carefully to make sure that
-they have not made incorrect changes to your code. In particular, the ""?."" null propagating dereference will be changed
-to ""."", a simple dereference, which can cause unexpected NullReferenceExceptions at runtime.
-");
+You may continue to use refactoring operations with C# 6, however you should check the results carefully to make sure that they have not made incorrect changes to your code. In particular, the ""?."" null propagating dereference will be changed to ""."", a simple dereference, which can cause unexpected NullReferenceExceptions at runtime.");
 				var message = new QuestionMessage (text);
 				message.Buttons.Add (useRefactoringsButton);
 				message.Buttons.Add (AlertButton.Cancel);
