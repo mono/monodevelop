@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public OutputProgressMonitor GetRunProgressMonitor ()
 		{
-			return GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.RunProgramIcon, true, true);
+			return GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.RunProgramIcon, false, true);
 		}
 		
 		public OutputProgressMonitor GetToolOutputProgressMonitor (bool bringToFront, CancellationTokenSource cs = null)
@@ -104,7 +104,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public OperationConsole CreateConsole (bool closeOnDispose, CancellationToken cancellationToken)
 		{
-			return ((OutputProgressMonitor)GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.MessageLog, true, true)).Console;
+			return ((OutputProgressMonitor)GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.MessageLog, false, true)).Console;
 		}
 
 		CustomConsoleFactory customConsoleFactory = new CustomConsoleFactory ();
