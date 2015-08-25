@@ -79,11 +79,18 @@ namespace MonoDevelop.VersionControl.Git
 			}
 
 			// Grab the credentials from the user.
-			var cred = (UsernamePasswordCredentials)GitCredentials.TryGet (url, "", SupportedCredentialTypes.UsernamePassword);
-
-			var httpClient = new HttpClient (new HttpClientHandler { Credentials = new System.Net.NetworkCredential (cred.Username, cred.Password) }) {
+			var httpClient = new HttpClient {
 				Timeout = TimeSpan.FromMinutes (1.0),
 			};
+
+			var res = httpClient.GetAsync (serviceUri).Result;
+			if (res.StatusCode == System.Net.HttpStatusCode.Unauthorized) {
+				var cred = (UsernamePasswordCredentials)GitCredentials.TryGet (url, "", SupportedCredentialTypes.UsernamePassword, GitCredentialsType.Tfs);
+
+				httpClient = new HttpClient (new HttpClientHandler { Credentials = new System.Net.NetworkCredential (cred.Username, cred.Password) }) {
+					Timeout = TimeSpan.FromMinutes (1.0),
+				};
+			}
 
 			return new TfsSmartSubtransportStream(this) {
 				HttpClient = httpClient,

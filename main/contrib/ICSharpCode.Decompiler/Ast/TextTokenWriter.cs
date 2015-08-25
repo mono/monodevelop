@@ -30,6 +30,7 @@ namespace ICSharpCode.Decompiler.Ast
 	public class TextTokenWriter : TokenWriter
 	{
 		readonly ITextOutput output;
+		readonly DecompilerContext context;
 		readonly Stack<AstNode> nodeStack = new Stack<AstNode>();
 		int braceLevelWithinType = -1;
 		bool inDocumentationComment = false;
@@ -40,15 +41,22 @@ namespace ICSharpCode.Decompiler.Ast
 		
 		public bool FoldBraces = false;
 		
-		public TextTokenWriter(ITextOutput output)
+		public TextTokenWriter(ITextOutput output, DecompilerContext context)
 		{
 			if (output == null)
 				throw new ArgumentNullException("output");
+			if (context == null)
+				throw new ArgumentNullException("context");
 			this.output = output;
+			this.context = context;
 		}
 		
 		public override void WriteIdentifier(Identifier identifier)
 		{
+			if (identifier.IsVerbatim || CSharpOutputVisitor.IsKeyword(identifier.Name, identifier)) {
+				output.Write('@');
+			}
+			
 			var definition = GetCurrentDefinition();
 			if (definition != null) {
 				output.WriteDefinition(identifier.Name, definition, false);
@@ -89,6 +97,24 @@ namespace ICSharpCode.Decompiler.Ast
 			if (memberRef == null && node.Role == Roles.TargetExpression && (node.Parent is InvocationExpression || node.Parent is ObjectCreateExpression)) {
 				memberRef = node.Parent.Annotation<MemberReference>();
 			}
+			if (node is IdentifierExpression && node.Role == Roles.TargetExpression && node.Parent is InvocationExpression && memberRef != null) {
+				var declaringType = memberRef.DeclaringType.Resolve();
+				if (declaringType != null && declaringType.IsDelegate())
+					return null;
+			}
+			return FilterMemberReference(memberRef);
+		}
+
+		MemberReference FilterMemberReference(MemberReference memberRef)
+		{
+			if (memberRef == null)
+				return null;
+
+			if (context.Settings.AutomaticEvents && memberRef is FieldDefinition) {
+				var field = (FieldDefinition)memberRef;
+				return field.DeclaringType.Events.FirstOrDefault(ev => ev.Name == field.Name) ?? memberRef;
+			}
+
 			return memberRef;
 		}
 

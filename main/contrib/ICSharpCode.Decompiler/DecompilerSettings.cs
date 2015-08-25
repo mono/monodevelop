@@ -295,6 +295,21 @@ namespace ICSharpCode.Decompiler
 			}
 		}
 		
+		bool makeAssignmentExpressions = true;
+		
+		/// <summary>
+		/// Gets/Sets whether to use assignment expressions such as in while ((count = Do()) != 0) ;
+		/// </summary>
+		public bool MakeAssignmentExpressions {
+			get { return makeAssignmentExpressions; }
+			set {
+				if (makeAssignmentExpressions != value) {
+					makeAssignmentExpressions = value;
+					OnPropertyChanged("MakeAssignmentExpressions");
+				}
+			}
+		}
+		
 		bool alwaysGenerateExceptionVariableForCatchBlocks = false;
 		
 		/// <summary>
@@ -318,6 +333,7 @@ namespace ICSharpCode.Decompiler
 				if (csharpFormattingOptions == null) {
 					csharpFormattingOptions = FormattingOptionsFactory.CreateAllman();
 					csharpFormattingOptions.IndentSwitchBody = false;
+					csharpFormattingOptions.ArrayInitializerWrapping = Wrapping.WrapAlways;
 				}
 				return csharpFormattingOptions;
 			}

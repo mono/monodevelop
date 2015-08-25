@@ -223,7 +223,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			pref.Flags = ProjectItemFlags.DontPersist;
 			pref.SetItemsProjectPath (ProjItemsPath);
 			foreach (var f in Files) {
-				if (pref.OwnerProject.Files.GetFile (f.FilePath) == null) {
+				if (pref.OwnerProject.Files.GetFile (f.FilePath) == null && f.Subtype != Subtype.Directory) {
 					var cf = (ProjectFile)f.Clone ();
 					cf.Flags |= ProjectItemFlags.DontPersist | ProjectItemFlags.Hidden;
 					pref.OwnerProject.Files.Add (cf);

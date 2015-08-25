@@ -36,6 +36,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 		}
 
+		bool sameUrls;
 		public EditRemoteDialog (Remote remote)
 		{
 			this.Build ();
@@ -47,8 +48,18 @@ namespace MonoDevelop.VersionControl.Git
 				entryUrl.Text = remote.Url ?? "";
 				entryPushUrl.Text = remote.PushUrl ?? "";
 			}
+
+			sameUrls = entryPushUrl.Text == entryUrl.Text;
+			SetPushUrlTextStyle (sameUrls);
+
 			checkImportTags.Visible = remote == null;
 			UpdateButtons ();
+		}
+
+		void SetPushUrlTextStyle (bool disabled)
+		{
+			entryPushUrl.ModifyText (Gtk.StateType.Normal, entryUrl.Style.Text (disabled ? Gtk.StateType.Insensitive : Gtk.StateType.Normal));
+			entryPushUrl.ModifyText (Gtk.StateType.Active, entryUrl.Style.Text (disabled ? Gtk.StateType.Insensitive : Gtk.StateType.Active));
 		}
 
 		public string RemoteName {
@@ -79,11 +90,21 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected virtual void OnEntryUrlChanged (object sender, System.EventArgs e)
 		{
+			// If we had the same text or we're now having matching text, then change styling.
+			if (sameUrls || entryPushUrl.Text == entryUrl.Text) {
+				entryPushUrl.Text = entryUrl.Text;
+				sameUrls = true;
+				SetPushUrlTextStyle (sameUrls);
+			}
+
 			UpdateButtons ();
 		}
 
 		protected void OnEntryPushUrlChanged (object sender, System.EventArgs e)
 		{
+			sameUrls = entryPushUrl.Text == entryUrl.Text;
+			SetPushUrlTextStyle (sameUrls);
+
 			UpdateButtons ();
 		}
 	}

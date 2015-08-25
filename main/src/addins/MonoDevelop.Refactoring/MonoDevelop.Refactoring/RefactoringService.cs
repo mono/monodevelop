@@ -42,6 +42,7 @@ using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
 using System.Diagnostics;
 using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Refactoring
 {
@@ -293,10 +294,53 @@ namespace MonoDevelop.Refactoring
 				return RunAll (allFixes, refactoringContext, script);
 			}
 		}
-		
+
+		const string EnableRefactorings = "RefactoringSettings.EnableRefactorings";
+
+		internal static bool CheckUserSettings()
+		{
+			var hasRefactoringSettings = IdeApp.ProjectOperations.CurrentSelectedSolution == null ||
+				IdeApp.ProjectOperations.CurrentSelectedSolution.UserProperties.HasValue (EnableRefactorings);
+			if (!hasRefactoringSettings) {
+				var useRefactoringsButton     = new AlertButton (GettextCatalog.GetString("Use refactorings on this solution"));
+				var text = GettextCatalog.GetString (
+@"WARNING: The Xamarin Studio refactoring operations do not yet support C# 6.
+
+You may continue to use refactoring operations with C# 6, however you should check the results carefully to make sure that they have not made incorrect changes to your code. In particular, the ""?."" null propagating dereference will be changed to ""."", a simple dereference, which can cause unexpected NullReferenceExceptions at runtime.");
+				var message = new QuestionMessage (text);
+				message.Buttons.Add (useRefactoringsButton);
+				message.Buttons.Add (AlertButton.Cancel);
+				message.Icon = Gtk.Stock.DialogWarning;
+				message.DefaultButton = 1;
+
+				var result = MessageService.AskQuestion (message);
+				if (result == AlertButton.Cancel)
+					return false;
+				ShowFixes = result == useRefactoringsButton;
+			}
+			return ShowFixes;
+		}
+
+		internal static bool ShowFixes {
+			get {
+				if (Ide.IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
+					var hasRefactoringSettings = IdeApp.ProjectOperations.CurrentSelectedSolution.UserProperties.HasValue (EnableRefactorings);
+					return !hasRefactoringSettings || IdeApp.ProjectOperations.CurrentSelectedSolution.UserProperties.GetValue<bool> (EnableRefactorings);
+				}
+				return true;
+			}
+			set {
+				IdeApp.ProjectOperations.CurrentSelectedSolution.UserProperties.SetValue (EnableRefactorings, value);
+				IdeApp.ProjectOperations.CurrentSelectedSolution.SaveUserProperties ();
+			}
+		}
+
+
 		public static void ApplyFix (CodeAction action, IRefactoringContext context)
 		{
-			using(var script = context.CreateScript ()) {
+			if (!CheckUserSettings ())
+				return;
+			using (var script = context.CreateScript ()) {
 				action.Run (context, script);
 			}
 		}
