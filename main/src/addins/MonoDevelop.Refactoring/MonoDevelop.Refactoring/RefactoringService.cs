@@ -314,7 +314,7 @@ to ""."", a simple dereference, which can cause unexpected NullReferenceExceptio
 				message.Buttons.Add (useRefactoringsButton);
 				message.Buttons.Add (AlertButton.Cancel);
 				message.Icon = Gtk.Stock.DialogWarning;
-				message.DefaultButton = 2;
+				message.DefaultButton = 1;
 
 				var result = MessageService.AskQuestion (message);
 				if (result == AlertButton.Cancel)
