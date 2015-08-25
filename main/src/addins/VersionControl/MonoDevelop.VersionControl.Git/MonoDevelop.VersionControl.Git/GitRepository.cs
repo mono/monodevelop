@@ -216,7 +216,7 @@ namespace MonoDevelop.VersionControl.Git
 					OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
 					OnCheckoutNotify = RefreshFile,
 					CheckoutNotifyFlags = refreshFlags,
-				}
+				},
 			});
 
 			NotifyFilesChangedForStash (RootRepository.Stashes [stashIndex]);
@@ -238,7 +238,7 @@ namespace MonoDevelop.VersionControl.Git
 					OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
 					OnCheckoutNotify = RefreshFile,
 					CheckoutNotifyFlags = refreshFlags,
-				}
+				},
 			});
 			NotifyFilesChangedForStash (stash);
 			if (monitor != null)
@@ -687,26 +687,25 @@ namespace MonoDevelop.VersionControl.Git
 			return true;
 		}
 
-		void ConflictResolver(IProgressMonitor monitor, Commit resetToIfFail, string message)
+		bool ConflictResolver(IProgressMonitor monitor, Commit resetToIfFail, string message)
 		{
-			bool commit = true;
 			foreach (var conflictFile in RootRepository.Index.Conflicts) {
 				ConflictResult res = ResolveConflict (RootRepository.FromGitPath (conflictFile.Ancestor.Path));
 				if (res == ConflictResult.Abort) {
 					RootRepository.Reset (ResetMode.Hard, resetToIfFail);
-					commit = false;
-					break;
+					return false;
 				}
 				if (res == ConflictResult.Skip) {
 					Revert (RootRepository.FromGitPath (conflictFile.Ancestor.Path), false, monitor);
 					break;
 				}
 			}
-			if (commit)
+			if (!string.IsNullOrEmpty (message))
 				RootRepository.Commit (message);
+			return true;
 		}
 
-		void CommonPostMergeRebase(int stashIndex, GitUpdateOptions options, IProgressMonitor monitor)
+		void CommonPostMergeRebase(int stashIndex, GitUpdateOptions options, IProgressMonitor monitor, Commit oldHead)
 		{
 			if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges) {
 				monitor.Step (1);
@@ -714,7 +713,13 @@ namespace MonoDevelop.VersionControl.Git
 				// Restore local changes
 				if (stashIndex != -1) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Restoring local changes"));
-					PopStash (monitor, stashIndex);
+					ApplyStash (monitor, stashIndex);
+					// FIXME: No StashApplyStatus.Conflicts here.
+					if (RootRepository.Index.Conflicts.Any () && !ConflictResolver (monitor, oldHead, string.Empty))
+						PopStash (monitor, stashIndex);
+					else
+						RootRepository.Stashes.Remove (stashIndex);
+
 					monitor.Step (1);
 				}
 			}
@@ -724,6 +729,8 @@ namespace MonoDevelop.VersionControl.Git
 		public void Rebase (string branch, GitUpdateOptions options, IProgressMonitor monitor)
 		{
 			int stashIndex = -1;
+			var oldHead = RootRepository.Head.Tip;
+
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Rebasing"), 5);
 				if (!CommonPreMergeRebase (options, monitor, out stashIndex))
@@ -752,13 +759,14 @@ namespace MonoDevelop.VersionControl.Git
 					++i;
 				}
 			} finally {
-				CommonPostMergeRebase (stashIndex, options, monitor);
+				CommonPostMergeRebase (stashIndex, options, monitor, oldHead);
 			}
 		}
 
 		public void Merge (string branch, GitUpdateOptions options, IProgressMonitor monitor)
 		{
 			int stashIndex = -1;
+			var oldHead = RootRepository.Head.Tip;
 
 			Signature sig = GetSignature ();
 			if (sig == null)
@@ -777,7 +785,7 @@ namespace MonoDevelop.VersionControl.Git
 				if (mergeResult.Status == MergeStatus.Conflicts)
 					ConflictResolver (monitor, RootRepository.Head.Tip, RootRepository.Info.Message);
 			} finally {
-				CommonPostMergeRebase (stashIndex, GitUpdateOptions.SaveLocalChanges, monitor);
+				CommonPostMergeRebase (stashIndex, GitUpdateOptions.SaveLocalChanges, monitor, oldHead);
 			}
 		}
 
