@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 using Gtk;
 
@@ -10,7 +11,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	internal class DirtyFilesDialog : Gtk.Dialog
 	{
-
 		Button btnSaveAndQuit;
 		Button btnQuit;
 		Button btnCancel;
@@ -18,21 +18,26 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		TreeStore tsFiles;
 		CellRendererToggle togRender;
 		CellRendererText textRender;
-		
-		public DirtyFilesDialog () : base (GettextCatalog.GetString ("Save Files"), IdeApp.Workbench.RootWindow, DialogFlags.Modal)
+
+		public DirtyFilesDialog () : this (IdeApp.Workbench.Documents, true, true)
+		{
+		}
+
+		public DirtyFilesDialog (IReadOnlyList<Document> docs, bool closeWorkspace, bool groupByProject) :
+			base (GettextCatalog.GetString ("Save Files"), IdeApp.Workbench.RootWindow, DialogFlags.Modal)
 		{
 			tsFiles = new TreeStore (typeof(string), typeof(bool), typeof(SdiWorkspaceWindow), typeof(bool));
 			tvFiles = new TreeView (tsFiles);
 			TreeIter topCombineIter = TreeIter.Zero;
 			Hashtable projectIters = new Hashtable ();
 			
-			foreach (Document doc in IdeApp.Workbench.Documents) {
+			foreach (Document doc in docs) {
 				if (!doc.IsDirty)
 					continue;
 				
 				IViewContent viewcontent = doc.Window.ViewContent;
 				 
-				if (viewcontent.Project != null) {
+				if (groupByProject && viewcontent.Project != null) {
 					TreeIter projIter = TreeIter.Zero;
 					if (projectIters.ContainsKey (viewcontent.Project))
 						projIter = (TreeIter)projectIters [viewcontent.Project];
@@ -79,9 +84,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 			sc.BorderWidth = 6;
 			this.VBox.PackStart (sc, true, true, 6);
-			
-			btnSaveAndQuit = new Button (GettextCatalog.GetString ("_Save and Quit"));
-			btnQuit = new Button (Gtk.Stock.Quit);
+
+			btnSaveAndQuit = new Button (closeWorkspace ? GettextCatalog.GetString ("_Save and Quit") : GettextCatalog.GetString ("_Save and Close"));
+			btnQuit = new Button (closeWorkspace ? Gtk.Stock.Quit : Gtk.Stock.Close);
 			btnCancel = new Button (Gtk.Stock.Cancel);
 
 			btnSaveAndQuit.Clicked += SaveAndQuit;
