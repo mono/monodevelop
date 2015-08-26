@@ -701,8 +701,10 @@ namespace MonoDevelop.VersionControl.Git
 					break;
 				}
 			}
-			if (!string.IsNullOrEmpty (message))
-				RootRepository.Commit (message);
+			if (!string.IsNullOrEmpty (message)) {
+				var sig = GetSignature ();
+				RootRepository.Commit (message, sig, sig);
+			}
 			return true;
 		}
 
@@ -740,8 +742,8 @@ namespace MonoDevelop.VersionControl.Git
 				// Do a rebase.
 				var divergence = RootRepository.ObjectDatabase.CalculateHistoryDivergence (RootRepository.Head.Tip, RootRepository.Branches [branch].Tip);
 				var toApply = RootRepository.Commits.QueryBy (new CommitFilter {
-					Since = RootRepository.Head.Tip,
-					Until = divergence.CommonAncestor,
+					IncludeReachableFrom = RootRepository.Head.Tip,
+					ExcludeReachableFrom = divergence.CommonAncestor,
 					SortBy = CommitSortStrategies.Topological
 				});
 
@@ -838,7 +840,7 @@ namespace MonoDevelop.VersionControl.Git
 					(string)changeSet.ExtendedProperties ["Git.AuthorEmail"],
 					DateTimeOffset.Now), sig);
 			else
-				repo.RootRepository.Commit (message, sig);
+				repo.RootRepository.Commit (message, sig, sig);
 		}
 
 		public bool IsUserInfoDefault ()
@@ -1437,7 +1439,7 @@ namespace MonoDevelop.VersionControl.Git
 			repositoryPath = repository.ToGitPath (repositoryPath);
 			var status = repository.RetrieveStatus (repositoryPath);
 			if (status != FileStatus.NewInIndex && status != FileStatus.NewInWorkdir) {
-				foreach (var hunk in repository.Blame (repositoryPath, new BlameOptions { Strategy = BlameStrategy.FollowExactRenames })) {
+				foreach (var hunk in repository.Blame (repositoryPath, new BlameOptions { FindExactRenames = true, })) {
 					var commit = hunk.FinalCommit;
 					var author = hunk.FinalSignature;
 					working = new Annotation (commit.Sha, author.Name, author.When.LocalDateTime, String.Format ("<{0}>", author.Email));
