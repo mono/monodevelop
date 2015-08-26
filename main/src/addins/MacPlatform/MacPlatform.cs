@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Reflection;
 
 using AppKit;
 using Foundation;
@@ -359,9 +360,13 @@ namespace MonoDevelop.MacIntegration
 				};
 
 				appDelegate.OpenFilesRequest += delegate (object sender, Xwt.Mac.OpenFilesEventArgs e) {
-					//OpenFiles may pump the mainloop, but can't do that from an AppleEvent, so use a brief timeout
+					// OpenFiles may pump the mainloop, but can't do that from an AppleEvent, so use a brief timeout
 					GLib.Timeout.Add (10, delegate {
-						IdeApp.OpenFiles (e.Filenames.Select (
+						// For mono based apps run from the commandline via `mono-sgen MonoDevelop.exe` Cocoa decides
+						// that MonoDevelop.exe is the first filename to be passed when the app starts up
+						// Therefore we strip any filenames that match the assembly that we started from.
+						var entryAsm = Assembly.GetEntryAssembly ();
+						IdeApp.OpenFiles (e.Filenames.Where (filename => filename != entryAsm.Location).Select (
 							filename => new FileOpenInformation (filename, null, 1, 1, OpenDocumentOptions.DefaultInternal))
 						);
 						return false;
