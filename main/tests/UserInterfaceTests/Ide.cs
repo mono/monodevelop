@@ -106,6 +106,7 @@ namespace UserInterfaceTests
 				"Package updates are available.",
 				"Packages are up to date.",
 				"No updates found but warnings were reported.",
+				"Packages successfully added.",
 				"Packages successfully updated.",
 				"Packages updated with warnings."},
 				timeoutInSecs: 360, pollStepInSecs: 5);
