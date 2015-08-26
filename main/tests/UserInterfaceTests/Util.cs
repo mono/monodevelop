@@ -33,6 +33,12 @@ namespace UserInterfaceTests
 {
 	public static class Util
 	{
+		public static void PrintData (this object data)
+		{
+			if (data != null)
+				TestService.Session.DebugObject.Debug (data.ToString ());
+		}
+
 		public static FilePath CreateTmpDir (string hint = null)
 		{
 			var cwd = new FileInfo (Assembly.GetExecutingAssembly ().Location).DirectoryName;

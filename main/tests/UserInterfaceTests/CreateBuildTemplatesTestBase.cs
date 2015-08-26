@@ -104,6 +104,7 @@ namespace UserInterfaceTests
 		public void CreateProject (TemplateSelectionOptions templateOptions,
 			ProjectDetails projectDetails, GitOptions gitOptions = null, object miscOptions = null)
 		{
+			PrintToTestRunner (templateOptions, projectDetails, gitOptions, miscOptions);
 			var newProject = new NewProjectController ();
 
 			if (projectDetails.AddProjectToExistingSolution)
@@ -208,6 +209,15 @@ namespace UserInterfaceTests
 //					newProject.Open ();
 //			}
 //			newProject.IsSelected (templateOptions);
+		}
+
+		void PrintToTestRunner (TemplateSelectionOptions templateOptions,
+			ProjectDetails projectDetails, GitOptions gitOptions, object miscOptions)
+		{
+			templateOptions.PrintData ();
+			projectDetails.PrintData ();
+			gitOptions.PrintData ();
+			miscOptions.PrintData ();
 		}
 	}
 }

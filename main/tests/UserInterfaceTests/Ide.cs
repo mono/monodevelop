@@ -110,7 +110,7 @@ namespace UserInterfaceTests
 				"Packages successfully updated.",
 				"Packages added with warnings.",
 				"Packages updated with warnings."},
-				timeoutInSecs: 360, pollStepInSecs: 5);
+				timeoutInSecs: 180, pollStepInSecs: 5);
 		};
 
 		public readonly static Action WaitForSolutionCheckedOut = delegate {
