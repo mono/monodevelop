@@ -1260,7 +1260,7 @@ namespace MonoDevelop.SourceEditor
 			foreach (PinnedWatchInfo wi in pinnedWatches) {
 				if (wi.Watch == args.Watch) {
 					pinnedWatches.Remove (wi);
-					widget.TextEditor.Remove (wi.Widget);
+					widget.TextEditor.TextArea.Remove (wi.Widget);
 					wi.Widget.Destroy ();
 					break;
 				}
@@ -1684,7 +1684,7 @@ namespace MonoDevelop.SourceEditor
 
 		public void DeleteText (int position, int length)
 		{
-			this.widget.TextEditor.Remove (position, length);
+			this.widget.TextEditor.TextArea.Remove (position, length);
 		}
 		#endregion 
 		
