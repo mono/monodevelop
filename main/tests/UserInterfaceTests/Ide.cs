@@ -108,6 +108,7 @@ namespace UserInterfaceTests
 				"No updates found but warnings were reported.",
 				"Packages successfully added.",
 				"Packages successfully updated.",
+				"Packages added with warnings.",
 				"Packages updated with warnings."},
 				timeoutInSecs: 360, pollStepInSecs: 5);
 		};
