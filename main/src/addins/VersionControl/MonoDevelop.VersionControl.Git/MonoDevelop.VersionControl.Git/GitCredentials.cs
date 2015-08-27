@@ -65,8 +65,11 @@ namespace MonoDevelop.VersionControl.Git
 		static GitCredentials ()
 		{
 			string keyStorage = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), ".ssh");
-			if (!Directory.Exists (keyStorage))
-				return;
+			if (!Directory.Exists (keyStorage)) {
+				keyStorage = Path.Combine (Environment.ExpandEnvironmentVariables ("%HOME%"), ".ssh");
+				if (!Directory.Exists (keyStorage))
+					return;
+			}
 
 			foreach (var privateKey in Directory.EnumerateFiles (keyStorage)) {
 				string publicKey = privateKey + ".pub";
