@@ -59,4 +59,4 @@
 [submodule "main/external/roslyn"]
 	path = main/external/roslyn
 	url = git://github.com/mono/roslyn.git
-	branch = monodevelop
+	branch = monodevelop_bin
