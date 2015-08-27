@@ -32,6 +32,7 @@ using ICSharpCode.PackageManagement;
 using Mono.Unix;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Projects;
 using NuGet;
 using Xwt;
 using Xwt.Drawing;
@@ -60,6 +61,7 @@ namespace MonoDevelop.PackageManagement
 			new PackageSource ("", Catalog.GetString ("Configure Sources..."));
 		ImageLoader imageLoader = new ImageLoader ();
 		bool loadingMessageVisible;
+		const string IncludePrereleaseUserPreferenceName = "NuGet.AddPackagesDialog.IncludePrerelease";
 
 		public AddPackagesDialog (ManagePackagesViewModel parentViewModel, string initialSearch = null)
 			: this (
@@ -187,12 +189,40 @@ namespace MonoDevelop.PackageManagement
 		void ShowPrereleaseCheckBoxClicked (object sender, EventArgs e)
 		{
 			viewModel.IncludePrerelease = !viewModel.IncludePrerelease;
+
+			SaveIncludePrereleaseUserPreference ();
+		}
+
+		void SaveIncludePrereleaseUserPreference ()
+		{
+			Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			if (solution != null) {
+				if (viewModel.IncludePrerelease) {
+					solution.UserProperties.SetValue (IncludePrereleaseUserPreferenceName, viewModel.IncludePrerelease);
+				} else {
+					solution.UserProperties.RemoveValue (IncludePrereleaseUserPreferenceName);
+				}
+				solution.SaveUserProperties ();
+			}
+		}
+
+		bool GetIncludePrereleaseUserPreference ()
+		{
+			Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			if (solution != null) {
+				return solution.UserProperties.GetValue (IncludePrereleaseUserPreferenceName, false);
+			}
+
+			return false;
 		}
 
 		void LoadViewModel (string initialSearch)
 		{
 			viewModel.ClearPackagesOnPaging = false;
 			viewModel.SearchTerms = initialSearch;
+
+			viewModel.IncludePrerelease = GetIncludePrereleaseUserPreference ();
+			showPrereleaseCheckBox.Active = viewModel.IncludePrerelease;
 
 			ClearSelectedPackageInformation ();
 			PopulatePackageSources ();
