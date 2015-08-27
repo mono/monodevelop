@@ -37,6 +37,9 @@ namespace UserInterfaceTests
 
 		Action<string> takeScreenshot;
 
+		Func<AppQuery, AppQuery> categoryViewQuery = c => c.TreeView ().Marked ("catView").Model ();
+		Func<AppQuery, AppQuery> fileTypeQuery = c => c.TreeView ().Marked ("newFileTemplateTreeView").Model ("templateStore__Name");
+
 		public NewFileController (Action<string> takeScreenshot = null)
 		{
 			this.takeScreenshot = takeScreenshot ?? delegate { };
@@ -44,6 +47,8 @@ namespace UserInterfaceTests
 
 		public static void Create (NewFileOptions options, Action<string> takeScreenshot = null)
 		{
+			options.PrintData ();
+
 			var ctrl = new NewFileController (takeScreenshot);
 			ctrl.Open ();
 			ctrl.ConfigureAddToProject (!string.IsNullOrEmpty (options.AddToProjectName), options.AddToProjectName);
@@ -63,16 +68,18 @@ namespace UserInterfaceTests
 
 		public bool SelectFileTypeCategory (string fileTypeCategory, string fileTypeCategoryRoot = "C#")
 		{
-			var openChild = Session.ClickElement (c => c.TreeView ().Marked ("catView").Model ().Text (fileTypeCategoryRoot));
-			var resultParent = Session.SelectElement (c => c.TreeView ().Marked ("catView").Model ().Text (fileTypeCategoryRoot).Children ().Text (fileTypeCategory));
-			var result = Session.SelectElement (c => c.TreeView ().Marked ("catView").Model ().Text (fileTypeCategory));
+			var openChild = Session.ClickElement (c => categoryViewQuery (c).Text (fileTypeCategoryRoot));
+			var resultParent = Session.SelectElement (c => categoryViewQuery (c).Text (fileTypeCategoryRoot).Children ().Text (fileTypeCategory));
+			var result = Session.SelectElement (c => categoryViewQuery (c).Text (fileTypeCategory)) &&
+				Session.WaitForElement (c => categoryViewQuery (c).Text (fileTypeCategory).Selected ()).Length > 0;
 			takeScreenshot ("FileTypeCategory-Selected");
 			return resultParent || result;
 		}
 
 		public bool SelectFileType (string fileType)
 		{
-			var result = Session.SelectElement (c => c.TreeView ().Marked ("newFileTemplateTreeView").Model ("templateStore__Name").Contains (fileType));
+			var result = Session.SelectElement (c => fileTypeQuery (c).Contains (fileType)) &&
+				Session.WaitForElement (c => fileTypeQuery (c).Contains (fileType).Selected ()).Length > 0;
 			takeScreenshot ("FileType-Selected");
 			return result;
 		}

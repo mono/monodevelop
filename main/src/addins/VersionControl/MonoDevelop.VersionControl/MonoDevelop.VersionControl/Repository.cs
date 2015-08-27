@@ -94,9 +94,17 @@ namespace MonoDevelop.VersionControl
 			if (--references == 0)
 				Dispose ();
 		}
-		
+
 		public virtual void Dispose ()
 		{
+			if (!queryRunning)
+				return;
+
+			lock (queryLock) {
+				fileQueryQueue.Clear ();
+				directoryQueryQueue.Clear ();
+				recursiveDirectoryQueryQueue.Clear ();
+			}
 		}
 		
 		// Display name of the repository

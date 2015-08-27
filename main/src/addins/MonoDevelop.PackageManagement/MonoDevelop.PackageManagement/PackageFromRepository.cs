@@ -231,5 +231,10 @@ namespace ICSharpCode.PackageManagement
 				return true;
 			}
 		}
+
+		public void ExtractContents (IFileSystem fileSystem, string extractPath)
+		{
+			package.ExtractContents (fileSystem, extractPath);
+		}
 	}
 }

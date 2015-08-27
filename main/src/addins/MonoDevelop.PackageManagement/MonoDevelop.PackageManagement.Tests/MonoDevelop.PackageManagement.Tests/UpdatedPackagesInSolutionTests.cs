@@ -54,10 +54,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			taskFactory = new FakeTaskFactory ();
 			taskFactory.RunTasksSynchronously = true;
 			progressMonitorFactory = new FakeProgressMonitorFactory ();
-			checkForUpdatesTaskRunner = new TestableCheckForUpdatesTaskRunner (
-				taskFactory,
-				progressMonitorFactory,
-				packageManagementEvents);
+			checkForUpdatesTaskRunner = new TestableCheckForUpdatesTaskRunner (taskFactory);
 			updatedPackagesInSolution = new TestableUpdatedPackagesInSolution (
 				solution,
 				registeredPackageRepositories,
@@ -387,61 +384,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void CheckForUpdates_OnePackageUpdated_ProgressMonitorCreatedAndDisposedAfterCheckForUpdatesReturned ()
-		{
-			CreateUpdatedPackagesInSolution ();
-			taskFactory.RunTasksSynchronously = false;
-			FakePackageManagementProject project = AddProjectToSolution ();
-			project.AddPackageReference ("MyPackage", "1.0");
-			AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
-			updatedPackagesInSolution.CheckForUpdates ();
-			bool progressMonitorCreated = checkForUpdatesTaskRunner.ProgressMonitorCreated != null;
-			bool disposedBeforeTaskRun = progressMonitorFactory.ProgressMonitor.IsDisposed;
-
-			taskFactory.ExecuteAllTasks<CheckForUpdatesTask> ();
-
-			Assert.IsTrue (progressMonitorCreated);
-			Assert.IsFalse (disposedBeforeTaskRun);
-			Assert.IsTrue (progressMonitorFactory.ProgressMonitor.IsDisposed);
-		}
-
-		[Test]
-		public void CheckForUpdates_OnePackageUpdatedButSolutionClosedBeforeResultsReturned_ProgressMonitorIsDisposed ()
-		{
-			CreateUpdatedPackagesInSolution ();
-			taskFactory.RunTasksSynchronously = false;
-			FakePackageManagementProject project = AddProjectToSolution ();
-			project.AddPackageReference ("MyPackage", "1.0");
-			AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
-			updatedPackagesInSolution.CheckForUpdates ();
-			bool progressMonitorCreated = checkForUpdatesTaskRunner.ProgressMonitorCreated != null;
-			bool disposedBeforeTaskRun = progressMonitorFactory.ProgressMonitor.IsDisposed;
-			var task = taskFactory.FakeTasksCreated [0] as FakeTask<CheckForUpdatesTask>;
-			task.ExecuteTaskButNotContinueWith ();
-			updatedPackagesInSolution.Clear ();
-
-			task.ExecuteContinueWith ();
-
-			Assert.IsTrue (progressMonitorCreated);
-			Assert.IsFalse (disposedBeforeTaskRun);
-			Assert.IsTrue (progressMonitorFactory.ProgressMonitor.IsDisposed);
-		}
-
-		[Test]
-		public void CheckForUpdates_OnePackageUpdated_SuccessReportedToProgressMonitor ()
-		{
-			CreateUpdatedPackagesInSolution ();
-			FakePackageManagementProject project = AddProjectToSolution ();
-			project.AddPackageReference ("MyPackage", "1.0");
-			AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
-
-			updatedPackagesInSolution.CheckForUpdates ();
-
-			Assert.AreEqual (GettextCatalog.GetString ("Package updates are available."), progressMonitorFactory.ProgressMonitor.ReportedSuccessMessage);
-		}
-
-		[Test]
-		public void CheckForUpdates_NoPackagesUpdated_SuccessReportedToProgressMonitor ()
+		public void CheckForUpdates_NoPackagesUpdated_NoUpdates ()
 		{
 			CreateUpdatedPackagesInSolution ();
 			FakePackageManagementProject project = AddProjectToSolution ();
@@ -451,11 +394,10 @@ namespace MonoDevelop.PackageManagement.Tests
 			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
 
 			Assert.IsFalse (updatedPackagesInSolution.AnyUpdates ());
-			Assert.AreEqual (GettextCatalog.GetString ("Packages are up to date."), progressMonitorFactory.ProgressMonitor.ReportedSuccessMessage);
 		}
 
 		[Test]
-		public void CheckForUpdates_ExceptionThrownWhilstCheckingForUpdates_ErrorReportedToProgressMonitorWhichIsDisposed ()
+		public void CheckForUpdates_ExceptionThrownWhilstCheckingForUpdates_ExceptionLogged ()
 		{
 			CreateUpdatedPackagesInSolution ();
 			taskFactory.RunTasksSynchronously = false;
@@ -471,14 +413,12 @@ namespace MonoDevelop.PackageManagement.Tests
 			task.Result = null;
 			task.ExecuteContinueWith ();
 
-			Assert.AreEqual (GettextCatalog.GetString ("Could not check for package updates."), progressMonitorFactory.ProgressMonitor.ReportedErrorMessage);
-			Assert.IsTrue (checkForUpdatesTaskRunner.ProgressMonitorCreated.IsPackageConsoleShown);
-			progressMonitorFactory.ProgressMonitor.AssertMessageIsLogged ("Inner exception error message");
-			Assert.IsTrue (progressMonitorFactory.ProgressMonitor.IsDisposed);
+			Assert.AreEqual ("Current check for updates task error.", checkForUpdatesTaskRunner.LoggedErrorMessages[0]);
+			Assert.AreEqual (task.Exception, checkForUpdatesTaskRunner.LoggedExceptions[0]);
 		}
 
 		[Test]
-		public void CheckForUpdates_ExceptionThrownWhilstCheckingForUpdatesButSolutionClosedBeforeCheckForUpdatesReturns_ErrorIsNotReportedButProgressMonitorIsDisposed ()
+		public void CheckForUpdates_ExceptionThrownWhilstCheckingForUpdatesButSolutionClosedBeforeCheckForUpdatesReturns_ErrorIsLogged ()
 		{
 			CreateUpdatedPackagesInSolution ();
 			taskFactory.RunTasksSynchronously = false;
@@ -494,13 +434,12 @@ namespace MonoDevelop.PackageManagement.Tests
 			task.Result = null;
 			task.ExecuteContinueWith ();
 
-			Assert.IsNull (progressMonitorFactory.ProgressMonitor.ReportedErrorMessage);
-			progressMonitorFactory.ProgressMonitor.AssertMessageIsNotLogged ("Error message");
-			Assert.IsTrue (progressMonitorFactory.ProgressMonitor.IsDisposed);
+			Assert.AreEqual ("Check for updates task error.", checkForUpdatesTaskRunner.LoggedErrorMessages[0]);
+			Assert.AreEqual (task.Exception, checkForUpdatesTaskRunner.LoggedExceptions[0]);
 		}
 
 		[Test]
-		public void CheckForUpdates_ExceptionThrownWhilstCheckingForUpdatesButSolutionClosedBeforeCheckForUpdatesReturnsAndSecondCheckForUpdatesIsStarted_ErrorIsNotReported ()
+		public void CheckForUpdates_ExceptionThrownWhilstCheckingForUpdatesButSolutionClosedBeforeCheckForUpdatesReturnsAndSecondCheckForUpdatesIsStarted_ErrorIsLogged ()
 		{
 			CreateUpdatedPackagesInSolution ();
 			taskFactory.RunTasksSynchronously = false;
@@ -516,9 +455,8 @@ namespace MonoDevelop.PackageManagement.Tests
 			task.Result = null;
 			task.ExecuteContinueWith ();
 
-			Assert.IsNull (progressMonitorFactory.ProgressMonitor.ReportedErrorMessage);
-			progressMonitorFactory.ProgressMonitor.AssertMessageIsNotLogged ("Error message");
-			Assert.IsTrue (progressMonitorFactory.ProgressMonitor.IsDisposed);
+			Assert.AreEqual ("Check for updates task error.", checkForUpdatesTaskRunner.LoggedErrorMessages[0]);
+			Assert.AreEqual (task.Exception, checkForUpdatesTaskRunner.LoggedExceptions[0]);
 		}
 
 		[Test]

@@ -89,7 +89,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-
 		public string Name {
 			get { return filename; }
 
@@ -470,7 +469,7 @@ namespace MonoDevelop.Projects
 		}
 	}
 
-	internal class ProjectFileVirtualPathChangedEventArgs : EventArgs
+	class ProjectFileVirtualPathChangedEventArgs : EventArgs
 	{
 		public ProjectFileVirtualPathChangedEventArgs (ProjectFile projectFile, FilePath oldPath, FilePath newPath)
 		{
@@ -484,7 +483,7 @@ namespace MonoDevelop.Projects
 		public FilePath NewVirtualPath { get; private set; }
 	}
 
-	internal class ProjectFilePathChangedEventArgs : ProjectFileVirtualPathChangedEventArgs
+	class ProjectFilePathChangedEventArgs : ProjectFileVirtualPathChangedEventArgs
 	{
 		public ProjectFilePathChangedEventArgs (ProjectFile projectFile, FilePath oldPath, FilePath newPath, FilePath oldVirtualPath, FilePath newVirtualPath) : base (projectFile, oldVirtualPath, newVirtualPath)
 		{

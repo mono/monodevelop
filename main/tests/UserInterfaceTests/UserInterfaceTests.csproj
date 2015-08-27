@@ -97,8 +97,10 @@
     <Compile Include="VersionControlTests\Git\GitRepositoryConfigurationTests.cs" />
     <Compile Include="VersionControlTests\Git\GitStashManagerTests.cs" />
     <Compile Include="VersionControlTests\Git\GitTests.cs" />
-    <Compile Include="Controllers\ProjectOptionsController.cs" />
     <Compile Include="Controllers\NuGetOptions.cs" />
+    <Compile Include="Controllers\OptionsController.cs" />
+    <Compile Include="Exceptions\NuGetException.cs" />
+    <Compile Include="LogMessageValidator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -129,7 +131,7 @@
       <NuGet>$(SolutionDir)\external\nuget-binary\NuGet.exe</NuGet>
       <NuGet Condition="$(OS)=='Unix'">mono $(NuGet)</NuGet>
     </PropertyGroup>
-    <Exec Command="$(NuGet) restore -SolutionDirectory $(SolutionDir)" />
+    <Exec Condition="Exists('$(SolutionDir)\..\.git')" Command="$(NuGet) restore -SolutionDirectory $(SolutionDir)" />
   </Target>
   <ItemGroup>
     <Folder Include="DialogTests\" />

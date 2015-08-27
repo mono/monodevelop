@@ -293,6 +293,12 @@ namespace MonoDevelop.Components.AutoTest
 			return this;
 		}
 
+		public AppQuery Selected ()
+		{
+			operations.Add (new SelectedOperation ());
+			return this;
+		}
+
 		public AppQuery Model (string column = null)
 		{
 			operations.Add (new ModelOperation (column));

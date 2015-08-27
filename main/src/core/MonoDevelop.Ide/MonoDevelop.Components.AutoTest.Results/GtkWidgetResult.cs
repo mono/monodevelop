@@ -85,6 +85,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
+		public override AppResult Selected ()
+		{
+			return resultWidget.HasFocus ? this : null;
+		}
+
 		public override AppResult CheckType (Type desiredType)
 		{
 			if (resultWidget.GetType () == desiredType || resultWidget.GetType ().IsSubclassOf (desiredType)) {

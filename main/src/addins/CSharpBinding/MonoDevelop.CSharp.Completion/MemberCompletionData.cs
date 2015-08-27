@@ -387,7 +387,7 @@ namespace MonoDevelop.CSharp.Completion
 			var ctx = editorCompletion.CSharpUnresolvedFile.GetTypeResolveContext (editorCompletion.UnresolvedFileCompilation, editorCompletion.Document.Editor.Caret.Location) as CSharpTypeResolveContext;
 			var state = new CSharpResolver (ctx);
 			var builder = new TypeSystemAstBuilder (state);
-			builder.AddAnnotations = true;
+			builder.AddTypeReferenceAnnotations  = true;
 			var dt = state.CurrentTypeDefinition;
 			var declaring = ctx.CurrentTypeDefinition != null ? ctx.CurrentTypeDefinition.DeclaringTypeDefinition : null;
 			if (declaring != null) {

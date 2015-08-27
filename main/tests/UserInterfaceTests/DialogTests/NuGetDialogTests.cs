@@ -97,7 +97,7 @@ namespace UserInterfaceTests
 			};
 
 			var projectDetails = CreateProject ();
-			NuGetController.AddPackage (packageInfo);
+			NuGetController.AddPackage (packageInfo, TakeScreenShot);
 			WaitForNuGetReadmeOpened ();
 			Session.ExecuteCommand (FileCommands.CloseFile);
 
@@ -112,7 +112,7 @@ namespace UserInterfaceTests
 			CreateProject (pclTemplateOptions, pclProjectDetails);
 
 			SolutionExplorerController.SelectProject (projectDetails.SolutionName, pclProjectDetails.ProjectName);
-			NuGetController.AddPackage (packageInfo);
+			NuGetController.AddPackage (packageInfo, TakeScreenShot);
 			Assert.Throws<TimeoutException> (WaitForNuGetReadmeOpened);
 		}
 

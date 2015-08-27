@@ -342,7 +342,6 @@
     <Compile Include="MonoDevelop.PackageManagement\IUpdatedPackagesInSolution.cs" />
     <Compile Include="MonoDevelop.PackageManagement\FallbackRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\PackageManagementStartupHandler.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageUpdatesEventMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdatePackagesProgressMonitorStatusMessage.cs" />
     <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatedPackagesAction.cs" />
@@ -364,16 +363,17 @@
     <Compile Include="MonoDevelop.PackageManagement\MSBuildTargetsRestoredMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementMSBuildExtension.cs" />
     <Compile Include="MonoDevelop.PackageManagement\EnsureNuGetPackageBuildImportsTargetUpdater.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatesProgressMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatesTaskRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatesTask.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectReloadedEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\OpenPackageReadmeMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IOpenPackageReadMeMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\NullOpenPackageReadMeMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageManagementSolutionExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DotNetProjectReferenceEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\LocalCopyReferenceMaintainer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DotNetSolutionEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\DotNetProjectImportEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

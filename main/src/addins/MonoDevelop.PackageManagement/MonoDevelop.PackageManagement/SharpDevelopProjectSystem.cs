@@ -426,9 +426,10 @@ namespace ICSharpCode.PackageManagement
 
 				using (var updater = new EnsureNuGetPackageBuildImportsTargetUpdater ()) {
 					updater.RemoveImport (relativeTargetPath);
-					project.DisposeProjectBuilder ();
 					project.Save ();
 				}
+
+				packageManagementEvents.OnImportRemoved (project, relativeTargetPath);
 			});
 		}
 

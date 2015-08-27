@@ -34,17 +34,33 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Git
 {
+	public enum GitCredentialsType
+	{
+		Normal,
+		Tfs,
+	}
+
+	public class GitCredentialsState
+	{
+		public string UrlUsed { get; set; }
+		public bool AgentUsed { get; set; }
+		public int KeyUsed { get; set; }
+		public bool NativePasswordUsed { get; set; }
+		public Dictionary<string, int> KeyForUrl = new Dictionary<string, int> ();
+		public Dictionary<string, bool> AgentForUrl = new Dictionary<string, bool> ();
+
+		public GitCredentialsState ()
+		{
+			KeyUsed = -1;
+		}
+	}
+
 	static class GitCredentials
 	{
 		// Gather keys on initialize.
 		static readonly List<string> Keys = new List<string> ();
-		static readonly Dictionary<string, int> KeyForUrl = new Dictionary<string, int> ();
-		static readonly Dictionary<string, bool> AgentForUrl = new Dictionary<string, bool> ();
 
-		static string urlUsed;
-		static bool agentUsed;
-		static int keyUsed = -1;
-		static bool nativePasswordUsed;
+		static Dictionary<GitCredentialsType, GitCredentialsState> credState = new Dictionary<GitCredentialsType, GitCredentialsState> ();
 
 		static GitCredentials ()
 		{
@@ -59,12 +75,15 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		public static Credentials TryGet (string url, string userFromUrl, SupportedCredentialTypes types)
+		public static Credentials TryGet (string url, string userFromUrl, SupportedCredentialTypes types, GitCredentialsType type)
 		{
 			bool result = true;
 			Uri uri = null;
 
-			urlUsed = url;
+			GitCredentialsState state;
+			if (!credState.TryGetValue (type, out state))
+				credState [type] = state = new GitCredentialsState ();
+			state.UrlUsed = url;
 
 			// We always need to run the TryGet* methods as we need the passphraseItem/passwordItem populated even
 			// if the password store contains an invalid password/no password
@@ -72,8 +91,8 @@ namespace MonoDevelop.VersionControl.Git
 				uri = new Uri (url);
 				string username;
 				string password;
-				if (!nativePasswordUsed && TryGetUsernamePassword (uri, out username, out password)) {
-					nativePasswordUsed = true;
+				if (!state.NativePasswordUsed && TryGetUsernamePassword (uri, out username, out password)) {
+					state.NativePasswordUsed = true;
 					return new UsernamePasswordCredentials {
 						Username = username,
 						Password = password
@@ -86,13 +105,13 @@ namespace MonoDevelop.VersionControl.Git
 				cred = new UsernamePasswordCredentials ();
 			else {
 				// Try ssh-agent on Linux.
-				if (!Platform.IsWindows && !agentUsed) {
+				if (!Platform.IsWindows && !state.AgentUsed) {
 					bool agentUsable;
-					if (!AgentForUrl.TryGetValue (url, out agentUsable))
-						AgentForUrl [url] = agentUsable = true;
+					if (!state.AgentForUrl.TryGetValue (url, out agentUsable))
+						state.AgentForUrl [url] = agentUsable = true;
 
 					if (agentUsable) {
-						agentUsed = true;
+						state.AgentUsed = true;
 						return new SshAgentCredentials {
 							Username = userFromUrl,
 						};
@@ -100,9 +119,9 @@ namespace MonoDevelop.VersionControl.Git
 				}
 
 				int key;
-				if (!KeyForUrl.TryGetValue (url, out key)) {
-					if (keyUsed + 1 < Keys.Count)
-						keyUsed++;
+				if (!state.KeyForUrl.TryGetValue (url, out key)) {
+					if (state.KeyUsed + 1 < Keys.Count)
+						state.KeyUsed++;
 					else {
 						SelectFileDialog dlg = null;
 						bool success = false;
@@ -135,13 +154,13 @@ namespace MonoDevelop.VersionControl.Git
 						throw new VersionControlException (GettextCatalog.GetString ("Invalid credentials were supplied. Aborting operation."));
 					}
 				} else
-					keyUsed = key;
+					state.KeyUsed = key;
 
 				cred = new SshUserKeyCredentials {
 					Username = userFromUrl,
 					Passphrase = "",
-					PrivateKey = Keys [keyUsed],
-					PublicKey = Keys [keyUsed] + ".pub",
+					PrivateKey = Keys [state.KeyUsed],
+					PublicKey = Keys [state.KeyUsed] + ".pub",
 				};
 				return cred;
 			}
@@ -194,31 +213,40 @@ namespace MonoDevelop.VersionControl.Git
 			return false;
 		}
 
-		internal static void StoreCredentials ()
+		internal static void StoreCredentials (GitCredentialsType type)
 		{
-			nativePasswordUsed = false;
+			GitCredentialsState state;
+			if (!credState.TryGetValue (type, out state))
+				return;
 
-			if (!string.IsNullOrEmpty (urlUsed))
-				if (keyUsed != -1)
-					KeyForUrl [urlUsed] = keyUsed;
+			var url = state.UrlUsed;
+			var key = state.KeyUsed;
 
-			Cleanup ();
+			state.NativePasswordUsed = false;
+
+			if (!string.IsNullOrEmpty (url) && key != -1)
+				state.KeyForUrl [url] = key;
+
+			Cleanup (state);
 		}
 
-		internal static void InvalidateCredentials ()
+		internal static void InvalidateCredentials (GitCredentialsType type)
 		{
-			if (!string.IsNullOrEmpty (urlUsed))
-				if (AgentForUrl.ContainsKey (urlUsed))
-					AgentForUrl [urlUsed] &= !agentUsed;
+			GitCredentialsState state;
+			if (!credState.TryGetValue (type, out state))
+				return;
 
-			Cleanup ();
+			if (!string.IsNullOrEmpty (state.UrlUsed) && state.AgentForUrl.ContainsKey (state.UrlUsed))
+				state.AgentForUrl [state.UrlUsed] &= !state.AgentUsed;
+
+			Cleanup (state);
 		}
 
-		static void Cleanup ()
+		static void Cleanup (GitCredentialsState state)
 		{
-			urlUsed = null;
-			agentUsed = false;
-			keyUsed = -1;
+			state.UrlUsed = null;
+			state.AgentUsed = false;
+			state.KeyUsed = -1;
 		}
 	}
 }
