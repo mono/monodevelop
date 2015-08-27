@@ -30,6 +30,7 @@ using MonoDevelop.Core;
 using System.IO;
 using System.Xml;
 using System;
+using System.Collections.Generic;
 
 namespace UserInterfaceTests
 {
@@ -160,7 +161,7 @@ namespace UserInterfaceTests
 
 			Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workspace.OpenWorkspaceItem", new FilePath (solutionPath), true);
 			TakeScreenShot ("Solution-Opened");
-			Ide.WaitForPackageUpdate ();
+			Ide.WaitForPackageUpdateExtra (new List<string> { "Solution loaded." });
 			TakeScreenShot ("Solution-Ready");
 
 			NuGetController.UpdateAllNuGetPackages (TakeScreenShot);
