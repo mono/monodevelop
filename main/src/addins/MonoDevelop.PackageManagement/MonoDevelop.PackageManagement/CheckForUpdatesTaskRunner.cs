@@ -124,7 +124,7 @@ namespace MonoDevelop.PackageManagement
 
 		protected virtual void LogError (string message, Exception ex)
 		{
-			LoggingService.LogInternalError (message, ex);
+			LoggingService.LogError (message, ex);
 		}
 
 		bool IsCurrentTask (ITask<CheckForUpdatesTask> taskToCompare)

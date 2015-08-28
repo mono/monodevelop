@@ -210,7 +210,7 @@ namespace MonoDevelop.PackageManagement
 
 		public void ShowError (ProgressMonitorStatusMessage progressMessage, Exception exception)
 		{
-			LoggingService.LogInternalError (progressMessage.Status, exception);
+			LoggingService.LogError (progressMessage.Error, exception);
 			ShowError (progressMessage, exception.Message);
 		}
 
