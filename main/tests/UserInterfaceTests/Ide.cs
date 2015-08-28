@@ -102,7 +102,7 @@ namespace UserInterfaceTests
 		public readonly static Action EmptyAction = delegate { };
 
 		static string[] waitForNuGetMessages = {
-			"Project Saved.",
+			"Project saved.",
 			"Solution loaded.",
 			"Package updates are available.",
 			"Packages are up to date.",
