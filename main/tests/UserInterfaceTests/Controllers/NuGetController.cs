@@ -66,6 +66,7 @@ namespace UserInterfaceTests
 
 		static void AddUpdatePackage (NuGetPackageOptions packageOptions, Action<string> takeScreenshot, bool isUpdate = false)
 		{
+			packageOptions.PrintData ();
 			takeScreenshot = takeScreenshot ?? delegate {};
 			var nuget = new NuGetController (takeScreenshot, isUpdate);
 			nuget.Open ();

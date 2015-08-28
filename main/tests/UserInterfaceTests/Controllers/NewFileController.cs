@@ -47,6 +47,8 @@ namespace UserInterfaceTests
 
 		public static void Create (NewFileOptions options, Action<string> takeScreenshot = null)
 		{
+			options.PrintData ();
+
 			var ctrl = new NewFileController (takeScreenshot);
 			ctrl.Open ();
 			ctrl.ConfigureAddToProject (!string.IsNullOrEmpty (options.AddToProjectName), options.AddToProjectName);

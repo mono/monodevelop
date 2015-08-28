@@ -51,6 +51,7 @@ namespace UserInterfaceTests
 
 		public static bool Select (params string[] selectionTree)
 		{
+			string.Join (" > ", selectionTree).PrintData ();
 			Func<AppQuery, AppQuery> query = GetNodeQuery (selectionTree);
 			return Session.SelectElement (GetNodeQuery (selectionTree)) && Session.WaitForElement (c => query (c).Selected ()).Any ();
 		}

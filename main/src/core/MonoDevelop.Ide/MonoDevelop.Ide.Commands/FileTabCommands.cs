@@ -35,6 +35,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Core;
 using System.Linq;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -49,33 +50,46 @@ namespace MonoDevelop.Ide.Commands
 	
 	class CloseAllHandler : CommandHandler
 	{
+		protected virtual IViewContent GetDocumentException ()
+		{
+			return null;
+		}
+
 		protected override void Run ()
 		{
 			var active = IdeApp.Workbench.ActiveDocument;
 			if (active == null)
 				return;
+
 			var activeNotebook = ((SdiWorkspaceWindow)active.Window).TabControl;
-			foreach (Document doc in IdeApp.Workbench.Documents.ToArray ()) {
-				var w1 = (SdiWorkspaceWindow) doc.Window;
-				if (w1.TabControl == activeNotebook)
+			var except = GetDocumentException ();
+
+			var docs = IdeApp.Workbench.Documents
+				.Where (doc => ((SdiWorkspaceWindow)doc.Window).TabControl == activeNotebook && (except == null || doc.Window.ViewContent != except))
+				.ToArray ();
+
+			var dirtyDialogShown = docs.Count (doc => doc.IsDirty) > 1;
+			if (dirtyDialogShown)
+				using (var dlg = new DirtyFilesDialog (docs, closeWorkspace: false, groupByProject: false)) {
+					dlg.Modal = true;
+					if (MessageService.ShowCustomDialog (dlg) != (int)Gtk.ResponseType.Ok)
+						return;
+				}
+			
+			foreach (Document doc in docs)
+				if (dirtyDialogShown)
+					doc.Window.CloseWindow (true);
+				else
 					doc.Close ();
-			}
 		}
 	}
 	
-	class CloseAllButThisHandler : CommandHandler
+	class CloseAllButThisHandler : CloseAllHandler
 	{
-		protected override void Run ()
+		protected override IViewContent GetDocumentException ()
 		{
 			var active = IdeApp.Workbench.ActiveDocument;
-			if (active == null)
-				return;
-			var activeNotebook = ((SdiWorkspaceWindow)active.Window).TabControl;
-			foreach (Document doc in IdeApp.Workbench.Documents.ToArray ()) {
-				var w1 = (SdiWorkspaceWindow) doc.Window;
-				if (w1.TabControl == activeNotebook && doc != active)
-					doc.Close ();
-			}
+			return active == null ? null : active.Window.ViewContent;
 		}
 	}
 	

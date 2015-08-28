@@ -345,6 +345,7 @@ namespace UserInterfaceTests
 			TakeScreenShot ("About-To-Click-Convert-To-Branch");
 			Session.ClickElement (c => c.Window ().Marked ("Stash Manager").Children ().Button ().Text ("Convert to Branch"), false);
 			EnterBranchName (branchName);
+			Ide.WaitForStatusMessage (new [] { "Stash successfully applied" });
 		}
 
 		#endregion
