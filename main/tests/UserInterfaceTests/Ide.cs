@@ -103,6 +103,7 @@ namespace UserInterfaceTests
 
 		static string[] waitForNuGetMessages = {
 			"Project Saved.",
+			"Solution loaded.",
 			"Package updates are available.",
 			"Packages are up to date.",
 			"No updates found but warnings were reported.",
