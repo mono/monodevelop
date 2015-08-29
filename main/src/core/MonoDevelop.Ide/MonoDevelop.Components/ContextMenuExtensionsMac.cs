@@ -67,8 +67,16 @@ namespace MonoDevelop.Components
 				var toplevel = parent.Toplevel as Gtk.Window;
 
 				var nswindow = MonoDevelop.Components.Mac.GtkMacInterop.GetNSWindow (toplevel);
-				var titleBarHeight = MonoDevelop.Components.Mac.GtkMacInterop.GetTitleBarHeight ();
-				var pt = new CoreGraphics.CGPoint (x, nswindow.Frame.Height - y - titleBarHeight - 12);
+
+				int titleBarOffset;
+				if (toplevel.TypeHint == Gdk.WindowTypeHint.Toolbar && toplevel.Type == Gtk.WindowType.Toplevel && toplevel.Decorated == false) {
+					// Undecorated toplevel toolbars are used for auto-hide pad windows. Don't add a titlebar offset for them.
+					titleBarOffset = 0;
+				} else {
+					titleBarOffset = MonoDevelop.Components.Mac.GtkMacInterop.GetTitleBarHeight () + 12;
+				}
+
+				var pt = new CoreGraphics.CGPoint (x, nswindow.Frame.Height - y - titleBarOffset);
 
 				var tmp_event = NSEvent.MouseEvent (NSEventType.LeftMouseDown,
 					pt,
