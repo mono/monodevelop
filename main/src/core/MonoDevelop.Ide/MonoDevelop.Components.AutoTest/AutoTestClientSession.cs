@@ -77,7 +77,6 @@ namespace MonoDevelop.Components.AutoTest
 
 			var pi = new ProcessStartInfo (file, args) { UseShellExecute = false };
 			pi.EnvironmentVariables ["MONO_AUTOTEST_CLIENT"] = sref;
-			pi.EnvironmentVariables ["GTK_MODULES"] = "gail:atk-bridge";
 			if (environment != null)
 				foreach (var e in environment)
 					pi.EnvironmentVariables [e.Key] = e.Value;
