@@ -335,7 +335,7 @@ namespace MonoDevelop.VersionControl
 
 		class RecursiveDirectoryInfoQuery : DirectoryInfoQuery
 		{
-			public VersionInfo[] Result;
+			public VersionInfo[] Result = new VersionInfo[0];
 			public ManualResetEvent ResetEvent;
 			public int Count;
 		}
