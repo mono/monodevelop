@@ -96,7 +96,11 @@ namespace UserInterfaceTests
 			} finally {
 				var testStatus = TestContext.CurrentContext.Result.Status;
 				if (testStatus != TestStatus.Passed) {
-					TakeScreenShot (string.Format ("{0}-Test-Failed", TestContext.CurrentContext.Test.Name));
+					try {
+						TakeScreenShot (string.Format ("{0}-Test-Failed", TestContext.CurrentContext.Test.Name));
+					} catch (Exception e) {
+						Session.DebugObject.Debug ("Final Screenshot failed");
+					}
 				}
 
 				File.WriteAllText (Path.Combine (currentTestResultFolder, "MemoryUsage.json"),
