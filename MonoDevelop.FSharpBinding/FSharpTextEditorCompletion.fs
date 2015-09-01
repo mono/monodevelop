@@ -65,12 +65,43 @@ type internal FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, ove
             return result
         | _ -> return TooltipInformation() }, cancellationToken = cancel)
 
-type Category(category) =
-  inherit CompletionCategory(category, null)
+type SimpleCategory(text) =
+  inherit CompletionCategory(text, null)
   override x.CompareTo other =
     if other = null then -1 else x.DisplayText.CompareTo other.DisplayText
 
-//TODO: finish porting symbol version once it hit FCS
+type Category(text, s:FSharpSymbol) =
+  inherit CompletionCategory(text, null)
+
+  let ancestry (e: FSharpEntity) =
+    e.UnAnnotate()
+    |> Seq.unfold (fun x -> x.BaseType
+                            |> Option.map (fun x -> let entity = x.TypeDefinition.UnAnnotate()
+                                                    entity, entity))
+    |> Seq.append (e.AllInterfaces
+                   |> Seq.map (fun a -> a.TypeDefinition.UnAnnotate()))
+                                                                            
+  member x.Symbol = s
+  override x.CompareTo other =
+    match other with
+    | null -> 1
+    | :? Category as other ->
+      match s, other.Symbol with
+      | (:? FSharpEntity as aa), (:? FSharpEntity as bb) ->
+        let comparisonResult =
+          let aaAllBases = ancestry aa
+          match (aaAllBases |> Seq.tryFind (fun a -> a.IsEffectivelySameAs bb)) with
+          | Some _ ->  -1
+          | _ ->
+            let bbAllBases = ancestry bb
+            match (bbAllBases |> Seq.tryFind (fun a -> a.IsEffectivelySameAs aa)) with
+            | Some _ ->  1
+            | _ -> aa.DisplayName.CompareTo(bb.DisplayName)
+        comparisonResult
+      | a, b -> a.DisplayName.CompareTo(b.DisplayName)
+    | _ -> -1
+
+//TODO: finish porting symbol version
 type FSharpParameterHintingData (name, meth : FSharpMethodGroupItem(*, symbol:FSharpSymbolUse*) ) =
   inherit ParameterHintingData (null)
 
@@ -92,8 +123,7 @@ type FSharpParameterHintingData (name, meth : FSharpMethodGroupItem(*, symbol:FS
 //    | _ -> ""
     meth.Parameters.[i].ParameterName
 
-  /// Returns the markup to use to represent the specified method overload
-  /// in the parameter information window.
+  /// Returns the markup to use to represent the method overload in the parameter information window.
   override x.CreateTooltipInformation (_editor, _context, currentParameter:int, _smartWrap:bool, cancel) =
     Async.StartAsTask(
       async {
@@ -102,7 +132,7 @@ type FSharpParameterHintingData (name, meth : FSharpMethodGroupItem(*, symbol:FS
             match TooltipFormatting.formatTip meth.Description with
             | [signature,comment] -> signature,comment
             //With multiple tips just take the head.  
-            //This shouldnt happen anyway as we split them in the resolver provider
+            //This shouldnt happen as we split them in the resolver provider
             | multiple ->
                 multiple 
                 |> List.head
@@ -133,11 +163,11 @@ type FSharpParameterHintingData (name, meth : FSharpMethodGroupItem(*, symbol:FS
 
           let lines = signature.Split [| '\n';'\r' |]
 
-          // Try to highlight the current parameter in bold. Hack apart the text based on (, comma, and ), then
-          // put it back together again.
+          // Try to highlight the current parameter in bold. Hack apart the text based on (, comma, and ),
+          // then put it back together again.
           //
-          // @todo This will not be perfect when the text contains generic types with more than one type parameter
-          // since they will have extra commas. 
+          // @todo This will not be perfect when the text contains generic types with more than one type
+          // parameter since they will have extra commas. 
 
           let text = if lines.Length = 0 then name else  lines.[0]
           let textL = text.Split '('
@@ -170,7 +200,7 @@ type FSharpTextEditorCompletion() =
          
   let compilerIdentifiers =
     let icon = Stock.Literal
-    let compilerIdentifierCategory = Category "Compiler Identifiers"
+    let compilerIdentifierCategory = SimpleCategory "Compiler Identifiers"
     [ CompletionData("__LINE__", icon,
                         "Evaluates to the current line number, considering <tt>#line</tt> directives.",
                         CompletionCategory = compilerIdentifierCategory, 
@@ -187,6 +217,7 @@ type FSharpTextEditorCompletion() =
   // Until we build some functionality around a reversing tokenizer that detect this and other contexts
   // A crude detection of being inside an auto property decl: member val Foo = 10 with get,$ set
   let isAnAutoProperty (_editor: TextEditor) _offset =
+    //let line, col, txt = editor.GetLineInfoFromOffset(offset)
     false
   //TODO
   //  let lastStart = editor.FindPrevWordOffset(offset)
@@ -200,12 +231,12 @@ type FSharpTextEditorCompletion() =
 
   let getCompletionData (symbols:FSharpSymbolUse list list) =
     let categories = Dictionary<string, Category>()
-    let getOrAddCategory id =
-      let found, item = categories.TryGetValue id
-      if found then item
-      else let cat = Category id 
-           categories.Add (id,cat)
-           cat
+    let getOrAddCategory symbol id =
+      match categories.TryGetValue id with
+      | true, item -> item
+      | _ -> let cat = Category(id, symbol) 
+             categories.Add (id, cat)
+             cat
 
     let symbolToIcon (symbolUse:FSharpSymbolUse) = 
       match symbolUse with
@@ -217,7 +248,10 @@ type FSharpTextEditorCompletion() =
       | Constructor _  -> Stock.Method
       | Event _ -> Stock.Event
       | Property _ -> Stock.Property
-      | Function _ -> IconId("md-fs-field")
+      | Function f ->
+        if f.IsExtensionMember then IconId("md-extensionmethod")
+        elif f.IsMember then IconId("md-method")
+        else IconId("md-fs-field")
       | Operator _ -> IconId("md-fs-field")
       | ClosureOrNestedFunction _ -> IconId("md-fs-field")
       | Val _ -> Stock.Field
@@ -236,65 +270,84 @@ type FSharpTextEditorCompletion() =
         try
             match symbolUse with
             | Constructor c ->
-                Some c.EnclosingEntity.DisplayName
-            | TypeAbbreviation _ta -> None
-            | Class _cl -> None
-            | Delegate _dl -> None
+                let ent = c.EnclosingEntity.UnAnnotate()
+                Some (ent.DisplayName, ent)
             | Event ev ->
-                Some ev.EnclosingEntity.DisplayName
+                let ent = ev.EnclosingEntity.UnAnnotate()
+                Some (ent.DisplayName, ent)
             | Property pr ->
-                Some pr.EnclosingEntity.DisplayName
+                let ent  = pr.EnclosingEntity.UnAnnotate()
+                Some (ent.DisplayName, ent)
             | ActivePatternCase ap ->
                 if ap.Group.Names.Count > 1 then
                   match ap.Group.EnclosingEntity with
                   | Some enclosing ->
-                      enclosing.DisplayName
-                      |> SymbolTooltips.escapeText
-                      |> Some
+                      let ent = enclosing.UnAnnotate()
+                      Some(SymbolTooltips.escapeText ent.DisplayName, ent)
                   | None -> None
                 else None
-
             | UnionCase uc ->
                 if uc.UnionCaseFields.Count > 1 then
-                    uc.ReturnType.AbbreviatedType.Format symbolUse.DisplayContext
-                    |> SymbolTooltips.escapeText
-                    |> Some
+                  let ent = uc.ReturnType.TypeDefinition.UnAnnotate()
+                  Some(SymbolTooltips.escapeText ent.DisplayName, ent)
                 else None
-                 
             | Function f ->
-                Some f.EnclosingEntity.DisplayName
+                if f.IsExtensionMember then
+                  let real = f.LogicalEnclosingEntity.UnAnnotate()
+                  Some(real.DisplayName, real)
+                else
+                  let real = f.EnclosingEntity.UnAnnotate()
+                  Some(real.DisplayName, real)
             | Operator o ->
-                Some o.EnclosingEntity.DisplayName
+                let ent = o.EnclosingEntity.UnAnnotate()
+                Some (ent.DisplayName, ent)
             | Pattern p ->
-                Some p.EnclosingEntity.DisplayName
+                let ent = p.EnclosingEntity.UnAnnotate()
+                Some (ent.DisplayName, ent)
+            | Val v ->
+                let ent = v.EnclosingEntity.UnAnnotate()
+                Some (ent.DisplayName, ent)
+            | TypeAbbreviation ta ->
+                //TODO:  Check this is correct, I suspect we should return None here
+                let ent = ta.UnAnnotate()
+                Some (ent.DisplayName, ent)
             | ClosureOrNestedFunction _cl ->
                 //Theres no link to a parent type for a closure (FCS limitation)
                 None
-            | Val v -> Some v.EnclosingEntity.DisplayName
-            | Enum _ | Interface _ | Module _ | Namespace _ | Record _ | Union _ | ValueType _ | CorePatterns.Entity _ -> None
-            | _ ->
-                None
-        with exn ->
-            None
+            //The following have no logical parent to display
+            //The F# compiler does not currently expose an Entitys parent, only children
+            | Class _cl -> None
+            | Delegate _dl -> None
+            | Enum _en  -> None
+            | Interface _  -> None
+            | Module _  -> None
+            | Namespace _  -> None
+            | Record _  -> None
+            | Union _  -> None
+            | ValueType _  -> None
+            | _ -> None
+        with exn -> None
       category
 
     let symbolToCompletionData (symbols : FSharpSymbolUse list) =
       match symbols with
       | head :: tail ->
           let cd = FSharpMemberCompletionData(head.Symbol.DisplayName, symbolToIcon head, head, tail) :> CompletionData
+          //cd.PriorityGroup <- 1 + inheritanceDepth l.Head.Symbol
           match tryGetCategory head with
-          | Some c -> let category = getOrAddCategory c
-                      cd.CompletionCategory <- category
+          | Some (c, ent) -> 
+              let category = getOrAddCategory ent c
+              cd.CompletionCategory <- category
           | None -> ()
           cd
       | _ -> null //FSharpTryAgainMemberCompletionData() :> ICompletionData
-
-    symbols |> List.map symbolToCompletionData
+    symbols |> List.map symbolToCompletionData 
 
 
   let codeCompletionCommandImpl(editor:TextEditor, documentContext:DocumentContext, context:CodeCompletionContext, allowAnyStale, dottedInto, ctrlSpace, completionChar) =
     async {
       let result = CompletionDataList()
+      result.IsSorted <- true
       let fileName = documentContext.Name
       try
         // Try to get typed information from LanguageService (with the specified timeout)
@@ -425,7 +478,7 @@ type FSharpTextEditorCompletion() =
                    | Some tyRes ->
                        let line, col, lineStr = x.Editor.GetLineInfoFromOffset (startOffset)
                        let! methsOpt = tyRes.GetMethods(line, col, lineStr)
-                       //TODO: Use the symbol version when available
+                       //TODO: Use the symbol version
                        //let! allMethodSymbols = tyRes.GetMethodsAsSymbols (line, col, lineStr)
                        return methsOpt
                    | None -> return None}

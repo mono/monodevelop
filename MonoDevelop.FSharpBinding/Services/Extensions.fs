@@ -113,6 +113,20 @@ module FSharpSymbolExt =
           else Some name
         with _ -> None
 
+      member x.UnAnnotate() =
+        let rec realEntity (s:FSharpEntity) = 
+          if s.IsFSharpAbbreviation
+          then realEntity s.AbbreviatedType.TypeDefinition
+          else s
+        realEntity x
+
+      member x.InheritanceDepth() =
+        let rec loop (ent:FSharpEntity) l =
+          match ent.BaseType with
+          | Some bt -> loop (bt.TypeDefinition.UnAnnotate()) l + 1
+          | None -> l
+        loop x 0
+
 [<AutoOpen>]
 module FrameworkExt =
   type Path with
