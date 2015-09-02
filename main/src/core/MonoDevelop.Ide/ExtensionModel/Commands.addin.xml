@@ -619,8 +619,8 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.ZoomIn"
 			_label = "_Zoom In"
 			icon = "gtk-zoom-in"
-			shortcut = "Control|+"
-			macShortcut = "Meta|+"
+			shortcut = "Control|="
+			macShortcut = "Meta|="
 			_description = "Zooms view in" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomOut"
 			defaultHandler = "MonoDevelop.Ide.Commands.ZoomOut"
