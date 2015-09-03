@@ -123,7 +123,7 @@ namespace MonoDevelop.MacInterop
 			//NSRunningApplication app = NSWorkspace.SharedWorkspace.LaunchApplication (appUrl, 0, new NSDictionary (), null);
 
 			var config = new NSDictionary ();
-			IntPtr error = IntPtr.Zero;
+			IntPtr error;
 			var appHandle = IntPtr_objc_msgSend_IntPtr_UInt32_IntPtr_IntPtr (NSWorkspace.SharedWorkspace.Handle, launchApplicationAtURLOptionsConfigurationErrorSelector, appUrl.Handle, 0, config.Handle, out error);
 			NSRunningApplication app = (NSRunningApplication)ObjCRuntime.Runtime.GetNSObject (appHandle);
 
