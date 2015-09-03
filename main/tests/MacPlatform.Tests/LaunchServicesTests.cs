@@ -39,7 +39,7 @@ namespace MacPlatform.Tests
 			platformService = new MacPlatformService ();
 		}
 
-		[Ignore ("OpenApplication doesn't work")]
+		[Ignore ("Requires to be running as a Cocoa application")]
 		[Test]
 		public void TestLaunchProcess ()
 		{
