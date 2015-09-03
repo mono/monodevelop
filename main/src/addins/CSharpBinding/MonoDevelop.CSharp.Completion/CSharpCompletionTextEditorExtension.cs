@@ -222,6 +222,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override void Dispose ()
 		{
+			CancelParsedDocumentUpdate ();
 			DocumentContext.DocumentParsed -= HandleDocumentParsed;
 			if (validTypeSystemSegmentTree != null) {
 				validTypeSystemSegmentTree.RemoveListener ();
@@ -231,23 +232,36 @@ namespace MonoDevelop.CSharp.Completion
 			base.Dispose ();
 		}
 
+		CancellationTokenSource documentParsedTokenSrc = new CancellationTokenSource ();
+
 		void HandleDocumentParsed (object sender, EventArgs e)
 		{
 			var parsedDocument = DocumentContext.ParsedDocument;
-			if (parsedDocument == null) 
+			if (parsedDocument == null)
 				return;
 			var semanticModel = parsedDocument.GetAst<SemanticModel> ();
-			if (semanticModel == null) 
+			if (semanticModel == null)
 				return;
-			var newTree = TypeSystemSegmentTree.Create (Editor, DocumentContext, semanticModel);
+			CancelParsedDocumentUpdate ();
+			var token = documentParsedTokenSrc.Token;
+			Task.Run(delegate {
+				try {
+					var newTree = TypeSystemSegmentTree.Create (semanticModel, token);
+					if (validTypeSystemSegmentTree != null)
+						validTypeSystemSegmentTree.RemoveListener ();
+					validTypeSystemSegmentTree = newTree;
+					newTree.InstallListener (Editor);
+					if (TypeSegmentTreeUpdated != null)
+						TypeSegmentTreeUpdated (this, EventArgs.Empty);
+				} catch (OperationCanceledException) {
+				}
+			});
+		}
 
-			if (validTypeSystemSegmentTree != null)
-				validTypeSystemSegmentTree.RemoveListener ();
-			validTypeSystemSegmentTree = newTree;
-			newTree.InstallListener (Editor);
-
-			if (TypeSegmentTreeUpdated != null)
-				TypeSegmentTreeUpdated (this, EventArgs.Empty);
+		void CancelParsedDocumentUpdate ()
+		{
+			documentParsedTokenSrc.Cancel ();
+			documentParsedTokenSrc = new CancellationTokenSource ();
 		}
 
 		public event EventHandler TypeSegmentTreeUpdated;
@@ -1143,16 +1157,22 @@ namespace MonoDevelop.CSharp.Completion
 
 			
 			
-			internal static TypeSystemSegmentTree Create (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext ctx, SemanticModel semanticModel)
+			internal static TypeSystemSegmentTree Create (SemanticModel semanticModel, CancellationToken token)
 			{
-				var visitor = new TreeVisitor ();
+				var visitor = new TreeVisitor (token);
 				visitor.Visit (semanticModel.SyntaxTree.GetRoot ()); 
 				return visitor.Result;
 			}
 
 			class TreeVisitor : CSharpSyntaxWalker
 			{
+				readonly CancellationToken token;
 				public TypeSystemSegmentTree Result = new TypeSystemSegmentTree ();
+
+				public TreeVisitor (System.Threading.CancellationToken token)
+				{
+					this.token = token;
+				}
 
 				public override void VisitClassDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax node)
 				{
@@ -1218,7 +1238,7 @@ namespace MonoDevelop.CSharp.Completion
 
 				public override void VisitBlock (Microsoft.CodeAnalysis.CSharp.Syntax.BlockSyntax node)
 				{
-					// nothing
+					token.ThrowIfCancellationRequested ();
 				}
 			}
 			

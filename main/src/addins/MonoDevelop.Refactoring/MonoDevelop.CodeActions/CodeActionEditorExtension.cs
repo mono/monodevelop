@@ -153,10 +153,12 @@ namespace MonoDevelop.CodeActions
 			if (AnalysisOptions.EnableFancyFeatures && DocumentContext.ParsedDocument != null && !Debugger.DebuggingService.IsDebugging) {
 				var token = quickFixCancellationTokenSource.Token;
 				var curOffset = Editor.CaretOffset;
-				foreach (var fix in GetCurrentFixes ().AllValidCodeActions) {
-					if (!fix.ValidSegment.Contains (curOffset)) {
-						RemoveWidget ();
-						break;
+				if (HasCurrentFixes) {
+					foreach (var fix in GetCurrentFixes ().AllValidCodeActions) {
+						if (!fix.ValidSegment.Contains (curOffset)) {
+							RemoveWidget ();
+							break;
+						}
 					}
 				}
 
@@ -864,6 +866,12 @@ namespace MonoDevelop.CodeActions
 			if (currentSmartTag == null)
 				return;
 			CurrentSmartTagPopup ();
+		}
+
+		internal bool HasCurrentFixes {
+			get {
+				return smartTagTask != null && smartTagTask.IsCompleted;
+			}
 		}
 
 		internal CodeActionContainer GetCurrentFixes ()
