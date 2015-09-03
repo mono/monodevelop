@@ -1739,7 +1739,7 @@ namespace MonoDevelop.Projects
 
 		internal void ReadProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
-			OnReadProjectHeader (monitor, msproject);
+			ProjectExtension.OnReadProjectHeader (monitor, msproject);
 			modifiedInMemory = false;
 			msbuildUpdatePending = false;
 			ProjectExtension.OnReadProject (monitor, msproject);
@@ -2723,6 +2723,11 @@ namespace MonoDevelop.Projects
 			internal protected override void OnFileRenamedInProject (ProjectFileRenamedEventArgs e)
 			{
 				Project.DoOnFileRenamedInProject (e);
+			}
+
+			internal protected override void OnReadProjectHeader (ProgressMonitor monitor, MSBuildProject msproject)
+			{
+				Project.OnReadProjectHeader (monitor, msproject);
 			}
 
 			internal protected override void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
