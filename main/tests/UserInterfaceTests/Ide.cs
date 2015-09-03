@@ -102,8 +102,6 @@ namespace UserInterfaceTests
 		public readonly static Action EmptyAction = delegate { };
 
 		static string[] waitForNuGetMessages = {
-			"Project saved.",
-			"Solution loaded.",
 			"Package updates are available.",
 			"Packages are up to date.",
 			"No updates found but warnings were reported.",
@@ -111,6 +109,7 @@ namespace UserInterfaceTests
 			"Packages successfully updated.",
 			"Packages added with warnings.",
 			"Packages updated with warnings."};
+		
 		public readonly static Action WaitForPackageUpdate = delegate {
 			WaitForStatusMessage (waitForNuGetMessages, timeoutInSecs: 180, pollStepInSecs: 5);
 		};
@@ -125,13 +124,9 @@ namespace UserInterfaceTests
 			WaitForStatusMessage (new [] {"Solution checked out", "Solution Loaded."}, timeoutInSecs: 360, pollStepInSecs: 5);
 		};
 
-		public static void WaitForSolutionLoaded (Action<string> afterEachStep)
-		{
-			WaitForStatusMessage (new [] {"Loading..."});
-			afterEachStep ("Loading-Solution");
-			WaitForNoStatusMessage (new [] {"Loading..."});
-			afterEachStep ("Solution-Loaded");
-		}
+		public readonly static Action WaitForSolutionLoaded = delegate {
+			WaitForStatusMessage (new [] {"Project saved.", "Solution loaded."}, timeoutInSecs: 120, pollStepInSecs: 5);
+		};
 
 		public static void WaitForStatusMessage (string[] statusMessage, int timeoutInSecs = 240, int pollStepInSecs = 1)
 		{

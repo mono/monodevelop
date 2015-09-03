@@ -88,6 +88,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			// no standard values, so just use an entry
 			else {
 				entry = new Entry ();
+				entry.IsEditable = !session.Property.IsReadOnly;
 				PackStart (entry, true, true, 0);
 			}
 
@@ -96,9 +97,11 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 				entry.HasFrame = false;
 				entry.Changed += TextChanged;
 				entry.FocusOutEvent += FirePendingChangeEvent;
+				if (!entry.IsEditable)
+					entry.ModifyText (StateType.Normal, entry.Style.Text (Gtk.StateType.Insensitive));
 			}
 
-			if (entry != null && ShouldShowDialogButton ()) {
+			if (entry != null && ShouldShowDialogButton () && entry.IsEditable) {
 				var button = new Button ("...");
 				PackStart (button, false, false, 0);
 				button.Clicked += ButtonClicked;

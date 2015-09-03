@@ -56,6 +56,25 @@ namespace UserInterfaceTests
 			Session.WaitForElement (windowQuery);
 			TakeScreenshot ("Opened-Preferences-Window");
 		}
+
+		public static void SetAuthorInformation (string name = null, string email = null , string copyright = null,
+			string company = null, string trademark = null, Action<string> takeScreenshot = null)
+		{
+			takeScreenshot = takeScreenshot ?? new Action<string> (delegate {});
+
+			if (name == null && email == null && copyright == null && company == null && trademark == null)
+				throw new ArgumentNullException ("Atleast one of these arguments need to be not null: name, email, copyright, company, trademark");
+
+			var prefs = new PreferencesController ();
+			prefs.Open ();
+			prefs.SelectPane ("Author Information");
+			prefs.SetEntry ("nameEntry", name, "Name", takeScreenshot);
+			prefs.SetEntry ("emailEntry", email, "Email", takeScreenshot);
+			prefs.SetEntry ("copyrightEntry", copyright, "Copyright", takeScreenshot);
+			prefs.SetEntry ("companyEntry", company, "Company", takeScreenshot);
+			prefs.SetEntry ("trademarkEntry", trademark, "Trademark", takeScreenshot);
+			prefs.ClickOK ();
+		}
 	}
 
 	public abstract class OptionsController
@@ -78,6 +97,15 @@ namespace UserInterfaceTests
 			string.Format ("Selected Pane :{0}", name).PrintData ();
 			Session.SelectElement (c => windowQuery (c).Children ().Marked (
 				"__gtksharp_16_MonoDevelop_Components_HeaderBox").Children ().TreeView ().Model ().Children ().Property ("Label", name));
+		}
+
+		protected void SetEntry (string entryName, string entryValue, string stepName,  Action<string> takeScreenshot)
+		{
+			if (entryValue != null) {
+				Session.EnterText (c => c.Marked (entryName), entryValue);
+				Session.WaitForElement (c => c.Marked (entryName).Text (entryValue));
+				takeScreenshot (string.Format("{0}-Entry-Set", stepName));
+			}
 		}
 
 		public void ClickOK ()
