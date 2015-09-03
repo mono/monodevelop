@@ -105,6 +105,10 @@ namespace MonoDevelop.MacInterop
 
 		// This function can be replaced by NSWorkspace.LaunchApplication but it currently doesn't work
 		// https://bugzilla.xamarin.com/show_bug.cgi?id=32540
+
+		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
+		static extern IntPtr IntPtr_objc_msgSend_IntPtr_UInt32_IntPtr_IntPtr (IntPtr receiver, IntPtr selector, IntPtr url, UInt32 options, IntPtr configuration, out IntPtr error);
+		static readonly IntPtr launchApplicationAtURLOptionsConfigurationErrorSelector = ObjCRuntime.Selector.GetHandle ("launchApplicationAtURL:options:configuration:error:");
 		public static int OpenApplication (ApplicationStartInfo application)
 		{
 			if (application == null)
@@ -113,14 +117,17 @@ namespace MonoDevelop.MacInterop
 			if (string.IsNullOrEmpty (application.Application) || !System.IO.Directory.Exists (application.Application))
 				throw new ArgumentException ("Application is not valid");
 
-			LoggingService.LogError ("OpenApplication will not work until BXC #32540 is fixed");
-			/*
 			NSUrl appUrl = NSUrl.FromFilename (application.Application);
-			NSRunningApplication app = NSWorkspace.SharedWorkspace.LaunchApplication (appUrl, 0, new NSDictionary (), null);
+
+			// TODO: Once the above bug is fixed, we can replace the code below with
+			//NSRunningApplication app = NSWorkspace.SharedWorkspace.LaunchApplication (appUrl, 0, new NSDictionary (), null);
+
+			var config = new NSDictionary ();
+			IntPtr error = IntPtr.Zero;
+			var appHandle = IntPtr_objc_msgSend_IntPtr_UInt32_IntPtr_IntPtr (NSWorkspace.SharedWorkspace.Handle, launchApplicationAtURLOptionsConfigurationErrorSelector, appUrl.Handle, 0, config.Handle, out error);
+			NSRunningApplication app = (NSRunningApplication)ObjCRuntime.Runtime.GetNSObject (appHandle);
 
 			return app.ProcessIdentifier;
-			*/
-			return -1;
 		}
 		
 		struct LSApplicationParameters
