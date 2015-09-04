@@ -363,7 +363,7 @@ module SymbolTooltips =
             func.CurriedParameterGroups 
             |> Seq.map Seq.toList 
             |> Seq.toList 
-
+        
         let retType =
             //This try block will be removed when FCS updates
             try 
@@ -398,18 +398,33 @@ module SymbolTooltips =
             if signatureOnly then retType
             else asType Keyword modifiers ++ functionName ++ asType Symbol "() :" ++ retType 
         | many ->
-                let allParams =
-                  many
-                  |> List.map(fun listOfParams ->
-                                  listOfParams
-                                  |> List.map(fun p -> formatName indent padLength p ++ asType UserType (escapeText (p.Type.Format displayContext)))
-                                  |> String.concat (asType Symbol " *" ++ "\n"))
-                  |> String.concat (asType Symbol " ->" + "\n") 
+            let allParamsLengths = 
+                many 
+                |> List.map (fun listOfParams ->
+                                 (listOfParams, listOfParams    
+                                                |> List.map (fun p -> (p.Type.Format displayContext).Length)
+                                                |> List.sum))
+            let maxLength =
+                match allParamsLengths with
+                | [] -> 0
+                | l -> l |> List.map(fun p -> snd p + 1) |> List.max
+  
+            let parameterTypeWithPadding (p: FSharpParameter) length =
+                (escapeText (p.Type.Format displayContext) + (String.replicate (maxLength - length) " "))
 
-                let typeArguments =
-                    allParams +  "\n" + indent + (String.replicate (max (padLength-1) 0) " ") +  asType Symbol "->" ++ retType
-                if signatureOnly then typeArguments
-                else asType Keyword modifiers ++ functionName ++ asType Symbol ":" + "\n" + typeArguments
+            let allParams =
+                allParamsLengths
+                |> List.map(fun p -> let (paramTypes, length) = p 
+                                     paramTypes
+                                     |> List.map(fun p -> formatName indent padLength p ++ asType UserType (parameterTypeWithPadding p length))
+                                     |> String.concat (asType Symbol " *" ++ "\n"))
+                |> String.concat (asType Symbol "->" + "\n")
+            
+            let typeArguments =
+                allParams +  "\n" + indent + (String.replicate (max (padLength-1) 0) " ") +  asType Symbol "->" ++ retType
+
+            if signatureOnly then typeArguments
+            else asType Keyword modifiers ++ functionName ++ asType Symbol ":" + "\n" + typeArguments
 
     let getEntitySignature displayContext (fse: FSharpEntity) =
         let modifier =
@@ -535,7 +550,7 @@ module SymbolTooltips =
             let signature = getFuncSignature symbol.DisplayContext func 3 false
             let summary = getSummaryFromSymbol func
             ToolTip(signature, summary)
-
+             
         | Function func ->
             let signature = getFuncSignature symbol.DisplayContext func 3 false
             ToolTip(signature, getSummaryFromSymbol func) 
