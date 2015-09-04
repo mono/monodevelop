@@ -59,7 +59,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (sol.FileName, model.GetValue ("SolutionFile"));
 			Assert.AreEqual ("ConsoleProject", model.GetValue ("SolutionName"));
 			Assert.AreEqual (sol.ItemDirectory, model.GetValue ("SolutionDir"));
-			Assert.AreEqual ("Debug.", model.GetValue ("ProjectConfig"));
+			Assert.AreEqual ("Debug", model.GetValue ("ProjectConfig"));
 			Assert.AreEqual ("Debug", model.GetValue ("ProjectConfigName"));
 			Assert.AreEqual ("", model.GetValue ("ProjectConfigPlat"));
 			Assert.AreEqual (p.GetOutputFileName (ConfigurationSelector.Default), model.GetValue ("TargetFile"));
