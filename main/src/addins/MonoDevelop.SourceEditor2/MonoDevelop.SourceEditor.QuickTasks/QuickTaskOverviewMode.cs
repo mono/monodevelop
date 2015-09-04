@@ -892,7 +892,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 						surface = new SurfaceWrapper (similiar, allocation.Width, allocation.Height);
 				}
 
-				searchResults = mode.TextEditor.TextViewMargin.SearchResults.GetEnumerator ();
+				searchResults = mode.TextEditor.TextViewMargin.SearchResults.ToList().GetEnumerator ();
 				allUsages = mode.AllUsages.GetEnumerator ();
 				allTasks = mode.AllTasks.GetEnumerator ();
 				cr = new Cairo.Context (surface.Surface);

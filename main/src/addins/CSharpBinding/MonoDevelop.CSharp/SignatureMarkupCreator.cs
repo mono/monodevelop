@@ -1803,7 +1803,7 @@ namespace MonoDevelop.CSharp
 		public string CreateFooter (ISymbol entity)
 		{
 			var type = entity as ITypeSymbol;
-			if (type != null) {
+			if (type != null && type.Locations.Any ()) {
 				var loc = type.Locations.First ();
 				if (loc.IsInSource) {// TODO:
 									 //					MonoDevelop.Projects.Project project;
@@ -1821,7 +1821,7 @@ namespace MonoDevelop.CSharp
 					"<small>" + GettextCatalog.GetString ("Assembly:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (type.ContainingAssembly.Name)) + "</small>";
 			}
 
-			if (entity.ContainingType != null) {
+			if (entity.ContainingType != null && entity.Locations.Any ()) {
 				var loc = entity.Locations.First ();
 				if (!loc.IsInSource) {
 					// TODO:
