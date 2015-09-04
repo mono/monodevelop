@@ -46,11 +46,18 @@ namespace MonoDevelop.Debugger
 	class ExceptionCaughtDialog : Dialog
 	{
 		static readonly Xwt.Drawing.Image WarningIconPixbuf = Xwt.Drawing.Image.FromResource ("toolbar-icon.png");
+		static readonly Xwt.Drawing.Image WarningIconPixbufInner = Xwt.Drawing.Image.FromResource ("exception-outline-16.png");
+
 		protected ObjectValueTreeView ExceptionValueTreeView { get; private set; }
+
 		protected TreeView StackTraceTreeView { get; private set; }
+
 		protected CheckButton OnlyShowMyCodeCheckbox { get; private set; }
+
 		protected Label ExceptionMessageLabel { get; private set; }
+
 		protected Label ExceptionTypeLabel { get; private set; }
+
 		readonly ExceptionCaughtMessage message;
 		readonly ExceptionInfo exception;
 		ExceptionInfo selected;
@@ -107,7 +114,7 @@ namespace MonoDevelop.Debugger
 			frame.ShadowType = ShadowType.None;
 			eventBox.Add (frame);
 			eventBox.ShowAll ();
-			eventBox.ModifyBg (StateType.Normal, new Gdk.Color (100, 110, 122));
+			eventBox.ModifyBg (StateType.Normal, new Gdk.Color (0x77, 0x82, 0x8c));
 			return eventBox;
 		}
 
@@ -115,28 +122,36 @@ namespace MonoDevelop.Debugger
 		{
 			ExceptionValueTreeView = new ObjectValueTreeView ();
 			ExceptionValueTreeView.Frame = DebuggingService.CurrentFrame;
-			//ExceptionValueTreeView.ModifyBase (StateType.Normal, new Gdk.Color (223, 228, 235));
 			ExceptionValueTreeView.AllowPopupMenu = false;
 			ExceptionValueTreeView.AllowExpanding = true;
 			ExceptionValueTreeView.AllowPinning = false;
 			ExceptionValueTreeView.AllowEditing = false;
 			ExceptionValueTreeView.AllowAdding = false;
 			ExceptionValueTreeView.RulesHint = true;
+			ExceptionValueTreeView.ModifyFont (Pango.FontDescription.FromString ("11"));
 
 			ExceptionValueTreeView.Show ();
 
-			var scrolled = new ScrolledWindow { HeightRequest = 180, HscrollbarPolicy = PolicyType.Automatic, VscrollbarPolicy = PolicyType.Automatic };
+			var scrolled = new ScrolledWindow {
+				HeightRequest = 180,
+				HscrollbarPolicy = PolicyType.Automatic,
+				VscrollbarPolicy = PolicyType.Automatic
+			};
 
 			scrolled.ShadowType = ShadowType.None;
 			scrolled.Add (ExceptionValueTreeView);
 			scrolled.Show ();
-			return WrapInExpander (GettextCatalog.GetString ("Properties"), scrolled);
+			var vbox = new VBox ();
+			vbox.Show ();
+			vbox.PackStart (CreateSeparator (), false, true, 0);
+			vbox.PackStart (WrapInExpander (GettextCatalog.GetString ("Properties"), scrolled), true, true, 0);
+			return vbox;
 		}
 
-		Expander WrapInExpander (string title, ScrolledWindow scrolled)
+		Expander WrapInExpander (string title, Widget widget)
 		{
 			var expander = new Expander (string.Format ("<b>{0}</b>", GLib.Markup.EscapeText (title)));
-			expander.Child = scrolled;
+			expander.Child = widget;
 			expander.Spacing = 0;
 			expander.Show ();
 			expander.CanFocus = false;
@@ -170,7 +185,7 @@ namespace MonoDevelop.Debugger
 
 		Widget CreateStackTraceTreeView ()
 		{
-			var store = new ListStore (typeof (ExceptionStackFrame), typeof (string), typeof (bool));
+			var store = new ListStore (typeof(ExceptionStackFrame), typeof(string), typeof(bool));
 			StackTraceTreeView = new TreeView (store);
 			StackTraceTreeView.FixedHeightMode = false;
 			StackTraceTreeView.HeadersVisible = false;
@@ -184,16 +199,25 @@ namespace MonoDevelop.Debugger
 
 			StackTraceTreeView.RowActivated += StackFrameActivated;
 
-			var scrolled = new ScrolledWindow { HeightRequest = 180, HscrollbarPolicy = PolicyType.Never, VscrollbarPolicy = PolicyType.Automatic };
+			var scrolled = new ScrolledWindow {
+				HeightRequest = 180,
+				HscrollbarPolicy = PolicyType.Never,
+				VscrollbarPolicy = PolicyType.Automatic
+			};
 			scrolled.ShadowType = ShadowType.None;
 			scrolled.Add (StackTraceTreeView);
 			scrolled.Show ();
-			return WrapInExpander (GettextCatalog.GetString ("Stacktrace"), scrolled);
+			var vbox = new VBox ();
+			vbox.PackStart (CreateSeparator (), false, true, 0);
+			vbox.PackStart (scrolled, true, true, 0);
+			vbox.Show ();
+
+			return WrapInExpander (GettextCatalog.GetString ("Stacktrace"), vbox);
 		}
 
 		Widget CreateButtonBox ()
 		{
-			var buttons = new HButtonBox { Layout = ButtonBoxStyle.End, Spacing = 12 };
+			var buttons = new HButtonBox { Layout = ButtonBoxStyle.End, Spacing = 16 };
 
 			var copy = new Button (Stock.Copy);
 			copy.Clicked += CopyClicked;
@@ -224,7 +248,9 @@ namespace MonoDevelop.Debugger
 		{
 			return exception.InnerException != null;
 		}
+
 		bool hadInnerException;
+
 		void Build ()
 		{
 			Title = GettextCatalog.GetString ("Exception Caught");
@@ -243,13 +269,9 @@ namespace MonoDevelop.Debugger
 			whiteBackground.Add (vbox);
 			hadInnerException = HasInnerException ();
 			if (hadInnerException) {
-				vbox.PackStart (CreateInnerExceptionMessage (), false, true, 0);
-				vbox.PackStart (CreateSeparator (), false, true, 10);
-			} else {
-				vbox.PackStart (CreateSeparator (), false, true, 0);
+				vbox.PackStart (CreateInnerExceptionMessage (), false, true, 12);
 			}
 			vbox.PackStart (paned, true, true, 0);
-			vbox.PackStart (CreateSeparator (), false, true, 0);
 			vbox.Show ();
 
 			if (hadInnerException) {
@@ -264,7 +286,7 @@ namespace MonoDevelop.Debugger
 				VBox.PackStart (whiteBackground, true, true, 0);
 			}
 
-			var actionArea = new HBox (false, 12) { BorderWidth = 6 };
+			var actionArea = new HBox (false, 0) { BorderWidth = 14 };
 
 			OnlyShowMyCodeCheckbox = new CheckButton (GettextCatalog.GetString ("_Only show my code."));
 			OnlyShowMyCodeCheckbox.Toggled += OnlyShowMyCodeToggled;
@@ -276,7 +298,8 @@ namespace MonoDevelop.Debugger
 
 			actionArea.PackStart (alignment, true, true, 0);
 			actionArea.PackStart (CreateButtonBox (), false, true, 0);
-			actionArea.Show ();
+			actionArea.PackStart (new VBox (), false, true, 2);//Dummy just to take extra 4pixels at end to make it 20pixels
+			actionArea.ShowAll ();
 
 			VBox.PackStart (actionArea, false, true, 0);
 			ActionArea.Hide ();
@@ -287,32 +310,40 @@ namespace MonoDevelop.Debugger
 
 		Widget CreateInnerExceptionMessage ()
 		{
+			var hboxMain = new HBox ();
 			var vbox = new VBox ();
+			var hbox = new HBox ();
+
+			var icon = new ImageView (WarningIconPixbufInner);
+			icon.Yalign = 0;
+			hbox.PackStart (icon, false, false, 0);
+
 			InnerExceptionTypeLabel = new Label ();
 			InnerExceptionTypeLabel.UseMarkup = true;
 			InnerExceptionTypeLabel.Xalign = 0;
+			hbox.PackStart (InnerExceptionTypeLabel, false, true, 4);
+
 			InnerExceptionMessageLabel = new Label ();
 			InnerExceptionMessageLabel.Wrap = true;
 			InnerExceptionMessageLabel.Xalign = 0;
-			vbox.PackStart (InnerExceptionTypeLabel, false, false, 0);
-			vbox.PackStart (InnerExceptionMessageLabel, true, true, 5);
-			var frame = new Frame ();
-			frame.Add (vbox);
-			frame.BorderWidth = 10;
-			frame.Shadow = ShadowType.None;
-			frame.ShowAll ();
-			return frame;
+			InnerExceptionMessageLabel.ModifyFont (Pango.FontDescription.FromString ("11"));
+			vbox.PackStart (hbox, false, true, 0);
+			vbox.PackStart (InnerExceptionMessageLabel, true, true, 10);
+			hboxMain.PackStart (vbox, true, true, 10);
+			hboxMain.ShowAll ();
+			return hboxMain;
 		}
 
 		TreeStore InnerExceptionsStore;
 		TreeView InnerExceptionsTreeView;
+
 		Widget CreateInnerExceptionsTree ()
 		{
 			InnerExceptionsTreeView = new TreeView ();
 			InnerExceptionsTreeView.ModifyBase (StateType.Normal, new Gdk.Color (218, 221, 227));
 			InnerExceptionsTreeView.ModifyBase (StateType.Selected, new Gdk.Color (218, 221, 227));
 			InnerExceptionsTreeView.HeadersVisible = false;
-			InnerExceptionsStore = new TreeStore (typeof (ExceptionInfo));
+			InnerExceptionsStore = new TreeStore (typeof(ExceptionInfo));
 
 			FillInnerExceptionsStore (InnerExceptionsStore, exception);
 			InnerExceptionsTreeView.AppendColumn ("Exception", new CellRendererInnerException (), new TreeCellDataFunc ((tree_column, cell, tree_model, iter) => {
@@ -323,14 +354,19 @@ namespace MonoDevelop.Debugger
 			InnerExceptionsTreeView.LevelIndentation = 10;
 			InnerExceptionsTreeView.Model = InnerExceptionsStore;
 			InnerExceptionsTreeView.ExpandAll ();
-			InnerExceptionsTreeView.Show ();
 			InnerExceptionsTreeView.Selection.Changed += (sender, e) => {
 				TreeIter selectedIter;
 				if (InnerExceptionsTreeView.Selection.GetSelected (out selectedIter)) {
 					UpdateSelectedException ((ExceptionInfo)InnerExceptionsTreeView.Model.GetValue (selectedIter, 0));
 				}
 			};
-			return InnerExceptionsTreeView;
+			var eventBox = new EventBox ();
+			eventBox.ModifyBg (StateType.Normal, new Gdk.Color (218, 221, 227));
+			var vbox = new VBox ();
+			vbox.PackStart (InnerExceptionsTreeView, true, true, 9);
+			eventBox.Add (vbox);
+			eventBox.ShowAll ();
+			return eventBox;
 		}
 
 		void FillInnerExceptionsStore (TreeStore store, ExceptionInfo exception, TreeIter parentIter = default (TreeIter))
@@ -357,7 +393,6 @@ namespace MonoDevelop.Debugger
 			});
 			exception.Changed += delegate {
 				Application.Invoke (delegate {
-					var path = InnerExceptionsStore.GetPath (iter);
 					InnerExceptionsStore.EmitRowChanged (InnerExceptionsStore.GetPath (iter), iter);
 					updateInnerExceptions ();
 					InnerExceptionsTreeView.ExpandRow (InnerExceptionsStore.GetPath (iter), true);
@@ -492,11 +527,14 @@ namespace MonoDevelop.Debugger
 		{
 			public string Text { get; set; }
 
+			Pango.FontDescription font = Pango.FontDescription.FromString ("11");
+
 			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
 				using (var layout = new Pango.Layout (widget.PangoContext)) {
+					layout.FontDescription = font;
 					Pango.Rectangle ink, logical;
-					layout.SetText (Text);
+					layout.SetMarkup ("<b>" + Text + "</b>");
 					layout.GetPixelExtents (out ink, out logical);
 					width = logical.Width + 10;
 					height = logical.Height + 6;
@@ -512,8 +550,9 @@ namespace MonoDevelop.Debugger
 					cr.Rectangle (background_area.X, background_area.Y, background_area.Width, background_area.Height);
 
 					using (var layout = new Pango.Layout (widget.PangoContext)) {
+						layout.FontDescription = font;
 						if ((flags & CellRendererState.Selected) != 0) {
-							cr.SetSourceRGB (194 / 256.0, 197 / 256.0, 202 / 256.0);
+							cr.SetSourceRGB (0xCD / 256.0, 0xD0 / 256.0, 0xD4 / 256.0);
 							cr.Fill ();
 							cr.SetSourceColor (new Cairo.Color (0, 0, 0));
 							layout.SetMarkup ("<b>" + Text + "</b>");
@@ -539,6 +578,7 @@ namespace MonoDevelop.Debugger
 		public ExceptionStackFrame Frame;
 		public bool IsUserCode;
 		public string Markup;
+		Pango.FontDescription font = Pango.FontDescription.FromString ("11");
 
 		public StackFrameCellRenderer (Pango.Context ctx)
 		{
@@ -555,7 +595,7 @@ namespace MonoDevelop.Debugger
 			var endOfParameters = methodText.IndexOf (')') + 1;
 			var parameters = methodText.Substring (endOfMethodName, endOfParameters - endOfMethodName).Trim ();
 
-			var markup = string.Format ("<b>{0}</b>{1}", GLib.Markup.EscapeText (methodName), GLib.Markup.EscapeText (parameters));
+			var markup = string.Format ("<b>{0}</b> {1}", GLib.Markup.EscapeText (methodName), GLib.Markup.EscapeText (parameters));
 
 			if (selected)
 				markup = "<span foreground='#FFFFFF'>" + markup + "</span>";
@@ -569,7 +609,7 @@ namespace MonoDevelop.Debugger
 				return "";
 			}
 
-			var markup = string.Format ("<span size='smaller' foreground='{0}'>{1}", selected ? "#FFFFFF" : "#777777", GLib.Markup.EscapeText (Path.GetFileName (Frame.File)));
+			var markup = string.Format ("<span size='smaller' foreground='{0}'>{1}", selected ? "#FFFFFF" : "#BBBBBB", GLib.Markup.EscapeText (Path.GetFileName (Frame.File)));
 			if (Frame.Line > 0) {
 				markup += ":" + Frame.Line;
 				if (Frame.Column > 0)
@@ -583,6 +623,7 @@ namespace MonoDevelop.Debugger
 		{
 			using (var layout = new Pango.Layout (Context)) {
 				Pango.Rectangle ink, logical;
+				layout.FontDescription = font;
 				layout.SetMarkup (GetMethodMarkup (false));
 				layout.GetPixelExtents (out ink, out logical);
 
@@ -598,16 +639,17 @@ namespace MonoDevelop.Debugger
 			using (var cr = Gdk.CairoHelper.Create (window)) {
 				Pango.Rectangle ink, logical;
 				using (var layout = new Pango.Layout (Context)) {
+					layout.FontDescription = font;
 					layout.SetMarkup (GetFileMarkup ((flags & CellRendererState.Selected) != 0));
 					layout.GetPixelExtents (out ink, out logical);
 					var width = widget.Allocation.Width;
-					cr.Translate (width - logical.Width - 5, cell_area.Y + 2);
+					cr.Translate (width - logical.Width - 20, cell_area.Y + 2);
 					cr.ShowLayout (layout);
 
 					cr.IdentityMatrix ();
 
 					layout.SetMarkup (GetMethodMarkup ((flags & CellRendererState.Selected) != 0));
-					layout.Width = (int)((width - logical.Width - 20) * Pango.Scale.PangoScale);
+					layout.Width = (int)((width - logical.Width - 35) * Pango.Scale.PangoScale);
 					layout.Ellipsize = Pango.EllipsizeMode.Middle;
 					cr.Translate (cell_area.X + 10, cell_area.Y);
 					cr.ShowLayout (layout);
@@ -631,11 +673,13 @@ namespace MonoDevelop.Debugger
 		}
 
 		public FilePath File {
-			get; private set;
+			get;
+			private set;
 		}
 
 		public int Line {
-			get; set;
+			get;
+			set;
 		}
 
 		public bool IsMinimized {
@@ -854,8 +898,8 @@ namespace MonoDevelop.Debugger
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			if (key == Gdk.Key.Escape && DebuggingService.ExceptionCaughtMessage != null &&
-				!DebuggingService.ExceptionCaughtMessage.IsMinimized &&
-				DebuggingService.ExceptionCaughtMessage.File.CanonicalPath == Document.FileName.CanonicalPath) {
+			    !DebuggingService.ExceptionCaughtMessage.IsMinimized &&
+			    DebuggingService.ExceptionCaughtMessage.File.CanonicalPath == Document.FileName.CanonicalPath) {
 
 				DebuggingService.ExceptionCaughtMessage.ShowMiniButton ();
 				return true;
