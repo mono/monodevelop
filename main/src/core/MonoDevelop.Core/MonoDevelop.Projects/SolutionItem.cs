@@ -659,9 +659,6 @@ namespace MonoDevelop.Projects
 			if (!visited.Add(item))
 				return;
 
-			if (item.IsUnsupportedProject || !item.SupportsBuild ())
-				return;
-
 			referenced.Add (item);
 
 			foreach (var ritem in item.GetReferencedItems (configuration))
