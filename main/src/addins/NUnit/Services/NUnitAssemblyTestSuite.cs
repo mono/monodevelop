@@ -483,7 +483,7 @@ namespace MonoDevelop.NUnit
 
 				bool automaticUpdates = cmd.Command != null && (cmd.Command.Contains ("GuiUnit") || (cmd.Command.Contains ("mdtool.exe") && cmd.Arguments.Contains ("run-md-tests")));
 				if (!string.IsNullOrEmpty(pathName))
-					cmd.Arguments += " -run=" + test.TestId;
+					cmd.Arguments += " -run=\"" + test.TestId + "\"";
 				if (automaticUpdates) {
 					tcpListener = new MonoDevelop.NUnit.External.TcpTestListener (localMonitor, suiteName);
 					cmd.Arguments += " -port=" + tcpListener.Port;
