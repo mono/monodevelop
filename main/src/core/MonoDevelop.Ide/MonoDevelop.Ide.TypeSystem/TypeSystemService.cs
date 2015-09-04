@@ -96,19 +96,41 @@ namespace MonoDevelop.Ide.TypeSystem
 			FileService.FileChanged += delegate(object sender, FileEventArgs e) {
 				//				if (!TrackFileChanges)
 				//					return;
+
+				var filesToUpdate = new List<string> ();
 				foreach (var file in e) {
 					// Open documents are handled by the Document class itself.
 					if (IdeApp.Workbench != null && IdeApp.Workbench.GetDocument (file.FileName) != null)
 						continue;
-					try {
-						var text = MonoDevelop.Core.Text.StringTextSource.ReadFrom (file.FileName).Text;
-						foreach (var w in Workspaces)
-							w.UpdateFileContent (file.FileName, text);
-					} catch (FileNotFoundException) {}
+					
+					foreach (var w in Workspaces) {
+						foreach (var p in w.CurrentSolution.ProjectIds) {
+							if (w.GetDocumentId (p, file.FileName) != null) {
+								filesToUpdate.Add (file.FileName);
+								goto found;
+							}
+						}
+					}
+				found:;
+					
 				}
-				if (IdeApp.Workbench != null)
-					foreach (var w in IdeApp.Workbench.Documents)
-						w.StartReparseThread ();
+				if (filesToUpdate.Count == 0)
+					return;
+
+				Task.Run (delegate {
+					try {
+						foreach (var file in filesToUpdate) {
+							var text = MonoDevelop.Core.Text.StringTextSource.ReadFrom (file).Text;
+							foreach (var w in Workspaces)
+								w.UpdateFileContent (file, text);
+							Gtk.Application.Invoke (delegate {
+								if (IdeApp.Workbench != null)
+									foreach (var w in IdeApp.Workbench.Documents)
+										w.StartReparseThread ();
+							});
+						}
+					} catch (FileNotFoundException) {}
+				});
 			};
 
 			IntitializeTrackedProjectHandling ();
