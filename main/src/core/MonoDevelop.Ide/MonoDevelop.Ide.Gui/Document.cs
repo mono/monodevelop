@@ -785,7 +785,12 @@ namespace MonoDevelop.Ide.Gui
 						newProject.References.Add (ProjectReference.CreateAssemblyReference ("System.Core"));
 
 						newProject.FileName = "test.csproj";
-						adHocFile = Platform.IsWindows ? "C:\\a.cs" : "/a.cs";
+						if (!Window.ViewContent.IsUntitled) {
+							adHocFile = Editor.FileName;
+						} else {
+							adHocFile = (Platform.IsWindows ? "C:\\" : "/") + Window.ViewContent.UntitledName + ".cs";
+						}
+
 						newProject.Files.Add (new ProjectFile (adHocFile, BuildAction.Compile));
 
 						var solution = new Solution ();
