@@ -363,7 +363,7 @@ module SymbolTooltips =
             func.CurriedParameterGroups 
             |> Seq.map Seq.toList 
             |> Seq.toList 
-        
+
         let retType =
             //This try block will be removed when FCS updates
             try 
@@ -550,7 +550,7 @@ module SymbolTooltips =
             let signature = getFuncSignature symbol.DisplayContext func 3 false
             let summary = getSummaryFromSymbol func
             ToolTip(signature, summary)
-             
+
         | Function func ->
             let signature = getFuncSignature symbol.DisplayContext func 3 false
             ToolTip(signature, getSummaryFromSymbol func) 
