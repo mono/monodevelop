@@ -456,21 +456,43 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return;
             }
 
+			// For some reason, Mono can have several extension paths, so we need to try each of them
+			foreach (var ep in MSBuildEvaluationContext.GetApplicableExtensionsPaths ()) {
+				var files = GetImportFiles (project, context, import, ep);
+				if (files == null || files.Length == 0)
+					continue;
+				foreach (var f in files)
+					ImportFile (project, context, import, f);
+				return;
+			}
+
+			// No import was found
+		}
+
+		string[] GetImportFiles (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImport import, string extensionsPath)
+		{
+			var tempCtx = new MSBuildEvaluationContext (context);
+			var mep = MSBuildProjectService.ToMSBuildPath (null, extensionsPath);
+			tempCtx.SetPropertyValue ("MSBuildExtensionsPath", mep);
+			tempCtx.SetPropertyValue ("MSBuildExtensionsPath32", mep);
+			tempCtx.SetPropertyValue ("MSBuildExtensionsPath64", mep);
+
 			var pr = context.EvaluateString (import.Project);
 			project.Imports [import] = pr;
 
-			if (!string.IsNullOrEmpty (import.Condition) && !SafeParseAndEvaluate (import.Condition, context))
-				return;
+			if (!string.IsNullOrEmpty (import.Condition) && !SafeParseAndEvaluate (import.Condition, tempCtx))
+				return null;
 
 			var path = MSBuildProjectService.FromMSBuildPath (project.Project.BaseDirectory, pr);
 			var fileName = Path.GetFileName (path);
-			if (fileName.IndexOfAny (new [] {'*','?'}) == -1)
-				ImportFile (project, context, import, path);
+
+			if (fileName.IndexOfAny (new [] { '*', '?' }) == -1) {
+				return File.Exists (path) ? new [] { path } : null;
+			}
 			else {
-				var files = Directory.GetFiles (Path.GetDirectoryName (path), fileName).ToList ();
-				files.Sort ();
-				foreach (var file in files)
-					ImportFile (project, context, import, file);
+				var files = Directory.GetFiles (Path.GetDirectoryName (path), fileName);
+				Array.Sort (files);
+				return files;
 			}
 		}
 
