@@ -876,7 +876,7 @@ namespace MonoDevelop.Projects
 				Enabled = sc == null || sc.BuildEnabledForItem (this)
 			});
 			if (includeReferencedProjects) {
-				foreach (var refProject in GetReferencedItems (configuration).OfType<Project> ()) {
+				foreach (var refProject in GetReferencedItems (configuration).OfType<Project> ().Where (p => p.SupportsBuild ())) {
 					// Recursively get all referenced projects. This is necessary if one of the referenced
 					// projects is using the local copy flag.
 					foreach (var rp in refProject.GetConfigurations (configuration)) {
