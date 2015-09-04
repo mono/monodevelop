@@ -117,8 +117,6 @@ namespace MonoDevelop.CSharp.Formatting
 						if (!exact && change.Span.Start >= caretOffset)
 							continue;
 						var newText = change.NewText;
-						if (editor.EolMarker != "\r\n")
-							newText = newText.Replace ("\r", "");
 						editor.ReplaceText (change.Span.Start, change.Span.Length, newText); 
 					}
 					if (editor.CaretColumn == 1)
