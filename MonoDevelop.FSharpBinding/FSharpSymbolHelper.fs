@@ -414,10 +414,10 @@ module SymbolTooltips =
 
             let allParams =
                 allParamsLengths
-                |> List.map(fun p -> let (paramTypes, length) = p 
-                                     paramTypes
-                                     |> List.map(fun p -> formatName indent padLength p ++ asType UserType (parameterTypeWithPadding p length))
-                                     |> String.concat (asType Symbol " *" ++ "\n"))
+                |> List.map(fun (paramTypes, length) ->
+                                paramTypes
+                                |> List.map(fun p -> formatName indent padLength p ++ asType UserType (parameterTypeWithPadding p length))
+                                |> String.concat (asType Symbol " *" ++ "\n"))
                 |> String.concat (asType Symbol "->" + "\n")
             
             let typeArguments =
