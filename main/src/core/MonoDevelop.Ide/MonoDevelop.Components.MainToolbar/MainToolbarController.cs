@@ -341,6 +341,10 @@ namespace MonoDevelop.Components.MainToolbar
 		bool SelectActiveRuntime (ref bool selected, ref ExecutionTarget defaultTarget, ref int defaultIter)
 		{
 			var runtimes = ToolbarView.RuntimeModel.Cast<RuntimeModel> ().ToList ();
+			string lastRuntimeForProject = currentStartupProject.UserProperties.GetValue<string> ("PreferredExecutionTarget", defaultValue: null);
+			var activeTarget = IdeApp.Workspace.ActiveExecutionTarget;
+			var activeTargetId = activeTarget != null ? activeTarget.Id : null;
+
 			for (int iter = 0; iter < runtimes.Count; ++iter) {
 				var item = runtimes [iter];
 				using (var model = item.GetMutableModel ()) {
@@ -356,12 +360,12 @@ namespace MonoDevelop.Components.MainToolbar
 					if (item.HasChildren)
 						continue;
 
-				if (defaultTarget == null) {
+				if (defaultTarget == null || lastRuntimeForProject == target.Id) {
 					defaultTarget = target;
 					defaultIter = iter;
 				}
 
-				if (target.Id == IdeApp.Workspace.PreferredActiveExecutionTarget) {
+				if (target.Id == activeTargetId) {
 					IdeApp.Workspace.ActiveExecutionTarget = target;
 					ToolbarView.ActiveRuntime = ToolbarView.RuntimeModel.ElementAt (iter);
 					UpdateBuildConfiguration ();
@@ -369,7 +373,7 @@ namespace MonoDevelop.Components.MainToolbar
 					return true;
 				}
 
-				if (target.Equals (IdeApp.Workspace.ActiveExecutionTarget)) {
+				if (target.Equals (activeTarget)) {
 					ToolbarView.ActiveRuntime = ToolbarView.RuntimeModel.ElementAt (iter);
 					UpdateBuildConfiguration ();
 					selected = true;
@@ -397,7 +401,6 @@ namespace MonoDevelop.Components.MainToolbar
 						UpdateBuildConfiguration ();
 					}
 				}
-
 			} finally {
 				ignoreRuntimeChangedCount--;
 			}
@@ -440,6 +443,9 @@ namespace MonoDevelop.Components.MainToolbar
 		void TrackStartupProject ()
 		{
 			if (currentStartupProject != null && ((currentSolution != null && currentStartupProject != currentSolution.StartupItem) || currentSolution == null)) {
+				var runtime = (RuntimeModel)ToolbarView.ActiveRuntime;
+				if (runtime != null && runtime.Command == null)
+					currentStartupProject.UserProperties.SetValue<string> ("PreferredExecutionTarget", runtime.TargetId);
 				currentStartupProject.ExecutionTargetsChanged -= executionTargetsChanged;
 				currentStartupProject.Saved -= HandleUpdateCombos;
 			}
@@ -814,6 +820,14 @@ namespace MonoDevelop.Components.MainToolbar
 				if (Command != null && IdeApp.CommandService.DispatchCommand (Command, CommandSource.ContextMenu))
 					return true;
 				return false;
+			}
+
+			internal string TargetId {
+				get {
+					if (ExecutionTarget == null)
+						return "";
+					return ExecutionTarget.Id;
+				}
 			}
 
 			public IRuntimeMutableModel GetMutableModel ()
