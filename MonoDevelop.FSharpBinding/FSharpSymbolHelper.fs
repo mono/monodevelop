@@ -398,18 +398,33 @@ module SymbolTooltips =
             if signatureOnly then retType
             else asType Keyword modifiers ++ functionName ++ asType Symbol "() :" ++ retType 
         | many ->
-                let allParams =
-                  many
-                  |> List.map(fun listOfParams ->
-                                  listOfParams
-                                  |> List.map(fun p -> formatName indent padLength p ++ asType UserType (escapeText (p.Type.Format displayContext)))
-                                  |> String.concat (asType Symbol " *" ++ "\n"))
-                  |> String.concat (asType Symbol " ->" + "\n") 
+            let allParamsLengths = 
+                many 
+                |> List.map (fun listOfParams ->
+                                 (listOfParams, listOfParams    
+                                                |> List.map (fun p -> (p.Type.Format displayContext).Length)
+                                                |> List.sum))
+            let maxLength =
+                match allParamsLengths with
+                | [] -> 0
+                | l -> l |> List.map(fun p -> snd p + 1) |> List.max
+  
+            let parameterTypeWithPadding (p: FSharpParameter) length =
+                (escapeText (p.Type.Format displayContext) + (String.replicate (maxLength - length) " "))
 
-                let typeArguments =
-                    allParams +  "\n" + indent + (String.replicate (max (padLength-1) 0) " ") +  asType Symbol "->" ++ retType
-                if signatureOnly then typeArguments
-                else asType Keyword modifiers ++ functionName ++ asType Symbol ":" + "\n" + typeArguments
+            let allParams =
+                allParamsLengths
+                |> List.map(fun (paramTypes, length) ->
+                                paramTypes
+                                |> List.map(fun p -> formatName indent padLength p ++ asType UserType (parameterTypeWithPadding p length))
+                                |> String.concat (asType Symbol " *" ++ "\n"))
+                |> String.concat (asType Symbol "->" + "\n")
+            
+            let typeArguments =
+                allParams +  "\n" + indent + (String.replicate (max (padLength-1) 0) " ") +  asType Symbol "->" ++ retType
+
+            if signatureOnly then typeArguments
+            else asType Keyword modifiers ++ functionName ++ asType Symbol ":" + "\n" + typeArguments
 
     let getEntitySignature displayContext (fse: FSharpEntity) =
         let modifier =
