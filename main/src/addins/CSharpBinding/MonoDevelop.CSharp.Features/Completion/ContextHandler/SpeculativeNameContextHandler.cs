@@ -48,7 +48,6 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				return Enumerable.Empty<CompletionData>();
 
 			var token = tree.FindTokenOnLeftOfPosition(completionContext.Position, cancellationToken);
-			var semanticModel = await completionContext.Document.GetSemanticModelAsync (cancellationToken).ConfigureAwait(false);
 			var parent = token.Parent.AncestorsAndSelf ().OfType<GenericNameSyntax> ().FirstOrDefault () ?? token.Parent;
 
 			if (!parent.Parent.IsKind (SyntaxKind.IncompleteMember) &&
@@ -95,6 +94,9 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					return list;
 				}
 			} else {
+				var incompleteMember = parent.Parent as IncompleteMemberSyntax;
+				if (incompleteMember != null)
+					return list;
 				var gns = parent as GenericNameSyntax;
 				var names = WordParser.BreakWords (gns != null ? gns.Identifier.ToString () : token.ToString ().Trim ());
 				var possibleName = new StringBuilder ();
