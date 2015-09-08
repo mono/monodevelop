@@ -66,7 +66,7 @@ type FSharpTooltipProvider() =
            match ident with
            | Some (col, identIsland) ->
              match identIsland with
-             | [single] when Lexhelp.Keywords.keywordNames |> List.contains single ->
+             | [single] when PrettyNaming.KeywordNames |> List.contains single ->
                let startOffset = editor.LocationToOffset(line, col - single.Length+1)
                let endOffset = startOffset + single.Length
                let segment = Text.TextSegment.FromBounds(startOffset, endOffset)

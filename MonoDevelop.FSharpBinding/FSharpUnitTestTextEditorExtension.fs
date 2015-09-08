@@ -79,7 +79,7 @@ type FSharpUnitTestTextEditorExtension() =
                                        match symbolUse.Symbol with
                                        | :? FSharpMemberOrFunctionOrValue as func -> 
                                             let typeName = func.EnclosingEntity.QualifiedName
-                                            let methName = Lexhelp.Keywords.QuoteIdentifierIfNeeded func.CompiledName
+                                            let methName = PrettyNaming.QuoteIdentifierIfNeeded func.CompiledName
                                             let isIgnored =
                                                 func.Attributes
                                                 |> Seq.exists (hasAttributeNamed "NUnit.Framework.IgnoreAttribute")
