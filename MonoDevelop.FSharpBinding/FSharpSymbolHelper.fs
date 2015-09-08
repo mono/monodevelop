@@ -399,21 +399,14 @@ module SymbolTooltips =
             else asType Keyword modifiers ++ functionName ++ asType Symbol "() :" ++ retType 
         | many ->
             let allParamsLengths = 
-                many 
-                |> List.map (fun listOfParams ->
-                                 (listOfParams, listOfParams    
-                                                |> List.map (fun p -> (p.Type.Format displayContext).Length)
-                                                |> List.sum))
-            let maxLength =
-                match allParamsLengths with
-                | [] -> 0
-                | l -> l |> List.map(fun p -> snd p + 1) |> List.max
+                many |> List.map (List.map (fun p -> (p.Type.Format displayContext).Length) >> List.sum)
+            let maxLength = allParamsLengths |> List.map ((+) 1) |> List.max
   
             let parameterTypeWithPadding (p: FSharpParameter) length =
                 (escapeText (p.Type.Format displayContext) + (String.replicate (maxLength - length) " "))
 
             let allParams =
-                allParamsLengths
+                List.zip many allParamsLengths
                 |> List.map(fun (paramTypes, length) ->
                                 paramTypes
                                 |> List.map(fun p -> formatName indent padLength p ++ asType UserType (parameterTypeWithPadding p length))
