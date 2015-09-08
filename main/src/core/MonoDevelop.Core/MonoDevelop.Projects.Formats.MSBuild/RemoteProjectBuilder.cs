@@ -383,7 +383,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void EndOperation ()
 		{
-			engine.Unlock ();
+			if (engine != null)
+				engine.Unlock ();
 		}
 
 		public void Lock ()
