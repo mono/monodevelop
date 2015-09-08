@@ -36,8 +36,6 @@ module ServiceSettings =
 /// various IntelliSense functions (such as completion & tool tips). Provides default
 /// empty/negative results if information is missing.
 type ParseAndCheckResults private (infoOpt: (FSharpCheckFileResults * FSharpParseFileResults) option) =
-  let token = Parser.tagOfToken(Parser.token.IDENT("")) 
-
   new (checkResults, parseResults) = ParseAndCheckResults(Some (checkResults, parseResults))
 
   static member Empty = ParseAndCheckResults(None)
@@ -83,7 +81,7 @@ type ParseAndCheckResults private (infoOpt: (FSharpCheckFileResults * FSharpPars
         match Parsing.findLongIdents(col, lineStr) with 
         | None -> return None
         | Some(col,identIsland) ->
-          let! res = checkResults.GetToolTipTextAlternate(line, col, lineStr, identIsland, token)
+          let! res = checkResults.GetToolTipTextAlternate(line, col, lineStr, identIsland, FSharpTokenTag.Identifier)
           let! sym = checkResults.GetSymbolUseAtLocation(line, col, lineStr, identIsland)
           Debug.WriteLine("Result: Got something, returning")
           return sym |> Option.bind (fun sym -> let start, finish = Symbol.trimSymbolRegion sym (Seq.last identIsland)

@@ -24,7 +24,7 @@ open ICSharpCode.NRefactory.TypeSystem
 open ExtCore.Control
 
 type internal FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FSharpSymbolUse list) =
-  inherit CompletionData(CompletionText = Lexhelp.Keywords.QuoteIdentifierIfNeeded name, 
+  inherit CompletionData(CompletionText = PrettyNaming.QuoteIdentifierIfNeeded name, 
                          DisplayText = name, 
                          DisplayFlags = DisplayFlags.DescriptionHasMarkup,
                          Icon = icon)
