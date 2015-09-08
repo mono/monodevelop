@@ -199,6 +199,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				"Click Remove from Project if you only want to remove it from your current solution.")
 			};
 			question.Buttons.Add (AlertButton.Delete);
+			question.Buttons.Add (AlertButton.Cancel);
 			question.Buttons.Add (removeButton);
 			question.Buttons.Add (AlertButton.Cancel);
 
