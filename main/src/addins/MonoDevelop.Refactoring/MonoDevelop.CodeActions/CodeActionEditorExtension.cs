@@ -638,6 +638,8 @@ namespace MonoDevelop.CodeActions
 
 				var oldSolution = documentContext.AnalysisDocument.Project.Solution;
 				var updatedSolution = oldSolution;
+				if (RefactoringService.OptionSetCreation != null)
+					documentContext.RoslynWorkspace.Options = RefactoringService.OptionSetCreation (editor, documentContext);
 				using (var undo = editor.OpenUndoGroup ()) {
 					foreach (var operation in act.GetOperationsAsync (token).Result) {
 						var applyChanges = operation as ApplyChangesOperation;
@@ -672,7 +674,6 @@ namespace MonoDevelop.CodeActions
 				foreach (var documentId in changedDocuments) {
 					var document = newSolution.GetDocument (documentId);
 					var root = await document.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
-
 					SyntaxToken? renameTokenOpt = root.GetAnnotatedNodesAndTokens (RenameAnnotation.Kind)
 					                                  .Where (s => s.IsToken)
 					                                  .Select (s => s.AsToken ())

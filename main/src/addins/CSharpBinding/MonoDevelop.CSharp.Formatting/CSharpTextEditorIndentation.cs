@@ -44,6 +44,7 @@ using System.Threading;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Options;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -52,7 +53,7 @@ namespace MonoDevelop.CSharp.Formatting
 		internal ICSharpCode.NRefactory6.CSharp.CacheIndentEngine stateTracker;
 		int cursorPositionBeforeKeyPress;
 
-		readonly IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+		readonly static IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 
 		CSharpFormattingPolicy Policy {
 			get {
@@ -76,16 +77,21 @@ namespace MonoDevelop.CSharp.Formatting
 
 		static CSharpTextEditorIndentation ()
 		{
-			CompletionWindowManager.WordCompleted += delegate(object sender, CodeCompletionContextEventArgs e) {
+			CompletionWindowManager.WordCompleted += delegate (object sender, CodeCompletionContextEventArgs e) {
 				var editor = e.Widget as IServiceProvider;
 				if (editor == null)
 					return;
-				var extension = editor.GetService (typeof(CSharpTextEditorIndentation)) as CSharpTextEditorIndentation;
+				var extension = editor.GetService (typeof (CSharpTextEditorIndentation)) as CSharpTextEditorIndentation;
 				if (extension == null)
 					return;
 				extension.SafeUpdateIndentEngine (extension.Editor.CaretOffset);
 				if (extension.stateTracker.NeedsReindent)
 					extension.DoReSmartIndent ();
+			};
+
+			RefactoringService.OptionSetCreation = (editor, ctx) => {
+				var policy = ctx.Project.Policies.Get<CSharpFormattingPolicy> (types);
+				return policy.CreateOptions (editor.Options);
 			};
 		}
 
@@ -141,7 +147,7 @@ namespace MonoDevelop.CSharp.Formatting
 				foreach (string s in configuration.GetDefineSymbols ())
 					yield return s;
 				// Workaround for mcs defined symbol
-				if (configuration.TargetRuntime.RuntimeId == "Mono") 
+				if (configuration.TargetRuntime.RuntimeId == "Mono")
 					yield return "__MonoCS__";
 			}
 		}

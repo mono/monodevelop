@@ -41,11 +41,14 @@ using MonoDevelop.Ide.TypeSystem;
 using System.Diagnostics;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide.Editor;
+using Microsoft.CodeAnalysis.Options;
 
 namespace MonoDevelop.Refactoring
 {
 	public static class RefactoringService
 	{
+		internal static Func<TextEditor, DocumentContext, OptionSet> OptionSetCreation;
+
 		static RefactoringService ()
 		{
 
