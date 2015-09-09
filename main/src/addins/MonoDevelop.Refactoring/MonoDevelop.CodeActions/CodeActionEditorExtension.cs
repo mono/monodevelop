@@ -609,30 +609,27 @@ namespace MonoDevelop.CodeActions
 				if (insertionAction != null) {
 					var insertion = await insertionAction.CreateInsertion (token).ConfigureAwait (false);
 
-					var document = IdeApp.Workbench.OpenDocument (insertion.Location.SourceTree.FilePath);
+					var document = IdeApp.Workbench.OpenDocument (insertion.Location.SourceTree.FilePath, documentContext.Project);
 					var parsedDocument = document.UpdateParseDocument ();
 					if (parsedDocument != null) {
 						var insertionPoints = InsertionPointService.GetInsertionPoints (
-							                     document.Editor,
-							                     parsedDocument,
-							                     insertion.Type,
-							                     insertion.Location.SourceSpan.Start
-						                     );
+							document.Editor,
+							parsedDocument,
+							insertion.Type,
+							insertion.Location.SourceSpan.Start
+						);
 
 						var options = new InsertionModeOptions (
-							             insertionAction.Title,
-							             insertionPoints,
-							             async point => {
+							insertionAction.Title,
+							insertionPoints,
+							point => {
 								if (!point.Success)
 									return;
-
-											 var node = Formatter.Format (insertion.Node, TypeSystemService.Workspace, document.GetOptionSet (), token);
-
-											 point.InsertionPoint.Insert (document.Editor, document, node.ToString ());
-											 // document = await Simplifier.ReduceAsync(document.AnalysisDocument, Simplifier.Annotation, cancellationToken: token).ConfigureAwait(false);
-
-										 }
-									 );
+								var node = Formatter.Format (insertion.Node, TypeSystemService.Workspace, document.GetOptionSet (), token);
+								point.InsertionPoint.Insert (document.Editor, document, node.ToString ());
+								// document = await Simplifier.ReduceAsync(document.AnalysisDocument, Simplifier.Annotation, cancellationToken: token).ConfigureAwait(false);
+							}
+						);
 
 						document.Editor.StartInsertionMode (options);
 						return;
@@ -641,16 +638,18 @@ namespace MonoDevelop.CodeActions
 
 				var oldSolution = documentContext.AnalysisDocument.Project.Solution;
 				var updatedSolution = oldSolution;
-				foreach (var operation in act.GetOperationsAsync (token).Result) {
-					var applyChanges = operation as ApplyChangesOperation;
-					if (applyChanges == null) {
+				using (var undo = editor.OpenUndoGroup ()) {
+					foreach (var operation in act.GetOperationsAsync (token).Result) {
+						var applyChanges = operation as ApplyChangesOperation;
+						if (applyChanges == null) {
+							operation.Apply (documentContext.RoslynWorkspace, token);
+							continue;
+						}
+						if (updatedSolution == oldSolution) {
+							updatedSolution = applyChanges.ChangedSolution;
+						}
 						operation.Apply (documentContext.RoslynWorkspace, token);
-						continue;
 					}
-					if (updatedSolution == oldSolution) {
-						updatedSolution = applyChanges.ChangedSolution;
-					}
-					operation.Apply (documentContext.RoslynWorkspace, token);
 				}
 				TryStartRenameSession (documentContext.RoslynWorkspace, oldSolution, updatedSolution, token);
 			}
@@ -675,11 +674,10 @@ namespace MonoDevelop.CodeActions
 					var root = await document.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
 
 					SyntaxToken? renameTokenOpt = root.GetAnnotatedNodesAndTokens (RenameAnnotation.Kind)
-											 .Where (s => s.IsToken)
-											 .Select (s => s.AsToken ())
-					                         .Cast<SyntaxToken?> ()
-											 .FirstOrDefault ();
-
+					                                  .Where (s => s.IsToken)
+					                                  .Select (s => s.AsToken ())
+					                                  .Cast<SyntaxToken?> ()
+					                                  .FirstOrDefault ();
 					if (renameTokenOpt.HasValue) {
 						var latestDocument = workspace.CurrentSolution.GetDocument (documentId);
 						var latestModel = await latestDocument.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
