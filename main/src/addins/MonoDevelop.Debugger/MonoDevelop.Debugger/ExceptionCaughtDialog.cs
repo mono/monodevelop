@@ -114,7 +114,7 @@ namespace MonoDevelop.Debugger
 			frame.ShadowType = ShadowType.None;
 			eventBox.Add (frame);
 			eventBox.ShowAll ();
-			eventBox.ModifyBg (StateType.Normal, new Gdk.Color (0x77, 0x82, 0x8c));
+			eventBox.ModifyBg (StateType.Normal, new Gdk.Color (119, 130, 140));
 			return eventBox;
 		}
 
@@ -129,6 +129,7 @@ namespace MonoDevelop.Debugger
 			ExceptionValueTreeView.AllowAdding = false;
 			ExceptionValueTreeView.RulesHint = true;
 			ExceptionValueTreeView.ModifyFont (Pango.FontDescription.FromString ("11"));
+			ExceptionValueTreeView.RulesHint = false;
 
 			ExceptionValueTreeView.Show ();
 
@@ -143,7 +144,7 @@ namespace MonoDevelop.Debugger
 			scrolled.Show ();
 			var vbox = new VBox ();
 			vbox.Show ();
-			vbox.PackStart (CreateSeparator (), false, true, 0);
+			vbox.PackStart (CreateSeparator (), false, true, 7);
 			vbox.PackStart (WrapInExpander (GettextCatalog.GetString ("Properties"), scrolled), true, true, 0);
 			return vbox;
 		}
@@ -217,7 +218,7 @@ namespace MonoDevelop.Debugger
 
 		Widget CreateButtonBox ()
 		{
-			var buttons = new HButtonBox { Layout = ButtonBoxStyle.End, Spacing = 16 };
+			var buttons = new HButtonBox { Layout = ButtonBoxStyle.End, Spacing = 18 };
 
 			var copy = new Button (Stock.Copy);
 			copy.Clicked += CopyClicked;
@@ -298,7 +299,7 @@ namespace MonoDevelop.Debugger
 
 			actionArea.PackStart (alignment, true, true, 0);
 			actionArea.PackStart (CreateButtonBox (), false, true, 0);
-			actionArea.PackStart (new VBox (), false, true, 2);//Dummy just to take extra 4pixels at end to make it 20pixels
+			actionArea.PackStart (new VBox (), false, true, 3); // dummy just to take extra 6px at end to make it 20pixels
 			actionArea.ShowAll ();
 
 			VBox.PackStart (actionArea, false, true, 0);
@@ -340,8 +341,8 @@ namespace MonoDevelop.Debugger
 		Widget CreateInnerExceptionsTree ()
 		{
 			InnerExceptionsTreeView = new TreeView ();
-			InnerExceptionsTreeView.ModifyBase (StateType.Normal, new Gdk.Color (218, 221, 227));
-			InnerExceptionsTreeView.ModifyBase (StateType.Selected, new Gdk.Color (218, 221, 227));
+			InnerExceptionsTreeView.ModifyBase (StateType.Normal, new Gdk.Color (225, 228, 232)); // background
+			InnerExceptionsTreeView.ModifyBase (StateType.Selected, new Gdk.Color (205, 208, 212)); // selected
 			InnerExceptionsTreeView.HeadersVisible = false;
 			InnerExceptionsStore = new TreeStore (typeof(ExceptionInfo));
 
@@ -361,7 +362,7 @@ namespace MonoDevelop.Debugger
 				}
 			};
 			var eventBox = new EventBox ();
-			eventBox.ModifyBg (StateType.Normal, new Gdk.Color (218, 221, 227));
+			eventBox.ModifyBg (StateType.Normal, new Gdk.Color (225, 228, 232)); // top and bottom padders
 			var vbox = new VBox ();
 			vbox.PackStart (InnerExceptionsTreeView, true, true, 9);
 			eventBox.Add (vbox);
@@ -552,12 +553,12 @@ namespace MonoDevelop.Debugger
 					using (var layout = new Pango.Layout (widget.PangoContext)) {
 						layout.FontDescription = font;
 						if ((flags & CellRendererState.Selected) != 0) {
-							cr.SetSourceRGB (0xCD / 256.0, 0xD0 / 256.0, 0xD4 / 256.0);
+							cr.SetSourceRGB (205 / 256.0, 208 / 256.0, 212 / 256.0); // selected
 							cr.Fill ();
 							cr.SetSourceColor (new Cairo.Color (0, 0, 0));
 							layout.SetMarkup ("<b>" + Text + "</b>");
 						} else {
-							cr.SetSourceRGB (218 / 256.0, 221 / 256.0, 227 / 256.0);
+							cr.SetSourceRGB (225 / 256.0, 228 / 256.0, 232 / 256.0); // background
 							cr.Fill ();
 							cr.SetSourceColor (new Cairo.Color (0, 0, 0));
 							layout.SetMarkup (Text);
@@ -609,7 +610,7 @@ namespace MonoDevelop.Debugger
 				return "";
 			}
 
-			var markup = string.Format ("<span size='smaller' foreground='{0}'>{1}", selected ? "#FFFFFF" : "#BBBBBB", GLib.Markup.EscapeText (Path.GetFileName (Frame.File)));
+			var markup = string.Format ("<span foreground='{0}'>{1}", selected ? "#FFFFFF" : "#BBBBBB", GLib.Markup.EscapeText (Path.GetFileName (Frame.File)));
 			if (Frame.Line > 0) {
 				markup += ":" + Frame.Line;
 				if (Frame.Column > 0)
@@ -643,7 +644,7 @@ namespace MonoDevelop.Debugger
 					layout.SetMarkup (GetFileMarkup ((flags & CellRendererState.Selected) != 0));
 					layout.GetPixelExtents (out ink, out logical);
 					var width = widget.Allocation.Width;
-					cr.Translate (width - logical.Width - 20, cell_area.Y + 2);
+					cr.Translate (width - logical.Width - 10, cell_area.Y);
 					cr.ShowLayout (layout);
 
 					cr.IdentityMatrix ();
