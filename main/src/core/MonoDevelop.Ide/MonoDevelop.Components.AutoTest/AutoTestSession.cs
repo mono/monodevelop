@@ -530,6 +530,36 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 
+		public bool SetActiveConfiguration (AppResult result, string configuration)
+		{
+			bool success = false;
+
+			try {
+				ExecuteOnIdle (() => {
+					success = result.SetActiveConfiguration (configuration);
+				});
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("SetActiveConfiguration", result.SourceQuery, result, e);
+			}
+
+			return success;
+		}
+
+		public bool SetActiveRuntime (AppResult result, string runtime)
+		{
+			bool success = false;
+
+			try {
+				ExecuteOnIdle (() => {
+					success = result.SetActiveRuntime (runtime);
+				});
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("SetActiveRuntime", result.SourceQuery, result, e);
+			}
+
+			return success;
+		}
+
 		void ThrowOperationTimeoutException (string operation, string query, AppResult result, Exception innerException)
 		{
 			throw new TimeoutException (string.Format ("Timeout while executing {0}: {1}\n\ton Element: {2}", operation, query, result), innerException);
