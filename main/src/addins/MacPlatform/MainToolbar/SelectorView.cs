@@ -115,7 +115,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				} else {
 					menuItem.Activated += (o2, e2) => {
 						string old = ActiveRuntime.FullDisplayString;
-						ActiveRuntime = runtimeModel.First (r => r.FullDisplayString == runtime.FullDisplayString);
+						IRuntimeModel newRuntime = runtimeModel.FirstOrDefault (r => r.FullDisplayString == runtime.FullDisplayString);
+						if (newRuntime == null)
+							return;
+
+						ActiveRuntime = newRuntime;
 						var ea = new HandledEventArgs ();
 						if (RuntimeChanged != null)
 							RuntimeChanged (o2, ea);
