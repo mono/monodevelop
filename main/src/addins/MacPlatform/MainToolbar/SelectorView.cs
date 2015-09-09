@@ -56,7 +56,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			Title = "";
 			BezelStyle = NSBezelStyle.TexturedRounded;
-			AddSubview (new PathSelectorView (new CGRect (6, 0, 1, 1)));
+			var pathSelectorView = new PathSelectorView (new CGRect (6, 0, 1, 1));
+			pathSelectorView.UnregisterDraggedTypes ();
+			AddSubview (pathSelectorView);
 		}
 
 		public override void DrawRect (CGRect dirtyRect)
