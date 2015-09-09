@@ -1107,6 +1107,11 @@ namespace MonoDevelop.Projects
 		/// Occurs when a file of this project has been renamed
 		/// </summary>
 		public event ProjectFileRenamedEventHandler FileRenamedInProject;
+
+	    public virtual Project GetProjectForTypeSystem ()
+	    {
+	        return this;
+	    }
 	}
 
 	public delegate void ProjectEventHandler (Object sender, ProjectEventArgs e);

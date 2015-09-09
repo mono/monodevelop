@@ -41,7 +41,7 @@ using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
-	class SolutionNodeBuilder: TypeNodeBuilder
+	public class SolutionNodeBuilder: TypeNodeBuilder
 	{
 		SolutionItemChangeEventHandler globalItemAddedRemoved;
 		SolutionItemChangeEventHandler combineEntryAdded;

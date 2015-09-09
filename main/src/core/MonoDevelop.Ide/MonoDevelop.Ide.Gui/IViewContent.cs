@@ -49,6 +49,9 @@ namespace MonoDevelop.Ide.Gui
 		void LoadNew (System.IO.Stream content, string mimeType);
         void Save (string fileName);
         void Save ();
+
+		void Suspend();
+		void Resume();
 		
 		/// <summary>
 		/// Discards all changes. This method is called before a dirty file is closed. It tells the view 

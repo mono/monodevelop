@@ -31,7 +31,7 @@ using SolutionFolder = MonoDevelop.Projects.SolutionFolder;
 
 namespace MonoDevelop.Ide.Projects
 {
-	class FinalProjectConfigurationPage
+	public class FinalProjectConfigurationPage
 	{
 		static readonly string WorkplaceTemplateId = "MonoDevelop.Workspace";
 

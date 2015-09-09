@@ -397,6 +397,10 @@ namespace MonoDevelop.CSharp.Parser
 				return compilerArguments;
 			}
 
+            project = project.GetProjectForTypeSystem();
+		    if (project == null)
+		        return compilerArguments;
+
 			var configuration = project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
 			if (configuration == null)
 				return compilerArguments;

@@ -129,6 +129,9 @@ namespace MonoDevelop.CSharp.Highlighting
 			var workspace = IdeApp.Workspace;
 			if (workspace == null || project == null)
 				yield break;
+		    project = project.GetProjectForTypeSystem ();
+		    if (project == null)
+		        yield break;
 			var configuration = project.GetConfiguration (workspace.ActiveConfiguration) as DotNetProjectConfiguration;
 			if (configuration != null) {
 				foreach (string s in configuration.GetDefineSymbols ())

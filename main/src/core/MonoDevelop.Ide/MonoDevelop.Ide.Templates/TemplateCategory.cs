@@ -104,6 +104,11 @@ namespace MonoDevelop.Ide.Templates
 		{
 			return templates.Any () || categories.Any ();
 		}
+
+	    public void Clear ()
+	    {
+	        templates.Clear ();
+	    }
 	}
 }
 

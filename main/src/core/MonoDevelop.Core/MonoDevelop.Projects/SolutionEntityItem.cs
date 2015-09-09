@@ -139,7 +139,7 @@ namespace MonoDevelop.Projects
 		}
 
 		
-		internal override void SetItemHandler (ISolutionItemHandler handler)
+		public override void SetItemHandler (ISolutionItemHandler handler)
 		{
 			string oldName = Name;
 			string oldFile = FileName;

@@ -4803,6 +4803,7 @@ Diagnostic</property>
                     <property name="Tooltip" translatable="yes">Switch to Find in Files</property>
                     <property name="CanFocus">True</property>
                     <property name="Label" translatable="yes">Find in Files</property>
+                    <property name="Active">True</property>
                     <property name="DrawIndicator">False</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>
@@ -11313,7 +11314,6 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
   <widget class="Gtk.Bin" id="MonoDevelop.Ide.Projects.GtkProjectFolderPreviewWidget" design-size="300 416">
     <property name="MemberName" />
     <property name="Visible">False</property>
-    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="mainVBox">
         <property name="MemberName" />

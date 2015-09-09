@@ -365,7 +365,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			foreach (Project p in IdeApp.Workspace.GetAllProjects ()) {
 				ITreeBuilder tb = Context.GetTreeBuilder (p);
 				if (tb != null)
+                { 
 					tb.Update ();
+                    tb.UpdateChildren();
+                }
 			}
 		}
 		

@@ -117,6 +117,14 @@ namespace MonoDevelop.Ide.Gui
 			throw new NotSupportedException ();
 		}
 
+		public virtual void Suspend()
+		{
+		}
+
+		public virtual void Resume()
+		{
+		}
+
 		public event EventHandler ContentNameChanged;
 
 		public event EventHandler DirtyChanged;

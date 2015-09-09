@@ -107,7 +107,7 @@ namespace MonoDevelop.Projects
 		/// <param name='handler'>
 		/// A handler.
 		/// </param>
-		internal virtual void SetItemHandler (ISolutionItemHandler handler)
+		public virtual void SetItemHandler (ISolutionItemHandler handler)
 		{
 			if (this.handler != null)
 				this.handler.Dispose ();
@@ -175,7 +175,7 @@ namespace MonoDevelop.Projects
 					return parentFolder.ParentSolution;
 				return parentSolution; 
 			}
-			internal set {
+			set {
 				if (parentSolution != null && parentSolution != value)
 					NotifyUnboundFromSolution (true);
 				parentSolution = value;

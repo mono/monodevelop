@@ -1082,6 +1082,9 @@ namespace MonoDevelop.CSharp.Completion
 				var project = ext.document.Project;
 				if (project == null)
 					yield break;
+			    project = project.GetProjectForTypeSystem ();
+			    if (project == null)
+			        yield break;
 				var configuration = project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
 				if (configuration == null)
 					yield break;

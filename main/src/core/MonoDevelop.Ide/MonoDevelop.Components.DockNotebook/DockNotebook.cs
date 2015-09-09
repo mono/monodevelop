@@ -171,12 +171,26 @@ namespace MonoDevelop.Components.DockNotebook
 				if (currentTab != value) {
 					currentTab = value;
 					if (contentBox.Child != null)
+					{
+						var window = contentBox.Child as MonoDevelop.Ide.Gui.SdiWorkspaceWindow;
+						if (window != null)
+						{
+							window.ViewContent.Suspend();
+						}
+
 						contentBox.Remove (contentBox.Child);
+					}
 
 					if (currentTab != null) {
 						if (currentTab.Content != null) {
 							contentBox.Add (currentTab.Content);
 							contentBox.ChildFocus (DirectionType.Down);
+
+							var window = contentBox.Child as MonoDevelop.Ide.Gui.SdiWorkspaceWindow;
+							if (window != null)
+							{
+								window.ViewContent.Resume();
+							}
 						}
 						pagesHistory.Remove (currentTab);
 						pagesHistory.Insert (0, currentTab);
