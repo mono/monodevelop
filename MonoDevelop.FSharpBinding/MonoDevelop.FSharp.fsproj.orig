@@ -90,6 +90,7 @@
     <Compile Include="FSharpProject.fs" />
     <Compile Include="FSharpFoldingParser.fs" />
     <Compile Include="FSharpParser.fs" />
+    <Compile Include="FSharpOutlineTextEditorExtension.fs" />
     <Compile Include="FSharpTextEditorCompletion.fs" />
     <Compile Include="FSharpPathExtension.fs" />
     <Compile Include="FSharpUnitTestTextEditorExtension.fs" />

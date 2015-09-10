@@ -59,10 +59,6 @@ type FSharpOutlineTextEditorExtension() =
         refreshingOutline <- false
         false
  
-    override x.Dispose() = 
-        // more stuff here
-        printf "%s" "Disposed"
-        base.Dispose()
     interface IOutlinedDocument with
         member x.GetOutlineWidget() = 
             match treeView with
