@@ -55,6 +55,12 @@ namespace MonoDevelop.VersionControl.Git
 			return false;
 		}
 
+		public override string GetTitleToAppend (ChangeSet changeSet)
+		{
+			var gitRepo = changeSet.Repository as GitRepository;
+			return gitRepo != null ? string.Format ("({0})", gitRepo.GetCurrentBranch ()) : null;
+		}
+
 		public override bool OnBeginCommit (ChangeSet changeSet)
 		{
 			// In this callback we check if the user information configured in Git

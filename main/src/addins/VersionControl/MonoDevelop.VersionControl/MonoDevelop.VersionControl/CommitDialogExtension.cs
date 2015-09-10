@@ -24,6 +24,11 @@ namespace MonoDevelop.VersionControl
 			return true;
 		}
 
+		public virtual string GetTitleToAppend (ChangeSet changeSet)
+		{
+			return null;
+		}
+
 		public virtual void CommitMessageTextViewHook (Gtk.TextView textView)
 		{
 		}
