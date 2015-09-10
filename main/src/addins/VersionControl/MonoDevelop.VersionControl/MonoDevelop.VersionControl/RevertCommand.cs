@@ -71,8 +71,8 @@ namespace MonoDevelop.VersionControl
 					}
 					VersionControlService.NotifyFileStatusChanged (items);
 				});
+				Monitor.ReportSuccess (GettextCatalog.GetString ("Revert operation completed."));
 			}
-			Monitor.ReportSuccess (GettextCatalog.GetString ("Revert operation completed."));
 		}
 		
 	}
