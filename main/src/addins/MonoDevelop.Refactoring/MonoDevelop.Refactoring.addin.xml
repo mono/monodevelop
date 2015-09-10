@@ -99,7 +99,7 @@
 				defaultHandler = "MonoDevelop.Refactoring.ResolveCommandHandler"
 				type="array"
 				_label = "Resolve"/> 
-		
+
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations"
 				defaultHandler = "MonoDevelop.Refactoring.CurrentRefactoryOperationsHandler"
 				type="array"
@@ -186,7 +186,7 @@
 				func="MonoDevelop.AnalysisCore.Rules.NamingConventions.ClassNaming" />-->
 		</Category>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/AnalysisCore/FixHandlers">
 		<Handler fixName="RenameMember" class = "MonoDevelop.AnalysisCore.Fixes.RenameMemberHandler" />
 		<Handler fixName="Generic" class = "MonoDevelop.AnalysisCore.Fixes.GenericFixHandler" />
