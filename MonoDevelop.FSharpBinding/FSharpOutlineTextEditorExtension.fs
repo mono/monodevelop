@@ -19,7 +19,9 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 type FSharpOutlineTextEditorExtension() = 
     inherit TextEditorExtension()
     let mutable treeView : PadTreeView option = None
-    
+    let mutable refreshingOutline : bool = false
+    let mutable timerId : uint32 = 0u
+
     override x.Initialize() = 
         base.Initialize()
         x.DocumentContext.DocumentParsed.Add(x.UpdateDocumentOutline)
@@ -28,6 +30,12 @@ type FSharpOutlineTextEditorExtension() =
     
     //    IdeApp.Workbench.ActiveDocument <> null && IdeApp.Workbench.ActiveDocument.Name = x.DocumentContext.Name
     member private x.UpdateDocumentOutline _ = 
+        if not refreshingOutline then
+            refreshingOutline <- true
+            timerId <- GLib.Timeout.Add (3000u, (fun _ -> x.refillTree))
+
+    member private x.refillTree = 
+
         let ast = maybe { let! context = x.DocumentContext |> Option.ofNull
                           let! parsedDocument = context.ParsedDocument |> Option.ofNull
                           let! ast = parsedDocument.Ast |> Option.tryCast<ParseAndCheckResults>
@@ -38,6 +46,8 @@ type FSharpOutlineTextEditorExtension() =
         ast |> Option.iter (fun ast -> 
                    match treeView with
                    | Some(treeView) -> 
+                       if treeView.Model = null || not treeView.IsRealized then
+                           false
                        let treeStore = treeView.Model :?> TreeStore
                        treeStore.Clear()
                        let toplevel = ast.GetNavigationItems()
@@ -48,9 +58,13 @@ type FSharpOutlineTextEditorExtension() =
                        treeView.ExpandAll()
                    | None -> ())
         Gdk.Threads.Leave()
-    
+        refreshingOutline <- false
+        timerId <- 0u
+        false
+ 
     override x.Dispose() = 
         // more stuff here
+        printf "%s" "Disposed"
         base.Dispose()
     interface IOutlinedDocument with
         member x.GetOutlineWidget() = 
@@ -94,7 +108,6 @@ type FSharpOutlineTextEditorExtension() =
                 padTreeView.TextRenderer.Ypad <- 0u
 
                 let treeCol = new TreeViewColumn()
-                treeCol.Title <- "HI I AM A COLUMN"
                 treeCol.PackStart(pixRenderer, false)
                 // treeCol.AddAttribute (padTreeView.TextRenderer,"text",1)
                 treeCol.SetCellDataFunc(pixRenderer, new TreeCellDataFunc(setCellIcon))
@@ -103,12 +116,11 @@ type FSharpOutlineTextEditorExtension() =
 
                 padTreeView.AppendColumn treeCol |> ignore
                 padTreeView.HeadersVisible <- true
-                //padTreeView.Realized.Add refillTree
+                padTreeView.Realized.Add(fun _ -> x.refillTree |> ignore)
                 padTreeView.Selection.Changed.Subscribe(fun _ -> jumpToDeclaration false) |> ignore
                 padTreeView.RowActivated.Subscribe(fun _ -> jumpToDeclaration true) |> ignore
 
                 let sw = new CompactScrolledWindow()
-//                padTreeView.Model <- treeStore
                 sw.Add padTreeView
                 sw.ShowAll()
                 sw :> Widget
