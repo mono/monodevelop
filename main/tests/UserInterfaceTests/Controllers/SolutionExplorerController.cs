@@ -51,13 +51,20 @@ namespace UserInterfaceTests
 
 		public static bool Select (params string[] selectionTree)
 		{
+			string.Join (" > ", selectionTree).PrintData ();
+			Func<AppQuery, AppQuery> query = GetNodeQuery (selectionTree);
+			return Session.SelectElement (GetNodeQuery (selectionTree)) && Session.WaitForElement (c => query (c).Selected ()).Any ();
+		}
+
+		public static Func<AppQuery, AppQuery> GetNodeQuery (params string[] selectionTree)
+		{
 			var funcs = new List<Func<AppQuery, AppQuery>> ();
 			funcs.Add (topLevel);
 			foreach (var nodeName in selectionTree) {
 				var lastFunc = funcs.Last ();
-				funcs.Add (c => lastFunc (c).Children (false).Index (0).Property ("Label", nodeName));
+				funcs.Add (c => lastFunc (c).Children (false).Property ("Label", nodeName).Index (0));
 			}
-			return Session.SelectElement (funcs.Last ());
+			return funcs.Last ();
 		}
 
 		public static bool SelectSolution (string solutionName)
@@ -72,7 +79,7 @@ namespace UserInterfaceTests
 
 		public static bool SelectReferenceFolder (string solutionName, string projectName)
 		{
-			return Select (solutionName, projectName);
+			return Select (solutionName, projectName, "References");
 		}
 
 		public static bool SelectSingleReference (string solutionName, string projectName, string referenceName, bool fromPackage = false)

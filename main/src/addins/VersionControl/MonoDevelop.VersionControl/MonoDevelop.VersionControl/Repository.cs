@@ -94,9 +94,17 @@ namespace MonoDevelop.VersionControl
 			if (--references == 0)
 				Dispose ();
 		}
-		
+
 		public virtual void Dispose ()
 		{
+			if (!queryRunning)
+				return;
+
+			lock (queryLock) {
+				fileQueryQueue.Clear ();
+				directoryQueryQueue.Clear ();
+				recursiveDirectoryQueryQueue.Clear ();
+			}
 		}
 		
 		// Display name of the repository
@@ -327,7 +335,7 @@ namespace MonoDevelop.VersionControl
 
 		class RecursiveDirectoryInfoQuery : DirectoryInfoQuery
 		{
-			public VersionInfo[] Result;
+			public VersionInfo[] Result = new VersionInfo[0];
 			public ManualResetEvent ResetEvent;
 			public int Count;
 		}

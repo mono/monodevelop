@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Desktop
 		const string projGroup = "MonoDevelop Projects";
 		const string fileGroup = "MonoDevelop Files";
 		
-		const int ItemLimit = 10;
+		const int ItemLimit = 25;
 		
 		public FdoRecentFiles () : this (RecentFileStorage.DefaultPath)
 		{

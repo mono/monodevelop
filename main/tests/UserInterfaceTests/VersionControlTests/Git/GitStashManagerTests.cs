@@ -92,7 +92,7 @@ namespace UserInterfaceTests
 			ComvertToBranch (0, branchName);
 			OpenStashManager ();
 			TakeScreenShot ("Asserting-if-Stash-Still-Present");
-			Assert.IsNotEmpty (Session.Query (StashEntries));
+			Assert.IsEmpty (Session.Query (StashEntries));
 			CloseStashManager ();
 
 			OpenRepositoryConfiguration ("Branches");

@@ -113,6 +113,10 @@ namespace MonoDevelop.Projects.Text
 				}
 			}
 		}
+
+		public bool KeepLines {
+			get; set;
+		}
 		
 		public bool TabsAsSpaces {
 			get { return tabsAsSpaces; }
@@ -304,8 +308,12 @@ namespace MonoDevelop.Projects.Text
 		
 		void AppendCurrentWord (char separatorChar)
 		{
-			if (currentWord.Length == 0)
+			if (currentWord.Length == 0) {
+				if (KeepLines && lineStart && separatorChar == '\n') {
+					AppendChar (separatorChar, true);
+				}
 				return;
+			}
 			if (Wrap == WrappingType.Word || Wrap == WrappingType.WordChar) {
 				if (curCol + currentWord.Length > MaxColumns) {
 					// If the last char was a word separator, remove it

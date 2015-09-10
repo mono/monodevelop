@@ -32,6 +32,7 @@ using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Templates;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -118,7 +119,8 @@ namespace MonoDevelop.Ide.Projects
 					SetMarkup (layout, GetSelectedLanguage ());
 					layout.GetPixelSize (out textWidth, out textHeight);
 
-					languageRect = GetLanguageButtonRectangle (window, widget, cell_area, textHeight, textWidth);
+					double scale = GtkWorkarounds.GetPixelScale ();
+					languageRect = GetLanguageButtonRectangle (window, widget, cell_area, textHeight, textWidth, scale);
 
 					DrawTemplateNameText (window, widget, cell_area, iconRect, languageRect, flags);
 
@@ -126,7 +128,7 @@ namespace MonoDevelop.Ide.Projects
 					SetSourceColor (ctx, LanguageButtonBackgroundColor.ToCairoColor ());
 					ctx.Fill ();
 
-					int languageTextX = languageRect.X + languageLeftHandPadding;
+					int languageTextX = languageRect.X + GetLanguageLeftHandPadding (scale);
 					if (!TemplateHasMultipleLanguages ()) {
 						languageTextX = languageRect.X + (languageRect.Width - textWidth) / 2;
 					}
@@ -135,12 +137,28 @@ namespace MonoDevelop.Ide.Projects
 					window.DrawLayout (widget.Style.TextGC (StateType.Normal), languageTextX, languageTextY, layout);
 
 					if (TemplateHasMultipleLanguages ()) {
-						int triangleX = languageTextX + textWidth + languageRightHandPadding;
-						int triangleY = languageRect.Y + (languageRect.Height - dropdownTriangleHeight) / 2;
-						DrawTriangle (ctx, triangleX, triangleY);
+						int triangleX = languageTextX + textWidth + GetLanguageRightHandPadding (scale);
+						int triangleY = languageRect.Y + (languageRect.Height - ((int)(scale * dropdownTriangleHeight))) / 2;
+						DrawTriangle (ctx, triangleX, triangleY, scale);
 					}
 				}
 			}
+		}
+
+		int GetLanguageLeftHandPadding (double scale)
+		{
+			if (Platform.IsWindows && scale > 1.0) {
+				return (int)(scale * (languageLeftHandPadding + 3));
+			}
+			return languageLeftHandPadding;
+		}
+
+		int GetLanguageRightHandPadding (double scale)
+		{
+			if (Platform.IsWindows && scale > 1.0) {
+				return (int)(scale * languageRightHandPadding);
+			}
+			return languageRightHandPadding;
 		}
 
 		void DrawTemplateCategoryText (Drawable window, Widget widget, Rectangle cell_area, CellRendererState flags)
@@ -233,7 +251,7 @@ namespace MonoDevelop.Ide.Projects
 			layout.SetMarkup (markup);
 		}
 
-		Rectangle GetLanguageButtonRectangle (Drawable window, Widget widget, Rectangle cell_area, int textHeight, int textWidth)
+		Rectangle GetLanguageButtonRectangle (Drawable window, Widget widget, Rectangle cell_area, int textHeight, int textWidth, double scale)
 		{
 			int languageRectangleHeight = cell_area.Height - 8;
 			int languageRectangleWidth = textWidth + languageLeftHandPadding;
@@ -243,6 +261,8 @@ namespace MonoDevelop.Ide.Projects
 				languageRectangleWidth += languageLeftHandPadding;
 				languageRectangleWidth = Math.Max (languageRectangleWidth, minLanguageRectWidth);
 			}
+
+			languageRectangleWidth = (int)(scale * languageRectangleWidth);
 
 			var dy = (cell_area.Height - languageRectangleHeight) / 2 - 1;
 			var y = cell_area.Y + dy;
@@ -256,12 +276,15 @@ namespace MonoDevelop.Ide.Projects
 			return Template.AvailableLanguages.Count > 1;
 		}
 
-		void DrawTriangle (Cairo.Context ctx, int x, int y)
+		void DrawTriangle (Cairo.Context ctx, int x, int y, double scale)
 		{
+			int width = (int)(scale * dropdownTriangleWidth);
+			int height = (int)(scale * dropdownTriangleHeight);
+
 			SetSourceColor (ctx, triangleColor.ToCairoColor ());
 			ctx.MoveTo (x, y);
-			ctx.LineTo (x + dropdownTriangleWidth, y);
-			ctx.LineTo (x + (dropdownTriangleWidth / 2), y + dropdownTriangleHeight);
+			ctx.LineTo (x + width, y);
+			ctx.LineTo (x + (width / 2), y + height);
 			ctx.LineTo (x, y);
 			ctx.Fill ();
 		}

@@ -82,7 +82,7 @@ namespace MonoDevelop.PackageManagement
 					try {
 						RestorePackages (progressMonitor, progressMessage);
 					} catch (Exception ex) {
-						LoggingService.LogInternalError (ex);
+						LoggingService.LogError (progressMessage.Error, ex);
 						progressMonitor.Log.WriteLine (ex.Message);
 						progressMonitor.ReportError (progressMessage.Error, null);
 						progressMonitor.ShowPackageConsole ();

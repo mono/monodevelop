@@ -1,10 +1,10 @@
-//
-// PackageUpdatesEventMonitor.cs
+﻿//
+// TestableCheckForUpdatesTaskRunner.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,49 +25,32 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
-using MonoDevelop.Core;
-using NuGet;
+using MonoDevelop.Ide;
 
-namespace MonoDevelop.PackageManagement
+namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class PackageUpdatesEventMonitor : IDisposable
+	public class TestableCheckForUpdatesTaskRunner : CheckForUpdatesTaskRunner
 	{
-		IPackageManagementEvents packageEvents;
-		IProgressMonitor progressMonitor;
+		public List<string> LoggedErrorMessages = new List<string> ();
+		public List<Exception> LoggedExceptions = new List<Exception> ();
 
-		public PackageUpdatesEventMonitor (IProgressMonitor progressMonitor)
-			: this (
-				progressMonitor,
-				PackageManagementServices.PackageManagementEvents)
+		public TestableCheckForUpdatesTaskRunner (ITaskFactory taskFactory)
+			: base (taskFactory)
 		{
 		}
 
-		public PackageUpdatesEventMonitor (
-			IProgressMonitor progressMonitor,
-			IPackageManagementEvents packageEvents)
+		protected override void GuiBackgroundDispatch (MessageHandler handler)
 		{
-			this.progressMonitor = progressMonitor;
-			this.packageEvents = packageEvents;
-
-			packageEvents.PackageOperationMessageLogged += PackageOperationMessageLogged;
+			handler.Invoke ();
 		}
 
-		void PackageOperationMessageLogged (object sender, PackageOperationMessageLoggedEventArgs e)
+		protected override void LogError (string message, Exception ex)
 		{
-			progressMonitor.Log.WriteLine (e.Message.ToString ());
-
-			if (e.Message.Level == MessageLevel.Warning) {
-				WarningReported = true;
-			}
+			LoggedErrorMessages.Add (message);
+			LoggedExceptions.Add (ex);
 		}
-
-		public void Dispose ()
-		{
-			packageEvents.PackageOperationMessageLogged -= PackageOperationMessageLogged;
-		}
-
-		public bool WarningReported { get; private set; }
 	}
 }
 

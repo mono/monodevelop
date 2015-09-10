@@ -56,7 +56,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			Title = "";
 			BezelStyle = NSBezelStyle.TexturedRounded;
-			AddSubview (new PathSelectorView (new CGRect (6, 0, 1, 1)));
+			var pathSelectorView = new PathSelectorView (new CGRect (6, 0, 1, 1));
+			pathSelectorView.UnregisterDraggedTypes ();
+			AddSubview (pathSelectorView);
 		}
 
 		public override void DrawRect (CGRect dirtyRect)
@@ -115,7 +117,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				} else {
 					menuItem.Activated += (o2, e2) => {
 						string old = ActiveRuntime.FullDisplayString;
-						ActiveRuntime = runtimeModel.First (r => r.FullDisplayString == runtime.FullDisplayString);
+						IRuntimeModel newRuntime = runtimeModel.FirstOrDefault (r => r.FullDisplayString == runtime.FullDisplayString);
+						if (newRuntime == null)
+							return;
+
+						ActiveRuntime = newRuntime;
 						var ea = new HandledEventArgs ();
 						if (RuntimeChanged != null)
 							RuntimeChanged (o2, ea);

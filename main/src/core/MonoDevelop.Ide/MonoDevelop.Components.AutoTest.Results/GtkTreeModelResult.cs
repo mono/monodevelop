@@ -234,6 +234,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 			if (ParentWidget is TreeView) {
 				TreeView treeView = (TreeView) ParentWidget;
 				treeView.Selection.UnselectAll ();
+				treeView.ExpandRow (TModel.GetPath (resultIter.Value), false);
 				treeView.Selection.SelectIter ((TreeIter) resultIter);
 				treeView.SetCursor (TModel.GetPath ((TreeIter) resultIter), treeView.Columns [0], false);
 

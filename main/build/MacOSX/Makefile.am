@@ -25,8 +25,8 @@ dmg: render.exe app
 	./make-dmg-bundle.sh
 
 monostub: monostub.m $(MONOSTUB_EXTRA_SOURCES)
-	gcc -Wall -mmacosx-version-min=10.9 -m32 -o $@ $^ -framework AppKit
-#	gcc -Wall -mmacosx-version-min=10.9 -m32 -o $@ $^ -framework AppKit -isysroot $(SDK_PATH)
+	gcc -Wall -mmacosx-version-min=10.10 -m32 -o $@ $^ -framework AppKit
+#	gcc -Wall -mmacosx-version-min=10.10 -m32 -o $@ $^ -framework AppKit -isysroot $(SDK_PATH)
 
 clean-local:
 	rm -rf MonoDevelop.app

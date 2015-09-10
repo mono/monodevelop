@@ -48,7 +48,7 @@ sln_clean:
 print_extradist:
 	@echo $(WILDCARDED_FILES)
 
-EXTS:=*.bmp *.cs *.csproj *.html *.png *.snk *.config *.stetic *.glade *.xml *.xsd *.exe.addins *.template *.tt *.txt
+EXTS:=*.bmp *.cs *.csproj *.html *.png *.snk *.config *.stetic *.glade *.xml *.xsd *.exe.addins *.template *.tt *.txt *.targets *.sh
 
 ALL_FILES:=	$(EXTS) \
 		$(addprefix */,$(EXTS))		\

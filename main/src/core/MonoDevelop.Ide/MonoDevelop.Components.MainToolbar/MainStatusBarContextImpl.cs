@@ -71,6 +71,7 @@ namespace MonoDevelop.Components.MainToolbar
 		public void ShowReady ()
 		{
 			statusBar.ShowReady ();
+			statusBar.SetMessageSourcePad (null);
 		}
 		
 		public void SetMessageSourcePad (Pad pad)

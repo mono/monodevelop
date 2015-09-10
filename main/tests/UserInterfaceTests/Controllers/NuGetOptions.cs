@@ -30,11 +30,24 @@ namespace UserInterfaceTests
 {
 	public class NuGetPackageOptions
 	{
+		public NuGetPackageOptions ()
+		{
+			RetryCount = 3;
+		}
+
 		public string PackageName { get; set;}
 
 		public string Version { get; set;}
 
 		public bool IsPreRelease { get; set;}
+
+		public int RetryCount { get; set;}
+
+		public override string ToString ()
+		{
+			return string.Format ("PackageName={0}, Version={1}, IsPreRelease={2}, RetryCount={3}",
+				PackageName, Version, IsPreRelease, RetryCount);
+		}
 	}
 
 	public enum NuGetOperations
@@ -65,6 +78,12 @@ namespace UserInterfaceTests
 		public int TimeOutSeconds  { get; set;}
 
 		public int PollStepSeconds  { get; set;}
+
+		public override string ToString ()
+		{
+			return string.Format ("Operation={0}, PackageName={1}, WaitForSuccess={2}, WaitForWarning={3}, WaitForError={4}, TimeOutSeconds={5}, PollStepSeconds={6}",
+				Operation, PackageName, WaitForSuccess, WaitForWarning, WaitForError, TimeOutSeconds, PollStepSeconds);
+		}
 
 		public static void UpdateSuccess (string packageName, bool waitForWarning = true)
 		{

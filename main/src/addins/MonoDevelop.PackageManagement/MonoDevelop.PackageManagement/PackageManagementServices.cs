@@ -100,7 +100,7 @@ namespace ICSharpCode.PackageManagement
 			try {
 				return Settings.LoadDefaultSettings (null, null, null);
 			} catch (Exception ex) {
-				LoggingService.LogInternalError ("Unable to load NuGet.Config.", ex);
+				LoggingService.LogError ("Unable to load NuGet.Config.", ex);
 			}
 			return NullSettings.Instance;
 		}

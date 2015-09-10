@@ -489,8 +489,15 @@ namespace Mono.TextEditor
 		public static void ShowContextMenu (Gtk.Menu menu, Gtk.Widget parent, Gdk.EventButton evt, Gdk.Rectangle caret)
 		{
 			int x, y;
+			if (evt == null) {
+				evt = (Gdk.EventButton) Global.CurrentEvent;
+			}
+
 			var window = evt.Window;
 
+			if (window == null)
+				return;
+			
 			window.GetOrigin (out x, out y);
 			x += (int)evt.X;
 			y += (int)evt.Y;
@@ -1189,6 +1196,13 @@ namespace Mono.TextEditor
 				return GetScaleFactor ();
 			else
 				return 1d;
+		}
+
+		public static int ConvertToPixelScale (int size)
+		{
+			double scale = GetPixelScale ();
+
+			return (int)(size * scale);
 		}
 		
 		public static Gdk.Pixbuf RenderIcon (this Gtk.IconSet iconset, Gtk.Style style, Gtk.TextDirection direction, Gtk.StateType state, Gtk.IconSize size, Gtk.Widget widget, string detail, double scale)

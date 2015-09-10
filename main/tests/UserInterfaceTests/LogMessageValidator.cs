@@ -1,10 +1,10 @@
-//
-// Util.cs
+﻿//
+// LogMessageValidator.cs
 //
 // Author:
-//       Lluis Sanchez Gual <lluis@novell.com>
+//       Manish Sinha <manish.sinha@xamarin.com>
 //
-// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2015 Xamarin Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,45 +23,27 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using System.IO;
-using MonoDevelop.Core;
-using System.Reflection;
+using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace UserInterfaceTests
 {
-	public static class Util
+	public class LogMessageValidator
 	{
-		public static void PrintData (this object data)
-		{
-			if (data != null)
-				TestService.Session.DebugObject.Debug (data.ToString ());
-		}
+		static List<string> invalidLogStrings = new List<string> {
+			"Gtk-Critical: void gtk_container_remove(GtkContainer , GtkWidget )"
+		};
 
-		public static FilePath CreateTmpDir (string hint = null)
+		public static void Validate (string fileName)
 		{
-			var cwd = new FileInfo (Assembly.GetExecutingAssembly ().Location).DirectoryName;
-			string tempDirectory = Path.Combine (cwd, Path.GetRandomFileName());
-			tempDirectory = hint != null ? Path.Combine (tempDirectory, hint) : tempDirectory;
-
-			if (!Directory.Exists (tempDirectory))
-				Directory.CreateDirectory (tempDirectory);
-			return tempDirectory;
-		}
-
-		public static Action GetAction (this BeforeBuildAction action)
-		{
-			switch (action) {
-			case BeforeBuildAction.None:
-				return Ide.EmptyAction;
-			case BeforeBuildAction.WaitForPackageUpdate:
-				return Ide.WaitForPackageUpdate;
-			case BeforeBuildAction.WaitForSolutionCheckedOut:
-				return Ide.WaitForSolutionCheckedOut;
-			default:
-				return Ide.EmptyAction;
+			var readIdeLog = File.ReadAllText (fileName);
+			foreach (var error in invalidLogStrings) {
+				Assert.IsFalse (readIdeLog.Contains (error),
+					string.Format ("GTK Error detected in Ide.log file:\n\t{0}",error));
 			}
 		}
 	}
 }
+

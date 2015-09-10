@@ -512,7 +512,7 @@ namespace MonoDevelop.NUnit
 				Gtk.TreeIter iter;
 				if (!failuresTreeView.Selection.GetSelected (out foo, out iter))
 					return;
-
+				
 				int type = (int)failuresStore.GetValue (iter, 5);
 
 				var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
@@ -535,9 +535,23 @@ namespace MonoDevelop.NUnit
 		{
 			UnitTest test = GetSelectedTest ();
 			if (test != null) {
-				var result = test.GetLastResult ();
-				if (result != null) {
-					info.Enabled = !string.IsNullOrEmpty (result.StackTrace);
+				var last = test.GetLastResult ();
+
+				Gtk.TreeModel foo;
+				Gtk.TreeIter iter;
+				if (!failuresTreeView.Selection.GetSelected (out foo, out iter)) {
+					info.Enabled = false;
+					return;
+				}
+
+				int type = (int)failuresStore.GetValue (iter, 5);
+				switch (type) {
+				case ErrorMessage:
+					info.Enabled = !string.IsNullOrEmpty (last.Message);
+					return;
+				case StackTrace:
+				default:
+					info.Enabled = !string.IsNullOrEmpty (last.StackTrace);
 					return;
 				}
 			}

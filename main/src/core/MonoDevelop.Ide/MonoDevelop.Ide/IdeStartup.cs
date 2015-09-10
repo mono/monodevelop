@@ -731,6 +731,10 @@ namespace MonoDevelop.Ide
 				Console.WriteLine (BrandingService.ApplicationName + " " + BuildInfo.VersionLabel);
 				Console.WriteLine ("Options:");
 				optSet.WriteOptionDescriptions (Console.Out);
+				const string openFileText = "      file.ext;line;column";
+				Console.Write (openFileText);
+				Console.Write (new string (' ', 29 - openFileText.Length));
+				Console.WriteLine ("Opens a file at specified integer line and column");
 			}
 			
 			return opt;

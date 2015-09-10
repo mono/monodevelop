@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace MonoDevelop.Core.Instrumentation
 {
@@ -52,7 +53,7 @@ namespace MonoDevelop.Core.Instrumentation
 	
 	class TimeCounter: ITimeTracker
 	{
-		DateTime begin;
+		Stopwatch stopWatch = new Stopwatch ();
 		TimerTraceList traceList;
 		TimerTrace lastTrace;
 		TimerCounter counter;
@@ -97,16 +98,18 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		internal void Begin ()
 		{
-			begin = DateTime.Now;
+			stopWatch.Start ();
 		}
 		
 		public void End ()
 		{
-			if (counter == null) {
+			if (!stopWatch.IsRunning) {
 				Console.WriteLine ("Timer already finished");
 				return;
 			}
-			traceList.TotalTime = DateTime.Now - begin;
+
+			stopWatch.Stop ();
+			traceList.TotalTime = TimeSpan.FromMilliseconds (stopWatch.ElapsedMilliseconds);
 			if (traceList.TotalTime.TotalSeconds < counter.MinSeconds)
 				counter.RemoveValue (traceList.ValueIndex);
 			else
@@ -118,7 +121,7 @@ namespace MonoDevelop.Core.Instrumentation
 					t.Dispose ();
 			} else if (linkedTrackers != null)
 				((IDisposable)linkedTrackers).Dispose ();
-
+			stopWatch.Reset ();
 		}
 		
 		void IDisposable.Dispose ()
