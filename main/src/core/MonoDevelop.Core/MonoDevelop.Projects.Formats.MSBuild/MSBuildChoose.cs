@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (op != null) {
 				op.ParentNode = this;
 				op.Read (reader);
-				ChildNodes.Add (op);
+				ChildNodes = ChildNodes.Add (op);
 			} else
 				base.ReadChildElement (reader);
 		}
@@ -86,7 +86,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (ob != null) {
 				ob.ParentNode = this;
 				ob.Read (reader);
-				ChildNodes.Add (ob);
+				ChildNodes = ChildNodes.Add (ob);
 			} else
 				reader.Read ();
 		}

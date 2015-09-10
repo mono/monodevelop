@@ -38,7 +38,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var item = new MSBuildItem ();
 			item.ParentNode = this;
 			item.Read (reader);
-			ChildNodes.Add (item);
+			ChildNodes = ChildNodes.Add (item);
 		}
 
 		internal override string GetElementName ()
@@ -53,6 +53,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public MSBuildItem AddNewItem (string name, string include)
 		{
+			AssertCanModify ();
 			var it = new MSBuildItem (name);
 			it.Include = include;
 			AddItem (it);
@@ -61,8 +62,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void AddItem (MSBuildItem item)
 		{
-			ChildNodes.Add (item);
+			AssertCanModify ();
 			item.ParentNode = this;
+			ChildNodes = ChildNodes.Add (item);
 			item.ResetIndent (false);
 			if (ParentProject != null)
 				ParentProject.NotifyChanged ();
@@ -76,9 +78,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal void RemoveItem (MSBuildItem item)
 		{
+			AssertCanModify ();
 			if (ChildNodes.Contains (item)) {
 				item.RemoveIndent ();
-				ChildNodes.Remove (item);
+				ChildNodes = ChildNodes.Remove (item);
 				NotifyChanged ();
 			}
 		}

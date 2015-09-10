@@ -72,6 +72,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void SetProjectExtension (XmlElement value)
 		{
+			AssertCanModify ();
 			var sr = new StringReader (value.OuterXml);
 			var xr = new XmlTextReader (sr);
 			xr.MoveToContent ();
@@ -83,10 +84,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			int i = ChildNodes.FindIndex (n => (n is MSBuildXmlElement) && ((MSBuildXmlElement)n).Name == section);
 			if (i == -1)
-				ChildNodes.Add (elem);
+				ChildNodes = ChildNodes.Add (elem);
 			else {
-				ChildNodes.RemoveAt (i);
-				ChildNodes.Insert (i, elem);
+				ChildNodes = ChildNodes.RemoveAt (i);
+				ChildNodes = ChildNodes.Insert (i, elem);
 			}
 			elem.ParentNode = this;
 			elem.ResetIndent (false);
@@ -95,9 +96,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void RemoveProjectExtension (string section)
 		{
+			AssertCanModify ();
 			int i = ChildNodes.FindIndex (n => (n is MSBuildXmlElement) && ((MSBuildXmlElement)n).Name == section);
 			if (i != -1) {
-				ChildNodes.RemoveAt (i);
+				ChildNodes = ChildNodes.RemoveAt (i);
 				NotifyChanged ();
 			}
 		}

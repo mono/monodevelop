@@ -51,6 +51,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 		}
 
+		internal virtual void AssertCanModify ()
+		{
+			var pp = ParentProject;
+			if (pp != null)
+				pp.AssertCanModify ();
+		}
+
 		internal MSBuildNode ParentNode {
 			get {
 				return parentObject;

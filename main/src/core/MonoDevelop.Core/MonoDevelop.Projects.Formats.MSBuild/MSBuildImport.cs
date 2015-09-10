@@ -64,7 +64,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public string Project {
 			get { return target; }
-			set { target = value; NotifyChanged (); }
+			set { AssertCanModify (); target = value; NotifyChanged (); }
 		}
 
 		public string EvaluatedProject {

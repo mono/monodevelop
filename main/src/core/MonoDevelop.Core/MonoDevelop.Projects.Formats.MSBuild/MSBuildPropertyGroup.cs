@@ -32,6 +32,7 @@ using System.Xml;
 using MonoDevelop.Core;
 using System.Xml.Linq;
 using Microsoft.Build.BuildEngine;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -43,11 +44,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 		}
 
-		internal override List<MSBuildNode> ChildNodes {
+		internal override ImmutableList<MSBuildNode> ChildNodes {
 			get {
 				if (ParentNode is MSBuildItem)
 					return ((MSBuildItem)ParentNode).ChildNodes;
 				return base.ChildNodes;
+			}
+			set {
+				if (ParentNode is MSBuildItem)
+					((MSBuildItem)ParentNode).ChildNodes = value;
+				base.ChildNodes = value;
 			}
 		}
 
@@ -67,7 +73,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			prop.ParentNode = PropertiesParent;
 			prop.Owner = this;
 			prop.Read (reader);
-			ChildNodes.Add (prop);
+			ChildNodes = ChildNodes.Add (prop);
 			properties [prop.Name] = prop; // If a property is defined more than once, we only care about the last registered value
 		}
 
@@ -85,6 +91,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal void CopyFrom (MSBuildPropertyGroup other)
 		{
+			AssertCanModify ();
 			foreach (var node in other.ChildNodes) {
 				var prop = node as MSBuildProperty;
 				if (prop != null) {
@@ -92,16 +99,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					var currentPropIndex = ChildNodes.FindIndex (p => (p is MSBuildProperty) && ((MSBuildProperty)p).Name == prop.Name);
 					if (currentPropIndex != -1) {
 						var currentProp = (MSBuildProperty) ChildNodes [currentPropIndex];
-						ChildNodes [currentPropIndex] = cp;
+						ChildNodes = ChildNodes.SetItem (currentPropIndex, cp);
 					} else {
-						ChildNodes.Add (cp);
+						ChildNodes = ChildNodes.Add (cp);
 					}
 					properties [cp.Name] = cp;
 					cp.ParentNode = PropertiesParent;
 					cp.Owner = this;
 					cp.ResetIndent (false);
 				} else
-					ChildNodes.Add (node);
+					ChildNodes = ChildNodes.Add (node);
 			}
 			foreach (var prop in ChildNodes.OfType<MSBuildProperty> ().ToArray ()) {
 				if (!other.HasProperty (prop.Name))
@@ -214,6 +221,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		MSBuildProperty AddProperty (string name, string condition = null)
 		{
+			AssertCanModify ();
 			int i = propertyOrder.IndexOf (name);
 			int insertIndex = -1;
 			if (i != -1) {
@@ -233,9 +241,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			properties [name] = prop;
 
 			if (insertIndex != -1)
-				ChildNodes.Insert (insertIndex, prop);
+				ChildNodes = ChildNodes.Insert (insertIndex, prop);
 			else
-				ChildNodes.Add (prop);
+				ChildNodes = ChildNodes.Add (prop);
 
 			if (condition != null)
 				prop.Condition = condition;
@@ -272,6 +280,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void SetValue (string name, string value, string defaultValue = null, bool preserveExistingCase = false, bool mergeToMainGroup = false, string condition = null)
 		{
+			AssertCanModify ();
 			if (value == null && defaultValue == "")
 				value = "";
 			var prop = GetProperty (name, condition);
@@ -295,6 +304,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void SetValue (string name, FilePath value, FilePath defaultValue = default(FilePath), bool relativeToProject = true, FilePath relativeToPath = default(FilePath), bool mergeToMainGroup = false, string condition = null)
 		{
+			AssertCanModify ();
 			var prop = GetProperty (name, condition);
 			var isDefault = value.CanonicalPath == defaultValue.CanonicalPath;
 			if (isDefault && !mergeToMainGroup) {
@@ -316,6 +326,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void SetValue (string name, object value, object defaultValue = null, bool mergeToMainGroup = false, string condition = null)
 		{
+			AssertCanModify ();
 			var prop = GetProperty (name, condition);
 			var isDefault = object.Equals (value, defaultValue);
 			if (isDefault && !mergeToMainGroup) {
@@ -347,21 +358,24 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void RemoveProperty (MSBuildProperty prop)
 		{
+			AssertCanModify ();
 			prop.RemoveIndent ();
 			properties.Remove (prop.Name);
-			ChildNodes.Remove (prop);
+			ChildNodes = ChildNodes.Remove (prop);
 			NotifyChanged ();
 		}
 
 		public void RemoveAllProperties ()
 		{
+			AssertCanModify ();
 			properties.Clear ();
-			ChildNodes.Clear ();
+			ChildNodes = ChildNodes.Clear ();
 			NotifyChanged ();
 		}
 
 		public void UnMerge (IMSBuildPropertySet baseGrp, ISet<string> propsToExclude)
 		{
+			AssertCanModify ();
 			HashSet<string> baseProps = new HashSet<string> ();
 			foreach (MSBuildProperty prop in baseGrp.GetProperties ()) {
 				if (propsToExclude != null && propsToExclude.Contains (prop.Name))
@@ -398,6 +412,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void SetPropertyOrder (params string[] propertyNames)
 		{
+			AssertCanModify ();
 			int i = 0;
 			foreach (var name in propertyNames) {
 				if (i < propertyOrder.Count) {

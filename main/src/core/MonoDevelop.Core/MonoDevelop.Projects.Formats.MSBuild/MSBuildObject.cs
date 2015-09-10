@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Xml;
 
@@ -38,7 +39,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	{
 		UnknownAttribute[] unknownAttributes;
 		string [] attributeOrder;
-		List<MSBuildNode> children;
+		ImmutableList<MSBuildNode> children = ImmutableList<MSBuildNode>.Empty;
 		EmptyElementMode emptyElementMode;
 
 		enum EmptyElementMode : byte
@@ -185,7 +186,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					}
 					var tn = new MSBuildXmlTextNode ();
 					tn.Read (reader);
-					ChildNodes.Add (tn);
+					ChildNodes = ChildNodes.Add (tn);
 				} else if (reader.NodeType == XmlNodeType.CDATA) {
 					if (!childFound) {
 						childFound = true;
@@ -193,7 +194,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					}
 					var tn = new MSBuildXmlCDataNode ();
 					tn.Read (reader);
-					ChildNodes.Add (tn);
+					ChildNodes = ChildNodes.Add (tn);
 				} else if (reader.NodeType == XmlNodeType.Comment) {
 					if (!childFound) {
 						childFound = true;
@@ -201,7 +202,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					}
 					var tn = new MSBuildXmlCommentNode ();
 					tn.Read (reader);
-					ChildNodes.Add (tn);
+					ChildNodes = ChildNodes.Add (tn);
 				} else if (reader.IsWhitespace) {
 					reader.ReadAndStoreWhitespace ();
 				} else if (reader.EOF)
@@ -311,19 +312,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				var n = new MSBuildXmlElement ();
 				n.Read (reader);
 				n.ParentNode = this;
-				ChildNodes.Add (n);
-			}
-		}
-
-		internal void RemoveUnknownAttribute (string name)
-		{
-			if (unknownAttributes == null)
-				return;
-			var list = new List<UnknownAttribute> (unknownAttributes);
-			int i = list.FindIndex (a => a.LocalName == name);
-			if (i != -1) {
-				list.RemoveAt (i);
-				unknownAttributes = list.ToArray ();
+				ChildNodes = ChildNodes.Add (n);
 			}
 		}
 
@@ -342,17 +331,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal abstract string GetElementName ();
 
-		internal virtual List<MSBuildNode> ChildNodes {
+		internal virtual ImmutableList<MSBuildNode> ChildNodes {
 			get {
-				if (children == null)
-					children = new List<MSBuildNode> ();
 				return children;
+			}
+			set {
+				children = value;
 			}
 		}
 
 		internal override IEnumerable<MSBuildNode> GetChildren ()
 		{
-			return children != null ? children : Enumerable.Empty<MSBuildNode> ();
+			return children;
 		}
 
 		internal void ResetIndent (bool closeInNewLine)

@@ -209,6 +209,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void SetValue (string value, bool preserveCase = false, bool mergeToMainGroup = false)
 		{
+			AssertCanModify ();
 			MergeToMainGroup = mergeToMainGroup;
 			this.preserverCase = preserveCase;
 			valueType = preserveCase ? MSBuildValueType.Default : MSBuildValueType.DefaultPreserveCase;
@@ -230,6 +231,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void SetValue (FilePath value, bool relativeToProject = true, FilePath relativeToPath = default(FilePath), bool mergeToMainGroup = false)
 		{
+			AssertCanModify ();
 			MergeToMainGroup = mergeToMainGroup;
 			this.preserverCase = false;
 			valueType = MSBuildValueType.Path;
@@ -268,6 +270,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void SetValue (object value, bool mergeToMainGroup = false)
 		{
+			AssertCanModify ();
 			if (value is bool) {
 				if (Owner != null && Owner.UppercaseBools)
 					SetValue ((bool)value ? "True" : "False", preserveCase: true, mergeToMainGroup: mergeToMainGroup);

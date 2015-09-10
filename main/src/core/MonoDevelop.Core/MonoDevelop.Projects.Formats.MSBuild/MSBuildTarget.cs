@@ -62,6 +62,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return this.afterTargets;
 			}
 			set {
+				AssertCanModify ();
 				this.afterTargets = value;
 				NotifyChanged ();
 			}
@@ -72,6 +73,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return this.inputs;
 			}
 			set {
+				AssertCanModify ();
 				this.inputs = value;
 				NotifyChanged ();
 			}
@@ -82,6 +84,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return this.outputs;
 			}
 			set {
+				AssertCanModify ();
 				this.outputs = value;
 				NotifyChanged ();
 			}
@@ -92,6 +95,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return this.beforeTargets;
 			}
 			set {
+				AssertCanModify ();
 				this.beforeTargets = value;
 				NotifyChanged ();
 			}
@@ -103,6 +107,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return this.dependsOnTargets;
 			}
 			set {
+				AssertCanModify ();
 				this.dependsOnTargets = value;
 				NotifyChanged ();
 			}
@@ -113,6 +118,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return this.returns;
 			}
 			set {
+				AssertCanModify ();
 				this.returns = value;
 				NotifyChanged ();
 			}
@@ -123,6 +129,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return this.keepDuplicateOutputs;
 			}
 			set {
+				AssertCanModify ();
 				this.keepDuplicateOutputs = value;
 				NotifyChanged ();
 			}
@@ -173,14 +180,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (ob != null) {
 				ob.ParentNode = this;
 				ob.Read (reader);
-				ChildNodes.Add (ob);
+				ChildNodes = ChildNodes.Add (ob);
 				return;
 			}
 
 			var task = new MSBuildTask ();
 			task.ParentNode = this;
 			task.Read (reader);
-			ChildNodes.Add (task);
+			ChildNodes = ChildNodes.Add (task);
 		}
 
 		internal override void Write (XmlWriter writer, WriteContext context)
@@ -195,7 +202,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public MSBuildTarget (string name, IEnumerable<MSBuildTask> tasks)
 		{
 			this.name = name;
-			ChildNodes.AddRange (tasks);
+			ChildNodes = ChildNodes.AddRange (tasks);
 		}
 
 		public string Name {
@@ -210,10 +217,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void RemoveTask (MSBuildTask task)
 		{
+			AssertCanModify ();
 			if (task.ParentObject != this)
 				throw new InvalidOperationException ("Task doesn't belong to the target");
 			task.RemoveIndent ();
-			ChildNodes.Remove (task);
+			ChildNodes = ChildNodes.Remove (task);
 		}
 	}
 	

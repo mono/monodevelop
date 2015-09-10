@@ -35,7 +35,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	public class MSBuildItem: MSBuildElement
 	{
 		MSBuildPropertyGroup metadata;
-		MSBuildPropertyGroupEvaluated evaluatedMetadata;
 		string name;
 		string include;
 		string exclude;
@@ -113,6 +112,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public string Include {
 			get { return include; }
 			set {
+				AssertCanModify ();
 				include = value;
 				NotifyChanged ();
 			}
@@ -121,6 +121,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public string Exclude {
 			get { return exclude; }
 			set {
+				AssertCanModify ();
 				exclude = value;
 				NotifyChanged ();
 			}
@@ -138,14 +139,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public IMSBuildPropertySet Metadata {
 			get {
 				return metadata; 
-			}
-		}
-
-		public IMSBuildPropertyGroupEvaluated EvaluatedMetadata {
-			get {
-				if (evaluatedMetadata == null)
-					evaluatedMetadata = new MSBuildPropertyGroupEvaluated (ParentProject);
-				return evaluatedMetadata; 
 			}
 		}
 
@@ -169,6 +162,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			this.include = include;
 			this.evaluatedInclude = evaluatedInclude;
 			this.parent = parent;
+			metadata = new MSBuildPropertyGroupEvaluated (parent);
 			Name = name;
 		}
 
@@ -193,8 +187,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public IMSBuildPropertyGroupEvaluated Metadata {
 			get {
-				if (metadata == null)
-					metadata = new MSBuildPropertyGroupEvaluated (parent);
 				return metadata; 
 			}
 		}
