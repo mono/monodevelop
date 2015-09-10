@@ -397,11 +397,6 @@ namespace Mono.TextEditor
 //			TextEditorAccessible.Factory.Init (this);
 //#endif
 
-			if (GtkGestures.IsSupported) {
-				this.AddGestureMagnifyHandler ((sender, args) => {
-					Options.Zoom += Options.Zoom * (args.Magnification / 4d);
-				});
-			}
 			OptionsChanged (this, EventArgs.Empty);
 		}
 

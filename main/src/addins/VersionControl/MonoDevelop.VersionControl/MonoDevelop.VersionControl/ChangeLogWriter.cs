@@ -89,6 +89,7 @@ namespace MonoDevelop.VersionControl
 			formatter.MaxColumns = MessageFormat.MaxColumns;
 			formatter.TabWidth = MessageFormat.TabWidth;
 			formatter.TabsAsSpaces = MessageFormat.TabsAsSpaces;
+			formatter.KeepLines = true;
 			
 			if (message_style.Header.Length > 0) {
 				string [,] tags = new string[,] { {"AuthorName", uinfo.Name}, {"AuthorEmail", uinfo.Email} };
