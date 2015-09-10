@@ -24,7 +24,7 @@ namespace MonoDevelop.VersionControl
 			return true;
 		}
 
-		public virtual string GetTitleToAppend (ChangeSet changeSet)
+		public virtual string FormatDialogTitle (ChangeSet changeSet, string title)
 		{
 			return null;
 		}

@@ -90,9 +90,9 @@ namespace MonoDevelop.VersionControl.Dialogs
 					continue;
 				}
 				if (ext.Initialize (changeSet)) {
-					string toAppend = ext.GetTitleToAppend (changeSet);
-					if (!string.IsNullOrEmpty (toAppend))
-						Title = string.Format ("{0} {1}", Title, toAppend);
+					var newTitle = ext.FormatDialogTitle (changeSet, Title);
+					if (newTitle != null)
+						Title = newTitle;
 
 					ext.CommitMessageTextViewHook (textview);
 					if (separatorRequired) {
