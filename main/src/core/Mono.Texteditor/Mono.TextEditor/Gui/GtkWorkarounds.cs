@@ -1030,7 +1030,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		static bool canSetOverlayScrollbarPolicy = true;
+		static bool canSetOverlayScrollbarPolicy = Platform.IsMac;
 
 		[DllImport (PangoUtil.LIBQUARTZ)]
 		static extern void gtk_scrolled_window_set_overlay_policy (IntPtr sw, Gtk.PolicyType hpolicy, Gtk.PolicyType vpolicy);

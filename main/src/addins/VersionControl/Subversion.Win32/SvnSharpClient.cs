@@ -419,6 +419,9 @@ namespace SubversionAddinWindows
 
 		public override IEnumerable<VersionInfo> Status (Repository repo, FilePath path, SvnRevision revision, bool descendDirs, bool changedItemsOnly, bool remoteStatus)
 		{
+			if (path == FilePath.Null)
+				throw new ArgumentNullException ();
+			
 			var list = new List<VersionInfo> ();
 			var args = new SvnStatusArgs {
 				Revision = GetRevision (revision),
@@ -430,12 +433,14 @@ namespace SubversionAddinWindows
 				try {
 					client.Status (path, args, (o, a) => list.Add (CreateVersionInfo (repo, a)));
 				} catch (SvnInvalidNodeKindException e) {
-					if (e.SvnErrorCode == SvnErrorCode.SVN_ERR_WC_NOT_WORKING_COPY)
-						list.Add (VersionInfo.CreateUnversioned (e.File, true));
-					else if (e.SvnErrorCode == SvnErrorCode.SVN_ERR_WC_NOT_FILE)
-						list.Add (VersionInfo.CreateUnversioned (e.File, false));
-					else
-						throw;
+					if (!string.IsNullOrEmpty (e.File)) {
+						if (e.SvnErrorCode == SvnErrorCode.SVN_ERR_WC_NOT_WORKING_COPY)
+							list.Add (VersionInfo.CreateUnversioned (e.File, true));
+						else if (e.SvnErrorCode == SvnErrorCode.SVN_ERR_WC_NOT_FILE)
+							list.Add (VersionInfo.CreateUnversioned (e.File, false));
+						else
+							throw;
+					}
 				} catch (SvnWorkingCopyPathNotFoundException e) {
 					list.Add (VersionInfo.CreateUnversioned (e.File, Directory.Exists (e.File)));
 				}

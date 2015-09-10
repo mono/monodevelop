@@ -115,7 +115,6 @@ namespace MonoDevelop.VersionControl
 				if (!(isDir || Directory.Exists (path)))
 					isDir = false;
 				
-				Monitor.ReportSuccess (GettextCatalog.GetString ("Revert operation completed."));
 				Gtk.Application.Invoke (delegate {
 					if (!isDir) {
 						// Reload reverted files
@@ -128,6 +127,7 @@ namespace MonoDevelop.VersionControl
 						VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (vc, path, true));
 					}
 				});
+				Monitor.ReportSuccess (GettextCatalog.GetString ("Revert operation completed."));
 			}
 		}
 		
