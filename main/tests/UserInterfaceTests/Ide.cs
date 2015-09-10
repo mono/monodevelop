@@ -141,13 +141,14 @@ namespace UserInterfaceTests
 		static void PollStatusMessage (string[] statusMessage, int timeoutInSecs, int pollStepInSecs, bool waitForMessage = true)
 		{
 			Ide.WaitUntil (() => {
+				string actualStatusMessage = null;
 				try {
-					var actualStatusMessage = Workbench.GetStatusMessage ();
+					actualStatusMessage = Workbench.GetStatusMessage ();
 					return waitForMessage == (statusMessage.Contains (actualStatusMessage, StringComparer.OrdinalIgnoreCase));
 				} catch (TimeoutException e) {
 					throw new TimeoutException (
-						string.Format ("Timed out. Found status message '{0}'\nand expected one of these:\n\t",
-						string.Join ("\n\t", statusMessage)), e);
+						string.Format ("Timed out. Found status message '{0}'\nand expected one of these:\n\t {1}",
+							actualStatusMessage, string.Join ("\n\t", statusMessage)), e);
 				}
 			}, pollStep: pollStepInSecs * 1000, timeout: timeoutInSecs * 1000);
 		}
