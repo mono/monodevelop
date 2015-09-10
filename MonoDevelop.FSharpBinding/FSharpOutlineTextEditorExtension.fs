@@ -42,11 +42,9 @@ type FSharpOutlineTextEditorExtension() =
                        treeStore.Clear()
                        let toplevel = ast.GetNavigationItems()
                        for item in toplevel do
-                           printfn "%s %s" item.Declaration.Name (string item.Declaration.Kind)
                            let iter = treeStore.AppendValues(item.Declaration)
                            for nested in item.Nested do
                                treeStore.AppendValues(iter, [| nested |]) |> ignore
-                               printfn "nested - %s %s" nested.Name (string nested.Kind)
                        treeView.ExpandAll()
                    | None -> ())
         Gdk.Threads.Leave()
@@ -59,6 +57,9 @@ type FSharpOutlineTextEditorExtension() =
             match treeView with
             | Some(treeView) -> treeView :> Widget
             | None -> 
+                let treeStore = new TreeStore(typedefof<obj>)
+                let padTreeView = new PadTreeView(treeStore)
+
                 let setCellIcon (_) (cellRenderer : CellRenderer) (treeModel : TreeModel) (iter : TreeIter) = 
                     let pixRenderer = cellRenderer :?> CellRendererImage
                     let item = treeModel.GetValue(iter, 0) :?> FSharpNavigationDeclarationItem
@@ -68,15 +69,22 @@ type FSharpOutlineTextEditorExtension() =
                     let renderer = cellRenderer :?> CellRendererText
                     let item = treeModel.GetValue(iter, 0) :?> FSharpNavigationDeclarationItem
                     renderer.Text <- item.Name
-                
+                let jumpToDeclaration _ =
+                    let iter : TreeIter ref = ref Unchecked.defaultof<_>
+                    match padTreeView.Selection.GetSelected(iter) with
+                    | true -> let node = padTreeView.Model.GetValue(!iter, 0) :?> FSharpNavigationDeclarationItem
+                              x.Editor.CaretLine <- node.Range.StartLine
+                              x.Editor.CaretColumn <- node.Range.StartColumn
+                              ()
+                    | false -> ()
+
+                    () 
 //                let refillTree _ = 
 //                    DispatchService.AssertGuiThread()
 //                    Gdk.Threads.Enter()
 //                    treeStore.AppendValues("23") |> ignore
 //                    Gdk.Threads.Leave()
                 
-                let treeStore = new TreeStore(typedefof<obj>)
-                let padTreeView = new PadTreeView(treeStore)
                 treeView <- Some padTreeView
 
                 let pixRenderer = new CellRendererImage()
@@ -96,6 +104,8 @@ type FSharpOutlineTextEditorExtension() =
                 padTreeView.AppendColumn treeCol |> ignore
                 padTreeView.HeadersVisible <- true
                 //padTreeView.Realized.Add refillTree
+                padTreeView.Selection.Changed.Subscribe(fun _ -> jumpToDeclaration false) |> ignore
+                padTreeView.RowActivated.Subscribe(fun _ -> jumpToDeclaration true) |> ignore
 
                 let sw = new CompactScrolledWindow()
 //                padTreeView.Model <- treeStore
