@@ -103,11 +103,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			{
 				var menuItem = new NSMenuItem {
 					IndentationLevel = runtime.IsIndented ? 2 : 1,
-					Enabled = runtime.Enabled,
-					Hidden = !runtime.Visible,
 					AttributedTitle = new NSAttributedString (runtime.DisplayString, new NSStringAttributes {
 						Font = runtime.Notable ? NSFontManager.SharedFontManager.ConvertFont (menu.Font, NSFontTraitMask.Bold) : menu.Font,
 					}),
+					Enabled = runtime.Enabled,
+					Hidden = !runtime.Visible,
 				};
 
 				var subMenu = CreateSubMenuForRuntime (runtime);
