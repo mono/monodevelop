@@ -117,7 +117,6 @@ type FSharpOutlineTextEditorExtension() as x =
         member x.GetToolbarWidgets() = List.empty<Widget> :> _
 
         member x.ReleaseOutlineWidget() =
-            let release (tv: PadTreeView) = let w = tv.Parent :?> ScrolledWindow
-                                            w.Destroy()
-                                            tv.Dispose()
-            Option.iter release treeView
+            treeView |> Option.iter(fun tv -> Option.tryCast<ScrolledWindow>(tv.Parent) 
+                                              |> Option.iter (fun sw -> sw.Destroy())
+                                              tv.Destroy())
