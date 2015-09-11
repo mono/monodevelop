@@ -87,12 +87,14 @@ namespace MonoDevelop.Debugger
 		{
 			var icon = new ImageView (WarningIconPixbuf);
 			icon.Yalign = 0;
+
 			ExceptionTypeLabel = new Label { Xalign = 0.0f };
 			ExceptionMessageLabel = new Label { Wrap = true, Xalign = 0.0f };
 			ExceptionTypeLabel.ModifyFg (StateType.Normal, new Gdk.Color (255, 255, 255));
 			ExceptionMessageLabel.ModifyFg (StateType.Normal, new Gdk.Color (255, 255, 255));
+
 			if (Platform.IsWindows) {
-				ExceptionTypeLabel.ModifyFont (Pango.FontDescription.FromString ("17"));
+				ExceptionTypeLabel.ModifyFont (Pango.FontDescription.FromString ("bold 19"));
 				ExceptionMessageLabel.ModifyFont (Pango.FontDescription.FromString ("10"));
 			} else {
 				ExceptionTypeLabel.ModifyFont (Pango.FontDescription.FromString ("21"));
@@ -101,20 +103,28 @@ namespace MonoDevelop.Debugger
 
 			//Force rendering of background with EventBox
 			var eventBox = new EventBox ();
-			var hbox = new HBox ();
-			hbox.PackStart (icon, false, false, 0);
-			var vbox = new VBox ();
-			vbox.PackStart (ExceptionTypeLabel, false, false, 2);
-			vbox.PackStart (ExceptionMessageLabel, true, true, 5);
-			hbox.PackStart (vbox, true, true, 10);
+			var hBox = new HBox ();
+			var leftVBox = new VBox ();
+			var rightVBox = new VBox ();
+
+			leftVBox.PackStart (icon, false, false, (uint)(Platform.IsWindows ? 5 : 0)); // as we change frame.BorderWidth below, we need to compensate
+
+			rightVBox.PackStart (ExceptionTypeLabel, false, false, (uint)(Platform.IsWindows ? 0 : 2));
+			rightVBox.PackStart (ExceptionMessageLabel, true, true, (uint)(Platform.IsWindows ? 6 : 5));
+
+			hBox.PackStart (leftVBox, false, false, (uint)(Platform.IsWindows ? 5 : 0)); // as we change frame.BorderWidth below, we need to compensate
+			hBox.PackStart (rightVBox, true, true, (uint)(Platform.IsWindows ? 5 : 10));
+
 			var frame = new Frame ();
-			frame.Add (hbox);
-			frame.BorderWidth = 10;
+			frame.Add (hBox);
+			frame.BorderWidth = (uint)(Platform.IsWindows ? 5 : 10); // on Windows we need to have smaller border due to ExceptionTypeLabel vertical misalignment
 			frame.Shadow = ShadowType.None;
 			frame.ShadowType = ShadowType.None;
+
 			eventBox.Add (frame);
 			eventBox.ShowAll ();
 			eventBox.ModifyBg (StateType.Normal, new Gdk.Color (119, 130, 140));
+
 			return eventBox;
 		}
 
@@ -128,7 +138,7 @@ namespace MonoDevelop.Debugger
 			ExceptionValueTreeView.AllowEditing = false;
 			ExceptionValueTreeView.AllowAdding = false;
 			ExceptionValueTreeView.RulesHint = true;
-			ExceptionValueTreeView.ModifyFont (Pango.FontDescription.FromString ("11"));
+			ExceptionValueTreeView.ModifyFont (Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11"));
 			ExceptionValueTreeView.RulesHint = false;
 
 			ExceptionValueTreeView.Show ();
@@ -327,7 +337,7 @@ namespace MonoDevelop.Debugger
 			InnerExceptionMessageLabel = new Label ();
 			InnerExceptionMessageLabel.Wrap = true;
 			InnerExceptionMessageLabel.Xalign = 0;
-			InnerExceptionMessageLabel.ModifyFont (Pango.FontDescription.FromString ("11"));
+			InnerExceptionMessageLabel.ModifyFont (Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11"));
 			vbox.PackStart (hbox, false, true, 0);
 			vbox.PackStart (InnerExceptionMessageLabel, true, true, 10);
 			hboxMain.PackStart (vbox, true, true, 10);
@@ -528,7 +538,7 @@ namespace MonoDevelop.Debugger
 		{
 			public string Text { get; set; }
 
-			Pango.FontDescription font = Pango.FontDescription.FromString ("11");
+			Pango.FontDescription font = Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11");
 
 			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
@@ -552,6 +562,7 @@ namespace MonoDevelop.Debugger
 
 					using (var layout = new Pango.Layout (widget.PangoContext)) {
 						layout.FontDescription = font;
+
 						if ((flags & CellRendererState.Selected) != 0) {
 							cr.SetSourceRGB (205 / 256.0, 208 / 256.0, 212 / 256.0); // selected
 							cr.Fill ();
@@ -563,6 +574,7 @@ namespace MonoDevelop.Debugger
 							cr.SetSourceColor (new Cairo.Color (0, 0, 0));
 							layout.SetMarkup (Text);
 						}
+
 						cr.Translate (cell_area.X + 10, cell_area.Y + 3);
 						cr.ShowLayout (layout);
 					}
@@ -579,7 +591,7 @@ namespace MonoDevelop.Debugger
 		public ExceptionStackFrame Frame;
 		public bool IsUserCode;
 		public string Markup;
-		Pango.FontDescription font = Pango.FontDescription.FromString ("11");
+		Pango.FontDescription font = Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11");
 
 		public StackFrameCellRenderer (Pango.Context ctx)
 		{
