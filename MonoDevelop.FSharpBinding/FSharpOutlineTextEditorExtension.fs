@@ -16,26 +16,26 @@ open MonoDevelop.Ide
 open MonoDevelop.Projects
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
-type FSharpOutlineTextEditorExtension() = 
+type FSharpOutlineTextEditorExtension() =
     inherit TextEditorExtension()
     let mutable treeView : PadTreeView option = None
     let mutable refreshingOutline : bool = false
 
-    override x.Initialize() = 
+    override x.Initialize() =
         base.Initialize()
         x.DocumentContext.DocumentParsed.Add(x.UpdateDocumentOutline)
-    
+
     override x.IsValidInContext _ = true
-    
+
     //    IdeApp.Workbench.ActiveDocument <> null && IdeApp.Workbench.ActiveDocument.Name = x.DocumentContext.Name
-    member private x.UpdateDocumentOutline _ = 
+    member private x.UpdateDocumentOutline _ =
         if not refreshingOutline then
             refreshingOutline <- true
             GLib.Timeout.Add (1000u, (fun _ -> x.refillTree)) |> ignore
 
-    member private x.refillTree = 
+    member private x.refillTree =
         match treeView with
-        | Some(treeView) -> 
+        | Some(treeView) ->
             if treeView.IsRealized then
                 let ast = maybe { let! context = x.DocumentContext |> Option.ofNull
                                   let! parsedDocument = context.ParsedDocument |> Option.ofNull
@@ -44,35 +44,41 @@ type FSharpOutlineTextEditorExtension() =
 
                 DispatchService.AssertGuiThread()
                 Gdk.Threads.Enter()
-                ast |> Option.iter (fun ast -> 
+                ast |> Option.iter (fun ast ->
                     let treeStore = treeView.Model :?> TreeStore
                     treeStore.Clear()
                     let toplevel = ast.GetNavigationItems()
+                                   |> Array.sortBy(fun xs -> xs.Declaration.Range.StartLine)
+ 
                     for item in toplevel do
                         let iter = treeStore.AppendValues(item.Declaration)
-                        for nested in item.Nested do
+                        let children = item.Nested
+                                       |> Array.sortBy(fun xs -> xs.Range.StartLine)
+
+                        for nested in children do
                             treeStore.AppendValues(iter, [| nested |]) |> ignore
+
                     treeView.ExpandAll())
                 Gdk.Threads.Leave()
         | None -> ()
 
         refreshingOutline <- false
         false
- 
+
     interface IOutlinedDocument with
-        member x.GetOutlineWidget() = 
+        member x.GetOutlineWidget() =
             match treeView with
             | Some(treeView) -> treeView :> Widget
-            | None -> 
+            | None ->
                 let treeStore = new TreeStore(typedefof<obj>)
                 let padTreeView = new PadTreeView(treeStore)
 
-                let setCellIcon (_) (cellRenderer : CellRenderer) (treeModel : TreeModel) (iter : TreeIter) = 
+                let setCellIcon (_) (cellRenderer : CellRenderer) (treeModel : TreeModel) (iter : TreeIter) =
                     let pixRenderer = cellRenderer :?> CellRendererImage
                     let item = treeModel.GetValue(iter, 0) :?> FSharpNavigationDeclarationItem
                     pixRenderer.Image <- ImageService.GetIcon(ServiceUtils.getIcon item.Glyph, Gtk.IconSize.Menu)
-                
-                let setCellText (_) (cellRenderer : CellRenderer) (treeModel : TreeModel) (iter : TreeIter) = 
+
+                let setCellText (_) (cellRenderer : CellRenderer) (treeModel : TreeModel) (iter : TreeIter) =
                     let renderer = cellRenderer :?> CellRendererText
                     let item = treeModel.GetValue(iter, 0) :?> FSharpNavigationDeclarationItem
                     renderer.Text <- item.Name
@@ -80,9 +86,8 @@ type FSharpOutlineTextEditorExtension() =
                     let iter : TreeIter ref = ref Unchecked.defaultof<_>
                     match padTreeView.Selection.GetSelected(iter) with
                     | true -> let node = padTreeView.Model.GetValue(!iter, 0) :?> FSharpNavigationDeclarationItem
-                              x.Editor.CaretLine <- node.Range.StartLine
-                              x.Editor.CaretColumn <- node.Range.StartColumn
-                              ()
+                              let (scol,sline) = node.Range.StartColumn, node.Range.StartLine
+                              x.Editor.SetCaretLocation(max 1 sline, max 1 scol, true)
                     | false -> ()
 
                 treeView <- Some padTreeView
@@ -109,6 +114,6 @@ type FSharpOutlineTextEditorExtension() =
                 sw.Add padTreeView
                 sw.ShowAll()
                 sw :> Widget
-        
+
         member x.GetToolbarWidgets() = List.empty<Widget> :> _
         member x.ReleaseOutlineWidget() = ()
