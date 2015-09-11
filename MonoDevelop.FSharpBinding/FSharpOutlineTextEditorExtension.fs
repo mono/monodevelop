@@ -20,11 +20,12 @@ type FSharpOutlineTextEditorExtension() as x =
     inherit TextEditorExtension()
     let mutable treeView : PadTreeView option = None
     let mutable refreshingOutline : bool = false
+    let mutable treeViewRealized : bool = false
 
-    let refillTree =
+    let refillTree() =
         match treeView with
         | Some(treeView) ->
-            if treeView.IsRealized then
+            if treeViewRealized then
                 let ast = maybe { let! context = x.DocumentContext |> Option.ofNull
                                   let! parsedDocument = context.ParsedDocument |> Option.ofNull
                                   let! ast = parsedDocument.Ast |> Option.tryCast<ParseAndCheckResults>
@@ -56,7 +57,7 @@ type FSharpOutlineTextEditorExtension() as x =
     let updateDocumentOutline _ =
       if not refreshingOutline then
         refreshingOutline <- true
-        GLib.Timeout.Add (1000u, (fun _ -> refillTree)) |> ignore
+        GLib.Timeout.Add (1000u, (fun _ -> refillTree())) |> ignore
 
     override x.Initialize() =
         base.Initialize()
@@ -105,7 +106,7 @@ type FSharpOutlineTextEditorExtension() as x =
                 treeCol.SetCellDataFunc(padTreeView.TextRenderer, new TreeCellDataFunc(setCellText))
 
                 padTreeView.AppendColumn treeCol |> ignore
-                padTreeView.Realized.Add(fun _ -> refillTree |> ignore)
+                padTreeView.Realized.Add(fun _ -> treeViewRealized <- true; refillTree |> ignore)
                 padTreeView.Selection.Changed.Subscribe(fun _ -> jumpToDeclaration false) |> ignore
                 padTreeView.RowActivated.Subscribe(fun _ -> jumpToDeclaration true) |> ignore
 
