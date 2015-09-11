@@ -117,8 +117,6 @@ type FSharpOutlineTextEditorExtension() as x =
         member x.GetToolbarWidgets() = List.empty<Widget> :> _
 
         member x.ReleaseOutlineWidget() =
-            match treeView with
-            | Some(treeView) -> let w = treeView.Parent :?> ScrolledWindow
-                                w.Destroy()
-                                treeView.Dispose()
-            | None -> ()
+            Option.iter (fun treeview -> let w = treeView.Parent :?> ScrolledWindow
+                                         w.Destroy()
+                                         treeView.Dispose()) treeView
