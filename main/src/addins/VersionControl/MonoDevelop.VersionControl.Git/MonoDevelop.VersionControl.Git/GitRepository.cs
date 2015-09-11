@@ -1395,6 +1395,9 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override void OnMoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)
 		{
+			var srcRepo = GetRepository (localSrcPath);
+			var dstRepo = GetRepository (localDestPath);
+
 			VersionInfo vi = GetVersionInfo (localSrcPath, VersionInfoQueryFlags.IgnoreCache);
 			if (vi == null || !vi.IsVersioned) {
 				base.OnMoveFile (localSrcPath, localDestPath, force, monitor);
@@ -1403,10 +1406,16 @@ namespace MonoDevelop.VersionControl.Git
 
 			vi = GetVersionInfo (localDestPath, VersionInfoQueryFlags.IgnoreCache);
 			if (vi != null && ((vi.Status & (VersionStatus.ScheduledDelete | VersionStatus.ScheduledReplace)) != VersionStatus.Unversioned))
-				RootRepository.Unstage (localDestPath);
+				dstRepo.Unstage (localDestPath);
 
-			RootRepository.Move (localSrcPath, localDestPath);
-			ClearCachedVersionInfo (localSrcPath, localDestPath);
+			if (srcRepo == dstRepo) {
+				srcRepo.Move (localSrcPath, localDestPath);
+				ClearCachedVersionInfo (localSrcPath, localDestPath);
+			} else {
+				File.Copy (localSrcPath, localDestPath);
+				srcRepo.Remove (localSrcPath, true);
+				dstRepo.Stage (localDestPath);
+			}
 		}
 
 		protected override void OnMoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)

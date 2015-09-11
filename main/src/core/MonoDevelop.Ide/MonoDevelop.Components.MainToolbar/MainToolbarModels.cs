@@ -51,30 +51,6 @@ namespace MonoDevelop.Components.MainToolbar
 		IEnumerable<IRuntimeModel> Children { get; }
 
 		/// <summary>
-		/// Gets the display string to be used inside a context menu.
-		/// </summary>
-		/// <value>The display string.</value>
-		string DisplayString { get; }
-
-		/// <summary>
-		/// Gets the display string to be for selected items.
-		/// </summary>
-		/// <value>The full display string.</value>
-		string FullDisplayString { get; }
-
-		/// <summary>
-		/// Gets whether the menu item is visible.
-		/// </summary>
-		/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
-		bool Visible { get; }
-
-		/// <summary>
-		/// Gets whether the menu item is enabled.
-		/// </summary>
-		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
-		bool Enabled { get; }
-
-		/// <summary>
 		/// Gets whether the menu item is a separator.
 		/// </summary>
 		/// <value><c>true</c> if this instance is separator; otherwise, <c>false</c>.</value>
@@ -100,6 +76,39 @@ namespace MonoDevelop.Components.MainToolbar
 		/// </remarks>
 		/// <value><c>true</c> if this instance has a parent; otherwise, <c>false</c>.</value>
 		bool HasParent { get; }
+
+		/// <summary>
+		/// Gets the runtime combo item model.
+		/// </summary>
+		/// <value>The runtime combo item.</value>
+		IRuntimeMutableModel GetMutableModel();
+	}
+
+	public interface IRuntimeMutableModel : IDisposable
+	{
+		/// <summary>
+		/// Gets the display string to be used inside a context menu.
+		/// </summary>
+		/// <value>The display string.</value>
+		string DisplayString { get; }
+
+		/// <summary>
+		/// Gets the display string to be for selected items.
+		/// </summary>
+		/// <value>The full display string.</value>
+		string FullDisplayString { get; }
+
+		/// <summary>
+		/// Gets whether the menu item is visible.
+		/// </summary>
+		/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
+		bool Visible { get; }
+
+		/// <summary>
+		/// Gets whether the menu item is enabled.
+		/// </summary>
+		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
+		bool Enabled { get; }
 	}
 
 	public interface ISearchMenuModel
