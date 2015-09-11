@@ -25,9 +25,9 @@ type FSharpOutlineTextEditorExtension() =
         base.Initialize()
         x.DocumentContext.DocumentParsed.Add(x.UpdateDocumentOutline)
 
-    override x.IsValidInContext _ = true
+    override x.IsValidInContext context =
+        LanguageBindingService.GetBindingPerFileName (context.Name) <> null;
 
-    //    IdeApp.Workbench.ActiveDocument <> null && IdeApp.Workbench.ActiveDocument.Name = x.DocumentContext.Name
     member private x.UpdateDocumentOutline _ =
         if not refreshingOutline then
             refreshingOutline <- true
@@ -49,7 +49,7 @@ type FSharpOutlineTextEditorExtension() =
                     treeStore.Clear()
                     let toplevel = ast.GetNavigationItems()
                                    |> Array.sortBy(fun xs -> xs.Declaration.Range.StartLine)
- 
+
                     for item in toplevel do
                         let iter = treeStore.AppendValues(item.Declaration)
                         let children = item.Nested
