@@ -71,7 +71,7 @@ type FSharpOutlineTextEditorExtension() as x =
             | Some(treeView) -> treeView :> Widget
             | None ->
                 let treeStore = new TreeStore(typedefof<obj>)
-                let padTreeView = new PadTreeView(treeStore)
+                let padTreeView = new PadTreeView(treeStore, HeadersVisible = true)
 
                 let setCellIcon (_) (cellRenderer : CellRenderer) (treeModel : TreeModel) (iter : TreeIter) =
                     let pixRenderer = cellRenderer :?> CellRendererImage
@@ -94,9 +94,7 @@ type FSharpOutlineTextEditorExtension() as x =
 
                 treeView <- Some padTreeView
 
-                let pixRenderer = new CellRendererImage()
-                pixRenderer.Xpad <- 0u
-                pixRenderer.Ypad <- 0u
+                let pixRenderer = new CellRendererImage(Xpad = 0u, Ypad = 0u)
                 padTreeView.TextRenderer.Xpad <- 0u
                 padTreeView.TextRenderer.Ypad <- 0u
 
@@ -107,7 +105,6 @@ type FSharpOutlineTextEditorExtension() as x =
                 treeCol.SetCellDataFunc(padTreeView.TextRenderer, new TreeCellDataFunc(setCellText))
 
                 padTreeView.AppendColumn treeCol |> ignore
-                padTreeView.HeadersVisible <- true
                 padTreeView.Realized.Add(fun _ -> refillTree |> ignore)
                 padTreeView.Selection.Changed.Subscribe(fun _ -> jumpToDeclaration false) |> ignore
                 padTreeView.RowActivated.Subscribe(fun _ -> jumpToDeclaration true) |> ignore
