@@ -16,24 +16,12 @@ open MonoDevelop.Ide
 open MonoDevelop.Projects
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
-type FSharpOutlineTextEditorExtension() =
+type FSharpOutlineTextEditorExtension() as x =
     inherit TextEditorExtension()
     let mutable treeView : PadTreeView option = None
     let mutable refreshingOutline : bool = false
 
-    override x.Initialize() =
-        base.Initialize()
-        x.DocumentContext.DocumentParsed.Add(x.UpdateDocumentOutline)
-
-    override x.IsValidInContext context =
-        LanguageBindingService.GetBindingPerFileName (context.Name) <> null;
-
-    member private x.UpdateDocumentOutline _ =
-        if not refreshingOutline then
-            refreshingOutline <- true
-            GLib.Timeout.Add (1000u, (fun _ -> x.refillTree)) |> ignore
-
-    member private x.refillTree =
+    let refillTree =
         match treeView with
         | Some(treeView) ->
             if treeView.IsRealized then
@@ -64,6 +52,18 @@ type FSharpOutlineTextEditorExtension() =
 
         refreshingOutline <- false
         false
+
+    let updateDocumentOutline _ =
+      if not refreshingOutline then
+        refreshingOutline <- true
+        GLib.Timeout.Add (1000u, (fun _ -> refillTree)) |> ignore
+
+    override x.Initialize() =
+        base.Initialize()
+        x.DocumentContext.DocumentParsed.Add(updateDocumentOutline)
+
+    override x.IsValidInContext context =
+        LanguageBindingService.GetBindingPerFileName (context.Name) <> null;
 
     interface IOutlinedDocument with
         member x.GetOutlineWidget() =
@@ -108,7 +108,7 @@ type FSharpOutlineTextEditorExtension() =
 
                 padTreeView.AppendColumn treeCol |> ignore
                 padTreeView.HeadersVisible <- true
-                padTreeView.Realized.Add(fun _ -> x.refillTree |> ignore)
+                padTreeView.Realized.Add(fun _ -> refillTree |> ignore)
                 padTreeView.Selection.Changed.Subscribe(fun _ -> jumpToDeclaration false) |> ignore
                 padTreeView.RowActivated.Subscribe(fun _ -> jumpToDeclaration true) |> ignore
 
