@@ -343,8 +343,10 @@ namespace MonoDevelop.Components.MainToolbar
 			var runtimes = ToolbarView.RuntimeModel.Cast<RuntimeModel> ().ToList ();
 			for (int iter = 0; iter < runtimes.Count; ++iter) {
 				var item = runtimes [iter];
-				if (!item.Enabled)
-					continue;
+				using (var model = item.GetMutableModel ()) {
+					if (!model.Enabled)
+						continue;
+				}
 
 				var target = item.ExecutionTarget;
 				if (target == null || !target.Enabled)
@@ -762,8 +764,6 @@ namespace MonoDevelop.Components.MainToolbar
 			public RuntimeModel (MainToolbarController controller, ExecutionTarget target) : this (controller)
 			{
 				ExecutionTarget = target;
-				Enabled = !(ExecutionTarget is ExecutionTargetGroup);
-				Visible = true;
 			}
 
 			public RuntimeModel (MainToolbarController controller, ExecutionTarget target, RuntimeModel parent) : this (controller, target)
@@ -785,6 +785,7 @@ namespace MonoDevelop.Components.MainToolbar
 			public IEnumerable<IRuntimeModel> Children {
 				get { return children; }
 			}
+
 			public bool Notable {
 				get { return ExecutionTarget != null && ExecutionTarget.Notable; }
 			}
@@ -799,6 +800,55 @@ namespace MonoDevelop.Components.MainToolbar
 				set;
 			}
 
+			public bool IsSeparator {
+				get { return Command == null && ExecutionTarget == null; }
+			}
+
+			public bool IsIndented {
+				get;
+				set;
+			}
+
+			public bool NotifyActivated ()
+			{
+				if (Command != null && IdeApp.CommandService.DispatchCommand (Command, CommandSource.ContextMenu))
+					return true;
+				return false;
+			}
+
+			public IRuntimeMutableModel GetMutableModel ()
+			{
+				return Command != null ? new RuntimeMutableModel (Controller, Command) : new RuntimeMutableModel (ExecutionTarget, HasParent);
+			}
+		}
+
+		class RuntimeMutableModel : IRuntimeMutableModel
+		{
+			public RuntimeMutableModel (MainToolbarController controller, object command)
+			{
+				var ci = IdeApp.CommandService.GetCommandInfo (command, new CommandTargetRoute (controller.lastCommandTarget));
+				Visible = ci.Visible;
+				Enabled = ci.Enabled;
+				DisplayString = FullDisplayString = RemoveUnderline (ci.Text);
+			}
+
+			public RuntimeMutableModel (ExecutionTarget target, bool hasParent)
+			{
+				Enabled = !(target is ExecutionTargetGroup);
+				Visible = true;
+				if (target == null)
+					DisplayString = FullDisplayString = string.Empty;
+				else {
+					FullDisplayString = target.FullName;
+					DisplayString = !hasParent ? target.FullName : target.Name;
+				}
+			}
+
+			// Marker so it won't be reused.
+			public void Dispose ()
+			{
+			}
+
 			public bool Visible {
 				get;
 				private set;
@@ -809,52 +859,14 @@ namespace MonoDevelop.Components.MainToolbar
 				private set;
 			}
 
-			public bool IsSeparator {
-				get { return Command == null && ExecutionTarget == null; }
-			}
-
-			public bool IsIndented {
-				get;
-				set;
-			}
-
 			public string DisplayString {
-				get {
-					if (Command != null) {
-						var ci = IdeApp.CommandService.GetCommandInfo (Command, new CommandTargetRoute (Controller.lastCommandTarget));
-						Visible = ci.Visible;
-						Enabled = ci.Enabled;
-						return RemoveUnderline (ci.Text);
-					}
-
-					if (ExecutionTarget == null)
-						return "";
-
-					return !HasParent ? ExecutionTarget.FullName : ExecutionTarget.Name;
-				}
+				get;
+				private set;
 			}
 
 			public string FullDisplayString {
-				get {
-					if (Command != null) {
-						var ci = IdeApp.CommandService.GetCommandInfo (Command, new CommandTargetRoute (Controller.lastCommandTarget));
-						Visible = ci.Visible;
-						Enabled = ci.Enabled;
-						return RemoveUnderline (ci.Text);
-					}
-
-					if (ExecutionTarget == null)
-						return "";
-
-					return ExecutionTarget.FullName;
-				}
-			}
-
-			public bool NotifyActivated ()
-			{
-				if (Command != null && IdeApp.CommandService.DispatchCommand (Command, CommandSource.ContextMenu))
-					return true;
-				return false;
+				get;
+				private set;
 			}
 
 			static string RemoveUnderline (string s)
