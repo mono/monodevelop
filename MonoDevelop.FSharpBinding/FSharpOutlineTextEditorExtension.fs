@@ -82,13 +82,15 @@ type FSharpOutlineTextEditorExtension() =
                     let renderer = cellRenderer :?> CellRendererText
                     let item = treeModel.GetValue(iter, 0) :?> FSharpNavigationDeclarationItem
                     renderer.Text <- item.Name
-                let jumpToDeclaration =
+                let jumpToDeclaration focus =
                     let iter : TreeIter ref = ref Unchecked.defaultof<_>
                     match padTreeView.Selection.GetSelected(iter) with
                     | true -> let node = padTreeView.Model.GetValue(!iter, 0) :?> FSharpNavigationDeclarationItem
                               let (scol,sline) = node.Range.StartColumn, node.Range.StartLine
                               x.Editor.SetCaretLocation(max 1 sline, max 1 scol, true)
                     | false -> ()
+                    if focus then
+                        x.Editor.GrabFocus()
 
                 treeView <- Some padTreeView
 
@@ -107,8 +109,8 @@ type FSharpOutlineTextEditorExtension() =
                 padTreeView.AppendColumn treeCol |> ignore
                 padTreeView.HeadersVisible <- true
                 padTreeView.Realized.Add(fun _ -> x.refillTree |> ignore)
-                padTreeView.Selection.Changed.Subscribe(fun _ -> jumpToDeclaration) |> ignore
-                padTreeView.RowActivated.Subscribe(fun _ -> jumpToDeclaration) |> ignore
+                padTreeView.Selection.Changed.Subscribe(fun _ -> jumpToDeclaration false) |> ignore
+                padTreeView.RowActivated.Subscribe(fun _ -> jumpToDeclaration true) |> ignore
 
                 let sw = new CompactScrolledWindow()
                 sw.Add padTreeView
