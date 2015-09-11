@@ -82,7 +82,7 @@ type FSharpOutlineTextEditorExtension() =
                     let renderer = cellRenderer :?> CellRendererText
                     let item = treeModel.GetValue(iter, 0) :?> FSharpNavigationDeclarationItem
                     renderer.Text <- item.Name
-                let jumpToDeclaration _ =
+                let jumpToDeclaration =
                     let iter : TreeIter ref = ref Unchecked.defaultof<_>
                     match padTreeView.Selection.GetSelected(iter) with
                     | true -> let node = padTreeView.Model.GetValue(!iter, 0) :?> FSharpNavigationDeclarationItem
@@ -107,8 +107,8 @@ type FSharpOutlineTextEditorExtension() =
                 padTreeView.AppendColumn treeCol |> ignore
                 padTreeView.HeadersVisible <- true
                 padTreeView.Realized.Add(fun _ -> x.refillTree |> ignore)
-                padTreeView.Selection.Changed.Subscribe(fun _ -> jumpToDeclaration false) |> ignore
-                padTreeView.RowActivated.Subscribe(fun _ -> jumpToDeclaration true) |> ignore
+                padTreeView.Selection.Changed.Subscribe(fun _ -> jumpToDeclaration) |> ignore
+                padTreeView.RowActivated.Subscribe(fun _ -> jumpToDeclaration) |> ignore
 
                 let sw = new CompactScrolledWindow()
                 sw.Add padTreeView
@@ -116,4 +116,10 @@ type FSharpOutlineTextEditorExtension() =
                 sw :> Widget
 
         member x.GetToolbarWidgets() = List.empty<Widget> :> _
-        member x.ReleaseOutlineWidget() = ()
+
+        member x.ReleaseOutlineWidget() =
+            match treeView with
+            | Some(treeView) -> let w = treeView.Parent :?> ScrolledWindow
+                                w.Destroy()
+                                treeView.Dispose()
+            | None -> ()
