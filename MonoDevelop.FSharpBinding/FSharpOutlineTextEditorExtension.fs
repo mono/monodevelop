@@ -77,7 +77,7 @@ type FSharpOutlineTextEditorExtension() as x =
                 let setCellIcon _column (cellRenderer : CellRenderer) (treeModel : TreeModel) (iter : TreeIter) =
                     let pixRenderer = cellRenderer :?> CellRendererImage
                     let item = treeModel.GetValue(iter, 0) :?> FSharpNavigationDeclarationItem
-                    pixRenderer.Image <- ImageService.GetIcon(ServiceUtils.getIcon item.Glyph, Gtk.IconSize.Menu)
+                    pixRenderer.Image <- ImageService.GetIcon(ServiceUtils.getIcon item, Gtk.IconSize.Menu)
 
                 let setCellText _column (cellRenderer : CellRenderer) (treeModel : TreeModel) (iter : TreeIter) =
                     let renderer = cellRenderer :?> CellRendererText
