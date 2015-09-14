@@ -100,13 +100,13 @@ module internal ServiceUtils =
       0x000e,  "md-module" (* module *)
       0x000f,  "md-name-space"
       0x000c,  "md-method";
-      0x000d,  "md-extensionmethod" (* method2 ? *)
+      0x000d,  "md-method" (* method2 ? *)
       0x00011, "md-property"
       0x0005,  "md-event"
       0x0007,  "md-field" (* fieldblue ? *)
       0x0020,  "md-field" (* fieldyellow ? *)
       0x0001,  "md-field" (* const *)
-      0x0004,  "md-property" (* enummember *)
+      0x0004,  "md-field" (* enummember *)
       0x0006,  "md-exception" (* exception *)
       0x0009,  "md-text-file-icon" (* TextLine *)
       0x000a,  "md-regular-file" (* Script *)
@@ -124,10 +124,12 @@ module internal ServiceUtils =
       0x00023, "md-misc-files" (* Misc3 *) ] |> Map.ofSeq
 
   /// Translates icon code that we get from F# language service into a MonoDevelop icon
-  let getIcon glyph =
-    match map.TryFind (glyph / 6), map.TryFind (glyph % 6) with
-    | Some(s), _ -> s // Is the second number good for anything?
-    | _, _ -> "md-breakpoint"
+  let getIcon (navItem: FSharpNavigationDeclarationItem) =
+    match navItem.Kind with
+    | NamespaceDecl -> "md-name-space"
+    | _ -> match map.TryFind (navItem.Glyph / 6), map.TryFind (navItem.Glyph % 6) with
+           | Some(s), _ -> s // Is the second number good for anything?
+           | _, _ -> "md-breakpoint"
 
 module internal KeywordList =
   let keywordDescriptions =  
