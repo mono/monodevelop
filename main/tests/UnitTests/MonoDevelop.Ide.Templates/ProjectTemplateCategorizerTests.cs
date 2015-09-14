@@ -525,6 +525,28 @@ namespace MonoDevelop.Ide.Templates
 			Assert.AreEqual (1, generalCategory.Templates.Count ());
 			Assert.AreEqual ("template-id2", firstTemplate.Id);
 		}
+
+		[Test]
+		public void GetCategorizedTemplates_TwoTemplateProvidersEachWithOneTemplateForTwoDifferentThirdLevelCategories_ThirdLevelCategoriresAreNotRemoved ()
+		{
+			TemplateCategory topLevelCategory = AddTemplateCategory ("android");
+			TemplateCategory secondLevelCategory = AddTemplateCategory ("app", topLevelCategory);
+			AddTemplateCategory ("general", secondLevelCategory);
+			AddTemplateCategory ("tests", secondLevelCategory);
+			CreateCategorizer ();
+			SolutionTemplate firstTemplateProviderTemplate = AddTemplate ("first-provider-template-id", "android/app/general");
+			categorizer.CategorizeTemplates (templates);
+			templates.Clear ();
+			SolutionTemplate secondTemplateProviderTemplate = AddTemplate ("second-provider-template-id", "android/app/tests");
+			CategorizeTemplates ();
+
+			TemplateCategory appCategory = categorizedTemplates.First ().Categories.First ();
+			TemplateCategory generalCategory = appCategory.Categories.First (category => category.Id == "general");
+			TemplateCategory testsCategory = appCategory.Categories.First (category => category.Id == "tests");
+			Assert.That (generalCategory.Templates.ToList (), Contains.Item (firstTemplateProviderTemplate));
+			Assert.That (testsCategory.Templates.ToList (), Contains.Item (secondTemplateProviderTemplate));
+			Assert.AreEqual (2, appCategory.Categories.Count ());
+		}
 	}
 }
 

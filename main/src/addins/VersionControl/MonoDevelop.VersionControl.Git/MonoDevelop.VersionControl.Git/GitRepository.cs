@@ -63,9 +63,7 @@ namespace MonoDevelop.VersionControl.Git
 		public GitRepository (VersionControlSystem vcs, FilePath path, string url) : base (vcs)
 		{
 			RootPath = path;
-			string discovered = LibGit2Sharp.Repository.Discover (path);
-			if (!string.IsNullOrEmpty (discovered))
-				RootRepository = new LibGit2Sharp.Repository (discovered);
+			RootRepository = new LibGit2Sharp.Repository (path);
 			Url = url;
 		}
 

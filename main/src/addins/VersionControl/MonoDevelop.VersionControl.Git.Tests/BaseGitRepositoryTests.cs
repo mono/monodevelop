@@ -392,6 +392,11 @@ index 0000000..009b64b
 			return new GitRepository (VersionControlService.GetVersionControlSystems ().First (id => id.Name == "Git"), path, url);
 		}
 
+		protected override Repository GetRepo ()
+		{
+			return new GitRepository ();
+		}
+
 		// This test is for a memory usage improvement on status.
 		[Test]
 		public void TestSameGitRevision ()
