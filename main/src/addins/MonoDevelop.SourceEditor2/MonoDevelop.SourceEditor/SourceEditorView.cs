@@ -2592,6 +2592,8 @@ namespace MonoDevelop.SourceEditor
 						
 					};
 				}
+				var undoOperation = TextEditor.OpenUndoGroup ();
+				tle.Exited += (object sender, EventArgs e) => undoOperation.Dispose ();
 				tle.StartMode ();
 				TextEditor.CurrentMode = tle;
 			}
