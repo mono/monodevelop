@@ -356,7 +356,10 @@ namespace MonoDevelop.Ide
 						gtkrc += "-yosemite";
 					}
 				}
-				Environment.SetEnvironmentVariable ("GTK2_RC_FILES", PropertyService.EntryAssemblyPath.Combine (gtkrc));
+
+				var gtkrcf = PropertyService.EntryAssemblyPath.Combine (gtkrc);
+				LoggingService.LogInfo ("GTK: Using gtkrc from {0}", gtkrcf);
+				Environment.SetEnvironmentVariable ("GTK2_RC_FILES", gtkrcf);
 			}
 		}
 
