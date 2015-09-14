@@ -654,9 +654,11 @@ namespace MonoDevelop.VersionControl.Tests
 
 		protected void Checkout (string path, string url)
 		{
-			Repository _repo = GetRepo (path, url);
-			_repo.Checkout (path, true, new ProgressMonitor ());
+			var mockRepo = (UrlBasedRepository)GetRepo ();
+			mockRepo.Url = url;
+			mockRepo.Checkout (path, true, new ProgressMonitor ());
 
+			var _repo = GetRepo (path, url);
 			if (Repo == null)
 				Repo = _repo;
 			else
