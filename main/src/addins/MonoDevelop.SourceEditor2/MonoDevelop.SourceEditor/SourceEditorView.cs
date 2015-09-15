@@ -753,16 +753,6 @@ namespace MonoDevelop.SourceEditor
 			Load (fileOpenInformation.FileName, fileOpenInformation.Encoding, fileOpenInformation.IsReloadOperation);
 		}
 
-		MonoDevelop.Ide.Gui.Document ownerDocument;
-		protected MonoDevelop.Ide.Gui.Document OwnerDocument {
-			get { return ownerDocument; }
-		}
-
-		protected virtual void HandleDocumentParsed (object sender, EventArgs e)
-		{
-			widget.UpdateParsedDocument (ownerDocument.ParsedDocument);
-		}
-
 		protected virtual string ProcessLoadText (string text)
 		{
 			return text;
@@ -972,11 +962,6 @@ namespace MonoDevelop.SourceEditor
 			
 			debugStackLineMarker = null;
 			currentDebugLineMarker = null;
-
-			if (ownerDocument != null) {
-				ownerDocument.DocumentParsed -= HandleDocumentParsed;
-				ownerDocument = null;
-			}
 
 			RemoveMarkerQueue ();
 			widget.Dispose ();
@@ -2252,7 +2237,7 @@ namespace MonoDevelop.SourceEditor
 
 		void CorrectIndenting ()
 		{
-			var doc = ownerDocument.Editor;
+			var doc = IdeApp.Workbench.ActiveDocument?.Editor;
 			if (doc == null)
 				return;
 			var formatter = CodeFormatterService.GetFormatter (Document.MimeType);
