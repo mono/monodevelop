@@ -154,7 +154,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				BezelStyle = NSTextFieldBezelStyle.Rounded;
 
 			WantsLayer = true;
-			Layer.CornerRadius = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 8 : 4;
+			Layer.CornerRadius = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 6 : 4;
 			ctxHandler = new StatusBarContextHandler (this);
 
 			updateHandler = delegate {
