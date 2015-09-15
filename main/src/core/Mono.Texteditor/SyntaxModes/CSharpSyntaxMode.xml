@@ -335,9 +335,10 @@
 
 	<Rule name = "InterpolatedString">
 		<Match color ="String(Escape)" ignorecase="True">\\(['"\\abfnrtv]|x[0-9a-fA-F]{2,4}|0\d\d)</Match>
+		<Match color ="String" ignorecase="True">{{</Match>
 
 		<Span color = "Plain Text" rule="mode:text/x-csharp" stopateol = "true">
-			<Begin color = "String">{</Begin>
+			<Begin color = "String">{‹{</Begin>
 			<End color = "String">}</End>
 		</Span>
 	</Rule>
@@ -348,9 +349,10 @@
 	
 	<Rule name = "InterpolatedVerbatimString">
 		<Match color ="String(Escape)">""</Match>
-
+		<Match color ="String" ignorecase="True">{{</Match>
+		
 		<Span color = "Plain Text" rule="mode:text/x-csharp" stopateol = "false">
-			<Begin color = "String">{</Begin>
+			<Begin color = "String">{‹{</Begin>
 			<End color = "String">}</End>
 		</Span>
 	</Rule>
