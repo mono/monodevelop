@@ -426,7 +426,7 @@ namespace MonoDevelop.Components.Commands
 		void NotifyKeyPressed (Gdk.EventKey ev)
 		{
 			if (KeyPressed != null)
-				KeyPressed (this, new KeyPressArgs () { Key = ev.Key, Modifiers = ev.State });
+				KeyPressed (this, new KeyPressArgs () { Key = ev.Key, KeyValue = ev.KeyValue, Modifiers = ev.State });
 		}
 		
 		/// <summary>
@@ -2602,6 +2602,7 @@ namespace MonoDevelop.Components.Commands
 	public class KeyPressArgs: EventArgs
 	{
 		public Gdk.Key Key { get; internal set; }
+		public uint KeyValue { get; internal set; }
 		public Gdk.ModifierType Modifiers { get; internal set; }
 	}
 	
