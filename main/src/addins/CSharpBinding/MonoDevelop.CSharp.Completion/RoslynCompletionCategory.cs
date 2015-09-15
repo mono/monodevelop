@@ -39,7 +39,7 @@ namespace MonoDevelop.CSharp.Completion
 		public RoslynCompletionCategory (ISymbol symbol)
 		{
 			this.symbol = symbol;
-			this.DisplayText = symbol.ToDisplayString (MonoDevelop.Ide.TypeSystem.Ambience.NameFormat);
+			this.DisplayText = Ambience.EscapeText (symbol.ToDisplayString (MonoDevelop.Ide.TypeSystem.Ambience.NameFormat));
 			this.Icon = MonoDevelop.Ide.TypeSystem.Stock.GetStockIcon (symbol);
 		}
 
