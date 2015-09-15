@@ -45,10 +45,18 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 	}
 
+	class OverflowInfoEventArgs : EventArgs
+	{
+		public nfloat WindowWidth { get; set; }
+		public nfloat AllItemsWidth { get; set; }
+		public nfloat ItemsInOverflowWidth { get; set; }
+	}
+
 	[Register]
 	class SelectorView : NSButton
 	{
 		public event EventHandler<SizeRequestedEventArgs> ResizeRequested;
+		public event EventHandler<OverflowInfoEventArgs> OverflowInfoRequested;
 		internal const int ConfigurationIdx = 0;
 		internal const int RuntimeIdx = 1;
 
@@ -61,19 +69,29 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			AddSubview (pathSelectorView);
 		}
 
-		public override void DrawRect (CGRect dirtyRect)
+		public CGSize RequestResize (bool needsDisplay = true)
 		{
-			var p = (NSPathControl)Subviews [0];
-			var size = new CGSize (10 +
-				p.PathComponentCells [ConfigurationIdx].CellSize.Width +
-				p.PathComponentCells [RuntimeIdx].CellSize.Width + p.Frame.Left,
-				Frame.Size.Height);
+			var p = (PathSelectorView)Subviews [0];
+			var overflowInfo = new OverflowInfoEventArgs ();
+			if (OverflowInfoRequested != null)
+				OverflowInfoRequested (this, overflowInfo);
+
+			var size = new CGSize (p.ResizeIfNeeded (overflowInfo), Frame.Height);
 			if (ResizeRequested != null)
 				ResizeRequested (this, new SizeRequestedEventArgs (size));
 
 			SetFrameSize (size);
 			p.SetFrameSize (size);
+
+			if (needsDisplay)
+				SetNeedsDisplay ();
 			p.SetNeedsDisplay ();
+			return size;
+		}
+
+		public override void DrawRect (CGRect dirtyRect)
+		{
+			var size = RequestResize (needsDisplay: false);
 			base.DrawRect (new CGRect (CGPoint.Empty, size));
 		}
 
@@ -81,8 +99,64 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		[Register]
 		public class PathSelectorView : NSPathControl
 		{
+			enum CellState
+			{
+				AllShown,
+				RuntimeHidden,
+				ConfigurationAndRuntimeHidden,
+			}
+
 			static readonly string ConfigurationPlaceholder = GettextCatalog.GetString ("Default");
 			static readonly string RuntimePlaceholder = GettextCatalog.GetString ("Default");
+			CellState state;
+
+			nfloat UpdatePathCellForSize (int idx, nfloat remaining, CellState newStateIfEnoughSize)
+			{
+				var cell = PathComponentCells [idx];
+				var size = cell.Title.StringSize (new NSStringAttributes { Font = cell.Font }).Width;
+				if (size < remaining) {
+					state = newStateIfEnoughSize;
+					string text;
+					if (idx == ConfigurationIdx) {
+						if (ActiveConfiguration != null)
+							text = ActiveConfiguration.DisplayString;
+						else
+							text = string.Empty;
+					} else {
+						if (ActiveRuntime != null) {
+							using (var mutableModel = ActiveRuntime.GetMutableModel ())
+								text = mutableModel.DisplayString;
+						} else
+							text = string.Empty;
+					}
+					UpdatePathText (idx, text);
+				}
+				return remaining - size;
+			}
+
+			internal nfloat ResizeIfNeeded (OverflowInfoEventArgs args)
+			{
+				var remaining = args.WindowWidth - args.AllItemsWidth;
+				if (args.ItemsInOverflowWidth > 0 && remaining < args.ItemsInOverflowWidth) {
+					if (state == CellState.AllShown) {
+						state = CellState.RuntimeHidden;
+						UpdatePathText (RuntimeIdx, string.Empty);
+					} else {
+						state = CellState.ConfigurationAndRuntimeHidden;
+						UpdatePathText (ConfigurationIdx, string.Empty);
+					}
+				} else {
+					remaining = remaining - args.ItemsInOverflowWidth;
+					if (state == CellState.ConfigurationAndRuntimeHidden)
+						remaining = UpdatePathCellForSize (ConfigurationIdx, remaining, CellState.RuntimeHidden);
+					if (state == CellState.RuntimeHidden)
+						UpdatePathCellForSize (RuntimeIdx, remaining, CellState.AllShown);
+				}
+
+				return 10 +
+					PathComponentCells [ConfigurationIdx].CellSize.Width +
+					PathComponentCells [RuntimeIdx].CellSize.Width + Frame.Left;
+			}
 
 			NSMenu CreateSubMenuForRuntime (IRuntimeModel runtime)
 			{
@@ -152,6 +226,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			public PathSelectorView (CGRect frameRect) : base (frameRect)
 			{
+				state = CellState.AllShown;
 				PathComponentCells = new [] {
 					new NSPathComponentCell {
 						Image = ImageService.GetIcon ("project").ToNSImage (),
@@ -254,7 +329,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			void UpdatePathText (int idx, string text)
 			{
-				PathComponentCells [idx].Title = text;
+				bool showText = state != CellState.ConfigurationAndRuntimeHidden || (idx == RuntimeIdx && state != CellState.RuntimeHidden);
+				PathComponentCells [idx].Title = showText ? text : "\u00A0";
 				PathComponentCells [ConfigurationIdx].Image = ImageService.GetIcon ("project").ToNSImage ();
 				PathComponentCells [RuntimeIdx].Image = ImageService.GetIcon ("device").ToNSImage ();
 
