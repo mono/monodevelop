@@ -561,6 +561,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 
 		static CGColor xamBlue = new CGColor (52f / 255, 152f / 255, 219f / 255);
+		static nfloat verticalOffset = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 2 : 0;
 		CALayer CreateProgressBarLayer (double width)
 		{
 			CALayer progress = ProgressLayer;
@@ -570,7 +571,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				progress.BackgroundColor = xamBlue;
 				progress.BorderColor = xamBlue;
 				progress.FillMode = CAFillMode.Forwards;
-				progress.Frame = new CGRect (0, Frame.Height - barHeight, (nfloat)width, barHeight);
+				progress.Frame = new CGRect (0, Frame.Height - barHeight - verticalOffset, (nfloat)width, barHeight);
 			}
 			return progress;
 		}
