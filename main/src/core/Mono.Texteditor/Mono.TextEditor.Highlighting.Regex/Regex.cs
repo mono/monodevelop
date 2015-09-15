@@ -40,7 +40,6 @@ namespace Mono.TextEditor.Highlighting
 						if (curOffset >= doc.Length) {
 							break;
 						}
-						Console.WriteLine (pattern[i] +"&"+ doc [curOffset]);
 						if (pattern[i] == doc [curOffset]) {
 							return RegexMatch.NoMatch;
 						}
