@@ -2,11 +2,11 @@ require 'pp'
 
 XAMARIN_MAC_MIN_VERSION="2.3"
 XAMARIN_MAC_VERSION=lambda { product_version ("/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/bin/mmp") }
-XAMARIN_MAC_URL="http://storage.bos.internalx.com/macios-mac-cycle6/1e/1e6896dd96bc9387725b4332175baace1bef8186/xamarin.mac-2.3.0.135.pkg"
+XAMARIN_MAC_URL="http://www.xamarin.com"
 
 MONO_MIN_VERSION="4.2"
 MONO_VERSION=lambda { mono_version("/Library/Frameworks/Mono.framework/Versions/Current/bin/mono") }
-MONO_URL="http://storage.bos.internalx.com/mono-mac-4.2.0-branch/27/2701b194139f851f54660bd66c97074b041427fd/MonoFramework-MDK-4.2.0.207.macos10.xamarin.x86.pkg"
+MONO_URL="http://mono-project.com"
 
 class String
 	def red;            "\e[31m#{self}\e[0m" end
