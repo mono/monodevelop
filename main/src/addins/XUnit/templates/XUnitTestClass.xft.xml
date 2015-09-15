@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<Template>
+
+	<TemplateConfiguration>
+		<_Name>xUnit.net v1 Test</_Name>
+		<Icon>md-file-unit-test</Icon>
+		<_Category>xUnit.net</_Category>
+		<LanguageName>C#</LanguageName>
+		<_Description>Creates an xUnit.net v1 Test.</_Description>
+		<DefaultFilename>XUnitTestClass</DefaultFilename>
+	</TemplateConfiguration>
+
+	<TemplateFiles>
+		<CodeDomFile>
+			<AssemblyReference>xunit</AssemblyReference>
+			<AssemblyReference>xunit.extensions</AssemblyReference>
+			<CompileUnit>
+				<Namespaces>
+					<Namespace Name="">
+						<Imports>
+							<NamespaceImport Namespace="System" />
+							<NamespaceImport Namespace="Xunit" />
+							<NamespaceImport Namespace="Xunit.Extensions" />
+						</Imports>
+					</Namespace>
+					<Namespace Name="${Namespace}">
+						<Types>
+							<TypeDeclaration Name="${Name}" IsClass="true">
+								<Members>
+									<MemberMethod Attributes="Public, Final" Name="TestMethod" ReturnType="System.Void">
+										<CustomAttributes>
+											<AttributeDeclaration Name="Fact" />
+										</CustomAttributes>
+									</MemberMethod>
+								</Members>
+							</TypeDeclaration>
+						</Types>
+					</Namespace>
+				</Namespaces>
+			</CompileUnit>
+		</CodeDomFile>
+	</TemplateFiles>
+
+	<FileOptions/>
+
+</Template>

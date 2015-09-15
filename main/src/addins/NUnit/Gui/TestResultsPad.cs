@@ -733,6 +733,9 @@ namespace MonoDevelop.NUnit
 		{
 			if (test is UnitTestGroup)
 				return;
+
+			if (result.IsComposite)
+				return;
 			
 			testsRun++;
 			ResultRecord rec = new ResultRecord ();
