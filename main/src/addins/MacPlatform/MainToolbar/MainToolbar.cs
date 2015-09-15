@@ -135,7 +135,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			selector.OverflowInfoRequested += (o, e) => {
 				FillOverflowInfo (e);
 			};
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notif => DispatchService.GuiDispatch (() => {
+			Action<NSNotification> resizeAction = notif => DispatchService.GuiDispatch (() => {
 				// Skip updates with a null Window. Only crashes on Mavericks.
 				// The View gets updated once again when the window resize finishes.
 				var window = selector.Window;
@@ -150,7 +150,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				// Don't check difference in overflow menus. This could cause issues since we're doing resizing of widgets and the views might go in front
 				// or behind while we're doing the resize request.
 				selector.RequestResize ();
-			}));
+			});
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, resizeAction);
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidEndLiveResizeNotification, resizeAction);
 
 			var pathSelector = (SelectorView.PathSelectorView)selector.Subviews [0];
 			pathSelector.ConfigurationChanged += (sender, e) => {
