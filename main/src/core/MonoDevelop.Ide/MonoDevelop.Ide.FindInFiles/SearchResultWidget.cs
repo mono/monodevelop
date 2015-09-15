@@ -852,7 +852,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		public static string ColorMarkupBackground (string textMarkup, int startIndex, int endIndex, HslColor searchColor)
 		{
 			var markupBuilder = new StringBuilder();
-			bool inMarkup = false, inEntity = false, closed = false;
+			bool inMarkup = false, inEntity = false, closed = false, opened = false;
 			int i = 0;
 			for (int j = 0; j < textMarkup.Length; j++) {
 				var ch = textMarkup [j];
@@ -869,8 +869,10 @@ namespace MonoDevelop.Ide.FindInFiles
 						inMarkup = false;
 						markupBuilder.Append (ch);
 						if (i > startIndex && markupBuilder.ToString ().EndsWith("</span>")) {
-							if (!closed)
+							if (opened && !closed) {
 								markupBuilder.Append ("</span>");
+								opened = false;
+							}
 							markupBuilder.Append (textMarkup.Substring(j + 1));
 							return ColorMarkupBackground (markupBuilder.ToString (), i, endIndex, searchColor);
 						}
@@ -880,28 +882,33 @@ namespace MonoDevelop.Ide.FindInFiles
 					continue;
 				}
 				if (i == endIndex) {
-					markupBuilder.Append ("</span>");
+					if (opened) {
+						markupBuilder.Append ("</span>");
+						opened = false;
+					}
 					markupBuilder.Append (textMarkup.Substring (j));
 					closed = true;
 					break;
 				}
-				if (ch == '&') {
-					inEntity = true;
-					markupBuilder.Append (ch);
-					continue;
-				}
+
 				if (ch == '<') {
 					inMarkup = true;
 					markupBuilder.Append (ch);
 					continue;
 				}
 				if (i == startIndex) {
+					opened = true;
 					markupBuilder.Append ("<span background=\"" + ColorToPangoMarkup (searchColor) + "\">");
+				}
+				if (ch == '&') {
+					inEntity = true;
+					markupBuilder.Append (ch);
+					continue;
 				}
 				markupBuilder.Append (ch);
 				i++;
 			}
-			if (!closed)
+			if (!closed && !opened)
 				markupBuilder.Append ("</span>");
 			return markupBuilder.ToString ();
 		}

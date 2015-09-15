@@ -88,5 +88,21 @@ namespace MonoDevelop.Ide.FindInFiles
 			);
 			Assert.AreEqual ("<span foreground=\"#000000\">ec.Report.Error <span background=\"#FFFFFF\">(</span></span><span foreground=\"#A40000\"><span background=\"#FFFFFF\">29</span></span><span foreground=\"#000000\"><span background=\"#FFFFFF\">,</span> loc, </span><span foreground=\"#A40000\">\"Cannot implicitly convert type `{0}' to `{1}'\"</span><span foreground=\"#000000\">,</span>", result);
 		}
+
+
+
+		[Test]
+		public void TestSpanClosingIssue ()
+		{
+			var result = PangoHelper.ColorMarkupBackground (
+				"<span foreground=\"#000000\">&lt;</span><span foreground=\"#204987\">Begin</span><span foreground=\"#000000\">&gt;/*&lt;/</span><span foreground=\"#204987\">Begin</span><span foreground=\"#000000\">&gt;</span>",
+				0,
+				17,
+				new HslColor (1d, 1d, 1d)
+			);
+			Assert.AreEqual ("<span foreground=\"#000000\"><span background=\"#FFFFFF\">&lt;</span></span><span foreground=\"#204987\"><span background=\"#FFFFFF\">Begin</span></span><span foreground=\"#000000\"><span background=\"#FFFFFF\">&gt;/*&lt;/</span></span><span foreground=\"#204987\"><span background=\"#FFFFFF\">Begin</span></span><span foreground=\"#000000\"><span background=\"#FFFFFF\">&gt;</span></span>", result);
+		}
+
+
 	}
 }
