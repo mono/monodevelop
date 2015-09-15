@@ -393,6 +393,7 @@ namespace MonoDevelop.CSharp
 
 		string GetNullableMarkup (ITypeSymbol t)
 		{
+			Console.WriteLine ("nullable markup !!!");
 			var result = new StringBuilder ();
 			result.Append (GetTypeReferenceString (t));
 			return result.ToString ();
@@ -448,7 +449,7 @@ namespace MonoDevelop.CSharp
 				return GetTypeParameterMarkup (t);
 			if (t.TypeKind == TypeKind.Array || t.TypeKind == TypeKind.Pointer)
 				return GetTypeReferenceString (t);
-			if (t.SpecialType == SpecialType.System_Nullable_T)
+			if (t.IsNullable ())
 				return GetNullableMarkup (t);
 			var result = new StringBuilder ();
 			if (IsNullableType (t))
