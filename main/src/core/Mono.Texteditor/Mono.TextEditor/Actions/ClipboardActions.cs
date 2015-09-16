@@ -358,11 +358,7 @@ namespace Mono.TextEditor
 								data.Caret.PreserveSelection = true;
 								result = text.Length;
 								DocumentLine curLine = data.Document.GetLine (data.Caret.Line);
-								if (data.Caret.Column == 1 || data.GetVirtualIndentationColumn (data.Caret.Location) == data.Caret.Column) {
-									result = PastePlainText (data, curLine.Offset, text + data.EolMarker, preserveSelection, copyData);
-								} else {
-									result = PastePlainText (data, insertionOffset, data.EolMarker + text + data.EolMarker, preserveSelection, copyData);
-								}
+								result = PastePlainText (data, curLine.Offset, text + data.EolMarker, preserveSelection, copyData);
 								if (!preserveState)
 									data.ClearSelection ();
 								data.Caret.PreserveSelection = false;
