@@ -127,7 +127,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					} else {
 						if (ActiveRuntime != null) {
 							using (var mutableModel = ActiveRuntime.GetMutableModel ())
-								text = mutableModel.DisplayString;
+								text = mutableModel.FullDisplayString;
 						} else
 							text = string.Empty;
 					}
