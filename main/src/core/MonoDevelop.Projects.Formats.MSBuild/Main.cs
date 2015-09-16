@@ -30,7 +30,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
-using System.Runtime.Remoting.Channels.Ipc;
 using System.Threading;
 using System.Diagnostics;
 
@@ -69,15 +68,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			IDictionary dict = new Hashtable ();
 			var clientProvider = new BinaryClientFormatterSinkProvider();
 			var serverProvider = new BinaryServerFormatterSinkProvider();
+			dict ["port"] = 0;
+			dict ["rejectRemoteRequests"] = true;
 			serverProvider.TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full;
-
-			/*			dict ["port"] = 0;
-						dict ["rejectRemoteRequests"] = true;
-						ChannelServices.RegisterChannel (new TcpChannel (dict, clientProvider, serverProvider), false);*/
-
-			// Use the IpcChannel for now, since seems to be failing when there are many concurrent calls
-			dict ["portName"] = Guid.NewGuid ().ToString ();
-			ChannelServices.RegisterChannel (new IpcChannel (dict, clientProvider, serverProvider), false);
+			ChannelServices.RegisterChannel (new TcpChannel (dict, clientProvider, serverProvider), false);
 		}
 		
 		public static void WatchProcess (string procId)
