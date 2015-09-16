@@ -87,11 +87,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			isShowing = true;
 
-			if (ext != null) {
-				int inserted = ext.Editor.EnsureCaretIsNotVirtual ();
-				if (inserted > 0)
-					completionContext.TriggerOffset = ext.Editor.CaretOffset;
-			}
 			if (wnd == null) {
 				wnd = new CompletionListWindow ();
 				wnd.WordCompleted += HandleWndWordCompleted;
@@ -211,9 +206,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (!IsVisible)
 				return;
 			isShowing = false;
+			if (wnd == null)
+				return;
 			ParameterInformationWindowManager.UpdateWindow (wnd.Extension, wnd.CompletionWidget);
-			if (wnd.Extension != null)
-				wnd.Extension.Editor.FixVirtualIndentation ();
 			wnd.HideWindow ();
 			OnWindowClosed (EventArgs.Empty);
 			//DestroyWindow ();
