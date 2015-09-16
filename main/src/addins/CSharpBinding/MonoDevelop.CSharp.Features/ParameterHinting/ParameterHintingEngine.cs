@@ -54,8 +54,6 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		public async Task<ParameterHintingResult> GetParameterDataProviderAsync(Document document, SemanticModel semanticModel, int position, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var tree = await document.GetSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
-			if (tree.IsInNonUserCode(position, cancellationToken))
-				return ParameterHintingResult.Empty;
 			var tokenLeftOfPosition = tree.FindTokenOnLeftOfPosition (position, cancellationToken);
 
 			if (tokenLeftOfPosition.IsKind (SyntaxKind.LessThanToken)) {

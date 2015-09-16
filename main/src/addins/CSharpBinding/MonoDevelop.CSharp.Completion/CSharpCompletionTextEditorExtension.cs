@@ -625,19 +625,26 @@ namespace MonoDevelop.CSharp.Completion
 //				}
 //			}
 //		}
-		
 
-		public override async Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> HandleParameterCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
+		public override Task<Ide.CodeCompletion.ParameterHintingResult> ParameterCompletionCommand (CodeCompletionContext completionContext)
+		{
+			char ch = completionContext.TriggerOffset > 0 ? Editor.GetCharAt (completionContext.TriggerOffset - 1) : '\0';
+			return InternalHandleParameterCompletionCommand (completionContext, ch, true, default(CancellationToken));
+		}
+
+		public override Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> HandleParameterCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default (CancellationToken))
+		{
+			return InternalHandleParameterCompletionCommand (completionContext, completionChar, false, token);
+		}
+
+		public async Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> InternalHandleParameterCompletionCommand (CodeCompletionContext completionContext, char completionChar, bool force, CancellationToken token = default(CancellationToken))
 		{
 			var data = Editor;
-			if (completionChar != '(' && completionChar != ',')
+			if (!force && completionChar != '(' && completionChar != ',')
 				return null;
 			if (Editor.EditMode != EditMode.Edit)
 				return null;
 			var offset = Editor.CaretOffset;
-
-			if (completionChar != '(' && completionChar != ',')
-				return null;
 			try {
 
 				var analysisDocument = DocumentContext.AnalysisDocument;

@@ -24,12 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core.Text;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
@@ -53,164 +55,40 @@ namespace ICSharpCode.NRefactory6.CSharp
 	{
 		public static async Task<ParameterIndexResult> GetCurrentParameterIndex (Document document, int startOffset, int caretOffset, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			var usedNamedParameters =new List<string> ();
-			var parameter = new Stack<int> ();
-			var bracketStack = new Stack<Stack<int>> ();
-			bool inSingleComment = false, inString = false, inVerbatimString = false, inChar = false, inMultiLineComment = false;
-			var word = new StringBuilder ();
-			bool foundCharAfterOpenBracket = false;
-			
-			var text = await document.GetTextAsync(cancellationToken);
-			for (int i = startOffset; i < caretOffset; i++) {
-				char ch = text[i];
-				char nextCh = i + 1 < text.Length ? text[i + 1] : '\0';
-				if (ch == ':') {
-					usedNamedParameters.Add (word.ToString ());
-					word.Length = 0;
-				} else if (char.IsLetterOrDigit (ch) || ch =='_') {
-					word.Append (ch);
-				} else if (char.IsWhiteSpace (ch)) {
+			List<string> usedNamedParameters = null;
+			var tree = await document.GetSyntaxTreeAsync (cancellationToken).ConfigureAwait (false);
+			var root = await tree.GetRootAsync (cancellationToken).ConfigureAwait (false);
 
-				} else {
-					word.Length = 0;
-				}
-				if (!char.IsWhiteSpace(ch) && parameter.Count > 0)
-					foundCharAfterOpenBracket = true;
-
-				switch (ch) {
-					case '{':
-						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment) {
-							break;
-						}
-						bracketStack.Push (parameter);
-						parameter = new Stack<int> ();
-						break;
-					case '[':
-					case '(':
-						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment) {
-							break;
-						}
-						parameter.Push (0);
-						break;
-					case '}':
-						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment) {
-							break;
-						}
-						if (bracketStack.Count > 0) {
-							parameter = bracketStack.Pop ();
-						} else {
-							return ParameterIndexResult.Invalid;
-						}
-						break;
-					case ']':
-					case ')':
-						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment) {
-							break;
-						}
-						if (parameter.Count > 0) {
-							parameter.Pop ();
-						} else {
-							return ParameterIndexResult.Invalid;
-						}
-						break;
-					case '<':
-						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment) {
-							break;
-						}
-						parameter.Push (0);
-						break;
-					case '=':
-						if (nextCh == '>') {
-							i++;
-							continue;
-						}
-						break;
-					case '>':
-						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment) {
-							break;
-						}
-						if (parameter.Count > 0) {
-							parameter.Pop ();
-						}
-						break;
-					case ',':
-						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment) {
-							break;
-						}
-						if (parameter.Count > 0) {
-							parameter.Push (parameter.Pop () + 1);
-						}
-						break;
-					case '/':
-						if (inString || inChar || inVerbatimString) {
-							break;
-						}
-						if (nextCh == '/') {
-							i++;
-							inSingleComment = true;
-						}
-						if (nextCh == '*') {
-							inMultiLineComment = true;
-						}
-						break;
-					case '*':
-						if (inString || inChar || inVerbatimString || inSingleComment) {
-							break;
-						}
-						if (nextCh == '/') {
-							i++;
-							inMultiLineComment = false;
-						}
-						break;
-					case '@':
-						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment) {
-							break;
-						}
-						if (nextCh == '"') {
-							i++;
-							inVerbatimString = true;
-						}
-						break;
-					case '\\':
-						if (inString || inChar) {
-							i++;
-						}
-						break;
-					case '"':
-						if (inSingleComment || inMultiLineComment || inChar) {
-							break;
-						}
-						if (inVerbatimString) {
-							if (nextCh == '"') {
-								i++;
-								break;
-							}
-							inVerbatimString = false;
-							break;
-						}
-						inString = !inString;
-						break;
-					case '\'':
-						if (inSingleComment || inMultiLineComment || inString || inVerbatimString) {
-							break;
-						}
-						inChar = !inChar;
-						break;
-					default:
-						if (NewLine.IsNewLine(ch)) {
-							inSingleComment = false;
-							inString = false;
-							inChar = false;
-						}
-						break;
-				}
-			}
-			if (parameter.Count != 1 || bracketStack.Count > 0) {
+			var token = root.FindToken (startOffset);
+			if (token.Parent == null)
 				return ParameterIndexResult.Invalid;
+
+			var invocation = token.Parent.AncestorsAndSelf ().OfType<InvocationExpressionSyntax> ().FirstOrDefault ();
+
+			if (invocation == null || invocation.ArgumentList == null)
+				return ParameterIndexResult.Invalid;
+
+			int i = 0;
+			foreach (var child in invocation.ArgumentList.ChildNodesAndTokens ()) {
+				if (child.Span.End > caretOffset) {
+					if (i == 0 && caretOffset <= child.SpanStart)
+						return ParameterIndexResult.First;
+					return new ParameterIndexResult (usedNamedParameters != null ? usedNamedParameters.ToArray () : null, i + 1);
+				}
+
+				if (child.IsToken) {
+					if (child.IsKind (Microsoft.CodeAnalysis.CSharp.SyntaxKind.CommaToken))
+						i++;
+				} else {
+					var node = child.AsNode () as ArgumentSyntax;
+					if (node != null && node.NameColon != null) {
+						if (usedNamedParameters == null)
+							usedNamedParameters = new List<string> ();
+						usedNamedParameters.Add (node.NameColon.Name.Identifier.Text);
+					}
+				}
 			}
-			if (!foundCharAfterOpenBracket)
-				return ParameterIndexResult.First;
-			return new ParameterIndexResult (usedNamedParameters.ToArray(), parameter.Pop() + 1);
+			return ParameterIndexResult.Invalid;
 		}
 	}
 }
