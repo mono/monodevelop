@@ -69,9 +69,10 @@ namespace ICSharpCode.NRefactory6.CSharp
 				return ParameterIndexResult.Invalid;
 
 			int i = 0;
+			int j = 0;
 			foreach (var child in invocation.ArgumentList.ChildNodesAndTokens ()) {
 				if (child.Span.End > caretOffset) {
-					if (i == 0 && caretOffset <= child.SpanStart)
+					if (i == 0 && j <= 1)
 						return ParameterIndexResult.First;
 					return new ParameterIndexResult (usedNamedParameters != null ? usedNamedParameters.ToArray () : null, i + 1);
 				}
@@ -87,6 +88,10 @@ namespace ICSharpCode.NRefactory6.CSharp
 						usedNamedParameters.Add (node.NameColon.Name.Identifier.Text);
 					}
 				}
+				j++;
+			}
+			if (j > 0) {
+				return new ParameterIndexResult (usedNamedParameters != null ? usedNamedParameters.ToArray () : null, i + 1);
 			}
 			return ParameterIndexResult.Invalid;
 		}
