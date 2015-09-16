@@ -80,19 +80,21 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			if (ResizeRequested != null)
 				ResizeRequested (this, new SizeRequestedEventArgs (size));
 
-			SetFrameSize (size);
-			p.SetFrameSize (size);
+			if (size != Frame.Size) {
+				SetFrameSize (size);
+				p.SetFrameSize (size);
 
-			if (needsDisplay)
-				SetNeedsDisplay ();
-			p.SetNeedsDisplay ();
+				if (needsDisplay)
+					SetNeedsDisplay ();
+				p.SetNeedsDisplay ();
+			}
 			return size;
 		}
 
-		public override void DrawRect (CGRect dirtyRect)
+		public override void ViewWillDraw ()
 		{
 			var size = RequestResize (needsDisplay: false);
-			base.DrawRect (new CGRect (CGPoint.Empty, size));
+			base.ViewWillDraw ();
 		}
 
 		#region PathSelectorView
