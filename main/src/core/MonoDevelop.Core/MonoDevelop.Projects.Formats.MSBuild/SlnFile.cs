@@ -432,15 +432,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				SlnPropertySet curSet = null;
 				for (int n = 0; n < sectionLines.Count; n++) {
 					var line = sectionLines [n];
+					if (string.IsNullOrEmpty (line.Trim ()))
+						continue;
 					var i = line.IndexOf ('.');
 					if (i == -1)
-						throw new InvalidSolutionFormatException (baseIndex + i);
+						throw new InvalidSolutionFormatException (baseIndex + n);
 					var id = line.Substring (0, i);
 					if (curSet == null || id != curSet.Id) {
 						curSet = new SlnPropertySet (id);
 						nestedPropertySets.Add (curSet);
 					}
-					curSet.ReadLine (line.Substring (i + 1), baseIndex + i);
+					curSet.ReadLine (line.Substring (i + 1), baseIndex + n);
 				}
 				sectionLines = null;
 			}
