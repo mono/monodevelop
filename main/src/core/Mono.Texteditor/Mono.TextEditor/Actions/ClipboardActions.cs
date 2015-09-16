@@ -434,5 +434,13 @@ namespace Mono.TextEditor
 				return;
 			PasteFrom (Clipboard.Get (CopyOperation.CLIPBOARD_ATOM), data, false, data.IsSomethingSelected ? data.SelectionRange.Offset : data.Caret.Offset);
 		}
+
+		public static string GetClipboardContent()
+		{
+			var clipboard = Clipboard.Get (CopyOperation.CLIPBOARD_ATOM);
+			if (!clipboard.WaitIsTextAvailable ())
+				return null;
+			return clipboard.WaitForText ();
+		}
 	}
 }

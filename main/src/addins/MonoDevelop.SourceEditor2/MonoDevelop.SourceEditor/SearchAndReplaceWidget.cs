@@ -284,7 +284,7 @@ namespace MonoDevelop.SourceEditor
 			searchEntry.FilterButtonPixbuf = Xwt.Drawing.Image.FromResource ("searchoptions.png");
 
 			if (textEditor.IsSomethingSelected) {
-				if (textEditor.MainSelection.MinLine == textEditor.MainSelection.MaxLine) {
+				if (textEditor.MainSelection.MinLine == textEditor.MainSelection.MaxLine || ClipboardContainsSelection()) {
 					SetSearchPattern ();
 				} else {
 					IsInSelectionSearchMode = true;
@@ -302,6 +302,11 @@ namespace MonoDevelop.SourceEditor
 
 			SearchAndReplaceOptions.SearchPatternChanged += HandleSearchPatternChanged;
 			SearchAndReplaceOptions.ReplacePatternChanged += HandleReplacePatternChanged;
+		}
+
+		bool ClipboardContainsSelection ()
+		{
+			return textEditor.SelectedText == ClipboardActions.GetClipboardContent ();
 		}
 
 		void HandleReplacePatternChanged (object sender, EventArgs e)
