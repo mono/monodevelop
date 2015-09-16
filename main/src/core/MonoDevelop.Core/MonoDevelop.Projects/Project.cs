@@ -861,7 +861,14 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 
-		internal ProjectConfigurationInfo[] GetConfigurations (ConfigurationSelector configuration, bool includeReferencedProjects = true)
+		internal ProjectConfigurationInfo [] GetConfigurations (ConfigurationSelector configuration, bool includeReferencedProjects = true)
+		{
+			var visitedProjects = new HashSet<Project> ();
+			visitedProjects.Add (this);
+			return GetConfigurations (configuration, includeReferencedProjects, visitedProjects);
+		}
+
+		ProjectConfigurationInfo[] GetConfigurations (ConfigurationSelector configuration, bool includeReferencedProjects, HashSet<Project> visited)
 		{
 			var sc = ParentSolution != null ? ParentSolution.GetConfiguration (configuration) : null;
 
@@ -877,9 +884,11 @@ namespace MonoDevelop.Projects
 			});
 			if (includeReferencedProjects) {
 				foreach (var refProject in GetReferencedItems (configuration).OfType<Project> ().Where (p => p.SupportsBuild ())) {
+					if (!visited.Add (refProject))
+						continue;
 					// Recursively get all referenced projects. This is necessary if one of the referenced
 					// projects is using the local copy flag.
-					foreach (var rp in refProject.GetConfigurations (configuration)) {
+					foreach (var rp in refProject.GetConfigurations (configuration, true, visited)) {
 						if (!configs.Any (pc => pc.ProjectFile == rp.ProjectFile))
 							configs.Add (rp);
 					}

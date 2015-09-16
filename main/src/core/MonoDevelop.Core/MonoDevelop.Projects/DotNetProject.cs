@@ -800,7 +800,7 @@ namespace MonoDevelop.Projects
 
 			foreach (ProjectReference pref in References) {
 				if (pref.ReferenceType == ReferenceType.Project) {
-					Project rp = ParentSolution.FindProjectByName (pref.Reference);
+					Project rp = pref.ResolveProject (ParentSolution);
 					if (rp != null)
 						items.Add (rp);
 				}
