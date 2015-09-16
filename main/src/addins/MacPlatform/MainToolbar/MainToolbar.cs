@@ -246,7 +246,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				MaxSize = new CGSize (360, 22),
 			};
 
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notif => DispatchService.GuiDispatch (() => {
+			Action<NSNotification> resizeAction = notif => DispatchService.GuiDispatch (() => {
 				// Skip updates with a null Window. Only crashes on Mavericks.
 				// The View gets updated once again when the window resize finishes.
 				if (bar.Window == null)
@@ -262,7 +262,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				item.MinSize = new CGSize ((nfloat)Math.Max (220, minSize), 22);
 				item.MaxSize = new CGSize ((nfloat)Math.Min (700, maxSize), 22);
 				bar.RepositionStatusLayers ();
-			}));
+			});
+
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, resizeAction);
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidEndLiveResizeNotification, resizeAction);
 			return item;
 		}
 
