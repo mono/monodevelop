@@ -45,6 +45,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static MonoDevelopTemporaryStorageServiceFactory ()
 		{
+			/*
 			if (Core.Platform.IsWindows || IsCompatibleMono()) {
 				try {
 					var asm = Assembly.Load ("Microsoft.CodeAnalysis.Workspaces.Desktop");
@@ -56,7 +57,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				} catch (Exception e) {
 					LoggingService.LogWarning ("MonoDevelopTemporaryStorageServiceFactory: Can't load microsoft temporary storage, fallback to default.", e);
 				}
-			}
+			}*/
 		}
 
 		// remove, if mono >= 4.3 is realeased as stable.
