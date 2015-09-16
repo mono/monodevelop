@@ -354,6 +354,26 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 
+		public bool SetActiveConfiguration (Func<AppQuery, AppQuery> query, string configuration)
+		{
+			AppResult[] results = Query (query);
+			if (results.Length == 0) {
+				return false;
+			}
+
+			return session.SetActiveConfiguration (results [0], configuration);
+		}
+
+		public bool SetActiveRuntime (Func<AppQuery, AppQuery> query, string runtime)
+		{
+			AppResult[] results = Query (query);
+			if (results.Length == 0) {
+				return false;
+			}
+
+			return session.SetActiveRuntime (results [0], runtime);
+		}
+
 		public void RunAndWaitForTimer (Action action, string counterName, int timeout = 20000)
 		{
 			AutoTestSession.TimerCounterContext context = session.CreateNewTimerContext (counterName);

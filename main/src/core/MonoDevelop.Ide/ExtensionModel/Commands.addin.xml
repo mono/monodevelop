@@ -680,6 +680,13 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.InstrumentationViewerHandler"
 			_label = "Instrumentation Monitor" />
 
+	<Command id = "MonoDevelop.Ide.Commands.ToolCommands.ToggleSessionRecorder"
+			defaultHandler = "MonoDevelop.Ide.Commands.ToggleSessionRecorderHandler"
+			_label = "Start Session Recorder" />
+
+	<Command id = "MonoDevelop.Ide.Commands.ToolCommands.ReplaySession"
+			defaultHandler = "MonoDevelop.Ide.Commands.ReplaySessionHandler"
+			_label = "Replay Session..." />
 	</Category>
 
 

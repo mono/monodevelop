@@ -154,7 +154,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				BezelStyle = NSTextFieldBezelStyle.Rounded;
 
 			WantsLayer = true;
-			Layer.CornerRadius = 4;
+			Layer.CornerRadius = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 6 : 4;
 			ctxHandler = new StatusBarContextHandler (this);
 
 			updateHandler = delegate {
@@ -298,12 +298,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			right -= 9;
 			if (layer != null) {
-				layer.Frame = new CGRect (right, 3, 1, 16);
+				layer.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 4 : 3, 1, 16);
 				layer.SetNeedsDisplay ();
 			} else {
 				layer = CALayer.Create ();
 				layer.Name = SeparatorLayerId;
-				layer.Frame = new CGRect (right, 3, 1, 16);
+				layer.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 4 : 3, 1, 16);
 				layer.BackgroundColor = NSColor.LightGray.CGColor;
 				Layer.AddSublayer (layer);
 			}
@@ -341,12 +341,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			nfloat right = DrawSeparatorIfNeeded (LeftMostStatusItemX ());
 			CGSize size = buildResultText.AttributedString.Size;
 			right = right - 6 - size.Width;
-			buildResultText.Frame = new CGRect (right, 5f, size.Width, size.Height);
+			buildResultText.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 6 : 5, size.Width, size.Height);
 			if (buildResultText.SuperLayer == null)
 				Layer.AddSublayer (buildResultText);
 			buildResultText.SetNeedsDisplay ();
 			right -= buildResultIcon.Bounds.Width;
-			buildResultIcon.Frame = new CGRect (right, 3, buildResultIcon.Bounds.Width, buildResultIcon.Bounds.Height);
+			buildResultIcon.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 4 : 3, buildResultIcon.Bounds.Width, buildResultIcon.Bounds.Height);
 			if (buildResultIcon.SuperLayer == null)
 				Layer.AddSublayer (buildResultIcon);
 
@@ -364,7 +364,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						RemoveTrackingArea (icon.TrackingArea);
 
 					right -= item.Bounds.Width + 6;
-					item.Frame = new CGRect (right, 3, item.Bounds.Width, item.Bounds.Height);
+					item.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 4 : 3, item.Bounds.Width, item.Bounds.Height);
 
 					var area = new NSTrackingArea (item.Frame, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInKeyWindow, this, null);
 					AddTrackingArea (area);
@@ -561,6 +561,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 
 		static CGColor xamBlue = new CGColor (52f / 255, 152f / 255, 219f / 255);
+		static nfloat verticalOffset = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 2 : 0;
 		CALayer CreateProgressBarLayer (double width)
 		{
 			CALayer progress = ProgressLayer;
@@ -570,7 +571,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				progress.BackgroundColor = xamBlue;
 				progress.BorderColor = xamBlue;
 				progress.FillMode = CAFillMode.Forwards;
-				progress.Frame = new CGRect (0, Frame.Height - barHeight, (nfloat)width, barHeight);
+				progress.Frame = new CGRect (0, Frame.Height - barHeight - verticalOffset, (nfloat)width, barHeight);
 			}
 			return progress;
 		}

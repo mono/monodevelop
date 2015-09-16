@@ -26,11 +26,14 @@
 #if MAC
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Xml;
 
 using AppKit;
 using Foundation;
+
+using MonoDevelop.Components.MainToolbar;
 
 namespace MonoDevelop.Components.AutoTest.Results
 {
@@ -240,6 +243,55 @@ namespace MonoDevelop.Components.AutoTest.Results
 		{
 			
 		}
+
+#region MacPlatform.MacIntegration.MainToolbar.SelectorView
+		public override bool SetActiveConfiguration (string configurationName)
+		{
+			Type type = ResultObject.GetType ();
+			PropertyInfo pinfo = type.GetProperty ("ConfigurationModel");
+			if (pinfo == null) {
+				return false;
+			}
+
+			IEnumerable<IConfigurationModel> model = (IEnumerable<IConfigurationModel>)pinfo.GetValue (ResultObject, null);
+			var configuration = model.FirstOrDefault (c => c.DisplayString == configurationName);
+			if (configuration == null) {
+				return false;
+			}
+
+			pinfo = type.GetProperty ("ActiveConfiguration");
+			if (pinfo == null) {
+				return false;
+			}
+
+			pinfo.SetValue (ResultObject, configuration);
+			return true;
+		}
+
+		public override bool SetActiveRuntime (string runtimeName)
+		{
+			Type type = ResultObject.GetType ();
+			PropertyInfo pinfo = type.GetProperty ("RuntimeModel");
+			if (pinfo == null) {
+				return false;
+			}
+
+			IEnumerable<IRuntimeModel> model = (IEnumerable<IRuntimeModel>)pinfo.GetValue (ResultObject, null);
+
+			var runtime = model.FirstOrDefault (r => r.GetMutableModel ().FullDisplayString == runtimeName);
+			if (runtime == null) {
+				return false;
+			}
+
+			pinfo = type.GetProperty ("ActiveRuntime");
+			if (pinfo == null) {
+				return false;
+			}
+
+			pinfo.SetValue (ResultObject, runtime);
+			return true;
+		}
+#endregion
 	}
 }
 

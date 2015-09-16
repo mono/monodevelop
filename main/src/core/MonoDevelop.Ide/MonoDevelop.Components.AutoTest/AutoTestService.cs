@@ -26,10 +26,16 @@
 
 using System;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Remoting;
+using System.Diagnostics;
 using System.Collections.Generic;
+using System.Linq;
+using System.Xml;
+using System.Xml.Linq;
+using System.Text;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -39,6 +45,11 @@ namespace MonoDevelop.Components.AutoTest
 		static AutoTestServiceManager manager = new AutoTestServiceManager ();
 		public static AutoTestSession CurrentSession { 
 			get { return manager.currentSession; } 
+		}
+
+		static SessionRecord currentRecordSession;
+		public static SessionRecord CurrentRecordSession {
+			get { return currentRecordSession; }
 		}
 
 		public static void Start (CommandManager commandManager, bool publishServer)
@@ -65,12 +76,35 @@ namespace MonoDevelop.Components.AutoTest
 				File.WriteAllText (SessionReferenceFile, sref);
 			}
 		}
-		
+
+		public static void ReplaySessionFromFile (string filename)
+		{
+			currentRecordSession = new SessionRecord (commandManager, filename);
+			currentRecordSession.ReplayEvents (() => {
+				currentRecordSession = null;
+			});
+		}
+
 		public static SessionRecord StartRecordingSession ()
 		{
-			return new SessionRecord (commandManager);
+			currentRecordSession = new SessionRecord (commandManager);
+			return currentRecordSession;
 		}
-		
+
+		public static void StopRecordingSession (string filename = null)
+		{
+			if (currentRecordSession == null) {
+				return;
+			}
+
+			currentRecordSession.Pause ();
+
+			if (filename != null) {
+				currentRecordSession.WriteLogToFile (filename);
+			}
+			currentRecordSession = null;
+		}
+
 		internal static string SessionReferenceFile {
 			get {
 				return Path.Combine (Path.GetTempPath (), "monodevelop-autotest-objref");
@@ -146,24 +180,133 @@ namespace MonoDevelop.Components.AutoTest
 	{
 		CommandManager commandManager;
 		List<RecordEvent> events = new List<RecordEvent> ();
-		bool recording;
-		
-		public class RecordEvent
+		enum State {
+			Idle,
+			Recording,
+			Replaying
+		};
+		State state;
+
+		StringBuilder pendingText;
+		Gdk.ModifierType pendingModifiers = Gdk.ModifierType.None;
+
+		public abstract class RecordEvent
 		{
+			public abstract XElement ToXML ();
+			public abstract void ParseXML (XElement element);
+			public abstract void Replay (AutoTestSession testSession);
 		}
 		
 		public class KeyPressEvent: RecordEvent
 		{
 			public Gdk.Key Key { get; set; }
 			public Gdk.ModifierType Modifiers { get; set; }
+
+			public override XElement ToXML ()
+			{
+				return new XElement ("event", new XAttribute ("type", "KeyPressEvent"),
+						new XElement ("key", Key.ToString ()),
+						new XElement ("modifier", Modifiers.ToString ()));
+			}
+
+			public override void ParseXML (XElement element)
+			{
+				foreach (var e in element.Elements ()) {
+					if (e.Name == "key") {
+						Key = (Gdk.Key)Enum.Parse (typeof (Gdk.Key), e.Value);
+					} else if (e.Name == "modifier") {
+						Modifiers = (Gdk.ModifierType)Enum.Parse (typeof (Gdk.ModifierType), e.Value);
+					}
+				}
+			}
+
+			public override void Replay (AutoTestSession testSession)
+			{
+				// Select the main window and then we can push key events to it.
+				AppQuery query = testSession.CreateNewQuery ();
+				AppResult[] results = query.Window ().Marked ("MonoDevelop.Ide.Gui.DefaultWorkbench").Execute ();
+				if (results.Length == 0) {
+					return;
+				}
+
+				testSession.Select (results[0]);
+				// We need the GtkWidgetResult for the main window as we only have the keys as a Gdk key
+				if (results [0] is AutoTest.Results.GtkWidgetResult) {
+					AutoTest.Results.GtkWidgetResult widgetResult = (AutoTest.Results.GtkWidgetResult) results[0];
+					widgetResult.RealTypeKey (Key, Modifiers);
+				}
+			}
 		}
-		
+
+		public class StringEvent: RecordEvent
+		{
+			internal string Text;
+			internal Gdk.ModifierType Modifiers { get; set; }
+
+			public override XElement ToXML ()
+			{
+				return new XElement ("event", new XAttribute ("type", "StringEvent"),
+					new XElement ("text", Text),
+					new XElement ("modifier", Modifiers.ToString ()));
+			}
+
+			public override void ParseXML (XElement element)
+			{
+				foreach (var e in element.Elements ()) {
+					if (e.Name == "text") {
+						Text = e.Value;
+					} else if (e.Name == "modifier") {
+						Modifiers = (Gdk.ModifierType)Enum.Parse (typeof(Gdk.ModifierType), e.Value);
+					}
+				}
+			}
+
+			public override void Replay (AutoTestSession testSession)
+			{
+				AppQuery query = testSession.CreateNewQuery ();
+				AppResult[] results = query.Window ().Marked ("MonoDevelop.Ide.Gui.DefaultWorkbench").Execute ();
+				if (results.Length == 0) {
+					return;
+				}
+
+				testSession.Select (results [0]);
+
+				if (results [0] is AutoTest.Results.GtkWidgetResult) {
+					AutoTest.Results.GtkWidgetResult widgetResult = (AutoTest.Results.GtkWidgetResult)results [0];
+					widgetResult.EnterText (Text);
+				}
+			}
+		}
+
 		public class CommandEvent: RecordEvent
 		{
 			public object CommandId { get; set; }
 			public int DataItemIndex { get; set; }
 			public bool IsCommandArray {
 				get { return DataItemIndex != -1; }
+			}
+
+			public override XElement ToXML ()
+			{
+				return new XElement ("event", new XAttribute ("type", "CommandEvent"),
+						new XElement ("commandID", CommandId.ToString ()),
+						new XElement ("dataItemIndex", DataItemIndex));
+			}
+
+			public override void ParseXML (XElement element)
+			{
+				foreach (var e in element.Elements ()) {
+					if (e.Name == "commandID") {
+						CommandId = e.Value;
+					} else if (e.Name == "dataItemIndex") {
+						DataItemIndex = Convert.ToInt32 (e.Value);
+					}
+				}
+			}
+
+			public override void Replay (AutoTestSession testSession)
+			{
+				testSession.ExecuteCommand (CommandId);
 			}
 		}
 		
@@ -172,39 +315,56 @@ namespace MonoDevelop.Components.AutoTest
 			this.commandManager = commandManager;
 			Resume ();
 		}
+
+		internal SessionRecord (CommandManager commandManager, string logFile)
+		{
+			state = State.Idle;
+			this.commandManager = commandManager;
+			LoadFromLogFile (logFile);
+		}
 		
 		public IEnumerable<RecordEvent> Events {
 			get {
-				if (recording)
+				if (state == State.Recording)
 					throw new InvalidOperationException ("The record session must be paused before getting the recorded events.");
 				return events; 
 			}
 		}
 		
 		public bool IsPaused {
-			get { return !recording; }
+			get { return state == State.Idle; }
+		}
+
+		public bool IsReplaying {
+			get { return state == State.Replaying; }
 		}
 		
 		public void Pause ()
 		{
-			if (recording) {
+			if (state == State.Recording) {
 				commandManager.KeyPressed -= HandleCommandManagerKeyPressed;
 				commandManager.CommandActivated -= HandleCommandManagerCommandActivated;
-				recording = false;
+				state = State.Idle;
 			}
 		}
 		
 		public void Resume ()
 		{
-			if (!recording) {
+			if (state == State.Idle) {
 				commandManager.KeyPressed += HandleCommandManagerKeyPressed;
 				commandManager.CommandActivated += HandleCommandManagerCommandActivated;
-				recording = true;
+				state = State.Recording;
+				LoggingService.LogError ("Starting up session recording");
 			}
 		}
 		
 		void HandleCommandManagerCommandActivated (object sender, CommandActivationEventArgs e)
 		{
+			if ((string)e.CommandId == "MonoDevelop.Ide.Commands.ToolCommands.ToggleSessionRecorder" ||
+				(string)e.CommandId == "MonoDevelop.Ide.Commands.ToolCommands.ReplaySession") {
+				return;
+			}
+
 			CommandEvent cme = new CommandEvent () { CommandId = e.CommandId };
 			cme.DataItemIndex = -1;
 			
@@ -219,9 +379,117 @@ namespace MonoDevelop.Components.AutoTest
 			events.Add (cme);
 		}
 
+		void CompleteStringEvent (string s, Gdk.ModifierType modifiers)
+		{
+			events.Add (new StringEvent { Text = pendingText.ToString (), Modifiers = pendingModifiers });
+			pendingText = null;
+			pendingModifiers = Gdk.ModifierType.None;
+		}
+
 		void HandleCommandManagerKeyPressed (object sender, KeyPressArgs e)
 		{
-			events.Add (new KeyPressEvent () { Key = e.Key, Modifiers = e.Modifiers });
+			uint unicode = Gdk.Keyval.ToUnicode (e.KeyValue);
+			if (pendingText != null) {
+				if (pendingModifiers != e.Modifiers || unicode == 0) {
+					CompleteStringEvent (pendingText.ToString (), pendingModifiers);
+				} else {
+					pendingText.Append ((char)unicode);
+					return;
+				}
+
+				// If text event has been completed, then we need to reset the pending events
+				if (unicode != 0) {
+					pendingText = new StringBuilder ();
+					pendingText.Append ((char)unicode);
+					pendingModifiers = e.Modifiers;
+				} else {
+					// Don't have a unicode key, so just issue a standard key event
+					events.Add (new KeyPressEvent { Key = e.Key, Modifiers = e.Modifiers });
+					pendingText = null;
+					pendingModifiers = Gdk.ModifierType.None;
+				}
+			} else {
+				if (unicode == 0) {
+					events.Add (new KeyPressEvent () { Key = e.Key, Modifiers = e.Modifiers });
+					return;
+				}
+
+				pendingText = new StringBuilder ();
+				pendingText.Append ((char)unicode);
+				pendingModifiers = e.Modifiers;
+			}
+		}
+
+		public void WriteLogToFile (string filepath)
+		{
+			var doc = new XDocument (new XElement ("xs-event-replay-log",
+				          from ev in events
+						  select ev.ToXML ()));
+
+			using (XmlWriter xw = XmlWriter.Create (filepath, new XmlWriterSettings { Indent = true })) {
+				doc.Save (xw);
+			}
+		}
+
+		public bool LoadFromLogFile (string filepath)
+		{
+			XDocument doc = XDocument.Load (filepath);
+			foreach (XElement element in doc.Element("xs-event-replay-log").Elements ()) {
+				if (element == null) {
+					continue;
+				}
+
+				string evType = element.Attribute ("type").Value;
+				RecordEvent ev = null;
+				if (evType == "KeyPressEvent") {
+					ev = new KeyPressEvent ();
+				} else if (evType == "CommandEvent") {
+					ev = new CommandEvent ();
+				} else if (evType == "StringEvent") {
+					ev = new StringEvent ();
+				}
+
+				if (ev == null) {
+					return false;
+				}
+
+				ev.ParseXML (element);
+				events.Add (ev);
+			}
+
+			return true;
+		}
+
+		public void ReplayEvents (Action completionHandler = null)
+		{
+			AutoTestSession testSession = new AutoTestSession ();
+			Stopwatch sw = new Stopwatch ();
+			int eventCount = events.Count;
+
+			state = State.Replaying;
+			
+			sw.Start ();
+			// Each spin of the main loop, remove an event from the queue and replay it.
+			GLib.Idle.Add (() => {
+				RecordEvent ev = events[0];
+				events.RemoveAt (0);
+
+				ev.Replay (testSession);
+
+				if (events.Count > 0) {
+					return true;
+				}
+
+				sw.Stop ();
+				LoggingService.LogInfo ("Time elapsed to replay {0} events: {1}", eventCount, sw.Elapsed);
+				state = State.Idle;
+
+				if (completionHandler != null) {
+					completionHandler ();
+				}
+
+				return false;
+			});
 		}
 	}
 }
