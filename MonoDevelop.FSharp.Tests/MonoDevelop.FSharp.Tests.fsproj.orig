@@ -106,6 +106,10 @@
       <Private>False</Private>
       <HintPath>INSERT_FSPROJ_MDROOT\AddIns\NUnit\MonoDevelop.NUnit.dll</HintPath>
     </Reference>
+    <Reference Include="GuiUnit">
+      <Private>False</Private>
+      <HintPath>..\packages\NUnit\lib\nunit.framework.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TestBase.fs" />
