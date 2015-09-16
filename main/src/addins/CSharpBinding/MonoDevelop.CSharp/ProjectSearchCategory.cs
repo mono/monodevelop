@@ -177,7 +177,10 @@ namespace MonoDevelop.CSharp
 					RemoveDocument (documentInfos, e.DocumentId);
 					break;
 				case WorkspaceChangeKind.DocumentChanged:
-					await UpdateDocument (documentInfos, ws.CurrentSolution.GetDocument (e.DocumentId), default (CancellationToken));
+					var doc = ws.CurrentSolution.GetDocument (e.DocumentId);
+					Task.Run (async delegate {
+						await UpdateDocument (documentInfos, doc, default (CancellationToken));
+					});
 					break;
 				}
 			}
