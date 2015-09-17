@@ -38,7 +38,14 @@ namespace UserInterfaceTests
 
 		public static void Validate (string fileName)
 		{
-			var readIdeLog = File.ReadAllText (fileName);
+			string readIdeLog = string.Empty;
+			using (FileStream fileStream = new FileStream (fileName, FileMode.Open, 
+				                               FileAccess.Read, FileShare.ReadWrite)) {
+				using (StreamReader streamReader = new StreamReader (fileStream)) {
+					readIdeLog = streamReader.ReadToEnd ();
+				}
+			}
+
 			foreach (var error in invalidLogStrings) {
 				Assert.IsFalse (readIdeLog.Contains (error),
 					string.Format ("GTK Error detected in Ide.log file:\n\t{0}",error));
