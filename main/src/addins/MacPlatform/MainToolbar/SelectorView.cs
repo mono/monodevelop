@@ -115,22 +115,22 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			nfloat UpdatePathCellForSize (int idx, nfloat remaining, CellState newStateIfEnoughSize)
 			{
 				var cell = PathComponentCells [idx];
-				var size = cell.Title.StringSize (new NSStringAttributes { Font = cell.Font }).Width;
+				string text;
+				if (idx == ConfigurationIdx) {
+					if (ActiveConfiguration != null)
+						text = ActiveConfiguration.DisplayString;
+					else
+						text = ConfigurationPlaceholder;
+				} else {
+					if (ActiveRuntime != null) {
+						using (var mutableModel = ActiveRuntime.GetMutableModel ())
+							text = mutableModel.FullDisplayString;
+					} else
+						text = RuntimePlaceholder;
+				}
+				var size = text.StringSize (new NSStringAttributes { Font = cell.Font }).Width;
 				if (size < remaining) {
 					state = newStateIfEnoughSize;
-					string text;
-					if (idx == ConfigurationIdx) {
-						if (ActiveConfiguration != null)
-							text = ActiveConfiguration.DisplayString;
-						else
-							text = ConfigurationPlaceholder;
-					} else {
-						if (ActiveRuntime != null) {
-							using (var mutableModel = ActiveRuntime.GetMutableModel ())
-								text = mutableModel.FullDisplayString;
-						} else
-							text = RuntimePlaceholder;
-					}
 					UpdatePathText (idx, text);
 				}
 				return remaining - size;
