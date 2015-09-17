@@ -261,6 +261,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						Font = NSFont.MenuFontOfSize (12),
 					};
 					if (object.ReferenceEquals (ClickedPathComponentCell, PathComponentCells [ConfigurationIdx])) {
+						if (ActiveConfiguration == null)
+							return;
+						
 						foreach (var configuration in ConfigurationModel) {
 							if (idx == -1 && configuration.OriginalId == ActiveConfiguration.OriginalId)
 								idx = i;
@@ -278,6 +281,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 							++i;
 						}
 					} else if (object.ReferenceEquals (ClickedPathComponentCell, PathComponentCells [RuntimeIdx])) {
+						if (ActiveRuntime == null)
+							return;
+						
 						using (var activeMutableModel = ActiveRuntime.GetMutableModel ()) {
 							foreach (var runtime in RuntimeModel) {
 								using (var mutableModel = runtime.GetMutableModel ()) {
