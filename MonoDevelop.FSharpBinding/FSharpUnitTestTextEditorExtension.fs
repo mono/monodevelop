@@ -75,7 +75,8 @@ type FSharpUnitTestTextEditorExtension() =
                             |> Seq.choose
                                 (fun symbolUse -> 
                                        let range = symbolUse.RangeAlternate
-                                       let test = UnitTestLocation(range.StartLine)
+                                       let startOffset = x.Editor.LocationToOffset(range.StartLine, range.StartColumn+1)
+                                       let test = UnitTestLocation(startOffset)
                                        match symbolUse.Symbol with
                                        | :? FSharpMemberOrFunctionOrValue as func -> 
                                             let typeName = func.EnclosingEntity.QualifiedName
