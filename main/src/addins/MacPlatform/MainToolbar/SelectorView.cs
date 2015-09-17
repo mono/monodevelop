@@ -123,13 +123,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						if (ActiveConfiguration != null)
 							text = ActiveConfiguration.DisplayString;
 						else
-							text = string.Empty;
+							text = ConfigurationPlaceholder;
 					} else {
 						if (ActiveRuntime != null) {
 							using (var mutableModel = ActiveRuntime.GetMutableModel ())
 								text = mutableModel.FullDisplayString;
 						} else
-							text = string.Empty;
+							text = RuntimePlaceholder;
 					}
 					UpdatePathText (idx, text);
 				}
