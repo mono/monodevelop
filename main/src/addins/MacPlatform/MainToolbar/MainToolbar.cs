@@ -114,7 +114,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			// Add spacings.
 			nfloat spacing = (allItems.Length - 1) * 16;
 			e.AllItemsWidth += spacing;
-			e.WindowWidth -= spacing;
 
 			return e;
 		}
