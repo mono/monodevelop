@@ -33,6 +33,7 @@ using AppKit;
 using CoreGraphics;
 using Foundation;
 using MonoDevelop.Ide;
+using Xwt;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -298,6 +299,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				}
 				throw new NotImplementedException ();
 			};
+
+			Application.TimeoutInvoke (1000, () => {
+				if (widget.Items.Length != widget.VisibleItems.Length)
+					selector.RequestResize ();
+				return true;
+			});
 		}
 
 		internal void Initialize ()
