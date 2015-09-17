@@ -424,7 +424,8 @@ namespace MonoDevelop.Core
 		/// </summary>
 		public static void AssertMainThread ()
 		{
-			if (SynchronizationContext.Current != MainSynchronizationContext)
+			// Compare types, because instances can change (using SynchronizationContext.CreateCopy).
+			if (SynchronizationContext.Current.GetType () != MainSynchronizationContext.GetType ())
 				throw new InvalidOperationException ("Operation not supported in background thread");
 		}
 
