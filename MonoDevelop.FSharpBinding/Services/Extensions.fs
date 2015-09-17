@@ -17,6 +17,9 @@ module Option =
     | :? 'T as a -> Some a
     | _ -> None
 
+  let inline cast o =
+    (Option.bind tryCast) o
+
   /// Convert string into Option string where null and String.Empty result in None
   let inline ofString (s:string) =
     if String.isNullOrEmpty s then None
