@@ -95,13 +95,15 @@ module Patterns =
     match symbol with FSharpTokenColorKind.Identifier | FSharpTokenColorKind.UpperIdentifier -> false | _ -> true
   
   let (|IdentifierSymbol|_|) ts = 
-    if isIdentifier ts.TokenInfo.ColorClass then ts.SymbolUse |> Option.map (fun su -> IdentifierSymbol(su)) else None
+    if isIdentifier ts.TokenInfo.ColorClass
+    then ts.SymbolUse |> Option.map (fun su -> IdentifierSymbol(su))
+    else None
   
   let (|Namespace|_|) ts = 
     match ts with
     | IdentifierSymbol symbolUse -> 
       match symbolUse with
-      | ExtendedPatterns.Namespace ns -> Some ns
+      | SymbolUse.Namespace ns -> Some ns
       | _ -> None
     | _ -> None
   
@@ -109,7 +111,7 @@ module Patterns =
     match ts with
     | IdentifierSymbol symbolUse ->
       match symbolUse with
-      | ExtendedPatterns.Class cl -> Some cl
+      | SymbolUse.Class cl -> Some cl
       | _ -> None
     | _ -> None
   
@@ -117,7 +119,7 @@ module Patterns =
     match ts with
     | IdentifierSymbol symbolUse -> 
       match symbolUse with
-      | ExtendedPatterns.Property _pr -> Some symbolUse.IsFromDefinition
+      | SymbolUse.Property _pr -> Some symbolUse.IsFromDefinition
       | _ -> None
     | _ -> None
   
@@ -125,7 +127,7 @@ module Patterns =
     match ts with
     | IdentifierSymbol symbolUse -> 
       match symbolUse with
-      | CorePatterns.Field _ -> Some symbolUse.IsFromDefinition
+      | SymbolUse.Field _ -> Some symbolUse.IsFromDefinition
       | _ -> None
     | _ -> None
   
@@ -133,7 +135,7 @@ module Patterns =
     match ts with
     | IdentifierSymbol symbolUse -> 
       match symbolUse with
-      | ExtendedPatterns.Function _ | ExtendedPatterns.ClosureOrNestedFunction _ -> Some symbolUse.IsFromDefinition
+      | SymbolUse.Function _ | SymbolUse.ClosureOrNestedFunction _ -> Some symbolUse.IsFromDefinition
       | _ -> None
     | _ -> None
   
@@ -141,7 +143,7 @@ module Patterns =
     match ts with
     | IdentifierSymbol symbolUse -> 
       match symbolUse with
-      | ExtendedPatterns.Val _ -> Some symbolUse.IsFromDefinition
+      | SymbolUse.Val _ -> Some symbolUse.IsFromDefinition
       | _ -> None
     | _ -> None
   
@@ -149,7 +151,7 @@ module Patterns =
     match ts with
     | IdentifierSymbol symbolUse -> 
       match symbolUse with
-      | ExtendedPatterns.Delegate dl -> Some dl
+      | SymbolUse.Delegate dl -> Some dl
       | _ -> None
     | _ -> None
   
@@ -157,7 +159,7 @@ module Patterns =
     match ts with
     | IdentifierSymbol symbolUse -> 
       match symbolUse with
-      | ExtendedPatterns.Event _ev -> Some symbolUse.IsFromDefinition
+      | SymbolUse.Event _ev -> Some symbolUse.IsFromDefinition
       | _ -> None
     | _ -> None
   
@@ -165,7 +167,7 @@ module Patterns =
     match ts with
     | IdentifierSymbol symbolUse -> 
       match symbolUse with
-      | ExtendedPatterns.Enum en -> Some en
+      | SymbolUse.Enum en -> Some en
       | _ -> None
     | _ -> None
   
@@ -173,7 +175,7 @@ module Patterns =
     match ts with
     | IdentifierSymbol symbolUse -> 
       match symbolUse with
-      | ExtendedPatterns.Record r -> Some r
+      | SymbolUse.Record r -> Some r
       | _ -> None
     | _ -> None
   
@@ -181,7 +183,7 @@ module Patterns =
     match ts with
     | IdentifierSymbol symbolUse -> 
       match symbolUse with
-      | ExtendedPatterns.ValueType v -> Some v
+      | SymbolUse.ValueType v -> Some v
       | _ -> None
     | _ -> None
   
@@ -189,7 +191,7 @@ module Patterns =
     match ts with
     | IdentifierSymbol symbolUse -> 
       match symbolUse with
-      | ExtendedPatterns.Module m -> Some m
+      | SymbolUse.Module m -> Some m
       | _ -> None
     | _ -> None
   
@@ -197,7 +199,7 @@ module Patterns =
     match ts with
     | IdentifierSymbol symbolUse -> 
       match symbolUse with
-      | ExtendedPatterns.Union u -> Some u
+      | SymbolUse.Union u -> Some u
       | _ -> None
     | _ -> None
   
@@ -205,7 +207,7 @@ module Patterns =
     match ts with
     | IdentifierSymbol symbolUse -> 
       match symbolUse with
-      | CorePatterns.GenericParameter _ -> Some GenericParameter
+      | SymbolUse.GenericParameter _ -> Some GenericParameter
       | _ -> None
     | _ -> None
   
@@ -213,7 +215,7 @@ module Patterns =
     match ts with
     | IdentifierSymbol symbolUse -> 
       match symbolUse with
-      | CorePatterns.UnionCase _ -> Some UnionCase
+      | SymbolUse.UnionCase _ -> Some UnionCase
       | _ -> None
     | _ -> None
   
@@ -221,7 +223,7 @@ module Patterns =
     match ts with
     | IdentifierSymbol symbolUse -> 
       match symbolUse with
-      | CorePatterns.ActivePatternCase _ -> Some ActivePatternCase
+      | SymbolUse.ActivePatternCase _ -> Some ActivePatternCase
       | _ -> None
     | _ -> None
   
@@ -229,7 +231,7 @@ module Patterns =
     match ts with
     | IdentifierSymbol symbolUse -> 
       match symbolUse with
-      | ExtendedPatterns.Interface _ -> Some Interface
+      | SymbolUse.Interface _ -> Some Interface
       | _ -> None
     | _ -> None
   
@@ -237,18 +239,17 @@ module Patterns =
     match ts with
     | IdentifierSymbol symbolUse -> 
       match symbolUse with
-      | ExtendedPatterns.TypeAbbreviation _ -> Some TypeAbbreviation
+      | SymbolUse.TypeAbbreviation _ -> Some TypeAbbreviation
       | _ -> None
     | _ -> None
   
   let (|ComputationExpression|_|) ts = 
-    if isIdentifier ts.TokenInfo.ColorClass
-    then
-      match ts.SymbolUse with
-      | Some su when su.IsFromComputationExpression ->
-        Some su.Symbol.DisplayName
+    match ts with
+    | IdentifierSymbol symbolUse -> 
+      match symbolUse with
+      | SymbolUse.ComputationExpression _ -> Some symbolUse.Symbol.DisplayName
       | _ -> None
-    else None
+    | _ -> None
 
 module internal Rules = 
   let baseMode = 

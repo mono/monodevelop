@@ -548,6 +548,9 @@ type LanguageService(dirtyNotify) =
       let filteredSymbols = allSymbolUses |> Array.filter predicate 
               
       return filteredSymbols }
+
+  member x.ParseAndCheckProject options=
+    checker.ParseAndCheckProject(options)
            
   /// This function is called when the project is know to have changed for reasons not encoded in the ProjectOptions
   /// e.g. dependent references have changed

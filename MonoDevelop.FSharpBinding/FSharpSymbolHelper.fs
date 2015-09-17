@@ -96,7 +96,7 @@ module Symbols =
         filename, Microsoft.CodeAnalysis.Text.TextSpan.FromBounds (start, finish)
 
 [<AutoOpen>]
-module CorePatterns =
+module SymbolUse =
     let (|ActivePatternCase|_|) (symbol : FSharpSymbolUse) =
         match symbol.Symbol with
         | :? FSharpActivePatternCase as ap-> ActivePatternCase(ap) |> Some
@@ -137,53 +137,43 @@ module CorePatterns =
         | :? FSharpUnionCase as uc-> Some uc
         | _ -> None
 
-[<AutoOpen>]
-module ExtendedPatterns = 
-    let (|Constructor|_|) symbol =
-        match symbol with
-        | CorePatterns.MemberFunctionOrValue func -> 
-            if func.IsConstructor || func.IsImplicitConstructor then Some func
-            else None
+    let (|Constructor|_|) = function
+        | MemberFunctionOrValue func when func.IsConstructor || func.IsImplicitConstructor -> Some func
         | _ -> None
 
-    let (|TypeAbbreviation|_|) symbol =
-        match symbol with
-        | CorePatterns.Entity symbol when symbol.IsFSharpAbbreviation -> Some symbol
+    let (|TypeAbbreviation|_|) = function
+        | Entity symbol when symbol.IsFSharpAbbreviation -> Some symbol
         | _ -> None
 
-    let (|Class|_|) symbol =
-        match symbol with
-        | CorePatterns.Entity symbol when symbol.IsClass -> Some symbol
-        | CorePatterns.Entity s when s.IsFSharp &&
-                                     s.IsOpaque &&
-                                     not s.IsFSharpModule &&
-                                     not s.IsNamespace &&
-                                     not s.IsDelegate &&
-                                     not s.IsFSharpUnion &&
-                                     not s.IsFSharpRecord &&
-                                     not s.IsInterface &&
-                                     not s.IsValueType -> Some s
+    let (|Class|_|) = function
+        | Entity symbol when symbol.IsClass -> Some symbol
+        | Entity s when s.IsFSharp &&
+                        s.IsOpaque &&
+                        not s.IsFSharpModule &&
+                        not s.IsNamespace &&
+                        not s.IsDelegate &&
+                        not s.IsFSharpUnion &&
+                        not s.IsFSharpRecord &&
+                        not s.IsInterface &&
+                        not s.IsValueType -> Some s
         | _ -> None
 
-    let (|Delegate|_|) symbol =
-        match symbol with
-        | CorePatterns.Entity symbol when symbol.IsDelegate -> Some symbol
+    let (|Delegate|_|) = function
+        | Entity symbol when symbol.IsDelegate -> Some symbol
         | _ -> None
 
-    let (|Event|_|) symbol =
-        match symbol with
-        | CorePatterns.MemberFunctionOrValue symbol when symbol.IsEvent -> Some symbol
+    let (|Event|_|) = function
+        | MemberFunctionOrValue symbol when symbol.IsEvent -> Some symbol
         | _ -> None
 
-    let (|Property|_|) symbol =
-        match symbol with
-        | CorePatterns.MemberFunctionOrValue symbol when
+    let (|Property|_|) = function
+        | MemberFunctionOrValue symbol when
             symbol.IsProperty || symbol.IsPropertyGetterMethod || symbol.IsPropertySetterMethod -> Some symbol
         | _ -> None
 
     let (|Function|Operator|Pattern|ClosureOrNestedFunction|Val|Unknown|) (symbolUse:FSharpSymbolUse) =
         match symbolUse with
-        | CorePatterns.MemberFunctionOrValue symbol
+        | MemberFunctionOrValue symbol
             when not (symbol.IsConstructor) ->
                 match symbol.FullTypeSafe with
                 | Some fullType when fullType.IsFunctionType
@@ -202,40 +192,38 @@ module ExtendedPatterns =
                 | None -> Unknown
         | _ -> Unknown
 
-    let (|Enum|_|) symbol =
-        match symbol with
-        | CorePatterns.Entity symbol when symbol.IsEnum -> Some symbol
+    let (|Enum|_|) = function
+      | Entity symbol when symbol.IsEnum && not symbol.IsValueType -> Some symbol
+      | _ -> None
+
+
+    let (|Interface|_|) = function
+      | Entity symbol when symbol.IsInterface -> Some symbol
+      | _ -> None
+
+    let (|Module|_|) = function
+        | Entity symbol when symbol.IsFSharpModule -> Some symbol
         | _ -> None
 
-    let (|Interface|_|) symbol =
-        match symbol with
-        | CorePatterns.Entity symbol when symbol.IsInterface -> Some symbol
+    let (|Namespace|_|) = function
+        | Entity symbol when symbol.IsNamespace -> Some symbol
         | _ -> None
 
-    let (|Module|_|) symbol = 
-        match symbol with
-        | CorePatterns.Entity symbol when symbol.IsFSharpModule -> Some symbol
+    let (|Record|_|) = function
+        | Entity symbol when symbol.IsFSharpRecord -> Some symbol
         | _ -> None
 
-    let (|Namespace|_|) symbol =
-        match symbol with
-        | CorePatterns.Entity symbol when symbol.IsNamespace -> Some symbol
+    let (|Union|_|) = function
+        | Entity symbol when symbol.IsFSharpUnion -> Some symbol
         | _ -> None
 
-    let (|Record|_|) symbol =
-        match symbol with
-        | CorePatterns.Entity symbol when symbol.IsFSharpRecord -> Some symbol
+    let (|ValueType|_|) = function
+        | Entity symbol when symbol.IsValueType -> Some symbol
         | _ -> None
 
-    let (|Union|_|) symbol =
-        match symbol with
-        | CorePatterns.Entity symbol when symbol.IsFSharpUnion -> Some symbol
-        | _ -> None
-
-    let (|ValueType|_|) symbol =
-        match symbol with
-        | CorePatterns.Entity symbol when symbol.IsValueType -> Some symbol
-        | _ -> None
+    let (|ComputationExpression|_|) (symbol:FSharpSymbolUse) =
+      if symbol.IsFromComputationExpression then Some symbol
+      else None
 
 type XmlDoc =
   ///A full xmldoc tooltip
