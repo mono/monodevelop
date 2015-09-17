@@ -289,10 +289,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					MSBuildResult result;
 					try {
 						BeginOperation ();
-						result = builder.Run (
-									configurations, null, MSBuildVerbosity.Normal,
-									new [] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null, null, taskId
-								);
+						lock (engine) {
+							// FIXME: This lock should not be necessary, but remoting seems to have problems when doing many concurrent calls.
+							result = builder.Run (
+										configurations, null, MSBuildVerbosity.Normal,
+										new [] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null, null, taskId
+									);
+						}
 					} catch (Exception ex) {
 						CheckDisconnected ();
 						LoggingService.LogError ("ResolveAssemblyReferences failed", ex);
