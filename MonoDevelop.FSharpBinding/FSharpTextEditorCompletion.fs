@@ -7,6 +7,7 @@ namespace MonoDevelop.FSharp
 open System
 open System.Collections.Generic
 open System.Diagnostics
+open Symbols
 open MonoDevelop
 open MonoDevelop.Core
 open MonoDevelop.Debugger
@@ -262,7 +263,7 @@ type FSharpTextEditorCompletion() =
       | Record _ -> Stock.Class
       | Union _ -> IconId("md-type")
       | ValueType _ -> Stock.Struct
-      | CorePatterns.Entity _ -> IconId("md-type")
+      | SymbolUse.Entity _ -> IconId("md-type")
       | _ -> Stock.Event
 
     let tryGetCategory (symbolUse : FSharpSymbolUse) =
@@ -602,41 +603,41 @@ type FSharpTextEditorCompletion() =
               match symbol with
               | Some symbolUse when not symbolUse.IsFromDefinition ->
                   match symbolUse with
-                  | CorePatterns.ActivePatternCase apc ->
+                  | SymbolUse.ActivePatternCase apc ->
                       Some (apc.DeclarationLocation, apc.DisplayName)
-                  | CorePatterns.Entity ent ->
+                  | SymbolUse.Entity ent ->
                       Some (ent.DeclarationLocation, ent.DisplayName)
-                  | CorePatterns.Field field ->
+                  | SymbolUse.Field field ->
                       Some (field.DeclarationLocation, field.DisplayName)
-                  | CorePatterns.GenericParameter _gp -> None
+                  | SymbolUse.GenericParameter _gp -> None
                   //| CorePatterns.MemberFunctionOrValue
-                  | CorePatterns.Parameter _p -> None
-                  | CorePatterns.StaticParameter _sp -> None
-                  | CorePatterns.UnionCase _uc -> None
-                  | ExtendedPatterns.Class _c -> None
-                  | ExtendedPatterns.ClosureOrNestedFunction _cl -> None
-                  | ExtendedPatterns.Constructor _ctor -> None
-                  | ExtendedPatterns.Delegate _del -> None
-                  | ExtendedPatterns.Enum _enum -> None
-                  | ExtendedPatterns.Event _ev -> None
-                  | ExtendedPatterns.Function _f -> None
-                  | ExtendedPatterns.Interface _i -> None
-                  | ExtendedPatterns.Module _m -> None
-                  | ExtendedPatterns.Namespace _ns -> None
-                  | ExtendedPatterns.Operator _op -> None
-                  | ExtendedPatterns.Pattern _p -> None
-                  | ExtendedPatterns.Property _pr ->
+                  | SymbolUse.Parameter _p -> None
+                  | SymbolUse.StaticParameter _sp -> None
+                  | SymbolUse.UnionCase _uc -> None
+                  | SymbolUse.Class _c -> None
+                  | SymbolUse.ClosureOrNestedFunction _cl -> None
+                  | SymbolUse.Constructor _ctor -> None
+                  | SymbolUse.Delegate _del -> None
+                  | SymbolUse.Enum _enum -> None
+                  | SymbolUse.Event _ev -> None
+                  | SymbolUse.Function _f -> None
+                  | SymbolUse.Interface _i -> None
+                  | SymbolUse.Module _m -> None
+                  | SymbolUse.Namespace _ns -> None
+                  | SymbolUse.Operator _op -> None
+                  | SymbolUse.Pattern _p -> None
+                  | SymbolUse.Property _pr ->
                       let loc = symbolUse.RangeAlternate
                       Some (loc, lineTxt.[loc.StartColumn..loc.EndColumn])
-                  | ExtendedPatterns.Record r ->
+                  | SymbolUse.Record r ->
                       let loc = r.DeclarationLocation
                       Some (loc, r.DisplayName)
-                  | ExtendedPatterns.TypeAbbreviation _ta -> None
-                  | ExtendedPatterns.Union _un -> None
-                  | ExtendedPatterns.Val v ->
+                  | SymbolUse.TypeAbbreviation _ta -> None
+                  | SymbolUse.Union _un -> None
+                  | SymbolUse.Val v ->
                       let loc = v.DeclarationLocation
                       Some (loc, v.DisplayName)
-                  | ExtendedPatterns.ValueType _vt -> None
+                  | SymbolUse.ValueType _vt -> None
                   | _ -> None
               | _ -> None
         match location with
