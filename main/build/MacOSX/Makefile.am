@@ -7,7 +7,7 @@ ADDINS=$(MAC_APP_LIB_DIR)/AddIns
 EXTRAS=$(top_srcdir)/../extras
 ARTIFACTS=$(top_srcdir)/../../artifacts
 MD_CONFIGURE=$(top_srcdir)/../scripts/configure.sh
-SDK_PATH=$(shell xcrun --sdk macosx10.11 --show-sdk-path)
+SDK_PATH=$(shell /Applications/Xcode511.app/Contents/Developer/usr/bin/xcrun --sdk macosx10.8 --show-sdk-path)
 
 PACKAGE_UPDATE_ID=$(shell $(MD_CONFIGURE) get-releaseid)
 BUNDLE_VERSION=$(shell $(MD_CONFIGURE) get-version)
