@@ -6,7 +6,9 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 open Mono.TextEditor
 open MonoDevelop
 open MonoDevelop.Ide
+open MonoDevelop.Ide.CodeCompletion
 open MonoDevelop.Components
+open ExtCore.Control
 
 module Symbols =
     let getLocationFromSymbolUse (s: FSharpSymbolUse) =
@@ -89,7 +91,14 @@ module Symbols =
         let start, finish = Symbol.trimSymbolRegion symbolUse lastIdent
         let startOffset = editor.LocationToOffset (start.Line, start.Column+1)
         let endOffset = editor.LocationToOffset (finish.Line, finish.Column+1)
-        filename, startOffset, endOffset
+        filename, startOffset, endOffset 
+
+    let getOffsetAndLength lastIdent (symbolUse:FSharpSymbolUse) =
+        let editor = getEditorForFileName symbolUse.RangeAlternate.FileName
+        let start, finish = Symbol.trimSymbolRegion symbolUse lastIdent
+        let startOffset = editor.LocationToOffset (start.Line, start.Column+1)
+        let endOffset = editor.LocationToOffset (finish.Line, finish.Column+1)
+        startOffset, endOffset - startOffset
 
     let getTextSpanTrimmed lastIdent (symbolUse:FSharpSymbolUse) =
         let filename, start, finish = getOffsetsTrimmed lastIdent symbolUse
@@ -98,102 +107,139 @@ module Symbols =
 [<AutoOpen>]
 module SymbolUse =
     let (|ActivePatternCase|_|) (symbol : FSharpSymbolUse) =
-        match symbol.Symbol with
-        | :? FSharpActivePatternCase as ap-> ActivePatternCase(ap) |> Some
-        | _ -> None
+      match symbol.Symbol with
+      | :? FSharpActivePatternCase as ap-> ActivePatternCase(ap) |> Some
+      | _ -> None
 
     let (|Entity|_|) (symbol : FSharpSymbolUse) =
-        match symbol.Symbol with
-        | :? FSharpEntity as ent -> Some ent
-        | _ -> None
+      match symbol.Symbol with
+      | :? FSharpEntity as ent -> Some ent
+      | _ -> None
 
     let (|Field|_|) (symbol : FSharpSymbolUse) =
-        match symbol.Symbol with
-        | :? FSharpField as field-> Some field
-        |  _ -> None
+      match symbol.Symbol with
+      | :? FSharpField as field-> Some field
+      |  _ -> None
 
     let (|GenericParameter|_|) (symbol: FSharpSymbolUse) = 
-        match symbol.Symbol with
-        | :? FSharpGenericParameter as gp -> Some gp
-        | _ -> None
+      match symbol.Symbol with
+      | :? FSharpGenericParameter as gp -> Some gp
+      | _ -> None
 
     let (|MemberFunctionOrValue|_|) (symbol : FSharpSymbolUse) =
-        match symbol.Symbol with
-        | :? FSharpMemberOrFunctionOrValue as func -> Some func
-        | _ -> None
+      match symbol.Symbol with
+      | :? FSharpMemberOrFunctionOrValue as func -> Some func
+      | _ -> None
 
     let (|Parameter|_|) (symbol : FSharpSymbolUse) = 
-        match symbol.Symbol with
-        | :? FSharpParameter as param -> Some param
-        | _ -> None
+      match symbol.Symbol with
+      | :? FSharpParameter as param -> Some param
+      | _ -> None
 
     let (|StaticParameter|_|) (symbol : FSharpSymbolUse) =
-        match symbol.Symbol with
-        | :? FSharpStaticParameter as sp -> Some sp
-        | _ -> None
+      match symbol.Symbol with
+      | :? FSharpStaticParameter as sp -> Some sp
+      | _ -> None
 
     let (|UnionCase|_|) (symbol : FSharpSymbolUse) =
-        match symbol.Symbol with
-        | :? FSharpUnionCase as uc-> Some uc
-        | _ -> None
+      match symbol.Symbol with
+      | :? FSharpUnionCase as uc-> Some uc
+      | _ -> None
 
     let (|Constructor|_|) = function
-        | MemberFunctionOrValue func when func.IsConstructor || func.IsImplicitConstructor -> Some func
-        | _ -> None
+      | MemberFunctionOrValue func when func.IsConstructor || func.IsImplicitConstructor -> Some func
+      | _ -> None
 
     let (|TypeAbbreviation|_|) = function
-        | Entity symbol when symbol.IsFSharpAbbreviation -> Some symbol
-        | _ -> None
+      | Entity symbol when symbol.IsFSharpAbbreviation -> Some symbol
+      | _ -> None
 
     let (|Class|_|) = function
-        | Entity symbol when symbol.IsClass -> Some symbol
-        | Entity s when s.IsFSharp &&
-                        s.IsOpaque &&
-                        not s.IsFSharpModule &&
-                        not s.IsNamespace &&
-                        not s.IsDelegate &&
-                        not s.IsFSharpUnion &&
-                        not s.IsFSharpRecord &&
-                        not s.IsInterface &&
-                        not s.IsValueType -> Some s
-        | _ -> None
+      | Entity symbol when symbol.IsClass -> Some symbol
+      | Entity s when s.IsFSharp &&
+                      s.IsOpaque &&
+                      not s.IsFSharpModule &&
+                      not s.IsNamespace &&
+                      not s.IsDelegate &&
+                      not s.IsFSharpUnion &&
+                      not s.IsFSharpRecord &&
+                      not s.IsInterface &&
+                      not s.IsValueType -> Some s
+      | _ -> None
 
     let (|Delegate|_|) = function
-        | Entity symbol when symbol.IsDelegate -> Some symbol
-        | _ -> None
+      | Entity symbol when symbol.IsDelegate -> Some symbol
+      | _ -> None
 
     let (|Event|_|) = function
-        | MemberFunctionOrValue symbol when symbol.IsEvent -> Some symbol
-        | _ -> None
+      | MemberFunctionOrValue symbol when symbol.IsEvent -> Some symbol
+      | _ -> None
 
     let (|Property|_|) = function
-        | MemberFunctionOrValue symbol when
-            symbol.IsProperty || symbol.IsPropertyGetterMethod || symbol.IsPropertySetterMethod -> Some symbol
-        | _ -> None
+      | MemberFunctionOrValue symbol when symbol.IsProperty || symbol.IsPropertyGetterMethod || symbol.IsPropertySetterMethod -> Some symbol
+      | _ -> None
 
-    let (|Function|Operator|Pattern|ClosureOrNestedFunction|Val|Unknown|) (symbolUse:FSharpSymbolUse) =
-        match symbolUse with
-        | MemberFunctionOrValue symbol
-            when not (symbol.IsConstructor) ->
-                match symbol.FullTypeSafe with
-                | Some fullType when fullType.IsFunctionType
-                                    && not symbol.IsPropertyGetterMethod
-                                    && not symbol.IsPropertySetterMethod ->
-                    if symbol.IsOperatorOrActivePattern then
-                        if symbolUse.IsFromPattern then Pattern symbol
-                        else Operator symbol
-                    else
-                        if not symbol.IsModuleValueOrMember then ClosureOrNestedFunction symbol
-                        else Function symbol                       
-                | Some _fullType -> 
-                  if symbol.IsOperatorOrActivePattern then
-                    if symbolUse.IsFromPattern then Pattern symbol else Operator symbol
-                  else Val symbol 
-                | None -> Unknown
-        | _ -> Unknown
+    let inline private notCtorOrProp (symbol:FSharpMemberOrFunctionOrValue) =
+      not symbol.IsConstructor && not symbol.IsPropertyGetterMethod && not symbol.IsPropertySetterMethod
+
+    let (|Method|_|) (symbolUse:FSharpSymbolUse) =
+      match symbolUse with
+      | MemberFunctionOrValue symbol when symbol.IsModuleValueOrMember  &&
+                                          not symbolUse.IsFromPattern &&
+                                          not symbol.IsOperatorOrActivePattern &&
+                                          not symbol.IsPropertyGetterMethod && 
+                                          not symbol.IsPropertySetterMethod -> Some symbol
+      | _ -> None
+
+    let (|Function|_|) = function
+      | MemberFunctionOrValue symbol when notCtorOrProp symbol  &&
+                                          symbol.IsModuleValueOrMember &&
+                                          not symbol.IsOperatorOrActivePattern ->
+          match symbol.FullTypeSafe with
+          | Some fullType when fullType.IsFunctionType -> Some symbol                       
+          | _ -> None
+      | _ -> None
+
+    let (|Operator|_|) (symbolUse:FSharpSymbolUse) =
+      match symbolUse with
+      | MemberFunctionOrValue symbol when notCtorOrProp symbol &&
+                                          not symbolUse.IsFromPattern &&
+                                          symbol.IsOperatorOrActivePattern ->
+         match symbol.FullTypeSafe with
+          | Some fullType when fullType.IsFunctionType -> Some symbol                       
+          | _ -> None
+      | _ -> None
+
+    let (|Pattern|_|) (symbolUse:FSharpSymbolUse) =
+      match symbolUse with
+      | MemberFunctionOrValue symbol when notCtorOrProp symbol &&
+                                          symbol.IsOperatorOrActivePattern &&
+                                          symbolUse.IsFromPattern ->
+          match symbol.FullTypeSafe with
+          | Some fullType when fullType.IsFunctionType ->Some symbol
+          | _ -> None
+      | _ -> None
+
+
+    let (|ClosureOrNestedFunction|_|) = function
+      | MemberFunctionOrValue symbol when notCtorOrProp symbol &&
+                                          not symbol.IsOperatorOrActivePattern &&
+                                          not symbol.IsModuleValueOrMember ->
+          match symbol.FullTypeSafe with
+          | Some fullType when fullType.IsFunctionType -> Some symbol
+          | _ -> None
+      | _ -> None
+
+    let (|Val|_|) = function
+      | MemberFunctionOrValue symbol when notCtorOrProp symbol &&
+                                          not symbol.IsOperatorOrActivePattern ->
+          match symbol.FullTypeSafe with
+          | Some _fullType -> Some symbol 
+          | _ -> None
+      | _ -> None
 
     let (|Enum|_|) = function
-      | Entity symbol when symbol.IsEnum && not symbol.IsValueType -> Some symbol
+      | Entity symbol when symbol.IsEnum -> Some symbol
       | _ -> None
 
 
@@ -202,24 +248,24 @@ module SymbolUse =
       | _ -> None
 
     let (|Module|_|) = function
-        | Entity symbol when symbol.IsFSharpModule -> Some symbol
-        | _ -> None
+      | Entity symbol when symbol.IsFSharpModule -> Some symbol
+      | _ -> None
 
     let (|Namespace|_|) = function
-        | Entity symbol when symbol.IsNamespace -> Some symbol
-        | _ -> None
+      | Entity symbol when symbol.IsNamespace -> Some symbol
+      | _ -> None
 
     let (|Record|_|) = function
-        | Entity symbol when symbol.IsFSharpRecord -> Some symbol
-        | _ -> None
+      | Entity symbol when symbol.IsFSharpRecord -> Some symbol
+      | _ -> None
 
     let (|Union|_|) = function
-        | Entity symbol when symbol.IsFSharpUnion -> Some symbol
-        | _ -> None
+      | Entity symbol when symbol.IsFSharpUnion -> Some symbol
+      | _ -> None
 
     let (|ValueType|_|) = function
-        | Entity symbol when symbol.IsValueType -> Some symbol
-        | _ -> None
+      | Entity symbol when symbol.IsValueType && not symbol.IsEnum -> Some symbol
+      | _ -> None
 
     let (|ComputationExpression|_|) (symbol:FSharpSymbolUse) =
       if symbol.IsFromComputationExpression then Some symbol
@@ -555,3 +601,25 @@ module SymbolTooltips =
          
         | _ ->
             ToolTips.EmptyTip
+
+    let getTooltipInformation symbol =
+      async {
+          let tip = getTooltipFromSymbolUse symbol
+          match tip  with
+          | ToolTips.ToolTip (signature, xmldoc) ->
+              let toolTipInfo = new TooltipInformation(SignatureMarkup = signature)
+              let result = 
+                match xmldoc with
+                | Full(summary) -> toolTipInfo.SummaryMarkup <- summary
+                                   toolTipInfo
+                | Lookup(key, potentialFilename) ->
+                    let summary = 
+                      maybe {let! filename = potentialFilename
+                             let! markup = TooltipXmlDoc.findDocForEntity(filename, key)
+                             let summary = TooltipsXml.getTooltipSummary Styles.simpleMarkup markup
+                             return summary }
+                    summary |> Option.iter (fun summary -> toolTipInfo.SummaryMarkup <- summary)
+                    toolTipInfo
+                | EmptyDoc -> toolTipInfo
+              return result
+          | _ -> return TooltipInformation() }
