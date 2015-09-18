@@ -381,6 +381,10 @@ int main (int argc, char **argv)
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSString *binDir = [[NSString alloc] initWithUTF8String: "Contents/Resources/lib/monodevelop/bin"];
+	BOOL isDir = NO;
+	if (![[NSFileManager defaultManager] fileExistsAtPath: binDir isDirectory: &isDir] || !isDir)
+		binDir = @".";
+
 	NSString *appDir = [[NSBundle mainBundle] bundlePath];
 	// can be overridden with plist string MonoMinVersion
 	NSString *req_mono_version = @"3.10";
