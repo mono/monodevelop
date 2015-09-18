@@ -69,7 +69,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			AddSubview (pathSelectorView);
 		}
 
-		public CGSize RequestResize ()
+		public bool RequestResize ()
 		{
 			var p = (PathSelectorView)Subviews [0];
 			var overflowInfo = new OverflowInfoEventArgs ();
@@ -87,13 +87,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 				SetNeedsDisplay ();
 				p.SetNeedsDisplay ();
+				return true;
 			}
-			return size;
+			return false;
 		}
 
 		public override void ViewWillDraw ()
 		{
-			var size = RequestResize ();
+			RequestResize ();
 			base.ViewWillDraw ();
 		}
 
