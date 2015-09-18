@@ -213,13 +213,6 @@ fi
 
 AM_CONDITIONAL(ENABLE_MACPLATFORM, [test x$enable_macplatform = xyes])
 
-# Mac bundle
-AC_ARG_ENABLE(macbundle,
-	AC_HELP_STRING([--enable-macbundle],
-		[enable Mac bundle packaging [default=no]]),
-		enable_macbundle=${enableval}, enable_macbundle=no)
-AM_CONDITIONAL(ENABLE_MACBUNDLE, [test x$enable_macbundle = xyes])
-
 # Windows platform addin
 AC_ARG_ENABLE(windowsplatform,
 	AC_HELP_STRING([--enable-windowsplatform],

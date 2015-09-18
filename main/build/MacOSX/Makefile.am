@@ -34,7 +34,6 @@ clean-local:
 
 app: monostub
 	cp monostub ../bin/MonoDevelop
-if ENABLE_MACBUNDLE
 	@echo ""
 	@echo "Creating directories in app bundle"
 	@echo ""
@@ -143,6 +142,5 @@ if ENABLE_MACBUNDLE
 	@if test -f missing-stuff; then echo ""; echo "Missing stuff:"; cat missing-stuff; fi
 	@echo ""
 	@rm -f missing-stuff
-endif
 
 .PHONY: app dmg
