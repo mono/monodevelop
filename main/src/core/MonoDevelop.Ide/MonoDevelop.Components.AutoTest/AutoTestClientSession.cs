@@ -65,6 +65,15 @@ namespace MonoDevelop.Components.AutoTest
 			if (file == null) {
 				var binDir = Path.GetDirectoryName (typeof(AutoTestClientSession).Assembly.Location);
 				file = Path.Combine (binDir, "MonoDevelop.exe");
+				if (!File.Exists (file)) {
+					file = Path.Combine (binDir, "XamarinStudio.exe");
+				}
+			} else if (!File.Exists (file)) {
+				file = file.Replace ("MonoDevelop.exe", "XamarinStudio.exe");
+			}
+
+			if (!File.Exists (file)) {
+				throw new FileNotFoundException (file);
 			}
 
 			MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();

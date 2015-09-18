@@ -381,6 +381,16 @@ int main (int argc, char **argv)
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSString *binDir = [[NSString alloc] initWithUTF8String: "Contents/Resources/lib/monodevelop/bin"];
+
+	// Check if we are running inside an actual app bundle. If we are not, then assume we're being run
+	// as part of `make run` and then binDir should be '.'
+	NSString *entryExecutable = [[NSString alloc] initWithUTF8String: argv[0]];
+	NSArray *components = [NSArray arrayWithObjects:[entryExecutable stringByDeletingLastPathComponent], @"..", @"..", binDir, nil];
+	NSString *binDirFullPath = [NSString pathWithComponents:components];
+	BOOL isDir = NO;
+	if (![[NSFileManager defaultManager] fileExistsAtPath: binDirFullPath isDirectory: &isDir] || !isDir)
+		binDir = [[NSString alloc] initWithUTF8String: "."];
+
 	NSString *appDir = [[NSBundle mainBundle] bundlePath];
 	// can be overridden with plist string MonoMinVersion
 	NSString *req_mono_version = @"3.10";
