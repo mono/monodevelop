@@ -51,15 +51,12 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		public ConsoleProgressMonitor () : this (Console.Out, true)
 		{
 			//TODO: can we efficiently update Console.WindowWidth when it changes?
-			// TODO: Use Console.IsOutputRedirected in .NET 4.5.
-			try {
-				columns = Console.WindowWidth;
-			}
 			//when the output is redirected, Mono returns 0 but .NET throws IOException
-			catch (IOException) {
+			if (Console.IsOutputRedirected)
 				columns = 0;
-			}
-			
+			else
+				columns = Console.WindowWidth;
+
 			wrap = columns > 0;
 		}
 

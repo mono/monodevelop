@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using NUnit.Framework;
 
 namespace UserInterfaceTests
@@ -32,9 +33,34 @@ namespace UserInterfaceTests
 	[Category ("GitConfig")]
 	public class GitRepositoryConfigurationTests : GitBase
 	{
+		string gtkSharpUrl = "git@github.com:mono/gtk-sharp.git";
+
 		#region Branch Tab
 
 		[Test]
+		[Description ("Check that Edit, Switch, Switch to Branch are enabled only when a branch is selected")]
+		public void CheckBranchButtonsSensitivity ()
+		{
+			TestClone (gtkSharpUrl);
+			Ide.WaitForSolutionCheckedOut ();
+
+			OpenRepositoryConfiguration ("Branches");
+
+			TakeScreenShot ("Asserting-Edit-Delete-Switch-Button-Disabled");
+			AssertBranchesButtonSensitivity (false, false, false);
+			SelectBranch ("<b>master</b>");
+			TakeScreenShot ("Asserting-Edit-Switch-Button-Enabled");
+			AssertBranchesButtonSensitivity (true, false, false);
+			CreateNewBranch ("new-branch");
+			SelectBranch ("new-branch");
+			TakeScreenShot ("Asserting-Edit-Delete-Switch-Button-Enabled");
+			AssertBranchesButtonSensitivity (true, true, true);
+
+			CloseRepositoryConfiguration ();
+		}
+
+		[Test]
+		[Description ("Create a New Branch")]
 		public void CreateNewBranchTest ()
 		{
 			TestClone ("git@github.com:mono/jurassic.git");
@@ -46,6 +72,7 @@ namespace UserInterfaceTests
 		}
 
 		[Test]
+		[Description ("Create a New Branch and switch to it")]
 		public void GitSwitchBranchTest ()
 		{
 			TestClone ("git@github.com:mono/jurassic.git");
@@ -58,6 +85,7 @@ namespace UserInterfaceTests
 		}
 
 		[Test]
+		[Description ("Create a New Branch, select it and edit the name and switch to it")]
 		public void GitEditBranchTest ()
 		{
 			TestClone ("git@github.com:mono/jurassic.git");
@@ -72,6 +100,7 @@ namespace UserInterfaceTests
 		}
 
 		[Test]
+		[Description ("Create a new branch, select it and delete it")]
 		public void GitDeleteBranchTest ()
 		{
 			TestClone ("git@github.com:mono/jurassic.git");
@@ -87,9 +116,81 @@ namespace UserInterfaceTests
 
 		#endregion
 
+		#region Tag
+
+		[Test]
+		[Description ("Check that Push and Delete button are enabled only when a tag is selected")]
+		public void CheckTagButtonsSensitivity ()
+		{
+			TestClone (gtkSharpUrl);
+			Ide.WaitForSolutionCheckedOut ();
+
+			OpenRepositoryConfiguration ("Tags");
+
+			TakeScreenShot ("Asserting-Push-Delete-Button-Disabled");
+			AssertTagsButtonSensitivity (false, false);
+			SelectTag ("1.0.10");
+			TakeScreenShot ("Asserting-Push-Delete-Button-Enabled");
+			AssertTagsButtonSensitivity (true, true);
+
+			CloseRepositoryConfiguration ();
+		}
+
+		[Test]
+		[Description ("Create a new tag with tag name, tag message and by selecting a specific commit message")]
+		public void AddTag ()
+		{
+			TestClone (gtkSharpUrl);
+			Ide.WaitForSolutionCheckedOut ();
+
+			OpenRepositoryConfiguration ("Tags");
+
+			AddNewTag ("bumped", "bumped tag", "build: Bump mono dependency to 3.2.8");
+			SelectTag ("bumped");
+			TakeScreenShot ("New-Tag-Selected");
+
+			CloseRepositoryConfiguration ();
+		}
+
+		[Test]
+		[Description ("Clone a repo, open Tag tab, select a tag by name and delete it")]
+		public void DeleteTag ()
+		{
+			TestClone (gtkSharpUrl);
+			Ide.WaitForSolutionCheckedOut ();
+
+			OpenRepositoryConfiguration ("Tags");
+			DeleteTag ("1.0.10");
+			CloseRepositoryConfiguration ();
+		}
+
+		#endregion
+
 		#region Remotes Tab
 
 		[Test]
+		[Description ("Check that Edit, Remove, Fetch button are enabled only when a remote is selected and 'Track in Local' only when a remote branch is selected")]
+		public void CheckRemoteButtonsSensitivity ()
+		{
+			TestClone (gtkSharpUrl);
+			Ide.WaitForSolutionCheckedOut ();
+
+			OpenRepositoryConfiguration ("Remote Sources");
+
+			TakeScreenShot ("Asserting-Edit-Remove-Track--Fetch-Button-Disabled");
+			AssertRemotesButtonSensitivity (false, false, false, false);
+			SelectRemote ("origin");
+			TakeScreenShot ("Asserting-Edit-Switch-Button-Enabled");
+			AssertRemotesButtonSensitivity (true, true, false, true);
+			SelectRemoteBranch ("origin", "master");
+			TakeScreenShot ("Asserting-Edit-Switch-Button-Track-Enabled");
+			AssertRemotesButtonSensitivity (true, true, true, true);
+
+			CloseRepositoryConfiguration ();
+		}
+
+		[Test]
+		[Description ("Clone a repo and select a remote")]
 		public void SelectRemoteTest ()
 		{
 			TestClone ("git@github.com:mono/jurassic.git");
@@ -101,6 +202,7 @@ namespace UserInterfaceTests
 		}
 
 		[Test]
+		[Description ("Clone a repo, add a new remote and select that added remote")]
 		public void AddGitRemoteTest ()
 		{
 			TestClone ("git@github.com:mono/jurassic.git");
@@ -115,6 +217,7 @@ namespace UserInterfaceTests
 		}
 
 		[Test]
+		[Description ("Clone a repo, add a new remote, select it and delete it")]
 		public void DeleteGitRemoteTest ()
 		{
 			TestClone ("git@github.com:mono/jurassic.git");
@@ -213,6 +316,7 @@ namespace UserInterfaceTests
 		}
 
 		[Test]
+		[Description ("Clone a repo, add a new remote and fetch the remote branches for that remote")]
 		public void FetchRemoteBranches ()
 		{
 			TestClone ("git@github.com:mono/jurassic.git");
@@ -227,6 +331,7 @@ namespace UserInterfaceTests
 		}
 
 		[Test]
+		[Description ("Clone a repo, add a new remote, fetch the remote branch, chose a branch and track it in local. Select that branch in Branches tab")]
 		public void TrackRemoteBranchInLocalTest()
 		{
 			TestClone ("git@github.com:mono/jurassic.git");

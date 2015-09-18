@@ -110,19 +110,22 @@ namespace MonoDevelop.Components.MainToolbar
 				return;
 			}
 
-			renderer.Visible = runtime.Visible;
-			renderer.Sensitive = runtime.Enabled;
-			renderer.Xpad = (uint)(runtime.IsIndented ? 18 : 3);
+			using (var mutableModel = runtime.GetMutableModel ()) {
+				renderer.Visible = mutableModel.Visible;
+				renderer.Sensitive = mutableModel.Enabled;
+				renderer.Xpad = (uint)(runtime.IsIndented ? 18 : 3);
 
-			if (!runtimeCombo.PopupShown) {
-				// no need to ident text when the combo dropdown is not showing
-				if (Platform.IsWindows)
-					renderer.Xpad = 3;
-				renderer.Text = runtime.FullDisplayString;
-				renderer.Attributes = normalAttributes;
-			} else {
-				renderer.Text = runtime.DisplayString;
-				renderer.Attributes = runtime.Notable ? boldAttributes : normalAttributes;
+				if (!runtimeCombo.PopupShown) {
+					// no need to ident text when the combo dropdown is not showing
+					if (Platform.IsWindows)
+						renderer.Xpad = 3;
+					renderer.Text = mutableModel.FullDisplayString;
+					renderer.Attributes = normalAttributes;
+				} else {
+					renderer.Text = mutableModel.DisplayString;
+					renderer.Attributes = runtime.Notable ? boldAttributes : normalAttributes;
+				}
+
 			}
 		}
 

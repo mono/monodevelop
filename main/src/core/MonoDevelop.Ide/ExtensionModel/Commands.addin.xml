@@ -619,15 +619,15 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.ZoomIn"
 			_label = "_Zoom In"
 			icon = "gtk-zoom-in"
-			shortcut = "Control|+"
-			macShortcut = "Meta|+"
+			shortcut = "Control|+ Control|="
+			macShortcut = "Meta|+ Meta|="
 			_description = "Zooms view in" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomOut"
 			defaultHandler = "MonoDevelop.Ide.Commands.ZoomOut"
 			_label = "Zoom _Out"
 			icon = "gtk-zoom-out"
-			shortcut = "Control|-"
-			macShortcut = "Meta|-"
+			shortcut = "Control|- Control|_"
+			macShortcut = "Meta|- Meta|_"
 			_description = "Zooms view out" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomReset"
 			defaultHandler = "MonoDevelop.Ide.Commands.ZoomReset"
@@ -683,6 +683,13 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.InstrumentationViewerHandler"
 			_label = "Instrumentation Monitor" />
 
+	<Command id = "MonoDevelop.Ide.Commands.ToolCommands.ToggleSessionRecorder"
+			defaultHandler = "MonoDevelop.Ide.Commands.ToggleSessionRecorderHandler"
+			_label = "Start Session Recorder" />
+
+	<Command id = "MonoDevelop.Ide.Commands.ToolCommands.ReplaySession"
+			defaultHandler = "MonoDevelop.Ide.Commands.ReplaySessionHandler"
+			_label = "Replay Session..." />
 	</Category>
 
 

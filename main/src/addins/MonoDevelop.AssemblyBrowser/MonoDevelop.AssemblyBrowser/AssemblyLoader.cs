@@ -49,6 +49,9 @@ namespace MonoDevelop.AssemblyBrowser
 			get {
 				return assemblyLoaderTask;
 			}
+			set {
+				assemblyLoaderTask = value;
+			}
 		}
 
 		public AssemblyDefinition Assembly {

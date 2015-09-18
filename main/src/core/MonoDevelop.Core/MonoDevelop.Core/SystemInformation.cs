@@ -120,6 +120,17 @@ namespace MonoDevelop.Core
 				Title = "Operating System",
 				Description = sb.ToString ()
 			};
+
+			string userAddins = string.Join (Environment.NewLine,
+				AddinManager.Registry.GetModules (AddinSearchFlags.IncludeAddins | AddinSearchFlags.LatestVersionsOnly)
+				.Where (addin => addin.IsUserAddin && addin.Enabled)
+				.Select (addin => string.Format ("{0} {1}", addin.Name, addin.Version))
+			);
+			if (!string.IsNullOrEmpty (userAddins))
+				yield return new SystemInformationSection () {
+					Title = "Enabled user installed addins",
+					Description = userAddins,
+				};
 		}
 
 		internal static string GetReleaseId ()

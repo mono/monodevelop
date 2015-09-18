@@ -29,58 +29,143 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core;
 using System.IO;
 using System.Xml;
+using System;
+using System.Collections.Generic;
 
 namespace UserInterfaceTests
 {
 	[TestFixture]
 	[Category ("Dialog")]
+	[Category ("NuGet")]
 	[Category ("PackagesDialog")]
 	public class NuGetDialogTests : CreateBuildTemplatesTestBase
 	{
 		[Test]
+		[Description ("Add a single NuGet Package")]
 		public void AddPackagesTest ()
 		{
 			CreateProject ();
 			NuGetController.AddPackage (new NuGetPackageOptions {
 				PackageName = "CommandLineParser",
-				Version = "2.0.119-alpha",
+				Version = "2.0.257-beta",
 				IsPreRelease = true
-			});
+			}, TakeScreenShot);
 		}
 
 		[Test]
+		[Description ("When a solution is opened and package updates are available, don't show in status bar")]
+		public void DontShowPackageUpdatesAvailable ()
+		{
+			var templateOptions = new TemplateSelectionOptions {
+				CategoryRoot = OtherCategoryRoot,
+				Category = ".NET",
+				TemplateKindRoot = GeneralKindRoot,
+				TemplateKind = "Console Project"
+			};
+			var projectDetails = new ProjectDetails (templateOptions);
+			CreateProject (templateOptions, projectDetails);
+			NuGetController.AddPackage (new NuGetPackageOptions {
+				PackageName = "CommandLineParser",
+				Version = "1.9.3.34",
+				IsPreRelease = false
+			}, TakeScreenShot);
+
+			string solutionFolder = GetSolutionDirectory ();
+			string solutionPath = Path.Combine (solutionFolder, projectDetails.SolutionName+".sln");
+			var projectPath = Path.Combine (solutionFolder, projectDetails.ProjectName, projectDetails.ProjectName + ".csproj");
+			Assert.IsTrue (File.Exists (projectPath));
+
+			TakeScreenShot ("About-To-Close-Solution");
+			Session.ExecuteCommand (FileCommands.CloseWorkspace);
+			TakeScreenShot ("Closed-Solution");
+
+			Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workspace.OpenWorkspaceItem", new FilePath (solutionPath), true);
+			TakeScreenShot ("Solution-Opened");
+			Assert.Throws <TimeoutException> (() => Ide.WaitForPackageUpdate ());
+			Ide.WaitForSolutionLoaded ();
+			TakeScreenShot ("Solution-Ready");
+		}
+
+		[Test]
+		[Description ("Add a single NuGet Package and check if it's readme.txt opens")]
 		public void TestReadmeTxtOpens ()
 		{
 			CreateProject ();
 			NuGetController.AddPackage (new NuGetPackageOptions {
 				PackageName = "RestSharp",
-				Version = "105.0.1",
+				Version = "105.2.3",
 				IsPreRelease = true
-			});
-			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.DefaultWorkbench").Property ("TabControl.CurrentTab.Text", "readme.txt"));
+			}, TakeScreenShot);
+			WaitForNuGetReadmeOpened ();
 		}
 
 		[Test]
+		[Description ("Add a single NuGet Package. Check if readme.txt opens even when updating")]
 		public void TestReadmeTxtUpgradeOpens ()
 		{
 			CreateProject ();
 			NuGetController.AddPackage (new NuGetPackageOptions {
 				PackageName = "RestSharp",
-				Version = "105.0.1",
+				Version = "105.2.2",
 				IsPreRelease = true
 			}, TakeScreenShot);
-			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.DefaultWorkbench").Property ("TabControl.CurrentTab.Text", "readme.txt"));
+			WaitForNuGetReadmeOpened ();
 			Session.ExecuteCommand (FileCommands.CloseFile);
 			Session.WaitForElement (IdeQuery.TextArea);
+			TakeScreenShot ("About-To-Update-Package");
 			NuGetController.UpdatePackage (new NuGetPackageOptions {
 				PackageName = "RestSharp",
-				Version = "105.1.0",
+				Version = "105.2.3",
 				IsPreRelease = true
 			}, TakeScreenShot);
-			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.DefaultWorkbench").Property ("TabControl.CurrentTab.Text", "readme.txt"));
+			WaitForNuGetReadmeOpened ();
 		}
 
-		[Test, Description ("When a NuGet package is updated, the 'Local Copy' value should be preserved")]
+		[Test]
+		[Description ("When readme.txt from a package has already been opened, adding same package to another project should not open readme.txt")]
+		public void TestDontOpenReadmeOpenedInOther ()
+		{
+			var packageInfo = new NuGetPackageOptions {
+				PackageName = "RestSharp",
+				Version = "105.2.3",
+				IsPreRelease = true
+			};
+
+			var projectDetails = CreateProject ();
+			NuGetController.AddPackage (packageInfo, TakeScreenShot);
+			WaitForNuGetReadmeOpened ();
+			Session.ExecuteCommand (FileCommands.CloseFile);
+
+			var pclTemplateOptions = new TemplateSelectionOptions {
+				CategoryRoot = "Other",
+				Category = ".NET",
+				TemplateKindRoot = "General",
+				TemplateKind = "Library"
+			};
+			var pclProjectDetails = ProjectDetails.ToExistingSolution (projectDetails.SolutionName,
+				GenerateProjectName (pclTemplateOptions.TemplateKind));
+			CreateProject (pclTemplateOptions, pclProjectDetails);
+
+			SolutionExplorerController.SelectProject (projectDetails.SolutionName, pclProjectDetails.ProjectName);
+			NuGetController.AddPackage (packageInfo, TakeScreenShot);
+			Assert.Throws<TimeoutException> (WaitForNuGetReadmeOpened);
+		}
+
+		[Test]
+		[Description ("Add a package with powershell scripts and assert that Xamarin Studio doesn't report warnings "+
+			"when trying to add powershell scripts to Xamarin Studio")]
+		public void TestDontShowWarningWithPowerShellScripts ()
+		{
+			CreateProject ();
+			NuGetController.AddPackage (new NuGetPackageOptions {
+				PackageName = "Newtonsoft.Json",
+			}, TakeScreenShot);
+			WaitForNuGet.Success ("Newtonsoft.Json", NuGetOperations.Add, false);
+			TakeScreenShot ("NewtonSoftJson-Package-Added-Without-Warning");
+		}
+
+		[Test]
+		[Description ("When a NuGet package is updated, the 'Local Copy' value should be preserved")]
 		public void TestLocalCopyPreservedUpdate ()
 		{
 			var templateOptions = new TemplateSelectionOptions {
@@ -93,7 +178,7 @@ namespace UserInterfaceTests
 			CreateProject (templateOptions, projectDetails);
 			NuGetController.AddPackage (new NuGetPackageOptions {
 				PackageName = "CommandLineParser",
-				Version = "1.9.7",
+				Version = "1.9.71",
 				IsPreRelease = false
 			}, TakeScreenShot);
 
@@ -110,7 +195,7 @@ namespace UserInterfaceTests
 
 			Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workspace.OpenWorkspaceItem", new FilePath (solutionPath), true);
 			TakeScreenShot ("Solution-Opened");
-			Ide.WaitForPackageUpdate ();
+			Ide.WaitForPackageUpdateExtra (new List<string> { "Solution loaded." });
 			TakeScreenShot ("Solution-Ready");
 
 			NuGetController.UpdateAllNuGetPackages (TakeScreenShot);
@@ -163,6 +248,11 @@ namespace UserInterfaceTests
 			Session.WaitForElement (IdeQuery.TextArea);
 			FoldersToClean.Add (projectDetails.SolutionLocation);
 			return projectDetails;
+		}
+
+		void WaitForNuGetReadmeOpened ()
+		{
+			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.DefaultWorkbench").Property ("TabControl.CurrentTab.Text", "readme.txt"));
 		}
 	}
 }

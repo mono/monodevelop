@@ -37,6 +37,7 @@ namespace MonoDevelop.Ide.Templates
 		TemplateCategory defaultCategory;
 		Dictionary<string, TemplateCategory> mappedCategories = new Dictionary<string, TemplateCategory> ();
 		Predicate<SolutionTemplate> templateMatch;
+		bool removedEmptyCategories;
 
 		public static readonly Predicate<SolutionTemplate> MatchNewProjectTemplates = template => template.IsMatch (SolutionTemplateVisibility.NewProject);
 		public static readonly Predicate<SolutionTemplate> MatchNewSolutionTemplates = template => template.IsMatch (SolutionTemplateVisibility.NewSolution);
@@ -86,6 +87,11 @@ namespace MonoDevelop.Ide.Templates
 
 		public IEnumerable<TemplateCategory> GetCategorizedTemplates ()
 		{
+			if (!removedEmptyCategories) {
+				RemoveEmptyCategories ();
+				removedEmptyCategories = true;
+			}
+
 			return categories;
 		}
 
@@ -99,7 +105,6 @@ namespace MonoDevelop.Ide.Templates
 					LogNoCategoryMatch (template);
 				}
 			}
-			RemoveEmptyCategories ();
 		}
 
 		IEnumerable<SolutionTemplate> GetFilteredTemplates (IEnumerable<SolutionTemplate> templates)

@@ -469,7 +469,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			// Grab today's day and the start of tomorrow's day to make Today/Yesterday calculations.
 			var now = DateTime.Now;
-			var age = new DateTime (now.Year, now.Month, now.Day + 1) - rev.Time;
+			var age = new DateTime (now.Year, now.Month, now.Day).AddDays(1) - rev.Time;
 			if (age.Days >= 0 && age.Days < 1) { // Check whether it's a commit that's less than a day away. Also discard future commits.
 				day = GettextCatalog.GetString ("Today");
 			} else if (age.Days < 2) { // Check whether it's a commit from yesterday.

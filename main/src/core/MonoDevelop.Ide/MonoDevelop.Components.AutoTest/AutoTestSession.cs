@@ -302,14 +302,20 @@ namespace MonoDevelop.Components.AutoTest
 
 		public void ExecuteOnIdle (Action idleFunc, bool wait = true, int timeout = 20000)
 		{
+			if (DispatchService.IsGuiThread) {
+				idleFunc ();
+				return;
+			}
+
 			if (wait == false) {
 				GLib.Idle.Add (() => {
 					idleFunc ();
 					return false;
 				});
+
 				return;
 			}
-
+				
 			syncEvent.Reset ();
 			GLib.Idle.Add (() => {
 				idleFunc ();
@@ -324,7 +330,7 @@ namespace MonoDevelop.Components.AutoTest
 
 		// Executes the query outside of a syncEvent wait so it is safe to call from
 		// inside an ExecuteOnIdleAndWait
-		AppResult[] ExecuteQueryNoWait (AppQuery query)
+		internal AppResult[] ExecuteQueryNoWait (AppQuery query)
 		{
 			AppResult[] resultSet = query.Execute ();
 			Sync (() => {
@@ -346,7 +352,6 @@ namespace MonoDevelop.Components.AutoTest
 			} catch (TimeoutException e) {
 				throw new TimeoutException (string.Format ("Timeout while executing ExecuteQuery: {0}", query), e);
 			}
-
 			return resultSet;
 		}
 
@@ -528,6 +533,36 @@ namespace MonoDevelop.Components.AutoTest
 			} catch (TimeoutException e) {
 				ThrowOperationTimeoutException ("Flash", result.SourceQuery, result, e);
 			}
+		}
+
+		public bool SetActiveConfiguration (AppResult result, string configuration)
+		{
+			bool success = false;
+
+			try {
+				ExecuteOnIdle (() => {
+					success = result.SetActiveConfiguration (configuration);
+				});
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("SetActiveConfiguration", result.SourceQuery, result, e);
+			}
+
+			return success;
+		}
+
+		public bool SetActiveRuntime (AppResult result, string runtime)
+		{
+			bool success = false;
+
+			try {
+				ExecuteOnIdle (() => {
+					success = result.SetActiveRuntime (runtime);
+				});
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("SetActiveRuntime", result.SourceQuery, result, e);
+			}
+
+			return success;
 		}
 
 		void ThrowOperationTimeoutException (string operation, string query, AppResult result, Exception innerException)

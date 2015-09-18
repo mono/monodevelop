@@ -43,7 +43,7 @@ namespace MonoDevelop.Core
 		string[] exceptionMessage = new[] {
 			"This is a log message",
 			"System.Exception: Exception of type 'System.Exception' was thrown.",
-			"at MonoDevelop.Core.LoggingServiceTests.TestSimpleLogging (LogLevel level, System.String methodName)", // [0x000c7] in /path/to/monodevelop/main/tests/UnitTests/MonoDevelop.Core/LoggingServiceTests.cs:LINENO
+			"at MonoDevelop.Core.LoggingServiceTests.TestSimpleLogging", // This line is different on .NET and Mono, so use least common denominator.
 			"Exception Data:",
 			"key: value",
 			"key2: value2"
@@ -152,7 +152,11 @@ namespace MonoDevelop.Core
 		[Test]
 		public void TestCrashLogging ()
 		{
+			var oldValue = LoggingService.ReportCrashes;
+			LoggingService.ReportCrashes = true;
+
 			Tuple<Exception, bool, string> message;
+
 			LoggingService.LogInternalError (null);
 			message = reporter.Messages [reporter.Messages.Count - 1];
 			Assert.AreSame (null, message.Item1);
@@ -166,6 +170,8 @@ namespace MonoDevelop.Core
 			Assert.AreEqual (true, message.Item2);
 			Assert.AreEqual ("fatal", message.Item3);
 			Assert.AreEqual (2, reporter.Messages.Count);
+
+			LoggingService.ReportCrashes = oldValue;
 		}
 
 		class LoggingServiceTestsLogger : ILogger

@@ -635,6 +635,22 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsFalse (fileService.IsOpenFileCalled);
 			Assert.IsTrue (monitor.IsDisposed);
 		}
+
+		[Test]
+		public void Execute_PackagesConfigFileNamedAfterProjectDeletedDuringUpdate_FileServicePackagesConfigFileDeletionIsCancelled ()
+		{
+			CreateSolution ();
+			action.Package = new FakePackage ("Test");
+			string expectedFileName = @"d:\projects\MyProject\packages.MyProject.config".ToNativePath ();
+			bool? fileRemovedResult = null;
+			fakeProject.UpdatePackageAction = (p, a) => {
+				fileRemovedResult = packageManagementEvents.OnFileRemoving (expectedFileName);
+			};
+			action.Execute ();
+
+			Assert.AreEqual (expectedFileName, fileRemover.FileRemoved);
+			Assert.IsFalse (fileRemovedResult.Value);
+		}
 	}
 }
 

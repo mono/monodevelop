@@ -319,5 +319,15 @@ namespace ICSharpCode.PackageManagement
 		{
 			unsafeEvents.OnReferenceRemoving (reference);
 		}
+
+		public event EventHandler<DotNetProjectImportEventArgs> ImportRemoved {
+			add { unsafeEvents.ImportRemoved += value; }
+			remove { unsafeEvents.ImportRemoved -= value; }
+		}
+
+		public void OnImportRemoved (IDotNetProject project, string import)
+		{
+			unsafeEvents.OnImportRemoved (project, import);
+		}
 	}
 }

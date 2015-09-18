@@ -609,7 +609,7 @@ namespace MonoDevelop.Components.PropertyGrid
 
 			if (row != null && editSession == null) {
 				var bounds = GetInactiveEditorBounds (row);
-				if (!bounds.IsEmpty && bounds.Contains ((int)evnt.X, (int)evnt.Y) && row.Enabled) {
+				if (!bounds.IsEmpty && bounds.Contains ((int)evnt.X, (int)evnt.Y)) {
 					StartEditing (row);
 					return true;
 				}

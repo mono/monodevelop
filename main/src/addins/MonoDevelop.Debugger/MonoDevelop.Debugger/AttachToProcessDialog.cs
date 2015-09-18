@@ -51,6 +51,7 @@ namespace MonoDevelop.Debugger
 			tree.Model = store;
 			tree.AppendColumn ("PID", new Gtk.CellRendererText (), "text", 1);
 			tree.AppendColumn ("Process Name", new Gtk.CellRendererText (), "text", 2);
+			tree.RowActivated += OnRowActivated;
 
 			state = new TreeViewState (tree, 1);
 
@@ -150,7 +151,7 @@ namespace MonoDevelop.Debugger
 			FillList ();
 		}
 
-		protected virtual void OnRowActivated (object o, Gtk.RowActivatedArgs args)
+		void OnRowActivated (object o, Gtk.RowActivatedArgs args)
 		{
 			Respond (Gtk.ResponseType.Ok);
 		}

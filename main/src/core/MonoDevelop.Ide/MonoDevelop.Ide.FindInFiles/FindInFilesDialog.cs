@@ -146,8 +146,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			properties = PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
 			SetButtonIcon (toggleReplaceInFiles, "gtk-find-and-replace");
 			SetButtonIcon (toggleFindInFiles, "gtk-find");
-			
-			TransientFor = IdeApp.Workbench.RootWindow;
+
+			// If we have an active floating window, attach the dialog to it. Otherwise use the main IDE window.
+			var current_toplevel = Gtk.Window.ListToplevels ().Where (x => x.IsActive).First ();
+			if (current_toplevel is Components.DockNotebook.DockWindow)
+				TransientFor = current_toplevel;
+			else
+				TransientFor = IdeApp.Workbench.RootWindow;
 
 			toggleReplaceInFiles.Active = showReplace;
 			toggleFindInFiles.Active = !showReplace;

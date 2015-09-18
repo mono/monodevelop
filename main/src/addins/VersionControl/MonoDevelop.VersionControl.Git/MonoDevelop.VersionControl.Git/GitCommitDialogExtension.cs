@@ -55,6 +55,12 @@ namespace MonoDevelop.VersionControl.Git
 			return false;
 		}
 
+		public override string FormatDialogTitle (ChangeSet changeSet, string title)
+		{
+			var gitRepo = changeSet.Repository as GitRepository;
+			return gitRepo != null ? string.Format ("{0} ({1})", title, gitRepo.GetCurrentBranch ()) : title;
+		}
+
 		public override bool OnBeginCommit (ChangeSet changeSet)
 		{
 			// In this callback we check if the user information configured in Git
@@ -178,10 +184,12 @@ namespace MonoDevelop.VersionControl.Git
 			var text = textView.Buffer.Text;
 			var lines = text.Split ('\n');
 			if (lines.Length > 0 && lines [0].Length > maxLengthConventionForFirstLineOfCommitMessage) {
-				textView.TooltipText = String.Format (GettextCatalog.GetString (
-					"When using Git, it is not recommended to surpass the character count of {0} in the first line of the commit message"),
-					maxLengthConventionForFirstLineOfCommitMessage);
-				textView.HasTooltip = true;
+				if (!textView.HasTooltip) {
+					textView.TooltipText = String.Format (GettextCatalog.GetString (
+						"When using Git, it is not recommended to surpass the character count of {0} in the first line of the commit message"),
+						maxLengthConventionForFirstLineOfCommitMessage);
+					textView.HasTooltip = true;
+				}
 
 				textView.Buffer.GetBounds (out start, out unused);
 				start.ForwardChars (maxLengthConventionForFirstLineOfCommitMessage);

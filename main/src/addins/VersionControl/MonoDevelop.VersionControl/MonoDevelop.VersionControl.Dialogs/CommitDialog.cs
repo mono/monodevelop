@@ -90,6 +90,10 @@ namespace MonoDevelop.VersionControl.Dialogs
 					continue;
 				}
 				if (ext.Initialize (changeSet)) {
+					var newTitle = ext.FormatDialogTitle (changeSet, Title);
+					if (newTitle != null)
+						Title = newTitle;
+
 					ext.CommitMessageTextViewHook (textview);
 					if (separatorRequired) {
 						HSeparator sep = new HSeparator ();

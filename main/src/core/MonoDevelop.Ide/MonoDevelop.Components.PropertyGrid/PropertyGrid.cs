@@ -252,6 +252,10 @@ namespace MonoDevelop.Components.PropertyGrid
 		{
 			if (this.currentObject == obj)
 				return;
+			if (this.propertyProviders != null) {
+				foreach (var old in this.propertyProviders.OfType<IDisposable> ())
+					old.Dispose ();
+			}
 			this.currentObject = obj;
 			this.propertyProviders = propertyProviders;
 			UpdateTabs ();

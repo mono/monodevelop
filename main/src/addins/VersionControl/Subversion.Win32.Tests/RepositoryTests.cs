@@ -131,6 +131,11 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 		{
 			return new SubversionRepository (new SvnSharpClient (), url, path);
 		}
+
+		protected override Repository GetRepo ()
+		{
+			return new SubversionRepository (new SvnSharpClient (), string.Empty, FilePath.Empty);
+		}
 	}
 }
 

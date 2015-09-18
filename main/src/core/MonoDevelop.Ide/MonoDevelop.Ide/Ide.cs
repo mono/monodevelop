@@ -295,6 +295,8 @@ namespace MonoDevelop.Ide
 			};
 			AutoTestService.Start (commandService, Preferences.EnableAutomatedTesting);
 			AutoTestService.NotifyEvent ("MonoDevelop.Ide.IdeStart");
+
+			Gtk.LinkButton.SetUriHook ((button, uri) => Xwt.Desktop.OpenUrl (uri));
 		}
 
 		static void KeyBindingFailed (object sender, KeyBindingFailedEventArgs e)

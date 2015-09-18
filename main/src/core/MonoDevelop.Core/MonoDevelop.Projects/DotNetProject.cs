@@ -471,21 +471,28 @@ namespace MonoDevelop.Projects
 			for (int n=0; n<References.Count; n++) {
 				ProjectReference pr = References [n];
 				if (pr.ReferenceType == ReferenceType.Assembly && DefaultConfiguration != null) {
-					if (pr.GetReferencedFileNames (DefaultConfiguration.Selector).Any (f => f == updatedFile))
+					if (pr.GetReferencedFileNames (DefaultConfiguration.Selector).Any (f => f == updatedFile)) {
+						SetFastBuildCheckDirty ();
 						pr.NotifyStatusChanged ();
+					}
 				} else if (pr.HintPath == updatedFile) {
+					SetFastBuildCheckDirty ();
 					var nr = pr.GetRefreshedReference ();
 					if (nr != null)
 						References [n] = nr;
 				}
 			}
 
+			/* Removed because it is very slow. SetFastBuildCheckDirty() is being called above. It is not the perfect solution but it is good enough
+			 * In the new project model GetReferencedAssemblies is asynchronous, so the code can be uncommented there. 
+ 
 			// If a referenced assembly changes, dirtify the project.
 			foreach (var asm in GetReferencedAssemblies (DefaultConfiguration.Selector))
 				if (asm == updatedFile) {
 					SetFastBuildCheckDirty ();
 					break;
 				}
+				*/
 		}
 
 		internal override void OnFileChanged (object source, MonoDevelop.Core.FileEventArgs e)

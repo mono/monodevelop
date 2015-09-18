@@ -744,6 +744,8 @@ namespace MonoDevelop.Debugger
 		
 		static void OnTargetEvent (object sender, TargetEventArgs args)
 		{
+			if (args.BreakEvent != null && args.BreakEvent.NonUserBreakpoint)
+				return;
 			nextStatementLocations.Clear ();
 
 			try {

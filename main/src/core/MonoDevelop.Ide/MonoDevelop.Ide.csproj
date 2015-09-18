@@ -5283,6 +5283,7 @@
     <Compile Include="MonoDevelop.Components\IdeDialog.cs" />
     <Compile Include="MonoDevelop.Components\IdeWindow.cs" />
     <Compile Include="MonoDevelop.Components\IdeTheme.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\SelectedOperation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

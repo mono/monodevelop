@@ -35,11 +35,11 @@ namespace UserInterfaceTests
 		readonly string miscCategory = "Miscellaneous";
 
 		[Test]
-		[TestCase ("Generic Project", "Generic", TestName = "TestMiscGenericProject")]
-		[TestCase ("Packaging project", "Generic", TestName = "TestMiscPackagingProject")]
-		[TestCase ("Shared Library", "C/C++", TestName = "TestMiscCCPlusSharedLibrary")]
-		[TestCase ("Static Library", "C/C++", TestName = "TestMiscCCPlusStaticLibrary")]
-		[TestCase ("Console Project", "C/C++", TestName = "TestMiscCCPlusConsoleProject")]
+		[TestCase ("Generic Project", "Generic", TestName = "TestMiscGenericProject", Description = "Create and build Generic Project")]
+		[TestCase ("Packaging project", "Generic", TestName = "TestMiscPackagingProject", Description = "Create and build Packaging Project")]
+		[TestCase ("Shared Library", "C/C++", TestName = "TestMiscCCPlusSharedLibrary", Description = "Create and build Shared C/C++ Library")]
+		[TestCase ("Static Library", "C/C++", TestName = "TestMiscCCPlusStaticLibrary", Description = "Create and build Static C/C++ Library")]
+		[TestCase ("Console Project", "C/C++", TestName = "TestMiscCCPlusConsoleProject", Description = "Create and build Console C/C++ Project")]
 		public void RunMiscTemplatesTest (string templateName, string templateKind)
 		{
 			var templateOptions = new TemplateSelectionOptions {
@@ -49,6 +49,7 @@ namespace UserInterfaceTests
 				TemplateKind = templateName
 			};
 			CreateBuildProject (templateOptions, EmptyAction);
+			IsTemplateSelected (templateOptions);
 		}
 	}
 }

@@ -654,8 +654,11 @@ namespace MonoDevelop.VersionControl.Tests
 
 		protected void Checkout (string path, string url)
 		{
-			Repository _repo = GetRepo (path, url);
-			_repo.Checkout (path, true, new NullProgressMonitor ());
+			var mockRepo = (UrlBasedRepository)GetRepo ();
+			mockRepo.Url = url;
+			mockRepo.Checkout (path, true, new NullProgressMonitor ());
+
+			var _repo = GetRepo (path, url);
 			if (Repo == null)
 				Repo = _repo;
 			else
@@ -714,6 +717,7 @@ namespace MonoDevelop.VersionControl.Tests
 				AddedItems.Add (added);
 		}
 
+		protected abstract Repository GetRepo ();
 		protected abstract Repository GetRepo (string path, string url);
 
 		protected static void DeleteDirectory (string path)
