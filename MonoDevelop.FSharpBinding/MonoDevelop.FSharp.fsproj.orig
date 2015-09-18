@@ -85,6 +85,7 @@
     <Compile Include="Services\FSharpIndentationTracker.fs" />
     <Compile Include="FSharpSymbolHelper.fs" />
     <Compile Include="FSharpTokens.fs" />
+    <Compile Include="ProjectSearchCategory.fs" />
     <Compile Include="FSharpInteractivePad.fs" />
     <Compile Include="FSharpOptionsPanels.fs" />
     <Compile Include="FSharpProject.fs" />
