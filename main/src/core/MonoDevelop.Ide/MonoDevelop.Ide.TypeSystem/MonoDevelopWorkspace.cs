@@ -635,12 +635,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			try {
 				internalChanges = true;
 				base.ApplyProjectChanges (projectChanges);
-				var data = GetMonoProject (projectChanges.NewProject);
-				if (data != null) {
-					Application.Invoke (delegate {
-						data.SaveAsync (new ProgressMonitor ());	
-					});
-				}
 			} finally {
 				internalChanges = false;
 			}
