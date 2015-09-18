@@ -119,6 +119,17 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			return e;
 		}
 
+		bool IsCorrectNotification (NSView view, NSObject notifObject)
+		{
+			var window = selector.Window;
+
+			// Skip updates with a null Window. Only crashes on Mavericks.
+			// The View gets updated once again when the window resize finishes.
+			// We're getting notified about all windows in the application (for example, NSPopovers) that change size when really we only care about
+			// the window the bar is in.
+			return window != null && notifObject == window;
+		}
+
 		NSToolbarItem CreateSelectorToolbarItem ()
 		{
 			var selector = new SelectorView ();
@@ -135,24 +146,40 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			selector.OverflowInfoRequested += (o, e) => {
 				FillOverflowInfo (e);
 			};
-			Action<NSNotification> resizeAction = notif => DispatchService.GuiDispatch (() => {
-				// Skip updates with a null Window. Only crashes on Mavericks.
-				// The View gets updated once again when the window resize finishes.
-				var window = selector.Window;
-				if (window == null)
+
+			IDisposable resizeTimer = null;
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.WillStartLiveResizeNotification, notif => DispatchService.GuiDispatch (() => {
+				if (!IsCorrectNotification (selector, notif.Object))
 					return;
 
-				// We're getting notified about all windows in the application (for example, NSPopovers) that change size when really we only care about
-				// the window the bar is in.
-				if (notif.Object != window)
+				if (resizeTimer != null)
+					resizeTimer.Dispose ();
+
+				resizeTimer = Application.TimeoutInvoke (100, () => {
+					if (widget.Items.Length != widget.VisibleItems.Length)
+						selector.RequestResize ();
+					return true;
+				});
+			}));
+
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notif => DispatchService.GuiDispatch (() => {
+				if (!IsCorrectNotification (selector, notif.Object))
 					return;
 
 				// Don't check difference in overflow menus. This could cause issues since we're doing resizing of widgets and the views might go in front
 				// or behind while we're doing the resize request.
 				selector.RequestResize ();
-			});
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, resizeAction);
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidEndLiveResizeNotification, resizeAction);
+			}));
+
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidEndLiveResizeNotification, notif => DispatchService.GuiDispatch (() => {
+				if (!IsCorrectNotification (selector, notif.Object))
+					return;
+
+				if (resizeTimer != null)
+					resizeTimer.Dispose ();
+
+				resizeTimer = Application.TimeoutInvoke (300, selector.RequestResize);
+			}));
 
 			var pathSelector = (SelectorView.PathSelectorView)selector.Subviews [0];
 			pathSelector.ConfigurationChanged += (sender, e) => {
@@ -299,12 +326,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				}
 				throw new NotImplementedException ();
 			};
-
-			Application.TimeoutInvoke (1000, () => {
-				if (widget.Items.Length != widget.VisibleItems.Length)
-					selector.RequestResize ();
-				return true;
-			});
 		}
 
 		internal void Initialize ()
