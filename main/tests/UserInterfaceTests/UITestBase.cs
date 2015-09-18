@@ -173,6 +173,8 @@ namespace UserInterfaceTests
 						Directory.Delete (folder, true);
 				} catch (IOException e) {
 					TestService.Session.DebugObject.Debug ("Cleanup failed\n" +e);
+				} catch (UnauthorizedAccessException e) {
+					TestService.Session.DebugObject.Debug (string.Format ("Unable to clean directory: {0}\n", folder) + e);
 				}
 			}
 		}
