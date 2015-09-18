@@ -156,11 +156,23 @@
     <EmbeddedResource Include="icons\build%402x.png">
       <LogicalName>build@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\build~dark.png">
+      <LogicalName>build~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\build~dark%402x.png">
+      <LogicalName>build~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\continue.png">
       <LogicalName>continue.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\continue%402x.png">
       <LogicalName>continue@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\continue~dark.png">
+      <LogicalName>continue~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\continue~dark%402x.png">
+      <LogicalName>continue~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\device.png">
       <LogicalName>device.png</LogicalName>
@@ -168,17 +180,35 @@
     <EmbeddedResource Include="icons\device%402x.png">
       <LogicalName>device@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\device~dark.png">
+      <LogicalName>device~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\device~dark%402x.png">
+      <LogicalName>device~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\project.png">
       <LogicalName>project.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\project%402x.png">
       <LogicalName>project@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\project~dark.png">
+      <LogicalName>project~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project~dark%402x.png">
+      <LogicalName>project~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\stop.png">
       <LogicalName>stop.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\stop%402x.png">
       <LogicalName>stop@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stop~dark.png">
+      <LogicalName>stop~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stop~dark%402x.png">
+      <LogicalName>stop~dark@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
