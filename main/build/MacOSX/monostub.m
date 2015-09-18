@@ -383,7 +383,7 @@ int main (int argc, char **argv)
 	NSString *binDir = [[NSString alloc] initWithUTF8String: "Contents/Resources/lib/monodevelop/bin"];
 	BOOL isDir = NO;
 	if (![[NSFileManager defaultManager] fileExistsAtPath: binDir isDirectory: &isDir] || !isDir)
-		binDir = @".";
+		binDir = [[NSString alloc] initWithUTF8String: "."];
 
 	NSString *appDir = [[NSBundle mainBundle] bundlePath];
 	// can be overridden with plist string MonoMinVersion
