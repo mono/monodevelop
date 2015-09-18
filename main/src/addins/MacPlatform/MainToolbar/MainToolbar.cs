@@ -33,6 +33,7 @@ using AppKit;
 using CoreGraphics;
 using Foundation;
 using MonoDevelop.Ide;
+using Xwt;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -66,6 +67,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 
 		int selectorIdx;
+		SelectorView selector {
+			get { return (SelectorView)widget.Items[selectorIdx].View; }
+		}
+
 		SelectorView.PathSelectorView selectorView {
 			get { return (SelectorView.PathSelectorView)widget.Items[selectorIdx].View.Subviews [0]; }
 		}
@@ -96,6 +101,35 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			return item;
 		}
 
+		OverflowInfoEventArgs FillOverflowInfo (OverflowInfoEventArgs e)
+		{
+			var visibleItems = widget.VisibleItems;
+			var allItems = widget.Items;
+
+			e.WindowWidth = gtkWindow.Allocation.Width;
+			foreach (var iter in allItems) {
+				e.AllItemsWidth += iter.MinSize.Width;
+				if (!visibleItems.Contains (iter))
+					e.ItemsInOverflowWidth += iter.MinSize.Width;
+			}
+			// Add spacings.
+			nfloat spacing = (allItems.Length - 1) * 16;
+			e.AllItemsWidth += spacing;
+
+			return e;
+		}
+
+		bool IsCorrectNotification (NSView view, NSObject notifObject)
+		{
+			var window = selector.Window;
+
+			// Skip updates with a null Window. Only crashes on Mavericks.
+			// The View gets updated once again when the window resize finishes.
+			// We're getting notified about all windows in the application (for example, NSPopovers) that change size when really we only care about
+			// the window the bar is in.
+			return window != null && notifObject == window;
+		}
+
 		NSToolbarItem CreateSelectorToolbarItem ()
 		{
 			var selector = new SelectorView ();
@@ -109,6 +143,43 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				item.MinSize = item.MaxSize = e.Size;
 				centeringSpace.UpdateWidth ();
 			};
+			selector.OverflowInfoRequested += (o, e) => {
+				FillOverflowInfo (e);
+			};
+
+			IDisposable resizeTimer = null;
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.WillStartLiveResizeNotification, notif => DispatchService.GuiDispatch (() => {
+				if (!IsCorrectNotification (selector, notif.Object))
+					return;
+
+				if (resizeTimer != null)
+					resizeTimer.Dispose ();
+
+				resizeTimer = Application.TimeoutInvoke (100, () => {
+					if (widget.Items.Length != widget.VisibleItems.Length)
+						selector.RequestResize ();
+					return true;
+				});
+			}));
+
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notif => DispatchService.GuiDispatch (() => {
+				if (!IsCorrectNotification (selector, notif.Object))
+					return;
+
+				// Don't check difference in overflow menus. This could cause issues since we're doing resizing of widgets and the views might go in front
+				// or behind while we're doing the resize request.
+				selector.RequestResize ();
+			}));
+
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidEndLiveResizeNotification, notif => DispatchService.GuiDispatch (() => {
+				if (!IsCorrectNotification (selector, notif.Object))
+					return;
+
+				if (resizeTimer != null)
+					resizeTimer.Dispose ();
+
+				resizeTimer = Application.TimeoutInvoke (300, selector.RequestResize);
+			}));
 
 			var pathSelector = (SelectorView.PathSelectorView)selector.Subviews [0];
 			pathSelector.ConfigurationChanged += (sender, e) => {
@@ -143,6 +214,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				nfloat resize = 6 + 33 * bar.SegmentCount;
 				item.MinSize = new CGSize (resize, bar.FittingSize.Height);
 				item.MaxSize = new CGSize (resize, bar.FittingSize.Height);
+				selector.RequestResize ();
 				centeringSpace.UpdateWidth ();
 			};
 			return item;
@@ -181,15 +253,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			bar.GainedFocus += (o, e) => IdeApp.Workbench.RootWindow.Focus = null;
 
 			viewCache.Add (bar);
-			var menuBar = new SearchBar {
-				Frame = new CGRect (0, 0, 180, bar.FittingSize.Height),
-			};
 			var item = new NSToolbarItem (SearchBarId) {
 				View = bar,
-				MenuFormRepresentation = new NSMenuItem {
-					View = menuBar,
-				},
-				MinSize = new CGSize (180, bar.FittingSize.Height),
+				MinSize = new CGSize (150, bar.FittingSize.Height),
 				MaxSize = new CGSize (270, bar.FittingSize.Height),
 			};
 			AttachToolbarEvents (bar);
@@ -207,7 +273,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				MaxSize = new CGSize (360, 22),
 			};
 
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notif => DispatchService.GuiDispatch (() => {
+			Action<NSNotification> resizeAction = notif => DispatchService.GuiDispatch (() => {
 				// Skip updates with a null Window. Only crashes on Mavericks.
 				// The View gets updated once again when the window resize finishes.
 				if (bar.Window == null)
@@ -220,10 +286,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 				double maxSize = Math.Round (bar.Window.Frame.Width * 0.30f);
 				double minSize = Math.Round (bar.Window.Frame.Width * 0.25f);
-				item.MinSize = new CGSize ((nfloat)Math.Max (280, minSize), 22);
+				item.MinSize = new CGSize ((nfloat)Math.Max (220, minSize), 22);
 				item.MaxSize = new CGSize ((nfloat)Math.Min (700, maxSize), 22);
 				bar.RepositionStatusLayers ();
-			}));
+			});
+
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, resizeAction);
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidEndLiveResizeNotification, resizeAction);
 			return item;
 		}
 
@@ -284,32 +353,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public event EventHandler SearchEntryResized;
 		#pragma warning restore 0067
 
-		bool IsSearchEntryInOverflow {
-			get { return widget.Items.Length != widget.VisibleItems.Length; }
-		}
-
 		public void FocusSearchBar ()
 		{
 			searchEntry.Focus ();
 
 			var entry = searchEntry;
-			if (!IsSearchEntryInOverflow)
-				entry.SelectText (entry);
-			else {
-				// NSSearchField -> NSToolbarItemViewer -> _NSToolbarClipView -> NSToolbarView -> NSToolbarClippedItemsIndicator
-				var clipItem = (NSButton)searchEntry.Superview.Superview.Superview.Subviews [1];
-				var sel = new ObjCRuntime.Selector ("_computeMenuForClippedItemsIfNeeded");
-				if (!clipItem.RespondsToSelector (sel))
-					throw new Exception ("Cocoa selector changed for clipped items menu.");
-
-				clipItem.PerformSelector (sel);
-				var menu = clipItem.Menu;
-				var searchItem = menu.ItemAt (0);
-				var searchView = (SearchBar)searchItem.View;
-				AttachToolbarEvents (searchView);
-				menu.PopUpMenu (menu.ItemAt (0), new CGPoint (0, -5), clipItem);
-				searchView.SelectText (searchView);
-			}
+			entry.SelectText (entry);
 		}
 
 		List<IButtonBarButton> barItems = new List<IButtonBarButton> ();
@@ -409,44 +458,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public string SearchText {
 			get {
-				if (!IsSearchEntryInOverflow) {
-					return searchEntry.StringValue;
-				}
-
-				// NSSearchField -> NSToolbarItemViewer -> _NSToolbarClipView -> NSToolbarView -> NSToolbarClippedItemsIndicator
-				var clipItem = (NSButton)searchEntry.Superview.Superview.Superview.Subviews [1];
-				var sel = new ObjCRuntime.Selector ("_computeMenuForClippedItemsIfNeeded");
-				if (!clipItem.RespondsToSelector (sel))
-					throw new Exception ("Cocoa selector changed for clipped items menu.");
-
-				clipItem.PerformSelector (sel);
-
-				var menuBar = (SearchBar)clipItem.Menu.ItemAt (0).View;
-				AttachToolbarEvents (menuBar);
-				return menuBar.StringValue;
+				return searchEntry.StringValue;
 			}
 			set {
-				if (!IsSearchEntryInOverflow) {
-					searchEntry.StringValue = value;
-					return;
-				}
-
-				// NSSearchField -> NSToolbarItemViewer -> _NSToolbarClipView -> NSToolbarView -> NSToolbarClippedItemsIndicator
-				var clipItem = (NSButton)searchEntry.Superview.Superview.Superview.Subviews [1];
-				var sel = new ObjCRuntime.Selector ("_computeMenuForClippedItemsIfNeeded");
-				if (!clipItem.RespondsToSelector (sel))
-					throw new Exception ("Cocoa selector changed for clipped items menu.");
-
-				clipItem.PerformSelector (sel);
-
-				foreach (NSMenuItem item in clipItem.Menu.ItemArray ()) {
-					if (item.View is SearchBar) {
-						var menuBar = (SearchBar)item.View;
-						AttachToolbarEvents (menuBar);
-						menuBar.StringValue = value;
-						break;
-					}
-				}
+				searchEntry.StringValue = value;
 			}
 		}
 

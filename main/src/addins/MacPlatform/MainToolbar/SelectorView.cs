@@ -45,10 +45,18 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 	}
 
+	class OverflowInfoEventArgs : EventArgs
+	{
+		public nfloat WindowWidth { get; set; }
+		public nfloat AllItemsWidth { get; set; }
+		public nfloat ItemsInOverflowWidth { get; set; }
+	}
+
 	[Register]
 	class SelectorView : NSButton
 	{
 		public event EventHandler<SizeRequestedEventArgs> ResizeRequested;
+		public event EventHandler<OverflowInfoEventArgs> OverflowInfoRequested;
 		internal const int ConfigurationIdx = 0;
 		internal const int RuntimeIdx = 1;
 
@@ -61,28 +69,104 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			AddSubview (pathSelectorView);
 		}
 
-		public override void DrawRect (CGRect dirtyRect)
+		public bool RequestResize ()
 		{
-			var p = (NSPathControl)Subviews [0];
-			var size = new CGSize (10 +
-				p.PathComponentCells [ConfigurationIdx].CellSize.Width +
-				p.PathComponentCells [RuntimeIdx].CellSize.Width + p.Frame.Left,
-				Frame.Size.Height);
-			if (ResizeRequested != null)
-				ResizeRequested (this, new SizeRequestedEventArgs (size));
+			var p = (PathSelectorView)Subviews [0];
+			var overflowInfo = new OverflowInfoEventArgs ();
+			if (OverflowInfoRequested != null)
+				OverflowInfoRequested (this, overflowInfo);
 
-			SetFrameSize (size);
-			p.SetFrameSize (size);
-			p.SetNeedsDisplay ();
-			base.DrawRect (new CGRect (CGPoint.Empty, size));
+			var size = new CGSize (p.ResizeIfNeeded (overflowInfo), Frame.Height);
+
+			if (size != Frame.Size) {
+				if (ResizeRequested != null)
+					ResizeRequested (this, new SizeRequestedEventArgs (size));
+
+				SetFrameSize (size);
+				p.SetFrameSize (size);
+
+				SetNeedsDisplay ();
+				p.SetNeedsDisplay ();
+				return true;
+			}
+			return false;
+		}
+
+		public override void ViewWillDraw ()
+		{
+			RequestResize ();
+			base.ViewWillDraw ();
 		}
 
 		#region PathSelectorView
 		[Register]
 		public class PathSelectorView : NSPathControl
 		{
+			[Flags]
+			enum CellState
+			{
+				AllHidden = 0x0,
+				RuntimeShown = 0x1,
+				ConfigurationShown = 0x2,
+				AllShown = 0x3,
+			}
+
 			static readonly string ConfigurationPlaceholder = GettextCatalog.GetString ("Default");
 			static readonly string RuntimePlaceholder = GettextCatalog.GetString ("Default");
+			CellState state = CellState.AllShown;
+
+			nfloat UpdatePathCellForSize (int idx, nfloat remaining, CellState newStateIfEnoughSize)
+			{
+				var cell = PathComponentCells [idx];
+				string text;
+				if (idx == ConfigurationIdx) {
+					if (ActiveConfiguration != null)
+						text = ActiveConfiguration.DisplayString;
+					else
+						text = ConfigurationPlaceholder;
+				} else {
+					if (ActiveRuntime != null) {
+						using (var mutableModel = ActiveRuntime.GetMutableModel ())
+							text = mutableModel.FullDisplayString;
+					} else
+						text = RuntimePlaceholder;
+				}
+				var size = new NSAttributedString (text, new NSStringAttributes { Font = cell.Font }).Size.Width + 20;
+				if (size < remaining) {
+					state |= newStateIfEnoughSize;
+					UpdatePathText (idx, text);
+				}
+				return remaining - size;
+			}
+
+			internal nfloat ResizeIfNeeded (OverflowInfoEventArgs args)
+			{
+				var remaining = args.WindowWidth - args.AllItemsWidth;
+				if (remaining < 0 || args.ItemsInOverflowWidth > 0) {
+					var cell = PathComponentCells [RuntimeIdx];
+					var size = new NSAttributedString (cell.Title, new NSStringAttributes { Font = cell.Font }).Size.Width;
+					remaining += size;
+					args.ItemsInOverflowWidth -= size;
+					if ((state & CellState.RuntimeShown) != 0) {
+						state &= ~CellState.RuntimeShown;
+						UpdatePathText (RuntimeIdx, string.Empty);
+					}
+					if ((remaining < 0 || args.ItemsInOverflowWidth > 0) && (state & CellState.ConfigurationShown) != 0) {
+						state &= ~CellState.ConfigurationShown;
+						UpdatePathText (ConfigurationIdx, string.Empty);
+					}
+				} else {
+					remaining = remaining - args.ItemsInOverflowWidth;
+					if ((state & CellState.ConfigurationShown) == 0)
+						remaining = UpdatePathCellForSize (ConfigurationIdx, remaining, CellState.ConfigurationShown);
+					if ((state & CellState.RuntimeShown) == 0)
+						UpdatePathCellForSize (RuntimeIdx, remaining, CellState.RuntimeShown);
+				}
+
+				return 10 +
+					PathComponentCells [ConfigurationIdx].CellSize.Width +
+					PathComponentCells [RuntimeIdx].CellSize.Width + Frame.Left;
+			}
 
 			NSMenu CreateSubMenuForRuntime (IRuntimeModel runtime)
 			{
@@ -101,14 +185,21 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			void CreateMenuItem (NSMenu menu, IRuntimeModel runtime)
 			{
-				var menuItem = new NSMenuItem {
-					IndentationLevel = runtime.IsIndented ? 2 : 1,
-					Enabled = runtime.Enabled,
-					Hidden = !runtime.Visible,
-					AttributedTitle = new NSAttributedString (runtime.DisplayString, new NSStringAttributes {
-						Font = runtime.Notable ? NSFontManager.SharedFontManager.ConvertFont (menu.Font, NSFontTraitMask.Bold) : menu.Font,
-					}),
-				};
+				NSMenuItem menuItem;
+				string runtimeFullDisplayString;
+
+				using (var mutableModel = runtime.GetMutableModel ()) {
+					runtimeFullDisplayString = mutableModel.FullDisplayString;
+
+					menuItem = new NSMenuItem {
+						IndentationLevel = runtime.IsIndented ? 2 : 1,
+						AttributedTitle = new NSAttributedString (mutableModel.DisplayString, new NSStringAttributes {
+							Font = runtime.Notable ? NSFontManager.SharedFontManager.ConvertFont (menu.Font, NSFontTraitMask.Bold) : menu.Font,
+						}),
+						Enabled = mutableModel.Enabled,
+						Hidden = !mutableModel.Visible,
+					};
+				}
 
 				var subMenu = CreateSubMenuForRuntime (runtime);
 				if (subMenu != null) {
@@ -116,8 +207,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					menuItem.Enabled = true;
 				} else {
 					menuItem.Activated += (o2, e2) => {
-						string old = ActiveRuntime.FullDisplayString;
-						IRuntimeModel newRuntime = runtimeModel.FirstOrDefault (r => r.FullDisplayString == runtime.FullDisplayString);
+						string old;
+						using (var activeMutableModel = ActiveRuntime.GetMutableModel ())
+							old = activeMutableModel.FullDisplayString;
+
+						IRuntimeModel newRuntime = runtimeModel.FirstOrDefault (r => {
+							using (var newRuntimeMutableModel = r.GetMutableModel ())
+								return newRuntimeMutableModel.FullDisplayString == runtimeFullDisplayString;
+						});
 						if (newRuntime == null)
 							return;
 
@@ -127,7 +224,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 							RuntimeChanged (o2, ea);
 
 						if (ea.Handled)
-							ActiveRuntime = runtimeModel.First (r => r.FullDisplayString == old);
+							ActiveRuntime = runtimeModel.First (r => {
+								using (var newRuntimeMutableModel = r.GetMutableModel ())
+									return newRuntimeMutableModel.FullDisplayString == old;
+							});
 					};
 				}
 				menu.AddItem (menuItem);
@@ -168,6 +268,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						Font = NSFont.MenuFontOfSize (12),
 					};
 					if (object.ReferenceEquals (ClickedPathComponentCell, PathComponentCells [ConfigurationIdx])) {
+						if (ActiveConfiguration == null)
+							return;
+						
 						foreach (var configuration in ConfigurationModel) {
 							if (idx == -1 && configuration.OriginalId == ActiveConfiguration.OriginalId)
 								idx = i;
@@ -185,18 +288,25 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 							++i;
 						}
 					} else if (object.ReferenceEquals (ClickedPathComponentCell, PathComponentCells [RuntimeIdx])) {
-						foreach (var runtime in RuntimeModel) {
-							if (idx == -1 && runtime.DisplayString == ActiveRuntime.DisplayString)
-								idx = i;
+						if (ActiveRuntime == null)
+							return;
+						
+						using (var activeMutableModel = ActiveRuntime.GetMutableModel ()) {
+							foreach (var runtime in RuntimeModel) {
+								using (var mutableModel = runtime.GetMutableModel ()) {
+									if (idx == -1 && mutableModel.DisplayString == activeMutableModel.DisplayString)
+										idx = i;
+								}
 
-							if (runtime.HasParent)
-								continue;
+								if (runtime.HasParent)
+									continue;
 
-							if (runtime.IsSeparator)
-								menu.AddItem (NSMenuItem.SeparatorItem);
-							else
-								CreateMenuItem (menu, runtime);
-							++i;
+								if (runtime.IsSeparator)
+									menu.AddItem (NSMenuItem.SeparatorItem);
+								else
+									CreateMenuItem (menu, runtime);
+								++i;
+							}
 						}
 					} else
 						throw new NotSupportedException ();
@@ -234,7 +344,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			void UpdatePathText (int idx, string text)
 			{
-				PathComponentCells [idx].Title = text;
+				bool showText = (idx == ConfigurationIdx && (state & CellState.ConfigurationShown) != 0) || (idx == RuntimeIdx && (state & CellState.RuntimeShown) != 0);
+				PathComponentCells [idx].Title = showText ? text : "\u00A0";
 				PathComponentCells [ConfigurationIdx].Image = ImageService.GetIcon ("project").ToNSImage ();
 				PathComponentCells [RuntimeIdx].Image = ImageService.GetIcon ("device").ToNSImage ();
 
@@ -246,6 +357,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				get { return activeConfiguration; }
 				set {
 					activeConfiguration = value;
+					state |= CellState.ConfigurationShown;
 					UpdatePathText (ConfigurationIdx, value.DisplayString);
 				}
 			}
@@ -255,7 +367,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				get { return activeRuntime; }
 				set {
 					activeRuntime = value;
-					UpdatePathText (RuntimeIdx, value.FullDisplayString);
+					using (var mutableModel = value.GetMutableModel ()) {
+						state |= CellState.RuntimeShown;
+						UpdatePathText (RuntimeIdx, mutableModel.FullDisplayString);
+					}
 				}
 			}
 
@@ -265,8 +380,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				set {
 					configurationModel = value;
 					int count = value.Count ();
-					if (count == 0)
+					if (count == 0) {
+						state |= CellState.ConfigurationShown;
 						UpdatePathText (ConfigurationIdx, ConfigurationPlaceholder);
+					}
 					PathComponentCells [ConfigurationIdx].Enabled = count > 1;
 				}
 			}
@@ -277,8 +394,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				set {
 					runtimeModel = value;
 					int count = value.Count ();
-					if (count == 0)
+					if (count == 0) {
+						state |= CellState.RuntimeShown;
 						UpdatePathText (RuntimeIdx, RuntimePlaceholder);
+					}
 					PathComponentCells [RuntimeIdx].Enabled = count > 1;
 				}
 			}
