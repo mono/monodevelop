@@ -16,7 +16,7 @@ CLEANFILES = render.exe
 #DISTCLEANFILES =
 EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh render.cs
 
-all: app
+all: monostub
 
 render.exe: render.cs
 	gmcs -r:System.Drawing render.cs
