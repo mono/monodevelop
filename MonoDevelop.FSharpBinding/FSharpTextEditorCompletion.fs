@@ -43,28 +43,7 @@ type internal FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, ove
 
   // TODO: what does 'smartWrap' indicate?
   override x.CreateTooltipInformation (_smartWrap, cancel) =
-    Async.StartAsTask(
-      async {
-        LoggingService.LogInfo("computing tooltip for {0}", name)
-        let tip = SymbolTooltips.getTooltipFromSymbolUse symbol
-        match tip  with
-        | ToolTips.ToolTip (signature, xmldoc) ->
-            let toolTipInfo = new TooltipInformation(SignatureMarkup = signature)
-            let result = 
-              match xmldoc with
-              | Full(summary) -> toolTipInfo.SummaryMarkup <- summary
-                                 toolTipInfo
-              | Lookup(key, potentialFilename) ->
-                  let summary = 
-                    maybe {let! filename = potentialFilename
-                           let! markup = TooltipXmlDoc.findDocForEntity(filename, key)
-                           let summary = TooltipsXml.getTooltipSummary Styles.simpleMarkup markup
-                           return summary }
-                  summary |> Option.iter (fun summary -> toolTipInfo.SummaryMarkup <- summary)
-                  toolTipInfo
-              | EmptyDoc -> toolTipInfo
-            return result
-        | _ -> return TooltipInformation() }, cancellationToken = cancel)
+    Async.StartAsTask(SymbolTooltips.getTooltipInformation symbol, cancellationToken = cancel)
 
 type SimpleCategory(text) =
   inherit CompletionCategory(text, null)
