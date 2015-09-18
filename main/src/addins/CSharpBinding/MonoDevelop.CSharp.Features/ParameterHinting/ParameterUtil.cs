@@ -70,7 +70,11 @@ namespace ICSharpCode.NRefactory6.CSharp
 
 			int i = 0;
 			int j = 0;
-			foreach (var child in invocation.ArgumentList.ChildNodesAndTokens ()) {
+			var argList = invocation.ArgumentList;
+			if (caretOffset < argList.SpanStart || caretOffset > argList.Span.End)
+				return ParameterIndexResult.Invalid;
+			
+			foreach (var child in argList.ChildNodesAndTokens ()) {
 				if (child.Span.End > caretOffset) {
 					if (i == 0 && j <= 1)
 						return ParameterIndexResult.First;
