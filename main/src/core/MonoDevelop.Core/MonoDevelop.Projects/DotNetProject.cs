@@ -532,14 +532,17 @@ namespace MonoDevelop.Projects
 			get { return LanguageBinding.SupportsPartialTypes; }
 		}
 
-		async void CheckReferenceChange (FilePath updatedFile)
+		void CheckReferenceChange (FilePath updatedFile)
 		{
 			for (int n=0; n<References.Count; n++) {
 				ProjectReference pr = References [n];
 				if (pr.ReferenceType == ReferenceType.Assembly && DefaultConfiguration != null) {
-					if (pr.GetReferencedFileNames (DefaultConfiguration.Selector).Any (f => f == updatedFile))
+					if (pr.GetReferencedFileNames (DefaultConfiguration.Selector).Any (f => f == updatedFile)) {
+						SetFastBuildCheckDirty ();
 						pr.NotifyStatusChanged ();
+					}
 				} else if (pr.HintPath == updatedFile) {
+					SetFastBuildCheckDirty ();
 					var nr = pr.GetRefreshedReference ();
 					if (nr != null)
 						References [n] = nr;
@@ -547,13 +550,15 @@ namespace MonoDevelop.Projects
 			}
 
 			// If a referenced assembly changes, dirtify the project.
-			if (DefaultConfiguration != null) {
+/*			if (DefaultConfiguration != null) {
 				foreach (var asm in await GetReferencedAssemblies (DefaultConfiguration.Selector))
 					if (asm == updatedFile) {
 						SetFastBuildCheckDirty ();
 						break;
 					}
 			}
+			Removed for now since it can be a very slow operation
+			*/
 		}
 
 		internal override void OnFileChanged (object source, MonoDevelop.Core.FileEventArgs e)
