@@ -16,7 +16,7 @@ CLEANFILES = render.exe
 #DISTCLEANFILES =
 EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh render.cs
 
-all: app copy-local
+all: app
 
 render.exe: render.cs
 	gmcs -r:System.Drawing render.cs
@@ -32,10 +32,8 @@ clean-local:
 	rm -rf MonoDevelop.app
 	rm -f MonoDevelop*.dmg
 
-copy-local: monostub
-	cp monostub ../bin/MonoDevelop
-
 app: monostub
+	cp monostub ../bin/MonoDevelop
 if ENABLE_MACBUNDLE
 	@echo ""
 	@echo "Creating directories in app bundle"
