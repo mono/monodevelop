@@ -27,13 +27,13 @@ dmg: render.exe app
 monostub: monostub.m $(MONOSTUB_EXTRA_SOURCES)
 	gcc -Wall -mmacosx-version-min=10.10 -m32 -o $@ $^ -framework AppKit
 #	gcc -Wall -mmacosx-version-min=10.10 -m32 -o $@ $^ -framework AppKit -isysroot $(SDK_PATH)
+	cp monostub ../bin/MonoDevelop
 
 clean-local:
 	rm -rf MonoDevelop.app
 	rm -f MonoDevelop*.dmg
 
 app: monostub
-	cp monostub ../bin/MonoDevelop
 	@echo ""
 	@echo "Creating directories in app bundle"
 	@echo ""
