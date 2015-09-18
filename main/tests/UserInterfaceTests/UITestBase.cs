@@ -136,7 +136,7 @@ namespace UserInterfaceTests
 
 		void SetupTestResultFolder ()
 		{
-			currentTestResultFolder = Path.Combine (testResultFolder, TestContext.CurrentContext.Test.FullName);
+			currentTestResultFolder = Path.Combine (testResultFolder, TestContext.CurrentContext.Test.Name);
 			if (Directory.Exists (currentTestResultFolder))
 				Directory.Delete (currentTestResultFolder, true);
 			Directory.CreateDirectory (currentTestResultFolder);
@@ -153,7 +153,7 @@ namespace UserInterfaceTests
 
 		void SetupIdeLogFolder ()
 		{
-			var currentXSIdeLog = Path.Combine (currentTestResultFolder, string.Format ("{0}.Ide.log", TestContext.CurrentContext.Test.FullName.Replace ('/','_').Replace ('\\','_')));
+			var currentXSIdeLog = Path.Combine (currentTestResultFolder, string.Format ("{0}.Ide.log", TestContext.CurrentContext.Test.Name.Replace ('/','_').Replace ('\\','_')));
 			Environment.SetEnvironmentVariable ("MONODEVELOP_LOG_FILE", currentXSIdeLog);
 			Environment.SetEnvironmentVariable ("MONODEVELOP_FILE_LOG_LEVEL", "UpToInfo");
 		}
