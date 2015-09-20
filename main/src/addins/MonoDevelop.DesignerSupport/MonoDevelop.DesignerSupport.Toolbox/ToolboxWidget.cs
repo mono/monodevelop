@@ -205,11 +205,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		const int ItemIconTextItemSpacing = 4;
 		const int IconModePadding = 2;
 
-		static readonly Cairo.Color CategoryBackgroundGradientStartColor = new Cairo.Color (248d/255d, 248d/255d, 248d/255d);
-		static readonly Cairo.Color CategoryBackgroundGradientEndColor = new Cairo.Color (240d/255d, 240d/255d, 240d/255d);
-		static readonly Cairo.Color CategoryBorderColor = new Cairo.Color (217d/255d, 217d/255d, 217d/255d);
-		static readonly Cairo.Color CategoryLabelColor = new Cairo.Color (128d/255d, 128d/255d, 128d/255d);
-
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
 			Cairo.Context cr = Gdk.CairoHelper.Create (e.Window);
@@ -250,8 +245,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 				cr.Rectangle (xpos, ypos, itemDimension.Width, itemDimension.Height);
 				using (var pat = new Cairo.LinearGradient (xpos, ypos, xpos, ypos + itemDimension.Height)) {
-					pat.AddColorStop (0, CategoryBackgroundGradientStartColor);
-					pat.AddColorStop (1, CategoryBackgroundGradientEndColor);
+					pat.AddColorStop (0, MonoDevelop.Ide.Gui.Styles.PadCategoryBackgroundGradientStartColor);
+					pat.AddColorStop (1, MonoDevelop.Ide.Gui.Styles.PadCategoryBackgroundGradientEndColor);
 					cr.SetSource (pat);
 					cr.Fill ();
 				}
@@ -261,13 +256,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				}
 				cr.MoveTo (0, ypos + itemDimension.Height - 0.5);
 				cr.LineTo (xpos + Allocation.Width, ypos + itemDimension.Height - 0.5);
-				cr.SetSourceColor (CategoryBorderColor);
+				cr.SetSourceColor (MonoDevelop.Ide.Gui.Styles.PadCategoryBorderColor);
 				cr.LineWidth = 1;
 				cr.Stroke ();
 
 				headerLayout.SetText (category.Text);
 				int width, height;
-				cr.SetSourceColor (CategoryLabelColor);
+				cr.SetSourceColor (MonoDevelop.Ide.Gui.Styles.PadCategoryLabelColor);
 				layout.GetPixelSize (out width, out height);
 				cr.MoveTo (xpos + CategoryLeftPadding, ypos + (double)(Math.Round ((double)(itemDimension.Height - height) / 2)));
 				Pango.CairoHelper.ShowLayout (cr, headerLayout);
@@ -309,7 +304,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				// Closing line when animating the last group of the toolbox
 				cr.MoveTo (area.X, ypos + 0.5);
 				cr.RelLineTo (area.Width, 0);
-				cr.SetSourceColor (CategoryBorderColor);
+				cr.SetSourceColor (MonoDevelop.Ide.Gui.Styles.PadCategoryBorderColor);
 				cr.Stroke ();
 			}
 
