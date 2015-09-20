@@ -33,7 +33,7 @@ using Xwt.GtkBackend;
 
 namespace MonoDevelop.MacIntegration
 {
-	class ExtendedTitleBarWindowBackend: Xwt.GtkBackend.WindowBackend, IExtendedTitleBarWindowBackend
+	class ExtendedTitleBarWindowBackend: ThemedGtkWindowBackend, IExtendedTitleBarWindowBackend
 	{
 		CustomToolbar toolbar;
 
