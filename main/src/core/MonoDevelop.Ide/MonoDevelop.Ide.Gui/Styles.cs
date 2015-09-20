@@ -83,6 +83,14 @@ namespace MonoDevelop.Ide.Gui
 		public static Gdk.Color BrowserPadBackground { get; internal set; }
 		public static Gdk.Color InactiveBrowserPadBackground { get; internal set; }
 
+		public static Cairo.Color PadCategoryBackgroundGradientStartColor { get; internal set; }
+		public static Cairo.Color PadCategoryBackgroundGradientEndColor { get; internal set; }
+		public static Cairo.Color PadCategoryBorderColor { get; internal set; }
+		public static Cairo.Color PadCategoryLabelColor { get; internal set; }
+
+		public static Cairo.Color PropertyPadLabelBackgroundColor { get; internal set; }
+		public static Cairo.Color PropertyPadDividerColor { get; internal set; }
+
 		public static Cairo.Color DockBarBackground1 { get; internal set; }
 		public static Cairo.Color DockBarBackground2 { get; internal set; }
 		public static Cairo.Color DockBarSeparatorColorDark { get; internal set; }
@@ -264,6 +272,14 @@ namespace MonoDevelop.Ide.Gui
 			BrowserPadBackground = new Gdk.Color (225, 228, 232);
 			InactiveBrowserPadBackground = new Gdk.Color (240, 240, 240);
 
+			PadCategoryBackgroundGradientStartColor = new Cairo.Color (248d/255d, 248d/255d, 248d/255d);
+			PadCategoryBackgroundGradientEndColor = new Cairo.Color (240d/255d, 240d/255d, 240d/255d);
+			PadCategoryBorderColor = new Cairo.Color (217d/255d, 217d/255d, 217d/255d);
+			PadCategoryLabelColor = new Cairo.Color (128d/255d, 128d/255d, 128d/255d);
+
+			PropertyPadLabelBackgroundColor = new Cairo.Color (250d/255d, 250d/255d, 250d/255d);
+			PropertyPadDividerColor = PropertyPadLabelBackgroundColor;
+
 			DockBarBackground1 = PadBackground.ToCairoColor ();
 			DockBarBackground2 = Shift (PadBackground.ToCairoColor (), 0.95);
 			DockBarSeparatorColorDark = new Cairo.Color (0, 0, 0, 0.2);
@@ -365,6 +381,14 @@ namespace MonoDevelop.Ide.Gui
 
 			BrowserPadBackground = new Gdk.Color (32, 32, 32);
 			InactiveBrowserPadBackground = new Gdk.Color (20, 20, 20);
+
+			PadCategoryBackgroundGradientStartColor = new Cairo.Color (90d/255d, 90d/255d, 90d/255d);
+			PadCategoryBackgroundGradientEndColor = new Cairo.Color (82d/255d, 82d/255d, 82d/255d);
+			PadCategoryBorderColor = new Cairo.Color (96d/255d, 96d/255d, 96d/255d);
+			PadCategoryLabelColor = Shift (BaseForegroundColor, 0.8);
+
+			PropertyPadLabelBackgroundColor = PadBackground.ToCairoColor();
+			PropertyPadDividerColor = PadBackground.ToCairoColor();
 
 			DockBarBackground1 = PadBackground.ToCairoColor ();
 			DockBarBackground2 = Shift (PadBackground.ToCairoColor (), 0.95);
