@@ -112,11 +112,11 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 		public SearchPopupWindow ()
 		{
-			headerColor = CairoExtensions.ParseColor ("8c8c8c");
-			separatorLine = CairoExtensions.ParseColor ("dedede");
-			lightSearchBackground = CairoExtensions.ParseColor ("ffffff");
-			darkSearchBackground = CairoExtensions.ParseColor ("f7f7f7");
-			selectionBackgroundColor = CairoExtensions.ParseColor ("cccccc");
+			headerColor = Styles.GlobalSearch.HeaderTextColor;
+			separatorLine = Styles.GlobalSearch.SeparatorLineColor;
+			lightSearchBackground = Styles.GlobalSearch.HeaderBackgroundColor;
+			darkSearchBackground = Styles.GlobalSearch.BackgroundColor;
+			selectionBackgroundColor = Styles.GlobalSearch.SelectionBackgroundColor;
 			TypeHint = Gdk.WindowTypeHint.Combo;
 			this.SkipTaskbarHint = true;
 			this.SkipPagerHint = true;
@@ -974,7 +974,7 @@ namespace MonoDevelop.Components.MainToolbar
 				context.SetSourceColor (separatorLine);
 				context.Stroke ();
 			} else {
-				context.SetSourceRGB (1, 1, 1);
+				context.SetSourceColor (darkSearchBackground);
 				context.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
 				context.Fill ();
 			}
@@ -1078,10 +1078,10 @@ namespace MonoDevelop.Components.MainToolbar
 
 		string GetRowMarkup (SearchResult result)
 		{
-			string txt = "<span foreground=\"#606060\">" + result.GetMarkupText(this) +"</span>";
+			string txt = "<span foreground=\"" + CairoExtensions.ColorGetHex (Styles.GlobalSearch.ResultTextColor) + "\">" + result.GetMarkupText(this) +"</span>";
 			string desc = result.GetDescriptionMarkupText (this);
 			if (!string.IsNullOrEmpty (desc))
-				txt += "<span foreground=\"#8F8F8F\" size=\"small\">\n" + desc + "</span>";
+				txt += "<span foreground=\"" + CairoExtensions.ColorGetHex (Styles.GlobalSearch.ResultDescriptionTextColor) + "\" size=\"small\">\n" + desc + "</span>";
 			return txt;
 		}
 	}

@@ -165,6 +165,19 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		// Global Search
+
+		public static class GlobalSearch
+		{
+			public static Cairo.Color HeaderTextColor { get; internal set; }
+			public static Cairo.Color SeparatorLineColor { get; internal set; }
+			public static Cairo.Color HeaderBackgroundColor { get; internal set; }
+			public static Cairo.Color BackgroundColor { get; internal set; }
+			public static Cairo.Color SelectionBackgroundColor { get; internal set; }
+			public static Cairo.Color ResultTextColor { get; internal set; }
+			public static Cairo.Color ResultDescriptionTextColor { get; internal set; }
+		}
+
 		// Helper methods
 
 		internal static Cairo.Color Shift (Cairo.Color color, double factor)
@@ -330,6 +343,16 @@ namespace MonoDevelop.Ide.Gui
 			PopoverWindow.InformationTextColor = CairoExtensions.ParseColor ("ffffff");
 			PopoverWindow.ParamaterWindows.GradientStartColor = CairoExtensions.ParseColor ("fffee6");
 			PopoverWindow.ParamaterWindows.GradientEndColor = CairoExtensions.ParseColor ("fffcd1");
+
+			// Global Search
+
+			GlobalSearch.HeaderTextColor = CairoExtensions.ParseColor ("8c8c8c");
+			GlobalSearch.SeparatorLineColor = CairoExtensions.ParseColor ("dedede");
+			GlobalSearch.HeaderBackgroundColor = CairoExtensions.ParseColor ("ffffff");
+			GlobalSearch.BackgroundColor = CairoExtensions.ParseColor ("f7f7f7");
+			GlobalSearch.SelectionBackgroundColor = CairoExtensions.ParseColor ("cccccc");
+			GlobalSearch.ResultTextColor = CairoExtensions.ParseColor ("#606060");
+			GlobalSearch.ResultDescriptionTextColor = CairoExtensions.ParseColor ("#8F8F8F");
 		}
 
 		internal static void LoadDarkStyle ()
@@ -439,7 +462,17 @@ namespace MonoDevelop.Ide.Gui
 			PopoverWindow.WarningTextColor = CairoExtensions.ParseColor ("563b00");
 			PopoverWindow.InformationTextColor = CairoExtensions.ParseColor ("ffffff");
 			PopoverWindow.ParamaterWindows.GradientStartColor = CairoExtensions.ParseColor ("fffee6");
-			PopoverWindow.ParamaterWindows.GradientEndColor = CairoExtensions.ParseColor ("fffcd1");			
+			PopoverWindow.ParamaterWindows.GradientEndColor = CairoExtensions.ParseColor ("fffcd1");
+
+			// Global Search
+
+			GlobalSearch.HeaderTextColor = CairoExtensions.ParseColor ("ffffff");
+			GlobalSearch.HeaderBackgroundColor = CairoExtensions.ParseColor ("5a5a5a");
+			GlobalSearch.SeparatorLineColor = CairoExtensions.ParseColor ("595959");
+			GlobalSearch.BackgroundColor = CairoExtensions.ParseColor ("696969");
+			GlobalSearch.SelectionBackgroundColor = CairoExtensions.ParseColor ("cccccc");
+			GlobalSearch.ResultTextColor = CairoExtensions.ParseColor ("#ffffff");
+			GlobalSearch.ResultDescriptionTextColor = CairoExtensions.ParseColor ("#a3a3a3");
 		}
 	}
 }
