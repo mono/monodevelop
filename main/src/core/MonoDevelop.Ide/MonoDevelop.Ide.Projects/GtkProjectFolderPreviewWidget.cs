@@ -30,6 +30,7 @@ using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Components.AutoTest;
+using MonoDevelop.Ide.Gui;
 using System.ComponentModel;
 
 namespace MonoDevelop.Ide.Projects
@@ -56,6 +57,13 @@ namespace MonoDevelop.Ide.Projects
 		public GtkProjectFolderPreviewWidget ()
 		{
 			this.Build ();
+
+			previewLabel.LabelProp = String.Format (
+				"<span weight='bold' foreground='{0}'>{1}</span>",
+				CairoExtensions.ColorGetHex (Styles.NewProjectDialog.ProjectConfigurationPreviewLabelColor),
+				global::Mono.Unix.Catalog.GetString ("PREVIEW"));
+
+			folderTreeView.ModifyBase (StateType.Normal, Styles.NewProjectDialog.ProjectConfigurationRightHandBackgroundColor);
 
 			CreateFolderTreeViewColumns ();
 		}

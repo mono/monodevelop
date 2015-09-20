@@ -11304,7 +11304,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
             <child>
               <widget class="Gtk.Label" id="previewLabel">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">&lt;span weight='bold' foreground='#555555'&gt;PREVIEW&lt;/span&gt;</property>
+                <property name="LabelProp">&lt;span weight='bold' foreground='#555555'&gt;PREVIEW&lt;/span&gt;</property>
                 <property name="UseMarkup">True</property>
               </widget>
               <packing>

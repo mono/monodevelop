@@ -32,6 +32,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Components.AutoTest;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Templates;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -119,7 +120,7 @@ namespace MonoDevelop.Ide.Projects
 				}
 				ClearPopupMenuItems ();
 				AddLanguageMenuItems (popupMenu, template);
-				popupMenu.ModifyBg (StateType.Normal, GtkTemplateCellRenderer.LanguageButtonBackgroundColor);
+				popupMenu.ModifyBg (StateType.Normal, Styles.NewProjectDialog.TemplateLanguageButtonBackground);
 				popupMenu.ShowAll ();
 
 				MenuPositionFunc posFunc = (Menu m, out int x, out int y, out bool pushIn) => {
