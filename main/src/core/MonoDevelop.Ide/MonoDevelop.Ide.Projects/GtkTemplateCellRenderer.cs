@@ -31,6 +31,7 @@ using Gdk;
 using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Templates;
 using Mono.TextEditor;
 
@@ -38,9 +39,6 @@ namespace MonoDevelop.Ide.Projects
 {
 	class GtkTemplateCellRenderer : CellRendererText
 	{
-		public static Color LanguageButtonBackgroundColor = new Color (247, 247, 247);
-
-		Color triangleColor = new Color (83, 83, 83);
 		Rectangle languageRect;
 		int dropdownTriangleWidth = 8;
 		int dropdownTriangleHeight = 5;
@@ -125,7 +123,7 @@ namespace MonoDevelop.Ide.Projects
 					DrawTemplateNameText (window, widget, cell_area, iconRect, languageRect, flags);
 
 					RoundBorder (ctx, languageRect.X, languageRect.Y, languageRect.Width, languageRect.Height);
-					SetSourceColor (ctx, LanguageButtonBackgroundColor.ToCairoColor ());
+					SetSourceColor (ctx, Styles.NewProjectDialog.TemplateLanguageButtonBackground.ToCairoColor ());
 					ctx.Fill ();
 
 					int languageTextX = languageRect.X + GetLanguageLeftHandPadding (scale);
@@ -281,7 +279,7 @@ namespace MonoDevelop.Ide.Projects
 			int width = (int)(scale * dropdownTriangleWidth);
 			int height = (int)(scale * dropdownTriangleHeight);
 
-			SetSourceColor (ctx, triangleColor.ToCairoColor ());
+			SetSourceColor (ctx, Styles.NewProjectDialog.TemplateLanguageButtonTriangle.ToCairoColor ());
 			ctx.MoveTo (x, y);
 			ctx.LineTo (x + width, y);
 			ctx.LineTo (x + (width / 2), y + height);

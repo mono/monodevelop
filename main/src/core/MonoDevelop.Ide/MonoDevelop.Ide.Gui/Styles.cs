@@ -178,6 +178,25 @@ namespace MonoDevelop.Ide.Gui
 			public static Cairo.Color ResultDescriptionTextColor { get; internal set; }
 		}
 
+		// New Project Dialog
+
+		public static class NewProjectDialog
+		{
+			public static Gdk.Color BannerBackgroundColor { get; internal set; }
+			public static Gdk.Color BannerLineColor { get; internal set; }
+			public static Gdk.Color BannerForegroundColor { get; internal set; }
+			public static Gdk.Color CategoriesBackgroundColor { get; internal set; }
+			public static Gdk.Color TemplateListBackgroundColor { get; internal set; }
+			public static Gdk.Color TemplateBackgroundColor { get; internal set; }
+			public static Gdk.Color TemplateSectionSeparatorColor { get; internal set; }
+			public static Gdk.Color TemplateLanguageButtonBackground { get; internal set; }
+			public static Gdk.Color TemplateLanguageButtonTriangle { get; internal set; }
+			public static Gdk.Color ProjectConfigurationLeftHandBackgroundColor { get; internal set; }
+			public static Gdk.Color ProjectConfigurationRightHandBackgroundColor { get; internal set; }
+			public static Cairo.Color ProjectConfigurationPreviewLabelColor { get; internal set; }
+			public static Gdk.Color ProjectConfigurationSeparatorColor { get; internal set; }
+		}
+
 		// Helper methods
 
 		internal static Cairo.Color Shift (Cairo.Color color, double factor)
@@ -353,6 +372,22 @@ namespace MonoDevelop.Ide.Gui
 			GlobalSearch.SelectionBackgroundColor = CairoExtensions.ParseColor ("cccccc");
 			GlobalSearch.ResultTextColor = CairoExtensions.ParseColor ("#606060");
 			GlobalSearch.ResultDescriptionTextColor = CairoExtensions.ParseColor ("#8F8F8F");
+
+			// New Project Dialog
+
+			NewProjectDialog.BannerBackgroundColor = new Gdk.Color (119, 130, 140);
+			NewProjectDialog.BannerLineColor = new Gdk.Color (112, 122, 131);
+			NewProjectDialog.BannerForegroundColor = new Gdk.Color (255, 255, 255);
+			NewProjectDialog.CategoriesBackgroundColor = new Gdk.Color (225, 228, 232);
+			NewProjectDialog.TemplateListBackgroundColor = new Gdk.Color (240, 240, 240);
+			NewProjectDialog.TemplateBackgroundColor = new Gdk.Color (255, 255, 255);
+			NewProjectDialog.TemplateSectionSeparatorColor = new Gdk.Color (208, 208, 208);
+			NewProjectDialog.TemplateLanguageButtonBackground = new Gdk.Color (247, 247, 247);
+			NewProjectDialog.TemplateLanguageButtonTriangle = new Gdk.Color (83, 83, 83);
+			NewProjectDialog.ProjectConfigurationLeftHandBackgroundColor = new Gdk.Color (225, 228, 232);
+			NewProjectDialog.ProjectConfigurationRightHandBackgroundColor = new Gdk.Color (255, 255, 255);
+			NewProjectDialog.ProjectConfigurationPreviewLabelColor = CairoExtensions.ParseColor ("#555555");
+			NewProjectDialog.ProjectConfigurationSeparatorColor = new Gdk.Color (176, 178, 181);
 		}
 
 		internal static void LoadDarkStyle ()
@@ -473,6 +508,22 @@ namespace MonoDevelop.Ide.Gui
 			GlobalSearch.SelectionBackgroundColor = CairoExtensions.ParseColor ("cccccc");
 			GlobalSearch.ResultTextColor = CairoExtensions.ParseColor ("#ffffff");
 			GlobalSearch.ResultDescriptionTextColor = CairoExtensions.ParseColor ("#a3a3a3");
+
+			// New Project Dialog
+
+			NewProjectDialog.BannerBackgroundColor = new Gdk.Color (119, 130, 140);
+			NewProjectDialog.BannerLineColor = ThinSplitterColor;
+			NewProjectDialog.BannerForegroundColor = new Gdk.Color (255, 255, 255);
+			NewProjectDialog.CategoriesBackgroundColor = new Gdk.Color (85, 85, 85);
+			NewProjectDialog.TemplateListBackgroundColor = new Gdk.Color (90, 90, 90);
+			NewProjectDialog.TemplateBackgroundColor = new Gdk.Color (105, 105, 105);
+			NewProjectDialog.TemplateSectionSeparatorColor = ThinSplitterColor;
+			NewProjectDialog.TemplateLanguageButtonBackground = new Gdk.Color (97, 97, 97);
+			NewProjectDialog.TemplateLanguageButtonTriangle = new Gdk.Color (255, 255, 255);
+			NewProjectDialog.ProjectConfigurationLeftHandBackgroundColor = new Gdk.Color (85, 85, 85);
+			NewProjectDialog.ProjectConfigurationRightHandBackgroundColor = NewProjectDialog.TemplateBackgroundColor;
+			NewProjectDialog.ProjectConfigurationPreviewLabelColor = Shift (BaseForegroundColor, 0.8);
+			NewProjectDialog.ProjectConfigurationSeparatorColor = ThinSplitterColor;
 		}
 	}
 }

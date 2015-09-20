@@ -28,20 +28,21 @@ using Gdk;
 using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Templates;
 using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.Projects
 {
-	partial class GtkNewProjectDialogBackend : Gtk.Dialog
+	partial class GtkNewProjectDialogBackend : IdeDialog
 	{
-		Color bannerBackgroundColor = new Color (119, 130, 140);
-		Color bannerLineColor = new Color (112, 122, 131);
-		Color whiteColor = new Color (255, 255, 255);
-		Color categoriesBackgroundColor = new Color (225, 228, 232);
-		Color templateListBackgroundColor = new Color (240, 240, 240);
-		Color templateBackgroundColor = new Color (255, 255, 255);
-		Color templateSectionSeparatorColor = new Color (208, 208, 208);
+		Color bannerBackgroundColor = Styles.NewProjectDialog.BannerBackgroundColor;
+		Color bannerLineColor = Styles.NewProjectDialog.BannerLineColor;
+		Color whiteColor = Styles.NewProjectDialog.BannerForegroundColor;
+		Color categoriesBackgroundColor = Styles.NewProjectDialog.CategoriesBackgroundColor;
+		Color templateListBackgroundColor = Styles.NewProjectDialog.TemplateListBackgroundColor;
+		Color templateBackgroundColor = Styles.NewProjectDialog.TemplateBackgroundColor;
+		Color templateSectionSeparatorColor = Styles.NewProjectDialog.TemplateSectionSeparatorColor;
 
 		VBox centreVBox;
 		HBox templatesHBox;
