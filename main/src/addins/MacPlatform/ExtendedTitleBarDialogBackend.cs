@@ -44,7 +44,7 @@ namespace MonoDevelop.MacIntegration
 				WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 			}
 
-			public Cairo.ImageSurface Background {
+			public Gdk.Pixbuf Background {
 				get;
 				set;
 			}
@@ -67,7 +67,8 @@ namespace MonoDevelop.MacIntegration
 					context.LineWidth = 1;
 					if (Background != null && Background.Width > 0) {
 						for (int x=0; x < Allocation.Width; x += Background.Width) {
-							Background.Show (context, x, -TitleBarHeight);
+							Gdk.CairoHelper.SetSourcePixbuf (context, Background, x, -TitleBarHeight);
+							context.Paint ();
 						}
 					} else {
 						context.Rectangle (0, 0, Allocation.Width, Allocation.Height);
@@ -102,18 +103,17 @@ namespace MonoDevelop.MacIntegration
 		{
 			base.Initialize ();
 
-			var resource = "maintoolbarbg.png";
+			var image = Xwt.Drawing.Image.FromResource (typeof(MacPlatformService).Assembly, "maintoolbarbg.png");
 
 			Window.Realized += delegate {
 				NSWindow w = GtkQuartz.GetWindow (Window);
 				w.IsOpaque = false;
-				NSImage img = MacPlatformService.LoadImage (resource);
-				w.BackgroundColor = NSColor.FromPatternImage (img);
+				w.BackgroundColor = NSColor.FromPatternImage (image.ToBitmap().ToNSImage());
 				w.StyleMask |= NSWindowStyle.TexturedBackground;
 			};
 
 			toolbar = new CustomToolbar ();
-			toolbar.Background = MonoDevelop.Components.CairoExtensions.LoadImage (typeof(MacPlatformService).Assembly, resource);
+			toolbar.Background = (Gdk.Pixbuf)Xwt.Toolkit.Load (Xwt.ToolkitType.Gtk).GetNativeImage (image);
 			toolbar.TitleBarHeight = MacPlatformService.GetTitleBarHeight ();
 			MainBox.PackStart (toolbar, false, false, 0);
 			((Gtk.Box.BoxChild)MainBox [toolbar]).Position = 0;

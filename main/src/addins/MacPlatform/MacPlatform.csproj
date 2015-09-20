@@ -210,6 +210,12 @@
     <EmbeddedResource Include="icons\stop~dark%402x.png">
       <LogicalName>stop~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="maintoolbarbg~dark.png">
+      <LogicalName>maintoolbarbg~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="maintoolbarbg~dark%402x.png">
+      <LogicalName>maintoolbarbg~dark@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Dialogs\" />
