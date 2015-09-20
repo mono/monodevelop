@@ -299,6 +299,7 @@
     </Compile>
     <Compile Include="MonoDevelop.PackageManagement.Gui\DialogExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageCellViewEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\Styles.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ImageLoader.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ImageLoadedEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageSourceViewModelChecker.cs" />

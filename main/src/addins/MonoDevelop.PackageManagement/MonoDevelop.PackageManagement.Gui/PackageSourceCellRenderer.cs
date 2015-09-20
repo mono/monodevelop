@@ -107,7 +107,7 @@ namespace MonoDevelop.PackageManagement
 		string GetPackageSourceDescriptionMarkup ()
 		{
 			return MarkupString.Format (
-				"<b>{0}</b>\n<span foreground='#747474'>{1}</span>",
+				"<b>{0}</b>\n<span foreground='" + CairoExtensions.ColorGetHex (Styles.PackageSourceUrlTextColor) + "'>{1}</span>",
 				PackageSourceViewModel.Name,
 				PackageSourceViewModel.SourceUrl);
 		}
@@ -115,7 +115,7 @@ namespace MonoDevelop.PackageManagement
 		string GetPackageSourceErrorMarkup ()
 		{
 			return MarkupString.Format (
-				"<span foreground='#656565'>{0}</span>",
+				"<span foreground='" + CairoExtensions.ColorGetHex (Styles.PackageSourceErrorTextColor) + "'>{0}</span>",
 				PackageSourceViewModel.ValidationFailureMessage);
 		}
 

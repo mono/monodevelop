@@ -37,9 +37,9 @@ namespace MonoDevelop.PackageManagement
 		{
 			CellWidth = 260;
 
-			BackgroundColor = Color.FromBytes (243, 246, 250);
-			StrongSelectionColor = Color.FromBytes (49, 119, 216);
-			SelectionColor = Color.FromBytes (204, 204, 204);
+			BackgroundColor = Styles.CellBackgroundColor;
+			StrongSelectionColor = Styles.CellStrongSelectionColor;
+			SelectionColor = Styles.CellSelectionColor;
 
 			UseStrongSelectionColor = true;
 		}
@@ -114,9 +114,9 @@ namespace MonoDevelop.PackageManagement
 		void UpdateTextColor (Context ctx)
 		{
 			if (UseStrongSelectionColor && Selected) {
-				ctx.SetColor (Colors.White);
+				ctx.SetColor (Styles.CellTextSelectionColor);
 			} else {
-				ctx.SetColor (Colors.Black);
+				ctx.SetColor (Styles.CellTextColor);
 			}
 		}
 
