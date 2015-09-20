@@ -58,6 +58,16 @@ namespace MonoDevelop.Components
 				window.Appearance = NSAppearance.GetAppearance (NSAppearance.NameAqua);
 			else
 				window.Appearance = NSAppearance.GetAppearance (NSAppearance.NameVibrantDark);
+			
+			object[] platforms = Mono.Addins.AddinManager.GetExtensionObjects ("/MonoDevelop/Core/PlatformService");
+			if (platforms.Length > 0) {
+				var platformService = (MonoDevelop.Ide.Desktop.PlatformService)platforms [0];
+				var image = Xwt.Drawing.Image.FromResource (platformService.GetType().Assembly, "maintoolbarbg.png");
+
+				window.IsOpaque = false;
+				window.BackgroundColor = NSColor.FromPatternImage (image.ToBitmap().ToNSImage());
+				window.StyleMask |= NSWindowStyle.TexturedBackground;
+			}
 		}
 
 		static void Window_WillClose (object sender, EventArgs e)
