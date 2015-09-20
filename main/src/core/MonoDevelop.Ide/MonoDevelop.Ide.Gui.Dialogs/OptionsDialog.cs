@@ -140,6 +140,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				c.Light += 0.09;
 				fboxHeader.BackgroundColor = c.ToGdkColor ();
 			};
+			StyleSet += delegate {
+				if (IsRealized) {
+					var c = Style.Background (Gtk.StateType.Normal).ToXwtColor ();
+					c.Light += 0.09;
+					fboxHeader.BackgroundColor = c.ToGdkColor ();
+				}
+			};
 			vbox.PackStart (fboxHeader, false, false, 0);
 
 			pageFrame = new HBox ();
