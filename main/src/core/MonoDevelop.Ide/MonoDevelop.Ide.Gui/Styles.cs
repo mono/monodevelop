@@ -28,7 +28,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui
 {
-	static class Styles
+	public static class Styles
 	{
 		public static event EventHandler Changed;
 
