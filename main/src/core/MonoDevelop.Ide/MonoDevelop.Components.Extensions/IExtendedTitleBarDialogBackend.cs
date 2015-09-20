@@ -34,7 +34,7 @@ namespace MonoDevelop.Components.Extensions
 		void SetHeaderContent (IWidgetBackend backend);
 	}
 
-	class GtkExtendedTitleBarDialogBackend: DialogBackend, IExtendedTitleBarDialogBackend
+	class GtkExtendedTitleBarDialogBackend: ThemedGtkDialogBackend, IExtendedTitleBarDialogBackend
 	{
 		HeaderBox toolbar;
 

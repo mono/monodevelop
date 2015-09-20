@@ -38,6 +38,8 @@ namespace MonoDevelop.Components
 		static IdeTheme ()
 		{
 			IdeApp.Preferences.UserInterfaceSkinChanged += Preferences_UserInterfaceSkinChanged;
+			Xwt.Toolkit.CurrentEngine.RegisterBackend <Xwt.Backends.IWindowBackend, ThemedGtkWindowBackend>();
+			Xwt.Toolkit.CurrentEngine.RegisterBackend <Xwt.Backends.IDialogBackend, ThemedGtkDialogBackend>();
 		}
 #if MAC
 		static HashSet<NSWindow> nsWindows = new HashSet<NSWindow> ();
@@ -97,6 +99,24 @@ namespace MonoDevelop.Components
 					ApplyTheme (nsw);
 			}
 			#endif
+		}
+	}
+
+	public class ThemedGtkWindowBackend : Xwt.GtkBackend.WindowBackend
+	{
+		public override void Initialize ()
+		{
+			base.Initialize ();
+			IdeTheme.ApplyTheme (Window);
+		}
+	}
+
+	public class ThemedGtkDialogBackend : Xwt.GtkBackend.DialogBackend
+	{
+		public override void Initialize ()
+		{
+			base.Initialize ();
+			IdeTheme.ApplyTheme (Window);
 		}
 	}
 }
