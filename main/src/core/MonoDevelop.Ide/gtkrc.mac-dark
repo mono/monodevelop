@@ -327,12 +327,24 @@ style "scrollbar" = "default"
 {
     GtkScrollbar::has-forward-stepper = 0
     GtkScrollbar::has-backward-stepper = 0
-    GtkRange::slider-width = 15
-    GtkRange::trough-border = 0
+    GtkRange::slider-width = 8
+    GtkRange::trough-border = 4
     GtkRange::trough-side-details = 0
 
-    engine "quartz" {
-    }
+	bg[NORMAL] = @base_color
+	bg[ACTIVE] = @bg_color
+	bg[PRELIGHT] = @bg_color
+	bg[INSENSITIVE] = @bg_color
+	bg[SELECTED] = @bg_color
+	#bg[PRELIGHT] = shade (1.75, @bg_color)
+	#bg[INSENSITIVE] = shade (1.75, @bg_color)
+	#bg[SELECTED] = shade (1.75, @base_color)
+
+	engine "xamarin"
+	{
+		roundness	= 1
+		#border_shades	= {0.75, 0.75}
+	}
 }
 
 style "progressbar" = "default"
