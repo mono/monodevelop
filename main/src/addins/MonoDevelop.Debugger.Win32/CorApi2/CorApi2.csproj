@@ -38,7 +38,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE;MDBG_FEATURE_INTEROP,MDBGENG_FEATURE_TRACECALLS,MDBGENG_FEATURE_CAPTUREOUTPUT,CORAPI_EXPOSE_RAW_INTERFACES</DefineConstants>
