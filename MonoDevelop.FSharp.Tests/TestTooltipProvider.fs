@@ -139,7 +139,6 @@ type TestTooltipProvider() =
             """
         
         let signature = getTooltip input "A"
-                     //     type A<^T when ^T : (static member staticMethod1 : unit ->  ^T)> 
         let expected = """type A<^T when ^T : (static member staticMethod1 : unit -> ^T)>"""
         signature.ToString() |> should startWith expected
 
@@ -152,7 +151,6 @@ type TestTooltipProvider() =
             """
         
         let signature = getTooltip input "A"
-                       //   type A<'T when 'T : (member Method1 : int)> 
         let expected = """type A<^T when ^T : (member Method1 : ^T -> int)>"""
         signature.ToString() |> should startWith expected
 
@@ -261,6 +259,7 @@ type TestTooltipProvider() =
         signature.ToString() |> should startWith expected
 
     [<Test>]
+    [<Ignore>]
     member this.Formats_member_constraints_with_two_type_parameters_tooltip() =
         let input = 
             """
@@ -270,10 +269,11 @@ type TestTooltipProvider() =
         
         let signature = getTooltip input "add"
 
-        let expected = """type A<'T when 'T : unmanaged>"""
+        let expected = """???"""
         signature.ToString() |> should startWith expected
 
     [<Test>]
+    [<Ignore>]
     member this.Formats_member_operator_constraint_tooltip() =
         let input = 
             """
@@ -283,7 +283,7 @@ type TestTooltipProvider() =
         
         let signature = getTooltip input "heterogenousAdd"
 
-        let expected = """type A<'T when 'T : unmanaged>"""
+        let expected = """???"""
         signature.ToString() |> should startWith expected
     
     [<Test>]
@@ -302,8 +302,9 @@ type TestTooltipProvider() =
 
 type Class14<'T,'U when 'T : equality and 'U : equality> =
     class end
-//let inline add(value1 : ^T when ^T : (static member (+) : ^T * ^T -> ^T), value2: ^T) =
-//    value1 + value2
+//type yo = 
+//    let inline add(value1 : ^T when ^T : (static member (+) : ^T * ^T -> ^T), value2: ^T) =
+//        value1 + value2
 //let inline heterogenousAdd(value1 : ^T when (^T or ^U) : (static member (+) : ^T * ^U -> ^T), value2 : ^U) =
 //    value1 + value2
 type Class12<'T when 'T : delegate<obj * System.EventArgs, unit>> =
