@@ -20,7 +20,8 @@ namespace MonoDevelop.Debugger.Win32
 {
 	public class CorDebuggerSession: DebuggerSession
 	{
-		readonly object debugLock = new object ();
+	  private readonly char[] badPathChars;
+	  readonly object debugLock = new object ();
 		readonly object terminateLock = new object ();
 
 		CorDebugger dbg;
@@ -61,9 +62,10 @@ namespace MonoDevelop.Debugger.Win32
 			public int References;
 		}
 
-		public CorDebuggerSession ( )
+    public CorDebuggerSession(char[] badPathChars)
 		{
-			documents = new Dictionary<string, DocInfo> (StringComparer.CurrentCultureIgnoreCase);
+      this.badPathChars = badPathChars;
+      documents = new Dictionary<string, DocInfo> (StringComparer.CurrentCultureIgnoreCase);
 			modules = new Dictionary<string, ModuleInfo> (StringComparer.CurrentCultureIgnoreCase);
 
 			ObjectAdapter = new CorObjectAdaptor ();
@@ -495,7 +497,6 @@ namespace MonoDevelop.Debugger.Win32
 			string file = e.Module.Assembly.Name;
 			lock (documents) {
 				ISymbolReader reader = null;
-				char[] badPathChars = MonoDevelop.Core.FilePath.GetInvalidPathChars ();
 				if (file.IndexOfAny (badPathChars) == -1 && System.IO.File.Exists (System.IO.Path.ChangeExtension (file, ".pdb"))) {
 					try {
 						reader = symbolBinder.GetReaderForFile (mi.RawCOMObject, file, ".");
