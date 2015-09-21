@@ -51,6 +51,12 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>mono.debugging.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -62,6 +68,9 @@
     <Compile Include="ICorPublishWrappers.cs" />
     <Compile Include="RawAssemblyAttributes.cs" />
     <Compile Include="WindowsImports.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="mono.debugging.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
