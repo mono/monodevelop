@@ -32,6 +32,7 @@
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\..\build\AddIns\MonoDevelop.TextTemplating\TextTransform.xml</DocumentationFile>
+    <Commandlineparameters>-o:out.txt in.tt</Commandlineparameters>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -37,8 +37,8 @@
       <Execution clr-version="Net_2_0" />
     </Execution>
     <DebugSymbols>true</DebugSymbols>
-    <DefineConstants>1591</DefineConstants>
     <DocumentationFile>..\..\..\..\build\AddIns\BackendBindings\MonoDevelop.CSharpBinding.Autotools.xml</DocumentationFile>
+    <NoWarn>1591;1573</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\MonoDevelop.Autotools\MonoDevelop.Autotools.csproj">
