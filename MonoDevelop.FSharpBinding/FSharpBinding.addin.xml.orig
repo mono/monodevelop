@@ -168,6 +168,10 @@
   <Extension path = "/MonoDevelop/TypeSystem/OutputTracking">
      <Track languageName = "F#"/>
   </Extension>
+  
+  <Extension path="/MonoDevelop/Ide/SearchCategories">
+    <Class class="MonoDevelop.FSharp.ProjectSearchCategory" />
+  </Extension>
 
   <!-- F# interactive -->
 
