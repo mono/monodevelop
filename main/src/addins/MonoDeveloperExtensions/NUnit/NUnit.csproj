@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>NUnit</RootNamespace>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <AssemblyName>MonoDeveloperExtensions_nunit</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -21,7 +22,6 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
-    <AssemblyName>MonoDeveloperExtensions_nunit</AssemblyName>
     <DefineConstants>DEBUG</DefineConstants>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\..\build\AddIns\MonoDeveloperExtensions\MonoDeveloperExtensions_nunit.xml</DocumentationFile>
@@ -36,10 +36,9 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
-    <AssemblyName>NUnit</AssemblyName>
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\..\build\AddIns\MonoDeveloperExtensions\NUnit.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\..\build\AddIns\MonoDeveloperExtensions\MonoDeveloperExtensions_nunit.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDeveloperExtensions.csproj">
