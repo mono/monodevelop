@@ -524,6 +524,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			throw new Exception ("Too many cache directories");
 		}
 
+		static string EscapeToXml (string txt)
+		{
+			return new System.Xml.Linq.XText (txt).ToString ();
+		}
+
 		static string CreateCacheDirectory (FilePath fileName)
 		{
 			CanonicalizePath (ref fileName);
@@ -535,7 +540,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				File.WriteAllText (
 					Path.Combine (cacheDir, "data.xml"),
-					string.Format ("<DerivedData><File name=\"{0}\" version =\"{1}\"/></DerivedData>", fileName, CurrentVersion)
+					string.Format ("<DerivedData><File name=\"{0}\" version =\"{1}\"/></DerivedData>", EscapeToXml (fileName), CurrentVersion)
 				);
 
 				return cacheDir;
