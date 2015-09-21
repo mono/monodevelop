@@ -62,10 +62,10 @@ namespace MonoDevelop.Debugger.Win32
 			public int References;
 		}
 
-    public CorDebuggerSession(char[] badPathChars)
+		public CorDebuggerSession(char[] badPathChars)
 		{
-      this.badPathChars = badPathChars;
-      documents = new Dictionary<string, DocInfo> (StringComparer.CurrentCultureIgnoreCase);
+			this.badPathChars = badPathChars;
+			documents = new Dictionary<string, DocInfo> (StringComparer.CurrentCultureIgnoreCase);
 			modules = new Dictionary<string, ModuleInfo> (StringComparer.CurrentCultureIgnoreCase);
 
 			ObjectAdapter = new CorObjectAdaptor ();
