@@ -20,6 +20,11 @@ open MonoDevelop.FSharp.Symbols
 open ExtCore.Control
 open Symbols
 
+type A<'T> = { i : 'T -> unit }
+type Class1<'T when 'T :> System.Exception> =
+    class end
+type B<'a> = 
+    class end
 /// Resolves locations to tooltip items, and orchestrates their display.
 type FSharpTooltipProvider() = 
     inherit TooltipProvider()
