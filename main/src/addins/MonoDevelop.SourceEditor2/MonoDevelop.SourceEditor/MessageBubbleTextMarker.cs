@@ -151,7 +151,6 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		string initialText;
 		bool isError;
 
 		public MessageBubbleTextMarker (MessageBubbleCache cache)
@@ -169,7 +168,6 @@ namespace MonoDevelop.SourceEditor
 			this.cache = cache;
 			this.task = task;
 			this.IsVisible = true;
-			this.initialText = editor.Document.GetTextAt (LineSegment);
 			this.isError = isError;
 			AddError (task, isError, errorMessage);
 //			cache.Changed += (sender, e) => CalculateLineFit (editor, lineSegment);
@@ -589,7 +587,7 @@ namespace MonoDevelop.SourceEditor
 
 			bool isEolSelected = editor.IsSomethingSelected && editor.SelectionMode != Mono.TextEditor.SelectionMode.Block ? editor.SelectionRange.Contains (LineSegment.Offset + LineSegment.Length) : false;
 
-			int active = editor.Document.GetTextAt (LineSegment) == initialText ? 0 : 1;
+			int active = 0;
 			bool highlighted = active == 0 && isCaretInLine;
 			var y = metrics.LineYRenderStartPosition;
 			// draw background
