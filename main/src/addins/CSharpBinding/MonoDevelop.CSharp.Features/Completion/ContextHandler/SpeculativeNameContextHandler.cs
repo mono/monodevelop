@@ -48,6 +48,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				return Enumerable.Empty<CompletionData>();
 
 			var token = tree.FindTokenOnLeftOfPosition(completionContext.Position, cancellationToken);
+			if (token.Span.End == completionContext.Position)
+				return Enumerable.Empty<CompletionData>();
 			var parent = token.Parent.AncestorsAndSelf ().OfType<GenericNameSyntax> ().FirstOrDefault () ?? token.Parent;
 
 			if (!parent.Parent.IsKind (SyntaxKind.IncompleteMember) &&
