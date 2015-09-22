@@ -20,8 +20,8 @@ namespace MonoDevelop.Debugger.Win32
 {
 	public class CorDebuggerSession: DebuggerSession
 	{
-	  private readonly char[] badPathChars;
-	  readonly object debugLock = new object ();
+		private readonly char[] badPathChars;
+		readonly object debugLock = new object ();
 		readonly object terminateLock = new object ();
 
 		CorDebugger dbg;
@@ -176,8 +176,8 @@ namespace MonoDevelop.Debugger.Win32
 				}
 
 				process = dbg.CreateProcess (startInfo.Command, cmdLine, startInfo.WorkingDirectory, env, flags);				
-        SetupProcess (process);
-			  process.Continue (false);
+				SetupProcess (process);
+				process.Continue (false);
 			});
 			OnStarted ();
 		}
@@ -675,9 +675,7 @@ namespace MonoDevelop.Debugger.Win32
 				return false;
 			// See if a catchpoint is set for this exception.
 			foreach (Catchpoint cp in Breakpoints.GetCatchpoints()) {
-				if (cp.Enabled &&
-				    ((cp.IncludeSubclasses && exceptions.Contains (cp.ExceptionName)) ||
-				    (exceptions [0] == cp.ExceptionName))) {
+				if (cp.Enabled && ((cp.IncludeSubclasses && exceptions.Contains (cp.ExceptionName)) || (exceptions [0] == cp.ExceptionName))) {
 					return true;
 				}
 			}
@@ -700,8 +698,8 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			MtaThread.Run (delegate
 			{
-        process.Stop (1000);
-        process.Detach ();
+				process.Stop(1000);
+				process.Detach();
 			});
 		}
 
@@ -1140,16 +1138,8 @@ namespace MonoDevelop.Debugger.Win32
 
 			WaitUntilStopped ();
 			if (exception != null) {
-/*				ValueReference<CorValue, CorType> msg = ctx.Adapter.GetMember (ctx, val, "Message");
-				if (msg != null) {
-					string s = msg.ObjectValue as string;
-					mc.ExceptionMessage = s;
-				}
-				else
-					mc.ExceptionMessage = "Evaluation failed.";*/
 				CorValRef vref = new CorValRef (exception);
-				//throw new EvaluatorException ("Evaluation failed: " + );
-			  throw new EvaluatorExceptionThrownException (vref, ObjectAdapter.GetValueTypeName (ctx, vref));
+				throw new EvaluatorExceptionThrownException (vref, ObjectAdapter.GetValueTypeName (ctx, vref));
 			}
 
 			return eval.Result;
