@@ -132,6 +132,7 @@ namespace MonoDevelop.CSharp
 				var root = await document.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
 				var infos = new List<DeclaredSymbolInfo> ();
 				foreach (var current in root.DescendantNodesAndSelf (CSharpSyntaxFactsService.DescentIntoSymbolForDeclarationSearch)) {
+					cancellationToken.ThrowIfCancellationRequested ();
 					DeclaredSymbolInfo declaredSymbolInfo;
 					if (current.TryGetDeclaredSymbolInfo (out declaredSymbolInfo)) {
 						infos.Add (declaredSymbolInfo);
