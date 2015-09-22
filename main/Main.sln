@@ -296,6 +296,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsPlatform.Tests", "te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Debugging.Win32", "src\addins\MonoDevelop.Debugger.Win32\Mono.Debugging.Win32\Mono.Debugging.Win32.csproj", "{74704C00-5861-4F86-920C-865148A175C5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{57D62846-D111-4901-AB67-56A5F6D3DC22}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2248,6 +2253,7 @@ Global
 		{8AFA4FB4-BD2D-478F-942B-7AE3451535BB}.ReleaseWin32|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{8AFA4FB4-BD2D-478F-942B-7AE3451535BB}.ReleaseWin32|Mixed Platforms.Build.0 = Release|Any CPU
 		{9FBCC262-10DC-4E84-A5C4-17230BBF8862}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FBCC262-10DC-4E84-A5C4-17230BBF8862}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9FBCC262-10DC-4E84-A5C4-17230BBF8862}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{9FBCC262-10DC-4E84-A5C4-17230BBF8862}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{9FBCC262-10DC-4E84-A5C4-17230BBF8862}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
@@ -2261,6 +2267,7 @@ Global
 		{9FBCC262-10DC-4E84-A5C4-17230BBF8862}.DebugWin32|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{9FBCC262-10DC-4E84-A5C4-17230BBF8862}.DebugWin32|Mixed Platforms.Build.0 = Debug|Any CPU
 		{9FBCC262-10DC-4E84-A5C4-17230BBF8862}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FBCC262-10DC-4E84-A5C4-17230BBF8862}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9FBCC262-10DC-4E84-A5C4-17230BBF8862}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{9FBCC262-10DC-4E84-A5C4-17230BBF8862}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{9FBCC262-10DC-4E84-A5C4-17230BBF8862}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
@@ -2274,6 +2281,7 @@ Global
 		{9FBCC262-10DC-4E84-A5C4-17230BBF8862}.ReleaseWin32|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{9FBCC262-10DC-4E84-A5C4-17230BBF8862}.ReleaseWin32|Mixed Platforms.Build.0 = Release|Any CPU
 		{69136056-BFD3-4CEC-BB41-D9991C79593C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69136056-BFD3-4CEC-BB41-D9991C79593C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69136056-BFD3-4CEC-BB41-D9991C79593C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{69136056-BFD3-4CEC-BB41-D9991C79593C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{69136056-BFD3-4CEC-BB41-D9991C79593C}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
@@ -2287,6 +2295,7 @@ Global
 		{69136056-BFD3-4CEC-BB41-D9991C79593C}.DebugWin32|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{69136056-BFD3-4CEC-BB41-D9991C79593C}.DebugWin32|Mixed Platforms.Build.0 = Debug|Any CPU
 		{69136056-BFD3-4CEC-BB41-D9991C79593C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69136056-BFD3-4CEC-BB41-D9991C79593C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{69136056-BFD3-4CEC-BB41-D9991C79593C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{69136056-BFD3-4CEC-BB41-D9991C79593C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{69136056-BFD3-4CEC-BB41-D9991C79593C}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU

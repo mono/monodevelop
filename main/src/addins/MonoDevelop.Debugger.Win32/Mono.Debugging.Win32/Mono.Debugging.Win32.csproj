@@ -78,14 +78,17 @@
     <ProjectReference Include="..\..\..\..\external\debugger-libs\Mono.Debugging\Mono.Debugging.csproj">
       <Project>{90c99adb-7d4b-4eb4-98c2-40bd1b14c7d2}</Project>
       <Name>Mono.Debugging</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\CorApi2\CorApi2.csproj">
       <Project>{69136056-bfd3-4cec-bb41-d9991c79593c}</Project>
       <Name>CorApi2</Name>
+      <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\CorApi\CorApi.csproj">
       <Project>{9fbcc262-10dc-4e84-a5c4-17230bbf8862}</Project>
       <Name>CorApi</Name>
+      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
