@@ -34,7 +34,7 @@ namespace UserInterfaceTests
 	{
 		readonly string miscCategory = "Miscellaneous";
 
-		[Test]
+		[Test, Timeout(60000)]
 		[TestCase ("Generic Project", "Generic", TestName = "TestMiscGenericProject", Description = "Create and build Generic Project")]
 		[TestCase ("Packaging project", "Generic", TestName = "TestMiscPackagingProject", Description = "Create and build Packaging Project")]
 		[TestCase ("Shared Library", "C/C++", TestName = "TestMiscCCPlusSharedLibrary", Description = "Create and build Shared C/C++ Library")]

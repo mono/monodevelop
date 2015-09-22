@@ -35,7 +35,7 @@ namespace UserInterfaceTests
 	{
 		readonly string aspCategory = "ASP.NET";
 
-		[Test]
+		[Test, Timeout(60000)]
 		[TestCase ("Empty ASP.NET MVC Project", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestEmptyASPMVCProject",
 			Description = "Create and build Empty ASP.NET MVC Project")]
 		[TestCase ("Empty ASP.NET Project", BeforeBuildAction.None, TestName = "TestEmptyASPProject",

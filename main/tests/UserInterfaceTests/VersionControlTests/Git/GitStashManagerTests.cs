@@ -31,7 +31,7 @@ using MonoDevelop.Components.AutoTest;
 
 namespace UserInterfaceTests
 {
-	[TestFixture]
+	[TestFixture, Timeout(60000)]
 	[Category ("Git")]
 	[Category ("StashManager")]
 	public class GitStashManagerTests : GitBase
