@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.SymbolStore;
 using System.Reflection;
 using Microsoft.Samples.Debugging.CorDebug;
@@ -7,6 +9,7 @@ using Microsoft.Samples.Debugging.CorMetadata;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace MonoDevelop.Debugger.Win32
 {
@@ -29,15 +32,22 @@ namespace MonoDevelop.Debugger.Win32
 
 		internal static IEnumerable<CorFrame> GetFrames (CorThread thread)
 		{
-			foreach (CorChain chain in thread.Chains) {
-                if (!chain.IsManaged)
-                    continue;
-                foreach (CorFrame frame in chain.Frames)
-                    yield return frame;
-			}
+		  var result = new List<CorFrame> ();
+		  try {
+		    var chains = thread.Chains;
+		    foreach (CorChain chain in chains) {
+		      if (!chain.IsManaged)
+		        continue;
+		      foreach (CorFrame frame in chain.Frames)
+		        result.Add (frame);
+		    }
+		  }
+		  catch (COMException e) {		    
+		  }
+		  return result;
 		}
 
-		internal List<CorFrame> FrameList {
+	  internal List<CorFrame> FrameList {
 			get {
 				if (evalTimestamp != CorDebuggerSession.EvaluationTimestamp) {
 					thread = session.GetThread (threadId);
