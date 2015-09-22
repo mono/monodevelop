@@ -1355,6 +1355,25 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (byDefault);
 			Assert.IsFalse (require);
 		}
+
+		[Test]
+		public async Task RenameFile ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Project p = (Project) sol.Items [0];
+
+			var f = p.GetProjectFile (p.ItemDirectory.Combine ("Program.cs"));
+			f.Name = p.ItemDirectory.Combine ("test.cs");
+
+			Assert.AreEqual ("test.cs", f.FilePath.FileName);
+			await sol.SaveAsync (Util.GetMonitor ());
+
+			var mp = await MSBuildProject.LoadAsync (p.FileName);
+			mp.Evaluate ();
+			Assert.IsTrue (mp.EvaluatedItems.FirstOrDefault (i => i.Name == "Compile" && i.Include == "test.cs") != null);
+			Assert.IsTrue (mp.EvaluatedItems.FirstOrDefault (i => i.Name == "Compile" && i.Include == "Program.cs") == null);
+		}
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode

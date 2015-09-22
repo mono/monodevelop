@@ -180,6 +180,11 @@ namespace MonoDevelop.Projects
 				if (IsLink && Link.FileName == oldPath.FileName)
 					link = Path.Combine (Path.GetDirectoryName (link), filename.FileName);
 
+				// If a file that belongs to a project is being renamed, update the value of UnevaluatedInclude
+				// since that is used when saving
+				if (Project != null)
+					UnevaluatedInclude = Include;
+
 				OnPathChanged (oldPath, filename, oldVirtualPath, ProjectVirtualPath);
 
 				if (Project != null)

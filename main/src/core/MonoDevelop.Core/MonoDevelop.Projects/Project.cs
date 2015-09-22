@@ -2459,7 +2459,7 @@ namespace MonoDevelop.Projects
 			unusedItems.Remove (buildItem);
 
 			item.Write (this, buildItem);
-			if (pathPrefix != null)
+			if (buildItem.Include != include)
 				buildItem.Include = include;
 		}
 
