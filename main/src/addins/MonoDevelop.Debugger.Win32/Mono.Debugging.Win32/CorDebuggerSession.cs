@@ -1085,13 +1085,14 @@ namespace MonoDevelop.Debugger.Win32
 			CorValue exception = null;
 			CorEval eval = ctx.Eval;
 
-			EvalEventHandler completeHandler = delegate (object o, CorEvalEventArgs eargs) {
+		    DebugEventHandler<CorEvalEventArgs> completeHandler = delegate (object o, CorEvalEventArgs eargs) {
 				OnEndEvaluating ();
 				mc.DoneEvent.Set ();
 				eargs.Continue = false;
 			};
 
-			EvalEventHandler exceptionHandler = delegate (object o, CorEvalEventArgs eargs) {
+            DebugEventHandler<CorEvalEventArgs> exceptionHandler = delegate(object o, CorEvalEventArgs eargs)
+            {
 				OnEndEvaluating ();
 				exception = eargs.Eval.Result;
 				mc.DoneEvent.Set ();
@@ -1167,14 +1168,15 @@ namespace MonoDevelop.Debugger.Win32
 			ManualResetEvent doneEvent = new ManualResetEvent (false);
 			CorValue result = null;
 
-			EvalEventHandler completeHandler = delegate (object o, CorEvalEventArgs eargs) {
+			DebugEventHandler<CorEvalEventArgs> completeHandler = delegate (object o, CorEvalEventArgs eargs) {
 				OnEndEvaluating ();
 				result = eargs.Eval.Result;
 				doneEvent.Set ();
 				eargs.Continue = false;
 			};
 
-			EvalEventHandler exceptionHandler = delegate (object o, CorEvalEventArgs eargs) {
+            DebugEventHandler<CorEvalEventArgs> exceptionHandler = delegate(object o, CorEvalEventArgs eargs)
+            {
 				OnEndEvaluating ();
 				result = eargs.Eval.Result;
 				doneEvent.Set ();
@@ -1206,7 +1208,7 @@ namespace MonoDevelop.Debugger.Win32
 			ManualResetEvent doneEvent = new ManualResetEvent (false);
 			CorValue result = null;
 
-			EvalEventHandler completeHandler = delegate (object o, CorEvalEventArgs eargs)
+            DebugEventHandler<CorEvalEventArgs> completeHandler = delegate(object o, CorEvalEventArgs eargs)
 			{
 				OnEndEvaluating ();
 				result = eargs.Eval.Result;
@@ -1214,7 +1216,7 @@ namespace MonoDevelop.Debugger.Win32
 				eargs.Continue = false;
 			};
 
-			EvalEventHandler exceptionHandler = delegate (object o, CorEvalEventArgs eargs)
+            DebugEventHandler<CorEvalEventArgs> exceptionHandler = delegate(object o, CorEvalEventArgs eargs)
 			{
 				OnEndEvaluating ();
 				result = eargs.Eval.Result;
