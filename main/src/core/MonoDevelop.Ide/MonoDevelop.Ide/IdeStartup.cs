@@ -105,11 +105,15 @@ namespace MonoDevelop.Ide
 				LoggingService.LogError ("Error initialising GLib logging.", ex);
 			}
 
-			SetupTheme ();
-			IdeApp.Preferences.UserInterfaceSkinChanged += (s,a) => UpdateTheme ();
+			// On Windows we have to load our gtkrc first
+			if (Platform.IsWindows)
+				UpdateGtkRc ();
 
 			var args = options.RemainingArgs.ToArray ();
 			Gtk.Application.Init (BrandingService.ApplicationName, ref args);
+
+			SetupTheme ();
+			IdeApp.Preferences.UserInterfaceSkinChanged += (s,a) => UpdateTheme ();
 
 			LoggingService.LogInfo ("Using GTK+ {0}", IdeVersionInfo.GetGtkVersion ());
 
@@ -342,7 +346,7 @@ namespace MonoDevelop.Ide
 			UpdateTheme ();
 		}
 
-		void UpdateTheme ()
+		bool UpdateGtkRc ()
 		{
 			// Use the bundled gtkrc only if the Xamarin theme is installed
 			if (File.Exists (Path.Combine (Gtk.Rc.ModuleDir, "libxamarin.so")) || File.Exists (Path.Combine (Gtk.Rc.ModuleDir, "libxamarin.dll"))) {
@@ -365,17 +369,31 @@ namespace MonoDevelop.Ide
 						gtkrc += "-yosemite";
 					}
 				}
+
 				var gtkrcf = PropertyService.EntryAssemblyPath.Combine (gtkrc);
 				LoggingService.LogInfo ("GTK: Using gtkrc from {0}", gtkrcf);
-				
-				// Generate a dummy rc file and use that to include the real rc. This allows changing the rc
-				// on the fly. All we have to do is rewrite the dummy rc changing the include and call ReparseAll
 
-				var rcFile = UserProfile.Current.ConfigDir.Combine ("gtkrc");
-				File.WriteAllText (rcFile, "include \"" + gtkrcf + "\"");
-				Environment.SetEnvironmentVariable ("GTK2_RC_FILES", rcFile);
+				if (Platform.IsWindows) {
+					Environment.SetEnvironmentVariable ("GTK2_RC_FILES", gtkrcf);
+				} else if (Platform.IsMac) {
+					// Generate a dummy rc file and use that to include the real rc. This allows changing the rc
+					// on the fly. All we have to do is rewrite the dummy rc changing the include and call ReparseAll
+					var rcFile = UserProfile.Current.ConfigDir.Combine ("gtkrc");
+					if (!Directory.Exists (UserProfile.Current.ConfigDir))
+						Directory.CreateDirectory (UserProfile.Current.ConfigDir);
+					File.WriteAllText (rcFile, "include \"" + gtkrcf + "\"");
+					Environment.SetEnvironmentVariable ("GTK2_RC_FILES", rcFile);
+				}
 				Gtk.Rc.ReparseAll ();
 
+				return true;
+			}
+			return false;
+		}
+
+		void UpdateTheme ()
+		{
+			if (UpdateGtkRc()) {
 				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark)
 					Xwt.Drawing.Context.SetGlobalStyle ("dark");
 				else
