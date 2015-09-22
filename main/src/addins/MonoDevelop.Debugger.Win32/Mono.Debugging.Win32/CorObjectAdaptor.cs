@@ -32,6 +32,7 @@ using System.Diagnostics;
 using System.Diagnostics.SymbolStore;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Microsoft.Samples.Debugging.CorDebug;
@@ -41,7 +42,6 @@ using Microsoft.Samples.Debugging.Extensions;
 using Mono.Debugging.Backend;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
-using SR = System.Reflection;
 
 namespace MonoDevelop.Debugger.Win32
 {
@@ -287,7 +287,7 @@ namespace MonoDevelop.Debugger.Win32
 					ulong nval = (ulong) System.Convert.ChangeType (val.ObjectValue, typeof (ulong));
 					ulong remainingFlags = nval;
 					string flags = null;
-					foreach (ValueReference evals in GetMembers (ctx, co.ExactType, null, SR.BindingFlags.Public | SR.BindingFlags.Static)) {
+					foreach (ValueReference evals in GetMembers (ctx, co.ExactType, null, BindingFlags.Public | BindingFlags.Static)) {
 						ulong nev = (ulong) System.Convert.ChangeType (evals.ObjectValue, typeof (ulong));
 						if (nval == nev)
 							return evals.Name;
@@ -312,7 +312,7 @@ namespace MonoDevelop.Debugger.Win32
 
 				var targetType = (CorType) GetValueType (ctx, objr);
 
-				var methodInfo = OverloadResolve (cctx, "ToString", targetType, new CorType[0], SR.BindingFlags.Public | SR.BindingFlags.Instance, false);
+				var methodInfo = OverloadResolve (cctx, "ToString", targetType, new CorType[0], BindingFlags.Public | BindingFlags.Instance, false);
 				if (methodInfo != null && methodInfo.Item1.DeclaringType != null && methodInfo.Item1.DeclaringType.FullName != "System.Object") {
 					var args = new object[0];
 					object ores = RuntimeInvoke (ctx, targetType, objr, "ToString", new object[0], args, args);
@@ -367,13 +367,13 @@ namespace MonoDevelop.Debugger.Win32
 			return (CorValRef) RuntimeInvoke (ctx, at, arr, "GetValue", argTypes, new object[] {CreateValue (ctx, 0)});
 		}
 
-		public override bool HasMethod (EvaluationContext gctx, object gtargetType, string methodName, object[] ggenericArgTypes, object[] gargTypes, SR.BindingFlags flags)
+		public override bool HasMethod (EvaluationContext gctx, object gtargetType, string methodName, object[] ggenericArgTypes, object[] gargTypes, BindingFlags flags)
 		{
 			// FIXME: support generic methods by using the genericArgTypes parameter
 			CorType targetType = (CorType) gtargetType;
 			CorType[] argTypes = gargTypes != null ? CastArray<CorType> (gargTypes) : null;
 			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
-			flags = flags | SR.BindingFlags.Public | SR.BindingFlags.NonPublic;
+			flags = flags | BindingFlags.Public | BindingFlags.NonPublic;
 
 			return OverloadResolve (ctx, methodName, targetType, argTypes, flags, false) != null;
 		}
@@ -386,11 +386,11 @@ namespace MonoDevelop.Debugger.Win32
 			CorType[] argTypes = CastArray<CorType> (gargTypes);
 			CorValRef[] argValues = CastArray<CorValRef> (gargValues);
 
-			SR.BindingFlags flags = SR.BindingFlags.Public | SR.BindingFlags.NonPublic;
+			BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic;
 			if (target != null)
-				flags |= SR.BindingFlags.Instance;
+				flags |= BindingFlags.Instance;
 			else
-				flags |= SR.BindingFlags.Static;
+				flags |= BindingFlags.Static;
 
 			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
 			var methodInfo = OverloadResolve (ctx, methodName, targetType, argTypes, flags, true);
@@ -398,7 +398,7 @@ namespace MonoDevelop.Debugger.Win32
 				return null;
 			var method = methodInfo.Item1;
 			var methodOwner = methodInfo.Item2;
-			SR.ParameterInfo[] parameters = method.GetParameters ();
+			ParameterInfo[] parameters = method.GetParameters ();
 			// TODO: Check this.
 			for (int n = 0; n < parameters.Length; n++) {
 				if (parameters[n].ParameterType == typeof (object) && IsValueType (ctx, argValues[n]) &&
@@ -439,18 +439,18 @@ namespace MonoDevelop.Debugger.Win32
 		/// <param name="flags"></param>
 		/// <param name="throwIfNotFound"></param>
 		/// <returns></returns>
-		Tuple<SR.MethodInfo, CorType> OverloadResolve (CorEvaluationContext ctx, string methodName, CorType type, CorType[] argtypes, SR.BindingFlags flags, bool throwIfNotFound)
+		Tuple<MethodInfo, CorType> OverloadResolve (CorEvaluationContext ctx, string methodName, CorType type, CorType[] argtypes, BindingFlags flags, bool throwIfNotFound)
 		{
-			List<Tuple<SR.MethodInfo, CorType>> candidates = new List<Tuple<SR.MethodInfo, CorType>> ();
+			List<Tuple<MethodInfo, CorType>> candidates = new List<Tuple<MethodInfo, CorType>> ();
 			CorType currentType = type;
 
 			while (currentType != null) {
 				Type rtype = currentType.GetTypeInfo (ctx.Session);
-				foreach (SR.MethodInfo met in rtype.GetMethods (flags)) {
+				foreach (MethodInfo met in rtype.GetMethods (flags)) {
 					if (met.Name == methodName || (!ctx.CaseSensitive && met.Name.Equals (methodName, StringComparison.CurrentCultureIgnoreCase))) {
 						if (argtypes == null)
 							return Tuple.Create (met, currentType);
-						SR.ParameterInfo[] pars = met.GetParameters ();
+						ParameterInfo[] pars = met.GetParameters ();
 						if (pars.Length == argtypes.Length)
 							candidates.Add (Tuple.Create (met, currentType));
 					}
@@ -484,9 +484,9 @@ namespace MonoDevelop.Debugger.Win32
 			return OverloadResolve (ctx, GetTypeName (ctx, type), methodName, argtypes, candidates, throwIfNotFound);
 		}
 
-		bool IsApplicable (CorEvaluationContext ctx, SR.MethodInfo method, CorType[] types, out string error, out int matchCount)
+		bool IsApplicable (CorEvaluationContext ctx, MethodInfo method, CorType[] types, out string error, out int matchCount)
 		{
-			SR.ParameterInfo[] mparams = method.GetParameters ();
+			ParameterInfo[] mparams = method.GetParameters ();
 			matchCount = 0;
 
 			for (int i = 0; i < types.Length; i++) {
@@ -510,7 +510,7 @@ namespace MonoDevelop.Debugger.Win32
 			return true;
 		}
 
-		Tuple<SR.MethodInfo, CorType> OverloadResolve (CorEvaluationContext ctx, string typeName, string methodName, CorType[] argtypes, List<Tuple<SR.MethodInfo, CorType>> candidates, bool throwIfNotFound)
+		Tuple<MethodInfo, CorType> OverloadResolve (CorEvaluationContext ctx, string typeName, string methodName, CorType[] argtypes, List<Tuple<MethodInfo, CorType>> candidates, bool throwIfNotFound)
 		{
 			if (candidates.Count == 1) {
 				string error;
@@ -532,7 +532,7 @@ namespace MonoDevelop.Debugger.Win32
 			}
 
 			// Ok, now we need to find an exact match.
-			Tuple<SR.MethodInfo, CorType> match = null;
+			Tuple<MethodInfo, CorType> match = null;
 			int bestCount = -1;
 			bool repeatedBestCount = false;
 
@@ -752,16 +752,16 @@ namespace MonoDevelop.Debugger.Win32
 				targs[n] = vargs[n].ExactType;
 			}
 
-			SR.MethodInfo ctor = null;
-			var ctorInfo = OverloadResolve (cctx, ".ctor", type, targs, SR.BindingFlags.Instance | SR.BindingFlags.Public, false);
+			MethodInfo ctor = null;
+			var ctorInfo = OverloadResolve (cctx, ".ctor", type, targs, BindingFlags.Instance | BindingFlags.Public, false);
 			if (ctorInfo != null)
 				ctor = ctorInfo.Item1;
 			if (ctor == null) {
 				//TODO: Remove this if and content when Generic method invocation is fully implemented
 				Type t = type.GetTypeInfo (cctx.Session);
-				foreach (SR.MethodInfo met in t.GetMethods ()) {
+				foreach (MethodInfo met in t.GetMethods ()) {
 					if (met.IsSpecialName && met.Name == ".ctor") {
-						SR.ParameterInfo[] pinfos = met.GetParameters ();
+						ParameterInfo[] pinfos = met.GetParameters ();
 						if (pinfos.Length == 1) {
 							ctor = met;
 							break;
@@ -867,7 +867,7 @@ namespace MonoDevelop.Debugger.Win32
 
 			if (ptype != null && ptype.IsPrimitive) {
 				ptype = bval.ExactType.GetTypeInfo (((CorEvaluationContext) ctx).Session);
-				foreach (SR.FieldInfo field in ptype.GetFields (SR.BindingFlags.Public | SR.BindingFlags.NonPublic | SR.BindingFlags.Instance)) {
+				foreach (FieldInfo field in ptype.GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
 					if (field.Name == "m_value") {
 						CorValue val = bval.GetFieldValue (bval.ExactType.Class, field.MetadataToken);
 						val = GetRealObject (ctx, val);
@@ -899,7 +899,7 @@ namespace MonoDevelop.Debugger.Win32
 
 			Type type = t.GetTypeInfo (cctx.Session);
 
-			foreach (SR.FieldInfo field in type.GetFields (SR.BindingFlags.Public | SR.BindingFlags.Static)) {
+			foreach (FieldInfo field in type.GetFields (BindingFlags.Public | BindingFlags.Static)) {
 				if (field.IsLiteral && field.IsStatic) {
 					object val = field.GetValue (null);
 					EnumMember em = new EnumMember ();
@@ -922,16 +922,16 @@ namespace MonoDevelop.Debugger.Win32
 				values[n] = (CorValRef) indices[n];
 			}
 
-			List<Tuple<SR.MethodInfo, CorType>> candidates = new List<Tuple<SR.MethodInfo, CorType>> ();
-			List<SR.PropertyInfo> props = new List<SR.PropertyInfo> ();
+			List<Tuple<MethodInfo, CorType>> candidates = new List<Tuple<MethodInfo, CorType>> ();
+			List<PropertyInfo> props = new List<PropertyInfo> ();
 			List<CorType> propTypes = new List<CorType> ();
 
 			CorType t = targetType;
 			while (t != null) {
 				Type type = t.GetTypeInfo (cctx.Session);
 
-				foreach (SR.PropertyInfo prop in type.GetProperties (SR.BindingFlags.Public | SR.BindingFlags.NonPublic | SR.BindingFlags.Instance)) {
-					SR.MethodInfo mi = null;
+				foreach (PropertyInfo prop in type.GetProperties (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
+					MethodInfo mi = null;
 					try {
 						mi = prop.CanRead ? prop.GetGetMethod (true) : null;
 					}
@@ -958,7 +958,7 @@ namespace MonoDevelop.Debugger.Win32
 			return new PropertyReference (ctx, props[i], (CorValRef) target, propTypes[i], values);
 		}
 
-		public override bool HasMember (EvaluationContext ctx, object tt, string memberName, SR.BindingFlags bindingFlags)
+		public override bool HasMember (EvaluationContext ctx, object tt, string memberName, BindingFlags bindingFlags)
 		{
 			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
 			CorType ct = (CorType) tt;
@@ -966,18 +966,18 @@ namespace MonoDevelop.Debugger.Win32
 			while (ct != null) {
 				Type type = ct.GetTypeInfo (cctx.Session);
 
-				SR.FieldInfo field = type.GetField (memberName, bindingFlags);
+				FieldInfo field = type.GetField (memberName, bindingFlags);
 				if (field != null)
 					return true;
 
-				SR.PropertyInfo prop = type.GetProperty (memberName, bindingFlags);
+				PropertyInfo prop = type.GetProperty (memberName, bindingFlags);
 				if (prop != null) {
-					SR.MethodInfo getter = prop.CanRead ? prop.GetGetMethod (bindingFlags.HasFlag (SR.BindingFlags.NonPublic)) : null;
+					MethodInfo getter = prop.CanRead ? prop.GetGetMethod (bindingFlags.HasFlag (BindingFlags.NonPublic)) : null;
 					if (getter != null)
 						return true;
 				}
 
-				if (bindingFlags.HasFlag (SR.BindingFlags.DeclaredOnly))
+				if (bindingFlags.HasFlag (BindingFlags.DeclaredOnly))
 					break;
 
 				ct = ct.Base;
@@ -986,13 +986,13 @@ namespace MonoDevelop.Debugger.Win32
 			return false;
 		}
 
-		protected override IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, object tt, object gval, SR.BindingFlags bindingFlags)
+		protected override IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, object tt, object gval, BindingFlags bindingFlags)
 		{
-			var subProps = new Dictionary<string, SR.PropertyInfo> ();
+			var subProps = new Dictionary<string, PropertyInfo> ();
 			var t = (CorType) tt;
 			var val = (CorValRef) gval;
 			CorType realType = null;
-			if (gval != null && (bindingFlags & SR.BindingFlags.Instance) != 0)
+			if (gval != null && (bindingFlags & BindingFlags.Instance) != 0)
 				realType = GetValueType (ctx, gval) as CorType;
 
 			if (t.Type == CorElementType.ELEMENT_TYPE_CLASS && t.Class == null)
@@ -1003,13 +1003,13 @@ namespace MonoDevelop.Debugger.Win32
 			// First of all, get a list of properties overriden in sub-types
 			while (realType != null && realType != t) {
 				Type type = realType.GetTypeInfo (cctx.Session);
-				foreach (SR.PropertyInfo prop in type.GetProperties (bindingFlags | SR.BindingFlags.DeclaredOnly)) {
-					SR.MethodInfo mi = prop.GetGetMethod (true);
+				foreach (PropertyInfo prop in type.GetProperties (bindingFlags | BindingFlags.DeclaredOnly)) {
+					MethodInfo mi = prop.GetGetMethod (true);
 					if (mi == null || mi.GetParameters ().Length != 0 || mi.IsAbstract || !mi.IsVirtual || mi.IsStatic)
 						continue;
-					if (mi.IsPublic && ((bindingFlags & SR.BindingFlags.Public) == 0))
+					if (mi.IsPublic && ((bindingFlags & BindingFlags.Public) == 0))
 						continue;
-					if (!mi.IsPublic && ((bindingFlags & SR.BindingFlags.NonPublic) == 0))
+					if (!mi.IsPublic && ((bindingFlags & BindingFlags.NonPublic) == 0))
 						continue;
 					subProps[prop.Name] = prop;
 				}
@@ -1019,20 +1019,20 @@ namespace MonoDevelop.Debugger.Win32
 			while (t != null) {
 				Type type = t.GetTypeInfo (cctx.Session);
 
-				foreach (SR.FieldInfo field in type.GetFields (bindingFlags)) {
-					if (field.IsStatic && ((bindingFlags & SR.BindingFlags.Static) == 0))
+				foreach (FieldInfo field in type.GetFields (bindingFlags)) {
+					if (field.IsStatic && ((bindingFlags & BindingFlags.Static) == 0))
 						continue;
-					if (!field.IsStatic && ((bindingFlags & SR.BindingFlags.Instance) == 0))
+					if (!field.IsStatic && ((bindingFlags & BindingFlags.Instance) == 0))
 						continue;
-					if (field.IsPublic && ((bindingFlags & SR.BindingFlags.Public) == 0))
+					if (field.IsPublic && ((bindingFlags & BindingFlags.Public) == 0))
 						continue;
-					if (!field.IsPublic && ((bindingFlags & SR.BindingFlags.NonPublic) == 0))
+					if (!field.IsPublic && ((bindingFlags & BindingFlags.NonPublic) == 0))
 						continue;
 					yield return new FieldReference (ctx, val, t, field);
 				}
 
-				foreach (SR.PropertyInfo prop in type.GetProperties (bindingFlags)) {
-					SR.MethodInfo mi = null;
+				foreach (PropertyInfo prop in type.GetProperties (bindingFlags)) {
+					MethodInfo mi = null;
 					try {
 						mi = prop.CanRead ? prop.GetGetMethod (true) : null;
 					}
@@ -1042,17 +1042,17 @@ namespace MonoDevelop.Debugger.Win32
 					if (mi == null || mi.GetParameters ().Length != 0 || mi.IsAbstract)
 						continue;
 
-					if (mi.IsStatic && ((bindingFlags & SR.BindingFlags.Static) == 0))
+					if (mi.IsStatic && ((bindingFlags & BindingFlags.Static) == 0))
 						continue;
-					if (!mi.IsStatic && ((bindingFlags & SR.BindingFlags.Instance) == 0))
+					if (!mi.IsStatic && ((bindingFlags & BindingFlags.Instance) == 0))
 						continue;
-					if (mi.IsPublic && ((bindingFlags & SR.BindingFlags.Public) == 0))
+					if (mi.IsPublic && ((bindingFlags & BindingFlags.Public) == 0))
 						continue;
-					if (!mi.IsPublic && ((bindingFlags & SR.BindingFlags.NonPublic) == 0))
+					if (!mi.IsPublic && ((bindingFlags & BindingFlags.NonPublic) == 0))
 						continue;
 
 					// If a property is overriden, return the override instead of the base property
-					SR.PropertyInfo overridden;
+					PropertyInfo overridden;
 					if (mi.IsVirtual && subProps.TryGetValue (prop.Name, out overridden)) {
 						mi = overridden.GetGetMethod (true);
 						if (mi == null)
@@ -1065,7 +1065,7 @@ namespace MonoDevelop.Debugger.Win32
 						yield return new PropertyReference (ctx, prop, val, t);
 					}
 				}
-				if ((bindingFlags & SR.BindingFlags.DeclaredOnly) != 0)
+				if ((bindingFlags & BindingFlags.DeclaredOnly) != 0)
 					break;
 				t = t.Base;
 			}
@@ -1084,9 +1084,9 @@ namespace MonoDevelop.Debugger.Win32
 			return best;
 		}
 
-		static bool IsStatic (SR.PropertyInfo prop)
+		static bool IsStatic (PropertyInfo prop)
 		{
-			SR.MethodInfo met = prop.GetGetMethod (true) ?? prop.GetSetMethod (true);
+			MethodInfo met = prop.GetGetMethod (true) ?? prop.GetSetMethod (true);
 			return met.IsStatic;
 		}
 
@@ -1095,7 +1095,7 @@ namespace MonoDevelop.Debugger.Win32
 			return type.Name.StartsWith ("<>__AnonType", StringComparison.Ordinal);
 		}
 
-		static bool IsCompilerGenerated (SR.FieldInfo field)
+		static bool IsCompilerGenerated (FieldInfo field)
 		{
 			return field.GetCustomAttributes (true).Any (v => v is DebuggerHiddenAttribute);
 		}
@@ -1107,21 +1107,21 @@ namespace MonoDevelop.Debugger.Win32
 
 			while (type != null) {
 				var tt = type.GetTypeInfo (cctx.Session);
-				SR.FieldInfo field = FindByName (tt.GetFields (SR.BindingFlags.Public | SR.BindingFlags.NonPublic | SR.BindingFlags.Static | SR.BindingFlags.Instance), f => f.Name, name, ctx.CaseSensitive);
+				FieldInfo field = FindByName (tt.GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance), f => f.Name, name, ctx.CaseSensitive);
 				if (field != null && (field.IsStatic || co != null))
 					return new FieldReference (ctx, co as CorValRef, type, field);
 
-				SR.PropertyInfo prop = FindByName (tt.GetProperties (SR.BindingFlags.Public | SR.BindingFlags.NonPublic | SR.BindingFlags.Static | SR.BindingFlags.Instance), p => p.Name, name, ctx.CaseSensitive);
+				PropertyInfo prop = FindByName (tt.GetProperties (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance), p => p.Name, name, ctx.CaseSensitive);
 				if (prop != null && (IsStatic (prop) || co != null)) {
 					// Optimization: if the property has a CompilerGenerated backing field, use that instead.
 					// This way we avoid overhead of invoking methods on the debugee when the value is requested.
 					string cgFieldName = string.Format ("<{0}>{1}", prop.Name, IsAnonymousType (tt) ? "" : "k__BackingField");
-					if ((field = FindByName (tt.GetFields (SR.BindingFlags.Public | SR.BindingFlags.NonPublic | SR.BindingFlags.Static | SR.BindingFlags.Instance), f => f.Name, cgFieldName, true)) != null &&
+					if ((field = FindByName (tt.GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance), f => f.Name, cgFieldName, true)) != null &&
 						IsCompilerGenerated (field))
 						return new FieldReference (ctx, co as CorValRef, type, field, prop.Name, ObjectValueFlags.Property);
 
 					// Backing field not available, so do things the old fashioned way.
-					SR.MethodInfo getter = prop.GetGetMethod (true);
+					MethodInfo getter = prop.GetGetMethod (true);
 					if (getter == null)
 						return null;
 
@@ -1265,7 +1265,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		static bool InGeneratedClosureOrIteratorType (CorEvaluationContext ctx)
 		{
-			SR.MethodInfo mi = ctx.Frame.Function.GetMethodInfo (ctx.Session);
+			MethodInfo mi = ctx.Frame.Function.GetMethodInfo (ctx.Session);
 			if (mi == null || mi.IsStatic)
 				return false;
 
@@ -1313,7 +1313,7 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			Type t = type.GetTypeInfo (cx.Session);
 			var vref = (CorValRef) val;
-			foreach (SR.FieldInfo field in t.GetFields ()) {
+			foreach (FieldInfo field in t.GetFields ()) {
 				if (IsHoistedThisReference (field))
 					return new FieldReference (cx, vref, type, field, "this", ObjectValueFlags.Literal);
 
@@ -1329,7 +1329,7 @@ namespace MonoDevelop.Debugger.Win32
 			return null;
 		}
 
-		static bool IsHoistedThisReference (SR.FieldInfo field)
+		static bool IsHoistedThisReference (FieldInfo field)
 		{
 			// mcs is "<>f__this" or "$this" (if in an async compiler generated type)
 			// csc is "<>4__this"
@@ -1338,7 +1338,7 @@ namespace MonoDevelop.Debugger.Win32
 					field.Name.EndsWith ("__this", StringComparison.Ordinal));
 		}
 
-		static bool IsClosureReferenceField (SR.FieldInfo field)
+		static bool IsClosureReferenceField (FieldInfo field)
 		{
 			// mcs is "<>f__ref"
 			// csc is "CS$<>"
@@ -1379,7 +1379,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		ValueReference GetThisReference (CorEvaluationContext ctx)
 		{
-			SR.MethodInfo mi = ctx.Frame.Function.GetMethodInfo (ctx.Session);
+			MethodInfo mi = ctx.Frame.Function.GetMethodInfo (ctx.Session);
 			if (mi == null || mi.IsStatic)
 				return null;
 
@@ -1403,9 +1403,9 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
 			if (ctx.Frame.FrameType == CorFrameType.ILFrame && ctx.Frame.Function != null) {
-				SR.MethodInfo met = ctx.Frame.Function.GetMethodInfo (ctx.Session);
+				MethodInfo met = ctx.Frame.Function.GetMethodInfo (ctx.Session);
 				if (met != null) {
-					foreach (SR.ParameterInfo pi in met.GetParameters ()) {
+					foreach (ParameterInfo pi in met.GetParameters ()) {
 						int pos = pi.Position;
 						if (met.IsStatic)
 							pos--;
@@ -1455,7 +1455,7 @@ namespace MonoDevelop.Debugger.Win32
 			bool isIterator = IsGeneratedType (t);
 
 			var list = new List<ValueReference> ();
-			foreach (SR.FieldInfo field in t.GetFields (SR.BindingFlags.Public | SR.BindingFlags.NonPublic | SR.BindingFlags.Instance)) {
+			foreach (FieldInfo field in t.GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
 				if (IsHoistedThisReference (field))
 					continue;
 				if (IsClosureReferenceField (field)) {
@@ -1477,7 +1477,7 @@ namespace MonoDevelop.Debugger.Win32
 			return list;
 		}
 
-		static string GetHoistedIteratorLocalName (SR.FieldInfo field)
+		static string GetHoistedIteratorLocalName (FieldInfo field)
 		{
 			//mcs captured args, of form <$>name
 			if (field.Name.StartsWith ("<$>", StringComparison.Ordinal)) {
@@ -1616,10 +1616,10 @@ namespace MonoDevelop.Debugger.Win32
 				}
 
 				ArrayList mems = new ArrayList ();
-				mems.AddRange (t.GetFields (SR.BindingFlags.Public | SR.BindingFlags.NonPublic | SR.BindingFlags.Static | SR.BindingFlags.Instance));
-				mems.AddRange (t.GetProperties (SR.BindingFlags.Public | SR.BindingFlags.NonPublic | SR.BindingFlags.Static | SR.BindingFlags.Instance));
+				mems.AddRange (t.GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance));
+				mems.AddRange (t.GetProperties (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance));
 
-				foreach (SR.MemberInfo m in mems) {
+				foreach (MemberInfo m in mems) {
 					object[] atts = m.GetCustomAttributes (typeof (DebuggerBrowsableAttribute), false);
 					if (atts.Length == 0) {
 						atts = m.GetCustomAttributes (typeof (CompilerGeneratedAttribute), false);
