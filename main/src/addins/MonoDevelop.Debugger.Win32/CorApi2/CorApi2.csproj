@@ -87,9 +87,11 @@
     <Compile Include="debug\Module.cs" />
     <Compile Include="debug\ModuleBreakpoint.cs" />
     <Compile Include="debug\ModuleEnumerator.cs" />
+    <Compile Include="debug\NativeMethods.cs" />
     <Compile Include="debug\ObjectEnumerator.cs" />
     <Compile Include="debug\Process.cs" />
     <Compile Include="debug\ProcessEnumerator.cs" />
+    <Compile Include="debug\ProcessSafeHandle.cs" />
     <Compile Include="debug\RegisterSet.cs" />
     <Compile Include="debug\Stepper.cs" />
     <Compile Include="debug\StepperEnumerator.cs" />
@@ -105,6 +107,7 @@
     <Compile Include="Metadata\MetadataParameterInfo.cs" />
     <Compile Include="Metadata\MetadataPropertyInfo.cs" />
     <Compile Include="Metadata\MetadataType.cs" />
+    <Compile Include="Metahost\Metahost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SymStore\ISymBinder2.cs" />
     <Compile Include="SymStore\ISymConstant.cs" />

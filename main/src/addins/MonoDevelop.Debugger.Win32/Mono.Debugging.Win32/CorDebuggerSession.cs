@@ -33,6 +33,7 @@ namespace MonoDevelop.Debugger.Win32
 		bool autoStepInto;
 		bool stepInsideDebuggerHidden=false;
 		int processId;
+	  bool attaching = false;
 
 		static int evaluationTimestamp;
 
@@ -174,37 +175,56 @@ namespace MonoDevelop.Debugger.Win32
 						flags |= DebuggerExtensions.CREATE_REDIRECT_STD;
 				}
 
-				process = dbg.CreateProcess (startInfo.Command, cmdLine, startInfo.WorkingDirectory, env, flags);
-				processId = process.Id;
-
-				process.OnCreateProcess += new CorProcessEventHandler (OnCreateProcess);
-				process.OnCreateAppDomain += new CorAppDomainEventHandler (OnCreateAppDomain);
-				process.OnAssemblyLoad += new CorAssemblyEventHandler (OnAssemblyLoad);
-				process.OnAssemblyUnload += new CorAssemblyEventHandler (OnAssemblyUnload);
-				process.OnCreateThread += new CorThreadEventHandler (OnCreateThread);
-				process.OnThreadExit += new CorThreadEventHandler (OnThreadExit);
-				process.OnModuleLoad += new CorModuleEventHandler (OnModuleLoad);
-				process.OnModuleUnload += new CorModuleEventHandler (OnModuleUnload);
-				process.OnProcessExit += new CorProcessEventHandler (OnProcessExit);
-				process.OnUpdateModuleSymbols += new UpdateModuleSymbolsEventHandler (OnUpdateModuleSymbols);
-				process.OnDebuggerError += new DebuggerErrorEventHandler (OnDebuggerError);
-				process.OnBreakpoint += new BreakpointEventHandler (OnBreakpoint);
-				process.OnStepComplete += new StepCompleteEventHandler (OnStepComplete);
-				process.OnBreak += new CorThreadEventHandler (OnBreak);
-				process.OnNameChange += new CorThreadEventHandler (OnNameChange);
-				process.OnEvalComplete += new EvalEventHandler (OnEvalComplete);
-				process.OnEvalException += new EvalEventHandler (OnEvalException);
-				process.OnLogMessage += new LogMessageEventHandler (OnLogMessage);
-				process.OnException2 += new CorException2EventHandler (OnException2);
-
-				process.RegisterStdOutput (OnStdOutput);
-
-				process.Continue (false);
+				process = dbg.CreateProcess (startInfo.Command, cmdLine, startInfo.WorkingDirectory, env, flags);				
+        SetupProcess (process);
+			  process.Continue (false);
 			});
 			OnStarted ();
 		}
 
-		void OnStdOutput (object sender, CorTargetOutputEventArgs e)
+    protected override void OnAttachToProcess(long procId)
+    {
+      attaching = true;
+      MtaThread.Run(delegate
+      {
+        var version = CorDebugger.GetProcessLoadedRuntimes((int)procId);
+        if (!version.Any())
+          throw new InvalidOperationException(string.Format("Process {0} doesn't have .NET loaded runtimes", procId));
+        dbg = new CorDebugger(version.Last());
+        process = dbg.DebugActiveProcess((int)procId, false);
+        SetupProcess(process);
+        process.Continue(false);
+      });
+      OnStarted();
+    }
+
+
+	  private void SetupProcess (CorProcess corProcess)
+	  {
+	    processId = corProcess.Id;
+	    corProcess.OnCreateProcess += OnCreateProcess;
+	    corProcess.OnCreateAppDomain += OnCreateAppDomain;
+	    corProcess.OnAssemblyLoad += OnAssemblyLoad;
+	    corProcess.OnAssemblyUnload += OnAssemblyUnload;
+	    corProcess.OnCreateThread += OnCreateThread;
+	    corProcess.OnThreadExit += OnThreadExit;
+	    corProcess.OnModuleLoad += OnModuleLoad;
+	    corProcess.OnModuleUnload += OnModuleUnload;
+	    corProcess.OnProcessExit += OnProcessExit;
+	    corProcess.OnUpdateModuleSymbols += OnUpdateModuleSymbols;
+	    corProcess.OnDebuggerError += OnDebuggerError;
+	    corProcess.OnBreakpoint += OnBreakpoint;
+	    corProcess.OnStepComplete += OnStepComplete;
+	    corProcess.OnBreak += OnBreak;
+	    corProcess.OnNameChange += OnNameChange;
+	    corProcess.OnEvalComplete += OnEvalComplete;
+	    corProcess.OnEvalException += OnEvalException;
+	    corProcess.OnLogMessage += OnLogMessage;
+	    corProcess.OnException2 += OnException2;
+	    corProcess.RegisterStdOutput (OnStdOutput);
+	  }
+
+	  void OnStdOutput (object sender, CorTargetOutputEventArgs e)
 		{
 			OnTargetOutput (e.IsStdError, e.Text);
 		}
@@ -565,9 +585,12 @@ namespace MonoDevelop.Debugger.Win32
 
 		void OnCreateProcess (object sender, CorProcessEventArgs e)
 		{
-			// Required to avoid the jit to get rid of variables too early
-			e.Process.DesiredNGENCompilerFlags = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
-			e.Process.EnableLogMessages (true);
+		  if (!attaching) {
+		    // Required to avoid the jit to get rid of variables too early
+        // not allowed in attach mode
+		    e.Process.DesiredNGENCompilerFlags = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
+		  }
+		  e.Process.EnableLogMessages (true);
 			e.Continue = true;
 		}
 
@@ -654,10 +677,6 @@ namespace MonoDevelop.Debugger.Win32
 			}
 			
 			return false;
-		}
-
-		protected override void OnAttachToProcess (long processId)
-		{
 		}
 
 		protected override void OnContinue ( )
