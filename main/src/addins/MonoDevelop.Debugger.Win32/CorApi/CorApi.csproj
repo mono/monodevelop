@@ -66,6 +66,7 @@
     <Compile Include="IMetadataImport.cs" />
     <Compile Include="ICorDebugWrappers.cs" />
     <Compile Include="ICorPublishWrappers.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RawAssemblyAttributes.cs" />
     <Compile Include="WindowsImports.cs" />
   </ItemGroup>
