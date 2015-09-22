@@ -350,6 +350,8 @@ namespace MonoDevelop.Ide
 				var gtkrc = "gtkrc";
 				if (Platform.IsWindows) {
 					gtkrc += ".win32";
+					if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark)
+						gtkrc += "-dark";
 					var osv = Environment.OSVersion.Version;
 					if (osv.Major == 6 && osv.Minor < 1)
 						gtkrc += "-vista";
