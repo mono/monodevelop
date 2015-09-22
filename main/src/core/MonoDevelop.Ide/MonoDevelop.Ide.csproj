@@ -5352,5 +5352,8 @@
     <Content Include="gtkrc.mac-dark-yosemite">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="gtkrc.win32-dark">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>
