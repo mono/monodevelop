@@ -24,7 +24,7 @@ type FSharpProjectNodeCommandHandler() =
     monitor.Step (1)
     monitor.EndTask()
 
-  let moveNodes (currentNode: ITreeNavigator) (movingNode:ProjectFile) position =
+  member x.MoveNodes (currentNode: ITreeNavigator) (movingNode:ProjectFile) position =
     match currentNode.DataItem with
     | :? ProjectFile as moveToNode ->
 
@@ -87,7 +87,7 @@ type FSharpProjectNodeCommandHandler() =
     match dataObject, dragOperation with
     | :? ProjectFile as movingNode, DragOperation.Move ->
         //Move as long as this is a drag op and the moving node is a project file
-        moveNodes x.CurrentNode movingNode position
+        x.MoveNodes x.CurrentNode movingNode position
     | _ -> //otherwise use the base behaviour
            base.OnNodeDrop(dataObject, dragOperation, position) 
         
