@@ -27,8 +27,17 @@ using System;
 
 namespace Mono.TextEditor
 {
+	[Flags]
+	public enum IndentatitonTrackerFeatures {
+		None = 0,
+		SmartBackspace = 1,
+		All = SmartBackspace
+	}
+
 	public interface IIndentationTracker
 	{
+		IndentatitonTrackerFeatures SupportedFeatures { get; }
+
 		string GetIndentationString (int offset);
 		string GetIndentationString (int lineNumber, int column);
 		
@@ -57,7 +66,13 @@ namespace Mono.TextEditor
 		{
 			this.doc = doc;
 		}
-		
+
+		public IndentatitonTrackerFeatures SupportedFeatures {
+			get {
+				return IndentatitonTrackerFeatures.None;
+			}
+		}
+
 		public string GetIndentationString (int offset)
 		{
 			var loc = doc.OffsetToLocation (offset);
@@ -86,5 +101,6 @@ namespace Mono.TextEditor
 		{
 			return 1 + GetIndentationString (lineNumber, column).Length;
 		}
+
 	}
 }

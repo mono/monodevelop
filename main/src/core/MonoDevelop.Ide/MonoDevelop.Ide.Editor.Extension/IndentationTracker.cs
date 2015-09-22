@@ -23,15 +23,29 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
 using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
+	[Flags]
+	public enum IndentatitonTrackerFeatures {
+		None = 0,
+		SmartBackspace = 1,
+		All = SmartBackspace
+	}
+
 	/// <summary>
 	/// The indentation tracker is for giving the editor information about virtual line indentations.
 	/// </summary>
 	public abstract class IndentationTracker
 	{
+		public virtual IndentatitonTrackerFeatures SupportedFeatures {
+			get {
+				return IndentatitonTrackerFeatures.All;
+			}
+		}
+
 		/// <summary>
 		/// Gets the indentation string for a given line.
 		/// </summary>

@@ -45,6 +45,13 @@ namespace Mono.TextEditor.Tests
 			}
 			
 			#region IIndentationTracker implementation
+
+			public IndentatitonTrackerFeatures SupportedFeatures {
+				get {
+					return IndentatitonTrackerFeatures.All;
+				}
+			}
+
 			public string GetIndentationString (int offset)
 			{
 				return indentString;
