@@ -63,8 +63,14 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		TaskListEntry task;
+		internal TaskListEntry Task {
+			get {
+				return this.task;
+			}
+		}
+
 		TaskListEntry primaryTask;
-		DocumentLine lineSegment;
+
 //		int editorAllocHeight = -1;
 //		int lastLineLength = -1;
 		internal double lastHeight = 0;
@@ -138,7 +144,7 @@ namespace MonoDevelop.SourceEditor
 
 		public override TextLineMarkerFlags Flags {
 			get {
-				if (lineSegment != null && lineSegment.Markers.Any (m => m is DebugTextMarker)) 
+				if (LineSegment != null && LineSegment.Markers.Any (m => m is DebugTextMarker)) 
 					return TextLineMarkerFlags.None;
 
 				return TextLineMarkerFlags.DrawsSelection;
@@ -156,15 +162,14 @@ namespace MonoDevelop.SourceEditor
 			this.IsVisible = true;
 		}
 
-		internal MessageBubbleTextMarker (MessageBubbleCache cache, TaskListEntry task, DocumentLine lineSegment, bool isError, string errorMessage)
+		internal MessageBubbleTextMarker (MessageBubbleCache cache, TaskListEntry task, bool isError, string errorMessage)
 		{
 			if (cache == null)
 				throw new ArgumentNullException ("cache");
 			this.cache = cache;
 			this.task = task;
 			this.IsVisible = true;
-			this.lineSegment = lineSegment;
-			this.initialText = editor.Document.GetTextAt (lineSegment);
+			this.initialText = editor.Document.GetTextAt (LineSegment);
 			this.isError = isError;
 			AddError (task, isError, errorMessage);
 //			cache.Changed += (sender, e) => CalculateLineFit (editor, lineSegment);
@@ -357,7 +362,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (!IsVisible)
 				return;
-			if (LineSegment == null)
+			if (base.LineSegment == null)
 				return;
 			if (bubbleDrawX < args.X && args.X < bubbleDrawX + bubbleWidth) {
 				editor.HideTooltip ();
@@ -541,7 +546,7 @@ namespace MonoDevelop.SourceEditor
 		public override bool DrawBackground (MonoTextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
 			if (metrics.Margin is FoldMarkerMargin || metrics.Margin is GutterMargin || metrics.Margin is ActionMargin)
-				return DrawMarginBackground (editor, metrics.Margin, cr, metrics.Area, lineSegment, metrics.LineNumber, metrics.X, metrics.Y, metrics.Height);
+				return DrawMarginBackground (editor, metrics.Margin, cr, metrics.Area, LineSegment, metrics.LineNumber, metrics.X, metrics.Y, metrics.Height);
 			if (metrics.Margin is IconMargin) {
 				DrawIconMarginBackground (editor, cr, metrics);
 				return true;
@@ -582,9 +587,9 @@ namespace MonoDevelop.SourceEditor
 			var max = Math.Round (editor.TextViewMargin.XOffset + editor.LineHeight / 2);
 			double x2 = Math.Max (min, max);
 
-			bool isEolSelected = editor.IsSomethingSelected && editor.SelectionMode != Mono.TextEditor.SelectionMode.Block ? editor.SelectionRange.Contains (lineSegment.Offset + lineSegment.Length) : false;
+			bool isEolSelected = editor.IsSomethingSelected && editor.SelectionMode != Mono.TextEditor.SelectionMode.Block ? editor.SelectionRange.Contains (LineSegment.Offset + LineSegment.Length) : false;
 
-			int active = editor.Document.GetTextAt (lineSegment) == initialText ? 0 : 1;
+			int active = editor.Document.GetTextAt (LineSegment) == initialText ? 0 : 1;
 			bool highlighted = active == 0 && isCaretInLine;
 			var y = metrics.LineYRenderStartPosition;
 			// draw background
@@ -672,7 +677,7 @@ namespace MonoDevelop.SourceEditor
 
 		MonoDevelop.Ide.Editor.IDocumentLine MonoDevelop.Ide.Editor.ITextLineMarker.Line {
 			get {
-				return new DocumentLineWrapper (LineSegment);
+				return new DocumentLineWrapper (base.LineSegment);
 			}
 		}
 

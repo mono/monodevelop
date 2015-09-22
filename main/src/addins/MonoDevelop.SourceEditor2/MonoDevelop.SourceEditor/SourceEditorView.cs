@@ -61,6 +61,8 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.SourceEditor.Wrappers;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor.Highlighting;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.SourceEditor
 {	
@@ -527,43 +529,61 @@ namespace MonoDevelop.SourceEditor
 		
 		MessageBubbleCache messageBubbleCache;
 		List<MessageBubbleTextMarker> currentErrorMarkers = new List<MessageBubbleTextMarker> ();
+		CancellationTokenSource messageBubbleUpdateSource = new CancellationTokenSource ();
 
 		void UpdateTasks (object sender, TaskEventArgs e)
 		{
-			TaskListEntry[] tasks = TaskService.Errors.GetFileTasks (ContentName);
+			TaskListEntry [] tasks = TaskService.Errors.GetFileTasks (ContentName);
 			if (tasks == null)
 				return;
 			DisposeErrorMarkers (); // disposes messageBubbleCache as well.
 			if (IdeApp.Preferences.ShowMessageBubbles == ShowMessageBubbles.Never)
 				return;
-			using (var undo = Document.OpenUndoGroup ()) {
-				if (messageBubbleCache != null)
-					messageBubbleCache.Dispose ();
-				messageBubbleCache = new MessageBubbleCache (widget.TextEditor);
-				
+			messageBubbleCache = new MessageBubbleCache (widget.TextEditor);
+			CancelMessageBubbleUpdate ();
+			var token = messageBubbleUpdateSource;
+
+			Task.Run (delegate {
+				var errorMarkers = new List<MessageBubbleTextMarker> ();
 				foreach (TaskListEntry task in tasks) {
+					if (token.IsCancellationRequested)
+						return null;
 					if (task.Severity == TaskSeverity.Error || task.Severity == TaskSeverity.Warning) {
 						if (IdeApp.Preferences.ShowMessageBubbles == ShowMessageBubbles.ForErrors && task.Severity == TaskSeverity.Warning)
 							continue;
-						DocumentLine lineSegment = widget.Document.GetLine (task.Line);
-						if (lineSegment == null)
-							continue;
-						var marker = currentErrorMarkers.FirstOrDefault (m => m.LineSegment == lineSegment);
-						if (marker != null) {
-							marker.AddError (task, task.Severity == TaskSeverity.Error, task.Description);
-							continue;
-						}
-						MessageBubbleTextMarker errorTextMarker = new MessageBubbleTextMarker (messageBubbleCache, task, lineSegment, task.Severity == TaskSeverity.Error, task.Description);
-						currentErrorMarkers.Add (errorTextMarker);
-						
-						errorTextMarker.IsVisible =  !IdeApp.Preferences.DefaultHideMessageBubbles;
-						widget.Document.AddMarker (lineSegment, errorTextMarker, false);
+						var errorTextMarker = new MessageBubbleTextMarker (messageBubbleCache, task, task.Severity == TaskSeverity.Error, task.Description);
+						errorMarkers.Add (errorTextMarker);
+
+						errorTextMarker.IsVisible = !IdeApp.Preferences.DefaultHideMessageBubbles;
 					}
 				}
-			}
-			widget.TextEditor.QueueDraw ();
+				return errorMarkers;
+			}).ContinueWith (t => {
+				if (token.IsCancellationRequested)
+					return;
+				Application.Invoke (delegate {
+					if (token.IsCancellationRequested)
+						return;
+					currentErrorMarkers = t.Result;
+					foreach (var marker in currentErrorMarkers) {
+						if (token.IsCancellationRequested)
+							return;
+						var lineSegment = widget.Document.GetLine (marker.Task.Line);
+						if (lineSegment == null)
+							continue;
+						marker.LineSegment = lineSegment;
+						widget.Document.AddMarker (lineSegment, marker, false);
+					}
+				});
+			});
 		}
-		
+
+		void CancelMessageBubbleUpdate ()
+		{
+			messageBubbleUpdateSource.Cancel ();
+			messageBubbleUpdateSource = new CancellationTokenSource ();
+		}
+
 		void DisposeErrorMarkers ()
 		{
 			//the window has a reference to the markers we're destroying
@@ -907,7 +927,8 @@ namespace MonoDevelop.SourceEditor
 			if (isDisposed)
 				return;
 			isDisposed = true;
-			
+
+			CancelMessageBubbleUpdate ();
 			ClearExtensions ();
 			FileRegistry.Remove (this);
 
