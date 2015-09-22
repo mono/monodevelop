@@ -16,7 +16,7 @@ CLEANFILES = render.exe
 #DISTCLEANFILES =
 EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh render.cs
 
-all: app
+all: monostub
 
 render.exe: render.cs
 	gmcs -r:System.Drawing render.cs
@@ -25,8 +25,9 @@ dmg: render.exe app
 	./make-dmg-bundle.sh
 
 monostub: monostub.m $(MONOSTUB_EXTRA_SOURCES)
-	gcc -Wall -mmacosx-version-min=10.9 -m32 -o $@ $^ -framework AppKit
-#	gcc -Wall -mmacosx-version-min=10.9 -m32 -o $@ $^ -framework AppKit -isysroot $(SDK_PATH)
+	gcc -Wall -mmacosx-version-min=10.10 -m32 -o $@ $^ -framework AppKit
+#	gcc -Wall -mmacosx-version-min=10.10 -m32 -o $@ $^ -framework AppKit -isysroot $(SDK_PATH)
+	cp monostub ../bin/MonoDevelop
 
 clean-local:
 	rm -rf MonoDevelop.app

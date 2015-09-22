@@ -1,10 +1,10 @@
 ﻿//
-// TestableCheckForUpdatesProgressMonitor.cs
+// DotNetProjectImportEventArgs.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,25 +25,19 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.PackageManagement
 {
-	public class TestableCheckForUpdatesProgressMonitor : CheckForUpdatesProgressMonitor
+	public class DotNetProjectImportEventArgs : EventArgs
 	{
-		public TestableCheckForUpdatesProgressMonitor (
-			IPackageManagementProgressMonitorFactory progressMonitorFactory,
-			IPackageManagementEvents packageEvents)
-			: base (progressMonitorFactory, packageEvents)
+		public DotNetProjectImportEventArgs (IDotNetProject project, string import)
 		{
+			Project = project;
+			Import = import;
 		}
 
-		public bool IsPackageConsoleShown;
-
-		protected override void ShowPackageConsole ()
-		{
-			IsPackageConsoleShown = true;
-		}
+		public IDotNetProject Project { get; private set; }
+		public string Import { get; private set; }
 	}
 }
 

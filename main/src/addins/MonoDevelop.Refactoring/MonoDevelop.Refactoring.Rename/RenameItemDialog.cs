@@ -140,6 +140,7 @@ namespace MonoDevelop.Refactoring.Rename
 			buttonPreview.Clicked += OnPreviewClicked;
 			entry.Changed += delegate { buttonPreview.Sensitive = buttonOk.Sensitive = ValidateName (); };
 			ValidateName ();
+			this.hbox1.HideAll ();
 		}
 
 		bool ValidateName ()

@@ -886,6 +886,8 @@ namespace MonoDevelop.Components.Docking
 					t.Hide ();
 					t.Show ();
 				}
+
+				MonoDevelop.Ide.IdeApp.CommandService.RegisterTopWindow (win);
 			} else {
 				w.Parent = this;
 				w.Size = new Size (width, height);

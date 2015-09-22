@@ -1,7 +1,7 @@
 [submodule "main/external/cecil"]
 	path = main/external/cecil
 	url = git://github.com/mono/cecil.git
-	branch = mono-3.0
+	branch = monodevelop
 [submodule "main/external/mono-tools"]
 	path = main/external/mono-tools
 	url = git://github.com/mono/mono-tools.git
@@ -43,12 +43,12 @@
 	url = git://github.com/mono/sharpsvn-binary.git
 [submodule "main/external/libgit2sharp"]
 	path = main/external/libgit2sharp
-	url = git://github.com/libgit2/libgit2sharp.git
-	branch = xs-5.10-v1
+	url = git://github.com/mono/libgit2sharp.git
+	branch = xs-5.10-v2
 [submodule "main/external/libgit-binary"]
 	path = main/external/libgit-binary
 	url = git://github.com/mono/libgit-binary.git
 [submodule "main/external/libgit2"]
 	path = main/external/libgit2
 	url = git://github.com/mono/libgit2.git
-	branch = xs-5.10-v1
+	branch = xs-5.10-v2

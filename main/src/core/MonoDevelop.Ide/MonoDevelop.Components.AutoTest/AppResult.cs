@@ -50,6 +50,7 @@ namespace MonoDevelop.Components.AutoTest
 		// Operations
 		public abstract AppResult Marked (string mark);
 		public abstract AppResult CheckType (Type desiredType);
+		public abstract AppResult Selected ();
 		public abstract AppResult Text (string text, bool exact);
 		public abstract AppResult Model (string column);
 		public abstract AppResult Property (string propertyName, object value);
@@ -62,8 +63,21 @@ namespace MonoDevelop.Components.AutoTest
 		public abstract bool TypeKey (string keyString, string state = "");
 		public abstract bool EnterText (string text);
 		public abstract bool Toggle (bool active);
-
 		public abstract void Flash ();
+
+		// More specific actions for complicated widgets
+
+		#region For MacPlatform.MacIntegration.MainToolbar.SelectorView
+		public virtual bool SetActiveConfiguration (string configurationName)
+		{
+			return false;
+		}
+
+		public virtual bool SetActiveRuntime (string runtimeName)
+		{
+			return false;
+		}
+		#endregion
 
 		// Inspection Operations
 		public abstract ObjectProperties Properties ();

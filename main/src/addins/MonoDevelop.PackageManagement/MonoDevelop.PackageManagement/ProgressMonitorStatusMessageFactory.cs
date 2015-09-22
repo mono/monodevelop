@@ -213,15 +213,6 @@ namespace MonoDevelop.PackageManagement
 			);
 		}
 
-		public static ProgressMonitorStatusMessage CreateCheckingForPackageUpdatesMessage ()
-		{
-			return new ProgressMonitorStatusMessage (
-				GetString ("Checking for package updates..."),
-				GetString ("Packages are up to date."),
-				GetString ("Could not check for package updates."),
-				GetString ("No updates found but warnings were reported."));
-		}
-
 		static string GetString (string phrase)
 		{
 			return GettextCatalog.GetString (phrase);

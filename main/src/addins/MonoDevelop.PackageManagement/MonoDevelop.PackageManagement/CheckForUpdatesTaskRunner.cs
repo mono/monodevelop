@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -35,26 +34,16 @@ namespace MonoDevelop.PackageManagement
 	public class CheckForUpdatesTaskRunner : IDisposable
 	{
 		ITaskFactory taskFactory;
-		IPackageManagementProgressMonitorFactory progressMonitorFactory;
-		IPackageManagementEvents packageManagementEvents;
 		CheckForUpdatesTask currentCheckForUpdatesTask;
 		ITask<CheckForUpdatesTask> task;
 
-		public CheckForUpdatesTaskRunner (
-			ITaskFactory taskFactory,
-			IPackageManagementProgressMonitorFactory progressMonitorFactory,
-			IPackageManagementEvents packageManagementEvents)
+		public CheckForUpdatesTaskRunner (ITaskFactory taskFactory)
 		{
 			this.taskFactory = taskFactory;
-			this.progressMonitorFactory = progressMonitorFactory;
-			this.packageManagementEvents = packageManagementEvents;
 		}
 
 		public CheckForUpdatesTaskRunner ()
-			: this (
-				new PackageManagementTaskFactory (),
-				PackageManagementServices.ProgressMonitorFactory,
-				PackageManagementServices.PackageManagementEvents)
+			: this (new PackageManagementTaskFactory ())
 		{
 		}
 
@@ -74,7 +63,6 @@ namespace MonoDevelop.PackageManagement
 		void CreateCheckForUpdatesTask (CheckForUpdatesTask checkForUpdatesTask)
 		{
 			currentCheckForUpdatesTask = checkForUpdatesTask;
-			checkForUpdatesTask.ProgressMonitor = CreateProgressMonitor ();
 
 			task = taskFactory.CreateTask (
 				() => CheckForUpdates (checkForUpdatesTask),
@@ -108,9 +96,9 @@ namespace MonoDevelop.PackageManagement
 		{
 			if (task.IsFaulted) {
 				if (IsCurrentTask (task)) {
-					ReportError (task.Exception);
+					LogError ("Current check for updates task error.", task.Exception);
 				} else {
-					LoggingService.LogInternalError ("Check for updates task error.", task.Exception);
+					LogError ("Check for updates task error.", task.Exception);
 				}
 			} else if (task.IsCancelled) {
 				// Ignore.
@@ -134,30 +122,14 @@ namespace MonoDevelop.PackageManagement
 			return currentCheckForUpdatesTask == task;
 		}
 
-		void ReportError (Exception ex)
+		protected virtual void LogError (string message, Exception ex)
 		{
-			CheckForUpdatesTask task = currentCheckForUpdatesTask;
-			task.ReportError (ex);
-			GuiBackgroundDispatch (() => {
-				task.Dispose ();
-			});
+			LoggingService.LogError (message, ex);
 		}
 
 		bool IsCurrentTask (ITask<CheckForUpdatesTask> taskToCompare)
 		{
 			return taskToCompare == task;
-		}
-
-		CheckForUpdatesProgressMonitor CreateProgressMonitor ()
-		{
-			return CreateProgressMonitor (progressMonitorFactory, packageManagementEvents);
-		}
-
-		protected virtual CheckForUpdatesProgressMonitor CreateProgressMonitor (
-			IPackageManagementProgressMonitorFactory progressMonitorFactory,
-			IPackageManagementEvents packageManagementEvents)
-		{
-			return new CheckForUpdatesProgressMonitor (progressMonitorFactory, packageManagementEvents);
 		}
 
 		protected virtual void GuiBackgroundDispatch (MessageHandler handler)

@@ -85,6 +85,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
+		public override AppResult Selected ()
+		{
+			return resultWidget.HasFocus ? this : null;
+		}
+
 		public override AppResult CheckType (Type desiredType)
 		{
 			if (resultWidget.GetType () == desiredType || resultWidget.GetType ().IsSubclassOf (desiredType)) {
@@ -291,7 +296,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 			}
 		}
 
-		void RealTypeKey (Gdk.Key key, Gdk.ModifierType state)
+		internal void RealTypeKey (Gdk.Key key, Gdk.ModifierType state)
 		{
 			SendKeyEvent (resultWidget, (uint)key, state, Gdk.EventType.KeyPress, null);
 			SendKeyEvent (resultWidget, (uint)key, state, Gdk.EventType.KeyRelease, null);

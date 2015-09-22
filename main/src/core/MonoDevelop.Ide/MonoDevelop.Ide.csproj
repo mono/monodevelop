@@ -31,14 +31,14 @@
     <Optimize>True</Optimize>
     <OutputPath>..\..\..\build\bin</OutputPath>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>3</WarningLevel>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Ide.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\build\bin\MonoDevelop.Ide.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -62,8 +62,8 @@
     <OutputPath>..\..\..\build\bin</OutputPath>
     <DefineConstants>MAC</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Ide.xml</DocumentationFile>
+    <WarningLevel>3</WarningLevel>
+    <DocumentationFile>..\..\..\build\bin\MonoDevelop.Ide.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Execution>
       <Execution clr-version="Net_2_0" />
@@ -3378,6 +3378,7 @@
     <Compile Include="MonoDevelop.Components.AutoTest.Results\ObjectResult.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\PropertyMetadata.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\ObjectProperties.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\SelectedOperation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

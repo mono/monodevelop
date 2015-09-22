@@ -241,7 +241,10 @@ namespace MonoDevelop.Core.Assemblies
 				return;
 			foreach (string pcfile in GetAllPkgConfigFiles ()) {
 				try {
-					ParsePCFile (new FilePath (pcfile).ResolveLinks ());
+					var pc = new FilePath (pcfile).ResolveLinks ();
+					if (!string.IsNullOrEmpty (pc))
+						ParsePCFile (pc);
+
 					if (ShuttingDown)
 						return;
 				}

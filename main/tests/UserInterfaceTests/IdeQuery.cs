@@ -36,6 +36,7 @@ namespace UserInterfaceTests
 		readonly static Func<AppQuery, AppQuery> _editRemoteDialog = c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog");
 		readonly static Func<AppQuery, AppQuery> _editBranchDialog = c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditBranchDialog");
 		readonly static Func<AppQuery, AppQuery> _textArea = c => c.Window ().Children ().Marked ("Mono.TextEditor.TextArea");
+		readonly static Func<AppQuery, AppQuery> _xamarinUpdate = c => c.Marked ("Xamarin Update");
 
 		public static Func<AppQuery, AppQuery> DefaultWorkbench
 		{
@@ -76,6 +77,13 @@ namespace UserInterfaceTests
 		{
 			get {
 				return _textArea;
+			}
+		}
+
+		public static Func<AppQuery, AppQuery> XamarinUpdate
+		{
+			get {
+				return _xamarinUpdate;
 			}
 		}
 	}

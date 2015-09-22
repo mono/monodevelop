@@ -198,16 +198,16 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				"The Delete option permanently removes the directory and any files it contains from your hard disk. " +
 				"Click Remove from Project if you only want to remove it from your current solution.")
 			};
-			question.Buttons.Add (AlertButton.Cancel);
 			question.Buttons.Add (AlertButton.Delete);
 			question.Buttons.Add (removeButton);
+			question.Buttons.Add (AlertButton.Cancel);
 
 			var deleteOnlyQuestion = new QuestionMessage () {
 				AllowApplyToAll = folders.Count > 1,
 				SecondaryText = GettextCatalog.GetString ("The directory and any files it contains will be permanently removed from your hard disk. ")
 			};
-			deleteOnlyQuestion.Buttons.Add (AlertButton.Cancel);
 			deleteOnlyQuestion.Buttons.Add (AlertButton.Delete);
+			deleteOnlyQuestion.Buttons.Add (AlertButton.Cancel);
 			
 			foreach (var folder in folders) {
 				var project = folder.Project;

@@ -30,6 +30,7 @@ using MonoDevelop.Core;
 using System.IO;
 using System.Xml;
 using System;
+using System.Collections.Generic;
 
 namespace UserInterfaceTests
 {
@@ -46,9 +47,43 @@ namespace UserInterfaceTests
 			CreateProject ();
 			NuGetController.AddPackage (new NuGetPackageOptions {
 				PackageName = "CommandLineParser",
-				Version = "2.0.119-alpha",
+				Version = "2.0.257-beta",
 				IsPreRelease = true
 			}, TakeScreenShot);
+		}
+
+		[Test]
+		[Description ("When a solution is opened and package updates are available, don't show in status bar")]
+		public void DontShowPackageUpdatesAvailable ()
+		{
+			var templateOptions = new TemplateSelectionOptions {
+				CategoryRoot = OtherCategoryRoot,
+				Category = ".NET",
+				TemplateKindRoot = GeneralKindRoot,
+				TemplateKind = "Console Project"
+			};
+			var projectDetails = new ProjectDetails (templateOptions);
+			CreateProject (templateOptions, projectDetails);
+			NuGetController.AddPackage (new NuGetPackageOptions {
+				PackageName = "CommandLineParser",
+				Version = "1.9.3.34",
+				IsPreRelease = false
+			}, TakeScreenShot);
+
+			string solutionFolder = GetSolutionDirectory ();
+			string solutionPath = Path.Combine (solutionFolder, projectDetails.SolutionName+".sln");
+			var projectPath = Path.Combine (solutionFolder, projectDetails.ProjectName, projectDetails.ProjectName + ".csproj");
+			Assert.IsTrue (File.Exists (projectPath));
+
+			TakeScreenShot ("About-To-Close-Solution");
+			Session.ExecuteCommand (FileCommands.CloseWorkspace);
+			TakeScreenShot ("Closed-Solution");
+
+			Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workspace.OpenWorkspaceItem", new FilePath (solutionPath), true);
+			TakeScreenShot ("Solution-Opened");
+			Assert.Throws <TimeoutException> (() => Ide.WaitForPackageUpdate ());
+			Ide.WaitForSolutionLoaded ();
+			TakeScreenShot ("Solution-Ready");
 		}
 
 		[Test]
@@ -58,7 +93,7 @@ namespace UserInterfaceTests
 			CreateProject ();
 			NuGetController.AddPackage (new NuGetPackageOptions {
 				PackageName = "RestSharp",
-				Version = "105.0.1",
+				Version = "105.2.3",
 				IsPreRelease = true
 			}, TakeScreenShot);
 			WaitForNuGetReadmeOpened ();
@@ -71,7 +106,7 @@ namespace UserInterfaceTests
 			CreateProject ();
 			NuGetController.AddPackage (new NuGetPackageOptions {
 				PackageName = "RestSharp",
-				Version = "105.0.1",
+				Version = "105.2.2",
 				IsPreRelease = true
 			}, TakeScreenShot);
 			WaitForNuGetReadmeOpened ();
@@ -80,7 +115,7 @@ namespace UserInterfaceTests
 			TakeScreenShot ("About-To-Update-Package");
 			NuGetController.UpdatePackage (new NuGetPackageOptions {
 				PackageName = "RestSharp",
-				Version = "105.1.0",
+				Version = "105.2.3",
 				IsPreRelease = true
 			}, TakeScreenShot);
 			WaitForNuGetReadmeOpened ();
@@ -92,7 +127,7 @@ namespace UserInterfaceTests
 		{
 			var packageInfo = new NuGetPackageOptions {
 				PackageName = "RestSharp",
-				Version = "105.0.1",
+				Version = "105.2.3",
 				IsPreRelease = true
 			};
 
@@ -143,7 +178,7 @@ namespace UserInterfaceTests
 			CreateProject (templateOptions, projectDetails);
 			NuGetController.AddPackage (new NuGetPackageOptions {
 				PackageName = "CommandLineParser",
-				Version = "1.9.7",
+				Version = "1.9.71",
 				IsPreRelease = false
 			}, TakeScreenShot);
 
@@ -160,7 +195,7 @@ namespace UserInterfaceTests
 
 			Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workspace.OpenWorkspaceItem", new FilePath (solutionPath), true);
 			TakeScreenShot ("Solution-Opened");
-			Ide.WaitForPackageUpdate ();
+			Ide.WaitForPackageUpdateExtra (new List<string> { "Solution loaded." });
 			TakeScreenShot ("Solution-Ready");
 
 			NuGetController.UpdateAllNuGetPackages (TakeScreenShot);

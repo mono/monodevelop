@@ -113,7 +113,7 @@ namespace MonoDevelop.PackageManagement.Commands
 			try {
 				PackageManagementServices.UpdatedPackagesInSolution.CheckForUpdates ();
 			} catch (Exception ex) {
-				LoggingService.LogInternalError ("Check for NuGet package updates error.", ex);
+				LoggingService.LogError ("Check for NuGet package updates error.", ex);
 			}
 		}
 
@@ -125,7 +125,7 @@ namespace MonoDevelop.PackageManagement.Commands
 					e.Cancel = true;
 				}
 			} catch (Exception ex) {
-				LoggingService.LogInternalError (ex);
+				LoggingService.LogError ("Error on unloading workspace item.", ex);
 			}
 		}
 	}

@@ -71,12 +71,5 @@ namespace MonoDevelop.VersionControl.Git
 				repo.Network.Remotes.Add ("origin", url);
 			return repo;
 		}
-
-		internal static bool IsGitRepository (this FilePath path)
-		{
-			// Maybe check if it has a HEAD file? But this check should be enough.
-			var newPath = path.Combine (".git");
-			return Directory.Exists (newPath) && Directory.Exists (newPath.Combine ("objects")) && Directory.Exists (newPath.Combine ("refs"));
-		}
 	}
 }

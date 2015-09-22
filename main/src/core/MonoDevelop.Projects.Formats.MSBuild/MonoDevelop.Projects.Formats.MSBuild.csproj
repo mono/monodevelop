@@ -28,7 +28,6 @@
     <WarningLevel>4</WarningLevel>
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\bin\MonoDevelop.Projects.Formats.MSBuild.xml</DocumentationFile>
     <DefineConstants>NET_3_5,NET_4_0</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
