@@ -37,7 +37,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		static int evaluationTimestamp;
 
-		readonly SymbolBinder symbolBinder = new SymbolBinder ();
+		readonly SymbolBinder symbolBinder = MtaThread.Run (() => new SymbolBinder ());
 		Dictionary<string, DocInfo> documents;
 		Dictionary<int, ProcessInfo> processes = new Dictionary<int, ProcessInfo> ();
 		Dictionary<int, ThreadInfo> threads = new Dictionary<int,ThreadInfo> ();
@@ -255,6 +255,9 @@ namespace MonoDevelop.Debugger.Win32
 			lock (threads) {
 				threads.Clear ();
 			}
+		  lock (processes) {
+		    processes.Clear();
+		  }
 		}
 
 		void OnBreak (object sender, CorThreadEventArgs e)
@@ -456,6 +459,7 @@ namespace MonoDevelop.Debugger.Win32
 			args.Process = GetProcess (process);
 			args.Thread = GetThread (e.Thread);
 			args.Backtrace = new Backtrace (new CorBacktrace (e.Thread, this));
+		  args.BreakEvent = breakEvent;
 			OnTargetEvent (args);
 		}
 

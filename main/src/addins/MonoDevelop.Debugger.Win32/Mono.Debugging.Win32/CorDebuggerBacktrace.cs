@@ -266,7 +266,7 @@ namespace MonoDevelop.Debugger.Win32
 				method = "<Unknown>";
 
 			var loc = new SourceLocation (method, file, line, column, endLine, endColumn);
-			return new StackFrame ((long)address, addressSpace, loc, lang, external, hasDebugInfo, hidden, null, null);
+			return new StackFrame ((long)address, addressSpace, loc, lang, external, hasDebugInfo, hidden, module, type);
 		}
 
 		#endregion
