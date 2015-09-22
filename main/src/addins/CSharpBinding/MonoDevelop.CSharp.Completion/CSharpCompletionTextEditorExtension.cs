@@ -389,7 +389,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		Task<ICompletionDataList> InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, int triggerWordLength, CancellationToken token)
+		Task<ICompletionDataList> InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, int triggerWordLength, CancellationToken token, bool forceSymbolCompletion = false)
 		{
 			if (Editor.EditMode != MonoDevelop.Ide.Editor.EditMode.Edit)
 				return null;
@@ -426,7 +426,7 @@ namespace MonoDevelop.CSharp.Completion
 						list.Add ((Ide.CodeCompletion.CompletionData)symbol); 
 					}
 
-					if (IdeApp.Preferences.AddImportedItemsToCompletionList.Value && list.OfType<RoslynSymbolCompletionData> ().Any (cd => cd.Symbol is ITypeSymbol)) {
+					if (forceSymbolCompletion || (IdeApp.Preferences.AddImportedItemsToCompletionList.Value && list.OfType<RoslynSymbolCompletionData> ().Any (cd => cd.Symbol is ITypeSymbol))) {
 						AddImportCompletionData (list, semanticModel, offset, token);
 					}
 
@@ -1273,7 +1273,6 @@ namespace MonoDevelop.CSharp.Completion
 				return;
 			var offset = Editor.CaretOffset;
 
-			ICompletionDataList completionList = null;
 			int cpos, wlen;
 			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
 				cpos = Editor.CaretOffset;
@@ -1282,14 +1281,10 @@ namespace MonoDevelop.CSharp.Completion
 			CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
 			CurrentCompletionContext.TriggerWordLength = wlen;
 
-			var list = new CSharpCompletionDataList ();
-			list.TriggerWordLength = wlen;
-			var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, default (CancellationToken));
-			var semanticModel = await partialDoc.GetSemanticModelAsync ();
-
-			AddImportCompletionData (list, semanticModel, offset);
+			int triggerWordLength = 0;
+			char ch = CurrentCompletionContext.TriggerOffset > 0 ? Editor.GetCharAt (CurrentCompletionContext.TriggerOffset - 1) : '\0';
 				
-			completionList = await CodeCompletionCommand (CurrentCompletionContext);
+			var	completionList = await InternalHandleCodeCompletion (CurrentCompletionContext, ch, true, triggerWordLength, default(CancellationToken), true);
 			if (completionList != null)
 				CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, CurrentCompletionContext);
 			else
