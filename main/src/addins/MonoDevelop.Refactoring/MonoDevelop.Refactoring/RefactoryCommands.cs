@@ -269,49 +269,49 @@ namespace MonoDevelop.Refactoring
 				}));
 				added = true;
 			}
-			
-			foreach (var refactoring in RefactoringService.Refactorings) {
-				if (refactoring.IsValid (options)) {
-					CommandInfo info = new CommandInfo (refactoring.GetMenuDescription (options));
-					info.AccelKey = refactoring.AccelKey;
-					ciset.CommandInfos.Add (info, new Action (new RefactoringOperationWrapper (refactoring, options).Operation));
-				}
-			}
-			var refactoringInfo = doc.Annotation<RefactoringDocumentInfo> ();
-			if (refactoringInfo == null) {
-				refactoringInfo = new RefactoringDocumentInfo ();
-				doc.AddAnnotation (refactoringInfo);
-			}
-			var loc = doc.Editor.Caret.Location;
-			bool first = true;
-			if (refactoringInfo.lastDocument != doc.ParsedDocument || loc != lastLocation) {
-				try {
-					refactoringInfo.validActions = RefactoringService.GetValidActions (doc, loc, new CancellationTokenSource (500).Token);
-				} catch (TaskCanceledException) {
-				} catch (AggregateException ae) {
-					ae.Flatten ().Handle (x => x is TaskCanceledException); 
-				}
-	
-				lastLocation = loc;
-				refactoringInfo.lastDocument = doc.ParsedDocument;
-			}
-			if (refactoringInfo.validActions != null && refactoringInfo.lastDocument != null && refactoringInfo.lastDocument.CreateRefactoringContext != null) {
-				var context = refactoringInfo.lastDocument.CreateRefactoringContext (doc, CancellationToken.None);
-
-				foreach (var fix_ in refactoringInfo.validActions.OrderByDescending (i => Tuple.Create (CodeActionEditorExtension.IsAnalysisOrErrorFix(i), (int)i.Severity, CodeActionEditorExtension.GetUsage (i.IdString)))) {
-					if (CodeActionEditorExtension.IsAnalysisOrErrorFix (fix_))
-						continue;
-					var fix = fix_;
-					if (first) {
-						first = false;
-						if (ciset.CommandInfos.Count > 0)
-							ciset.CommandInfos.AddSeparator ();
+			if (RefactoringService.ShowFixes) {
+				foreach (var refactoring in RefactoringService.Refactorings) {
+					if (refactoring.IsValid (options)) {
+						CommandInfo info = new CommandInfo (refactoring.GetMenuDescription (options));
+						info.AccelKey = refactoring.AccelKey;
+						ciset.CommandInfos.Add (info, new Action (new RefactoringOperationWrapper (refactoring, options).Operation));
 					}
+				}
+				var refactoringInfo = doc.Annotation<RefactoringDocumentInfo> ();
+				if (refactoringInfo == null) {
+					refactoringInfo = new RefactoringDocumentInfo ();
+					doc.AddAnnotation (refactoringInfo);
+				}
+				var loc = doc.Editor.Caret.Location;
+				bool first = true;
+				if (refactoringInfo.lastDocument != doc.ParsedDocument || loc != lastLocation) {
+					try {
+						refactoringInfo.validActions = RefactoringService.GetValidActions (doc, loc, new CancellationTokenSource (500).Token);
+					} catch (TaskCanceledException) {
+					} catch (AggregateException ae) {
+						ae.Flatten ().Handle (x => x is TaskCanceledException); 
+					}
+	
+					lastLocation = loc;
+					refactoringInfo.lastDocument = doc.ParsedDocument;
+				}
+				if (refactoringInfo.validActions != null && refactoringInfo.lastDocument != null && refactoringInfo.lastDocument.CreateRefactoringContext != null) {
+					var context = refactoringInfo.lastDocument.CreateRefactoringContext (doc, CancellationToken.None);
 
-					ciset.CommandInfos.Add (fix.Title, new Action (() => RefactoringService.ApplyFix (fix, context)));
+					foreach (var fix_ in refactoringInfo.validActions.OrderByDescending (i => Tuple.Create (CodeActionEditorExtension.IsAnalysisOrErrorFix(i), (int)i.Severity, CodeActionEditorExtension.GetUsage (i.IdString)))) {
+						if (CodeActionEditorExtension.IsAnalysisOrErrorFix (fix_))
+							continue;
+						var fix = fix_;
+						if (first) {
+							first = false;
+							if (ciset.CommandInfos.Count > 0)
+								ciset.CommandInfos.AddSeparator ();
+						}
+
+						ciset.CommandInfos.Add (fix.Title, new Action (() => RefactoringService.ApplyFix (fix, context)));
+					}
 				}
 			}
-
 			if (ciset.CommandInfos.Count > 0) {
 				ainfo.Add (ciset, null);
 				added = true;

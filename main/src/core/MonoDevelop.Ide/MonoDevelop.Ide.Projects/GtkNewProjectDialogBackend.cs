@@ -352,6 +352,8 @@ namespace MonoDevelop.Ide.Projects
 				var currentTemplate = templatesListStore.GetValue (iter, TemplateColumn) as SolutionTemplate;
 				if (currentTemplate == template) {
 					templatesTreeView.Selection.SelectIter (iter);
+					TreePath path = templatesListStore.GetPath (iter);
+					templatesTreeView.ScrollToCell (path, null, true, 1, 0);
 					break;
 				}
 			}
