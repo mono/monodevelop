@@ -165,6 +165,22 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		// Code Completion
+
+		public static class CodeCompletion
+		{
+			public static Cairo.Color BackgroundColor { get; internal set; }
+			public static Cairo.Color BorderColor { get; internal set; }
+			public static Cairo.Color TextColor { get; internal set; }
+			public static Cairo.Color HighlightColor { get; internal set; }
+			public static Cairo.Color SelectionBackgroundColor { get; internal set; }
+			public static Cairo.Color SelectionBackgroundInactiveColor { get; internal set; }
+			public static Cairo.Color SelectionBorderColor { get; internal set; }
+			public static Cairo.Color SelectionBorderInactiveColor { get; internal set; }
+			public static Cairo.Color SelectionTextColor { get; internal set; }
+			public static Cairo.Color SelectionHighlightColor { get; internal set; }
+		}
+
 		// Global Search
 
 		public static class GlobalSearch
@@ -363,6 +379,17 @@ namespace MonoDevelop.Ide.Gui
 			PopoverWindow.ParamaterWindows.GradientStartColor = CairoExtensions.ParseColor ("fffee6");
 			PopoverWindow.ParamaterWindows.GradientEndColor = CairoExtensions.ParseColor ("fffcd1");
 
+			CodeCompletion.BackgroundColor = CairoExtensions.ParseColor ("F0F6F8");
+			CodeCompletion.BorderColor = CairoExtensions.ParseColor ("C9C9C9");
+			CodeCompletion.TextColor = CairoExtensions.ParseColor ("665a36");
+			CodeCompletion.HighlightColor = CairoExtensions.ParseColor ("ba3373");
+			CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("dff4f0");
+			CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("434343");
+			CodeCompletion.SelectionBorderColor = CairoExtensions.ParseColor ("c9c9c9");
+			CodeCompletion.SelectionBorderInactiveColor = CairoExtensions.ParseColor ("666666");
+			CodeCompletion.SelectionTextColor = CairoExtensions.ParseColor ("ffffff");
+			CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("ba3373");
+
 			// Global Search
 
 			GlobalSearch.HeaderTextColor = CairoExtensions.ParseColor ("8c8c8c");
@@ -482,22 +509,34 @@ namespace MonoDevelop.Ide.Gui
 
 			// Popover window
 
-			PopoverWindow.DefaultBackgroundColor = CairoExtensions.ParseColor ("f2f2f2");
+			PopoverWindow.DefaultBackgroundColor = CairoExtensions.ParseColor ("5A5A5A");
 			PopoverWindow.ErrorBackgroundColor = CairoExtensions.ParseColor ("E27267");
 			PopoverWindow.WarningBackgroundColor = CairoExtensions.ParseColor ("efd46c");
 			PopoverWindow.InformationBackgroundColor = CairoExtensions.ParseColor ("709DC9");
 
-			PopoverWindow.DefaultBorderColor = CairoExtensions.ParseColor ("ffeeba");
+			PopoverWindow.DefaultBorderColor = CairoExtensions.ParseColor ("989892");
 			PopoverWindow.ErrorBorderColor = CairoExtensions.ParseColor ("c97968");
 			PopoverWindow.WarningBorderColor = CairoExtensions.ParseColor ("e8c12c");
 			PopoverWindow.InformationBorderColor = CairoExtensions.ParseColor ("6688bc");
 
-			PopoverWindow.DefaultTextColor = CairoExtensions.ParseColor ("665a36");
+			PopoverWindow.DefaultTextColor = CairoExtensions.ParseColor ("ffffff");
 			PopoverWindow.ErrorTextColor = CairoExtensions.ParseColor ("ffffff");
 			PopoverWindow.WarningTextColor = CairoExtensions.ParseColor ("563b00");
 			PopoverWindow.InformationTextColor = CairoExtensions.ParseColor ("ffffff");
 			PopoverWindow.ParamaterWindows.GradientStartColor = CairoExtensions.ParseColor ("fffee6");
 			PopoverWindow.ParamaterWindows.GradientEndColor = CairoExtensions.ParseColor ("fffcd1");
+
+			CodeCompletion.BackgroundColor = CairoExtensions.ParseColor ("5A5A5A");
+			CodeCompletion.BorderColor = CairoExtensions.ParseColor ("989892");
+			CodeCompletion.TextColor = CairoExtensions.ParseColor ("ffffff");
+			CodeCompletion.HighlightColor = CairoExtensions.ParseColor ("BA3373");
+			CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("CCCCCC");
+			CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("434343");
+			CodeCompletion.SelectionBorderColor = CairoExtensions.ParseColor ("C9C9C9");
+			CodeCompletion.SelectionBorderInactiveColor = CairoExtensions.ParseColor ("666666");
+			CodeCompletion.SelectionTextColor = CairoExtensions.ParseColor ("ffffff");
+			CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("BA3373");
+
 
 			// Global Search
 

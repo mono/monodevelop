@@ -331,19 +331,32 @@ style "scrollbar" = "default"
     GtkRange::trough-border = 4
     GtkRange::trough-side-details = 0
 
-	bg[NORMAL] = @base_color
-	bg[ACTIVE] = @bg_color
-	bg[PRELIGHT] = @bg_color
-	bg[INSENSITIVE] = @bg_color
-	bg[SELECTED] = @bg_color
+	bg[NORMAL] = "#ADA8A8"
+	#bg[ACTIVE] = @bg_color
+	#bg[PRELIGHT] = @bg_color
+	#bg[INSENSITIVE] = @bg_color
+	#bg[SELECTED] = @bg_color
 	#bg[PRELIGHT] = shade (1.75, @bg_color)
 	#bg[INSENSITIVE] = shade (1.75, @bg_color)
 	#bg[SELECTED] = shade (1.75, @base_color)
 
 	engine "xamarin"
 	{
-		roundness	= 1
-		#border_shades	= {0.75, 0.75}
+		roundness		= 1
+		border_shades	= { 1.0, 1.0 }
+		contrast		= 0.0
+		trough_shades	= { 0.8, 0.8 }
+	}
+}
+
+style "completion_scrollbar" = "scrollbar"
+{
+	bg[NORMAL] = @base_color
+
+	engine "xamarin"
+	{
+		trough_shades	= { 1.9, 1.9 }
+		trough_border_shades	= { 2.03, 2.03 }
 	}
 }
 
@@ -381,6 +394,7 @@ style "spin-button" = "wider"
 }
 
 ### Apply the styles
+
 class "GtkWidget"    style "default"
 
 class "GtkEntry"     style "entry"
@@ -408,6 +422,8 @@ widget_class "<GtkDialog>.<GtkVBox>.<GtkHBox>.<GtkButtonBox>.<GtkButton>*" style
 widget "*.toggleFindInFiles" style "toggle-button"
 widget "*.toggleReplaceInFiles" style "toggle-button"
 widget "wizard_dialog" style "wizard-dialog"
+
+widget "*CompletionScrolledWindow*" style "completion_scrollbar"
 
 widget_class "*<GtkMenu>*"      style "menu"
 widget_class "*<GtkMenuItem>*"  style "menu-item"

@@ -39,7 +39,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Core;
 using Xwt.Drawing;
-using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -423,8 +423,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				int width = alloc.Width;
 				int height = alloc.Height;
 				context.Rectangle (args.Area.X, args.Area.Y, args.Area.Width, args.Area.Height);
-				var backgroundColor = ColorScheme.CompletionWindow.Color;
-				var textColor = ColorScheme.GetForeground (ColorScheme.CompletionText);
+				var backgroundColor = Styles.CodeCompletion.BackgroundColor;
+				var textColor = Styles.CodeCompletion.TextColor;
 				context.SetSourceColor (backgroundColor);
 				context.Fill ();
 				int xpos = iconTextSpacing;
@@ -505,7 +505,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 								} else {
 									stringStyle= ColorScheme.CompletionMatchingSubstring;
 								}
-								var highlightColor = (Cairo.Color)ColorScheme.GetForeground (stringStyle);
+								var highlightColor = (item == SelectedItem) ? Styles.CodeCompletion.SelectionHighlightColor : Styles.CodeCompletion.HighlightColor;
 								var fg = new AttrForeground ((ushort)(highlightColor.R * ushort.MaxValue), (ushort)(highlightColor.G * ushort.MaxValue), (ushort)(highlightColor.B * ushort.MaxValue));
 								fg.StartIndex = (uint)idx;
 								fg.EndIndex = (uint)(idx + 1);
@@ -538,20 +538,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 					typos = he < rowHeight ? ypos + (int)Math.Ceiling((rowHeight - he) / 2.0) : ypos;
 					iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
 					if (item == SelectedItem) {
-						context.Rectangle (0, ypos, Allocation.Width, rowHeight / 2);
-						var barStyle = SelectionEnabled ? ColorScheme.CompletionSelectionBarBackground : ColorScheme.CompletionSelectionBarBackgroundInactive;
-						var barBorderStyle = SelectionEnabled ? ColorScheme.CompletionSelectionBarBorder : ColorScheme.CompletionSelectionBarBorderInactive;
+						var barStyle = SelectionEnabled ? Styles.CodeCompletion.SelectionBackgroundColor : Styles.CodeCompletion.SelectionBackgroundInactiveColor;
+						var barBorderStyle = SelectionEnabled ? Styles.CodeCompletion.SelectionBorderColor : Styles.CodeCompletion.SelectionBorderInactiveColor;
 
-						context.SetSourceColor (barStyle.Color);
-						context.Fill ();
-						context.Rectangle (0, ypos + rowHeight / 2, Allocation.Width, rowHeight / 2);
-						context.SetSourceColor (barStyle.SecondColor);
+						context.Rectangle (0, ypos, Allocation.Width, rowHeight);
+						context.SetSourceColor (barStyle);
 						context.Fill ();
 
 						context.Rectangle (0.5, ypos + 0.5, Allocation.Width - 1, rowHeight - 1);
 						if (!SelectionEnabled)
 							context.SetDash (new double[] {4, 4}, 0);
-						context.SetSourceColor (barBorderStyle.Color);
+						context.SetSourceColor (barBorderStyle);
 						context.Stroke ();
 					} 
 
@@ -559,7 +556,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 						context.DrawImage (this, icon, xpos, iypos);
 						xpos += iconTextSpacing;
 					}
-					context.SetSourceColor (item == SelectedItem ? ColorScheme.GetForeground (ColorScheme.CompletionSelectedText) : textColor);
+					context.SetSourceColor (item == SelectedItem ? Styles.CodeCompletion.SelectionTextColor : Styles.CodeCompletion.TextColor);
 					var textXPos = xpos + iconWidth + 2;
 					context.MoveTo (textXPos, typos);
 					layout.Width = (int)((Allocation.Width - textXPos) * Pango.Scale.PangoScale);

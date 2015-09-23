@@ -326,6 +326,27 @@ style "scrollbar" = "default"
 
     engine "quartz" {
     }
+    #engine "xamarin" {
+	#	roundness		= 1
+	#	border_shades	= { 1.0, 1.0 }
+	#	contrast		= 0.5
+	#	trough_shades	= { 1.2, 1.2 }
+    #}
+}
+
+style "completion_scrollbar" = "scrollbar"
+{
+    GtkRange::slider-width = 8
+    GtkRange::trough-border = 3
+	bg[NORMAL] = @bg_color
+
+	engine "xamarin"
+	{
+		roundness		= 1
+		contrast		= 0.5
+		trough_shades	= { 1.8, 1.8 }
+		#trough_border_shades	= { 1.5, 1.5 }
+	}
 }
 
 style "progressbar" = "default"
@@ -389,6 +410,8 @@ widget_class "<GtkDialog>.<GtkVBox>.<GtkHBox>.<GtkButtonBox>.<GtkButton>*" style
 widget "*.toggleFindInFiles" style "toggle-button"
 widget "*.toggleReplaceInFiles" style "toggle-button"
 widget "wizard_dialog" style "wizard-dialog"
+
+widget "*CompletionScrolledWindow*" style "completion_scrollbar"
 
 widget_class "*<GtkMenu>*"      style "menu"
 widget_class "*<GtkMenuItem>*"  style "menu-item"
