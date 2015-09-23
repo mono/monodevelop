@@ -37,6 +37,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -126,7 +127,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		Cairo.Color backgroundColor;
 		Cairo.Color selectionBorderColor, selectionBorderInactiveColor;
-		ChunkStyle selectedItemColor, selectedItemInactiveColor;
+		Cairo.Color selectedItemColor, selectedItemInactiveColor;
 		Cairo.Color textColor;
 		Cairo.Color highlightColor;
 		FontDescription itemFont;
@@ -161,17 +162,24 @@ namespace MonoDevelop.Ide.CodeCompletion
 			noMatchLayout = new Pango.Layout (this.PangoContext);
 			layout = new Pango.Layout (this.PangoContext);
 			layout.Wrap = Pango.WrapMode.Char;
-			var style = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
 			SetFont ();
-			textColor = style.CompletionText.Foreground;
 
-			highlightColor = style.CompletionHighlight.Color;
-			backgroundColor = style.CompletionText.Background;
-			selectedItemColor = style.CompletionSelectedText;
-			selectedItemInactiveColor = style.CompletionSelectedInactiveText;
-			selectionBorderColor = style.CompletionBorder.Color;
-			selectionBorderInactiveColor = style.CompletionInactiveBorder.Color;
+			UpdateStyle ();
+			IdeApp.Preferences.UserInterfaceSkinChanged += (sender, e) => UpdateStyle ();
+			IdeApp.Preferences.ColorSchemeChanged += (sender, e) => UpdateStyle ();
+
 			this.Show ();
+		}
+
+		void UpdateStyle ()
+		{
+			textColor = Styles.CodeCompletion.TextColor;
+			highlightColor = Styles.CodeCompletion.HighlightColor;
+			backgroundColor = Styles.CodeCompletion.BackgroundColor;
+			selectedItemColor = Styles.CodeCompletion.SelectionBackgroundColor;
+			selectedItemInactiveColor = Styles.CodeCompletion.SelectionBackgroundInactiveColor;
+			selectionBorderColor = Styles.CodeCompletion.SelectionBorderColor;
+			selectionBorderInactiveColor = Styles.CodeCompletion.SelectionBorderInactiveColor;
 		}
 
 		
@@ -530,11 +538,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 					typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
 					iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
 					if (item == SelectedItem) {
-						context.Rectangle (0, ypos, Allocation.Width, rowHeight / 2);
-						context.SetSourceColor (SelectionEnabled ? selectedItemColor.Foreground : selectedItemInactiveColor.Background);
-						context.Fill ();
-						context.Rectangle (0, ypos + rowHeight / 2, Allocation.Width, rowHeight / 2);
-						context.SetSourceColor (SelectionEnabled ? selectedItemColor.Background : selectedItemInactiveColor.Background);
+						context.Rectangle (0, ypos, Allocation.Width, rowHeight);
+						context.SetSourceColor (SelectionEnabled ? selectedItemColor : selectedItemInactiveColor);
 						context.Fill ();
 
 						context.Rectangle (0.5, ypos + 0.5, Allocation.Width - 1, rowHeight - 1);

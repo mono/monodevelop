@@ -91,6 +91,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			list.ScrollEvent += new ScrollEventHandler (OnScrolled);
 
 			scrollbar = new MonoDevelop.Components.CompactScrolledWindow ();
+			scrollbar.Name = "CompletionScrolledWindow"; // use a different gtkrc style for GtkScrollBar
 			scrollbar.Child = list;
 			list.ButtonPressEvent += delegate(object o, ButtonPressEventArgs args) {
 				if (args.Event.Button == 1 && args.Event.Type == Gdk.EventType.TwoButtonPress)
@@ -101,8 +102,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.AutoSelect = true;
 			this.TypeHint = WindowTypeHint.Menu;
 			Theme.CornerRadius = 4;
-			var style = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
-			Theme.SetFlatColor (style.CompletionText.Background);
+
+			UpdateStyle ();
+			IdeApp.Preferences.UserInterfaceSkinChanged += (sender, e) => UpdateStyle ();
+			IdeApp.Preferences.ColorSchemeChanged += (sender, e) => UpdateStyle ();
+		}
+
+		void UpdateStyle ()
+		{
+			Theme.SetFlatColor (MonoDevelop.Ide.Gui.Styles.CodeCompletion.BackgroundColor);
+			Theme.BorderColor = MonoDevelop.Ide.Gui.Styles.CodeCompletion.BorderColor;
+
 		}
 
 		protected virtual void DoubleClick ()
