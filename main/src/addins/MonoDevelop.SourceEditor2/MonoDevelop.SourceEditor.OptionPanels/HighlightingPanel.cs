@@ -60,6 +60,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			styleTreeview.AppendColumn (col);
 			styleTreeview.Model = styleStore;
 			schemeName = DefaultSourceEditorOptions.Instance.ColorScheme;
+			IdeApp.Preferences.UserInterfaceSkinChanged += (sender, e) => ShowStyles ();
 		}
 		
 		protected override void OnDestroyed ()
