@@ -255,6 +255,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			newStore.SetSortFunc (1, CompareProjectFileNames);
 			newStore.SetSortFunc (2, CompareFileNames);
 			newStore.SetSortFunc (3, CompareFilePaths);
+			newStore.SetSortColumnId (2, SortType.Ascending); 
 			Reset ();
 			buttonStop.Sensitive = true;
 			treeviewSearchResults.FreezeChildNotify ();
