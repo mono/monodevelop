@@ -102,14 +102,16 @@ namespace MonoDevelop.Ide
 				LoggingService.LogError ("Error initialising GLib logging.", ex);
 			}
 
-			// On Windows we have to load our gtkrc first
 			if (Platform.IsWindows)
 				UpdateGtkRc ();
+			else
+				SetupTheme ();
 
 			var args = options.RemainingArgs.ToArray ();
 			Gtk.Application.Init (BrandingService.ApplicationName, ref args);
 
-			SetupTheme ();
+			if (Platform.IsWindows)
+				SetupTheme ();
 			IdeApp.Preferences.UserInterfaceSkinChanged += (s,a) => UpdateTheme ();
 
 			LoggingService.LogInfo ("Using GTK+ {0}", IdeVersionInfo.GetGtkVersion ());
