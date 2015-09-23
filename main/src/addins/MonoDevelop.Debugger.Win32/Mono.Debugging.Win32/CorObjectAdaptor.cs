@@ -407,12 +407,13 @@ namespace MonoDevelop.Debugger.Win32
 			}
 			CorValRef v = new CorValRef (delegate {
 				CorModule mod;
-				if (methodOwner.Type == CorElementType.ELEMENT_TYPE_ARRAY || targetType.Type == CorElementType.ELEMENT_TYPE_SZARRAY
-					|| MetadataHelperFunctionsExtensions.CoreTypes.ContainsKey (targetType.Type)) {
+				if (methodOwner.Type == CorElementType.ELEMENT_TYPE_ARRAY || methodOwner.Type == CorElementType.ELEMENT_TYPE_SZARRAY
+					|| MetadataHelperFunctionsExtensions.CoreTypes.ContainsKey(methodOwner.Type))
+				{
 					mod = ((CorType) ctx.Adapter.GetType (ctx, "System.Object")).Class.Module;
 				}
 				else {
-					mod = targetType.Class.Module;
+					mod = methodOwner.Class.Module;
 				}
 				CorFunction func = mod.GetFunctionFromToken (method.MetadataToken);
 				CorValue[] args = new CorValue[argValues.Length];
