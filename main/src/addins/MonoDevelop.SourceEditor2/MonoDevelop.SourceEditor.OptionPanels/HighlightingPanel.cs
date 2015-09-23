@@ -50,6 +50,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			// ensure that custom styles are loaded.
 			new SourceEditorDisplayBinding ();
 			schemeName = DefaultSourceEditorOptions.Instance.ColorScheme;
+			IdeApp.Preferences.UserInterfaceSkinChanged += (sender, e) => ShowStyles ();
 		}
 		
 		protected override void OnDestroyed ()

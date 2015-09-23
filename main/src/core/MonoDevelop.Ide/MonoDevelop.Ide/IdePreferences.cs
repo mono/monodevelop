@@ -304,13 +304,30 @@ namespace MonoDevelop.Ide
 		}
 		
 		public string ColorScheme {
-			get { return PropertyService.Get ("ColorScheme", "Default"); }
-			set { PropertyService.Set ("ColorScheme", value); }
+			get {
+				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+					return PropertyService.Get ("ColorScheme", "Default");
+				else
+					return PropertyService.Get ("ColorScheme-" + IdeApp.Preferences.UserInterfaceSkin, "Monokai");
+			}
+			set {
+				string newColorScheme = !String.IsNullOrEmpty (value) ? value : "Default";
+				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+					PropertyService.Set ("ColorScheme", newColorScheme);
+				else
+					PropertyService.Set ("ColorScheme-" + IdeApp.Preferences.UserInterfaceSkin, newColorScheme);
+			}
 		}
 		
 		public event EventHandler<PropertyChangedEventArgs> ColorSchemeChanged {
-			add { PropertyService.AddPropertyHandler ("ColorScheme", value); }
-			remove { PropertyService.RemovePropertyHandler ("ColorScheme", value); }
+			add {
+				PropertyService.AddPropertyHandler ("ColorScheme", value);
+				PropertyService.AddPropertyHandler ("ColorScheme-Dark", value);
+			}
+			remove {
+				PropertyService.RemovePropertyHandler ("ColorScheme", value);
+				PropertyService.RemovePropertyHandler ("ColorScheme-Dark", value);
+			}
 		}
 
 		public readonly PropertyWrapper<bool> BuildBeforeRunningTests = new PropertyWrapper<bool> ("BuildBeforeRunningTests", true);
