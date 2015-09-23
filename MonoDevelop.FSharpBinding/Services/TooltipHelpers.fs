@@ -30,7 +30,7 @@ module Linq2Xml =
     let firstOrDefault seq = Enumerable.FirstOrDefault(seq)
     let firstOrNone seq = 
         let iter = Enumerable.FirstOrDefault(seq)
-        match iter with null -> Some(iter) | _ -> None
+        match iter with null -> None | _ -> Some(iter)
 
     let singleOrDefault seq = Enumerable.SingleOrDefault(seq)
     let where (pred: XElement -> bool) elements = Enumerable.Where(elements, pred)

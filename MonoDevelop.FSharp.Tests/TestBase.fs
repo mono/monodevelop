@@ -2,9 +2,11 @@
 open System
 open System.Reflection
 open System.IO
+open System.Threading
 open NUnit.Framework
 open MonoDevelop.Core
 open MonoDevelop.Core.Assemblies
+open MonoDevelop.Core.Logging
 open MonoDevelop.Ide
 open MonoDevelop.Ide.TypeSystem
 open MonoDevelop.Projects
@@ -85,6 +87,17 @@ type Util =
         let rootDir = Path.GetDirectoryName (typeof<Util>.Assembly.Location) ++ ".." ++ ".." ++ "tests"
         Path.GetFullPath (rootDir)
 
+type TestLogger() = 
+    // logger with instant flush for testing
+    let logPath = Path.Combine(Util.TestsRootDir, "nunit.log")
+    static let monitor = new Object()
+    interface ILogger with
+        member x.EnabledLevel = EnabledLoggingLevel.All
+        member x.Name = "TestLogger"
+        member x.Log (level, message) =
+            lock monitor (fun() -> File.AppendAllText (logPath, message + "\n"))
+            
+        
 type TestBase() =
     static let firstRun = ref true
     do MonoDevelop.FSharp.MDLanguageService.DisableVirtualFileSystem()
@@ -109,12 +122,26 @@ type TestBase() =
 
 
     member x.InternalSetup (rootDir) =
+
+        // Set a synchronization context for the main gtk thread
+        SynchronizationContext.SetSynchronizationContext (new GtkSynchronizationContext ())
+        Runtime.MainSynchronizationContext <- SynchronizationContext.Current
+
         //Util.ClearTmpDir ()
+        let logger = new FileLogger (Path.Combine(Util.TestsRootDir, "nunit.log")) 
+        logger.EnabledLevel <- EnabledLoggingLevel.All
+        MonoDevelop.Core.LoggingService.AddLogger(new TestLogger())
+
+
         Environment.SetEnvironmentVariable ("MONO_ADDINS_REGISTRY", rootDir)
         Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", rootDir)
+        Environment.SetEnvironmentVariable ("MONODEVELOP_CONSOLE_LOG_LEVEL", "Debug")
+        Environment.SetEnvironmentVariable ("MONODEVELOP_LOGGING_PAD_LEVEL", "Debug")
+
         Runtime.Initialize (true)
         Xwt.Application.Initialize ()
         Gtk.Application.Init ()
+
         MonoDevelop.Ide.TypeSystem.TypeSystemService.TrackFileChanges <- true
         DesktopService.Initialize ()
         Services.ProjectService.DefaultTargetFramework <- Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_4_5)

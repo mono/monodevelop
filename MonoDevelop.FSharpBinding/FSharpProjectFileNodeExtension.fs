@@ -16,78 +16,76 @@ type FSharpProjectNodeCommandHandler() =
   inherit NodeCommandHandler()
 
   /// Reload project causing the node tree up refresh with new ordering
-  let reloadProject (currentNode: ITreeNavigator) =
-    use monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor(true)
-    monitor.BeginTask("Reloading Project", 1) |> ignore
-    let file = currentNode.DataItem :?> ProjectFile
-    file.Project.ParentFolder.ReloadItem(monitor, file.Project) |> ignore
-    monitor.Step (1)
-    monitor.EndTask()
+  let reloadProject (file: ProjectFile) =
+      use monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor(true)
+      monitor.BeginTask("Reloading Project", 1) |> ignore
+      file.Project.ParentFolder.ReloadItem(monitor, file.Project) |> ignore
+      monitor.Step (1)
+      monitor.EndTask()
 
-  member x.MoveNodes (currentNode: ITreeNavigator) (movingNode:ProjectFile) position =
-    match currentNode.DataItem with
-    | :? ProjectFile as moveToNode ->
-
-        let projectFile = movingNode.Project.FileName.ToString()
-
-        let descendantsNamed name ancestor = 
-            ///partially apply the default namespace of msbuild to xs
-            let xd = xs "http://schemas.microsoft.com/developer/msbuild/2003"
-            descendants (xd name) ancestor
-
-        // If the "Compile" element contains a "Link" element then it is a linked file,
-        // so use that value for comparison when finding the node.
-        let nodeName (node:XElement) = 
-           let link = node |> descendantsNamed "Link" |> firstOrNone
-           match link with
-           | Some l -> l.Value
-           | None   -> node |> attributeValue "Include"
-
-        //open project file
-        use file = IO.File.Open(projectFile, FileMode.Open)
-        let xdoc = XElement.Load(file)
-        file.Close()
-
-        //get movable nodes from the project file
-        let movableNodes = (descendantsNamed "Compile" xdoc).
-                             Concat(descendantsNamed "EmbeddedResource" xdoc).
-                             Concat(descendantsNamed "Content" xdoc).
-                             Concat(descendantsNamed "None" xdoc)
-
-        let findByIncludeFile name seq = 
-            seq |> where (fun elem -> nodeName elem = name )
-                |> firstOrNone
-        
-        let getFullName (pf:ProjectFile) = pf.ProjectVirtualPath.ToString().Replace("/", "\\")
-
-        let movingElement = movableNodes |> findByIncludeFile (getFullName movingNode)
-        let moveToElement = movableNodes |> findByIncludeFile (getFullName moveToNode)
-
-        let addFunction (moveTo:XElement) (position:DropPosition) =
-            match position with
-            | DropPosition.Before -> moveTo.AddBeforeSelf : obj -> unit
-            | DropPosition.After -> moveTo.AddAfterSelf : obj -> unit
-            | _ -> ignore
-
-        match (movingElement, moveToElement, position) with
-        | Some(moving), Some(moveTo), (DropPosition.Before | DropPosition.After) ->
-            moving.Remove()
-            //if the moving node contains a DependentUpon node as a child remove the DependentUpon nodes
-            moving |> descendantsNamed "DependentUpon" |> Seq.iter (fun node -> node.Remove())
-            //get the add function using the position
-            let add = addFunction moveTo position
-            add(moving)
-            xdoc.Save(projectFile)
-            reloadProject currentNode
-        | _ -> ()//If we cant find both nodes or the position isnt before or after we dont continue
-    | _ -> ()//unsupported
+  member x.MoveNodes (moveToNode: ProjectFile) (movingNode:ProjectFile) position =
+      let projectFile = movingNode.Project.FileName.ToString()
+     
+      let descendantsNamed name ancestor = 
+          ///partially apply the default namespace of msbuild to xs
+          let xd = xs "http://schemas.microsoft.com/developer/msbuild/2003"
+          descendants (xd name) ancestor
+     
+      // If the "Compile" element contains a "Link" element then it is a linked file,
+      // so use that value for comparison when finding the node.
+      let nodeName (node:XElement) = 
+         let link = node |> descendantsNamed "Link" |> firstOrNone
+         match link with
+         | Some l -> l.Value
+         | None -> node |> attributeValue "Include"
+     
+      //open project file
+      use file = IO.File.Open(projectFile, FileMode.Open)
+      let xdoc = XElement.Load(file)
+      file.Close()
+     
+      //get movable nodes from the project file
+      let movableNodes = (descendantsNamed "Compile" xdoc).
+                           Concat(descendantsNamed "EmbeddedResource" xdoc).
+                           Concat(descendantsNamed "Content" xdoc).
+                           Concat(descendantsNamed "None" xdoc)
+     
+      let findByIncludeFile name seq = 
+          seq |> where (fun elem -> nodeName elem = name )
+              |> firstOrNone
+      
+      let getFullName (pf:ProjectFile) = pf.ProjectVirtualPath.ToString().Replace("/", "\\")
+     
+      let movingElement = movableNodes |> findByIncludeFile (getFullName movingNode)
+      let moveToElement = movableNodes |> findByIncludeFile (getFullName moveToNode)
+     
+      let addFunction (moveTo:XElement) (position:DropPosition) =
+          match position with
+          | DropPosition.Before -> moveTo.AddBeforeSelf : obj -> unit
+          | DropPosition.After -> moveTo.AddAfterSelf : obj -> unit
+          | _ -> ignore
+     
+      match (movingElement, moveToElement, position) with
+      | Some(moving), Some(moveTo), (DropPosition.Before | DropPosition.After) ->
+          moving.Remove()
+          //if the moving node contains a DependentUpon node as a child remove the DependentUpon nodes
+          moving |> descendantsNamed "DependentUpon" |> Seq.iter (fun node -> node.Remove())
+          //get the add function using the position
+          let add = addFunction moveTo position
+          add(moving)
+          xdoc.Save(projectFile)
+      | _ -> ()//If we cant find both nodes or the position isnt before or after we dont continue
 
   /// Implement drag and drop of nodes in F# projects in the solution explorer.
   override x.OnNodeDrop(dataObject, dragOperation, position) =
     match dataObject, dragOperation with
     | :? ProjectFile as movingNode, DragOperation.Move ->
         //Move as long as this is a drag op and the moving node is a project file
-        x.MoveNodes x.CurrentNode movingNode position
+        match x.CurrentNode.DataItem with
+        | :? ProjectFile as moveToNode ->
+            x.MoveNodes moveToNode movingNode position
+            reloadProject moveToNode
+        | _ -> ()//unsupported
     | _ -> //otherwise use the base behaviour
            base.OnNodeDrop(dataObject, dragOperation, position) 
         
