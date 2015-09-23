@@ -135,6 +135,7 @@
 	<StockIcon stockid="md-platform-android" resource="platform-android-light-16.png" size="Menu" />
 	<StockIcon stockid="md-platform-cross-platform" resource="platform-cross-platform-light-16.png" size="Menu" />
 	<StockIcon stockid="md-platform-ios" resource="platform-ios-light-16.png" size="Menu" />
+	<StockIcon stockid="md-platform-tvos" resource="platform-tvos-light-16.png" size="Menu" />
 	<StockIcon stockid="md-platform-mac" resource="platform-mac-light-16.png" size="Menu" />
 	<StockIcon stockid="md-platform-other" resource="platform-other-light-16.png" size="Menu" />
 	<StockIcon stockid="md-popup-close" resource="popup-close-16.png" size="Menu" />
