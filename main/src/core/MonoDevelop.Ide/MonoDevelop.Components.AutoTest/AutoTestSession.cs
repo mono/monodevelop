@@ -274,6 +274,8 @@ namespace MonoDevelop.Components.AutoTest
 			
 			if (remaining == null)
 				return res;
+			else if (res == null)
+				return null;
 			else
 				return GetValue (res, res.GetType (), remaining);
 		}
