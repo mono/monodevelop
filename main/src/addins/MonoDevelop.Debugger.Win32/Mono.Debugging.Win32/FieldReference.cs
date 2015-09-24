@@ -30,7 +30,7 @@ using Microsoft.Samples.Debugging.CorDebug;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 
-namespace MonoDevelop.Debugger.Win32
+namespace Mono.Debugging.Win32
 {
 	public class FieldReference: ValueReference
 	{

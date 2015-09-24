@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Mono.Debugging.Client;
+using Mono.Debugging.Win32;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.AspNet.Execution;

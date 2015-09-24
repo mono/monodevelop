@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace MonoDevelop.Debugger.Win32
+namespace Mono.Debugging.Win32
 {
 	static class MtaThread
 	{

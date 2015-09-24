@@ -26,12 +26,12 @@
 //
 
 using System.Reflection;
-using Mono.Debugging.Client;
-using Mono.Debugging.Evaluation;
 using Microsoft.Samples.Debugging.CorDebug;
 using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using Mono.Debugging.Client;
+using Mono.Debugging.Evaluation;
 
-namespace MonoDevelop.Debugger.Win32
+namespace Mono.Debugging.Win32
 {
 	class PropertyReference: ValueReference
 	{
