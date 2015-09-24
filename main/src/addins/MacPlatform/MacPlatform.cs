@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Reflection;
 
 using AppKit;
 using Foundation;
@@ -326,81 +327,123 @@ namespace MonoDevelop.MacIntegration
 
 		void GlobalSetup ()
 		{
+			var appDelegate = (Xwt.Mac.AppDelegate)NSApplication.SharedApplication.Delegate;
 			//FIXME: should we remove these when finalizing?
 			try {
-				ApplicationEvents.Quit += delegate (object sender, ApplicationQuitEventArgs e)
+				appDelegate.Terminating += delegate (object sender, Xwt.Mac.TerminationEventArgs e)
 				{
 					// We can only attempt to quit safely if all windows are GTK windows and not modal
 					if (!IsModalDialogRunning ()) {
-						e.UserCancelled = !IdeApp.Exit ();
-						e.Handled = true;
+						e.Reply = IdeApp.Exit () ? NSApplicationTerminateReply.Now : NSApplicationTerminateReply.Cancel;
 						return;
 					}
 
 					// When a modal dialog is running, things are much harder. We can't just shut down MD behind the
 					// dialog, and aborting the dialog may not be appropriate.
 					//
-					// There's NSTerminateLater but I'm not sure how to access it from carbon, maybe
-					// we need to swizzle methods into the app's NSApplicationDelegate.
-					// Also, it stops the main CFRunLoop and enters a special runloop mode, not sure how that would
-					// interact with GTK+.
+					// There's NSTerminateLater but it stops the main CFRunLoop and enters a special runloop mode,
+					// not sure how that would interact with GTK+.
 
 					// For now, just bounce
 					NSApplication.SharedApplication.RequestUserAttention (NSRequestUserAttentionType.CriticalRequest);
 					// and abort the quit.
-					e.UserCancelled = true;
-					e.Handled = true;
+					e.Reply = NSApplicationTerminateReply.Cancel;
 				};
 
-				ApplicationEvents.Reopen += delegate (object sender, ApplicationEventArgs e) {
+				appDelegate.Unhidden += delegate (object sender, EventArgs e) {
+					Console.WriteLine ("Unhide");
 					if (IdeApp.Workbench != null && IdeApp.Workbench.RootWindow != null) {
 						IdeApp.Workbench.RootWindow.Deiconify ();
 						IdeApp.Workbench.RootWindow.Visible = true;
 
 						IdeApp.Workbench.RootWindow.Present ();
-						e.Handled = true;
 					}
 				};
 
-				ApplicationEvents.OpenDocuments += delegate (object sender, ApplicationDocumentEventArgs e) {
-					//OpenFiles may pump the mainloop, but can't do that from an AppleEvent, so use a brief timeout
+				appDelegate.OpenFilesRequest += delegate (object sender, Xwt.Mac.OpenFilesEventArgs e) {
+					// OpenFiles may pump the mainloop, but can't do that from an AppleEvent, so use a brief timeout
 					GLib.Timeout.Add (10, delegate {
-						IdeApp.OpenFiles (e.Documents.Select (
-							doc => new FileOpenInformation (doc.Key, doc.Value, 1, OpenDocumentOptions.DefaultInternal))
+						// For mono based apps run from the commandline via `mono-sgen MonoDevelop.exe` Cocoa decides
+						// that MonoDevelop.exe is the first filename to be passed when the app starts up
+						// Therefore we strip any filenames that match the assembly that we started from.
+						var entryAsm = Assembly.GetEntryAssembly ();
+						IdeApp.OpenFiles (e.Filenames.Where (filename => filename != entryAsm.Location).Select (
+							filename => new FileOpenInformation (filename, null, 1, 1, OpenDocumentOptions.DefaultInternal))
 						);
 						return false;
 					});
-					e.Handled = true;
 				};
 
-				ApplicationEvents.OpenUrls += delegate (object sender, ApplicationUrlEventArgs e) {
-					GLib.Timeout.Add (10, delegate {
-						// Open files via the monodevelop:// URI scheme, compatible with the
-						// common TextMate scheme: http://blog.macromates.com/2007/the-textmate-url-scheme/
-						IdeApp.OpenFiles (e.Urls.Select (url => {
-							try {
-								var uri = new Uri (url);
-								if (uri.Host != "open")
-									return null;
-
-								var qs = System.Web.HttpUtility.ParseQueryString (uri.Query);
-								var fileUri = new Uri (qs ["file"]);
-
-								int line, column;
-								if (!Int32.TryParse (qs ["line"], out line))
-									line = 1;
-								if (!Int32.TryParse (qs ["column"], out column))
-									column = 1;
-
-								return new FileOpenInformation (Uri.UnescapeDataString(fileUri.AbsolutePath),
-									line, column, OpenDocumentOptions.DefaultInternal);
-							} catch (Exception ex) {
-								LoggingService.LogError ("Invalid TextMate URI: " + url, ex);
-								return null;
-							}
-						}).Where (foi => foi != null));
+				appDelegate.OpenUrl += (sender, e) => GLib.Timeout.Add (10, delegate {
+					FileOpenInformation foi;
+					// Open files via the monodevelop:// URI scheme, compatible with the
+					// common TextMate scheme: http://blog.macromates.com/2007/the-textmate-url-scheme/
+					try {
+						var uri = new Uri (e.Url);
+						if (uri.Host != "open")
+							return false;
+						var qs = System.Web.HttpUtility.ParseQueryString (uri.Query);
+						var fileUri = new Uri (qs ["file"]);
+						int line, column;
+						if (!Int32.TryParse (qs ["line"], out line))
+							line = 1;
+						if (!Int32.TryParse (qs ["column"], out column))
+							column = 1;
+						foi = new FileOpenInformation (Uri.UnescapeDataString (fileUri.AbsolutePath), null, line, column, OpenDocumentOptions.DefaultInternal);
+					} catch (Exception ex) {
+						LoggingService.LogError ("Invalid TextMate URI: " + e.Url, ex);
 						return false;
+					}
+					IdeApp.OpenFiles (new[] {
+						foi
 					});
+					return false;
+				});
+
+				appDelegate.ShowDockMenu += (sender, e) => {
+					var recentProjects = DesktopService.RecentFiles.GetProjects ();
+					var recentFiles = DesktopService.RecentFiles.GetFiles ();
+					if (recentProjects.Count == 0 && recentFiles.Count == 0) {
+						return;
+					}
+
+					NSMenu menu = new NSMenu ();
+					if (recentProjects.Count > 0) {
+						var projects = new NSMenuItem ("Recent Solutions");
+						menu.AddItem (projects);
+
+						var submenu = new NSMenu ();
+						projects.Submenu = submenu;
+
+						foreach (var recentProject in recentProjects) {
+							string filename = recentProject.FileName;
+							var item = new NSMenuItem (recentProject.DisplayName, (s, args) => {
+								FileOpenInformation foi = new FileOpenInformation (filename, null, 0, 0, OpenDocumentOptions.DefaultInternal);
+								IdeApp.OpenFiles (new[] { foi });
+							});
+							submenu.AddItem (item);
+						}
+					}
+
+					if (recentFiles.Count > 0) {
+						var files = new NSMenuItem ("Recent Files");
+						menu.AddItem (files);
+
+						var submenu = new NSMenu (); 
+						files.Submenu = submenu;
+
+						foreach (var recentFile in recentFiles) {
+							string filename = recentFile.FileName;
+
+							var item = new NSMenuItem (recentFile.DisplayName, (s, args) => {
+								FileOpenInformation foi = new FileOpenInformation (filename, null, 0, 0, OpenDocumentOptions.DefaultInternal);
+								IdeApp.OpenFiles (new[] { foi });
+							});
+							submenu.AddItem (item);
+						}
+					}
+
+					e.dockMenu = menu;
 				};
 
 				//if not running inside an app bundle (at dev time), need to do some additional setup
