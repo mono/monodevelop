@@ -550,6 +550,7 @@
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildXmlNode.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildFileFormatException.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildXmlElement.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IMSBuildProjectObject.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -612,6 +612,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (t == null)
 					throw new UserException ("Unknown project type");
 
+				var dt = Services.ProjectService.DataContext.GetConfigurationDataType (t);
+				if (dt != null) {
+					if (!typeof(Project).IsAssignableFrom (dt.ValueType))
+						throw new UserException ("Unknown project type: " + t);
+					return (SolutionItem)Activator.CreateInstance (dt.ValueType);
+				}
+
 				Type type;
 				lock (genericProjectTypes) {
 					if (!genericProjectTypes.TryGetValue (t, out type))

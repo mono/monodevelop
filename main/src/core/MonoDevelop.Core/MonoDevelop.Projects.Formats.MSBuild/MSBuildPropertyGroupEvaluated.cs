@@ -30,7 +30,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	class MSBuildPropertyGroupEvaluated: IMSBuildPropertyGroupEvaluated
+	class MSBuildPropertyGroupEvaluated: IMSBuildPropertyGroupEvaluated, IMSBuildProjectObject
 	{
 		protected Dictionary<string,MSBuildPropertyEvaluated> properties = new Dictionary<string, MSBuildPropertyEvaluated> ();
 		protected MSBuildProject parent;
@@ -40,6 +40,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal MSBuildPropertyGroupEvaluated (MSBuildProject parent)
 		{
 			this.parent = parent;
+		}
+
+		public MSBuildProject ParentProject {
+			get {
+				return parent;
+			}
 		}
 
 		internal void Sync (MSBuildEngine engine, object item)

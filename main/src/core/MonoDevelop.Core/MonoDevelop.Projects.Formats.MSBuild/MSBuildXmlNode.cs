@@ -31,7 +31,7 @@ using System.Xml;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class MSBuildNode
+	public class MSBuildNode: IMSBuildProjectObject
 	{
 		public MSBuildNode ()
 		{
