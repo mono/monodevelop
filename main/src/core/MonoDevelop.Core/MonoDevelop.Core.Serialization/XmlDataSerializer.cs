@@ -87,19 +87,34 @@ namespace MonoDevelop.Core.Serialization
 			cw.StoreAllInElements = StoreAllInElements;
 			cw.Write (writer, data);
 		}
-		
+
+		public T Deserialize<T> (string fileName)
+		{
+			return (T)Deserialize (fileName, typeof (T));
+		}
+
 		public object Deserialize (string fileName, Type type)
 		{
 			using (StreamReader sr = new StreamReader (fileName)) {
 				return Deserialize (sr, type);
 			}
 		}
-		
+
+		public T Deserialize<T> (TextReader reader)
+		{
+			return (T)Deserialize (reader, typeof (T));
+		}
+
 		public object Deserialize (TextReader reader, Type type)
 		{
 			return Deserialize (new XmlTextReader (reader), type);
 		}
-		
+
+		public T Deserialize<T> (XmlReader reader)
+		{
+			return (T)Deserialize (reader, typeof (T));
+		}
+
 		public object Deserialize (XmlReader reader, Type type)
 		{
 			DataNode data = XmlConfigurationReader.DefaultReader.Read (reader);
