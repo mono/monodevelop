@@ -929,10 +929,13 @@ namespace MonoDevelop.Projects
 
 		SolutionLoadContext currentLoadContext;
 
-		internal void ReadSolution (ProgressMonitor monitor, SlnFile file)
+		internal void ReadSolution (ProgressMonitor monitor)
 		{
+			var sln = new SlnFile ();
+			sln.Read (this.FileName);
+
 			using (currentLoadContext = new SolutionLoadContext (this))
-				SolutionExtension.OnReadSolution (monitor, file);
+				SolutionExtension.OnReadSolution (monitor, sln);
 			currentLoadContext = null;
 		}
 

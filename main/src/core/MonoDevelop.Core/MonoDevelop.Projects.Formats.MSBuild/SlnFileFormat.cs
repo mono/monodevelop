@@ -373,14 +373,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return null;
 
 			var sol = new Solution (true);
-			sol.OnBeginLoad ();
+			sol.FileName = fileName;
+			sol.FileFormat = format;
+
 			try {
 				monitor.BeginTask (string.Format (GettextCatalog.GetString ("Loading solution: {0}"), fileName), 1);
 				monitor.BeginStep ();
+				await sol.OnBeginLoad ();
 				var projectLoadMonitor = monitor as ProjectLoadProgressMonitor;
 				if (projectLoadMonitor != null)
 					projectLoadMonitor.CurrentSolution = sol;
-				await Task.Factory.StartNew (() => LoadSolution (sol, fileName, monitor));
+				await Task.Factory.StartNew (() => {
+					sol.ReadSolution (monitor);
+				});
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not load solution: {0}", fileName), ex);
 				sol.OnEndLoad ().Wait ();
@@ -392,18 +397,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			sol.NotifyItemReady ();
 			monitor.EndTask ();
 			return sol;
-		}
-
-		SolutionFolder LoadSolution (Solution sol, string fileName, ProgressMonitor monitor)
-		{
-			var sln = new SlnFile ();
-			sln.Read (fileName);
-
-			sol.FileName = fileName;
-			sol.FileFormat = format;
-
-			sol.ReadSolution (monitor, sln);
-			return sol.RootFolder;
 		}
 
 		internal void LoadSolution (Solution sol, SlnFile sln, ProgressMonitor monitor, SolutionLoadContext ctx)

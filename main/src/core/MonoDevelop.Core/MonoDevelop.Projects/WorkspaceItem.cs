@@ -293,19 +293,20 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Called when a load operation for this item has started
 		/// </summary>
-		internal protected virtual void OnBeginLoad ()
+		internal protected async virtual Task OnBeginLoad ()
 		{
 			Loading = true;
+			await LoadUserProperties ();
 		}
 		
 		/// <summary>
 		/// Called when a load operation for this item has finished
 		/// </summary>
-		internal protected virtual async Task OnEndLoad ()
+		internal protected virtual Task OnEndLoad ()
 		{
 			Loading = false;
 			fileStatusTracker.ResetLoadTimes ();
-			await LoadUserProperties ();
+			return Task.FromResult (true);
 		}
 
 		/// <summary>
