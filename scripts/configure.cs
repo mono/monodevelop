@@ -136,7 +136,7 @@ namespace MonoDevelop.Configuration
             Version = SystemUtil.Grep(versionTxt, @"Version=(.*)");
             ProductVersionText = SystemUtil.Grep(versionTxt, "Label=(.*)");
             CompatVersion = SystemUtil.Grep(versionTxt, "CompatVersion=(.*)");
-			SourceUrl = SystemUtil.Grep(versionTxt, "SourceUrl=(.*)");
+			SourceUrl = SystemUtil.Grep(versionTxt, "SourceUrl=(.*)", true);
 
             Version ver = new Version(Version);
             int vbuild = ver.Build != -1 ? ver.Build : 0;
@@ -270,12 +270,15 @@ namespace MonoDevelop.Configuration
 
 		public static Platform Platform { get; private set; }
 
-        public static string Grep(string file, string regex)
+        public static string Grep(string file, string regex, bool optional = false)
         {
             string txt = File.ReadAllText(file);
             var m = Regex.Match(txt, regex);
-            if (m == null)
-                throw new UserException("Match not found for regex: " + regex);
+			if (m == null || !m.Success) {
+				if (!optional)
+					throw new UserException ("Match not found for regex: " + regex);
+				return null;
+			}
             if (m.Groups.Count != 2)
                 throw new UserException("Invalid regex: expression must have a single capture group: " + regex);
             Group cap = m.Groups[1];
