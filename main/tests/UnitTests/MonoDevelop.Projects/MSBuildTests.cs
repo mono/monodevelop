@@ -1374,6 +1374,17 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (mp.EvaluatedItems.FirstOrDefault (i => i.Name == "Compile" && i.Include == "test.cs") != null);
 			Assert.IsTrue (mp.EvaluatedItems.FirstOrDefault (i => i.Name == "Compile" && i.Include == "Program.cs") == null);
 		}
+
+		[Test]
+		public void FrameworkAssemblyVersionNotStored ()
+		{
+			// We don't store the version number for framework assemblies
+			var p = Services.ProjectService.CreateDotNetProject ("C#");
+			var pr = ProjectReference.CreateAssemblyReference ("System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+			p.References.Add (pr);
+
+			Assert.AreEqual ("System", pr.Include);
+		}
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode

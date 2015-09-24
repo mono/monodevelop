@@ -212,16 +212,6 @@ namespace MonoDevelop.Projects
 			this.hintPath = hintPath;
 			UpdatePackageReference ();
 
-			if (referenceType == ReferenceType.Package && Include == null) {
-				Include = StoredReference;
-				SystemPackage pkg = Package;
-				if (pkg != null && pkg.IsFrameworkPackage) {
-					int i = Include.IndexOf (',');
-					if (i != -1)
-						Include = Include.Substring (0, i).Trim ();
-				}
-			}
-
 			if (Include == null)
 				Include = reference;
 		}
@@ -635,6 +625,14 @@ namespace MonoDevelop.Projects
 					reference = cref;
 				}
 				cachedPackage = null;
+
+				SystemPackage pkg = Package;
+				if (pkg != null && pkg.IsFrameworkPackage) {
+					int i = Include.IndexOf (',');
+					if (i != -1)
+						Include = Include.Substring (0, i).Trim ();
+				}
+
 				OnStatusChanged ();
 			}
 		}
