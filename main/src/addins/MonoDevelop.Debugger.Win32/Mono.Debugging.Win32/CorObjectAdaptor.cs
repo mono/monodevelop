@@ -223,7 +223,7 @@ namespace MonoDevelop.Debugger.Win32
 				if (mi != null) {
 					var token = mi.GetTypeTokenFromName (name);
 					if (token == CorMetadataImport.TokenNotFound)
-						break;
+						continue;
 					var t = mi.GetType (token);
 					CorClass cls = mod.GetClassFromToken (t.MetadataToken);
 					fastRet = cls.GetParameterizedType (CorElementType.ELEMENT_TYPE_CLASS, typeArgs);
