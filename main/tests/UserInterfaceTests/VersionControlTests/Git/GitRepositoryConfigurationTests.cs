@@ -29,7 +29,7 @@ using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
-	[TestFixture]
+	[TestFixture, Timeout(90000)]
 	[Category ("GitConfig")]
 	public class GitRepositoryConfigurationTests : GitBase
 	{

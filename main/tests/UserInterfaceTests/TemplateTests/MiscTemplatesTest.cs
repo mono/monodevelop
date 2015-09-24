@@ -28,18 +28,25 @@ using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
-	[TestFixture]
-	[Category("Misc")]
+	[TestFixture, Timeout (60000), Category ("Misc")]
 	public class MiscTemplatesTest : CreateBuildTemplatesTestBase
 	{
 		readonly string miscCategory = "Miscellaneous";
 
 		[Test]
-		[TestCase ("Generic Project", "Generic", TestName = "TestMiscGenericProject", Description = "Create and build Generic Project")]
-		[TestCase ("Packaging project", "Generic", TestName = "TestMiscPackagingProject", Description = "Create and build Packaging Project")]
+		[Platform (Exclude="Win")]
 		[TestCase ("Shared Library", "C/C++", TestName = "TestMiscCCPlusSharedLibrary", Description = "Create and build Shared C/C++ Library")]
 		[TestCase ("Static Library", "C/C++", TestName = "TestMiscCCPlusStaticLibrary", Description = "Create and build Static C/C++ Library")]
 		[TestCase ("Console Project", "C/C++", TestName = "TestMiscCCPlusConsoleProject", Description = "Create and build Console C/C++ Project")]
+		public void RunMiscCPlusPlusTemplatesTest (string templateName, string templateKind)
+		{
+			RunMiscTemplatesTest (templateName, templateKind);
+		}
+
+		[Test]
+		[TestCase ("Generic Project", "Generic", TestName = "TestMiscGenericProject", Description = "Create and build Generic Project")]
+		[TestCase ("Packaging project", "Generic", TestName = "TestMiscPackagingProject", Description = "Create and build Packaging Project")]
+
 		public void RunMiscTemplatesTest (string templateName, string templateKind)
 		{
 			var templateOptions = new TemplateSelectionOptions {
