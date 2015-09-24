@@ -48,10 +48,32 @@ namespace MonoDevelop.SourceEditor
 			get;
 			set;
 		}
+		bool isInSelectionSearchMode;
+		TextSegmentMarker selectionMarker;
 
 		public bool IsInSelectionSearchMode {
-			get;
-			set;
+			get {
+				return isInSelectionSearchMode;
+			}
+
+			set {
+				if (value) {
+					Console.WriteLine ("add marker");
+					selectionMarker = new SearchInSelectionMarker (SelectionSegment);
+					this.textEditor.Document.AddMarker (selectionMarker);
+				} else {
+					RemoveSelectionMarker ();
+				}
+				isInSelectionSearchMode = value;
+			}
+		}
+
+		void RemoveSelectionMarker ()
+		{
+			if (selectionMarker == null)
+				return;
+			this.textEditor.Document.RemoveMarker (selectionMarker);
+			selectionMarker = null;
 		}
 
 		readonly MonoTextEditor textEditor;
@@ -287,8 +309,8 @@ namespace MonoDevelop.SourceEditor
 				if (textEditor.MainSelection.MinLine == textEditor.MainSelection.MaxLine || ClipboardContainsSelection()) {
 					SetSearchPattern ();
 				} else {
-					IsInSelectionSearchMode = true;
 					SelectionSegment = textEditor.SelectionRange;
+					IsInSelectionSearchMode = true;
 					SetSearchOptions ();
 				}
 			}
@@ -616,6 +638,7 @@ But I leave it in in the case I've missed something. Mike
 		
 		protected override void OnDestroyed ()
 		{
+			RemoveSelectionMarker ();
 			SearchAndReplaceOptions.SearchPatternChanged -= HandleSearchPatternChanged;
 			SearchAndReplaceOptions.ReplacePatternChanged -= HandleReplacePatternChanged;
 

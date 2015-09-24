@@ -212,6 +212,7 @@
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\ErrorMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SyntaxModeLoader.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\ImmutableTextTextSource.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\SearchInSelectionMarker.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
