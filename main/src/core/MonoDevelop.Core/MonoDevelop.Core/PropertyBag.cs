@@ -211,6 +211,14 @@ namespace MonoDevelop.Core
 				}
 				else if (entry.Value is DataNode) {
 					val = (DataNode) entry.Value;
+				} else if (entry.Value is DataNodeInfo) {
+					var di = (DataNodeInfo)entry.Value;
+					if (di.DataNode != null)
+						val = di.DataNode;
+					else if (di.Object != null) {
+						val = handler.SerializationContext.Serializer.Serialize (di.Object, di.Object.GetType ());
+					} else
+						continue;
 				} else {
 					val = handler.SerializationContext.Serializer.Serialize (entry.Value, entry.Value.GetType ());
 				}
