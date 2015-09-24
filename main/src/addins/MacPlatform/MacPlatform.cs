@@ -351,6 +351,7 @@ namespace MonoDevelop.MacIntegration
 				};
 
 				appDelegate.Unhidden += delegate (object sender, EventArgs e) {
+					Console.WriteLine ("Unhide");
 					if (IdeApp.Workbench != null && IdeApp.Workbench.RootWindow != null) {
 						IdeApp.Workbench.RootWindow.Deiconify ();
 						IdeApp.Workbench.RootWindow.Visible = true;
@@ -398,6 +399,52 @@ namespace MonoDevelop.MacIntegration
 					});
 					return false;
 				});
+
+				appDelegate.ShowDockMenu += (sender, e) => {
+					var recentProjects = DesktopService.RecentFiles.GetProjects ();
+					var recentFiles = DesktopService.RecentFiles.GetFiles ();
+					if (recentProjects.Count == 0 && recentFiles.Count == 0) {
+						return;
+					}
+
+					NSMenu menu = new NSMenu ();
+					if (recentProjects.Count > 0) {
+						var projects = new NSMenuItem ("Recent Solutions");
+						menu.AddItem (projects);
+
+						var submenu = new NSMenu ();
+						projects.Submenu = submenu;
+
+						foreach (var recentProject in recentProjects) {
+							string filename = recentProject.FileName;
+							var item = new NSMenuItem (recentProject.DisplayName, (s, args) => {
+								FileOpenInformation foi = new FileOpenInformation (filename, null, 0, 0, OpenDocumentOptions.DefaultInternal);
+								IdeApp.OpenFiles (new[] { foi });
+							});
+							submenu.AddItem (item);
+						}
+					}
+
+					if (recentFiles.Count > 0) {
+						var files = new NSMenuItem ("Recent Files");
+						menu.AddItem (files);
+
+						var submenu = new NSMenu (); 
+						files.Submenu = submenu;
+
+						foreach (var recentFile in recentFiles) {
+							string filename = recentFile.FileName;
+
+							var item = new NSMenuItem (recentFile.DisplayName, (s, args) => {
+								FileOpenInformation foi = new FileOpenInformation (filename, null, 0, 0, OpenDocumentOptions.DefaultInternal);
+								IdeApp.OpenFiles (new[] { foi });
+							});
+							submenu.AddItem (item);
+						}
+					}
+
+					e.dockMenu = menu;
+				};
 
 				//if not running inside an app bundle (at dev time), need to do some additional setup
 				if (NSBundle.MainBundle.InfoDictionary ["CFBundleIdentifier"] == null) {
