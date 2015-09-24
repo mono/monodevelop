@@ -86,17 +86,6 @@ type Util =
     static member TestsRootDir =
         let rootDir = Path.GetDirectoryName (typeof<Util>.Assembly.Location) ++ ".." ++ ".." ++ "tests"
         Path.GetFullPath (rootDir)
-
-type TestLogger() = 
-    // logger with instant flush for testing
-    let logPath = Path.Combine(Util.TestsRootDir, "nunit.log")
-    static let monitor = new Object()
-    interface ILogger with
-        member x.EnabledLevel = EnabledLoggingLevel.All
-        member x.Name = "TestLogger"
-        member x.Log (level, message) =
-            lock monitor (fun() -> File.AppendAllText (logPath, message + "\n"))
-            
         
 type TestBase() =
     static let firstRun = ref true
@@ -130,7 +119,7 @@ type TestBase() =
         //Util.ClearTmpDir ()
         let logger = new FileLogger (Path.Combine(Util.TestsRootDir, "nunit.log")) 
         logger.EnabledLevel <- EnabledLoggingLevel.All
-        MonoDevelop.Core.LoggingService.AddLogger(new TestLogger())
+        MonoDevelop.Core.LoggingService.AddLogger(logger)
 
 
         Environment.SetEnvironmentVariable ("MONO_ADDINS_REGISTRY", rootDir)
