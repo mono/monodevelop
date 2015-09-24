@@ -60,7 +60,12 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			styleTreeview.AppendColumn (col);
 			styleTreeview.Model = styleStore;
 			schemeName = DefaultSourceEditorOptions.Instance.ColorScheme;
-			IdeApp.Preferences.UserInterfaceSkinChanged += (sender, e) => ShowStyles ();
+			IdeApp.Preferences.UserInterfaceSkinChanged += HandleSkinChanged;
+		}
+
+		void HandleSkinChanged (object sender, PropertyChangedEventArgs e)
+		{
+			ShowStyles ();
 		}
 		
 		protected override void OnDestroyed ()
@@ -71,6 +76,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				styleStore.Dispose ();
 				styleStore = null;
 			}
+
+			IdeApp.Preferences.UserInterfaceSkinChanged -= HandleSkinChanged;
 			base.OnDestroyed ();
 		}
 

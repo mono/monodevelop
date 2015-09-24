@@ -102,14 +102,26 @@ namespace MonoDevelop.Ide.CodeCompletion
 			Theme.CornerRadius = 4;
 
 			UpdateStyle ();
-			IdeApp.Preferences.UserInterfaceSkinChanged += (sender, e) => UpdateStyle ();
-			IdeApp.Preferences.ColorScheme.Changed += (sender, e) => UpdateStyle ();
+			IdeApp.Preferences.UserInterfaceSkinChanged += HandleSkinChanged;
+			IdeApp.Preferences.ColorScheme.Changed += HandleSkinChanged;
+		}
+
+		void HandleSkinChanged (object sender, PropertyChangedEventArgs e)
+		{
+			UpdateStyle ();
 		}
 
 		void UpdateStyle ()
 		{
 			Theme.SetFlatColor (Gui.Styles.CodeCompletion.BackgroundColor);
 			Theme.BorderColor = Gui.Styles.CodeCompletion.BorderColor;
+		}
+
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			IdeApp.Preferences.UserInterfaceSkinChanged -= HandleSkinChanged;
+			IdeApp.Preferences.ColorScheme.Changed -= HandleSkinChanged;
 		}
 
 		protected virtual void DoubleClick ()
