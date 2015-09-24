@@ -118,8 +118,11 @@ namespace MonoDevelop.Ide.CustomTools
 					result.Errors.Add (new CompilerError (filePath, 0, 0, null, msg));
 				}
 
-				using (var w = new StreamWriter (outputfile, false, Encoding.UTF8))
-					provider.GenerateCodeFromCompileUnit (ccu, w, new CodeGeneratorOptions ());
+				lock (file) {
+					// Avoid race if ResXFileCodeGenerator is called more than once for the same file
+					using (var w = new StreamWriter (outputfile, false, Encoding.UTF8))
+						provider.GenerateCodeFromCompileUnit (ccu, w, new CodeGeneratorOptions ());
+				}
 
 				result.GeneratedFilePath = outputfile;
 			});
