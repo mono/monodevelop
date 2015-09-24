@@ -165,10 +165,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 			SetFont ();
 
 			UpdateStyle ();
-			IdeApp.Preferences.UserInterfaceSkinChanged += (sender, e) => UpdateStyle ();
-			IdeApp.Preferences.ColorSchemeChanged += (sender, e) => UpdateStyle ();
+			IdeApp.Preferences.UserInterfaceSkinChanged += HandleSkinChanged;
+			IdeApp.Preferences.ColorSchemeChanged += HandleSkinChanged;
 
 			this.Show ();
+		}
+
+		void HandleSkinChanged (object sender, PropertyChangedEventArgs e)
+		{
+			UpdateStyle ();
 		}
 
 		void UpdateStyle ()
@@ -196,6 +201,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				itemFont.Dispose ();
 				itemFont = null;
 			}
+			IdeApp.Preferences.UserInterfaceSkinChanged -= HandleSkinChanged;
+			IdeApp.Preferences.ColorSchemeChanged -= HandleSkinChanged;
 		}
 		internal Adjustment vadj;
 
