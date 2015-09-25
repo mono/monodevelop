@@ -39,6 +39,11 @@ namespace UserInterfaceTests
 				TestService.Session.DebugObject.Debug (data.ToString ());
 		}
 
+		public static string ToPathSafeString (this string str)
+		{
+			return str.Replace (@"\", "").Replace ("/", "");
+		}
+
 		public static FilePath CreateTmpDir (string hint = null)
 		{
 			var cwd = new FileInfo (Assembly.GetExecutingAssembly ().Location).DirectoryName;
