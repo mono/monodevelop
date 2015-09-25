@@ -528,7 +528,7 @@ index 0000000..009b64b
 			var history = gitRepo.GetHistory (LocalPath, null).Reverse ().ToArray ();
 			Assert.AreEqual (5, history.Length);
 			for (int i = 0; i < 5; ++i) {
-				Assert.AreEqual (string.Format ("Commit #{0}{1}", i, Environment.NewLine), history [i].Message);
+				Assert.AreEqual (string.Format ("Commit #{0}\n", i), history [i].Message);
 			}
 		}
 	}
