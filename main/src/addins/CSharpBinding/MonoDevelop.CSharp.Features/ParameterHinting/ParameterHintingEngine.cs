@@ -113,10 +113,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			if (ma != null) {
 				staticLookup = semanticModel.GetSymbolInfo (ma.Expression).Symbol is ITypeSymbol;
 				type = semanticModel.GetTypeInfo (ma.Expression).Type; 
-				name = ma.Name.ToString ();
+				name = info.Symbol?.Name ?? ma.Name.Identifier.ValueText;
 			} else {
 				type = within as ITypeSymbol;
-				name = node.Expression.ToString ();
+				name = info.Symbol?.Name ?? node.Expression.ToString ();
 				var sym = semanticModel.GetEnclosingSymbol (node.SpanStart, cancellationToken); 
 				staticLookup = sym.IsStatic;
 			}
