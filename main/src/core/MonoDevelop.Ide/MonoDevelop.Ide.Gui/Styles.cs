@@ -368,15 +368,15 @@ namespace MonoDevelop.Ide.Gui
 			PopoverWindow.ParamaterWindows.GradientStartColor = CairoExtensions.ParseColor ("fffee6");
 			PopoverWindow.ParamaterWindows.GradientEndColor = CairoExtensions.ParseColor ("fffcd1");
 
-			CodeCompletion.BackgroundColor = CairoExtensions.ParseColor ("F0F6F8");
-			CodeCompletion.TextColor = CairoExtensions.ParseColor ("665a36");
-			CodeCompletion.HighlightColor = CairoExtensions.ParseColor ("ba3373");
-			CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("dff4f0");
-			CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("434343");
-			CodeCompletion.SelectionBorderColor = CairoExtensions.ParseColor ("c9c9c9");
-			CodeCompletion.SelectionBorderInactiveColor = CairoExtensions.ParseColor ("666666");
-			CodeCompletion.SelectionTextColor = CairoExtensions.ParseColor ("ffffff");
-			CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("ba3373");
+			CodeCompletion.BackgroundColor = CairoExtensions.ParseColor ("F0F6F8"); // TODO: VV: New value
+			CodeCompletion.TextColor = CairoExtensions.ParseColor ("665a36"); // TODO: VV: New value
+			CodeCompletion.HighlightColor = CairoExtensions.ParseColor ("ba3373"); // TODO: VV: New value
+			CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("dff4f0"); // TODO: VV: New value
+			CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("434343"); // TODO: VV: New value
+			CodeCompletion.SelectionBorderColor = CairoExtensions.ParseColor ("c9c9c9"); // TODO: VV: New value
+			CodeCompletion.SelectionBorderInactiveColor = CairoExtensions.ParseColor ("666666"); // TODO: VV: New value
+			CodeCompletion.SelectionTextColor = CairoExtensions.ParseColor ("ffffff"); // TODO: VV: New value
+			CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("ba3373"); // TODO: VV: New value
 
 			// Global Search
 
@@ -509,15 +509,15 @@ namespace MonoDevelop.Ide.Gui
 			PopoverWindow.ParamaterWindows.GradientStartColor = CairoExtensions.ParseColor ("fffee6");
 			PopoverWindow.ParamaterWindows.GradientEndColor = CairoExtensions.ParseColor ("fffcd1");
 
-			CodeCompletion.BackgroundColor = CairoExtensions.ParseColor ("5A5A5A");
+			CodeCompletion.BackgroundColor = CairoExtensions.ParseColor ("454545");
 			CodeCompletion.TextColor = CairoExtensions.ParseColor ("ffffff");
-			CodeCompletion.HighlightColor = CairoExtensions.ParseColor ("BA3373");
-			CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("CCCCCC");
-			CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("434343");
-			CodeCompletion.SelectionBorderColor = CairoExtensions.ParseColor ("C9C9C9");
-			CodeCompletion.SelectionBorderInactiveColor = CairoExtensions.ParseColor ("666666");
+			CodeCompletion.HighlightColor = CairoExtensions.ParseColor ("F9D33C");
+			CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("0069d9");
+			CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("555555");
+			CodeCompletion.SelectionBorderColor = CairoExtensions.ParseColor ("0069d9");
+			CodeCompletion.SelectionBorderInactiveColor = CairoExtensions.ParseColor ("555555");
 			CodeCompletion.SelectionTextColor = CairoExtensions.ParseColor ("ffffff");
-			CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("BA3373");
+			CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("F9D33C");
 
 
 			// Global Search

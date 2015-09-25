@@ -52,7 +52,6 @@
         { "name":"Indicator Margin(Separator)", "color":"aluminium6" },
 
         { "name":"Tooltip Pager Top", "color":"aluminium5" },
-        { "name":"Tooltip Pager Bottom", "color":"aluminium5" },
         { "name":"Tooltip Pager Triangle", "color":"aluminium2" },
         { "name":"Tooltip Pager Text", "color":"aluminium2" },
 
