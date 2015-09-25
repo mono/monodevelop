@@ -99,7 +99,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			ContentBox.Add (vbox);
 			this.AutoSelect = true;
 			this.TypeHint = WindowTypeHint.Menu;
-			Theme.CornerRadius = 4;
+			Theme.CornerRadius = 0;
+			Theme.Padding = 0;
 
 			UpdateStyle ();
 			IdeApp.Preferences.UserInterfaceSkinChanged += HandleSkinChanged;
