@@ -866,14 +866,14 @@ namespace MonoDevelop.Components.DockNotebook
 					gr.AddColorStop (0, Styles.BreadcrumbGradientStartColor.MultiplyAlpha (tab.Opacity));
 					gr.AddColorStop (1, Styles.BreadcrumbBackgroundColor.MultiplyAlpha (tab.Opacity));
 				} else {
-					gr.AddColorStop (0, CairoExtensions.ParseColor ("f4f4f4").MultiplyAlpha (tab.Opacity));
-					gr.AddColorStop (1, CairoExtensions.ParseColor ("cecece").MultiplyAlpha (tab.Opacity));
+					gr.AddColorStop (0, Styles.TabBarInactiveGradientStartColor.MultiplyAlpha (tab.Opacity));
+					gr.AddColorStop (1, Styles.TabBarInactiveGradientEndColor.MultiplyAlpha (tab.Opacity));
 				}
 				ctx.SetSource (gr);
 			}
 			ctx.Fill ();
 
-			ctx.SetSourceColor (new Cairo.Color (1, 1, 1, .5).MultiplyAlpha (tab.Opacity));
+			ctx.SetSourceColor (Styles.TabBarInnerBorderColor.MultiplyAlpha (tab.Opacity));
 			LayoutTabBorder (ctx, allocation, tabBounds.Width, tabBounds.X, 1, active);
 			ctx.Stroke ();
 
@@ -884,8 +884,8 @@ namespace MonoDevelop.Components.DockNotebook
 			if (tab.GlowStrength > 0) {
 				Gdk.Point mouse = tracker.MousePosition;
 				using (var rg = new RadialGradient (mouse.X, tabBounds.Bottom, 0, mouse.X, tabBounds.Bottom, 100)) {
-					rg.AddColorStop (0, new Cairo.Color (1, 1, 1, 0.4 * tab.Opacity * tab.GlowStrength));
-					rg.AddColorStop (1, new Cairo.Color (1, 1, 1, 0));
+					rg.AddColorStop (0, Styles.TabBarGlowGradientStartColor.MultiplyAlpha (tab.Opacity * tab.GlowStrength));
+					rg.AddColorStop (1, Styles.TabBarGlowGradientEndColor);
 
 					ctx.SetSource (rg);
 					ctx.Fill ();
@@ -923,12 +923,12 @@ namespace MonoDevelop.Components.DockNotebook
 				// If that bug get's fixed remove this HACK asap.
 				la.Ellipsize = Pango.EllipsizeMode.End;
 				la.Width = (int)(w * Pango.Scale.PangoScale);
-				ctx.SetSourceColor (tab.Notify ? new Cairo.Color (0, 0, 1) : Styles.TabBarActiveTextColor);
+				ctx.SetSourceColor (tab.Notify ? Styles.TabBarNotifyTextColor : Styles.TabBarActiveTextColor);
 				Pango.CairoHelper.ShowLayoutLine (ctx, la.GetLine (0));
 			} else {
 				// ellipses are for space wasting ..., we cant afford that
 				using (var lg = new LinearGradient (textStart + w - 5, 0, textStart + w + 3, 0)) {
-					var color = tab.Notify ? new Cairo.Color (0, 0, 1) : Styles.TabBarActiveTextColor;
+					var color = tab.Notify ? Styles.TabBarNotifyTextColor : Styles.TabBarActiveTextColor;
 					color = color.MultiplyAlpha (tab.Opacity);
 					lg.AddColorStop (0, color);
 					color.A = 0;
