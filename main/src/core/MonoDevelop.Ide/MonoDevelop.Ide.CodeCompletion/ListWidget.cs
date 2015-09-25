@@ -139,7 +139,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (itemFont != null)
 				itemFont.Dispose ();
 			itemFont = FontService.MonospaceFont.Copy ();
-			var newSize = itemFont.Size * (completionWidget != null ? this.completionWidget.ZoomLevel : 1);
+			var newSize = itemFont.Size;
 			if (newSize > 0) {
 				itemFont.Size = (int)newSize;
 				layout.FontDescription = itemFont;
