@@ -43,15 +43,21 @@ namespace MonoDevelop.Ide.Gui
 
 		public static Cairo.Color TabBarBackgroundColor { get; internal set; }
 		public static Cairo.Color TabBarActiveTextColor { get; internal set; }
+		public static Cairo.Color TabBarNotifyTextColor { get; internal set; }
 
 		public static Cairo.Color TabBarActiveGradientStartColor { get; internal set; }
 		public static Cairo.Color TabBarActiveGradientEndColor { get; internal set; }
 		public static Cairo.Color TabBarGradientStartColor { get; internal set; }
 		public static Cairo.Color TabBarGradientEndColor { get; internal set; }
 		public static Cairo.Color TabBarGradientShadowColor { get; internal set; }
+		public static Cairo.Color TabBarGlowGradientStartColor { get; internal set; }
+		public static Cairo.Color TabBarGlowGradientEndColor { get; internal set; }
 		public static Cairo.Color TabBarHoverActiveTextColor { get; internal set; }
 		public static Cairo.Color TabBarInactiveTextColor { get; internal set; }
 		public static Cairo.Color TabBarHoverInactiveTextColor { get; internal set; }
+		public static Cairo.Color TabBarInnerBorderColor { get; internal set; }
+		public static Cairo.Color TabBarInactiveGradientStartColor { get; internal set; }
+		public static Cairo.Color TabBarInactiveGradientEndColor { get; internal set; }
 
 		public static Cairo.Color BreadcrumbGradientStartColor { get; internal set; }
 		public static Cairo.Color BreadcrumbBackgroundColor { get; internal set; }
@@ -289,15 +295,21 @@ namespace MonoDevelop.Ide.Gui
 
 			TabBarBackgroundColor = CairoExtensions.ParseColor ("c2c2c2");
 			TabBarActiveTextColor = new Cairo.Color (0, 0, 0);
+			TabBarNotifyTextColor = new Cairo.Color (0, 0, 1);
 
 			TabBarActiveGradientStartColor = Shift (TabBarBackgroundColor, 0.92);
 			TabBarActiveGradientEndColor = TabBarBackgroundColor;
 			TabBarGradientStartColor = Shift (TabBarBackgroundColor, 1.02);
 			TabBarGradientEndColor = TabBarBackgroundColor;
 			TabBarGradientShadowColor = Shift (TabBarBackgroundColor, 0.8);
+			TabBarGlowGradientStartColor = new Cairo.Color (1, 1, 1, .4);
+			TabBarGlowGradientEndColor = new Cairo.Color (1, 1, 1, 0);
 			TabBarHoverActiveTextColor = TabBarActiveTextColor;
 			TabBarInactiveTextColor = Blend (new Cairo.Color (0, 0, 0), TabBarGradientStartColor, 0.4);
 			TabBarHoverInactiveTextColor = new Cairo.Color (0, 0, 0);
+			TabBarInnerBorderColor = new Cairo.Color (1, 1, 1, .5);
+			TabBarInactiveGradientStartColor = CairoExtensions.ParseColor ("f4f4f4");
+			TabBarInactiveGradientEndColor = CairoExtensions.ParseColor ("cecece");
 
 			BreadcrumbGradientStartColor = CairoExtensions.ParseColor ("FFFFFF");
 			BreadcrumbBackgroundColor = Shift (BreadcrumbGradientStartColor, .95);
@@ -438,6 +450,7 @@ namespace MonoDevelop.Ide.Gui
 
 			TabBarBackgroundColor = CairoExtensions.ParseColor ("333333");
 			TabBarActiveTextColor = new Cairo.Color (1, 1, 1);
+			TabBarNotifyTextColor = new Cairo.Color (1, 1, 1);
 
 			// Document tabs
 
@@ -446,9 +459,14 @@ namespace MonoDevelop.Ide.Gui
 			TabBarGradientStartColor = Shift (TabBarBackgroundColor, 1.02);
 			TabBarGradientEndColor = TabBarBackgroundColor;
 			TabBarGradientShadowColor = Shift (TabBarBackgroundColor, 0.8);
+			TabBarGlowGradientStartColor = new Cairo.Color (0, 0, 0, .4);
+			TabBarGlowGradientEndColor = new Cairo.Color (0, 0, 0, 0);
 			TabBarHoverActiveTextColor = TabBarActiveTextColor;
 			TabBarInactiveTextColor = Blend (new Cairo.Color (0, 0, 0), TabBarGradientStartColor, 0.4);
 			TabBarHoverInactiveTextColor = new Cairo.Color (1, 1, 1);
+			TabBarInnerBorderColor = new Cairo.Color (0, 0, 0, .5);
+			TabBarInactiveGradientStartColor = Shift (TabBarBackgroundColor, 0.8);
+			TabBarInactiveGradientEndColor = Shift (TabBarBackgroundColor, 0.7);
 
 			// Breadcrumb
 
