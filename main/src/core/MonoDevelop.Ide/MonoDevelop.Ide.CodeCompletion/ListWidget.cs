@@ -523,6 +523,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 
 					Xwt.Drawing.Image icon = win.DataProvider.GetIcon (item);
+					if (item == SelectedItem)
+						icon = icon.WithStyles("sel");
 					int iconHeight, iconWidth;
 					if (icon != null) {
 						iconWidth = (int)icon.Width;
