@@ -66,6 +66,20 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly bool BreadcrumbInvertedIcons = false;
 		public static readonly bool BreadcrumbGreyscaleIcons = false;
 
+		// Document Subview Tabs
+
+		public static Cairo.Color SubTabBarBackgroundGradientTopColor { get; internal set; }
+		public static Cairo.Color SubTabBarBackgroundGradientStartColor { get; internal set; }
+		public static Cairo.Color SubTabBarBackgroundGradientEndColor { get; internal set; }
+		public static Cairo.Color SubTabBarTextColor { get; internal set; }
+		public static Cairo.Color SubTabBarActiveGradientStartColor { get; internal set; }
+		public static Cairo.Color SubTabBarActiveGradientTopColor { get; internal set; }
+		public static Cairo.Color SubTabBarActiveGradientEndColor { get; internal set; }
+		public static Cairo.Color SubTabBarActiveTextColor { get; internal set; }
+		public static Cairo.Color SubTabBarHoverGradientStartColor { get; internal set; }
+		public static Cairo.Color SubTabBarHoverGradientEndColor { get; internal set; }
+		public static Cairo.Color SubTabBarSeparatorColor { get; internal set; }
+
 		// Dock pads
 		
 		public static Cairo.Color DockTabBarGradientTop { get; internal set; }
@@ -295,6 +309,20 @@ namespace MonoDevelop.Ide.Gui
 			BreadcrumbButtonFillColor = WithAlpha (BaseBackgroundColor, 0.1d);
 			BreadcrumbBottomBorderColor = Shift (BreadcrumbBackgroundColor, 0.7d);
 
+			// Document Subview Tabs
+
+			SubTabBarBackgroundGradientTopColor = new Cairo.Color (1, 1, 1);
+			SubTabBarBackgroundGradientStartColor = new Cairo.Color (241d / 255d, 241d / 255d, 241d / 255d);
+			SubTabBarBackgroundGradientEndColor = SubTabBarBackgroundGradientStartColor;//new Cairo.Color (224d / 255d, 224d / 255d, 224d / 255d);
+			SubTabBarTextColor = BaseForegroundColor;
+			SubTabBarActiveGradientTopColor = new Cairo.Color (1, 1, 1, 0.05);
+			SubTabBarActiveGradientStartColor = new Cairo.Color (92d / 255d, 93d / 255d, 94d / 255d);
+			SubTabBarActiveGradientEndColor = new Cairo.Color (134d / 255d, 136d / 255d, 137d / 255d);
+			SubTabBarActiveTextColor = new Cairo.Color (1, 1, 1);
+			SubTabBarHoverGradientStartColor = new Cairo.Color (92d / 255d, 93d / 255d, 94d / 255d, 0.2);
+			SubTabBarHoverGradientEndColor = new Cairo.Color (134d / 255d, 136d / 255d, 137d / 255d, 0.2);
+			SubTabBarSeparatorColor = new Cairo.Color (171d / 255d, 171d / 255d, 171d / 255d);
+
 			// Dock pads
 
 			DockTabBarGradientTop = new Cairo.Color (248d / 255d, 248d / 255d, 248d / 255d);
@@ -433,6 +461,20 @@ namespace MonoDevelop.Ide.Gui
 			BreadcrumbButtonBorderColor = Shift (BaseBackgroundColor, 0.8);
 			BreadcrumbButtonFillColor = WithAlpha (BaseBackgroundColor, 0.1d);
 			BreadcrumbBottomBorderColor = Shift (BreadcrumbBackgroundColor, 0.7d);
+
+			// Document Subview Tabs
+
+			SubTabBarBackgroundGradientTopColor = Shift (TabBarBackgroundColor, 0.8);
+			SubTabBarBackgroundGradientStartColor = TabBarBackgroundColor;
+			SubTabBarBackgroundGradientEndColor = SubTabBarBackgroundGradientStartColor;
+			SubTabBarTextColor = BaseForegroundColor;
+			SubTabBarActiveGradientTopColor = new Cairo.Color (0, 0, 0, 0.05);
+			SubTabBarActiveGradientStartColor = new Cairo.Color (0, 0, 0);
+			SubTabBarActiveGradientEndColor = new Cairo.Color (0, 0, 0);
+			SubTabBarActiveTextColor = BaseForegroundColor;
+			SubTabBarHoverGradientStartColor = Shift (SubTabBarBackgroundGradientTopColor, 0.8);
+			SubTabBarHoverGradientEndColor =  Shift (SubTabBarBackgroundGradientTopColor, 0.8);
+			SubTabBarSeparatorColor = ThinSplitterColor.ToCairoColor();
 
 			// Dock pads
 
