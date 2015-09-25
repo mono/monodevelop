@@ -39,7 +39,7 @@ namespace MonoDevelop.Components
 
 		public TooltipPopoverWindow ()
 		{
-			Theme.SetFlatColor (Styles.PopoverWindow.DefaultBackgroundColor);
+			Theme.SetBackgroundColor (Styles.PopoverWindow.DefaultBackgroundColor);
 			ShowArrow = true;
 		}
 
@@ -88,23 +88,23 @@ namespace MonoDevelop.Components
 
 					switch (severity.Value) {
 					case TaskSeverity.Information:
-						Theme.SetFlatColor (Styles.PopoverWindow.InformationBackgroundColor);
+						Theme.SetBackgroundColor (Styles.PopoverWindow.InformationBackgroundColor);
 						break;
 
 					case TaskSeverity.Comment:
-						Theme.SetFlatColor (Styles.PopoverWindow.InformationBackgroundColor);
+						Theme.SetBackgroundColor (Styles.PopoverWindow.InformationBackgroundColor);
 						break;
 
 					case TaskSeverity.Error:
-						Theme.SetFlatColor (Styles.PopoverWindow.ErrorBackgroundColor);
+						Theme.SetBackgroundColor (Styles.PopoverWindow.ErrorBackgroundColor);
 						return;
 
 					case TaskSeverity.Warning:
-						Theme.SetFlatColor (Styles.PopoverWindow.WarningBackgroundColor);
+						Theme.SetBackgroundColor (Styles.PopoverWindow.WarningBackgroundColor);
 						return;
 					}
 				} else {
-					Theme.SetFlatColor (Styles.PopoverWindow.DefaultBackgroundColor);
+					Theme.SetBackgroundColor (Styles.PopoverWindow.DefaultBackgroundColor);
 				}
 			}
 		}

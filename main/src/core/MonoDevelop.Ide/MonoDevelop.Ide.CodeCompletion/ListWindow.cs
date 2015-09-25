@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		void UpdateStyle ()
 		{
-			Theme.SetFlatColor (MonoDevelop.Ide.Gui.Styles.CodeCompletion.BackgroundColor);
+			Theme.SetBackgroundColor (MonoDevelop.Ide.Gui.Styles.CodeCompletion.BackgroundColor);
 		}
 
 		protected override void OnDestroyed ()

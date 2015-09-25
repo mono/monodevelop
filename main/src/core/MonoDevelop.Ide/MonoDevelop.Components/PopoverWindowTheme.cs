@@ -54,8 +54,7 @@ namespace MonoDevelop.Components
 		int padding;
 		int arrowWidth;
 		int arrowLength;
-		Cairo.Color topColor;
-		Cairo.Color bottomColor;
+		Cairo.Color backgroundColor;
 		Pango.FontDescription font;
 		int currentPage;
 		int pages;
@@ -67,44 +66,23 @@ namespace MonoDevelop.Components
 		public event EventHandler RedrawNeeded;
 
 		/// <summary>
-		/// Gets or sets the color of the top of the gradient used to render the background.
+		/// Gets or sets the color of the background.
 		/// </summary>
-		public Cairo.Color TopColor { 
-			get { return topColor; }
-			set { SetAndEmit (value, topColor, ref topColor); }
+		public Cairo.Color BackgroundColor { 
+			get { return backgroundColor; }
+			set { SetAndEmit (value, backgroundColor, ref backgroundColor); }
 		}
 
+		Cairo.Color pagerBackgroundColor = CairoExtensions.ParseColor ("ffffff");
 		/// <summary>
-		/// Gets or sets the color of the bottom of the gradient used to render the background.
+		/// Gets or sets the color of the background color of the pager.
 		/// </summary>
-		public Cairo.Color BottomColor { 
-			get { return bottomColor; }
-			set { SetAndEmit (value, bottomColor, ref bottomColor); } 
-		}
-
-		Cairo.Color pagerBackgroundColorTop = CairoExtensions.ParseColor ("ffffff");
-		/// <summary>
-		/// Gets or sets the color of the top background color of the pager.
-		/// </summary>
-		public Cairo.Color PagerBackgroundColorTop {
+		public Cairo.Color PagerBackgroundColor {
 			get {
-				return pagerBackgroundColorTop;
+				return pagerBackgroundColor;
 			}
 			set {
-				pagerBackgroundColorTop = value;
-			}
-		}
-
-		Cairo.Color pagerBackgroundColorBottom = CairoExtensions.ParseColor ("f5f5f5");
-		/// <summary>
-		/// Gets or sets the color of the bottom background color of the pager.
-		/// </summary>
-		public Cairo.Color PagerBackgroundColorBottom {
-			get {
-				return pagerBackgroundColorBottom;
-			}
-			set {
-				pagerBackgroundColorBottom = value;
+				pagerBackgroundColor = value;
 			}
 		}
 
@@ -130,10 +108,11 @@ namespace MonoDevelop.Components
 		public Cairo.Color PagerTextColor {
 			get {
 				if (!pagerColorSet) {
-					return new Cairo.Color (BorderColor.R * .7,
-					                        BorderColor.G * .7,
-					                        BorderColor.B * .7,
-					                        BorderColor.A);
+					// FIXME: VV: Sane value!
+					//return new Cairo.Color (BorderColor.R * .7,
+					//                        BorderColor.G * .7,
+					//                        BorderColor.B * .7,
+					//                        BorderColor.A);
 				}
 				return pagerTextColor;
 			}
@@ -233,12 +212,11 @@ namespace MonoDevelop.Components
 		public int ArrowOffset { private get; set; }
 
 		/// <summary>
-		/// Convenience method to set the top and bottom color to the same color.
+		/// Set the background color.
 		/// </summary>
-		public void SetFlatColor (Cairo.Color color)
+		public void SetBackgroundColor (Cairo.Color color)
 		{
-			TopColor = color;
-			BottomColor = color;
+			BackgroundColor = color;
 		}
 
 		public PopoverWindowTheme ()
@@ -247,19 +225,16 @@ namespace MonoDevelop.Components
 			Padding = 6;
 			ArrowWidth = 10;
 			ArrowLength = 5;
-			TopColor = new Cairo.Color (1, 1, 1);
-			BottomColor = new Cairo.Color (1, 1, 1);
+			BackgroundColor = new Cairo.Color (1, 1, 1);
 
 			Font = Pango.FontDescription.FromString ("Normal");
 		}
 
 		public void SetSchemeColors (Mono.TextEditor.Highlighting.ColorScheme scheme)
 		{
-			TopColor = scheme.TooltipText.Background.AddLight (0.03);
-			BottomColor = scheme.TooltipText.Background;
+			BackgroundColor = scheme.TooltipText.Background;
 			PagerTextColor = scheme.TooltipPagerText.Color;
-			PagerBackgroundColorTop = scheme.TooltipPagerTop.Color;
-			PagerBackgroundColorBottom = scheme.TooltipPagerBottom.Color;
+			PagerBackgroundColor = scheme.TooltipPager.Color;
 			PagerTriangleColor = scheme.TooltipPagerTriangle.Color;
 		}
 		
@@ -332,13 +307,9 @@ namespace MonoDevelop.Components
 		/// </summary>
 		public virtual void RenderBackground (Cairo.Context context, Gdk.Rectangle region)
 		{
-			using (var lg = new Cairo.LinearGradient (0, region.Y, 0, region.Y + region.Height)) {
-				lg.AddColorStop (0, TopColor);
-				lg.AddColorStop (1, BottomColor);
-				context.Rectangle (region.X, region.Y, region.Width, region.Height);
-				context.SetSource (lg);
-				context.Fill ();
-			}
+			context.Rectangle (region.X, region.Y, region.Width, region.Height);
+			context.SetSourceColor (BackgroundColor);
+			context.Fill ();
 		}
 
 		/// <summary>
@@ -415,13 +386,9 @@ namespace MonoDevelop.Components
 			                                  bounds.Height, 
 			                                  CornerRadius, 
 			                                  CairoCorners.BottomLeft);
-			using (var lg = new Cairo.LinearGradient (0, bounds.Y, 0, bounds.Y + bounds.Height)) {
-				lg.AddColorStop (0, PagerBackgroundColorTop);
-				lg.AddColorStop (1, PagerBackgroundColorBottom);
-
-				context.SetSource (lg);
-				context.Fill ();
-			}
+			
+			context.SetSourceColor (PagerBackgroundColor);
+			context.Fill ();
 		}
 
 		/// <summary>
