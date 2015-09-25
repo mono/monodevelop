@@ -31,15 +31,12 @@ using System.Drawing.Design;
 using Cairo;
 using Gtk;
 using System.Linq;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components
 {
 	class Tabstrip : DrawingArea
 	{
-		static readonly Cairo.Color BackgroundGradientStart = new Cairo.Color (241d / 255d, 241d / 255d, 241d / 255d);
-		static readonly Cairo.Color BackgroundGradientEnd = BackgroundGradientStart;//new Cairo.Color (224d / 255d, 224d / 255d, 224d / 255d);
-		internal static readonly Cairo.Color ActiveGradientStart = new Cairo.Color (92d / 255d, 93d / 255d, 94d / 255d);
-		internal static readonly Cairo.Color ActiveGradientEnd = new Cairo.Color (134d / 255d, 136d / 255d, 137d / 255d);
 
 		readonly List<Tab> tabs = new List<Tab> ();
 		readonly List<Cairo.PointD> tabSizes = new List<Cairo.PointD> ();
@@ -181,15 +178,15 @@ namespace MonoDevelop.Components
 			using (var cr = Gdk.CairoHelper.Create (evnt.Window)) {
 				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 				using (LinearGradient gr = new LinearGradient (0, 0, 0, Allocation.Height)) {
-					gr.AddColorStop (0, BackgroundGradientStart);
-					gr.AddColorStop (1, BackgroundGradientEnd);
+					gr.AddColorStop (0, Styles.SubTabBarBackgroundGradientStartColor);
+					gr.AddColorStop (1, Styles.SubTabBarBackgroundGradientEndColor);
 					cr.SetSource (gr);
 				}
 				cr.Fill ();
 
 				cr.MoveTo (0.5, 0.5);
 				cr.Line (0.5, 0.5, Allocation.Width - 1, 0.5);
-				cr.SetSourceRGB (1,1,1);
+				cr.SetSourceColor (Styles.SubTabBarBackgroundGradientTopColor);
 				cr.LineWidth = 1;
 				cr.Stroke ();
 
@@ -302,7 +299,7 @@ namespace MonoDevelop.Components
 				cr.MoveTo (x, rectangle.Y + 0.5 + 2);
 				cr.RelLineTo (0, rectangle.Height - 1 - 4);
 				cr.ClosePath ();
-				cr.SetSourceColor (parent.Style.Dark (StateType.Normal).ToCairoColor ());
+				cr.SetSourceColor (Styles.SubTabBarSeparatorColor);
 				cr.LineWidth = 1;
 				cr.Stroke ();
 				return;
@@ -312,24 +309,20 @@ namespace MonoDevelop.Components
 				if (Active) {
 					cr.Rectangle (rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 					using (var gr = new LinearGradient (rectangle.X, rectangle.Y, rectangle.X, rectangle.Y + rectangle.Height)) {
-						gr.AddColorStop (0, Tabstrip.ActiveGradientStart);
-						gr.AddColorStop (1, Tabstrip.ActiveGradientEnd);
+						gr.AddColorStop (0, Styles.SubTabBarActiveGradientStartColor);
+						gr.AddColorStop (1, Styles.SubTabBarActiveGradientEndColor);
 						cr.SetSource (gr);
 					}
 					cr.Fill ();
 					cr.Rectangle (rectangle.X + 0.5, rectangle.Y + 0.5, rectangle.Width - 1, rectangle.Height - 1);
-					cr.SetSourceRGBA (1, 1, 1, 0.05);
+					cr.SetSourceColor (Styles.SubTabBarActiveGradientTopColor);
 					cr.LineWidth = 1;
 					cr.Stroke ();
 				} else if (HoverPosition.X >= 0) {
 					cr.Rectangle (rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 					using (var gr = new LinearGradient (rectangle.X, rectangle.Y, rectangle.X, rectangle.Y + rectangle.Height)) {
-						var c1 = Tabstrip.ActiveGradientStart;
-						var c2 = Tabstrip.ActiveGradientEnd;
-						c1.A = 0.2;
-						c2.A = 0.2;
-						gr.AddColorStop (0, c1);
-						gr.AddColorStop (1, c2);
+						gr.AddColorStop (0, Styles.SubTabBarHoverGradientStartColor);
+						gr.AddColorStop (1, Styles.SubTabBarHoverGradientEndColor);
 						cr.SetSource (gr);
 					}
 					cr.Fill ();
@@ -337,9 +330,9 @@ namespace MonoDevelop.Components
 			}
 
 			if (Active)
-				cr.SetSourceRGB (1, 1, 1);
+				cr.SetSourceColor (Styles.SubTabBarActiveTextColor);
 			else
-				cr.SetSourceColor (parent.Style.Text (StateType.Normal).ToCairoColor ());
+				cr.SetSourceColor (Styles.SubTabBarTextColor);
 
 			if (layout.Width != (int)rectangle.Width)
 				layout.Width = (int)rectangle.Width;
