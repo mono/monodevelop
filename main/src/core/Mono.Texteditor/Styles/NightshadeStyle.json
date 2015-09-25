@@ -76,7 +76,6 @@
         { "name":"Indicator Margin(Separator)", "color":"aluminium6" },
 
         { "name":"Tooltip Pager Top", "color":"BlackVim" },
-        { "name":"Tooltip Pager Bottom", "color":"BlackVim" },
         { "name":"Tooltip Pager Triangle", "color":"NormalVim" },
         { "name":"Tooltip Pager Text", "color":"NormalVim" },
 
