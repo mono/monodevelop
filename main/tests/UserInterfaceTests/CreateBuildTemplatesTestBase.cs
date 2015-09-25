@@ -92,7 +92,7 @@ namespace UserInterfaceTests
 					Assert.Fail (e.ToString ());
 				}
 
-				OnBuildTemplate ();
+				OnBuildTemplate ((int)projectDetails.BuildTimeout.TotalSeconds);
 			} catch (Exception e) {
 				TakeScreenShot ("TestFailedWithGenericException");
 				Assert.Fail (e.ToString ());

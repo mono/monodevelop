@@ -96,6 +96,7 @@ namespace UserInterfaceTests
 		{
 			ProjectName = CreateBuildTemplatesTestBase.GenerateProjectName (templateData.TemplateKind);
 			SolutionName = ProjectName;
+			BuildTimeout = TimeSpan.FromSeconds (180);
 		}
 
 		public static ProjectDetails ToExistingSolution (string solutionName, string projectName)
@@ -117,6 +118,8 @@ namespace UserInterfaceTests
 		public bool ProjectInSolution { get; set; }
 
 		public bool AddProjectToExistingSolution { get; set; }
+
+		public TimeSpan BuildTimeout { get; set; }
 
 		public override string ToString ()
 		{
