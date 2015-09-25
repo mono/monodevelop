@@ -332,6 +332,12 @@ namespace MonoDevelop.Components.Commands
 					return null;
 			}
 
+			// If a modal dialog is running then the menus are disabled, even if the commands are not
+			// See MDMenuItem::IsGloballyDisabled
+			if (DesktopService.IsModalDialogRunning ()) {
+				return ev;
+			}
+
 			var gdkev = MonoDevelop.Components.Mac.GtkMacInterop.ConvertKeyEvent (ev);
 			if (gdkev != null) {
 				if (ProcessKeyEvent (gdkev))
@@ -1165,7 +1171,7 @@ namespace MonoDevelop.Components.Commands
 				return false;
 
 			commandId = CommandManager.ToCommandId (commandId);
-			
+
 			List<HandlerCallback> handlers = new List<HandlerCallback> ();
 			ActionCommand cmd = null;
 			try {

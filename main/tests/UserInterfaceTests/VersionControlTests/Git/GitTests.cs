@@ -30,11 +30,11 @@ using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
-	[TestFixture]
+	[TestFixture, Timeout(60000)]
 	[Category ("Git")]
 	public class GitTests : VCSBase
 	{
-		[Test]
+		[Test, Timeout(90000)]
 		[TestCase ("git@github.com:mono/jurassic.git", TestName = "TestGitSSHClone", Description = "Clone Git repo over SSH")]
 		[TestCase ("https://github.com/mono/jurassic.git", TestName = "TestGitHTTPSClone", Description = "Clone Git repo over HTTPS")]
 		public void TestGitClone (string url)

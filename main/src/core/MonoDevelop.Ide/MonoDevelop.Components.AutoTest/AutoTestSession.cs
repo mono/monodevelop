@@ -194,6 +194,27 @@ namespace MonoDevelop.Components.AutoTest
 					throw;
 				}
 			});
+			#else
+			Sync (delegate {
+				try {
+					using (var bmp = new System.Drawing.Bitmap (System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width,
+						System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height)) {
+						using (var g = System.Drawing.Graphics.FromImage(bmp))
+						{
+							g.CopyFromScreen(System.Windows.Forms.Screen.PrimaryScreen.Bounds.X,
+								System.Windows.Forms.Screen.PrimaryScreen.Bounds.Y,
+								0, 0,
+								bmp.Size,
+								System.Drawing.CopyPixelOperation.SourceCopy);
+						}
+						bmp.Save(screenshotPath);
+					}
+					return null;
+				} catch (Exception e) {
+					Console.WriteLine (e);
+					throw;
+				}
+			});
 			#endif
 		}
 		
@@ -253,6 +274,8 @@ namespace MonoDevelop.Components.AutoTest
 			
 			if (remaining == null)
 				return res;
+			else if (res == null)
+				return null;
 			else
 				return GetValue (res, res.GetType (), remaining);
 		}

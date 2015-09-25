@@ -28,7 +28,7 @@ using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
-	[TestFixture]
+	[TestFixture, Timeout(60000)]
 	[Category ("Dialog")]
 	[Category ("ProjectDialog")]
 	public class NewProjectDialogTests : CreateBuildTemplatesTestBase

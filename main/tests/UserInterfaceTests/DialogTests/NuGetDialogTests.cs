@@ -34,7 +34,7 @@ using System.Collections.Generic;
 
 namespace UserInterfaceTests
 {
-	[TestFixture]
+	[TestFixture, Timeout(60000)]
 	[Category ("Dialog")]
 	[Category ("NuGet")]
 	[Category ("PackagesDialog")]
@@ -52,7 +52,7 @@ namespace UserInterfaceTests
 			}, TakeScreenShot);
 		}
 
-		[Test]
+		[Test, Timeout(300000)]
 		[Description ("When a solution is opened and package updates are available, don't show in status bar")]
 		public void DontShowPackageUpdatesAvailable ()
 		{

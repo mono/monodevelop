@@ -6,6 +6,7 @@ using MonoDevelop.Core;
 using Gtk;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
+using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl.Dialogs
 {
@@ -18,10 +19,10 @@ namespace MonoDevelop.VersionControl.Dialogs
 	internal partial class SelectRepositoryDialog : Gtk.Dialog
 	{
 		Repository repo;
-		ArrayList systems = new ArrayList ();
+		List<VersionControlSystem> systems = new List<VersionControlSystem> ();
 		Gtk.TreeStore store;
 		SelectRepositoryMode mode;
-		ArrayList loadingRepos = new ArrayList ();
+		List<Repository> loadingRepos = new List<Repository> ();
 		IRepositoryEditor currentEditor;
 		string defaultPath;
 		
@@ -116,7 +117,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			if (repCombo.Active == -1)
 				return;
 
-			VersionControlSystem vcs = (VersionControlSystem) systems [repCombo.Active];
+			VersionControlSystem vcs = systems [repCombo.Active];
 			repo = vcs.CreateRepositoryInstance ();
 			currentEditor = vcs.CreateRepositoryEditor (repo);
 			repoContainer.Add (currentEditor.Widget);

@@ -216,7 +216,13 @@ namespace MonoDevelop.Ide
 				Counters.Initialization.Trace ("Loading Icons");
 				//force initialisation before the workbench so that it can register stock icons for GTK before they get requested
 				ImageService.Initialize ();
-				
+
+				// If we display an error dialog before the main workbench window on OS X then a second application menu is created
+				// which is then replaced with an second empty Apple menu.
+				// XBC #33699
+				Counters.Initialization.Trace ("Initializing IdeApp");
+				IdeApp.Initialize (monitor);
+
 				if (errorsList.Count > 0) {
 					using (AddinLoadErrorDialog dlg = new AddinLoadErrorDialog ((AddinError[]) errorsList.ToArray (typeof(AddinError)), false)) {
 						if (!dlg.Run ())
@@ -227,9 +233,6 @@ namespace MonoDevelop.Ide
 
 				if (!CheckSCPlugin ())
 					return 1;
-
-				Counters.Initialization.Trace ("Initializing IdeApp");
-				IdeApp.Initialize (monitor);
 
 				// Load requested files
 				Counters.Initialization.Trace ("Opening Files");

@@ -99,6 +99,19 @@ namespace UserInterfaceTests
 			WaitUntil (() => c.TotalTime > tt, timeout);
 		}
 
+
+		public readonly static Action WaitForPackageUpdateOrSaved = delegate {
+			try {
+				WaitForPackageUpdate ();
+			} catch (TimeoutException e1) {
+				try {
+					WaitForSolutionLoaded ();
+				} catch (TimeoutException e2) {
+					throw new TimeoutException (string.Format ("{0}\n{1}", e1.Message, e2.Message), e1);
+				}
+			}
+		};
+
 		public readonly static Action EmptyAction = delegate { };
 
 		static string[] waitForNuGetMessages = {
