@@ -89,8 +89,10 @@ namespace UserInterfaceTests
 		public virtual void Teardown ()
 		{
 			try {
-				if (TestContext.CurrentContext.Result.Status != TestStatus.Passed && Session.Query (IdeQuery.XamarinUpdate).Any ()) {
-					Assert.Inconclusive ("Xamarin Update is blocking the application focus");
+				if (TestContext.CurrentContext.Result.Status != TestStatus.Passed) {
+					var updateOpened = Session.Query (IdeQuery.XamarinUpdate);
+					if (updateOpened != null && updateOpened.Any ())
+						Assert.Inconclusive ("Xamarin Update is blocking the application focus");
 				}
 				ValidateIdeLogMessages ();
 			} finally {
