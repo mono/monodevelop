@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			IdeApp.Preferences.ColorScheme.Changed += HandleSkinChanged;
 		}
 
-		void HandleSkinChanged (object sender, PropertyChangedEventArgs e)
+		void HandleSkinChanged (object sender, EventArgs e)
 		{
 			UpdateStyle ();
 		}
@@ -114,7 +114,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		void UpdateStyle ()
 		{
 			Theme.SetFlatColor (Gui.Styles.CodeCompletion.BackgroundColor);
-			Theme.BorderColor = Gui.Styles.CodeCompletion.BorderColor;
 		}
 
 		protected override void OnDestroyed ()

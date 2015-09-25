@@ -40,7 +40,6 @@ namespace MonoDevelop.Components
 		public TooltipPopoverWindow ()
 		{
 			Theme.SetFlatColor (Styles.PopoverWindow.DefaultBackgroundColor);
-			Theme.BorderColor = Styles.PopoverWindow.DefaultBorderColor;
 			ShowArrow = true;
 		}
 
@@ -80,7 +79,6 @@ namespace MonoDevelop.Components
 				if (severity.HasValue) {
 					Theme.Padding = 3;
 					Theme.CornerRadius = 3;
-					Theme.BorderColor = new Cairo.Color (0, 0, 0, 0);
 
 					alignment.SetPadding (4, 4, 6, 6);
 
@@ -91,27 +89,22 @@ namespace MonoDevelop.Components
 					switch (severity.Value) {
 					case TaskSeverity.Information:
 						Theme.SetFlatColor (Styles.PopoverWindow.InformationBackgroundColor);
-						Theme.BorderColor = Styles.PopoverWindow.InformationBorderColor;
 						break;
 
 					case TaskSeverity.Comment:
 						Theme.SetFlatColor (Styles.PopoverWindow.InformationBackgroundColor);
-						Theme.BorderColor = Styles.PopoverWindow.InformationBorderColor;
 						break;
 
 					case TaskSeverity.Error:
 						Theme.SetFlatColor (Styles.PopoverWindow.ErrorBackgroundColor);
-						Theme.BorderColor = Styles.PopoverWindow.ErrorBorderColor;
 						return;
 
 					case TaskSeverity.Warning:
 						Theme.SetFlatColor (Styles.PopoverWindow.WarningBackgroundColor);
-						Theme.BorderColor = Styles.PopoverWindow.WarningBorderColor;
 						return;
 					}
 				} else {
 					Theme.SetFlatColor (Styles.PopoverWindow.DefaultBackgroundColor);
-					Theme.BorderColor = Styles.PopoverWindow.DefaultBorderColor;
 				}
 			}
 		}

@@ -619,8 +619,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			var style = Editor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
 			declarationviewwindow.Theme.SetFlatColor (style.CompletionTooltipWindow.Color);
-			if (style.CompletionWindow.HasBorderColor)
-				declarationviewwindow.Theme.BorderColor = style.CompletionTooltipWindow.BorderColor;
 		}
 
 		void RepositionDeclarationViewWindow ()
