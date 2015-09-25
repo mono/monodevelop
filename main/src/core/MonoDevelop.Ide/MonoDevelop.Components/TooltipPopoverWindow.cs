@@ -123,9 +123,9 @@ namespace MonoDevelop.Components
 
 		void UpdateLabel ()
 		{
-			if (severity.HasValue) {
-				string msg = hasMarkup ? text : GLib.Markup.EscapeText (text);
+			string msg = hasMarkup ? text : GLib.Markup.EscapeText (text);
 
+			if (severity.HasValue) {
 				switch (severity.Value) {
 				case TaskSeverity.Information:
 					label.Markup = "<b><span color='" + CairoExtensions.ColorGetHex (Styles.PopoverWindow.InformationTextColor) + "'>" + msg + "</span></b>";
@@ -145,10 +145,7 @@ namespace MonoDevelop.Components
 				}
 			}
 
-			if (hasMarkup)
-				label.Markup = text;
-			else
-				label.Text = text;
+			label.Markup = "<span color='" + CairoExtensions.ColorGetHex (Styles.PopoverWindow.DefaultTextColor) + "'>" + msg + "</span>";
 		}
 
 		void AdjustSize ()
