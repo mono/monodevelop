@@ -41,7 +41,7 @@ namespace UserInterfaceTests
 
 		public static string ToPathSafeString (this string str)
 		{
-			return str.Replace (@"\", "").Replace ("/", "");
+			return str.Replace (@"\", "-").Replace ("/", "-");
 		}
 
 		public static FilePath CreateTmpDir (string hint = null)
