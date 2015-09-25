@@ -1,6 +1,6 @@
 {
     "name":"Monokai",
-    "version":"1.1",
+    "version":"1.2",
     "description":"A smooth, dusky scheme.",
     "originator":"Xamarin Inc. (http://xamarin.com)",
 
@@ -143,7 +143,7 @@
         { "name":"Html Tag Delimiter", "fore":"monokai-white" },
         { "name":"Razor Code", "fore":"monokai-white", "back":"#373832" },
 
-        { "name":"Tooltip Text", "fore":"monokai-white", "back":"#454545" },
+        { "name":"Tooltip Text", "fore":"monokai-white", "back":"#5b6365" },
         { "name":"Notification Text", "fore":"monokai-white", "back":"#272725" },
 
         { "name":"Completion Text", "fore":"monokai-white" },

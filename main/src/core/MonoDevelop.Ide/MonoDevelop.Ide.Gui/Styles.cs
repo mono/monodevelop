@@ -569,14 +569,14 @@ namespace MonoDevelop.Ide.Gui
 			PopoverWindow.ParamaterWindows.GradientStartColor = CairoExtensions.ParseColor ("fffee6");
 			PopoverWindow.ParamaterWindows.GradientEndColor = CairoExtensions.ParseColor ("fffcd1");
 
-			CodeCompletion.BackgroundColor = CairoExtensions.ParseColor ("454545");
-			CodeCompletion.TextColor = CairoExtensions.ParseColor ("ffffff");
+			CodeCompletion.BackgroundColor = CairoExtensions.ParseColor ("5b6365");
+			CodeCompletion.TextColor = CairoExtensions.ParseColor ("c3c5c6");
 			CodeCompletion.HighlightColor = CairoExtensions.ParseColor ("F9D33C");
-			CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("0069d9");
+			CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("3D8AFA");
 			CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("555555");
-			CodeCompletion.SelectionBorderColor = CairoExtensions.ParseColor ("0069d9");
+			CodeCompletion.SelectionBorderColor = CairoExtensions.ParseColor ("3D8AFA");
 			CodeCompletion.SelectionBorderInactiveColor = CairoExtensions.ParseColor ("555555");
-			CodeCompletion.SelectionTextColor = CairoExtensions.ParseColor ("ffffff");
+			CodeCompletion.SelectionTextColor = CairoExtensions.ParseColor ("c3c5c6");
 			CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("F9D33C");
 
 
