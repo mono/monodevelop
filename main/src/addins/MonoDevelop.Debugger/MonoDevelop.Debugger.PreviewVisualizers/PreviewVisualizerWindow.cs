@@ -44,7 +44,7 @@ namespace MonoDevelop.Debugger
 				this.Modal = true;
 			TransientFor = (Gtk.Window) invokingWidget.Toplevel;
 
-			Theme.SetFlatColor (new Cairo.Color (245 / 256.0, 245 / 256.0, 245 / 256.0));
+			Theme.SetBackgroundColor (new Cairo.Color (245 / 256.0, 245 / 256.0, 245 / 256.0));
 			Theme.Padding = 3;
 			ShowArrow = true;
 			var mainBox = new VBox ();

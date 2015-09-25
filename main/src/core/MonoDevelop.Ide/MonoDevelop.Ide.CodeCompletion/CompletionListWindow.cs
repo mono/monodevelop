@@ -618,7 +618,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				declarationviewwindow.SetDefaultScheme ();
 			}
 			var style = Editor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
-			declarationviewwindow.Theme.SetFlatColor (style.CompletionTooltipWindow.Color);
+			declarationviewwindow.Theme.SetBackgroundColor (style.CompletionTooltipWindow.Color);
 		}
 
 		void RepositionDeclarationViewWindow ()
