@@ -383,10 +383,7 @@ namespace MonoDevelop.Components
 					                   PangoContext,
 					                   new Gdk.Rectangle (Allocation.X, Allocation.Y, paintSize.Width, paintSize.Height));
 				}
-
-				Theme.RenderBorder (context, BorderAllocation, position);
 				context.Restore ();
-
 			}
 
 			if (changed)

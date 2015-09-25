@@ -40,7 +40,6 @@
         { "name":"Indicator Margin", "color":"base2" },
         { "name":"Indicator Margin(Separator)", "color":"base3" },
 
-        { "name":"Tooltip Border", "color":"base1" },
         { "name":"Tooltip Pager Top", "color":"base2" },
         { "name":"Tooltip Pager Bottom", "color":"base2" },
         { "name":"Tooltip Pager Triangle", "color":"base00" },

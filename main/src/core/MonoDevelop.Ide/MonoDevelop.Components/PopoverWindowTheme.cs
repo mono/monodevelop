@@ -56,7 +56,6 @@ namespace MonoDevelop.Components
 		int arrowLength;
 		Cairo.Color topColor;
 		Cairo.Color bottomColor;
-		Cairo.Color borderColor;
 		Pango.FontDescription font;
 		int currentPage;
 		int pages;
@@ -82,15 +81,6 @@ namespace MonoDevelop.Components
 			get { return bottomColor; }
 			set { SetAndEmit (value, bottomColor, ref bottomColor); } 
 		}
-
-		/// <summary>
-		/// Gets or sets the color of the border of the entire window. Set to transparent to disable border drawing.
-		/// </summary>
-		public Cairo.Color BorderColor { 
-			get { return borderColor; }
-			set { SetAndEmit (value, borderColor, ref borderColor); } 
-		}
-
 
 		Cairo.Color pagerBackgroundColorTop = CairoExtensions.ParseColor ("ffffff");
 		/// <summary>
@@ -259,7 +249,6 @@ namespace MonoDevelop.Components
 			ArrowLength = 5;
 			TopColor = new Cairo.Color (1, 1, 1);
 			BottomColor = new Cairo.Color (1, 1, 1);
-			BorderColor = new Cairo.Color (0.7, 0.7, 0.7);
 
 			Font = Pango.FontDescription.FromString ("Normal");
 		}
@@ -268,7 +257,6 @@ namespace MonoDevelop.Components
 		{
 			TopColor = scheme.TooltipText.Background.AddLight (0.03);
 			BottomColor = scheme.TooltipText.Background;
-			BorderColor = scheme.TooltipBorder.Color;
 			PagerTextColor = scheme.TooltipPagerText.Color;
 			PagerBackgroundColorTop = scheme.TooltipPagerTop.Color;
 			PagerBackgroundColorBottom = scheme.TooltipPagerBottom.Color;
@@ -287,14 +275,6 @@ namespace MonoDevelop.Components
 				return;
 			result = newValue;
 			EmitRedrawNeeded ();
-		}
-
-		public virtual void RenderBorder (Cairo.Context context, Gdk.Rectangle region, PopupPosition arrowPosition)
-		{
-			SetBorderPath (context, region, arrowPosition);
-			context.SetSourceColor (BorderColor);
-			context.LineWidth = 1;
-			context.Stroke ();
 		}
 
 		object setBorderPathLastArgs;
@@ -442,18 +422,6 @@ namespace MonoDevelop.Components
 				context.SetSource (lg);
 				context.Fill ();
 			}
-
-			// draw outline
-			CairoExtensions.RoundedRectangle (context, 
-			                                  bounds.X + .5, 
-			                                  bounds.Y + .5, 
-			                                  bounds.Width - 1, 
-			                                  bounds.Height - 1, 
-			                                  CornerRadius, 
-			                                  CairoCorners.BottomLeft);
-			context.LineWidth = 1;
-			context.SetSourceColor (BorderColor);
-			context.Stroke ();
 		}
 
 		/// <summary>
