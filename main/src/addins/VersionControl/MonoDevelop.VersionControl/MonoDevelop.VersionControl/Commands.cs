@@ -37,21 +37,20 @@ namespace MonoDevelop.VersionControl
 		{
 			VersionControlItemList list = new VersionControlItemList ();
 			
-			WorkspaceItem wob;
-			SolutionItem sol;
+			IWorkspaceObject wob;
 			Repository repo = null;
 			wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
 			if (wob != null)
 				repo = VersionControlService.GetRepository (wob);
 			if (repo == null) {
-				sol = IdeApp.ProjectOperations.CurrentSelectedSolutionItem;
-				if (sol != null)
-					repo = VersionControlService.GetRepository (sol);
+				wob = IdeApp.ProjectOperations.CurrentSelectedSolutionItem;
+				if (wob != null)
+					repo = VersionControlService.GetRepository (wob);
 			}
 			if (repo == null || repo.VersionControlSystem == null || !repo.VersionControlSystem.IsInstalled)
 				return list;
 
-			list.Add (new VersionControlItem (repo, wob, wob.FileName, true, null));
+			list.Add (new VersionControlItem (repo, wob, wob.BaseDirectory, true, null));
 			return list;
 		}
 		
