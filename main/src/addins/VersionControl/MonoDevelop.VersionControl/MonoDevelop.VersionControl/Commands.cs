@@ -106,7 +106,7 @@ namespace MonoDevelop.VersionControl
 			return new VersionControlItem (repo, project, doc.FileName, false, null);
 		}
 		
-		protected override void Run ()
+		protected sealed override void Run ()
 		{
 			VersionControlItemList items = GetItems ();
 			RunCommand (items, false);
@@ -243,30 +243,28 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 
-	class CurrentFileDiffHandler : FileVersionControlCommandHandler
+	class CurrentFileViewHandler<T> : FileVersionControlCommandHandler where T:IAttachableViewContent
 	{
-		protected override void Run ()
+		protected override bool RunCommand (VersionControlItemList items, bool test)
 		{
+			if (test)
+				return true;
+
 			var window = IdeApp.Workbench.ActiveDocument.Window;
-			window.SwitchView (window.FindView<IDiffView> ());
+			window.SwitchView (window.FindView<T> ());
+			return true;
 		}
 	}
-	
-	class CurrentFileBlameHandler : FileVersionControlCommandHandler
+
+	class CurrentFileDiffHandler : CurrentFileViewHandler<IDiffView>
 	{
-		protected override void Run ()
-		{
-			var window = IdeApp.Workbench.ActiveDocument.Window;
-			window.SwitchView (window.FindView<IBlameView> ());
-		}
 	}
 	
-	class CurrentFileLogHandler : FileVersionControlCommandHandler
+	class CurrentFileBlameHandler : CurrentFileViewHandler<IBlameView>
 	{
-		protected override void Run ()
-		{
-			var window = IdeApp.Workbench.ActiveDocument.Window;
-			window.SwitchView (window.FindView<ILogView> ());
-		}
+	}
+	
+	class CurrentFileLogHandler : CurrentFileViewHandler<ILogView>
+	{
 	}
 }
