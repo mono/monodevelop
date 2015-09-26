@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using MonoDevelop.Core;
 using System.Reflection;
+using System.Linq;
 
 namespace UserInterfaceTests
 {
@@ -39,9 +40,10 @@ namespace UserInterfaceTests
 				TestService.Session.DebugObject.Debug (data.ToString ());
 		}
 
-		public static string ToPathSafeString (this string str)
+		public static string ToPathSafeString (this string str, char replaceWith = '-')
 		{
-			return str.Replace (@"\", "-").Replace ("/", "-");
+			var invalids = Path.GetInvalidFileNameChars ().Concat (Path.GetInvalidPathChars ()).Distinct ().ToArray ();
+			return new string (str.Select (c => invalids.Contains (c) ? replaceWith : c).ToArray ());
 		}
 
 		public static FilePath CreateTmpDir (string hint = null)
