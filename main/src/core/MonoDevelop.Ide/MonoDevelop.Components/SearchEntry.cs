@@ -648,6 +648,8 @@ namespace MonoDevelop.Components
 
 				parent.StyleSet += OnParentStyleSet;
 				WidthChars = 1;
+
+				GtkWorkarounds.SetTransparentBgHint (this, true);
 			}
 
 			private void OnParentStyleSet (object o, EventArgs args)
