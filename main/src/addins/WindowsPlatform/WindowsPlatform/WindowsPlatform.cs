@@ -45,6 +45,10 @@ using System.Text;
 using MonoDevelop.Core;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using MonoDevelop.Ide;
+using MonoDevelop.Components.Windows;
+using WindowsPlatform.MainToolbar;
+using MonoDevelop.Components.Commands;
+using System.Windows.Controls;
 
 namespace MonoDevelop.Platform
 {
@@ -63,6 +67,73 @@ namespace MonoDevelop.Platform
 		public override string Name {
 			get { return "Windows"; }
 		}
+
+		#region Toolbar implementation
+		CommandManager commandManager;
+		string commandMenuAddinPath;
+		string appMenuAddinPath;
+		public override bool SetGlobalMenu (CommandManager commandManager, string commandMenuAddinPath, string appMenuAddinPath)
+		{
+			// Only store this information. Release it when creating the main toolbar.
+			this.commandManager = commandManager;
+			this.commandMenuAddinPath = commandMenuAddinPath;
+			this.appMenuAddinPath = appMenuAddinPath;
+
+			return true;
+		}
+
+		internal override void AttachMainToolbar (Gtk.VBox parent, MonoDevelop.Components.MainToolbar.IMainToolbarView toolbar)
+		{
+			// TODO: Attach to RootWindow.
+			base.AttachMainToolbar (parent, toolbar);
+		}
+
+		void SetupMenu ()
+		{
+			// TODO: Use this?
+			CommandEntrySet appCes = commandManager.CreateCommandEntrySet (appMenuAddinPath);
+
+			CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
+			Menu mainMenu = new Menu {
+				IsMainMenu = true,
+			};
+			foreach (CommandEntrySet ce in ces) {
+				var currentMenuItem = new MenuItem {
+					Header = ce.Name,
+				};
+				foreach (CommandEntry command in ce) {
+					// TODO: Find a way to generate this at click time.
+					currentMenuItem.Items.Add (new MenuItem {
+						Header = "Test ",
+					});
+				}
+				mainMenu.Items.Add (currentMenuItem);
+			}
+			
+			titleBar.DockTitle.Children.Add (mainMenu);
+			DockPanel.SetDock (mainMenu, Dock.Left);
+
+			commandManager = null;
+			commandMenuAddinPath = appMenuAddinPath = null;
+		}
+
+		TitleBar titleBar;
+		internal override MonoDevelop.Components.MainToolbar.IMainToolbarView CreateMainToolbar (Gtk.Window window)
+		{
+			var root = IdeApp.Workbench.RootWindow;
+			titleBar = new TitleBar ();
+			var topMenu = new GtkWPFWidget (titleBar) {
+				HeightRequest = System.Windows.Forms.SystemInformation.CaptionHeight,
+			};
+			var container = root.Child as Gtk.VBox;
+			container.PackStart (topMenu, false, true, 0);
+
+			SetupMenu ();
+
+			// TODO: Create GtkWpfWidget with implementation.
+			return base.CreateMainToolbar (window);
+		}
+		#endregion
 
 		internal override void SetMainWindowDecorations (Gtk.Window window)
 		{
