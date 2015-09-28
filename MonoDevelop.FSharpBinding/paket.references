@@ -1,6 +1,5 @@
 ExtCore
 Fantomas
-FSharp.Compiler.Service
 FSharp.Compiler.CodeDom
 Microsoft.CodeAnalysis copy_local: false
 Mono.Cecil

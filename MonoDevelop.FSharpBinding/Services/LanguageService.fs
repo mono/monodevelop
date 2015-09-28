@@ -318,7 +318,7 @@ type LanguageService(dirtyNotify) =
 
             let started = proc.Start()
             let exited = proc.WaitForExit(ServiceSettings.maximumTimeout)
-            let binarySer =  Nessos.FsPickler.FsPickler.CreateBinary()
+            let binarySer =  Nessos.FsPickler.FsPickler.CreateBinarySerializer()
             let optsNew = binarySer.Deserialize<FSharpProjectOptions>(proc.StandardOutput.BaseStream)
 
             //let opts = checker.GetProjectOptionsFromProjectFile(projFilename, properties)
