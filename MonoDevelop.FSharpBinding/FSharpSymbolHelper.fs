@@ -320,6 +320,14 @@ type TooltipResults =
 | NoToolTipData
 | Tooltip of MonoDevelop.Ide.Editor.TooltipItem
 
+[<AutoOpen>]
+module PrintParameter =
+    let print (sb: StringBuilder) symbols = symbols |> Seq.iter (Printf.bprintf sb "%s")
+
+    let printParamName sb (param: FSharpGenericParameter) =
+        print sb [asSymbol (if param.IsSolveAtCompileTime then "^" else "'")]
+        print sb [param.Name]
+
 module SymbolTooltips =
 
     type NestedFunctionParams =
@@ -392,17 +400,12 @@ module SymbolTooltips =
                 Some(s.Substring(4,s.Length - 4))
 
         let sb = new StringBuilder()
-        let print symbols = symbols |> Seq.iter (Printf.bprintf sb "%s")
-
-        let printParamName() =
-            print [asSymbol (if param.IsSolveAtCompileTime then "^" else "'")]
-            print [param.Name]
         
-        printParamName()
+        printParamName sb param
 
         let formatConstraint (constrainedBy: FSharpGenericParameterConstraint) =
-            print [asKeyword " when " ]
-            printParamName()
+            print sb [asKeyword " when " ]
+            printParamName sb param
 
             let memberConstraint (c: FSharpGenericParameterMemberConstraint) =
                 let hasPropertyShape =
@@ -415,67 +418,67 @@ module SymbolTooltips =
                         chopped, true
                     | _, _ -> c.MemberName, false
 
-                print [ asSymbol " : (" ]
+                print sb [ asSymbol " : (" ]
                 if c.MemberIsStatic then
-                    print [ asKeyword "static " ]
+                    print sb [ asKeyword "static " ]
 
-                print [ asKeyword "member "
-                        asUserType formattedMemberName
-                        asSymbol " : " ]
+                print sb [ asKeyword "member "
+                           asUserType formattedMemberName
+                           asSymbol " : " ]
 
                 if isProperty then
-                    print [ asUserType (c.MemberReturnType.Format displayContext) ]
+                    print sb [ asUserType (c.MemberReturnType.Format displayContext) ]
                 else 
                     if c.MemberArgumentTypes.Count <= 1 then
-                        print [ asUserType "unit" ]
+                        print sb [ asUserType "unit" ]
                     else
-                        printParamName()
-                    print [ asSymbol " -> "
-                            asUserType ((c.MemberReturnType.Format displayContext).TrimStart()) ]
+                        printParamName sb param
+                    print sb [ asSymbol " -> "
+                               asUserType ((c.MemberReturnType.Format displayContext).TrimStart()) ]
 
-                print [ asBrackets ")" ]
+                print sb [ asBrackets ")" ]
 
             let typeConstraint (tc: FSharpType) =
-                print [ asSymbol " :> "
-                        asUserType (tc.Format displayContext) ]
+                print sb [ asSymbol " :> "
+                           asUserType (tc.Format displayContext) ]
 
             let constructorConstraint () =
-                print [ asSymbol " : "
-                        asBrackets "("
-                        asKeyword "new"
-                        asSymbol " : "
-                        asKeyword "unit"
-                        asSymbol " -> '"
-                        param.DisplayName
-                        asBrackets ")" ]
+                print sb [ asSymbol " : "
+                           asBrackets "("
+                           asKeyword "new"
+                           asSymbol " : "
+                           asKeyword "unit"
+                           asSymbol " -> '"
+                           param.DisplayName
+                           asBrackets ")" ]
 
             let enumConstraint (ec: FSharpType) =
-                print [ asSymbol " : "
-                        asKeyword "enum"
-                        asBrackets (escapeText "<")
-                        asUserType (ec.Format displayContext)
-                        asBrackets (escapeText ">") ]
+                print sb [ asSymbol " : "
+                           asKeyword "enum"
+                           asBrackets (escapeText "<")
+                           asUserType (ec.Format displayContext)
+                           asBrackets (escapeText ">") ]
 
             let delegateConstraint (tc: FSharpGenericParameterDelegateConstraint) =
-                print [ asSymbol " : "
-                        asKeyword "delegate"
-                        asBrackets (escapeText "<")
-                        asUserType (tc.DelegateTupledArgumentType.Format displayContext)
-                        asSymbol ", "
-                        asUserType (tc.DelegateReturnType.Format displayContext)
-                        asBrackets (escapeText ">") ]
+                print sb [ asSymbol " : "
+                           asKeyword "delegate"
+                           asBrackets (escapeText "<")
+                           asUserType (tc.DelegateTupledArgumentType.Format displayContext)
+                           asSymbol ", "
+                           asUserType (tc.DelegateReturnType.Format displayContext)
+                           asBrackets (escapeText ">") ]
 
             match constrainedBy with
             | _ when constrainedBy.IsCoercesToConstraint -> typeConstraint constrainedBy.CoercesToTarget
             | _ when constrainedBy.IsMemberConstraint -> memberConstraint constrainedBy.MemberConstraintData
-            | _ when constrainedBy.IsSupportsNullConstraint -> print [(asSymbol " : "); (asKeyword "null")]
+            | _ when constrainedBy.IsSupportsNullConstraint -> print sb [(asSymbol " : "); (asKeyword "null")]
             | _ when constrainedBy.IsRequiresDefaultConstructorConstraint -> constructorConstraint()
-            | _ when constrainedBy.IsReferenceTypeConstraint -> print [(asSymbol " : "); asKeyword "not struct"]
+            | _ when constrainedBy.IsReferenceTypeConstraint -> print sb [(asSymbol " : "); asKeyword "not struct"]
             | _ when constrainedBy.IsEnumConstraint -> enumConstraint constrainedBy.EnumConstraintTarget
-            | _ when constrainedBy.IsComparisonConstraint -> print [(asSymbol " : "); (asKeyword "comparison")]
-            | _ when constrainedBy.IsEqualityConstraint -> print [(asSymbol " : "); (asKeyword "equality")]
+            | _ when constrainedBy.IsComparisonConstraint -> print sb [(asSymbol " : "); (asKeyword "comparison")]
+            | _ when constrainedBy.IsEqualityConstraint -> print sb [(asSymbol " : "); (asKeyword "equality")]
             | _ when constrainedBy.IsDelegateConstraint -> delegateConstraint constrainedBy.DelegateConstraintData
-            | _ when constrainedBy.IsUnmanagedConstraint -> print [(asSymbol " : "); (asKeyword "unmanaged")]
+            | _ when constrainedBy.IsUnmanagedConstraint -> print sb [(asSymbol " : "); (asKeyword "unmanaged")]
             | _ -> ()
 
         if param.Constraints.Count > 0 then
