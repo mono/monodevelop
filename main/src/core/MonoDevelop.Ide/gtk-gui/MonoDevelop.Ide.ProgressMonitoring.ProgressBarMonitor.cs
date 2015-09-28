@@ -30,9 +30,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 			this.buttonCancel.Name = "buttonCancel";
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Relief = ((global::Gtk.ReliefStyle)(2));
-			this.buttonCancel.Label = "";
 			global::Gtk.Image w2 = new global::Gtk.Image ();
-			w2.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-cancel", global::Gtk.IconSize.Menu);
 			this.buttonCancel.Image = w2;
 			this.hbox1.Add (this.buttonCancel);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonCancel]));

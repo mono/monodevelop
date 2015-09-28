@@ -42,6 +42,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public AddinLoadErrorDialog (AddinError[] errors, bool warning)
 		{
 			Build ();
+			this.iconError.Pixbuf = ImageService.GetIcon ("gtk-dialog-error", Gtk.IconSize.Dialog).ToPixbuf();
+
 			Title = BrandingService.ApplicationName;
 			
 			TreeStore store = new TreeStore (typeof(string));

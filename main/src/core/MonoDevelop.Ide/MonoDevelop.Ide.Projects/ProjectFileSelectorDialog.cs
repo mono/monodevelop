@@ -66,6 +66,7 @@ namespace MonoDevelop.Ide.Projects
 			this.buildActions = buildActions;
 			
 			this.Build();
+			this.AddFileButton.Image = new Image (ImageService.GetIcon ("gtk-add", Gtk.IconSize.Menu).ToPixbuf());
 			
 			projBuf = ImageService.GetIcon (project.StockIcon, IconSize.Menu);
 			dirClosedBuf = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.ClosedFolder, IconSize.Menu);

@@ -331,9 +331,8 @@
                         <property name="MemberName" />
                         <property name="Spacing">6</property>
                         <child>
-                          <widget class="Gtk.Image" id="image3">
+                          <widget class="Gtk.Image" id="iconWarning">
                             <property name="MemberName" />
-                            <property name="Pixbuf">stock:gtk-dialog-warning Menu</property>
                           </widget>
                           <packing>
                             <property name="Position">0</property>
@@ -452,8 +451,7 @@
               <widget class="Gtk.Button" id="updateButton">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Type">TextAndIcon</property>
-                <property name="Icon">stock:gtk-apply Button</property>
+                <property name="Type">TextOnly</property>
                 <property name="Label" translatable="yes">Apply</property>
                 <property name="UseUnderline">True</property>
               </widget>
@@ -760,11 +758,10 @@
                 <property name="MemberName" />
                 <property name="Spacing">5</property>
                 <child>
-                  <widget class="Gtk.Image" id="image5">
+                  <widget class="Gtk.Image" id="iconInfo">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
                     <property name="Yalign">0</property>
-                    <property name="Pixbuf">stock:gtk-dialog-info Dialog</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -848,8 +845,7 @@
                 <child>
                   <widget class="Gtk.Button" id="nextButton">
                     <property name="MemberName" />
-                    <property name="Type">TextAndIcon</property>
-                    <property name="Icon">stock:gtk-go-forward Button</property>
+                    <property name="Type">TextOnly</property>
                     <property name="Label" translatable="yes">_Next Tip</property>
                     <property name="UseUnderline">True</property>
                   </widget>
@@ -1673,8 +1669,7 @@ Diagnostic</property>
             <property name="CanDefault">True</property>
             <property name="HasDefault">True</property>
             <property name="CanFocus">True</property>
-            <property name="Type">TextAndIcon</property>
-            <property name="Icon">stock:gtk-new Menu</property>
+            <property name="Type">TextOnly</property>
             <property name="Label" translatable="yes">Create _Layout</property>
             <property name="UseUnderline">True</property>
             <property name="ResponseId">-5</property>
@@ -2438,10 +2433,7 @@ Diagnostic</property>
                 <child>
                   <widget class="Gtk.Button" id="btnAdd">
                     <property name="MemberName" />
-                    <property name="Type">TextAndIcon</property>
-                    <property name="Icon">stock:gtk-go-forward Button</property>
-                    <property name="Label" translatable="yes" />
-                    <property name="UseUnderline">True</property>
+                    <property name="Type">Custom</property>
                     <signal name="Clicked" handler="OnAddClicked" />
                   </widget>
                   <packing>
@@ -2454,9 +2446,11 @@ Diagnostic</property>
                 <child>
                   <widget class="Gtk.Button" id="btnRemove">
                     <property name="MemberName" />
-                    <property name="Type">TextAndIcon</property>
-                    <property name="Icon">stock:gtk-go-back SmallToolbar</property>
+                    <property name="Type">Custom</property>
                     <signal name="Clicked" handler="OnRemoveClicked" />
+                    <child>
+                      <placeholder />
+                    </child>
                   </widget>
                   <packing>
                     <property name="Position">2</property>
@@ -2503,12 +2497,7 @@ Diagnostic</property>
                     <property name="Type">Custom</property>
                     <signal name="Clicked" handler="OnUpClicked" />
                     <child>
-                      <widget class="Gtk.Image" id="image9">
-                        <property name="MemberName" />
-                        <property name="Xalign">0</property>
-                        <property name="Yalign">0</property>
-                        <property name="Pixbuf">stock:gtk-go-up Button</property>
-                      </widget>
+                      <placeholder />
                     </child>
                   </widget>
                   <packing>
@@ -2524,12 +2513,7 @@ Diagnostic</property>
                     <property name="Type">Custom</property>
                     <signal name="Clicked" handler="OnDownClicked" />
                     <child>
-                      <widget class="Gtk.Image" id="image10">
-                        <property name="MemberName" />
-                        <property name="Xalign">0</property>
-                        <property name="Yalign">0</property>
-                        <property name="Pixbuf">stock:gtk-go-down Button</property>
-                      </widget>
+                      <placeholder />
                     </child>
                   </widget>
                   <packing>
@@ -2624,11 +2608,10 @@ Diagnostic</property>
             <property name="Spacing">12</property>
             <property name="BorderWidth">6</property>
             <child>
-              <widget class="Gtk.Image" id="image1">
+              <widget class="Gtk.Image" id="iconError">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
                 <property name="Yalign">0</property>
-                <property name="Pixbuf">stock:gtk-dialog-error Dialog</property>
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -4803,6 +4786,7 @@ Diagnostic</property>
                     <property name="Tooltip" translatable="yes">Switch to Find in Files</property>
                     <property name="CanFocus">True</property>
                     <property name="Label" translatable="yes">Find in Files</property>
+                    <property name="Active">True</property>
                     <property name="DrawIndicator">False</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>
@@ -5856,9 +5840,8 @@ All solutions</property>
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <child>
-                  <widget class="Gtk.Image" id="image146">
+                  <widget class="Gtk.Image" id="iconWarning">
                     <property name="MemberName" />
-                    <property name="Pixbuf">stock:gtk-dialog-warning Dialog</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -7756,10 +7739,9 @@ All solutions</property>
             <property name="Spacing">12</property>
             <property name="BorderWidth">12</property>
             <child>
-              <widget class="Gtk.Image" id="image6">
+              <widget class="Gtk.Image" id="iconQuestion">
                 <property name="MemberName" />
                 <property name="Yalign">0</property>
-                <property name="Pixbuf">stock:gtk-dialog-question Dialog</property>
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -9078,7 +9060,6 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                         <property name="Tooltip" translatable="yes">Add existing files to the project</property>
                         <property name="CanFocus">True</property>
                         <property name="Type">TextAndIcon</property>
-                        <property name="Icon">stock:gtk-add Menu</property>
                         <property name="Label" translatable="yes" />
                         <property name="UseUnderline">True</property>
                         <property name="Relief">None</property>
@@ -9244,7 +9225,6 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                   <widget class="Gtk.Image" id="image">
                     <property name="MemberName" />
                     <property name="Visible">False</property>
-                    <property name="Pixbuf">stock:gtk-dialog-error Menu</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -9827,8 +9807,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
               <widget class="Gtk.Button" id="buttonReset">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Type">TextAndIcon</property>
-                <property name="Icon">stock:gtk-clear Menu</property>
+                <property name="Type">TextOnly</property>
                 <property name="Label" translatable="yes">Clear All Options</property>
                 <property name="UseUnderline">True</property>
                 <signal name="Clicked" handler="OnButtonResetClicked" />
@@ -9941,7 +9920,6 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                                     <property name="MemberName" />
                                     <property name="Tooltip">Remove</property>
                                     <property name="Type">TextAndIcon</property>
-                                    <property name="Icon">stock:gtk-delete Menu</property>
                                     <property name="Label" />
                                     <property name="UseUnderline">True</property>
                                     <property name="FocusOnClick">False</property>
@@ -10954,7 +10932,6 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="Type">TextAndIcon</property>
-            <property name="Icon">stock:gtk-cancel Menu</property>
             <property name="Label" translatable="yes" />
             <property name="UseUnderline">True</property>
             <property name="Relief">None</property>
@@ -10990,9 +10967,8 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <child>
-                  <widget class="Gtk.Image" id="image23">
+                  <widget class="Gtk.Image" id="iconQuestion">
                     <property name="MemberName" />
-                    <property name="Pixbuf">stock:gtk-dialog-question Dialog</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>

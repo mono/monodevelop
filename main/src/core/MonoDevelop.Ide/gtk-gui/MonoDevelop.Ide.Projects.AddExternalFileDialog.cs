@@ -6,7 +6,7 @@ namespace MonoDevelop.Ide.Projects
 	{
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.VBox vbox3;
-		private global::Gtk.Image image23;
+		private global::Gtk.Image iconQuestion;
 		private global::Gtk.VBox vbox2;
 		private global::Gtk.Label labelTitle;
 		private global::Gtk.Alignment alignment1;
@@ -44,11 +44,10 @@ namespace MonoDevelop.Ide.Projects
 			this.vbox3.Name = "vbox3";
 			this.vbox3.Spacing = 6;
 			// Container child vbox3.Gtk.Box+BoxChild
-			this.image23 = new global::Gtk.Image ();
-			this.image23.Name = "image23";
-			this.image23.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-question", global::Gtk.IconSize.Dialog);
-			this.vbox3.Add (this.image23);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.image23]));
+			this.iconQuestion = new global::Gtk.Image ();
+			this.iconQuestion.Name = "iconQuestion";
+			this.vbox3.Add (this.iconQuestion);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.iconQuestion]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;

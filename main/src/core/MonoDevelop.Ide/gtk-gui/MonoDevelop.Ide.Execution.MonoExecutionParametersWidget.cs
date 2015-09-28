@@ -39,14 +39,11 @@ namespace MonoDevelop.Ide.Execution
 			this.buttonReset.Name = "buttonReset";
 			this.buttonReset.UseUnderline = true;
 			this.buttonReset.Label = global::Mono.Unix.Catalog.GetString ("Clear All Options");
-			global::Gtk.Image w2 = new global::Gtk.Image ();
-			w2.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-clear", global::Gtk.IconSize.Menu);
-			this.buttonReset.Image = w2;
 			this.vbox4.Add (this.buttonReset);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.buttonReset]));
-			w3.Position = 0;
-			w3.Expand = false;
-			w3.Fill = false;
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.buttonReset]));
+			w2.Position = 0;
+			w2.Expand = false;
+			w2.Fill = false;
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.buttonPreview = new global::Gtk.Button ();
 			this.buttonPreview.CanFocus = true;
@@ -54,15 +51,15 @@ namespace MonoDevelop.Ide.Execution
 			this.buttonPreview.UseUnderline = true;
 			this.buttonPreview.Label = global::Mono.Unix.Catalog.GetString ("Preview Options");
 			this.vbox4.Add (this.buttonPreview);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.buttonPreview]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.buttonPreview]));
+			w3.Position = 1;
+			w3.Expand = false;
+			w3.Fill = false;
+			this.hbox1.Add (this.vbox4);
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox4]));
 			w4.Position = 1;
 			w4.Expand = false;
 			w4.Fill = false;
-			this.hbox1.Add (this.vbox4);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox4]));
-			w5.Position = 1;
-			w5.Expand = false;
-			w5.Fill = false;
 			this.Add (this.hbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
