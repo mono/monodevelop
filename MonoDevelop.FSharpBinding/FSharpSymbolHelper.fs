@@ -323,12 +323,11 @@ type TooltipResults =
 
 [<AutoOpen>]
 module PrintParameter =
-    let printSymbol sb = Printf.bprintf sb "%s"
-    let printSymbols sb symbols = symbols |> Seq.iter (printSymbol sb)
+    let print sb = Printf.bprintf sb "%s"
      
     let printGenericParamName sb (param: FSharpGenericParameter) =
-        printSymbol sb (asSymbol (if param.IsSolveAtCompileTime then "^" else "'"))
-        printSymbol sb param.Name
+        print sb (asSymbol (if param.IsSolveAtCompileTime then "^" else "'"))
+        print sb param.Name
 
     let asGenericParamName (param: FSharpGenericParameter) =
         asSymbol (if param.IsSolveAtCompileTime then "^" else "'") + param.Name
@@ -499,11 +498,10 @@ module SymbolTooltips =
                 yield! symbols
             }
 
-
         if param.Constraints.Count > 0 then
             param.Constraints 
             |> Seq.collect getConstraintSymbols 
-            |> Seq.iter(fun symbol -> printSymbol sb symbol)
+            |> Seq.iter(fun symbol -> print sb symbol)
 
         sb.ToString()
 
