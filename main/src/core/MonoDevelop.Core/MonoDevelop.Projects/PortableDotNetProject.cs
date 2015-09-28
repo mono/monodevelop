@@ -96,5 +96,10 @@ namespace MonoDevelop.Projects
 			var asms = TargetRuntime.AssemblyContext.GetAssemblies (TargetFramework).Where (a => a.Package.IsFrameworkPackage).Select (a => a.Location);
 			return res.Concat (asms).Distinct ();
 		}
+
+		protected internal override bool OnGetSupportsExecute ()
+		{
+			return false;
+		}
 	}
 }
