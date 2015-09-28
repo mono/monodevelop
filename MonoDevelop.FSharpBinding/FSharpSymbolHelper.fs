@@ -324,10 +324,6 @@ type TooltipResults =
 [<AutoOpen>]
 module PrintParameter =
     let print sb = Printf.bprintf sb "%s"
-     
-    let printGenericParamName sb (param: FSharpGenericParameter) =
-        print sb (asSymbol (if param.IsSolveAtCompileTime then "^" else "'"))
-        print sb param.Name
 
     let asGenericParamName (param: FSharpGenericParameter) =
         asSymbol (if param.IsSolveAtCompileTime then "^" else "'") + param.Name
@@ -405,7 +401,7 @@ module SymbolTooltips =
 
         let sb = new StringBuilder()
         
-        printGenericParamName sb param
+        print sb (asGenericParamName param)
 
         let getConstraintSymbols (constrainedBy: FSharpGenericParameterConstraint) =
             let memberConstraint (c: FSharpGenericParameterMemberConstraint) =
