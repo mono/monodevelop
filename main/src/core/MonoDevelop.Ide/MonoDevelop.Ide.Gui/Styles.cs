@@ -193,6 +193,7 @@ namespace MonoDevelop.Ide.Gui
 			public static Cairo.Color SelectionBackgroundInactiveColor { get; internal set; }
 			public static Cairo.Color SelectionBorderColor { get; internal set; }
 			public static Cairo.Color SelectionBorderInactiveColor { get; internal set; }
+			public static Cairo.Color SelectionTextColor { get; internal set; }
 		}
 
 		// Global Search
@@ -418,6 +419,7 @@ namespace MonoDevelop.Ide.Gui
 			CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("434343"); // TODO: VV: New value
 			CodeCompletion.SelectionBorderColor = CairoExtensions.ParseColor ("c9c9c9"); // TODO: VV: New value
 			CodeCompletion.SelectionBorderInactiveColor = CairoExtensions.ParseColor ("666666"); // TODO: VV: New value
+			CodeCompletion.SelectionTextColor = CairoExtensions.ParseColor ("000000"); // TODO: VV: New value
 
 			// Global Search
 
@@ -580,6 +582,7 @@ namespace MonoDevelop.Ide.Gui
 			CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("555555");
 			CodeCompletion.SelectionBorderColor = CairoExtensions.ParseColor ("3D8AFA");
 			CodeCompletion.SelectionBorderInactiveColor = CairoExtensions.ParseColor ("555555");
+			CodeCompletion.SelectionTextColor = CairoExtensions.ParseColor ("FFFFFF"); // TODO: VV: New value
 
 			// Global Search
 

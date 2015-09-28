@@ -128,7 +128,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		Cairo.Color backgroundColor;
 		Cairo.Color selectionBorderColor, selectionBorderInactiveColor;
 		Cairo.Color selectedItemColor, selectedItemInactiveColor;
-		Cairo.Color textColor;
+		Cairo.Color textColor, selectionTextColor;
 		Cairo.Color highlightColor;
 		FontDescription itemFont;
 
@@ -185,6 +185,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			selectedItemInactiveColor = Styles.CodeCompletion.SelectionBackgroundInactiveColor;
 			selectionBorderColor = Styles.CodeCompletion.SelectionBorderColor;
 			selectionBorderInactiveColor = Styles.CodeCompletion.SelectionBorderInactiveColor;
+			selectionTextColor = Styles.CodeCompletion.SelectionTextColor;
 		}
 
 		
@@ -566,7 +567,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 						context.DrawImage (this, icon, xpos, iypos);
 						xpos += iconTextSpacing;
 					}
-					context.SetSourceColor (textColor);
+					context.SetSourceColor (item == SelectedItem ? selectionTextColor : textColor);
 					var textXPos = xpos + iconWidth + 2;
 					context.MoveTo (textXPos, typos);
 					layout.Width = (int)((Allocation.Width - textXPos) * Pango.Scale.PangoScale);
