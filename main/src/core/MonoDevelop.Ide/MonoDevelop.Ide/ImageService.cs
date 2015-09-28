@@ -206,8 +206,7 @@ namespace MonoDevelop.Ide
 			if (icons.TryGetValue (name, out img))
 				return img;
 
-			Gtk.IconSet iconset = Gtk.IconFactory.LookupDefault (name);
-			if (iconset == null && !Gtk.IconTheme.Default.HasIcon (name) && generateDefaultIcon) {
+			if (generateDefaultIcon) {
 				LoggingService.LogWarning ("Unknown icon: " + name);
 				return CreateColorIcon ("#FF0000FF");
 			}
