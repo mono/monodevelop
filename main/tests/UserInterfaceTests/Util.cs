@@ -46,6 +46,11 @@ namespace UserInterfaceTests
 			return new string (str.Select (c => invalids.Contains (c) ? replaceWith : c).ToArray ());
 		}
 
+		public static string ToBoldText (this string str)
+		{
+			return string.Format ("<b>{0}</b>", str);
+		}
+
 		public static FilePath CreateTmpDir (string hint = null)
 		{
 			var cwd = new FileInfo (Assembly.GetExecutingAssembly ().Location).DirectoryName;
