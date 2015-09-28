@@ -1,5 +1,5 @@
 ﻿open System
-open Nessos.UnionArgParser
+open Nessos.Argu
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Reflection
 open Nessos.FsPickler
@@ -15,12 +15,12 @@ type Arguments =
 [<EntryPoint>]
 let main argv =
   try
-    let parser = UnionArgParser.Create<Arguments>()
+    let parser = ArgumentParser.Create<Arguments>()
     let results = parser.Parse argv
     let projectFile = results.GetResult(<@ Project @>)
     let checker = FSharpChecker.Create()
     let fsharpProjectOptions = checker.GetProjectOptionsFromProjectFile(projectFile)
-    let pickler = FsPickler.CreateBinary()
+    let pickler = FsPickler.CreateBinarySerializer()
     let outstream = Console.OpenStandardOutput()
     pickler.Serialize(outstream, fsharpProjectOptions)
     0
