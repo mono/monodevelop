@@ -18,6 +18,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
             : base (WindowType.Toplevel)
         {
             Build ();
+			this.iconInfo.Pixbuf = ImageService.GetIcon ("gtk-dialog-info", Gtk.IconSize.Dialog).ToPixbuf();
+
             TransientFor = IdeApp.Workbench.RootWindow;
 
             if (IdeApp.Preferences.ShowTipsAtStartup)

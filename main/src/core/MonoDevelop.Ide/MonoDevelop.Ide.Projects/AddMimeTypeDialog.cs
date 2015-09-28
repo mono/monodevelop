@@ -41,6 +41,7 @@ namespace MonoDevelop.Ide.Projects
 		public AddMimeTypeDialog (IEnumerable<string> types)
 		{
 			this.Build ();
+			this.image.Pixbuf = ImageService.GetIcon ("gtk-dialog-error", Gtk.IconSize.Menu).ToPixbuf();
 			currentTypes = types;
 			buttonOk.Sensitive = false;
 		}

@@ -57,7 +57,6 @@ namespace MonoDevelop.Ide.Projects
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.image = new global::Gtk.Image ();
 			this.image.Name = "image";
-			this.image.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-error", global::Gtk.IconSize.Menu);
 			this.hbox1.Add (this.image);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.image]));
 			w4.Position = 0;

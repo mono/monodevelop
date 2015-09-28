@@ -96,7 +96,6 @@ namespace MonoDevelop.Ide.Projects
 			this.AddFileButton.UseUnderline = true;
 			this.AddFileButton.Relief = ((global::Gtk.ReliefStyle)(2));
 			global::Gtk.Image w7 = new global::Gtk.Image ();
-			w7.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-add", global::Gtk.IconSize.Menu);
 			this.AddFileButton.Image = w7;
 			this.hbox2.Add (this.AddFileButton);
 			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.AddFileButton]));
