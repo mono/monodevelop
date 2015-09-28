@@ -161,3 +161,9 @@ module FrameworkExt =
           member x.Dispose() =
             this.RemoveHandler(handler) }
 
+[<AutoOpen>]
+module ConstraintExt =
+  type FSharpGenericParameterMemberConstraint with 
+    member x.IsProperty =
+      (x.MemberIsStatic && x.MemberArgumentTypes.Count = 0) ||
+      (not x.MemberIsStatic && x.MemberArgumentTypes.Count = 1)
