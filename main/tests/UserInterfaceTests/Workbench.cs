@@ -99,6 +99,7 @@ namespace UserInterfaceTests
 				testContext.ReproStep (string.Format ("Open solution path '{0}'", solutionPath));
 			Action<string> takeScreenshot = GetScreenshotAction (testContext);
 			Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workspace.OpenWorkspaceItem", new FilePath (solutionPath), true);
+			Ide.WaitForSolutionLoaded ();
 			takeScreenshot ("Solution-Opened");
 		}
 

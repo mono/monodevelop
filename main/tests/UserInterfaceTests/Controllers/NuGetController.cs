@@ -46,28 +46,37 @@ namespace UserInterfaceTests
 		readonly Func<AppQuery,AppQuery> resultList;
 		readonly Func<AppQuery,AppQuery> includePreRelease;
 
-		public static void AddPackage (NuGetPackageOptions packageOptions, Action<string> takeScreenshot = null)
+		public static void AddPackage (NuGetPackageOptions packageOptions, UITestBase testContext = null)
 		{
-			AddUpdatePackage (packageOptions, takeScreenshot, false);
+			Action<string> screenshotAction = delegate { };
+			if (testContext != null) {
+				testContext.ReproStep (string.Format ("Add NuGet package '{0}'", packageOptions.PackageName), packageOptions);
+				screenshotAction = testContext.TakeScreenShot;
+			}
+			AddUpdatePackage (packageOptions, screenshotAction, false);
 		}
 
-		public static void UpdatePackage (NuGetPackageOptions packageOptions, Action<string> takeScreenshot = null)
+		public static void UpdatePackage (NuGetPackageOptions packageOptions, UITestBase testContext = null)
 		{
-			AddUpdatePackage (packageOptions, takeScreenshot, true);
+			Action<string> screenshotAction = delegate { };
+			if (testContext != null) {
+				testContext.ReproStep (string.Format ("Update NuGet package '{0}'", packageOptions.PackageName), packageOptions);
+				screenshotAction = testContext.TakeScreenShot;
+			}
+			AddUpdatePackage (packageOptions, screenshotAction, true);
 		}
 
-		public static void UpdateAllNuGetPackages (Action<string> takeScreenshot = null)
+		public static void UpdateAllNuGetPackages (UITestBase testContext = null)
 		{
 			Session.ExecuteCommand ("MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolution");
 			WaitForNuGet.UpdateSuccess (string.Empty);
-			if (takeScreenshot != null)
-				takeScreenshot ("All-NuGet-Packages-Updated");
+			if (testContext != null)
+				testContext.TakeScreenShot ("All-NuGet-Packages-Updated");
 		}
 
 		static void AddUpdatePackage (NuGetPackageOptions packageOptions, Action<string> takeScreenshot, bool isUpdate = false)
 		{
 			packageOptions.PrintData ();
-			takeScreenshot = takeScreenshot ?? delegate {};
 			var nuget = new NuGetController (takeScreenshot, isUpdate);
 			nuget.Open ();
 			nuget.EnterSearchText (packageOptions.PackageName, packageOptions.Version, packageOptions.IsPreRelease);
