@@ -178,7 +178,7 @@ namespace UserInterfaceTests
 
 		protected void TakeScreenShot (string stepName)
 		{
-			stepName = string.Format ("{0:D3}-{1}", testScreenshotIndex++, stepName);
+			stepName = string.Format ("{0:D3}-{1}", testScreenshotIndex++, stepName).ToPathSafeString ();
 			var screenshotPath = Path.Combine (currentTestResultScreenshotFolder, stepName) + ".png";
 			Session.TakeScreenshot (screenshotPath);
 		}
