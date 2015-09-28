@@ -173,6 +173,8 @@ namespace MonoDevelop.Ide.Gui
 			public static Cairo.Color WarningTextColor { get; internal set; }
 			public static Cairo.Color InformationTextColor { get; internal set; }
 
+			public static Cairo.Color ShadowColor { get; internal set; }
+
 			public static class ParamaterWindows
 			{
 				public static Cairo.Color GradientStartColor { get; internal set; }
@@ -403,6 +405,9 @@ namespace MonoDevelop.Ide.Gui
 			PopoverWindow.ErrorTextColor = CairoExtensions.ParseColor ("ffffff");
 			PopoverWindow.WarningTextColor = CairoExtensions.ParseColor ("563b00");
 			PopoverWindow.InformationTextColor = CairoExtensions.ParseColor ("ffffff");
+
+			PopoverWindow.ShadowColor = new Cairo.Color (0, 0, 0, 0.1);
+
 			PopoverWindow.ParamaterWindows.GradientStartColor = CairoExtensions.ParseColor ("fffee6");
 			PopoverWindow.ParamaterWindows.GradientEndColor = CairoExtensions.ParseColor ("fffcd1");
 
@@ -562,6 +567,9 @@ namespace MonoDevelop.Ide.Gui
 			PopoverWindow.ErrorTextColor = CairoExtensions.ParseColor ("ffffff");
 			PopoverWindow.WarningTextColor = CairoExtensions.ParseColor ("563b00");
 			PopoverWindow.InformationTextColor = CairoExtensions.ParseColor ("ffffff");
+
+			PopoverWindow.ShadowColor = new Cairo.Color (0, 0, 0, 0.1);
+
 			PopoverWindow.ParamaterWindows.GradientStartColor = CairoExtensions.ParseColor ("fffee6");
 			PopoverWindow.ParamaterWindows.GradientEndColor = CairoExtensions.ParseColor ("fffcd1");
 
