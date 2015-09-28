@@ -96,7 +96,7 @@ namespace UserInterfaceTests
 		{
 			string.Format ("Selected Pane :{0}", name).PrintData ();
 			Session.SelectElement (c => windowQuery (c).Children ().Marked (
-				"__gtksharp_16_MonoDevelop_Components_HeaderBox").Children ().TreeView ().Model ().Children ().Property ("Label", name));
+				"MonoDevelop.Components.HeaderBox").Children ().TreeView ().Model ().Children ().Property ("Label", name));
 		}
 
 		protected void SetEntry (string entryName, string entryValue, string stepName,  Action<string> takeScreenshot)
