@@ -325,8 +325,6 @@ type TooltipResults =
 module PrintParameter =
     let print sb = Printf.bprintf sb "%s"
 
-    let asGenericParamName (param: FSharpGenericParameter) =
-        asSymbol (if param.IsSolveAtCompileTime then "^" else "'") + param.Name
 
 module SymbolTooltips =
 
@@ -398,6 +396,9 @@ module SymbolTooltips =
                 None
             else 
                 Some(s.Substring(4,s.Length - 4))
+        
+        let asGenericParamName (param: FSharpGenericParameter) =
+            asSymbol (if param.IsSolveAtCompileTime then "^" else "'") + param.Name
 
         let sb = new StringBuilder()
         
@@ -405,12 +406,9 @@ module SymbolTooltips =
 
         let getConstraintSymbols (constrainedBy: FSharpGenericParameterConstraint) =
             let memberConstraint (c: FSharpGenericParameterMemberConstraint) =
-                let hasPropertyShape =
-                    (c.MemberIsStatic && c.MemberArgumentTypes.Count = 0) ||
-                    (not c.MemberIsStatic && c.MemberArgumentTypes.Count = 1)
 
                 let formattedMemberName, isProperty =
-                    match hasPropertyShape, tryChopPropertyName c.MemberName with
+                    match c.IsProperty, tryChopPropertyName c.MemberName with
                     | true, Some(chopped) when chopped <> c.MemberName ->
                         chopped, true
                     | _, _ -> c.MemberName, false
@@ -430,7 +428,7 @@ module SymbolTooltips =
                         if c.MemberArgumentTypes.Count <= 1 then
                             yield asUserType "unit"
                         else
-                            printGenericParamName sb param
+                            yield asGenericParamName param
                         yield asSymbol " -> "
                         yield asUserType ((c.MemberReturnType.Format displayContext).TrimStart())
                     
