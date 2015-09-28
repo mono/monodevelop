@@ -510,13 +510,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 								fg.StartIndex = (uint)idx;
 								fg.EndIndex = (uint)(idx + 1);
 								attrList.Insert (fg);
-
-								if (stringStyle.FontWeight != FontWeight.Normal) {
-									var variant = new AttrWeight ((Pango.Weight)stringStyle.FontWeight);
-									variant.StartIndex = (uint)idx;
-									variant.EndIndex = (uint)(idx + 1);
-									attrList.Insert (variant);
-								}
+								var bold = new AttrWeight (Weight.Bold);
+								bold.StartIndex = (uint)idx;
+								bold.EndIndex = (uint)(idx + 1);
+								attrList.Insert (bold);
 							}
 							layout.Attributes = attrList;
 						}
