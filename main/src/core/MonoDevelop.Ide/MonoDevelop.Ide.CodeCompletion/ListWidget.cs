@@ -524,6 +524,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 								fg.StartIndex = (uint)idx;
 								fg.EndIndex = (uint)(idx + 1);
 								attrList.Insert (fg);
+								var bold = new AttrWeight (Weight.Bold);
+								bold.StartIndex = (uint)idx;
+								bold.EndIndex = (uint)(idx + 1);
+								attrList.Insert (bold);
 							}
 							layout.Attributes = attrList;
 						}
