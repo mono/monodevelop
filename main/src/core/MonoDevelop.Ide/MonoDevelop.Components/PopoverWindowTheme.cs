@@ -56,6 +56,7 @@ namespace MonoDevelop.Components
 		int arrowWidth;
 		int arrowLength;
 		Cairo.Color backgroundColor;
+		Cairo.Color shadowColor;
 		Pango.FontDescription font;
 		int currentPage;
 		int pages;
@@ -85,6 +86,14 @@ namespace MonoDevelop.Components
 			set {
 				pagerBackgroundColor = value;
 			}
+		}
+
+		/// <summary>
+		/// Gets or sets the color of the border of the entire window. Set to transparent to disable border drawing.
+		/// </summary>
+		public Cairo.Color ShadowColor { 
+			get { return shadowColor; }
+			set { SetAndEmit (value, shadowColor, ref shadowColor); } 
 		}
 
 		Cairo.Color pagerTriangleColor = CairoExtensions.ParseColor ("737373");
@@ -226,7 +235,8 @@ namespace MonoDevelop.Components
 			Padding = 6;
 			ArrowWidth = 10;
 			ArrowLength = 5;
-			BackgroundColor = new Cairo.Color (1, 1, 1);
+			BackgroundColor = Styles.PopoverWindow.DefaultBackgroundColor;
+			ShadowColor = Styles.PopoverWindow.ShadowColor;
 
 			Font = Pango.FontDescription.FromString ("Normal");
 		}
@@ -251,6 +261,34 @@ namespace MonoDevelop.Components
 				return;
 			result = newValue;
 			EmitRedrawNeeded ();
+		}
+
+		public virtual void RenderBorder (Cairo.Context context, Gdk.Rectangle region, PopupPosition arrowPosition)
+		{
+			SetBorderPath (context, region, arrowPosition);
+			context.SetSourceColor (BackgroundColor);
+			context.LineWidth = 1;
+			context.Stroke ();
+		}
+
+		public virtual void RenderShadow (Cairo.Context context, Gdk.Rectangle region, PopupPosition arrowPosition)
+		{
+			RenderBorder (context, region, arrowPosition);
+			double r = CornerRadius;
+			double x = region.X + 0.5, y = region.Y + 0.5, w = region.Width - 1, h = region.Height - 1;
+			context.MoveTo(x + w, y + h - r);
+			context.Arc(x + w - r, y + h - r, r, 0, Math.PI * 0.5);
+			if (ShowArrow && (arrowPosition & PopupPosition.Bottom) != 0) {
+				double apos = ArrowOffset;
+				context.LineTo (x + apos + ArrowWidth / 2, y + h);
+				context.RelLineTo (-ArrowWidth / 2, ArrowLength);
+				context.RelLineTo (-ArrowWidth / 2, -ArrowLength);
+			}
+			context.Arc(x + r, y + h - r, r, Math.PI * 0.5, Math.PI);
+
+			context.SetSourceColor (ShadowColor);
+			context.LineWidth = 1;
+			context.Stroke ();
 		}
 
 		object setBorderPathLastArgs;
