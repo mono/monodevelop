@@ -314,6 +314,7 @@ module internal Highlight =
     let asBrackets = asType Brackets
     let asUserType = asType UserType
 
+
 type TooltipResults =
 | ParseAndCheckNotFound
 | NoToolTipText
@@ -325,9 +326,12 @@ module PrintParameter =
     let printSymbol sb = Printf.bprintf sb "%s"
     let printSymbols sb symbols = symbols |> Seq.iter (printSymbol sb)
      
-    let printParamName sb (param: FSharpGenericParameter) =
+    let printGenericParamName sb (param: FSharpGenericParameter) =
         printSymbol sb (asSymbol (if param.IsSolveAtCompileTime then "^" else "'"))
         printSymbol sb param.Name
+
+    let asGenericParamName (param: FSharpGenericParameter) =
+        asSymbol (if param.IsSolveAtCompileTime then "^" else "'") + param.Name
 
 module SymbolTooltips =
 
@@ -402,12 +406,9 @@ module SymbolTooltips =
 
         let sb = new StringBuilder()
         
-        printParamName sb param
+        printGenericParamName sb param
 
-        let formatConstraint (constrainedBy: FSharpGenericParameterConstraint) =
-            printSymbol sb (asKeyword " when ")
-            printParamName sb param
-
+        let getConstraintSymbols (constrainedBy: FSharpGenericParameterConstraint) =
             let memberConstraint (c: FSharpGenericParameterMemberConstraint) =
                 let hasPropertyShape =
                     (c.MemberIsStatic && c.MemberArgumentTypes.Count = 0) ||
@@ -419,71 +420,90 @@ module SymbolTooltips =
                         chopped, true
                     | _, _ -> c.MemberName, false
 
-                printSymbol sb (asSymbol " : (")
-                if c.MemberIsStatic then
-                    printSymbol sb (asKeyword "static ")
+                seq {
+                    yield asSymbol " : ("
+                    if c.MemberIsStatic then
+                        yield asKeyword "static "
 
-                printSymbols sb [ asKeyword "member "
-                                  asUserType formattedMemberName
-                                  asSymbol " : " ]
+                    yield asKeyword "member "
+                    yield asUserType formattedMemberName
+                    yield asSymbol " : "
 
-                if isProperty then
-                    printSymbol sb (asUserType (c.MemberReturnType.Format displayContext))
-                else 
-                    if c.MemberArgumentTypes.Count <= 1 then
-                        printSymbol sb (asUserType "unit")
-                    else
-                        printParamName sb param
-                    printSymbols sb [ asSymbol " -> "
-                                      asUserType ((c.MemberReturnType.Format displayContext).TrimStart()) ]
-
-                printSymbol sb (asBrackets ")")
+                    if isProperty then
+                        yield asUserType (c.MemberReturnType.Format displayContext)
+                    else 
+                        if c.MemberArgumentTypes.Count <= 1 then
+                            yield asUserType "unit"
+                        else
+                            printGenericParamName sb param
+                        yield asSymbol " -> "
+                        yield asUserType ((c.MemberReturnType.Format displayContext).TrimStart())
+                    
+                    yield asBrackets ")"
+                }
 
             let typeConstraint (tc: FSharpType) =
-                printSymbols sb [ asSymbol " :> "
-                                  asUserType (tc.Format displayContext) ]
-
+                seq {
+                    yield asSymbol " :> "
+                    yield asUserType (tc.Format displayContext)
+                }
+            
             let constructorConstraint () =
-                printSymbols sb [ asSymbol " : "
-                                  asBrackets "("
-                                  asKeyword "new"
-                                  asSymbol " : "
-                                  asKeyword "unit"
-                                  asSymbol " -> '"
-                                  param.DisplayName
-                                  asBrackets ")" ]
-
+                seq {
+                    yield asSymbol " : "
+                    yield asBrackets "("
+                    yield asKeyword "new"
+                    yield asSymbol " : "
+                    yield asKeyword "unit"
+                    yield asSymbol " -> '"
+                    yield param.DisplayName
+                    yield asBrackets ")" 
+                }
             let enumConstraint (ec: FSharpType) =
-                printSymbols sb [ asSymbol " : "
-                                  asKeyword "enum"
-                                  asBrackets (escapeText "<")
-                                  asUserType (ec.Format displayContext)
-                                  asBrackets (escapeText ">") ]
+                seq {
+                    yield asSymbol " : "
+                    yield asKeyword "enum"
+                    yield asBrackets (escapeText "<")
+                    yield asUserType (ec.Format displayContext)
+                    yield asBrackets (escapeText ">")
+                }
 
             let delegateConstraint (tc: FSharpGenericParameterDelegateConstraint) =
-                printSymbols sb [ asSymbol " : "
-                                  asKeyword "delegate"
-                                  asBrackets (escapeText "<")
-                                  asUserType (tc.DelegateTupledArgumentType.Format displayContext)
-                                  asSymbol ", "
-                                  asUserType (tc.DelegateReturnType.Format displayContext)
-                                  asBrackets (escapeText ">") ]
+                seq {
+                    yield asSymbol " : "
+                    yield asKeyword "delegate"
+                    yield asBrackets (escapeText "<")
+                    yield asUserType (tc.DelegateTupledArgumentType.Format displayContext)
+                    yield asSymbol ", "
+                    yield asUserType (tc.DelegateReturnType.Format displayContext)
+                    yield asBrackets (escapeText ">")
+                }
 
-            match constrainedBy with
-            | _ when constrainedBy.IsCoercesToConstraint -> typeConstraint constrainedBy.CoercesToTarget
-            | _ when constrainedBy.IsMemberConstraint -> memberConstraint constrainedBy.MemberConstraintData
-            | _ when constrainedBy.IsSupportsNullConstraint -> printSymbols sb [(asSymbol " : "); (asKeyword "null")]
-            | _ when constrainedBy.IsRequiresDefaultConstructorConstraint -> constructorConstraint()
-            | _ when constrainedBy.IsReferenceTypeConstraint -> printSymbols sb [(asSymbol " : "); asKeyword "not struct"]
-            | _ when constrainedBy.IsEnumConstraint -> enumConstraint constrainedBy.EnumConstraintTarget
-            | _ when constrainedBy.IsComparisonConstraint -> printSymbols sb [(asSymbol " : "); (asKeyword "comparison")]
-            | _ when constrainedBy.IsEqualityConstraint -> printSymbols sb [(asSymbol " : "); (asKeyword "equality")]
-            | _ when constrainedBy.IsDelegateConstraint -> delegateConstraint constrainedBy.DelegateConstraintData
-            | _ when constrainedBy.IsUnmanagedConstraint -> printSymbols sb [(asSymbol " : "); (asKeyword "unmanaged")]
-            | _ -> ()
+            let symbols = 
+                match constrainedBy with
+                | _ when constrainedBy.IsCoercesToConstraint -> typeConstraint constrainedBy.CoercesToTarget
+                | _ when constrainedBy.IsMemberConstraint -> memberConstraint constrainedBy.MemberConstraintData
+                | _ when constrainedBy.IsSupportsNullConstraint -> seq { yield asSymbol " : "; yield asKeyword "null" }
+                | _ when constrainedBy.IsRequiresDefaultConstructorConstraint -> constructorConstraint()
+                | _ when constrainedBy.IsReferenceTypeConstraint -> seq { yield asSymbol " : "; yield asKeyword "not struct" }
+                | _ when constrainedBy.IsEnumConstraint -> enumConstraint constrainedBy.EnumConstraintTarget
+                | _ when constrainedBy.IsComparisonConstraint -> seq { yield asSymbol " : "; yield asKeyword "comparison" }
+                | _ when constrainedBy.IsEqualityConstraint -> seq { yield asSymbol " : "; yield asKeyword "equality" }
+                | _ when constrainedBy.IsDelegateConstraint -> delegateConstraint constrainedBy.DelegateConstraintData
+                | _ when constrainedBy.IsUnmanagedConstraint -> seq { yield asSymbol " : "; yield asKeyword "unmanaged"}
+                | _ -> Seq.empty
+
+            seq { 
+                yield asKeyword " when "
+                yield asGenericParamName param
+                yield! symbols
+            }
+
 
         if param.Constraints.Count > 0 then
-            param.Constraints |> Seq.iter formatConstraint
+            param.Constraints 
+            |> Seq.collect getConstraintSymbols 
+            |> Seq.iter(fun symbol -> printSymbol sb symbol)
 
         sb.ToString()
 
