@@ -1249,7 +1249,7 @@ namespace Mono.TextEditor
 			gtk_object_set_data (gtkobject.Handle, pkey, pdata);
 			Marshal.FreeHGlobal(pdata);
 			GLib.Marshaller.Free (pkey);
-			gtkobject.Data [key] = true;
+			gtkobject.Data [key] = data;
 		}
 
 		public static void SetTransparentBgHint (this Widget widget, bool enable)
