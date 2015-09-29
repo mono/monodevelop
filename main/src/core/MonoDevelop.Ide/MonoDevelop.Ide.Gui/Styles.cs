@@ -569,7 +569,7 @@ namespace MonoDevelop.Ide.Gui
 			PopoverWindow.WarningTextColor = CairoExtensions.ParseColor ("563b00");
 			PopoverWindow.InformationTextColor = CairoExtensions.ParseColor ("ffffff");
 
-			PopoverWindow.ShadowColor = new Cairo.Color (0, 0, 0, 0.1);
+			PopoverWindow.ShadowColor = new Cairo.Color (0, 0, 0, 0); // transparent since dark skin doesn't need shadows
 
 			PopoverWindow.ParamaterWindows.GradientStartColor = CairoExtensions.ParseColor ("fffee6");
 			PopoverWindow.ParamaterWindows.GradientEndColor = CairoExtensions.ParseColor ("fffcd1");
