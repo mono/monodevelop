@@ -68,8 +68,8 @@
         { "name":"Breakpoint Marker(Disabled)", "color":"#707070", "bordercolor":"#7b7b7b" },
         { "name":"Breakpoint Marker(Invalid)", "color":"#604343", "bordercolor":"#6a4a4a" },
 
-        { "name":"Current Line Marker", "color":"base02"},
-        { "name":"Current Line Marker(Inactive)", "color":"base02"},
+        { "name":"Current Line Marker", "color":"#183842", "secondcolor":"#183842"},
+        { "name":"Current Line Marker(Inactive)", "color":"#183842", "secondcolor":"#183842"},
 
         { "name":"Debugger Current Line Marker", "color":"#69684c", "bordercolor":"#747354" },
         { "name":"Debugger Stack Line Marker", "color":"#5c6b4d", "bordercolor":"#657655"},
