@@ -141,10 +141,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			// TODO: Add font property to ICompletionWidget;
 			if (itemFont != null)
 				itemFont.Dispose ();
-			itemFont = FontService.SansFont.Copy ();
+			itemFont = FontService.MonospaceFont.Copy ();
 			var provider = CompletionWidget as ITextEditorDataProvider;
 			if (provider != null) {
-				var newSize = itemFont.Size * 0.917; // 12pt default font size * 0.917 = 11pt;
+				var newSize = itemFont.Size * 0.84; // 12pt default font size * 0.84 = 10pt;
 				if (newSize > 0) {
 					itemFont.Size = (int)newSize;
 					layout.FontDescription = itemFont;
@@ -518,12 +518,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 							Pango.AttrList attrList = layout.Attributes ?? new Pango.AttrList ();
 							for (int newSelection = 0; newSelection < matchIndices.Length; newSelection++) {
 								int idx = matchIndices [newSelection];
-								if (item == SelectedItem) {
-									var bold = new AttrWeight (Weight.Bold);
-									bold.StartIndex = (uint)idx;
-									bold.EndIndex = (uint)(idx + 1);
-									attrList.Insert (bold);
-								} else {
+								var bold = new AttrWeight (Weight.Bold);
+
+								bold.StartIndex = (uint)idx;
+								bold.EndIndex = (uint)(idx + 1);
+								attrList.Insert (bold);
+
+								if (item != SelectedItem) {
 									var fg = new AttrForeground ((ushort)(highlightColor.R * ushort.MaxValue), (ushort)(highlightColor.G * ushort.MaxValue), (ushort)(highlightColor.B  * ushort.MaxValue));
 									fg.StartIndex = (uint)idx;
 									fg.EndIndex = (uint)(idx + 1);
