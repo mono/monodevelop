@@ -143,6 +143,8 @@
         { "name":"Script Keyword", "fore":"keyword-blue" },
         { "name":"Script Number" },
         { "name":"Script Operator" },
-        { "name":"Script String" }
+        { "name":"Script String" },
+
+        { "name":"Tooltip Text", "fore":"#333", "back":"#fafae3" }
     ]
 }

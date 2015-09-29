@@ -140,7 +140,7 @@
         { "name": "Html Tag Delimiter", "fore": "monokai-white" },
         { "name": "Razor Code", "fore": "monokai-white", "back": "#373832" },
 
-        { "name": "Tooltip Text", "fore": "monokai-white", "back": "#5b6365" },
+        { "name": "Tooltip Text", "fore": "#f8f8f2", "back": "#5b6365" },
         { "name": "Notification Text", "fore": "monokai-white", "back": "#272725" },
 
         { "name": "Completion Text", "fore": "#434343", "back": "#F0F6F8" },
