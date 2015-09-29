@@ -99,6 +99,7 @@ namespace UserInterfaceTests
 						Assert.Inconclusive ("Xamarin Update is blocking the application focus");
 				}
 				ValidateIdeLogMessages ();
+
 				LoggingService.RemoveLogger (Logger.Name);
 				Logger.Dispose ();
 			} finally {
@@ -152,6 +153,7 @@ namespace UserInterfaceTests
 
 		void SetupTestLogger ()
 		{
+			reproStepIndex = 0;
 			var currentTestLog = Path.Combine (currentTestResultFolder, string.Format ("{0}.Test.log.txt", TestContext.CurrentContext.Test.Name.ToPathSafeString ()));
 			Logger = new FileLogger (currentTestLog) {
 				Name = "UITestLogger",
@@ -176,14 +178,14 @@ namespace UserInterfaceTests
 			Environment.SetEnvironmentVariable ("MONODEVELOP_FILE_LOG_LEVEL", "UpToInfo");
 		}
 
-		protected void TakeScreenShot (string stepName)
+		public void TakeScreenShot (string stepName)
 		{
 			stepName = string.Format ("{0:D3}-{1}", testScreenshotIndex++, stepName).ToPathSafeString ();
 			var screenshotPath = Path.Combine (currentTestResultScreenshotFolder, stepName) + ".png";
 			Session.TakeScreenshot (screenshotPath);
 		}
 
-		protected void ReproStep (string stepDescription, params object[] info)
+		public void ReproStep (string stepDescription, params object[] info)
 		{
 			reproStepIndex++;
 			stepDescription = string.Format ("@Repro-Step-{0:D2}: {1}", reproStepIndex, stepDescription);
