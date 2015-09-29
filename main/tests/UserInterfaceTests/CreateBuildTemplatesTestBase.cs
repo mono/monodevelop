@@ -1,4 +1,4 @@
-﻿//
+//
 // CreateBuildTemplatesTestBase.cs
 //
 // Author:
@@ -91,8 +91,8 @@ namespace UserInterfaceTests
 					TakeScreenShot ("BeforeBuildActionFailed");
 					Assert.Fail (e.ToString ());
 				}
-
-				OnBuildTemplate ();
+				ReproStep ("Build solution");
+				OnBuildTemplate ((int)projectDetails.BuildTimeout.TotalSeconds);
 			} catch (Exception e) {
 				TakeScreenShot ("TestFailedWithGenericException");
 				Assert.Fail (e.ToString ());
@@ -105,6 +105,7 @@ namespace UserInterfaceTests
 			ProjectDetails projectDetails, GitOptions gitOptions = null, object miscOptions = null)
 		{
 			PrintToTestRunner (templateOptions, projectDetails, gitOptions, miscOptions);
+			ReproStep ("Create a new project", templateOptions, projectDetails, gitOptions, miscOptions);
 			var newProject = new NewProjectController ();
 
 			if (projectDetails.AddProjectToExistingSolution)

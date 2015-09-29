@@ -34,7 +34,7 @@ namespace UserInterfaceTests
 	{
 		readonly string dotNetCategory = ".NET";
 
-		[Test]
+		[Test, Timeout(60000)]
 		[TestCase ("Console Project", BeforeBuildAction.None, TestName = "TestCreateBuildConsoleProject", Description = "Create and build C# Console Project")]
 		[TestCase ("Gtk# 2.0 Project", BeforeBuildAction.None, TestName = "TestCreateBuildGtkSharp20Project", Description = "Create and build a GTK#2 Project")]
 		[TestCase ("Library", BeforeBuildAction.None, TestName = "TestCreateBuildLibrary", Description = "Create and build a Library Project")]

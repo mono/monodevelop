@@ -39,14 +39,16 @@ using Mono.Addins;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using MonoDevelop.Components;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.VersionControl.Dialogs
 {
 	partial class CommitDialog : Gtk.Dialog
 	{
 		ListStore store;
-		ArrayList selected = new ArrayList ();
-		ArrayList extensions = new ArrayList ();
+		List<FilePath> selected = new List<FilePath> ();
+		List<CommitDialogExtension> extensions = new List<CommitDialogExtension> ();
 		ChangeSet changeSet;
 		string oldMessage;
 		bool responseSensitive;
@@ -220,7 +222,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			}
 
 			// Update the change set
-			ArrayList todel = new ArrayList ();
+			List<FilePath> todel = new List<FilePath> ();
 			foreach (ChangeSetItem it in changeSet.Items) {
 				if (!selected.Contains (it.LocalPath))
 					todel.Add (it.LocalPath);
@@ -233,7 +235,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			
 			int n;
 			for (n=0; n<extensions.Count; n++) {
-				CommitDialogExtension ext = (CommitDialogExtension) extensions [n];
+				CommitDialogExtension ext = extensions [n];
 				bool res;
 				try {
 					res = ext.OnBeginCommit (changeSet);
@@ -244,7 +246,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				if (!res) {
 					// Commit failed. Rollback the previous extensions
 					for (int m=0; m<n; m++) {
-						ext = (CommitDialogExtension) extensions [m];
+						ext = extensions [m];
 						try {
 							ext.OnEndCommit (changeSet, false);
 						} catch {}
@@ -289,7 +291,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 		
 		public string[] GetFilesToCommit ()
 		{
-			return (string[]) selected.ToArray (typeof(string));
+			return selected.ToPathStrings ().ToArray ();
 		}
 		
 		public string Message {
