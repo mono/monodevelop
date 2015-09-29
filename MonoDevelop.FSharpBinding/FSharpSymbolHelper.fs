@@ -295,10 +295,14 @@ module internal Highlight =
     let getColourScheme () =
         Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme.Value)
 
+    let getColourPart x = round(x * 255.0) |> int
+
+    let argbToHex (c : Cairo.Color) =
+        sprintf "#%02X%02X%02X" (getColourPart c.R) (getColourPart c.G) (getColourPart c.B)
+
     let hl str (style: Highlighting.ChunkStyle) =
-        let color = getColourScheme().GetForeground (style) |> GtkUtil.ToGdkColor
-        let colorString = HelperMethods.GetColorString (color)
-        String.Format ("""<span foreground="{0}">{1}</span>""", colorString, str)
+        let color = getColourScheme().GetForeground (style) |> argbToHex
+        String.Format ("""<span foreground="{0}">{1}</span>""", color, str)
 
     let asType t s =
         let cs = getColourScheme ()
