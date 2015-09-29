@@ -144,7 +144,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			itemFont = FontService.SansFont.Copy ();
 			var provider = CompletionWidget as ITextEditorDataProvider;
 			if (provider != null) {
-				var newSize = itemFont.Size;
+				var newSize = itemFont.Size * 0.917; // 12pt default font size * 0.917 = 11pt;
 				if (newSize > 0) {
 					itemFont.Size = (int)newSize;
 					layout.FontDescription = itemFont;
