@@ -26,6 +26,10 @@
 using System;
 using MonoDevelop.Components;
 
+#if MAC
+using AppKit;
+#endif
+
 namespace MonoDevelop.Ide.Gui
 {
 	public static class Styles
@@ -413,12 +417,28 @@ namespace MonoDevelop.Ide.Gui
 			PopoverWindow.ParamaterWindows.GradientEndColor = CairoExtensions.ParseColor ("fffcd1");
 
 			CodeCompletion.BackgroundColor = CairoExtensions.ParseColor ("eef1f2");
-			CodeCompletion.TextColor = CairoExtensions.ParseColor ("665a36");
+			CodeCompletion.TextColor = CairoExtensions.ParseColor ("646566");
 			CodeCompletion.HighlightColor = CairoExtensions.ParseColor ("ba3373");
-			CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("3f59e5");
+
+			#if MAC
+			if(NSColor.CurrentControlTint == NSControlTint.Graphite) {
+				CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("727272");
+				CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("bbbbbb");
+				CodeCompletion.SelectionTextColor = CairoExtensions.ParseColor ("ffffff");
+				CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("ba3373");
+			}
+			else {
+				CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("3f59e5");
+				CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("bbbbbb");
+				CodeCompletion.SelectionTextColor = CairoExtensions.ParseColor ("ffffff");
+				CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("ba3373");
+			}
+			#else
+			CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("647073");
 			CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("bbbbbb");
 			CodeCompletion.SelectionTextColor = CairoExtensions.ParseColor ("ffffff");
-			CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("ba3373"); // TODO: VV: New value
+			CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("ba3373");
+			#endif
 
 			// Global Search
 
@@ -577,11 +597,26 @@ namespace MonoDevelop.Ide.Gui
 			CodeCompletion.BackgroundColor = CairoExtensions.ParseColor ("5b6365");
 			CodeCompletion.TextColor = CairoExtensions.ParseColor ("c3c5c6");
 			CodeCompletion.HighlightColor = CairoExtensions.ParseColor ("f9d33c");
-			CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("3d8afa");
-			CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("555555");
+
+			#if MAC
+			if(NSColor.CurrentControlTint == NSControlTint.Graphite) {
+				CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("404447");
+				CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("bbbbbb");
+				CodeCompletion.SelectionTextColor = CairoExtensions.ParseColor ("ffffff");
+				CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("f9d33c");
+			}
+			else {
+				CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("3d8afa");
+				CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("555555");
+				CodeCompletion.SelectionTextColor = CairoExtensions.ParseColor ("ffffff");
+				CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("f9d33c");
+			}
+			#else
+			CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("3e4647");
+			CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("bbbbbb");
 			CodeCompletion.SelectionTextColor = CairoExtensions.ParseColor ("ffffff");
 			CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("f9d33c");
-
+			#endif
 
 			// Global Search
 
