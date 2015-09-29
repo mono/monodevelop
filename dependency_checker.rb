@@ -44,15 +44,14 @@ end
 
 def check_product(product_min_version, product_version, product_url, product_name)
 	actual_version = product_version.call
-	if (actual_version == NOT_INSTALLED_VERSION)
-		puts "You do not have #{product_name} installed.".red
-		retval = -1
-	else
-		puts "Your installed #{product_name} (#{actual_version}) is too old, please use #{product_min_version} or newer".red
-		retval = compare_version(actual_version, product_min_version)
-	end
+	retval = compare_version(actual_version, product_min_version)
 
 	if (retval < 0)
+		if (actual_version == NOT_INSTALLED_VERSION)
+			puts "You do not have #{product_name} installed.".red
+		else
+			puts "Your installed #{product_name} (#{actual_version}) is too old, please use #{product_min_version} or newer".red
+		end
 		puts "You can download it from #{product_url}".red
 		puts
 	end
