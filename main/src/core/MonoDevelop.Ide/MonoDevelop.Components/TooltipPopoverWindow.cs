@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Components
 {
@@ -40,6 +41,7 @@ namespace MonoDevelop.Components
 		public TooltipPopoverWindow ()
 		{
 			Theme.SetBackgroundColor (Styles.PopoverWindow.DefaultBackgroundColor);
+			Theme.Font = FontService.SansFont.CopyModified (Styles.PopoverWindow.DefaultFontScale);
 			ShowArrow = true;
 		}
 
@@ -115,6 +117,7 @@ namespace MonoDevelop.Components
 				alignment = new Gtk.Alignment (0.5f, 0.5f, 1f, 1f);
 				alignment.SetPadding (6, 6, 6, 6);
 				label = new Gtk.Label ();
+				label.ModifyFont (Theme.Font);
 				alignment.Add (label);
 				ContentBox.Add (alignment);
 				alignment.ShowAll ();
