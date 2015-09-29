@@ -540,12 +540,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 						context.Rectangle (0, ypos, Allocation.Width, rowHeight);
 						context.SetSourceColor (barStyle);
 						context.Fill ();
-
-						context.Rectangle (0.5, ypos + 0.5, Allocation.Width - 1, rowHeight - 1);
-						if (!SelectionEnabled)
-							context.SetDash (new double[] {4, 4}, 0);
-						context.SetSourceColor (barBorderStyle);
-						context.Stroke ();
 					} 
 
 					if (icon != null) {
