@@ -192,8 +192,6 @@ namespace MonoDevelop.Ide.Gui
 			public static Cairo.Color HighlightColor { get; internal set; }
 			public static Cairo.Color SelectionBackgroundColor { get; internal set; }
 			public static Cairo.Color SelectionBackgroundInactiveColor { get; internal set; }
-			public static Cairo.Color SelectionBorderColor { get; internal set; }
-			public static Cairo.Color SelectionBorderInactiveColor { get; internal set; }
 			public static Cairo.Color SelectionTextColor { get; internal set; }
 		}
 
@@ -418,8 +416,6 @@ namespace MonoDevelop.Ide.Gui
 			CodeCompletion.HighlightColor = CairoExtensions.ParseColor ("ba3373");
 			CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("3f59e5");
 			CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("bbbbbb");
-			CodeCompletion.SelectionBorderColor = CairoExtensions.ParseColor ("3f59e5");
-			CodeCompletion.SelectionBorderInactiveColor = CairoExtensions.ParseColor ("bbbbbb");
 			CodeCompletion.SelectionTextColor = CairoExtensions.ParseColor ("ffffff");
 
 			// Global Search
@@ -581,8 +577,6 @@ namespace MonoDevelop.Ide.Gui
 			CodeCompletion.HighlightColor = CairoExtensions.ParseColor ("f9d33c");
 			CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("3d8afa");
 			CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("555555");
-			CodeCompletion.SelectionBorderColor = CairoExtensions.ParseColor ("3d8afa");
-			CodeCompletion.SelectionBorderInactiveColor = CairoExtensions.ParseColor ("555555");
 			CodeCompletion.SelectionTextColor = CairoExtensions.ParseColor ("ffffff");
 
 			// Global Search

@@ -126,7 +126,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 
 		Cairo.Color backgroundColor;
-		Cairo.Color selectionBorderColor, selectionBorderInactiveColor;
 		Cairo.Color selectedItemColor, selectedItemInactiveColor;
 		Cairo.Color textColor, selectionTextColor;
 		Cairo.Color highlightColor;
@@ -183,8 +182,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			backgroundColor = Styles.CodeCompletion.BackgroundColor;
 			selectedItemColor = Styles.CodeCompletion.SelectionBackgroundColor;
 			selectedItemInactiveColor = Styles.CodeCompletion.SelectionBackgroundInactiveColor;
-			selectionBorderColor = Styles.CodeCompletion.SelectionBorderColor;
-			selectionBorderInactiveColor = Styles.CodeCompletion.SelectionBorderInactiveColor;
 			selectionTextColor = Styles.CodeCompletion.SelectionTextColor;
 		}
 
@@ -558,12 +555,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 						context.Rectangle (0, ypos, Allocation.Width, rowHeight);
 						context.SetSourceColor (SelectionEnabled ? selectedItemColor : selectedItemInactiveColor);
 						context.Fill ();
-
-						context.Rectangle (0.5, ypos + 0.5, Allocation.Width - 1, rowHeight - 1);
-						if (!SelectionEnabled)
-							context.SetDash (new double[] {4, 4}, 0);
-						context.SetSourceColor (SelectionEnabled ? selectionBorderColor : selectionBorderInactiveColor);
-						context.Stroke ();
 					} 
 
 					if (icon != null) {
