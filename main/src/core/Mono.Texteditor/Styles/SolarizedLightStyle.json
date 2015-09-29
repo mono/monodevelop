@@ -144,7 +144,7 @@
         { "name":"Html Tag Delimiter", "fore":"base00" },
         { "name":"Razor Code", "fore":"black", "back":"base2" },
 
-        { "name":"Tooltip Text", "fore":"black", "back":"#feffe9" },
+        { "name":"Tooltip Text", "fore":"#333", "back":"#fff" },
         { "name":"Notification Text", "fore":"black", "back":"#feffe9" },
 
         { "name":"Completion Text", "fore":"base00" },
