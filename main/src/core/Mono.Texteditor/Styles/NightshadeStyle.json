@@ -179,7 +179,7 @@
         { "name":"Html Tag Delimiter", "fore":"PreProcVim" },
         { "name":"Razor Code", "fore":"NormalVim", "back":"aluminium6" },
 
-        { "name":"Tooltip Text", "fore":"#f8f8f2", "back":"#5b6365" },
+        { "name":"Tooltip Text", "fore":"#d1d1cd", "back":"#525759" },
         { "name":"Notification Text", "fore":"NormalVim", "back":"#0a0a0a" },
 
         { "name":"Completion Text", "fore":"NormalVim" },

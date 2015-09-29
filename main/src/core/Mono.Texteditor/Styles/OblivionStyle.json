@@ -155,7 +155,7 @@
         { "name":"Html Tag Delimiter", "fore":"aluminium2" },
         { "name":"Razor Code", "fore":"aluminium2", "back":"aluminium7" },
 
-        { "name":"Tooltip Text", "fore":"#f8f8f2", "back":"#5b6365" },
+        { "name":"Tooltip Text", "fore":"#d1d1cd", "back":"#525759" },
         { "name":"Notification Text", "fore":"aluminium2", "back":"aluminium5" },
 
         { "name":"Completion Text", "fore":"aluminium2" },
