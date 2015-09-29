@@ -126,7 +126,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
-		FontDescription itemFont;
+		FontDescription itemFont, noMatchFont;
 
 		const int marginIconSpacing = 4;
 		const int iconTextSpacing = 6;
@@ -136,13 +136,28 @@ namespace MonoDevelop.Ide.CodeCompletion
 		void SetFont ()
 		{
 			// TODO: Add font property to ICompletionWidget;
+
 			if (itemFont != null)
 				itemFont.Dispose ();
-			itemFont = FontService.SansFont.Copy ();
-			var newSize = itemFont.Size * 0.84; // 12pt default font size * 0.84 = 10pt;
-			if (newSize > 0) {
-				itemFont.Size = (int)newSize;
+			
+			if (noMatchFont != null)
+				noMatchFont.Dispose ();
+			
+			itemFont = FontService.MonospaceFont.Copy ();
+			noMatchFont = FontService.SansFont.Copy ();
+
+			// 12pt default font size * 0.84 = 10pt;
+			var newItemFontSize = itemFont.Size * 0.84;
+			var newNoMatchFontSize = noMatchFont.Size * 0.84;
+
+			if (newItemFontSize > 0) {
+				itemFont.Size = (int)newItemFontSize;
 				layout.FontDescription = itemFont;
+			}
+
+			if (newNoMatchFontSize > 0) {
+				noMatchFont.Size = (int)newNoMatchFontSize;
+				noMatchLayout.FontDescription = noMatchFont;
 			}
 		}
 
@@ -408,7 +423,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 		
 		string NoMatchesMsg {
-			get { return MonoDevelop.Core.GettextCatalog.GetString ("No Completions Found"); }
+			get { return MonoDevelop.Core.GettextCatalog.GetString ("No completions found"); }
 		}
 		
 		string NoSuggestionsMsg {
@@ -438,7 +453,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					int lWidth, lHeight;
 					noMatchLayout.GetPixelSize (out lWidth, out lHeight);
 					context.SetSourceColor (textColor);
-					context.MoveTo ((width - lWidth) / 2, yPos + (height - lHeight - yPos) / 2 - lHeight);
+					context.MoveTo ((width - lWidth) / 2, yPos + (height - lHeight - yPos) / 2 - lHeight / 2);
 					Pango.CairoHelper.ShowLayout (context, noMatchLayout);
 					return false;
 				}
