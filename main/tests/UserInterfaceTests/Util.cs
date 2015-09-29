@@ -75,5 +75,15 @@ namespace UserInterfaceTests
 				return Ide.EmptyAction;
 			}
 		}
+
+		public static Action<string> GetNonNullAction (Action<string> action)
+		{
+			return action ?? delegate { };
+		}
+
+		public static string StripBold (this string value)
+		{
+			return value.Replace ("<b>", string.Empty).Replace ("</b>", string.Empty);
+		}
 	}
 }
