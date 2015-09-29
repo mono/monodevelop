@@ -133,6 +133,9 @@ module SymbolUse =
       | :? FSharpMemberOrFunctionOrValue as func -> Some func
       | _ -> None
 
+    let (|ActivePattern|_|) = function
+      | MemberFunctionOrValue m when m.IsActivePattern -> Some m | _ -> None
+
     let (|Parameter|_|) (symbol : FSharpSymbolUse) = 
       match symbol.Symbol with
       | :? FSharpParameter as param -> Some param
@@ -193,10 +196,12 @@ module SymbolUse =
                                           not symbol.IsPropertySetterMethod -> Some symbol
       | _ -> None
 
-    let (|Function|_|) = function
+    let (|Function|_|) (symbolUse:FSharpSymbolUse) =
+      match symbolUse with
       | MemberFunctionOrValue symbol when notCtorOrProp symbol  &&
                                           symbol.IsModuleValueOrMember &&
-                                          not symbol.IsOperatorOrActivePattern ->
+                                          not symbol.IsOperatorOrActivePattern &&
+                                          not symbolUse.IsFromPattern ->
           match symbol.FullTypeSafe with
           | Some fullType when fullType.IsFunctionType -> Some symbol                       
           | _ -> None
@@ -206,6 +211,7 @@ module SymbolUse =
       match symbolUse with
       | MemberFunctionOrValue symbol when notCtorOrProp symbol &&
                                           not symbolUse.IsFromPattern &&
+                                          not symbol.IsActivePattern &&
                                           symbol.IsOperatorOrActivePattern ->
          match symbol.FullTypeSafe with
           | Some fullType when fullType.IsFunctionType -> Some symbol                       
@@ -215,7 +221,7 @@ module SymbolUse =
     let (|Pattern|_|) (symbolUse:FSharpSymbolUse) =
       match symbolUse with
       | MemberFunctionOrValue symbol when notCtorOrProp symbol &&
-                                          symbol.IsOperatorOrActivePattern &&
+                                          not symbol.IsOperatorOrActivePattern &&
                                           symbolUse.IsFromPattern ->
           match symbol.FullTypeSafe with
           | Some fullType when fullType.IsFunctionType ->Some symbol
@@ -724,6 +730,10 @@ module SymbolTooltips =
             let signature = getValSignature symbol.DisplayContext func
             ToolTip(signature, getSummaryFromSymbol func)
 
+        | Property prop ->
+            let signature = getFuncSignature symbol.DisplayContext prop 3 false
+            ToolTip(signature, getSummaryFromSymbol prop)
+
         | Field fsf ->
             let signature = getFieldSignature symbol.DisplayContext fsf
             ToolTip(signature, getSummaryFromSymbol fsf)
@@ -735,6 +745,10 @@ module SymbolTooltips =
         | ActivePatternCase apc ->
             let signature = getAPCaseSignature symbol.DisplayContext apc
             ToolTip(signature, getSummaryFromSymbol apc)
+
+        | ActivePattern ap ->
+            let signature = getFuncSignature symbol.DisplayContext ap 3 false
+            ToolTip(signature, getSummaryFromSymbol ap)
          
         | _ ->
             ToolTips.EmptyTip

@@ -23,6 +23,64 @@ module Accessibility =
     elif accessibility.IsInternal then getImage inter
     else getImage priv 
 
+
+module Search =
+
+  let private filter tag (s:FSharpSymbolUse seq) =
+    match tag with
+    | "type" | "t" | "c" -> s |> Seq.filter (function | Class _ -> true | _ -> false)
+    | "mod" -> s |> Seq.filter (function | Module _ -> true | _ -> false)
+    | "s" ->   s |> Seq.filter (function | ValueType _ -> true | _ -> false)
+    | "i" ->   s |> Seq.filter (function | Interface _ -> true | _ -> false)
+    | "e" ->   s |> Seq.filter (function | Enum _ -> true | _ -> false)
+    | "d" ->   s |> Seq.filter (function | Delegate _ -> true | _ -> false)
+    | "u" ->   s |> Seq.filter (function | Union _ -> true | _ -> false)
+    | "r" ->   s |> Seq.filter (function | Record _ -> true | _ -> false)
+    | "member" | "m" -> s |> Seq.filter (function | Method _ -> true | _ -> false)
+    | "p" ->   s |> Seq.filter (function | Property _ -> true | _ -> false)
+    | "f" ->   s |> Seq.filter (function | Field _ -> true | _ -> false)
+    | "evt" -> s |> Seq.filter (function | Event _ -> true | _ -> false)
+    | "ap" ->  s |> Seq.filter (function | ActivePattern _ -> true | _ -> false)
+    | "op" ->  s |> Seq.filter (function | Operator _ -> true | _ -> false)
+    | _ ->     s
+
+  let byTag tag projectFile =
+    async {
+    let projectOptions = MDLanguageService.Instance.GetProjectCheckerOptions projectFile
+    let! proj = MDLanguageService.Instance.ParseAndCheckProject projectOptions
+    if not proj.HasCriticalErrors then
+      let! items = proj.GetAllUsesOfAllSymbols()
+      let definitions = items |> Array.filter (fun s -> s.IsFromDefinition)
+      let filtered = definitions |> filter tag
+      return filtered
+    else return Seq.empty }
+
+  let byPattern (cache:Dictionary<_,_>) pattern symbols =
+
+    let matchName (matcher:StringMatcher) (name:string) =
+      if name = null then SearchCategory.MatchResult(false, -1)
+      else
+        match cache.TryGetValue(name) with
+        | true, v -> v
+        | false, _ ->
+          let doesMatch, rank = matcher.CalcMatchRank (name)
+          let savedMatch = SearchCategory.MatchResult (doesMatch, rank)
+          cache.Add(name, savedMatch)
+          savedMatch
+
+    let matcher = StringMatcher.GetMatcher (pattern, false)
+
+    // constructors have a display name of ( .ctor ) use the enclosing entities display name 
+    let correctDisplayName (symbol:FSharpSymbolUse) = 
+      match symbol with
+      | Constructor c -> c.EnclosingEntity.DisplayName
+      | _ -> symbol.Symbol.DisplayName
+
+    symbols
+    |> Seq.choose (fun s -> let matchres = matchName matcher (correctDisplayName s)
+                            if matchres.Match then Some(s, matchres.Rank)
+                            else None)
+
 type SymbolSearchResult(match', matchedString, rank, symbol:FSharpSymbolUse) =
   inherit SearchResult(match', matchedString, rank)
 
@@ -38,7 +96,7 @@ type SymbolSearchResult(match', matchedString, rank, symbol:FSharpSymbolUse) =
   override x.SearchResultType =
     match symbol with
     | Record _ | Module _ | ValueType _ | Delegate _ | Union _  | Class _
-    | Namespace _ | Interface _ | Enum _ -> SearchResultType.Type
+    | Namespace _ | Interface _ | Enum _ | ActivePattern _ -> SearchResultType.Type
 
     | ActivePatternCase _ | Field _ | UnionCase _ | Property _
     | Event _ | Operator _ | Constructor _ | Function _ | Val _-> SearchResultType.Member
@@ -58,7 +116,7 @@ type SymbolSearchResult(match', matchedString, rank, symbol:FSharpSymbolUse) =
       | Enum _ -> "enum"
       //TODO: check if we can isolate F# specific types
       // | Type _ -> getImage "md-type"
-      | ActivePatternCase _ -> "active pattern"
+      | ActivePattern _ -> "active pattern"
       | Field _ -> "field"
       | UnionCase _ -> "union case"
       | Property _ -> "property"
@@ -72,7 +130,6 @@ type SymbolSearchResult(match', matchedString, rank, symbol:FSharpSymbolUse) =
     sprintf "%s (file %s)" cat symbol.RangeAlternate.FileName
 
   override x.PlainText = simpleName
-
 
   override x.File = symbol.RangeAlternate.FileName
   override x.Icon =
@@ -88,7 +145,7 @@ type SymbolSearchResult(match', matchedString, rank, symbol:FSharpSymbolUse) =
     | Enum e -> e |> getImageFromAccessibility Stock.Enum.Name Stock.InternalEnum.Name Stock.PrivateEnum.Name
     //TODO: check if we can isolate F# specific types
     // | Type _ -> getImage "md-type"
-    | ActivePatternCase _ -> getImage Stock.Enum.Name
+    | ActivePattern _ -> getImage "md-type"
     | Field f ->f |> getImageFromAccessibility Stock.Field.Name Stock.InternalField.Name Stock.PrivateField.Name
     | UnionCase _ -> getImage "md-type"
     | Property p -> p |> getImageFromAccessibility Stock.Property.Name Stock.InternalProperty.Name Stock.PrivateProperty.Name
@@ -113,7 +170,6 @@ type SymbolSearchResult(match', matchedString, rank, symbol:FSharpSymbolUse) =
 
 type ProjectSearchCategory() =
   inherit SearchCategory(GettextCatalog.GetString ("Solution"), sortOrder = SearchCategory.FirstCategory)
-  let savedMatches = Dictionary<string, SearchCategory.MatchResult> ()
 
   //type, module, struct, interface, enum, delegate, union, record
   let typeTags = ["type"; "t"; "c"; "mod"; "s"; "i"; "e"; "d"; "u"; "r" ]
@@ -121,17 +177,6 @@ type ProjectSearchCategory() =
   //member, property, field, event, active pattern, operator
   let memberTags = ["member"; "m"; "p"; "f"; "evt"; "ap"; "op"]
   let tags = lazy (List.concat [typeTags; memberTags] |> List.toArray)
-  let serv = MDLanguageService.Instance
-
-  let matchName (matcher:StringMatcher) (name:string) =
-      if name = null then SearchCategory.MatchResult(false, -1) else
-      match savedMatches.TryGetValue name with
-      | true, savedMatch -> savedMatch
-      | false, _ ->
-          let doesMatch, rank = matcher.CalcMatchRank (name)
-          let savedMatch = SearchCategory.MatchResult (doesMatch, rank)
-          savedMatches.[name] <- savedMatch
-          savedMatch
 
   override x.get_Tags() = tags.Force()
 
@@ -139,58 +184,22 @@ type ProjectSearchCategory() =
     typeTags |> List.contains tag || memberTags |> List.contains tag
 
   override x.GetResults(searchCallback, pattern, token) =
-    let filter tag (symbols:FSharpSymbolUse seq) =
-      match tag with
-      | "type" | "t" | "c" -> symbols |> Seq.filter (function | Class _ -> true | _ -> false)
-      | "mod" -> symbols |> Seq.filter (function | Module _ -> true | _ -> false)
-      | "s" -> symbols |> Seq.filter (function | ValueType _ -> true | _ -> false)
-      | "i" -> symbols |> Seq.filter (function | Interface _ -> true | _ -> false)
-      | "e" -> symbols |> Seq.filter (function | Enum _ -> true | _ -> false)
-      | "d" -> symbols |> Seq.filter (function | Delegate _ -> true | _ -> false)
-      | "u" -> symbols |> Seq.filter (function | Union _ -> true | _ -> false)
-      | "r" -> symbols |> Seq.filter (function | Record _ -> true | _ -> false)
-     
-      | "member" | "m" -> symbols |> Seq.filter (function | Method _ -> true | _ -> false)
-      | "p" -> symbols |> Seq.filter (function | Property _ -> true | _ -> false)
-      | "f" -> symbols |> Seq.filter (function | Field _ -> true | _ -> false)
-      | "evt" -> symbols |> Seq.filter (function | Event _ -> true | _ -> false)
-      | "ap" -> symbols |> Seq.filter (function | ActivePatternCase _ -> true | _ -> false)
-      | "op" -> symbols |> Seq.filter (function | Operator _ -> true | _ -> false)
-      | _ -> symbols
 
-    let matcher = StringMatcher.GetMatcher (pattern.Pattern, false)
-
-    let addResult (symbol:FSharpSymbolUse) = 
+    let addResult (symbol:FSharpSymbolUse, rank) = 
       if token.IsCancellationRequested then ()
       else
-        // constructors have a displaye name of ( .ctor ) use the enclosing entities display name 
-        let matchname = 
-          match symbol with
-          | Constructor c -> c.EnclosingEntity.DisplayName
-          | _ -> symbol.Symbol.DisplayName
-
-        let matchres = matchName matcher matchname
-        if matchres.Match then
-          let sr = SymbolSearchResult(pattern.Pattern, symbol.Symbol.DisplayName, matchres.Rank, symbol)
-          searchCallback.ReportResult sr
+        let sr = SymbolSearchResult(pattern.Pattern, symbol.Symbol.DisplayName, rank, symbol)
+        searchCallback.ReportResult sr
 
     Task.Run(
       (fun () ->
-
-          let allProjects =
+          let allProjectFiles =
             IdeApp.Workspace.GetAllProjects()
             |> Seq.filter (fun p -> p.SupportedLanguages |> Array.contains "F#")
-
-          let allProjectOptions =
-            allProjects
-            |> Seq.map (fun p -> p.FileName.ToString() |> serv.GetProjectCheckerOptions  )
-
-          async {
-            for projOpt in allProjectOptions do
-              let! proj = serv.ParseAndCheckProject(projOpt)
-              if not proj.HasCriticalErrors then
-                let! items = proj.GetAllUsesOfAllSymbols()
-                items
-                |> Array.filter (fun s -> s.IsFromDefinition)
-                |> filter pattern.Tag
-                |> Seq.iter addResult } |> Async.RunSynchronously ), token)
+            |> Seq.map (fun p -> p.FileName.ToString())
+          let cachingSearch = Search.byPattern (Dictionary<_,_>())
+          async {for projFile in allProjectFiles do
+                   let! typeFilteredSymbols = Search.byTag pattern.Tag projFile
+                   let matchedSymbols = typeFilteredSymbols |> cachingSearch pattern.Pattern
+                   matchedSymbols |> Seq.iter addResult }
+          |> Async.Start ), token)
