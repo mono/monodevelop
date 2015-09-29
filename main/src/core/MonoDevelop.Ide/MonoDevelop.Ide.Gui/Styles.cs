@@ -162,7 +162,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			public static readonly int PagerTriangleSize = 6;
 			public static readonly int PagerHeight = 16;
-			public static readonly double DefaultFontScale = 0.95;
+			public static readonly double DefaultFontScale = 0.917; // 12pt default font size * 0.917 = 11pt
 
 			public static Cairo.Color DefaultBackgroundColor { get; internal set; }
 			public static Cairo.Color ErrorBackgroundColor { get; internal set; }

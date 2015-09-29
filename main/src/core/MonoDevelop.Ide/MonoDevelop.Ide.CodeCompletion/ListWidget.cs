@@ -139,7 +139,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (itemFont != null)
 				itemFont.Dispose ();
 			itemFont = FontService.SansFont.Copy ();
-			var newSize = itemFont.Size;
+			var newSize = itemFont.Size * 0.917; // 12pt default font size * 0.917 = 11pt;
 			if (newSize > 0) {
 				itemFont.Size = (int)newSize;
 				layout.FontDescription = itemFont;
