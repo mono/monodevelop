@@ -576,7 +576,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			base.GdkWindow.GetOrigin (out ox, out oy);
 			declarationviewwindow.MaximumYTopBound = oy;
 			int y = rect.Y + Theme.Padding - (int)List.vadj.Value;
-			declarationviewwindow.ShowPopup (this, new Gdk.Rectangle (Gui.Styles.TooltipInfoSpacing, Math.Min (Allocation.Height, Math.Max (0, y)), Allocation.Width, rect.Height), PopupPosition.Left);
+			declarationviewwindow.ShowPopup (this, new Gdk.Rectangle (Gui.Styles.TooltipInfoSpacing - 5, Math.Min (Allocation.Height, Math.Max (0, y)), Allocation.Width, rect.Height), PopupPosition.Left);
 			declarationViewHidden = false;
 		}
 		
