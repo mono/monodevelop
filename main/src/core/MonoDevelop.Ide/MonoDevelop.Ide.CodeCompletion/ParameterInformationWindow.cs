@@ -203,7 +203,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		VBox CreateCategory (string categoryName, string categoryContentMarkup)
 		{
-			return TooltipInformationWindow.CreateCategory (categoryName, categoryContentMarkup, foreColor);
+			return TooltipInformationWindow.CreateCategory (categoryName, categoryContentMarkup, foreColor, Theme.Font);
 		}
 
 		public void ChangeOverload ()

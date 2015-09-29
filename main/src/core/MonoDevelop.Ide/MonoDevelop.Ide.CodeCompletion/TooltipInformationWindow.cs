@@ -29,6 +29,7 @@ using MonoDevelop.Components;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide.Gui;
 using System.Linq;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
@@ -87,7 +88,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return;
 
 			using (var layout = new Pango.Layout (PangoContext)) {
-				layout.FontDescription = FontService.GetFontDescription ("Editor");
+				layout.FontDescription = Theme.Font;
 				layout.SetMarkup (tooltipInformation.SignatureMarkup);
 				int w, h;
 				layout.GetPixelSize (out w, out h);
@@ -126,11 +127,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 					headLabel.WidthRequest = -1;
 				}
 				foreach (var cat in o.Categories) {
-					descriptionBox.PackStart (CreateCategory (GetHeaderMarkup (cat.Item1), cat.Item2, foreColor), true, true, 4);
+					descriptionBox.PackStart (CreateCategory (GetHeaderMarkup (cat.Item1), cat.Item2, foreColor, Theme.Font), true, true, 4);
 				}
 
 				if (!string.IsNullOrEmpty (o.SummaryMarkup)) {
-					descriptionBox.PackStart (CreateCategory (GetHeaderMarkup (GettextCatalog.GetString ("Summary")), o.SummaryMarkup, foreColor), true, true, 4);
+					descriptionBox.PackStart (CreateCategory (GetHeaderMarkup (GettextCatalog.GetString ("Summary")), o.SummaryMarkup, foreColor, Theme.Font), true, true, 4);
 				}
 				if (!string.IsNullOrEmpty (o.FooterMarkup)) {
 
@@ -141,7 +142,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					contentLabel.MaxWidth = 400;
 					contentLabel.Markup = o.FooterMarkup.Trim ();
 					contentLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
-					contentLabel.FontDescription = FontService.GetFontDescription ("Editor");
+					contentLabel.FontDescription = Theme.Font;
 
 					descriptionBox.PackEnd (contentLabel, true, true, 4);
 				}
@@ -202,7 +203,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			current_overload = 0;
 		}
 
-		internal static VBox CreateCategory (string categoryName, string categoryContentMarkup, Cairo.Color foreColor)
+		internal static VBox CreateCategory (string categoryName, string categoryContentMarkup, Cairo.Color foreColor, Pango.FontDescription font)
 		{
 			var vbox = new VBox ();
 
@@ -212,7 +213,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var catLabel = new FixedWidthWrapLabel ();
 				catLabel.Markup = categoryName;
 				catLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
-				catLabel.FontDescription = FontService.GetFontDescription ("Editor");
+				catLabel.FontDescription = font;
 				vbox.PackStart (catLabel, false, true, 0);
 			}
 
@@ -228,7 +229,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			contentLabel.MaxWidth = 400;
 			contentLabel.Markup = categoryContentMarkup.Trim ();
 			contentLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
-			contentLabel.FontDescription = FontService.GetFontDescription ("Editor");
+			contentLabel.FontDescription = font;
 
 			hbox.PackStart (contentLabel, true, true, 0);
 			vbox.PackStart (hbox, true, true, 0);
@@ -246,6 +247,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			Theme.SetSchemeColors (scheme);
 			foreColor = scheme.PlainText.Foreground;
 			headLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
+			Theme.Font = FontService.SansFont.CopyModified (Styles.PopoverWindow.DefaultFontScale);
 		}
 
 		public TooltipInformationWindow () : base ()
@@ -261,7 +263,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			headLabel = new FixedWidthWrapLabel ();
 			headLabel.Indent = -20;
-			headLabel.FontDescription = FontService.GetFontDescription ("Editor").CopyModified (1.1);
+			headLabel.FontDescription = Theme.Font.CopyModified (1.1);
 			headLabel.Wrap = Pango.WrapMode.WordChar;
 			headLabel.BreakOnCamelCasing = false;
 			headLabel.BreakOnPunctuation = false;

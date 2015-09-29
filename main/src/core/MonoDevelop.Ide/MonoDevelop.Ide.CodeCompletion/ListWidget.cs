@@ -138,7 +138,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			// TODO: Add font property to ICompletionWidget;
 			if (itemFont != null)
 				itemFont.Dispose ();
-			itemFont = FontService.MonospaceFont.Copy ();
+			itemFont = FontService.SansFont.Copy ();
 			var newSize = itemFont.Size;
 			if (newSize > 0) {
 				itemFont.Size = (int)newSize;
