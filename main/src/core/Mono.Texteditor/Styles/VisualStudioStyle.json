@@ -29,8 +29,8 @@
         { "name":"Usages(Rectangle)", "color":"#B1DFF9", "secondcolor":"#B1DFF9", "bordercolor":"#B1DFF9" },
         { "name":"Changing usages(Rectangle)", "color":"#FFD6DD", "secondcolor":"#FFD6DD", "bordercolor":"#FFD6DD" },
 
-        { "name":"Current Line Marker", "color":"white", "secondcolor":"gray"},
-        { "name":"Current Line Marker(Inactive)", "color":"white", "secondcolor":"gray"},
+        { "name":"Current Line Marker", "color":"#f7f7f7", "secondcolor":"#f7f7f7" },
+        { "name":"Current Line Marker(Inactive)", "color":"#f7f7f7", "secondcolor":"#f7f7f7" },
 
         { "name":"Indicator Margin", "color":"#F0F0F0" },
         { "name":"Indicator Margin(Separator)", "color":"#F0F0F0" }

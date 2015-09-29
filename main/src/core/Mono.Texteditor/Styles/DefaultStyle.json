@@ -80,8 +80,8 @@
         { "name":"Breakpoint Marker(Disabled)", "color":"#e9e9e9", "bordercolor":"#dbdbdb" },
         { "name":"Breakpoint Marker(Invalid)", "color":"#f1e3e3", "bordercolor":"#e3d5d5" },
 
-        { "name":"Current Line Marker", "color":"aluminium1", "secondcolor":"aluminium2" },
-        { "name":"Current Line Marker(Inactive)", "color":"aluminium2", "secondcolor":"aluminium3" },
+        { "name":"Current Line Marker", "color":"#f7f7f7", "secondcolor":"#f7f7f7" },
+        { "name":"Current Line Marker(Inactive)", "color":"#f7f7f7", "secondcolor":"#f7f7f7" },
 
         { "name":"Debugger Current Line Marker", "color":"#f8f4a1", "bordercolor":"#ede993" },
         { "name":"Debugger Stack Line Marker", "color":"#ccfca6", "bordercolor":"#bff197" },
