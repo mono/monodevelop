@@ -521,14 +521,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 							Pango.AttrList attrList = layout.Attributes ?? new Pango.AttrList ();
 							for (int newSelection = 0; newSelection < matchIndices.Length; newSelection++) {
 								int idx = matchIndices [newSelection];
-								var fg = new AttrForeground ((ushort)(highlightColor.R * ushort.MaxValue), (ushort)(highlightColor.G * ushort.MaxValue), (ushort)(highlightColor.B  * ushort.MaxValue));
-								fg.StartIndex = (uint)idx;
-								fg.EndIndex = (uint)(idx + 1);
-								attrList.Insert (fg);
-								var bold = new AttrWeight (Weight.Bold);
-								bold.StartIndex = (uint)idx;
-								bold.EndIndex = (uint)(idx + 1);
-								attrList.Insert (bold);
+								if (item == SelectedItem) {
+									var bold = new AttrWeight (Weight.Bold);
+									bold.StartIndex = (uint)idx;
+									bold.EndIndex = (uint)(idx + 1);
+									attrList.Insert (bold);
+								} else {
+									var fg = new AttrForeground ((ushort)(highlightColor.R * ushort.MaxValue), (ushort)(highlightColor.G * ushort.MaxValue), (ushort)(highlightColor.B  * ushort.MaxValue));
+									fg.StartIndex = (uint)idx;
+									fg.EndIndex = (uint)(idx + 1);
+									attrList.Insert (fg);
+								}
 							}
 							layout.Attributes = attrList;
 						}
