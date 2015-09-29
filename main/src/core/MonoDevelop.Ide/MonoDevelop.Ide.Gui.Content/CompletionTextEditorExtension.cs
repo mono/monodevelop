@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		public readonly static PropertyWrapper<bool> IncludeCodeSnippetsInCompletionList = PropertyService.Wrap ("IncludeCodeSnippetsInCompletionList", true);
 		public readonly static PropertyWrapper<bool> AddParenthesesAfterCompletion = PropertyService.Wrap ("AddParenthesesAfterCompletion", false);
 		public readonly static PropertyWrapper<bool> AddOpeningOnly = PropertyService.Wrap ("AddOpeningOnly", false);
-		public readonly static PropertyWrapper<int>  CompletionListRows = PropertyService.Wrap ("CompletionListRows", 7);
+		public readonly static PropertyWrapper<int>  CompletionListRows = PropertyService.Wrap ("CompletionListRows", 10);
 
 		public readonly static PropertyWrapper<bool> FilterCompletionListByEditorBrowsable = PropertyService.Wrap ("FilterCompletionListByEditorBrowsable", true);
 		public readonly static PropertyWrapper<bool> IncludeEditorBrowsableAdvancedMembers = PropertyService.Wrap ("IncludeEditorBrowsableAdvancedMembers", true);
