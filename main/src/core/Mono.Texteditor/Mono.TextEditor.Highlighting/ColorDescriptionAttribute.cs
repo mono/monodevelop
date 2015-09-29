@@ -37,17 +37,38 @@ namespace Mono.TextEditor.Highlighting
 	public class ColorDescriptionAttribute : Attribute
 	{
 		public string Name { get; private set; }
+
 		public string Description { get; set; }
+
 		public string VSSetting { get; set; }
+
+		public string GroupName{ get; set; }
 
 		public ColorDescriptionAttribute (string name)
 		{
 			this.Name = name;
+			this.GroupName = GroupNames.Other;
 		}
 
 		public override string ToString ()
 		{
-			return string.Format ("[ColorDescriptionAttribute: Name={0}, Description={1}, VSSetting={2}]", Name, Description, VSSetting);
+			return string.Format ("[ColorDescriptionAttribute: Name={0}, Description={1}, VSSetting={2}, Group={3}]", Name, Description, VSSetting, GroupName);
 		}
+	}
+
+	public static class GroupNames
+	{
+		public const string XML = "XML";
+		public const string HTML = "HTML";
+		public const string CSS = "CSS";
+		public const string Diffs = "Diffs";
+		public const string Script = "Script";
+		public const string CSharp = "C#";
+		public const string Tooltip = "Tooltips";
+		public const string Debugging = "Debugging";
+		public const string Other = "Other";
+		public const string Completion = "Completion";
+		public const string Refactoring = "Refactoring";
+		public const string ErrorWarning = "Errors/Warnings";
 	}
 }

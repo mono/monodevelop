@@ -22,7 +22,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using System.IO;
 using System.Text;
@@ -39,9 +38,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 	{
 		string schemeName;
 
-
 		ListStore styleStore = new ListStore (typeof (string), typeof (Mono.TextEditor.Highlighting.ColorScheme));
-		
+
 		public HighlightingPanel ()
 		{
 			this.Build ();
@@ -51,7 +49,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			new SourceEditorDisplayBinding ();
 			schemeName = DefaultSourceEditorOptions.Instance.ColorScheme;
 		}
-		
+
 		protected override void OnDestroyed ()
 		{
 			DefaultSourceEditorOptions.Instance.ColorScheme = schemeName;
@@ -115,14 +113,16 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			TreeIter selectedIter;
 			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
-				using (var editor = new ColorShemeEditor (this)) {
+				using (var editor = new XwtColorSchemeEditor (this)) {
 					var colorScheme = (Mono.TextEditor.Highlighting.ColorScheme)this.styleStore.GetValue (selectedIter, 1);
-					editor.SetSheme (colorScheme);
-					MessageService.ShowCustomDialog (editor, dialog);
+					editor.SetScheme (colorScheme);
+					var toolkit = Xwt.Toolkit.CurrentEngine;
+					var window=toolkit.WrapWindow (dialog);
+					editor.Run (window);
 				}
 			}
 		}
-		
+
 		Mono.TextEditor.Highlighting.ColorScheme LoadStyle (string styleName, bool showException = true)
 		{
 			try {
@@ -134,7 +134,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			}
 		
 		}
-		
+
 		internal void ShowStyles ()
 		{
 			styleStore.Clear ();
@@ -160,7 +160,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			}
 			styleTreeview.Selection.SelectIter (selectedIter); 
 		}
-		
+
 		void RemoveColorScheme (object sender, EventArgs args)
 		{
 			TreeIter selectedIter;
@@ -176,7 +176,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				ShowStyles ();
 			}
 		}
-		
+
 		void HandleButtonExportClicked (object sender, EventArgs e)
 		{
 			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Highlighting Scheme"), Gtk.FileChooserAction.Save) {
@@ -195,7 +195,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			}
 
 		}
-		
+
 		void AddColorScheme (object sender, EventArgs args)
 		{
 			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Highlighting Scheme"), Gtk.FileChooserAction.Open) {
@@ -220,7 +220,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				ShowStyles ();
 			}
 		}
-		
+
 		void EnableHighlightingCheckbuttonToggled (object sender, EventArgs e)
 		{
 		}
@@ -236,7 +236,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				}
 			}
 		}
-		
+
 		public virtual void ApplyChanges ()
 		{
 			TreeIter selectedIter;
@@ -247,7 +247,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		}
 
 		OptionsDialog dialog;
-		
+
 		public void Initialize (OptionsDialog dialog, object dataObject)
 		{
 			this.dialog = dialog;
