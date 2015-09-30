@@ -68,9 +68,8 @@ namespace Mono.TextEditor
 		}
 
 		public IndentatitonTrackerFeatures SupportedFeatures {
-			get {
-				return IndentatitonTrackerFeatures.None;
-			}
+			get;
+			set;
 		}
 
 		public string GetIndentationString (int offset)

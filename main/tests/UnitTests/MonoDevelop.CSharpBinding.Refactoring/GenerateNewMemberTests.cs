@@ -122,7 +122,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			solution.AddConfiguration ("", true); 
 			solution.DefaultSolutionFolder.AddItem (project);
 			using (var monitor = new ProgressMonitor ())
-				TypeSystemService.Load (solution, monitor, false);
+				TypeSystemService.Load (solution, monitor, false).Wait ();
 			content.Project = project;
 			doc.SetProject (project);
 			var parsedFile = doc.UpdateParseDocument ();
@@ -131,7 +131,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			var type = sym as INamedTypeSymbol ?? sym?.ContainingType;
 			if (type != null) {
 				var foundPoints = InsertionPointService.GetInsertionPoints (doc.Editor, parsedFile, type, type.Locations.First ());
-				//	Assert.AreEqual (loc.Count, foundPoints.Count, "point count doesn't match");
+				Assert.AreEqual (loc.Count, foundPoints.Count, "point count doesn't match");
 				for (int i = 0; i < loc.Count; i++) {
 					Assert.AreEqual (loc [i].Location, foundPoints [i].Location, "point " + i + " doesn't match");
 					Assert.AreEqual (loc [i].LineAfter, foundPoints [i].LineAfter, "point " + i + " ShouldInsertNewLineAfter doesn't match");

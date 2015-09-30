@@ -59,7 +59,7 @@ namespace MonoDevelop.Refactoring
 			var sourceSpan = new TextSpan (part, 0);
 
 			var filePath = data.FileName;
-			var declaringType = type.DeclaringSyntaxReferences.FirstOrDefault (dsr => dsr.SyntaxTree.FilePath == filePath && dsr.Span.Contains (sourceSpan));
+			var declaringType = type.DeclaringSyntaxReferences.FirstOrDefault (dsr => dsr.SyntaxTree.FilePath == filePath && dsr.Span.Contains (sourceSpan)) ?? type.DeclaringSyntaxReferences.FirstOrDefault ();
 			if (declaringType == null)
 				return result;
 			var openBraceToken = declaringType.GetSyntax ().ChildTokens ().FirstOrDefault (t => t.IsKind (SyntaxKind.OpenBraceToken));
@@ -74,7 +74,7 @@ namespace MonoDevelop.Refactoring
 					continue;
 				//var domLocation = member.BodyRegion.End;
 				foreach (var loc in member.DeclaringSyntaxReferences) {
-					if (loc.SyntaxTree.FilePath != filePath || !declaringType.Span.Contains (sourceSpan))
+					if (loc.SyntaxTree.FilePath != declaringType.SyntaxTree.FilePath || !declaringType.Span.Contains (sourceSpan))
 						continue;
 					var domLocation = data.OffsetToLocation (loc.Span.End);
 
