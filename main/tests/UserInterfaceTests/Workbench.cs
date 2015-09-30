@@ -89,7 +89,7 @@ namespace UserInterfaceTests
 			Session.ExecuteCommand (ProjectCommands.Run);
 			try {
 				Ide.WaitUntil (
-					() => !Session.Query (c => c.Marked ("MonoDevelop.MacIntegration.MainToolbar.RunButton").Property ("Icon", "Stop")).Any (),
+					() => !Session.Query (c => IdeQuery.RunButton (c).Property ("Icon", "Stop")).Any (),
 					timeout: timeoutSeconds * 1000, pollStep: pollStepSecs * 1000);
 				return false;
 			} catch (TimeoutException) {
@@ -103,7 +103,7 @@ namespace UserInterfaceTests
 				testContext.ReproStep (string.Format ("Open solution path '{0}'", solutionPath));
 			Action<string> takeScreenshot = GetScreenshotAction (testContext);
 			Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workspace.OpenWorkspaceItem", new FilePath (solutionPath), true);
-			Ide.WaitForSolutionLoaded ();
+			Ide.WaitForIdeIdle ();
 			takeScreenshot ("Solution-Opened");
 		}
 
