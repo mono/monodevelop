@@ -66,7 +66,6 @@ type FSharpOutlineTextEditorExtension() as x =
     override x.Initialize() =
         base.Initialize()
         handler <- x.DocumentContext.DocumentParsed.Subscribe(fun o e -> x.updateDocumentOutline())
-        ()
 
     override x.Dispose() =
         handler.Dispose()
@@ -132,8 +131,8 @@ type FSharpOutlineTextEditorExtension() as x =
         member x.ReleaseOutlineWidget() =
             treeView |> Option.iter(fun tv -> Option.tryCast<ScrolledWindow>(tv.Parent) 
                                               |> Option.iter (fun sw -> sw.Destroy())
-                                              let treeStore = tv.Model :?> TreeStore
-                                              if treeStore <> null then
-                                                  treeStore.Dispose()
 
-                                              treeView <- None)
+                                              match tv.Model with
+                                              :? TreeStore as ts -> ts.Dispose()
+                                              | _ -> ())
+            treeView <- None
