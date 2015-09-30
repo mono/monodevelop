@@ -35,7 +35,14 @@ namespace WindowsPlatform.MainToolbar
 				Header = menuLinkEntry.Text;
 			} else {
 				actionCommand = manager.GetCommand (menuEntry.CommandId) as ActionCommand;
+				if (actionCommand == null)
+					return;
+				
 				IsCheckable = actionCommand.CommandArray;
+
+				// FIXME: Use proper keybinding text.
+				if (actionCommand.KeyBinding != null)
+					InputGestureText = actionCommand.KeyBinding.ToString ();
 
 				// TODO: Load WPF Xwt engine and use the native image backend.
 				//Icon = ImageService.GetIcon (actionCommand.Icon);
@@ -157,9 +164,9 @@ namespace WindowsPlatform.MainToolbar
 			DesktopService.ShowUrl (menuLinkEntry.Url);
 		}
 
-		MonoDevelop.Components.Commands.CommandManager manager;
-		object initialCommandTarget;
-		CommandSource commandSource;
+		readonly MonoDevelop.Components.Commands.CommandManager manager;
+		readonly object initialCommandTarget;
+		readonly CommandSource commandSource;
 		readonly ActionCommand actionCommand;
 		readonly CommandEntry menuEntry;
 		readonly CommandEntrySet menuEntrySet;

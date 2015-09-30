@@ -50,6 +50,7 @@ using WindowsPlatform.MainToolbar;
 using MonoDevelop.Components.Commands;
 using System.Windows.Controls;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace MonoDevelop.Platform
 {
