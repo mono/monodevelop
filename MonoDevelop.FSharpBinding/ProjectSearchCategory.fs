@@ -39,7 +39,6 @@ module Search =
     | "member" | "m" -> s |> Seq.filter (function | Method _ -> true | _ -> false)
     | "p" ->   s |> Seq.filter (function | Property _ -> true | _ -> false)
     | "f" ->   s |> Seq.filter (function | Field _ -> true | _ -> false)
-    | "evt" -> s |> Seq.filter (function | Event _ -> true | _ -> false)
     | "ap" ->  s |> Seq.filter (function | ActivePattern _ -> true | _ -> false)
     | "op" ->  s |> Seq.filter (function | Operator _ -> true | _ -> false)
     | _ ->     s
