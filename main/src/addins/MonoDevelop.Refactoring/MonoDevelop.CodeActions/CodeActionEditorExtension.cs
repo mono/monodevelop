@@ -350,7 +350,7 @@ namespace MonoDevelop.CodeActions
 				MonoDevelop.Components.Mac.GtkMacInterop.GetNSWindow (toplevel).WindowNumber,
 				null, 0, 0, 0);
 
-				AppKit.NSMenu.PopUpContextMenu (menu, tmp_event, nsview);
+				AppKit.NSMenu.PopUpContextMenu (menu, tmp_event, nsview, AppKit.NSFont.MenuFontOfSize (12));
 				#else
 				var menu = CreateGtkMenu (entrySet);
 				menu.Events |= Gdk.EventMask.AllEventsMask;

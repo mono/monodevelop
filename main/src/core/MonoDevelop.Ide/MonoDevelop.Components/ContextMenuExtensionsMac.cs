@@ -84,7 +84,7 @@ namespace MonoDevelop.Components
 					nswindow.WindowNumber,
 					null, 0, 0, 0);
 
-				NSMenu.PopUpContextMenu (menu, tmp_event, nsview);
+				NSMenu.PopUpContextMenu (menu, tmp_event, nsview, AppKit.NSFont.MenuFontOfSize (12));
 			});
 		}
 
