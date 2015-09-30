@@ -244,7 +244,7 @@ namespace UserInterfaceTests
 		protected void SelectBranch (string branchName)
 		{
 			Assert.IsTrue (Session.SelectElement (c => branchDisplayName (c).Contains (branchName)));
-			TakeScreenShot (string.Format ("Selected-Branch-{0}", branchName));
+			TakeScreenShot (string.Format ("Selected-Branch-{0}", branchName.ToPathSafeString ()));
 		}
 
 		protected void DeleteBranch (string branchName)

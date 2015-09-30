@@ -93,6 +93,26 @@ namespace UserInterfaceTests
 			}
 		}
 
+		public static void OpenWorkspace (string solutionPath, UITestBase testContext = null)
+		{
+			if (testContext != null)
+				testContext.ReproStep (string.Format ("Open solution path '{0}'", solutionPath));
+			Action<string> takeScreenshot = GetScreenshotAction (testContext);
+			Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workspace.OpenWorkspaceItem", new FilePath (solutionPath), true);
+			Ide.WaitForSolutionLoaded ();
+			takeScreenshot ("Solution-Opened");
+		}
+
+		public static void CloseWorkspace (UITestBase testContext = null)
+		{
+			if (testContext != null)
+				testContext.ReproStep ("Close current workspace");
+			Action<string> takeScreenshot = GetScreenshotAction (testContext);
+			takeScreenshot ("About-To-Close-Workspace");
+			Session.ExecuteCommand (FileCommands.CloseWorkspace);
+			takeScreenshot ("Closed-Workspace");
+		}
+
 		public static string Configuration
 		{
 			get {
@@ -103,6 +123,16 @@ namespace UserInterfaceTests
 				Session.SetGlobalValue ("MonoDevelop.Ide.IdeApp.Workspace.ActiveConfigurationId", value);
 				Ide.WaitUntil (() => Workbench.Configuration == value);
 			}
+		}
+
+		public static Action<string> GetScreenshotAction (UITestBase testContext)
+		{
+			Action<string> takeScreenshot = delegate {
+			};
+			if (testContext != null)
+				takeScreenshot = testContext.TakeScreenShot;
+
+			return takeScreenshot;
 		}
 	}
 }

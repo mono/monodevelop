@@ -148,7 +148,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			SetButtonIcon (toggleFindInFiles, "gtk-find");
 
 			// If we have an active floating window, attach the dialog to it. Otherwise use the main IDE window.
-			var current_toplevel = Gtk.Window.ListToplevels ().Where (x => x.IsActive).First ();
+			var current_toplevel = Gtk.Window.ListToplevels ().FirstOrDefault (x => x.IsActive);
 			if (current_toplevel is Components.DockNotebook.DockWindow)
 				TransientFor = current_toplevel;
 			else

@@ -353,7 +353,7 @@ namespace MonoDevelop.Components.Commands
 			e.RetVal = ProcessKeyEvent (e.Event);
 		}
 
-		bool ProcessKeyEvent (Gdk.EventKey ev)
+		internal bool ProcessKeyEvent (Gdk.EventKey ev)
 		{
 			if (!IsEnabled)
 				return true;

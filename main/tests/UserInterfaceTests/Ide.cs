@@ -84,9 +84,10 @@ namespace UserInterfaceTests
 			if (Platform.IsMac) {
 				Ide.WaitUntil (() => Session.Query (c => c.Marked ("Xamarin Studio").Marked ("AppKit.NSPanel")).Any ());
 				return Session.ClickElement (c => c.Marked ("AppKit.NSButton").Text (buttonText));
+			} else {
+				Ide.WaitUntil (() => Session.Query (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.Dialogs.GtkAlertDialog")).Any ());
+				return Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.Dialogs.GtkAlertDialog").Children ().Button ().Text (buttonText));
 			}
-
-			throw new PlatformNotSupportedException ("ClickButtonAlertDialog is only supported on Mac");
 		}
 
 		public static void RunAndWaitForTimer (Action action, string counter, int timeout = 20000)

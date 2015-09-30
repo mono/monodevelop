@@ -743,8 +743,8 @@ namespace MonoDevelop.VersionControl.Git
 				var toApply = RootRepository.Commits.QueryBy (new CommitFilter {
 					IncludeReachableFrom = RootRepository.Head.Tip,
 					ExcludeReachableFrom = divergence.CommonAncestor,
-					SortBy = CommitSortStrategies.Topological
-				}).Reverse ().ToArray ();
+					SortBy = CommitSortStrategies.Topological | CommitSortStrategies.Reverse
+				}).ToArray ();
 
 				RootRepository.Reset (ResetMode.Hard, divergence.Another);
 
