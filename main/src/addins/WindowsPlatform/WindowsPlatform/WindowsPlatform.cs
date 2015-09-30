@@ -49,6 +49,7 @@ using MonoDevelop.Components.Windows;
 using WindowsPlatform.MainToolbar;
 using MonoDevelop.Components.Commands;
 using System.Windows.Controls;
+using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Platform
 {
@@ -94,22 +95,12 @@ namespace MonoDevelop.Platform
 			CommandEntrySet appCes = commandManager.CreateCommandEntrySet (appMenuAddinPath);
 
 			CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
-			Menu mainMenu = new Menu {
+			var mainMenu = new Menu {
 				IsMainMenu = true,
 			};
-			foreach (CommandEntrySet ce in ces) {
-				var currentMenuItem = new MenuItem {
-					Header = ce.Name,
-				};
-				foreach (CommandEntry command in ce) {
-					// TODO: Find a way to generate this at click time.
-					currentMenuItem.Items.Add (new MenuItem {
-						Header = "Test ",
-					});
-				}
-				mainMenu.Items.Add (currentMenuItem);
-			}
-			
+			foreach (CommandEntrySet ce in ces)
+				mainMenu.Items.Add (new TitleMenuItem (commandManager, ce));
+
 			titleBar.DockTitle.Children.Add (mainMenu);
 			DockPanel.SetDock (mainMenu, Dock.Left);
 
@@ -134,6 +125,15 @@ namespace MonoDevelop.Platform
 			return base.CreateMainToolbar (window);
 		}
 		#endregion
+
+//		internal static Xwt.Toolkit WPFToolkit;
+//
+//		public override Xwt.Toolkit LoadNativeToolkit ()
+//		{
+//			var path = Path.GetDirectoryName (GetType ().Assembly.Location);
+//			System.Reflection.Assembly.LoadFrom (Path.Combine (path, "Xwt.WPF.dll"));
+//			return WPFToolkit = Xwt.Toolkit.Load (Xwt.ToolkitType.Wpf);
+//		}
 
 		internal override void SetMainWindowDecorations (Gtk.Window window)
 		{

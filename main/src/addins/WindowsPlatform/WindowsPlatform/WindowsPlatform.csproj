@@ -82,6 +82,10 @@
       <Project>{252117CA-0ABB-4F36-BFC8-DE23A8089BB9}</Project>
       <Name>Xwt.Gtk.Windows</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\xwt\Xwt.WPF\Xwt.WPF.csproj">
+      <Project>{C93D746E-1586-4D4F-B411-BF5A966E6A08}</Project>
+      <Name>Xwt.WPF</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dialogs\AddFileDialogHandler.cs" />
@@ -92,6 +96,7 @@
     <Compile Include="Dialogs\OpenFileDialogHandler.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="GdkWin32.cs" />
+    <Compile Include="MainToolbar\TitleMenuItem.cs" />
     <Compile Include="MainToolbar\TitleBar.xaml.cs">
       <DependentUpon>TitleBar.xaml</DependentUpon>
     </Compile>

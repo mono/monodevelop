@@ -5,15 +5,21 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WindowsPlatform.MainToolbar"
              mc:Ignorable="d" Background="Transparent">
+    <UserControl.CommandBindings>
+        <CommandBinding Command="{x:Static SystemCommands.CloseWindowCommand}" CanExecute="AlwaysCanExecute" Executed="CloseExecuted" />
+        <CommandBinding Command="{x:Static SystemCommands.MaximizeWindowCommand}" CanExecute="AlwaysCanExecute" Executed="MaximizeExecuted" />
+        <CommandBinding Command="{x:Static SystemCommands.MinimizeWindowCommand}" CanExecute="AlwaysCanExecute" Executed="MinimizeExecuted" />
+    </UserControl.CommandBindings>
+
     <DockPanel x:Name="DockTitle" Height="{DynamicResource {x:Static SystemParameters.WindowCaptionHeightKey}}" Margin="0,0,0,0">
         <Button DockPanel.Dock="Left" Height="{DynamicResource {x:Static SystemParameters.WindowCaptionHeightKey}}" Content="Xamarin Studio is awesome" VerticalContentAlignment="Center" />
         <!-- Insert menu items programmatically here on Left. -->
 
         <!-- TODO: Red color on hover - possibly fade-in fade-out effect on 2 images. -->
         <!-- TODO: Icons -->
-        <Button DockPanel.Dock="Right" Height="{DynamicResource {x:Static SystemParameters.WindowCaptionHeightKey}}" Content="X" VerticalContentAlignment="Center" />
-        <Button DockPanel.Dock="Right" Height="{DynamicResource {x:Static SystemParameters.WindowCaptionHeightKey}}" Content="M" VerticalContentAlignment="Center" />
-        <Button DockPanel.Dock="Right" Height="{DynamicResource {x:Static SystemParameters.WindowCaptionHeightKey}}" Content="m" VerticalContentAlignment="Center" />
+        <Button DockPanel.Dock="Right" Command="{x:Static SystemCommands.CloseWindowCommand}" Height="{DynamicResource {x:Static SystemParameters.WindowCaptionHeightKey}}" Content="X" VerticalContentAlignment="Center" />
+        <Button DockPanel.Dock="Right" Command="{x:Static SystemCommands.MaximizeWindowCommand}" Height="{DynamicResource {x:Static SystemParameters.WindowCaptionHeightKey}}" Content="M" VerticalContentAlignment="Center" />
+        <Button DockPanel.Dock="Right" Command="{x:Static SystemCommands.MinimizeWindowCommand}" Height="{DynamicResource {x:Static SystemParameters.WindowCaptionHeightKey}}" Content="m" VerticalContentAlignment="Center" />
         <Grid DockPanel.Dock="Right" Height="{DynamicResource {x:Static SystemParameters.WindowCaptionHeightKey}}" />
     </DockPanel>
 </UserControl>
