@@ -44,7 +44,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		enum EmptyElementMode : byte
 		{
-			Unknow, Empty, NotEmpty
+			Unknown, Empty, NotEmpty
 		}
 
 		class UnknownAttribute
@@ -289,7 +289,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			MSBuildWhitespace.Write (EndInnerWhitespace, writer);
 
-			if (!hasContent && (emptyElementMode == EmptyElementMode.NotEmpty || (emptyElementMode == EmptyElementMode.Unknow && !PreferEmptyElement))) {
+			if (!hasContent && (emptyElementMode == EmptyElementMode.NotEmpty || (emptyElementMode == EmptyElementMode.Unknown && !PreferEmptyElement))) {
 				// Don't write an empty element if it wasn't read as an empty element
 				writer.WriteString ("");
 			}
