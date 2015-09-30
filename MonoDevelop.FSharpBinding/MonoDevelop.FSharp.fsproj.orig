@@ -91,6 +91,7 @@
     <Compile Include="FSharpFoldingParser.fs" />
     <Compile Include="FSharpParser.fs" />
     <Compile Include="FSharpOutlineTextEditorExtension.fs" />
+    <Compile Include="FSharpIndentationTracker.fs" />
     <Compile Include="FSharpTextEditorCompletion.fs" />
     <Compile Include="FSharpPathExtension.fs" />
     <Compile Include="FSharpUnitTestTextEditorExtension.fs" />
@@ -99,7 +100,6 @@
     <Compile Include="FSharpResolverProvider.fs" />
     <Compile Include="RefactoringOperationsHandler.fs" />
     <Compile Include="FSharpReferenceFinderExtension.fs" />
-    <Compile Include="FSharpIndentationTracker.fs" />
     <Compile Include="FSharpFormattingPolicy.fs" />
     <Compile Include="FSharpFormatter.fs" />
     <Compile Include="FSharpFormattingPanelWidget.fs" />
