@@ -48,7 +48,7 @@ namespace UserInterfaceTests
 
 		public static string ToBoldText (this string str)
 		{
-			return string.Format ("<b>{0}</b>", str);
+			return str != null ? string.Format ("<b>{0}</b>", str) : null;
 		}
 
 		public static FilePath CreateTmpDir (string hint = null)
@@ -83,7 +83,7 @@ namespace UserInterfaceTests
 
 		public static string StripBold (this string value)
 		{
-			return value.Replace ("<b>", string.Empty).Replace ("</b>", string.Empty);
+			return value != null ? value.Replace ("<b>", string.Empty).Replace ("</b>", string.Empty) : null;
 		}
 	}
 }
