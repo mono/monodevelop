@@ -35,22 +35,22 @@ namespace UserInterfaceTests
 	{
 		readonly string aspCategory = "ASP.NET";
 
-		[Test, Timeout(60000)]
-		[TestCase ("Empty ASP.NET MVC Project", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestEmptyASPMVCProject",
+		[Test, Timeout (90000)]
+		[TestCase ("Empty ASP.NET MVC Project", TestName = "TestEmptyASPMVCProject",
 			Description = "Create and build Empty ASP.NET MVC Project")]
-		[TestCase ("Empty ASP.NET Project", BeforeBuildAction.None, TestName = "TestEmptyASPProject",
+		[TestCase ("Empty ASP.NET Project", TestName = "TestEmptyASPProject",
 			Description = "Create and build Empty ASP.NET MVC Project")]
-		[TestCase ("ASP.NET MVC Project", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestASPMVCProject",
+		[TestCase ("ASP.NET MVC Project", TestName = "TestASPMVCProject",
 			Description = "Create and build ASP.NET MVC Project")]
-		[TestCase ("ASP.NET MVC Project with Unit Tests", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestASPMVCProjectWithUnitTests",
+		[TestCase ("ASP.NET MVC Project with Unit Tests", TestName = "TestASPMVCProjectWithUnitTests",
 			Description = "Create and build ASP.NET MVC Project with Unit Tests")]
-		[TestCase ("ASP.NET MVC Razor Project", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestASPMVCMazorProject",
+		[TestCase ("ASP.NET MVC Razor Project", TestName = "TestASPMVCMazorProject",
 			Description = "Create and build ASP.NET MVC Razor Project")]
-		[TestCase ("ASP.NET MVC Razor Project with Unit Tests", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestASPMVCMazorProjectWithUnitTests",
-			Description = "Create and build \"ASP.NET MVC Razor Project with Unit Tests")]
-		[TestCase ("ASP.NET Project", BeforeBuildAction.None, TestName = "TestASPProject",
+		[TestCase ("ASP.NET MVC Razor Project with Unit Tests", TestName = "TestASPMVCMazorProjectWithUnitTests",
+			Description = "Create and build ASP.NET MVC Razor Project with Unit Tests")]
+		[TestCase ("ASP.NET Project", TestName = "TestASPProject",
 			Description = "Create and build ASP.NET Project")]
-		public void RunASPTest (string templateName, BeforeBuildAction beforeBuild)
+		public void RunASPTest (string templateName)
 		{
 			var templateOptions = new TemplateSelectionOptions {
 				CategoryRoot = OtherCategoryRoot,
@@ -58,8 +58,8 @@ namespace UserInterfaceTests
 				TemplateKindRoot = GeneralKindRoot,
 				TemplateKind = templateName
 			};
-			CreateBuildProject (templateOptions, beforeBuild.GetAction ());
-			IsTemplateSelected (templateOptions);
+
+			CreateBuildProject (templateOptions, () => Ide.WaitForIdeIdle (totalTimeoutInSecs: 50));
 		}
 	}
 }

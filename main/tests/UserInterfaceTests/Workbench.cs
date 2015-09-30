@@ -40,20 +40,24 @@ namespace UserInterfaceTests
 
 		static readonly Regex buildRegex = new Regex (@"Build: (?<errors>\d*) error\D*, (?<warnings>\d*) warning\D*", RegexOptions.Compiled);
 
-		public static string GetStatusMessage (int timeout = 20000)
+		public static string GetStatusMessage (int timeout = 20000, bool waitForNonEmpty = true)
 		{
 			if (Platform.IsMac) {
-				Ide.WaitUntil (
-					() => Session.GetGlobalValue<string> ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.text") != string.Empty,
-					timeout
-				);
+				if (waitForNonEmpty) {
+					Ide.WaitUntil (
+						() => Session.GetGlobalValue<string> ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.text") != string.Empty,
+						timeout
+					);
+				}
 				return (string)Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.text");
 			}
 
-			Ide.WaitUntil (
-				() => Session.GetGlobalValue<int> ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.messageQueue.Count") == 0,
-				timeout
-			);
+			if (waitForNonEmpty) {
+				Ide.WaitUntil (
+					() => Session.GetGlobalValue<int> ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.messageQueue.Count") == 0,
+					timeout
+				);
+			}
 			return (string) Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.renderArg.CurrentText");
 		}
 
