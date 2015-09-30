@@ -71,8 +71,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			MSBuildWhitespace.Write (StartInnerWhitespace, writer);
 			if (rawValue != null) {
-				if (!object.ReferenceEquals (rawValue, EmptyElementMarker))
-					writer.WriteRaw (rawValue);
+				if (!object.ReferenceEquals (rawValue, EmptyElementMarker)) {
+					if (rawValue.Length == 0 && !WasReadAsEmptyElement)
+						writer.WriteString (""); // Keep the non-empty element
+					else
+						writer.WriteRaw (rawValue);
+				}
 			} else if (textValue != null) {
 				writer.WriteValue (textValue);
 			} else {

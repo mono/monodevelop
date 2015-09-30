@@ -257,6 +257,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			MSBuildWhitespace.Write (EndWhitespace, writer);
 		}
 
+		internal bool WasReadAsEmptyElement {
+			get {
+				return emptyElementMode == EmptyElementMode.Empty;
+			}
+		}
+
 		internal virtual string Namespace {
 			get {
 				return MSBuildProject.Schema;
