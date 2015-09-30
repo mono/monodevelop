@@ -235,7 +235,8 @@ namespace MonoDevelop.Ide.Gui
 
 		public static class Editor
 		{
-			public static Cairo.Color SmartTagMarkerColor { get; internal set; }
+			public static Cairo.Color SmartTagMarkerColorLight { get; internal set; }
+			public static Cairo.Color SmartTagMarkerColorDark { get; internal set; }
 		}
 
 		// Helper methods
@@ -294,6 +295,9 @@ namespace MonoDevelop.Ide.Gui
 				LoadLightStyle ();
 			else
 				LoadDarkStyle ();
+
+			Editor.SmartTagMarkerColorLight = new Cairo.Color (255d / 255d, 112d / 255d, 254d / 255d, 0.5);
+			Editor.SmartTagMarkerColorDark = new Cairo.Color (255d / 255d, 169d / 255d, 255d / 255d, 0.5);
 
 			if (Changed != null)
 				Changed (null, EventArgs.Empty);
@@ -468,10 +472,6 @@ namespace MonoDevelop.Ide.Gui
 			NewProjectDialog.ProjectConfigurationRightHandBackgroundColor = new Gdk.Color (255, 255, 255);
 			NewProjectDialog.ProjectConfigurationPreviewLabelColor = CairoExtensions.ParseColor ("#555555");
 			NewProjectDialog.ProjectConfigurationSeparatorColor = new Gdk.Color (176, 178, 181);
-
-			// Editor
-
-			Editor.SmartTagMarkerColor = new Cairo.Color (255d / 255d, 112d / 255d, 254d / 255d, 0.5);
 		}
 
 		internal static void LoadDarkStyle ()
@@ -647,10 +647,6 @@ namespace MonoDevelop.Ide.Gui
 			NewProjectDialog.ProjectConfigurationRightHandBackgroundColor = NewProjectDialog.TemplateBackgroundColor;
 			NewProjectDialog.ProjectConfigurationPreviewLabelColor = Shift (BaseForegroundColor, 0.8);
 			NewProjectDialog.ProjectConfigurationSeparatorColor = ThinSplitterColor;
-
-			// Editor
-
-			Editor.SmartTagMarkerColor = new Cairo.Color (255d / 255d, 169d / 255d, 255d / 255d, 0.5);
 		}
 	}
 }

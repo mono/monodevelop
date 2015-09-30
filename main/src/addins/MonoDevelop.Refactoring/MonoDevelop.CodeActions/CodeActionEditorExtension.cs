@@ -586,7 +586,7 @@ namespace MonoDevelop.CodeActions
 				var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition;
 
 				cr.Rectangle (Math.Floor (x), Math.Floor (y) + (line == editor.GetLineByOffset (startOffset) ? -tagMarkerHeight : 0), tagMarkerWidth, tagMarkerHeight);
-				cr.SetSourceColor (Styles.Editor.SmartTagMarkerColor);
+				cr.SetSourceColor (HslColor.Brightness (editor.ColorStyle.PlainText.Background) < 0.5 ? Styles.Editor.SmartTagMarkerColorDark : Styles.Editor.SmartTagMarkerColorLight);
 				cr.Fill ();
 			}
 
