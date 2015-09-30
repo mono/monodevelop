@@ -9,6 +9,7 @@ open MonoDevelop.Core
 open MonoDevelop.DesignerSupport
 open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Ide.Editor
+open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Gui.Components
 open MonoDevelop.Ide.Gui.Content
 open MonoDevelop.Ide.TypeSystem
@@ -99,8 +100,7 @@ type FSharpOutlineTextEditorExtension() as x =
                     if padTreeView.Selection.GetSelected(iter) then
                         let node = padTreeView.Model.GetValue(!iter, 0) :?> FSharpNavigationDeclarationItem
                         let (scol,sline) = node.Range.StartColumn, node.Range.StartLine
-                        x.Editor.SetCaretLocation(max 1 sline, max 1 scol, true)
-
+                        IdeApp.Workbench.OpenDocument (x.Editor.FileName, null, max 1 sline, max 1 scol) |> ignore
                     if focus then
                         x.Editor.GrabFocus()
 
