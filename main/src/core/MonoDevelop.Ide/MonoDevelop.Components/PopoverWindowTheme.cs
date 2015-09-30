@@ -423,12 +423,12 @@ namespace MonoDevelop.Components
 		{
 			// draw background
 			CairoExtensions.RoundedRectangle (context, 
-			                                  bounds.X, 
-			                                  bounds.Y, 
-			                                  bounds.Width, 
-			                                  bounds.Height, 
+			                                  bounds.X + 1, 
+			                                  bounds.Y + 1, 
+			                                  bounds.Width - 2, 
+			                                  bounds.Height - 1, 
 			                                  CornerRadius, 
-			                                  CairoCorners.BottomLeft);
+                                              CairoCorners.All);
 			
 			context.SetSourceColor (PagerBackgroundColor);
 			context.Fill ();
