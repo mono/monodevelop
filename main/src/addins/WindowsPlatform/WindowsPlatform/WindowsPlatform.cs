@@ -86,7 +86,14 @@ namespace MonoDevelop.Platform
 
 		internal override void AttachMainToolbar (Gtk.VBox parent, MonoDevelop.Components.MainToolbar.IMainToolbarView toolbar)
 		{
-			// TODO: Attach to RootWindow.
+			titleBar = new TitleBar ();
+			var topMenu = new GtkWPFWidget (titleBar) {
+				HeightRequest = System.Windows.Forms.SystemInformation.CaptionHeight,
+			};
+			parent.PackStart (topMenu, false, true, 0);
+
+			SetupMenu ();
+
 			base.AttachMainToolbar (parent, toolbar);
 		}
 
@@ -112,16 +119,6 @@ namespace MonoDevelop.Platform
 		TitleBar titleBar;
 		internal override MonoDevelop.Components.MainToolbar.IMainToolbarView CreateMainToolbar (Gtk.Window window)
 		{
-			var root = IdeApp.Workbench.RootWindow;
-			titleBar = new TitleBar ();
-			var topMenu = new GtkWPFWidget (titleBar) {
-				HeightRequest = System.Windows.Forms.SystemInformation.CaptionHeight,
-			};
-			var container = root.Child as Gtk.VBox;
-			container.PackStart (topMenu, false, true, 0);
-
-			SetupMenu ();
-
 			// TODO: Create GtkWpfWidget with implementation.
 			return base.CreateMainToolbar (window);
 		}
