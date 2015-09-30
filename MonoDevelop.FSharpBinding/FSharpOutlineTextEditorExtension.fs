@@ -20,19 +20,22 @@ type FSharpOutlineTextEditorExtension() as x =
     inherit TextEditorExtension()
     let mutable treeView : PadTreeView option = None
     let mutable refreshingOutline : bool = false
-    let mutable treeViewRealized : bool = false
+    let mutable timerId : uint32 = 0u
+    let mutable handler : IDisposable = null
 
     let refillTree() =
         match treeView with
         | Some(treeView) ->
-            if treeViewRealized then
-                let ast = maybe { let! context = x.DocumentContext |> Option.ofNull
-                                  let! parsedDocument = context.ParsedDocument |> Option.ofNull
-                                  let! ast = parsedDocument.Ast |> Option.tryCast<ParseAndCheckResults>
-                                  return ast }
+            let ast = maybe { let! context = x.DocumentContext |> Option.ofNull
+                              let! parsedDocument = context.ParsedDocument |> Option.ofNull
+                              let! ast = parsedDocument.Ast |> Option.tryCast<ParseAndCheckResults>
+                              return ast }
 
-                DispatchService.AssertGuiThread()
-                Gdk.Threads.Enter()
+            DispatchService.AssertGuiThread()
+            Gdk.Threads.Enter()
+            refreshingOutline <- false
+
+            if treeView.IsRealized then
                 ast |> Option.iter (fun ast ->
                     let treeStore = treeView.Model :?> TreeStore
                     treeStore.Clear()
@@ -49,19 +52,28 @@ type FSharpOutlineTextEditorExtension() as x =
 
                     treeView.ExpandAll())
                 Gdk.Threads.Leave()
+                timerId <- 0u
         | None -> ()
 
         refreshingOutline <- false
         false
 
-    let updateDocumentOutline _ =
+    member private x.updateDocumentOutline _ =
       if not refreshingOutline then
         refreshingOutline <- true
-        GLib.Timeout.Add (1000u, (fun _ -> refillTree())) |> ignore
+        timerId <- GLib.Timeout.Add (1000u, (fun _ -> refillTree()))
 
     override x.Initialize() =
         base.Initialize()
-        x.DocumentContext.DocumentParsed.Add(updateDocumentOutline)
+        handler <- x.DocumentContext.DocumentParsed.Subscribe(fun o e -> x.updateDocumentOutline())
+        ()
+
+    override x.Dispose() =
+        handler.Dispose()
+        if timerId > 0u then
+            GLib.Source.Remove timerId |> ignore
+        timerId <- 0u
+        base.Dispose()
 
     override x.IsValidInContext context =
         LanguageBindingService.GetBindingPerFileName (context.Name) <> null;
@@ -106,7 +118,7 @@ type FSharpOutlineTextEditorExtension() as x =
                 treeCol.SetCellDataFunc(padTreeView.TextRenderer, new TreeCellDataFunc(setCellText))
 
                 padTreeView.AppendColumn treeCol |> ignore
-                padTreeView.Realized.Add(fun _ -> treeViewRealized <- true; refillTree |> ignore)
+                padTreeView.Realized.Add(fun _ -> refillTree |> ignore)
                 padTreeView.Selection.Changed.Subscribe(fun _ -> jumpToDeclaration false) |> ignore
                 padTreeView.RowActivated.Subscribe(fun _ -> jumpToDeclaration true) |> ignore
 
@@ -120,4 +132,8 @@ type FSharpOutlineTextEditorExtension() as x =
         member x.ReleaseOutlineWidget() =
             treeView |> Option.iter(fun tv -> Option.tryCast<ScrolledWindow>(tv.Parent) 
                                               |> Option.iter (fun sw -> sw.Destroy())
-                                              tv.Destroy())
+                                              let treeStore = tv.Model :?> TreeStore
+                                              if treeStore <> null then
+                                                  treeStore.Dispose()
+
+                                              treeView <- None)
