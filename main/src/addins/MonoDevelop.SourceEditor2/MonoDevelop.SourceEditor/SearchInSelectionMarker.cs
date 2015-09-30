@@ -47,7 +47,7 @@ namespace MonoDevelop.SourceEditor
 					to = metrics.WholeLineWidth + metrics.TextRenderStartPosition;
 				var c1 = editor.Options.GetColorStyle ().PlainText.Background;
 				var c2 = editor.Options.GetColorStyle ().SelectedText.Background;
-				cr.SetSourceColor (new Cairo.Color ((c1.R + c2.R) / 2, (c1.G + c2.G) / 2, (c1.B + c2.B) / 2));
+				cr.SetSourceRGB ((c1.R + c2.R) / 2, (c1.G + c2.G) / 2, (c1.B + c2.B) / 2);
 				cr.Rectangle (@from, y, to - @from, metrics.LineHeight);
 				cr.Fill ();
 			}
