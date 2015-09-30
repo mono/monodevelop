@@ -585,14 +585,9 @@ namespace MonoDevelop.CodeActions
 				var line = editor.GetLine (loc.Line);
 				var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition;
 
-				cr.Rectangle (Math.Floor (x) + 0.5, Math.Floor (y) + 0.5 + (line == editor.GetLineByOffset (startOffset) ? editor.LineHeight - tagMarkerHeight - 1 : 0), tagMarkerWidth * cr.LineWidth, tagMarkerHeight * cr.LineWidth);
-
-				if (HslColor.Brightness (editor.ColorStyle.PlainText.Background) < 0.5) {
-					cr.SetSourceRGBA (0.8, 0.8, 1, 0.9);
-				} else {
-					cr.SetSourceRGBA (0.2, 0.2, 1, 0.9);
-				}
-				cr.Stroke ();
+				cr.Rectangle (Math.Floor (x), Math.Floor (y) + (line == editor.GetLineByOffset (startOffset) ? -tagMarkerHeight : 0), tagMarkerWidth, tagMarkerHeight);
+				cr.SetSourceColor (Styles.Editor.SmartTagMarkerColor);
+				cr.Fill ();
 			}
 
 			#region IActionTextLineMarker implementation
