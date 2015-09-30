@@ -82,7 +82,6 @@
     <Compile Include="Services\FSharpConsoleView.fs" />
     <Compile Include="Services\InteractiveSession.fs" />
     <Compile Include="Services\NRefactory.fs" />
-    <Compile Include="Services\FSharpIndentationTracker.fs" />
     <Compile Include="FSharpSymbolHelper.fs" />
     <Compile Include="FSharpTokens.fs" />
     <Compile Include="ProjectSearchCategory.fs" />
@@ -100,6 +99,7 @@
     <Compile Include="FSharpResolverProvider.fs" />
     <Compile Include="RefactoringOperationsHandler.fs" />
     <Compile Include="FSharpReferenceFinderExtension.fs" />
+    <Compile Include="FSharpIndentationTracker.fs" />
     <Compile Include="FSharpFormattingPolicy.fs" />
     <Compile Include="FSharpFormatter.fs" />
     <Compile Include="FSharpFormattingPanelWidget.fs" />
