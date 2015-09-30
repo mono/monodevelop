@@ -43,15 +43,18 @@ module Search =
     | "op" ->  s |> Seq.filter (function | Operator _ -> true | _ -> false)
     | _ ->     s
 
-  let byTag tag projectFile =
+  let byTag tag (items: FSharpSymbolUse seq) =
+      let definitions = items |> Seq.filter (fun s -> s.IsFromDefinition)
+      let filtered = definitions |> filter tag
+      filtered
+
+  let getAllProjectSymbols projectFile =
     async {
     let projectOptions = MDLanguageService.Instance.GetProjectCheckerOptions projectFile
     let! proj = MDLanguageService.Instance.ParseAndCheckProject projectOptions
     if not proj.HasCriticalErrors then
-      let! items = proj.GetAllUsesOfAllSymbols()
-      let definitions = items |> Array.filter (fun s -> s.IsFromDefinition)
-      let filtered = definitions |> filter tag
-      return filtered
+      let! allSymbols = proj.GetAllUsesOfAllSymbols()
+      return allSymbols |> Array.toSeq
     else return Seq.empty }
 
   let byPattern (cache:Dictionary<_,_>) pattern symbols =
@@ -198,7 +201,8 @@ type ProjectSearchCategory() =
             |> Seq.map (fun p -> p.FileName.ToString())
           let cachingSearch = Search.byPattern (Dictionary<_,_>())
           async {for projFile in allProjectFiles do
-                   let! typeFilteredSymbols = Search.byTag pattern.Tag projFile
+                   let! allProjectSymbols = Search.getAllProjectSymbols projFile
+                   let typeFilteredSymbols = Search.byTag pattern.Tag allProjectSymbols
                    let matchedSymbols = typeFilteredSymbols |> cachingSearch pattern.Pattern
                    matchedSymbols |> Seq.iter addResult }
           |> Async.Start ), token)
