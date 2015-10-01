@@ -200,6 +200,7 @@
     <Compile Include="MonoDevelop.Debugger\SourceCodeLookup.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Debugger.DebugApplicationDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\DebugApplicationDialog.cs" />
+    <Compile Include="MonoDevelop.Debugger\Styles.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">

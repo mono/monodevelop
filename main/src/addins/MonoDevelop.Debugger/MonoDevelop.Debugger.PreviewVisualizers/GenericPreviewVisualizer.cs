@@ -42,7 +42,7 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 		public override Control GetVisualizerWidget (ObjectValue val)
 		{
 			string value = val.Value;
-			Gdk.Color col = new Gdk.Color (85, 85, 85);
+			Gdk.Color col = Styles.PreviewVisualizerTextColor;
 
 			if (!val.IsNull && (val.TypeName == "string" || val.TypeName == "char[]"))
 				value = '"' + GetString (val) + '"';
