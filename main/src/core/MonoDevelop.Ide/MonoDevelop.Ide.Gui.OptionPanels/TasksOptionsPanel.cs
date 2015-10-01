@@ -66,6 +66,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			buttonChange.Clicked += new EventHandler (ChangeToken);
 			buttonRemove.Clicked += new EventHandler (RemoveToken);
 			entryToken.Changed += new EventHandler (Validate);
+
+			IdeApp.Preferences.UserInterfaceSkinChanged += HandleSkinChanged;
 		}
 		
 		void Validate (object sender, EventArgs args)
@@ -162,15 +164,27 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			}
 			Validate (null, null);
 		}
+
+		void HandleSkinChanged (object sender, PropertyChangedEventArgs e)
+		{
+			Load ();
+		}
 		
 		public void Load ()
 		{
+			tokensStore.Clear ();
 			foreach (var ctag in CommentTag.SpecialCommentTags)
 				tokensStore.AppendValues (ctag.Tag, ctag.Priority);
-			
-			colorbuttonHighPrio.Color = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksHighPrioColor", ""));
-			colorbuttonNormalPrio.Color = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksNormalPrioColor", ""));
-			colorbuttonLowPrio.Color = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksLowPrioColor", ""));
+
+			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
+				colorbuttonHighPrio.Color = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksHighPrioColor", ""));
+				colorbuttonNormalPrio.Color = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksNormalPrioColor", ""));
+				colorbuttonLowPrio.Color = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksLowPrioColor", ""));
+			} else {
+				colorbuttonHighPrio.Color = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksHighPrioColor-" + IdeApp.Preferences.UserInterfaceSkin, Styles.BaseForegroundColor.ToGdkColor().ToString()));
+				colorbuttonNormalPrio.Color = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksNormalPrioColor-" + IdeApp.Preferences.UserInterfaceSkin, Styles.BaseForegroundColor.ToGdkColor().ToString()));
+				colorbuttonLowPrio.Color = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksLowPrioColor-" + IdeApp.Preferences.UserInterfaceSkin, Styles.BaseForegroundColor.ToGdkColor().ToString()));
+			}
 		}
 		
 		public void Store ()
@@ -180,10 +194,16 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				tags.Add (new CommentTag ((string)row[0], (int)row[1]));
 
 			CommentTag.SpecialCommentTags = tags;
-			
-			PropertyService.Set ("Monodevelop.UserTasksHighPrioColor", ColorToString (colorbuttonHighPrio.Color));
-			PropertyService.Set ("Monodevelop.UserTasksNormalPrioColor", ColorToString (colorbuttonNormalPrio.Color));
-			PropertyService.Set ("Monodevelop.UserTasksLowPrioColor", ColorToString (colorbuttonLowPrio.Color));
+
+			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
+				PropertyService.Set ("Monodevelop.UserTasksHighPrioColor", ColorToString (colorbuttonHighPrio.Color));
+				PropertyService.Set ("Monodevelop.UserTasksNormalPrioColor", ColorToString (colorbuttonNormalPrio.Color));
+				PropertyService.Set ("Monodevelop.UserTasksLowPrioColor", ColorToString (colorbuttonLowPrio.Color));
+			} else {
+				PropertyService.Set ("Monodevelop.UserTasksHighPrioColor-" + IdeApp.Preferences.UserInterfaceSkin, ColorToString (colorbuttonHighPrio.Color));
+				PropertyService.Set ("Monodevelop.UserTasksNormalPrioColor-" + IdeApp.Preferences.UserInterfaceSkin, ColorToString (colorbuttonNormalPrio.Color));
+				PropertyService.Set ("Monodevelop.UserTasksLowPrioColor-" + IdeApp.Preferences.UserInterfaceSkin, ColorToString (colorbuttonLowPrio.Color));
+			}
 		}
 		
 		static string ColorToString (Gdk.Color color)
@@ -208,6 +228,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				color = new Gdk.Color (0, 0, 0);
 			}
 			return color;
+		}
+
+		protected override void OnDestroyed ()
+		{
+			IdeApp.Preferences.UserInterfaceSkinChanged -= HandleSkinChanged;
+			base.OnDestroyed ();
 		}
 	}
 	

@@ -86,9 +86,7 @@ namespace MonoDevelop.Ide.Tasks
 			IdeApp.Workspace.WorkspaceItemLoaded += OnWorkspaceItemLoaded;
 			IdeApp.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
 			
-			highPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksHighPrioColor", ""));
-			normalPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksNormalPrioColor", ""));
-			lowPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksLowPrioColor", ""));
+			UpdateStyle ();
 
 			store = new Gtk.ListStore (
 				typeof (int),        // line
@@ -572,19 +570,24 @@ namespace MonoDevelop.Ide.Tasks
 		void OnPropertyUpdated (object sender, PropertyChangedEventArgs e)
 		{
 			bool change = false;
-			if (e.Key == "Monodevelop.UserTasksHighPrioColor" && e.NewValue != e.OldValue)
+			if (e.Key.StartsWith("Monodevelop.UserTasksHighPrioColor") && e.NewValue != e.OldValue)
 			{
 				highPrioColor = StringToColor ((string)e.NewValue);
 				change = true;
 			}
-			if (e.Key == "Monodevelop.UserTasksNormalPrioColor" && e.NewValue != e.OldValue)
+			if (e.Key.StartsWith("Monodevelop.UserTasksNormalPrioColor") && e.NewValue != e.OldValue)
 			{
 				normalPrioColor = StringToColor ((string)e.NewValue);
 				change = true;
 			}
-			if (e.Key == "Monodevelop.UserTasksLowPrioColor" && e.NewValue != e.OldValue)
+			if (e.Key.StartsWith("Monodevelop.UserTasksLowPrioColor") && e.NewValue != e.OldValue)
 			{
 				lowPrioColor = StringToColor ((string)e.NewValue);
+				change = true;
+			}
+			if (e.Key == "MonoDevelop.Ide.UserInterfaceTheme" && e.NewValue != e.OldValue)
+			{
+				UpdateStyle ();
 				change = true;
 			}
 			
@@ -599,6 +602,19 @@ namespace MonoDevelop.Ide.Tasks
 						store.SetValue (iter, (int)Columns.Foreground, GetColorByPriority (task.Priority));
 					} while (store.IterNext (ref iter));
 				}
+			}
+		}
+
+		void UpdateStyle ()
+		{
+			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
+				highPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksHighPrioColor", ""));
+				normalPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksNormalPrioColor", ""));
+				lowPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksLowPrioColor", ""));
+			} else {
+				highPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksHighPrioColor-" + IdeApp.Preferences.UserInterfaceSkin, ""));
+				normalPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksNormalPrioColor-" + IdeApp.Preferences.UserInterfaceSkin, ""));
+				lowPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksLowPrioColor-" + IdeApp.Preferences.UserInterfaceSkin, ""));
 			}
 		}
 		

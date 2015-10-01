@@ -66,9 +66,15 @@ namespace MonoDevelop.Ide.Tasks
 		
 		public UserTasksView ()
 		{
-			highPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksHighPrioColor", ""));
-			normalPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksNormalPrioColor", ""));
-			lowPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksLowPrioColor", ""));
+			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
+				highPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksHighPrioColor", ""));
+				normalPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksNormalPrioColor", ""));
+				lowPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksLowPrioColor", ""));
+			} else {
+				highPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksHighPrioColor-" + IdeApp.Preferences.UserInterfaceSkin, ""));
+				normalPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksNormalPrioColor-" + IdeApp.Preferences.UserInterfaceSkin, ""));
+				lowPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksLowPrioColor-" + IdeApp.Preferences.UserInterfaceSkin, ""));
+			}
 			
 			store = new ListStore (
 				typeof (string),     // priority
@@ -173,17 +179,17 @@ namespace MonoDevelop.Ide.Tasks
 		void OnPropertyUpdated (object sender, PropertyChangedEventArgs e)
 		{
 			bool change = false;
-			if (e.Key == "Monodevelop.UserTasksHighPrioColor" && e.NewValue != e.OldValue)
+			if (e.Key.StartsWith("Monodevelop.UserTasksHighPrioColor") && e.NewValue != e.OldValue)
 			{
 				highPrioColor = StringToColor ((string)e.NewValue);
 				change = true;
 			}
-			if (e.Key == "Monodevelop.UserTasksNormalPrioColor" && e.NewValue != e.OldValue)
+			if (e.Key.StartsWith("Monodevelop.UserTasksNormalPrioColor") && e.NewValue != e.OldValue)
 			{
 				normalPrioColor = StringToColor ((string)e.NewValue);
 				change = true;
 			}
-			if (e.Key == "Monodevelop.UserTasksLowPrioColor" && e.NewValue != e.OldValue)
+			if (e.Key.StartsWith("Monodevelop.UserTasksLowPrioColor") && e.NewValue != e.OldValue)
 			{
 				lowPrioColor = StringToColor ((string)e.NewValue);
 				change = true;
