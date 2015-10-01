@@ -533,10 +533,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 
 					Xwt.Drawing.Image icon = win.DataProvider.GetIcon (item);
-					if (item == SelectedItem)
-						icon = icon.WithStyles("sel");
 					int iconHeight, iconWidth;
 					if (icon != null) {
+						if (item == SelectedItem)
+							icon = icon.WithStyles("sel");
 						iconWidth = (int)icon.Width;
 						iconHeight = (int)icon.Height;
 					} else if (!Gtk.Icon.SizeLookup (IconSize.Menu, out iconWidth, out iconHeight)) {
