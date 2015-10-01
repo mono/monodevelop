@@ -27,7 +27,7 @@ type FSharpResolverProvider() =
         let docText = doc.Editor.Text
         if docText = null || offset >= docText.Length || offset < 0 then null else
         let filename =doc.FileName.FullPath.ToString()
-        LoggingService.LogInfo "ResolverProvider: Getting results of type checking"
+        LoggingService.LogDebug "ResolverProvider: Getting results of type checking"
         // Try to get typed result - with the specified timeout
         let curVersion = doc.Editor.Version
         let isObsolete =
@@ -36,16 +36,16 @@ type FSharpResolverProvider() =
             let newVersion = doc.Editor.Version
             if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
             then
-              LoggingService.LogInfo ("FSharpResolverProvider: type check of {0} is not obsolete",  IO.Path.GetFileName filename)
+              LoggingService.LogDebug ("FSharpResolverProvider: type check of {0} is not obsolete",  IO.Path.GetFileName filename)
               false
             else
-              LoggingService.LogInfo ("FSharpResolverProvider: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
+              LoggingService.LogDebug ("FSharpResolverProvider: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
               true )
 
         let results =
             asyncMaybe {
                 let! tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout (doc.Project.FileName.ToString(), filename, docText, AllowStaleResults.MatchingSource, obsoleteCheck=isObsolete)
-                LoggingService.LogInfo "ResolverProvider: Getting declaration location"
+                LoggingService.LogDebug "ResolverProvider: Getting declaration location"
                 // Get the declaration location from the language service
                 let line, col, lineStr = doc.Editor.GetLineInfoFromOffset offset
                 let! fsSymbolUse = tyRes.GetSymbolAtLocation(line, col, lineStr)
@@ -53,7 +53,7 @@ type FSharpResolverProvider() =
                 let domRegion =
                     match findDeclarationResult with
                     | FSharpFindDeclResult.DeclFound(m) ->
-                        LoggingService.LogInfo("ResolverProvider: found, line = {0}, col = {1}, file = {2}", m.StartLine, m.StartColumn, m.FileName)
+                        LoggingService.LogDebug("ResolverProvider: found, line = {0}, col = {1}, file = {2}", m.StartLine, m.StartColumn, m.FileName)
                         DocumentRegion(m.StartLine, m.EndLine, m.StartColumn+1, m.EndColumn+1)
                     | FSharpFindDeclResult.DeclNotFound(notfound) ->
                         match notfound with

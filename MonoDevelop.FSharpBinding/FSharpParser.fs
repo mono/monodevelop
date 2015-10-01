@@ -67,14 +67,14 @@ type FSharpParser() =
                 let newVersion = doc.Editor.Version
                 if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
                 then
-                  LoggingService.LogInfo ("FSharpParser: Parse {0} is not obsolete", shortFilename)
+                  LoggingService.LogDebug ("FSharpParser: Parse {0} is not obsolete", shortFilename)
                   false
                 else
-                  LoggingService.LogInfo ("FSharpParser: Parse {0} is obsolete type check cancelled", shortFilename)
+                  LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled", shortFilename)
                   true ) 
 
             let doc = new FSharpParsedDocument(fileName, Flags = ParsedDocumentFlags.NonSerializable)
-            LoggingService.LogInfo ("FSharpParser: Parse {0}, ", shortFilename)
+            LoggingService.LogDebug ("FSharpParser: Parse {0}, ", shortFilename)
                                    
             match tryGetFilePath fileName proj with
             | None -> ()
@@ -82,7 +82,7 @@ type FSharpParser() =
                 let! results =
                   try
                     let projectFile = proj |> function null -> filePath | proj -> proj.FileName.ToString()
-                    LoggingService.LogInfo ("FSharpParser: Running ParseAndCheckFileInProject for {0}", shortFilename)
+                    LoggingService.LogDebug ("FSharpParser: Running ParseAndCheckFileInProject for {0}", shortFilename)
                     languageService.GetTypedParseResultWithTimeout(projectFile, filePath, content.Text, AllowStaleResults.No, obsoleteCheck = isObsolete )
                   with
                   | :? TimeoutException ->

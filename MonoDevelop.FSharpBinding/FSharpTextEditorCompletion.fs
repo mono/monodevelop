@@ -339,10 +339,10 @@ type FSharpTextEditorCompletion() =
             let newVersion = doc.Editor.Version
             if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
             then
-              LoggingService.LogInfo ("FSharpTextEditorCompletion - codeCompletionCommandImpl: type check of {0} is not obsolete",  IO.Path.GetFileName filename)
+              LoggingService.LogDebug ("FSharpTextEditorCompletion - codeCompletionCommandImpl: type check of {0} is not obsolete",  IO.Path.GetFileName filename)
               false
             else
-              LoggingService.LogInfo ("FSharpTextEditorCompletion - codeCompletionCommandImpl: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
+              LoggingService.LogDebug ("FSharpTextEditorCompletion - codeCompletionCommandImpl: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
               true )
 
         let! typedParseResults =
@@ -476,10 +476,10 @@ type FSharpTextEditorCompletion() =
             let newVersion = doc.Editor.Version
             if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
             then
-              LoggingService.LogInfo ("FSharpTextEditorCompletion - HandleParameterCompletionAsync: type check of {0} is not obsolete",  IO.Path.GetFileName filename)
+              LoggingService.LogDebug ("FSharpTextEditorCompletion - HandleParameterCompletionAsync: type check of {0} is not obsolete",  IO.Path.GetFileName filename)
               false
             else
-              LoggingService.LogInfo ("FSharpTextEditorCompletion - HandleParameterCompletionAsync: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
+              LoggingService.LogDebug ("FSharpTextEditorCompletion - HandleParameterCompletionAsync: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
               true )
 
         // Try to get typed result - within the specified timeout
@@ -502,7 +502,7 @@ type FSharpTextEditorCompletion() =
         
         match methsOpt with
         | Some(name, meths) when meths.Length > 0 -> 
-            LoggingService.LogInfo ("FSharpTextEditorCompletion: Getting Parameter Info: {0} methods", meths.Length)
+            LoggingService.LogDebug ("FSharpTextEditorCompletion: Getting Parameter Info: {0} methods", meths.Length)
             let hintingData =
                 meths
                 |> Array.map (fun meth -> FSharpParameterHintingData (name, meth) :> ParameterHintingData)
