@@ -37,7 +37,7 @@ namespace WindowsPlatform.MainToolbar
 				actionCommand = manager.GetCommand (menuEntry.CommandId) as ActionCommand;
 				if (actionCommand == null)
 					return;
-				
+
 				IsCheckable = actionCommand.CommandArray;
 
 				// FIXME: Use proper keybinding text.
@@ -73,7 +73,7 @@ namespace WindowsPlatform.MainToolbar
 
 						// If we have a separator, don't draw another one if the previous visible item is a separator.
 						var separatorMenuItem = Items [i] as Separator;
-						separatorMenuItem.Visibility = System.Windows.Visibility.Hidden;
+						separatorMenuItem.Visibility = System.Windows.Visibility.Collapsed;
 						for (int j = i - 1; j >= 0; --j) {
 							var iterMenuItem = Items [j] as Control;
 
@@ -87,26 +87,30 @@ namespace WindowsPlatform.MainToolbar
 							break;
 						}
 					}
+					if (menuEntrySet.AutoHide)
+						Visibility = Items.Cast<Control> ().Any (item => item.Visibility == System.Windows.Visibility.Visible) ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
 				}
 				return;
 			}
 
-			var info = manager.GetCommandInfo (menuEntry.CommandId);
+			var info = manager.GetCommandInfo (menuEntry.CommandId, new CommandTargetRoute (initialCommandTarget));
 			if (actionCommand != null) {
 				if (!string.IsNullOrEmpty (info.Description) && ToolTip != info.Description)
 					ToolTip = info.Description;
+				
+				Items.Clear ();
+				foreach (var item in info.ArrayInfo) {
+					Items.Add (new MenuItem {
+						Header = item.Text,
+					});
+				}
 
-				bool enabled = info.Enabled;
-				bool visible = info.Visible && (menuEntry.DisabledVisible || info.Enabled);
-
-				IsEnabled = enabled;
-				Visibility = visible ? System.Windows.Visibility.Visible : System.Windows.Visibility.Hidden;
-
-				IsChecked = info.Checked || info.CheckedInconsistent;
+				IsEnabled = info.Enabled;
+				Visibility = info.Visible && (menuEntry.DisabledVisible || info.Enabled) ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
 			}
 
 			Header = info.Text;
-			Visibility = info.Visible ? System.Windows.Visibility.Visible : System.Windows.Visibility.Hidden;
+			Visibility = info.Visible ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
 			Click += OnMenuClicked;
 		}
 
