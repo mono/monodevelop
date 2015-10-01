@@ -2,9 +2,9 @@
 // Styles.cs
 //
 // Author:
-//       sevo <>
+//       Vsevolod Kukol <sevo@xamarin.com>
 //
-// Copyright (c) 2015 sevo
+// Copyright (c) 2015 Xamarin Inc. (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
