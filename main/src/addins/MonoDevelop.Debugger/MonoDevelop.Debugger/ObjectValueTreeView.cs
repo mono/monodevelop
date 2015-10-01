@@ -256,9 +256,9 @@ namespace MonoDevelop.Debugger
 							cell_area.Height - TopBottomPadding * 2 - 1,
 							(cell_area.Height - (TopBottomPadding * 2)) / 2);
 						cr.LineWidth = 1;
-						cr.SetSourceRGB (233 / 255.0, 242 / 255.0, 252 / 255.0);
+						cr.SetSourceColor (Styles.ObjectValueTreeValuesButtonBackground);
 						cr.FillPreserve ();
-						cr.SetSourceRGB (82 / 255.0, 148 / 255.0, 235 / 255.0);
+						cr.SetSourceColor (Styles.ObjectValueTreeValuesButtonBorder);
 						cr.Stroke ();
 
 						int YOffset = (cell_area.Height - h) / 2;
@@ -267,7 +267,7 @@ namespace MonoDevelop.Debugger
 						window.DrawLayoutWithColors (widget.Style.TextGC (StateType.Normal),
 							cell_area.X + (cell_area.Height - TopBottomPadding * 2 + 1) / 2 + xpad,
 							cell_area.Y + YOffset,
-							layout, new Gdk.Color (82, 148, 235), new Gdk.Color (233, 242, 252));
+							layout, Styles.ObjectValueTreeValuesButtonText.ToGdkColor(), Styles.ObjectValueTreeValuesButtonBackground.ToGdkColor());
 					}
 				}
 			}
