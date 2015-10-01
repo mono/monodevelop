@@ -9,7 +9,7 @@ open System
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler
 open System.Globalization
-
+open MonoDevelop.Core
 // --------------------------------------------------------------------------------------
 // Simple implementation of LazyList
 // --------------------------------------------------------------------------------------

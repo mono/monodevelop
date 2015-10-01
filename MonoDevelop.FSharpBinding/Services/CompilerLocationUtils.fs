@@ -8,6 +8,7 @@ open System.Reflection
 open Microsoft.Win32
 open System.Runtime.InteropServices
 open System.Text.RegularExpressions
+open MonoDevelop.Core
 
 #nowarn "44" // ConfigurationSettings is obsolete but the new stuff is horribly complicated. 
 
