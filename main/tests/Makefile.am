@@ -33,11 +33,11 @@ TEST_ASSEMBLIES_COMMON = \
 	$(TEST_DIR)/MonoDevelop.Xml.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.AspNet.Tests.dll
 
-ifneq ("$(wildcard $($(EXTERNAL)/nrefactory/bin/Debug/ICSharpCode.NRefactory.Tests.dll))","")
+if ENABLE_RELEASE
 TEST_ASSEMBLIES_COMMON += $(EXTERNAL)/nrefactory/bin/Debug/ICSharpCode.NRefactory.Tests.dll
 else
 TEST_ASSEMBLIES_COMMON += $(EXTERNAL)/nrefactory/bin/Release/ICSharpCode.NRefactory.Tests.dll
-fi
+endif
 
 ALL_CSPROJ = $(TEST_PROJECTS_COMMON)
 TEST_ASSEMBLIES = $(TEST_ASSEMBLIES_COMMON)
