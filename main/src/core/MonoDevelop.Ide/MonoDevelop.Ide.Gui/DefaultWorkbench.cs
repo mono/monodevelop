@@ -1037,7 +1037,8 @@ namespace MonoDevelop.Ide.Gui
 		protected override bool OnConfigureEvent (Gdk.EventConfigure evnt)
 		{
 			SetActiveWidget (Focus);
-			return base.OnConfigureEvent (evnt);
+			base.OnConfigureEvent (evnt);
+			return false;
 		}
 
 		protected override bool OnFocusInEvent (Gdk.EventFocus evnt)

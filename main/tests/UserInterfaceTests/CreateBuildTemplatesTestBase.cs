@@ -91,7 +91,6 @@ namespace UserInterfaceTests
 					TakeScreenShot ("BeforeBuildActionFailed");
 					Assert.Fail (e.ToString ());
 				}
-				ReproStep ("Build solution");
 				OnBuildTemplate ((int)projectDetails.BuildTimeout.TotalSeconds);
 			} catch (Exception e) {
 				TakeScreenShot ("TestFailedWithGenericException");
@@ -189,10 +188,13 @@ namespace UserInterfaceTests
 
 		protected virtual void OnBuildTemplate (int buildTimeoutInSecs = 180)
 		{
+			ReproStep ("Build solution");
 			try {
 				Assert.IsTrue (Ide.BuildSolution (timeoutInSecs : buildTimeoutInSecs), "Build Failed");
 				TakeScreenShot ("AfterBuildFinishedSuccessfully");
 			} catch (TimeoutException e) {
+				Session.DebugObject.Debug ("Build Failed");
+				ReproStep (string.Format ("Expected: Build should finish within '{0}' seconds\nActual: Build timed out", buildTimeoutInSecs));
 				TakeScreenShot ("AfterBuildFailed");
 				Assert.Fail (e.ToString ());
 			}

@@ -67,24 +67,42 @@ namespace UserInterfaceTests
 			return funcs.Last ();
 		}
 
-		public static bool SelectSolution (string solutionName)
+		public static bool SelectSolution (string solutionName, UITestBase testContext = null)
 		{
+			LogReproSteps (testContext, string.Format ("Under Solution Explorer, select Solution '{0}'", solutionName.StripBold ()));
 			return Select (solutionName);
 		}
 
-		public static bool SelectProject (string solutionName, string projectName)
+		public static bool SelectProject (string solutionName, string projectName, UITestBase testContext = null)
 		{
+			LogReproSteps (testContext, string.Format ("Under Solution Explorer, select Project '{0}' under '{1}'", projectName.StripBold (), solutionName.StripBold ()));
 			return Select (solutionName, projectName);
 		}
 
-		public static bool SelectReferenceFolder (string solutionName, string projectName)
+		public static bool SelectReferenceFolder (string solutionName, string projectName, UITestBase testContext = null)
 		{
+			LogReproSteps (testContext, string.Format ("Under Solution Explorer, expand References node under '{0}'> '{1}'", projectName.StripBold (), solutionName.StripBold ()));
 			return Select (solutionName, projectName, "References");
 		}
 
-		public static bool SelectSingleReference (string solutionName, string projectName, string referenceName, bool fromPackage = false)
+		public static bool SelectSingleReference (string solutionName, string projectName, string referenceName, bool fromPackage = false, UITestBase testContext = null)
 		{
+			LogReproSteps (testContext, string.Format ("Under Solution Explorer, select NuGet package '{0}' under '{1}' > '{2}' > From Packages",
+				referenceName, projectName.StripBold (), solutionName.StripBold ()));
 			return fromPackage ? Select (solutionName, projectName, "From Packages", referenceName) : Select (solutionName, projectName, referenceName);
+		}
+
+		public static bool SelectPackage (string solutionName, string projectName, string package, UITestBase testContext = null)
+		{
+			LogReproSteps (testContext, string.Format ("Under Solution Explorer, select package '{0}' under '{1}' > '{2}' > 'Packages'", package, projectName.StripBold (), solutionName.StripBold ()));
+			return Select (solutionName, projectName, "Packages", package);
+		}
+
+		static void LogReproSteps (UITestBase testContext, string message, params object[] info)
+		{
+			if (testContext != null) {
+				testContext.ReproStep (message, info);
+			}
 		}
 	}
 }

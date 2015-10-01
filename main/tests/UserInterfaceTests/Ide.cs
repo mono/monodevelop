@@ -165,6 +165,40 @@ namespace UserInterfaceTests
 				}
 			}, pollStep: pollStepInSecs * 1000, timeout: timeoutInSecs * 1000);
 		}
+
+		public static void WaitForIdeIdle (uint totalTimeoutInSecs = 100, uint idlePeriodInSecs = 10)
+		{
+			uint retriesLeft = (uint)Math.Ceiling ((double)totalTimeoutInSecs/(double)idlePeriodInSecs);
+			ManualResetEvent resetEvent = new ManualResetEvent (false);
+
+			var timer = new System.Timers.Timer {
+				Interval = idlePeriodInSecs * 1000,
+				AutoReset = true
+			};
+
+			var initialStatusMessage = Workbench.GetStatusMessage (waitForNonEmpty: false);
+			timer.Elapsed += (sender, e) => {
+				if (retriesLeft == 0)
+					throw new TimeoutException ("Timeout waiting for IDE to be ready and idle");
+
+				var finalStatusMessage = Workbench.GetStatusMessage (waitForNonEmpty: false);
+				var isIdle = string.Equals (initialStatusMessage, finalStatusMessage);
+
+				if (!isIdle) {
+					retriesLeft--;
+					initialStatusMessage = finalStatusMessage;
+				}
+				if (isIdle) {
+					resetEvent.Set ();
+					timer.Stop ();
+					timer.AutoReset = false;
+					timer.Dispose ();
+				}
+			};
+
+			timer.Start ();
+			resetEvent.WaitOne ();
+		}
 	}
 
 }

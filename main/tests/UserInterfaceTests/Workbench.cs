@@ -40,20 +40,24 @@ namespace UserInterfaceTests
 
 		static readonly Regex buildRegex = new Regex (@"Build: (?<errors>\d*) error\D*, (?<warnings>\d*) warning\D*", RegexOptions.Compiled);
 
-		public static string GetStatusMessage (int timeout = 20000)
+		public static string GetStatusMessage (int timeout = 20000, bool waitForNonEmpty = true)
 		{
 			if (Platform.IsMac) {
-				Ide.WaitUntil (
-					() => Session.GetGlobalValue<string> ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.text") != string.Empty,
-					timeout
-				);
+				if (waitForNonEmpty) {
+					Ide.WaitUntil (
+						() => Session.GetGlobalValue<string> ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.text") != string.Empty,
+						timeout
+					);
+				}
 				return (string)Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.text");
 			}
 
-			Ide.WaitUntil (
-				() => Session.GetGlobalValue<int> ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.messageQueue.Count") == 0,
-				timeout
-			);
+			if (waitForNonEmpty) {
+				Ide.WaitUntil (
+					() => Session.GetGlobalValue<int> ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.messageQueue.Count") == 0,
+					timeout
+				);
+			}
 			return (string) Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.renderArg.CurrentText");
 		}
 
@@ -85,7 +89,7 @@ namespace UserInterfaceTests
 			Session.ExecuteCommand (ProjectCommands.Run);
 			try {
 				Ide.WaitUntil (
-					() => !Session.Query (c => c.Marked ("MonoDevelop.MacIntegration.MainToolbar.RunButton").Property ("Icon", "Stop")).Any (),
+					() => !Session.Query (c => IdeQuery.RunButton (c).Property ("Icon", "Stop")).Any (),
 					timeout: timeoutSeconds * 1000, pollStep: pollStepSecs * 1000);
 				return false;
 			} catch (TimeoutException) {
@@ -99,7 +103,7 @@ namespace UserInterfaceTests
 				testContext.ReproStep (string.Format ("Open solution path '{0}'", solutionPath));
 			Action<string> takeScreenshot = GetScreenshotAction (testContext);
 			Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workspace.OpenWorkspaceItem", new FilePath (solutionPath), true);
-			Ide.WaitForSolutionLoaded ();
+			Ide.WaitForIdeIdle ();
 			takeScreenshot ("Solution-Opened");
 		}
 

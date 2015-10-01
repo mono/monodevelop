@@ -33,10 +33,22 @@ namespace UserInterfaceTests
 	{
 		readonly static Func<AppQuery, AppQuery> windowQuery = c => c.Window ().Marked ("MonoDevelop.Ide.Projects.ProjectOptionsDialog");
 
-		public ProjectOptionsController (Action<string> takeScreenshot = null) : base (windowQuery, takeScreenshot) { }
+		readonly string solutionName;
+		readonly string projectName;
+
+		public ProjectOptionsController (string solutionName, string projectName, UITestBase testContext = null) : base (windowQuery,testContext)
+		{
+			this.solutionName = solutionName;
+			this.projectName = projectName;
+		}
+
+		public ProjectOptionsController (UITestBase testContext = null) : base (windowQuery, testContext) { }
 
 		public void OpenProjectOptions ()
 		{
+			ReproStep (string.Format ("In Solution Explorer, right click '{0}' and select 'Options'", projectName));
+			SolutionExplorerController.SelectProject (solutionName, projectName);
+
 			Session.Query (IdeQuery.TextArea);
 			Session.ExecuteCommand (ProjectCommands.ProjectOptions);
 			Session.WaitForElement (windowQuery);
@@ -84,16 +96,28 @@ namespace UserInterfaceTests
 		}
 
 		protected Action<string> TakeScreenshot;
+		readonly UITestBase testContext;
 		readonly Func<AppQuery, AppQuery> windowQuery;
+
+		protected OptionsController (Func<AppQuery, AppQuery> windowQuery, UITestBase testContext) : this (windowQuery, testContext.TakeScreenShot)
+		{
+			this.testContext = testContext;
+		}
 
 		protected OptionsController (Func<AppQuery, AppQuery> windowQuery, Action<string> takeScreenshot = null)
 		{
 			this.windowQuery = windowQuery;
-			TakeScreenshot = takeScreenshot ?? delegate { };
+			TakeScreenshot = Util.GetNonNullAction (takeScreenshot);
+		}
+
+		protected void ReproStep (string stepDescription, params object[] info)
+		{
+			testContext.ReproStep (stepDescription, info);
 		}
 
 		public void SelectPane (string name)
 		{
+			ReproStep (string.Format ("Select pane: '{0}'", name));
 			string.Format ("Selected Pane :{0}", name).PrintData ();
 			Session.SelectElement (c => windowQuery (c).Children ().Marked (
 				"MonoDevelop.Components.HeaderBox").Children ().TreeView ().Model ().Children ().Property ("Label", name));
@@ -110,11 +134,13 @@ namespace UserInterfaceTests
 
 		public void ClickOK ()
 		{
+			ReproStep ("Click OK");
 			Session.ClickElement (c => windowQuery (c).Children ().Button ().Text ("OK"));
 		}
 
 		public void ClickCancel ()
 		{
+			ReproStep ("Click Cancel");
 			Session.ClickElement (c => windowQuery (c).Children ().Button ().Text ("Cancel"));
 		}
 	}

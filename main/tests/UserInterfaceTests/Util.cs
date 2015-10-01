@@ -48,7 +48,7 @@ namespace UserInterfaceTests
 
 		public static string ToBoldText (this string str)
 		{
-			return string.Format ("<b>{0}</b>", str);
+			return str != null ? string.Format ("<b>{0}</b>", str) : null;
 		}
 
 		public static FilePath CreateTmpDir (string hint = null)
@@ -74,6 +74,16 @@ namespace UserInterfaceTests
 			default:
 				return Ide.EmptyAction;
 			}
+		}
+
+		public static Action<string> GetNonNullAction (Action<string> action)
+		{
+			return action ?? delegate { };
+		}
+
+		public static string StripBold (this string value)
+		{
+			return value != null ? value.Replace ("<b>", string.Empty).Replace ("</b>", string.Empty) : null;
 		}
 	}
 }
