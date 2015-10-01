@@ -31,5 +31,10 @@ namespace Stetic.Wrapper
 				((Gtk.Misc)Wrapped).Xalign = 0.5f;
 			}
 		}
+
+		public static Gtk.Image CreateInstance ()
+		{
+			return new Gtk.Image (Gtk.Stock.MissingImage, Gtk.IconSize.Menu);
+		}
 	}
 }
