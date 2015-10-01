@@ -90,13 +90,13 @@ namespace UserInterfaceTests
 		{
 			SolutionLocation = Util.CreateTmpDir ();
 			ProjectInSolution = true;
+			BuildTimeout = TimeSpan.FromSeconds (180);
 		}
 
 		public ProjectDetails (TemplateSelectionOptions templateData) : this ()
 		{
 			ProjectName = CreateBuildTemplatesTestBase.GenerateProjectName (templateData.TemplateKind);
 			SolutionName = ProjectName;
-			BuildTimeout = TimeSpan.FromSeconds (180);
 		}
 
 		public static ProjectDetails ToExistingSolution (string solutionName, string projectName)
