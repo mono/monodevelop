@@ -8,6 +8,7 @@ open System.Reflection
 open Microsoft.Win32
 open System.Runtime.InteropServices
 open System.Text.RegularExpressions
+open MonoDevelop.Core
 
 #nowarn "44" // ConfigurationSettings is obsolete but the new stuff is horribly complicated. 
 
@@ -212,16 +213,16 @@ module FSharpEnvironment =
                     | Some v -> if v.Length > 1 && v.[0] <= '3' then key20,key40 
                                 else key40,key20
     
-    Debug.WriteLine(sprintf "BinFolderOfDefaultFSharpCore: Probing registry key %s" key1)
+    LoggingService.LogDebug(sprintf "BinFolderOfDefaultFSharpCore: Probing registry key %s" key1)
     let result = tryRegKey key1
     match result with 
     | Some _ ->  result 
-    | None -> Debug.WriteLine(sprintf "Resolution: BinFolderOfDefaultFSharpCore: Probing registry key %s" key2)
+    | None -> LoggingService.LogDebug(sprintf "Resolution: BinFolderOfDefaultFSharpCore: Probing registry key %s" key2)
               tryRegKey key2
               
   let tryUnixConfig() = 
       // On Unix we let you set FSHARP_COMILER_BIN. I've rarely seen this used and its not documented in the install isntructions.
-      Debug.WriteLine(sprintf "Resolution: BinFolderOfDefaultFSharpCore: Probing environment variable FSHARP_COMPILER_BIN")
+      LoggingService.LogDebug(sprintf "Resolution: BinFolderOfDefaultFSharpCore: Probing environment variable FSHARP_COMPILER_BIN")
       let result = 
           let var = System.Environment.GetEnvironmentVariable("FSHARP_COMPILER_BIN")
           if String.IsNullOrEmpty(var) then None
@@ -237,7 +238,7 @@ module FSharpEnvironment =
       // Really we should just search the path or otherwise resolve the 'mono' command?
       BackupInstallationProbePoints 
       |> List.tryPick (fun x -> 
-         Debug.WriteLine(sprintf "Resolution: BinFolderOfDefaultFSharpCore: Probing    %s" x)
+         LoggingService.LogDebug(sprintf "Resolution: BinFolderOfDefaultFSharpCore: Probing    %s" x)
          let file f = Path.Combine(Path.Combine(x,"bin"),f)
          let exists f = safeExists(file f)
          match (if exists "fsc" && exists "fsi" then tryFsharpiScript (file "fsi") else None) with
@@ -260,7 +261,7 @@ module FSharpEnvironment =
       // Like fsharp-compiler-location
       try
         // FSharp.Compiler support setting an appkey for compiler location. I've never seen this used.
-        Debug.WriteLine("Resolution:BinFolderOfDefaultFSharpCore: Probing app.config")
+        LoggingService.LogDebug("Resolution:BinFolderOfDefaultFSharpCore: Probing app.config")
         let result = tryAppConfig "fsharp-compiler-location"
         match result with 
         | Some _ -> result 
@@ -273,7 +274,7 @@ module FSharpEnvironment =
                             | None -> None
       with e -> 
         System.Diagnostics.Debug.Assert(false, "Error while determining default location of F# compiler")
-        Debug.WriteLine(sprintf "Resolution: BinFolderOfDefaultFSharpCore: error %s" (e.ToString()))
+        LoggingService.LogDebug(sprintf "Resolution: BinFolderOfDefaultFSharpCore: error %s" (e.ToString()))
         None
 
     match reqLangVersion with
@@ -284,7 +285,7 @@ module FSharpEnvironment =
 
     let getFolder reqLangVersion =
       try 
-        Debug.WriteLine(sprintf "Resolution: Determing folder of FSharp.Core for target framework '%A'" targetFramework)
+        LoggingService.LogDebug(sprintf "Resolution: Determing folder of FSharp.Core for target framework '%A'" targetFramework)
         let result = tryAppConfig "fsharp-core-location"
         match result with 
         | Some _ ->  result 
@@ -314,7 +315,7 @@ module FSharpEnvironment =
           match result with 
           | Some _ ->  result 
           | None -> 
-          Debug.WriteLine(sprintf "Resolution: FSharp.Core: looking in environment variable")
+          LoggingService.LogDebug(sprintf "Resolution: FSharp.Core: looking in environment variable")
           let result = 
               let var = System.Environment.GetEnvironmentVariable("FSHARP_CORE_LOCATION")
               if String.IsNullOrEmpty(var) then None
@@ -325,7 +326,7 @@ module FSharpEnvironment =
           let possibleInstallationPoints = 
               Option.toList (BinFolderOfDefaultFSharpCompiler(Some reqLangVersion) |> Option.map Path.GetDirectoryName) @  
               BackupInstallationProbePoints
-          Debug.WriteLine(sprintf "Resolution: targetFramework = %A" targetFramework)
+          LoggingService.LogDebug(sprintf "Resolution: targetFramework = %A" targetFramework)
           let ext = 
               match targetFramework with 
               | NET_2_0 | NET_3_0 | NET_3_5 -> "2.0"
@@ -336,7 +337,7 @@ module FSharpEnvironment =
           let result = 
               possibleInstallationPoints |> List.tryPick (fun possibleInstallationDir -> 
  
-                Debug.WriteLine(sprintf "Resolution: Probing for %s/lib/mono/%s/FSharp.Core.dll" possibleInstallationDir ext)   
+                LoggingService.LogDebug(sprintf "Resolution: Probing for %s/lib/mono/%s/FSharp.Core.dll" possibleInstallationDir ext)   
                 let (++) s x = Path.Combine(s,x)
                 let candidate = possibleInstallationDir ++ "lib" ++ "mono" ++ ext
                 if safeExists (candidate ++ "FSharp.Core.dll") then 
@@ -350,7 +351,7 @@ module FSharpEnvironment =
           let result = 
               possibleInstallationPoints |> List.tryPick (fun possibleInstallationDir -> 
 
-                    Debug.WriteLine(sprintf "Resolution: Probing %s/bin for fsc/fsi scripts or fsharpc/fsharpi scripts" possibleInstallationDir)
+                    LoggingService.LogDebug(sprintf "Resolution: Probing %s/bin for fsc/fsi scripts or fsharpc/fsharpi scripts" possibleInstallationDir)
               
                     let file f = Path.Combine(Path.Combine(possibleInstallationDir,"bin"),f)
                     let exists f = safeExists(file f)
@@ -383,9 +384,9 @@ module FSharpEnvironment =
 
     // Return all known directories, get the location of the System DLLs
     [ match dir with
-      | Some dir -> Debug.WriteLine(sprintf "Resolution: Using '%A' as the location of default FSharp.Core.dll" dir)
+      | Some dir -> LoggingService.LogDebug(sprintf "Resolution: Using '%A' as the location of default FSharp.Core.dll" dir)
                     yield dir
-      | None -> Debug.WriteLine(sprintf "Resolution: Unable to find a default location for FSharp.Core.dll")
+      | None -> LoggingService.LogDebug(sprintf "Resolution: Unable to find a default location for FSharp.Core.dll")
       yield System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory()]
 
   /// Resolve assembly in the specified list of directories
