@@ -35,6 +35,7 @@ using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.Gui.Content;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -91,19 +92,40 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			HBox hb = new HBox (false, 0);
 			hb.PackStart (vb, true, true, 0);
-			
-			
 			vb2.Spacing = 4;
 			vb2.PackStart (hb, true, true, 0);
 			ContentBox.Add (vb2);
-			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
-			Theme.SetSchemeColors (scheme);
 
-			foreColor = scheme.PlainText.Foreground;
-			headlabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
+			UpdateStyle ();
+			IdeApp.Preferences.UserInterfaceSkinChanged += HandleSkinChanged;
+			IdeApp.Preferences.ColorSchemeChanged += HandleSkinChanged;
+
 			ShowAll ();
 			DesktopService.RemoveWindowShadow (this);
+		}
 
+		void UpdateStyle ()
+		{
+			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			Theme.SetSchemeColors (scheme);
+			Theme.Font = FontService.SansFont.CopyModified (Styles.PopoverWindow.DefaultFontScale);
+			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor;
+			foreColor = scheme.PlainText.Foreground;
+			headlabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
+			if (this.Visible)
+				QueueDraw ();
+		}
+
+		void HandleSkinChanged (object sender, PropertyChangedEventArgs e)
+		{
+			UpdateStyle ();
+		}
+
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			IdeApp.Preferences.UserInterfaceSkinChanged -= HandleSkinChanged;
+			IdeApp.Preferences.ColorSchemeChanged -= HandleSkinChanged;
 		}
 
 		int lastParam = -2;

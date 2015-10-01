@@ -231,6 +231,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			foreColor = scheme.PlainText.Foreground;
 			headLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
 			Theme.Font = FontService.SansFont.CopyModified (Styles.PopoverWindow.DefaultFontScale);
+			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor;
+			if (this.Visible)
+				ShowOverload ();
 		}
 
 		public TooltipInformationWindow () : base ()
@@ -267,9 +270,23 @@ namespace MonoDevelop.Ide.CodeCompletion
 			ContentBox.Add (vb2);
 
 			SetDefaultScheme ();
+			IdeApp.Preferences.UserInterfaceSkinChanged += HandleSkinChanged;
+			IdeApp.Preferences.ColorSchemeChanged += HandleSkinChanged;
 
 			ShowAll ();
 			DesktopService.RemoveWindowShadow (this);
+		}
+
+		void HandleSkinChanged (object sender, PropertyChangedEventArgs e)
+		{
+			SetDefaultScheme ();
+		}
+
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			IdeApp.Preferences.UserInterfaceSkinChanged -= HandleSkinChanged;
+			IdeApp.Preferences.ColorSchemeChanged -= HandleSkinChanged;
 		}
 	}
 }
