@@ -220,7 +220,7 @@ namespace MonoDevelop.Debugger
 				options.AllowTargetInvoke = false;
 			}
 
-			var args = frame.GetParameters ();
+			var args = frame.GetParameters (options);
 
 			//MethodName starting with "["... it's something like [ExternalCode]
 			if (!frame.SourceLocation.MethodName.StartsWith ("[", StringComparison.Ordinal)) {
