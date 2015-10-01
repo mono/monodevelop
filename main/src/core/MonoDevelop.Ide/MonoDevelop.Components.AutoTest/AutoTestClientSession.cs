@@ -378,7 +378,7 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			AutoTestSession.TimerCounterContext context = session.CreateNewTimerContext (counterName);
 			action ();
-			session.WaitForTimerContext (context);
+			session.WaitForTimerContext (context, timeout);
 		}
 
 		public XmlDocument ResultsAsXml (AppResult[] results)
