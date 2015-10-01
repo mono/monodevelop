@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Editor.Extension;
 using System.Threading.Tasks;
 using System.Threading;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -96,18 +97,37 @@ namespace MonoDevelop.Ide.CodeCompletion
 			vb2.Spacing = 4;
 			vb2.PackStart (hb, true, true, 0);
 			ContentBox.Add (vb2);
+
+			UpdateStyle ();
+			IdeApp.Preferences.UserInterfaceSkinChanged += HandleSkinChanged;
+			IdeApp.Preferences.ColorScheme.Changed += HandleSkinChanged;
+
 			ShowAll ();
 			DesktopService.RemoveWindowShadow (this);
 		}
 
-		protected override void OnShown ()
+		void UpdateStyle ()
 		{
 			var scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
 			Theme.SetSchemeColors (scheme);
+			Theme.Font = FontService.SansFont.CopyModified (Styles.PopoverWindow.DefaultFontScale);
+			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor;
 			foreColor = scheme.PlainText.Foreground;
 			headlabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
+			if (this.Visible)
+				QueueDraw ();
+		}
 
-			base.OnShown ();
+		void HandleSkinChanged (object sender, EventArgs e)
+		{
+			UpdateStyle ();
+		}
+
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			IdeApp.Preferences.UserInterfaceSkinChanged -= HandleSkinChanged;
+			IdeApp.Preferences.ColorScheme.Changed -= HandleSkinChanged;
 		}
 
 		int lastParam = -2;

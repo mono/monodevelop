@@ -248,6 +248,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			foreColor = scheme.PlainText.Foreground;
 			headLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
 			Theme.Font = FontService.SansFont.CopyModified (Styles.PopoverWindow.DefaultFontScale);
+			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor;
+			if (this.Visible)
+				ShowOverload ();
 		}
 
 		public TooltipInformationWindow () : base ()
@@ -285,6 +288,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			vb2.ShowAll ();
 			SetDefaultScheme ();
+			IdeApp.Preferences.UserInterfaceSkinChanged += HandleSkinChanged;
+			IdeApp.Preferences.ColorScheme.Changed += HandleSkinChanged;
 		}
 
 		public override void RepositionWindow(Gdk.Rectangle? newCaret = null)
@@ -296,6 +301,18 @@ namespace MonoDevelop.Ide.CodeCompletion
 				Opacity = 1;
 				return false;
 			});
+		}
+
+		void HandleSkinChanged (object sender, EventArgs e)
+		{
+			SetDefaultScheme ();
+		}
+
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			IdeApp.Preferences.UserInterfaceSkinChanged -= HandleSkinChanged;
+			IdeApp.Preferences.ColorScheme.Changed -= HandleSkinChanged;
 		}
 	}
 }
