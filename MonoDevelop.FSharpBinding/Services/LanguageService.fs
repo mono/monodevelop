@@ -352,11 +352,11 @@ type LanguageService(dirtyNotify) =
     | Some (untyped,typed,_) when typed.HasFullTypeCheckInfo  -> Some (ParseAndCheckResults(typed, untyped))
     | _ -> None
 
-  member internal x.ParseAndCheckFile (fileName, src, opts) =
+  member internal x.ParseAndCheckFile (fileName, src, opts, obsoleteCheck) =
     async {
       try
          let fileName = fixFileName(fileName)
-         let! parseResults, checkAnswer = checker.ParseAndCheckFileInProject(fileName, 0, src ,opts, IsResultObsolete(fun () -> false), null )
+         let! parseResults, checkAnswer = checker.ParseAndCheckFileInProject(fileName, 0, src ,opts, obsoleteCheck, null )
 
          // Construct new typed parse result if the task succeeded
          let results =
@@ -372,7 +372,8 @@ type LanguageService(dirtyNotify) =
 
   /// Parses and checks the given file in the given project under the given configuration.
   ///Asynchronously returns the results of checking the file.
-  member x.GetTypedParseResultWithTimeout(projectFilename, fileName:string, src, stale, ?timeout) = 
+  member x.GetTypedParseResultWithTimeout(projectFilename, fileName:string, src, stale, ?timeout, ?obsoleteCheck) =
+    let obs = defaultArg obsoleteCheck (IsResultObsolete(fun () -> false))
     async {
       let fileName = if Path.GetExtension fileName = ".sketchfs" then Path.ChangeExtension (fileName, ".fsx") else fileName
       let opts = x.GetCheckerOptions(fileName, projectFilename, src)
@@ -387,14 +388,14 @@ type LanguageService(dirtyNotify) =
           // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
           match timeout with
           | Some timeout ->
-            let! computation = Async.StartChild(x.ParseAndCheckFile(fileName, src, opts), timeout)
+            let! computation = Async.StartChild(x.ParseAndCheckFile(fileName, src, opts, obs), timeout)
             try 
               let! result = computation
               return Some(result)
             with
             | :? System.TimeoutException -> return None
           | None ->
-            let! result = x.ParseAndCheckFile(fileName, src, opts) 
+            let! result = x.ParseAndCheckFile(fileName, src, opts, obs) 
             return Some(result) }
 
   /// Returns a TypeParsedResults if available, otherwise None
@@ -410,7 +411,7 @@ type LanguageService(dirtyNotify) =
     asyncMaybe {
       LoggingService.LogDebug("LanguageService: GetUsesOfSymbolAtLocationInFile: fileName={0}, line = {1}, col = {2}", fileName, line, col)
       let! colu, identIsland = Parsing.findLongIdents(col, lineStr) |> async.Return
-      let! results = x.GetTypedParseResultWithTimeout(projectFilename, fileName, source, stale= AllowStaleResults.MatchingSource)
+      let! results = x.GetTypedParseResultWithTimeout(projectFilename, fileName, source, AllowStaleResults.MatchingSource)
       let! symbolUse = results.GetSymbolAtLocation(line, colu, lineStr)
       let lastIdent = Seq.last identIsland
       let! refs = results.GetUsesOfSymbolInFile(symbolUse.Symbol) |> Async.map Some
@@ -494,7 +495,7 @@ type LanguageService(dirtyNotify) =
   /// Get all overloads derived from the specified symbol in the current project
   //Currently there seems to be an issue in FCS where a methods EnclosingEntity returns the wrong type
   //The sanest option is to just use the OverloadsProperty for now.
-  member x.GetOverridesForSymbolInProject(projectFilename, file, source, symbolAtCaret:FSharpSymbol) =
+  member x.GetOverridesForSymbol(symbolAtCaret:FSharpSymbol) =
     try
       match symbolAtCaret with
       | :? FSharpMemberOrFunctionOrValue as caretmfv ->
@@ -560,6 +561,6 @@ type LanguageService(dirtyNotify) =
     checker.InvalidateConfiguration(options)
 
   //flush all caches and garbage collect
-  member x.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients() =
+  member x.ClearRootCaches() =
     LoggingService.LogDebug("LanguageService: Clearing root caches and finalizing transients")
     checker.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients()

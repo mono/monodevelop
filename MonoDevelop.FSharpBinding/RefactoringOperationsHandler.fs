@@ -272,7 +272,7 @@ module Refactoring =
       let monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
       let findAsync = async { 
         //let dependentProjects = getDependentProjects ctx.Project symbolUse
-        let overrides = langServ.GetOverridesForSymbolInProject(ctx.Project.FileName.ToString(), editor.FileName.ToString(), editor.Text, symbolUse.Symbol)
+        let overrides = langServ.GetOverridesForSymbol(symbolUse.Symbol)
 
         let distinctRefs = 
             match overrides with
