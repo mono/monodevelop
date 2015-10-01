@@ -31,8 +31,13 @@ TEST_ASSEMBLIES_COMMON = \
 	$(TEST_DIR)/MonoDevelop.PackageManagement.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.TextEditor.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.Xml.Tests.dll \
-	$(TEST_DIR)/MonoDevelop.AspNet.Tests.dll \
-	$(EXTERNAL)/nrefactory/bin/Debug/ICSharpCode.NRefactory.Tests.dll
+	$(TEST_DIR)/MonoDevelop.AspNet.Tests.dll
+
+ifneq ("$(wildcard $($(EXTERNAL)/nrefactory/bin/Debug/ICSharpCode.NRefactory.Tests.dll))","")
+TEST_ASSEMBLIES_COMMON += $(EXTERNAL)/nrefactory/bin/Debug/ICSharpCode.NRefactory.Tests.dll
+else
+TEST_ASSEMBLIES_COMMON += $(EXTERNAL)/nrefactory/bin/Release/ICSharpCode.NRefactory.Tests.dll
+fi
 
 ALL_CSPROJ = $(TEST_PROJECTS_COMMON)
 TEST_ASSEMBLIES = $(TEST_ASSEMBLIES_COMMON)
