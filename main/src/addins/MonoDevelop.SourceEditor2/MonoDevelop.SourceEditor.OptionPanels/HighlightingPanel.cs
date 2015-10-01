@@ -186,7 +186,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				if (style.Name == DefaultSourceEditorOptions.Instance.ColorScheme)
 					selectedIter = iter;
 			}
-			styleTreeview.Selection.SelectIter (selectedIter); 
+			if (styleTreeview.Selection != null)
+				styleTreeview.Selection.SelectIter (selectedIter); 
 		}
 		
 		void RemoveColorScheme (object sender, EventArgs args)
