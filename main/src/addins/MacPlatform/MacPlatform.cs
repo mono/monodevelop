@@ -309,7 +309,6 @@ namespace MonoDevelop.MacIntegration
 
 			string gtkrc = String.Format (@"
 				style ""treeview"" = ""default"" {{
-					GtkTreeView::odd-row-color = ""#f5f5f5""
 
 					base[SELECTED] = ""{0}""
 					base[ACTIVE] = ""{0}""

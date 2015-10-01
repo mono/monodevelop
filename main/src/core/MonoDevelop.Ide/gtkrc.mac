@@ -68,7 +68,7 @@ style "default" {
     GtkButtonBox::child-min-width = 70
     GtkButtonBox::child-min-height = 22
 
-    GtkTreeView::odd-row-color = @base_color
+    GtkTreeView::odd-row-color = @bg_color
 
     GtkScrolledWindow::scrollbar-spacing = 0
     GtkScrolledWindow::scrollbars-within-bevel = 1
