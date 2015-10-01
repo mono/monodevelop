@@ -287,6 +287,7 @@ namespace MonoDevelop.MacIntegration
 					Styles.LoadStyle();
 					PatchGtkTheme;
 				}));
+			IdeApp.Preferences.UserInterfaceSkinChanged += (s,a) => PatchGtkTheme ();
 		}
 
 		// This will dynamically generate a gtkrc for certain widgets using system control colors.
