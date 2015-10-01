@@ -115,6 +115,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		void UpdateStyle ()
 		{
 			Theme.SetBackgroundColor (Gui.Styles.CodeCompletion.BackgroundColor);
+			Theme.ShadowColor = Gui.Styles.PopoverWindow.ShadowColor;
 		}
 
 		protected override void OnDestroyed ()
