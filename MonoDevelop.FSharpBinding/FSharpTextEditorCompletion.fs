@@ -291,10 +291,9 @@ type FSharpTextEditorCompletion() =
                 //TODO:  Check this is correct, I suspect we should return None here
                 let ent = ta.UnAnnotate()
                 Some (ent.DisplayName, ent)
-            | ClosureOrNestedFunction _cl ->
-                //Theres no link to a parent type for a closure (FCS limitation)
-                None
             //The following have no logical parent to display
+            //Theres no link to a parent type for a closure (FCS limitation)
+            | ClosureOrNestedFunction _cl -> None
             //The F# compiler does not currently expose an Entitys parent, only children
             | Class _cl -> None
             | Delegate _dl -> None
@@ -324,16 +323,35 @@ type FSharpTextEditorCompletion() =
     symbols |> List.map symbolToCompletionData 
 
 
-  let codeCompletionCommandImpl(editor:TextEditor, documentContext:DocumentContext, context:CodeCompletionContext, allowAnyStale, dottedInto, ctrlSpace, completionChar) =
+  let codeCompletionCommandImpl(editor:TextEditor, documentContext:DocumentContext, context:CodeCompletionContext, dottedInto, ctrlSpace, completionChar) =
     async {
       let result = CompletionDataList()
       result.IsSorted <- true
-      let fileName = documentContext.Name
+      let filename = documentContext.Name
       try
         // Try to get typed information from LanguageService (with the specified timeout)
-        let stale = if allowAnyStale then AllowStaleResults.MatchingFileName else AllowStaleResults.MatchingSource
-        let projectFile = documentContext.Project |> function null -> fileName | project -> project.FileName.ToString()
-        let! typedParseResults = MDLanguageService.Instance.GetTypedParseResultWithTimeout(projectFile, fileName, editor.Text, stale, ServiceSettings.blockingTimeout)
+        let projectFile = documentContext.Project |> function null -> filename | project -> project.FileName.ToString()
+
+        let curVersion = editor.Version
+        let isObsolete =
+            IsResultObsolete(fun () -> 
+            let doc = IdeApp.Workbench.GetDocument(filename)
+            let newVersion = doc.Editor.Version
+            if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
+            then
+              LoggingService.LogInfo ("FSharpTextEditorCompletion - codeCompletionCommandImpl: type check of {0} is not obsolete",  IO.Path.GetFileName filename)
+              false
+            else
+              LoggingService.LogInfo ("FSharpTextEditorCompletion - codeCompletionCommandImpl: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
+              true )
+
+        let! typedParseResults =
+          MDLanguageService.Instance.GetTypedParseResultWithTimeout(projectFile,
+                                                                    filename,
+                                                                    editor.Text,
+                                                                    AllowStaleResults.MatchingSource,
+                                                                    ServiceSettings.maximumTimeout,
+                                                                    isObsolete)
 
         match typedParseResults with
         | None       -> () //TODOresult.Add(FSharpTryAgainMemberCompletionData())
@@ -407,6 +425,10 @@ type FSharpTextEditorCompletion() =
       isTokenInvalid
     with ex -> true
 
+  let isValidParamCompletionDecriptor (d:KeyDescriptor) =
+    d.KeyChar = '(' || d.KeyChar = '<' || d.KeyChar = ',' || (d.KeyChar = ' ' && d.ModifierKeys = ModifierKeys.Control)
+
+
   //only used for testing
   member x.Initialize(editor, context) =
     x.DocumentContext <- context
@@ -444,16 +466,31 @@ type FSharpTextEditorCompletion() =
         if docText = null || offset > docText.Length || startOffset < 0 || offset <= 0 || isAnAutoProperty x.Editor offset
         then return ParameterHintingResult.Empty 
         else
-        LoggingService.LogDebug("FSharpTextEditorCompletion: Getting Parameter Info, startOffset = {0}", startOffset)
-        
+        LoggingService.LogDebug("FSharpTextEditorCompletion - HandleParameterCompletionAsync: Getting Parameter Info, startOffset = {0}", startOffset)
+
+        let filename =x.DocumentContext.Name
+        let curVersion = x.Editor.Version
+        let isObsolete =
+            IsResultObsolete(fun () -> 
+            let doc = IdeApp.Workbench.GetDocument(filename)
+            let newVersion = doc.Editor.Version
+            if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
+            then
+              LoggingService.LogInfo ("FSharpTextEditorCompletion - HandleParameterCompletionAsync: type check of {0} is not obsolete",  IO.Path.GetFileName filename)
+              false
+            else
+              LoggingService.LogInfo ("FSharpTextEditorCompletion - HandleParameterCompletionAsync: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
+              true )
+
         // Try to get typed result - within the specified timeout
         let! methsOpt =
-            async {let projectFile = x.DocumentContext.Project |> function null -> x.DocumentContext.Name | project -> project.FileName.ToString()
+            async {let projectFile = x.DocumentContext.Project |> function null -> filename | project -> project.FileName.ToString()
                    let! tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout (projectFile,
-                                                                                           x.DocumentContext.Name,
+                                                                                           filename,
                                                                                            docText,
-                                                                                           AllowStaleResults.MatchingFileName,
-                                                                                           ServiceSettings.blockingTimeout) 
+                                                                                           AllowStaleResults.MatchingSource,
+                                                                                           ServiceSettings.maximumTimeout,
+                                                                                           isObsolete) 
                    match tyRes with
                    | Some tyRes ->
                        let line, col, lineStr = x.Editor.GetLineInfoFromOffset (startOffset)
@@ -486,50 +523,25 @@ type FSharpTextEditorCompletion() =
     let suppressMemberCompletion = lastCharDottedInto && descriptor.KeyChar = '.'
     lastCharDottedInto <- false
     if suppressMemberCompletion then true else
-    // base.KeyPress will execute RunParameterCompletionCommand
-    // so suppress it here.  
-    suppressParameterCompletion <- descriptor.KeyChar <> '(' && descriptor.KeyChar <> '<' && descriptor.KeyChar <> ','
-    
-    let result = base.KeyPress (descriptor)
+    // base.KeyPress will execute RunParameterCompletionCommand so suppress it here.  
 
-    suppressParameterCompletion <- false
-    if (descriptor.KeyChar = ')' && x.CanRunParameterCompletionCommand ()) then
-      base.RunParameterCompletionCommand ()
-
-    result
+    suppressParameterCompletion <- not (isValidParamCompletionDecriptor descriptor)
+    base.KeyPress (descriptor)
+//
+//    suppressParameterCompletion <- false
+//    if (descriptor.KeyChar = ')' && x.CanRunParameterCompletionCommand ()) then
+//      base.RunParameterCompletionCommand ()
+//
+//    result
 
   // Run completion automatically when the user hits '.'
   // (this means that completion currently also works in comments and strings...)
   override x.HandleCodeCompletionAsync(context, completionChar, token) =
     if completionChar <> '.' then null else
-
-    // We generally avoid forcing a re-typecheck on '.' by using TryGetRecentTypeCheckResults. Forcing a re-typecheck on a user action 
-    // can cause a blocking delay in the UI (up to the blockingTimeout=500). We can't do it asynchronously because MD doesn't allow this yet). 
-    //
-    // However, if a '.' is pressed then in some situations the F# compiler language service really does need to re-typecheck, especially when
-    // relying on 'expression' typings (rather than just name lookup). This is specifically the case on '.' because of this curious
-    // line in service.fs: https://github.com/fsharp/fsharp/blob/0e80412570847e3e825b30f8636fc313ebaa3be0/src/fsharp/vs/service.fs#L771
-    // where the location is adjusted by +1. However that location won't yield good expression typings because the results returned by 
-    // TryGetRecentTypeCheckResults will be based on code where the '.' was not present.
-    //
-    // Because of this, we like to force re-typechecking in those situations where '.' is pressed AND when expression typings are highly 
-    // likely to be useful. The most common example of this is where a character to the left of the '.' is not a letter. This catches 
-    // situations like (abc + def).
-    // Note, however, that this is just an approximation - for example no re-typecheck is enforced here: (abc + def).PPP.
     let computation = 
       async {
         if isCurrentTokenInvalid x.Editor x.DocumentContext.ParsedDocument x.DocumentContext.Project context.TriggerOffset then return null else
-        
-        let allowAnyStale = 
-          match completionChar with 
-          | '.' -> 
-              let docText = x.Editor.Text
-              if docText = null then true else
-              let offset = context.TriggerOffset
-              offset > 1 && Char.IsLetter (docText.[offset-2])
-          | _ -> true 
-
-        return! codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, allowAnyStale, true, false, completionChar) }
+        return! codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, true, false, completionChar) }
     Async.StartAsTask (computation =computation, cancellationToken = token)
 
   /// Completion was triggered explicitly using Ctrl+Space or by the function above  
@@ -539,7 +551,7 @@ type FSharpTextEditorCompletion() =
     Async.StartAsTask(
       async {
         if isCurrentTokenInvalid x.Editor x.DocumentContext.ParsedDocument x.DocumentContext.Project context.TriggerOffset then return null
-        else return! codeCompletionCommandImpl(x.Editor, x.DocumentContext,context, true, completionIsDot, true, completionChar) } )
+        else return! codeCompletionCommandImpl(x.Editor, x.DocumentContext,context, completionIsDot, true, completionChar) } )
 
   // Returns the index of the parameter where the cursor is currently positioned.
   // -1 means the cursor is outside the method parameter list

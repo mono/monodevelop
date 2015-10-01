@@ -7,6 +7,7 @@ namespace MonoDevelop.FSharp
 open System
 open MonoDevelop
 open MonoDevelop.Core
+open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Gui.Content
@@ -25,12 +26,25 @@ type FSharpResolverProvider() =
         if doc.Editor = null then null else
         let docText = doc.Editor.Text
         if docText = null || offset >= docText.Length || offset < 0 then null else
-
+        let filename =doc.FileName.FullPath.ToString()
         LoggingService.LogInfo "ResolverProvider: Getting results of type checking"
         // Try to get typed result - with the specified timeout
+        let curVersion = doc.Editor.Version
+        let isObsolete =
+            IsResultObsolete(fun () -> 
+            let doc = IdeApp.Workbench.GetDocument(filename)
+            let newVersion = doc.Editor.Version
+            if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
+            then
+              LoggingService.LogInfo ("FSharpResolverProvider: type check of {0} is not obsolete",  IO.Path.GetFileName filename)
+              false
+            else
+              LoggingService.LogInfo ("FSharpResolverProvider: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
+              true )
+
         let results =
             asyncMaybe {
-                let! tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout (doc.Project.FileName.ToString(), doc.FileName.FullPath.ToString(), docText, AllowStaleResults.MatchingSource)
+                let! tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout (doc.Project.FileName.ToString(), filename, docText, AllowStaleResults.MatchingSource, obsoleteCheck=isObsolete)
                 LoggingService.LogInfo "ResolverProvider: Getting declaration location"
                 // Get the declaration location from the language service
                 let line, col, lineStr = doc.Editor.GetLineInfoFromOffset offset

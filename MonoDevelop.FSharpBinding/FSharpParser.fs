@@ -5,6 +5,7 @@ open Microsoft.FSharp.Compiler
 open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui
+open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.TypeSystem
 open System 
 open System.Diagnostics
@@ -29,7 +30,7 @@ type FSharpParser() =
         let errorType = 
             if error.Severity = FSharpErrorSeverity.Error then ErrorType.Error
             else ErrorType.Warning
-        Error(errorType, String.wrapText error.Message 80, Editor.DocumentRegion (error.StartLineAlternate, error.StartColumn + 1, error.EndLineAlternate, error.EndColumn + 1))
+        Error(errorType, String.wrapText error.Message 80, DocumentRegion (error.StartLineAlternate, error.StartColumn + 1, error.EndLineAlternate, error.EndColumn + 1))
 
     let tryGetFilePath fileName (project: MonoDevelop.Projects.Project) = 
         // TriggerParse will work only for full paths
@@ -59,8 +60,21 @@ type FSharpParser() =
             computation = async {
             let shortFilename = Path.GetFileName fileName
 
+            let curVersion = parseOptions.Content.Version
+            let isObsolete =
+                SourceCodeServices.IsResultObsolete(fun () -> 
+                let doc = IdeApp.Workbench.GetDocument(parseOptions.FileName)
+                let newVersion = doc.Editor.Version
+                if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
+                then
+                  LoggingService.LogInfo ("FSharpParser: Parse {0} is not obsolete", shortFilename)
+                  false
+                else
+                  LoggingService.LogInfo ("FSharpParser: Parse {0} is obsolete type check cancelled", shortFilename)
+                  true ) 
+
             let doc = new FSharpParsedDocument(fileName, Flags = ParsedDocumentFlags.NonSerializable)
-            LoggingService.LogInfo ("FSharpParser: [Thread {0}] Parse {1}, ", Thread.CurrentThread.ManagedThreadId, shortFilename)
+            LoggingService.LogInfo ("FSharpParser: Parse {0}, ", shortFilename)
                                    
             match tryGetFilePath fileName proj with
             | None -> ()
@@ -68,20 +82,20 @@ type FSharpParser() =
                 let! results =
                   try
                     let projectFile = proj |> function null -> filePath | proj -> proj.FileName.ToString()
-                    LoggingService.LogInfo ("FSharpParser: [Thread {0}] Running ParseAndCheckFileInProject for {1}", Thread.CurrentThread.ManagedThreadId, shortFilename)
-                    languageService.GetTypedParseResultWithTimeout(projectFile, filePath, content.Text, AllowStaleResults.MatchingSource)
+                    LoggingService.LogInfo ("FSharpParser: Running ParseAndCheckFileInProject for {0}", shortFilename)
+                    languageService.GetTypedParseResultWithTimeout(projectFile, filePath, content.Text, AllowStaleResults.No, obsoleteCheck = isObsolete )
                   with
                   | :? TimeoutException ->
                     doc.IsInvalid <- true
-                    LoggingService.LogWarning ("FSharpParser: [Thread {0}] ParseAndCheckFileInProject timed out for {1}", Thread.CurrentThread.ManagedThreadId, shortFilename)
+                    LoggingService.LogWarning ("FSharpParser: ParseAndCheckFileInProject timed out for {0}", shortFilename)
                     async.Return None
                   | :? Tasks.TaskCanceledException ->
                     doc.IsInvalid <- true
-                    LoggingService.LogWarning ("FSharpParser: [Thread {0}] ParseAndCheckFileInProject was cancelled for {1}", Thread.CurrentThread.ManagedThreadId, shortFilename)
+                    LoggingService.LogWarning ("FSharpParser: ParseAndCheckFileInProject was cancelled for {0}", shortFilename)
                     async.Return None
                   | ex ->
                     doc.IsInvalid <- true
-                    LoggingService.LogError("FSharpParser: [Thread {0}] Error processing ParseAndCheckFileResults for {1}", Thread.CurrentThread.ManagedThreadId, shortFilename, ex)
+                    LoggingService.LogError("FSharpParser: Error processing ParseAndCheckFileResults for {0}", shortFilename, ex)
                     async.Return None
                 match results with
                 | Some results ->                                                                     
@@ -90,7 +104,7 @@ type FSharpParser() =
 
                   //Try creating tokens
                   try
-                    let readOnlyDoc = MonoDevelop.Ide.Editor.TextEditorFactory.CreateNewReadonlyDocument (parseOptions.Content, fileName)
+                    let readOnlyDoc = TextEditorFactory.CreateNewReadonlyDocument (parseOptions.Content, fileName)
                     let lineDetails =
                       [ for i in 1..readOnlyDoc.LineCount do
                           let line = readOnlyDoc.GetLine(i)
@@ -99,14 +113,14 @@ type FSharpParser() =
                     let tokens = Tokens.getTokens lineDetails filePath defines
                     doc.Tokens <- Some(tokens)
                   with ex ->
-                    LoggingService.LogWarning ("FSharpParser: Couldn't update toekn information", ex)
+                    LoggingService.LogWarning ("FSharpParser: Couldn't update token information", ex)
 
                   //Set code folding regions, GetNavigationItems may throw in some situations
                   try 
                     let regions = 
                       let processDecl (decl : SourceCodeServices.FSharpNavigationDeclarationItem) = 
                         let m = decl.Range
-                        FoldingRegion(decl.Name, Editor.DocumentRegion(m.StartLine, m.StartColumn + 1, m.EndLine, m.EndColumn + 1))
+                        FoldingRegion(decl.Name, DocumentRegion(m.StartLine, m.StartColumn + 1, m.EndLine, m.EndColumn + 1))
                       seq {for toplevel in results.GetNavigationItems() do
                              yield processDecl toplevel.Declaration
                              for next in toplevel.Nested do
@@ -117,7 +131,7 @@ type FSharpParser() =
                   doc.Ast <- results
                 | None ->
                   doc.IsInvalid <- true
-                  LoggingService.LogError("FSharpParser: [Thread {0}] Error ParseAndCheckFileResults for {1} no results returned", Thread.CurrentThread.ManagedThreadId, shortFilename)
+                  LoggingService.LogError("FSharpParser: Error ParseAndCheckFileResults for {0} no results returned", shortFilename)
 
             doc.LastWriteTimeUtc <- try File.GetLastWriteTimeUtc(fileName) with _ -> DateTime.UtcNow
             return doc :> _})
