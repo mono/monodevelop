@@ -282,6 +282,11 @@ namespace MonoDevelop.MacIntegration
 			}
 
 			PatchGtkTheme ();
+			NSNotificationCenter.DefaultCenter.AddObserver (NSCell.ControlTintChangedNotification, notif => DispatchService.GuiDispatch (
+				delegate {
+					Styles.LoadStyle();
+					PatchGtkTheme;
+				}));
 		}
 
 		// This will dynamically generate a gtkrc for certain widgets using system control colors.
