@@ -23,6 +23,7 @@ type HighlightUsagesExtension() =
         x.Editor.SemanticHighlighting <- syntaxMode
 
     override x.ResolveAsync (token) =
+        LoggingService.LogDebug("HighlightUsagesExtension: ResolveAsync starting")
         Async.StartAsTask (
             cancellationToken = token,
             computation = async {
@@ -39,6 +40,7 @@ type HighlightUsagesExtension() =
                      return None })
             
     override x.GetReferences(resolveResult, token) =
+        LoggingService.LogDebug("HighlightUsagesExtension: GetReferences starting")
         if token.IsCancellationRequested then Seq.empty else
             try
                 match resolveResult with

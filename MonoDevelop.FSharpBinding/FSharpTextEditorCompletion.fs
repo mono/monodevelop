@@ -428,6 +428,8 @@ type FSharpTextEditorCompletion() =
   let isValidParamCompletionDecriptor (d:KeyDescriptor) =
     d.KeyChar = '(' || d.KeyChar = '<' || d.KeyChar = ',' || (d.KeyChar = ' ' && d.ModifierKeys = ModifierKeys.Control)
 
+  let validCompletionChar c =
+    c = '(' || c = ',' || c = '<'
 
   //only used for testing
   member x.Initialize(editor, context) =
@@ -440,83 +442,83 @@ type FSharpTextEditorCompletion() =
     base.Initialize()
 
   /// Provide parameter and method overload information when you type '(', '<' or ','
-  override x.HandleParameterCompletionAsync (context, _completionChar, token) =
+  override x.HandleParameterCompletionAsync (context, completionChar, token) =
     //TODO refactor computation to remove some return statements (clarity)
-    Async.StartAsTask (cancellationToken = token, computation = async {
-    try
-        if suppressParameterCompletion then
-           suppressParameterCompletion <- false
-           return ParameterHintingResult.Empty
-        else
-        let docText = x.Editor.Text
-        let offset = context.TriggerOffset
-        
-        // Parse backwards, skipping (...) and { ... } and [ ... ] to determine the parameter index. 
-        // This is an approximation.
-        let startOffset =
-            let rec loop depth i = 
-              if (i <= 0) then i else
-              let ch = docText.[i] 
-              if ((ch = '(' || ch = '{' || ch = '[') && depth > 0) then loop (depth - 1) (i-1) 
-              elif ((ch = ')' || ch = '}' || ch = ']')) then loop (depth+1) (i-1) 
-              elif (ch = '(' || ch = '<') then i
-              else loop depth (i-1) 
-            loop 0 (offset-1)
-        
-        if docText = null || offset > docText.Length || startOffset < 0 || offset <= 0 || isAnAutoProperty x.Editor offset
-        then return ParameterHintingResult.Empty 
-        else
-        LoggingService.LogDebug("FSharpTextEditorCompletion - HandleParameterCompletionAsync: Getting Parameter Info, startOffset = {0}", startOffset)
+    if suppressParameterCompletion || not (validCompletionChar completionChar)
+    then suppressParameterCompletion <- false
+         System.Threading.Tasks.Task.FromResult(ParameterHintingResult.Empty)
+    else
+      Async.StartAsTask (cancellationToken = token, computation = async {
+      try
+          let docText = x.Editor.Text
+          let offset = context.TriggerOffset
+          
+          // Parse backwards, skipping (...) and { ... } and [ ... ] to determine the parameter index. 
+          // This is an approximation.
+          let startOffset =
+              let rec loop depth i = 
+                if (i <= 0) then i else
+                let ch = docText.[i] 
+                if ((ch = '(' || ch = '{' || ch = '[') && depth > 0) then loop (depth - 1) (i-1) 
+                elif ((ch = ')' || ch = '}' || ch = ']')) then loop (depth+1) (i-1) 
+                elif (ch = '(' || ch = '<') then i
+                else loop depth (i-1) 
+              loop 0 (offset-1)
+          
+          if docText = null || offset > docText.Length || startOffset < 0 || offset <= 0 || isAnAutoProperty x.Editor offset
+          then return ParameterHintingResult.Empty 
+          else
+          LoggingService.LogDebug("FSharpTextEditorCompletion - HandleParameterCompletionAsync: Getting Parameter Info, startOffset = {0}", startOffset)
 
-        let filename =x.DocumentContext.Name
-        let curVersion = x.Editor.Version
-        let isObsolete =
-            IsResultObsolete(fun () -> 
-            let doc = IdeApp.Workbench.GetDocument(filename)
-            let newVersion = doc.Editor.Version
-            if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
-            then
-              LoggingService.LogDebug ("FSharpTextEditorCompletion - HandleParameterCompletionAsync: type check of {0} is not obsolete",  IO.Path.GetFileName filename)
-              false
-            else
-              LoggingService.LogDebug ("FSharpTextEditorCompletion - HandleParameterCompletionAsync: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
-              true )
+          let filename =x.DocumentContext.Name
+          let curVersion = x.Editor.Version
+          let isObsolete =
+              IsResultObsolete(fun () -> 
+              let doc = IdeApp.Workbench.GetDocument(filename)
+              let newVersion = doc.Editor.Version
+              if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
+              then
+                LoggingService.LogDebug ("FSharpTextEditorCompletion - HandleParameterCompletionAsync: type check of {0} is not obsolete",  IO.Path.GetFileName filename)
+                false
+              else
+                LoggingService.LogDebug ("FSharpTextEditorCompletion - HandleParameterCompletionAsync: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
+                true )
 
-        // Try to get typed result - within the specified timeout
-        let! methsOpt =
-            async {let projectFile = x.DocumentContext.Project |> function null -> filename | project -> project.FileName.ToString()
-                   let! tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout (projectFile,
-                                                                                           filename,
-                                                                                           docText,
-                                                                                           AllowStaleResults.MatchingSource,
-                                                                                           ServiceSettings.maximumTimeout,
-                                                                                           isObsolete) 
-                   match tyRes with
-                   | Some tyRes ->
-                       let line, col, lineStr = x.Editor.GetLineInfoFromOffset (startOffset)
-                       let! methsOpt = tyRes.GetMethods(line, col, lineStr)
-                       //TODO: Use the symbol version
-                       //let! allMethodSymbols = tyRes.GetMethodsAsSymbols (line, col, lineStr)
-                       return methsOpt
-                   | None -> return None}
-        
-        match methsOpt with
-        | Some(name, meths) when meths.Length > 0 -> 
-            LoggingService.LogDebug ("FSharpTextEditorCompletion: Getting Parameter Info: {0} methods", meths.Length)
-            let hintingData =
-                meths
-                |> Array.map (fun meth -> FSharpParameterHintingData (name, meth) :> ParameterHintingData)
-                |> ResizeArray.ofArray
+          // Try to get typed result - within the specified timeout
+          let! methsOpt =
+              async {let projectFile = x.DocumentContext.Project |> function null -> filename | project -> project.FileName.ToString()
+                     let! tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout (projectFile,
+                                                                                             filename,
+                                                                                             docText,
+                                                                                             AllowStaleResults.MatchingSource,
+                                                                                             ServiceSettings.maximumTimeout,
+                                                                                             isObsolete) 
+                     match tyRes with
+                     | Some tyRes ->
+                         let line, col, lineStr = x.Editor.GetLineInfoFromOffset (startOffset)
+                         let! methsOpt = tyRes.GetMethods(line, col, lineStr)
+                         //TODO: Use the symbol version
+                         //let! allMethodSymbols = tyRes.GetMethodsAsSymbols (line, col, lineStr)
+                         return methsOpt
+                     | None -> return None}
+          
+          match methsOpt with
+          | Some(name, meths) when meths.Length > 0 -> 
+              LoggingService.LogDebug ("FSharpTextEditorCompletion: Getting Parameter Info: {0} methods", meths.Length)
+              let hintingData =
+                  meths
+                  |> Array.map (fun meth -> FSharpParameterHintingData (name, meth) :> ParameterHintingData)
+                  |> ResizeArray.ofArray
 
-            return ParameterHintingResult(hintingData, startOffset) 
-        | _ -> LoggingService.LogWarning("FSharpTextEditorCompletion: Getting Parameter Info: no methods found")
-               return ParameterHintingResult.Empty 
-    with
-    | :? Threading.Tasks.TaskCanceledException ->
-        return ParameterHintingResult.Empty
-    | ex ->
-        LoggingService.LogError ("FSharpTextEditorCompletion: Error in HandleParameterCompletion", ex)
-        return ParameterHintingResult.Empty})
+              return ParameterHintingResult(hintingData, startOffset) 
+          | _ -> LoggingService.LogWarning("FSharpTextEditorCompletion: Getting Parameter Info: no methods found")
+                 return ParameterHintingResult.Empty 
+      with
+      | :? Threading.Tasks.TaskCanceledException ->
+          return ParameterHintingResult.Empty
+      | ex ->
+          LoggingService.LogError ("FSharpTextEditorCompletion: Error in HandleParameterCompletion", ex)
+          return ParameterHintingResult.Empty})
 
   override x.KeyPress (descriptor:KeyDescriptor) =
     // Avoid two dots in sucession turning inte ie '.CompareWith.' instead of '..'

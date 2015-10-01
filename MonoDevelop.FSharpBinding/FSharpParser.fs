@@ -48,7 +48,6 @@ type FSharpParser() =
                 | doc -> let file = doc.FileName.FullPath.ToString()
                          if file = "" then None else Some file
             
-
     override x.Parse(parseOptions, cancellationToken) =
         let fileName = parseOptions.FileName
         let content = parseOptions.Content
@@ -67,7 +66,7 @@ type FSharpParser() =
                 let newVersion = doc.Editor.Version
                 if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
                 then
-                  LoggingService.LogDebug ("FSharpParser: Parse {0} is not obsolete", shortFilename)
+                  //LoggingService.LogDebug ("FSharpParser: Parse {0} is not obsolete", shortFilename)
                   false
                 else
                   LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled", shortFilename)

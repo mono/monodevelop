@@ -286,7 +286,7 @@ module Parsing =
          current::prev |> List.rev
       | [] -> []
 
-    LoggingService.LogDebug("Result: Crack symbol text at column {0}\nIdentifier: {1}\nLine string: {2}", col, identIsland, lineStr)
+    LoggingService.LogDebug("Result: Crack symbol text at column:{0} Identifier:{1} Line string:{2}", col, identIsland, lineStr)
     
     match identIsland with
     | [] | [ "" ] -> None
