@@ -285,7 +285,7 @@ namespace MonoDevelop.MacIntegration
 			NSNotificationCenter.DefaultCenter.AddObserver (NSCell.ControlTintChangedNotification, notif => DispatchService.GuiDispatch (
 				delegate {
 					Styles.LoadStyle();
-					PatchGtkTheme;
+					PatchGtkTheme();
 				}));
 			IdeApp.Preferences.UserInterfaceSkinChanged += (s,a) => PatchGtkTheme ();
 		}
