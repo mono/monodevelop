@@ -99,7 +99,7 @@ namespace MonoDevelop.Components
 			#endif
 		}
 
-		public static void ApplyTheme (Gtk.Window window)
+		public static void ApplyTheme (this Gtk.Window window)
 		{
 			#if MAC
 			window.Realized += OnGtkWindowRealized;
