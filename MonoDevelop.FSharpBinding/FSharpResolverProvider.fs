@@ -84,5 +84,6 @@ type FSharpResolverProvider() =
         null
 
     member x.GetLanguageItem(doc:Document, offset:int, _identifier:string): Microsoft.CodeAnalysis.ISymbol =
+      LoggingService.LogDebug "ResolverProvider: GetLanguageItem"
       let (result, _region) = (x :> ITextEditorResolverProvider).GetLanguageItem(doc, offset)
       result

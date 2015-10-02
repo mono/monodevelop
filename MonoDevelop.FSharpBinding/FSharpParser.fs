@@ -73,7 +73,6 @@ type FSharpParser() =
                   true ) 
 
             let doc = new FSharpParsedDocument(fileName, Flags = ParsedDocumentFlags.NonSerializable)
-            LoggingService.LogDebug ("FSharpParser: Parse {0}, ", shortFilename)
                                    
             match tryGetFilePath fileName proj with
             | None -> ()
@@ -130,7 +129,7 @@ type FSharpParser() =
                   doc.Ast <- results
                 | None ->
                   doc.IsInvalid <- true
-                  LoggingService.LogError("FSharpParser: Error ParseAndCheckFileResults for {0} no results returned", shortFilename)
+                  LoggingService.LogDebug("FSharpParser: Error ParseAndCheckFileResults for {0} no results returned", shortFilename)
 
             doc.LastWriteTimeUtc <- try File.GetLastWriteTimeUtc(fileName) with _ -> DateTime.UtcNow
             return doc :> _})

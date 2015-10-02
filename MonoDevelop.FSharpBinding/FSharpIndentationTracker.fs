@@ -50,10 +50,14 @@ type FSharpIndentationTracker(data:TextEditor) =
           indent.Substring(initialWhiteSpace text 0)
 
     override x.GetIndentationString (lineNumber) =
+
         try
             let line = data.GetLine (lineNumber)
-            if line = null then "" else
+            let indent =
+              if line = null then "" else
                 getIndentString lineNumber
+            LoggingService.LogError ("FSharpIndentationTracker: indent: '{0}'", indent)
+            indent
         with
         | ex ->   LoggingService.LogError ("FSharpIndentationTracker", ex)
                   ""

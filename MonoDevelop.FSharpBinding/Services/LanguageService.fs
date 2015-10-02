@@ -249,15 +249,12 @@ type LanguageService(dirtyNotify) =
 
   /// Constructs options for the interactive checker for the given file in the project under the given configuration.
   member x.GetCheckerOptions(fileName, projFilename, source) =
-    LoggingService.LogDebug("LanguageService: GetCheckerOptions")
     let opts =
-      if LanguageService.IsAScript fileName || fileName = projFilename then
-        // We are in a stand-alone file or we are in a project, but currently editing a script file
-        x.GetScriptCheckerOptions(fileName, projFilename, source)
-          
+      if LanguageService.IsAScript fileName || fileName = projFilename
+      // We are in a stand-alone file or we are in a project, but currently editing a script file
+      then x.GetScriptCheckerOptions(fileName, projFilename, source)
       // We are in a project - construct options using current properties
-      else
-        x.GetProjectCheckerOptions(projFilename)
+      else x.GetProjectCheckerOptions(projFilename)
     opts
    
   /// Constructs options for the interactive checker for the given script file in the project under the given configuration. 
@@ -362,6 +359,7 @@ type LanguageService(dirtyNotify) =
          let results =
            match checkAnswer with
            | FSharpCheckFileAnswer.Succeeded(checkResults) ->
+               LoggingService.LogDebug("LanguageService: ParseAndCheckFile check succeeded for {0}", Path.GetFileName(fileName))
                ParseAndCheckResults(checkResults, parseResults)
            | FSharpCheckFileAnswer.Aborted ->
              LoggingService.LogDebug("LanguageService: ParseAndCheckFile check aborted for {0}", Path.GetFileName(fileName))
@@ -379,24 +377,27 @@ type LanguageService(dirtyNotify) =
     async {
       let fileName = if Path.GetExtension fileName = ".sketchfs" then Path.ChangeExtension (fileName, ".fsx") else fileName
       let opts = x.GetCheckerOptions(fileName, projectFilename, src)
-      LoggingService.LogDebug("LanguageService: GetTypedParseResultWithTimeout, file:{0}", Path.GetFileName(fileName))
       // Try to get recent results from the F# service
       match x.TryGetStaleTypedParseResult(fileName, opts, src, stale) with
       | Some _ as results ->
           LoggingService.LogDebug("LanguageService: GetTypedParseResultWithTimeout: using stale results")
           return results
       | None -> 
-          LoggingService.LogDebug("LanguageService: GetTypedParseResultWithTimeout: No stale results - typechecking with timeout")
+          
           // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
           match timeout with
           | Some timeout ->
+            LoggingService.LogDebug("LanguageService: GetTypedParseResultWithTimeout: No stale results - typechecking with timeout")
             let! computation = Async.StartChild(x.ParseAndCheckFile(fileName, src, opts, obs), timeout)
             try 
               let! result = computation
               return Some(result)
             with
-            | :? System.TimeoutException -> return None
+            | :? System.TimeoutException ->
+              LoggingService.LogDebug("LanguageService: GetTypedParseResultWithTimeout: No stale results - typechecking with timeout - timeout exception occured")
+              return None
           | None ->
+            LoggingService.LogDebug("LanguageService: GetTypedParseResultWithTimeout: No stale results - typechecking without timeout")
             let! result = x.ParseAndCheckFile(fileName, src, opts, obs) 
             return Some(result) }
 
