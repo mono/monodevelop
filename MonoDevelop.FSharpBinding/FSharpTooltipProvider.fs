@@ -84,7 +84,7 @@ type FSharpTooltipProvider() =
             Async.RunSynchronously (
                 async {
                     try 
-                        LoggingService.LogInfo "TooltipProvider: Getting tool tip"
+                        LoggingService.LogDebug "TooltipProvider: Getting tool tip"
                         let! symbol = parseAndCheckResults.GetSymbolAtLocation(line, col, lineStr)
 
                         // As the new tooltips are unfinished we match ToolTip here to use the new tooltips and anything else to run through the old tooltip system

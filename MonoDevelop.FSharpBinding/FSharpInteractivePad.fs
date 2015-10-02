@@ -77,7 +77,7 @@ type FSharpInteractivePad() as this =
           colourSchemChanged.Dispose()
           if killIntent = NoIntent then
             DispatchService.GuiDispatch(fun () ->
-              LoggingService.LogInfo ("Interactive: process stopped")
+              LoggingService.LogDebug ("Interactive: process stopped")
               view.WriteOutput("\nSession termination detected. Press Enter to restart.")) |> ignore
             isPrompting <- true
           elif killIntent = Restart then 
@@ -127,15 +127,14 @@ type FSharpInteractivePad() as this =
     else Path.Combine(root, path)
     
   //let handler = 
-  do LoggingService.LogInfo ("InteractivePad: created!")
+  do LoggingService.LogDebug ("InteractivePad: created!")
              
   member x.Shutdown()  = 
-
-    do LoggingService.LogInfo ("Interactive: Shutdown()!")
+    do LoggingService.LogDebug ("Interactive: Shutdown()!")
     resetFsi Kill
  
   override x.Dispose() =
-      LoggingService.LogInfo ("Interactive: disposing pad...")
+      LoggingService.LogDebug ("Interactive: disposing pad...")
       activeDoc |> Option.iter (fun ad -> ad.Dispose())
       x.Shutdown()
       view.Dispose()
@@ -205,7 +204,7 @@ type FSharpInteractivePad() as this =
   member x.UpdateFont() = 
     let fontName = MonoDevelop.Ide.Fonts.FontService.MonospaceFont.Family
     let fontName = PropertyService.Get ("FSharpBinding.FsiFontName", fontName)
-    LoggingService.LogInfo ("Interactive: Loading font '{0}'", fontName)
+    LoggingService.LogDebug ("Interactive: Loading font '{0}'", fontName)
     let font = Pango.FontDescription.FromString(fontName)
     view.SetFont(font)
 
@@ -246,7 +245,7 @@ type FSharpInteractivePad() as this =
   member x.IsInsideFSharpFile = isInsideFSharpFile()
       
   member x.LoadReferences() =
-    LoggingService.LogInfo ("FSI:  #LoadReferences")
+    LoggingService.LogDebug ("FSI:  #LoadReferences")
     let project = IdeApp.Workbench.ActiveDocument.Project :?> DotNetProject
 
     let references =
