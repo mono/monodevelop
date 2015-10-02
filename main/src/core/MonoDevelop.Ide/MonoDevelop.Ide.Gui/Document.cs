@@ -818,9 +818,8 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		object reparseLock = new object();
 		CancellationTokenSource parseTokenSource = new CancellationTokenSource();
-		int reparseQueue;
+
 		void CancelOldParsing()
 		{
 			parseTokenSource.Cancel ();
@@ -832,18 +831,21 @@ namespace MonoDevelop.Ide.Gui
 			string currentParseFile = adhocProject != null ? adHocFile : FileName;
 			if (string.IsNullOrEmpty (currentParseFile))
 				return;
-			Interlocked.Increment (ref reparseQueue);
-			Application.Invoke (delegate {
-				if (Interlocked.Decrement (ref reparseQueue) != 0) {
-					return;
+			CancelParseTimeout ();
+
+			parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
+				var editor = Editor;
+				if (editor == null) {
+					parseTimeout = 0;
+					return false;
 				}
+
 				// Don't directly parse the document because doing it at every key press is
 				// very inefficient. Do it after a small delay instead, so several changes can
 				// be parsed at the same time.
 				EnsureAnalysisDocumentIsOpen ().Wait ();
-				CancelParseTimeout ();
-				var currentParseText = Editor.CreateSnapshot ();
-				string mimeType = Editor.MimeType;
+				var currentParseText = editor.CreateSnapshot ();
+				string mimeType = editor.MimeType;
 				CancelOldParsing ();
 				var token = parseTokenSource.Token;
 				var project = Project ?? adhocProject;
@@ -889,8 +891,9 @@ namespace MonoDevelop.Ide.Gui
 							});
 						}, TaskContinuationOptions.OnlyOnRanToCompletion);
 					}
-					parseTimeout = 0;
 				});
+				parseTimeout = 0;
+				return false;
 			});
 		}
 		
