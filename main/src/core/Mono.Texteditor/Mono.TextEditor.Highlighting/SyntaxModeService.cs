@@ -92,13 +92,24 @@ namespace Mono.TextEditor.Highlighting
 				return styleLookup[style.Name];
 			return null;
 		}
-		
+
+		public static string GetFileName (string name)
+		{
+			if (!styleLookup.ContainsKey (name))
+				throw new System.ArgumentException ("Style " + name + " not found", "name");
+			var provider = styleLookup [name];
+			if (provider is UrlStreamProvider) {
+				var usp = provider as UrlStreamProvider;
+				return usp.Url;
+			}
+			return null;
+		}
+
 		static void LoadStyle (string name)
 		{
 			if (!styleLookup.ContainsKey (name))
 				throw new System.ArgumentException ("Style " + name + " not found", "name");
 			var provider = styleLookup [name];
-			styleLookup.Remove (name); 
 			var stream = provider.Open ();
 			try {
 				if (provider is UrlStreamProvider) {
@@ -112,6 +123,7 @@ namespace Mono.TextEditor.Highlighting
 				} else {
 					styles [name] = ColorScheme.LoadFrom (stream);
 				}
+				styleLookup.Remove (name); 
 			} catch (Exception e) {
 				throw new IOException ("Error while loading style :" + name, e);
 			} finally {
