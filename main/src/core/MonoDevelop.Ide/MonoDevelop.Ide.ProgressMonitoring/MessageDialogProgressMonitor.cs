@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 		{
 		}
 		
-		public MessageDialogProgressMonitor (bool showProgress, bool allowCancel, bool showDetails, bool hideWhenDone)
+		public MessageDialogProgressMonitor (bool showProgress, bool allowCancel, bool showDetails, bool hideWhenDone): base (Runtime.MainSynchronizationContext)
 		{
 			if (showProgress) {
 				dialog = new ProgressDialog (MessageService.RootWindow, allowCancel, showDetails);

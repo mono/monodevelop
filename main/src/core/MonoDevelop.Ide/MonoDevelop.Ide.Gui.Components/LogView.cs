@@ -684,7 +684,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			get { return outputPad; }
 		}
 		
-		internal LogViewProgressMonitor (LogView pad)
+		internal LogViewProgressMonitor (LogView pad): base (Runtime.MainSynchronizationContext)
 		{
 			outputPad = pad;
 			outputPad.Clear ();

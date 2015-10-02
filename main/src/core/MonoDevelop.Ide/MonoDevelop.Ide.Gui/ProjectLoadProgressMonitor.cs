@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Gui
 			get; set;
 		}
 		
-		public GtkProjectLoadProgressMonitor (ProgressMonitor monitor)
+		public GtkProjectLoadProgressMonitor (ProgressMonitor monitor): base (Runtime.MainSynchronizationContext)
 		{
 			AddSlaveMonitor (monitor);
 		}
