@@ -84,7 +84,7 @@ namespace MonoDevelop.Platform
 			return true;
 		}
 
-		internal override void AttachMainToolbar (Gtk.VBox parent, MonoDevelop.Components.MainToolbar.IMainToolbarView toolbar)
+		internal override void AttachMainToolbar (Gtk.VBox parent, Components.MainToolbar.IMainToolbarView toolbar)
 		{
 			titleBar = new TitleBar ();
 			var topMenu = new GtkWPFWidget (titleBar) {
@@ -99,10 +99,11 @@ namespace MonoDevelop.Platform
 			commandManager.IncompleteKeyReleased += (sender, e) => {
 			};
 			parent.PackStart (topMenu, false, true, 0);
-
 			SetupMenu ();
 
-			base.AttachMainToolbar (parent, toolbar);
+			parent.PackStart (new WPFToolbar {
+				HeightRequest = 50,
+			}, false, true, 0);
 		}
 
 		void SetupMenu ()
@@ -125,21 +126,22 @@ namespace MonoDevelop.Platform
 		}
 
 		TitleBar titleBar;
-		internal override MonoDevelop.Components.MainToolbar.IMainToolbarView CreateMainToolbar (Gtk.Window window)
+		internal override Components.MainToolbar.IMainToolbarView CreateMainToolbar (Gtk.Window window)
 		{
-			// TODO: Create GtkWpfWidget with implementation.
-			return base.CreateMainToolbar (window);
+			return new WPFToolbar {
+				HeightRequest = 50,
+			};
 		}
 		#endregion
 
-//		internal static Xwt.Toolkit WPFToolkit;
-//
-//		public override Xwt.Toolkit LoadNativeToolkit ()
-//		{
-//			var path = Path.GetDirectoryName (GetType ().Assembly.Location);
-//			System.Reflection.Assembly.LoadFrom (Path.Combine (path, "Xwt.WPF.dll"));
-//			return WPFToolkit = Xwt.Toolkit.Load (Xwt.ToolkitType.Wpf);
-//		}
+		internal static Xwt.Toolkit WPFToolkit;
+
+		public override Xwt.Toolkit LoadNativeToolkit ()
+		{
+			var path = Path.GetDirectoryName (GetType ().Assembly.Location);
+			System.Reflection.Assembly.LoadFrom (Path.Combine (path, "Xwt.WPF.dll"));
+			return WPFToolkit = Xwt.Toolkit.Load (Xwt.ToolkitType.Wpf);
+		}
 
 		internal override void SetMainWindowDecorations (Gtk.Window window)
 		{

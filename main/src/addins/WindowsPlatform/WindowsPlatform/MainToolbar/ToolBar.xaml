@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="WindowsPlatform.MainToolbar.ToolBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WindowsPlatform.MainToolbar"
+             mc:Ignorable="d" Background="Transparent">
+    <Grid x:Name="DockTitle" Height="32" Margin="0,0,0,0" Background="Transparent">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel x:Name="LeftPanel" Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Height="Auto">
+            <local:RunButtonControl x:Name="RunButton" VerticalContentAlignment="Center"/>
+            <ComboBox x:Name="ConfigurationCombo"  VerticalContentAlignment="Center"
+                      SelectedValuePath="OriginalId"
+                      DisplayMemberPath="DisplayString"/>
+            <ComboBox x:Name="RuntimeCombo" VerticalContentAlignment="Center"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Height="Auto">
+            <local:StatusBarControl x:Name="StatusBar" VerticalContentAlignment="Center"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Height="Auto">
+            <TextBox x:Name="SearchBar" Text="Search" VerticalContentAlignment="Center"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
