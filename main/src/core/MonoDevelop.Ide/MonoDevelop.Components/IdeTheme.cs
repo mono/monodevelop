@@ -29,6 +29,7 @@ using System.Collections.Generic;
 
 #if MAC
 using AppKit;
+using Foundation;
 #endif
 
 namespace MonoDevelop.Components
@@ -42,12 +43,12 @@ namespace MonoDevelop.Components
 			Xwt.Toolkit.CurrentEngine.RegisterBackend <Xwt.Backends.IDialogBackend, ThemedGtkDialogBackend>();
 		}
 #if MAC
-		static HashSet<NSWindow> nsWindows = new HashSet<NSWindow> ();
+		static Dictionary<NSWindow, NSObject> nsWindows = new Dictionary<NSWindow, NSObject> ();
 
 		public static void ApplyTheme (NSWindow window)
 		{
-			if (nsWindows.Add (window)) {
-				window.WillClose += Window_WillClose;
+			if (!nsWindows.ContainsKey(window)) {
+				nsWindows [window] = NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.WillCloseNotification, OnClose, window);
 				SetTheme (window);
 			}
 		}
@@ -70,17 +71,16 @@ namespace MonoDevelop.Components
 			}
 		}
 
-		static void Window_WillClose (object sender, EventArgs e)
+		static void OnClose (NSNotification note)
 		{
-			var n = (Foundation.NSNotification) sender;
-			var w = (NSWindow)n.Object;
-			w.WillClose -= Window_WillClose;
+			var w = (NSWindow)note.Object;
+			NSNotificationCenter.DefaultCenter.RemoveObserver(nsWindows[w]);
 			nsWindows.Remove (w);
 		}
 
 		static void UpdateMacWindows ()
 		{
-			foreach (var w in nsWindows)
+			foreach (var w in nsWindows.Keys)
 				SetTheme (w);
 		}
 
