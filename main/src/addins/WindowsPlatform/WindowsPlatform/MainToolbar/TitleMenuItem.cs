@@ -12,11 +12,12 @@ namespace WindowsPlatform.MainToolbar
 {
 	public class TitleMenuItem : MenuItem
 	{
-		public TitleMenuItem (MonoDevelop.Components.Commands.CommandManager manager, CommandEntry entry, CommandSource commandSource = CommandSource.MainMenu, object initialCommandTarget = null)
+		public TitleMenuItem (MonoDevelop.Components.Commands.CommandManager manager, CommandEntry entry, CommandInfo commandArrayInfo = null, CommandSource commandSource = CommandSource.MainMenu, object initialCommandTarget = null)
 		{
 			this.manager = manager;
 			this.initialCommandTarget = initialCommandTarget;
 			this.commandSource = commandSource;
+			this.commandArrayInfo = commandArrayInfo;
 
 			menuEntry = entry;
 			menuEntrySet = entry as CommandEntrySet;
@@ -33,12 +34,10 @@ namespace WindowsPlatform.MainToolbar
 				}
 			} else if (menuLinkEntry != null) {
 				Header = menuLinkEntry.Text;
-			} else {
+			} else if (entry != null) {
 				actionCommand = manager.GetCommand (menuEntry.CommandId) as ActionCommand;
 				if (actionCommand == null)
 					return;
-
-				IsCheckable = actionCommand.CommandArray;
 
 				// FIXME: Use proper keybinding text.
 				if (actionCommand.KeyBinding != null)
@@ -97,12 +96,32 @@ namespace WindowsPlatform.MainToolbar
 			if (actionCommand != null) {
 				if (!string.IsNullOrEmpty (info.Description) && ToolTip != info.Description)
 					ToolTip = info.Description;
-				
-				Items.Clear ();
-				foreach (var item in info.ArrayInfo) {
-					Items.Add (new MenuItem {
-						Header = item.Text,
-					});
+
+				if (actionCommand.CommandArray && commandArrayInfo == null) {
+					Visibility = System.Windows.Visibility.Collapsed;
+
+//					var parent = (TitleMenuItem)Parent;
+//					int count = 0;
+//					int indexOfThis = parent.Items.IndexOf (this);
+//					foreach (var child in info.ArrayInfo) {
+//						Control toAdd;
+//						if (child.IsArraySeparator) {
+//							toAdd = new Separator ();
+//						} else {
+//							toAdd = new TitleMenuItem (manager, new CommandEntry (info.Command), info) {
+//								IsCheckable = actionCommand.ActionType == ActionType.Check,
+//								IsChecked = child.Checked || child.CheckedInconsistent,
+//								IsEnabled = child.Enabled,
+//								Visibility = child.Visible ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed,
+//							};
+//						}
+//
+//						List<Control> toRemoveList;
+//						if (!toRemoveFromItem.TryGetValue (parent, out toRemoveList))
+//							toRemoveFromItem [parent] = toRemoveList = new List<Control> ();
+//						toRemoveList.Add (toAdd);
+//						parent.Items.Insert (indexOfThis + (count++), toAdd);
+//					}
 				}
 
 				IsEnabled = info.Enabled;
@@ -156,11 +175,11 @@ namespace WindowsPlatform.MainToolbar
 
 		void OnMenuClicked (object sender, System.Windows.RoutedEventArgs e)
 		{
-			//if (array != null) {
-			//	manager.DispatchCommand (menuEntry.CommandId, actionCommand.Info.DataItem, initialCommandTarget, commandSource);
-			//} else {
+			if (commandArrayInfo != null) {
+				manager.DispatchCommand (menuEntry.CommandId, commandArrayInfo.DataItem, initialCommandTarget, commandSource);
+			} else {
 				manager.DispatchCommand (menuEntry.CommandId, null, initialCommandTarget, commandSource);
-			//}
+			}
 		}
 
 		void OnMenuLinkClicked (object sender, System.Windows.RoutedEventArgs e)
@@ -171,9 +190,11 @@ namespace WindowsPlatform.MainToolbar
 		readonly MonoDevelop.Components.Commands.CommandManager manager;
 		readonly object initialCommandTarget;
 		readonly CommandSource commandSource;
+		readonly CommandInfo commandArrayInfo;
 		readonly ActionCommand actionCommand;
 		readonly CommandEntry menuEntry;
 		readonly CommandEntrySet menuEntrySet;
 		readonly LinkCommandEntry menuLinkEntry;
+		Dictionary<TitleMenuItem, List<Control>> toRemoveFromItem = new Dictionary<TitleMenuItem, List<Control>> ();
 	}
 }
