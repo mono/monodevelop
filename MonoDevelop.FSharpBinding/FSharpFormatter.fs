@@ -104,14 +104,14 @@ type FSharpFormatter()  =
                 |> Seq.map (fun s -> String.length s + 1)
                 |> Seq.scan (+) 0
                 |> Seq.toArray
-            LoggingService.LogInfo("**Fantomas**: Offsets from {0} to {1}", fromOffset, toOffset)
+            LoggingService.LogDebug("**Fantomas**: Offsets from {0} to {1}", fromOffset, toOffset)
 
             let tryFormat = 
                 maybe { 
                     let! startPos = offsetToPos positions (max 0 fromOffset)
                     let! endPos = offsetToPos positions (min input.Length toOffset+1)
                     let range = Range.mkRange "/tmp.fsx" startPos endPos
-                    LoggingService.LogInfo("**Fantomas**: Try to format range {0}.", range)
+                    LoggingService.LogDebug("**Fantomas**: Try to format range {0}.", range)
                     let! result = 
                         try 
                             let selection = input.Substring(fromOffset, toOffset - fromOffset)
