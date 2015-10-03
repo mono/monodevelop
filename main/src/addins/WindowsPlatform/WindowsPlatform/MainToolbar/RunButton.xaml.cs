@@ -22,15 +22,21 @@ namespace WindowsPlatform.MainToolbar
 	/// <summary>
 	/// Interaction logic for RunButton.xaml
 	/// </summary>
-	public partial class RunButtonControl : UserControl
+	public partial class RunButtonControl : UserControl, INotifyPropertyChanged
 	{
+		ImageSource currentImage;
+		public ImageSource CurrentImage {
+			get { return currentImage; }
+			set { currentImage = value; RaisePropertyChanged (); }
+		}
+
 		public RunButtonControl ()
 		{
 			InitializeComponent ();
 
-			DataContext = this;
-
+			RunIcon.DataContext = this;
 			icon = OperationIcon.Run;
+			CurrentImage = GetIcon ();
 			IsEnabled = false;
 		}
 
@@ -43,6 +49,7 @@ namespace WindowsPlatform.MainToolbar
 				if (value == icon)
 					return;
 				icon = value;
+				CurrentImage = GetIcon ();
 			}
 		}
 
@@ -72,6 +79,13 @@ namespace WindowsPlatform.MainToolbar
 				Click (sender, args);
 		}
 
+		void RaisePropertyChanged([CallerMemberName] string propName = null)
+		{
+			if (PropertyChanged != null)
+				PropertyChanged (this, new PropertyChangedEventArgs (propName));
+		}
+
 		public event RoutedEventHandler Click;
+		public event PropertyChangedEventHandler PropertyChanged;
 	}
 }

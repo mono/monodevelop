@@ -101,9 +101,7 @@ namespace MonoDevelop.Platform
 			parent.PackStart (topMenu, false, true, 0);
 			SetupMenu ();
 
-			parent.PackStart (new WPFToolbar {
-				HeightRequest = 50,
-			}, false, true, 0);
+			parent.PackStart ((WPFToolbar)toolbar, false, true, 0);
 		}
 
 		void SetupMenu ()

@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using Gtk;
 using MonoDevelop.Ide;
 using Xwt;
+using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
+using System.Windows.Threading;
 
 namespace WindowsPlatform.MainToolbar
 {
@@ -23,7 +26,7 @@ namespace WindowsPlatform.MainToolbar
 
 			toolbar.RunButton.Click += (o, e) => {
 				if (RunButtonClicked != null)
-					RunButtonClicked (o, EventArgs.Empty);
+					RunButtonClicked (o, e);
 			};
 		}
 
@@ -48,7 +51,7 @@ namespace WindowsPlatform.MainToolbar
 		}
 
 		public bool ButtonBarSensitivity {
-			set	{ toolbar.RunButton.IsEnabled = value; }
+			set	{  }
 		}
 
 		public IEnumerable<IConfigurationModel> ConfigurationModel {
