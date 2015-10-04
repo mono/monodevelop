@@ -34,7 +34,7 @@ namespace WindowsPlatform.MainToolbar
 		{
 			InitializeComponent ();
 
-			RunIcon.DataContext = this;
+			DataContext = this;
 			icon = OperationIcon.Run;
 			CurrentImage = GetIcon ();
 			IsEnabled = false;

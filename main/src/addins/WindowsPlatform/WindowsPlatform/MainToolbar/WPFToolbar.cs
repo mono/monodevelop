@@ -11,18 +11,59 @@ using Xwt;
 using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
 using System.Windows.Threading;
+using System.Globalization;
+using System.Windows.Data;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace WindowsPlatform.MainToolbar
 {
-	public class WPFToolbar : GtkWPFWidget, IMainToolbarView
+	public class WPFToolbar : GtkWPFWidget, IMainToolbarView, INotifyPropertyChanged
 	{
 		ToolBar toolbar;
 		WPFToolbar (ToolBar toolbar) : base (toolbar)
 		{
 			this.toolbar = toolbar;
-
+			
 			toolbar.ConfigurationCombo.DataContext = this;
+
+			toolbar.ConfigurationCombo.SelectionChanged += (o, e) => {
+				if (e.AddedItems.Count == 0)
+					return;
+
+				var newModel = (IConfigurationModel)e.AddedItems[0];
+
+				ActiveConfiguration = newModel;
+				if (newModel == null) {
+					toolbar.ConfigurationCombo.Text = "Default";
+				}
+			};
+
 			toolbar.RuntimeCombo.DataContext = this;
+			toolbar.RuntimeCombo.SelectionChanged += (o, e) => {
+				//var oldModel = (IRuntimeModel)e.RemovedItems[0];
+				//var newModel = (IRuntimeModel)e.AddedItems[0];
+				//if (newModel == null)
+				//	return;
+
+				//using (var mutableModel = newModel.GetMutableModel ()) {
+				//	if (newModel == null)
+				//		return;
+
+				//	ActiveRuntime = newModel;
+				//	var ea = new HandledEventArgs ();
+				//	if (RuntimeChanged != null)
+				//		RuntimeChanged (o, ea);
+
+				//	if (ea.Handled)
+				//		using (var oldRuntimeMutableModel = oldModel.GetMutableModel ()) {
+				//			ActiveRuntime = RuntimeModel.First (r => {
+				//				using (var newRuntimeMutableModel = r.GetMutableModel ())
+				//					return newRuntimeMutableModel.FullDisplayString == oldRuntimeMutableModel.FullDisplayString;
+				//			});
+				//		};
+				//}
+			};
 
 			toolbar.RunButton.Click += (o, e) => {
 				if (RunButtonClicked != null)
@@ -33,21 +74,23 @@ namespace WindowsPlatform.MainToolbar
 		public WPFToolbar () : this (new ToolBar ())
 		{
 		}
-
-		IConfigurationModel activeConfiguration;
+		
 		public IConfigurationModel ActiveConfiguration {
-			get {
-				return (IConfigurationModel)toolbar.ConfigurationCombo.SelectedItem;
-            }
+			get { return (IConfigurationModel)toolbar.ConfigurationCombo.SelectedItem; }
 			set {
-				toolbar.ConfigurationCombo.SelectedItem = value;
+				toolbar.ConfigurationCombo.SelectedItem = toolbar.ConfigurationCombo.Items
+					.Cast<IConfigurationModel>()
+					.FirstOrDefault (it => it.OriginalId == value.OriginalId);
+				RaisePropertyChanged ();
 			}
 		}
-
-		IRuntimeModel activeRuntime;
+		
 		public IRuntimeModel ActiveRuntime {
 			get	{ return (IRuntimeModel)toolbar.RuntimeCombo.SelectedItem; }
-			set	{ toolbar.RuntimeCombo.SelectedItem = value; }
+			set	{
+				toolbar.RuntimeCombo.SelectedItem = value;
+				RaisePropertyChanged ();
+			}
 		}
 
 		public bool ButtonBarSensitivity {
@@ -56,9 +99,13 @@ namespace WindowsPlatform.MainToolbar
 
 		public IEnumerable<IConfigurationModel> ConfigurationModel {
 			get	{ return (IEnumerable<IConfigurationModel>)toolbar.ConfigurationCombo.ItemsSource; }
-			set	{ toolbar.ConfigurationCombo.ItemsSource = value; }
+			set	{
+				toolbar.ConfigurationCombo.ItemsSource = value;
+				if (!value.Any ())
+					toolbar.ConfigurationCombo.Text = "Default";
+			}
 		}
-
+		
 		public bool ConfigurationPlatformSensitivity {
 			get { return toolbar.ConfigurationCombo.IsEnabled; }
 			set { toolbar.ConfigurationCombo.IsEnabled = toolbar.RuntimeCombo.IsEnabled = value; }
@@ -85,7 +132,11 @@ namespace WindowsPlatform.MainToolbar
 
 		public IEnumerable<IRuntimeModel> RuntimeModel {
 			get { return (IEnumerable<IRuntimeModel>)toolbar.RuntimeCombo.ItemsSource; }
-			set { toolbar.RuntimeCombo.ItemsSource = value; }
+			set {
+				toolbar.RuntimeCombo.ItemsSource = value;
+				if (!value.Any ())
+					toolbar.RuntimeCombo.Text = "Default";
+			}
 		}
 
 		public string SearchCategory {
@@ -126,7 +177,7 @@ namespace WindowsPlatform.MainToolbar
 
 		public event EventHandler ConfigurationChanged;
 		public event EventHandler RunButtonClicked;
-		public event EventHandler<HandledEventArgs> RuntimeChanged;
+		public event EventHandler<MonoDevelop.Components.MainToolbar.HandledEventArgs> RuntimeChanged;
 		public event EventHandler SearchEntryActivated;
 		public event EventHandler SearchEntryChanged;
 		public event EventHandler<KeyEventArgs> SearchEntryKeyPressed;
@@ -142,5 +193,26 @@ namespace WindowsPlatform.MainToolbar
 		{
 			//throw new NotImplementedException ();
 		}
+
+		void RaisePropertyChanged ([CallerMemberName] string propName = null)
+		{
+			if (PropertyChanged != null)
+				PropertyChanged (this, new PropertyChangedEventArgs (propName));
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
 	}
+
+	public class NotNullConverter : IValueConverter
+	{
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return value != null;
+		}
+
+		public object ConvertBack (object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			throw new NotImplementedException ();
+		}
+    }
 }

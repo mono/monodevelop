@@ -5,5 +5,17 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WindowsPlatform.MainToolbar"
              mc:Ignorable="d" Background="Transparent">
-    <TextBox x:Name="Text"/>
+    <StackPanel Orientation="Horizontal">
+        <Image MaxWidth="14" Margin="1,1,1,1" MaxHeight="14" Source="{Binding StatusImage}"></Image>
+        <TextBlock
+            Background="LightGray"
+            MinWidth="220"
+            MaxWidth="700"
+            VerticalAlignment="Center"
+            FontSize="14"
+            Padding="0,1,0,2"
+            Foreground="{Binding TextBrush}"
+            Text="{Binding Message}"/>
+        <StackPanel x:Name="StatusIconsPanel" />
+    </StackPanel>
 </UserControl>

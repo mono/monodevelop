@@ -5,6 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WindowsPlatform.MainToolbar"
              mc:Ignorable="d" Background="Transparent">
+    <UserControl.Resources>
+        <local:NotNullConverter x:Key="NotNullConverter"/>
+    </UserControl.Resources>
     <Grid x:Name="DockTitle" Height="32" Margin="0,0,0,0" Background="Transparent">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -19,8 +22,12 @@
             <local:RunButtonControl x:Name="RunButton" VerticalContentAlignment="Center"/>
             <ComboBox x:Name="ConfigurationCombo"  VerticalContentAlignment="Center"
                       SelectedValuePath="OriginalId"
-                      DisplayMemberPath="DisplayString"/>
-            <ComboBox x:Name="RuntimeCombo" VerticalContentAlignment="Center"/>
+                      DisplayMemberPath="DisplayString"
+                      IsEnabled="{Binding ActiveConfiguration, Converter={StaticResource NotNullConverter}}"
+                      Text="Default"/>
+            <ComboBox x:Name="RuntimeCombo" VerticalContentAlignment="Center"
+                      IsEnabled="{Binding ActiveRuntime, Converter={StaticResource NotNullConverter}}"
+                      Text="Default"/>
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Height="Auto">
             <local:StatusBarControl x:Name="StatusBar" VerticalContentAlignment="Center"/>
