@@ -63,7 +63,7 @@ namespace UserInterfaceTests
 		[Description ("Create a New Branch")]
 		public void CreateNewBranchTest ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			OpenRepositoryConfiguration ();
@@ -75,7 +75,7 @@ namespace UserInterfaceTests
 		[Description ("Create a New Branch and switch to it")]
 		public void GitSwitchBranchTest ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			OpenRepositoryConfiguration ();
@@ -88,7 +88,7 @@ namespace UserInterfaceTests
 		[Description ("Create a New Branch, select it and edit the name and switch to it")]
 		public void GitEditBranchTest ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			OpenRepositoryConfiguration ();
@@ -103,7 +103,7 @@ namespace UserInterfaceTests
 		[Description ("Create a new branch, select it and delete it")]
 		public void GitDeleteBranchTest ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			OpenRepositoryConfiguration ();
@@ -193,7 +193,7 @@ namespace UserInterfaceTests
 		[Description ("Clone a repo and select a remote")]
 		public void SelectRemoteTest ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			OpenRepositoryConfiguration ("Remote Sources");
@@ -205,7 +205,7 @@ namespace UserInterfaceTests
 		[Description ("Clone a repo, add a new remote and select that added remote")]
 		public void AddGitRemoteTest ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			const string newRemoteName = "second";
@@ -220,7 +220,7 @@ namespace UserInterfaceTests
 		[Description ("Clone a repo, add a new remote, select it and delete it")]
 		public void DeleteGitRemoteTest ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			const string newRemoteName = "second";
@@ -236,7 +236,7 @@ namespace UserInterfaceTests
 		[Description ("Edit only Remote Name, don't edit URL or Push URL")]
 		public void EditGitRemoteNameTest ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			OpenRepositoryConfiguration ("Remote Sources");
@@ -257,7 +257,7 @@ namespace UserInterfaceTests
 		[Description ("Edit only Remote Name and URL, don't edit Push URL")]
 		public void EditGitRemoteNameAndUrlTest ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			OpenRepositoryConfiguration ("Remote Sources");
@@ -278,7 +278,7 @@ namespace UserInterfaceTests
 		[Description ("Edit only Remote Name and Push URL, don't edit URL")]
 		public void EditGitRemoteNameAndPushUrlTest ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			OpenRepositoryConfiguration ("Remote Sources");
@@ -299,7 +299,7 @@ namespace UserInterfaceTests
 		[Description ("Edit only Remote URL and Push URL, don't edit Name")]
 		public void EditGitRemoteUrlTest ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			OpenRepositoryConfiguration ("Remote Sources");
@@ -319,7 +319,7 @@ namespace UserInterfaceTests
 		[Description ("Clone a repo, add a new remote and fetch the remote branches for that remote")]
 		public void FetchRemoteBranches ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			const string newRemoteName = "second";
@@ -334,7 +334,7 @@ namespace UserInterfaceTests
 		[Description ("Clone a repo, add a new remote, fetch the remote branch, chose a branch and track it in local. Select that branch in Branches tab")]
 		public void TrackRemoteBranchInLocalTest()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			const string newRemoteName = "second";

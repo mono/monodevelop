@@ -130,6 +130,7 @@ namespace UserInterfaceTests
 		}
 
 		[Test]
+		[Timeout (90000)]
 		[Description ("When readme.txt from a package has already been opened, adding same package to another project should not open readme.txt")]
 		public void TestDontOpenReadmeOpenedInOther ()
 		{
@@ -153,6 +154,7 @@ namespace UserInterfaceTests
 			var pclProjectDetails = ProjectDetails.ToExistingSolution (projectDetails.SolutionName,
 				GenerateProjectName (pclTemplateOptions.TemplateKind));
 			CreateProject (pclTemplateOptions, pclProjectDetails);
+			Ide.WaitForIdeIdle (30);
 
 			SolutionExplorerController.SelectProject (projectDetails.SolutionName, pclProjectDetails.ProjectName);
 			NuGetController.AddPackage (packageInfo, this);

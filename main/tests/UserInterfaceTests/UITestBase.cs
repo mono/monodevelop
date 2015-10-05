@@ -156,7 +156,7 @@ namespace UserInterfaceTests
 			reproStepIndex = 0;
 			var currentTestLog = Path.Combine (currentTestResultFolder, string.Format ("{0}.Test.log.txt", TestContext.CurrentContext.Test.Name.ToPathSafeString ()));
 			Logger = new FileLogger (currentTestLog) {
-				Name = "UITestLogger",
+				Name = TestContext.CurrentContext.Test.Name,
 				EnabledLevel = EnabledLoggingLevel.All,
 			};
 			LoggingService.AddLogger (Logger);
