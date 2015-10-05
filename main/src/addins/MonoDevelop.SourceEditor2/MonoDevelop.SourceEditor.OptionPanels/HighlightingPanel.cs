@@ -38,14 +38,24 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 	public partial class HighlightingPanel : Gtk.Bin, IOptionsPanel
 	{
 		string schemeName;
+		ListStore styleStore = new ListStore (typeof (string), typeof (Mono.TextEditor.Highlighting.ColorScheme), typeof(bool));
+		Lazy<Gdk.Pixbuf> errorPixbuf = new Lazy<Gdk.Pixbuf> (() => ImageService.GetIcon (Stock.DialogError, IconSize.Menu).ToPixbuf ());
 
-
-		ListStore styleStore = new ListStore (typeof (string), typeof (Mono.TextEditor.Highlighting.ColorScheme));
-		
 		public HighlightingPanel ()
 		{
 			this.Build ();
-			styleTreeview.AppendColumn ("", new CellRendererText (), "markup", 0);
+			var col = new TreeViewColumn ();
+			var crpixbuf = new CellRendererPixbuf ();
+			col.PackStart (crpixbuf, false);
+			col.SetCellDataFunc (crpixbuf, (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) => {
+				var isError = (bool)styleStore.GetValue (iter, 2);
+				crpixbuf.Visible = isError;
+				crpixbuf.Pixbuf = isError ? errorPixbuf.Value : null;
+			});
+			var crtext = new CellRendererText ();
+			col.PackEnd (crtext, true);
+			col.SetAttributes (crtext, "markup", 0);
+			styleTreeview.AppendColumn (col);
 			styleTreeview.Model = styleStore;
 			// ensure that custom styles are loaded.
 			new SourceEditorDisplayBinding ();
@@ -109,7 +119,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			var sheme = (Mono.TextEditor.Highlighting.ColorScheme)styleStore.GetValue (iter, 1);
 			if (sheme == null)
 				return;
-			
+			var isError = (bool)styleStore.GetValue (iter, 2);
+			if (isError) {
+				this.removeButton.Sensitive = true;
+				return;
+			}
 			DefaultSourceEditorOptions.Instance.ColorScheme = sheme.Name;
 			this.buttonExport.Sensitive = true;
 			string fileName = sheme.FileName;
@@ -126,19 +140,24 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				using (var editor = new ColorShemeEditor (this)) {
 					var colorScheme = (Mono.TextEditor.Highlighting.ColorScheme)this.styleStore.GetValue (selectedIter, 1);
 					editor.SetSheme (colorScheme);
-					MessageService.ShowCustomDialog (editor, dialog);
+					MessageService. ShowCustomDialog (editor, dialog);
 				}
 			}
 		}
 		
-		Mono.TextEditor.Highlighting.ColorScheme LoadStyle (string styleName, bool showException = true)
+		Mono.TextEditor.Highlighting.ColorScheme LoadStyle (string styleName, out bool error)
 		{
 			try {
+				error = false;
 				return Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (styleName);
 			} catch (Exception e) {
-				if (showException)
-					MessageService.ShowError ("Error while importing color style " + styleName, (e.InnerException ?? e).Message);
-				return Mono.TextEditor.Highlighting.SyntaxModeService.DefaultColorStyle;
+				LoggingService.LogError ("Error while loading color style " + styleName, e);
+				error = true;
+				var style = Mono.TextEditor.Highlighting.SyntaxModeService.DefaultColorStyle.Clone ();
+				style.Name = styleName;
+				style.Description = GettextCatalog.GetString ("Loading error:" + e.Message);
+				style.FileName = Mono.TextEditor.Highlighting.SyntaxModeService.GetFileName (styleName);
+				return style;
 			}
 		
 		}
@@ -146,11 +165,12 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		internal void ShowStyles ()
 		{
 			styleStore.Clear ();
-			TreeIter selectedIter = styleStore.AppendValues (GetMarkup (GettextCatalog.GetString ("Default"), GettextCatalog.GetString ("The default color scheme.")), LoadStyle ("Default"));
+			bool error;
+			TreeIter selectedIter = styleStore.AppendValues (GetMarkup (GettextCatalog.GetString ("Default"), GettextCatalog.GetString ("The default color scheme.")), LoadStyle ("Default", out error));
 			foreach (string styleName in Mono.TextEditor.Highlighting.SyntaxModeService.Styles) {
 				if (styleName == "Default")
 					continue;
-				var style = LoadStyle (styleName);
+				var style = LoadStyle (styleName, out error);
 				string name = style.Name ?? "";
 				string description = style.Description ?? "";
 				// translate only build-in sheme names
@@ -162,7 +182,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 					} catch {
 					}
 				}
-				TreeIter iter = styleStore.AppendValues (GetMarkup (name, description), style);
+				TreeIter iter = styleStore.AppendValues (GetMarkup (name, description), style, error);
 				if (style.Name == DefaultSourceEditorOptions.Instance.ColorScheme)
 					selectedIter = iter;
 			}
