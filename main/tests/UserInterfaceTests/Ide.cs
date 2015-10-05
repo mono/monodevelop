@@ -155,34 +155,49 @@ namespace UserInterfaceTests
 		static void PollStatusMessage (string[] statusMessage, int timeoutInSecs, int pollStepInSecs, bool waitForMessage = true)
 		{
 			Ide.WaitUntil (() => {
+				string actualStatusMessage = string.Empty;
 				try {
-					var actualStatusMessage = Workbench.GetStatusMessage ();
+					actualStatusMessage = Workbench.GetStatusMessage ();
 					return waitForMessage == (statusMessage.Contains (actualStatusMessage, StringComparer.OrdinalIgnoreCase));
 				} catch (TimeoutException e) {
 					throw new TimeoutException (
-						string.Format ("Timed out. Found status message '{0}'\nand expected one of these:\n\t",
-						string.Join ("\n\t", statusMessage)), e);
+						string.Format ("Timed out. Found status message '{0}'\nand expected one of these:\n\t {1}",
+							actualStatusMessage, string.Join ("\n\t", statusMessage)), e);
 				}
 			}, pollStep: pollStepInSecs * 1000, timeout: timeoutInSecs * 1000);
 		}
 
-		public static void WaitForIdeIdle (uint totalTimeoutInSecs = 100, uint idlePeriodInSecs = 10)
+		static readonly List<string> ignoreStatusMessgaes = new List<string> {
+			"Saving...",
+			"Restoring packages for solution...",
+			"Restoring packages before update...",
+			"Restoring packages for project...",
+			"Updating packages in solution...",
+			"Updating packages in project..."
+		};
+
+		public static void WaitForIdeIdle (uint totalTimeoutInSecs = 100, uint idlePeriodInSecs = 10, string[] ignoreMessages = null)
 		{
 			uint retriesLeft = (uint)Math.Ceiling ((double)totalTimeoutInSecs/(double)idlePeriodInSecs);
 			ManualResetEvent resetEvent = new ManualResetEvent (false);
+			if (ignoreMessages != null)
+				ignoreStatusMessgaes.AddRange (ignoreMessages);
 
 			var timer = new System.Timers.Timer {
 				Interval = idlePeriodInSecs * 1000,
 				AutoReset = true
 			};
+			bool didTimeout = false;
 
 			var initialStatusMessage = Workbench.GetStatusMessage (waitForNonEmpty: false);
 			timer.Elapsed += (sender, e) => {
-				if (retriesLeft == 0)
-					throw new TimeoutException ("Timeout waiting for IDE to be ready and idle");
+				if (retriesLeft == 0) {
+					didTimeout = true;
+					resetEvent.Set ();
+				}
 
 				var finalStatusMessage = Workbench.GetStatusMessage (waitForNonEmpty: false);
-				var isIdle = string.Equals (initialStatusMessage, finalStatusMessage);
+				var isIdle = string.Equals (initialStatusMessage, finalStatusMessage) && !ignoreStatusMessgaes.Contains (finalStatusMessage);
 
 				if (!isIdle) {
 					retriesLeft--;
@@ -190,14 +205,17 @@ namespace UserInterfaceTests
 				}
 				if (isIdle) {
 					resetEvent.Set ();
-					timer.Stop ();
-					timer.AutoReset = false;
-					timer.Dispose ();
 				}
 			};
 
 			timer.Start ();
 			resetEvent.WaitOne ();
+			timer.Stop ();
+			timer.AutoReset = false;
+			timer.Dispose ();
+
+			if (didTimeout)
+				throw new TimeoutException ("Timeout waiting for IDE to be ready and idle");
 		}
 	}
 
