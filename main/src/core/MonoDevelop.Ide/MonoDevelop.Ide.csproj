@@ -840,17 +840,17 @@
     <EmbeddedResource Include="icons\file-class-32~dark%402x.png">
       <LogicalName>file-class-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-enumeration-32.png">
-      <LogicalName>file-enumeration-32.png</LogicalName>
+    <EmbeddedResource Include="icons\file-enum-32.png">
+      <LogicalName>file-enum-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-enumeration-32%402x.png">
-      <LogicalName>file-enumeration-32@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\file-enum-32%402x.png">
+      <LogicalName>file-enum-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-enumeration-32~dark.png">
-      <LogicalName>file-enumeration-32~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\file-enum-32~dark.png">
+      <LogicalName>file-enum-32~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-enumeration-32~dark%402x.png">
-      <LogicalName>file-enumeration-32~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\file-enum-32~dark%402x.png">
+      <LogicalName>file-enum-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-interface-32.png">
       <LogicalName>file-interface-32.png</LogicalName>
