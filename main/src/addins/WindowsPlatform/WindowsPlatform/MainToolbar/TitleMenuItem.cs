@@ -23,6 +23,20 @@ namespace WindowsPlatform.MainToolbar
 			menuEntrySet = entry as CommandEntrySet;
 			menuLinkEntry = entry as LinkCommandEntry;
 
+			if (commandArrayInfo != null) {
+				Header = commandArrayInfo.Text;
+
+				var commandArrayInfoSet = commandArrayInfo as CommandInfoSet;
+				if (commandArrayInfoSet != null) {
+					foreach (var item in commandArrayInfoSet.CommandInfos) {
+						if (item.IsArraySeparator)
+							Items.Add (new Separator ());
+						else
+							Items.Add (new TitleMenuItem (manager, entry, item, commandSource, initialCommandTarget));
+					}
+				}
+			}
+
 			if (menuEntrySet != null) {
 				Header = menuEntrySet.Name;
 
@@ -38,6 +52,8 @@ namespace WindowsPlatform.MainToolbar
 				actionCommand = manager.GetCommand (menuEntry.CommandId) as ActionCommand;
 				if (actionCommand == null)
 					return;
+
+				IsCheckable = actionCommand.ActionType == ActionType.Check;
 
 				// FIXME: Use proper keybinding text.
 				if (actionCommand.KeyBinding != null)
@@ -60,7 +76,7 @@ namespace WindowsPlatform.MainToolbar
 				return;
 			}
 
-			if (menuEntrySet != null) {
+			if (menuEntrySet != null || commandArrayInfo is CommandInfoSet) {
 				if (includeChildren) {
 					for (int i = 0; i < Items.Count; ++i) {
 						var titleMenuItem = Items[i] as TitleMenuItem;
@@ -86,7 +102,7 @@ namespace WindowsPlatform.MainToolbar
 							break;
 						}
 					}
-					if (menuEntrySet.AutoHide)
+					if (menuEntrySet != null && menuEntrySet.AutoHide)
 						Visibility = Items.Cast<Control> ().Any (item => item.Visibility == System.Windows.Visibility.Visible) ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
 				}
 				return;
@@ -94,43 +110,43 @@ namespace WindowsPlatform.MainToolbar
 
 			var info = manager.GetCommandInfo (menuEntry.CommandId, new CommandTargetRoute (initialCommandTarget));
 			if (actionCommand != null) {
-				if (!string.IsNullOrEmpty (info.Description) && ToolTip != info.Description)
+				if (!string.IsNullOrEmpty (info.Description) && (string)ToolTip != info.Description)
 					ToolTip = info.Description;
 
 				if (actionCommand.CommandArray && commandArrayInfo == null) {
 					Visibility = System.Windows.Visibility.Collapsed;
 
-//					var parent = (TitleMenuItem)Parent;
-//					int count = 0;
-//					int indexOfThis = parent.Items.IndexOf (this);
-//					foreach (var child in info.ArrayInfo) {
-//						Control toAdd;
-//						if (child.IsArraySeparator) {
-//							toAdd = new Separator ();
-//						} else {
-//							toAdd = new TitleMenuItem (manager, new CommandEntry (info.Command), info) {
-//								IsCheckable = actionCommand.ActionType == ActionType.Check,
-//								IsChecked = child.Checked || child.CheckedInconsistent,
-//								IsEnabled = child.Enabled,
-//								Visibility = child.Visible ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed,
-//							};
-//						}
-//
-//						List<Control> toRemoveList;
-//						if (!toRemoveFromItem.TryGetValue (parent, out toRemoveList))
-//							toRemoveFromItem [parent] = toRemoveList = new List<Control> ();
-//						toRemoveList.Add (toAdd);
-//						parent.Items.Insert (indexOfThis + (count++), toAdd);
-//					}
-				}
+					var parent = (TitleMenuItem)Parent;
 
-				IsEnabled = info.Enabled;
-				Visibility = info.Visible && (menuEntry.DisabledVisible || info.Enabled) ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+					int count = 1;
+					int indexOfThis = parent.Items.IndexOf (this);
+					foreach (var child in info.ArrayInfo) {
+						Control toAdd;
+						if (child.IsArraySeparator) {
+							toAdd = new Separator ();
+						} else {
+							toAdd = new TitleMenuItem (manager, menuEntry, child);
+						}
+
+						toRemoveFromParent.Add (toAdd);
+						parent.Items.Insert (indexOfThis + (count++), toAdd);
+					}
+					return;
+				}
 			}
 
-			Header = info.Text;
-			Visibility = info.Visible ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+			SetInfo (commandArrayInfo != null ? commandArrayInfo : info);
 			Click += OnMenuClicked;
+		}
+
+		void SetInfo (CommandInfo info)
+		{
+			Header = info.Text;
+			IsEnabled = info.Enabled;
+			Visibility = info.Visible && (menuEntry.DisabledVisible || IsEnabled) ?
+				System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+			IsChecked = info.Checked || info.CheckedInconsistent;
+			ToolTip = info.Description;
 		}
 
 		/// <summary>
@@ -138,27 +154,35 @@ namespace WindowsPlatform.MainToolbar
 		/// This will update all the menu's children on a first call, then only the nodes themselves on the recursive call.
 		/// </summary>
 		/// <param name="includeChildren">If set to <c>true</c> include children.</param>
-		void Clear (bool includeChildren)
+		IEnumerable<Control> Clear (bool includeChildren)
 		{
 			if (menuLinkEntry != null) {
 				Click -= OnMenuLinkClicked;
-				return;
+				return Enumerable.Empty<TitleMenuItem> ();
 			}
 
 			if (menuEntrySet != null) {
 				if (includeChildren) {
-					foreach (var item in Items) {
+					var toRemove = Enumerable.Empty<Control> ();
+                    foreach (var item in Items) {
 						var titleMenuItem = item as TitleMenuItem;
 						if (titleMenuItem == null)
 							continue;
 
-						titleMenuItem.Clear (false);
+						toRemove = toRemove.Concat (titleMenuItem.Clear (false));
 					}
+
+					foreach (var item in toRemove)
+						Items.Remove (item);
 				}
-				return;
+				return Enumerable.Empty<TitleMenuItem> (); 
 			}
 
 			Click -= OnMenuClicked;
+
+			var ret = toRemoveFromParent;
+			toRemoveFromParent = new List<Control> ();
+			return ret;
 		}
 
 		protected override void OnSubmenuOpened (System.Windows.RoutedEventArgs e)
@@ -195,6 +219,6 @@ namespace WindowsPlatform.MainToolbar
 		readonly CommandEntry menuEntry;
 		readonly CommandEntrySet menuEntrySet;
 		readonly LinkCommandEntry menuLinkEntry;
-		Dictionary<TitleMenuItem, List<Control>> toRemoveFromItem = new Dictionary<TitleMenuItem, List<Control>> ();
+		List<Control> toRemoveFromParent = new List<Control> ();
 	}
 }
