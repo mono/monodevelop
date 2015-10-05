@@ -135,7 +135,7 @@ namespace WindowsPlatform.MainToolbar
 		}
 
 		public bool ButtonBarSensitivity {
-			set	{  }
+			set	{ toolbar.ButtonBarPanel.IsEnabled = value; }
 		}
 
 		public IEnumerable<IConfigurationModel> ConfigurationModel {
