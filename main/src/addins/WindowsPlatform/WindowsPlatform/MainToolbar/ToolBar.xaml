@@ -24,16 +24,25 @@
                       SelectedValuePath="OriginalId"
                       DisplayMemberPath="DisplayString"
                       IsEnabled="{Binding ActiveConfiguration, Converter={StaticResource NotNullConverter}}"
-                      Text="Default"/>
+                      Background="Transparent"
+                      BorderBrush="Transparent">
+                <ComboBox.ItemContainerStyle>
+                    <Style TargetType="ComboBoxItem">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderBrush" Value="Transparent"/>
+                    </Style>
+                </ComboBox.ItemContainerStyle>
+            </ComboBox>
             <ComboBox x:Name="RuntimeCombo" VerticalContentAlignment="Center"
                       IsEnabled="{Binding ActiveRuntime, Converter={StaticResource NotNullConverter}}"
-                      Text="Default"/>
+                      Background="Transparent"/>
+            <StackPanel x:Name="ButtonBarPanel" Orientation="Horizontal" />
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Height="Auto">
             <local:StatusBarControl x:Name="StatusBar" VerticalContentAlignment="Center"/>
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Height="Auto">
-            <TextBox x:Name="SearchBar" Text="Search" VerticalContentAlignment="Center"/>
+            <local:SearchBarControl x:Name="SearchBar" VerticalContentAlignment="Center"/>
         </StackPanel>
     </Grid>
 </UserControl>

@@ -34,6 +34,7 @@ namespace WindowsPlatform.MainToolbar
 		static Brush ReadyTextBrush = Brushes.Gray;
 
 		StatusBarContextHandler ctxHandler;
+		TaskEventHandler updateHandler;
 		public StatusBarControl ()
 		{
 			InitializeComponent ();
@@ -42,6 +43,32 @@ namespace WindowsPlatform.MainToolbar
 			ctxHandler = new StatusBarContextHandler (this);
 
 			ShowReady ();
+
+			updateHandler = delegate {
+				int ec = 0, wc = 0;
+
+				foreach (MonoDevelop.Ide.Tasks.Task t in TaskService.Errors) {
+					if (t.Severity == TaskSeverity.Error)
+						ec++;
+					else if (t.Severity == TaskSeverity.Warning)
+						wc++;
+				}
+
+				DispatchService.GuiDispatch (delegate {
+					if (ec > 0) {
+						BuildResultPanelVisibility = Visibility.Visible;
+						BuildResultCount = ec;
+						BuildResultIcon = (ImageSource)MonoDevelop.Platform.WindowsPlatform.WPFToolkit.GetNativeImage (ImageService.GetIcon (Stock.Error));
+					} else if (wc > 0) {
+						BuildResultPanelVisibility = Visibility.Visible;
+						BuildResultCount = wc;
+						BuildResultIcon = (ImageSource)MonoDevelop.Platform.WindowsPlatform.WPFToolkit.GetNativeImage (ImageService.GetIcon (Stock.Warning));
+					} else
+						BuildResultPanelVisibility = Visibility.Collapsed;
+				});
+			};
+			TaskService.Errors.TasksAdded += updateHandler;
+			TaskService.Errors.TasksRemoved += updateHandler;
 		}
 
 		public bool AutoPulse {
@@ -55,10 +82,12 @@ namespace WindowsPlatform.MainToolbar
 
 		public void BeginProgress (string name)
 		{
+			ShowMessage (name);
 		}
 
 		public void BeginProgress (IconId image, string name)
 		{
+			ShowMessage (image, name);
 		}
 
 		public StatusBarContext CreateContext ()
@@ -68,8 +97,8 @@ namespace WindowsPlatform.MainToolbar
 
 		public void Dispose ()
 		{
-			//TaskService.Errors.TasksAdded -= updateHandler;
-			//TaskService.Errors.TasksRemoved -= updateHandler;
+			TaskService.Errors.TasksAdded -= updateHandler;
+			TaskService.Errors.TasksRemoved -= updateHandler;
 		}
 
 		public void EndProgress ()
@@ -125,10 +154,17 @@ namespace WindowsPlatform.MainToolbar
 
 		public StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)
 		{
-			return new StatusIcon (this) {
+			var icon = new StatusIcon (this) {
 				Image = pixbuf,
+				Margin = new Thickness (0, 1, 0, 1),
+				MaxWidth = 14,
+				MaxHeight = 14,
 			};
-		}
+
+			StatusIconsPanel.Children.Add (icon);
+
+			return icon;
+        }
 
 		public void ShowWarning (string warning)
 		{
@@ -155,6 +191,27 @@ namespace WindowsPlatform.MainToolbar
 		{
 			get { return statusImage; }
 			set { statusImage = value; RaisePropertyChanged (); }
+		}
+
+		int buildResultCount;
+		public int BuildResultCount
+		{
+			get { return buildResultCount; }
+			set { buildResultCount = value; RaisePropertyChanged (); }
+		}
+
+		ImageSource buildResultIcon;
+		public ImageSource BuildResultIcon
+		{
+			get { return buildResultIcon; }
+			set { buildResultIcon = value; RaisePropertyChanged (); }
+		}
+
+		Visibility buildResultPanelVisibility = Visibility.Collapsed;
+		public Visibility BuildResultPanelVisibility
+		{
+            get { return buildResultPanelVisibility; }
+			set { buildResultPanelVisibility = value; RaisePropertyChanged (); }
 		}
 
 		void RaisePropertyChanged ([CallerMemberName] string propName = null)

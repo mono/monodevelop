@@ -96,8 +96,8 @@
     <Compile Include="Dialogs\OpenFileDialogHandler.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="GdkWin32.cs" />
-    <Compile Include="MainToolbar\RunButton.xaml.cs">
-      <DependentUpon>RunButton.xaml</DependentUpon>
+    <Compile Include="MainToolbar\IconButton.xaml.cs">
+      <DependentUpon>IconButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainToolbar\SearchBar.xaml.cs">
       <DependentUpon>SearchBar.xaml</DependentUpon>
@@ -138,7 +138,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainToolbar\RunButton.xaml">
+    <Page Include="MainToolbar\IconButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

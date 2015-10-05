@@ -5,10 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WindowsPlatform.MainToolbar"
              mc:Ignorable="d" Background="Transparent">
-    <StackPanel Orientation="Horizontal">
-        <Image MaxWidth="14" Margin="1,1,1,1" MaxHeight="14" Source="{Binding StatusImage}"></Image>
+    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Background="LightGray">
+        <Image MaxWidth="14" Margin="1,1,1,1" MaxHeight="14" Source="{Binding StatusImage}" />
         <TextBlock
-            Background="LightGray"
             MinWidth="220"
             MaxWidth="700"
             VerticalAlignment="Center"
@@ -16,6 +15,10 @@
             Padding="0,1,0,2"
             Foreground="{Binding TextBrush}"
             Text="{Binding Message}"/>
-        <StackPanel x:Name="StatusIconsPanel" />
+        <StackPanel x:Name="BuildResultPanel" Visibility="{Binding BuildResultPanelVisibility}" Orientation="Horizontal">
+            <Image Source="{Binding BuildResultIcon}" MaxWidth="14" Margin="1,1,1,1" MaxHeight="14"/>
+            <TextBlock Text="{Binding BuildResultCount}" Padding="0,1,0,2"/>
+        </StackPanel>
+        <StackPanel x:Name="StatusIconsPanel" Orientation="Horizontal"/>
     </StackPanel>
 </UserControl>
