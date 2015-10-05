@@ -32,15 +32,16 @@ namespace UserInterfaceTests
 {
 	[TestFixture, Timeout(60000)]
 	[Category ("Git")]
+	[Category ("GitBase")]
 	public class GitTests : VCSBase
 	{
 		[Test, Timeout(90000)]
-		[TestCase ("git@github.com:mono/jurassic.git", TestName = "TestGitSSHClone", Description = "Clone Git repo over SSH")]
-		[TestCase ("https://github.com/mono/jurassic.git", TestName = "TestGitHTTPSClone", Description = "Clone Git repo over HTTPS")]
+		[TestCase ("git@github.com:mono/gtk-sharp.git", TestName = "TestGitSSHClone", Description = "Clone Git repo over SSH")]
+		[TestCase ("https://github.com/mono/gtk-sharp.git", TestName = "TestGitHTTPSClone", Description = "Clone Git repo over HTTPS")]
 		public void TestGitClone (string url)
 		{
 			TestClone (url);
-			Ide.WaitForSolutionCheckedOut ();
+			Ide.WaitForIdeIdle ();
 		}
 
 		[Test]
