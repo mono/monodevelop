@@ -303,7 +303,7 @@ type LanguageService(dirtyNotify) =
 
           let filename = Path.Combine(Reflection.Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName, "CompilerService.exe")
           let processName = 
-            if Environment.runningOnMono then "mono" else filename
+            if Environment.runningOnMono then Environment.getMonoPath() else filename
           
           let arguments = 
             if Environment.runningOnMono then sprintf "%s --project %s" filename projFilename else sprintf "--project %s" projFilename
