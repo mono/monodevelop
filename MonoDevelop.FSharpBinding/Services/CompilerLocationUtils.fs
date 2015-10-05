@@ -18,6 +18,12 @@ module Environment =
     try System.Type.GetType("Mono.Runtime") <> null
     with _ -> false  
 
+  let getMonoPath() =
+    if File.Exists "/Library/Frameworks/Mono.framework/Commands/mono" then
+      "/Library/Frameworks/Mono.framework/Commands/mono"
+    else
+      "mono"
+
 /// Target framework (used to find the right version of F# binaries)
 type FSharpTargetFramework = 
     | NET_2_0
