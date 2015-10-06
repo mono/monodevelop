@@ -141,10 +141,10 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		static WelcomePageListButton ()
 		{
-			starNormal = Xwt.Drawing.Image.FromResource ("unstar-overlay-16.png");
-			starNormalHover = Xwt.Drawing.Image.FromResource ("unstar-overlay-hover-16.png");
-			starPinned = Xwt.Drawing.Image.FromResource ("star-overlay-16.png");
-			starPinnedHover = Xwt.Drawing.Image.FromResource ("star-overlay-hover-16.png");
+			starNormal = Xwt.Drawing.Image.FromResource ("unstar-16.png");
+			starNormalHover = Xwt.Drawing.Image.FromResource ("unstar-hover-16.png");
+			starPinned = Xwt.Drawing.Image.FromResource ("star-16.png");
+			starPinnedHover = Xwt.Drawing.Image.FromResource ("star-hover-16.png");
 		}
 
 		public WelcomePageListButton (string title, string subtitle, Xwt.Drawing.Image icon, string actionUrl)
