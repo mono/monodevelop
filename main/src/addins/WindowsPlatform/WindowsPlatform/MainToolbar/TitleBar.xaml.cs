@@ -69,9 +69,13 @@ namespace WindowsPlatform.MainToolbar
 			if (e.MouseDevice.DirectlyOver.GetType () != typeof (Border))
 				return;
 
-			int wndX, wndY;
-			IdeApp.Workbench.RootWindow.GetPosition (out wndX, out wndY);
-			IdeApp.Workbench.RootWindow.BeginMoveDrag (1, wndX, wndY, (uint)e.Timestamp);
+			if (e.ClickCount == 2)
+				MaximizeExecuted (this, null);
+			else {
+				int wndX, wndY;
+				IdeApp.Workbench.RootWindow.GetPosition (out wndX, out wndY);
+				IdeApp.Workbench.RootWindow.BeginMoveDrag (1, wndX, wndY, (uint)e.Timestamp);
+			}
 		}
 	}
 }
