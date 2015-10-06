@@ -299,14 +299,10 @@ namespace MonoDevelop.Projects
 			return Task.Run (delegate {
 				WriteProject (monitor);
 
-				var t = File.GetLastWriteTime (FileName);
-
 				// Doesn't save the file to disk if the content did not change
-				sourceProject.Save (FileName);
-
-				// Check the last write time to avoid an unnecessary refresh if the file did not change
-				if (projectBuilder != null && t != File.GetLastWriteTime (FileName))
+				if (sourceProject.Save (FileName) && projectBuilder != null) {
 					projectBuilder.Refresh ().Wait ();
+				}
 			});
 		}
 

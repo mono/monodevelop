@@ -346,17 +346,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		public void Save (string fileName)
+		public bool Save (string fileName)
 		{
 			string content = SaveToString ();
-			TextFile.WriteFile (fileName, content, format.ByteOrderMark, true);
+			return TextFile.WriteFile (fileName, content, format.ByteOrderMark, true);
 		}
 
-		public Task SaveAsync (string fileName)
+		public Task<bool> SaveAsync (string fileName)
 		{
 			return Task.Run (() => {
 				string content = SaveToString ();
-				TextFile.WriteFile (fileName, content, format.ByteOrderMark, true);
+				return TextFile.WriteFile (fileName, content, format.ByteOrderMark, true);
 			});
 		}
 
