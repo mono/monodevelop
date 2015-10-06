@@ -32,7 +32,7 @@ type HighlightUsagesExtension() =
                 let currentFile = x.DocumentContext.Name
                 let source = x.Editor.Text
                 let projectFile = x.DocumentContext.Project |> function null -> currentFile | project -> project.FileName.ToString()
-                let! symbolReferences = MDLanguageService.Instance.GetUsesOfSymbolAtLocationInFile (projectFile, currentFile, source, line, col, lineStr)
+                let! symbolReferences = MDLanguageService.Instance.GetUsesOfSymbolAtLocationInFile (projectFile, currentFile, 0, source, line, col, lineStr)
                 return symbolReferences
             with
             | :? Threading.Tasks.TaskCanceledException -> return None
