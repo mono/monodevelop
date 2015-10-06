@@ -113,7 +113,7 @@ test:
 	cd main && $(MAKE) test assembly=$(assembly)
 
 uitest:
-	cd main && $(MAKE) uitest assembly=$(assembly)
+	cd main && $(MAKE) uitest assembly=$(assembly) tests=$(tests)
 
 coverage:
 	cd main && $(MAKE) coverage
