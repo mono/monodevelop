@@ -41,8 +41,11 @@ namespace WindowsPlatform.MainToolbar
 		{
 			if (IdeApp.Workbench.RootWindow.GdkWindow.State == Gdk.WindowState.Maximized)
 				IdeApp.Workbench.RootWindow.Unmaximize ();
-			else
+			else {
 				IdeApp.Workbench.RootWindow.Maximize ();
+				IdeApp.Workbench.RootWindow.Resize ((int)SystemParameters.WorkArea.Width, (int)SystemParameters.WorkArea.Height);
+				IdeApp.Workbench.RootWindow.Decorated = false;
+			}
 		}
 
 		void MinimizeExecuted (object sender, ExecutedRoutedEventArgs e)
