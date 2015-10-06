@@ -81,42 +81,39 @@ type FSharpParser() =
             match tryGetFilePath fileName proj with
             | None -> ()
             | Some filePath -> 
-                let! results =
-                    let projectFile = proj |> function null -> filePath | proj -> proj.FileName.ToString()
-                    LoggingService.LogDebug ("FSharpParser: Running ParseAndCheckFileInProject for {0}", shortFilename)
-                    languageService.ParseAndCheckFileInProject(projectFile, filePath, 0, content.Text, obsoleteCheck = isObsolete )
+                LoggingService.LogDebug ("FSharpParser: Running ParseAndCheckFileInProject for {0}", shortFilename)
+                let projectFile = proj |> function null -> filePath | proj -> proj.FileName.ToString()
+                let! results = languageService.ParseAndCheckFileInProject(projectFile, filePath, 0, content.Text, isObsolete)
 
-                match results with
-                | results ->                                                                     
-                  results.GetErrors() |> Option.iter (Array.map formatError >> doc.AddRange)
+                results.GetErrors() |> Option.iter (Array.map formatError >> doc.AddRange)
 
-                  //Try creating tokens
-                  try
-                    let readOnlyDoc = TextEditorFactory.CreateNewReadonlyDocument (parseOptions.Content, fileName)
-                    let lineDetails =
-                      [ for i in 1..readOnlyDoc.LineCount do
-                          let line = readOnlyDoc.GetLine(i)
-                          yield Tokens.LineDetail(line.LineNumber, line.Offset, readOnlyDoc.GetTextAt(line.Offset, line.Length)) ]
-                    let defines = CompilerArguments.getDefineSymbols filePath (proj |> Option.ofNull)
-                    let tokens = Tokens.getTokens lineDetails filePath defines
-                    doc.Tokens <- Some(tokens)
-                  with ex ->
-                    LoggingService.LogWarning ("FSharpParser: Couldn't update token information", ex)
+                //Try creating tokens
+                try
+                  let readOnlyDoc = TextEditorFactory.CreateNewReadonlyDocument (parseOptions.Content, fileName)
+                  let lineDetails =
+                    [ for i in 1..readOnlyDoc.LineCount do
+                        let line = readOnlyDoc.GetLine(i)
+                        yield Tokens.LineDetail(line.LineNumber, line.Offset, readOnlyDoc.GetTextAt(line.Offset, line.Length)) ]
+                  let defines = CompilerArguments.getDefineSymbols filePath (proj |> Option.ofNull)
+                  let tokens = Tokens.getTokens lineDetails filePath defines
+                  doc.Tokens <- Some(tokens)
+                with ex ->
+                  LoggingService.LogWarning ("FSharpParser: Couldn't update token information", ex)
 
-                  //Set code folding regions, GetNavigationItems may throw in some situations
-                  try 
-                    let regions = 
-                      let processDecl (decl : SourceCodeServices.FSharpNavigationDeclarationItem) = 
-                        let m = decl.Range
-                        FoldingRegion(decl.Name, DocumentRegion(m.StartLine, m.StartColumn + 1, m.EndLine, m.EndColumn + 1))
-                      seq {for toplevel in results.GetNavigationItems() do
-                             yield processDecl toplevel.Declaration
-                             for next in toplevel.Nested do
-                               yield processDecl next }
-                    regions |> doc.AddRange
-                  with ex -> LoggingService.LogWarning ("FSharpParser: Couldn't update navigation items.", ex)
-                  //Store the AST of active results
-                  doc.Ast <- results
+                //Set code folding regions, GetNavigationItems may throw in some situations
+                try 
+                  let regions = 
+                    let processDecl (decl : SourceCodeServices.FSharpNavigationDeclarationItem) = 
+                      let m = decl.Range
+                      FoldingRegion(decl.Name, DocumentRegion(m.StartLine, m.StartColumn + 1, m.EndLine, m.EndColumn + 1))
+                    seq {for toplevel in results.GetNavigationItems() do
+                           yield processDecl toplevel.Declaration
+                           for next in toplevel.Nested do
+                             yield processDecl next }
+                  regions |> doc.AddRange
+                with ex -> LoggingService.LogWarning ("FSharpParser: Couldn't update navigation items.", ex)
+                //Store the AST of active results
+                doc.Ast <- results
 
             doc.LastWriteTimeUtc <- try File.GetLastWriteTimeUtc(fileName) with _ -> DateTime.UtcNow
             return doc :> _})
