@@ -2711,12 +2711,6 @@
     <EmbeddedResource Include="icons\star-hover-16%402x.png">
       <LogicalName>star-hover-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\star-hover-16~dark.png">
-      <LogicalName>star-hover-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\star-hover-16~dark%402x.png">
-      <LogicalName>star-hover-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\unstar-16.png">
       <LogicalName>unstar-16.png</LogicalName>
     </EmbeddedResource>
@@ -2734,12 +2728,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\unstar-hover-16%402x.png">
       <LogicalName>unstar-hover-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\unstar-hover-16~dark.png">
-      <LogicalName>unstar-hover-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\unstar-hover-16~dark%402x.png">
-      <LogicalName>unstar-hover-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\remove-16.png">
       <LogicalName>remove-16.png</LogicalName>
