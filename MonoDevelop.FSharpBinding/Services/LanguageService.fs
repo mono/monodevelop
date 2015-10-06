@@ -191,8 +191,7 @@ type AllowStaleResults =
   | MatchingFileName
   // Allow checker results where the source matches but where the background builder may not have caught up yet after some other change
   | MatchingSource
-  // Don't allow stale results
-  | No
+
 
 //type Debug = System.Console
 
@@ -344,16 +343,16 @@ type LanguageService(dirtyNotify) =
       match stale with 
       | AllowStaleResults.MatchingFileName -> checker.TryGetRecentTypeCheckResultsForFile(fixFileName fileName, options) 
       | AllowStaleResults.MatchingSource -> checker.TryGetRecentTypeCheckResultsForFile(fixFileName fileName, options, source=src) 
-      | AllowStaleResults.No -> None
+
     match res with 
     | Some (untyped,typed,_) when typed.HasFullTypeCheckInfo  -> Some (ParseAndCheckResults(typed, untyped))
     | _ -> None
 
-  member internal x.ParseAndCheckFile (fileName, src, opts, obsoleteCheck) =
+  member internal x.ParseAndCheckFile (fileName, src, version:int, opts, obsoleteCheck) =
     async {
       try
          let fileName = fixFileName(fileName)
-         let! parseResults, checkAnswer = checker.ParseAndCheckFileInProject(fileName, 0, src ,opts, obsoleteCheck, null )
+         let! parseResults, checkAnswer = checker.ParseAndCheckFileInProject(fileName, version, src ,opts, obsoleteCheck, null )
 
          // Construct new typed parse result if the task succeeded
          let results =
@@ -370,9 +369,14 @@ type LanguageService(dirtyNotify) =
         LoggingService.LogDebug("LanguageService agent: Exception: {0}", exn.ToString())
         return ParseAndCheckResults.Empty }
 
+  member x.ParseAndCheckFileInProject(projectFilename, fileName, version:int, src:string, obsoleteCheck) =
+    let fileName = if Path.GetExtension fileName = ".sketchfs" then Path.ChangeExtension (fileName, ".fsx") else fileName
+    let opts = x.GetCheckerOptions(fileName, projectFilename, src)
+    x.ParseAndCheckFile(fileName, src, version, opts, obsoleteCheck) 
+
   /// Parses and checks the given file in the given project under the given configuration.
   ///Asynchronously returns the results of checking the file.
-  member x.GetTypedParseResultWithTimeout(projectFilename, fileName:string, src, stale, ?timeout, ?obsoleteCheck) =
+  member x.GetTypedParseResultWithTimeout(projectFilename, fileName, version:int, src:string, stale, ?timeout, ?obsoleteCheck) =
     let obs = defaultArg obsoleteCheck (IsResultObsolete(fun () -> false))
     async {
       let fileName = if Path.GetExtension fileName = ".sketchfs" then Path.ChangeExtension (fileName, ".fsx") else fileName
@@ -388,7 +392,7 @@ type LanguageService(dirtyNotify) =
           match timeout with
           | Some timeout ->
             LoggingService.LogDebug("LanguageService: GetTypedParseResultWithTimeout: No stale results - typechecking with timeout")
-            let! computation = Async.StartChild(x.ParseAndCheckFile(fileName, src, opts, obs), timeout)
+            let! computation = Async.StartChild(x.ParseAndCheckFile(fileName, src, version, opts, obs), timeout)
             try 
               let! result = computation
               return Some(result)
@@ -398,23 +402,21 @@ type LanguageService(dirtyNotify) =
               return None
           | None ->
             LoggingService.LogDebug("LanguageService: GetTypedParseResultWithTimeout: No stale results - typechecking without timeout")
-            let! result = x.ParseAndCheckFile(fileName, src, opts, obs) 
+            let! result = x.ParseAndCheckFile(fileName, src, version, opts, obs) 
             return Some(result) }
 
   /// Returns a TypeParsedResults if available, otherwise None
   member x.GetTypedParseResultIfAvailable(projectFilename, fileName:string, src, stale) = 
     let opts = x.GetCheckerOptions(fileName, projectFilename, src)
     LoggingService.LogDebug("LanguageService: GetTypedParseResultIfAvailable: file={0}", Path.GetFileName(fileName))
-    match x.TryGetStaleTypedParseResult(fileName, opts, src, stale)  with
-    | Some results -> results
-    | None -> ParseAndCheckResults.Empty
+    x.TryGetStaleTypedParseResult(fileName, opts, src, stale)
 
   /// Get all the uses of a symbol in the given file (using 'source' as the source for the file)
-  member x.GetUsesOfSymbolAtLocationInFile(projectFilename, fileName, source, line:int, col, lineStr) =
+  member x.GetUsesOfSymbolAtLocationInFile(projectFilename, fileName, version, source, line:int, col, lineStr) =
     asyncMaybe {
       LoggingService.LogDebug("LanguageService: GetUsesOfSymbolAtLocationInFile: file:{0}, line:{1}, col:{2}", Path.GetFileName(fileName), line, col)
       let! colu, identIsland = Parsing.findLongIdents(col, lineStr) |> async.Return
-      let! results = x.GetTypedParseResultWithTimeout(projectFilename, fileName, source, AllowStaleResults.MatchingSource)
+      let! results = x.GetTypedParseResultWithTimeout(projectFilename, fileName, version, source, AllowStaleResults.MatchingSource)
       let! symbolUse = results.GetSymbolAtLocation(line, colu, lineStr)
       let lastIdent = Seq.last identIsland
       let! refs = results.GetUsesOfSymbolInFile(symbolUse.Symbol) |> Async.map Some
