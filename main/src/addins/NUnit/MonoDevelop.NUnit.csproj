@@ -177,18 +177,6 @@
     <EmbeddedResource Include="Gui\icons\unit-skipped-16~dark%402x.png">
       <LogicalName>unit-skipped-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-skipped-16~dark~sel.png">
-      <LogicalName>unit-skipped-16~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-skipped-16~dark~sel%402x.png">
-      <LogicalName>unit-skipped-16~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-skipped-16~sel.png">
-      <LogicalName>unit-skipped-16~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-skipped-16~sel%402x.png">
-      <LogicalName>unit-skipped-16~sel@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="Gui\icons\unit-loading-16.png">
       <LogicalName>unit-loading-16.png</LogicalName>
     </EmbeddedResource>
