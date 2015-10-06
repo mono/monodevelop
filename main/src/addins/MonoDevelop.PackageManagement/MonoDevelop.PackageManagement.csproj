@@ -406,6 +406,18 @@
     <EmbeddedResource Include="icons\prefs-package-16~dark%402x.png">
       <LogicalName>prefs-package-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-package-16~sel.png">
+      <LogicalName>prefs-package-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-package-16~sel%402x.png">
+      <LogicalName>prefs-package-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-package-16~dark~sel.png">
+      <LogicalName>prefs-package-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-package-16~dark~sel%402x.png">
+      <LogicalName>prefs-package-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-package-source-16.png">
       <LogicalName>prefs-package-source-16.png</LogicalName>
     </EmbeddedResource>
@@ -417,6 +429,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-package-source-16~dark%402x.png">
       <LogicalName>prefs-package-source-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-package-source-16~sel.png">
+      <LogicalName>prefs-package-source-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-package-source-16~sel%402x.png">
+      <LogicalName>prefs-package-source-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-package-source-16~dark~sel.png">
+      <LogicalName>prefs-package-source-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-package-source-16~dark~sel%402x.png">
+      <LogicalName>prefs-package-source-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
