@@ -52,5 +52,26 @@ namespace WindowsPlatform.MainToolbar
 		{
 			IdeApp.Workbench.RootWindow.Iconify ();
 		}
+
+		protected override void OnVisualParentChanged (DependencyObject oldParent)
+		{
+			base.OnVisualParentChanged (oldParent);
+
+			window = Window.GetWindow (this);
+		}
+
+		int initX, initY;
+		bool inDrag;
+		Window window;
+
+		void OnDragStart (object sender, MouseButtonEventArgs e)
+		{
+			if (e.MouseDevice.DirectlyOver.GetType () != typeof (Border))
+				return;
+
+			int wndX, wndY;
+			IdeApp.Workbench.RootWindow.GetPosition (out wndX, out wndY);
+			IdeApp.Workbench.RootWindow.BeginMoveDrag (1, wndX, wndY, (uint)e.Timestamp);
+		}
 	}
 }

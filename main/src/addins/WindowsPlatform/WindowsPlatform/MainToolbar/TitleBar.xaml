@@ -11,7 +11,7 @@
         <CommandBinding Command="{x:Static SystemCommands.MinimizeWindowCommand}" CanExecute="AlwaysCanExecute" Executed="MinimizeExecuted" />
     </UserControl.CommandBindings>
 
-    <DockPanel x:Name="DockTitle" Height="{DynamicResource {x:Static SystemParameters.WindowCaptionHeightKey}}" Margin="0,0,0,0">
+    <DockPanel x:Name="DockTitle" Height="{DynamicResource {x:Static SystemParameters.WindowCaptionHeightKey}}" Margin="0,0,0,0" PreviewMouseDown="OnDragStart">
         <Button DockPanel.Dock="Left" Height="{DynamicResource {x:Static SystemParameters.WindowCaptionHeightKey}}" Content="Xamarin Studio is awesome" VerticalContentAlignment="Center" />
         <!-- Insert menu items programmatically here on Left. -->
 
