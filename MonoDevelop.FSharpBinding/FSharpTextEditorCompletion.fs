@@ -346,12 +346,7 @@ type FSharpTextEditorCompletion() =
               true )
 
         let! typedParseResults =
-          MDLanguageService.Instance.GetTypedParseResultWithTimeout(projectFile,
-                                                                    filename,
-                                                                    editor.Text,
-                                                                    AllowStaleResults.MatchingSource,
-                                                                    ServiceSettings.maximumTimeout,
-                                                                    isObsolete)
+          MDLanguageService.Instance.GetTypedParseResultWithTimeout(projectFile, filename, 0, editor.Text, AllowStaleResults.MatchingSource, ServiceSettings.maximumTimeout, isObsolete)
 
         match typedParseResults with
         | None       -> () //TODOresult.Add(FSharpTryAgainMemberCompletionData())
@@ -487,12 +482,7 @@ type FSharpTextEditorCompletion() =
           // Try to get typed result - within the specified timeout
           let! methsOpt =
               async {let projectFile = x.DocumentContext.Project |> function null -> filename | project -> project.FileName.ToString()
-                     let! tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout (projectFile,
-                                                                                             filename,
-                                                                                             docText,
-                                                                                             AllowStaleResults.MatchingSource,
-                                                                                             ServiceSettings.maximumTimeout,
-                                                                                             isObsolete) 
+                     let! tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout (projectFile, filename, 0, docText, AllowStaleResults.MatchingSource, ServiceSettings.maximumTimeout, isObsolete) 
                      match tyRes with
                      | Some tyRes ->
                          let line, col, lineStr = x.Editor.GetLineInfoFromOffset (startOffset)

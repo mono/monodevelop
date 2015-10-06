@@ -286,7 +286,7 @@ module Parsing =
          current::prev |> List.rev
       | [] -> []
 
-    LoggingService.LogDebug("Result: Crack symbol text at column:{0} Identifier:{1} Line string:{2}", col, identIsland, lineStr)
+    LoggingService.LogDebug("findLongIdents: at column:{0} Identifier:{1} Line:{2}", col, identIsland, lineStr)
     
     match identIsland with
     | [] | [ "" ] -> None
@@ -304,7 +304,9 @@ module Parsing =
       match List.rev backIdent with
       | last::prev -> (last::prev |> List.rev)
       | [] -> []
-
+    
+    LoggingService.LogDebug("findLongIdentsAtGetMethodsTrigger: at column:{0} Identifier:{1} Line:{2}", col, identIsland, lineStr)
+    
     match identIsland with
     | [] | [ "" ] -> None
     | _ -> Some (col,identIsland)
@@ -317,6 +319,6 @@ module Parsing =
         List.sortBy (fun (s,ss) -> String.length s + (List.sumBy String.length ss)) results
         |> List.rev
         |> List.head
-
+    LoggingService.LogDebug("findLongIdentsAndResidue: at column:{0} Line:{1} longname:{2} residue: {3}", col, lineStr, longName, residue)
     longName, residue
 

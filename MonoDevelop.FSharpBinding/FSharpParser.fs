@@ -82,27 +82,13 @@ type FSharpParser() =
             | None -> ()
             | Some filePath -> 
                 let! results =
-                  try
                     let projectFile = proj |> function null -> filePath | proj -> proj.FileName.ToString()
                     LoggingService.LogDebug ("FSharpParser: Running ParseAndCheckFileInProject for {0}", shortFilename)
-                    languageService.GetTypedParseResultWithTimeout(projectFile, filePath, content.Text, AllowStaleResults.No, obsoleteCheck = isObsolete )
-                  with
-                  | :? TimeoutException ->
-                    doc.IsInvalid <- true
-                    LoggingService.LogWarning ("FSharpParser: ParseAndCheckFileInProject timed out for {0}", shortFilename)
-                    async.Return None
-                  | :? Tasks.TaskCanceledException ->
-                    doc.IsInvalid <- true
-                    LoggingService.LogWarning ("FSharpParser: ParseAndCheckFileInProject was cancelled for {0}", shortFilename)
-                    async.Return None
-                  | ex ->
-                    doc.IsInvalid <- true
-                    LoggingService.LogError("FSharpParser: Error processing ParseAndCheckFileResults for {0}", shortFilename, ex)
-                    async.Return None
+                    languageService.ParseAndCheckFileInProject(projectFile, filePath, 0, content.Text, obsoleteCheck = isObsolete )
+
                 match results with
-                | Some results ->                                                                     
-                  results.GetErrors()
-                  |> Option.iter (Array.map formatError >> doc.AddRange)
+                | results ->                                                                     
+                  results.GetErrors() |> Option.iter (Array.map formatError >> doc.AddRange)
 
                   //Try creating tokens
                   try
@@ -131,9 +117,6 @@ type FSharpParser() =
                   with ex -> LoggingService.LogWarning ("FSharpParser: Couldn't update navigation items.", ex)
                   //Store the AST of active results
                   doc.Ast <- results
-                | None ->
-                  doc.IsInvalid <- true
-                  LoggingService.LogDebug("FSharpParser: Error ParseAndCheckFileResults for {0} no results returned", shortFilename)
 
             doc.LastWriteTimeUtc <- try File.GetLastWriteTimeUtc(fileName) with _ -> DateTime.UtcNow
             return doc :> _})

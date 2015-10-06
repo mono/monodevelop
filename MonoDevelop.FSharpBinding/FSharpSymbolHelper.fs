@@ -1,12 +1,10 @@
 ﻿namespace MonoDevelop.FSharp
 open System
 open System.Collections.Generic
-open System.Reflection
 open System.Text
+open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open Microsoft.FSharp.Compiler.SourceCodeServices.PrettyNaming
 open Mono.TextEditor
-open MonoDevelop
 open MonoDevelop.Ide
 open MonoDevelop.Ide.CodeCompletion
 open MonoDevelop.Components
@@ -25,7 +23,6 @@ module Symbols =
         |> Seq.distinctBy (fun r -> r.FileName)
         |> Seq.toList 
     
-        
     ///Given a column and line string returns the identifier portion of the string
     let lastIdent column lineString =
         match Parsing.findLongIdents(column, lineString) with
@@ -44,16 +41,16 @@ module Symbols =
     let getEditorForFileName (fileName:string) =
         match IdeApp.Workbench.GetDocument (fileName) with
         | null ->           
-            let doc = MonoDevelop.Ide.Editor.TextEditorFactory.LoadDocument (fileName)
-            MonoDevelop.Ide.Editor.TextEditorFactory.CreateNewEditor (doc)
+            let doc = Editor.TextEditorFactory.LoadDocument (fileName)
+            Editor.TextEditorFactory.CreateNewEditor (doc)
         | doc -> doc.Editor
 
-    let getOffsets (range:Microsoft.FSharp.Compiler.Range.range) (editor:Editor.IReadonlyTextDocument) =
+    let getOffsets (range:Range.range) (editor:Editor.IReadonlyTextDocument) =
         let startOffset = editor.LocationToOffset (range.StartLine, range.StartColumn+1)
         let endOffset = editor.LocationToOffset (range.EndLine, range.EndColumn+1)
         startOffset, endOffset
 
-    let getTextSpan (range:Microsoft.FSharp.Compiler.Range.range) (editor:Editor.IReadonlyTextDocument) =
+    let getTextSpan (range:Range.range) (editor:Editor.IReadonlyTextDocument) =
         let startOffset, endOffset = getOffsets range editor
         Microsoft.CodeAnalysis.Text.TextSpan.FromBounds (startOffset, endOffset)
 
@@ -397,8 +394,8 @@ module SymbolTooltips =
         let tryChopPropertyName (s: string) =
             // member names start with get_ or set_ when the member is a property
             let s = 
-                if s.StartsWith("get_", System.StringComparison.Ordinal) || 
-                   s.StartsWith("set_", System.StringComparison.Ordinal) 
+                if s.StartsWith("get_", StringComparison.Ordinal) || 
+                   s.StartsWith("set_", StringComparison.Ordinal) 
                 then s 
                 else chopStringTo s '.'
         
