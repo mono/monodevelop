@@ -136,18 +136,6 @@
     <EmbeddedResource Include="Gui\icons\unit-running-16~dark%402x.png">
       <LogicalName>unit-running-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-running-16~dark~sel.png">
-      <LogicalName>unit-running-16~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-running-16~dark~sel%402x.png">
-      <LogicalName>unit-running-16~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-running-16~sel.png">
-      <LogicalName>unit-running-16~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-running-16~sel%402x.png">
-      <LogicalName>unit-running-16~sel@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="Gui\icons\unit-failed-16.png">
       <LogicalName>unit-failed-16.png</LogicalName>
     </EmbeddedResource>
@@ -159,18 +147,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\icons\unit-failed-16~dark%402x.png">
       <LogicalName>unit-failed-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-failed-16~dark~sel.png">
-      <LogicalName>unit-failed-16~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-failed-16~dark~sel%402x.png">
-      <LogicalName>unit-failed-16~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-failed-16~sel.png">
-      <LogicalName>unit-failed-16~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-failed-16~sel%402x.png">
-      <LogicalName>unit-failed-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\icons\unit-mixed-results-16.png">
       <LogicalName>unit-mixed-results-16.png</LogicalName>
@@ -184,18 +160,6 @@
     <EmbeddedResource Include="Gui\icons\unit-mixed-results-16~dark%402x.png">
       <LogicalName>unit-mixed-results-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-mixed-results-16~dark~sel.png">
-      <LogicalName>unit-mixed-results-16~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-mixed-results-16~dark~sel%402x.png">
-      <LogicalName>unit-mixed-results-16~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-mixed-results-16~sel.png">
-      <LogicalName>unit-mixed-results-16~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-mixed-results-16~sel%402x.png">
-      <LogicalName>unit-mixed-results-16~sel@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="Gui\icons\unit-not-yet-run-16.png">
       <LogicalName>unit-not-yet-run-16.png</LogicalName>
     </EmbeddedResource>
@@ -207,18 +171,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\icons\unit-not-yet-run-16~dark%402x.png">
       <LogicalName>unit-not-yet-run-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-not-yet-run-16~dark~sel.png">
-      <LogicalName>unit-not-yet-run-16~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-not-yet-run-16~dark~sel%402x.png">
-      <LogicalName>unit-not-yet-run-16~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-not-yet-run-16~sel.png">
-      <LogicalName>unit-not-yet-run-16~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-not-yet-run-16~sel%402x.png">
-      <LogicalName>unit-not-yet-run-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\icons\unit-skipped-16.png">
       <LogicalName>unit-skipped-16.png</LogicalName>
@@ -255,18 +207,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\icons\unit-loading-16~dark%402x.png">
       <LogicalName>unit-loading-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-loading-16~dark~sel.png">
-      <LogicalName>unit-loading-16~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-loading-16~dark~sel%402x.png">
-      <LogicalName>unit-loading-16~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-loading-16~sel.png">
-      <LogicalName>unit-loading-16~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-loading-16~sel%402x.png">
-      <LogicalName>unit-loading-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\icons\unit-success-16.png">
       <LogicalName>unit-success-16.png</LogicalName>
@@ -343,18 +283,6 @@
     <EmbeddedResource Include="Gui\icons\unit-inconclusive-16~dark%402x.png">
       <LogicalName>unit-inconclusive-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-inconclusive-16~dark~sel.png">
-      <LogicalName>unit-inconclusive-16~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-inconclusive-16~dark~sel%402x.png">
-      <LogicalName>unit-inconclusive-16~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-inconclusive-16~sel.png">
-      <LogicalName>unit-inconclusive-16~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-inconclusive-16~sel%402x.png">
-      <LogicalName>unit-inconclusive-16~sel@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="Gui\icons\unit-run-16.png">
       <LogicalName>unit-run-16.png</LogicalName>
     </EmbeddedResource>
@@ -366,18 +294,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\icons\unit-run-16~dark%402x.png">
       <LogicalName>unit-run-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-run-16~dark~sel.png">
-      <LogicalName>unit-run-16~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-run-16~dark~sel%402x.png">
-      <LogicalName>unit-run-16~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-run-16~sel.png">
-      <LogicalName>unit-run-16~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\unit-run-16~sel%402x.png">
-      <LogicalName>unit-run-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="templates\NUnitProjectVBNet.xpt.xml">
       <LogicalName>NUnitProjectVBNet.xpt.xml</LogicalName>
