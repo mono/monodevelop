@@ -44,7 +44,6 @@ namespace WindowsPlatform.MainToolbar
 			else {
 				IdeApp.Workbench.RootWindow.Maximize ();
 				IdeApp.Workbench.RootWindow.Resize ((int)SystemParameters.WorkArea.Width, (int)SystemParameters.WorkArea.Height);
-				IdeApp.Workbench.RootWindow.Decorated = false;
 			}
 		}
 
