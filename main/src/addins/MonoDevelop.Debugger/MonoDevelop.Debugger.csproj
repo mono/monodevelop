@@ -370,18 +370,6 @@
     <EmbeddedResource Include="icons\gutter-execution-15~dark%402x.png">
       <LogicalName>gutter-execution-15~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\gutter-execution-15~dark~sel.png">
-      <LogicalName>gutter-execution-15~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\gutter-execution-15~dark~sel%402x.png">
-      <LogicalName>gutter-execution-15~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\gutter-execution-15~sel.png">
-      <LogicalName>gutter-execution-15~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\gutter-execution-15~sel%402x.png">
-      <LogicalName>gutter-execution-15~sel@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\gutter-stack-15.png">
       <LogicalName>gutter-stack-15.png</LogicalName>
     </EmbeddedResource>
