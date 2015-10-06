@@ -190,6 +190,18 @@
     <EmbeddedResource Include="icons\prefs-code-actions-16~dark%402x.png">
       <LogicalName>prefs-code-actions-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-actions-16~sel.png">
+      <LogicalName>prefs-code-actions-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-actions-16~sel%402x.png">
+      <LogicalName>prefs-code-actions-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-actions-16~dark~sel.png">
+      <LogicalName>prefs-code-actions-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-actions-16~dark~sel%402x.png">
+      <LogicalName>prefs-code-actions-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-code-rules-16.png">
       <LogicalName>prefs-code-rules-16.png</LogicalName>
     </EmbeddedResource>
@@ -202,6 +214,18 @@
     <EmbeddedResource Include="icons\prefs-code-rules-16~dark%402x.png">
       <LogicalName>prefs-code-rules-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-rules-16~sel.png">
+      <LogicalName>prefs-code-rules-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-rules-16~sel%402x.png">
+      <LogicalName>prefs-code-rules-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-rules-16~dark~sel.png">
+      <LogicalName>prefs-code-rules-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-rules-16~dark~sel%402x.png">
+      <LogicalName>prefs-code-rules-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-code-analysis-16.png">
       <LogicalName>prefs-code-analysis-16.png</LogicalName>
     </EmbeddedResource>
@@ -213,6 +237,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-code-analysis-16~dark%402x.png">
       <LogicalName>prefs-code-analysis-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-analysis-16~sel.png">
+      <LogicalName>prefs-code-analysis-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-analysis-16~sel%402x.png">
+      <LogicalName>prefs-code-analysis-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-analysis-16~dark~sel.png">
+      <LogicalName>prefs-code-analysis-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-analysis-16~dark~sel%402x.png">
+      <LogicalName>prefs-code-analysis-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
