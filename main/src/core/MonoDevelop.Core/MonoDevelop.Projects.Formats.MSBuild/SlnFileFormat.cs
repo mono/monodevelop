@@ -80,7 +80,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				monitor.BeginTask (GettextCatalog.GetString ("Saving solution: {0}", file), 1);
 				try {
 					if (File.Exists (file))
-						tmpfilename = Path.GetTempFileName ();
+						tmpfilename = Path.GetDirectoryName (file) + Path.DirectorySeparatorChar + ".#" + Path.GetFileName (file);
 				} catch (IOException) {
 				}
 
