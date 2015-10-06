@@ -386,11 +386,6 @@ namespace MonoDevelop.Ide
 		public static bool Exit ()
 		{
 			if (workbench.Close ()) {
-#if WIN32
-				foreach (System.Windows.Window window in System.Windows.Application.Current.Windows) {
-					window.Close ();
-				}
-#endif
 				Gtk.Application.Quit ();
 				return true;
 			}

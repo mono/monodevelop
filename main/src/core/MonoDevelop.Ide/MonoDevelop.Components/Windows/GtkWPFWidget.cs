@@ -110,7 +110,7 @@ namespace MonoDevelop.Components.Windows
 			fromGtk = true;
 			wpfWindow.Close ();
 		}
-		
+
 		protected override void OnShown ()
 		{
 			base.OnShown ();
