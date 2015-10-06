@@ -311,6 +311,18 @@
     <EmbeddedResource Include="icons\prefs-debugger-16~dark%402x.png">
       <LogicalName>prefs-debugger-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-debugger-16~sel.png">
+      <LogicalName>prefs-debugger-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-debugger-16~sel%402x.png">
+      <LogicalName>prefs-debugger-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-debugger-16~dark~sel.png">
+      <LogicalName>prefs-debugger-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-debugger-16~dark~sel%402x.png">
+      <LogicalName>prefs-debugger-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\lightning-16.png">
       <LogicalName>lightning-16.png</LogicalName>
     </EmbeddedResource>
