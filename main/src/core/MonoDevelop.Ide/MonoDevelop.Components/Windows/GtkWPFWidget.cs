@@ -85,7 +85,7 @@ namespace MonoDevelop.Components.Windows
 
 			int root_x, root_y;
 			gtkWnd.GetPosition (out root_x, out root_y);
-			if (TranslateCoordinates (Toplevel, root_x + borderOffset, root_y + titleOffset + borderOffset, out x, out y)) {
+			if (TranslateCoordinates (Toplevel, root_x + borderOffset, root_y + titleOffset, out x, out y)) {
 				wpfWindow.Left = x;
 				wpfWindow.Top = y;
 			} else {
