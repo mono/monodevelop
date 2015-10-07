@@ -150,11 +150,12 @@ type FakeSearchCategory() =
              let launcherScriptPath = Path.Combine([|string solution.BaseDirectory; launcherScript|])
              if File.Exists(fakeScriptPath) && File.Exists(launcherScriptPath)  then
                let fakeScript = File.ReadAllText fakeScriptPath
+
                Regex.Matches(fakeScript, "Target \"([\\w.]+)\"")
                  |> Seq.cast<Match> 
-                 |> Seq.map (fun m -> (solution, m, matcher.CalcMatchRank ("FAKE " + m.Groups.[1].Value)))
-                 |> Seq.choose (fun x -> match x with
-                                         | (solution, m, (true, rank)) -> Some (solution, m, rank, launcherScriptPath) 
+                 |> Seq.choose (fun x -> let (matched, rank) = matcher.CalcMatchRank ("FAKE " + x.Groups.[1].Value)
+                                         match matched with
+                                         | true -> Some (solution, x, rank, launcherScriptPath) 
                                          | _ -> None)
                  |> Seq.iter addResult }
          |> Async.Start ), token)
