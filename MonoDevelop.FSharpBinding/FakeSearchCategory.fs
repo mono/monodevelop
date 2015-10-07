@@ -153,9 +153,9 @@ type FakeSearchCategory() =
 
                Regex.Matches(fakeScript, "Target \"([\\w.]+)\"")
                  |> Seq.cast<Match> 
-                 |> Seq.choose (fun x -> let (matched, rank) = matcher.CalcMatchRank ("FAKE " + x.Groups.[1].Value)
-                                         match matched with
-                                         | true -> Some (solution, x, rank, launcherScriptPath) 
-                                         | _ -> None)
+                 |> Seq.choose(fun x -> let (matched, rank) = matcher.CalcMatchRank ("FAKE " + x.Groups.[1].Value)
+                                        match matched with
+                                        | true -> Some (solution, x, rank, launcherScriptPath) 
+                                        | _ -> None)
                  |> Seq.iter addResult }
          |> Async.Start ), token)

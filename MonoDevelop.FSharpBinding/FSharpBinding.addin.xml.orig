@@ -171,6 +171,7 @@
   
   <Extension path="/MonoDevelop/Ide/SearchCategories">
     <Class class="MonoDevelop.FSharp.ProjectSearchCategory" />
+    <Class class="MonoDevelop.FSharp.FakeSearchCategory" />
   </Extension>
 
   <!-- F# interactive -->
