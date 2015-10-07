@@ -47,7 +47,9 @@ type FSharpUnitTestTextEditorExtension() =
                   |> Async.RunSynchronously
                   |> Seq.toArray
                   |> Seq.exists (fun r -> r.EndsWith ("nunit.framework.dll", StringComparison.InvariantCultureIgnoreCase)) 
-                with _ -> false
+                with ex ->
+                  MonoDevelop.Core.LoggingService.LogInternalError ("FSharpUnitTestTextEditorExtension: GatherUnitTests failed", ex)
+                  false
             | _ -> false
 
         if x.DocumentContext.ParsedDocument = null || not hasNUnitReference then
