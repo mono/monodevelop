@@ -339,7 +339,6 @@ type FSharpTextEditorCompletion() =
             let newVersion = doc.Editor.Version
             if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
             then
-              LoggingService.LogDebug ("FSharpTextEditorCompletion - codeCompletionCommandImpl: type check of {0} is not obsolete",  IO.Path.GetFileName filename)
               false
             else
               LoggingService.LogDebug ("FSharpTextEditorCompletion - codeCompletionCommandImpl: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
@@ -473,7 +472,6 @@ type FSharpTextEditorCompletion() =
               let newVersion = doc.Editor.Version
               if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
               then
-                LoggingService.LogDebug ("FSharpTextEditorCompletion - HandleParameterCompletionAsync: type check of {0} is not obsolete",  IO.Path.GetFileName filename)
                 false
               else
                 LoggingService.LogDebug ("FSharpTextEditorCompletion - HandleParameterCompletionAsync: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
