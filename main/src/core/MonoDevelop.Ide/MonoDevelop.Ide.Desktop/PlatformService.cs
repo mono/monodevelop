@@ -498,5 +498,10 @@ namespace MonoDevelop.Ide.Desktop
 			window.Move (x, y);
 			window.Resize (width, height);
 		}
+
+		public virtual bool RequiresCustomResizeBorders ()
+		{
+			return false;
+		}
 	}
 }

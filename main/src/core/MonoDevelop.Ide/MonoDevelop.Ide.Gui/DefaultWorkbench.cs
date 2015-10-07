@@ -296,8 +296,8 @@ namespace MonoDevelop.Ide.Gui
 		void InstallMenuBar ()
 		{
 			if (topMenu != null) {
-				((VBox)rootWidget).PackStart (topMenu, false, false, 0);
-				((Gtk.Box.BoxChild) rootWidget [topMenu]).Position = 0;
+				((VBox)fullViewVBox).PackStart (topMenu, false, false, 0);
+				((Gtk.Box.BoxChild) fullViewVBox [topMenu]).Position = 0;
 				topMenu.ShowAll ();
 			}
 		}
@@ -307,7 +307,7 @@ namespace MonoDevelop.Ide.Gui
 			if (topMenu == null)
 				return;
 			
-			rootWidget.Remove (topMenu);
+			fullViewVBox.Remove (topMenu);
 			topMenu.Destroy ();
 			topMenu = null;
 		}
@@ -806,13 +806,138 @@ namespace MonoDevelop.Ide.Gui
 			initializing = false;
 		}
 
+		List<EventBox> borders = new List<EventBox> ();
+		EventBox CreateBorder (bool horizontal, Gdk.CursorType hoverCursor, Gdk.WindowEdge resizeEdge)
+		{
+			const int borderThickness = 1;
+			const int cornerBorderLength = 6;
+
+			var border = new EventBox ();
+
+			border.EnterNotifyEvent += (o, args) => {
+				border.ParentWindow.Cursor = new Gdk.Cursor (hoverCursor);
+			};
+
+			border.LeaveNotifyEvent += (o, args) => {
+				border.ParentWindow.Cursor = new Gdk.Cursor (Gdk.CursorType.Arrow);
+			};
+
+			border.ButtonPressEvent += (o, args) => {
+				if (args.Event.Button != 1)
+					return;
+
+				int wndX, wndY;
+
+				IdeApp.Workbench.RootWindow.GetPosition (out wndX, out wndY);
+				IdeApp.Workbench.RootWindow.BeginResizeDrag (resizeEdge, 1, wndX, wndY, args.Event.Time);
+			};
+
+			border.ModifyBg (StateType.Normal, new Gdk.Color (255, 0, 0));
+			if (horizontal) {
+				border.HeightRequest = borderThickness;
+				border.WidthRequest = cornerBorderLength;
+			} else {
+				border.HeightRequest = cornerBorderLength;
+				border.WidthRequest = borderThickness;
+			}
+
+			borders.Add (border);
+
+			return border;
+		}
+
+		VBox CreateCustomResizeBorders (VBox contentBox)
+		{
+			var frame = new VBox ();
+
+			// Add top area.
+			var topFrame = new HBox ();
+			frame.PackStart (topFrame, false, true, 0);
+
+			// Add top border.
+			var topLeftTop = CreateBorder (true, Gdk.CursorType.TopLeftCorner, Gdk.WindowEdge.NorthWest);
+			topFrame.PackStart (topLeftTop, false, false, 0);
+			var top = CreateBorder (true, Gdk.CursorType.TopSide, Gdk.WindowEdge.North);
+			topFrame.PackStart (top, true, true, 0);
+			var topRightTop = CreateBorder (true, Gdk.CursorType.TopRightCorner, Gdk.WindowEdge.NorthEast);
+			topFrame.PackStart (topRightTop, false, false, 0);
+
+			// Add middle area.
+			var midFrame = new HBox ();
+			frame.PackStart (midFrame, true, true, 0);
+
+			// Add middle-left area.
+			var leftFrame = new VBox ();
+			midFrame.PackStart (leftFrame, false, true, 0);
+
+			// Add left border.
+			var topLeftLeft = CreateBorder (false, Gdk.CursorType.TopLeftCorner, Gdk.WindowEdge.NorthWest);
+			leftFrame.PackStart (topLeftLeft, false, false, 0);
+			var middleLeft = CreateBorder (false, Gdk.CursorType.LeftSide, Gdk.WindowEdge.West);
+			leftFrame.PackStart (middleLeft, true, true, 0);
+			var bottomLeftLeft = CreateBorder (false, Gdk.CursorType.BottomLeftCorner, Gdk.WindowEdge.SouthWest);
+			leftFrame.PackStart (bottomLeftLeft, false, false, 0);
+
+			// Add content.
+			midFrame.PackStart (contentBox, true, true, 0);
+
+			// Add middle-right area.
+			var rightFrame = new VBox ();
+			midFrame.PackStart (rightFrame, false, true, 0);
+
+			// Add right border
+			var topRightRight = CreateBorder (false, Gdk.CursorType.TopRightCorner, Gdk.WindowEdge.NorthEast);
+			rightFrame.PackStart (topRightRight, false, false, 0);
+			var middleRight = CreateBorder (false, Gdk.CursorType.RightSide, Gdk.WindowEdge.East);
+			rightFrame.PackStart (middleRight, true, true, 0);
+			var bottomRightRight = CreateBorder (false, Gdk.CursorType.BottomRightCorner, Gdk.WindowEdge.SouthEast);
+			rightFrame.PackStart (bottomRightRight, false, false, 0);
+
+			// Add bottom area.
+			var botFrame = new HBox ();
+			frame.PackStart (botFrame, false, true, 0);
+
+			// Add bottom border
+			var bottomLeftBottom = CreateBorder (true, Gdk.CursorType.BottomLeftCorner, Gdk.WindowEdge.SouthWest);
+			botFrame.PackStart (bottomLeftBottom, false, false, 0);
+			var bottom = CreateBorder (true, Gdk.CursorType.BottomSide, Gdk.WindowEdge.South);
+			botFrame.PackStart (bottom, true, true, 0);
+			var bottomRightBottom = CreateBorder (true, Gdk.CursorType.BottomRightCorner, Gdk.WindowEdge.SouthEast);
+			botFrame.PackStart (bottomRightBottom, false, false, 0);
+
+			return frame;
+		}
+
+		void UpdateBorderVisibility (Gdk.WindowState windowState)
+		{
+			bool borderVisible = (windowState & Gdk.WindowState.Maximized) == 0;
+			foreach (var border in borders)
+				border.Visible = borderVisible;
+		}
+
+		protected override bool OnWindowStateEvent (Gdk.EventWindowState evnt)
+		{
+			if (DesktopService.RequiresCustomResizeBorders ()) {
+				if ((evnt.ChangedMask & Gdk.WindowState.Maximized) != 0)
+					UpdateBorderVisibility (evnt.NewWindowState);
+			}
+			return base.OnWindowStateEvent (evnt);
+		}
+
 		void CreateComponents ()
 		{
 			fullViewVBox = new VBox (false, 0);
-			rootWidget = fullViewVBox;
+
+			if (DesktopService.RequiresCustomResizeBorders ()) {
+				var borderBox = CreateCustomResizeBorders (fullViewVBox);
+				rootWidget = borderBox;
+			} else {
+				rootWidget = fullViewVBox;
+			}
 			
 			InstallMenuBar ();
 			Realize ();
+			UpdateBorderVisibility (GdkWindow.State);
 			toolbar = DesktopService.CreateMainToolbar (this);
 			DesktopService.SetMainWindowDecorations (this);
 			DesktopService.AttachMainToolbar (fullViewVBox, toolbar);
@@ -851,8 +976,8 @@ namespace MonoDevelop.Ide.Gui
 				OnActiveWindowChanged (null, null);
 			};
 
-			Add (fullViewVBox);
-			fullViewVBox.ShowAll ();
+			Add (rootWidget);
+			rootWidget.ShowAll ();
 			bottomBar = new MonoDevelopStatusBar ();
 			fullViewVBox.PackEnd (bottomBar, false, true, 0);
 			bottomBar.ShowAll ();

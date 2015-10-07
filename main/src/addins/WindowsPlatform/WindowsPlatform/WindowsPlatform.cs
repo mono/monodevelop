@@ -130,6 +130,11 @@ namespace MonoDevelop.Platform
 				HeightRequest = 50,
 			};
 		}
+
+		public override bool RequiresCustomResizeBorders ()
+		{
+			return true;
+		}
 		#endregion
 
 		internal static Xwt.Toolkit WPFToolkit;
