@@ -34,136 +34,136 @@ module ServiceSettings =
 
 // --------------------------------------------------------------------------------------
 /// Wraps the result of type-checking and provides methods for implementing
-/// various IntelliSense functions (such as completion & tool tips). Provides default
-/// empty/negative results if information is missing.
-type ParseAndCheckResults private (infoOpt: (FSharpCheckFileResults * FSharpParseFileResults) option) =
-  new (checkResults, parseResults) = ParseAndCheckResults(Some (checkResults, parseResults))
-
-  static member Empty = ParseAndCheckResults(None)
+/// various IntelliSense functions (such as completion & tool tips).
+/// Provides default empty/negative results if information is missing.
+type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults : FSharpParseFileResults option) =
 
   /// Get declarations at the current location in the specified document and the long ident residue
   /// e.g. The incomplete ident One.Two.Th will return Th
   member x.GetDeclarations(line, col, lineStr) = 
-    match infoOpt with 
-    | None -> None
-    | Some (checkResults, parseResults) -> 
+    match infoOpt, parseResults with 
+    | Some (checkResults), parseResults -> 
       let longName,residue = Parsing.findLongIdentsAndResidue(col, lineStr)
       LoggingService.LogDebug (sprintf "GetDeclarations: '%A', '%s'" longName residue)
       // Get items & generate output
       try
         let results =
-          Async.RunSynchronously (checkResults.GetDeclarationListInfo(Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false), timeout = ServiceSettings.blockingTimeout )
+          Async.RunSynchronously (checkResults.GetDeclarationListInfo( parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false), timeout = ServiceSettings.blockingTimeout )
         Some (results, residue)
       with :? TimeoutException -> None
+    | None, _ -> None
 
     /// Get the symbols for declarations at the current location in the specified document and the long ident residue
     /// e.g. The incomplete ident One.Two.Th will return Th
     member x.GetDeclarationSymbols(line, col, lineStr) = 
-      match infoOpt with 
-      | None -> None
-      | Some (checkResults, parseResults) -> 
+      match infoOpt, parseResults with 
+      | Some checkResults, parseResults -> 
           let longName,residue = Parsing.findLongIdentsAndResidue(col, lineStr)
           LoggingService.LogDebug (sprintf "GetDeclarationSymbols: '%A', '%s'" longName residue)
           // Get items & generate output
           try
-           let results = 
-               Async.RunSynchronously (checkResults.GetDeclarationListSymbols(Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false),
-                                       timeout = ServiceSettings.blockingTimeout )
-           Some (results, residue)
+            let results = Async.RunSynchronously (checkResults.GetDeclarationListSymbols(parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false), timeout = ServiceSettings.blockingTimeout )
+            Some (results, residue)
           with :? TimeoutException -> None
+      | None, _ -> None
 
     /// Get the tool-tip to be displayed at the specified offset (relatively
     /// from the beginning of the current document)
     member x.GetToolTip(line, col, lineStr) =
       async {
         match infoOpt with 
-        | None -> return None
-        | Some (checkResults, _parseResults) -> 
-        match Parsing.findLongIdents(col, lineStr) with 
-        | None -> return None
-        | Some(col,identIsland) ->
-          let! res = checkResults.GetToolTipTextAlternate(line, col, lineStr, identIsland, FSharpTokenTag.Identifier)
-          let! sym = checkResults.GetSymbolUseAtLocation(line, col, lineStr, identIsland)
-          LoggingService.LogDebug("Result: Got something, returning")
-          return sym |> Option.bind (fun sym -> let start, finish = Symbol.trimSymbolRegion sym (Seq.last identIsland)
-                                                Some (res, (start.Column, finish.Column))) }
+        | Some checkResults -> 
+          match Parsing.findLongIdents(col, lineStr) with 
+          | None -> return None
+          | Some(col,identIsland) ->
+            let! res = checkResults.GetToolTipTextAlternate(line, col, lineStr, identIsland, FSharpTokenTag.Identifier)
+            let! sym = checkResults.GetSymbolUseAtLocation(line, col, lineStr, identIsland)
+            LoggingService.LogDebug("Result: Got something, returning")
+            return sym |> Option.bind (fun sym -> let start, finish = Symbol.trimSymbolRegion sym (Seq.last identIsland)
+                                                  Some (res, (start.Column, finish.Column)))
+        | None -> return None }
       
     member x.GetDeclarationLocation(line, col, lineStr) =
       async {
         match infoOpt with 
-        | None -> return FSharpFindDeclResult.DeclNotFound FSharpFindDeclFailureReason.Unknown
-        | Some (checkResults, _parseResults) -> 
-        match Parsing.findLongIdents(col, lineStr) with 
-        | None -> return FSharpFindDeclResult.DeclNotFound FSharpFindDeclFailureReason.Unknown
-        | Some(col,identIsland) -> return! checkResults.GetDeclarationLocationAlternate(line, col, lineStr, identIsland, false) }
+        | Some checkResults -> 
+          match Parsing.findLongIdents(col, lineStr) with 
+          | None -> return FSharpFindDeclResult.DeclNotFound FSharpFindDeclFailureReason.Unknown
+          | Some(col,identIsland) -> return! checkResults.GetDeclarationLocationAlternate(line, col, lineStr, identIsland, false)
+        | None -> return FSharpFindDeclResult.DeclNotFound FSharpFindDeclFailureReason.Unknown }
       
     member x.GetMethods(line, col, lineStr) =
       async { 
         match infoOpt with 
-        | None -> return None
-        | Some (checkResults, _parseResults) -> 
-        match Parsing.findLongIdentsAtGetMethodsTrigger(col, lineStr) with 
-        | None -> return None
-        | Some(col,identIsland) ->
-            let! res = checkResults.GetMethodsAlternate(line, col, lineStr, Some identIsland)
-            LoggingService.LogDebug("Result: Got something, returning")
-            return Some (res.MethodName, res.Methods) }
+        | Some checkResults -> 
+          match Parsing.findLongIdentsAtGetMethodsTrigger(col, lineStr) with 
+          | None -> return None
+          | Some(col,identIsland) ->
+              let! res = checkResults.GetMethodsAlternate(line, col, lineStr, Some identIsland)
+              LoggingService.LogDebug("Result: Got something, returning")
+              return Some (res.MethodName, res.Methods)
+        | None -> return None }
 
     member x.GetSymbolAtLocation(line, col, lineStr) =
       async {
         match infoOpt with 
-        | None -> return None
-        | Some (checkResults, _parseResults) -> 
-        match Parsing.findLongIdents(col, lineStr) with 
-        | None -> return None
-        | Some(colu, identIsland) ->
-            try
-              let! symbolUse = checkResults.GetSymbolUseAtLocation(line, colu, lineStr, identIsland)
-              return symbolUse
-            with ex ->
-              LoggingService.LogDebug("Error at: GetSymbolUseAtLocation: {0}", ex)
-              return None }
+        | Some (checkResults) -> 
+          match Parsing.findLongIdents(col, lineStr) with 
+          | None -> return None
+          | Some(colu, identIsland) ->
+              try
+                let! symbolUse = checkResults.GetSymbolUseAtLocation(line, colu, lineStr, identIsland)
+                return symbolUse
+              with ex ->
+                LoggingService.LogDebug("Error at: GetSymbolUseAtLocation: {0}", ex)
+                return None 
+        | None -> return None }
 
     member x.GetMethodsAsSymbols(line, col, lineStr) =
       async {
         match infoOpt with 
-        | None -> return None
-        | Some (checkResults, _parseResults) -> 
-        match Parsing.findLongIdentsAtGetMethodsTrigger(col, lineStr) with 
-        | None -> return None
-        | Some(colu, identIsland) ->
-            return! checkResults.GetMethodsAsSymbols(line, colu, lineStr, identIsland) }
+        | Some (checkResults) -> 
+          match Parsing.findLongIdentsAtGetMethodsTrigger(col, lineStr) with 
+          | None -> return None
+          | Some(colu, identIsland) ->
+              return! checkResults.GetMethodsAsSymbols(line, colu, lineStr, identIsland)
+        | None -> return None }
 
     member x.GetUsesOfSymbolInFile(symbol) =
       async {
         match infoOpt with 
-        | None -> return [| |]
-        | Some (checkResults, _parseResults) -> return! checkResults.GetUsesOfSymbolInFile(symbol) }
+        | Some checkResults -> return! checkResults.GetUsesOfSymbolInFile(symbol)
+        | None -> return [| |] }
 
     member x.GetAllUsesOfAllSymbolsInFile() =
       async {
         match infoOpt with
-        | None -> return None
-        | Some (checkResults, _parseResults) ->
+        | Some checkResults ->
             let! allSymbols = checkResults.GetAllUsesOfAllSymbolsInFile()
-            return Some allSymbols }
+            return Some allSymbols
+        | None -> return None }
 
     member x.PartialAssemblySignature =
       async {
         match infoOpt with
-        | None -> return None
-        | Some (checkResults, _parseResults) ->
-          return Some checkResults.PartialAssemblySignature }
+        | Some (checkResults) ->
+          return Some checkResults.PartialAssemblySignature
+        | None -> return None }
 
     member x.GetErrors() =
-      match infoOpt with 
-      | None -> None
-      | Some (checkResults, _parseResults) -> Some checkResults.Errors
+      match infoOpt, parseResults with 
+      | Some checkResults, Some parseResults ->
+        checkResults.Errors
+        |> Array.append parseResults.Errors
+        |> Seq.distinct
+      | Some checkResults, None -> checkResults.Errors |> Array.toSeq
+      | None, Some parseResults -> parseResults.Errors |> Array.toSeq
+      | None, None -> Seq.empty
 
     member x.GetNavigationItems() =
-      match infoOpt with 
+      match parseResults with 
       | None -> [| |]
-      | Some (_checkResults, parseResults) -> 
+      | Some parseResults -> 
          // GetNavigationItems is not 100% solid and throws occasional exceptions
           try parseResults.GetNavigationItems().Declarations
           with _ -> 
@@ -171,18 +171,15 @@ type ParseAndCheckResults private (infoOpt: (FSharpCheckFileResults * FSharpPars
             [| |]
 
     member x.ParseTree = 
-      match infoOpt with
-      | Some (_checkResults,parseResults) -> parseResults.ParseTree
+      match parseResults with
+      | Some parseResults -> parseResults.ParseTree
       | None -> None
 
-    member x.CheckResults = 
-      match infoOpt with
-      | Some (checkResults,_parseResults) -> checkResults |> Some
-      | None -> None
+    member x.CheckResults = infoOpt
 
     member x.GetExtraColorizations() =
       match infoOpt with
-      | Some(checkResults,_parseResults) -> checkResults.GetExtraColorizationsAlternate() |> Some
+      | Some checkResults -> Some(checkResults.GetExtraColorizationsAlternate())
       | None -> None
 
 [<RequireQualifiedAccess>]
@@ -276,10 +273,11 @@ type LanguageService(dirtyNotify) =
           {opts with OtherOptions = [| yield! opts.OtherOptions
                                        match FSharpEnvironment.resolveAssembly dirs "FSharp.Core" with
                                        | Some fn -> yield String.Format ("-r:{0}", fn)
-                                       | None -> LoggingService.LogDebug("LanguageService: Resolution: FSharp.Core assembly resolution failed!")
-                                       match FSharpEnvironment.resolveAssembly dirs "FSharp.Compiler.Interactive.Settings" with
-                                       | Some fn -> yield String.Format ("-r:{0}", fn)
-                                       | None -> LoggingService.LogDebug("LanguageService: Resolution: FSharp.Compiler.Interactive.Settings assembly resolution failed!") |]}
+                                       | None -> 
+                                         LoggingService.LogDebug("LanguageService: Resolution: FSharp.Core assembly resolution failed!")
+                                         match FSharpEnvironment.resolveAssembly dirs "FSharp.Compiler.Interactive.Settings" with
+                                         | Some fn -> yield String.Format ("-r:{0}", fn)
+                                         | None -> LoggingService.LogDebug("LanguageService: Resolution: FSharp.Compiler.Interactive.Settings assembly resolution failed!") |]}
       with e -> failwithf "Exception when getting check options for '%s'\n.Details: %A" fileName e
 
     // Print contents of check option for debugging purposes
@@ -299,18 +297,20 @@ type LanguageService(dirtyNotify) =
           entry
       | None, cache ->
           LoggingService.LogDebug ("LanguageService: GetProjectCheckerOptions: Generating ProjectOptions for:{0}", Path.GetFileName(projFilename))
-
+          let sw = Diagnostics.Stopwatch.StartNew()
           let filename = Path.Combine(Reflection.Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName, "CompilerService.exe")
           let processName = 
             if Environment.runningOnMono then Environment.getMonoPath() else filename
           
           let arguments = 
-            if Environment.runningOnMono then sprintf "%s --project %s" filename projFilename else sprintf "--project %s" projFilename
+            if Environment.runningOnMono then sprintf "%s --project %s" filename projFilename
+            else sprintf "--project %s" projFilename
           try
             use proc =
               let startInfo = ProcessStartInfo(processName, arguments, RedirectStandardError = false, RedirectStandardOutput = true, 
                                                RedirectStandardInput = true, UseShellExecute = false, CreateNoWindow = true)
-
+              sw.Stop()
+              LoggingService.LogDebug("LanguageService: processStart creation: {0}", sw.Elapsed.TotalMilliseconds)
               new Process(EnableRaisingEvents = true, StartInfo = startInfo)
 
             let started = proc.Start()
@@ -345,7 +345,8 @@ type LanguageService(dirtyNotify) =
       | AllowStaleResults.MatchingSource -> checker.TryGetRecentTypeCheckResultsForFile(fixFileName fileName, options, source=src) 
 
     match res with 
-    | Some (untyped,typed,_) when typed.HasFullTypeCheckInfo  -> Some (ParseAndCheckResults(typed, untyped))
+    | Some (untyped,typed,_) when typed.HasFullTypeCheckInfo -> Some (ParseAndCheckResults(Some typed, Some untyped))
+    | Some (untyped,_,_) -> Some (ParseAndCheckResults(None, Some untyped))
     | _ -> None
 
   member internal x.ParseAndCheckFile (fileName, src, version:int, opts, obsoleteCheck) =
@@ -359,15 +360,15 @@ type LanguageService(dirtyNotify) =
            match checkAnswer with
            | FSharpCheckFileAnswer.Succeeded(checkResults) ->
                LoggingService.LogDebug("LanguageService: ParseAndCheckFile check succeeded for {0}", Path.GetFileName(fileName))
-               ParseAndCheckResults(checkResults, parseResults)
+               ParseAndCheckResults(Some checkResults, Some parseResults)
            | FSharpCheckFileAnswer.Aborted ->
              LoggingService.LogDebug("LanguageService: ParseAndCheckFile check aborted for {0}", Path.GetFileName(fileName))
-             ParseAndCheckResults.Empty
+             ParseAndCheckResults(None, Some parseResults)
                
          return results
       with exn ->
         LoggingService.LogDebug("LanguageService agent: Exception: {0}", exn.ToString())
-        return ParseAndCheckResults.Empty }
+        return ParseAndCheckResults(None, None) }
 
   member x.ParseAndCheckFileInProject(projectFilename, fileName, version:int, src:string, obsoleteCheck) =
     let fileName = if Path.GetExtension fileName = ".sketchfs" then Path.ChangeExtension (fileName, ".fsx") else fileName

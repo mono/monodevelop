@@ -85,7 +85,7 @@ type FSharpParser() =
                 let projectFile = proj |> function null -> filePath | proj -> proj.FileName.ToString()
                 let! results = languageService.ParseAndCheckFileInProject(projectFile, filePath, 0, content.Text, isObsolete)
 
-                results.GetErrors() |> Option.iter (Array.map formatError >> doc.AddRange)
+                results.GetErrors() |> (Seq.map formatError >> doc.AddRange)
 
                 //Try creating tokens
                 try
