@@ -36,7 +36,6 @@ type FSharpResolverProvider() =
             let newVersion = doc.Editor.Version
             if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
             then
-              LoggingService.LogDebug ("FSharpResolverProvider: type check of {0} is not obsolete",  IO.Path.GetFileName filename)
               false
             else
               LoggingService.LogDebug ("FSharpResolverProvider: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
