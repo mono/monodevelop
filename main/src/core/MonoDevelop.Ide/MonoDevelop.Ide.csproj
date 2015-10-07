@@ -1598,18 +1598,6 @@
     <EmbeddedResource Include="icons\disclose-arrow-down-16~dark%402x.png">
       <LogicalName>disclose-arrow-down-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\disclose-arrow-down-16~dark~sel.png">
-      <LogicalName>disclose-arrow-down-16~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\disclose-arrow-down-16~dark~sel%402x.png">
-      <LogicalName>disclose-arrow-down-16~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\disclose-arrow-down-16~sel.png">
-      <LogicalName>disclose-arrow-down-16~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\disclose-arrow-down-16~sel%402x.png">
-      <LogicalName>disclose-arrow-down-16~sel@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\disclose-arrow-up-16.png">
       <LogicalName>disclose-arrow-up-16.png</LogicalName>
     </EmbeddedResource>
@@ -1621,18 +1609,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\disclose-arrow-up-16~dark%402x.png">
       <LogicalName>disclose-arrow-up-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\disclose-arrow-up-16~dark~sel.png">
-      <LogicalName>disclose-arrow-up-16~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\disclose-arrow-up-16~dark~sel%402x.png">
-      <LogicalName>disclose-arrow-up-16~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\disclose-arrow-up-16~sel.png">
-      <LogicalName>disclose-arrow-up-16~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\disclose-arrow-up-16~sel%402x.png">
-      <LogicalName>disclose-arrow-up-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-search-results-16.png">
       <LogicalName>pad-search-results-16.png</LogicalName>
@@ -1658,18 +1634,6 @@
     <EmbeddedResource Include="icons\searchbox-clear-16~dark%402x.png">
       <LogicalName>searchbox-clear-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-clear-16~dark~sel.png">
-      <LogicalName>searchbox-clear-16~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-clear-16~dark~sel%402x.png">
-      <LogicalName>searchbox-clear-16~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-clear-16~sel.png">
-      <LogicalName>searchbox-clear-16~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-clear-16~sel%402x.png">
-      <LogicalName>searchbox-clear-16~sel@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\searchbox-search-16.png">
       <LogicalName>searchbox-search-16.png</LogicalName>
     </EmbeddedResource>
@@ -1681,18 +1645,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\searchbox-search-16~dark%402x.png">
       <LogicalName>searchbox-search-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-search-16~dark~sel.png">
-      <LogicalName>searchbox-search-16~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-search-16~dark~sel%402x.png">
-      <LogicalName>searchbox-search-16~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-search-16~sel.png">
-      <LogicalName>searchbox-search-16~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-search-16~sel%402x.png">
-      <LogicalName>searchbox-search-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tree-popup-button.png">
       <LogicalName>tree-popup-button.png</LogicalName>
@@ -1886,18 +1838,6 @@
     <EmbeddedResource Include="icons\breadcrumb-previous-16~dark%402x.png">
       <LogicalName>breadcrumb-previous-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\breadcrumb-previous-16~dark~sel.png">
-      <LogicalName>breadcrumb-previous-16~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\breadcrumb-previous-16~dark~sel%402x.png">
-      <LogicalName>breadcrumb-previous-16~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\breadcrumb-previous-16~sel.png">
-      <LogicalName>breadcrumb-previous-16~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\breadcrumb-previous-16~sel%402x.png">
-      <LogicalName>breadcrumb-previous-16~sel@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\breadcrumb-next-16.png">
       <LogicalName>breadcrumb-next-16.png</LogicalName>
     </EmbeddedResource>
@@ -1909,18 +1849,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\breadcrumb-next-16~dark%402x.png">
       <LogicalName>breadcrumb-next-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\breadcrumb-next-16~dark~sel.png">
-      <LogicalName>breadcrumb-next-16~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\breadcrumb-next-16~dark~sel%402x.png">
-      <LogicalName>breadcrumb-next-16~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\breadcrumb-next-16~sel.png">
-      <LogicalName>breadcrumb-next-16~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\breadcrumb-next-16~sel%402x.png">
-      <LogicalName>breadcrumb-next-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\information-16.png">
       <LogicalName>information-16.png</LogicalName>
