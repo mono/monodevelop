@@ -40,7 +40,7 @@ namespace UserInterfaceTests
 	[Category ("PackagesDialog")]
 	public class NuGetDialogTests : CreateBuildTemplatesTestBase
 	{
-		[Test]
+		[Test, Category("Smoke")]
 		[Description ("Add a single NuGet Package")]
 		public void AddPackagesTest ()
 		{
@@ -93,7 +93,7 @@ namespace UserInterfaceTests
 			TakeScreenShot ("Solution-Ready");
 		}
 
-		[Test]
+		[Test, Category("Smoke")]
 		[Description ("Add a single NuGet Package and check if it's readme.txt opens")]
 		public void TestReadmeTxtOpens ()
 		{
@@ -129,7 +129,7 @@ namespace UserInterfaceTests
 			WaitForNuGetReadmeOpened ();
 		}
 
-		[Test]
+		[Test, Category("Smoke")]
 		[Timeout (90000)]
 		[Description ("When readme.txt from a package has already been opened, adding same package to another project should not open readme.txt")]
 		public void TestDontOpenReadmeOpenedInOther ()
