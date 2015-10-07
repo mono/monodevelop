@@ -17,14 +17,19 @@ namespace SubversionAddinWindows
 	sealed class SvnSharpClient: SubversionVersionControl
 	{
 		static bool errorShown;
+		static bool loadError;
 		static bool installError {
-			get { return client.Value == null; }
+			get { return loadError || client.Value == null; }
 		}
 		static readonly internal Lazy<SvnClient> client;
 		
 		static SvnSharpClient ()
 		{
-			client = new Lazy<SvnClient> (CheckInstalled);
+			try {
+				client = new Lazy<SvnClient> (CheckInstalled);
+			} catch (Exception e) {
+				loadError = true;
+			}
 		}
 
 		public override string Version {
