@@ -41,11 +41,13 @@ type FSharpUnitTestTextEditorExtension() =
             match x.DocumentContext.Project with
             | null -> false
             | :? MonoDevelop.Projects.DotNetProject as dnp ->
+                try
                   dnp.GetReferencedAssemblies(MonoDevelop.getConfig())
                   |> Async.AwaitTask
                   |> Async.RunSynchronously
                   |> Seq.toArray
                   |> Seq.exists (fun r -> r.EndsWith ("nunit.framework.dll", StringComparison.InvariantCultureIgnoreCase)) 
+                with _ -> false
             | _ -> false
 
         if x.DocumentContext.ParsedDocument = null || not hasNUnitReference then
