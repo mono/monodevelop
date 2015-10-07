@@ -2107,12 +2107,6 @@ Global
 		$0.TextStylePolicy = $19
 		$19.inheritsSet = null
 		$19.scope = application/json
-		$0.TextStylePolicy = $20
-		$20.inheritsSet = null
-		$20.scope = application/glade+xml
-		$0.XmlFormattingPolicy = $21
-		$21.inheritsSet = null
-		$21.scope = application/glade+xml
 		outputpath = build\bin\
 		MakePkgConfig = False
 		MakeLibPC = True
