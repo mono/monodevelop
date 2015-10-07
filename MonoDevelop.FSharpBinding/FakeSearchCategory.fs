@@ -32,11 +32,7 @@ type FakePad() =
             else None
     with exn -> None
 
-  member x.Run (baseDirectory, task) =
-    let mono = Environment.getMonoPath()
-    let fake = Path.Combine [|baseDirectory; "packages"; "FAKE"; "tools"; "FAKE.exe"|]
-    let buildScript = Path.Combine [|baseDirectory; "build.sh"|]
-    let args = sprintf "%s %s %s" fake buildScript task
+  member x.Run (baseDirectory, task, buildScript) =
     let fsiProcess = 
       let startInfo = 
         new ProcessStartInfo
@@ -45,9 +41,7 @@ type FakePad() =
            RedirectStandardInput = true, StandardErrorEncoding = Text.Encoding.UTF8, 
            StandardOutputEncoding = Text.Encoding.UTF8,
            WorkingDirectory = baseDirectory)
-      LoggingService.LogDebug (sprintf "FAKE task runner: Starting file=%s, Args=%A" mono args)
-      view.WriteOutput (sprintf "FAKE task runner: Starting file=%s, Args=%A\n" mono args)
-      view.WriteOutput (sprintf "FAKE task runner: Starting file=%s %A\n" mono args)
+      view.WriteOutput(sprintf "FAKE task runner: Starting %s %s" buildScript task)
       view.Clear()
 
       try
@@ -101,14 +95,14 @@ type FakePad() =
     let font = Pango.FontDescription.FromString(fontName)
     view.SetFont(font)
 
-type FakeSearchResult(project: Solution, match', matchedString, rank) =
+type FakeSearchResult(solution: Solution, match', matchedString, rank, scriptPath) =
   inherit SearchResult(match', matchedString, rank)
 
   override x.SearchResultType =
     SearchResultType.Type
 
   override x.Description =
-    sprintf "Runs the FAKE %s task in %s" matchedString project.Name
+    sprintf "Runs the FAKE %s task in %s" matchedString solution.Name
 
   override x.PlainText = "FAKE " + matchedString
 
@@ -123,7 +117,7 @@ type FakeSearchResult(project: Solution, match', matchedString, rank) =
     pad.BringToFront()
     let padContent = pad.Content :?> FakePad
 
-    padContent.Run (string project.BaseDirectory, matchedString)
+    padContent.Run (string solution.BaseDirectory, matchedString, scriptPath)
 
 type FakeSearchCategory() =
   inherit SearchCategory("FAKE", sortOrder = SearchCategory.FirstCategory)
@@ -135,10 +129,10 @@ type FakeSearchCategory() =
 
   override x.GetResults(searchCallback, pattern, token) =
 
-    let addResult (solution: Solution, m: Match, rank) = 
+    let addResult (solution: Solution, m: Match, rank, scriptPath) = 
       if token.IsCancellationRequested then ()
       else
-        let sr = FakeSearchResult(solution, pattern.Pattern, m.Groups.[1].Value, rank)
+        let sr = FakeSearchResult(solution, pattern.Pattern, m.Groups.[1].Value, rank, scriptPath)
         searchCallback.ReportResult sr
 
     Task.Run(
@@ -146,15 +140,21 @@ type FakeSearchCategory() =
          let matcher = StringMatcher.GetMatcher (pattern.Pattern, false)
          async {
            for solution in IdeApp.Workspace.GetAllSolutions() do
-             let root = solution.BaseDirectory
-             let fakeScriptPath = Path.Combine([|string root; "build.fsx"|])
-             if File.Exists(fakeScriptPath) then
+
+             let launcherScript = if Platform.IsWindows then
+                                    "build.cmd"
+                                  else
+                                    "build.sh"
+
+             let fakeScriptPath = Path.Combine([|string solution.BaseDirectory; "build.fsx"|])
+             let launcherScriptPath = Path.Combine([|string solution.BaseDirectory; launcherScript|])
+             if File.Exists(fakeScriptPath) && File.Exists(launcherScriptPath)  then
                let fakeScript = File.ReadAllText fakeScriptPath
                Regex.Matches(fakeScript, "Target \"([\\w.]+)\"")
                  |> Seq.cast<Match> 
                  |> Seq.map (fun m -> (solution, m, matcher.CalcMatchRank ("FAKE " + m.Groups.[1].Value)))
                  |> Seq.choose (fun x -> match x with
-                                         | (p, m, (true, r)) -> Some (p, m, r) 
+                                         | (solution, m, (true, rank)) -> Some (solution, m, rank, launcherScriptPath) 
                                          | _ -> None)
                  |> Seq.iter addResult }
          |> Async.Start ), token)
