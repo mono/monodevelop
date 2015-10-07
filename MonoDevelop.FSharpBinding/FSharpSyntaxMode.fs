@@ -300,7 +300,7 @@ type FSharpSyntaxMode(editor, context) =
       | StringLiteral -> style.String
       | NumberLiteral -> style.Number
       | Module _ | ActivePatternCase | Record _ | Union _ | TypeAbbreviation | Class _ -> style.UserTypes
-      | Namespace _ -> style.KeywordNamespace
+      | Namespace _ -> style.PlainText
       | Property fromDef -> if fromDef then style.UserPropertyDeclaration else style.UserPropertyUsage
       | Field fromDef -> if fromDef then style.UserFieldDeclaration else style.UserFieldUsage
       | Function fromDef -> if fromDef then style.UserMethodDeclaration else style.UserMethodUsage
