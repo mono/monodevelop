@@ -18,7 +18,7 @@
 			<Panel id = "NamespaceSynchronisationPanel" class = "MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanel" />
 		</Section>
 		<Section id="CodeFormattingPolicies" _label="Code Formatting" fill="true" class="MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanel" icon="md-prefs-code-formatting" />
-		<Section id="DefaultStandardHeader" _label="Standard Header" fill="true" class="MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" icon="md-prefs-standard-header" />
+		<Section id="DefaultStandardHeader" _label="Standard Header" fill="true" class="MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" icon="md-prefs-header" />
 	</Section>
 	<Section id="VersionControl" _label="Version Control" />
 </Extension>

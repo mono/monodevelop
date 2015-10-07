@@ -2885,29 +2885,29 @@
     <EmbeddedResource Include="icons\prefs-generic-16~sel%402x.png">
       <LogicalName>prefs-generic-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\prefs-csharp-16.png">
-      <LogicalName>prefs-csharp-16.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-source-16.png">
+      <LogicalName>prefs-source-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\prefs-csharp-16%402x.png">
-      <LogicalName>prefs-csharp-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-source-16%402x.png">
+      <LogicalName>prefs-source-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\prefs-csharp-16~dark.png">
-      <LogicalName>prefs-csharp-16~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-source-16~dark.png">
+      <LogicalName>prefs-source-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\prefs-csharp-16~dark%402x.png">
-      <LogicalName>prefs-csharp-16~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-source-16~dark%402x.png">
+      <LogicalName>prefs-source-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\prefs-standard-header-16.png">
-      <LogicalName>prefs-standard-header-16.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-header-16.png">
+      <LogicalName>prefs-header-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\prefs-standard-header-16%402x.png">
-      <LogicalName>prefs-standard-header-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-header-16%402x.png">
+      <LogicalName>prefs-header-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\prefs-standard-header-16~dark.png">
-      <LogicalName>prefs-standard-header-16~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-header-16~dark.png">
+      <LogicalName>prefs-header-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\prefs-standard-header-16~dark%402x.png">
-      <LogicalName>prefs-standard-header-16~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-header-16~dark%402x.png">
+      <LogicalName>prefs-header-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-dotnet-naming-policies-16.png">
       <LogicalName>prefs-dotnet-naming-policies-16.png</LogicalName>

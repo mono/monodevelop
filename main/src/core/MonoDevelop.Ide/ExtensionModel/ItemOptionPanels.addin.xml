@@ -101,11 +101,11 @@
 		</Section>
 		<Condition id="ItemType" value="Solution">
 			<Section id="CodeFormattingPolicies" _label="Code Formatting" fill="true" class="MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanel" icon="md-prefs-code-formatting" />
-			<Section id="DefaultStandardHeader" _label="Standard Header" fill="true" class= "MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" icon="md-prefs-standard-header" />
+			<Section id="DefaultStandardHeader" _label="Standard Header" fill="true" class= "MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" icon="md-prefs-header" />
 		</Condition>
 		<Condition id="ItemType" value="SolutionFolderItem">
 			<Section id="CodeFormattingPolicies" _label="Code Formatting" fill="true" class="MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanel" icon="md-prefs-code-formatting" />
-			<Section id="DefaultStandardHeader" _label="Standard Header" fill="true" class="MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" icon="md-prefs-standard-header" />
+			<Section id="DefaultStandardHeader" _label="Standard Header" fill="true" class="MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" icon="md-prefs-header" />
 		</Condition>
 	</Section>
 </Extension>
