@@ -320,6 +320,18 @@
     <EmbeddedResource Include="icons\prefs-markers-rulers-16~dark%402x.png">
       <LogicalName>prefs-markers-rulers-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-markers-rulers-16~sel.png">
+      <LogicalName>prefs-markers-rulers-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-markers-rulers-16~sel%402x.png">
+      <LogicalName>prefs-markers-rulers-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-markers-rulers-16~dark~sel.png">
+      <LogicalName>prefs-markers-rulers-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-markers-rulers-16~dark~sel%402x.png">
+      <LogicalName>prefs-markers-rulers-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-syntax-highlighting-16.png">
       <LogicalName>prefs-syntax-highlighting-16.png</LogicalName>
     </EmbeddedResource>
@@ -331,6 +343,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-syntax-highlighting-16~dark%402x.png">
       <LogicalName>prefs-syntax-highlighting-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-syntax-highlighting-16~sel.png">
+      <LogicalName>prefs-syntax-highlighting-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-syntax-highlighting-16~sel%402x.png">
+      <LogicalName>prefs-syntax-highlighting-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-syntax-highlighting-16~dark~sel.png">
+      <LogicalName>prefs-syntax-highlighting-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-syntax-highlighting-16~dark~sel%402x.png">
+      <LogicalName>prefs-syntax-highlighting-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-text-editor-general-16.png">
       <LogicalName>prefs-text-editor-general-16.png</LogicalName>
@@ -344,6 +368,18 @@
     <EmbeddedResource Include="icons\prefs-text-editor-general-16~dark%402x.png">
       <LogicalName>prefs-text-editor-general-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-text-editor-general-16~sel.png">
+      <LogicalName>prefs-text-editor-general-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-text-editor-general-16~sel%402x.png">
+      <LogicalName>prefs-text-editor-general-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-text-editor-general-16~dark~sel.png">
+      <LogicalName>prefs-text-editor-general-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-text-editor-general-16~dark~sel%402x.png">
+      <LogicalName>prefs-text-editor-general-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-text-editor-behavior-16.png">
       <LogicalName>prefs-text-editor-behavior-16.png</LogicalName>
     </EmbeddedResource>
@@ -355,6 +391,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-text-editor-behavior-16~dark%402x.png">
       <LogicalName>prefs-text-editor-behavior-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-text-editor-behavior-16~sel.png">
+      <LogicalName>prefs-text-editor-behavior-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-text-editor-behavior-16~sel%402x.png">
+      <LogicalName>prefs-text-editor-behavior-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-text-editor-behavior-16~dark~sel.png">
+      <LogicalName>prefs-text-editor-behavior-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-text-editor-behavior-16~dark~sel%402x.png">
+      <LogicalName>prefs-text-editor-behavior-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-completion-appearance-16.png">
       <LogicalName>prefs-completion-appearance-16.png</LogicalName>
