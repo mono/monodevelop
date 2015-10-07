@@ -108,7 +108,6 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 		{
 			if (dialog != null) {
 				dialog.SetProgress (Progress);
-				DispatchService.RunPendingEvents ();
 			}
 		}
 		

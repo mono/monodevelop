@@ -69,7 +69,6 @@ namespace MonoDevelop.Ide.Gui
 				DesktopService.SetGlobalProgress (Progress);
 			} else
 				DesktopService.ShowGlobalProgressIndeterminate ();
-			DispatchService.RunPendingEvents ();
 		}
 		
 		public void UpdateStatusBar ()
