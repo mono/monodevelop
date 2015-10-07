@@ -47,7 +47,7 @@ namespace UserInterfaceTests
 		[TestCase ("ASP.NET MVC Razor Project", TestName = "TestASPMVCMazorProject",
 			Description = "Create and build ASP.NET MVC Razor Project")]
 		[TestCase ("ASP.NET MVC Razor Project with Unit Tests", TestName = "TestASPMVCMazorProjectWithUnitTests",
-			Description = "Create and build ASP.NET MVC Razor Project with Unit Tests")]
+			Description = "Create and build ASP.NET MVC Razor Project with Unit Tests", Category="Smoke")]
 		[TestCase ("ASP.NET Project", TestName = "TestASPProject",
 			Description = "Create and build ASP.NET Project")]
 		public void RunASPTest (string templateName)
