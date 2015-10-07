@@ -582,6 +582,10 @@
       <Link>Microsoft.CodeAnalysis.Workspaces.Desktop.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.VisualBasic.dll">
+      <Link>Microsoft.CodeAnalysis.VisualBasic.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Core.addin.xml">
