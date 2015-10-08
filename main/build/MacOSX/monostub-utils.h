@@ -121,9 +121,9 @@ push_env (const char *variable, const char *value)
 	BOOL updated = YES;
 	
 	if ((current = getenv (variable)) && *current) {
-		char *token, *copy;
+		char *token, *copy, *tofree;
 
-		copy = strdup (current);
+		tofree = copy = strdup (current);
 		len = strlen (value);
 		while ((token = strsep(&copy, ":"))) {
 			if (!strncmp (token, value, len)) {
@@ -144,7 +144,7 @@ push_env (const char *variable, const char *value)
 		setenv (variable, buf, 1);
 		free (buf);
 done:
-		free (copy);
+		free (tofree);
 	} else {
 		setenv (variable, value, 1);
 	}
