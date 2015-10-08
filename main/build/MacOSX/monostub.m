@@ -315,7 +315,7 @@ update_environment (const char *contentsDir)
 	if ((value = str_append (contentsDir, "/MacOS"))) {
 		char *compat;
 
-		char *value2 = str_append("/Libraries/Frameworks/Mono.framework/Commands:", value);
+		char *value2 = str_append("/Library/Frameworks/Mono.framework/Commands:", value);
 
 		// Note: older versions of Xamarin Studio incorrectly set the PATH to the Resources dir instead of the MacOS dir
 		// and older versions of mtouch relied on this broken behavior.
