@@ -233,7 +233,7 @@ push_env (const char *variable, const char *value)
 		setenv (variable, value, 1);
 	}
 
-	//printf ("Updated the %s environment variable.\n", variable);
+	//printf ("Updated the %s environment variable with '%s'.\n", variable, value);
 	
 	return YES;
 }
@@ -314,18 +314,20 @@ update_environment (const char *contentsDir)
 	
 	if ((value = str_append (contentsDir, "/MacOS"))) {
 		char *compat;
-		
+
+		char *value2 = str_append("/Libraries/Frameworks/Mono.framework/Commands:", value);
+
 		// Note: older versions of Xamarin Studio incorrectly set the PATH to the Resources dir instead of the MacOS dir
 		// and older versions of mtouch relied on this broken behavior.
 		if ((compat = str_append (contentsDir, "/Resources"))) {
 			size_t compatlen = strlen (compat);
-			size_t valuelen = strlen (value);
+			size_t valuelen = strlen (value2);
 			char *combined;
 			
 			if ((combined = malloc (compatlen + valuelen + 2))) {
 				memcpy (combined, compat, compatlen);
 				combined[compatlen] = ':';
-				strcpy (combined + compatlen + 1, value);
+				strcpy (combined + compatlen + 1, value2);
 
 				if (push_env ("PATH", combined))
 					updated = YES;
@@ -339,15 +341,14 @@ update_environment (const char *contentsDir)
 			
 			free (compat);
 		} else {
-			if (push_env ("PATH", value))
+			if (push_env ("PATH", value2))
 				updated = YES;
 		}
-		
+
 		free (value);
+		free (value2);
 	}
 
-	if (push_env ("PATH", "/Library/Frameworks/Mono.framework/Commands"))
-		updated = YES;
 
 	return updated;
 }
