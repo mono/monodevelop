@@ -9,3 +9,4 @@ nuget Microsoft.CodeAnalysis 1.0.0.0-rc2 framework: >= net45
 nuget Mono.Cecil 0.9.6.1 framework: >= net40
 nuget NUnit 2.6.4 framework: >= net45
 nuget Argu 1.0.0
+nuget FAKE
