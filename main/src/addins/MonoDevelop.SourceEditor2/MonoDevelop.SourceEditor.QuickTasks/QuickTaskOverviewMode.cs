@@ -683,14 +683,14 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			return y;
 		}
 
-		protected void DrawQuickTasks (Cairo.Context cr, IEnumerator<Usage> allUsages, IEnumerator<QuickTask> allTasks, ref bool nextStep, ref DiagnosticSeverity severity, HashSet<int> lineCache)
+		protected void DrawQuickTasks (Cairo.Context cr, IEnumerator<Usage> allUsages, IEnumerator<QuickTask> allTasks, ref bool nextStep, ref DiagnosticSeverity severity, List<HashSet<int>> lineCache)
 		{
 			if (allUsages.MoveNext ()) {
 				var usage = allUsages.Current;
 				int y = (int)GetYPosition (TextEditor.OffsetToLineNumber (usage.Offset));
-				if (lineCache.Contains (y))
+				if (lineCache[0].Contains (y))
 					return;
-				lineCache.Add (y);
+				lineCache[0].Add (y);
 				var usageColor = TextEditor.ColorStyle.PlainText.Foreground;
 				usageColor.A = 0.4;
 				HslColor color;
@@ -714,12 +714,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			} else if (allTasks.MoveNext ()) {
 				var task = allTasks.Current;
 				int y = (int)GetYPosition (TextEditor.OffsetToLineNumber (task.Location));
-				if (lineCache.Contains (y))
-					return;
-				lineCache.Add (y);
-				cr.SetSourceColor (GetBarColor (task.Severity));
-				cr.Rectangle (0, y - 1, Allocation.Width, 2);
-				cr.Fill ();
+				if (!lineCache[1].Contains (y)) {
+					lineCache[1].Add (y);
+					cr.SetSourceColor (GetBarColor (task.Severity));
+					cr.Rectangle (0, y - 1, Allocation.Width, 2);
+					cr.Fill ();
+				}
 				if (task.Severity == DiagnosticSeverity.Error)
 					severity = DiagnosticSeverity.Error;
 				else if (task.Severity == DiagnosticSeverity.Warning && severity != DiagnosticSeverity.Error)
@@ -915,7 +915,9 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 						surface.Dispose ();
 					return false;
 				}
-				var lineCache = new HashSet<int> ();
+				var lineCache = new List<HashSet<int>> ();
+				lineCache.Add (new HashSet<int> ());
+				lineCache.Add (new HashSet<int> ());
 				bool nextStep = false;
 				switch (drawingStep) {
 				case 0:
