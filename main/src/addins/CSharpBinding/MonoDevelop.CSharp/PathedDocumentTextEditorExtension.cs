@@ -730,7 +730,8 @@ namespace MonoDevelop.CSharp
 						while (type != null) {
 							if (!(type is TypeDeclarationSyntax))
 								break;
-							result.Insert (pos, new PathEntry (ImageService.GetIcon (type.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (type)) { Tag = (object)type.Parent ?? unit });
+							var tag = (object)type.Ancestors ().OfType<TypeDeclarationSyntax> ().FirstOrDefault () ?? unit;
+							result.Insert (pos, new PathEntry (ImageService.GetIcon (type.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (type)) { Tag = tag });
 							type = type.Parent;
 						}
 					}
