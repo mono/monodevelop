@@ -253,8 +253,9 @@ namespace MonoDevelop.Ide.Gui.Components
 			var info = (NodeInfo)model.GetValue (it, NodeInfoColumn);
 			var cell = (ZoomableCellRendererPixbuf)renderer;
 
-			cell.Image = info.Icon != null && info.Icon != CellRendererImage.NullImage && info.DisabledStyle ? info.Icon.WithAlpha (0.5) : info.Icon;
-			cell.ImageExpanderOpen = cell.Image;
+			var img = info.Icon != null && info.Icon != CellRendererImage.NullImage && info.DisabledStyle ? info.Icon.WithAlpha (0.5) : info.Icon;
+			cell.Image = img;
+			cell.ImageExpanderOpen = img;
 			cell.ImageExpanderClosed = info.ClosedIcon != null && info.ClosedIcon != CellRendererImage.NullImage && info.DisabledStyle ? info.ClosedIcon.WithAlpha (0.5) : info.ClosedIcon;
 			cell.OverlayBottomLeft = info.OverlayBottomLeft;
 			cell.OverlayBottomRight = info.OverlayBottomRight;
