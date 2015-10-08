@@ -150,23 +150,62 @@ void test_push_env(void)
 	}
 }
 
+void check_path_has_components(char *path, const char **components, int count)
+{
+	char *token, *tofree, *copy;
+
+
+	for (int i = 0; i < count; ++i) {
+		BOOL found = FALSE;
+		tofree = copy = strdup(path);
+
+		while ((token = strsep(&copy, ":"))) {
+			if (!strncmp(token, components[i], strlen(components[i])))
+				found = TRUE;
+		}
+
+		if (!found) {
+			printf("Expected '%s'\nIn       '%s'", components[i], tofree);
+			fail();
+		}
+		free(tofree);
+	}
+}
+
 void test_update_environment(void)
 {
-	const char *added_path = "/Library/Frameworks/Mono.framework/Commands:./Resources:./MacOS:/Library/Frameworks/Mono.framework/Versions/Current/bin";
+	const char *path_components[] = {
+		"/Library/Frameworks/Mono.framework/Commands",
+		"./Resources",
+		"./MacOS",
+		"/Library/Frameworks/Mono.framework/Versions/Current/bin",
+	};
+	const char *dyld_components[] = {
+		"/usr/local/lib",
+		"/Library/Developer/CommandLineTools/usr/lib",
+		"/usr/lib",
+		"/lib",
+		"/Library/Frameworks/Mono.framework/Versions/Current/lib",
+		"./Resources/lib/monodevelop/bin",
+		"./Resources/lib",
+	};
+	const char *pkg_components[] = {
+		"./Resources/lib/pkgconfig",
+		"/Library/Frameworks/Mono.framework/External/pkgconfig",
+	};
+	const char *gac_components[] = {
+		"./Resources",
+	};
 
 	// Check that we only get updates one time, that's how monostub works.
 	check_bool_equal(TRUE, update_environment("."));
 	check_bool_equal(FALSE, update_environment("."));
 
-	check_string_equal("/usr/local/lib:/Library/Developer/CommandLineTools/usr/lib:/usr/lib:/lib:/Library/Frameworks/Mono.framework/Versions/Current/lib:./Resources/lib/monodevelop/bin:./Resources/lib", getenv("DYLD_FALLBACK_LIBRARY_PATH"));
-	check_string_equal("./Resources/lib/pkgconfig:/Library/Frameworks/Mono.framework/External/pkgconfig", getenv("PKG_CONFIG_PATH"));
-	check_string_equal("./Resources", getenv("MONO_GAC_PREFIX"));
 
-	const char *new_path = getenv("PATH");
-
-	// Check we have the new components in the beginning.
-	if (strstr(new_path, added_path) != new_path)
-		fail();
+	check_path_has_components(getenv("DYLD_FALLBACK_LIBRARY_PATH"), dyld_components, sizeof(dyld_components) / sizeof(char *));
+	check_path_has_components(getenv("PATH"), path_components, sizeof(path_components) / sizeof(char *));
+	check_path_has_components(getenv("PKG_CONFIG_PATH"), pkg_components, sizeof(pkg_components) / sizeof(char *));
+	check_path_has_components(getenv("MONO_GAC_PREFIX"), gac_components, sizeof(gac_components) / sizeof(char *));
 }
 
 void (*tests[])(void) = {
