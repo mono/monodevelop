@@ -484,8 +484,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					var workbenchNsWindow = nsWindows.FirstOrDefault (nswin =>
 						GtkMacInterop.GetGtkWindow (nswin) is MonoDevelop.Ide.Gui.DefaultWorkbench);
 
-					widget.Allocation = new Gdk.Rectangle (0, (int)(fullscreenToolbarNsWindow.Frame.Bottom - workbenchNsWindow.Frame.Height),
-						(int)fullscreenToolbarNsWindow.Frame.Width, 0);
+					// Gtk and Cocoa coordinates are not the same. Offset by left and top screens to get the correct
+					// coordinate for the popup window based on Cocoa coordinates which offset left/top from current desktop.
+					nfloat xOffset = -NSScreen.Screens.Min (screen => screen.Frame.Left);
+					nfloat yOffset = NSScreen.Screens.Max (screen => screen.Frame.Bottom);
+					widget.Allocation = new Gdk.Rectangle (0, (int)(yOffset - workbenchNsWindow.Frame.Height),
+						(int)(xOffset + fullscreenToolbarNsWindow.Frame.Width), 0);
 				}
 				return widget;
 			}

@@ -35,7 +35,7 @@ namespace UserInterfaceTests
 	[Category ("GitBase")]
 	public class GitTests : VCSBase
 	{
-		[Test, Timeout(90000)]
+		[Test, Timeout(90000), Category("Smoke")]
 		[TestCase ("git@github.com:mono/gtk-sharp.git", TestName = "TestGitSSHClone", Description = "Clone Git repo over SSH")]
 		[TestCase ("https://github.com/mono/gtk-sharp.git", TestName = "TestGitHTTPSClone", Description = "Clone Git repo over HTTPS")]
 		public void TestGitClone (string url)
@@ -44,7 +44,7 @@ namespace UserInterfaceTests
 			Ide.WaitForIdeIdle ();
 		}
 
-		[Test]
+		[Test, Category("Smoke")]
 		[Description ("Create a new project with Git and commit the changes")]
 		public void TestCommit ()
 		{
@@ -97,7 +97,7 @@ namespace UserInterfaceTests
 			TakeScreenShot ("Stash-Window-Doesnt-Show");
 		}
 
-		[Test]
+		[Test, Category("Smoke")]
 		[Description ("Create a new project, make a commit, make changes. Stash and Unstash successfully")]
 		public void TestStashAndUnstashSuccessful ()
 		{
