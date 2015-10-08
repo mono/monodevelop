@@ -346,6 +346,9 @@ update_environment (const char *contentsDir)
 		free (value);
 	}
 
+	if (push_env ("PATH", "/Library/Frameworks/Mono.framework/Commands"))
+		updated = YES;
+
 	return updated;
 }
 
