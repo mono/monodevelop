@@ -85,6 +85,7 @@ namespace UserInterfaceTests
 		protected void TestCommit (string commitMsg)
 		{
 			Session.ExecuteCommand (MonoDevelop.VersionControl.Commands.SolutionStatus);
+			Session.WaitForElement (c =>  c.Button ().Marked ("buttonCommit").Sensitivity (true));
 			Session.ClickElement (c => c.Button ().Marked ("buttonCommit"), false);
 			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Dialogs.CommitDialog"));
 			TakeScreenShot ("Commit-Dialog-Opened");
