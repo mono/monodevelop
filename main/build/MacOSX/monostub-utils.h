@@ -3,7 +3,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#define MONO_LIB_PATH(lib) "/Library/Frameworks/Mono.framework/Versions/Current/lib/"lib
+#define MONO_LIB_PATH(lib) "/Library/Frameworks/Mono.framework/Libraries/"lib
 
 static int
 check_mono_version (const char *version, const char *req_version)
@@ -76,7 +76,7 @@ generate_fallback_path (const char *contentsDir)
 		abort ();
 
 	/* Mono's lib dir, and CommandLineTool's lib dir into the DYLD_FALLBACK_LIBRARY_PATH */
-	result = str_append (value, "/Library/Frameworks/Mono.framework/Versions/Current/lib:/lib:/usr/lib:/Library/Developer/CommandLineTools/usr/lib:/usr/local/lib");
+	result = str_append (value, "/Library/Frameworks/Mono.framework/Libraries:/lib:/usr/lib:/Library/Developer/CommandLineTools/usr/lib:/usr/local/lib");
 
 	free (lib_dir);
 	free (monodevelop_bin_dir);
