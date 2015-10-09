@@ -190,6 +190,10 @@ namespace MonoDevelop.CSharp
 
 			GetAccessibility (element, out acc);
 
+			if (element is EnumDeclarationSyntax) {
+				return typeIconTable [1, (int) (acc)];
+			}
+
 			if (element is TypeDeclarationSyntax) {
 				var type = element as TypeDeclarationSyntax;
 				switch (type.Keyword.Kind ()) {

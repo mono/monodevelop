@@ -246,6 +246,12 @@ namespace MonoDevelop.CSharp
 				if (customEvent.ExplicitInterfaceSpecifier != null)
 					AppendEscaped (sb, customEvent.ExplicitInterfaceSpecifier + ".");
 				sb.Append (customEvent.Identifier);
+			} else if (e is EnumDeclarationSyntax) {
+				var enumDecl = (EnumDeclarationSyntax)e;
+				sb.Append (enumDecl.Identifier);
+			} else if (e is EnumMemberDeclarationSyntax) {
+				var enumMemberDecl = (EnumMemberDeclarationSyntax)e;
+				sb.Append (enumMemberDecl.Identifier);
 			} /*else if (e is MemberDeclarationSyntax) {
 				LoggingService.LogWarning ("can't display : " + e);
 				//				var entity = (MemberDeclarationSyntax)e;

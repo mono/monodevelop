@@ -44,6 +44,7 @@ using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Core.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace MonoDevelop.CSharp
 {
@@ -305,8 +306,16 @@ namespace MonoDevelop.CSharp
 
 			#region IListDataProvider implementation
 
-			void AddTypeToMemberList (TypeDeclarationSyntax type)
+			void AddTypeToMemberList (BaseTypeDeclarationSyntax btype)
 			{
+				var e = btype as EnumDeclarationSyntax;
+				if (e !=null){
+					foreach (var member in e.Members) {
+						memberList.Add (member);
+					}
+					return;
+				}
+				var type = btype as TypeDeclarationSyntax;
 				foreach (var member in type.Members) {
 					if (member is FieldDeclarationSyntax) {
 						foreach (var variable in ((FieldDeclarationSyntax)member).Declaration.Variables)
@@ -325,16 +334,16 @@ namespace MonoDevelop.CSharp
 				memberList.Clear ();
 				if (tag is SyntaxTree) {
 					var unit = tag as SyntaxTree;
-					memberList.AddRange (unit.GetRoot ().DescendantNodes ().OfType<TypeDeclarationSyntax> ());
-				} else if (tag is TypeDeclarationSyntax) {
-					AddTypeToMemberList ((TypeDeclarationSyntax)tag);
+					memberList.AddRange (unit.GetRoot ().DescendantNodes ().Where (IsType));
+				} else if (tag is BaseTypeDeclarationSyntax) {
+					AddTypeToMemberList ((BaseTypeDeclarationSyntax)tag);
 				} else if (tag is AccessorDeclarationSyntax) {
 					var acc = (AccessorDeclarationSyntax)tag;
 					var parent = (MemberDeclarationSyntax)acc.Parent;
 					memberList.AddRange (parent.ChildNodes ().OfType<AccessorDeclarationSyntax> ());
 				} else if (tag is MemberDeclarationSyntax) {
 					var entity = (MemberDeclarationSyntax)tag;
-					var type = entity.Parent as TypeDeclarationSyntax;
+					var type = entity.Parent as BaseTypeDeclarationSyntax;
 					if (type != null) {
 						AddTypeToMemberList (type);
 					}
@@ -439,7 +448,7 @@ namespace MonoDevelop.CSharp
 					if (type != null) {
 						var sb = new StringBuilder ();
 						sb.Append (ext.GetEntityMarkup (type));
-						while (type.Parent is TypeDeclarationSyntax) {
+						while (type.Parent is BaseTypeDeclarationSyntax) {
 							sb.Insert (0, ext.GetEntityMarkup (type.Parent) + ".");
 							type = type.Parent;
 						}
@@ -669,27 +678,30 @@ namespace MonoDevelop.CSharp
 				SyntaxNode token;
 				try {
 					root = await unit.GetRootAsync(cancellationToken).ConfigureAwait(false);
-					if (root.Span.Length <= caretOffset)
+					if (root.FullSpan.Length <= caretOffset) {
 						return;
+					}
 					token = root.FindNode(TextSpan.FromBounds(caretOffset, caretOffset));
 				} catch (Exception ex ) {
 					Console.WriteLine (ex);
 					return;
 				}
 				var curMember = token.AncestorsAndSelf ().FirstOrDefault (m => m is MemberDeclarationSyntax && !(m is NamespaceDeclarationSyntax));
-				var curType = token.AncestorsAndSelf ().FirstOrDefault (m => m is TypeDeclarationSyntax || m is DelegateDeclarationSyntax);
+				var curType = token.AncestorsAndSelf ().FirstOrDefault (IsType);
 
 				var curProject = ownerProjects != null && ownerProjects.Count > 1 ? DocumentContext.Project : null;
 
 				if (curType == curMember || curType is DelegateDeclarationSyntax)
 					curMember = null;
-				if (isPathSet && curType == lastType && curMember == lastMember && curProject == lastProject)
+				if (isPathSet && curType == lastType && curMember == lastMember && curProject == lastProject) {
 					return;
+				}
 				var curTypeMakeup = GetEntityMarkup(curType);
 				var curMemberMarkup = GetEntityMarkup(curMember);
 				if (isPathSet && curType != null && lastType != null && curTypeMakeup == lastTypeMarkup &&
-					curMember != null && lastMember != null && curMemberMarkup == lastMemberMarkup && curProject == lastProject)
+					curMember != null && lastMember != null && curMemberMarkup == lastMemberMarkup && curProject == lastProject) {
 					return;
+				}
 
 
 				var result = new List<PathEntry>();
@@ -728,9 +740,9 @@ namespace MonoDevelop.CSharp
 						var type = curType;
 						var pos = result.Count;
 						while (type != null) {
-							if (!(type is TypeDeclarationSyntax))
+							if (!(type is BaseTypeDeclarationSyntax))
 								break;
-							var tag = (object)type.Ancestors ().OfType<TypeDeclarationSyntax> ().FirstOrDefault () ?? unit;
+							var tag = (object)type.Ancestors ().FirstOrDefault (IsType) ?? unit;
 							result.Insert (pos, new PathEntry (ImageService.GetIcon (type.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (type)) { Tag = tag });
 							type = type.Parent;
 						}
@@ -785,6 +797,11 @@ namespace MonoDevelop.CSharp
 					OnPathChanged (new DocumentPathChangedEventArgs(prev));
 				});
 			});
+		}
+
+		static bool IsType (SyntaxNode m)
+		{
+			return m is BaseTypeDeclarationSyntax || m is DelegateDeclarationSyntax;
 		}
 
 		void CancelUpdatePath ()
