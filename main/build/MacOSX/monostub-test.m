@@ -26,7 +26,7 @@ void check_bool_equal(int expected, int actual)
 
 void test_mono_lib_path(void)
 {
-	char *expected = "/Library/Frameworks/Mono.framework/Versions/Current/lib/test";
+	char *expected = "/Library/Frameworks/Mono.framework/Libraries/test";
 	char *actual = MONO_LIB_PATH("test");
 
 	check_string_equal(expected, actual);
@@ -77,7 +77,7 @@ void test_generate_fallback_path (void)
 {
 	char *actual = generate_fallback_path(".");
 
-	check_string_equal("./Resources/lib:./Resources/lib/monodevelop/bin:/Library/Frameworks/Mono.framework/Versions/Current/lib:/lib:/usr/lib:/Library/Developer/CommandLineTools/usr/lib:/usr/local/lib", actual);
+	check_string_equal("./Resources/lib:./Resources/lib/monodevelop/bin:/Library/Frameworks/Mono.framework/Libraries:/lib:/usr/lib:/Library/Developer/CommandLineTools/usr/lib:/usr/local/lib", actual);
 }
 
 void test_env2bool(void)
@@ -184,7 +184,7 @@ void test_update_environment(void)
 		"/Library/Developer/CommandLineTools/usr/lib",
 		"/usr/lib",
 		"/lib",
-		"/Library/Frameworks/Mono.framework/Versions/Current/lib",
+		"/Library/Frameworks/Mono.framework/Libraries",
 		"./Resources/lib/monodevelop/bin",
 		"./Resources/lib",
 	};
