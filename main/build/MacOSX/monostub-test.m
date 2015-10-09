@@ -178,7 +178,6 @@ void test_update_environment(void)
 		"/Library/Frameworks/Mono.framework/Commands",
 		"./Resources",
 		"./MacOS",
-		"/Library/Frameworks/Mono.framework/Versions/Current/bin",
 	};
 	const char *dyld_components[] = {
 		"/usr/local/lib",
