@@ -92,6 +92,7 @@ namespace UserInterfaceTests
 			TakeScreenShot ("Commit-Msg-Entered");
 			Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Dialogs.CommitDialog").Children ().Button ().Marked ("buttonCommit"), false);
 			CheckIfNameEmailNeeded ();
+			CheckIfUserConflict ();
 			Ide.WaitForStatusMessage (new[] {"Commit operation completed."});
 			TakeScreenShot ("Commit-Completed");
 		}
@@ -154,6 +155,15 @@ namespace UserInterfaceTests
 				TakeScreenShot ("Git-User-Not-Configured");
 				EnterGitUserConfig ("John Doe", "john.doe@example.com");
 			} catch (TimeoutException e) { }
+		}
+
+		protected void CheckIfUserConflict ()
+		{
+			try {
+				Session.WaitForElement (c => c.Window ().Marked ("User Information Conflict"));
+				Session.ClickElement (c => c.Window ().Marked ("User Information Conflict").Children ().Button ().Text ("OK"));
+			} catch (TimeoutException) {
+			}
 		}
 
 		protected override void OnBuildTemplate (int buildTimeoutInSecs = 180)
