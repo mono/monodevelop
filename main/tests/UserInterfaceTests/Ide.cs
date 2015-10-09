@@ -52,6 +52,7 @@ namespace UserInterfaceTests
 
 		public static void CloseAll ()
 		{
+			Session.ExecuteCommand (FileCommands.SaveAll);
 			Session.ExecuteCommand (FileCommands.CloseWorkspace);
 			Session.ExitApp ();
 		}
