@@ -77,7 +77,7 @@ namespace UserInterfaceTests
 			SetupScreenshotsFolder ();
 			SetupIdeLogFolder ();
 
-			var mdProfile = Util.CreateTmpDir ();
+			var mdProfile = CreateProfileAndInitSettings ();
 			TestService.StartSession (MonoDevelopBinPath, mdProfile);
 			TestService.Session.DebugObject = new UITestDebug ();
 
@@ -85,19 +85,34 @@ namespace UserInterfaceTests
 
 			Session.WaitForElement (IdeQuery.DefaultWorkbench);
 			TakeScreenShot ("Application-Started");
-			CloseIfXamarinUpdateOpen ();
 			TakeScreenShot ("Application-Ready");
+		}
+
+		static FilePath CreateProfileAndInitSettings ()
+		{
+			const string mdPropertiesFile = "MonoDevelopProperties.xml";
+
+			var mdProfile = Util.CreateTmpDir ();
+			var profileDir = Path.Combine (mdProfile, BrandingService.ApplicationName + "-" + MonoDevelop.BuildInfo.CompatVersion, "Config");
+			Directory.CreateDirectory (profileDir);
+
+			var fromMDFile = Path.Combine (UserProfile.Current.ConfigDir, mdPropertiesFile);
+			var toMDFile = Path.Combine (profileDir, mdPropertiesFile);
+			File.Copy (fromMDFile, toMDFile);
+			Console.WriteLine ("Using Settings file: " + toMDFile);
+
+			var property = Properties.Load (toMDFile);
+			property.Set ("MonoDevelop.Ide.AddinUpdater.CheckForUpdates", false);
+			property.Save (toMDFile);
+			Console.WriteLine ("Disabled AddinUpdater.CheckForUpdates");
+
+			return mdProfile;
 		}
 
 		[TearDown]
 		public virtual void Teardown ()
 		{
 			try {
-				if (TestContext.CurrentContext.Result.Status != TestStatus.Passed) {
-					var updateOpened = Session.Query (IdeQuery.XamarinUpdate);
-					if (updateOpened != null && updateOpened.Any ())
-						Assert.Inconclusive ("Xamarin Update is blocking the application focus");
-				}
 				ValidateIdeLogMessages ();
 
 				LoggingService.RemoveLogger (Logger.Name);
@@ -129,18 +144,6 @@ namespace UserInterfaceTests
 		static void ValidateIdeLogMessages ()
 		{
 			LogMessageValidator.Validate (Environment.GetEnvironmentVariable ("MONODEVELOP_LOG_FILE"));
-		}
-
-		protected void CloseIfXamarinUpdateOpen ()
-		{
-			try {
-				Session.WaitForElement (IdeQuery.XamarinUpdate, 10 * 1000);
-				TakeScreenShot ("Xamarin-Update-Opened");
-				Session.ClickElement (c => IdeQuery.XamarinUpdate (c).Children ().Button ().Text ("Close"));
-			}
-			catch (TimeoutException) {
-				TestService.Session.DebugObject.Debug ("Xamarin Update did not open");
-			}
 		}
 
 		void SetupTestResultFolder ()

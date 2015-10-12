@@ -35,7 +35,7 @@ namespace UserInterfaceTests
 	[Category ("GitBase")]
 	public class GitTests : VCSBase
 	{
-		[Test, Timeout(90000), Category("Smoke")]
+		[Test, Timeout(120000), Category("Smoke")]
 		[TestCase ("git@github.com:mono/gtk-sharp.git", TestName = "TestGitSSHClone", Description = "Clone Git repo over SSH")]
 		[TestCase ("https://github.com/mono/gtk-sharp.git", TestName = "TestGitHTTPSClone", Description = "Clone Git repo over HTTPS")]
 		public void TestGitClone (string url)
