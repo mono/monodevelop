@@ -28,6 +28,7 @@ using System;
 using System.Collections;
 using MonoDevelop.Core;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
@@ -58,9 +59,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public bool IsSaved;
 
-		public virtual void Save ()
+		public virtual Task SaveAsync ()
 		{
 			IsSaved = true;
+			return Task.FromResult (0);
 		}
 
 		public IEnumerable<string> FlavorGuids {

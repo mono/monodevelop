@@ -30,15 +30,17 @@ using System;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
+using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace ICSharpCode.PackageManagement
 {
 	public static class ProjectExtensions
 	{
-		public static void Save(this Project project)
+		public static Task SaveAsync(this Project project)
 		{
-			DispatchService.GuiSyncDispatch(() => {
-				IdeApp.ProjectOperations.SaveAsync(project);
+			return Runtime.RunInMainThread (async () => {
+				await IdeApp.ProjectOperations.SaveAsync (project);
 			});
 		}
 	}

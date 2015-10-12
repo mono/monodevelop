@@ -28,6 +28,7 @@ using System;
 using System.Collections;
 using MonoDevelop.Core;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -40,7 +41,7 @@ namespace MonoDevelop.PackageManagement
 		IDictionary ExtendedProperties { get; }
 		IEnumerable<string> FlavorGuids { get; }
 
-		void Save ();
+		Task SaveAsync ();
 	}
 }
 
