@@ -162,11 +162,12 @@ namespace MonoDevelop.Ide.Editor
 			var ctx = (DocumentContext)sender;
 			CancelDocumentParsedUpdate ();
 			var token = src.Token;
+			var caretLocation = textEditor.CaretLocation;
 			Task.Run (() => {
 				try {
 					UpdateErrorUndelines (ctx.ParsedDocument, token);
 					UpdateQuickTasks (ctx.ParsedDocument, token);
-					UpdateFoldings (ctx.ParsedDocument, false, token);
+					UpdateFoldings (ctx.ParsedDocument, caretLocation, false, token);
 				} catch (OperationCanceledException) {
 					// ignore
 				}
@@ -237,14 +238,14 @@ namespace MonoDevelop.Ide.Editor
 		}
 		#endregion
 		CancellationTokenSource src = new CancellationTokenSource ();
-		void UpdateFoldings (ParsedDocument parsedDocument, bool firstTime = false, CancellationToken token = default (CancellationToken))
+		void UpdateFoldings (ParsedDocument parsedDocument, DocumentLocation caretLocation, bool firstTime = false, CancellationToken token = default (CancellationToken))
 		{
 			if (parsedDocument == null || !textEditor.Options.ShowFoldMargin || isDisposed)
 				return;
 			// don't update parsed documents that contain errors - the foldings from there may be invalid.
 			if (parsedDocument.HasErrors)
 				return;
-			var caretLocation = textEditor.CaretLocation;
+			
 			try {
 				var foldSegments = new List<IFoldSegment> ();
 
@@ -326,7 +327,7 @@ namespace MonoDevelop.Ide.Editor
 				}
 			}
 			if (parsedDocument != null) {
-				UpdateFoldings (parsedDocument, true);
+				UpdateFoldings (parsedDocument, textEditor.CaretLocation, true);
 			}
 		}
 
