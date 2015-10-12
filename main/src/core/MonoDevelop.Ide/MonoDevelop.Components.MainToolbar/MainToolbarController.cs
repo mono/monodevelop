@@ -579,7 +579,7 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		string lastSearchText;
+		string lastSearchText = string.Empty;
 		public void FocusSearchBar ()
 		{
 			IdeApp.Workbench.Present ();
