@@ -617,8 +617,11 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (widget.HasMessageBar)
 				return;
-			if (encoding != null)
+			if (encoding != null) {
 				this.encoding = encoding;
+				this.hadBom = true;
+				UpdateTextDocumentEncoding ();
+			}
 			if (ContentName != fileName) {
 				FileService.RequestFileEdit ((FilePath) fileName);
 				writeAllowed = true;
@@ -778,6 +781,14 @@ namespace MonoDevelop.SourceEditor
 			return text;
 		}
 
+		void UpdateTextDocumentEncoding ()
+		{
+			if (wrapper != null) {
+				wrapper.Document.Encoding = encoding;
+				wrapper.Document.UseBom = hadBom;
+			}
+		}
+
 		public void Load (string fileName, Encoding loadEncoding, bool reload = false)
 		{
 			widget.TextEditor.Document.TextReplaced -= OnTextReplaced;
@@ -829,7 +840,7 @@ namespace MonoDevelop.SourceEditor
 			if (didLoadCleanly) {
 				widget.EnsureCorrectEolMarker (fileName);
 			}
-			
+			UpdateTextDocumentEncoding ();			
 			widget.TextEditor.Document.TextReplaced += OnTextReplaced;
 		}
 		
@@ -897,6 +908,7 @@ namespace MonoDevelop.SourceEditor
 			UpdatePinnedWatches ();
 			LoadExtensions ();
 			IsDirty = false;
+			UpdateTextDocumentEncoding ();
 			InformLoadComplete ();
 		}
 	
@@ -2417,8 +2429,16 @@ namespace MonoDevelop.SourceEditor
 		TextDocumentWrapper wrapper;
 		IReadonlyTextDocument ITextEditorImpl.Document {
 			get {
-				if (wrapper == null)
+				if (wrapper == null) {
 					wrapper = new TextDocumentWrapper (widget.TextEditor.Document);
+					if (encoding != null) {
+						wrapper.Document.Encoding = encoding;
+						wrapper.Document.UseBom = hadBom;
+					} else {
+						wrapper.Document.Encoding = Encoding.UTF8;
+						wrapper.Document.UseBom = true;
+					}
+				}
 				return wrapper;
 			}
 			set {
