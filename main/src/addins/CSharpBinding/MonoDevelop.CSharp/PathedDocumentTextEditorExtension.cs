@@ -671,9 +671,9 @@ namespace MonoDevelop.CSharp
 			CancelUpdatePath ();
 			var cancellationToken = src.Token;
 			amb = new AstAmbience(TypeSystemService.Workspace.Options);
+			var loc = Editor.CaretLocation;
 			Task.Run(async delegate {
 				var unit = model.SyntaxTree;
-				var loc = Editor.CaretLocation;
 				SyntaxNode root;
 				SyntaxNode token;
 				try {
