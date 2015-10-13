@@ -68,7 +68,7 @@ namespace UserInterfaceTests
 			return isPass == Workbench.IsBuildSuccessful (timeoutInSecs);
 		}
 
-		public static void WaitUntil (Func<bool> done, int timeout = 20000, int pollStep = 200)
+		public static void WaitUntil (Func<bool> done, int timeout = 20000, int pollStep = 200, Func<string> timeoutMessage = null)
 		{
 			do {
 				if (done ())
@@ -77,7 +77,11 @@ namespace UserInterfaceTests
 				Thread.Sleep (pollStep);
 			} while (timeout > 0);
 
-			throw new TimeoutException ("Timed out waiting for Function: "+done.Method.Name);
+			if (timeoutMessage != null) {
+				throw new TimeoutException ("Timed out waiting for Function: " + done.Method.Name + " Message: " + timeoutMessage ());
+			} else {
+				throw new TimeoutException ("Timed out waiting for Function: " + done.Method.Name);
+			}
 		}
 
 		public static bool ClickButtonAlertDialog (string buttonText)
@@ -98,7 +102,8 @@ namespace UserInterfaceTests
 
 			action ();
 
-			WaitUntil (() => c.TotalTime > tt, timeout);
+			WaitUntil (() => c.TotalTime > tt, timeout,
+					   timeoutMessage: () => "Counter:" + counter + " T1:" + c.TotalTime + " T2:" + tt + " Timeout:" + timeout);
 		}
 
 
@@ -165,7 +170,10 @@ namespace UserInterfaceTests
 						string.Format ("Timed out. Found status message '{0}'\nand expected one of these:\n\t {1}",
 							actualStatusMessage, string.Join ("\n\t", statusMessage)), e);
 				}
-			}, pollStep: pollStepInSecs * 1000, timeout: timeoutInSecs * 1000);
+			},
+			pollStep: pollStepInSecs * 1000,
+			timeout: timeoutInSecs * 1000,
+			timeoutMessage: () => "GetStatusMessage=" + Workbench.GetStatusMessage ());
 		}
 
 		static readonly List<string> ignoreStatusMessgaes = new List<string> {
