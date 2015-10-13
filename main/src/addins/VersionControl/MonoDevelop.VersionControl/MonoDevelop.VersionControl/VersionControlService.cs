@@ -95,7 +95,15 @@ namespace MonoDevelop.VersionControl
 
 		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
-			VersionControlSystem vcs = (VersionControlSystem) args.ExtensionObject;
+			VersionControlSystem vcs;
+
+			try {
+				vcs = (VersionControlSystem) args.ExtensionObject;
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to initialize VersionControlSystem type.", e);
+				return;
+			}
+
 			if (args.Change == ExtensionChange.Add) {
 				handlers.Add (vcs);
 				try {

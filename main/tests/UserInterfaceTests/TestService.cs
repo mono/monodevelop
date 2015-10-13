@@ -27,7 +27,6 @@
 using System;
 using MonoDevelop.Components.AutoTest;
 using System.Collections.Generic;
-using MonoDevelop.Core;
 
 namespace UserInterfaceTests
 {
@@ -42,7 +41,7 @@ namespace UserInterfaceTests
 			//TODO: support for testing the installed app
 
 			Session.StartApplication (file: monoDevelopBinPath, environment: new Dictionary<string,string> {
-				{ "MONODEVELOP_PROFILE", profilePath ?? Util.CreateTmpDir ("profile") }
+				{ "MONODEVELOP_TEST_PROFILE", profilePath ?? Util.CreateTmpDir ("profile") }
 			});
 
 			Session.SetGlobalValue ("MonoDevelop.Core.Instrumentation.InstrumentationService.Enabled", true);
