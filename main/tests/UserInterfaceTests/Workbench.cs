@@ -55,7 +55,8 @@ namespace UserInterfaceTests
 			if (waitForNonEmpty) {
 				Ide.WaitUntil (
 					() => Session.GetGlobalValue<int> ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.messageQueue.Count") == 0,
-					timeout
+					timeout,
+					timeoutMessage: ()=> "MessageQueue.Count="+Session.GetGlobalValue<int> ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.messageQueue.Count")
 				);
 			}
 			return (string) Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.renderArg.CurrentText");
@@ -80,7 +81,11 @@ namespace UserInterfaceTests
 					return true;
 				}
 				return false;
-			}, pollStep: 5 * 1000, timeout: timeoutInSecs * 1000);
+			},
+			pollStep: 5 * 1000,
+			timeout: timeoutInSecs * 1000,
+			timeoutMessage: () => "GetStatusMessage=" + Workbench.GetStatusMessage ());
+			
 			return isBuildSuccessful;
 		}
 
@@ -125,7 +130,7 @@ namespace UserInterfaceTests
 			}
 			set {
 				Session.SetGlobalValue ("MonoDevelop.Ide.IdeApp.Workspace.ActiveConfigurationId", value);
-				Ide.WaitUntil (() => Workbench.Configuration == value);
+				Ide.WaitUntil (() => Workbench.Configuration == value, timeoutMessage: () => "Failed to set Configuration, Configuration=" + Workbench.Configuration + " value=" + value);
 			}
 		}
 
