@@ -173,8 +173,10 @@ namespace MonoDevelop.VersionControl.Git
 
 			int currentProgress = tp.ReceivedObjects + tp.IndexedObjects;
 			int steps = currentProgress - progress;
-			if (throttleWatch.ElapsedMilliseconds > progressThrottle)
+			if (throttleWatch.ElapsedMilliseconds > progressThrottle) {
 				monitor.Step (steps);
+				throttleWatch.Restart ();
+			}
 			progress = currentProgress;
 
 			if (tp.IndexedObjects >= tp.TotalObjects) {
