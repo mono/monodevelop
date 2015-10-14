@@ -193,8 +193,10 @@ namespace MonoDevelop.VersionControl.Git
 			}
 
 			int steps = completedSteps - progress;
-			if (throttleWatch.ElapsedMilliseconds > progressThrottle)
+			if (throttleWatch.ElapsedMilliseconds > progressThrottle) {
 				monitor.Step (steps);
+				throttleWatch.Restart ();
+			}
 			progress = completedSteps;
 
 			if (completedSteps >= totalSteps) {
