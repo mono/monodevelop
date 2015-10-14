@@ -163,25 +163,35 @@ namespace MonoDevelop.CSharp
 			async void Ws_WorkspaceChanged (object sender, WorkspaceChangeEventArgs e)
 			{
 				var ws = (Microsoft.CodeAnalysis.Workspace)sender;
+				var currentSolution = ws.CurrentSolution;
+				if (currentSolution == null)
+					return;
 				switch (e.Kind) {
 				case WorkspaceChangeKind.ProjectAdded:
-					SearchAsync (documentInfos, ws.CurrentSolution.GetProject (e.ProjectId), default (CancellationToken));
+					SearchAsync (documentInfos, currentSolution.GetProject (e.ProjectId), default (CancellationToken));
 					break;
 				case WorkspaceChangeKind.ProjectRemoved:
-					foreach (var docId in ws.CurrentSolution.GetProject (e.ProjectId).DocumentIds)
-						RemoveDocument (documentInfos, docId);
+					var project = currentSolution.GetProject (e.ProjectId);
+					if (project != null) {
+						foreach (var docId in project.DocumentIds)
+							RemoveDocument (documentInfos, docId);
+					}
 					break;
 				case WorkspaceChangeKind.DocumentAdded:
-					await UpdateDocument (documentInfos, ws.CurrentSolution.GetDocument (e.DocumentId), default (CancellationToken));
+					var document = currentSolution.GetDocument (e.DocumentId);
+					if (document != null)
+						await UpdateDocument (documentInfos, document, default (CancellationToken));
 					break;
 				case WorkspaceChangeKind.DocumentRemoved:
 					RemoveDocument (documentInfos, e.DocumentId);
 					break;
 				case WorkspaceChangeKind.DocumentChanged:
-					var doc = ws.CurrentSolution.GetDocument (e.DocumentId);
-					Task.Run (async delegate {
-						await UpdateDocument (documentInfos, doc, default (CancellationToken));
-					});
+					var doc = currentSolution.GetDocument (e.DocumentId);
+					if (doc != null) {
+						Task.Run (async delegate {
+							await UpdateDocument (documentInfos, doc, default (CancellationToken));
+						});
+					}
 					break;
 				}
 			}
