@@ -35,6 +35,7 @@ namespace MonoDevelop.Components.Windows
 {
 	public class GtkWPFWidget : Widget
 	{
+		bool fromGtk;
 		internal System.Windows.Window wpfWindow {
 			get;
 			private set;
@@ -54,7 +55,12 @@ namespace MonoDevelop.Components.Windows
 				e.Handled = Ide.IdeApp.CommandService.ProcessKeyEvent (GtkWin32Interop.ConvertKeyEvent (e.KeyboardDevice.Modifiers, key));
 			};
 
-			wpfWindow.Closed += (sender, e) => Ide.IdeApp.Exit ();
+			wpfWindow.Closed += (sender, e) => {
+				if (fromGtk)
+					return;
+
+				Ide.IdeApp.Exit ();
+			};
 			wpfWindow.ShowInTaskbar = false;
 			WidgetFlags |= WidgetFlags.NoWindow;
 		}
@@ -99,6 +105,7 @@ namespace MonoDevelop.Components.Windows
 		{
 			base.OnDestroyed ();
 
+			fromGtk = true;
 			wpfWindow.Close ();
 		}
 
