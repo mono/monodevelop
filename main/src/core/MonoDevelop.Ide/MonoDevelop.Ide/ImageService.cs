@@ -214,6 +214,12 @@ namespace MonoDevelop.Ide
 			return icons [name] = img = Xwt.Toolkit.CurrentEngine.WrapImage (name);
 		}
 
+		public static Xwt.Drawing.Image GetImageResource (this RuntimeAddin addin, string resource)
+		{
+			var loader = new CustomImageLoader (addin);
+			return Xwt.Drawing.Image.FromCustomLoader (loader, resource);
+		}
+
 		static Gdk.Pixbuf GetPixbuf (string name, Gtk.IconSize size, bool generateDefaultIcon = true)
 		{
 			if (string.IsNullOrEmpty (name)) {

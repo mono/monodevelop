@@ -150,25 +150,6 @@ namespace MonoDevelop.Components
 			return image.WithSize (w, h);
 		}
 
-		public static Xwt.Drawing.Image GetImageResource (this RuntimeAddin addin, string resource)
-		{
-			using (var s = addin.GetResource (resource)) {
-				var img = Xwt.Drawing.Image.FromStream (s);
-				int i = resource.LastIndexOf ('.');
-				if (i != -1) {
-					var resource2x = resource.Substring (0, i) + "@2x" + resource.Substring (i);
-					var s2x = addin.GetResource (resource2x);
-					if (s2x != null) {
-						using (s2x) {
-							var img2x = Xwt.Drawing.Image.FromStream (s2x);
-							return Xwt.Drawing.Image.CreateMultiSizeIcon (new Xwt.Drawing.Image[] {img, img2x});
-						}
-					}
-				}
-				return img;
-			}
-		}
-
 		public static Gdk.Point GetScreenCoordinates (this Gtk.Widget w, Gdk.Point p)
 		{
 			if (w.ParentWindow == null)
