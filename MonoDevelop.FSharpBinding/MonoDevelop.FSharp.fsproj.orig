@@ -99,7 +99,6 @@
     <Compile Include="FSharpTooltipProvider.fs" />
     <Compile Include="FSharpResolverProvider.fs" />
     <Compile Include="RefactoringOperationsHandler.fs" />
-    <Compile Include="FSharpReferenceFinderExtension.fs" />
     <Compile Include="FSharpFormattingPolicy.fs" />
     <Compile Include="FSharpFormatter.fs" />
     <Compile Include="FSharpFormattingPanelWidget.fs" />
