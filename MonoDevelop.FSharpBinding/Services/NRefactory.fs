@@ -34,7 +34,7 @@ module NRefactory =
             member x.LastIdent = lastIdent
 
     /// An NRefactory symbol for an F# method, property or other member definition.
-    type FSharpResolvedMethod(unresolvedMember, context, symbol, lastIdent) = 
+    type FSharpResolvedMethod(unresolvedMember:DefaultUnresolvedMethod, context, symbol, lastIdent) = 
         inherit DefaultResolvedMethod(unresolvedMember, context)
         interface IHasFSharpSymbol with 
             member x.FSharpSymbol = symbol
