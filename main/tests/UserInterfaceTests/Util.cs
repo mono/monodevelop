@@ -27,18 +27,63 @@
 using System;
 using System.IO;
 using MonoDevelop.Core;
+using System.Reflection;
+using System.Linq;
 
 namespace UserInterfaceTests
 {
 	public static class Util
 	{
-		public static FilePath CreateTmpDir (string hint)
+		public static void PrintData (this object data)
 		{
-			string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName(), hint);
+			if (data != null)
+				TestService.Session.DebugObject.Debug (data.ToString ());
+		}
+
+		public static string ToPathSafeString (this string str, char replaceWith = '-')
+		{
+			var invalids = Path.GetInvalidFileNameChars ().Concat (Path.GetInvalidPathChars ()).Distinct ().ToArray ();
+			return new string (str.Select (c => invalids.Contains (c) ? replaceWith : c).ToArray ());
+		}
+
+		public static string ToBoldText (this string str)
+		{
+			return str != null ? string.Format ("<b>{0}</b>", str) : null;
+		}
+
+		public static FilePath CreateTmpDir (string hint = null)
+		{
+			var cwd = new FileInfo (Assembly.GetExecutingAssembly ().Location).DirectoryName;
+			string tempDirectory = Path.Combine (cwd, Path.GetRandomFileName());
+			tempDirectory = hint != null ? Path.Combine (tempDirectory, hint) : tempDirectory;
 
 			if (!Directory.Exists (tempDirectory))
 				Directory.CreateDirectory (tempDirectory);
 			return tempDirectory;
+		}
+
+		public static Action GetAction (this BeforeBuildAction action)
+		{
+			switch (action) {
+			case BeforeBuildAction.None:
+				return Ide.EmptyAction;
+			case BeforeBuildAction.WaitForPackageUpdate:
+				return Ide.WaitForPackageUpdate;
+			case BeforeBuildAction.WaitForSolutionCheckedOut:
+				return Ide.WaitForSolutionCheckedOut;
+			default:
+				return Ide.EmptyAction;
+			}
+		}
+
+		public static Action<string> GetNonNullAction (Action<string> action)
+		{
+			return action ?? delegate { };
+		}
+
+		public static string StripBold (this string value)
+		{
+			return value != null ? value.Replace ("<b>", string.Empty).Replace ("</b>", string.Empty) : null;
 		}
 	}
 }

@@ -12,6 +12,7 @@ using Roslyn.Utilities;
 using MonoDevelop.Core;
 using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp;
+using RefactoringEssentials;
 
 namespace MonoDevelop.CSharp.Diagnostics.RemoveUnnecessaryCast
 {

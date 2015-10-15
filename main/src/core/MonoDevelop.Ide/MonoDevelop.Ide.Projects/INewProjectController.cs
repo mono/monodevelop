@@ -60,6 +60,8 @@ namespace MonoDevelop.Ide.Projects
 		Task Create ();
 
 		Image GetImage (SolutionTemplate template);
+
+		IEnumerable<ProjectConfigurationControl> GetFinalPageControls ();
 	}
 }
 

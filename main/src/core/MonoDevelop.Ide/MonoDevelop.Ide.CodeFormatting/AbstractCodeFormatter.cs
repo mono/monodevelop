@@ -36,20 +36,20 @@ namespace MonoDevelop.Ide.CodeFormatting
 {
 	public abstract class AbstractCodeFormatter
 	{
-		protected abstract ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, ITextSource input, int startOffset, int endOffset);
+		protected abstract ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, ITextSource input, int startOffset, int length);
 
-		public ITextSource Format (PolicyContainer policyParent, string mimeType, ITextSource input, int fromOffset, int toOffset)
+		public ITextSource Format (PolicyContainer policyParent, string mimeType, ITextSource input, int startOffset, int length)
 		{
-			if (fromOffset < 0 || fromOffset > input.Length)
-				throw new ArgumentOutOfRangeException (nameof (fromOffset), "should be >= 0 && < " + input.Length + " was:" + fromOffset);
-			if (toOffset < 0 || toOffset > input.Length)
-				throw new ArgumentOutOfRangeException (nameof (toOffset), "should be >= 0 && < " + input.Length + " was:" + toOffset);
+			if (startOffset < 0 || startOffset > input.Length)
+				throw new ArgumentOutOfRangeException (nameof (startOffset), "should be >= 0 && < " + input.Length + " was:" + startOffset);
+			if (length < 0 || startOffset + length > input.Length)
+				throw new ArgumentOutOfRangeException (nameof (length), "should be >= 0 && < " + (input.Length - startOffset) + " was:" + length);
 			try {
-				return FormatImplementation (policyParent ?? PolicyService.DefaultPolicies, mimeType, input, fromOffset, toOffset);
+				return FormatImplementation (policyParent ?? PolicyService.DefaultPolicies, mimeType, input, startOffset, length);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while formatting text.", e);
 			}
-			return input.CreateSnapshot (fromOffset, toOffset - fromOffset);
+			return input.CreateSnapshot (startOffset, length);
 		}
 
 		public ITextSource Format (PolicyContainer policyParent, string mimeType, ITextSource input)
@@ -59,13 +59,15 @@ namespace MonoDevelop.Ide.CodeFormatting
 			return Format (policyParent ?? PolicyService.DefaultPolicies, mimeType, input, 0, input.Length);
 		}
 
+		public virtual bool SupportsPartialDocumentFormatting { get { return false; } }
+
 		public string FormatText (PolicyContainer policyParent, string mimeType, string input, int fromOffset, int toOffset)
 		{
 			if (input == null)
 				throw new ArgumentNullException (nameof (input));
 			if (mimeType == null)
 				throw new ArgumentNullException (nameof (mimeType));
-			return FormatImplementation (policyParent, mimeType, new StringTextSource (input), fromOffset, toOffset).Text;
+			return FormatImplementation (policyParent ?? PolicyService.DefaultPolicies, mimeType, new StringTextSource (input), fromOffset, toOffset - fromOffset).Text;
 		}
 
 		public string FormatText (PolicyContainer policyParent, string mimeType, string input)
@@ -77,12 +79,12 @@ namespace MonoDevelop.Ide.CodeFormatting
 
 		public virtual bool SupportsOnTheFlyFormatting { get { return false; } }
 
-		protected virtual void OnTheFlyFormatImplementation (TextEditor editor, DocumentContext context, int startOffset, int endOffset)
+		protected virtual void OnTheFlyFormatImplementation (TextEditor editor, DocumentContext context, int startOffset, int length)
 		{
 			throw new NotSupportedException ("On the fly formatting not supported");
 		}
 
-		public virtual void OnTheFlyFormat (TextEditor editor, DocumentContext context, int startOffset, int endOffset)
+		public virtual void OnTheFlyFormat (TextEditor editor, DocumentContext context, int startOffset, int length)
 		{
 			if (editor == null)
 				throw new ArgumentNullException (nameof (editor));
@@ -91,15 +93,10 @@ namespace MonoDevelop.Ide.CodeFormatting
 
 			if (startOffset < 0 || startOffset > editor.Length)
 				throw new ArgumentOutOfRangeException (nameof (startOffset), "should be >= 0 && < " + editor.Length + " was:" + startOffset);
-			if (endOffset < 0 || endOffset > editor.Length)
-				throw new ArgumentOutOfRangeException (nameof (endOffset), "should be >= 0 && < " + editor.Length + " was:" + endOffset);
+			if (length < 0 || startOffset + length > editor.Length)
+				throw new ArgumentOutOfRangeException (nameof (length), "should be >= 0 && < " + (editor.Length - startOffset) + " was:" + length);
 
-			OnTheFlyFormatImplementation (editor, context, startOffset, endOffset);
-		}
-
-		public void OnTheFlyFormat (Document ideDocument, int startOffset, int endOffset)
-		{
-			OnTheFlyFormat (ideDocument.Editor, ideDocument, startOffset, endOffset);
+			OnTheFlyFormatImplementation (editor, context, startOffset, length);
 		}
 
 		public virtual bool SupportsCorrectingIndent { get { return false; } }

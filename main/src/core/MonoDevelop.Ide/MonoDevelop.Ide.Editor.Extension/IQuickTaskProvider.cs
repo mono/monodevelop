@@ -26,12 +26,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
 	public interface IQuickTaskProvider
 	{
-		IEnumerable<QuickTask> QuickTasks {
+		ImmutableArray<QuickTask> QuickTasks {
 			get;
 		}
 		

@@ -407,7 +407,7 @@ namespace MonoDevelop.Projects
 			if (DataContextChanged != null)
 				DataContextChanged (this, EventArgs.Empty);
 		}
-		
+
 		string GetTargetFile (string file)
 		{
 			if (!Platform.IsWindows) {

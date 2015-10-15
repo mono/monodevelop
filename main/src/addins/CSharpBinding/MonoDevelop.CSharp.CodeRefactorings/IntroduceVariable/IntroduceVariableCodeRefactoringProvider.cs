@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.CodeRefactorings;
 using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp.Features.IntroduceVariable;
 using ICSharpCode.NRefactory6.CSharp;
+using RefactoringEssentials;
 
 namespace MonoDevelop.CSharp.CodeRefactorings.IntroduceVariable
 {

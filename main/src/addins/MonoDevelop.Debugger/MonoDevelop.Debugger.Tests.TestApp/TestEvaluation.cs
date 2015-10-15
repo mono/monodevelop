@@ -66,6 +66,42 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 		}
 	}
 
+	class TestEvaluationChild : TestEvaluation
+	{
+		public int HiddenField = 6;
+		public int HiddenProperty {
+			get {
+				return 6;
+			}
+		}
+		public int HiddenMethod ()
+		{
+			return 6;
+		}
+
+		public override int OverridenMethodInt ()
+		{
+			return 6;
+		}
+
+		public override int OverridenPropertyInt {
+			get {
+				return 6;
+			}
+		}
+
+		public override string OverridenMethodString ()
+		{
+			return "6";
+		}
+
+		public override string OverridenPropertyString {
+			get {
+				return "6";
+			}
+		}
+	}
+
 	class TestEvaluation : TestEvaluationParent
 	{
 		static string staticString = "some static";
@@ -74,7 +110,7 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 
 		public static void RunTest ()
 		{
-			var obj = new TestEvaluation ();
+			var obj = new TestEvaluationChild ();
 			obj.Test ("testString", 55);
 		}
 
@@ -152,7 +188,14 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 				}
 			}
 
+			var testEvaluationChild = new TestEvaluationChild ();
+
 			Console.WriteLine (n); /*break*/
+		}
+
+		public string TestCastingArgument (myNint nint)
+		{
+			return nint.v.ToString ();
 		}
 
 		public int TestMethod ()
@@ -239,6 +282,39 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 		{
 
 		}
+
+		public int HiddenField = 5;
+		public virtual int HiddenProperty {
+			get {
+				return 5;
+			}
+		}
+		public virtual int HiddenMethod ()
+		{
+			return 5;
+		}
+
+		public virtual int OverridenMethodInt ()
+		{
+			return 5;
+		}
+
+		public virtual int OverridenPropertyInt {
+			get {
+				return 5;
+			}
+		}
+
+		public virtual string OverridenMethodString ()
+		{
+			return "5";
+		}
+
+		public virtual string OverridenPropertyString {
+			get {
+				return "5";
+			}
+		}
 	}
 
 	public class SomeClassInNamespace
@@ -306,6 +382,11 @@ class RichClass
 		privatePropStringA = "stringA";
 		privatePropStringB = "stringB";
 		privatePropStringC = "stringC";
+	}
+
+	public RichClass (myNint i)
+	{
+		publicPropInt1 = i;
 	}
 }
 
@@ -534,6 +615,31 @@ class ClassWithCompilerGeneratedNestedClass
 	public class NestedClass
 	{
 
+	}
+}
+
+struct myNint
+{
+	public long v;
+
+	public static implicit operator myNint (int v)
+	{
+		return new myNint (v);
+	}
+
+	public static implicit operator int (myNint v)
+	{
+		return (int)v.v;
+	}
+
+	public override string ToString ()
+	{
+		return v.ToString ();
+	}
+
+	myNint (int v)
+	{
+		this.v = v;
 	}
 }
 

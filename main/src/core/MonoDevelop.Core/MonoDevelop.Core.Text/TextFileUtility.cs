@@ -53,7 +53,7 @@ namespace MonoDevelop.Core.Text
 				var bom = encoding.GetPreamble ();
 				if (bom == null || bom.Length == 0)
 					continue;
-				maxBomLength = Math.Max (maxBomLength, bom.Length);
+				maxBomLength = System.Math.Max (maxBomLength, bom.Length);
 				encodings.Add (encoding);
 			}
 			encodingsWithBom = encodings.ToArray ();
@@ -114,7 +114,7 @@ namespace MonoDevelop.Core.Text
 			if (stream == null)
 				throw new ArgumentNullException ("stream");
 			byte[] possibleBom = new byte[maxBomLength];
-			stream.Read (possibleBom, 0, Math.Min ((int)stream.Length, maxBomLength));
+			stream.Read (possibleBom, 0, System.Math.Min ((int)stream.Length, maxBomLength));
 
 			foreach (var encoding in encodingsWithBom) {
 				var bom = encoding.GetPreamble ();
@@ -141,19 +141,42 @@ namespace MonoDevelop.Core.Text
 		#region string methods
 		public static string GetText (byte[] bytes)
 		{
-			using (var stream = OpenStream (bytes)) {
-				return stream.ReadToEnd ();
-			}
+			Encoding encoding;
+			bool hadBom;
+			return GetText (bytes, out encoding, out hadBom);
 		}
 
 		public static string GetText (byte[] bytes, out Encoding encoding, out bool hadBom)
 		{
 			if (bytes == null)
 				throw new ArgumentNullException ("bytes");
-			using (var stream = OpenStream (bytes, out hadBom)) {
-				encoding = stream.CurrentEncoding;
-				return stream.ReadToEnd ();
+			encoding = null;
+			hadBom = false;
+			int start = 0;
+			foreach (var enc in encodingsWithBom) {
+				var bom = enc.GetPreamble ();
+				bool invalid = false;
+				if (bom.Length > bytes.Length)
+					continue;
+				for (int i = 0; i < bom.Length; i++) {
+					if (bom [i] != bytes [i]) {
+						invalid = true;
+						break;
+					}
+				}
+
+				if (!invalid) {
+					encoding = enc;
+					hadBom = true;
+					start = bom.Length;
+					break;
+				}
 			}
+			if (encoding == null) {
+				int max = System.Math.Min (bytes.Length, maxBufferLength);
+				encoding = AutoDetectEncoding (bytes, max);
+			}
+			return encoding.GetString (bytes, start, bytes.Length - start);
 		}
 
 		public static string GetText (byte[] bytes, Encoding encoding, out bool hadBom)
@@ -194,19 +217,14 @@ namespace MonoDevelop.Core.Text
 
 		public static string GetText (string fileName)
 		{
-			using (var stream = OpenStream (fileName)) {
-				return stream.ReadToEnd ();
-			}
+			return GetText (File.ReadAllBytes (fileName));
 		}
 
 		public static string GetText (string fileName, out Encoding encoding, out bool hadBom)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
-			using (var stream = OpenStream (fileName, out hadBom)) {
-				encoding = stream.CurrentEncoding;
-				return stream.ReadToEnd ();
-			}
+			return GetText (File.ReadAllBytes (fileName), out encoding, out hadBom);
 		}
 
 		#endregion
@@ -309,9 +327,8 @@ namespace MonoDevelop.Core.Text
 		{
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
-			using (var stream = new FileStream (fileName, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-				return GetText (stream, out encoding, out hadBom);
-			}
+			byte[] content = File.ReadAllBytes (fileName);
+			return GetText (content, out encoding, out hadBom);
 		}
 
 		public static string ReadAllText (string fileName, Encoding encoding, out bool hadBom)
@@ -345,7 +362,8 @@ namespace MonoDevelop.Core.Text
 		{
 			if (bytes == null)
 				throw new ArgumentNullException ("bytes");
-			return IsBinary (new MemoryStream (bytes, false));
+			var enc = AutoDetectEncoding (bytes, Math.Min (bytes.Length, maxBufferLength));
+			return enc == Encoding.ASCII;
 		}
 
 		public static bool IsBinary (string fileName)
@@ -371,61 +389,46 @@ namespace MonoDevelop.Core.Text
 		static readonly Verifier[] verifiers;
 		static readonly byte[][][] stateTables;
 
+		const int maxBufferLength = 50 * 1024;
+
 		static unsafe Encoding AutoDetectEncoding (Stream stream)
 		{
 			try {
-				int max = (int)Math.Min (stream.Length, 50 * 1024);
-				byte[] readBuf = new byte[max];
+				int max = (int)System.Math.Min (stream.Length, maxBufferLength);
+				var readBuf = new byte[max];
 				int readLength = stream.Read (readBuf, 0, max);
 				stream.Position = 0;
+				return AutoDetectEncoding (readBuf, readLength);
+			} catch (Exception e) {
+				Console.WriteLine (e);
+			}
+			return Encoding.ASCII;
+		}
 
-				// Store the dfa data from the verifiers in local variables.
-				byte[] states = new byte[verifiers.Length];
-				int verifiersRunning = verifiers.Length;
-
-				for (int i = 0; i < verifiers.Length; i++)
-					states [i] = verifiers [i].InitalState;
+		static unsafe Encoding AutoDetectEncoding (byte[] bytes, int readLength)
+		{
+			try {
+				var readBuf = bytes;
 
 				// run the verifiers
-				fixed (byte* bBeginPtr = readBuf, stateBeginPtr = states) {
-					byte* bPtr = bBeginPtr;
+				fixed (byte* bBeginPtr = readBuf) {
 					byte* bEndPtr = bBeginPtr + readLength;
-					byte* sEndPtr = stateBeginPtr + states.Length;
-
-					while (bPtr != bEndPtr) {
-						byte* sPtr = stateBeginPtr;
-						int i = 0;
-						while (sPtr != sEndPtr) {
-							byte curState = *sPtr;
+					for (int i = 0; i < verifiers.Length; i++) {
+						byte curState = verifiers [i].InitalState;
+						byte* bPtr = bBeginPtr;
+						while (bPtr != bEndPtr) {
 							if (curState != 0) {
 								curState = stateTables [i] [curState] [*bPtr];
 								if (curState == 0) {
-									verifiersRunning--;
-									if (verifiersRunning == 0) 
-										goto finishVerify;
+									break;
 								}
-								*sPtr = curState;
 							}
-							sPtr++;
-							i++;
+							bPtr++;
 						}
-						bPtr++;
-					}
-					finishVerify:
-					if (verifiersRunning > 0) {
-						//						Console.WriteLine ("valid encodings:");
-						//						for (int i = 0; i < verifiers.Length; i++) {
-						//							if (verifiers [i].IsEncodingValid (states [i]))
-						//								Console.WriteLine (verifiers [i].Encoding.EncodingName);
-						//						}
-						//						Console.WriteLine ("---------------");
-						for (int i = 0; i < verifiers.Length; i++) {
-							if (verifiers [i].IsEncodingValid (states [i]))
-								return verifiers [i].Encoding;
-						}
+						if (verifiers [i].IsEncodingValid (curState))
+							return verifiers [i].Encoding;
 					}
 				}
-
 			} catch (Exception e) {
 				Console.WriteLine (e);
 			}

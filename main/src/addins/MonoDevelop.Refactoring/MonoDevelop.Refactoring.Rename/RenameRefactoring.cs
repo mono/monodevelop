@@ -90,14 +90,16 @@ namespace MonoDevelop.Refactoring.Rename
 			var projectChanges = currentSolution.GetChanges (newSolution).GetProjectChanges ().ToList ();
 
 			if (projectChanges.Count != 1) {
-				MessageService.ShowCustomDialog (new RenameItemDialog (symbol, this));
+				using (var dlg = new RenameItemDialog (symbol, this))
+					MessageService.ShowCustomDialog (dlg);
 				return;
 			}
 
 			var projectChange = projectChanges [0];
 			var changes = projectChange.GetChangedDocuments ().ToList ();
 			if (changes.Count != 1 || symbol.Kind == SymbolKind.NamedType) {
-				MessageService.ShowCustomDialog (new RenameItemDialog (symbol, this));
+				using (var dlg = new RenameItemDialog (symbol, this))
+					MessageService.ShowCustomDialog (dlg);
 				return;
 			}
 			var doc = IdeApp.Workbench.ActiveDocument;

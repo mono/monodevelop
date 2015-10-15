@@ -11,14 +11,15 @@ namespace MonoDevelop.Core.Execution
 	[System.ComponentModel.DesignerCategory ("Code")]
 	public class ProcessWrapper : Process
 	{
+		private Thread captureOutputThread;
 		private Thread captureErrorThread;
 		ManualResetEvent endEventOut = new ManualResetEvent (false);
 		ManualResetEvent endEventErr = new ManualResetEvent (false);
 		bool done;
 		object lockObj = new object ();
-		Task task;
 		ProcessAsyncOperation operation;
 		IDisposable customCancelToken;
+		TaskCompletionSource<int> taskCompletionSource = new TaskCompletionSource<int> ();
 		
 		public ProcessWrapper ()
 		{
@@ -26,7 +27,7 @@ namespace MonoDevelop.Core.Execution
 		public bool CancelRequested { get; private set; }
 
 		public Task Task {
-			get { return task; }
+			get { return taskCompletionSource.Task; }
 		}
 
 		public ProcessAsyncOperation ProcessAsyncOperation {
@@ -38,9 +39,13 @@ namespace MonoDevelop.Core.Execution
 			CheckDisposed ();
 			base.Start ();
 
-			task = Task.Factory.StartNew (CaptureOutput, TaskCreationOptions.LongRunning);
+			captureOutputThread = new Thread (new ThreadStart(CaptureOutput));
+			captureOutputThread.Name = "Process output reader";
+			captureOutputThread.IsBackground = true;
+			captureOutputThread.Start ();
+
 			var cs = new CancellationTokenSource ();
-			operation = new ProcessAsyncOperation (task, cs);
+			operation = new ProcessAsyncOperation (Task, cs);
 			cs.Token.Register (Cancel);
 
 			if (ErrorStreamChanged != null) {
@@ -73,7 +78,6 @@ namespace MonoDevelop.Core.Execution
 		
 		private void CaptureOutput ()
 		{
-			Thread.CurrentThread.Name = "Process output reader";
 			try {
 				if (OutputStreamChanged != null) {
 					char[] buffer = new char [1024];
@@ -95,14 +99,19 @@ namespace MonoDevelop.Core.Execution
 				if (HasExited)
 					operation.ExitCode = ExitCode;
 
-				OnExited (this, EventArgs.Empty);
+				try {
+					OnExited (this, EventArgs.Empty);
+				} catch {
+					// Ignore
+				}
 
 				lock (lockObj) {
 					//call this AFTER the exit event, or the ProcessWrapper may get disposed and abort this thread
 					if (endEventOut != null)
 						endEventOut.Set ();
 				}
-			}
+				taskCompletionSource.SetResult (operation.ExitCode);
+            }
 		}
 		
 		private void CaptureError ()
@@ -131,7 +140,7 @@ namespace MonoDevelop.Core.Execution
 				if (!done)
 					Cancel ();
 				
-				captureErrorThread = null;
+				captureOutputThread = captureErrorThread = null;
 				endEventOut.Close ();
 				endEventErr.Close ();
 				endEventOut = endEventErr = null;

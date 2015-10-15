@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			SourceText text;
 			if (workspace.IsDocumentOpen (documentId)) {
-				text = SourceText.From (TextFileProvider.Instance.GetTextEditorData (fileName).Text);
+				text = new MonoDevelopSourceText (TextFileProvider.Instance.GetTextEditorData (fileName).CreateDocumentSnapshot ());
 			}
 			else {
 				text = SourceText.From (MonoDevelop.Core.Text.TextFileUtility.GetText (fileName));

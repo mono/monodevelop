@@ -40,19 +40,11 @@ using System.Threading;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	class RoslynSymbolCompletionData : RoslynCompletionData, ICSharpCode.NRefactory6.CSharp.Completion.ISymbolCompletionData
+	class RoslynSymbolCompletionData : RoslynCompletionData
 	{
-		readonly ISymbol symbol;
-
-		public ISymbol Symbol {
-			get {
-				return symbol;
-			}
-		}
-		
 		public override string DisplayText {
 			get {
-				return text ?? symbol.Name;
+				return text ?? Symbol.Name;
 			}
 			set {
 				text = value;
@@ -61,7 +53,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override string CompletionText {
 			get {
-				return text ?? symbol.Name;
+				return text ?? Symbol.Name;
 			}
 			set {
 				throw new NotSupportedException ();
@@ -70,7 +62,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override MonoDevelop.Core.IconId Icon {
 			get {
-				return MonoDevelop.Ide.TypeSystem.Stock.GetStockIcon (symbol);
+				return MonoDevelop.Ide.TypeSystem.Stock.GetStockIcon (Symbol);
 			}
 			set {
 				throw new NotSupportedException ();
@@ -85,11 +77,11 @@ namespace MonoDevelop.CSharp.Completion
 
 		protected CSharpCompletionTextEditorExtension ext { get { return factory.Ext; } }
 
-		public RoslynSymbolCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, RoslynCodeCompletionFactory factory, ISymbol symbol, string text = null) : base (keyHandler)
+		public RoslynSymbolCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, ISymbol symbol, string text = null) : base (keyHandler)
 		{
 			this.factory = factory;
 			this.text = text;
-			this.symbol = symbol;
+			Symbol = symbol;
 		}
 
 		static readonly SymbolDisplayFormat nameOnlyFormat =
@@ -109,7 +101,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			if (text != null)
 				return text;
-			return symbol.ToDisplayString (nameOnlyFormat);
+			return Symbol.ToDisplayString (nameOnlyFormat);
 		}
 
 		public override Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken ctoken)
@@ -420,14 +412,29 @@ namespace MonoDevelop.CSharp.Completion
 		public override int CompareTo (object obj)
 		{
 			var anonymousMethodCompletionData = obj as AnonymousMethodCompletionData;
-			if (anonymousMethodCompletionData == null)
-				return 1;
+			if (anonymousMethodCompletionData != null)
+				return -1;
 			var objectCreationData = obj as ObjectCreationCompletionData;
-			if (objectCreationData == null)
-				return 1;
-			
-
-			return base.CompareTo (obj);
+			if (objectCreationData != null)
+				return -1;
+			int ret = base.CompareTo (obj);
+			if (ret == 0) {
+				var sym = Symbol;
+				var other = obj as RoslynSymbolCompletionData;
+				if (other == null)
+					return 0;
+				if (sym.Kind == other.Symbol.Kind) {
+					var m1 = sym as IMethodSymbol;
+					var m2 = other.Symbol as IMethodSymbol;
+					if (m1 != null)
+						return m1.Parameters.Length.CompareTo (m2.Parameters.Length);
+					var p1 = sym as IPropertySymbol;
+					var p2 = other.Symbol as IPropertySymbol;
+					if (p1 != null)
+						return p1.Parameters.Length.CompareTo (p2.Parameters.Length);
+				}
+			}
+			return ret;
 		}
 
 

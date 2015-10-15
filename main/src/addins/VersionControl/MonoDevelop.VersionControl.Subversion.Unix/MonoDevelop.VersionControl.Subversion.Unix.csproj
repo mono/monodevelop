@@ -57,6 +57,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DocumentationFile>..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.Subversion.Unix.xml</DocumentationFile>
     <DebugType>pdbonly</DebugType>
+    <ConsolePause>false</ConsolePause>
+    <NoWarn>1591;1573</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

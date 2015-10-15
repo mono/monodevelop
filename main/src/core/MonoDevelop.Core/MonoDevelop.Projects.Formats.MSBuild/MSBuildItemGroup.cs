@@ -27,18 +27,23 @@
 using System.Collections.Generic;
 using System.Xml;
 using System.Linq;
-
+using System;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	
-	public class MSBuildItemGroup: MSBuildObject
+	public class MSBuildItemGroup: MSBuildElement
 	{
-		MSBuildProject parent;
-
-		internal MSBuildItemGroup (MSBuildProject parent, XmlElement elem): base (elem)
+		internal override void ReadChildElement (MSBuildXmlReader reader)
 		{
-			this.parent = parent;
+			var item = new MSBuildItem ();
+			item.ParentNode = this;
+			item.Read (reader);
+			ChildNodes = ChildNodes.Add (item);
+		}
+
+		internal override string GetElementName ()
+		{
+			return "ItemGroup";
 		}
 
 		public bool IsImported {
@@ -48,38 +53,37 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public MSBuildItem AddNewItem (string name, string include)
 		{
-			XmlElement elem = AddChildElement (name);
-			MSBuildItem it = parent.GetItem (elem);
+			AssertCanModify ();
+			var it = new MSBuildItem (name);
 			it.Include = include;
-			XmlUtil.Indent (parent.TextFormat, elem, false);
-			parent.NotifyChanged ();
+			AddItem (it);
 			return it;
 		}
 
 		public void AddItem (MSBuildItem item)
 		{
-			XmlElement elem = item.Element;
-			Element.AppendChild (elem);
-			XmlUtil.Indent (parent.TextFormat, elem, false);
-			parent.AddToItemCache (item);
-			parent.NotifyChanged ();
+			AssertCanModify ();
+			item.ParentNode = this;
+			ChildNodes = ChildNodes.Add (item);
+			item.ResetIndent (false);
+			if (ParentProject != null)
+				ParentProject.NotifyChanged ();
 		}
 
-		MSBuildItem[] items;
 		public IEnumerable<MSBuildItem> Items {
 			get {
-				lock (parent.ReadLock) {
-					if (items == null)
-						items = Element.ChildNodes.OfType<XmlElement> ().Select (e => parent.GetItem (e)).ToArray ();
-					return items;
-				}
+				return ChildNodes.OfType<MSBuildItem> ();
 			}
 		}
 
-		internal void ResetItemCache ()
+		internal void RemoveItem (MSBuildItem item)
 		{
-			lock (parent.ReadLock)
-				items = null;
+			AssertCanModify ();
+			if (ChildNodes.Contains (item)) {
+				item.RemoveIndent ();
+				ChildNodes = ChildNodes.Remove (item);
+				NotifyChanged ();
+			}
 		}
 	}
 	

@@ -183,6 +183,7 @@ namespace Mono.TextEditor
 			base.cursor.Dispose ();
 			base.cursor = null;
 			
+			this.editor.Caret.PositionChanged -= EditorCarethandlePositionChanged;
 			this.editor.Document.TextSet -= HandleEditorDocumenthandleTextSet;
 			this.editor.Document.LineChanged -= UpdateWidth;
 //			layout = layout.Kill ();

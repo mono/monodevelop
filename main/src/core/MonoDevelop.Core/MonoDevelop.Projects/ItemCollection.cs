@@ -37,7 +37,6 @@ namespace MonoDevelop.Projects
 	{
 		ImmutableList<T> list = ImmutableList<T>.Empty;
 		bool controlWrites;
-		T[] singleItem = new T[1];
 
 		protected ImmutableList<T> List {
 			get {
@@ -62,8 +61,7 @@ namespace MonoDevelop.Projects
 		public void Add (T item)
 		{
 			list = list.Add (item);
-			singleItem [0] = item;
-			OnItemsAdded (singleItem);
+			OnItemsAdded (new [] { item });
 		}
 
 		public void AddRange (IEnumerable<T> items)
@@ -76,8 +74,7 @@ namespace MonoDevelop.Projects
 		public void Insert (int index, T item)
 		{
 			list = list.Insert (index, item);
-			singleItem [0] = item;
-			OnItemsAdded (singleItem);
+			OnItemsAdded (new [] { item });
 		}
 
 		public void RemoveRange (IEnumerable<T> items)
@@ -104,8 +101,7 @@ namespace MonoDevelop.Projects
 			AssertCanWrite ();
 			T it = list [index];
 			list = list.RemoveAt (index);
-			singleItem [0] = it;
-			OnItemsRemoved (singleItem);
+			OnItemsRemoved (new [] { it });
 		}
 
 		public int IndexOf (T item)
@@ -126,10 +122,8 @@ namespace MonoDevelop.Projects
 				AssertCanWrite ();
 				T it = list [index];
 				list = list.SetItem (index, value);
-				singleItem [0] = it;
-				OnItemsRemoved (singleItem);
-				singleItem [0] = value;
-				OnItemsAdded (singleItem);
+				OnItemsRemoved (new [] { it });
+				OnItemsAdded (new [] { value });
 			}
 		}
 

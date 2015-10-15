@@ -9,6 +9,7 @@ using MonoDevelop.Core;
 using System.Linq;
 using System.Threading;
 using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl
 {
@@ -43,8 +44,30 @@ namespace MonoDevelop.VersionControl
 			VersionControlSystem = vcs;
 			Repositories.SetValue (Repositories.Count + 1, string.Format ("Repository #{0}", Repositories.Count + 1), new Dictionary<string, string> {
 				{ "Type", vcs.Name },
-				{ "Version", vcs.Version },
+				{ "Type+Version", string.Format ("{0} {1}", vcs.Name, vcs.Version) },
 			});
+		}
+
+		public override bool Equals (object obj)
+		{
+			var other = obj as Repository;
+			return other != null &&
+				other.RootPath == RootPath &&
+				other.VersionControlSystem == VersionControlSystem &&
+				other.LocationDescription == LocationDescription &&
+				other.Name == Name;
+		}
+
+		public override int GetHashCode ()
+		{
+			int result = 0;
+			result ^= RootPath.GetHashCode ();
+			if (VersionControlSystem != null)
+				result ^= VersionControlSystem.GetHashCode ();
+			if (LocationDescription != null)
+				result ^= LocationDescription.GetHashCode ();
+			result ^= Name.GetHashCode ();
+			return result;
 		}
 		
 		public virtual void CopyConfigurationFrom (Repository other)
@@ -71,9 +94,17 @@ namespace MonoDevelop.VersionControl
 			if (--references == 0)
 				Dispose ();
 		}
-		
+
 		public virtual void Dispose ()
 		{
+			if (!queryRunning)
+				return;
+
+			lock (queryLock) {
+				fileQueryQueue.Clear ();
+				directoryQueryQueue.Clear ();
+				recursiveDirectoryQueryQueue.Clear ();
+			}
 		}
 		
 		// Display name of the repository
@@ -304,7 +335,7 @@ namespace MonoDevelop.VersionControl
 
 		class RecursiveDirectoryInfoQuery : DirectoryInfoQuery
 		{
-			public VersionInfo[] Result;
+			public VersionInfo[] Result = new VersionInfo[0];
 			public ManualResetEvent ResetEvent;
 			public int Count;
 		}
@@ -832,6 +863,11 @@ namespace MonoDevelop.VersionControl
 		}
 
 		protected abstract void OnUnignore (FilePath[] localPath);
+
+		public virtual bool GetFileIsText (FilePath path)
+		{
+			return DesktopService.GetFileIsText (path);
+		}
 	}
 	
 	public class Annotation

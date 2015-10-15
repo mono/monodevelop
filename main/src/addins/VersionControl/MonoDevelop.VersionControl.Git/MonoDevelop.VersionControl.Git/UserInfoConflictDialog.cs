@@ -23,8 +23,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using MonoDevelop.Core;
 
+using MonoDevelop.Core;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -33,6 +34,7 @@ namespace MonoDevelop.VersionControl.Git
 		public UserInfoConflictDialog (string mdInfo, string gitInfo)
 		{
 			this.Build ();
+			this.UseNativeContextMenus ();
 			label1.LabelProp = BrandingService.BrandApplicationName (label1.LabelProp);
 			radioMD.Label = BrandingService.BrandApplicationName (radioMD.Label);
 			labelMD.Markup = "<b>" + GLib.Markup.EscapeText (mdInfo) + "</b>";

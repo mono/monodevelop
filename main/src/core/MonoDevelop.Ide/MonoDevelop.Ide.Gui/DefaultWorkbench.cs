@@ -711,10 +711,11 @@ namespace MonoDevelop.Ide.Gui
 			}
 
 			if (showDirtyDialog) {
-				DirtyFilesDialog dlg = new DirtyFilesDialog ();
-				dlg.Modal = true;
-				if (MessageService.ShowCustomDialog (dlg, this) != (int)Gtk.ResponseType.Ok)
-					return false;
+				using (DirtyFilesDialog dlg = new DirtyFilesDialog ()) {
+					dlg.Modal = true;
+					if (MessageService.ShowCustomDialog (dlg, this) != (int)Gtk.ResponseType.Ok)
+						return false;
+				}
 			}
 			
 			if (!IdeApp.Workspace.Close (false, false))
@@ -1023,7 +1024,8 @@ namespace MonoDevelop.Ide.Gui
 		protected override bool OnConfigureEvent (Gdk.EventConfigure evnt)
 		{
 			SetActiveWidget (Focus);
-			return base.OnConfigureEvent (evnt);
+			base.OnConfigureEvent (evnt);
+			return false;
 		}
 
 		protected override bool OnFocusInEvent (Gdk.EventFocus evnt)

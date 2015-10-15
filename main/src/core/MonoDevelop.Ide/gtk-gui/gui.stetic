@@ -928,6 +928,22 @@
           </packing>
         </child>
         <child>
+          <widget class="Gtk.CheckButton" id="parallelBuildCheckbox">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Label" translatable="yes">Enable parallel build of projects</property>
+            <property name="DrawIndicator">True</property>
+            <property name="HasLabel">True</property>
+            <property name="UseUnderline">True</property>
+          </widget>
+          <packing>
+            <property name="Position">2</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
           <widget class="Gtk.CheckButton" id="buildBeforeTestCheckBox">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
@@ -937,7 +953,7 @@
             <property name="UseUnderline">True</property>
           </widget>
           <packing>
-            <property name="Position">2</property>
+            <property name="Position">3</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -990,7 +1006,7 @@ Diagnostic</property>
             </child>
           </widget>
           <packing>
-            <property name="Position">3</property>
+            <property name="Position">4</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -1005,7 +1021,7 @@ Diagnostic</property>
             <property name="UseMarkup">True</property>
           </widget>
           <packing>
-            <property name="Position">4</property>
+            <property name="Position">5</property>
             <property name="AutoSize">False</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -1038,7 +1054,6 @@ Diagnostic</property>
                   <widget class="Gtk.RadioButton" id="saveChangesRadioButton">
                     <property name="MemberName" />
                     <property name="Label" translatable="yes">_Save changes to open documents</property>
-                    <property name="Active">True</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>
@@ -1092,7 +1107,7 @@ Diagnostic</property>
             </child>
           </widget>
           <packing>
-            <property name="Position">5</property>
+            <property name="Position">6</property>
             <property name="AutoSize">False</property>
           </packing>
         </child>
@@ -11683,7 +11698,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                         <child>
                           <widget class="Gtk.Label" id="versionControlSpacerLabel">
                             <property name="MemberName" />
-                            <property name="WidthRequest">7</property>
+                            <property name="WidthRequest">24</property>
                             <property name="Justify">Right</property>
                           </widget>
                           <packing>

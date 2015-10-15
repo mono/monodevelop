@@ -61,6 +61,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			buildBeforeRunCheckBox.Active = IdeApp.Preferences.BuildBeforeExecuting;
 			verbosityCombo.Active = (int)IdeApp.Preferences.MSBuildVerbosity.Value;
 			buildBeforeTestCheckBox.Active = IdeApp.Preferences.BuildBeforeRunningTests;
+			parallelBuildCheckbox.Active = MonoDevelop.Core.Runtime.Preferences.ParallelBuild.Value;
 		}
 		
 		public void Store ()
@@ -69,6 +70,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			IdeApp.Preferences.BuildBeforeExecuting.Value = buildBeforeRunCheckBox.Active;
 			IdeApp.Preferences.MSBuildVerbosity.Value = (MSBuildVerbosity) verbosityCombo.Active;
 			IdeApp.Preferences.BuildBeforeRunningTests.Value = buildBeforeTestCheckBox.Active;
+			MonoDevelop.Core.Runtime.Preferences.ParallelBuild.Value = parallelBuildCheckbox.Active;
 			if (saveChangesRadioButton.Active)
 				IdeApp.Preferences.BeforeBuildSaveAction.Value = BeforeCompileAction.SaveAllFiles;
 			else if (promptChangesRadioButton.Active)

@@ -161,25 +161,18 @@ namespace MonoDevelop.Projects.Formats.MD1
 			buildData.Configuration.SetParentItem (project);
 			buildData.ConfigurationSelector = configuration;
 
-			return await Task<BuildResult>.Factory.StartNew (delegate {
-				ProjectItemCollection items = buildData.Items;
-				BuildResult br = BuildResources (buildData.Configuration, ref items, monitor);
-				if (br != null)
-					return br;
+			var br = await project.Compile (monitor, buildData);
 
-				br = project.OnCompileSources (items, buildData.Configuration, buildData.ConfigurationSelector, monitor);
-				if (refres != null) {
-					refres.Append (br);
-					return refres;
-				} else
-					return br;
-			});
-			
+			if (refres != null) {
+				refres.Append (br);
+				return refres;
+			} else
+				return br;
 		}
 
 		internal static Task<BuildResult> Compile (ProgressMonitor monitor, DotNetProject project, BuildData buildData)
 		{
-			return Task<BuildResult>.Factory.StartNew (delegate {
+			return Task<BuildResult>.Run (delegate {
 				ProjectItemCollection items = buildData.Items;
 				BuildResult br = BuildResources (buildData.Configuration, ref items, monitor);
 				if (br != null)

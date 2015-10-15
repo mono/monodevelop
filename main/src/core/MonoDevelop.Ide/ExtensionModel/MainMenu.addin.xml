@@ -71,7 +71,6 @@
 		
 		<ItemSet id = "Format" _label = "_Format">
 			<CommandItem id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer" />
-			<CommandItem id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatSelection" />
 			<SeparatorItem id ="FormatSeparator" /> 
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" />
@@ -182,6 +181,9 @@
 		<SeparatorItem id = "ExportSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
 		<SeparatorItem id = "OptionsSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunCodeAnalysisProject" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunCodeAnalysisSolution" />
+		<SeparatorItem id = "OptionsSeparator" />
 		<ItemSet id = "SelectActiveConfiguration" _label = "Active Configuration" autohide = "true">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SelectActiveConfiguration" />
 		</ItemSet>
@@ -226,6 +228,10 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.InstrumentationViewer" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertGuid" />
+		<ItemSet id = "SessionRecorder" _label = "Session Recorder" autohide = "true">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToggleSessionRecorder" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ReplaySession" />
+		</ItemSet>
 		<SeparatorItem id = "OptionsSection" />
 		<Condition id="Platform" value="windows">
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" />

@@ -49,14 +49,15 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 				MessageService.ShowWarning (monitor.Warnings[0]);
 			}
 			else if (monitor.HasErrors || monitor.HasWarnings) {
-				var resultDialog = new MultiMessageDialog () {
+				using (var resultDialog = new MultiMessageDialog () {
 					Modal = true,
-				};
-				foreach (var m in monitor.Errors)
-					resultDialog.AddError (m.Message);
-				foreach (var m in monitor.Warnings)
-					resultDialog.AddWarning (m);
-				MessageService.ShowCustomDialog (resultDialog);
+				}) {
+					foreach (var m in monitor.Errors)
+						resultDialog.AddError (m.Message);
+					foreach (var m in monitor.Warnings)
+						resultDialog.AddWarning (m);
+					MessageService.ShowCustomDialog (resultDialog);
+				}
 			}
 		}
 		

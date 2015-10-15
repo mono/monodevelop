@@ -26,7 +26,6 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.Components.Commands;

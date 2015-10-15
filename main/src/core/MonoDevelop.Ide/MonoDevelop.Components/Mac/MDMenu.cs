@@ -42,14 +42,21 @@ namespace MonoDevelop.Components.Mac
 	{
 		static readonly string servicesID = "MonoDevelop.MacIntegration.MacIntegrationCommands.Services";
 
-		public MDMenu (CommandManager manager, CommandEntrySet ces, CommandSource commandSource, object initialCommandTarget)
+		EventHandler CloseHandler;
+
+		public MDMenu (CommandManager manager, CommandEntrySet ces, CommandSource commandSource, object initialCommandTarget) : this (manager, ces, commandSource, initialCommandTarget, null)
 		{
+		}
+
+		public MDMenu (CommandManager manager, CommandEntrySet ces, CommandSource commandSource, object initialCommandTarget, EventHandler closeHandler)
+		{
+			CloseHandler = closeHandler;
 			this.WeakDelegate = this;
 
 			AutoEnablesItems = false;
 
 			Title = (ces.Name ?? "").Replace ("_", "");
-
+			Font = NSFont.MenuFontOfSize (12);
 			foreach (CommandEntry ce in ces) {
 				if (ce.CommandId == Command.Separator) {
 					AddItem (NSMenuItem.SeparatorItem);
@@ -149,7 +156,7 @@ namespace MonoDevelop.Components.Mac
 			}
 		}
 
-		[ExportAttribute ("menuNeedsUpdate:")]
+		[Export ("menuNeedsUpdate:")]
 		void MenuNeedsUpdate (NSMenu menu)
 		{
 			Debug.Assert (menu == this);
@@ -162,6 +169,14 @@ namespace MonoDevelop.Components.Mac
 			//
 			if (PropertiesToUpdate ().HasFlag (NSMenuProperty.Image))
 				UpdateCommands ();
+		}
+
+		[Export ("menuDidClose:")]
+		void MenuDidClose (NSMenu menu)
+		{
+			if (CloseHandler != null) {
+				CloseHandler (this, null);
+			}
 		}
 
 		public static void ShowLastSeparator (ref NSMenuItem lastSeparator)

@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCopyright ("LGPL")]
 
 [assembly: InternalsVisibleTo("MacPlatform")]
+[assembly: InternalsVisibleTo("WindowsPlatform")]
 [assembly: InternalsVisibleTo("MonoDevelop.Debugger")]
 [assembly: InternalsVisibleTo("MonoDevelop.DesignerSupport")]
 [assembly: InternalsVisibleTo("Ide.Tests")]
@@ -29,3 +30,5 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("MonoDevelop.AspNet")]
 [assembly: InternalsVisibleTo("Xamarin.Sketches")]
 [assembly: InternalsVisibleTo("MonoDevelop.CSharpBinding.AspNet")]
+[assembly: InternalsVisibleTo("MonoDevelop.GtkCore")]
+[assembly: InternalsVisibleTo("MonoDevelop.PackageManagement")]

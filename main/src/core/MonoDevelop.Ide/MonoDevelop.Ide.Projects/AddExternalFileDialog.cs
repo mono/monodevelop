@@ -37,6 +37,7 @@ namespace MonoDevelop.Ide.Projects
 			radioCopy.Active = true;
 			labelTitle.Markup = GettextCatalog.GetString (labelTitle.Text, "<b>" + GLib.Markup.EscapeText (file) + "</b>");
 			Resizable = false;
+			buttonOk.GrabFocus ();
 		}
 		
 		public void ShowKeepOption (string dir)

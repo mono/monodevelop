@@ -438,7 +438,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			editor.CaretLocation = editor.OffsetToLocation (newoffset) ;
 
 			var prettyPrinter = CodeFormatterService.GetFormatter (data.MimeType);
-			if (prettyPrinter != null) {
+			if (prettyPrinter != null && prettyPrinter.SupportsOnTheFlyFormatting) {
 				int endOffset = template.InsertPosition + template.Code.Length;
 				var oldVersion = data.Version;
 				prettyPrinter.OnTheFlyFormat (editor, context, template.InsertPosition, endOffset);

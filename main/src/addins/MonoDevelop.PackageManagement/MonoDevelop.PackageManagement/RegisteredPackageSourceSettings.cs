@@ -39,7 +39,9 @@ namespace ICSharpCode.PackageManagement
 {
 	public class RegisteredPackageSourceSettings
 	{
+		public static readonly string PackageSourcesSectionName = "packageSources";
 		public static readonly string ActivePackageSourceSectionName = "activePackageSource";
+		public static readonly string DisabledPackageSourceSectionName = "disabledPackageSources";
 
 		public static readonly PackageSource AggregatePackageSource = 
 			new PackageSource("(Aggregate source)", "All");

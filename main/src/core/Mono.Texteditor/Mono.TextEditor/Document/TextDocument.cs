@@ -40,7 +40,7 @@ namespace Mono.TextEditor
 {
 	public class TextDocument : ICSharpCode.NRefactory.AbstractAnnotatable, ICSharpCode.NRefactory.Editor.IDocument
 	{
-		readonly Rope<char> buffer;
+		ImmutableText buffer;
 		readonly ILineSplitter splitter;
 
 		ISyntaxMode syntaxMode = null;
@@ -155,7 +155,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		protected TextDocument (Rope<char> buffer,ILineSplitter splitter)
+		protected TextDocument (ImmutableText buffer,ILineSplitter splitter)
 		{
 			this.buffer = buffer;
 			this.splitter = splitter;
@@ -171,7 +171,7 @@ namespace Mono.TextEditor
 				foldedSegments.Remove (e.Node);
 		}
 
-		public TextDocument () : this(new Rope<char> (), new LineSplitter ())
+		public TextDocument () : this(ImmutableText.Empty, new LineSplitter ())
 		{
 		}
 
@@ -182,7 +182,7 @@ namespace Mono.TextEditor
 
 		public static TextDocument CreateImmutableDocument (string text, bool suppressHighlighting = true)
 		{
-			return new TextDocument (CharRope.Create (text), new PrimitiveLineSplitter ()) {
+			return new TextDocument (new ImmutableText (text), new PrimitiveLineSplitter ()) {
 				SuppressHighlightUpdate = suppressHighlighting,
 				Text = text,
 				ReadOnly = true
@@ -230,8 +230,7 @@ namespace Mono.TextEditor
 				textSegmentMarkerTree.Clear ();
 				OnTextReplacing (args);
 				cachedText = null;
-				buffer.Clear ();
-				buffer.InsertText (0, value); 
+				buffer = new ImmutableText (value);
 				extendingTextMarkers = new List<TextLineMarker> ();
 				splitter.Initalize (value, out longestLineAtTextSet);
 				ClearFoldSegments ();
@@ -290,9 +289,9 @@ namespace Mono.TextEditor
 				redoStack.Clear ();
 			}
 			cachedText = null;
-			buffer.RemoveRange(offset, count);
+			buffer = buffer.RemoveText(offset, count);
 			if (!string.IsNullOrEmpty (value))
-				buffer.InsertText (offset, value);
+				buffer = buffer.InsertText (offset, value);
 			foldSegmentTree.UpdateOnTextReplace (this, args);
 			splitter.TextReplaced (this, args);
 			versionProvider.AppendChange (args);
@@ -369,10 +368,6 @@ namespace Mono.TextEditor
 		
 		public char GetCharAt (int offset)
 		{
-			if (offset < 0)
-				throw new ArgumentException ("offset < 0");
-			if (offset >= TextLength)
-				throw new ArgumentException ("offset >= TextLength");
 			return buffer [offset];
 		}
 
@@ -395,7 +390,7 @@ namespace Mono.TextEditor
 		/// <returns>The first index where the character was found; or -1 if no occurrence was found.</returns>
 		public int IndexOf (char c, int startIndex, int count)
 		{
-			return buffer.IndexOf (c, startIndex, count);
+			return Text.IndexOf (c, startIndex, count);
 		}
 		
 		/// <summary>
@@ -407,7 +402,7 @@ namespace Mono.TextEditor
 		/// <returns>The first index where any character was found; or -1 if no occurrence was found.</returns>
 		public int IndexOfAny (char[] anyOf, int startIndex, int count)
 		{
-			return buffer.IndexOfAny (anyOf, startIndex, count);
+			return Text.IndexOfAny (anyOf, startIndex, count);
 		}
 		
 		/// <summary>
@@ -420,7 +415,7 @@ namespace Mono.TextEditor
 		/// <returns>The first index where the search term was found; or -1 if no occurrence was found.</returns>
 		public int IndexOf (string searchText, int startIndex, int count, StringComparison comparisonType)
 		{
-			return buffer.IndexOf (searchText, startIndex, count, comparisonType);
+			return Text.IndexOf (searchText, startIndex, count, comparisonType);
 		}
 		
 		/// <summary>
@@ -434,7 +429,7 @@ namespace Mono.TextEditor
 		/// This is different than the meaning of the parameters on string.LastIndexOf!</remarks>
 		public int LastIndexOf (char c, int startIndex, int count)
 		{
-			return buffer.LastIndexOf (c, startIndex, count);
+			return Text.LastIndexOf (c, startIndex, count);
 		}
 		
 		/// <summary>
@@ -449,7 +444,7 @@ namespace Mono.TextEditor
 		/// This is different than the meaning of the parameters on string.LastIndexOf!</remarks>
 		public int LastIndexOf (string searchText, int startIndex, int count, StringComparison comparisonType)
 		{
-			return buffer.LastIndexOf (searchText, startIndex, count, comparisonType);
+			return Text.LastIndexOf (searchText, startIndex, count, comparisonType);
 		}
 
 		protected virtual void OnTextReplaced (DocumentChangeEventArgs args)
@@ -1909,12 +1904,12 @@ namespace Mono.TextEditor
 
 		public System.IO.TextReader CreateReader ()
 		{
-			return new RopeTextReader (buffer);
+			return new ImmutableTextTextReader (buffer);
 		}
 
 		public System.IO.TextReader CreateReader (int offset, int length)
 		{
-			return new RopeTextReader(buffer.GetRange(offset, length));
+			return new ImmutableTextTextReader(buffer.GetText(offset, length));
 		}
 
 		string ICSharpCode.NRefactory.Editor.ITextSource.GetText (int offset, int length)
@@ -1948,9 +1943,10 @@ namespace Mono.TextEditor
 				}
 			}
 
-			public SnapshotDocument (TextDocument doc) : base (doc.buffer.Clone(), new ImmutableLineSplitter (doc.splitter))
+			public SnapshotDocument (TextDocument doc) : base (doc.buffer, new LazyLineSplitter (doc.LineCount))
 			{
 				this.version = doc.Version;
+				((LazyLineSplitter)splitter).src = this;
 				fileName = doc.fileName;
 				Encoding = doc.Encoding;
 				UseBom = doc.UseBom;
@@ -1965,14 +1961,14 @@ namespace Mono.TextEditor
 			return new SnapshotDocument (this);
 		}
 
-		public Mono.TextEditor.Utils.Rope<char> CloneRope ()
+		public ImmutableText GetImmutableText ()
 		{
-			return buffer.Clone ();
+			return buffer;
 		}
 
-		public Mono.TextEditor.Utils.Rope<char> CloneRope (int offset, int count)
+		public ImmutableText GetImmutableText (int offset, int count)
 		{
-			return buffer.GetRange (offset, count);
+			return buffer.GetText (offset, count);
 		}
 
 		ICSharpCode.NRefactory.Editor.IDocument ICSharpCode.NRefactory.Editor.IDocument.CreateDocumentSnapshot ()
@@ -1980,6 +1976,10 @@ namespace Mono.TextEditor
 			return new SnapshotDocument (this);
 		}
 
+		public void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
+		{
+			buffer.CopyTo (sourceIndex, destination, destinationIndex, count); 
+		}
 		#endregion
 	}
 	

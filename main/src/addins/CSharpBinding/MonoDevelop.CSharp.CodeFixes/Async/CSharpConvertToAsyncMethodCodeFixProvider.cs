@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CodeActions;
-using ICSharpCode.NRefactory6.CSharp.Refactoring;
+using RefactoringEssentials;
 using MonoDevelop.CSharp.CodeFixes;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;

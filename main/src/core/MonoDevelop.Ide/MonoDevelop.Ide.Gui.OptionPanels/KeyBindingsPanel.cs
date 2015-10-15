@@ -431,25 +431,29 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				return;
 			}
 			globalWarningBox.Show ();
-			conflicButton.MenuCreator = delegate {
-				Menu menu = new Menu ();
+
+			conflicButton.ContextMenuRequested = delegate {
+				ContextMenu menu = new ContextMenu ();
+				bool first = true;
+
 				foreach (KeyBindingConflict conf in conflicts) {
-					if (menu.Children.Length > 0) {
-						SeparatorMenuItem it = new SeparatorMenuItem ();
-						it.Show ();
-						menu.Insert (it, -1);
+					if (first == false) {
+						ContextMenuItem item = new SeparatorContextMenuItem ();
+						menu.Items.Add (item);
 					}
+
 					foreach (Command cmd in conf.Commands) {
 						string txt = currentBindings.GetBinding (cmd) + " - " + cmd.Text;
-						MenuItem item = new MenuItem (txt);
+						ContextMenuItem item = new ContextMenuItem (txt);
 						Command localCmd = cmd;
-						item.Activated += delegate {
-							SelectCommand (localCmd);
-						};
-						item.Show ();
-						menu.Insert (item, -1);
+
+						item.Clicked += (sender, e) => SelectCommand (localCmd);
+
+						menu.Items.Add (item);
+						first = false;
 					}
 				}
+
 				return menu;
 			};
 		}

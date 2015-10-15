@@ -451,7 +451,9 @@ namespace Mono.TextEditor.Tests
 		{
 			var data = CreateData ("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\r\n\t\t\r\n\r\n");
 			data.Options.DefaultEolMarker = "\r\n";
-			data.IndentationTracker = new DefaultIndentationTracker (data.Document);
+			data.IndentationTracker = new DefaultIndentationTracker (data.Document) {
+				SupportedFeatures = IndentatitonTrackerFeatures.All
+			};
 			data.Caret.Location = new DocumentLocation (4, 3);
 
 			DeleteActions.Backspace (data);

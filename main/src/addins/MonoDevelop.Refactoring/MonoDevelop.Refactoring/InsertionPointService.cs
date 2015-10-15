@@ -27,20 +27,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using ICSharpCode.NRefactory6.CSharp;
 using System.Threading;
 using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Refactoring
 {
 	public static class InsertionPointService
 	{
-		public static List<InsertionPoint> GetInsertionPoints (IReadonlyTextDocument data, ParsedDocument parsedDocument, ITypeSymbol type, int part)
+		public static List<InsertionPoint> GetInsertionPoints (IReadonlyTextDocument data, MonoDevelop.Ide.TypeSystem.ParsedDocument parsedDocument, ITypeSymbol type, int part)
 		{
 			if (data == null)
 				throw new ArgumentNullException (nameof (data));
@@ -60,7 +59,7 @@ namespace MonoDevelop.Refactoring
 			var sourceSpan = new TextSpan (part, 0);
 
 			var filePath = data.FileName;
-			var declaringType = type.DeclaringSyntaxReferences.FirstOrDefault (dsr => dsr.SyntaxTree.FilePath == filePath && dsr.Span.Contains (sourceSpan));
+			var declaringType = type.DeclaringSyntaxReferences.FirstOrDefault (dsr => dsr.SyntaxTree.FilePath == filePath && dsr.Span.Contains (sourceSpan)) ?? type.DeclaringSyntaxReferences.FirstOrDefault ();
 			if (declaringType == null)
 				return result;
 			var openBraceToken = declaringType.GetSyntax ().ChildTokens ().FirstOrDefault (t => t.IsKind (SyntaxKind.OpenBraceToken));
@@ -75,7 +74,7 @@ namespace MonoDevelop.Refactoring
 					continue;
 				//var domLocation = member.BodyRegion.End;
 				foreach (var loc in member.DeclaringSyntaxReferences) {
-					if (loc.SyntaxTree.FilePath != filePath || !declaringType.Span.Contains (sourceSpan))
+					if (loc.SyntaxTree.FilePath != declaringType.SyntaxTree.FilePath || !declaringType.Span.Contains (sourceSpan))
 						continue;
 					var domLocation = data.OffsetToLocation (loc.Span.End);
 
@@ -127,7 +126,7 @@ namespace MonoDevelop.Refactoring
 			return result;
 		}
 
-		public static List<InsertionPoint> GetInsertionPoints (IReadonlyTextDocument data, ParsedDocument parsedDocument, ITypeSymbol type, Location location)
+		public static List<InsertionPoint> GetInsertionPoints (IReadonlyTextDocument data, MonoDevelop.Ide.TypeSystem.ParsedDocument parsedDocument, ITypeSymbol type, Location location)
 		{
 			return GetInsertionPoints (data, parsedDocument, type, location.SourceSpan.Start);
 		}

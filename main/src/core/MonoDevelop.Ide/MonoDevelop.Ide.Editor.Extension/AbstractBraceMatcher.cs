@@ -33,7 +33,7 @@ using System;
 
 namespace MonoDevelop.Ide.Editor
 {
-	abstract class AbstractBraceMatcher
+	public abstract class AbstractBraceMatcher
 	{
 		public abstract bool CanHandle (TextEditor editor);
 		public abstract Task<BraceMatchingResult?> GetMatchingBracesAsync(IReadonlyTextDocument editor, DocumentContext context, int offset, CancellationToken cancellationToken = default(CancellationToken));

@@ -44,112 +44,56 @@ namespace MonoDevelop.Components.MainToolbar
 	class CommandSearchCategory : SearchCategory
 	{
 		Widget widget;
+		static readonly List<Tuple<Command, string>> allCommands;
+
+		static CommandSearchCategory ()
+		{
+			allCommands = IdeApp.CommandService.GetCommands ().Select(cmd =>
+				Tuple.Create (cmd, cmd.Text.Replace ("_", ""))
+			).ToList();
+		}
 
 		public CommandSearchCategory (Widget widget) : base (GettextCatalog.GetString("Commands"))
 		{
 			this.widget = widget;
-			this.lastResult = new WorkerResult (widget);
 		}
 
-		WorkerResult lastResult;
 		string[] validTags = new [] { "cmd", "command" };
+
+		public override string [] Tags {
+			get {
+				return validTags;
+			}
+		}
 
 		public override bool IsValidTag (string tag)
 		{
 			return validTags.Any (t => t == tag);
 		}
 
-		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token)
+		public override Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern pattern, CancellationToken token)
 		{
-			// NOTE: This is run on the UI thread as checking whether or not a command is enabled is not thread-safe
-			return Task.Factory.StartNew (delegate {
+			return Task.Run (delegate {
 				try {
-					if (searchPattern.Tag != null && !validTags.Contains (searchPattern.Tag) || searchPattern.HasLineNumber)
-						return null;
-					WorkerResult newResult = new WorkerResult (widget);
-					newResult.pattern = searchPattern.Pattern;
+					if (pattern.HasLineNumber)
+						return;
+					CommandTargetRoute route = new CommandTargetRoute (MainToolbar.LastCommandTarget);
+					var matcher = StringMatcher.GetMatcher (pattern.Pattern, false);
 
-					newResult.matcher = StringMatcher.GetMatcher (searchPattern.Pattern, false);
-					newResult.FullSearch = true;
+					foreach (var cmdTuple in allCommands) {
+						token.ThrowIfCancellationRequested ();
+						var cmd = cmdTuple.Item1;
+						var matchString = cmdTuple.Item2;
+						int rank;
 
-
-					AllResults (lastResult, newResult, token);
-					newResult.results.SortUpToN (new DataItemComparer (token), resultsCount);
-					lastResult = newResult;
-					return (ISearchDataSource)newResult.results;
+						if (matcher.CalcMatchRank (matchString, out rank))
+							searchResultCallback.ReportResult (new CommandResult (cmd, null, route, pattern.Pattern, matchString, rank));
+					}
 				} catch {
 					token.ThrowIfCancellationRequested ();
 					throw;
 				}
-			}, token, TaskCreationOptions.None, Xwt.Application.UITaskScheduler);
-		}
-
-		void AllResults (WorkerResult lastResult, WorkerResult newResult, CancellationToken token)
-		{
-			CommandTargetRoute route = new CommandTargetRoute (MainToolbar.LastCommandTarget);
-			newResult.filteredCommands = new List<Command> ();
-			bool startsWithLastFilter = lastResult != null && lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredCommands != null;
-			IEnumerable<Command> allCommands = startsWithLastFilter ? lastResult.filteredCommands : IdeApp.CommandService.GetCommands ();
-			foreach (Command cmd in allCommands) {
-				token.ThrowIfCancellationRequested ();
-				SearchResult curResult = newResult.CheckCommand (cmd, route);
-				if (curResult != null) {
-					newResult.filteredCommands.Add (cmd);
-					newResult.results.AddResult (curResult);
-				}
-			}
-		}
-		
-		class WorkerResult 
-		{
-			public List<Command> filteredCommands = null;
-			public string pattern = null;
-			public ResultsDataSource results;
-			public bool FullSearch;
-			public StringMatcher matcher = null;
-			
-			public WorkerResult (Widget widget)
-			{
-				results = new ResultsDataSource (widget);
-			}
-			
-			internal SearchResult CheckCommand (Command c, CommandTargetRoute route)
-			{
-				ActionCommand cmd = c as ActionCommand;
-				if (cmd == null || cmd.CommandArray)
-					return null;
-
-				int rank;
-				string matchString = cmd.Text.Replace ("_", "");
-				if (MatchName (matchString, out rank)) {
-					try {
-						var ci = IdeApp.CommandService.GetCommandInfo (cmd.Id, route);
-						if (ci.Enabled && ci.Visible)
-							return new CommandResult (cmd, ci, route, pattern, matchString, rank);
-					} catch (Exception 	ex) {
-						LoggingService.LogError ("Failure while checking command: " + cmd.Id, ex);
-					}
-				}
-				return null;
-			}
-			
-			Dictionary<string, MatchResult> savedMatches = new Dictionary<string, MatchResult> ();
-			bool MatchName (string name, out int matchRank)
-			{
-				if (name == null) {
-					matchRank = -1;
-					return false;
-				}
-				MatchResult savedMatch;
-				if (!savedMatches.TryGetValue (name, out savedMatch)) {
-					bool doesMatch = matcher.CalcMatchRank (name, out matchRank);
-					savedMatches[name] = savedMatch = new MatchResult (doesMatch, matchRank);
-				}
-				
-				matchRank = savedMatch.Rank;
-				return savedMatch.Match;
-			}
+			});
 		}
 	}
 }
-

@@ -39,6 +39,7 @@ namespace MonoDevelop.VersionControl
 		static bool CanShow (VersionControlItem item)
 		{
 			return !item.IsDirectory
+				// FIXME: Review appending of Annotate support and use it.
 				&& item.VersionInfo.IsVersioned
 				&& AddinManager.GetExtensionObjects<IBlameViewHandler> (BlameViewHandlers).Any (h => h.CanHandle (item, null));
 		}

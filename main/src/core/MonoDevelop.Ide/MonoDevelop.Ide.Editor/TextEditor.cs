@@ -117,15 +117,16 @@ namespace MonoDevelop.Ide.Editor
 			remove { textEditorImpl.BeginMouseHover -= value; }
 		}
 
-		public event EventHandler VAdjustmentChanged {
+		internal event EventHandler VAdjustmentChanged {
 			add { textEditorImpl.VAdjustmentChanged += value; }
 			remove { textEditorImpl.VAdjustmentChanged -= value; }
 		}
 
-		public event EventHandler HAdjustmentChanged {
+		internal event EventHandler HAdjustmentChanged {
 			add { textEditorImpl.HAdjustmentChanged += value; }
 			remove { textEditorImpl.HAdjustmentChanged -= value; }
 		}
+
 		public char this[int offset] {
 			get {
 				return ReadOnlyTextDocument [offset];
@@ -781,6 +782,12 @@ namespace MonoDevelop.Ide.Editor
 			ReadOnlyTextDocument.WriteTextTo (writer, offset, length);
 		}
 
+		/// <inheritdoc/>
+		public void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
+		{
+			ReadOnlyTextDocument.CopyTo (sourceIndex, destination, destinationIndex, count); 
+		}
+
 		public void ScrollTo (int offset)
 		{
 			textEditorImpl.ScrollTo (offset);
@@ -835,8 +842,13 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.AddSkipChar (offset, ch);
 		}
 
+		bool isDisposed;
+
 		protected override void Dispose (bool disposing)
 		{
+			if (isDisposed)
+				return;
+			isDisposed = true;
 			DetachExtensionChain ();
 			FileNameChanged -= TextEditor_FileNameChanged;
 			MimeTypeChanged -= TextEditor_MimeTypeChanged;
@@ -1299,12 +1311,12 @@ namespace MonoDevelop.Ide.Editor
 			projectionsAdded = true;
 		}
 
-		public void AddOverlay (Control messageOverlayContent, Func<int> sizeFunc)
+		internal void AddOverlay (Control messageOverlayContent, Func<int> sizeFunc)
 		{
 			textEditorImpl.AddOverlay (messageOverlayContent, sizeFunc);
 		}
 
-		public void RemoveOverlay (Control messageOverlayContent)
+		internal void RemoveOverlay (Control messageOverlayContent)
 		{
 			textEditorImpl.RemoveOverlay (messageOverlayContent);
 		}

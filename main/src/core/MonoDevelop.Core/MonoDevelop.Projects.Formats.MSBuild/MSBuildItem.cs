@@ -32,44 +32,98 @@ using System.Collections.Immutable;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class MSBuildItem: MSBuildObject
+	public class MSBuildItem: MSBuildElement
 	{
 		MSBuildPropertyGroup metadata;
-		MSBuildPropertyGroupEvaluated evaluatedMetadata;
-		MSBuildProject parent;
+		string name;
+		string include;
+		string exclude;
 
-		internal MSBuildItem (MSBuildProject parent, XmlElement elem): base (elem)
+		public MSBuildItem ()
 		{
-			this.parent = parent;
+			metadata = new MSBuildPropertyGroup ();
+			metadata.UppercaseBools = true;
+			metadata.ParentNode = this;
 		}
 
-		public MSBuildProject Project {
-			get { return parent; }
+		public MSBuildItem (string name): this ()
+		{
+			this.name = name;
+		}
+
+		static readonly string [] knownAttributes = { "Include", "Exclude", "Condition", "Label" };
+
+		internal override string [] GetKnownAttributes ()
+		{
+			return knownAttributes;
+		}
+
+		internal override void ReadAttribute (string name, string value)
+		{
+			if (name == "Include")
+				include = value;
+			else if (name == "Exclude")
+				exclude = value;
+			else
+				base.ReadAttribute (name, value);
+		}
+
+		internal override string WriteAttribute (string name)
+		{
+			if (name == "Include")
+				return include;
+			else if (name == "Exclude")
+				return exclude;
+			else
+				return base.WriteAttribute (name);
+		}
+
+		internal override void Read (MSBuildXmlReader reader)
+		{
+			name = reader.LocalName;
+			base.Read (reader);
+		}
+
+		internal override void ReadChildElement (MSBuildXmlReader reader)
+		{
+			metadata.ReadChildElement (reader);
+		}
+
+		internal override void Write (XmlWriter writer, WriteContext context)
+		{
+			base.Write (writer, context);
+			if (context.Evaluating) {
+				string id = context.ItemMap.Count.ToString ();
+				context.ItemMap [id] = this;
+			}
+		}
+
+		internal override string GetElementName ()
+		{
+			return name;
 		}
 
 		public MSBuildItemGroup ParentGroup {
 			get {
-				if (parent != null)
-					return parent.GetItemGroup ((XmlElement)Element.ParentNode);
-				return null; 
+				return (MSBuildItemGroup)ParentObject;
 			}
 		}
 
 		public string Include {
-			get { return Element.GetAttribute ("Include"); }
+			get { return include; }
 			set {
-				Element.SetAttribute ("Include", value); 
-				if (parent != null)
-					parent.NotifyChanged ();
+				AssertCanModify ();
+				include = value;
+				NotifyChanged ();
 			}
 		}
 		
 		public string Exclude {
-			get { return Element.GetAttribute ("Exclude"); }
+			get { return exclude; }
 			set {
-				Element.SetAttribute ("Exclude", value); 
-				if (parent != null)
-					parent.NotifyChanged ();
+				AssertCanModify ();
+				exclude = value;
+				NotifyChanged ();
 			}
 		}
 
@@ -79,24 +133,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 
 		public string Name {
-			get { return Element.Name; }
+			get { return name; }
 		}
 
 		public IMSBuildPropertySet Metadata {
 			get {
-				if (metadata == null) {
-					metadata = new MSBuildPropertyGroup (parent, Element);
-					metadata.UppercaseBools = true;
-				}
 				return metadata; 
-			}
-		}
-
-		public IMSBuildPropertyGroupEvaluated EvaluatedMetadata {
-			get {
-				if (evaluatedMetadata == null)
-					evaluatedMetadata = new MSBuildPropertyGroupEvaluated (parent);
-				return evaluatedMetadata; 
 			}
 		}
 
@@ -120,6 +162,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			this.include = include;
 			this.evaluatedInclude = evaluatedInclude;
 			this.parent = parent;
+			metadata = new MSBuildPropertyGroupEvaluated (parent);
 			Name = name;
 		}
 
@@ -144,8 +187,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public IMSBuildPropertyGroupEvaluated Metadata {
 			get {
-				if (metadata == null)
-					metadata = new MSBuildPropertyGroupEvaluated (parent);
 				return metadata; 
 			}
 		}

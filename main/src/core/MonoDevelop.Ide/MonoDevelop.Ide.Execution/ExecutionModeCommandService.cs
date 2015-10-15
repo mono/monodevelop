@@ -90,7 +90,8 @@ namespace MonoDevelop.Ide.Execution
 			}
 
 			var targets = new List<ExecutionTarget> ();
-			FlattenExecutionTargets (targets, project.GetExecutionTargets (IdeApp.Workspace.ActiveConfiguration));
+			if (project != null)
+				FlattenExecutionTargets (targets, project.GetExecutionTargets (IdeApp.Workspace.ActiveConfiguration));
 
 			if (targets.Count > 1) {
 				foreach (var t in targets) {
@@ -123,8 +124,8 @@ namespace MonoDevelop.Ide.Execution
 		{
 			CommandItem item = (CommandItem) data;
 			if (item.Mode == null) {
-				var dlg = new CustomExecutionModeManagerDialog (item.Context);
-				MessageService.ShowCustomDialog (dlg);
+				using (var dlg = new CustomExecutionModeManagerDialog (item.Context))
+					MessageService.ShowCustomDialog (dlg);
 				return null;
 			}
 			
@@ -255,6 +256,7 @@ namespace MonoDevelop.Ide.Execution
 					}
 				} finally {
 					dlg.Destroy ();
+					dlg.Dispose ();
 				}
 			});
 			return cmode;

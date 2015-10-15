@@ -30,6 +30,7 @@ using ICSharpCode.NRefactory6;
 using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.JSon
 {

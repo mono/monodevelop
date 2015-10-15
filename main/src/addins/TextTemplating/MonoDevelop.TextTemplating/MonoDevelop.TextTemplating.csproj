@@ -76,23 +76,11 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Core" />
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\..\packages\System.Collections.Immutable.1.1.33-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\..\..\packages\System.Reflection.Metadata.1.0.18-beta\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Desktop">
-      <HintPath>..\..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.Desktop.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Parser\" />
@@ -141,6 +129,5 @@
     <None Include="Templates\T4PreprocessedTemplateCSharp.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
   </ItemGroup>
 </Project>

@@ -50,9 +50,9 @@ namespace MonoDevelop.CSharp.Completion
 				if (displayText == null) {
 					var model = ext.ParsedDocument.GetAst<SemanticModel> ();
 					try {
-						displayText = base.Symbol.ToMinimalDisplayString (model, ext.Editor.CaretOffset, Ambience.LabelFormat) + " {...}";
+						displayText = Ambience.EscapeText (base.Symbol.ToMinimalDisplayString (model, ext.Editor.CaretOffset, Ambience.LabelFormat)) + " {...}";
 					} catch (ArgumentOutOfRangeException) {
-						displayText = base.Symbol.ToMinimalDisplayString (model, 0, Ambience.LabelFormat) + " {...}";
+						displayText = Ambience.EscapeText (base.Symbol.ToMinimalDisplayString (model, 0, Ambience.LabelFormat)) + " {...}";
 					}
 
 					if (!afterKeyword)
@@ -67,7 +67,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			var model = ext.ParsedDocument.GetAst<SemanticModel> ();
 
-			var result = base.Symbol.ToMinimalDisplayString (model, ext.Editor.CaretOffset, Ambience.LabelFormat) + " {...}";
+			var result = Ambience.EscapeText (base.Symbol.ToMinimalDisplayString (model, ext.Editor.CaretOffset, Ambience.LabelFormat)) + " {...}";
 			var idx = result.IndexOf (Symbol.Name);
 			if (idx >= 0) {
 				result = 
@@ -82,7 +82,7 @@ namespace MonoDevelop.CSharp.Completion
 			return ApplyDiplayFlagsFormatting (result);
 		}
 
-		public CreatePartialCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, RoslynCodeCompletionFactory factory, int declarationBegin, ITypeSymbol currentType, ISymbol member, bool afterKeyword) : base (keyHandler, factory, member)
+		public CreatePartialCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, int declarationBegin, ITypeSymbol currentType, ISymbol member, bool afterKeyword) : base (keyHandler, factory, member)
 		{
 			this.afterKeyword = afterKeyword;
 			this.currentType = currentType;

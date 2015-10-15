@@ -466,7 +466,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 			if (e.TriggersContextMenu ()) {
 				if (DoPopupMenu != null) {
-					DoPopupMenu (null);
+					DoPopupMenu (e);
 					return true;
 				}
 			} else if (e.Type == EventType.TwoButtonPress && this.SelectedItem != null) { 

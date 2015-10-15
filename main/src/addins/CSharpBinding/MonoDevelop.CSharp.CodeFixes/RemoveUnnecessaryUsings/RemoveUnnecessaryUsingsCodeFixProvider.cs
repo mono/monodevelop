@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis.Shared.Extensions;
 using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp.Features.RemoveUnnecessaryImports;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory6.CSharp.Refactoring;
+using RefactoringEssentials;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.CSharp.Diagnostics;
 

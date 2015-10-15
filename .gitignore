@@ -15,6 +15,7 @@ obj/
 /main/tests/config
 /main/tests/UnitTests/test-results
 /main/build/MacOSX/monostub
+/main/build/MacOSx/monostub-test
 /main/contrib/bin/
 /main/contrib/*/*/bin/
 /local-libs
@@ -50,6 +51,7 @@ install-sh
 autom4te.cache/
 *.user
 *.tar.gz
+*.dSYM
 tarballs/
 test-results/
 Thumbs.db

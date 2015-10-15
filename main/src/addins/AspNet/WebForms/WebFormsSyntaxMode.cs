@@ -29,6 +29,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Xml;
 using System.Text;
+using MonoDevelop.Core;
 using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.AspNet.WebForms.Parser;
@@ -176,8 +177,12 @@ namespace MonoDevelop.AspNet.WebForms
 						
 						if (mime != null) {
 							CodeDeclarationSpan span = new CodeDeclarationSpan (mime);
-							FoundSpanBegin (span, i, 0);
-							return true;
+							try {
+								FoundSpanBegin (span, i, 0);
+								return true;
+							} catch (Exception ex) {
+								LoggingService.LogInternalError (ex);
+							}
 						}
 					}
 				}

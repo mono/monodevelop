@@ -35,8 +35,6 @@ using MonoDevelop.Ide.Tasks;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using System.Linq;
-using ICSharpCode.NRefactory6.CSharp;
-using ICSharpCode.NRefactory6.CSharp.Completion;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 
@@ -141,17 +139,20 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return "Count";
 		}
 		
-		ITypeSymbol GetElementType (ITypeSymbol type)
+		ITypeSymbol GetElementType (Compilation compilation, ITypeSymbol type)
 		{
+			ITypeSymbol tmp = type;
 			foreach (var baseType in type.AllInterfaces) {
 				if (baseType != null && baseType.Name == "IEnumerable") {
-					if (baseType.TypeArguments.Length > 0)
-						return baseType.TypeArguments[0];
+					if (baseType.TypeArguments.Length > 0) {
+						return baseType.TypeArguments [0];
+					} else if (baseType.ContainingNamespace.ToDisplayString (Ambience.LabelFormat) == "System.Collections") {
+						tmp = compilation.GetSpecialType (SpecialType.System_Object);
+					}
 				}
 			}
-			return type;
+			return tmp;
 		}
-		
 		
 		public string GetComponentTypeOf (Func<string, string> callback, string varName)
 		{
@@ -178,13 +179,16 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			var result = new List<CodeTemplateVariableValue> ();
 			var ext = CurrentContext.DocumentContext.GetContent <CompletionTextEditorExtension> ();
+			var analysisProject = TypeSystemService.GetCodeAnalysisProject (CurrentContext.DocumentContext.Project);
+			var compilation = analysisProject != null ? analysisProject.GetCompilationAsync ().Result : null;
+
 			if (ext != null) {
 				if (list == null)
 					list = ext.CodeCompletionCommand (
 						CurrentContext.DocumentContext.GetContent <MonoDevelop.Ide.CodeCompletion.ICompletionWidget> ().CurrentCodeCompletionContext).Result;
 				
 				foreach (var data in list.OfType<ISymbolCompletionData> ()) {
-					if (GetElementType (data.Symbol.GetReturnType ()).TypeKind != TypeKind.Error) {
+					if (GetElementType (compilation, data.Symbol.GetReturnType ()).TypeKind != TypeKind.Error) {
 						var method = data as IMethodSymbol;
 						if (method != null) {
 							if (method.Parameters.Length == 0)
@@ -199,7 +203,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				foreach (var data in list.OfType<ISymbolCompletionData> ()) {
 					var m = data.Symbol as IParameterSymbol;
 					if (m != null) {
-						if (GetElementType (m.Type).TypeKind != TypeKind.Error)
+						if (GetElementType (compilation, m.Type).TypeKind != TypeKind.Error)
 							result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)data).Icon));
 					}
 				}
@@ -208,7 +212,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 					var m = sym.Symbol as ILocalSymbol;
 					if (m == null)
 						continue;
-					if (GetElementType (m.Type).TypeKind != TypeKind.Error)
+					if (GetElementType (compilation, m.Type).TypeKind != TypeKind.Error)
 						result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)m).Icon));
 				}
 			}

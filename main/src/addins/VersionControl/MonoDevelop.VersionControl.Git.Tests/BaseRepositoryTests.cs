@@ -271,12 +271,34 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.GetHistory.
 		public void LogIsProper ()
 		{
+			if (!Platform.IsWindows)
+				Assert.Ignore ("Linux/Mac Svn seems to hiccup on symlinks.");
+
 			AddFile ("testfile", null, true, true);
 			AddFile ("testfile2", null, true, true);
-			int index = 0;
-			foreach (Revision rev in Repo.GetHistory (LocalPath + "testfile", null)) {
-				Assert.AreEqual (String.Format ("Commit #{0}", index++), rev.Message);
-			}
+			AddFile ("testfile3", null, true, true);
+
+			CheckLog (Repo);
+		}
+
+		protected abstract void CheckLog (Repository repo);
+
+		[Ignore ("This is failing on Wrench (Windows), and it seems to be choking on symlinks on Mac.")]
+		[TestCase(0)]
+		[TestCase(1)]
+		[TestCase(2)]
+		// Tests Repository.GetHistory with slices.
+		public void LogSinceWorks (int historyId)
+		{
+			AddFile ("testfile", null, true, true);
+			AddFile ("testfile2", null, true, true);
+			AddFile ("testfile3", null, true, true);
+
+			var history = Repo.GetHistory (LocalPath, null);
+			foreach (var rev in Repo.GetHistory (LocalPath, history[historyId]))
+				Assert.AreNotEqual (history [historyId].GetPrevious (), rev, "The revision was found in slice, yet should not be in it.");
+
+			Assert.True (history.Any (r => r == history[historyId]));
 		}
 
 		[Test]
@@ -632,8 +654,11 @@ namespace MonoDevelop.VersionControl.Tests
 
 		protected void Checkout (string path, string url)
 		{
-			Repository _repo = GetRepo (path, url);
-			_repo.Checkout (path, true, new ProgressMonitor ());
+			var mockRepo = (UrlBasedRepository)GetRepo ();
+			mockRepo.Url = url;
+			mockRepo.Checkout (path, true, new ProgressMonitor ());
+
+			var _repo = GetRepo (path, url);
 			if (Repo == null)
 				Repo = _repo;
 			else
@@ -692,6 +717,7 @@ namespace MonoDevelop.VersionControl.Tests
 				AddedItems.Add (added);
 		}
 
+		protected abstract Repository GetRepo ();
 		protected abstract Repository GetRepo (string path, string url);
 
 		protected static void DeleteDirectory (string path)

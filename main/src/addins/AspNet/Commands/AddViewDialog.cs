@@ -30,7 +30,6 @@ using System.Collections.Generic;
 using PP = System.IO.Path;
 
 using Gtk;
-using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -348,6 +347,7 @@ namespace MonoDevelop.AspNet.Commands
 					masterEntry.Text = aspFlavor.LocalToVirtualPath (dialog.SelectedFile.FilePath);
 			} finally {
 				dialog.Destroy ();
+				dialog.Dispose ();
 			}
 		}
 		

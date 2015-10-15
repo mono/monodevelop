@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	public static partial class TypeSystemService
 	{
-		const string CurrentVersion = "1.1.8";
+		const string CurrentVersion = "1.1.9";
 		static readonly List<TypeSystemParserNode> parsers;
 		static string[] filesSkippedInParseThread = new string[0];
 
@@ -96,19 +96,41 @@ namespace MonoDevelop.Ide.TypeSystem
 			FileService.FileChanged += delegate(object sender, FileEventArgs e) {
 				//				if (!TrackFileChanges)
 				//					return;
+
+				var filesToUpdate = new List<string> ();
 				foreach (var file in e) {
 					// Open documents are handled by the Document class itself.
 					if (IdeApp.Workbench != null && IdeApp.Workbench.GetDocument (file.FileName) != null)
 						continue;
-					try {
-						var text = MonoDevelop.Core.Text.StringTextSource.ReadFrom (file.FileName).Text;
-						foreach (var w in Workspaces)
-							w.UpdateFileContent (file.FileName, text);
-					} catch (FileNotFoundException) {}
+					
+					foreach (var w in Workspaces) {
+						foreach (var p in w.CurrentSolution.ProjectIds) {
+							if (w.GetDocumentId (p, file.FileName) != null) {
+								filesToUpdate.Add (file.FileName);
+								goto found;
+							}
+						}
+					}
+				found:;
+					
 				}
-				if (IdeApp.Workbench != null)
-					foreach (var w in IdeApp.Workbench.Documents)
-						w.StartReparseThread ();
+				if (filesToUpdate.Count == 0)
+					return;
+
+				Task.Run (delegate {
+					try {
+						foreach (var file in filesToUpdate) {
+							var text = MonoDevelop.Core.Text.StringTextSource.ReadFrom (file).Text;
+							foreach (var w in Workspaces)
+								w.UpdateFileContent (file, text);
+							Gtk.Application.Invoke (delegate {
+								if (IdeApp.Workbench != null)
+									foreach (var w in IdeApp.Workbench.Documents)
+										w.StartReparseThread ();
+							});
+						}
+					} catch (FileNotFoundException) {}
+				});
 			};
 
 			IntitializeTrackedProjectHandling ();
@@ -162,10 +184,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			try {
 				if (!File.Exists (fileName))
-					return null;
+					return TaskUtil.Default<ParsedDocument>();
 				text = StringTextSource.ReadFrom (fileName);
 			} catch (Exception) {
-				return null;
+				return TaskUtil.Default<ParsedDocument>();
 			}
 
 			return ParseFile (project, fileName, DesktopService.GetMimeTypeForUri (fileName), text, cancellationToken);
@@ -180,17 +202,17 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			var parser = GetParser (mimeType);
 			if (parser == null)
-				return Task.FromResult ((ParsedDocument)null);
+				return TaskUtil.Default<ParsedDocument>();
 
 			var t = Counters.ParserService.FileParsed.BeginTiming (options.FileName);
 			try {
 				var result = parser.Parse (options, cancellationToken);
-				return result;
+				return result ?? TaskUtil.Default<ParsedDocument>();
 			} catch (OperationCanceledException) {
-				return Task.FromResult ((ParsedDocument)null);
+				return TaskUtil.Default<ParsedDocument>();
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception while parsing: " + e);
-				return Task.FromResult ((ParsedDocument)null);
+				return TaskUtil.Default<ParsedDocument>();
 			} finally {
 				t.Dispose ();
 			}
@@ -502,6 +524,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			throw new Exception ("Too many cache directories");
 		}
 
+		static string EscapeToXml (string txt)
+		{
+			return new System.Xml.Linq.XText (txt).ToString ();
+		}
+
 		static string CreateCacheDirectory (FilePath fileName)
 		{
 			CanonicalizePath (ref fileName);
@@ -513,7 +540,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				File.WriteAllText (
 					Path.Combine (cacheDir, "data.xml"),
-					string.Format ("<DerivedData><File name=\"{0}\" version =\"{1}\"/></DerivedData>", fileName, CurrentVersion)
+					string.Format ("<DerivedData><File name=\"{0}\" version =\"{1}\"/></DerivedData>", EscapeToXml (fileName), CurrentVersion)
 				);
 
 				return cacheDir;

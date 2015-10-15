@@ -26,16 +26,20 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Text;
 using System.Collections.Generic;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+
+using System.Xml;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -85,6 +89,11 @@ namespace MonoDevelop.Components.AutoTest
 				};
 				return stats;
 			}
+		}
+
+		public string[] GetCounterStats ()
+		{
+			return Counters.CounterReport ();
 		}
 
 		public void ExecuteCommand (object cmd, object dataItem = null, CommandSource source = CommandSource.Unknown)
@@ -185,6 +194,27 @@ namespace MonoDevelop.Components.AutoTest
 					throw;
 				}
 			});
+			#else
+			Sync (delegate {
+				try {
+					using (var bmp = new System.Drawing.Bitmap (System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width,
+						System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height)) {
+						using (var g = System.Drawing.Graphics.FromImage(bmp))
+						{
+							g.CopyFromScreen(System.Windows.Forms.Screen.PrimaryScreen.Bounds.X,
+								System.Windows.Forms.Screen.PrimaryScreen.Bounds.Y,
+								0, 0,
+								bmp.Size,
+								System.Drawing.CopyPixelOperation.SourceCopy);
+						}
+						bmp.Save(screenshotPath);
+					}
+					return null;
+				} catch (Exception e) {
+					Console.WriteLine (e);
+					throw;
+				}
+			});
 			#endif
 		}
 		
@@ -207,9 +237,9 @@ namespace MonoDevelop.Components.AutoTest
 		}
 			
 		// FIXME: This shouldn't be here.
-		public bool IsBuildSuccessful ()
+		public int ErrorCount (TaskSeverity severity)
 		{
-			return TaskService.Errors.Count (x => x.Severity == TaskSeverity.Error) == 0;
+			return TaskService.Errors.Count (x => x.Severity == severity);
 		}
 
 		object SafeObject (object ob)
@@ -244,6 +274,8 @@ namespace MonoDevelop.Components.AutoTest
 			
 			if (remaining == null)
 				return res;
+			else if (res == null)
+				return null;
 			else
 				return GetValue (res, res.GetType (), remaining);
 		}
@@ -293,14 +325,20 @@ namespace MonoDevelop.Components.AutoTest
 
 		public void ExecuteOnIdle (Action idleFunc, bool wait = true, int timeout = 20000)
 		{
+			if (DispatchService.IsGuiThread) {
+				idleFunc ();
+				return;
+			}
+
 			if (wait == false) {
 				GLib.Idle.Add (() => {
 					idleFunc ();
 					return false;
 				});
+
 				return;
 			}
-
+				
 			syncEvent.Reset ();
 			GLib.Idle.Add (() => {
 				idleFunc ();
@@ -315,7 +353,7 @@ namespace MonoDevelop.Components.AutoTest
 
 		// Executes the query outside of a syncEvent wait so it is safe to call from
 		// inside an ExecuteOnIdleAndWait
-		AppResult[] ExecuteQueryNoWait (AppQuery query)
+		internal AppResult[] ExecuteQueryNoWait (AppQuery query)
 		{
 			AppResult[] resultSet = query.Execute ();
 			Sync (() => {
@@ -337,7 +375,6 @@ namespace MonoDevelop.Components.AutoTest
 			} catch (TimeoutException e) {
 				throw new TimeoutException (string.Format ("Timeout while executing ExecuteQuery: {0}", query), e);
 			}
-
 			return resultSet;
 		}
 
@@ -475,6 +512,28 @@ namespace MonoDevelop.Components.AutoTest
 			return true;
 		}
 
+		public bool TypeKey (AppResult result, char key, string modifiers)
+		{
+			try {
+				ExecuteOnIdle (() => result.TypeKey (key, modifiers));
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("TypeKey", result.SourceQuery, result, e);
+			}
+
+			return true;
+		}
+
+		public bool TypeKey (AppResult result, string keyString, string modifiers)
+		{
+			try {
+				ExecuteOnIdle (() => result.TypeKey (keyString, modifiers));
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("TypeKey", result.SourceQuery, result, e);
+			}
+
+			return true;
+		}
+
 		public bool Toggle (AppResult result, bool active)
 		{
 			bool success = false;
@@ -490,9 +549,122 @@ namespace MonoDevelop.Components.AutoTest
 			return success;
 		}
 
+		public void Flash (AppResult result)
+		{
+			try {
+				ExecuteOnIdle (() => result.Flash ());
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("Flash", result.SourceQuery, result, e);
+			}
+		}
+
+		public bool SetActiveConfiguration (AppResult result, string configuration)
+		{
+			bool success = false;
+
+			try {
+				ExecuteOnIdle (() => {
+					success = result.SetActiveConfiguration (configuration);
+				});
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("SetActiveConfiguration", result.SourceQuery, result, e);
+			}
+
+			return success;
+		}
+
+		public bool SetActiveRuntime (AppResult result, string runtime)
+		{
+			bool success = false;
+
+			try {
+				ExecuteOnIdle (() => {
+					success = result.SetActiveRuntime (runtime);
+				});
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("SetActiveRuntime", result.SourceQuery, result, e);
+			}
+
+			return success;
+		}
+
 		void ThrowOperationTimeoutException (string operation, string query, AppResult result, Exception innerException)
 		{
 			throw new TimeoutException (string.Format ("Timeout while executing {0}: {1}\n\ton Element: {2}", operation, query, result), innerException);
+		}
+
+		void AddChildrenToDocument (XmlDocument document, XmlElement parentElement, AppResult children, bool withSiblings = true)
+		{
+			while (children != null) {
+				XmlElement childElement = document.CreateElement ("result");
+				children.ToXml (childElement);
+				parentElement.AppendChild (childElement);
+
+				if (children.FirstChild != null) {
+					AddChildrenToDocument (document, childElement, children.FirstChild);
+				}
+
+				children = withSiblings ? children.NextSibling : null;
+			}
+		}
+
+		class UTF8StringWriter : StringWriter
+		{
+			public override Encoding Encoding {
+				get {
+					return Encoding.UTF8;
+				}
+			}
+		}
+
+		//
+		// The XML result structure
+		// <AutoTest>
+		//   <query>c =&gt; c.Window()</query>
+		//   <results>
+		//     <result type="Gtk.Window" fulltype="Gtk.Window" name="Main Window" visible="true" sensitive="true" allocation="1,1 1024x1024">
+		//       ... contains result elements for all children widgets ...
+		//     </result>
+		//     ... and more result element trees for each of the AppResult in results ...
+		//   </results>
+		// </AutoTest>
+		//
+		public string ResultsAsXml (AppResult[] results)
+		{
+			XmlDocument document = new XmlDocument ();
+			XmlElement rootElement = document.CreateElement ("AutoTest");
+			document.AppendChild (rootElement);
+
+			if (results [0].SourceQuery != null) {
+				XmlElement queryElement = document.CreateElement ("query");
+				queryElement.AppendChild (document.CreateTextNode (results [0].SourceQuery));
+				rootElement.AppendChild (queryElement);
+			}
+
+			XmlElement resultsElement = document.CreateElement ("results");
+			rootElement.AppendChild (resultsElement);
+
+			try {
+				ExecuteOnIdle (() => {
+					foreach (var result in results) {
+						AddChildrenToDocument (document, resultsElement, result, false);
+					}
+				});
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("ResultsAsXml", null, null, e);
+			}
+
+			string output;
+
+			using (var sw = new UTF8StringWriter ()) {
+				using (var xw = XmlWriter.Create (sw, new XmlWriterSettings { Indent = true })) {
+					document.WriteTo (xw);
+				}
+
+				output = sw.ToString ();
+			}
+
+			return output;
 		}
 	}
 

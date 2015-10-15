@@ -107,11 +107,6 @@
       <Name>Xwt</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\NRefactory6\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory6.CSharp.csproj">
-      <Project>{7E891659-45F3-42B5-B940-A728780CCAE9}</Project>
-      <Name>ICSharpCode.NRefactory6.CSharp</Name>
-      <Private>False</Private>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\prefs-xml-16.png">

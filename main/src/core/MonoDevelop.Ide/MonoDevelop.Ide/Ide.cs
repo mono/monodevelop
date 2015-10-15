@@ -180,7 +180,6 @@ namespace MonoDevelop.Ide
 			commandService = new CommandManager ();
 			ideServices = new IdeServices ();
 			CustomToolService.Init ();
-			AutoTestService.Start (commandService, Preferences.EnableAutomatedTesting);
 			
 			commandService.CommandTargetScanStarted += CommandServiceCommandTargetScanStarted;
 			commandService.CommandTargetScanFinished += CommandServiceCommandTargetScanFinished;
@@ -297,7 +296,10 @@ namespace MonoDevelop.Ide
 			IdeApp.Preferences.EnableInstrumentation.Changed += delegate {
 				UpdateInstrumentationIcon ();
 			};
+			AutoTestService.Start (commandService, Preferences.EnableAutomatedTesting);
 			AutoTestService.NotifyEvent ("MonoDevelop.Ide.IdeStart");
+
+			Gtk.LinkButton.SetUriHook ((button, uri) => Xwt.Desktop.OpenUrl (uri));
 		}
 
 		static void KeyBindingFailed (object sender, KeyBindingFailedEventArgs e)

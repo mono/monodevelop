@@ -39,6 +39,7 @@ using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.CSharp.CodeFixes;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using RefactoringEssentials;
 
 namespace MonoDevelop.CSharp.CodeFixes
 {

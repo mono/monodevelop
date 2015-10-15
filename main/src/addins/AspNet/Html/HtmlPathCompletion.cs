@@ -128,6 +128,7 @@ namespace MonoDevelop.AspNet.Html
 				}
 				finally {
 					dialog.Destroy ();
+					dialog.Dispose ();
 				}
 				window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, "", text);
 			}

@@ -28,73 +28,35 @@ using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
-	[TestFixture]
-	[Category("Misc")]
+	[TestFixture, Timeout (60000), Category ("Misc")]
 	public class MiscTemplatesTest : CreateBuildTemplatesTestBase
 	{
 		readonly string miscCategory = "Miscellaneous";
 
-		readonly string genericKindRoot = "Generic";
-		readonly string cCPlusKindRoot = "C/C++";
-
-		#region Generic
-
 		[Test]
-		public void TestMiscGenericProject ()
+		[Platform (Exclude="Win")]
+		[TestCase ("Shared Library", "C/C++", TestName = "TestMiscCCPlusSharedLibrary", Description = "Create and build Shared C/C++ Library")]
+		[TestCase ("Static Library", "C/C++", TestName = "TestMiscCCPlusStaticLibrary", Description = "Create and build Static C/C++ Library")]
+		[TestCase ("Console Project", "C/C++", TestName = "TestMiscCCPlusConsoleProject", Description = "Create and build Console C/C++ Project")]
+		public void RunMiscCPlusPlusTemplatesTest (string templateName, string templateKind)
 		{
-			RunMiscGenericTests ("Generic Project");
+			RunMiscTemplatesTest (templateName, templateKind);
 		}
 
 		[Test]
-		public void TestMiscPackagingProject ()
-		{
-			RunMiscGenericTests ("Packaging project");
-		}
+		[TestCase ("Generic Project", "Generic", TestName = "TestMiscGenericProject", Description = "Create and build Generic Project")]
+		[TestCase ("Packaging project", "Generic", TestName = "TestMiscPackagingProject", Description = "Create and build Packaging Project")]
 
-		void RunMiscGenericTests (string templateName)
+		public void RunMiscTemplatesTest (string templateName, string templateKind)
 		{
 			var templateOptions = new TemplateSelectionOptions {
 				CategoryRoot = OtherCategoryRoot,
 				Category = miscCategory,
-				TemplateKindRoot = genericKindRoot,
+				TemplateKindRoot = templateKind,
 				TemplateKind = templateName
 			};
-			CreateBuildProject (templateOptions, EmptyAction);
+			CreateBuildProject (templateOptions, () => Ide.WaitForIdeIdle ());
+			IsTemplateSelected (templateOptions);
 		}
-
-		#endregion
-
-		#region C/C++
-
-		[Test]
-		public void TestMiscCCPlusSharedLibrary ()
-		{
-			RunCCPlusTests ("Shared Library");
-		}
-
-		[Test]
-		public void TestMiscCCPlusStaticLibrary ()
-		{
-			RunCCPlusTests ("Static Library");
-		}
-
-		[Test]
-		public void TestMiscCCPlusConsoleProject ()
-		{
-			RunCCPlusTests ("Console Project");
-		}
-
-		void RunCCPlusTests (string templateName)
-		{
-			var templateOptions = new TemplateSelectionOptions {
-				CategoryRoot = OtherCategoryRoot,
-				Category = miscCategory,
-				TemplateKindRoot = cCPlusKindRoot,
-				TemplateKind = templateName
-			};
-			CreateBuildProject (templateOptions, EmptyAction);
-		}
-
-		#endregion
 	}
 }

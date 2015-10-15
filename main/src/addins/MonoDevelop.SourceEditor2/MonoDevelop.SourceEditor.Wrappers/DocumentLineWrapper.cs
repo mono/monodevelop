@@ -91,12 +91,6 @@ namespace MonoDevelop.SourceEditor.Wrappers
 				return next != null ? new DocumentLineWrapper (next) : null;
 			}
 		}
-
-		bool MonoDevelop.Ide.Editor.IDocumentLine.IsDeleted {
-			get {
-				return false;
-			}
-		}
 		#endregion
 
 		#region ISegment implementation

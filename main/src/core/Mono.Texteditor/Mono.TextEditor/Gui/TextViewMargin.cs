@@ -137,10 +137,7 @@ namespace Mono.TextEditor
 
 			textEditor.Document.TextReplaced += HandleTextReplaced;
 			base.cursor = xtermCursor;
-			textEditor.HighlightSearchPatternChanged += delegate {
-				selectedRegions.Clear ();
-				RefreshSearchMarker ();
-			};
+			textEditor.HighlightSearchPatternChanged += TextEditor_HighlightSearchPatternChanged;
 			textEditor.Document.LineChanged += TextEditorDocumentLineChanged;
 			textEditor.GetTextEditorData ().SearchChanged += HandleSearchChanged;
 			markerLayout = PangoUtil.CreateLayout (textEditor);
@@ -149,6 +146,12 @@ namespace Mono.TextEditor
 			textEditor.TextArea.FocusInEvent += HandleFocusInEvent;
 			textEditor.TextArea.FocusOutEvent += HandleFocusOutEvent;
 			textEditor.VScroll += HandleVAdjustmentValueChanged;
+		}
+
+		void TextEditor_HighlightSearchPatternChanged (object sender, EventArgs e)
+		{
+			selectedRegions.Clear ();
+			RefreshSearchMarker ();
 		}
 
 		void HandleFocusInEvent (object o, FocusInEventArgs args)
@@ -390,7 +393,9 @@ namespace Mono.TextEditor
 		protected internal override void OptionsChanged ()
 		{
 			DisposeGCs ();
-
+			selectionColor = null;
+			currentLineColor = null;
+		
 			var markerFont = textEditor.Options.Font.Copy ();
 			markerFont.Size = markerFont.Size * 8 / 10;
 			markerLayout.FontDescription = markerFont;
@@ -467,7 +472,10 @@ namespace Mono.TextEditor
 			CancelCodeSegmentTooltip ();
 			StopCaretThread ();
 			DisposeSearchPatternWorker ();
-			
+			HideCodeSegmentPreviewWindow ();
+			textEditor.VScroll -= HandleVAdjustmentValueChanged;
+			textEditor.HighlightSearchPatternChanged -= TextEditor_HighlightSearchPatternChanged;
+
 			textEditor.Document.TextReplaced -= HandleTextReplaced;
 			textEditor.Document.LineChanged -= TextEditorDocumentLineChanged;
 			textEditor.TextArea.FocusInEvent -= HandleFocusInEvent;
@@ -803,6 +811,7 @@ namespace Mono.TextEditor
 		
 		public LayoutWrapper CreateLinePartLayout (ISyntaxMode mode, DocumentLine line, int logicalRulerColumn, int offset, int length, int selectionStart, int selectionEnd)
 		{
+			textEditor.CheckUIThread ();
 			bool containsPreedit = textEditor.ContainsPreedit (offset, length);
 			LayoutDescriptor descriptor;
 			if (!containsPreedit && layoutDict.TryGetValue (line, out descriptor)) {
@@ -1005,6 +1014,7 @@ namespace Mono.TextEditor
 		{
 			if (line == null)
 				return;
+			textEditor.CheckUIThread ();
 			LayoutDescriptor descriptor;
 			if (layoutDict.TryGetValue (line, out descriptor)) {
 				descriptor.Dispose ();
@@ -1019,6 +1029,7 @@ namespace Mono.TextEditor
 
 		internal void DisposeLayoutDict ()
 		{
+			textEditor.CheckUIThread ();
 			foreach (LayoutDescriptor descr in layoutDict.Values) {
 				descr.Dispose ();
 			}

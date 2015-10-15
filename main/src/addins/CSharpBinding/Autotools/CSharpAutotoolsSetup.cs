@@ -6,6 +6,7 @@ using MonoDevelop.Autotools;
 using MonoDevelop.Projects;
 using CSharpBinding;
 using MonoDevelop.CSharp.Project;
+using System.Text.RegularExpressions;
 
 namespace CSharpBinding.Autotools
 {
@@ -97,7 +98,7 @@ namespace CSharpBinding.Autotools
 			//}
 			
 			if (parameters.DefineSymbols.Length > 0) {
-				writer.Write (" \"-define:" + parameters.DefineSymbols + '"');
+				writer.Write (string.Format (" \"-define:{0}\"", parameters.DefineSymbols.TrimEnd(';')));
 			}
 				
 			if (projectParameters.MainClass != null && projectParameters.MainClass != "") {

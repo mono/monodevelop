@@ -124,14 +124,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					MessageService.PlaceDialog (instance, IdeApp.Workbench.RootWindow);
 					instance.Response += delegate {
 						instance.Destroy ();
+						instance.Dispose ();
 						instance = null;
 					};
 				}
 				instance.Present ();
 				return;
 			}
-			
-			MessageService.ShowCustomDialog (new CommonAboutDialog ());
+
+			using (var dlg = new CommonAboutDialog ())
+				MessageService.ShowCustomDialog (dlg);
 		}
 	}
 }

@@ -652,6 +652,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return false;
 		}
 
+		static readonly DataItemComparer overloadComparer = new DataItemComparer ();
+
+
 		async void DelayedTooltipShowAsync ()
 		{
 			var selectedItem = List.SelectedItem;
@@ -674,6 +677,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var cs = new CancellationTokenSource ();
 				declarationViewCancelSource = cs;
 				var overloads = new List<CompletionData> (filteredOverloads);
+				overloads.Sort (overloadComparer);
 				foreach (var overload in overloads) {
 					await declarationviewwindow.AddOverload ((CompletionData)overload, cs.Token);
 				}

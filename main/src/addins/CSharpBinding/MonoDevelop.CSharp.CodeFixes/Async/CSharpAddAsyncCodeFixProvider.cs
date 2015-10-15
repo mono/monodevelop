@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.CodeActions;
-using ICSharpCode.NRefactory6.CSharp.Refactoring;
+using RefactoringEssentials;
 using MonoDevelop.CSharp.CodeFixes;
 using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis.CSharp;

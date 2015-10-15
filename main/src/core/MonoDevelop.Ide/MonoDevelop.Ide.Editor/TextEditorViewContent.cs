@@ -47,6 +47,7 @@ using System.Threading;
 using Microsoft.CodeAnalysis;
 using Gdk;
 using MonoDevelop.Ide.CodeFormatting;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -72,12 +73,15 @@ namespace MonoDevelop.Ide.Editor
 			this.textEditorImpl = textEditorImpl;
 			this.textEditor.MimeTypeChanged += UpdateTextEditorOptions;
 			DefaultSourceEditorOptions.Instance.Changed += UpdateTextEditorOptions;
-			this.textEditor.DocumentContextChanged += delegate {
-				if (currentContext != null)
-					currentContext.DocumentParsed -= HandleDocumentParsed;
-				currentContext = textEditor.DocumentContext;
-				currentContext.DocumentParsed += HandleDocumentParsed;
-			};
+			this.textEditor.DocumentContextChanged += HandleDocumentContextChanged;
+		}
+
+		void HandleDocumentContextChanged (object sender, EventArgs e)
+		{
+			if (currentContext != null)
+				currentContext.DocumentParsed -= HandleDocumentParsed;
+			currentContext = textEditor.DocumentContext;
+			currentContext.DocumentParsed += HandleDocumentParsed;
 		}
 
 		void HandleDirtyChanged (object sender, EventArgs e)
@@ -96,14 +100,17 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		uint autoSaveTimer = 0;
-
+		Task autoSaveTask;
 		void InformAutoSave ()
 		{
 			if (isDisposed)
 				return;
 			RemoveAutoSaveTimer ();
 			autoSaveTimer = GLib.Timeout.Add (500, delegate {
-				AutoSave.InformAutoSaveThread (textEditor.CreateSnapshot (), textEditor.FileName, textEditorImpl.IsDirty);
+				if (autoSaveTask != null && !autoSaveTask.IsCompleted)
+					return false;
+
+				autoSaveTask = AutoSave.InformAutoSaveThread (textEditor.CreateSnapshot (), textEditor.FileName, textEditorImpl.IsDirty);
 				autoSaveTimer = 0;
 				return false;
 			});
@@ -153,18 +160,24 @@ namespace MonoDevelop.Ide.Editor
 		void HandleDocumentParsed (object sender, EventArgs e)
 		{
 			var ctx = (DocumentContext)sender;
-			src.Cancel ();
-			src = new CancellationTokenSource ();
+			CancelDocumentParsedUpdate ();
 			var token = src.Token;
+			var caretLocation = textEditor.CaretLocation;
 			Task.Run (() => {
 				try {
 					UpdateErrorUndelines (ctx.ParsedDocument, token);
 					UpdateQuickTasks (ctx.ParsedDocument, token);
-					UpdateFoldings (ctx.ParsedDocument, false, token);
+					UpdateFoldings (ctx.ParsedDocument, caretLocation, false, token);
 				} catch (OperationCanceledException) {
 					// ignore
 				}
 			}, token);
+		}
+
+		void CancelDocumentParsedUpdate ()
+		{
+			src.Cancel ();
+			src = new CancellationTokenSource ();
 		}
 
 		#region Error handling
@@ -225,14 +238,14 @@ namespace MonoDevelop.Ide.Editor
 		}
 		#endregion
 		CancellationTokenSource src = new CancellationTokenSource ();
-		void UpdateFoldings (ParsedDocument parsedDocument, bool firstTime = false, CancellationToken token = default (CancellationToken))
+		void UpdateFoldings (ParsedDocument parsedDocument, DocumentLocation caretLocation, bool firstTime = false, CancellationToken token = default (CancellationToken))
 		{
 			if (parsedDocument == null || !textEditor.Options.ShowFoldMargin || isDisposed)
 				return;
 			// don't update parsed documents that contain errors - the foldings from there may be invalid.
 			if (parsedDocument.HasErrors)
 				return;
-			var caretLocation = textEditor.CaretLocation;
+			
 			try {
 				var foldSegments = new List<IFoldSegment> ();
 
@@ -314,7 +327,7 @@ namespace MonoDevelop.Ide.Editor
 				}
 			}
 			if (parsedDocument != null) {
-				UpdateFoldings (parsedDocument, true);
+				UpdateFoldings (parsedDocument, textEditor.CaretLocation, true);
 			}
 		}
 
@@ -418,6 +431,9 @@ namespace MonoDevelop.Ide.Editor
 
 		void IViewContent.DiscardChanges ()
 		{
+			if (autoSaveTask != null)
+				autoSaveTask.Wait (TimeSpan.FromSeconds (5));
+			RemoveAutoSaveTimer ();
 			if (!string.IsNullOrEmpty (textEditorImpl.ContentName))
 				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
 			textEditorImpl.DiscardChanges ();
@@ -572,13 +588,20 @@ namespace MonoDevelop.Ide.Editor
 		bool isDisposed;
 		void IDisposable.Dispose ()
 		{
+			if (isDisposed)
+				return;
 			isDisposed = true;
+			CancelDocumentParsedUpdate ();
+			textEditorImpl.DirtyChanged -= HandleDirtyChanged;
+			textEditor.MimeTypeChanged -= UpdateTextEditorOptions;
+			textEditor.TextChanged -= HandleTextChanged;
+			textEditor.DocumentContextChanged -= HandleDocumentContextChanged;
+
 			currentContext.DocumentParsed -= HandleDocumentParsed;
 			DefaultSourceEditorOptions.Instance.Changed -= UpdateTextEditorOptions;
 			RemovePolicyChangeHandler ();
 			RemoveAutoSaveTimer ();
 			RemoveErrorUndelinesResetTimerId ();
-			textEditorImpl.Dispose ();
 		}
 
 		#endregion
@@ -610,6 +633,11 @@ namespace MonoDevelop.Ide.Editor
 				if (textEditor.IsSomethingSelected) {
 					startLine = textEditor.GetLineByOffset (textEditor.SelectionRange.Offset);
 					endLine = textEditor.GetLineByOffset (textEditor.SelectionRange.EndOffset);
+
+					// If selection ends at begining of line... This is visible as previous line
+					// is selected, hence we want to select previous line Bug 26287
+					if (endLine.Offset == textEditor.SelectionRange.EndOffset)
+						endLine = endLine.PreviousLine;
 				} else {
 					startLine = endLine = textEditor.GetLine (textEditor.CaretLine);
 				}
@@ -826,7 +854,7 @@ namespace MonoDevelop.Ide.Editor
 		#endregion
 	
 		#region IQuickTaskProvider implementation
-		List<QuickTask> tasks = new List<QuickTask> ();
+		ImmutableArray<QuickTask> tasks = ImmutableArray<QuickTask>.Empty;
 
 		public event EventHandler TasksUpdated;
 
@@ -837,7 +865,7 @@ namespace MonoDevelop.Ide.Editor
 				handler (this, e);
 		}
 
-		public IEnumerable<QuickTask> QuickTasks {
+		public ImmutableArray<QuickTask> QuickTasks {
 			get {
 				return tasks;
 			}
@@ -847,7 +875,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (isDisposed)
 				return;
-			var newTasks = new List<QuickTask> ();
+			var newTasks = ImmutableArray<QuickTask>.Empty.ToBuilder ();
 			if (doc != null) {
 				foreach (var cmt in await doc.GetTagCommentsAsync(token).ConfigureAwait (false)) {
 					var newTask = new QuickTask (cmt.Text, textEditor.LocationToOffset (cmt.Region.Begin.Line, cmt.Region.Begin.Column), DiagnosticSeverity.Info);
@@ -862,7 +890,7 @@ namespace MonoDevelop.Ide.Editor
 			Application.Invoke (delegate {
 				if (token.IsCancellationRequested || isDisposed)
 					return;
-				tasks = newTasks;
+				tasks = newTasks.ToImmutable ();
 				OnTasksUpdated (EventArgs.Empty);
 			});
 		}

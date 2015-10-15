@@ -64,11 +64,11 @@ namespace MonoDevelop.Platform
 			get { return "Windows"; }
 		}
 
-		public override void Initialize ()
+		internal override void SetMainWindowDecorations (Gtk.Window window)
 		{
 			// Only initialize elements for Win7+.
 			if (TaskbarManager.IsPlatformSupported) {
-				TaskbarManager.Instance.ApplicationId = BrandingService.ProfileDirectoryName;
+				TaskbarManager.Instance.SetApplicationIdForSpecificWindow (GdkWin32.HgdiobjGet (window.GdkWindow), BrandingService.ApplicationName);
 			}
 		}
 

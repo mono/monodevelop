@@ -45,6 +45,7 @@ namespace MonoDevelop.Deployment
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 		
@@ -67,6 +68,7 @@ namespace MonoDevelop.Deployment
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 		

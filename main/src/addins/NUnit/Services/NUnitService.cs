@@ -145,14 +145,14 @@ namespace MonoDevelop.NUnit
 			
 			OnTestSessionStarting (new TestSessionEventArgs { Session = session, Test = test });
 
+			if (checkCurrentRunOperation)
+				IdeApp.ProjectOperations.CurrentRunOperation = session;
+			
 			try {
 				await session.Start ();
 			} finally {
 				resultsPad.Sticky = false;
 			}
-
-			if (checkCurrentRunOperation)
-				IdeApp.ProjectOperations.CurrentRunOperation = session;
 		}
 		
 		public Task RefreshTests (CancellationToken ct)
@@ -302,13 +302,6 @@ namespace MonoDevelop.NUnit
 		
 		public UnitTest[] RootTests {
 			get { return rootTests; }
-		}
-		
-		public static void ShowOptionsDialog (UnitTest test)
-		{
-			Properties properties = new Properties ();
-			properties.Set ("UnitTest", test);
-			MessageService.ShowCustomDialog (new UnitTestOptionsDialog (IdeApp.Workbench.RootWindow, properties));
 		}
 		
 		void NotifyTestSuiteChanged ()

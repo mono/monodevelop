@@ -224,7 +224,6 @@ namespace Mono.TextEditor
 			document.EndUndo += OnEndUndo;
 			document.Undone += DocumentHandleUndone;
 			document.Redone += DocumentHandleRedone;
-			document.LineChanged += HandleDocLineChanged;
 			document.TextReplaced += HandleTextReplaced;
 			document.TextSet += HandleDocTextSet;
 			document.Folded += HandleTextEditorDataDocumentFolded;
@@ -260,12 +259,6 @@ namespace Mono.TextEditor
 				return LineHeight;
 			return Parent.GetLineHeight (line);
 		}
-
-		void HandleDocLineChanged (object sender, LineEventArgs e)
-		{
-			e.Line.WasChanged = true;
-		}
-
 		
 		public TextDocument Document {
 			get {
@@ -556,7 +549,6 @@ namespace Mono.TextEditor
 
 			document.Undone -= DocumentHandleUndone;
 			document.Redone -= DocumentHandleRedone;
-			document.LineChanged -= HandleDocLineChanged;
 			document.TextReplaced -= HandleTextReplaced;
 
 			document.TextSet -= HandleDocTextSet;

@@ -78,6 +78,9 @@
     <Reference Include="OpenTK">
       <HintPath>..\..\..\packages\OpenTK.1.1.1589.5942\lib\NET40\OpenTK.dll</HintPath>
     </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mono.TextEditor.Highlighting\Rule.cs" />
@@ -229,18 +232,14 @@
     <Compile Include="Mono.TextEditor\Document\OperationType.cs" />
     <Compile Include="Mono.TextEditor\Document\DiffTracker.cs" />
     <Compile Include="Mono.TextEditor.Utils\CompressingTreeList.cs" />
-    <Compile Include="Mono.TextEditor.Utils\AvlTree.cs" />
     <Compile Include="Mono.TextEditor.Utils\FileSettingsStore.cs" />
     <Compile Include="Mono.TextEditor\Gui\LayoutCache.cs" />
     <Compile Include="Mono.TextEditor\Gui\GtkUtil.cs" />
     <Compile Include="Mono.TextEditor\EditModeChangedEventArgs.cs" />
-    <Compile Include="Mono.TextEditor.Utils\Rope.cs" />
-    <Compile Include="Mono.TextEditor.Utils\RopeNode.cs" />
-    <Compile Include="Mono.TextEditor.Utils\ImmutableStack.cs" />
-    <Compile Include="Mono.TextEditor.Utils\CharRope.cs" />
-    <Compile Include="Mono.TextEditor.Utils\RopeTextReader.cs" />
-    <Compile Include="Mono.TextEditor\Document\ImmutableLineSplitter.cs" />
     <Compile Include="Mono.TextEditor\Gui\MonoTextEditor.cs" />
+    <Compile Include="Mono.TextEditor\Document\LazyLineSplitter.cs" />
+    <Compile Include="Mono.TextEditor.Utils\ImmutableText.cs" />
+    <Compile Include="Mono.TextEditor.Utils\ImmutableTextTextReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

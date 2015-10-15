@@ -30,7 +30,9 @@ using Microsoft.Build.BuildEngine;
 using System.Xml.Linq;
 using MonoDevelop.Core;
 using System.Globalization;
-
+using System.Text;
+using System.IO;
+using System.Linq;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -38,28 +40,151 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	{
 		bool preserverCase;
 		MSBuildValueType valueType = MSBuildValueType.Default;
+		string value;
+		string rawValue, textValue;
+		string name;
 
-		internal MSBuildProperty (MSBuildProject project, XmlElement elem): base (project, elem)
+		static readonly string EmptyElementMarker = new string ('e', 1);
+
+		internal MSBuildProperty ()
 		{
 			NotifyChanges = true;
+		}
+
+		internal MSBuildProperty (string name): this ()
+		{
+			this.name = name;
+		}
+
+		internal override void Read (MSBuildXmlReader reader)
+		{
+			name = reader.LocalName;
+			base.Read (reader);
+		}
+
+		internal override void ReadContent (MSBuildXmlReader reader)
+		{
+			value = ReadValue (reader);
+		}
+
+		internal override void WriteContent (XmlWriter writer, WriteContext context)
+		{
+			MSBuildWhitespace.Write (StartInnerWhitespace, writer);
+			if (rawValue != null) {
+				if (!object.ReferenceEquals (rawValue, EmptyElementMarker)) {
+					if (rawValue.Length == 0 && !WasReadAsEmptyElement)
+						writer.WriteString (""); // Keep the non-empty element
+					else
+						writer.WriteRaw (rawValue);
+				}
+			} else if (textValue != null) {
+				writer.WriteValue (textValue);
+			} else {
+				WriteValue (writer, context, value);
+			}
+			MSBuildWhitespace.Write (EndInnerWhitespace, writer);
+		}
+
+		internal override bool PreferEmptyElement {
+			get {
+				return false;
+			}
+		}
+
+		internal override string GetElementName ()
+		{
+			return name;
+		}
+
+		string ReadValue (MSBuildXmlReader reader)
+		{
+			if (reader.IsEmptyElement) {
+				rawValue = EmptyElementMarker;
+				reader.Skip ();
+				return string.Empty;
+			}
+
+			MSBuildXmlElement elem = new MSBuildXmlElement ();
+			elem.ParentNode = this;
+			elem.ReadContent (reader);
+
+			if (elem.ChildNodes.Count == 0) {
+				rawValue = elem.GetInnerXml ();
+				return string.Empty;
+			}
+
+			if (elem.ChildNodes.Count == 1) {
+				var node = elem.ChildNodes [0] as MSBuildXmlValueNode;
+				if (node != null) {
+					StartInnerWhitespace = elem.StartInnerWhitespace;
+					StartInnerWhitespace = MSBuildWhitespace.AppendSpace (StartInnerWhitespace, node.StartWhitespace);
+					EndInnerWhitespace = node.EndWhitespace;
+					EndInnerWhitespace = MSBuildWhitespace.AppendSpace (EndInnerWhitespace, elem.EndInnerWhitespace);
+					if (node is MSBuildXmlTextNode) {
+						textValue = node.Value;
+						return node.Value.Trim ();
+					} else if (node is MSBuildXmlCDataNode) {
+						rawValue = "<![CDATA[" + node.Value + "]]>";
+						return node.Value;
+					}
+				}
+			}
+
+			if (elem.ChildNodes.Any (n => n is MSBuildXmlElement))
+				return elem.GetInnerXml ();
+			else {
+				rawValue = elem.GetInnerXml ();
+				return elem.GetText ();
+			}
+		}
+
+		void WriteValue (XmlWriter writer, WriteContext context, string value)
+		{
+			if (value == null)
+				value = string.Empty;
+
+			// This code is from Microsoft.Build.Internal.Utilities
+
+			if (value.IndexOf('<') != -1) {
+				// If the value looks like it probably contains XML markup ...
+				try {
+					var sr = new StringReader ("<a>"+ value + "</a>");
+					var elem = new MSBuildXmlElement ();
+					using (var xr = new XmlTextReader (sr)) {
+						xr.MoveToContent ();
+						var cr = new MSBuildXmlReader { XmlReader = xr };
+						elem.Read (cr);
+					}
+					elem.ParentNode = this;
+					elem.SetNamespace (MSBuildProject.Schema);
+
+					elem.StartWhitespace = StartWhitespace;
+					elem.EndWhitespace = EndWhitespace;
+					elem.ResetChildrenIndent ();
+					elem.WriteContent (writer, context);
+					return;
+				}
+				catch (XmlException) {
+					// But that may fail, in the event that "value" is not really well-formed
+					// XML.  Eat the exception and fall through below ...
+				}
+			}
+
+			// The value does not contain valid XML markup.  Write it as text, so it gets 
+			// escaped properly.
+			writer.WriteValue (value);
 		}
 
 		internal virtual MSBuildProperty Clone (XmlDocument newOwner = null)
 		{
 			var prop = (MSBuildProperty)MemberwiseClone ();
-			if (Element != null) {
-				if (newOwner == null || newOwner == Element.OwnerDocument)
-					prop.Element = (XmlElement) Element.CloneNode (true);
-				else
-					prop.Element = (XmlElement) newOwner.ImportNode (Element, true);
-			}
-			prop.Owner = null;
+			prop.ParentNode = null;
 			return prop;
 		}
 
 		internal override string GetName ()
 		{
-			return Element.Name;
+			return name;
 		}
 
 		public bool IsImported {
@@ -88,6 +213,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void SetValue (string value, bool preserveCase = false, bool mergeToMainGroup = false)
 		{
+			AssertCanModify ();
 			MergeToMainGroup = mergeToMainGroup;
 			this.preserverCase = preserveCase;
 			valueType = preserveCase ? MSBuildValueType.Default : MSBuildValueType.DefaultPreserveCase;
@@ -103,12 +229,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 			SetPropertyValue (value);
-			if (Project != null && NotifyChanges)
-				Project.NotifyChanged ();
+			if (ParentProject != null && NotifyChanges)
+				ParentProject.NotifyChanged ();
 		}
 
 		public void SetValue (FilePath value, bool relativeToProject = true, FilePath relativeToPath = default(FilePath), bool mergeToMainGroup = false)
 		{
+			AssertCanModify ();
 			MergeToMainGroup = mergeToMainGroup;
 			this.preserverCase = false;
 			valueType = MSBuildValueType.Path;
@@ -117,7 +244,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (relativeToPath != null) {
 				baseDir = relativeToPath;
 			} else if (relativeToProject) {
-				if (Project == null) {
+				if (ParentProject == null) {
 					// The project has not been set, so we can't calculate the relative path.
 					// Store the full path for now, and set the property type to UnresolvedPath.
 					// When the property gets a value, the relative path will be calculated
@@ -125,7 +252,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					SetPropertyValue (value.ToString ());
 					return;
 				}
-				baseDir = Project.BaseDirectory;
+				baseDir = ParentProject.BaseDirectory;
 			}
 
 			// If the path is normalized in the property, keep the value
@@ -133,20 +260,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return;
 
 			SetPropertyValue (MSBuildProjectService.ToMSBuildPath (baseDir, value, false));
-			if (Project != null && NotifyChanges)
-				Project.NotifyChanged ();
+			if (ParentProject != null && NotifyChanges)
+				ParentProject.NotifyChanged ();
 		}
 
 		internal void ResolvePath ()
 		{
 			if (valueType == MSBuildValueType.UnresolvedPath) {
 				var val = Value;
-				SetPropertyValue (MSBuildProjectService.ToMSBuildPath (Project.BaseDirectory, val, false));
+				SetPropertyValue (MSBuildProjectService.ToMSBuildPath (ParentProject.BaseDirectory, val, false));
 			}
 		}
 
 		public void SetValue (object value, bool mergeToMainGroup = false)
 		{
+			AssertCanModify ();
 			if (value is bool) {
 				if (Owner != null && Owner.UppercaseBools)
 					SetValue ((bool)value ? "True" : "False", preserveCase: true, mergeToMainGroup: mergeToMainGroup);
@@ -156,80 +284,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			else
 				SetValue (Convert.ToString (value, CultureInfo.InvariantCulture), false, mergeToMainGroup);
-		}		
+		}
 
 		internal virtual void SetPropertyValue (string value)
 		{
-			if (Element.IsEmpty && string.IsNullOrEmpty (value))
-				return;
-
-			if (value == null)
-				value = string.Empty;
-
-			// This code is from Microsoft.Build.Internal.Utilities
-
-			if (value.IndexOf('<') != -1) {
-				// If the value looks like it probably contains XML markup ...
-				try {
-					// Attempt to store it verbatim as XML.
-					Element.InnerXml = value;
-					if (Project != null)
-						XmlUtil.FormatElement (Project.TextFormat, Element);
-					return;
-				}
-				catch (XmlException) {
-					// But that may fail, in the event that "value" is not really well-formed
-					// XML.  Eat the exception and fall through below ...
-				}
-			}
-
-			// The value does not contain valid XML markup.  Store it as text, so it gets 
-			// escaped properly.
-			Element.InnerText = value;
-			if (Project != null && NotifyChanges)
-				Project.NotifyChanged ();
+			this.value = value;
+			this.rawValue = null;
+			this.textValue = null;
+			StartInnerWhitespace = null;
+			EndInnerWhitespace = null;
+			if (ParentProject != null && NotifyChanges)
+				ParentProject.NotifyChanged ();
 		}
 
 		internal override string GetPropertyValue ()
 		{
-			// This code is from Microsoft.Build.Internal.Utilities
-
-			if (!Element.HasChildNodes)
-				return string.Empty;
-
-			if (Element.ChildNodes.Count == 1 && (Element.FirstChild.NodeType == XmlNodeType.Text || Element.FirstChild.NodeType == XmlNodeType.CDATA))
-				return Element.InnerText.Trim ();
-
-			string innerXml = Element.InnerXml;
-
-			// If there is no markup under the XML node (detected by the presence
-			// of a '<' sign
-			int firstLessThan = innerXml.IndexOf('<');
-			if (firstLessThan == -1) {
-				// return the inner text so it gets properly unescaped
-				return Element.InnerText.Trim ();
-			}
-
-			bool containsNoTagsOtherThanComments = ContainsNoTagsOtherThanComments (innerXml, firstLessThan);
-
-			// ... or if the only XML is comments,
-			if (containsNoTagsOtherThanComments) {
-				// return the inner text so the comments are stripped
-				// (this is how one might comment out part of a list in a property value)
-				return Element.InnerText.Trim ();
-			}
-
-			// ...or it looks like the whole thing is a big CDATA tag ...
-			bool startsWithCData = (innerXml.IndexOf("<![CDATA[", StringComparison.Ordinal) == 0);
-
-			if (startsWithCData) {
-				// return the inner text so it gets properly extracted from the CDATA
-				return Element.InnerText.Trim ();
-			}
-
-			// otherwise, it looks like genuine XML; return the inner XML so that
-			// tags and comments are preserved and any XML escaping is preserved
-			return innerXml;
+			return value;
 		}
 
 		// This code is from Microsoft.Build.Internal.Utilities
@@ -305,13 +375,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string unevaluatedValue;
 		string name;
 
-		public ItemMetadataProperty (MSBuildProject project, string name): base (project, null)
+		public ItemMetadataProperty (string name)
 		{
 			NotifyChanges = false;
 			this.name = name;
 		}
 
-		public ItemMetadataProperty (MSBuildProject project, string name, string value, string unevaluatedValue): base (project, null)
+		public ItemMetadataProperty (string name, string value, string unevaluatedValue)
 		{
 			NotifyChanges = false;
 			this.name = name;

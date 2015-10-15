@@ -40,6 +40,7 @@ namespace MonoDevelop.VersionControl.Git
 		public StashManagerDialog (GitRepository repo)
 		{
 			this.Build ();
+			this.UseNativeContextMenus ();
 			repository = repo;
 
 			stashes = repo.GetStashes ();
@@ -66,7 +67,7 @@ namespace MonoDevelop.VersionControl.Git
 			tvs.Save ();
 			store.Clear ();
 			foreach (var s in stashes) {
-				string name = s.Name;
+				string name = s.FriendlyName;
 				string branch = GitRepository.GetStashBranchName (name);
 				if (branch != null) {
 					if (branch == "_tmp_")
@@ -133,6 +134,7 @@ namespace MonoDevelop.VersionControl.Git
 					}
 				} finally {
 					dlg.Destroy ();
+					dlg.Dispose ();
 				}
 				Respond (ResponseType.Ok);
 			}

@@ -81,6 +81,8 @@ namespace MonoDevelop.Ide
 			//ensure native libs initialized before we hit anything that p/invokes
 			Platform.Initialize ();
 
+			LoggingService.LogInfo ("Operating System: {0}", SystemInformation.GetOperatingSystemDescription ());
+
 			IdeApp.Customizer = options.IdeCustomizer ?? new IdeCustomizer ();
 			IdeApp.Customizer.Initialize ();
 
@@ -214,19 +216,23 @@ namespace MonoDevelop.Ide
 				Counters.Initialization.Trace ("Loading Icons");
 				//force initialisation before the workbench so that it can register stock icons for GTK before they get requested
 				ImageService.Initialize ();
-				
+
+				// If we display an error dialog before the main workbench window on OS X then a second application menu is created
+				// which is then replaced with a second empty Apple menu.
+				// XBC #33699
+				Counters.Initialization.Trace ("Initializing IdeApp");
+				IdeApp.Initialize (monitor);
+
 				if (errorsList.Count > 0) {
-					AddinLoadErrorDialog dlg = new AddinLoadErrorDialog ((AddinError[]) errorsList.ToArray (typeof(AddinError)), false);
-					if (!dlg.Run ())
-						return 1;
+					using (AddinLoadErrorDialog dlg = new AddinLoadErrorDialog ((AddinError[]) errorsList.ToArray (typeof(AddinError)), false)) {
+						if (!dlg.Run ())
+							return 1;
+					}
 					reportedFailures = errorsList.Count;
 				}
 
 				if (!CheckSCPlugin ())
 					return 1;
-
-				Counters.Initialization.Trace ("Initializing IdeApp");
-				IdeApp.Initialize (monitor);
 
 				// Load requested files
 				Counters.Initialization.Trace ("Opening Files");
@@ -256,8 +262,8 @@ namespace MonoDevelop.Ide
 			}
 
 			if (errorsList.Count > reportedFailures) {
-				AddinLoadErrorDialog dlg = new AddinLoadErrorDialog ((AddinError[]) errorsList.ToArray (typeof(AddinError)), true);
-				dlg.Run ();
+				using (AddinLoadErrorDialog dlg = new AddinLoadErrorDialog ((AddinError[]) errorsList.ToArray (typeof(AddinError)), true))
+					dlg.Run ();
 			}
 			
 			errorsList = null;
@@ -348,7 +354,10 @@ namespace MonoDevelop.Ide
 						gtkrc += "-yosemite";
 					}
 				}
-				Environment.SetEnvironmentVariable ("GTK2_RC_FILES", PropertyService.EntryAssemblyPath.Combine (gtkrc));
+
+				var gtkrcf = PropertyService.EntryAssemblyPath.Combine (gtkrc);
+				LoggingService.LogInfo ("GTK: Using gtkrc from {0}", gtkrcf);
+				Environment.SetEnvironmentVariable ("GTK2_RC_FILES", gtkrcf);
 			}
 		}
 
@@ -731,6 +740,10 @@ namespace MonoDevelop.Ide
 				Console.WriteLine (BrandingService.ApplicationName + " " + BuildInfo.VersionLabel);
 				Console.WriteLine ("Options:");
 				optSet.WriteOptionDescriptions (Console.Out);
+				const string openFileText = "      file.ext;line;column";
+				Console.Write (openFileText);
+				Console.Write (new string (' ', 29 - openFileText.Length));
+				Console.WriteLine ("Opens a file at specified integer line and column");
 			}
 			
 			return opt;

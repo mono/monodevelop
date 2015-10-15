@@ -477,9 +477,11 @@ namespace MonoDevelop.Ide
 		{
 			try {
 				callback ();
+				callback = null;
 			}
 			catch (Exception e) {
 				ex = e;
+				callback = null;
 			}
 		}
 		

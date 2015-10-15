@@ -10,6 +10,7 @@ all: update_submodules all-recursive
 
 update_submodules:
 	if test -d ".git"; then \
+		git submodule sync; \
 		git submodule update --init --recursive || exit 1; \
 	fi
 
@@ -26,8 +27,8 @@ CONFIG_MAKE=$(top_srcdir)/config.make
 	case $$2 in *=*) dk="exit 1" ;; *k*) dk=: ;; *) dk="exit 1" ;; esac; \
 	for dir in $(SUBDIRS); do \
 		case $$dir in \
-		.) $(MAKE) $*-local || { final_exit="exit 1"; $$dk; };;\
-		*) (cd $$dir && $(MAKE) $*) || { final_exit="exit 1"; $$dk; };;\
+		.) PATH=$(PATH):/Library/Frameworks/Mono.framework/Versions/Current/bin $(MAKE) $*-local || { final_exit="exit 1"; $$dk; };;\
+		*) (cd $$dir && PATH=$(PATH):/Library/Frameworks/Mono.framework/Versions/Current/bin $(MAKE) $*) || { final_exit="exit 1"; $$dk; };;\
 		esac \
 	done
 	$$final_exit
@@ -112,7 +113,7 @@ test:
 	cd main && $(MAKE) test assembly=$(assembly)
 
 uitest:
-	cd main && $(MAKE) uitest assembly=$(assembly)
+	cd main && $(MAKE) uitest assembly=$(assembly) tests=$(tests)
 
 coverage:
 	cd main && $(MAKE) coverage

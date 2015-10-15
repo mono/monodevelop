@@ -31,8 +31,11 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	public abstract class SearchCategory 
+	public abstract class SearchCategory : IComparable<SearchCategory>
 	{
+		protected const int FirstCategory = -1000;
+		protected int sortOrder = 0;
+
 		internal class DataItemComparer : IComparer<SearchResult>
 		{
 			CancellationToken Token {
@@ -61,6 +64,7 @@ namespace MonoDevelop.Components.MainToolbar
 					return String.CompareOrdinal (o1.MatchedString, o2.MatchedString);
 				return r;
 			}
+
 		}
 
 		protected struct MatchResult
@@ -80,6 +84,9 @@ namespace MonoDevelop.Components.MainToolbar
 			set;
 		}
 
+		public abstract string[] Tags {
+			get;
+		}
 
 		public SearchCategory (string name)
 		{
@@ -88,6 +95,16 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public abstract bool IsValidTag (string tag);
 
-		public abstract Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token);
+		public abstract Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern pattern, CancellationToken token);
+
+		public virtual void Initialize (PopoverWindow popupWindow)
+		{
+			
+		}
+
+		public int CompareTo (SearchCategory other)
+		{
+			return sortOrder.CompareTo (other.sortOrder);
+		}
 	}
 }

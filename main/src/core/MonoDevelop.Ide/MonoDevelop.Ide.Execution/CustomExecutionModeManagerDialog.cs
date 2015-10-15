@@ -94,6 +94,7 @@ namespace MonoDevelop.Ide.Execution
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 
@@ -121,6 +122,7 @@ namespace MonoDevelop.Ide.Execution
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 		

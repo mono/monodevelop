@@ -79,22 +79,16 @@ namespace MonoDevelop.Components.DockNotebook
 
 			tabStrip.DropDownButton.Sensitive = false;
 
-			tabStrip.DropDownButton.MenuCreator = delegate {
-				Gtk.Menu menu = new Menu ();
+			tabStrip.DropDownButton.ContextMenuRequested = delegate {
+				ContextMenu menu = new ContextMenu ();
 				foreach (var tab in pages) {
-					var mi = new Gtk.ImageMenuItem ("");
-					menu.Insert (mi, -1);
-					var label = (Gtk.AccelLabel) mi.Child;
-					if (tab.Markup != null)
-						label.Markup = tab.Markup;
-					else
-						label.Text = tab.Text;
+					var item = new ContextMenuItem (tab.Markup ?? tab.Text);
 					var locTab = tab;
-					mi.Activated += delegate {
+					item.Clicked += (object sender, ContextMenuItemClickedEventArgs e) => {
 						CurrentTab = locTab;
 					};
+					menu.Items.Add (item);
 				}
-				menu.ShowAll ();
 				return menu;
 			};
 

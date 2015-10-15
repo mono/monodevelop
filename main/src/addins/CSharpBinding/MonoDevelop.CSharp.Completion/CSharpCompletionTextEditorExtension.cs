@@ -39,7 +39,6 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.CSharp.Formatting;
 
 using ICSharpCode.NRefactory6.CSharp.Completion;
-using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
@@ -57,6 +56,7 @@ using MonoDevelop.Ide;
 using Mono.Addins;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -89,7 +89,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		public ParsedDocument ParsedDocument {
+		public MonoDevelop.Ide.TypeSystem.ParsedDocument ParsedDocument {
 			get {
 				return DocumentContext.ParsedDocument;
 			}
@@ -123,7 +123,7 @@ namespace MonoDevelop.CSharp.Completion
 		}
 
 		static Func<Microsoft.CodeAnalysis.Document, CancellationToken, Task<Microsoft.CodeAnalysis.Document>> WithFrozenPartialSemanticsAsync;
-		static List<ICompletionData> snippets;
+		static List<CompletionData> snippets;
 
 		static CSharpCompletionTextEditorExtension ()
 		{
@@ -142,8 +142,8 @@ namespace MonoDevelop.CSharp.Completion
 
 			CompletionEngine.SnippetCallback = delegate(CancellationToken arg) {
 				if (snippets != null)
-					return Task.FromResult ((IEnumerable<ICompletionData>)snippets);
-				var newSnippets = new List<ICompletionData> ();
+					return Task.FromResult((IEnumerable<CompletionData>)snippets);
+				var newSnippets = new List<CompletionData>();
 				foreach (var ct in MonoDevelop.Ide.CodeTemplates.CodeTemplateService.GetCodeTemplates ("text/x-csharp")) {
 					if (string.IsNullOrEmpty (ct.Shortcut) || ct.CodeTemplateContext != MonoDevelop.Ide.CodeTemplates.CodeTemplateContext.Standard)
 						continue;
@@ -155,7 +155,7 @@ namespace MonoDevelop.CSharp.Completion
 					});
 				}
 				snippets = newSnippets;
-				return Task.FromResult ((IEnumerable<ICompletionData>)newSnippets);
+				return Task.FromResult((IEnumerable<CompletionData>)newSnippets);
 			};
 
 		}
@@ -222,6 +222,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override void Dispose ()
 		{
+			CancelParsedDocumentUpdate ();
 			DocumentContext.DocumentParsed -= HandleDocumentParsed;
 			if (validTypeSystemSegmentTree != null) {
 				validTypeSystemSegmentTree.RemoveListener ();
@@ -231,23 +232,36 @@ namespace MonoDevelop.CSharp.Completion
 			base.Dispose ();
 		}
 
+		CancellationTokenSource documentParsedTokenSrc = new CancellationTokenSource ();
+
 		void HandleDocumentParsed (object sender, EventArgs e)
 		{
 			var parsedDocument = DocumentContext.ParsedDocument;
-			if (parsedDocument == null) 
+			if (parsedDocument == null)
 				return;
 			var semanticModel = parsedDocument.GetAst<SemanticModel> ();
-			if (semanticModel == null) 
+			if (semanticModel == null)
 				return;
-			var newTree = TypeSystemSegmentTree.Create (Editor, DocumentContext, semanticModel);
+			CancelParsedDocumentUpdate ();
+			var token = documentParsedTokenSrc.Token;
+			Task.Run(delegate {
+				try {
+					var newTree = TypeSystemSegmentTree.Create (semanticModel, token);
+					if (validTypeSystemSegmentTree != null)
+						validTypeSystemSegmentTree.RemoveListener ();
+					validTypeSystemSegmentTree = newTree;
+					newTree.InstallListener (Editor);
+					if (TypeSegmentTreeUpdated != null)
+						TypeSegmentTreeUpdated (this, EventArgs.Empty);
+				} catch (OperationCanceledException) {
+				}
+			});
+		}
 
-			if (validTypeSystemSegmentTree != null)
-				validTypeSystemSegmentTree.RemoveListener ();
-			validTypeSystemSegmentTree = newTree;
-			newTree.InstallListener (Editor);
-
-			if (TypeSegmentTreeUpdated != null)
-				TypeSegmentTreeUpdated (this, EventArgs.Empty);
+		void CancelParsedDocumentUpdate ()
+		{
+			documentParsedTokenSrc.Cancel ();
+			documentParsedTokenSrc = new CancellationTokenSource ();
 		}
 
 		public event EventHandler TypeSegmentTreeUpdated;
@@ -375,7 +389,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		async Task<ICompletionDataList> InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, int triggerWordLength, CancellationToken token)
+		Task<ICompletionDataList> InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, int triggerWordLength, CancellationToken token, bool forceSymbolCompletion = false)
 		{
 			if (Editor.EditMode != MonoDevelop.Ide.Editor.EditMode.Edit)
 				return null;
@@ -388,49 +402,51 @@ namespace MonoDevelop.CSharp.Completion
 
 			var list = new CSharpCompletionDataList ();
 			list.TriggerWordLength = triggerWordLength;
-			try {
-				var analysisDocument = DocumentContext.AnalysisDocument;
-				if (analysisDocument == null)
-					return null;
-				
-				var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, token);
-				var semanticModel = await partialDoc.GetSemanticModelAsync ();
-
-				var roslynCodeCompletionFactory = new RoslynCodeCompletionFactory (this, semanticModel);
-				foreach (var extHandler in additionalContextHandlers.OfType<IExtensionContextHandler> ())
-					extHandler.Init (roslynCodeCompletionFactory);
-				var engine = new CompletionEngine(TypeSystemService.Workspace, roslynCodeCompletionFactory);
-				var ctx = new ICSharpCode.NRefactory6.CSharp.CompletionContext (partialDoc, offset, semanticModel);
-				ctx.AdditionalContextHandlers = additionalContextHandlers;
-				var triggerInfo = new CompletionTriggerInfo (ctrlSpace ? CompletionTriggerReason.CompletionCommand : CompletionTriggerReason.CharTyped, completionChar);
-				var completionResult = await engine.GetCompletionDataAsync (ctx, triggerInfo, token);
-				if (completionResult == CompletionResult.Empty)
-					return null;
-
-				foreach (var symbol in completionResult) {
-					list.Add ((CompletionData)symbol); 
-				}
-
-				if (IdeApp.Preferences.AddImportedItemsToCompletionList.Value && list.OfType<RoslynSymbolCompletionData> ().Any (cd => cd.Symbol is ITypeSymbol)) {
-					AddImportCompletionData (list, semanticModel, offset, token);
-				}
-
-				list.AutoCompleteEmptyMatch = completionResult.AutoCompleteEmptyMatch;
-				// list.AutoCompleteEmptyMatchOnCurlyBrace = completionResult.AutoCompleteEmptyMatchOnCurlyBracket;
-				list.AutoSelect = completionResult.AutoSelect;
-				list.DefaultCompletionString = completionResult.DefaultCompletionString;
-				// list.CloseOnSquareBrackets = completionResult.CloseOnSquareBrackets;
-				if (ctrlSpace)
-					list.AutoCompleteUniqueMatch = true;
-			} catch (OperationCanceledException) {
+			var analysisDocument = DocumentContext.AnalysisDocument;
+			if (analysisDocument == null)
 				return null;
-			} catch (AggregateException e) {
-				foreach (var inner in e.Flatten ().InnerExceptions)
-					LoggingService.LogError ("Error while getting C# recommendations", inner); 
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while getting C# recommendations", e); 
-			}
-			return (ICompletionDataList)list;
+			return Task.Run (async delegate {
+				try {
+					
+					var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, token).ConfigureAwait (false);
+					var semanticModel = await partialDoc.GetSemanticModelAsync (token).ConfigureAwait (false);
+
+					var roslynCodeCompletionFactory = new RoslynCodeCompletionFactory (this, semanticModel);
+					foreach (var extHandler in additionalContextHandlers.OfType<IExtensionContextHandler> ())
+						extHandler.Init (roslynCodeCompletionFactory);
+					var engine = new CompletionEngine(MonoDevelop.Ide.TypeSystem.TypeSystemService.Workspace, roslynCodeCompletionFactory);
+					var ctx = new ICSharpCode.NRefactory6.CSharp.CompletionContext (partialDoc, offset, semanticModel);
+					ctx.AdditionalContextHandlers = additionalContextHandlers;
+					var triggerInfo = new CompletionTriggerInfo (ctrlSpace ? CompletionTriggerReason.CompletionCommand : CompletionTriggerReason.CharTyped, completionChar);
+					var completionResult = await engine.GetCompletionDataAsync (ctx, triggerInfo, token).ConfigureAwait (false);
+					if (completionResult == CompletionResult.Empty)
+						return null;
+					
+					foreach (var symbol in completionResult) {
+						list.Add ((Ide.CodeCompletion.CompletionData)symbol); 
+					}
+
+					if (forceSymbolCompletion || (IdeApp.Preferences.AddImportedItemsToCompletionList.Value && list.OfType<RoslynSymbolCompletionData> ().Any (cd => cd.Symbol is ITypeSymbol))) {
+						AddImportCompletionData (list, semanticModel, offset, token);
+					}
+
+					list.AutoCompleteEmptyMatch = completionResult.AutoCompleteEmptyMatch;
+					// list.AutoCompleteEmptyMatchOnCurlyBrace = completionResult.AutoCompleteEmptyMatchOnCurlyBracket;
+					list.AutoSelect = completionResult.AutoSelect;
+					list.DefaultCompletionString = completionResult.DefaultCompletionString;
+					// list.CloseOnSquareBrackets = completionResult.CloseOnSquareBrackets;
+					if (ctrlSpace)
+						list.AutoCompleteUniqueMatch = true;
+				} catch (OperationCanceledException) {
+					return null;
+				} catch (AggregateException e) {
+					foreach (var inner in e.Flatten ().InnerExceptions)
+						LoggingService.LogError ("Error while getting C# recommendations", inner); 
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while getting C# recommendations", e); 
+				}
+				return (ICompletionDataList)list;
+			});
 		}
 		
 		public override Task<ICompletionDataList> CodeCompletionCommand (CodeCompletionContext completionContext)
@@ -609,19 +625,26 @@ namespace MonoDevelop.CSharp.Completion
 //				}
 //			}
 //		}
-		
 
-		public override async Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> HandleParameterCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
+		public override Task<Ide.CodeCompletion.ParameterHintingResult> ParameterCompletionCommand (CodeCompletionContext completionContext)
+		{
+			char ch = completionContext.TriggerOffset > 0 ? Editor.GetCharAt (completionContext.TriggerOffset - 1) : '\0';
+			return InternalHandleParameterCompletionCommand (completionContext, ch, true, default(CancellationToken));
+		}
+
+		public override Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> HandleParameterCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default (CancellationToken))
+		{
+			return InternalHandleParameterCompletionCommand (completionContext, completionChar, false, token);
+		}
+
+		public async Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> InternalHandleParameterCompletionCommand (CodeCompletionContext completionContext, char completionChar, bool force, CancellationToken token = default(CancellationToken))
 		{
 			var data = Editor;
-			if (completionChar != '(' && completionChar != ',')
+			if (!force && completionChar != '(' && completionChar != ',')
 				return null;
 			if (Editor.EditMode != EditMode.Edit)
 				return null;
 			var offset = Editor.CaretOffset;
-
-			if (completionChar != '(' && completionChar != ',')
-				return null;
 			try {
 
 				var analysisDocument = DocumentContext.AnalysisDocument;
@@ -629,7 +652,7 @@ namespace MonoDevelop.CSharp.Completion
 					return null;
 				var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, token);
 				var semanticModel = await partialDoc.GetSemanticModelAsync ();
-				var engine = new ParameterHintingEngine (TypeSystemService.Workspace, new RoslynParameterHintingFactory ());
+				var engine = new ParameterHintingEngine (MonoDevelop.Ide.TypeSystem.TypeSystemService.Workspace, new RoslynParameterHintingFactory ());
 				var result = await engine.GetParameterDataProviderAsync (analysisDocument, semanticModel, offset, token);
 				return new MonoDevelop.Ide.CodeCompletion.ParameterHintingResult (result.OfType<MonoDevelop.Ide.CodeCompletion.ParameterHintingData>().ToList (), result.StartOffset);
 			} catch (Exception e) {
@@ -737,12 +760,12 @@ namespace MonoDevelop.CSharp.Completion
 					return tooltipFunc != null ? tooltipFunc (List, smartWrap) : new TooltipInformation ();
 				}
 
-				protected List<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> overloads;
+				protected List<ICompletionData> overloads;
 				public override bool HasOverloads {
 					get { return overloads != null && overloads.Count > 0; }
 				}
 
-				public override IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> OverloadedData {
+				public override IEnumerable<ICompletionData> OverloadedData {
 					get {
 						return overloads;
 					}
@@ -1141,16 +1164,22 @@ namespace MonoDevelop.CSharp.Completion
 
 			
 			
-			internal static TypeSystemSegmentTree Create (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext ctx, SemanticModel semanticModel)
+			internal static TypeSystemSegmentTree Create (SemanticModel semanticModel, CancellationToken token)
 			{
-				var visitor = new TreeVisitor ();
+				var visitor = new TreeVisitor (token);
 				visitor.Visit (semanticModel.SyntaxTree.GetRoot ()); 
 				return visitor.Result;
 			}
 
 			class TreeVisitor : CSharpSyntaxWalker
 			{
+				readonly CancellationToken token;
 				public TypeSystemSegmentTree Result = new TypeSystemSegmentTree ();
+
+				public TreeVisitor (System.Threading.CancellationToken token)
+				{
+					this.token = token;
+				}
 
 				public override void VisitClassDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax node)
 				{
@@ -1216,7 +1245,7 @@ namespace MonoDevelop.CSharp.Completion
 
 				public override void VisitBlock (Microsoft.CodeAnalysis.CSharp.Syntax.BlockSyntax node)
 				{
-					// nothing
+					token.ThrowIfCancellationRequested ();
 				}
 			}
 			
@@ -1244,7 +1273,6 @@ namespace MonoDevelop.CSharp.Completion
 				return;
 			var offset = Editor.CaretOffset;
 
-			ICompletionDataList completionList = null;
 			int cpos, wlen;
 			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
 				cpos = Editor.CaretOffset;
@@ -1253,14 +1281,10 @@ namespace MonoDevelop.CSharp.Completion
 			CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
 			CurrentCompletionContext.TriggerWordLength = wlen;
 
-			var list = new CSharpCompletionDataList ();
-			list.TriggerWordLength = wlen;
-			var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, default (CancellationToken));
-			var semanticModel = await partialDoc.GetSemanticModelAsync ();
-
-			AddImportCompletionData (list, semanticModel, offset);
+			int triggerWordLength = 0;
+			char ch = CurrentCompletionContext.TriggerOffset > 0 ? Editor.GetCharAt (CurrentCompletionContext.TriggerOffset - 1) : '\0';
 				
-			completionList = await CodeCompletionCommand (CurrentCompletionContext);
+			var	completionList = await InternalHandleCodeCompletion (CurrentCompletionContext, ch, true, triggerWordLength, default(CancellationToken), true);
 			if (completionList != null)
 				CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, CurrentCompletionContext);
 			else

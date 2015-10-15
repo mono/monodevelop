@@ -180,6 +180,11 @@ namespace MonoDevelop.Projects
 				if (IsLink && Link.FileName == oldPath.FileName)
 					link = Path.Combine (Path.GetDirectoryName (link), filename.FileName);
 
+				// If a file that belongs to a project is being renamed, update the value of UnevaluatedInclude
+				// since that is used when saving
+				if (Project != null)
+					UnevaluatedInclude = Include;
+
 				OnPathChanged (oldPath, filename, oldVirtualPath, ProjectVirtualPath);
 
 				if (Project != null)
@@ -517,7 +522,7 @@ namespace MonoDevelop.Projects
 		}
 	}
 
-	internal class ProjectFileVirtualPathChangedEventArgs : EventArgs
+	class ProjectFileVirtualPathChangedEventArgs : EventArgs
 	{
 		public ProjectFileVirtualPathChangedEventArgs (ProjectFile projectFile, FilePath oldPath, FilePath newPath)
 		{
@@ -531,7 +536,7 @@ namespace MonoDevelop.Projects
 		public FilePath NewVirtualPath { get; private set; }
 	}
 
-	internal class ProjectFilePathChangedEventArgs : ProjectFileVirtualPathChangedEventArgs
+	class ProjectFilePathChangedEventArgs : ProjectFileVirtualPathChangedEventArgs
 	{
 		public ProjectFilePathChangedEventArgs (ProjectFile projectFile, FilePath oldPath, FilePath newPath, FilePath oldVirtualPath, FilePath newVirtualPath) : base (projectFile, oldVirtualPath, newVirtualPath)
 		{

@@ -43,6 +43,7 @@ namespace MonoDevelop.Projects
 			public bool IsError { get; set; }
 			public string Code { get; set; }
 			public string Message { get; set; }
+			public string HelpKeyword { get; set; }
 		}
 
 		// Parses single-line error message in the standard MSBuild error format:

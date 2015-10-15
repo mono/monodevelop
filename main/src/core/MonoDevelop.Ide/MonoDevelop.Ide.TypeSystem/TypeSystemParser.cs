@@ -57,6 +57,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		public MonoDevelop.Projects.Project Project { get; set; }
 
 		public Document RoslynDocument { get; set; }
+		public ParsedDocument OldParsedDocument { get; internal set; }
 	}
 
 	[Flags]

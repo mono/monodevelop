@@ -95,20 +95,6 @@ namespace MonoDevelop.SourceEditor
 			Document.SyntaxMode = new SemanticHighlightingSyntaxMode (this, Document.SyntaxMode, semanticHighlighting);
 		}
 
-		static Gdk.ModifierType ConvertModifiers (ModifierKeys s)
-		{
-			Gdk.ModifierType m = Gdk.ModifierType.None;
-			if ((s & ModifierKeys.Shift) != 0)
-				m |= Gdk.ModifierType.ShiftMask;
-			if ((s & ModifierKeys.Control) != 0)
-				m |= Gdk.ModifierType.ControlMask;
-			if ((s & ModifierKeys.Alt) != 0)
-				m |= Gdk.ModifierType.Mod1Mask;
-			if ((s & ModifierKeys.Command) != 0)
-				m |= Gdk.ModifierType.Mod2Mask;
-			return m;
-		}
-
 		class LastEditorExtension : TextEditorExtension
 		{
 			readonly ExtensibleTextEditor ext;
@@ -121,7 +107,8 @@ namespace MonoDevelop.SourceEditor
 			
 			public override bool KeyPress (KeyDescriptor descriptor)
 			{
-				ext.SimulateKeyPress ((Gdk.Key)descriptor.SpecialKey, (uint)descriptor.KeyChar, ConvertModifiers (descriptor.ModifierKeys));
+				var native =(Tuple<Gdk.Key, Gdk.ModifierType>)descriptor.NativeKeyChar;
+				ext.SimulateKeyPress (native.Item1, (uint)descriptor.KeyChar, native.Item2);
 				if (descriptor.SpecialKey == SpecialKey.Escape)
 					return true;
 				return false;
@@ -617,7 +604,15 @@ namespace MonoDevelop.SourceEditor
 			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet (ctx, menuPath);
 
 			if (Platform.IsMac) {
-				IdeApp.CommandService.ShowContextMenu (this, evt, cset, this);
+				if (evt == null) {
+					int x, y;
+					var pt = LocationToPoint (this.Caret.Location);
+					TranslateCoordinates (Toplevel, pt.X, pt.Y, out x, out y);
+
+					IdeApp.CommandService.ShowContextMenu (this, x, y, cset, this);
+				} else {
+					IdeApp.CommandService.ShowContextMenu (this, evt, cset, this);
+				}
 			} else {
 				Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
 				var imMenu = CreateInputMethodMenuItem (GettextCatalog.GetString ("_Input Methods"));
@@ -631,7 +626,8 @@ namespace MonoDevelop.SourceEditor
 					GtkWorkarounds.ShowContextMenu (menu, this, evt);
 				} else {
 					var pt = LocationToPoint (this.Caret.Location);
-					GtkWorkarounds.ShowContextMenu (menu, this, new Gdk.Rectangle (pt.X, pt.Y, 1, (int)LineHeight));
+
+					GtkWorkarounds.ShowContextMenu (menu, this, (int)pt.X, (int)pt.Y);
 				}
 			}
 		}

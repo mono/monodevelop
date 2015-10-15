@@ -38,6 +38,7 @@ using Microsoft.CodeAnalysis.Shared.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using ICSharpCode.NRefactory6.CSharp;
+using RefactoringEssentials;
 
 namespace MonoDevelop.CSharp.CodeFixes.GenerateConstructor
 {

@@ -63,6 +63,28 @@ namespace MonoDevelop.Ide
 			public static TimerCounter WorkspaceItemLoaded = InstrumentationService.CreateTimerCounter ("Workspace item loaded", "Parser Service");
 			public static Counter ProjectsLoaded = InstrumentationService.CreateTimerCounter ("Projects loaded", "Parser Service");
 		}
+
+		public static string[] CounterReport ()
+		{
+			string[] reports = new string[15];
+			reports [0] = Initialization.ToString ();
+			reports [1] = OpenDocuments.ToString ();
+			reports [2] = DocumentsInMemory.ToString ();
+			reports [3] = PadsLoaded.ToString ();
+			reports [4] = CommandTargetScanTime.ToString ();
+			reports [5] = OpenWorkspaceItemTimer.ToString ();
+			reports [6] = OpenDocumentTimer.ToString ();
+			reports [7] = DocumentOpened.ToString ();
+			reports [8] = BuildItemTimer.ToString ();
+			reports [9] = PadShown.ToString ();
+			reports [10] = ParserService.FileParsed.ToString ();
+			reports [11] = ParserService.ObjectSerialized.ToString ();
+			reports [12] = ParserService.ObjectDeserialized.ToString ();
+			reports [13] = ParserService.WorkspaceItemLoaded.ToString ();
+			reports [14] = ParserService.ProjectsLoaded.ToString ();
+
+			return reports;
+		}
 	}
 }
 

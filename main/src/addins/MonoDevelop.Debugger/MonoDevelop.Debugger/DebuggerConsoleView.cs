@@ -50,9 +50,19 @@ namespace MonoDevelop.Debugger
 			SetFont (IdeApp.Preferences.CustomOutputPadFont);
 
 			TextView.KeyReleaseEvent += OnEditKeyRelease;
+			TextView.FocusOutEvent += TextView_FocusOutEvent;
 
 			IdeApp.Preferences.CustomOutputPadFont.Changed += OnCustomOutputPadFontChanged;
 			CompletionWindowManager.WindowClosed += OnCompletionWindowClosed;
+		}
+
+		void TextView_FocusOutEvent(object o, Gtk.FocusOutEventArgs args)
+		{
+			// On Windows code completion popup stays TopMost also when switching to other apps
+			// but on Mac code completion window hides and shows when focus goes out and back in
+			// so no need to hide it on Mac for better UX
+			if (MonoDevelop.Core.Platform.IsWindows)
+				CompletionWindowManager.HideWindow ();
 		}
 
 		public bool Editable {
@@ -63,11 +73,6 @@ namespace MonoDevelop.Debugger
 				TextView.CursorVisible = value;
 				TextView.Editable = value;
 			}
-		}
-
-		static bool IsCompletionChar (char c)
-		{
-			return (char.IsLetterOrDigit (c) || char.IsPunctuation (c) || char.IsSymbol (c) || char.IsWhiteSpace (c));
 		}
 
 		static Mono.Debugging.Client.CompletionData GetCompletionData (string exp)
@@ -83,22 +88,25 @@ namespace MonoDevelop.Debugger
 			currentCompletionData = null;
 		}
 
+		static bool IsCompletionChar (char c)
+		{
+			return char.IsLetter (c) || c == '_' || c == '.';
+		}
+
 		void PopupCompletion ()
 		{
-			Gtk.Application.Invoke (delegate {
-				char c = (char) Gdk.Keyval.ToUnicode (keyValue);
-				if (currentCompletionData == null && IsCompletionChar (c)) {
-					string expr = Buffer.GetText (TokenBegin, Cursor, false);
-					currentCompletionData = GetCompletionData (expr);
-					if (currentCompletionData != null) {
-						DebugCompletionDataList dataList = new DebugCompletionDataList (currentCompletionData);
-						ctx = ((ICompletionWidget) this).CreateCodeCompletionContext (expr.Length - currentCompletionData.ExpressionLength);
-						CompletionWindowManager.ShowWindow (null, c, dataList, this, ctx);
-					} else {
-						currentCompletionData = null;
-					}
+			char c = (char)Gdk.Keyval.ToUnicode (keyValue);
+			if (currentCompletionData == null && IsCompletionChar (c)) {
+				string expr = Buffer.GetText (TokenBegin, Cursor, false);
+				currentCompletionData = GetCompletionData (expr);
+				if (currentCompletionData != null) {
+					DebugCompletionDataList dataList = new DebugCompletionDataList (currentCompletionData);
+					ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (expr.Length - currentCompletionData.ExpressionLength);
+					CompletionWindowManager.ShowWindow (null, c, dataList, this, ctx);
+				} else {
+					currentCompletionData = null;
 				}
-			});
+			}
 		}
 
 		static bool EatWhitespace (string text, ref int index)
@@ -267,12 +275,6 @@ namespace MonoDevelop.Debugger
 			if (keyHandled)
 				return;
 
-			string text = TokenText;
-
-			if (ctx != null)
-				text = text.Substring (Math.Max (0, Math.Min (ctx.TriggerOffset, text.Length)));
-
-			CompletionWindowManager.UpdateWordSelection (text);
 			CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
 			PopupCompletion ();
 		}
@@ -421,25 +423,23 @@ namespace MonoDevelop.Debugger
 
 		void ICompletionWidget.SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word)
 		{
-			int sp = Position - partial_word.Length;
-
-			var start = Buffer.GetIterAtOffset (TokenBegin.Offset + sp);
+			int cursorOffset = Position - (ctx.TriggerOffset + partial_word.Length);
+			var start = Buffer.GetIterAtOffset (TokenBegin.Offset + ctx.TriggerOffset);
 			var end = Buffer.GetIterAtOffset (start.Offset + partial_word.Length);
 			Buffer.Delete (ref start, ref end);
 			Buffer.Insert (ref start, complete_word);
-			Buffer.PlaceCursor (start);
+			Buffer.PlaceCursor (Buffer.GetIterAtOffset (start.Offset + cursorOffset));
 		}
 
 		void ICompletionWidget.SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word, int offset)
 		{
-			int sp = Position - partial_word.Length;
-
-			var start = Buffer.GetIterAtOffset (TokenBegin.Offset + sp);
+			int cursorOffset = Position - (ctx.TriggerOffset + partial_word.Length);
+			var start = Buffer.GetIterAtOffset (TokenBegin.Offset + ctx.TriggerOffset);
 			var end = Buffer.GetIterAtOffset (start.Offset + partial_word.Length);
 			Buffer.Delete (ref start, ref end);
 			Buffer.Insert (ref start, complete_word);
 
-			var cursor = Buffer.GetIterAtOffset (start.Offset + offset);
+			var cursor = Buffer.GetIterAtOffset (start.Offset + offset + cursorOffset);
 			Buffer.PlaceCursor (cursor);
 		}
 
@@ -477,6 +477,7 @@ namespace MonoDevelop.Debugger
 			IdeApp.Preferences.CustomOutputPadFont.Changed -= OnCustomOutputPadFontChanged;
 			CompletionWindowManager.WindowClosed -= OnCompletionWindowClosed;
 			CompletionWindowManager.HideWindow ();
+			TextView.FocusOutEvent -= TextView_FocusOutEvent;
 			base.OnDestroyed ();
 		}
 	}

@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Editor.Extension;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.CodeIssues;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
@@ -81,7 +82,6 @@ namespace MonoDevelop.AnalysisCore.Gui
 			AnalysisOptions.AnalysisEnabled.Changed -= AnalysisOptionsChanged;
 			while (markers.Count > 0)
 				Editor.RemoveMarker (markers.Dequeue ());
-			tasks.Clear ();
 			disposed = true;
 		}
 		
@@ -141,12 +141,12 @@ namespace MonoDevelop.AnalysisCore.Gui
 			var doc = DocumentContext.ParsedDocument;
 			if (doc == null)
 				return;
-			var ad = new AnalysisDocument (Editor, DocumentContext);
 			updateTimeout = GLib.Timeout.Add (250, delegate {
 				lock (updateLock) {
 					CancelTask ();
 					src = new CancellationTokenSource ();
 					var token = src.Token;
+					var ad = new AnalysisDocument (Editor, DocumentContext);
 					oldTask = Task.Run (() => {
 						try {
 							var result = CodeDiagnosticRunner.Check (ad, token);
@@ -181,6 +181,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			//the number of markers at the head of the queue that need tp be removed
 			int oldMarkers;
 			IEnumerator<Result> enumerator;
+			ImmutableArray<QuickTask>.Builder builder;
 			
 			public ResultsUpdater (ResultsEditorExtension ext, IEnumerable<Result> results, CancellationToken cancellationToken)
 			{
@@ -191,6 +192,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				this.ext = ext;
 				this.cancellationToken = cancellationToken;
 				this.oldMarkers = ext.markers.Count;
+				builder = ImmutableArray<QuickTask>.Empty.ToBuilder ();
 				enumerator = ((IEnumerable<Result>)results).GetEnumerator ();
 			}
 			
@@ -198,7 +200,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			{
 				if (!AnalysisOptions.EnableFancyFeatures || cancellationToken.IsCancellationRequested)
 					return;
-				ext.tasks.Clear ();
+				ext.tasks = ext.tasks.Clear ();
 				GLib.Idle.Add (IdleHandler);
 			}
 
@@ -237,6 +239,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				//add in the new markers
 				for (int i = 0; i < UPDATE_COUNT; i++) {
 					if (!enumerator.MoveNext ()) {
+						ext.tasks = builder.ToImmutable ();
 						ext.OnTasksUpdated (EventArgs.Empty);
 						return false;
 					}
@@ -266,7 +269,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 							ext.markers.Enqueue (marker);
 						}
 					}
-					ext.tasks.Add (new QuickTask (currentResult.Message, currentResult.Region.Start, currentResult.Level));
+					builder.Add (new QuickTask (currentResult.Message, currentResult.Region.Start, currentResult.Level));
 				}
 				
 				return true;
@@ -300,7 +303,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		}
 
 		#region IQuickTaskProvider implementation
-		List<QuickTask> tasks = new List<QuickTask> ();
+		ImmutableArray<QuickTask> tasks = ImmutableArray<QuickTask>.Empty;
 
 		public event EventHandler TasksUpdated;
 
@@ -311,7 +314,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				handler (this, e);
 		}
 		
-		public IEnumerable<QuickTask> QuickTasks {
+		public ImmutableArray<QuickTask> QuickTasks {
 			get {
 				return tasks;
 			}

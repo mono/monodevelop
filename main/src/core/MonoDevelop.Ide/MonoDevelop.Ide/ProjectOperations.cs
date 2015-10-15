@@ -308,7 +308,7 @@ namespace MonoDevelop.Ide
 			JumpTo (symbol, locations.FirstOrDefault (), project);
 		}
 
-		public async void JumpToMetadata (string metadataDllName, string documentationCommentId, Project project = null)
+		public async void JumpToMetadata (string metadataDllName, string documentationCommentId, Project project = null, bool openInPublicOnlyMode = true)
 		{
 			if (metadataDllName == null)
 				throw new ArgumentNullException ("metadataDllName");
@@ -333,7 +333,7 @@ namespace MonoDevelop.Ide
 				doc.RunWhenLoaded (delegate {
 					var handler = doc.PrimaryView.GetContent<MonoDevelop.Ide.Gui.Content.IOpenNamedElementHandler> ();
 					if (handler != null)
-						handler.Open (documentationCommentId);
+						handler.Open (documentationCommentId, openInPublicOnlyMode);
 				});
 			}
 		}
@@ -366,6 +366,7 @@ namespace MonoDevelop.Ide
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 		
@@ -583,6 +584,7 @@ namespace MonoDevelop.Ide
 				return false;
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 		
@@ -628,6 +630,7 @@ namespace MonoDevelop.Ide
 					}
 				} finally {
 					optionsDialog.Destroy ();
+					optionsDialog.Dispose ();
 				}
 			} else if (entry is Solution) {
 				Solution solution = (Solution) entry;
@@ -643,6 +646,7 @@ namespace MonoDevelop.Ide
 					}
 				} finally {
 					optionsDialog.Destroy ();
+					optionsDialog.Dispose ();
 				}
 			}
 			else {
@@ -662,6 +666,7 @@ namespace MonoDevelop.Ide
 					}
 				} finally {
 					optionsDialog.Destroy ();
+					optionsDialog.Dispose ();
 				}
 			}
 		}
@@ -689,6 +694,7 @@ namespace MonoDevelop.Ide
 			var newProjectDialog = new NewProjectDialogController ();
 			newProjectDialog.BasePath = parentWorkspace.BaseDirectory;
 			newProjectDialog.SelectedTemplateId = defaultItemId;
+			newProjectDialog.ParentWorkspace = parentWorkspace;
 
 			if (newProjectDialog.Show () && newProjectDialog.NewItem != null) {
 				parentWorkspace.Items.Add ((WorkspaceItem)newProjectDialog.NewItem);
@@ -713,6 +719,11 @@ namespace MonoDevelop.Ide
 			
 			if (dlg.Run ()) {
 				try {
+					if (WorkspaceContainsWorkspaceItem (parentWorkspace, dlg.SelectedFile)) {
+						MessageService.ShowMessage (GettextCatalog.GetString ("The workspace already contains '{0}'.", Path.GetFileNameWithoutExtension (dlg.SelectedFile)));
+						return res;
+					}
+
 					res = await AddWorkspaceItem (parentWorkspace, dlg.SelectedFile);
 				} catch (Exception ex) {
 					MessageService.ShowError (GettextCatalog.GetString ("The file '{0}' could not be loaded.", dlg.SelectedFile), ex);
@@ -721,7 +732,12 @@ namespace MonoDevelop.Ide
 
 			return res;
 		}
-		
+
+		static bool WorkspaceContainsWorkspaceItem (Workspace workspace, FilePath workspaceItemFileName)
+		{
+			return workspace.Items.Any (existingWorkspaceItem => existingWorkspaceItem.FileName == workspaceItemFileName);
+		}
+
 		public async Task<WorkspaceItem> AddWorkspaceItem (Workspace parentWorkspace, string itemFileName)
 		{
 			using (ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
@@ -769,6 +785,11 @@ namespace MonoDevelop.Ide
 					return res;
 				}
 
+				if (SolutionContainsProject (parentFolder, dlg.SelectedFile)) {
+					MessageService.ShowMessage (GettextCatalog.GetString ("The project '{0}' has already been added.", Path.GetFileNameWithoutExtension (dlg.SelectedFile)));
+					return res;
+				}
+
 				try {
 					res = await AddSolutionItem (parentFolder, dlg.SelectedFile);
 				} catch (Exception ex) {
@@ -781,7 +802,13 @@ namespace MonoDevelop.Ide
 
 			return res;
 		}
-		
+
+		static bool SolutionContainsProject (SolutionFolder folder, FilePath projectFileName)
+		{
+			Solution solution = folder.ParentSolution;
+			return solution.GetAllProjects ().Any (existingProject => existingProject.FileName == projectFileName);
+		}
+
 		public async Task<SolutionFolderItem> AddSolutionItem (SolutionFolder folder, string entryFileName)
 		{
 			AddEntryEventArgs args = new AddEntryEventArgs (folder, entryFileName);
@@ -801,17 +828,20 @@ namespace MonoDevelop.Ide
 		
 		public bool CreateProjectFile (Project parentProject, string basePath, string selectedTemplateId)
 		{
-			NewFileDialog nfd = new NewFileDialog (parentProject, basePath);
-			if (selectedTemplateId != null)
-				nfd.SelectTemplate (selectedTemplateId);
-			return MessageService.ShowCustomDialog (nfd) == (int) Gtk.ResponseType.Ok;
+			using (NewFileDialog nfd = new NewFileDialog (parentProject, basePath)) {
+				if (selectedTemplateId != null)
+					nfd.SelectTemplate (selectedTemplateId);
+				return MessageService.ShowCustomDialog (nfd) == (int)Gtk.ResponseType.Ok;
+			}
 		}
 
 		public bool AddReferenceToProject (DotNetProject project)
 		{
 			try {
-				if (selDialog == null)
+				if (selDialog == null) {
 					selDialog = new SelectReferenceDialog ();
+					selDialog.TransientFor = MessageService.RootWindow;
+				}
 				
 				selDialog.SetProject (project);
 
@@ -889,6 +919,7 @@ namespace MonoDevelop.Ide
 					}
 				} finally {
 					dlg.Destroy ();
+					dlg.Dispose ();
 				}
 			}
 			else if (result == AlertButton.Remove && IdeApp.Workspace.RequestItemUnload (prj)) {
@@ -1518,12 +1549,6 @@ namespace MonoDevelop.Ide
 				FilePath fp = file;
 				FilePath dest = folder.BaseDirectory.Combine (fp.FileName);
 				
-				if (folder.IsRoot) {
-					// Don't allow adding files to the root folder. VS doesn't allow it
-					// If there is no existing folder, create one
-					folder = folder.ParentSolution.DefaultSolutionFolder;
-				}
-				
 				if (!fp.IsChildPathOf (folder.BaseDirectory)) {
 					msg.Text = GettextCatalog.GetString ("The file {0} is outside the folder directory. What do you want to do?", fp.FileName);
 					AlertButton res = MessageService.AskQuestion (msg);
@@ -1537,6 +1562,13 @@ namespace MonoDevelop.Ide
 						fp = dest;
 					}
 				}
+
+				if (folder.IsRoot) {
+					// Don't allow adding files to the root folder. VS doesn't allow it
+					// If there is no existing folder, create one
+					folder = folder.ParentSolution.DefaultSolutionFolder;
+				}
+
 				folder.Files.Add (fp);
 				someAdded = true;
 			}
@@ -1663,7 +1695,9 @@ namespace MonoDevelop.Ide
 					
 					try {
 						if (!dialogShown || !applyToAll) {
-							if (MessageService.RunCustomDialog (addExternalDialog) == (int) Gtk.ResponseType.Cancel) {
+							int response = MessageService.RunCustomDialog (addExternalDialog);
+							// A dialog emits DeleteEvent rather than Cancel in response to Escape being pressed
+							if (response == (int) Gtk.ResponseType.Cancel || response == (int) Gtk.ResponseType.DeleteEvent) {
 								project.Files.AddRange (newFileList.Where (f => f != null));
 								return newFileList;
 							}
@@ -1707,8 +1741,10 @@ namespace MonoDevelop.Ide
 							newFileList.Add (null);
 						}
 					} finally {
-						if (addExternalDialog != null)
+						if (addExternalDialog != null) {
 							addExternalDialog.Destroy ();
+							addExternalDialog.Dispose ();
+						}
 					}
 				}
 			}
@@ -1745,9 +1781,15 @@ namespace MonoDevelop.Ide
 					FileService.DeleteFile (filename);
 			}
 			return true;
-		}		
-		
+		}
+
 		public void TransferFiles (ProgressMonitor monitor, Project sourceProject, FilePath sourcePath, Project targetProject,
+								   FilePath targetPath, bool removeFromSource, bool copyOnlyProjectFiles)
+		{
+			TransferFilesInternal (monitor, sourceProject, sourcePath, targetProject, targetPath, removeFromSource, copyOnlyProjectFiles);
+		}
+
+		internal static void TransferFilesInternal (ProgressMonitor monitor, Project sourceProject, FilePath sourcePath, Project targetProject,
 		                           FilePath targetPath, bool removeFromSource, bool copyOnlyProjectFiles)
 		{
 			// When transfering directories, targetPath is the directory where the source
@@ -1769,11 +1811,9 @@ namespace MonoDevelop.Ide
 			
 			bool sourceIsFolder = Directory.Exists (sourcePath);
 
-			bool copyingFolder = sourceIsFolder && (
+			bool movingFolder = removeFromSource && sourceIsFolder && (
 				!copyOnlyProjectFiles ||
-				IsDirectoryHierarchyEmpty (sourcePath));
-
-			bool movingFolder = removeFromSource && copyingFolder;
+				ContainsOnlyProjectFiles (sourcePath, sourceProject));
 
 			// We need to remove all files + directories from the source project
 			// but when dealing with the VCS addins we need to process only the
@@ -1938,8 +1978,8 @@ namespace MonoDevelop.Ide
 					sourceProject.Files.Remove (v);
 			}
 
-			// Moving an empty folder. A new folder object has to be added to the project.
-			if ((movingFolder || copyingFolder) && !targetProject.Files.GetFilesInVirtualPath (targetPath).Any ()) {
+			// Moving or copying an empty folder. A new folder object has to be added to the project.
+			if (sourceIsFolder && !targetProject.Files.GetFilesInVirtualPath (targetPath).Any ()) {
 				var folderFile = new ProjectFile (targetPath) { Subtype = Subtype.Directory };
 				targetProject.Files.Add (folderFile);
 			}
@@ -2003,7 +2043,7 @@ namespace MonoDevelop.Ide
 			return " (" + string.Format (sc, n) + ")";
 		}
 		
-		void GetAllFilesRecursive (string path, List<ProjectFile> files)
+		static void GetAllFilesRecursive (string path, List<ProjectFile> files)
 		{
 			if (File.Exists (path)) {
 				files.Add (new ProjectFile (path));
@@ -2019,11 +2059,12 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		bool IsDirectoryHierarchyEmpty (string path)
+		static bool ContainsOnlyProjectFiles (string path, Project project)
 		{
-			if (Directory.GetFiles(path).Length > 0) return false;
+			if (Directory.GetFiles (path).Any (f => project.Files.GetFile (f) == null))
+				return false;
 			foreach (string dir in Directory.GetDirectories (path))
-				if (!IsDirectoryHierarchyEmpty (dir)) return false;
+				if (!ContainsOnlyProjectFiles (dir, project)) return false;
 			return true;
 		}
 

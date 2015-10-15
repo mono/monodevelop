@@ -32,17 +32,19 @@ namespace MonoDevelop.Ide.Editor.Extension
 {
 	public struct KeyDescriptor
 	{
-		public static KeyDescriptor Empty = new KeyDescriptor (SpecialKey.None, '\0', ModifierKeys.None);
+		public static KeyDescriptor Empty = new KeyDescriptor (SpecialKey.None, '\0', ModifierKeys.None, null);
 
 		public readonly SpecialKey SpecialKey;
 		public readonly char KeyChar;
 		public readonly ModifierKeys ModifierKeys;
+		public readonly object NativeKeyChar;
 
-		KeyDescriptor (SpecialKey specialKey, char keyChar, ModifierKeys modifierKeys)
+		KeyDescriptor (SpecialKey specialKey, char keyChar, ModifierKeys modifierKeys, object nativeKeyChar)
 		{
 			SpecialKey = specialKey;
 			KeyChar = keyChar;
 			ModifierKeys = modifierKeys;
+			NativeKeyChar = nativeKeyChar;
 		}
 
 		public override string ToString ()
@@ -53,7 +55,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		#region GTK
 		public static KeyDescriptor FromGtk (Gdk.Key key, char ch, Gdk.ModifierType state)
 		{
-			return new KeyDescriptor (ConvertKey (key), ch, ConvertModifiers (state));
+			return new KeyDescriptor (ConvertKey (key), ch, ConvertModifiers (state), Tuple.Create (key, state));
 		}
 
 		static SpecialKey ConvertKey (Gdk.Key key)
@@ -116,6 +118,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 				m |= ModifierKeys.Alt;
 			if ((s & Gdk.ModifierType.Mod2Mask) != 0)
 				m |= ModifierKeys.Command;
+			if ((s & Gdk.ModifierType.MetaMask) != 0)
+				m |= ModifierKeys.Command;
 			return m;
 		}
 		#endregion
@@ -125,7 +129,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		public static KeyDescriptor FromMac (char ch, NSEventModifierMask state)
 		{
 			var specialKey = ConvertKey (ref ch);
-			var keyDescriptor = new KeyDescriptor (specialKey, ch, ConvertModifiers (state));
+			var keyDescriptor = new KeyDescriptor (specialKey, ch, ConvertModifiers (state), state);
 			return keyDescriptor;
 		}
 

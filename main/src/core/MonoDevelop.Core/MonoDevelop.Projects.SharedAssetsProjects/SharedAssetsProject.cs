@@ -78,22 +78,14 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 		{
 			base.OnReadProject (monitor, msproject);
 
-			var doc = msproject.Document;
-			string projitemsFile = null;
-			foreach (var no in doc.DocumentElement.ChildNodes) {
-				var im = no as XmlElement;
-				if (im != null && im.LocalName == "Import" && im.GetAttribute ("Label") == "Shared") {
-					projitemsFile = im.GetAttribute ("Project");
-					break;
-				}
-			}
-			if (projitemsFile == null)
+			var import = msproject.Imports.FirstOrDefault (im => im.Label == "Shared");
+			if (import == null)
 				return;
 
 			// TODO: load the type from msbuild
 			LanguageName = "C#";
 
-			projItemsPath = Path.Combine (Path.GetDirectoryName (msproject.FileName), projitemsFile);
+			projItemsPath = MSBuildProjectService.FromMSBuildPath (msproject.BaseDirectory, import.Project);
 
 			MSBuildProject p = new MSBuildProject (msproject.EngineManager);
 			p.Load (projItemsPath);
@@ -335,7 +327,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			pref.Flags = ProjectItemFlags.DontPersist;
 			pref.SetItemsProjectPath (ProjItemsPath);
 			foreach (var f in Files) {
-				if (pref.OwnerProject.Files.GetFile (f.FilePath) == null) {
+				if (pref.OwnerProject.Files.GetFile (f.FilePath) == null && f.Subtype != Subtype.Directory) {
 					var cf = (ProjectFile)f.Clone ();
 					cf.Flags |= ProjectItemFlags.DontPersist | ProjectItemFlags.Hidden;
 					pref.OwnerProject.Files.Add (cf);

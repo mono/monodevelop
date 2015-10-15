@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Templates
@@ -69,23 +70,16 @@ namespace MonoDevelop.Ide.Templates
 
 		void UpdateSupportedParameters (string parameters)
 		{
-			if (String.IsNullOrEmpty (parameters)) {
-				supportedParameters = null;
-				return;
-			}
-
 			supportedParameters = new List<string> ();
-			foreach (string part in parameters.Split (new [] {',', ';'}, StringSplitOptions.RemoveEmptyEntries)) {
-				supportedParameters.Add (part.Trim ());
+			if (!string.IsNullOrEmpty (parameters)) {
+				foreach (string part in parameters.Split (new [] {',', ';'}, StringSplitOptions.RemoveEmptyEntries)) {
+					supportedParameters.Add (part.Trim ());
+				}
 			}
 		}
 
 		public bool IsSupportedParameter (string name)
 		{
-			if (supportedParameters == null) {
-				return true;
-			}
-
 			return supportedParameters.Contains (name);
 		}
 
@@ -108,6 +102,11 @@ namespace MonoDevelop.Ide.Templates
 
 		public virtual void ItemsCreated (IEnumerable<IWorkspaceFileObject> items)
 		{
+		}
+
+		public virtual IEnumerable<ProjectConfigurationControl> GetFinalPageControls ()
+		{
+			return Enumerable.Empty <ProjectConfigurationControl> ();
 		}
 	}
 }

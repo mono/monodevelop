@@ -293,19 +293,20 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Called when a load operation for this item has started
 		/// </summary>
-		internal protected virtual void OnBeginLoad ()
+		internal protected async virtual Task OnBeginLoad ()
 		{
 			Loading = true;
+			await LoadUserProperties ();
 		}
 		
 		/// <summary>
 		/// Called when a load operation for this item has finished
 		/// </summary>
-		internal protected virtual async Task OnEndLoad ()
+		internal protected virtual Task OnEndLoad ()
 		{
 			Loading = false;
 			fileStatusTracker.ResetLoadTimes ();
-			await LoadUserProperties ();
+			return Task.FromResult (true);
 		}
 
 		/// <summary>
@@ -343,21 +344,23 @@ namespace MonoDevelop.Projects
 			await Task.Run (() => {
 				if (!File.Exists (preferencesFileName))
 					return;
-			
-				XmlTextReader reader = new XmlTextReader (preferencesFileName);
-				try {
-					reader.MoveToContent ();
-					if (reader.LocalName != "Properties")
-						return;
 
-					XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
-					ser.SerializationContext.BaseFile = preferencesFileName;
-					userProperties = (PropertyBag)ser.Deserialize (reader, typeof(PropertyBag));
-				} catch (Exception e) {
-					LoggingService.LogError ("Exception while loading user solution preferences.", e);
-					return;
-				} finally {
-					reader.Close ();
+				using (var streamReader = new StreamReader (preferencesFileName)) {
+					XmlTextReader reader = new XmlTextReader (streamReader);
+					try {
+						reader.MoveToContent ();
+						if (reader.LocalName != "Properties")
+							return;
+
+						XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
+						ser.SerializationContext.BaseFile = preferencesFileName;
+						userProperties = (PropertyBag)ser.Deserialize (reader, typeof(PropertyBag));
+					} catch (Exception e) {
+						LoggingService.LogError ("Exception while loading user solution preferences.", e);
+						return;
+					} finally {
+						reader.Close ();
+					}
 				}
 			});
 		}

@@ -28,7 +28,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using MonoDevelop.Ide;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
@@ -40,32 +39,35 @@ namespace ICSharpCode.PackageManagement
 		public PackageManagementProjectService ()
 		{
 			IdeApp.Workspace.SolutionLoaded += (sender, e) => OnSolutionLoaded (e.Solution);
-			IdeApp.Workspace.SolutionUnloaded += (sender, e) => OnSolutionUnloaded ();
+			IdeApp.Workspace.SolutionUnloaded += (sender, e) => OnSolutionUnloaded (e.Solution);
 		}
 
 		public event EventHandler SolutionLoaded;
 
-		ISolution openSolution;
 
 		void OnSolutionLoaded (Solution solution)
 		{
+			solution.SolutionItemAdded += SolutionItemAdded;
+
 			OpenSolution = new SolutionProxy (solution);
 
 			EventHandler handler = SolutionLoaded;
 			if (handler != null) {
-				handler (this, new EventArgs ());
+				handler (this, new DotNetSolutionEventArgs (OpenSolution));
 			}
 		}
 
 		public event EventHandler SolutionUnloaded;
 
-		void OnSolutionUnloaded ()
+		void OnSolutionUnloaded (Solution solution)
 		{
+			solution.SolutionItemAdded -= SolutionItemAdded;
 			OpenSolution = null;
 
 			var handler = SolutionUnloaded;
 			if (handler != null) {
-				handler (this, new EventArgs ());
+				var proxy = new SolutionProxy (solution);
+				handler (this, new DotNetSolutionEventArgs (proxy));
 			}
 		}
 
@@ -82,21 +84,7 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 
-		public ISolution OpenSolution {
-			get { return openSolution; }
-
-			private set {
-				if (openSolution != null) {
-					openSolution.Solution.SolutionItemAdded -= SolutionItemAdded;
-				}
-
-				openSolution = value;
-
-				if (openSolution != null) {
-					openSolution.Solution.SolutionItemAdded += SolutionItemAdded;
-				}
-			}
-		}
+		public ISolution OpenSolution { get; private set; }
 
 		public IEnumerable<IDotNetProject> GetOpenProjects ()
 		{

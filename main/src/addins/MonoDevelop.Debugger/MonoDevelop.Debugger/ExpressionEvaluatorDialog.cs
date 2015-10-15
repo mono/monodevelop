@@ -87,22 +87,25 @@ namespace MonoDevelop.Debugger
 			currentCompletionData = null;
 		}
 
+		static bool IsCompletionChar (char c)
+		{
+			return char.IsLetter (c) || c == '_' || c == '.';
+		}
+
 		void PopupCompletion (Entry entry)
 		{
-			Application.Invoke (delegate {
-				char c = (char) Gdk.Keyval.ToUnicode (keyValue);
-				if (currentCompletionData == null && IsCompletionChar (c)) {
-					string exp = entry.Text.Substring (0, entry.CursorPosition);
-					currentCompletionData = GetCompletionData (exp);
-					if (currentCompletionData != null) {
-						DebugCompletionDataList dataList = new DebugCompletionDataList (currentCompletionData);
-						ctx = ((ICompletionWidget) this).CreateCodeCompletionContext (entry.CursorPosition - currentCompletionData.ExpressionLength);
-						CompletionWindowManager.ShowWindow (null, c, dataList, this, ctx);
-					} else {
-						currentCompletionData = null;
-					}
+			char c = (char)Gdk.Keyval.ToUnicode (keyValue);
+			if (currentCompletionData == null && IsCompletionChar (c)) {
+				string expr = entry.Text.Substring (0, entry.CursorPosition);
+				currentCompletionData = GetCompletionData (expr);
+				if (currentCompletionData != null) {
+					DebugCompletionDataList dataList = new DebugCompletionDataList (currentCompletionData);
+					ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (expr.Length - currentCompletionData.ExpressionLength);
+					CompletionWindowManager.ShowWindow (null, c, dataList, this, ctx);
+				} else {
+					currentCompletionData = null;
 				}
-			});
+			}
 		}
 
 		void OnEditKeyRelease (object sender, EventArgs e)
@@ -110,8 +113,6 @@ namespace MonoDevelop.Debugger
 			if (keyHandled)
 				return;
 
-			string text = ctx == null ? entry.Text : entry.Text.Substring (Math.Max (0, Math.Min (ctx.TriggerOffset, entry.Text.Length)));
-			CompletionWindowManager.UpdateWordSelection (text);
 			CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
 			PopupCompletion ((Entry) sender);
 		}
@@ -137,11 +138,6 @@ namespace MonoDevelop.Debugger
 		void OnEditFocusOut (object sender, FocusOutEventArgs args)
 		{
 			CompletionWindowManager.HideWindow ();
-		}
-
-		static bool IsCompletionChar (char c)
-		{
-			return (char.IsLetterOrDigit (c) || char.IsPunctuation (c) || char.IsSymbol (c) || char.IsWhiteSpace (c));
 		}
 
 		Mono.Debugging.Client.CompletionData GetCompletionData (string exp)
@@ -230,18 +226,20 @@ namespace MonoDevelop.Debugger
 		
 		void ICompletionWidget.SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word)
 		{
-			int sp = entry.Position - partial_word.Length;
+			int cursorOffset = entry.Position - (ctx.TriggerOffset + partial_word.Length);
+			int sp = ctx.TriggerOffset;
 			entry.DeleteText (sp, sp + partial_word.Length);
 			entry.InsertText (complete_word, ref sp);
-			entry.Position = sp; // sp is incremented by InsertText
+			entry.Position = sp + cursorOffset; // sp is incremented by InsertText
 		}
 		
 		void ICompletionWidget.SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word, int offset)
 		{
-			int sp = entry.Position - partial_word.Length;
+			int cursorOffset = entry.Position - (ctx.TriggerOffset + partial_word.Length);
+			int sp = ctx.TriggerOffset;
 			entry.DeleteText (sp, sp + partial_word.Length);
 			entry.InsertText (complete_word, ref sp);
-			entry.Position = sp + offset; // sp is incremented by InsertText
+			entry.Position = sp + offset + cursorOffset; // sp is incremented by InsertText
 		}
 		
 		int ICompletionWidget.TextLength {

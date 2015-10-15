@@ -80,9 +80,10 @@ namespace MonoDevelop.Autotools
 
 		protected virtual void OnAutofooPropertiesClicked (object sender, System.EventArgs e)
 		{
-			MakefileSwitchEditor editor = new MakefileSwitchEditor (target);
-			editor.ShowAll ();
-			MonoDevelop.Ide.MessageService.ShowCustomDialog (editor, this.Toplevel as Gtk.Window);
+			using (MakefileSwitchEditor editor = new MakefileSwitchEditor (target)) {
+				editor.ShowAll ();
+				MonoDevelop.Ide.MessageService.ShowCustomDialog (editor, this.Toplevel as Gtk.Window);
+			}
 		}
 	}
 }

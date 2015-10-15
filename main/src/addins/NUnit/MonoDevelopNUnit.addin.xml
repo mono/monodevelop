@@ -39,15 +39,6 @@
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/NUnit/UnitTestOptions/GeneralOptions">
-		<ExtensionNodeSet id="MonoDevelop.Ide.OptionsDialogSection"/>
-	</ExtensionPoint>
-
-	<ExtensionPoint path = "/MonoDevelop/NUnit/UnitTestOptions/ConfigurationOptions">
-		<ExtensionNodeSet id="MonoDevelop.Ide.OptionsDialogSection"/>
-	</ExtensionPoint>
-
-
 	<!-- Extensions -->
 
 	<Extension path = "/MonoDevelop/Ide/Pads">
@@ -128,8 +119,6 @@
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.GoToFailure" />
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.ShowTestCode" />
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.ShowTestDetails" />
-		<SeparatorItem id = "s1" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/NUnit/ContextMenu/TestResultsPad">
@@ -150,17 +139,6 @@
 		<SeparatorItem id = "s2" />
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestChartCommands.UseTimeScale" />
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestChartCommands.SingleDayResult" />
-	</Extension>
-
-	<Extension path = "/MonoDevelop/NUnit/UnitTestOptions/GeneralOptions">
-		<Section id = "Configurations"
-					 _label = "Configurations" />
-	</Extension>
-
-	<Extension path = "/MonoDevelop/NUnit/UnitTestOptions/ConfigurationOptions">
-		<Section id = "NUnitOptionsPanel"
-					 _label = "${Configuration}"
-					 class = "MonoDevelop.NUnit.NUnitOptionsPanel"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">

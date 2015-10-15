@@ -24,6 +24,7 @@ namespace MonoDevelop.VersionControl
 					dlg.EndCommit (false);
 				} finally {
 					dlg.Destroy ();
+					dlg.Dispose ();
 				}
 				VersionControlService.NotifyAfterCommit (vc, changeSet, false);
 			}

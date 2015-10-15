@@ -53,6 +53,8 @@ namespace MonoDevelop.Components.Docking
 		bool allowPlaceholderDocking;
 		bool mouseOver;
 
+		IDisposable subscribedLeaveEvent;
+
 		static Gdk.Cursor fleurCursor = new Gdk.Cursor (Gdk.CursorType.Fleur);
 
 		static Xwt.Drawing.Image pixClose;
@@ -88,7 +90,7 @@ namespace MonoDevelop.Components.Docking
 			KeyPressEvent += HeaderKeyPress;
 			KeyReleaseEvent += HeaderKeyRelease;
 
-			this.SubscribeLeaveEvent (OnLeave);
+			subscribedLeaveEvent = this.SubscribeLeaveEvent (OnLeave);
 		}
 
 		public DockVisualStyle VisualStyle {
@@ -98,6 +100,12 @@ namespace MonoDevelop.Components.Docking
 				UpdateVisualStyle ();
 				QueueDraw ();
 			}
+		}
+
+		protected override void OnDestroyed ()
+		{
+			subscribedLeaveEvent.Dispose ();
+			base.OnDestroyed ();
 		}
 
 		void UpdateVisualStyle ()

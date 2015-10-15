@@ -48,6 +48,7 @@ namespace MonoDevelop.VersionControl
 				} while (true);
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 			return true;
 		}
@@ -100,11 +101,10 @@ namespace MonoDevelop.VersionControl
 				return;
 			}
 
-			Monitor.ReportSuccess (GettextCatalog.GetString ("Publish operation completed."));
-			
 			Gtk.Application.Invoke (delegate {
 				VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (vc, path, true));
 			});
+			Monitor.ReportSuccess (GettextCatalog.GetString ("Publish operation completed."));
 		}
 	}
 }

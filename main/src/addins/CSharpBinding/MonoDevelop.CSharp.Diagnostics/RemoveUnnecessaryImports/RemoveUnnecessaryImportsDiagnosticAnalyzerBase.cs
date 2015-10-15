@@ -11,6 +11,7 @@ using Roslyn.Utilities;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp;
+using RefactoringEssentials;
 
 namespace MonoDevelop.CSharp.Diagnostics.RemoveUnnecessaryImports
 {

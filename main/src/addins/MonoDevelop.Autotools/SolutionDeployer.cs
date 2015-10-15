@@ -261,15 +261,11 @@ namespace MonoDevelop.Autotools
 
 			string fileName = Path.Combine (solution_dir, "autogen.sh");
 
-			StreamWriter writer = new StreamWriter( fileName );
-
-			Stream stream = context.GetTemplateStream ("autogen.sh.template");
-			StreamReader reader = new StreamReader(stream);
-
-			templateEngine.Process(reader, writer);
-
-			reader.Close();
-			writer.Close();
+			using (StreamWriter writer = new StreamWriter( fileName ))
+			using (Stream stream = context.GetTemplateStream ("autogen.sh.template"))
+			using (StreamReader reader = new StreamReader (stream)) {
+				templateEngine.Process (reader, writer);
+			}
 
 			context.AddGeneratedFile (fileName);
 

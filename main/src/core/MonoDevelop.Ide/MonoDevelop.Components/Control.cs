@@ -48,11 +48,6 @@ namespace MonoDevelop.Components
 			this.nativeWidget = widget;
 		}
 
-		~Control ()
-		{
-			Dispose (false);
-		}
-
 		protected virtual object CreateNativeWidget ()
 		{
 			throw new NotSupportedException ();
@@ -128,7 +123,6 @@ namespace MonoDevelop.Components
 				((NSView)nativeWidget).Dispose ();
 			#endif
 
-			GC.SuppressFinalize (this);
 			Dispose (true);
 		}
 

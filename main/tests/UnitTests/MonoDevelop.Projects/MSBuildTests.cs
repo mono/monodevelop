@@ -1163,7 +1163,13 @@ namespace MonoDevelop.Projects
 		[Test]
 		public async Task ProjectSerializationRoundtrip (
 			[Values (
-				"broken-condition.csproj"
+				"broken-condition.csproj",
+				"empty-element.csproj",
+				"comment.csproj",
+				"text-spacing.csproj",
+				"inconsistent-line-endings.csproj",
+				"attribute-order.csproj",
+				"custom-namespace.csproj"
 				//"ICSharpCode.NRefactory.Cecil.csproj"
 			)]
 			string project)
@@ -1309,6 +1315,13 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (1, res.Errors.Count);
 			Assert.AreEqual ("Something failed: foo", res.Errors [0].ErrorText);
+
+			await p.Clean (Util.GetMonitor (), p.Configurations [0].Selector);
+			res = await p.Build (Util.GetMonitor (), p.Configurations [0].Selector, true);
+
+			// Check that the global property is reset
+			Assert.AreEqual (1, res.Errors.Count);
+			Assert.AreEqual ("Something failed: show", res.Errors [0].ErrorText);
 		}
 
 		[Test]
@@ -1341,6 +1354,36 @@ namespace MonoDevelop.Projects
 			MSBuildProjectService.CheckHandlerUsesMSBuildEngine (project, out byDefault, out require);
 			Assert.IsTrue (byDefault);
 			Assert.IsFalse (require);
+		}
+
+		[Test]
+		public async Task RenameFile ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Project p = (Project) sol.Items [0];
+
+			var f = p.GetProjectFile (p.ItemDirectory.Combine ("Program.cs"));
+			f.Name = p.ItemDirectory.Combine ("test.cs");
+
+			Assert.AreEqual ("test.cs", f.FilePath.FileName);
+			await sol.SaveAsync (Util.GetMonitor ());
+
+			var mp = await MSBuildProject.LoadAsync (p.FileName);
+			mp.Evaluate ();
+			Assert.IsTrue (mp.EvaluatedItems.FirstOrDefault (i => i.Name == "Compile" && i.Include == "test.cs") != null);
+			Assert.IsTrue (mp.EvaluatedItems.FirstOrDefault (i => i.Name == "Compile" && i.Include == "Program.cs") == null);
+		}
+
+		[Test]
+		public void FrameworkAssemblyVersionNotStored ()
+		{
+			// We don't store the version number for framework assemblies
+			var p = Services.ProjectService.CreateDotNetProject ("C#");
+			var pr = ProjectReference.CreateAssemblyReference ("System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+			p.References.Add (pr);
+
+			Assert.AreEqual ("System", pr.Include);
 		}
 	}
 

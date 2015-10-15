@@ -40,8 +40,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string evaluatedValue;
 		string name;
 
-		internal MSBuildPropertyEvaluated (MSBuildProject project, string name, string value, string evaluatedValue): base (project, null)
+		internal MSBuildPropertyEvaluated (MSBuildProject project, string name, string value, string evaluatedValue)
 		{
+			ParentProject = project;
 			this.evaluatedValue = evaluatedValue;
 			this.value = value;
 			this.name = name;

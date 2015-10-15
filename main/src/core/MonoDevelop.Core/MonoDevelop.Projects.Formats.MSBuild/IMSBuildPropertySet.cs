@@ -47,7 +47,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		new MSBuildProperty GetProperty (string name);
 		new IEnumerable<MSBuildProperty> GetProperties ();
 
-		MSBuildProject Project { get; }
+		MSBuildProject ParentProject { get; }
 	}
 
 	public static class IMSBuildPropertySetExtensions
@@ -57,6 +57,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			DataSerializer ser = new DataSerializer (Services.ProjectService.DataContext);
 			var props = Services.ProjectService.DataContext.GetProperties (ser.SerializationContext, ob);
 			XmlConfigurationWriter cwriter = null;
+
+			var mso = pset as IMSBuildProjectObject;
+			if (mso != null && mso.ParentProject != null)
+				ser.SerializationContext.BaseFile = mso.ParentProject.FileName;
+			ser.SerializationContext.DirectorySeparatorChar = '\\';
 		
 			foreach (var prop in props) {
 				if (prop.IsExternal)
@@ -99,6 +104,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			DataSerializer ser = new DataSerializer (Services.ProjectService.DataContext);
 			var props = Services.ProjectService.DataContext.GetProperties (ser.SerializationContext, ob);
 
+			var mso = pset as IMSBuildProjectObject;
+			if (mso != null && mso.ParentProject != null)
+				ser.SerializationContext.BaseFile = mso.ParentProject.FileName;
+			ser.SerializationContext.DirectorySeparatorChar = '\\';
+
 			foreach (var prop in props) {
 				if (prop.IsExternal)
 					continue;
@@ -121,7 +131,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					if (!string.IsNullOrEmpty (val)) {
 						try {
 							var data = XmlConfigurationReader.DefaultReader.Read (new XmlTextReader (new StringReader (val)));
-							readVal = prop.Deserialize (ser.SerializationContext, ob, data);
+							if (prop.HasSetter && prop.DataType.CanCreateInstance) {
+								readVal = prop.Deserialize (ser.SerializationContext, ob, data);
+							} else if (prop.DataType.CanReuseInstance) {
+								// Try to deserialize over the existing instance
+								prop.Deserialize (ser.SerializationContext, ob, data, prop.GetValue (ob));
+								continue;
+							} else {
+								throw new InvalidOperationException ("The property '" + prop.Name + "' does not have a setter.");
+							}
 						} catch (Exception ex) {
 							LoggingService.LogError ("Cound not read project property '" + prop.Name + "'", ex);
 						}
@@ -342,7 +360,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						data.Name = prop.Name;
 						if (writer == null)
 							writer = new XmlConfigurationWriter { Namespace = MSBuildProject.Schema };
-						var elem = writer.Write (project.Document, data);
+
+						XmlDocument doc = new XmlDocument ();
+						var elem = writer.Write (doc, data);
+						// TODO NPM
 						project.SetMonoDevelopProjectExtension (prop.Name, elem);
 						continue;
 					}

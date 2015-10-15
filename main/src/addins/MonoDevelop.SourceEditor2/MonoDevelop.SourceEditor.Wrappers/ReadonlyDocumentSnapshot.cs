@@ -140,7 +140,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		MonoDevelop.Core.Text.ITextSource MonoDevelop.Core.Text.ITextSource.CreateSnapshot (int offset, int length)
 		{
-			return new RopeTextSource (snapshot.CloneRope (offset, length), snapshot.Encoding, snapshot.UseBom);
+			return new ImmutableTextTextSource (snapshot.GetImmutableText (offset, length), snapshot.Encoding, snapshot.UseBom);
 		}
 
 		MonoDevelop.Core.Text.ITextSourceVersion MonoDevelop.Core.Text.ITextSource.Version {
@@ -173,6 +173,11 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			}
 		}
 
+		/// <inheritdoc/>
+		public void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
+		{
+			snapshot.CopyTo (sourceIndex, destination, destinationIndex, count); 
+		}
 		#endregion
 	}
 }

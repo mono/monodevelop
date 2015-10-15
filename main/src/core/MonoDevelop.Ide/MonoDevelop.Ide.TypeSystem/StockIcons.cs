@@ -26,7 +26,6 @@
 using System;
 using MonoDevelop.Core;
 using Mono.Cecil;
-using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -257,40 +256,5 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		internal static IconId GetStockIconForSymbolInfo (this DeclaredSymbolInfo symbol)
-		{
-			switch (symbol.Kind) {
-			case DeclaredSymbolInfoKind.Class:
-				return Stock.Class;
-			case DeclaredSymbolInfoKind.Constant:
-				return Stock.Field;
-			case DeclaredSymbolInfoKind.Constructor:
-				return Stock.Method;
-			case DeclaredSymbolInfoKind.Delegate:
-				return Stock.Delegate;
-			case DeclaredSymbolInfoKind.Enum:
-				return Stock.Enum;
-			case DeclaredSymbolInfoKind.EnumMember:
-				return Stock.Field;
-			case DeclaredSymbolInfoKind.Event:
-				return Stock.Event;
-			case DeclaredSymbolInfoKind.Field:
-				return Stock.Field;
-			case DeclaredSymbolInfoKind.Indexer:
-				return Stock.Method;
-			case DeclaredSymbolInfoKind.Interface:
-				return Stock.Interface;
-			case DeclaredSymbolInfoKind.Method:
-				return Stock.Method;
-			case DeclaredSymbolInfoKind.Module:
-				return Stock.Method;
-			case DeclaredSymbolInfoKind.Property:
-				return Stock.Property;
-			case DeclaredSymbolInfoKind.Struct:
-				return Stock.Struct;
-			default:
-				throw new ArgumentOutOfRangeException ();
-			}
-		}
 	}
 }

@@ -40,6 +40,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	sealed class MonoDevelopSourceText : SourceText
 	{
 		readonly ITextSource doc;
+		TextLineCollectionWrapper wrapper;
 
 		public override System.Text.Encoding Encoding {
 			get {
@@ -54,14 +55,65 @@ namespace MonoDevelop.Ide.TypeSystem
 			this.doc = doc;
 		}
 
+		protected override TextLineCollection GetLinesCore ()
+		{
+			var textDoc = doc as IReadonlyTextDocument;
+			if (textDoc != null) {
+				if (wrapper == null)
+					wrapper = new TextLineCollectionWrapper (this, textDoc);
+				return wrapper;
+			}
+			return base.GetLinesCore ();
+		}
+
+		class TextLineCollectionWrapper : TextLineCollection
+		{
+			readonly MonoDevelopSourceText parent;
+			readonly IReadonlyTextDocument textDoc;
+
+			public TextLineCollectionWrapper (MonoDevelopSourceText parent, IReadonlyTextDocument textDoc)
+			{
+				this.parent = parent;
+				this.textDoc = textDoc;
+			}
+
+			public override int Count {
+				get {
+					return textDoc.LineCount;
+				}
+			}
+
+			public override TextLine this[int index] {
+				get {
+					var line = textDoc.GetLine (index + 1);
+					return TextLine.FromSpan (parent, new TextSpan(line.Offset, line.Length));
+				}
+			}
+
+			public override TextLine GetLineFromPosition (int position)
+			{
+				var line = textDoc.GetLineByOffset (position);
+				return TextLine.FromSpan (parent, new TextSpan(line.Offset, line.Length));
+			}
+
+			public override LinePosition GetLinePosition (int position)
+			{
+				var loc = textDoc.OffsetToLocation (position);
+				return new LinePosition (loc.Line - 1, loc.Column - 1);
+			}
+
+			public override int IndexOf (int position)
+			{
+				return textDoc.OffsetToLineNumber (position) - 1;
+			}
+		}
+
 		#region implemented abstract members of SourceText
 		public override void CopyTo (int sourceIndex, char[] destination, int destinationIndex, int count)
 		{
-			while (count --> 0) {
-				destination[destinationIndex++] = doc.GetCharAt (sourceIndex++);
-			}
+			doc.CopyTo (sourceIndex, destination, destinationIndex, count);
 		}
-		
+
 		public override int Length {
 			get {
 				return doc.Length;

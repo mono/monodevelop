@@ -36,6 +36,7 @@ using System.Linq;
 using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Refactoring.Rename;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Refactoring
 {

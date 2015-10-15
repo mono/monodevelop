@@ -30,7 +30,6 @@ using System.Linq;
 using Gdk;
 using Gtk;
 using Pango;
-using ICSharpCode.NRefactory6.CSharp.Completion;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Gui.Content;

@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 
 		public PathMode PathMode {
-			set { outputPad.PathMode = value; }
+			set { DispatchService.GuiDispatch (delegate { outputPad.PathMode = value; }); }
 		}
 
 		public void ReportResult (SearchResult result)
@@ -85,7 +85,9 @@ namespace MonoDevelop.Ide.FindInFiles
 		protected override void OnWriteLog (string text)
 		{
 			if (outputPad == null) throw GetDisposedException ();
-			outputPad.WriteText (text);
+			DispatchService.GuiDispatch (delegate {
+				outputPad.WriteText (text);
+			});
 		}
 		
 		protected override void OnCompleted ()

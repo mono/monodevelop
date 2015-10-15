@@ -134,6 +134,7 @@ namespace MonoDevelop.Refactoring.Rename
 			buttonPreview.Clicked += OnPreviewClicked;
 			entry.Changed += delegate { buttonPreview.Sensitive = buttonOk.Sensitive = ValidateName (); };
 			ValidateName ();
+			this.hbox1.HideAll ();
 		}
 
 
@@ -191,7 +192,8 @@ namespace MonoDevelop.Refactoring.Rename
 			var properties = Properties;
 			((Widget)this).Destroy ();
 			var changes = this.rename (properties);
-			MessageService.ShowCustomDialog (new RefactoringPreviewDialog (changes));
+			using (var dlg = new RefactoringPreviewDialog (changes))
+				MessageService.ShowCustomDialog (dlg);
 		}
 	}
 		

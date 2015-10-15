@@ -141,10 +141,10 @@ namespace Mono.TextEditor
 				int end = endOffset < markerEnd ? endOffset : markerEnd;
 				int /*lineNr,*/ x_pos;
 				
-				x_pos = layout.IndexToPos (start - startOffset).X;
+				x_pos = layout.IndexToPos (System.Math.Max (0, start - startOffset)).X;
 				@from = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 				
-				x_pos = layout.IndexToPos (end - startOffset).X;
+				x_pos = layout.IndexToPos (System.Math.Max (0, end - startOffset)).X;
 				
 				to = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 			}

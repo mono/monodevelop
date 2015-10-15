@@ -36,7 +36,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.CodeIssues;
 using Mono.Addins;
-using ICSharpCode.NRefactory6.CSharp.Refactoring;
+using RefactoringEssentials;
 using MonoDevelop.Core.Text;
 using System.Linq;
 
@@ -90,6 +90,7 @@ namespace MonoDevelop.CodeActions
 			return result;
 		}
 
+		static List<CodeRefactoringDescriptor> codeRefactoringCache;
 		public static async Task<IEnumerable<ValidCodeAction>> GetValidActionsAsync (TextEditor editor, DocumentContext doc, TextSpan span, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			if (editor == null)
@@ -111,7 +112,10 @@ namespace MonoDevelop.CodeActions
 			if (!token.IsMissing)
 				tokenSegment = token.Span;
 			try {
-				foreach (var descriptor in await GetCodeRefactoringsAsync (doc, MimeTypeToLanguage(editor.MimeType), cancellationToken).ConfigureAwait (false)) {
+				if (codeRefactoringCache == null) {
+					codeRefactoringCache = (await GetCodeRefactoringsAsync (doc, MimeTypeToLanguage(editor.MimeType), cancellationToken).ConfigureAwait (false)).ToList ();
+				}
+				foreach (var descriptor in codeRefactoringCache) {
 					var analysisDocument = doc.AnalysisDocument;
 					if (cancellationToken.IsCancellationRequested || analysisDocument == null)
 						return Enumerable.Empty<ValidCodeAction> ();

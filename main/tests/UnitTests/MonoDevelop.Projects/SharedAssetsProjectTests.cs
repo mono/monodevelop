@@ -67,6 +67,17 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task BuildSharedProject ()
+		{
+			string solFile = Util.GetSampleProject ("SharedProjectTest", "SharedProjectTest.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var pc1 = sol.FindProjectByName ("Console1");
+			var res = await pc1.Build (Util.GetMonitor (), ConfigurationSelector.Default, true);
+			Assert.AreEqual (0, res.ErrorCount);
+			Assert.AreEqual (0, res.WarningCount);
+		}
+
+		[Test]
 		public async Task PropagateFileChanges ()
 		{
 			string solFile = Util.GetSampleProject ("SharedProjectTest", "SharedProjectTest.sln");

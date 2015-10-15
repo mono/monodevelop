@@ -38,9 +38,10 @@ namespace ICSharpCode.PackageManagement
 	{
 		public bool AcceptLicenses(IEnumerable<IPackage> packages)
 		{
-			LicenseAcceptanceDialog dialog = CreateLicenseAcceptanceDialog(packages);
-			int result = MessageService.ShowCustomDialog(dialog);
-			return result == (int)Gtk.ResponseType.Ok;
+			using (LicenseAcceptanceDialog dialog = CreateLicenseAcceptanceDialog (packages)) {
+				int result = MessageService.ShowCustomDialog (dialog);
+				return result == (int)Gtk.ResponseType.Ok;
+			}
 		}
 		
 		LicenseAcceptanceDialog CreateLicenseAcceptanceDialog(IEnumerable<IPackage> packages)

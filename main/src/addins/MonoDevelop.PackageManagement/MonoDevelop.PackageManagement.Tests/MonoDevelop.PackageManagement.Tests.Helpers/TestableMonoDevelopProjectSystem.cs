@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Ide;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
@@ -38,6 +39,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public Action<Stream> ActionPassedToPhysicalFileSystemAddFile;
 		public FakeFileService FakeFileService;
 		public FakePackageManagementProjectService FakeProjectService;
+		public PackageManagementEvents PackageManagementEvents;
 		public FakeLogger FakeLogger;
 		public string FileNamePassedToLogDeletedFile;
 		public FileNameAndDirectory FileNameAndDirectoryPassedToLogDeletedFileFromDirectory;
@@ -47,12 +49,14 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public FileNameAndProjectName FileNameAndProjectNamePassedToLogAddedFileToProject;
 
 		public static Action<MessageHandler> GuiSyncDispatcher = handler => handler.Invoke ();
+		public static Func<Func<Task>,Task> GuiSyncDispatcherFunc = handler => handler.Invoke();
 
 		public TestableMonoDevelopProjectSystem (IDotNetProject project)
 			: this (
 				project,
 				new FakeFileService (project),
 				new FakePackageManagementProjectService (),
+				new PackageManagementEvents (),
 				new FakeLogger ())
 		{
 		}
@@ -61,11 +65,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			IDotNetProject project,
 			IPackageManagementFileService fileService,
 			IPackageManagementProjectService projectService,
+			PackageManagementEvents packageManagementEvents,
 			FakeLogger logger)
-			: base (project, fileService, projectService, GuiSyncDispatcher)
+			: base (project, fileService, projectService, packageManagementEvents, GuiSyncDispatcher, GuiSyncDispatcherFunc)
 		{
 			FakeFileService = (FakeFileService)fileService;
 			FakeProjectService = (FakePackageManagementProjectService)projectService;
+			PackageManagementEvents = packageManagementEvents;
 			Logger = logger;
 		}
 

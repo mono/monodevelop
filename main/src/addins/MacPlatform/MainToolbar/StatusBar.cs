@@ -154,7 +154,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				BezelStyle = NSTextFieldBezelStyle.Rounded;
 
 			WantsLayer = true;
-			Layer.CornerRadius = 4;
+			Layer.CornerRadius = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 6 : 4;
 			ctxHandler = new StatusBarContextHandler (this);
 
 			updateHandler = delegate {
@@ -233,6 +233,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			base.Dispose (disposing);
 		}
 
+		NSTrackingArea textFieldArea;
 		void ReconstructString ()
 		{
 			if (string.IsNullOrEmpty (text)) {
@@ -242,6 +243,20 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				textField.AttributedStringValue = GetStatusString (text, textColor);
 				imageView.Image = image;
 			}
+
+			var width = textField.AttributedStringValue.BoundingRectWithSize (new CGSize (nfloat.MaxValue, textField.Frame.Height),
+				NSStringDrawingOptions.UsesFontLeading | NSStringDrawingOptions.UsesLineFragmentOrigin).Width;
+
+			if (textFieldArea != null) {
+				RemoveTrackingArea (textFieldArea);
+				DestroyPopover ();
+			}
+
+			if (width > textField.Frame.Width) {
+				textFieldArea = new NSTrackingArea (textField.Frame, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInKeyWindow, this, null);
+				AddTrackingArea (textFieldArea);
+			} else
+				textFieldArea = null;
 		}
 
 		CALayer ProgressLayer {
@@ -283,12 +298,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			right -= 9;
 			if (layer != null) {
-				layer.Frame = new CGRect (right, 3, 1, 16);
+				layer.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 4 : 3, 1, 16);
 				layer.SetNeedsDisplay ();
 			} else {
 				layer = CALayer.Create ();
 				layer.Name = SeparatorLayerId;
-				layer.Frame = new CGRect (right, 3, 1, 16);
+				layer.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 4 : 3, 1, 16);
 				layer.BackgroundColor = NSColor.LightGray.CGColor;
 				Layer.AddSublayer (layer);
 			}
@@ -326,12 +341,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			nfloat right = DrawSeparatorIfNeeded (LeftMostStatusItemX ());
 			CGSize size = buildResultText.AttributedString.Size;
 			right = right - 6 - size.Width;
-			buildResultText.Frame = new CGRect (right, 5f, size.Width, size.Height);
+			buildResultText.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 6 : 5, size.Width, size.Height);
 			if (buildResultText.SuperLayer == null)
 				Layer.AddSublayer (buildResultText);
 			buildResultText.SetNeedsDisplay ();
 			right -= buildResultIcon.Bounds.Width;
-			buildResultIcon.Frame = new CGRect (right, 3, buildResultIcon.Bounds.Width, buildResultIcon.Bounds.Height);
+			buildResultIcon.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 4 : 3, buildResultIcon.Bounds.Width, buildResultIcon.Bounds.Height);
 			if (buildResultIcon.SuperLayer == null)
 				Layer.AddSublayer (buildResultIcon);
 
@@ -345,10 +360,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			foreach (var item in Layer.Sublayers) {
 				if (item.Name != null && item.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)) {
 					var icon = layerToStatus [item.Name];
-					RemoveTrackingArea (icon.TrackingArea);
+					if (icon.TrackingArea != null)
+						RemoveTrackingArea (icon.TrackingArea);
 
 					right -= item.Bounds.Width + 6;
-					item.Frame = new CGRect (right, 3, item.Bounds.Width, item.Bounds.Height);
+					item.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 4 : 3, item.Bounds.Width, item.Bounds.Height);
 
 					var area = new NSTrackingArea (item.Frame, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInKeyWindow, this, null);
 					AddTrackingArea (area);
@@ -368,27 +384,17 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		long statusCounter;
 		public StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)
 		{
-			nfloat right = layerToStatus.Count == 0 ?
-				Layer.Frame.Width :
-				Layer.Sublayers.Last (i => i.Name != null && i.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)).Frame.Left;
-
-			right -= (nfloat)pixbuf.Width + 6;
 			var layer = CALayer.Create ();
 			layer.Name = StatusIconPrefixId + (++statusCounter);
 			layer.Bounds = new CGRect (0, 0, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
-			layer.Frame = new CGRect (right, 3, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
-
-			var area = new NSTrackingArea (layer.Frame, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInKeyWindow, this, null);
-			AddTrackingArea (area);
-
-			var statusIcon = new StatusIcon (this, layer, area) {
+			var statusIcon = new StatusIcon (this, layer, null) {
 				Image = pixbuf,
 			};
 			layerToStatus [layer.Name] = statusIcon;
 
 			Layer.AddSublayer (layer);
 
-			textField.SetFrameSize (new CGSize (right - 6 - textField.Frame.Left, Frame.Height));
+			RepositionStatusLayers ();
 
 			return statusIcon;
 		}
@@ -555,6 +561,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 
 		static CGColor xamBlue = new CGColor (52f / 255, 152f / 255, 219f / 255);
+		static nfloat verticalOffset = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 2 : 0;
 		CALayer CreateProgressBarLayer (double width)
 		{
 			CALayer progress = ProgressLayer;
@@ -564,7 +571,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				progress.BackgroundColor = xamBlue;
 				progress.BorderColor = xamBlue;
 				progress.FillMode = CAFillMode.Forwards;
-				progress.Frame = new CGRect (0, Frame.Height - barHeight, (nfloat)width, barHeight);
+				progress.Frame = new CGRect (0, Frame.Height - barHeight - verticalOffset, (nfloat)width, barHeight);
 			}
 			return progress;
 		}
@@ -674,48 +681,83 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			});
 		}
 
-		public override void ViewDidMoveToSuperview ()
-		{
-			base.ViewDidMoveToSuperview ();
+		NSPopover popover;
 
+		void CreatePopoverCommon (nfloat width, string text)
+		{
+			popover = new NSPopover {
+				ContentViewController = new NSViewController (null, null),
+				Animates = false
+			};
+
+			var attrString = GetPopoverString (text);
+
+			var height = attrString.BoundingRectWithSize (new CGSize (width, nfloat.MaxValue),
+				NSStringDrawingOptions.UsesFontLeading | NSStringDrawingOptions.UsesLineFragmentOrigin).Height;
+			
 			popover.ContentViewController.View = new NSTextField {
+				Frame = new CGRect (0, 0, width, height + 14),
 				DrawsBackground = false,
-				Bezeled = false,
+				Bezeled = true,
 				Editable = false,
-				Frame = new CGRect (0, 0, 230, 30),
-				AutoresizingMask = NSViewResizingMask.HeightSizable,
 				Cell = new VerticallyCenteredTextFieldCell (yOffset: -1),
 			};
+			((NSTextField)popover.ContentViewController.View).AttributedStringValue = attrString;
 		}
 
-		NSPopover popover = new NSPopover {
-			ContentViewController = new NSViewController (null, null),
-			Animates = false,
-		};
-
-		public void ShowPopoverForLayer (CALayer layer)
+		bool CreatePopoverForLayer (CALayer layer)
 		{
+			string tooltip = layerToStatus [layer.Name].ToolTip;
+			if (tooltip == null)
+				return false;
+
+			CreatePopoverCommon (230, tooltip);
+			return true;
+		}
+
+		void CreatePopoverForStatusBar ()
+		{
+			CreatePopoverCommon (Frame.Width, textField.AttributedStringValue.Value);
+		}
+
+		void ShowPopoverForLayer (CALayer layer)
+		{
+			if (popover != null)
+				return;
+
 			if (!layerToStatus.ContainsKey (layer.Name))
 				return;
 
-			var field = (NSTextField)popover.ContentViewController.View;
-			string tooltip = layerToStatus [layer.Name].ToolTip;
-			if (tooltip == null)
+			if (!CreatePopoverForLayer (layer))
 				return;
 
-			field.AttributedStringValue = GetPopoverString (tooltip);
 			popover.Show (layer.Frame, this, NSRectEdge.MinYEdge);
+		}
+
+		void ShowPopoverForStatusBar ()
+		{
+			if (popover != null)
+				return;
+
+			CreatePopoverForStatusBar ();
+			popover.Show (textField.Frame, this, NSRectEdge.MinYEdge);
 		}
 
 		void DestroyPopover ()
 		{
 			oldLayer = null;
-			popover.Close ();
+			if (popover != null)
+				popover.Close ();
+			popover = null;
 		}
 
-		CALayer LayerForEvent (NSEvent theEvent)
+		bool InTextField (CGPoint location)
 		{
-			CGPoint location = ConvertPointFromView (theEvent.LocationInWindow, null);
+			return textField.IsMouseInRect (location, textField.Frame);
+		}
+
+		CALayer LayerForPoint (CGPoint location)
+		{
 			CALayer layer = Layer.PresentationLayer.HitTest (location);
 			return layer != null ? layer.ModelLayer : null;
 		}
@@ -725,9 +767,19 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			base.MouseEntered (theEvent);
 
-			StatusIcon icon;
-			var layer = LayerForEvent (theEvent);
-			if (layer == null || layer.Name == oldLayer) {
+			CGPoint location = ConvertPointFromView (theEvent.LocationInWindow, null);
+
+			if (InTextField (location)) {
+				ShowPopoverForStatusBar ();
+				return;
+			}
+
+			var layer = LayerForPoint (location);
+			if (layer == null)
+				return;
+
+			if (layer.Name == oldLayer) {
+				StatusIcon icon;
 				if (!layerToStatus.TryGetValue (layer.Name, out icon))
 					return;
 
@@ -743,16 +795,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			base.MouseExited (theEvent);
 
-			if (oldLayer != null) {
-				DestroyPopover ();
-			}
+			DestroyPopover ();
 		}
 
 		public override void MouseDown (NSEvent theEvent)
 		{
 			base.MouseDown (theEvent);
 
-			var layer = LayerForEvent (theEvent);
+			CGPoint location = ConvertPointFromView (theEvent.LocationInWindow, null);
+			var layer = LayerForPoint (location);
 			if (layer != null && layer.Name != null) {
 				Xwt.PointerButton button = Xwt.PointerButton.Left;
 				switch ((NSEventType)(long)theEvent.ButtonNumber) {

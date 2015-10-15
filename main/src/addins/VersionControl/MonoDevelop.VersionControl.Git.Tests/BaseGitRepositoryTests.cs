@@ -91,6 +91,13 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			repo2.RootRepository.Config.Set<string> ("user.email", Email);
 		}
 
+		protected override void CheckLog (Repository repo)
+		{
+			int index = 2;
+			foreach (Revision rev in Repo.GetHistory (LocalPath, null))
+				Assert.AreEqual (String.Format ("Commit #{0}\n", index--), rev.Message);
+		}
+
 		[Test]
 		[Ignore ("Not implemented in GitRepository.")]
 		public override void LocksEntities ()
@@ -147,7 +154,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 
 			vi = repo2.GetVersionInfo (LocalPath + "file3", VersionInfoQueryFlags.IgnoreCache);
 			Assert.IsTrue (File.Exists (LocalPath + "file3"), "Stash pop untracked failure");
-			Assert.AreEqual (VersionStatus.Unversioned, vi.Status & VersionStatus.Unversioned, "Stash pop failure");
+			Assert.AreEqual (VersionStatus.Unversioned, vi.Status, "Stash pop failure");
 
 			vi = repo2.GetVersionInfo (LocalPath + "file4", VersionInfoQueryFlags.IgnoreCache);
 			Assert.IsTrue (File.Exists (LocalPath + "file4"), "Stash pop conflict failure");
@@ -215,10 +222,10 @@ namespace MonoDevelop.VersionControl.Git.Tests
 
 			repo2.SwitchToBranch (new ProgressMonitor (), "master");
 			repo2.RemoveBranch ("branch1");
-			Assert.IsFalse (repo2.GetBranches ().Any (b => b.Name == "branch1"), "Failed to delete branch");
+			Assert.IsFalse (repo2.GetBranches ().Any (b => b.FriendlyName == "branch1"), "Failed to delete branch");
 
 			repo2.RenameBranch ("branch2", "branch3");
-			Assert.IsTrue (repo2.GetBranches ().Any (b => b.Name == "branch3") && repo2.GetBranches ().All (b => b.Name != "branch2"), "Failed to rename branch");
+			Assert.IsTrue (repo2.GetBranches ().Any (b => b.FriendlyName == "branch3") && repo2.GetBranches ().All (b => b.FriendlyName != "branch2"), "Failed to rename branch");
 
 			// TODO: Add CreateBranchFromCommit tests.
 		}
@@ -385,6 +392,11 @@ index 0000000..009b64b
 			return new GitRepository (VersionControlService.GetVersionControlSystems ().First (id => id.Name == "Git"), path, url);
 		}
 
+		protected override Repository GetRepo ()
+		{
+			return new GitRepository ();
+		}
+
 		// This test is for a memory usage improvement on status.
 		[Test]
 		public void TestSameGitRevision ()
@@ -453,7 +465,7 @@ index 0000000..009b64b
 				Assert.Throws (exceptionType, () => repo2.CreateBranch ("testBranch2", trackSource, trackRef));
 			else {
 				repo2.CreateBranch ("testBranch2", trackSource, trackRef);
-				Assert.True (repo2.GetBranches ().Any (b => b.Name == "testBranch2" && b.TrackedBranch.Name == trackSource));
+				Assert.True (repo2.GetBranches ().Any (b => b.FriendlyName == "testBranch2" && b.TrackedBranch.FriendlyName == trackSource));
 			}
 		}
 
@@ -465,13 +477,13 @@ index 0000000..009b64b
 
 			repo2.SetBranchTrackRef ("testBranch", "origin/master", "refs/remotes/origin/master");
 			Assert.True (repo2.GetBranches ().Any (
-				b => b.Name == "testBranch" &&
-				b.TrackedBranch == repo2.GetBranches ().Single (rb => rb.Name == "origin/master")
+				b => b.FriendlyName == "testBranch" &&
+				b.TrackedBranch == repo2.GetBranches ().Single (rb => rb.FriendlyName == "origin/master")
 			));
 
 			repo2.SetBranchTrackRef ("testBranch", null, null);
 			Assert.True (repo2.GetBranches ().Any (
-				b => b.Name == "testBranch" &&
+				b => b.FriendlyName == "testBranch" &&
 				b.TrackedBranch == null)
 			);
 		}
@@ -489,6 +501,35 @@ index 0000000..009b64b
 			var revisions = Repo.GetAnnotations (added).Select (a => a.Revision);
 			foreach (var rev in revisions)
 				Assert.AreEqual (GettextCatalog.GetString ("working copy"), rev);
+		}
+
+		[Test]
+		public void TestGitRebaseCommitOrdering ()
+		{
+			var gitRepo = (GitRepository)Repo;
+
+			AddFile ("init", "init", toVcs: true, commit: true);
+
+			// Create a branch from initial commit.
+			gitRepo.CreateBranch ("test", null, null);
+
+			// Create two commits in master.
+			AddFile ("init2", "init", toVcs: true, commit: true);
+			AddFile ("init3", "init", toVcs: true, commit: true);
+
+			// Create two commits in test.
+			gitRepo.SwitchToBranch (new ProgressMonitor (), "test");
+			AddFile ("init4", "init", toVcs: true, commit: true);
+			AddFile ("init5", "init", toVcs: true, commit: true);
+
+			gitRepo.Rebase ("master", GitUpdateOptions.None, new ProgressMonitor ());
+
+			// Commits come in reverse (recent to old).
+			var history = gitRepo.GetHistory (LocalPath, null).Reverse ().ToArray ();
+			Assert.AreEqual (5, history.Length);
+			for (int i = 0; i < 5; ++i) {
+				Assert.AreEqual (string.Format ("Commit #{0}\n", i), history [i].Message);
+			}
 		}
 	}
 }

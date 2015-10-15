@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{84E22F5F-0562-4B51-8B9A-FD79FF33A8B5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>MonoDevelop.CSharpBinding.Tests</RootNamespace>
+    <AssemblyName>MonoDevelop.CSharpBinding.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\build\tests</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\build\tests</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Reference Include="Microsoft.CodeAnalysis.CSharp">
+      <HintPath>..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
+      <HintPath>..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\external\roslyn\Binaries\Release\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
+      <HintPath>..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.Runtime">
+      <HintPath>..\..\external\roslyn\Binaries\Release\System.Composition.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection.Metadata">
+      <HintPath>..\..\external\roslyn\Binaries\Release\System.Reflection.Metadata.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.AttributedModel">
+      <HintPath>..\..\external\roslyn\Binaries\Release\System.Composition.AttributedModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Features\CodeCompletion\NR5\BrowsableAttributeTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR5\CodeCompletionAccessibleTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR5\CodeCompletionBugTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR5\CodeCompletionCSharp3Tests.cs" />
+    <Compile Include="Features\CodeCompletion\NR5\CodeCompletionCSharpTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR5\CodeCompletionOperatorTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR5\CompletionDataList.cs" />
+    <Compile Include="Features\CodeCompletion\NR5\DelegateContextTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR5\DocumentationContextTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR5\EnumContextTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR5\FormatItemTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR5\GetCurrentParameterIndexTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR5\ImportCompletionTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR5\KeywordTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR5\NameContextTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR5\ObjectInitializerTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR5\PreProcessorTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR5\TestBase.cs" />
+    <Compile Include="Features\CodeCompletion\NR5\VariableDeclarationStatementTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR6\CastCompletionContextHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR6\DelegateCreationContextHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR6\EnumMemberContextHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR6\KeywordCompletionContextHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR6\MiscTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR6\ObjectCreationCompletionContextHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR6\OverrideCompletionContextHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR6\PartialCompletionContextHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR6\SenderCompletionContextHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR6\SpeculativeNameContextHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\PortedRoslynTests\AttributeNamedParameterCompletionHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\PortedRoslynTests\CompletionTestBase.cs" />
+    <Compile Include="Features\CodeCompletion\PortedRoslynTests\CrefCompletionHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\PortedRoslynTests\EnumAndCompletionListTagCompletionHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\PortedRoslynTests\ExplicitInterfaceCompletionHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\PortedRoslynTests\ExternAliasCompletionHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\PortedRoslynTests\KeywordCompletionHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\PortedRoslynTests\NamedParameterCompletionHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\PortedRoslynTests\ObjectCreationCompletionHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\PortedRoslynTests\ObjectInitializerCompletionHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\PortedRoslynTests\OverrideCompletionHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\PortedRoslynTests\PartialCompletionHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\PortedRoslynTests\SpeculativeTCompletionHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\PortedRoslynTests\SymbolCompletionHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\PortedRoslynTests\SymbolCompletionHandlerTests_NoInteractive.cs" />
+    <Compile Include="Features\CodeCompletion\PortedRoslynTests\XmlDocCompletionHandlerTests.cs" />
+    <Compile Include="Features\ParameterHinting\ParameterHintingTests.cs" />
+    <Compile Include="Features\InspectionActionTestBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">
+      <Project>{07CC7654-27D6-421D-A64C-0FFA40456FA2}</Project>
+      <Name>CSharpBinding</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
+      <Name>MonoDevelop.Ide</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
+      <Project>{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}</Project>
+      <Name>GuiUnit_NET_4_5</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Neuer Ordner\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

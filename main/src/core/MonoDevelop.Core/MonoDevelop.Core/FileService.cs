@@ -96,6 +96,35 @@ namespace MonoDevelop.Core
 			}
 		}
 
+		/// <summary>
+		/// Returns true if the folder is in a case sensitive file system
+		/// </summary>
+		public static bool IsFolderCaseSensitive (FilePath path)
+		{
+			var testFile = path.Combine (Guid.NewGuid ().ToString ().ToLower ());
+			try {
+				File.WriteAllText (testFile, "");
+				return !File.Exists (testFile.ToString ().ToUpper ());
+			} catch (Exception ex) {
+				// Don't crashh
+				LoggingService.LogError ("IsFolderCaseSensitive failed", ex);
+				return false;
+			} finally {
+				File.Delete (testFile);
+			}
+		}
+
+		/// <summary>
+		/// Gets the real name of a file. In case insensitive file systems the name may have a different case.
+		/// </summary>
+		public static string GetPhysicalFileName (FilePath path)
+		{
+			if (!File.Exists (path) || IsFolderCaseSensitive (path.ParentDirectory))
+				return path.FileName;
+			var file = Directory.GetFiles (path.ParentDirectory).FirstOrDefault (f => string.Equals (path.FileName, Path.GetFileName (f), StringComparison.CurrentCultureIgnoreCase));
+			return file ?? path.FileName;
+		}
+		
 		public static void DeleteFile (string fileName)
 		{
 			Debug.Assert (!String.IsNullOrEmpty (fileName));

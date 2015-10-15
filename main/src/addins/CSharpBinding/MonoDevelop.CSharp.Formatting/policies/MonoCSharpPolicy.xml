@@ -34,6 +34,7 @@ THE SOFTWARE.
 	<LabelPositioning>OneLess</LabelPositioning>
 	<NewLinesForBracesInTypes>True</NewLinesForBracesInTypes>
 	<NewLinesForBracesInMethods>True</NewLinesForBracesInMethods>
+	<NewLinesForBracesInProperties>False</NewLinesForBracesInProperties>
 	<NewLinesForBracesInAnonymousMethods>False</NewLinesForBracesInAnonymousMethods>
 	<NewLinesForBracesInControlBlocks>False</NewLinesForBracesInControlBlocks>
 	<NewLinesForBracesInAnonymousTypes>False</NewLinesForBracesInAnonymousTypes>

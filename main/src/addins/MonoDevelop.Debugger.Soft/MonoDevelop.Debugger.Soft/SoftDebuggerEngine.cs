@@ -168,7 +168,7 @@ namespace MonoDevelop.Debugger.Soft
 			oper.Task.ContinueWith (t => {
 				if (Exited != null)
 					Exited (this, EventArgs.Empty);
-			}, TaskScheduler.FromCurrentSynchronizationContext ());
+			}, Runtime.MainTaskScheduler);
 		}
 		
 		#region IProcess implementation

@@ -12,6 +12,7 @@ using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
 using System;
+using RefactoringEssentials;
 
 namespace MonoDevelop.CSharp.Diagnostics.SimplifyTypeNames
 {

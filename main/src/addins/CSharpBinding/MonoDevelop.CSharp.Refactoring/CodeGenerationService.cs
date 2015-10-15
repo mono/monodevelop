@@ -32,7 +32,6 @@ using MonoDevelop.Core;
 using System.CodeDom;
 using MonoDevelop.Projects;
 using System.CodeDom.Compiler;
-using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -48,6 +47,7 @@ using MonoDevelop.Ide.CodeFormatting;
 using Microsoft.CodeAnalysis.CSharp.Formatting;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Refactoring
 {
@@ -104,7 +104,7 @@ namespace MonoDevelop.Refactoring
 				throw new ArgumentException ("The given type needs to be defined in source code.", nameof (type));
 
 
-			var ws = TypeSystemService.GetWorkspace (project.ParentSolution);
+			var ws = MonoDevelop.Ide.TypeSystem.TypeSystemService.GetWorkspace (project.ParentSolution);
 			var projectId = ws.GetProjectId (project);
 			var docId = ws.GetDocumentId (projectId, part.SourceTree.FilePath);
 
@@ -142,7 +142,7 @@ namespace MonoDevelop.Refactoring
 				throw new ArgumentNullException (nameof (type));
 			if (newMember == null)
 				throw new ArgumentNullException (nameof (newMember));
-			var ws = TypeSystemService.GetWorkspace (project.ParentSolution);
+			var ws = MonoDevelop.Ide.TypeSystem.TypeSystemService.GetWorkspace (project.ParentSolution);
 			var projectId = ws.GetProjectId (project);
 			var docId = ws.GetDocumentId (projectId, part.SourceTree.FilePath);
 
@@ -290,8 +290,8 @@ namespace MonoDevelop.Refactoring
 				sw.WriteLine (ns.ToString ());
 			}
 			FileService.NotifyFileChanged (fileName);
-			var roslynProject = TypeSystemService.GetCodeAnalysisProject (project);
-			var id = TypeSystemService.GetDocumentId (roslynProject.Id, fileName);
+			var roslynProject = MonoDevelop.Ide.TypeSystem.TypeSystemService.GetCodeAnalysisProject (project);
+			var id = MonoDevelop.Ide.TypeSystem.TypeSystemService.GetDocumentId (roslynProject.Id, fileName);
 			if (id == null)
 				return null;
 			var model = roslynProject.GetDocument (id).GetSemanticModelAsync ().Result;

@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Ide.TypeSystem;
 using System.Text;
 using System.IO;
 using System.Collections.Generic;
@@ -45,6 +44,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor.Highlighting;
 using ICSharpCode.NRefactory6.CSharp;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp
 {
@@ -84,7 +84,7 @@ namespace MonoDevelop.CSharp
 				}
 				this.options = ctx.GetOptionSet ();
 			} else {
-				this.options = TypeSystemService.Workspace.Options;
+				this.options = MonoDevelop.Ide.TypeSystem.TypeSystemService.Workspace.Options;
 			}
 		}
 
@@ -114,11 +114,11 @@ namespace MonoDevelop.CSharp
 				//ToMinimalDisplayString can use little outdated model this is fine
 				//but in case of Sketches where user usually is at end of document when typing text this can throw exception
 				//because offset can be >= Length
-				displayString = model != null ? type.ToMinimalDisplayString (model, Math.Min (model.SyntaxTree.Length - 1, offset), Ambience.LabelFormat) : type.Name;
+				displayString = model != null ? type.ToMinimalDisplayString (model, Math.Min (model.SyntaxTree.Length - 1, offset), MonoDevelop.Ide.TypeSystem.Ambience.LabelFormat) : type.Name;
 			} else {
-				displayString = type.ToDisplayString (Ambience.LabelFormat);
+				displayString = type.ToDisplayString (MonoDevelop.Ide.TypeSystem.Ambience.LabelFormat);
 			}
-			var text = Ambience.EscapeText (displayString);
+			var text = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (displayString);
 			return highlight ? HighlightSemantically (text, colorStyle.UserTypes) : text;
 		}
 
@@ -393,6 +393,7 @@ namespace MonoDevelop.CSharp
 
 		string GetNullableMarkup (ITypeSymbol t)
 		{
+			Console.WriteLine ("nullable markup !!!");
 			var result = new StringBuilder ();
 			result.Append (GetTypeReferenceString (t));
 			return result.ToString ();
@@ -448,7 +449,7 @@ namespace MonoDevelop.CSharp
 				return GetTypeParameterMarkup (t);
 			if (t.TypeKind == TypeKind.Array || t.TypeKind == TypeKind.Pointer)
 				return GetTypeReferenceString (t);
-			if (t.SpecialType == SpecialType.System_Nullable_T)
+			if (t.IsNullable ())
 				return GetNullableMarkup (t);
 			var result = new StringBuilder ();
 			if (IsNullableType (t))
@@ -576,7 +577,7 @@ namespace MonoDevelop.CSharp
 
 		static string FilterEntityName (string name)
 		{
-			return Ambience.EscapeText (CSharpAmbience.FilterName (name));
+			return MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (CSharpAmbience.FilterName (name));
 		}
 
 		public string GetDelegateInfo (ITypeSymbol type)
@@ -1505,7 +1506,7 @@ namespace MonoDevelop.CSharp
 		{
 			var result = new TooltipInformation ();
 			if (resolveResult == null) {
-				result.SignatureMarkup = Ambience.EscapeText (typeOfExpression.Type.ToString ());
+				result.SignatureMarkup = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (typeOfExpression.Type.ToString ());
 			} else {
 				result.SignatureMarkup = GetTypeMarkup (resolveResult, true);
 			}
@@ -1650,7 +1651,7 @@ namespace MonoDevelop.CSharp
 		void AppendConstant (StringBuilder sb, ITypeSymbol constantType, object constantValue, bool useNumericalEnumValue = false)
 		{
 			if (constantValue is string) {
-				sb.Append (Highlight ("\"" + Ambience.EscapeText ((string)constantValue) + "\"", colorStyle.String));
+				sb.Append (Highlight ("\"" + MonoDevelop.Ide.TypeSystem.Ambience.EscapeText ((string)constantValue) + "\"", colorStyle.String));
 				return;
 			}
 			if (constantValue is char) {
@@ -1714,7 +1715,7 @@ namespace MonoDevelop.CSharp
 				sb.Append ("(" + GetTypeReferenceString (constantType) + ")" + Highlight (constantValue.ToString (), colorStyle.Number));
 				return;
 			}
-			sb.Append (Highlight (Ambience.EscapeText (constantValue.ToString ()), colorStyle.Number));
+			sb.Append (Highlight (MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (constantValue.ToString ()), colorStyle.Number));
 		}
 
 		void AppendVariance (StringBuilder sb, VarianceKind variance)
@@ -1803,7 +1804,7 @@ namespace MonoDevelop.CSharp
 		public string CreateFooter (ISymbol entity)
 		{
 			var type = entity as ITypeSymbol;
-			if (type != null) {
+			if (type != null && type.Locations.Any ()) {
 				var loc = type.Locations.First ();
 				if (loc.IsInSource) {// TODO:
 									 //					MonoDevelop.Projects.Project project;
@@ -1817,11 +1818,11 @@ namespace MonoDevelop.CSharp
 									 //							"<small>" + GettextCatalog.GetString ("File:\t\t{0} (line {1})", AmbienceService.EscapeText (relPath), line) + "</small>";
 									 //					}
 				}
-				return (type.ContainingNamespace.IsGlobalNamespace ? "" : "<small>" + GettextCatalog.GetString ("Namespace:\t{0}", Ambience.EscapeText (type.ContainingNamespace.Name)) + "</small>" + Environment.NewLine) +
-					"<small>" + GettextCatalog.GetString ("Assembly:\t{0}", Ambience.EscapeText (type.ContainingAssembly.Name)) + "</small>";
+				return (type.ContainingNamespace.IsGlobalNamespace ? "" : "<small>" + GettextCatalog.GetString ("Namespace:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (type.ContainingNamespace.GetFullName ())) + "</small>" + Environment.NewLine) +
+					"<small>" + GettextCatalog.GetString ("Assembly:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (type.ContainingAssembly.Name)) + "</small>";
 			}
 
-			if (entity.ContainingType != null) {
+			if (entity.ContainingType != null && entity.Locations.Any ()) {
 				var loc = entity.Locations.First ();
 				if (!loc.IsInSource) {
 					// TODO:
@@ -1834,8 +1835,8 @@ namespace MonoDevelop.CSharp
 					//								"<small>" + GettextCatalog.GetString ("File:\t\t{0} (line {1})", AmbienceService.EscapeText (relPath), line) + "</small>";
 					//					}
 				}
-				return "<small>" + GettextCatalog.GetString ("From type:\t{0}", Ambience.EscapeText (entity.ContainingType.Name)) + "</small>" + Environment.NewLine +
-					"<small>" + GettextCatalog.GetString ("Assembly:\t{0}", Ambience.EscapeText (entity.ContainingAssembly.Name)) + "</small>";
+				return "<small>" + GettextCatalog.GetString ("From type:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (entity.ContainingType.Name)) + "</small>" + Environment.NewLine +
+					"<small>" + GettextCatalog.GetString ("Assembly:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (entity.ContainingAssembly.Name)) + "</small>";
 			}
 			return null;
 		}

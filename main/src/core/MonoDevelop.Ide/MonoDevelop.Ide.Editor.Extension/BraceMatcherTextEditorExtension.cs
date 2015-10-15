@@ -25,19 +25,38 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Gtk;
+using Mono.Addins;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
 	sealed class BraceMatcherTextEditorExtension : TextEditorExtension
 	{
 		CancellationTokenSource src = new CancellationTokenSource();
-		
+		static List<AbstractBraceMatcher> braceMatcher = new List<AbstractBraceMatcher> ();
+
+		static BraceMatcherTextEditorExtension()
+		{
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/BraceMatcher", delegate(object sender, ExtensionNodeEventArgs args) {
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					braceMatcher.Add ((AbstractBraceMatcher)args.ExtensionObject);
+					break;
+				case ExtensionChange.Remove:
+					braceMatcher.Remove ((AbstractBraceMatcher)args.ExtensionObject);
+					break;
+				}
+			});
+			braceMatcher.Add (new DefaultBraceMatcher());
+		}
+
 		AbstractBraceMatcher GetBraceMatcher ()
 		{
-			return new DefaultBraceMatcher ();
+			return braceMatcher.First (m => m.CanHandle (Editor));
 		}
 
 		protected override void Initialize ()
@@ -45,12 +64,19 @@ namespace MonoDevelop.Ide.Editor.Extension
 			if ((Editor.TextEditorType & TextEditorType.Invisible) != 0)
 				return;
 			Editor.CaretPositionChanged += Editor_CaretPositionChanged;
+			DocumentContext.DocumentParsed += HandleDocumentParsed;
 		}
 
 		public override void Dispose ()
 		{
 			src.Cancel ();
 			Editor.CaretPositionChanged -= Editor_CaretPositionChanged;
+			DocumentContext.DocumentParsed -= HandleDocumentParsed;
+		}
+
+		void HandleDocumentParsed (object sender, EventArgs e)
+		{
+			Editor_CaretPositionChanged (sender, e);
 		}
 
 		void Editor_CaretPositionChanged (object sender, EventArgs e)

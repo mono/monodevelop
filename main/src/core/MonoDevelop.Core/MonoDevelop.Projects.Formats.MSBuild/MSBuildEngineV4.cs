@@ -46,7 +46,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			engine = new Engine ();
 		}
 
-		public override object LoadProject (MSBuildProject p, XmlDocument doc, FilePath fileName)
+		public override object LoadProject (MSBuildProject p, string xml, FilePath fileName)
 		{
 			lock (engine) {
 				engine.GlobalProperties.Clear ();
@@ -54,7 +54,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				var project = new MSProject (engine);
 				project.BuildEnabled = false;
 				project.FullFileName = fileName;
-				project.LoadXml (doc.OuterXml);
+				project.LoadXml (xml);
 				return project;
 			}
 		}
@@ -174,22 +174,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public override IEnumerable<MSBuildTarget> GetTargets (object project)
 		{
-			var doc = new XmlDocument ();
 			var p = (MSProject)project;
 			foreach (var t in p.Targets.Cast<Target> ()) {
-				var te = doc.CreateElement ("Target", MSBuildProject.Schema);
-				te.SetAttribute ("Name", t.Name);
-				if (!string.IsNullOrEmpty (t.Condition))
-					te.SetAttribute ("Condition", t.Condition);
-				foreach (var task in t.OfType<BuildTask> ()) {
-					var tke = doc.CreateElement (task.Name, MSBuildProject.Schema);
-					tke.SetAttribute ("Name", task.Name);
-					if (!string.IsNullOrEmpty (task.Condition))
-						tke.SetAttribute ("Condition", task.Condition);
-					te.AppendChild (tke);
-				}
-				yield return new MSBuildTarget (te) {
-					IsImported = t.IsImported
+				List<MSBuildTask> tasks = new List<MSBuildTask> ();
+				foreach (var task in t.OfType<BuildTask> ())
+					tasks.Add (new MSBuildTask (task.Name) { Condition = task.Condition });
+				yield return new MSBuildTarget (t.Name, tasks) {
+					IsImported = t.IsImported,
+					Condition = t.Condition
 				};
 			}
 		}

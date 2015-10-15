@@ -96,6 +96,11 @@ namespace MonoDevelop.Projects
 			next.OnPrepareForEvaluation (project);
 		}
 
+		internal protected virtual void OnReadProjectHeader (ProgressMonitor monitor, MSBuildProject msproject)
+		{
+			next.OnReadProjectHeader (monitor, msproject);
+		}
+
 		internal protected virtual void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
 			next.OnReadProject (monitor, msproject);

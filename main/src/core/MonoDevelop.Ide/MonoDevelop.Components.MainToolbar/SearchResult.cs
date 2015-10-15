@@ -37,7 +37,6 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide;
 using Microsoft.CodeAnalysis;
 using System.Linq;
-using ICSharpCode.NRefactory6.CSharp;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -45,13 +44,14 @@ namespace MonoDevelop.Components.MainToolbar
 {
 	public enum SearchResultType
 	{
+		Unknown,
 		File,
 		Type,
 		Member,
 		Command
 	}
 
-	abstract class SearchResult
+	public abstract class SearchResult
 	{
 		protected string match;
 		
@@ -66,21 +66,31 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 
-		public abstract SearchResultType SearchResultType { get; }
-		public abstract string PlainText  { get; }
+		public virtual SearchResultType SearchResultType { get { return SearchResultType.Unknown; } }
+		public virtual string PlainText  { get { return null; } }
 
 		public int Rank { get; private set; }
+
+		public double Weight {
+			get;
+			set;
+		}
 
 		public virtual int Offset { get { return -1; } }
 		public virtual int Length { get { return -1; } }
 		
-		public abstract string File { get; }
-		public abstract Xwt.Drawing.Image Icon { get; }
+		public virtual string File { get { return null;} }
+		public virtual Xwt.Drawing.Image Icon { get { return null; } }
 		
-		public abstract string Description { get; }
+		public virtual string Description { get { return null;} }
 		public string MatchedString { get; private set;}
 
-		public abstract Task<TooltipInformation> GetTooltipInformation (CancellationToken token);
+		public ISegment Segment { get { return new TextSegment (Offset, Length); } }
+
+		public virtual Task<TooltipInformation> GetTooltipInformation (CancellationToken token)
+		{
+			return TaskUtil.Default<TooltipInformation> ();
+		}
 
 		public SearchResult (string match, string matchedString, int rank)
 		{
@@ -119,100 +129,12 @@ namespace MonoDevelop.Components.MainToolbar
 		public virtual void Activate ()
 		{
 		}
-	}
-	
-	class DeclaredSymbolInfoResult : SearchResult
-	{
-		bool useFullName;
 
-		DeclaredSymbolInfo type;
-			
-		public override SearchResultType SearchResultType { get { return SearchResultType.Type; } }
-
-		public override string File {
-			get { return type.FilePath; }
-		}
-		
-		public override Xwt.Drawing.Image Icon {
-			get {
-				return ImageService.GetIcon (type.GetStockIconForSymbolInfo(), IconSize.Menu);
-			}
-		}
-
-		
-		public override int Offset {
-			get { return type.Span.Start; }
-		}
-
-		public override int Length {
-			get { return type.Span.Length; }
-		}
-			
-		public override string PlainText {
-			get {
-				return type.Name;
-			}
-		}
-
-		public override async Task<TooltipInformation> GetTooltipInformation (CancellationToken token)
-		{
-			var docId = TypeSystemService.GetDocuments (type.FilePath).FirstOrDefault ();
-			if (docId == null)
-				return new TooltipInformation ();
-			
-			var symbol = await type.GetSymbolAsync (TypeSystemService.GetCodeAnalysisDocument (docId, token), token);
-			return await Ambience.GetTooltip (token, symbol);
-		}
-
-		public override string Description {
-			get {
-				string loc;
-				MonoDevelop.Projects.Project project;
-//				if (type.TryGetSourceProject (out project)) {
-//					loc = GettextCatalog.GetString ("project {0}", project.Name);
-//				} else {
-				loc = GettextCatalog.GetString ("file {0}", File);
-//				}
-
-				switch (type.Kind) {
-				case DeclaredSymbolInfoKind.Interface:
-					return GettextCatalog.GetString ("interface ({0})", loc);
-				case DeclaredSymbolInfoKind.Struct:
-					return GettextCatalog.GetString ("struct ({0})", loc);
-				case DeclaredSymbolInfoKind.Delegate:
-					return GettextCatalog.GetString ("delegate ({0})", loc);
-				case DeclaredSymbolInfoKind.Enum:
-					return GettextCatalog.GetString ("enumeration ({0})", loc);
-				case DeclaredSymbolInfoKind.Class:
-					return GettextCatalog.GetString ("class ({0})", loc);
-
-				case DeclaredSymbolInfoKind.Field:
-					return GettextCatalog.GetString ("field ({0})", loc);
-				case DeclaredSymbolInfoKind.Property:
-					return GettextCatalog.GetString ("property ({0})", loc);
-				case DeclaredSymbolInfoKind.Indexer:
-					return GettextCatalog.GetString ("indexer ({0})", loc);
-				case DeclaredSymbolInfoKind.Event:
-					return GettextCatalog.GetString ("event ({0})", loc);
-				case DeclaredSymbolInfoKind.Method:
-					return GettextCatalog.GetString ("method ({0})", loc);
-				}
-				return GettextCatalog.GetString ("symbol ({0})", loc);
-			}
-		}
-		
-		public override string GetMarkupText (Widget widget)
-		{
-			return HighlightMatch (widget, useFullName ? type.FullyQualifiedContainerName : type.Name, match);
-		}
-		
-		public DeclaredSymbolInfoResult (string match, string matchedString, int rank, DeclaredSymbolInfo type, bool useFullName)  : base (match, matchedString, rank)
-		{
-			this.useFullName = useFullName;
-			this.type = type;
+		public virtual bool IsValid {
+			get { return true; }
 		}
 	}
-	
+
 	class FileSearchResult: SearchResult
 	{
 		ProjectFile file;
@@ -269,7 +191,6 @@ namespace MonoDevelop.Components.MainToolbar
 			return file.FilePath;
 		}
 	}
-
 
 	class CommandResult: SearchResult
 	{
@@ -346,6 +267,17 @@ namespace MonoDevelop.Components.MainToolbar
 		public override void Activate ()
 		{
 			IdeApp.CommandService.DispatchCommand (command.Id, null, route.InitialTarget, CommandSource.MainToolbar);
+		}
+
+		public override bool IsValid {
+			get {
+				if (ci == null) {
+					DispatchService.GuiSyncDispatch (delegate {
+						ci = IdeApp.CommandService.GetCommandInfo (command.Id, new CommandTargetRoute (MainToolbar.LastCommandTarget));
+					});
+				}
+				return ci.Enabled && ci.Visible;
+			}
 		}
 	}
 }

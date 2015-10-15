@@ -30,7 +30,6 @@ using System.Threading.Tasks;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Gui;
-using ICSharpCode.NRefactory6.CSharp.Completion;
 using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.Razor

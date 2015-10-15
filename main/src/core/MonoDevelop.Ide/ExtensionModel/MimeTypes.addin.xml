@@ -67,6 +67,11 @@
 	<MimeType id="text/x-apple-strings" _description="Apple Strings" isText="true">
 		<File pattern="*.strings" />
 	</MimeType>
+		
+	<MimeType id="text/x-sql" _description="sql files" isText="true">
+		<File pattern="*.sql" />
+	</MimeType>
+		
 	<MimeType id="application/json" _description="JSON files" isText="true">
 		<File pattern="*.json" />
 	</MimeType>

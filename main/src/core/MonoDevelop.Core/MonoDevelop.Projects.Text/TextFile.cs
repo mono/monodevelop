@@ -354,13 +354,14 @@ namespace MonoDevelop.Projects.Text
 			modified = true;
 		}
 		
-		public void Save ()
+		public bool Save ()
 		{
-			WriteFile (name, text.ToString (), sourceEncoding, HadBOM);
+			var result = WriteFile (name, text.ToString (), sourceEncoding, HadBOM);
 			modified = false;
+			return result;
 		}
 		
-		public static void WriteFile (FilePath fileName, byte[] content, string encoding, ByteOrderMark bom, bool onlyIfChanged)
+		public static bool WriteFile (FilePath fileName, byte[] content, string encoding, ByteOrderMark bom, bool onlyIfChanged)
 		{
 			int contentLength = content.Length + (bom != null ? bom.Length : 0);
 			byte[] converted;
@@ -374,55 +375,55 @@ namespace MonoDevelop.Projects.Text
 				FileInfo finfo = new FileInfo (fileName);
 				if (finfo.Exists && finfo.Length == contentLength) {
 					bool changed = false;
-					
+
 					// Open the file on disk and compare them byte by byte...
 					using (FileStream stream = finfo.Open (FileMode.Open, FileAccess.Read, FileShare.Read)) {
-						byte[] buf = new byte [4096];
+						byte [] buf = new byte [4096];
 						int bomOffset = 0;
 						int offset = 0;
 						int nread;
 						int i;
-						
+
 						while (!changed && (nread = stream.Read (buf, 0, buf.Length)) > 0) {
 							i = 0;
-							
+
 							if (bom != null && bomOffset < bom.Length) {
 								while (i < nread && bomOffset < bom.Length) {
-									if (bom.Bytes[bomOffset] != buf[i]) {
+									if (bom.Bytes [bomOffset] != buf [i]) {
 										changed = true;
 										break;
 									}
-									
+
 									bomOffset++;
 									i++;
 								}
-								
+
 								if (changed)
 									break;
 							}
-							
+
 							while (i < nread && offset < converted.Length) {
-								if (converted[offset] != buf[i]) {
+								if (converted [offset] != buf [i]) {
 									changed = true;
 									break;
 								}
-								
+
 								offset++;
 								i++;
 							}
-							
+
 							if (offset == converted.Length && i < nread)
 								changed = true;
 						}
-						
+
 						if (offset < converted.Length)
 							changed = true;
 					}
-					
+
 					if (!changed)
-						return;
-				}
-				
+						return true;
+					}
+
 				// Content has changed...
 			}
 			
@@ -438,30 +439,30 @@ namespace MonoDevelop.Projects.Text
 
 			FileService.SystemRename (tempName, fileName);
 			FileService.NotifyFileChanged (fileName);
+			return true;
 		}
 		
-		public static void WriteFile (FilePath fileName, string content, string encoding, ByteOrderMark bom, bool onlyIfChanged)
+		public static bool WriteFile (FilePath fileName, string content, string encoding, ByteOrderMark bom, bool onlyIfChanged)
 		{
 			byte[] buf = Encoding.UTF8.GetBytes (content);
-			
-			WriteFile (fileName, buf, encoding, bom, onlyIfChanged);
+			return WriteFile (fileName, buf, encoding, bom, onlyIfChanged);
 		}
 		
-		public static void WriteFile (FilePath fileName, string content, ByteOrderMark bom, bool onlyIfChanged)
+		public static bool WriteFile (FilePath fileName, string content, ByteOrderMark bom, bool onlyIfChanged)
 		{
-			WriteFile (fileName, content, bom != null ? bom.Name : null, bom, onlyIfChanged);
+			return WriteFile (fileName, content, bom != null ? bom.Name : null, bom, onlyIfChanged);
 		}
 		
-		public static void WriteFile (FilePath fileName, string content, string encoding)
+		public static bool WriteFile (FilePath fileName, string content, string encoding)
 		{
-			WriteFile (fileName, content, encoding, false);
+			return WriteFile (fileName, content, encoding, false);
 		}
 		
-		public static void WriteFile (FilePath fileName, string content, string encoding, bool saveBOM)
+		public static bool WriteFile (FilePath fileName, string content, string encoding, bool saveBOM)
 		{
 			ByteOrderMark bom = saveBOM && encoding != null ? ByteOrderMark.GetByName (encoding) : null;
 			
-			WriteFile (fileName, content, encoding, bom, false);
+			return WriteFile (fileName, content, encoding, bom, false);
 		}
 	}
 	

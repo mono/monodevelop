@@ -452,7 +452,12 @@ namespace Mono.TextEditor
 			imContext.RetrieveSurrounding += delegate (object o, RetrieveSurroundingArgs args) {
 				//use a single line of context, whole document would be very expensive
 				//FIXME: UTF16 surrogates handling for caret offset? only matters for astral plane
-				imContext.SetSurrounding (Document.GetLineText (Caret.Line, false), Caret.Column);
+				var text = Document.GetLineText (Caret.Line, false);
+				// Gtk#, with some input methods, causes
+				// "Gtk-Critical: IA__gtk_im_context_set_surrounding: assertion 'cursor_index >= 0 && cursor_index <= len' failed"
+				// so, do not try to attempt erroneous imcontext call.
+				if (Caret.Column < text.Length)
+					imContext.SetSurrounding (text, Caret.Column);
 				args.RetVal = true;
 			};
 
@@ -474,11 +479,6 @@ namespace Mono.TextEditor
 			//			TextEditorAccessible.Factory.Init (this);
 			//#endif
 
-			if (GtkGestures.IsSupported) {
-				this.AddGestureMagnifyHandler ((sender, args) => {
-					Options.Zoom += Options.Zoom * (args.Magnification / 4d);
-				});
-			}
 			OptionsChanged (this, EventArgs.Empty);
 		}
 
@@ -1425,13 +1425,9 @@ namespace Mono.TextEditor
 			scrollWindowTimer_mod = mod;
 			if (scrollWindowTimer == 0) {
 				scrollWindowTimer = GLib.Timeout.Add (50, delegate {
-					//'If' below shouldn't be needed, but after reproducing bug with FireMotionEvent being called
-					//when it shouldn't and attaching with debugger it turned out that it's called from here
-					//even when scrollWindowTimer was 0, looks like GLib bug
-					if (scrollWindowTimer == 0) {
-						return false;
+					if (HasFocus) {
+						FireMotionEvent (scrollWindowTimer_x, scrollWindowTimer_y, scrollWindowTimer_mod);
 					}
-					FireMotionEvent (scrollWindowTimer_x, scrollWindowTimer_y, scrollWindowTimer_mod);
 					return true;
 				});
 			}
@@ -3157,15 +3153,15 @@ namespace Mono.TextEditor
 			CancelScheduledShow ();
 
 			if (tipWindow != null) {
-				if (checkMouseOver && tipWindow.GdkWindow != null) {
-					// Don't hide the tooltip window if the mouse pointer is inside it.
-					int x, y, w, h;
-					Gdk.ModifierType m;
-					tipWindow.GdkWindow.GetPointer (out x, out y, out m);
-					tipWindow.GdkWindow.GetSize (out w, out h);
-					if (x >= 0 && y >= 0 && x < w && y < h)
-						return;
-				}
+//				if (checkMouseOver && tipWindow.GdkWindow != null) {
+//					// Don't hide the tooltip window if the mouse pointer is inside it.
+//					int x, y, w, h;
+//					Gdk.ModifierType m;
+//					tipWindow.GdkWindow.GetPointer (out x, out y, out m);
+//					tipWindow.GdkWindow.GetSize (out w, out h);
+//					if (x >= 0 && y >= 0 && x < w && y < h)
+//						return;
+//				}
 				tipWindow.Destroy ();
 				tipWindow = null;
 				tipItem = null;

@@ -43,6 +43,8 @@ namespace MonoDevelop.Core
 		[DllImport ("kernel32.dll", SetLastError = true)]
 		static extern int SetThreadUILanguage (int LangId);
 
+		const int LOCALE_CUSTOM_UNSPECIFIED = 4096;
+
 		static GettextCatalog ()
 		{
 			mainThread = Thread.CurrentThread;
@@ -59,7 +61,7 @@ namespace MonoDevelop.Core
 					if (ci.IsNeutralCulture) {
 						// We need a non-neutral culture
 						foreach (CultureInfo c in CultureInfo.GetCultures (CultureTypes.AllCultures & ~CultureTypes.NeutralCultures))
-							if (c.Parent != null && c.Parent.Name == ci.Name) {
+							if (c.Parent != null && c.Parent.Name == ci.Name && c.LCID != LOCALE_CUSTOM_UNSPECIFIED) {
 								ci = c;
 								break;
 							}
@@ -105,60 +107,80 @@ namespace MonoDevelop.Core
 		}
 		
 		#region GetString
+
+		static string GetStringInternal (string phrase)
+		{
+			try {
+				return Catalog.GetString (phrase);
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to localize string", e);
+				return phrase;
+			}
+		}
 		
 		public static string GetString (string phrase)
 		{
-			return Catalog.GetString (phrase);
+			return GetStringInternal (phrase);
 		}
 		
 		public static string GetString (string phrase, object arg0)
 		{
-			return string.Format (Catalog.GetString (phrase), arg0);
+			return string.Format (GetStringInternal (phrase), arg0);
 		}
 		
 		public static string GetString (string phrase, object arg0, object arg1)
 		{
-			return string.Format (Catalog.GetString (phrase), arg0, arg1);
+			return string.Format (GetStringInternal (phrase), arg0, arg1);
 		}
 		
 		public static string GetString (string phrase, object arg0, object arg1, object arg2)
 		{
-			return string.Format (Catalog.GetString (phrase), arg0, arg1, arg2);
+			return string.Format (GetStringInternal (phrase), arg0, arg1, arg2);
 		}
 		
 		public static string GetString (string phrase, params object[] args)
 		{
-			return string.Format (Catalog.GetString (phrase), args);
+			return string.Format (GetStringInternal (phrase), args);
 		}
 		
 		#endregion
 		
 		#region GetPluralString
+
+		static string GetPluralStringInternal (string singular, string plural, int number)
+		{
+			try {
+				return Catalog.GetPluralString (singular, plural, number);
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to localize string", e);
+				return number == 0 ? singular : plural;
+			}
+		}
 		
 		public static string GetPluralString (string singular, string plural, int number)
 		{
-			return Catalog.GetPluralString (singular, plural, number);
+			return GetPluralStringInternal (singular, plural, number);
 		}
 		
 		public static string GetPluralString (string singular, string plural, int number, object arg0)
 		{
-			return string.Format (Catalog.GetPluralString (singular, plural, number), arg0);
+			return string.Format (GetPluralStringInternal (singular, plural, number), arg0);
 		}
 		
 		public static string GetPluralString (string singular, string plural, int number, object arg0, object arg1)
 		{
-			return string.Format (Catalog.GetPluralString (singular, plural, number), arg0, arg1);
+			return string.Format (GetPluralStringInternal (singular, plural, number), arg0, arg1);
 		}
 		
 		public static string GetPluralString (string singular, string plural, int number, 
 			object arg0, object arg1, object arg2)
 		{
-			return string.Format (Catalog.GetPluralString (singular, plural, number), arg0, arg1, arg2);
+			return string.Format (GetPluralStringInternal (singular, plural, number), arg0, arg1, arg2);
 		}
 		
 		public static string GetPluralString (string singular, string plural, int number, params object[] args)
 		{
-			return string.Format (Catalog.GetPluralString (singular, plural, number), args);
+			return string.Format (GetPluralStringInternal (singular, plural, number), args);
 		}
 		#endregion
 	}

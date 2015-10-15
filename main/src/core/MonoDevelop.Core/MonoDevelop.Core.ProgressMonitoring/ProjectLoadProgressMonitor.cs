@@ -23,7 +23,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using System.Threading;
 using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Core
@@ -32,6 +34,14 @@ namespace MonoDevelop.Core
 	{
 		public MonoDevelop.Projects.Solution CurrentSolution { get; set; }
 		public abstract MigrationType ShouldMigrateProject ();
+
+		public ProjectLoadProgressMonitor ()
+		{
+		}
+
+		public ProjectLoadProgressMonitor (SynchronizationContext context): base (context)
+		{
+		}
 
 		public override void Dispose ()
 		{

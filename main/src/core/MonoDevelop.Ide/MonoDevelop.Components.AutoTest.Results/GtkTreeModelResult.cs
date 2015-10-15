@@ -26,10 +26,11 @@
 using System;
 using System.Collections.Generic;
 using Gtk;
+using System.Linq;
 
 namespace MonoDevelop.Components.AutoTest.Results
 {
-	public class GtkTreeModelResult : AppResult
+	public class GtkTreeModelResult : GtkWidgetResult
 	{
 		Widget ParentWidget;
 		TreeModel TModel;
@@ -37,23 +38,36 @@ namespace MonoDevelop.Components.AutoTest.Results
 		TreeIter? resultIter;
 		string DesiredText;
 
-		public GtkTreeModelResult (Widget parent, TreeModel treeModel, int column)
+		public GtkTreeModelResult (Widget parent, TreeModel treeModel, int column) : base (parent)
 		{
 			ParentWidget = parent;
 			TModel = treeModel;
 			Column = column;
 		}
 
-		public GtkTreeModelResult (Widget parent, TreeModel treeModel, int column, TreeIter iter)
+		public GtkTreeModelResult (Widget parent, TreeModel treeModel, int column, TreeIter iter) : base (parent)
 		{
 			ParentWidget = parent;
 			TModel = treeModel;
 			Column = column;
 			resultIter = iter;
 		}
-			
+
 		public override AppResult Marked (string mark)
 		{
+			return null;
+		}
+
+		public override AppResult Selected ()
+		{
+			if (!resultIter.HasValue) {
+				return base.Selected ();
+			}
+
+			if (base.Selected () != null && ParentWidget is TreeView) {
+				TreeView treeView = (TreeView)ParentWidget;
+				return treeView.Selection.IterIsSelected (resultIter.Value) ? this : null;
+			}
 			return null;
 		}
 
@@ -103,7 +117,21 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Property (string propertyName, object value)
 		{
-			return null;
+			if (resultIter != null && resultIter.HasValue) {
+				var objectToCompare = TModel.GetValue (resultIter.Value, Column);
+				return MatchProperty (propertyName, objectToCompare, value);
+			}
+
+			return MatchProperty (propertyName, ParentWidget, value);
+		}
+
+		public override ObjectProperties Properties ()
+		{
+			if (resultIter != null && resultIter.HasValue) {
+				var objectForProperties = TModel.GetValue (resultIter.Value, Column);
+				return base.GetProperties (objectForProperties);
+			}
+			return base.Properties ();
 		}
 
 		public override List<AppResult> NextSiblings ()
@@ -122,15 +150,94 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return newList;
 		}
 
+		public override List<AppResult> Children (bool recursive = true)
+		{
+			if (resultIter == null || !resultIter.HasValue) {
+				List<AppResult> children = new List<AppResult> ();
+				TreeIter topIter;
+				if (TModel.GetIterFirst (out topIter)) {
+					var child = new GtkTreeModelResult (ParentWidget, TModel, Column, topIter);
+					children.Add (child);
+					this.FirstChild = child;
+					child.ParentNode = this;
+
+					if (recursive) {
+						var topIterChildren = FetchIterChildren (topIter, child, recursive);
+						child.FirstChild = topIterChildren.FirstOrDefault ();
+						children.AddRange (topIterChildren);
+					}
+
+					GtkTreeModelResult previousSibling = child;
+					while (TModel.IterNext (ref topIter)) {
+						var nextSibling = new GtkTreeModelResult (ParentWidget, TModel, Column, topIter);
+						children.Add (nextSibling);
+
+						nextSibling.PreviousSibling = previousSibling;
+						previousSibling.NextSibling = nextSibling;
+						nextSibling.ParentNode = this;
+
+						if (recursive) {
+							var topIterChildren = FetchIterChildren (topIter, nextSibling, recursive);
+							nextSibling.FirstChild = topIterChildren.FirstOrDefault ();
+							children.AddRange (topIterChildren);
+						}
+					}
+				}
+				return children;
+			}
+
+			TreeIter currentIter = (TreeIter) resultIter;
+			return FetchIterChildren (currentIter, this, recursive);
+		}
+
+		List<AppResult> FetchIterChildren (TreeIter iter, GtkTreeModelResult result, bool recursive)
+		{
+			List<AppResult> newList = new List<AppResult> ();
+			if (!TModel.IterHasChild (iter))
+			{
+				return newList;
+			}
+
+			GtkTreeModelResult previousSibling = null;
+			for (int i = 0; i < TModel.IterNChildren (iter); i++) {
+				TreeIter childIter;
+				if (TModel.IterNthChild (out childIter, iter, i)) {
+					var child = new GtkTreeModelResult (ParentWidget, TModel, Column, childIter);
+
+					child.ParentNode = this;
+					child.PreviousSibling = previousSibling;
+					if (previousSibling != null)
+						previousSibling.NextSibling = child;
+					
+					newList.Add (child);
+					if (recursive) {
+						var childrenIter = FetchIterChildren (childIter, child, recursive);
+						newList.AddRange (childrenIter);
+						child.FirstChild = childrenIter.FirstOrDefault ();
+					}
+
+					previousSibling = child;
+				}
+			}
+			result.FirstChild = newList.FirstOrDefault ();
+			return newList;
+		}
+
 		public override bool Select ()
 		{
+			base.Select ();
+
 			if (!resultIter.HasValue) {
 				return false;
 			}
 
 			if (ParentWidget is TreeView) {
 				TreeView treeView = (TreeView) ParentWidget;
+				treeView.Selection.UnselectAll ();
+				treeView.ExpandRow (TModel.GetPath (resultIter.Value), false);
 				treeView.Selection.SelectIter ((TreeIter) resultIter);
+				treeView.SetCursor (TModel.GetPath ((TreeIter) resultIter), treeView.Columns [0], false);
+
 			} else if (ParentWidget is ComboBox) {
 				ComboBox comboBox = (ComboBox) ParentWidget;
 				comboBox.SetActiveIter ((TreeIter) resultIter);
@@ -141,13 +248,23 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override bool Click ()
 		{
-			// FIXME: Same as select?
-			return true;
+			if (ParentWidget is TreeView && resultIter.HasValue) {
+				var path = TModel.GetPath (resultIter.Value);
+				var tree = ParentWidget as TreeView;
+				return tree.ExpandRow (path, true);
+			}
+
+			return false;
 		}
 
-		public override bool TypeKey (char key, string state)
+		public override bool TypeKey (char key, string state = "")
 		{
 			return false;
+		}
+
+		public override bool TypeKey (string keyString, string state = "")
+		{
+			throw new NotImplementedException ();
 		}
 
 		public override bool EnterText (string text)

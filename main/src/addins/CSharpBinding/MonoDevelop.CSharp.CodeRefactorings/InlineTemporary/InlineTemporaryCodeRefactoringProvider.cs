@@ -21,7 +21,7 @@ using Roslyn.Utilities;
 using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis.CSharp;
-using ICSharpCode.NRefactory6.CSharp.Refactoring;
+using RefactoringEssentials;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.CodeRefactorings.InlineTemporary

@@ -2,15 +2,27 @@ ALL_CSPROJ=$(wildcard *.csproj)
 MAIN_SLN=$(top_builddir)/Main.sln
 
 if ENABLE_MACPLATFORM
+if RELEASE_BUILDS
+PROFILE_NAME=ReleaseMac
+else
 PROFILE_NAME=DebugMac
+endif
 endif
 
 if ENABLE_GNOMEPLATFORM
+if RELEASE_BUILDS
+PROFILE_NAME=ReleaseGnome
+else
 PROFILE_NAME=DebugGnome
+endif
 endif
 
 if ENABLE_WINDOWSPLATFORM
+if RELEASE_BUILDS
+PROFILE_NAME=ReleaseWin32
+else
 PROFILE_NAME=DebugWin32
+endif
 endif
 
 XBUILD=xbuild
@@ -48,7 +60,7 @@ sln_clean:
 print_extradist:
 	@echo $(WILDCARDED_FILES)
 
-EXTS:=*.bmp *.cs *.csproj *.html *.png *.snk *.config *.stetic *.glade *.xml *.xsd *.exe.addins *.template *.tt *.txt
+EXTS:=*.bmp *.cs *.csproj *.html *.png *.snk *.config *.stetic *.glade *.xml *.xsd *.exe.addins *.template *.tt *.txt *.targets *.sh
 
 ALL_FILES:=	$(EXTS) \
 		$(addprefix */,$(EXTS))		\

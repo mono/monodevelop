@@ -286,8 +286,8 @@ namespace MonoDevelop.ChangeLogAddIn
 				return;
 			}
 			
-			var dlg = new AddLogEntryDialog (entries);
-			MessageService.ShowCustomDialog (dlg, (Window) Toplevel);
+			using (var dlg = new AddLogEntryDialog (entries))
+				MessageService.ShowCustomDialog (dlg, (Window) Toplevel);
 		}
 		
 		void OnClickOptions (object s, EventArgs args)

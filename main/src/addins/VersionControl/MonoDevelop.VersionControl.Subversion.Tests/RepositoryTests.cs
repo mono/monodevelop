@@ -137,6 +137,11 @@ namespace VersionControl.Subversion.Unix.Tests
 		{
 			return new SubversionRepository (new SvnClient (), url, path);
 		}
+
+		protected override Repository GetRepo ()
+		{
+			return new SubversionRepository (new SvnClient (), string.Empty, FilePath.Empty);
+		}
 	}
 }
 

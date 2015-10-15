@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using NUnit.Framework;
 
 namespace UserInterfaceTests
@@ -35,31 +34,13 @@ namespace UserInterfaceTests
 	{
 		readonly string dotNetCategory = ".NET";
 
-		[Test]
-		public void TestCreateBuildConsoleProject ()
-		{
-			RunDotNetTests ("Console Project", EmptyAction);
-		}
-
-		[Test]
-		public void TestCreateBuildGtkSharp20Project ()
-		{
-			RunDotNetTests ("Gtk# 2.0 Project", EmptyAction);
-		}
-
-		[Test]
-		public void TestCreateBuildLibrary ()
-		{
-			RunDotNetTests ("Library", EmptyAction);
-		}
-
-		[Test]
-		public void TestCreateBuildNUnitLibraryProject ()
-		{
-			RunDotNetTests ("NUnit Library Project", WaitForPackageUpdate);
-		}
-
-		void RunDotNetTests (string templateName, Action beforeBuild)
+		[Test, Timeout (90000)]
+		[TestCase ("Console Project", 30, TestName = "TestCreateBuildConsoleProject", Description = "Create and build C# Console Project", Category="Smoke")]
+		[TestCase ("Gtk# 2.0 Project", 30, TestName = "TestCreateBuildGtkSharp20Project", Description = "Create and build a GTK#2 Project")]
+		[TestCase ("Library", 30, TestName = "TestCreateBuildLibrary", Description = "Create and build a Library Project")]
+		[TestCase ("NUnit Library Project", 50, TestName = "TestCreateBuildNUnitLibraryProject",
+			Description = "Create and build NUnit Library Project", Category="Smoke")]
+		public void RunDotNetTests (string templateName, int totalTimeoutInSecs)
 		{
 			var templateOptions = new TemplateSelectionOptions {
 				CategoryRoot = OtherCategoryRoot,
@@ -67,7 +48,7 @@ namespace UserInterfaceTests
 				TemplateKindRoot = GeneralKindRoot,
 				TemplateKind = templateName
 			};
-			CreateBuildProject (templateOptions, beforeBuild);
+			CreateBuildProject (templateOptions, () => Ide.WaitForIdeIdle ((uint)totalTimeoutInSecs));
 		}
 	}
 }

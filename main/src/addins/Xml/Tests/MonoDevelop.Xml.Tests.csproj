@@ -39,6 +39,7 @@
     </Execution>
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591;1573</NoWarn>
+    <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -59,10 +60,6 @@
       <Project>{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}</Project>
       <Name>MonoDevelop.Xml</Name>
       <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\external\NRefactory6\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory6.CSharp.csproj">
-      <Project>{7E891659-45F3-42B5-B940-A728780CCAE9}</Project>
-      <Name>ICSharpCode.NRefactory6.CSharp</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

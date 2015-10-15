@@ -202,6 +202,11 @@ namespace MonoDevelop.Ide.Gui
 					return false;
 				if (toplevel == RootWindow)
 					return true;
+				#if WIN32
+				var wpfWindow = System.Windows.Application.Current.Windows.OfType<System.Windows.Window>().SingleOrDefault (x => x.IsActive);
+				if (wpfWindow != null)
+					return true;
+				#endif
 				var dock = toplevel as DockFloatingWindow;
 				return dock != null && dock.DockParent == RootWindow;
 			}
@@ -638,6 +643,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 			} finally {
 				ops.Destroy ();
+				ops.Dispose ();
 			}
 		}
 		
@@ -660,6 +666,7 @@ namespace MonoDevelop.Ide.Gui
 				MessageService.RunCustomDialog (ops, parentWindow);
 			} finally {
 				ops.Destroy ();
+				ops.Dispose ();
 			}
 		}
 		
@@ -1320,6 +1327,11 @@ namespace MonoDevelop.Ide.Gui
 		public IViewContent NewContent { get; set; }
 		public Encoding Encoding { get; set; }
 		public Project Project { get; set; }
+
+		/// <summary>
+		/// Is true when the file is already open and reload is requested.
+		/// </summary>
+		public bool IsReloadOperation { get; set; }
 
 		internal DockNotebook DockNotebook { get; set; }
 

@@ -422,7 +422,7 @@ namespace MonoDevelop.NUnit
 				
 			} catch (Exception ex) {
 				if (ReportCrash (testContext, crashLogFile)) {
-					result = UnitTestResult.CreateFailure (GettextCatalog.GetString ("Undhandled exception"), null);
+					result = UnitTestResult.CreateFailure (GettextCatalog.GetString ("Unhandled exception"), null);
 				}
 				else if (!localMonitor.Canceled) {
 					LoggingService.LogError (ex.ToString ());
@@ -483,7 +483,7 @@ namespace MonoDevelop.NUnit
 
 				bool automaticUpdates = cmd.Command != null && (cmd.Command.Contains ("GuiUnit") || (cmd.Command.Contains ("mdtool.exe") && cmd.Arguments.Contains ("run-md-tests")));
 				if (!string.IsNullOrEmpty(pathName))
-					cmd.Arguments += " -run=" + test.TestId;
+					cmd.Arguments += " -run=\"" + test.TestId + "\"";
 				if (automaticUpdates) {
 					tcpListener = new MonoDevelop.NUnit.External.TcpTestListener (localMonitor, suiteName);
 					cmd.Arguments += " -port=" + tcpListener.Port;
@@ -493,12 +493,12 @@ namespace MonoDevelop.NUnit
 				// forever if the test runner does not try to connect to it
 				using (tcpListener) {
 					var p = testContext.ExecutionContext.Execute (cmd, cons);
-
 					testContext.Monitor.CancelRequested += p.Cancel;
 					if (testContext.Monitor.IsCancelRequested)
 						p.Cancel ();
 					p.Task.Wait ();
-					
+					testContext.Monitor.CancelRequested -= p.Cancel;
+
 					if (new FileInfo (outFile).Length == 0)
 						throw new Exception ("Command failed");
 				}
@@ -547,6 +547,7 @@ namespace MonoDevelop.NUnit
 				return UnitTestResult.CreateIgnored ("Test execution failed");
 			} finally {
 				File.Delete (outFile);
+				cons.Dispose ();
 			}
 		}
 

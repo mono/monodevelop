@@ -22,6 +22,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
+using Mono.TextEditor;
 using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor.Wrappers
@@ -32,6 +34,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		readonly MonoDevelop.Ide.Editor.Extension.IndentationTracker indentationTracker;
 
 		readonly Mono.TextEditor.TextEditorData textEditorData;
+
 
 		public IndentationTrackerWrapper (Mono.TextEditor.TextEditorData textEditorData, IReadonlyTextDocument document, MonoDevelop.Ide.Editor.Extension.IndentationTracker indentationTracker)
 		{
@@ -47,6 +50,13 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		}
 
 		#region IIndentationTracker implementation
+
+		IndentatitonTrackerFeatures IIndentationTracker.SupportedFeatures {
+			get {
+				return (IndentatitonTrackerFeatures)indentationTracker.SupportedFeatures;
+			}
+		}
+
 		string Mono.TextEditor.IIndentationTracker.GetIndentationString (int offset)
 		{
 			return indentationTracker.GetIndentationString (document.OffsetToLineNumber (offset));

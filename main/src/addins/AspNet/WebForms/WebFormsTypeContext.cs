@@ -44,7 +44,6 @@ using MonoDevelop.AspNet.WebForms.Dom;
 using System.Reflection;
 using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis;
-using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Threading;
 using System.Threading.Tasks;

@@ -30,6 +30,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using LibGit2Sharp;
+using MonoDevelop.Components.AutoTest;
+using System.ComponentModel;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -51,6 +53,8 @@ namespace MonoDevelop.VersionControl.Git
 			oldName = name;
 			currentTracking = tracking;
 
+			this.UseNativeContextMenus ();
+
 			comboStore = new ListStore (typeof(string), typeof(Xwt.Drawing.Image), typeof (string), typeof(string));
 			comboSources.Model = comboStore;
 			var crp = new CellRendererImage ();
@@ -60,8 +64,11 @@ namespace MonoDevelop.VersionControl.Git
 			comboSources.PackStart (crt, true);
 			comboSources.AddAttribute (crt, "text", 2);
 
+			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("comboStore__Branch", "comboStore__Icon", "comboStore__Name", "comboStore__Tracking");
+			TypeDescriptor.AddAttributes (comboStore, modelAttr);
+
 			foreach (Branch b in repo.GetBranches ()) {
-				AddValues (b.Name, ImageService.GetIcon ("vc-branch", IconSize.Menu), "refs/heads/");
+				AddValues (b.FriendlyName, ImageService.GetIcon ("vc-branch", IconSize.Menu), "refs/heads/");
 			}
 
 			foreach (Remote r in repo.GetRemotes ()) {
@@ -112,7 +119,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			comboSources.Sensitive = checkTrack.Active;
 			buttonOk.Sensitive = entryName.Text.Length > 0;
-			if (oldName != entryName.Text && repo.GetBranches ().Any (b => b.Name == entryName.Text)) {
+			if (oldName != entryName.Text && repo.GetBranches ().Any (b => b.FriendlyName == entryName.Text)) {
 				labelError.Markup = "<span color='red'>" + GettextCatalog.GetString ("A branch with this name already exists") + "</span>";
 				labelError.Show ();
 				buttonOk.Sensitive = false;

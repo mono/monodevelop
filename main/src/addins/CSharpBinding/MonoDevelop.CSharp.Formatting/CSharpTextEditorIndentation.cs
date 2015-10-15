@@ -43,6 +43,8 @@ using ICSharpCode.NRefactory6.CSharp;
 using System.Threading;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Options;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -51,7 +53,7 @@ namespace MonoDevelop.CSharp.Formatting
 		internal ICSharpCode.NRefactory6.CSharp.CacheIndentEngine stateTracker;
 		int cursorPositionBeforeKeyPress;
 
-		readonly IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+		readonly static IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 
 		CSharpFormattingPolicy Policy {
 			get {
@@ -75,16 +77,21 @@ namespace MonoDevelop.CSharp.Formatting
 
 		static CSharpTextEditorIndentation ()
 		{
-			CompletionWindowManager.WordCompleted += delegate(object sender, CodeCompletionContextEventArgs e) {
+			CompletionWindowManager.WordCompleted += delegate (object sender, CodeCompletionContextEventArgs e) {
 				var editor = e.Widget as IServiceProvider;
 				if (editor == null)
 					return;
-				var extension = editor.GetService (typeof(CSharpTextEditorIndentation)) as CSharpTextEditorIndentation;
+				var extension = editor.GetService (typeof (CSharpTextEditorIndentation)) as CSharpTextEditorIndentation;
 				if (extension == null)
 					return;
 				extension.SafeUpdateIndentEngine (extension.Editor.CaretOffset);
 				if (extension.stateTracker.NeedsReindent)
 					extension.DoReSmartIndent ();
+			};
+
+			RefactoringService.OptionSetCreation = (editor, ctx) => {
+				var policy = ctx.Project.Policies.Get<CSharpFormattingPolicy> (types);
+				return policy.CreateOptions (editor.Options);
 			};
 		}
 
@@ -111,7 +118,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (!OnTheFlyFormatting || Editor == null || Editor.EditMode != EditMode.Edit)
 				return;
 			var offset = Editor.LocationToOffset (location);
-			OnTheFlyFormatter.Format (Editor, DocumentContext, offset, offset);
+			OnTheFlyFormatter.Format (Editor, DocumentContext, offset, offset, optionSet: optionSet);
 		}
 
 		protected override void Initialize ()
@@ -140,7 +147,7 @@ namespace MonoDevelop.CSharp.Formatting
 				foreach (string s in configuration.GetDefineSymbols ())
 					yield return s;
 				// Workaround for mcs defined symbol
-				if (configuration.TargetRuntime.RuntimeId == "Mono") 
+				if (configuration.TargetRuntime.RuntimeId == "Mono")
 					yield return "__MonoCS__";
 			}
 		}
@@ -148,11 +155,11 @@ namespace MonoDevelop.CSharp.Formatting
 		void HandleTextOptionsChanged (object sender, EventArgs e)
 		{
 			//var options = Editor.CreateNRefactoryTextEditorOptions ();
-			var policy = Policy.CreateOptions (Editor.Options);
+			optionSet = Policy.CreateOptions (Editor.Options);
 			//options.IndentBlankLines = true;
 			ICSharpCode.NRefactory6.CSharp.IStateMachineIndentEngine indentEngine;
 			try {
-				var csharpIndentEngine = new ICSharpCode.NRefactory6.CSharp.CSharpIndentEngine (policy);
+				var csharpIndentEngine = new ICSharpCode.NRefactory6.CSharp.CSharpIndentEngine (optionSet);
 				//csharpIndentEngine.EnableCustomIndentLevels = true;
 				foreach (var symbol in GetDefinedSymbols (DocumentContext.Project)) {
 					csharpIndentEngine.DefineSymbol (symbol);
@@ -173,7 +180,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (indentationDisabled) {
 				Editor.SetTextPasteHandler (null);
 			} else {
-				Editor.SetTextPasteHandler (new CSharpTextPasteHandler (this, stateTracker, policy));
+				Editor.SetTextPasteHandler (new CSharpTextPasteHandler (this, stateTracker, optionSet));
 			}
 		}
 
@@ -396,13 +403,13 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 				using (var undo = Editor.OpenUndoGroup ()) {
 					if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
-						OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation);
+						OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation, optionSet: optionSet);
 					}
 				}
 				return retval;
 			}
 			
-			if (descriptor.SpecialKey == SpecialKey.Tab && !CompletionWindowManager.IsVisible) {
+			if (descriptor.SpecialKey == SpecialKey.Tab && descriptor.ModifierKeys == ModifierKeys.None && !CompletionWindowManager.IsVisible) {
 				SafeUpdateIndentEngine (Editor.CaretOffset);
 				if (stateTracker.IsInsideStringLiteral && !Editor.IsSomethingSelected) {
 					var lexer = new ICSharpCode.NRefactory.CSharp.Completion.CSharpCompletionEngineBase.MiniLexer (Editor.GetTextAt (0, Editor.CaretOffset));
@@ -544,7 +551,7 @@ namespace MonoDevelop.CSharp.Formatting
 						return;
 					using (var undo = Editor.OpenUndoGroup ()) {
 						if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
-							OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation);
+							OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation, optionSet: optionSet);
 						}
 					}
 				}
@@ -579,7 +586,7 @@ namespace MonoDevelop.CSharp.Formatting
 				return;
 			var value = tokenRange.Value;
 			using (var undo = Editor.OpenUndoGroup ()) {
-				OnTheFlyFormatter.Format (Editor, DocumentContext, value.Item1.SpanStart, value.Item2.Span.End);
+				OnTheFlyFormatter.Format (Editor, DocumentContext, value.Item1.SpanStart, value.Item2.Span.End, optionSet: optionSet);
 			}
 		}
 
@@ -724,6 +731,7 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 
 		internal bool wasInStringLiteral;
+		OptionSet optionSet;
 
 		public bool FixLineStart (TextEditor textEditorData, ICSharpCode.NRefactory6.CSharp.IStateMachineIndentEngine stateTracker, int lineNumber)
 		{

@@ -38,6 +38,7 @@ using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using Microsoft.CodeAnalysis;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
@@ -71,7 +72,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			set {
 				if (value == null)
 					throw new ArgumentNullException ();
+				if (textEditor != null)
+					textEditor.EditorOptionsChanged -= TextEditor_EditorOptionsChanged;
 				textEditor = value;
+				textEditor.EditorOptionsChanged += TextEditor_EditorOptionsChanged;
 				SetupMode ();
 			}
 		}
@@ -88,8 +92,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			}
 		}
 		
-		Dictionary<IQuickTaskProvider, List<QuickTask>> providerTasks = new Dictionary<IQuickTaskProvider, List<QuickTask>> ();
-		Dictionary<UsageProviderEditorExtension, List<Usage>> providerUsages = new Dictionary<UsageProviderEditorExtension, List<Usage>> ();
+		ImmutableDictionary<IQuickTaskProvider, ImmutableArray<QuickTask>> providerTasks = ImmutableDictionary<IQuickTaskProvider, ImmutableArray<QuickTask>>.Empty;
+		ImmutableDictionary<UsageProviderEditorExtension, ImmutableArray<Usage>> providerUsages = ImmutableDictionary<UsageProviderEditorExtension, ImmutableArray<Usage>>.Empty;
 
 		public IEnumerable<QuickTask> AllTasks {
 			get {
@@ -157,6 +161,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		protected override void OnDestroyed ()
 		{
 			adj = null;
+			if (textEditor != null)
+				textEditor.EditorOptionsChanged -= TextEditor_EditorOptionsChanged;
 			textEditor = null;
 			providerTasks = null;
 			PropertyService.RemovePropertyHandler ("ScrollBar.Mode", ScrollBarModeChanged);
@@ -174,7 +180,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			if (providerTasks == null)
 				return;
-			providerTasks [provider] = new List<QuickTask> (provider.QuickTasks);
+			providerTasks = providerTasks.SetItem (provider, provider.QuickTasks);
 			OnTaskProviderUpdated (EventArgs.Empty);
 		}
 		
@@ -182,7 +188,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			if (providerTasks == null)
 				return;
-			providerUsages [provider] = new List<Usage> (provider.Usages);
+			providerUsages = providerUsages.SetItem (provider, provider.Usages);
 			OnTaskProviderUpdated (EventArgs.Empty);
 		}
 
@@ -202,7 +208,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			}
 			return base.OnButtonPressEvent (evnt);
 		}
-		
+
+		void TextEditor_EditorOptionsChanged (object sender, EventArgs e)
+		{
+			QueueDraw ();
+		}
+
 		#region Command handlers
 		[CommandHandler (ScrollbarCommand.Top)]
 		internal void GotoTop ()

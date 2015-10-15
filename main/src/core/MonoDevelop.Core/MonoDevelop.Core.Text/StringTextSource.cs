@@ -142,6 +142,22 @@ namespace MonoDevelop.Core.Text
 			return new StringTextSource (text, encoding, hadBom);
 		}
 
+		public static StringTextSource ReadFrom (Stream stream)
+		{
+			bool hadBom;
+			Encoding encoding;
+			var text = TextFileUtility.GetText (stream, out encoding, out hadBom);
+			return new StringTextSource (text, encoding, hadBom);
+		}
+
+		public static StringTextSource ReadFrom (byte[] data)
+		{
+			bool hadBom;
+			Encoding encoding;
+			var text = TextFileUtility.GetText (data, out encoding, out hadBom);
+			return new StringTextSource (text, encoding, hadBom);
+		}
+
 		/// <inheritdoc/>
 		public TextReader CreateReader ()
 		{
@@ -168,6 +184,12 @@ namespace MonoDevelop.Core.Text
 			if (writer == null)
 				throw new ArgumentNullException ("writer");
 			writer.Write (text.Substring (offset, length));
+		}
+
+		/// <inheritdoc/>
+		public void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
+		{
+			text.CopyTo (sourceIndex, destination, destinationIndex, count); 
 		}
 	}
 }

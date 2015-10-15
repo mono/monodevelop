@@ -31,8 +31,13 @@ TEST_ASSEMBLIES_COMMON = \
 	$(TEST_DIR)/MonoDevelop.PackageManagement.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.TextEditor.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.Xml.Tests.dll \
-	$(TEST_DIR)/MonoDevelop.AspNet.Tests.dll \
-	$(EXTERNAL)/nrefactory/bin/Debug/ICSharpCode.NRefactory.Tests.dll
+	$(TEST_DIR)/MonoDevelop.AspNet.Tests.dll
+
+if RELEASE_BUILDS
+TEST_ASSEMBLIES_COMMON += $(EXTERNAL)/nrefactory/bin/Release/ICSharpCode.NRefactory.Tests.dll
+else
+TEST_ASSEMBLIES_COMMON += $(EXTERNAL)/nrefactory/bin/Debug/ICSharpCode.NRefactory.Tests.dll
+endif
 
 ALL_CSPROJ = $(TEST_PROJECTS_COMMON)
 TEST_ASSEMBLIES = $(TEST_ASSEMBLIES_COMMON)
@@ -45,9 +50,6 @@ endif
 if ENABLE_WINDOWSPLATFORM
 TEST_ASSEMBLIES += $(TEST_ASSEMBLIES_WINDOWS)
 endif
-
-UITEST_ASSEMBLIES = \
-	$(TEST_DIR)/UserInterfaceTests.dll
 
 test:
 	@if test -n "$(assembly)"; then \
@@ -75,12 +77,15 @@ test:
 uitest:
 	rm -rf $(TEST_DIR)/TestResults
 	@if test -n "$(assembly)"; then \
-		for asm in $(UITEST_ASSEMBLIES); do \
+		for asm in $(wildcard $(TEST_DIR)/MonoDevelop.UITests*.dll); do \
 			if test `basename $$asm` = $(assembly); then \
 				if test -n "$(categories)"; then \
 					($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml -labels -include=$(categories) $$asm) || exit $?; \
 				fi; \
-				if ! test -n "$(categories)"; then \
+				if test -n "$(tests)"; then \
+					($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml -labels -run=$(tests) $$asm) || exit $?; \
+				fi; \
+				if ! test -n "$(categories)" && ! test -n "$(tests)"; then \
 					($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml -labels $$asm) || exit $?; \
 				fi; \
 			fi; \

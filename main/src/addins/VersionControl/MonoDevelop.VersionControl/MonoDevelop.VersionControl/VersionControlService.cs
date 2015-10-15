@@ -95,7 +95,15 @@ namespace MonoDevelop.VersionControl
 
 		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
-			VersionControlSystem vcs = (VersionControlSystem) args.ExtensionObject;
+			VersionControlSystem vcs;
+
+			try {
+				vcs = (VersionControlSystem) args.ExtensionObject;
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to initialize VersionControlSystem type.", e);
+				return;
+			}
+
 			if (args.Change == ExtensionChange.Add) {
 				handlers.Add (vcs);
 				try {
@@ -124,9 +132,10 @@ namespace MonoDevelop.VersionControl
 			
 			switch (status & VersionStatus.LocalChangesMask) {
 				case VersionStatus.Modified:
-				case VersionStatus.ScheduledReplace:
 				case VersionStatus.ScheduledIgnore:
 					return overlay_modified;
+				case VersionStatus.ScheduledReplace:
+					return overlay_renamed;
 				case VersionStatus.Conflicted:
 					return overlay_conflicted;
 				case VersionStatus.ScheduledAdd:
@@ -209,26 +218,28 @@ namespace MonoDevelop.VersionControl
 			
 			return repo;
 		}
-		
+
 		public static Repository GetRepositoryReference (string path, string id)
 		{
 			VersionControlSystem detectedVCS = null;
-			FilePath shortestPath = FilePath.Null;
+			FilePath bestMatch = FilePath.Null;
 
 			foreach (VersionControlSystem vcs in GetVersionControlSystems ()) {
 				var newPath = vcs.GetRepositoryPath (path, id);
 				if (!newPath.IsNullOrEmpty) {
-					if (string.IsNullOrEmpty (shortestPath)) {
-						shortestPath = newPath;
+					// Check whether we have no match or if a new match is found with a longer path.
+					// TODO: If the repo root is not the same as the repo reference, ask user for input.
+					// TODO: If we have two version control directories in the same place, ask user for input.
+					if (bestMatch.IsNullOrEmpty) {
+						bestMatch = newPath;
 						detectedVCS = vcs;
-					} else if (shortestPath.CompareTo (newPath) <= 0) {
-						// They are guaranteed to be on the same path segments, so choose by path length.
-						shortestPath = newPath;
+					} else if (bestMatch.CompareTo (newPath) <= 0) {
+						bestMatch = newPath;
 						detectedVCS = vcs;
 					}
 				}
 			}
-			return detectedVCS == null ? null : detectedVCS.GetRepositoryReference (shortestPath, id);
+			return detectedVCS == null ? null : detectedVCS.GetRepositoryReference (bestMatch, id);
 
 		}
 		

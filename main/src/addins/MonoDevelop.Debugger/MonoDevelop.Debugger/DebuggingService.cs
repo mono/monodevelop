@@ -46,7 +46,7 @@ using MonoDevelop.Debugger.Viewers;
 using MonoDevelop.Ide.TextEditing;
 using System.Linq;
 using System.Threading.Tasks;
-using ICSharpCode.NRefactory6.CSharp;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Debugger
 {
@@ -249,9 +249,10 @@ namespace MonoDevelop.Debugger
 		
 		public static void ShowValueVisualizer (ObjectValue val)
 		{
-			var dlg = new ValueVisualizerDialog ();
-			dlg.Show (val);
-			MessageService.ShowCustomDialog (dlg);
+			using (var dlg = new ValueVisualizerDialog ()) {
+				dlg.Show (val);
+				MessageService.ShowCustomDialog (dlg);
+			}
 		}
 
 		public static void ShowPreviewVisualizer (ObjectValue val, MonoDevelop.Components.Control widget, Gdk.Rectangle previewButtonArea)
@@ -321,12 +322,12 @@ namespace MonoDevelop.Debugger
 
 		public static void ShowExpressionEvaluator (string expression)
 		{
-			var dlg = new ExpressionEvaluatorDialog ();
+			using (var dlg = new ExpressionEvaluatorDialog ()) {
+				if (expression != null)
+					dlg.Expression = expression;
 
-			if (expression != null)
-				dlg.Expression = expression;
-
-			MessageService.ShowCustomDialog (dlg);
+				MessageService.ShowCustomDialog (dlg);
+			}
 		}
 
 		public static void ShowExceptionCaughtDialog ()
@@ -451,13 +452,16 @@ namespace MonoDevelop.Debugger
 			currentSession.Dispose ();
 		}
 
+		static string oldLayout;
 		static void UnsetDebugLayout ()
 		{
 			// Dispatch synchronously to avoid start/stop races
 			DispatchService.GuiSyncDispatch (delegate {
 				IdeApp.Workbench.HideCommandBar ("Debug");
-				if (IdeApp.Workbench.CurrentLayout == "Debug")
-					IdeApp.Workbench.CurrentLayout = "Solution";
+				if (IdeApp.Workbench.CurrentLayout == "Debug") {
+					IdeApp.Workbench.CurrentLayout = oldLayout ?? "Solution";
+				}
+				oldLayout = null;
 			});
 		}
 
@@ -465,6 +469,7 @@ namespace MonoDevelop.Debugger
 		{
 			// Dispatch synchronously to avoid start/stop races
 			DispatchService.GuiSyncDispatch (delegate {
+				oldLayout = IdeApp.Workbench.CurrentLayout;
 				IdeApp.Workbench.CurrentLayout = "Debug";
 				IdeApp.Workbench.ShowCommandBar ("Debug");
 			});
@@ -659,7 +664,7 @@ namespace MonoDevelop.Debugger
 		{
 			Gtk.Application.Invoke (delegate {
 				if (ex is DebuggerException)
-					MessageService.ShowError (ex.Message);
+					MessageService.ShowError (ex.Message, ex);
 				else
 					MessageService.ShowError ("Debugger operation failed", ex);
 			});
@@ -743,6 +748,8 @@ namespace MonoDevelop.Debugger
 		
 		static void OnTargetEvent (object sender, TargetEventArgs args)
 		{
+			if (args.BreakEvent != null && args.BreakEvent.NonUserBreakpoint)
+				return;
 			nextStatementLocations.Clear ();
 
 			try {
@@ -1070,9 +1077,9 @@ namespace MonoDevelop.Debugger
 					var rr = textEditorResolver.GetLanguageItem (doc.Editor.LocationToOffset (location.Line, 1), identifier);
 					var ns = rr as Microsoft.CodeAnalysis.INamespaceSymbol;
 					if (ns != null)
-						return ns.GetFullName ();
+						return ns.ToDisplayString (Microsoft.CodeAnalysis.SymbolDisplayFormat.CSharpErrorMessageFormat);
 					var result = rr as Microsoft.CodeAnalysis.INamedTypeSymbol;
-					if (result != null && !(result.TypeKind == Microsoft.CodeAnalysis.TypeKind.Dynamic && result.GetFullName () == "dynamic")) {
+					if (result != null && !(result.TypeKind == Microsoft.CodeAnalysis.TypeKind.Dynamic && result.ToDisplayString (Microsoft.CodeAnalysis.SymbolDisplayFormat.CSharpErrorMessageFormat) == "dynamic")) {
 						return result.ToDisplayString (new Microsoft.CodeAnalysis.SymbolDisplayFormat (
 							typeQualificationStyle: Microsoft.CodeAnalysis.SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
 							miscellaneousOptions:
@@ -1146,7 +1153,7 @@ namespace MonoDevelop.Debugger
 		public void SetMessage (DebuggerStartInfo dsi, string message, bool listening, int attemptNumber)
 		{
 			Gtk.Application.Invoke (delegate {
-				IdeApp.Workbench.StatusBar.ShowMessage (Stock.StatusConnecting, message);
+				IdeApp.Workbench.StatusBar.ShowMessage (Ide.Gui.Stock.StatusConnecting, message);
 			});
 		}
 

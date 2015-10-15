@@ -76,13 +76,14 @@ namespace MonoDevelop.VersionControl.Git
 				});
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 
 		public static void ShowConfigurationDialog (GitRepository repo)
 		{
-			var dlg = new GitConfigurationDialog (repo);
-			MessageService.ShowCustomDialog (dlg);
+			using (var dlg = new GitConfigurationDialog (repo))
+				MessageService.ShowCustomDialog (dlg);
 		}
 
 		public static void ShowMergeDialog (GitRepository repo, bool rebasing)
@@ -107,13 +108,14 @@ namespace MonoDevelop.VersionControl.Git
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 
 		public static void ShowStashManager (GitRepository repo)
 		{
-			var dlg = new StashManagerDialog (repo);
-			MessageService.ShowCustomDialog (dlg);
+			using (var dlg = new StashManagerDialog (repo))
+				MessageService.ShowCustomDialog (dlg);
 		}
 
 		public async static void SwitchToBranch (GitRepository repo, string branch)
@@ -153,7 +155,7 @@ namespace MonoDevelop.VersionControl.Git
 				}
 				finally {
 					monitor.Dispose ();
-					statusTracker.NotifyChanges ();
+					statusTracker.Dispose ();
 				}
 			});
 			return t;

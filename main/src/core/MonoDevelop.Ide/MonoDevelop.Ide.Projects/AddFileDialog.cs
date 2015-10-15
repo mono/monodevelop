@@ -98,6 +98,7 @@ namespace MonoDevelop.Ide.Projects
 				return result == (int) Gtk.ResponseType.Ok;
 			} finally {
 				fdiag.Destroy ();
+				fdiag.Dispose ();
 			}
 		}
 	}

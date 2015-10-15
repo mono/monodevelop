@@ -654,7 +654,7 @@ namespace MonoDevelop.Ide
 			return bestConfig;
 		}
 		
-		public async Task SavePreferences (WorkspaceItem item)
+		public Task SavePreferences (WorkspaceItem item)
 		{
 			// Local configuration info
 			
@@ -678,7 +678,7 @@ namespace MonoDevelop.Ide
 			
 			// Save the file
 			
-			await item.SaveUserProperties ();
+			return item.SaveUserProperties ();
 		}
 		
 		public FileStatusTracker GetFileStatusTracker ()
@@ -1444,7 +1444,7 @@ namespace MonoDevelop.Ide
 				FileService.NotifyFilesChanged (modified);
 		}
 		
-		void IDisposable.Dispose ()
+		public void Dispose ()
 		{
 			NotifyChanges ();
 		}

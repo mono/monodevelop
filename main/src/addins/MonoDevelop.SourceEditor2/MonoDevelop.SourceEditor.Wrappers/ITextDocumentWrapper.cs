@@ -35,7 +35,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 {
 	class TextDocumentWrapper : ITextDocument, IDisposable
 	{
-		TextDocument document;
+		readonly TextDocument document;
 
 		public TextDocument Document {
 			get {
@@ -45,6 +45,8 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		public TextDocumentWrapper (TextDocument document)
 		{
+			if (document == null)
+				throw new ArgumentNullException (nameof (document));
 			this.document = document;
 			this.document.TextReplaced += HandleTextReplaced;
 			this.document.TextReplacing += HandleTextReplacing;
@@ -55,14 +57,11 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		public void Dispose ()
 		{
-			if (document == null)
-				return;
 			document.TextReplaced -= HandleTextReplaced;
 			document.TextReplacing -= HandleTextReplacing;
 			document.LineChanged -= Document_LineChanged; 
 			document.LineInserted -= Document_LineInserted;
 			document.LineRemoved -= Document_LineRemoved;
-			document = null;
 		}
 
 		void Document_LineRemoved (object sender, Mono.TextEditor.LineEventArgs e)
@@ -377,13 +376,20 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		ITextSource ITextSource.CreateSnapshot ()
 		{
-			return new RopeTextSource (document.CloneRope (), document.Encoding, document.UseBom, new TextSourceVersionWrapper (document.Version));
+			return new ImmutableTextTextSource (document.GetImmutableText (), document.Encoding, document.UseBom, new TextSourceVersionWrapper (document.Version));
 		}
 
 		ITextSource ITextSource.CreateSnapshot (int offset, int length)
 		{
-			return new RopeTextSource (document.CloneRope (offset, length), document.Encoding, document.UseBom);
+			return new ImmutableTextTextSource (document.GetImmutableText (offset, length), document.Encoding, document.UseBom);
 		}
+
+		/// <inheritdoc/>
+		public void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
+		{
+			document.CopyTo (sourceIndex, destination, destinationIndex, count); 
+		}
+
 		#endregion
 	}
 }

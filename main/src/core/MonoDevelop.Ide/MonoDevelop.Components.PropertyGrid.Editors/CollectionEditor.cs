@@ -269,20 +269,20 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			#endregion
 			
 			//if 'OK' put items back in collection
-			if (MonoDevelop.Ide.MessageService.ShowCustomDialog (dialog, toplevel) == (int)ResponseType.Ok)
-			{
-				DesignerTransaction tran = CreateTransaction (Instance);
-				object old = collection;
+			using (dialog) {
+				if (MonoDevelop.Ide.MessageService.ShowCustomDialog (dialog, toplevel) == (int)ResponseType.Ok) {
+					DesignerTransaction tran = CreateTransaction (Instance);
+					object old = collection;
 			
-				try {
-					collection.Clear();
-					foreach (object[] o in itemStore)
-						collection.Add (o[0]);
-					EndTransaction (Instance, tran, old, collection, true);
-				}
-				catch {
-					EndTransaction (Instance, tran, old, collection, false);
-					throw;
+					try {
+						collection.Clear ();
+						foreach (object[] o in itemStore)
+							collection.Add (o [0]);
+						EndTransaction (Instance, tran, old, collection, true);
+					} catch {
+						EndTransaction (Instance, tran, old, collection, false);
+						throw;
+					}
 				}
 			}
 		}

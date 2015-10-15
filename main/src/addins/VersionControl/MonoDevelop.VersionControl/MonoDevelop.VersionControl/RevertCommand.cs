@@ -59,7 +59,6 @@ namespace MonoDevelop.VersionControl
 				foreach (VersionControlItemList list in items.SplitByRepository ())
 					list[0].Repository.Revert (list.Paths, true, Monitor);
 				
-				Monitor.ReportSuccess (GettextCatalog.GetString ("Revert operation completed."));
 				Gtk.Application.Invoke (delegate {
 					foreach (VersionControlItem item in items) {
 						if (!item.IsDirectory) {
@@ -72,6 +71,7 @@ namespace MonoDevelop.VersionControl
 					}
 					VersionControlService.NotifyFileStatusChanged (items);
 				});
+				Monitor.ReportSuccess (GettextCatalog.GetString ("Revert operation completed."));
 			}
 		}
 		

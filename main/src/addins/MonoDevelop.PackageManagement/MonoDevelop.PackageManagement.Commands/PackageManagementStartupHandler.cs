@@ -47,6 +47,7 @@ namespace MonoDevelop.PackageManagement.Commands
 		{
 			projectService.SolutionLoaded += SolutionLoaded;
 			projectService.SolutionUnloaded += SolutionUnloaded;
+			IdeApp.Workspace.ItemUnloading += WorkspaceItemUnloading;
 		}
 
 		void SolutionLoaded (object sender, EventArgs e)
@@ -112,7 +113,19 @@ namespace MonoDevelop.PackageManagement.Commands
 			try {
 				PackageManagementServices.UpdatedPackagesInSolution.CheckForUpdates ();
 			} catch (Exception ex) {
-				LoggingService.LogInternalError ("Check for NuGet package updates error.", ex);
+				LoggingService.LogError ("Check for NuGet package updates error.", ex);
+			}
+		}
+
+		void WorkspaceItemUnloading (object sender, ItemUnloadingEventArgs e)
+		{
+			try {
+				if (PackageManagementServices.BackgroundPackageActionRunner.IsRunning) {
+					MessageService.ShowMessage (GettextCatalog.GetString ("Unable to close the solution when NuGet packages are being processed."));
+					e.Cancel = true;
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error on unloading workspace item.", ex);
 			}
 		}
 	}

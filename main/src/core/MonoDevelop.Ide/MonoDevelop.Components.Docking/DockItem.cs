@@ -592,7 +592,6 @@ namespace MonoDevelop.Components.Docking
 	{
 		public DockFloatingWindow (Window dockParent, string title) : base (title)
 		{
-			TypeHint = Gdk.WindowTypeHint.Utility;
 			this.DockParent = dockParent;
 		}
 

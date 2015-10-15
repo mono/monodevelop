@@ -139,6 +139,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
+		static string DotConfigExtensionsPath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData), Path.Combine ("xbuild", "tasks"));
+		const string MacOSXExternalXBuildDir = "/Library/Frameworks/Mono.framework/External/xbuild";
+
+		internal static IEnumerable<string> GetApplicableExtensionsPaths ()
+		{
+			if (Platform.IsMac)
+				yield return MacOSXExternalXBuildDir;
+			yield return DotConfigExtensionsPath;
+			yield return DefaultExtensionsPath;
+		}
+
 		internal void SetItemContext (string itemFile, string recursiveDir)
 		{
 			this.itemFile = itemFile;
@@ -283,6 +294,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public string Evaluate (string str)
 		{
+			if (str == null)
+				return null;
+			
 			int i = FindNextTag (str, 0);
 			if (i == -1)
 				return str;

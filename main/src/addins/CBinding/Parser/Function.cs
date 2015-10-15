@@ -32,11 +32,10 @@
 using System;
 
 using MonoDevelop.Projects;
-using ICSharpCode.NRefactory6.CSharp.Completion;
 
 namespace CBinding.Parser
 {
-	public class Function : LanguageItem, IParameterHintingData
+	public class Function : LanguageItem //, IParameterHintingData
 	{
 		#region IParameterHintingData implementation
 

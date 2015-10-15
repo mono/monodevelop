@@ -41,10 +41,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public MSBuildPropertyGroupMerged (MSBuildProject project)
 		{
-			Project = project;
+			ParentProject = project;
 		}
 
-		public MSBuildProject Project { get; private set; }
+		public MSBuildProject ParentProject { get; private set; }
 
 		public string Label { get; set; }
 		
@@ -184,7 +184,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			if (g != groups [0] && !g.GetProperties ().Any()) {
 				// Remove this group since it's now empty
-				g.Project.RemoveGroup (g);
+				g.ParentProject.Remove (g);
 			}
 		}
 

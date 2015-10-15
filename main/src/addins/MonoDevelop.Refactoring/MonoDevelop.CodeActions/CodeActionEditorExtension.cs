@@ -38,7 +38,7 @@ using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide;
 using Microsoft.CodeAnalysis.CodeActions;
-using ICSharpCode.NRefactory6.CSharp.Refactoring;
+using RefactoringEssentials;
 using MonoDevelop.AnalysisCore;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components;
@@ -143,6 +143,7 @@ namespace MonoDevelop.CodeActions
 
 		Task<CodeActionContainer> smartTagTask;
 		CancellationTokenSource quickFixCancellationTokenSource = new CancellationTokenSource ();
+		List<CodeDiagnosticFixDescriptor> codeFixes;
 
 		void HandleCaretPositionChanged (object sender, EventArgs e)
 		{
@@ -152,10 +153,12 @@ namespace MonoDevelop.CodeActions
 			if (AnalysisOptions.EnableFancyFeatures && DocumentContext.ParsedDocument != null && !Debugger.DebuggingService.IsDebugging) {
 				var token = quickFixCancellationTokenSource.Token;
 				var curOffset = Editor.CaretOffset;
-				foreach (var fix in GetCurrentFixes ().AllValidCodeActions) {
-					if (!fix.ValidSegment.Contains (curOffset)) {
-						RemoveWidget ();
-						break;
+				if (HasCurrentFixes) {
+					foreach (var fix in GetCurrentFixes ().AllValidCodeActions) {
+						if (!fix.ValidSegment.Contains (curOffset)) {
+							RemoveWidget ();
+							break;
+						}
 					}
 				}
 
@@ -191,8 +194,11 @@ namespace MonoDevelop.CodeActions
 				smartTagTask = Task.Run (async delegate {
 					try {
 						var codeIssueFixes = new List<ValidCodeDiagnosticAction> ();
-						var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).Concat (errorList.Select (rm => rm.Error.Id)).ToImmutableArray<string> ();
-						foreach (var cfp in CodeRefactoringService.GetCodeFixesAsync (DocumentContext, CodeRefactoringService.MimeTypeToLanguage (Editor.MimeType)).Result) {
+						var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).Concat (errorList.Select (rm => rm.Error.Id)).ToList ();
+						if (codeFixes == null) {
+							codeFixes = (await CodeRefactoringService.GetCodeFixesAsync (DocumentContext, CodeRefactoringService.MimeTypeToLanguage (Editor.MimeType), token).ConfigureAwait (false)).ToList ();
+						}
+						foreach (var cfp in codeFixes) {
 							if (token.IsCancellationRequested)
 								return CodeActionContainer.Empty;
 							var provider = cfp.GetCodeFixProvider ();
@@ -229,7 +235,7 @@ namespace MonoDevelop.CodeActions
 							}
 						}
 						var codeActions = new List<ValidCodeAction> ();
-						foreach (var action in await CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, token)) {
+						foreach (var action in await CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, token).ConfigureAwait (false)) {
 							codeActions.Add (action);
 						}
 						var codeActionContainer = new CodeActionContainer (codeIssueFixes, codeActions, diagnosticsAtCaret);
@@ -433,7 +439,9 @@ namespace MonoDevelop.CodeActions
 
 		AppKit.NSMenu CreateNSMenu (FixMenuDescriptor entrySet)
 		{
-			var menu = new AppKit.NSMenu ();
+			var menu = new AppKit.NSMenu {
+				Font = AppKit.NSFont.MenuFontOfSize (12),
+			};
 			foreach (var item in entrySet.Items) {
 				if (item == FixMenuEntry.Separator) {
 					menu.AddItem (AppKit.NSMenuItem.SeparatorItem);
@@ -480,6 +488,16 @@ namespace MonoDevelop.CodeActions
 			return menu;
 		}
 
+		static string CreateLabel (string title, ref int mnemonic)
+		{
+			var escapedLabel = title.Replace ("_", "__");
+			#if MAC
+			return escapedLabel;
+			#else
+			return (mnemonic <= 10) ? "_" + mnemonic++ % 10 + " \u2013 " + escapedLabel : "  " + escapedLabel;
+			#endif
+		}
+
 		void PopulateFixes (FixMenuDescriptor menu, ref int items)
 		{
 			int mnemonic = 1;
@@ -494,10 +512,7 @@ namespace MonoDevelop.CodeActions
 				}
 
 				var fix = fix_;
-				var escapedLabel = fix.CodeAction.Title.Replace ("_", "__");
-				var label = (mnemonic <= 10)
-					? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
-					: "  " + escapedLabel;
+				var label = CreateLabel (fix.CodeAction.Title, ref mnemonic);
 				var thisInstanceMenuItem = new FixMenuEntry (label, delegate {
 					new ContextActionRunner (fix.CodeAction, Editor, DocumentContext).Run (null, EventArgs.Empty);
 					ConfirmUsage (fix.CodeAction.EquivalenceKey);
@@ -514,10 +529,7 @@ namespace MonoDevelop.CodeActions
 					first = false;
 				}
 
-				var escapedLabel = fix.CodeAction.Title.Replace ("_", "__");
-				var label = (mnemonic <= 10)
-					? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
-					: "  " + escapedLabel;
+				var label = CreateLabel (fix.CodeAction.Title, ref mnemonic);
 				var thisInstanceMenuItem = new FixMenuEntry (label, delegate {
 					new ContextActionRunner (fix.CodeAction, Editor, DocumentContext).Run (null, EventArgs.Empty);
 					ConfirmUsage (fix.CodeAction.EquivalenceKey);
@@ -597,30 +609,27 @@ namespace MonoDevelop.CodeActions
 				if (insertionAction != null) {
 					var insertion = await insertionAction.CreateInsertion (token).ConfigureAwait (false);
 
-					var document = IdeApp.Workbench.OpenDocument (insertion.Location.SourceTree.FilePath);
+					var document = IdeApp.Workbench.OpenDocument (insertion.Location.SourceTree.FilePath, documentContext.Project);
 					var parsedDocument = document.UpdateParseDocument ();
 					if (parsedDocument != null) {
 						var insertionPoints = InsertionPointService.GetInsertionPoints (
-							                     document.Editor,
-							                     parsedDocument,
-							                     insertion.Type,
-							                     insertion.Location.SourceSpan.Start
-						                     );
+							document.Editor,
+							parsedDocument,
+							insertion.Type,
+							insertion.Location.SourceSpan.Start
+						);
 
 						var options = new InsertionModeOptions (
-							             insertionAction.Title,
-							             insertionPoints,
-							             async point => {
+							insertionAction.Title,
+							insertionPoints,
+							point => {
 								if (!point.Success)
 									return;
-
-											 var node = Formatter.Format (insertion.Node, TypeSystemService.Workspace, document.GetOptionSet (), token);
-
-											 point.InsertionPoint.Insert (document.Editor, document, node.ToString ());
-											 // document = await Simplifier.ReduceAsync(document.AnalysisDocument, Simplifier.Annotation, cancellationToken: token).ConfigureAwait(false);
-
-										 }
-									 );
+								var node = Formatter.Format (insertion.Node, TypeSystemService.Workspace, document.GetOptionSet (), token);
+								point.InsertionPoint.Insert (document.Editor, document, node.ToString ());
+								// document = await Simplifier.ReduceAsync(document.AnalysisDocument, Simplifier.Annotation, cancellationToken: token).ConfigureAwait(false);
+							}
+						);
 
 						document.Editor.StartInsertionMode (options);
 						return;
@@ -629,16 +638,20 @@ namespace MonoDevelop.CodeActions
 
 				var oldSolution = documentContext.AnalysisDocument.Project.Solution;
 				var updatedSolution = oldSolution;
-				foreach (var operation in act.GetOperationsAsync (token).Result) {
-					var applyChanges = operation as ApplyChangesOperation;
-					if (applyChanges == null) {
+				if (RefactoringService.OptionSetCreation != null)
+					documentContext.RoslynWorkspace.Options = RefactoringService.OptionSetCreation (editor, documentContext);
+				using (var undo = editor.OpenUndoGroup ()) {
+					foreach (var operation in act.GetOperationsAsync (token).Result) {
+						var applyChanges = operation as ApplyChangesOperation;
+						if (applyChanges == null) {
+							operation.Apply (documentContext.RoslynWorkspace, token);
+							continue;
+						}
+						if (updatedSolution == oldSolution) {
+							updatedSolution = applyChanges.ChangedSolution;
+						}
 						operation.Apply (documentContext.RoslynWorkspace, token);
-						continue;
 					}
-					if (updatedSolution == oldSolution) {
-						updatedSolution = applyChanges.ChangedSolution;
-					}
-					operation.Apply (documentContext.RoslynWorkspace, token);
 				}
 				TryStartRenameSession (documentContext.RoslynWorkspace, oldSolution, updatedSolution, token);
 			}
@@ -661,13 +674,11 @@ namespace MonoDevelop.CodeActions
 				foreach (var documentId in changedDocuments) {
 					var document = newSolution.GetDocument (documentId);
 					var root = await document.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
-
 					SyntaxToken? renameTokenOpt = root.GetAnnotatedNodesAndTokens (RenameAnnotation.Kind)
-											 .Where (s => s.IsToken)
-											 .Select (s => s.AsToken ())
-					                         .Cast<SyntaxToken?> ()
-											 .FirstOrDefault ();
-
+					                                  .Where (s => s.IsToken)
+					                                  .Select (s => s.AsToken ())
+					                                  .Cast<SyntaxToken?> ()
+					                                  .FirstOrDefault ();
 					if (renameTokenOpt.HasValue) {
 						var latestDocument = workspace.CurrentSolution.GetDocument (documentId);
 						var latestModel = await latestDocument.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
@@ -751,6 +762,7 @@ namespace MonoDevelop.CodeActions
 			currentSmartTag.CancelPopup += CurrentSmartTag_CancelPopup;
 			currentSmartTag.ShowPopup += CurrentSmartTag_ShowPopup;
 			currentSmartTag.Tag = fixes;
+			currentSmartTag.IsVisible = fixes.CodeFixActions.Count > 0;
 			editor.AddMarker (currentSmartTag);
 		}
 
@@ -853,6 +865,12 @@ namespace MonoDevelop.CodeActions
 			if (currentSmartTag == null)
 				return;
 			CurrentSmartTagPopup ();
+		}
+
+		internal bool HasCurrentFixes {
+			get {
+				return smartTagTask != null && smartTagTask.IsCompleted;
+			}
 		}
 
 		internal CodeActionContainer GetCurrentFixes ()

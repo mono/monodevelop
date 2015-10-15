@@ -95,7 +95,7 @@ namespace MonoDevelop.Core
 			try {
 				buffer = Marshal.AllocHGlobal (PATHMAX);
 				var result = realpath (this, buffer);
-				return result == IntPtr.Zero ? "" : Marshal.PtrToStringAuto (buffer);
+				return result == IntPtr.Zero ? Path.GetFullPath (this) : Marshal.PtrToStringAuto (buffer);
 			} finally {
 				if (buffer != IntPtr.Zero)
 					Marshal.FreeHGlobal (buffer);
@@ -124,10 +124,12 @@ namespace MonoDevelop.Core
 				if (string.IsNullOrEmpty (fileName))
 					return FilePath.Empty;
 				string fp = Path.GetFullPath (fileName);
-				if (fp.Length > 0 && fp [fp.Length - 1] == Path.DirectorySeparatorChar)
-					return fp.TrimEnd (Path.DirectorySeparatorChar);
-				if (fp.Length > 0 && fp [fp.Length - 1] == Path.AltDirectorySeparatorChar)
-					return fp.TrimEnd (Path.AltDirectorySeparatorChar);
+				if (fp.Length > 0) {
+					if (fp [fp.Length - 1] == Path.DirectorySeparatorChar)
+						return fp.TrimEnd (Path.DirectorySeparatorChar);
+					if (fp [fp.Length - 1] == Path.AltDirectorySeparatorChar)
+						return fp.TrimEnd (Path.AltDirectorySeparatorChar);
+				}
 				return fp;
 			}
 		}

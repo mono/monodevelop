@@ -32,6 +32,7 @@ using ICSharpCode.PackageManagement;
 using NuGet;
 using NUnit.Framework;
 using MonoDevelop.PackageManagement.Tests.Helpers;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Tests
 {
@@ -484,6 +485,92 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
+		public void Execute_ReferenceBeingUpdatedHasLocalCopyTrue_ReferenceAddedHasLocalCopyTrue ()
+		{
+			CreateSolution ();
+			fakeProject.FakePackages.Add (new FakePackage ("Test", "1.0"));
+			action.Package = new FakePackage ("Test", "1.1");
+			var firstReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NewAssembly");
+			var secondReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
+			fakeProject.UpdatePackageAction = (p, a) => {
+				var referenceBeingRemoved = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
+				referenceBeingRemoved.LocalCopy = true;
+				packageManagementEvents.OnReferenceRemoving (referenceBeingRemoved);
+				packageManagementEvents.OnReferenceAdding (firstReferenceBeingAdded);
+				packageManagementEvents.OnReferenceAdding (secondReferenceBeingAdded);
+			};
+			action.Execute ();
+
+			Assert.IsTrue (firstReferenceBeingAdded.LocalCopy);
+			Assert.IsTrue (secondReferenceBeingAdded.LocalCopy);
+		}
+
+		[Test]
+		public void Execute_ReferenceBeingUpdatedHasLocalCopyTrueButCaseIsDifferent_ReferenceAddedHasLocalCopyTrue ()
+		{
+			CreateSolution ();
+			fakeProject.FakePackages.Add (new FakePackage ("Test", "1.0"));
+			action.Package = new FakePackage ("Test", "1.1");
+			var firstReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NewAssembly");
+			var secondReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
+			fakeProject.UpdatePackageAction = (p, a) => {
+				var referenceBeingRemoved = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "nunit.framework");
+				referenceBeingRemoved.LocalCopy = true;
+				packageManagementEvents.OnReferenceRemoving (referenceBeingRemoved);
+				packageManagementEvents.OnReferenceAdding (firstReferenceBeingAdded);
+				packageManagementEvents.OnReferenceAdding (secondReferenceBeingAdded);
+			};
+			action.Execute ();
+
+			Assert.IsTrue (firstReferenceBeingAdded.LocalCopy);
+			Assert.IsTrue (secondReferenceBeingAdded.LocalCopy);
+		}
+
+		[Test]
+		public void Execute_ReferenceBeingUpdatedHasLocalCopyFalse_ReferenceAddedHasLocalCopyFalse ()
+		{
+			CreateSolution ();
+			fakeProject.FakePackages.Add (new FakePackage ("Test", "1.0"));
+			action.Package = new FakePackage ("Test", "1.1");
+			var firstReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NewAssembly");
+			firstReferenceBeingAdded.LocalCopy = true;
+			var secondReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
+			fakeProject.UpdatePackageAction = (p, a) => {
+				var referenceBeingRemoved = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
+				referenceBeingRemoved.LocalCopy = false;
+				packageManagementEvents.OnReferenceRemoving (referenceBeingRemoved);
+				packageManagementEvents.OnReferenceAdding (firstReferenceBeingAdded);
+				packageManagementEvents.OnReferenceAdding (secondReferenceBeingAdded);
+			};
+			action.Execute ();
+
+			Assert.IsTrue (firstReferenceBeingAdded.LocalCopy);
+			Assert.IsFalse (secondReferenceBeingAdded.LocalCopy);
+		}
+
+		[Test]
+		public void Execute_ReferenceBeingUpdatedHasLocalCopyFalseButCaseIsDifferent_ReferenceAddedHasLocalCopyFalse ()
+		{
+			CreateSolution ();
+			fakeProject.FakePackages.Add (new FakePackage ("Test", "1.0"));
+			action.Package = new FakePackage ("Test", "1.1");
+			var firstReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NewAssembly");
+			firstReferenceBeingAdded.LocalCopy = true;
+			var secondReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
+			fakeProject.UpdatePackageAction = (p, a) => {
+				var referenceBeingRemoved = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "nunit.framework");
+				referenceBeingRemoved.LocalCopy = false;
+				packageManagementEvents.OnReferenceRemoving (referenceBeingRemoved);
+				packageManagementEvents.OnReferenceAdding (firstReferenceBeingAdded);
+				packageManagementEvents.OnReferenceAdding (secondReferenceBeingAdded);
+			};
+			action.Execute ();
+
+			Assert.IsTrue (firstReferenceBeingAdded.LocalCopy);
+			Assert.IsFalse (secondReferenceBeingAdded.LocalCopy);
+		}
+
+		[Test]
 		public void Execute_PackageUpdatedSuccessfully_OpenPackageReadmeMonitorCreated ()
 		{
 			CreateSolution ();
@@ -541,6 +628,22 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.IsFalse (fileService.IsOpenFileCalled);
 			Assert.IsTrue (monitor.IsDisposed);
+		}
+
+		[Test]
+		public void Execute_PackagesConfigFileNamedAfterProjectDeletedDuringUpdate_FileServicePackagesConfigFileDeletionIsCancelled ()
+		{
+			CreateSolution ();
+			action.Package = new FakePackage ("Test");
+			string expectedFileName = @"d:\projects\MyProject\packages.MyProject.config".ToNativePath ();
+			bool? fileRemovedResult = null;
+			fakeProject.UpdatePackageAction = (p, a) => {
+				fileRemovedResult = packageManagementEvents.OnFileRemoving (expectedFileName);
+			};
+			action.Execute ();
+
+			Assert.AreEqual (expectedFileName, fileRemover.FileRemoved);
+			Assert.IsFalse (fileRemovedResult.Value);
 		}
 	}
 }

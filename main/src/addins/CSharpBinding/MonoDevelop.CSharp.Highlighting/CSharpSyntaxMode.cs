@@ -76,8 +76,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			var resolver = parsedDocument.GetAst<SemanticModel> ();
 			if (resolver == null)
 				return;
-			src.Cancel ();
-			src = new CancellationTokenSource ();
+			CancelHighlightingTask ();
 			var token = src.Token;
 
 			Task.Run (async delegate {
@@ -107,6 +106,12 @@ namespace MonoDevelop.CSharp.Highlighting
 			}, token);
 		}
 
+		void CancelHighlightingTask ()
+		{
+			src.Cancel ();
+			src = new CancellationTokenSource ();
+		}
+
 		public override IEnumerable<ColoredSegment> GetColoredSegments (ISegment segment)
 		{
 			var result = new List<ColoredSegment> ();
@@ -114,6 +119,16 @@ namespace MonoDevelop.CSharp.Highlighting
 				return result;
 			return highlightTree.GetSegmentsOverlapping (segment).Select (seg => seg.GetColoredSegment () );
 		}
+
+		public override void Dispose ()
+		{
+			CancelHighlightingTask ();
+			if (highlightTree != null)
+				highlightTree.RemoveListener ();
+			highlightTree = null;
+			base.Dispose ();
+		}
+
 		#endregion
 	}
 

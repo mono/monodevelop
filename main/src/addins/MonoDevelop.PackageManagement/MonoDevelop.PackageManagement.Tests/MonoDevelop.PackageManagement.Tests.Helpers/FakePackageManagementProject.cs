@@ -92,7 +92,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public List<FakeUpdatePackageAction> FakeUpdatePackageActionsCreated = 
 			new List<FakeUpdatePackageAction> ();
 
-		public string Name { get; set; }
+		public string Name {
+			get { return FakeDotNetProject.Name; }
+			set { FakeDotNetProject.Name = value; }
+		}
 
 		public bool IsPackageInstalled (string packageId)
 		{
@@ -187,9 +190,12 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public FakeInstallPackageAction LastInstallPackageCreated;
 
+		public Action InstallPackageExecuteAction = () => { };
+
 		public virtual InstallPackageAction CreateInstallPackageAction ()
 		{
 			LastInstallPackageCreated = new FakeInstallPackageAction (this);
+			LastInstallPackageCreated.ExecuteAction = InstallPackageExecuteAction;
 			return LastInstallPackageCreated;
 		}
 

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Deployment
 {
-	public class PackagingProject: SolutionItem
+	public class PackagingProject: Project
 	{
 		PackageCollection packages;
 		

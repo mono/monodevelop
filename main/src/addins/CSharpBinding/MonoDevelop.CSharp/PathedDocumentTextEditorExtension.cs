@@ -44,6 +44,7 @@ using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Core.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace MonoDevelop.CSharp
 {
@@ -56,12 +57,14 @@ namespace MonoDevelop.CSharp
 			Editor.TextChanging -= Editor_TextChanging;
 			DocumentContext.DocumentParsed -= DocumentContext_DocumentParsed; 
 			Editor.CaretPositionChanged -= Editor_CaretPositionChanged;
+			UntrackStartupProjectChanges ();
+
 			IdeApp.Workspace.FileAddedToProject -= HandleProjectChanged;
 			IdeApp.Workspace.FileRemovedFromProject -= HandleProjectChanged;
 			IdeApp.Workspace.WorkspaceItemUnloaded -= HandleWorkspaceItemUnloaded;
 			IdeApp.Workspace.WorkspaceItemLoaded -= HandleWorkspaceItemLoaded;
 			IdeApp.Workspace.ItemAddedToSolution -= HandleProjectChanged;
-
+			IdeApp.Workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
 
 			if (ext != null) {
 				ext.TypeSegmentTreeUpdated -= HandleTypeSegmentTreeUpdated;
@@ -88,7 +91,7 @@ namespace MonoDevelop.CSharp
 		{
 			CurrentPath = new PathEntry[] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = null } };
 			isPathSet = false;
-			// Delay the execution of UpdateOwnerProjects since it may end calling Document.AttachToProject,
+			// Delay the execution of UpdateOwnerProjects since it may end calling DocumentContext.AttachToProject,
 			// which shouldn't be called while the extension chain is being initialized.
 			Gtk.Application.Invoke (delegate {
 				UpdateOwnerProjects ();
@@ -105,6 +108,7 @@ namespace MonoDevelop.CSharp
 			IdeApp.Workspace.WorkspaceItemUnloaded += HandleWorkspaceItemUnloaded;
 			IdeApp.Workspace.WorkspaceItemLoaded += HandleWorkspaceItemLoaded;
 			IdeApp.Workspace.ItemAddedToSolution += HandleProjectChanged;
+			IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
 			SubscribeCaretPositionChange ();
 		}
 
@@ -137,6 +141,17 @@ namespace MonoDevelop.CSharp
 			Editor.CaretPositionChanged -= Editor_CaretPositionChanged;
 		}
 
+		void HandleActiveConfigurationChanged (object sender, EventArgs e)
+		{
+			// If the current configuration changes and the project to which this document is bound is disabled in the
+			// new configuration, try to find another project
+			if (DocumentContext.Project != null && DocumentContext.Project.ParentSolution == IdeApp.ProjectOperations.CurrentSelectedSolution) {
+				var conf = DocumentContext.Project.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
+				if (conf != null && !conf.BuildEnabledForItem (DocumentContext.Project))
+					ResetOwnerProject ();
+			}
+		}
+
 		void HandleWorkspaceItemLoaded (object sender, WorkspaceItemEventArgs e)
 		{
 			if (ownerProjects != null)
@@ -149,7 +164,7 @@ namespace MonoDevelop.CSharp
 			if (ownerProjects == null)
 				return;
 			foreach (var p in e.Item.GetAllItems<DotNetProject> ()) {
-				ownerProjects.Remove (p); 
+				RemoveOwnerProject (p);
 			}
 			if (ownerProjects.Count == 0) {
 				ownerProjects = null;
@@ -177,12 +192,12 @@ namespace MonoDevelop.CSharp
 		{
 			var projects = new HashSet<DotNetProject> (allProjects.Where (p => p.IsFileInProject (DocumentContext.Name)));
 			if (ownerProjects == null || !projects.SetEquals (ownerProjects)) {
-				ownerProjects = projects.OrderBy (p => p.Name).ToList ();
+				SetOwnerProjects (projects.OrderBy (p => p.Name).ToList ());
 				var dnp = DocumentContext.Project as DotNetProject;
 				if (ownerProjects.Count > 0 && (dnp == null || !ownerProjects.Contains (dnp))) {
 					// If the project for the document is not a DotNetProject but there is a project containing this file
 					// in the current solution, then use that project
-					var pp = DocumentContext.Project != null ? ownerProjects.FirstOrDefault (p => p.ParentSolution == DocumentContext.Project.ParentSolution) : null;
+					var pp = DocumentContext.Project != null ? FindBestDefaultProject (DocumentContext.Project.ParentSolution) : null;
 					if (pp != null)
 						DocumentContext.AttachToProject (pp);
 				}
@@ -192,8 +207,76 @@ namespace MonoDevelop.CSharp
 		void UpdateOwnerProjects ()
 		{
 			UpdateOwnerProjects (IdeApp.Workspace.GetAllItems<DotNetProject> ());
-			if (DocumentContext.Project == null && ownerProjects.Count > 0)
-				DocumentContext.AttachToProject (ownerProjects[0]);
+			if (DocumentContext.Project == null)
+				ResetOwnerProject ();
+		}
+
+		void ResetOwnerProject ()
+		{
+			if (ownerProjects.Count > 0)
+				DocumentContext.AttachToProject (FindBestDefaultProject ());
+		}
+
+		DotNetProject FindBestDefaultProject (MonoDevelop.Projects.Solution solution = null)
+		{
+			// The best candidate to be selected as default project for this document is the startup project.
+			// If the startup project is not an owner, pick any project that is not disabled in the current configuration.
+			DotNetProject best = null;
+			if (solution == null)
+				solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			foreach (var p in ownerProjects) {
+				if (p.ParentSolution != solution)
+					continue;
+				var solConf = p.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
+				if (solConf == null || !solConf.BuildEnabledForItem (p))
+					continue;
+				if (p == p.ParentSolution.StartupItem)
+					return p;
+				if (best == null)
+					best = p;
+			}
+			return best ?? ownerProjects.FirstOrDefault (pr => pr.ParentSolution == solution) ?? ownerProjects.FirstOrDefault ();
+		}
+
+		void SetOwnerProjects (List<DotNetProject> projects)
+		{
+			UntrackStartupProjectChanges ();
+			ownerProjects = projects;
+			TrackStartupProjectChanges ();
+		}
+
+		void RemoveOwnerProject (DotNetProject project)
+		{
+			UntrackStartupProjectChanges ();
+			ownerProjects.Remove (project);
+			TrackStartupProjectChanges ();
+		}
+
+		void TrackStartupProjectChanges ()
+		{
+			if (ownerProjects != null) {
+				foreach (var sol in ownerProjects.Select (p => p.ParentSolution).Distinct ())
+					sol.StartupItemChanged += HandleStartupProjectChanged;
+			}
+		}
+
+		void UntrackStartupProjectChanges ()
+		{
+			if (ownerProjects != null) {
+				foreach (var sol in ownerProjects.Select (p => p.ParentSolution).Distinct ())
+					sol.StartupItemChanged -= HandleStartupProjectChanged;
+			}
+		}
+
+		void HandleStartupProjectChanged (object sender, EventArgs e)
+		{
+			// If the startup project changes, and the new startup project is an owner of this document,
+			// then attach the document to that project
+
+			var sol = (Projects.Solution) sender;
+			var p = sol.StartupItem as DotNetProject;
+			if (p != null && ownerProjects.Contains (p))
+				DocumentContext.AttachToProject (p);
 		}
 
 		#region IPathedDocument implementation
@@ -223,8 +306,16 @@ namespace MonoDevelop.CSharp
 
 			#region IListDataProvider implementation
 
-			void AddTypeToMemberList (TypeDeclarationSyntax type)
+			void AddTypeToMemberList (BaseTypeDeclarationSyntax btype)
 			{
+				var e = btype as EnumDeclarationSyntax;
+				if (e !=null){
+					foreach (var member in e.Members) {
+						memberList.Add (member);
+					}
+					return;
+				}
+				var type = btype as TypeDeclarationSyntax;
 				foreach (var member in type.Members) {
 					if (member is FieldDeclarationSyntax) {
 						foreach (var variable in ((FieldDeclarationSyntax)member).Declaration.Variables)
@@ -243,21 +334,20 @@ namespace MonoDevelop.CSharp
 				memberList.Clear ();
 				if (tag is SyntaxTree) {
 					var unit = tag as SyntaxTree;
-					memberList.AddRange (unit.GetRoot ().DescendantNodes ().OfType<TypeDeclarationSyntax> ());
-				} else if (tag is TypeDeclarationSyntax) {
-					AddTypeToMemberList ((TypeDeclarationSyntax)tag);
+					memberList.AddRange (unit.GetRoot ().DescendantNodes ().Where (IsType));
+				} else if (tag is BaseTypeDeclarationSyntax) {
+					AddTypeToMemberList ((BaseTypeDeclarationSyntax)tag);
 				} else if (tag is AccessorDeclarationSyntax) {
 					var acc = (AccessorDeclarationSyntax)tag;
 					var parent = (MemberDeclarationSyntax)acc.Parent;
 					memberList.AddRange (parent.ChildNodes ().OfType<AccessorDeclarationSyntax> ());
 				} else if (tag is MemberDeclarationSyntax) {
 					var entity = (MemberDeclarationSyntax)tag;
-					var type = entity.Parent as TypeDeclarationSyntax;
+					var type = entity.Parent as BaseTypeDeclarationSyntax;
 					if (type != null) {
 						AddTypeToMemberList (type);
 					}
 				}
-
 				memberList.Sort ((x, y) => {
 					var result = String.Compare (GetName (x), GetName (y), StringComparison.OrdinalIgnoreCase);
 					if (result == 0)
@@ -313,7 +403,6 @@ namespace MonoDevelop.CSharp
 						return sb.ToString ();
 					}
 				}
-				
 				var accessor = node as AccessorDeclarationSyntax;
 				if (accessor != null) {
 					if (accessor.Kind () == SyntaxKind.GetAccessorDeclaration)
@@ -328,9 +417,17 @@ namespace MonoDevelop.CSharp
 				}
 				if (node is OperatorDeclarationSyntax)
 					return "operator";
+				if (node is PropertyDeclarationSyntax)
+					return ((PropertyDeclarationSyntax)node).Identifier.ToString ();
+				if (node is MethodDeclarationSyntax)
+					return ((MethodDeclarationSyntax)node).Identifier.ToString ();
+				if (node is ConstructorDeclarationSyntax)
+					return ((ConstructorDeclarationSyntax)node).Identifier.ToString ();
+				if (node is DestructorDeclarationSyntax)
+					return ((DestructorDeclarationSyntax)node).Identifier.ToString ();
+				if (node is BaseTypeDeclarationSyntax)
+					return ((BaseTypeDeclarationSyntax)node).Identifier.ToString ();
 
-				if (node is MemberDeclarationSyntax)
-					return ((MemberDeclarationSyntax)node).ToString ();
 //				if (node is fixeds) {
 //					return ((FixedVariableInitializer)node).Name;
 //				}
@@ -351,7 +448,7 @@ namespace MonoDevelop.CSharp
 					if (type != null) {
 						var sb = new StringBuilder ();
 						sb.Append (ext.GetEntityMarkup (type));
-						while (type.Parent is TypeDeclarationSyntax) {
+						while (type.Parent is BaseTypeDeclarationSyntax) {
 							sb.Insert (0, ext.GetEntityMarkup (type.Parent) + ".");
 							type = type.Parent;
 						}
@@ -507,14 +604,15 @@ namespace MonoDevelop.CSharp
 			}
 		}
 
-		static PathEntry GetRegionEntry (ParsedDocument unit, DocumentLocation loc)
+		async static Task<PathEntry> GetRegionEntry (ParsedDocument unit, DocumentLocation loc)
 		{
 			PathEntry entry;
 			FoldingRegion reg;
 			try {
-				if (unit == null || !unit.GetUserRegionsAsync ().Result.Any ())
+				var regions = await unit.GetUserRegionsAsync ().ConfigureAwait (false);
+				if (unit == null || !regions.Any ())
 					return null;
-				reg = unit.GetUserRegionsAsync ().Result.LastOrDefault (r => r.Region.Contains (loc));
+				reg = regions.LastOrDefault (r => r.Region.Contains (loc));
 			} catch (AggregateException) {
 				return null;
 			} catch (OperationCanceledException) {
@@ -523,8 +621,7 @@ namespace MonoDevelop.CSharp
 			if (reg == null) {
 				entry = new PathEntry (GettextCatalog.GetString ("No region"));
 			} else {
-				entry = new PathEntry (CompilationUnitDataProvider.Pixbuf,
-				                       GLib.Markup.EscapeText (reg.Name));
+				entry = new PathEntry (CompilationUnitDataProvider.Pixbuf, GLib.Markup.EscapeText (reg.Name));
 			}
 			entry.Position = EntryPosition.Right;
 			return entry;
@@ -574,32 +671,37 @@ namespace MonoDevelop.CSharp
 			CancelUpdatePath ();
 			var cancellationToken = src.Token;
 			amb = new AstAmbience(TypeSystemService.Workspace.Options);
+			var loc = Editor.CaretLocation;
 			Task.Run(async delegate {
 				var unit = model.SyntaxTree;
-				var loc = Editor.CaretLocation;
 				SyntaxNode root;
 				SyntaxNode token;
 				try {
 					root = await unit.GetRootAsync(cancellationToken).ConfigureAwait(false);
+					if (root.FullSpan.Length <= caretOffset) {
+						return;
+					}
 					token = root.FindNode(TextSpan.FromBounds(caretOffset, caretOffset));
 				} catch (Exception ex ) {
 					Console.WriteLine (ex);
 					return;
 				}
 				var curMember = token.AncestorsAndSelf ().FirstOrDefault (m => m is MemberDeclarationSyntax && !(m is NamespaceDeclarationSyntax));
-				var curType = token.AncestorsAndSelf ().FirstOrDefault (m => m is TypeDeclarationSyntax || m is DelegateDeclarationSyntax);
+				var curType = token.AncestorsAndSelf ().FirstOrDefault (IsType);
 
 				var curProject = ownerProjects != null && ownerProjects.Count > 1 ? DocumentContext.Project : null;
 
 				if (curType == curMember || curType is DelegateDeclarationSyntax)
 					curMember = null;
-				if (isPathSet && curType == lastType && curMember == lastMember && curProject == lastProject)
+				if (isPathSet && curType == lastType && curMember == lastMember && curProject == lastProject) {
 					return;
+				}
 				var curTypeMakeup = GetEntityMarkup(curType);
 				var curMemberMarkup = GetEntityMarkup(curMember);
 				if (isPathSet && curType != null && lastType != null && curTypeMakeup == lastTypeMarkup &&
-					curMember != null && lastMember != null && curMemberMarkup == lastMemberMarkup && curProject == lastProject)
+					curMember != null && lastMember != null && curMemberMarkup == lastMemberMarkup && curProject == lastProject) {
 					return;
+				}
 
 
 				var result = new List<PathEntry>();
@@ -631,15 +733,17 @@ namespace MonoDevelop.CSharp
 					});
 					return;
 				}
+				var regionEntry = await GetRegionEntry (DocumentContext.ParsedDocument, loc).ConfigureAwait (false);
 
 				Gtk.Application.Invoke(delegate {
 					if (curType != null) {
 						var type = curType;
 						var pos = result.Count;
 						while (type != null) {
-							if (!(type is TypeDeclarationSyntax))
+							if (!(type is BaseTypeDeclarationSyntax))
 								break;
-							result.Insert (pos, new PathEntry (ImageService.GetIcon (type.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (type)) { Tag = (object)type ?? unit });
+							var tag = (object)type.Ancestors ().FirstOrDefault (IsType) ?? unit;
+							result.Insert (pos, new PathEntry (ImageService.GetIcon (type.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (type)) { Tag = tag });
 							type = type.Parent;
 						}
 					}
@@ -655,9 +759,8 @@ namespace MonoDevelop.CSharp
 						}
 					}
 
-					var entry = GetRegionEntry (DocumentContext.ParsedDocument, loc);
-					if (entry != null)
-						result.Add(entry);
+					if (regionEntry != null)
+						result.Add(regionEntry);
 
 					PathEntry noSelection = null;
 					if (curType == null) {
@@ -694,6 +797,11 @@ namespace MonoDevelop.CSharp
 					OnPathChanged (new DocumentPathChangedEventArgs(prev));
 				});
 			});
+		}
+
+		static bool IsType (SyntaxNode m)
+		{
+			return m is BaseTypeDeclarationSyntax || m is DelegateDeclarationSyntax;
 		}
 
 		void CancelUpdatePath ()
