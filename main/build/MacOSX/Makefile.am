@@ -28,7 +28,7 @@ monostub: monostub.m $(MONOSTUB_EXTRA_SOURCES)
 	gcc -Wall -mmacosx-version-min=10.6 -m32 -o $@ $^ -framework AppKit -isysroot $(SDK_PATH)
 
 monostub-test: monostub-test.m $(MONOSTUB_EXTRA_SOURCES)
-	gcc -g -Wall -mmacosx-version-min=10.10 -m32 -o $@ $^ -framework AppKit
+	gcc -g -Wall -mmacosx-version-min=10.6 -m32 -o $@ $^ -framework AppKit
 	./monostub-test
 
 clean-local:
