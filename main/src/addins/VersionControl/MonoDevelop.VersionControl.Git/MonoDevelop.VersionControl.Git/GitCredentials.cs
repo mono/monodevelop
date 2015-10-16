@@ -76,35 +76,12 @@ namespace MonoDevelop.VersionControl.Git
 				if (File.Exists (publicKey) && !KeyHasPassphrase (privateKey))
 					Keys.Add (privateKey);
 			}
-
-			if (PlatformSupportsSshAgent) {
-				var psi = new System.Diagnostics.ProcessStartInfo ("ssh-agent") {
-					RedirectStandardOutput = true,
-					UseShellExecute = false,
-				};
-
-				// Sample output:
-				// SSH_AUTH_SOCK=/var/folders/0j/41xlj0jx3cgbtmhgltrfkh380000gn/T//ssh-i6vkPrEeFBuB/agent.40235; export SSH_AUTH_SOCK;
-				// SSH_AGENT_PID=40236; export SSH_AGENT_PID;
-				// echo Agent pid 40236;
-
-				var proc = System.Diagnostics.Process.Start (psi);
-				proc.WaitForExit ();
-
-				var envSetter = proc.StandardOutput.ReadLine ().Split (';')[0];
-				var offset = envSetter.IndexOf ('=') + 1;
-				var envValue = envSetter.Substring (offset, envSetter.Length - offset);
-				Environment.SetEnvironmentVariable ("SSH_AUTH_SOCK", envValue);
-			}
-		}
-
-		static bool PlatformSupportsSshAgent {
-			get { return !Platform.IsWindows; }
 		}
 
 		static bool SshAgentSupported (GitCredentialsState state)
 		{
-			return !state.AgentUsed && PlatformSupportsSshAgent;
+			return !state.AgentUsed &&
+				(Platform.IsLinux || (Platform.IsMac && MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan));
 		}
 
 		public static Credentials TryGet (string url, string userFromUrl, SupportedCredentialTypes types, GitCredentialsType type)
