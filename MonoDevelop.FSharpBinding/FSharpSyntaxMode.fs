@@ -289,7 +289,7 @@ type FSharpSyntaxMode(editor, context) =
     let tokenSymbol = 
       { TokenInfo = token; SymbolUse = symbol; ExtraColorInfo = extraColor }
     
-    let chunkStyle = 
+    let chunkStyle =
       match tokenSymbol with
       | InactiveCode -> style.ExcludedCode
       | ComputationExpression _name -> style.KeywordTypes
@@ -313,7 +313,7 @@ type FSharpSyntaxMode(editor, context) =
       | PreprocessorKeyword -> style.Preprocessor
       | _ -> style.PlainText
     
-    let seg = ColoredSegment(lineOffset + token.LeftColumn, token.RightColumn - token.LeftColumn + 1, chunkStyle.Name)
+    let seg = ColoredSegment(lineOffset + token.LeftColumn, max (token.RightColumn - token.LeftColumn + 1) token.FullMatchedLength, chunkStyle.Name)
     //Uncomment to visualise tokens segments
     //LoggingService.LogInfo (sprintf """Segment: %s S:%i E:%i L:%i - "%s" """ seg.ColorStyleKey seg.Offset seg.EndOffset seg.Length (editor.GetTextBetween (seg.Offset, seg.EndOffset)) )
     seg
