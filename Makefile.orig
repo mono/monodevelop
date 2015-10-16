@@ -27,7 +27,7 @@ endif
 all: build
 
 build: MonoDevelop.FSharpBinding/MonoDevelop.FSharp.$(MDTAG).fsproj MonoDevelop.FSharpBinding/FSharpBinding.addin.xml
-	(cd MonoDevelop.FSharpBinding && xbuild MonoDevelop.FSharp.$(MDTAG).fsproj /p:Configuration=$(config))
+	(xbuild MonoDevelop.FSharp.$(MDTAG).sln /p:Configuration=$(config))
 
 pack: build
 	-rm -fr pack/$(VERSION)/$(MDTAG)/$(config)
