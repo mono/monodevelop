@@ -384,7 +384,7 @@ type FSharpConsoleView() as x =
     if newLine then buffer.Insert (&end', "\n")
 
     match prompt with
-    | Prompt.Normal -> bueffer.Insert (&end', x.PromptString)
+    | Prompt.Normal -> buffer.Insert (&end', x.PromptString)
     | Prompt.Multiline -> buffer.Insert (&end', x.PromptMultiLineString)
     | Prompt.None -> ()
 
