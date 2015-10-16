@@ -78,12 +78,6 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		static bool SshAgentSupported (GitCredentialsState state)
-		{
-			return !state.AgentUsed &&
-				(Platform.IsLinux || (Platform.IsMac && MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan));
-		}
-
 		public static Credentials TryGet (string url, string userFromUrl, SupportedCredentialTypes types, GitCredentialsType type)
 		{
 			bool result = true;
@@ -114,7 +108,7 @@ namespace MonoDevelop.VersionControl.Git
 				cred = new UsernamePasswordCredentials ();
 			else {
 				// Try ssh-agent on Linux.
-				if (SshAgentSupported (state)) {
+				if (!Platform.IsWindows && !state.AgentUsed) {
 					bool agentUsable;
 					if (!state.AgentForUrl.TryGetValue (url, out agentUsable))
 						state.AgentForUrl [url] = agentUsable = true;
