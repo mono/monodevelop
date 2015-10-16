@@ -17,9 +17,9 @@ MDROOT=INSERT_MDROOT
 MDTAG=mac-linux
 
 
-# The default configuration is Debug
+# The default configuration is Release since Roslyn
 ifeq ($(config),)
-config=Debug
+config=Release
 endif
 
 .PHONY: all
