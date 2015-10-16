@@ -41,7 +41,7 @@ type FakePad() =
            RedirectStandardInput = true, StandardErrorEncoding = Text.Encoding.UTF8, 
            StandardOutputEncoding = Text.Encoding.UTF8,
            WorkingDirectory = baseDirectory)
-      view.WriteOutput(sprintf "FAKE task runner: Starting %s %s" buildScript task)
+      view.WriteOutput(sprintf "FAKE task runner: Starting %s %s" buildScript task, false)
       view.Clear()
 
       try
@@ -56,7 +56,7 @@ type FakePad() =
             LoggingService.LogDebug (sprintf "Interactive: received %s" de.Data)
 
             async {
-              do! DispatchService.GuiDispatch(fun _ -> view.WriteOutput (de.Data + "\n"))
+              do! DispatchService.GuiDispatch(fun _ -> view.WriteOutput (de.Data + "\n", false))
                   |> Async.AwaitTask
             } |> Async.RunSynchronously)
 

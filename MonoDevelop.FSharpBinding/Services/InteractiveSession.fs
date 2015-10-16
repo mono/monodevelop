@@ -26,8 +26,8 @@ type InteractiveSession() =
  
   let _check = 
     if path = "" then
-        MonoDevelop.Ide.MessageService.ShowError( "No path to F# Interactive console set, and default could not be located.", "Have you got F# installed, see http://fsharp.org for details.")
-        raise (InvalidOperationException("No path to F# Interactive console set, and default could not be located."))
+        MonoDevelop.Ide.MessageService.ShowError( "No path to F# Interactive set, and default could not be located.", "Have you got F# installed, see http://fsharp.org for details.")
+        raise (InvalidOperationException("No path to F# Interactive set, and default could not be located."))
   let fsiProcess = 
     let startInfo = 
       new ProcessStartInfo
@@ -53,8 +53,9 @@ type InteractiveSession() =
           if de.Data.Trim() = "SERVER-PROMPT>" then
             promptReady.Trigger()
           elif de.Data.Trim() <> "" then
-            let str = (if waitingForResponse then waitingForResponse <- false; "\n" else "") + de.Data + "\n"
-            textReceived.Trigger(str))
+            //let str = (if waitingForResponse then waitingForResponse <- false; "\n" else "") + de.Data + "\n"
+            if waitingForResponse then waitingForResponse <- false
+            textReceived.Trigger(de.Data + "\n"))
     fsiProcess.EnableRaisingEvents <- true
   
   member x.Interrupt() =
@@ -88,9 +89,8 @@ type InteractiveSession() =
   member x.SendCommand(str:string) = 
     waitingForResponse <- true
     LoggingService.LogDebug (sprintf "Interactive: sending %s" str)
-    let message = str + if str.EndsWith(";;") then "\n" else ";;\n"
     let stream = fsiProcess.StandardInput.BaseStream
-    let bytes = Text.Encoding.UTF8.GetBytes(message)
+    let bytes = Text.Encoding.UTF8.GetBytes(str + "\n")
     stream.Write(bytes,0,bytes.Length)
     stream.Flush()
 

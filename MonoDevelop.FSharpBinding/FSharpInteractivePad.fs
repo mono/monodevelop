@@ -44,7 +44,7 @@ type FSharpInteractivePad() as this =
 
   do view.InitialiseEvents()
   let mutable killIntent = NoIntent
-  let mutable isPrompting = false
+  let mutable promptReceived = false
   let mutable activeDoc : IDisposable option = None
 
   let isInsideFSharpFile () = 
@@ -63,8 +63,8 @@ type FSharpInteractivePad() as this =
   let setupSession() =
     try
         let ses = InteractiveSession()
-        let textReceived = ses.TextReceived.Subscribe(fun t -> DispatchService.GuiDispatch(fun () -> view.WriteOutput t ) |> ignore)
-        let promptReady = ses.PromptReady.Subscribe(fun () -> DispatchService.GuiDispatch(fun () -> view.Prompt true ) |> ignore)
+        let textReceived = ses.TextReceived.Subscribe(fun t -> DispatchService.GuiDispatch(fun () -> view.WriteOutput(t, promptReceived) ) |> ignore)
+        let promptReady = ses.PromptReady.Subscribe(fun () -> DispatchService.GuiDispatch(fun () -> promptReceived<- true; view.Prompt(true, Prompt.Normal) ) |> ignore)
         let colourSchemChanged =
             PropertyService.PropertyChanged.Subscribe
                 (fun _ (eventArgs:PropertyChangedEventArgs) -> 
@@ -78,11 +78,11 @@ type FSharpInteractivePad() as this =
           if killIntent = NoIntent then
             DispatchService.GuiDispatch(fun () ->
               LoggingService.LogDebug ("Interactive: process stopped")
-              view.WriteOutput("\nSession termination detected. Press Enter to restart.")) |> ignore
-            isPrompting <- true
+              view.WriteOutput("\nSession termination detected. Press Enter to restart.", false)) |> ignore
           elif killIntent = Restart then 
             DispatchService.GuiDispatch view.Clear |> ignore
-          killIntent <- NoIntent)
+          killIntent <- NoIntent
+          promptReceived <- false)
         ses.StartReceiving()
         // Make sure we're in the correct directory after a start/restart. No ActiveDocument event then.
         getCorrectDirectory() |> Option.iter (fun path -> ses.SendCommand("#silentCd @\"" + path + "\";;"))
@@ -113,12 +113,7 @@ type FSharpInteractivePad() as this =
     |> Option.iter (fun path -> sendCommand ("#silentCd @\"" + path + "\";;") )
     
   let consoleInputHandler (cie:string) = 
-    if isPrompting then 
-      isPrompting <- false
-      session := None
-      sendCommand ""
-    elif cie.EndsWith(";;") then 
-      sendCommand cie
+    sendCommand cie
   
   /// Make path absolute using the specified 'root' path if it is not already
   let makeAbsolute root (path:string) = 
