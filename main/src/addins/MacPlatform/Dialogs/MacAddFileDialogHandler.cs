@@ -60,7 +60,8 @@ namespace MonoDevelop.MacIntegration
 					};
 					box.Layout ();
 					panel.AccessoryView = box.View;
-					box.Layout (box.View.Superview.Frame.Size);
+					if (box.View.Superview != null)
+						box.Layout (box.View.Superview.Frame.Size);
 				} else {
 					dropdownBox.Layout ();
 					panel.AccessoryView = dropdownBox.View;
