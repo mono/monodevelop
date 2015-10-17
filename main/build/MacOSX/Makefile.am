@@ -16,6 +16,12 @@ CLEANFILES = render.exe
 #DISTCLEANFILES =
 EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh render.cs
 
+if RELEASE_BUILDS
+FSHARP_BIN=../../external/fsharpbinding/bin/mac-linux/Release
+else
+FSHARP_BIN=../../external/fsharpbinding/bin/mac-linux/Debug
+endif
+
 all: monostub monostub-test
 
 render.exe: render.cs
@@ -59,7 +65,7 @@ app: monostub monostub-test
 	@echo "Copying MonoDevelop into app bundle"
 	@echo ""
 	cp -pR ../AddIns $(MAC_APP_LIB_DIR)
-	cp -pR ../../external/fsharpbinding/bin/mac-linux/Debug $(MAC_APP_LIB_DIR)/AddIns/fsharpbinding
+	cp -pR $(FSHARP_BIN) $(MAC_APP_LIB_DIR)/AddIns/fsharpbinding
 	cp -pR ../data $(MAC_APP_LIB_DIR)
 	cp -pR ../bin $(MAC_APP_LIB_DIR)
 	cp -pR ../locale $(MAC_APP_DIR)/Contents/MacOS/share
