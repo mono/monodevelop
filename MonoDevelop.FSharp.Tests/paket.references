@@ -1,5 +1,4 @@
 ExtCore
 FSharp.Compiler.Service
-Microsoft.CodeAnalysis copy_local:false
 Mono.Cecil
 NUnit
