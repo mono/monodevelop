@@ -844,10 +844,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				sourcePad.BringToFront (true);
 		}
 
-		public override void ViewDidEndLiveResize ()
-		{
-			base.ViewDidEndLiveResize ();
-			RepositionStatusLayers ();
+		public override CGRect Frame {
+			get {
+				return base.Frame;
+			}
+			set {
+				base.Frame = value;
+				RepositionStatusLayers ();
+			}
 		}
 	}
 }
