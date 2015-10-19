@@ -162,6 +162,12 @@
     <EmbeddedResource Include="icons\build~dark%402x.png">
       <LogicalName>build~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\build~disabled.png">
+      <LogicalName>build~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\build~disabled%402x.png">
+      <LogicalName>build~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\continue.png">
       <LogicalName>continue.png</LogicalName>
     </EmbeddedResource>
@@ -173,6 +179,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\continue~dark%402x.png">
       <LogicalName>continue~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\continue~disabled.png">
+      <LogicalName>continue~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\continue~disabled%402x.png">
+      <LogicalName>continue~disabled@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\device.png">
       <LogicalName>device.png</LogicalName>
@@ -186,6 +198,12 @@
     <EmbeddedResource Include="icons\device~dark%402x.png">
       <LogicalName>device~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\device~disabled.png">
+      <LogicalName>device~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\device~disabled%402x.png">
+      <LogicalName>device~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\project.png">
       <LogicalName>project.png</LogicalName>
     </EmbeddedResource>
@@ -198,6 +216,12 @@
     <EmbeddedResource Include="icons\project~dark%402x.png">
       <LogicalName>project~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\project~disabled.png">
+      <LogicalName>project~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project~disabled%402x.png">
+      <LogicalName>project~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\stop.png">
       <LogicalName>stop.png</LogicalName>
     </EmbeddedResource>
@@ -209,6 +233,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\stop~dark%402x.png">
       <LogicalName>stop~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stop~disabled.png">
+      <LogicalName>stop~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stop~disabled%402x.png">
+      <LogicalName>stop~disabled@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="maintoolbarbg~dark.png">
       <LogicalName>maintoolbarbg~dark.png</LogicalName>
