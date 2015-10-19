@@ -399,7 +399,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 			
 			internal double highlightPositon;
-			internal Annotation highlightAnnotation;
+			internal Annotation highlightAnnotation, menuAnnotation;
 			protected override bool OnMotionNotifyEvent (EventMotion evnt)
 			{
 				TooltipText = null;
@@ -438,6 +438,9 @@ namespace MonoDevelop.VersionControl.Views
 			protected override bool OnButtonPressEvent (EventButton evnt)
 			{
 				if (evnt.TriggersContextMenu ()) {
+					int startLine = widget.Editor.YToLine (widget.Editor.VAdjustment.Value + evnt.Y);
+					menuAnnotation = startLine > 0 && startLine <= annotations.Count ? annotations[startLine - 1] : null;
+
 					CommandEntrySet opset = new CommandEntrySet ();
 					opset.AddItem (BlameCommands.ShowDiff);
 					opset.AddItem (BlameCommands.ShowLog);
@@ -460,24 +463,24 @@ namespace MonoDevelop.VersionControl.Views
 			[CommandHandler (BlameCommands.CopyRevision)]
 			protected void OnCopyRevision ()
 			{
-				if (highlightAnnotation == null)
+				if (menuAnnotation == null)
 					return;
 				var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
-				clipboard.Text = highlightAnnotation.Revision.ToString ();
+				clipboard.Text = menuAnnotation.Revision.ToString ();
 				clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
-				clipboard.Text = highlightAnnotation.Revision.ToString ();
+				clipboard.Text = menuAnnotation.Revision.ToString ();
 			}
 		
 			[CommandHandler (BlameCommands.ShowDiff)]
 			protected void OnShowDiff ()
 			{
-				if (highlightAnnotation == null)
+				if (menuAnnotation == null)
 					return;
 				foreach (var view in widget.info.Document.ParentDocument.Views) {
 					DiffView diffView = view.GetContent<DiffView> ();
 					if (diffView != null) {
 						view.Select ();
-						var rev = widget.info.History.FirstOrDefault (h => h.ToString () == highlightAnnotation.Revision);
+						var rev = widget.info.History.FirstOrDefault (h => h.ToString () == menuAnnotation.Revision);
 						if (rev == null)
 							return;
 						diffView.ComparisonWidget.SetRevision (diffView.ComparisonWidget.DiffEditor, rev.GetPrevious ());
@@ -490,13 +493,13 @@ namespace MonoDevelop.VersionControl.Views
 			[CommandHandler (BlameCommands.ShowLog)]
 			protected void OnShowLog ()
 			{
-				if (highlightAnnotation == null)
+				if (menuAnnotation == null)
 					return;
 				foreach (var view in widget.info.Document.ParentDocument.Views) {
 					LogView logView = view.GetContent<LogView> ();
 					if (logView != null) {
 						view.Select ();
-						var rev = widget.info.History.FirstOrDefault (h => h.ToString () == highlightAnnotation.Revision);
+						var rev = widget.info.History.FirstOrDefault (h => h.ToString () == menuAnnotation.Revision);
 						if (rev == null)
 							return;
 						logView.LogWidget.SelectedRevision = rev;
