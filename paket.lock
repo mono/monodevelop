@@ -9,30 +9,5 @@ NUGET
     FSharp.Compiler.CodeDom (0.9.2) - framework: >= net40
     FSharp.Compiler.Service (1.4.0.9)
     FsPickler (1.5.2)
-    Microsoft.CodeAnalysis (1.0.0.0-rc2) - framework: >= net45
-      Microsoft.CodeAnalysis.CSharp.Workspaces (1.0.0-rc2)
-      Microsoft.CodeAnalysis.VisualBasic.Workspaces (1.0.0-rc2)
-    Microsoft.CodeAnalysis.Analyzers (1.0.0-rc2) - framework: >= net45
-    Microsoft.CodeAnalysis.Common (1.0.0-rc2) - framework: >= net45
-      Microsoft.CodeAnalysis.Analyzers (1.0.0-rc2)
-      System.Collections.Immutable (1.1.33-beta)
-      System.Reflection.Metadata (1.0.18-beta)
-    Microsoft.CodeAnalysis.CSharp (1.0.0-rc2) - framework: >= net45
-      Microsoft.CodeAnalysis.Common (1.0.0-rc2)
-    Microsoft.CodeAnalysis.CSharp.Workspaces (1.0.0-rc2) - framework: >= net45
-      Microsoft.CodeAnalysis.CSharp (1.0.0-rc2)
-      Microsoft.CodeAnalysis.Workspaces.Common (1.0.0-rc2)
-    Microsoft.CodeAnalysis.VisualBasic (1.0.0-rc2) - framework: >= net45
-      Microsoft.CodeAnalysis.Common (>= 1.0.0-rc2)
-    Microsoft.CodeAnalysis.VisualBasic.Workspaces (1.0.0-rc2) - framework: >= net45
-      Microsoft.CodeAnalysis.VisualBasic (1.0.0-rc2)
-      Microsoft.CodeAnalysis.Workspaces.Common (1.0.0-rc2)
-    Microsoft.CodeAnalysis.Workspaces.Common (1.0.0-rc2) - framework: >= net45
-      Microsoft.CodeAnalysis.Common (1.0.0-rc2)
-      Microsoft.Composition (>= 1.0.27)
-    Microsoft.Composition (1.0.30) - framework: >= net45
     Mono.Cecil (0.9.6.1) - framework: >= net40
     NUnit (2.6.4) - framework: >= net45
-    System.Collections.Immutable (1.1.33-beta) - framework: >= net45
-    System.Reflection.Metadata (1.0.18-beta) - framework: >= net45
-      System.Collections.Immutable (>= 1.1.33-beta)

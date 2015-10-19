@@ -5,7 +5,6 @@ nuget FSPickler
 nuget FSharp.Compiler.Service
 nuget Fantomas framework: >= net45
 nuget FSharp.Compiler.CodeDom 0.9.2 framework: >= net40
-nuget Microsoft.CodeAnalysis 1.0.0.0-rc2 framework: >= net45
 nuget Mono.Cecil framework: >= net40
 nuget NUnit 2.6.4 framework: >= net45
 nuget Argu
