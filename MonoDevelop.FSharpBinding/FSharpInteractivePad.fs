@@ -106,7 +106,7 @@ type FSharpInteractivePad() as this =
      let stap = IdeApp.Workbench.ActiveDocument.Editor.SelectionRange.Offset
      let line = IdeApp.Workbench.ActiveDocument.Editor.OffsetToLineNumber(stap)
      let file = IdeApp.Workbench.ActiveDocument.FileName
-     String.Format("# {0} \"{1}\"\n{2}\n" ,line,file.FullPath,selection)  
+     String.Format("# {0} \"{1}\"\n{2};;\n" ,line,file.FullPath,selection)  
 
   let ensureCorrectDirectory _ =
     getCorrectDirectory()
@@ -219,7 +219,7 @@ type FSharpInteractivePad() as this =
       let line = IdeApp.Workbench.ActiveDocument.Editor.CaretLine
       let text = IdeApp.Workbench.ActiveDocument.Editor.GetLineText(line)
       let file = IdeApp.Workbench.ActiveDocument.FileName
-      let sel = String.Format("# {0} \"{1}\"\n{2}\n", line, file.FullPath, text)
+      let sel = String.Format("# {0} \"{1}\"\n{2};;\n", line, file.FullPath, text)
       sendCommand sel
       //advance to the next line
       if PropertyService.Get ("FSharpBinding.AdvanceToNextLine", true)

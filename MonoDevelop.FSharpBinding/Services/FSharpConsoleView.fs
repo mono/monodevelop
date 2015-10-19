@@ -116,17 +116,14 @@ type FSharpConsoleView() as x =
   let addDisposable =
     disposables.Add
 
-  do x.UpdateColors()
-     x.Add (textView)
-     x.ShowAll ()
 
-  member x.UpdateColors() =
+  let updateColors() =
     let addTag (k:Tags) v = 
       tags.Add(k,v)
       buffer.TagTable.Add v
 
     let scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme.Value)
-    tags |> Seq.iter (fun (KeyValue(k,v)) -> buffer.TagTable.Remove(v); v.Dispose())
+    tags |> Seq.iter (fun (KeyValue(_k,v)) -> buffer.TagTable.Remove(v); v.Dispose())
     tags.Clear()
     addTag Tags.Keyword (getTextTag scheme.KeywordTypes)
     addTag Tags.User (getTextTag scheme.UserTypes)
@@ -139,12 +136,17 @@ type FSharpConsoleView() as x =
     addTag Tags.PlainText (getTextTag scheme.PlainText)
     addTag Tags.Freezer (new TextTag ("Freezer", Editable = false))
   
+  do updateColors()
+     x.Add (textView)
+     x.ShowAll ()
+
+
   member x.InitialiseEvents() =
     disposables.Add(
       PropertyService.PropertyChanged.Subscribe
         (fun _ (eventArgs:PropertyChangedEventArgs) -> 
            if eventArgs.Key = "ColorScheme" && eventArgs.OldValue <> eventArgs.NewValue then
-             x.UpdateColors ()))
+             updateColors ()))
 
     let handleKeyPressDelegate =
       let mainType = typeof<FSharpConsoleView>
