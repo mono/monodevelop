@@ -330,7 +330,7 @@ type LanguageService(dirtyNotify) =
 
   member x.StartBackgroundCompileOfProject (projectFilename) =
     let opts = x.GetProjectCheckerOptions(projectFilename)
-    checker.StartBackgroundCompile(opts)
+    checker.CheckProjectInBackground(opts)
 
   member x.ParseFileInProject(projectFilename, fileName:string, src) = 
     let opts = x.GetCheckerOptions(fileName, projectFilename, src)
