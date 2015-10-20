@@ -785,7 +785,7 @@ module SymbolTooltips =
             ToolTip(signature, getSummaryFromSymbol ap)
          
         | other ->
-            MonoDevelop.Core.LoggingService.LogWarning (sprintf "F# Tooltip not rendered for: %A" other)
+            MonoDevelop.Core.LoggingService.LogWarning (sprintf "F# Tooltip not rendered for: %A" other.Symbol)
             ToolTips.EmptyTip
 
     let getTooltipFromParameter (p:FSharpParameter) context =
