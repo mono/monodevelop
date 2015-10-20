@@ -21,7 +21,7 @@ type SemanticHighlighting() =
     let fixedc = content.Replace("§", "")
     let doc, _viewContent = TestHelpers.createDoc fixedc [] "defined"
     let syntaxMode = new FSharpSyntaxMode(doc.Editor, doc)
-    //let parsed = doc.UpdateParseDocument()
+
     let segments = 
       syntaxMode.GetProcessedTokens().Value
       |> Seq.collect (fun s -> s)
