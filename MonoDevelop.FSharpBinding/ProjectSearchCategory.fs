@@ -57,6 +57,16 @@ module Search =
       return allSymbols |> Array.toSeq
     else return Seq.empty }
 
+  /// constructors have a display name of ( .ctor ) use the enclosing entities display name 
+  let correctDisplayName (symbol:FSharpSymbolUse) = 
+      match symbol with
+      | Constructor c -> 
+        match c.EnclosingEntitySafe with
+        | Some ent -> ent.DisplayName
+        | _ -> LoggingService.LogError(sprintf "Constructor with no EnclosingEntity: %s" c.DisplayName)
+               c.DisplayName
+      | _ -> symbol.Symbol.DisplayName
+
   let byPattern (cache:Dictionary<_,_>) pattern symbols =
 
     let matchName (matcher:StringMatcher) (name:string) =
@@ -72,12 +82,6 @@ module Search =
 
     let matcher = StringMatcher.GetMatcher (pattern, false)
 
-    // constructors have a display name of ( .ctor ) use the enclosing entities display name 
-    let correctDisplayName (symbol:FSharpSymbolUse) = 
-      match symbol with
-      | Constructor c -> c.EnclosingEntity.DisplayName
-      | _ -> symbol.Symbol.DisplayName
-
     symbols
     |> Seq.choose (fun s -> let matchres = matchName matcher (correctDisplayName s)
                             if matchres.Match then Some(s, matchres.Rank)
@@ -86,11 +90,7 @@ module Search =
 type SymbolSearchResult(match', matchedString, rank, symbol:FSharpSymbolUse) =
   inherit SearchResult(match', matchedString, rank)
 
-  let simpleName =
-    // constructors have a displaye name of ( .ctor ) use the enclosing entities display name
-    match symbol with
-    | Constructor c -> c.EnclosingEntity.DisplayName
-    | _ -> symbol.Symbol.DisplayName
+  let simpleName = Search.correctDisplayName symbol
 
   let offsetAndLength =
     lazy Symbols.getOffsetAndLength simpleName symbol

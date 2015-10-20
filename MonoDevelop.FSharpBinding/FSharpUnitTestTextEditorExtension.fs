@@ -83,7 +83,12 @@ type FSharpUnitTestTextEditorExtension() =
                                        let test = UnitTestLocation(startOffset)
                                        match symbolUse.Symbol with
                                        | :? FSharpMemberOrFunctionOrValue as func -> 
-                                            let typeName = func.EnclosingEntity.QualifiedName
+                                            let typeName =
+                                              match func.EnclosingEntitySafe with
+                                              | Some ent -> ent.QualifiedName
+                                              | None _ ->
+                                                MonoDevelop.Core.LoggingService.LogWarning(sprintf "F# GatherUnitTests: found a unit test method with no qualified name: %s" func.FullName)
+                                                func.CompiledName
                                             let methName = PrettyNaming.QuoteIdentifierIfNeeded func.CompiledName
                                             let isIgnored =
                                                 func.Attributes

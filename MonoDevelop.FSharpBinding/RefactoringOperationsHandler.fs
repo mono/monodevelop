@@ -12,6 +12,7 @@ open MonoDevelop.Refactoring
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.Ide.FindInFiles
+open ExtCore.Control
 
 module Refactoring =
 
@@ -95,8 +96,10 @@ module Refactoring =
     let getBaseSymbol (symbolUse:FSharpSymbolUse) : FSharpSymbol option =
         match symbolUse.Symbol with
         | :? FSharpMemberOrFunctionOrValue as mfv when mfv.IsDispatchSlot ->
-            match mfv.EnclosingEntity.BaseType with
-            | Some bt when bt.HasTypeDefinition ->
+            maybe {
+              let! ent =  mfv.EnclosingEntitySafe
+              let! bt = ent.BaseType
+              if bt.HasTypeDefinition then
                 let baseDefs = bt.TypeDefinition.MembersFunctionsAndValues
                 
                 //TODO check for more than one match?
@@ -104,10 +107,10 @@ module Refactoring =
                 assert (matches.Length <= 1)
                 
                 //assume just the first for now
-                match baseDefs |> Seq.tryFind (fun btd -> btd.DisplayName = mfv.DisplayName) with
-                | Some bm -> Some (bm :> _)
-                | _ -> None
-            | _ -> None
+                let! bm = baseDefs |> Seq.tryFind (fun btd -> btd.DisplayName = mfv.DisplayName)
+                return! Some (bm :> FSharpSymbol)
+              else return! None }
+
         | :? FSharpEntity as ent ->
             match ent.BaseType with
             | Some bt when bt.HasTypeDefinition -> Some (bt.TypeDefinition :> _)
@@ -343,9 +346,11 @@ module Refactoring =
       let canGotoBase (symbolUse:FSharpSymbolUse) =
         match symbolUse.Symbol with
         | :? FSharpMemberOrFunctionOrValue as mfv when mfv.IsDispatchSlot ->
-            match mfv.EnclosingEntity.BaseType with
-            | Some bt -> bt.HasTypeDefinition
-            | _ -> false
+            maybe {
+              let! ent =  mfv.EnclosingEntitySafe
+              let! bt = ent.BaseType
+              return bt.HasTypeDefinition } |> Option.getOrElse (fun () -> false)
+
         | :? FSharpEntity as ent ->
             match ent.BaseType with
             | Some bt -> bt.HasTypeDefinition
@@ -449,14 +454,17 @@ type CurrentRefactoringOperationsHandler() =
                                       match symbolUse.Symbol with
                                       | :? FSharpEntity ->
                                           getCatalogString "Go to _Base Type"
-                                      | :? FSharpMemberOrFunctionOrValue as mfv when mfv.EnclosingEntity.IsInterface ->
-                                          if mfv.IsProperty then getCatalogString "Go to _Interface Property"
-                                          elif mfv.IsEvent then getCatalogString "Go to _Interface Event"
-                                          else GettextCatalog.GetString ("Go to _Interface Method")
                                       | :? FSharpMemberOrFunctionOrValue as mfv ->
-                                          if mfv.IsProperty then  getCatalogString "Go to _Base Property"
-                                          elif mfv.IsEvent then getCatalogString "Go to _Base Event"
-                                          else getCatalogString "Go to _Base Method"
+                                          match mfv.EnclosingEntitySafe with
+                                          | Some ent when ent.IsInterface ->
+                                              if mfv.IsProperty then getCatalogString "Go to _Interface Property"
+                                              elif mfv.IsEvent then getCatalogString "Go to _Interface Event"
+                                              else GettextCatalog.GetString ("Go to _Interface Method")
+                                          | _ -> 
+                                              if mfv.IsProperty then  getCatalogString "Go to _Base Property"
+                                              elif mfv.IsEvent then getCatalogString "Go to _Base Event"
+                                              else getCatalogString "Go to _Base Method"
+
                                       | _-> getCatalogString "Go to _Base Symbol"
                                     ainfo.Add (description, Action (fun () -> Refactoring.jumpTo (doc.Editor, doc, symbol, location)))
                                     |> ignore
@@ -486,10 +494,10 @@ type CurrentRefactoringOperationsHandler() =
                             | :? FSharpEntity as fse when fse.IsInterface -> getCatalogString "Find Implementing Types"
                             | :? FSharpEntity -> getCatalogString "Find Derived Types"
                             | :? FSharpMemberOrFunctionOrValue as mfv ->
-                                try 
-                                  if mfv.EnclosingEntity.IsInterface then getCatalogString "Find Implementing Symbols"
-                                  else getCatalogString "Find overriden Symbols"
-                                with :? InvalidOperationException -> getCatalogString "Find overriden Symbols"
+                                  match mfv.EnclosingEntitySafe with
+                                  | Some ent when ent.IsInterface ->
+                                    getCatalogString "Find Implementing Symbols"
+                                  | _ -> getCatalogString "Find overriden Symbols"
                             | _ -> getCatalogString "Find Derived Symbols"
                           ainfo.Add (description, Action (fun () -> Refactoring.findDerivedReferences (doc.Editor, doc, symbolUse, lastIdent))) |> ignore
 

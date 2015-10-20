@@ -5,6 +5,7 @@ open System.Text
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Mono.TextEditor
+open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.CodeCompletion
 open MonoDevelop.Components
@@ -513,7 +514,14 @@ module SymbolTooltips =
     let getFuncSignatureWithFormat displayContext (func: FSharpMemberOrFunctionOrValue) (format:FormatOptions) =
         let indent = String.replicate format.Indent " "
         let functionName =
-            let name = if func.IsConstructor then func.EnclosingEntity.DisplayName else func.DisplayName
+            let name =
+              if func.IsConstructor then
+                match func.EnclosingEntitySafe with
+                | Some ent -> ent.DisplayName
+                | _ ->
+                  LoggingService.LogWarning(sprintf "getFuncSignatureWithFormat: No enclosing entity found for: %s" func.DisplayName)
+                  func.DisplayName
+              else func.DisplayName
             name |> escapeText
 
         let modifiers =
@@ -526,8 +534,12 @@ module SymbolTooltips =
             let modifier =
                 //F# types are prefixed with new, should non F# types be too for consistancy?
                 if func.IsConstructor then
-                    if func.EnclosingEntity.IsFSharp then "new" ++ accessibility
-                    else accessibility
+                    match func.EnclosingEntitySafe with
+                    | Some ent -> if ent.IsFSharp then "new" ++ accessibility
+                                  else accessibility
+                    | _ ->
+                      LoggingService.LogWarning(sprintf "getFuncSignatureWithFormat: No enclosing entity found for: %s" func.DisplayName)
+                      accessibility
                 elif func.IsMember then 
                     if func.IsInstanceMember then
                         if func.IsDispatchSlot then "abstract member" ++ accessibility
@@ -574,7 +586,13 @@ module SymbolTooltips =
             | _ -> indent + asUnderline name + asSymbol ":" 
           | _ -> indent + name.PadRight padding + asSymbol ":" 
         
-        let isDelegate = func.EnclosingEntity.IsDelegate
+        let isDelegate = 
+          match func.EnclosingEntitySafe with
+          | Some ent -> ent.IsDelegate 
+          | _ ->
+            LoggingService.LogWarning(sprintf "getFuncSignatureWithFormat: No enclosing entity found for: %s" func.DisplayName)
+            false
+
         match argInfos with
         | [] ->
             //When does this occur, val type within  module?
@@ -691,9 +709,10 @@ module SymbolTooltips =
 
     let getAPCaseSignature displayContext (apc:FSharpActivePatternCase) =
       let findVal =
-        apc.Group.EnclosingEntity.Value.MembersFunctionsAndValues
-        |> Seq.tryFind (fun thing -> thing.DisplayName.Contains apc.DisplayName)
-        |> Option.map (getFuncSignature displayContext)
+        apc.Group.EnclosingEntity
+        |> Option.bind (fun ent -> ent.MembersFunctionsAndValues
+                                   |> Seq.tryFind (fun func -> func.DisplayName.Contains apc.DisplayName)
+                                   |> Option.map (getFuncSignature displayContext))
 
       match findVal with
       | Some v -> v
@@ -710,14 +729,16 @@ module SymbolTooltips =
                 ToolTips.EmptyTip
 
         | Constructor func ->
-            if func.EnclosingEntity.IsValueType || func.EnclosingEntity.IsEnum then
-                //ValueTypes
-                let signature = getFuncSignature symbol.DisplayContext func
-                ToolTip(signature, getSummaryFromSymbol func)
-            else
-                //ReferenceType constructor
-                let signature = getFuncSignature symbol.DisplayContext func
-                ToolTip(signature, getSummaryFromSymbol func)
+            match func.EnclosingEntitySafe with
+            | Some ent when ent.IsValueType || ent.IsEnum ->
+                  //ValueTypes
+                  let signature = getFuncSignature symbol.DisplayContext func
+                  ToolTip(signature, getSummaryFromSymbol func)
+            | _ ->
+                  LoggingService.LogWarning(sprintf "getTooltipFromSymbolUse: No enclosing entity found for: %s" func.DisplayName)
+                  //ReferenceType constructor
+                  let signature = getFuncSignature symbol.DisplayContext func
+                  ToolTip(signature, getSummaryFromSymbol func)
 
         | Operator func ->
             let signature = getFuncSignature symbol.DisplayContext func

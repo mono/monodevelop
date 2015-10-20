@@ -116,27 +116,35 @@ module NRefactory =
            let resolvedTypeDef = FSharpResolvedTypeDefinition(context, unresolvedTypeDef, fsSymbol, lastIdent)
            resolvedTypeDef :> ISymbol
     
-        // Members, Module-defined functions and Module-definned values
+        // Members, Module-defined functions and Module-defined values
         | :? FSharpMemberOrFunctionOrValue as fsMember when fsMember.IsModuleValueOrMember && fsMember.CurriedParameterGroups.Count > 0 -> 
     
+           let getAssemblyFilename (assembly:FSharpAssembly) = 
+             match assembly.FileName with
+             | Some name -> name
+             | _ -> "fakeassembly.dll"
+
+
            // This is more or less like the case above for entities.
            let access = Accessibility.Public
-           let fsEntity = fsMember.EnclosingEntity
+           let nsp, name, assemblyFilename = 
+             match fsMember.EnclosingEntitySafe with
+             | Some ent -> 
+               let nsp = match ent.Namespace with None -> "" | Some n -> n
+               let name = ent.DisplayName
+               // For scripts, there is no assembly so avoid errors caused by null in XS
+               let assemblyFilename = getAssemblyFilename ent.Assembly
+               nsp, name, assemblyFilename
+             | _ -> "", fsMember.DisplayName, getAssemblyFilename fsMember.Assembly
     
            // We create a fake 'Compilation', 'TypeDefinition' and 'Assembly' for the symbol 
-           let nsp = match fsEntity.Namespace with None -> "" | Some n -> n
-           let unresolvedTypeDef = DefaultUnresolvedTypeDefinition (nsp, fsEntity.DisplayName, Accessibility=access)
+           let unresolvedTypeDef = DefaultUnresolvedTypeDefinition (nsp, name, Accessibility=access)
     
            // We use an IUnresolvedMethod for the symbol regardless of whether it is a property, event, 
            // method or function. For the operations we're implementing (Find-all references and rename refactoring)
            // it doesn't seem to matter.
            let unresolvedMember = FSharpUnresolvedMethod(unresolvedTypeDef, fsMember.DisplayName, fsSymbol, lastIdent, Region=region, Accessibility=access)
     
-           // For scripts, there is no assembly so avoid errors caused by null in XS
-           let assemblyFilename =
-               match fsEntity.Assembly.FileName with
-               | None -> "fakeassembly.dll"
-               | Some n -> n
            let assemblyName = fsMember.Assembly.QualifiedName
            let unresolvedAssembly = DefaultUnresolvedAssembly(assemblyName, Location = assemblyFilename)
     
