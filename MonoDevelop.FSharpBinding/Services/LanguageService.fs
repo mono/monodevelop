@@ -454,15 +454,18 @@ type LanguageService(dirtyNotify) =
             | :? FSharpMemberOrFunctionOrValue as mfv ->
               let isOverrideOrDefault = mfv.IsOverrideOrExplicitInterfaceImplementation
               let baseTypeMatch() =
-                match mfv.EnclosingEntity.BaseType with
-                | Some bt -> caretmfv.EnclosingEntity.IsEffectivelySameAs bt.TypeDefinition
-                | _ -> false
+                maybe {
+                  let! ent = mfv.EnclosingEntitySafe
+                  let! bt = ent.BaseType 
+                  let! carentEncEnt = caretmfv.EnclosingEntitySafe 
+                  return carentEncEnt.IsEffectivelySameAs bt.TypeDefinition }
+
               let nameMatch = mfv.DisplayName = caretmfv.DisplayName
               let parameterMatch() =
                 let both = (mfv.CurriedParameterGroups |> Seq.concat) |> Seq.zip (caretmfv.CurriedParameterGroups |> Seq.concat)
                 let allMatch = both |> Seq.forall (fun (one, two) -> one.Type = two.Type)
                 allMatch
-              let allmatch = nameMatch && isOverrideOrDefault && baseTypeMatch() && parameterMatch()
+              let allmatch = nameMatch && isOverrideOrDefault && baseTypeMatch().IsSome && parameterMatch()
               allmatch
             | _ -> false
 

@@ -203,21 +203,22 @@ type FSharpTextEditorCompletion() =
         try
             match symbolUse with
             | Constructor c ->
-                let ent = c.EnclosingEntity.UnAnnotate()
-                Some (ent.DisplayName, ent)
+                c.EnclosingEntitySafe
+                |> Option.map (fun ent -> let un = ent.UnAnnotate()
+                                          un.DisplayName, un)
             | Event ev ->
-                let ent = ev.EnclosingEntity.UnAnnotate()
-                Some (ent.DisplayName, ent)
+                ev.EnclosingEntitySafe
+                |> Option.map (fun ent -> let un = ent.UnAnnotate()
+                                          un.DisplayName, un)
             | Property pr ->
-                let ent  = pr.EnclosingEntity.UnAnnotate()
-                Some (ent.DisplayName, ent)
+                pr.EnclosingEntitySafe
+                |> Option.map (fun ent -> let un = ent.UnAnnotate()
+                                          un.DisplayName, un)
             | ActivePatternCase ap ->
                 if ap.Group.Names.Count > 1 then
-                  match ap.Group.EnclosingEntity with
-                  | Some enclosing ->
-                      let ent = enclosing.UnAnnotate()
-                      Some(SymbolTooltips.escapeText ent.DisplayName, ent)
-                  | None -> None
+                  ap.Group.EnclosingEntity
+                  |> Option.map (fun enclosing -> let un = enclosing.UnAnnotate()
+                                                  SymbolTooltips.escapeText un.DisplayName, un)
                 else None
             | UnionCase uc ->
                 if uc.UnionCaseFields.Count > 1 then
@@ -229,17 +230,21 @@ type FSharpTextEditorCompletion() =
                   let real = f.LogicalEnclosingEntity.UnAnnotate()
                   Some(real.DisplayName, real)
                 else
-                  let real = f.EnclosingEntity.UnAnnotate()
-                  Some(real.DisplayName, real)
+                  f.EnclosingEntitySafe
+                  |> Option.map (fun real -> let un = real.UnAnnotate()
+                                             un.DisplayName, un)
             | Operator o ->
-                let ent = o.EnclosingEntity.UnAnnotate()
-                Some (ent.DisplayName, ent)
+                o.EnclosingEntitySafe
+                |> Option.map (fun ent -> let un = ent.UnAnnotate()
+                                          un.DisplayName, un)
             | Pattern p ->
-                let ent = p.EnclosingEntity.UnAnnotate()
-                Some (ent.DisplayName, ent)
+                p.EnclosingEntitySafe
+                |> Option.map (fun ent -> let un = ent.UnAnnotate()
+                                          un.DisplayName, ent)
             | Val v ->
-                let ent = v.EnclosingEntity.UnAnnotate()
-                Some (ent.DisplayName, ent)
+                v.EnclosingEntitySafe
+                |> Option.map (fun ent -> let un  = ent.UnAnnotate()
+                                          un.DisplayName, un)
             | TypeAbbreviation ta ->
                 //TODO:  Check this is correct, I suspect we should return None here
                 let ent = ta.UnAnnotate()
@@ -267,8 +272,8 @@ type FSharpTextEditorCompletion() =
           let cd = FSharpMemberCompletionData(head.Symbol.DisplayName, symbolToIcon head, head, tail) :> CompletionData
           //cd.PriorityGroup <- 1 + inheritanceDepth l.Head.Symbol
           match tryGetCategory head with
-          | Some (c, ent) -> 
-              let category = getOrAddCategory ent c
+          | Some (id, ent) -> 
+              let category = getOrAddCategory ent id
               cd.CompletionCategory <- category
           | None -> ()
           cd
