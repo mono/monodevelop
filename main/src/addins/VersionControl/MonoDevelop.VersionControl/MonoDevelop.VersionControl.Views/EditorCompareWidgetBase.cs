@@ -43,13 +43,9 @@ namespace MonoDevelop.VersionControl.Views
 	{
 		internal protected VersionControlDocumentInfo info;
 
-		Adjustment vAdjustment;
-		Adjustment[] attachedVAdjustments;
+		Adjustment vAdjustment, hAdjustment;
 
-		Adjustment hAdjustment;
-		Adjustment[] attachedHAdjustments;
-
-		Gtk.HScrollbar[] hScrollBars;
+		Gtk.HScrollbar hScrollBar;
 
 		DiffScrollbar rightDiffScrollBar, leftDiffScrollBar;
 		MiddleArea[] middleAreas;
@@ -91,12 +87,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public TextEditor FocusedEditor {
 			get {
-				foreach (TextEditor editor in editors) {
-					
-					if (editor.HasFocus)
-						return editor;
-				}
-				return null;
+				return editors.FirstOrDefault (editor => editor.HasFocus);
 			}
 		}
 		
@@ -118,28 +109,15 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			CreateComponents ();
 
-			vAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
-			attachedVAdjustments = new Adjustment[editors.Length];
-			attachedHAdjustments = new Adjustment[editors.Length];
-			for (int i = 0; i < editors.Length; i++) {
-				attachedVAdjustments[i] = new Adjustment (0, 0, 0, 0, 0, 0);
-				attachedHAdjustments[i] = new Adjustment (0, 0, 0, 0, 0, 0);
-			}
+			if (editors.Length <= 1 || editors.Length > 3)
+				throw new NotSupportedException ();
 
-			foreach (var attachedAdjustment in attachedVAdjustments) {
-				Connect (attachedAdjustment, vAdjustment);
-			}
+			vAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
+			vAdjustment.ValueChanged += (sender, e) => RedrawMiddleAreas ();
 
 			hAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
-			foreach (var attachedAdjustment in attachedHAdjustments) {
-				Connect (attachedAdjustment, hAdjustment);
-			}
-
-			hScrollBars = new Gtk.HScrollbar[attachedHAdjustments.Length];
-			for (int i = 0; i < hScrollBars.Length; i++) {
-				hScrollBars[i] = new HScrollbar (hAdjustment);
-				Add (hScrollBars[i]);
-			}
+			hScrollBar = new Gtk.HScrollbar (hAdjustment);
+			Add (hScrollBar);
 
 			for (int i = 0; i < editors.Length; i++) {
 				var editor = editors[i];
@@ -147,15 +125,17 @@ namespace MonoDevelop.VersionControl.Views
 				editor.DoPopupMenu += (e) => ShowPopup (editor, e);
 				editor.Caret.PositionChanged += CaretPositionChanged;
 				editor.FocusInEvent += EditorFocusIn;
-				editor.SetScrollAdjustments (attachedHAdjustments[i], attachedVAdjustments[i]);
+				editor.SetScrollAdjustments (hAdjustment, vAdjustment);
 			}
 
-			if (editors.Length == 2) {
-				editors[0].Painted +=  delegate (object sender, PaintEventArgs args) {
-					var myEditor = (TextArea)sender;
-					PaintEditorOverlay (myEditor, args, LeftDiff, true);
-				};
+			editors[0].Painted +=  delegate (object sender, PaintEventArgs args) {
+				var myEditor = (TextArea)sender;
+				PaintEditorOverlay (myEditor, args, LeftDiff, true);
+			};
+			leftDiffScrollBar = new DiffScrollbar (this, editors[0], true, false);
+			Add (leftDiffScrollBar);
 
+			if (editors.Length == 2) {
 				editors[1].Painted +=  delegate (object sender, PaintEventArgs args) {
 					var myEditor = (TextArea)sender;
 					PaintEditorOverlay (myEditor, args, LeftDiff, false);
@@ -164,10 +144,6 @@ namespace MonoDevelop.VersionControl.Views
 				rightDiffScrollBar = new DiffScrollbar (this, editors[1], true, true);
 				Add (rightDiffScrollBar);
 			} else {
-				editors[0].Painted +=  delegate (object sender, PaintEventArgs args) {
-					var myEditor = (TextArea)sender;
-					PaintEditorOverlay (myEditor, args, LeftDiff, true);
-				};
 				editors[1].Painted +=  delegate (object sender, PaintEventArgs args) {
 					var myEditor = (TextArea)sender;
 					PaintEditorOverlay (myEditor, args, LeftDiff, false);
@@ -178,11 +154,9 @@ namespace MonoDevelop.VersionControl.Views
 					PaintEditorOverlay (myEditor, args, RightDiff, true);
 				};
 				rightDiffScrollBar = new DiffScrollbar (this, editors[2], false, false);
-				Add (rightDiffScrollBar);
 			}
-			
-			leftDiffScrollBar = new DiffScrollbar (this, editors[0], true, false);
-			Add (leftDiffScrollBar);
+			Add (rightDiffScrollBar);
+
 			if (headerWidgets != null) {
 				foreach (var widget in headerWidgets) {
 					Add (widget);
@@ -190,9 +164,6 @@ namespace MonoDevelop.VersionControl.Views
 			}
 
 			middleAreas = new MiddleArea [editors.Length - 1];
-			if (middleAreas.Length <= 0 || middleAreas.Length > 2)
-				throw new NotSupportedException ();
-
 			middleAreas[0] = new MiddleArea (this, editors[0], MainEditor, true);
 			Add (middleAreas[0]);
 
@@ -340,38 +311,6 @@ namespace MonoDevelop.VersionControl.Views
 				middleArea.QueueDraw ();
 			}
 		}
-		
-		void Connect (Adjustment fromAdj, Adjustment toAdj)
-		{
-			fromAdj.Changed += AdjustmentChanged;
-			fromAdj.ValueChanged += delegate {
-				double fromValue = fromAdj.Value / (fromAdj.Upper - fromAdj.Lower);
-				if (toAdj.Value != fromValue)
-					toAdj.Value = fromValue;
-				RedrawMiddleAreas ();
-			};
-
-			toAdj.ValueChanged += delegate {
-				double toValue = System.Math.Round (toAdj.Value * (fromAdj.Upper - fromAdj.Lower)); 
-				if (fromAdj.Value != toValue)
-					fromAdj.Value = toValue;
-				RedrawMiddleAreas ();
-			};
-		}
-
-		void AdjustmentChanged (object sender, EventArgs e)
-		{
-			vAdjustment.SetBounds (0, 1.0,
-				attachedVAdjustments.Min (adj => adj.StepIncrement / (adj.Upper - adj.Lower)),
-				attachedVAdjustments.Min (adj => adj.PageIncrement / (adj.Upper - adj.Lower)),
-				attachedVAdjustments.Min (adj => adj.PageSize / (adj.Upper - adj.Lower)));
-			
-			hAdjustment.SetBounds (0, 1.0,
-				attachedHAdjustments.Min (adj => adj.StepIncrement / (adj.Upper - adj.Lower)),
-				attachedHAdjustments.Min (adj => adj.PageIncrement / (adj.Upper - adj.Lower)),
-				attachedHAdjustments.Min (adj => adj.PageSize / (adj.Upper - adj.Lower)));
-			
-		}
 
 		internal static void EditorFocusIn (object sender, FocusInEventArgs args)
 		{
@@ -434,17 +373,12 @@ namespace MonoDevelop.VersionControl.Views
 			if (vAdjustment != null) {
 				vAdjustment.Destroy ();
 				hAdjustment.Destroy ();
-				foreach (var adj in attachedVAdjustments)
-					adj.Destroy ();
-				foreach (var adj in attachedHAdjustments)
-					adj.Destroy ();
 				vAdjustment = null;
+				hAdjustment = null;
 			}
 
-			foreach (var hscrollbar in hScrollBars) {
-				Remove (hscrollbar);
-				hscrollbar.Destroy ();
-			}
+			Remove (hScrollBar);
+			hScrollBar.Destroy ();
 
 			foreach (var child in children.ToArray ()) {
 				child.Child.Destroy ();
@@ -460,9 +394,9 @@ namespace MonoDevelop.VersionControl.Views
 			const int overviewWidth = 16;
 			int vwidth = 1;
 
-			bool hScrollBarVisible = hScrollBars[0].Visible;
+			bool hScrollBarVisible = hScrollBar.Visible;
 
-			int hheight = hScrollBarVisible ? hScrollBars[0].Requisition.Height : 0;
+			int hheight = hScrollBarVisible ? hScrollBar.Requisition.Height : 0;
 			int headerSize = 0;
 
 			if (headerWidgets != null)
@@ -477,13 +411,13 @@ namespace MonoDevelop.VersionControl.Views
 			const int middleAreaWidth = 42;
 			int editorWidth = (childRectangle.Width - middleAreaWidth * (editors.Length - 1)) / editors.Length;
 
+			if (hScrollBarVisible) {
+				hScrollBar.SizeAllocate (new Rectangle (childRectangle.X, childRectangle.Top + childRectangle.Height, allocation.Width, hheight));
+			}
+
 			for (int i = 0; i < editors.Length; i++) {
 				Rectangle editorRectangle = new Rectangle (childRectangle.X + (editorWidth + middleAreaWidth) * i  , childRectangle.Top, editorWidth, childRectangle.Height);
 				editors[i].SizeAllocate (editorRectangle);
-
-				if (hScrollBarVisible) {
-					hScrollBars[i].SizeAllocate (new Rectangle (editorRectangle.X, editorRectangle.Y + editorRectangle.Height, editorRectangle.Width, hheight));
-				}
 
 				if (headerWidgets != null)
 					headerWidgets[i].SizeAllocate (new Rectangle (editorRectangle.X, allocation.Y + 1, editorRectangle.Width, headerSize));
@@ -494,10 +428,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 			base.OnSizeAllocated (allocation);
 		}
-		
-		// FIXME: if the editors have different adjustment ranges, the pixel deltas
-		// don't really feel quite right since they're applied after scaling via the
-		// linked adjustment
+
 		protected override bool OnScrollEvent (EventScroll evnt)
 		{
 			//using the size of an editor for the calculations means pixel deltas apply better
@@ -542,6 +473,15 @@ namespace MonoDevelop.VersionControl.Views
 			result.A = alpha;
 			return result;
 		}
+
+		double LineToY (TextArea editor, int line)
+		{
+			double y = editor.LineToY (line);
+			int i;
+			for (i = 0; i < editors.Length; ++i)
+				if (editor == editors [i])
+					break;
+		}
 		
 		void PaintEditorOverlay (TextArea editor, PaintEventArgs args, List<Hunk> diff, bool paintRemoveSide)
 		{
@@ -552,7 +492,7 @@ namespace MonoDevelop.VersionControl.Views
 				double y1 = editor.LineToY (paintRemoveSide ? hunk.RemoveStart : hunk.InsertStart) - editor.VAdjustment.Value;
 				double y2 = editor.LineToY (paintRemoveSide ? hunk.RemoveStart + hunk.Removed : hunk.InsertStart + hunk.Inserted) - editor.VAdjustment.Value;
 				if (y1 == y2)
-					y2 = y1 + 1;
+					continue;
 				cr.Rectangle (0, y1, editor.Allocation.Width, y2 - y1);
 				cr.SetSourceColor (GetColor (hunk, paintRemoveSide, false, 0.15));
 				cr.Fill ();
@@ -614,10 +554,13 @@ namespace MonoDevelop.VersionControl.Views
 			var editor = info.Document.GetContent <ITextFile> ();
 			if (editor != null)
 				data.Document.Text = editor.Text;
-			data.Document.ReadOnly = info.Document.GetContent<IEditableTextFile> () == null;
 			
+			data.Document.ReadOnly = info.Document.GetContent<IEditableTextFile> () == null;
+
 			CreateDiff ();
 			data.Document.TextReplaced += HandleDataDocumentTextReplaced;
+
+			UpdateMarkers ();
 		}
 
 		void HandleDataDocumentTextReplaced (object sender, DocumentChangeEventArgs e)
@@ -629,6 +572,64 @@ namespace MonoDevelop.VersionControl.Views
 			editor.InsertText (e.Offset, e.InsertedText.Text);
 			localUpdate.Add (data);
 			UpdateDiff ();
+
+			UpdateMarkers ();
+		}
+
+		List<LineBalanceTextMarker>[] allMarkers = new[] {
+			new List<LineBalanceTextMarker> (),
+			new List<LineBalanceTextMarker> (),
+			new List<LineBalanceTextMarker> (),
+		};
+
+		void UpdateMarkers ()
+		{
+			// FIXME for merge.
+			if (editors.Length == 2) {
+				for (int i = 0; i < editors.Length; ++i)
+					foreach (var marker in allMarkers[i])
+						marker.LineCount = 0;
+
+				int leftOffset = 0, rightOffset = 0;
+				var lines = new List<DocumentLine> (LeftDiff.Count);
+				foreach (var hunk in LeftDiff) {
+					int diff = hunk.Inserted - hunk.Removed;
+					if (diff == 0)
+						continue;
+
+					int targetLine, targetEditor;
+					if (diff > 0) {
+						targetLine = hunk.RemoveStart - 1;
+						leftOffset += diff;
+						targetEditor = 0;
+					} else {
+						diff = -diff;
+						targetLine = hunk.InsertStart - 1;
+						rightOffset += diff;
+						targetEditor = 1;
+					}
+					diff = diff + 1;
+
+					var target = editors [targetEditor].Document.GetLine (targetLine);
+					lines.Add (target);
+					LineBalanceTextMarker marker = target.Markers
+						.OfType<LineBalanceTextMarker> ()
+						.FirstOrDefault ();
+					
+					if (marker == null) {
+						marker = new LineBalanceTextMarker {
+							LineCount = diff,
+						};
+						editors [targetEditor].Document.AddMarker (targetLine, marker);
+						allMarkers [targetEditor].Add (marker);
+					} else
+						marker.LineCount = diff;
+				}
+
+				for (int i = 0; i < editors.Length; ++i)
+					foreach (var marker in allMarkers[i])
+						editors [i].Document.CommitLineUpdate (marker.LineSegment);
+			}
 		}
 
 		public void RemoveLocal (TextEditorData data)
@@ -809,29 +810,22 @@ namespace MonoDevelop.VersionControl.Views
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
 					cr.Rectangle (evnt.Region.Clipbox.X, evnt.Region.Clipbox.Y, evnt.Region.Clipbox.Width, evnt.Region.Clipbox.Height);
 					cr.Clip ();
-					int delta = widget.MainEditor.Allocation.Y - Allocation.Y;
+					double delta = widget.MainEditor.Allocation.Y - Allocation.Y - toEditor.VAdjustment.Value;
 					if (Diff != null) {
 						foreach (Hunk hunk in Diff) {
-							double z1 = delta + fromEditor.LineToY (hunk.RemoveStart) - fromEditor.VAdjustment.Value;
-							double z2 = delta + fromEditor.LineToY (hunk.RemoveStart + hunk.Removed) - fromEditor.VAdjustment.Value;
-							if (z1 == z2)
-								z2 = z1 + 1;
-	
-							double y1 = delta + toEditor.LineToY (hunk.InsertStart) - toEditor.VAdjustment.Value;
-							double y2 = delta + toEditor.LineToY (hunk.InsertStart + hunk.Inserted) - toEditor.VAdjustment.Value;
-	
+							int diff = hunk.Inserted - hunk.Removed;
+							double y1 = delta;
+							double y2 = delta;
+
+							if (diff < 0) {
+								y1 += fromEditor.LineToY (hunk.RemoveStart);
+								y2 += fromEditor.LineToY (hunk.RemoveStart + hunk.Removed);
+							} else {
+								y1 += toEditor.LineToY (hunk.InsertStart);
+								y2 += toEditor.LineToY (hunk.InsertStart + hunk.Inserted);
+							}
 							if (y1 == y2)
 								y2 = y1 + 1;
-	
-							if (!useLeft) {
-								var tmp = z1;
-								z1 = y1;
-								y1 = tmp;
-	
-								tmp = z2;
-								z2 = y2;
-								y2 = tmp;
-							}
 	
 							int x1 = 0;
 							int x2 = Allocation.Width;
@@ -843,43 +837,17 @@ namespace MonoDevelop.VersionControl.Views
 									x2 -= 16;
 								}
 							}
-	
-							if (z1 == z2)
-								z2 = z1 + 1;
-	
-							cr.MoveTo (x1, z1);
-							
-							cr.CurveTo (x1 + (x2 - x1) / 4, z1,
-								x1 + (x2 - x1) * 3 / 4, y1,
-								x2, y1);
-	
-							cr.LineTo (x2, y2);
-							cr.CurveTo (x1 + (x2 - x1) * 3 / 4, y2,
-								x1 + (x2 - x1) / 4, z2,
-								x1, z2);
-							cr.ClosePath ();
+
+							cr.Rectangle (x1, y1, x2 - x1, y2 - y1);
 							cr.SetSourceColor (GetColor (hunk, this.useLeft, false, 1.0));
 							cr.Fill ();
-	
-							cr.SetSourceColor (GetColor (hunk, this.useLeft, true, 1.0));
-							cr.MoveTo (x1, z1);
-							cr.CurveTo (x1 + (x2 - x1) / 4, z1,
-								x1 + (x2 - x1) * 3 / 4, y1,
-								x2, y1);
-							cr.Stroke ();
-							
-							cr.MoveTo (x2, y2);
-							cr.CurveTo (x1 + (x2 - x1) * 3 / 4, y2,
-								x1 + (x2 - x1) / 4, z2,
-								x1, z2);
-							cr.Stroke ();
 	
 							if (!hideButton) {
 								bool isButtonSelected = hunk == selectedHunk;
 	
 								double x, y, w, h;
-								bool drawArrow = useLeft ? GetButtonPosition (hunk, y1, y2, z1, z2, out x, out y, out w, out h) :
-									GetButtonPosition (hunk, z1, z2, y1, y2, out x, out y, out w, out h);
+								bool drawArrow = useLeft ? GetButtonPosition (hunk, y1, y2, y1, y2, out x, out y, out w, out h) :
+									GetButtonPosition (hunk, y1, y2, y1, y2, out x, out y, out w, out h);
 	
 								cr.Rectangle (x, y, w, h);
 								if (isButtonSelected) {
@@ -1006,15 +974,21 @@ namespace MonoDevelop.VersionControl.Views
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
 					cr.LineWidth = 1;
 					double curY = 0;
-					
+
+					int lineDelta = editor.Document.LinesWithExtendingTextMarkers
+						.SelectMany (line => line.Markers)
+						.OfType<LineBalanceTextMarker> ()
+						.Sum (marker => marker.LineCount > 1 ? marker.LineCount - 1 : 0);
+
+					double lineCount = editor.LineCount + lineDelta;
 					foreach (var hunk in diff) {
 						double y, count;
 						if (paintInsert) {
-							y = hunk.InsertStart / (double)editor.LineCount;
-							count = hunk.Inserted / (double)editor.LineCount;
+							y = hunk.InsertStart / lineCount;
+							count = hunk.Inserted / lineCount;
 						} else {
-							y = hunk.RemoveStart / (double)editor.LineCount;
-							count = hunk.Removed / (double)editor.LineCount;
+							y = hunk.RemoveStart / lineCount;
+							count = hunk.Removed / lineCount;
 						}
 						
 						double start  = y *  Allocation.Height;
@@ -1092,6 +1066,34 @@ namespace MonoDevelop.VersionControl.Views
 		}
 		
 		public event EventHandler DiffChanged;
+	}
+
+	class LineBalanceTextMarker : TextLineMarker, IExtendingTextLineMarker
+	{
+		public int LineCount { get; set; }
+
+		public override void Draw (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
+		{
+			if (LineCount == 0) {
+				base.Draw (editor, cr, y, metrics);
+				return;
+			}
+
+			var lineHeight = editor.LineHeight;
+			var marginWidth = editor.TextViewMargin.Width;
+			cr.Rectangle (editor.TextViewMargin.XOffset - marginWidth, y + lineHeight, metrics.WholeLineWidth + marginWidth, metrics.LineHeight - lineHeight);
+			cr.SetSourceColor (new Cairo.Color (0, 0, 0, 1));
+			cr.Fill ();
+		}
+
+		public void Draw (TextEditor editor, Cairo.Context cr, int lineNr, Cairo.Rectangle lineArea)
+		{
+		}
+
+		public double GetLineHeight (TextEditor editor)
+		{
+			return LineCount == 0 ? editor.LineHeight : editor.LineHeight * LineCount;
+		}
 	}
 
 }
