@@ -201,7 +201,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (Window == null)
 					return;
 
-				ReconstructString ();
+				ReconstructString (updateTrackingAreas: true);
 				foreach (var layer in Layer.Sublayers) {
 					if (layer.Name != null && layer.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal))
 						layer.SetImage (layerToStatus [layer.Name].Image, Window.BackingScaleFactor);
@@ -234,7 +234,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 
 		NSTrackingArea textFieldArea;
-		void ReconstructString ()
+		void ReconstructString (bool updateTrackingAreas)
 		{
 			if (string.IsNullOrEmpty (text)) {
 				textField.AttributedStringValue = new NSAttributedString ("");
@@ -247,6 +247,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			var width = textField.AttributedStringValue.BoundingRectWithSize (new CGSize (nfloat.MaxValue, textField.Frame.Height),
 				NSStringDrawingOptions.UsesFontLeading | NSStringDrawingOptions.UsesLineFragmentOrigin).Width;
 
+			if (!updateTrackingAreas)
+				return;
+			
 			if (textFieldArea != null) {
 				RemoveTrackingArea (textFieldArea);
 				DestroyPopover ();
@@ -451,7 +454,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			LoadText (message, isMarkup, color);
 			LoadPixbuf (image);
-			ReconstructString ();
+			ReconstructString (updateTrackingAreas: true);
 		}
 
 		void LoadText (string message, bool isMarkup, NSColor color)
@@ -489,7 +492,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				image = iconAnimation.FirstFrame.ToNSImage ();
 				xwtAnimation = iconAnimation.StartAnimation (p => {
 					image = p.ToNSImage ();
-					ReconstructString ();
+					ReconstructString (updateTrackingAreas: false);
 				});
 			} else {
 				image = ImageService.GetIcon (iconId).ToNSImage ();
