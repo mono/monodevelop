@@ -32,3 +32,5 @@ Makefile
 
 /MonoDevelop.FSharp.Tests/MonoDevelop.FSharp.Tests.fsproj
 /MonoDevelop.FSharp.Tests/tests
+
+.paket/paket.exe
