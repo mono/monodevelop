@@ -74,6 +74,7 @@ type CompilerArgumentsTests() =
     [<TestCaseAttribute(TestPlatform.Mono,"mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" )>]
     [<TestCaseAttribute(TestPlatform.Windows,"mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" )>]
     [<Test>]
+    [<Ignore>]
     member x.``Only mscorlib referenced`` (platform, assemblyName:string) =
         match platform with
             | TestPlatform.Mono when MonoDevelop.Core.Platform.IsWindows -> ()
@@ -88,6 +89,7 @@ type CompilerArgumentsTests() =
     [<TestCaseAttribute(TestPlatform.Mono, "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/gac/FSharp.Core/4.3.0.0__b03f5f7f11d50a3a/FSharp.Core.dll")>] 
     [<TestCaseAttribute(TestPlatform.Mono, "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5/FSharp.Core.dll")>]
     [<Test>]
+    [<Ignore>]
     member x.``Only FSharp.Core referenced`` (platform: TestPlatform, assemblyName:string) =
         match platform with
         | TestPlatform.Mono when MonoDevelop.Core.Platform.IsWindows -> ()

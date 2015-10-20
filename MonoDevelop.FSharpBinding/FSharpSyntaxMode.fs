@@ -1,4 +1,4 @@
-namespace MonoDevelop.FSharp
+﻿namespace MonoDevelop.FSharp
 
 open System
 open System.Collections.Generic
@@ -317,40 +317,42 @@ type FSharpSyntaxMode(editor, context) =
     //Uncomment to visualise tokens segments
     //LoggingService.LogInfo (sprintf """Segment: %s S:%i E:%i L:%i - "%s" """ seg.ColorStyleKey seg.Offset seg.EndOffset seg.Length (editor.GetTextBetween (seg.Offset, seg.EndOffset)) )
     seg
-  
+
+  member x.GetProcessedTokens() =
+    maybe { 
+      let! localParsedDocument = context.ParsedDocument |> Option.ofNull
+      let! pd = localParsedDocument |> Option.tryCast<FSharpParsedDocument>
+      let! checkResults = pd.Ast |> Option.tryCast<ParseAndCheckResults>
+      let symbolsInFile = 
+        try Async.RunSynchronously(checkResults.GetAllUsesOfAllSymbolsInFile(), ServiceSettings.maximumTimeout)
+        with _ -> None
+      
+      let colourisations = checkResults.GetExtraColorizations()
+      let lineDetails = 
+        editor.GetLines() |> Seq.map (fun line -> Tokens.LineDetail(line.LineNumber, line.Offset, editor.GetLineText line))
+      let defines = CompilerArguments.getDefineSymbols context.Name (context.Project |> Option.ofNull)
+      
+      let processedTokens = 
+        let style = getColourScheme()
+        
+        let tokens = 
+          match pd.Tokens with
+          | Some t -> t
+          | None -> Tokens.getTokens lineDetails context.Name defines
+        tokens
+        |> List.map 
+             (fun (Tokens.TokenisedLine(lineNumber, lineOffset, chunks, _state)) -> 
+                chunks |> List.map (makeChunk symbolsInFile colourisations lineNumber lineOffset style))
+        |> Array.ofList
+      return processedTokens
+    }
+
   override x.DocumentParsed() = 
-    let processedTokens = 
-      maybe { 
-        let! localParsedDocument = context.ParsedDocument |> Option.ofNull
-        let! pd = localParsedDocument |> Option.tryCast<FSharpParsedDocument>
-        let! checkResults = pd.Ast |> Option.tryCast<ParseAndCheckResults>
-        let symbolsInFile = 
-          try Async.RunSynchronously(checkResults.GetAllUsesOfAllSymbolsInFile(), ServiceSettings.maximumTimeout)
-          with _ -> None
-        
-        let colourisations = checkResults.GetExtraColorizations()
-        let lineDetails = 
-          editor.GetLines() |> Seq.map (fun line -> Tokens.LineDetail(line.LineNumber, line.Offset, editor.GetLineText line))
-        let defines = CompilerArguments.getDefineSymbols context.Name (context.Project |> Option.ofNull)
-        
-        let processedTokens = 
-          let style = getColourScheme()
-          
-          let tokens = 
-            match pd.Tokens with
-            | Some t -> t
-            | None -> Tokens.getTokens lineDetails context.Name defines
-          tokens
-          |> List.map 
-               (fun (Tokens.TokenisedLine(lineNumber, lineOffset, chunks, _state)) -> 
-                  chunks |> List.map (makeChunk symbolsInFile colourisations lineNumber lineOffset style))
-          |> Array.ofList
-        return processedTokens
-      }
+    let processedTokens = x.GetProcessedTokens()
     processedTokens |> Option.iter (fun _ -> 
                          segments <- processedTokens
                          Gtk.Application.Invoke(fun _ _ -> x.NotifySemanticHighlightingUpdate()))
-  
+
   override x.GetColoredSegments(segment) = 
     let line = editor.GetLineByOffset segment.Offset
     let lineNumber = line.LineNumber

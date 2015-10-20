@@ -60,7 +60,7 @@ module Symbols =
         |> List.map (fun range -> 
             let start, finish = Symbol.trimSymbolRegion symbolUse lastIdent
             range.FileName, start, finish)
-
+    
     let getTrimmedOffsetsForDeclarations lastIdent (symbolUse:FSharpSymbolUse) = 
         let trimmedSymbols = getTrimmedRangesForDeclarations lastIdent symbolUse 
         trimmedSymbols
