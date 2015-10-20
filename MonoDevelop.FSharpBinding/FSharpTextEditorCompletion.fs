@@ -81,90 +81,43 @@ type Category(text, s:FSharpSymbol) =
       | a, b -> a.DisplayName.CompareTo(b.DisplayName)
     | _ -> -1
 
-//TODO: finish porting symbol version
-type FSharpParameterHintingData (name, meth : FSharpMethodGroupItem(*, symbol:FSharpSymbolUse*) ) =
+type FSharpParameterHintingData (symbol:FSharpSymbolUse) =
   inherit ParameterHintingData (null)
 
   override x.ParameterCount =
-//    match symbol.Symbol with
-//    | :? FSharpMemberOrFunctionOrValue as fsm ->
-//        let cpg = fsm.CurriedParameterGroups
-//        cpg.Count
-//    | _ -> 
-    meth.Parameters.Length
+    match symbol.Symbol with
+    | :? FSharpMemberOrFunctionOrValue as fsm ->
+        let cpg = fsm.CurriedParameterGroups
+        cpg.[0].Count
+    | _ -> 0
 
-  override x.IsParameterListAllowed = false
+  override x.IsParameterListAllowed =
+    match symbol.Symbol with
+    | :? FSharpMemberOrFunctionOrValue as fsm ->
+        //TODO: How do we handle non tupled arguments?
+        let last = fsm.CurriedParameterGroups.[0] |> Seq.last 
+        last.IsParamArrayArg 
+    | _ -> false
 
   override x.GetParameterName i =
-//    match symbol.Symbol with
-//    | :? FSharpMemberOrFunctionOrValue as fsm ->
-//        let p = fsm.CurriedParameterGroups.[i]
-//        ""
-//    | _ -> ""
-    meth.Parameters.[i].ParameterName
+    match symbol.Symbol with
+    | :? FSharpMemberOrFunctionOrValue as fsm ->
+      //TODO: How do we handle non tupled arguments?
+        let group = fsm.CurriedParameterGroups.[0]
+        let param = group.[i]
+        match param.Name with
+        | Some n -> n
+        | None -> param.DisplayName
+    | _ -> ""
 
   /// Returns the markup to use to represent the method overload in the parameter information window.
-  override x.CreateTooltipInformation (_editor, _context, currentParameter:int, _smartWrap:bool, cancel) =
+  override x.CreateTooltipInformation (_editor, _context, paramIndex:int, _smartWrap:bool, cancel) =
     Async.StartAsTask(
       async {
-        // Get the lower part of the text for the display of an overload
-        let signature, comment =
-            match TooltipFormatting.formatTip meth.Description with
-            | [signature,comment] -> signature,comment
-            //With multiple tips just take the head.  
-            //This shouldnt happen as we split them in the resolver provider
-            | multiple ->
-                multiple 
-                |> List.head
-                |> (fun (signature,comment) -> signature,comment)
-
-        let description =
-            let param = 
-                meth.Parameters |> Array.mapi (fun i param -> 
-                    let paramDesc = 
-                        // Sometimes the parameter decription is hidden in the XML docs
-                        match TooltipFormatting.extractParamTip param.ParameterName meth.Description with 
-                        | Some(tip) -> tip
-                        | None -> param.Description
-                    let name = if i = currentParameter then  "<b>" + param.ParameterName + "</b>" else param.ParameterName
-                    let text = name + ": " + GLib.Markup.EscapeText paramDesc
-                    text )
-            if String.IsNullOrEmpty comment then String.Join("\n", param)
-            else comment + "\n" + String.Join("\n", param)
-            
-        
-        // Returns the text to use to represent the specified parameter
-        let paramDescription = 
-          if currentParameter < 0 || currentParameter >= meth.Parameters.Length  then "" else 
-          let param = meth.Parameters.[currentParameter]
-          param.ParameterName 
-
-        let heading = 
-
-          let lines = signature.Split [| '\n';'\r' |]
-
-          // Try to highlight the current parameter in bold. Hack apart the text based on (, comma, and ),
-          // then put it back together again.
-          //
-          // @todo This will not be perfect when the text contains generic types with more than one type
-          // parameter since they will have extra commas. 
-
-          let text = if lines.Length = 0 then name else  lines.[0]
-          let textL = text.Split '('
-          if textL.Length <> 2 then text else
-          //TODO: what was text0 used for?
-          let _text0 = textL.[0]
-          let text1 = textL.[1]
-          let text1L = text1.Split ')'
-          if text1L.Length <> 2 then text else
-          let text10 = text1L.[0]
-          let text11 = text1L.[1]
-          let text10L =  text10.Split ','
-          let text10L = text10L |> Array.mapi (fun i x -> if i = currentParameter then "<b>" + x + "</b>" else x)
-          textL.[0] + "(" + String.Join(",", text10L) + ")" + text11
-
-        let tooltipInfo = TooltipInformation(SummaryMarkup = description, SignatureMarkup = String.wrapText heading 80, FooterMarkup = paramDescription)
-        return tooltipInfo }, cancellationToken = cancel)
+        match symbol with
+        | MemberFunctionOrValue f -> 
+          let tooltipInfo = SymbolTooltips.getParameterTooltipInformation symbol paramIndex
+          return tooltipInfo }, cancellationToken = cancel)
 
 
 /// Implements text editor extension for MonoDevelop that shows F# completion    
@@ -484,19 +437,17 @@ type FSharpTextEditorCompletion() =
                      match tyRes with
                      | Some tyRes ->
                          let line, col, lineStr = x.Editor.GetLineInfoFromOffset (startOffset)
-                         let! methsOpt = tyRes.GetMethods(line, col, lineStr)
-                         //TODO: Use the symbol version
-                         //let! allMethodSymbols = tyRes.GetMethodsAsSymbols (line, col, lineStr)
-                         return methsOpt
+                         let! allMethodSymbols = tyRes.GetMethodsAsSymbols (line, col, lineStr)
+                         return allMethodSymbols
                      | None -> return None}
           
           match methsOpt with
-          | Some(name, meths) when meths.Length > 0 -> 
+          | Some(meths) when meths.Length > 0 -> 
               LoggingService.LogDebug ("FSharpTextEditorCompletion: Getting Parameter Info: {0} methods", meths.Length)
               let hintingData =
                   meths
-                  |> Array.map (fun meth -> FSharpParameterHintingData (name, meth) :> ParameterHintingData)
-                  |> ResizeArray.ofArray
+                  |> List.map (fun meth -> FSharpParameterHintingData (meth) :> ParameterHintingData)
+                  |> ResizeArray.ofList
 
               return ParameterHintingResult(hintingData, startOffset) 
           | _ -> LoggingService.LogWarning("FSharpTextEditorCompletion: Getting Parameter Info: no methods found")

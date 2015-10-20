@@ -320,6 +320,7 @@ module internal Highlight =
     let asKeyword = asType Keyword
     let asBrackets = asType Brackets
     let asUserType = asType UserType
+    let asUnderline = sprintf "<u>%s</u>"
 
 
 type TooltipResults =
@@ -422,8 +423,7 @@ module SymbolTooltips =
 
                 seq {
                     yield asSymbol " : ("
-                    if c.MemberIsStatic then
-                        yield asKeyword "static "
+                    if c.MemberIsStatic then yield asKeyword "static "
 
                     yield asKeyword "member "
                     yield asUserType formattedMemberName
@@ -506,13 +506,15 @@ module SymbolTooltips =
 
         sb.ToString()
 
-    let getFuncSignature displayContext (func: FSharpMemberOrFunctionOrValue) indent signatureOnly =
-        let indent = String.replicate indent " "
+    type FormatOptions =
+      {Indent : int; Highlight :string option}
+        static member Default = {Indent=3;Highlight=None}
+
+    let getFuncSignatureWithFormat displayContext (func: FSharpMemberOrFunctionOrValue) (format:FormatOptions) =
+        let indent = String.replicate format.Indent " "
         let functionName =
-            let name = 
-                if func.IsConstructor then func.EnclosingEntity.DisplayName
-                else func.DisplayName
-            escapeText name
+            let name = if func.IsConstructor then func.EnclosingEntity.DisplayName else func.DisplayName
+            name |> escapeText
 
         let modifiers =
             let accessibility =
@@ -555,25 +557,33 @@ module SymbolTooltips =
                 with _ -> "Unknown"
 
         let padLength =
-            let allLengths = argInfos |> List.concat |> List.map (fun p -> match p.Name with None -> 0 | Some name -> name.Length)
+            let allLengths =
+              argInfos
+              |> List.concat
+              |> List.map (fun p -> match p.Name with Some name -> name.Length | None -> p.DisplayName.Length)
             match allLengths with
             | [] -> 0
             | l -> l |> List.max
 
         let formatName indent padding (parameter:FSharpParameter) =
-          match parameter.Name with
-          | None -> indent
-          | Some name -> indent + name.PadRight (padding) + asSymbol ":" 
-
+          let name = match parameter.Name with Some name -> name | None -> parameter.DisplayName
+          match format.Highlight with
+          | Some paramName when paramName = name ->
+            match padding - name.Length with
+            | i when i > 0 -> indent + asUnderline name + String.replicate i " " + asSymbol ":" 
+            | _ -> indent + asUnderline name + asSymbol ":" 
+          | _ -> indent + name.PadRight padding + asSymbol ":" 
+        
+        let isDelegate = func.EnclosingEntity.IsDelegate
         match argInfos with
         | [] ->
             //When does this occur, val type within  module?
-            if signatureOnly then retType
+            if isDelegate then retType
             else asKeyword modifiers ++ functionName ++ asSymbol ":" ++ retType
                    
         | [[]] ->
             //A ctor with () parameters seems to be a list with an empty list
-            if signatureOnly then retType
+            if isDelegate then retType
             else asKeyword modifiers ++ functionName ++ asSymbol "() :" ++ retType 
         | many ->
             let allParamsLengths = 
@@ -594,8 +604,10 @@ module SymbolTooltips =
             let typeArguments =
                 allParams +  "\n" + indent + (String.replicate (max (padLength-1) 0) " ") +  asSymbol "->" ++ retType
 
-            if signatureOnly then typeArguments
+            if isDelegate then typeArguments
             else asKeyword modifiers ++ functionName ++ asSymbol ":" + "\n" + typeArguments
+
+    let getFuncSignature f c = getFuncSignatureWithFormat f c FormatOptions.Default
 
     let getEntitySignature displayContext (fse: FSharpEntity) =
         let modifier =
@@ -631,7 +643,7 @@ module SymbolTooltips =
         let delegateTip () =
             let invoker =
                 fse.MembersFunctionsAndValues |> Seq.find (fun f -> f.DisplayName = "Invoke")
-            let invokerSig = getFuncSignature FSharpDisplayContext.Empty invoker 6 true
+            let invokerSig = getFuncSignatureWithFormat displayContext invoker {Indent=6;Highlight=None}
             asSymbol " =" + "\n" +
             "   " + asKeyword "delegate" + " of\n" + invokerSig
                        
@@ -681,7 +693,7 @@ module SymbolTooltips =
       let findVal =
         apc.Group.EnclosingEntity.Value.MembersFunctionsAndValues
         |> Seq.tryFind (fun thing -> thing.DisplayName.Contains apc.DisplayName)
-        |> Option.map (fun v -> getFuncSignature displayContext v 3 false)
+        |> Option.map (getFuncSignature displayContext)
 
       match findVal with
       | Some v -> v
@@ -700,30 +712,30 @@ module SymbolTooltips =
         | Constructor func ->
             if func.EnclosingEntity.IsValueType || func.EnclosingEntity.IsEnum then
                 //ValueTypes
-                let signature = getFuncSignature symbol.DisplayContext func 3 false
+                let signature = getFuncSignature symbol.DisplayContext func
                 ToolTip(signature, getSummaryFromSymbol func)
             else
                 //ReferenceType constructor
-                let signature = getFuncSignature symbol.DisplayContext func 3 false
+                let signature = getFuncSignature symbol.DisplayContext func
                 ToolTip(signature, getSummaryFromSymbol func)
 
         | Operator func ->
-            let signature = getFuncSignature symbol.DisplayContext func 3 false
+            let signature = getFuncSignature symbol.DisplayContext func
             ToolTip(signature, getSummaryFromSymbol func)
 
         | Pattern func ->
             //Active pattern or operator
-            let signature = getFuncSignature symbol.DisplayContext func 3 false
+            let signature = getFuncSignature symbol.DisplayContext func
             ToolTip(signature, getSummaryFromSymbol func)
 
         | ClosureOrNestedFunction func ->
             //represents a closure or nested function
-            let signature = getFuncSignature symbol.DisplayContext func 3 false
+            let signature = getFuncSignature symbol.DisplayContext func
             let summary = getSummaryFromSymbol func
             ToolTip(signature, summary)
 
         | Function func ->
-            let signature = getFuncSignature symbol.DisplayContext func 3 false
+            let signature = getFuncSignature symbol.DisplayContext func
             ToolTip(signature, getSummaryFromSymbol func) 
 
         | Val func ->
@@ -732,7 +744,7 @@ module SymbolTooltips =
             ToolTip(signature, getSummaryFromSymbol func)
 
         | Property prop ->
-            let signature = getFuncSignature symbol.DisplayContext prop 3 false
+            let signature = getFuncSignature symbol.DisplayContext prop
             ToolTip(signature, getSummaryFromSymbol prop)
 
         | Field fsf ->
@@ -748,11 +760,21 @@ module SymbolTooltips =
             ToolTip(signature, getSummaryFromSymbol apc)
 
         | ActivePattern ap ->
-            let signature = getFuncSignature symbol.DisplayContext ap 3 false
+            let signature = getFuncSignature symbol.DisplayContext ap
             ToolTip(signature, getSummaryFromSymbol ap)
          
-        | _ ->
+        | other ->
+            MonoDevelop.Core.LoggingService.LogWarning (sprintf "F# Tooltip not rendered for: %A" other)
             ToolTips.EmptyTip
+
+    let getTooltipFromParameter (p:FSharpParameter) context =
+      let typ = asUserType (escapeText(p.Type.Format(context)))
+      let signature =
+        match p.Name with
+        | Some name -> name ++ asSymbol ":" ++ typ
+        | None -> typ
+
+      signature, getSummaryFromSymbol p
 
     let getTooltipInformation symbol =
       async {
@@ -775,3 +797,45 @@ module SymbolTooltips =
                 | EmptyDoc -> toolTipInfo
               return result
           | _ -> return TooltipInformation() }
+
+    let getParameterTooltipInformation symbol parameter =
+      match symbol with
+      | MemberFunctionOrValue m ->
+        let parameterName =
+          match m.CurriedParameterGroups |> Seq.toList with
+          | [single] ->
+            let param = single.[parameter]
+            match param.Name with
+            | Some n -> n
+            | _ -> param.DisplayName
+          | _ -> ""
+        let signature = getFuncSignatureWithFormat symbol.DisplayContext m {Indent=3;Highlight=Some(parameterName)}
+        let summary = getSummaryFromSymbol m
+
+                       
+        let summary, parameterInfo = 
+          match summary with
+          | Full(summary) ->
+            let parameterMarkup =
+              match TooltipsXml.getParameterTip Styles.simpleMarkup summary parameterName with
+              | Some p -> parameterName ++ ":" ++ p
+              | None -> ""
+            summary, parameterMarkup
+          | Lookup(key, filename) ->
+              let summaryAndparameterInfo = 
+                maybe {let! filename = filename
+                       let! markup = TooltipXmlDoc.findDocForEntity(filename, key)
+                       let parameterMarkup =
+                         match TooltipsXml.getParameterTip Styles.simpleMarkup markup parameterName with
+                         | Some p -> parameterName ++ ":" ++ p
+                         | None -> ""
+                       let summary = TooltipsXml.getTooltipSummary Styles.simpleMarkup markup
+                       return (summary, parameterMarkup) }
+
+              summaryAndparameterInfo |> Option.getOrElse (fun () -> "", "")
+          | EmptyDoc -> "", ""
+        let toolTipInfo = TooltipInformation(SignatureMarkup = signature, SummaryMarkup=summary)
+        if not (String.isNullOrEmpty parameterInfo) then
+          toolTipInfo.AddCategory("Parameter", parameterInfo)
+        toolTipInfo
+      | _ -> TooltipInformation()
