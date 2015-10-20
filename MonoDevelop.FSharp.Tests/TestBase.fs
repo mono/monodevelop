@@ -116,12 +116,6 @@ type TestBase() =
         SynchronizationContext.SetSynchronizationContext (new GtkSynchronizationContext ())
         Runtime.MainSynchronizationContext <- SynchronizationContext.Current
 
-        //Util.ClearTmpDir ()
-        let logger = new FileLogger (Path.Combine(Util.TestsRootDir, "nunit.log")) 
-        logger.EnabledLevel <- EnabledLoggingLevel.All
-        MonoDevelop.Core.LoggingService.AddLogger(logger)
-
-
         Environment.SetEnvironmentVariable ("MONO_ADDINS_REGISTRY", rootDir)
         Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", rootDir)
         Environment.SetEnvironmentVariable ("MONODEVELOP_CONSOLE_LOG_LEVEL", "Debug")
@@ -134,4 +128,9 @@ type TestBase() =
         MonoDevelop.Ide.TypeSystem.TypeSystemService.TrackFileChanges <- true
         DesktopService.Initialize ()
         Services.ProjectService.DefaultTargetFramework <- Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_4_5)
+
+         //Util.ClearTmpDir ()
+        let logger = new ConsoleLogger()
+        logger.EnabledLevel <- EnabledLoggingLevel.All
+        MonoDevelop.Core.LoggingService.AddLogger(logger)
         

@@ -97,7 +97,7 @@ module TestHelpers =
         let content = new TestViewContent()
         let tww = TestWorkbenchWindow(content)
 
-        content.ContentName <- "/a.fs"
+        content.ContentName <- "/a.fsx"
         content.Data.MimeType <- "text/x-fsharp"
 
         let endPos = text.IndexOf ('$')
@@ -136,12 +136,6 @@ module TestHelpers =
         compExt.Initialize(doc.Editor, doc)
         content.Contents.Add(compExt)
 
-        try
-            try 
-                let pd = doc.UpdateParseDocument()
-                ()
-            with exn ->
-                Diagnostics.Debug.WriteLine(exn.ToString())
-        finally
-            typeof<MonoDevelop.Ide.TypeSystem.TypeSystemService>?Unload(solution)
+        let pd = doc.UpdateParseDocument()
+        typeof<MonoDevelop.Ide.TypeSystem.TypeSystemService>?Unload(solution)
         doc, content

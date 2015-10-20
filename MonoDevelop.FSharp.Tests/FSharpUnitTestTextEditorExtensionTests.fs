@@ -1,4 +1,4 @@
-namespace MonoDevelopTests
+﻿namespace MonoDevelopTests
 open System
 open System.IO
 open NUnit.Framework
