@@ -115,7 +115,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			int s = GetSelectedIndex ();
 			if (s != -1) {
-				GitService.ApplyStash (repository, s);
+				GitService.ApplyStash (repository, s).Wait ();
 				Respond (ResponseType.Ok);
 			}
 		}

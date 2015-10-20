@@ -118,13 +118,13 @@ namespace MonoDevelop.VersionControl.Git
 				MessageService.ShowCustomDialog (dlg);
 		}
 
-		public async static void SwitchToBranch (GitRepository repo, string branch)
+		public static void SwitchToBranch (GitRepository repo, string branch)
 		{
 			var monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			try {
 				IdeApp.Workbench.AutoReloadDocuments = true;
 				IdeApp.Workbench.LockGui ();
-				await Task.Run (delegate {
+				Task.Run (delegate {
 					try {
 						repo.SwitchToBranch (monitor, branch);
 					} catch (Exception ex) {
@@ -132,7 +132,7 @@ namespace MonoDevelop.VersionControl.Git
 					} finally {
 						monitor.Dispose ();
 					}
-				});
+				}).Wait ();
 			} finally {
 				IdeApp.Workbench.AutoReloadDocuments = false;
 				IdeApp.Workbench.UnlockGui ();
