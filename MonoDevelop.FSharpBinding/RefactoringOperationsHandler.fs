@@ -485,8 +485,11 @@ type CurrentRefactoringOperationsHandler() =
                             match symbolUse.Symbol with
                             | :? FSharpEntity as fse when fse.IsInterface -> getCatalogString "Find Implementing Types"
                             | :? FSharpEntity -> getCatalogString "Find Derived Types"
-                            | :? FSharpMemberOrFunctionOrValue as mfv when mfv.EnclosingEntity.IsInterface -> getCatalogString "Find Implementing Symbols"
-                            | :? FSharpMemberOrFunctionOrValue -> getCatalogString "Find overriden Symbols"
+                            | :? FSharpMemberOrFunctionOrValue as mfv ->
+                                try 
+                                  if mfv.EnclosingEntity.IsInterface then getCatalogString "Find Implementing Symbols"
+                                  else getCatalogString "Find overriden Symbols"
+                                with :? InvalidOperationException -> getCatalogString "Find overriden Symbols"
                             | _ -> getCatalogString "Find Derived Symbols"
                           ainfo.Add (description, Action (fun () -> Refactoring.findDerivedReferences (doc.Editor, doc, symbolUse, lastIdent))) |> ignore
 
