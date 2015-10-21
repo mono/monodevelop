@@ -41,6 +41,7 @@ using Mono.TextEditor.Theatrics;
 
 using Gdk;
 using Gtk;
+using GLib;
 
 namespace Mono.TextEditor
 {
@@ -721,7 +722,9 @@ namespace Mono.TextEditor
 			gutterMargin.IsVisible     = Options.ShowLineNumberMargin;
 			foldMarkerMargin.IsVisible = Options.ShowFoldMargin || Options.EnableQuickDiff;
 //			dashedLineMargin.IsVisible = foldMarkerMargin.IsVisible || gutterMargin.IsVisible;
-			
+			if (!Options.ShowFoldMargin) {
+				Document.UpdateFoldSegments (new List<FoldSegment> ()); 
+			}
 			if (EditorOptionsChanged != null)
 				EditorOptionsChanged (this, args);
 			
