@@ -242,6 +242,7 @@ while test x$1 != x; do
 			;;
 		--enable-mac64)
 			x64=yes
+			;;
 		--enable-release)
 			release=yes
 			;;
