@@ -275,13 +275,6 @@ type FSharpInteractivePad() as this =
             else None
     with exn -> None
 
-  static member IsInteractiveAvailable =
-    match FSharpInteractivePad.Pad with
-    | Some(pad) -> match pad.Content with
-                   | :? FSharpInteractivePad as fsipad -> fsipad.IsValidSession
-                   | _ -> false
-    | None -> false
-
   static member BringToFront(grabfocus) =
     FSharpInteractivePad.Pad |> Option.iter (fun pad -> pad.BringToFront(grabfocus))
 
