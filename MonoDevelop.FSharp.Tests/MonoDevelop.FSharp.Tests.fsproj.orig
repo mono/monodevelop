@@ -112,6 +112,7 @@
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
       <HintPath>INSERT_FSPROJ_MDROOT\bin\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
