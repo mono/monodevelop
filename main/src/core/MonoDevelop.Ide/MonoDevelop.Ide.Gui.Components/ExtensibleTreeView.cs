@@ -1,4 +1,4 @@
-//
+﻿//
 // ExtensibleTreeView.cs
 //
 // Author:
@@ -2410,7 +2410,7 @@ namespace MonoDevelop.Ide.Gui.Components
 					if (scaledFont != null)
 						scaledFont.Dispose ();
 					scaledFont = (customFont ?? parent.Style.FontDesc).Copy ();
-					scaledFont.Size = (int)(customFont.Size * Zoom);
+					// scaledFont.Size = (int)(customFont.Size * Zoom);
 					if (layout != null)
 						layout.FontDescription = scaledFont;
 				}
