@@ -735,7 +735,6 @@ module SymbolTooltips =
                   let signature = getFuncSignature symbol.DisplayContext func
                   ToolTip(signature, getSummaryFromSymbol func)
             | _ ->
-                  LoggingService.LogWarning(sprintf "getTooltipFromSymbolUse: No enclosing entity found for: %s" func.DisplayName)
                   //ReferenceType constructor
                   let signature = getFuncSignature symbol.DisplayContext func
                   ToolTip(signature, getSummaryFromSymbol func)
