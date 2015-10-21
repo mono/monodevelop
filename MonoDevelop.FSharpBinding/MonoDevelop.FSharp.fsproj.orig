@@ -207,9 +207,11 @@
     </ProjectReference>
     <Reference Include="Microsoft.CodeAnalysis">
       <HintPath>INSERT_FSPROJ_MDROOT\bin\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.Collections.Immutable">
       <HintPath>INSERT_FSPROJ_MDROOT\bin\System.Collections.Immutable.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <Choose>
