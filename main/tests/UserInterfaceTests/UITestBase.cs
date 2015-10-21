@@ -93,36 +93,39 @@ namespace UserInterfaceTests
 		public virtual void Teardown ()
 		{
 			try {
-				if (TestContext.CurrentContext.Result.Status != TestStatus.Passed) {
-					var updateOpened = Session.Query (IdeQuery.XamarinUpdate);
-					if (updateOpened != null && updateOpened.Any ())
-						Assert.Inconclusive ("Xamarin Update is blocking the application focus");
-				}
-				ValidateIdeLogMessages ();
-
-				LoggingService.RemoveLogger (Logger.Name);
-				Logger.Dispose ();
-			} finally {
+				bool isInconclusive = false;
 				var testStatus = TestContext.CurrentContext.Result.Status;
 				if (testStatus != TestStatus.Passed) {
 					try {
+						var updateOpened = Session.Query (IdeQuery.XamarinUpdate);
+						if (updateOpened != null && updateOpened.Any ())
+							isInconclusive = true;
 						TakeScreenShot (string.Format ("{0}-Test-Failed", TestContext.CurrentContext.Test.Name));
 					} catch (Exception e) {
 						Session.DebugObject.Debug ("Final Screenshot failed");
+						Session.DebugObject.Debug (e.ToString ());
 					}
 				}
 
 				File.WriteAllText (Path.Combine (currentTestResultFolder, "MemoryUsage.json"),
-					JsonConvert.SerializeObject (Session.MemoryStats, Formatting.Indented));
+				                   JsonConvert.SerializeObject (Session.MemoryStats, Formatting.Indented));
 
 				Ide.CloseAll ();
 				TestService.EndSession ();
+
+				ValidateIdeLogMessages ();
 
 				OnCleanUp ();
 				if (testStatus == TestStatus.Passed) {
 					if (Directory.Exists (currentTestResultScreenshotFolder))
 						Directory.Delete (currentTestResultScreenshotFolder, true);
 				}
+
+				if (isInconclusive)
+					Assert.Inconclusive ("Xamarin Update is blocking the application focus");
+			} finally {
+				LoggingService.RemoveLogger (Logger.Name);
+				Logger.Dispose ();
 			}
 		}
 
