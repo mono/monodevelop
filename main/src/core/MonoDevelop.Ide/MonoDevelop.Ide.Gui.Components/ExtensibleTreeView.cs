@@ -200,6 +200,8 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			if (!string.IsNullOrEmpty (Id))
 				Zoom = PropertyService.Get<double> ("MonoDevelop.Ide.ExtensibleTreeView.Zoom." + Id, 1d);
+			else
+				Zoom = 1d;
 
 			this.Add (tree);
 			this.ShowAll ();
@@ -2410,7 +2412,7 @@ namespace MonoDevelop.Ide.Gui.Components
 					if (scaledFont != null)
 						scaledFont.Dispose ();
 					scaledFont = (customFont ?? parent.Style.FontDesc).Copy ();
-					// scaledFont.Size = (int)(customFont.Size * Zoom);
+					scaledFont.Size = (int)(customFont.Size * Zoom);
 					if (layout != null)
 						layout.FontDescription = scaledFont;
 				}
