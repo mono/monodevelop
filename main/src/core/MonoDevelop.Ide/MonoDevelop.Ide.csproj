@@ -1962,6 +1962,12 @@
     <EmbeddedResource Include="icons\platform-tvos-16%402x.png">
       <LogicalName>platform-tvos-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-watchos-16.png">
+      <LogicalName>platform-watchos-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-watchos-16%402x.png">
+      <LogicalName>platform-watchos-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' != 'DebugMac' AND '$(Configuration)' != 'ReleaseMac' ">
     <EmbeddedResource Include="icons\status-building-1-14.png">
