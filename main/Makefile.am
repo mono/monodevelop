@@ -109,7 +109,14 @@ apidocs:
 
 MD_LAUNCH=$(MD_LAUNCH_SETUP) $(MD_LAUNCH_EXTRA_ENV) UBUNTU_MENUPROXY=0 LIBOVERLAY_SCROLLBAR=0 exec -a "monodevelop" $(RUNTIME)
 
+if ENABLE_MACPLATFORM
+run: run-bundle
+else
 run: run-sgen
+endif
+
+run-bundle: $(PROGRAM)
+	$(MD_LAUNCH_SETUP) $(MD_LAUNCH_EXTRA_ENV) $(MD_BIN_PATH)/MonoDevelop --no-redirect
 
 run-boehm: runmd
 
@@ -157,7 +164,7 @@ test:
 	cd tests && $(MAKE) test assembly=$(assembly)
 
 uitest:
-	cd tests && $(MAKE) uitest assembly=$(assembly) categories=$(categories)
+	cd tests && $(MAKE) uitest assembly=$(assembly) categories=$(categories) tests=$(tests)
 
 coverage:
 	cd tests && $(MAKE) coverage

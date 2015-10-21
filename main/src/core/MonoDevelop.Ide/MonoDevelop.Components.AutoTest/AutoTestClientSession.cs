@@ -65,6 +65,15 @@ namespace MonoDevelop.Components.AutoTest
 			if (file == null) {
 				var binDir = Path.GetDirectoryName (typeof(AutoTestClientSession).Assembly.Location);
 				file = Path.Combine (binDir, "MonoDevelop.exe");
+				if (!File.Exists (file)) {
+					file = Path.Combine (binDir, "XamarinStudio.exe");
+				}
+			} else if (!File.Exists (file)) {
+				file = file.Replace ("MonoDevelop.exe", "XamarinStudio.exe");
+			}
+
+			if (!File.Exists (file)) {
+				throw new FileNotFoundException (file);
 			}
 
 			MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
@@ -354,11 +363,31 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 
+		public bool SetActiveConfiguration (Func<AppQuery, AppQuery> query, string configuration)
+		{
+			AppResult[] results = Query (query);
+			if (results.Length == 0) {
+				return false;
+			}
+
+			return session.SetActiveConfiguration (results [0], configuration);
+		}
+
+		public bool SetActiveRuntime (Func<AppQuery, AppQuery> query, string runtime)
+		{
+			AppResult[] results = Query (query);
+			if (results.Length == 0) {
+				return false;
+			}
+
+			return session.SetActiveRuntime (results [0], runtime);
+		}
+
 		public void RunAndWaitForTimer (Action action, string counterName, int timeout = 20000)
 		{
 			AutoTestSession.TimerCounterContext context = session.CreateNewTimerContext (counterName);
 			action ();
-			session.WaitForTimerContext (context);
+			session.WaitForTimerContext (context, timeout);
 		}
 
 		public XmlDocument ResultsAsXml (AppResult[] results)

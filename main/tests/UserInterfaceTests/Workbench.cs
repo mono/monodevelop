@@ -40,20 +40,25 @@ namespace UserInterfaceTests
 
 		static readonly Regex buildRegex = new Regex (@"Build: (?<errors>\d*) error\D*, (?<warnings>\d*) warning\D*", RegexOptions.Compiled);
 
-		public static string GetStatusMessage (int timeout = 20000)
+		public static string GetStatusMessage (int timeout = 20000, bool waitForNonEmpty = true)
 		{
 			if (Platform.IsMac) {
-				Ide.WaitUntil (
-					() => Session.GetGlobalValue<string> ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.text") != string.Empty,
-					timeout
-				);
+				if (waitForNonEmpty) {
+					Ide.WaitUntil (
+						() => Session.GetGlobalValue<string> ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.text") != string.Empty,
+						timeout
+					);
+				}
 				return (string)Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.text");
 			}
 
-			Ide.WaitUntil (
-				() => Session.GetGlobalValue<int> ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.messageQueue.Count") == 0,
-				timeout
-			);
+			if (waitForNonEmpty) {
+				Ide.WaitUntil (
+					() => Session.GetGlobalValue<int> ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.messageQueue.Count") == 0,
+					timeout,
+					timeoutMessage: ()=> "MessageQueue.Count="+Session.GetGlobalValue<int> ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.messageQueue.Count")
+				);
+			}
 			return (string) Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.renderArg.CurrentText");
 		}
 
@@ -76,7 +81,11 @@ namespace UserInterfaceTests
 					return true;
 				}
 				return false;
-			}, pollStep: 5 * 1000, timeout: timeoutInSecs * 1000);
+			},
+			pollStep: 5 * 1000,
+			timeout: timeoutInSecs * 1000,
+			timeoutMessage: () => "GetStatusMessage=" + Workbench.GetStatusMessage ());
+			
 			return isBuildSuccessful;
 		}
 
@@ -85,12 +94,32 @@ namespace UserInterfaceTests
 			Session.ExecuteCommand (ProjectCommands.Run);
 			try {
 				Ide.WaitUntil (
-					() => !Session.Query (c => c.Marked ("MonoDevelop.MacIntegration.MainToolbar.RunButton").Property ("Icon", "Stop")).Any (),
+					() => !Session.Query (c => IdeQuery.RunButton (c).Property ("Icon", "Stop")).Any (),
 					timeout: timeoutSeconds * 1000, pollStep: pollStepSecs * 1000);
 				return false;
 			} catch (TimeoutException) {
 				return true;
 			}
+		}
+
+		public static void OpenWorkspace (string solutionPath, UITestBase testContext = null)
+		{
+			if (testContext != null)
+				testContext.ReproStep (string.Format ("Open solution path '{0}'", solutionPath));
+			Action<string> takeScreenshot = GetScreenshotAction (testContext);
+			Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workspace.OpenWorkspaceItem", new FilePath (solutionPath), true);
+			Ide.WaitForIdeIdle ();
+			takeScreenshot ("Solution-Opened");
+		}
+
+		public static void CloseWorkspace (UITestBase testContext = null)
+		{
+			if (testContext != null)
+				testContext.ReproStep ("Close current workspace");
+			Action<string> takeScreenshot = GetScreenshotAction (testContext);
+			takeScreenshot ("About-To-Close-Workspace");
+			Session.ExecuteCommand (FileCommands.CloseWorkspace);
+			takeScreenshot ("Closed-Workspace");
 		}
 
 		public static string Configuration
@@ -101,8 +130,18 @@ namespace UserInterfaceTests
 			}
 			set {
 				Session.SetGlobalValue ("MonoDevelop.Ide.IdeApp.Workspace.ActiveConfigurationId", value);
-				Ide.WaitUntil (() => Workbench.Configuration == value);
+				Ide.WaitUntil (() => Workbench.Configuration == value, timeoutMessage: () => "Failed to set Configuration, Configuration=" + Workbench.Configuration + " value=" + value);
 			}
+		}
+
+		public static Action<string> GetScreenshotAction (UITestBase testContext)
+		{
+			Action<string> takeScreenshot = delegate {
+			};
+			if (testContext != null)
+				takeScreenshot = testContext.TakeScreenShot;
+
+			return takeScreenshot;
 		}
 	}
 }

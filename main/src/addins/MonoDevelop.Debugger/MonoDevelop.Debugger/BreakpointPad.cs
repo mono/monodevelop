@@ -397,6 +397,8 @@ namespace MonoDevelop.Debugger
 			if (breakpoints != null) {	
 				lock (breakpoints) {
 					foreach (BreakEvent be in breakpoints.GetBreakevents ()) {
+						if (be.NonUserBreakpoint)
+							continue;
 						string hitCount = be.HitCountMode != HitCountMode.None ? be.CurrentHitCount.ToString () : "";
 						string traceExp = (be.HitAction & HitAction.PrintExpression) != HitAction.None ? be.TraceExpression : "";
 						string traceVal = (be.HitAction & HitAction.PrintExpression) != HitAction.None ? be.LastTraceValue : "";

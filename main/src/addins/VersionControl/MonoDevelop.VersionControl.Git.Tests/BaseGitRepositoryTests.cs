@@ -392,6 +392,11 @@ index 0000000..009b64b
 			return new GitRepository (VersionControlService.GetVersionControlSystems ().First (id => id.Name == "Git"), path, url);
 		}
 
+		protected override Repository GetRepo ()
+		{
+			return new GitRepository ();
+		}
+
 		// This test is for a memory usage improvement on status.
 		[Test]
 		public void TestSameGitRevision ()
@@ -496,6 +501,35 @@ index 0000000..009b64b
 			var revisions = Repo.GetAnnotations (added).Select (a => a.Revision);
 			foreach (var rev in revisions)
 				Assert.AreEqual (GettextCatalog.GetString ("working copy"), rev);
+		}
+
+		[Test]
+		public void TestGitRebaseCommitOrdering ()
+		{
+			var gitRepo = (GitRepository)Repo;
+
+			AddFile ("init", "init", toVcs: true, commit: true);
+
+			// Create a branch from initial commit.
+			gitRepo.CreateBranch ("test", null, null);
+
+			// Create two commits in master.
+			AddFile ("init2", "init", toVcs: true, commit: true);
+			AddFile ("init3", "init", toVcs: true, commit: true);
+
+			// Create two commits in test.
+			gitRepo.SwitchToBranch (new NullProgressMonitor (), "test");
+			AddFile ("init4", "init", toVcs: true, commit: true);
+			AddFile ("init5", "init", toVcs: true, commit: true);
+
+			gitRepo.Rebase ("master", GitUpdateOptions.None, new NullProgressMonitor ());
+
+			// Commits come in reverse (recent to old).
+			var history = gitRepo.GetHistory (LocalPath, null).Reverse ().ToArray ();
+			Assert.AreEqual (5, history.Length);
+			for (int i = 0; i < 5; ++i) {
+				Assert.AreEqual (string.Format ("Commit #{0}\n", i), history [i].Message);
+			}
 		}
 	}
 }

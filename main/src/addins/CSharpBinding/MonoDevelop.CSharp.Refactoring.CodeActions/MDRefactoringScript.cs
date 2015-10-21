@@ -162,7 +162,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			var tcs = new TaskCompletionSource<Script>();
 			if (parentType == null)
 				return tcs.Task;
-			var part = parentType.Parts.FirstOrDefault ();
+			var part = MonoDevelop.Ide.TypeSystem.CodeGenerationService.FindCurrentPart(parentType);
 			if (part == null)
 				return tcs.Task;
 

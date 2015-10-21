@@ -30,20 +30,21 @@ using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
-	[TestFixture]
+	[TestFixture, Timeout(60000)]
 	[Category ("Git")]
+	[Category ("GitBase")]
 	public class GitTests : VCSBase
 	{
-		[Test]
-		[TestCase ("git@github.com:mono/jurassic.git", TestName = "TestGitSSHClone", Description = "Clone Git repo over SSH")]
-		[TestCase ("https://github.com/mono/jurassic.git", TestName = "TestGitHTTPSClone", Description = "Clone Git repo over HTTPS")]
+		[Test, Timeout(120000), Category("Smoke")]
+		[TestCase ("git@github.com:mono/gtk-sharp.git", TestName = "TestGitSSHClone", Description = "Clone Git repo over SSH")]
+		[TestCase ("https://github.com/mono/gtk-sharp.git", TestName = "TestGitHTTPSClone", Description = "Clone Git repo over HTTPS")]
 		public void TestGitClone (string url)
 		{
 			TestClone (url);
-			Ide.WaitForSolutionCheckedOut ();
+			Ide.WaitForIdeIdle ();
 		}
 
-		[Test]
+		[Test, Category("Smoke")]
 		[Description ("Create a new project with Git and commit the changes")]
 		public void TestCommit ()
 		{
@@ -96,7 +97,7 @@ namespace UserInterfaceTests
 			TakeScreenShot ("Stash-Window-Doesnt-Show");
 		}
 
-		[Test]
+		[Test, Category("Smoke")]
 		[Description ("Create a new project, make a commit, make changes. Stash and Unstash successfully")]
 		public void TestStashAndUnstashSuccessful ()
 		{

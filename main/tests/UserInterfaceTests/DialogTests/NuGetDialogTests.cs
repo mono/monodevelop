@@ -34,13 +34,13 @@ using System.Collections.Generic;
 
 namespace UserInterfaceTests
 {
-	[TestFixture]
+	[TestFixture, Timeout(60000)]
 	[Category ("Dialog")]
 	[Category ("NuGet")]
 	[Category ("PackagesDialog")]
 	public class NuGetDialogTests : CreateBuildTemplatesTestBase
 	{
-		[Test]
+		[Test, Category("Smoke")]
 		[Description ("Add a single NuGet Package")]
 		public void AddPackagesTest ()
 		{
@@ -49,10 +49,10 @@ namespace UserInterfaceTests
 				PackageName = "CommandLineParser",
 				Version = "2.0.257-beta",
 				IsPreRelease = true
-			}, TakeScreenShot);
+			}, this);
 		}
 
-		[Test]
+		[Test, Timeout(300000)]
 		[Description ("When a solution is opened and package updates are available, don't show in status bar")]
 		public void DontShowPackageUpdatesAvailable ()
 		{
@@ -68,25 +68,32 @@ namespace UserInterfaceTests
 				PackageName = "CommandLineParser",
 				Version = "1.9.3.34",
 				IsPreRelease = false
-			}, TakeScreenShot);
+			}, this);
 
 			string solutionFolder = GetSolutionDirectory ();
 			string solutionPath = Path.Combine (solutionFolder, projectDetails.SolutionName+".sln");
 			var projectPath = Path.Combine (solutionFolder, projectDetails.ProjectName, projectDetails.ProjectName + ".csproj");
 			Assert.IsTrue (File.Exists (projectPath));
 
-			TakeScreenShot ("About-To-Close-Solution");
-			Session.ExecuteCommand (FileCommands.CloseWorkspace);
-			TakeScreenShot ("Closed-Solution");
+			Workbench.CloseWorkspace (this);
 
-			Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workspace.OpenWorkspaceItem", new FilePath (solutionPath), true);
-			TakeScreenShot ("Solution-Opened");
-			Assert.Throws <TimeoutException> (() => Ide.WaitForPackageUpdate ());
+			Workbench.OpenWorkspace (solutionPath, this);
+			try {
+				const string expected = "When a solution is opened and package updates are available, it don't show in status bar";
+				ReproStep (expected);
+				Ide.WaitForPackageUpdate ();
+				var failureMessage = string.Format ("Expected: {0}\nActual: {1}",
+					expected, "When a solution is opened and package updates are available, it shows in status bar");
+				ReproStep (failureMessage);
+				Assert.Fail (failureMessage);
+			} catch (TimeoutException) {
+				Session.DebugObject.Debug ("WaitForPackageUpdate throws TimeoutException as expected");
+			}
 			Ide.WaitForSolutionLoaded ();
 			TakeScreenShot ("Solution-Ready");
 		}
 
-		[Test]
+		[Test, Category("Smoke")]
 		[Description ("Add a single NuGet Package and check if it's readme.txt opens")]
 		public void TestReadmeTxtOpens ()
 		{
@@ -95,7 +102,7 @@ namespace UserInterfaceTests
 				PackageName = "RestSharp",
 				Version = "105.2.3",
 				IsPreRelease = true
-			}, TakeScreenShot);
+			}, this);
 			WaitForNuGetReadmeOpened ();
 		}
 
@@ -108,8 +115,9 @@ namespace UserInterfaceTests
 				PackageName = "RestSharp",
 				Version = "105.2.2",
 				IsPreRelease = true
-			}, TakeScreenShot);
+			}, this);
 			WaitForNuGetReadmeOpened ();
+
 			Session.ExecuteCommand (FileCommands.CloseFile);
 			Session.WaitForElement (IdeQuery.TextArea);
 			TakeScreenShot ("About-To-Update-Package");
@@ -117,11 +125,12 @@ namespace UserInterfaceTests
 				PackageName = "RestSharp",
 				Version = "105.2.3",
 				IsPreRelease = true
-			}, TakeScreenShot);
+			}, this);
 			WaitForNuGetReadmeOpened ();
 		}
 
-		[Test]
+		[Test, Category("Smoke")]
+		[Timeout (90000)]
 		[Description ("When readme.txt from a package has already been opened, adding same package to another project should not open readme.txt")]
 		public void TestDontOpenReadmeOpenedInOther ()
 		{
@@ -132,7 +141,7 @@ namespace UserInterfaceTests
 			};
 
 			var projectDetails = CreateProject ();
-			NuGetController.AddPackage (packageInfo, TakeScreenShot);
+			NuGetController.AddPackage (packageInfo, this);
 			WaitForNuGetReadmeOpened ();
 			Session.ExecuteCommand (FileCommands.CloseFile);
 
@@ -145,10 +154,19 @@ namespace UserInterfaceTests
 			var pclProjectDetails = ProjectDetails.ToExistingSolution (projectDetails.SolutionName,
 				GenerateProjectName (pclTemplateOptions.TemplateKind));
 			CreateProject (pclTemplateOptions, pclProjectDetails);
+			Ide.WaitForIdeIdle (30);
 
 			SolutionExplorerController.SelectProject (projectDetails.SolutionName, pclProjectDetails.ProjectName);
-			NuGetController.AddPackage (packageInfo, TakeScreenShot);
-			Assert.Throws<TimeoutException> (WaitForNuGetReadmeOpened);
+			NuGetController.AddPackage (packageInfo, this);
+			try {
+				WaitForNuGetReadmeOpened (false);
+				var failureMessage = string.Format ("Expected: {0}\nActual:{1}",
+					"readme.txt tab should not open", "readme.txt tab opens");
+				ReproStep (failureMessage);
+				Assert.Fail (failureMessage);
+			} catch (TimeoutException) {
+				Session.DebugObject.Debug ("readme.txt tab failed to open as expected");
+			}
 		}
 
 		[Test]
@@ -159,12 +177,12 @@ namespace UserInterfaceTests
 			CreateProject ();
 			NuGetController.AddPackage (new NuGetPackageOptions {
 				PackageName = "Newtonsoft.Json",
-			}, TakeScreenShot);
-			WaitForNuGet.Success ("Newtonsoft.Json", NuGetOperations.Add, false);
+			}, this);
+			WaitForNuGet.Success ("Newtonsoft.Json", NuGetOperations.Add, false, this);
 			TakeScreenShot ("NewtonSoftJson-Package-Added-Without-Warning");
 		}
 
-		[Test]
+		[Test, Timeout (300000)]
 		[Description ("When a NuGet package is updated, the 'Local Copy' value should be preserved")]
 		public void TestLocalCopyPreservedUpdate ()
 		{
@@ -180,26 +198,24 @@ namespace UserInterfaceTests
 				PackageName = "CommandLineParser",
 				Version = "1.9.71",
 				IsPreRelease = false
-			}, TakeScreenShot);
+			}, this);
 
 			string solutionFolder = GetSolutionDirectory ();
 			string solutionPath = Path.Combine (solutionFolder, projectDetails.SolutionName+".sln");
 			var projectPath = Path.Combine (solutionFolder, projectDetails.ProjectName, projectDetails.ProjectName + ".csproj");
 			Assert.IsTrue (File.Exists (projectPath));
 
-			TakeScreenShot ("About-To-Close-Solution");
-			Session.ExecuteCommand (FileCommands.CloseWorkspace);
-			TakeScreenShot ("Closed-Solution");
+			ReproStep ("Check 'Local Copy' on CommandLine package under References");
+
+			Workbench.CloseWorkspace (this);
 
 			AddOrCheckLocalCopy (projectPath, true);
 
-			Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workspace.OpenWorkspaceItem", new FilePath (solutionPath), true);
-			TakeScreenShot ("Solution-Opened");
-			Ide.WaitForPackageUpdateExtra (new List<string> { "Solution loaded." });
-			TakeScreenShot ("Solution-Ready");
+			Workbench.OpenWorkspace (solutionPath, this);
 
-			NuGetController.UpdateAllNuGetPackages (TakeScreenShot);
+			NuGetController.UpdateAllNuGetPackages (this);
 
+			ReproStep ("Check if CommandLine package under References has 'Local Copy' checked");
 			AddOrCheckLocalCopy (projectPath, false);
 		}
 
@@ -250,9 +266,18 @@ namespace UserInterfaceTests
 			return projectDetails;
 		}
 
-		void WaitForNuGetReadmeOpened ()
+		void WaitForNuGetReadmeOpened (bool expectSuccess = true)
 		{
-			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.DefaultWorkbench").Property ("TabControl.CurrentTab.Text", "readme.txt"));
+			ReproStep ("Wait for tab with readme.txt to be opened");
+			try {
+				Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.DefaultWorkbench").Property ("TabControl.CurrentTab.Text", "readme.txt"));
+			} catch (TimeoutException) {
+				if (expectSuccess) {
+					ReproStep (string.Format ("Expected: {0}\nActual: {1}",
+						"readme.txt tab should open", "readm.txt tab did not open"));
+				}
+				throw;
+			}
 		}
 	}
 }

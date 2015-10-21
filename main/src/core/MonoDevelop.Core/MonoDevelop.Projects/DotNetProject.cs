@@ -967,8 +967,11 @@ namespace MonoDevelop.Projects
 
 			// Hack to keep backwards compatibility with the old behavior. For example, a MonoDroid project is a library, but OnGetSupportsExecute
 			// is not overriden, so it depends on DotNetProject to return true by default.
-			if (compileTarget == CompileTarget.Library && GetType () == typeof (DotNetAssemblyProject))
-				return false;
+			if (compileTarget == CompileTarget.Library) {
+				Type thisType = GetType ();
+				if (thisType == typeof (DotNetAssemblyProject) || thisType == typeof (PortableDotNetProject))
+					return false;
+			}
 
 			return true;
 		}

@@ -90,6 +90,7 @@ namespace UserInterfaceTests
 		{
 			SolutionLocation = Util.CreateTmpDir ();
 			ProjectInSolution = true;
+			BuildTimeout = TimeSpan.FromSeconds (180);
 		}
 
 		public ProjectDetails (TemplateSelectionOptions templateData) : this ()
@@ -117,6 +118,8 @@ namespace UserInterfaceTests
 		public bool ProjectInSolution { get; set; }
 
 		public bool AddProjectToExistingSolution { get; set; }
+
+		public TimeSpan BuildTimeout { get; set; }
 
 		public override string ToString ()
 		{

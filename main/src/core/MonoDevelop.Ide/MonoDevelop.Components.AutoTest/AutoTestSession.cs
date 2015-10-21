@@ -194,6 +194,27 @@ namespace MonoDevelop.Components.AutoTest
 					throw;
 				}
 			});
+			#else
+			Sync (delegate {
+				try {
+					using (var bmp = new System.Drawing.Bitmap (System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width,
+						System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height)) {
+						using (var g = System.Drawing.Graphics.FromImage(bmp))
+						{
+							g.CopyFromScreen(System.Windows.Forms.Screen.PrimaryScreen.Bounds.X,
+								System.Windows.Forms.Screen.PrimaryScreen.Bounds.Y,
+								0, 0,
+								bmp.Size,
+								System.Drawing.CopyPixelOperation.SourceCopy);
+						}
+						bmp.Save(screenshotPath);
+					}
+					return null;
+				} catch (Exception e) {
+					Console.WriteLine (e);
+					throw;
+				}
+			});
 			#endif
 		}
 		
@@ -253,6 +274,8 @@ namespace MonoDevelop.Components.AutoTest
 			
 			if (remaining == null)
 				return res;
+			else if (res == null)
+				return null;
 			else
 				return GetValue (res, res.GetType (), remaining);
 		}
@@ -302,14 +325,20 @@ namespace MonoDevelop.Components.AutoTest
 
 		public void ExecuteOnIdle (Action idleFunc, bool wait = true, int timeout = 20000)
 		{
+			if (DispatchService.IsGuiThread) {
+				idleFunc ();
+				return;
+			}
+
 			if (wait == false) {
 				GLib.Idle.Add (() => {
 					idleFunc ();
 					return false;
 				});
+
 				return;
 			}
-
+				
 			syncEvent.Reset ();
 			GLib.Idle.Add (() => {
 				idleFunc ();
@@ -324,7 +353,7 @@ namespace MonoDevelop.Components.AutoTest
 
 		// Executes the query outside of a syncEvent wait so it is safe to call from
 		// inside an ExecuteOnIdleAndWait
-		AppResult[] ExecuteQueryNoWait (AppQuery query)
+		internal AppResult[] ExecuteQueryNoWait (AppQuery query)
 		{
 			AppResult[] resultSet = query.Execute ();
 			Sync (() => {
@@ -346,7 +375,6 @@ namespace MonoDevelop.Components.AutoTest
 			} catch (TimeoutException e) {
 				throw new TimeoutException (string.Format ("Timeout while executing ExecuteQuery: {0}", query), e);
 			}
-
 			return resultSet;
 		}
 
@@ -528,6 +556,36 @@ namespace MonoDevelop.Components.AutoTest
 			} catch (TimeoutException e) {
 				ThrowOperationTimeoutException ("Flash", result.SourceQuery, result, e);
 			}
+		}
+
+		public bool SetActiveConfiguration (AppResult result, string configuration)
+		{
+			bool success = false;
+
+			try {
+				ExecuteOnIdle (() => {
+					success = result.SetActiveConfiguration (configuration);
+				});
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("SetActiveConfiguration", result.SourceQuery, result, e);
+			}
+
+			return success;
+		}
+
+		public bool SetActiveRuntime (AppResult result, string runtime)
+		{
+			bool success = false;
+
+			try {
+				ExecuteOnIdle (() => {
+					success = result.SetActiveRuntime (runtime);
+				});
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("SetActiveRuntime", result.SourceQuery, result, e);
+			}
+
+			return success;
 		}
 
 		void ThrowOperationTimeoutException (string operation, string query, AppResult result, Exception innerException)

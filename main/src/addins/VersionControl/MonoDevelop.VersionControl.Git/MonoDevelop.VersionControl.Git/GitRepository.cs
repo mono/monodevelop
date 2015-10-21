@@ -62,9 +62,7 @@ namespace MonoDevelop.VersionControl.Git
 		public GitRepository (VersionControlSystem vcs, FilePath path, string url) : base (vcs)
 		{
 			RootPath = path;
-			string discovered = LibGit2Sharp.Repository.Discover (path);
-			if (!string.IsNullOrEmpty (discovered))
-				RootRepository = new LibGit2Sharp.Repository (discovered);
+			RootRepository = new LibGit2Sharp.Repository (path);
 			Url = url;
 		}
 
@@ -164,33 +162,49 @@ namespace MonoDevelop.VersionControl.Git
 			return true;
 		}
 
+		const int progressThrottle = 200;
+		static System.Diagnostics.Stopwatch throttleWatch = new System.Diagnostics.Stopwatch ();
 		static bool OnTransferProgress (TransferProgress tp, IProgressMonitor monitor, ref int progress)
 		{
-			if (progress == 0 && tp.ReceivedObjects == 0)
+			if (progress == 0 && tp.ReceivedObjects == 0) {
 				monitor.BeginTask ("Receiving and indexing objects", 2 * tp.TotalObjects);
+				throttleWatch.Restart ();
+			}
 
 			int currentProgress = tp.ReceivedObjects + tp.IndexedObjects;
 			int steps = currentProgress - progress;
-			monitor.Step (steps);
+			if (throttleWatch.ElapsedMilliseconds > progressThrottle) {
+				monitor.Step (steps);
+				throttleWatch.Restart ();
+			}
 			progress = currentProgress;
 
-			if (tp.IndexedObjects >= tp.TotalObjects)
+			if (tp.IndexedObjects >= tp.TotalObjects) {
 				monitor.EndTask ();
+				throttleWatch.Stop ();
+			}
 
 			return !monitor.IsCancelRequested;
 		}
 
 		static void OnCheckoutProgress (int completedSteps, int totalSteps, IProgressMonitor monitor, ref int progress)
 		{
-			if (progress == 0 && completedSteps == 0)
+			if (progress == 0 && completedSteps == 0) {
 				monitor.BeginTask ("Checking out files", totalSteps);
+				throttleWatch.Restart ();
+			}
 
 			int steps = completedSteps - progress;
-			monitor.Step (steps);
+			if (throttleWatch.ElapsedMilliseconds > progressThrottle) {
+				monitor.Step (steps);
+				throttleWatch.Restart ();
+			}
 			progress = completedSteps;
 
-			if (completedSteps >= totalSteps)
+			if (completedSteps >= totalSteps) {
 				monitor.EndTask ();
+				throttleWatch.Stop ();
+			}
 		}
 
 		void NotifyFilesChangedForStash (Stash stash)
@@ -744,12 +758,12 @@ namespace MonoDevelop.VersionControl.Git
 				var toApply = RootRepository.Commits.QueryBy (new CommitFilter {
 					IncludeReachableFrom = RootRepository.Head.Tip,
 					ExcludeReachableFrom = divergence.CommonAncestor,
-					SortBy = CommitSortStrategies.Topological
-				});
+					SortBy = CommitSortStrategies.Topological | CommitSortStrategies.Reverse
+				}).ToArray ();
 
 				RootRepository.Reset (ResetMode.Hard, divergence.Another);
 
-				int count = toApply.Count ();
+				int count = toApply.Length;
 				int i = 1;
 				foreach (var com in toApply) {
 					monitor.Log.WriteLine ("Cherry-picking {0} - {1}/{2}", com.Id, i, count);
@@ -1394,6 +1408,9 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override void OnMoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
 		{
+			var srcRepo = GetRepository (localSrcPath);
+			var dstRepo = GetRepository (localDestPath);
+
 			VersionInfo vi = GetVersionInfo (localSrcPath, VersionInfoQueryFlags.IgnoreCache);
 			if (vi == null || !vi.IsVersioned) {
 				base.OnMoveFile (localSrcPath, localDestPath, force, monitor);
@@ -1402,10 +1419,16 @@ namespace MonoDevelop.VersionControl.Git
 
 			vi = GetVersionInfo (localDestPath, VersionInfoQueryFlags.IgnoreCache);
 			if (vi != null && ((vi.Status & (VersionStatus.ScheduledDelete | VersionStatus.ScheduledReplace)) != VersionStatus.Unversioned))
-				RootRepository.Unstage (localDestPath);
+				dstRepo.Unstage (localDestPath);
 
-			RootRepository.Move (localSrcPath, localDestPath);
-			ClearCachedVersionInfo (localSrcPath, localDestPath);
+			if (srcRepo == dstRepo) {
+				srcRepo.Move (localSrcPath, localDestPath);
+				ClearCachedVersionInfo (localSrcPath, localDestPath);
+			} else {
+				File.Copy (localSrcPath, localDestPath);
+				srcRepo.Remove (localSrcPath, true);
+				dstRepo.Stage (localDestPath);
+			}
 		}
 
 		protected override void OnMoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)

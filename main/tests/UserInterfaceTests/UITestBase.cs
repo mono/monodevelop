@@ -31,6 +31,8 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Linq;
+using MonoDevelop.Core.Logging;
+using MonoDevelop.Core;
 
 namespace UserInterfaceTests
 {
@@ -42,9 +44,10 @@ namespace UserInterfaceTests
 		string currentTestResultFolder;
 		string currentTestResultScreenshotFolder;
 
-		int testScreenshotIndex;
+		int testScreenshotIndex, reproStepIndex;
 
 		protected readonly List<string> FoldersToClean = new List<string> ();
+		protected FileLogger Logger;
 
 		public AutoTestClientSession Session {
 			get { return TestService.Session; }
@@ -70,6 +73,7 @@ namespace UserInterfaceTests
 		public virtual void SetUp ()
 		{
 			SetupTestResultFolder ();
+			SetupTestLogger ();
 			SetupScreenshotsFolder ();
 			SetupIdeLogFolder ();
 
@@ -89,10 +93,15 @@ namespace UserInterfaceTests
 		public virtual void Teardown ()
 		{
 			try {
-				if (TestContext.CurrentContext.Result.Status != TestStatus.Passed && Session.Query (IdeQuery.XamarinUpdate).Any ()) {
-					Assert.Inconclusive ("Xamarin Update is blocking the application focus");
+				if (TestContext.CurrentContext.Result.Status != TestStatus.Passed) {
+					var updateOpened = Session.Query (IdeQuery.XamarinUpdate);
+					if (updateOpened != null && updateOpened.Any ())
+						Assert.Inconclusive ("Xamarin Update is blocking the application focus");
 				}
 				ValidateIdeLogMessages ();
+
+				LoggingService.RemoveLogger (Logger.Name);
+				Logger.Dispose ();
 			} finally {
 				var testStatus = TestContext.CurrentContext.Result.Status;
 				if (testStatus != TestStatus.Passed) {
@@ -136,10 +145,21 @@ namespace UserInterfaceTests
 
 		void SetupTestResultFolder ()
 		{
-			currentTestResultFolder = Path.Combine (testResultFolder, TestContext.CurrentContext.Test.FullName);
+			currentTestResultFolder = Path.Combine (testResultFolder, TestContext.CurrentContext.Test.Name);
 			if (Directory.Exists (currentTestResultFolder))
 				Directory.Delete (currentTestResultFolder, true);
 			Directory.CreateDirectory (currentTestResultFolder);
+		}
+
+		void SetupTestLogger ()
+		{
+			reproStepIndex = 0;
+			var currentTestLog = Path.Combine (currentTestResultFolder, string.Format ("{0}.Test.log.txt", TestContext.CurrentContext.Test.Name.ToPathSafeString ()));
+			Logger = new FileLogger (currentTestLog) {
+				Name = TestContext.CurrentContext.Test.Name,
+				EnabledLevel = EnabledLoggingLevel.All,
+			};
+			LoggingService.AddLogger (Logger);
 		}
 
 		void SetupScreenshotsFolder ()
@@ -153,16 +173,27 @@ namespace UserInterfaceTests
 
 		void SetupIdeLogFolder ()
 		{
-			var currentXSIdeLog = Path.Combine (currentTestResultFolder, string.Format ("{0}.Ide.log", TestContext.CurrentContext.Test.FullName.Replace ('/','_').Replace ('\\','_')));
+			var currentXSIdeLog = Path.Combine (currentTestResultFolder, string.Format ("{0}.Ide.log", TestContext.CurrentContext.Test.Name.ToPathSafeString ()));
 			Environment.SetEnvironmentVariable ("MONODEVELOP_LOG_FILE", currentXSIdeLog);
 			Environment.SetEnvironmentVariable ("MONODEVELOP_FILE_LOG_LEVEL", "UpToInfo");
 		}
 
-		protected void TakeScreenShot (string stepName)
+		public void TakeScreenShot (string stepName)
 		{
-			stepName = string.Format ("{0:D3}-{1}", testScreenshotIndex++, stepName);
+			stepName = string.Format ("{0:D3}-{1}", testScreenshotIndex++, stepName).ToPathSafeString ();
 			var screenshotPath = Path.Combine (currentTestResultScreenshotFolder, stepName) + ".png";
 			Session.TakeScreenshot (screenshotPath);
+		}
+
+		public void ReproStep (string stepDescription, params object[] info)
+		{
+			reproStepIndex++;
+			stepDescription = string.Format ("@Repro-Step-{0:D2}: {1}", reproStepIndex, stepDescription);
+			LoggingService.LogInfo (stepDescription);
+			foreach (var obj in info) {
+				if (obj != null)
+					LoggingService.LogInfo (string.Format("@Repro-Info-{0:D2}: {1}", reproStepIndex, obj.ToString ()));
+			}
 		}
 
 		protected virtual void OnCleanUp ()
@@ -173,6 +204,8 @@ namespace UserInterfaceTests
 						Directory.Delete (folder, true);
 				} catch (IOException e) {
 					TestService.Session.DebugObject.Debug ("Cleanup failed\n" +e);
+				} catch (UnauthorizedAccessException e) {
+					TestService.Session.DebugObject.Debug (string.Format ("Unable to clean directory: {0}\n", folder) + e);
 				}
 			}
 		}
