@@ -1,4 +1,4 @@
-// DisplayBindingService.cs
+﻿// DisplayBindingService.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -51,7 +51,13 @@ namespace MonoDevelop.Ide.Gui
 				mimeType = DesktopService.GetMimeTypeForUri (filePath);
 			
 			foreach (var b in GetBindings<IDisplayBinding> ()) {
-				if (b.CanHandle (filePath, mimeType, ownerProject))
+				bool canHandle = false;
+				try {
+					canHandle = b.CanHandle (filePath, mimeType, ownerProject);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error while getting display bindings", ex);
+				}
+				if (canHandle)
 					yield return b;
 			}
 		}
