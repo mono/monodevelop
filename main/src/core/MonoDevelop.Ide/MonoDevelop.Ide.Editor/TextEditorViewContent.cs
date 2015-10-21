@@ -878,15 +878,33 @@ namespace MonoDevelop.Ide.Editor
 			var newTasks = ImmutableArray<QuickTask>.Empty.ToBuilder ();
 			if (doc != null) {
 				foreach (var cmt in await doc.GetTagCommentsAsync(token).ConfigureAwait (false)) {
-					var newTask = new QuickTask (cmt.Text, textEditor.LocationToOffset (cmt.Region.Begin.Line, cmt.Region.Begin.Column), DiagnosticSeverity.Info);
+					if (token.IsCancellationRequested)
+						return;
+					int offset;
+					try {
+						offset = textEditor.LocationToOffset (cmt.Region.Begin.Line, cmt.Region.Begin.Column);
+					} catch (Exception) {
+						return;
+					}
+					var newTask = new QuickTask (cmt.Text, offset, DiagnosticSeverity.Info);
 					newTasks.Add (newTask);
 				}
 
 				foreach (var error in await doc.GetErrorsAsync(token).ConfigureAwait (false)) {
-					var newTask = new QuickTask (error.Message, textEditor.LocationToOffset (error.Region.Begin.Line, error.Region.Begin.Column), error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Error ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning);
+					if (token.IsCancellationRequested)
+						return;
+					int offset;
+					try {
+						offset = textEditor.LocationToOffset (error.Region.Begin.Line, error.Region.Begin.Column);
+					} catch (Exception) {
+						return;
+					}
+					var newTask = new QuickTask (error.Message, offset, error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Error ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning);
 					newTasks.Add (newTask);
 				}
 			}
+			if (token.IsCancellationRequested)
+				return;
 			Application.Invoke (delegate {
 				if (token.IsCancellationRequested || isDisposed)
 					return;
