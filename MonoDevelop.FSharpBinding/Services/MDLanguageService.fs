@@ -84,7 +84,14 @@ type MDLanguageService() =
     let ext = Path.GetExtension(fileName).ToLower()
     MDLanguageService.SupportedFileExtensions
     |> List.exists ((=) ext)
-    
+  
+  static member IsInsideFSharpFile () = 
+    if IdeApp.Workbench.ActiveDocument = null ||
+       IdeApp.Workbench.ActiveDocument.FileName.FileName = null then false
+    else
+      let file = IdeApp.Workbench.ActiveDocument.FileName.ToString()
+      MDLanguageService.SupportedFileName (file)
+
   static member SupportedFilePath (filePath:FilePath) = 
       MDLanguageService.SupportedFileName (filePath.ToString())
 

@@ -47,15 +47,8 @@ type FSharpInteractivePad() as this =
   let mutable promptReceived = false
   let mutable activeDoc : IDisposable option = None
 
-  let isInsideFSharpFile () = 
-    if IdeApp.Workbench.ActiveDocument = null ||
-       IdeApp.Workbench.ActiveDocument.FileName.FileName = null then false
-    else
-      let file = IdeApp.Workbench.ActiveDocument.FileName.ToString()
-      MDLanguageService.SupportedFileName (file)
-
   let getCorrectDirectory () = 
-    if IdeApp.Workbench.ActiveDocument <> null && isInsideFSharpFile() then
+    if IdeApp.Workbench.ActiveDocument <> null && MDLanguageService.IsInsideFSharpFile() then
       let doc = IdeApp.Workbench.ActiveDocument.FileName.ToString()
       if doc <> null then Path.GetDirectoryName(doc) |> Some else None
     else None
@@ -237,8 +230,6 @@ type FSharpInteractivePad() as this =
       let sel = IdeApp.Workbench.ActiveDocument.Editor.SelectedText
       not(String.IsNullOrEmpty(sel))
     
-  member x.IsInsideFSharpFile = isInsideFSharpFile()
-      
   member x.LoadReferences() =
     LoggingService.LogDebug ("FSI:  #LoadReferences")
     let project = IdeApp.Workbench.ActiveDocument.Project :?> DotNetProject
@@ -284,30 +275,18 @@ type FSharpInteractivePad() as this =
             else None
     with exn -> None
 
-  static member IsInteractiveAvailable =
-    match FSharpInteractivePad.Pad with
-    | Some(pad) -> match pad.Content with
-                   | :? FSharpInteractivePad as fsipad -> fsipad.IsValidSession
-                   | _ -> false
-    | None -> false
-
   static member BringToFront(grabfocus) =
     FSharpInteractivePad.Pad |> Option.iter (fun pad -> pad.BringToFront(grabfocus))
 
   static member Fsi =
-     FSharpInteractivePad.Pad |> Option.bind (fun pad -> Some(pad.Content :?> FSharpInteractivePad))
+    FSharpInteractivePad.Pad |> Option.bind (fun pad -> Some(pad.Content :?> FSharpInteractivePad))
 
 type InteractiveCommand(command) =
   inherit CommandHandler()
-  //If FSharpInteractivePad is not available e.g. reinstall/update issues/fresh install
-  //then the various commands are visible but disabled.
+
   override x.Update(info:CommandInfo) =
-    if FSharpInteractivePad.IsInteractiveAvailable then
-        info.Enabled <- true
-        info.Visible <- match FSharpInteractivePad.Fsi with
-                        | Some(fsi) -> fsi.IsInsideFSharpFile 
-                        | None -> false
-    else info.Enabled <- false     
+    info.Enabled <- true
+    info.Visible <- MDLanguageService.IsInsideFSharpFile()
   override x.Run() =
     FSharpInteractivePad.Fsi
     |> Option.iter (fun fsi -> command fsi
@@ -316,12 +295,8 @@ type InteractiveCommand(command) =
 type ShowFSharpInteractive() =
   inherit InteractiveCommand(ignore)
   override x.Update(info:CommandInfo) =
-    if FSharpInteractivePad.IsInteractiveAvailable then
-        info.Enabled <- true
-        info.Visible <- true
-    else
-        info.Enabled <- false
-        info.Visible <- false
+    info.Enabled <- true
+    info.Visible <- true
             
 type SendSelection() = 
   inherit InteractiveCommand(fun fsi -> fsi.SendSelection())
