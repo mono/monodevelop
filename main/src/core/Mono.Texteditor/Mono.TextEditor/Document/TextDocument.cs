@@ -846,6 +846,7 @@ namespace Mono.TextEditor
 			operation.Undo (this);
 			isInUndo = false;
 			OnUndone (new UndoOperationEventArgs (operation));
+			CommitDocumentUpdate ();
 		}
 
 		public void RollbackTo (ICSharpCode.NRefactory.Editor.ITextSourceVersion version)
@@ -892,6 +893,7 @@ namespace Mono.TextEditor
 			operation.Redo (this);
 			isInUndo = false;
 			OnRedone (new UndoOperationEventArgs (operation));
+			CommitDocumentUpdate ();
 		}
 		
 		internal protected virtual void OnRedone (UndoOperationEventArgs e)
