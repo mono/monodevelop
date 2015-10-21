@@ -1,4 +1,4 @@
-// ExtendibleTextEditor.cs
+﻿// ExtendibleTextEditor.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -501,9 +501,9 @@ namespace MonoDevelop.SourceEditor
 			
 			if (error != null) {
 				if (error.Error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Warning)
-					return GettextCatalog.GetString ("<b>Parser Warning</b>: {0}",
+					return GettextCatalog.GetString ("<b>Warning</b>: {0}",
 						GLib.Markup.EscapeText (error.Error.Message));
-				return GettextCatalog.GetString ("<b>Parser Error</b>: {0}",
+				return GettextCatalog.GetString ("<b>Error</b>: {0}",
 					GLib.Markup.EscapeText (error.Error.Message));
 			}
 			return null;
