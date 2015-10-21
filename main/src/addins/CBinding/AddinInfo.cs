@@ -6,7 +6,8 @@ using Mono.Addins.Description;
 [assembly:Addin ("CBinding", 
 	Namespace = "MonoDevelop",
 	Version = MonoDevelop.BuildInfo.Version,
-	Category = "Language bindings")]
+	Category = "Language bindings",
+	EnabledByDefault = false)]
 
 [assembly:AddinName ("C/C++ Language Binding")]
 [assembly:AddinDescription ("C/C++ Language binding")]

@@ -6,7 +6,8 @@ using Mono.Addins.Description;
 [assembly:Addin ("Deployment.Linux", 
 	Namespace = "MonoDevelop",
 	Version = MonoDevelop.BuildInfo.Version,
-	Category = "Deployment")]
+	Category = "Deployment",
+	EnabledByDefault = false)]
 
 [assembly:AddinName ("Deployment Services for Linux")]
 [assembly:AddinDescription ("Provides basic deployment services for Linux")]
