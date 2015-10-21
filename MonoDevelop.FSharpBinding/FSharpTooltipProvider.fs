@@ -48,9 +48,9 @@ type FSharpTooltipProvider() =
 
       let isTokenInvalid = 
         match caretToken with
-        | Some token -> token.ColorClass = FSharpTokenColorKind.Comment ||
-                        token.ColorClass = FSharpTokenColorKind.String ||
-                        token.ColorClass = FSharpTokenColorKind.Text
+        | Some token -> token.CharClass = FSharpTokenCharKind.Comment ||
+                        token.CharClass = FSharpTokenCharKind.String ||
+                        token.CharClass = FSharpTokenCharKind.Text
         | None -> true
 
       if isTokenInvalid then null else 
@@ -93,7 +93,10 @@ type FSharpTooltipProvider() =
                       let textSeg = Symbols.getTextSegment editor s col lineStr
                       let tooltipItem = TooltipItem(tip, textSeg)
                       return Tooltip tooltipItem
-                    | EmptyTip -> return NoToolTipText //TODO Support non symbol tooltips?
+                    | EmptyTip ->
+                      //TODO Support non symbol tooltips?
+                      //Those currently being: '=', '->', '::'
+                      return NoToolTipText
                   | None -> return NoToolTipData
                 | None -> return ParseAndCheckNotFound
 
@@ -105,8 +108,12 @@ type FSharpTooltipProvider() =
 
       match result with
       | ParseAndCheckNotFound -> LoggingService.LogWarning "TooltipProvider: ParseAndCheckResults not found"; null
-      | NoToolTipText -> LoggingService.LogWarning "TooltipProvider: TootipText not returned"; null
-      | NoToolTipData -> LoggingService.LogWarning "TooltipProvider: No symbol data found"; null
+      | NoToolTipText -> sprintf "TooltipProvider: TootipText not returned\n   %s\n   %s" lineStr (String.replicate col "-" + "^")
+                         |> LoggingService.LogDebug
+                         null
+      | NoToolTipData -> sprintf "TooltipProvider: No symbol data found\n   %s\n   %s" lineStr (String.replicate col "-" + "^")
+                         |> LoggingService.LogDebug
+                         null
       | Tooltip t -> t
      
     with exn ->
