@@ -261,12 +261,12 @@ namespace MonoDevelop.Ide.Tasks
 			do {
 				if (cit == item)
 					return true;
-				if (cit is SolutionItem) {
-					SolutionItem si = (SolutionItem) cit;
-					if (si.ParentFolder != null)
-						cit = si.ParentFolder;
+				if (cit is SolutionFolderItem) {
+					var sfi = (SolutionFolderItem) cit;
+					if (sfi.ParentFolder != null)
+						cit = sfi.ParentFolder;
 					else
-						cit = si.ParentSolution;
+						cit = sfi.ParentSolution;
 				}
 				else if (cit is WorkspaceItem) {
 					cit = ((WorkspaceItem)cit).ParentWorkspace;
