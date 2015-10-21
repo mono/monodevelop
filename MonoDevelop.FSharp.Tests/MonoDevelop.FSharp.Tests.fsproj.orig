@@ -110,6 +110,9 @@
       <Private>False</Private>
       <HintPath>..\packages\NUnit\lib\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>INSERT_FSPROJ_MDROOT\bin\Microsoft.CodeAnalysis.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TestBase.fs" />
