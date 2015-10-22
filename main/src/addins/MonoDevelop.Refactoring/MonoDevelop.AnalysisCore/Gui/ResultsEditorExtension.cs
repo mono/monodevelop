@@ -78,6 +78,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				return;
 			enabled = false;
 			DocumentContext.DocumentParsed -= OnDocumentParsed;
+			CancelUpdateTimout ();
 			CancelTask ();
 			AnalysisOptions.AnalysisEnabled.Changed -= AnalysisOptionsChanged;
 			while (markers.Count > 0)

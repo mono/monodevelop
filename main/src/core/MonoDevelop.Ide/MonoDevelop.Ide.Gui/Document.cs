@@ -814,7 +814,7 @@ namespace MonoDevelop.Ide.Gui
 			lock (adhocProjectLock) {
 				if (adhocProject == null)
 					return;
-				TypeSystemService.Unload (adhocProject.ParentSolution.ParentWorkspace);
+				TypeSystemService.Unload (adhocSolution);
 				adhocSolution.Dispose ();
 				adhocSolution = null;
 				adhocProject = null;
