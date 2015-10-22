@@ -84,7 +84,8 @@ namespace MonoDevelop.Platform
 			return true;
 		}
 
-		internal override void AttachMainToolbar (Gtk.VBox parent, Components.MainToolbar.IMainToolbarView toolbar)
+		const int WM_SYSCHAR = 0x0106;
+        internal override void AttachMainToolbar (Gtk.VBox parent, Components.MainToolbar.IMainToolbarView toolbar)
 		{
 			titleBar = new TitleBar ();
 			var topMenu = new GtkWPFWidget (titleBar) {
@@ -92,11 +93,9 @@ namespace MonoDevelop.Platform
 			};
 			commandManager.IncompleteKeyPressed += (sender, e) => {
 				if (e.Key == Gdk.Key.Alt_L || e.Key == Gdk.Key.Alt_R) {
-					titleBar.Focus ();
-					titleBar.RaiseEvent (new System.Windows.Input.AccessKeyPressedEventArgs ());
+					var wnd = Window.GetWindow (titleBar);
+					wnd.Activate ();
 				}
-			};
-			commandManager.IncompleteKeyReleased += (sender, e) => {
 			};
 			parent.PackStart (topMenu, false, true, 0);
 			SetupMenu ();
