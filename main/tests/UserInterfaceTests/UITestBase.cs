@@ -199,6 +199,11 @@ namespace UserInterfaceTests
 			}
 		}
 
+		public void ReproFailedStep (string expected, string actual, params object [] info)
+		{
+			ReproStep (string.Format ("Expected: {0}\nActual: {1}", expected, actual), info);
+		}
+
 		protected virtual void OnCleanUp ()
 		{
 			foreach (var folder in FoldersToClean) {
