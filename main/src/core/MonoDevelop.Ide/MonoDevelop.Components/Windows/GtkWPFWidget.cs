@@ -72,13 +72,19 @@ namespace MonoDevelop.Components.Windows
 			int x, y;
 
 			var gtkWnd = Toplevel as Gtk.Window;
-			int offset = 0;
+			int titleOffset = 0;
 			if (gtkWnd.Decorated)
-				offset = System.Windows.Forms.SystemInformation.CaptionHeight;
+				titleOffset = System.Windows.Forms.SystemInformation.CaptionHeight;
+
+			Gdk.WMDecoration decors;
+			int borderOffset = 0;
+			if (Environment.OSVersion.Version >= new Version (10, 0, 0, 0)) {
+					borderOffset = 7;
+			}
 
 			int root_x, root_y;
 			gtkWnd.GetPosition (out root_x, out root_y);
-			if (TranslateCoordinates (Toplevel, root_x, root_y + offset, out x, out y)) {
+			if (TranslateCoordinates (Toplevel, root_x + borderOffset, root_y + titleOffset + borderOffset, out x, out y)) {
 				wpfWindow.Left = x;
 				wpfWindow.Top = y;
 			} else {
