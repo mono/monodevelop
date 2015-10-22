@@ -107,7 +107,7 @@ namespace MonoDevelop.MacIntegration
 			if (!string.IsNullOrEmpty (data.CurrentFolder))
 				panel.DirectoryUrl = new NSUrl (data.CurrentFolder, true);
 			
-			panel.ParentWindow = NSApplication.SharedApplication.KeyWindow;
+			panel.ParentWindow = NSApplication.SharedApplication.KeyWindow ?? NSApplication.SharedApplication.MainWindow;
 
 			var openPanel = panel as NSOpenPanel;
 			if (openPanel != null) {
