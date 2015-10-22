@@ -12,7 +12,7 @@ MD_CONFIGURE=$(top_srcdir)/../scripts/configure.sh
 PACKAGE_UPDATE_ID=$(shell $(MD_CONFIGURE) get-releaseid)
 BUNDLE_VERSION=$(shell $(MD_CONFIGURE) get-version)
 
-CLEANFILES = render.exe
+CLEANFILES = render.exe monostub monostub-test
 #DISTCLEANFILES =
 EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh render.cs
 

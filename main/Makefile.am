@@ -19,6 +19,7 @@ clean: clean-local
 
 clean-local: sln_clean
 	cd external && $(MAKE) clean
+	cd build && $(MAKE) clean
 
 restore-packages:
 	nuget restore
