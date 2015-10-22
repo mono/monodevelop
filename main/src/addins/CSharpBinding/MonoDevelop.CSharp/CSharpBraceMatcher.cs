@@ -63,7 +63,6 @@ namespace MonoDevelop.CSharp
 			var root = await partialDoc.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
 			if (offset < 0 || root.Span.Length <= offset)
 				return null;
-			Console.WriteLine ("!!!!!");
 			var token = root.FindToken (offset);
 			for (int i = 0; i < tokenPairs.Length / 2; i++) {
 				var open = tokenPairs [i * 2];
