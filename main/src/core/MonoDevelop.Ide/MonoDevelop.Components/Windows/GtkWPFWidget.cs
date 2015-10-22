@@ -76,9 +76,16 @@ namespace MonoDevelop.Components.Windows
 			if (gtkWnd.Decorated)
 				titleOffset = System.Windows.Forms.SystemInformation.CaptionHeight;
 
+			Gdk.WMDecoration decors;
+			int borderOffset = 0;
+			if (gtkWnd.GdkWindow.GetDecorations (out decors)) {
+				if (decors.HasFlag (Gdk.WMDecoration.Border))
+					borderOffset = 7;
+			}
+
 			int root_x, root_y;
 			gtkWnd.GetPosition (out root_x, out root_y);
-			if (TranslateCoordinates (Toplevel, root_x, root_y + titleOffset, out x, out y)) {
+			if (TranslateCoordinates (Toplevel, root_x + borderOffset, root_y + titleOffset, out x, out y)) {
 				wpfWindow.Left = x;
 				wpfWindow.Top = y;
 			} else {
