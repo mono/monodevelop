@@ -201,6 +201,7 @@ namespace MonoDevelop.Ide.Gui
 
 		FilePath adHocFile;
 		Project adhocProject;
+		Solution adhocSolution;
 
 		public override Project Project {
 			get { return (Window != null ? Window.ViewContent.Project : null); }
@@ -793,9 +794,9 @@ namespace MonoDevelop.Ide.Gui
 
 						newProject.Files.Add (new ProjectFile (adHocFile, BuildAction.Compile));
 
-						var solution = new Solution ();
-						solution.AddConfiguration ("", true);
-						solution.DefaultSolutionFolder.AddItem (newProject);
+						adhocSolution = new Solution ();
+						adhocSolution.AddConfiguration ("", true);
+						adhocSolution.DefaultSolutionFolder.AddItem (newProject);
 						return TypeSystemService.Load (solution, new ProgressMonitor (), false).ContinueWith (task => {
 							RoslynWorkspace = task.Result.FirstOrDefault(); // 1 solution loaded ->1 workspace as result
 							analysisDocument = TypeSystemService.GetDocumentId (RoslynWorkspace, adhocProject, adHocFile);
@@ -814,6 +815,8 @@ namespace MonoDevelop.Ide.Gui
 				if (adhocProject == null)
 					return;
 				TypeSystemService.Unload (adhocProject.ParentSolution.ParentWorkspace);
+				adhocSolution.Dispose ();
+				adhocSolution = null;
 				adhocProject = null;
 			}
 		}
