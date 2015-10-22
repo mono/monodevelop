@@ -80,13 +80,9 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		static readonly MonoDevelopWorkspace emptyWorkspace;
 
-		static ConcurrentBag<MonoDevelopWorkspace> workspaces = new ConcurrentBag<MonoDevelopWorkspace>();
+		static object workspaceLock = new object();
+		static ImmutableList<MonoDevelopWorkspace> workspaces = ImmutableList<MonoDevelopWorkspace>.Empty;
 
-		static ImmutableArray<MonoDevelopWorkspace> Workspaces {
-			get {
-				return workspaces.ToImmutableArray ();
-			}
-		}
 		public static ImmutableArray<Microsoft.CodeAnalysis.Workspace> AllWorkspaces {
 			get {
 				return workspaces.ToImmutableArray<Microsoft.CodeAnalysis.Workspace> ();
@@ -98,7 +94,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (solution == null)
 				throw new ArgumentNullException ("solution");
-			foreach (var ws in Workspaces) {
+			foreach (var ws in workspaces) {
 				if (ws.MonoDevelopSolution == solution)
 					return ws;
 			}
@@ -107,7 +103,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal static MonoDevelopWorkspace GetWorkspace (WorkspaceId id)
 		{
-			foreach (var ws in Workspaces) {
+			foreach (var ws in workspaces) {
 				if (ws.Id.Equals (id))
 					return ws;
 			}
@@ -126,7 +122,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static void NotifyFileChange (string fileName, string text)
 		{
-			foreach (var ws in Workspaces)
+			foreach (var ws in workspaces)
 				ws.UpdateFileContent (fileName, text);
 		}
 
@@ -162,7 +158,8 @@ namespace MonoDevelop.Ide.TypeSystem
 						var workspace = new MonoDevelopWorkspace ();
 						list.Add (workspace);
 						workspace.ShowStatusIcon ();
-						workspaces.Add (workspace);
+						lock (workspaceLock)
+							workspaces = workspaces.Add (workspace);
 						workspace.TryLoadSolution (solution/*, progressMonitor*/);
 						solution.SolutionItemAdded += OnSolutionItemAdded;
 						solution.SolutionItemRemoved += OnSolutionItemRemoved;
@@ -192,7 +189,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (solution != null) {
 					MonoDevelopWorkspace result = GetWorkspace (solution);
 					if (result != emptyWorkspace) {
-						workspaces = new ConcurrentBag<MonoDevelopWorkspace> (Workspaces.Where (w => w != result));
+						lock (workspaceLock)
+							workspaces = workspaces.Remove (result);
 						result.Dispose ();
 					}
 					solution.SolutionItemAdded -= OnSolutionItemAdded;
@@ -210,7 +208,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
 			fileName = FileService.GetFullPath (fileName);
-			foreach (var w in Workspaces) {
+			foreach (var w in workspaces) {
 				var projectId = w.GetProjectId (project);
 				if (projectId != null)
 					return w.GetDocumentId (projectId, fileName);
@@ -241,7 +239,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				throw new ArgumentNullException ("projectId");
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
-			foreach (var w in Workspaces) {
+			foreach (var w in workspaces) {
 				if (w.Contains (projectId))
 					return w.GetDocumentId (projectId, fileName);
 			}
@@ -253,7 +251,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
 			fileName = FileService.GetFullPath (fileName);
-			foreach (var w in Workspaces) {
+			foreach (var w in workspaces) {
 				foreach (var projectId in w.CurrentSolution.ProjectIds) {
 					var docId = w.GetDocumentId (projectId, fileName);
 					if (docId != null)
@@ -266,7 +264,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
-			foreach (var w in Workspaces) {
+			foreach (var w in workspaces) {
 				var projectId = w.GetProjectId (project); 
 				if (projectId != null)
 					return w.CurrentSolution.GetProject (projectId);
@@ -278,7 +276,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
-			foreach (var w in Workspaces) {
+			foreach (var w in workspaces) {
 				var projectId = w.GetProjectId (project); 
 				if (projectId == null)
 					continue;
