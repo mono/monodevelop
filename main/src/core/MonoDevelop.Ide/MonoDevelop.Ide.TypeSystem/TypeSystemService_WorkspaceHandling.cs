@@ -130,25 +130,22 @@ namespace MonoDevelop.Ide.TypeSystem
 				ws.UpdateFileContent (fileName, text);
 		}
 
-		internal static async Task<Microsoft.CodeAnalysis.Workspace> Load (WorkspaceItem item, ProgressMonitor progressMonitor, bool loadInBackground = true)
+		internal async static Task<List<MonoDevelopWorkspace>> Load (WorkspaceItem item, ProgressMonitor progressMonitor, bool loadInBackground = true)
 		{
 			using (Counters.ParserService.WorkspaceItemLoaded.BeginTiming ()) {
-				var workspace = new MonoDevelopWorkspace ();
-				await InternalLoad (item, progressMonitor, loadInBackground).ContinueWith (t => {
-					workspace.HideStatusIcon ();
-				}).ConfigureAwait (false);
-
-				return workspace;
+				var wsList = new List<MonoDevelopWorkspace> ();
+				await InternalLoad (wsList, item, progressMonitor, loadInBackground);
+				return wsList;
 			}
 		}
 
-		static Task InternalLoad (MonoDevelop.Projects.WorkspaceItem item, ProgressMonitor progressMonitor, bool loadInBackground)
+		static Task InternalLoad (List<MonoDevelopWorkspace> list, MonoDevelop.Projects.WorkspaceItem item, ProgressMonitor progressMonitor, bool loadInBackground)
 		{
 			var ws = item as MonoDevelop.Projects.Workspace;
 			if (ws != null) {
 				Action loadAction = () =>  {
 					foreach (var it in ws.Items) {
-						InternalLoad (it, progressMonitor, false);
+						InternalLoad (list, it, progressMonitor, false);
 					}
 					ws.ItemAdded += OnWorkspaceItemAdded;
 					ws.ItemRemoved += OnWorkspaceItemRemoved;
@@ -163,6 +160,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (solution != null) {
 					Action loadAction = () =>  {
 						var workspace = new MonoDevelopWorkspace ();
+						list.Add (workspace);
 						workspace.ShowStatusIcon ();
 						workspaces.Add (workspace);
 						workspace.TryLoadSolution (solution/*, progressMonitor*/);
