@@ -151,9 +151,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			var provider = CompletionWidget as ITextEditorDataProvider;
 			if (provider != null) {
-				// 12pt default font size * 0.84 = 10pt;
-				var newItemFontSize = itemFont.Size * 0.84;
-				var newNoMatchFontSize = noMatchFont.Size * 0.84;
+				// 12pt default font size * 0.92 = 11pt;
+				var newItemFontSize = itemFont.Size * 0.92;
+				var newNoMatchFontSize = noMatchFont.Size * 0.92;
 
 				if (newItemFontSize > 0) {
 					itemFont.Size = (int)newItemFontSize;
