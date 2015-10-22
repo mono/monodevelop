@@ -474,14 +474,15 @@ namespace MonoDevelop.VersionControl.Views
 			return result;
 		}
 
-		double LineToY (TextArea editor, int line)
-		{
-			double y = editor.LineToY (line);
-			int i;
-			for (i = 0; i < editors.Length; ++i)
-				if (editor == editors [i])
-					break;
-		}
+//		double LineToY (TextArea editor, int line)
+//		{
+//			double y = editor.LineToY (line);
+//			int i;
+//			for (i = 0; i < editors.Length; ++i)
+//				if (editor == editors [i])
+//					break;
+//			
+//		}
 		
 		void PaintEditorOverlay (TextArea editor, PaintEventArgs args, List<Hunk> diff, bool paintRemoveSide)
 		{

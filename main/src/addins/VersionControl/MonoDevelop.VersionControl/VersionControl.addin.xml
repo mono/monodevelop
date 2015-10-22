@@ -150,8 +150,8 @@
 			defaultHandler="MonoDevelop.VersionControl.UpdateCommandHandler"
 			description = "Updates the local copy with remote changes."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Publish"
-			_label = "_Publish..."
-			description = "Publish actual project into repository."/>
+			_label = "_Publish a new repository..."
+			description = "Publish actual project into a new repository."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Checkout"
 			defaultHandler = "MonoDevelop.VersionControl.CheckoutCommand"
 			_label = "C_heckout..."
