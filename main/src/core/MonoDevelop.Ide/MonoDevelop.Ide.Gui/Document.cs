@@ -797,7 +797,7 @@ namespace MonoDevelop.Ide.Gui
 						adhocSolution = new Solution ();
 						adhocSolution.AddConfiguration ("", true);
 						adhocSolution.DefaultSolutionFolder.AddItem (newProject);
-						return TypeSystemService.Load (solution, new ProgressMonitor (), false).ContinueWith (task => {
+						return TypeSystemService.Load (adhocSolution, new ProgressMonitor (), false).ContinueWith (task => {
 							RoslynWorkspace = task.Result.FirstOrDefault(); // 1 solution loaded ->1 workspace as result
 							analysisDocument = TypeSystemService.GetDocumentId (RoslynWorkspace, adhocProject, adHocFile);
 							TypeSystemService.InformDocumentOpen (RoslynWorkspace, analysisDocument, Editor);
