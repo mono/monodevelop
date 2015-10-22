@@ -274,7 +274,14 @@ namespace WindowsPlatform.MainToolbar
 				}
 
 				if (needsSeparator)
-					toolbar.ButtonBarPanel.Children.Add (new System.Windows.Controls.Separator { Style = sepStyle, MinWidth = 2 });
+					toolbar.ButtonBarPanel.Children.Add (new System.Windows.Controls.Separator {
+						Style = sepStyle,
+						MinWidth = 2,
+						Margin = new System.Windows.Thickness{
+							Left = 3,
+							Right = 3,
+						},
+					});
 
 				toolbar.ButtonBarPanel.Children.Add (new ButtonBarButton ((ImageSource)MonoDevelop.Platform.WindowsPlatform.WPFToolkit.GetNativeImage (ImageService.GetIcon (Stock.Add)), button));
 				needsSeparator = false;
