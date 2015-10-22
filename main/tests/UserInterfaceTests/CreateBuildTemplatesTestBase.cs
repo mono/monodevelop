@@ -220,7 +220,7 @@ namespace UserInterfaceTests
 			try {
 				Session.WaitForElement (query, timeoutInSecs * 1000);
 			} catch (TimeoutException) {
-				ReproStep (string.Format ("Expected: {0}\nActual:{1}", expected, actual));
+				ReproStep (expected, actual);
 				throw;
 			}
 		}
