@@ -228,10 +228,13 @@ AC_ARG_WITH(macarch,
 	with_macarch=${withval}, with_macarch=$default_macarch)
 
 SGEN_SUFFIX=
+MONOSTUB_ARCH=32
 if test x$with_macarch = xx86_64; then
 	SGEN_SUFFIX=64
+	MONOSTUB_ARCH=64
 fi
 AC_SUBST(SGEN_SUFFIX)
+AC_SUBST(MONOSTUB_ARCH)
 
 MAC_ARCHITECTURE=${with_macarch}
 AC_SUBST(MAC_ARCHITECTURE)
