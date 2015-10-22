@@ -41,12 +41,6 @@ namespace MonoDevelop.Components.Windows
 			WS_EX_TOOLWINDOW = 0x80,
 		}
 
-		public enum WindowStyles
-		{
-			// The window has a sizing border.
-			WS_SIZEBOX = 0x00040000,
-		}
-
 		public enum GWLParameter
 		{
 			// Sets a new extended style.

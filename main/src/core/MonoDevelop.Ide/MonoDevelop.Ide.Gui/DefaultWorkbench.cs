@@ -44,7 +44,6 @@ using MonoDevelop.Components;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Components.DockNotebook;
-using MonoDevelop.Components.Windows;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -614,12 +613,7 @@ namespace MonoDevelop.Ide.Gui
 					FullScreen = memento.FullScreen;
 					toolbarFrame.SetStatus (memento.ToolbarStatus);
 				}
-				if (Platform.IsWindows) {
-					Decorated = false;
-					GdkWindow.SetDecorations (Gdk.WMDecoration.Resizeh | Gdk.WMDecoration.Border);
-				} else {
-					Decorated = true;
-				}
+				Decorated = !Platform.IsWindows;
 			}
 		}
 		
