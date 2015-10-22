@@ -7,7 +7,13 @@ using Mono.Addins.Description;
 	Namespace = "MonoDevelop",
 	Version = MonoDevelop.BuildInfo.Version,
 	Category = "Language bindings",
-	EnabledByDefault = false)]
+	EnabledByDefault =
+	#if GNOME
+		true
+	#else
+		false
+	#endif
+)]
 
 [assembly:AddinName ("C/C++ Language Binding")]
 [assembly:AddinDescription ("C/C++ Language binding")]
