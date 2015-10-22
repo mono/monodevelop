@@ -52,10 +52,25 @@ namespace UserInterfaceTests
 
 		protected void SelectRemote (string remoteName, string remoteUrl = null)
 		{
+			ReproStep (string.Format ("Select a remote named '{0}' {1}", remoteName,
+			                          remoteUrl != null ? string.Format (" and Remote URL '{0}'", remoteUrl) : string.Empty));
 			Session.WaitForElement (c => remoteTreeName (c).Contains (remoteName));
-			Assert.IsTrue (Session.SelectElement (c => remoteTreeName (c).Contains (remoteName)));
+
+			try {
+				Assert.IsTrue (Session.SelectElement (c => remoteTreeName (c).Contains (remoteName)));
+			} catch (AssertionException) {
+				ReproStep (string.Format ("Expected: Remote Name '{0}' exists\nActual: Remote Name '{0}' does not exist", remoteName));
+				throw;
+			}
 			if (remoteUrl != null) {
-				Assert.IsTrue (Session.SelectElement (c => remoteTreeUrl (c).Contains (remoteUrl)));
+				try {
+					Assert.IsTrue (Session.SelectElement (c => remoteTreeUrl (c).Contains (remoteUrl)));
+				} catch (AssertionException) {
+					ReproStep (string.Format (
+						"Expected: Remote URL '{0}' with Name '{1}' exists\nActual: Remote URL '{0}' with Name '{1}' does not exist",
+					                          remoteUrl, remoteName));
+					throw;
+				}
 			}
 			TakeScreenShot (string.Format ("{0}-Remote-Selected", remoteName));
 		}
@@ -287,8 +302,14 @@ namespace UserInterfaceTests
 
 		protected void AssertButtonSensitivity (string buttonLabel, bool sensitivity)
 		{
-			Assert.IsNotEmpty (Session.Query (c => c.Button ().Text (buttonLabel).Sensitivity (sensitivity)),
-				string.Format ("{0} button is {1} enabled", buttonLabel, sensitivity ? notString : string.Empty));
+			var expected = string.Format ("{0} button is {1} enabled", buttonLabel, !sensitivity ? notString : string.Empty);
+			var actual = string.Format ("{0} button is {1} enabled", buttonLabel, sensitivity ? notString : string.Empty);
+			try {
+				Assert.IsNotEmpty (Session.Query (c => c.Button ().Text (buttonLabel).Sensitivity (sensitivity)), actual);
+			} catch (AssertionException) {
+				ReproStep (string.Format ("Expected: {0}\nActual: {1}", expected, actual));
+				throw;
+			}
 		}
 
 		#endregion
