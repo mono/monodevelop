@@ -122,7 +122,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		static Func<Microsoft.CodeAnalysis.Document, CancellationToken, Task<Microsoft.CodeAnalysis.Document>> WithFrozenPartialSemanticsAsync;
+		internal static Func<Microsoft.CodeAnalysis.Document, CancellationToken, Task<Microsoft.CodeAnalysis.Document>> WithFrozenPartialSemanticsAsync;
 		static List<CompletionData> snippets;
 
 		static CSharpCompletionTextEditorExtension ()

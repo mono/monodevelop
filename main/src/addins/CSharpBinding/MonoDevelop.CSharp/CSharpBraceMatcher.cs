@@ -32,6 +32,7 @@ using MonoDevelop.CSharp.Formatting;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.Core.Text;
+using MonoDevelop.CSharp.Completion;
 
 namespace MonoDevelop.CSharp
 {
@@ -55,12 +56,14 @@ namespace MonoDevelop.CSharp
 			if (context.ParsedDocument == null)
 				return await fallback.GetMatchingBracesAsync (editor, context, offset, cancellationToken);
 
-			var ast = context.ParsedDocument.GetAst<SemanticModel> ();
-			if (ast == null)
-				return await fallback.GetMatchingBracesAsync (editor, context, offset, cancellationToken);
-			var root = await ast.SyntaxTree.GetRootAsync (cancellationToken).ConfigureAwait (false);
+			var analysisDocument = context.AnalysisDocument;
+			if (analysisDocument == null)
+				return null;
+			var partialDoc = await CSharpCompletionTextEditorExtension.WithFrozenPartialSemanticsAsync (analysisDocument, cancellationToken).ConfigureAwait (false);
+			var root = await partialDoc.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
 			if (offset < 0 || root.Span.Length <= offset)
 				return null;
+			Console.WriteLine ("!!!!!");
 			var token = root.FindToken (offset);
 			for (int i = 0; i < tokenPairs.Length / 2; i++) {
 				var open = tokenPairs [i * 2];
