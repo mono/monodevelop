@@ -613,7 +613,7 @@ namespace MonoDevelop.Ide.Gui
 					FullScreen = memento.FullScreen;
 					toolbarFrame.SetStatus (memento.ToolbarStatus);
 				}
-				Decorated = !Platform.IsWindows;
+				Decorated = true;
 			}
 		}
 		
