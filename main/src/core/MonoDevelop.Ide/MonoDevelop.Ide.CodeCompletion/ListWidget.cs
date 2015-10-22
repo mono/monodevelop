@@ -146,9 +146,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			itemFont = FontService.MonospaceFont.Copy ();
 			noMatchFont = FontService.SansFont.Copy ();
 
-			// 12pt default font size * 0.92 = 11pt;
-			var newItemFontSize = itemFont.Size * 0.92;
-			var newNoMatchFontSize = noMatchFont.Size * 0.92;
+			// VV: prepared for further font tweaks when we have new fonts in
+			var newItemFontSize = itemFont.Size;
+			var newNoMatchFontSize = noMatchFont.Size;
 
 			if (newItemFontSize > 0) {
 				itemFont.Size = (int)newItemFontSize;
