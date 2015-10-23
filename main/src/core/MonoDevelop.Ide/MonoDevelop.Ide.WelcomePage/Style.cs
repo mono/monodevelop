@@ -10,16 +10,17 @@ namespace MonoDevelop.Ide.WelcomePage
 			public const string FontFamilyWindows = "Calibri"; // TODO: VV: "Segoe UI"
 			public const int VerticalPadding = 24;
 			public const int HorizontalPadding = 50;
+			public static string BackgroundColor { get; internal set; }
 			public const string BackgroundTile = "./images/tiny_grid.png";
-			public const string InnerShadowColor = "black";
+			public static string InnerShadowColor { get; internal set; }
 			public const double InnerShadowOpacity = 0.4;
 			public const int InnerShadowSize = 10;
 			public static int Spacing = 20;
 
 			public static class Links
 			{
-				public const string Color = "#555555";
-				public const string HoverColor = "#000000";
+				public static string Color { get; internal set; }
+				public static string HoverColor { get; internal set; }
 				public const int FontSize = 16;
 				public const int LinkSeparation = 24;
 				public const int BottomMargin = 24;
@@ -31,20 +32,20 @@ namespace MonoDevelop.Ide.WelcomePage
 				public const string TitleFontFamilyMac = "Lucida Grande";
 				public const string TitleFontFamilyWindows = "Calibri"; // TODO: VV: "Segoe UI"
 				public const int Padding = 20;
-				public const string BackgroundColor = "#FFF";
-				public const string BorderColor = "#CCC";
-				public const string TextColor = "#555555";
-				public const string ShadowColor = "#000";
+				public static string BackgroundColor { get; internal set; }
+				public static string BorderColor { get; internal set; }
+				public static string TextColor { get; internal set; }
+				public static string ShadowColor { get; internal set; }
 				public const double ShadowOpacity = 0.2;
 				public const int ShadowSize = 3;
 				public const int ShadowVerticalOffset = 1;
 				public const int LargeTitleFontSize = 22;
-				public const string LargeTitleFontColor = "#444444";
+				public static string LargeTitleFontColor { get; internal set; }
 				public const int LargeTitleMarginBottom = 10;
-				public const string MediumTitleColor = "#222222";
+				public static string MediumTitleColor { get; internal set; }
 				public const int MediumTitleFontSize = 15;
 				public const int MediumTitleMarginBottom = 2;
-				public const string SmallTitleColor = "#777777";
+				public static string SmallTitleColor { get; internal set; }
 				public const int SmallTitleFontSize = 13;
 				public const int SummaryFontSize = 12;
 				public const string SummaryFontFamily = "Arial"; // TODO: VV: "Segoe UI"
@@ -68,7 +69,7 @@ namespace MonoDevelop.Ide.WelcomePage
 					public static class Item
 					{
 						public const int MarginBottom = 26;
-						public const string TitleHoverColor = "#0982B3";
+						public static string TitleHoverColor { get; internal set; }
 						public const int FirstMarginTop = 18;
 					}
 				}
@@ -81,8 +82,8 @@ namespace MonoDevelop.Ide.WelcomePage
 					{
 						public const int Width = 260;
 						public const int Height = 46;
-						public const string HoverBackgroundColor = "#f9feff";
-						public const string HoverBorderColor = "#dddddd";
+						public static string HoverBackgroundColor { get; internal set; }
+						public static string HoverBorderColor { get; internal set; }
 						public const int TitleFontSize = 12;
 						public const int PathFontSize = 11;
 						public const int TextLeftPadding = 38;
@@ -96,6 +97,47 @@ namespace MonoDevelop.Ide.WelcomePage
 							public const string PinnedHoverImage = "star-hover-16.png";
 						}
 					}
+				}
+			}
+
+			static WelcomeScreen ()
+			{
+				LoadStyles ();
+				MonoDevelop.Ide.Gui.Styles.Changed +=  (o, e) => LoadStyles ();
+			}
+
+			public static void LoadStyles ()
+			{
+				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
+					BackgroundColor = "white";
+					InnerShadowColor = "black";
+					Links.Color = "#555555";
+					Links.HoverColor = "#000000";
+					Pad.BackgroundColor = "#FFF";
+					Pad.BorderColor = "#CCC";
+					Pad.TextColor = "#555555";
+					Pad.ShadowColor = "#000";
+					Pad.LargeTitleFontColor = "#444444";
+					Pad.MediumTitleColor = "#222222";
+					Pad.SmallTitleColor = "#777777";
+					Pad.News.Item.TitleHoverColor = "#0982B3";
+					Pad.Solutions.SolutionTile.HoverBackgroundColor = "#f9feff";
+					Pad.Solutions.SolutionTile.HoverBorderColor = "#dddddd";
+				} else {
+					BackgroundColor = "black";
+					InnerShadowColor = "white";
+					Links.Color = "#555555";
+					Links.HoverColor = "#FFF";
+					Pad.BackgroundColor = "#222";
+					Pad.BorderColor = "#CCC";
+					Pad.TextColor = "#555555";
+					Pad.ShadowColor = "#000";
+					Pad.LargeTitleFontColor = "#444444";
+					Pad.MediumTitleColor = "#444444";
+					Pad.SmallTitleColor = "#777777";
+					Pad.News.Item.TitleHoverColor = "#0982B3";
+					Pad.Solutions.SolutionTile.HoverBackgroundColor = "#f9feff";
+					Pad.Solutions.SolutionTile.HoverBorderColor = "#dddddd";
 				}
 			}
 		}
