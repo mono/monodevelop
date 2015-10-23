@@ -103,7 +103,8 @@ namespace MonoDevelop.CSharp
 				ws.WorkspaceChanged += Ws_WorkspaceChanged;
 
 				foreach (var p in ws.CurrentSolution.Projects) {
-					SearchAsync (documentInfos, p, token);
+					if (p.FilePath.EndsWith ("csproj", StringComparison.Ordinal))
+						SearchAsync (documentInfos, p, token);
 				}
 			}
 
