@@ -163,6 +163,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						workspace.TryLoadSolution (solution/*, progressMonitor*/);
 						solution.SolutionItemAdded += OnSolutionItemAdded;
 						solution.SolutionItemRemoved += OnSolutionItemRemoved;
+						workspace.HideStatusIcon ();
 					};
 
 					if (loadInBackground) {
