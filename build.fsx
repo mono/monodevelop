@@ -6,8 +6,15 @@ Target "Build" (fun _ ->
   |> Log "AppBuild-Output: "
 )
 
-Target "Test" (fun _ ->
+let test() =
   Shell.Exec ("mono", "../../build/bin/mdtool.exe run-md-tests ../../external/fsharpbinding/MonoDevelop.FSharp.Tests/bin/Debug/MonoDevelop.FSharp.Tests.dll -labels") |> ignore
+
+Target "BuildAndTest" (fun _ ->
+  test()
+)
+
+Target "Test" (fun _ ->
+  test()
 )
 
 Target "Run" (fun _ ->
@@ -15,7 +22,7 @@ Target "Run" (fun _ ->
 )
 
 "Build"
-  ==> "Test"
+  ==> "BuildAndTest"
 
 "Build"
   ==> "Run"
