@@ -36,8 +36,9 @@ namespace MonoDevelop.Ide.Gui
 	{
 		public static event EventHandler Changed;
 
-		public static Cairo.Color BaseBackgroundColor { get; internal set; }
-		public static Cairo.Color BaseForegroundColor { get; internal set; }
+		public static Cairo.Color BackgroundColor { get; internal set; }		// must be the bg color from Gtkrc
+		public static Cairo.Color BaseBackgroundColor { get; internal set; }	// must be the base color from Gtkrc
+		public static Cairo.Color BaseForegroundColor { get; internal set; }	// must be the text color from Gtkrc
 
 		// General
 
@@ -305,8 +306,9 @@ namespace MonoDevelop.Ide.Gui
 
 		internal static void LoadLightStyle ()
 		{
-			BaseBackgroundColor = new Cairo.Color (1, 1, 1);
-			BaseForegroundColor = new Cairo.Color (0, 0, 0);
+			BackgroundColor = CairoExtensions.ParseColor ("f5f5f5");	// must be the bg color from Gtkrc
+			BaseBackgroundColor = new Cairo.Color (1, 1, 1);	// must be the base color from Gtkrc
+			BaseForegroundColor = new Cairo.Color (0, 0, 0);	// must be the text color from Gtkrc
 
 			ThinSplitterColor = new Gdk.Color (166, 166, 166);
 
@@ -476,8 +478,9 @@ namespace MonoDevelop.Ide.Gui
 
 		internal static void LoadDarkStyle ()
 		{
-			BaseBackgroundColor = new Cairo.Color (0, 0, 0);
-			BaseForegroundColor = new Cairo.Color (1, 1, 1);
+			BackgroundColor = CairoExtensions.ParseColor ("333333");		// must be the bg color from Gtkrc
+			BaseBackgroundColor = CairoExtensions.ParseColor ("222222");	// must be the base color from Gtkrc
+			BaseForegroundColor = CairoExtensions.ParseColor ("bfbfbf");	// must be the text color from Gtkrc
 
 			ThinSplitterColor = new Gdk.Color (89, 89, 89);
 
