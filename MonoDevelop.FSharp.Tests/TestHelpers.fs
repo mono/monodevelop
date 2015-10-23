@@ -108,7 +108,7 @@ module TestHelpers =
         let project = Services.ProjectService.CreateDotNetProject ("F#")
         project.FileName <- FilePath("test.fsproj")
         project.References.AddRange references
-        project.Files.Add (new ProjectFile ("/a.fs", BuildAction.Compile))
+        project.Files.Add (new ProjectFile ("/a.fsx", BuildAction.None))
 
         let projectConfig = DotNetProjectConfiguration("Debug")
         let cp = FSharpCompilerParameters(DefineConstants = defines)
