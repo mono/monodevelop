@@ -765,7 +765,7 @@ namespace MonoDevelop.Ide.Gui
 				return SpecializedTasks.EmptyTask;
 			}
 			analysisDocumentFileName = FileName;
-			if (Project != null) {
+			if (Project != null && Editor.MimeType == "text/x-csharp") {
 				RoslynWorkspace = TypeSystemService.GetWorkspace (this.Project.ParentSolution);
 				analysisDocument = TypeSystemService.GetDocumentId (this.Project, this.FileName);
 				if (analysisDocument != null) {
