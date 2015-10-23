@@ -21,6 +21,7 @@ FSHARP_BIN=../../external/fsharpbinding/bin/mac-linux/Release
 else
 FSHARP_BIN=../../external/fsharpbinding/bin/mac-linux/Debug
 endif
+MONOSTUB_EXTRA_SOURCES = monostub-utils.h
 
 all: monostub monostub-test
 
@@ -31,12 +32,12 @@ dmg: render.exe app
 	./make-dmg-bundle.sh
 
 monostub: monostub.m $(MONOSTUB_EXTRA_SOURCES)
-	gcc -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ $^ -framework AppKit
-#	gcc -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ $^ -framework AppKit -isysroot $(SDK_PATH)
+	gcc -g -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.m -framework AppKit
+#	gcc -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.m -framework AppKit -isysroot $(SDK_PATH)
 	cp monostub ../bin/MonoDevelop
 
 monostub-test: monostub-test.m $(MONOSTUB_EXTRA_SOURCES)
-	gcc -g -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ $^ -framework AppKit
+	gcc -g -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub-test.m -framework AppKit
 	./monostub-test
 
 clean-local:
