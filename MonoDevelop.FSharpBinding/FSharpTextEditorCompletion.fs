@@ -84,6 +84,17 @@ type Category(text, s:FSharpSymbol) =
 type FSharpParameterHintingData (symbol:FSharpSymbolUse) =
   inherit ParameterHintingData (null)
 
+  let getTooltipInformation symbol paramIndex = 
+    async {
+      match symbol with
+      | MemberFunctionOrValue _f -> 
+        let tooltipInfo = SymbolTooltips.getParameterTooltipInformation symbol paramIndex
+        return tooltipInfo
+      | symbol ->
+        LoggingService.LogDebug(sprintf "FSharpParameterHintingData - CreateTooltipInformation could not create tooltip for %A" symbol.Symbol)
+        return null }
+
+
   override x.ParameterCount =
     match symbol.Symbol with
     | :? FSharpMemberOrFunctionOrValue as fsm ->
@@ -112,12 +123,7 @@ type FSharpParameterHintingData (symbol:FSharpSymbolUse) =
 
   /// Returns the markup to use to represent the method overload in the parameter information window.
   override x.CreateTooltipInformation (_editor, _context, paramIndex:int, _smartWrap:bool, cancel) =
-    Async.StartAsTask(
-      async {
-        match symbol with
-        | MemberFunctionOrValue f -> 
-          let tooltipInfo = SymbolTooltips.getParameterTooltipInformation symbol paramIndex
-          return tooltipInfo }, cancellationToken = cancel)
+    Async.StartAsTask(getTooltipInformation symbol paramIndex, cancellationToken = cancel)
 
 
 /// Implements text editor extension for MonoDevelop that shows F# completion    
