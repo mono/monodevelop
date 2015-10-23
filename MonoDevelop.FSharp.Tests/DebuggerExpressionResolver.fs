@@ -20,12 +20,20 @@ type TestOne() =
   member val PropertyOne = "42" with get, set
   member x.FunctionOne(parameter) = ()
 
-let localOne = TestOne()
-let localTwo = localOne.PropertyOne"""
+let local§One = TestOne()
+let local§Two = localOne.Prope§rtyOne
+let localThree = local§One.PropertyOne
+let localFour = localOne.Property§One"""
 
-    let getBasicOffset expr =
+    let getOffset expr =
         let startOffset = content.IndexOf (expr, StringComparison.Ordinal)
-        let offset = startOffset + (expr.Length / 2)
+        let previousMarkers =
+          content
+          |> String.toArray
+          |> Array.findIndices((=) '§')
+          |> Array.filter(fun i -> i < startOffset-1)
+          |> Array.length
+        let offset = content.IndexOf('§',startOffset) - previousMarkers
         offset
 
     let resolveExpression (doc:Document, content:string, offset:int) =
@@ -35,16 +43,19 @@ let localTwo = localOne.PropertyOne"""
         |> Async.RunSynchronously
 
     [<Test>]
-    [<TestCase("localOne")>]
-    [<TestCase("localTwo")>]
-    member x.TestBasicLocalVariable(localVariable) =
-        let basicOffset = getBasicOffset (localVariable)
-        let doc, _viewContent = TestHelpers.createDoc content [] ""
+    [<TestCase("local§One","localOne")>]
+    [<TestCase("local§Two", "localTwo")>]
+    [<TestCase("localOne.Prope§rtyOne", "localOne.PropertyOne")>]
+    [<TestCase("local§One.PropertyOne", "localOne")>]
+    [<TestCase("localOne.Property§One", "localOne.PropertyOne")>]
+    member x.TestBasicLocalVariable(localVariable, expected) =
+        let basicOffset = getOffset (localVariable)
+        let doc, _viewContent = TestHelpers.createDoc (content.Replace("§" ,"")) [] ""
 
         let loc = doc.Editor.OffsetToLocation basicOffset
         let lineTxt = doc.Editor.GetLineText(loc.Line, false)
         let markedLine = (String.replicate loc.Column " " + "^" )
-        printfn "%s\n%s" lineTxt markedLine
+        System.Console.WriteLine(sprintf "%s\n%s" lineTxt markedLine)
 
         let debugDataTipInfo = resolveExpression (doc, content, basicOffset)
-        debugDataTipInfo.Text |> should equal localVariable
+        debugDataTipInfo.Text |> should equal expected
