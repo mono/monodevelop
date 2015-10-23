@@ -69,7 +69,7 @@ namespace MonoDevelop.PackageManagement
 				LineBorderColor = Xwt.Drawing.Color.FromBytes (89, 89, 89);
 				BackgroundColor = MonoDevelop.Ide.Gui.Styles.BaseBackgroundColor.ToXwtColor ();
 				PackageInfoBackgroundColor = Xwt.Drawing.Color.FromBytes (105, 105, 105);
-				CellBackgroundColor = MonoDevelop.Ide.Gui.Styles.BaseBackgroundColor.ToXwtColor();
+				CellBackgroundColor = MonoDevelop.Ide.Gui.Styles.BackgroundColor.ToXwtColor();
 				CellSelectionColor = Xwt.Drawing.Color.FromBytes (90, 90, 90);
 				CellStrongSelectionColor = Xwt.Drawing.Color.FromBytes (49, 119, 216);
 				CellTextSelectionColor = Xwt.Drawing.Colors.White;
