@@ -14,16 +14,19 @@ open MonoDevelop.Debugger
 type DebuggerExpressionResolver() =
     inherit TestBase()
 
-    let content = """type TestOne() =
-    member val PropertyOne = "42" with get, set
-    member x.FunctionOne(parameter) = ()
+    let content =
+      """
+type TestOne() =
+  member val PropertyOne = "42" with get, set
+  member x.FunctionOne(parameter) = ()
 
 let localOne = TestOne()
 let localTwo = localOne.PropertyOne"""
 
     let getBasicOffset expr =
         let startOffset = content.IndexOf (expr, StringComparison.Ordinal)
-        startOffset + (expr.Length / 2)
+        let offset = startOffset + (expr.Length / 2)
+        offset
 
     let resolveExpression (doc:Document, content:string, offset:int) =
         let resolvers = doc.GetContents<FSharpTextEditorCompletion> () |> Seq.toArray
@@ -37,5 +40,11 @@ let localTwo = localOne.PropertyOne"""
     member x.TestBasicLocalVariable(localVariable) =
         let basicOffset = getBasicOffset (localVariable)
         let doc, _viewContent = TestHelpers.createDoc content [] ""
+
+        let loc = doc.Editor.OffsetToLocation basicOffset
+        let lineTxt = doc.Editor.GetLineText(loc.Line, false)
+        let markedLine = (String.replicate loc.Column " " + "^" )
+        printfn "%s\n%s" lineTxt markedLine
+
         let debugDataTipInfo = resolveExpression (doc, content, basicOffset)
         debugDataTipInfo.Text |> should equal localVariable
