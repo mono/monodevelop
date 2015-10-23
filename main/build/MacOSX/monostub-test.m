@@ -195,16 +195,20 @@ void test_update_environment(void)
 	const char *gac_components[] = {
 		"./Resources",
 	};
+	const char *safe_components[] = {
+		"yes",
+	};
 
 	// Check that we only get updates one time, that's how monostub works.
-	check_bool_equal(TRUE, update_environment("."));
-	check_bool_equal(FALSE, update_environment("."));
+	check_bool_equal(TRUE, update_environment(".", true));
+	check_bool_equal(FALSE, update_environment(".", true));
 
 
 	check_path_has_components(getenv("DYLD_FALLBACK_LIBRARY_PATH"), dyld_components, sizeof(dyld_components) / sizeof(char *));
 	check_path_has_components(getenv("PATH"), path_components, sizeof(path_components) / sizeof(char *));
 	check_path_has_components(getenv("PKG_CONFIG_PATH"), pkg_components, sizeof(pkg_components) / sizeof(char *));
 	check_path_has_components(getenv("MONO_GAC_PREFIX"), gac_components, sizeof(gac_components) / sizeof(char *));
+	check_path_has_components(getenv("MONODEVELOP_64BIT_SAFE"), safe_components, sizeof(safe_components) / sizeof (char *));
 }
 
 void (*tests[])(void) = {

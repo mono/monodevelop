@@ -172,7 +172,7 @@ push_env_to_end (const char *variable, const char *value)
 }
 
 static bool
-update_environment (const char *contentsDir)
+update_environment (const char *contentsDir, bool need64Bit)
 {
 	bool updated = NO;
 	char *value;
@@ -224,6 +224,12 @@ update_environment (const char *contentsDir)
 
 	if (push_env_to_start ("PATH", "/Library/Frameworks/Mono.framework/Commands"))
 		updated = YES;
+
+	if (need64Bit) {
+		if (push_env_to_start ("MONODEVELOP_64BIT_SAFE", "yes")) {
+			updated = YES;
+		}
+	}
 
 	return updated;
 }
