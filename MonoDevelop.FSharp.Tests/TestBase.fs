@@ -82,7 +82,6 @@ module AssemblyLocation =
         else File(input)
 
 type Util = 
-    
     static member TestsRootDir =
         let rootDir = Path.GetDirectoryName (typeof<Util>.Assembly.Location) ++ ".." ++ ".." ++ "tests"
         Path.GetFullPath (rootDir)
@@ -106,16 +105,15 @@ type TestBase() =
                     if  Directory.Exists (rootDir) then
                         Directory.Delete (rootDir, true)
                         x.InternalSetup (rootDir)
-                with
-                | exn -> printfn "%A" exn
-
+                with exn -> printfn "%A" exn
 
     member x.InternalSetup (rootDir) =
 
         // Set a synchronization context for the main gtk thread
-        SynchronizationContext.SetSynchronizationContext (new GtkSynchronizationContext ())
-        Runtime.MainSynchronizationContext <- SynchronizationContext.Current
-
+        try
+          SynchronizationContext.SetSynchronizationContext (new GtkSynchronizationContext ())
+          Runtime.MainSynchronizationContext <- SynchronizationContext.Current
+        with _ -> ()
         Environment.SetEnvironmentVariable ("MONO_ADDINS_REGISTRY", rootDir)
         Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", rootDir)
         Environment.SetEnvironmentVariable ("MONODEVELOP_CONSOLE_LOG_LEVEL", "Debug")
@@ -124,13 +122,7 @@ type TestBase() =
         Runtime.Initialize (true)
         Xwt.Application.Initialize ()
         Gtk.Application.Init ()
-
-        MonoDevelop.Ide.TypeSystem.TypeSystemService.TrackFileChanges <- true
+        LoggingService.Initialize(true)
+        TypeSystem.TypeSystemService.TrackFileChanges <- true
         DesktopService.Initialize ()
         Services.ProjectService.DefaultTargetFramework <- Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_4_5)
-
-         //Util.ClearTmpDir ()
-        let logger = new ConsoleLogger()
-        logger.EnabledLevel <- EnabledLoggingLevel.All
-        MonoDevelop.Core.LoggingService.AddLogger(logger)
-        

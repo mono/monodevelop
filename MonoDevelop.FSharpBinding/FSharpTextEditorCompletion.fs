@@ -548,20 +548,23 @@ type FSharpTextEditorCompletion() =
                   match symbolUse with
                   | SymbolUse.ActivePatternCase apc ->
                       Some (apc.DeclarationLocation, apc.DisplayName)
-                  | SymbolUse.Entity ent ->
-                      Some (ent.DeclarationLocation, ent.DisplayName)
+                  | SymbolUse.Entity _ent -> None
                   | SymbolUse.Field field ->
                       Some (field.DeclarationLocation, field.DisplayName)
-                  | SymbolUse.GenericParameter _gp -> None
+                  | SymbolUse.GenericParameter gp ->
+                      Some (gp.DeclarationLocation, gp.DisplayName)
                   //| CorePatterns.MemberFunctionOrValue
-                  | SymbolUse.Parameter _p -> None
-                  | SymbolUse.StaticParameter _sp -> None
+                  | SymbolUse.Parameter p ->
+                      Some (p.DeclarationLocation, p.DisplayName)
+                  | SymbolUse.StaticParameter sp ->
+                      Some (sp.DeclarationLocation, sp.DisplayName)
                   | SymbolUse.UnionCase _uc -> None
                   | SymbolUse.Class _c -> None
                   | SymbolUse.ClosureOrNestedFunction _cl -> None
                   | SymbolUse.Constructor _ctor -> None
                   | SymbolUse.Delegate _del -> None
-                  | SymbolUse.Enum _enum -> None
+                  | SymbolUse.Enum enum -> 
+                      Some (enum.DeclarationLocation, enum.DisplayName)
                   | SymbolUse.Event _ev -> None
                   | SymbolUse.Function _f -> None
                   | SymbolUse.Interface _i -> None
@@ -571,7 +574,7 @@ type FSharpTextEditorCompletion() =
                   | SymbolUse.Pattern _p -> None
                   | SymbolUse.Property _pr ->
                       let loc = symbolUse.RangeAlternate
-                      Some (loc, lineTxt.[loc.StartColumn..loc.EndColumn])
+                      Some (loc, lineTxt.Substring(loc.StartColumn, loc.EndColumn-loc.StartColumn))
                   | SymbolUse.Record r ->
                       let loc = r.DeclarationLocation
                       Some (loc, r.DisplayName)
