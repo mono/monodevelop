@@ -1429,11 +1429,8 @@ namespace Mono.TextEditor
 		{
 			isMouseTrapped = false;
 			if (tipWindow != null && currentTooltipProvider != null) {
-				if (!currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow)) {
+				if (!currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
 					DelayedHideTooltip ();
-				} else {
-					HideTooltip ();
-				}
 			} else {
 				HideTooltip ();
 			}
