@@ -344,7 +344,7 @@ namespace MonoDevelop.Ide
 
 		void SetupTheme ()
 		{
-			Xwt.Drawing.Context.RegisterStyles ("dark", "sel");
+			Xwt.Drawing.Context.RegisterStyles ("dark", "sel", "disabled");
 			UpdateTheme ();
 		}
 

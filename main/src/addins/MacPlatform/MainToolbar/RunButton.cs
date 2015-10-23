@@ -35,26 +35,46 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	[Register]
 	class RunButton : NSButton
 	{
+		NSImage stopIcon, continueIcon, buildIcon;
+		NSImage stopIconDisabled, continueIconDisabled, buildIconDisabled;
+
 		public RunButton ()
 		{
+			stopIcon = ImageService.GetIcon ("stop").ToNSImage ();
+			continueIcon = ImageService.GetIcon ("continue").ToNSImage ();
+			buildIcon = ImageService.GetIcon ("build").ToNSImage ();
+			stopIconDisabled = ImageService.GetIcon ("stop").WithStyles("disabled").ToNSImage ();
+			continueIconDisabled = ImageService.GetIcon ("continue").WithStyles("disabled").ToNSImage ();
+			buildIconDisabled = ImageService.GetIcon ("build").WithStyles("disabled").ToNSImage ();
+
 			icon = OperationIcon.Run;
-			Image = GetIcon ();
 			ImagePosition = NSCellImagePosition.ImageOnly;
 			BezelStyle = NSBezelStyle.TexturedRounded;
 			Enabled = false;
+			Cell.ImageDimsWhenDisabled = false;
 		}
 
 		NSImage GetIcon ()
 		{
 			switch (icon) {
 			case OperationIcon.Stop:
-				return ImageService.GetIcon ("stop").ToNSImage ();
+				return Enabled ? stopIcon : stopIconDisabled;
 			case OperationIcon.Run:
-				return ImageService.GetIcon ("continue").ToNSImage ();
+				return Enabled ? continueIcon : continueIconDisabled;
 			case OperationIcon.Build:
-				return ImageService.GetIcon ("build").ToNSImage ();
+				return Enabled ? buildIcon : buildIconDisabled;
 			}
 			throw new InvalidOperationException ();
+		}
+
+		public override bool Enabled {
+			get {
+				return base.Enabled;
+			}
+			set {
+				base.Enabled = value;
+				Image = GetIcon ();
+			}
 		}
 
 		OperationIcon icon;
