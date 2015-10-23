@@ -727,7 +727,8 @@ namespace MonoDevelop.Ide.Gui
 					Project = project,
 					Content = currentParseText,
 					FileName = currentParseFile,
-					OldParsedDocument = parsedDocument
+					OldParsedDocument = parsedDocument,
+					RoslynDocument = AnalysisDocument
 				};
 
 				if (project != null && TypeSystemService.CanParseProjections (project, Editor.MimeType, FileName)) {
@@ -859,7 +860,8 @@ namespace MonoDevelop.Ide.Gui
 						Project = project,
 						Content = currentParseText,
 						FileName = currentParseFile,
-						OldParsedDocument = parsedDocument
+						OldParsedDocument = parsedDocument,
+						RoslynDocument = AnalysisDocument
 					};
 					if (projectFile != null)
 						options.BuildAction = projectFile.BuildAction;
