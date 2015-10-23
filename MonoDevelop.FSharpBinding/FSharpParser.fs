@@ -61,19 +61,23 @@ type FSharpParser() =
 
             let curVersion = parseOptions.Content.Version
             let isObsolete =
-                SourceCodeServices.IsResultObsolete(fun () -> 
-                let doc = IdeApp.Workbench.GetDocument(parseOptions.FileName)
-                let newVersion = doc.Editor.Version
-                if cancellationToken.IsCancellationRequested
-                then
-                  LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled by cancellationToken", shortFilename)
-                  true
-                elif newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
-                then
-                  false
-                else
-                  LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled", shortFilename)
-                  true ) 
+                SourceCodeServices.IsResultObsolete(fun () ->
+                try
+                  let doc = IdeApp.Workbench.GetDocument(parseOptions.FileName)
+                  let newVersion = doc.Editor.Version
+                  if cancellationToken.IsCancellationRequested
+                  then
+                    LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled by cancellationToken", shortFilename)
+                    true
+                  elif newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
+                  then
+                    false
+                  else
+                    LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled", shortFilename)
+                    true
+                with ex ->
+                  LoggingService.LogDebug ("FSharpParser: Parse {0} unable to determine cancellation", shortFilename, ex)
+                  false ) 
 
             let doc = new FSharpParsedDocument(fileName, Flags = ParsedDocumentFlags.NonSerializable)
                                    
