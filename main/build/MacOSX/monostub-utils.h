@@ -113,7 +113,7 @@ env2bool (const char *env, bool defaultValue)
 }
 
 static bool
-push_env (const char *variable, const char *value)
+push_env (const char *variable, const char *value, BOOL push_to_end)
 {
 	const char *current;
 	size_t len;
@@ -137,10 +137,17 @@ push_env (const char *variable, const char *value)
 
 		if (!(buf = malloc (len + strlen (current) + 2)))
 			return NO;
-		
-		memcpy (buf, value, len);
-		buf[len] = ':';
-		strcpy (buf + len + 1, current);
+
+		if (push_to_end) {
+			size_t current_length = strlen (current);
+			memcpy (buf, current, current_length);
+			buf[current_length] = ':';
+			strcpy (buf + current_length + 1, value);
+		} else {
+			memcpy (buf, value, len);
+			buf[len] = ':';
+			strcpy (buf + len + 1, current);
+		}
 		setenv (variable, buf, 1);
 		free (buf);
 done:
@@ -149,10 +156,19 @@ done:
 		setenv (variable, value, 1);
 	}
 
-	//if (updated)
-	//	printf ("Updated the %s environment variable with '%s'.\n", variable, value);
-
 	return updated;
+}
+
+static bool
+push_env_to_start (const char *variable, const char *value)
+{
+	return push_env (variable, value, NO);
+}
+
+static bool
+push_env_to_end (const char *variable, const char *value)
+{
+	return push_env (variable, value, YES);
 }
 
 static bool
@@ -165,33 +181,33 @@ update_environment (const char *contentsDir)
 		char *token;
 
 		while ((token = strsep(&value, ":"))) {
-			if (push_env ("DYLD_FALLBACK_LIBRARY_PATH", token))
+			if (push_env_to_end ("DYLD_FALLBACK_LIBRARY_PATH", token))
 				updated = YES;
 		}
 
 		free (value);
 	}
 	
-	if (push_env ("PKG_CONFIG_PATH", "/Library/Frameworks/Mono.framework/External/pkgconfig"))
+	if (push_env_to_start ("PKG_CONFIG_PATH", "/Library/Frameworks/Mono.framework/External/pkgconfig"))
 		updated = YES;
 
 	/* Enable the use of stuff bundled into the app bundle and the Mono "External" directory */
 	if ((value = str_append (contentsDir, "/Resources/lib/pkgconfig"))) {
-		if (push_env ("PKG_CONFIG_PATH", value))
+		if (push_env_to_start ("PKG_CONFIG_PATH", value))
 			updated = YES;
 
 		free (value);
 	}
 
 	if ((value = str_append (contentsDir, "/Resources"))) {
-		if (push_env ("MONO_GAC_PREFIX", value))
+		if (push_env_to_start ("MONO_GAC_PREFIX", value))
 			updated = YES;
 		
 		free (value);
 	}
 	
 	if ((value = str_append (contentsDir, "/MacOS"))) {
-		if (push_env ("PATH", value))
+		if (push_env_to_start ("PATH", value))
 			updated = YES;
 
 		free (value);
@@ -200,13 +216,13 @@ update_environment (const char *contentsDir)
 	// Note: older versions of Xamarin Studio incorrectly set the PATH to the Resources dir instead of the MacOS dir
 	// and older versions of mtouch relied on this broken behavior.
 	if ((value = str_append (contentsDir, "/Resources"))) {
-		if (push_env ("PATH", value))
+		if (push_env_to_start ("PATH", value))
 			updated = YES;
 
 		free (value);
 	}
 
-	if (push_env ("PATH", "/Library/Frameworks/Mono.framework/Commands"))
+	if (push_env_to_start ("PATH", "/Library/Frameworks/Mono.framework/Commands"))
 		updated = YES;
 
 	return updated;
