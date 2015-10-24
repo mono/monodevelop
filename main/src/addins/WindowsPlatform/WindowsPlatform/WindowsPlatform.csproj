@@ -96,6 +96,7 @@
     <Compile Include="Dialogs\OpenFileDialogHandler.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="GdkWin32.cs" />
+    <Compile Include="MainToolbar\ComboMenu.cs" />
     <Compile Include="MainToolbar\IconButton.xaml.cs">
       <DependentUpon>IconButton.xaml</DependentUpon>
     </Compile>

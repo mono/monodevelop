@@ -27,32 +27,24 @@ namespace WindowsPlatform.MainToolbar
 		WPFToolbar (ToolBar toolbar) : base (toolbar)
 		{
 			this.toolbar = toolbar;
-			
-			toolbar.ConfigurationCombo.DataContext = this;
 
-			toolbar.ConfigurationCombo.SelectionChanged += (o, e) => {
-				if (e.AddedItems.Count == 0)
+			toolbar.ConfigurationMenu.SelectionChanged += (o, e) => {
+				var comboMenu = (ComboMenu<IConfigurationModel>)o;
+				var newModel = e.Added;
+				if (newModel == null)
 					return;
 
-				var newModel = (IConfigurationModel)e.AddedItems[0];
+				if (ConfigurationChanged != null)
+					ConfigurationChanged (o, e);
+
+				ActiveConfiguration = newModel;
+			};
+
+			toolbar.RuntimeMenu.SelectionChanged += (o, e) => {
+				var newModel = e.Added;
 				if (newModel == null)
 					return;
 				
-				ActiveConfiguration = newModel;
-				if (ConfigurationChanged != null)
-					ConfigurationChanged (o, e);
-			};
-
-			toolbar.RuntimeCombo.DataContext = this;
-			toolbar.RuntimeCombo.SelectionChanged += (o, e) => {
-				if (e.AddedItems.Count == 0)
-					return;
-
-				var selected = (RuntimeMenuItem)e.AddedItems[0];
-				if (selected == null || selected.Model == null)
-					return;
-
-				IRuntimeModel newModel = selected.Model;
 				using (var mutableModel = newModel.GetMutableModel ()) {
 					ActiveRuntime = newModel;
 					var ea = new MonoDevelop.Components.MainToolbar.HandledEventArgs ();
@@ -60,13 +52,8 @@ namespace WindowsPlatform.MainToolbar
 						RuntimeChanged (o, ea);
 
 					if (ea.Handled)
-						ActiveRuntime = ((RuntimeMenuItem)e.RemovedItems[0]).Model;
+						ActiveRuntime = e.Removed;
 				}
-			};
-			
-			toolbar.RuntimeCombo.DropDownOpened += (o, e) => {
-				foreach (var item in toolbar.RuntimeCombo.Items.OfType<RuntimeMenuItem> ())
-					item.Update ();
 			};
 
 			toolbar.RunButton.Click += (o, e) => {
@@ -105,33 +92,13 @@ namespace WindowsPlatform.MainToolbar
 		}
 		
 		public IConfigurationModel ActiveConfiguration {
-			get { return (IConfigurationModel)toolbar.ConfigurationCombo.SelectedItem; }
-			set {
-				toolbar.ConfigurationCombo.SelectedItem = toolbar.ConfigurationCombo.Items
-					.Cast<IConfigurationModel>()
-					.FirstOrDefault (it => it.OriginalId == value.OriginalId);
-				RaisePropertyChanged ();
-			}
+			get { return toolbar.ConfigurationMenu.Active; }
+			set { toolbar.ConfigurationMenu.Active = value; }
 		}
 		
 		public IRuntimeModel ActiveRuntime {
-			get	{ return ((RuntimeMenuItem)toolbar.RuntimeCombo.SelectedItem).Model; }
-			set	{
-				toolbar.RuntimeCombo.SelectedItem = toolbar.RuntimeCombo.Items
-					.OfType<RuntimeMenuItem> ()
-					.FirstOrDefault (it => it.Model == value);
-
-				var item = (RuntimeMenuItem)toolbar.RuntimeCombo.SelectedItem;
-				item.Margin = new System.Windows.Thickness (0, 0, 0, 0);
-				item.FontWeight = System.Windows.FontWeights.Normal;
-
-				if (item != null)
-					using (var mutableModel = item.Model.GetMutableModel ()) {
-						item.Header = mutableModel.FullDisplayString;
-					}
-
-				RaisePropertyChanged ();
-			}
+			get	{ return toolbar.RuntimeMenu.Active; }
+			set	{ toolbar.RuntimeMenu.Active = value; }
 		}
 
 		public bool ButtonBarSensitivity {
@@ -139,24 +106,17 @@ namespace WindowsPlatform.MainToolbar
 		}
 
 		public IEnumerable<IConfigurationModel> ConfigurationModel {
-			get	{ return (IEnumerable<IConfigurationModel>)toolbar.ConfigurationCombo.ItemsSource; }
-			set	{
-				int count = value.Count ();
-				toolbar.ConfigurationCombo.IsEditable = count == 0;
-				toolbar.ConfigurationCombo.IsEnabled = toolbar.ConfigurationCombo.Focusable = toolbar.ConfigurationCombo.IsHitTestVisible = count > 1;
-				toolbar.ConfigurationCombo.ItemsSource = value;
-				if (count == 0)
-					toolbar.ConfigurationCombo.Text = "Default";
-			}
+			get	{ return toolbar.ConfigurationMenu.Model; }
+			set { toolbar.ConfigurationMenu.Model = value; }
 		}
 		
 		public bool ConfigurationPlatformSensitivity {
-			get { return toolbar.ConfigurationCombo.IsEnabled; }
-			set { toolbar.ConfigurationCombo.IsEnabled = toolbar.RuntimeCombo.IsEnabled = value; }
+			get { return toolbar.ConfigurationMenu.IsEnabled; }
+			set { toolbar.ConfigurationMenu.IsEnabled = toolbar.RuntimeMenu.IsEnabled = value; }
 		}
 
 		public bool PlatformSensitivity {
-			set	{ toolbar.RuntimeCombo.IsEnabled = value; }
+			set	{ toolbar.RuntimeMenu.IsEnabled = value; }
 		}
 
 		public Gtk.Widget PopupAnchor {
@@ -173,40 +133,10 @@ namespace WindowsPlatform.MainToolbar
 			get { return toolbar.RunButton.IsEnabled; }
 			set { toolbar.RunButton.IsEnabled = value; }
 		}
-
-		IEnumerable<IRuntimeModel> runtimeModel;
+		
 		public IEnumerable<IRuntimeModel> RuntimeModel {
-			get { return runtimeModel; }
-			set {
-				runtimeModel = value;
-				var source = new List<Control> ();
-				FillSource (source, value);
-
-				int count = source.Count;
-				toolbar.RuntimeCombo.IsEditable = count == 0;
-				toolbar.RuntimeCombo.IsEnabled = toolbar.RuntimeCombo.Focusable = toolbar.RuntimeCombo.IsHitTestVisible = count > 1;
-				toolbar.RuntimeCombo.ItemsSource = source;
-				if (count == 0)
-					toolbar.RuntimeCombo.Text = "Default";
-			}
-		}
-
-		void FillSource (List<Control> source, IEnumerable<IRuntimeModel> model)
-		{
-			foreach (var item in model) {
-				if (item.HasParent)
-					continue;
-
-				if (item.IsSeparator)
-					source.Add (new System.Windows.Controls.Separator ());
-				else {
-					var menuItem = new RuntimeMenuItem (item);
-					foreach (var child in item.Children)
-						menuItem.Items.Add (new RuntimeMenuItem (item));
-
-					source.Add (menuItem);
-				}
-			}
+			get { return toolbar.RuntimeMenu.Model; }
+			set { toolbar.RuntimeMenu.Model = value; }
 		}
 
 		public string SearchCategory {
@@ -277,7 +207,7 @@ namespace WindowsPlatform.MainToolbar
 					toolbar.ButtonBarPanel.Children.Add (new System.Windows.Controls.Separator {
 						Style = sepStyle,
 						MinWidth = 2,
-						Margin = new System.Windows.Thickness{
+						Margin = new System.Windows.Thickness {
 							Left = 3,
 							Right = 3,
 						},
@@ -309,29 +239,4 @@ namespace WindowsPlatform.MainToolbar
 			throw new NotImplementedException ();
 		}
     }
-
-	class RuntimeMenuItem : System.Windows.Controls.MenuItem
-	{
-		public IRuntimeModel Model { get; private set; }
-		public RuntimeMenuItem (IRuntimeModel model)
-		{
-			Model = model;
-
-			Margin = new System.Windows.Thickness (model.IsIndented ? 15 : 0, 0, 0, 0);
-			if (model.Notable)
-				FontWeight = System.Windows.FontWeights.Bold;
-		}
-
-		public void Update ()
-		{
-			using (var mutableModel = Model.GetMutableModel ()) {
-				Header = mutableModel.DisplayString;
-				IsEnabled = mutableModel.Enabled;
-				Visibility = mutableModel.Visible ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
-			}
-
-			foreach (var item in Items.OfType<RuntimeMenuItem> ())
-				item.Update ();
-		}
-	}
 }

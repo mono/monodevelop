@@ -19,30 +19,16 @@
         </Grid.RowDefinitions>
 
         <StackPanel x:Name="LeftPanel" Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Height="Auto">
-            <local:RunButtonControl x:Name="RunButton" VerticalContentAlignment="Center"/>
-            <ComboBox x:Name="ConfigurationCombo"  VerticalContentAlignment="Center"
-                      SelectedValuePath="OriginalId"
-                      DisplayMemberPath="DisplayString"
-                      IsEnabled="{Binding ActiveConfiguration, Converter={StaticResource NotNullConverter}}"
-                      Background="Transparent"
-                      BorderBrush="Transparent">
-                <ComboBox.ItemContainerStyle>
-                    <Style TargetType="ComboBoxItem">
-                        <Setter Property="Background" Value="Transparent"/>
-                        <Setter Property="BorderBrush" Value="Transparent"/>
-                    </Style>
-                </ComboBox.ItemContainerStyle>
-            </ComboBox>
-            <ComboBox x:Name="RuntimeCombo" VerticalContentAlignment="Center"
-                      IsEnabled="{Binding ActiveRuntime, Converter={StaticResource NotNullConverter}}"
-                      Background="Transparent"/>
+            <local:RunButtonControl x:Name="RunButton" VerticalContentAlignment="Center" VerticalAlignment="Center"/>
+            <local:ConfigurationComboMenu x:Name="ConfigurationMenu" VerticalContentAlignment="Center" Background="Transparent" VerticalAlignment="Center" />
+            <local:RuntimeComboMenu x:Name="RuntimeMenu" VerticalContentAlignment="Center" Background="Transparent" VerticalAlignment="Center" />
             <StackPanel x:Name="ButtonBarPanel" Orientation="Horizontal" />
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Height="Auto">
-            <local:StatusBarControl x:Name="StatusBar" VerticalContentAlignment="Center"/>
+            <local:StatusBarControl x:Name="StatusBar" VerticalContentAlignment="Center" VerticalAlignment="Center"/>
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Height="Auto">
-            <local:SearchBarControl x:Name="SearchBar" VerticalContentAlignment="Center"/>
+            <local:SearchBarControl x:Name="SearchBar" VerticalContentAlignment="Center" VerticalAlignment="Center"/>
         </StackPanel>
     </Grid>
 </UserControl>
