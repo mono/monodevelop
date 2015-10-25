@@ -3798,6 +3798,18 @@
     <EmbeddedResource Include="icons\platform-android-16~dark%402x.png">
       <LogicalName>platform-android-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-android-16~sel.png">
+      <LogicalName>platform-android-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-android-16~sel%402x.png">
+      <LogicalName>platform-android-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-android-16~dark~sel.png">
+      <LogicalName>platform-android-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-android-16~dark~sel%402x.png">
+      <LogicalName>platform-android-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\platform-cross-platform-16.png">
       <LogicalName>platform-cross-platform-16.png</LogicalName>
     </EmbeddedResource>
@@ -3822,6 +3834,18 @@
     <EmbeddedResource Include="icons\platform-ios-16~dark%402x.png">
       <LogicalName>platform-ios-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-ios-16~sel.png">
+      <LogicalName>platform-ios-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-ios-16~sel%402x.png">
+      <LogicalName>platform-ios-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-ios-16~dark~sel.png">
+      <LogicalName>platform-ios-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-ios-16~dark~sel%402x.png">
+      <LogicalName>platform-ios-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\platform-mac-16.png">
       <LogicalName>platform-mac-16.png</LogicalName>
     </EmbeddedResource>
@@ -3834,6 +3858,18 @@
     <EmbeddedResource Include="icons\platform-mac-16~dark%402x.png">
       <LogicalName>platform-mac-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-mac-16~sel.png">
+      <LogicalName>platform-mac-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-mac-16~sel%402x.png">
+      <LogicalName>platform-mac-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-mac-16~dark~sel.png">
+      <LogicalName>platform-mac-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-mac-16~dark~sel%402x.png">
+      <LogicalName>platform-mac-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\platform-other-16.png">
       <LogicalName>platform-other-16.png</LogicalName>
     </EmbeddedResource>
@@ -3845,6 +3881,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\platform-other-16~dark%402x.png">
       <LogicalName>platform-other-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-other-16~sel.png">
+      <LogicalName>platform-other-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-other-16~sel%402x.png">
+      <LogicalName>platform-other-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-other-16~dark~sel.png">
+      <LogicalName>platform-other-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-other-16~dark~sel%402x.png">
+      <LogicalName>platform-other-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="templates\images\generic-project.png">
       <LogicalName>generic-project.png</LogicalName>
