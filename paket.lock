@@ -8,6 +8,6 @@ NUGET
       FSharp.Compiler.Service (>= 1.4.0.5)
     FSharp.Compiler.CodeDom (0.9.2) - framework: >= net40
     FSharp.Compiler.Service (1.4.2.1)
+    FsPickler (1.5.2)
     Mono.Cecil (0.9.6.1) - framework: >= net40
-    MsgPack.Cli (0.6.5)
     NUnit (2.6.4) - framework: >= net45
