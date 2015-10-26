@@ -2,7 +2,7 @@
 open Nessos.Argu
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Reflection
-open Nessos.FsPickler
+open Nessos.FsPickler.Json
 
 type Arguments =
   | Project of string
@@ -20,7 +20,7 @@ let main argv =
     let projectFile = results.GetResult(<@ Project @>)
     let checker = FSharpChecker.Create()
     let fsharpProjectOptions = checker.GetProjectOptionsFromProjectFile(projectFile)
-    let pickler = FsPickler.CreateBinarySerializer()
+    let pickler = FsPickler.CreateJsonSerializer()
     let outstream = Console.OpenStandardOutput()
     pickler.Serialize(outstream, fsharpProjectOptions)
     0

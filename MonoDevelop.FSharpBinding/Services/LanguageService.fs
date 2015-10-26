@@ -8,6 +8,7 @@ open ExtCore
 open ExtCore.Control
 open ExtCore.Control.Collections
 open MonoDevelop.Core
+open Nessos.FsPickler.Json
 
 module Symbol =
   /// We always know the text of the identifier that resolved to symbol.
@@ -320,8 +321,8 @@ type LanguageService(dirtyNotify) =
 
             let started = proc.Start()
             let exited = proc.WaitForExit(ServiceSettings.maximumTimeout)
-            let binarySer =  Nessos.FsPickler.FsPickler.CreateBinarySerializer()
-            let optsNew = binarySer.Deserialize<FSharpProjectOptions>(proc.StandardOutput.BaseStream)
+            let serializer =  FsPickler.CreateJsonSerializer()
+            let optsNew = serializer.Deserialize<FSharpProjectOptions>(proc.StandardOutput.BaseStream)
 
             //let opts = checker.GetProjectOptionsFromProjectFile(projFilename, properties)
             projectInfoCache := cache.Add (key, optsNew)
