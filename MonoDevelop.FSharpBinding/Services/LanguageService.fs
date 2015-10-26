@@ -182,6 +182,11 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
       | Some checkResults -> Some(checkResults.GetExtraColorizationsAlternate())
       | None -> None
 
+    member x.GetStringFormatterColours() =
+      match infoOpt with
+      | Some checkResults -> Some(checkResults.GetFormatSpecifierLocations())
+      | None -> None
+
 [<RequireQualifiedAccess>]
 type AllowStaleResults = 
   // Allow checker results where the source doesn't even match
