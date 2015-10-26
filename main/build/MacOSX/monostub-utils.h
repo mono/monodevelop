@@ -122,8 +122,10 @@ push_env (const char *variable, const char *value, BOOL push_to_end)
 	
 	if ((current = getenv (variable)) && *current) {
 		char *token, *copy, *tofree;
+		size_t current_length;
 
 		tofree = copy = strdup (current);
+		current_length = strlen (current);
 		len = strlen (value);
 		while ((token = strsep(&copy, ":"))) {
 			if (!strncmp (token, value, len)) {
@@ -135,11 +137,10 @@ push_env (const char *variable, const char *value, BOOL push_to_end)
 			}
 		}
 
-		if (!(buf = malloc (len + strlen (current) + 2)))
+		if (!(buf = malloc (len + current_length + 2)))
 			return NO;
 
 		if (push_to_end) {
-			size_t current_length = strlen (current);
 			memcpy (buf, current, current_length);
 			buf[current_length] = ':';
 			strcpy (buf + current_length + 1, value);
