@@ -487,7 +487,6 @@ type FSharpTextEditorCompletion() =
 //    result
 
   // Run completion automatically when the user hits '.'
-  // (this means that completion currently also works in comments and strings...)
   override x.HandleCodeCompletionAsync(context, completionChar, token) =
     if completionChar <> '.' then null else
     let computation = 
