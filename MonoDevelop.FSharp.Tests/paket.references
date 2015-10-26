@@ -2,4 +2,4 @@ ExtCore
 FSharp.Compiler.Service
 Mono.Cecil
 NUnit
-FSPickler
+MsgPack.Cli
