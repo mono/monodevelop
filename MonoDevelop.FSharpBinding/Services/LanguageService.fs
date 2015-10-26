@@ -309,7 +309,7 @@ type LanguageService(dirtyNotify) =
             if Environment.runningOnMono then Environment.getMonoPath() else filename
           
           let arguments = 
-            if Environment.runningOnMono then sprintf "%s --project %s" filename projFilename
+            if Environment.runningOnMono then sprintf "\"%s\" --project %s" filename projFilename
             else sprintf "--project %s" projFilename
           try
             use proc =
