@@ -60,6 +60,7 @@ namespace MonoDevelop.Debugger
 		CheckBox checkGroupPrivate;
 		CheckBox checkGroupStatic;
 		SpinButton spinTimeout;
+		CheckBox enableLogging;
 
 		void Build ()
 		{
@@ -79,8 +80,8 @@ namespace MonoDevelop.Debugger
 			PackStart (checkGroupPrivate);
 			checkGroupStatic = new CheckBox (GettextCatalog.GetString ("Group static members"));
 			PackStart (checkGroupStatic);
-			var hbox = new HBox ();
-			hbox.PackStart (new Label (GettextCatalog.GetString ("Evaluation Timeout:")));
+			var evalBox = new HBox ();
+			evalBox.PackStart (new Label (GettextCatalog.GetString ("Evaluation Timeout:")));
 			spinTimeout = new SpinButton ();
 			spinTimeout.ClimbRate = 100;
 			spinTimeout.Digits = 0;
@@ -89,9 +90,14 @@ namespace MonoDevelop.Debugger
 			spinTimeout.MinimumValue = 0;
 			spinTimeout.Wrap = false;
 			spinTimeout.WidthRequest = 80;
-			hbox.PackStart (spinTimeout);
-			hbox.PackStart (new Label (GettextCatalog.GetString ("ms")));
-			PackStart (hbox);
+			evalBox.PackStart (spinTimeout);
+			evalBox.PackStart (new Label (GettextCatalog.GetString ("ms")));
+			PackStart (evalBox);
+			PackStart (new Label () {
+				Markup = "<b>" + GettextCatalog.GetString ("Advanced options") + "</b>"
+			});
+			enableLogging = new CheckBox (GettextCatalog.GetString ("Enable diagnostic logging", BrandingService.ApplicationName));
+			PackStart (enableLogging);
 		}
 
 		public DebuggerOptionsPanelWidget ()
@@ -108,6 +114,7 @@ namespace MonoDevelop.Debugger
 			checkGroupStatic.Active = options.EvaluationOptions.GroupStaticMembers;
 			checkAllowToString.Sensitive = checkAllowEval.Active;
 			spinTimeout.Value = options.EvaluationOptions.EvaluationTimeout;
+			enableLogging.Active = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.DebuggerLogging", false);
 		}
 
 		public void Store ()
@@ -126,6 +133,7 @@ namespace MonoDevelop.Debugger
 			options.EvaluationOptions = ops;
 
 			DebuggingService.SetUserOptions (options);
+			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.DebuggerLogging", enableLogging.Active);
 		}
 
 		protected virtual void OnCheckAllowEvalToggled (object sender, System.EventArgs e)
