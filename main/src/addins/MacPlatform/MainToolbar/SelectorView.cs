@@ -359,6 +359,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					activeConfiguration = value;
 					state |= CellState.ConfigurationShown;
 					UpdatePathText (ConfigurationIdx, value.DisplayString);
+					((SelectorView)Superview).RequestResize ();
 				}
 			}
 
@@ -370,6 +371,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					using (var mutableModel = value.GetMutableModel ()) {
 						state |= CellState.RuntimeShown;
 						UpdatePathText (RuntimeIdx, mutableModel.FullDisplayString);
+						((SelectorView)Superview).RequestResize ();
 					}
 				}
 			}
@@ -383,6 +385,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					if (count == 0) {
 						state |= CellState.ConfigurationShown;
 						UpdatePathText (ConfigurationIdx, ConfigurationPlaceholder);
+						((SelectorView)Superview).RequestResize ();
 					}
 					PathComponentCells [ConfigurationIdx].Enabled = count > 1;
 				}
@@ -397,6 +400,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					if (count == 0) {
 						state |= CellState.RuntimeShown;
 						UpdatePathText (RuntimeIdx, RuntimePlaceholder);
+						((SelectorView)Superview).RequestResize ();
 					}
 					PathComponentCells [RuntimeIdx].Enabled = count > 1;
 				}
