@@ -9,5 +9,9 @@ NUGET
     FSharp.Compiler.CodeDom (0.9.2) - framework: >= net40
     FSharp.Compiler.Service (1.4.2.1)
     FsPickler (1.5.2)
+    FsPickler.Json (1.5.2)
+      FsPickler (1.5.2)
+      Newtonsoft.Json (>= 6.0.5)
     Mono.Cecil (0.9.6.1) - framework: >= net40
+    Newtonsoft.Json (7.0.1)
     NUnit (2.6.4) - framework: >= net45

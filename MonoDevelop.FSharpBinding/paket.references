@@ -3,3 +3,4 @@ Fantomas
 FSharp.Compiler.CodeDom
 Mono.Cecil
 FSPickler
+FSPickler.Json
