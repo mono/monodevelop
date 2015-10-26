@@ -1,10 +1,8 @@
 ﻿open System
-open System.IO
-open System.Collections
 open Nessos.Argu
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Reflection
-open MsgPack.Serialization
+open Nessos.FsPickler
 
 type Arguments =
   | Project of string
@@ -22,9 +20,9 @@ let main argv =
     let projectFile = results.GetResult(<@ Project @>)
     let checker = FSharpChecker.Create()
     let fsharpProjectOptions = checker.GetProjectOptionsFromProjectFile(projectFile)
-    let serializer = SerializationContext.Default.GetSerializer<FSharpProjectOptions>()
+    let pickler = FsPickler.CreateBinarySerializer()
     let outstream = Console.OpenStandardOutput()
-    serializer.Pack(outstream, fsharpProjectOptions)
+    pickler.Serialize(outstream, fsharpProjectOptions)
     0
   with ex ->
     Console.Out.WriteLine(ex)
