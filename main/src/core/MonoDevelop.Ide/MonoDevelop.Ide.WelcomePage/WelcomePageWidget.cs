@@ -181,7 +181,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			protected override bool OnExposeEvent (EventExpose evnt)
 			{
 				using (var context = CairoHelper.Create (evnt.Window)) {
-					context.SetSourceColor (backgroundColor.ToCairoColor());
+					context.SetSourceRGB (backgroundColor.Red, backgroundColor.Green, backgroundColor.Blue);
 					context.Operator = Cairo.Operator.Source;
 					context.Paint ();
 					context.Operator = Cairo.Operator.Over;
