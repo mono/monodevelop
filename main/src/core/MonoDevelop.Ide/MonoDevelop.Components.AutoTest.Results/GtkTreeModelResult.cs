@@ -78,7 +78,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Model (string column)
 		{
-			return null;
+			var columnNumber = GetColumnNumber (column, TModel);
+			if (columnNumber == -1)
+				return null;
+			Column = columnNumber;
+			return this;
 		}
 
 		bool CheckForText (TreeModel model, TreeIter iter, bool exact)
@@ -274,6 +278,13 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override bool Toggle (bool active)
 		{
+			if (resultIter.HasValue) {
+				var modelValue = TModel.GetValue ((TreeIter)resultIter, Column);
+				if (modelValue is bool) {
+					TModel.SetValue ((TreeIter)resultIter, Column, active);
+					return true;
+				}
+			}
 			return false;
 		}
 	}

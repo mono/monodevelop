@@ -392,7 +392,9 @@ namespace Mono.TextEditor
 			keyBindings.Add (GetKeyCode (Gdk.Key.f, Gdk.ModifierType.ControlMask), CaretMoveActions.Right);
 			keyBindings.Add (GetKeyCode (Gdk.Key.b, Gdk.ModifierType.ControlMask), CaretMoveActions.Left);
 			keyBindings.Add (GetKeyCode (Gdk.Key.p, Gdk.ModifierType.ControlMask), CaretMoveActions.Up);
+			keyBindings.Add (GetKeyCode (Gdk.Key.p, Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask), SelectionActions.MoveUp);
 			keyBindings.Add (GetKeyCode (Gdk.Key.n, Gdk.ModifierType.ControlMask), CaretMoveActions.Down);
+			keyBindings.Add (GetKeyCode (Gdk.Key.n, Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask), SelectionActions.MoveDown);
 			keyBindings.Add (GetKeyCode (Gdk.Key.h, Gdk.ModifierType.ControlMask), DeleteActions.Backspace);
 			keyBindings.Add (GetKeyCode (Gdk.Key.d, Gdk.ModifierType.ControlMask), DeleteActions.Delete);
 			keyBindings.Add (GetKeyCode (Gdk.Key.o, Gdk.ModifierType.ControlMask), MiscActions.InsertNewLinePreserveCaretPosition);
