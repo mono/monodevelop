@@ -579,7 +579,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 					context.SetSourceColor (item == SelectedItem ? selectionTextColor : textColor);
 					var textXPos = xpos + iconWidth + 2;
-					context.MoveTo (textXPos, typos - 0.5);
+					context.MoveTo (textXPos, typos);
 					layout.Width = (int)((Allocation.Width - textXPos) * Pango.Scale.PangoScale);
 					layout.Ellipsize = EllipsizeMode.End;
 					Pango.CairoHelper.ShowLayout (context, layout);
@@ -599,7 +599,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 						layout.GetPixelSize (out w, out h);
 						wi += w;
 						typos = h < rowHeight ? ypos + (rowHeight - h) / 2 : ypos;
-						context.MoveTo (Allocation.Width - w, typos - 0.5);
+						context.MoveTo (Allocation.Width - w, typos);
 						Pango.CairoHelper.ShowLayout (context, layout);
 					}
 
