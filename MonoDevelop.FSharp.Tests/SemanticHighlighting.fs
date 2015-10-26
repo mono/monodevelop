@@ -20,19 +20,18 @@ type SemanticHighlighting() =
   let getStyle (content : string) = 
     let fixedc = content.Replace("§", "")
     let doc, _viewContent = TestHelpers.createDoc fixedc [] "defined"
-    let syntaxMode = new FSharpSyntaxMode(doc.Editor, doc)
+    use syntaxMode = new FSharpSyntaxMode(doc.Editor, doc)
 
     let segments = 
-      syntaxMode.GetProcessedTokens().Value
-      |> Seq.collect (fun s -> s)
+      syntaxMode.GetProcessedTokens()
+      |> Option.getOrElse (fun _ -> [||])
+      |> Seq.concat
       |> Seq.distinct
       |> Seq.sortBy (fun s -> s.Offset)
 
-    segments 
-    |> Seq.iter 
-         (fun seg -> 
-         printf """Segment: %s S:%i E:%i L:%i - "%s" %s""" seg.ColorStyleKey seg.Offset seg.EndOffset seg.Length 
-           (doc.Editor.GetTextBetween(seg.Offset, seg.EndOffset)) Environment.NewLine)
+    for seg in segments do
+      printf """Segment: %s S:%i E:%i L:%i - "%s" %s""" seg.ColorStyleKey seg.Offset seg.EndOffset seg.Length 
+        (doc.Editor.GetTextBetween(seg.Offset, seg.EndOffset)) Environment.NewLine
 
     let offset = content.IndexOf("§")
     let endOffset = content.LastIndexOf("§") - 1
@@ -48,7 +47,8 @@ type SemanticHighlighting() =
         let add = (+)
         #endif
         """
-    getStyle content |> should equal "Preprocessor"
+    let output = getStyle content
+    output |> should equal "Preprocessor"
   
   [<Test>]
   member x.Test_is_plain_text() = 
@@ -87,19 +87,18 @@ type SemanticHighlighting() =
     getStyle content |> should equal "Keyword(Type)"
   
   [<Test>]
-  [<Ignore>]
   member x.Module_is_highlighted() = 
     let content = """
-                module MyModule() = 
+                module MyModule = 
                     let someFunc() = ()
                 
                 module Consumer = 
                     §MyModule§.someFunc()
                 """
-    getStyle content |> should equal "?????"
+    let output = getStyle content
+    output |> should equal "User Types"
   
   [<Test>]
-  [<Ignore>]
   member x.Type_is_highlighted() = 
     let content = """
                 open System
@@ -107,17 +106,18 @@ type SemanticHighlighting() =
                 module MyModule = 
                     let guid = §Guid§.NewGuid()
                 """
-    getStyle content |> should equal "?????"
+    let output = getStyle content
+    output |> should equal "User Types(Value types)"
   
   [<Test>]
   member x.Add_is_plain_text() = 
     let content = "let §add§ = (+)"
-    getStyle content |> should equal "Plain Text"
+    getStyle content |> should equal "User Method Declaration"
   
   [<TestCase("let add = (§+§)", "Punctuation")>]
-  [<TestCase("let §add§ = (+)", "Plain Text")>]
+  [<TestCase("let §add§ = (+)", "User Method Declaration")>]
   [<TestCase("let add = §(§+)", "Punctuation(Brackets)")>]
-  [<TestCase("let §simpleBinding§ = 1", "Plain Text")>]
+  [<TestCase("let §simpleBinding§ = 1", "User Field Declaration")>]
   [<TestCase("let simpleBinding = §1§", "Number")>]
   member x.Semantic_highlighting(source, expectedStyle) = 
     printf "%s" source

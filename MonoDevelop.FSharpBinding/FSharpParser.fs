@@ -16,6 +16,7 @@ open System.Threading
 type FSharpParsedDocument(fileName) = 
     inherit DefaultParsedDocument(fileName)
     member val Tokens = None with get,set
+    member val AllSymbolUses = None with get,set
 
 // An instance of this type is created by MonoDevelop (as defined in the .xml for the AddIn) 
 type FSharpParser() = 
@@ -102,6 +103,10 @@ type FSharpParser() =
                   doc.Tokens <- Some(tokens)
                 with ex ->
                   LoggingService.LogWarning ("FSharpParser: Couldn't update token information", ex)
+                
+                //Get all the symboluses now rather than in semantic highlighting
+                let! allSymbolUses = results.GetAllUsesOfAllSymbolsInFile()
+                doc.AllSymbolUses <- allSymbolUses
 
                 //Set code folding regions, GetNavigationItems may throw in some situations
                 try 

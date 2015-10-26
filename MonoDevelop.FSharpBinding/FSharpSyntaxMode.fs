@@ -275,12 +275,10 @@ type FSharpSyntaxMode(editor, context) =
   inherit SemanticHighlighting(editor, context)
   let mutable segments = None
   
-  let makeChunk (symbolsInFile : FSharpSymbolUse array option) colourisations lineNo lineOffset (style : ColorScheme) token = 
+  let makeChunk (symbolsInFile : FSharpSymbolUse array) colourisations lineNo lineOffset (style : ColorScheme) token = 
     let symbol = 
-      if isSimpleToken token.ColorClass then None
-      else
-        symbolsInFile
-        |> Option.bind (Array.tryFind (fun s -> s.RangeAlternate.StartLine = lineNo && s.RangeAlternate.EndColumn = token.RightColumn + 1))
+      symbolsInFile
+      |> Array.tryFind (fun s -> s.RangeAlternate.StartLine = lineNo && s.RangeAlternate.EndColumn = token.RightColumn + 1)
     
     let extraColor = 
       colourisations
@@ -313,7 +311,8 @@ type FSharpSyntaxMode(editor, context) =
       | PreprocessorKeyword -> style.Preprocessor
       | _ -> style.PlainText
     
-    let seg = ColoredSegment(lineOffset + token.LeftColumn, max (token.RightColumn - token.LeftColumn + 1) token.FullMatchedLength, chunkStyle.Name)
+    //let seg = ColoredSegment(lineOffset + token.LeftColumn, max (token.RightColumn - token.LeftColumn + 1) token.FullMatchedLength, chunkStyle.Name)
+    let seg = ColoredSegment(lineOffset + token.LeftColumn, token.RightColumn - token.LeftColumn + 1, chunkStyle.Name)
     //Uncomment to visualise tokens segments
     //LoggingService.LogInfo (sprintf """Segment: %s S:%i E:%i L:%i - "%s" """ seg.ColorStyleKey seg.Offset seg.EndOffset seg.Length (editor.GetTextBetween (seg.Offset, seg.EndOffset)) )
     seg
@@ -323,9 +322,7 @@ type FSharpSyntaxMode(editor, context) =
       let! localParsedDocument = context.ParsedDocument |> Option.ofNull
       let! pd = localParsedDocument |> Option.tryCast<FSharpParsedDocument>
       let! checkResults = pd.Ast |> Option.tryCast<ParseAndCheckResults>
-      let symbolsInFile = 
-        try Async.RunSynchronously(checkResults.GetAllUsesOfAllSymbolsInFile(), ServiceSettings.maximumTimeout)
-        with _ -> None
+      let! symbolsInFile = pd.AllSymbolUses
       
       let colourisations = checkResults.GetExtraColorizations()
       let lineDetails = 
