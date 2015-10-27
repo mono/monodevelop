@@ -81,6 +81,9 @@ namespace WindowsPlatform.MainToolbar
 
 			toolbar.SearchBar.SearchBar.PreviewKeyDown += (o, e) => {
 				var ka = new KeyEventArgs (KeyboardUtil.TranslateToXwtKey (e.Key), KeyboardUtil.GetModifiers (), e.IsRepeat, e.Timestamp);
+				if (ka.Key == Xwt.Key.Escape)
+					SearchText = string.Empty;
+
                 if (SearchEntryKeyPressed != null)
 					SearchEntryKeyPressed (o, ka);
 				e.Handled = ka.Handled;
