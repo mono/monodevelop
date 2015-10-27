@@ -169,24 +169,35 @@ namespace MonoDevelop.Ide.Commands
 					tv.Buffer.CopyClipboard (clipboard);
 					return;
 				}
-				#if MAC
+#if MAC
 				var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSText;
 				if (mactv != null) {
 					mactv.Copy (mactv);
 					return;
 				}
-				#endif
+#endif
 			}
+#if WIN32
+			var wintv = System.Windows.Input.Keyboard.FocusedElement;
+			if (wintv != null) {
+				System.Windows.Input.ApplicationCommands.Copy.Execute (null, wintv);
+				return;
+			}
+#endif
 		}
-		
+
 		protected override void Update (CommandInfo info)
 		{
 			object focus = IdeApp.Workbench.RootWindow.HasToplevelFocus ? IdeApp.Workbench.RootWindow.Focus : null;
 			info.Enabled = (focus is Gtk.Editable || focus is Gtk.TextView);
-			#if MAC
+#if MAC
 			var macfocus = AppKit.NSApplication.SharedApplication?.KeyWindow?.FirstResponder;
 			info.Enabled |= macfocus is AppKit.NSText;
-			#endif
+#endif
+#if WIN32
+			var winfocus = System.Windows.Input.Keyboard.FocusedElement;
+			info.Enabled |= winfocus != null;
+#endif
 			info.Bypass = !info.Enabled;
 		}
 	}	
@@ -207,16 +218,23 @@ namespace MonoDevelop.Ide.Commands
 					tv.Buffer.CutClipboard (clipboard, true);
 					return;
 				}
-				#if MAC
+#if MAC
 				var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSText;
 				if (mactv != null) {
 					mactv.Cut (mactv);
 					return;
 				}
-				#endif
+#endif
 			}
+#if WIN32
+			var wintv = System.Windows.Input.Keyboard.FocusedElement;
+			if (wintv != null) {
+				System.Windows.Input.ApplicationCommands.Cut.Execute (null, wintv);
+				return;
+			}
+#endif
 		}
-		
+
 		protected override void Update (CommandInfo info)
 		{
 			object focus = IdeApp.Workbench.RootWindow.HasToplevelFocus ? IdeApp.Workbench.RootWindow.Focus : null;
@@ -227,10 +245,15 @@ namespace MonoDevelop.Ide.Commands
 			else
 				info.Enabled = false;
 
-			#if MAC
+#if MAC
 			var macfocus = AppKit.NSApplication.SharedApplication?.KeyWindow?.FirstResponder;
 			info.Enabled |= macfocus is AppKit.NSText;
-			#endif
+#endif
+
+#if WIN32
+			var winfocus = System.Windows.Input.Keyboard.FocusedElement;
+			info.Enabled |= winfocus != null;
+#endif
 
 			info.Bypass = !info.Enabled;
 		}
@@ -252,16 +275,23 @@ namespace MonoDevelop.Ide.Commands
 					tv.Buffer.PasteClipboard (clipboard);
 					return;
 				}
-				#if MAC
+#if MAC
 				var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSText;
 				if (mactv != null) {
 					mactv.Paste (mactv);
 					return;
 				}
-				#endif
+#endif
 			}
+#if WIN32
+			var wintv = System.Windows.Input.Keyboard.FocusedElement;
+			if (wintv != null) {
+				System.Windows.Input.ApplicationCommands.Paste.Execute (null, wintv);
+				return;
+			}
+#endif
 		}
-		
+
 		protected override void Update (CommandInfo info)
 		{
 			object focus = IdeApp.Workbench.RootWindow.HasToplevelFocus ? IdeApp.Workbench.RootWindow.Focus : null;
@@ -272,10 +302,15 @@ namespace MonoDevelop.Ide.Commands
 			else
 				info.Enabled = false;
 
-			#if MAC
+#if MAC
 			var macfocus = AppKit.NSApplication.SharedApplication?.KeyWindow?.FirstResponder;
 			info.Enabled |= macfocus is AppKit.NSText;
-			#endif
+#endif
+
+#if WIN32
+			var winfocus = System.Windows.Input.Keyboard.FocusedElement;
+			info.Enabled |= winfocus != null;
+#endif
 
 			info.Bypass = !info.Enabled;
 		}
@@ -315,25 +350,37 @@ namespace MonoDevelop.Ide.Commands
 					tv.Buffer.SelectRange (tv.Buffer.StartIter, tv.Buffer.EndIter);
 					return;
 				}
-				#if MAC
+#if MAC
 				var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSText;
 				if (mactv != null) {
 					mactv.SelectAll (mactv);
 					return;
 				}
-				#endif
+#endif
 			}
+#if WIN32
+			var wintv = System.Windows.Input.Keyboard.FocusedElement;
+			if (wintv != null) {
+				System.Windows.Input.ApplicationCommands.SelectAll.Execute (null, wintv);
+				return;
+			}
+#endif
 		}
-		
+
 		protected override void Update (CommandInfo info)
 		{
 			object focus = IdeApp.Workbench.RootWindow.HasToplevelFocus ? IdeApp.Workbench.RootWindow.Focus : null;
-			info.Enabled = (focus is Gtk.Editable || focus is Gtk.TextView); 
+			info.Enabled = (focus is Gtk.Editable || focus is Gtk.TextView);
 
-			#if MAC
+#if MAC
 			var macfocus = AppKit.NSApplication.SharedApplication?.KeyWindow?.FirstResponder;
 			info.Enabled |= macfocus is AppKit.NSText;
-			#endif
+#endif
+
+#if WIN32
+			var winfocus = System.Windows.Input.Keyboard.FocusedElement;
+			info.Enabled |= winfocus != null;
+#endif
 		}
 	}	
 }
