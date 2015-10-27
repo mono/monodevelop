@@ -95,8 +95,10 @@ namespace MonoDevelop.VersionControl
 				Dispose ();
 		}
 
+		internal bool Disposed { get; private set; }
 		public virtual void Dispose ()
 		{
+			Disposed = true;
 			if (!queryRunning)
 				return;
 

@@ -48,10 +48,17 @@ namespace MonoDevelop.VersionControl
 			get;
 			private set;
 		}
-		
+
+		Repository repository;
 		public Repository Repository {
-			get;
-			private set;
+			get {
+				if (repository.Disposed)
+					repository = VersionControlService.GetRepository (WorkspaceObject);
+				return repository;
+			}
+			internal set {
+				repository = value;
+			}
 		}
 		
 		public FilePath Path {

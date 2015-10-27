@@ -170,7 +170,6 @@
     <Compile Include="MonoDevelop.Debugger\BusyEvaluatorDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Debugger.BusyEvaluatorDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\DebuggerOptionsPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Debugger.DebuggerOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.Debugger\PinnedWatch.cs" />
     <Compile Include="MonoDevelop.Debugger\PinnedWatchStore.cs" />
     <Compile Include="MonoDevelop.Debugger\DebuggerEngine.cs" />

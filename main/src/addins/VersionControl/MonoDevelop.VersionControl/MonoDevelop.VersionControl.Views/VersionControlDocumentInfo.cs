@@ -58,8 +58,8 @@ namespace MonoDevelop.VersionControl.Views
 		}
 		
 		public Repository Repository {
-			get;
-			set;
+			get { return Item.Repository; }
+			set { Item.Repository = value; }
 		}
 		
 		public bool Started {
@@ -70,7 +70,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			this.Document = document;
 			this.Item = item;
-			this.Repository = repository;
+			item.Repository = repository;
 		}
 
 		public void Start (bool rerun = false)
