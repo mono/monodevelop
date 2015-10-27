@@ -2,15 +2,17 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:WindowsPlatform.MainToolbar"
              mc:Ignorable="d">
-    <StackPanel Orientation="Horizontal" Background="White">
-        <TextBox x:Name="SearchBar" Text="{Binding Path=SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MinWidth="180" Background="Transparent"/>
-        <Image x:Name="SearchIcon" MaxWidth="14" MaxHeight="14" MouseLeftButtonDown="OnIconClicked" >
-            <Image.ContextMenu>
-                <ContextMenu />
-            </Image.ContextMenu>
-        </Image>
-    </StackPanel>
+    <Border BorderBrush="Gray" BorderThickness="1">
+        <StackPanel Orientation="Horizontal" Background="White">
+            <TextBox x:Name="SearchBar" Text="{Binding Path=SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MinWidth="180" Background="Transparent" BorderThickness="0"/>
+            <Image x:Name="SearchIcon" MaxWidth="14" MaxHeight="14" MouseLeftButtonDown="OnIconClicked" >
+                <Image.ContextMenu>
+                    <ContextMenu />
+                </Image.ContextMenu>
+            </Image>
+        </StackPanel>
+    </Border>
 </UserControl>
