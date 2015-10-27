@@ -287,12 +287,12 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Debugger.BusyEvaluatorDialog" design-size="381 126">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Debugger.BusyEvaluatorDialog" design-size="548 98">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="Title" translatable="yes">The Debugger is Busy</property>
     <property name="WindowPosition">CenterOnParent</property>
-    <property name="Buttons">2</property>
+    <property name="Buttons">1</property>
     <property name="HelpButton">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
@@ -307,7 +307,7 @@
               <widget class="Gtk.Label" id="label1">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes">The Debugger is waiting for an expression evaluation to finish.</property>
+                <property name="LabelProp" translatable="yes">The debugger runtime is not responding. You can wait for it to recover, or stop debugging.</property>
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -317,52 +317,12 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.HBox" id="hbox1">
-                <property name="MemberName" />
-                <property name="Spacing">6</property>
-                <child>
-                  <widget class="Gtk.Label" id="label2">
-                    <property name="MemberName" />
-                    <property name="Xalign">0</property>
-                    <property name="LabelProp" translatable="yes">Method:</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">0</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.Label" id="labelMethod">
-                    <property name="MemberName" />
-                    <property name="Xalign">0</property>
-                    <property name="LabelProp">&lt;method&gt;</property>
-                    <property name="Wrap">True</property>
-                    <property name="Selectable">True</property>
-                    <property name="MaxWidthChars">120</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">1</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-              </widget>
-              <packing>
-                <property name="Position">1</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
+              <placeholder />
             </child>
           </widget>
           <packing>
             <property name="Position">0</property>
             <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
           </packing>
         </child>
       </widget>
@@ -372,7 +332,7 @@
         <property name="MemberName" />
         <property name="Spacing">10</property>
         <property name="BorderWidth">5</property>
-        <property name="Size">2</property>
+        <property name="Size">1</property>
         <property name="LayoutStyle">End</property>
         <child>
           <widget class="Gtk.Button" id="buttonCancel">
@@ -386,23 +346,6 @@
             <signal name="Clicked" handler="OnButtonCancelClicked" />
           </widget>
           <packing>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.Button" id="buttonOk">
-            <property name="MemberName" />
-            <property name="CanDefault">True</property>
-            <property name="CanFocus">True</property>
-            <property name="Type">TextOnly</property>
-            <property name="Label" translatable="yes">Keep Waiting</property>
-            <property name="UseUnderline">True</property>
-            <property name="ResponseId">-1</property>
-            <signal name="Clicked" handler="OnButtonOkClicked" />
-          </widget>
-          <packing>
-            <property name="Position">1</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
