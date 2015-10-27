@@ -24,7 +24,7 @@ type SemanticHighlighting() =
 
     let segments = 
       syntaxMode.GetProcessedTokens()
-      |> Option.getOrElse (fun _ -> [||])
+      |> Option.getOrElse (fun _ -> [])
       |> Seq.concat
       |> Seq.distinct
       |> Seq.sortBy (fun s -> s.Offset)
