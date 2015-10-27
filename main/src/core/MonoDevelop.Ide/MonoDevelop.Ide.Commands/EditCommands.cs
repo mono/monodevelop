@@ -179,8 +179,9 @@ namespace MonoDevelop.Ide.Commands
 			}
 #if WIN32
 			var wintv = System.Windows.Input.Keyboard.FocusedElement;
-			if (wintv != null) {
-				System.Windows.Input.ApplicationCommands.Copy.Execute (null, wintv);
+			var cmd = System.Windows.Input.ApplicationCommands.Copy;
+			if (wintv != null && cmd.CanExecute (null, wintv)) {
+				cmd.Execute (null, wintv);
 				return;
 			}
 #endif
@@ -228,8 +229,9 @@ namespace MonoDevelop.Ide.Commands
 			}
 #if WIN32
 			var wintv = System.Windows.Input.Keyboard.FocusedElement;
-			if (wintv != null) {
-				System.Windows.Input.ApplicationCommands.Cut.Execute (null, wintv);
+			var cmd = System.Windows.Input.ApplicationCommands.Cut;
+			if (wintv != null && cmd.CanExecute (null, wintv)) {
+				cmd.Execute (null, wintv);
 				return;
 			}
 #endif
@@ -285,8 +287,9 @@ namespace MonoDevelop.Ide.Commands
 			}
 #if WIN32
 			var wintv = System.Windows.Input.Keyboard.FocusedElement;
-			if (wintv != null) {
-				System.Windows.Input.ApplicationCommands.Paste.Execute (null, wintv);
+			var cmd = System.Windows.Input.ApplicationCommands.Paste;
+			if (wintv != null && cmd.CanExecute (null, wintv)) {
+				cmd.Execute (null, wintv);
 				return;
 			}
 #endif
@@ -360,8 +363,9 @@ namespace MonoDevelop.Ide.Commands
 			}
 #if WIN32
 			var wintv = System.Windows.Input.Keyboard.FocusedElement;
-			if (wintv != null) {
-				System.Windows.Input.ApplicationCommands.SelectAll.Execute (null, wintv);
+			var cmd = System.Windows.Input.ApplicationCommands.SelectAll;
+            if (wintv != null && cmd.CanExecute (null, wintv)) {
+				cmd.Execute (null, wintv);
 				return;
 			}
 #endif
