@@ -275,14 +275,19 @@ type FSharpSyntaxMode(editor, context) =
   inherit SemanticHighlighting(editor, context)
   let mutable segments = None
   
-  let makeChunk (symbolsInFile : FSharpSymbolUse array) colourisations lineNo lineOffset (style : ColorScheme) token = 
-    let symbol = 
-      symbolsInFile
-      |> Array.tryFind (fun s -> s.RangeAlternate.StartLine = lineNo && s.RangeAlternate.EndColumn = token.RightColumn + 1)
+  let makeChunk (symbolsInFile:Dictionary<_,_>) (Tokens.LineDetail(lineNo, lineOffset, _lineText)) colourisations (style : ColorScheme) token = 
+    let symbol =
+      if token.CharClass = FSharpTokenCharKind.Identifier || token.CharClass = FSharpTokenCharKind.Operator then
+        match symbolsInFile.TryGetValue(Range.mkPos lineNo (token.RightColumn + 1)) with
+        | true, v -> Some(v)
+        | _ -> None
+      else None
     
-    let extraColor = 
-      colourisations
-      |> Option.bind (Array.tryFind (fun (rng : Range.range, _) -> rng.StartLine = lineNo && rng.EndColumn = token.RightColumn + 1))
+    let extraColor =
+      if token.CharClass = FSharpTokenCharKind.Identifier || token.CharClass = FSharpTokenCharKind.Operator then
+        colourisations
+        |> Option.bind (Array.tryFind (fun (rng : Range.range, _) -> rng.StartLine = lineNo && rng.EndColumn = token.RightColumn + 1))
+      else None
     
     let tokenSymbol = 
       { TokenInfo = token; SymbolUse = symbol; ExtraColorInfo = extraColor }
@@ -318,11 +323,12 @@ type FSharpSyntaxMode(editor, context) =
     seg
 
   member x.GetProcessedTokens() =
+    LoggingService.LogDebug "F# semantic highlighting - GetProcessedTokens"
     maybe { 
       let! localParsedDocument = context.ParsedDocument |> Option.ofNull
       let! pd = localParsedDocument |> Option.tryCast<FSharpParsedDocument>
       let! checkResults = pd.Ast |> Option.tryCast<ParseAndCheckResults>
-      let! symbolsInFile = pd.AllSymbolUses
+      let symbolsInFile = pd.AllSymbolsKeyed
       
       let colourisations = checkResults.GetExtraColorizations()
       let lineDetails = 
@@ -331,24 +337,34 @@ type FSharpSyntaxMode(editor, context) =
       
       let processedTokens = 
         let style = getColourScheme()
-        
+        LoggingService.LogDebug "F# semantic highlighting - DocumentParsed - GetTokens"
         let tokens = 
           match pd.Tokens with
           | Some t -> t
           | None -> Tokens.getTokens lineDetails context.Name defines
+
+        LoggingService.LogDebug "F# semantic highlighting - DocumentParsed - map tokens"
         tokens
         |> List.map 
-             (fun (Tokens.TokenisedLine(lineNumber, lineOffset, chunks, _state)) -> 
-                chunks |> List.map (makeChunk symbolsInFile colourisations lineNumber lineOffset style))
-        |> Array.ofList
+             (fun (Tokens.TokenisedLine(lineDetail, chunks, _state)) -> 
+                chunks
+                |> List.map (makeChunk symbolsInFile lineDetail colourisations style))
+      LoggingService.LogDebug "F# semantic highlighting - DocumentParsed - returning coloured segments"
       return processedTokens
     }
 
-  override x.DocumentParsed() = 
-    let processedTokens = x.GetProcessedTokens()
-    processedTokens |> Option.iter (fun _ -> 
-                         segments <- processedTokens
-                         Gtk.Application.Invoke(fun _ _ -> x.NotifySemanticHighlightingUpdate()))
+  override x.DocumentParsed() =
+    match IdeApp.Workbench.ActiveDocument with
+    | null -> ()
+    | doc when doc.FileName = FilePath.Null || doc.FileName <> editor.FileName -> ()
+    | _doc ->
+
+      LoggingService.LogDebug "F# semantic highlighting - DocumentParsed"
+      let processedTokens = x.GetProcessedTokens()
+      processedTokens |> Option.iter (fun _ ->
+                           LoggingService.LogDebug "F# semantic highlighting - DocumentParsed applying coloured segments"
+                           segments <- processedTokens
+                           Gtk.Application.Invoke(fun _ _ -> x.NotifySemanticHighlightingUpdate()))
 
   override x.GetColoredSegments(segment) = 
     let line = editor.GetLineByOffset segment.Offset

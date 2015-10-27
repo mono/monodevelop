@@ -159,7 +159,7 @@
   <Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
     <Class fileExtensions=".fs,.fsi,.fsx,.fsscript" class="MonoDevelop.FSharp.FSharpTextEditorCompletion" />
     <Class fileExtensions = ".fs,.fsx" class = "MonoDevelop.FSharp.FSharpPathExtension" />
-    <Class fileExtensions = ".fs,.fsx" class = "MonoDevelop.FSharp.HighlightUsagesExtension" />
+    <Class fileExtensions = ".fs,.fsi,.fsx" class = "MonoDevelop.FSharp.HighlightUsagesExtension" />
     <Class fileExtensions = ".fs" class = "MonoDevelop.FSharp.FSharpUnitTestTextEditorExtension" />
     <Class fileExtensions = ".fs" class = "MonoDevelop.FSharp.FSharpOutlineTextEditorExtension" />
   </Extension>

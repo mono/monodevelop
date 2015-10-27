@@ -7,7 +7,8 @@ open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.TypeSystem
-open System 
+open System
+open System.Collections.Generic
 open System.Diagnostics
 open System.IO
 open System.Text
@@ -16,7 +17,7 @@ open System.Threading
 type FSharpParsedDocument(fileName) = 
     inherit DefaultParsedDocument(fileName)
     member val Tokens = None with get,set
-    member val AllSymbolUses = None with get,set
+    member val AllSymbolsKeyed = Dictionary<_,_>() with get, set
 
 // An instance of this type is created by MonoDevelop (as defined in the .xml for the AddIn) 
 type FSharpParser() = 
@@ -59,6 +60,7 @@ type FSharpParser() =
             cancellationToken = cancellationToken,
             computation = async {
             let shortFilename = Path.GetFileName fileName
+            LoggingService.LogDebug ("FSharpParser: Parse starting on {0}", shortFilename)
 
             let curVersion = parseOptions.Content.Version
             let isObsolete =
@@ -88,10 +90,11 @@ type FSharpParser() =
                 LoggingService.LogDebug ("FSharpParser: Running ParseAndCheckFileInProject for {0}", shortFilename)
                 let projectFile = proj |> function null -> filePath | proj -> proj.FileName.ToString()
                 let! results = languageService.ParseAndCheckFileInProject(projectFile, filePath, 0, content.Text, isObsolete)
-
+                LoggingService.LogDebug ("FSharpParser: Parse and check results retieved on {0}", shortFilename)
                 results.GetErrors() |> (Seq.map formatError >> doc.AddRange)
 
                 //Try creating tokens
+                LoggingService.LogDebug ("FSharpParser: Processing tokens on {0}", shortFilename)
                 try
                   let readOnlyDoc = TextEditorFactory.CreateNewReadonlyDocument (parseOptions.Content, fileName)
                   let lineDetails =
@@ -105,10 +108,18 @@ type FSharpParser() =
                   LoggingService.LogWarning ("FSharpParser: Couldn't update token information", ex)
                 
                 //Get all the symboluses now rather than in semantic highlighting
+                LoggingService.LogDebug ("FSharpParser: Processing symbol uses on {0}", shortFilename)
                 let! allSymbolUses = results.GetAllUsesOfAllSymbolsInFile()
-                doc.AllSymbolUses <- allSymbolUses
+                match allSymbolUses with
+                | Some su ->
+                  su
+                  |> Array.iter 
+                       (fun s -> if not (doc.AllSymbolsKeyed.ContainsKey s.RangeAlternate.End)
+                                 then doc.AllSymbolsKeyed.Add(s.RangeAlternate.End, s))
+                | None -> ()
 
                 //Set code folding regions, GetNavigationItems may throw in some situations
+                LoggingService.LogDebug ("FSharpParser: processing regions on {0}", shortFilename)
                 try 
                   let regions = 
                     let processDecl (decl : SourceCodeServices.FSharpNavigationDeclarationItem) = 
@@ -124,5 +135,6 @@ type FSharpParser() =
                 doc.Ast <- results
 
             doc.LastWriteTimeUtc <- try File.GetLastWriteTimeUtc(fileName) with _ -> DateTime.UtcNow
+            LoggingService.LogDebug ("FSharpParser: returning ParsedDocument on {0}", shortFilename)
             return doc :> _})
 

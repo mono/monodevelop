@@ -5,7 +5,7 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 
 module Tokens =
   type LineDetail = LineDetail of linenumber:int * lineOffset:int * text:string
-  type TokenisedLine = TokenisedLine of lineNumber:int * lineOffset:int * tokens:FSharpTokenInfo list * stateAtEOL:int64
+  type TokenisedLine = TokenisedLine of LineDetail * tokens:FSharpTokenInfo list * stateAtEOL:int64
 
   let (|CollapsableToken|_|) (token:FSharpTokenInfo) =
     match token.ColorClass with
@@ -33,7 +33,7 @@ module Tokens =
                   yield tok
                   yield! parseLine()
               | None, nstate -> state := nstate ]
-        yield TokenisedLine(lineNumber, lineOffset, parseLine(), !state) ]
+        yield TokenisedLine(LineDetail(lineNumber, lineOffset, lineText), parseLine(), !state) ]
 
   let getTokens lineDetails filename defines = 
     getTokensWithInitialState 0L lineDetails filename defines
@@ -59,9 +59,9 @@ module Tokens =
              yield newToken
              yield! parseLine tail None ]
 
-    [| for TokenisedLine(lineNo, offset, tokens, stateEOL) in tokenLines do
+    [| for TokenisedLine(LineDetail(lineNo, offset, line), tokens, stateEOL) in tokenLines do
          let mergedTokens = parseLine tokens None
-         yield TokenisedLine(lineNo, offset, mergedTokens, stateEOL) |]
+         yield TokenisedLine(LineDetail(lineNo, offset, line), mergedTokens, stateEOL) |]
 
   let getMergedTokens lineDetails filename defines = 
     [|let state = ref 0L
@@ -93,4 +93,4 @@ module Tokens =
                  match lastToken with
                  | Some other -> yield other
                  | _ -> ()]
-        yield TokenisedLine(lineNumber, lineOffset, parseLine None, !state) |]
+        yield TokenisedLine(LineDetail(lineNumber, lineOffset, lineText), parseLine None, !state) |]
