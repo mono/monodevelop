@@ -61,44 +61,6 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		#region IActionTextLineMarker implementation
-		class TextEventArgsWrapper : TextMarkerMouseEventArgs
-		{
-			readonly MarginMouseEventArgs args;
-
-			public override double X {
-				get {
-					return args.X;
-				}
-			}
-
-			public override double Y {
-				get {
-					return args.Y;
-				}
-			}
-
-			public override object OverwriteCursor {
-				get;
-				set;
-			}
-
-			public override string TooltipMarkup {
-				get;
-				set;
-			}
-
-			public TextEventArgsWrapper (MarginMouseEventArgs args)
-			{
-				if (args == null)
-					throw new ArgumentNullException ("args");
-				this.args = args;
-			}
-
-			public override bool TriggersContextMenu ()
-			{
-				return args.TriggersContextMenu ();
-			}
-		}
 
 		bool IActionTextLineMarker.MousePressed (Mono.TextEditor.MonoTextEditor editor, MarginMouseEventArgs args)
 		{
@@ -160,5 +122,45 @@ namespace MonoDevelop.SourceEditor
 			set;
 		}
 	}
+
+	class TextEventArgsWrapper : TextMarkerMouseEventArgs
+	{
+		readonly MarginMouseEventArgs args;
+
+		public override double X {
+			get {
+				return args.X;
+			}
+		}
+
+		public override double Y {
+			get {
+				return args.Y;
+			}
+		}
+
+		public override object OverwriteCursor {
+			get;
+			set;
+		}
+
+		public override string TooltipMarkup {
+			get;
+			set;
+		}
+
+		public TextEventArgsWrapper (MarginMouseEventArgs args)
+		{
+			if (args == null)
+				throw new ArgumentNullException ("args");
+			this.args = args;
+		}
+
+		public override bool TriggersContextMenu ()
+		{
+			return args.TriggersContextMenu ();
+		}
+	}
+
 }
 

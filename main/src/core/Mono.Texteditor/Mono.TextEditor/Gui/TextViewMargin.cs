@@ -1845,7 +1845,7 @@ namespace Mono.TextEditor
 		{
 			VisualLocationTranslator trans = new VisualLocationTranslator (this);
 
-			clickLocation = trans.PointToLocation (x, y, snapCharacters: true);
+			clickLocation = trans.PointToLocation (x, y, snapCharacters: false);
 			if (clickLocation.Line < DocumentLocation.MinLine || clickLocation.Column < DocumentLocation.MinColumn)
 				return false;
 			DocumentLine line = Document.GetLine (clickLocation.Line);
@@ -1883,6 +1883,7 @@ namespace Mono.TextEditor
 					return;
 
 				DocumentLine line = Document.GetLine (clickLocation.Line);
+				int offset = Document.LocationToOffset (clickLocation);
 				bool isHandled = false;
 				if (line != null) {
 					foreach (TextLineMarker marker in line.Markers) {
@@ -1892,7 +1893,7 @@ namespace Mono.TextEditor
 								break;
 						}
 					}
-					foreach (var marker in Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)) {
+					foreach (var marker in Document.GetTextSegmentMarkersAt (offset).Where (m => m.IsVisible)) {
 						if (marker is IActionTextLineMarker) {
 							isHandled |= ((IActionTextLineMarker)marker).MousePressed (textEditor, args);
 							if (isHandled)
@@ -1903,7 +1904,6 @@ namespace Mono.TextEditor
 				if (isHandled)
 					return;
 
-				int offset = Document.LocationToOffset (clickLocation);
 				if (offset < 0) {
 					textEditor.RunAction (CaretMoveActions.ToDocumentEnd);
 					return;
@@ -2221,7 +2221,8 @@ namespace Mono.TextEditor
 				var tmp = oldMarkers;
 				oldMarkers = newMarkers;
 				newMarkers = tmp;
-				foreach (var marker in Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)) {
+				var locNotSnapped = PointToLocation (args.X, args.Y, snapCharacters: false);
+				foreach (var marker in Document.GetTextSegmentMarkersAt (Document.GetOffset (locNotSnapped)).Where (m => m.IsVisible)) {
 					if (marker is IActionTextLineMarker) {
 						((IActionTextLineMarker)marker).MouseHover (textEditor, args, hoverResult);
 					}

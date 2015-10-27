@@ -26,11 +26,13 @@
 using System;
 using MonoDevelop.Ide.Editor;
 using Mono.TextEditor;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.SourceEditor
 {
-	class LinkMarker : Mono.TextEditor.UnderlineTextSegmentMarker, ITextSegmentMarker
+	class LinkMarker : UnderlineTextSegmentMarker, ITextSegmentMarker, IActionTextLineMarker
 	{
+		static readonly Gdk.Cursor textLinkCursor = new Gdk.Cursor (Gdk.CursorType.Hand1);
 		static readonly Cairo.Color linkColor = new Cairo.Color (0, 0, 1.0);
 		Action<LinkRequest> activateLink;
 
@@ -40,26 +42,29 @@ namespace MonoDevelop.SourceEditor
 			this.Wave = false;
 		}
 
-		event EventHandler<TextMarkerMouseEventArgs> ITextSegmentMarker.MousePressed {
-			add {
-				throw new NotImplementedException ();
-			}
-			remove {
-				throw new NotImplementedException ();
-			}
-		}
-		event EventHandler<TextMarkerMouseEventArgs> ITextSegmentMarker.MouseHover {
-			add {
-				throw new NotImplementedException ();
-			}
-			remove {
-				throw new NotImplementedException ();
-			}
-		}
+		public event EventHandler<TextMarkerMouseEventArgs> MousePressed;
+		public event EventHandler<TextMarkerMouseEventArgs> MouseHover;
 
 		object ITextSegmentMarker.Tag {
 			get;
 			set;
+		}
+
+		bool IActionTextLineMarker.MousePressed (MonoTextEditor editor, MarginMouseEventArgs args)
+		{
+			MousePressed?.Invoke (this, new TextEventArgsWrapper (args));
+			if ((Platform.IsMac && (args.ModifierState & Gdk.ModifierType.Mod2Mask) == Gdk.ModifierType.Mod2Mask) ||
+				(!Platform.IsMac && (args.ModifierState & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask))
+				activateLink?.Invoke (LinkRequest.RequestNewView);
+			else
+				activateLink?.Invoke (LinkRequest.SameView);
+			return false;
+		}
+
+		void IActionTextLineMarker.MouseHover (MonoTextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result)
+		{
+			MouseHover?.Invoke (this, new TextEventArgsWrapper (args));
+			result.Cursor = textLinkCursor;
 		}
 	}
 }
