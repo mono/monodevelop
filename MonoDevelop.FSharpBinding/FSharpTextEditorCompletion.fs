@@ -350,7 +350,7 @@ type FSharpTextEditorCompletion() =
           let! parsedDoc = parsedDocument |> Option.ofNull
           let! fsparsedDoc = parsedDoc |> Option.tryCast<FSharpParsedDocument>
           let! tokenisedLines = fsparsedDoc.Tokens
-          let (Tokens.TokenisedLine(_lineNo, _lineOffset, _tokens, state)) = tokenisedLines.[line-1]
+          let (Tokens.TokenisedLine(_lineDetail, _tokens, state)) = tokenisedLines.[line-1]
           let linedetail = Seq.singleton (Tokens.LineDetail(line, offset, lineStr))
           return Tokens.getTokensWithInitialState state linedetail filepath defines }
 
@@ -362,7 +362,7 @@ type FSharpTextEditorCompletion() =
           //we have a line
           match line with
           | [single] ->
-            let (Tokens.TokenisedLine(_lineNumber, _offset, lineTokens, _state)) = single
+            let (Tokens.TokenisedLine(_lineDetail, lineTokens, _state)) = single
             lineTokens |> List.tryFind (isTokenAtOffset col)
           | _ -> None //should only be one
         | None ->
@@ -371,7 +371,7 @@ type FSharpTextEditorCompletion() =
                 let line = editor.GetLine(i)
                 yield Tokens.LineDetail(line.LineNumber, line.Offset, editor.GetTextAt(line.Offset, line.Length)) ]
           let tokens = Tokens.getTokens lineDetails filepath defines
-          let (Tokens.TokenisedLine(_lineNumber, _offset, lineTokens, _state)) = tokens.[line-1]
+          let (Tokens.TokenisedLine(_lineDetail, lineTokens, _state)) = tokens.[line-1]
           lineTokens |> List.tryFind (isTokenAtOffset col)
 
       let isTokenInvalid = 
