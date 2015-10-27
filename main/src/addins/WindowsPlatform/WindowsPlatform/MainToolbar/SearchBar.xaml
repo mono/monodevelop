@@ -7,7 +7,7 @@
              mc:Ignorable="d">
     <StackPanel Orientation="Horizontal" Background="White">
         <TextBox x:Name="SearchBar" Text="{Binding Path=SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MinWidth="180" Background="Transparent"/>
-        <Image x:Name="SearchIcon" MaxWidth="14" MaxHeight="14" MouseLeftButtonDown="OnIconClicked">
+        <Image x:Name="SearchIcon" MaxWidth="14" MaxHeight="14" MouseLeftButtonDown="OnIconClicked" >
             <Image.ContextMenu>
                 <ContextMenu />
             </Image.ContextMenu>

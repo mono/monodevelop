@@ -142,7 +142,10 @@ namespace WindowsPlatform.MainToolbar
 
 		public void ShowMessage (IconId image, string message, bool isMarkup)
 		{
-			StatusImage = (ImageSource)MonoDevelop.Platform.WindowsPlatform.WPFToolkit.GetNativeImage (ImageService.GetIcon (image));
+			if (image == Stock.StatusSteady)
+				StatusImage = null;
+			else
+				StatusImage = (ImageSource)MonoDevelop.Platform.WindowsPlatform.WPFToolkit.GetNativeImage (ImageService.GetIcon (image));
 			Message = message;
 		}
 

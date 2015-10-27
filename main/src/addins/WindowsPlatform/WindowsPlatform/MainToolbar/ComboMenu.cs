@@ -39,17 +39,19 @@ namespace WindowsPlatform.MainToolbar
 
 			content.Children.Add (new TextBlock {
 				HorizontalAlignment = HorizontalAlignment.Left,
+				VerticalAlignment = VerticalAlignment.Center,
 			});
 
 			var arrow = new Polygon {
 				Fill = Brushes.Black,
 				Margin = new Thickness (5, 0, 0, 0),
 				HorizontalAlignment = HorizontalAlignment.Right,
+				VerticalAlignment = VerticalAlignment.Center,
 			};
 
-			arrow.Points.Add (new Point (0, 6));
-			arrow.Points.Add (new Point (6, 12));
-			arrow.Points.Add (new Point (12, 6));
+			arrow.Points.Add (new Point (0, 3));
+			arrow.Points.Add (new Point (3, 6));
+			arrow.Points.Add (new Point (6, 3));
 			content.Children.Add (arrow);
 
 			Items.Add (new MenuItem {
