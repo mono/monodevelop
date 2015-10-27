@@ -129,7 +129,7 @@ namespace MonoDevelop.Debugger
 			// just run, so the label has to be changed accordingly.
 			if (!DebuggingService.IsDebuggingSupported) {
 				info.Text = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted ? GettextCatalog.GetString ("Start Without Debugging") : GettextCatalog.GetString ("Restart Without Debugging");
-				info.Icon = "gtk-execute";
+				info.Icon = Stock.RunProgramIcon;
 			}
 
 			if (IdeApp.Workspace.IsOpen) {
