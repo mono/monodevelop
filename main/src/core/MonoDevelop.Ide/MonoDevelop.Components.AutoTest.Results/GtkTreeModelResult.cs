@@ -257,21 +257,6 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return false;
 		}
 
-		public override bool TypeKey (char key, string state = "")
-		{
-			return false;
-		}
-
-		public override bool TypeKey (string keyString, string state = "")
-		{
-			throw new NotImplementedException ();
-		}
-
-		public override bool EnterText (string text)
-		{
-			return false;
-		}
-
 		public override bool Toggle (bool active)
 		{
 			return false;
