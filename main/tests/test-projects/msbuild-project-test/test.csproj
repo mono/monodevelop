@@ -11,6 +11,8 @@
     <AssemblyName>ConsoleProject</AssemblyName>
     <TestProp>TestVal</TestProp>
     <EvalProp>$(TestProp)</EvalProp>
+  	<Foo>support\file1.txt</Foo>
+  	<ExistsTest Condition="Exists('$(Foo)')">OK</ExistsTest>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>

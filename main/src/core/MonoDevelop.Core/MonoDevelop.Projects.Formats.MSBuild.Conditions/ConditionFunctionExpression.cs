@@ -104,13 +104,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
 		static bool Exists (string file, IExpressionContext context)
 		{
 			string directory  = null;
-			
+
 			if (context.FullFileName != String.Empty)
 				directory = Path.GetDirectoryName (context.FullFileName);
-				
-			if (!Path.IsPathRooted (file) && directory != null && directory != String.Empty)
-				file = Path.Combine (directory, file);
-		
+
+			file = MSBuildProjectService.FromMSBuildPath (directory, file);
+
 			return File.Exists (file) || Directory.Exists (file);
 		}
 

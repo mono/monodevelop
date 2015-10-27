@@ -169,6 +169,15 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public void EvalExists ()
+		{
+			var p = LoadProject ();
+			p.Evaluate ();
+			var res = p.EvaluatedProperties.GetValue ("ExistsTest");
+			Assert.AreEqual ("OK", res);
+		}
+
+		[Test]
 		public void ImportGroups ()
 		{
 			string projectFile = Util.GetSampleProject ("project-with-import-groups", "import-group-test.csproj");

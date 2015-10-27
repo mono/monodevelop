@@ -57,6 +57,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public MSBuildEvaluationContext (MSBuildEvaluationContext parentContext)
 		{
 			this.parentContext = parentContext;
+			this.project = parentContext.project;
 		}
 
 		internal void InitEvaluation (MSBuildProject project)
