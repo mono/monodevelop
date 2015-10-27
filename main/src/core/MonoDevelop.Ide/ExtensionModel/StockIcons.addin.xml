@@ -43,14 +43,17 @@
 	<StockIcon stockid="gtk-copy" resource="copy-16.png" size="Menu" />
 	<StockIcon stockid="gtk-delete" resource="remove-16.png" size="Menu" />
 	<StockIcon stockid="gtk-edit" resource="edit-16.png" size="Menu" />
+	<StockIcon stockid="gtk-execute" resource="execute-16.png" size="Menu" />
 	<StockIcon stockid="gtk-find" resource="find-16.png" size="Menu" />
 	<StockIcon stockid="gtk-find-and-replace" resource="find-and-replace-16.png" size="Menu" />
 	<StockIcon stockid="gtk-go-back" resource="go-back-16.png" size="Menu" />
 	<StockIcon stockid="gtk-go-down" resource="go-down-16.png" size="Menu" />
 	<StockIcon stockid="gtk-go-forward" resource="go-forward-16.png" size="Menu" />
 	<StockIcon stockid="gtk-go-up" resource="go-up-16.png" size="Menu" />
+	<StockIcon stockid="gtk-help" resource="help-16.png" size="Menu" />
 	<StockIcon stockid="gtk-home" resource="home-16.png" size="Menu" />
 	<StockIcon stockid="gtk-jump-to" resource="jump-to-16.png" size="Menu" />
+	<StockIcon stockid="gtk-info" resource="information-16.png" size="Menu" />
 	<StockIcon stockid="gtk-media-play" resource="media-play-16.png" size="Menu" />
 	<StockIcon stockid="gtk-missing-image" resource="missing-image-16.png" size="Menu" />
 	<StockIcon stockid="gtk-new" resource="add-16.png" size="Menu" />
