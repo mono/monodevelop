@@ -43,7 +43,7 @@ type FSharpTooltipProvider() =
         maybe {
           let! pd = Option.tryCast<FSharpParsedDocument> context.ParsedDocument
           let! tokens = pd.Tokens
-          let (Tokens.TokenisedLine(_lineNumber, _offset, lineTokens, _state)) = tokens.[line-1]
+          let (Tokens.TokenisedLine(_lineDetail, lineTokens, _state)) = tokens.[line-1]
           return! lineTokens |> List.tryFind (fun t -> col >= t.LeftColumn && col <= t.RightColumn) }
 
       let isTokenInvalid = 
