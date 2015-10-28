@@ -247,6 +247,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenWindowList" />
 		<SeparatorItem id = "windowDocSep" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenDocumentList" />
+		<SeparatorItem id = "docMinimizeSep" />
 	</ItemSet> 
 
 	<ItemSet id = "Help" _label = "_Help">
