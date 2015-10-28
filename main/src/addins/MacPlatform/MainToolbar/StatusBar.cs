@@ -452,18 +452,25 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			DispatchService.AssertGuiThread ();
 
-			LoadText (message, isMarkup, color);
+			bool changed = LoadText (message, isMarkup, color);
 			LoadPixbuf (image);
-			ReconstructString (updateTrackingAreas: true);
+			if (changed)
+				ReconstructString (updateTrackingAreas: true);
 		}
 
-		void LoadText (string message, bool isMarkup, NSColor color)
+		bool LoadText (string message, bool isMarkup, NSColor color)
 		{
 			message = message ?? "";
+			message = message.Replace (Environment.NewLine, " ").Replace ("\n", " ").Trim ();
 
-			text = message.Replace (Environment.NewLine, " ").Replace ("\n", " ").Trim ();
+			if (message == text)
+				return false;
+
+			text = message;
 			currentTextIsMarkup = isMarkup;
 			textColor = color;
+
+			return true;
 		}
 
 		static bool iconLoaded;
