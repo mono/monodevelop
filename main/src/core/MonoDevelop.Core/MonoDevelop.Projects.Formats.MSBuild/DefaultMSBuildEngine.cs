@@ -163,21 +163,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void EvaluateProject (ProjectInfo pi, MSBuildEvaluationContext context)
 		{
-			lock (pi.Project) {
-				// XmlDocument is not thread safe, so we need to lock while evaluating
-				context.InitEvaluation (pi.Project);
-				EvaluateObjects (pi, context, pi.Project.GetAllObjects (), false);
-				EvaluateObjects (pi, context, pi.Project.GetAllObjects (), true);
-			}
+			context.InitEvaluation (pi.Project);
+			EvaluateObjects (pi, context, pi.Project.GetAllObjects (), false);
+			EvaluateObjects (pi, context, pi.Project.GetAllObjects (), true);
 		}
 
 		void EvaluateProject (ProjectInfo pi, MSBuildEvaluationContext context, bool evalItems)
 		{
-			lock (pi.Project) {
-				// XmlDocument is not thread safe, so we need to lock while evaluating
-				context.InitEvaluation (pi.Project);
-				EvaluateObjects (pi, context, pi.Project.GetAllObjects (), evalItems);
-			}
+			// XmlDocument is not thread safe, so we need to lock while evaluating
+			context.InitEvaluation (pi.Project);
+			EvaluateObjects (pi, context, pi.Project.GetAllObjects (), evalItems);
 		}
 
 		void EvaluateObjects (ProjectInfo pi, MSBuildEvaluationContext context, IEnumerable<MSBuildObject> objects, bool evalItems)
