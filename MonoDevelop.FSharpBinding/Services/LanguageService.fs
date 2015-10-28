@@ -303,7 +303,6 @@ type LanguageService(dirtyNotify) =
           entry
       | None, cache ->
           LoggingService.LogDebug ("LanguageService: GetProjectCheckerOptions: Generating ProjectOptions for:{0}", Path.GetFileName(projFilename))
-          let sw = Diagnostics.Stopwatch.StartNew()
           let filename = Path.Combine(Reflection.Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName, "CompilerService.exe")
           let processName = 
             if Environment.runningOnMono then Environment.getMonoPath() else filename
@@ -315,14 +314,12 @@ type LanguageService(dirtyNotify) =
             use proc =
               let startInfo = ProcessStartInfo(processName, arguments, RedirectStandardError = false, RedirectStandardOutput = true, 
                                                RedirectStandardInput = true, UseShellExecute = false, CreateNoWindow = true)
-              sw.Stop()
-              LoggingService.LogDebug("LanguageService: processStart creation: {0}", sw.Elapsed.TotalMilliseconds)
               new Process(EnableRaisingEvents = true, StartInfo = startInfo)
 
             let started = proc.Start()
             let exited = proc.WaitForExit(ServiceSettings.maximumTimeout)
             let serializer =  FsPickler.CreateJsonSerializer()
-            let optsNew = serializer.Deserialize<FSharpProjectOptions>(proc.StandardOutput.BaseStream)
+            let optsNew = serializer.Deserialize(proc.StandardOutput.BaseStream)
 
             //let opts = checker.GetProjectOptionsFromProjectFile(projFilename, properties)
             projectInfoCache := cache.Add (key, optsNew)
