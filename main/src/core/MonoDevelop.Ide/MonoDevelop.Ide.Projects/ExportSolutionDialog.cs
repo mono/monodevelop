@@ -46,8 +46,12 @@ namespace MonoDevelop.Ide.Projects
 			labelNewFormat.Text = item.FileFormat.Name;
 			
 			formats = MSBuildFileFormat.GetSupportedFormats (item).ToArray ();
-			foreach (var format in formats)
-				comboFormat.AppendText (format.Name);
+			foreach (var format in formats) {
+				if (!string.IsNullOrEmpty (format.ProductDescription))
+					comboFormat.AppendText (string.Format ("{0} ({1})", format.Name, format.ProductDescription));
+				else 
+					comboFormat.AppendText (format.Name);
+			}
 
 			int sel = Array.IndexOf (formats, selectedFormat);
 			if (sel == -1) sel = 0;
