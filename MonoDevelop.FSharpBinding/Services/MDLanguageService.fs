@@ -47,6 +47,21 @@ module MonoDevelop =
            | null -> MonoDevelop.Projects.ConfigurationSelector.Default
            | config -> config
 
+    let visibleDocuments() = 
+      IdeApp.Workbench.Documents
+      |> Seq.filter (fun doc -> match doc.Window with
+                                | :? Gtk.Widget as w -> w.HasScreen
+                                | _ -> false )
+
+    let isDocumentVisible filename =
+      visibleDocuments() 
+      |> Seq.exists (fun d -> d.FileName.ToString() = filename)
+
+    let tryGetVisibleDocument filename =
+      visibleDocuments() 
+      |> Seq.tryFind (fun d -> d.FileName.ToString() = filename)
+
+
 /// Provides functionality for working with the F# interactive checker running in background
 type MDLanguageService() =
   /// Single instance of the language service. We don't want the VFS during tests, so set it to blank from tests
