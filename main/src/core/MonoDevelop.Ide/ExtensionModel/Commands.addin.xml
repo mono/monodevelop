@@ -710,6 +710,10 @@
 			_description = "Show previous document"
 			shortcut = "Control|Page_Up"
 			macShortcut = "Meta|{" />
+	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.OpenDocumentList"
+			defaultHandler = "MonoDevelop.Ide.Commands.OpenDocumentListHandler"
+			type="radio|array"
+			_label = "Document List" />
 	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.OpenWindowList"
 			defaultHandler = "MonoDevelop.Ide.Commands.OpenWindowListHandler"
 			type="radio|array"

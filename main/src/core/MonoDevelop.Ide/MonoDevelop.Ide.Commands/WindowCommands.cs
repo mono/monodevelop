@@ -39,6 +39,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		NextDocument,
 		PrevDocument,
+		OpenDocumentList,
 		OpenWindowList,
 		SplitWindowVertically,
 		SplitWindowHorizontally,
@@ -91,7 +92,7 @@ namespace MonoDevelop.Ide.Commands
 		}
 	}
 
-	internal class OpenWindowListHandler : CommandHandler
+	internal class OpenDocumentListHandler : CommandHandler
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
@@ -103,7 +104,7 @@ namespace MonoDevelop.Ide.Commands
 				commandInfo.Text = document.Window.Title.Replace ("_", "__");
 				if (document == IdeApp.Workbench.ActiveDocument) 
 					commandInfo.Checked = true; 
-				commandInfo.Description = GettextCatalog.GetString ("Activate window '{0}'", commandInfo.Text);
+				commandInfo.Description = GettextCatalog.GetString ("Activate document '{0}'", commandInfo.Text);
 				if (document.Window.ShowNotification) {
 					commandInfo.UseMarkup = true;
 					commandInfo.Text = "<span foreground=" + '"' + "blue" + '"' + ">" + commandInfo.Text + "</span>";
@@ -126,6 +127,34 @@ namespace MonoDevelop.Ide.Commands
 		{
 			Document document = (Document)dataItem;
 			document.Select ();
+		}
+	}
+
+	internal class OpenWindowListHandler : CommandHandler
+	{
+		protected override void Update (CommandArrayInfo info)
+		{
+			int i = 0;
+			foreach (Gtk.Window window in IdeApp.CommandService.TopLevelWindowStack) {
+
+				//Create CommandInfo object
+				CommandInfo commandInfo = new CommandInfo ();
+				commandInfo.Text = window.Title.Replace ("_", "__");
+				if (window.HasToplevelFocus)
+					commandInfo.Checked = true;
+				commandInfo.Description = GettextCatalog.GetString ("Activate window '{0}'", commandInfo.Text);
+
+				//Add menu item
+				info.Add (commandInfo, window);
+
+				i++;
+			}
+		}
+
+		protected override void Run (object dataItem)
+		{
+			Window window = (Window)dataItem;
+			window.Present ();
 		}
 	}
 

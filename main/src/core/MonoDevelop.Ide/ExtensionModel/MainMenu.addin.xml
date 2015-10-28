@@ -245,6 +245,8 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.SwitchSplitWindow" />-->
 		<SeparatorItem id = "contentSep" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenWindowList" />
+		<SeparatorItem id = "windowDocSep" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenDocumentList" />
 	</ItemSet> 
 
 	<ItemSet id = "Help" _label = "_Help">
