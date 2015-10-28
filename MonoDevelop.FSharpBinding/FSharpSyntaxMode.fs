@@ -354,17 +354,14 @@ type FSharpSyntaxMode(editor, context) =
     }
 
   override x.DocumentParsed() =
-    match IdeApp.Workbench.ActiveDocument with
-    | null -> ()
-    | doc when doc.FileName = FilePath.Null || doc.FileName <> editor.FileName -> ()
-    | _doc ->
-
+    if MonoDevelop.isDocumentVisible context.Name then
       LoggingService.LogDebug "F# semantic highlighting - DocumentParsed"
       let processedTokens = x.GetProcessedTokens()
       processedTokens |> Option.iter (fun _ ->
                            LoggingService.LogDebug "F# semantic highlighting - DocumentParsed applying coloured segments"
                            segments <- processedTokens
                            Gtk.Application.Invoke(fun _ _ -> x.NotifySemanticHighlightingUpdate()))
+
 
   override x.GetColoredSegments(segment) = 
     let line = editor.GetLineByOffset segment.Offset
