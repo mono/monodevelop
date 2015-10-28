@@ -354,14 +354,14 @@ namespace MonoDevelop.Ide
 			Export (item, null);
 		}
 		
-		public void Export (IMSBuildFileObject item, MSBuildFileFormat format)
+		public async void Export (IMSBuildFileObject item, MSBuildFileFormat format)
 		{
 			ExportSolutionDialog dlg = new ExportSolutionDialog (item, format);
 			
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 					using (ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetToolOutputProgressMonitor (true)) {
-						Services.ProjectService.Export (monitor, item.FileName, dlg.TargetFolder, dlg.Format);
+						await Services.ProjectService.Export (monitor, item.FileName, dlg.TargetFolder, dlg.Format);
 					}
 				}
 			} finally {
