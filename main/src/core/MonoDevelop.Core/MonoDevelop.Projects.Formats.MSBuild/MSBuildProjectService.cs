@@ -128,7 +128,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			// Get item type nodes
 
-			itemTypeNodes = AddinManager.GetExtensionNodes<ExtensionNode> (ItemTypesExtensionPath).ToArray ();
+			itemTypeNodes = AddinManager.GetExtensionNodes<ExtensionNode> (ItemTypesExtensionPath).Concat (Enumerable.Repeat (GenericItemNode.Instance,1)).ToArray ();
 
 			// Get import redirects
 
@@ -1145,13 +1145,29 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public bool? RawValue { get; private set; }
 	}
-	
-	[ExportProjectType (MSBuildProjectService.GenericItemGuid, Extension="mdproj")]
-	class GenericItemFactory: SolutionItemFactory
+
+	class GenericItemNode : SolutionItemTypeNode
 	{
-		public override Task<SolutionItem> CreateItem (string fileName, string typeGuid)
+		public static readonly GenericItemNode Instance = new GenericItemNode ();
+
+		public GenericItemNode ()
 		{
-			return MSBuildProjectService.CreateGenericProject (fileName);
+			Guid = MSBuildProjectService.GenericItemGuid;
+			Extension = "mdproj";
+		}
+
+		public override Type ItemType {
+			get {
+				return typeof (GenericItemFactory);
+			}
+		}
+
+		class GenericItemFactory: SolutionItemFactory
+		{
+			public override Task<SolutionItem> CreateItem (string fileName, string typeGuid)
+			{
+				return MSBuildProjectService.CreateGenericProject (fileName);
+			}
 		}
 	}
 
