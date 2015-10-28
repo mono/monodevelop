@@ -101,6 +101,7 @@ namespace MonoDevelop.Debugger
 				IdeApp.Workspace.LoadingUserPreferences += OnLoadUserPrefs;
 				IdeApp.Workspace.LastWorkspaceItemClosed += OnSolutionClosed;
 				busyDialog = new BusyEvaluatorDialog ();
+				busyDialog.Modal = true;
 				busyDialog.TransientFor = MessageService.RootWindow;
 				busyDialog.DestroyWithParent = true;
 			};
@@ -710,7 +711,7 @@ namespace MonoDevelop.Debugger
 					if (busyStatusIcon == null) {
 						busyStatusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon ("md-execute-debug", Gtk.IconSize.Menu));
 						busyStatusIcon.SetAlertMode (100);
-						busyStatusIcon.ToolTip = GettextCatalog.GetString ("The Debugger is waiting for an expression evaluation to finish.");
+						busyStatusIcon.ToolTip = GettextCatalog.GetString ("The debugger runtime is not responding. You can wait for it to recover, or stop debugging.");
 						busyStatusIcon.Clicked += delegate {
 							MessageService.PlaceDialog (busyDialog, MessageService.RootWindow);
 						};
