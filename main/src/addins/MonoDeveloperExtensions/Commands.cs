@@ -53,11 +53,11 @@ namespace MonoDeveloper
 			info.Visible = IdeApp.ProjectOperations.CurrentSelectedItem is MonoMakefileProjectExtension;
 		}
 		
-		void Install (object prj)
+		async void Install (object prj)
 		{
 			DotNetProject p = prj as DotNetProject;
 			using (ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ()) {
-				p.RunTarget (monitor, "install", IdeApp.Workspace.ActiveConfiguration);
+				await p.RunTarget (monitor, "install", IdeApp.Workspace.ActiveConfiguration);
 			}
 		}
 
