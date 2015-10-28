@@ -98,6 +98,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		protected override void Dispose (bool finalize)
 		{
 			base.Dispose (finalize);
+			CancelLoad ();
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
 			}
@@ -384,6 +385,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			var projectData = GetOrCreateProjectData (projectId);
 			return Task.Run (async () => {
 				var references = await CreateMetadataReferences (p, projectId, token).ConfigureAwait (false);
+				if (token.IsCancellationRequested)
+					return null;
 				var config = IdeApp.Workspace != null ? p.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : null;
 				MonoDevelop.Projects.DotNetCompilerParameters cp = null;
 				if (config != null)
@@ -407,7 +410,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				);
 				projectData.Info = info;
 				return info;
-			});
+			}, token);
 		}
 
 		internal void UpdateProjectionEnntry (MonoDevelop.Projects.ProjectFile projectFile, IReadOnlyList<Projection> projections)
