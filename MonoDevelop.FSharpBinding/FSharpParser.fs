@@ -62,36 +62,39 @@ type FSharpParser() =
             let shortFilename = Path.GetFileName fileName
             LoggingService.LogDebug ("FSharpParser: Parse starting on {0}", shortFilename)
 
-            let curVersion = parseOptions.Content.Version
-            let isObsolete =
+            let isObsolete filename version =
                 SourceCodeServices.IsResultObsolete(fun () ->
                 try
-                  let doc = IdeApp.Workbench.GetDocument(parseOptions.FileName)
-                  let newVersion = doc.Editor.Version
-                  if cancellationToken.IsCancellationRequested
-                  then
+                  if not cancellationToken.IsCancellationRequested then
+                    match MonoDevelop.tryGetVisibleDocument filename with
+                    | Some doc ->
+                      let newVersion = doc.Editor.Version
+                      if newVersion.BelongsToSameDocumentAs(version) && newVersion.CompareAge(version) = 0 then
+                        false
+                      else
+                        LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled, file has changed", shortFilename)
+                        true
+                    | None ->
+                      LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled, file no longer visible", shortFilename)
+                      true
+                  else
                     LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled by cancellationToken", shortFilename)
                     true
-                  elif newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
-                  then
-                    false
-                  else
-                    LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled", shortFilename)
-                    true
                 with ex ->
-                  LoggingService.LogDebug ("FSharpParser: Parse {0} unable to determine cancellation", shortFilename, ex)
+                  LoggingService.LogDebug ("FSharpParser: Parse {0} unable to determine cancellation due to exception", shortFilename, ex)
                   false ) 
 
             let doc = new FSharpParsedDocument(fileName, Flags = ParsedDocumentFlags.NonSerializable)
                                    
             match tryGetFilePath fileName proj with
-            | None -> ()
             | Some filePath -> 
                 LoggingService.LogDebug ("FSharpParser: Running ParseAndCheckFileInProject for {0}", shortFilename)
                 let projectFile = proj |> function null -> filePath | proj -> proj.FileName.ToString()
-                let! results = languageService.ParseAndCheckFileInProject(projectFile, filePath, 0, content.Text, isObsolete)
+                let! results = languageService.ParseAndCheckFileInProject(projectFile, filePath, 0, content.Text, isObsolete parseOptions.FileName parseOptions.Content.Version)
                 LoggingService.LogDebug ("FSharpParser: Parse and check results retieved on {0}", shortFilename)
                 results.GetErrors() |> (Seq.map formatError >> doc.AddRange)
+                //if you ever want to see the current parse tree
+                //let pt = match results.ParseTree with Some pt -> sprintf "%A" pt | _ -> "" 
 
                 //Try creating tokens
                 LoggingService.LogDebug ("FSharpParser: Processing tokens on {0}", shortFilename)
@@ -111,11 +114,10 @@ type FSharpParser() =
                 LoggingService.LogDebug ("FSharpParser: Processing symbol uses on {0}", shortFilename)
                 let! allSymbolUses = results.GetAllUsesOfAllSymbolsInFile()
                 match allSymbolUses with
-                | Some su ->
-                  su
-                  |> Array.iter 
-                       (fun s -> if not (doc.AllSymbolsKeyed.ContainsKey s.RangeAlternate.End)
-                                 then doc.AllSymbolsKeyed.Add(s.RangeAlternate.End, s))
+                | Some symbolUses ->
+                  for symbolUse in symbolUses do
+                    if not (doc.AllSymbolsKeyed.ContainsKey symbolUse.RangeAlternate.End)
+                    then doc.AllSymbolsKeyed.Add(symbolUse.RangeAlternate.End, symbolUse)
                 | None -> ()
 
                 //Set code folding regions, GetNavigationItems may throw in some situations
@@ -133,6 +135,7 @@ type FSharpParser() =
                 with ex -> LoggingService.LogWarning ("FSharpParser: Couldn't update navigation items.", ex)
                 //Store the AST of active results
                 doc.Ast <- results
+            | None -> ()
 
             doc.LastWriteTimeUtc <- try File.GetLastWriteTimeUtc(fileName) with _ -> DateTime.UtcNow
             LoggingService.LogDebug ("FSharpParser: returning ParsedDocument on {0}", shortFilename)
