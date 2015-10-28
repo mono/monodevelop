@@ -37,8 +37,8 @@ namespace MonoDevelop.Ide.Commands
 {
 	public enum WindowCommands
 	{
-		NextWindow,
-		PrevWindow,
+		NextDocument,
+		PrevDocument,
 		OpenWindowList,
 		SplitWindowVertically,
 		SplitWindowHorizontally,
@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Commands
 		SwitchPreviousDocument
 	}
 
-	internal class NextWindowHandler : CommandHandler
+	internal class NextDocumentHandler : CommandHandler
 	{
 		protected override void Update (CommandInfo info)
 		{
@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.Commands
 		}
 	}
 
-	internal class PrevWindowHandler : CommandHandler
+	internal class PrevDocumentHandler : CommandHandler
 	{
 		protected override void Update (CommandInfo info)
 		{
@@ -223,7 +223,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			//FIXME: does this option need to exist?
 			if (!PropertyService.Get ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", true)) {
-				IdeApp.CommandService.DispatchCommand (next? WindowCommands.NextWindow : WindowCommands.PrevWindow);
+				IdeApp.CommandService.DispatchCommand (next? WindowCommands.NextDocument : WindowCommands.PrevDocument);
 				return;
 			}
 			
