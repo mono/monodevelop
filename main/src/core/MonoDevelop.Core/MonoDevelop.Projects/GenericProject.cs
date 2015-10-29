@@ -44,6 +44,11 @@ namespace MonoDevelop.Projects
 			Configurations.Add (CreateConfiguration ("Default"));
 		}
 
+		protected override void OnInitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement template)
+		{
+			Configurations.Add (CreateConfiguration ("Default"));
+		}
+
 		protected override SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind)
 		{
 			GenericProjectConfiguration conf = new GenericProjectConfiguration (name);

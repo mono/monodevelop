@@ -607,6 +607,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal static Task<SolutionItem> CreateGenericProject (string file)
 		{
+			if (file == null)
+				return Task.FromResult<SolutionItem> (new GenericProject ());
+
 			return Task<SolutionItem>.Factory.StartNew (delegate {
 				var t = ReadGenericProjectType (file);
 				if (t == null)
@@ -1146,7 +1149,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public bool? RawValue { get; private set; }
 	}
 
-	class GenericItemNode : SolutionItemTypeNode
+	class GenericItemNode : ProjectTypeNode
 	{
 		public static readonly GenericItemNode Instance = new GenericItemNode ();
 
@@ -1154,6 +1157,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			Guid = MSBuildProjectService.GenericItemGuid;
 			Extension = "mdproj";
+			TypeAlias = "GenericProject";
 		}
 
 		public override Type ItemType {
