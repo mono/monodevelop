@@ -693,20 +693,24 @@
 	<!-- WindowCommands -->
 	<Category _name = "Window" id = "Window">
 
-	<Command id  = "MonoDevelop.Ide.Commands.WindowCommands.NextWindow"
-			defaultHandler = "MonoDevelop.Ide.Commands.NextWindowHandler"
-			_label = "_Next Window"
+	<Command id  = "MonoDevelop.Ide.Commands.WindowCommands.NextDocument"
+			defaultHandler = "MonoDevelop.Ide.Commands.NextDocumentHandler"
+			_label = "_Next Document"
 			icon = "gtk-go-forward"
-			_description = "Show next window"
+			_description = "Show next document"
 			shortcut = "Control|Page_Down"
 			macShortcut = "Meta|}" />
-	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.PrevWindow"
-			defaultHandler = "MonoDevelop.Ide.Commands.PrevWindowHandler"
-			_label = "_Previous Window"
+	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.PrevDocument"
+			defaultHandler = "MonoDevelop.Ide.Commands.PrevDocumentHandler"
+			_label = "_Previous Document"
 			icon = "gtk-go-back"
-			_description = "Show previous window"
+			_description = "Show previous document"
 			shortcut = "Control|Page_Up"
 			macShortcut = "Meta|{" />
+	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.OpenDocumentList"
+			defaultHandler = "MonoDevelop.Ide.Commands.OpenDocumentListHandler"
+			type="radio|array"
+			_label = "Document List" />
 	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.OpenWindowList"
 			defaultHandler = "MonoDevelop.Ide.Commands.OpenWindowListHandler"
 			type="radio|array"

@@ -416,6 +416,7 @@ namespace MonoDevelop.Components.Docking
 				SetRegionStyle (frame.GetRegionStyleForItem (this));
 
 				floatingWindow = new DockFloatingWindow ((Window)frame.Toplevel, GetWindowTitle ());
+				Ide.IdeApp.CommandService.RegisterTopWindow (floatingWindow);
 
 				VBox box = new VBox ();
 				box.Show ();

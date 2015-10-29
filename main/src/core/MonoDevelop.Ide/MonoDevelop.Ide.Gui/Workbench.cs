@@ -203,9 +203,12 @@ namespace MonoDevelop.Ide.Gui
 				if (toplevel == RootWindow)
 					return true;
 				#if WIN32
-				var wpfWindow = System.Windows.Application.Current.Windows.OfType<System.Windows.Window>().SingleOrDefault (x => x.IsActive);
-				if (wpfWindow != null)
-					return true;
+				var app = System.Windows.Application.Current;
+				if (app != null) {
+					var wpfWindow = app.Windows.OfType<System.Windows.Window>().SingleOrDefault (x => x.IsActive);
+					if (wpfWindow != null)
+						return true;
+				}
 				#endif
 				var dock = toplevel as DockFloatingWindow;
 				return dock != null && dock.DockParent == RootWindow;
