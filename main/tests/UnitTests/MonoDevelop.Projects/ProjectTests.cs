@@ -487,6 +487,32 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public void CreateGenericProject ()
+		{
+			var info = new ProjectCreateInformation ();
+			info.ProjectName = "Some.Test";
+			info.ProjectBasePath = "/tmp/test";
+			var doc = new XmlDocument ();
+			var projectOptions = doc.CreateElement ("Options");
+			var p = (GenericProject) Services.ProjectService.CreateProject ("GenericProject", info, projectOptions);
+			Assert.AreEqual ("Default", p.Configurations [0].Name);
+		}
+
+		[Test]
+		public async Task LoadGenericProject ()
+		{
+			string solFile = Util.GetSampleProject ("generic-project", "generic-project.sln");
+
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = sol.FindProjectByName ("GenericProject");
+
+			Assert.IsInstanceOf<GenericProject> (p);
+
+			var pl = (GenericProject)p;
+			Assert.AreEqual ("Default", pl.Configurations [0].Name);
+		}
+
+		[Test]
 		public void SanitizeProjectNamespace ()
 		{
 			var info = new ProjectCreateInformation {
