@@ -52,7 +52,6 @@ namespace MonoDevelop.Ide
 //		IParserDatabase parserDatabase;
 		string activeConfiguration;
 		bool useDefaultRuntime;
-		string preferredActiveExecutionTarget;
 
 		ProjectFileEventHandler fileAddedToProjectHandler;
 		ProjectFileEventHandler fileRemovedFromProjectHandler;
@@ -151,11 +150,6 @@ namespace MonoDevelop.Ide
 		{
 			if (ActiveExecutionTargetChanged != null)
 				ActiveExecutionTargetChanged (this, EventArgs.Empty);
-		}
-
-		internal string PreferredActiveExecutionTarget {
-			get { return ActiveExecutionTarget != null ? ActiveExecutionTarget.Id : preferredActiveExecutionTarget; }
-			set { preferredActiveExecutionTarget = value; }
 		}
 
 		public ConfigurationSelector ActiveConfiguration {
@@ -693,7 +687,6 @@ namespace MonoDevelop.Ide
 			try {
 				WorkspaceUserData data = item.UserProperties.GetValue<WorkspaceUserData> ("MonoDevelop.Ide.Workspace");
 				if (data != null) {
-					PreferredActiveExecutionTarget = data.PreferredExecutionTarget;
 					ActiveExecutionTarget = null;
 
 					if (GetConfigurations ().Contains (data.ActiveConfiguration))
@@ -762,8 +755,6 @@ namespace MonoDevelop.Ide
 			WorkspaceUserData data = new WorkspaceUserData ();
 			data.ActiveConfiguration = ActiveConfigurationId;
 			data.ActiveRuntime = UseDefaultRuntime ? null : ActiveRuntime.Id;
-			if (ActiveExecutionTarget != null)
-				data.PreferredExecutionTarget = ActiveExecutionTarget.Id;
 			item.UserProperties.SetValue ("MonoDevelop.Ide.Workspace", data);
 			
 			// Allow add-ins to fill-up data
@@ -1497,8 +1488,6 @@ namespace MonoDevelop.Ide
 		public string ActiveConfiguration;
 		[ItemProperty]
 		public string ActiveRuntime;
-		[ItemProperty]
-		public string PreferredExecutionTarget;
 	}
 	
 	public class ItemUnloadingEventArgs: EventArgs
