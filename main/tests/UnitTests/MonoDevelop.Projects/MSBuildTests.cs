@@ -1341,8 +1341,8 @@ namespace MonoDevelop.Projects
 
 			await p.SaveAsync (Util.GetMonitor ());
 
-			var refXml = Util.ToSystemEndings (File.ReadAllText (p.FileName + ".config-copied"));
-			var savedXml = File.ReadAllText (p.FileName);
+			var refXml = Util.ToWindowsEndings (File.ReadAllText (p.FileName + ".config-copied"));
+			var savedXml = Util.ToWindowsEndings (File.ReadAllText (p.FileName));
 			Assert.AreEqual (refXml, savedXml);
 		}
 
