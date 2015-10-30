@@ -370,6 +370,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			project.FileRemovedFromProject -= OnFileRemoved;
 			project.FileRenamedInProject -= OnFileRenamed;
 			project.Modified -= OnProjectModified;
+			project.FileChangedInProject -= OnFileChanged;
 		}
 
 		Task<ProjectInfo> LoadProject (MonoDevelop.Projects.Project p, CancellationToken token)
@@ -379,6 +380,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				p.FileRemovedFromProject += OnFileRemoved;
 				p.FileRenamedInProject += OnFileRenamed;
 				p.Modified += OnProjectModified;
+				p.FileChangedInProject += OnFileChanged;
 			}
 
 			var projectId = GetOrCreateProjectId (p);
@@ -394,6 +396,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				FilePath fileName = IdeApp.Workspace != null ? p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration) : (FilePath)"";
 				if (fileName.IsNullOrEmpty)
 					fileName = new FilePath (p.Name + ".dll");
+
+				var sourceFiles = await p.GetSourceFilesAsync (config != null ? config.Selector : null).ConfigureAwait (false);
+
 				var info = ProjectInfo.Create (
 					projectId,
 					VersionStamp.Create (),
@@ -404,7 +409,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					fileName,
 					cp != null ? cp.CreateCompilationOptions () : null,
 					cp != null ? cp.CreateParseOptions () : null,
-					CreateDocuments (projectData, p, token),
+					CreateDocuments (projectData, p, token, sourceFiles),
 					CreateProjectReferences (p, token),
 					references
 				);
@@ -460,10 +465,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			public IReadOnlyList<Projection> Projections;
 		}
 
-		IEnumerable<DocumentInfo> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token)
+		IEnumerable<DocumentInfo> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.ProjectFile[] sourceFiles)
 		{
 			var duplicates = new HashSet<DocumentId> ();
-			foreach (var f in p.Files) {
+
+			// use given source files instead of project.Files because there may be additional files added by msbuild targets
+			foreach (var f in sourceFiles) {
 				if (token.IsCancellationRequested)
 					yield break;
 				if (f.Subtype == MonoDevelop.Projects.Subtype.Directory)
@@ -894,7 +901,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		#region Project modification handlers
 
-		void OnFileAdded (object sender, MonoDevelop.Projects.ProjectFileEventArgs args)
+		async void OnFileAdded (object sender, MonoDevelop.Projects.ProjectFileEventArgs args)
 		{
 			if (internalChanges)
 				return;
@@ -908,10 +915,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				var projectId = GetProjectId (project);
 				var newDocument = CreateDocumentInfo(solutionData, project.Name, GetProjectData(projectId), projectFile);
 				OnDocumentAdded (newDocument);
+
+				// update generators if the new file has any
+				await HandleGenerator (fargs.ProjectFile, fargs.Project);
 			}
 		}
 
-		void OnFileRemoved (object sender, MonoDevelop.Projects.ProjectFileEventArgs args)
+		async void OnFileRemoved (object sender, MonoDevelop.Projects.ProjectFileEventArgs args)
 		{
 			if (internalChanges)
 				return;
@@ -925,6 +935,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					OnDocumentRemoved (id);
 					data.RemoveDocument (fargs.ProjectFile.FilePath);
 				}
+
+				// update generators if the new file has any
+				await HandleGenerator (fargs.ProjectFile, fargs.Project);
 			}
 		}
 
@@ -954,6 +967,56 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				var newDocument = CreateDocumentInfo (solutionData, project.Name, GetProjectData (projectId), projectFile);
 				OnDocumentAdded (newDocument);
+			}
+		}
+
+		async void OnFileChanged (object sender, MonoDevelop.Projects.ProjectFileEventArgs args)
+		{
+			foreach (var fileChange in args) {
+				// update generators if the new file has any
+				await HandleGenerator (fileChange.ProjectFile, fileChange.Project);
+			}
+		}
+
+		/// <summary>
+		/// Processes any genrator targets that the file might have associated with it
+		/// </summary>
+		async Task HandleGenerator (MonoDevelop.Projects.ProjectFile file, MonoDevelop.Projects.Project project) 
+		{
+			if (!string.IsNullOrEmpty (file.Generator)) {
+				var generatorTargets = file.Generator.Split (new string [] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+
+				foreach (var target in generatorTargets) {
+					await HandleGenerator (file, project, target);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Processes the genrator target that the file might have associated with it
+		/// </summary>
+		async Task HandleGenerator (MonoDevelop.Projects.ProjectFile file, MonoDevelop.Projects.Project project, string generatorTarget) 
+		{
+			if (!string.IsNullOrEmpty (generatorTarget)) {
+				// I think the 'msbuild:' may be optional, some examples I've seen seem to indicate this
+				if (generatorTarget.StartsWith ("msbuild:", StringComparison.OrdinalIgnoreCase)) {
+					generatorTarget = generatorTarget.Substring ("msbuild:".Length);
+				}
+
+				// now we need to run the target
+				// Q. Do we need to examine the compile items and add in any files, or can we assume from the 
+				// prior run of CoreCompileDependsOn that we know about all the files already?
+				// A. Probably shouldn't need to, but we do need to tell XS that the file may have changed - to update the type system
+				if (!string.IsNullOrEmpty (generatorTarget)) {
+					var config = IdeApp.Workspace != null ? project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : null;
+					var changedFiles = await project.PerformGeneratorAsync (config != null ? config.Selector : null, generatorTarget);
+					foreach (var f in changedFiles) {
+						// guard against recursion, we don't want to get stuck here
+						if (file.FilePath != f.FilePath) {
+							FileService.NotifyFileChanged (f.FilePath);
+						}
+					}
+				}
 			}
 		}
 
