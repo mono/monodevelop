@@ -400,6 +400,12 @@ namespace MonoDevelop.Components.AutoTest.Results
 			case "TAB":
 				return Gdk.Key.Tab;
 
+			case "BKSP":
+				return Gdk.Key.BackSpace;
+
+			case "DELETE":
+				return Gdk.Key.Delete;
+
 			default:
 				throw new Exception ("Unknown keystring: " + keyString);
 			}
