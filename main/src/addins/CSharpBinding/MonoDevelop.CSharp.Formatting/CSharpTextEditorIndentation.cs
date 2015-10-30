@@ -304,7 +304,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public bool DoInsertTemplate ()
 		{
-			string word = CodeTemplate.GetWordBeforeCaret (Editor);
+			string word = CodeTemplate.GetTemplateShortcutBeforeCaret (Editor);
 			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplates (CSharpFormatter.MimeType)) {
 				if (template.Shortcut == word)
 					return true;

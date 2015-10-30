@@ -643,28 +643,15 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 #region Templates
-		int FindPrevWordStart (int offset)
-		{
-			while (--offset >= 0 && !Char.IsWhiteSpace (Document.GetCharAt (offset))) 
-				;
-			return ++offset;
-		}
 
-		public string GetWordBeforeCaret ()
-		{
-			int offset = this.Caret.Offset;
-			int start  = FindPrevWordStart (offset);
-			return Document.GetTextAt (start, offset - start);
-		}
-		
 		public bool IsTemplateKnown ()
 		{
-			string word = GetWordBeforeCaret ();
+			string shortcut = CodeTemplate.GetTemplateShortcutBeforeCaret (EditorExtension.Editor);
 			bool result = false;
 			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplates (Document.MimeType)) {
-				if (template.Shortcut == word) {
+				if (template.Shortcut == shortcut) {
 					result = true;
-				} else if (template.Shortcut.StartsWith (word)) {
+				} else if (template.Shortcut.StartsWith (shortcut)) {
 					result = false;
 					break;
 				}
@@ -674,9 +661,9 @@ namespace MonoDevelop.SourceEditor
 		
 		public bool DoInsertTemplate ()
 		{
-			string word = GetWordBeforeCaret ();
+			string shortcut = CodeTemplate.GetTemplateShortcutBeforeCaret (EditorExtension.Editor);
 			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplates (Document.MimeType)) {
-				if (template.Shortcut == word) {
+				if (template.Shortcut == shortcut) {
 					InsertTemplate (template, view.WorkbenchWindow.Document.Editor, view.WorkbenchWindow.Document);
 					return true;
 				}
