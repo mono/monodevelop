@@ -289,7 +289,7 @@ namespace MonoDevelop.Projects
 				cancelToken.Register (() => cancelSource.Cancel ());
 
 				using (var monitor = new ProgressMonitor (cancelSource)) {
-					return await this.PerformGeneratorAsync (monitor, configuration, generatorTarget, cancelToken);
+					return await this.PerformGeneratorAsync (monitor, configuration, generatorTarget);
 				}
 			});
 		}
@@ -298,7 +298,7 @@ namespace MonoDevelop.Projects
 		/// Runs the generator target and returns any files that the target included into the compilation that were not already part of the 
 		/// build. This is the list of files assumed to have been possibly modified by the target.
 		/// </summary>
-		async Task<ProjectFile[]> PerformGeneratorAsync (ProgressMonitor monitor, ConfigurationSelector configuration, string generatorTarget, CancellationToken cancelToken)
+		async Task<ProjectFile[]> PerformGeneratorAsync (ProgressMonitor monitor, ConfigurationSelector configuration, string generatorTarget)
 		{
 			var ctx = new TargetEvaluationContext ();
 			ctx.ItemsToEvaluate.Add ("Compile");
@@ -332,7 +332,7 @@ namespace MonoDevelop.Projects
 				cancelToken.Register (() => cancelSource.Cancel ());
 
 				using (var monitor = new ProgressMonitor (cancelSource)) {
-					return await GetSourceFilesAsync (monitor, configuration, cancelToken);
+					return await GetSourceFilesAsync (monitor, configuration);
 				}
 			});
 		}
@@ -340,7 +340,7 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Gets the source files that are included in the project, including any that are added by `CoreCompileDependsOn`
 		/// </summary>
-		async Task<ProjectFile[]> GetSourceFilesAsync (ProgressMonitor monitor, ConfigurationSelector configuration, CancellationToken cancelToken)
+		async Task<ProjectFile[]> GetSourceFilesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			var coreCompileDependsOn = sourceProject.EvaluatedProperties.GetValue<string> ("CoreCompileDependsOn");
 
