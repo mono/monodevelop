@@ -337,6 +337,10 @@ namespace MonoDevelop.Projects
 			});
 		}
 
+		readonly object evaluatedCompileItemsLock = new object ();
+		List<ProjectFile> evaluatedCompileItems;
+		readonly ManualResetEvent evaluatedCompileItemsWaitHandle = new ManualResetEvent (false);
+
 		/// <summary>
 		/// Gets the source files that are included in the project, including any that are added by `CoreCompileDependsOn`
 		/// </summary>
@@ -350,26 +354,45 @@ namespace MonoDevelop.Projects
 			// pre-load the results with the current list of files in the project
 			var results = new List<ProjectFile> (this.Files);
 
-			var dependsList = coreCompileDependsOn.Split (new [] { ";" }, StringSplitOptions.RemoveEmptyEntries);
-			foreach (var dependTarget in dependsList) {
-				try {
-					// evaluate the Compile targets
-					var ctx = new TargetEvaluationContext ();
-					ctx.ItemsToEvaluate.Add ("Compile");
-
-					var evalResult = await this.RunTarget (monitor, dependTarget, configuration, ctx);
-					if (evalResult != null && !evalResult.BuildResult.HasErrors) {
-						var compileItems = evalResult.Items.Select (i =>
-																	new ProjectFile (Path.Combine (sourceProject.BaseDirectory, i.Include), "Compile") { Project = this }
-						                                           ).ToList ();
-
-						// add only files that aren't already in the list
-						results.AddRange (compileItems.Where (i =>  results.All (pi => pi.FilePath != i.FilePath)));
-					}
-				} catch (Exception ex) {
-					LoggingService.LogInternalError (string.Format ("Error running target {0}", dependTarget), ex);
+			var performEvaluation = false;
+			lock (evaluatedCompileItemsLock) {
+				if (evaluatedCompileItems == null) {
+					evaluatedCompileItems = new List<ProjectFile> ();
+					performEvaluation = true;
 				}
 			}
+
+			if (performEvaluation) {
+				var dependsList = coreCompileDependsOn.Split (new [] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+				foreach (var dependTarget in dependsList) {
+					try {
+						// evaluate the Compile targets
+						var ctx = new TargetEvaluationContext ();
+						ctx.ItemsToEvaluate.Add ("Compile");
+
+						var evalResult = await this.RunTarget (monitor, dependTarget, configuration, ctx);
+						if (evalResult != null && !evalResult.BuildResult.HasErrors) {
+							var evalItems = evalResult.Items.Select (i =>
+																		new ProjectFile (Path.Combine (sourceProject.BaseDirectory, i.Include), "Compile") { Project = this }
+																	   ).ToList ();
+
+							evaluatedCompileItems.AddRange (evalItems);
+						}
+					} catch (Exception ex) {
+						LoggingService.LogInternalError (string.Format ("Error running target {0}", dependTarget), ex);
+					}
+
+					evaluatedCompileItemsWaitHandle.Set ();
+				}
+			} else {
+				// wait for evaluation
+				await Task.Run (() => {
+					evaluatedCompileItemsWaitHandle.WaitOne ();
+				});
+			}
+
+			// add only files that aren't already in the list
+			results.AddRange (evaluatedCompileItems.Where (i =>  results.All (pi => pi.FilePath != i.FilePath)));
 
 			return results.ToArray ();
 		}
