@@ -283,6 +283,7 @@
     <Compile Include="MonoDevelop.Core\LoggingServiceTests.cs" />
     <Compile Include="MonoDevelop.Projects\PropertyBagTests.cs" />
     <Compile Include="MonoDevelop.Projects\TextFileTests.cs" />
+    <Compile Include="MonoDevelop.Projects\GetSourceFilesAsyncTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
