@@ -285,7 +285,10 @@ namespace MonoDevelop.Projects
 		public Task<ProjectFile[]> PerformGeneratorAsync (ConfigurationSelector configuration, string generatorTarget)
 		{
 			return BindTask<ProjectFile[]> (async cancelToken => {
-				using (var monitor = new ProgressMonitor ()) {
+				var cancelSource = new CancellationTokenSource ();
+				cancelToken.Register (() => cancelSource.Cancel ());
+
+				using (var monitor = new ProgressMonitor (cancelSource)) {
 					return await this.PerformGeneratorAsync (monitor, configuration, generatorTarget, cancelToken);
 				}
 			});
@@ -325,7 +328,10 @@ namespace MonoDevelop.Projects
 				return Task.FromResult (new ProjectFile [0]);
 
 			return BindTask<ProjectFile []> (async cancelToken => {
-				using (var monitor = new ProgressMonitor ()) {
+				var cancelSource = new CancellationTokenSource ();
+				cancelToken.Register (() => cancelSource.Cancel ());
+
+				using (var monitor = new ProgressMonitor (cancelSource)) {
 					return await GetSourceFilesAsync (monitor, configuration, cancelToken);
 				}
 			});
