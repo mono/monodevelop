@@ -72,7 +72,7 @@ namespace MonoDevelop.CSharp.Refactoring
 								offset = projectedOffset;
 							}
 							var sr = new SearchResult (new FileProvider (fileName), offset, loc.Location.SourceSpan.Length);
-							if (!antiDuplicatesSet.Add (sr)) {
+							if (antiDuplicatesSet.Add (sr)) {
 								monitor.ReportResult (sr);
 							}
 						}
@@ -128,7 +128,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					foreach (var simSym in SymbolFinder.FindSimilarSymbols (obj, compilation)) {
 						foreach (var loc in simSym.Locations) {
 							var sr = new SearchResult (new FileProvider (loc.SourceTree.FilePath), loc.SourceSpan.Start, loc.SourceSpan.Length);
-							if (!antiDuplicatesSet.Add (sr)) {
+							if (antiDuplicatesSet.Add (sr)) {
 								monitor.ReportResult (sr);
 							}
 						}
@@ -145,7 +145,7 @@ namespace MonoDevelop.CSharp.Refactoring
 								}
 
 								var sr = new SearchResult (new FileProvider (fileName), offset, loc.Location.SourceSpan.Length);
-								if (!antiDuplicatesSet.Add (sr)) {
+								if (antiDuplicatesSet.Add (sr)) {
 									monitor.ReportResult (sr);
 								}
 							}
