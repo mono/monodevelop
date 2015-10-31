@@ -111,7 +111,7 @@ namespace MonoDevelop.Platform
 			CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
 			var mainMenu = new Menu {
 				IsMainMenu = true,
-				Background = System.Windows.Media.Brushes.Transparent,
+				Background = global::WindowsPlatform.Styles.MainMenuBackgroundBrush,
 			};
 			foreach (CommandEntrySet ce in ces)
 				mainMenu.Items.Add (new TitleMenuItem (commandManager, ce));

@@ -37,13 +37,14 @@ namespace WindowsPlatform.MainToolbar
 				Orientation = Orientation.Horizontal,
 			};
 
+			Foreground = Styles.MainToolbarForegroundBrush;
 			content.Children.Add (new TextBlock {
 				HorizontalAlignment = HorizontalAlignment.Left,
 				VerticalAlignment = VerticalAlignment.Center,
 			});
 
 			var arrow = new Polygon {
-				Fill = Brushes.Black,
+				Fill = Styles.MainToolbarForegroundBrush,
 				Margin = new Thickness (5, 0, 0, 0),
 				HorizontalAlignment = HorizontalAlignment.Right,
 				VerticalAlignment = VerticalAlignment.Center,

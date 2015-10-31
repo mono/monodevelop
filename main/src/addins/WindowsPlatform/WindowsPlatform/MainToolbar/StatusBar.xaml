@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:WindowsPlatform.MainToolbar"
              mc:Ignorable="d" Background="Transparent">
-    <Grid VerticalAlignment="Center" Background="LightGray" Height="26" Width="350" MinWidth="220" MaxWidth="700">
+    <Grid VerticalAlignment="Center" Height="26" Width="350" MinWidth="220" MaxWidth="700" >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>

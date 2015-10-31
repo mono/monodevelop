@@ -128,6 +128,7 @@
     <Compile Include="CustomDialogs\CustomCommonSaveFileDialog.cs" />
     <Compile Include="Dialogs\CommonFileDialogExtensions.cs" />
     <Compile Include="ImageHelper.cs" />
+    <Compile Include="Styles.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="WindowsPlatform.addin.xml">

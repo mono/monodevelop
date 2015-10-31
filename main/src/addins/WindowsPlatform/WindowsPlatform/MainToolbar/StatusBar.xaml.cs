@@ -28,17 +28,13 @@ namespace WindowsPlatform.MainToolbar
 	/// </summary>
 	public partial class StatusBarControl : UserControl, StatusBar, INotifyPropertyChanged
 	{
-		static Brush ErrorTextBrush = Brushes.Red;
-		static Brush WarningTextBrush = Brushes.Orange;
-		static Brush NormalTextBrush = Brushes.Black;
-		static Brush ReadyTextBrush = Brushes.Gray;
-
 		StatusBarContextHandler ctxHandler;
 		TaskEventHandler updateHandler;
 		public StatusBarControl ()
 		{
 			InitializeComponent ();
 			DataContext = this;
+			Background = Styles.StatusBarBackgroundBrush;
 
 			ctxHandler = new StatusBarContextHandler (this);
 
@@ -121,7 +117,7 @@ namespace WindowsPlatform.MainToolbar
 
 		public void ShowError (string error)
 		{
-			TextBrush = ErrorTextBrush;
+			TextBrush = Styles.StatusBarErrorTextBrush;
 			ShowMessage (error);
 		}
 
@@ -151,7 +147,7 @@ namespace WindowsPlatform.MainToolbar
 
 		public void ShowReady ()
 		{
-			textBrush = ReadyTextBrush;
+			textBrush = Styles.StatusBarReadyTextBrush;
 			ShowMessage (BrandingService.StatusSteadyIconId, BrandingService.ApplicationName);
 		}
 
@@ -171,7 +167,7 @@ namespace WindowsPlatform.MainToolbar
 
 		public void ShowWarning (string warning)
 		{
-			TextBrush = WarningTextBrush;
+			TextBrush = Styles.StatusBarWarningTextBrush;
 			ShowMessage (warning);
 		}
 
@@ -182,7 +178,7 @@ namespace WindowsPlatform.MainToolbar
 			set { message = value; RaisePropertyChanged (); }
 		}
 
-		Brush textBrush = Brushes.Black;
+		Brush textBrush = Styles.StatusBarTextBrush;
 		public Brush TextBrush
 		{
 			get { return textBrush; }
