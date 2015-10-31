@@ -132,6 +132,63 @@
     <EmbeddedResource Include="WindowsPlatform.addin.xml">
       <LogicalName>WindowsPlatform.addin.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\md-continue-debug.png">
+      <LogicalName>md-continue-debug.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\md-continue-debug%402x.png">
+      <LogicalName>md-continue-debug@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\md-pause-debug.png">
+      <LogicalName>md-pause-debug.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\md-pause-debug%402x.png">
+      <LogicalName>md-pause-debug@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\md-step-into-debug.png">
+      <LogicalName>md-step-into-debug.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\md-step-out-debug.png">
+      <LogicalName>md-step-out-debug.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\md-step-over-debug.png">
+      <LogicalName>md-step-over-debug.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\build.png">
+      <LogicalName>build.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\build%402x.png">
+      <LogicalName>build@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\build-disabled.png">
+      <LogicalName>build-disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\build-disabled%402x.png">
+      <LogicalName>build-disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stop.png">
+      <LogicalName>stop.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stop%402x.png">
+      <LogicalName>stop@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stop-disabled.png">
+      <LogicalName>stop-disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stop-disabled%402x.png">
+      <LogicalName>stop-disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\execute.png">
+      <LogicalName>execute.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\execute%402x.png">
+      <LogicalName>execute@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\execute-disabled.png">
+      <LogicalName>execute-disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\execute-disabled%402x.png">
+      <LogicalName>execute-disabled@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
