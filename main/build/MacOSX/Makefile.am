@@ -19,7 +19,7 @@ EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh render.cs
 all: monostub monostub-test
 
 render.exe: render.cs
-	gmcs -r:System.Drawing render.cs
+	mcs -r:System.Drawing render.cs
 
 dmg: render.exe app
 	./make-dmg-bundle.sh
