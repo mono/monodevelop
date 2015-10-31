@@ -37,7 +37,7 @@ namespace WindowsPlatform.MainToolbar
 				SearchText = PlaceholderText;
 			};
 
-			SearchIcon.Source = (ImageSource)MonoDevelop.Platform.WindowsPlatform.WPFToolkit.GetNativeImage (ImageService.GetIcon (Stock.StatusSearch));
+			SearchIcon.Source = Stock.StatusSearch.GetStockIcon ().WithSize (Xwt.IconSize.Small).GetImageSource ();
 		}
 
 		string placeholderText;

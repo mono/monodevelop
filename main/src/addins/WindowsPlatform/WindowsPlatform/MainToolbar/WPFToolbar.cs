@@ -216,7 +216,7 @@ namespace WindowsPlatform.MainToolbar
 						},
 					});
 
-				toolbar.ButtonBarPanel.Children.Add (new ButtonBarButton ((ImageSource)MonoDevelop.Platform.WindowsPlatform.WPFToolkit.GetNativeImage (ImageService.GetIcon (Stock.Add)), button));
+				toolbar.ButtonBarPanel.Children.Add (new ButtonBarButton (button));
 				needsSeparator = false;
 			}
 		}

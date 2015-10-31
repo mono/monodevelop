@@ -58,11 +58,11 @@ namespace WindowsPlatform.MainToolbar
 					if (ec > 0) {
 						BuildResultPanelVisibility = Visibility.Visible;
 						BuildResultCount = ec;
-						BuildResultIcon = (ImageSource)MonoDevelop.Platform.WindowsPlatform.WPFToolkit.GetNativeImage (ImageService.GetIcon (Stock.Error));
+						BuildResultIcon = Stock.Error.GetStockIcon ().WithSize (Xwt.IconSize.Small).GetImageSource();
 					} else if (wc > 0) {
 						BuildResultPanelVisibility = Visibility.Visible;
 						BuildResultCount = wc;
-						BuildResultIcon = (ImageSource)MonoDevelop.Platform.WindowsPlatform.WPFToolkit.GetNativeImage (ImageService.GetIcon (Stock.Warning));
+						BuildResultIcon = Stock.Warning.GetStockIcon ().WithSize (Xwt.IconSize.Small).GetImageSource();
 					} else
 						BuildResultPanelVisibility = Visibility.Collapsed;
 				});
@@ -142,10 +142,10 @@ namespace WindowsPlatform.MainToolbar
 
 		public void ShowMessage (IconId image, string message, bool isMarkup)
 		{
-			if (image == Stock.StatusSteady)
+			if (image == Stock.StatusSteady || image.IsNull)
 				StatusImage = null;
 			else
-				StatusImage = (ImageSource)MonoDevelop.Platform.WindowsPlatform.WPFToolkit.GetNativeImage (ImageService.GetIcon (image));
+				StatusImage = image.GetStockIcon ().WithSize (Xwt.IconSize.Small).GetImageSource ();
 			Message = message;
 		}
 
@@ -289,7 +289,7 @@ namespace WindowsPlatform.MainToolbar
 			set
 			{
 				image = value;
-				Source = (ImageSource)MonoDevelop.Platform.WindowsPlatform.WPFToolkit.GetNativeImage (value);
+				Source = value.WithSize (Xwt.IconSize.Small).GetImageSource ();
 			}
 		}
 

@@ -31,6 +31,11 @@ namespace WindowsPlatform.MainToolbar
 			set { currentImage = value; RaisePropertyChanged (); }
 		}
 
+		public IconButtonControl (Xwt.Drawing.Image image)
+			: this (image == null ? null : image.GetImageSource ())
+		{
+		}
+
 		public IconButtonControl (ImageSource image)
 		{
 			InitializeComponent ();
@@ -84,26 +89,27 @@ namespace WindowsPlatform.MainToolbar
 			string img;
 			switch (icon) {
 				case OperationIcon.Stop:
-					img = "ico-stop-normal-32.png";
+					img = "stop.png";
 					break;
 				case OperationIcon.Run:
-					img = "ico-execute-normal-32.png";
+					img = "execute.png";
 					break;
 				case OperationIcon.Build:
-					img = "ico-build-normal-32.png";
+					img = "build.png";
 					break;
 				default:
 					throw new InvalidOperationException ();
 			}
 
-			return (ImageSource)MonoDevelop.Platform.WindowsPlatform.WPFToolkit.GetNativeImage (Xwt.Drawing.Image.FromResource (typeof (RoundButton), img));
+			return Xwt.Drawing.Image.FromResource (typeof (RunButtonControl), img).WithSize (Xwt.IconSize.Medium).GetImageSource ();
 		}
 	}
 
 	public class ButtonBarButton : IconButtonControl, IDisposable
 	{
 		IButtonBarButton button;
-		public ButtonBarButton (ImageSource image, IButtonBarButton button) : base (image)
+		public ButtonBarButton (IButtonBarButton button)
+			: base (button.Image.IsNull ? null : button.Image.GetStockIcon().WithSize(Xwt.IconSize.Medium))
 		{
 			this.button = button;
 
@@ -146,7 +152,7 @@ namespace WindowsPlatform.MainToolbar
 
 		void OnButtonImageChanged (object sender, EventArgs args)
 		{
-			CurrentImage = (ImageSource)MonoDevelop.Platform.WindowsPlatform.WPFToolkit.GetNativeImage (ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.Add));
+			CurrentImage = button.Image.GetStockIcon ().WithSize (Xwt.IconSize.Medium).GetImageSource();
         }
 
 		void OnButtonClicked (object sender, RoutedEventArgs args)
