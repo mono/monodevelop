@@ -215,6 +215,11 @@ namespace WindowsPlatform.MainToolbar
 							Right = 3,
 						},
 					});
+				else
+					toolbar.ButtonBarPanel.Children.Add (new System.Windows.Controls.Separator {
+						Opacity = 0,
+						MinWidth = 5,
+					});
 
 				toolbar.ButtonBarPanel.Children.Add (new ButtonBarButton (button));
 				needsSeparator = false;

@@ -8,11 +8,11 @@
     <UserControl.Resources>
         <local:NotNullConverter x:Key="NotNullConverter"/>
     </UserControl.Resources>
-    <Grid x:Name="DockTitle" Height="32" Margin="0,0,0,0" Background="Transparent">
+    <Grid x:Name="DockTitle" Height="32" Margin="30,0,10,0" Background="Transparent">
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -20,8 +20,11 @@
 
         <StackPanel x:Name="LeftPanel" Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Height="Auto">
             <local:RunButtonControl x:Name="RunButton" VerticalContentAlignment="Center" VerticalAlignment="Center"/>
+            <Separator Opacity="0" Width="10"/>
             <local:ConfigurationComboMenu x:Name="ConfigurationMenu" VerticalContentAlignment="Center" Background="Transparent" VerticalAlignment="Center" />
+            <Separator Opacity="0" Width="10"/>
             <local:RuntimeComboMenu x:Name="RuntimeMenu" VerticalContentAlignment="Center" Background="Transparent" VerticalAlignment="Center" />
+            <Separator Opacity="0" Width="5"/>
             <StackPanel x:Name="ButtonBarPanel" Orientation="Horizontal" />
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Height="Auto">

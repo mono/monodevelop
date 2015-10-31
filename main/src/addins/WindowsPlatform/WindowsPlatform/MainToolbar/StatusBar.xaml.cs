@@ -159,7 +159,7 @@ namespace WindowsPlatform.MainToolbar
 		{
 			var icon = new StatusIcon (this) {
 				Image = pixbuf,
-				Margin = new Thickness (0, 1, 0, 1),
+				Margin = new Thickness (5, 5, 5, 5),
 				MaxWidth = 14,
 				MaxHeight = 14,
 			};

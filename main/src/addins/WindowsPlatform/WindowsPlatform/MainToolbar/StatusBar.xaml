@@ -5,20 +5,28 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:WindowsPlatform.MainToolbar"
              mc:Ignorable="d" Background="Transparent">
-    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Background="LightGray" >
-        <Image x:Name="StatusImageControl" MaxWidth="14" Margin="1,1,1,1" MaxHeight="14" Source="{Binding StatusImage}" />
-        <TextBlock
-            MinWidth="220"
-            MaxWidth="700"
+    <Grid VerticalAlignment="Center" Background="LightGray" Height="26" Width="350" MinWidth="220" MaxWidth="700">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Image x:Name="StatusImageControl" Grid.Column="0" MaxWidth="14" Margin="5,5,0,5" MaxHeight="14" Source="{Binding StatusImage}" />
+        <TextBlock Grid.Column="1"
             VerticalAlignment="Center"
             FontSize="14"
-            Padding="0,1,0,2"
+            Padding="5,1,0,2"
             Foreground="{Binding TextBrush}"
             Text="{Binding Message}"/>
-        <StackPanel x:Name="BuildResultPanel" Visibility="{Binding BuildResultPanelVisibility}" Orientation="Horizontal">
-            <Image Source="{Binding BuildResultIcon}" MaxWidth="14" Margin="1,1,1,1" MaxHeight="14"/>
-            <TextBlock Text="{Binding BuildResultCount}" Padding="0,1,0,2"/>
+        <StackPanel x:Name="BuildResultPanel" Grid.Column="2" Visibility="{Binding BuildResultPanelVisibility}" VerticalAlignment="Center" Orientation="Horizontal">
+            <Image Source="{Binding BuildResultIcon}" MaxWidth="14" Margin="0,5,5,5" MaxHeight="14"/>
+            <TextBlock
+            	Text="{Binding BuildResultCount}" 
+	            VerticalAlignment="Center"
+	            FontSize="14"
+	            Padding="0,1,5,2"/>
         </StackPanel>
-        <StackPanel x:Name="StatusIconsPanel" Orientation="Horizontal"/>
-    </StackPanel>
+        <StackPanel x:Name="StatusIconsPanel" Grid.Column="3" VerticalAlignment="Center" Orientation="Horizontal"/>
+    </Grid>
 </UserControl>

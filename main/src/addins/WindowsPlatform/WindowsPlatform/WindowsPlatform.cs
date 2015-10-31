@@ -111,6 +111,7 @@ namespace MonoDevelop.Platform
 			CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
 			var mainMenu = new Menu {
 				IsMainMenu = true,
+				Background = System.Windows.Media.Brushes.Transparent,
 			};
 			foreach (CommandEntrySet ce in ces)
 				mainMenu.Items.Add (new TitleMenuItem (commandManager, ce));
@@ -126,7 +127,7 @@ namespace MonoDevelop.Platform
 		internal override Components.MainToolbar.IMainToolbarView CreateMainToolbar (Gtk.Window window)
 		{
 			return new WPFToolbar {
-				HeightRequest = 50,
+				HeightRequest = 40,
 			};
 		}
 		#endregion
