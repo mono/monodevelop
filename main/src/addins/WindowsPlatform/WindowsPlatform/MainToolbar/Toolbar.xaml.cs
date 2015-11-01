@@ -25,6 +25,8 @@ namespace WindowsPlatform.MainToolbar
 		{
 			InitializeComponent ();
 			Background = Styles.MainToolbarBackgroundBrush;
+			BorderBrush = Styles.MainToolbarShadowBrush;
+			BorderThickness = new Thickness (0, 0, 0, 0.5);
 		}
 	}
 }

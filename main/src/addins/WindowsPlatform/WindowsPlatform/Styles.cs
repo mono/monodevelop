@@ -32,6 +32,7 @@ namespace WindowsPlatform
 	{
 		public static Brush MainToolbarBackgroundBrush { get; private set; }
 		public static Brush MainToolbarForegroundBrush { get; private set; }
+		public static Brush MainToolbarShadowBrush { get; private set; }
 		public static Brush MainMenuBackgroundBrush { get; private set; }
 		public static Brush StatusBarBackgroundBrush { get; private set; }
 		public static Brush StatusBarTextBrush { get; private set; }
@@ -46,6 +47,7 @@ namespace WindowsPlatform
 		{
 			MainToolbarBackgroundBrush = Brushes.Transparent;
 			MainToolbarForegroundBrush = Brushes.Black;
+			MainToolbarShadowBrush = Brushes.Gray;
 			MainMenuBackgroundBrush = Brushes.Transparent;
 			StatusBarBackgroundBrush = Brushes.LightGray;
 			StatusBarTextBrush = MainToolbarForegroundBrush;
