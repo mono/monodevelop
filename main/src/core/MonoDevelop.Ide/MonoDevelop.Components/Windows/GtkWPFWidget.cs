@@ -91,8 +91,8 @@ namespace MonoDevelop.Components.Windows
 				wpfWindow.Left = Allocation.Left;
 				wpfWindow.Top = Allocation.Top;
 			}
-			wpfWindow.Width = Allocation.Width;
-			wpfWindow.Height = Allocation.Height;
+			wpfWindow.Width = Allocation.Width + 1;
+			wpfWindow.Height = Allocation.Height + 1;
 		}
 
 		protected override void OnRealized ()
