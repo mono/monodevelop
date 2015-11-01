@@ -59,8 +59,12 @@ namespace WindowsPlatform.MainToolbar
 				if (actionCommand.KeyBinding != null)
 					InputGestureText = actionCommand.KeyBinding.ToString ();
 
-				// TODO: Load WPF Xwt engine and use the native image backend.
-				//Icon = ImageService.GetIcon (actionCommand.Icon);
+				try {
+					if (!actionCommand.Icon.IsNull)
+						Icon = new Image { Source = ImageService.GetIcon (actionCommand.Icon).WithSize (Xwt.IconSize.Small).GetImageSource () };
+				} catch (Exception ex) {
+					MonoDevelop.Core.LoggingService.LogError ("Failed loading menu icon: " + actionCommand.Icon, ex);
+				}
 			}
 		}
 
