@@ -197,6 +197,12 @@
     <EmbeddedResource Include="Templates\images\aspnet-empty-project%402x.png">
       <LogicalName>aspnet-empty-project@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Templates\images\aspnet-empty-project~dark.png">
+      <LogicalName>aspnet-empty-project~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\images\aspnet-empty-project~dark%402x.png">
+      <LogicalName>aspnet-empty-project~dark@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Html\HtmlSchemaService.cs" />
