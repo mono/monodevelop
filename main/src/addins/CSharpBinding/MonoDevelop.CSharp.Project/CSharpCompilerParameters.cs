@@ -63,8 +63,7 @@ namespace MonoDevelop.CSharp.Project
 		[ItemProperty ("NoWarn", DefaultValue = "")]
 		string noWarnings = String.Empty;
 		
-		[ItemProperty ("Optimize")]
-		bool optimize;
+		bool? optimize = false;
 		
 		[ItemProperty ("AllowUnsafeBlocks", DefaultValue = false)]
 		bool unsafecode = false;
@@ -98,6 +97,9 @@ namespace MonoDevelop.CSharp.Project
 			pset.SetPropertyOrder ("DebugSymbols", "DebugType", "Optimize", "OutputPath", "DefineConstants", "ErrorReport", "WarningLevel", "TreatWarningsAsErrors", "DocumentationFile");
 
 			base.Write (pset, toolsVersion);
+
+			if (optimize.HasValue)
+				pset.SetValue ("Optimize", optimize.Value);
 		}
 
 		protected override void Read (IMSBuildEvaluatedPropertyCollection pset, string toolsVersion)
@@ -111,6 +113,8 @@ namespace MonoDevelop.CSharp.Project
 				else
 					documentationFile = null;
 			}
+
+			optimize = pset.GetValue ("Optimize", (bool?)null);
 		}
 
 		public override Microsoft.CodeAnalysis.CompilationOptions CreateCompilationOptions ()
@@ -204,7 +208,7 @@ namespace MonoDevelop.CSharp.Project
 		
 		public bool Optimize {
 			get {
-				return optimize;
+				return optimize ?? false;
 			}
 			set {
 				optimize = value;
