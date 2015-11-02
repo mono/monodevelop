@@ -218,6 +218,12 @@
     <EmbeddedResource Include="templates\images\packaging-project%402x.png">
       <LogicalName>packaging-project@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\packaging-project~dark.png">
+      <LogicalName>packaging-project~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\packaging-project~dark%402x.png">
+      <LogicalName>packaging-project~dark@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
