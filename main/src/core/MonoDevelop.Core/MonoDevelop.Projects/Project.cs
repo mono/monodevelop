@@ -279,6 +279,125 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
+		/// Runs the generator target and returns any files that the target included into the compilation that were not already part of the 
+		/// build. This is the list of files assumed to have been possibly modified by the target.
+		/// </summary>
+		public Task<ProjectFile[]> PerformGeneratorAsync (ConfigurationSelector configuration, string generatorTarget)
+		{
+			return BindTask<ProjectFile[]> (async cancelToken => {
+				var cancelSource = new CancellationTokenSource ();
+				cancelToken.Register (() => cancelSource.Cancel ());
+
+				using (var monitor = new ProgressMonitor (cancelSource)) {
+					return await this.PerformGeneratorAsync (monitor, configuration, generatorTarget);
+				}
+			});
+		}
+
+		/// <summary>
+		/// Runs the generator target and returns any files that the target included into the compilation that were not already part of the 
+		/// build. This is the list of files assumed to have been possibly modified by the target.
+		/// </summary>
+		async Task<ProjectFile[]> PerformGeneratorAsync (ProgressMonitor monitor, ConfigurationSelector configuration, string generatorTarget)
+		{
+			var ctx = new TargetEvaluationContext ();
+			ctx.ItemsToEvaluate.Add ("Compile");
+
+			var result = new List<ProjectFile> ();
+			var exisitingFiles = this.Files.ToList ();
+
+			var evalResult = await this.RunTarget (monitor, generatorTarget, configuration, ctx);
+			if (evalResult != null && !evalResult.BuildResult.HasErrors) {
+				var compileItems = evalResult.Items.Select (i =>
+				                                            new ProjectFile (Path.Combine (sourceProject.BaseDirectory, i.Include), "Compile") { Project = this }
+				                                           ).ToList ();
+
+				// we need to grab any items that are in this result but not explicitly part of the project
+				result.AddRange (compileItems.Where (ci => exisitingFiles.All (ei => ei.FilePath != ci.FilePath)));
+			}
+
+			return result.ToArray ();
+		}
+
+		/// <summary>
+		/// Gets the source files that are included in the project, including any that are added by `CoreCompileDependsOn`
+		/// </summary>
+		public Task<ProjectFile[]> GetSourceFilesAsync (ConfigurationSelector configuration)
+		{
+			if (sourceProject == null)
+				return Task.FromResult (new ProjectFile [0]);
+
+			return BindTask<ProjectFile []> (async cancelToken => {
+				var cancelSource = new CancellationTokenSource ();
+				cancelToken.Register (() => cancelSource.Cancel ());
+
+				using (var monitor = new ProgressMonitor (cancelSource)) {
+					return await GetSourceFilesAsync (monitor, configuration);
+				}
+			});
+		}
+
+		readonly object evaluatedCompileItemsLock = new object ();
+		List<ProjectFile> evaluatedCompileItems;
+		readonly ManualResetEvent evaluatedCompileItemsWaitHandle = new ManualResetEvent (false);
+
+		/// <summary>
+		/// Gets the source files that are included in the project, including any that are added by `CoreCompileDependsOn`
+		/// </summary>
+		public async Task<ProjectFile[]> GetSourceFilesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			var coreCompileDependsOn = sourceProject.EvaluatedProperties.GetValue<string> ("CoreCompileDependsOn");
+
+			if (string.IsNullOrEmpty (coreCompileDependsOn))
+				return this.Files.ToArray ();
+
+			// pre-load the results with the current list of files in the project
+			var results = new List<ProjectFile> (this.Files);
+
+			var performEvaluation = false;
+			lock (evaluatedCompileItemsLock) {
+				if (evaluatedCompileItems == null) {
+					evaluatedCompileItems = new List<ProjectFile> ();
+					performEvaluation = true;
+				}
+			}
+
+			if (performEvaluation) {
+				var dependsList = coreCompileDependsOn.Split (new [] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+				foreach (var dependTarget in dependsList) {
+					try {
+						// evaluate the Compile targets
+						var ctx = new TargetEvaluationContext ();
+						ctx.ItemsToEvaluate.Add ("Compile");
+
+						var evalResult = await this.RunTarget (monitor, dependTarget, configuration, ctx);
+						if (evalResult != null && !evalResult.BuildResult.HasErrors) {
+							var evalItems = evalResult.Items.Select (i =>
+																		new ProjectFile (Path.Combine (sourceProject.BaseDirectory, i.Include), "Compile") { Project = this }
+																	   ).ToList ();
+
+							evaluatedCompileItems.AddRange (evalItems);
+						}
+					} catch (Exception ex) {
+						LoggingService.LogInternalError (string.Format ("Error running target {0}", dependTarget), ex);
+					}
+
+					evaluatedCompileItemsWaitHandle.Set ();
+				}
+			} else {
+				// wait for evaluation
+				await Task.Run (() => {
+					evaluatedCompileItemsWaitHandle.WaitOne ();
+				});
+			}
+
+			// add only files that aren't already in the list
+			results.AddRange (evaluatedCompileItems.Where (i =>  results.All (pi => pi.FilePath != i.FilePath)));
+
+			return results.ToArray ();
+		}
+
+		/// <summary>
 		/// Called just after the MSBuild project is loaded but before it is evaluated.
 		/// </summary>
 		/// <param name="project">The project</param>
