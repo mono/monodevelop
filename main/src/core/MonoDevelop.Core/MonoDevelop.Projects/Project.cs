@@ -279,12 +279,11 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
-		/// Runs the generator target and returns any files that the target included into the compilation that were not already part of the 
-		/// build. This is the list of files assumed to have been possibly modified by the target.
+		/// Runs the generator target and sends file change notifications if any files were modified, returns the build result
 		/// </summary>
-		public Task<ProjectFile[]> PerformGeneratorAsync (ConfigurationSelector configuration, string generatorTarget)
+		public Task<TargetEvaluationResult> PerformGeneratorAsync (ConfigurationSelector configuration, string generatorTarget)
 		{
-			return BindTask<ProjectFile[]> (async cancelToken => {
+			return BindTask<TargetEvaluationResult> (async cancelToken => {
 				var cancelSource = new CancellationTokenSource ();
 				cancelToken.Register (() => cancelSource.Cancel ());
 
@@ -295,28 +294,62 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
-		/// Runs the generator target and returns any files that the target included into the compilation that were not already part of the 
-		/// build. This is the list of files assumed to have been possibly modified by the target.
+		/// Runs the generator target and sends file change notifications if any files were modified, returns the build result
 		/// </summary>
-		async Task<ProjectFile[]> PerformGeneratorAsync (ProgressMonitor monitor, ConfigurationSelector configuration, string generatorTarget)
+		public async Task<TargetEvaluationResult> PerformGeneratorAsync (ProgressMonitor monitor, ConfigurationSelector configuration, string generatorTarget)
 		{
-			var ctx = new TargetEvaluationContext ();
-			ctx.ItemsToEvaluate.Add ("Compile");
+			var fileInfo = await GetProjectFileTimestamps (monitor, configuration);
+			var evalResult = await this.RunTarget (monitor, generatorTarget, configuration);
+			await SendFileChangeNotifications (monitor, configuration, fileInfo);
 
-			var result = new List<ProjectFile> ();
-			var exisitingFiles = this.Files.ToList ();
+			return evalResult;
+		}
 
-			var evalResult = await this.RunTarget (monitor, generatorTarget, configuration, ctx);
-			if (evalResult != null && !evalResult.BuildResult.HasErrors) {
-				var compileItems = evalResult.Items.Select (i =>
-				                                            new ProjectFile (Path.Combine (sourceProject.BaseDirectory, i.Include), "Compile") { Project = this }
-				                                           ).ToList ();
+		/// <summary>
+		/// Returns a list containing FileInfo for all the source files in the project
+		/// </summary>
+		async Task<List<FileInfo>> GetProjectFileTimestamps (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			var infoList = new List<FileInfo> ();
+			var projectFiles = await this.GetSourceFilesAsync (monitor, configuration);
 
-				// we need to grab any items that are in this result but not explicitly part of the project
-				result.AddRange (compileItems.Where (ci => exisitingFiles.All (ei => ei.FilePath != ci.FilePath)));
+			foreach (var projectFile in projectFiles) {
+				if (File.Exists (projectFile.FilePath)) {
+					var info = new FileInfo (projectFile.FilePath);
+					infoList.Add (info);
+				}
 			}
 
-			return result.ToArray ();
+			return infoList;
+		}
+
+		/// <summary>
+		/// Sends a file change notification via FileService for any file that has changed since the timestamps in beforeFileInfo
+		/// </summary>
+		async Task SendFileChangeNotifications (ProgressMonitor monitor, ConfigurationSelector configuration, List<FileInfo> beforeFileInfo)
+		{
+			var changedFiles = new List<FileInfo> ();
+			var projectFiles = await this.GetSourceFilesAsync (monitor, configuration);
+
+			foreach (var projectFile in projectFiles.Reverse ()) {
+				Console.WriteLine (projectFile.FilePath.FileName);
+				if (File.Exists (projectFile.FilePath)) {
+					var info = new FileInfo (projectFile.FilePath);
+
+					var beforeFile = beforeFileInfo.FirstOrDefault (bf => bf.FullName == info.FullName);
+					if (beforeFile != null) {
+						if (beforeFile.LastWriteTime != info.LastWriteTime) {
+							changedFiles.Add (info);
+						}
+					} else {
+						changedFiles.Add (info);
+					}
+				}
+			}
+
+			foreach (var changedFile in changedFiles) {
+				FileService.NotifyFileChanged (changedFile.FullName);
+			}
 		}
 
 		/// <summary>
@@ -337,7 +370,6 @@ namespace MonoDevelop.Projects
 			});
 		}
 
-		readonly object evaluatedCompileItemsLock = new object ();
 		List<ProjectFile> evaluatedCompileItems;
 		readonly ManualResetEvent evaluatedCompileItemsWaitHandle = new ManualResetEvent (false);
 
@@ -355,7 +387,7 @@ namespace MonoDevelop.Projects
 			var results = new List<ProjectFile> (this.Files);
 
 			var performEvaluation = false;
-			lock (evaluatedCompileItemsLock) {
+			lock (evaluatedCompileItemsWaitHandle) {
 				if (evaluatedCompileItems == null) {
 					evaluatedCompileItems = new List<ProjectFile> ();
 					performEvaluation = true;

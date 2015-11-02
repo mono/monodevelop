@@ -993,19 +993,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					generatorTarget = generatorTarget.Substring ("msbuild:".Length);
 				}
 
-				// now we need to run the target
-				// Q. Do we need to examine the compile items and add in any files, or can we assume from the 
-				// prior run of CoreCompileDependsOn that we know about all the files already?
-				// A. Probably shouldn't need to, but we do need to tell XS that the file may have changed - to update the type system
 				if (!string.IsNullOrEmpty (generatorTarget)) {
 					var config = IdeApp.Workspace != null ? project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : null;
-					var changedFiles = await project.PerformGeneratorAsync (config != null ? config.Selector : null, generatorTarget);
-					foreach (var f in changedFiles) {
-						// guard against recursion, we don't want to get stuck here
-						if (file.FilePath != f.FilePath) {
-							FileService.NotifyFileChanged (f.FilePath);
-						}
-					}
+					await project.PerformGeneratorAsync (config != null ? config.Selector : null, generatorTarget);
 				}
 			}
 		}

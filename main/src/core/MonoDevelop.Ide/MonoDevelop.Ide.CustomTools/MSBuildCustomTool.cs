@@ -45,50 +45,7 @@ namespace MonoDevelop.Ide.CustomTools
 
 		public async Task Generate (ProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
-			var fileInfo = await GetProjectFileTimestamps (monitor, file.Project);
-			await PerformGenerate (monitor, file, result);
-			await SendFileChangeNotifications (monitor, file.Project, fileInfo);
-		}
-
-		async Task<List<FileInfo>> GetProjectFileTimestamps (ProgressMonitor monitor, Project project)
-		{
-			var infoList = new List<FileInfo> ();
-			var projectFiles = await project.GetSourceFilesAsync (monitor, IdeApp.Workspace.ActiveConfiguration);
-
-			foreach (var projectFile in projectFiles) {
-				var info = new FileInfo (projectFile.FilePath);
-				infoList.Add (info);
-			}
-
-			return infoList;
-		}
-
-		async Task SendFileChangeNotifications (ProgressMonitor monitor, Project project, List<FileInfo> beforeFileInfo)
-		{
-			var changedFiles = new List<FileInfo> ();
-			var projectFiles = await project.GetSourceFilesAsync (monitor, IdeApp.Workspace.ActiveConfiguration);
-
-			foreach (var projectFile in projectFiles) {
-				var info = new FileInfo (projectFile.FilePath);
-
-				var beforeFile = beforeFileInfo.FirstOrDefault (bf => bf.FullName == info.FullName);
-				if (beforeFile != null) {
-					if (beforeFile.LastWriteTime != info.LastWriteTime) {
-						changedFiles.Add (info);
-					}
-				} else {
-					changedFiles.Add (info);
-				}
-			}
-
-			foreach (var changedFile in changedFiles) {
-				FileService.NotifyFileChanged (changedFile.FullName);
-			}
-		}
-
-		async Task PerformGenerate (ProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
-		{
-			var buildResult = await file.Project.RunTarget (monitor, targetName, IdeApp.Workspace.ActiveConfiguration);
+			var buildResult = await file.Project.PerformGeneratorAsync (monitor, IdeApp.Workspace.ActiveConfiguration, this.targetName);
 
 			foreach (var err in buildResult.BuildResult.Errors) {
 				result.Errors.Add (new CompilerError (err.FileName, err.Line, err.Column, err.ErrorNumber, err.ErrorText) {
