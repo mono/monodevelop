@@ -34,27 +34,24 @@ namespace MonoDevelop.Debugger
 		public BusyEvaluatorDialog ()
 		{
 			this.Build ();
+			//Prevent closing dialog via X button, user can either wait with
+			//dialog open or press "Stop Debugger" button
+			DeleteEvent += (o, args) => args.RetVal = true;
 		}
-		
+
 		public void UpdateBusyState (BusyStateEventArgs args)
 		{
 			if (!args.IsBusy) {
 				Hide ();
 			} else {
-				labelMethod.Text = args.Description;
 				Show ();
 			}
 		}
-		
+
 		protected virtual void OnButtonCancelClicked (object sender, System.EventArgs e)
 		{
 			Hide ();
 			DebuggingService.Stop ();
-		}
-		
-		protected virtual void OnButtonOkClicked (object sender, System.EventArgs e)
-		{
-			Hide ();
 		}
 	}
 }
