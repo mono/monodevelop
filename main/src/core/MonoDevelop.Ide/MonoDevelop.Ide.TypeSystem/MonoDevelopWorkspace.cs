@@ -370,7 +370,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			project.FileRemovedFromProject -= OnFileRemoved;
 			project.FileRenamedInProject -= OnFileRenamed;
 			project.Modified -= OnProjectModified;
-			project.FileChangedInProject -= OnFileChanged;
 		}
 
 		Task<ProjectInfo> LoadProject (MonoDevelop.Projects.Project p, CancellationToken token)
@@ -380,7 +379,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				p.FileRemovedFromProject += OnFileRemoved;
 				p.FileRenamedInProject += OnFileRenamed;
 				p.Modified += OnProjectModified;
-				p.FileChangedInProject += OnFileChanged;
 			}
 
 			var projectId = GetOrCreateProjectId (p);
@@ -967,14 +965,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				var newDocument = CreateDocumentInfo (solutionData, project.Name, GetProjectData (projectId), projectFile);
 				OnDocumentAdded (newDocument);
-			}
-		}
-
-		async void OnFileChanged (object sender, MonoDevelop.Projects.ProjectFileEventArgs args)
-		{
-			foreach (var fileChange in args) {
-				// update generators if the new file has any
-				await HandleGenerator (fileChange.ProjectFile, fileChange.Project);
 			}
 		}
 

@@ -344,7 +344,7 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Gets the source files that are included in the project, including any that are added by `CoreCompileDependsOn`
 		/// </summary>
-		async Task<ProjectFile[]> GetSourceFilesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
+		public async Task<ProjectFile[]> GetSourceFilesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			var coreCompileDependsOn = sourceProject.EvaluatedProperties.GetValue<string> ("CoreCompileDependsOn");
 
