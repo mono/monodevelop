@@ -32,7 +32,7 @@ dmg: render.exe app
 	./make-dmg-bundle.sh
 
 monostub: monostub.m $(MONOSTUB_EXTRA_SOURCES)
-	gcc -g -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.m -framework AppKit
+	gcc -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.m -framework AppKit
 #	gcc -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.m -framework AppKit -isysroot $(SDK_PATH)
 	cp monostub ../bin/MonoDevelop
 
