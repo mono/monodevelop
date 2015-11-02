@@ -373,25 +373,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			NotifyChanged ();
 		}
 
-		public void UnMerge (IMSBuildPropertySet baseGrp, ISet<string> propsToExclude)
+		public void UnMerge (IMSBuildPropertyGroupEvaluated baseGrp, ISet<string> propsToExclude)
 		{
 			AssertCanModify ();
 			HashSet<string> baseProps = new HashSet<string> ();
-			foreach (MSBuildProperty prop in baseGrp.GetProperties ()) {
+			foreach (MSBuildProperty prop in GetProperties ()) {
 				if (propsToExclude != null && propsToExclude.Contains (prop.Name))
 					continue;
 				baseProps.Add (prop.Name);
-				MSBuildProperty thisProp = GetProperty (prop.Name);
-				if (thisProp != null && thisProp.ValueType.Equals (prop.Value, thisProp.Value))
-					RemoveProperty (prop.Name);
-			}
+				var baseProp = baseGrp.GetProperty (prop.Name);
 
-			// Remove properties which have the default value and which are not defined in the main group
-			foreach (var p in GetProperties ().ToArray ()) {
-				if (baseProps.Contains (p.Name))
-					continue;
-				if (p.HasDefaultValue)
-					RemoveProperty (p);
+				// Remove properties whose value is the same as the one set in the global group
+				// Remove properties which have the default value and which are not defined in the main group
+
+				if ((baseProp != null && prop.ValueType.Equals (prop.Value, baseProp.Value)) || (baseProp == null && prop.HasDefaultValue))
+					RemoveProperty (prop.Name);
 			}
 		}
 

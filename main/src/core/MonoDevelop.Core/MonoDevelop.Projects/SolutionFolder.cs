@@ -572,8 +572,6 @@ namespace MonoDevelop.Projects
 			if (conf == null)
 				return new BuildResult ();
 
-			var res = new BuildResult { BuildCount = 0 };
-
 			ReadOnlyCollection<SolutionItem> allProjects;
 			try {
 				allProjects = GetAllBuildableEntries (configuration, true, true);
@@ -591,7 +589,6 @@ namespace MonoDevelop.Projects
 			finally {
 				monitor.EndTask ();
 			}
-			return res;
 		}
 
 		class BuildStatus
