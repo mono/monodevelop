@@ -3920,11 +3920,23 @@
     <EmbeddedResource Include="templates\images\generic-project%402x.png">
       <LogicalName>generic-project@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\generic-project~dark.png">
+      <LogicalName>generic-project~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\generic-project~dark%402x.png">
+      <LogicalName>generic-project~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="templates\images\blank-solution.png">
       <LogicalName>blank-solution.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="templates\images\blank-solution%402x.png">
       <LogicalName>blank-solution@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\blank-solution~dark.png">
+      <LogicalName>blank-solution~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\blank-solution~dark%402x.png">
+      <LogicalName>blank-solution~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="templates\images\console-project.png">
       <LogicalName>console-project.png</LogicalName>
@@ -3932,11 +3944,23 @@
     <EmbeddedResource Include="templates\images\console-project%402x.png">
       <LogicalName>console-project@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\console-project~dark.png">
+      <LogicalName>console-project~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\console-project~dark%402x.png">
+      <LogicalName>console-project~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="templates\images\library-project.png">
       <LogicalName>library-project.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="templates\images\library-project%402x.png">
       <LogicalName>library-project@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\library-project~dark.png">
+      <LogicalName>library-project~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\library-project~dark%402x.png">
+      <LogicalName>library-project~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="templates\images\pcl-project.png">
       <LogicalName>pcl-project.png</LogicalName>
@@ -3944,11 +3968,23 @@
     <EmbeddedResource Include="templates\images\pcl-project%402x.png">
       <LogicalName>pcl-project@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\pcl-project~dark.png">
+      <LogicalName>pcl-project~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\pcl-project~dark%402x.png">
+      <LogicalName>pcl-project~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="templates\images\shared-project.png">
       <LogicalName>shared-project.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="templates\images\shared-project%402x.png">
       <LogicalName>shared-project@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\shared-project~dark.png">
+      <LogicalName>shared-project~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\shared-project~dark%402x.png">
+      <LogicalName>shared-project~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="templates\images\workspace.png">
       <LogicalName>workspace.png</LogicalName>
@@ -3956,11 +3992,23 @@
     <EmbeddedResource Include="templates\images\workspace%402x.png">
       <LogicalName>workspace@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\workspace~dark.png">
+      <LogicalName>workspace~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\workspace~dark%402x.png">
+      <LogicalName>workspace~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="templates\images\gtk2-project.png">
       <LogicalName>gtk2-project.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="templates\images\gtk2-project%402x.png">
       <LogicalName>gtk2-project@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\gtk2-project~dark.png">
+      <LogicalName>gtk2-project~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\gtk2-project~dark%402x.png">
+      <LogicalName>gtk2-project~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\preview-active-16.png">
       <LogicalName>preview-active-16.png</LogicalName>
