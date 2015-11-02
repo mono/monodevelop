@@ -27,6 +27,8 @@
 using System;
 using System.Runtime.InteropServices;
 
+using AppKit;
+
 namespace MonoDevelop.MacInterop
 {
 	public static class ProcessManager
@@ -46,12 +48,22 @@ namespace MonoDevelop.MacInterop
 				return pid;
 			return -1;
 		}
-		
+
+		[Obsolete ("Use KillProcess (int pid) instead")]
 		public static bool KillProcess (ProcessSerialNumber psn)
 		{
 			return KillProcess (ref psn) == OSStatus.Ok;
 		}
-		
+
+		public static bool KillProcess (int pid)
+		{
+			NSRunningApplication runningApp = NSRunningApplication.GetRunningApplication (pid);
+			if (runningApp == null)
+				return false;
+
+			return runningApp.Terminate ();
+		}
+
 		enum OSStatus
 		{
 			Ok = 0

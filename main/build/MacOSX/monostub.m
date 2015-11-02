@@ -190,20 +190,27 @@ int main (int argc, char **argv)
 		binDir = [[NSString alloc] initWithUTF8String: "."];
 
 	NSString *appDir = [[NSBundle mainBundle] bundlePath];
+
 	// can be overridden with plist string MonoMinVersion
 	NSString *req_mono_version = @"3.10";
 	// can be overridden with either plist bool MonoUseSGen or MONODEVELOP_USE_SGEN env
 	bool use_sgen = YES;
+	bool need64Bit = false;
 
 	NSDictionary *plist = [[NSBundle mainBundle] infoDictionary];
 	if (plist) {
 		NSNumber *sgen_obj = (NSNumber *) [plist objectForKey:@"MonoUseSGen"];
 		if (sgen_obj)
 			use_sgen = [sgen_obj boolValue];
-		
+
 		NSString *version_obj = [plist objectForKey:@"MonoMinVersion"];
 		if (version_obj && [version_obj length] > 0)
 			req_mono_version = version_obj;
+
+		NSNumber *need_64bit_obj = (NSNumber *) [plist objectForKey:@"Mono64Bit"];
+		if (need_64bit_obj) {
+			need64Bit = [need_64bit_obj boolValue];
+		}
 	}
 
 	NSString *exePath, *exeName;
@@ -217,7 +224,7 @@ int main (int argc, char **argv)
 	else
 		basename++;
 	
-	if (update_environment ([[appDir stringByAppendingPathComponent:@"Contents"] UTF8String])) {
+	if (update_environment ([[appDir stringByAppendingPathComponent:@"Contents"] UTF8String], need64Bit)) {
 		//printf ("Updated the environment.\n");
 		[pool drain];
 		
@@ -290,5 +297,6 @@ int main (int argc, char **argv)
 	
 	//clock_t end = clock();
 	//printf("%f seconds to start\n", (float)(end - start) / CLOCKS_PER_SEC);
+
 	return _mono_main (argc + extra_argc + injected, new_argv);
 }
