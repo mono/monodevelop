@@ -207,7 +207,7 @@ namespace MonoDevelop.CSharp
 		void UpdateOwnerProjects ()
 		{
 			UpdateOwnerProjects (IdeApp.Workspace.GetAllItems<DotNetProject> ());
-			if (DocumentContext.Project == null)
+			if (DocumentContext != null && DocumentContext.Project == null)
 				ResetOwnerProject ();
 		}
 
@@ -661,6 +661,8 @@ namespace MonoDevelop.CSharp
 
 		void Update()
 		{
+			if (DocumentContext == null)
+				return;
 			var parsedDocument = DocumentContext.ParsedDocument;
 			if (parsedDocument == null)
 				return;

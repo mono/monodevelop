@@ -165,13 +165,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		public void UnMerge (IMSBuildPropertySet baseGrp, ISet<string> propertiesToExclude)
-		{
-			foreach (var g in groups) {
-				((MSBuildPropertyGroup)g).UnMerge (baseGrp, propertiesToExclude);
-			}
-		}
-
 		public IEnumerable<MSBuildProperty> GetProperties ()
 		{
 			foreach (var g in groups) {

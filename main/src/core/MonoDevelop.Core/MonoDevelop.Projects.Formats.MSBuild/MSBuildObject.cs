@@ -285,15 +285,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal virtual void WriteContent (XmlWriter writer, WriteContext context)
 		{
-			var hasContent = StartInnerWhitespace != null || EndInnerWhitespace != null;
-			MSBuildWhitespace.Write (StartInnerWhitespace, writer);
+			var children = GetChildren ();
+			var hasChildren = children.Any ();
 
-			foreach (var c in GetChildren ()) {
-				c.Write (writer, context);
-				hasContent = true;
+			var hasContent = StartInnerWhitespace != null || EndInnerWhitespace != null;
+
+			if (hasChildren || emptyElementMode != EmptyElementMode.Empty) {
+				MSBuildWhitespace.Write (StartInnerWhitespace, writer);
+
+				foreach (var c in GetChildren ()) {
+					c.Write (writer, context);
+					hasContent = true;
+				}
+
+				MSBuildWhitespace.Write (EndInnerWhitespace, writer);
 			}
 
-			MSBuildWhitespace.Write (EndInnerWhitespace, writer);
 
 			if (!hasContent && (emptyElementMode == EmptyElementMode.NotEmpty || (emptyElementMode == EmptyElementMode.Unknown && !PreferEmptyElement))) {
 				// Don't write an empty element if it wasn't read as an empty element

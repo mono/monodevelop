@@ -26,7 +26,7 @@ MONOSTUB_EXTRA_SOURCES = monostub-utils.h
 all: monostub monostub-test
 
 render.exe: render.cs
-	gmcs -r:System.Drawing render.cs
+	mcs -r:System.Drawing render.cs
 
 dmg: render.exe app
 	./make-dmg-bundle.sh

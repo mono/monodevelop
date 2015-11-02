@@ -138,19 +138,30 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		static int FindPrevWordStart (TextEditor editor, int offset)
 		{
-			while (--offset >= 0 && !Char.IsWhiteSpace (editor.GetCharAt (offset))) 
-				;
+			while (--offset >= 0) {
+				var c = editor.GetCharAt (offset);
+				//Only legal characters in template Shortcut
+				//LetterOrDigit make sense
+				//_ to allow underscore naming convention
+				//# is because there are #if templates
+				//~ because disctructor template
+				//@ some Razor templates start with @
+				//in theory we should probably just support LetterOrDigit and _
+				if (!char.IsLetterOrDigit (c) && c != '_' && c != '#' && c != '~' && c != '@') {
+					break;
+				}
+			}
 			return ++offset;
 		}
 		
-		public static string GetWordBeforeCaret (TextEditor editor)
+		public static string GetTemplateShortcutBeforeCaret (TextEditor editor)
 		{
 			int offset = editor.CaretOffset;
 			int start  = FindPrevWordStart (editor, offset);
 			return editor.GetTextBetween (start, offset);
 		}
 		
-		static int DeleteWordBeforeCaret (TextEditor editor)
+		static int DeleteTemplateShortcutBeforeCaret (TextEditor editor)
 		{
 			int offset = editor.CaretOffset;
 			int start  = FindPrevWordStart (editor, offset);
@@ -419,9 +430,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 				data.RemoveText (start, end - start);
 				offset = start;
 			} else {
-				string word = GetWordBeforeCaret (data).Trim ();
+				string word = GetTemplateShortcutBeforeCaret (data).Trim ();
 				if (word.Length > 0)
-					offset = DeleteWordBeforeCaret (data);
+					offset = DeleteTemplateShortcutBeforeCaret (data);
 			}
 			
 			TemplateResult template = FillVariables (templateCtx);

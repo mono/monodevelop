@@ -47,6 +47,7 @@ namespace MonoDevelop.Projects
 		
 		public CompiledAssemblyProject ()
 		{
+			Initialize (this);
 			AddNewConfiguration ("Default");
 			StockIcon = "md-assembly-project";
 		}
@@ -208,7 +209,7 @@ namespace MonoDevelop.Projects
 	{
 		public override bool CanRead (FilePath file, Type expectedType)
 		{
-			return (expectedType.IsAssignableFrom (typeof(SolutionItem)) || expectedType.IsAssignableFrom (typeof(Solution))) && (file.Extension.ToLower() == ".exe" || file.Extension.ToLower() ==  ".dll");
+			return expectedType.IsAssignableFrom (typeof(SolutionItem)) && (file.Extension.ToLower() == ".exe" || file.Extension.ToLower() ==  ".dll");
 		}
 
 		public override Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, SolutionLoadContext ctx, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)
