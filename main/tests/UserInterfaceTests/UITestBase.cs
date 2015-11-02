@@ -59,7 +59,23 @@ namespace UserInterfaceTests
 
 		protected UITestBase (string mdBinPath)
 		{
-			MonoDevelopBinPath = mdBinPath;
+			var installedXS = Environment.GetEnvironmentVariable ("USE_INSTALLED_XS");
+			if (!string.IsNullOrWhiteSpace(installedXS)) {
+				if (Platform.IsMac)
+					installedXS = Path.Combine(installedXS, "Contents/MacOS/XamarinStudio");
+				else if (Platform.IsWindows)
+					installedXS = Path.Combine(installedXS, @"bin\XamarinStudio.exe");
+			}
+
+			if (File.Exists (installedXS)) {
+				MonoDevelopBinPath = installedXS;
+				Console.WriteLine ("[UITEST] Using installed Xamarin Studio from this location: " + installedXS);
+			}
+			else {
+				Console.WriteLine ("[UITEST] Installed Xamarin Studio not found. Falling back to default behavior.");
+				MonoDevelopBinPath = mdBinPath;
+			}
+
 			currentWorkingDirectory = Directory.GetCurrentDirectory ();
 		}
 
