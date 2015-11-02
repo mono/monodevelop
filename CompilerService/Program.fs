@@ -1,4 +1,5 @@
 ﻿open System
+open System.IO
 open Nessos.Argu
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Reflection
@@ -20,9 +21,15 @@ let main argv =
     let projectFile = results.GetResult(<@ Project @>)
     let checker = FSharpChecker.Create()
     let fsharpProjectOptions = checker.GetProjectOptionsFromProjectFile(projectFile)
+    let normalizedReferences = 
+      fsharpProjectOptions.ReferencedProjects
+      |> Array.map (fun p -> let (name, options) = p
+                             let fullPath = Path.GetFullPath(name)
+                             fullPath, { options with ProjectFileName = fullPath })
+
     let pickler = FsPickler.CreateJsonSerializer()
     let outstream = Console.OpenStandardOutput()
-    pickler.Serialize(outstream, fsharpProjectOptions)
+    pickler.Serialize(outstream, { fsharpProjectOptions with ReferencedProjects = normalizedReferences })
     0
   with ex ->
     Console.Out.WriteLine(ex)
