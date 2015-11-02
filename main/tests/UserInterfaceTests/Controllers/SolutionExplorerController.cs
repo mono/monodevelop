@@ -95,7 +95,7 @@ namespace UserInterfaceTests
 		public static bool SelectPackage (string solutionName, string projectName, string package, UITestBase testContext = null)
 		{
 			LogReproSteps (testContext, string.Format ("Under Solution Explorer, select package '{0}' under '{1}' > '{2}' > 'Packages'", package, projectName.StripBold (), solutionName.StripBold ()));
-			return Select (solutionName, projectName, "Packages", package);
+			return Select (solutionName, projectName, "Packages") && Select (solutionName, projectName, "Packages", package);
 		}
 
 		static void LogReproSteps (UITestBase testContext, string message, params object[] info)

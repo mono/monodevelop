@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.Components.AutoTest;
 using MonoDevelop.Components.Commands;
 using NUnit.Framework;
+using MonoDevelop.Ide.Commands;
 
 namespace UserInterfaceTests
 {
@@ -72,6 +73,30 @@ namespace UserInterfaceTests
 			WaitForNuGet.UpdateSuccess (string.Empty);
 			if (testContext != null)
 				testContext.TakeScreenShot ("All-NuGet-Packages-Updated");
+		}
+
+		public static void UpdatePackage (string solutionName, string projectName, string packageName, UITestBase testContext = null)
+		{
+			SolutionExplorerController.SelectSolution (solutionName);
+			SolutionExplorerController.SelectProject (solutionName, projectName);
+			SolutionExplorerController.SelectPackage (solutionName, projectName, packageName);
+			if (testContext != null) {
+				testContext.TakeScreenShot ("Selected-Package");
+				testContext.ReproStep (string.Format ("Select the package {0} under {1} > {2}", packageName, solutionName, projectName));
+			}
+			Session.ExecuteCommand ("MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.UpdatePackage");
+		}
+
+		public static void RemovePackage (string solutionName, string projectName, string packageName, UITestBase testContext = null)
+		{
+			SolutionExplorerController.SelectSolution (solutionName);
+			SolutionExplorerController.SelectProject (solutionName, projectName);
+			SolutionExplorerController.SelectPackage (solutionName, projectName, packageName);
+			if (testContext != null) {
+				testContext.TakeScreenShot ("Selected-Package");
+				testContext.ReproStep (string.Format ("Select the package {0} under {1} > {2}", packageName, solutionName, projectName));
+			}
+			Session.ExecuteCommand (EditCommands.Delete);
 		}
 
 		static void AddUpdatePackage (NuGetPackageOptions packageOptions, Action<string> takeScreenshot, bool isUpdate = false)

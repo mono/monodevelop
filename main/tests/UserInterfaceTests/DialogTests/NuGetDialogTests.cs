@@ -169,6 +169,8 @@ namespace UserInterfaceTests
 			}
 		}
 
+		#region Powershell warnings
+
 		[Test, Category ("Cycle6")]
 		[Description ("Add a package with powershell scripts and assert that Xamarin Studio doesn't report warnings "+
 			"when trying to add powershell scripts to Xamarin Studio")]
@@ -181,6 +183,42 @@ namespace UserInterfaceTests
 			WaitForNuGet.Success ("Newtonsoft.Json", NuGetOperations.Add, false, this);
 			TakeScreenShot ("NewtonSoftJson-Package-Added-Without-Warning");
 		}
+
+		[Test, Category ("Cycle6")]
+		[Description ("Add a package with powershell scripts and update it. Assert that Xamarin Studio doesn't report warnings "+
+			"when trying to update powershell scripts to Xamarin Studio")]
+		public void TestUpdateDontShowWarningWithPowerShellScripts ()
+		{
+			var projectDetails = CreateProject ();
+			var package = new NuGetPackageOptions {
+				PackageName = "Newtonsoft.Json",
+				Version = "6.0.8"
+			};
+			NuGetController.AddPackage (package, this);
+			WaitForNuGet.Success ("Newtonsoft.Json", NuGetOperations.Add, true, this);
+			TakeScreenShot ("NewtonSoftJson-Package-Added-Without-Warning");
+
+			NuGetController.UpdatePackage (projectDetails.SolutionName, projectDetails.ProjectName, "Newtonsoft.Json");
+			WaitForNuGet.Success ("Newtonsoft.Json", NuGetOperations.Update, false, this);
+		}
+
+		[Test, Category ("Cycle6")]
+		[Description ("Add a package with powershell scripts and remove it. Assert that Xamarin Studio doesn't report warnings "+
+			"when trying to remove powershell scripts to Xamarin Studio")]
+		public void TestRemoveDontShowWarningWithPowerShellScripts ()
+		{
+			var projectDetails = CreateProject ();
+			NuGetController.AddPackage (new NuGetPackageOptions {
+				PackageName = "Newtonsoft.Json",
+			}, this);
+			WaitForNuGet.Success ("Newtonsoft.Json", NuGetOperations.Add, true, this);
+			TakeScreenShot ("NewtonSoftJson-Package-Added-Without-Warning");
+
+			NuGetController.RemovePackage (projectDetails.SolutionName, projectDetails.ProjectName, "Newtonsoft.Json");
+			WaitForNuGet.Success ("Newtonsoft.Json", NuGetOperations.Remove, false, this);
+		}
+
+		#endregion
 
 		[Test, Timeout (300000), Category ("Cycle6")]
 		[Description ("When a NuGet package is updated, the 'Local Copy' value should be preserved")]
