@@ -95,22 +95,22 @@ namespace WindowsPlatform.MainToolbar
 
 						// If we have a separator, don't draw another one if the previous visible item is a separator.
 						var separatorMenuItem = Items [i] as Separator;
-						separatorMenuItem.Visibility = System.Windows.Visibility.Collapsed;
+						separatorMenuItem.Visibility = Visibility.Collapsed;
 						for (int j = i - 1; j >= 0; --j) {
 							var iterMenuItem = Items [j] as Control;
 
 							if (iterMenuItem is Separator)
 								break;
 
-							if (iterMenuItem.Visibility != System.Windows.Visibility.Visible)
+							if (iterMenuItem.Visibility != Visibility.Visible)
 								continue;
 
-							separatorMenuItem.Visibility = System.Windows.Visibility.Visible;
+							separatorMenuItem.Visibility = Visibility.Visible;
 							break;
 						}
 					}
 					if (menuEntrySet != null && menuEntrySet.AutoHide)
-						Visibility = Items.Cast<Control> ().Any (item => item.Visibility == System.Windows.Visibility.Visible) ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+						Visibility = Items.Cast<Control> ().Any (item => item.Visibility == Visibility.Visible) ? Visibility.Visible : Visibility.Collapsed;
 				}
 				return;
 			}
@@ -121,7 +121,7 @@ namespace WindowsPlatform.MainToolbar
 					ToolTip = info.Description;
 
 				if (actionCommand.CommandArray && commandArrayInfo == null) {
-					Visibility = System.Windows.Visibility.Collapsed;
+					Visibility = Visibility.Collapsed;
 
 					var parent = (TitleMenuItem)Parent;
 
@@ -151,7 +151,7 @@ namespace WindowsPlatform.MainToolbar
 			Header = info.Text;
 			IsEnabled = info.Enabled;
 			Visibility = info.Visible && (menuEntry.DisabledVisible || IsEnabled) ?
-				System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+				Visibility.Visible : Visibility.Collapsed;
 			IsChecked = info.Checked || info.CheckedInconsistent;
 			ToolTip = info.Description;
 		}
@@ -192,19 +192,19 @@ namespace WindowsPlatform.MainToolbar
 			return ret;
 		}
 
-		protected override void OnSubmenuOpened (System.Windows.RoutedEventArgs e)
+		protected override void OnSubmenuOpened (RoutedEventArgs e)
 		{
 			Update (includeChildren: true);
 			base.OnSubmenuOpened (e);
 		}
 
-		protected override void OnSubmenuClosed (System.Windows.RoutedEventArgs e)
+		protected override void OnSubmenuClosed (RoutedEventArgs e)
 		{
 			Clear (includeChildren: true);
 			base.OnSubmenuClosed (e);
 		}
 
-		void OnMenuClicked (object sender, System.Windows.RoutedEventArgs e)
+		void OnMenuClicked (object sender, RoutedEventArgs e)
 		{
 			if (commandArrayInfo != null) {
 				manager.DispatchCommand (menuEntry.CommandId, commandArrayInfo.DataItem, initialCommandTarget, commandSource);
@@ -213,7 +213,7 @@ namespace WindowsPlatform.MainToolbar
 			}
 		}
 
-		void OnMenuLinkClicked (object sender, System.Windows.RoutedEventArgs e)
+		void OnMenuLinkClicked (object sender, RoutedEventArgs e)
 		{
 			DesktopService.ShowUrl (menuLinkEntry.Url);
 		}
