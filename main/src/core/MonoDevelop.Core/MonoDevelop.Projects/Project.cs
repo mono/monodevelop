@@ -415,7 +415,7 @@ namespace MonoDevelop.Projects
 						if (evalResult != null && !evalResult.BuildResult.HasErrors) {
 							var evalItems = evalResult
 								.Items
-								.Select (i => new ProjectFile (Path.Combine (sourceProject.BaseDirectory, i.Include), "Compile") { Project = this })
+								.Select (i => new ProjectFile (MSBuildProjectService.FromMSBuildPath (sourceProject.BaseDirectory, i.Include), "Compile") { Project = this })
 								.ToList ();
 
 							result.AddRange (evalItems);
