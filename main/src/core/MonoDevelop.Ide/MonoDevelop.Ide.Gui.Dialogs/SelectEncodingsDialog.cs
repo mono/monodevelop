@@ -33,7 +33,6 @@ using MonoDevelop.Core;
 using System.Text;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide
 {
@@ -45,23 +44,6 @@ namespace MonoDevelop.Ide
 		public SelectEncodingsDialog ()
 		{
 			Build ();
-
-			var iconRight = new Image (ImageService.GetIcon ("gtk-go-forward", IconSize.Button).ToPixbuf());
-			this.btnAdd.Image = iconRight;
-
-			var iconLeft = new Image (ImageService.GetIcon ("gtk-go-back", IconSize.Button).ToPixbuf());
-			this.btnRemove.Image = iconLeft;
-
-			var iconUp = new Image (ImageService.GetIcon ("gtk-go-up", IconSize.Button).ToPixbuf());
-			iconUp.Xalign = 0F;
-			iconUp.Yalign = 0F;
-			this.btnUp.Add (iconUp);
-
-			var iconDown = new Image (ImageService.GetIcon ("gtk-go-down", IconSize.Button).ToPixbuf());
-			iconDown.Xalign = 0F;
-			iconDown.Yalign = 0F;
-			this.btnDown.Add (iconDown);
-
 			try {
 				storeAvail = new ListStore (typeof(string), typeof(string), typeof(int));
 				listAvail.Model = storeAvail;

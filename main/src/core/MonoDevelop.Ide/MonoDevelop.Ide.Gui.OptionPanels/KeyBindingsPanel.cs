@@ -65,8 +65,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		public KeyBindingsPanel ()
 		{
 			this.Build ();
-
-			this.iconWarning.Pixbuf = ImageService.GetIcon ("gtk-dialog-warning", IconSize.Menu).ToPixbuf();
 			
 			keyStore = new TreeStore (typeof (Command), typeof (string), typeof (string), typeof (string), typeof (int), typeof(string), typeof(bool), typeof (bool));
 			keyTreeView.Model = filterModel = new TreeModelFilter (keyStore, null);

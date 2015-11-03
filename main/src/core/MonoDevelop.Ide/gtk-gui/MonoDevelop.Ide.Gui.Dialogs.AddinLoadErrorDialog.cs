@@ -5,14 +5,23 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	internal partial class AddinLoadErrorDialog
 	{
 		private global::Gtk.HBox hbox1;
-		private global::Gtk.Image iconError;
+		
+		private global::MonoDevelop.Components.ImageView iconError;
+		
 		private global::Gtk.VBox vbox4;
+		
 		private global::Gtk.Label label4;
+		
 		private global::Gtk.ScrolledWindow scrolledwindow1;
+		
 		private global::Gtk.TreeView errorTree;
+		
 		private global::Gtk.Label messageLabel;
+		
 		private global::Gtk.Button noButton;
+		
 		private global::Gtk.Button yesButton;
+		
 		private global::Gtk.Button closeButton;
 
 		protected virtual void Build ()
@@ -35,10 +44,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.hbox1.Spacing = 12;
 			this.hbox1.BorderWidth = ((uint)(6));
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.iconError = new global::Gtk.Image ();
+			this.iconError = new global::MonoDevelop.Components.ImageView ();
 			this.iconError.Name = "iconError";
 			this.iconError.Xalign = 0F;
 			this.iconError.Yalign = 0F;
+			this.iconError.IconId = "gtk-dialog-error";
+			this.iconError.IconSize = ((global::Gtk.IconSize)(6));
 			this.hbox1.Add (this.iconError);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.iconError]));
 			w2.Position = 0;

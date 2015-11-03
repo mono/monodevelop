@@ -28,7 +28,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		private global::Gtk.HBox warningBox;
 		
-		private global::Gtk.Image iconWarning;
+		private global::MonoDevelop.Components.ImageView imageWarning;
 		
 		private global::Gtk.Label label2;
 		
@@ -140,10 +140,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.warningBox.Name = "warningBox";
 			this.warningBox.Spacing = 6;
 			// Container child warningBox.Gtk.Box+BoxChild
-			this.iconWarning = new global::Gtk.Image ();
-			this.iconWarning.Name = "iconWarning";
-			this.warningBox.Add (this.iconWarning);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.warningBox [this.iconWarning]));
+			this.imageWarning = new global::MonoDevelop.Components.ImageView ();
+			this.imageWarning.Name = "imageWarning";
+			this.imageWarning.IconId = "gtk-dialog-warning";
+			this.imageWarning.IconSize = ((global::Gtk.IconSize)(1));
+			this.warningBox.Add (this.imageWarning);
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.warningBox [this.imageWarning]));
 			w8.Position = 0;
 			w8.Expand = false;
 			w8.Fill = false;

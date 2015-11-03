@@ -5,16 +5,27 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	internal partial class TipOfTheDayWindow
 	{
 		private global::Gtk.VBox vbox2;
+		
 		private global::Gtk.VBox vbox3;
+		
 		private global::Gtk.HBox hbox7;
-		private global::Gtk.Image iconInfo;
+		
+		private global::MonoDevelop.Components.ImageView iconInfo;
+		
 		private global::Gtk.Label categoryLabel;
+		
 		private global::Gtk.ScrolledWindow scrolledwindow2;
+		
 		private global::Gtk.TextView tipTextview;
+		
 		private global::Gtk.HBox hbox5;
+		
 		private global::Gtk.CheckButton noshowCheckbutton;
+		
 		private global::Gtk.HButtonBox hbuttonbox1;
+		
 		private global::Gtk.Button nextButton;
+		
 		private global::Gtk.Button closeButton;
 
 		protected virtual void Build ()
@@ -39,10 +50,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.hbox7.Name = "hbox7";
 			this.hbox7.Spacing = 5;
 			// Container child hbox7.Gtk.Box+BoxChild
-			this.iconInfo = new global::Gtk.Image ();
+			this.iconInfo = new global::MonoDevelop.Components.ImageView ();
 			this.iconInfo.Name = "iconInfo";
 			this.iconInfo.Xalign = 0F;
 			this.iconInfo.Yalign = 0F;
+			this.iconInfo.IconId = "gtk-dialog-info";
+			this.iconInfo.IconSize = ((global::Gtk.IconSize)(6));
 			this.hbox7.Add (this.iconInfo);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.iconInfo]));
 			w1.Position = 0;

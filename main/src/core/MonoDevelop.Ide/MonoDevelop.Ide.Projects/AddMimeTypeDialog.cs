@@ -41,7 +41,6 @@ namespace MonoDevelop.Ide.Projects
 		public AddMimeTypeDialog (IEnumerable<string> types)
 		{
 			this.Build ();
-			this.image.Pixbuf = ImageService.GetIcon ("gtk-dialog-error", Gtk.IconSize.Menu).ToPixbuf();
 			currentTypes = types;
 			buttonOk.Sensitive = false;
 		}
@@ -85,7 +84,7 @@ namespace MonoDevelop.Ide.Projects
 				desc = mt;
 			buttonOk.Sensitive = mimeType != null;
 			labelDesc.Text = desc ?? string.Empty;
-			image.Pixbuf = img.ToPixbuf (Gtk.IconSize.Menu);
+			image.Image = img;
 		}
 		
 		string TryGetFileType (string name)

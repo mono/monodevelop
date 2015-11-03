@@ -28,6 +28,7 @@ using Gdk;
 
 namespace MonoDevelop.Components
 {
+	[System.ComponentModel.ToolboxItem (true)]
 	public class ImageView: Gtk.Misc
 	{
 		Xwt.Drawing.Image image;
