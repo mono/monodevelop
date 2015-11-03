@@ -86,7 +86,7 @@ namespace WindowsPlatform.MainToolbar
 						var titleMenuItem = Items[i] as TitleMenuItem;
 
 						if (titleMenuItem != null) {
-							titleMenuItem.Update (false);
+							titleMenuItem.Update (true);
 							continue;
 						}
 
