@@ -42,11 +42,12 @@ namespace WindowsPlatform.MainToolbar
 			content.Children.Add (new TextBlock {
 				HorizontalAlignment = HorizontalAlignment.Left,
 				VerticalAlignment = VerticalAlignment.Center,
+				Margin = new Thickness (0, 0, 0, 2),
 			});
 
 			var arrow = new Polygon {
 				Fill = Styles.MainToolbarForegroundBrush,
-				Margin = new Thickness (5, 0, 0, 0),
+				Margin = new Thickness (5, 0, 0, 2),
 				HorizontalAlignment = HorizontalAlignment.Right,
 				VerticalAlignment = VerticalAlignment.Center,
 			};
