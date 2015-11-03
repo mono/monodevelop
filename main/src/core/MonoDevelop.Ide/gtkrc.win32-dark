@@ -75,7 +75,7 @@ style "default" {
     GtkMenu::horizontal-padding = 3
     GtkMenu::vertical-padding = 3
     GtkMenuItem::horizontal-padding = 2
-    GtkSeparatorMenuItem::horizontal-padding = 2
+    GtkSeparatorMenuItem::horizontal-padding = 0
 
     GtkTreeView::expander-size = 8
     GtkExpander::expander-size = 8
@@ -122,16 +122,30 @@ style "menu" = "default" {
     xthickness = 0
     ythickness = 0
 
-    engine "wimp" {
+    base[NORMAL] = @fg_color
+
+    engine "xamarin" {
+        roundness  = 0
     }
 }
 
-style "menu-item" = "default" {
+style "menubar" = "default" {
     xthickness = 5
     ythickness = 3
+    base[NORMAL] = @bg_color
 
-    engine "wimp" {
+    engine "xamarin" {
+        roundness  = 0
     }
+}
+
+style "menu-item" = "menu" {
+    xthickness = 5
+    ythickness = 3
+}
+
+style "menu-separator" = "menu-item" {
+	xthickness = 0
 }
 
 style "toolbar" = "default"
@@ -273,11 +287,34 @@ style "wizard-dialog"
 
 style "scrollbar" = "default"
 {
-    GtkRange::slider-width = 7
-    GtkRange::trough-border = 2
+    #GtkScrollbar::has-forward-stepper = 0
+    #GtkScrollbar::has-backward-stepper = 0
 
-    engine "wimp" {
+	fg[INSENSITIVE] = lighter (@bg_color)  # inactive arrow
+	fg[NORMAL]      = @base_color          # active arrow
+
+	#bg[NORMAL]      = "#ADA8A8"
+	#bg[INSENSITIVE] = "#ADA8A8"
+	bg[NORMAL]      = @fg_color
+	bg[INSENSITIVE] = "#ADA8A8"
+
+    engine "xamarin" {
+        arrowstyle = 0
+        #stepperstyle = 1
+        gradient_shades = { 0.9, 0.9, 0.97, 0.97 }
     }
+}
+
+style "completion_scrollbar" = "scrollbar"
+{
+    GtkScrollbar::has-forward-stepper = 0
+    GtkScrollbar::has-backward-stepper = 0
+	bg[NORMAL] = @base_color
+
+	engine "xamarin"
+	{
+		trough_shades	= { 2.1, 2.1 }
+	}
 }
 
 style "progressbar" = "default"
@@ -326,8 +363,18 @@ widget_class "*<GtkButton>"     style "button"
 widget "*.GtkToggleButton"      style "button"
 widget "wizard_dialog"          style "wizard-dialog"
 
+widget "*CompletionScrolledWindow*" style "completion_scrollbar"
+
+# Menus Windows bug: matching widget_class doesn't work
+#        workaround: use slow name matching
+widget "*MenuBar"               style "menubar"
+widget "*GtkMenu"               style "menu"
+widget "*MenuItem*"             style "menu-item"
+widget "*SeparatorMenuItem*"    style "menu-separator"
+widget_class "*<GtkMenuBar>*"   style "menubar"
 widget_class "*<GtkMenu>*"      style "menu"
 widget_class "*<GtkMenuItem>*"  style "menu-item"
+widget_class "*<GtkSeparatorMenuItem>*" style "menu-separator"
 
 widget_class "*<GtkToolbar>*" style "toolbar"
 widget_class "*ToolButton*"     style "toolbar-button"
