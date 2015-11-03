@@ -137,35 +137,83 @@
     <EmbeddedResource Include="icons\md-continue-debug.png">
       <LogicalName>md-continue-debug.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\md-continue-debug~hover.png">
+      <LogicalName>md-continue-debug~hover.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\md-continue-debug~pressed.png">
+      <LogicalName>md-continue-debug~pressed.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\md-pause-debug.png">
       <LogicalName>md-pause-debug.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\md-pause-debug~hover.png">
+      <LogicalName>md-pause-debug~hover.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\md-pause-debug~pressed.png">
+      <LogicalName>md-pause-debug~pressed.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\md-step-into-debug.png">
       <LogicalName>md-step-into-debug.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\md-step-into-debug~hover.png">
+      <LogicalName>md-step-into-debug~hover.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\md-step-into-debug~pressed.png">
+      <LogicalName>md-step-into-debug~pressed.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\md-step-out-debug.png">
       <LogicalName>md-step-out-debug.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\md-step-out-debug~hover.png">
+      <LogicalName>md-step-out-debug~hover.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\md-step-out-debug~pressed.png">
+      <LogicalName>md-step-out-debug~pressed.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\md-step-over-debug.png">
       <LogicalName>md-step-over-debug.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\md-step-over-debug~hover.png">
+      <LogicalName>md-step-over-debug~hover.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\md-step-over-debug~pressed.png">
+      <LogicalName>md-step-over-debug~pressed.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\build.png">
       <LogicalName>build.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\stop.png">
-      <LogicalName>stop.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\execute.png">
-      <LogicalName>execute.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\build~disabled.png">
       <LogicalName>build~disabled.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\execute~disabled.png">
-      <LogicalName>execute~disabled.png</LogicalName>
+    <EmbeddedResource Include="icons\build~hover.png">
+      <LogicalName>build~hover.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\build~pressed.png">
+      <LogicalName>build~pressed.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stop.png">
+      <LogicalName>stop.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\stop~disabled.png">
       <LogicalName>stop~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stop~hover.png">
+      <LogicalName>stop~hover.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stop~pressed.png">
+      <LogicalName>stop~pressed.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\execute.png">
+      <LogicalName>execute.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\execute~disabled.png">
+      <LogicalName>execute~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\execute~hover.png">
+      <LogicalName>execute~hover.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\execute~pressed.png">
+      <LogicalName>execute~pressed.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
