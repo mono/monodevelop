@@ -142,6 +142,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		FindInFilesDialog (bool showReplace)
 		{
 			Build ();
+			IdeTheme.ApplyTheme (this);
 			
 			properties = PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
 			SetButtonIcon (toggleReplaceInFiles, "gtk-find-and-replace");

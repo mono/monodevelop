@@ -93,6 +93,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 				AllowGrow = true,
 				AllowShrink = true,
 			};
+			IdeTheme.ApplyTheme (dialog);
 			var toplevel = this.Container.Toplevel as Window;
 			if (toplevel != null)
 				dialog.TransientFor = toplevel;
