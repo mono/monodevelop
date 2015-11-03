@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharp
 				return null;
 			var partialDoc = await CSharpCompletionTextEditorExtension.WithFrozenPartialSemanticsAsync (analysisDocument, cancellationToken).ConfigureAwait (false);
 			var root = await partialDoc.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
-			if (offset < 0 || root.Span.Length <= offset)
+			if (offset < 0 || root.Span.End <= offset)
 				return null;
 			var token = root.FindToken (offset);
 			var tokenSpan = token.Span;
