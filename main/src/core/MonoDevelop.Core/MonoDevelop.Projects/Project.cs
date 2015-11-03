@@ -1769,7 +1769,8 @@ namespace MonoDevelop.Projects
 				// Create a project instance to be used for comparing old and new values in the global property group
 				// We use a dummy configuration and platform to avoid loading default values from the configurations
 				// while evaluating
-				pi = CreateProjectInstaceForConfiguration ("", "");
+				var c = Guid.NewGuid ().ToString ();
+				pi = CreateProjectInstaceForConfiguration (c, c);
 
 				IMSBuildPropertySet globalGroup = sourceProject.GetGlobalPropertyGroup ();
 
@@ -2397,9 +2398,15 @@ namespace MonoDevelop.Projects
 			return val.Substring (0, i).Trim () == "'$(" + prop.Name + ")'" && val.Substring (i + 2).Trim () == "''";
 		}
 
-		class ExpandedItemList: List<MSBuildItem>
+		class ExpandedItemList: List<ExpandedItemInfo>
 		{
 			public bool Modified { get; set; }
+		}
+
+		class ExpandedItemInfo
+		{
+			public ProjectItem ProjectItem;
+			public MSBuildItem MSBuildItem;
 		}
 
 		HashSet<MSBuildItem> usedMSBuildItems = new HashSet<MSBuildItem> ();
@@ -2420,8 +2427,10 @@ namespace MonoDevelop.Projects
 				if (itemInfo.Value.Modified || msproject.EvaluatedItemsIgnoringCondition.Where (i => i.SourceItem == itemInfo.Key).Count () != itemInfo.Value.Count) {
 					// Expand the list
 					unusedItems.Add (itemInfo.Key);
-					foreach (var it in itemInfo.Value)
-						msproject.AddItem (it);
+					foreach (var it in itemInfo.Value) {
+						it.ProjectItem.BackingItem = it.MSBuildItem;
+						msproject.AddItem (it.MSBuildItem);
+					}
 				}
 			}
 
@@ -2446,7 +2455,10 @@ namespace MonoDevelop.Projects
 				// must be individually included
 				var bitem = msproject.CreateItem (item.ItemName, GetPrefixedInclude (pathPrefix, item.Include));
 				item.Write (this, bitem);
-				items.Add (bitem);
+				items.Add (new ExpandedItemInfo {
+					ProjectItem = item,
+					MSBuildItem = bitem
+				});
 
 				unusedItems.Remove (item.BackingItem);
 
@@ -2478,10 +2490,17 @@ namespace MonoDevelop.Projects
 		{
 			// Compare only metadata, since item name and include can't change
 
+			var n = 0;
 			foreach (var p in item.Metadata.GetProperties ()) {
-				if (!object.Equals (p.Value, evalItem.Metadata.GetValue (p.Name)))
+				var p2 = evalItem.Metadata.GetProperty (p.Name);
+				if (p2 == null)
 					return false;
+				if (!p.ValueType.Equals (p.Value, p2.Value))
+					return false;
+				n++;
 			}
+			if (evalItem.SourceItem.Metadata.GetProperties ().Count () != n)
+				return false;
 			return true;
 		}
 

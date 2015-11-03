@@ -62,6 +62,11 @@ namespace MonoDevelop.Projects
 			initialMetadataCount = other.initialMetadataCount;
 		}
 
+		internal void OnLoaded ()
+		{
+			initialMetadataCount = propertyList.Count;
+		}
+
 		internal void SetProject (MSBuildProject project)
 		{
 			foreach (var p in propertyList) {
