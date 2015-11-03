@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects;
-using MonoDevelop.Components;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -38,7 +38,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public SelectFileFormatDialog (IWorkspaceFileObject item)
 		{
 			this.Build ();
-			this.iconWarning.Pixbuf = ImageService.GetIcon ("gtk-dialog-warning", Gtk.IconSize.Dialog).ToPixbuf();
 			string warning = "";
 			foreach (string msg in item.FileFormat.GetCompatibilityWarnings (item))
 				warning += msg + "\n";

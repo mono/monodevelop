@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Components;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Projects
@@ -35,8 +34,6 @@ namespace MonoDevelop.Ide.Projects
 		{
 			HasSeparator = true;
 			this.Build ();
-
-			this.iconQuestion.Pixbuf = ImageService.GetIcon ("gtk-dialog-question", Gtk.IconSize.Dialog).ToPixbuf();
 			radioCopy.Active = true;
 			labelTitle.Markup = GettextCatalog.GetString (labelTitle.Text, "<b>" + GLib.Markup.EscapeText (file) + "</b>");
 			Resizable = false;

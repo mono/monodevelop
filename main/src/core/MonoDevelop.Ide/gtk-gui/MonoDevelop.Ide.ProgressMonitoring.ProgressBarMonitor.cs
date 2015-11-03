@@ -5,8 +5,12 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 	public partial class ProgressBarMonitor
 	{
 		private global::Gtk.HBox hbox1;
+		
 		private global::Gtk.ProgressBar progressBar;
+		
 		private global::Gtk.Button buttonCancel;
+		
+		private global::MonoDevelop.Components.ImageView iconCancel;
 
 		protected virtual void Build ()
 		{
@@ -28,10 +32,13 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 			this.buttonCancel = new global::Gtk.Button ();
 			this.buttonCancel.CanFocus = true;
 			this.buttonCancel.Name = "buttonCancel";
-			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Relief = ((global::Gtk.ReliefStyle)(2));
-			global::Gtk.Image w2 = new global::Gtk.Image ();
-			this.buttonCancel.Image = w2;
+			// Container child buttonCancel.Gtk.Container+ContainerChild
+			this.iconCancel = new global::MonoDevelop.Components.ImageView ();
+			this.iconCancel.Name = "iconCancel";
+			this.iconCancel.IconSize = ((global::Gtk.IconSize)(1));
+			this.iconCancel.IconId = "gtk-cancel";
+			this.buttonCancel.Add (this.iconCancel);
 			this.hbox1.Add (this.buttonCancel);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonCancel]));
 			w3.Position = 1;

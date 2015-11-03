@@ -157,7 +157,6 @@ namespace MonoDevelop.Ide.Projects
 		public SelectReferenceDialog ()
 		{
 			Build ();
-			this.RemoveReferenceButton.Image = new Image (ImageService.GetIcon ("gtk-delete", Gtk.IconSize.Menu).ToPixbuf());
 
 			combinedBox = new CombinedBox ();
 			combinedBox.Show ();

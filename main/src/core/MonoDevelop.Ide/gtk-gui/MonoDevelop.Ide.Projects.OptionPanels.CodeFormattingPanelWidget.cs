@@ -5,13 +5,21 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	internal partial class CodeFormattingPanelWidget
 	{
 		private global::Gtk.VBox vbox1;
+		
 		private global::Gtk.Label label1;
+		
 		private global::Gtk.HBox hbox1;
+		
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
+		
 		private global::Gtk.TreeView tree;
+		
 		private global::Gtk.VBox boxButtons;
+		
 		private global::Gtk.Button buttonAdd;
+		
 		private global::Gtk.Button buttonRemove;
+		
 		private global::Gtk.Button buttonEdit;
 
 		protected virtual void Build ()

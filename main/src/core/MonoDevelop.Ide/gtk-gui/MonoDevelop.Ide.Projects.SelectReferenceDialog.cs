@@ -5,18 +5,33 @@ namespace MonoDevelop.Ide.Projects
 	internal partial class SelectReferenceDialog
 	{
 		private global::Gtk.VBox vbox5;
+		
 		private global::Gtk.HPaned hpaned1;
+		
 		private global::Gtk.Alignment alignment1;
+		
 		private global::Gtk.Alignment alignment2;
+		
 		private global::Gtk.VBox boxRefs;
+		
 		private global::Gtk.Alignment selectedHeader;
+		
 		private global::Gtk.HBox hbox2;
+		
 		private global::Gtk.Label label114;
+		
 		private global::Gtk.Button RemoveReferenceButton;
+		
+		private global::MonoDevelop.Components.ImageView imageAdd;
+		
 		private global::Gtk.HBox hbox4;
+		
 		private global::Gtk.ScrolledWindow scrolledwindow2;
+		
 		private global::Gtk.TreeView ReferencesTreeView;
+		
 		private global::Gtk.Button cancelbutton;
+		
 		private global::Gtk.Button okbutton;
 
 		protected virtual void Build ()
@@ -80,11 +95,14 @@ namespace MonoDevelop.Ide.Projects
 			this.RemoveReferenceButton = new global::Gtk.Button ();
 			this.RemoveReferenceButton.TooltipMarkup = "Remove";
 			this.RemoveReferenceButton.Name = "RemoveReferenceButton";
-			this.RemoveReferenceButton.UseUnderline = true;
 			this.RemoveReferenceButton.FocusOnClick = false;
 			this.RemoveReferenceButton.Relief = ((global::Gtk.ReliefStyle)(2));
-			global::Gtk.Image w4 = new global::Gtk.Image ();
-			this.RemoveReferenceButton.Image = w4;
+			// Container child RemoveReferenceButton.Gtk.Container+ContainerChild
+			this.imageAdd = new global::MonoDevelop.Components.ImageView ();
+			this.imageAdd.Name = "imageAdd";
+			this.imageAdd.IconId = "gtk-delete";
+			this.imageAdd.IconSize = ((global::Gtk.IconSize)(1));
+			this.RemoveReferenceButton.Add (this.imageAdd);
 			this.hbox2.Add (this.RemoveReferenceButton);
 			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.RemoveReferenceButton]));
 			w5.PackType = ((global::Gtk.PackType)(1));

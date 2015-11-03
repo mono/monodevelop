@@ -5,18 +5,33 @@ namespace MonoDevelop.Ide.Projects
 	public partial class ProjectFileSelectorDialog
 	{
 		private global::Gtk.HPaned hpaned1;
+		
 		private global::Gtk.VBox vbox3;
+		
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
+		
 		private global::Gtk.TreeView projectTree;
+		
 		private global::Gtk.VBox vbox4;
+		
 		private global::Gtk.ScrolledWindow GtkScrolledWindow1;
+		
 		private global::Gtk.TreeView fileList;
+		
 		private global::Gtk.HBox hbox2;
+		
 		private global::Gtk.Button AddFileButton;
+		
+		private global::MonoDevelop.Components.ImageView imageAdd;
+		
 		private global::Gtk.HBox typeBox;
+		
 		private global::Gtk.Label label2;
+		
 		private global::Gtk.ComboBox fileTypeCombo;
+		
 		private global::Gtk.Button buttonCancel;
+		
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -80,11 +95,13 @@ namespace MonoDevelop.Ide.Projects
 			this.AddFileButton.TooltipMarkup = "Add existing files to the project";
 			this.AddFileButton.CanFocus = true;
 			this.AddFileButton.Name = "AddFileButton";
-			this.AddFileButton.UseUnderline = true;
 			this.AddFileButton.Relief = ((global::Gtk.ReliefStyle)(2));
-			this.AddFileButton.Label = "";
-			global::Gtk.Image w7 = new global::Gtk.Image ();
-			this.AddFileButton.Image = w7;
+			// Container child AddFileButton.Gtk.Container+ContainerChild
+			this.imageAdd = new global::MonoDevelop.Components.ImageView ();
+			this.imageAdd.Name = "imageAdd";
+			this.imageAdd.IconSize = ((global::Gtk.IconSize)(1));
+			this.imageAdd.IconId = "gtk-add";
+			this.AddFileButton.Add (this.imageAdd);
 			this.hbox2.Add (this.AddFileButton);
 			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.AddFileButton]));
 			w8.Position = 0;

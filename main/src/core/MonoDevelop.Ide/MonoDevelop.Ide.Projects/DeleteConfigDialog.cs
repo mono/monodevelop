@@ -26,7 +26,6 @@
 //
 
 using System;
-using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -35,7 +34,6 @@ namespace MonoDevelop.Ide.Projects
 		public DeleteConfigDialog()
 		{
 			Build ();
-			this.iconQuestion.Pixbuf = ImageService.GetIcon ("gtk-dialog-question", Gtk.IconSize.Dialog).ToPixbuf();
 		}
 		
 		public bool DeleteChildren {

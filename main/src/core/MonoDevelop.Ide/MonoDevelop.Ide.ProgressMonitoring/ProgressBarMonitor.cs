@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 using System;
 using System.Linq;
-using MonoDevelop.Components;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.ProgressMonitoring
@@ -36,8 +35,6 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 		public ProgressBarMonitor ()
 		{
 			this.Build ();
-			var imgCancel = ImageService.GetIcon ("gtk-cancel", Gtk.IconSize.Menu).ToPixbuf();
-			this.buttonCancel.Image = new Gtk.Image (imgCancel);
 		}
 		
 		public bool AllowCancel {
