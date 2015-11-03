@@ -486,7 +486,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			var info = IdeApp.CommandService.GetCommand (Commands.NavigateTo);
 			ToolbarView.SearchPlaceholderMessage = !string.IsNullOrEmpty (info.AccelKey) ?
-				GettextCatalog.GetString ("Press '{0}' to search", KeyBindingManager.BindingToDisplayLabel (info.AccelKey, false)) :
+				GettextCatalog.GetString ("Press \u2018{0}\u2019 to search", KeyBindingManager.BindingToDisplayLabel (info.AccelKey, false)) :
 				GettextCatalog.GetString ("Search solution");
 		}
 
