@@ -133,24 +133,35 @@ style "button" {
 }
 
 style "dialog-button" = "default" {
-    xthickness = 3
-    ythickness = 2
+    xthickness = 2
+    ythickness = 4
     font_name = "Lucida Grande 13"
 
-    GtkWidget::draw-border = { 2, 2, 2, 2 }
+    bg[NORMAL]      = "#595959"
+    bg[PRELIGHT]    = shade(1.1, "#595959")
+    bg[ACTIVE]      = "#51ADF3"
+    bg[INSENSITIVE] = "#595959"
+    bg[SELECTED]    = "#51ADF3"
+    fg[NORMAL]      = "#fff"
+    fg[SELECTED]    = "#fff"
+    fg[PRELIGHT]    = "#fff"
+    fg[INSENSITIVE] = lighter ("#595959")
+
+    GtkWidget::draw-border = { 1, 1, 1, 1 }
     GtkWidget::focus-line-width = 1
-    GtkButton::inner-border = { 8, 8, 0, 3 }
+    GtkWidget::focus-padding = 0
+    GtkButton::inner-border = { 7, 7, 3, 4 }
 
     engine "xamarin" {
         rgba = FALSE
         contrast = 1.0
         gradient_shades     = {0.96, 0.918, 0.926, 0.858}
-        focus_color         = shade(0.6, @bg_color)
+        focus_color         = lighter ("#595959")
+        focusstyle          = 3
+        border_colors       = { @base_color, @base_color }
+        default_button_color = "#51ADF3"
         textstyle           = 1
       }
-#    engine "quartz" {
-#        buttontype = "aqua"
-#    }
 }
 
 style "toggle-button" = "button" {
