@@ -132,7 +132,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		void DisposeMainInstance ()
 		{
 			if (nativeProjectInfo != null) {
-				mainProjectInstance.Dispose ();
+				if (mainProjectInstance != null)
+					mainProjectInstance.Dispose ();
 				nativeProjectInfo.Engine.UnloadProject (nativeProjectInfo.Project);
 				if (engineManagerIsLocal)
 					nativeProjectInfo.Engine.Dispose ();
