@@ -35,7 +35,7 @@ namespace WindowsPlatform.MainToolbar
 	*/
 			var content = new StackPanel {
 				Orientation = Orientation.Horizontal,
-				Height = 22,
+				Height = 20,
 			};
 
 			Foreground = Styles.MainToolbarForegroundBrush;
