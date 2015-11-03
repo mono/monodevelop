@@ -3,6 +3,7 @@
     <itemgroups>
       <itemgroup label="ImageView Properties">
         <property name="IconId" />
+        <property name="IconSize" />
       </itemgroup>
     </itemgroups>
     <signals />
