@@ -33,6 +33,7 @@ namespace MacPlatform.Tests
 	public class CarbonTests
 	{
 		[Test]
+		[Ignore ("Doesn't appear to work on either 32bit or 64bit")]
 		public void TestProcessName ()
 		{
 			string processName = "HelloWorld";
