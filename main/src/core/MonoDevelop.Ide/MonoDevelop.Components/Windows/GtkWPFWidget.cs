@@ -52,6 +52,13 @@ namespace MonoDevelop.Components.Windows
 
 			wpfControl.PreviewKeyDown += (sender, e) => {
 				// TODO: Some commands check for toplevels, and this window is not a toplevel.
+				if (e.Key == System.Windows.Input.Key.Escape)
+				{
+					System.Windows.Input.Keyboard.ClearFocus();
+					MonoDevelop.Ide.IdeApp.Workbench.Present();
+					return;
+				}
+
 				var key = e.Key == System.Windows.Input.Key.System ? e.SystemKey : e.Key;
 				e.Handled = Ide.IdeApp.CommandService.ProcessKeyEvent (GtkWin32Interop.ConvertKeyEvent (e.KeyboardDevice.Modifiers, key));
 			};
