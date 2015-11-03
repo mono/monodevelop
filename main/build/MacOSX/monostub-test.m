@@ -145,7 +145,7 @@ void test_push_env(void)
 		if (current->initial)
 			setenv(current->var, current->initial, 1);
 
-		check_bool_equal(current->expected, push_env(current->var, current->to_find));
+		check_bool_equal(current->expected, push_env_to_start(current->var, current->to_find));
 		check_string_equal(current->updated, getenv(current->var));
 	}
 }

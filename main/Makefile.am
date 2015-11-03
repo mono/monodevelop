@@ -18,6 +18,7 @@ all-local: vcrevision restore-packages sln_build
 clean: clean-local
 
 clean-local: sln_clean
+	cd build && $(MAKE) clean
 
 restore-packages:
 	nuget restore
