@@ -77,7 +77,10 @@ uitest:
 				if test -n "$(categories)"; then \
 					($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml -labels -include=$(categories) $$asm) || exit $?; \
 				fi; \
-				if ! test -n "$(categories)"; then \
+				if test -n "$(tests)"; then \
+					($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml -labels -run=$(tests) $$asm) || exit $?; \
+				fi; \
+				if ! test -n "$(categories)" && ! test -n "$(tests)"; then \
 					($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml -labels $$asm) || exit $?; \
 				fi; \
 			fi; \

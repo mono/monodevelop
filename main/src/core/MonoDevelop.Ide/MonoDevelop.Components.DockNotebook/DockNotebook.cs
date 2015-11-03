@@ -85,7 +85,7 @@ namespace MonoDevelop.Components.DockNotebook
 					var item = new ContextMenuItem (tab.Markup ?? tab.Text);
 					var locTab = tab;
 					item.Clicked += (object sender, ContextMenuItemClickedEventArgs e) => {
-						currentTab = locTab;
+						CurrentTab = locTab;
 					};
 					menu.Items.Add (item);
 				}

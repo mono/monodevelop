@@ -152,7 +152,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
-		TreeModel ModelFromWidget (Widget widget)
+		protected TreeModel ModelFromWidget (Widget widget)
 		{
 			TreeView tv = widget as TreeView;
 			if (tv != null) {
@@ -179,25 +179,23 @@ namespace MonoDevelop.Components.AutoTest.Results
 			}
 
 			// Check if the class has the SemanticModelAttribute
+			var columnNumber = GetColumnNumber (column, model);
+			return columnNumber == -1 ? null : new GtkTreeModelResult (resultWidget, model, columnNumber) { SourceQuery = this.SourceQuery };
+		}
+
+		protected int GetColumnNumber (string column, TreeModel model)
+		{
 			Type modelType = model.GetType ();
 			SemanticModelAttribute attr = modelType.GetCustomAttribute<SemanticModelAttribute> ();
-
 			if (attr == null) {
 				// Check if the instance has the attributes
 				AttributeCollection attrs = TypeDescriptor.GetAttributes (model);
 				attr = (SemanticModelAttribute)attrs [typeof(SemanticModelAttribute)];
-
 				if (attr == null) {
-					return null;
+					return -1;
 				}
 			}
-
-			int columnNumber = Array.IndexOf (attr.ColumnNames, column);
-			if (columnNumber == -1) {
-				return null;
-			}
-
-			return new GtkTreeModelResult (resultWidget, model, columnNumber) { SourceQuery = this.SourceQuery };
+			return Array.IndexOf (attr.ColumnNames, column);
 		}
 
 		public override AppResult Property (string propertyName, object value)
@@ -399,6 +397,12 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 			case "TAB":
 				return Gdk.Key.Tab;
+
+			case "BKSP":
+				return Gdk.Key.BackSpace;
+
+			case "DELETE":
+				return Gdk.Key.Delete;
 
 			default:
 				throw new Exception ("Unknown keystring: " + keyString);

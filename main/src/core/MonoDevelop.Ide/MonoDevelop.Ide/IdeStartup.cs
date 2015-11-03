@@ -228,7 +228,7 @@ namespace MonoDevelop.Ide
 				ImageService.Initialize ();
 
 				// If we display an error dialog before the main workbench window on OS X then a second application menu is created
-				// which is then replaced with an second empty Apple menu.
+				// which is then replaced with a second empty Apple menu.
 				// XBC #33699
 				Counters.Initialization.Trace ("Initializing IdeApp");
 				IdeApp.Initialize (monitor);

@@ -162,33 +162,49 @@ namespace MonoDevelop.VersionControl.Git
 			return true;
 		}
 
+		const int progressThrottle = 200;
+		static System.Diagnostics.Stopwatch throttleWatch = new System.Diagnostics.Stopwatch ();
 		static bool OnTransferProgress (TransferProgress tp, IProgressMonitor monitor, ref int progress)
 		{
-			if (progress == 0 && tp.ReceivedObjects == 0)
+			if (progress == 0 && tp.ReceivedObjects == 0) {
 				monitor.BeginTask ("Receiving and indexing objects", 2 * tp.TotalObjects);
+				throttleWatch.Restart ();
+			}
 
 			int currentProgress = tp.ReceivedObjects + tp.IndexedObjects;
 			int steps = currentProgress - progress;
-			monitor.Step (steps);
+			if (throttleWatch.ElapsedMilliseconds > progressThrottle) {
+				monitor.Step (steps);
+				throttleWatch.Restart ();
+			}
 			progress = currentProgress;
 
-			if (tp.IndexedObjects >= tp.TotalObjects)
+			if (tp.IndexedObjects >= tp.TotalObjects) {
 				monitor.EndTask ();
+				throttleWatch.Stop ();
+			}
 
 			return !monitor.IsCancelRequested;
 		}
 
 		static void OnCheckoutProgress (int completedSteps, int totalSteps, IProgressMonitor monitor, ref int progress)
 		{
-			if (progress == 0 && completedSteps == 0)
+			if (progress == 0 && completedSteps == 0) {
 				monitor.BeginTask ("Checking out files", totalSteps);
+				throttleWatch.Restart ();
+			}
 
 			int steps = completedSteps - progress;
-			monitor.Step (steps);
+			if (throttleWatch.ElapsedMilliseconds > progressThrottle) {
+				monitor.Step (steps);
+				throttleWatch.Restart ();
+			}
 			progress = completedSteps;
 
-			if (completedSteps >= totalSteps)
+			if (completedSteps >= totalSteps) {
 				monitor.EndTask ();
+				throttleWatch.Stop ();
+			}
 		}
 
 		void NotifyFilesChangedForStash (Stash stash)

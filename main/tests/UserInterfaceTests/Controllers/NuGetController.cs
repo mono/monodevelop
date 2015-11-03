@@ -84,9 +84,9 @@ namespace UserInterfaceTests
 				try {
 					nuget.SelectResultByPackageName (packageOptions.PackageName, packageOptions.Version);
 					break;
-				} catch (NuGetException) {
+				} catch (NuGetException e) {
 					if (i == packageOptions.RetryCount - 1)
-						throw;
+						Assert.Inconclusive ("Unable to find NuGet package, could be network related.", e);
 				}
 			}
 			nuget.ClickAdd ();

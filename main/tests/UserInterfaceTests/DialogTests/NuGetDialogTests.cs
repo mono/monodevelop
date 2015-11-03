@@ -40,7 +40,7 @@ namespace UserInterfaceTests
 	[Category ("PackagesDialog")]
 	public class NuGetDialogTests : CreateBuildTemplatesTestBase
 	{
-		[Test]
+		[Test, Category("Smoke")]
 		[Description ("Add a single NuGet Package")]
 		public void AddPackagesTest ()
 		{
@@ -52,7 +52,7 @@ namespace UserInterfaceTests
 			}, this);
 		}
 
-		[Test, Timeout(300000)]
+		[Test, Timeout(300000), Category ("Cycle6")]
 		[Description ("When a solution is opened and package updates are available, don't show in status bar")]
 		public void DontShowPackageUpdatesAvailable ()
 		{
@@ -93,7 +93,7 @@ namespace UserInterfaceTests
 			TakeScreenShot ("Solution-Ready");
 		}
 
-		[Test]
+		[Test, Category("Smoke")]
 		[Description ("Add a single NuGet Package and check if it's readme.txt opens")]
 		public void TestReadmeTxtOpens ()
 		{
@@ -106,7 +106,7 @@ namespace UserInterfaceTests
 			WaitForNuGetReadmeOpened ();
 		}
 
-		[Test]
+		[Test, Category ("Cycle6")]
 		[Description ("Add a single NuGet Package. Check if readme.txt opens even when updating")]
 		public void TestReadmeTxtUpgradeOpens ()
 		{
@@ -129,7 +129,8 @@ namespace UserInterfaceTests
 			WaitForNuGetReadmeOpened ();
 		}
 
-		[Test]
+		[Test, Category("Smoke"), Category ("Cycle6")]
+		[Timeout (90000)]
 		[Description ("When readme.txt from a package has already been opened, adding same package to another project should not open readme.txt")]
 		public void TestDontOpenReadmeOpenedInOther ()
 		{
@@ -153,6 +154,7 @@ namespace UserInterfaceTests
 			var pclProjectDetails = ProjectDetails.ToExistingSolution (projectDetails.SolutionName,
 				GenerateProjectName (pclTemplateOptions.TemplateKind));
 			CreateProject (pclTemplateOptions, pclProjectDetails);
+			Ide.WaitForIdeIdle (30);
 
 			SolutionExplorerController.SelectProject (projectDetails.SolutionName, pclProjectDetails.ProjectName);
 			NuGetController.AddPackage (packageInfo, this);
@@ -167,7 +169,7 @@ namespace UserInterfaceTests
 			}
 		}
 
-		[Test]
+		[Test, Category ("Cycle6")]
 		[Description ("Add a package with powershell scripts and assert that Xamarin Studio doesn't report warnings "+
 			"when trying to add powershell scripts to Xamarin Studio")]
 		public void TestDontShowWarningWithPowerShellScripts ()
@@ -180,7 +182,7 @@ namespace UserInterfaceTests
 			TakeScreenShot ("NewtonSoftJson-Package-Added-Without-Warning");
 		}
 
-		[Test, Timeout (300000)]
+		[Test, Timeout (300000), Category ("Cycle6")]
 		[Description ("When a NuGet package is updated, the 'Local Copy' value should be preserved")]
 		public void TestLocalCopyPreservedUpdate ()
 		{
