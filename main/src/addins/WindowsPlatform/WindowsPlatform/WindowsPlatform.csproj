@@ -152,20 +152,20 @@
     <EmbeddedResource Include="icons\build.png">
       <LogicalName>build.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-disabled.png">
-      <LogicalName>build-disabled.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\stop.png">
       <LogicalName>stop.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\stop-disabled.png">
-      <LogicalName>stop-disabled.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\execute.png">
       <LogicalName>execute.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\execute-disabled.png">
-      <LogicalName>execute-disabled.png</LogicalName>
+    <EmbeddedResource Include="icons\build~disabled.png">
+      <LogicalName>build~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\execute~disabled.png">
+      <LogicalName>execute~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stop~disabled.png">
+      <LogicalName>stop~disabled.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
