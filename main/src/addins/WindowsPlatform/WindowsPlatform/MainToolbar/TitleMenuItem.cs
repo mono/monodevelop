@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
+using System.Windows;
 
 namespace WindowsPlatform.MainToolbar
 {
@@ -66,6 +67,8 @@ namespace WindowsPlatform.MainToolbar
 					MonoDevelop.Core.LoggingService.LogError ("Failed loading menu icon: " + actionCommand.Icon, ex);
 				}
 			}
+
+			Height = SystemParameters.CaptionHeight;
 		}
 
 		/// <summary>
