@@ -113,11 +113,11 @@ namespace WindowsPlatform.MainToolbar
 		{
 			this.button = button;
 
-			Margin = new Thickness (1, 0, 1, 0);
 			VerticalContentAlignment = VerticalAlignment.Center;
 			ToolTip = button.Tooltip;
 			IsEnabled = button.Enabled;
 			Visibility = button.Visible ? Visibility.Visible : Visibility.Collapsed;
+			Margin = new Thickness(3, 0, 3, 0);
 
 			button.EnabledChanged += OnButtonEnabledChanged;
 			button.VisibleChanged += OnButtonVisibleChanged;
