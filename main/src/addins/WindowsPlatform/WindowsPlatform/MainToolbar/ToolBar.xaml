@@ -8,7 +8,7 @@
     <UserControl.Resources>
         <local:NotNullConverter x:Key="NotNullConverter" />
     </UserControl.Resources>
-    <Grid x:Name="DockTitle" Height="32" Margin="30,0,10,0" Background="Transparent" UseLayoutRounding="True">
+    <Grid x:Name="DockTitle" Height="32" Margin="20,0,9,0" Background="Transparent" UseLayoutRounding="True">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
