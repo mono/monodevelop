@@ -101,6 +101,7 @@
     <Compile Include="Controllers\OptionsController.cs" />
     <Compile Include="Exceptions\NuGetException.cs" />
     <Compile Include="LogMessageValidator.cs" />
+    <Compile Include="Controllers\AppOutputController.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
