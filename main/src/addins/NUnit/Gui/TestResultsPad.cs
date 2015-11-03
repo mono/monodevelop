@@ -604,9 +604,19 @@ namespace MonoDevelop.NUnit
 			if (loc != null)
 				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column);
 		}
+
+		[CommandHandler (TestCommands.RerunTest)]
+		protected void OnRerunTest ()
+		{
+			UnitTest test = GetSelectedTest ();
+			if (test == null)
+				return;
+			NUnitService.Instance.RunTest (test, null);
+		}
 		
 		[CommandUpdateHandler (TestCommands.ShowTestCode)]
 		[CommandUpdateHandler (TestCommands.GoToFailure)]
+		[CommandUpdateHandler (TestCommands.RerunTest)]
 		protected void OnUpdateRunTest (CommandInfo info)
 		{
 			UnitTest test = GetSelectedTest ();
