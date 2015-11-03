@@ -5,12 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:WindowsPlatform.MainToolbar"
              mc:Ignorable="d">
-    <Border BorderBrush="{Binding BorderBrush}" BorderThickness="1">
-        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Height="24">
-            <TextBox x:Name="SearchBar" Text="{Binding Path=SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" MinWidth="180" Margin="5,0,0,0" Background="Transparent" Foreground="{Binding Foreground}" BorderThickness="0"/>
-            <Image x:Name="SearchIcon" MaxWidth="14" MaxHeight="14" Margin="5,5,5,5" MouseLeftButtonDown="OnIconClicked" >
+    <Border BorderBrush="{Binding BorderBrush}" BorderThickness="1" UseLayoutRounding="True">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Height="24" UseLayoutRounding="True">
+            <TextBox x:Name="SearchBar" Text="{Binding Path=SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" MinWidth="180" Margin="5,0,0,0" Background="Transparent" Foreground="{Binding Foreground}" BorderThickness="0" UseLayoutRounding="True" />
+            <Image x:Name="SearchIcon" MaxWidth="14" MaxHeight="14" Margin="5,5,5,5" MouseLeftButtonDown="OnIconClicked" UseLayoutRounding="True">
                 <Image.ContextMenu>
-                    <ContextMenu />
+                    <ContextMenu UseLayoutRounding="True" />
                 </Image.ContextMenu>
             </Image>
         </StackPanel>

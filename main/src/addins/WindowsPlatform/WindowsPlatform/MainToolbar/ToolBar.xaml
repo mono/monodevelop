@@ -6,32 +6,32 @@
              xmlns:local="clr-namespace:WindowsPlatform.MainToolbar"
              mc:Ignorable="d" Background="Transparent">
     <UserControl.Resources>
-        <local:NotNullConverter x:Key="NotNullConverter"/>
+        <local:NotNullConverter x:Key="NotNullConverter" />
     </UserControl.Resources>
-    <Grid x:Name="DockTitle" Height="32" Margin="30,0,10,0" Background="Transparent">
+    <Grid x:Name="DockTitle" Height="32" Margin="30,0,10,0" Background="Transparent" UseLayoutRounding="True">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel x:Name="LeftPanel" Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Height="Auto">
-            <local:RunButtonControl x:Name="RunButton" VerticalContentAlignment="Center" VerticalAlignment="Center"/>
-            <Separator Opacity="0" Width="10"/>
-            <local:ConfigurationComboMenu x:Name="ConfigurationMenu" VerticalContentAlignment="Center" Background="Transparent" VerticalAlignment="Center" />
-            <Separator Opacity="0" Width="10"/>
-            <local:RuntimeComboMenu x:Name="RuntimeMenu" VerticalContentAlignment="Center" Background="Transparent" VerticalAlignment="Center" />
-            <Separator Opacity="0" Width="5"/>
-            <StackPanel x:Name="ButtonBarPanel" Orientation="Horizontal" />
+        <StackPanel x:Name="LeftPanel" Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Height="Auto" UseLayoutRounding="True">
+            <local:RunButtonControl x:Name="RunButton" VerticalContentAlignment="Center" VerticalAlignment="Center" UseLayoutRounding="True" />
+            <Separator Opacity="0" Width="10" UseLayoutRounding="True" />
+            <local:ConfigurationComboMenu x:Name="ConfigurationMenu" VerticalContentAlignment="Center" Background="Transparent" VerticalAlignment="Center" UseLayoutRounding="True" />
+            <Separator Opacity="0" Width="10" UseLayoutRounding="True" />
+            <local:RuntimeComboMenu x:Name="RuntimeMenu" VerticalContentAlignment="Center" Background="Transparent" VerticalAlignment="Center" UseLayoutRounding="True" />
+            <Separator Opacity="0" Width="5" UseLayoutRounding="True" />
+            <StackPanel x:Name="ButtonBarPanel" Orientation="Horizontal" UseLayoutRounding="True" />
         </StackPanel>
-        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Height="Auto">
-            <local:StatusBarControl x:Name="StatusBar" VerticalContentAlignment="Center" VerticalAlignment="Center"/>
+        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Height="Auto" UseLayoutRounding="True">
+            <local:StatusBarControl x:Name="StatusBar" VerticalContentAlignment="Center" VerticalAlignment="Center" UseLayoutRounding="True" />
         </StackPanel>
-        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Height="Auto">
-            <local:SearchBarControl x:Name="SearchBar" VerticalContentAlignment="Center" VerticalAlignment="Center"/>
+        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Height="Auto" UseLayoutRounding="True">
+            <local:SearchBarControl x:Name="SearchBar" VerticalContentAlignment="Center" VerticalAlignment="Center" UseLayoutRounding="True" />
         </StackPanel>
     </Grid>
 </UserControl>
