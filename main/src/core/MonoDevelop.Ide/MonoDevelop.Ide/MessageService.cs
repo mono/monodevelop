@@ -363,6 +363,7 @@ namespace MonoDevelop.Ide
 
 			dialog.TransientFor = parent;
 			dialog.DestroyWithParent = true;
+			MonoDevelop.Components.IdeTheme.ApplyTheme (dialog);
 
 			if (dialog.Title == null)
 				dialog.Title = BrandingService.ApplicationName;
