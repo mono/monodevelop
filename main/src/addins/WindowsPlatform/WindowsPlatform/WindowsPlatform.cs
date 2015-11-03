@@ -93,8 +93,7 @@ namespace MonoDevelop.Platform
 			};
 			commandManager.IncompleteKeyPressed += (sender, e) => {
 				if (e.Key == Gdk.Key.Alt_L || e.Key == Gdk.Key.Alt_R) {
-					var wnd = Window.GetWindow (titleBar);
-					wnd.Activate ();
+					titleBar.Focus();
 				}
 			};
 			parent.PackStart (topMenu, false, true, 0);

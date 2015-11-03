@@ -230,8 +230,8 @@ namespace MonoDevelop.Ide.Commands
 #if WIN32
 			var wintv = System.Windows.Input.Keyboard.FocusedElement;
 			var cmd = System.Windows.Input.ApplicationCommands.Cut;
-			if (wintv != null && cmd.CanExecute (null, wintv)) {
-				cmd.Execute (null, wintv);
+			if (wintv != null && cmd.CanExecute(null, wintv)) {
+				cmd.Execute(null, wintv);
 				return;
 			}
 #endif

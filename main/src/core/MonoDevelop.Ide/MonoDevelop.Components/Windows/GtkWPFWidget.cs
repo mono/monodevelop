@@ -37,68 +37,46 @@ namespace MonoDevelop.Components.Windows
 {
 	public class GtkWPFWidget : Widget
 	{
-		bool fromGtk;
-		internal System.Windows.Window wpfWindow {
+		internal System.Windows.Forms.Integration.ElementHost wpfWidgetHost {
 			get;
 			private set;
 		}
 
 		public GtkWPFWidget (System.Windows.Controls.Control wpfControl)
 		{
-			wpfWindow = new System.Windows.Window {
-				Content = wpfControl,
-				AllowsTransparency = true,
-				WindowStyle = WindowStyle.None,
-				Background = System.Windows.Media.Brushes.Transparent,
+			wpfWidgetHost = new System.Windows.Forms.Integration.ElementHost
+			{
+				BackColor = System.Drawing.Color.Transparent,
+				Child = wpfControl,
 			};
-			wpfWindow.PreviewKeyDown += (sender, e) => {
+
+			wpfControl.PreviewKeyDown += (sender, e) => {
 				// TODO: Some commands check for toplevels, and this window is not a toplevel.
 				var key = e.Key == System.Windows.Input.Key.System ? e.SystemKey : e.Key;
 				e.Handled = Ide.IdeApp.CommandService.ProcessKeyEvent (GtkWin32Interop.ConvertKeyEvent (e.KeyboardDevice.Modifiers, key));
 			};
-
-			wpfWindow.Closed += (sender, e) => {
-				if (fromGtk)
-					return;
-
-				Ide.IdeApp.Exit ();
-			};
-			wpfWindow.ShowInTaskbar = false;
 			WidgetFlags |= WidgetFlags.NoWindow;
 		}
 
 		void RepositionWpfWindow ()
 		{
 			int x, y;
-
-			var gtkWnd = Toplevel as Gtk.Window;
-			int titleOffset = 0;
-			if (gtkWnd.Decorated)
-				titleOffset = System.Windows.Forms.SystemInformation.CaptionHeight;
-
-			Gdk.WMDecoration decors;
-			int borderOffset = 0;
-			if (Environment.OSVersion.Version >= new Version (10, 0, 0, 0)) {
-					borderOffset = 7;
-			}
-
-			int root_x, root_y;
-			gtkWnd.GetPosition (out root_x, out root_y);
-			if (TranslateCoordinates (Toplevel, root_x + borderOffset, root_y + titleOffset + borderOffset, out x, out y)) {
-				wpfWindow.Left = x;
-				wpfWindow.Top = y;
+			if (TranslateCoordinates (Toplevel, 0, 0, out x, out y)) {
+				wpfWidgetHost.Left = x;
+				wpfWidgetHost.Top = y;
 			} else {
-				wpfWindow.Left = Allocation.Left;
-				wpfWindow.Top = Allocation.Top;
+				wpfWidgetHost.Left = Allocation.Left;
+				wpfWidgetHost.Top = Allocation.Top;
 			}
-			wpfWindow.Width = Allocation.Width + 1;
-			wpfWindow.Height = Allocation.Height + 1;
+			wpfWidgetHost.Width = Allocation.Width + 1;
+			wpfWidgetHost.Height = Allocation.Height + 1;
 		}
 
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
 
+			// Initial size setting.
 			RepositionWpfWindow ();
 		}
 
@@ -106,43 +84,36 @@ namespace MonoDevelop.Components.Windows
 		{
 			base.OnSizeAllocated (allocation);
 
+			// Needed for window full screening.
 			RepositionWpfWindow ();
+		}
+
+		void OnWindowConfigured(object sender, ConfigureEventArgs args)
+		{
+			RepositionWpfWindow();
 		}
 
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
 
-			fromGtk = true;
-			wpfWindow.Close ();
+			wpfWidgetHost.Dispose();
 		}
 
 		protected override void OnShown ()
 		{
 			base.OnShown ();
 
-			wpfWindow.Show ();
-			AttachWindow ();
-		}
-
-		void AttachWindow ()
-		{
-			IntPtr gtkWindowPtr = GtkWin32Interop.HWndGet (Ide.IdeApp.Workbench.RootWindow.GdkWindow);
-			IntPtr wpfWindowPtr = new WindowInteropHelper (wpfWindow).Handle;
-			GtkWin32Interop.SetWindowLongPtr (wpfWindowPtr, (int)GtkWin32Interop.GWLParameter.GWL_HWNDPARENT, gtkWindowPtr);
+			IntPtr gtkWindowPtr = GtkWin32Interop.HWndGet(Ide.IdeApp.Workbench.RootWindow.GdkWindow);
+			IntPtr wpfWindowPtr = wpfWidgetHost.Handle;
+			GtkWin32Interop.SetWindowLongPtr(wpfWindowPtr, (int)GtkWin32Interop.GWLParameter.GWL_HWNDPARENT, gtkWindowPtr);
 			Ide.IdeApp.Workbench.RootWindow.ConfigureEvent += OnWindowConfigured;
-		}
-
-		void OnWindowConfigured (object sender, ConfigureEventArgs args)
-		{
-			RepositionWpfWindow ();
 		}
 
 		protected override void OnHidden ()
 		{
 			base.OnHidden ();
-
-			wpfWindow.Hide ();
+			
 			Ide.IdeApp.Workbench.RootWindow.ConfigureEvent -= OnWindowConfigured;
 		}
 	}
