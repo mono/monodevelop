@@ -290,7 +290,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			var hasContent = StartInnerWhitespace != null || EndInnerWhitespace != null;
 
-			if (hasChildren || emptyElementMode != EmptyElementMode.Empty) {
+			if (hasChildren || emptyElementMode == EmptyElementMode.NotEmpty || (emptyElementMode == EmptyElementMode.Unknown && !PreferEmptyElement)) {
 				MSBuildWhitespace.Write (StartInnerWhitespace, writer);
 
 				foreach (var c in GetChildren ()) {

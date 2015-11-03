@@ -109,6 +109,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			elem.ReadContent (reader);
 
 			if (elem.ChildNodes.Count == 0) {
+				StartInnerWhitespace = elem.StartInnerWhitespace;
+				EndInnerWhitespace = elem.EndInnerWhitespace;
 				rawValue = elem.GetInnerXml ();
 				return string.Empty;
 			}
