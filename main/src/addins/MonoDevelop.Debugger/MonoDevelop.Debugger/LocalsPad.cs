@@ -49,6 +49,7 @@ namespace MonoDevelop.Debugger
 			if (frame == null)
 				return;
 
+			tree.ClearAll ();
 			tree.AddValues (frame.GetAllLocals ().Where (l => !string.IsNullOrWhiteSpace (l.Name) && l.Name != "?").ToArray ());
 		}
 	}
