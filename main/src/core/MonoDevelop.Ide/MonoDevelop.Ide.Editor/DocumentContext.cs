@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide.Editor
 		/// Forces a reparse of the document. This call doesn't block the ui thread. 
 		/// The next call to ParsedDocument will give always the current parsed document but may block the UI thread.
 		/// </summary>
-		public abstract Task ReparseDocument ();
+		public abstract void ReparseDocument ();
 
 		public abstract OptionSet GetOptionSet ();
 

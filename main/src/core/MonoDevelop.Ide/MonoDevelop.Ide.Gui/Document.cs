@@ -909,10 +909,9 @@ namespace MonoDevelop.Ide.Gui
 		/// This method kicks off an async document parser and should be used instead of 
 		/// <see cref="UpdateParseDocument"/> unless you need the parsed document immediately.
 		/// </summary>
-		public override Task ReparseDocument ()
+		public override void ReparseDocument ()
 		{
 			StartReparseThread ();
-			return Task.FromResult (0);
 		}
 		
 		internal object ExtendedCommandTargetChain {

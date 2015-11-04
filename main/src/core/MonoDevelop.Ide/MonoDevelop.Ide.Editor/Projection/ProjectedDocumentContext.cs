@@ -90,7 +90,12 @@ namespace MonoDevelop.Ide.Editor.Projection
 		{
 		}
 
-		public override Task ReparseDocument ()
+		public override void ReparseDocument ()
+		{
+			ReparseDocumentInternal ();
+		}
+
+		Task ReparseDocumentInternal ()
 		{
 			var options = new ParseOptions {
 				FileName = projectedEditor.FileName,
@@ -112,7 +117,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 		public override async Task<MonoDevelop.Ide.TypeSystem.ParsedDocument> UpdateParseDocument ()
 		{
-			await ReparseDocument ();
+			await ReparseDocumentInternal ();
 			return parsedDocument;
 		}
 
