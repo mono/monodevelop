@@ -214,6 +214,7 @@ namespace WindowsPlatform.MainToolbar
 							Left = 3,
 							Right = 3,
 						},
+						UseLayoutRounding = true,
 					});
 
 				toolbar.ButtonBarPanel.Children.Add (new ButtonBarButton (button));

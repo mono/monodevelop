@@ -31,7 +31,7 @@ namespace WindowsPlatform.MainToolbar
 				if (commandArrayInfoSet != null) {
 					foreach (var item in commandArrayInfoSet.CommandInfos) {
 						if (item.IsArraySeparator)
-							Items.Add (new Separator ());
+							Items.Add (new Separator { UseLayoutRounding = true, });
 						else
 							Items.Add (new TitleMenuItem (manager, entry, item, commandSource, initialCommandTarget));
 					}
@@ -43,7 +43,7 @@ namespace WindowsPlatform.MainToolbar
 
 				foreach (CommandEntry item in menuEntrySet) {
 					if (item.CommandId == MonoDevelop.Components.Commands.Command.Separator) {
-						Items.Add (new Separator ());
+						Items.Add (new Separator { UseLayoutRounding = true, });
 					} else
 						Items.Add (new TitleMenuItem (manager, item));
 				}
@@ -69,6 +69,7 @@ namespace WindowsPlatform.MainToolbar
 			}
 
 			Height = SystemParameters.CaptionHeight;
+			UseLayoutRounding = true;
 		}
 
 		/// <summary>

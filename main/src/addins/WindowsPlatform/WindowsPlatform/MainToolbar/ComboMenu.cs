@@ -26,13 +26,8 @@ namespace WindowsPlatform.MainToolbar
 	{
 		protected ComboMenu () : base ()
 		{
-			/*
-			
-            <WrapPanel>
-                <TextBlock x:Name="HeaderText" Text="Default" HorizontalAlignment="Left"/>
-                <Path Fill="Black" Data="M 0 6 L 6 12 L 12 6 Z" Margin="5,0,0,0" HorizontalAlignment="Right"/>
-            </WrapPanel>
-	*/
+			UseLayoutRounding = true;
+
 			var content = new StackPanel {
 				Orientation = Orientation.Horizontal,
 				Height = 20,
@@ -59,6 +54,7 @@ namespace WindowsPlatform.MainToolbar
 
 			Items.Add (new MenuItem {
 				Header = content,
+				UseLayoutRounding = true,
 			});
 			DropMenuText = "Default";
         }
@@ -152,6 +148,7 @@ namespace WindowsPlatform.MainToolbar
 			{
 				Model = model;
 				Header = model.DisplayString;
+				UseLayoutRounding = true;
 			}
 			public IConfigurationModel Model { get; private set; }
 		}
@@ -245,7 +242,7 @@ namespace WindowsPlatform.MainToolbar
 					continue;
 
 				if (item.IsSeparator)
-					source.Add (new Separator ());
+					source.Add (new Separator { UseLayoutRounding = true, });
 				else {
 					var menuItem = new RuntimeMenuItem (item);
 					menuItem.Click += OnMenuItemClicked;
@@ -267,6 +264,7 @@ namespace WindowsPlatform.MainToolbar
 			public RuntimeMenuItem (IRuntimeModel model)
 			{
 				Model = model;
+				UseLayoutRounding = true;
 
 				Margin = new Thickness (model.IsIndented ? 15 : 0, 0, 0, 0);
 				if (model.Notable)
