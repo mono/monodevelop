@@ -1,3 +1,4 @@
+using System.Threading;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
@@ -18,7 +19,7 @@ namespace MonoDevelop.Xml.Tests.Schema
 			path.Elements.Add(new QualifiedName("project", "http://nant.sf.net//nant-0.84.xsd"));
 			path.Elements.Add(new QualifiedName("attrib", "http://nant.sf.net//nant-0.84.xsd"));
 			
-			attributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			attributes = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
 		}
 
 		[Test]

@@ -1,6 +1,7 @@
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
+using System.Threading;
 
 namespace MonoDevelop.Xml.Tests.Schema
 {
@@ -19,17 +20,17 @@ namespace MonoDevelop.Xml.Tests.Schema
 		{			
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("group", "http://www.w3.org/2001/XMLSchema"));
-			childElements = SchemaCompletionData.GetChildElementCompletionData(path);
-			attributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			childElements = SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
+			attributes = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
 		
 			// Get annotation child elements.
 			path.Elements.Add(new QualifiedName("annotation", "http://www.w3.org/2001/XMLSchema"));
-			annotationChildElements = SchemaCompletionData.GetChildElementCompletionData(path);
+			annotationChildElements = SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
 			
 			// Get choice child elements.
 			path.Elements.RemoveAt (path.Elements.Count - 1);
 			path.Elements.Add(new QualifiedName("choice", "http://www.w3.org/2001/XMLSchema"));
-			choiceChildElements = SchemaCompletionData.GetChildElementCompletionData(path);
+			choiceChildElements = SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
 		}
 
 		[Test]

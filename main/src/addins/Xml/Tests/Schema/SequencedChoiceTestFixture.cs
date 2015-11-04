@@ -1,6 +1,8 @@
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Xml.Tests.Schema
 {
@@ -18,28 +20,28 @@ namespace MonoDevelop.Xml.Tests.Schema
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 			
-			noteChildElements = SchemaCompletionData.GetChildElementCompletionData(path);
+			noteChildElements = SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
 		}
 		
 		[Test]
-		public void TitleHasNoChildElements()
+		public async Task TitleHasNoChildElements()
 		{
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 			path.Elements.Add(new QualifiedName("title", "http://www.w3schools.com"));
 			
-			Assert.AreEqual(0, SchemaCompletionData.GetChildElementCompletionData(path).Count, 
+			Assert.AreEqual(0, (await SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None)).Count, 
 			                "Should be no child elements.");
 		}
 		
 		[Test]
-		public void TextHasNoChildElements()
+		public async Task TextHasNoChildElements()
 		{
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 			path.Elements.Add(new QualifiedName("title", "http://www.w3schools.com"));
 
-			Assert.AreEqual(0, SchemaCompletionData.GetChildElementCompletionData(path).Count,
+			Assert.AreEqual(0, (await SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None)).Count,
 			                "Should be no child elements.");
 		}		
 		

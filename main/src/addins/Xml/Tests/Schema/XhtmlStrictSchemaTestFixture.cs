@@ -3,6 +3,7 @@ using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
 using System.Xml;
 using MonoDevelop.Xml.Tests.Utils;
+using System.Threading;
 
 namespace MonoDevelop.Xml.Tests.Schema
 {
@@ -30,7 +31,7 @@ namespace MonoDevelop.Xml.Tests.Schema
 			h1Path.Elements.Add(new QualifiedName("h1", namespaceURI));
 			
 			// Get h1 element info.
-			h1Attributes = schemaCompletionData.GetAttributeCompletionData(h1Path);
+			h1Attributes = schemaCompletionData.GetAttributeCompletionData(h1Path, CancellationToken.None).Result;
 		}
 		
 		[Test]

@@ -1,3 +1,4 @@
+using System.Threading;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
@@ -15,7 +16,7 @@ namespace MonoDevelop.Xml.Tests.Schema
 			noteElementPath = new XmlElementPath();
 			noteElementPath.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 
-			elementData = SchemaCompletionData.GetChildElementCompletionData(noteElementPath); 
+			elementData = SchemaCompletionData.GetChildElementCompletionData(noteElementPath, CancellationToken.None).Result; 
 		}
 		
 		[Test]

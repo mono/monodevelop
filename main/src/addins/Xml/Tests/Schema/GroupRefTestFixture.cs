@@ -1,3 +1,4 @@
+using System.Threading;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
@@ -20,10 +21,10 @@ namespace MonoDevelop.Xml.Tests.Schema
 			path.Elements.Add(new QualifiedName("html", "http://foo/xhtml"));
 			path.Elements.Add(new QualifiedName("body", "http://foo/xhtml"));
 			
-			childElements = SchemaCompletionData.GetChildElementCompletionData(path);
+			childElements = SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
 			
 			path.Elements.Add(new QualifiedName("p", "http://foo/xhtml"));
-			paraAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			paraAttributes = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
 		}
 		
 		[Test]

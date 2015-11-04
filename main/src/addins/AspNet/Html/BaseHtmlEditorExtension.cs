@@ -34,7 +34,9 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.AspNet.Html.Parser;
 using MonoDevelop.Xml.Parser;
-using MonoDevelop.Xml.Dom; 
+using MonoDevelop.Xml.Dom;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.AspNet.Html
 {
@@ -94,73 +96,71 @@ namespace MonoDevelop.AspNet.Html
 		
 		#endregion
 		
-		protected override void GetElementCompletions (CompletionDataList list)
+		protected override async Task<CompletionDataList> GetElementCompletions (CancellationToken token)
 		{
+			var list = new CompletionDataList ();
 			XName parentName = GetParentElementName (0);
-			AddHtmlTagCompletionData (list, Schema, parentName);
+			await AddHtmlTagCompletionData (list, Schema, parentName, token);
 			AddMiscBeginTags (list);
 			
 			//FIXME: don't show this after any elements
 			if (DocType == null)
 				list.Add ("!DOCTYPE", "md-literal", GettextCatalog.GetString ("Document type"));
+			return list;
 		}
 		
-		protected override CompletionDataList GetDocTypeCompletions ()
+		protected override Task<CompletionDataList> GetDocTypeCompletions (CancellationToken token)
 		{
-			return new CompletionDataList (from DocTypeCompletionData dat
+			return Task.FromResult (new CompletionDataList (from DocTypeCompletionData dat
 			                               in HtmlSchemaService.DocTypeCompletionData
-			                               select (CompletionData) dat);
+			                                                select (CompletionData) dat));
 		}
 		
-		protected override CompletionDataList GetAttributeCompletions (IAttributedXObject attributedOb,
-			Dictionary<string, string> existingAtts)
+		protected override async Task<CompletionDataList> GetAttributeCompletions (IAttributedXObject attributedOb,
+		                                                                     Dictionary<string, string> existingAtts, CancellationToken token)
 		{
-			if (attributedOb is XElement && !attributedOb.Name.HasPrefix) {
-				var list = new CompletionDataList ();
-				AddHtmlAttributeCompletionData (list, Schema, attributedOb.Name, existingAtts);
-				return list;
-			}
-			return null;
+			var list = new CompletionDataList ();
+			if (attributedOb is XElement && !attributedOb.Name.HasPrefix)
+				await AddHtmlAttributeCompletionData (list, Schema, attributedOb.Name, existingAtts, token);
+			return list;
 		}
 		
-		protected override CompletionDataList GetAttributeValueCompletions (IAttributedXObject ob, XAttribute att)
+		protected override async Task<CompletionDataList> GetAttributeValueCompletions (IAttributedXObject ob, XAttribute att, CancellationToken token)
 		{
-			if (ob is XElement && !ob.Name.HasPrefix) {
-				var list = new CompletionDataList ();
-				AddHtmlAttributeValueCompletionData (list, Schema, ob.Name, att.Name);
-				return list;
-			}
-			return null;
+			var list = new CompletionDataList ();
+			if (ob is XElement && !ob.Name.HasPrefix)
+				await AddHtmlAttributeValueCompletionData (list, Schema, ob.Name, att.Name, token);
+			return list;
 		}
 		
 		#region HTML data
 		
-		protected static void AddHtmlTagCompletionData (CompletionDataList list, HtmlSchema schema, XName parentName)
+		protected static async Task AddHtmlTagCompletionData (CompletionDataList list, HtmlSchema schema, XName parentName, CancellationToken token)
 		{
 			if (schema == null)
 				return;
 			
 			if (parentName.IsValid) {
-				list.AddRange (schema.CompletionProvider.GetChildElementCompletionData (parentName.FullName.ToLower ()));
+				list.AddRange (await schema.CompletionProvider.GetChildElementCompletionData (parentName.FullName.ToLower (), token));
 			} else {
-				list.AddRange (schema.CompletionProvider.GetElementCompletionData ());
+				list.AddRange (await schema.CompletionProvider.GetElementCompletionData (token));
 			}			
 		}
 		
-		protected void AddHtmlAttributeCompletionData (CompletionDataList list, HtmlSchema schema, 
-		    XName tagName, Dictionary<string, string> existingAtts)
+		protected async Task AddHtmlAttributeCompletionData (CompletionDataList list, HtmlSchema schema, 
+		                                                     XName tagName, Dictionary<string, string> existingAtts, CancellationToken token)
 		{
 			//add atts only if they're not aready in the tag
-			foreach (var datum in schema.CompletionProvider.GetAttributeCompletionData (tagName.FullName.ToLower ()))
+			foreach (var datum in await schema.CompletionProvider.GetAttributeCompletionData (tagName.FullName.ToLower (), token))
 				if (existingAtts == null || !existingAtts.ContainsKey (datum.DisplayText))
 					list.Add (datum);
 		}
 		
-		protected void AddHtmlAttributeValueCompletionData (CompletionDataList list, HtmlSchema schema, 
-		    XName tagName, XName attributeName)
+		protected async Task AddHtmlAttributeValueCompletionData (CompletionDataList list, HtmlSchema schema, 
+		                                                          XName tagName, XName attributeName, CancellationToken token)
 		{
-			list.AddRange (schema.CompletionProvider.GetAttributeValueCompletionData (tagName.FullName, 
-			                                                                          attributeName.FullName));
+			list.AddRange (await schema.CompletionProvider.GetAttributeValueCompletionData (tagName.FullName, 
+			                                                                          attributeName.FullName, token));
 		}
 		
 		#endregion

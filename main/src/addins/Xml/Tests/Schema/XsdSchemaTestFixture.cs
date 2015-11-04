@@ -3,6 +3,7 @@ using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
 using System.Xml;
 using MonoDevelop.Xml.Tests.Utils;
+using System.Threading;
 
 namespace MonoDevelop.Xml.Tests.Schema
 {
@@ -46,26 +47,26 @@ namespace MonoDevelop.Xml.Tests.Schema
 			choicePath.Elements.Add(new QualifiedName("element", namespaceURI, prefix));
 			choicePath.Elements.Add(new QualifiedName("complexType", namespaceURI, prefix));
 			
-			mixedAttributeValues = schemaCompletionData.GetAttributeValueCompletionData(choicePath, "mixed");
+			mixedAttributeValues = schemaCompletionData.GetAttributeValueCompletionData(choicePath, "mixed", CancellationToken.None).Result;
 
 			choicePath.Elements.Add(new QualifiedName("choice", namespaceURI, prefix));
 			
 			// Get choice element info.
-			choiceAttributes = schemaCompletionData.GetAttributeCompletionData(choicePath);
-			maxOccursAttributeValues = schemaCompletionData.GetAttributeValueCompletionData(choicePath, "maxOccurs");
+			choiceAttributes = schemaCompletionData.GetAttributeCompletionData(choicePath, CancellationToken.None).Result;
+			maxOccursAttributeValues = schemaCompletionData.GetAttributeValueCompletionData(choicePath, "maxOccurs", CancellationToken.None).Result;
 			
 			// Set up element path.
 			elementPath = new XmlElementPath();
 			elementPath.Elements.Add(new QualifiedName("schema", namespaceURI, prefix));
 			
-			elementFormDefaultAttributeValues = schemaCompletionData.GetAttributeValueCompletionData(elementPath, "elementFormDefault");
-			blockDefaultAttributeValues = schemaCompletionData.GetAttributeValueCompletionData(elementPath, "blockDefault");
-			finalDefaultAttributeValues = schemaCompletionData.GetAttributeValueCompletionData(elementPath, "finalDefault");
+			elementFormDefaultAttributeValues = schemaCompletionData.GetAttributeValueCompletionData(elementPath, "elementFormDefault", CancellationToken.None).Result;
+			blockDefaultAttributeValues = schemaCompletionData.GetAttributeValueCompletionData(elementPath, "blockDefault", CancellationToken.None).Result;
+			finalDefaultAttributeValues = schemaCompletionData.GetAttributeValueCompletionData(elementPath, "finalDefault", CancellationToken.None).Result;
 			
 			elementPath.Elements.Add(new QualifiedName("element", namespaceURI, prefix));
 				
 			// Get element attribute info.
-			elementAttributes = schemaCompletionData.GetAttributeCompletionData(elementPath);
+			elementAttributes = schemaCompletionData.GetAttributeCompletionData(elementPath, CancellationToken.None).Result;
 
 			// Set up simple enum type path.
 			simpleEnumPath = new XmlElementPath();
@@ -74,7 +75,7 @@ namespace MonoDevelop.Xml.Tests.Schema
 			simpleEnumPath.Elements.Add(new QualifiedName("restriction", namespaceURI, prefix));
 			
 			// Get child elements.
-			simpleEnumElements = schemaCompletionData.GetChildElementCompletionData(simpleEnumPath);
+			simpleEnumElements = schemaCompletionData.GetChildElementCompletionData(simpleEnumPath, CancellationToken.None).Result;
 
 			// Set up enum path.
 			enumPath = new XmlElementPath();
@@ -84,7 +85,7 @@ namespace MonoDevelop.Xml.Tests.Schema
 			enumPath.Elements.Add(new QualifiedName("enumeration", namespaceURI, prefix));
 			
 			// Get attributes.
-			enumAttributes = schemaCompletionData.GetAttributeCompletionData(enumPath);
+			enumAttributes = schemaCompletionData.GetAttributeCompletionData(enumPath, CancellationToken.None).Result;
 			
 			// Set up xs:all path.
 			allElementPath = new XmlElementPath();
@@ -94,7 +95,7 @@ namespace MonoDevelop.Xml.Tests.Schema
 			allElementPath.Elements.Add(new QualifiedName("all", namespaceURI, prefix));
 		
 			// Get child elements of the xs:all element.
-			allElementChildElements = schemaCompletionData.GetChildElementCompletionData(allElementPath);
+			allElementChildElements = schemaCompletionData.GetChildElementCompletionData(allElementPath, CancellationToken.None).Result;
 			
 			// Set up the path to the annotation element that is a child of xs:all.
 			allElementAnnotationPath = new XmlElementPath();
@@ -105,7 +106,7 @@ namespace MonoDevelop.Xml.Tests.Schema
 			allElementAnnotationPath.Elements.Add(new QualifiedName("annotation", namespaceURI, prefix));
 			
 			// Get the xs:all annotation child element.
-			allElementAnnotationChildElements = schemaCompletionData.GetChildElementCompletionData(allElementAnnotationPath);
+			allElementAnnotationChildElements = schemaCompletionData.GetChildElementCompletionData(allElementAnnotationPath, CancellationToken.None).Result;
 		}
 		
 		[Test]

@@ -1,3 +1,5 @@
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
@@ -18,7 +20,7 @@ namespace MonoDevelop.Xml.Tests.Schema
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 						
-			attributeCompletionData = SchemaCompletionData.GetAttributeCompletionData(path);
+			attributeCompletionData = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
 			attributeName = attributeCompletionData[0].DisplayText;
 		}
 
@@ -35,11 +37,11 @@ namespace MonoDevelop.Xml.Tests.Schema
 		}
 		
 		[Test]
-		public void NoAttributesForUnknownElement()
+		public async Task NoAttributesForUnknownElement()
 		{
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foobar", "http://www.w3schools.com"));
-			CompletionDataList attributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			CompletionDataList attributes = await SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None);
 			
 			Assert.AreEqual(0, attributes.Count, "Should not find attributes for unknown element.");
 		}

@@ -1,3 +1,4 @@
+using System.Threading;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
@@ -17,7 +18,7 @@ namespace MonoDevelop.Xml.Tests.Schema
 		{	
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foo", "http://foo.com"));
-			barAttributeValuesCompletionData = SchemaCompletionData.GetAttributeValueCompletionData(path, "bar");
+			barAttributeValuesCompletionData = SchemaCompletionData.GetAttributeValueCompletionData(path, "bar", CancellationToken.None).Result;
 		}
 				
 		[Test]

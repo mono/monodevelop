@@ -1,6 +1,7 @@
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
+using System.Threading;
 
 namespace MonoDevelop.Xml.Tests.Schema
 {
@@ -20,13 +21,13 @@ namespace MonoDevelop.Xml.Tests.Schema
 			
 			path.Elements.Add(new QualifiedName("project", "http://foo"));
 			path.Elements.Add(new QualifiedName("items", "http://foo"));
-			
-			itemsElementChildren = SchemaCompletionData.GetChildElementCompletionData(path);
+
+			itemsElementChildren = SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
 			
 			path.Elements.Add(new QualifiedName("file", "http://foo"));
 			
-			fileElementAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
-			fileElementChildren = SchemaCompletionData.GetChildElementCompletionData(path);
+			fileElementAttributes = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
+			fileElementChildren = SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
 		}
 		
 		[Test]

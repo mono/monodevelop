@@ -24,6 +24,8 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Schema;
 using MonoDevelop.Ide.CodeCompletion;
@@ -149,32 +151,34 @@ namespace MonoDevelop.Xml.Completion
 			get { return loaded; }
 		}
 		
-		public void EnsureLoaded ()
+		public Task EnsureLoaded ()
 		{
 			if (loaded)
-				return;
-			
-			if (schema == null)
-				using (StreamReader reader = new StreamReader (fileName, true))
-					ReadSchema (baseUri, reader);
-			
-			//TODO: should we evaluate unresolved imports against other registered schemas?
-			//will be messy because we'll have to re-evaluate if any schema is added, removed or changes
-			//maybe we should just force users to use schemaLocation in their includes
-			var sset = new XmlSchemaSet ();
-			sset.XmlResolver = new LocalOnlyXmlResolver ();
-			sset.Add (schema);
-			sset.ValidationEventHandler += SchemaValidation;
-			sset.Compile ();
-			loaded = true;
+				return Task.FromResult (0);
+
+			return Task.Run (() => {
+				if (schema == null)
+					using (StreamReader reader = new StreamReader (fileName, true))
+						ReadSchema (baseUri, reader);
+
+				//TODO: should we evaluate unresolved imports against other registered schemas?
+				//will be messy because we'll have to re-evaluate if any schema is added, removed or changes
+				//maybe we should just force users to use schemaLocation in their includes
+				var sset = new XmlSchemaSet ();
+				sset.XmlResolver = new LocalOnlyXmlResolver ();
+				sset.Add (schema);
+				sset.ValidationEventHandler += SchemaValidation;
+				sset.Compile ();
+				loaded = true;
+			});
 		}
 		#endregion
 		
 		#region Simplified API, useful for e.g. HTML
 		
-		public CompletionDataList GetChildElementCompletionData (string tagName)
+		public async Task<CompletionDataList> GetChildElementCompletionData (string tagName, CancellationToken token)
 		{
-			EnsureLoaded ();
+			await EnsureLoaded ();
 			
 			var list = new XmlCompletionDataList ();
 			var element = FindElement (tagName);
@@ -183,9 +187,9 @@ namespace MonoDevelop.Xml.Completion
 			return list;
 		}
 		
-		public CompletionDataList GetAttributeCompletionData (string tagName)
+		public async Task<CompletionDataList> GetAttributeCompletionData (string tagName, CancellationToken token)
 		{
-			EnsureLoaded ();
+			await EnsureLoaded ();
 			
 			var list = new XmlCompletionDataList ();
 			var element = FindElement (tagName);
@@ -196,9 +200,9 @@ namespace MonoDevelop.Xml.Completion
 			return list;
 		}
 		
-		public CompletionDataList GetAttributeValueCompletionData (string tagName, string name)
+		public async Task<CompletionDataList> GetAttributeValueCompletionData (string tagName, string name, CancellationToken token)
 		{
-			EnsureLoaded ();
+			await EnsureLoaded ();
 			
 			var list = new XmlCompletionDataList ();
 			var element = FindElement (tagName);
@@ -212,17 +216,17 @@ namespace MonoDevelop.Xml.Completion
 		/// <summary>
 		/// Gets the possible root elements for an xml document using this schema.
 		/// </summary>
-		public CompletionDataList GetElementCompletionData ()
+		public Task<CompletionDataList> GetElementCompletionData (CancellationToken token)
 		{
-			return GetElementCompletionData ("");
+			return GetElementCompletionData ("", token);
 		}
 		
 		/// <summary>
 		/// Gets the possible root elements for an xml document using this schema.
 		/// </summary>
-		public CompletionDataList GetElementCompletionData (string namespacePrefix)
+		public async Task<CompletionDataList> GetElementCompletionData (string namespacePrefix, CancellationToken token)
 		{
-			EnsureLoaded ();
+			await EnsureLoaded ();
 			
 			var data = new XmlCompletionDataList ();
 			foreach (XmlSchemaElement element in schema.Elements.Values) {
@@ -239,9 +243,9 @@ namespace MonoDevelop.Xml.Completion
 		/// Gets the attribute completion data for the xml element that exists
 		/// at the end of the specified path.
 		/// </summary>
-		public CompletionDataList GetAttributeCompletionData (XmlElementPath path)
+		public async Task<CompletionDataList> GetAttributeCompletionData (XmlElementPath path, CancellationToken token)
 		{
-			EnsureLoaded ();
+			await EnsureLoaded ();
 			
 			var data = new XmlCompletionDataList (path.Namespaces);
 			var element = FindElement (path);
@@ -256,9 +260,9 @@ namespace MonoDevelop.Xml.Completion
 		/// Gets the child element completion data for the xml element that exists
 		/// at the end of the specified path.
 		/// </summary>
-		public CompletionDataList GetChildElementCompletionData (XmlElementPath path)
+		public async Task<CompletionDataList> GetChildElementCompletionData (XmlElementPath path, CancellationToken token)
 		{
-			EnsureLoaded ();
+			await EnsureLoaded ();
 			
 			var data = new XmlCompletionDataList (path.Namespaces);
 			var element = FindElement (path);
@@ -272,9 +276,9 @@ namespace MonoDevelop.Xml.Completion
 		/// <summary>
 		/// Gets the autocomplete data for the specified attribute value.
 		/// </summary>
-		public CompletionDataList GetAttributeValueCompletionData (XmlElementPath path, string name)
+		public async Task<CompletionDataList> GetAttributeValueCompletionData (XmlElementPath path, string name, CancellationToken token)
 		{
-			EnsureLoaded ();
+			await EnsureLoaded ();
 			
 			var data = new XmlCompletionDataList (path.Namespaces);
 			var element = FindElement (path);

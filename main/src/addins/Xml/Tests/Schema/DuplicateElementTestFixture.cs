@@ -1,6 +1,7 @@
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
+using System.Threading;
 
 namespace MonoDevelop.Xml.Tests.Schema
 {
@@ -17,7 +18,7 @@ namespace MonoDevelop.Xml.Tests.Schema
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("html", "http://foo/xhtml"));
 		
-			htmlChildElements = SchemaCompletionData.GetChildElementCompletionData(path);
+			htmlChildElements = SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
 		}		
 		
 		[Test]

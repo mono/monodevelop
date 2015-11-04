@@ -1,6 +1,7 @@
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
+using System.Threading;
 
 namespace MonoDevelop.Xml.Tests.Schema
 {
@@ -23,28 +24,28 @@ namespace MonoDevelop.Xml.Tests.Schema
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("schema", "http://www.w3.org/2001/XMLSchema"));
 			
-			schemaChildElements = SchemaCompletionData.GetChildElementCompletionData(path);
+			schemaChildElements = SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
 			//schemaAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
 			
 			// Get include elements attributes.
 			path.Elements.Add(new QualifiedName("include", "http://www.w3.org/2001/XMLSchema"));
-			includeAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			includeAttributes = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
 		
 			// Get annotation element info.
 			path.Elements.RemoveAt(path.Elements.Count - 1);
 			path.Elements.Add(new QualifiedName("annotation", "http://www.w3.org/2001/XMLSchema"));
 			
-			annotationChildElements = SchemaCompletionData.GetChildElementCompletionData(path);
-			annotationAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			annotationChildElements = SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
+			annotationAttributes = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
 		
 			// Get app info attributes.
 			path.Elements.Add(new QualifiedName("appinfo", "http://www.w3.org/2001/XMLSchema"));
-			appInfoAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			appInfoAttributes = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
 			
 			// Get foo attributes.
 			path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foo", "http://www.w3.org/2001/XMLSchema"));
-			fooAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			fooAttributes = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
 		}
 		
 		[Test]
