@@ -163,12 +163,12 @@ namespace UserInterfaceTests
 			Ide.WaitUntil (() => {
 				string actualStatusMessage = string.Empty;
 				try {
-					actualStatusMessage = Workbench.GetStatusMessage ();
+					actualStatusMessage = Workbench.GetStatusMessage (waitForNonEmpty: false);
 					return waitForMessage == (statusMessage.Contains (actualStatusMessage, StringComparer.OrdinalIgnoreCase));
 				} catch (TimeoutException e) {
 					throw new TimeoutException (
-						string.Format ("Timed out. Found status message '{0}'\nand expected one of these:\n\t {1}",
-							actualStatusMessage, string.Join ("\n\t", statusMessage)), e);
+						string.Format ("Timed out. Found status message '{0}'\nand {2}expected one of these:\n\t {1}",
+							actualStatusMessage, string.Join ("\n\t", statusMessage), waitForMessage ? string.Empty : "not "), e);
 				}
 			},
 			pollStep: pollStepInSecs * 1000,
