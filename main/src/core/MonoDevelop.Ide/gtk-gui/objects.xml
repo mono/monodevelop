@@ -13,7 +13,6 @@
       <itemgroup label="ExtensibleTreeView Properties">
         <property name="Id" />
         <property name="Zoom" />
-        <property name="ShowSelectionPopupButton" />
       </itemgroup>
     </itemgroups>
     <signals>
