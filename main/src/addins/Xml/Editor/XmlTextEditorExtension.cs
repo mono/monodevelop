@@ -45,6 +45,8 @@ using MonoDevelop.Xml.Completion;
 using MonoDevelop.Xml.Dom;
 using MonoDevelop.Xml.Parser;
 using MonoDevelop.Ide.Editor.Extension;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Xml.Editor
 {
@@ -109,8 +111,9 @@ namespace MonoDevelop.Xml.Editor
 			);
 		}
 		
-		protected override void GetElementCompletions (CompletionDataList list)
-		{	
+		protected override async Task<CompletionDataList> GetElementCompletions (CancellationToken token)
+		{
+			var list = new CompletionDataList ();
 			var path = GetElementPath ();
 
 			if (path.Elements.Count > 0) {
@@ -120,22 +123,23 @@ namespace MonoDevelop.Xml.Editor
 
 				if (schema != null) {
 
-					var completionData = schema.GetChildElementCompletionData (path);
+					var completionData = await schema.GetChildElementCompletionData (path, token);
 					if (completionData != null)
 						list.AddRange (completionData);
 				}
 
 			} else if (defaultSchemaCompletionData != null) {
-				list.AddRange (defaultSchemaCompletionData.GetElementCompletionData (defaultNamespacePrefix));
+				list.AddRange (await defaultSchemaCompletionData.GetElementCompletionData (defaultNamespacePrefix, token));
 
 			} else if (inferredCompletionData != null) {
-				list.AddRange (inferredCompletionData.GetElementCompletionData ());
+				list.AddRange (await inferredCompletionData.GetElementCompletionData (token));
 			}
 			AddMiscBeginTags (list);
+			return list;
 		}
 		
-		protected override CompletionDataList GetAttributeCompletions (IAttributedXObject attributedOb,
-			Dictionary<string, string> existingAtts)
+		protected override Task<CompletionDataList> GetAttributeCompletions (IAttributedXObject attributedOb,
+		                                                               Dictionary<string, string> existingAtts, CancellationToken token)
 		{
 			var path = GetElementPath ();
 
@@ -145,13 +149,12 @@ namespace MonoDevelop.Xml.Editor
 					schema = inferredCompletionData;
 
 				if (schema != null)
-
-					return schema.GetAttributeCompletionData (path);
+					return schema.GetAttributeCompletionData (path, token);
 			}
-			return null;
+			return Task.FromResult (new CompletionDataList ());
 		}
 		
-		protected override CompletionDataList GetAttributeValueCompletions (IAttributedXObject attributedOb, XAttribute att)
+		protected override Task<CompletionDataList> GetAttributeValueCompletions (IAttributedXObject attributedOb, XAttribute att, CancellationToken token)
 		{
 			var path = GetElementPath ();
 
@@ -159,10 +162,9 @@ namespace MonoDevelop.Xml.Editor
 				var schema = FindSchema (path);
 
 				if (schema != null)
-
-					return schema.GetAttributeValueCompletionData (path, att.Name.FullName);
+					return schema.GetAttributeValueCompletionData (path, att.Name.FullName, token);
 			}
-			return null;
+			return Task.FromResult (new CompletionDataList ());
 		}
 		
 		#endregion

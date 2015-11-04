@@ -268,7 +268,7 @@ namespace MonoDevelop.Xml.Editor
 			return null;
 		}
 
-		protected virtual Task<ICompletionDataList> HandleCodeCompletion (
+		protected virtual async Task<ICompletionDataList> HandleCodeCompletion (
 			CodeCompletionContext completionContext, bool forced, CancellationToken token)
 		{
 			var buf = this.Editor;
@@ -284,7 +284,7 @@ namespace MonoDevelop.Xml.Editor
 			
 			//closing tag completion
 			if (tracker.Engine.CurrentState is XmlRootState && currentChar == '>')
-				return Task.FromResult (ClosingTagCompletion (buf, currentLocation));
+				return ClosingTagCompletion (buf, currentLocation);
 			
 			// Auto insert '>' when '/' is typed inside tag state (for quick tag closing)
 			//FIXME: avoid doing this when the next non-whitespace char is ">" or ignore the next ">" typed
@@ -314,16 +314,17 @@ namespace MonoDevelop.Xml.Editor
 				list.Add (">").CompletionText = "gt;";
 				list.Add ("&").CompletionText = "amp;";
 				
-				GetEntityCompletions (list);
-				return Task.FromResult ((ICompletionDataList)list);
+				var ecList = await GetEntityCompletions (token);
+				list.AddRange (ecList);
+				return list;
 			}
 			
 			//doctype completion
 			if (tracker.Engine.CurrentState is XmlDocTypeState) {
 				if (tracker.Engine.CurrentStateLength == 1) {
-					CompletionDataList list = GetDocTypeCompletions ();
+					CompletionDataList list = await GetDocTypeCompletions (token);
 					if (list != null && list.Count > 0)
-						return Task.FromResult ((ICompletionDataList)list);
+						return list;
 				}
 				return null;
 			}
@@ -344,10 +345,10 @@ namespace MonoDevelop.Xml.Editor
 
 					//if triggered by first letter of value or forced, grab those letters
 
-					var result = GetAttributeValueCompletions (attributedOb, att);
+					var result = await GetAttributeValueCompletions (attributedOb, att, token);
 					if (result != null) {
 						result.TriggerWordLength = Tracker.Engine.CurrentStateLength - 1;
-						return Task.FromResult ((ICompletionDataList)result);
+						return result;
 					}
 					return null;
 				}
@@ -373,11 +374,11 @@ namespace MonoDevelop.Xml.Editor
 					foreach (XAttribute att in attributedOb.Attributes) {
 						existingAtts [att.Name.FullName] = att.Value ?? string.Empty;
 					}
-					var result = GetAttributeCompletions (attributedOb, existingAtts);
+					var result = await GetAttributeCompletions (attributedOb, existingAtts, token);
 					if (result != null) {
 						if (!forced)
 							result.TriggerWordLength = 1;
-						return Task.FromResult ((ICompletionDataList)result);
+						return result;
 					}
 					return null;
 				}
@@ -391,16 +392,15 @@ namespace MonoDevelop.Xml.Editor
 			//element completion
 			if (currentChar == '<' && tracker.Engine.CurrentState is XmlRootState ||
 				(tracker.Engine.CurrentState is XmlNameState && forced)) {
-				var list = new CompletionDataList ();
-				GetElementCompletions (list);
+				var list = await GetElementCompletions (token);
 				AddCloseTag (list, Tracker.Engine.Nodes);
-				return Task.FromResult ((ICompletionDataList)(list.Count > 0? list : null));
+				return list.Count > 0 ? list : null;
 			}
 
 			if (forced && Tracker.Engine.CurrentState is XmlRootState) {
 				var list = new CompletionDataList ();
 				MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForFileName (DocumentContext.Name, list);
-				return Task.FromResult ((ICompletionDataList)(list.Count > 0? list : null));
+				return list.Count > 0? list : null;
 			}
 			
 			return null;
@@ -469,28 +469,30 @@ namespace MonoDevelop.Xml.Editor
 			return null;
 		}
 		
-		protected virtual void GetElementCompletions (CompletionDataList list)
+		protected virtual Task<CompletionDataList> GetElementCompletions (CancellationToken token)
 		{
+			return Task.FromResult (new CompletionDataList ());
 		}
 		
-		protected virtual CompletionDataList GetAttributeCompletions (IAttributedXObject attributedOb,
-			Dictionary<string, string> existingAtts)
+		protected virtual Task<CompletionDataList> GetAttributeCompletions (IAttributedXObject attributedOb,
+		                                                                    Dictionary<string, string> existingAtts, CancellationToken token)
 		{
-			return null;
+			return Task.FromResult (new CompletionDataList ());
 		}
 		
-		protected virtual CompletionDataList GetAttributeValueCompletions (IAttributedXObject attributedOb, XAttribute att)
+		protected virtual Task<CompletionDataList> GetAttributeValueCompletions (IAttributedXObject attributedOb, XAttribute att, CancellationToken token)
 		{
-			return null;
+			return Task.FromResult (new CompletionDataList ());
 		}
 		
-		protected virtual void GetEntityCompletions (CompletionDataList list)
+		protected virtual Task<CompletionDataList> GetEntityCompletions (CancellationToken token)
 		{
+			return Task.FromResult (new CompletionDataList ());
 		}
 		
-		protected virtual CompletionDataList GetDocTypeCompletions ()
+		protected virtual Task<CompletionDataList> GetDocTypeCompletions (CancellationToken token)
 		{
-			return null;
+			return Task.FromResult (new CompletionDataList ());
 		}
 		
 		protected string GetLineIndent (int line)

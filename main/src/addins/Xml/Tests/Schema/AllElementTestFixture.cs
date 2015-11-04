@@ -1,6 +1,8 @@
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Xml.Tests.Schema
 {
@@ -15,33 +17,39 @@ namespace MonoDevelop.Xml.Tests.Schema
 		CompletionDataList firstNameAttributes;
 		CompletionDataList firstNameElementChildren;
 		
-		public override void FixtureInit()
+		async Task Init ()
 		{
+			if (personElementChildren != null)
+				return;
+			
 			var path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("person", "http://foo"));
-			personElementChildren = SchemaCompletionData.GetChildElementCompletionData(path);
+			personElementChildren = await SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None);
 			
 			path.Elements.Add(new QualifiedName("firstname", "http://foo"));
-			firstNameAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
-			firstNameElementChildren = SchemaCompletionData.GetChildElementCompletionData(path);
+			firstNameAttributes = await SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None);
+			firstNameElementChildren = await SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None);
 		}
 		
 		[Test]
-		public void PersonElementHasTwoChildElements()
+		public async Task PersonElementHasTwoChildElements()
 		{
+			await Init ();
 			Assert.AreEqual(2, personElementChildren.Count, 
 			                "Should be 2 child elements.");
 		}
 		
 		[Test]
-		public void FirstNameElementHasAttribute()
+		public async Task FirstNameElementHasAttribute()
 		{
+			await Init ();
 			Assert.AreEqual(1, firstNameAttributes.Count, "Should have one attribute.");
 		}
 		
 		[Test]
-		public void FirstNameElementHasChildren()
+		public async Task FirstNameElementHasChildren()
 		{
+			await Init ();
 			Assert.AreEqual(2, firstNameElementChildren.Count, 
 			                "Should be 2 child elements.");
 		}
