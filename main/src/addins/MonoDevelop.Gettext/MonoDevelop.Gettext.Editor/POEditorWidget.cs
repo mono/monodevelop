@@ -687,9 +687,9 @@ namespace MonoDevelop.Gettext
 			return entry.IsFuzzy ? iconFuzzy : entry.IsTranslated ? iconValid : iconMissing;
 		}
 		
-		static string iconFuzzy   = "error-16.png";// "md-translation-fuzzy";
-		static string iconValid   = "done-16.png";//"md-translation-valid";
-		static string iconMissing = "warning-16.png";//"md-translation-missing";
+		static string iconFuzzy   = "md-error";// "md-translation-fuzzy";
+		static string iconValid   = "md-done";//"md-translation-valid";
+		static string iconMissing = "md-warning";//"md-translation-missing";
 		
 //		static Color translated   = new Color (255, 255, 255);
 		static Color untranslated = new Color (234, 232, 227);
