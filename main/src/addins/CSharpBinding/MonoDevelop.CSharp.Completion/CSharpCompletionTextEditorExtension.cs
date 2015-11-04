@@ -1116,7 +1116,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		async Task<DebugDataTipInfo> IDebuggerExpressionResolver.ResolveExpressionAsync (IReadonlyTextDocument editor, DocumentContext doc, int offset, CancellationToken cancellationToken)
 		{
-			return await Resolver.DebuggerExpressionResolver.ResolveAsync (editor, doc, offset, cancellationToken);
+			return await Resolver.DebuggerExpressionResolver.ResolveAsync (editor, doc, offset, cancellationToken).ConfigureAwait (false);
 		}
 
 		#endregion
