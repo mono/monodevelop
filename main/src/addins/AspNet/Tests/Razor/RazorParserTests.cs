@@ -54,9 +54,9 @@ namespace MonoDevelop.AspNet.Tests.Razor
 		}
 
 		[Test]
-		public void PreprocessedFileUsesPreprocessorRazorHost ()
+		public async Task PreprocessedFileUsesPreprocessorRazorHost ()
 		{
-			var document = Parse ("@{ }", isPreprocessed: true);
+			var document = await Parse ("@{ }", isPreprocessed: true);
 			var method = document.PageInfo.CSharpSyntaxTree
 				.GetRoot ()
 				.DescendantNodes ()
