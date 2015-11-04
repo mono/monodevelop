@@ -69,6 +69,16 @@ namespace MonoDevelop.CSharpBinding.Tests
 		public override void Load(FileOpenInformation fileOpenInformation)
 		{
 		}
+
+		public override string ContentName {
+			get {
+				return base.ContentName;
+			}
+			set {
+				base.ContentName = value;
+				Name = value;
+			}
+		}
 		
 		FilePath name;
 		public FilePath Name { 

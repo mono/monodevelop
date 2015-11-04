@@ -134,11 +134,11 @@ namespace MonoDevelop.Ide.Editor
 		/// Forces a reparse of the document. This call doesn't block the ui thread. 
 		/// The next call to ParsedDocument will give always the current parsed document but may block the UI thread.
 		/// </summary>
-		public abstract void ReparseDocument ();
+		public abstract Task ReparseDocument ();
 
 		public abstract OptionSet GetOptionSet ();
 
-		public abstract ParsedDocument UpdateParseDocument ();
+		public abstract Task<ParsedDocument> UpdateParseDocument ();
 
 		// TODO: IMO that needs to be handled differently (this is atm only used in the ASP.NET binding)
 		// Maybe using the file service. Files can be changed/saved w/o beeing opened.

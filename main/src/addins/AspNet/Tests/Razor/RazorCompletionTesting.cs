@@ -26,6 +26,7 @@
 
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.Razor;
@@ -110,7 +111,7 @@ namespace MonoDevelop.AspNet.Tests.Razor
 
 		static Solution solution;
 
-		static RazorCSharpEditorExtension CreateEditor (string text, bool isInCSharpContext, out string editorText,
+		static async Task<RazorCSharpEditorExtension> CreateEditor (string text, bool isInCSharpContext, out string editorText,
 			out TestViewContent sev)
 		{
 			string parsedText;
@@ -146,7 +147,7 @@ namespace MonoDevelop.AspNet.Tests.Razor
 			solution = new MonoDevelop.Projects.Solution ();
 			solution.DefaultSolutionFolder.AddItem (project);
 			solution.AddConfiguration ("", true);
-			TypeSystemServiceTestExtensions.LoadSolution (solution);
+			await TypeSystemServiceTestExtensions.LoadSolution (solution);
 
 			var parser = new RazorTestingParser {
 				Doc = doc

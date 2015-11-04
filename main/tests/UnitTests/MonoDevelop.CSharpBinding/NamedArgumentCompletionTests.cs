@@ -40,6 +40,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -158,10 +159,10 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 
-		static CSharpCompletionTextEditorExtension Setup (string input, out TestViewContent content)
+		static async Task<Tuple<CSharpCompletionTextEditorExtension,TestViewContent>> Setup (string input)
 		{
 			var tww = new TestWorkbenchWindow ();
-			content = new TestViewContent ();
+			TestViewContent content = new TestViewContent ();
 			tww.ViewContent = content;
 			content.ContentName = "/a.cs";
 			content.Data.MimeType = "text/x-csharp";
@@ -185,7 +186,7 @@ namespace MonoDevelop.CSharpBinding
 			solution.AddConfiguration ("", true); 
 			solution.DefaultSolutionFolder.AddItem (project);
 			using (var monitor = new ProgressMonitor ())
-				TypeSystemService.Load (solution, monitor, false);
+				await TypeSystemService.Load (solution, monitor);
 			content.Project = project;
 			doc.SetProject (project);
 
@@ -195,13 +196,14 @@ namespace MonoDevelop.CSharpBinding
 
 			doc.UpdateParseDocument ();
 			TypeSystemService.Unload (solution);
-			return compExt;
+			return Tuple.Create (compExt, content);
 		}
 
-		string Test(string input, string type, string member, Gdk.Key key = Gdk.Key.Return)
+		async Task<string> Test(string input, string type, string member, Gdk.Key key = Gdk.Key.Return)
 		{
-			TestViewContent content;
-			var ext = Setup (input, out content);
+			var s = await Setup (input);
+			var ext = s.Item1;
+			TestViewContent content = s.Item2;
 
 			var listWindow = new CompletionListWindow ();
 			var widget = new TestCompletionWidget (ext.Editor, ext.DocumentContext);
@@ -222,10 +224,10 @@ namespace MonoDevelop.CSharpBinding
 
 		
 		[Test]
-		public void TestSimpleCase ()
+		public async Task TestSimpleCase ()
 		{
 			IdeApp.Preferences.AddParenthesesAfterCompletion.Set (true); 
-			string completion = Test (@"class MyClass
+			string completion = await Test (@"class MyClass
 {
 	int foo;
 	void MyMethod ()
@@ -238,10 +240,10 @@ namespace MonoDevelop.CSharpBinding
 
 		
 		[Test]
-		public void TestNoAutoCase ()
+		public async Task TestNoAutoCase ()
 		{
 			IdeApp.Preferences.AddParenthesesAfterCompletion.Set (false); 
-			string completion = Test (@"class MyClass
+			string completion = await Test (@"class MyClass
 {
 	int foo;
 	void MyMethod ()

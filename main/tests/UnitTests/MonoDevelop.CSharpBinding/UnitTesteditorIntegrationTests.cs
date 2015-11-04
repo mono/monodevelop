@@ -36,16 +36,17 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {
 	[TestFixture]
 	public class UnitTesteditorIntegrationTests : UnitTests.TestBase
 	{
-		static UnitTestTextEditorExtension Setup (string input, out TestViewContent content)
+		static async Task<UnitTestTextEditorExtension> Setup (string input)
 		{
 			var tww = new TestWorkbenchWindow ();
-			content = new TestViewContent ();
+			var content = new TestViewContent ();
 			tww.ViewContent = content;
 			content.ContentName = "/a.cs";
 			content.Data.MimeType = "text/x-csharp";
@@ -72,14 +73,14 @@ namespace MonoDevelop.CSharpBinding.Tests
 			solution.AddConfiguration ("", true); 
 			solution.DefaultSolutionFolder.AddItem (project);
 			using (var monitor = new ProgressMonitor ())
-				TypeSystemService.Load (solution, monitor, false);
+				await TypeSystemService.Load (solution, monitor);
 			content.Project = project;
 			doc.SetProject (project);
 
 			var compExt = new UnitTestTextEditorExtension ();
 			compExt.Initialize (doc.Editor, doc);
 			content.Contents.Add (compExt);
-			doc.UpdateParseDocument ();
+			await doc.UpdateParseDocument ();
 			TypeSystemService.Unload (solution);
 			return compExt;
 		}
@@ -91,33 +92,31 @@ namespace MonoDevelop.CSharpBinding.Tests
 		}
 
 		[Test]
-		public void TestSimple ()
+		public async Task TestSimple ()
 		{
-			TestViewContent content;
-			var ext = Setup (@"using NUnit.Framework;
+			var ext = await Setup (@"using NUnit.Framework;
 [TestFixture]
 class TestClass
 {
 	[Test]
 	public void MyTest () {}
 }
-", out content);
-			var tests = ext.GatherUnitTests (default(CancellationToken)).Result;
+");
+			var tests = await ext.GatherUnitTests (default(CancellationToken));
 			Assert.IsNotNull (tests);
 			Assert.AreEqual (2, tests.Count);
 		}
 
 		[Test]
-		public void TestNoTests ()
+		public async Task TestNoTests ()
 		{
-			TestViewContent content;
-			var ext = Setup (@"using NUnit.Framework;
+			var ext = await Setup (@"using NUnit.Framework;
 class TestClass
 {
 	public void MyTest () {}
 }
-", out content);
-			var tests = ext.GatherUnitTests (default(CancellationToken)).Result;
+");
+			var tests = await ext.GatherUnitTests (default(CancellationToken));
 			Assert.IsNotNull (tests);
 			Assert.AreEqual (0, tests.Count);
 		}
@@ -128,10 +127,9 @@ class TestClass
 		/// Bug 14522 - Unit test editor integration does not work for derived classes 
 		/// </summary>
 		[Test]
-		public void TestBug14522 ()
+		public async Task TestBug14522 ()
 		{
-			TestViewContent content;
-			var ext = Setup (@"using NUnit.Framework;
+			var ext = await Setup (@"using NUnit.Framework;
 [TestFixture]
 abstract class MyBase
 {
@@ -142,8 +140,8 @@ public class Derived : MyBase
 	[Test]
 	public void MyTest () {}
 }
-", out content);
-			var tests = ext.GatherUnitTests (default(CancellationToken)).Result;
+");
+			var tests = await ext.GatherUnitTests (default(CancellationToken));
 			Assert.IsNotNull (tests);
 			Assert.AreEqual (2, tests.Count);
 
@@ -156,17 +154,16 @@ public class Derived : MyBase
 		/// Bug 19651 - Should not require [TestFixture] for Unit Test Integration
 		/// </summary>
 		[Test]
-		public void TestBug19651 ()
+		public async Task TestBug19651 ()
 		{
-			TestViewContent content;
-			var ext = Setup (@"using NUnit.Framework;
+			var ext = await Setup (@"using NUnit.Framework;
 class TestClass
 {
 	[Test]
 	public void MyTest () {}
 }
-", out content);
-			var tests = ext.GatherUnitTests (default(CancellationToken)).Result;
+");
+			var tests = await ext.GatherUnitTests (default(CancellationToken));
 			Assert.IsNotNull (tests);
 			Assert.AreEqual (2, tests.Count);
 		}

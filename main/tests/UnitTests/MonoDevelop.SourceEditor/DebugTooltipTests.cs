@@ -42,6 +42,7 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Debugger;
 using UnitTests;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -52,7 +53,7 @@ namespace MonoDevelop.SourceEditor
 		string content;
 		MonoDevelop.Projects.Solution solution;
 
-		Document CreateDocument (string input)
+		async Task<Document> CreateDocument (string input)
 		{
 			var text = input;
 			int endPos = text.IndexOf ('$');
@@ -72,7 +73,7 @@ namespace MonoDevelop.SourceEditor
 			var config = solution.AddConfiguration ("", true); 
 			solution.DefaultSolutionFolder.AddItem (project);
 			using (var monitor = new ProgressMonitor ())
-				TypeSystemService.Load (solution, monitor, false);
+				await TypeSystemService.Load (solution, monitor);
 
 			var tww = new TestWorkbenchWindow ();
 			var content = new TestViewContent ();
@@ -199,7 +200,7 @@ namespace DebuggerTooltipTests
 }
 ";
 
-			document = CreateDocument (content);
+			document = CreateDocument (content).Result;
 		}
 
 		public override void TearDown()

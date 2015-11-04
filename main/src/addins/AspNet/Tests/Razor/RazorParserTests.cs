@@ -27,6 +27,7 @@
 using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.Razor;
@@ -65,7 +66,7 @@ namespace MonoDevelop.AspNet.Tests.Razor
 			Assert.IsNotNull (method);
 		}
 
-		RazorCSharpParsedDocument Parse (string text, bool isPreprocessed)
+		async Task<RazorCSharpParsedDocument> Parse (string text, bool isPreprocessed)
 		{
 			var project = Services.ProjectService.CreateDotNetProject ("C#", "AspNetApp");
 
@@ -90,7 +91,7 @@ namespace MonoDevelop.AspNet.Tests.Razor
 			solution = new MonoDevelop.Projects.Solution ();
 			solution.DefaultSolutionFolder.AddItem (project);
 			solution.AddConfiguration ("", true);
-			TypeSystemServiceTestExtensions.LoadSolution (solution);
+			await TypeSystemServiceTestExtensions.LoadSolution (solution);
 
 			var parser = new RazorTestingParser {
 				Doc = doc

@@ -82,7 +82,7 @@ namespace MonoDevelop.CSharp.Completion
 
 
 			var document = IdeApp.Workbench.ActiveDocument;
-			var parsedDocument = document.UpdateParseDocument ();
+			var parsedDocument = document.UpdateParseDocument ().Result;
 			var semanticModel = parsedDocument.GetAst<SemanticModel> ();
 
 			var declaringType = semanticModel.GetEnclosingSymbol<INamedTypeSymbol> (position, default(CancellationToken));

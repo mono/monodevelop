@@ -29,6 +29,7 @@ using System.Collections.Immutable;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.TypeSystem;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Editor.Projection
 {
@@ -89,7 +90,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 		{
 		}
 
-		public override void ReparseDocument ()
+		public override Task ReparseDocument ()
 		{
 			var options = new ParseOptions {
 				FileName = projectedEditor.FileName,
@@ -98,9 +99,10 @@ namespace MonoDevelop.Ide.Editor.Projection
 				RoslynDocument = projectedDocument,
 				OldParsedDocument = parsedDocument
 			}; 
-			parsedDocument = TypeSystemService.ParseFile (options, projectedEditor.MimeType).Result;
-
-			base.OnDocumentParsed (EventArgs.Empty);
+			return TypeSystemService.ParseFile (options, projectedEditor.MimeType).ContinueWith (t => {
+				parsedDocument = t.Result;
+				base.OnDocumentParsed (EventArgs.Empty);
+			});
 		}
 
 		public override Microsoft.CodeAnalysis.Options.OptionSet GetOptionSet ()
@@ -108,9 +110,9 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return originalContext.GetOptionSet ();
 		}
 
-		public override MonoDevelop.Ide.TypeSystem.ParsedDocument UpdateParseDocument ()
+		public override async Task<MonoDevelop.Ide.TypeSystem.ParsedDocument> UpdateParseDocument ()
 		{
-			ReparseDocument ();
+			await ReparseDocument ();
 			return parsedDocument;
 		}
 

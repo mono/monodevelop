@@ -164,9 +164,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			var token = src.Token;
 
 			var service = Services.GetService<IPersistentStorageService>();
-			Task.Run (delegate {
+			Task.Run (async delegate {
 				try {
-					var si = CreateSolutionInfo (currentMonoDevelopSolution, token);
+					var si = await CreateSolutionInfo (currentMonoDevelopSolution, token).ConfigureAwait (false);
 					if (si != null)
 						OnSolutionReloaded (si);
 				} catch (OperationCanceledException) {
@@ -182,7 +182,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		SolutionData solutionData;
-		SolutionInfo CreateSolutionInfo (MonoDevelop.Projects.Solution solution, CancellationToken token)
+		async Task<SolutionInfo> CreateSolutionInfo (MonoDevelop.Projects.Solution solution, CancellationToken token)
 		{
 			var projects = new ConcurrentBag<ProjectInfo> ();
 			var mdProjects = solution.GetAllProjects ();
@@ -198,7 +198,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				});
 				allTasks.Add (tp);
 			}
-			Task.WaitAll (allTasks.ToArray ());
+			await Task.WhenAll (allTasks.ToArray ());
 			if (token.IsCancellationRequested)
 				return null;
 			var solutionInfo = SolutionInfo.Create (GetSolutionId (solution), VersionStamp.Create (), solution.FileName, projects);
@@ -211,7 +211,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return solutionInfo;
 		}
 
-		public SolutionInfo TryLoadSolution (MonoDevelop.Projects.Solution solution/*, IProgressMonitor progressMonitor*/)
+		public Task<SolutionInfo> TryLoadSolution (MonoDevelop.Projects.Solution solution/*, IProgressMonitor progressMonitor*/)
 		{
 			this.currentMonoDevelopSolution = solution;
 			CancelLoad ();

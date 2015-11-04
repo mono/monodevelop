@@ -41,6 +41,7 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -159,10 +160,10 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 
-		static CSharpCompletionTextEditorExtension Setup (string input, out TestViewContent content)
+		static async Task<Tuple<CSharpCompletionTextEditorExtension,TestViewContent>> Setup (string input)
 		{
 			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
-			content = new TestViewContent ();
+			TestViewContent content = new TestViewContent ();
 			tww.ViewContent = content;
 			content.ContentName = "/a.cs";
 			content.Data.MimeType = "text/x-csharp";
@@ -186,7 +187,7 @@ namespace MonoDevelop.CSharpBinding
 			solution.AddConfiguration ("", true); 
 			solution.DefaultSolutionFolder.AddItem (project);
 			using (var monitor = new ProgressMonitor ())
-				TypeSystemService.Load (solution, monitor, false);
+				await TypeSystemService.Load (solution, monitor);
 			content.Project = project;
 			doc.SetProject (project);
 
@@ -197,13 +198,14 @@ namespace MonoDevelop.CSharpBinding
 
 			doc.UpdateParseDocument ();
 			TypeSystemService.Unload (solution);
-			return compExt;
+			return Tuple.Create (compExt, content);
 		}
 
-		string Test(string input, string type, string member, Gdk.Key key = Gdk.Key.Return, bool isDelegateExpected = false)
+		async Task<string> Test(string input, string type, string member, Gdk.Key key = Gdk.Key.Return, bool isDelegateExpected = false)
 		{
-			TestViewContent content;
-			var ext = Setup (input, out content);
+			var s = await Setup (input);
+			var ext = s.Item1;
+			TestViewContent content = s.Item2;
 
 			var listWindow = new CompletionListWindow ();
 			var widget = new TestCompletionWidget (ext.Editor, ext.DocumentContext);
@@ -223,9 +225,9 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 		[Test]
-		public void TestSimpleCase ()
+		public async Task TestSimpleCase ()
 		{
-			string completion = Test (@"class MyClass
+			string completion = await Test (@"class MyClass
 {
 	void FooBar ()
 	{
@@ -236,9 +238,9 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 		[Test]
-		public void TestBracketAlreadyThere ()
+		public async Task TestBracketAlreadyThere ()
 		{
-			string completion = Test (@"class MyClass
+			string completion = await Test (@"class MyClass
 {
 	void FooBar ()
 	{
@@ -249,9 +251,9 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 		[Test]
-		public void TestBracketAlreadyThereCase2 ()
+		public async Task TestBracketAlreadyThereCase2 ()
 		{
-			string completion = Test (@"class MyClass
+			string completion = await Test (@"class MyClass
 {
 	void FooBar ()
 	{
@@ -262,9 +264,9 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 		[Test]
-		public void TestParameter ()
+		public async Task TestParameter ()
 		{
-			string completion = Test (@"class MyClass
+			string completion = await Test (@"class MyClass
 {
 	void FooBar ()
 	{
@@ -275,9 +277,9 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 		[Test]
-		public void TestOverloads ()
+		public async Task TestOverloads ()
 		{
-			string completion = Test (@"class MyClass
+			string completion = await Test (@"class MyClass
 {
 	void FooBar (int foo)
 	{
@@ -291,9 +293,9 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 		[Test]
-		public void TestExpressionCase ()
+		public async Task TestExpressionCase ()
 		{
-			string completion = Test (@"class MyClass
+			string completion = await Test (@"class MyClass
 {
 	int FooBar ()
 	{
@@ -305,9 +307,9 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 		[Test]
-		public void TestExpressionCaseWithOverloads ()
+		public async Task TestExpressionCaseWithOverloads ()
 		{
-			string completion = Test (@"class MyClass
+			string completion = await Test (@"class MyClass
 {
 	int FooBar (int foo)
 	{
@@ -323,9 +325,9 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 		[Test]
-		public void TestDelegateCase ()
+		public async Task TestDelegateCase ()
 		{
-			string completion = Test (@"using System;
+			string completion = await Test (@"using System;
 class MyClass
 {
 	int FooBar ()
@@ -338,9 +340,9 @@ class MyClass
 		}
 
 		[Test]
-		public void TestDotCompletion ()
+		public async Task TestDotCompletion ()
 		{
-			string completion = Test (@"class MyClass
+			string completion = await Test (@"class MyClass
 {
 	void FooBar ()
 	{
@@ -353,9 +355,9 @@ class MyClass
 
 		
 		[Test]
-		public void TestConstructorSimple ()
+		public async Task TestConstructorSimple ()
 		{
-			string completion = Test (@"class MyClass
+			string completion = await Test (@"class MyClass
 {
 	public MyClass () {}
 
@@ -368,9 +370,9 @@ class MyClass
 		}
 
 		[Test]
-		public void TestConstructorWithOverloads ()
+		public async Task TestConstructorWithOverloads ()
 		{
-			string completion = Test (@"class MyClass
+			string completion = await Test (@"class MyClass
 {
 	public MyClass () {}
 	public MyClass (int x) {}
@@ -384,9 +386,9 @@ class MyClass
 		}
 
 		[Test]
-		public void TestGenericCase1 ()
+		public async Task TestGenericCase1 ()
 		{
-			string completion = Test (@"class MyClass
+			string completion = await Test (@"class MyClass
 {
 	void FooBar<T> ()
 	{
@@ -397,9 +399,9 @@ class MyClass
 		}
 
 		[Test]
-		public void TestGenericCase2 ()
+		public async Task TestGenericCase2 ()
 		{
-			string completion = Test (@"class MyClass
+			string completion = await Test (@"class MyClass
 {
 	void FooBar<T> (T t)
 	{
@@ -410,9 +412,9 @@ class MyClass
 		}
 
 		[Test]
-		public void TestGenericDotCompletion ()
+		public async Task TestGenericDotCompletion ()
 		{
-			string completion = Test (@"class MyClass
+			string completion = await Test (@"class MyClass
 {
 	void FooBar<T> ()
 	{
@@ -423,9 +425,9 @@ class MyClass
 		}
 
 		[Test]
-		public void TestInsertionBug ()
+		public async Task TestInsertionBug ()
 		{
-			string completion = Test (@"class MyClass
+			string completion = await Test (@"class MyClass
 {
 	void FooBar ()
 	{
@@ -438,9 +440,9 @@ class MyClass
 
 		
 		[Test]
-		public void TestGenericConstructor ()
+		public async Task TestGenericConstructor ()
 		{
-			string completion = Test (@"class MyClass<T>
+			string completion = await Test (@"class MyClass<T>
 {
 	public MyClass () {}
 
@@ -453,9 +455,9 @@ class MyClass
 		}
 
 		[Test]
-		public void TestBracketAlreadyThereGenericCase ()
+		public async Task TestBracketAlreadyThereGenericCase ()
 		{
-			string completion = Test (@"class MyClass
+			string completion = await Test (@"class MyClass
 {
 	void FooBar<T> ()
 	{
