@@ -67,8 +67,6 @@ namespace MonoDevelop.Ide.Gui.Components
 		TreeBuilderContext builderContext;
 		Hashtable callbacks = new Hashtable ();
 		bool editingText = false;
-		bool showSelectionPopupButton;
-		Gtk.TreeIter? lastPopupButtonIter;
 
 		TreePadOption[] options;
 		TreeOptions globalOptions;
@@ -246,7 +244,6 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			tree.CursorChanged += OnSelectionChanged;
 			tree.KeyPressEvent += OnKeyPress;
-			tree.ButtonPressEvent += HandleButtonPressEvent;
 			tree.MotionNotifyEvent += HandleMotionNotifyEvent;
 			tree.LeaveNotifyEvent += HandleLeaveNotifyEvent;
 
@@ -334,7 +331,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				cell.TextMarkup = info.Label;
 
 			cell.StatusIcon = info.StatusIconInternal;
-			cell.ShowPopupButton = (bool)model.GetValue (it, ShowPopupColumn);
 		}
 
 		public void UpdateBuilders (NodeBuilder[] builders, TreePadOption[] options)
@@ -478,18 +474,6 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 
 		[GLib.ConnectBefore]
-		void HandleButtonPressEvent (object o, Gtk.ButtonPressEventArgs args)
-		{
-			if (ShowSelectionPopupButton && text_render.PointerInButton ((int)args.Event.XRoot, (int)args.Event.YRoot)) {
-				text_render.Pushed = true;
-				args.RetVal = true;
-				var entryset = BuildEntrySet ();
-
-				IdeApp.CommandService.ShowContextMenu (tree, args.Event, entryset, this, HandleMenuHidden);
-			}
-		}
-
-		[GLib.ConnectBefore]
 		void HandleMotionNotifyEvent (object o, Gtk.MotionNotifyEventArgs args)
 		{
 			Gtk.TreePath path;
@@ -498,12 +482,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			bool popupShown = false;
 
 			if (tree.GetPathAtPos ((int)args.Event.X, (int)args.Event.Y, out path, out col, out cx, out cy)) {
-				if (ShowSelectionPopupButton) {
-					text_render.PointerPosition = new Gdk.Point ((int)args.Event.XRoot, (int)args.Event.YRoot);
-					var area = tree.GetCellArea (path, tree.Columns [0]);
-					tree.QueueDrawArea (area.X, area.Y, area.Width, area.Height);
-				}
-
 				Gtk.TreeIter it;
 				if (store.GetIter (out it, path)) {
 					var info = (NodeInfo)store.GetValue (it, NodeInfoColumn);
@@ -2049,14 +2027,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			tree.CollapseAll();
 		}
 
-		public bool ShowSelectionPopupButton {
-			get { return showSelectionPopupButton; }
-			set {
-				showSelectionPopupButton = value;
-				UpdateSelectionPopupButton ();
-			}
-		}
-
 		[GLib.ConnectBefore]
 		void OnKeyPress (object o, Gtk.KeyPressEventArgs args)
 		{
@@ -2119,33 +2089,8 @@ namespace MonoDevelop.Ide.Gui.Components
 			ActivateCurrentItem ();
 		}
 
-		void UpdateSelectionPopupButton ()
-		{
-			if (editingText)
-				return;
-
-			if (lastPopupButtonIter != null) {
-				if (store.IterIsValid (lastPopupButtonIter.Value))
-					tree.Model.SetValue (lastPopupButtonIter.Value, ShowPopupColumn, false);
-				lastPopupButtonIter = null;
-			}
-
-			if (showSelectionPopupButton) {
-				var sel = Tree.Selection.GetSelectedRows ();
-				if (sel.Length > 0) {
-					Gtk.TreeIter it;
-					if (store.GetIter (out it, sel[0])) {
-						lastPopupButtonIter = it;
-						tree.Model.SetValue (it, ShowPopupColumn, true);
-					}
-				}
-			}
-		}
-
 		void OnSelectionChanged (object sender, EventArgs args)
 		{
-			UpdateSelectionPopupButton ();
-
 			TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
 			if (node != null) {
 				NodeBuilder[] chain = node.NodeBuilderChain;
@@ -2208,24 +2153,6 @@ namespace MonoDevelop.Ide.Gui.Components
 		object ICommandRouter.GetNextCommandTarget ()
 		{
 			return widget.Parent;
-		}
-
-		class PopupButton: Gtk.EventBox
-		{
-			public event EventHandler Clicked;
-
-			public PopupButton ()
-			{
-				Gtk.Button b = new Gtk.Button ("...");
-				b.CanFocus = false;
-				Add (b);
-
-				b.Clicked += delegate {
-					if (Clicked != null)
-						Clicked (this, EventArgs.Empty);
-				};
-				ShowAll ();
-			}
 		}
 
 		internal class PadCheckMenuItem: Gtk.CheckMenuItem
@@ -2426,9 +2353,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			Pango.Layout layout;
 			Pango.FontDescription scaledFont, customFont;
 
-			static Xwt.Drawing.Image popupIcon;
-			static Xwt.Drawing.Image popupIconDown;
-			static Xwt.Drawing.Image popupIconHover;
 			bool bound;
 			ExtensibleTreeView parent;
 			Gdk.Rectangle buttonScreenRect;
@@ -2455,9 +2379,6 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			static CustomCellRendererText ()
 			{
-				popupIcon = Xwt.Drawing.Image.FromResource ("tree-popup-button.png");
-				popupIconDown = Xwt.Drawing.Image.FromResource ("tree-popup-button-down.png");
-				popupIconHover = Xwt.Drawing.Image.FromResource ("tree-popup-button-hover.png");
 			}
 
 			[GLib.Property ("text-markup")]
@@ -2465,9 +2386,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				get { return markup; }
 				set { Markup = markup = value; }
 			}
-
-			[GLib.Property ("show-popup-button")]
-			public bool ShowPopupButton { get; set; }
 
 			[GLib.Property ("status-icon")]
 			public Xwt.Drawing.Image StatusIcon { get; set; }
@@ -2531,73 +2449,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				window.DrawLayout (widget.Style.TextGC (st), tx, ty, layout);
 
 				hasStatusIcon = false;
-
-				if (ShowPopupButton || hasStatusIcon) {
-					if (!bound) {
-						bound = true;
-						((Gtk.ScrolledWindow)widget.Parent).Hadjustment.ValueChanged += delegate {
-							foreach (var r in parent.Tree.Selection.GetSelectedRows ()) {
-								var rect = parent.Tree.GetCellArea (r, parent.Tree.Columns [0]);
-								parent.Tree.QueueDrawArea (rect.X, rect.Y, rect.Width, rect.Height);
-							}
-						};
-					}
-
-					var selected = (flags & Gtk.CellRendererState.Selected) != 0;
-					if (selected || hasStatusIcon) {
-						var icon = Pushed ? popupIconDown : popupIcon;
-						var dy = (cell_area.Height - (int)icon.Height) / 2 - 1;
-						var y = cell_area.Y + dy;
-						var x = cell_area.X + cell_area.Width - (int)icon.Width - dy;
-
-						var sw = (Gtk.ScrolledWindow)widget.Parent;
-						int ox, oy, ow, oh;
-						sw.GdkWindow.GetOrigin (out ox, out oy);
-						sw.GdkWindow.GetSize (out ow, out oh);
-						ox += sw.Allocation.X;
-						oy += sw.Allocation.Y;
-						if (sw.VScrollbar.Visible)
-							ow -= sw.VScrollbar.Allocation.Width;
-
-						int cx, cy, cw, ch;
-						((Gdk.Window)window).GetOrigin (out cx, out cy);
-						((Gdk.Window)window).GetSize (out cw, out ch);
-						cx += widget.Allocation.X;
-						cy += widget.Allocation.Y;
-
-						int rp = ox + ow;
-						int diff = rp - (cx + cw);
-
-						if (diff < 0) {
-							x += diff;
-							if (x < cell_area.X + 20)
-								x = cell_area.X + 20;
-						}
-
-						buttonScreenRect = new Gdk.Rectangle (cx + x, cy + y, (int)popupIcon.Width, (int)popupIcon.Height);
-
-						buttonAllocation = new Gdk.Rectangle (x, y, (int)popupIcon.Width, (int)popupIcon.Height);
-						buttonAllocation = GtkUtil.ToScreenCoordinates (widget, ((Gdk.Window)window), buttonAllocation);
-						buttonAllocation = GtkUtil.ToWindowCoordinates (widget, widget.GdkWindow, buttonAllocation);
-
-						bool mouseOver = (flags & Gtk.CellRendererState.Prelit) != 0 && buttonScreenRect.Contains (PointerPosition);
-						if (mouseOver && !Pushed)
-							icon = popupIconHover;
-
-						using (var ctx = Gdk.CairoHelper.Create (window)) {
-							if (ShowPopupButton && selected) {
-								if (hasStatusIcon)
-									x -= (int) icon.Width + StatusIconSpacing;
-								ctx.DrawImage (widget, icon, x, y);
-								if (hasStatusIcon)
-									x += (int) icon.Width + StatusIconSpacing;
-							}
-							if (hasStatusIcon) {
-								ctx.DrawImage (widget, StatusIcon, x, y);
-							}
-						}
-					}
-				}
 			}
 
 			public Gdk.Rectangle GetStatusIconArea (Gtk.Widget widget, Gdk.Rectangle cell_area)

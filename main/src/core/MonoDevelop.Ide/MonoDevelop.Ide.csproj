@@ -1649,24 +1649,6 @@
     <EmbeddedResource Include="icons\searchbox-search-16~dark%402x.png">
       <LogicalName>searchbox-search-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\tree-popup-button.png">
-      <LogicalName>tree-popup-button.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\tree-popup-button%402x.png">
-      <LogicalName>tree-popup-button@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\tree-popup-button-hover.png">
-      <LogicalName>tree-popup-button-hover.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\tree-popup-button-hover%402x.png">
-      <LogicalName>tree-popup-button-hover@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\tree-popup-button-down.png">
-      <LogicalName>tree-popup-button-down.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\tree-popup-button-down%402x.png">
-      <LogicalName>tree-popup-button-down@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\clear-all-bookmarks-16.png">
       <LogicalName>clear-all-bookmarks-16.png</LogicalName>
     </EmbeddedResource>
