@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
@@ -14,16 +15,19 @@ namespace MonoDevelop.Xml.Tests.Schema
 	{
 		CompletionDataList barAttributeValuesCompletionData;
 		
-		public override void FixtureInit()
-		{	
+		async Task Init ()
+		{
+			if (barAttributeValuesCompletionData != null)
+				return;
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foo", "http://foo.com"));
-			barAttributeValuesCompletionData = SchemaCompletionData.GetAttributeValueCompletionData(path, "bar", CancellationToken.None).Result;
+			barAttributeValuesCompletionData = await SchemaCompletionData.GetAttributeValueCompletionData(path, "bar", CancellationToken.None);
 		}
 				
 		[Test]
-		public void BarAttributeValueDefaultDocumentation()
+		public async Task BarAttributeValueDefaultDocumentation()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.ContainsDescription(barAttributeValuesCompletionData, "default", "Default attribute value info."),
 			                "Description for attribute value 'default' is incorrect.");
 		}

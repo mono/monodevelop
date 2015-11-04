@@ -15,30 +15,35 @@ namespace MonoDevelop.Xml.Tests.Schema
 		CompletionDataList attributeCompletionData;
 		string attributeName;
 		
-		public override void FixtureInit()
+		async Task Init ()
 		{
+			if (attributeCompletionData != null)
+				return;
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 						
-			attributeCompletionData = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
+			attributeCompletionData = await SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None);
 			attributeName = attributeCompletionData[0].DisplayText;
 		}
 
 		[Test]
-		public void AttributeCount()
+		public async Task AttributeCount()
 		{
+			await Init ();
 			Assert.AreEqual(1, attributeCompletionData.Count, "Should be one attribute.");
 		}
 		
 		[Test]
-		public void AttributeName()
+		public async Task AttributeName()
 		{
+			await Init ();
 			Assert.AreEqual("name", attributeName, "Attribute name is incorrect.");
 		}
 		
 		[Test]
 		public async Task NoAttributesForUnknownElement()
 		{
+			await Init ();
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foobar", "http://www.w3schools.com"));
 			CompletionDataList attributes = await SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None);

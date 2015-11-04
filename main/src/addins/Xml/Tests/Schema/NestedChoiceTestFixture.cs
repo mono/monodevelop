@@ -16,22 +16,26 @@ namespace MonoDevelop.Xml.Tests.Schema
 		CompletionDataList noteChildElements;
 		CompletionDataList titleChildElements;
 		
-		public override void FixtureInit()
+		async Task Init ()
 		{
+			if (noteChildElements != null)
+				return;
+			
 			// Get note child elements.
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
-			
-			noteChildElements = SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
+
+			noteChildElements = await SchemaCompletionData.GetChildElementCompletionData (path, CancellationToken.None);
 		
 			// Get title child elements.
 			path.Elements.Add(new QualifiedName("title", "http://www.w3schools.com"));
-			titleChildElements = SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
+			titleChildElements = await SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None);
 		}
 		
 		[Test]
-		public void TitleHasTwoChildElements()
+		public async Task TitleHasTwoChildElements()
 		{
+			await Init ();
 			Assert.AreEqual(2, titleChildElements.Count, 
 			                "Should be 2 child elements.");
 		}
@@ -39,6 +43,7 @@ namespace MonoDevelop.Xml.Tests.Schema
 		[Test]
 		public async Task TextHasNoChildElements()
 		{
+			await Init ();
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 			path.Elements.Add(new QualifiedName("text", "http://www.w3schools.com"));
@@ -47,22 +52,25 @@ namespace MonoDevelop.Xml.Tests.Schema
 		}		
 		
 		[Test]
-		public void NoteHasTwoChildElements()
+		public async Task NoteHasTwoChildElements()
 		{
+			await Init ();
 			Assert.AreEqual(2, noteChildElements.Count, 
 			                "Should be two child elements.");
 		}
 		
 		[Test]
-		public void NoteChildElementIsText()
+		public async Task NoteChildElementIsText()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(noteChildElements, "text"), 
 			              "Should have a child element called text.");
 		}
 		
 		[Test]
-		public void NoteChildElementIsTitle()
+		public async Task NoteChildElementIsTitle()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(noteChildElements, "title"), 
 			              "Should have a child element called title.");
 		}		

@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
@@ -13,24 +14,28 @@ namespace MonoDevelop.Xml.Tests.Schema
 	{
 		CompletionDataList attributes;
 		
-		public override void FixtureInit()
+		async Task Init ()
 		{
+			if (attributes != null)
+				return;
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("project", "http://nant.sf.net//nant-0.84.xsd"));
 			path.Elements.Add(new QualifiedName("attrib", "http://nant.sf.net//nant-0.84.xsd"));
 			
-			attributes = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
+			attributes = await SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None);
 		}
 
 		[Test]
-		public void AttributeCount()
+		public async Task AttributeCount()
 		{
+			await Init ();
 			Assert.AreEqual(10, attributes.Count, "Should be one attribute.");
 		}
 		
 		[Test]
-		public void FileAttribute()
+		public async Task FileAttribute()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributes, "file"),
 			              "Attribute file does not exist.");
 		}		

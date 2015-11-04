@@ -2,6 +2,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Xml.Tests.Schema
 {
@@ -15,69 +16,79 @@ namespace MonoDevelop.Xml.Tests.Schema
 		CompletionDataList attributes;
 		CompletionDataList annotationChildElements;
 		CompletionDataList choiceChildElements;
-		
-		public override void FixtureInit()
-		{			
-			XmlElementPath path = new XmlElementPath();
-			path.Elements.Add(new QualifiedName("group", "http://www.w3.org/2001/XMLSchema"));
-			childElements = SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
-			attributes = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
-		
+
+		async Task Init ()
+		{
+			if (childElements != null)
+				return;
+
+			XmlElementPath path = new XmlElementPath ();
+			path.Elements.Add (new QualifiedName ("group", "http://www.w3.org/2001/XMLSchema"));
+			childElements = await SchemaCompletionData.GetChildElementCompletionData (path, CancellationToken.None);
+			attributes = await SchemaCompletionData.GetAttributeCompletionData (path, CancellationToken.None);
+
 			// Get annotation child elements.
-			path.Elements.Add(new QualifiedName("annotation", "http://www.w3.org/2001/XMLSchema"));
-			annotationChildElements = SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
-			
+			path.Elements.Add (new QualifiedName ("annotation", "http://www.w3.org/2001/XMLSchema"));
+			annotationChildElements = await SchemaCompletionData.GetChildElementCompletionData (path, CancellationToken.None);
+
 			// Get choice child elements.
 			path.Elements.RemoveAt (path.Elements.Count - 1);
-			path.Elements.Add(new QualifiedName("choice", "http://www.w3.org/2001/XMLSchema"));
-			choiceChildElements = SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
+			path.Elements.Add (new QualifiedName ("choice", "http://www.w3.org/2001/XMLSchema"));
+			choiceChildElements = await SchemaCompletionData.GetChildElementCompletionData (path, CancellationToken.None);
 		}
 
 		[Test]
-		public void GroupChildElementIsAnnotation()
+		public async Task GroupChildElementIsAnnotation()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(childElements, "annotation"), 
 			              "Should have a child element called annotation.");
 		}
 		
 		[Test]
-		public void GroupChildElementIsChoice()
+		public async Task GroupChildElementIsChoice()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(childElements, "choice"), 
 			              "Should have a child element called choice.");
 		}		
 		
 		[Test]
-		public void GroupChildElementIsSequence()
+		public async Task GroupChildElementIsSequence()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(childElements, "sequence"), 
 			              "Should have a child element called sequence.");
 		}		
 		
 		[Test]
-		public void GroupAttributeIsName()
+		public async Task GroupAttributeIsName()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributes, "name"),
 			              "Should have an attribute called name.");			
 		}
 		
 		[Test]
-		public void AnnotationChildElementIsAppInfo()
+		public async Task AnnotationChildElementIsAppInfo()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(annotationChildElements, "appinfo"), 
 			              "Should have a child element called appinfo.");
 		}	
 		
 		[Test]
-		public void AnnotationChildElementIsDocumentation()
+		public async Task AnnotationChildElementIsDocumentation()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(annotationChildElements, "documentation"), 
 			              "Should have a child element called appinfo.");
 		}	
 		
 		[Test]
-		public void ChoiceChildElementIsSequence()
+		public async Task ChoiceChildElementIsSequence()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(choiceChildElements, "element"), 
 			              "Should have a child element called element.");
 		}	

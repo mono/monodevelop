@@ -2,6 +2,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Xml.Tests.Schema
 {
@@ -18,42 +19,49 @@ namespace MonoDevelop.Xml.Tests.Schema
 		CompletionDataList rootChildElements;
 		CompletionDataList fooAttributes;
 		
-		public override void FixtureInit()
+		async Task Init ()
 		{
+			if (rootChildElements != null)
+				return;
+			
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("root", "http://foo"));
 			
-			rootChildElements = SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
+			rootChildElements = await SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None);
 		
 			path.Elements.Add(new QualifiedName("foo", "http://foo"));
 			
-			fooAttributes = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
+			fooAttributes = await SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None);
 		}
 				
 		[Test]
-		public void RootHasTwoChildElements()
+		public async Task RootHasTwoChildElements()
 		{
+			await Init ();
 			Assert.AreEqual(2, rootChildElements.Count, 
 			                "Should be two child elements.");
 		}
 		
 		[Test]
-		public void RootChildElementIsFoo()
+		public async Task RootChildElementIsFoo()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(rootChildElements, "foo"), 
 			              "Should have a child element called foo.");
 		}
 		
 		[Test]
-		public void RootChildElementIsBar()
+		public async Task RootChildElementIsBar()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(rootChildElements, "bar"), 
 			              "Should have a child element called bar.");
 		}		
 		
 		[Test]
-		public void FooElementHasIdAttribute()
+		public async Task FooElementHasIdAttribute()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(fooAttributes, "id"),
 			              "Should have an attribute called id.");
 		}

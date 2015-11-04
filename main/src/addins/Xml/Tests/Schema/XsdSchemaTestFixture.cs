@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System.Xml;
 using MonoDevelop.Xml.Tests.Utils;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Xml.Tests.Schema
 {
@@ -35,9 +36,11 @@ namespace MonoDevelop.Xml.Tests.Schema
 		string namespaceURI = "http://www.w3.org/2001/XMLSchema";
 		string prefix = "xs";
 		
-		[TestFixtureSetUp]
-		public void FixtureInit()
+		async Task Init ()
 		{
+			if (schemaCompletionData != null)
+				return;
+			
 			XmlTextReader reader = ResourceManager.GetXsdSchema();
 			schemaCompletionData = new XmlSchemaCompletionData(reader);
 			
@@ -47,26 +50,26 @@ namespace MonoDevelop.Xml.Tests.Schema
 			choicePath.Elements.Add(new QualifiedName("element", namespaceURI, prefix));
 			choicePath.Elements.Add(new QualifiedName("complexType", namespaceURI, prefix));
 			
-			mixedAttributeValues = schemaCompletionData.GetAttributeValueCompletionData(choicePath, "mixed", CancellationToken.None).Result;
+			mixedAttributeValues = await schemaCompletionData.GetAttributeValueCompletionData(choicePath, "mixed", CancellationToken.None);
 
 			choicePath.Elements.Add(new QualifiedName("choice", namespaceURI, prefix));
 			
 			// Get choice element info.
-			choiceAttributes = schemaCompletionData.GetAttributeCompletionData(choicePath, CancellationToken.None).Result;
-			maxOccursAttributeValues = schemaCompletionData.GetAttributeValueCompletionData(choicePath, "maxOccurs", CancellationToken.None).Result;
+			choiceAttributes = await schemaCompletionData.GetAttributeCompletionData(choicePath, CancellationToken.None);
+			maxOccursAttributeValues = await schemaCompletionData.GetAttributeValueCompletionData(choicePath, "maxOccurs", CancellationToken.None);
 			
 			// Set up element path.
 			elementPath = new XmlElementPath();
 			elementPath.Elements.Add(new QualifiedName("schema", namespaceURI, prefix));
-			
-			elementFormDefaultAttributeValues = schemaCompletionData.GetAttributeValueCompletionData(elementPath, "elementFormDefault", CancellationToken.None).Result;
-			blockDefaultAttributeValues = schemaCompletionData.GetAttributeValueCompletionData(elementPath, "blockDefault", CancellationToken.None).Result;
-			finalDefaultAttributeValues = schemaCompletionData.GetAttributeValueCompletionData(elementPath, "finalDefault", CancellationToken.None).Result;
+
+			elementFormDefaultAttributeValues = await schemaCompletionData.GetAttributeValueCompletionData (elementPath, "elementFormDefault", CancellationToken.None);
+			blockDefaultAttributeValues = await schemaCompletionData.GetAttributeValueCompletionData(elementPath, "blockDefault", CancellationToken.None);
+			finalDefaultAttributeValues = await schemaCompletionData.GetAttributeValueCompletionData(elementPath, "finalDefault", CancellationToken.None);
 			
 			elementPath.Elements.Add(new QualifiedName("element", namespaceURI, prefix));
 				
 			// Get element attribute info.
-			elementAttributes = schemaCompletionData.GetAttributeCompletionData(elementPath, CancellationToken.None).Result;
+			elementAttributes = await schemaCompletionData.GetAttributeCompletionData(elementPath, CancellationToken.None);
 
 			// Set up simple enum type path.
 			simpleEnumPath = new XmlElementPath();
@@ -75,7 +78,7 @@ namespace MonoDevelop.Xml.Tests.Schema
 			simpleEnumPath.Elements.Add(new QualifiedName("restriction", namespaceURI, prefix));
 			
 			// Get child elements.
-			simpleEnumElements = schemaCompletionData.GetChildElementCompletionData(simpleEnumPath, CancellationToken.None).Result;
+			simpleEnumElements = await schemaCompletionData.GetChildElementCompletionData(simpleEnumPath, CancellationToken.None);
 
 			// Set up enum path.
 			enumPath = new XmlElementPath();
@@ -85,7 +88,7 @@ namespace MonoDevelop.Xml.Tests.Schema
 			enumPath.Elements.Add(new QualifiedName("enumeration", namespaceURI, prefix));
 			
 			// Get attributes.
-			enumAttributes = schemaCompletionData.GetAttributeCompletionData(enumPath, CancellationToken.None).Result;
+			enumAttributes = await schemaCompletionData.GetAttributeCompletionData(enumPath, CancellationToken.None);
 			
 			// Set up xs:all path.
 			allElementPath = new XmlElementPath();
@@ -95,7 +98,7 @@ namespace MonoDevelop.Xml.Tests.Schema
 			allElementPath.Elements.Add(new QualifiedName("all", namespaceURI, prefix));
 		
 			// Get child elements of the xs:all element.
-			allElementChildElements = schemaCompletionData.GetChildElementCompletionData(allElementPath, CancellationToken.None).Result;
+			allElementChildElements = await schemaCompletionData.GetChildElementCompletionData(allElementPath, CancellationToken.None);
 			
 			// Set up the path to the annotation element that is a child of xs:all.
 			allElementAnnotationPath = new XmlElementPath();
@@ -106,25 +109,28 @@ namespace MonoDevelop.Xml.Tests.Schema
 			allElementAnnotationPath.Elements.Add(new QualifiedName("annotation", namespaceURI, prefix));
 			
 			// Get the xs:all annotation child element.
-			allElementAnnotationChildElements = schemaCompletionData.GetChildElementCompletionData(allElementAnnotationPath, CancellationToken.None).Result;
+			allElementAnnotationChildElements = await schemaCompletionData.GetChildElementCompletionData(allElementAnnotationPath, CancellationToken.None);
 		}
 		
 		[Test]
-		public void ChoiceHasAttributes()
+		public async Task ChoiceHasAttributes()
 		{
+			await Init ();
 			Assert.IsTrue(choiceAttributes.Count > 0, "Should have at least one attribute.");
 		}
 		
 		[Test]
-		public void ChoiceHasMinOccursAttribute()
+		public async Task ChoiceHasMinOccursAttribute()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(choiceAttributes, "minOccurs"),
 			              "Attribute minOccurs missing.");
 		}
 		
 		[Test]
-		public void ChoiceHasMaxOccursAttribute()
+		public async Task ChoiceHasMaxOccursAttribute()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(choiceAttributes, "maxOccurs"),
 			              "Attribute maxOccurs missing.");
 		}
@@ -133,8 +139,9 @@ namespace MonoDevelop.Xml.Tests.Schema
 		/// Tests that prohibited attributes are not added to the completion data.
 		/// </summary>
 		[Test]
-		public void ChoiceDoesNotHaveNameAttribute()
+		public async Task ChoiceDoesNotHaveNameAttribute()
 		{
+			await Init ();
 			Assert.IsFalse(SchemaTestFixtureBase.Contains(choiceAttributes, "name"),
 			               "Attribute name should not exist.");
 		}
@@ -143,8 +150,9 @@ namespace MonoDevelop.Xml.Tests.Schema
 		/// Tests that prohibited attributes are not added to the completion data.
 		/// </summary>
 		[Test]
-		public void ChoiceDoesNotHaveRefAttribute()
+		public async Task ChoiceDoesNotHaveRefAttribute()
 		{
+			await Init ();
 			Assert.IsFalse(SchemaTestFixtureBase.Contains(choiceAttributes, "ref"),
 			               "Attribute ref should not exist.");
 		}	
@@ -153,57 +161,65 @@ namespace MonoDevelop.Xml.Tests.Schema
 		/// Duplicate attribute test.
 		/// </summary>
 		[Test]
-		public void ElementNameAttributeAppearsOnce()
+		public async Task ElementNameAttributeAppearsOnce()
 		{
+			await Init ();
 			int nameAttributeCount = SchemaTestFixtureBase.GetItemCount(elementAttributes, "name");
 			Assert.AreEqual(1, nameAttributeCount, "Should be only one name attribute.");
 		}
 		
 		[Test]
-		public void ElementHasIdAttribute()
+		public async Task ElementHasIdAttribute()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(elementAttributes, "id"), 
 			              "id attribute missing.");
 		}		
 		
 		[Test]
-		public void SimpleRestrictionTypeHasEnumChildElement()
+		public async Task SimpleRestrictionTypeHasEnumChildElement()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(simpleEnumElements, "xs:enumeration"),
 			              "enumeration element missing.");			
 		}
 		
 		[Test]
-		public void EnumHasValueAttribute()
+		public async Task EnumHasValueAttribute()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(enumAttributes, "value"),
 			              "Attribute value missing.");			
 		}
 		
 		[Test]
-		public void ElementFormDefaultAttributeHasValueQualified()
+		public async Task ElementFormDefaultAttributeHasValueQualified()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(elementFormDefaultAttributeValues, "qualified"),
 			              "Attribute value 'qualified' missing.");
 		}
 		
 		[Test]
-		public void BlockDefaultAttributeHasValueAll()
+		public async Task BlockDefaultAttributeHasValueAll()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(blockDefaultAttributeValues, "#all"),
 			              "Attribute value '#all' missing.");
 		}		
 		
 		[Test]
-		public void BlockDefaultAttributeHasValueExtension()
+		public async Task BlockDefaultAttributeHasValueExtension()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(blockDefaultAttributeValues, "extension"),
 			              "Attribute value 'extension' missing.");
 		}		
 		
 		[Test]
-		public void FinalDefaultAttributeHasValueList()
+		public async Task FinalDefaultAttributeHasValueList()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(finalDefaultAttributeValues, "list"),
 			              "Attribute value 'list' missing.");
 		}
@@ -213,36 +229,41 @@ namespace MonoDevelop.Xml.Tests.Schema
 		/// </summary>
 		[Test]
 		[Ignore]
-		public void MixedAttributeHasValueTrue()
+		public async Task MixedAttributeHasValueTrue()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(mixedAttributeValues, "true"),
 			              "Attribute value 'true' missing.");
 		}
 		
 		[Test]
-		public void MaxOccursAttributeHasValueUnbounded()
+		public async Task MaxOccursAttributeHasValueUnbounded()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(maxOccursAttributeValues, "unbounded"),
 			              "Attribute value 'unbounded' missing.");
 		}
 		
 		[Test]
-		public void AllElementHasAnnotationChildElement()
+		public async Task AllElementHasAnnotationChildElement()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(allElementChildElements, "xs:annotation"),
 			              "Should have an annotation child element.");
 		}
 		
 		[Test]
-		public void AllElementHasElementChildElement()
+		public async Task AllElementHasElementChildElement()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(allElementChildElements, "xs:element"),
 			              "Should have an child element called 'element'.");
 		}
 		
 		[Test]
-		public void AllElementAnnotationHasDocumentationChildElement()
+		public async Task AllElementAnnotationHasDocumentationChildElement()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(allElementAnnotationChildElements, "xs:documentation"),
 			              "Should have documentation child element.");
 		}				

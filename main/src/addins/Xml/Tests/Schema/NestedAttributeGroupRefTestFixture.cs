@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
@@ -13,64 +14,74 @@ namespace MonoDevelop.Xml.Tests.Schema
 	{
 		CompletionDataList attributeCompletionData;
 		
-		public override void FixtureInit()
+		async Task Init ()
 		{
+			if (attributeCompletionData != null)
+				return;
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
-			attributeCompletionData = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
+			attributeCompletionData = await SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None);
 		}
 		
 		[Test]
-		public void AttributeCount()
+		public async Task AttributeCount()
 		{
+			await Init ();
 			Assert.AreEqual(7, attributeCompletionData.Count, "Should be 7 attributes.");
 		}
 		
 		[Test]
-		public void NameAttribute()
+		public async Task NameAttribute()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "name"), 
 			              "Attribute name does not exist.");
 		}		
 		
 		[Test]
-		public void IdAttribute()
+		public async Task IdAttribute()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "id"), 
 			              "Attribute id does not exist.");
 		}		
 		
 		[Test]
-		public void StyleAttribute()
+		public async Task StyleAttribute()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "style"), 
 			              "Attribute style does not exist.");
 		}	
 		
 		[Test]
-		public void TitleAttribute()
+		public async Task TitleAttribute()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "title"), 
 			              "Attribute title does not exist.");
 		}		
 		
 		[Test]
-		public void BaseIdAttribute()
+		public async Task BaseIdAttribute()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "baseid"), 
 			              "Attribute baseid does not exist.");
 		}		
 		
 		[Test]
-		public void BaseStyleAttribute()
+		public async Task BaseStyleAttribute()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "basestyle"), 
 			              "Attribute basestyle does not exist.");
 		}	
 		
 		[Test]
-		public void BaseTitleAttribute()
+		public async Task BaseTitleAttribute()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "basetitle"), 
 			              "Attribute basetitle does not exist.");
 		}			

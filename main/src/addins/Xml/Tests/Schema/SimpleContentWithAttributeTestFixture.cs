@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
@@ -13,17 +14,21 @@ namespace MonoDevelop.Xml.Tests.Schema
 	{
 		CompletionDataList attributeCompletionData;
 		
-		public override void FixtureInit()
+		async Task Init ()
 		{
+			if (attributeCompletionData != null)
+				return;
+			
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foo", "http://foo.com"));
 			
-			attributeCompletionData = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
+			attributeCompletionData = await SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None);
 		}
 		
 		[Test]
-		public void BarAttributeExists()
+		public async Task BarAttributeExists()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "bar"),
 			              "Attribute bar does not exist.");
 		}		

@@ -2,6 +2,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Xml.Tests.Schema
 {
@@ -15,49 +16,57 @@ namespace MonoDevelop.Xml.Tests.Schema
 		CompletionDataList fileElementAttributes;
 		CompletionDataList fileElementChildren;
 		
-		public override void FixtureInit()
+		async Task Init ()
 		{
+			if (fileElementAttributes != null)
+				return;
+			
 			var path = new XmlElementPath();
 			
 			path.Elements.Add(new QualifiedName("project", "http://foo"));
 			path.Elements.Add(new QualifiedName("items", "http://foo"));
 
-			itemsElementChildren = SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
+			itemsElementChildren = await SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None);
 			
 			path.Elements.Add(new QualifiedName("file", "http://foo"));
 			
-			fileElementAttributes = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
-			fileElementChildren = SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
+			fileElementAttributes = await SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None);
+			fileElementChildren = await SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None);
 		}
 		
 		[Test]
-		public void ItemsElementHasTwoChildElements()
+		public async Task ItemsElementHasTwoChildElements()
 		{
+			await Init ();
 			Assert.AreEqual(2, itemsElementChildren.Count, 
 			                "Should be 2 child elements.");
 		}
 		
 		[Test]
-		public void ReferenceElementIsChildOfItemsElement()
+		public async Task ReferenceElementIsChildOfItemsElement()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(itemsElementChildren, "reference"));
 		}
 		
 		[Test]
-		public void FileElementIsChildOfItemsElement()
+		public async Task FileElementIsChildOfItemsElement()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(itemsElementChildren, "file"));
 		}
 		
 		[Test]
-		public void FileElementHasAttributeNamedType()
+		public async Task FileElementHasAttributeNamedType()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(fileElementAttributes, "type"));
 		}
 		
 		[Test]
-		public void FileElementHasTwoChildElements()
+		public async Task FileElementHasTwoChildElements()
 		{
+			await Init ();
 			Assert.AreEqual(2, fileElementChildren.Count, "Should be 2 child elements.");
 		}
 		

@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
@@ -15,36 +16,42 @@ namespace MonoDevelop.Xml.Tests.Schema
 		CompletionDataList childElementCompletionData;
 		CompletionDataList attributeCompletionData;
 		
-		public override void FixtureInit()
+		async Task Init ()
 		{
+			if (attributeCompletionData != null)
+				return;
+			
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 
 			attributeCompletionData = 
-				SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
+				await SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None);
 
 			childElementCompletionData = 
-				SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
+				await SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None);
 		}
 		
 		[Test]
-		public void NamespaceUri()
+		public async Task NamespaceUri()
 		{
+			await Init ();
 			Assert.AreEqual("http://www.w3schools.com", 
 			                SchemaCompletionData.NamespaceUri,
 			                "Unexpected namespace.");
 		}
 		
 		[Test]
-		public void NoteElementHasNoAttributes()
+		public async Task NoteElementHasNoAttributes()
 		{
+			await Init ();
 			Assert.AreEqual(0, attributeCompletionData.Count, 
 			                "Not expecting any attributes.");
 		}
 		
 		[Test]
-		public void NoteElementHasNoChildElements()
+		public async Task NoteElementHasNoChildElements()
 		{
+			await Init ();
 			Assert.AreEqual(0, childElementCompletionData.Count, "" +
 			                "Not expecting any child elements.");
 		}

@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
@@ -14,17 +15,21 @@ namespace MonoDevelop.Xml.Tests.Schema
 	{
 		CompletionDataList fooChildElementCompletionData;
 		
-		public override void FixtureInit()
+		async Task Init ()
 		{
+			if (fooChildElementCompletionData != null)
+				return;
+			
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foo", "http://foo.com"));
 			
-			fooChildElementCompletionData = SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
+			fooChildElementCompletionData = await SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None);
 		}
 				
 		[Test]
-		public void BarElementDocumentation()
+		public async Task BarElementDocumentation()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.ContainsDescription(fooChildElementCompletionData, "bar", "Documentation for bar element."),
 			              "Missing documentation for bar element");
 		}

@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
@@ -13,41 +14,48 @@ namespace MonoDevelop.Xml.Tests.Schema
 	{
 		CompletionDataList attributes;
 		
-		public override void FixtureInit()
+		async Task Init ()
 		{
+			if (attributes != null)
+				return;
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("html", "http://foo/xhtml"));
-			attributes = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
+			attributes = await SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None);
 		}
 		
 		[Test]
-		public void HtmlAttributeCount()
+		public async Task HtmlAttributeCount()
 		{
+			await Init ();
 			Assert.AreEqual(4, attributes.Count, 
 			                "Should be 4 attributes.");
 		}
 		
 		[Test]
-		public void HtmlLangAttribute()
+		public async Task HtmlLangAttribute()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributes, "lang"), "Attribute lang not found.");
 		}
 		
 		[Test]
-		public void HtmlIdAttribute()
+		public async Task HtmlIdAttribute()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributes, "id"), "Attribute id not found.");
 		}		
 		
 		[Test]
-		public void HtmlDirAttribute()
+		public async Task HtmlDirAttribute()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributes, "dir"), "Attribute dir not found.");
 		}			
 		
 		[Test]
-		public void HtmlXmlLangAttribute()
+		public async Task HtmlXmlLangAttribute()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributes, "xml:lang"), "Attribute xml:lang not found.");
 		}				
 		

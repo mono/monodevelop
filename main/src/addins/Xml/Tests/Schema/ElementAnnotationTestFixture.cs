@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
@@ -15,25 +16,30 @@ namespace MonoDevelop.Xml.Tests.Schema
 		CompletionDataList fooChildElementCompletionData;
 		CompletionDataList rootElementCompletionData;
 		
-		public override void FixtureInit()
+		async Task Init ()
 		{
-			rootElementCompletionData = SchemaCompletionData.GetElementCompletionData(CancellationToken.None).Result;
+			if (rootElementCompletionData != null)
+				return;
+			
+			rootElementCompletionData = await SchemaCompletionData.GetElementCompletionData(CancellationToken.None);
 			
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foo", "http://foo.com"));
 			
-			fooChildElementCompletionData = SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
+			fooChildElementCompletionData = await SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None);
 		}
 				
 		[Test]
-		public void RootElementDocumentation()
+		public async Task RootElementDocumentation()
 		{
+			await Init ();
 			Assert.AreEqual("Documentation for foo element.", ((MonoDevelop.Ide.CodeCompletion.CompletionData)rootElementCompletionData[0]).Description);
 		}
 		
 		[Test]
-		public void FooChildElementDocumentation()
+		public async Task FooChildElementDocumentation()
 		{
+			await Init ();
 			Assert.AreEqual("Documentation for bar element.", ((MonoDevelop.Ide.CodeCompletion.CompletionData)fooChildElementCompletionData[0]).Description);
 		}
 		

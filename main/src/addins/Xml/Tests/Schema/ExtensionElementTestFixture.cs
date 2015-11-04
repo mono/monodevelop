@@ -2,6 +2,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Xml.Tests.Schema
 {
@@ -19,59 +20,66 @@ namespace MonoDevelop.Xml.Tests.Schema
 		//CompletionDataList schemaAttributes;
 		CompletionDataList fooAttributes;
 		
-		public override void FixtureInit()
+		async Task Init ()
 		{
+			if (schemaChildElements != null)
+				return;
+			
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("schema", "http://www.w3.org/2001/XMLSchema"));
 			
-			schemaChildElements = SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
+			schemaChildElements = await SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None);
 			//schemaAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
 			
 			// Get include elements attributes.
 			path.Elements.Add(new QualifiedName("include", "http://www.w3.org/2001/XMLSchema"));
-			includeAttributes = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
+			includeAttributes = await SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None);
 		
 			// Get annotation element info.
 			path.Elements.RemoveAt(path.Elements.Count - 1);
 			path.Elements.Add(new QualifiedName("annotation", "http://www.w3.org/2001/XMLSchema"));
 			
-			annotationChildElements = SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
-			annotationAttributes = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
+			annotationChildElements = await SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None);
+			annotationAttributes = await SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None);
 		
 			// Get app info attributes.
 			path.Elements.Add(new QualifiedName("appinfo", "http://www.w3.org/2001/XMLSchema"));
-			appInfoAttributes = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
+			appInfoAttributes = await SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None);
 			
 			// Get foo attributes.
 			path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foo", "http://www.w3.org/2001/XMLSchema"));
-			fooAttributes = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
+			fooAttributes = await SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None);
 		}
 		
 		[Test]
-		public void SchemaHasSevenChildElements()
+		public async Task SchemaHasSevenChildElements()
 		{
+			await Init ();
 			Assert.AreEqual(7, schemaChildElements.Count, 
 			                "Should be 7 child elements.");
 		}
 		
 		[Test]
-		public void SchemaChildElementIsInclude()
+		public async Task SchemaChildElementIsInclude()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(schemaChildElements, "include"), 
 			              "Should have a child element called include.");
 		}
 		
 		[Test]
-		public void SchemaChildElementIsImport()
+		public async Task SchemaChildElementIsImport()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(schemaChildElements, "import"), 
 			              "Should have a child element called import.");
 		}		
 		
 		[Test]
-		public void SchemaChildElementIsNotation()
+		public async Task SchemaChildElementIsNotation()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(schemaChildElements, "notation"), 
 			              "Should have a child element called notation.");
 		}		
@@ -80,68 +88,78 @@ namespace MonoDevelop.Xml.Tests.Schema
 		/// Tests that the extended element has the base type's attributes. 
 		/// </summary>
 		[Test]
-		public void FooHasClassAttribute()
+		public async Task FooHasClassAttribute()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(fooAttributes, "class"), 
 			              "Should have an attribute called class.");						
 		}
 		
 		[Test]
-		public void AnnotationElementHasOneAttribute()
+		public async Task AnnotationElementHasOneAttribute()
 		{
+			await Init ();
 			Assert.AreEqual(1, annotationAttributes.Count, "Should be one attribute.");
 		}
 		
 		[Test]
-		public void AnnotationHasIdAttribute()
+		public async Task AnnotationHasIdAttribute()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(annotationAttributes, "id"), 
 			              "Should have an attribute called id.");			
 		}
 		
 		[Test]
-		public void AnnotationHasTwoChildElements()
+		public async Task AnnotationHasTwoChildElements()
 		{
+			await Init ();
 			Assert.AreEqual(2, annotationChildElements.Count, 
 			                "Should be 2 child elements.");
 		}
 		
 		[Test]
-		public void AnnotationChildElementIsAppInfo()
+		public async Task AnnotationChildElementIsAppInfo()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(annotationChildElements, "appinfo"), 
 			              "Should have a child element called appinfo.");
 		}
 		
 		[Test]
-		public void AnnotationChildElementIsDocumentation()
+		public async Task AnnotationChildElementIsDocumentation()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(annotationChildElements, "documentation"), 
 			              "Should have a child element called documentation.");
 		}		
 		
 		[Test]
-		public void IncludeElementHasOneAttribute()
+		public async Task IncludeElementHasOneAttribute()
 		{
+			await Init ();
 			Assert.AreEqual(1, includeAttributes.Count, "Should be one attribute.");
 		}
 		
 		[Test]
-		public void IncludeHasSchemaLocationAttribute()
+		public async Task IncludeHasSchemaLocationAttribute()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(includeAttributes, "schemaLocation"), 
 			              "Should have an attribute called schemaLocation.");			
 		}	
 		
 		[Test]
-		public void AppInfoElementHasOneAttribute()
+		public async Task AppInfoElementHasOneAttribute()
 		{
+			await Init ();
 			Assert.AreEqual(1, appInfoAttributes.Count, "Should be one attribute.");
 		}
 		
 		[Test]
-		public void AppInfoHasIdAttribute()
+		public async Task AppInfoHasIdAttribute()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(appInfoAttributes, "id"), 
 			              "Should have an attribute called id.");			
 		}		

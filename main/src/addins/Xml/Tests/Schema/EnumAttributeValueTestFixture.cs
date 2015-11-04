@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
@@ -13,30 +14,35 @@ namespace MonoDevelop.Xml.Tests.Schema
 	{
 		CompletionDataList attributeValues;
 		
-		public override void FixtureInit()
+		async Task Init ()
 		{
+			if (attributeValues != null)
+				return;
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foo", "http://foo.com"));
-			attributeValues = SchemaCompletionData.GetAttributeValueCompletionData(path, "id", CancellationToken.None).Result;
+			attributeValues = await SchemaCompletionData.GetAttributeValueCompletionData(path, "id", CancellationToken.None);
 		}
 		
 		[Test]
-		public void IdAttributeHasValueOne()
+		public async Task IdAttributeHasValueOne()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeValues, "one"),
 			              "Missing attribute value 'one'");
 		}
 		
 		[Test]
-		public void IdAttributeHasValueTwo()
+		public async Task IdAttributeHasValueTwo()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeValues, "two"),
 			              "Missing attribute value 'two'");
 		}		
 		
 		[Test]
-		public void IdAttributeValueCount()
+		public async Task IdAttributeValueCount()
 		{
+			await Init ();
 			Assert.AreEqual(2, attributeValues.Count, "Expecting 2 attribute values.");
 		}
 		

@@ -150,8 +150,13 @@ namespace MonoDevelop.Xml.Completion
 		public bool IsLoaded {
 			get { return loaded; }
 		}
-		
-		public Task EnsureLoaded ()
+
+		public void EnsureLoaded ()
+		{
+			EnsureLoadedAsync ().Wait ();
+		}
+
+		public Task EnsureLoadedAsync ()
 		{
 			if (loaded)
 				return Task.FromResult (0);
@@ -178,7 +183,7 @@ namespace MonoDevelop.Xml.Completion
 		
 		public async Task<CompletionDataList> GetChildElementCompletionData (string tagName, CancellationToken token)
 		{
-			await EnsureLoaded ();
+			await EnsureLoadedAsync ();
 			
 			var list = new XmlCompletionDataList ();
 			var element = FindElement (tagName);
@@ -189,7 +194,7 @@ namespace MonoDevelop.Xml.Completion
 		
 		public async Task<CompletionDataList> GetAttributeCompletionData (string tagName, CancellationToken token)
 		{
-			await EnsureLoaded ();
+			await EnsureLoadedAsync ();
 			
 			var list = new XmlCompletionDataList ();
 			var element = FindElement (tagName);
@@ -202,7 +207,7 @@ namespace MonoDevelop.Xml.Completion
 		
 		public async Task<CompletionDataList> GetAttributeValueCompletionData (string tagName, string name, CancellationToken token)
 		{
-			await EnsureLoaded ();
+			await EnsureLoadedAsync ();
 			
 			var list = new XmlCompletionDataList ();
 			var element = FindElement (tagName);
@@ -226,7 +231,7 @@ namespace MonoDevelop.Xml.Completion
 		/// </summary>
 		public async Task<CompletionDataList> GetElementCompletionData (string namespacePrefix, CancellationToken token)
 		{
-			await EnsureLoaded ();
+			await EnsureLoadedAsync ();
 			
 			var data = new XmlCompletionDataList ();
 			foreach (XmlSchemaElement element in schema.Elements.Values) {
@@ -245,7 +250,7 @@ namespace MonoDevelop.Xml.Completion
 		/// </summary>
 		public async Task<CompletionDataList> GetAttributeCompletionData (XmlElementPath path, CancellationToken token)
 		{
-			await EnsureLoaded ();
+			await EnsureLoadedAsync ();
 			
 			var data = new XmlCompletionDataList (path.Namespaces);
 			var element = FindElement (path);
@@ -262,7 +267,7 @@ namespace MonoDevelop.Xml.Completion
 		/// </summary>
 		public async Task<CompletionDataList> GetChildElementCompletionData (XmlElementPath path, CancellationToken token)
 		{
-			await EnsureLoaded ();
+			await EnsureLoadedAsync ();
 			
 			var data = new XmlCompletionDataList (path.Namespaces);
 			var element = FindElement (path);
@@ -278,7 +283,7 @@ namespace MonoDevelop.Xml.Completion
 		/// </summary>
 		public async Task<CompletionDataList> GetAttributeValueCompletionData (XmlElementPath path, string name, CancellationToken token)
 		{
-			await EnsureLoaded ();
+			await EnsureLoadedAsync ();
 			
 			var data = new XmlCompletionDataList (path.Namespaces);
 			var element = FindElement (path);

@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System.Xml;
 using MonoDevelop.Xml.Tests.Utils;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Xml.Tests.Schema
 {
@@ -18,9 +19,11 @@ namespace MonoDevelop.Xml.Tests.Schema
 		CompletionDataList h1Attributes;
 		string namespaceURI = "http://www.w3.org/1999/xhtml";
 		
-		[TestFixtureSetUp]
-		public void FixtureInit()
+		async Task Init ()
 		{
+			if (schemaCompletionData != null)
+				return;
+			
 			XmlTextReader reader = ResourceManager.GetXhtmlStrictSchema();
 			schemaCompletionData = new XmlSchemaCompletionData(reader);
 			
@@ -31,12 +34,13 @@ namespace MonoDevelop.Xml.Tests.Schema
 			h1Path.Elements.Add(new QualifiedName("h1", namespaceURI));
 			
 			// Get h1 element info.
-			h1Attributes = schemaCompletionData.GetAttributeCompletionData(h1Path, CancellationToken.None).Result;
+			h1Attributes = await schemaCompletionData.GetAttributeCompletionData(h1Path, CancellationToken.None);
 		}
 		
 		[Test]
-		public void H1HasAttributes()
+		public async Task H1HasAttributes()
 		{
+			await Init ();
 			Assert.IsTrue(h1Attributes.Count > 0, "Should have at least one attribute.");
 		}
 	}

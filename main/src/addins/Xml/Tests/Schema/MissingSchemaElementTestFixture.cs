@@ -2,6 +2,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Xml.Tests.Schema
 {
@@ -10,17 +11,20 @@ namespace MonoDevelop.Xml.Tests.Schema
 	{
 		CompletionDataList barElementAttributes;
 		
-		public override void FixtureInit()
+		async Task Init ()
 		{
+			if (barElementAttributes != null)
+				return;
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("root", "http://foo"));
 			path.Elements.Add(new QualifiedName("bar", "http://foo"));
-			barElementAttributes = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
+			barElementAttributes = await SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None);
 		}
 		
 		[Test]
-		public void BarHasOneAttribute()
+		public async Task BarHasOneAttribute()
 		{
+			await Init ();
 			Assert.AreEqual(1, barElementAttributes.Count, "Should have 1 attribute.");
 		}
 		

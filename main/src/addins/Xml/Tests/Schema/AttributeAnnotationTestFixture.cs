@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
@@ -15,26 +16,31 @@ namespace MonoDevelop.Xml.Tests.Schema
 		CompletionDataList fooAttributeCompletionData;
 		CompletionDataList barAttributeCompletionData;
 		
-		public override void FixtureInit()
-		{			
+		async Task Init ()
+		{
+			if (fooAttributeCompletionData != null)
+				return;
+			
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foo", "http://foo.com"));
 			
-			fooAttributeCompletionData = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
+			fooAttributeCompletionData = await SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None);
 
 			path.Elements.Add(new QualifiedName("bar", "http://foo.com"));
-			barAttributeCompletionData = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
+			barAttributeCompletionData = await SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None);
 		}
 				
 		[Test]
-		public void FooAttributeDocumentation()
+		public async Task FooAttributeDocumentation()
 		{
+			await Init ();
 			Assert.AreEqual("Documentation for foo attribute.", ((MonoDevelop.Ide.CodeCompletion.CompletionData)fooAttributeCompletionData[0]).Description);
 		}
 		
 		[Test]
-		public void BarAttributeDocumentation()
+		public async Task BarAttributeDocumentation()
 		{
+			await Init ();
 			Assert.AreEqual("Documentation for bar attribute.", ((MonoDevelop.Ide.CodeCompletion.CompletionData)barAttributeCompletionData[0]).Description);
 		}
 		

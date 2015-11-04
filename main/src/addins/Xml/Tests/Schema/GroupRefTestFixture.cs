@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
@@ -14,57 +15,66 @@ namespace MonoDevelop.Xml.Tests.Schema
 		CompletionDataList childElements;
 		CompletionDataList paraAttributes;
 		
-		public override void FixtureInit()
+		async Task Init ()
 		{
+			if (childElements != null)
+				return;
+			
 			XmlElementPath path = new XmlElementPath();
 			
 			path.Elements.Add(new QualifiedName("html", "http://foo/xhtml"));
 			path.Elements.Add(new QualifiedName("body", "http://foo/xhtml"));
 			
-			childElements = SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None).Result;
+			childElements = await SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None);
 			
 			path.Elements.Add(new QualifiedName("p", "http://foo/xhtml"));
-			paraAttributes = SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None).Result;
+			paraAttributes = await SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None);
 		}
 		
 		[Test]
-		public void BodyHasFourChildElements()
+		public async Task BodyHasFourChildElements()
 		{
+			await Init ();
 			Assert.AreEqual(4, childElements.Count, 
 			                "Should be 4 child elements.");
 		}
 		
 		[Test]
-		public void BodyChildElementForm()
+		public async Task BodyChildElementForm()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(childElements, "form"), 
 			              "Should have a child element called form.");
 		}
 		
 		[Test]
-		public void BodyChildElementPara()
+		public async Task BodyChildElementPara()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(childElements, "p"), 
 			              "Should have a child element called p.");
 		}		
 		
 		[Test]
-		public void BodyChildElementTest()
+		public async Task BodyChildElementTest()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(childElements, "test"), 
 			              "Should have a child element called test.");
 		}		
 		
 		[Test]
-		public void BodyChildElementId()
+		public async Task BodyChildElementId()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(childElements, "id"), 
 			              "Should have a child element called id.");
 		}		
 		
 		[Test]
-		public void ParaElementHasIdAttribute()
+		public async Task ParaElementHasIdAttribute()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(paraAttributes, "id"), 
 			              "Should have an attribute called id.");			
 		}

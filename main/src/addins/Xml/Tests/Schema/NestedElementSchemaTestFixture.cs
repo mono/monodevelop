@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
@@ -11,23 +12,28 @@ namespace MonoDevelop.Xml.Tests.Schema
 		XmlElementPath noteElementPath;
 		CompletionDataList elementData;
 		
-		public override void FixtureInit()
-		{			
+		async Task Init ()
+		{
+			if (elementData != null)
+				return;
+			
 			noteElementPath = new XmlElementPath();
 			noteElementPath.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 
-			elementData = SchemaCompletionData.GetChildElementCompletionData(noteElementPath, CancellationToken.None).Result; 
+			elementData = await SchemaCompletionData.GetChildElementCompletionData(noteElementPath, CancellationToken.None); 
 		}
 		
 		[Test]
-		public void NoteHasOneChildElementCompletionDataItem()
+		public async Task NoteHasOneChildElementCompletionDataItem()
 		{
+			await Init ();
 			Assert.AreEqual(1, elementData.Count, "Should be one child element completion data item.");
 		}
 		
 		[Test]
-		public void NoteChildElementCompletionDataText()
+		public async Task NoteChildElementCompletionDataText()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(elementData, "text"),
 			              "Should be one child element called text.");
 		}		

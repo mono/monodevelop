@@ -14,46 +14,53 @@ namespace MonoDevelop.Xml.Tests.Schema
 		XmlElementPath shipToPath;
 		XmlElementPath shipOrderPath;
 		
-		public override void FixtureInit()
+		async Task Init ()
 		{
+			if (shipOrderAttributes != null)
+				return;
+			
 			// Get shipto attributes.
 			shipToPath = new XmlElementPath();
 			QualifiedName shipOrderName = new QualifiedName("shiporder", "http://www.w3schools.com");
 			shipToPath.Elements.Add(shipOrderName);
 			shipToPath.Elements.Add(new QualifiedName("shipto", "http://www.w3schools.com"));
 
-			shipToAttributes = SchemaCompletionData.GetAttributeCompletionData(shipToPath, CancellationToken.None).Result;
+			shipToAttributes = await SchemaCompletionData.GetAttributeCompletionData(shipToPath, CancellationToken.None);
 			
 			// Get shiporder attributes.
 			shipOrderPath = new XmlElementPath();
 			shipOrderPath.Elements.Add(shipOrderName);
 			
-			shipOrderAttributes = SchemaCompletionData.GetAttributeCompletionData(shipOrderPath, CancellationToken.None).Result;
+			shipOrderAttributes = await SchemaCompletionData.GetAttributeCompletionData(shipOrderPath, CancellationToken.None);
 			
 		}
 		
 		[Test]
-		public void OneShipOrderAttribute()
+		public async Task OneShipOrderAttribute()
 		{
+			await Init ();
 			Assert.AreEqual(1, shipOrderAttributes.Count, "Should only have one shiporder attribute.");
 		}		
 		
 		[Test]
-		public void ShipOrderAttributeName()
+		public async Task ShipOrderAttributeName()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(shipOrderAttributes,"id"),
 			                "Incorrect shiporder attribute name.");
 		}
 
 		[Test]
-		public void OneShipToAttribute()
+		public async Task OneShipToAttribute()
 		{
+			await Init ();
 			Assert.AreEqual(1, shipToAttributes.Count, "Should only have one shipto attribute.");
 		}
 		
 		[Test]
-		public void ShipToAttributeName()
+		public async Task ShipToAttributeName()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(shipToAttributes, "address"),
 			                "Incorrect shipto attribute name.");
 		}					
@@ -61,6 +68,7 @@ namespace MonoDevelop.Xml.Tests.Schema
 		[Test]
 		public async Task ShipOrderChildElementsCount()
 		{
+			await Init ();
 			Assert.AreEqual(1, (await SchemaCompletionData.GetChildElementCompletionData(shipOrderPath, CancellationToken.None)).Count, 
 			                "Should be one child element.");
 		}
@@ -68,6 +76,7 @@ namespace MonoDevelop.Xml.Tests.Schema
 		[Test]
 		public async Task ShipOrderHasShipToChildElement()
 		{
+			await Init ();
 			CompletionDataList data = await SchemaCompletionData.GetChildElementCompletionData(shipOrderPath, CancellationToken.None);
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(data, "shipto"), 
 			                "Incorrect child element name.");
@@ -76,6 +85,7 @@ namespace MonoDevelop.Xml.Tests.Schema
 		[Test]
 		public async Task ShipToChildElementsCount()
 		{
+			await Init ();
 			Assert.AreEqual(2, (await SchemaCompletionData.GetChildElementCompletionData(shipToPath, CancellationToken.None)).Count, 
 			                "Should be 2 child elements.");
 		}		
@@ -83,6 +93,7 @@ namespace MonoDevelop.Xml.Tests.Schema
 		[Test]
 		public async Task ShipToHasNameChildElement()
 		{
+			await Init ();
 			CompletionDataList data = await SchemaCompletionData.GetChildElementCompletionData(shipToPath, CancellationToken.None);
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(data, "name"), 
 			                "Incorrect child element name.");
@@ -91,6 +102,7 @@ namespace MonoDevelop.Xml.Tests.Schema
 		[Test]
 		public async Task ShipToHasAddressChildElement()
 		{
+			await Init ();
 			CompletionDataList data = await SchemaCompletionData.GetChildElementCompletionData(shipToPath, CancellationToken.None);
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(data, "address"), 
 			                "Incorrect child element name.");
