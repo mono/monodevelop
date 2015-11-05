@@ -343,8 +343,8 @@ style "completion_scrollbar" = "scrollbar"
 	engine "xamarin"
 	{
 		roundness		= 1
-		contrast		= 0.5
-		trough_shades	= { 1.8, 1.8 }
+		contrast		= 0.0
+		trough_shades	= { 1.0, 1.0 }
 		#trough_border_shades	= { 1.5, 1.5 }
 	}
 }

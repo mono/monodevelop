@@ -287,21 +287,19 @@ style "wizard-dialog"
 
 style "scrollbar" = "default"
 {
-    #GtkScrollbar::has-forward-stepper = 0
-    #GtkScrollbar::has-backward-stepper = 0
+	fg[INSENSITIVE] = lighter (@base_color)   # inactive arrow
+	fg[NORMAL]      = @fg_color               # active arrow
 
-	fg[INSENSITIVE] = lighter (@bg_color)  # inactive arrow
-	fg[NORMAL]      = @base_color          # active arrow
-
-	#bg[NORMAL]      = "#ADA8A8"
-	#bg[INSENSITIVE] = "#ADA8A8"
-	bg[NORMAL]      = @fg_color
-	bg[INSENSITIVE] = "#ADA8A8"
+	bg[NORMAL]      = @fg_color               # default slider/stepper color
+	bg[INSENSITIVE] = @fg_color               # disabled slider/stepper color
+	bg[PRELIGHT]    = shade (0.8, @fg_color)  # hover slider/stepper color
+	bg[ACTIVE]      = @fg_color               # pressed stepper color
 
     engine "xamarin" {
-        arrowstyle = 0
-        #stepperstyle = 1
-        gradient_shades = { 0.9, 0.9, 0.97, 0.97 }
+        arrowstyle      = 0
+		contrast		= 0.0
+		stepperstyle    = 1
+		trough_shades	= { 1.0, 1.0 }
     }
 }
 
@@ -309,12 +307,8 @@ style "completion_scrollbar" = "scrollbar"
 {
     GtkScrollbar::has-forward-stepper = 0
     GtkScrollbar::has-backward-stepper = 0
-	bg[NORMAL] = @base_color
-
-	engine "xamarin"
-	{
-		trough_shades	= { 2.1, 2.1 }
-	}
+	bg[NORMAL]      = @base_color
+	bg[PRELIGHT]    = shade (1.3, @base_color)
 }
 
 style "progressbar" = "default"

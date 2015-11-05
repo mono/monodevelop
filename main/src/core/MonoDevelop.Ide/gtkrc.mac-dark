@@ -342,7 +342,7 @@ style "scrollbar" = "default"
     GtkRange::trough-border = 4
     GtkRange::trough-side-details = 0
 
-	bg[NORMAL] = "#ADA8A8"
+	bg[NORMAL] = @fg_color
 	#bg[ACTIVE] = @bg_color
 	#bg[PRELIGHT] = @bg_color
 	#bg[INSENSITIVE] = @bg_color
@@ -351,24 +351,18 @@ style "scrollbar" = "default"
 	#bg[INSENSITIVE] = shade (1.75, @bg_color)
 	#bg[SELECTED] = shade (1.75, @base_color)
 
-	engine "xamarin"
+    engine "xamarin"
 	{
 		roundness		= 1
-		border_shades	= { 1.0, 1.0 }
 		contrast		= 0.0
-		trough_shades	= { 0.8, 0.8 }
+		trough_shades	= { 1.0, 1.0 }
+		stepperstyle = 1
 	}
 }
 
 style "completion_scrollbar" = "scrollbar"
 {
 	bg[NORMAL] = @base_color
-
-	engine "xamarin"
-	{
-		trough_shades	= { 1.9, 1.9 }
-		trough_border_shades	= { 2.03, 2.03 }
-	}
 }
 
 style "progressbar" = "default"
