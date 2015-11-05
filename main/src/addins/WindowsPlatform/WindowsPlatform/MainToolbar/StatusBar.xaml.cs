@@ -173,9 +173,9 @@ namespace WindowsPlatform.MainToolbar
 		public void ShowMessage (IconId image, string message, bool isMarkup)
 		{
 			if (image.IsNull)
-				StatusImage = null;
-			else
-				StatusImage = image.GetStockIcon ().WithSize (Xwt.IconSize.Small).GetImageSource ();
+				image = BrandingService.StatusSteadyIconId;
+
+			StatusImage = image.GetStockIcon ().WithSize (Xwt.IconSize.Small).GetImageSource ();
 			Message = message;
 		}
 
