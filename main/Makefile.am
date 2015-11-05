@@ -21,7 +21,7 @@ clean-local: sln_clean
 
 restore-packages:
 	mozroots --import --sync
-	mono /usr/home/rhaley/git/monodevelop/main/external/nuget-binary/NuGet.exe restore
+	mono $(top_builddir)/main/external/nuget-binary/NuGet.exe restore
 
 vcrevision:
 	touch vcrevision

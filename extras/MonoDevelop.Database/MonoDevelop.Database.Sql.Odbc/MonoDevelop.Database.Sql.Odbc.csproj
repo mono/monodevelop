@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{38607664-F006-4187-A139-F0786BA33D2E}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -50,12 +50,10 @@
     <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
-      <Private>False</Private>
     </Reference>
     <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>

@@ -1612,8 +1612,8 @@ using Npgsql;
 					
 				using (IPooledDbConnection conn = connectionPool.Request ()) {
 					using (NpgsqlConnection internalConn = conn.DbConnection as NpgsqlConnection) {
-						int major = internalConn.ServerVersion.Major;
-						int minor = internalConn.ServerVersion.Minor;
+//						int major = internalConn.ServerVersion.Major;
+//						int minor = internalConn.ServerVersion.Minor;
 						try {
 							using (IDbCommand command = conn.CreateCommand (
 																		"SELECT datlastsysoid FROM pg_database Limit 1"))
@@ -1624,18 +1624,28 @@ using Npgsql;
 										throw new Exception ();
 							
 						} catch (Exception) {
-							if (major == 8)
+							switch (internalConn.ServerVersion) {
+								case "8.0":
 								lastSystemOID = 17137;
-							else if (major == 7 && minor == 1)
+								break;
+							case "7.1":
 								lastSystemOID = 18539;
-							else if (major == 7 && minor == 2)
+								break;
+
+							case "7.2":
 								lastSystemOID = 16554;
-							else if (major == 7 && minor == 3)
+								break;
+							case "7.3":
 								lastSystemOID = 16974;
-							else if (major == 7 && minor == 4)
+								break;
+							case "7.4":
 								lastSystemOID = 17137;
-							else
+								break;
+							default:
 								lastSystemOID = 17137;
+								break;
+							}						
+
 						}  finally {
 							conn.Release ();
 						}

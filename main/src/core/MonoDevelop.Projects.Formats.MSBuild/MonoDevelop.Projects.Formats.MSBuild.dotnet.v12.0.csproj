@@ -40,18 +40,12 @@
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.Build, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>$(MSBuildProgramFiles32)\MSBuild\12.0\Bin\Microsoft.Build.dll</HintPath>
-      <Private>False</Private>
-      <SpecificVersion>True</SpecificVersion>
     </Reference>
     <Reference Include="Microsoft.Build.Framework, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>$(MSBuildProgramFiles32)\MSBuild\12.0\Bin\Microsoft.Build.Framework.dll</HintPath>
-      <Private>False</Private>
-      <SpecificVersion>True</SpecificVersion>
     </Reference>
     <Reference Include="Microsoft.Build.Utilities.v12.0, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>$(MSBuildProgramFiles32)\MSBuild\12.0\Bin\Microsoft.Build.Utilities.v12.0.dll</HintPath>
-      <Private>False</Private>
-      <SpecificVersion>True</SpecificVersion>
     </Reference>
   </ItemGroup>
   <ItemGroup>

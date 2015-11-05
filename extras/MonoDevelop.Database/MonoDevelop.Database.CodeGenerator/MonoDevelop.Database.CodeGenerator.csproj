@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{D945526C-0897-4FE8-AAFD-29B4BAB4174F}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -52,18 +52,14 @@
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="Mono.Addins, Version=0.5.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
-      <Private>False</Private>
-      <Package>mono-addins</Package>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="MonoDevelop.Core, Version=2.2.0.0, Culture=neutral">
       <Package>monodevelop</Package>
-      <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="MonoDevelop.Ide, Version=2.2.0.0, Culture=neutral">
       <Package>monodevelop</Package>
-      <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="NRefactory, Version=2.1.1.0, Culture=neutral, PublicKeyToken=efe927acf176eea2">
@@ -71,7 +67,6 @@
     </Reference>
     <Reference Include="Mono.Cecil, Version=0.6.9.0, Culture=neutral">
       <Package>monodevelop</Package>
-      <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f">

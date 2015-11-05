@@ -569,7 +569,7 @@ namespace MonoDevelop.Core
 				}
 			}
 			else {
-				if (Syscall.rename (sourceFile, destFile) != 0) {
+				if (Stdlib.rename (sourceFile, destFile) != 0) {
 					switch (Stdlib.GetLastError ()) {
 					case Errno.EACCES:
 					case Errno.EPERM:
@@ -582,6 +582,9 @@ namespace MonoDevelop.Core
 						throw new FileNotFoundException ();
 					case Errno.ENAMETOOLONG:
 						throw new PathTooLongException ();
+					case Errno.EXDEV:
+						CrossFilesystemRename (sourceFile, destFile);
+						break;
 					default:
 						throw new IOException ();
 					}
@@ -589,6 +592,37 @@ namespace MonoDevelop.Core
 			}
 		}
 
+		/// <summary>
+		/// Moves a file when the source and destination are on different 
+		/// filesystems or devices.
+		/// </summary>
+		/// <param name="sourceFile">Source file.</param>
+		/// <param name="destFile">Destination file.</param>
+		private static void CrossFilesystemRename(string sourceFile, string destFile)
+		{
+			//copy the existing destfile to tmp
+			//move the sourceFile to the destFilename
+			//delete the old destFile contents
+			string tempFile = Path.Combine ("/tmp/", Path.GetRandomFileName () + ".tmp");
+			try{
+
+				InternalMoveFile (destFile, tempFile);
+				InternalMoveFile(sourceFile,destFile);
+				DeleteFile(tempFile);
+			}
+			catch
+			{
+				if (!File.Exists (destFile)) {
+					InternalMoveFile (tempFile, destFile);
+				}
+
+				if (File.Exists (tempFile)) {
+					DeleteFile(tempFile);
+				}
+
+				throw;
+			}
+		}
 		/// <summary>
 		/// Renames a directory
 		/// </summary>
