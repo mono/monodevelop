@@ -20,6 +20,7 @@ using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Ide.Tasks;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Media.Animation;
 
 namespace WindowsPlatform.MainToolbar
 {
@@ -65,8 +66,31 @@ namespace WindowsPlatform.MainToolbar
 			TaskService.Errors.TasksRemoved += updateHandler;
 		}
 
+		void OnProgressBarLoaded(object sender, RoutedEventArgs args)
+		{
+			var p = (ProgressBar)sender;
+			p.ApplyTemplate();
+
+			var color = new SolidColorBrush (new System.Windows.Media.Color {
+				A = 0xFF,
+				R = 0xB3,
+				G = 0xE7,
+				B = 0x70,
+			});
+
+			var target = p.Template.FindName("Animation", p);
+			var panel = target as Panel;
+			if (panel != null)
+				panel.Background = color;
+
+			var rect = target as Rectangle;
+			if (rect != null)
+				rect.Fill = color;
+		}
+
 		public bool AutoPulse {
-			get; set;
+			get { return ProgressBar.IsIndeterminate; }
+			set { ProgressBar.IsIndeterminate = value; }
 		}
 
 		public StatusBar MainContext
@@ -76,12 +100,14 @@ namespace WindowsPlatform.MainToolbar
 
 		public void BeginProgress (string name)
 		{
+			EndProgress();
 			ShowMessage (name);
 		}
 
 		public void BeginProgress (IconId image, string name)
 		{
-			ShowMessage (image, name);
+			EndProgress();
+			ShowMessage(image, name);
 		}
 
 		public StatusBarContext CreateContext ()
@@ -97,10 +123,13 @@ namespace WindowsPlatform.MainToolbar
 
 		public void EndProgress ()
 		{
+			oldWork = 0;
+            ProgressBar.BeginAnimation(System.Windows.Controls.Primitives.RangeBase.ValueProperty, null);
 		}
 
 		public void Pulse ()
 		{
+			// Nothing to do here.
 		}
 
 		static Pad sourcePad;
@@ -109,8 +138,19 @@ namespace WindowsPlatform.MainToolbar
 			sourcePad = pad;
 		}
 
+		double oldWork = 0;
 		public void SetProgressFraction (double work)
 		{
+			var anim = new DoubleAnimation
+			{
+				From = oldWork,
+				To = work,
+				Duration = TimeSpan.FromSeconds(0.2),
+				FillBehavior = FillBehavior.HoldEnd,
+			};
+			oldWork = work;
+
+			ProgressBar.BeginAnimation(System.Windows.Controls.Primitives.RangeBase.ValueProperty, anim, HandoffBehavior.SnapshotAndReplace);
 		}
 
 		public void ShowError (string error)

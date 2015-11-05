@@ -6,25 +6,31 @@
              xmlns:local="clr-namespace:WindowsPlatform.MainToolbar"
              mc:Ignorable="d" Background="Transparent">
     <Grid VerticalAlignment="Center" Height="26" Width="350" MinWidth="220" MaxWidth="700" UseLayoutRounding="True">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-        <TextBlock Grid.Column="1"
-            VerticalAlignment="Center"
-            Padding="7,1,0,2"
-            Foreground="{Binding TextBrush}"
-            Text="{Binding Message}"
-            UseLayoutRounding="True" />
-        <StackPanel x:Name="BuildResultPanel" Grid.Column="2" Visibility="{Binding BuildResultPanelVisibility}" VerticalAlignment="Center" Orientation="Horizontal" UseLayoutRounding="True">
-            <Image Source="{Binding BuildResultIcon}" MaxWidth="14" Margin="0,5,5,5" MaxHeight="14" UseLayoutRounding="True" />
-            <TextBlock
-            	Text="{Binding BuildResultCount}" 
-	            VerticalAlignment="Center"
-	            Padding="0,1,5,2" />
-        </StackPanel>
-        <StackPanel x:Name="StatusIconsPanel" Grid.Column="3" VerticalAlignment="Center" Orientation="Horizontal" UseLayoutRounding="True" />
+        <Grid>
+            <ProgressBar Minimum="0" Maximum="1" x:Name="ProgressBar" Loaded="OnProgressBarLoaded" />
+        </Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Image x:Name="StatusImageControl" Grid.Column="0" MaxWidth="14" Margin="5,5,0,5" MaxHeight="14" Source="{Binding StatusImage}" UseLayoutRounding="True" />
+            <TextBlock Grid.Column="1"
+                VerticalAlignment="Center"
+                Padding="7,1,0,2"
+                Foreground="{Binding TextBrush}"
+                Text="{Binding Message}"
+                UseLayoutRounding="True" />
+            <StackPanel x:Name="BuildResultPanel" Grid.Column="2" Visibility="{Binding BuildResultPanelVisibility}" VerticalAlignment="Center" Orientation="Horizontal" UseLayoutRounding="True">
+                <Image Source="{Binding BuildResultIcon}" MaxWidth="14" Margin="0,5,5,5" MaxHeight="14" UseLayoutRounding="True" />
+                <TextBlock
+            	    Text="{Binding BuildResultCount}" 
+	                VerticalAlignment="Center"
+	                Padding="0,1,5,2" />
+            </StackPanel>
+            <StackPanel x:Name="StatusIconsPanel" Grid.Column="3" VerticalAlignment="Center" Orientation="Horizontal" UseLayoutRounding="True" />
+        </Grid>
     </Grid>
 </UserControl>
