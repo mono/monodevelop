@@ -12,10 +12,9 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <Image x:Name="StatusImageControl" Grid.Column="0" MaxWidth="14" Margin="5,5,0,5" MaxHeight="14" Source="{Binding StatusImage}" UseLayoutRounding="True" />
         <TextBlock Grid.Column="1"
             VerticalAlignment="Center"
-            Padding="5,1,0,2"
+            Padding="7,1,0,2"
             Foreground="{Binding TextBrush}"
             Text="{Binding Message}"
             UseLayoutRounding="True" />
