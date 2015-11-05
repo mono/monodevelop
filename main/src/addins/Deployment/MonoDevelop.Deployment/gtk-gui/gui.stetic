@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
@@ -237,9 +237,10 @@
               <widget class="Gtk.VBox" id="vbox2">
                 <property name="MemberName" />
                 <child>
-                  <widget class="Gtk.Image" id="image2">
+                  <widget class="MonoDevelop.Components.ImageView" id="image2">
                     <property name="MemberName" />
-                    <property name="Pixbuf">resource:package-48.png</property>
+                    <property name="IconId">md-package</property>
+                    <property name="IconSize">Dialog</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -1849,9 +1850,10 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.Image" id="image1">
+              <widget class="MonoDevelop.Components.ImageView" id="image1">
                 <property name="MemberName" />
-                <property name="Pixbuf">stock:gtk-dialog-warning Dialog</property>
+                <property name="IconId">gtk-dialog-warning</property>
+                <property name="IconSize">Dialog</property>
               </widget>
               <packing>
                 <property name="Position">1</property>
@@ -2274,8 +2276,7 @@
           <widget class="Gtk.Button" id="cancelButton">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Type">TextAndIcon</property>
-            <property name="Icon">stock:gtk-cancel Button</property>
+            <property name="Type">TextOnly</property>
             <property name="Label" translatable="yes">_Cancel deployment</property>
             <property name="UseUnderline">True</property>
             <property name="ResponseId">-6</property>
