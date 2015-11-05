@@ -5,33 +5,59 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 	internal partial class SslServerTrustDialog
 	{
 		private global::Gtk.HBox hbox1;
-		private global::Gtk.VBox vbox2;
-		private global::Gtk.Image image1;
-		private global::Gtk.VBox vbox3;
-		private global::Gtk.Label label2;
-		private global::Gtk.Label labelReason;
-		private global::Gtk.HSeparator hseparator2;
-		private global::Gtk.Table table1;
-		private global::Gtk.Label label3;
-		private global::Gtk.Label label4;
-		private global::Gtk.Label label5;
-		private global::Gtk.Label label6;
-		private global::Gtk.Label label7;
-		private global::Gtk.Label label8;
-		private global::Gtk.Label labelFprint;
-		private global::Gtk.Label labelFrom;
-		private global::Gtk.Label labelHost;
-		private global::Gtk.Label labelIssuer;
-		private global::Gtk.Label labelRealm;
-		private global::Gtk.Label labelUntil;
-		private global::Gtk.HSeparator hseparator1;
-		private global::Gtk.Label label15;
-		private global::Gtk.RadioButton radioAccept;
-		private global::Gtk.RadioButton radioAcceptSession;
-		private global::Gtk.RadioButton radioNotAccept;
-		private global::Gtk.Button button98;
-		private global::Gtk.Button button104;
 		
+		private global::Gtk.VBox vbox2;
+		
+		private global::MonoDevelop.Components.ImageView image1;
+		
+		private global::Gtk.VBox vbox3;
+		
+		private global::Gtk.Label label2;
+		
+		private global::Gtk.Label labelReason;
+		
+		private global::Gtk.HSeparator hseparator2;
+		
+		private global::Gtk.Table table1;
+		
+		private global::Gtk.Label label3;
+		
+		private global::Gtk.Label label4;
+		
+		private global::Gtk.Label label5;
+		
+		private global::Gtk.Label label6;
+		
+		private global::Gtk.Label label7;
+		
+		private global::Gtk.Label label8;
+		
+		private global::Gtk.Label labelFprint;
+		
+		private global::Gtk.Label labelFrom;
+		
+		private global::Gtk.Label labelHost;
+		
+		private global::Gtk.Label labelIssuer;
+		
+		private global::Gtk.Label labelRealm;
+		
+		private global::Gtk.Label labelUntil;
+		
+		private global::Gtk.HSeparator hseparator1;
+		
+		private global::Gtk.Label label15;
+		
+		private global::Gtk.RadioButton radioAccept;
+		
+		private global::Gtk.RadioButton radioAcceptSession;
+		
+		private global::Gtk.RadioButton radioNotAccept;
+		
+		private global::Gtk.Button button98;
+		
+		private global::Gtk.Button button104;
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -54,9 +80,10 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			this.vbox2 = new global::Gtk.VBox ();
 			this.vbox2.Name = "vbox2";
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.image1 = new global::Gtk.Image ();
+			this.image1 = new global::MonoDevelop.Components.ImageView ();
 			this.image1.Name = "image1";
-			this.image1.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-warning", global::Gtk.IconSize.Dialog);
+			this.image1.IconId = "gtk-dialog-warning";
+			this.image1.IconSize = ((global::Gtk.IconSize)(6));
 			this.vbox2.Add (this.image1);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.image1]));
 			w2.Position = 0;
