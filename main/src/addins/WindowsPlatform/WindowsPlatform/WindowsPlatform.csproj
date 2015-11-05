@@ -97,6 +97,9 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="GdkWin32.cs" />
     <Compile Include="MainToolbar\ComboMenu.cs" />
+    <Compile Include="MainToolbar\DottedSeparator.xaml.cs">
+      <DependentUpon>DottedSeparator.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainToolbar\IconButton.xaml.cs">
       <DependentUpon>IconButton.xaml</DependentUpon>
     </Compile>
@@ -219,6 +222,10 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Page Include="Dialogs\SelectEncodingControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MainToolbar\DottedSeparator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

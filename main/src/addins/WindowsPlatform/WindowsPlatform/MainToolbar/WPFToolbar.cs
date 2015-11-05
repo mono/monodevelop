@@ -207,9 +207,7 @@ namespace WindowsPlatform.MainToolbar
 				}
 
 				if (needsSeparator)
-					toolbar.ButtonBarPanel.Children.Add (new System.Windows.Controls.Separator {
-						Style = sepStyle,
-						MinWidth = 2,
+					toolbar.ButtonBarPanel.Children.Add (new DottedSeparator {
 						Margin = new System.Windows.Thickness {
 							Left = 3,
 							Right = 3,
