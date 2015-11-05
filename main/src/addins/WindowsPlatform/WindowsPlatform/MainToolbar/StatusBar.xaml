@@ -16,14 +16,28 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Image x:Name="StatusImageControl" Grid.Column="0" MaxWidth="14" Margin="9,5,0,5" MaxHeight="14" Source="{Binding StatusImage}" UseLayoutRounding="True" />
+            <Image Grid.Column="0"
+                   x:Name="StatusImageControl" 
+                   MaxWidth="14"
+                   Margin="9,5,0,5"
+                   MaxHeight="14"
+                   Source="{Binding StatusImage}"
+                   UseLayoutRounding="True"
+                   MouseLeftButtonUp="OnShowPad" />
             <TextBlock Grid.Column="1"
                 VerticalAlignment="Center"
                 Padding="7,1,0,2"
                 Foreground="{Binding TextBrush}"
                 Text="{Binding Message}"
-                UseLayoutRounding="True" />
-            <StackPanel x:Name="BuildResultPanel" Grid.Column="2" Visibility="{Binding BuildResultPanelVisibility}" VerticalAlignment="Center" Orientation="Horizontal" UseLayoutRounding="True">
+                UseLayoutRounding="True" 
+                MouseLeftButtonUp="OnShowPad" />
+            <StackPanel x:Name="BuildResultPanel"
+                        Grid.Column="2"
+                        Visibility="{Binding BuildResultPanelVisibility}"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        UseLayoutRounding="True"
+                        MouseLeftButtonUp="OnShowError">
                 <Image Source="{Binding BuildResultIcon}" Margin="0,0,0,0" MaxWidth="16" MaxHeight="16" UseLayoutRounding="True" />
                 <TextBlock
             	    Text="{Binding BuildResultCount}" 

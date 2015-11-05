@@ -120,6 +120,17 @@ namespace WindowsPlatform.MainToolbar
 			sourcePad = pad;
 		}
 
+		void OnShowError(object sender, MouseButtonEventArgs e)
+		{
+			IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad>().BringToFront();
+		}
+
+		void OnShowPad(object sender, MouseButtonEventArgs e)
+		{
+			if (sourcePad != null)
+				sourcePad.BringToFront(true);
+		}
+
 		double oldWork = 0;
 		public void SetProgressFraction (double work)
 		{
