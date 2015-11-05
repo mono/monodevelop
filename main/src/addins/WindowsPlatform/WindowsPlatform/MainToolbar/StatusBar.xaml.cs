@@ -178,7 +178,7 @@ namespace WindowsPlatform.MainToolbar
 
 		public void ShowMessage (IconId image, string message, bool isMarkup)
 		{
-			if (image == Stock.StatusSteady || image.IsNull)
+			if (image.IsNull)
 				StatusImage = null;
 			else
 				StatusImage = image.GetStockIcon ().WithSize (Xwt.IconSize.Small).GetImageSource ();
