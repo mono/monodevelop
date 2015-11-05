@@ -128,10 +128,11 @@ namespace MonoDevelop.Ide.Projects
 			centreVBox.PackEnd (templatesHBox, true, true, 0);
 
 			// Template categories.
-			var templateCategoriesVBox = new VBox ();
-			templateCategoriesVBox.Name = "templateCategoriesVBox";
-			templateCategoriesVBox.BorderWidth = 0;
-			templateCategoriesVBox.WidthRequest = GtkWorkarounds.ConvertToPixelScale (220);
+			var templateCategoriesBgBox = new EventBox ();
+			templateCategoriesBgBox.Name = "templateCategoriesVBox";
+			templateCategoriesBgBox.BorderWidth = 0;
+			templateCategoriesBgBox.ModifyBg (StateType.Normal, Styles.NewProjectDialog.CategoriesBackgroundColor);
+			templateCategoriesBgBox.WidthRequest = GtkWorkarounds.ConvertToPixelScale (220);
 			var templateCategoriesScrolledWindow = new ScrolledWindow ();
 			templateCategoriesScrolledWindow.Name = "templateCategoriesScrolledWindow";
 			templateCategoriesScrolledWindow.HscrollbarPolicy = PolicyType.Never;
@@ -145,14 +146,15 @@ namespace MonoDevelop.Ide.Projects
 			templateCategoriesTreeView.ModifyBase (StateType.Normal, categoriesBackgroundColor);
 			templateCategoriesTreeView.AppendColumn (CreateTemplateCategoriesTreeViewColumn ());
 			templateCategoriesScrolledWindow.Add (templateCategoriesTreeView);
-			templateCategoriesVBox.PackStart (templateCategoriesScrolledWindow, true, true, 0);
-			templatesHBox.PackStart (templateCategoriesVBox, false, false, 0);
+			templateCategoriesBgBox.Add (templateCategoriesScrolledWindow);
+			templatesHBox.PackStart (templateCategoriesBgBox, false, false, 0);
 
 			// Templates.
-			var templatesVBox = new VBox ();
-			templatesVBox.Name = "templatesVBox";
-			templatesVBox.WidthRequest = GtkWorkarounds.ConvertToPixelScale (400);
-			templatesHBox.PackStart (templatesVBox, false, false, 0);
+			var templatesBgBox = new EventBox ();
+			templatesBgBox.ModifyBg (StateType.Normal, Styles.NewProjectDialog.TemplateListBackgroundColor);
+			templatesBgBox.Name = "templatesVBox";
+			templatesBgBox.WidthRequest = GtkWorkarounds.ConvertToPixelScale (400);
+			templatesHBox.PackStart (templatesBgBox, false, false, 0);
 			var templatesScrolledWindow = new ScrolledWindow ();
 			templatesScrolledWindow.Name = "templatesScrolledWindow";
 			templatesScrolledWindow.HscrollbarPolicy = PolicyType.Never;
@@ -165,7 +167,7 @@ namespace MonoDevelop.Ide.Projects
 			templatesTreeView.ModifyBase (StateType.Normal, templateListBackgroundColor);
 			templatesTreeView.AppendColumn (CreateTemplateListTreeViewColumn ());
 			templatesScrolledWindow.Add (templatesTreeView);
-			templatesVBox.PackStart (templatesScrolledWindow, true, true, 0);
+			templatesBgBox.Add (templatesScrolledWindow);
 
 			// Template
 			var templateEventBox = new EventBox ();

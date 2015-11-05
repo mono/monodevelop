@@ -96,7 +96,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 					DoubleClick ();
 			};
 			vbox.PackEnd (scrollbar, true, true, 0);
-			ContentBox.Add (vbox);
+			var colorBox = new EventBox ();
+			colorBox.Add (vbox);
+			ContentBox.Add (colorBox);
 			this.AutoSelect = true;
 			this.TypeHint = WindowTypeHint.Menu;
 			Theme.CornerRadius = 0;
@@ -116,6 +118,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			Theme.SetBackgroundColor (Gui.Styles.CodeCompletion.BackgroundColor);
 			Theme.ShadowColor = Gui.Styles.PopoverWindow.ShadowColor;
+			ContentBox.Child.ModifyBg (StateType.Normal, Gui.Styles.CodeCompletion.BackgroundColor.ToGdkColor ());
 		}
 
 		protected override void OnDestroyed ()
