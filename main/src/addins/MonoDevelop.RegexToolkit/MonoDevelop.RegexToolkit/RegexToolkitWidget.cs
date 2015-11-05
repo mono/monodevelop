@@ -178,9 +178,9 @@ namespace MonoDevelop.RegexToolkit
 
 		void SetButtonStart (string text, string icon)
 		{
-			((Gtk.Label)((Gtk.HBox)((Gtk.Alignment)this.buttonStart.Child).Child).Children [1]).Text = text;
-			((Gtk.Label)((Gtk.HBox)((Gtk.Alignment)this.buttonStart.Child).Child).Children [1]).UseUnderline = true;
-			((Gtk.Image)((Gtk.HBox)((Gtk.Alignment)this.buttonStart.Child).Child).Children [0]).Pixbuf = global::Stetic.IconLoader.LoadIcon (this, icon, global::Gtk.IconSize.Menu);
+			buttonStartLabel.Text = text;
+			buttonStartLabel.UseUnderline = true;
+			buttonStartIcon.SetIcon (icon, IconSize.Menu);
 		}
 		
 		
