@@ -68,28 +68,6 @@ namespace WindowsPlatform.MainToolbar
 			TaskService.Errors.TasksRemoved += updateHandler;
 		}
 
-		void OnProgressBarLoaded(object sender, RoutedEventArgs args)
-		{
-			var p = (ProgressBar)sender;
-			p.ApplyTemplate();
-
-			var color = new SolidColorBrush (new System.Windows.Media.Color {
-				A = 0xFF,
-				R = 0xB3,
-				G = 0xE7,
-				B = 0x70,
-			});
-
-			var target = p.Template.FindName("Animation", p);
-			var panel = target as Panel;
-			if (panel != null)
-				panel.Background = color;
-
-			var rect = target as Rectangle;
-			if (rect != null)
-				rect.Fill = color;
-		}
-
 		public bool AutoPulse {
 			get { return ProgressBar.IsIndeterminate; }
 			set { ProgressBar.IsIndeterminate = value; }
