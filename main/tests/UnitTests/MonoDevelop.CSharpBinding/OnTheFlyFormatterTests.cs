@@ -117,7 +117,7 @@ namespace MonoDevelop.CSharpBinding
 			ext.Initialize (doc.Editor, doc);
 			content.Contents.Add (ext);
 			
-			doc.UpdateParseDocument ();
+			await doc.UpdateParseDocument ();
 			if (selectionStart >= 0 && selectionEnd >= 0)
 				content.GetTextEditorData ().SetSelection (selectionStart, selectionEnd);
 			try {

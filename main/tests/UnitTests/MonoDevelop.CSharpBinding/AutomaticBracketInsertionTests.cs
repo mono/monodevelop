@@ -196,7 +196,7 @@ namespace MonoDevelop.CSharpBinding
 			compExt.Initialize (doc.Editor, doc);
 			content.Contents.Add (compExt);
 
-			doc.UpdateParseDocument ();
+			await doc.UpdateParseDocument ();
 			TypeSystemService.Unload (solution);
 			return Tuple.Create (compExt, content);
 		}
