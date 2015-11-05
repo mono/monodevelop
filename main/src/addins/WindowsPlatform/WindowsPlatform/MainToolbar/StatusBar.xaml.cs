@@ -55,9 +55,11 @@ namespace WindowsPlatform.MainToolbar
 					if (ec > 0) {
 						BuildResultPanelVisibility = Visibility.Visible;
 						BuildResultCount = ec;
+						BuildResultIcon = Stock.Error.GetStockIcon ().WithSize (Xwt.IconSize.Small).GetImageSource();
 					} else if (wc > 0) {
 						BuildResultPanelVisibility = Visibility.Visible;
 						BuildResultCount = wc;
+						BuildResultIcon = Stock.Warning.GetStockIcon ().WithSize (Xwt.IconSize.Small).GetImageSource();
 					} else
 						BuildResultPanelVisibility = Visibility.Collapsed;
 				});
@@ -191,8 +193,16 @@ namespace WindowsPlatform.MainToolbar
 
 		public StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)
 		{
-			// No icons on Windows
-			return null;
+			var icon = new StatusIcon (this) {
+				Image = pixbuf,
+				Margin = new Thickness (5, 5, 5, 5),
+				MaxWidth = 14,
+				MaxHeight = 14,
+			};
+
+			StatusIconsPanel.Children.Add (icon);
+
+			return icon;
         }
 
 		public void ShowWarning (string warning)
@@ -229,6 +239,13 @@ namespace WindowsPlatform.MainToolbar
 			set { buildResultCount = value; RaisePropertyChanged (); }
 		}
 
+		ImageSource buildResultIcon;
+		public ImageSource BuildResultIcon
+		{
+			get { return buildResultIcon; }
+			set { buildResultIcon = value; RaisePropertyChanged (); }
+		}
+
 		Visibility buildResultPanelVisibility = Visibility.Collapsed;
 		public Visibility BuildResultPanelVisibility
 		{
@@ -243,5 +260,75 @@ namespace WindowsPlatform.MainToolbar
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
+	}
+
+	class StatusIcon : System.Windows.Controls.Image, StatusBarIcon
+	{
+		StatusBar bar;
+
+		public StatusIcon (StatusBar bar)
+		{
+			this.bar = bar;
+		}
+
+		public void SetAlertMode (int seconds)
+		{
+			// Create fade-out fade-in animation.
+		}
+
+		public void Dispose ()
+		{
+			((StackPanel)Parent).Children.Remove (this);
+		}
+
+		public new string ToolTip
+		{
+			get { return (string)base.ToolTip; }
+			set { base.ToolTip = value; }
+		}
+
+		protected override void OnMouseUp (MouseButtonEventArgs e)
+		{
+			base.OnMouseUp (e);
+
+			Xwt.PointerButton button;
+			switch (e.ChangedButton) {
+				case MouseButton.Left:
+					button = Xwt.PointerButton.Left;
+					break;
+				case MouseButton.Middle:
+					button = Xwt.PointerButton.Middle;
+					break;
+				case MouseButton.Right:
+					button = Xwt.PointerButton.Right;
+					break;
+				case MouseButton.XButton1:
+					button = Xwt.PointerButton.ExtendedButton1;
+					break;
+				case MouseButton.XButton2:
+					button = Xwt.PointerButton.ExtendedButton2;
+					break;
+				default:
+					throw new NotSupportedException ();
+			}
+
+			if (Clicked != null)
+				Clicked (this, new StatusBarIconClickedEventArgs {
+					Button = button,
+				});
+		}
+
+		Xwt.Drawing.Image image;
+		public Xwt.Drawing.Image Image
+		{
+			get { return image; }
+			set
+			{
+				image = value;
+				Source = value.WithSize (Xwt.IconSize.Small).GetImageSource ();
+			}
+		}
+
+		public event EventHandler<StatusBarIconClickedEventArgs> Clicked;
 	}
 }
