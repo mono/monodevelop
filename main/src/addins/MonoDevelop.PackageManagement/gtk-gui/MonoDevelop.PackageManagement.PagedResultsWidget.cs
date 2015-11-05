@@ -5,13 +5,24 @@ namespace MonoDevelop.PackageManagement
 	public partial class PagedResultsWidget
 	{
 		private global::Gtk.HBox mainHBox;
+		
 		private global::Gtk.Button backButton;
+		
+		private global::MonoDevelop.Components.ImageView imageBack;
+		
 		private global::Gtk.Button firstButton;
+		
 		private global::Gtk.Button secondButton;
+		
 		private global::Gtk.Button thirdButton;
+		
 		private global::Gtk.Button fourthButton;
+		
 		private global::Gtk.Button fifthButton;
+		
 		private global::Gtk.Button forwardButton;
+		
+		private global::MonoDevelop.Components.ImageView imageForward;
 
 		protected virtual void Build ()
 		{
@@ -28,9 +39,12 @@ namespace MonoDevelop.PackageManagement
 			this.backButton.Name = "backButton";
 			this.backButton.FocusOnClick = false;
 			this.backButton.Relief = ((global::Gtk.ReliefStyle)(2));
-			global::Gtk.Image w1 = new global::Gtk.Image ();
-			w1.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-go-back", global::Gtk.IconSize.Menu);
-			this.backButton.Image = w1;
+			// Container child backButton.Gtk.Container+ContainerChild
+			this.imageBack = new global::MonoDevelop.Components.ImageView ();
+			this.imageBack.Name = "imageBack";
+			this.imageBack.IconId = "gtk-go-back";
+			this.imageBack.IconSize = ((global::Gtk.IconSize)(1));
+			this.backButton.Add (this.imageBack);
 			this.mainHBox.Add (this.backButton);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.mainHBox [this.backButton]));
 			w2.Position = 0;
@@ -103,9 +117,12 @@ namespace MonoDevelop.PackageManagement
 			this.forwardButton.Name = "forwardButton";
 			this.forwardButton.FocusOnClick = false;
 			this.forwardButton.Relief = ((global::Gtk.ReliefStyle)(2));
-			global::Gtk.Image w8 = new global::Gtk.Image ();
-			w8.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-go-forward", global::Gtk.IconSize.Menu);
-			this.forwardButton.Image = w8;
+			// Container child forwardButton.Gtk.Container+ContainerChild
+			this.imageForward = new global::MonoDevelop.Components.ImageView ();
+			this.imageForward.Name = "imageForward";
+			this.imageForward.IconId = "gtk-go-forward";
+			this.imageForward.IconSize = ((global::Gtk.IconSize)(1));
+			this.forwardButton.Add (this.imageForward);
 			this.mainHBox.Add (this.forwardButton);
 			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.mainHBox [this.forwardButton]));
 			w9.Position = 6;
