@@ -40,7 +40,7 @@ namespace WindowsPlatform.MainToolbar
 				SearchText = PlaceholderText;
 			};
 
-			SearchIcon.Source = Stock.StatusSearch.GetStockIcon ().WithSize (Xwt.IconSize.Small).GetImageSource ();
+			SearchIcon.Source = Stock.SearchboxSearch.GetStockIcon ().WithSize (Xwt.IconSize.Small).GetImageSource ();
 		}
 
 		string placeholderText;

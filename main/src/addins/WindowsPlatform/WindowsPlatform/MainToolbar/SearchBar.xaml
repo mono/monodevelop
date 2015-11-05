@@ -8,7 +8,7 @@
     <Border BorderBrush="{Binding BorderBrush}" BorderThickness="1" UseLayoutRounding="True">
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Height="24" UseLayoutRounding="True">
             <TextBox x:Name="SearchBar" Text="{Binding Path=SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" MinWidth="180" Margin="5,0,0,0" Background="Transparent" Foreground="{Binding Foreground}" BorderThickness="0" UseLayoutRounding="True" />
-            <Image x:Name="SearchIcon" MaxWidth="14" MaxHeight="14" Margin="5,5,5,5" MouseLeftButtonDown="OnIconClicked" UseLayoutRounding="True">
+            <Image x:Name="SearchIcon" MaxWidth="16" MaxHeight="16" Margin="0,0,4,0" MouseLeftButtonDown="OnIconClicked" UseLayoutRounding="True">
                 <Image.ContextMenu>
                     <ContextMenu UseLayoutRounding="True" />
                 </Image.ContextMenu>
