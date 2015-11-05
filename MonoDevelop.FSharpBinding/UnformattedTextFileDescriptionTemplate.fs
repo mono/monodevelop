@@ -2,6 +2,7 @@ namespace MonoDevelop.FSharp
 open System
 open System.Collections.Generic
 open System.IO
+open System.Text.RegularExpressions
 open MonoDevelop.Ide.Templates
 open MonoDevelop.Core
 open MonoDevelop.Projects
@@ -35,7 +36,12 @@ type UnformattedTextFileDescriptionTemplate() =
         base.ModifyTags (policyParent, project, language, identifier, fileName, &tags)
 
         let ns = project |> function null -> "Application" | project -> getDefaultNs project.Name
+        let getSafeName str =
+            let regex = new Regex("[^a-zA-Z0-9]")
+            regex.Replace(str, "")
+
         tags.["Namespace"] <- ns
+        tags.["AppName"] <- getSafeName tags.["SolutionName"]
 
     override x.CreateFileContent(policyParent, project, language, fileName, identifier) =
         let tags = new Dictionary<_, _> ()
