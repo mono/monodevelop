@@ -162,7 +162,9 @@ namespace MonoDevelop.Components.Docking
 				gc.RgbFgColor = VisualStyle.PadBackgroundColor.Value;
 				evnt.Window.DrawRectangle (gc, true, Allocation);
 				gc.Dispose ();
-			}
+				ModifyBg (StateType.Normal, VisualStyle.PadBackgroundColor.Value);
+			} else 
+				ModifyBg (StateType.Normal, Style.Background(StateType.Normal));
 			return base.OnExposeEvent (evnt);
 		}
 	}

@@ -692,7 +692,7 @@ namespace MonoDevelop.Components.Docking
 		
 		internal void UpdateStyles ()
 		{
-			container.RelayoutWidgets ();
+			container.ReloadStyles ();
 		}
 
 		internal void UpdateStyle (DockItem item)

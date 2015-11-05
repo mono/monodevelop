@@ -224,6 +224,13 @@ namespace MonoDevelop.Components.Docking
 			needsRelayout = true;
 			QueueResize ();
 		}
+
+		public void ReloadStyles ()
+		{
+			foreach (var item in Items)
+				item.SetRegionStyle (frame.GetRegionStyleForItem (item));
+			RelayoutWidgets ();
+		}
 		
 		void LayoutWidgets ()
 		{
