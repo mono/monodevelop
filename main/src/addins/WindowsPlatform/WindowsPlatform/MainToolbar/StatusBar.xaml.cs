@@ -123,6 +123,9 @@ namespace WindowsPlatform.MainToolbar
 		double oldWork = 0;
 		public void SetProgressFraction (double work)
 		{
+			if (work == oldWork)
+				return;
+
 			var anim = new DoubleAnimation
 			{
 				From = oldWork,
