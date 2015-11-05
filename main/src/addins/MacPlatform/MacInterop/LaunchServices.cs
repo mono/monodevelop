@@ -27,6 +27,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
+using System.Linq;
 
 using MonoDevelop.Core;
 using Foundation;
@@ -92,12 +93,6 @@ namespace MonoDevelop.MacInterop
 	
 	public static class LaunchServices
 	{
-		const string APP_SERVICES = "/System/Library/Frameworks/ApplicationServices.framework/Versions/A/ApplicationServices";
-		const string CFLIB = "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation";
-		
-		[DllImport (APP_SERVICES)]
-		static extern OSStatus LSOpenApplication (ref LSApplicationParameters appParams, out ProcessSerialNumber psn);
-		
 		public static int OpenApplication (string application)
 		{
 			return OpenApplication (new ApplicationStartInfo (application));
@@ -128,60 +123,49 @@ namespace MonoDevelop.MacInterop
 				foreach (string arg in application.Args) {
 					args.Add (new NSString (arg));
 				}
-				config.SetValueForKey (args, new NSString ("NSWorkspaceLaunchConfigurationArguments"));
+				config.Add (new NSString ("NSWorkspaceLaunchConfigurationArguments"), args);
 			}
+
+			if (application.Environment != null && application.Environment.Count > 0) {
+				var envValueStrings = application.Environment.Values.Select (t => new NSString (t)).ToArray ();
+				var envKeyStrings = application.Environment.Keys.Select (t => new NSString (t)).ToArray ();
+
+				var envDict = new NSMutableDictionary ();
+				for (int i = 0; i < envValueStrings.Length; i++) {
+					envDict.Add (envKeyStrings[i], envValueStrings[i]);
+				}
+
+				config.Add (new NSString ("NSWorkspaceLaunchConfigurationEnvironment"), envDict);
+			}
+
+			UInt32 options = 0;
+
+			if (application.Async)
+				options |= (UInt32) LaunchOptions.NSWorkspaceLaunchAsync;
+			if (application.NewInstance)
+				options |= (UInt32) LaunchOptions.NSWorkspaceLaunchNewInstance;
+
 			IntPtr error;
-			var appHandle = IntPtr_objc_msgSend_IntPtr_UInt32_IntPtr_IntPtr (NSWorkspace.SharedWorkspace.Handle, launchApplicationAtURLOptionsConfigurationErrorSelector, appUrl.Handle, 0, config.Handle, out error);
+			var appHandle = IntPtr_objc_msgSend_IntPtr_UInt32_IntPtr_IntPtr (NSWorkspace.SharedWorkspace.Handle, launchApplicationAtURLOptionsConfigurationErrorSelector, appUrl.Handle, options, config.Handle, out error);
 			NSRunningApplication app = (NSRunningApplication)ObjCRuntime.Runtime.GetNSObject (appHandle);
 
 			return app.ProcessIdentifier;
 		}
-		
-		struct LSApplicationParameters
-		{
-			public IntPtr version; // CFIndex, must be 0
-			public LSLaunchFlags flags;
-			public IntPtr application; //FSRef *
-			public IntPtr asyncLaunchRefCon; // void *
-			public IntPtr environment; // CFDictionaryRef
-			public IntPtr argv; // CFArrayRef
-			public IntPtr initialEvent; // AppleEvent *
-		}
-		
+
 		[Flags]
-		public enum LSLaunchFlags : uint
-		{
-			Defaults = 0x00000001,
-			AndPrint = 0x00000002,
-			AndDisplayErrors = 0x00000040,
-			InhibitBGOnly = 0x00000080,
-			DontAddToRecents = 0x00000100,
-			DontSwitch = 0x00000200,
-			NoParams = 0x00000800,
-			Async = 0x00010000,
-			StartClassic = 0x00020000,
-			InClassic = 0x00040000,
-			NewInstance = 0x00080000,
-			AndHide = 0x00100000,
-			AndHideOthers = 0x00200000,
-			HasUntrustedContents = 0x00400000
-		}
-		
-		static class CoreFoundation
-		{
-			[DllImport (CFLIB)]
-			public static extern bool CFURLGetFSRef (IntPtr urlPtr, IntPtr fsRefPtr);
-		}
-		
-		//this is an 80-byte opaque object
-		[StructLayout(LayoutKind.Sequential, Size = 80)]
-		struct FSRef
-		{
-		}
-		
-		enum OSStatus
-		{
-			Ok = 0
-		}
+		enum LaunchOptions {
+			NSWorkspaceLaunchAndPrint = 0x00000002,
+			NSWorkspaceLaunchWithErrorPresentation = 0x00000040,
+			NSWorkspaceLaunchInhibitingBackgroundOnly = 0x00000080,
+			NSWorkspaceLaunchWithoutAddingToRecents = 0x00000100,
+			NSWorkspaceLaunchWithoutActivation = 0x00000200,
+			NSWorkspaceLaunchAsync = 0x00010000,
+			NSWorkspaceLaunchAllowingClassicStartup = 0x00020000,
+			NSWorkspaceLaunchPreferringClassic = 0x00040000,
+			NSWorkspaceLaunchNewInstance = 0x00080000,
+			NSWorkspaceLaunchAndHide = 0x00100000,
+			NSWorkspaceLaunchAndHideOthers = 0x00200000,
+			NSWorkspaceLaunchDefault = NSWorkspaceLaunchAsync | NSWorkspaceLaunchAllowingClassicStartup
+		};
 	}
 }
