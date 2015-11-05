@@ -15,7 +15,6 @@
         <Image x:Name="StatusImageControl" Grid.Column="0" MaxWidth="14" Margin="5,5,0,5" MaxHeight="14" Source="{Binding StatusImage}" UseLayoutRounding="True" />
         <TextBlock Grid.Column="1"
             VerticalAlignment="Center"
-            FontSize="14"
             Padding="5,1,0,2"
             Foreground="{Binding TextBrush}"
             Text="{Binding Message}"
@@ -25,7 +24,6 @@
             <TextBlock
             	Text="{Binding BuildResultCount}" 
 	            VerticalAlignment="Center"
-	            FontSize="14"
 	            Padding="0,1,5,2" />
         </StackPanel>
         <StackPanel x:Name="StatusIconsPanel" Grid.Column="3" VerticalAlignment="Center" Orientation="Horizontal" UseLayoutRounding="True" />

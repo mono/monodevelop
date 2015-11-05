@@ -49,7 +49,7 @@ namespace WindowsPlatform
 			MainToolbarForegroundBrush = Brushes.Black;
 			MainToolbarShadowBrush = Brushes.Gray;
 			MainMenuBackgroundBrush = Brushes.Transparent;
-			StatusBarBackgroundBrush = Brushes.LightGray;
+			StatusBarBackgroundBrush = new SolidColorBrush (new Color {A = 0xFF, R = 0xE5, G = 0xE5, B = 0xE5});
 			StatusBarTextBrush = MainToolbarForegroundBrush;
 			StatusBarErrorTextBrush = Brushes.Red;
 			StatusBarWarningTextBrush = Brushes.Orange;
