@@ -122,7 +122,14 @@ namespace MonoDevelop.MacInterop
 			// TODO: Once the above bug is fixed, we can replace the code below with
 			//NSRunningApplication app = NSWorkspace.SharedWorkspace.LaunchApplication (appUrl, 0, new NSDictionary (), null);
 
-			var config = new NSDictionary ();
+			var config = new NSMutableDictionary ();
+			if (application.Args != null && application.Args.Length > 0) {
+				var args = new NSMutableArray ();
+				foreach (string arg in application.Args) {
+					args.Add (new NSString (arg));
+				}
+				config.SetValueForKey (args, new NSString ("NSWorkspaceLaunchConfigurationArguments"));
+			}
 			IntPtr error;
 			var appHandle = IntPtr_objc_msgSend_IntPtr_UInt32_IntPtr_IntPtr (NSWorkspace.SharedWorkspace.Handle, launchApplicationAtURLOptionsConfigurationErrorSelector, appUrl.Handle, 0, config.Handle, out error);
 			NSRunningApplication app = (NSRunningApplication)ObjCRuntime.Runtime.GetNSObject (appHandle);
