@@ -34,6 +34,9 @@ namespace MonoDevelop.Debugger
 		public static Cairo.Color ObjectValueTreeValuesButtonBackground { get; internal set; }
 		public static Cairo.Color ObjectValueTreeValuesButtonText { get; internal set; }
 		public static Cairo.Color ObjectValueTreeValuesButtonBorder { get; internal set; }
+		public static Cairo.Color ObjectValueTreeValueErrorText { get; internal set; }
+		public static Cairo.Color ObjectValueTreeValueDisabledText { get; internal set; }
+		public static Cairo.Color ObjectValueTreeValueModifiedText { get; internal set; }
 		public static Cairo.Color PreviewVisualizerBackgroundColor { get; internal set; }
 		public static Gdk.Color PreviewVisualizerTextColor { get; internal set; }
 		public static Gdk.Color PreviewVisualizerHeaderTextColor { get; internal set; }
@@ -65,6 +68,10 @@ namespace MonoDevelop.Debugger
 				ObjectValueTreeValuesButtonBackground = new Cairo.Color (233 / 255.0, 242 / 255.0, 252 / 255.0);
 				ObjectValueTreeValuesButtonText = new Cairo.Color (82 / 255.0, 148 / 255.0, 235 / 255.0);
 				ObjectValueTreeValuesButtonBorder = new Cairo.Color (82 / 255.0, 148 / 255.0, 235 / 255.0);
+				ObjectValueTreeValueErrorText = new Cairo.Color (1.0, 0.0, 0.0);
+				ObjectValueTreeValueDisabledText = new Cairo.Color (0.5, 0.5, 0.5);
+				ObjectValueTreeValueModifiedText = new Cairo.Color (0.0, 0.0, 1.0);
+
 				PreviewVisualizerBackgroundColor = new Cairo.Color (245 / 256.0, 245 / 256.0, 245 / 256.0);
 				PreviewVisualizerHeaderTextColor = new Gdk.Color (36, 36, 36);
 				PreviewVisualizerTextColor = new Gdk.Color (85, 85, 85);
@@ -81,6 +88,10 @@ namespace MonoDevelop.Debugger
 				ObjectValueTreeValuesButtonBackground = new Cairo.Color (233 / 255.0, 242 / 255.0, 252 / 255.0);
 				ObjectValueTreeValuesButtonText = new Cairo.Color (82 / 255.0, 148 / 255.0, 235 / 255.0);
 				ObjectValueTreeValuesButtonBorder = new Cairo.Color (82 / 255.0, 148 / 255.0, 235 / 255.0);
+				ObjectValueTreeValueErrorText = new Cairo.Color (1.0, 0.0, 0.0);
+				ObjectValueTreeValueDisabledText = new Cairo.Color (0.5, 0.5, 0.5);
+				ObjectValueTreeValueModifiedText = new Cairo.Color (0.0, 0.0, 1.0);
+
 				PreviewVisualizerBackgroundColor = MonoDevelop.Ide.Gui.Styles.PopoverWindow.DefaultBackgroundColor;
 				PreviewVisualizerHeaderTextColor = new Gdk.Color (219, 219, 219);
 				PreviewVisualizerTextColor = MonoDevelop.Ide.Gui.Styles.PopoverWindow.DefaultTextColor.ToGdkColor();
