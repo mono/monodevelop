@@ -81,12 +81,14 @@ namespace WindowsPlatform.MainToolbar
 		public void BeginProgress (string name)
 		{
 			EndProgress();
+			TextBrush = Styles.StatusBarTextBrush;
 			ShowMessage (name);
 		}
 
 		public void BeginProgress (IconId image, string name)
 		{
 			EndProgress();
+			TextBrush = Styles.StatusBarTextBrush;
 			ShowMessage(image, name);
 		}
 
@@ -165,7 +167,7 @@ namespace WindowsPlatform.MainToolbar
 
 		public void ShowReady ()
 		{
-			textBrush = Styles.StatusBarReadyTextBrush;
+			TextBrush = Styles.StatusBarReadyTextBrush;
 			ShowMessage (BrandingService.StatusSteadyIconId, BrandingService.ApplicationName);
 		}
 
