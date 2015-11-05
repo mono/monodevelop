@@ -8,6 +8,8 @@
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/AddIns/VersionControl/MonoDevelop.VersionControl.dll" />
     <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
+    <widget-library name="../../../../build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
     <widget-library name="../../../../build/AddIns/ChangeLogAddIn/ChangeLogAddIn.dll" internal="true" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.ChangeLogAddIn.AddLogEntryDialog" design-size="573 510">
@@ -125,9 +127,10 @@
                 <property name="Visible">False</property>
                 <property name="Spacing">6</property>
                 <child>
-                  <widget class="Gtk.Image" id="image36">
+                  <widget class="MonoDevelop.Components.ImageView" id="image36">
                     <property name="MemberName" />
-                    <property name="Pixbuf">stock:gtk-new SmallToolbar</property>
+                    <property name="IconId">gtk-new</property>
+                    <property name="IconSize">SmallToolbar</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -165,9 +168,10 @@
                 <property name="Visible">False</property>
                 <property name="Spacing">6</property>
                 <child>
-                  <widget class="Gtk.Image" id="image37">
+                  <widget class="MonoDevelop.Components.ImageView" id="image37">
                     <property name="MemberName" />
-                    <property name="Pixbuf">stock:gtk-dialog-warning SmallToolbar</property>
+                    <property name="IconId">gtk-dialog-warning</property>
+                    <property name="IconSize">SmallToolbar</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -209,9 +213,10 @@
                     <property name="MemberName" />
                     <property name="Spacing">6</property>
                     <child>
-                      <widget class="Gtk.Image" id="image38">
+                      <widget class="MonoDevelop.Components.ImageView" id="image38">
                         <property name="MemberName" />
-                        <property name="Pixbuf">stock:gtk-dialog-info SmallToolbar</property>
+                        <property name="IconId">gtk-dialog-info</property>
+                        <property name="IconSize">SmallToolbar</property>
                       </widget>
                       <packing>
                         <property name="Position">0</property>

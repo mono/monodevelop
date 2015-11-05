@@ -5,28 +5,49 @@ namespace MonoDevelop.ChangeLogAddIn
 	internal partial class AddLogEntryDialog
 	{
 		private global::Gtk.VBox vbox1;
-		private global::Gtk.VPaned vpaned1;
-		private global::Gtk.VBox vbox2;
-		private global::Gtk.Label label1;
-		private global::Gtk.ScrolledWindow scrolledwindow2;
-		private global::Gtk.TreeView fileList;
-		private global::Gtk.VBox vbox3;
-		private global::Gtk.Label label3;
-		private global::Gtk.ScrolledWindow scrolledwindow1;
-		private global::Gtk.TextView textview;
-		private global::Gtk.HBox boxNewFile;
-		private global::Gtk.Image image36;
-		private global::Gtk.Label label7;
-		private global::Gtk.HBox boxNoFile;
-		private global::Gtk.Image image37;
-		private global::Gtk.Label label8;
-		private global::Gtk.HBox hbox3;
-		private global::Gtk.VBox vbox4;
-		private global::Gtk.Image image38;
-		private global::Gtk.Label label9;
-		private global::Gtk.Button button7;
-		private global::Gtk.Button button119;
 		
+		private global::Gtk.VPaned vpaned1;
+		
+		private global::Gtk.VBox vbox2;
+		
+		private global::Gtk.Label label1;
+		
+		private global::Gtk.ScrolledWindow scrolledwindow2;
+		
+		private global::Gtk.TreeView fileList;
+		
+		private global::Gtk.VBox vbox3;
+		
+		private global::Gtk.Label label3;
+		
+		private global::Gtk.ScrolledWindow scrolledwindow1;
+		
+		private global::Gtk.TextView textview;
+		
+		private global::Gtk.HBox boxNewFile;
+		
+		private global::MonoDevelop.Components.ImageView image36;
+		
+		private global::Gtk.Label label7;
+		
+		private global::Gtk.HBox boxNoFile;
+		
+		private global::MonoDevelop.Components.ImageView image37;
+		
+		private global::Gtk.Label label8;
+		
+		private global::Gtk.HBox hbox3;
+		
+		private global::Gtk.VBox vbox4;
+		
+		private global::MonoDevelop.Components.ImageView image38;
+		
+		private global::Gtk.Label label9;
+		
+		private global::Gtk.Button button7;
+		
+		private global::Gtk.Button button119;
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -119,9 +140,10 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.boxNewFile.Name = "boxNewFile";
 			this.boxNewFile.Spacing = 6;
 			// Container child boxNewFile.Gtk.Box+BoxChild
-			this.image36 = new global::Gtk.Image ();
+			this.image36 = new global::MonoDevelop.Components.ImageView ();
 			this.image36.Name = "image36";
-			this.image36.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-new", global::Gtk.IconSize.SmallToolbar);
+			this.image36.IconId = "gtk-new";
+			this.image36.IconSize = ((global::Gtk.IconSize)(2));
 			this.boxNewFile.Add (this.image36);
 			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.boxNewFile [this.image36]));
 			w11.Position = 0;
@@ -149,9 +171,10 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.boxNoFile.Name = "boxNoFile";
 			this.boxNoFile.Spacing = 6;
 			// Container child boxNoFile.Gtk.Box+BoxChild
-			this.image37 = new global::Gtk.Image ();
+			this.image37 = new global::MonoDevelop.Components.ImageView ();
 			this.image37.Name = "image37";
-			this.image37.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-warning", global::Gtk.IconSize.SmallToolbar);
+			this.image37.IconId = "gtk-dialog-warning";
+			this.image37.IconSize = ((global::Gtk.IconSize)(2));
 			this.boxNoFile.Add (this.image37);
 			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.boxNoFile [this.image37]));
 			w14.Position = 0;
@@ -184,9 +207,10 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.vbox4.Name = "vbox4";
 			this.vbox4.Spacing = 6;
 			// Container child vbox4.Gtk.Box+BoxChild
-			this.image38 = new global::Gtk.Image ();
+			this.image38 = new global::MonoDevelop.Components.ImageView ();
 			this.image38.Name = "image38";
-			this.image38.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-info", global::Gtk.IconSize.SmallToolbar);
+			this.image38.IconId = "gtk-dialog-info";
+			this.image38.IconSize = ((global::Gtk.IconSize)(2));
 			this.vbox4.Add (this.image38);
 			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.image38]));
 			w17.Position = 0;
