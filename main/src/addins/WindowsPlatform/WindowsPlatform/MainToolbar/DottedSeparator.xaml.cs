@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace WindowsPlatform.MainToolbar
@@ -27,9 +17,9 @@ namespace WindowsPlatform.MainToolbar
 			SizeChanged += ModifyPoints;
 			dotColor = new SolidColorBrush (new Color {
 				A = 0xFF,
-				R = 0xB8,
-				G = 0xB8,
-				B = 0xB8,
+				R = 0x7d,
+				G = 0x7d,
+				B = 0x7d,
 			});
 		}
 
