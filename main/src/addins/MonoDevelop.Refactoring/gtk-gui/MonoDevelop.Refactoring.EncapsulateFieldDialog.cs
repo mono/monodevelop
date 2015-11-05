@@ -32,7 +32,7 @@ namespace MonoDevelop.Refactoring
 		
 		private global::Gtk.HBox hbox2;
 		
-		private global::Gtk.Image imageError;
+		private global::MonoDevelop.Components.ImageView imageError;
 		
 		private global::Gtk.Label labelError;
 		
@@ -176,8 +176,10 @@ namespace MonoDevelop.Refactoring
 			this.hbox2.Name = "hbox2";
 			this.hbox2.Spacing = 6;
 			// Container child hbox2.Gtk.Box+BoxChild
-			this.imageError = new global::Gtk.Image ();
+			this.imageError = new global::MonoDevelop.Components.ImageView ();
 			this.imageError.Name = "imageError";
+			this.imageError.IconId = "md-error";
+			this.imageError.IconSize = ((global::Gtk.IconSize)(1));
 			this.hbox2.Add (this.imageError);
 			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.imageError]));
 			w14.Position = 0;

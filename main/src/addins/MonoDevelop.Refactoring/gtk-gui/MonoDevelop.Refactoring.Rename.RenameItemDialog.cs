@@ -18,7 +18,7 @@ namespace MonoDevelop.Refactoring.Rename
 		
 		private global::Gtk.HBox hbox1;
 		
-		private global::Gtk.Image imageWarning;
+		private global::MonoDevelop.Components.ImageView imageWarning;
 		
 		private global::Gtk.Label labelWarning;
 		
@@ -104,9 +104,10 @@ namespace MonoDevelop.Refactoring.Rename
 			this.hbox1.Name = "hbox1";
 			this.hbox1.Spacing = 6;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.imageWarning = new global::Gtk.Image ();
+			this.imageWarning = new global::MonoDevelop.Components.ImageView ();
 			this.imageWarning.Name = "imageWarning";
-			this.imageWarning.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-apply", global::Gtk.IconSize.Button);
+			this.imageWarning.IconId = "md-warning";
+			this.imageWarning.IconSize = ((global::Gtk.IconSize)(4));
 			this.hbox1.Add (this.imageWarning);
 			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.imageWarning]));
 			w7.Position = 0;
