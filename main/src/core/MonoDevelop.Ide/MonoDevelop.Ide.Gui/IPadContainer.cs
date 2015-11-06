@@ -95,11 +95,6 @@ namespace MonoDevelop.Ide.Gui
 		IPadContent Content { get; }
 		
 		/// <summary>
-		/// Interface providing the widget to be shown in the label of minimized pads
-		/// </summary>
-		IDockItemLabelProvider DockItemLabelProvider { get; set; }
-		
-		/// <summary>
 		/// Returns a toolbar for the pad.
 		/// </summary>
 		DockItemToolbar GetToolbar (Gtk.PositionType position);
@@ -243,11 +238,6 @@ namespace MonoDevelop.Ide.Gui
 				else
 					Item.Status = DockItemStatus.Dockable;
 			}
-		}
-
-		public IDockItemLabelProvider DockItemLabelProvider {
-			get { return Item.DockLabelProvider; }
-			set { Item.DockLabelProvider = value; }
 		}
 
 		public bool ContentVisible {

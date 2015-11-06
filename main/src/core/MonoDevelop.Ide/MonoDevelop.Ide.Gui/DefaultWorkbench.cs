@@ -1329,7 +1329,6 @@ namespace MonoDevelop.Ide.Gui
 			item.DefaultLocation = location;
 			item.DefaultVisible = false;
 			item.DefaultStatus = defaultStatus;
-			item.DockLabelProvider = padCodon;
 			window.Item = item;
 			
 			if (padCodon.Initialized) {
