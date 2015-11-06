@@ -204,9 +204,16 @@ namespace MonoDevelop.Debugger.Tests
 			};
 
 			Session.TargetStopped += (sender, e) => {
-				Frame = e.Backtrace.GetFrame (0);
-				lastStoppedPosition = Frame.SourceLocation;
-				targetStoppedEvent.Set ();
+				//This can be null in case of ForcedStop
+				//which is called when exception is thrown
+				//when Continue & Stepping is executed
+				if (e.Backtrace != null) {
+					Frame = e.Backtrace.GetFrame (0);
+					lastStoppedPosition = Frame.SourceLocation;
+					targetStoppedEvent.Set ();
+				} else {
+					Console.WriteLine ("e.Backtrace is null");
+				}
 			};
 
 			var targetExited = new ManualResetEvent (false);
@@ -215,6 +222,10 @@ namespace MonoDevelop.Debugger.Tests
 			};
 
 			Session.Run (dsi, ops);
+			Session.ExceptionHandler = (ex) => {
+				Console.WriteLine ("Session.ExceptionHandler:" + Environment.NewLine + ex.ToString ());
+				return true;
+			};
 			switch (WaitHandle.WaitAny (new WaitHandle[]{ done, targetExited }, 30000)) {
 			case 0:
 				//Breakpoint is hit good... run tests now
