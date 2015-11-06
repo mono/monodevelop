@@ -220,7 +220,7 @@ namespace Microsoft.Build.Evaluation
                             RegexOptions.IgnoreCase);
                         if (m.Success && m.Groups.Count >= 1 && valueName.Equals("InstallRoot", StringComparison.OrdinalIgnoreCase))
                         {
-							var mr = Runtime.SystemAssemblyService.DefaultRuntime as MonoTargetRuntime;
+							var mr = MonoDevelop.Core.Runtime.SystemAssemblyService.DefaultRuntime as MonoTargetRuntime;
 							if (mr != null)
 	                            return Path.Combine(mr.MonoDirectory, m.Groups[0].Value) + Path.DirectorySeparatorChar;
                         }
