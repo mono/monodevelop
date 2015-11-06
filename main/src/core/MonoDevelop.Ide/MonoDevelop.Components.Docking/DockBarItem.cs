@@ -219,31 +219,21 @@ namespace MonoDevelop.Components.Docking
 					mainBox.SetPadding (9, 11, 3, 3);
 			}
 			
-			Gtk.Widget customLabel = null;
-			if (it.DockLabelProvider != null)
-				customLabel = it.DockLabelProvider.CreateLabel (bar.Orientation);
-			
-			if (customLabel != null) {
-				customLabel.ShowAll ();
-				box.PackStart (customLabel, true, true, 0);
+			if (it.Icon != null) {
+				var desat = it.Icon.WithAlpha (0.5);
+				crossfade = new CrossfadeIcon (desat, it.Icon);
+				box.PackStart (crossfade, false, false, 0);
+				desat.Dispose ();
 			}
-			else {
-				if (it.Icon != null) {
-					var desat = it.Icon.WithAlpha (0.5);
-					crossfade = new CrossfadeIcon (desat, it.Icon);
-					box.PackStart (crossfade, false, false, 0);
-					desat.Dispose ();
-				}
-					
-				if (!string.IsNullOrEmpty (it.Label)) {
-					label = new Gtk.Label (it.Label);
-					label.UseMarkup = true;
-					if (bar.Orientation == Gtk.Orientation.Vertical)
-						label.Angle = 270;
-					box.PackStart (label, true, true, 0);
-				} else
-					label = null;
-			}
+				
+			if (!string.IsNullOrEmpty (it.Label)) {
+				label = new Gtk.Label (it.Label);
+				label.UseMarkup = true;
+				if (bar.Orientation == Gtk.Orientation.Vertical)
+					label.Angle = 270;
+				box.PackStart (label, true, true, 0);
+			} else
+				label = null;
 
 			box.Spacing = 2;
 			mainBox.Add (box);
