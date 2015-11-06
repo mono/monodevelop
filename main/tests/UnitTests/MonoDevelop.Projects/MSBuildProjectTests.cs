@@ -229,6 +229,31 @@ namespace MonoDevelop.Projects
 			p.Evaluate ();
 			Assert.AreEqual (new [] {"Two"}, p.EvaluatedItems.Select (i => i.Include).ToArray ());
 		}
+
+		[Test]
+		public void FunctionProperties ()
+		{
+			string projectFile = Util.GetSampleProject ("msbuild-tests", "functions.csproj");
+			var p = new MSBuildProject ();
+			p.Load (projectFile);
+			p.Evaluate ();
+
+			Assert.AreEqual ("bcd", p.EvaluatedProperties.GetValue ("Substring"));
+			Assert.AreEqual ("255", p.EvaluatedProperties.GetValue ("MaxByte"));
+			Assert.AreEqual ("A", p.EvaluatedProperties.GetValue ("Upper1"));
+			Assert.AreEqual ("a'b'c5", p.EvaluatedProperties.GetValue ("Upper2"));
+			Assert.AreEqual ("a\"b\"c5", p.EvaluatedProperties.GetValue ("Upper3"));
+			Assert.AreEqual ("abc5", p.EvaluatedProperties.GetValue ("Upper4"));
+			Assert.AreEqual ("abcdefgh5", p.EvaluatedProperties.GetValue ("Upper5"));
+			Assert.AreEqual ("1234567890", p.EvaluatedProperties.GetValue ("FileContent"));
+			Assert.AreEqual ("00007fff", p.EvaluatedProperties.GetValue ("HexConv"));
+			Assert.AreEqual ("[1234567890]", p.EvaluatedProperties.GetValue ("ConcatFileContent"));
+
+			Assert.AreEqual ("5", p.EvaluatedProperties.GetValue ("MSBuildAdd"));
+			Assert.AreEqual ("5.5", p.EvaluatedProperties.GetValue ("MSBuildAddDouble"));
+			Assert.AreEqual ("abcdefgh", p.EvaluatedProperties.GetValue ("MSBuildValueOrDefault1"));
+			Assert.AreEqual ("empty", p.EvaluatedProperties.GetValue ("MSBuildValueOrDefault2"));
+		}
 	}
 }
 
