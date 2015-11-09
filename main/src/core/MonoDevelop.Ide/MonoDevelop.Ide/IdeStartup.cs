@@ -358,18 +358,10 @@ namespace MonoDevelop.Ide
 					gtkrc += ".win32";
 					if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark)
 						gtkrc += "-dark";
-					var osv = Environment.OSVersion.Version;
-					if (osv.Major == 6 && osv.Minor < 1)
-						gtkrc += "-vista";
 				} else if (Platform.IsMac) {
 					gtkrc += ".mac";
 					if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark)
 						gtkrc += "-dark";
-
-					var osv = Platform.OSVersion;
-					if (osv.Major == 10 && osv.Minor >= 10) {
-						gtkrc += "-yosemite";
-					}
 				}
 
 				var gtkrcf = PropertyService.EntryAssemblyPath.Combine (gtkrc);
