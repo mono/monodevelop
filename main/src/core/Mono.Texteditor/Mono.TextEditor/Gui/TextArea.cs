@@ -853,14 +853,17 @@ namespace Mono.TextEditor
 		
 		public void RedrawMarginLine (Margin margin, int logicalLine)
 		{
-			if (isDisposed)
+			if (isDisposed || !margin.IsVisible)
 				return;
 			
 			double y = LineToY (logicalLine) - this.textEditorData.VAdjustment.Value;
 			double h = GetLineHeight (logicalLine);
-			
-			if (y + h > 0)
-				QueueDrawArea ((int)margin.XOffset, (int)y, (int)GetMarginWidth (margin), (int)h);
+
+			if (y + h > 0) {
+				var mw = (int)GetMarginWidth (margin);
+				if (mw > 0 && h > 0) 
+					QueueDrawArea ((int)margin.XOffset, (int)y, mw, (int)h);
+			}
 		}
 
 		int GetMarginWidth (Margin margin)
