@@ -571,8 +571,13 @@ namespace MonoDevelop.SourceEditor
 						var lineSegment = widget.Document.GetLine (marker.Task.Line);
 						if (lineSegment == null)
 							continue;
-						marker.LineSegment = lineSegment;
-						widget.Document.AddMarker (lineSegment, marker, false);
+						var oldMarker = lineSegment.Markers.OfType<MessageBubbleTextMarker> ().FirstOrDefault ();
+						if (oldMarker != null) {
+							oldMarker.AddError (marker.Task, marker.Task.Severity == TaskSeverity.Error, marker.Task.Description);
+						} else {
+							marker.LineSegment = lineSegment;
+							widget.Document.AddMarker (lineSegment, marker, false);
+						}
 					}
 				});
 			});
