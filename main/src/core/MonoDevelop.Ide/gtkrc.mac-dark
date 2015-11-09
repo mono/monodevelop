@@ -10,7 +10,7 @@ fg_color:          #bfbfbf
 base_color:        #222
 text_color:        #bfbfbf
 selected_bg_color: #649dd6
-selected_fg_color: #222
+selected_fg_color: #fff
 tooltip_bg_color:  #5a5a5a
 tooltip_fg_color:  #222222
 tooltip_border_color: #b2b2b2"
@@ -85,7 +85,6 @@ style "default" {
     GtkSeparatorMenuItem::horizontal-padding = 2
 
     engine "xamarin" {
-
         arrowstyle = 2
         rgba       = TRUE
         roundness  = 3
@@ -99,6 +98,8 @@ style "default" {
         colorize_scrollbar = FALSE
         progressbarstyle = 0
         trough_shades = { 0.842, 0.886 }
+
+        focusstyle = 0
     }
 }
 

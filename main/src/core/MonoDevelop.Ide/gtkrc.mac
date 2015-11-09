@@ -85,7 +85,6 @@ style "default" {
     GtkSeparatorMenuItem::horizontal-padding = 2
 
     engine "xamarin" {
-
         arrowstyle = 2
         rgba       = TRUE
         roundness  = 3
@@ -99,6 +98,8 @@ style "default" {
         colorize_scrollbar = FALSE
         progressbarstyle = 0
         trough_shades = { 0.842, 0.886 }
+
+        focusstyle = 0
     }
 }
 
