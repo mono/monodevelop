@@ -37,6 +37,7 @@ using System.Reflection;
 using Microsoft.Build.Utilities;
 using MonoDevelop.Projects.Formats.MSBuild.Conditions;
 using System.Globalization;
+using Microsoft.Build.Evaluation;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -494,10 +495,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		object ConvertArg (MethodInfo method, int argNum, object value, Type parameterType)
 		{
 			var res = Convert.ChangeType (value, parameterType, CultureInfo.InvariantCulture);
+			bool convertPath = false;
+
 			if ((method.DeclaringType == typeof (System.IO.File) || method.DeclaringType == typeof (System.IO.Directory)) && argNum == 0) {
-				// The argument is a path. Convert to native path and make absolute
-				res = MSBuildProjectService.FromMSBuildPath (project.BaseDirectory, (string)res);
+				convertPath = true;
+			} else if (method.DeclaringType == typeof (IntrinsicFunctions)) {
+				if (method.Name == "MakeRelative")
+					convertPath = true;
+				else if (method.Name == "GetDirectoryNameOfFileAbove" && argNum == 0)
+					convertPath = true;
 			}
+
+			// The argument is a path. Convert to native path and make absolute
+			if (convertPath)
+				res = MSBuildProjectService.FromMSBuildPath (project.BaseDirectory, (string)res);
+			
 			return res;
 		}
 
