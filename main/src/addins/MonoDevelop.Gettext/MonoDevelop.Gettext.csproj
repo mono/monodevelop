@@ -151,6 +151,7 @@
     <Compile Include="MonoDevelop.Gettext\TranslationCollection.cs" />
     <Compile Include="MonoDevelop.Gettext.NodeBuilders\ProjectFileNodeBuilderExtension.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="MonoDevelop.Gettext.Editor\Styles.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
