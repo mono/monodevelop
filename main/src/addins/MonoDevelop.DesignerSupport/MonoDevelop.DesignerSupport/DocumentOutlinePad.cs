@@ -59,7 +59,7 @@ namespace MonoDevelop.DesignerSupport
 			base.Initialize (window);
 			IdeApp.Workbench.ActiveDocumentChanged += DocumentChangedHandler;
 			CurrentDoc = IdeApp.Workbench.ActiveDocument;
-			toolbar = window.GetToolbar (PositionType.Top);
+			toolbar = window.GetToolbar (DockPositionType.Top);
 			toolbar.Visible = false;
 			Update ();
 		}

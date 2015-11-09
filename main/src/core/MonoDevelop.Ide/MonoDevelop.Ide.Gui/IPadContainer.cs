@@ -97,7 +97,7 @@ namespace MonoDevelop.Ide.Gui
 		/// <summary>
 		/// Returns a toolbar for the pad.
 		/// </summary>
-		DockItemToolbar GetToolbar (Gtk.PositionType position);
+		DockItemToolbar GetToolbar (DockPositionType position);
 		
 		/// <summary>
 		/// Brings the pad to the front.
@@ -253,7 +253,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public DockItemToolbar GetToolbar (Gtk.PositionType position)
+		public DockItemToolbar GetToolbar (DockPositionType position)
 		{
 			return Item.GetToolbar (position);
 		}

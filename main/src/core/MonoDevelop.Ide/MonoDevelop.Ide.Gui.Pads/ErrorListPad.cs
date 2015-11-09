@@ -124,7 +124,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			this.window = window;
 			window.Title = GettextCatalog.GetString ("Errors");
 
-			DockItemToolbar toolbar = window.GetToolbar (PositionType.Top);
+			DockItemToolbar toolbar = window.GetToolbar (DockPositionType.Top);
 			
 			errorBtn = new ToggleButton ();
 			errorBtn.Active = ShowErrors;

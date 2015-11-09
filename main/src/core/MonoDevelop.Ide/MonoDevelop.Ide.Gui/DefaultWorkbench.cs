@@ -866,21 +866,21 @@ namespace MonoDevelop.Ide.Gui
 			documentDockItem.Content = new DockNotebookContainer (tabControl, true);
 
 			DockVisualStyle style = new DockVisualStyle ();
-			style.PadTitleLabelColor = Styles.PadLabelColor;
-			style.PadBackgroundColor = Styles.PadBackground;
-			style.InactivePadBackgroundColor = Styles.InactivePadBackground;
+			style.PadTitleLabelColor = Styles.PadLabelColor.ToXwtColor ();
+			style.PadBackgroundColor = Styles.PadBackground.ToXwtColor ();
+			style.InactivePadBackgroundColor = Styles.InactivePadBackground.ToXwtColor ();
 			style.PadTitleHeight = barHeight;
 			dock.DefaultVisualStyle = style;
 
 			style = new DockVisualStyle ();
-			style.PadTitleLabelColor = Styles.PadLabelColor;
+			style.PadTitleLabelColor = Styles.PadLabelColor.ToXwtColor ();
 			style.PadTitleHeight = barHeight;
 			style.ShowPadTitleIcon = false;
 			style.UppercaseTitles = false;
 			style.ExpandedTabs = true;
-			style.PadBackgroundColor = Styles.BrowserPadBackground;
-			style.InactivePadBackgroundColor = Styles.InactiveBrowserPadBackground;
-			style.TreeBackgroundColor = Styles.BrowserPadBackground;
+			style.PadBackgroundColor = Styles.BrowserPadBackground.ToXwtColor ();
+			style.InactivePadBackgroundColor = Styles.InactiveBrowserPadBackground.ToXwtColor ();
+			style.TreeBackgroundColor = Styles.BrowserPadBackground.ToXwtColor ();
 			dock.SetDockItemStyle ("ProjectPad", style);
 			dock.SetDockItemStyle ("ClassPad", style);
 

@@ -67,7 +67,7 @@ namespace MonoDevelop.DesignerSupport
 		public override void Initialize (IPadWindow container)
 		{
 			base.Initialize (container);
-			toolbarProvider.Attach (container.GetToolbar (Gtk.PositionType.Top));
+			toolbarProvider.Attach (container.GetToolbar (DockPositionType.Top));
 			grid.SetToolbarProvider (toolbarProvider);
 			this.container = container;
 			DesignerSupport.Service.SetPad (this);
@@ -118,7 +118,7 @@ namespace MonoDevelop.DesignerSupport
 					customWidget = false;
 					frame.Remove (frame.Child);
 					frame.Add (grid);
-					toolbarProvider.Attach (container.GetToolbar (Gtk.PositionType.Top));
+					toolbarProvider.Attach (container.GetToolbar (DockPositionType.Top));
 				}
 				
 				return grid;
@@ -138,7 +138,7 @@ namespace MonoDevelop.DesignerSupport
 		void ClearToolbar ()
 		{
 			if (container != null) {
-				var toolbar = container.GetToolbar (Gtk.PositionType.Top);
+				var toolbar = container.GetToolbar (DockPositionType.Top);
 				foreach (var w in toolbar.Children)
 					toolbar.Remove (w);
 			}

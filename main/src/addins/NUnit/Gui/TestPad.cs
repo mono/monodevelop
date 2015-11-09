@@ -90,7 +90,7 @@ namespace MonoDevelop.NUnit
 			paned = new VPaned ();
 			
 			VBox vbox = new VBox ();
-			DockItemToolbar topToolbar = Window.GetToolbar (PositionType.Top);
+			DockItemToolbar topToolbar = Window.GetToolbar (DockPositionType.Top);
 
 			var hbox = new HBox { Spacing = 6 };
 			hbox.PackStart (new ImageView (ImageService.GetIcon ("nunit-run", IconSize.Menu)), false, false, 0);

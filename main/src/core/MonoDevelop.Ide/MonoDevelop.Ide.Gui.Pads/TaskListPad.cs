@@ -129,7 +129,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		void IPadContent.Initialize (IPadWindow window)
 		{
-			toolbar = window.GetToolbar (PositionType.Top);
+			toolbar = window.GetToolbar (DockPositionType.Top);
 			toolbar.Add (switcherCombo);
 			toolbar.ShowAll ();
 			switcherCombo.Changed += new EventHandler (OnContentSwitched);

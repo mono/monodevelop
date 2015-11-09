@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			this.window = window;
 			window.Icon = icon;
 			
-			DockItemToolbar toolbar = window.GetToolbar (PositionType.Right);
+			DockItemToolbar toolbar = window.GetToolbar (DockPositionType.Right);
 
 			buttonStop = new Button (new Gtk.Image (Stock.Stop, IconSize.Menu));
 			buttonStop.Clicked += new EventHandler (OnButtonStopClick);

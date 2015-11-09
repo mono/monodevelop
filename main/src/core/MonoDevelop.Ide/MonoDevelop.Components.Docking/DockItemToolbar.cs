@@ -34,11 +34,11 @@ namespace MonoDevelop.Components.Docking
 		DockItem parentItem;
 		Gtk.Widget frame;
 		Box box;
-		PositionType position;
+		DockPositionType position;
 		bool empty = true;
 		CustomFrame topFrame;
 		
-		internal DockItemToolbar (DockItem parentItem, PositionType position)
+		internal DockItemToolbar (DockItem parentItem, DockPositionType position)
 		{
 			this.parentItem = parentItem;
 
@@ -65,7 +65,7 @@ namespace MonoDevelop.Components.Docking
 			}*/
 
 			this.position = position;
-			if (position == PositionType.Top || position == PositionType.Bottom)
+			if (position == DockPositionType.Top || position == DockPositionType.Bottom)
 				box = new HBox (false, 3);
 			else
 				box = new VBox (false, 3);
@@ -79,7 +79,7 @@ namespace MonoDevelop.Components.Docking
 
 		internal void SetStyle (DockVisualStyle style)
 		{
-			topFrame.BackgroundColor = style.PadBackgroundColor.Value;
+			topFrame.BackgroundColor = style.PadBackgroundColor.Value.ToGdkColor ();
 		}
 
 		public DockItem DockItem {
@@ -90,7 +90,7 @@ namespace MonoDevelop.Components.Docking
 			get { return frame; }
 		}
 		
-		public PositionType Position {
+		public DockPositionType Position {
 			get { return this.position; }
 		}
 		
