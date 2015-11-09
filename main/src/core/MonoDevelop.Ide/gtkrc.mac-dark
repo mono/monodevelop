@@ -117,50 +117,44 @@ style "button" {
     xthickness = 2
     ythickness = 4
 
-    bg[NORMAL]      = @bg_color
-    bg[PRELIGHT]    = shade(1.1, @bg_color)
-    bg[ACTIVE]      = @bg_color
-    bg[INSENSITIVE] = @bg_color
+    bg[NORMAL]      = "#595959"
+    bg[PRELIGHT]    = "#595959"				  # Mac buttons have no hover state
+    bg[ACTIVE]      = shade(1.2, "#595959")
+    bg[INSENSITIVE] = "#595959"
+
+    fg[NORMAL]      = "#fff"
+    fg[PRELIGHT]    = "#fff"
+    fg[ACTIVE]      = "#fff"
+    fg[INSENSITIVE] = lighter ("#595959")
+
+    GtkWidget::draw-border = { 1, 1, 1, 1 }
     GtkWidget::focus-padding = 0
+    GtkWidget::focus-line-width = 1
 
     engine "xamarin" {
         rgba = FALSE
         contrast = 1.0
         gradient_shades     = {0.96, 0.918, 0.926, 0.858}
-        focus_color         = shade(0.6, @bg_color)
+        focus_color         = shade(1.4, @bg_color)
+        focusstyle          = 3
+        border_colors       = { @bg_color, @bg_color }
         textstyle           = 1
-      }
+        text_shade = 1.0
+        highlight_shade = 1.0
+        lightborder_shade = 1.0
+        default_button_color = lighter ("#595959")
+	}
 }
 
-style "dialog-button" = "default" {
+style "dialog-button" = "button" {
     xthickness = 2
     ythickness = 4
     font_name = "Lucida Grande 13"
 
-    bg[NORMAL]      = "#595959"
-    bg[PRELIGHT]    = shade(1.1, "#595959")
-    bg[ACTIVE]      = "#51ADF3"
-    bg[INSENSITIVE] = "#595959"
-    bg[SELECTED]    = "#51ADF3"
-    fg[NORMAL]      = "#fff"
-    fg[SELECTED]    = "#fff"
-    fg[PRELIGHT]    = "#fff"
-    fg[INSENSITIVE] = lighter ("#595959")
-
-    GtkWidget::draw-border = { 1, 1, 1, 1 }
-    GtkWidget::focus-line-width = 1
-    GtkWidget::focus-padding = 0
     GtkButton::inner-border = { 7, 7, 3, 4 }
 
     engine "xamarin" {
-        rgba = FALSE
-        contrast = 1.0
-        gradient_shades     = {0.96, 0.918, 0.926, 0.858}
-        focus_color         = lighter ("#595959")
-        focusstyle          = 3
-        border_colors       = { @base_color, @base_color }
         default_button_color = "#51ADF3"
-        textstyle           = 1
       }
 }
 
@@ -271,6 +265,7 @@ style "combo-box" = "default"
 
     engine "xamarin" {
         arrowstyle = 4
+        border_colors       = { @base_color, @base_color }
     }
 }
 
@@ -414,10 +409,10 @@ class "GtkScale" style "scale"
 widget "*search-entry*" style "search-entry"
 widget "*GtkTextView"   style "entry"
 
+widget_class "*.GtkButton.*" style "button"
 widget_class "<GtkDialog>.*.<GtkButton>" style "dialog-button"
 widget_class "<GtkDialog>*<GtkCheckButton>" style "radio-or-check-box"
-widget_class "<GtkDialog>.<GtkVBox>.<GtkButtonBox>.<GtkButton>*" style "dialog-button"
-widget_class "<GtkDialog>.<GtkVBox>.<GtkHBox>.<GtkButtonBox>.<GtkButton>*" style "dialog-button"
+widget_class "<GtkDialog>.*.<GtkButtonBox>.*.<GtkButton>.*" style "dialog-button"
 widget "*.toggleFindInFiles" style "toggle-button"
 widget "*.toggleReplaceInFiles" style "toggle-button"
 widget "wizard_dialog" style "wizard-dialog"
