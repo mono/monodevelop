@@ -863,6 +863,18 @@
     <EmbeddedResource Include="icons\file-class-32~dark%402x.png">
       <LogicalName>file-class-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-class-32~sel.png">
+      <LogicalName>file-class-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-class-32~sel%402x.png">
+      <LogicalName>file-class-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-class-32~dark~sel.png">
+      <LogicalName>file-class-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-class-32~dark~sel%402x.png">
+      <LogicalName>file-class-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-enum-32.png">
       <LogicalName>file-enum-32.png</LogicalName>
     </EmbeddedResource>
@@ -874,6 +886,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-enum-32~dark%402x.png">
       <LogicalName>file-enum-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-enum-32~sel.png">
+      <LogicalName>file-enum-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-enum-32~sel%402x.png">
+      <LogicalName>file-enum-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-enum-32~dark~sel.png">
+      <LogicalName>file-enum-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-enum-32~dark~sel%402x.png">
+      <LogicalName>file-enum-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-interface-32.png">
       <LogicalName>file-interface-32.png</LogicalName>
@@ -887,6 +911,18 @@
     <EmbeddedResource Include="icons\file-interface-32~dark%402x.png">
       <LogicalName>file-interface-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-interface-32~sel.png">
+      <LogicalName>file-interface-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-interface-32~sel%402x.png">
+      <LogicalName>file-interface-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-interface-32~dark~sel.png">
+      <LogicalName>file-interface-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-interface-32~dark~sel%402x.png">
+      <LogicalName>file-interface-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-struct-32.png">
       <LogicalName>file-struct-32.png</LogicalName>
     </EmbeddedResource>
@@ -898,6 +934,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-struct-32~dark%402x.png">
       <LogicalName>file-struct-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-struct-32~sel.png">
+      <LogicalName>file-struct-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-struct-32~sel%402x.png">
+      <LogicalName>file-struct-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-struct-32~dark~sel.png">
+      <LogicalName>file-struct-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-struct-32~dark~sel%402x.png">
+      <LogicalName>file-struct-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-xml-16.png">
       <LogicalName>file-xml-16.png</LogicalName>
@@ -911,6 +959,18 @@
     <EmbeddedResource Include="icons\file-xml-16~dark%402x.png">
       <LogicalName>file-xml-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-xml-16~sel.png">
+      <LogicalName>file-xml-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-xml-16~sel%402x.png">
+      <LogicalName>file-xml-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-xml-16~dark~sel.png">
+      <LogicalName>file-xml-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-xml-16~dark~sel%402x.png">
+      <LogicalName>file-xml-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-xml-32.png">
       <LogicalName>file-xml-32.png</LogicalName>
     </EmbeddedResource>
@@ -922,6 +982,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-xml-32~dark%402x.png">
       <LogicalName>file-xml-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-xml-32~sel.png">
+      <LogicalName>file-xml-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-xml-32~sel%402x.png">
+      <LogicalName>file-xml-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-xml-32~dark~sel.png">
+      <LogicalName>file-xml-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-xml-32~dark~sel%402x.png">
+      <LogicalName>file-xml-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-script-16.png">
       <LogicalName>file-script-16.png</LogicalName>
@@ -935,6 +1007,18 @@
     <EmbeddedResource Include="icons\file-script-16~dark%402x.png">
       <LogicalName>file-script-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-script-16~sel.png">
+      <LogicalName>file-script-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-script-16~sel%402x.png">
+      <LogicalName>file-script-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-script-16~dark~sel.png">
+      <LogicalName>file-script-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-script-16~dark~sel%402x.png">
+      <LogicalName>file-script-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-script-32.png">
       <LogicalName>file-script-32.png</LogicalName>
     </EmbeddedResource>
@@ -946,6 +1030,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-script-32~dark%402x.png">
       <LogicalName>file-script-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-script-32~sel.png">
+      <LogicalName>file-script-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-script-32~sel%402x.png">
+      <LogicalName>file-script-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-script-32~dark~sel.png">
+      <LogicalName>file-script-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-script-32~dark~sel%402x.png">
+      <LogicalName>file-script-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\folder-new-16.png">
       <LogicalName>folder-new-16.png</LogicalName>
@@ -1721,6 +1817,18 @@
     <EmbeddedResource Include="icons\file-resource-16~dark%402x.png">
       <LogicalName>file-resource-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-resource-16~sel.png">
+      <LogicalName>file-resource-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-resource-16~sel%402x.png">
+      <LogicalName>file-resource-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-resource-16~dark~sel.png">
+      <LogicalName>file-resource-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-resource-16~dark~sel%402x.png">
+      <LogicalName>file-resource-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-resource-32.png">
       <LogicalName>file-resource-32.png</LogicalName>
     </EmbeddedResource>
@@ -1732,6 +1840,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-resource-32~dark%402x.png">
       <LogicalName>file-resource-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-resource-32~sel.png">
+      <LogicalName>file-resource-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-resource-32~sel%402x.png">
+      <LogicalName>file-resource-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-resource-32~dark~sel.png">
+      <LogicalName>file-resource-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-resource-32~dark~sel%402x.png">
+      <LogicalName>file-resource-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-text-32.png">
       <LogicalName>file-text-32.png</LogicalName>
@@ -1745,6 +1865,18 @@
     <EmbeddedResource Include="icons\file-text-32~dark%402x.png">
       <LogicalName>file-text-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-text-32~sel.png">
+      <LogicalName>file-text-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-text-32~sel%402x.png">
+      <LogicalName>file-text-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-text-32~dark~sel.png">
+      <LogicalName>file-text-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-text-32~dark~sel%402x.png">
+      <LogicalName>file-text-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-text-16.png">
       <LogicalName>file-text-16.png</LogicalName>
     </EmbeddedResource>
@@ -1756,6 +1888,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-text-16~dark%402x.png">
       <LogicalName>file-text-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-text-16~sel.png">
+      <LogicalName>file-text-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-text-16~sel%402x.png">
+      <LogicalName>file-text-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-text-16~dark~sel.png">
+      <LogicalName>file-text-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-text-16~dark~sel%402x.png">
+      <LogicalName>file-text-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\toggle-bookmark-16.png">
       <LogicalName>toggle-bookmark-16.png</LogicalName>
@@ -1775,6 +1919,18 @@
     <EmbeddedResource Include="icons\file-generic-16~dark%402x.png">
       <LogicalName>file-generic-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-generic-16~sel.png">
+      <LogicalName>file-generic-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-generic-16~sel%402x.png">
+      <LogicalName>file-generic-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-generic-16~dark~sel.png">
+      <LogicalName>file-generic-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-generic-16~dark~sel%402x.png">
+      <LogicalName>file-generic-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-generic-32.png">
       <LogicalName>file-generic-32.png</LogicalName>
     </EmbeddedResource>
@@ -1786,6 +1942,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-generic-32~dark%402x.png">
       <LogicalName>file-generic-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-generic-32~sel.png">
+      <LogicalName>file-generic-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-generic-32~sel%402x.png">
+      <LogicalName>file-generic-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-generic-32~dark~sel.png">
+      <LogicalName>file-generic-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-generic-32~dark~sel%402x.png">
+      <LogicalName>file-generic-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tabbar-prev-12.png">
       <LogicalName>tabbar-prev-12.png</LogicalName>
@@ -2210,6 +2378,18 @@
     <EmbeddedResource Include="icons\file-source-16~dark%402x.png">
       <LogicalName>file-source-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-source-16~sel.png">
+      <LogicalName>file-source-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-source-16~sel%402x.png">
+      <LogicalName>file-source-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-source-16~dark~sel.png">
+      <LogicalName>file-source-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-source-16~dark~sel%402x.png">
+      <LogicalName>file-source-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-source-32.png">
       <LogicalName>file-source-32.png</LogicalName>
     </EmbeddedResource>
@@ -2221,6 +2401,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-source-32~dark%402x.png">
       <LogicalName>file-source-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-source-32~sel.png">
+      <LogicalName>file-source-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-source-32~sel%402x.png">
+      <LogicalName>file-source-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-source-32~dark~sel.png">
+      <LogicalName>file-source-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-source-32~dark~sel%402x.png">
+      <LogicalName>file-source-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-header-16.png">
       <LogicalName>file-header-16.png</LogicalName>
@@ -2234,6 +2426,18 @@
     <EmbeddedResource Include="icons\file-header-16~dark%402x.png">
       <LogicalName>file-header-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-header-16~sel.png">
+      <LogicalName>file-header-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-header-16~sel%402x.png">
+      <LogicalName>file-header-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-header-16~dark~sel.png">
+      <LogicalName>file-header-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-header-16~dark~sel%402x.png">
+      <LogicalName>file-header-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-header-32.png">
       <LogicalName>file-header-32.png</LogicalName>
     </EmbeddedResource>
@@ -2245,6 +2449,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-header-32~dark%402x.png">
       <LogicalName>file-header-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-header-32~sel.png">
+      <LogicalName>file-header-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-header-32~sel%402x.png">
+      <LogicalName>file-header-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-header-32~dark~sel.png">
+      <LogicalName>file-header-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-header-32~dark~sel%402x.png">
+      <LogicalName>file-header-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-unit-test-32.png">
       <LogicalName>file-unit-test-32.png</LogicalName>
@@ -2258,6 +2474,18 @@
     <EmbeddedResource Include="icons\file-unit-test-32~dark%402x.png">
       <LogicalName>file-unit-test-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-unit-test-32~sel.png">
+      <LogicalName>file-unit-test-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-unit-test-32~sel%402x.png">
+      <LogicalName>file-unit-test-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-unit-test-32~dark~sel.png">
+      <LogicalName>file-unit-test-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-unit-test-32~dark~sel%402x.png">
+      <LogicalName>file-unit-test-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-web-16.png">
       <LogicalName>file-web-16.png</LogicalName>
     </EmbeddedResource>
@@ -2269,6 +2497,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-web-16~dark%402x.png">
       <LogicalName>file-web-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-web-16~sel.png">
+      <LogicalName>file-web-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-web-16~sel%402x.png">
+      <LogicalName>file-web-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-web-16~dark~sel.png">
+      <LogicalName>file-web-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-web-16~dark~sel%402x.png">
+      <LogicalName>file-web-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-web-32.png">
       <LogicalName>file-web-32.png</LogicalName>
@@ -2282,6 +2522,18 @@
     <EmbeddedResource Include="icons\file-web-32~dark%402x.png">
       <LogicalName>file-web-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-web-32~sel.png">
+      <LogicalName>file-web-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-web-32~sel%402x.png">
+      <LogicalName>file-web-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-web-32~dark~sel.png">
+      <LogicalName>file-web-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-web-32~dark~sel%402x.png">
+      <LogicalName>file-web-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-gtk-32.png">
       <LogicalName>file-gtk-32.png</LogicalName>
     </EmbeddedResource>
@@ -2293,6 +2545,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-gtk-32~dark%402x.png">
       <LogicalName>file-gtk-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-gtk-32~sel.png">
+      <LogicalName>file-gtk-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-gtk-32~sel%402x.png">
+      <LogicalName>file-gtk-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-gtk-32~dark~sel.png">
+      <LogicalName>file-gtk-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-gtk-32~dark~sel%402x.png">
+      <LogicalName>file-gtk-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\folder-component-mac-16.png">
       <LogicalName>folder-component-mac-16.png</LogicalName>
