@@ -336,8 +336,8 @@ style "scrollbar" = "default"
 
 style "completion_scrollbar" = "scrollbar"
 {
-    GtkRange::slider-width = 8
-    GtkRange::trough-border = 3
+    GtkRange::slider-width = 7
+    GtkRange::trough-border = 2
 	bg[NORMAL] = @bg_color
 
 	engine "xamarin"
@@ -345,7 +345,6 @@ style "completion_scrollbar" = "scrollbar"
 		roundness		= 1
 		contrast		= 0.0
 		trough_shades	= { 1.0, 1.0 }
-		#trough_border_shades	= { 1.5, 1.5 }
 	}
 }
 
