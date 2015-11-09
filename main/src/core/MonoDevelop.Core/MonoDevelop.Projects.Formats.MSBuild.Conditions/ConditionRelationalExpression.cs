@@ -152,6 +152,57 @@ namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
 				throw new NotSupportedException (String.Format ("Relational operator {0} is not supported.", op));
 			}
 		}
+
+		public override void CollectConditionProperties (ConditionedPropertyCollection properties)
+		{
+			if ((op == RelationOperator.Equal || op == RelationOperator.NotEqual) && left is ConditionFactorExpression && right is ConditionFactorExpression) {
+				var leftString = ((ConditionFactorExpression)left).Token.Value;
+				var rightString = ((ConditionFactorExpression)right).Token.Value;
+
+				int il = 0;
+				int rl = 0;
+				while (il < leftString.Length && rl < rightString.Length) {
+					if (il < leftString.Length - 2 && leftString [il] == '$' && leftString [il + 1] == '(')
+						ReadPropertyCondition (properties, leftString, ref il, rightString, ref rl);
+					else if (rl < rightString.Length - 2 && rightString [rl] == '$' && rightString [rl + 1] == '(')
+						ReadPropertyCondition (properties, rightString, ref rl, leftString, ref il);
+					else if (leftString [il] != rightString [rl])
+						return; // Condition can't be true
+					il++; rl++;
+				}
+			}
+		}
+
+		void ReadPropertyCondition (ConditionedPropertyCollection properties, string propString, ref int i, string valString, ref int j)
+		{ 
+			var prop = ReadPropertyTag (propString, ref i);
+			string val;
+			if (i < propString.Length)
+				val = ReadPropertyValue (valString, ref j, propString [i]);
+			else
+				val = valString.Substring (j);
+
+			properties.AddProperty (prop, val);
+		}
+
+		string ReadPropertyValue (string valString, ref int j, char v)
+		{
+			var s = j;
+			while (j < valString.Length && valString [j] != v)
+				j++;
+			return valString.Substring (s, j - s);
+		}
+
+		string ReadPropertyTag (string propString, ref int i)
+		{
+			i += 2;
+			var s = i;
+			while (i < propString.Length && propString [i] != ')')
+				i++;
+			if (i < propString.Length)
+				return propString.Substring (s, (i++) - s);
+			return propString.Substring (s);
+		}
 	}
 	
 	internal enum RelationOperator {

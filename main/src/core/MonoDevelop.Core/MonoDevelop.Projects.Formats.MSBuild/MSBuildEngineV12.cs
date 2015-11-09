@@ -174,6 +174,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var p = (MSProject)project;
 			p.RemoveGlobalProperty (property);
 		}
+
+		public override IDictionary<string, List<string>> GetConditionedProperties (object project)
+		{
+			var p = (MSProject)project;
+			return p.ConditionedProperties;
+		}
 	}
 
 	#if !WINDOWS

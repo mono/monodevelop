@@ -38,5 +38,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
 		public abstract bool CanEvaluateToBool (IExpressionContext context);
 		public abstract bool CanEvaluateToNumber (IExpressionContext context);
 		public abstract bool CanEvaluateToString (IExpressionContext context);
+
+		public virtual void CollectConditionProperties (ConditionedPropertyCollection properties)
+		{
+		}
 	}
 }
