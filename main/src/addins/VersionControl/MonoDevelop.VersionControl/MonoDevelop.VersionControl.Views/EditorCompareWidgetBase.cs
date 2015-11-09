@@ -34,6 +34,7 @@ using Mono.TextEditor;
 using Mono.TextEditor.Utils;
 using MonoDevelop.Ide;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Components;
@@ -76,15 +77,6 @@ namespace MonoDevelop.VersionControl.Views
 				OnDiffChanged (EventArgs.Empty);
 			}
 		}
-
-		static readonly Cairo.Color lightRed = new Cairo.Color (255 / 255.0, 200 / 255.0, 200 / 255.0);
-		static readonly Cairo.Color darkRed = new Cairo.Color (178 / 255.0, 140 / 255.0, 140 / 255.0);
-		
-		static readonly Cairo.Color lightGreen = new Cairo.Color (190 / 255.0, 240 / 255.0, 190 / 255.0);
-		static readonly Cairo.Color darkGreen = new Cairo.Color (133 / 255.0, 168 / 255.0, 133 / 255.0);
-		
-		static readonly Cairo.Color lightBlue = new Cairo.Color (190 / 255.0, 190 / 255.0, 240 / 255.0);
-		static readonly Cairo.Color darkBlue = new Cairo.Color (133 / 255.0, 133 / 255.0, 168 / 255.0);
 		
 		protected abstract MonoTextEditor MainEditor {
 			get;
@@ -522,22 +514,22 @@ namespace MonoDevelop.VersionControl.Views
 			children.ForEach (child => child.Child.SizeRequest ());
 		}
 
-		public static Cairo.Color GetColor (Hunk hunk, bool removeSide, bool dark, double alpha)
+		public static Cairo.Color GetColor (Hunk hunk, bool removeSide, bool border, double alpha)
 		{
 			Cairo.Color result;
 			if (hunk.Removed > 0 && hunk.Inserted > 0) {
-				result = dark ? darkBlue : lightBlue;
+				result = border ? Styles.DiffView.MergeBackgroundColor : Styles.DiffView.MergeBorderColor;
 			} else if (removeSide) {
 				if (hunk.Removed > 0) {
-					result = dark ? darkRed : lightRed;
+					result = border ? Styles.DiffView.RemoveBackgroundColor : Styles.DiffView.RemoveBorderColor;
 				} else {
-					result = dark ? darkGreen : lightGreen;
+					result = border ? Styles.DiffView.AddBackgroundColor : Styles.DiffView.AddBorderColor;
 				}
 			} else {
 				if (hunk.Inserted > 0) {
-					result = dark ? darkGreen : lightGreen;
+					result = border ? Styles.DiffView.AddBackgroundColor : Styles.DiffView.AddBorderColor;
 				} else {
-					result = dark ? darkRed : lightRed;
+					result = border ? Styles.DiffView.RemoveBackgroundColor : Styles.DiffView.RemoveBorderColor;
 				}
 			}
 			result.A = alpha;
@@ -904,7 +896,7 @@ namespace MonoDevelop.VersionControl.Views
 								cr.SetSourceColor ((MonoDevelop.Components.HslColor)Style.Dark (StateType.Normal));
 								cr.Stroke ();
 								cr.LineWidth = 1;
-								cr.SetSourceRGB (0, 0, 0);
+								cr.SetSourceColor (MonoDevelop.Ide.Gui.Styles.BaseForegroundColor);
 								if (drawArrow) {
 									DrawArrow (cr, x + w / 1.5, y + h / 2);
 									DrawArrow (cr, x + w / 2.5, y + h / 2);
@@ -1071,7 +1063,7 @@ namespace MonoDevelop.VersionControl.Views
 					h,
 					barWidth / 2);
 				
-				var color = (HslColor)Style.Mid (StateType.Normal);
+				var color = (HslColor)MonoDevelop.Ide.Gui.Styles.BaseBackgroundColor;
 				color.L = 0.5;
 				var c = (Cairo.Color)color;
 				c.A = 0.6;

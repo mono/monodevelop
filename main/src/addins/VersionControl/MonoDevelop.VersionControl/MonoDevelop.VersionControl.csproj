@@ -655,6 +655,7 @@
     <Compile Include="MonoDevelop.VersionControl\VersionControlTask.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\CommonTextEditorOptions.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\BaseView.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Views\Styles.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

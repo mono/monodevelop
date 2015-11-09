@@ -246,7 +246,7 @@ namespace MonoDevelop.VersionControl.Views
 			c.Light *= 0.8;
 			commitBox.ModifyBg (StateType.Normal, c.ToGdkColor ());
 
-			var tcol = new Gdk.Color (255, 251, 242);
+			var tcol = Styles.LogView.CommitDescBackgroundColor;
 			textviewDetails.ModifyBase (StateType.Normal, tcol);
 			scrolledwindow1.ModifyBase (StateType.Normal, tcol);
 		}

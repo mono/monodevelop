@@ -22,11 +22,6 @@ namespace MonoDevelop.VersionControl.Views
 		TreePath path;
 		int RightPadding = 4;
 		
-//		Gdk.Color baseAddColor = new Gdk.Color (133, 168, 133);
-//		Gdk.Color baseRemoveColor = new Gdk.Color (178, 140, 140);
-		Gdk.Color baseAddColor = new Gdk.Color (123, 200, 123).AddLight (0.1);
-		Gdk.Color baseRemoveColor = new Gdk.Color (200, 140, 140).AddLight (0.1);
-		
 		int RoundedSectionRadius = 4;
 		int LeftPaddingBlock = 19;
 		
@@ -143,10 +138,10 @@ namespace MonoDevelop.VersionControl.Views
 				Gdk.GC normalGC = widget.Style.TextGC (StateType.Normal);
 				Gdk.GC removedGC = new Gdk.GC (window);
 				removedGC.Copy (normalGC);
-				removedGC.RgbFgColor = baseRemoveColor.AddLight (-0.3);
+				removedGC.RgbFgColor = Styles.LogView.DiffRemoveBackgroundColor.AddLight (-0.3);
 				Gdk.GC addedGC = new Gdk.GC (window);
 				addedGC.Copy (normalGC);
-				addedGC.RgbFgColor = baseAddColor.AddLight (-0.3);
+				addedGC.RgbFgColor = Styles.LogView.DiffAddBackgroundColor.AddLight (-0.3);
 				Gdk.GC infoGC = new Gdk.GC (window);
 				infoGC.Copy (normalGC);
 				infoGC.RgbFgColor = widget.Style.Text (StateType.Normal).AddLight (0.2);
@@ -266,11 +261,11 @@ namespace MonoDevelop.VersionControl.Views
 						double xrow = cell_area.X + LeftPaddingBlock;
 						int wrow = cell_area.Width - 1 - LeftPaddingBlock;
 						if (block.Type == BlockType.Added)
-							ctx.SetSourceColor (baseAddColor.AddLight (0.1).ToCairoColor ());
+							ctx.SetSourceColor (Styles.LogView.DiffAddBackgroundColor.AddLight (0.1).ToCairoColor ());
 						else if (block.Type == BlockType.Removed)
-							ctx.SetSourceColor (baseRemoveColor.AddLight (0.1).ToCairoColor ());
+							ctx.SetSourceColor (Styles.LogView.DiffRemoveBackgroundColor.AddLight (0.1).ToCairoColor ());
 						else {
-							ctx.SetSourceColor (widget.Style.Base (Gtk.StateType.Prelight).AddLight (0.1).ToCairoColor ());
+							ctx.SetSourceColor (Styles.LogView.DiffHighlightColor.ToCairoColor ());
 							xrow -= LeftPaddingBlock;
 							wrow += LeftPaddingBlock;
 						}
@@ -353,16 +348,16 @@ namespace MonoDevelop.VersionControl.Views
 			int bottomSpacing = (lineHeight - spacing) / 2;
 			
 			ctx.Rectangle (x + shadowSize + 0.5, firstBlock.YStart + bottomSpacing + spacing - shadowSize + 0.5, width - shadowSize*2, shadowSize);
-			ctx.SetSourceRGB (0.9, 0.9, 0.9);
+			ctx.SetSourceColor (Styles.LogView.DiffBoxSplitterColor);
 			ctx.LineWidth = 1;
 			ctx.Fill ();
 			
 			ctx.Rectangle (x + shadowSize + 0.5, lastBlock.YEnd + bottomSpacing + 0.5, width - shadowSize*2, shadowSize);
-			ctx.SetSourceRGB (0.9, 0.9, 0.9);
+			ctx.SetSourceColor (Styles.LogView.DiffBoxSplitterColor);
 			ctx.Fill ();
 			
 			ctx.Rectangle (x + 0.5, firstBlock.YStart + bottomSpacing + spacing + 0.5, width, lastBlock.YEnd - firstBlock.YStart - spacing);
-			ctx.SetSourceRGB (0.7,0.7,0.7);
+			ctx.SetSourceColor (Styles.LogView.DiffBoxBorderColor);
 			ctx.Stroke ();
 			
 			string text = lines[firstBlock.FirstLine].Replace ("@","").Replace ("-","");
@@ -380,7 +375,7 @@ namespace MonoDevelop.VersionControl.Views
 			ctx.LineWidth = 1;
 			ctx.SetSourceColor (widget.Style.Base (StateType.Normal).ToCairoColor ());
 			ctx.FillPreserve ();
-			ctx.SetSourceRGB (0.7, 0.7, 0.7);
+			ctx.SetSourceColor (Styles.LogView.DiffBoxBorderColor);
 			ctx.Stroke ();
 				
 			window.DrawLayout (gc, (int)(x + 2 + LeftPaddingBlock), firstBlock.YStart + dy, layout);
@@ -400,7 +395,7 @@ namespace MonoDevelop.VersionControl.Views
 			ctx.LineWidth = 1;
 			ctx.SetSourceColor (widget.Style.Base (Gtk.StateType.Normal).ToCairoColor ());
 			ctx.FillPreserve ();
-			ctx.SetSourceRGB (0.7, 0.7, 0.7);
+			ctx.SetSourceColor (Styles.LogView.DiffBoxBorderColor);
 			ctx.Stroke ();
 
 			window.DrawLayout (gc, right - tw - 1, top + dy, layout);
@@ -411,7 +406,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (!IsChangeBlock (block.Type))
 				return;
 			
-			Gdk.Color color = block.Type == BlockType.Added ? baseAddColor : baseRemoveColor;
+			Gdk.Color color = block.Type == BlockType.Added ? Styles.LogView.DiffAddBackgroundColor : Styles.LogView.DiffRemoveBackgroundColor;
 			double y = block.YStart;
 			int height = block.YEnd - block.YStart;
 			
@@ -454,7 +449,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (!IsChangeBlock (block.Type))
 				return;
 			
-			Gdk.Color color = block.Type == BlockType.Added ? baseAddColor : baseRemoveColor;
+			Gdk.Color color = block.Type == BlockType.Added ? Styles.LogView.DiffAddBackgroundColor : Styles.LogView.DiffRemoveBackgroundColor;
 
 			int ssize = 8;
 			int barSize = 3;

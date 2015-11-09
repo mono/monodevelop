@@ -33,6 +33,7 @@ using Mono.TextEditor;
 using MonoDevelop.Ide;
 using System.Threading;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Components;
 
@@ -278,7 +279,6 @@ namespace MonoDevelop.VersionControl.Views
 			double startY = Editor.LineToY (startLine);
 			double curY = startY - Editor.VAdjustment.Value;
 			int line = startLine;
-			var color = Style.Dark (State);
 			
 			while (curY < editor.Allocation.Bottom && line <= editor.LineCount) {
 				Annotation ann = line <= overview.annotations.Count ? overview.annotations[line - 1] : null;
@@ -293,10 +293,7 @@ namespace MonoDevelop.VersionControl.Views
 					if (ann != null && overview.highlightAnnotation.Revision == ann.Revision && curStart <= overview.highlightPositon && overview.highlightPositon < curY) {
 					} else {
 						cr.Rectangle (Editor.TextViewMargin.XOffset, curStart + cr.LineWidth, Editor.Allocation.Width - Editor.TextViewMargin.XOffset, curY - curStart - cr.LineWidth);
-						cr.SetSourceRGBA (color.Red / (double)ushort.MaxValue,
-							color.Green / (double)ushort.MaxValue,
-							color.Blue / (double)ushort.MaxValue,
-							0.1);
+						cr.SetSourceColor (Styles.BlameView.RangeHazeColor);
 						cr.Fill ();
 						
 					}
@@ -305,10 +302,7 @@ namespace MonoDevelop.VersionControl.Views
 					cr.MoveTo (Editor.TextViewMargin.XOffset, curY + 0.5);
 					cr.LineTo (Editor.Allocation.Width, curY + 0.5);
 					
-					cr.SetSourceRGBA (color.Red / (double)ushort.MaxValue,
-						color.Green / (double)ushort.MaxValue,
-						color.Blue / (double)ushort.MaxValue,
-						0.2);
+					cr.SetSourceColor (Styles.BlameView.RangeSplitterColor);
 					cr.Stroke ();
 				}
 			}
@@ -686,7 +680,7 @@ namespace MonoDevelop.VersionControl.Views
 					cr.LineWidth = Math.Max (1.0, widget.Editor.Options.Zoom);
 					
 					cr.Rectangle (leftSpacer, 0, Allocation.Width, Allocation.Height);
-					cr.SetSourceRGB (0.95, 0.95, 0.95);
+					cr.SetSourceColor (Styles.BlameView.AnnotationBackgroundColor);
 					cr.Fill ();
 					
 					int startLine = widget.Editor.YToLine ((int)widget.Editor.VAdjustment.Value);
@@ -712,7 +706,7 @@ namespace MonoDevelop.VersionControl.Views
 							double nextY = widget.editor.LineToY (line) - widget.editor.VAdjustment.Value;
 							if (highlightAnnotation != null && highlightAnnotation.Revision == ann.Revision && curStart <= highlightPositon && highlightPositon < nextY) {
 								cr.Rectangle (leftSpacer, curStart + cr.LineWidth, Allocation.Width - leftSpacer, nextY - curStart - cr.LineWidth);
-								cr.SetSourceRGB (1, 1, 1);
+								cr.SetSourceColor (Styles.BlameView.AnnotationHighlightColor);
 								cr.Fill ();
 							}
 
@@ -720,16 +714,22 @@ namespace MonoDevelop.VersionControl.Views
 							layout.SetText ("88888888");
 							layout.GetPixelSize (out revisionWidth, out h);
 							layout.SetText (TruncRevision (ann.Revision));
-							e.Window.DrawLayout (Style.BlackGC, Allocation.Width - revisionWidth - margin, (int)(curY + (widget.Editor.LineHeight - h) / 2), layout);
 
 							const int dateRevisionSpacing = 16;
-							if (ann.HasDate) {
-								string dateTime = ann.Date.ToShortDateString ();
-								// use a fixed size date to get a approx. date width
-								layout.SetText (new DateTime (1999, 10, 10).ToShortDateString ());
-								layout.GetPixelSize (out dateWidth, out h);
-								layout.SetText (dateTime);
-								e.Window.DrawLayout (Style.BlackGC, Allocation.Width - revisionWidth - margin - revisionWidth - dateRevisionSpacing, (int)(curY + (widget.Editor.LineHeight - h) / 2), layout);
+
+							using (var gc = new Gdk.GC (e.Window)) {
+								gc.RgbFgColor = Styles.BlameView.AnnotationTextColor.ToGdkColor ();
+								e.Window.DrawLayout (gc, Allocation.Width - revisionWidth - margin, (int)(curY + (widget.Editor.LineHeight - h) / 2), layout);
+
+								if (ann.HasDate) {
+									string dateTime = ann.Date.ToShortDateString ();
+									// use a fixed size date to get a approx. date width
+									layout.SetText (new DateTime (1999, 10, 10).ToShortDateString ());
+									layout.GetPixelSize (out dateWidth, out h);
+									layout.SetText (dateTime);
+
+									e.Window.DrawLayout (gc, Allocation.Width - revisionWidth - margin - revisionWidth - dateRevisionSpacing, (int)(curY + (widget.Editor.LineHeight - h) / 2), layout);
+								}
 							}
 
 							using (var authorLayout = MonoDevelop.Components.PangoUtil.CreateLayout (this)) {
@@ -750,7 +750,7 @@ namespace MonoDevelop.VersionControl.Views
 								cr.Rectangle (0, 0, maxWidth, Allocation.Height); 
 								cr.Clip ();
 								cr.Translate (leftSpacer + margin, (int)(curY + (widget.Editor.LineHeight - h) / 2)); 
-								cr.SetSourceRGB (0, 0, 0);
+								cr.SetSourceColor (Styles.BlameView.AnnotationTextColor);
 								cr.ShowLayout (authorLayout);
 								cr.ResetClip ();
 								cr.Restore ();
@@ -771,7 +771,7 @@ namespace MonoDevelop.VersionControl.Views
 								layout.SetText (msg);
 								layout.Width = (int)(Allocation.Width * Pango.Scale.PangoScale);
 								using (var gc = new Gdk.GC (e.Window)) {
-									gc.RgbFgColor = Style.Dark (State);
+									gc.RgbFgColor = Styles.BlameView.AnnotationSummaryTextColor.ToGdkColor ();
 									gc.ClipRectangle = new Rectangle (0, (int)curStart, Allocation.Width, (int)(curY - curStart));
 									e.Window.DrawLayout (gc, (int)(leftSpacer + margin), (int)(curStart + h), layout);
 								}
@@ -788,19 +788,19 @@ namespace MonoDevelop.VersionControl.Views
 							} else {
 								a = 1;
 							}
-							HslColor color = new Cairo.Color (0.90, 0.90, 1);
+							HslColor color = Styles.BlameView.AnnotationMarkColor;
 							color.L = 0.4 + a / 2;
 							color.S = 1 - a / 2;
 							cr.SetSourceColor (color);
 						} else {
-							cr.SetSourceColor (ann != null ? new Cairo.Color (1, 1, 0) : new Cairo.Color (0.95, 0.95, 0.95));
+							cr.SetSourceColor (ann != null ? Styles.BlameView.AnnotationMarkModifiedColor : Styles.BlameView.AnnotationBackgroundColor);
 						}
 						cr.Fill ();
 
 						if (ann != null) {
 							cr.MoveTo (0, curY + 0.5);
 							cr.LineTo (Allocation.Width, curY + 0.5);
-							cr.SetSourceRGB (0.6, 0.6, 0.6);
+							cr.SetSourceColor (Styles.BlameView.AnnotationSplitterColor);
 							cr.Stroke ();
 						}
 					}
