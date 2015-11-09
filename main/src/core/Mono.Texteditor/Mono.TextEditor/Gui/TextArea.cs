@@ -756,7 +756,11 @@ namespace Mono.TextEditor
 				if (parent != null) {
 					parent.ModifyBg (StateType.Normal, (HslColor)this.textEditorData.ColorStyle.PlainText.Background);
 				}
-				
+
+				// set additionally the real parent background for gtk themes that use the content background
+				// to draw the scrollbar slider trough.
+				this.Parent.ModifyBg (StateType.Normal, (HslColor)this.textEditorData.ColorStyle.PlainText.Background);
+
 				this.ModifyBg (StateType.Normal, (HslColor)this.textEditorData.ColorStyle.PlainText.Background);
 				settingWidgetBg = false;
 			}
