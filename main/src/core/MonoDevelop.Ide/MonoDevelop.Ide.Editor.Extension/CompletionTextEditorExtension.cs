@@ -145,8 +145,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 						// Show the completion window in two steps. The call to PrepareShowWindow creates the window but
 						// it doesn't show it. It is used only to process the keys while the completion data is being retrieved.
 						CompletionWindowManager.PrepareShowWindow (this, descriptor.KeyChar, CompletionWidget, CurrentCompletionContext);
+						EventHandler windowClosed = delegate (object o, EventArgs a) {
+							completionTokenSrc.Cancel ();
+						};
+						CompletionWindowManager.WindowClosed += windowClosed;
 
 						task.ContinueWith (t => {
+							CompletionWindowManager.WindowClosed -= windowClosed;
 							if (token.IsCancellationRequested)
 								return;
 							var result = t.Result;
