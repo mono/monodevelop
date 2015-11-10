@@ -1867,7 +1867,9 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		void ShowPopup (Gdk.EventButton evt)
 		{
-			var entryset = BuildEntrySet () ?? new CommandEntrySet ();
+			var entryset = BuildEntrySet ();
+			if (entryset == null)
+				return;
 
 			if (evt == null) {
 				var paths = tree.Selection.GetSelectedRows ();
