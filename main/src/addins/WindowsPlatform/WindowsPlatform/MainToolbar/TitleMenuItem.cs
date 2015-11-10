@@ -49,6 +49,7 @@ namespace WindowsPlatform.MainToolbar
 				}
 			} else if (menuLinkEntry != null) {
 				Header = menuLinkEntry.Text;
+				Click += OnMenuLinkClicked;
 			} else if (entry != null) {
 				actionCommand = manager.GetCommand (menuEntry.CommandId) as ActionCommand;
 				if (actionCommand == null)
@@ -66,6 +67,7 @@ namespace WindowsPlatform.MainToolbar
 				} catch (Exception ex) {
 					MonoDevelop.Core.LoggingService.LogError ("Failed loading menu icon: " + actionCommand.Icon, ex);
 				}
+				Click += OnMenuClicked;
 			}
 
 			Height = SystemParameters.CaptionHeight;
@@ -79,18 +81,13 @@ namespace WindowsPlatform.MainToolbar
 		/// <param name="includeChildren">If set to <c>true</c> include children.</param>
 		void Update (bool includeChildren)
 		{
-			if (menuLinkEntry != null) {
-				Click += OnMenuLinkClicked;
-				return;
-			}
-
 			if (menuEntrySet != null || commandArrayInfo is CommandInfoSet) {
 				if (includeChildren) {
 					for (int i = 0; i < Items.Count; ++i) {
 						var titleMenuItem = Items[i] as TitleMenuItem;
 
 						if (titleMenuItem != null) {
-							titleMenuItem.Update (true);
+							titleMenuItem.Update (false);
 							continue;
 						}
 
@@ -144,7 +141,6 @@ namespace WindowsPlatform.MainToolbar
 			}
 
 			SetInfo (commandArrayInfo != null ? commandArrayInfo : info);
-			Click += OnMenuClicked;
 		}
 
 		void SetInfo (CommandInfo info)
@@ -165,7 +161,6 @@ namespace WindowsPlatform.MainToolbar
 		IEnumerable<Control> Clear (bool includeChildren)
 		{
 			if (menuLinkEntry != null) {
-				Click -= OnMenuLinkClicked;
 				return Enumerable.Empty<TitleMenuItem> ();
 			}
 
@@ -185,9 +180,7 @@ namespace WindowsPlatform.MainToolbar
 				}
 				return Enumerable.Empty<TitleMenuItem> (); 
 			}
-
-			Click -= OnMenuClicked;
-
+			
 			var ret = toRemoveFromParent;
 			toRemoveFromParent = new List<Control> ();
 			return ret;
