@@ -243,11 +243,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Category lastCategory = null;
 			int lastCategoryYpos = 0;
 
+			cr.LineWidth = 1;
+
 			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
 				const int foldSegmentHeight = 8;
 
 				ProcessExpandAnimation (cr, lastCategory, lastCategoryYpos, backColor, area, ref ypos);
 
+				if (!area.IntersectsWith (new Gdk.Rectangle (new Gdk.Point (xpos, ypos), itemDimension)))
+					return true;
 				cr.Rectangle (xpos, ypos, itemDimension.Width, itemDimension.Height);
 				using (var pat = new Cairo.LinearGradient (xpos, ypos, xpos, ypos + itemDimension.Height)) {
 					pat.AddColorStop (0, CategoryBackgroundGradientStartColor);
@@ -262,7 +266,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				cr.MoveTo (0, ypos + itemDimension.Height - 0.5);
 				cr.LineTo (xpos + Allocation.Width, ypos + itemDimension.Height - 0.5);
 				cr.SetSourceColor (CategoryBorderColor);
-				cr.LineWidth = 1;
 				cr.Stroke ();
 
 				headerLayout.SetText (category.Text);
@@ -278,7 +281,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				lastCategory = category;
 				lastCategoryYpos = ypos + itemDimension.Height;
 
+				return true;
 			}, delegate (Category curCategory, Item item, Gdk.Size itemDimension) {
+				if (!area.IntersectsWith (new Gdk.Rectangle (new Gdk.Point (xpos, ypos), itemDimension)))
+					return true;
+				
 				if (item == SelectedItem) {
 					cr.SetSourceColor (Style.Base (StateType.Selected).ToCairoColor ());
 					cr.Rectangle (xpos, ypos, itemDimension.Width, itemDimension.Height);
@@ -301,6 +308,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					cr.Rectangle (xpos + 0.5, ypos + 0.5, itemDimension.Width - 1, itemDimension.Height - 1);
 					cr.Stroke ();
 				}
+
+				return true;
 			});
 
 			ProcessExpandAnimation (cr, lastCategory, lastCategoryYpos, backColor, area, ref ypos);
@@ -540,6 +549,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			HideTooltipWindow ();
 			var oldItem = mouseOverItem;
 			mouseOverItem = null;
+			Gdk.Rectangle newItemExtents = Gdk.Rectangle.Zero;
 			this.mouseX = (int)e.X + (int)(this.hAdjustement != null ? this.hAdjustement.Value : 0);
 			this.mouseY = (int)e.Y + (int)(this.vAdjustement != null ? this.vAdjustement.Value : 0);
 			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
@@ -549,7 +559,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					GdkWindow.Cursor = handCursor;
 					if (!e.State.HasFlag (ModifierType.Button1Mask))
 						ShowTooltip (mouseOverItem, TipTimer, (int)e.X + 2, (int)e.Y + 16);
+					newItemExtents = new Gdk.Rectangle (xpos, ypos, itemDimension.Width, itemDimension.Height);
+					return false;
 				}
+				return true;
 			}, delegate (Category curCategory, Item item, Gdk.Size itemDimension) {
 				if (xpos <= mouseX && mouseX <= xpos + itemDimension.Width  &&
 				    ypos <= mouseY && mouseY <= ypos + itemDimension.Height) {
@@ -557,14 +570,21 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					GdkWindow.Cursor = null;
 					if (!e.State.HasFlag (ModifierType.Button1Mask))
 						ShowTooltip (mouseOverItem, TipTimer, (int)e.X + 2, (int)e.Y + 16);
+					newItemExtents = new Gdk.Rectangle (xpos, ypos, itemDimension.Width, itemDimension.Height);
+					return false;
 				}
+				return true;
 			});
 
 			if (mouseOverItem == null)
 				GdkWindow.Cursor = null;
 			
-			if (oldItem != mouseOverItem)
+			if (oldItem != mouseOverItem) {
 				this.QueueDraw ();
+				var oldItemExtents = GetItemExtends (oldItem);
+				QueueDrawArea (oldItemExtents.X, oldItemExtents.Y, oldItemExtents.Width, oldItemExtents.Height);
+				QueueDrawArea (newItemExtents.X, newItemExtents.Y, newItemExtents.Width, newItemExtents.Height);
+			}
 			
 			return base.OnMotionNotifyEvent (e);
 		}
@@ -614,10 +634,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			Category result = null;
 			int xpos = 0, ypos = 0;
-			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
-			}, delegate (Category curCategory, Item innerItem, Gdk.Size itemDimension) {
-				if (innerItem == item) 
+			Iterate (ref xpos, ref ypos, null, delegate (Category curCategory, Item innerItem, Gdk.Size itemDimension) {
+				if (innerItem == item) {
 					result = curCategory;
+					return false;
+				}
+				return true;
 			});
 			return result;
 		}
@@ -628,11 +650,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Category last = null;
 			int xpos = 0, ypos = 0;
 			Iterate (ref xpos, ref ypos, delegate (Category curCategory, Gdk.Size itemDimension) {
-				if (last == category) 
+				if (last == category) {
 					result = curCategory;
+					return false;
+				}
 				last = curCategory;
-			}, delegate (Category curCategory, Item innerItem, Gdk.Size itemDimension) {
-			});
+				return true;
+			}, null);
 			return result;
 		}
 		
@@ -641,10 +665,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Item result = item;
 			Gdk.Rectangle rect = GetItemExtends (item);
 			int xpos = 0, ypos = 0;
-			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
-			}, delegate (Category curCategory, Item curItem, Gdk.Size itemDimension) {
-				if (xpos > rect.X && ypos == rect.Y && result == item)
+			Iterate (ref xpos, ref ypos, null, delegate (Category curCategory, Item curItem, Gdk.Size itemDimension) {
+				if (xpos > rect.X && ypos == rect.Y && result == item) {
 					result = curItem;
+					return false;
+				}
+				return true;
 			});
 			return result;
 		}
@@ -654,10 +680,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Item result = item;
 			Gdk.Rectangle rect = GetItemExtends (item);
 			int xpos = 0, ypos = 0;
-			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
-			}, delegate (Category curCategory, Item curItem, Gdk.Size itemDimension) {
-				if (xpos < rect.X && ypos == rect.Y)
+			Iterate (ref xpos, ref ypos, null, delegate (Category curCategory, Item curItem, Gdk.Size itemDimension) {
+				if (xpos < rect.X && ypos == rect.Y) {
 					result = curItem;
+					return false;
+				}
+				return true;
 			});
 			return result;
 		}
@@ -669,10 +697,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Item result = item;
 			Gdk.Rectangle rect = GetItemExtends (item);
 			int xpos = 0, ypos = 0;
-			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
-			}, delegate (Category curCategory, Item curItem, Gdk.Size itemDimension) {
-				if (ypos > rect.Y && xpos == rect.X && result == item && curCategory == itemCategory)
+			Iterate (ref xpos, ref ypos, null, delegate (Category curCategory, Item curItem, Gdk.Size itemDimension) {
+				if (ypos > rect.Y && xpos == rect.X && result == item && curCategory == itemCategory) {
 					result = curItem;
+					return false;
+				}
+				return true;
 			});
 			return result;
 		}
@@ -683,10 +713,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Item result = item;
 			Gdk.Rectangle rect = GetItemExtends (item);
 			int xpos = 0, ypos = 0;
-			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
-			}, delegate (Category curCategory, Item curItem, Gdk.Size itemDimension) {
-				if (ypos < rect.Y && xpos == rect.X && curCategory == itemCategory)
+			Iterate (ref xpos, ref ypos, null, delegate (Category curCategory, Item curItem, Gdk.Size itemDimension) {
+				if (ypos < rect.Y && xpos == rect.X && curCategory == itemCategory) {
 					result = curItem;
+					return false;
+				}
+				return true;
 			});
 			return result;
 		}
@@ -696,11 +728,17 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Gdk.Rectangle result = new Gdk.Rectangle (0, 0, 0, 0);
 			int xpos = 0, ypos = 0;
 			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
-				if (item == category)
+				if (item == category) {
 					result = new Gdk.Rectangle (xpos, ypos, itemDimension.Width, itemDimension.Height);
+					return false;
+				}
+				return true;
 			}, delegate (Category curCategory, Item curItem, Gdk.Size itemDimension) {
-				if (item == curItem)
+				if (item == curItem) {
 					result = new Gdk.Rectangle (xpos, ypos, itemDimension.Width, itemDimension.Height);
+					return false;
+				}
+				return true;
 			});
 			return result;
 		}
@@ -711,13 +749,19 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Item lastItem = null;
 			int xpos = 0, ypos = 0;
 			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
-				if (currentItem == category && lastItem != null)
+				if (currentItem == category && lastItem != null) {
 					result = lastItem;
+					return false;
+				}
 				lastItem = category;
+				return true;
 			}, delegate (Category curCategory, Item item, Gdk.Size itemDimension) {
-				if (currentItem == item && lastItem != null) 
+				if (currentItem == item && lastItem != null) {
 					result = lastItem;
+					return false;
+				}
 				lastItem = item;
+				return true;
 			});
 			
 			return result;
@@ -731,13 +775,17 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
 				if (lastItem == currentItem) {
 					result = category;
+					return false;
 				}
 				lastItem = category;
+				return true;
 			}, delegate (Category curCategory, Item item, Gdk.Size itemDimension) {
 				if (lastItem == currentItem) {
 					result = item;
+					return false;
 				}
 				lastItem = item;
+				return true;
 			});
 			return result;
 		}
@@ -776,28 +824,32 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		#endregion
 		
 		#region Item & Category iteration
-		delegate void CategoryAction (Category category, Gdk.Size categoryDimension);
-		delegate void ItemAction (Category curCategory, Item item, Gdk.Size itemDimension);
-		void IterateItems (Category category, ref int xpos, ref int ypos, ItemAction action)
+		delegate bool CategoryAction (Category category, Gdk.Size categoryDimension);
+		delegate bool ItemAction (Category curCategory, Item item, Gdk.Size itemDimension);
+		bool IterateItems (Category category, ref int xpos, ref int ypos, ItemAction action)
 		{
 			if (listMode || !category.CanIconizeItems) {
 				foreach (Item item in category.Items) {
 					if (!item.IsVisible)
 						continue;
-					
-					layout.SetText (item.Text);
-					int x, y;
-					layout.GetPixelSize (out x, out y);
-					y = Math.Max (IconSize.Height, y);
-					y += ItemTopBottomPadding * 2;
+
+					int x, y = item.ItemHeight;
+
+					if (y == 0) {
+						layout.SetText (item.Text);
+						layout.GetPixelSize (out x, out y);
+						y = Math.Max (IconSize.Height, y);
+						y += ItemTopBottomPadding * 2;
+						item.ItemHeight = y;
+					}
 					
 					xpos = 0;
-					if (action != null)
-						action (category, item, new Gdk.Size (Allocation.Width, y));
+					if (action != null && !action (category, item, new Gdk.Size (Allocation.Width, y)))
+						return false;
 					
 					ypos += y;
 				}
-				return;
+				return true;
 			}
 			foreach (Item item in category.Items) {
 				if (!item.IsVisible)
@@ -806,11 +858,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					xpos = 0;
 					ypos += IconSize.Height;
 				}
-				if (action != null)
-					action (category, item, IconSize);
+				if (action != null && !action (category, item, IconSize))
+					return false;
 				xpos += IconSize.Width;
 			}
 			ypos += IconSize.Height;
+			return true;
 		}
 		
 		void Iterate (ref int xpos, ref int ypos, CategoryAction catAction, ItemAction action)
@@ -820,18 +873,22 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					continue;
 				xpos = 0;
 				if (this.showCategories) {
-					
-					layout.SetText (category.Text);
-					int x, y;
-					layout.GetPixelSize (out x, out y);
-					y += CategoryTopBottomPadding * 2;
+					int x, y = category.ItemHeight;
 
-					if (catAction != null)
-						catAction (category, new Size (this.Allocation.Width, y));
+					if (y == 0) {
+						layout.SetText (category.Text);
+						layout.GetPixelSize (out x, out y);
+						y += CategoryTopBottomPadding * 2;
+						category.ItemHeight = y;
+					}
+
+					if (catAction != null && !catAction (category, new Size (this.Allocation.Width, y)))
+						return;
 					ypos += y;
 				} 
 				if (category.IsExpanded || category.AnimatingExpand || !this.showCategories) {
-					IterateItems (category, ref xpos, ref  ypos, action);
+					if (!IterateItems (category, ref xpos, ref  ypos, action))
+						return;
 				}
 			}
 		}
@@ -1082,6 +1139,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					return node.Name;
 				return text;
 			}
+		}
+
+		public int ItemHeight {
+			get;
+			set;
 		}
 		
 		public bool IsVisible {
