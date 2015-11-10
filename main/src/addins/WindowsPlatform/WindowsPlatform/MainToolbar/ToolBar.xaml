@@ -8,16 +8,7 @@
     <UserControl.Resources>
         <local:NotNullConverter x:Key="NotNullConverter" />
     </UserControl.Resources>
-    <Grid x:Name="DockTitle" Height="32" Margin="20,0,9,0" Background="Transparent" UseLayoutRounding="True">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-
+    <UniformGrid x:Name="DockTitle" Height="32" Margin="20,0,9,0" Background="Transparent" UseLayoutRounding="True" Rows="1" Columns="3">
         <StackPanel x:Name="LeftPanel" Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Height="Auto" UseLayoutRounding="True">
             <local:RunButtonControl x:Name="RunButton" VerticalContentAlignment="Center" VerticalAlignment="Center" UseLayoutRounding="True" />
             <Separator Opacity="0" Width="10" UseLayoutRounding="True" />
@@ -33,5 +24,5 @@
         <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Height="Auto" UseLayoutRounding="True">
             <local:SearchBarControl x:Name="SearchBar" VerticalContentAlignment="Center" VerticalAlignment="Center" UseLayoutRounding="True" />
         </StackPanel>
-    </Grid>
+    </UniformGrid>
 </UserControl>
