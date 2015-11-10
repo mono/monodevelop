@@ -547,14 +547,16 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				    ypos <= mouseY && mouseY <= ypos + itemDimension.Height) {
 					mouseOverItem = category;
 					GdkWindow.Cursor = handCursor;
-					ShowTooltip (mouseOverItem, TipTimer, (int)e.X + 2, (int)e.Y + 16);
+					if (!e.State.HasFlag (ModifierType.Button1Mask))
+						ShowTooltip (mouseOverItem, TipTimer, (int)e.X + 2, (int)e.Y + 16);
 				}
 			}, delegate (Category curCategory, Item item, Gdk.Size itemDimension) {
 				if (xpos <= mouseX && mouseX <= xpos + itemDimension.Width  &&
 				    ypos <= mouseY && mouseY <= ypos + itemDimension.Height) {
 					mouseOverItem = item;
 					GdkWindow.Cursor = null;
-					ShowTooltip (mouseOverItem, TipTimer, (int)e.X + 2, (int)e.Y + 16);
+					if (!e.State.HasFlag (ModifierType.Button1Mask))
+						ShowTooltip (mouseOverItem, TipTimer, (int)e.X + 2, (int)e.Y + 16);
 				}
 			});
 
