@@ -199,6 +199,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			ExpandCategories ();
 			this.DefaultResponse = Gtk.ResponseType.Ok;
 
+			buttonOk.CanDefault = true;
+			buttonOk.GrabDefault ();
+
 			DefaultWidth = 960;
 			DefaultHeight = 680;
 		}
