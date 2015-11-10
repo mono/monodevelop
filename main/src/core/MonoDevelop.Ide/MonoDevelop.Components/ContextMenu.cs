@@ -71,5 +71,22 @@ namespace MonoDevelop.Components
 
 			ContextMenuExtensionsGtk.ShowContextMenu (parent, evt, this);
 		}
+
+		public void Show (Gtk.Widget parent, int x, int y)
+		{
+			#if MAC
+			if (Platform.IsMac) {
+				ContextMenuExtensionsMac.ShowContextMenu (parent, x, y, this);
+				return;
+			}
+			#endif
+
+			ContextMenuExtensionsGtk.ShowContextMenu (parent, x, y, this);
+		}
+
+		public void Add (ContextMenuItem menuItem)
+		{
+			items.Add (menuItem);
+		}
 	}
 }
