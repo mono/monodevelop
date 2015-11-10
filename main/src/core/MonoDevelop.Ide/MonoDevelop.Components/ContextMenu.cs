@@ -76,7 +76,9 @@ namespace MonoDevelop.Components
 		{
 			#if MAC
 			if (Platform.IsMac) {
-				ContextMenuExtensionsMac.ShowContextMenu (parent, x, y, this);
+				int trans_x, trans_y;
+				parent.TranslateCoordinates (parent.Toplevel, (int)x, (int)y, out trans_x, out trans_y);
+				ContextMenuExtensionsMac.ShowContextMenu (parent, trans_x, trans_y, this);
 				return;
 			}
 			#endif
