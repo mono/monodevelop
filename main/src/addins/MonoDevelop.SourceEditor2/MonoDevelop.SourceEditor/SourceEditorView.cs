@@ -2782,7 +2782,16 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-
+		bool ITextEditorImpl.SuppressTooltips {
+			get {
+				return TextEditor.GetTextEditorData ().SuppressTooltips;
+			}
+			set {
+				if (value)
+					TextEditor.HideTooltip ();
+				TextEditor.GetTextEditorData ().SuppressTooltips = value;
+			}
+		}
 
 		MonoDevelop.Ide.Editor.DocumentRegion ITextEditorImpl.SelectionRegion {
 			get {

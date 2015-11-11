@@ -1218,6 +1218,11 @@ namespace MonoDevelop.Ide.Editor
 				return Enumerable.Empty<object> ();
 			}
 		}
+
+		internal bool SuppressTooltips {
+			get { return textEditorImpl.SuppressTooltips; } 
+			set { textEditorImpl.SuppressTooltips = value; }
+		}
 		#endregion
 
 		List<ProjectedTooltipProvider> projectedProviders = new List<ProjectedTooltipProvider> ();

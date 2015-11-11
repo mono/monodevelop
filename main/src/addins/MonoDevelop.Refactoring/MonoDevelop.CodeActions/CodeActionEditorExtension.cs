@@ -338,8 +338,7 @@ namespace MonoDevelop.CodeActions
 			if (items == 0) {
 				return;
 			}
-//			document.Editor.SuppressTooltips = true;
-//			document.Editor.Parent.HideTooltip ();
+			Editor.SuppressTooltips = true;
 			if (menuAction != null)
 				menuAction (menu);
 
@@ -368,8 +367,7 @@ namespace MonoDevelop.CodeActions
 
 			public override void MenuDidClose (AppKit.NSMenu menu)
 			{
-				// TODO: roslyn port ? (seems to be unused anyways btw.)
-				//data.SuppressTooltips = false;
+				data.SuppressTooltips = false;
 			}
 		}
 #endif
