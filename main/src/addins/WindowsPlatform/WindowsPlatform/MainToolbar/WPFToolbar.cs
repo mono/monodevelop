@@ -72,6 +72,7 @@ namespace WindowsPlatform.MainToolbar
 			toolbar.SearchBar.SearchBar.LostKeyboardFocus += (o, e) => {
 				if (SearchEntryLostFocus != null)
 					SearchEntryLostFocus (o, e);
+				toolbar.SearchBar.SearchText = toolbar.SearchBar.PlaceholderText;
 			};
 
 			toolbar.SearchBar.SearchBar.SizeChanged += (o, e) => {

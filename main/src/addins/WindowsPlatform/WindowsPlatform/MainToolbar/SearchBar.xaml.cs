@@ -36,8 +36,10 @@ namespace WindowsPlatform.MainToolbar
 			SearchBar.GotKeyboardFocus += (o, e) => {
 				SearchText = string.Empty;
 			};
-			SearchBar.LostKeyboardFocus += (o, e) => {
-				SearchText = PlaceholderText;
+			IdeApp.Workbench.RootWindow.SetFocus += (o, e) =>
+			{
+				Keyboard.ClearFocus();
+				IdeApp.Workbench.RootWindow.Present();
 			};
 
 			SearchIcon.Source = Stock.SearchboxSearch.GetStockIcon ().WithSize (Xwt.IconSize.Small).GetImageSource ();
