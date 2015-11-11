@@ -112,25 +112,46 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 
-		static string GetLink (ReferenceSegment referencedSegment)
+		static string GetLink (ReferenceSegment referencedSegment, out bool? isNotPublic)
 		{
+			isNotPublic = null;
 			if (referencedSegment == null)
 				return null;
-			if (referencedSegment.Reference is TypeDefinition)
+
+			var td = referencedSegment.Reference as TypeDefinition;
+			if (td != null) {
+				isNotPublic = !td.IsPublic;
 				return new XmlDocIdGenerator ().GetXmlDocPath ((TypeDefinition)referencedSegment.Reference);
-			if (referencedSegment.Reference is MethodDefinition)
-				return new XmlDocIdGenerator ().GetXmlDocPath ((MethodDefinition)referencedSegment.Reference);
-			if (referencedSegment.Reference is PropertyDefinition)
-				return new XmlDocIdGenerator ().GetXmlDocPath ((PropertyDefinition)referencedSegment.Reference);
-			if (referencedSegment.Reference is FieldDefinition)
-				return new XmlDocIdGenerator ().GetXmlDocPath ((FieldDefinition)referencedSegment.Reference);
-			if (referencedSegment.Reference is EventDefinition)
-				return new XmlDocIdGenerator ().GetXmlDocPath ((EventDefinition)referencedSegment.Reference);
-			if (referencedSegment.Reference is FieldDefinition)
-				return new XmlDocIdGenerator ().GetXmlDocPath ((FieldDefinition)referencedSegment.Reference);
-			if (referencedSegment.Reference is TypeReference) {
-				return new XmlDocIdGenerator ().GetXmlDocPath ((TypeReference)referencedSegment.Reference);
 			}
+			var md = referencedSegment.Reference as MethodDefinition;
+			if (md != null) {
+				isNotPublic = !md.IsPublic;
+				return new XmlDocIdGenerator ().GetXmlDocPath ((MethodDefinition)referencedSegment.Reference);
+			}
+
+			var pd = referencedSegment.Reference as PropertyDefinition;
+			if (pd != null) {
+				isNotPublic = (pd.GetMethod == null || !pd.GetMethod.IsPublic) &&  
+					(pd.SetMethod == null || !pd.SetMethod.IsPublic);
+				return new XmlDocIdGenerator ().GetXmlDocPath ((PropertyDefinition)referencedSegment.Reference);
+			}
+
+			var fd = referencedSegment.Reference as FieldDefinition;
+			if (fd != null) {
+				isNotPublic = !fd.IsPublic;
+				return new XmlDocIdGenerator ().GetXmlDocPath ((FieldDefinition)referencedSegment.Reference);
+			}
+
+			var ed = referencedSegment.Reference as EventDefinition;
+			if (ed != null) {
+				return new XmlDocIdGenerator ().GetXmlDocPath ((EventDefinition)referencedSegment.Reference);
+			}
+
+			var tref = referencedSegment.Reference as MemberReference;
+			if (tref != null) {
+				return new XmlDocIdGenerator ().GetXmlDocPath (tref);
+			}
+
 			return referencedSegment.Reference.ToString ();
 		}
 
@@ -1204,9 +1225,20 @@ namespace MonoDevelop.AssemblyBrowser
 				if (text != null && text.Length == 1 && !(char.IsLetter (text [0]) || text [0] == '…'))
 					continue;
 				var marker = TextMarkerFactory.CreateLinkMarker (inspectEditor, seg.Offset, seg.Length, delegate (LinkRequest request) {
-					var link = GetLink (seg);
+					bool? isNotPublic;
+					var link = GetLink (seg, out isNotPublic);
 					if (link == null)
 						return;
+					if (isNotPublic.HasValue) {
+						if (isNotPublic.Value) {
+							PublicApiOnly = false;
+						}
+					} else {
+						// unable to determine if the member is public or not (in case of member references) -> try to search
+						var nav = SearchMember (link, false);
+						if (nav == null)
+							PublicApiOnly = false;
+					}
 					var loader = (AssemblyLoader)this.TreeView.GetSelectedNode ().GetParentDataItem (typeof(AssemblyLoader), true);
 					// args.Button == 2 || (args.Button == 1 && (args.ModifierState & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)
 					if (request == LinkRequest.RequestNewView) {
@@ -1337,7 +1369,7 @@ namespace MonoDevelop.AssemblyBrowser
 			});
 		}
 
-		async void OpenFromAssembly (string url, AssemblyLoader currentAssembly, bool expandNode = true)
+		void OpenFromAssembly (string url, AssemblyLoader currentAssembly, bool expandNode = true)
 		{
 			var cecilObject = loader.GetCecilObject (currentAssembly.UnresolvedAssembly);
 			if (cecilObject == null)
