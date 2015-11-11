@@ -112,9 +112,19 @@ namespace MonoDevelop.Platform
 			var mainMenu = new Menu {
 				IsMainMenu = true,
 				Background = global::WindowsPlatform.Styles.MainMenuBackgroundBrush,
+				FocusVisualStyle = null,
 			};
 			foreach (CommandEntrySet ce in ces)
-				mainMenu.Items.Add (new TitleMenuItem (commandManager, ce));
+			{
+				var item = new TitleMenuItem(commandManager, ce);
+				item.SubmenuClosed += (o, e) =>
+				{
+					bool shouldFocusIde = !mainMenu.Items.OfType<MenuItem>().Any(mi => mi.IsSubmenuOpen);
+					if (shouldFocusIde)
+						IdeApp.Workbench.RootWindow.Present();
+				};
+				mainMenu.Items.Add(item);
+			}
 
 			titleBar.DockTitle.Children.Add (mainMenu);
 			DockPanel.SetDock (mainMenu, Dock.Left);
