@@ -51,7 +51,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\BuildEngine.Shared.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\BuildEngine.v4.0.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IBuildEngine.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\ILogWriter.cs" />
