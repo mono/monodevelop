@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -27,6 +28,18 @@ namespace WindowsPlatform.MainToolbar
 		protected ComboMenu () : base ()
 		{
 			UseLayoutRounding = true;
+
+			IsEnabledChanged += (o, e) =>
+			{
+				if ((bool)e.NewValue == true)
+				{
+					Opacity = 1.0;
+				}
+				else
+				{
+					Opacity = 0.5;
+				}
+			};
 
 			var content = new StackPanel {
 				Orientation = Orientation.Horizontal,
@@ -56,6 +69,7 @@ namespace WindowsPlatform.MainToolbar
 				Header = content,
 				UseLayoutRounding = true,
 			});
+			IsEnabled = false;
 			DropMenuText = "Default";
         }
 
@@ -100,7 +114,16 @@ namespace WindowsPlatform.MainToolbar
 			set
 			{
 				active = model.FirstOrDefault (cm => cm.OriginalId == value.OriginalId);
-				DropMenuText = active == null ? "Default" : active.DisplayString;
+				if (active == null)
+				{
+					DropMenuText = "Default";
+					IsEnabled = false;
+				}
+				else
+				{
+					DropMenuText = active.DisplayString;
+					IsEnabled = true;
+				}
 			}
 		}
 
@@ -185,6 +208,7 @@ namespace WindowsPlatform.MainToolbar
 				if (menuItem == null) {
 					active = null;
 					DropMenuText = "Default";
+					IsEnabled = false;
 					return;
 				}
 
@@ -194,6 +218,7 @@ namespace WindowsPlatform.MainToolbar
 
 				using (var mutableModel = active.GetMutableModel ()) {
 					DropMenuText = mutableModel.FullDisplayString;
+					IsEnabled = true;
 				}
             }
 		}
