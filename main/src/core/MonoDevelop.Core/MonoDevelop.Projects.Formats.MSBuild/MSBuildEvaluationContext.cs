@@ -404,11 +404,29 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				try {
 					// Convert the given parameters to the types specified in the method signature
 					var methodParams = method.GetParameters ();
-					for (int n = 0; n < parameterValues.Length; n++)
-						parameterValues [n] = ConvertArg (method, n, parameterValues [n], methodParams [n].ParameterType);
+
+					var convertedArgs = (methodParams.Length == parameterValues.Length) ? parameterValues : new object [methodParams.Length];
+
+					int numArgs = methodParams.Length;
+					Type paramsArgType = null;
+					if (methodParams.Length > 0 && methodParams [methodParams.Length - 1].ParameterType.IsArray && methodParams [methodParams.Length - 1].IsDefined (typeof (ParamArrayAttribute))) {
+						paramsArgType = methodParams [methodParams.Length - 1].ParameterType.GetElementType ();
+						numArgs--;
+					}
+
+					int n;
+					for (n = 0; n < numArgs; n++)
+						convertedArgs [n] = ConvertArg (method, n, parameterValues [n], methodParams [n].ParameterType);
+
+					if (paramsArgType != null) {
+						var argsArray = new object [parameterValues.Length - numArgs];
+						for (int m = 0; m < argsArray.Length; m++)
+							argsArray [m] = ConvertArg (method, n, parameterValues [n++], paramsArgType);
+						convertedArgs [convertedArgs.Length - 1] = argsArray;
+					}
 
 					// Invoke the method
-					val = method.Invoke (instance, parameterValues);
+					val = method.Invoke (instance, convertedArgs);
 
 					// Skip the closing parens
 					j++;
@@ -478,22 +496,38 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		MethodInfo FindBestOverload (IEnumerable<MethodInfo> methods, object [] args)
 		{
+			MethodInfo methodWithParams = null;
+
 			foreach (var m in methods.OfType<MethodInfo> ()) {
 				var argInfo = m.GetParameters ();
+
+				// Exclude methods which take a complex object as argument
+				if (argInfo.Any (a => a.ParameterType != typeof(object) && Type.GetTypeCode (a.ParameterType) == TypeCode.Object && !IsParamsArg(a)))
+					continue;
+
+				if (args.Length >= argInfo.Length - 1 && argInfo.Length > 0 && IsParamsArg (argInfo [argInfo.Length - 1])) {
+					methodWithParams = m;
+					continue;
+				}
 				if (args.Length != argInfo.Length)
 					continue;
 				
-				// Exclude methods which take a complex object as argument
-				if (argInfo.Any (a => a.ParameterType != typeof(object) && Type.GetTypeCode (a.ParameterType) == TypeCode.Object))
-					continue;
-
 				return m;
 			}
-			return null;
+			return methodWithParams;
+		}
+
+		bool IsParamsArg (ParameterInfo pi)
+		{
+			return pi.ParameterType.IsArray && pi.IsDefined (typeof (ParamArrayAttribute));
 		}
 
 		object ConvertArg (MethodInfo method, int argNum, object value, Type parameterType)
 		{
+			var sval = value as string;
+			if (sval == "null")
+				return null;
+			
 			var res = Convert.ChangeType (value, parameterType, CultureInfo.InvariantCulture);
 			bool convertPath = false;
 

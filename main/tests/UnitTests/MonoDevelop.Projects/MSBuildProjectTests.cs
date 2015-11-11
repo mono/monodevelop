@@ -239,6 +239,11 @@ namespace MonoDevelop.Projects
 			p.Evaluate ();
 
 			Assert.AreEqual ("bcd", p.EvaluatedProperties.GetValue ("Substring"));
+			Assert.AreEqual ("ab", p.EvaluatedProperties.GetValue ("MethodWithParams1"));
+			Assert.AreEqual ("abc", p.EvaluatedProperties.GetValue ("MethodWithParams2"));
+			Assert.AreEqual ("abcd", p.EvaluatedProperties.GetValue ("MethodWithParams3"));
+			Assert.AreEqual ("abcdefghij", p.EvaluatedProperties.GetValue ("MethodWithParams4"));
+			Assert.AreEqual ("ab", p.EvaluatedProperties.GetValue ("MethodWithParams5"));
 			Assert.AreEqual ("255", p.EvaluatedProperties.GetValue ("MaxByte"));
 			Assert.AreEqual ("A", p.EvaluatedProperties.GetValue ("Upper1"));
 			Assert.AreEqual ("a'b'c5", p.EvaluatedProperties.GetValue ("Upper2"));
