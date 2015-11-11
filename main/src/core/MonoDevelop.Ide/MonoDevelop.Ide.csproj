@@ -2558,101 +2558,101 @@
     <EmbeddedResource Include="icons\file-gtk-32~dark~sel%402x.png">
       <LogicalName>file-gtk-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-component-mac-16.png">
-      <LogicalName>folder-component-mac-16.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-component-16.png">
+      <LogicalName>folder-component-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-component-mac-16%402x.png">
-      <LogicalName>folder-component-mac-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-component-16%402x.png">
+      <LogicalName>folder-component-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-component-mac-16~dark.png">
-      <LogicalName>folder-component-mac-16~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-component-16~dark.png">
+      <LogicalName>folder-component-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-component-mac-16~dark%402x.png">
-      <LogicalName>folder-component-mac-16~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-component-16~dark%402x.png">
+      <LogicalName>folder-component-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-component-win-16.png">
-      <LogicalName>folder-component-win-16.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-component-16~sel.png">
+      <LogicalName>folder-component-16~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-component-win-16%402x.png">
-      <LogicalName>folder-component-win-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-component-16~sel%402x.png">
+      <LogicalName>folder-component-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-component-win-16~dark.png">
-      <LogicalName>folder-component-win-16~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-component-16~dark~sel.png">
+      <LogicalName>folder-component-16~dark~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-component-win-16~dark%402x.png">
-      <LogicalName>folder-component-win-16~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-component-16~dark~sel%402x.png">
+      <LogicalName>folder-component-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-generic-mac-16.png">
-      <LogicalName>folder-generic-mac-16.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-generic-16.png">
+      <LogicalName>folder-generic-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-generic-mac-16%402x.png">
-      <LogicalName>folder-generic-mac-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-generic-16%402x.png">
+      <LogicalName>folder-generic-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-generic-mac-16~dark.png">
-      <LogicalName>folder-generic-mac-16~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-generic-16~dark.png">
+      <LogicalName>folder-generic-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-generic-mac-16~dark%402x.png">
-      <LogicalName>folder-generic-mac-16~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-generic-16~dark%402x.png">
+      <LogicalName>folder-generic-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-generic-win-16.png">
-      <LogicalName>folder-generic-win-16.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-generic-16~sel.png">
+      <LogicalName>folder-generic-16~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-generic-win-16%402x.png">
-      <LogicalName>folder-generic-win-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-generic-16~sel%402x.png">
+      <LogicalName>folder-generic-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-generic-win-16~dark.png">
-      <LogicalName>folder-generic-win-16~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-generic-16~dark~sel.png">
+      <LogicalName>folder-generic-16~dark~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-generic-win-16~dark%402x.png">
-      <LogicalName>folder-generic-win-16~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-generic-16~dark~sel%402x.png">
+      <LogicalName>folder-generic-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-special-mac-16.png">
-      <LogicalName>folder-special-mac-16.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-resource-16.png">
+      <LogicalName>folder-resource-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-special-mac-16%402x.png">
-      <LogicalName>folder-special-mac-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-resource-16%402x.png">
+      <LogicalName>folder-resource-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-special-mac-16~dark.png">
-      <LogicalName>folder-special-mac-16~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-resource-16~dark.png">
+      <LogicalName>folder-resource-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-special-mac-16~dark%402x.png">
-      <LogicalName>folder-special-mac-16~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-resource-16~dark%402x.png">
+      <LogicalName>folder-resource-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-special-win-16.png">
-      <LogicalName>folder-special-win-16.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-resource-16~sel.png">
+      <LogicalName>folder-resource-16~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-special-win-16%402x.png">
-      <LogicalName>folder-special-win-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-resource-16~sel%402x.png">
+      <LogicalName>folder-resource-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-special-win-16~dark.png">
-      <LogicalName>folder-special-win-16~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-resource-16~dark~sel.png">
+      <LogicalName>folder-resource-16~dark~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-special-win-16~dark%402x.png">
-      <LogicalName>folder-special-win-16~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-resource-16~dark~sel%402x.png">
+      <LogicalName>folder-resource-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-web-reference-mac-16.png">
-      <LogicalName>folder-web-reference-mac-16.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-solution-16.png">
+      <LogicalName>folder-solution-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-web-reference-mac-16%402x.png">
-      <LogicalName>folder-web-reference-mac-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-solution-16%402x.png">
+      <LogicalName>folder-solution-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-web-reference-mac-16~dark.png">
-      <LogicalName>folder-web-reference-mac-16~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-solution-16~dark.png">
+      <LogicalName>folder-solution-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-web-reference-mac-16~dark%402x.png">
-      <LogicalName>folder-web-reference-mac-16~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-solution-16~dark%402x.png">
+      <LogicalName>folder-solution-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-web-reference-win-16.png">
-      <LogicalName>folder-web-reference-win-16.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-solution-16~sel.png">
+      <LogicalName>folder-solution-16~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-web-reference-win-16%402x.png">
-      <LogicalName>folder-web-reference-win-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-solution-16~sel%402x.png">
+      <LogicalName>folder-solution-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-web-reference-win-16~dark.png">
-      <LogicalName>folder-web-reference-win-16~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-solution-16~dark~sel.png">
+      <LogicalName>folder-solution-16~dark~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-web-reference-win-16~dark%402x.png">
-      <LogicalName>folder-web-reference-win-16~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-solution-16~dark~sel%402x.png">
+      <LogicalName>folder-solution-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-help-16.png">
       <LogicalName>pad-help-16.png</LogicalName>
