@@ -42,7 +42,7 @@
 
   <!-- MD icons -->
 	<StockIcon stockid="md-add" resource="add-16.png" size="Menu" />
-	<StockIcon stockid="md-assembly-project" resource="assembly-project-16.png" size="Menu" />
+	<StockIcon stockid="md-assembly-project" resource="project-assembly-16.png" size="Menu" />
 	<StockIcon stockid="md-breadcrumb-next" resource="breadcrumb-next-16.png" size="Menu" />
 	<StockIcon stockid="md-breadcrumb-prev" resource="breadcrumb-prev-16.png" size="Menu" />
 	<StockIcon stockid="md-breakpoint" resource="breakpoint-16.png" size="Menu" />

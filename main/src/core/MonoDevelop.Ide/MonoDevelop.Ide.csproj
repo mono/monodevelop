@@ -383,17 +383,29 @@
     <EmbeddedResource Include="icons\add-namespace-16.png">
       <LogicalName>add-namespace-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\assembly-project-16.png">
-      <LogicalName>assembly-project-16.png</LogicalName>
+    <EmbeddedResource Include="icons\project-assembly-16.png">
+      <LogicalName>project-assembly-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\assembly-project-16%402x.png">
-      <LogicalName>assembly-project-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\project-assembly-16%402x.png">
+      <LogicalName>project-assembly-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\assembly-project-16~dark.png">
-      <LogicalName>assembly-project-16~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\project-assembly-16~dark.png">
+      <LogicalName>project-assembly-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\assembly-project-16~dark%402x.png">
-      <LogicalName>assembly-project-16~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\project-assembly-16~dark%402x.png">
+      <LogicalName>project-assembly-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-assembly-16~sel.png">
+      <LogicalName>project-assembly-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-assembly-16~sel%402x.png">
+      <LogicalName>project-assembly-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-assembly-16~dark~sel.png">
+      <LogicalName>project-assembly-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-assembly-16~dark~sel%402x.png">
+      <LogicalName>project-assembly-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\breakpoint-16.png">
       <LogicalName>breakpoint-16.png</LogicalName>
@@ -1154,6 +1166,18 @@
     <EmbeddedResource Include="icons\project-16~dark%402x.png">
       <LogicalName>project-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-16~sel.png">
+      <LogicalName>project-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-16~sel%402x.png">
+      <LogicalName>project-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-16~dark~sel.png">
+      <LogicalName>project-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-16~dark~sel%402x.png">
+      <LogicalName>project-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\project-32.png">
       <LogicalName>project-32.png</LogicalName>
     </EmbeddedResource>
@@ -1253,6 +1277,18 @@
     <EmbeddedResource Include="icons\reference-16~dark%402x.png">
       <LogicalName>reference-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\reference-16~sel.png">
+      <LogicalName>reference-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\reference-16~sel%402x.png">
+      <LogicalName>reference-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\reference-16~dark~sel.png">
+      <LogicalName>reference-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\reference-16~dark~sel%402x.png">
+      <LogicalName>reference-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\solution-16.png">
       <LogicalName>solution-16.png</LogicalName>
     </EmbeddedResource>
@@ -1264,6 +1300,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\solution-16~dark%402x.png">
       <LogicalName>solution-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-16~sel.png">
+      <LogicalName>solution-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-16~sel%402x.png">
+      <LogicalName>solution-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-16~dark~sel.png">
+      <LogicalName>solution-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-16~dark~sel%402x.png">
+      <LogicalName>solution-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\solution-32.png">
       <LogicalName>solution-32.png</LogicalName>
@@ -1450,6 +1498,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\workspace-16~dark%402x.png">
       <LogicalName>workspace-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\workspace-16~sel.png">
+      <LogicalName>workspace-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\workspace-16~sel%402x.png">
+      <LogicalName>workspace-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\workspace-16~dark~sel.png">
+      <LogicalName>workspace-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\workspace-16~dark~sel%402x.png">
+      <LogicalName>workspace-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\workspace-32.png">
       <LogicalName>workspace-32.png</LogicalName>
