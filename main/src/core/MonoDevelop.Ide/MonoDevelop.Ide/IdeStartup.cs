@@ -127,7 +127,6 @@ namespace MonoDevelop.Ide
 					GtkWorkarounds.SetProperty (settings, "gtk-im-module", new GLib.Value ("ime"));
 			}
 			
-			InternalLog.Initialize ();
 			string socket_filename = null;
 			EndPoint ep = null;
 			
