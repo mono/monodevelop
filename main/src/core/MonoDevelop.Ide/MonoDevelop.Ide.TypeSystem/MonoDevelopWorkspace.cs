@@ -194,7 +194,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (token.IsCancellationRequested)
 					return null;
 				var tp = LoadProject (proj, token).ContinueWith (t => {
-					projects.Add (t.Result);
+					if (!t.IsCanceled)
+						projects.Add (t.Result);
 				});
 				allTasks.Add (tp);
 			}
