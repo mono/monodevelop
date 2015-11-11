@@ -1,4 +1,5 @@
 ﻿using MonoDevelop.Components.MainToolbar;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using System;
 using System.Collections.Generic;
@@ -54,7 +55,7 @@ namespace WindowsPlatform.MainToolbar
 		void RaisePropertyChanged ([CallerMemberName] string propName = null)
 		{
 			if (PropertyChanged != null)
-				PropertyChanged (this, new PropertyChangedEventArgs (propName));
+				PropertyChanged (this, new System.ComponentModel.PropertyChangedEventArgs(propName));
 		}
 
 		public event RoutedEventHandler Click;
@@ -66,6 +67,7 @@ namespace WindowsPlatform.MainToolbar
 		RunButtonControl (OperationIcon icon) : base(GetIcon(icon))
 		{
 			this.icon = icon;
+			ToolTip = GetTooltip(icon);
 		}
 		public RunButtonControl () : this (OperationIcon.Run)
 		{
@@ -80,7 +82,23 @@ namespace WindowsPlatform.MainToolbar
 				if (value == icon)
 					return;
 				icon = value;
+				ToolTip = GetTooltip (icon);
 				CurrentImage = GetIcon (icon);
+			}
+		}
+
+		static string GetTooltip (OperationIcon icon)
+		{
+			switch (icon)
+			{
+				case OperationIcon.Stop:
+					return GettextCatalog.GetString("Stop currently running operation");
+				case OperationIcon.Run:
+					return GettextCatalog.GetString("Run current startup project");
+				case OperationIcon.Build:
+					return GettextCatalog.GetString("Build current startup project");
+				default:
+					throw new InvalidOperationException();
 			}
 		}
 
