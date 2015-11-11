@@ -8,7 +8,7 @@
     <ProjectGuid>{8EE5A588-9445-48EC-97BD-BF066E7FFD51}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>MonoDevelop.Projects.Formats.MSBuild</RootNamespace>
-    <AssemblyName>MonoDevelop.Projects.Formats.MSBuild.dotnet.v14.0</AssemblyName>
+    <AssemblyName>MonoDevelop.Projects.Formats.MSBuild</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
+    <OutputPath>..\..\..\build\bin\MSBuild\dotnet.14.0\</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
