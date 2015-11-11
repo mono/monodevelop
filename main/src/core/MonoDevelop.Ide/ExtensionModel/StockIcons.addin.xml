@@ -80,7 +80,7 @@
 	<StockIcon stockid="md-file-source" resource="file-source-16.png" size="Menu" />
 	<StockIcon stockid="md-file-source" resource="file-source-32.png" size="Dnd" />
 	<StockIcon stockid="md-file-unit-test" resource="file-unit-test-32.png" size="Dnd" />
-	<StockIcon stockid="md-folder-overlay" resource="assembly-reference-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-reference-assembly" resource="reference-assembly-16.png" size="Menu" />
 	<StockIcon stockid="md-fs-field" resource="element-fs-field-16.png" size="Menu" />
 	<StockIcon stockid="md-generic-pad" resource="pad-generic-pad-16.png" size="Menu" />
 	<StockIcon stockid="md-group-by-category" resource="group-by-category-16.png" size="Menu" />
@@ -142,7 +142,8 @@
 	<StockIcon stockid="md-project-status-information" resource="project-status-information-16.png" size="Menu" />
 	<StockIcon stockid="md-project-status-warning" resource="project-status-warning-16.png" size="Menu" />
 	<StockIcon stockid="md-project-status-error" resource="project-status-error-16.png" size="Menu" />
-	<StockIcon stockid="md-project-overlay" resource="project-reference-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-reference-project" resource="reference-project-16.png" size="Menu" />
+	<StockIcon stockid="md-reference-invalid" resource="reference-invalid-16.png" size="Menu" />
 	<StockIcon stockid="md-properties" resource="properties-16.png" size="Menu" />
 	<StockIcon stockid="md-property" resource="element-property-16.png" size="Menu" />
 	<StockIcon stockid="md-reference" resource="reference-16.png" size="Menu" />
@@ -167,7 +168,7 @@
 	<StockIcon stockid="md-text-file-icon" resource="file-text-32.png" size="Dnd" />
 	<StockIcon stockid="md-type" resource="element-type-16.png" size="Menu" />
 	<StockIcon stockid="md-variable" resource="element-variable-16.png" size="Menu" />
-	<StockIcon stockid="md-warning-overlay" resource="invalid-reference-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-warning-overlay" resource="reference-invalid-16.png" size="Menu" />
 	<StockIcon stockid="md-web-overlay" resource="project-web-overlay-32.png" size="Dnd" />
 	<StockIcon stockid="md-workspace" resource="workspace-16.png" size="Menu" />
 	<StockIcon stockid="md-workspace" resource="workspace-32.png" size="Dnd" />
@@ -387,10 +388,10 @@
 	<StockIcon stockid="md-ProtectedOrInternal-static-method" icon="res:element-method-16.png|res:element-visibility-static-overlay-16.png|res:element-visibility-internal-or-protected-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-ProtectedOrInternal-static-property" icon="res:element-property-16.png|res:element-visibility-static-overlay-16.png|res:element-visibility-internal-or-protected-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-ProtectedOrInternal-struct" icon="res:element-struct-16.png|res:element-visibility-internal-or-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-reference-folder" icon="md-reference|md-folder-overlay" size="Menu" />
+	<StockIcon stockid="md-reference-folder" icon="md-reference-assembly" size="Menu" />
 	<StockIcon stockid="md-reference-package" icon="md-reference" size="Menu" />
-	<StockIcon stockid="md-reference-project" icon="md-reference|md-project-overlay" size="Menu" />
-	<StockIcon stockid="md-reference-warning" icon="md-reference|res:invalid-reference-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-reference-project" icon="md-reference-project" size="Menu" />
+	<StockIcon stockid="md-reference-warning" icon="md-reference-invalid" size="Menu" />
 	<StockIcon stockid="md-static-event" icon="res:element-event-16.png|res:element-visibility-static-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-static-field" icon="res:element-field-16.png|res:element-visibility-static-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-static-method" icon="res:element-method-16.png|res:element-visibility-static-overlay-16.png" size="Menu" />
