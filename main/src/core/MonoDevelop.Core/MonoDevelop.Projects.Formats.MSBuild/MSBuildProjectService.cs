@@ -1157,6 +1157,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			Guid = MSBuildProjectService.GenericItemGuid;
 			Extension = "mdproj";
+			MSBuildSupport = MSBuildSupport.NotSupported;
 			TypeAlias = "GenericProject";
 		}
 
