@@ -5,9 +5,25 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:WindowsPlatform.MainToolbar"
              mc:Ignorable="d" Background="Transparent">
+    <UserControl.Resources>
+        <Style x:Key="FlatProgressBar" TargetType="{x:Type ProgressBar}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Border BorderBrush="#D9DCE1" BorderThickness="0" CornerRadius="0" Padding="0">
+                            <Grid x:Name="PART_Track">
+                                <Rectangle x:Name="PART_Indicator" HorizontalAlignment="Left" Fill="#FFB3E770" />
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
     <Grid VerticalAlignment="Center" Height="26" Width="350" MinWidth="220" MaxWidth="700" UseLayoutRounding="True">
         <Grid>
-            <ProgressBar Minimum="0" Maximum="1" x:Name="ProgressBar" BorderThickness="0" Foreground="#FFB3E770" />
+            <ProgressBar Minimum="0" Maximum="1" x:Name="ProgressBar" Style="{StaticResource FlatProgressBar}"/>
+
         </Grid>
         <Grid>
             <Grid.ColumnDefinitions>
