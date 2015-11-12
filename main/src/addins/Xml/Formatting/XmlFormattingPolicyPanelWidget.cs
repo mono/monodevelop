@@ -26,6 +26,7 @@
 
 using System;
 using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
@@ -227,7 +228,7 @@ namespace MonoDevelop.Xml.Formatting
 				};
 				uint c = 2;
 				if (currentFormat.ScopeXPath.Count != 1) {
-					var butRem = new Button (ImageService.GetImage (Stock.Remove, IconSize.Menu));
+					var butRem = new Button (new ImageView (Stock.Remove, IconSize.Menu));
 					tableScopes.Attach (butRem, 2, 3, n, n + 1, AttachOptions.Shrink, AttachOptions.Shrink, 0, 0);
 					butRem.Clicked += delegate {
 						currentFormat.ScopeXPath.RemoveAt (capn);
@@ -237,7 +238,7 @@ namespace MonoDevelop.Xml.Formatting
 					c++;
 				}
 				if (n == currentFormat.ScopeXPath.Count - 1) {
-					var butAdd = new Button (ImageService.GetImage (Stock.Add, IconSize.Menu));
+					var butAdd = new Button (new ImageView (Stock.Add, IconSize.Menu));
 					tableScopes.Attach (butAdd, c, c + 1, n, n + 1, AttachOptions.Shrink, AttachOptions.Shrink, 0, 0);
 					butAdd.Clicked += delegate {
 						currentFormat.ScopeXPath.Add ("");

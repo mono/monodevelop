@@ -204,7 +204,7 @@ namespace MonoDevelop.NUnit
 			buttonOutput = new ToggleButton ();
 			buttonOutput.Label = GettextCatalog.GetString ("Output");
 			buttonOutput.Active = false;
-			buttonOutput.Image = ImageService.GetImage (MonoDevelop.Ide.Gui.Stock.OutputIcon, IconSize.Menu);
+			buttonOutput.Image = new ImageView (MonoDevelop.Ide.Gui.Stock.OutputIcon, IconSize.Menu);
 			buttonOutput.Image.Show ();
 			buttonOutput.Toggled += new EventHandler (OnShowOutputToggled);
 			buttonOutput.TooltipText = GettextCatalog.GetString ("Show Output");

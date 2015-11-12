@@ -710,7 +710,7 @@ namespace MonoDevelop.SourceEditor
 					EllipsizeMiddle (Document.FileName, 50), BrandingService.ApplicationName));
 				
 				var b1 = new Button (GettextCatalog.GetString ("_Reload from disk"));
-				b1.Image = ImageService.GetImage (Gtk.Stock.Refresh, IconSize.Button);
+				b1.Image = new ImageView (Gtk.Stock.Refresh, IconSize.Button);
 				b1.Clicked += delegate {
 					Reload ();
 					view.TextEditor.GrabFocus ();
@@ -718,7 +718,7 @@ namespace MonoDevelop.SourceEditor
 				messageBar.ActionArea.Add (b1);
 				
 				var b2 = new Button (GettextCatalog.GetString ("_Keep changes"));
-				b2.Image = ImageService.GetImage (Gtk.Stock.Cancel, IconSize.Button);
+				b2.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
 				b2.Clicked += delegate {
 					RemoveMessageBar ();
 					view.LastSaveTimeUtc = System.IO.File.GetLastWriteTimeUtc (view.ContentName);
@@ -728,14 +728,14 @@ namespace MonoDevelop.SourceEditor
 
 				if (multiple) {
 					var b3 = new Button (GettextCatalog.GetString ("_Reload all"));
-					b3.Image = ImageService.GetImage (Gtk.Stock.Cancel, IconSize.Button);
+					b3.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
 					b3.Clicked += delegate {
 						FileRegistry.ReloadAllChangedFiles ();
 					};
 					messageBar.ActionArea.Add (b3);
 	
 					var b4 = new Button (GettextCatalog.GetString ("_Ignore all"));
-					b4.Image = ImageService.GetImage (Gtk.Stock.Cancel, IconSize.Button);
+					b4.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
 					b4.Clicked += delegate {
 						FileRegistry.IgnoreAllChangedFiles ();
 					};
@@ -963,7 +963,7 @@ namespace MonoDevelop.SourceEditor
 					    "Do you want to use the original file, or load from the autosave file?")));
 				
 				Button b1 = new Button (GettextCatalog.GetString("_Use original file"));
-				b1.Image = ImageService.GetImage (Gtk.Stock.Refresh, IconSize.Button);
+				b1.Image = new ImageView (Gtk.Stock.Refresh, IconSize.Button);
 				b1.Clicked += delegate {
 					try {
 						AutoSave.RemoveAutoSaveFile (fileName);
@@ -979,7 +979,7 @@ namespace MonoDevelop.SourceEditor
 				messageBar.ActionArea.Add (b1);
 				
 				Button b2 = new Button (GettextCatalog.GetString("_Load from autosave"));
-				b2.Image = ImageService.GetImage (Gtk.Stock.RevertToSaved, IconSize.Button);
+				b2.Image = new ImageView (Gtk.Stock.RevertToSaved, IconSize.Button);
 				b2.Clicked += delegate {
 					try {
 						var content = AutoSave.LoadAndRemoveAutoSave (fileName);

@@ -157,7 +157,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			logBtn = new ToggleButton { Name = "toggleBuildOutput" };
 			logBtn.Label = GettextCatalog.GetString ("Build Output");
-			logBtn.Image = ImageService.GetImage ("md-message-log", Gtk.IconSize.Menu);
+			logBtn.Image = new ImageView ("md-message-log", Gtk.IconSize.Menu);
 			logBtn.Image.Show ();
 			logBtn.TooltipText = GettextCatalog.GetString ("Show build output");
 			logBtn.Toggled += HandleLogBtnToggled;
