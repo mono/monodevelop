@@ -899,7 +899,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		#region Project modification handlers
 
-		async void OnFileAdded (object sender, MonoDevelop.Projects.ProjectFileEventArgs args)
+		void OnFileAdded (object sender, MonoDevelop.Projects.ProjectFileEventArgs args)
 		{
 			if (internalChanges)
 				return;
@@ -913,13 +913,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				var projectId = GetProjectId (project);
 				var newDocument = CreateDocumentInfo(solutionData, project.Name, GetProjectData(projectId), projectFile);
 				OnDocumentAdded (newDocument);
-
-				// update generators if the new file has any
-				await HandleGenerator (fargs.ProjectFile, fargs.Project);
 			}
 		}
 
-		async void OnFileRemoved (object sender, MonoDevelop.Projects.ProjectFileEventArgs args)
+		void OnFileRemoved (object sender, MonoDevelop.Projects.ProjectFileEventArgs args)
 		{
 			if (internalChanges)
 				return;
@@ -933,9 +930,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					OnDocumentRemoved (id);
 					data.RemoveDocument (fargs.ProjectFile.FilePath);
 				}
-
-				// update generators if the new file has any
-				await HandleGenerator (fargs.ProjectFile, fargs.Project);
 			}
 		}
 
@@ -965,38 +959,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				var newDocument = CreateDocumentInfo (solutionData, project.Name, GetProjectData (projectId), projectFile);
 				OnDocumentAdded (newDocument);
-			}
-		}
-
-		/// <summary>
-		/// Processes any genrator targets that the file might have associated with it
-		/// </summary>
-		async Task HandleGenerator (MonoDevelop.Projects.ProjectFile file, MonoDevelop.Projects.Project project) 
-		{
-			if (!string.IsNullOrEmpty (file.Generator)) {
-				var generatorTargets = file.Generator.Split (new string [] { ";" }, StringSplitOptions.RemoveEmptyEntries);
-
-				foreach (var target in generatorTargets) {
-					await HandleGenerator (file, project, target);
-				}
-			}
-		}
-
-		/// <summary>
-		/// Processes the genrator target that the file might have associated with it
-		/// </summary>
-		async Task HandleGenerator (MonoDevelop.Projects.ProjectFile file, MonoDevelop.Projects.Project project, string generatorTarget) 
-		{
-			if (!string.IsNullOrEmpty (generatorTarget)) {
-				// I think the 'msbuild:' may be optional, some examples I've seen seem to indicate this
-				if (generatorTarget.StartsWith ("msbuild:", StringComparison.OrdinalIgnoreCase)) {
-					generatorTarget = generatorTarget.Substring ("msbuild:".Length);
-				}
-
-				if (!string.IsNullOrEmpty (generatorTarget)) {
-					var config = IdeApp.Workspace != null ? project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : null;
-					await project.PerformGeneratorAsync (config != null ? config.Selector : null, generatorTarget);
-				}
 			}
 		}
 
