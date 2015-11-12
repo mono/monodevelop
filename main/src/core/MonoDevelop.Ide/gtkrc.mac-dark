@@ -131,6 +131,8 @@ style "button" = "default" {
     bg[ACTIVE] = shade(1.2, "#595959")
     bg[INSENSITIVE] = "#595959"
 
+    fg[NORMAL] = "#fff"
+    fg[PRELIGHT] = "#fff"
     fg[ACTIVE] = "black"
     fg[INSENSITIVE] = lighter ("#595959")
 
