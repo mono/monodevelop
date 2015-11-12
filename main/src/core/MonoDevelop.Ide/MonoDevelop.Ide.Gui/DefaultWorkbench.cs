@@ -924,6 +924,7 @@ namespace MonoDevelop.Ide.Gui
 			DockVisualStyle style = new DockVisualStyle ();
 			style.PadTitleLabelColor = Styles.PadLabelColor;
 			style.PadBackgroundColor = Styles.PadBackground;
+			style.TreeBackgroundColor = Styles.BaseBackgroundColor.ToGdkColor ();
 			style.InactivePadBackgroundColor = Styles.InactivePadBackground;
 			style.PadTitleHeight = barHeight;
 			dock.DefaultVisualStyle = style;
