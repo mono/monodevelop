@@ -306,7 +306,7 @@ namespace MonoDevelop.Debugger.Tests
 
 		public bool CheckPosition (string guid, int offset = 0, string statement = null, bool silent = false)
 		{
-			if (!targetStoppedEvent.WaitOne (3000)) {
+			if (!targetStoppedEvent.WaitOne (6000)) {
 				if (!silent)
 					Assert.Fail ("CheckPosition failure: Target stop timeout");
 				return false;
@@ -438,7 +438,7 @@ namespace MonoDevelop.Debugger.Tests
 
 			lock (locker) {
 				while (val.IsEvaluating) {
-					if (!Monitor.Wait (locker, 4000))
+					if (!Monitor.Wait (locker, 8000))
 						throw new Exception ("Timeout while waiting for value evaluation");
 				}
 			}
