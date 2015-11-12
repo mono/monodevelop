@@ -190,6 +190,9 @@ namespace MonoDevelop.CSharp
 
 		void UpdateOwnerProjects (IEnumerable<DotNetProject> allProjects)
 		{
+			if (DocumentContext == null) {
+				return;//This can happen if this object is disposed
+			}
 			var projects = new HashSet<DotNetProject> (allProjects.Where (p => p.IsFileInProject (DocumentContext.Name)));
 			if (ownerProjects == null || !projects.SetEquals (ownerProjects)) {
 				SetOwnerProjects (projects.OrderBy (p => p.Name).ToList ());
