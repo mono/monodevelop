@@ -32,6 +32,7 @@ namespace MonoDevelop.Ide.Projects
 	{
 		public AddExternalFileDialog (string file)
 		{
+			MonoDevelop.Components.IdeTheme.ApplyTheme (this);
 			HasSeparator = true;
 			this.Build ();
 			radioCopy.Active = true;
