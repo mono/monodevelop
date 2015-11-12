@@ -218,7 +218,8 @@ namespace MonoDevelop.MacIntegration
 				if (closeSolutionButton != null)
 					closeSolutionButton.State = NSCellStateValue.On;
 				
-				selected = 0;
+				if (!CanBeOpenedInAssemblyBrowser (filename))
+					selected = 0;
 				hasWorkbenchViewer = true;
 				i++;
 			}
@@ -241,6 +242,11 @@ namespace MonoDevelop.MacIntegration
 			button.Enabled = currentViewers.Count > 1;
 			button.SelectItem (selected);
 			return hasWorkbenchViewer;
+		}
+
+		static bool CanBeOpenedInAssemblyBrowser (FilePath filename)
+		{
+			return filename.Extension.ToLower () == ".exe" || filename.Extension.ToLower () == ".dll";
 		}
 
 		static void CenterAccessoryView (MDBox box)
