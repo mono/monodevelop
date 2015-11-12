@@ -277,12 +277,8 @@ namespace MonoDevelop.AssemblyBrowser
 				new BaseTypeFolderNodeBuilder (this),
 				new BaseTypeNodeBuilder (this)
 				}, new TreePadOption [0]);
-			TreeView.Tree.Selection.Mode = Gtk.SelectionMode.Single;
-			TreeView.Tree.CursorChanged += HandleCursorChanged;
-			TreeView.ShadowType = ShadowType.None;
-			TreeView.BorderWidth = 1;
-			TreeView.ShowBorderLine = false;
-			//TreeView.Zoom = 1.0;
+			TreeView.AllowsMultipleSelection = false;
+			TreeView.SelectionChanged += HandleCursorChanged;
 
 			treeViewPlaceholder.Add (TreeView);
 
@@ -1504,7 +1500,7 @@ namespace MonoDevelop.AssemblyBrowser
 			
 			if (this.TreeView != null) {
 				//	Dispose (TreeView.GetRootNode ());
-				TreeView.Tree.CursorChanged -= HandleCursorChanged;
+				TreeView.SelectionChanged -= HandleCursorChanged;
 				this.TreeView.Clear ();
 				this.TreeView = null;
 			}
@@ -1621,8 +1617,7 @@ namespace MonoDevelop.AssemblyBrowser
 						} else {
 							builder = TreeView.AddChild (result);
 						}
-						TreeIter iter;
-						if (!TreeView.Tree.Selection.GetSelected (out iter))
+						if (TreeView.GetSelectedNode () == null)
 							builder.Selected = builder.Expanded = true;
 					} catch (Exception e) {
 						LoggingService.LogError ("Error while adding assembly to the assembly list", e);
