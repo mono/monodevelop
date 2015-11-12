@@ -120,7 +120,7 @@ style "wider" = "default" {
     ythickness = 3
 }
 
-style "button" {
+style "button" = "default" {
     xthickness = 2
     ythickness = 4
 
@@ -131,9 +131,7 @@ style "button" {
     bg[ACTIVE] = shade(1.2, "#595959")
     bg[INSENSITIVE] = "#595959"
 
-    fg[NORMAL] = "#fff"
-    fg[PRELIGHT] = "#fff"
-    fg[ACTIVE] = "#fff"
+    fg[ACTIVE] = "black"
     fg[INSENSITIVE] = lighter ("#595959")
 
     GtkWidget::draw-border = { 1, 1, 1, 1 }
@@ -147,8 +145,7 @@ style "button" {
         focus_color = shade(1.4, @bg_color)
         focusstyle = 3
         border_colors = { @bg_color, @bg_color }
-        textstyle = 1
-        text_shade = 1.0
+        textstyle = 0
         highlight_shade = 1.0
         lightborder_shade = 1.0
         default_button_color = lighter ("#595959")
@@ -156,12 +153,6 @@ style "button" {
 }
 
 style "dialog-button" = "button" {
-    xthickness = 2
-    ythickness = 4
-
-    fg[ACTIVE] = @selected_fg_color
-
-    font_name = "Helvetica Neue 13"
 
     GtkButton::inner-border = { 7, 7, 3, 4 }
 
