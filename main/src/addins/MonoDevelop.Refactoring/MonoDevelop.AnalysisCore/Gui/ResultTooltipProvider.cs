@@ -29,6 +29,8 @@ using System.Text;
 using System.Collections.Generic;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Editor;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
@@ -38,7 +40,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		{
 		}
 
-		public override TooltipItem GetItem (TextEditor editor, DocumentContext ctx, int offset)
+		public override Task<TooltipItem> GetItem (TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default(CancellationToken))
 		{
 //			//get the ResultsEditorExtension from the editor
 //			var ed =  editor as ExtensibleTextEditor;
@@ -57,7 +59,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 //				return null;
 //			
 //			return new TooltipItem (results, editor.GetLineByOffset (offset));
-			return null;
+			return Task.FromResult<TooltipItem> (null);
 		}
 
 		public override MonoDevelop.Components.Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Gdk.ModifierType modifierState)

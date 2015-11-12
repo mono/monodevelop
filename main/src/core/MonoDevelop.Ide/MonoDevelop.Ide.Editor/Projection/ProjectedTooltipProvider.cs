@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Editor.Projection
@@ -51,11 +53,11 @@ namespace MonoDevelop.Ide.Editor.Projection
 			this.ctx = ctx;
 		}
 
-		public override TooltipItem GetItem (TextEditor editor, DocumentContext ctx, int offset)
+		public override async Task<TooltipItem> GetItem (TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default(CancellationToken))
 		{
 			foreach (var pseg in projection.ProjectedSegments) {
 				if (pseg.ContainsOriginal (offset)) {
-					var result = projectedTooltipProvider.GetItem (projection.ProjectedEditor, projection.ProjectedContext, pseg.FromOriginalToProjected (offset));
+					var result = await projectedTooltipProvider.GetItem (projection.ProjectedEditor, projection.ProjectedContext, pseg.FromOriginalToProjected (offset));
 					if (result == null)
 						return null;
 					result.Offset = pseg.FromProjectedToOriginal (result.Offset);
