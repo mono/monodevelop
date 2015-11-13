@@ -531,10 +531,7 @@ namespace MonoDevelop.Ide
 
 					ib.Context.DrawImage (px, 0, 0);
 				}
-
-				// Create composed icons in normal and double resolution
-				var comp = Xwt.Drawing.Image.CreateMultiResolutionImage (new [] { ib.ToBitmap (1d), ib.ToBitmap (2d) });
-				frames.Add (comp);
+				frames.Add (ib.ToVectorImage ());
 			}
 
 			icons [id] = Xwt.Drawing.Image.CreateMultiSizeIcon (frames);
