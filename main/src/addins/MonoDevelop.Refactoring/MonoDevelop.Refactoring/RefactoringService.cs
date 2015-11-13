@@ -89,53 +89,55 @@ namespace MonoDevelop.Refactoring
 			var ws = TypeSystemService.Workspace as MonoDevelopWorkspace;
 			string originalName;
 			int originalOffset;
-
-			for (int i = 0; i < changes.Count; i++) {
-				var change = changes[i] as TextReplaceChange;
-				if (change == null)
-					continue;
-				
-				if (ws.TryGetOriginalFileFromProjection (change.FileName, change.Offset, out originalName, out originalOffset)) {
-					fileNames.Add (change.FileName);
-					change.FileName = originalName;
-					change.Offset = originalOffset;
-				}
-			}
-			if (changes.All (x => x is TextReplaceChange)) {
-				List<Change> newChanges = new List<Change> (changes);
-				newChanges.Sort ((Change x, Change y) => ((TextReplaceChange)x).Offset.CompareTo (((TextReplaceChange)y).Offset));
-				changes = newChanges;
-			}
-
-
-			for (int i = 0; i < changes.Count; i++) {
-				changes[i].PerformChange (monitor, rctx);
-				var replaceChange = changes[i] as TextReplaceChange;
-				if (replaceChange == null)
-					continue;
-
-				for (int j = i + 1; j < changes.Count; j++) {
-					var change = changes[j] as TextReplaceChange;
+			try {
+				for (int i = 0; i < changes.Count; i++) {
+					var change = changes [i] as TextReplaceChange;
 					if (change == null)
 						continue;
-					
-					fileNames.Add (change.FileName);
 
-					if (replaceChange.Offset >= 0 && change.Offset >= 0 && replaceChange.FileName == change.FileName) {
-						if (replaceChange.Offset < change.Offset) {
-							change.Offset -= replaceChange.RemovedChars;
-							if (!string.IsNullOrEmpty (replaceChange.InsertedText))
-								change.Offset += replaceChange.InsertedText.Length;
-						} else if (replaceChange.Offset < change.Offset + change.RemovedChars) {
-							change.RemovedChars = Math.Max (0, change.RemovedChars - replaceChange.RemovedChars);
-							change.Offset = replaceChange.Offset + (!string.IsNullOrEmpty (replaceChange.InsertedText) ? replaceChange.InsertedText.Length : 0);
+					if (ws.TryGetOriginalFileFromProjection (change.FileName, change.Offset, out originalName, out originalOffset)) {
+						fileNames.Add (change.FileName);
+						change.FileName = originalName;
+						change.Offset = originalOffset;
+					}
+				}
+				if (changes.All (x => x is TextReplaceChange)) {
+					List<Change> newChanges = new List<Change> (changes);
+					newChanges.Sort ((Change x, Change y) => ((TextReplaceChange)x).Offset.CompareTo (((TextReplaceChange)y).Offset));
+					changes = newChanges;
+				}
+
+
+				for (int i = 0; i < changes.Count; i++) {
+					changes [i].PerformChange (monitor, rctx);
+					var replaceChange = changes [i] as TextReplaceChange;
+					if (replaceChange == null)
+						continue;
+
+					for (int j = i + 1; j < changes.Count; j++) {
+						var change = changes [j] as TextReplaceChange;
+						if (change == null)
+							continue;
+
+						fileNames.Add (change.FileName);
+
+						if (replaceChange.Offset >= 0 && change.Offset >= 0 && replaceChange.FileName == change.FileName) {
+							if (replaceChange.Offset < change.Offset) {
+								change.Offset -= replaceChange.RemovedChars;
+								if (!string.IsNullOrEmpty (replaceChange.InsertedText))
+									change.Offset += replaceChange.InsertedText.Length;
+							} else if (replaceChange.Offset < change.Offset + change.RemovedChars) {
+								change.RemovedChars = Math.Max (0, change.RemovedChars - replaceChange.RemovedChars);
+								change.Offset = replaceChange.Offset + (!string.IsNullOrEmpty (replaceChange.InsertedText) ? replaceChange.InsertedText.Length : 0);
+							}
 						}
 					}
 				}
+				FileService.NotifyFilesChanged (fileNames);
+				FileService.FileRenamed -= handler.FileRename;
+			} finally {
+				TextReplaceChange.FinishRefactoringOperation ();
 			}
-			FileService.NotifyFilesChanged (fileNames);
-			FileService.FileRenamed -= handler.FileRename;
-			TextReplaceChange.FinishRefactoringOperation ();
 		}
 
 //		public static void QueueQuickFixAnalysis (Document doc, TextLocation loc, CancellationToken token, Action<List<CodeAction>> callback)
