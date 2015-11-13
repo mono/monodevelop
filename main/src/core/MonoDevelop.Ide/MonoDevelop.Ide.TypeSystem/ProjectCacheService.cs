@@ -13,9 +13,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Diagnostics;
 using System.Collections;
-
 namespace MonoDevelop.Ide.TypeSystem
 {
+/*
 	class ProjectCacheService : IProjectCacheHostService
 	{
 		internal const int ImplicitCacheSize = 3;
@@ -380,7 +380,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 	}
-
+*/
 	internal static class SpecializedTasks
 	{
 		public static readonly Task<bool> True = Task.FromResult<bool> (true);
