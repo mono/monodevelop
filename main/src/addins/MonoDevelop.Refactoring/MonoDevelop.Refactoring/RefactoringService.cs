@@ -133,9 +133,11 @@ namespace MonoDevelop.Refactoring
 						}
 					}
 				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while applying refactoring changes", e);
+			} finally {
 				FileService.NotifyFilesChanged (fileNames);
 				FileService.FileRenamed -= handler.FileRename;
-			} finally {
 				TextReplaceChange.FinishRefactoringOperation ();
 			}
 		}
