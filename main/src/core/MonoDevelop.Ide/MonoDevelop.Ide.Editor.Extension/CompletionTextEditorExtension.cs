@@ -257,7 +257,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			info.Bypass = !CanRunParameterCompletionCommand ();
 		}
 
-		[CommandHandler(TextEditorCommands.ShowCompletionWindow)]
+		[CommandHandler (TextEditorCommands.ShowCompletionWindow)]
 		public virtual async void RunCompletionCommand ()
 		{
 			if (Editor.SelectionMode == SelectionMode.Block)
@@ -276,10 +276,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 			CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
 			CurrentCompletionContext.TriggerWordLength = wlen;
 			completionList = await CodeCompletionCommand (CurrentCompletionContext);
-			if (completionList != null)
-				CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, CurrentCompletionContext);
-			else
+			if (completionList == null || !CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, CurrentCompletionContext)) {
 				CurrentCompletionContext = null;
+			}
 		}
 
 		[CommandHandler(TextEditorCommands.ShowCodeTemplateWindow)]
