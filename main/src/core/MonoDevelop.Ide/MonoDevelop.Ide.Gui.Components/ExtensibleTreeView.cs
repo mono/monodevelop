@@ -46,7 +46,7 @@ using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
-	public partial class ExtensibleTreeView : Control
+	public partial class ExtensibleTreeView : Control, ICommandRouter
 	{
 		internal const int NodeInfoColumn = 0;
 		internal const int DataItemColumn = 1;
@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		public string Id { get; set; }
 
 
-		class ExtensibleTreeViewWidget : CompactScrolledWindow
+		class ExtensibleTreeViewWidget : CompactScrolledWindow, ICommandRouter
 		{
 			ExtensibleTreeView control;
 
@@ -160,6 +160,11 @@ namespace MonoDevelop.Ide.Gui.Components
 			{
 				control.Destroy ();
 				base.OnDestroyed ();
+			}
+
+			public object GetNextCommandTarget ()
+			{
+				return control;
 			}
 		}
 
@@ -2198,6 +2203,11 @@ namespace MonoDevelop.Ide.Gui.Components
 				builders = null;
 			}
 			builderChains.Clear ();
+		}
+
+		object ICommandRouter.GetNextCommandTarget ()
+		{
+			return widget.Parent;
 		}
 
 		class PopupButton: Gtk.EventBox
