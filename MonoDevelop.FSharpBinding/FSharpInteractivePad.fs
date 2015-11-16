@@ -153,13 +153,13 @@ type FSharpInteractivePad() as this =
       
       x.UpdateColors()
                             
-      let toolbar = container.GetToolbar(Gtk.PositionType.Right)
+      let toolbar = container.GetToolbar(DockPositionType.Right)
 
       let buttonClear = new DockToolButton("gtk-clear")
       buttonClear.Clicked.Add(fun _ -> view.Clear())
       buttonClear.TooltipText <- GettextCatalog.GetString("Clear")
       toolbar.Add(buttonClear)
-      
+
       let buttonRestart = new DockToolButton("gtk-refresh")
       buttonRestart.Clicked.Add(fun _ -> x.RestartFsi())
       buttonRestart.TooltipText <- GettextCatalog.GetString("Reset")
