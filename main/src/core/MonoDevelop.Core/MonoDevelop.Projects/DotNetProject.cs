@@ -485,7 +485,11 @@ namespace MonoDevelop.Projects
 
 			/* Removed because it is very slow. SetFastBuildCheckDirty() is being called above. It is not the perfect solution but it is good enough
 			 * In the new project model GetReferencedAssemblies is asynchronous, so the code can be uncommented there. 
- 
+			 * 
+			 * NOTE: If this code is re-enabled we need to add a null check before accessing `DefaultConfiguration`,
+			 * this is what other users of this property do and there were reports of us hitting a null `DefaultConfiguration`
+			 * in this block of code.
+			 * 
 			// If a referenced assembly changes, dirtify the project.
 			foreach (var asm in GetReferencedAssemblies (DefaultConfiguration.Selector))
 				if (asm == updatedFile) {
