@@ -678,6 +678,9 @@ namespace MonoDevelop.Ide
 		
 		public void NewSolution (string defaultTemplate)
 		{
+			if (!IdeApp.Workbench.SaveAllDirtyFiles ())
+				return;
+
 			var newProjectDialog = new NewProjectDialogController ();
 			newProjectDialog.OpenSolution = true;
 			newProjectDialog.SelectedTemplateId = defaultTemplate;

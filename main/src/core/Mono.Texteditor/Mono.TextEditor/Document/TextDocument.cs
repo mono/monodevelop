@@ -274,6 +274,8 @@ namespace Mono.TextEditor
 			InterruptFoldWorker ();
 			//int oldLineCount = LineCount;
 			var args = new DocumentChangeEventArgs (offset, count > 0 ? GetTextAt (offset, count) : "", value, anchorMovementType);
+			if (value != null)
+				EnsureSegmentIsUnfolded (offset, value.Length);
 			OnTextReplacing (args);
 			value = args.InsertedText.Text;
 			UndoOperation operation = null;
@@ -1266,7 +1268,20 @@ namespace Mono.TextEditor
 				CommitDocumentUpdate ();
 			}
 		}
-		
+
+		public void EnsureSegmentIsUnfolded (int offset, int length)
+		{
+			bool needUpdate = false;
+			foreach (var fold in GetFoldingContaining (offset, length).Where (f => f.IsFolded)) {
+				needUpdate = true;
+				fold.IsFolded = false;
+			}
+			if (needUpdate) {
+				RequestUpdate (new UpdateAll ());
+				CommitDocumentUpdate ();
+			}
+		}
+
 		internal void InformFoldTreeUpdated ()
 		{
 			var handler = FoldTreeUpdated;

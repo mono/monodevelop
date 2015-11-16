@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <ItemGroup>
+	<File Include="$(P1).$(Prefix)Test1" />
+	<Result Include="$(Files)" />
+  </ItemGroup>
+  <PropertyGroup>
+	<Prop>abcdefgh</Prop>
+	<TestFile>files\test.txt</TestFile>
+	<Substring>$(Prop.Substring(1,3))</Substring>
+	<MethodWithParams1>$([System.String]::Format("ab"))</MethodWithParams1>
+	<MethodWithParams2>$([System.String]::Format("a{0}c",b))</MethodWithParams2>
+	<MethodWithParams3>$([System.String]::Format("a{0}{1}d",b,c))</MethodWithParams3>
+	<MethodWithParams4>$([System.String]::Format("a{0}{1}{2}{3}{4}{5}{6}{7}j",b,c,d,e,f,g,h,i))</MethodWithParams4>
+	<MethodWithParams5>$([System.String]::Format("a{0}b",null))</MethodWithParams5>
+	<MaxByte>$([System.Byte]::MaxValue)</MaxByte>
+	<Upper1>$([System.Char]::ToUpper("a"))</Upper1>
+	<Upper2>$([System.String]::Concat("a'b'c",5))</Upper2>
+	<Upper3>$([System.String]::Concat('a"b"c',5))</Upper3>
+	<Upper4>$([System.String]::Concat(abc,5))</Upper4>
+	<Upper5>$([System.String]::Concat($(Prop),5))</Upper5>
+	<FileContent>$([System.IO.File]::ReadAllText($(TestFile)).Substring(1,10))</FileContent>
+	<HexConv>$([System.Int16]::MaxValue.ToString(x8))</HexConv>
+	<ConcatFileContent>$([System.String]::Concat("[", $([System.IO.File]::ReadAllText($(TestFile)).Substring(1,10)), "]"))</ConcatFileContent>
+	<MSBuildAdd>$([MSBuild]::Add(2, 3))</MSBuildAdd>
+	<MSBuildAddDouble>$([MSBuild]::Add(2.5, 3))</MSBuildAddDouble>
+	<MSBuildValueOrDefault1>$([MSBuild]::ValueOrDefault($(Prop), "empty"))</MSBuildValueOrDefault1>
+	<MSBuildValueOrDefault2>$([MSBuild]::ValueOrDefault($(NoProp), "empty"))</MSBuildValueOrDefault2>
+	<P1>AAA</P1>
+	<Files>$(P1);@(File)</Files>
+	<Prefix>Post</Prefix>
+	<PostFiles>@(File)</PostFiles>
+	<P1>BBB</P1>
+  </PropertyGroup>
+  <PropertyGroup>
+  </PropertyGroup>
+	<Target Name="Test">
+		<Message Text="@(Result)" />
+	</Target>
+  <ItemGroup>
+	<File Include="$(P1).$(Prefix)Test2" />
+  </ItemGroup>
+</Project>

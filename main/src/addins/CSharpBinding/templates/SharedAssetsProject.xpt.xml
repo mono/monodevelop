@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Shared Project</_Name>
-		<Category>crossplat/library/general</Category>
+		<Category>multiplat/library/general</Category>
 		<Icon>md-project-shared-assets</Icon>
 		<Image id="md-shared-project" />
 		<_Description>Creates a project that allows sharing files between projects</_Description>

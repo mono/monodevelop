@@ -496,6 +496,7 @@ namespace MonoDevelop.Projects
 			var projectOptions = doc.CreateElement ("Options");
 			var p = (GenericProject) Services.ProjectService.CreateProject ("GenericProject", info, projectOptions);
 			Assert.AreEqual ("Default", p.Configurations [0].Name);
+			Assert.AreEqual (MSBuildSupport.NotSupported, p.MSBuildEngineSupport);
 		}
 
 		[Test]

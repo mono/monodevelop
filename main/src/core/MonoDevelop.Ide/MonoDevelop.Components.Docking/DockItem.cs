@@ -57,7 +57,6 @@ namespace MonoDevelop.Components.Docking
 		bool gettingContent;
 		bool isPositionMarker;
 		bool stickyVisible;
-		IDockItemLabelProvider dockLabelProvider;
 		DockItemToolbar toolbarTop;
 		DockItemToolbar toolbarBottom;
 		DockItemToolbar toolbarLeft;
@@ -141,11 +140,6 @@ namespace MonoDevelop.Components.Docking
 			set {
 				frame.SetStatus (this, value);
 			}
-		}
-		
-		public IDockItemLabelProvider DockLabelProvider {
-			get { return this.dockLabelProvider; }
-			set { this.dockLabelProvider = value; }
 		}
 		
 		internal DockItemContainer Widget {
@@ -602,10 +596,5 @@ namespace MonoDevelop.Components.Docking
 		}
 
 		public Window DockParent { get; private set; }
-	}
-	
-	public interface IDockItemLabelProvider
-	{
-		Gtk.Widget CreateLabel (Orientation orientation);
 	}
 }

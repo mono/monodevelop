@@ -1218,6 +1218,11 @@ namespace MonoDevelop.Ide.Editor
 				return Enumerable.Empty<object> ();
 			}
 		}
+
+		internal bool SuppressTooltips {
+			get { return textEditorImpl.SuppressTooltips; } 
+			set { textEditorImpl.SuppressTooltips = value; }
+		}
 		#endregion
 
 		List<ProjectedTooltipProvider> projectedProviders = new List<ProjectedTooltipProvider> ();
@@ -1285,30 +1290,31 @@ namespace MonoDevelop.Ide.Editor
 			if (projections.Count == 0)
 				return;
 
-			TextEditorExtension lastExtension = textEditorImpl.EditorExtension;
-			while (lastExtension != null && lastExtension.Next != null) {
-				var completionTextEditorExtension = lastExtension.Next as CompletionTextEditorExtension;
-				if (completionTextEditorExtension != null) {
-					var projectedFilterExtension = new ProjectedFilterCompletionTextEditorExtension (completionTextEditorExtension, projections) { Next = completionTextEditorExtension.Next };
-					completionTextEditorExtension.Deinitialize ();
-					lastExtension.Next = projectedFilterExtension;
-					projectedFilterExtension.Initialize (this, DocumentContext);
-				}
-				lastExtension = lastExtension.Next;
-			}
-
 			// no extensions -> no projections needed
 			if (textEditorImpl.EditorExtension == null)
 				return;
 
 			if ((disabledFeatures & DisabledProjectionFeatures.Completion) != DisabledProjectionFeatures.Completion) {
+				TextEditorExtension lastExtension = textEditorImpl.EditorExtension;
+				while (lastExtension != null && lastExtension.Next != null) {
+					var completionTextEditorExtension = lastExtension.Next as CompletionTextEditorExtension;
+					if (completionTextEditorExtension != null) {
+						var projectedFilterExtension = new ProjectedFilterCompletionTextEditorExtension (completionTextEditorExtension, projections) { Next = completionTextEditorExtension.Next };
+						completionTextEditorExtension.Deinitialize ();
+						lastExtension.Next = projectedFilterExtension;
+						projectedFilterExtension.Initialize (this, DocumentContext);
+					}
+					lastExtension = lastExtension.Next;
+				}
+
+
 				var projectedCompletionExtension = new ProjectedCompletionExtension (ctx, projections);
 				projectedCompletionExtension.Next = textEditorImpl.EditorExtension;
 
 				textEditorImpl.EditorExtension = projectedCompletionExtension;
 				projectedCompletionExtension.Initialize (this, DocumentContext);
+				projectionsAdded = true;
 			}
-			projectionsAdded = true;
 		}
 
 		internal void AddOverlay (Control messageOverlayContent, Func<int> sizeFunc)

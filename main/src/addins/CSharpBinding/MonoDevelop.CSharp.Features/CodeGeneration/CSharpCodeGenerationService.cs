@@ -89,12 +89,11 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeGeneration
 			if (createPropertyDeclaration == null)
 				throw new InvalidOperationException ("CreatePropertyDeclaration not found.");
 
-
-			createNamedTypeDeclaration = typeInfo.GetMethod ("CreateNamedTypeDeclaration", BindingFlags.Instance | BindingFlags.Public, null, new [] { typeof(INamedTypeSymbol), codeGenerationDestinationType, codeGenerationOptionsType }, null);
+			createNamedTypeDeclaration = typeInfo.GetMethod ("CreateNamedTypeDeclaration", BindingFlags.Instance | BindingFlags.Public, null, new [] { typeof(INamedTypeSymbol), codeGenerationDestinationType, codeGenerationOptionsType, typeof(CancellationToken) }, null);
 			if (createNamedTypeDeclaration == null)
 				throw new InvalidOperationException ("CreateNamedTypeDeclaration not found.");
 
-			createNamespaceDeclaration = typeInfo.GetMethod ("CreateNamespaceDeclaration", BindingFlags.Instance | BindingFlags.Public, null, new [] { typeof(INamespaceSymbol), codeGenerationDestinationType, codeGenerationOptionsType }, null);
+			createNamespaceDeclaration = typeInfo.GetMethod ("CreateNamespaceDeclaration", BindingFlags.Instance | BindingFlags.Public, null, new [] { typeof(INamespaceSymbol), codeGenerationDestinationType, codeGenerationOptionsType, typeof(CancellationToken) }, null);
 			if (createNamespaceDeclaration == null)
 				throw new InvalidOperationException ("CreateNamespaceDeclaration not found.");
 
@@ -228,10 +227,10 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeGeneration
 		/// <summary>
 		/// Returns a newly created named type declaration node from the provided named type.
 		/// </summary>
-		public SyntaxNode CreateNamedTypeDeclaration(INamedTypeSymbol namedType, CodeGenerationDestination destination = CodeGenerationDestination.Unspecified)
+		public SyntaxNode CreateNamedTypeDeclaration(INamedTypeSymbol namedType, CodeGenerationDestination destination, CodeGenerationOptions options, CancellationToken cancellationToken)
 		{
 			try {
-				return (SyntaxNode)createNamedTypeDeclaration.Invoke (instance, new object[] { @namedType, (int)destination, null });
+				return (SyntaxNode)createNamedTypeDeclaration.Invoke (instance, new object[] { @namedType, destination, options != null ? options.Instance : null, cancellationToken });
 			} catch (TargetInvocationException ex) {
 				ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
 				return null;
@@ -241,10 +240,10 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeGeneration
 		/// <summary>
 		/// Returns a newly created namespace declaration node from the provided namespace.
 		/// </summary>
-		public SyntaxNode CreateNamespaceDeclaration(INamespaceSymbol @namespace, CodeGenerationDestination destination = CodeGenerationDestination.Unspecified)
+		public SyntaxNode CreateNamespaceDeclaration(INamespaceSymbol @namespace, CodeGenerationDestination destination, CodeGenerationOptions options, CancellationToken cancellationToken)
 		{
 			try {
-				return (SyntaxNode)createNamespaceDeclaration.Invoke (instance, new object[] { @namespace, (int)destination, null });
+				return (SyntaxNode)createNamespaceDeclaration.Invoke (instance, new object[] { @namespace, (int)destination, options != null ? options.Instance : null, cancellationToken });
 			} catch (TargetInvocationException ex) {
 				ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
 				return null;

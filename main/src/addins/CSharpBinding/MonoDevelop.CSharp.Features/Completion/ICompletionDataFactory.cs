@@ -66,6 +66,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		/// Creates the event creation completion data.
 		/// </summary>
 		CompletionData CreateNewMethodDelegate (ICompletionDataKeyHandler keyHandler, ITypeSymbol delegateType, string varName, INamedTypeSymbol curType);
+		ISymbolCompletionData CreateExistingMethodDelegate (ICompletionDataKeyHandler keyHandler, IMethodSymbol method);
 
 		CompletionData CreateAnonymousMethod (ICompletionDataKeyHandler keyHandler, string displayText, string description, string textBeforeCaret, string textAfterCaret);
 

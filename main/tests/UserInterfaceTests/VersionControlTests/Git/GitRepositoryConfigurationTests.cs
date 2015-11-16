@@ -33,7 +33,8 @@ namespace UserInterfaceTests
 	[Category ("GitConfig")]
 	public class GitRepositoryConfigurationTests : GitBase
 	{
-		string gtkSharpUrl = "git@github.com:mono/gtk-sharp.git";
+		const string gtkSharpUrl = "https://github.com/mono/gtk-sharp.git";
+		const string monoHotdrawUrl = "https://github.com/mono/monocov.git";
 
 		#region Branch Tab
 
@@ -209,7 +210,7 @@ namespace UserInterfaceTests
 			Ide.WaitForSolutionCheckedOut ();
 
 			const string newRemoteName = "second";
-			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			const string newRemoteUrl = monoHotdrawUrl;
 			OpenRepositoryConfiguration ("Remote Sources");
 			AddRemote (newRemoteName, newRemoteUrl);
 			SelectRemote (newRemoteName, newRemoteUrl);
@@ -224,7 +225,7 @@ namespace UserInterfaceTests
 			Ide.WaitForSolutionCheckedOut ();
 
 			const string newRemoteName = "second";
-			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			const string newRemoteUrl = monoHotdrawUrl;
 			OpenRepositoryConfiguration ("Remote Sources");
 			AddRemote (newRemoteName, newRemoteUrl);
 			SelectRemote (newRemoteName, newRemoteUrl);
@@ -242,12 +243,12 @@ namespace UserInterfaceTests
 			OpenRepositoryConfiguration ("Remote Sources");
 
 			const string newRemoteName = "second";
-			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			const string newRemoteUrl = monoHotdrawUrl;
 			AddRemote (newRemoteName, newRemoteUrl);
 			SelectRemote (newRemoteName, newRemoteUrl);
 
 			const string updatedRemoteName = "second-origin";
-			const string updatedRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			const string updatedRemoteUrl = monoHotdrawUrl;
 			EditRemote (updatedRemoteName, updatedRemoteUrl, updatedRemoteUrl);
 			SelectRemote (updatedRemoteName, updatedRemoteUrl);
 			CloseRepositoryConfiguration ();
@@ -263,12 +264,12 @@ namespace UserInterfaceTests
 			OpenRepositoryConfiguration ("Remote Sources");
 
 			const string newRemoteName = "second";
-			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			const string newRemoteUrl = monoHotdrawUrl;
 			AddRemote (newRemoteName, newRemoteUrl);
 			SelectRemote (newRemoteName, newRemoteUrl);
 
 			const string updatedRemoteName = "second-origin";
-			const string updatedRemoteUrl = "git@github.com:mono/monohotdraw-push.git";
+			const string updatedRemoteUrl = monoHotdrawUrl;
 			EditRemote (updatedRemoteName, updatedRemoteUrl, newRemoteUrl);
 			SelectRemote (updatedRemoteName, updatedRemoteUrl);
 			CloseRepositoryConfiguration ();
@@ -284,13 +285,13 @@ namespace UserInterfaceTests
 			OpenRepositoryConfiguration ("Remote Sources");
 
 			const string newRemoteName = "second";
-			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			const string newRemoteUrl = monoHotdrawUrl;
 			AddRemote (newRemoteName, newRemoteUrl);
 			SelectRemote (newRemoteName, newRemoteUrl);
 
 			const string updatedRemoteName = "second-origin";
-			const string updatedRemoteUrl = "git@github.com:mono/monohotdraw.git";
-			EditRemote (updatedRemoteName, updatedRemoteUrl, "git@github.com:mono/monohotdraw-push.git");
+			const string updatedRemoteUrl = monoHotdrawUrl;
+			EditRemote (updatedRemoteName, updatedRemoteUrl, monoHotdrawUrl);
 			SelectRemote (updatedRemoteName, updatedRemoteUrl);
 			CloseRepositoryConfiguration ();
 		}
@@ -305,11 +306,11 @@ namespace UserInterfaceTests
 			OpenRepositoryConfiguration ("Remote Sources");
 
 			const string newRemoteName = "second";
-			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			const string newRemoteUrl = monoHotdrawUrl;
 			AddRemote (newRemoteName, newRemoteUrl);
 			SelectRemote (newRemoteName, newRemoteUrl);
 
-			const string updatedRemoteUrl = "git@github.com:mono/monohotdraw-push.git";
+			const string updatedRemoteUrl = monoHotdrawUrl;
 			EditRemote (newRemoteName, updatedRemoteUrl, updatedRemoteUrl);
 			SelectRemote (newRemoteName, updatedRemoteUrl);
 			CloseRepositoryConfiguration ();
@@ -323,7 +324,7 @@ namespace UserInterfaceTests
 			Ide.WaitForSolutionCheckedOut ();
 
 			const string newRemoteName = "second";
-			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			const string newRemoteUrl = monoHotdrawUrl;
 			OpenRepositoryConfiguration ("Remote Sources");
 			AddRemote (newRemoteName, newRemoteUrl);
 			FetchRemoteBranch (newRemoteName);
@@ -338,7 +339,7 @@ namespace UserInterfaceTests
 			Ide.WaitForSolutionCheckedOut ();
 
 			const string newRemoteName = "second";
-			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			const string newRemoteUrl = monoHotdrawUrl;
 			OpenRepositoryConfiguration ("Remote Sources");
 			AddRemote (newRemoteName, newRemoteUrl);
 			FetchRemoteBranch (newRemoteName);

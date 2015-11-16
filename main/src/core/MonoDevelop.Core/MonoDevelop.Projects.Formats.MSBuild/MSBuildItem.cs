@@ -152,7 +152,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	class MSBuildItemEvaluated: IMSBuildItemEvaluated
 	{
 		MSBuildPropertyGroupEvaluated metadata;
-		MSBuildProject parent;
 		string evaluatedInclude;
 		string include;
 		MSBuildItem sourceItem;
@@ -161,7 +160,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			this.include = include;
 			this.evaluatedInclude = evaluatedInclude;
-			this.parent = parent;
 			metadata = new MSBuildPropertyGroupEvaluated (parent);
 			Name = name;
 		}

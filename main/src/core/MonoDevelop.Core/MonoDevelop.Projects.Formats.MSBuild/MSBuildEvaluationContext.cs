@@ -36,10 +36,12 @@ using MonoDevelop.Core;
 using System.Reflection;
 using Microsoft.Build.Utilities;
 using MonoDevelop.Projects.Formats.MSBuild.Conditions;
+using System.Globalization;
+using Microsoft.Build.Evaluation;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class MSBuildEvaluationContext: IExpressionContext
+	class MSBuildEvaluationContext: IExpressionContext
 	{
 		Dictionary<string,string> properties = new Dictionary<string, string> ();
 
@@ -163,7 +165,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			this.recursiveDir = null;
 		}
 
-		public string GetPropertyValue (string name)
+		string GetPropertyValue (string name)
 		{
 			string val;
 			if (properties.TryGetValue (name, out val))
@@ -246,13 +248,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				parentContext.ClearPropertyValue (name);
 		}
 
-		public bool Evaluate (XmlElement source, out XmlElement result)
-		{
-			allResolved = true;
-			result = (XmlElement) EvaluateNode (source);
-			return allResolved;
-		}
-
 		XmlNode EvaluateNode (XmlNode source)
 		{
 			var elemSource = source as XmlElement;
@@ -284,14 +279,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return source.Clone ();
 		}
 
-		public bool Evaluate (string str, out string result)
-		{
-			allResolved = true;
-			result = Evaluate (str);
-			return allResolved;
-		}
-
-		readonly static char[] tagStart = new [] {'$','%'};
+		readonly static char[] tagStart = new [] {'$','%','@'};
 
 		public string Evaluate (string str)
 		{
@@ -306,24 +294,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			StringBuilder sb = new StringBuilder ();
 			do {
-				var tag = str[i];
 				sb.Append (str, last, i - last);
-				i += 2;
-				int j = str.IndexOf (")", i);
-				if (j == -1) {
+				int j = i;
+				object val;
+				if (!EvaluateReference (str, ref j, out val))
 					allResolved = false;
-					return str;
-				}
-
-				string prop = str.Substring (i, j - i);
-				string val = tag == '$' ? GetPropertyValue (prop) : GetMetadataValue (prop);
-				if (val == null) {
-					allResolved = false;
-					val = string.Empty;
-				}
-
-				sb.Append (val);
-				last = j + 1;
+				sb.Append (ValueToString (val));
+				last = j;
 
 				i = FindNextTag (str, last);
 			}
@@ -332,6 +309,317 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			sb.Append (str, last, str.Length - last);
 			return sb.ToString ();
 		}
+
+		bool EvaluateReference (string str, ref int i, out object val)
+		{
+			val = null;
+			var tag = str[i];
+			int start = i;
+
+			i += 2;
+			int j = FindClosingChar (str, i, ')');
+			if (j == -1) {
+				val = str.Substring (start);
+				i = str.Length;
+				return false;
+			}
+
+			string prop = str.Substring (i, j - i).Trim ();
+			i = j + 1;
+
+			bool res = false;
+			if (prop.Length > 0) {
+				switch (tag) {
+					case '$': res = EvaluateProperty (prop, out val); break;
+					case '%': res = EvaluateMetadata (prop, out val); break;
+					case '@': res = EvaluateList (prop, out val); break;
+				}
+			}
+			if (!res)
+				val = str.Substring (start, j - start + 1);
+			return res;
+		}
+
+		string ValueToString (object ob)
+		{
+			return ob != null ? Convert.ToString (ob, CultureInfo.InvariantCulture) : string.Empty;
+		}
+
+		bool EvaluateProperty (string prop, out object val)
+		{
+			val = null;
+			if (prop [0] == '[') {
+				int i = prop.IndexOf (']');
+				if (i == -1 || (prop.Length - i) < 3 || prop [i + 1] != ':' || prop [i + 2] != ':')
+					return false;
+				var typeName = prop.Substring (1, i - 1).Trim ();
+				if (typeName.Length == 0)
+					return false;
+				var type = ResolveType (typeName);
+				if (type == null)
+					return false;
+				i += 3;
+				return EvaluateMember (type, null, prop, i, out val);
+			}
+			int n = prop.IndexOf ('.');
+			if (n == -1) {
+				val = GetPropertyValue (prop) ?? string.Empty;
+				return true;
+			} else {
+				var pn = prop.Substring (0, n);
+				val = GetPropertyValue (pn) ?? string.Empty;
+				return EvaluateMember (typeof(string), val, prop, n + 1, out val);
+			}
+		}
+
+		bool EvaluateMember (Type type, object instance, string str, int i, out object val)
+		{
+			val = null;
+
+			// Find the delimiter of the member
+			int j = str.IndexOfAny (new [] { '.', ')', '(' }, i);
+			if (j == -1)
+				j = str.Length;
+
+			var memberName = str.Substring (i, j - i).Trim ();
+			if (memberName.Length == 0)
+				return false;
+			
+			var member = ResolveMember (type, memberName, instance == null);
+			if (member.Length == 0)
+				return false;
+
+			if (j < str.Length && str[j] == '(') {
+				// It is a method invocation
+				object [] parameterValues;
+				j++;
+				if (!EvaluateParameters (str, ref j, out parameterValues))
+					return false;
+
+				// Find a method with a matching number of parameters
+				var method = FindBestOverload (member.OfType<MethodInfo> (), parameterValues);
+				if (method == null)
+					return false;
+				
+				try {
+					// Convert the given parameters to the types specified in the method signature
+					var methodParams = method.GetParameters ();
+
+					var convertedArgs = (methodParams.Length == parameterValues.Length) ? parameterValues : new object [methodParams.Length];
+
+					int numArgs = methodParams.Length;
+					Type paramsArgType = null;
+					if (methodParams.Length > 0 && methodParams [methodParams.Length - 1].ParameterType.IsArray && methodParams [methodParams.Length - 1].IsDefined (typeof (ParamArrayAttribute))) {
+						paramsArgType = methodParams [methodParams.Length - 1].ParameterType.GetElementType ();
+						numArgs--;
+					}
+
+					int n;
+					for (n = 0; n < numArgs; n++)
+						convertedArgs [n] = ConvertArg (method, n, parameterValues [n], methodParams [n].ParameterType);
+
+					if (paramsArgType != null) {
+						var argsArray = new object [parameterValues.Length - numArgs];
+						for (int m = 0; m < argsArray.Length; m++)
+							argsArray [m] = ConvertArg (method, n, parameterValues [n++], paramsArgType);
+						convertedArgs [convertedArgs.Length - 1] = argsArray;
+					}
+
+					// Invoke the method
+					val = method.Invoke (instance, convertedArgs);
+
+					// Skip the closing parens
+					j++;
+				}
+				catch (Exception ex) {
+					LoggingService.LogError ("MSBuild property evaluation failed: " + str, ex);
+					return false;
+				}
+			} else {
+				// It has to be a property or field
+				try {
+					if (member[0] is PropertyInfo)
+						val = ((PropertyInfo)member[0]).GetValue (instance);
+					else if (member[0] is FieldInfo)
+						val = ((FieldInfo)member[0]).GetValue (instance);
+					else
+						return false;
+				} catch (Exception ex) {
+					LoggingService.LogError ("MSBuild property evaluation failed: " + str, ex);
+					return false;
+				}
+			}
+			if (j < str.Length && str[j] == '.') {
+				// Chained member invocation
+				if (val == null)
+					return false;
+				return EvaluateMember (val.GetType (), val, str, j + 1, out val);
+			}
+			return true;
+		}
+
+		bool EvaluateParameters (string str, ref int i, out object[] parameters)
+		{
+			parameters = null;
+			var list = new List<object> ();
+
+			while (i < str.Length) {
+				var j = FindClosingChar (str, i, new [] { ',', ')' });
+				if (j == -1)
+					return false;
+				
+				var arg = str.Substring (i, j - i).Trim ();
+
+				if (arg.Length == 0 && str [j] == ')' && list.Count == 0) {
+					// Empty parameters list
+					parameters = new object [0];
+					i = j;
+					return true;
+				}
+
+				// Trim enclosing quotation marks
+				if (arg.Length > 1 && ((arg [0] == '"' && arg [arg.Length - 1] == '"') || (arg [0] == '\'' && arg [arg.Length - 1] == '\'')))
+					arg = arg.Substring (1, arg.Length - 2);
+
+				list.Add (Evaluate (arg));
+
+				if (str [j] == ')') {
+					// End of parameters list
+					parameters = list.ToArray ();
+					i = j;
+					return true;
+				}
+				i = j + 1;
+			}
+			return false;
+		}
+
+		MethodInfo FindBestOverload (IEnumerable<MethodInfo> methods, object [] args)
+		{
+			MethodInfo methodWithParams = null;
+
+			foreach (var m in methods.OfType<MethodInfo> ()) {
+				var argInfo = m.GetParameters ();
+
+				// Exclude methods which take a complex object as argument
+				if (argInfo.Any (a => a.ParameterType != typeof(object) && Type.GetTypeCode (a.ParameterType) == TypeCode.Object && !IsParamsArg(a)))
+					continue;
+
+				if (args.Length >= argInfo.Length - 1 && argInfo.Length > 0 && IsParamsArg (argInfo [argInfo.Length - 1])) {
+					methodWithParams = m;
+					continue;
+				}
+				if (args.Length != argInfo.Length)
+					continue;
+				
+				return m;
+			}
+			return methodWithParams;
+		}
+
+		bool IsParamsArg (ParameterInfo pi)
+		{
+			return pi.ParameterType.IsArray && pi.IsDefined (typeof (ParamArrayAttribute));
+		}
+
+		object ConvertArg (MethodInfo method, int argNum, object value, Type parameterType)
+		{
+			var sval = value as string;
+			if (sval == "null")
+				return null;
+			
+			var res = Convert.ChangeType (value, parameterType, CultureInfo.InvariantCulture);
+			bool convertPath = false;
+
+			if ((method.DeclaringType == typeof (System.IO.File) || method.DeclaringType == typeof (System.IO.Directory)) && argNum == 0) {
+				convertPath = true;
+			} else if (method.DeclaringType == typeof (IntrinsicFunctions)) {
+				if (method.Name == "MakeRelative")
+					convertPath = true;
+				else if (method.Name == "GetDirectoryNameOfFileAbove" && argNum == 0)
+					convertPath = true;
+			}
+
+			// The argument is a path. Convert to native path and make absolute
+			if (convertPath)
+				res = MSBuildProjectService.FromMSBuildPath (project.BaseDirectory, (string)res);
+			
+			return res;
+		}
+
+		bool EvaluateMetadata (string prop, out object val)
+		{
+			val = GetMetadataValue (prop);
+			return val != null;
+		}
+
+		bool EvaluateList (string prop, out object val)
+		{
+			val = "";
+			return false;
+		}
+
+		Type ResolveType (string typeName)
+		{
+			if (typeName == "MSBuild")
+				return typeof (Microsoft.Build.Evaluation.IntrinsicFunctions);
+			else {
+				var t = supportedTypeMembers.FirstOrDefault (st => st.Item1.FullName == typeName);
+				if (t == null)
+					return null;
+				return t.Item1;
+			}
+		}
+
+		MemberInfo[] ResolveMember (Type type, string memberName, bool isStatic)
+		{
+			var flags = isStatic ? BindingFlags.Static : BindingFlags.Instance;
+			if (type != typeof (Microsoft.Build.Evaluation.IntrinsicFunctions)) {
+				var t = supportedTypeMembers.FirstOrDefault (st => st.Item1 == type);
+				if (t == null)
+					return null;
+				if (t.Item2 != null && !t.Item2.Contains (memberName))
+					return null;
+			} else
+				flags |= BindingFlags.NonPublic;
+			
+			return type.GetMember (memberName, flags | BindingFlags.Public);
+		}
+
+		static Tuple<Type, string []> [] supportedTypeMembers = {
+			Tuple.Create (typeof(System.Byte), (string[]) null),
+			Tuple.Create (typeof(System.Char), (string[]) null),
+			Tuple.Create (typeof(System.Convert), (string[]) null),
+			Tuple.Create (typeof(System.DateTime), (string[]) null),
+			Tuple.Create (typeof(System.Decimal), (string[]) null),
+			Tuple.Create (typeof(System.Double), (string[]) null),
+			Tuple.Create (typeof(System.Enum), (string[]) null),
+			Tuple.Create (typeof(System.Guid), (string[]) null),
+			Tuple.Create (typeof(System.Int16), (string[]) null),
+			Tuple.Create (typeof(System.Int32), (string[]) null),
+			Tuple.Create (typeof(System.Int64), (string[]) null),
+			Tuple.Create (typeof(System.IO.Path), (string[]) null),
+			Tuple.Create (typeof(System.Math), (string[]) null),
+			Tuple.Create (typeof(System.UInt16), (string[]) null),
+			Tuple.Create (typeof(System.UInt32), (string[]) null),
+			Tuple.Create (typeof(System.UInt64), (string[]) null),
+			Tuple.Create (typeof(System.SByte), (string[]) null),
+			Tuple.Create (typeof(System.Single), (string[]) null),
+			Tuple.Create (typeof(System.String), (string[]) null),
+			Tuple.Create (typeof(System.StringComparer), (string[]) null),
+			Tuple.Create (typeof(System.TimeSpan), (string[]) null),
+			Tuple.Create (typeof(System.Text.RegularExpressions.Regex), (string[]) null),
+			Tuple.Create (typeof(Microsoft.Build.Utilities.ToolLocationHelper), (string[]) null),
+			Tuple.Create (typeof(System.Environment), new string [] {
+				"CommandLine", "ExpandEnvironmentVariables", "GetEnvironmentVariable", "GetEnvironmentVariables", "GetFolderPath", "GetLogicalDrives"
+			}),
+			Tuple.Create (typeof(System.IO.Directory), new string [] {
+				"GetDirectories", "GetFiles", "GetLastAccessTime", "GetLastWriteTime", "GetParent"
+			}),
+			Tuple.Create (typeof(System.IO.File), new string [] {
+				"Exists", "GetCreationTime", "GetAttributes", "GetLastAccessTime", "GetLastWriteTime", "ReadAllText"
+			}),
+		};
 
 		int FindNextTag (string str, int i)
 		{
@@ -344,6 +632,48 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				i++;
 			} while (i < str.Length);
 
+			return -1;
+		}
+
+		int FindClosingChar (string str, int i, char closeChar)
+		{
+			int pc = 0;
+			while (i < str.Length) {
+				var c = str [i];
+				if (pc == 0 && c == closeChar)
+					return i;
+				if (c == '(' || c == '[')
+					pc++;
+				else if (c == ')' || c == ']')
+					pc--;
+				else if (c == '"' || c == '\'') {
+					i = str.IndexOf (c, i + 1);
+					if (i == -1)
+						return -1;
+				}
+				i++;
+			}
+			return -1;
+		}
+
+		int FindClosingChar (string str, int i, char[] closeChar)
+		{
+			int pc = 0;
+			while (i < str.Length) {
+				var c = str [i];
+				if (pc == 0 && closeChar.Contains (c))
+					return i;
+				if (c == '(' || c == '[')
+					pc++;
+				else if (c == ')' || c == ']')
+					pc--;
+				else if (c == '"' || c == '\'') {
+					i = str.IndexOf (c, i + 1);
+					if (i == -1)
+						return -1;
+				}
+				i++;
+			}
 			return -1;
 		}
 

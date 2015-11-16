@@ -1428,7 +1428,7 @@ namespace MonoDevelop.Projects
 			var savedXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (refXml, savedXml);
 
-			refXml = Util.ToSystemEndings (File.ReadAllText (p.FileName + ".2"));
+			refXml = Util.ToSystemEndings (Util.ToWindowsEndings (File.ReadAllText (p.FileName + ".2")));
 			f.Visible = true;
 			await p.SaveAsync (Util.GetMonitor ());
 			await p.SaveAsync (Util.GetMonitor ());

@@ -2043,7 +2043,6 @@ namespace MonoDevelop.Projects
 
 		MSBuildProjectInstance CreateProjectInstaceForConfiguration (string conf, string platform)
 		{
-			var t = System.Diagnostics.Stopwatch.StartNew ();
 			var pi = sourceProject.CreateInstance ();
 			pi.SetGlobalProperty ("Configuration", conf);
 			if (platform == string.Empty)
