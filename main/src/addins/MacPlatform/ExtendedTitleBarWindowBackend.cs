@@ -105,13 +105,6 @@ namespace MonoDevelop.MacIntegration
 
 			var image = Xwt.Drawing.Image.FromResource (typeof(MacPlatformService).Assembly, "maintoolbarbg.png");
 
-			Window.Realized += delegate {
-				NSWindow w = GtkQuartz.GetWindow (Window);
-				w.IsOpaque = false;
-				w.BackgroundColor = NSColor.FromPatternImage (image.ToBitmap().ToNSImage());
-				w.StyleMask |= NSWindowStyle.TexturedBackground;
-			};
-
 			toolbar = new CustomToolbar ();
 			toolbar.Background = (Gdk.Pixbuf)Xwt.Toolkit.Load (Xwt.ToolkitType.Gtk).GetNativeImage (image);
 			toolbar.TitleBarHeight = MacPlatformService.GetTitleBarHeight ();
