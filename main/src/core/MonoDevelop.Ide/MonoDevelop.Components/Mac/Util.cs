@@ -99,6 +99,11 @@ namespace MonoDevelop.Components.Mac
 			return NSColor.FromDeviceRgba ((float)col.Red, (float)col.Green, (float)col.Blue, (float)col.Alpha);
 		}
 
+		public static NSColor ToNSColor (this Cairo.Color col)
+		{
+			return NSColor.FromDeviceRgba ((float)col.R, (float)col.G, (float)col.B, (float)col.A);
+		}
+
 		static Selector applyFontTraits = new Selector ("applyFontTraits:range:");
 
 		public static NSAttributedString ToAttributedString (this FormattedText ft)

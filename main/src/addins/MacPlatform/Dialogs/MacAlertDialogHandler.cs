@@ -46,6 +46,7 @@ namespace MonoDevelop.MacIntegration
 		{
 			using (var alert = new NSAlert ()) {
 				alert.Window.Title = data.Title ?? BrandingService.ApplicationName;
+				IdeTheme.ApplyTheme (alert.Window);
 
 				bool stockIcon;
 				if (data.Message.Icon == MonoDevelop.Ide.Gui.Stock.Error || data.Message.Icon == Gtk.Stock.DialogError) {
