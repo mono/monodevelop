@@ -23,8 +23,8 @@ let main argv =
       let results = parser.Parse argv
       let projectFile = results.GetResult(<@ Project @>)
       let checker = FSharpChecker.Create()
-      let res = FSharpProjectFileInfo.Parse(projectFile, enableLogging= true)
-      let log = res.LogOutput
+      //let projectFileInfo = FSharpProjectFileInfo.Parse(projectFile, enableLogging= true)
+      //let log = projectFileInfo.LogOutput
       let fsharpProjectOptions = checker.GetProjectOptionsFromProjectFile(projectFile)
       let normalizedReferences = 
         fsharpProjectOptions.ReferencedProjects
