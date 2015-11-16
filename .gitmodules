@@ -26,7 +26,7 @@
 	url = git://github.com/mono/guiunit.git
 [submodule "main/external/fsharpbinding"]
 	path = main/external/fsharpbinding
-	url = https://github.com/fsharp/xamarin-monodevelop-fsharp-addin.git
+	url = git://github.com/fsharp/xamarin-monodevelop-fsharp-addin.git
 	branch = master
 [submodule "main/external/nuget-binary"]
 	path = main/external/nuget-binary
