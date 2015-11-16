@@ -46,6 +46,9 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 		MSBuildProject projitemsProject;
 		HashSet<MSBuildItem> usedMSBuildItems = new HashSet<MSBuildItem> ();
 
+		const string CSharptargets = @"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.CSharp.targets";
+		const string FSharptargets = @"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.FSharp.targets";
+
 		public SharedAssetsProject ()
 		{
 			Initialize (this);
@@ -72,7 +75,19 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 				return;
 
 			// TODO: load the type from msbuild
-			LanguageName = "C#";
+			foreach (var item in msproject.Imports) {
+				if (item.Project.Equals (CSharptargets, StringComparison.OrdinalIgnoreCase)) {
+					LanguageName = "C#";
+					break;
+				}
+				if (item.Project.Equals (FSharptargets, StringComparison.OrdinalIgnoreCase)) {
+					LanguageName = "F#";
+					break;
+				}
+			}
+			//If for some reason the language name is empty default it to C#
+			if (String.IsNullOrEmpty(LanguageName))
+				LanguageName = "C#";
 
 			projItemsPath = MSBuildProjectService.FromMSBuildPath (msproject.BaseDirectory, import.Project);
 
@@ -132,7 +147,13 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 				msproject.AddNewImport (@"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.Common.props");
 				import = msproject.AddNewImport (Path.ChangeExtension (FileName.FileName, ".projitems"));
 				import.Label = "Shared";
-				msproject.AddNewImport (@"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.CSharp.targets");
+				if (LanguageName.Equals("C#", StringComparison.OrdinalIgnoreCase)) {
+					msproject.AddNewImport (CSharptargets);
+				}
+				else if (LanguageName.Equals("F#", StringComparison.OrdinalIgnoreCase)) {
+					msproject.AddNewImport (FSharptargets);
+				}
+
 			} else {
 				msproject.Load (FileName);
 			}
