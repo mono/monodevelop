@@ -5,6 +5,10 @@ open System.IO
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.Ide.Editor
 
+module Seq =
+  let tryHead items =
+    if Seq.isEmpty items then None else Some (Seq.head items)
+
 module Option =
   let inline getOrElse f o = 
     match o with

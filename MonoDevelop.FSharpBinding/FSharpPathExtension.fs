@@ -149,7 +149,7 @@ type FSharpPathExtension() as x =
         sameParentSlnAndBuilt
         |> Seq.tryFind(fun p -> p = (p.ParentSolution.StartupItem :?> DotNetProject))
         |> Option.coalesce (sameParentSlnAndBuilt |> Seq.tryHead)
-        
+
       best
       |> Option.coalesce (ownerProjects |> Seq.tryFind (fun p -> p.ParentSolution = solution))
       |> Option.coalesce (ownerProjects |> Seq.tryHead)
