@@ -91,7 +91,21 @@ namespace MonoDevelop.VersionControl.Views
 					double center_x = cell_area.X + Math.Round ((double) (cell_area.Width / 2d));
 					double center_y = cell_area.Y + Math.Round ((double) (cell_area.Height / 2d));
 					cr.Arc (center_x, center_y, 5, 0, 2 * Math.PI);
-					cr.SetSourceRGBA (0, 0, 0, 1);
+					var state = StateType.Normal;
+					if (!base.Sensitive)
+						state = StateType.Insensitive;
+					else if (flags.HasFlag (CellRendererState.Selected)) {
+						if (widget.HasFocus)
+							state = StateType.Selected;
+						else
+							state = StateType.Active;
+					}
+					else if (flags.HasFlag (CellRendererState.Prelit))
+						state = StateType.Prelight;
+					else if (widget.State == StateType.Insensitive)
+						state = StateType.Insensitive;
+
+					cr.SetSourceColor (widget.Style.Text (state).ToCairoColor ());
 					cr.Stroke ();
 					if (!FirstNode) {
 						cr.MoveTo (center_x, cell_area.Y - 2);
@@ -237,11 +251,24 @@ namespace MonoDevelop.VersionControl.Views
 			tb.UseChildBackgroundColor = true;
 			tb.Add (scrolledwindow1);
 			vbox2.PackStart (tb, true, true, 0);
+
+			UpdateStyle ();
+			MonoDevelop.Ide.Gui.Styles.Changed += HandleStylesChanged;
 		}
 
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
+			UpdateStyle ();
+		}
+
+		void HandleStylesChanged (object sender, EventArgs e)
+		{
+			UpdateStyle ();
+		}
+
+		void UpdateStyle ()
+		{
 			var c = Style.Base (StateType.Normal).ToXwtColor ();
 			c.Light *= 0.8;
 			commitBox.ModifyBg (StateType.Normal, c.ToGdkColor ());
@@ -249,6 +276,12 @@ namespace MonoDevelop.VersionControl.Views
 			var tcol = Styles.LogView.CommitDescBackgroundColor;
 			textviewDetails.ModifyBase (StateType.Normal, tcol);
 			scrolledwindow1.ModifyBase (StateType.Normal, tcol);
+		}
+
+		protected override void OnDestroyed ()
+		{
+			MonoDevelop.Ide.Gui.Styles.Changed -= HandleStylesChanged;
+			base.OnDestroyed ();
 		}
 
 		internal void SetToolbar (DocumentToolbar toolbar)
