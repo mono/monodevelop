@@ -111,9 +111,15 @@ namespace MonoDevelop.Xml.Completion
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
 			if (XmlEditorOptions.AutoInsertFragments && dataType == DataType.XmlAttribute) {
+				//This temporary variable is needed because
+				//base.InsertCompletionText sets window.CompletionWidget to null
+				var completionWidget = window.CompletionWidget;
 				base.InsertCompletionText (window, ref ka, descriptor);
-				window.CompletionWidget.AddSkipChar (window.CompletionWidget.CaretOffset, '"');
-				IdeApp.CommandService.DispatchCommand (TextEditorCommands.ShowCompletionWindow);
+				completionWidget.AddSkipChar (completionWidget.CaretOffset, '"');
+
+				//Even if we are on UI thread call Application.Invoke to postpone calling command
+				//otherwise code calling InsertCompletionText will close completion window created by this command
+				Application.Invoke ((s,e) => IdeApp.CommandService.DispatchCommand (TextEditorCommands.ShowCompletionWindow));
 				ka &= ~KeyActions.CloseWindow;
 			} else {
 				base.InsertCompletionText (window, ref ka, descriptor);
