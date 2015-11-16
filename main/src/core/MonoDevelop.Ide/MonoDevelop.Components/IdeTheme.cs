@@ -26,11 +26,11 @@
 using System;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
-using MonoDevelop.Components.Mac;
 
 #if MAC
 using AppKit;
 using Foundation;
+using MonoDevelop.Components.Mac;
 #endif
 
 namespace MonoDevelop.Components
