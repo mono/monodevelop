@@ -209,6 +209,11 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 				return new CompletionData (varName);
 			}
 
+			ISymbolCompletionData ICompletionDataFactory.CreateExistingMethodDelegate (ICompletionDataKeyHandler keyHandler, IMethodSymbol method)
+			{
+				return new SymbolCompletionData(method);
+			}
+
 			CompletionData ICompletionDataFactory.CreateAnonymousMethod(ICompletionDataKeyHandler keyHandler, string displayText, string description, string textBeforeCaret, string textAfterCaret)
 			{
 				return new CompletionData (displayText);

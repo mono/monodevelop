@@ -190,6 +190,11 @@ namespace MonoDevelop.CSharp.Completion
 			return new RoslynSymbolCompletionData (keyHandler, this, symbol, text);
 		}
 
+		ISymbolCompletionData ICompletionDataFactory.CreateExistingMethodDelegate (ICompletionDataKeyHandler keyHandler, IMethodSymbol method)
+		{
+			return new RoslynSymbolCompletionData (keyHandler, this, method, method.Name) { IsDelegateExpected = true };
+		}
+
 		CompletionData ICompletionDataFactory.CreateNewOverrideCompletionData(ICompletionDataKeyHandler keyHandler, int declarationBegin, ITypeSymbol currentType, ISymbol m, bool afterKeyword)
 		{
 			return new CreateOverrideCompletionData (keyHandler, this, declarationBegin, currentType, m, afterKeyword);
