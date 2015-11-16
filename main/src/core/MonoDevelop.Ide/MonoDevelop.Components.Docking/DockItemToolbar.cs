@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using Gtk;
 
 namespace MonoDevelop.Components.Docking
@@ -94,25 +95,26 @@ namespace MonoDevelop.Components.Docking
 			get { return this.position; }
 		}
 		
-		public void Add (Widget widget)
+		public void Add (Control widget)
 		{
 			Add (widget, false);
 		}
 		
-		public void Add (Widget widget, bool fill)
+		public void Add (Control widget, bool fill)
 		{
 			Add (widget, fill, -1);
 		}
 		
-		public void Add (Widget widget, bool fill, int padding)
+		public void Add (Control widget, bool fill, int padding)
 		{
 			Add (widget, fill, padding, -1);
 		}
 		
-		void Add (Widget widget, bool fill, int padding, int index)
+		void Add (Control control, bool fill, int padding, int index)
 		{
 			int defaultPadding = 3;
-			
+
+			Widget widget = control;
 			if (widget is Button) {
 				((Button)widget).Relief = ReliefStyle.None;
 				((Button)widget).FocusOnClick = false;
@@ -141,12 +143,12 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
-		public void Insert (Widget w, int index)
+		public void Insert (Control w, int index)
 		{
 			Add (w, false, 0, index);
 		}
 		
-		public void Remove (Widget widget)
+		public void Remove (Control widget)
 		{
 			box.Remove (widget);
 		}
@@ -170,24 +172,66 @@ namespace MonoDevelop.Components.Docking
 			frame.ShowAll ();
 		}
 		
-		public Widget[] Children {
-			get { return box.Children; }
+		public Control[] Children {
+			get { return box.Children.Select (child => (Control)child).ToArray (); }
 		}
 	}
 	
-	public class DockToolButton: Gtk.Button
+	public class DockToolButton : Control
 	{
-		public DockToolButton (string stockId)
+		public DockToolButtonImage Image {
+			get { return (Gtk.Image)button.Image; }
+			set { button.Image = value; }
+		}
+
+		public string TooltipText {
+			get { return button.TooltipText; }
+			set { button.TooltipText = value; }
+		}
+
+		public string Label {
+			get { return button.Label; }
+			set { button.Label = value; }
+		}
+
+		Gtk.Button button;
+
+		public DockToolButton (string stockId) : this (stockId, null)
 		{
-			Image = new Gtk.Image (stockId, IconSize.Menu);
-			Image.Show ();
 		}
 		
-		public DockToolButton (string stockId, string label)
+		public DockToolButton (string stockId, string label) : base (new Gtk.Button ())
 		{
+			button = GetNativeWidget<Gtk.Button> ();
 			Label = label;
 			Image = new Gtk.Image (stockId, IconSize.Menu);
-			Image.Show ();
+			button.Image.Show ();
+		}
+
+		public event EventHandler Clicked {
+			add {
+				button.Clicked += value;
+			}
+			remove {
+				button.Clicked -= value;
+			}
+		}
+
+		public class DockToolButtonImage : Control
+		{
+			internal DockToolButtonImage (Gtk.Image image) : base (image)
+			{
+			}
+
+			public static implicit operator Gtk.Widget (DockToolButtonImage d)
+			{
+				return d.GetNativeWidget<Gtk.Widget> ();
+			}
+
+			public static implicit operator DockToolButtonImage (Gtk.Image d)
+			{
+				return new DockToolButtonImage (d);
+			}
 		}
 	}
 }
