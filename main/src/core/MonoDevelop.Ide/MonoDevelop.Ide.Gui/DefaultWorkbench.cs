@@ -365,11 +365,6 @@ namespace MonoDevelop.Ide.Gui
 			return mimeimage;
 		}
 
-		public void ShowView (IViewContent content, bool bringToFront, DockNotebook notebook = null)
-		{
-			ShowView (content, bringToFront, null, notebook);
-		}
-
 		public virtual void ShowView (IViewContent content, bool bringToFront, IViewDisplayBinding binding = null, DockNotebook notebook = null)
 		{
 			bool isFile = content.IsFile;

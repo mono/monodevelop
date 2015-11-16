@@ -1068,8 +1068,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 		string GetRowMarkup (SearchResult result)
 		{
-			string txt = "<span foreground=\"#606060\">" + result.GetMarkupText(this) +"</span>";
-			string desc = result.GetDescriptionMarkupText (this);
+			string txt = "<span foreground=\"#606060\">" + result.GetMarkupText() +"</span>";
+			string desc = result.GetDescriptionMarkupText ();
 			if (!string.IsNullOrEmpty (desc))
 				txt += "<span foreground=\"#8F8F8F\" size=\"small\">\n" + desc + "</span>";
 			return txt;
