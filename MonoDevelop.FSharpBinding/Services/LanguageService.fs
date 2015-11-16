@@ -319,11 +319,15 @@ type LanguageService(dirtyNotify) =
             let started = proc.Start()
             let exited = proc.WaitForExit(ServiceSettings.maximumTimeout)
             let serializer =  FsPickler.CreateJsonSerializer()
-            let optsNew = serializer.Deserialize(proc.StandardOutput.BaseStream)
+            let result = serializer.Deserialize(proc.StandardOutput.BaseStream)
+            match result with
+            | Choice1Of2 optsNew ->
 
-            //let opts = checker.GetProjectOptionsFromProjectFile(projFilename, properties)
-            projectInfoCache := cache.Add (key, optsNew)
-            optsNew
+              //let opts = checker.GetProjectOptionsFromProjectFile(projFilename, properties)
+              projectInfoCache := cache.Add (key, optsNew)
+              optsNew
+            | Choice2Of2 (ex) ->
+              raise ex
           with ex -> LoggingService.LogDebug("LanguageService: GetProjectCheckerOptions Exception: {0}", ex.ToString())
                      reraise())
 
