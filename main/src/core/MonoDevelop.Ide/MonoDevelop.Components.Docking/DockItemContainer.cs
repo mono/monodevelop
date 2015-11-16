@@ -123,6 +123,11 @@ namespace MonoDevelop.Components.Docking
 				item.GetToolbar (PositionType.Left).SetStyle (VisualStyle);
 				item.GetToolbar (PositionType.Right).SetStyle (VisualStyle);
 				item.GetToolbar (PositionType.Bottom).SetStyle (VisualStyle);
+
+				if (VisualStyle.TabStyle == DockTabStyle.Normal)
+					ModifyBg (StateType.Normal, VisualStyle.PadBackgroundColor.Value);
+				else 
+					ModifyBg (StateType.Normal, Style.Background(StateType.Normal));
 			}
 		}
 
@@ -162,9 +167,7 @@ namespace MonoDevelop.Components.Docking
 				gc.RgbFgColor = VisualStyle.PadBackgroundColor.Value;
 				evnt.Window.DrawRectangle (gc, true, Allocation);
 				gc.Dispose ();
-				ModifyBg (StateType.Normal, VisualStyle.PadBackgroundColor.Value);
-			} else 
-				ModifyBg (StateType.Normal, Style.Background(StateType.Normal));
+			}
 			return base.OnExposeEvent (evnt);
 		}
 	}
