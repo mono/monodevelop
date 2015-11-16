@@ -44,6 +44,13 @@ namespace MonoDevelop.Xml.Formatting
 			try {
 				doc = new XmlDocument ();
 				doc.LoadXml (input);
+			} catch (XmlException ex) {
+				// handle xml files without root element (https://bugzilla.xamarin.com/show_bug.cgi?id=4748)
+				if (ex.Message == "Root element is missing.")
+					return input;
+				MonoDevelop.Core.LoggingService.LogWarning ("Error formatting XML file", ex);
+				IdeApp.Workbench.StatusBar.ShowError ("Error formatting file: " + ex.Message);
+				return input;
 			} catch (Exception ex) {
 				// Ignore malformed xml
 				MonoDevelop.Core.LoggingService.LogWarning ("Error formatting XML file", ex);
