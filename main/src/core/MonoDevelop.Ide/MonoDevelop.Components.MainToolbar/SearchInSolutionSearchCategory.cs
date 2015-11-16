@@ -30,7 +30,7 @@ using MonoDevelop.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.FindInFiles;
 using System.Linq;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -42,9 +42,13 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token)
 		{
-			return Task.Factory.StartNew (delegate {
-				return (ISearchDataSource)new SearchInSolutionDataSource (searchPattern);
-			});
+			if (IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
+				return Task.Factory.StartNew (delegate {
+					return (ISearchDataSource)new SearchInSolutionDataSource (searchPattern);
+				});
+			}
+
+			return Task.FromResult<ISearchDataSource> (default(ISearchDataSource));
 		}
 
 		public override bool IsValidTag (string tag)

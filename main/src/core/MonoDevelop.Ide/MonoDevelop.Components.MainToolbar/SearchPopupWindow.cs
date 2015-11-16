@@ -120,6 +120,7 @@ namespace MonoDevelop.Components.MainToolbar
 			categories.Add (new ProjectSearchCategory (this));
 			categories.Add (new FileSearchCategory (this));
 			categories.Add (new CommandSearchCategory (this));
+
 			categories.Add (new SearchInSolutionSearchCategory ());
 			categories.AddRange (AddinManager.GetExtensionObjects<SearchCategory> ("/MonoDevelop/Ide/SearchCategories"));
 
