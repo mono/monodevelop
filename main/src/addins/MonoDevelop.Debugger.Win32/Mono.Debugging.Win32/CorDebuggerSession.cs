@@ -174,6 +174,9 @@ namespace Mono.Debugging.Win32
 					flags = (int)CreationFlags.CREATE_NO_WINDOW;
 						flags |= DebuggerExtensions.CREATE_REDIRECT_STD;
 				}
+				else {
+					flags |= (int) CreationFlags.CREATE_NEW_CONSOLE;
+				}
 
 				process = dbg.CreateProcess (startInfo.Command, cmdLine, startInfo.WorkingDirectory, env, flags);				
 				SetupProcess (process);

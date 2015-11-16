@@ -145,11 +145,18 @@ namespace Microsoft.Samples.Debugging.Extensions
 				// output pipe are maintained in this process or else the pipe will
 				// not close when the child process exits and the ReadFile will hang.
 
-				si.hStdInput.Close ();
-				si.hStdOutput.Close ();
-				si.hStdError.Close ();
+				try
+				{
+					si.hStdInput.Close();
+					si.hStdOutput.Close();
+					si.hStdError.Close();
 
-				ret.TrackStdOutput (outReadPipe, errorReadPipe);
+					ret.TrackStdOutput(outReadPipe, errorReadPipe);
+				}
+				catch
+				{
+					// Ignore
+				}
 			}
 		}
 
