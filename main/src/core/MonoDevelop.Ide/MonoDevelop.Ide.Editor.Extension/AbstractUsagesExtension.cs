@@ -128,7 +128,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		/// <returns>The references.</returns>
 		/// <param name="resolveResult">The resolve result given in 'TryResolve'.</param>
 		/// <param name="token">A cancellation token to cancel the operation.</param>
-		protected abstract Task<IList<MemberReference>> GetReferencesAsync (T resolveResult, CancellationToken token);
+		protected abstract Task<IEnumerable<MemberReference>> GetReferencesAsync (T resolveResult, CancellationToken token);
 
 		async void DelayedTooltipShow ()
 		{

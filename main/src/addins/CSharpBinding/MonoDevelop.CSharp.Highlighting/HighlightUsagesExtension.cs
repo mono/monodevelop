@@ -97,7 +97,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			};
 		}
 
-		protected override async Task<IList<MemberReference>> GetReferencesAsync (UsageData resolveResult, CancellationToken token)
+		protected override async Task<IEnumerable<MemberReference>> GetReferencesAsync (UsageData resolveResult, CancellationToken token)
 		{
 			var result = new List<MemberReference> ();
 			if (resolveResult.Symbol == null)
