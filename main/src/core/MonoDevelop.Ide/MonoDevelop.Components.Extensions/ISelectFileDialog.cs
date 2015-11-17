@@ -328,31 +328,4 @@ namespace MonoDevelop.Components.Extensions
 			}
 		}
 	}
-
-	public enum FileChooserAction
-	{
-		Open,
-		Save,
-		SelectFolder,
-		CreateFolder,
-	}
-
-	static class FileChooserActionExtensions
-	{
-		public static Gtk.FileChooserAction ToGtkAction(this FileChooserAction action)
-		{
-			switch (action) {
-			case FileChooserAction.Open:
-				return Gtk.FileChooserAction.Open;
-			case FileChooserAction.Save:
-				return Gtk.FileChooserAction.Save;
-			case FileChooserAction.SelectFolder:
-				return Gtk.FileChooserAction.SelectFolder;
-			case FileChooserAction.CreateFolder:
-				return Gtk.FileChooserAction.CreateFolder;
-			default:
-				throw new NotSupportedException ();
-			}
-		}
-	}
 }

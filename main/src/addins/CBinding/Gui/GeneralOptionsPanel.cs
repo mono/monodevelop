@@ -36,7 +36,7 @@ using Mono.Addins;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
-using MonoDevelop.Components.Extensions;
+using MonoDevelop.Components;
 
 namespace CBinding
 {

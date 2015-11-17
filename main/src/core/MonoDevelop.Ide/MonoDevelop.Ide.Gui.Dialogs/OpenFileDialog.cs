@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Extensions;
+using MonoDevelop.Components;
 using MonoDevelop.Components.Extensions;
 using System.Collections.Generic;
 using Mono.Addins;

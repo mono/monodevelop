@@ -25,8 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Components.Extensions;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;

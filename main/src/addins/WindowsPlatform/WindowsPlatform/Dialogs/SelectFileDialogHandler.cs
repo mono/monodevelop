@@ -29,8 +29,8 @@
 using System;
 using System.IO;
 using System.Linq;
-using Gtk;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using MonoDevelop.Components;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;

@@ -27,7 +27,6 @@
 //
 
 using System.ComponentModel;
-using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.Components
 {
