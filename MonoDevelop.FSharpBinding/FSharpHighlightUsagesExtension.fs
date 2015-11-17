@@ -45,7 +45,8 @@ type HighlightUsagesExtension() =
               | exn -> LoggingService.LogError("Unhandled Exception in F# HighlightingUsagesExtension", exn)
                        return None })
             
-    override x.GetReferences(resolveResult, token) =
+    override x.GetReferencesAsync(resolveResult, token) =
+      let references =
         if token.IsCancellationRequested then Seq.empty else
             try
                 match resolveResult with
@@ -61,6 +62,8 @@ type HighlightUsagesExtension() =
             | :? TaskCanceledException -> Seq.empty
             | exn -> LoggingService.LogError("Unhandled Exception in F# HighlightingUsagesExtension", exn)
                      Seq.empty
+
+      Task.FromResult references
 
     override x.Dispose () =
         x.Editor.SemanticHighlighting.Dispose()
