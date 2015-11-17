@@ -41,11 +41,12 @@ using System.Collections.Generic;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Commands;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.DesignerSupport
 {
 	
-	public class PropertyPad : AbstractPadContent, ICommandDelegator
+	public class PropertyPad : PadContent, ICommandDelegator
 	{
 		pg.PropertyGrid grid;
 		InvisibleFrame frame;
@@ -64,7 +65,7 @@ namespace MonoDevelop.DesignerSupport
 			frame.ShowAll ();
 		}
 		
-		public override void Initialize (IPadWindow container)
+		protected override void Initialize (IPadWindow container)
 		{
 			base.Initialize (container);
 			toolbarProvider.Attach (container.GetToolbar (DockPositionType.Top));
@@ -79,7 +80,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		#region AbstractPadContent implementations
 		
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get { return frame; }
 		}
 		

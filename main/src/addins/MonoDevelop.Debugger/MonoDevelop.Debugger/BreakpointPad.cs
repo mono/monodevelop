@@ -40,7 +40,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.Debugger
 {
-	public class BreakpointPad : IPadContent
+	public class BreakpointPad : PadContent
 	{
 		BreakpointStore breakpoints;
 		
@@ -69,8 +69,9 @@ namespace MonoDevelop.Debugger
 			Properties
 		}
 		
-		public void Initialize (IPadWindow window)
+		protected override void Initialize (IPadWindow window)
 		{
+			Id = "MonoDevelop.Debugger.BreakpointPad";
 			// Toolbar and menu definitions
 			
 			ActionCommand gotoCmd = new ActionCommand (LocalCommands.GoToFile, GettextCatalog.GetString ("Go to File"));
@@ -173,7 +174,7 @@ namespace MonoDevelop.Debugger
 			toolbar.ShowAll ();
 		}
 		
-		public void Dispose ()
+		public override void Dispose ()
 		{
 			breakpoints.BreakpointAdded -= OnBreakpointAdded;
 			breakpoints.BreakpointRemoved -= OnBreakpointRemoved;
@@ -183,6 +184,7 @@ namespace MonoDevelop.Debugger
 			DebuggingService.PausedEvent -= OnDebuggerStatusCheck;
 			DebuggingService.ResumedEvent -= OnDebuggerStatusCheck;
 			DebuggingService.StoppedEvent -= OnDebuggerStatusCheck;
+			base.Dispose ();
 		}
 
 		void ShowPopup (Gdk.EventButton evt)
@@ -465,14 +467,10 @@ namespace MonoDevelop.Debugger
 			OnBpJumpTo ();
 		}
 		
-		public Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return control;
 			}
-		}
-
-		public string Id {
-			get { return "MonoDevelop.Debugger.BreakpointPad"; }
 		}
 
 		public string DefaultPlacement {

@@ -148,7 +148,7 @@ namespace MonoDevelop.Debugger
 	
 	class DebugEntryHandler: CommandHandler
 	{
-		protected async override void Run ()
+		protected override void Run ()
 		{
 			IBuildTarget entry = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
 

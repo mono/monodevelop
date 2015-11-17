@@ -29,20 +29,20 @@ using System;
 using Gtk;
 using MonoDevelop.Ide.Gui;
 using Mono.Debugging.Client;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Debugger
 {
-	public class ObjectValuePad: IPadContent
+	public class ObjectValuePad: PadContent
 	{
 		protected ObjectValueTreeView tree;
 		readonly ScrolledWindow scrolled;
 		bool needsUpdate;
-		IPadWindow container;
 		bool initialResume;
 		StackFrame lastFrame;
 		PadFontChanger fontChanger;
 		
-		public Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return scrolled;
 			}
@@ -76,7 +76,7 @@ namespace MonoDevelop.Debugger
 			initialResume = !DebuggingService.IsDebugging;
 		}
 
-		public void Dispose ()
+		public override void Dispose ()
 		{
 			if (fontChanger == null)
 				return;
@@ -88,11 +88,11 @@ namespace MonoDevelop.Debugger
 			DebuggingService.ResumedEvent -= OnDebuggerResumed;
 			DebuggingService.StoppedEvent -= OnDebuggerStopped;
 			DebuggingService.EvaluationOptionsChanged -= OnEvaluationOptionsChanged;
+			base.Dispose ();
 		}
 
-		public void Initialize (IPadWindow container)
+		protected override void Initialize (IPadWindow container)
 		{
-			this.container = container;
 			container.PadContentShown += delegate {
 				if (needsUpdate)
 					OnUpdateList ();
@@ -113,7 +113,7 @@ namespace MonoDevelop.Debugger
 		
 		protected virtual void OnFrameChanged (object s, EventArgs a)
 		{
-			if (container != null && container.ContentVisible)
+			if (Window != null && Window.ContentVisible)
 				OnUpdateList ();
 			else
 				needsUpdate = true;
@@ -144,7 +144,7 @@ namespace MonoDevelop.Debugger
 		{
 			if (!DebuggingService.IsRunning) {
 				lastFrame = null;
-				if (container != null && container.ContentVisible)
+				if (Window != null && Window.ContentVisible)
 					OnUpdateList ();
 				else
 					needsUpdate = true;

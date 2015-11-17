@@ -92,7 +92,7 @@ namespace MonoDevelop.Ide.Gui
 		/// <summary>
 		/// Interface providing the content widget
 		/// </summary>
-		IPadContent Content { get; }
+		PadContent Content { get; }
 		
 		/// <summary>
 		/// Returns a toolbar for the pad.
@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.Gui
 		bool isWorking;
 		bool hasErrors;
 		bool hasNewData;
-		IPadContent content;
+		PadContent content;
 		PadCodon codon;
 		DefaultWorkbench workbench;
 		
@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.Gui
 			this.icon = codon.Icon;
 		}
 		
-		public IPadContent Content {
+		public PadContent Content {
 			get {
 				CreateContent ();
 				return content; 

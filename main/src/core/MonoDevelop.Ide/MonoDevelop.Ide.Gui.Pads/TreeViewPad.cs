@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 		
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return treeView;
 			}
@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			treeView.Tree.EnableAutoTooltips ();
 		}
 		
-		public override void Initialize (IPadWindow container)
+		protected override void Initialize (IPadWindow container)
 		{
 			base.Initialize (container);
 			TreeView.Id = Id;

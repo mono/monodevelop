@@ -112,6 +112,17 @@ namespace MonoDevelop.Components
 			// TODO
 		}
 
+
+		public bool HasFocus {
+			get
+			{
+				// TODO
+				if (nativeWidget is Gtk.Widget)
+					return ((Gtk.Widget)nativeWidget).HasFocus;
+				return false;
+			}
+		}
+
 		public void Dispose ()
 		{
 			if (nativeWidget is Gtk.Widget) {

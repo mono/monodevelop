@@ -37,13 +37,13 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Debugger
 {
-	public class ImmediatePad: IPadContent
+	public class ImmediatePad: PadContent
 	{
 		static readonly object mutex = new object();
 		DebuggerConsoleView view;
 		readonly List<uint> timersList = new List<uint>();
 		
-		public void Initialize (IPadWindow container)
+		protected override void Initialize (IPadWindow container)
 		{
 			view = new DebuggerConsoleView ();
 			view.ConsoleInput += OnViewConsoleInput;
@@ -267,17 +267,18 @@ namespace MonoDevelop.Debugger
 		{
 		}
 		
-		public Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return view;
 			}
 		}
 
-		public void Dispose ()
+		public override void Dispose ()
 		{
 			DebuggingService.PausedEvent -= DebuggerPaused;
 			DebuggingService.ResumedEvent -= DebuggerResumed;
 			DebuggingService.StoppedEvent -= DebuggerStopped;
+			base.Dispose ();
 		}
 
 		void DebuggerResumed (object sender, EventArgs e)

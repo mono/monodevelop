@@ -62,7 +62,6 @@ namespace MonoDevelop.Ide.Gui
 	{
 		readonly ProgressMonitorManager monitors = new ProgressMonitorManager ();
 		readonly List<Document> documents = new List<Document> ();
-		readonly List<Split> splits = new List<Split> ();
 		DefaultWorkbench workbench;
 		PadCollection pads;
 
@@ -179,7 +178,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public WorkbenchWindow RootWindow {
+		public Gtk.Window RootWindow {
 			get { return workbench; }
 		}
 		
@@ -380,22 +379,22 @@ namespace MonoDevelop.Ide.Gui
 			return WrapPad (content);
 		}
 
-		public Pad AddPad (IPadContent padContent, string id, string label, string defaultPlacement, IconId icon)
+		public Pad AddPad (PadContent padContent, string id, string label, string defaultPlacement, IconId icon)
 		{
 			return AddPad (new PadCodon (padContent, id, label, defaultPlacement, icon));
 		}
 		
-		public Pad AddPad (IPadContent padContent, string id, string label, string defaultPlacement, DockItemStatus defaultStatus, IconId icon)
+		public Pad AddPad (PadContent padContent, string id, string label, string defaultPlacement, DockItemStatus defaultStatus, IconId icon)
 		{
 			return AddPad (new PadCodon (padContent, id, label, defaultPlacement, defaultStatus, icon));
 		}
 		
-		public Pad ShowPad (IPadContent padContent, string id, string label, string defaultPlacement, IconId icon)
+		public Pad ShowPad (PadContent padContent, string id, string label, string defaultPlacement, IconId icon)
 		{
 			return ShowPad (new PadCodon (padContent, id, label, defaultPlacement, icon));
 		}
 		
-		public Pad ShowPad (IPadContent padContent, string id, string label, string defaultPlacement, DockItemStatus defaultStatus, IconId icon)
+		public Pad ShowPad (PadContent padContent, string id, string label, string defaultPlacement, DockItemStatus defaultStatus, IconId icon)
 		{
 			return ShowPad (new PadCodon (padContent, id, label, defaultPlacement, defaultStatus, icon));
 		}
@@ -1134,7 +1133,7 @@ namespace MonoDevelop.Ide.Gui
 			return null;
 		}
 		
-		internal Pad FindPad (IPadContent padContent)
+		internal Pad FindPad (PadContent padContent)
 		{
 			foreach (Pad pad in Pads)
 				if (pad.Content == padContent)

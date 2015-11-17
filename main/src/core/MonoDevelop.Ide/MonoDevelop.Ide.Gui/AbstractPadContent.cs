@@ -32,61 +32,18 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public abstract class AbstractPadContent : IPadContent
+	public abstract class AbstractPadContent : PadContent
 	{
-		protected AbstractPadContent () : this (null, null)
+		protected AbstractPadContent ()
 		{
 		}
 
-		public AbstractPadContent (string title) : this (title, null)
+		public AbstractPadContent (string title) : base (title)
 		{
 		}
 
-		private IconId icon;
-		private string title;
-		public AbstractPadContent (string title, IconId icon)
-		{
-			this.Id = GetType ().FullName;
-			this.icon = icon;
-			this.title = title;
-		}
-
-		public string Id { get; set; }
-
-		private IPadWindow window = null;
-		public IPadWindow Window {
-			get { return window; }
-		}
-
-		#region IPadContent Members
-
-		public virtual void Initialize (IPadWindow container)
-		{
-			if (title != null)
-				container.Title = title;
-
-			if (icon != IconId.Null)
-				container.Icon = icon;
-
-			window = container;
-		}
-
-		public abstract Gtk.Widget Control {
-			get;
-		}
-
-		public virtual void RedrawContent ()
+		public AbstractPadContent (string title, string icon): base (title, icon)
 		{
 		}
-
-		#endregion
-
-		#region IDisposable Members
-
-		public virtual void Dispose ()
-		{
-		}
-
-		#endregion
 	}
 }

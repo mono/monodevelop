@@ -49,7 +49,7 @@ using MonoDevelop.NUnit.External;
 
 namespace MonoDevelop.NUnit
 {
-	public class TestResultsPad: IPadContent, ITestProgressMonitor
+	public class TestResultsPad: PadContent, ITestProgressMonitor
 	{
 		NUnitService testService = NUnitService.Instance;
 		
@@ -154,12 +154,12 @@ namespace MonoDevelop.NUnit
 					"/MonoDevelop/NUnit/ContextMenu/TestResultsPad");
 			};
 			
-			Control.ShowAll ();
+			panel.ShowAll ();
 			
 			outputViewScrolled.Hide ();
 		}
 		
-		void IPadContent.Initialize (IPadWindow window)
+		protected override void Initialize (IPadWindow window)
 		{
 			this.window = window;
 			
@@ -257,10 +257,6 @@ namespace MonoDevelop.NUnit
 			UpdateCounters ();
 		}
 		
-		public void Dispose ()
-		{
-		}
-		
 		public void OnTestSuiteChanged (object sender, EventArgs e)
 		{
 			if (rootTest != null) {
@@ -306,7 +302,7 @@ namespace MonoDevelop.NUnit
 			}
 		}
 		
-		public Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return panel;
 			}

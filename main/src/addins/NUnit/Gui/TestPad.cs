@@ -382,7 +382,7 @@ namespace MonoDevelop.NUnit
 			return TreeView.GetNodeAtObject (t);
 		}
 		
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return paned;
 			}
