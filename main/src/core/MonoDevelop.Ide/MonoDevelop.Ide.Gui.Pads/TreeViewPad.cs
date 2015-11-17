@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 	/// <summary>
 	/// This class implements a project browser.
 	/// </summary>
-	public class TreeViewPad : AbstractPadContent, IMementoCapable, ICommandDelegatorRouter
+	public class TreeViewPad : PadContent, IMementoCapable, ICommandDelegatorRouter
 	{
 		internal Action Initializer;
 		

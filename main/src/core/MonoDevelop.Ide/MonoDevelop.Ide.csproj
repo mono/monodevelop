@@ -2591,7 +2591,6 @@
     <Compile Include="MonoDevelop.Ide.Templates\SolutionDescriptor.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ResourceFileDescriptionTemplate.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\AbstractBaseViewContent.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\AbstractPadContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\AbstractViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\IBaseViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\PadContent.cs" />
