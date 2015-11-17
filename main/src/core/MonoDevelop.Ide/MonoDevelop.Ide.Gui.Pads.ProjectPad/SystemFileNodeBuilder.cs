@@ -118,7 +118,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void ActivateItem ()
 		{
 			SystemFile file = CurrentNode.DataItem as SystemFile;
-			IdeApp.Workbench.OpenDocument (file.Path);
+			IdeApp.Workbench.OpenDocument (file.Path, project: null);
 		}
 		
 		public override void DeleteMultipleItems ()

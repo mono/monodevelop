@@ -698,7 +698,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (result != null) {
 				var loc = GetLocation (result);
 				store.SetValue (iter, DidReadColumn, true);
-				IdeApp.Workbench.OpenDocument (result.FileName, loc.Line, loc.Column);
+				IdeApp.Workbench.OpenDocument (result.FileName, null, loc.Line, loc.Column);
 			}
 		}
 		

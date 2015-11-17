@@ -191,9 +191,9 @@ namespace MonoDevelop.Components.MainToolbar
 					return;
 				if (region.Length <= 0) {
 					if (Pattern.LineNumber == 0) {
-						IdeApp.Workbench.OpenDocument (SelectedItemFileName);
+						IdeApp.Workbench.OpenDocument (SelectedItemFileName, project: null);
 					} else {
-						IdeApp.Workbench.OpenDocument (SelectedItemFileName, Pattern.LineNumber, Pattern.HasColumn ? Pattern.Column : 1);
+						IdeApp.Workbench.OpenDocument (SelectedItemFileName, null, Pattern.LineNumber, Pattern.HasColumn ? Pattern.Column : 1);
 					}
 				} else {
 					IdeApp.Workbench.OpenDocument (new FileOpenInformation (SelectedItemFileName, null) {

@@ -488,7 +488,7 @@ namespace MonoDevelop.Ide
 			}
 			if (closedDocs != null) {
 				foreach (string doc in closedDocs) {
-					IdeApp.Workbench.OpenDocument (doc, false);
+					IdeApp.Workbench.OpenDocument (doc, null, false);
 				}
 			}
 		}

@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 			if (fmt == null)
 				return;
 			if (fmt.SupportsOnTheFlyFormatting) {
-				fmt.OnTheFlyFormat (editor, ctx, segment.Offset, segment.EndOffset);
+				fmt.OnTheFlyFormat (editor, ctx, segment);
 				return;
 			}
 			editor.Text = fmt.FormatText (ctx.HasProject ? ctx.Project.Policies : null, editor.Text, segment);

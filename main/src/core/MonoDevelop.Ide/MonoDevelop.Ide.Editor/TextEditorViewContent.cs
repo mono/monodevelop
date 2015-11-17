@@ -801,7 +801,7 @@ namespace MonoDevelop.Ide.Editor
 				var anchor = textEditor.SelectionAnchorOffset;
 				int lines = 0;
 				
-				IDocumentLine first = null;
+				//IDocumentLine first = null;
 				IDocumentLine last  = null;
 				var oldVersion = textEditor.Version;
 				foreach (var line in GetSelectedLines (textEditor)) {
@@ -811,7 +811,7 @@ namespace MonoDevelop.Ide.Editor
 						lines++;
 					}
 					
-					first = line;
+					//first = line;
 					if (last == null)
 						last = line;
 				}

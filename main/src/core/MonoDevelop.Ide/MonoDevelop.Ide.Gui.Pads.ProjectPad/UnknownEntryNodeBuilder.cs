@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void OnEditUnknownSolutionItem ()
 		{
 			UnknownSolutionItem si = (UnknownSolutionItem) CurrentNode.DataItem;
-			IdeApp.Workbench.OpenDocument (si.FileName);
+			IdeApp.Workbench.OpenDocument (si.FileName, project: null);
 		}
 
 		[CommandUpdateHandler (ProjectCommands.EditSolutionItem)]

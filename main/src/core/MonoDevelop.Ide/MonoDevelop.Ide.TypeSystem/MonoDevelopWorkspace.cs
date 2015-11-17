@@ -435,7 +435,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		static DocumentInfo CreateDocumentInfo (SolutionData data, string projectName, ProjectData id, MonoDevelop.Projects.ProjectFile f)
 		{
 			var filePath = f.FilePath;
-			var sourceCodeKind = filePath.Extension == ".sketchcs" ? SourceCodeKind.Interactive : SourceCodeKind.Regular;
+			var sourceCodeKind = filePath.Extension == ".sketchcs" ? SourceCodeKind.Script : SourceCodeKind.Regular;
 			return DocumentInfo.Create (
 				id.GetOrCreateDocumentId (filePath),
 				f.FilePath,
@@ -756,9 +756,9 @@ namespace MonoDevelop.Ide.TypeSystem
 								startOffset = originalOffset;
 						}
 						if (change.NewText.Length == 0) {
-							formatter.OnTheFlyFormat ((TextEditor)data, documentContext, Math.Max (0, startOffset - 1), Math.Min (data.Length, startOffset + 1));
+							formatter.OnTheFlyFormat ((TextEditor)data, documentContext, TextSegment.FromBounds (Math.Max (0, startOffset - 1), Math.Min (data.Length, startOffset + 1)));
 						} else {
-							formatter.OnTheFlyFormat ((TextEditor)data, documentContext, startOffset, startOffset + change.NewText.Length);
+								formatter.OnTheFlyFormat ((TextEditor)data, documentContext, new TextSegment (startOffset, change.NewText.Length));
 						}
 					}
 				}

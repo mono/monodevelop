@@ -294,7 +294,7 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Run (object dataItem)
 		{
-			IdeApp.Workbench.OpenDocument ((string)dataItem);
+			IdeApp.Workbench.OpenDocument ((string)dataItem, project: null);
 		}
 	}
 	

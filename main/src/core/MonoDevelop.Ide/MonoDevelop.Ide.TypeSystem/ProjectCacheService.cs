@@ -538,8 +538,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		private static Action<Exception> s_fatalHandler;
 		private static Action<Exception> s_nonFatalHandler;
 
-		private static Exception s_reportedException;
-		private static string s_reportedExceptionMessage;
+		//private static Exception s_reportedException;
+		//private static string s_reportedExceptionMessage;
 
 		/// <summary>
 		/// Set by the host to a fail fast trigger, 
@@ -658,8 +658,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		private static void Report (Exception exception, Action<Exception> handler)
 		{
 			// hold onto last exception to make investigation easier
-			s_reportedException = exception;
-			s_reportedExceptionMessage = exception.ToString ();
+			//s_reportedException = exception;
+			//s_reportedExceptionMessage = exception.ToString ();
 
 			handler?.Invoke (exception);
 		}

@@ -31,14 +31,6 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.Editor
 {
-	[Obsolete ("Use WordNavigationStyle")]
-	public enum ControlLeftRightMode
-	{
-		MonoDevelop,
-		Emacs,
-		SharpDevelop
-	}
-
 	public enum WordNavigationStyle
 	{
 		Unix,
@@ -246,11 +238,8 @@ namespace MonoDevelop.Ide.Editor
 
 		DefaultSourceEditorOptions (TextStylePolicy currentPolicy)
 		{
-			var defaultControlMode = (ControlLeftRightMode)Enum.Parse (typeof(ControlLeftRightMode), DesktopService.DefaultControlLeftRightBehavior);
-			controlLeftRightMode = ConfigurationProperty.Create ("ControlLeftRightMode", defaultControlMode);
-			
 			WordNavigationStyle defaultWordNavigation = WordNavigationStyle.Unix;
-			if (Platform.IsWindows || controlLeftRightMode.Value == ControlLeftRightMode.SharpDevelop) {
+			if (Platform.IsWindows) {
 				defaultWordNavigation = WordNavigationStyle.Windows;
 			}
 			wordNavigationStyle = ConfigurationProperty.Create ("WordNavigationStyle", defaultWordNavigation);
@@ -437,18 +426,6 @@ namespace MonoDevelop.Ide.Editor
 					defaultEolMarker = value;
 					OnChanged (EventArgs.Empty);
 				}
-			}
-		}
-
-		ConfigurationProperty<ControlLeftRightMode> controlLeftRightMode;
-		[Obsolete("Use WordNavigationStyle")]
-		public ControlLeftRightMode ControlLeftRightMode {
-			get {
-				return controlLeftRightMode;
-			}
-			set {
-				if (controlLeftRightMode.Set (value))
-					OnChanged (EventArgs.Empty);
 			}
 		}
 		

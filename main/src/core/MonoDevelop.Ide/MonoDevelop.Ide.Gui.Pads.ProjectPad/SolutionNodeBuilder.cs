@@ -311,7 +311,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void OnEditSolution ()
 		{
 			var solution = (Solution) CurrentNode.DataItem;
-			IdeApp.Workbench.OpenDocument (solution.FileName);
+			IdeApp.Workbench.OpenDocument (solution.FileName, project:null);
 		}
 
 		[CommandUpdateHandler (ProjectCommands.EditSolutionItem)]

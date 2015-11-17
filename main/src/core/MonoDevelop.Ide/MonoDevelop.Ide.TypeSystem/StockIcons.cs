@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		static readonly IconId Field = "md-field";
 		static readonly IconId Interface = "md-interface";
 		static readonly IconId Method = "md-method";
-		static readonly IconId ExtensionMethod = "md-extensionmethod";
+		//static readonly IconId ExtensionMethod = "md-extensionmethod";
 		static readonly IconId Property = "md-property";
 		static readonly IconId Struct = "md-struct";
 		static readonly IconId Delegate = "md-delegate";
@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		static readonly IconId InternalField = "md-internal-field";
 		static readonly IconId InternalInterface = "md-internal-interface";
 		static readonly IconId InternalMethod = "md-internal-method";
-		static readonly IconId InternalExtensionMethod = "md-internal-extensionmethod";
+		//static readonly IconId InternalExtensionMethod = "md-internal-extensionmethod";
 		static readonly IconId InternalProperty = "md-internal-property";
 		static readonly IconId InternalStruct = "md-internal-struct";
 
@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		static readonly IconId InternalAndProtectedField = "md-InternalAndProtected-field";
 		static readonly IconId InternalAndProtectedInterface = "md-InternalAndProtected-interface";
 		static readonly IconId InternalAndProtectedMethod = "md-InternalAndProtected-method";
-		static readonly IconId InternalAndProtectedExtensionMethod = "md-InternalAndProtected-extensionmethod";
+		//static readonly IconId InternalAndProtectedExtensionMethod = "md-InternalAndProtected-extensionmethod";
 		static readonly IconId InternalAndProtectedProperty = "md-InternalAndProtected-property";
 		static readonly IconId InternalAndProtectedStruct = "md-InternalAndProtected-struct";
 
@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		static readonly IconId PrivateField = "md-private-field";
 		static readonly IconId PrivateInterface = "md-private-interface";
 		static readonly IconId PrivateMethod = "md-private-method";
-		static readonly IconId PrivateExtensionMethod = "md-private-extensionmethod";
+		//static readonly IconId PrivateExtensionMethod = "md-private-extensionmethod";
 		static readonly IconId PrivateProperty = "md-private-property";
 		static readonly IconId PrivateStruct = "md-private-struct";
 
@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		static readonly IconId ProtectedField = "md-protected-field";
 		static readonly IconId ProtectedInterface = "md-protected-interface";
 		static readonly IconId ProtectedMethod = "md-protected-method";
-		static readonly IconId ProtectedExtensionMethod = "md-protected-extensionmethod";
+		//static readonly IconId ProtectedExtensionMethod = "md-protected-extensionmethod";
 		static readonly IconId ProtectedProperty = "md-protected-property";
 		static readonly IconId ProtectedStruct = "md-protected-struct";
 		
@@ -94,7 +94,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		static readonly IconId ProtectedOrInternalField = "md-ProtectedOrInternal-field";
 		static readonly IconId ProtectedOrInternalInterface = "md-ProtectedOrInternal-interface";
 		static readonly IconId ProtectedOrInternalMethod = "md-ProtectedOrInternal-method";
-		static readonly IconId ProtectedOrInternalExtensionMethod = "md-ProtectedOrInternal-extensionmethod";
+		//static readonly IconId ProtectedOrInternalExtensionMethod = "md-ProtectedOrInternal-extensionmethod";
 		static readonly IconId ProtectedOrInternalProperty = "md-ProtectedOrInternal-property";
 		static readonly IconId ProtectedOrInternalStruct = "md-ProtectedOrInternal-struct";
 		
@@ -111,9 +111,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		static readonly IconId[] methodIconTable = {
 			Stock.Method, Stock.PrivateMethod, Stock.Method, Stock.ProtectedMethod, Stock.InternalMethod, Stock.ProtectedOrInternalMethod, Stock.InternalAndProtectedMethod
 		};
-		static readonly IconId[] extensionMethodIconTable = {
-			Stock.ExtensionMethod, Stock.PrivateExtensionMethod, Stock.ExtensionMethod, Stock.ProtectedExtensionMethod, Stock.InternalExtensionMethod, Stock.ProtectedOrInternalExtensionMethod, Stock.InternalAndProtectedExtensionMethod
-		};
+		//static readonly IconId[] extensionMethodIconTable = {
+		//	Stock.ExtensionMethod, Stock.PrivateExtensionMethod, Stock.ExtensionMethod, Stock.ProtectedExtensionMethod, Stock.InternalExtensionMethod, Stock.ProtectedOrInternalExtensionMethod, Stock.InternalAndProtectedExtensionMethod
+		//};
 		static readonly IconId[] propertyIconTable = {
 			Stock.Property, Stock.PrivateProperty, Stock.Property, Stock.ProtectedProperty, Stock.InternalProperty, Stock.ProtectedOrInternalProperty, Stock.InternalAndProtectedProperty
 		};

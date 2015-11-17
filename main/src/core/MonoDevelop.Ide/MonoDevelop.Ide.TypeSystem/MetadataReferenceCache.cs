@@ -80,11 +80,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		static Timer timer;
+		//static Timer timer;
 
 		static MetadataReferenceCache ()
 		{
-			timer = new Timer ((o) => CheckForChanges (), null, 10000, 10000);
+			//timer = new Timer ((o) => CheckForChanges (), null, 10000, 10000);
 		}
 
 		//TODO: Call this method when focus returns to MD or even better use FileSystemWatcher

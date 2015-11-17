@@ -452,7 +452,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			if (prettyPrinter != null && prettyPrinter.SupportsOnTheFlyFormatting) {
 				int endOffset = template.InsertPosition + template.Code.Length;
 				var oldVersion = data.Version;
-				prettyPrinter.OnTheFlyFormat (editor, context, template.InsertPosition, endOffset);
+				prettyPrinter.OnTheFlyFormat (editor, context, TextSegment.FromBounds (template.InsertPosition, endOffset));
 				foreach (var textLink in template.TextLinks) {
 					for (int i = 0; i < textLink.Links.Count; i++) {
 						var segment = textLink.Links [i];
