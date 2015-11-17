@@ -127,7 +127,7 @@ type FSharpInteractivePad() as this =
       x.Shutdown()
       view.Dispose()
 
-  override x.Control : Gtk.Widget = view :> Gtk.Widget
+  override x.Control : Control = Control.op_Implicit view
   
   override x.Initialize(container:MonoDevelop.Ide.Gui.IPadWindow) = 
       view.ConsoleInput.Add consoleInputHandler
