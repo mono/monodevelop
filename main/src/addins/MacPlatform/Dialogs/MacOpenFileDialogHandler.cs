@@ -31,7 +31,7 @@ using System.Text;
 
 using AppKit;
 
-using MonoDevelop.Components.Extensions;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Extensions;

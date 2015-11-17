@@ -34,7 +34,7 @@ using Foundation;
 using CoreGraphics;
 using AppKit;
 
-using MonoDevelop.Components.Extensions;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.Extensions;
