@@ -50,7 +50,7 @@ namespace MonoDevelop.Components.Extensions
 			FilterSet = new FileFilterSet ();
 		}
 		internal FileFilterSet FilterSet { get; set; } 
-		public Gtk.FileChooserAction Action { get; set; }
+		public FileChooserAction Action { get; set; }
 		public IList<SelectFileDialogFilter> Filters { get { return FilterSet.Filters; } }
 		public FilePath CurrentFolder { get; set; }
 		public bool SelectMultiple { get; set; }
@@ -107,7 +107,7 @@ namespace MonoDevelop.Components.Extensions
 		/// <summary>
 		/// Action to perform with the file dialog.
 		/// </summary>
-		public Gtk.FileChooserAction Action {
+		public FileChooserAction Action {
 			get { return data.Action; }
 			set { data.Action = value; }
 		}
@@ -269,7 +269,7 @@ namespace MonoDevelop.Components.Extensions
 		internal void SetDefaultProperties (FileSelector fdiag)
 		{
 			fdiag.Title = Title;
-			fdiag.Action = Action;
+			fdiag.Action = Action.ToGtkAction ();
 			fdiag.LocalOnly = true;
 			fdiag.SelectMultiple = SelectMultiple;
 			fdiag.TransientFor = TransientFor;
@@ -325,6 +325,33 @@ namespace MonoDevelop.Components.Extensions
 			} finally {
 				fdiag.Destroy ();
 				fdiag.Dispose ();
+			}
+		}
+	}
+
+	public enum FileChooserAction
+	{
+		Open,
+		Save,
+		SelectFolder,
+		CreateFolder,
+	}
+
+	static class FileChooserActionExtensions
+	{
+		public static Gtk.FileChooserAction ToGtkAction(this FileChooserAction action)
+		{
+			switch (action) {
+			case FileChooserAction.Open:
+				return Gtk.FileChooserAction.Open;
+			case FileChooserAction.Save:
+				return Gtk.FileChooserAction.Save;
+			case FileChooserAction.SelectFolder:
+				return Gtk.FileChooserAction.SelectFolder;
+			case FileChooserAction.CreateFolder:
+				return Gtk.FileChooserAction.CreateFolder;
+			default:
+				throw new NotSupportedException ();
 			}
 		}
 	}

@@ -31,6 +31,7 @@ using System.Text;
 
 using AppKit;
 
+using MonoDevelop.Components.Extensions;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Extensions;
@@ -47,10 +48,10 @@ namespace MonoDevelop.MacIntegration
 			NSSavePanel panel = null;
 			
 			try {
-				bool directoryMode = data.Action != Gtk.FileChooserAction.Open
-						&& data.Action != Gtk.FileChooserAction.Save;
+				bool directoryMode = data.Action != FileChooserAction.Open
+						&& data.Action != FileChooserAction.Save;
 				
-				if (data.Action == Gtk.FileChooserAction.Save) {
+				if (data.Action == FileChooserAction.Save) {
 					panel = new NSSavePanel ();
 				} else {
 					panel = new NSOpenPanel {
@@ -84,7 +85,7 @@ namespace MonoDevelop.MacIntegration
 					}
 
 					if (data.ShowEncodingSelector) {
-						encodingSelector = new SelectEncodingPopUpButton (data.Action != Gtk.FileChooserAction.Save);
+						encodingSelector = new SelectEncodingPopUpButton (data.Action != FileChooserAction.Save);
 						encodingSelector.SelectedEncodingId = data.Encoding != null ? data.Encoding.CodePage : 0;
 						
 						var encodingLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Encoding:")), true);

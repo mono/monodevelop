@@ -26,11 +26,11 @@
 
 using System;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Components.Extensions;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
-using Gtk;
 using MonoDevelop.AnalysisCore.Gui;
 using MonoDevelop.AnalysisCore.Fixes;
 using MonoDevelop.Ide;
