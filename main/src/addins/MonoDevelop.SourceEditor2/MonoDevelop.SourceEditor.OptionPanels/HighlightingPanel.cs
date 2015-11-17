@@ -199,7 +199,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		
 		void HandleButtonExportClicked (object sender, EventArgs e)
 		{
-			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Highlighting Scheme"), Gtk.FileChooserAction.Save) {
+			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Highlighting Scheme"), MonoDevelop.Components.Extensions.FileChooserAction.Save) {
 				TransientFor = this.Toplevel as Gtk.Window,
 			};
 			dialog.AddFilter (GettextCatalog.GetString ("Color schemes"), "*.json");
@@ -218,7 +218,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		
 		void AddColorScheme (object sender, EventArgs args)
 		{
-			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Highlighting Scheme"), Gtk.FileChooserAction.Open) {
+			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Highlighting Scheme"), MonoDevelop.Components.Extensions.FileChooserAction.Open) {
 				TransientFor = this.Toplevel as Gtk.Window,
 			};
 			dialog.AddFilter (GettextCatalog.GetString ("Color schemes"), "*.json");

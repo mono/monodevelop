@@ -26,8 +26,8 @@
 
 using System;
 using System.Linq;
-using Gtk;
 using MonoDevelop.Core;
+using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 {
