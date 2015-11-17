@@ -239,6 +239,11 @@ namespace MonoDevelop.Projects
 			p.Evaluate ();
 
 			Assert.AreEqual ("bcd", p.EvaluatedProperties.GetValue ("Substring"));
+			Assert.AreEqual ("ab", p.EvaluatedProperties.GetValue ("MethodWithParams1"));
+			Assert.AreEqual ("abc", p.EvaluatedProperties.GetValue ("MethodWithParams2"));
+			Assert.AreEqual ("abcd", p.EvaluatedProperties.GetValue ("MethodWithParams3"));
+			Assert.AreEqual ("abcdefghij", p.EvaluatedProperties.GetValue ("MethodWithParams4"));
+			Assert.AreEqual ("ab", p.EvaluatedProperties.GetValue ("MethodWithParams5"));
 			Assert.AreEqual ("255", p.EvaluatedProperties.GetValue ("MaxByte"));
 			Assert.AreEqual ("A", p.EvaluatedProperties.GetValue ("Upper1"));
 			Assert.AreEqual ("a'b'c5", p.EvaluatedProperties.GetValue ("Upper2"));
@@ -253,6 +258,27 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("5.5", p.EvaluatedProperties.GetValue ("MSBuildAddDouble"));
 			Assert.AreEqual ("abcdefgh", p.EvaluatedProperties.GetValue ("MSBuildValueOrDefault1"));
 			Assert.AreEqual ("empty", p.EvaluatedProperties.GetValue ("MSBuildValueOrDefault2"));
+		}
+
+		[Test]
+		public void ConditionedProperties ()
+		{
+			string projectFile = Util.GetSampleProject ("msbuild-tests", "conditioned-properties.csproj");
+			var p = new MSBuildProject ();
+			p.Load (projectFile);
+			p.Evaluate ();
+
+			Assert.That (new string [] { "cond1", "cond2", "cond9", "cond10", "cond13"}, Is.EquivalentTo (p.ConditionedProperties.Keys.ToArray ()));
+
+			Assert.That (new string [] { "val1"}, Is.EquivalentTo (p.ConditionedProperties["cond1"].ToArray ()));
+
+			Assert.That (new string [] { "val2_0", "val2_7"}, Is.EquivalentTo (p.ConditionedProperties["cond2"].ToArray ()));
+
+			Assert.That (new string [] { "val9"}, Is.EquivalentTo (p.ConditionedProperties["cond9"].ToArray ()));
+
+			Assert.That (new string [] { "val10_1", "val10_2"}, Is.EquivalentTo (p.ConditionedProperties["cond10"].ToArray ()));
+
+			Assert.That (new string [] { "val13_4"}, Is.EquivalentTo (p.ConditionedProperties["cond13"].ToArray ()));
 		}
 	}
 }

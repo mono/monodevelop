@@ -145,8 +145,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 						// Show the completion window in two steps. The call to PrepareShowWindow creates the window but
 						// it doesn't show it. It is used only to process the keys while the completion data is being retrieved.
 						CompletionWindowManager.PrepareShowWindow (this, descriptor.KeyChar, CompletionWidget, CurrentCompletionContext);
+						EventHandler windowClosed = delegate (object o, EventArgs a) {
+							completionTokenSrc.Cancel ();
+						};
+						CompletionWindowManager.WindowClosed += windowClosed;
 
 						task.ContinueWith (t => {
+							CompletionWindowManager.WindowClosed -= windowClosed;
 							if (token.IsCancellationRequested)
 								return;
 							var result = t.Result;
@@ -162,6 +167,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 								if (!CompletionWindowManager.ShowWindow (result, CurrentCompletionContext))
 									CurrentCompletionContext = null;
 							} else {
+								CompletionWindowManager.HideWindow ();
 								CurrentCompletionContext = null;
 							}
 						}, Runtime.MainTaskScheduler);
@@ -252,7 +258,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			info.Bypass = !CanRunParameterCompletionCommand ();
 		}
 
-		[CommandHandler(TextEditorCommands.ShowCompletionWindow)]
+		[CommandHandler (TextEditorCommands.ShowCompletionWindow)]
 		public virtual async void RunCompletionCommand ()
 		{
 			if (Editor.SelectionMode == SelectionMode.Block)
@@ -271,10 +277,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 			CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
 			CurrentCompletionContext.TriggerWordLength = wlen;
 			completionList = await CodeCompletionCommand (CurrentCompletionContext);
-			if (completionList != null)
-				CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, CurrentCompletionContext);
-			else
+			if (completionList == null || !CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, CurrentCompletionContext)) {
 				CurrentCompletionContext = null;
+			}
 		}
 
 		[CommandHandler(TextEditorCommands.ShowCodeTemplateWindow)]

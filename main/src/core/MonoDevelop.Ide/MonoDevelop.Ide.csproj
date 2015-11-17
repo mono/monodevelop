@@ -2594,7 +2594,7 @@
     <Compile Include="MonoDevelop.Ide.Gui\AbstractPadContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\AbstractViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\IBaseViewContent.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\IPadContent.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\PadContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\IViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\IWorkbenchWindow.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\ViewCommandHandlers.cs" />
@@ -2664,7 +2664,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\UnknownEntryNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\NavigationCommands.cs" />
     <Compile Include="MonoDevelop.Ide.StandardHeader\StandardHeaderService.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\InternalLog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\KeyBindingsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\TextEditorCommands.cs" />

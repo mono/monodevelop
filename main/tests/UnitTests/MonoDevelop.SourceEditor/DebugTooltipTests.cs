@@ -42,6 +42,7 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Debugger;
 using UnitTests;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -52,7 +53,7 @@ namespace MonoDevelop.SourceEditor
 		string content;
 		MonoDevelop.Projects.Solution solution;
 
-		Document CreateDocument (string input)
+		async Task<Document> CreateDocument (string input)
 		{
 			var text = input;
 			int endPos = text.IndexOf ('$');
@@ -69,10 +70,10 @@ namespace MonoDevelop.SourceEditor
 			project.Files.Add (new ProjectFile ("/a.cs", BuildAction.Compile)); 
 
 			solution = new MonoDevelop.Projects.Solution ();
-			var config = solution.AddConfiguration ("", true); 
+			solution.AddConfiguration ("", true); 
 			solution.DefaultSolutionFolder.AddItem (project);
 			using (var monitor = new ProgressMonitor ())
-				TypeSystemService.Load (solution, monitor, false);
+				await TypeSystemService.Load (solution, monitor);
 
 			var tww = new TestWorkbenchWindow ();
 			var content = new TestViewContent ();
@@ -91,14 +92,16 @@ namespace MonoDevelop.SourceEditor
 			compExt.Initialize (doc.Editor, doc);
 			content.Contents.Add (compExt);
 
-			doc.UpdateParseDocument ();
+			await doc.UpdateParseDocument ();
 
 			return doc;
 		}
 
-		[TestFixtureSetUp]
-		public virtual void Setup ()
+		public async Task Init ()
 		{
+			if (document != null)
+				return;
+			
 			content = @"using System;
 
 namespace DebuggerTooltipTests
@@ -199,7 +202,7 @@ namespace DebuggerTooltipTests
 }
 ";
 
-			document = CreateDocument (content);
+			document = await CreateDocument (content);
 		}
 
 		public override void TearDown()
@@ -262,54 +265,62 @@ namespace DebuggerTooltipTests
 		}
 
 		[Test]
-		public void TestBasicLocalVariable ()
+		public async Task TestBasicLocalVariable ()
 		{
+			await Init ();
 			Assert.AreEqual ("basicLocalVariable", ResolveExpression (document, content, GetBasicOffset ("basicLocalVariable")));
 		}
 
 		[Test]
-		public void TestConstructorInvocation ()
+		public async Task TestConstructorInvocation ()
 		{
+			await Init ();
 			Assert.AreEqual ("DebuggerTooltipTests.Abc", ResolveExpression (document, content, GetCtorOffset ("new Abc ()")));
 		}
 
 		[Test]
-		public void TestCastExpression ()
+		public async Task TestCastExpression ()
 		{
+			await Init ();
 			Assert.AreEqual ("((Abc) instanceVariable).Text", ResolveExpression (document, content, GetPropertyOffset ("((Abc) instanceVariable).Text")));
 			Assert.AreEqual ("((Abc) instanceVariable).Text.Length", ResolveExpression (document, content, GetPropertyOffset ("((Abc) instanceVariable).Text.Length")));
 		}
 
 		[Test]
-		public void TestPropertyOfMethodInvocation ()
+		public async Task TestPropertyOfMethodInvocation ()
 		{
+			await Init ();
 			Assert.AreEqual ("instanceVariable.GetType ().Name", ResolveExpression (document, content, GetPropertyOffset ("instanceVariable.GetType ().Name")));
 		}
 
 		[Test]
-		public void TestFieldDeclarations ()
+		public async Task TestFieldDeclarations ()
 		{
+			await Init ();
 			Assert.AreEqual ("DebuggerTooltipTests.Abc.StaticField", ResolveExpression (document, content, GetBasicOffset ("StaticField")));
 			Assert.AreEqual ("@double", ResolveExpression (document, content, GetBasicOffset ("@double")));
 			Assert.AreEqual ("field", ResolveExpression (document, content, GetBasicOffset ("field")));
 		}
 
 		[Test]
-		public void TestPropertyDeclarations ()
+		public async Task TestPropertyDeclarations ()
 		{
+			await Init ();
 			Assert.AreEqual ("DebuggerTooltipTests.Abc.StaticProperty", ResolveExpression (document, content, GetBasicOffset ("StaticProperty")));
 			Assert.AreEqual ("Text", ResolveExpression (document, content, GetBasicOffset ("Text")));
 		}
 
 		[Test]
-		public void TestPropertySetter ()
+		public async Task TestPropertySetter ()
 		{
+			await Init ();
 			Assert.AreEqual ("value", ResolveExpression (document, content, GetBasicOffset ("value")));
 		}
 
 		[Test]
-		public void TestMethodParameters ()
+		public async Task TestMethodParameters ()
 		{
+			await Init ();
 			Assert.AreEqual ("this", ResolveExpression (document, content, GetBasicOffset ("this")));
 			Assert.AreEqual ("this.Text", ResolveExpression (document, content, GetPropertyOffset ("this.Text")));
 			Assert.AreEqual ("this.Text.Length", ResolveExpression (document, content, GetPropertyOffset ("this.Text.Length")));
@@ -319,14 +330,17 @@ namespace DebuggerTooltipTests
 		}
 
 		[Test]
-		public void TestBaseExpressions ()
+		public async Task TestBaseExpressions ()
 		{
+			await Init ();
 			Assert.AreEqual ("base.BaseProperty", ResolveExpression (document, content, GetPropertyOffset ("base.BaseProperty")));
 		}
 
 		[Test]
-		public void TestEscapedVariables ()
+		public async Task TestEscapedVariables ()
 		{
+			await Init ();
+
 			// Inside class Abc
 			Assert.AreEqual ("@class", ResolveExpression (document, content, GetBasicOffset ("@class")));
 			Assert.AreEqual ("@class.Length", ResolveExpression (document, content, GetPropertyOffset ("@class.Length")));
@@ -336,20 +350,23 @@ namespace DebuggerTooltipTests
 		}
 
 		[Test]
-		public void TestPropertyInitializers ()
+		public async Task TestPropertyInitializers ()
 		{
+			await Init ();
 			Assert.AreEqual ("propertyInitializer.Property", ResolveExpression (document, content, GetAssignmentOffset ("Property = string.Empty")));
 		}
 
 		[Test]
-		public void TestDefaultValueParameters ()
+		public async Task TestDefaultValueParameters ()
 		{
+			await Init ();
 			Assert.AreEqual ("defaultValue", ResolveExpression (document, content, GetAssignmentOffset ("defaultValue = 5")));
 		}
 
 		[Test]
-		public void TestMethodInvocations ()
+		public async Task TestMethodInvocations ()
 		{
+			await Init ();
 			Assert.AreEqual (null, ResolveExpression (document, content, GetPropertyOffset ("instanceVariable.Method")));
 			Assert.AreEqual (null, ResolveExpression (document, content, GetBasicOffset ("Method")));
 		}

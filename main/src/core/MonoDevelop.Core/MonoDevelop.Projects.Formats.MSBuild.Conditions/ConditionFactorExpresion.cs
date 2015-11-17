@@ -129,5 +129,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
 			string val = context.EvaluateString (token.Value);
 			return new Token (val, TokenType.String, 0);
 		}
+
+		internal Conditions.Token Token {
+			get {
+				return this.token;
+			}
+		}
 	}
 }

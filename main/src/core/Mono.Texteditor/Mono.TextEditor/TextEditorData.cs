@@ -287,13 +287,28 @@ namespace Mono.TextEditor
 			get {
 				if (Options.OverrideDocumentEolMarker)
 					return Options.DefaultEolMarker;
-				string eol = null;
 				if (Document.LineCount > 0) {
-					DocumentLine line = Document.GetLine (DocumentLocation.MinLine);
-					if (line.DelimiterLength > 0) 
-						eol = Document.GetTextAt (line.Length, line.DelimiterLength);
-				}
-				return !String.IsNullOrEmpty (eol) ? eol : Options.DefaultEolMarker;
+					var line = Document.GetLine (DocumentLocation.MinLine);
+					switch (line.UnicodeNewline) {
+					case ICSharpCode.NRefactory.UnicodeNewline.LF:
+						return "\u000A";
+					case ICSharpCode.NRefactory.UnicodeNewline.CRLF:
+						return "\u000D\u000A";
+					case ICSharpCode.NRefactory.UnicodeNewline.CR:
+						return "\u000D";
+					case ICSharpCode.NRefactory.UnicodeNewline.NEL:
+						return "\u0085";
+					case ICSharpCode.NRefactory.UnicodeNewline.VT:
+						return "\u000B";
+					case ICSharpCode.NRefactory.UnicodeNewline.FF:
+						return "\u000C";
+					case ICSharpCode.NRefactory.UnicodeNewline.LS:
+						return "\u2028";
+					case ICSharpCode.NRefactory.UnicodeNewline.PS:
+						return "\u2029";
+					}
+				} 
+				return Options.DefaultEolMarker;
 			}
 		}
 		

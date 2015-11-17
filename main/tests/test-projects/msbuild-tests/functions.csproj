@@ -8,6 +8,11 @@
 	<Prop>abcdefgh</Prop>
 	<TestFile>files\test.txt</TestFile>
 	<Substring>$(Prop.Substring(1,3))</Substring>
+	<MethodWithParams1>$([System.String]::Format("ab"))</MethodWithParams1>
+	<MethodWithParams2>$([System.String]::Format("a{0}c",b))</MethodWithParams2>
+	<MethodWithParams3>$([System.String]::Format("a{0}{1}d",b,c))</MethodWithParams3>
+	<MethodWithParams4>$([System.String]::Format("a{0}{1}{2}{3}{4}{5}{6}{7}j",b,c,d,e,f,g,h,i))</MethodWithParams4>
+	<MethodWithParams5>$([System.String]::Format("a{0}b",null))</MethodWithParams5>
 	<MaxByte>$([System.Byte]::MaxValue)</MaxByte>
 	<Upper1>$([System.Char]::ToUpper("a"))</Upper1>
 	<Upper2>$([System.String]::Concat("a'b'c",5))</Upper2>

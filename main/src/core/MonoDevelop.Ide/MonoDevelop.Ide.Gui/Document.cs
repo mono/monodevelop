@@ -64,7 +64,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		IWorkbenchWindow window;
 		ParsedDocument parsedDocument;
-		FilePath analysisDocumentFileName;
 		Microsoft.CodeAnalysis.DocumentId analysisDocument;
 
 		const int ParseDelay = 600;
@@ -710,10 +709,10 @@ namespace MonoDevelop.Ide.Gui
 		/// <returns>
 		/// A <see cref="ParsedDocument"/> that contains the current dom.
 		/// </returns>
-		public override ParsedDocument UpdateParseDocument ()
+		public override async Task<ParsedDocument> UpdateParseDocument ()
 		{
 			try {
-				EnsureAnalysisDocumentIsOpen ().Wait ();
+				await EnsureAnalysisDocumentIsOpen ();
 				string currentParseFile = FileName;
 				var editor = Editor;
 				if (editor == null || string.IsNullOrEmpty (currentParseFile))
@@ -736,9 +735,8 @@ namespace MonoDevelop.Ide.Gui
                     if (projectFile != null)
 						options.BuildAction = projectFile.BuildAction;
 					
-					var task = TypeSystemService.ParseProjection (options, editor.MimeType);
-					if (task.Result != null) {
-						var p = task.Result;
+					var p = await TypeSystemService.ParseProjection (options, editor.MimeType);
+					if (p != null) {
 						this.parsedDocument = p.ParsedDocument;
 						var projections = p.Projections;
 						foreach (var p2 in projections)
@@ -746,7 +744,7 @@ namespace MonoDevelop.Ide.Gui
 						Editor.SetOrUpdateProjections (this, projections, p.DisabledProjectionFeatures);
 					}
 				} else { 
-					this.parsedDocument = TypeSystemService.ParseFile (options, editor.MimeType).Result ?? this.parsedDocument;
+					this.parsedDocument = await TypeSystemService.ParseFile (options, editor.MimeType) ?? this.parsedDocument;
 				}
 			} finally {
 
@@ -765,7 +763,6 @@ namespace MonoDevelop.Ide.Gui
 				analysisDocument = null;
 				return SpecializedTasks.EmptyTask;
 			}
-			analysisDocumentFileName = FileName;
 			if (Project != null && Editor.MimeType == "text/x-csharp") {
 				RoslynWorkspace = TypeSystemService.GetWorkspace (this.Project.ParentSolution);
 				analysisDocument = TypeSystemService.GetDocumentId (this.Project, this.FileName);
@@ -798,7 +795,7 @@ namespace MonoDevelop.Ide.Gui
 						adhocSolution = new Solution ();
 						adhocSolution.AddConfiguration ("", true);
 						adhocSolution.DefaultSolutionFolder.AddItem (newProject);
-						return TypeSystemService.Load (adhocSolution, new ProgressMonitor (), false).ContinueWith (task => {
+						return TypeSystemService.Load (adhocSolution, new ProgressMonitor ()).ContinueWith (task => {
 							RoslynWorkspace = task.Result.FirstOrDefault(); // 1 solution loaded ->1 workspace as result
 							analysisDocument = TypeSystemService.GetDocumentId (RoslynWorkspace, adhocProject, adHocFile);
 							TypeSystemService.InformDocumentOpen (RoslynWorkspace, analysisDocument, Editor);
@@ -838,67 +835,71 @@ namespace MonoDevelop.Ide.Gui
 			CancelParseTimeout ();
 
 			parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
-				var editor = Editor;
-				if (editor == null) {
-					parseTimeout = 0;
-					return false;
-				}
-
-				// Don't directly parse the document because doing it at every key press is
-				// very inefficient. Do it after a small delay instead, so several changes can
-				// be parsed at the same time.
-				EnsureAnalysisDocumentIsOpen ().Wait ();
-				var currentParseText = editor.CreateSnapshot ();
-				string mimeType = editor.MimeType;
-				CancelOldParsing ();
-				var token = parseTokenSource.Token;
-				var project = Project ?? adhocProject;
-				var projectFile = project?.GetProjectFile (currentParseFile);
-				ThreadPool.QueueUserWorkItem (delegate {
-					TypeSystemService.AddSkippedFile (currentParseFile);
-					var options = new ParseOptions {
-						Project = project,
-						Content = currentParseText,
-						FileName = currentParseFile,
-						OldParsedDocument = parsedDocument,
-						RoslynDocument = AnalysisDocument
-					};
-					if (projectFile != null)
-						options.BuildAction = projectFile.BuildAction;
-					
-					if (project != null && TypeSystemService.CanParseProjections (project, mimeType, currentParseFile)) {
-						TypeSystemService.ParseProjection (options, mimeType, token).ContinueWith (task => {
-							if (token.IsCancellationRequested)
-								return;
-							Application.Invoke (delegate {
-								// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
-								var taskResult = task.Result;
-								if (isClosed || taskResult == null || token.IsCancellationRequested)
-									return;
-								this.parsedDocument = taskResult.ParsedDocument;
-								var projections = taskResult.Projections;
-								foreach (var p2 in projections)
-									p2.CreateProjectedEditor (this);
-								Editor.SetOrUpdateProjections (this, projections, taskResult.DisabledProjectionFeatures);
-								OnDocumentParsed (EventArgs.Empty);
-							});
-						}, TaskContinuationOptions.OnlyOnRanToCompletion);
-					} else {
-						TypeSystemService.ParseFile (options, mimeType, token).ContinueWith (task => {
-							if (token.IsCancellationRequested)
-								return;
-							Application.Invoke (delegate {
-								// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
-								if (isClosed || task.Result == null || token.IsCancellationRequested)
-									return;
-								this.parsedDocument = task.Result;
-								OnDocumentParsed (EventArgs.Empty);
-							});
-						}, TaskContinuationOptions.OnlyOnRanToCompletion);
-					}
-				});
+				StartReparseThreadDelayed (currentParseFile);
 				parseTimeout = 0;
 				return false;
+			});
+		}
+
+		async void StartReparseThreadDelayed (FilePath currentParseFile)
+		{
+			var editor = Editor;
+			if (editor == null)
+				return;
+
+			// Don't directly parse the document because doing it at every key press is
+			// very inefficient. Do it after a small delay instead, so several changes can
+			// be parsed at the same time.
+			await EnsureAnalysisDocumentIsOpen ();
+			var currentParseText = editor.CreateSnapshot ();
+			string mimeType = editor.MimeType;
+			CancelOldParsing ();
+			var token = parseTokenSource.Token;
+			var project = Project ?? adhocProject;
+			var projectFile = project?.GetProjectFile (currentParseFile);
+
+			ThreadPool.QueueUserWorkItem (delegate {
+				TypeSystemService.AddSkippedFile (currentParseFile);
+				var options = new ParseOptions {
+					Project = project,
+					Content = currentParseText,
+					FileName = currentParseFile,
+					OldParsedDocument = parsedDocument,
+					RoslynDocument = AnalysisDocument
+				};
+				if (projectFile != null)
+					options.BuildAction = projectFile.BuildAction;
+				
+				if (project != null && TypeSystemService.CanParseProjections (project, mimeType, currentParseFile)) {
+					TypeSystemService.ParseProjection (options, mimeType, token).ContinueWith (task => {
+						if (token.IsCancellationRequested)
+							return;
+						Application.Invoke (delegate {
+							// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
+							var taskResult = task.Result;
+							if (isClosed || taskResult == null || token.IsCancellationRequested)
+								return;
+							this.parsedDocument = taskResult.ParsedDocument;
+							var projections = taskResult.Projections;
+							foreach (var p2 in projections)
+								p2.CreateProjectedEditor (this);
+							Editor.SetOrUpdateProjections (this, projections, taskResult.DisabledProjectionFeatures);
+							OnDocumentParsed (EventArgs.Empty);
+						});
+					}, TaskContinuationOptions.OnlyOnRanToCompletion);
+				} else {
+					TypeSystemService.ParseFile (options, mimeType, token).ContinueWith (task => {
+						if (token.IsCancellationRequested)
+							return;
+						Application.Invoke (delegate {
+							// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
+							if (isClosed || task.Result == null || token.IsCancellationRequested)
+								return;
+							this.parsedDocument = task.Result;
+							OnDocumentParsed (EventArgs.Empty);
+						});
+					}, TaskContinuationOptions.OnlyOnRanToCompletion);
+				}
 			});
 		}
 		

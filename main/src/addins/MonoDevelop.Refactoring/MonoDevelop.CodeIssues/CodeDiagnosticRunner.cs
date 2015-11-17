@@ -74,21 +74,15 @@ namespace MonoDevelop.CodeIssues
 
 				if (providers.Count == 0 || cancellationToken.IsCancellationRequested)
 					return Enumerable.Empty<Result> ();
-				var localCompilation = CSharpCompilation.Create (
-					compilation.AssemblyName, 
-					new[] { model.SyntaxTree }, 
-					compilation.References, 
-					(CSharpCompilationOptions)compilation.Options
-				);
 
 				CompilationWithAnalyzers compilationWithAnalyzer;
 				var analyzers = System.Collections.Immutable.ImmutableArray<DiagnosticAnalyzer>.Empty.AddRange (providers);
 				var diagnosticList = new List<Diagnostic> ();
 				try {
-					compilationWithAnalyzer = localCompilation.WithAnalyzers (analyzers, null, cancellationToken);
+					compilationWithAnalyzer = compilation.WithAnalyzers (analyzers, null, cancellationToken);
 					if (input.ParsedDocument == null || cancellationToken.IsCancellationRequested)
 						return Enumerable.Empty<Result> ();
-					diagnosticList.AddRange (compilationWithAnalyzer.GetAnalyzerDiagnosticsAsync ().Result);
+					diagnosticList.AddRange (compilationWithAnalyzer.GetAnalyzerSemanticDiagnosticsAsync (model, null, cancellationToken).Result);
 				} catch (Exception) {
 					return Enumerable.Empty<Result> ();
 				} finally {

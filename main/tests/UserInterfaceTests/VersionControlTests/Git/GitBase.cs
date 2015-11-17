@@ -91,7 +91,7 @@ namespace UserInterfaceTests
 			SelectRemote (remoteName);
 
 			Assert.IsEmpty (Session.Query (c => remoteTreeFullName (c).Contains (remoteName+"/")));
-			Assert.IsTrue (Session.ClickElement (c => IdeQuery.GitConfigurationDialog (c).Children ().Button ().Marked ("buttonFetch")));
+			Assert.IsTrue (Session.ClickElement (c => IdeQuery.GitConfigurationDialog (c).Children ().Button ().Text ("Fetch")));
 			TakeScreenShot ("Fetch-Remote");
 
 			SelectRemoteBranch (remoteName);

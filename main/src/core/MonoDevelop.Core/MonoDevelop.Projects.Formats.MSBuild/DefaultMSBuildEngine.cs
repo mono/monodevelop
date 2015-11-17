@@ -58,6 +58,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			public List<MSBuildTarget> Targets = new List<MSBuildTarget> ();
 			public List<MSBuildProject> ReferencedProjects = new List<MSBuildProject> ();
 			public Dictionary<MSBuildImport, List<ProjectInfo>> ImportedProjects = new Dictionary<MSBuildImport, List<ProjectInfo>> ();
+			public ConditionedPropertyCollection ConditionedProperties = new ConditionedPropertyCollection ();
         }
 
 		class PropertyInfo
@@ -198,7 +199,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildPropertyGroup group)
 		{
-			if (!string.IsNullOrEmpty (group.Condition) && !SafeParseAndEvaluate (group.Condition, context))
+			if (!string.IsNullOrEmpty (group.Condition) && !SafeParseAndEvaluate (project, context, group.Condition, true))
 				return;
 
 			foreach (var prop in group.GetProperties ())
@@ -210,7 +211,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			bool conditionIsTrue = true;
 
 			if (!string.IsNullOrEmpty (items.Condition))
-				conditionIsTrue = SafeParseAndEvaluate (items.Condition, context);
+				conditionIsTrue = SafeParseAndEvaluate (project, context, items.Condition);
 
 			foreach (var item in items.Items) {
 
@@ -219,7 +220,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 				var it = CreateEvaluatedItem (context, project.Project, item, include);
 
-				var trueCond = conditionIsTrue && (string.IsNullOrEmpty (it.Condition) || SafeParseAndEvaluate (it.Condition, context));
+				var trueCond = conditionIsTrue && (string.IsNullOrEmpty (it.Condition) || SafeParseAndEvaluate (project, context, it.Condition));
 
 				var excludeRegex = !string.IsNullOrEmpty (exclude) ? new Regex (ExcludeToRegex (exclude)) : null;
 
@@ -266,7 +267,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImportGroup imports, bool evalItems)
 		{
-			if (!string.IsNullOrEmpty (imports.Condition) && !SafeParseAndEvaluate (imports.Condition, context))
+			if (!string.IsNullOrEmpty (imports.Condition) && !SafeParseAndEvaluate (project, context, imports.Condition, true))
 				return;
 
 			foreach (var item in imports.Imports)
@@ -390,7 +391,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildProperty prop)
 		{
-			if (string.IsNullOrEmpty (prop.Condition) || SafeParseAndEvaluate (prop.Condition, context)) {
+			if (string.IsNullOrEmpty (prop.Condition) || SafeParseAndEvaluate (project, context, prop.Condition, true)) {
 				var val = context.EvaluateString (prop.Value);
 				project.Properties [prop.Name] = new PropertyInfo { Name = prop.Name, Value = prop.Value, FinalValue = val };
 				context.SetPropertyValue (prop.Name, val);
@@ -447,6 +448,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						t.IsImported = true;
 						project.Targets.Add (t);
 					}
+					foreach (var cp in p.ConditionedProperties) {
+						foreach (var v in cp.Value)
+							project.ConditionedProperties.AddProperty (cp.Key, v);
+					}
 				}
 				return;
             }
@@ -475,7 +480,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var pr = context.EvaluateString (import.Project);
 			project.Imports [import] = pr;
 
-			if (!string.IsNullOrEmpty (import.Condition) && !SafeParseAndEvaluate (import.Condition, tempCtx))
+			if (!string.IsNullOrEmpty (import.Condition) && !SafeParseAndEvaluate (project, tempCtx, import.Condition, true))
 				return null;
 
 			var path = MSBuildProjectService.FromMSBuildPath (project.Project.BaseDirectory, pr);
@@ -515,7 +520,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildChoose choose, bool evalItems)
 		{
 			foreach (var op in choose.GetOptions ()) {
-				if (op.IsOtherwise || SafeParseAndEvaluate (op.Condition, context)) {
+				if (op.IsOtherwise || SafeParseAndEvaluate (project, context, op.Condition, true)) {
 					EvaluateObjects (project, context, op.GetAllObjects (), evalItems);
 					break;
 				}
@@ -528,10 +533,31 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			project.Targets.Add (target);
 		}
 
-		static bool SafeParseAndEvaluate (string cond, MSBuildEvaluationContext context)
+		static bool SafeParseAndEvaluate (ProjectInfo project, MSBuildEvaluationContext context, string condition, bool collectConditionedProperties = false)
 		{
 			try {
-				return ConditionParser.ParseAndEvaluate (cond, context);
+				if (String.IsNullOrEmpty (condition))
+					return true;
+
+				try {
+					ConditionExpression ce = ConditionParser.ParseCondition (condition);
+
+					if (!ce.CanEvaluateToBool (context))
+						throw new InvalidProjectFileException (String.Format ("Can not evaluate \"{0}\" to bool.", condition));
+
+					if (collectConditionedProperties)
+						ce.CollectConditionProperties (project.ConditionedProperties);
+
+					return ce.BoolEvaluate (context);
+				} catch (ExpressionParseException epe) {
+					throw new InvalidProjectFileException (
+						String.Format ("Unable to parse condition \"{0}\" : {1}", condition, epe.Message),
+						epe);
+				} catch (ExpressionEvaluationException epe) {
+					throw new InvalidProjectFileException (
+						String.Format ("Unable to evaluate condition \"{0}\" : {1}", condition, epe.Message),
+						epe);
+				}
 			}
 			catch {
 				// The condition is likely to be invalid
@@ -627,6 +653,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			var pi = (ProjectInfo)projectInstance;
 			pi.GlobalProperties.Remove (property);
+		}
+
+		public override IDictionary<string, List<string>> GetConditionedProperties (object projectInstance)
+		{
+			var pi = (ProjectInfo)projectInstance;
+			return pi.ConditionedProperties;
 		}
 
 		#endregion

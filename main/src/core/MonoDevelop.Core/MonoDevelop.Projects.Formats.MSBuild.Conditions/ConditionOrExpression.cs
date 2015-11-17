@@ -83,6 +83,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
 		{
 			return false;
 		}
+
+		public override void CollectConditionProperties (ConditionedPropertyCollection properties)
+		{
+			left.CollectConditionProperties (properties);
+			right.CollectConditionProperties (properties);
+		}
 	}
 }
 

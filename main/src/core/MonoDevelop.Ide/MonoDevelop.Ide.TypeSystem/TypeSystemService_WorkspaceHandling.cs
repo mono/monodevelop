@@ -126,54 +126,39 @@ namespace MonoDevelop.Ide.TypeSystem
 				ws.UpdateFileContent (fileName, text);
 		}
 
-		internal async static Task<List<MonoDevelopWorkspace>> Load (WorkspaceItem item, ProgressMonitor progressMonitor, bool loadInBackground = true)
+		internal static Task<List<MonoDevelopWorkspace>> Load (WorkspaceItem item, ProgressMonitor progressMonitor)
 		{
 			using (Counters.ParserService.WorkspaceItemLoaded.BeginTiming ()) {
 				var wsList = new List<MonoDevelopWorkspace> ();
-				await InternalLoad (wsList, item, progressMonitor, loadInBackground);
-				return wsList;
+				return InternalLoad (wsList, item, progressMonitor).ContinueWith (t => { t.Wait (); return wsList; });
 			}
 		}
 
-		static Task InternalLoad (List<MonoDevelopWorkspace> list, MonoDevelop.Projects.WorkspaceItem item, ProgressMonitor progressMonitor, bool loadInBackground)
+		static Task InternalLoad (List<MonoDevelopWorkspace> list, MonoDevelop.Projects.WorkspaceItem item, ProgressMonitor progressMonitor)
 		{
-			var ws = item as MonoDevelop.Projects.Workspace;
-			if (ws != null) {
-				Action loadAction = () =>  {
+			return Task.Run (async () => {
+				var ws = item as MonoDevelop.Projects.Workspace;
+				if (ws != null) {
 					foreach (var it in ws.Items) {
-						InternalLoad (list, it, progressMonitor, false);
+						await InternalLoad (list, it, progressMonitor);
 					}
 					ws.ItemAdded += OnWorkspaceItemAdded;
 					ws.ItemRemoved += OnWorkspaceItemRemoved;
-				};
-				if (loadInBackground) {
-					return Task.Run (loadAction);
 				} else {
-					loadAction ();
-				}
-			} else {
-				var solution = item as MonoDevelop.Projects.Solution;
-				if (solution != null) {
-					Action loadAction = () =>  {
+					var solution = item as MonoDevelop.Projects.Solution;
+					if (solution != null) {
 						var workspace = new MonoDevelopWorkspace ();
 						list.Add (workspace);
 						workspace.ShowStatusIcon ();
 						lock (workspaceLock)
 							workspaces = workspaces.Add (workspace);
-						workspace.TryLoadSolution (solution/*, progressMonitor*/);
+						await workspace.TryLoadSolution (solution/*, progressMonitor*/);
 						solution.SolutionItemAdded += OnSolutionItemAdded;
 						solution.SolutionItemRemoved += OnSolutionItemRemoved;
 						workspace.HideStatusIcon ();
-					};
-
-					if (loadInBackground) {
-						return Task.Run (loadAction);
-					} else {
-						loadAction ();
 					}
 				}
-			}
-			return Task.FromResult(false);
+			});
 		}
 
 		internal static void Unload (MonoDevelop.Projects.WorkspaceItem item)
@@ -299,12 +284,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			Unload (args.Item);
 		}
 
-		static void OnSolutionItemAdded (object sender, MonoDevelop.Projects.SolutionItemChangeEventArgs args)
+		static async void OnSolutionItemAdded (object sender, MonoDevelop.Projects.SolutionItemChangeEventArgs args)
 		{
 			var project = args.SolutionItem as MonoDevelop.Projects.Project;
 			if (project != null) {
 				var ws = GetWorkspace (project.ParentSolution);
-				ws.AddProject (project);
+				await ws.AddProject (project);
 			}
 		}
 

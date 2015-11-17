@@ -167,7 +167,6 @@ namespace MonoDevelop.SourceEditor
 				throw new ArgumentNullException ("cache");
 			this.cache = cache;
 			this.task = task;
-			this.IsVisible = true;
 			this.isError = isError;
 			AddError (task, isError, errorMessage);
 //			cache.Changed += (sender, e) => CalculateLineFit (editor, lineSegment);

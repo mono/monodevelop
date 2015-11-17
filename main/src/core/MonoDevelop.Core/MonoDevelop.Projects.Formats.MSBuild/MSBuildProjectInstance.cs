@@ -39,6 +39,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		MSBuildEvaluatedPropertyCollection evaluatedProperties;
 		MSBuildTarget[] targets = new MSBuildTarget[0];
 		Dictionary<string,string> globalProperties = new Dictionary<string, string> ();
+		IDictionary<string, List<string>> conditionedProperties;
 
 		MSBuildProjectInstanceInfo info;
 
@@ -166,6 +167,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var props = new MSBuildEvaluatedPropertyCollection (msproject);
 			evaluatedProperties = props;
 			props.SyncCollection (e, project);
+
+			conditionedProperties = engine.GetConditionedProperties (project);
 		}
 
 		MSBuildItemEvaluated CreateEvaluatedItem (MSBuildEngine e, object it)
@@ -195,6 +198,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get {
 				return targets;
 			}
+		}
+
+		internal IDictionary<string, List<string>> GetConditionedProperties ()
+		{
+			return conditionedProperties;
 		}
 	}
 

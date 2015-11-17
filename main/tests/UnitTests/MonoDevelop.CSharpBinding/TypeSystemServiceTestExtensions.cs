@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
@@ -33,10 +34,10 @@ namespace MonoDevelop.CSharpBinding
 {
 	public static class TypeSystemServiceTestExtensions
 	{
-		public static void LoadSolution (Solution solution)
+		public static async Task LoadSolution (Solution solution)
 		{
 			using (var monitor = new ProgressMonitor ())
-				TypeSystemService.Load (solution, monitor, false);
+				await TypeSystemService.Load (solution, monitor);
 		}
 
 		public static void UnloadSolution (Solution solution)

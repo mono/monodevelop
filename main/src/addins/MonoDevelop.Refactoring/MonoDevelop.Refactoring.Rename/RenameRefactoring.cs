@@ -133,7 +133,7 @@ namespace MonoDevelop.Refactoring.Rename
 				foreach (var v in textChanges) {
 					editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
 				}
-				var parsedDocument = doc.UpdateParseDocument ();
+				var parsedDocument = doc.UpdateParseDocument ().Result;
 				if (parsedDocument == null) {
 					Rollback (editor, textChanges);
 					return;

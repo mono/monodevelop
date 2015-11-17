@@ -70,6 +70,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
 		{
 			return false;
 		}
+
+		public override void CollectConditionProperties (ConditionedPropertyCollection properties)
+		{
+			expression.CollectConditionProperties (properties);
+		}
 	}
 }
 

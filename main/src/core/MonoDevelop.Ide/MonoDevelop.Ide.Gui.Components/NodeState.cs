@@ -37,11 +37,11 @@ namespace MonoDevelop.Ide.Gui.Components
 {
 	public class NodeState : ICustomXmlSerializer
 	{
-		public string NodeName { get; set; }
-		public bool Expanded { get; set; }
-		public bool Selected { get; set; }
-		public bool IsRoot { get { return NodeName == "__root__"; } }
-		public List<NodeState> ChildrenState { get; set; }
+		internal string NodeName { get; set; }
+		internal bool Expanded { get; set; }
+		internal bool Selected { get; set; }
+		internal bool IsRoot { get { return NodeName == "__root__"; } }
+		internal List<NodeState> ChildrenState { get; set; }
 
 		internal static NodeState CreateRoot ()
 		{

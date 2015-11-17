@@ -42,8 +42,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 	{
 		CodeTemplate template;
 		TextEditor textEditor = TextEditorFactory.CreateNewEditor ();
-		ITextEditorOptions options;
-		
+
 		ListStore variablesListStore;
 		List<CodeTemplateVariable> variables = new List<CodeTemplateVariable> ();
 		MonoDevelop.Components.PropertyGrid.PropertyGrid grid;

@@ -30,8 +30,6 @@ namespace MonoDevelop.Ide.Editor.Projection
 {
 	sealed class ProjectedTooltipProvider  : TooltipProvider
 	{
-		readonly TextEditor editor;
-		readonly DocumentContext ctx;
 		readonly Projection projection;
 		readonly TooltipProvider projectedTooltipProvider;
 
@@ -47,8 +45,6 @@ namespace MonoDevelop.Ide.Editor.Projection
 				throw new ArgumentNullException ("projectedTooltipProvider");
 			this.projectedTooltipProvider = projectedTooltipProvider;
 			this.projection = projection;
-			this.editor = editor;
-			this.ctx = ctx;
 		}
 
 		public override TooltipItem GetItem (TextEditor editor, DocumentContext ctx, int offset)

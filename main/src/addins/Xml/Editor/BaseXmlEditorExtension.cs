@@ -115,6 +115,9 @@ namespace MonoDevelop.Xml.Editor
 				ownerProjects = new List<DotNetProject> ();
 				return;
 			}
+			if (DocumentContext == null) {
+				return;//This can happen if this object is disposed
+			}
 			var projects = new HashSet<DotNetProject> (IdeApp.Workspace.GetAllItems<DotNetProject> ().Where (p => p.IsFileInProject (DocumentContext.Name)));
 			if (ownerProjects == null || !projects.SetEquals (ownerProjects)) {
 				ownerProjects = projects.OrderBy (p => p.Name).ToList ();

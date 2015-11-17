@@ -42,10 +42,8 @@ namespace MonoDevelop.Components.MainToolbar
 {
 	class FileSearchCategory : SearchCategory
 	{
-		Widget widget;
 		public FileSearchCategory (Widget widget) : base (GettextCatalog.GetString("Files"))
 		{
-			this.widget = widget;
 		}
 
 		IEnumerable<ProjectFile> AllFiles {

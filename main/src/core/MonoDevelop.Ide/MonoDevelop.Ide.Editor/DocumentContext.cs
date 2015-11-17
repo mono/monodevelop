@@ -138,7 +138,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public abstract OptionSet GetOptionSet ();
 
-		public abstract ParsedDocument UpdateParseDocument ();
+		public abstract Task<ParsedDocument> UpdateParseDocument ();
 
 		// TODO: IMO that needs to be handled differently (this is atm only used in the ASP.NET binding)
 		// Maybe using the file service. Files can be changed/saved w/o beeing opened.

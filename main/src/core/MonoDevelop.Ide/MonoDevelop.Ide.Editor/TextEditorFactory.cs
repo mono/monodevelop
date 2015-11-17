@@ -26,6 +26,7 @@
 
 using MonoDevelop.Core.Text;
 using Mono.Addins;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -71,16 +72,30 @@ namespace MonoDevelop.Ide.Editor
 			return currentFactory.CreateNewDocument (textSource, fileName, mimeType); 
 		}
 
+		static ConfigurationProperty<double> zoomLevel = ConfigurationProperty.Create ("Editor.ZoomLevel", 1.0d);
+
 		public static TextEditor CreateNewEditor (TextEditorType textEditorType = TextEditorType.Default)
 		{
-			return new TextEditor (currentFactory.CreateNewEditor (), textEditorType);
+			var result = new TextEditor (currentFactory.CreateNewEditor (), textEditorType) {
+				ZoomLevel = zoomLevel
+			};
+			result.ZoomLevelChanged += delegate {
+				zoomLevel.Value = result.ZoomLevel;
+			};
+			return result;
 		}
 
 		public static TextEditor CreateNewEditor (IReadonlyTextDocument document, TextEditorType textEditorType = TextEditorType.Default)
 		{
 			if (document == null)
 				throw new System.ArgumentNullException ("document");
-			return new TextEditor (currentFactory.CreateNewEditor (document), textEditorType);
+			var result = new TextEditor (currentFactory.CreateNewEditor (document), textEditorType) {
+				ZoomLevel = zoomLevel
+			};
+			result.ZoomLevelChanged += delegate {
+				zoomLevel.Value = result.ZoomLevel;
+			};
+			return result;
 		}
 
 		public static string[] GetSyntaxProperties (string mimeType, string name)

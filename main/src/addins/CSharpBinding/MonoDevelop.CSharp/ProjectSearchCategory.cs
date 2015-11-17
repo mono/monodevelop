@@ -76,9 +76,15 @@ namespace MonoDevelop.CSharp
 		{
 			symbolInfoTokenSrc.Cancel ();
 			if (SymbolInfoTask != null) {
-				var old = SymbolInfoTask.Result;
-				if (old != null)
-					old.Dispose ();
+				try {
+					var old = SymbolInfoTask.Result;
+					if (old != null)
+						old.Dispose ();
+				} catch (TaskCanceledException) {
+					// Ignore
+				} catch (Exception ex) {
+					LoggingService.LogError ("UpdateSymbolInfos failed", ex);
+				}
             }
 			symbolInfoTokenSrc = new CancellationTokenSource();
 			lastResult = new WorkerResult ();

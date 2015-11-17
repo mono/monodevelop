@@ -1,9 +1,10 @@
-﻿// IPadContent.cs
+﻿//
+// ConditionedPropertyCollection.cs
 //
 // Author:
-//   Viktoria Dudka (viktoriad@remobjects.com)
+//       Lluis Sanchez Gual <lluis@xamarin.com>
 //
-// Copyright (c) 2009 RemObjects Software
+// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,19 +23,21 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-
 using System;
-using Gtk;
+using System.Collections.Generic;
 
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Projects.Formats.MSBuild.Conditions
 {
-    public interface IPadContent : IDisposable
+	class ConditionedPropertyCollection : Dictionary<string, List<string>>
 	{
-        Widget Control { get; }
-
-        void Initialize (IPadWindow window);
-        void RedrawContent ();
+		public void AddProperty (string name, string value)
+		{
+			List<string> list;
+			if (!TryGetValue (name, out list))
+				Add (name, list = new List<string> ());
+			if (!list.Contains (value))
+				list.Add (value);
+		}
 	}
 }
+

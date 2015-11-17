@@ -30,6 +30,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Projects.Policies;
+using System.Linq;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
@@ -54,7 +55,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 		{
 			Document doc;
 			var formatter = GetFormatter (out doc);
-			info.Enabled = formatter != null && formatter.SupportsOnTheFlyFormatting;
+			info.Enabled = formatter != null;
 
 			if (formatter != null && formatter.SupportsPartialDocumentFormatting && doc.Editor.IsSomethingSelected) {
 				info.Text = GettextCatalog.GetString ("_Format Selection");
@@ -69,7 +70,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 				return;
 			var editor = doc.Editor;
 
-			if (editor.IsSomethingSelected) {
+			if (editor.IsSomethingSelected && formatter.SupportsPartialDocumentFormatting) {
 				ISegment selection = editor.SelectionRange;
 
 				using (var undo = editor.OpenUndoGroup ()) {
@@ -102,13 +103,23 @@ namespace MonoDevelop.Ide.CodeFormatting
 					formatter.OnTheFlyFormat (doc.Editor, doc, new TextSegment (0, doc.Editor.Length));
 				}
 			} else {
-				var text = doc.Editor.Text;
+				var text = editor.Text;
+				var oldOffsetWithoutWhitespaces = editor.GetTextBetween (0, editor.CaretOffset).Count (c => !char.IsWhiteSpace (c));
 				var policies = doc.Project != null ? doc.Project.Policies : PolicyService.DefaultPolicies;
 				string formattedText = formatter.FormatText (policies, text);
 				if (formattedText == null || formattedText == text)
 					return;
-
-				doc.Editor.ReplaceText (0, text.Length, formattedText);
+				
+				editor.ReplaceText (0, text.Length, formattedText);
+				text = editor.Text;
+				var currentOffsetWithoutWhitepspaces = 0;
+				int i = 0;
+				for (; i < text.Length && currentOffsetWithoutWhitepspaces < oldOffsetWithoutWhitespaces; i++) {
+					if (!char.IsWhiteSpace(text [i])) {
+						currentOffsetWithoutWhitepspaces++;
+					}
+				}
+				editor.SetCaretLocation (editor.OffsetToLocation (i));
 			}
 		}
 	}

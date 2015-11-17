@@ -236,6 +236,8 @@ namespace MonoDevelop.Ide.Editor
 		#endregion
 
 		double ZoomLevel { get; set; }
+		bool SuppressTooltips { get; set; }
+
 		event EventHandler ZoomLevelChanged;
 
 		void AddOverlay (Control messageOverlayContent, Func<int> sizeFunc);

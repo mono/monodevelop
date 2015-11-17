@@ -106,6 +106,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public abstract void SetGlobalProperty (object projectInstance, string property, string value);
 
 		public abstract void RemoveGlobalProperty (object projectInstance, string property);
+
+		public abstract IDictionary<string, List<string>> GetConditionedProperties (object projectInstance);
 	}
 }
 

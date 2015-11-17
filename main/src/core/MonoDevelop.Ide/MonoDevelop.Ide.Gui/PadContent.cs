@@ -1,10 +1,9 @@
-//
-// ContextMenuItemCollection.cs
+﻿// IPadContent.cs
 //
 // Author:
-//       Greg Munn <greg.munn@xamarin.com>
+//   Viktoria Dudka (viktoriad@remobjects.com)
 //
-// Copyright (c) 2015 Xamarin Inc
+// Copyright (c) 2009 RemObjects Software
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,16 +22,18 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+//
+//
 
 using System;
-using System.Collections.ObjectModel;
+using Gtk;
 
-namespace MonoDevelop.Components
+namespace MonoDevelop.Ide.Gui
 {
-	public class ContextMenuItemCollection: Collection<ContextMenuItem>
+    public interface IPadContent : IDisposable
 	{
-		internal ContextMenuItemCollection (ContextMenu parent)
-		{
-		}
+        Widget Control { get; }
+
+        void Initialize (IPadWindow window);
 	}
 }

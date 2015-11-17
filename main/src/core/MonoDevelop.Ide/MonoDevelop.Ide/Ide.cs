@@ -204,8 +204,6 @@ namespace MonoDevelop.Ide
 			workbench.Initialize (monitor);
 			monitor.Step (1);
 			
-			InternalLog.EnableErrorNotification ();
-
 			MonoDevelop.Ide.WelcomePage.WelcomePageService.Initialize ();
 			MonoDevelop.Ide.WelcomePage.WelcomePageService.ShowWelcomePage ();
 

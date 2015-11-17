@@ -162,7 +162,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 	
 	public class SolutionNodeCommandHandler: NodeCommandHandler
 	{
-		public override void RenameItem (string newName)
+		public override async void RenameItem (string newName)
 		{
 			if (newName.IndexOfAny (new char [] { '\'', '(', ')', '"', '{', '}', '|' } ) != -1) {
 				MessageService.ShowError (GettextCatalog.GetString ("Solution name may not contain any of the following characters: {0}", "', (, ), \", {, }, |"));
@@ -171,7 +171,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			
 			Solution sol = (Solution) CurrentNode.DataItem;
 			sol.Name = newName;
-			IdeApp.Workspace.SaveAsync();
+			await IdeApp.Workspace.SaveAsync();
 		}
 		
 		public override DragOperation CanDragNode ()
@@ -195,7 +195,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		}
 		
 		[CommandHandler (EditCommands.Delete)]
-		public void RemoveItem ()
+		public async void RemoveItem ()
 		{
 			Solution solution = CurrentNode.DataItem as Solution;
 			Workspace parent = CurrentNode.GetParentDataItem (typeof(Workspace), false) as Workspace;
@@ -205,7 +205,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			if (res == AlertButton.Remove) {
 				parent.Items.Remove (solution);
 				solution.Dispose ();
-				IdeApp.Workspace.SaveAsync();
+				await IdeApp.Workspace.SaveAsync();
 			}
 		}
 		

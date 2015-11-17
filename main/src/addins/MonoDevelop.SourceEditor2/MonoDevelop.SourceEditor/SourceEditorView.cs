@@ -153,7 +153,8 @@ namespace MonoDevelop.SourceEditor
 				while (markersToRemove.Count > 0) {
 					var _m = markersToRemove.Dequeue ();
 					currentErrorMarkers.Remove (_m);
-					widget.TextEditor.Document.RemoveMarker (_m);
+					if (_m.LineSegment != null)
+						widget.TextEditor.Document.RemoveMarker (_m);
 				}
 				removeMarkerTimeout = 0;
 				return false;
@@ -267,7 +268,8 @@ namespace MonoDevelop.SourceEditor
 
 			int startIndex = args.Offset;
 			foreach (var marker in currentErrorMarkers) {
-				if (marker.LineSegment.Contains (args.Offset) || marker.LineSegment.Contains (args.Offset + args.InsertionLength) || args.Offset < marker.LineSegment.Offset && marker.LineSegment.Offset < args.Offset + args.InsertionLength) {
+				var line = marker.LineSegment;
+				if (line == null || line.Contains (args.Offset) || line.Contains (args.Offset + args.InsertionLength) || args.Offset < line.Offset && line.Offset < args.Offset + args.InsertionLength) {
 					markersToRemove.Enqueue (marker);
 				}
 			}
@@ -564,16 +566,23 @@ namespace MonoDevelop.SourceEditor
 				Application.Invoke (delegate {
 					if (token.IsCancellationRequested)
 						return;
-					currentErrorMarkers = t.Result;
-					foreach (var marker in currentErrorMarkers) {
+					var newErrorMarkers = new List<MessageBubbleTextMarker> ();
+					foreach (var marker in t.Result) {
 						if (token.IsCancellationRequested)
 							return;
 						var lineSegment = widget.Document.GetLine (marker.Task.Line);
 						if (lineSegment == null)
 							continue;
-						marker.LineSegment = lineSegment;
-						widget.Document.AddMarker (lineSegment, marker, false);
+						var oldMarker = lineSegment.Markers.OfType<MessageBubbleTextMarker> ().FirstOrDefault ();
+						if (oldMarker != null) {
+							oldMarker.AddError (marker.Task, marker.Task.Severity == TaskSeverity.Error, marker.Task.Description);
+						} else {
+							marker.LineSegment = lineSegment;
+							widget.Document.AddMarker (lineSegment, marker, false);
+							newErrorMarkers.Add (marker);
+						}
 					}
+					this.currentErrorMarkers = newErrorMarkers;
 				});
 			});
 		}
@@ -2773,7 +2782,16 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-
+		bool ITextEditorImpl.SuppressTooltips {
+			get {
+				return TextEditor.GetTextEditorData ().SuppressTooltips;
+			}
+			set {
+				if (value)
+					TextEditor.HideTooltip ();
+				TextEditor.GetTextEditorData ().SuppressTooltips = value;
+			}
+		}
 
 		MonoDevelop.Ide.Editor.DocumentRegion ITextEditorImpl.SelectionRegion {
 			get {
