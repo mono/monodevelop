@@ -43,7 +43,6 @@ namespace MonoDevelop.Components.MainToolbar
 {
 	class CommandSearchCategory : SearchCategory
 	{
-		Widget widget;
 		static readonly List<Tuple<Command, string>> allCommands;
 
 		static CommandSearchCategory ()
@@ -55,7 +54,6 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public CommandSearchCategory (Widget widget) : base (GettextCatalog.GetString("Commands"))
 		{
-			this.widget = widget;
 		}
 
 		string[] validTags = new [] { "cmd", "command" };

@@ -284,12 +284,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			Unload (args.Item);
 		}
 
-		static void OnSolutionItemAdded (object sender, MonoDevelop.Projects.SolutionItemChangeEventArgs args)
+		static async void OnSolutionItemAdded (object sender, MonoDevelop.Projects.SolutionItemChangeEventArgs args)
 		{
 			var project = args.SolutionItem as MonoDevelop.Projects.Project;
 			if (project != null) {
 				var ws = GetWorkspace (project.ParentSolution);
-				ws.AddProject (project);
+				await ws.AddProject (project);
 			}
 		}
 

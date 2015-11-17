@@ -851,7 +851,7 @@ namespace MonoDevelop.Components
 			if (Platform.IsMac) {
 				try {
 					return gdk_window_has_embedded_nsview_focus (window.Handle);
-				} catch (Exception e) {
+				} catch (Exception) {
 					return false;
 				}
 			} else {

@@ -392,7 +392,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				project.ParentSolution.SingleStartup = true;
 				await IdeApp.ProjectOperations.SaveAsync (project.ParentSolution);
 			} else
-				project.ParentSolution.SaveUserProperties ();
+				await project.ParentSolution.SaveUserProperties ();
 		}
 		
 		public override void DeleteItem ()

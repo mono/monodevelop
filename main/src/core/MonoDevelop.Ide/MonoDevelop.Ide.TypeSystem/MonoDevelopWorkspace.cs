@@ -163,7 +163,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			CancelLoad ();
 			var token = src.Token;
 
-			var service = Services.GetService<IPersistentStorageService>();
 			Task.Run (async delegate {
 				try {
 					var si = await CreateSolutionInfo (currentMonoDevelopSolution, token).ConfigureAwait (false);
@@ -627,10 +626,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			OnDocumentOpened (documentId, monoDevelopSourceTextContainer); 
 		}
 
-		Solution newSolution;
 		public override bool TryApplyChanges (Solution newSolution)
 		{
-			this.newSolution = newSolution;
 			return base.TryApplyChanges (newSolution);
 		}
 

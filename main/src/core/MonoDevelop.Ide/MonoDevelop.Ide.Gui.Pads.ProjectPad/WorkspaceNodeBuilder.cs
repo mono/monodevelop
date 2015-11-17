@@ -179,7 +179,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 		[CommandHandler (EditCommands.Delete)]
 		[AllowMultiSelection]
-		public void RemoveItem ()
+		public async void RemoveItem ()
 		{
 			foreach (ITreeNavigator node in CurrentNodes) {
 				Workspace ws = node.DataItem as Workspace;
@@ -191,7 +191,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					ws.Dispose ();
 				}
 			}
-			IdeApp.Workspace.SaveAsync ();
+			await IdeApp.Workspace.SaveAsync ();
 		}
 		
 		[CommandUpdateHandler (EditCommands.Delete)]

@@ -60,8 +60,6 @@ namespace MonoDevelop.Components.Commands
 		LinkedList<Gtk.Window> topLevelWindows = new LinkedList<Gtk.Window> ();
 		Stack delegatorStack = new Stack ();
 
-		List<Gtk.Window> activeWindowStack = new List<Gtk.Window> ();
-
 		HashSet<object> visitedTargets = new HashSet<object> ();
 		
 		bool disposed;

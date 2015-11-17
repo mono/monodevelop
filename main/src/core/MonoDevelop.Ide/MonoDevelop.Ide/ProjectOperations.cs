@@ -604,7 +604,7 @@ namespace MonoDevelop.Ide
 			ShowOptions (entry, null);
 		}
 		
-		public void ShowOptions (WorkspaceObject entry, string panelId)
+		public async void ShowOptions (WorkspaceObject entry, string panelId)
 		{
 			if (entry is SolutionItem) {
 				var selectedProject = (SolutionItem) entry;
@@ -620,11 +620,11 @@ namespace MonoDevelop.Ide
 					if (MessageService.RunCustomDialog (optionsDialog) == (int)Gtk.ResponseType.Ok) {
 						foreach (object ob in optionsDialog.ModifiedObjects) {
 							if (ob is Solution) {
-								SaveAsync ((Solution)ob);
+								await SaveAsync ((Solution)ob);
 								return;
 							}
 						}
-						SaveAsync (selectedProject);
+						await SaveAsync (selectedProject);
 						IdeApp.Workspace.SavePreferences ();
 						IdeApp.Workbench.ReparseOpenDocuments ();
 					}
@@ -641,8 +641,8 @@ namespace MonoDevelop.Ide
 					if (panelId != null)
 						optionsDialog.SelectPanel (panelId);
 					if (MessageService.RunCustomDialog (optionsDialog) == (int) Gtk.ResponseType.Ok) {
-						SaveAsync (solution);
-						IdeApp.Workspace.SavePreferences (solution);
+						await SaveAsync (solution);
+						await IdeApp.Workspace.SavePreferences (solution);
 					}
 				} finally {
 					optionsDialog.Destroy ();
@@ -656,11 +656,11 @@ namespace MonoDevelop.Ide
 						optionsDialog.SelectPanel (panelId);
 					if (MessageService.RunCustomDialog (optionsDialog) == (int) Gtk.ResponseType.Ok) {
 						if (entry is IWorkspaceFileObject)
-							SaveAsync ((IWorkspaceFileObject) entry);
+							await SaveAsync ((IWorkspaceFileObject) entry);
 						else {
 							SolutionFolderItem si = entry as SolutionFolderItem;
 							if (si.ParentSolution != null)
-								SaveAsync (si.ParentSolution);
+								await SaveAsync (si.ParentSolution);
 						}
 						IdeApp.Workspace.SavePreferences ();
 					}

@@ -701,25 +701,17 @@ namespace MonoDevelop.Ide
 				reloadingCount--;
 		}
 
-		void CheckWorkspaceItems (object sender, FileEventArgs args)
+		async void CheckWorkspaceItems (object sender, FileEventArgs args)
 		{
 			HashSet<FilePath> files = new HashSet<FilePath> (args.Select (e => e.FileName.CanonicalPath));
 			foreach (Solution s in GetAllSolutions ().Where (sol => sol.GetItemFiles (false).Any (f => files.Contains (f.CanonicalPath))))
-				OnCheckWorkspaceItem (s);
+				await OnCheckWorkspaceItem (s);
 			
 			foreach (Project p in GetAllProjects ().Where (proj => proj.GetItemFiles (false).Any (f => files.Contains (f.CanonicalPath))))
-				OnCheckProject (p);
+				await OnCheckProject (p);
 		}
 		
-		bool OnRunProjectChecks ()
-		{
-			// If any project has been modified, reload it
-			foreach (WorkspaceItem it in new List<WorkspaceItem> (Items))
-				OnCheckWorkspaceItem (it);
-			return true;
-		}
-
-		void OnCheckWorkspaceItem (WorkspaceItem item)
+		async Task OnCheckWorkspaceItem (WorkspaceItem item)
 		{
 			if (item.NeedsReload) {
 				IEnumerable<string> closedDocs;
@@ -730,14 +722,14 @@ namespace MonoDevelop.Ide
 							SetReloading (true);
 							SavePreferences ();
 							CloseWorkspaceItem (item, false);
-							OpenWorkspaceItem (file, false, false);
+							await OpenWorkspaceItem (file, false, false);
 						} finally {
 							SetReloading (false);
 						}
 					}
 					else {
 						using (ProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true)) {
-							item.ParentWorkspace.ReloadItem (m, item);
+							await item.ParentWorkspace.ReloadItem (m, item);
 							ReattachDocumentProjects (closedDocs);
 						}
 					}
@@ -751,15 +743,15 @@ namespace MonoDevelop.Ide
 				Workspace ws = (Workspace) item;
 				List<WorkspaceItem> items = new List<WorkspaceItem> (ws.Items);
 				foreach (WorkspaceItem it in items)
-					OnCheckWorkspaceItem (it);
+					await OnCheckWorkspaceItem (it);
 			}
 			else if (item is Solution) {
 				Solution sol = (Solution) item;
-				OnCheckProject (sol.RootFolder);
+				await OnCheckProject (sol.RootFolder);
 			}
 		}
 		
-		void OnCheckProject (SolutionFolderItem entry)
+		async Task OnCheckProject (SolutionFolderItem entry)
 		{
 			if (entry.NeedsReload) {
 				IEnumerable projects = null;
@@ -774,7 +766,7 @@ namespace MonoDevelop.Ide
 				if (AllowReload (projects, out closedDocs)) {
 					using (ProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
 						// Root folders never need to reload
-						entry.ParentFolder.ReloadItem (m, entry);
+						await entry.ParentFolder.ReloadItem (m, entry);
 						ReattachDocumentProjects (closedDocs);
 					}
 					return;
@@ -787,7 +779,7 @@ namespace MonoDevelop.Ide
 				foreach (SolutionFolderItem ce in ((SolutionFolder)entry).Items)
 					ens.Add (ce);
 				foreach (SolutionFolderItem ce in ens)
-					OnCheckProject (ce);
+					await OnCheckProject (ce);
 			}
 		}
 		

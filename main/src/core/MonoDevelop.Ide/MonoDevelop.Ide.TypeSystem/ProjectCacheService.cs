@@ -438,7 +438,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			Action wrapped = () => {
 				try {
 					action ();
-				} catch (Exception e) {
+				} catch (Exception) {
 					throw new InvalidOperationException ("This program location is thought to be unreachable.");
 				}
 			};
@@ -462,7 +462,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			Func<TResult> wrapped = () => {
 				try {
 					return func ();
-				} catch (Exception e) {
+				} catch (Exception) {
 					throw new InvalidOperationException ("This program location is thought to be unreachable.");
 				}
 			};

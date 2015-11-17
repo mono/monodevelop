@@ -35,6 +35,5 @@ namespace MonoDevelop.Ide.Gui
         Widget Control { get; }
 
         void Initialize (IPadWindow window);
-        void RedrawContent ();
 	}
 }

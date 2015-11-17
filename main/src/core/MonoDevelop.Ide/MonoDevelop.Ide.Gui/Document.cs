@@ -64,7 +64,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		IWorkbenchWindow window;
 		ParsedDocument parsedDocument;
-		FilePath analysisDocumentFileName;
 		Microsoft.CodeAnalysis.DocumentId analysisDocument;
 
 		const int ParseDelay = 600;
@@ -764,7 +763,6 @@ namespace MonoDevelop.Ide.Gui
 				analysisDocument = null;
 				return SpecializedTasks.EmptyTask;
 			}
-			analysisDocumentFileName = FileName;
 			if (Project != null && Editor.MimeType == "text/x-csharp") {
 				RoslynWorkspace = TypeSystemService.GetWorkspace (this.Project.ParentSolution);
 				analysisDocument = TypeSystemService.GetDocumentId (this.Project, this.FileName);

@@ -422,7 +422,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			//sort, sinking obsolete items to the bottoms
 			//the string comparison is ordinal as that makes it an order of magnitude faster, which 
 			//which makes completion triggering noticeably more responsive
-			var list = completionDataList as CompletionDataList;
 			if (!completionDataList.IsSorted)
 				completionDataList.Sort (GetComparerForCompletionList (completionDataList));
 

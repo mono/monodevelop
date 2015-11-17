@@ -43,8 +43,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		CellRendererText   templateCellRenderer;
 		CellRendererImage pixbufCellRenderer;
 		TextEditor textEditor = TextEditorFactory.CreateNewEditor ();
-		ITextEditorOptions options;
-		
+
 		public CodeTemplatePanelWidget (OptionsDialog parent)
 		{
 			this.Build();
