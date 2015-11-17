@@ -71,7 +71,7 @@ namespace MonoDevelop.AssemblyBrowser
 				|| mimeType == "application/x-msdownload";
 		}
 		
-		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
+		public ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			return GetViewContent ();
 		}

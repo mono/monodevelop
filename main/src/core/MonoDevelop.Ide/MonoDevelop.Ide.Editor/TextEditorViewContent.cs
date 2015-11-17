@@ -1,4 +1,4 @@
-﻿//
+//
 // TextEditorViewContent.cs
 //
 // Author:
@@ -52,10 +52,10 @@ using System.Collections.Immutable;
 namespace MonoDevelop.Ide.Editor
 {
 	/// <summary>
-	/// The TextEditor object needs to be available through IBaseViewContent.GetContent therefore we need to insert a 
+	/// The TextEditor object needs to be available through BaseViewContent.GetContent therefore we need to insert a 
 	/// decorator in between.
 	/// </summary>
-	class TextEditorViewContent : IViewContent, ICommandRouter, IQuickTaskProvider
+	class TextEditorViewContent : ViewContent, ICommandRouter, IQuickTaskProvider
 	{
 		readonly TextEditor textEditor;
 		readonly ITextEditorImpl textEditorImpl;
@@ -74,6 +74,8 @@ namespace MonoDevelop.Ide.Editor
 			this.textEditor.MimeTypeChanged += UpdateTextEditorOptions;
 			DefaultSourceEditorOptions.Instance.Changed += UpdateTextEditorOptions;
 			this.textEditor.DocumentContextChanged += HandleDocumentContextChanged;
+
+			textEditorImpl.ViewContent.ContentChanged += (object sender, EventArgs e) => OnContentChanged (e);
 		}
 
 		void HandleDocumentContextChanged (object sender, EventArgs e)
@@ -86,6 +88,7 @@ namespace MonoDevelop.Ide.Editor
 
 		void HandleDirtyChanged (object sender, EventArgs e)
 		{
+			IsDirty = textEditorImpl.ViewContent.IsDirty;
 			InformAutoSave ();
 		}
 
@@ -110,7 +113,7 @@ namespace MonoDevelop.Ide.Editor
 				if (autoSaveTask != null && !autoSaveTask.IsCompleted)
 					return false;
 
-				autoSaveTask = AutoSave.InformAutoSaveThread (textEditor.CreateSnapshot (), textEditor.FileName, textEditorImpl.IsDirty);
+				autoSaveTask = AutoSave.InformAutoSaveThread (textEditor.CreateSnapshot (), textEditor.FileName, IsDirty);
 				autoSaveTimer = 0;
 				return false;
 			});
@@ -336,68 +339,27 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		public override void OnContentNameChanged (EventArgs e)
+		{
+			base.OnContentNameChanged (e);
+			textEditorImpl.ContentName = ContentName;
+		}
+
 
 		#region IViewFContent implementation
 
-		event EventHandler IViewContent.ContentNameChanged {
-			add {
-				textEditorImpl.ContentNameChanged += value;
-			}
-			remove {
-				textEditorImpl.ContentNameChanged -= value;
-			}
-		}
-
-		event EventHandler IViewContent.ContentChanged {
-			add {
-				textEditorImpl.ContentChanged += value;
-			}
-			remove {
-				textEditorImpl.ContentChanged -= value;
-			}
-		}
-
-		event EventHandler IViewContent.DirtyChanged {
-			add {
-				textEditorImpl.DirtyChanged += value;
-			}
-			remove {
-				textEditorImpl.DirtyChanged -= value;
-			}
-		}
-
-		event EventHandler IViewContent.BeforeSave {
-			add {
-				textEditorImpl.BeforeSave += value;
-			}
-			remove {
-				textEditorImpl.BeforeSave -= value;
-			}
-		}
-
-		void IViewContent.Load (FileOpenInformation fileOpenInformation)
+		public override void Load (FileOpenInformation fileOpenInformation)
 		{
-			this.textEditorImpl.DirtyChanged -= HandleDirtyChanged;
-			this.textEditor.TextChanged -= HandleTextChanged;
-			textEditorImpl.Load (fileOpenInformation);
+			textEditorImpl.ViewContent.DirtyChanged -= HandleDirtyChanged;
+			textEditor.TextChanged -= HandleTextChanged;
+			textEditorImpl.ViewContent.Load (fileOpenInformation);
 			RunFirstTimeFoldUpdate (textEditor.Text);
 			textEditorImpl.InformLoadComplete ();
-			this.textEditor.TextChanged += HandleTextChanged;
-			this.textEditorImpl.DirtyChanged += HandleDirtyChanged;
-		}
-		
-		void IViewContent.Load (string fileName)
-		{
-			this.textEditorImpl.DirtyChanged -= HandleDirtyChanged;
-			this.textEditor.TextChanged -= HandleTextChanged;
-			textEditorImpl.Load (new FileOpenInformation (fileName));
-			RunFirstTimeFoldUpdate (textEditor.Text);
-			textEditorImpl.InformLoadComplete ();
-			this.textEditor.TextChanged += HandleTextChanged;
-			this.textEditorImpl.DirtyChanged += HandleDirtyChanged;
+			textEditor.TextChanged += HandleTextChanged;
+			textEditorImpl.ViewContent.DirtyChanged += HandleDirtyChanged;
 		}
 
-		void IViewContent.LoadNew (System.IO.Stream content, string mimeType)
+		public override void LoadNew (Stream content, string mimeType)
 		{
 			textEditor.MimeType = mimeType;
 			string text = null;
@@ -413,114 +375,45 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.InformLoadComplete ();
 		}
 
-		void IViewContent.Save (FileSaveInformation fileSaveInformation)
+		public override void Save (FileSaveInformation fileSaveInformation)
 		{
 			if (!string.IsNullOrEmpty (fileSaveInformation.FileName))
 				AutoSave.RemoveAutoSaveFile (fileSaveInformation.FileName);
-			textEditorImpl.Save (fileSaveInformation);
+			textEditorImpl.ViewContent.Save (fileSaveInformation);
 		}
 
-		void IViewContent.Save (string fileName)
-		{
-			if (!string.IsNullOrEmpty (fileName))
-				AutoSave.RemoveAutoSaveFile (fileName);
-			textEditorImpl.Save (new FileSaveInformation (fileName));
-		}
-
-		void IViewContent.Save ()
+		public override void Save ()
 		{
 			if (!string.IsNullOrEmpty (textEditorImpl.ContentName))
 				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
-			textEditorImpl.Save ();
+			textEditorImpl.ViewContent.Save ();
 		}
 
-		void IViewContent.DiscardChanges ()
+		public override void DiscardChanges ()
 		{
 			if (autoSaveTask != null)
 				autoSaveTask.Wait (TimeSpan.FromSeconds (5));
 			RemoveAutoSaveTimer ();
 			if (!string.IsNullOrEmpty (textEditorImpl.ContentName))
 				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
-			textEditorImpl.DiscardChanges ();
+			textEditorImpl.ViewContent.DiscardChanges ();
 		}
 
-		public MonoDevelop.Projects.Project Project {
+		public override MonoDevelop.Projects.Project Project {
 			get {
-				return textEditorImpl.Project;
+				return textEditorImpl.ViewContent.Project;
 			}
 			set {
-				textEditorImpl.Project = value;
+				textEditorImpl.ViewContent.Project = value;
 				UpdateTextEditorOptions (null, null);
-			}
-		}
-
-		string IViewContent.PathRelativeToProject {
-			get {
-				return textEditorImpl.PathRelativeToProject;
-			}
-		}
-
-		string IViewContent.ContentName {
-			get {
-				return textEditorImpl.ContentName;
-			}
-			set {
-				textEditorImpl.ContentName = value;
-			}
-		}
-
-		string IViewContent.UntitledName {
-			get {
-				return textEditorImpl.UntitledName;
-			}
-			set {
-				textEditorImpl.UntitledName = value;
-			}
-		}
-
-		string IViewContent.StockIconId {
-			get {
-				return textEditorImpl.StockIconId;
-			}
-		}
-
-		bool IViewContent.IsUntitled {
-			get {
-				return textEditorImpl.IsUntitled;
-			}
-		}
-
-		bool IViewContent.IsViewOnly {
-			get {
-				return textEditorImpl.IsViewOnly;
-			}
-		}
-
-		bool IViewContent.IsFile {
-			get {
-				return textEditorImpl.IsFile;
-			}
-		}
-
-		bool IViewContent.IsDirty {
-			get {
-				return textEditorImpl.IsDirty;
-			}
-			set {
-				textEditorImpl.IsDirty = value;
-			}
-		}
-
-		bool IViewContent.IsReadOnly {
-			get {
-				return textEditorImpl.IsReadOnly;
 			}
 		}
 
 		#endregion
 
-		#region IBaseViewContent implementation
-		object IBaseViewContent.GetContent (Type type)
+		#region BaseViewContent implementation
+
+		public override object GetContent (Type type)
 		{
 			if (type.IsAssignableFrom (typeof(TextEditor)))
 				return textEditor;
@@ -530,10 +423,10 @@ namespace MonoDevelop.Ide.Editor
 					return ext;
 				ext = ext.Next;
 			}
-			return textEditorImpl.GetContent (type);
+			return textEditorImpl.ViewContent.GetContent (type);
 		}
 
-		public virtual IEnumerable<T> GetContents<T> () where T : class
+		public override IEnumerable<T> GetContents<T> ()
 		{
 			if (typeof(T) == typeof(TextEditor)) {
 				yield return (T)(object)textEditor;
@@ -551,39 +444,26 @@ namespace MonoDevelop.Ide.Editor
 				}
 				ext = ext.Next;
 			}
-			foreach (var cnt in textEditorImpl.GetContents<T> ()) {
+			foreach (var cnt in textEditorImpl.ViewContent.GetContents<T> ()) {
 				yield return cnt;
 			}
 		}
 
-		bool IBaseViewContent.CanReuseView (string fileName)
+		protected override void OnWorkbenchWindowChanged (EventArgs e)
 		{
-			return textEditorImpl.CanReuseView (fileName);
+			base.OnWorkbenchWindowChanged (e);
+			textEditorImpl.ViewContent.WorkbenchWindow = WorkbenchWindow;
 		}
 
-		void IBaseViewContent.RedrawContent ()
-		{
-			textEditorImpl.RedrawContent ();
-		}
-
-		IWorkbenchWindow IBaseViewContent.WorkbenchWindow {
-			get {
-				return textEditorImpl.WorkbenchWindow;
-			}
-			set {
-				textEditorImpl.WorkbenchWindow = value;
-			}
-		}
-
-		Control IBaseViewContent.Control {
+		public override Control Control {
 			get {
 				return textEditor;
 			}
 		}
 
-		string IBaseViewContent.TabPageLabel {
+		public override string TabPageLabel {
 			get {
-				return textEditorImpl.TabPageLabel;
+				return textEditorImpl.ViewContent.TabPageLabel;
 			}
 		}
 
@@ -591,13 +471,17 @@ namespace MonoDevelop.Ide.Editor
 
 		#region IDisposable implementation
 		bool isDisposed;
-		void IDisposable.Dispose ()
+
+		public override void Dispose ()
 		{
 			if (isDisposed)
 				return;
+			
+			base.Dispose ();
+
 			isDisposed = true;
 			CancelDocumentParsedUpdate ();
-			textEditorImpl.DirtyChanged -= HandleDirtyChanged;
+			textEditorImpl.ViewContent.DirtyChanged -= HandleDirtyChanged;
 			textEditor.MimeTypeChanged -= UpdateTextEditorOptions;
 			textEditor.TextChanged -= HandleTextChanged;
 			textEditor.DocumentContextChanged -= HandleDocumentContextChanged;

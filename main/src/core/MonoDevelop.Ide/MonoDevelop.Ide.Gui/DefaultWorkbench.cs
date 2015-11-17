@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.Gui
 		List<string> layouts = new List<string> ();
 		
 		List<PadCodon> padContentCollection      = new List<PadCodon> ();
-		List<IViewContent> viewContentCollection = new List<IViewContent> ();
+		List<ViewContent> viewContentCollection = new List<ViewContent> ();
 		Dictionary<PadCodon, IPadWindow> padWindows = new Dictionary<PadCodon, IPadWindow> ();
 		Dictionary<IPadWindow, PadCodon> padCodons = new Dictionary<IPadWindow, PadCodon> ();
 		
@@ -195,7 +195,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		internal List<IViewContent> InternalViewContentCollection {
+		internal List<ViewContent> InternalViewContentCollection {
 			get {
 				Debug.Assert(viewContentCollection != null);
 				return viewContentCollection;
@@ -311,7 +311,7 @@ namespace MonoDevelop.Ide.Gui
 			topMenu = null;
 		}
 		
-		public void CloseContent (IViewContent content)
+		public void CloseContent (ViewContent content)
 		{
 			if (viewContentCollection.Contains(content)) {
 				if (content.Project != null)
@@ -324,8 +324,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			try {
 				closeAll = true;
-				List<IViewContent> fullList = new List<IViewContent>(viewContentCollection);
-				foreach (IViewContent content in fullList) {
+				List<ViewContent> fullList = new List<ViewContent>(viewContentCollection);
+				foreach (ViewContent content in fullList) {
 					IWorkbenchWindow window = content.WorkbenchWindow;
 					if (window != null)
 						window.CloseWindow(true);
@@ -336,7 +336,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		private Xwt.Drawing.Image PrepareShowView (IViewContent content)
+		private Xwt.Drawing.Image PrepareShowView (ViewContent content)
 		{
 			viewContentCollection.Add (content);
 
@@ -365,7 +365,7 @@ namespace MonoDevelop.Ide.Gui
 			return mimeimage;
 		}
 
-		public virtual void ShowView (IViewContent content, bool bringToFront, IViewDisplayBinding binding = null, DockNotebook notebook = null)
+		public virtual void ShowView (ViewContent content, bool bringToFront, IViewDisplayBinding binding = null, DockNotebook notebook = null)
 		{
 			bool isFile = content.IsFile;
 			if (!isFile) {
@@ -557,7 +557,7 @@ namespace MonoDevelop.Ide.Gui
 			return BrandingService.ApplicationName;
 		}
 		
-		public Properties GetStoredMemento (IViewContent content)
+		public Properties GetStoredMemento (ViewContent content)
 		{
 			if (content != null && content.ContentName != null) {
 				string directory = UserProfile.Current.CacheDir.Combine ("temp");
@@ -619,15 +619,15 @@ namespace MonoDevelop.Ide.Gui
 		{
 			foreach (FileEventInfo e in args) {
 				if (e.IsDirectory) {
-					IViewContent[] views = new IViewContent [viewContentCollection.Count];
+					ViewContent[] views = new ViewContent [viewContentCollection.Count];
 					viewContentCollection.CopyTo (views, 0);
-					foreach (IViewContent content in views) {
+					foreach (ViewContent content in views) {
 						if (content.ContentName.StartsWith (e.FileName)) {
 							((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true);
 						}
 					}
 				} else {
-					foreach (IViewContent content in viewContentCollection) {
+					foreach (ViewContent content in viewContentCollection) {
 						if (content.ContentName != null &&
 							content.ContentName == e.FileName) {
 							((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true);
@@ -642,13 +642,13 @@ namespace MonoDevelop.Ide.Gui
 		{
 			foreach (FileCopyEventInfo e in args) {
 				if (e.IsDirectory) {
-					foreach (IViewContent content in viewContentCollection) {
+					foreach (ViewContent content in viewContentCollection) {
 						if (content.ContentName != null && ((FilePath)content.ContentName).IsChildPathOf (e.SourceFile)) {
 							content.ContentName = e.TargetFile.Combine (((FilePath) content.ContentName).FileName);
 						}
 					}
 				} else {
-					foreach (IViewContent content in viewContentCollection) {
+					foreach (ViewContent content in viewContentCollection) {
 						if (content.ContentName != null &&
 						    content.ContentName == e.SourceFile) {
 							content.ContentName = e.TargetFile;
@@ -700,7 +700,7 @@ namespace MonoDevelop.Ide.Gui
 
 			bool showDirtyDialog = false;
 
-			foreach (IViewContent content in viewContentCollection)
+			foreach (ViewContent content in viewContentCollection)
 			{
 				if (content.IsDirty) {
 					showDirtyDialog = true;

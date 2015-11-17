@@ -1,4 +1,4 @@
-// AbstractBaseViewContent.cs
+// BaseViewContent.cs
 //
 // Author:
 //   Viktoria Dudka (viktoriad@remobjects.com)
@@ -33,11 +33,11 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public abstract class AbstractBaseViewContent : IBaseViewContent
+	public abstract class BaseViewContent: IDisposable
 	{
 		IWorkbenchWindow workbenchWindow = null;
 		
-		#region IBaseViewContent Members
+		#region BaseViewContent Members
 
 		public abstract Control Control { get; }
 		
@@ -95,6 +95,23 @@ namespace MonoDevelop.Ide.Gui
 			if (WorkbenchWindowChanged != null) {
 				WorkbenchWindowChanged (this, e);
 			}
+		}
+
+
+		public virtual void Selected ()
+		{
+		}
+
+		public virtual void Deselected ()
+		{
+		}
+
+		public virtual void BeforeSave ()
+		{
+		}
+
+		public virtual void BaseContentChanged ()
+		{
 		}
 	}
 }

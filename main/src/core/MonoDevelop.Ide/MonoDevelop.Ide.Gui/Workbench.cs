@@ -344,12 +344,12 @@ namespace MonoDevelop.Ide.Gui
 		static AlertButton PromptToSaveChanges (Document doc)
 		{
 			return MessageService.GenericAlert (MonoDevelop.Ide.Gui.Stock.Warning,
-				GettextCatalog.GetString ("Save the changes to document '{0}' before creating a new solution?",
-					doc.Window.ViewContent.IsUntitled
+                GettextCatalog.GetString ("Save the changes to document '{0}' before creating a new solution?",
+(object)(doc.Window.ViewContent.IsUntitled
 					? doc.Window.ViewContent.UntitledName
-					: System.IO.Path.GetFileName (doc.FileName)),
+					: System.IO.Path.GetFileName (doc.FileName))),
 				"",
-				AlertButton.Cancel, doc.Window.ViewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
+                AlertButton.Cancel, doc.Window.ViewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
 		}
 		
 		public void CloseAllDocuments (bool leaveActiveDocumentOpen)
@@ -522,7 +522,7 @@ namespace MonoDevelop.Ide.Gui
 				if (info.Options.HasFlag (OpenDocumentOptions.TryToReuseViewer)) {
 					Counters.OpenDocumentTimer.Trace ("Look for open document");
 					foreach (Document doc in Documents) {
-						IBaseViewContent vcFound = null;
+						BaseViewContent vcFound = null;
 
 						//search all ViewContents to see if they can "re-use" this filename
 						if (doc.Window.ViewContent.CanReuseView (info.FileName))
@@ -578,7 +578,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		IViewContent BatchOpenDocument (ProgressMonitor monitor, FilePath fileName, Project project, int line, int column, DockNotebook dockNotebook)
+		ViewContent BatchOpenDocument (ProgressMonitor monitor, FilePath fileName, Project project, int line, int column, DockNotebook dockNotebook)
 		{
 			if (string.IsNullOrEmpty (fileName))
 				return null;
@@ -597,7 +597,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public Document OpenDocument (IViewContent content, bool bringToFront)
+		public Document OpenDocument (ViewContent content, bool bringToFront)
 		{
 			workbench.ShowView (content, bringToFront);
 			if (bringToFront)
@@ -625,7 +625,7 @@ namespace MonoDevelop.Ide.Gui
 			if (binding == null)
 				throw new ApplicationException("Can't create display binding for mime type: " + mimeType);				
 			
-			IViewContent newContent = binding.CreateContent (defaultName, mimeType, null);
+			ViewContent newContent = binding.CreateContent (defaultName, mimeType, null);
 			using (content) {
 				newContent.LoadNew (content, mimeType);
 			}
@@ -802,13 +802,13 @@ namespace MonoDevelop.Ide.Gui
 		{
 			IWorkbenchWindow window = (IWorkbenchWindow) sender;
 			if (!args.Forced && window.ViewContent != null && window.ViewContent.IsDirty) {
-				AlertButton result = MessageService.GenericAlert (Stock.Warning,
-					GettextCatalog.GetString ("Save the changes to document '{0}' before closing?",
-						window.ViewContent.IsUntitled
+                AlertButton result = MessageService.GenericAlert (Stock.Warning,
+                    GettextCatalog.GetString ("Save the changes to document '{0}' before closing?",
+(object)(window.ViewContent.IsUntitled
 							? window.ViewContent.UntitledName
-							: System.IO.Path.GetFileName (window.ViewContent.ContentName)), 
-				    GettextCatalog.GetString ("If you don't save, all changes will be permanently lost."),
-				    AlertButton.CloseWithoutSave, AlertButton.Cancel, window.ViewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
+							: System.IO.Path.GetFileName ((string)window.ViewContent.ContentName))),
+                    GettextCatalog.GetString ("If you don't save, all changes will be permanently lost."),
+                    AlertButton.CloseWithoutSave, AlertButton.Cancel, window.ViewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
 				if (result == AlertButton.Save || result == AlertButton.SaveAs) {
 					FindDocument (window).Save ();
 					args.Cancel = window.ViewContent.IsDirty;
@@ -1044,7 +1044,7 @@ namespace MonoDevelop.Ide.Gui
 				IdeApp.Workbench.LockActiveWindowChangeEvent ();
 				NavigationHistoryService.LogActiveDocument ();
 				
-				List<Tuple<IViewContent,string>> docViews = new List<Tuple<IViewContent,string>> ();
+				List<Tuple<ViewContent,string>> docViews = new List<Tuple<ViewContent,string>> ();
 				FilePath baseDir = args.Item.BaseDirectory;
 				var floatingWindows = new List<DockWindow> ();
 
@@ -1102,7 +1102,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		void OpenDocumentsInContainer (ProgressMonitor pm, FilePath baseDir, List<Tuple<IViewContent,string>> docViews, List<DocumentUserPrefs> list, DockNotebookContainer container)
+		void OpenDocumentsInContainer (ProgressMonitor pm, FilePath baseDir, List<Tuple<ViewContent,string>> docViews, List<DocumentUserPrefs> list, DockNotebookContainer container)
 		{
 			int currentNotebook = -1;
 			DockNotebook nb = container.GetFirstNotebook ();
@@ -1119,7 +1119,7 @@ namespace MonoDevelop.Ide.Gui
 					var view = IdeApp.Workbench.BatchOpenDocument (pm, fileName, null, doc.Line, doc.Column, nb);
 
 					if (view != null) {
-						var t = new Tuple<IViewContent,string> (view, fileName);
+						var t = new Tuple<ViewContent,string> (view, fileName);
 						docViews.Add (t);
 					}
 				}
@@ -1149,7 +1149,7 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void ReorderDocuments (int oldPlacement, int newPlacement)
 		{
-			IViewContent content = workbench.InternalViewContentCollection[oldPlacement];
+			ViewContent content = workbench.InternalViewContentCollection[oldPlacement];
 			workbench.InternalViewContentCollection.RemoveAt (oldPlacement);
 			workbench.InternalViewContentCollection.Insert (newPlacement, content);
 
@@ -1352,7 +1352,7 @@ namespace MonoDevelop.Ide.Gui
 		public int Line { get; set; }
 		public int Column { get; set; }
 		public IViewDisplayBinding DisplayBinding { get; set; }
-		public IViewContent NewContent { get; set; }
+		public ViewContent NewContent { get; set; }
 		public Encoding Encoding { get; set; }
 		public Project Project { get; set; }
 
@@ -1439,7 +1439,7 @@ namespace MonoDevelop.Ide.Gui
 		FileOpenInformation fileInfo;
 		DefaultWorkbench workbench;
 		ProgressMonitor monitor;
-		IViewContent newContent;
+		ViewContent newContent;
 		
 		public LoadFileWrapper (ProgressMonitor monitor, DefaultWorkbench workbench, IViewDisplayBinding binding, FileOpenInformation fileInfo)
 		{

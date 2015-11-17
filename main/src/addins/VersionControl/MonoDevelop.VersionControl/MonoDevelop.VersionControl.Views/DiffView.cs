@@ -32,7 +32,7 @@ using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	public interface IDiffView : IAttachableViewContent
+	public interface IDiffView
 	{
 	}
 	
@@ -90,7 +90,7 @@ namespace MonoDevelop.VersionControl.Views
 			return editor.YToLine (midY);
 		}
 		
-		public void Selected ()
+		public override void Selected ()
 		{
 			info.Start ();
 			ComparisonWidget.UpdateLocalText ();
@@ -120,7 +120,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		public void Deselected ()
+		public override void Deselected ()
 		{
 			var sourceEditor = info.Document.GetContent <MonoDevelop.SourceEditor.SourceEditorView> ();
 			if (sourceEditor != null) {
@@ -132,14 +132,6 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		public void BeforeSave ()
-		{
-		}
-
-		public void BaseContentChanged ()
-		{
-		}
-		
 		#endregion
 		
 		#region IUndoHandler implementation

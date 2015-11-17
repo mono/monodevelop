@@ -29,7 +29,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	public interface IMergeView : IAttachableViewContent
+	public interface IMergeView
 	{
 	}
 	
@@ -54,22 +54,10 @@ namespace MonoDevelop.VersionControl.Views
 			this.info = info;
 		}
 
-		public void Selected ()
+		public override void Selected ()
 		{
 			widget.UpdateLocalText ();
 			widget.info.Start ();
-		}
-		
-		public void Deselected ()
-		{
-		}
-
-		public void BeforeSave ()
-		{
-		}
-
-		public void BaseContentChanged ()
-		{
 		}
 	}
 }

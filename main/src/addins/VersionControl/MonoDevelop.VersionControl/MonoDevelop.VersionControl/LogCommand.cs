@@ -40,8 +40,8 @@ namespace MonoDevelop.VersionControl
 		{
 			// We want directories to be able to view the log for an entire directory
 			// by selecting it from the solution pane
-			return item.VersionInfo.IsVersioned
-				&& AddinManager.GetExtensionObjects<ILogViewHandler> (LogViewHandlers).Any (h => h.CanHandle (item, null));
+			return item.VersionInfo.IsVersioned && 
+				       AddinManager.GetExtensionObjects<IVersionControlViewHandler> (LogViewHandlers).Any (h => h.CanHandle (item, null));
 		}
 		
 		public static bool Show (VersionControlItemList items, bool test)

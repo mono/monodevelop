@@ -1,4 +1,4 @@
-// IBaseViewContent.cs
+// BaseViewContent.cs
 //
 // Author:
 //   Viktoria Dudka (viktoriad@remobjects.com)
@@ -32,7 +32,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public interface IBaseViewContent : IDisposable
+	public interface BaseViewContent2 : IDisposable
 	{
 		IWorkbenchWindow WorkbenchWindow { get; set; }
 		Control Control { get; }

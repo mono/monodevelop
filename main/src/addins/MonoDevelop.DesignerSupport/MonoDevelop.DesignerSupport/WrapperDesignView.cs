@@ -1,5 +1,5 @@
 //
-// WrapperDesignView.cs: base class for wrapping an IViewContent. Heavily based on 
+// WrapperDesignView.cs: base class for wrapping an ViewContent. Heavily based on 
 //         MonoDevelop.GtkCore.GuiBuilder.CombinedDesignView
 //
 // Author:
@@ -38,13 +38,13 @@ using MonoDevelop.Ide;
 namespace MonoDevelop.DesignerSupport
 {
 	
-	public class WrapperDesignView : AbstractViewContent
+	public class WrapperDesignView : ViewContent
 	{
-		IViewContent content;
+		ViewContent content;
 		Gtk.VBox contentBox;
 		Gtk.Widget topBar;
 		
-		public WrapperDesignView  (IViewContent content)
+		public WrapperDesignView  (ViewContent content)
 		{
 			this.content = content;
 			this.contentBox = new Gtk.VBox ();
@@ -77,7 +77,7 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 		
-		protected IViewContent Content {
+		protected ViewContent Content {
 			get { return content; }
 		}
 		

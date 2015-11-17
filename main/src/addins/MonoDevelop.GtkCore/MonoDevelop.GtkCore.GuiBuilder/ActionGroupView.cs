@@ -50,7 +50,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		Stetic.ActionGroupInfo groupInfo;
 		string groupName;
 		
-		public ActionGroupView (IViewContent content, Stetic.ActionGroupInfo group, GuiBuilderProject project): base (content)
+		public ActionGroupView (ViewContent content, Stetic.ActionGroupInfo group, GuiBuilderProject project): base (content)
 		{
 			groupName = group.Name;
 			this.project = project;

@@ -41,13 +41,13 @@ using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class CombinedDesignView : AbstractViewContent
+	public class CombinedDesignView : ViewContent
 	{
-		IViewContent content;
+		ViewContent content;
 		Gtk.Widget control;
 		List<TabView> tabs = new List<TabView> ();
 		
-		public CombinedDesignView (IViewContent content)
+		public CombinedDesignView (ViewContent content)
 		{
 			this.content = content;
 	/* This code causes that chagnes in a version control view always select the source code view.
@@ -256,7 +256,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		}
 	}
 	
-	class TabView: AbstractBaseViewContent, IAttachableViewContent
+	class TabView: BaseViewContent
 	{
 		string label;
 		Gtk.Widget content;
@@ -274,24 +274,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return base.GetContent (type);
 		}
 		
-		#region IAttachableViewContent implementation
-		public virtual void Selected ()
-		{
-		}
-
-		public virtual void Deselected ()
-		{
-		}
-
-		public virtual void BeforeSave ()
-		{
-		}
-
-		public virtual void BaseContentChanged ()
-		{
-		}
-		#endregion
-
 		public override Control Control {
 			get {
 				return content;

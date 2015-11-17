@@ -44,16 +44,16 @@ namespace MonoDevelop.Ide.Gui
 	internal class SdiWorkspaceWindow : EventBox, IWorkbenchWindow, ICommandDelegatorRouter
 	{
 		DefaultWorkbench workbench;
-		IViewContent content;
+		ViewContent content;
 		ExtensionContext extensionContext;
 		FileTypeCondition fileTypeCondition = new FileTypeCondition ();
 		
-		List<IBaseViewContent> viewContents = new List<IBaseViewContent> ();
+		List<BaseViewContent> viewContents = new List<BaseViewContent> ();
 		Notebook subViewNotebook = null;
 		Tabstrip subViewToolbar = null;
 		PathBar pathBar = null;
 		HBox toolbarBox = null;
-		Dictionary<IBaseViewContent,DocumentToolbar> documentToolbars = new Dictionary<IBaseViewContent, DocumentToolbar> ();
+		Dictionary<BaseViewContent,DocumentToolbar> documentToolbars = new Dictionary<BaseViewContent, DocumentToolbar> ();
 
 		VBox box;
 		DockNotebookTab tab;
@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Gui
 			SetDockNotebookTabTitle ();
 		}
 
-		public SdiWorkspaceWindow (DefaultWorkbench workbench, IViewContent content, DockNotebook tabControl, DockNotebookTab tabLabel) : base ()
+		public SdiWorkspaceWindow (DefaultWorkbench workbench, ViewContent content, DockNotebook tabControl, DockNotebookTab tabLabel) : base ()
 		{
 			this.workbench = workbench;
 			this.tabControl = tabControl;
@@ -205,15 +205,15 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public IEnumerable<IAttachableViewContent> SubViewContents {
+		public IEnumerable<BaseViewContent> SubViewContents {
 			get {
-				return viewContents.OfType<IAttachableViewContent> ();
+				return viewContents.OfType<BaseViewContent> ();
 			}
 		}
 		
 		// caution use activeView with care !!
-		IBaseViewContent activeView = null;
-		public IBaseViewContent ActiveViewContent {
+		BaseViewContent activeView = null;
+		public BaseViewContent ActiveViewContent {
 			get {
 				if (activeView != null)
 					return activeView;
@@ -233,7 +233,7 @@ namespace MonoDevelop.Ide.Gui
 				ShowPage (viewNumber);
 		}
 
-		public void SwitchView (IAttachableViewContent view)
+		public void SwitchView (BaseViewContent view)
 		{
 			if (subViewNotebook != null)
 				ShowPage (viewContents.IndexOf (view));
@@ -359,7 +359,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public DocumentToolbar GetToolbar (IBaseViewContent targetView)
+		public DocumentToolbar GetToolbar (BaseViewContent targetView)
 		{
 			DocumentToolbar toolbar;
 			if (!documentToolbars.TryGetValue (targetView, out toolbar)) {
@@ -375,13 +375,13 @@ namespace MonoDevelop.Ide.Gui
 
 		void BeforeSave(object sender, EventArgs e)
 		{
-			IAttachableViewContent secondaryViewContent = ActiveViewContent as IAttachableViewContent;
+			BaseViewContent secondaryViewContent = ActiveViewContent as BaseViewContent;
 			if (secondaryViewContent != null) {
 				secondaryViewContent.BeforeSave ();
 			}
 		}
 		
-		public IViewContent ViewContent {
+		public ViewContent ViewContent {
 			get {
 				return content;
 			}
@@ -419,7 +419,7 @@ namespace MonoDevelop.Ide.Gui
 					myUntitledTitle = baseName + System.IO.Path.GetExtension (content.UntitledName);
 					while (found) {
 						found = false;
-						foreach (IViewContent windowContent in workbench.InternalViewContentCollection) {
+						foreach (ViewContent windowContent in workbench.InternalViewContentCollection) {
 							string title = windowContent.WorkbenchWindow.Title;
 							if (title.EndsWith("+")) {
 								title = title.Substring(0, title.Length - 1);
@@ -451,7 +451,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void OnContentChanged (object o, EventArgs e)
 		{
-			foreach (IAttachableViewContent subContent in SubViewContents) {
+			foreach (BaseViewContent subContent in SubViewContents) {
 				subContent.BaseContentChanged ();
 			}
 		}
@@ -485,7 +485,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 
 			if (viewContents != null) {
-				foreach (IAttachableViewContent sv in SubViewContents) {
+				foreach (BaseViewContent sv in SubViewContents) {
 					sv.Dispose ();
 				}
 				viewContents = null;
@@ -591,12 +591,12 @@ namespace MonoDevelop.Ide.Gui
 
 		#endregion
 
-		public void AttachViewContent (IAttachableViewContent subViewContent)
+		public void AttachViewContent (BaseViewContent subViewContent)
 		{
 			InsertViewContent (viewContents.Count, subViewContent);
 		}
 
-		public void InsertViewContent (int index, IAttachableViewContent subViewContent)
+		public void InsertViewContent (int index, BaseViewContent subViewContent)
 		{
 			// need to create child Notebook when first IAttachableViewContent is added
 			CheckCreateSubViewContents ();
@@ -611,13 +611,13 @@ namespace MonoDevelop.Ide.Gui
 				ViewsChanged (this, EventArgs.Empty);
 		}
 
-		protected Tab AddButton (string label, IBaseViewContent viewContent)
+		protected Tab AddButton (string label, BaseViewContent viewContent)
 		{
 			return InsertButton (viewContents.Count, label, viewContent);
 		}
 
 		bool updating = false;
-		protected Tab InsertButton (int index, string label, IBaseViewContent viewContent)
+		protected Tab InsertButton (int index, string label, BaseViewContent viewContent)
 		{
 			CheckCreateSubViewToolbar ();
 			updating = true;
@@ -643,7 +643,7 @@ namespace MonoDevelop.Ide.Gui
 					addedContent = true;
 				}
 
-				int page = viewContents.IndexOf ((IBaseViewContent) tab.Tag);
+				int page = viewContents.IndexOf ((BaseViewContent) tab.Tag);
 				SetCurrentView (page);
 				QueueDraw ();
 			};
@@ -724,26 +724,26 @@ namespace MonoDevelop.Ide.Gui
 		
 		void SetCurrentView (int newIndex)
 		{
-			IAttachableViewContent subViewContent;
+			BaseViewContent subViewContent;
 
 			int oldIndex = subViewNotebook.CurrentPage;
 			subViewNotebook.CurrentPage = newIndex;
 
 			if (oldIndex != -1) {
-				subViewContent = viewContents[oldIndex] as IAttachableViewContent;
+				subViewContent = viewContents[oldIndex] as BaseViewContent;
 				if (subViewContent != null)
 					subViewContent.Deselected ();
 			}
 
-			subViewContent = viewContents[newIndex] as IAttachableViewContent;
+			subViewContent = viewContents[newIndex] as BaseViewContent;
 
 			DetachFromPathedDocument ();
 			
 			MonoDevelop.Ide.Gui.Content.IPathedDocument pathedDocument;
-			if (newIndex < 0 || newIndex == viewContents.IndexOf (ViewContent)) {
-				pathedDocument = Document != null ? Document.GetContent<IPathedDocument> () : (IPathedDocument) ViewContent.GetContent (typeof(IPathedDocument));
+			if (newIndex < 0 || newIndex == viewContents.IndexOf ((BaseViewContent)ViewContent)) {
+				pathedDocument = Document != null ? Document.GetContent<IPathedDocument> () : (IPathedDocument)ViewContent.GetContent (typeof(IPathedDocument));
 			} else {
-				pathedDocument = (IPathedDocument) viewContents[newIndex].GetContent (typeof(IPathedDocument));
+				pathedDocument = (IPathedDocument)viewContents[newIndex].GetContent (typeof(IPathedDocument));
 			}
 
 			var toolbarVisible = false;
@@ -776,12 +776,8 @@ namespace MonoDevelop.Ide.Gui
 			if (((Gtk.Window)Toplevel).HasToplevelFocus)
 				DockNotebook.ActiveNotebook = (SdiDragNotebook)Parent.Parent;
 
-			Gtk.Widget w = content as Gtk.Widget;
-			if (w != this.tabPage) {
-				// Route commands to the view
-				return ActiveViewContent;
-			} else
-				return null;
+			// Route commands to the view
+			return ActiveViewContent;
 		}
 
 		void SetDockNotebookTabTitle ()

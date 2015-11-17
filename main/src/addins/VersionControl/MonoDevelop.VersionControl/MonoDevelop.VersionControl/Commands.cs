@@ -243,7 +243,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 
-	class CurrentFileViewHandler<T> : FileVersionControlCommandHandler where T:IAttachableViewContent
+	class CurrentFileViewHandler<T> : FileVersionControlCommandHandler
 	{
 		protected override bool RunCommand (VersionControlItemList items, bool test)
 		{

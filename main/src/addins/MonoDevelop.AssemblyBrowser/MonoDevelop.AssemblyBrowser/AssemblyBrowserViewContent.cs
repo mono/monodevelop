@@ -41,7 +41,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	class AssemblyBrowserViewContent : AbstractViewContent, IOpenNamedElementHandler, INavigable
+	class AssemblyBrowserViewContent : ViewContent, IOpenNamedElementHandler, INavigable
 	{
 		readonly static string[] defaultAssemblies = new string[] { "mscorlib", "System", "System.Core", "System.Xml" };
 		AssemblyBrowserWidget widget;

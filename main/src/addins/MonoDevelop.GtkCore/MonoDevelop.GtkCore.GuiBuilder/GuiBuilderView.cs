@@ -63,7 +63,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		string rootName;
 		object designerStatus;
 		
-		public GuiBuilderView (IViewContent content, GuiBuilderWindow window): base (content)
+		public GuiBuilderView (ViewContent content, GuiBuilderWindow window): base (content)
 		{
 			rootName = window.Name;
 			

@@ -39,7 +39,7 @@ using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Gettext.Editor
 {
-	class CatalogEditorView : AbstractViewContent, IUndoHandler
+	class CatalogEditorView : ViewContent, IUndoHandler
 	{
 		Catalog catalog;
 		POEditorWidget poEditorWidget;

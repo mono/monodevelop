@@ -46,7 +46,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Debugger
 {
-	public class DisassemblyView: AbstractViewContent, IClipboardHandler
+	public class DisassemblyView: ViewContent, IClipboardHandler
 	{
 		Gtk.ScrolledWindow sw;
 		TextEditor editor;

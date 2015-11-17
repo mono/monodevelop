@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Gui
 	///<summary>A display binding that opens a new view within the workspace.</summary>
 	public interface IViewDisplayBinding : IDisplayBinding
 	{
-		IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject);
+		ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject);
 		string Name { get; }
 	}
 	
@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Gui
 	///<summary>A display binding that attaches to an existing view in the workspace.</summary>
 	public interface IAttachableDisplayBinding
 	{
-		bool CanAttachTo (IViewContent content);
-		IAttachableViewContent CreateViewContent (IViewContent viewContent);
+		bool CanAttachTo (ViewContent content);
+		BaseViewContent CreateViewContent (ViewContent viewContent);
 	}
 }

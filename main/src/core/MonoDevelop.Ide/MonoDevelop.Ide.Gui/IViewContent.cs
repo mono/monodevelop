@@ -1,4 +1,4 @@
-﻿// IViewContent.cs
+﻿// ViewContent.cs
 //
 // Author:
 //   Viktoria Dudka (viktoriad@remobjects.com)
@@ -30,7 +30,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public interface IViewContent : IBaseViewContent
+	public interface ViewContent2
 	{
         Project Project { get; set; }
 

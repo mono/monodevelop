@@ -930,7 +930,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		TextEditorViewContent viewContent;
-		internal IViewContent GetViewContent ()
+		internal ViewContent GetViewContent ()
 		{
 			if (viewContent == null) {
 				viewContent = new TextEditorViewContent (this, textEditorImpl);

@@ -1,4 +1,4 @@
-// AbstractViewContent.cs
+// ViewContent.cs
 //
 // Author:
 //   Viktoria Dudka (viktoriad@remobjects.com)
@@ -35,9 +35,9 @@ using Xwt;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public abstract class AbstractViewContent : AbstractBaseViewContent, IViewContent
+	public abstract class ViewContent : BaseViewContent
 	{
-		#region IViewContent Members
+		#region ViewContent Members
 
 		private string untitledName = "";
 		public virtual string UntitledName {
@@ -164,7 +164,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 	}
 
-	public abstract class AbstractXwtViewContent :AbstractViewContent
+	public abstract class AbstractXwtViewContent :ViewContent
 	{
 		public override Control Control {
 			get {

@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				if (!doc.IsDirty)
 					continue;
 				
-				IViewContent viewcontent = doc.Window.ViewContent;
+				ViewContent viewcontent = doc.Window.ViewContent;
 				 
 				if (groupByProject && viewcontent.Project != null) {
 					TreeIter projIter = TreeIter.Zero;

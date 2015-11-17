@@ -358,10 +358,6 @@ namespace MonoDevelop.VersionControl.Views
 			toolbar.ShowAll ();
 		}
 
-		public override string StockIconId {
-			get { return "vc-status"; }
-		}
-
 		int CompareNodes (Gtk.TreeModel model, Gtk.TreeIter a, Gtk.TreeIter b)
 		{
 			int col, val=0;

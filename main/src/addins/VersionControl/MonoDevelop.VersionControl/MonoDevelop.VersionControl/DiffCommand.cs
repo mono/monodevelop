@@ -40,7 +40,7 @@ namespace MonoDevelop.VersionControl
 		{
 			return !item.IsDirectory 
 				&& item.VersionInfo.IsVersioned
-				&& AddinManager.GetExtensionObjects<IDiffViewHandler> (DiffViewHandlers).Any (h => h.CanHandle (item, null));
+				&& AddinManager.GetExtensionObjects<IVersionControlViewHandler> (DiffViewHandlers).Any (h => h.CanHandle (item, null));
 		}
 		
 		public static bool Show (VersionControlItemList items, bool test)

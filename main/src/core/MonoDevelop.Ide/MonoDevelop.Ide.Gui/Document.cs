@@ -303,7 +303,7 @@ namespace MonoDevelop.Ide.Gui
 			viewsRO = null;
 		}
 
-		DocumentView WrapView (IBaseViewContent content)
+		DocumentView WrapView (BaseViewContent content)
 		{
 			if (content == null)
 				return null;
@@ -315,7 +315,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public override string Name {
 			get {
-				IViewContent view = Window.ViewContent;
+				ViewContent view = Window.ViewContent;
 				return view.IsUntitled ? view.UntitledName : view.ContentName;
 			}
 		}
@@ -362,25 +362,25 @@ namespace MonoDevelop.Ide.Gui
 					SaveAs ();
 				} else {
 					try {
-						FileService.RequestFileEdit (Window.ViewContent.ContentName, true);
+                        FileService.RequestFileEdit ((FilePath)Window.ViewContent.ContentName, true);
 					} catch (Exception ex) {
 						MessageService.ShowError (GettextCatalog.GetString ("The file could not be saved."), ex.Message, ex);
 					}
 					
 					FileAttributes attr = FileAttributes.ReadOnly | FileAttributes.Directory | FileAttributes.Offline | FileAttributes.System;
 	
-					if (!File.Exists (Window.ViewContent.ContentName) || (File.GetAttributes (window.ViewContent.ContentName) & attr) != 0) {
-						SaveAs ();
+					if (!File.Exists ((string)Window.ViewContent.ContentName) || (File.GetAttributes ((string)window.ViewContent.ContentName) & attr) != 0) {
+                        SaveAs();
 					} else {
 						string fileName = Window.ViewContent.ContentName;
 						// save backup first						
 						if (IdeApp.Preferences.CreateFileBackupCopies) {
-							Window.ViewContent.Save (fileName + "~");
-							FileService.NotifyFileChanged (fileName);
+                            Window.ViewContent.Save (fileName + "~");
+                            FileService.NotifyFileChanged (fileName);
 						}
-						Window.ViewContent.Save (fileName);
-						FileService.NotifyFileChanged (fileName);
-						OnSaved (EventArgs.Empty);
+                        Window.ViewContent.Save (fileName);
+                        FileService.NotifyFileChanged (fileName);
+                        OnSaved(EventArgs.Empty);
 					}
 				}
 			} finally {
@@ -431,8 +431,8 @@ namespace MonoDevelop.Ide.Gui
 				if (Window.ViewContent.IsUntitled)
 					dlg.InitialFileName = Window.ViewContent.UntitledName;
 				else {
-					dlg.CurrentFolder = Path.GetDirectoryName (Window.ViewContent.ContentName);
-					dlg.InitialFileName = Path.GetFileName (Window.ViewContent.ContentName);
+					dlg.CurrentFolder = Path.GetDirectoryName ((string)Window.ViewContent.ContentName);
+					dlg.InitialFileName = Path.GetFileName ((string)Window.ViewContent.ContentName);
 				}
 				
 				if (!dlg.Run ())

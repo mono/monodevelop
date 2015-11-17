@@ -10,11 +10,11 @@ using System.Linq;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	public interface ILogView : IAttachableViewContent
+	public interface ILogView
 	{
 	}
 	
-	public class LogView : BaseView, ILogView
+	class LogView : BaseView, ILogView
 	{
 		LogWidget widget;
 		VersionInfo vinfo;
@@ -112,7 +112,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 
 		#region IAttachableViewContent implementation
-		public void Selected ()
+		public override void Selected ()
 		{
 			if (info != null && !info.Started) {
 				widget.ShowLoading ();
@@ -120,17 +120,6 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		public void Deselected ()
-		{
-		}
-
-		public void BeforeSave ()
-		{
-		}
-
-		public void BaseContentChanged ()
-		{
-		}
 		#endregion
 
 		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Copy)]

@@ -38,7 +38,7 @@ using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {
-	public class TestViewContent : AbstractViewContent
+	public class TestViewContent : ViewContent
 	{
 		TextEditor data;
 		
