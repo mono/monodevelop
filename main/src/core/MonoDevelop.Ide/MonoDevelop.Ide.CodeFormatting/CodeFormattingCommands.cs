@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 				return;
 			var editor = doc.Editor;
 
-			if (editor.IsSomethingSelected) {
+			if (editor.IsSomethingSelected && formatter.SupportsPartialDocumentFormatting) {
 				ISegment selection = editor.SelectionRange;
 
 				using (var undo = editor.OpenUndoGroup ()) {
