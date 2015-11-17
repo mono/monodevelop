@@ -42,7 +42,7 @@ namespace MonoDevelop.Components.MainToolbar
 {
 	class FileSearchCategory : SearchCategory
 	{
-		public FileSearchCategory (Widget widget) : base (GettextCatalog.GetString("Files"))
+		public FileSearchCategory () : base (GettextCatalog.GetString("Files"))
 		{
 		}
 

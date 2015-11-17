@@ -1263,7 +1263,7 @@ namespace MonoDevelop.Ide.Editor
 					foreach (var tp in projection.ProjectedEditor.allProviders) {
 						if (!tp.IsValidFor (projection.ProjectedEditor.MimeType))
 							continue;
-						var newProvider = new ProjectedTooltipProvider (this, ctx, projection, (TooltipProvider)tp.CreateInstance ());
+						var newProvider = new ProjectedTooltipProvider (projection, (TooltipProvider)tp.CreateInstance ());
 						projectedProviders.Add (newProvider);
 						textEditorImpl.AddTooltipProvider (newProvider);
 					}

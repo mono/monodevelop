@@ -33,12 +33,8 @@ namespace MonoDevelop.Ide.Editor.Projection
 		readonly Projection projection;
 		readonly TooltipProvider projectedTooltipProvider;
 
-		public ProjectedTooltipProvider (TextEditor editor, DocumentContext ctx, Projection projection, TooltipProvider projectedTooltipProvider)
+		public ProjectedTooltipProvider (Projection projection, TooltipProvider projectedTooltipProvider)
 		{
-			if (editor == null)
-				throw new ArgumentNullException ("editor");
-			if (ctx == null)
-				throw new ArgumentNullException ("ctx");
 			if (projection == null)
 				throw new ArgumentNullException ("projection");
 			if (projectedTooltipProvider == null)
