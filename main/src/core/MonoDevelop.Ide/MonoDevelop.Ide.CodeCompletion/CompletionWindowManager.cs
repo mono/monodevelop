@@ -203,9 +203,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public static void HideWindow ()
 		{
+			isShowing = false;
 			if (!IsVisible)
 				return;
-			isShowing = false;
 			if (wnd == null)
 				return;
 			ParameterInformationWindowManager.UpdateWindow (wnd.Extension, wnd.CompletionWidget);

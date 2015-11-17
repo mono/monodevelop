@@ -167,6 +167,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 								if (!CompletionWindowManager.ShowWindow (result, CurrentCompletionContext))
 									CurrentCompletionContext = null;
 							} else {
+								CompletionWindowManager.HideWindow ();
 								CurrentCompletionContext = null;
 							}
 						}, Runtime.MainTaskScheduler);
