@@ -34,10 +34,10 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Content;
 using System.IO;
-using Gtk;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Desktop;
 using System.Linq;
+using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			var dlg = new OpenFileDialog (GettextCatalog.GetString ("File to Open"), Gtk.FileChooserAction.Open) {
+			var dlg = new OpenFileDialog (GettextCatalog.GetString ("File to Open"), SelectFileDialogAction.Open) {
 				TransientFor = IdeApp.Workbench.RootWindow,
 				ShowEncodingSelector = true,
 				ShowViewerSelector = true,

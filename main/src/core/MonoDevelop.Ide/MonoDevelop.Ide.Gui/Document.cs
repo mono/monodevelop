@@ -52,6 +52,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.Text;
 using System.Collections.ObjectModel;
+using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -414,7 +415,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 				
 			if (filename == null) {
-				var dlg = new OpenFileDialog (GettextCatalog.GetString ("Save as..."), FileChooserAction.Save) {
+				var dlg = new OpenFileDialog (GettextCatalog.GetString ("Save as..."), SelectFileDialogAction.Save) {
 					TransientFor = IdeApp.Workbench.RootWindow,
 					Encoding = encoding,
 					ShowEncodingSelector = (tbuffer != null),
