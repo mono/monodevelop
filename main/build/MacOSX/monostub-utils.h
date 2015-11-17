@@ -173,6 +173,18 @@ push_env_to_end (const char *variable, const char *value)
 }
 
 static bool
+replace_env (const char *variable, const char *value)
+{
+	const char *old = getenv (variable);
+
+	if (old && !strcmp (old, value))
+		return false;
+
+	setenv (variable, value, true);
+	return true;
+}
+
+static bool
 update_environment (const char *contentsDir)
 {
 	bool updated = NO;
@@ -224,6 +236,9 @@ update_environment (const char *contentsDir)
 	}
 
 	if (push_env_to_start ("PATH", "/Library/Frameworks/Mono.framework/Commands"))
+		updated = YES;
+
+	if (replace_env ("LC_NUMERIC", "C"))
 		updated = YES;
 
 	return updated;
