@@ -127,7 +127,7 @@ module Patterns =
     match ts with
     | IdentifierSymbol symbolUse -> 
       match symbolUse with
-      | SymbolUse.Field _ -> Some symbolUse.IsFromDefinition
+      | SymbolUse.Field f -> Some (symbolUse.IsFromDefinition, f.IsMutable)
       | _ -> None
     | _ -> None
   
@@ -143,7 +143,7 @@ module Patterns =
     match ts with
     | IdentifierSymbol symbolUse -> 
       match symbolUse with
-      | SymbolUse.Val _ -> Some symbolUse.IsFromDefinition
+      | SymbolUse.Val v -> Some (symbolUse.IsFromDefinition, v.IsMutable)
       | _ -> None
     | _ -> None
   
@@ -291,7 +291,7 @@ type FSharpSyntaxMode(editor, context) =
     
     let tokenSymbol = 
       { TokenInfo = token; SymbolUse = symbol; ExtraColorInfo = extraColor }
-    
+
     let chunkStyle =
       match tokenSymbol with
       | InactiveCode -> style.ExcludedCode
@@ -305,9 +305,17 @@ type FSharpSyntaxMode(editor, context) =
       | Module _ | ActivePatternCase | Record _ | Union _ | TypeAbbreviation | Class _ -> style.UserTypes
       | Namespace _ -> style.PlainText
       | Property fromDef -> if fromDef then style.UserPropertyDeclaration else style.UserPropertyUsage
-      | Field fromDef -> if fromDef then style.UserFieldDeclaration else style.UserFieldUsage
+      | Field (fromDef,isMut) ->
+        if isMut then style.UserTypesMutable
+        elif fromDef then style.UserFieldDeclaration
+        else style.UserFieldUsage
+
       | Function fromDef -> if fromDef then style.UserMethodDeclaration else style.UserMethodUsage
-      | Val fromDef -> if fromDef then style.UserFieldDeclaration else style.UserFieldUsage
+      | Val (fromDef,isMut) ->
+        if isMut then style.UserTypesMutable
+        elif fromDef then style.UserFieldDeclaration
+        else style.UserFieldUsage
+
       | UnionCase | Enum _ -> style.UserTypesEnums
       | Delegate _ -> style.UserTypesDelegates
       | Event fromDef -> if fromDef then style.UserEventDeclaration else style.UserEventUsage
