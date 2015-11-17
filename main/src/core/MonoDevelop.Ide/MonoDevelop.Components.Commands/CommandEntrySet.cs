@@ -112,7 +112,7 @@ namespace MonoDevelop.Components.Commands
 			get { return cmds.Count; }
 		}
 		
-		internal protected override Gtk.MenuItem CreateMenuItem (CommandManager manager)
+		internal override Gtk.MenuItem CreateMenuItem (CommandManager manager)
 		{
 			Gtk.MenuItem mi;
 			if (autoHide)
@@ -123,7 +123,7 @@ namespace MonoDevelop.Components.Commands
 			return mi;
 		}
 
-		internal protected override Gtk.ToolItem CreateToolItem (CommandManager manager)
+		internal override Gtk.ToolItem CreateToolItem (CommandManager manager)
 		{
 			Gtk.Menu menu = manager.CreateMenu (this);
 			return new MenuToolButton (menu, icon);
