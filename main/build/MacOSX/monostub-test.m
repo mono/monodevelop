@@ -154,7 +154,6 @@ void check_path_has_components(char *path, const char **components, int count)
 {
 	char *token, *tofree, *copy;
 
-
 	for (int i = 0; i < count; ++i) {
 		BOOL found = FALSE;
 		tofree = copy = strdup(path);
@@ -195,6 +194,9 @@ void test_update_environment(void)
 	const char *gac_components[] = {
 		"./Resources",
 	};
+	const char *numeric_components[] = {
+		"C",
+	};
 
 	// Check that we only get updates one time, that's how monostub works.
 	check_bool_equal(TRUE, update_environment("."));
@@ -205,6 +207,7 @@ void test_update_environment(void)
 	check_path_has_components(getenv("PATH"), path_components, sizeof(path_components) / sizeof(char *));
 	check_path_has_components(getenv("PKG_CONFIG_PATH"), pkg_components, sizeof(pkg_components) / sizeof(char *));
 	check_path_has_components(getenv("MONO_GAC_PREFIX"), gac_components, sizeof(gac_components) / sizeof(char *));
+	check_path_has_components(getenv("LC_NUMERIC"), numeric_components, sizeof(numeric_components) / sizeof(char *));
 }
 
 void (*tests[])(void) = {
