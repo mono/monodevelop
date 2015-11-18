@@ -4,6 +4,7 @@ using MonoDevelop.Ide.Gui;
 using System.Text;
 using Gtk;
 using System.Threading.Tasks;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl
 {
@@ -16,7 +17,7 @@ namespace MonoDevelop.VersionControl
 			this.name = name;
 		}
 
-		public override Widget Control {
+		public override Control Control {
 			get
 			{
 				throw new NotImplementedException ();
@@ -25,11 +26,6 @@ namespace MonoDevelop.VersionControl
 
 		public override string TabPageLabel {
 			get { return name; }
-		}
-
-		public override Task Load (FileOpenInformation fileOpenInformation)
-		{
-			throw new NotImplementedException ();
 		}
 	}
 }

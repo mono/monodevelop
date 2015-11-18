@@ -39,6 +39,7 @@ using System.Linq;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -103,8 +104,11 @@ namespace MonoDevelop.AssemblyBrowser
 			IsDisposed = true;
 			base.Dispose ();
 			widget = null;
-			GC.Collect ();
+			if (Disposed != null)
+				Disposed (this, EventArgs.Empty);
 		}
+
+		internal event EventHandler Disposed;
 
 		#region INavigable implementation 
 		

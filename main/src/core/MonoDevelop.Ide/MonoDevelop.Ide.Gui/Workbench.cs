@@ -1341,6 +1341,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		public OpenDocumentOptions Options { get; set; }
+
 		int offset = -1;
 		public int Offset {
 			get {

@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Views
 {

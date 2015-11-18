@@ -116,7 +116,10 @@ namespace MonoDevelop.Ide.Gui
 		{
 		}
 
-		public abstract Task Load (FileOpenInformation fileOpenInformation);
+		public virtual Task Load (FileOpenInformation fileOpenInformation)
+		{
+			return Task.FromResult (true);
+		}
 		
 		public Task Load (FilePath fileName)
 		{

@@ -29,6 +29,8 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using Mono.TextEditor;
+using MonoDevelop.Components;
+
 namespace MonoDevelop.VersionControl.Views
 {
 	public interface IBlameView

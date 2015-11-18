@@ -66,11 +66,6 @@ namespace MonoDevelop.CSharpBinding.Tests
 			Contents.Add (data);
 			Name = "";
 		}
-		
-		public override Task Load(FileOpenInformation fileOpenInformation)
-		{
-			return Task.FromResult (true);
-		}
 
 		protected override void OnContentNameChanged ()
 		{

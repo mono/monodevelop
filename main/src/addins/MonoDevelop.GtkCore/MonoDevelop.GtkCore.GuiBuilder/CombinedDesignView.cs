@@ -272,7 +272,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return base.OnGetContent (type);
 		}
 		
+<<<<<<< d31689b2197378846e127fd9c38d594f7c7f85e1
 		public override Control Control {
+=======
+		public override Components.Control Control {
+>>>>>>> ViewContent now creates Controls instead of GTK widgets
 			get {
 				return content;
 			}

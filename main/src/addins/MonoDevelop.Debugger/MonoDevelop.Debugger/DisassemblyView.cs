@@ -161,11 +161,6 @@ namespace MonoDevelop.Debugger
 				return sw;
 			}
 		}
-		
-		public override Task Load (FileOpenInformation fileOpenInformation)
-		{
-			return Task.FromResult (true);
-		}
 
 		public override bool IsFile {
 			get {

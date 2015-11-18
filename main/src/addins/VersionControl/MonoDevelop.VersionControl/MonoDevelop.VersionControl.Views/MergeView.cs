@@ -26,6 +26,7 @@
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Views
 {

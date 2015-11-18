@@ -62,11 +62,6 @@ namespace MonoDevelop.Ide.Gui
 			Name = editor.FileName;
 		}
 
-		public override Task Load (FileOpenInformation fileOpenInformation)
-		{
-			return Task.FromResult (true);
-		}
-		
 		public FilePath Name { 
 			get;
 			set;
