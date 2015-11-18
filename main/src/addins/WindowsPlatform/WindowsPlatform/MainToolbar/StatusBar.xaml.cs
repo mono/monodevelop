@@ -24,6 +24,14 @@ using System.Windows.Media.Animation;
 
 namespace WindowsPlatform.MainToolbar
 {
+	public enum StatusBarStatus
+	{
+		Normal,
+		Ready,
+		Warning,
+		Error,
+	}
+
 	/// <summary>
 	/// Interaction logic for StatusBar.xaml
 	/// </summary>
@@ -35,7 +43,6 @@ namespace WindowsPlatform.MainToolbar
 		{
 			InitializeComponent ();
 			DataContext = this;
-			Background = Styles.StatusBarBackgroundBrush;
 
 			ctxHandler = new StatusBarContextHandler (this);
 
@@ -81,14 +88,14 @@ namespace WindowsPlatform.MainToolbar
 		public void BeginProgress (string name)
 		{
 			EndProgress();
-			TextBrush = Styles.StatusBarTextBrush;
+			Status = StatusBarStatus.Normal;
 			ShowMessage (name);
 		}
 
 		public void BeginProgress (IconId image, string name)
 		{
 			EndProgress();
-			TextBrush = Styles.StatusBarTextBrush;
+			Status = StatusBarStatus.Normal;
 			ShowMessage(image, name);
 		}
 
@@ -151,7 +158,7 @@ namespace WindowsPlatform.MainToolbar
 
 		public void ShowError (string error)
 		{
-			TextBrush = Styles.StatusBarErrorTextBrush;
+			Status = StatusBarStatus.Error;
 			ShowMessage (error);
 		}
 
@@ -181,7 +188,7 @@ namespace WindowsPlatform.MainToolbar
 
 		public void ShowReady ()
 		{
-			TextBrush = Styles.StatusBarReadyTextBrush;
+			Status = StatusBarStatus.Ready;
 			ShowMessage (BrandingService.StatusSteadyIconId, BrandingService.ApplicationName);
 		}
 
@@ -201,7 +208,7 @@ namespace WindowsPlatform.MainToolbar
 
 		public void ShowWarning (string warning)
 		{
-			TextBrush = Styles.StatusBarWarningTextBrush;
+			Status = StatusBarStatus.Warning;
 			ShowMessage (warning);
 		}
 
@@ -212,11 +219,21 @@ namespace WindowsPlatform.MainToolbar
 			set { message = value; RaisePropertyChanged (); }
 		}
 
-		Brush textBrush = Styles.StatusBarTextBrush;
-		public Brush TextBrush
+		public static readonly DependencyProperty StatusProperty =
+			DependencyProperty.Register("Status", typeof(StatusBarStatus), typeof(StatusBarControl), new FrameworkPropertyMetadata(StatusBarStatus.Normal, FrameworkPropertyMetadataOptions.AffectsRender));
+
+		public StatusBarStatus Status {
+			get { return (StatusBarStatus)GetValue(StatusProperty); }  
+			private set { SetValue(StatusProperty, value); RaisePropertyChanged (); }
+		}
+
+		public static readonly DependencyProperty StatusTextBrushProperty =
+			DependencyProperty.Register("StatusTextBrush", typeof(Brush), typeof(StatusBarControl), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
+		
+		public Brush StatusTextBrush
 		{
-			get { return textBrush; }
-			set { textBrush = value; RaisePropertyChanged (); }
+			get { return GetValue (StatusTextBrushProperty) as Brush; }
+			set { SetValue (StatusTextBrushProperty, value); }
 		}
 
 		ImageSource statusImage;

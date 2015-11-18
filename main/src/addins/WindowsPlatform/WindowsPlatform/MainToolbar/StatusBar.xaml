@@ -21,6 +21,22 @@
             </Setter>
         </Style>
     </UserControl.Resources>
+    <UserControl.Style>
+        <Style TargetType="{x:Type local:StatusBarControl}">
+        	<Setter Property="StatusTextBrush" Value="{Binding Path=(platform:Styles.StatusBarTextBrush), Mode=OneWay}" />
+			<Style.Triggers>
+                <Trigger Property="Status" Value="Ready">
+                    <Setter Property="StatusTextBrush" Value="{Binding Path=(platform:Styles.StatusBarReadyTextBrush), Mode=OneWay}"/>
+                </Trigger>
+                <Trigger Property="Status" Value="Warning">
+                    <Setter Property="StatusTextBrush" Value="{Binding Path=(platform:Styles.StatusBarWarningTextBrush), Mode=OneWay}"/>
+                </Trigger>
+                <Trigger Property="Status" Value="Error">
+                    <Setter Property="StatusTextBrush" Value="{Binding Path=(platform:Styles.StatusBarErrorTextBrush), Mode=OneWay}"/>
+                </Trigger>
+			</Style.Triggers>
+		</Style>
+    </UserControl.Style>
     <Grid VerticalAlignment="Center" Height="26" Width="350" MinWidth="220" MaxWidth="700" UseLayoutRounding="True">
         <Grid>
             <ProgressBar Minimum="0" Maximum="1" x:Name="ProgressBar" Style="{StaticResource FlatProgressBar}"/>
@@ -44,7 +60,7 @@
             <TextBlock Grid.Column="1"
                 VerticalAlignment="Center"
                 Padding="7,1,0,2"
-                Foreground="{Binding TextBrush}"
+                Foreground="{Binding StatusTextBrush}"
                 Text="{Binding Message}"
                 UseLayoutRounding="True" 
                 MouseLeftButtonUp="OnShowPad" />

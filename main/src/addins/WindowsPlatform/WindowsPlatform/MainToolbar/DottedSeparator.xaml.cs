@@ -15,15 +15,8 @@ namespace WindowsPlatform.MainToolbar
 			InitializeComponent();
 
 			SizeChanged += ModifyPoints;
-			dotColor = new SolidColorBrush (new Color {
-				A = 0xFF,
-				R = 0x7d,
-				G = 0x7d,
-				B = 0x7d,
-			});
 		}
 
-		static Brush dotColor;
 		void ModifyPoints(object sender, SizeChangedEventArgs args)
 		{
 			DotPanel.Children.Clear();
@@ -32,8 +25,8 @@ namespace WindowsPlatform.MainToolbar
 			{
 				DotPanel.Children.Add(new Ellipse
 				{
-					Fill = dotColor,
-					Stroke = dotColor,
+					Fill = Foreground,
+					Stroke = Foreground,
 					HorizontalAlignment = HorizontalAlignment.Center,
 					Width = 1,
 					Height = 1,
