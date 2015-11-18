@@ -603,7 +603,9 @@ namespace MonoDevelop.Core
 			//copy the existing destfile to tmp
 			//move the sourceFile to the destFilename
 			//delete the old destFile contents
-			string tempFile = Path.Combine ("/tmp/", Path.GetRandomFileName () + ".tmp");
+
+			//can't use Path.GetTempFileName because it creates the temp file, we just need the filename.
+			string tempFile = Path.Combine (Path.GetTempPath (), Path.GetRandomFileName () + ".tmp");
 			try{
 
 				InternalMoveFile (destFile, tempFile);
