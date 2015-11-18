@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Windows.Media;
+using System.Windows;
 
 namespace WindowsPlatform
 {
@@ -33,7 +34,17 @@ namespace WindowsPlatform
 		public static Brush MainToolbarBackgroundBrush { get; private set; }
 		public static Brush MainToolbarForegroundBrush { get; private set; }
 		public static Brush MainToolbarShadowBrush { get; private set; }
-		public static Brush MainMenuBackgroundBrush { get; private set; }
+
+		public static Brush MenuBackgroundBrush { get; private set; }
+		public static Brush MenuForegroundBrush { get; private set; }
+		public static Brush MenuBorderBrush { get; private set; }
+		public static Brush MenuHighlightBackgroundBrush { get; private set; }
+		public static Brush MenuHighlightBorderBrush { get; private set; }
+		public static Brush MenuSelectedBackgroundBrush { get; private set; }
+		public static Brush MenuSelectedBorderBrush { get; private set; }
+		public static Brush MenuDisabledForegroundBrush { get; private set; }
+		public static Brush MenuSeparatorBrush { get; private set; }
+
 		public static Brush StatusBarBackgroundBrush { get; private set; }
 		public static Brush StatusBarTextBrush { get; private set; }
 		public static Brush StatusBarErrorTextBrush { get; private set; }
@@ -48,7 +59,17 @@ namespace WindowsPlatform
 			MainToolbarBackgroundBrush = Brushes.Transparent;
 			MainToolbarForegroundBrush = Brushes.Black;
 			MainToolbarShadowBrush = Brushes.Gray;
-			MainMenuBackgroundBrush = Brushes.Transparent;
+
+			MenuBackgroundBrush = SystemColors.MenuBarBrush;
+			MenuForegroundBrush = SystemColors.MenuTextBrush;
+			MenuBorderBrush = new SolidColorBrush (new Color {A = 0xFF, R = 0x99, G = 0x99, B = 0x99});
+			MenuSeparatorBrush = new SolidColorBrush (new Color {A = 0xFF, R = 0xD7, G = 0xD7, B = 0xD7});
+			MenuHighlightBackgroundBrush = new SolidColorBrush (new Color {A = 0x3D, R = 0x26, G = 0xA0, B = 0xDA});
+			MenuHighlightBorderBrush = new SolidColorBrush (new Color {A = 0xFF, R = 0x26, G = 0xA0, B = 0xDA});
+			MenuSelectedBackgroundBrush = new SolidColorBrush (new Color {A = 0x3D, R = 0x26, G = 0xA0, B = 0xDA});
+			MenuSelectedBorderBrush = new SolidColorBrush (new Color {A = 0xFF, R = 0x26, G = 0xA0, B = 0xDA});
+			MenuDisabledForegroundBrush = new SolidColorBrush (new Color {A = 0xFF, R = 0x70, G = 0x70, B = 0x70});
+
 			StatusBarBackgroundBrush = new SolidColorBrush (new Color {A = 0xFF, R = 0xE5, G = 0xE5, B = 0xE5});
 			StatusBarTextBrush = MainToolbarForegroundBrush;
 			StatusBarErrorTextBrush = Brushes.Red;

@@ -111,7 +111,6 @@ namespace MonoDevelop.Platform
 			CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
 			var mainMenu = new Menu {
 				IsMainMenu = true,
-				Background = global::WindowsPlatform.Styles.MainMenuBackgroundBrush,
 				FocusVisualStyle = null,
 			};
 			foreach (CommandEntrySet ce in ces)
@@ -153,6 +152,9 @@ namespace MonoDevelop.Platform
 
 		internal override void SetMainWindowDecorations (Gtk.Window window)
 		{
+			Uri uri = new Uri ("pack://application:,,,/WindowsPlatform;component/Styles.xaml");
+			Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary() { Source = uri });
+
 			// Only initialize elements for Win7+.
 			if (TaskbarManager.IsPlatformSupported) {
 				TaskbarManager.Instance.SetApplicationIdForSpecificWindow (GdkWin32.HgdiobjGet (window.GdkWindow), BrandingService.ApplicationName);
