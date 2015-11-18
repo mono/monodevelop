@@ -28,6 +28,8 @@
 
 using System.ComponentModel;
 
+using MonoDevelop.Components.Extensions;
+
 namespace MonoDevelop.Components
 {
 	[Category ("MonoDevelop.Components")]
@@ -40,7 +42,7 @@ namespace MonoDevelop.Components
 
 		public FileEntry (string name) : base (name)
 		{
-			Action = Gtk.FileChooserAction.Open;
+			Action = SelectFileDialogAction.Open;
 		}
 
 		protected override string ShowBrowseDialog (string name, string startIn)
@@ -57,6 +59,6 @@ namespace MonoDevelop.Components
 			return null;
 		}
 
-		public new Gtk.FileChooserAction Action { get; set; }
+		public SelectFileDialogAction Action { get; set; }
 	}
 }

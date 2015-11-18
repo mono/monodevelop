@@ -126,7 +126,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			DockItemToolbar toolbar = window.GetToolbar (PositionType.Top);
 			
-			errorBtn = new ToggleButton ();
+			errorBtn = new ToggleButton { Name = "toggleErrors" };
 			errorBtn.Active = ShowErrors;
 			errorBtn.Image = new Gtk.Image (Stock.Error, Gtk.IconSize.Menu);
 			errorBtn.Image.Show ();
@@ -135,7 +135,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			UpdateErrorsNum();
 			toolbar.Add (errorBtn);
 			
-			warnBtn = new ToggleButton ();
+			warnBtn = new ToggleButton  { Name = "toggleWarnings" };
 			warnBtn.Active = ShowWarnings;
 			warnBtn.Image = new Gtk.Image (Stock.Warning, Gtk.IconSize.Menu);
 			warnBtn.Image.Show ();
@@ -143,8 +143,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			warnBtn.TooltipText = GettextCatalog.GetString ("Show Warnings");
 			UpdateWarningsNum();
 			toolbar.Add (warnBtn);
-			
-			msgBtn = new ToggleButton ();
+
+			msgBtn = new ToggleButton  { Name = "toggleMessages" };
 			msgBtn.Active = ShowMessages;
 			msgBtn.Image = new Gtk.Image (Stock.Information, Gtk.IconSize.Menu);
 			msgBtn.Image.Show ();
@@ -155,7 +155,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			toolbar.Add (new SeparatorToolItem ());
 			
-			logBtn = new ToggleButton ();
+			logBtn = new ToggleButton { Name = "toggleBuildOutput" };
 			logBtn.Label = GettextCatalog.GetString ("Build Output");
 			logBtn.Image = ImageService.GetImage ("md-message-log", Gtk.IconSize.Menu);
 			logBtn.Image.Show ();
@@ -231,7 +231,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			control.Add1 (sw);
 			
-			outputView = new LogView ();
+			outputView = new LogView { Name = "buildOutput" };
 			control.Add2 (outputView);
 			
 			Control.ShowAll ();

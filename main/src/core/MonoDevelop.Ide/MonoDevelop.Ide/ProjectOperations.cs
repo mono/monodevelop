@@ -56,6 +56,8 @@ using MonoDevelop.Projects.Formats.MSBuild;
 using System.Collections.Immutable;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.Ide
 {
@@ -712,7 +714,7 @@ namespace MonoDevelop.Ide
 			WorkspaceItem res = null;
 			
 			var dlg = new SelectFileDialog () {
-				Action = Gtk.FileChooserAction.Open,
+				Action = SelectFileDialogAction.Open,
 				CurrentFolder = parentWorkspace.BaseDirectory,
 				SelectMultiple = false,
 			};
@@ -774,7 +776,7 @@ namespace MonoDevelop.Ide
 			SolutionFolderItem res = null;
 			
 			var dlg = new SelectFileDialog () {
-				Action = Gtk.FileChooserAction.Open,
+				Action = SelectFileDialogAction.Open,
 				CurrentFolder = parentFolder.BaseDirectory,
 				SelectMultiple = false,
 			};
@@ -1521,7 +1523,7 @@ namespace MonoDevelop.Ide
 		{
 			var dlg = new SelectFileDialog () {
 				SelectMultiple = true,
-				Action = Gtk.FileChooserAction.Open,
+				Action = SelectFileDialogAction.Open,
 				CurrentFolder = folder.BaseDirectory,
 				TransientFor = MessageService.RootWindow,
 			};

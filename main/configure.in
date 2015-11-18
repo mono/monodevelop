@@ -39,12 +39,17 @@ if ! $PKG_CONFIG --atleast-version=$MONO_REQUIRED_VERSION mono; then
 	AC_MSG_ERROR([You need mono $MONO_REQUIRED_VERSION or newer])
 fi
 
-#ensure we have the same env as when configured
-AC_SUBST(PATH)
-AC_SUBST(PKG_CONFIG_PATH)
-AC_SUBST(LD_LIBRARY_PATH)
-AC_SUBST(DYLD_FALLBACK_LIBRARY_PATH)
-AC_SUBST(MONO_GAC_PREFIX)
+###
+# Disable the environment capturing as it breaks on El Capitan and we end up storing empty env vars
+# which means we break things like `DYLD_FALLBACK_LIBRARY_PATH` because that env has a default meaning
+# when it is *not set*, but this code causes it to be set to an empty value so we can't load libc.
+###
+##ensure we have the same env as when configured
+#AC_SUBST(PATH)
+#AC_SUBST(PKG_CONFIG_PATH)
+#AC_SUBST(LD_LIBRARY_PATH)
+#AC_SUBST(DYLD_FALLBACK_LIBRARY_PATH)
+#AC_SUBST(MONO_GAC_PREFIX)
 
 default_gnomeplatform=no
 default_windowsplatform=no
