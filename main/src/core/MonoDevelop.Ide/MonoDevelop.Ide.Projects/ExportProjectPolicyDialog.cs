@@ -23,11 +23,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using Gtk;
+
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Policies;
+using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -41,7 +43,7 @@ namespace MonoDevelop.Ide.Projects
 			this.Build ();
 			this.policyProvider = policyProvider;
 
-			fileEntry.Action = FileChooserAction.Save;
+			fileEntry.Action = SelectFileDialogAction.Save;
 			fileEntry.DefaultPath = DefaultFileDialogPolicyDir;
 			if (policyProvider is SolutionItem)
 				fileEntry.Path = ((SolutionItem)policyProvider).Name + ".mdpolicy";
