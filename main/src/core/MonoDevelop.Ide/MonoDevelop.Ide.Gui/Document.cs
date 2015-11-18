@@ -335,8 +335,13 @@ namespace MonoDevelop.Ide.Gui
 		public bool IsViewOnly {
 			get { return Window.ViewContent.IsViewOnly; }
 		}
-		
-		public void Reload ()
+
+		public Task Reload ()
+		{
+			return ReloadTask ();
+		}
+
+		async Task ReloadTask ()
 		{
 			ICustomXmlSerializer memento = null;
 			IMementoCapable mc = GetContent<IMementoCapable> ();
@@ -344,13 +349,18 @@ namespace MonoDevelop.Ide.Gui
 				memento = mc.Memento;
 			}
 			window.ViewContent.DiscardChanges ();
-			window.ViewContent.Load (new FileOpenInformation (window.ViewContent.ContentName) { IsReloadOperation = true });
+			await window.ViewContent.Load (new FileOpenInformation (window.ViewContent.ContentName) { IsReloadOperation = true });
 			if (memento != null) {
 				mc.Memento = memento;
 			}
 		}
-		
-		public void Save ()
+
+		public Task Save ()
+		{
+			return SaveTask ();
+		}
+
+		async Task SaveTask ()
 		{
 			// suspend type service "check all file loop" since we have already a parsed document.
 			// Or at least one that updates "soon".
@@ -360,7 +370,7 @@ namespace MonoDevelop.Ide.Gui
 					return;
 	
 				if (!Window.ViewContent.IsFile) {
-					Window.ViewContent.Save ();
+					await Window.ViewContent.Save ();
 					return;
 				}
 				
@@ -381,10 +391,10 @@ namespace MonoDevelop.Ide.Gui
 						string fileName = Window.ViewContent.ContentName;
 						// save backup first						
 						if (IdeApp.Preferences.CreateFileBackupCopies) {
-                            Window.ViewContent.Save (fileName + "~");
+                            await Window.ViewContent.Save (fileName + "~");
                             FileService.NotifyFileChanged (fileName);
 						}
-                        Window.ViewContent.Save (fileName);
+						await Window.ViewContent.Save (fileName);
                         FileService.NotifyFileChanged (fileName);
                         OnSaved(EventArgs.Empty);
 					}
@@ -408,16 +418,20 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public void SaveAs ()
+		public Task SaveAs ()
 		{
-			SaveAs (null);
+			return SaveAs (null);
 		}
-		
-		public void SaveAs (string filename)
+
+		public Task SaveAs (string filename)
+		{
+			return SaveAsTask (filename);
+		}
+
+		async Task SaveAsTask (string filename)
 		{
 			if (Window.ViewContent.IsViewOnly || !Window.ViewContent.IsFile)
 				return;
-
 
 			Encoding encoding = null;
 			
@@ -463,15 +477,15 @@ namespace MonoDevelop.Ide.Gui
 				if (tbuffer != null && encoding != null)
 					TextFileUtility.WriteText (filename + "~", tbuffer.Text, encoding, tbuffer.UseBOM);
 				else
-					Window.ViewContent.Save (new FileSaveInformation (filename + "~", encoding));
+					await Window.ViewContent.Save (new FileSaveInformation (filename + "~", encoding));
 			}
 			TypeSystemService.RemoveSkippedfile (FileName);
 			// do actual save
-			Window.ViewContent.Save (new FileSaveInformation (filename, encoding));
+			await Window.ViewContent.Save (new FileSaveInformation (filename, encoding));
 			DesktopService.RecentFiles.AddFile (filename, (Project)null);
 			
 			OnSaved (EventArgs.Empty);
-			UpdateParseDocument ();
+			await UpdateParseDocument ();
 		}
 		
 		public bool Close ()

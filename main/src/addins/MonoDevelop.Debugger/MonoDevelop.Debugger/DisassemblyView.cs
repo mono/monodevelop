@@ -43,6 +43,7 @@ using MonoDevelop.Ide;
 using System.Security.Cryptography;
 using Gdk;
 using MonoDevelop.Components;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Debugger
 {
@@ -161,8 +162,9 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		public override void Load (FileOpenInformation fileOpenInformation)
+		public override Task Load (FileOpenInformation fileOpenInformation)
 		{
+			return Task.FromResult (true);
 		}
 
 		public override bool IsFile {

@@ -276,7 +276,7 @@ namespace MonoDevelop.Ide
 				}
 				if (fileName == null)
 					return;
-				var doc = IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName, project));
+				var doc = await IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName, project));
 
 				if (doc != null) {
 					doc.RunWhenLoaded (delegate {
@@ -288,7 +288,7 @@ namespace MonoDevelop.Ide
 
 				return;
 			}
-			IdeApp.Workbench.OpenDocument (new FileOpenInformation (location.SourceTree.FilePath, project) {
+			await IdeApp.Workbench.OpenDocument (new FileOpenInformation (location.SourceTree.FilePath, project) {
 				Offset = location.SourceSpan.Start
 			});
 		}
@@ -329,7 +329,7 @@ namespace MonoDevelop.Ide
 			}
 			if (fileName == null || !File.Exists (fileName))
 				return;
-			var doc = IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName));
+			var doc = await IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName));
 			if (doc != null) {
 				doc.RunWhenLoaded (delegate {
 					var handler = doc.PrimaryView.GetContent<MonoDevelop.Ide.Gui.Content.IOpenNamedElementHandler> ();

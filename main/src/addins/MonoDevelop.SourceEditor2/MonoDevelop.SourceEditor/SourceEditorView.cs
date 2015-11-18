@@ -622,12 +622,12 @@ namespace MonoDevelop.SourceEditor
 			return text;
 		}
 		
-		public override void Save (FileSaveInformation fileSaveInformation)
+		public override Task Save (FileSaveInformation fileSaveInformation)
 		{
-			Save (fileSaveInformation.FileName, fileSaveInformation.Encoding ?? encoding);
+			return Save (fileSaveInformation.FileName, fileSaveInformation.Encoding ?? encoding);
 		}
 
-		public void Save (string fileName, Encoding encoding)
+		public async Task Save (string fileName, Encoding encoding)
 		{
 			if (widget.HasMessageBar)
 				return;
@@ -723,7 +723,7 @@ namespace MonoDevelop.SourceEditor
 	//						writeBom =!Mono.TextEditor.Utils.TextFileUtility.IsASCII (writeText);
 						}
 					}
-					MonoDevelop.Core.Text.TextFileUtility.WriteText (fileName, writeText, writeEncoding, writeBom);
+					await MonoDevelop.Core.Text.TextFileUtility.WriteTextAsync (fileName, writeText, writeEncoding, writeBom);
 				} catch (InvalidEncodingException) {
 					var result = MessageService.AskQuestion (GettextCatalog.GetString ("Can't save file with current codepage."), 
 						GettextCatalog.GetString ("Some unicode characters in this file could not be saved with the current encoding.\nDo you want to resave this file as Unicode ?\nYou can choose another encoding in the 'save as' dialog."),
@@ -779,14 +779,14 @@ namespace MonoDevelop.SourceEditor
 			Document.InformLoadComplete ();
 		}
 		
-		public override void LoadNew (Stream content, string mimeType)
+		public override Task LoadNew (Stream content, string mimeType)
 		{
 			throw new NotSupportedException ("Moved to TextEditorViewContent.LoadNew.");
 		}
 		
-		public override void Load (FileOpenInformation fileOpenInformation)
+		public override Task Load (FileOpenInformation fileOpenInformation)
 		{
-			Load (fileOpenInformation.FileName, fileOpenInformation.Encoding, fileOpenInformation.IsReloadOperation);
+			return Load (fileOpenInformation.FileName, fileOpenInformation.Encoding, fileOpenInformation.IsReloadOperation);
 		}
 
 		protected virtual string ProcessLoadText (string text)
@@ -802,7 +802,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public void Load (string fileName, Encoding loadEncoding, bool reload = false)
+		public async Task Load (string fileName, Encoding loadEncoding, bool reload = false)
 		{
 			widget.TextEditor.Document.TextReplaced -= OnTextReplaced;
 			
@@ -823,10 +823,15 @@ namespace MonoDevelop.SourceEditor
 			else {
 				inLoad = true;
 				if (loadEncoding == null) {
-					text = MonoDevelop.Core.Text.TextFileUtility.ReadAllText (fileName, out hadBom, out encoding);
+					var res = await MonoDevelop.Core.Text.TextFileUtility.ReadAllTextAsync (fileName);
+					text = res.Text;
+					hadBom = res.HasBom;
+					encoding = res.Encoding;
 				} else {
 					encoding = loadEncoding;
-					text = MonoDevelop.Core.Text.TextFileUtility.ReadAllText (fileName, loadEncoding, out hadBom);
+					var res = await MonoDevelop.Core.Text.TextFileUtility.ReadAllTextAsync (fileName, loadEncoding);
+					text = res.Text;
+					hadBom = res.HasBom;
 				}
 				text = ProcessLoadText (text);
 				if (reload) {

@@ -26,6 +26,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Navigation
@@ -35,9 +36,9 @@ namespace MonoDevelop.Ide.Navigation
 		public abstract string DisplayName { get; }
 		//public abstract string Tooltip { get; }
 
-		public virtual Document ShowDocument ()
+		public virtual Task<Document> ShowDocument ()
 		{
-			return null;
+			return Task.FromResult<Document> (null);
 		}
 		
 		// used for fuzzy matching to decide whether to replace an existing nav point

@@ -947,25 +947,25 @@ namespace MonoDevelop.Debugger
 			});
 		}
 		
-		public static void ShowCurrentExecutionLine ()
+		public static async void ShowCurrentExecutionLine ()
 		{
 			Runtime.AssertMainThread ();
 			if (currentBacktrace != null) {
 				var sf = GetCurrentVisibleFrame ();
 				if (sf != null && !string.IsNullOrEmpty (sf.SourceLocation.FileName) && System.IO.File.Exists (sf.SourceLocation.FileName) && sf.SourceLocation.Line != -1) {
-					Document document = IdeApp.Workbench.OpenDocument (sf.SourceLocation.FileName, null, sf.SourceLocation.Line, 1, OpenDocumentOptions.Debugger);
+					Document document = await IdeApp.Workbench.OpenDocument (sf.SourceLocation.FileName, null, sf.SourceLocation.Line, 1, OpenDocumentOptions.Debugger);
 					OnDisableConditionalCompilation (new DocumentEventArgs (document));
 				}
 			}
 		}
 
-		public static void ShowNextStatement ()
+		public static async void ShowNextStatement ()
 		{
 			Runtime.AssertMainThread ();
 			var location = NextStatementLocation;
 
 			if (location != null && System.IO.File.Exists (location.FileName)) {
-				Document document = IdeApp.Workbench.OpenDocument (location.FileName, null, location.Line, 1, OpenDocumentOptions.Debugger);
+				Document document = await IdeApp.Workbench.OpenDocument (location.FileName, null, location.Line, 1, OpenDocumentOptions.Debugger);
 				OnDisableConditionalCompilation (new DocumentEventArgs (document));
 			} else {
 				ShowCurrentExecutionLine ();

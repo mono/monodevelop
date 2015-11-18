@@ -28,6 +28,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Core.Text
 {
@@ -215,6 +216,20 @@ namespace MonoDevelop.Core.Text
 			}
 		}
 
+		public static async Task<TextContent> GetTextAsync (Stream inputStream)
+		{
+			if (inputStream == null)
+				throw new ArgumentNullException ("inputStream");
+			var tc = new TextContent ();
+			bool hadBom;
+			using (var stream = OpenStream (inputStream, out hadBom)) {
+				tc.Encoding = stream.CurrentEncoding;
+				tc.Text = await stream.ReadToEndAsync ();
+				tc.HasBom = hadBom;
+			}
+			return tc;
+		}
+
 		public static string GetText (string fileName)
 		{
 			return GetText (File.ReadAllBytes (fileName));
@@ -232,6 +247,11 @@ namespace MonoDevelop.Core.Text
 		#region file methods
 		public static void WriteText (string fileName, string text, Encoding encoding, bool hadBom)
 		{
+			WriteTextAsync (fileName, text, encoding, hadBom).Wait ();
+		}
+
+		public static async Task WriteTextAsync (string fileName, string text, Encoding encoding, bool hadBom)
+		{
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
 			if (text == null)
@@ -247,7 +267,7 @@ namespace MonoDevelop.Core.Text
 						stream.Write (bom, 0, bom.Length);
 				}
 				byte[] bytes = encoding.GetBytes (text);
-				stream.Write (bytes, 0, bytes.Length);
+				await stream.WriteAsync (bytes, 0, bytes.Length);
 			}
 			try {
 				SystemRename (tmpPath, fileName);
@@ -331,6 +351,22 @@ namespace MonoDevelop.Core.Text
 			return GetText (content, out encoding, out hadBom);
 		}
 
+		public static async Task<TextContent> ReadAllTextAsync (string fileName)
+		{
+			if (fileName == null)
+				throw new ArgumentNullException ("fileName");
+			byte[] content = await ReadAllBytesAsync (fileName);
+
+			bool hadBom;
+			Encoding encoding;
+			var txt = GetText (content, out encoding, out hadBom);
+			return new TextContent {
+				Text = txt,
+				HasBom = hadBom,
+				Encoding = encoding
+			};
+		}
+
 		public static string ReadAllText (string fileName, Encoding encoding, out bool hadBom)
 		{
 			if (fileName == null)
@@ -341,6 +377,37 @@ namespace MonoDevelop.Core.Text
 			byte[] content = File.ReadAllBytes (fileName);
 			return GetText (content, encoding, out hadBom); 
 		}
+
+		public static async Task<TextContent> ReadAllTextAsync (string fileName, Encoding encoding)
+		{
+			if (fileName == null)
+				throw new ArgumentNullException ("fileName");
+			if (encoding == null)
+				throw new ArgumentNullException ("encoding");
+
+			byte[] content = await ReadAllBytesAsync (fileName);
+
+			bool hadBom;
+			var txt = GetText (content, encoding, out hadBom); 
+			return new TextContent {
+				Text = txt,
+				HasBom = hadBom,
+				Encoding = encoding
+			};
+		}
+
+		public static async Task<byte[]> ReadAllBytesAsync (string file)
+		{
+			using (var f = File.OpenRead (file)) {
+				var res = new byte [f.Length];
+				int nr = 0;
+				int c = 0;
+				while (nr < res.Length && (c = await f.ReadAsync (res, nr, res.Length - nr)) > 0)
+					nr += c;
+				return res;
+			}
+		}
+
 		#endregion
 
 		#region ASCII encoding check
@@ -849,5 +916,12 @@ namespace MonoDevelop.Core.Text
 			}
 		}
 		#endregion
+	}
+
+	public class TextContent
+	{
+		public string Text { get; internal set; }
+		public bool HasBom { get; internal set; }
+		public Encoding Encoding { get; internal set; }
 	}
 }

@@ -10,7 +10,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.VersionControl.Views;
 using MonoDevelop.Ide;
-
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl
 {
@@ -222,8 +222,8 @@ namespace MonoDevelop.VersionControl
 	{
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Update)]
-		protected void OnUpdate() {
-			RunCommand(Commands.Update, false);
+		protected async void OnUpdate() {
+			await RunCommand(Commands.Update, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Update)]
@@ -233,8 +233,8 @@ namespace MonoDevelop.VersionControl
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Diff)]
-		protected void OnDiff() {
-			RunCommand(Commands.Diff, false);
+		protected async void OnDiff() {
+			await RunCommand(Commands.Diff, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Diff)]
@@ -244,8 +244,8 @@ namespace MonoDevelop.VersionControl
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Log)]
-		protected void OnLog() {
-			RunCommand(Commands.Log, false);
+		protected async void OnLog() {
+			await RunCommand(Commands.Log, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Log)]
@@ -255,8 +255,8 @@ namespace MonoDevelop.VersionControl
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Status)]
-		protected void OnStatus() {
-			RunCommand(Commands.Status, false);
+		protected async void OnStatus() {
+			await RunCommand(Commands.Status, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Status)]
@@ -266,8 +266,8 @@ namespace MonoDevelop.VersionControl
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Add)]
-		protected void OnAdd() {
-			RunCommand(Commands.Add, false);
+		protected async void OnAdd() {
+			await RunCommand(Commands.Add, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Add)]
@@ -277,8 +277,8 @@ namespace MonoDevelop.VersionControl
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Remove)]
-		protected void OnRemove() {
-			RunCommand(Commands.Remove, false);
+		protected async void OnRemove() {
+			await RunCommand(Commands.Remove, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Remove)]
@@ -287,9 +287,9 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandHandler (Commands.Publish)]
-		protected void OnPublish() 
+		protected async void OnPublish() 
 		{
-			RunCommand(Commands.Publish, false);
+			await RunCommand(Commands.Publish, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Publish)]
@@ -299,8 +299,8 @@ namespace MonoDevelop.VersionControl
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Revert)]
-		protected void OnRevert() {
-			RunCommand(Commands.Revert, false, false);
+		protected async void OnRevert() {
+			await RunCommand(Commands.Revert, false, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Revert)]
@@ -310,8 +310,8 @@ namespace MonoDevelop.VersionControl
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Lock)]
-		protected void OnLock() {
-			RunCommand(Commands.Lock, false);
+		protected async void OnLock() {
+			await RunCommand(Commands.Lock, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Lock)]
@@ -321,8 +321,8 @@ namespace MonoDevelop.VersionControl
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Unlock)]
-		protected void OnUnlock() {
-			RunCommand(Commands.Unlock, false);
+		protected async void OnUnlock() {
+			await RunCommand(Commands.Unlock, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Unlock)]
@@ -332,8 +332,8 @@ namespace MonoDevelop.VersionControl
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Annotate)]
-		protected void OnAnnotate() {
-			RunCommand(Commands.Annotate, false);
+		protected async void OnAnnotate() {
+			await RunCommand(Commands.Annotate, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Annotate)]
@@ -343,8 +343,8 @@ namespace MonoDevelop.VersionControl
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.CreatePatch)]
-		protected void OnCreatePatch() {
-			RunCommand(Commands.CreatePatch, false);
+		protected async void OnCreatePatch() {
+			await RunCommand(Commands.CreatePatch, false);
 		}
 		
 		[CommandUpdateHandler (Commands.CreatePatch)]
@@ -354,9 +354,9 @@ namespace MonoDevelop.VersionControl
 
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Ignore)]
-		protected void OnIgnore ()
+		protected async void OnIgnore ()
 		{
-			RunCommand(Commands.Ignore, false);
+			await RunCommand(Commands.Ignore, false);
 		}
 
 		[CommandUpdateHandler (Commands.Ignore)]
@@ -367,9 +367,9 @@ namespace MonoDevelop.VersionControl
 
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Unignore)]
-		protected void OnUnignore ()
+		protected async void OnUnignore ()
 		{
-			RunCommand(Commands.Unignore, false);
+			await RunCommand(Commands.Unignore, false);
 		}
 
 		[CommandUpdateHandler (Commands.Unignore)]
@@ -379,9 +379,9 @@ namespace MonoDevelop.VersionControl
 		}
 
 		[CommandHandler (Commands.ResolveConflicts)]
-		protected void OnResolveConflicts ()
+		protected async void OnResolveConflicts ()
 		{
-			RunCommand (Commands.ResolveConflicts, false, false);
+			await RunCommand (Commands.ResolveConflicts, false, false);
 		}
 
 		[CommandUpdateHandler (Commands.ResolveConflicts)]
@@ -390,9 +390,9 @@ namespace MonoDevelop.VersionControl
 			TestCommand (Commands.ResolveConflicts, item, false);
 		}
 
-		private void TestCommand(Commands cmd, CommandInfo item, bool projRecurse = true)
+		private async void TestCommand(Commands cmd, CommandInfo item, bool projRecurse = true)
 		{
-			TestResult res = RunCommand(cmd, true, projRecurse);
+			TestResult res = await RunCommand(cmd, true, projRecurse);
 			if (res == TestResult.NoVersionControl && cmd == Commands.Log) {
 				// Use the update command to show the "not available" message
 				item.Icon = null;
@@ -405,7 +405,7 @@ namespace MonoDevelop.VersionControl
 				item.Visible = res == TestResult.Enable;
 		}
 		
-		private TestResult RunCommand (Commands cmd, bool test, bool projRecurse = true)
+		private async Task<TestResult> RunCommand (Commands cmd, bool test, bool projRecurse = true)
 		{
 			VersionControlItemList items = GetItems (projRecurse);
 
@@ -426,10 +426,10 @@ namespace MonoDevelop.VersionControl
 					res = UpdateCommand.Update (items, test);
 					break;
 				case Commands.Diff:
-					res = DiffCommand.Show (items, test);
+					res = await DiffCommand.Show (items, test);
 					break;
 				case Commands.Log:
-					res = LogCommand.Show (items, test);
+					res = await LogCommand.Show (items, test);
 					break;
 				case Commands.Status:
 					res = StatusView.Show (items, test, false);
@@ -455,7 +455,7 @@ namespace MonoDevelop.VersionControl
 						res = PublishCommand.Publish (it.WorkspaceObject, it.Path, test);
 					break;
 				case Commands.Annotate:
-					res = BlameCommand.Show (items, test);
+					res = await BlameCommand.Show (items, test);
 					break;
 				case Commands.CreatePatch:
 					res = CreatePatchCommand.CreatePatch (items, test);
@@ -467,7 +467,7 @@ namespace MonoDevelop.VersionControl
 					res = UnignoreCommand.Unignore (items, test);
 					break;
 				case Commands.ResolveConflicts:
-					res = ResolveConflictsCommand.ResolveConflicts (items, test);
+					res = await ResolveConflictsCommand.ResolveConflicts (items, test);
 					break;
 				}
 			}

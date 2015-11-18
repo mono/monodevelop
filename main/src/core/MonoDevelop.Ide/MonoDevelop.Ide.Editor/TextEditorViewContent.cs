@@ -346,45 +346,43 @@ namespace MonoDevelop.Ide.Editor
 
 		#region IViewFContent implementation
 
-		public override void Load (FileOpenInformation fileOpenInformation)
+		public override async Task Load (FileOpenInformation fileOpenInformation)
 		{
 			textEditorImpl.ViewContent.DirtyChanged -= HandleDirtyChanged;
 			textEditor.TextChanged -= HandleTextChanged;
-			textEditorImpl.ViewContent.Load (fileOpenInformation);
+			await textEditorImpl.ViewContent.Load (fileOpenInformation);
 			RunFirstTimeFoldUpdate (textEditor.Text);
 			textEditorImpl.InformLoadComplete ();
 			textEditor.TextChanged += HandleTextChanged;
 			textEditorImpl.ViewContent.DirtyChanged += HandleDirtyChanged;
 		}
 
-		public override void LoadNew (Stream content, string mimeType)
+		public override async Task LoadNew (Stream content, string mimeType)
 		{
 			textEditor.MimeType = mimeType;
 			string text = null;
 			if (content != null) {
-				Encoding encoding;
-				bool hadBom;
-				text = TextFileUtility.GetText (content, out encoding, out hadBom);
-				textEditor.Text = text;
-				textEditor.Encoding = encoding;
-				textEditor.UseBOM = hadBom;
+				var res = await TextFileUtility.GetTextAsync (content);
+				text = textEditor.Text = res.Text;
+				textEditor.Encoding = res.Encoding;
+				textEditor.UseBOM = res.HasBom;
 			}
 			RunFirstTimeFoldUpdate (text);
 			textEditorImpl.InformLoadComplete ();
 		}
 
-		public override void Save (FileSaveInformation fileSaveInformation)
+		public override Task Save (FileSaveInformation fileSaveInformation)
 		{
 			if (!string.IsNullOrEmpty (fileSaveInformation.FileName))
 				AutoSave.RemoveAutoSaveFile (fileSaveInformation.FileName);
-			textEditorImpl.ViewContent.Save (fileSaveInformation);
+			return textEditorImpl.ViewContent.Save (fileSaveInformation);
 		}
 
-		public override void Save ()
+		public override Task Save ()
 		{
 			if (!string.IsNullOrEmpty (textEditorImpl.ContentName))
 				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
-			textEditorImpl.ViewContent.Save ();
+			return textEditorImpl.ViewContent.Save ();
 		}
 
 		public override void DiscardChanges ()

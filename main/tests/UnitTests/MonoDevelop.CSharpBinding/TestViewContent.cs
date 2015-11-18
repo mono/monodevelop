@@ -34,6 +34,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {
@@ -66,8 +67,9 @@ namespace MonoDevelop.CSharpBinding.Tests
 			Name = "";
 		}
 		
-		public override void Load(FileOpenInformation fileOpenInformation)
+		public override Task Load(FileOpenInformation fileOpenInformation)
 		{
+			return Task.FromResult (true);
 		}
 
 		protected override void OnContentNameChanged ()

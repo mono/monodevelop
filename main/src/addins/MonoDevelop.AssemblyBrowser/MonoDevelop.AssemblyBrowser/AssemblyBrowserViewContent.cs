@@ -38,6 +38,7 @@ using MonoDevelop.Projects;
 using System.Linq;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -74,10 +75,11 @@ namespace MonoDevelop.AssemblyBrowser
 			IsDisposed = false;
 		}
 		
-		public override void Load (FileOpenInformation fileOpenInformation)
+		public override Task Load (FileOpenInformation fileOpenInformation)
 		{
 			ContentName = GettextCatalog.GetString ("Assembly Browser");
 			widget.AddReferenceByFileName (fileOpenInformation.FileName);
+			return Task.FromResult (true);
 		}
 
 		internal void EnsureDefinitionsLoaded (List<AssemblyLoader> definitions)

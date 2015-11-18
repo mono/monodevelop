@@ -318,7 +318,7 @@ namespace MonoDevelop.VersionControl.Views
 			revertButton.GetNativeWidget<Gtk.Widget> ().Sensitive = revertToButton.GetNativeWidget<Gtk.Widget> ().Sensitive = false;
 		}
 
-		void HandleTreeviewFilesDiffLineActivated (object sender, EventArgs e)
+		async void HandleTreeviewFilesDiffLineActivated (object sender, EventArgs e)
 		{
 			TreePath[] paths = treeviewFiles.Selection.GetSelectedRows ();
 			
@@ -332,7 +332,7 @@ namespace MonoDevelop.VersionControl.Views
 			int line = diffRenderer.GetSelectedLine (paths[0]);
 			if (line == -1)
 				line = 1;
-			var doc = IdeApp.Workbench.OpenDocument (fileName, line, 0, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
+			var doc = await IdeApp.Workbench.OpenDocument (fileName, line, 0, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
 			int i = 1;
 			foreach (var content in doc.Window.SubViewContents) {
 				DiffView diffView = content as DiffView;

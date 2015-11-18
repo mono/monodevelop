@@ -33,6 +33,7 @@ using MonoDevelop.Ide;
 using Gtk;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.RegexToolkit
 {
@@ -63,7 +64,7 @@ namespace MonoDevelop.RegexToolkit
 			}
 		}
 		
-		public override void Load (FileOpenInformation fileOpenInformation)
+		public override Task Load (FileOpenInformation fileOpenInformation)
 		{
 			throw new System.NotImplementedException ();
 		}

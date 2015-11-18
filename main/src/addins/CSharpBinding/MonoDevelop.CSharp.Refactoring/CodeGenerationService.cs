@@ -157,7 +157,7 @@ namespace MonoDevelop.Refactoring
 			if (systemVoid != null) newMember = newMember.ReplaceNode (systemVoid, SyntaxFactory.ParseTypeName ("void"));
 
 			var newRoot = root.ReplaceNode (typeDecl, typeDecl.AddMembers ((MemberDeclarationSyntax)newMember.WithAdditionalAnnotations (Simplifier.Annotation, Formatter.Annotation, insertedMemberAnnotation)));
-			var doc = IdeApp.Workbench.OpenDocument (part.SourceTree.FilePath, project, true);
+			var doc = await IdeApp.Workbench.OpenDocument (part.SourceTree.FilePath, project, true);
 
 			var policy = project.Policies.Get<CSharpFormattingPolicy> ("text/x-csharp");
 			var textPolicy = project.Policies.Get<TextStylePolicy> ("text/x-csharp");

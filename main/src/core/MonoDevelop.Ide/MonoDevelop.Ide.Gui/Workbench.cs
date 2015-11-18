@@ -53,6 +53,7 @@ using MonoDevelop.Components.DockNotebook;
 using System.Text;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -401,37 +402,37 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		[Obsolete("Use OpenDocument (FilePath fileName, Project project, bool bringToFront)")]
-		public Document OpenDocument (FilePath fileName, bool bringToFront)
+		public Task<Document> OpenDocument (FilePath fileName, bool bringToFront)
 		{
 			return OpenDocument (fileName, bringToFront ? OpenDocumentOptions.Default : OpenDocumentOptions.Default & ~OpenDocumentOptions.BringToFront);
 		}
 
 		[Obsolete("Use OpenDocument (FilePath fileName, Project project, OpenDocumentOptions options = OpenDocumentOptions.Default)")]
-		public Document OpenDocument (FilePath fileName, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		public Task<Document> OpenDocument (FilePath fileName, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, -1, -1, options, null, null);
 		}
 
 		[Obsolete("Use OpenDocument (FilePath fileName, Project project, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)")]
-		public Document OpenDocument (FilePath fileName, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		public Task<Document> OpenDocument (FilePath fileName, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, -1, -1, options, encoding, null);
 		}
 
 		[Obsolete("Use OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options = OpenDocumentOptions.Default)")]
-		public Document OpenDocument (FilePath fileName, int line, int column, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		public Task<Document> OpenDocument (FilePath fileName, int line, int column, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, line, column, options, null, null);
 		}
 
 		[Obsolete("Use OpenDocument (FilePath fileName, Project project, int line, int column, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)")]
-		public Document OpenDocument (FilePath fileName, int line, int column, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		public Task<Document> OpenDocument (FilePath fileName, int line, int column, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, line, column, options, encoding, null);
 		}
 
 		[Obsolete("Use OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options, Encoding encoding, IViewDisplayBinding binding)")]
-		internal Document OpenDocument (FilePath fileName, int line, int column, OpenDocumentOptions options, Encoding encoding, IViewDisplayBinding binding)
+		internal Task<Document> OpenDocument (FilePath fileName, int line, int column, OpenDocumentOptions options, Encoding encoding, IViewDisplayBinding binding)
 		{
 			var openFileInfo = new FileOpenInformation (fileName, null) {
 				Options = options,
@@ -444,32 +445,32 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 
-		public Document OpenDocument (FilePath fileName, Project project, bool bringToFront)
+		public Task<Document> OpenDocument (FilePath fileName, Project project, bool bringToFront)
 		{
 			return OpenDocument (fileName, project, bringToFront ? OpenDocumentOptions.Default : OpenDocumentOptions.Default & ~OpenDocumentOptions.BringToFront);
 		}
 
-		public Document OpenDocument (FilePath fileName, Project project, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		public Task<Document> OpenDocument (FilePath fileName, Project project, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, project, -1, -1, options, null, null);
 		}
 
-		public Document OpenDocument (FilePath fileName, Project project, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		public Task<Document> OpenDocument (FilePath fileName, Project project, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, project, -1, -1, options, encoding, null);
 		}
 
-		public Document OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		public Task<Document> OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, project, line, column, options, null, null);
 		}
 
-		public Document OpenDocument (FilePath fileName, Project project, int line, int column, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		public Task<Document> OpenDocument (FilePath fileName, Project project, int line, int column, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, project, line, column, options, encoding, null);
 		}
 
-		internal Document OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options, Encoding encoding, IViewDisplayBinding binding)
+		internal Task<Document> OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options, Encoding encoding, IViewDisplayBinding binding)
 		{
 			var openFileInfo = new FileOpenInformation (fileName, project) {
 				Options = options,
@@ -498,7 +499,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		internal Document OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options, Encoding Encoding, IViewDisplayBinding binding, DockNotebook dockNotebook)
+		internal Task<Document> OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options, Encoding Encoding, IViewDisplayBinding binding, DockNotebook dockNotebook)
 		{
 			var openFileInfo = new FileOpenInformation (fileName, project) {
 				Options = options,
@@ -512,7 +513,7 @@ namespace MonoDevelop.Ide.Gui
 			return OpenDocument (openFileInfo);
 		}
 
-		public Document OpenDocument (FileOpenInformation info)
+		public async Task<Document> OpenDocument (FileOpenInformation info)
 		{
 			if (string.IsNullOrEmpty (info.FileName))
 				return null;
@@ -1455,7 +1456,7 @@ namespace MonoDevelop.Ide.Gui
 			this.project = project;
 		}
 		
-		public void Invoke (string fileName)
+		public async void Invoke (string fileName)
 		{
 			try {
 				Counters.OpenDocumentTimer.Trace ("Creating content");
@@ -1476,7 +1477,7 @@ namespace MonoDevelop.Ide.Gui
 				Counters.OpenDocumentTimer.Trace ("Loading file");
 				
 				try {
-					newContent.Load (fileInfo);
+					await newContent.Load (fileInfo);
 				} catch (InvalidEncodingException iex) {
 					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. {1}", fileName, iex.Message), null);
 					return;

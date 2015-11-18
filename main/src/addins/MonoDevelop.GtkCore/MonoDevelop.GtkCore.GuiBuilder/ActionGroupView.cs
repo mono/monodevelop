@@ -37,7 +37,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.DesignerSupport;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide;
-
+using System.Threading.Tasks;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -140,11 +140,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			codeBinder.TargetObject = designer.RootComponent;
 		}
 		
-		public override void Save (FileSaveInformation fileSaveInformation)
+		public override async Task Save (FileSaveInformation fileSaveInformation)
 		{
 			string oldBuildFile = GuiBuilderService.GetBuildCodeFileName (project.Project, groupInfo.Name);
 			
-			base.Save (fileSaveInformation);
+			await base.Save (fileSaveInformation);
 			if (designer == null)
 				return;
 
@@ -202,10 +202,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			codeBinder.UpdateSignal (a.OldSignal, a.Signal);
 		}
 		
-		void OnBindField (object s, EventArgs args)
+		async void OnBindField (object s, EventArgs args)
 		{
 			if (designer.SelectedAction != null) {
-				codeBinder.BindToField (designer.SelectedAction);
+				await codeBinder.BindToField (designer.SelectedAction);
 			}
 		}
 	}

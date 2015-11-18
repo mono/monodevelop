@@ -38,13 +38,14 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
-using MonoDevelop.DesignerSupport.Toolbox; 
+using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.DesignerSupport;
 
 using Gtk;
 using Gdk;
 using MonoDevelop.Ide;
 using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -301,16 +302,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			OnDirtyChanged ();
 		}
 		
-		void OnBindWidgetField (object o, EventArgs a)
+		async void OnBindWidgetField (object o, EventArgs a)
 		{
 			if (designer.Selection != null)
-				codeBinder.BindToField (designer.Selection);
+				await codeBinder.BindToField (designer.Selection);
 		}
 		
-		void OnBindActionField (object o, EventArgs a)
+		async void OnBindActionField (object o, EventArgs a)
 		{
 			if (actionsBox.SelectedAction != null)
-				codeBinder.BindToField (actionsBox.SelectedAction);
+				await codeBinder.BindToField (actionsBox.SelectedAction);
 		}
 		
 		void OnSignalAdded (object sender, Stetic.ComponentSignalEventArgs args)
@@ -327,9 +328,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			codeBinder.UpdateSignal (args.OldSignal, args.Signal);
 		}
 		
-		public override void Save (FileSaveInformation fileSaveInformation)
+		public override async Task Save (FileSaveInformation fileSaveInformation)
 		{
-			base.Save (fileSaveInformation);
+			await base.Save (fileSaveInformation);
 			
 			if (designer == null)
 				return;

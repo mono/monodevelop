@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Components;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using Xwt;
@@ -96,17 +97,17 @@ namespace MonoDevelop.Ide.Gui
 			get { return Project == null ? null : FileService.AbsoluteToRelativePath (Project.BaseDirectory, ContentName); }
 		}
 
-		public virtual void Save ()
+		public virtual Task Save ()
 		{
-			Save (contentName);
+			return Save (contentName);
 		}
 		
-		public void Save (FilePath fileName)
+		public Task Save (FilePath fileName)
 		{
-			Save (new FileSaveInformation (fileName)); 
+			return Save (new FileSaveInformation (fileName)); 
 		}
 		
-		public virtual void Save (FileSaveInformation fileSaveInformation)
+		public virtual Task Save (FileSaveInformation fileSaveInformation)
 		{
 			throw new NotImplementedException ();
 		}
@@ -115,14 +116,14 @@ namespace MonoDevelop.Ide.Gui
 		{
 		}
 
-		public abstract void Load (FileOpenInformation fileOpenInformation);
+		public abstract Task Load (FileOpenInformation fileOpenInformation);
 		
-		public void Load (FilePath fileName)
+		public Task Load (FilePath fileName)
 		{
-			Load (new FileOpenInformation (fileName, null));
+			return Load (new FileOpenInformation (fileName, null));
 		}
 		
-		public virtual void LoadNew (System.IO.Stream content, string mimeType)
+		public virtual Task LoadNew (System.IO.Stream content, string mimeType)
 		{
 			throw new NotSupportedException ();
 		}

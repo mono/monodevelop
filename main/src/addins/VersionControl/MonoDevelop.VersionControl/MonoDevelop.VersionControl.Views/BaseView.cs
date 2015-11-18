@@ -3,6 +3,7 @@ using System.IO;
 using MonoDevelop.Ide.Gui;
 using System.Text;
 using Gtk;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl
 {
@@ -26,7 +27,7 @@ namespace MonoDevelop.VersionControl
 			get { return name; }
 		}
 
-		public override void Load (FileOpenInformation fileOpenInformation)
+		public override Task Load (FileOpenInformation fileOpenInformation)
 		{
 			throw new NotImplementedException ();
 		}

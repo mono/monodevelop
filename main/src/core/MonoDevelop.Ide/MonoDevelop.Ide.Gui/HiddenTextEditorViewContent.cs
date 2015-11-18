@@ -30,6 +30,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -61,8 +62,9 @@ namespace MonoDevelop.Ide.Gui
 			Name = editor.FileName;
 		}
 
-		public override void Load (FileOpenInformation fileOpenInformation)
+		public override Task Load (FileOpenInformation fileOpenInformation)
 		{
+			return Task.FromResult (true);
 		}
 		
 		public FilePath Name { 

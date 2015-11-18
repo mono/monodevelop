@@ -35,6 +35,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -106,24 +107,24 @@ namespace MonoDevelop.DesignerSupport
 			base.Dispose ();
 		}
 		
-		public override void Load (FileOpenInformation fileOpenInformation)
+		public override Task Load (FileOpenInformation fileOpenInformation)
 		{
 			ContentName = fileOpenInformation.FileName;
-			content.Load (ContentName);
+			return content.Load (ContentName);
 		}
 		
-		public override void LoadNew (System.IO.Stream content, string mimeType)
+		public override Task LoadNew (System.IO.Stream content, string mimeType)
 		{
-			this.content.LoadNew (content, mimeType);
+			return this.content.LoadNew (content, mimeType);
 		}
 		
 		public override Control Control {
 			get { return contentBox; }
 		}
 		
-		public override void Save (FileSaveInformation fileSaveInformation)
+		public override Task Save (FileSaveInformation fileSaveInformation)
 		{
-			content.Save (fileSaveInformation);
+			return content.Save (fileSaveInformation);
 		}
 		
 		public override bool IsDirty {

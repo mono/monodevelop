@@ -38,6 +38,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Editor;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -175,19 +176,19 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			base.Dispose ();
 		}
 		
-		public override void Load (FileOpenInformation fileOpenInformation)
+		public override Task Load (FileOpenInformation fileOpenInformation)
 		{
 			ContentName = fileOpenInformation.FileName;
-			content.Load (ContentName);
+			return content.Load (ContentName);
 		}
 		
 		public override Control Control {
 			get { return control; }
 		}
 		
-		public override void Save (FileSaveInformation fileSaveInformation)
+		public override Task Save (FileSaveInformation fileSaveInformation)
 		{
-			content.Save (fileSaveInformation);
+			return content.Save (fileSaveInformation);
 		}
 		
 		public override bool IsDirty {

@@ -36,6 +36,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Gettext.Editor
 {
@@ -53,7 +54,7 @@ namespace MonoDevelop.Gettext.Editor
 			};
 		}
 		
-		public override void Load (FileOpenInformation fileOpenInformation)
+		public override Task Load (FileOpenInformation fileOpenInformation)
 		{
 			var fileName = fileOpenInformation.FileName;
 //			using (IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
@@ -65,20 +66,17 @@ namespace MonoDevelop.Gettext.Editor
 			
 			this.ContentName = fileName;
 			this.IsDirty = false;
+			return Task.FromResult (true);
 		}
 		
-		public override void Save (FileSaveInformation fileSaveInformation)
+		public override Task Save (FileSaveInformation fileSaveInformation)
 		{
 			catalog.Save (fileSaveInformation.FileName);
 			ContentName = fileSaveInformation.FileName;
 			IsDirty = false;
+			return Task.FromResult (true);
 		}
 		
-		public override void Save ()
-		{
-			Save (this.ContentName);
-		}
-	
 		#region IUndoHandler implementation
 		void IUndoHandler.Undo ()
 		{

@@ -28,6 +28,7 @@
 //
 
 using System;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 
@@ -77,12 +78,12 @@ namespace MonoDevelop.Ide.Navigation
 			get { return doc != null? doc.FileName : fileName; }
 		}
 
-		public override Document ShowDocument ()
+		public override Task<Document> ShowDocument ()
 		{
 			return DoShow ();
 		}
 		
-		protected virtual Document DoShow ()
+		protected virtual async Task<Document> DoShow ()
 		{
 			if (doc != null) {
 				doc.Select ();
@@ -95,7 +96,7 @@ namespace MonoDevelop.Ide.Navigation
 					break;
 				}
 			}
-			return IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName, p, true));
+			return await IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName, p, true));
 		}
 		
 		public override string DisplayName {
