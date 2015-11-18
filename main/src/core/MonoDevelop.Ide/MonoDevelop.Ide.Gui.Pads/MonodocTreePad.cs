@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				return;
 			if (populated.ContainsKey (node))
 				return;
-			if (node.ChildNodes == null)
+			if (node.Nodes == null)
 				return;
 			TreeIter iter;
 			if (store.IterChildren (out iter, args.Iter)) {
@@ -118,10 +118,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void PopulateNode (TreeIter parent)
 		{
 			Node node = (Node)store.GetValue (parent, 1);
-			if (node.ChildNodes == null)
+			if (node.Nodes == null)
 				return;
 
-			foreach (Node n in node.ChildNodes) {
+			foreach (Node n in node.Nodes) {
 				store.AppendValues (parent, n.Caption, n);
 			}
 		}
