@@ -325,7 +325,7 @@
                     HorizontalAlignment="Center"
                     Width="16"
                     Height="16"
-                    Margin="3"/>
+                    Margin="6,3"/>
                 <Border x:Name="GlyphPanel"
                     Visibility="Hidden"
                     Height="22"
@@ -350,7 +350,7 @@
                     VerticalAlignment="Center"
                     ContentSource="Header"
                     RecognizesAccessKey="True"
-                    Margin="{TemplateBinding MenuItem.Padding}"
+                    Margin="0,0,0,1"
                     SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                 <TextBlock x:Name="menuGestureText"
                     Grid.Column="4"
@@ -403,7 +403,7 @@
                     HorizontalAlignment="Center"
                     Width="16"
                     Height="16"
-                    Margin="3"/>
+                    Margin="6,3"/>
                 <Border x:Name="GlyphPanel"
                     BorderThickness="1"
                     Height="22"
@@ -426,13 +426,13 @@
                     VerticalAlignment="Center"
                     ContentSource="Header"
                     RecognizesAccessKey="True"
-                    Margin="{TemplateBinding MenuItem.Padding}"
+                    Margin="0,0,0,1"
                     SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                 <TextBlock
                     Grid.Column="4"
                     Text="{TemplateBinding InputGestureText}"
                     VerticalAlignment="Center"
-                    Margin="{TemplateBinding MenuItem.Padding}"
+                    Margin="0,0,0,1"
                     Opacity="0.7" />
                 <Path x:Name="RightArrow"
                     Grid.Column="5"
