@@ -4,8 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:WindowsPlatform.MainToolbar"
-             mc:Ignorable="d">
-    <Border BorderBrush="{Binding BorderBrush}" BorderThickness="1" UseLayoutRounding="True">
+             xmlns:platform="clr-namespace:WindowsPlatform"
+             mc:Ignorable="d"
+             Background="{Binding Path=(platform:Styles.SearchBarBackgroundBrush), Mode=OneWay}"
+             Foreground="{Binding Path=(platform:Styles.SearchBarTextBrush), Mode=OneWay}"
+             BorderBrush="{Binding Path=(platform:Styles.SearchBarBorderBrush), Mode=OneWay}">
+    <Border BorderThickness="1" UseLayoutRounding="True">
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Height="24" UseLayoutRounding="True">
             <TextBox x:Name="SearchBar" Text="{Binding Path=SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" MinWidth="180" Margin="5,0,0,0" Background="Transparent" Foreground="{Binding Foreground}" BorderThickness="0" UseLayoutRounding="True" />
             <Image x:Name="SearchIcon" MaxWidth="16" MaxHeight="16" Margin="0,0,4,0" MouseLeftButtonDown="OnIconClicked" UseLayoutRounding="True">

@@ -29,9 +29,6 @@ namespace WindowsPlatform.MainToolbar
 		{
 			InitializeComponent ();
 			DataContext = this;
-			BorderBrush = Styles.SearchBarBorderBrush;
-			Background = Styles.SearchBarBackgroundBrush;
-			Foreground = Styles.SearchBarTextBrush;
 
 			SearchBar.GotKeyboardFocus += (o, e) => {
 				SearchText = string.Empty;

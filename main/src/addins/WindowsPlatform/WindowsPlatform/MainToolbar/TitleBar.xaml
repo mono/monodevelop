@@ -4,8 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WindowsPlatform.MainToolbar"
-             mc:Ignorable="d" Background="Transparent">
-    <DockPanel x:Name="DockTitle" Height="{DynamicResource {x:Static SystemParameters.WindowCaptionHeightKey}}" Margin="1,0,0,0" Background="Transparent" UseLayoutRounding="True">
+             xmlns:platform="clr-namespace:WindowsPlatform"
+             mc:Ignorable="d" Background="{Binding Path=(platform:Styles.MainToolbarBackgroundBrush), Mode=OneWay}">
+    <DockPanel x:Name="DockTitle" Height="{DynamicResource {x:Static SystemParameters.WindowCaptionHeightKey}}" Margin="1,0,0,0" UseLayoutRounding="True">
         <!-- Insert menu items programmatically here on Left. -->
     </DockPanel>
 </UserControl>

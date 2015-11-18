@@ -4,7 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WindowsPlatform.MainToolbar"
-             mc:Ignorable="d" Background="Transparent">
+             xmlns:platform="clr-namespace:WindowsPlatform"
+             mc:Ignorable="d"
+             Background="{Binding Path=(platform:Styles.MainToolbarBackgroundBrush), Mode=OneWay}"
+             Foreground="{Binding Path=(platform:Styles.MainToolbarForegroundBrush), Mode=OneWay}"
+             BorderBrush="{Binding Path=(platform:Styles.MainToolbarShadowBrush), Mode=OneWay}"
+             BorderThickness="0, 0, 0, 0.5">
     <UserControl.Resources>
         <local:NotNullConverter x:Key="NotNullConverter" />
     </UserControl.Resources>
