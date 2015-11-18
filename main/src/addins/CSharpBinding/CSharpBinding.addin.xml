@@ -129,6 +129,7 @@
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.PathedDocumentTextEditorExtension" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.UnitTestTextEditorExtension" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.ClassOutline.CSharpOutlineTextEditorExtension" />
+		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.CSharpNavigationTextEditorExtension" />
 		<Class fileExtensions = ".json" class = "MonoDevelop.JSon.JSonTextEditorExtension" />
 		<Class class = "MonoDevelop.CSharp.Refactoring.CSharpFeaturesTextEditorExtension" />
 	</Extension>

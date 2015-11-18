@@ -1874,6 +1874,7 @@ namespace Mono.TextEditor
 
 			string link = GetLink != null ? GetLink (args) : null;
 			if (!String.IsNullOrEmpty (link)) {
+				textEditor.ClearSelection ();
 				textEditor.FireLinkEvent (link, args.Button, args.ModifierState);
 				return;
 			}

@@ -312,7 +312,7 @@ namespace Mono.TextEditor
 					nextTipOffset = tipOffset;
 					nextTipScheduledTime = DateTime.FromBinary (0);
 					tipItem = null;
-                    TooltipTimer ();
+					TooltipTimer ();
 				}
 			}
 			return 0; //FALSE
@@ -649,6 +649,7 @@ namespace Mono.TextEditor
 		{
 			var result = base.OnFocusOutEvent (evnt);
 			imContextNeedsReset = true;
+			mouseButtonPressed = 0;
 			imContext.FocusOut ();
 			RemoveFocusOutTimerId ();
 

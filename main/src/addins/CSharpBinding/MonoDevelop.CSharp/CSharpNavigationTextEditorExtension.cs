@@ -24,12 +24,100 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Ide.Editor.Extension;
+using System.Threading;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor;
+using System.Linq;
+
 namespace MonoDevelop.CSharp
 {
-	public class CSharpNavigationTextEditorExtension
+	class CSharpNavigationTextEditorExtension : AbstractNavigationExtension
 	{
-		public CSharpNavigationTextEditorExtension ()
+		static List<NavigationSegment> emptyList = new List<NavigationSegment> ();
+
+		protected override async Task<IEnumerable<NavigationSegment>> RequestLinksAsync (int offset, int length, CancellationToken token)
 		{
+			var parsedDocument = DocumentContext.ParsedDocument;
+			if (parsedDocument == null)
+				return emptyList;
+			var model = parsedDocument.GetAst<SemanticModel> ();
+			if (model == null)
+				return emptyList;
+			try {
+				var visitor = new NavigationVisitor (DocumentContext, model, TextSpan.FromBounds (offset, length), token);
+				visitor.Visit (await model.SyntaxTree.GetRootAsync (token));
+				return visitor.result;
+			} catch (OperationCanceledException) {
+				return emptyList;
+			}
+		}
+
+		class NavigationVisitor : CSharpSyntaxWalker
+		{
+			SemanticModel model;
+			internal List<NavigationSegment> result = new List<NavigationSegment> ();
+
+			TextSpan region;
+			DocumentContext documentContext;
+			CancellationToken token;
+
+			public NavigationVisitor (DocumentContext documentContext, SemanticModel model, TextSpan region, CancellationToken token)
+			{
+				this.documentContext = documentContext;
+				this.model = model;
+				this.region = region;
+				this.token = token;
+			}
+
+			public override void VisitCompilationUnit (CompilationUnitSyntax node)
+			{
+				var startNode = node.DescendantNodesAndSelf (n => region.Start <= n.SpanStart).FirstOrDefault ();
+				if (startNode == node || startNode == null) {
+					base.VisitCompilationUnit (node);
+				} else {
+					this.Visit (startNode);
+				}
+			}
+
+			public override void Visit (SyntaxNode node)
+			{
+				if (node.Span.End < region.Start)
+					return;
+				if (node.Span.Start > region.End)
+					return;
+				base.Visit(node);
+			}
+
+			public override void VisitIdentifierName (IdentifierNameSyntax node)
+			{
+				var info = model.GetSymbolInfo (node); 
+				if (info.Symbol != null) {
+					result.Add (new NavigationSegment (node.Span.Start, node.Span.Length, delegate { Console.WriteLine (Environment.StackTrace); IdeApp.ProjectOperations.JumpToDeclaration (info.Symbol, documentContext.Project); })); 
+				}
+			}
+
+			public override void VisitMemberAccessExpression (MemberAccessExpressionSyntax node)
+			{
+				var info = model.GetSymbolInfo (node); 
+				if (info.Symbol != null) {
+					result.Add (new NavigationSegment (node.Name.Span.Start, node.Name.Span.Length, delegate { IdeApp.ProjectOperations.JumpToDeclaration (info.Symbol, documentContext.Project); })); 
+				}
+
+				base.VisitMemberAccessExpression (node);
+			}
+			 
+			public override void VisitBlock (BlockSyntax node)
+			{
+				token.ThrowIfCancellationRequested ();
+				base.VisitBlock (node);
+			}
 		}
 	}
 }
