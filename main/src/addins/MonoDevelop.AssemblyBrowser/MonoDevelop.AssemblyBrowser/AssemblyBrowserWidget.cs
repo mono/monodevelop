@@ -53,6 +53,7 @@ using System.Threading;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Ide.Gui.Content;
+using System.IO;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -1603,6 +1604,8 @@ namespace MonoDevelop.AssemblyBrowser
 
 				return result;
 			}
+			if (!File.Exists (fileName))
+				return null;
 			result = new AssemblyLoader (this, fileName);
 			
 			definitions.Add (result);
