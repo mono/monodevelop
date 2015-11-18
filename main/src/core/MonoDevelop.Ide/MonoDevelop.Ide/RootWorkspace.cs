@@ -226,7 +226,12 @@ namespace MonoDevelop.Ide
 				monitor.Dispose ();
 			}
 		}
-		
+
+		bool IBuildTarget.CanBuild (ConfigurationSelector configuration)
+		{
+			return true;
+		}
+
 		bool IBuildTarget.CanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
 			if (IdeApp.ProjectOperations.CurrentSelectedSolution != null)

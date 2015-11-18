@@ -630,6 +630,11 @@ namespace MonoDevelop.Projects
 			}
 		}	 
 
+		bool IBuildTarget.CanBuild (ConfigurationSelector configuration)
+		{
+			return true;
+		}
+
 		public Task<BuildResult> Clean (ProgressMonitor monitor, string configuration)
 		{
 			return Clean (monitor, (SolutionConfigurationSelector) configuration);
