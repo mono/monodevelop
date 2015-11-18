@@ -87,9 +87,9 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		protected override void OnWorkbenchWindowChanged (EventArgs e)
+		protected override void OnWorkbenchWindowChanged ()
 		{
-			base.OnWorkbenchWindowChanged (e);
+			base.OnWorkbenchWindowChanged ();
 			if (WorkbenchWindow != null && widget != null)
 				widget.SetToolbar (WorkbenchWindow.GetToolbar (this));
 		}
@@ -111,13 +111,18 @@ namespace MonoDevelop.VersionControl.Views
 			base.Dispose ();
 		}
 
-		#region IAttachableViewContent implementation
-		public override void Selected ()
+		public void Init ()
 		{
 			if (info != null && !info.Started) {
 				widget.ShowLoading ();
 				info.Start ();
 			}
+		}
+
+		#region IAttachableViewContent implementation
+		protected override void OnSelected ()
+		{
+			Init ();
 		}
 
 		#endregion

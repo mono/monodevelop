@@ -66,16 +66,14 @@ namespace MonoDevelop.Ide.Editor
 		public TextEditorViewContent (TextEditor textEditor, ITextEditorImpl textEditorImpl)
 		{
 			if (textEditor == null)
-				throw new ArgumentNullException ("textEditor");
+				throw new ArgumentNullException (nameof (textEditor));
 			if (textEditorImpl == null)
-				throw new ArgumentNullException ("textEditorImpl");
+				throw new ArgumentNullException (nameof (textEditorImpl));
 			this.textEditor = textEditor;
 			this.textEditorImpl = textEditorImpl;
 			this.textEditor.MimeTypeChanged += UpdateTextEditorOptions;
 			DefaultSourceEditorOptions.Instance.Changed += UpdateTextEditorOptions;
 			this.textEditor.DocumentContextChanged += HandleDocumentContextChanged;
-
-			textEditorImpl.ViewContent.ContentChanged += (object sender, EventArgs e) => OnContentChanged (e);
 		}
 
 		void HandleDocumentContextChanged (object sender, EventArgs e)
@@ -339,9 +337,9 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public override void OnContentNameChanged (EventArgs e)
+		protected override void OnContentNameChanged ()
 		{
-			base.OnContentNameChanged (e);
+			base.OnContentNameChanged ();
 			textEditorImpl.ContentName = ContentName;
 		}
 
@@ -399,13 +397,16 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.ViewContent.DiscardChanges ();
 		}
 
-		public override MonoDevelop.Projects.Project Project {
+		protected override void OnSetProject (MonoDevelop.Projects.Project project)
+		{
+			base.OnSetProject (project);
+			textEditorImpl.ViewContent.Project = project;
+			UpdateTextEditorOptions (null, null);
+		}
+
+		public override ProjectReloadCapability ProjectReloadCapability {
 			get {
-				return textEditorImpl.ViewContent.Project;
-			}
-			set {
-				textEditorImpl.ViewContent.Project = value;
-				UpdateTextEditorOptions (null, null);
+				return textEditorImpl.ViewContent.ProjectReloadCapability;
 			}
 		}
 
@@ -413,45 +414,25 @@ namespace MonoDevelop.Ide.Editor
 
 		#region BaseViewContent implementation
 
-		public override object GetContent (Type type)
+		protected override IEnumerable<object> OnGetContents (Type type)
 		{
-			if (type.IsAssignableFrom (typeof(TextEditor)))
-				return textEditor;
+			var res = base.OnGetContents (type);
+
+			if (type == typeof (TextEditor))
+				return res.Concat (textEditor);
+
 			var ext = textEditorImpl.EditorExtension;
 			while (ext != null) {
-				if (type.IsInstanceOfType (ext))
-					return ext;
+				res = res.Concat (ext.OnGetContents (type));
 				ext = ext.Next;
 			}
-			return textEditorImpl.ViewContent.GetContent (type);
+			res = res.Concat (textEditorImpl.ViewContent.GetContents (type));
+			return res;
 		}
 
-		public override IEnumerable<T> GetContents<T> ()
+		protected override void OnWorkbenchWindowChanged ()
 		{
-			if (typeof(T) == typeof(TextEditor)) {
-				yield return (T)(object)textEditor;
-				yield break;
-			}
-			var result = this as T;
-			if (result != null) {
-				yield return result;
-			}
-			var ext = textEditorImpl.EditorExtension;
-			while (ext != null) {
-				result = ext as T;
-				if (result != null) {
-					yield return result;
-				}
-				ext = ext.Next;
-			}
-			foreach (var cnt in textEditorImpl.ViewContent.GetContents<T> ()) {
-				yield return cnt;
-			}
-		}
-
-		protected override void OnWorkbenchWindowChanged (EventArgs e)
-		{
-			base.OnWorkbenchWindowChanged (e);
+			base.OnWorkbenchWindowChanged ();
 			textEditorImpl.ViewContent.WorkbenchWindow = WorkbenchWindow;
 		}
 

@@ -117,7 +117,13 @@ namespace MonoDevelop.Ide.Gui
 
 			return null;
 		}
-		
+
+		internal ProjectReloadCapability ProjectReloadCapability {
+			get {
+				return Window.ViewContent.ProjectReloadCapability;
+			}
+		}
+
 		public override IEnumerable<T> GetContents<T> ()
 		{
 			foreach (var cnt in window.ViewContent.GetContents<T> ()) {
@@ -666,13 +672,11 @@ namespace MonoDevelop.Ide.Gui
 			UnloadAdhocProject ();
 			if (adhocProject == null) 
 				analysisDocument = null;
-			ISupportsProjectReload pr = GetContent<ISupportsProjectReload> ();
-			if (pr != null) {
+			if (Window.ViewContent.ProjectReloadCapability != ProjectReloadCapability.None) {
 				// Unsubscribe project events
 				if (Window.ViewContent.Project != null)
 					Window.ViewContent.Project.Modified -= HandleProjectModified;
 				Window.ViewContent.Project = project;
-				pr.Update (project);
 			}
 			if (project != null)
 				project.Modified += HandleProjectModified;

@@ -477,11 +477,6 @@ namespace MonoDevelop.Debugger
 			get { return "Bottom"; }
 		}
 
-		public void RedrawContent ()
-		{
-			UpdateDisplay ();
-		}
-		
 		protected void OnDeleteClicked (object o, EventArgs args)
 		{
 			OnDeleted ();

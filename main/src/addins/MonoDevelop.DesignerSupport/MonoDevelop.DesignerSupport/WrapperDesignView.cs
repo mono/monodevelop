@@ -34,6 +34,7 @@ using System;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
+using System.Collections.Generic;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -51,9 +52,8 @@ namespace MonoDevelop.DesignerSupport
 			this.contentBox.PackEnd (content.Control, true, true, 0);
 			this.contentBox.ShowAll ();
 			
-			content.ContentChanged += new EventHandler (OnTextContentChanged);
 			content.DirtyChanged += new EventHandler (OnTextDirtyChanged);
-			
+
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);
 		}
 		
@@ -81,23 +81,26 @@ namespace MonoDevelop.DesignerSupport
 			get { return content; }
 		}
 		
-		public override MonoDevelop.Projects.Project Project {
-			get { return base.Project; }
-			set { 
-				base.Project = value; 
-				content.Project = value; 
+		protected override void OnSetProject (MonoDevelop.Projects.Project project)
+		{
+			base.OnSetProject (project);
+			content.Project = project;
+		}
+
+		public override ProjectReloadCapability ProjectReloadCapability {
+			get {
+				return content.ProjectReloadCapability;
 			}
 		}
 		
-		protected override void OnWorkbenchWindowChanged (EventArgs e)
+		protected override void OnWorkbenchWindowChanged ()
 		{
-			base.OnWorkbenchWindowChanged (e);
+			base.OnWorkbenchWindowChanged ();
 			content.WorkbenchWindow = WorkbenchWindow;
 		}
 		
 		public override void Dispose ()
 		{
-			content.ContentChanged -= new EventHandler (OnTextContentChanged);
 			content.DirtyChanged -= new EventHandler (OnTextDirtyChanged);
 			IdeApp.Workbench.ActiveDocumentChanged -= new EventHandler (OnActiveDocumentChanged);
 			base.Dispose ();
@@ -139,19 +142,15 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 		
-		public override string ContentName {
-			get { return content.ContentName; }
-			set { content.ContentName = value; }
-		}
-				
-		void OnTextContentChanged (object s, EventArgs args)
+		protected override void OnContentNameChanged ()
 		{
-			OnContentChanged (args);
+			base.OnContentNameChanged ();
+			content.ContentName = ContentName;
 		}
-		
+
 		void OnTextDirtyChanged (object s, EventArgs args)
 		{
-			OnDirtyChanged (args);
+			OnDirtyChanged ();
 		}
 		
 		void OnActiveDocumentChanged (object s, EventArgs args)
@@ -164,10 +163,10 @@ namespace MonoDevelop.DesignerSupport
 		protected virtual void OnDocumentActivated ()
 		{
 		}
-		
-		public override object GetContent (Type type)
+
+		protected override IEnumerable<object> OnGetContents (Type type)
 		{
-			return base.GetContent (type) ?? content.GetContent (type);
+			return base.OnGetContents (type).Concat (content.GetContents (type));
 		}
 	}
 }

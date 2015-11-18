@@ -115,8 +115,6 @@ namespace MonoDevelop.Ide.Gui
 			
 			content.ContentNameChanged += new EventHandler(SetTitleEvent);
 			content.DirtyChanged       += HandleDirtyChanged;
-			content.BeforeSave         += new EventHandler(BeforeSave);
-			content.ContentChanged     += new EventHandler (OnContentChanged);
 			box.Show ();
 			Add (box);
 			
@@ -373,14 +371,6 @@ namespace MonoDevelop.Ide.Gui
 			return toolbar;
 		}
 
-		void BeforeSave(object sender, EventArgs e)
-		{
-			BaseViewContent secondaryViewContent = ActiveViewContent as BaseViewContent;
-			if (secondaryViewContent != null) {
-				secondaryViewContent.BeforeSave ();
-			}
-		}
-		
 		public ViewContent ViewContent {
 			get {
 				return content;
@@ -449,13 +439,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public void OnContentChanged (object o, EventArgs e)
-		{
-			foreach (BaseViewContent subContent in SubViewContents) {
-				subContent.BaseContentChanged ();
-			}
-		}
-		
 		public bool CloseWindow (bool force)
 		{
 			return CloseWindow (force, false);
@@ -494,8 +477,6 @@ namespace MonoDevelop.Ide.Gui
 			if (content != null) {
 				content.ContentNameChanged -= new EventHandler(SetTitleEvent);
 				content.DirtyChanged       -= HandleDirtyChanged;
-				content.BeforeSave         -= new EventHandler(BeforeSave);
-				content.ContentChanged     -= new EventHandler (OnContentChanged);
 				content.WorkbenchWindow     = null;
 				content.Dispose ();
 				content = null;
@@ -604,8 +585,6 @@ namespace MonoDevelop.Ide.Gui
 			viewContents.Insert (index, subViewContent);
 			subViewContent.WorkbenchWindow = this;
 			InsertButton (index, subViewContent.TabPageLabel, subViewContent);
-
-			OnContentChanged (null, null);
 
 			if (ViewsChanged != null)
 				ViewsChanged (this, EventArgs.Empty);
@@ -732,7 +711,7 @@ namespace MonoDevelop.Ide.Gui
 			if (oldIndex != -1) {
 				subViewContent = viewContents[oldIndex] as BaseViewContent;
 				if (subViewContent != null)
-					subViewContent.Deselected ();
+					subViewContent.OnDeselected ();
 			}
 
 			subViewContent = viewContents[newIndex] as BaseViewContent;
@@ -756,7 +735,7 @@ namespace MonoDevelop.Ide.Gui
 				AttachToPathedDocument (pathedDocument);
 
 			if (subViewContent != null)
-				subViewContent.Selected ();
+				subViewContent.OnSelected ();
 
 			OnActiveViewContentChanged (new ActiveViewContentEventArgs (this.ActiveViewContent));
 		}

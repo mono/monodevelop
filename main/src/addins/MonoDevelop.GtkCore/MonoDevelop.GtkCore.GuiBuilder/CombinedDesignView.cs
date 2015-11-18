@@ -56,7 +56,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					ShowPage (0);
 				};
 			}*/
-			content.ContentChanged += new EventHandler (OnTextContentChanged);
 			content.DirtyChanged += new EventHandler (OnTextDirtyChanged);
 			
 			CommandRouterContainer crc = new CommandRouterContainer (content.Control, content, true);
@@ -109,17 +108,21 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			ShowPage (0);*/
 		}
 		
-		public override MonoDevelop.Projects.Project Project {
-			get { return base.Project; }
-			set { 
-				base.Project = value; 
-				content.Project = value; 
+		protected override void OnSetProject (Projects.Project project)
+		{
+			base.OnSetProject (project);
+			content.Project = project; 
+		}
+
+		public override ProjectReloadCapability ProjectReloadCapability {
+			get {
+				return content.ProjectReloadCapability;
 			}
 		}
 		
-		protected override void OnWorkbenchWindowChanged (EventArgs e)
+		protected override void OnWorkbenchWindowChanged ()
 		{
-			base.OnWorkbenchWindowChanged (e);
+			base.OnWorkbenchWindowChanged ();
 			content.WorkbenchWindow = WorkbenchWindow;
 			if (WorkbenchWindow != null) {
 				foreach (TabView view in tabs) {
@@ -162,7 +165,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public override void Dispose ()
 		{
-			content.ContentChanged -= new EventHandler (OnTextContentChanged);
 			content.DirtyChanged -= new EventHandler (OnTextDirtyChanged);
 			IdeApp.Workbench.ActiveDocumentChanged -= new EventHandler (OnActiveDocumentChanged);
 			content.Dispose ();
@@ -212,14 +214,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 		}
 		
-		void OnTextContentChanged (object s, EventArgs args)
-		{
-			OnContentChanged (args);
-		}
-		
 		void OnTextDirtyChanged (object s, EventArgs args)
 		{
-			OnDirtyChanged (args);
+			OnDirtyChanged ();
 		}
 		
 		void OnActiveDocumentChanged (object s, EventArgs args)
@@ -232,7 +229,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 		}
 		
-		public override object GetContent (Type type)
+		protected override object OnGetContent (Type type)
 		{
 //			if (type == typeof(IEditableTextBuffer)) {
 //				// Intercept the IPositionable interface, since we need to
@@ -243,7 +240,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 //					return null;
 //			}
 //			
-			return  base.GetContent (type) ?? (content !=null  ? content.GetContent (type) : null);
+			return  base.OnGetContent (type) ?? (content !=null  ? content.GetContent (type) : null);
 		}
 
 		public void JumpTo (int line, int column)
@@ -267,11 +264,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			this.content = content;
 		}
 		
-		public override object GetContent (Type type)
+		protected override object OnGetContent (Type type)
 		{
 			if (type.IsInstanceOfType (Control))
 				return Control;
-			return base.GetContent (type);
+			return base.OnGetContent (type);
 		}
 		
 		public override Control Control {

@@ -308,10 +308,6 @@ namespace MonoDevelop.NUnit
 			}
 		}
 		
-		public void RedrawContent ()
-		{
-		}
-		
 		string GetResultsMarkup ()
 		{
 			return string.Format (GettextCatalog.GetString ("<b>Passed</b>: {0}   <b>Failed</b>: {1}   <b>Errors</b>: {2}   <b>Inconclusive</b>: {3}   <b>Invalid</b>: {4}   <b>Ignored</b>: {5}   <b>Skipped</b>: {6}   <b>Time</b>: {7}"), 

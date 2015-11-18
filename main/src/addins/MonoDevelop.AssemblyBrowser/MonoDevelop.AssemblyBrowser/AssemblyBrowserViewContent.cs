@@ -46,9 +46,9 @@ namespace MonoDevelop.AssemblyBrowser
 		readonly static string[] defaultAssemblies = new string[] { "mscorlib", "System", "System.Core", "System.Xml" };
 		AssemblyBrowserWidget widget;
 		
-		protected override void OnWorkbenchWindowChanged (EventArgs e)
+		protected override void OnWorkbenchWindowChanged ()
 		{
-			base.OnWorkbenchWindowChanged (e);
+			base.OnWorkbenchWindowChanged ();
 			if (WorkbenchWindow != null) {
 				var toolbar = WorkbenchWindow.GetToolbar (this);
 				widget.SetToolbar (toolbar);

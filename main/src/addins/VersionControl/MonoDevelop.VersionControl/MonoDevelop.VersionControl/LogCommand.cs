@@ -60,7 +60,7 @@ namespace MonoDevelop.VersionControl
 					VersionControlDocumentInfo info = new VersionControlDocumentInfo (null, item, item.Repository);
 					LogView logView = new LogView (info);
 					info.Document = IdeApp.Workbench.OpenDocument (logView, true).PrimaryView;
-					logView.Selected ();	
+					logView.Init ();
 				}
 			}
 			

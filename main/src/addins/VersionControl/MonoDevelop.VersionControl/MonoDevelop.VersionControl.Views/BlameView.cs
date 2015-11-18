@@ -54,7 +54,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 		
 		#region IAttachableViewContent implementation
-		public override void Selected ()
+		protected override void OnSelected ()
 		{
 			info.Start ();
 			var sourceEditor = info.Document.GetContent <MonoDevelop.SourceEditor.SourceEditorView> ();
@@ -64,7 +64,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		public override void Deselected ()
+		protected override void OnDeselected ()
 		{
 			var sourceEditor = info.Document.GetContent <MonoDevelop.SourceEditor.SourceEditorView> ();
 			if (sourceEditor != null) {

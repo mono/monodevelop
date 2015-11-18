@@ -228,11 +228,12 @@ namespace MonoDevelop.Ide.Gui
 				handler (this, e);
 		}
 
-		public override object GetContent (Type type)
+		protected override object OnGetContent (Type type)
 		{
 			if (type.IsAssignableFrom (typeof(TextEditor)))
 				return Editor;
-			return base.GetContent (type);
+			else
+				return base.OnGetContent (type);
 		}
 	}
 }

@@ -69,7 +69,6 @@ namespace MonoDevelop.Gettext.Editor
 		
 		public override void Save (FileSaveInformation fileSaveInformation)
 		{
-			OnBeforeSave (EventArgs.Empty);
 			catalog.Save (fileSaveInformation.FileName);
 			ContentName = fileSaveInformation.FileName;
 			IsDirty = false;

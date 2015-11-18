@@ -54,7 +54,7 @@ namespace MonoDevelop.VersionControl.Views
 			this.info = info;
 		}
 
-		public override void Selected ()
+		protected override void OnSelected ()
 		{
 			widget.UpdateLocalText ();
 			widget.info.Start ();

@@ -48,7 +48,7 @@ using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class GuiBuilderView : CombinedDesignView, ISupportsProjectReload
+	public class GuiBuilderView : CombinedDesignView
 	{
 		Stetic.WidgetDesigner designer;
 		Stetic.ActionGroupDesigner actionsBox;
@@ -86,14 +86,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			LoadDesigner ();
 		}
 		
-		ProjectReloadCapability ISupportsProjectReload.ProjectReloadCapability {
+		public override ProjectReloadCapability ProjectReloadCapability {
 			get {
 				return ProjectReloadCapability.Full;
 			}
 		}
-		
-		void ISupportsProjectReload.Update (MonoDevelop.Projects.Project project)
+
+		protected override void OnSetProject (Projects.Project project)
 		{
+			base.OnSetProject (project);
+
 			if (gproject != null && gproject.Project == project)
 				return;
 			
@@ -296,9 +298,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnWindowModifiedChanged (object s, EventArgs args)
 		{
-			if (IsDirty)
-				OnContentChanged (args);
-			OnDirtyChanged (args);
+			OnDirtyChanged ();
 		}
 		
 		void OnBindWidgetField (object o, EventArgs a)

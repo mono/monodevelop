@@ -69,7 +69,7 @@ namespace MonoDevelop.SourceEditor
 	partial class SourceEditorView : ViewContent, IBookmarkBuffer, IClipboardHandler, ITextFile,
 		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, ITextEditorDataProvider,
-		ICodeTemplateHandler, ICodeTemplateContextProvider, ISupportsProjectReload, IPrintable,
+		ICodeTemplateHandler, ICodeTemplateContextProvider, IPrintable,
 	ITextEditorImpl, IEditorActionHost, ITextMarkerFactory, IUndoHandler
 	{
 		readonly SourceEditorWidget widget;
@@ -203,14 +203,6 @@ namespace MonoDevelop.SourceEditor
 			debugStackLineMarker = new DebugStackLineTextMarker (widget.TextEditor);
 			currentDebugLineMarker = new CurrentDebugLineTextMarker (widget.TextEditor);
 			
-			WorkbenchWindowChanged += HandleWorkbenchWindowChanged;
-			ContentNameChanged += delegate {
-				Document.FileName = ContentName;
-				if (String.IsNullOrEmpty (ContentName) || !File.Exists (ContentName))
-					return;
-				
-				lastSaveTimeUtc = File.GetLastWriteTimeUtc (ContentName);
-			};
 			ClipbardRingUpdated += UpdateClipboardRing;
 			
 			TextEditorService.FileExtensionAdded += HandleFileExtensionAdded;
@@ -243,6 +235,14 @@ namespace MonoDevelop.SourceEditor
 				Document.FileName = document.FileName;
 			}
 			FileRegistry.Add (this);
+		}
+
+		protected override void OnContentNameChanged ()
+		{
+			Document.FileName = ContentName;
+			if (!String.IsNullOrEmpty (ContentName) && File.Exists (ContentName))
+				lastSaveTimeUtc = File.GetLastWriteTimeUtc (ContentName);
+			base.OnContentNameChanged ();
 		}
 
 		void HandleLineChanged (object sender, Mono.TextEditor.LineEventArgs e)
@@ -473,12 +473,11 @@ namespace MonoDevelop.SourceEditor
 			return true;
 		}
 
-		void HandleWorkbenchWindowChanged (object sender, EventArgs e)
+		protected override void OnWorkbenchWindowChanged ()
 		{
-			if (WorkbenchWindow != null) {
+			base.OnWorkbenchWindowChanged ();
+			if (WorkbenchWindow != null)
 				WorkbenchWindow.ActiveViewContentChanged += HandleActiveViewContentChanged;
-				WorkbenchWindowChanged -= HandleWorkbenchWindowChanged;
-			}
 		}
 
 		void HandleActiveViewContentChanged (object o, ActiveViewContentEventArgs e)
@@ -2255,17 +2254,12 @@ namespace MonoDevelop.SourceEditor
 		
 		#region ISupportsProjectReload implementaion
 		
-		ProjectReloadCapability ISupportsProjectReload.ProjectReloadCapability {
+		public override ProjectReloadCapability ProjectReloadCapability {
 			get {
 				return ProjectReloadCapability.Full;
 			}
 		}
-		
-		void ISupportsProjectReload.Update (Project project)
-		{
-			// The project will be assigned to the view. Nothing else to do. 
-		}
-		
+
 		#endregion
 		
 		#endregion
@@ -2309,14 +2303,13 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public override object GetContent (Type type)
+		protected override object OnGetContent (Type type)
 		{
 			if (type.Equals (typeof(TextEditorData)))
 				return TextEditor.GetTextEditorData ();
-			return base.GetContent (type);
+			return base.OnGetContent (type);
 		}
 
-		
 		#region widget command handlers
 		[CommandHandler (SearchCommands.EmacsFindNext)]
 		public void EmacsFindNext ()

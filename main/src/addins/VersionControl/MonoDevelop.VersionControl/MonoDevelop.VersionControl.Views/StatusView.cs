@@ -291,9 +291,9 @@ namespace MonoDevelop.VersionControl.Views
 			Init ();
 		}
 
-		protected override void OnWorkbenchWindowChanged (EventArgs e)
+		protected override void OnWorkbenchWindowChanged ()
 		{
-			base.OnWorkbenchWindowChanged (e);
+			base.OnWorkbenchWindowChanged ();
 			if (WorkbenchWindow == null)
 				return;
 

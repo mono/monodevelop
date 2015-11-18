@@ -1,9 +1,10 @@
-// BaseViewContent.cs
+//
+// CoreExtensions.cs
 //
 // Author:
-//   Viktoria Dudka (viktoriad@remobjects.com)
+//       Lluis Sanchez Gual <lluis@xamarin.com>
 //
-// Copyright (c) 2009 RemObjects Software
+// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,30 +23,18 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-
-using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
-using MonoDevelop.Components;
-
-namespace MonoDevelop.Ide.Gui
+namespace System
 {
-	public interface BaseViewContent2 : IDisposable
+	public static class CoreExtensions
 	{
-		IWorkbenchWindow WorkbenchWindow { get; set; }
-		Control Control { get; }
-		
-		/// <summary>
-		/// The label used for the subview list.
-		/// </summary>
-		string TabPageLabel { get; }
-
-		object GetContent (Type type);
-		IEnumerable<T> GetContents<T> () where T : class;
-
-		bool CanReuseView (string fileName);
-		void RedrawContent ();
+		public static IEnumerable<T> Concat<T> (this IEnumerable<T> e, T item)
+		{
+			return e.Concat (Enumerable.Repeat (item, 1));
+		}
 	}
 }
+

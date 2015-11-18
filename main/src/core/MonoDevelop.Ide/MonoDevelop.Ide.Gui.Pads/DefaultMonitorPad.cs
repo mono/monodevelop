@@ -219,9 +219,5 @@ namespace MonoDevelop.Ide.Gui.Pads
 			IdeApp.Workspace.FirstWorkspaceItemOpened -= OnCombineOpen;
 			IdeApp.Workspace.LastWorkspaceItemClosed -= OnCombineClosed;
 		}
-	
-		public void RedrawContent()
-		{
-		}
 	}
 }

@@ -99,10 +99,6 @@ namespace MonoDevelop.Debugger
 			};
 		}
 
-		public void RedrawContent ()
-		{
-		}
-		
 		public virtual void OnUpdateList ()
 		{
 			needsUpdate = false;

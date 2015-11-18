@@ -26,35 +26,37 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
+using System.Collections.Immutable;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public abstract class BaseViewContent: IDisposable
+	public abstract class BaseViewContent : IDisposable
 	{
-		IWorkbenchWindow workbenchWindow = null;
-		
-		#region BaseViewContent Members
+		IWorkbenchWindow workbenchWindow;
+		Project project;
 
 		public abstract Control Control { get; }
-		
-		public virtual IWorkbenchWindow WorkbenchWindow {
+
+		public IWorkbenchWindow WorkbenchWindow {
 			get { return workbenchWindow; }
 			set {
 				if (workbenchWindow != value) {
 					workbenchWindow = value;
-					OnWorkbenchWindowChanged (EventArgs.Empty);
+					OnWorkbenchWindowChanged ();
 				}
 			}
 		}
 
-		public virtual string TabPageLabel { get { return GettextCatalog.GetString ("Content"); } }
-
-		public virtual void RedrawContent ()
-		{
+		public virtual string TabPageLabel {
+			get {
+				return GettextCatalog.GetString ("Content");
+			}
 		}
 
 		public virtual bool CanReuseView (string fileName)
@@ -62,7 +64,27 @@ namespace MonoDevelop.Ide.Gui
 			return false;
 		}
 
-		public virtual object GetContent (Type type)
+		public object GetContent (Type type)
+		{
+			return GetContents (type).FirstOrDefault ();
+		}
+
+		public T GetContent<T> () where T : class
+		{
+			return GetContents<T> ().FirstOrDefault ();
+		}
+
+		public IEnumerable<T> GetContents<T> () where T : class
+		{
+			return OnGetContents (typeof (T)).Cast<T> ();
+		}
+
+		public IEnumerable<object> GetContents (Type type)
+		{
+			return OnGetContents (type);
+		}
+
+		protected virtual object OnGetContent (Type type)
 		{
 			if (type.IsInstanceOfType (this))
 				return this;
@@ -70,48 +92,75 @@ namespace MonoDevelop.Ide.Gui
 				return null;
 		}
 
-		public virtual IEnumerable<T> GetContents<T> () where T : class
+		protected virtual IEnumerable<object> OnGetContents (Type type)
 		{
-			var t = this as T;
-			if (t != null)
-				yield return t;
+			var c = OnGetContent (type);
+			if (c != null)
+				yield return c;
 		}
-
-
-		#endregion
-
-		#region IDisposable Members
 
 		public virtual void Dispose ()
 		{
 		}
 
-		#endregion
-
-		public event EventHandler WorkbenchWindowChanged;
-		
-		protected virtual void OnWorkbenchWindowChanged (EventArgs e)
+		protected virtual void OnWorkbenchWindowChanged ()
 		{
-			if (WorkbenchWindowChanged != null) {
-				WorkbenchWindowChanged (this, e);
+		}
+
+		internal protected virtual void OnSelected ()
+		{
+		}
+
+		internal protected virtual void OnDeselected ()
+		{
+		}
+
+		/// <summary>
+		/// Gets or sets the project bound to the view
+		/// </summary>
+		public Project Project {
+			get {
+				return project;
+			}
+			set {
+				OnSetProject (value);
 			}
 		}
 
-
-		public virtual void Selected ()
+		/// <summary>
+		/// Called to update the project bound to the view.
+		/// </summary>
+		/// <param name="project">
+		/// New project assigned to the view. It can be null.
+		/// </param>
+		protected virtual void OnSetProject (Project project)
 		{
+			this.project = project;
 		}
 
-		public virtual void Deselected ()
-		{
+		/// <summary>
+		/// Gets the capability of this view for being reassigned a project
+		/// </summary>
+		/// <value>The project reload capability.</value>
+		public virtual ProjectReloadCapability ProjectReloadCapability {
+			get {
+				return ProjectReloadCapability.None;
+			}
 		}
+	}
 
-		public virtual void BeforeSave ()
-		{
-		}
+	public enum ProjectReloadCapability
+	{
+		None = 0,
 
-		public virtual void BaseContentChanged ()
-		{
-		}
+		/// <summary>
+		/// It can keep unsaved data. Some status (such as undo queue) may be lost.
+		/// </summary>
+		UnsavedData = 1,
+
+		/// <summary>
+		/// It can keep unsaved data and status.
+		/// </summary>
+		Full = 2
 	}
 }

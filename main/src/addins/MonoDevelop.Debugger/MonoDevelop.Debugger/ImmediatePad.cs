@@ -263,10 +263,6 @@ namespace MonoDevelop.Debugger
 			});
 		}	
 
-		public void RedrawContent ()
-		{
-		}
-		
 		public override Control Control {
 			get {
 				return view;

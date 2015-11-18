@@ -39,19 +39,21 @@ namespace MonoDevelop.Ide.Gui
 	{
 		#region ViewContent Members
 
-		private string untitledName = "";
-		public virtual string UntitledName {
+		string untitledName = "";
+		string contentName;
+		bool isDirty;
+
+		public string UntitledName {
 			get { return untitledName; }
 			set { untitledName = value; }
 		}
 
-		private string contentName;
-		public virtual string ContentName {
+		public string ContentName {
 			get { return contentName; }
 			set {
 				if (value != contentName) {
 					contentName = value;
-					OnContentNameChanged (EventArgs.Empty);
+					OnContentNameChanged ();
 				}
 			}
 		}
@@ -60,13 +62,12 @@ namespace MonoDevelop.Ide.Gui
 			get { return (contentName == null); }
 		}
 
-		private bool isDirty;
 		public virtual bool IsDirty {
 			get { return isDirty; }
 			set {
 				if (value != isDirty) {
 					isDirty = value;
-					OnDirtyChanged (EventArgs.Empty);
+					OnDirtyChanged ();
 				}
 			}
 		}
@@ -75,12 +76,13 @@ namespace MonoDevelop.Ide.Gui
 			get { return false; }
 		}
 
-
 		public virtual bool IsHidden {
 			get { return false; }
 		}
 
-		public virtual bool IsViewOnly { get; set; }
+		public virtual bool IsViewOnly {
+			get { return false; }
+		}
 
 		public virtual bool IsFile {
 			get { return true; }
@@ -90,19 +92,16 @@ namespace MonoDevelop.Ide.Gui
 			get { return null; }
 		}
 
-		public virtual Project Project { get; set; }
-
-		public string PathRelativeToProject {
+		internal string PathRelativeToProject {
 			get { return Project == null ? null : FileService.AbsoluteToRelativePath (Project.BaseDirectory, ContentName); }
 		}
 
 		public virtual void Save ()
 		{
-			OnBeforeSave (EventArgs.Empty);
-			this.Save (contentName);
+			Save (contentName);
 		}
 		
-		public void Save (string fileName)
+		public void Save (FilePath fileName)
 		{
 			Save (new FileSaveInformation (fileName)); 
 		}
@@ -118,7 +117,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public abstract void Load (FileOpenInformation fileOpenInformation);
 		
-		public void Load (string fileName)
+		public void Load (FilePath fileName)
 		{
 			Load (new FileOpenInformation (fileName, null));
 		}
@@ -128,43 +127,27 @@ namespace MonoDevelop.Ide.Gui
 			throw new NotSupportedException ();
 		}
 
-		public event EventHandler ContentNameChanged;
+		internal event EventHandler ContentNameChanged;
 
 		public event EventHandler DirtyChanged;
-
-		public event EventHandler BeforeSave;
-
-		public event EventHandler ContentChanged;
 
 		#endregion
 
 
-		public virtual void OnContentChanged (EventArgs e)
-		{
-			if (ContentChanged != null)
-				ContentChanged (this, e);
-		}
-
-		public virtual void OnDirtyChanged (EventArgs e)
+		protected virtual void OnDirtyChanged ()
 		{
 			if (DirtyChanged != null)
-				DirtyChanged (this, e);
+				DirtyChanged (this, EventArgs.Empty);
 		}
 
-		public virtual void OnBeforeSave (EventArgs e)
-		{
-			if (BeforeSave != null)
-				BeforeSave (this, e);
-		}
-
-		public virtual void OnContentNameChanged (EventArgs e)
+		protected virtual void OnContentNameChanged ()
 		{
 			if (ContentNameChanged != null)
-				ContentNameChanged (this, e);
+				ContentNameChanged (this, EventArgs.Empty);
 		}
 	}
 
-	public abstract class AbstractXwtViewContent :ViewContent
+	public abstract class AbstractXwtViewContent : ViewContent
 	{
 		public override Control Control {
 			get {

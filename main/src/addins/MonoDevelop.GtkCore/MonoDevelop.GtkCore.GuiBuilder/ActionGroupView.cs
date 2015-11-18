@@ -189,8 +189,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnGroupModified (object s, EventArgs a)
 		{
-			if (designer.Modified)
-				OnContentChanged (a);
 			IsDirty = designer.Modified;
 		}
 		

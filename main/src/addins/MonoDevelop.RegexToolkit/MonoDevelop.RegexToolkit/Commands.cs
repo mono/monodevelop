@@ -55,7 +55,12 @@ namespace MonoDevelop.RegexToolkit
 		{
 			this.widget = widget;
 			this.ContentName = contentName;
-			IsViewOnly = true;
+		}
+
+		public override bool IsViewOnly {
+			get {
+				return true;
+			}
 		}
 		
 		public override void Load (FileOpenInformation fileOpenInformation)

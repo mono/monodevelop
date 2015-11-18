@@ -90,7 +90,7 @@ namespace MonoDevelop.VersionControl.Views
 			return editor.YToLine (midY);
 		}
 		
-		public override void Selected ()
+		protected override void OnSelected ()
 		{
 			info.Start ();
 			ComparisonWidget.UpdateLocalText ();
@@ -120,7 +120,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		public override void Deselected ()
+		protected override void OnDeselected ()
 		{
 			var sourceEditor = info.Document.GetContent <MonoDevelop.SourceEditor.SourceEditorView> ();
 			if (sourceEditor != null) {

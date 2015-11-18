@@ -316,10 +316,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			PropertyService.Set ("Monodevelop.ErrorListColumns", string.Join (";", view.Columns.Select (c => c.Visible ? "TRUE" : "FALSE")));
 		}
-		
-		public void RedrawContent()
-		{
-		}
 
 		Gtk.Menu CreateMenu ()
 		{
