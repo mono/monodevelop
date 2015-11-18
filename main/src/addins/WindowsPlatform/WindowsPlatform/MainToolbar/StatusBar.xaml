@@ -11,9 +11,9 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ProgressBar">
-                        <Border BorderBrush="#D9DCE1" BorderThickness="0" CornerRadius="0" Padding="0">
+                        <Border BorderBrush="{Binding Path=(platform:Styles.StatusBarProgressBorderBrush), Mode=OneWay}" BorderThickness="0" CornerRadius="0" Padding="0">
                             <Grid x:Name="PART_Track">
-                                <Rectangle x:Name="PART_Indicator" HorizontalAlignment="Left" Fill="#FFB3E770" />
+                                <Rectangle x:Name="PART_Indicator" HorizontalAlignment="Left" Fill="{Binding Path=(platform:Styles.StatusBarProgressBackgroundBrush), Mode=OneWay}" />
                             </Grid>
                         </Border>
                     </ControlTemplate>
@@ -42,7 +42,7 @@
             <ProgressBar Minimum="0" Maximum="1" x:Name="ProgressBar" Style="{StaticResource FlatProgressBar}"/>
 
         </Grid>
-        <Grid Background="{Binding Path=(platform:Styles.StatusBarBackgroundBrush), Mode=OneWay}" >
+        <Grid Background="Transparent" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />

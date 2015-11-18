@@ -51,6 +51,8 @@ namespace WindowsPlatform
 		public static Brush StatusBarErrorTextBrush { get; private set; }
 		public static Brush StatusBarWarningTextBrush { get; private set; }
 		public static Brush StatusBarReadyTextBrush { get; private set; }
+		public static Brush StatusBarProgressBorderBrush { get; private set; }
+		public static Brush StatusBarProgressBackgroundBrush { get; private set; }
 		public static Brush SearchBarBorderBrush { get; private set; }
 		public static Brush SearchBarBackgroundBrush { get; private set; }
 		public static Brush SearchBarTextBrush { get; private set; }
@@ -77,6 +79,8 @@ namespace WindowsPlatform
 			StatusBarErrorTextBrush = Brushes.Red;
 			StatusBarWarningTextBrush = Brushes.Orange;
 			StatusBarReadyTextBrush = Brushes.Gray;
+			StatusBarProgressBorderBrush = new SolidColorBrush (new Color {A = 0xFF, R = 0xD9, G = 0xDC, B = 0xE1});
+			StatusBarProgressBackgroundBrush = new SolidColorBrush (new Color {A = 0xFF, R = 0xB3, G = 0xE7, B = 0x70});
 			SearchBarBorderBrush = Brushes.LightGray;
 			SearchBarBackgroundBrush = Brushes.White;
 			SearchBarTextBrush = MainToolbarForegroundBrush;
