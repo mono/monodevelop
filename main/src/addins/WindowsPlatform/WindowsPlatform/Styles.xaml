@@ -3,6 +3,23 @@
                     xmlns:ui="clr-namespace:System.Windows.Documents;assembly=PresentationUI"
              		xmlns:platform="clr-namespace:WindowsPlatform">
 
+    <Style x:Key="FlatProgressBar" TargetType="{x:Type ProgressBar}">
+    	<Setter Property="Background" Value="Transparent"/>
+    	<Setter Property="Foreground" Value="{Binding Path=(platform:Styles.StatusBarProgressBackgroundBrush), Mode=OneWay}"/>
+    	<Setter Property="BorderBrush" Value="{Binding Path=(platform:Styles.StatusBarProgressBorderBrush), Mode=OneWay}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ProgressBar">
+                    <Border BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}" BorderThickness="0" CornerRadius="0" Padding="0">
+                        <Grid x:Name="PART_Track">
+                            <Rectangle x:Name="PART_Indicator" HorizontalAlignment="Left" Fill="{TemplateBinding Foreground}" />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <MenuScrollingVisibilityConverter x:Key="MenuScrollingVisibilityConverter"/>
     <Geometry x:Key="DownArrow"> M 0,0 L 3.5,4 L 7,0 Z</Geometry>
     <Geometry x:Key="UpArrow">   M 0,4 L 3.5,0 L 7,4 Z</Geometry>
