@@ -33,7 +33,7 @@ using System.Xml.Serialization;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting
 {
 	[Serializable]
 	public class UnitTestResult
@@ -205,7 +205,7 @@ namespace MonoDevelop.NUnit
 				if (m.Groups ["file"] != null && m.Groups ["line"] != null && File.Exists (m.Groups ["file"].Value)) {
 					int lin;
 					if (int.TryParse (m.Groups ["line"].Value, out lin))
-						return new MonoDevelop.NUnit.SourceCodeLocation (m.Groups ["file"].Value, lin, -1);
+						return new SourceCodeLocation (m.Groups ["file"].Value, lin, -1);
 				}
 			}
 			return null;

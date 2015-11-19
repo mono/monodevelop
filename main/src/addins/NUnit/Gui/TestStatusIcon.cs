@@ -31,7 +31,7 @@ using Gdk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting
 {
 	static class TestStatusIcon
 	{

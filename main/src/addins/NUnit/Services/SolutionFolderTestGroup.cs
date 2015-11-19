@@ -35,7 +35,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting
 {
 	public class SolutionFolderTestGroup: UnitTestGroup
 	{
@@ -44,7 +44,7 @@ namespace MonoDevelop.NUnit
 		public SolutionFolderTestGroup (SolutionFolder c): base (c.Name, c)
 		{
 			string storeId = c.ItemId;
-			string resultsPath = MonoDevelop.NUnit.RootTest.GetTestResultsDirectory (c.BaseDirectory);
+			string resultsPath = UnitTestService.GetTestResultsDirectory (c.BaseDirectory);
 			ResultsStore = new BinaryResultsStore (resultsPath, storeId);
 			
 			folder = c;
@@ -95,7 +95,7 @@ namespace MonoDevelop.NUnit
 		
 		protected override void OnCreateTests ()
 		{
-			NUnitService testService = NUnitService.Instance;
+			UnitTestService testService = UnitTestService.Instance;
 			foreach (SolutionFolderItem e in folder.Items) {
 				UnitTest t = testService.BuildTest (e);
 				if (t != null)

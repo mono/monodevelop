@@ -30,7 +30,7 @@
 using System;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting
 {
 	public interface ITestProvider
 	{

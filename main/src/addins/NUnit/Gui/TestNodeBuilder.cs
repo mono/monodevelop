@@ -30,12 +30,12 @@ using System;
 
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.NUnit.Commands;
+using MonoDevelop.UnitTesting.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting
 {
 	public class TestNodeBuilder: TypeNodeBuilder
 	{

@@ -38,7 +38,7 @@ using MonoDevelop.Ide;
 using System.Threading.Tasks;
 using System.Threading;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting
 {
 	public abstract class UnitTest: IDisposable
 	{

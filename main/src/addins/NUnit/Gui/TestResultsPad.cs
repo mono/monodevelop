@@ -36,7 +36,7 @@ using Gdk;
 
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.NUnit.Commands;
+using MonoDevelop.UnitTesting.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide;
@@ -47,11 +47,11 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.NUnit.External;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting
 {
 	public class TestResultsPad: PadContent, ITestProgressMonitor
 	{
-		NUnitService testService = NUnitService.Instance;
+		UnitTestService testService = UnitTestService.Instance;
 		
 		IPadWindow window;
 		VBox panel;
@@ -462,7 +462,7 @@ namespace MonoDevelop.NUnit
 		{
 			if (rootTest == null)
 				return;
-			NUnitService.Instance.RunTest (rootTest, null);
+			UnitTestService.Instance.RunTest (rootTest, null);
 		}
 
 		void OnRowActivated (object s, EventArgs a)
@@ -627,7 +627,7 @@ namespace MonoDevelop.NUnit
 			UnitTest test = GetSelectedTest ();
 			if (test == null)
 				return;
-			NUnitService.Instance.RunTest (test, null);
+			UnitTestService.Instance.RunTest (test, null);
 		}
 		
 		[CommandUpdateHandler (TestCommands.ShowTestCode)]

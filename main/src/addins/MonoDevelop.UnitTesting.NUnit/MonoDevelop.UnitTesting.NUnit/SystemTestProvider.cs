@@ -1,5 +1,5 @@
 //
-// NUnitTestCase.cs
+// SystemTestProvider.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -26,49 +26,29 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System;
+using MonoDevelop.Projects;
 
-
-using MonoDevelop.NUnit.External;
-
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting.NUnit
 {
-	class NUnitTestCase: UnitTest
+	public class SystemTestProvider: ITestProvider
 	{
-		NUnitAssemblyTestSuite rootSuite;
-		string className;
-		string pathName;
-		
-		public NUnitTestCase (NUnitAssemblyTestSuite rootSuite, NunitTestInfo tinfo, string className) : base (tinfo.Name)
+		public UnitTest CreateUnitTest (WorkspaceObject entry)
 		{
-			this.className = className;
-			this.pathName = tinfo.PathName;
-			this.rootSuite = rootSuite;
-			this.TestId = tinfo.TestId;
-			this.IsExplicit = tinfo.IsExplicit;
-		}
-		
-		protected override UnitTestResult OnRun (TestContext testContext)
-		{
-			return rootSuite.RunUnitTest (this, className, pathName, Name, testContext);
-		}
-		
-		protected override bool OnCanRun (MonoDevelop.Core.Execution.IExecutionHandler executionContext)
-		{
-			return rootSuite.CanRun (executionContext);
-		}
-
-		
-		public override SourceCodeLocation SourceCodeLocation {
-			get {
-				UnitTest p = Parent;
-				while (p != null) {
-					NUnitAssemblyTestSuite root = p as NUnitAssemblyTestSuite;
-					if (root != null)
-						return root.GetSourceCodeLocation (this);
-					p = p.Parent;
-				}
-				return null; 
+			UnitTest test = null;
+			
+			if (entry is DotNetProject)
+				test = NUnitProjectTestSuite.CreateTest ((DotNetProject)entry);
+			if (entry is NUnitAssemblyGroupProject)
+				test = ((NUnitAssemblyGroupProject)entry).RootTest;
+			
+			UnitTestGroup grp = test as UnitTestGroup;
+			if (grp != null && !grp.HasTests) {
+				test.Dispose ();
+				return null;
 			}
+			
+			return test;
 		}
 	}
 }

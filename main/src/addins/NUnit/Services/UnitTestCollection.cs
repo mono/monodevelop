@@ -31,7 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting
 {
 	public class UnitTestCollection: Collection<UnitTest>
 	{

@@ -29,7 +29,7 @@
 
 using System;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting
 {
 	public class UnitTestResultsStore
 	{

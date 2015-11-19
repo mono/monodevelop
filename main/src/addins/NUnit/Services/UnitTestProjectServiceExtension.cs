@@ -32,9 +32,9 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Runtime.InteropServices;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting
 {
-	public class NUnitProjectServiceExtension: ProjectExtension
+	public class UnitTestProjectServiceExtension: ProjectExtension
 	{
 		bool checkingCanExecute;
 		object canExecuteCheckLock = new object ();
@@ -51,14 +51,14 @@ namespace MonoDevelop.NUnit
 		{
 			base.Initialize ();
 			if (IdeApp.IsInitialized)
-				NUnitService.Instance.TestSuiteChanged += TestSuiteChanged;
+				UnitTestService.Instance.TestSuiteChanged += TestSuiteChanged;
 		}
 
 		public override void Dispose ()
 		{
 			base.Dispose ();
 			if (IdeApp.IsInitialized)
-				NUnitService.Instance.TestSuiteChanged -= TestSuiteChanged;
+				UnitTestService.Instance.TestSuiteChanged -= TestSuiteChanged;
 		}
 
 		void TestSuiteChanged (object sender, System.EventArgs e)
@@ -70,7 +70,7 @@ namespace MonoDevelop.NUnit
 		UnitTest FindRootTest ()
 		{
 			if (!unitTestChecked) {
-				unitTestFound = NUnitService.Instance.FindRootTest (Project);
+				unitTestFound = UnitTestService.Instance.FindRootTest (Project);
 				unitTestChecked = true;
 			}
 			return unitTestFound;
@@ -97,7 +97,7 @@ namespace MonoDevelop.NUnit
 			if (test != null) {
 				var cs = new CancellationTokenSource ();
 				using (monitor.CancellationToken.Register (cs.Cancel))
-					await NUnitService.Instance.RunTest (test, context.ExecutionHandler, false, false, cs);
+					await UnitTestService.Instance.RunTest (test, context.ExecutionHandler, false, false, cs);
 			}
 		}
 

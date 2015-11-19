@@ -29,7 +29,7 @@
 using MonoDevelop.Projects;
 
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting
 {
 	public class WorkspaceTestGroup: UnitTestGroup
 	{
@@ -38,7 +38,7 @@ namespace MonoDevelop.NUnit
 		public WorkspaceTestGroup (Workspace ws): base (ws.Name, ws)
 		{
 			string storeId = ws.Name;
-			string resultsPath = MonoDevelop.NUnit.RootTest.GetTestResultsDirectory (ws.BaseDirectory);
+			string resultsPath = UnitTestService.GetTestResultsDirectory (ws.BaseDirectory);
 			ResultsStore = new BinaryResultsStore (resultsPath, storeId);
 			
 			workspace = ws;
@@ -74,7 +74,7 @@ namespace MonoDevelop.NUnit
 		
 		protected override void OnCreateTests ()
 		{
-			NUnitService testService = NUnitService.Instance;
+			UnitTestService testService = UnitTestService.Instance;
 			foreach (WorkspaceItem e in workspace.Items) {
 				UnitTest t = testService.BuildTest (e);
 				if (t != null)

@@ -30,7 +30,7 @@
 using System;
 using System.Collections;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting
 {
 	public class GeneralTestOptions: ICloneable
 	{

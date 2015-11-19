@@ -42,7 +42,7 @@ using NUnit.Util;
 using NF = NUnit.Framework;
 using NC = NUnit.Core;
 
-namespace MonoDevelop.NUnit.External
+namespace MonoDevelop.UnitTesting.External
 {
 	class ExternalTestRunner: RemoteProcessObject
 	{
@@ -379,45 +379,6 @@ namespace MonoDevelop.NUnit.External
 		}
 	}	
 
-	/// <summary>
-	/// Exception class that can be serialized
-	/// </summary>
-	class RemoteUnhandledException: Exception
-	{
-		string stack;
-
-		public RemoteUnhandledException (string exceptionName, string message, string stack): base (message)
-		{
-			RemoteExceptionName = exceptionName;
-			this.stack = stack;
-		}
-
-		public RemoteUnhandledException (Exception ex): base (ex.Message)
-		{
-			RemoteExceptionName = ex.GetType().Name;
-			this.stack = ex.StackTrace;
-		}
-
-		public string Serialize ()
-		{
-			return RemoteExceptionName + "\n" + Message.Replace ('\r',' ').Replace ('\n',' ') + "\n" + StackTrace;
-		}
-
-		public static RemoteUnhandledException Parse (string s)
-		{
-			int i = s.IndexOf ('\n');
-			string name = s.Substring (0, i++);
-			int i2 = s.IndexOf ('\n', i);
-			return new RemoteUnhandledException (name, s.Substring (i, i2 - i), s.Substring (i2 + 1));
-		}
-
-		public string RemoteExceptionName { get; set; }
-
-		public override string StackTrace {
-			get {
-				return stack;
-			}
-		}
-	}
+	
 }
 

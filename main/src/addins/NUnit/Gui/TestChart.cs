@@ -32,7 +32,7 @@ using Gtk;
 using Gdk;
 using MonoDevelop.Components.Chart;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting
 {
 	public enum TestChartType {
 		Results,

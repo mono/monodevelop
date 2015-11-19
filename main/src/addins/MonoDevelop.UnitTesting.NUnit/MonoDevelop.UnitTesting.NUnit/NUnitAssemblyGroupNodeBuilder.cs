@@ -31,11 +31,11 @@ using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.NUnit.Commands;
+using MonoDevelop.UnitTesting.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting
 {
 	public class NUnitAssemblyGroupNodeBuilder: TypeNodeBuilder
 	{

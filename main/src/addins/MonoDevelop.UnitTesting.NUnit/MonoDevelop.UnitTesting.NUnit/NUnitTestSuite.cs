@@ -29,7 +29,7 @@
 
 using MonoDevelop.NUnit.External;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting.NUnit
 {
 	class NUnitTestSuite: UnitTestGroup
 	{

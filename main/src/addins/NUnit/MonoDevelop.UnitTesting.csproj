@@ -15,7 +15,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>..\..\..\build\AddIns\NUnit\</OutputPath>
+    <OutputPath>..\..\..\build\AddIns\MonoDevelop.UnitTesting</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
     <Execution>
@@ -28,7 +28,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>..\..\..\build\AddIns\NUnit\</OutputPath>
+    <OutputPath>..\..\..\build\AddIns\MonoDevelop.UnitTesting</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
     <Execution>
@@ -297,26 +297,15 @@
     <Compile Include="Gui\TestResultsPad.cs" />
     <Compile Include="Gui\TestNodeBuilder.cs" />
     <Compile Include="Gui\TestChart.cs" />
-    <Compile Include="Gui\NUnitAssemblyGroupNodeBuilder.cs" />
-    <Compile Include="Gui\NUnitAssemblyGroupConfigurationNodeBuilder.cs" />
-    <Compile Include="Gui\TestAssemblyNodeBuilder.cs" />
-    <Compile Include="Project\NUnitAssemblyGroupProject.cs" />
-    <Compile Include="Project\TestAssembly.cs" />
-    <Compile Include="Project\TestAssemblyCollection.cs" />
     <Compile Include="Services\SolutionFolderTestGroup.cs" />
     <Compile Include="Services\ITestProvider.cs" />
-    <Compile Include="Services\NUnitService.cs" />
+    <Compile Include="Services\UnitTestService.cs" />
     <Compile Include="Services\SystemTestProvider.cs" />
     <Compile Include="Services\ITestProgressMonitor.cs" />
     <Compile Include="Services\TestContext.cs" />
     <Compile Include="Services\UnitTestCollection.cs" />
     <Compile Include="Services\UnitTest.cs" />
     <Compile Include="Services\UnitTestGroup.cs" />
-    <Compile Include="Services\ExternalTestRunner.cs" />
-    <Compile Include="Services\NUnitAssemblyTestSuite.cs" />
-    <Compile Include="Services\NUnitProjectTestSuite.cs" />
-    <Compile Include="Services\NUnitTestCase.cs" />
-    <Compile Include="Services\NUnitTestSuite.cs" />
     <Compile Include="Services\GeneralTestOptions.cs" />
     <Compile Include="Services\IResultsStore.cs" />
     <Compile Include="Services\UnitTestResultsStore.cs" />
@@ -324,14 +313,13 @@
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="Services\UnitTestResult.cs" />
     <Compile Include="Services\UnitTestStatus.cs" />
-    <Compile Include="Services\NUnitProjectServiceExtension.cs" />
-    <Compile Include="Services\TcpTestListener.cs" />
+    <Compile Include="Services\UnitTestProjectServiceExtension.cs" />
     <Compile Include="Gui\TestStatusIcon.cs" />
     <Compile Include="AddinInfo.cs" />
-    <Compile Include="Gui\AbstractUnitTestEditorExtension.cs" />
     <Compile Include="Services\AbstractResultsStore.cs" />
     <Compile Include="Services\BinaryResultsStore.cs" />
     <Compile Include="Services\NUnitSourceCodeLocationFinder.cs" />
+    <Compile Include="Services\RemoteUnhandledException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

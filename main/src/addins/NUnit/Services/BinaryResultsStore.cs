@@ -28,7 +28,7 @@ using System.Xml.Serialization;
 using System.IO;
 using ICSharpCode.NRefactory.Utils;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting
 {
 	/// <summary>
 	/// ResultsStore implementation that uses binary serializer

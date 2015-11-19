@@ -39,17 +39,19 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using System.Threading.Tasks;
 using System.Linq;
+using MonoDevelop.Ide.TypeSystem;
+using System.IO;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting
 {
-	public class NUnitService
+	public class UnitTestService
 	{
-		static NUnitService instance;
+		static UnitTestService instance;
 		
 		ArrayList providers = new ArrayList ();
 		UnitTest[] rootTests;
 		
-		private NUnitService ()
+		private UnitTestService ()
 		{
 			IdeApp.Workspace.WorkspaceItemOpened += OnWorkspaceChanged;
 			IdeApp.Workspace.WorkspaceItemClosed += OnWorkspaceChanged;
@@ -63,10 +65,10 @@ namespace MonoDevelop.NUnit
 			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/NUnit/TestProviders", OnExtensionChange);
 		}
 
-		public static NUnitService Instance {
+		public static UnitTestService Instance {
 			get {
 				if (instance == null) {
-					instance = new NUnitService ();
+					instance = new UnitTestService ();
 					instance.RebuildTests ();
 				}
 				return instance;
@@ -299,7 +301,30 @@ namespace MonoDevelop.NUnit
 			}
 			return null;
 		}
-		
+
+		public static string GetTestResultsDirectory (string baseDirectory)
+		{
+			var newCache = TypeSystemService.GetCacheDirectory (baseDirectory, false);
+			if (newCache == null) {
+				newCache = TypeSystemService.GetCacheDirectory (baseDirectory, true);
+				var oldDirectory = Path.Combine (baseDirectory, "test-results");
+				var newDirectory = Path.Combine (newCache, "test-results");
+				try {
+					Directory.CreateDirectory (newDirectory);
+					if (Directory.Exists (oldDirectory)) {
+						foreach (string file in Directory.GetFiles(oldDirectory, "*.*"))
+							File.Copy (file, file.Replace (oldDirectory, newDirectory));
+					}
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while copying old test-results", e);
+				}
+				return newDirectory;
+			}
+
+			return Path.Combine (newCache, "test-results");
+		}
+
+
 		public UnitTest[] RootTests {
 			get { return rootTests; }
 		}
@@ -376,7 +401,7 @@ namespace MonoDevelop.NUnit
 		void RunTests ()
 		{
 			try {
-				NUnitService.ResetResult (test);
+				UnitTestService.ResetResult (test);
 
 				TestContext ctx = new TestContext (monitor, resultsPad, context, DateTime.Now);
 				test.Run (ctx);

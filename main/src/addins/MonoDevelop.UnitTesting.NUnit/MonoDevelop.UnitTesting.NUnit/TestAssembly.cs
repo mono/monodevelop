@@ -1,5 +1,5 @@
 //
-// TestAssemblyCollection.cs
+// TestAssembly.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -28,51 +28,46 @@
 
 
 using System;
-using System.Collections;
+using System.IO;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Serialization;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting.NUnit
 {
-	public class TestAssemblyCollection: CollectionBase
+	public class TestAssembly: NUnitAssemblyTestSuite
 	{
-		NUnitAssemblyGroupProjectConfiguration owner;
+		[ItemProperty ("Path")]
+		string path;
 		
-		internal TestAssemblyCollection (NUnitAssemblyGroupProjectConfiguration owner)
+		public TestAssembly (): base (null)
 		{
-			this.owner = owner;
 		}
 		
-		public new TestAssembly this [int n] {
-			get { return (TestAssembly) List [n]; }
+		public TestAssembly (string path): base (null)
+		{
+			this.path = path;
 		}
 		
-		public void Add (TestAssembly asm)
-		{
-			List.Add (asm);
+		public override string Name {
+			get { return System.IO.Path.GetFileNameWithoutExtension (path); }
 		}
 		
-		public void Remove (TestAssembly asm)
-		{
-			List.Remove (asm);
+		public string Path {
+			get { return path; }
+			set { path = value; }
 		}
 		
-		protected override void OnInsertComplete (int index, object value)
-		{
-			owner.OnAssembliesChanged ();
+		protected override string AssemblyPath {
+			get { return path; }
 		}
 		
-		protected override void OnRemoveComplete (int index, object value)
-		{
-			owner.OnAssembliesChanged ();
-		}
-		
-		protected override void OnSetComplete (int index, object oldValue, object newValue)
-		{
-			owner.OnAssembliesChanged ();
-		}
-		
-		protected override void OnClearComplete ()
-		{
-			owner.OnAssembliesChanged ();
+		protected override string TestInfoCachePath {
+			get {
+				if (Parent != null)
+					return System.IO.Path.Combine (((RootTest)Parent).ResultsPath, System.IO.Path.GetFileName (path) + ".test-cache");
+				else
+					return null;
+			}
 		}
 	}
 }

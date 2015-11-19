@@ -28,7 +28,7 @@
 
 using System;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting
 {
 	public interface IResultsStore
 	{

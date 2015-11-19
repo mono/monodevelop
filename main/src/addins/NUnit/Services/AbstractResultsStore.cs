@@ -34,7 +34,7 @@ using System.IO;
 using System.Xml.Serialization;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting
 {
 	public abstract class AbstractResultsStore: IResultsStore
 	{

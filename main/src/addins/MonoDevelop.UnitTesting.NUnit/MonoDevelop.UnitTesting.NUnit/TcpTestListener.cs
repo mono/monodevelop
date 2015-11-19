@@ -36,7 +36,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.NUnit.External
+namespace MonoDevelop.UnitTesting.NUnit.External
 {
 	class TcpTestListener : IDisposable
 	{

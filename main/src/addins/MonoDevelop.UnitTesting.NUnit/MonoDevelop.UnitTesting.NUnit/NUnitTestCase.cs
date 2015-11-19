@@ -1,5 +1,5 @@
 //
-// TestAssembly.cs
+// NUnitTestCase.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -27,46 +27,47 @@
 //
 
 
-using System;
-using System.IO;
-using MonoDevelop.Projects;
-using MonoDevelop.Core.Serialization;
 
-namespace MonoDevelop.NUnit
+using MonoDevelop.NUnit.External;
+
+namespace MonoDevelop.UnitTesting.NUnit
 {
-	public class TestAssembly: NUnitAssemblyTestSuite
+	class NUnitTestCase: UnitTest
 	{
-		[ItemProperty ("Path")]
-		string path;
+		NUnitAssemblyTestSuite rootSuite;
+		string className;
+		string pathName;
 		
-		public TestAssembly (): base (null)
+		public NUnitTestCase (NUnitAssemblyTestSuite rootSuite, NunitTestInfo tinfo, string className) : base (tinfo.Name)
 		{
+			this.className = className;
+			this.pathName = tinfo.PathName;
+			this.rootSuite = rootSuite;
+			this.TestId = tinfo.TestId;
+			this.IsExplicit = tinfo.IsExplicit;
 		}
 		
-		public TestAssembly (string path): base (null)
+		protected override UnitTestResult OnRun (TestContext testContext)
 		{
-			this.path = path;
+			return rootSuite.RunUnitTest (this, className, pathName, Name, testContext);
 		}
 		
-		public override string Name {
-			get { return System.IO.Path.GetFileNameWithoutExtension (path); }
+		protected override bool OnCanRun (MonoDevelop.Core.Execution.IExecutionHandler executionContext)
+		{
+			return rootSuite.CanRun (executionContext);
 		}
+
 		
-		public string Path {
-			get { return path; }
-			set { path = value; }
-		}
-		
-		protected override string AssemblyPath {
-			get { return path; }
-		}
-		
-		protected override string TestInfoCachePath {
+		public override SourceCodeLocation SourceCodeLocation {
 			get {
-				if (Parent != null)
-					return System.IO.Path.Combine (((RootTest)Parent).ResultsPath, System.IO.Path.GetFileName (path) + ".test-cache");
-				else
-					return null;
+				UnitTest p = Parent;
+				while (p != null) {
+					NUnitAssemblyTestSuite root = p as NUnitAssemblyTestSuite;
+					if (root != null)
+						return root.GetSourceCodeLocation (this);
+					p = p.Parent;
+				}
+				return null; 
 			}
 		}
 	}

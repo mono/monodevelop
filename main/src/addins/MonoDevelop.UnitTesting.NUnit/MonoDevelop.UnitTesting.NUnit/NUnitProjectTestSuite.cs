@@ -39,7 +39,7 @@ using Microsoft.CodeAnalysis;
 using System.Threading;
 using ProjectReference = MonoDevelop.Projects.ProjectReference;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting.NUnit
 {
 	public class NUnitProjectTestSuite: NUnitAssemblyTestSuite
 	{

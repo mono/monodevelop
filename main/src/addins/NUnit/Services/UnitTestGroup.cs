@@ -34,7 +34,7 @@ using MonoDevelop.Projects;
 using System.Threading.Tasks;
 using System.Threading;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting
 {
 	public class UnitTestGroup: UnitTest
 	{

@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.NUnit.Commands;
+using MonoDevelop.UnitTesting.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Execution;
 using MonoDevelop.Components.Docking;
@@ -47,11 +47,11 @@ using MonoDevelop.Ide.Commands;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting
 {
 	public class TestPad : TreeViewPad
 	{
-		NUnitService testService = NUnitService.Instance;
+		UnitTestService testService = UnitTestService.Instance;
 		
 		AsyncOperation runningTestOperation;
 		VPaned paned;
@@ -489,7 +489,7 @@ namespace MonoDevelop.NUnit
 			UnitTest test = nav.DataItem as UnitTest;
 			if (test == null)
 				return null;
-			NUnitService.ResetResult (test.RootTest);
+			UnitTestService.ResetResult (test.RootTest);
 			
 			this.buttonRunAll.Sensitive = false;
 			this.buttonStop.Sensitive = true;

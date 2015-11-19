@@ -206,7 +206,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\src\addins\NUnit\MonoDevelop.NUnit.csproj">
       <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
-      <Name>MonoDevelop.NUnit</Name>
+      <Name>MonoDevelop.UnitTesting</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
       <Project>{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}</Project>

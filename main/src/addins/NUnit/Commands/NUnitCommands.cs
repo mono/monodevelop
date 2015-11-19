@@ -30,7 +30,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 
-namespace MonoDevelop.NUnit.Commands
+namespace MonoDevelop.UnitTesting.Commands
 {
 	public enum TestCommands
 	{
@@ -67,9 +67,9 @@ namespace MonoDevelop.NUnit.Commands
 		{
 			WorkspaceObject ob = IdeApp.ProjectOperations.CurrentSelectedObject;
 			if (ob != null) {
-				UnitTest test = NUnitService.Instance.FindRootTest (ob);
+				UnitTest test = UnitTestService.Instance.FindRootTest (ob);
 				if (test != null)
-					NUnitService.Instance.RunTest (test, null);
+					UnitTestService.Instance.RunTest (test, null);
 			}
 		}
 		
@@ -77,7 +77,7 @@ namespace MonoDevelop.NUnit.Commands
 		{
 			WorkspaceObject ob = IdeApp.ProjectOperations.CurrentSelectedObject;
 			if (ob != null) {
-				UnitTest test = NUnitService.Instance.FindRootTest (ob);
+				UnitTest test = UnitTestService.Instance.FindRootTest (ob);
 				info.Enabled = (test != null);
 			} else
 				info.Enabled = false;

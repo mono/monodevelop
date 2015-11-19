@@ -29,7 +29,7 @@
 using System;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting
 {
 	public class SystemTestProvider: ITestProvider
 	{
@@ -43,10 +43,6 @@ namespace MonoDevelop.NUnit
 				test = SolutionFolderTestGroup.CreateTest (((Solution)entry).RootFolder);
 			if (entry is Workspace)
 				test = WorkspaceTestGroup.CreateTest ((Workspace)entry);
-			if (entry is DotNetProject)
-				test = NUnitProjectTestSuite.CreateTest ((DotNetProject)entry);
-			if (entry is NUnitAssemblyGroupProject)
-				test = ((NUnitAssemblyGroupProject)entry).RootTest;
 			
 			UnitTestGroup grp = test as UnitTestGroup;
 			if (grp != null && !grp.HasTests) {

@@ -47,7 +47,7 @@ using System.Linq;
 using System.Globalization;
 using System.Threading.Tasks;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting.NUnit
 {
 	public abstract class NUnitAssemblyTestSuite: UnitTestGroup
 	{

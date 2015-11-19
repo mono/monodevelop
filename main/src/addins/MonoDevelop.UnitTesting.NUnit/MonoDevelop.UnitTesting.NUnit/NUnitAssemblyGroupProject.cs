@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Ide.TypeSystem;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting.NUnit
 {
 	[DataInclude (typeof(NUnitAssemblyGroupProjectConfiguration))]
 	public class NUnitAssemblyGroupProject: SolutionItem
@@ -118,32 +118,10 @@ namespace MonoDevelop.NUnit
 		NUnitAssemblyGroupProjectConfiguration lastConfig;
 			
 		
-		internal static string GetTestResultsDirectory (string baseDirectory)
-		{
-			var newCache = TypeSystemService.GetCacheDirectory (baseDirectory, false);
-			if (newCache == null) {
-				newCache = TypeSystemService.GetCacheDirectory (baseDirectory, true);
-				var oldDirectory = Path.Combine (baseDirectory, "test-results");
-				var newDirectory = Path.Combine (newCache, "test-results");
-				try {
-					Directory.CreateDirectory (newDirectory);
-					if (Directory.Exists (oldDirectory)) {
-						foreach (string file in Directory.GetFiles(oldDirectory, "*.*"))
-							File.Copy (file, file.Replace (oldDirectory, newDirectory));
-					}
-				} catch (Exception e) {
-					LoggingService.LogError ("Error while copying old test-results", e);
-				}
-				return newDirectory;
-			}
-
-			return Path.Combine (newCache, "test-results");
-		}
-		
 		public RootTest (NUnitAssemblyGroupProject project): base (project.Name, project)
 		{
 			this.project = project;
-			resultsPath = GetTestResultsDirectory (project.BaseDirectory);
+			resultsPath = UnitTestService.GetTestResultsDirectory (project.BaseDirectory);
 			ResultsStore = new BinaryResultsStore (resultsPath, Path.GetFileName (project.FileName));
 			
 			lastConfig = (NUnitAssemblyGroupProjectConfiguration) project.DefaultConfiguration;
