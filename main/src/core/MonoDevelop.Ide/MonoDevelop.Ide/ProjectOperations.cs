@@ -1347,7 +1347,7 @@ namespace MonoDevelop.Ide
 				}
 
 				//wait for any custom tools that were triggered by the save, since the build may depend on them
-				MonoDevelop.Ide.CustomTools.CustomToolService.WaitForRunningTools (monitor);
+				await MonoDevelop.Ide.CustomTools.CustomToolService.WaitForRunningTools (monitor);
 
 				if (skipPrebuildCheck || result.ErrorCount == 0) {
 					tt.Trace ("Building item");
