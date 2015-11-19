@@ -14,7 +14,7 @@ fg_color: #bfbfbf
 base_color: #222
 text_color: #bfbfbf
 selected_bg_color: #649dd6
-selected_fg_color: #222
+selected_fg_color: #fff
 tooltip_bg_color: #5a5a5a
 tooltip_fg_color: #222222
 tooltip_border_color: #b2b2b2"
@@ -72,7 +72,7 @@ style "default" {
     GtkButton::default-border = { 0, 0, 0, 0 }
     GtkButton::inner-border = { 2, 2, 2, 2 }
 
-    GtkTreeView::odd-row-color = @base_color
+    GtkTreeView::odd-row-color = @bg_color
 
     GtkScrolledWindow::scrollbar-spacing = 0
     GtkScale::slider-length = 14
@@ -85,6 +85,7 @@ style "default" {
     GtkTreeView::expander-size = 8
     GtkExpander::expander-size = 8
     GtkComboBox::arrow-size = 8
+    GtkComboBox::appears-as-list = 1
 
     engine "xamarin" {
         arrowstyle = 2
@@ -116,6 +117,12 @@ style "wider" = "default" {
 style "button" {
     xthickness = 2
     ythickness = 1
+
+    fg[NORMAL] = "#000"
+    fg[PRELIGHT] = "#000"
+    fg[SELECTED] = "#000"
+    fg[INSENSITIVE] = darker (@fg_color)
+    fg[ACTIVE] = "#000"
 
     engine "wimp" {
     }
@@ -185,11 +192,8 @@ style "tooltip"
 
 style "treeview" = "default"
 {
-    GtkTreeView::odd-row-color = "#f5f5f5"
-
-    base[SELECTED] = "#bcd0d4"
-    base[ACTIVE] = "#bcd0d4"
-    text[SELECTED] = "#000"
+    base[ACTIVE] = @selected_bg_color
+    text[ACTIVE] = @selected_fg_color
 
     engine "xamarin" {
         roundness = 0
@@ -200,8 +204,6 @@ style "treeview" = "default"
 
 style "tree-header" = "wide"
 {
-    bg[NORMAL] = "#f2f2f2"
-
     engine "xamarin" {
         listviewheaderstyle = 3
         separatorstyle = 1
@@ -216,31 +218,13 @@ style "icon-view" = "default"
     text[SELECTED] = "#000"
 }
 
-style "toolbar-combo-box" = "default"
-{
-    fg[NORMAL] = @fg_color
-    text[NORMAL] = @fg_color
-    bg[NORMAL] = "#fff"
-    base[NORMAL] = "#fff"
-
-    engine "wimp" {
-        comboboxstyle = 0
-        arrowstyle = 2
-    }
-}
-
 style "combo-box" = "default"
 {
-    fg[NORMAL] = "#616161"
+    xthickness = 0
+    ythickness = 0
 
     engine "wimp" {
-        arrowstyle = 3
     }
-}
-
-style "combo-box-label" = "combo-box"
-{
-    fg[NORMAL] = "#595959"
 }
 
 style "notebook" = "default"
@@ -367,6 +351,7 @@ widget "*GtkEntry" style:highest "entry"
 widget "*search-entry*" style "search-entry"
 
 widget_class "*<GtkButton>" style "button"
+widget_class "*.GtkButton.*" style "button"
 widget "*.GtkToggleButton" style "button"
 widget "wizard_dialog" style "wizard-dialog"
 
@@ -397,10 +382,5 @@ widget_class "*.<GtkComboBox>.*" style "combo-box"
 widget_class "*.<GtkComboBoxText>.*" style "combo-box"
 widget_class "*.<GtkComboBoxEntry>.*" style "combo-box"
 widget_class "*.<GtkComboBoxText>.<GtkEntry>" style "entry"
-widget_class "*.<GtkComboBox>.*.GtkLabel" style "combo-box-label"
-
-# Comboboxes within toolbars
-widget_class "*.<GtkToolbar>.*.<GtkComboBox>.*" style "toolbar-combo-box"
-widget "*MainToolbar*.GtkComboBox.*" style "toolbar-combo-box"
 
 widget "gtk-tooltip*" style "tooltip"
