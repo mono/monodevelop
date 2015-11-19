@@ -485,7 +485,7 @@ namespace MonoDevelop.VersionControl.Views
 			} else {
 				day = rev.Time.ToShortDateString ();
 			}
-			renderer.Text = string.Format ("{0} {1:HH:MM}", day, rev.Time);
+			renderer.Text = string.Format ("{0} {1:HH:mm}", day, rev.Time);
 		}	
 		
 		static void GraphFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
