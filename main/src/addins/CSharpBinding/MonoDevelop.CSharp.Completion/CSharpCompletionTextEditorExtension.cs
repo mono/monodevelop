@@ -312,6 +312,41 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
+
+		public override Task<ICompletionDataList> HandleBackspaceOrDeleteCodeCompletionAsync (CodeCompletionContext completionContext, SpecialKey key, char triggerCharacter, CancellationToken token = default(CancellationToken))
+		{
+			if (!IdeApp.Preferences.EnableAutoCodeCompletion)
+				return null;
+			if (!char.IsLetterOrDigit (triggerCharacter) && triggerCharacter != '_')
+				return null;
+			//char completionChar = Editor.GetCharAt (completionContext.TriggerOffset - 1);
+			//Console.WriteLine ("completion char: " + completionChar);
+			//	var timer = Counters.ResolveTime.BeginTiming ();
+			try {
+				int triggerWordLength = 0;
+				//if (char.IsLetterOrDigit (completionChar) || completionChar == '_') {
+				//	if (completionContext.TriggerOffset > 1 && char.IsLetterOrDigit (Editor.GetCharAt (completionContext.TriggerOffset - 2)))
+				//		return null;
+				//	triggerWordLength = 1;
+				//}
+				return InternalHandleCodeCompletion (completionContext, triggerCharacter, true, triggerWordLength, token).ContinueWith ( t => {
+					var result = (CompletionDataList)t.Result;
+					result.AutoCompleteUniqueMatch = false;
+					result.AutoCompleteEmptyMatch = false;
+					return (ICompletionDataList)result;
+				});
+			} catch (Exception e) {
+				LoggingService.LogError ("Unexpected code completion exception." + Environment.NewLine + 
+				                         "FileName: " + DocumentContext.Name + Environment.NewLine + 
+				                         "Position: line=" + completionContext.TriggerLine + " col=" + completionContext.TriggerLineOffset + Environment.NewLine + 
+				                         "Line text: " + Editor.GetLineText (completionContext.TriggerLine), 
+				                         e);
+				return null;
+			} finally {
+				//			if (timer != null)
+				//				timer.Dispose ();
+			}		}
+
 		class CSharpCompletionDataList : CompletionDataList
 		{
 		}
