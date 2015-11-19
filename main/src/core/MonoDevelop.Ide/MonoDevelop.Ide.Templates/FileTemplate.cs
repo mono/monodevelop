@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.Templates
         }
 
         private List<FileTemplateCondition> conditions = new List<FileTemplateCondition> ();
-        public List<FileTemplateCondition> Сonditions
+        public List<FileTemplateCondition> Conditions
         {
             get { return conditions; }
         }
