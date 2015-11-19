@@ -23,31 +23,34 @@ let main argv =
         Some(s.Substring(p.Length))
     else
         None
+  
+  let normalizeOptions options =  
+      options
+      |> Array.map (fun o -> match o with
+                             | Prefix "-r:" rest -> "-r:" + Path.GetFullPath(rest)
+                             | _ -> o)
+
+  let rec normalizeProject (path, options) =
+      let fullPath = Path.GetFullPath(path)
+      fullPath, { options with ProjectFileName = fullPath
+                               OtherOptions = normalizeOptions options.OtherOptions
+                               ReferencedProjects = options.ReferencedProjects 
+                                                    |> Array.map(fun project -> normalizeProject project) }
 
   let result =
     try
       let parser = ArgumentParser.Create<Arguments>()
       let results = parser.Parse argv
       let projectFile = results.GetResult(<@ Project @>)
+      Environment.CurrentDirectory <- Path.GetDirectoryName projectFile
       let checker = FSharpChecker.Create()
       //let projectFileInfo = FSharpProjectFileInfo.Parse(projectFile, enableLogging= true)
       //let log = projectFileInfo.LogOutput
       let fsharpProjectOptions = checker.GetProjectOptionsFromProjectFile(projectFile)
-      let normalizedReferences = 
-        fsharpProjectOptions.ReferencedProjects
-        |> Array.map (fun p -> let (name, options) = p
-                               let fullPath = Path.GetFullPath(name)
-                               fullPath, { options with ProjectFileName = fullPath })
+      let (_, normalizedProject) = normalizeProject (".", fsharpProjectOptions)
 
-      let normalizedOptions = 
-        fsharpProjectOptions.OtherOptions
-        |> Array.map (fun o -> match o with
-                               | Prefix "-r:" rest -> "-r:" + Path.GetFullPath(rest)
-                               | _ -> o)
-                                               
-      Choice1Of2 { fsharpProjectOptions with ReferencedProjects = normalizedReferences; 
-                                             OtherOptions = normalizedOptions}
+      Choice1Of2 normalizedProject
     with
-    | ex -> Choice2Of2(ex)
+    | ex -> Choice2Of2 ex
   pickler.Serialize(outstream, result)
   0
