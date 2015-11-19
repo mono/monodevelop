@@ -219,12 +219,7 @@ namespace MonoDevelop.NUnit
 
 		public UnitTest FindRootTest (WorkspaceObject item)
 		{
-			var tt = System.Diagnostics.Stopwatch.StartNew ();
-			try {
-				return FindRootTest (RootTests, item);
-			} finally {
-				System.Console.WriteLine ("TTT: " + tt.ElapsedMilliseconds);
-			}
+			return FindRootTest (RootTests, item);
 		}
 		
 		public UnitTest FindRootTest (IEnumerable<UnitTest> tests, WorkspaceObject item)
