@@ -42,16 +42,23 @@ namespace MonoDevelop.NUnit
 		bool unitTestChecked;
 		UnitTest unitTestFound;
 
+		protected override bool SupportsObject (WorkspaceObject item)
+		{
+			return IdeApp.IsInitialized && base.SupportsObject (item);
+		}
+
 		protected override void Initialize ()
 		{
 			base.Initialize ();
-			NUnitService.Instance.TestSuiteChanged += TestSuiteChanged;
+			if (IdeApp.IsInitialized)
+				NUnitService.Instance.TestSuiteChanged += TestSuiteChanged;
 		}
 
 		public override void Dispose ()
 		{
 			base.Dispose ();
-			NUnitService.Instance.TestSuiteChanged -= TestSuiteChanged;
+			if (IdeApp.IsInitialized)
+				NUnitService.Instance.TestSuiteChanged -= TestSuiteChanged;
 		}
 
 		void TestSuiteChanged (object sender, System.EventArgs e)
@@ -97,7 +104,7 @@ namespace MonoDevelop.NUnit
 		protected override ProjectFeatures OnGetSupportedFeatures ()
 		{
 			var sf = base.OnGetSupportedFeatures ();
-			if (!sf.HasFlag (ProjectFeatures.Execute) && IdeApp.IsInitialized) {
+			if (!sf.HasFlag (ProjectFeatures.Execute)) {
 				// Unit test projects support execution
 				UnitTest test = FindRootTest ();
 				if (test != null)
