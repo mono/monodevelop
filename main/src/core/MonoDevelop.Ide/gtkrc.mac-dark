@@ -79,6 +79,7 @@ style "default" {
 
     GtkScrolledWindow::scrollbar-spacing = 0
     GtkScrolledWindow::scrollbars-within-bevel = 1
+    GtkScrolledWindow::draw-child-bg = 1
     GtkScale::slider-length = 14
     GtkRange::trough-side-details = 1
 
@@ -361,7 +362,7 @@ style "scrollbar" = "default"
     {
         roundness		= 1
         contrast		= 0.0
-        trough_shades	= { 1.0, 1.0 }
+        trough_shades	= { 0.975, 0.975 }
         stepperstyle = 1
     }
 }
