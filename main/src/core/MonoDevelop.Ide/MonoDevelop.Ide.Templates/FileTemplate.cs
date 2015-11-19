@@ -337,7 +337,7 @@ namespace MonoDevelop.Ide.Templates
 
 			//filter on conditions
 			if (project != null) {
-				if (!string.IsNullOrEmpty (projecttype) && project.GetTypeTags ().All (p => p != projecttype))
+				if (!string.IsNullOrEmpty (ProjectType) && project.GetTypeTags ().All (p => p != ProjectType))
 					return false;
 
 				foreach (FileTemplateCondition condition in Conditions)
