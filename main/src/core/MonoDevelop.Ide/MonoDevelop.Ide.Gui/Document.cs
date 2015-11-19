@@ -55,6 +55,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Components.Extensions;
+using MonoDevelop.Projects.SharedAssetsProjects;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -238,7 +239,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public Task<Microsoft.CodeAnalysis.Compilation> GetCompilationAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			var project = TypeSystemService.GetCodeAnalysisProject (Project ?? adhocProject); 
+			var project = TypeSystemService.GetCodeAnalysisProject (adhocProject ?? Project); 
 			if (project == null)
 				return new Task<Microsoft.CodeAnalysis.Compilation> (() => null);
 			return project.GetCompilationAsync (cancellationToken);
@@ -721,7 +722,7 @@ namespace MonoDevelop.Ide.Gui
 				TypeSystemService.AddSkippedFile (currentParseFile);
 				var currentParseText = editor.CreateDocumentSnapshot ();
 				CancelOldParsing();
-				var project = Project ?? adhocProject;
+				var project = adhocProject ?? Project;
 
 				var options = new ParseOptions {
 					Project = project,
@@ -764,7 +765,7 @@ namespace MonoDevelop.Ide.Gui
 				analysisDocument = null;
 				return SpecializedTasks.EmptyTask;
 			}
-			if (Project != null && Editor.MimeType == "text/x-csharp") {
+			if (Project != null && Editor.MimeType == "text/x-csharp" && !IsUnreferencedSharedProject(Project)) {
 				RoslynWorkspace = TypeSystemService.GetWorkspace (this.Project.ParentSolution);
 				analysisDocument = TypeSystemService.GetDocumentId (this.Project, this.FileName);
 				if (analysisDocument != null) {
@@ -806,6 +807,12 @@ namespace MonoDevelop.Ide.Gui
 			}
 			return SpecializedTasks.EmptyTask;
 		}
+
+		bool IsUnreferencedSharedProject (Project project)
+		{
+			return project is SharedAssetsProject;
+		}
+
 		object adhocProjectLock = new object();
 
 		void UnloadAdhocProject ()
@@ -856,7 +863,7 @@ namespace MonoDevelop.Ide.Gui
 			string mimeType = editor.MimeType;
 			CancelOldParsing ();
 			var token = parseTokenSource.Token;
-			var project = Project ?? adhocProject;
+			var project = adhocProject ?? Project;
 			var projectFile = project?.GetProjectFile (currentParseFile);
 
 			ThreadPool.QueueUserWorkItem (delegate {
