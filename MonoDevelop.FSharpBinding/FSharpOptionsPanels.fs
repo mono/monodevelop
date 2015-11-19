@@ -9,6 +9,7 @@ open Gdk
 open System
 open System.IO
 open MonoDevelop.Core
+open MonoDevelop.Ide
 open MonoDevelop.Projects
 open MonoDevelop.Ide.Gui.Dialogs
 open MonoDevelop.FSharp.Gui
@@ -27,6 +28,7 @@ type FSharpSettingsPanel() =
   let fsiTextColorPropName ="FSharpBinding.TextColorPropName"
   let fsiMatchWithThemePropName = "FSharpBinding.MatchWithThemePropName"
   let fsiAdvanceToNextLine = "FSharpBinding.AdvanceToNextLine"
+  let fsHighlightMutables = "FSharpBinding.HighlightMutables"
   
   let mutable widget : FSharpSettingsWidget = null
 
@@ -81,6 +83,7 @@ type FSharpSettingsPanel() =
     let interactiveAdvanceToNextLine = PropertyService.Get (fsiAdvanceToNextLine, true)
     let matchWithTheme = PropertyService.Get (fsiMatchWithThemePropName, true)
     let compilerPath = PropertyService.Get (fscPathPropName, "")
+    let highlightMutables = PropertyService.Get (fsHighlightMutables, true)
 
     setInteractiveDisplay (interactivePath = "" && interactiveArgs = "")
     setCompilerDisplay (compilerPath = "")
@@ -106,12 +109,14 @@ type FSharpSettingsPanel() =
     let baseColor = PropertyService.Get (fsiBaseColorPropName, "#FFFFFF") |> strToColor
     widget.BaseColorButton.Color <- baseColor
 
+    widget.CheckHighlightMutables.Active <- highlightMutables
+
     // Implement checkbox for F# Interactive options
     widget.CheckInteractiveUseDefault.Toggled.Add (fun _ -> setInteractiveDisplay widget.CheckInteractiveUseDefault.Active)
 
     // Implement checkbox for F# Compiler options
     widget.CheckCompilerUseDefault.Toggled.Add (fun _ -> setCompilerDisplay widget.CheckCompilerUseDefault.Active)
-    
+
     widget.Show()
     upcast widget 
   
@@ -129,8 +134,11 @@ type FSharpSettingsPanel() =
 
     PropertyService.Set (fsiAdvanceToNextLine, widget.AdvanceLine.Active)
 
+    PropertyService.Set (fsHighlightMutables, widget.CheckHighlightMutables.Active)
     FSharpInteractivePad.Fsi |> Option.iter (fun fsi -> fsi.UpdateFont()    
                                                         fsi.UpdateColors())
+
+    IdeApp.Workbench.ReparseOpenDocuments()
 
     
     

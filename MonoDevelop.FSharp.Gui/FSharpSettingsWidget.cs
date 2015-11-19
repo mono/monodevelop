@@ -22,6 +22,7 @@ namespace MonoDevelop.FSharp.Gui
 		public Gtk.CheckButton CheckCompilerUseDefault { get { return checkCompilerUseDefault; } }
         public Gtk.Button ButtonCompilerBrowse { get { return buttonCompilerBrowse; } }
 		public Gtk.Entry EntryCompilerPath { get { return entryCompilerPath; } }
+		public Gtk.CheckButton CheckHighlightMutables { get { return checkHighlightMutables; } }
 		
 	}
 }

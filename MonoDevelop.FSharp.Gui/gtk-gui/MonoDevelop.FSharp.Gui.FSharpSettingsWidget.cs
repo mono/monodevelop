@@ -67,6 +67,14 @@ namespace MonoDevelop.FSharp.Gui
 		private global::Gtk.Entry entryCompilerPath;
 		
 		private global::Gtk.Label label3;
+		
+		private global::Gtk.HSeparator hseparator1;
+		
+		private global::Gtk.HBox hbox3;
+		
+		private global::Gtk.Label label8;
+		
+		private global::Gtk.CheckButton checkHighlightMutables;
 
 		protected virtual void Build ()
 		{
@@ -78,6 +86,7 @@ namespace MonoDevelop.FSharp.Gui
 			this.vbox1 = new global::Gtk.VBox ();
 			this.vbox1.Name = "vbox1";
 			this.vbox1.Spacing = 6;
+			this.vbox1.BorderWidth = ((uint)(6));
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.hbox2 = new global::Gtk.HBox ();
 			this.hbox2.Name = "hbox2";
@@ -404,6 +413,44 @@ namespace MonoDevelop.FSharp.Gui
 			w31.Position = 7;
 			w31.Expand = false;
 			w31.Fill = false;
+			// Container child vbox1.Gtk.Box+BoxChild
+			this.hseparator1 = new global::Gtk.HSeparator ();
+			this.hseparator1.Name = "hseparator1";
+			this.vbox1.Add (this.hseparator1);
+			global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hseparator1]));
+			w32.Position = 8;
+			w32.Expand = false;
+			w32.Fill = false;
+			// Container child vbox1.Gtk.Box+BoxChild
+			this.hbox3 = new global::Gtk.HBox ();
+			this.hbox3.Name = "hbox3";
+			this.hbox3.Spacing = 6;
+			// Container child hbox3.Gtk.Box+BoxChild
+			this.label8 = new global::Gtk.Label ();
+			this.label8.Name = "label8";
+			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>F# Editor</b>");
+			this.label8.UseMarkup = true;
+			this.hbox3.Add (this.label8);
+			global::Gtk.Box.BoxChild w33 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.label8]));
+			w33.Position = 0;
+			w33.Expand = false;
+			w33.Fill = false;
+			// Container child hbox3.Gtk.Box+BoxChild
+			this.checkHighlightMutables = new global::Gtk.CheckButton ();
+			this.checkHighlightMutables.CanFocus = true;
+			this.checkHighlightMutables.Name = "checkHighlightMutables";
+			this.checkHighlightMutables.Label = global::Mono.Unix.Catalog.GetString ("Highlight mutable variables");
+			this.checkHighlightMutables.Active = true;
+			this.checkHighlightMutables.DrawIndicator = true;
+			this.checkHighlightMutables.UseUnderline = true;
+			this.hbox3.Add (this.checkHighlightMutables);
+			global::Gtk.Box.BoxChild w34 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.checkHighlightMutables]));
+			w34.Position = 1;
+			this.vbox1.Add (this.hbox3);
+			global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox3]));
+			w35.Position = 9;
+			w35.Expand = false;
+			w35.Fill = false;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
