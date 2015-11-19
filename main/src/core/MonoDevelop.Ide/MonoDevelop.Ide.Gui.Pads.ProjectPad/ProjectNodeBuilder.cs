@@ -222,6 +222,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 		void AddFile (ProjectFile file, Project project)
 		{
+			if (!file.Visible || file.Flags.HasFlag (ProjectItemFlags.Hidden))
+				return;
+			
 			ITreeBuilder tb = Context.GetTreeBuilder ();
 			
 			if (file.DependsOnFile != null) {
@@ -402,9 +405,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void SetAsStartupProject ()
 		{
 			Project project = CurrentNode.DataItem as Project;
-			project.ParentSolution.SingleStartup = true;
 			project.ParentSolution.StartupItem = project;
-			IdeApp.ProjectOperations.Save (project.ParentSolution);
+			if (!project.ParentSolution.SingleStartup) {
+				project.ParentSolution.SingleStartup = true;
+				IdeApp.ProjectOperations.Save (project.ParentSolution);
+			} else
+				project.ParentSolution.SaveUserProperties ();
 		}
 		
 		public override void DeleteItem ()

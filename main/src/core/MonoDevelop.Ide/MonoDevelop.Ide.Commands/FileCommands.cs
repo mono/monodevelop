@@ -34,10 +34,10 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Content;
 using System.IO;
-using Gtk;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Desktop;
 using System.Linq;
+using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			var dlg = new OpenFileDialog (GettextCatalog.GetString ("File to Open"), Gtk.FileChooserAction.Open) {
+			var dlg = new OpenFileDialog (GettextCatalog.GetString ("File to Open"), SelectFileDialogAction.Open) {
 				TransientFor = IdeApp.Workbench.RootWindow,
 				ShowEncodingSelector = true,
 				ShowViewerSelector = true,
@@ -273,8 +273,12 @@ namespace MonoDevelop.Ide.Commands
 			
 			int i = 0;
 			foreach (var ri in files) {
-				string acceleratorKeyPrefix = i < 10 ? "_" + ((i + 1) % 10).ToString() + " " : "";
-				var cmd = new CommandInfo (acceleratorKeyPrefix + ri.DisplayName.Replace ("_", "__")) {
+				string commandText = ri.DisplayName.Replace ("_", "__");
+				if (!Platform.IsMac) {
+					string acceleratorKeyPrefix = i < 10 ? "_" + ((i + 1) % 10).ToString() + " " : "";
+					commandText = acceleratorKeyPrefix + commandText;
+				}
+				var cmd = new CommandInfo (commandText) {
 					Description = GettextCatalog.GetString ("Open {0}", ri.FileName)
 				};
 /*				Gdk.Pixbuf icon = DesktopService.GetIconForFile (ri.FileName, IconSize.Menu);
@@ -347,13 +351,18 @@ namespace MonoDevelop.Ide.Commands
 					LoggingService.LogWarning ("Error building recent solutions list", ex);
 					continue;
 				}
-				
-				string acceleratorKeyPrefix = i < 10 ? "_" + ((i + 1) % 10).ToString() + " " : "";
+
+				string commandText = ri.DisplayName.Replace ("_", "__");
+				if (!Platform.IsMac) {
+					string acceleratorKeyPrefix = i < 10 ? "_" + ((i + 1) % 10).ToString() + " " : "";
+					commandText = acceleratorKeyPrefix + commandText;
+				}
+
 				string str = GettextCatalog.GetString ("Load solution {0}", ri.ToString ());
 				if (IdeApp.Workspace.IsOpen)
 					str += " - " + GettextCatalog.GetString ("Hold Control to open in current workspace.");
 				
-				var cmd = new CommandInfo (acceleratorKeyPrefix + ri.DisplayName.Replace ("_", "__")) {
+				var cmd = new CommandInfo (commandText) {
 					Icon = icon,
 					Description = str,
 				};

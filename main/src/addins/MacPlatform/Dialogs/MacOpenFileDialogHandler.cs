@@ -25,9 +25,9 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Collections.Generic;
 
 using AppKit;
 
@@ -36,7 +36,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.MacInterop;
-
+using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -47,15 +47,12 @@ namespace MonoDevelop.MacIntegration
 			NSSavePanel panel = null;
 			
 			try {
-				bool directoryMode = data.Action != Gtk.FileChooserAction.Open
-						&& data.Action != Gtk.FileChooserAction.Save;
-				
-				if (data.Action == Gtk.FileChooserAction.Save) {
+				if (data.Action == SelectFileDialogAction.Save) {
 					panel = new NSSavePanel ();
 				} else {
 					panel = new NSOpenPanel {
-						CanChooseDirectories = directoryMode,
-						CanChooseFiles = !directoryMode,
+						CanChooseDirectories = (data.Action & SelectFileDialogAction.FolderFlags) != 0,
+						CanChooseFiles = (data.Action & SelectFileDialogAction.FileFlags) != 0,
 					};
 				}
 				
@@ -70,7 +67,7 @@ namespace MonoDevelop.MacIntegration
 				List<FileViewer> currentViewers = null;
 				var labels = new List<MDAlignment> ();
 				
-				if (!directoryMode) {
+				if ((data.Action & SelectFileDialogAction.FileFlags) != 0) {
 					var filterPopup = MacSelectFileDialogHandler.CreateFileFilterPopup (data, panel);
 
 					if (filterPopup != null) {
@@ -84,7 +81,7 @@ namespace MonoDevelop.MacIntegration
 					}
 
 					if (data.ShowEncodingSelector) {
-						encodingSelector = new SelectEncodingPopUpButton (data.Action != Gtk.FileChooserAction.Save);
+						encodingSelector = new SelectEncodingPopUpButton (data.Action != SelectFileDialogAction.Save);
 						encodingSelector.SelectedEncodingId = data.Encoding != null ? data.Encoding.CodePage : 0;
 						
 						var encodingLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Encoding:")), true);
@@ -249,7 +246,11 @@ namespace MonoDevelop.MacIntegration
 
 			//re-center the accessory view in its parent, Cocoa does this for us initially and after
 			//resizing the window, but we need to do it again after altering its layout
-			var superFrame = box.View.Superview.Frame;
+			var superView = box.View.Superview;
+			if (superView == null)
+				return;
+			
+			var superFrame = superView.Frame;
 			var frame = box.View.Frame;
 			//not sure why it's ceiling, but this matches the Cocoa layout
 			frame.X = (float)Math.Ceiling ((superFrame.Width - frame.Width) / 2);

@@ -35,6 +35,7 @@ using System.Text;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Microsoft.WindowsAPICodePack.Dialogs.Controls;
 using MonoDevelop.Core;
+using MonoDevelop.Components.Extensions;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui;
@@ -51,7 +52,7 @@ namespace MonoDevelop.Platform
 		{
 			var parent = data.TransientFor ?? MessageService.RootWindow;
 			CommonFileDialog dialog;
-			if (data.Action == FileChooserAction.Open) {
+			if (data.Action == SelectFileDialogAction.Open) {
 				dialog = new CustomCommonOpenFileDialog {
 					EnsureFileExists = true
 				};
@@ -65,7 +66,7 @@ namespace MonoDevelop.Platform
 				var group = new CommonFileDialogGroupBox ("encoding", "Encoding:");
 				encodingCombo = new CustomCommonFileDialogComboBox ();
 
-				BuildEncodingsCombo (encodingCombo, data.Action != FileChooserAction.Save, data.Encoding);
+				BuildEncodingsCombo (encodingCombo, data.Action != SelectFileDialogAction.Save, data.Encoding);
 				group.Items.Add (encodingCombo);
 				dialog.Controls.Add (group);
 
@@ -77,7 +78,7 @@ namespace MonoDevelop.Platform
 							SizeToContent = SizeToContent.WidthAndHeight
 						};
 						if (dlg.ShowDialog ().Value) {
-							BuildEncodingsCombo (encodingCombo, data.Action != FileChooserAction.Save, data.Encoding);
+							BuildEncodingsCombo (encodingCombo, data.Action != SelectFileDialogAction.Save, data.Encoding);
 							dialog.ApplyControlPropertyChange ("Items", encodingCombo);
 						}
 					}
@@ -86,7 +87,7 @@ namespace MonoDevelop.Platform
 
 			CustomCommonFileDialogComboBox viewerCombo = null;
 			CommonFileDialogCheckBox closeSolution = null;
-			if (data.ShowViewerSelector && data.Action == FileChooserAction.Open) {
+			if (data.ShowViewerSelector && data.Action == SelectFileDialogAction.Open) {
 				var group = new CommonFileDialogGroupBox ("openWith", "Open with:");
 
 				viewerCombo = new CustomCommonFileDialogComboBox {

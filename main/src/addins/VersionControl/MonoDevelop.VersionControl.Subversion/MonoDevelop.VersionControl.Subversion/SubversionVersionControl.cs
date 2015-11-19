@@ -251,18 +251,16 @@ namespace MonoDevelop.VersionControl.Subversion
 	public class SubversionException : VersionControlException
 	{
 		public int ErrorCode {
-			get;
-			private set;
+			get { return (int)Data ["ErrorCode"]; }
 		}
 		
 		public SubversionException (string message, int errorCode) : base (message)
 		{
-			ErrorCode = errorCode;
+			Data ["ErrorCode"] = errorCode;
 		}
 
-		public SubversionException (string message) : base (message)
+		public SubversionException (string message) : this (message, 0)
 		{
-			ErrorCode = 0;
 		}
 	}
 }

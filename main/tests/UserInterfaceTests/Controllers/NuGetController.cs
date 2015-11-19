@@ -25,21 +25,11 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Components.AutoTest;
-using UserInterfaceTests;
 using MonoDevelop.Components.Commands;
 using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
-	public class NuGetPackageOptions
-	{
-		public string PackageName { get; set;}
-
-		public string Version { get; set;}
-
-		public bool IsPreRelease { get; set;}
-	}
-
 	public class NuGetController
 	{
 		static AutoTestClientSession Session {
@@ -48,31 +38,76 @@ namespace UserInterfaceTests
 
 		Action<string> takeScreenshot;
 
-		readonly Func<AppQuery,AppQuery> nugetWindow;
+		bool isUpdate;
+
+		static readonly Func<AppQuery,AppQuery> nugetWindow = c => c.Window ().Marked ("Add Packages");
 		readonly Func<AppQuery,AppQuery> addPackageButton;
+		readonly Func<AppQuery,AppQuery> updatePackageButton;
 		readonly Func<AppQuery,AppQuery> resultList;
 		readonly Func<AppQuery,AppQuery> includePreRelease;
 
-		public static void AddPackage (NuGetPackageOptions packageOptions, Action<string> takeScreenshot = null)
+		public static void AddPackage (NuGetPackageOptions packageOptions, UITestBase testContext = null)
 		{
-			var nuget = new NuGetController (takeScreenshot);
-			nuget.Open ();
-			nuget.EnterSearchText (packageOptions.PackageName, packageOptions.Version, packageOptions.IsPreRelease);
-			nuget.SelectResultByPackageName (packageOptions.PackageName, packageOptions.Version);
-			nuget.ClickAdd ();
-			Ide.WaitForStatusMessage (new [] {
-				string.Format ("{0} successfully added.", packageOptions.PackageName)
-			});
-			if (takeScreenshot != null)
-				takeScreenshot ("Package-Added");
+			Action<string> screenshotAction = delegate { };
+			if (testContext != null) {
+				testContext.ReproStep (string.Format ("Add NuGet package '{0}'", packageOptions.PackageName), packageOptions);
+				screenshotAction = testContext.TakeScreenShot;
+			}
+			AddUpdatePackage (packageOptions, screenshotAction, false);
 		}
 
-		public NuGetController (Action<string> takeScreenshot = null)
+		public static void UpdatePackage (NuGetPackageOptions packageOptions, UITestBase testContext = null)
+		{
+			Action<string> screenshotAction = delegate { };
+			if (testContext != null) {
+				testContext.ReproStep (string.Format ("Update NuGet package '{0}'", packageOptions.PackageName), packageOptions);
+				screenshotAction = testContext.TakeScreenShot;
+			}
+			AddUpdatePackage (packageOptions, screenshotAction, true);
+		}
+
+		public static void UpdateAllNuGetPackages (UITestBase testContext = null)
+		{
+			Session.ExecuteCommand ("MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolution");
+			WaitForNuGet.UpdateSuccess (string.Empty);
+			if (testContext != null)
+				testContext.TakeScreenShot ("All-NuGet-Packages-Updated");
+		}
+
+		static void AddUpdatePackage (NuGetPackageOptions packageOptions, Action<string> takeScreenshot, bool isUpdate = false)
+		{
+			packageOptions.PrintData ();
+			var nuget = new NuGetController (takeScreenshot, isUpdate);
+			nuget.Open ();
+			nuget.EnterSearchText (packageOptions.PackageName, packageOptions.Version, packageOptions.IsPreRelease);
+			for (int i = 0; i < packageOptions.RetryCount; i++) {
+				try {
+					nuget.SelectResultByPackageName (packageOptions.PackageName, packageOptions.Version);
+					break;
+				} catch (NuGetException e) {
+					if (i == packageOptions.RetryCount - 1)
+						Assert.Inconclusive ("Unable to find NuGet package, could be network related.", e);
+				}
+			}
+			nuget.ClickAdd ();
+			Session.WaitForNoElement (nugetWindow);
+			takeScreenshot ("NuGet-Update-Is-"+isUpdate);
+			try {
+				WaitForNuGet.Success (packageOptions.PackageName, isUpdate ? NuGetOperations.Update : NuGetOperations.Add);
+			} catch (TimeoutException e) {
+				takeScreenshot ("Wait-For-NuGet-Operation-Failed");
+				throw;
+			}
+			takeScreenshot ("NuGet-Operation-Finished");
+		}
+
+		public NuGetController (Action<string> takeScreenshot = null, bool isUpdate = false)
 		{
 			this.takeScreenshot = takeScreenshot ?? delegate { };
+			this.isUpdate = isUpdate;
 
-			nugetWindow = c => c.Window ().Marked ("Add Packages");
 			addPackageButton = c => nugetWindow (c).Children ().Button ().Text ("Add Package");
+			updatePackageButton = c => nugetWindow (c).Children ().Button ().Text ("Update Package");
 			resultList = c => nugetWindow (c).Children ().TreeView ().Model ();
 			includePreRelease = c => nugetWindow (c).Children ().CheckButton ().Text ("Show pre-release packages");
 		}
@@ -112,18 +147,18 @@ namespace UserInterfaceTests
 				var found = Session.Query (c => nugetWindow (c).Children ().CheckType (typeof(Gtk.Label)).Text (packageName)).Length > 0;
 				if (version != null) {
 					found = found && (Session.Query (c => nugetWindow (c).Children ().CheckType (typeof(Gtk.Label)).Text (version)).Length > 0);
-					if (found)
-						return;
 				}
+				if (found)
+					return;
 			}
 			takeScreenshot ("Package-Failed-To-Be-Found");
-			Assert.Fail ("No package '{0}' with version: '{1}' found", packageName, version);
+			throw new NuGetException (string.Format ("No package '{0}' with version: '{1}' found", packageName, version));
 		}
 
 		public void ClickAdd ()
 		{
 			WaitForAddButton (true);
-			Assert.IsTrue (Session.ClickElement (addPackageButton));
+			Assert.IsTrue (Session.ClickElement (isUpdate ? updatePackageButton : addPackageButton));
 			Session.WaitForElement (IdeQuery.TextArea);
 		}
 
@@ -138,7 +173,7 @@ namespace UserInterfaceTests
 			if (enabled == null)
 				Session.WaitForElement (addPackageButton);
 			else
-				Session.WaitForElement (c => addPackageButton (c).Sensitivity (enabled.Value), 10000);
+				Session.WaitForElement (c => (isUpdate? updatePackageButton(c) : addPackageButton (c)).Sensitivity (enabled.Value), 30000);
 		}
 	}
 }

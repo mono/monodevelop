@@ -26,11 +26,14 @@
 #if MAC
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Xml;
 
 using AppKit;
 using Foundation;
+
+using MonoDevelop.Components.MainToolbar;
 
 namespace MonoDevelop.Components.AutoTest.Results
 {
@@ -41,6 +44,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 		public NSObjectResult (NSObject resultObject)
 		{
 			ResultObject = resultObject;
+		}
+
+		public override string ToString ()
+		{
+			return string.Format ("NSObject: Type: {0}", ResultObject.GetType ().FullName);
 		}
 
 		public override void ToXml (XmlElement element)
@@ -69,15 +77,26 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Marked (string mark)
 		{
-			if (ResultObject is NSView) {
-				if (((NSView)ResultObject).Identifier == mark) {
-					return this;
-				}
+			if (CheckForText (ResultObject.GetType ().FullName, mark, true)) {
+				return this;
+			}
 
-				if (ResultObject.GetType ().FullName == mark) {
+			if (ResultObject is NSView) {
+				if (CheckForText (((NSView)ResultObject).Identifier, mark, true)) {
 					return this;
 				}
 			}
+
+			if (ResultObject is NSWindow) {
+				if (CheckForText (((NSWindow)ResultObject).Title,  mark, true)) {
+					return this;
+				}
+			}
+			return null;
+		}
+
+		public override AppResult Selected ()
+		{
 			return null;
 		}
 
@@ -97,6 +116,13 @@ namespace MonoDevelop.Components.AutoTest.Results
 				string value = control.StringValue;
 				if (CheckForText (value, text, exact)) {
 					return this;
+				}
+
+				if (ResultObject is NSButton) {
+					var nsButton = (NSButton)ResultObject;
+					if (CheckForText (nsButton.Title, text, exact)) {
+						return this;
+					}
 				}
 			}
 
@@ -125,7 +151,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Property (string propertyName, object value)
 		{
-			return (GetPropertyValue (propertyName) == value) ? this : null;
+			return MatchProperty (propertyName, ResultObject, value);
 		}
 
 		public override List<AppResult> NextSiblings ()
@@ -150,7 +176,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return false;
 			}
 
-			control.PerformClick (null);
+			using (var nsObj = new NSObject ())
+				control.PerformClick (nsObj);
 			return true;
 		}
 
@@ -216,6 +243,55 @@ namespace MonoDevelop.Components.AutoTest.Results
 		{
 			
 		}
+
+#region MacPlatform.MacIntegration.MainToolbar.SelectorView
+		public override bool SetActiveConfiguration (string configurationName)
+		{
+			Type type = ResultObject.GetType ();
+			PropertyInfo pinfo = type.GetProperty ("ConfigurationModel");
+			if (pinfo == null) {
+				return false;
+			}
+
+			IEnumerable<IConfigurationModel> model = (IEnumerable<IConfigurationModel>)pinfo.GetValue (ResultObject, null);
+			var configuration = model.FirstOrDefault (c => c.DisplayString == configurationName);
+			if (configuration == null) {
+				return false;
+			}
+
+			pinfo = type.GetProperty ("ActiveConfiguration");
+			if (pinfo == null) {
+				return false;
+			}
+
+			pinfo.SetValue (ResultObject, configuration);
+			return true;
+		}
+
+		public override bool SetActiveRuntime (string runtimeName)
+		{
+			Type type = ResultObject.GetType ();
+			PropertyInfo pinfo = type.GetProperty ("RuntimeModel");
+			if (pinfo == null) {
+				return false;
+			}
+
+			IEnumerable<IRuntimeModel> model = (IEnumerable<IRuntimeModel>)pinfo.GetValue (ResultObject, null);
+
+			var runtime = model.FirstOrDefault (r => r.GetMutableModel ().FullDisplayString == runtimeName);
+			if (runtime == null) {
+				return false;
+			}
+
+			pinfo = type.GetProperty ("ActiveRuntime");
+			if (pinfo == null) {
+				return false;
+			}
+
+			pinfo.SetValue (ResultObject, runtime);
+			return true;
+		}
+#endregion
 	}
 }
 

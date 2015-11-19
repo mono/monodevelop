@@ -44,7 +44,7 @@ namespace MonoDevelop.VersionControl
 			VersionControlSystem = vcs;
 			Repositories.SetValue (Repositories.Count + 1, string.Format ("Repository #{0}", Repositories.Count + 1), new Dictionary<string, string> {
 				{ "Type", vcs.Name },
-				{ "Version", vcs.Version },
+				{ "Type+Version", string.Format ("{0} {1}", vcs.Name, vcs.Version) },
 			});
 		}
 
@@ -94,9 +94,19 @@ namespace MonoDevelop.VersionControl
 			if (--references == 0)
 				Dispose ();
 		}
-		
+
+		internal bool Disposed { get; private set; }
 		public virtual void Dispose ()
 		{
+			Disposed = true;
+			if (!queryRunning)
+				return;
+
+			lock (queryLock) {
+				fileQueryQueue.Clear ();
+				directoryQueryQueue.Clear ();
+				recursiveDirectoryQueryQueue.Clear ();
+			}
 		}
 		
 		// Display name of the repository
@@ -327,7 +337,7 @@ namespace MonoDevelop.VersionControl
 
 		class RecursiveDirectoryInfoQuery : DirectoryInfoQuery
 		{
-			public VersionInfo[] Result;
+			public VersionInfo[] Result = new VersionInfo[0];
 			public ManualResetEvent ResetEvent;
 			public int Count;
 		}

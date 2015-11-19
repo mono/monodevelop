@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using Gtk;
+using System.Linq;
 
 namespace MonoDevelop.Components.AutoTest.Results
 {
@@ -51,9 +52,22 @@ namespace MonoDevelop.Components.AutoTest.Results
 			Column = column;
 			resultIter = iter;
 		}
-			
+
 		public override AppResult Marked (string mark)
 		{
+			return null;
+		}
+
+		public override AppResult Selected ()
+		{
+			if (!resultIter.HasValue) {
+				return base.Selected ();
+			}
+
+			if (base.Selected () != null && ParentWidget is TreeView) {
+				TreeView treeView = (TreeView)ParentWidget;
+				return treeView.Selection.IterIsSelected (resultIter.Value) ? this : null;
+			}
 			return null;
 		}
 
@@ -64,7 +78,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Model (string column)
 		{
-			return null;
+			var columnNumber = GetColumnNumber (column, TModel);
+			if (columnNumber == -1)
+				return null;
+			Column = columnNumber;
+			return this;
 		}
 
 		bool CheckForText (TreeModel model, TreeIter iter, bool exact)
@@ -108,7 +126,16 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return MatchProperty (propertyName, objectToCompare, value);
 			}
 
-			return null;
+			return MatchProperty (propertyName, ParentWidget, value);
+		}
+
+		public override ObjectProperties Properties ()
+		{
+			if (resultIter != null && resultIter.HasValue) {
+				var objectForProperties = TModel.GetValue (resultIter.Value, Column);
+				return base.GetProperties (objectForProperties);
+			}
+			return base.Properties ();
 		}
 
 		public override List<AppResult> NextSiblings ()
@@ -131,38 +158,90 @@ namespace MonoDevelop.Components.AutoTest.Results
 		{
 			if (resultIter == null || !resultIter.HasValue) {
 				List<AppResult> children = new List<AppResult> ();
-				TModel.Foreach ((m, p, i) => {
-					children.Add (new GtkTreeModelResult (ParentWidget, TModel, Column, i));
-					return false;
-				});
+				TreeIter topIter;
+				if (TModel.GetIterFirst (out topIter)) {
+					var child = new GtkTreeModelResult (ParentWidget, TModel, Column, topIter);
+					children.Add (child);
+					this.FirstChild = child;
+					child.ParentNode = this;
+
+					if (recursive) {
+						var topIterChildren = FetchIterChildren (topIter, child, recursive);
+						child.FirstChild = topIterChildren.FirstOrDefault ();
+						children.AddRange (topIterChildren);
+					}
+
+					GtkTreeModelResult previousSibling = child;
+					while (TModel.IterNext (ref topIter)) {
+						var nextSibling = new GtkTreeModelResult (ParentWidget, TModel, Column, topIter);
+						children.Add (nextSibling);
+
+						nextSibling.PreviousSibling = previousSibling;
+						previousSibling.NextSibling = nextSibling;
+						nextSibling.ParentNode = this;
+
+						if (recursive) {
+							var topIterChildren = FetchIterChildren (topIter, nextSibling, recursive);
+							nextSibling.FirstChild = topIterChildren.FirstOrDefault ();
+							children.AddRange (topIterChildren);
+						}
+					}
+				}
 				return children;
 			}
 
 			TreeIter currentIter = (TreeIter) resultIter;
-			if (!TModel.IterHasChild (currentIter))
+			return FetchIterChildren (currentIter, this, recursive);
+		}
+
+		List<AppResult> FetchIterChildren (TreeIter iter, GtkTreeModelResult result, bool recursive)
+		{
+			List<AppResult> newList = new List<AppResult> ();
+			if (!TModel.IterHasChild (iter))
 			{
-				return null;
+				return newList;
 			}
 
-			List<AppResult> newList = new List<AppResult> ();
-			for (int i = 0; i < TModel.IterNChildren (currentIter); i++) {
+			GtkTreeModelResult previousSibling = null;
+			for (int i = 0; i < TModel.IterNChildren (iter); i++) {
 				TreeIter childIter;
-				if (TModel.IterNthChild (out childIter, currentIter, i)) {
-					newList.Add (new GtkTreeModelResult (ParentWidget, TModel, Column, childIter));
+				if (TModel.IterNthChild (out childIter, iter, i)) {
+					var child = new GtkTreeModelResult (ParentWidget, TModel, Column, childIter);
+
+					child.ParentNode = this;
+					child.PreviousSibling = previousSibling;
+					if (previousSibling != null)
+						previousSibling.NextSibling = child;
+					
+					newList.Add (child);
+					if (recursive) {
+						var childrenIter = FetchIterChildren (childIter, child, recursive);
+						newList.AddRange (childrenIter);
+						child.FirstChild = childrenIter.FirstOrDefault ();
+					}
+
+					previousSibling = child;
 				}
 			}
+			result.FirstChild = newList.FirstOrDefault ();
 			return newList;
 		}
 
 		public override bool Select ()
 		{
+			base.Select ();
+
 			if (!resultIter.HasValue) {
 				return false;
 			}
 
 			if (ParentWidget is TreeView) {
 				TreeView treeView = (TreeView) ParentWidget;
+				treeView.Selection.UnselectAll ();
+				treeView.ExpandRow (TModel.GetPath (resultIter.Value), false);
 				treeView.Selection.SelectIter ((TreeIter) resultIter);
+				treeView.SetCursor (TModel.GetPath ((TreeIter) resultIter), treeView.Columns [0], false);
+
 			} else if (ParentWidget is ComboBox) {
 				ComboBox comboBox = (ComboBox) ParentWidget;
 				comboBox.SetActiveIter ((TreeIter) resultIter);
@@ -182,23 +261,15 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return false;
 		}
 
-		public override bool TypeKey (char key, string state = "")
-		{
-			return false;
-		}
-
-		public override bool TypeKey (string keyString, string state = "")
-		{
-			throw new NotImplementedException ();
-		}
-
-		public override bool EnterText (string text)
-		{
-			return false;
-		}
-
 		public override bool Toggle (bool active)
 		{
+			if (resultIter.HasValue) {
+				var modelValue = TModel.GetValue ((TreeIter)resultIter, Column);
+				if (modelValue is bool) {
+					TModel.SetValue ((TreeIter)resultIter, Column, active);
+					return true;
+				}
+			}
 			return false;
 		}
 	}

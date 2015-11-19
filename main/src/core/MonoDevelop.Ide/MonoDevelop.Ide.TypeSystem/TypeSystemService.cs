@@ -160,7 +160,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 	public static class TypeSystemService
 	{
-		const string CurrentVersion = "1.1.8";
+		const string CurrentVersion = "1.1.9";
 		static readonly List<TypeSystemParserNode> parsers;
 		static string[] filesSkippedInParseThread = new string[0];
 
@@ -674,6 +674,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			throw new Exception ("Too many cache directories");
 		}
 
+		static string EscapeToXml (string txt)
+		{
+			return new System.Xml.Linq.XText (txt).ToString ();
+		}
+
 		static string CreateCacheDirectory (FilePath fileName)
 		{
 			CanonicalizePath (ref fileName);
@@ -685,7 +690,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				File.WriteAllText (
 					Path.Combine (cacheDir, "data.xml"),
-					string.Format ("<DerivedData><File name=\"{0}\" version =\"{1}\"/></DerivedData>", fileName, CurrentVersion)
+					string.Format ("<DerivedData><File name=\"{0}\" version =\"{1}\"/></DerivedData>", EscapeToXml (fileName), CurrentVersion)
 				);
 
 				return cacheDir;
@@ -1129,10 +1134,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			public bool WasChanged;
 			[NonSerialized]
 			ICompilation compilation;
+			object compilationContentLock = new object ();
 
 			public ICompilation Compilation {
 				get {
-					lock (updateContentLock) {
+					lock (compilationContentLock) {
 						if (compilation == null) {
 							compilation = Content.CreateCompilation ();
 						}

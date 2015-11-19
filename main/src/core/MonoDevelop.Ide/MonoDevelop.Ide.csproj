@@ -31,14 +31,14 @@
     <Optimize>True</Optimize>
     <OutputPath>..\..\..\build\bin</OutputPath>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>3</WarningLevel>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Ide.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\build\bin\MonoDevelop.Ide.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -62,8 +62,38 @@
     <OutputPath>..\..\..\build\bin</OutputPath>
     <DefineConstants>MAC</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Ide.xml</DocumentationFile>
+    <WarningLevel>3</WarningLevel>
+    <DocumentationFile>..\..\..\build\bin\MonoDevelop.Ide.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <NoWarn>1591;1573</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWin32|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\build\bin</OutputPath>
+    <DefineConstants>DEBUG,WIN32</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>3</WarningLevel>
+    <DocumentationFile>..\..\..\build\bin\MonoDevelop.Ide.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>1591;1573</NoWarn>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWin32|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\build\bin</OutputPath>
+    <DefineConstants>WIN32</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>3</WarningLevel>
+    <DocumentationFile>..\..\..\build\bin\MonoDevelop.Ide.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Execution>
       <Execution clr-version="Net_2_0" />
@@ -104,6 +134,11 @@
     <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' Or '$(Configuration)' == 'ReleaseMac' ">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
+    <Reference Include="PresentationCore" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
+    <Reference Include="PresentationFramework" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
+    <Reference Include="WindowsBase" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
+    <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -3379,6 +3414,9 @@
     <Compile Include="MonoDevelop.Components.AutoTest\PropertyMetadata.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\ObjectProperties.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\TemplateConditionEvaluator.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\SelectedOperation.cs" />
+    <Compile Include="MonoDevelop.Components\Windows\GtkWPFWidget.cs" />
+    <Compile Include="MonoDevelop.Components\Windows\GtkWin32Interop.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -3423,6 +3461,7 @@
     <Folder Include="MonoDevelop.Ide.TextEditing\" />
     <Folder Include="MonoDevelop.Components.DockNotebook\" />
     <Folder Include="icons\mac\" />
+    <Folder Include="MonoDevelop.Components\Windows\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc.win32">

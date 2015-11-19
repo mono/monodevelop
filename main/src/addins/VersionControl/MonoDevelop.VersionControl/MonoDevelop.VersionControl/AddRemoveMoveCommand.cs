@@ -33,13 +33,14 @@ namespace MonoDevelop.VersionControl
 			protected override void Run ()
 			{
 				IProgressMonitor monitor = Monitor;
-				
+
 				foreach (VersionControlItemList list in items.SplitByRepository ())
 					list[0].Repository.Add (list.Paths, true, monitor);
 				
 				Gtk.Application.Invoke (delegate {
 					VersionControlService.NotifyFileStatusChanged (items);
 				});
+				monitor.ReportSuccess (GettextCatalog.GetString ("Add operation completed."));
 			}
 		}
 		
@@ -133,6 +134,7 @@ namespace MonoDevelop.VersionControl
 				Gtk.Application.Invoke (delegate {
 					VersionControlService.NotifyFileStatusChanged (items);
 				});
+				Monitor.ReportSuccess (GettextCatalog.GetString ("Remove operation completed."));
 			}
 		}
 		

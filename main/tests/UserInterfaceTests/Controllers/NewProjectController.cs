@@ -28,6 +28,7 @@ using MonoDevelop.Components.AutoTest;
 using MonoDevelop.Ide.Commands;
 using NUnit.Framework;
 using System.Threading;
+using System.Linq;
 
 namespace UserInterfaceTests
 {
@@ -37,27 +38,74 @@ namespace UserInterfaceTests
 			get { return TestService.Session; }
 		}
 
-		Func<AppQuery, AppQuery> previewTree = (c) => c.TreeView ().Marked ("folderTreeView").Model ("folderTreeStore__NodeName");
+		Func<AppQuery, AppQuery> templateCategoriesTreeViewQuery = c => c.TreeView ().Marked ("templateCategoriesTreeView");
+		Func<AppQuery, AppQuery> templatesTreeViewQuery = c => c.TreeView ().Marked ("templatesTreeView");
+
+		Func<AppQuery, AppQuery> previewTree = c => c.TreeView ().Marked ("folderTreeView").Model ("folderTreeStore__NodeName");
+		Func<AppQuery, AppQuery> templateCategoriesQuery = c => c.TreeView ().Marked ("templateCategoriesTreeView").Model ("templateCategoriesListStore__Name");
+		Func<AppQuery, AppQuery> templatesQuery = c => c.TreeView ().Marked ("templatesTreeView").Model ("templateListStore__Name");
 
 		public void Open ()
 		{
 			Session.ExecuteCommand (FileCommands.NewProject);
+			WaitForOpen ();
+		}
+
+		public void Open (string addToSolutionName)
+		{
+			SolutionExplorerController.SelectSolution (addToSolutionName);
+			Session.ExecuteCommand (ProjectCommands.AddNewProject);
+			WaitForOpen ();
+		}
+
+		public void WaitForOpen ()
+		{
 			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Projects.GtkNewProjectDialogBackend"));
+		}
+
+		public void Select (TemplateSelectionOptions templateOptions)
+		{
+			SelectTemplateType (templateOptions.CategoryRoot, templateOptions.Category);
+			SelectTemplate (templateOptions.TemplateKindRoot, templateOptions.TemplateKind);
+		}
+
+		public bool IsSelected  (TemplateSelectionOptions templateOptions)
+		{
+			return true;
+//			return Session.SelectElement (templateCategoriesTreeViewQuery) && IsTemplateTypeSelected (templateOptions.CategoryRoot, templateOptions.Category)
+//				&& Session.SelectElement (templatesTreeViewQuery) && IsTemplateSelected (templateOptions.TemplateKindRoot, templateOptions.TemplateKind);
 		}
 
 		public bool SelectTemplateType (string categoryRoot, string category)
 		{
-			return Session.SelectElement (c => c.TreeView ().Marked ("templateCategoriesTreeView").Model ("templateCategoriesListStore__Name").Contains (categoryRoot).NextSiblings ().Text (category));
+			return Session.SelectElement (c => templateCategoriesQuery (c).Contains (categoryRoot).NextSiblings ().Text (category))
+				&& IsTemplateTypeSelected (categoryRoot, category);
 		}
 
 		public bool SelectTemplate (string kindRoot, string kind)
 		{
-			return Session.SelectElement (c => c.TreeView ().Marked ("templatesTreeView").Model ("templateListStore__Name").Contains (kindRoot).NextSiblings ().Text (kind));
+			return Session.SelectElement (c => templatesQuery (c).Contains (kindRoot).NextSiblings ().Text (kind))
+				&& IsTemplateSelected (kindRoot, kind);
+		}
+
+		public bool IsTemplateTypeSelected (string categoryRoot, string category)
+		{
+			return Session.WaitForElement (c => templateCategoriesQuery (c).Contains (categoryRoot).NextSiblings ().Text (category).Selected ()).Any ();
+		}
+
+		public bool IsTemplateSelected (string kindRoot, string kind)
+		{
+			return Session.WaitForElement (c => templatesQuery (c).Contains (kindRoot).NextSiblings ().Text (kind).Selected ()).Any ();
 		}
 
 		public bool Next ()
 		{
-			return Session.ClickElement (c => c.Button ().Marked ("nextButton"));
+			return Session.ClickElement (c => c.Button ().Text ("Next"));
+		}
+
+		public bool Create ()
+		{
+			return Session.ClickElement (c => c.Button ().Text ("Create"));
 		}
 
 		public bool Previous ()
@@ -70,14 +118,23 @@ namespace UserInterfaceTests
 			return Session.ClickElement (c => c.Button ().Marked ("cancelButton"));
 		}
 
-		public bool SetProjectName (string projectName)
+		public bool SetProjectName (string projectName, bool addToExistingSolution)
 		{
-			return Session.EnterText (c => c.Textfield ().Marked ("projectNameTextBox"), projectName);
+			Func<AppQuery, AppQuery> projectNameTextBox = c => c.Textfield ().Marked ("projectNameTextBox");
+			if (addToExistingSolution && Session.Query (c => projectNameTextBox (c).Sensitivity (false)).Length > 0) {
+				return Session.Query (c => projectNameTextBox (c).Text (projectName)).Length > 0;
+			}
+			return Session.EnterText (projectNameTextBox, projectName);
 		}
 
-		public bool SetSolutionName (string solutionName)
+		public bool SetSolutionName (string solutionName, bool addToExistingSolution)
 		{
-			return Session.EnterText (c => c.Textfield ().Marked ("solutionNameTextBox"), solutionName);
+			Func<AppQuery, AppQuery> solutionNameTextBox = c => c.Textfield ().Marked ("solutionNameTextBox");
+			if (addToExistingSolution) {
+				return Session.Query (c => solutionNameTextBox (c).Sensitivity (false)).Length > 0 &&
+					Session.Query (c => solutionNameTextBox (c).Text (solutionName)).Length > 0;
+			}
+			return Session.EnterText (solutionNameTextBox, solutionName);
 		}
 
 		public bool SetSolutionLocation (string solutionLocation)

@@ -39,14 +39,14 @@ namespace MonoDevelop.Components
 	{
 		public SelectFolderDialog ()
 		{
-			Action = Gtk.FileChooserAction.SelectFolder;
+			Action = SelectFileDialogAction.SelectFolder;
 		}
 		
-		public SelectFolderDialog (string title): this (title, Gtk.FileChooserAction.SelectFolder)
+		public SelectFolderDialog (string title): this (title, SelectFileDialogAction.SelectFolder)
 		{
 		}
 		
-		public SelectFolderDialog (string title, Gtk.FileChooserAction action)
+		public SelectFolderDialog (string title, SelectFileDialogAction action)
 		{
 			Title = title;
 			Action = action;

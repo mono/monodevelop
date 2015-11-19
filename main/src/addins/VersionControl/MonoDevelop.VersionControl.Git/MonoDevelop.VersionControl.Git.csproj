@@ -80,10 +80,11 @@
     <OutputPath>..\..\..\..\build\AddIns\VersionControl</OutputPath>
     <WarningLevel>4</WarningLevel>
     <DebugSymbols>true</DebugSymbols>
-    <NoWarn>1591;1573</NoWarn>
+    <NoWarn>1591</NoWarn>
     <DocumentationFile>..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.Git.xml</DocumentationFile>
     <DebugType>pdbonly</DebugType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' ">
     <Optimize>true</Optimize>
@@ -94,6 +95,7 @@
     <DocumentationFile>..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.Git.xml</DocumentationFile>
     <DebugType>pdbonly</DebugType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseGnome|AnyCPU' ">
     <Optimize>true</Optimize>
@@ -104,6 +106,7 @@
     <DocumentationFile>..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.Git.xml</DocumentationFile>
     <DebugType>pdbonly</DebugType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -113,6 +116,7 @@
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="Mono.Posix" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -157,6 +161,7 @@
     <Compile Include="MonoDevelop.VersionControl.Git\GitSelectRevisionDialog.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\ProjectTemplateHandler.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git\TfsSmartSubtransport.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">

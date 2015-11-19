@@ -40,7 +40,19 @@ namespace MonoDevelop.Components.Extensions
 	public interface ISelectFileDialogHandler : IDialogHandler<SelectFileDialogData>
 	{
 	}
-	
+
+	[Flags]
+	public enum SelectFileDialogAction
+	{
+		CreateFolder = 1,
+		SelectFolder = 2,
+		Open = 4,
+		Save = 8,
+
+		FolderFlags = CreateFolder | SelectFolder,
+		FileFlags = Open | Save
+	}
+
 	/// <summary>
 	/// Data for the ISelectFileDialogHandler implementation
 	/// </summary>
@@ -50,7 +62,7 @@ namespace MonoDevelop.Components.Extensions
 			FilterSet = new FileFilterSet ();
 		}
 		internal FileFilterSet FilterSet { get; set; } 
-		public Gtk.FileChooserAction Action { get; set; }
+		public SelectFileDialogAction Action { get; set; }
 		public IList<SelectFileDialogFilter> Filters { get { return FilterSet.Filters; } }
 		public FilePath CurrentFolder { get; set; }
 		public bool SelectMultiple { get; set; }
@@ -107,7 +119,7 @@ namespace MonoDevelop.Components.Extensions
 		/// <summary>
 		/// Action to perform with the file dialog.
 		/// </summary>
-		public Gtk.FileChooserAction Action {
+		public SelectFileDialogAction Action {
 			get { return data.Action; }
 			set { data.Action = value; }
 		}
@@ -269,7 +281,14 @@ namespace MonoDevelop.Components.Extensions
 		internal void SetDefaultProperties (FileSelector fdiag)
 		{
 			fdiag.Title = Title;
-			fdiag.Action = Action;
+			if ((Action & SelectFileDialogAction.CreateFolder) != 0)
+				fdiag.Action = Gtk.FileChooserAction.CreateFolder;
+			else if ((Action & SelectFileDialogAction.SelectFolder) != 0)
+				fdiag.Action = Gtk.FileChooserAction.SelectFolder;
+			else if ((Action & SelectFileDialogAction.Open) != 0)
+				fdiag.Action = Gtk.FileChooserAction.Open;
+			else if ((Action & SelectFileDialogAction.Save) != 0)
+				fdiag.Action = Gtk.FileChooserAction.Save;
 			fdiag.LocalOnly = true;
 			fdiag.SelectMultiple = SelectMultiple;
 			fdiag.TransientFor = TransientFor;

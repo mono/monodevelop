@@ -333,6 +333,12 @@ namespace MonoDevelop.Components.Commands
 					return null;
 			}
 
+			// If a modal dialog is running then the menus are disabled, even if the commands are not
+			// See MDMenuItem::IsGloballyDisabled
+			if (DesktopService.IsModalDialogRunning ()) {
+				return ev;
+			}
+
 			var gdkev = MonoDevelop.Components.Mac.GtkMacInterop.ConvertKeyEvent (ev);
 			if (gdkev != null) {
 				if (ProcessKeyEvent (gdkev))
@@ -348,7 +354,7 @@ namespace MonoDevelop.Components.Commands
 			e.RetVal = ProcessKeyEvent (e.Event);
 		}
 
-		bool ProcessKeyEvent (Gdk.EventKey ev)
+		internal bool ProcessKeyEvent (Gdk.EventKey ev)
 		{
 			if (!IsEnabled)
 				return true;
@@ -426,7 +432,7 @@ namespace MonoDevelop.Components.Commands
 		void NotifyKeyPressed (Gdk.EventKey ev)
 		{
 			if (KeyPressed != null)
-				KeyPressed (this, new KeyPressArgs () { Key = ev.Key, Modifiers = ev.State });
+				KeyPressed (this, new KeyPressArgs () { Key = ev.Key, KeyValue = ev.KeyValue, Modifiers = ev.State });
 		}
 		
 		/// <summary>
@@ -1166,7 +1172,7 @@ namespace MonoDevelop.Components.Commands
 				return false;
 
 			commandId = CommandManager.ToCommandId (commandId);
-			
+
 			List<HandlerCallback> handlers = new List<HandlerCallback> ();
 			ActionCommand cmd = null;
 			try {
@@ -2602,6 +2608,7 @@ namespace MonoDevelop.Components.Commands
 	public class KeyPressArgs: EventArgs
 	{
 		public Gdk.Key Key { get; internal set; }
+		public uint KeyValue { get; internal set; }
 		public Gdk.ModifierType Modifiers { get; internal set; }
 	}
 	

@@ -30,20 +30,22 @@ using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
-	[TestFixture]
+	[TestFixture, Timeout(60000)]
 	[Category ("Git")]
+	[Category ("GitBase")]
 	public class GitTests : VCSBase
 	{
-		[Test]
-		[TestCase ("git@github.com:mono/jurassic.git", TestName = "TestGitSSHClone")]
-		[TestCase ("https://github.com/mono/jurassic.git", TestName = "TestGitHTTPSClone")]
+		[Test, Timeout(120000), Category("Smoke")]
+		[TestCase ("git@github.com:mono/gtk-sharp.git", TestName = "TestGitSSHClone", Description = "Clone Git repo over SSH")]
+		[TestCase ("https://github.com/mono/gtk-sharp.git", TestName = "TestGitHTTPSClone", Description = "Clone Git repo over HTTPS")]
 		public void TestGitClone (string url)
 		{
 			TestClone (url);
-			Ide.WaitForSolutionCheckedOut ();
+			Ide.WaitForIdeIdle ();
 		}
 
-		[Test]
+		[Test, Category("Smoke")]
+		[Description ("Create a new project with Git and commit the changes")]
 		public void TestCommit ()
 		{
 			var templateOptions = new TemplateSelectionOptions {
@@ -52,15 +54,11 @@ namespace UserInterfaceTests
 				TemplateKindRoot = GeneralKindRoot,
 				TemplateKind = "Console Project"
 			};
-			CreateProject (templateOptions,
-				new ProjectDetails (templateOptions),
-				new GitOptions { UseGit = true, UseGitIgnore = true});
-			
-			Session.WaitForElement (IdeQuery.TextArea);
-			TestCommit ("First commit");
+			GitCreateAndCommit (templateOptions, "First commit");
 		}
 
 		[Test]
+		[Description ("Create a new project and try to stash without any changes, it should not be allowed")]
 		public void TestNoChangesStashOperation ()
 		{
 			var templateOptions = new TemplateSelectionOptions {
@@ -81,6 +79,7 @@ namespace UserInterfaceTests
 		}
 
 		[Test]
+		[Description ("Create a new project and try to stash without HEAD commit, it should not be allowed")]
 		public void TestStashWithoutHeadCommit ()
 		{
 			var templateOptions = new TemplateSelectionOptions {
@@ -98,7 +97,8 @@ namespace UserInterfaceTests
 			TakeScreenShot ("Stash-Window-Doesnt-Show");
 		}
 
-		[Test]
+		[Test, Category("Smoke")]
+		[Description ("Create a new project, make a commit, make changes. Stash and Unstash successfully")]
 		public void TestStashAndUnstashSuccessful ()
 		{
 			var templateOptions = new TemplateSelectionOptions {
@@ -107,23 +107,10 @@ namespace UserInterfaceTests
 				TemplateKindRoot = GeneralKindRoot,
 				TemplateKind = "Console Project"
 			};
-			CreateProject (templateOptions, 
-				new ProjectDetails (templateOptions),
-				new GitOptions { UseGit = true, UseGitIgnore = true });
-			
-			Session.WaitForElement (IdeQuery.TextArea);
-			TestCommit ("First commit");
+			GitCreateAndCommit (templateOptions, "First commit");
 
-			Session.ExecuteCommand (FileCommands.CloseFile);
-			Session.WaitForElement (IdeQuery.TextArea);
-
-			Session.ExecuteCommand (TextEditorCommands.InsertNewLine);
-			TakeScreenShot ("Inserted-Newline-Marked-Dirty");
-			Session.ExecuteCommand (FileCommands.SaveAll);
-			TakeScreenShot ("Inserted-Newline-SaveAll-Called");
-
-			TestGitStash ("Entered new blank line");
-
+			var changeDescription = MakeSomeChangesAndSaveAll ("Program.cs");
+			TestGitStash (changeDescription);
 			Session.WaitForElement (IdeQuery.TextArea);
 			TakeScreenShot ("After-Stash");
 

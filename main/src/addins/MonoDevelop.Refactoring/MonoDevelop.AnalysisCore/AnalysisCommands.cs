@@ -44,6 +44,7 @@ using System.Threading;
 using System.IO;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.AnalysisCore
 {
@@ -120,6 +121,8 @@ namespace MonoDevelop.AnalysisCore
 				((System.Action)dataItem) ();
 				return;
 			}
+			if (!RefactoringService.CheckUserSettings ())
+				return;
 			var action = dataItem as IAnalysisFixAction;
 			if (action != null) {
 				action.Fix (); 
@@ -289,7 +292,7 @@ namespace MonoDevelop.AnalysisCore
 		{
 			var lang = "text/x-csharp";
 
-			OpenFileDialog dlg = new OpenFileDialog ("Export Rules", FileChooserAction.Save);
+			OpenFileDialog dlg = new OpenFileDialog ("Export Rules", SelectFileDialogAction.Save);
 			dlg.InitialFileName = "rules.html";
 			if (!dlg.Run ())
 				return;

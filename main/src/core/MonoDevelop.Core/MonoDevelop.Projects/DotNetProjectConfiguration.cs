@@ -247,7 +247,7 @@ namespace MonoDevelop.Projects
 				case "TARGETNAME": return conf.CompiledOutputName.FileName;
 				case "TARGETDIR": return conf.CompiledOutputName.ParentDirectory;
 				case "TARGETEXT": return conf.CompiledOutputName.Extension;
-				case "PROJECTCONFIG": return conf.Name + "." + conf.Platform;
+				case "PROJECTCONFIG": return string.IsNullOrEmpty (conf.Platform) ? conf.Name : conf.Name + "." + conf.Platform;
 				case "PROJECTCONFIGNAME": return conf.Name;
 				case "PROJECTCONFIGPLAT": return conf.Platform;
 			}

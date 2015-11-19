@@ -33,14 +33,36 @@ namespace MonoDevelop.Components
 	{
 		public static void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ContextMenu menu)
 		{
+			ShowContextMenu (parent, evt, menu, null);
+		}
+
+		public static void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ContextMenu menu, Action closeHandler)
+		{
 			if (parent == null)
 				throw new ArgumentNullException ("parent");
 			if (menu == null)
 				throw new ArgumentNullException ("menu");
 
-			var gtkMenu = FromMenu (menu);
+			var gtkMenu = FromMenu (menu, closeHandler);
 			gtkMenu.ShowAll ();
 			ShowContextMenu (parent, evt, gtkMenu);
+		}
+
+		public static void ShowContextMenu (Gtk.Widget parent, int x, int y, ContextMenu menu)
+		{
+			ShowContextMenu (parent, x, y, menu, null);
+		}
+
+		public static void ShowContextMenu (Gtk.Widget parent, int x, int y, ContextMenu menu, Action closeHandler)
+		{
+			if (parent == null)
+				throw new ArgumentNullException ("parent");
+			if (menu == null)
+				throw new ArgumentNullException ("menu");
+
+			var gtkMenu = FromMenu (menu, closeHandler);
+			gtkMenu.ShowAll ();
+			ShowContextMenu (parent, x, y, gtkMenu);
 		}
 
 		public static void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, Gtk.Menu menu)
@@ -51,6 +73,16 @@ namespace MonoDevelop.Components
 				throw new ArgumentNullException ("menu");
 
 			Mono.TextEditor.GtkWorkarounds.ShowContextMenu (menu, parent, evt);
+		}
+
+		public static void ShowContextMenu (Gtk.Widget parent, int x, int y, Gtk.Menu menu)
+		{
+			if (parent == null)
+				throw new ArgumentNullException ("parent");
+			if (menu == null)
+				throw new ArgumentNullException ("menu");
+
+			Mono.TextEditor.GtkWorkarounds.ShowContextMenu (menu, parent, x, y, parent.Allocation);
 		}
 
 		static Gtk.MenuItem CreateMenuItem (ContextMenuItem item)
@@ -74,7 +106,7 @@ namespace MonoDevelop.Components
 			} 
 
 			if (item.SubMenu != null && item.SubMenu.Items.Count > 0) {
-				menuItem.Submenu = FromMenu (item.SubMenu);
+				menuItem.Submenu = FromMenu (item.SubMenu, null);
 			}
 			else {
 				menuItem.Activated += (sender, e) => item.Click ();
@@ -100,7 +132,7 @@ namespace MonoDevelop.Components
 			return menuItem;
 		}
 
-		static Gtk.Menu FromMenu (ContextMenu menu)
+		static Gtk.Menu FromMenu (ContextMenu menu, Action closeHandler)
 		{
 			var result = new Gtk.Menu ();
 
@@ -110,6 +142,9 @@ namespace MonoDevelop.Components
 					result.Append (item);
 			}
 
+			if (closeHandler != null) {
+				result.Hidden += (sender, e) => closeHandler ();
+			}
 			return result;
 		}
 	}

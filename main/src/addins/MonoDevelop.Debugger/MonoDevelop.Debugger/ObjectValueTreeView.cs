@@ -1232,7 +1232,7 @@ namespace MonoDevelop.Debugger
 			
 			if (hasChildren) {
 				// Add dummy node
-				store.AppendValues (it, GettextCatalog.GetString ("Loading..."), "", "", null, true);
+				store.AppendValues (it, GettextCatalog.GetString ("Loading..."), "", "", null, false);
 				if (!ShowExpanders)
 					ShowExpanders = true;
 				valPath += "/";

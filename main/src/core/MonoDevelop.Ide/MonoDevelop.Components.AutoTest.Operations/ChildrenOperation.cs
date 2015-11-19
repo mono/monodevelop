@@ -30,12 +30,19 @@ namespace MonoDevelop.Components.AutoTest.Operations
 {
 	public class ChildrenOperation : Operation
 	{
+		bool recursive;
+
+		public ChildrenOperation (bool recursive = true)
+		{
+			this.recursive = recursive;
+		}
+
 		public override List<AppResult> Execute (List<AppResult> resultSet)
 		{
 			List<AppResult> newResultSet = new List<AppResult> ();
 
 			foreach (var result in resultSet) {
-				List<AppResult> flattenedChildren = result.Children ();
+				List<AppResult> flattenedChildren = result.Children (recursive);
 				if (flattenedChildren != null) {
 					newResultSet.AddRange (flattenedChildren);
 				}

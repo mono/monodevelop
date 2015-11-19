@@ -53,6 +53,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.Text;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.Ide
 {
@@ -622,6 +623,9 @@ namespace MonoDevelop.Ide
 		
 		public void NewSolution (string defaultTemplate)
 		{
+			if (!IdeApp.Workbench.SaveAllDirtyFiles ())
+				return;
+
 			var newProjectDialog = new NewProjectDialogController ();
 			newProjectDialog.OpenSolution = true;
 			newProjectDialog.SelectedTemplateId = defaultTemplate;
@@ -653,7 +657,7 @@ namespace MonoDevelop.Ide
 			WorkspaceItem res = null;
 			
 			var dlg = new SelectFileDialog () {
-				Action = Gtk.FileChooserAction.Open,
+				Action = SelectFileDialogAction.Open,
 				CurrentFolder = parentWorkspace.BaseDirectory,
 				SelectMultiple = false,
 			};
@@ -716,7 +720,7 @@ namespace MonoDevelop.Ide
 			SolutionItem res = null;
 			
 			var dlg = new SelectFileDialog () {
-				Action = Gtk.FileChooserAction.Open,
+				Action = SelectFileDialogAction.Open,
 				CurrentFolder = parentFolder.BaseDirectory,
 				SelectMultiple = false,
 			};
@@ -1621,7 +1625,7 @@ namespace MonoDevelop.Ide
 		{
 			var dlg = new SelectFileDialog () {
 				SelectMultiple = true,
-				Action = Gtk.FileChooserAction.Open,
+				Action = SelectFileDialogAction.Open,
 				CurrentFolder = folder.BaseDirectory,
 				TransientFor = MessageService.RootWindow,
 			};
@@ -1798,7 +1802,9 @@ namespace MonoDevelop.Ide
 					
 					try {
 						if (!dialogShown || !applyToAll) {
-							if (MessageService.RunCustomDialog (addExternalDialog) == (int) Gtk.ResponseType.Cancel) {
+							int response = MessageService.RunCustomDialog (addExternalDialog);
+							// A dialog emits DeleteEvent rather than Cancel in response to Escape being pressed
+							if (response == (int) Gtk.ResponseType.Cancel || response == (int) Gtk.ResponseType.DeleteEvent) {
 								project.Files.AddRange (newFileList.Where (f => f != null));
 								return newFileList;
 							}

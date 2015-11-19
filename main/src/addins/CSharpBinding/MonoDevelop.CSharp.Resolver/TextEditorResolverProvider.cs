@@ -193,7 +193,7 @@ namespace MonoDevelop.CSharp.Resolver
 			var ctx = doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
 			var state = ctx.GetResolver (doc.Compilation, doc.Editor.OffsetToLocation (offset));
 			var builder = new TypeSystemAstBuilder (state);
-			builder.AddAnnotations = true;
+			builder.AddTypeReferenceAnnotations = true;
 			var dt = state.CurrentTypeDefinition;
 			var declaring = dt != null ? dt.DeclaringTypeDefinition : null;
 			if (declaring != null) {

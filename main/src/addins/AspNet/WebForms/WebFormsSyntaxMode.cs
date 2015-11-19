@@ -24,9 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MonoDevelop.Core;
 using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.AspNet.WebForms.Parser;
@@ -174,8 +176,12 @@ namespace MonoDevelop.AspNet.WebForms
 						
 						if (mime != null) {
 							CodeDeclarationSpan span = new CodeDeclarationSpan (mime);
-							FoundSpanBegin (span, i, 0);
-							return true;
+							try {
+								FoundSpanBegin (span, i, 0);
+								return true;
+							} catch (Exception ex) {
+								LoggingService.LogInternalError (ex);
+							}
 						}
 					}
 				}

@@ -476,7 +476,9 @@ namespace Mono.TextEditor
 		protected internal override void OptionsChanged ()
 		{
 			DisposeGCs ();
-
+			selectionColor = null;
+			currentLineColor = null;
+		
 			var markerFont = textEditor.Options.Font.Copy ();
 			markerFont.Size = markerFont.Size * 8 / 10;
 			markerLayout.FontDescription = markerFont;

@@ -49,6 +49,7 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
@@ -125,7 +126,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			DockItemToolbar toolbar = window.GetToolbar (PositionType.Top);
 			
-			errorBtn = new ToggleButton ();
+			errorBtn = new ToggleButton { Name = "toggleErrors" };
 			errorBtn.Active = (bool)PropertyService.Get (showErrorsPropertyName, true);
 			errorBtn.Image = new Gtk.Image (Stock.Error, Gtk.IconSize.Menu);
 			errorBtn.Image.Show ();
@@ -134,7 +135,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			UpdateErrorsNum();
 			toolbar.Add (errorBtn);
 			
-			warnBtn = new ToggleButton ();
+			warnBtn = new ToggleButton  { Name = "toggleWarnings" };
 			warnBtn.Active = (bool)PropertyService.Get (showWarningsPropertyName, true);
 			warnBtn.Image = new Gtk.Image (Stock.Warning, Gtk.IconSize.Menu);
 			warnBtn.Image.Show ();
@@ -143,7 +144,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			UpdateWarningsNum();
 			toolbar.Add (warnBtn);
 			
-			msgBtn = new ToggleButton ();
+			msgBtn = new ToggleButton  { Name = "toggleMessages" };
 			msgBtn.Active = (bool)PropertyService.Get (showMessagesPropertyName, true);
 			msgBtn.Image = new Gtk.Image (Stock.Information, Gtk.IconSize.Menu);
 			msgBtn.Image.Show ();
@@ -154,7 +155,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			toolbar.Add (new SeparatorToolItem ());
 			
-			logBtn = new ToggleButton ();
+			logBtn = new ToggleButton { Name = "toggleBuildOutput" };
 			logBtn.Label = GettextCatalog.GetString ("Build Output");
 			logBtn.Image = ImageService.GetImage ("md-message-log", Gtk.IconSize.Menu);
 			logBtn.Image.Show ();
@@ -230,7 +231,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			control.Add1 (sw);
 			
-			outputView = new LogView ();
+			outputView = new LogView { Name = "buildOutput" };
 			control.Add2 (outputView);
 			
 			Control.ShowAll ();
@@ -302,31 +303,20 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		void LoadColumnsVisibility ()
 		{
-			string columns = (string)PropertyService.Get ("Monodevelop.ErrorListColumns", "TRUE;TRUE;TRUE;TRUE;TRUE;TRUE;TRUE");
-			string[] tokens = columns.Split (new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
-			if (tokens.Length == 7 && view != null && view.Columns.Length == 7)
-			{
-				for (int i = 0; i < 7; i++)
-				{
+			var columns = PropertyService.Get ("Monodevelop.ErrorListColumns", string.Join (";", Enumerable.Repeat ("TRUE", view.Columns.Length)));
+			var tokens = columns.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+			if (view.Columns.Length == tokens.Length) {
+				for (int i = 0; i < tokens.Length; i++) {
 					bool visible;
-					if (bool.TryParse (tokens[i], out visible))
-						view.Columns[i].Visible = visible;
+					if (bool.TryParse (tokens [i], out visible))
+						view.Columns [i].Visible = visible;
 				}
 			}
 		}
 
 		void StoreColumnsVisibility ()
 		{
-			string columns = String.Format ("{0};{1};{2};{3};{4};{5};{6};{7}",
-			                                view.Columns[VisibleColumns.Type].Visible,
-			                                view.Columns[VisibleColumns.Marked].Visible,
-			                                view.Columns[VisibleColumns.Line].Visible,
-			                                view.Columns[VisibleColumns.Description].Visible,
-			                                view.Columns[VisibleColumns.File].Visible,
-			                                view.Columns[VisibleColumns.Project].Visible,
-			                                view.Columns[VisibleColumns.Path].Visible,
-			                                view.Columns[VisibleColumns.Category].Visible);
-			PropertyService.Set ("Monodevelop.ErrorListColumns", columns);
+			PropertyService.Set ("Monodevelop.ErrorListColumns", string.Join (";", view.Columns.Select (c => c.Visible ? "TRUE" : "FALSE")));
 		}
 		
 		public void RedrawContent()

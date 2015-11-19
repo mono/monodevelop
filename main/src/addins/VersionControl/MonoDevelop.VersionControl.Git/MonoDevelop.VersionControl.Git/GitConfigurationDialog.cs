@@ -72,6 +72,7 @@ namespace MonoDevelop.VersionControl.Git
 				string currentBranch = repo.GetCurrentBranch ();
 				var b = (Branch) storeBranches.GetValue (it, 0);
 				buttonRemoveBranch.Sensitive = b.FriendlyName != currentBranch;
+				buttonSetDefaultBranch.Sensitive = !b.IsCurrentRepositoryHead;
 			};
 			buttonRemoveBranch.Sensitive = buttonEditBranch.Sensitive = buttonSetDefaultBranch.Sensitive = false;
 
@@ -105,6 +106,9 @@ namespace MonoDevelop.VersionControl.Git
 			storeTags = new ListStore (typeof(string));
 			listTags.Model = storeTags;
 			listTags.HeadersVisible = true;
+
+			SemanticModelAttribute tagsModelAttr = new SemanticModelAttribute ("storeTags__Name");
+			TypeDescriptor.AddAttributes (storeTags, tagsModelAttr);
 
 			listTags.AppendColumn (GettextCatalog.GetString ("Tag"), new CellRendererText (), "text", 0);
 
@@ -254,12 +258,14 @@ namespace MonoDevelop.VersionControl.Git
 			var dlg = new EditRemoteDialog (remote);
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
-					if (remote.Name != dlg.RemoteName)
-						repo.RenameRemote (remote.Name, dlg.RemoteName);
 					if (remote.Url != dlg.RemoteUrl)
 						repo.ChangeRemoteUrl (remote.Name, dlg.RemoteUrl);
-					if (remote.Url != dlg.RemotePushUrl)
+					if (remote.PushUrl != dlg.RemotePushUrl)
 						repo.ChangeRemotePushUrl (remote.Name, dlg.RemotePushUrl);
+
+					// Only do rename after we've done previous changes.
+					if (remote.Name != dlg.RemoteName)
+						repo.RenameRemote (remote.Name, dlg.RemoteName);
 					FillRemotes ();
 				}
 			} finally {

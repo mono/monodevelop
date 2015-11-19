@@ -25,12 +25,10 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core;
+using System.Text;
+
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Components.Extensions;
-using System.Collections.Generic;
-using Mono.Addins;
-using System.Text;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -43,11 +41,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 		}
 		
-		public OpenFileDialog (string title) : this (title, Gtk.FileChooserAction.Save)
+		public OpenFileDialog (string title) : this (title, SelectFileDialogAction.Save)
 		{
 		}
 		
-		public OpenFileDialog (string title, Gtk.FileChooserAction action)
+		public OpenFileDialog (string title, SelectFileDialogAction action)
 		{
 			Title = title;
 			Action = action;
@@ -90,10 +88,20 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public FileViewer SelectedViewer {
 			get { return data.SelectedViewer; }
 		}
+
+		Gtk.FileChooserAction GetFileChooserAction ()
+		{
+			switch (Action) {
+			case SelectFileDialogAction.CreateFolder: return Gtk.FileChooserAction.CreateFolder;
+			case SelectFileDialogAction.SelectFolder: return Gtk.FileChooserAction.SelectFolder;
+			case SelectFileDialogAction.Save: return Gtk.FileChooserAction.Save;
+			default: return Gtk.FileChooserAction.Open;
+			}
+		}
 		
 		protected override bool RunDefault ()
 		{
-			var win = new FileSelectorDialog (Title, Action);
+			var win = new FileSelectorDialog (Title, GetFileChooserAction ());
 			win.SelectedEncoding = Encoding != null ? Encoding.CodePage : 0;
 			win.ShowEncodingSelector = ShowEncodingSelector;
 			win.ShowViewerSelector = ShowViewerSelector;
