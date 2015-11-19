@@ -30,6 +30,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Runtime.InteropServices;
 
 namespace MonoDevelop.NUnit
 {
@@ -37,6 +38,36 @@ namespace MonoDevelop.NUnit
 	{
 		bool checkingCanExecute;
 		object canExecuteCheckLock = new object ();
+
+		bool unitTestChecked;
+		UnitTest unitTestFound;
+
+		protected override void Initialize ()
+		{
+			base.Initialize ();
+			NUnitService.Instance.TestSuiteChanged += TestSuiteChanged;
+		}
+
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			NUnitService.Instance.TestSuiteChanged -= TestSuiteChanged;
+		}
+
+		void TestSuiteChanged (object sender, System.EventArgs e)
+		{
+			unitTestChecked = false;
+			unitTestFound = null;
+		}
+
+		UnitTest FindRootTest ()
+		{
+			if (!unitTestChecked) {
+				unitTestFound = NUnitService.Instance.FindRootTest (Project);
+				unitTestChecked = true;
+			}
+			return unitTestFound;
+		}
 
 		protected override async Task OnExecute (MonoDevelop.Core.ProgressMonitor monitor, MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration)
 		{
@@ -55,7 +86,7 @@ namespace MonoDevelop.NUnit
 				await base.OnExecute (monitor, context, configuration);
 				return;
 			}
-			UnitTest test = NUnitService.Instance.FindRootTest (Project);
+			UnitTest test = FindRootTest ();
 			if (test != null) {
 				var cs = new CancellationTokenSource ();
 				using (monitor.CancellationToken.Register (cs.Cancel))
@@ -68,7 +99,7 @@ namespace MonoDevelop.NUnit
 			var sf = base.OnGetSupportedFeatures ();
 			if (!sf.HasFlag (ProjectFeatures.Execute) && IdeApp.IsInitialized) {
 				// Unit test projects support execution
-				UnitTest test = NUnitService.Instance.FindRootTest (Project);
+				UnitTest test = FindRootTest ();
 				if (test != null)
 					sf |= ProjectFeatures.Execute;
 			}
@@ -86,7 +117,7 @@ namespace MonoDevelop.NUnit
 			}
 			if (res)
 				return true;
-			UnitTest test = NUnitService.Instance.FindRootTest (Project);
+			UnitTest test = FindRootTest ();
 			return (test != null) && test.CanRun (context.ExecutionHandler);
 		}
 	}
