@@ -292,6 +292,9 @@ type FSharpSyntaxMode(editor, context) =
     let tokenSymbol = 
       { TokenInfo = token; SymbolUse = symbol; ExtraColorInfo = extraColor }
 
+    let highlightMutable b =
+      b && PropertyService.Get("FSharpBinding.HighlightMutables", true)
+
     let chunkStyle =
       match tokenSymbol with
       | InactiveCode -> style.ExcludedCode
@@ -306,13 +309,13 @@ type FSharpSyntaxMode(editor, context) =
       | Namespace _ -> style.PlainText
       | Property fromDef -> if fromDef then style.UserPropertyDeclaration else style.UserPropertyUsage
       | Field (fromDef,isMut) ->
-        if isMut then style.UserTypesMutable
+        if highlightMutable isMut then style.UserTypesMutable
         elif fromDef then style.UserFieldDeclaration
         else style.UserFieldUsage
 
       | Function fromDef -> if fromDef then style.UserMethodDeclaration else style.UserMethodUsage
       | Val (fromDef,isMut) ->
-        if isMut then style.UserTypesMutable
+        if highlightMutable isMut then style.UserTypesMutable
         elif fromDef then style.UserFieldDeclaration
         else style.UserFieldUsage
 
