@@ -17,6 +17,13 @@ type Arguments =
 let main argv =
   let pickler = FsPickler.CreateJsonSerializer()
   let outstream = Console.OpenStandardOutput()
+
+  let (|Prefix|_|) (p:string) (s:string) =
+    if s.StartsWith(p) then
+        Some(s.Substring(p.Length))
+    else
+        None
+
   let result =
     try
       let parser = ArgumentParser.Create<Arguments>()
@@ -32,7 +39,14 @@ let main argv =
                                let fullPath = Path.GetFullPath(name)
                                fullPath, { options with ProjectFileName = fullPath })
 
-      Choice1Of2 { fsharpProjectOptions with ReferencedProjects = normalizedReferences }
+      let normalizedOptions = 
+        fsharpProjectOptions.OtherOptions
+        |> Array.map (fun o -> match o with
+                               | Prefix "-r:" rest -> "-r:" + Path.GetFullPath(rest)
+                               | _ -> o)
+                                               
+      Choice1Of2 { fsharpProjectOptions with ReferencedProjects = normalizedReferences; 
+                                             OtherOptions = normalizedOptions}
     with
     | ex -> Choice2Of2(ex)
   pickler.Serialize(outstream, result)
