@@ -29,28 +29,22 @@ namespace WindowsPlatform.MainToolbar
 		{
 			UseLayoutRounding = true;
 
-			IsEnabledChanged += (o, e) =>
-			{
-				if ((bool)e.NewValue == true)
-				{
-					Opacity = 1.0;
-				}
-				else
-				{
-					Opacity = 0.5;
-				}
+			var bindingFgColor = new Binding {
+				Path = new PropertyPath (typeof(Styles).GetProperty("MainToolbarForegroundBrush")),
+				Mode = BindingMode.OneWay,
 			};
+			var bindingDisabledFgColor = new Binding {
+				Path = new PropertyPath (typeof(Styles).GetProperty("MainToolbarDisabledForegroundBrush")),
+				Mode = BindingMode.OneWay,
+			};
+
+			IsEnabledChanged += (o, e) =>
+				SetBinding (Control.ForegroundProperty, (bool)e.NewValue ? bindingFgColor : bindingDisabledFgColor);
 
 			var content = new StackPanel {
 				Orientation = Orientation.Horizontal,
 				Height = 20,
 			};
-
-			var bindingFgColor = new Binding {
-				Path = new PropertyPath (typeof(Styles).GetProperty("MainToolbarForegroundBrush")),
-				Mode = BindingMode.OneWay,
-			};
-			SetBinding (Control.ForegroundProperty, bindingFgColor);
 
 			content.Children.Add (new TextBlock {
 				HorizontalAlignment = HorizontalAlignment.Left,
@@ -77,6 +71,14 @@ namespace WindowsPlatform.MainToolbar
 			IsEnabled = false;
 			DropMenuText = "Default";
         }
+
+		protected override void OnPropertyChanged (DependencyPropertyChangedEventArgs e)
+		{
+			base.OnPropertyChanged (e);
+			if (e.Property == Control.IsEnabledProperty) {
+				
+			}
+		}
 
 		protected MenuItem DropMenu
 		{
