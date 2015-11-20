@@ -46,7 +46,12 @@ namespace WindowsPlatform.MainToolbar
 				Height = 20,
 			};
 
-			Foreground = Styles.MainToolbarForegroundBrush;
+			var bindingFgColor = new Binding {
+				Path = new PropertyPath (typeof(Styles).GetProperty("MainToolbarForegroundBrush")),
+				Mode = BindingMode.OneWay,
+			};
+			SetBinding (Control.ForegroundProperty, bindingFgColor);
+
 			content.Children.Add (new TextBlock {
 				HorizontalAlignment = HorizontalAlignment.Left,
 				VerticalAlignment = VerticalAlignment.Center,
@@ -54,11 +59,11 @@ namespace WindowsPlatform.MainToolbar
 			});
 
 			var arrow = new Polygon {
-				Fill = Styles.MainToolbarForegroundBrush,
 				Margin = new Thickness (5, 0, 0, 2),
 				HorizontalAlignment = HorizontalAlignment.Right,
 				VerticalAlignment = VerticalAlignment.Center,
 			};
+			arrow.SetBinding (Shape.FillProperty, new Binding ("Foreground") { Source = this });
 
 			arrow.Points.Add (new Point (0, 3));
 			arrow.Points.Add (new Point (3, 6));
