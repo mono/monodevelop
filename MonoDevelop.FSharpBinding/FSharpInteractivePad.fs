@@ -39,7 +39,7 @@ type KillIntent =
   | NoIntent // Unexpected kill, or from #q/#quit, so we prompt  
 
 type FSharpInteractivePad() as this =
-  inherit MonoDevelop.Ide.Gui.AbstractPadContent()
+  inherit MonoDevelop.Ide.Gui.PadContent()
   let view = new FSharpConsoleView()
 
   do view.InitialiseEvents()

@@ -14,7 +14,7 @@ open MonoDevelop.Ide
 open MonoDevelop.Projects
 
 type FakePad() =
-  inherit MonoDevelop.Ide.Gui.AbstractPadContent()
+  inherit MonoDevelop.Ide.Gui.PadContent()
   let view = new FSharpConsoleView()
 
   do view.InitialiseEvents()
