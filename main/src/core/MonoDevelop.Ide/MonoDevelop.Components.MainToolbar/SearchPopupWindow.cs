@@ -306,20 +306,22 @@ namespace MonoDevelop.Components.MainToolbar
 			Task.WhenAll (collectors.Select (c => c.Task)).ContinueWith (t => {
 				if (t.IsCanceled)
 					return;
-				if (t.IsFaulted) {
-					LoggingService.LogError ("Error getting search results", t.Exception);
-				} else {
-					Application.Invoke (delegate {
-						RemoveTimeout ();
-						if (token.IsCancellationRequested)
-							return;
-						foreach (var col in collectors) {
+				Application.Invoke (delegate {
+					RemoveTimeout ();
+					if (token.IsCancellationRequested)
+						return;
+					foreach (var col in collectors) {
+						if (col.Task.IsCanceled) {
+							continue;
+						} else if (col.Task.IsFaulted) {
+							LoggingService.LogError ($"Error getting search results for {col.Category}", col.Task.Exception);
+						} else {
 							ShowResult (col.Category, col.Results);
 						}
-						isInSearch = false;
-						AnimatedResize ();
-					});
-				}
+					}
+					isInSearch = false;
+					AnimatedResize ();
+				});
 			}, token);
 		}
 
