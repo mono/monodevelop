@@ -1487,29 +1487,29 @@
     <EmbeddedResource Include="icons\element-visibility-internal-or-protected-overlay-16~dark~sel%402x.png">
       <LogicalName>element-visibility-internal-or-protected-overlay-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-visibility-static-overlay-16.png">
-      <LogicalName>element-visibility-static-overlay-16.png</LogicalName>
+    <EmbeddedResource Include="icons\element-static-overlay-16.png">
+      <LogicalName>element-static-overlay-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-visibility-static-overlay-16%402x.png">
-      <LogicalName>element-visibility-static-overlay-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\element-static-overlay-16%402x.png">
+      <LogicalName>element-static-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-visibility-static-overlay-16~dark.png">
-      <LogicalName>element-visibility-static-overlay-16~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\element-static-overlay-16~dark.png">
+      <LogicalName>element-static-overlay-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-visibility-static-overlay-16~dark%402x.png">
-      <LogicalName>element-visibility-static-overlay-16~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\element-static-overlay-16~dark%402x.png">
+      <LogicalName>element-static-overlay-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-visibility-static-overlay-16~sel.png">
-      <LogicalName>element-visibility-static-overlay-16~sel.png</LogicalName>
+    <EmbeddedResource Include="icons\element-static-overlay-16~sel.png">
+      <LogicalName>element-static-overlay-16~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-visibility-static-overlay-16~sel%402x.png">
-      <LogicalName>element-visibility-static-overlay-16~sel@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\element-static-overlay-16~sel%402x.png">
+      <LogicalName>element-static-overlay-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-visibility-static-overlay-16~dark~sel.png">
-      <LogicalName>element-visibility-static-overlay-16~dark~sel.png</LogicalName>
+    <EmbeddedResource Include="icons\element-static-overlay-16~dark~sel.png">
+      <LogicalName>element-static-overlay-16~dark~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-visibility-static-overlay-16~dark~sel%402x.png">
-      <LogicalName>element-visibility-static-overlay-16~dark~sel@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\element-static-overlay-16~dark~sel%402x.png">
+      <LogicalName>element-static-overlay-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\project-web-overlay-32.png">
       <LogicalName>project-web-overlay-32.png</LogicalName>
