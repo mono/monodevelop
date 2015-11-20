@@ -60,27 +60,27 @@ namespace WindowsPlatform
 		static Styles ()
 		{
 			MainToolbarBackgroundBrush = Brushes.Transparent;
-			MainToolbarForegroundBrush = Brushes.Black;
+			MainToolbarForegroundBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x22, G = 0x22, B = 0x22 });
 			MainToolbarShadowBrush = Brushes.Gray;
-			MainToolbarSeparatorBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x7d, G = 0x7d, B = 0x7d, });
+			MainToolbarSeparatorBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x7d, G = 0x7d, B = 0x7d });
 
 			MenuBackgroundBrush = SystemColors.MenuBarBrush;
 			MenuForegroundBrush = SystemColors.MenuTextBrush;
-			MenuBorderBrush = new SolidColorBrush (new Color {A = 0xFF, R = 0x99, G = 0x99, B = 0x99});
-			MenuSeparatorBrush = new SolidColorBrush (new Color {A = 0xFF, R = 0xD7, G = 0xD7, B = 0xD7});
-			MenuHighlightBackgroundBrush = new SolidColorBrush (new Color {A = 0x3D, R = 0x26, G = 0xA0, B = 0xDA});
-			MenuHighlightBorderBrush = new SolidColorBrush (new Color {A = 0xFF, R = 0x26, G = 0xA0, B = 0xDA});
-			MenuSelectedBackgroundBrush = new SolidColorBrush (new Color {A = 0x3D, R = 0x26, G = 0xA0, B = 0xDA});
-			MenuSelectedBorderBrush = new SolidColorBrush (new Color {A = 0xFF, R = 0x26, G = 0xA0, B = 0xDA});
-			MenuDisabledForegroundBrush = new SolidColorBrush (new Color {A = 0xFF, R = 0x70, G = 0x70, B = 0x70});
+			MenuBorderBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x99, G = 0x99, B = 0x99 });
+			MenuSeparatorBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0xD7, G = 0xD7, B = 0xD7 });
+			MenuHighlightBackgroundBrush = new SolidColorBrush (new Color { A = 0x3D, R = 0x26, G = 0xA0, B = 0xDA });
+			MenuHighlightBorderBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x26, G = 0xA0, B = 0xDA });
+			MenuSelectedBackgroundBrush = new SolidColorBrush (new Color { A = 0x3D, R = 0x26, G = 0xA0, B = 0xDA });
+			MenuSelectedBorderBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x26, G = 0xA0, B = 0xDA });
+			MenuDisabledForegroundBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x70, G = 0x70, B = 0x70 });
 
-			StatusBarBackgroundBrush = new SolidColorBrush (new Color {A = 0xFF, R = 0xE5, G = 0xE5, B = 0xE5});
+			StatusBarBackgroundBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0xE5, G = 0xE5, B = 0xE5 });
 			StatusBarTextBrush = MainToolbarForegroundBrush;
-			StatusBarErrorTextBrush = Brushes.Red;
-			StatusBarWarningTextBrush = Brushes.Orange;
+			StatusBarErrorTextBrush = StatusBarTextBrush;
+			StatusBarWarningTextBrush = StatusBarTextBrush;
 			StatusBarReadyTextBrush = Brushes.Gray;
-			StatusBarProgressBorderBrush = new SolidColorBrush (new Color {A = 0xFF, R = 0xD9, G = 0xDC, B = 0xE1});
-			StatusBarProgressBackgroundBrush = new SolidColorBrush (new Color {A = 0xFF, R = 0xB3, G = 0xE7, B = 0x70});
+			StatusBarProgressBorderBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0xD9, G = 0xDC, B = 0xE1 });
+			StatusBarProgressBackgroundBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0xB3, G = 0xE7, B = 0x70 });
 			SearchBarBorderBrush = Brushes.LightGray;
 			SearchBarBackgroundBrush = Brushes.White;
 			SearchBarTextBrush = MainToolbarForegroundBrush;
