@@ -324,73 +324,73 @@
 	<StockIcon stockid="md-internal-interface" icon="res:element-interface-16.png|res:element-visibility-internal-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-internal-method" icon="res:element-method-16.png|res:element-visibility-internal-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-internal-property" icon="res:element-property-16.png|res:element-visibility-internal-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-internal-static-event" icon="res:element-event-16.png|res:element-static-overlay-16.png|res:element-visibility-internal-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-internal-static-field" icon="res:element-field-16.png|res:element-static-overlay-16.png|res:element-visibility-internal-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-internal-static-method" icon="res:element-method-16.png|res:element-static-overlay-16.png|res:element-visibility-internal-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-internal-static-property" icon="res:element-property-16.png|res:element-static-overlay-16.png|res:element-visibility-internal-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-internal-static-event" icon="res:element-event-16.png|res:element-visibility-internal-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-internal-static-field" icon="res:element-field-16.png|res:element-visibility-internal-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-internal-static-method" icon="res:element-method-16.png|res:element-visibility-internal-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-internal-static-property" icon="res:element-property-16.png|res:element-visibility-internal-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-internal-struct" icon="res:element-struct-16.png|res:element-visibility-internal-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-InternalAndProtected-class" icon="res:element-class-16.png|res:element-visibility-internal-and-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-InternalAndProtected-delegate" icon="res:element-delegate-16.png|res:element-visibility-internal-and-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-InternalAndProtected-enum" icon="res:element-enum-16.png|res:element-visibility-internal-and-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-InternalAndProtected-event" icon="res:element-event-16.png|res:element-visibility-internal-and-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-InternalAndProtected-extensionmethod" icon="res:element-extensionmethod-16.png|res:element-visibility-internal-and-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-InternalAndProtected-field" icon="res:element-field-16.png|res:element-visibility-internal-and-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-InternalAndProtected-interface" icon="res:element-interface-16.png|res:element-visibility-internal-and-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-InternalAndProtected-method" icon="res:element-method-16.png|res:element-visibility-internal-and-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-InternalAndProtected-property" icon="res:element-property-16.png|res:element-visibility-internal-and-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-InternalAndProtected-static-event" icon="res:element-event-16.png|res:element-static-overlay-16.png|res:element-visibility-internal-and-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-InternalAndProtected-static-field" icon="res:element-field-16.png|res:element-static-overlay-16.png|res:element-visibility-internal-and-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-InternalAndProtected-static-method" icon="res:element-method-16.png|res:element-static-overlay-16.png|res:element-visibility-internal-and-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-InternalAndProtected-static-property" icon="res:element-property-16.png|res:element-static-overlay-16.png|res:element-visibility-internal-and-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-InternalAndProtected-struct" icon="res:element-struct-16.png|res:element-visibility-internal-and-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-private-class" icon="res:element-class-16.png|res:element-visibility-private-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-private-delegate" icon="res:element-delegate-16.png|res:element-visibility-private-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-private-enum" icon="res:element-enum-16.png|res:element-visibility-private-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-private-event" icon="res:element-event-16.png|res:element-visibility-private-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-private-extensionmethod" icon="res:element-extensionmethod-16.png|res:element-visibility-private-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-private-field" icon="res:element-field-16.png|res:element-visibility-private-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-private-interface" icon="res:element-interface-16.png|res:element-visibility-private-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-private-method" icon="res:element-method-16.png|res:element-visibility-private-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-private-property" icon="res:element-property-16.png|res:element-visibility-private-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-private-static-event" icon="res:element-event-16.png|res:element-static-overlay-16.png|res:element-visibility-private-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-private-static-field" icon="res:element-field-16.png|res:element-visibility-private-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-private-static-method" icon="res:element-method-16.png|res:element-static-overlay-16.png|res:element-visibility-private-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-private-static-property" icon="res:element-property-16.png|res:element-static-overlay-16.png|res:element-visibility-private-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-private-struct" icon="res:element-struct-16.png|res:element-visibility-private-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-InternalAndProtected-class" icon="res:element-class-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-InternalAndProtected-delegate" icon="res:element-delegate-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-InternalAndProtected-enum" icon="res:element-enum-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-InternalAndProtected-event" icon="res:element-event-16.png|res:element-visibility-internal-square-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-InternalAndProtected-extensionmethod" icon="res:element-extensionmethod-16.png|res:element-visibility-internal-square-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-InternalAndProtected-field" icon="res:element-field-16.png|res:element-visibility-internal-square-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-InternalAndProtected-interface" icon="res:element-interface-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-InternalAndProtected-method" icon="res:element-method-16.png|res:element-visibility-internal-square-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-InternalAndProtected-property" icon="res:element-property-16.png|res:element-visibility-internal-square-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-InternalAndProtected-static-event" icon="res:element-event-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-InternalAndProtected-static-field" icon="res:element-field-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-InternalAndProtected-static-method" icon="res:element-method-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-InternalAndProtected-static-property" icon="res:element-property-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-InternalAndProtected-struct" icon="res:element-struct-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-private-class" icon="res:element-class-16.png|res:element-visibility-private-diamond-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-private-delegate" icon="res:element-delegate-16.png|res:element-visibility-private-diamond-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-private-enum" icon="res:element-enum-16.png|res:element-visibility-private-diamond-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-private-event" icon="res:element-event-16.png|res:element-visibility-private-square-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-private-extensionmethod" icon="res:element-extensionmethod-16.png|res:element-visibility-private-square-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-private-field" icon="res:element-field-16.png|res:element-visibility-private-square-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-private-interface" icon="res:element-interface-16.png|res:element-visibility-private-diamond-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-private-method" icon="res:element-method-16.png|res:element-visibility-private-square-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-private-property" icon="res:element-property-16.png|res:element-visibility-private-square-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-private-static-event" icon="res:element-event-16.png|res:element-visibility-private-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-private-static-field" icon="res:element-field-16.png|res:element-visibility-private-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-private-static-method" icon="res:element-method-16.png|res:element-visibility-private-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-private-static-property" icon="res:element-property-16.png|res:element-visibility-private-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-private-struct" icon="res:element-struct-16.png|res:element-visibility-private-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-project-console" icon="md-project|res:project-console-overlay-32.png" size="Dnd" />
 	<StockIcon stockid="md-project-gui" icon="md-project|res:project-gui-overlay-32.png" size="Dnd" />
 	<StockIcon stockid="md-project-library" icon="md-project|md-library-overlay" size="Dnd" />
 	<StockIcon stockid="md-project-package" icon="md-project|res:project-package-overlay-32.png" size="Dnd" />
 	<StockIcon stockid="md-project-shared-assets" icon="md-project|res:project-shared-assets-overlay-32.png" size="Dnd" />
 	<StockIcon stockid="md-project-web" icon="md-project|md-web-overlay" size="Dnd" />
-	<StockIcon stockid="md-protected-class" icon="res:element-class-16.png|res:element-visibility-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-protected-delegate" icon="res:element-delegate-16.png|res:element-visibility-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-protected-enum" icon="res:element-enum-16.png|res:element-visibility-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-protected-event" icon="res:element-event-16.png|res:element-visibility-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-protected-extensionmethod" icon="res:element-extensionmethod-16.png|res:element-visibility-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-protected-field" icon="res:element-field-16.png|res:element-visibility-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-protected-interface" icon="res:element-interface-16.png|res:element-visibility-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-protected-method" icon="res:element-method-16.png|res:element-visibility-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-protected-property" icon="res:element-property-16.png|res:element-visibility-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-protected-static-event" icon="res:element-event-16.png|res:element-static-overlay-16.png|res:element-visibility-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-protected-static-field" icon="res:element-field-16.png|res:element-static-overlay-16.png|res:element-visibility-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-protected-static-method" icon="res:element-method-16.png|res:element-static-overlay-16.png|res:element-visibility-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-protected-static-property" icon="res:element-property-16.png|res:element-static-overlay-16.png|res:element-visibility-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-protected-struct" icon="res:element-struct-16.png|res:element-visibility-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-ProtectedOrInternal-class" icon="res:element-class-16.png|res:element-visibility-internal-or-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-ProtectedOrInternal-delegate" icon="res:element-delegate-16.png|res:element-visibility-internal-or-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-ProtectedOrInternal-enum" icon="res:element-enum-16.png|res:element-visibility-internal-or-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-ProtectedOrInternal-event" icon="res:element-event-16.png|res:element-visibility-internal-or-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-ProtectedOrInternal-extensionmethod" icon="res:element-extensionmethod-16.png|res:element-visibility-internal-or-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-ProtectedOrInternal-field" icon="res:element-field-16.png|res:element-visibility-internal-or-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-ProtectedOrInternal-interface" icon="res:element-interface-16.png|res:element-visibility-internal-or-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-ProtectedOrInternal-method" icon="res:element-method-16.png|res:element-visibility-internal-or-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-ProtectedOrInternal-property" icon="res:element-property-16.png|res:element-visibility-internal-or-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-ProtectedOrInternal-static-event" icon="res:element-event-16.png|res:element-static-overlay-16.png|res:element-visibility-internal-or-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-ProtectedOrInternal-static-field" icon="res:element-field-16.png|res:element-static-overlay-16.png|res:element-visibility-internal-or-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-ProtectedOrInternal-static-method" icon="res:element-method-16.png|res:element-static-overlay-16.png|res:element-visibility-internal-or-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-ProtectedOrInternal-static-property" icon="res:element-property-16.png|res:element-static-overlay-16.png|res:element-visibility-internal-or-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-ProtectedOrInternal-struct" icon="res:element-struct-16.png|res:element-visibility-internal-or-protected-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-protected-class" icon="res:element-class-16.png|res:element-visibility-protected-diamond-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-protected-delegate" icon="res:element-delegate-16.png|res:element-visibility-protected-diamond-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-protected-enum" icon="res:element-enum-16.png|res:element-visibility-protected-diamond-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-protected-event" icon="res:element-event-16.png|res:element-visibility-protected-square-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-protected-extensionmethod" icon="res:element-extensionmethod-16.png|res:element-visibility-protected-square-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-protected-field" icon="res:element-field-16.png|res:element-visibility-protected-square-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-protected-interface" icon="res:element-interface-16.png|res:element-visibility-protected-diamond-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-protected-method" icon="res:element-method-16.png|res:element-visibility-protected-square-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-protected-property" icon="res:element-property-16.png|res:element-visibility-protected-square-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-protected-static-event" icon="res:element-event-16.png|res:element-visibility-protected-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-protected-static-field" icon="res:element-field-16.png|res:element-visibility-protected-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-protected-static-method" icon="res:element-method-16.png|res:element-visibility-protected-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-protected-static-property" icon="res:element-property-16.png|res:element-visibility-protected-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-protected-struct" icon="res:element-struct-16.png|res:element-visibility-protected-diamond-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-ProtectedOrInternal-class" icon="res:element-class-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-ProtectedOrInternal-delegate" icon="res:element-delegate-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-ProtectedOrInternal-enum" icon="res:element-enum-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-ProtectedOrInternal-event" icon="res:element-event-16.png|res:element-visibility-internal-square-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-ProtectedOrInternal-extensionmethod" icon="res:element-extensionmethod-16.png|res:element-visibility-internal-square-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-ProtectedOrInternal-field" icon="res:element-field-16.png|res:element-visibility-internal-square-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-ProtectedOrInternal-interface" icon="res:element-interface-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-ProtectedOrInternal-method" icon="res:element-method-16.png|res:element-visibility-internal-diamond-square-16.png" size="Menu" />
+	<StockIcon stockid="md-ProtectedOrInternal-property" icon="res:element-property-16.png|res:element-visibility-internal-square-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-ProtectedOrInternal-static-event" icon="res:element-event-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-ProtectedOrInternal-static-field" icon="res:element-field-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-ProtectedOrInternal-static-method" icon="res:element-method-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-ProtectedOrInternal-static-property" icon="res:element-property-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-ProtectedOrInternal-struct" icon="res:element-struct-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-static-event" icon="res:element-event-16.png|res:element-static-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-static-field" icon="res:element-field-16.png|res:element-static-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-static-method" icon="res:element-method-16.png|res:element-static-overlay-16.png" size="Menu" />
