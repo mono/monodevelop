@@ -50,6 +50,8 @@ using MonoDevelop.Xml.Dom;
 using MonoDevelop.Xml.Parser;
 using System.Threading.Tasks;
 using System.Threading;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.Xml.Editor
 {
@@ -1028,5 +1030,95 @@ namespace MonoDevelop.Xml.Editor
 			EditorSelect (region);
 		}		
 		#endregion
+
+		[CommandUpdateHandler (EditCommands.AddCodeComment)]
+		[CommandUpdateHandler (EditCommands.RemoveCodeComment)]
+		[CommandUpdateHandler (EditCommands.ToggleCodeComment)]
+		void ToggleCodeCommentCommandUpdate (CommandInfo info)
+		{
+			info.Enabled = true;
+			info.Visible = true;
+		}
+
+		bool IsInComment ()
+		{
+			Tracker.UpdateEngine ();
+			if (Tracker.Engine.CurrentState is XmlCommentState) {
+				return true;
+			}
+			//If we are not in comment, try parsing 3 letters so in case we are just after
+			//"<" of <!-- we come inside... and state changes into XmlCommentState
+			var engineClone = Tracker.Engine.GetTreeParser ();
+			int j = 0;
+			for (int i = engineClone.Position; i < Editor.Length && j < 3; i++, j++) {
+				engineClone.Push (Editor.GetCharAt (engineClone.Position));
+			}
+			return engineClone.CurrentState is XmlCommentState;
+		}
+
+		[CommandHandler (EditCommands.AddCodeComment)]
+		public void AddCodeCommentCommand ()
+		{
+			if (!IsInComment ()) {
+				ToggleCodeCommentCommandInternal (false);
+			}
+		}
+
+		[CommandHandler (EditCommands.RemoveCodeComment)]
+		public void RemoveCodeCommentCommand ()
+		{
+			if (IsInComment ()) {
+				ToggleCodeCommentCommandInternal (true);
+			}
+		}
+
+		[CommandHandler (EditCommands.ToggleCodeComment)]
+		public void ToggleCodeCommentCommand ()
+		{
+			ToggleCodeCommentCommandInternal (IsInComment ());
+		}
+
+		void ToggleCodeCommentCommandInternal (bool remove)
+		{
+			if (remove) {
+				//We are guarenteed we are inside comment start
+				var treeParser = Tracker.Engine.GetTreeParser ();
+				XComment commentNode = treeParser.Nodes.Peek () as XComment;
+				//Keep parsing XML until end of file or until comment node is ended
+				for (int i = treeParser.Position; i < Editor.Length; i++) {
+					treeParser.Push (Editor.GetCharAt (i));
+					if (commentNode != null) {
+						if (commentNode.IsEnded) {
+							break;
+						}
+					} else {
+						commentNode = treeParser.Nodes.Peek () as XComment;
+					}
+				}
+				//Comment doesn't close until end of file
+				if (commentNode == null || !commentNode.IsEnded) {
+					return;
+				}
+				var startOffset = Editor.LocationToOffset (commentNode.Region.Begin);
+				var endOffset = Editor.LocationToOffset (commentNode.Region.End) - 3 - 4;//-3 because End is after "-->", -4 because removed "<!--" just before
+				using (Editor.OpenUndoGroup ()) {
+					Editor.RemoveText (startOffset, 4);//4 equals "<!--"
+					Editor.RemoveText (endOffset, 3);//3 equals "-->"
+				}
+			} else {
+				using (Editor.OpenUndoGroup ()) {
+					if (Editor.IsSomethingSelected) {
+						//end variable is also used because inserting start deselectes text and Editor.SelectionRange.EndOffset becomes invalid
+						var end = Editor.SelectionRange.EndOffset + 4;//+4 equals "<!--" inserted in next line
+						Editor.InsertText (Editor.SelectionRange.Offset, "<!--");
+						Editor.InsertText (end, "-->");
+					} else {
+						var currentLine = Editor.GetLine (Editor.CaretLine);
+						Editor.InsertText (currentLine.Offset, "<!--");
+						Editor.InsertText (currentLine.EndOffset, "-->");//currentLine.EndOffset updates automaticlly
+					}
+				}
+			}
+		}
 	}
 }

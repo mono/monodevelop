@@ -680,6 +680,7 @@ namespace MonoDevelop.Ide.Editor
 		[CommandUpdateHandler (EditCommands.ToggleCodeComment)]
 		void OnUpdateToggleComment (CommandInfo info)
 		{
+			info.Bypass = true;
 			var lineComments = TextEditorFactory.GetSyntaxProperties (textEditor.MimeType, "LineComment");
 			if (lineComments != null && lineComments.Length > 0) {
 				info.Visible = true;
