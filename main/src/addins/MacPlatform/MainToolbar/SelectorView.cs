@@ -66,7 +66,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			Title = "";
 			BezelStyle = NSBezelStyle.TexturedRounded;
 
-			RealSelectorView = new PathSelectorView (new CGRect (6, 0.5, 1, 1));
+			RealSelectorView = new PathSelectorView (new CGRect (6, 0, 1, 1));
 			RealSelectorView.UnregisterDraggedTypes ();
 			AddSubview (RealSelectorView);
 		}
