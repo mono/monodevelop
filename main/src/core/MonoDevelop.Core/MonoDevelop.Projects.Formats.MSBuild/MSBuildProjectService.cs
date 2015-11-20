@@ -504,12 +504,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal static RemoteProjectBuilder GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile)
 		{
 			lock (builders) {
-				//attempt to use 12.0 builder first if available
-				string toolsVersion = "12.0";
-				string binDir = runtime.GetMSBuildBinPath ("12.0");
+				//attempt to use 14.0 builder first if available
+				string toolsVersion = "14.0";
+				string binDir = runtime.GetMSBuildBinPath ("14.0");
 				if (binDir == null) {
-					//fall back to 4.0, we know it's always available
-					toolsVersion = "4.0";
+					toolsVersion = "12.0";
+					binDir = runtime.GetMSBuildBinPath ("12.0");
+					if (binDir == null) {
+						//fall back to 4.0, we know it's always available
+						toolsVersion = "4.0";
+					}
 				}
 
 				//check the ToolsVersion we found can handle the project
