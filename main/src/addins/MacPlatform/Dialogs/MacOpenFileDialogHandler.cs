@@ -58,8 +58,6 @@ namespace MonoDevelop.MacIntegration
 					};
 				}
 
-				IdeTheme.ApplyTheme (panel);
-
 				MacSelectFileDialogHandler.SetCommonPanelProperties (data, panel);
 				
 				SelectEncodingPopUpButton encodingSelector = null;
