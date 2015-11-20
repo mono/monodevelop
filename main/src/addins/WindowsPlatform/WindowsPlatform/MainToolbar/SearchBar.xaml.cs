@@ -74,7 +74,7 @@ namespace WindowsPlatform.MainToolbar
 
 				SearchIcon.ContextMenu.Items.Clear ();
 				foreach (var item in value) {
-					var menuItem = new MenuItem {
+					var menuItem = new SimpleMenuItem {
 						Header = item.DisplayString,
 						Tag = item,
 					};

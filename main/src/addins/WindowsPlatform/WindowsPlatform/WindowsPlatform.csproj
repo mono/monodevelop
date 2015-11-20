@@ -109,6 +109,9 @@
     <Compile Include="MainToolbar\StatusBar.xaml.cs">
       <DependentUpon>StatusBar.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MainToolbar\SimpleMenuItem.cs">
+      <DependentUpon>SimpleMenuItem.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainToolbar\TitleMenuItem.cs" />
     <Compile Include="MainToolbar\TitleBar.xaml.cs">
       <DependentUpon>TitleBar.xaml</DependentUpon>
@@ -239,6 +242,9 @@
     </Page>
     <Page Include="MainToolbar\StatusBar.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MainToolbar\SimpleMenuItem.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MainToolbar\TitleBar.xaml">
