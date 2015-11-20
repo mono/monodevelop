@@ -832,7 +832,7 @@ namespace MonoDevelop.Ide
 
 		public Stream LoadImage (string fileName)
 		{
-			return addin.GetResource (fileName);
+			return addin.GetResource (fileName, true);
 		}
 	}
 }
