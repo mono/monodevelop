@@ -35,7 +35,7 @@ let main argv =
       fullPath, { options with ProjectFileName = fullPath
                                OtherOptions = normalizeOptions options.OtherOptions
                                ReferencedProjects = options.ReferencedProjects 
-                                                    |> Array.map(fun project -> normalizeProject project) }
+                                                    |> Array.map normalizeProject }
 
   let result =
     try
