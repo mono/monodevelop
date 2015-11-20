@@ -72,14 +72,6 @@ namespace WindowsPlatform.MainToolbar
 			DropMenuText = "Default";
         }
 
-		protected override void OnPropertyChanged (DependencyPropertyChangedEventArgs e)
-		{
-			base.OnPropertyChanged (e);
-			if (e.Property == Control.IsEnabledProperty) {
-				
-			}
-		}
-
 		protected MenuItem DropMenu
 		{
 			get { return (MenuItem)Items[0]; }
