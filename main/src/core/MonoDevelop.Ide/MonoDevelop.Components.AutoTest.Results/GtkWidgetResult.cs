@@ -37,7 +37,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 	{
 		Widget resultWidget;
 
-		public GtkWidgetResult (Widget widget)
+		internal GtkWidgetResult (Widget widget)
 		{
 			resultWidget = widget;
 		}
