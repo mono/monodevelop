@@ -62,7 +62,7 @@
                 <TextBlock
             	    Text="{Binding BuildResultCount}" 
 	                VerticalAlignment="Center"
-	                Padding="0,1,5,2" />
+	                Padding="3,2,5,1" />
             </StackPanel>
             <StackPanel x:Name="StatusIconsPanel" Grid.Column="3" VerticalAlignment="Center" Orientation="Horizontal" UseLayoutRounding="True" />
         </Grid>
