@@ -46,7 +46,9 @@ namespace MonoDevelop.Ide.Templates
 {
 	class FileTemplate
 	{
-		public string Category { get; private set; } = String.Empty;
+		public const string DefaultCategoryKey = "DefaultKey";
+
+		public Dictionary<string, string> Categories { get; private set; } = new Dictionary<string, string> ();
 
 		public List<FileTemplateCondition> Conditions { get; private set; } = new List<FileTemplateCondition> ();
 
@@ -109,12 +111,6 @@ namespace MonoDevelop.Ide.Templates
 				throw new InvalidOperationException (string.Format ("Missing element '_Name' in file template: {0}", templateId));
 			}
 
-			if (xmlNodeConfig ["_Category"] != null) {
-				fileTemplate.Category = xmlNodeConfig ["_Category"].InnerText;
-			} else {
-				throw new InvalidOperationException (string.Format ("Missing element '_Category' in file template: {0}", templateId));
-			}
-
 			if (xmlNodeConfig ["LanguageName"] != null) {
 				fileTemplate.LanguageName = xmlNodeConfig ["LanguageName"].InnerText;
 			}
@@ -124,6 +120,24 @@ namespace MonoDevelop.Ide.Templates
 				foreach (var item in xmlNodeConfig["ProjectType"].InnerText.Split (','))
 					projectTypeList.Add (item.Trim ());
 				fileTemplate.ProjectTypes = projectTypeList;
+			}
+
+			fileTemplate.Categories = new Dictionary<string, string> ();
+			if (xmlNodeConfig ["_Category"] != null) {
+				foreach (XmlNode xmlNode in xmlNodeConfig.GetElementsByTagName ("_Category")) {
+					if (xmlNode is XmlElement) {
+						string projectType = "";
+						if (xmlNode.Attributes ["projectType"] != null)
+							projectType = xmlNode.Attributes ["projectType"].Value;
+
+						if (!string.IsNullOrEmpty (projectType) && fileTemplate.ProjectTypes.Contains (projectType))
+							fileTemplate.Categories.Add (projectType, xmlNode.InnerText);
+						else if (!fileTemplate.Categories.ContainsKey (DefaultCategoryKey))
+							fileTemplate.Categories.Add (DefaultCategoryKey, xmlNode.InnerText);
+					}
+				}
+			} else {
+				throw new InvalidOperationException (string.Format ("Missing element '_Category' in file template: {0}", templateId));
 			}
 
 			if (xmlNodeConfig ["_Description"] != null) {
