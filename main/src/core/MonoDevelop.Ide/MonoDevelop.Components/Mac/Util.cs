@@ -104,6 +104,15 @@ namespace MonoDevelop.Components.Mac
 			return NSColor.FromDeviceRgba ((float)col.R, (float)col.G, (float)col.B, (float)col.A);
 		}
 
+		static readonly CoreGraphics.CGColorSpace DeviceRgbColorSpace = CoreGraphics.CGColorSpace.CreateDeviceRGB ();
+
+		public static CoreGraphics.CGColor ToCGColor (this Cairo.Color col)
+		{
+			return new CoreGraphics.CGColor (DeviceRgbColorSpace, new nfloat[] {
+				(nfloat)col.R, (nfloat)col.G, (nfloat)col.B, (nfloat)col.A
+			});
+		}
+
 		static Selector applyFontTraits = new Selector ("applyFontTraits:range:");
 
 		public static NSAttributedString ToAttributedString (this FormattedText ft)

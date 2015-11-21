@@ -72,6 +72,8 @@ namespace MonoDevelop.Components
 					window.IsOpaque = false;
 					window.BackgroundColor = NSColor.FromPatternImage (image.ToBitmap().ToNSImage());
 				}
+				window.ContentView.WantsLayer = true;
+				window.ContentView.Layer.BackgroundColor = MonoDevelop.Ide.Gui.Styles.BackgroundColor.ToCGColor ();
 			}
 			window.StyleMask |= NSWindowStyle.TexturedBackground;
 		}
