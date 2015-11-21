@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.Templates
 
 		public string Originator { get; private set; } = String.Empty;
 
-		public string ProjectType { get; private set; } = String.Empty;
+		public List<string> ProjectTypes { get; private set; } = new List<string> ();
 
 		public string WizardPath { get; private set; } = String.Empty;
 
@@ -118,7 +118,10 @@ namespace MonoDevelop.Ide.Templates
 			}
 
 			if (xmlNodeConfig ["ProjectType"] != null) {
-				fileTemplate.ProjectType = xmlNodeConfig ["ProjectType"].InnerText;
+				var projectTypeList = new List<string> ();
+				foreach (var item in xmlNodeConfig["ProjectType"].InnerText.Split (','))
+					projectTypeList.Add (item.Trim ());
+				fileTemplate.ProjectTypes = projectTypeList;
 			}
 
 			if (xmlNodeConfig ["_Description"] != null) {
@@ -337,7 +340,7 @@ namespace MonoDevelop.Ide.Templates
 
 			//filter on conditions
 			if (project != null) {
-				if (!string.IsNullOrEmpty (ProjectType) && project.GetProjectTypes ().All (p => p != ProjectType))
+				if (ProjectTypes != null && project.GetProjectTypes ().All (p => !ProjectTypes.Contains (p)))
 					return false;
 
 				foreach (FileTemplateCondition condition in Conditions)
