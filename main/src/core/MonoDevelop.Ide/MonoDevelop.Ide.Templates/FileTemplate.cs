@@ -80,9 +80,11 @@ namespace MonoDevelop.Ide.Templates
 
 		static FileTemplate LoadFileTemplate (RuntimeAddin addin, ProjectTemplateCodon codon)
 		{
-			XmlDocument xmlDocument = codon.GetTemplate ();
-			FilePath baseDirectory = codon.BaseDirectory;
-			
+			return LoadFileTemplate (addin, codon.GetTemplate (), codon.BaseDirectory, codon.Id);
+		}
+
+		internal static FileTemplate LoadFileTemplate (RuntimeAddin addin, XmlDocument xmlDocument, FilePath baseDirectory = new FilePath (), string templateId = "")
+		{
 			//Configuration
 			XmlElement xmlNodeConfig = xmlDocument.DocumentElement ["TemplateConfiguration"];
 
@@ -104,13 +106,13 @@ namespace MonoDevelop.Ide.Templates
 			if (xmlNodeConfig ["_Name"] != null) {
 				fileTemplate.Name = xmlNodeConfig ["_Name"].InnerText;
 			} else {
-				throw new InvalidOperationException (string.Format ("Missing element '_Name' in file template: {0}", codon.Id));
+				throw new InvalidOperationException (string.Format ("Missing element '_Name' in file template: {0}", templateId));
 			}
 
 			if (xmlNodeConfig ["_Category"] != null) {
 				fileTemplate.Category = xmlNodeConfig ["_Category"].InnerText;
 			} else {
-				throw new InvalidOperationException (string.Format ("Missing element '_Category' in file template: {0}", codon.Id));
+				throw new InvalidOperationException (string.Format ("Missing element '_Category' in file template: {0}", templateId));
 			}
 
 			if (xmlNodeConfig ["LanguageName"] != null) {
