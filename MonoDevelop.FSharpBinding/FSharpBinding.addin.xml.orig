@@ -10,6 +10,7 @@
     <Import file="CompilerService.exe" />
     <Import assembly="FantomasLib.dll" />
     <Import assembly="FSharp.Compiler.CodeDom.dll" />
+    <Import assembly="Argu.dll" />
     <Import assembly="ExtCore.dll" />
     <Import assembly="FsPickler.Json.dll" />
     <Import assembly="FsPickler.dll" />
