@@ -97,26 +97,28 @@ namespace MonoDevelop.CSharp.Highlighting
 			};
 		}
 
-		protected override IEnumerable<MemberReference> GetReferences (UsageData resolveResult, CancellationToken token)
+		protected override async Task<IEnumerable<MemberReference>> GetReferencesAsync (UsageData resolveResult, CancellationToken token)
 		{
+			var result = new List<MemberReference> ();
 			if (resolveResult.Symbol == null)
-				yield break;
+				return result;
 			var doc = resolveResult.Document;
 			var documents = ImmutableHashSet.Create (doc); 
 			var symbol = resolveResult.Symbol;
 			foreach (var loc in symbol.Locations) {
 				if (loc.IsInSource && loc.SourceTree.FilePath == doc.FilePath)
-					yield return new MemberReference (symbol, doc.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length) {
+					result.Add (new MemberReference (symbol, doc.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length) {
 						ReferenceUsageType = ReferenceUsageType.Declariton	
-					};
+					});
 			}
-			foreach (var mref in SymbolFinder.FindReferencesAsync (symbol, TypeSystemService.Workspace.CurrentSolution, documents, token).Result) {
+			foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, TypeSystemService.Workspace.CurrentSolution, documents, token)) {
 				foreach (var loc in mref.Locations) {
-					yield return new MemberReference (symbol, doc.FilePath, loc.Location.SourceSpan.Start, loc.Location.SourceSpan.Length) {
+					result.Add (new MemberReference (symbol, doc.FilePath, loc.Location.SourceSpan.Start, loc.Location.SourceSpan.Length) {
 						ReferenceUsageType = GetUsage (loc.Location.SourceTree.GetRoot ().FindNode (loc.Location.SourceSpan))
-					};
+					});
 				}
 			}
+			return result;
 		}
 
 		static ReferenceUsageType GetUsage (SyntaxNode node)

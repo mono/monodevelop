@@ -116,9 +116,15 @@ namespace MonoDevelop.DesignerSupport
 				});
 				WrittenCount++;
 			} catch (IOException ex) {
-				monitor.ReportError (GettextCatalog.GetString ("Failed to write file '{0}'.", path), ex);
+				if (monitor != null)
+					monitor.ReportError (GettextCatalog.GetString ("Failed to write file '{0}'.", path), ex);
+				else
+					LoggingService.LogError ("CodeBehindWriter failed", ex);
 			} catch (Exception ex) {
-				monitor.ReportError (GettextCatalog.GetString ("Failed to generate code for file '{0}'.", path), ex);
+				if (monitor != null)
+					monitor.ReportError (GettextCatalog.GetString ("Failed to generate code for file '{0}'.", path), ex);
+				else
+					LoggingService.LogError ("CodeBehindWriter failed", ex);
 			}
 		}
 
@@ -145,9 +151,15 @@ namespace MonoDevelop.DesignerSupport
 				});
 				WrittenCount++;
 			} catch (IOException ex) {
-				monitor.ReportError (GettextCatalog.GetString ("Failed to write file '{0}'.", path), ex);
+				if (monitor != null)
+					monitor.ReportError (GettextCatalog.GetString ("Failed to write file '{0}'.", path), ex);
+				else
+					LoggingService.LogError ("CodeBehindWriter failed", ex);
 			} catch (Exception ex) {
-				monitor.ReportError (GettextCatalog.GetString ("Failed to generate code for file '{0}'.", path), ex);
+				if (monitor != null)
+					monitor.ReportError (GettextCatalog.GetString ("Failed to generate code for file '{0}'.", path), ex);
+				else
+					LoggingService.LogError ("CodeBehindWriter failed", ex);
 			}
 		}
 		
@@ -195,9 +207,10 @@ namespace MonoDevelop.DesignerSupport
 						WrittenCount++;
 						
 					} catch (IOException ex) {
-						monitor.ReportError (
-							GettextCatalog.GetString ("Failed to write file '{0}'.", item.Key),
-							ex);
+						if (monitor != null)
+							monitor.ReportError (GettextCatalog.GetString ("Failed to write file '{0}'.", item.Key), ex);
+						else
+							LoggingService.LogError ("CodeBehindWriter failed", ex);
 					}
 				}
 			});

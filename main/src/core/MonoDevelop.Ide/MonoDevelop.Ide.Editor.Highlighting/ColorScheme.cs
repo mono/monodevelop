@@ -445,6 +445,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		[ColorDescription(UserTypesTypeParametersKey, VSSetting = "User Types(Type parameters)")]
 		public ChunkStyle UserTypesTypeParameters { get; private set; }
 
+		public const string UserTypesMutableKey = "User Types(Mutable)";
+		[ColorDescription(UserTypesMutableKey, VSSetting = "User Types(Mutable")]
+		public ChunkStyle UserTypesMutable { get; private set; }
+
 		public const string UserFieldUsageKey = "User Field Usage";
 		[ColorDescription(UserFieldUsageKey, VSSetting = "Identifier")]
 		public ChunkStyle UserFieldUsage { get; private set; }

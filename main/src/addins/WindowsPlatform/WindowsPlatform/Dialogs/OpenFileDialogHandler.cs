@@ -36,6 +36,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using Microsoft.WindowsAPICodePack.Dialogs.Controls;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Components.Extensions;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui;

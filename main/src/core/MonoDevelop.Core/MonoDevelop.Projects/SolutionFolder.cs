@@ -564,6 +564,11 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 
+		bool IBuildTarget.CanBuild (ConfigurationSelector configuration)
+		{
+			return true;
+		}
+
 		public async Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext = null)
 		{
 			if (ParentSolution == null)

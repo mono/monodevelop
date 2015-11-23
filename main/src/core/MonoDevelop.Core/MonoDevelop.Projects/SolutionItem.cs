@@ -468,6 +468,11 @@ namespace MonoDevelop.Projects
 			get { return fileStatusTracker.ItemFilesChanged; }
 		}
 
+		bool IBuildTarget.CanBuild (ConfigurationSelector configuration)
+		{
+			return SupportsBuild ();
+		}
+
 		public bool SupportsBuild ()
 		{
 			return ItemExtension.OnGetSupportedFeatures ().HasFlag (ProjectFeatures.Build);

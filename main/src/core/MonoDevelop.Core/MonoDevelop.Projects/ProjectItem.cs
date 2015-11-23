@@ -69,7 +69,7 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				backingItem = value;
-				UnevaluatedInclude = backingItem.Include;
+				UnevaluatedInclude = backingItem?.Include;
 			}
 		}
 

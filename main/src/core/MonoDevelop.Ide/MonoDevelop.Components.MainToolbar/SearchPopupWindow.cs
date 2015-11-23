@@ -191,9 +191,9 @@ namespace MonoDevelop.Components.MainToolbar
 					return;
 				if (region.Length <= 0) {
 					if (Pattern.LineNumber == 0) {
-						IdeApp.Workbench.OpenDocument (SelectedItemFileName);
+						IdeApp.Workbench.OpenDocument (SelectedItemFileName, project: null);
 					} else {
-						IdeApp.Workbench.OpenDocument (SelectedItemFileName, Pattern.LineNumber, Pattern.HasColumn ? Pattern.Column : 1);
+						IdeApp.Workbench.OpenDocument (SelectedItemFileName, null, Pattern.LineNumber, Pattern.HasColumn ? Pattern.Column : 1);
 					}
 				} else {
 					IdeApp.Workbench.OpenDocument (new FileOpenInformation (SelectedItemFileName, null) {
@@ -305,20 +305,22 @@ namespace MonoDevelop.Components.MainToolbar
 			Task.WhenAll (collectors.Select (c => c.Task)).ContinueWith (t => {
 				if (t.IsCanceled)
 					return;
-				if (t.IsFaulted) {
-					LoggingService.LogError ("Error getting search results", t.Exception);
-				} else {
-					Application.Invoke (delegate {
-						RemoveTimeout ();
-						if (token.IsCancellationRequested)
-							return;
-						foreach (var col in collectors) {
+				Application.Invoke (delegate {
+					RemoveTimeout ();
+					if (token.IsCancellationRequested)
+						return;
+					foreach (var col in collectors) {
+						if (col.Task.IsCanceled) {
+							continue;
+						} else if (col.Task.IsFaulted) {
+							LoggingService.LogError ($"Error getting search results for {col.Category}", col.Task.Exception);
+						} else {
 							ShowResult (col.Category, col.Results);
 						}
-						isInSearch = false;
-						AnimatedResize ();
-					});
-				}
+					}
+					isInSearch = false;
+					AnimatedResize ();
+				});
 			}, token);
 		}
 

@@ -240,7 +240,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (entity != null) {
 					var ambience = new ICSharpCode.NRefactory.CSharp.CSharpAmbience ();
 					ambience.ConversionFlags = ICSharpCode.NRefactory.TypeSystem.ConversionFlags.ShowParameterList | ICSharpCode.NRefactory.TypeSystem.ConversionFlags.ShowParameterNames | ICSharpCode.NRefactory.TypeSystem.ConversionFlags.ShowTypeParameterList;
-					return ambience.ConvertEntity (entity);
+					return ambience.ConvertSymbol (entity);
 				}
 			} catch (Exception e) {
 				LoggingService.LogWarning ("Invalid cref:" + cref, e);

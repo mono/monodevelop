@@ -3021,8 +3021,8 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		public double ZoomLevel {
-			get { return TextEditor.Options.Zoom; }
-			set { TextEditor.Options.Zoom = value; } 
+			get { return TextEditor != null && TextEditor.Options != null ? TextEditor.Options.Zoom : 1d; }
+			set { if (TextEditor != null && TextEditor.Options != null) TextEditor.Options.Zoom = value; } 
 		}
 		event EventHandler ITextEditorImpl.ZoomLevelChanged {
 			add {

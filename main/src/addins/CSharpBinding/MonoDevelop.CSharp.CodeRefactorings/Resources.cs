@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 		public static string GenerateNewConstructorIn = "Generate constructor in '{0}'";
 
 		public static string GenerateAbstractMethod = "Generate abstract method '{0}' in '{1}'";
-		public static string GenerateAbstractProperty = "Generate abstract property '{0}' in '{1}&apos";
+		public static string GenerateAbstractProperty = "Generate abstract property '{0}' in '{1}'";
 		public static string GeneratePropertyIn = "Generate property '{1}.{0}'";
 		public static string GenerateMethodIn = "Generate method '{1}.{0}'";
 
@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 		public static string ImplementInterfaceAbstractly = "Implement interface abstractly";
 		public static string ImplementInterfaceExplicitly = "Implement interface explicitly";
 		public static string ImplementInterfaceExplicitlyWithDisposePattern = "Implement interface explicitly with Dispose pattern";
-		public static string ImplementInterfaceThrough = "Implement interface through '{0}&apos";
+		public static string ImplementInterfaceThrough = "Implement interface through '{0}'";
 		public static string ImplementInterfaceWithDisposePattern = "Implement interface with Dispose pattern";
 
 		public static string ImplicitConversionDisplayText = "Generate implicit conversion operator in '{0}'";

@@ -1,10 +1,10 @@
 ﻿//
-// FileChooserAction.cs
+// AbstractNavigationExtension.cs
 //
 // Author:
-//       therzok <marius.ungureanu@xamarin.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 //
-// Copyright (c) 2015 therzok
+// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,35 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-
-namespace MonoDevelop.Components
+namespace MonoDevelop.Ide.Editor.Extension
 {
-	[Flags]
-	public enum FileChooserAction
+	public class AbstractNavigationExtension
 	{
-		Open = 0x1,
-		Save = 0x2,
-		SelectFolder = 0x4,
-		CreateFolder = 0x8,
-
-		FolderFlags = CreateFolder | SelectFolder,
-		FileFlags = Open | Save,
-	}
-
-	static class FileChooserActionExtensions
-	{
-		public static Gtk.FileChooserAction ToGtkAction(this FileChooserAction action)
+		public AbstractNavigationExtension ()
 		{
-			if ((action & FileChooserAction.CreateFolder) != 0)
-				return Gtk.FileChooserAction.CreateFolder;
-			else if ((action & FileChooserAction.SelectFolder) != 0)
-				return Gtk.FileChooserAction.SelectFolder;
-			else if ((action & FileChooserAction.Open) != 0)
-				return Gtk.FileChooserAction.Open;
-			else if ((action & FileChooserAction.Save) != 0)
-				return Gtk.FileChooserAction.Save;
-			else
-				throw new NotSupportedException ();
 		}
 	}
 }

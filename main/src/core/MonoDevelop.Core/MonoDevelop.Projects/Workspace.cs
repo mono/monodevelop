@@ -73,6 +73,11 @@ namespace MonoDevelop.Projects
 			base.OnDispose ();
 		}
 
+		bool IBuildTarget.CanBuild (ConfigurationSelector configuration)
+		{
+			return true;
+		}
+
 		[ThreadSafe]
 		public async Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferencedTargets = false, OperationContext operationContext = null)
 		{

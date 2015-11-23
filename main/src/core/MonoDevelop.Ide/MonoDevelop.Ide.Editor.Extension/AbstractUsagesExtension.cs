@@ -128,7 +128,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		/// <returns>The references.</returns>
 		/// <param name="resolveResult">The resolve result given in 'TryResolve'.</param>
 		/// <param name="token">A cancellation token to cancel the operation.</param>
-		protected abstract IEnumerable<MemberReference> GetReferences (T resolveResult, CancellationToken token);
+		protected abstract Task<IEnumerable<MemberReference>> GetReferencesAsync (T resolveResult, CancellationToken token);
 
 		async void DelayedTooltipShow ()
 		{
@@ -142,16 +142,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 					ClearQuickTasks ();
 					return;
 				}
-
-				Task.Run (delegate {
-					var list = GetReferences (result, token).ToList ();
-					if (!token.IsCancellationRequested) {
-						Gtk.Application.Invoke (delegate {
-							if (!token.IsCancellationRequested)
-								ShowReferences (list);
-						});
-					}
-				});
+				var list = await GetReferencesAsync (result, token);
+				if (!token.IsCancellationRequested) {
+					Gtk.Application.Invoke (delegate {
+						if (!token.IsCancellationRequested)
+							ShowReferences (list);
+					});
+				}
 
 			} catch (Exception e) {
 				LoggingService.LogError ("Unhandled Exception in HighlightingUsagesExtension", e);

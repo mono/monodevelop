@@ -166,10 +166,13 @@ namespace MonoDevelop.Ide.Projects
 		{
 			string key = "Dialogs.NewFileDialog.LastSelectedCategory";
 			if (proj != null) {
-				key += "." + proj.GetTypeTags ().First ();
-				var dnp = proj as DotNetProject;
-				if (dnp != null)
-					key += "." + dnp.LanguageName;
+				string projectType = proj.GetTypeTags ().FirstOrDefault ();
+				if (projectType != null) {
+					key += "." + projectType;
+					var dnp = proj as DotNetProject;
+					if (dnp != null)
+						key += "." + dnp.LanguageName;
+				}
 			}
 			return key;
 		}

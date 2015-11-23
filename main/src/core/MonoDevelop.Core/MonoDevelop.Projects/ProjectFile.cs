@@ -488,6 +488,7 @@ namespace MonoDevelop.Projects
 			pf.Project = null;
 			pf.VirtualPathChanged = null;
 			pf.PathChanged = null;
+			pf.BackingItem = null;
 			return pf;
 		}
 

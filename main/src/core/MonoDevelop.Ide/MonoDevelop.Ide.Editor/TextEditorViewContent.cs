@@ -680,6 +680,7 @@ namespace MonoDevelop.Ide.Editor
 		[CommandUpdateHandler (EditCommands.ToggleCodeComment)]
 		void OnUpdateToggleComment (CommandInfo info)
 		{
+			info.Bypass = true;
 			var lineComments = TextEditorFactory.GetSyntaxProperties (textEditor.MimeType, "LineComment");
 			if (lineComments != null && lineComments.Length > 0) {
 				info.Visible = true;
@@ -801,7 +802,7 @@ namespace MonoDevelop.Ide.Editor
 				var anchor = textEditor.SelectionAnchorOffset;
 				int lines = 0;
 				
-				IDocumentLine first = null;
+				//IDocumentLine first = null;
 				IDocumentLine last  = null;
 				var oldVersion = textEditor.Version;
 				foreach (var line in GetSelectedLines (textEditor)) {
@@ -811,7 +812,7 @@ namespace MonoDevelop.Ide.Editor
 						lines++;
 					}
 					
-					first = line;
+					//first = line;
 					if (last == null)
 						last = line;
 				}

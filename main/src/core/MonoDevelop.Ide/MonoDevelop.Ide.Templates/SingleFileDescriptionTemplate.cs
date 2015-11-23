@@ -185,7 +185,7 @@ namespace MonoDevelop.Ide.Templates
 		public override void Show ()
 		{
 			if (!suppressAutoOpen)
-				IdeApp.Workbench.OpenDocument (generatedFile);
+				IdeApp.Workbench.OpenDocument (generatedFile, project: null);
 		}
 		
 		// Creates a file and saves it to disk. Returns the path to the new file

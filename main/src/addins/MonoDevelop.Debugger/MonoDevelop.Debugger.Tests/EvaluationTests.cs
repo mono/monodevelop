@@ -1529,6 +1529,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("{int[2][]}", val.Value);
 			Assert.AreEqual ("int[][]", val.TypeName);
 
+			IgnoreCorDebugger ("Randomly fails");
 
 			val = Eval ("arrayWithLowerBounds");
 			Assert.AreEqual ("int[,,]", val.TypeName);
@@ -1538,8 +1539,6 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("{int[3,4,5]}", val.Value);
 			Assert.AreEqual ("int[,,]", val.TypeName);
 			Assert.IsFalse (val.IsNull);
-
-			IgnoreCorDebugger ("Randomly fails");
 
 			val = Eval ("nulledByteArray");
 			Assert.AreEqual ("(null)", val.Value);

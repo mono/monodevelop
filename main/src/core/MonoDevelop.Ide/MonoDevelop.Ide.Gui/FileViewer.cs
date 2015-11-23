@@ -92,7 +92,7 @@ namespace MonoDevelop.Ide.Gui
 		public Document OpenFile (string filePath, Encoding encoding)
 		{
 			if (binding != null)
-				return IdeApp.Workbench.OpenDocument (filePath, -1, -1, OpenDocumentOptions.Default, encoding, binding);
+				return IdeApp.Workbench.OpenDocument (filePath, null, -1, -1, OpenDocumentOptions.Default, encoding, binding);
 			else {
 				app.Launch (filePath);
 				return null;

@@ -191,6 +191,7 @@
         { "name":"User Types(Delegates)", "fore":"skyblue2" },
         { "name":"User Types(Value types)", "fore":"skyblue2" },
         { "name":"User Types(Type parameters)", "fore":"skyblue2" },
+		{ "name":"User Types(Mutable)", "fore":"aluminium1", "back":"invalid-red" },
 
         { "name":"User Field Usage", "fore":"text-black" },
         { "name":"User Field Declaration", "fore":"text-black" },

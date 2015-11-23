@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void ActivateItem ()
 		{
 			var aref = (ImplicitFrameworkAssemblyReference) CurrentNode.DataItem;
-			IdeApp.Workbench.OpenDocument (aref.Assembly.Location);
+			IdeApp.Workbench.OpenDocument (aref.Assembly.Location, project: null);
 		}
 	}
 }

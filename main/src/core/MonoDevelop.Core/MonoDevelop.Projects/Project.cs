@@ -1437,10 +1437,7 @@ namespace MonoDevelop.Projects
 			}
 			
 			if (UsingMSBuildEngine (configuration)) {
-				var result = await RunMSBuildTarget (monitor, "Clean", configuration, context);
-				if (!result.BuildResult.Failed)
-					SetFastBuildCheckClean (configuration);
-				return result;			
+				return await RunMSBuildTarget (monitor, "Clean", configuration, context);
 			}
 			
 			monitor.Log.WriteLine ("Removing output files...");

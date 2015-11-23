@@ -718,7 +718,7 @@ namespace MonoDevelop.Ide.Projects
 		static void RunTemplateActions (ProcessedTemplateResult templateResult)
 		{
 			foreach (string action in templateResult.Actions) {
-				IdeApp.Workbench.OpenDocument (Path.Combine (templateResult.ProjectBasePath, action));
+				IdeApp.Workbench.OpenDocument (Path.Combine (templateResult.ProjectBasePath, action), project: null);
 			}
 		}
 
