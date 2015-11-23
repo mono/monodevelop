@@ -52,7 +52,7 @@ namespace MonoDevelop.VersionControl.Views
 		ListStore logstore = new ListStore (typeof (Revision), typeof(string));
 		FileTreeView treeviewFiles;
 		TreeStore changedpathstore;
-		Gtk.Button revertButton, revertToButton, refreshButton;
+		DocumentToolButton revertButton, revertToButton, refreshButton;
 		SearchEntry searchEntry;
 		string currentFilter;
 		
@@ -124,11 +124,11 @@ namespace MonoDevelop.VersionControl.Views
 			vpaned1 = vpaned1.ReplaceWithWidget (new VPanedThin () { HandleWidget = separator }, true);
 
 			revertButton = new DocumentToolButton ("vc-revert-command", GettextCatalog.GetString ("Revert changes from this revision"));
-			revertButton.Sensitive = false;
+			revertButton.GetNativeWidget<Gtk.Widget> ().Sensitive = false;
 			revertButton.Clicked += new EventHandler (RevertRevisionClicked);
 
 			revertToButton = new DocumentToolButton ("vc-revert-command", GettextCatalog.GetString ("Revert to this revision"));
-			revertToButton.Sensitive = false;
+			revertToButton.GetNativeWidget<Gtk.Widget> ().Sensitive = false;
 			revertToButton.Clicked += new EventHandler (RevertToRevisionClicked);
 
 			refreshButton = new DocumentToolButton (Gtk.Stock.Refresh, GettextCatalog.GetString ("Refresh"));
@@ -315,7 +315,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			ShowLoading ();
 			info.Start (true);
-			revertButton.Sensitive = revertToButton.Sensitive = false;
+			revertButton.GetNativeWidget<Gtk.Widget> ().Sensitive = revertToButton.GetNativeWidget<Gtk.Widget> ().Sensitive = false;
 		}
 
 		void HandleTreeviewFilesDiffLineActivated (object sender, EventArgs e)
@@ -630,7 +630,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (d == null)
 				return;
 
-			revertButton.Sensitive = revertToButton.Sensitive = true;
+			revertButton.GetNativeWidget<Gtk.Widget> ().Sensitive = revertToButton.GetNativeWidget<Gtk.Widget> ().Sensitive = true;
 			Gtk.TreeIter selectIter = Gtk.TreeIter.Zero;
 			bool select = false;
 			foreach (RevisionPath rp in info.Repository.GetRevisionChanges (d)) {

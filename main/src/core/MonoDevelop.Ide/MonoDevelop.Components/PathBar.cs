@@ -148,10 +148,10 @@ namespace MonoDevelop.Components
 		const int spacing = arrowLeftPadding + arrowRightPadding + arrowSize;
 		const int minRegionSelectorWidth = 30;
 		
-		Func<int, Widget> createMenuForItem;
+		Func<int, Control> createMenuForItem;
 		Widget menuWidget;
 		
-		public PathBar (Func<int, Widget> createMenuForItem)
+		public PathBar (Func<int, Control> createMenuForItem)
 		{
 			this.Events =  EventMask.ExposureMask | 
 				           EventMask.EnterNotifyMask |

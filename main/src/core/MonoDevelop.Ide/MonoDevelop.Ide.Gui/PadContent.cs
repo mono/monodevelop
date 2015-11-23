@@ -37,13 +37,13 @@ namespace MonoDevelop.Ide.Gui
 		string icon;
 		string title;
 
-		public PadContent (string title, string icon = null): this()
+		protected PadContent (string title, string icon = null): this()
 		{
 			this.icon = icon;
 			this.title = title;
 		}
 
-		public PadContent ()
+		protected PadContent ()
 		{
 			Id = GetType ().FullName;
 		}

@@ -52,6 +52,7 @@ using MonoDevelop.Components.Docking;
 using MonoDevelop.Components.DockNotebook;
 using System.Text;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -651,7 +652,7 @@ namespace MonoDevelop.Ide.Gui
 			"MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties",
 			new Properties()));
 
-		public void ShowGlobalPreferencesDialog (Gtk.Window parentWindow, string panelId, Action<OptionsDialog> configurationAction = null)
+		public void ShowGlobalPreferencesDialog (Window parentWindow, string panelId, Action<OptionsDialog> configurationAction = null)
 		{
 			if (parentWindow == null)
 				parentWindow = IdeApp.Workbench.RootWindow;
@@ -680,12 +681,12 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public void ShowDefaultPoliciesDialog (Gtk.Window parentWindow)
+		public void ShowDefaultPoliciesDialog (Window parentWindow)
 		{
 			ShowDefaultPoliciesDialog (parentWindow, null);
 		}
 		
-		public void ShowDefaultPoliciesDialog (Gtk.Window parentWindow, string panelId)
+		public void ShowDefaultPoliciesDialog (Window parentWindow, string panelId)
 		{
 			if (parentWindow == null)
 				parentWindow = IdeApp.Workbench.RootWindow;

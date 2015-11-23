@@ -749,7 +749,7 @@ namespace MonoDevelop.Ide.Gui
 			var toolbarVisible = false;
 			foreach (var t in documentToolbars) {
 				toolbarVisible = ActiveViewContent == t.Key;
-				t.Value.Container.Visible = toolbarVisible;
+				t.Value.Container.GetNativeWidget<Gtk.Widget> ().Visible = toolbarVisible;
 			}
 
 			if (pathedDocument != null && !toolbarVisible)
