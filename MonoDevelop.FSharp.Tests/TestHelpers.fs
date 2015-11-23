@@ -123,7 +123,7 @@ module TestHelpers =
         using ( new MonoDevelop.Core.ProgressMonitor ())
             (fun monitor -> 
                  let typeSystemService = typeof<MonoDevelop.Ide.TypeSystem.TypeSystemService>
-                 typeSystemService?Load (solution, monitor, false) |> ignore)
+                 typeSystemService?Load (solution, monitor) |> ignore)
 
         content.Project <- project
 
