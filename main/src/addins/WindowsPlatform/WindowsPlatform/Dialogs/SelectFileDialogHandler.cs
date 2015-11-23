@@ -44,7 +44,7 @@ namespace MonoDevelop.Platform
 			var parent = data.TransientFor ?? MessageService.RootWindow;
 
 			CommonFileDialog dialog;
-			if (data.Action == FileChooserAction.Open || data.Action == FileChooserAction.SelectFolder)
+			if ((data.Action & (FileChooserAction.Open | FileChooserAction.SelectFolder)) != 0)
 				dialog = new CustomCommonOpenFileDialog ();
 			else
 				dialog = new CommonSaveFileDialog ();

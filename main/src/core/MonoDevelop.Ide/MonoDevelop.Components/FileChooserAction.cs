@@ -27,30 +27,33 @@ using System;
 
 namespace MonoDevelop.Components
 {
+	[Flags]
 	public enum FileChooserAction
 	{
-		Open,
-		Save,
-		SelectFolder,
-		CreateFolder,
+		Open = 0x1,
+		Save = 0x2,
+		SelectFolder = 0x4,
+		CreateFolder = 0x8,
+
+		FolderFlags = CreateFolder | SelectFolder,
+		FileFlags = Open | Save,
 	}
 
 	static class FileChooserActionExtensions
 	{
 		public static Gtk.FileChooserAction ToGtkAction(this FileChooserAction action)
 		{
-			switch (action) {
-			case FileChooserAction.Open:
-				return Gtk.FileChooserAction.Open;
-			case FileChooserAction.Save:
-				return Gtk.FileChooserAction.Save;
-			case FileChooserAction.SelectFolder:
-				return Gtk.FileChooserAction.SelectFolder;
-			case FileChooserAction.CreateFolder:
+			if ((action & FileChooserAction.CreateFolder) != 0)
 				return Gtk.FileChooserAction.CreateFolder;
-			default:
+			else if ((action & FileChooserAction.SelectFolder) != 0)
+				return Gtk.FileChooserAction.SelectFolder;
+			else if ((action & FileChooserAction.Open) != 0)
+				return Gtk.FileChooserAction.Open;
+			else if ((action & FileChooserAction.Save) != 0)
+				return Gtk.FileChooserAction.Save;
+			else
 				throw new NotSupportedException ();
-			}
+
 		}
 	}
 }

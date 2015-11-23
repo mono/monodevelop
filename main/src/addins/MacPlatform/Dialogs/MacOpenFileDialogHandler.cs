@@ -48,15 +48,12 @@ namespace MonoDevelop.MacIntegration
 			NSSavePanel panel = null;
 			
 			try {
-				bool directoryMode = data.Action != FileChooserAction.Open
-						&& data.Action != FileChooserAction.Save;
-				
 				if (data.Action == FileChooserAction.Save) {
 					panel = new NSSavePanel ();
 				} else {
 					panel = new NSOpenPanel {
-						CanChooseDirectories = directoryMode,
-						CanChooseFiles = !directoryMode,
+						CanChooseDirectories = (data.Action & FileChooserAction.FolderFlags) != 0,
+						CanChooseFiles = (data.Action & FileChooserAction.FileFlags) != 0,
 					};
 				}
 				
@@ -71,7 +68,7 @@ namespace MonoDevelop.MacIntegration
 				List<FileViewer> currentViewers = null;
 				var labels = new List<MDAlignment> ();
 				
-				if (!directoryMode) {
+				if ((data.Action & FileChooserAction.FileFlags) != 0) {
 					var filterPopup = MacSelectFileDialogHandler.CreateFileFilterPopup (data, panel);
 
 					if (filterPopup != null) {
