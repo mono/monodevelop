@@ -82,9 +82,9 @@ namespace MonoDevelop.Components.Commands
 		{
 		}
 		
-		public CommandManager (Gtk.Window root)
+		public CommandManager (Control root)
 		{
-			rootWidget = root;
+			rootWidget = root.GetNativeWidget<Gtk.Window> ();
 			bindings = new KeyBindingManager ();
 			ActionCommand c = new ActionCommand (CommandSystemCommands.ToolbarList, "Toolbar List", null, null, ActionType.Check);
 			c.CommandArray = true;
@@ -131,7 +131,7 @@ namespace MonoDevelop.Components.Commands
 		/// <summary>
 		/// Creates a menu bar from the menu definition at the provided extension path
 		/// </summary>
-		public Gtk.MenuBar CreateMenuBar (string addinPath)
+		internal Gtk.MenuBar CreateMenuBar (string addinPath)
 		{
 			CommandEntrySet cset = CreateCommandEntrySet (addinPath);
 			return CreateMenuBar (addinPath, cset);
@@ -410,12 +410,12 @@ namespace MonoDevelop.Components.Commands
 		/// <summary>
 		/// Sets the root window. The manager will start the command route at this window, if no other is active.
 		/// </summary>
-		public void SetRootWindow (Gtk.Window root)
+		public void SetRootWindow (Control root)
 		{
 			if (rootWidget != null)
 				rootWidget.KeyPressEvent -= OnKeyPressed;
 			
-			rootWidget = root;
+			rootWidget = root.GetNativeWidget<Gtk.Window> ();
 			rootWidget.AddAccelGroup (AccelGroup);
 			RegisterTopWindow (rootWidget);
 		}
@@ -666,7 +666,7 @@ namespace MonoDevelop.Components.Commands
 		/// <param name='entrySet'>
 		/// Entry set with the definition of the commands to be included in the menu bar
 		/// </param>
-		public Gtk.MenuBar CreateMenuBar (string name, CommandEntrySet entrySet)
+		internal Gtk.MenuBar CreateMenuBar (string name, CommandEntrySet entrySet)
 		{
 			Gtk.MenuBar topMenu = new CommandMenuBar (this);
 			foreach (CommandEntry entry in entrySet) {
@@ -2045,8 +2045,8 @@ namespace MonoDevelop.Components.Commands
 
 	public class ActiveWidgetEventArgs: EventArgs
 	{
-		public Gtk.Widget OldActiveWidget { get; internal set; }
-		public Gtk.Widget NewActiveWidget { get; internal set; }
+		public Control OldActiveWidget { get; internal set; }
+		public Control NewActiveWidget { get; internal set; }
 	}
 
 	internal class HandlerTypeInfo
