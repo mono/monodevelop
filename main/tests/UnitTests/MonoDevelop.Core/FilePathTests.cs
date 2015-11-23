@@ -181,7 +181,42 @@ namespace MonoDevelop.Core
 
 			Assert.AreEqual (pathname, (string)path);
 		}
-		// TODO: more tests
+
+		[Test]
+		public void Equality ()
+		{
+			Assert.IsTrue (new FilePath ("") == FilePath.Empty);
+			Assert.IsTrue (new FilePath () == FilePath.Null);
+			Assert.IsFalse (new FilePath ("") == FilePath.Null);
+
+			var root = Platform.IsWindows ? "c:\\" : "/";
+
+			Assert.IsTrue (new FilePath (Path.Combine (root, "a","b")) == new FilePath (Path.Combine (root, "a","b")));
+			Assert.IsFalse (new FilePath (Path.Combine (root, "a","c")) == new FilePath (Path.Combine (root, "a","b")));
+			Assert.IsFalse (new FilePath (Path.Combine (root, "a","b")) == new FilePath (Path.Combine (root, "a","b") + Path.DirectorySeparatorChar));
+			Assert.IsFalse (new FilePath (Path.Combine (root, "a","b")) == new FilePath (Path.Combine (root, "a","c", "..", "b")));
+
+			if (Platform.IsWindows || Platform.IsMac)
+				Assert.IsTrue (new FilePath (Path.Combine (root, "a","B")) == new FilePath (Path.Combine (root, "a","b")));
+			else
+				Assert.IsFalse (new FilePath (Path.Combine (root, "a","B")) == new FilePath (Path.Combine (root, "a","b")));
+		}
+
+		[Test]
+		public void CanonicalPath ()
+		{
+			var root = Platform.IsWindows ? "c:\\" : "/";
+			var p = new FilePath (Path.Combine (root, "a","c", "..", "b"));
+
+			Assert.AreEqual (new FilePath (Path.Combine (root, "a","b")), p.CanonicalPath);
+
+			// Trailing slashes are removed from canonical path
+			p = new FilePath (Path.Combine (root, "a","b") + Path.DirectorySeparatorChar);
+			Assert.AreEqual (new FilePath (Path.Combine (root, "a","b")), p.CanonicalPath);
+
+			// Canonical path of null is null
+			Assert.AreEqual (FilePath.Null, FilePath.Null.CanonicalPath);
+		}
 	}
 }
 
