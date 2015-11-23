@@ -69,17 +69,26 @@ namespace MonoDevelop.Ide.Editor.Extension
 		int TooltipKeySnooper (Gtk.Widget widget, Gdk.EventKey evnt)
 		{
 			RemoveTimer ();
-			if (evnt != null && evnt.Type == Gdk.EventType.KeyPress && (evnt.Key == Gdk.Key.Control_L || evnt.Key == Gdk.Key.Control_R)) {
+			if (evnt != null && evnt.Type == Gdk.EventType.KeyPress && IsTriggerKey (evnt)) {
 				timerId = GLib.Timeout.Add (250, delegate {
 					timerId = 0;
 					ShowLinks ();
 					return false;
 				});
 			}
-			if (evnt != null && evnt.Type == Gdk.EventType.KeyRelease && (evnt.Key == Gdk.Key.Control_L || evnt.Key == Gdk.Key.Control_R)) {
+			if (evnt != null && evnt.Type == Gdk.EventType.KeyRelease && IsTriggerKey (evnt)) {
 				HideLinks ();
 			}
 			return 0; //FALSE
+		}
+
+		static bool IsTriggerKey (Gdk.EventKey evnt)
+		{
+			#if MAC
+			return evnt.Key == Gdk.Key.Meta_L || evnt.Key == Gdk.Key.Meta_R;
+			#else
+			return evnt.Key == Gdk.Key.Control_L || evnt.Key == Gdk.Key.Control_R;
+			#endif
 		}
 
 		List<ITextSegmentMarker> markers = new List<ITextSegmentMarker> ();
