@@ -1067,20 +1067,23 @@ namespace MonoDevelop.Ide
 		
 		void NotifyItemRemovedFromSolution (object sender, SolutionItemChangeEventArgs args)
 		{
-			NotifyItemRemovedFromSolutionRec (sender, args.SolutionItem, args.Solution);
+			NotifyItemRemovedFromSolutionRec (sender, args.SolutionItem, args.Solution, args);
 		}
 		
-		void NotifyItemRemovedFromSolutionRec (object sender, SolutionFolderItem e, Solution sol)
+		void NotifyItemRemovedFromSolutionRec (object sender, SolutionFolderItem e, Solution sol, SolutionItemChangeEventArgs originalArgs)
 		{
 			if (e == IdeApp.ProjectOperations.CurrentSelectedSolutionItem)
 				IdeApp.ProjectOperations.CurrentSelectedSolutionItem = null;
 				
 			if (e is SolutionFolder) {
 				foreach (SolutionFolderItem ce in ((SolutionFolder)e).Items)
-					NotifyItemRemovedFromSolutionRec (sender, ce, sol);
+					NotifyItemRemovedFromSolutionRec (sender, ce, sol, null);
 			}
+
+			// For the root item send the original args, since they contain reload information
+
 			if (ItemRemovedFromSolution != null)
-				ItemRemovedFromSolution (sender, new SolutionItemChangeEventArgs (e, sol, false));
+				ItemRemovedFromSolution (sender, originalArgs ?? new SolutionItemChangeEventArgs (e, sol, false));
 		}
 		
 		void NotifyDescendantItemAdded (object s, WorkspaceItemEventArgs args)

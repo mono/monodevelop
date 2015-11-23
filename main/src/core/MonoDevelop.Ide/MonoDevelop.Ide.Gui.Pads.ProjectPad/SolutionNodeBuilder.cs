@@ -144,13 +144,23 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem.ParentSolution);
 			if (tb != null) {
-				tb.AddChild (e.SolutionItem, true);
-				tb.Expanded = true;
+				if (e.Reloading)
+					// When reloading we ignore the removed event, and we do an UpdateAll here. This will
+					// replace the reloaded instance and will preserve the tree status
+					tb.UpdateAll ();
+				else {
+					tb.AddChild (e.SolutionItem, true);
+					tb.Expanded = true;
+				}
 			}
 		}
 
 		void OnEntryRemoved (object sender, SolutionItemChangeEventArgs e)
 		{
+			// If reloading, ignore the event. We handle it in OnEntryAdded.
+			if (e.Reloading)
+				return;
+			
 			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem);
 			if (tb != null)
 				tb.Remove ();
