@@ -93,7 +93,7 @@ module Test =
             t2.IsIgnored |> should equal true
         | _ -> NUnit.Framework.Assert.Fail "invalid number of tests returned"
 
-    [<Test>]
+    [<Test; Ignore ("Gather unit tests needs to be refactored so the type sytem service is not involved.  C# has explicit files that dont have to be loaded from disk e.g. /a.cs")>]
     member x.NoTests () =
         let testExtension = createDoc noTests [nunitRef]
         let tests = testExtension.GatherUnitTests(Async.DefaultCancellationToken)
@@ -123,7 +123,7 @@ module Test =
             t2.IsIgnored |> should equal true
         | _ -> NUnit.Framework.Assert.Fail "invalid number of tests returned"
 
-    [<Test>]
+    [<Test; Ignore ("Gather unit tests needs to be refactored so the type sytem service is not involved.  C# has explicit files that dont have to be loaded from disk e.g. /a.cs")>]
     member x.TestsPesentButNoNUnitReference () =
         let testExtension = createDoc normalAndDoubleTick []
         let tests = testExtension.GatherUnitTests(Async.DefaultCancellationToken)
