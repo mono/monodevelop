@@ -93,7 +93,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 				AllowGrow = true,
 				AllowShrink = true,
 			};
-			var toplevel = this.Container.Toplevel as Gtk.Window;
+			var toplevel = this.Container.GetNativeWidget<Gtk.Widget> ().Toplevel as Gtk.Window;
 			if (toplevel != null)
 				dialog.TransientFor = toplevel;
 			
