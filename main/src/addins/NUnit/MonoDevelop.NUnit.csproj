@@ -178,15 +178,6 @@
     <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32%402x.png">
       <LogicalName>project-nunit-overlay-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <!--
-    <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32.png">
-      <LogicalName>project-nunit-overlay-light-32.png</LogicalName>
-    </EmbeddedResource> -->
-    <!-- TODO: VV: Duped definition to not break fsharpbinding (https://github.com/fsharp/fsharpbinding/blob/master/monodevelop/MonoDevelop.FSharpBinding/Templates/FSharpNUnitLibraryProject.xpt.xml#L8) -->
-    <!--<EmbeddedResource Include="Gui\icons\project-nunit-overlay-32@2x.png">
-      <LogicalName>project-nunit-overlay-light-32@2x.png</LogicalName>
-    </EmbeddedResource> -->
-    <!-- TODO: VV: Duped definition to not break fsharpbinding (https://github.com/fsharp/fsharpbinding/blob/master/monodevelop/MonoDevelop.FSharpBinding/Templates/FSharpNUnitLibraryProject.xpt.xml#L8) -->
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
