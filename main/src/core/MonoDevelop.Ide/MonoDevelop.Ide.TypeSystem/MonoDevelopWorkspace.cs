@@ -801,8 +801,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					IdeApp.ProjectOperations.SaveAsync (mdProject);
 				});
 			}
-
-			OnDocumentAdded (info.WithTextLoader (new MonoDevelopTextLoader (path)));
 		}
 
 		string DetermineFilePath (DocumentId id, string name, string filePath, IReadOnlyList<string> docFolders, bool createDirectory = false)
