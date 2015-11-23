@@ -675,7 +675,7 @@ namespace MonoDevelop.Debugger
 			dlg.Line = Line;
 		}
 
-		public override Widget CreateWidget ()
+		public override Control CreateWidget ()
 		{
 			var icon = Xwt.Drawing.Image.FromResource ("lightning-16.png");
 			var image = new Xwt.ImageView (icon).ToGtkWidget ();
@@ -763,7 +763,7 @@ namespace MonoDevelop.Debugger
 			dlg.Line = Line;
 		}
 
-		public override Widget CreateWidget ()
+		public override Control CreateWidget ()
 		{
 			var box = new EventBox ();
 			box.VisibleWindow = false;

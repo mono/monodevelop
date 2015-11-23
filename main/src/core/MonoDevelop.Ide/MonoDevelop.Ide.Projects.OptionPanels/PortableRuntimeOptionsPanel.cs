@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	}
 	
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class PortableRuntimeOptionsPanelWidget : Gtk.Bin
+	partial class PortableRuntimeOptionsPanelWidget : Gtk.Bin
 	{
 		readonly TargetFramework missingFramework;
 		readonly List<TargetFramework> targetFrameworks;

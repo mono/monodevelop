@@ -33,7 +33,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
-	public class WelcomePageOptionPanel : OptionsPanel
+	class WelcomePageOptionPanel : OptionsPanel
 	{
 		CheckButton showOnStartCheckButton = new CheckButton ();
 		CheckButton internetUpdateCheckButton = new CheckButton ();

@@ -325,7 +325,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (extension is TopLevelWidgetExtension) {
 				var widgetExtension = (TopLevelWidgetExtension)extension;
-				var w = widgetExtension.CreateWidget ();
+				Widget w = widgetExtension.CreateWidget ();
 				int x, y;
 				if (!CalcWidgetPosition (widgetExtension, w, out x, out y)) {
 					w.Destroy ();

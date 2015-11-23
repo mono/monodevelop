@@ -32,6 +32,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Gtk;
 
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
@@ -623,14 +624,14 @@ namespace MonoDevelop.Ide.Tasks
 		}
 		
 		#region ITaskListView members
-		TreeView ITaskListView.Content {
+		Control ITaskListView.Content {
 			get {
 				CreateView ();
 				return view; 
 			} 
 		}
 		
-		Widget[] ITaskListView.ToolBarItems {
+		Control[] ITaskListView.ToolBarItems {
 			get { return null; } 
 		}
 		#endregion

@@ -33,7 +33,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Projects.OptionPanels
 {
-	public class CodeAnalysisPanel : MultiConfigItemOptionsPanel
+	class CodeAnalysisPanel : MultiConfigItemOptionsPanel
 	{
 		CodeAnalysisPanelWidget widget;
 
