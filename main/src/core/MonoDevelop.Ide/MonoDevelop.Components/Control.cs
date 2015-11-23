@@ -35,6 +35,7 @@ namespace MonoDevelop.Components
 {
 	public class Control: IDisposable
 	{
+		bool objectSet;
 		object nativeWidget;
 
 		protected Control ()
@@ -43,9 +44,8 @@ namespace MonoDevelop.Components
 
 		public Control (object widget)
 		{
-			if (widget == null)
-				throw new ArgumentNullException ("widget");
 			this.nativeWidget = widget;
+			objectSet = true;
 		}
 
 		protected virtual object CreateNativeWidget ()
@@ -53,9 +53,12 @@ namespace MonoDevelop.Components
 			throw new NotSupportedException ();
 		}
 
-		public T GetNativeWidget<T> ()
+		public T GetNativeWidget<T> () where T:class
 		{
 			if (nativeWidget == null) {
+				if (objectSet)
+					return null;
+
 				var w = CreateNativeWidget ();
 				if (!(w is T))
 					w = ConvertToType (typeof(T), w);
@@ -105,6 +108,26 @@ namespace MonoDevelop.Components
 		public static implicit operator Control (Gtk.Widget d)
 		{
 			return new Control (d);
+		}
+
+		static Type controlType = typeof(Control);
+		public static bool operator ==(Control a, Control b)
+		{
+			if (a?.GetType () != controlType || b?.GetType () != controlType)
+				return (object)a == (object)b;
+			return a?.nativeWidget == b?.nativeWidget;
+		}
+
+		public static bool operator !=(Control a, Control b)
+		{
+			return !(a == b);
+		}
+
+		public override int GetHashCode ()
+		{
+			if (nativeWidget == null)
+				return 0;
+			return nativeWidget.GetHashCode ();
 		}
 
 		public void GrabFocus ()
