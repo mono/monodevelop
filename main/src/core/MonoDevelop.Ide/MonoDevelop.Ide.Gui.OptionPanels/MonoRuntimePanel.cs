@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	{
 		MonoRuntimePanelWidget widget;
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return widget = new MonoRuntimePanelWidget ();
 		}

@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
@@ -94,7 +95,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 		
-		Gtk.Widget IOptionsPanel.CreatePanelWidget ()
+		Control IOptionsPanel.CreatePanelWidget ()
 		{
 			Gtk.VBox cbox = new Gtk.VBox (false, 6);
 			Gtk.HBox combosBox = new Gtk.HBox (false, 6);

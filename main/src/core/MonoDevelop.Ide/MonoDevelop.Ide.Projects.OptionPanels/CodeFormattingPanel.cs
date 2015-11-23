@@ -186,7 +186,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				data.UseParentPolicy = useParentPolicy;
 		}
 		
-		public override Gtk.Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return widget = new CodeFormattingPanelWidget (this, ParentDialog);
 		}

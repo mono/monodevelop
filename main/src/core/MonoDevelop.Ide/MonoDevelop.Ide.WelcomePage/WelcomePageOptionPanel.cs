@@ -27,6 +27,7 @@
 
 using Gtk;
 
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 
@@ -38,7 +39,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		CheckButton internetUpdateCheckButton = new CheckButton ();
 		CheckButton closeOnOpenSlnCheckButton = new CheckButton ();
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			VBox vbox = new VBox();
 			showOnStartCheckButton.Label = GettextCatalog.GetString ("Show welcome page on startup");

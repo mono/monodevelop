@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	{
 		CombineEntryConfigurationsPanelWidget widget;
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			MultiConfigItemOptionsDialog dlg = (MultiConfigItemOptionsDialog) ParentDialog;
 			return (widget = new CombineEntryConfigurationsPanelWidget (dlg));

@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -46,7 +47,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			return ConfiguredProject is DotNetProject;
 		}
 
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return (widget = new CodeAnalysisPanelWidget ());
 		}

@@ -27,7 +27,7 @@
 //
 
 using System;
-using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Policies;
@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.StandardHeader
 			get { return GettextCatalog.GetString ("Standard _Header"); }
 		}
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			panel = new StandardHeaderPolicyPanelWidget (this);
 			panel.ShowAll ();

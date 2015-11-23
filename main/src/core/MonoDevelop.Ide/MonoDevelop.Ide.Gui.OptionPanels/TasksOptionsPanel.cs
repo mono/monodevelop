@@ -215,7 +215,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	{
 		TasksPanelWidget widget;
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			widget = new TasksPanelWidget ();
 			widget.Load ();

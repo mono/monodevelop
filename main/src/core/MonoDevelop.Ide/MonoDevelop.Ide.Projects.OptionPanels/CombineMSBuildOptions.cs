@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	{
 		Xwt.CheckBox checkMSBuild;
 
-		public override Gtk.Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			bool byDefault, require;
 			MSBuildProjectService.CheckHandlerUsesMSBuildEngine (ConfiguredProject, out byDefault, out require);
