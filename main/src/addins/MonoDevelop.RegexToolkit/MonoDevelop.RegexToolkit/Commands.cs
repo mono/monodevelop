@@ -27,6 +27,7 @@
 //
 
 using System;
+using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using Gtk;
@@ -43,8 +44,8 @@ namespace MonoDevelop.RegexToolkit
 	class ViewOnlyContent : AbstractViewContent
 	{
 		Widget widget;
-		
-		public override Widget Control {
+
+		public override Control Control {
 			get {
 				return widget;
 			}
@@ -67,8 +68,8 @@ namespace MonoDevelop.RegexToolkit
 	class DefaultAttachableViewContent : AbstractAttachableViewContent
 	{
 		Widget widget;
-		
-		public override Widget Control {
+
+		public override Control Control {
 			get {
 				return widget;
 			}

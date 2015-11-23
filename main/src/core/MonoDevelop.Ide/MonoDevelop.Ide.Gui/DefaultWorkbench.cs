@@ -538,7 +538,7 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				IWorkbenchWindow window = ActiveWorkbenchWindow;
 				if (window != null) {
-					if (window.ActiveViewContent.Control.Toplevel == this)
+					if (window.ActiveViewContent.Control.GetNativeWidget<Gtk.Widget> ().Toplevel == this)
 						Title = GetTitle (window);
 				} else {
 					Title = GetDefaultTitle ();

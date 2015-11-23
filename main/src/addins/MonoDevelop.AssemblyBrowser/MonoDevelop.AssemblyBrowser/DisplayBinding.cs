@@ -53,7 +53,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			if (viewContent == null || viewContent.IsDisposed) {
 				viewContent = new AssemblyBrowserViewContent ();
-				viewContent.Control.Destroyed += HandleDestroyed;
+				viewContent.Control.GetNativeWidget<Gtk.Widget> ().Destroyed += HandleDestroyed;
 			}
 			return viewContent;
 		}

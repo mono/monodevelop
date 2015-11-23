@@ -32,6 +32,7 @@ using System;
 using System.Collections.Generic;
 using Gtk;
 using Gdk;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
@@ -108,7 +109,7 @@ namespace MonoDevelop.Gettext.Editor
 		}
 		#endregion
 	
-		public override Widget Control
+		public override Control Control
 		{
 			get { return poEditorWidget; }
 		}

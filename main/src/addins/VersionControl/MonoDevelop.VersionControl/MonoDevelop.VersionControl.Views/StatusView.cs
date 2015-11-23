@@ -8,6 +8,7 @@ using Mono.Addins;
 using Gtk;
 
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
@@ -436,7 +437,7 @@ namespace MonoDevelop.VersionControl.Views
 			base.Dispose ();
 		}
 
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return widget;
 			}

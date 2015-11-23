@@ -155,7 +155,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return sw;
 			}

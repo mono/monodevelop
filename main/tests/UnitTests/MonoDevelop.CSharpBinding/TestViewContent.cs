@@ -29,6 +29,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
@@ -41,7 +42,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 	{
 		TextEditor data;
 		
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return null;
 			}

@@ -566,8 +566,9 @@ namespace MonoDevelop.Ide.Gui
 			// may happen before the main content is added to 'box', so we
 			// have to check if the content is already parented or not
 
-			if (this.ViewContent.Control.Parent != null)
-				box.Remove (this.ViewContent.Control);
+			Gtk.Widget viewWidget = ViewContent.Control;
+			if (viewWidget.Parent != null)
+				box.Remove (viewWidget);
 			
 			subViewNotebook = new Notebook ();
 			subViewNotebook.TabPos = PositionType.Bottom;

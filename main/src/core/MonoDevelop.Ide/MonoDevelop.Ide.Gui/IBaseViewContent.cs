@@ -26,15 +26,16 @@
 //
 
 using System;
-using Gtk;
 using System.Collections.Generic;
+
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui
 {
 	public interface IBaseViewContent : IDisposable
 	{
 		IWorkbenchWindow WorkbenchWindow { get; set; }
-		Widget Control { get; }
+		Control Control { get; }
 		
 		/// <summary>
 		/// The label used for the subview list.

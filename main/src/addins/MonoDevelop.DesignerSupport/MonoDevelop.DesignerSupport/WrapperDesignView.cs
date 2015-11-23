@@ -31,6 +31,7 @@
 
 using System;
 
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 
@@ -113,7 +114,7 @@ namespace MonoDevelop.DesignerSupport
 			this.content.LoadNew (content, mimeType);
 		}
 		
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get { return contentBox; }
 		}
 		

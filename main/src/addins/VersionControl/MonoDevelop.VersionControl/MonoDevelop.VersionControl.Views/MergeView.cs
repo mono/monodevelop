@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl.Views
@@ -37,7 +38,7 @@ namespace MonoDevelop.VersionControl.Views
 		VersionControlDocumentInfo info;
 		MergeWidget widget;
 
-		public override Gtk.Widget Control { 
+		public override Control Control { 
 			get {
 				if (widget == null) {
 					widget = new MergeWidget ();

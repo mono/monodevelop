@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Gtk;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
@@ -78,7 +79,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 
 		
-		public override Gtk.Widget Control { 
+		public override Control Control { 
 			get {
 				if (widget == null)
 					CreateControlFromInfo ();

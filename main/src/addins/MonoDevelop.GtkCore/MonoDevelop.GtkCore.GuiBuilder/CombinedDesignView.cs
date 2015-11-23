@@ -30,6 +30,7 @@
 using System;
 using System.Linq;
 using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui;
@@ -87,7 +88,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public bool HasPage (Gtk.Widget page)
 		{
-			return tabs.Any (p => p.Control == page);
+			return tabs.Any (p => p.Control.GetNativeWidget<Gtk.Widget> () == page);
 		}
 		
 		public void RemoveButton (Gtk.Widget page)
@@ -178,7 +179,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			content.Load (ContentName);
 		}
 		
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get { return control; }
 		}
 		
@@ -291,7 +292,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		}
 		#endregion
 
-		public override Widget Control {
+		public override Control Control {
 			get {
 				return content;
 			}

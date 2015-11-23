@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using Xwt;
@@ -165,7 +166,7 @@ namespace MonoDevelop.Ide.Gui
 
 	public abstract class AbstractXwtViewContent :AbstractViewContent
 	{
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return (Gtk.Widget)Toolkit.CurrentEngine.GetNativeWidget (Widget);
 			}

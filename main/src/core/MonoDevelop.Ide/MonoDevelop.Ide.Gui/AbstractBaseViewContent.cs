@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui
@@ -38,7 +39,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		#region IBaseViewContent Members
 
-		public abstract Gtk.Widget Control { get; }
+		public abstract Control Control { get; }
 		
 		public virtual IWorkbenchWindow WorkbenchWindow {
 			get { return workbenchWindow; }

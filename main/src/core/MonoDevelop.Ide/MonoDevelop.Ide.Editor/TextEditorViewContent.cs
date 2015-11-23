@@ -575,7 +575,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		Gtk.Widget IBaseViewContent.Control {
+		Control IBaseViewContent.Control {
 			get {
 				return textEditor;
 			}

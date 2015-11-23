@@ -118,7 +118,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public override Widget Control {
+		public override Control Control {
 			get {
 				return widget != null ? widget.Vbox : null;
 			}

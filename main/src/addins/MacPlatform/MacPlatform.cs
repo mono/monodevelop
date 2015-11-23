@@ -675,7 +675,7 @@ namespace MonoDevelop.MacIntegration
 			return new Gdk.Rectangle ((int) x, (int) y, (int) width, (int) height);
 		}
 
-		public override void GrabDesktopFocus (Gtk.Window window)
+		internal override void GrabDesktopFocus (Gtk.Window window)
 		{
 			window.Present ();
 			NSApplication.SharedApplication.ActivateIgnoringOtherApps (true);
@@ -763,7 +763,7 @@ namespace MonoDevelop.MacIntegration
 			return new FdoRecentFiles (UserProfile.Current.LocalConfigDir.Combine ("RecentlyUsed.xml"));
 		}
 
-		public override bool GetIsFullscreen (Gtk.Window window)
+		public override bool GetIsFullscreen (Window window)
 		{
 			if (MacSystemInformation.OsVersion < MacSystemInformation.Lion) {
 				return base.GetIsFullscreen (window);
@@ -773,7 +773,7 @@ namespace MonoDevelop.MacIntegration
 			return (nswin.StyleMask & NSWindowStyle.FullScreenWindow) != 0;
 		}
 
-		public override void SetIsFullscreen (Gtk.Window window, bool isFullscreen)
+		public override void SetIsFullscreen (Window window, bool isFullscreen)
 		{
 			if (MacSystemInformation.OsVersion < MacSystemInformation.Lion) {
 				base.SetIsFullscreen (window, isFullscreen);
@@ -801,7 +801,7 @@ namespace MonoDevelop.MacIntegration
 				));
 		}
 
-		public override void AddChildWindow (Gtk.Window parent, Gtk.Window child)
+		internal override void AddChildWindow (Gtk.Window parent, Gtk.Window child)
 		{
 			NSWindow w = GtkQuartz.GetWindow (parent);
 			child.Realize ();
@@ -810,7 +810,7 @@ namespace MonoDevelop.MacIntegration
 			w.AddChildWindow (overlay, NSWindowOrderingMode.Above);
 		}
 
-		public override void PlaceWindow (Gtk.Window window, int x, int y, int width, int height)
+		internal override void PlaceWindow (Gtk.Window window, int x, int y, int width, int height)
 		{
 			if (window.GdkWindow == null)
 				return; // Not yet realized

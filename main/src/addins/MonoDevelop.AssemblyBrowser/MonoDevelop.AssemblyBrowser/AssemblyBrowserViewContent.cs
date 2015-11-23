@@ -30,6 +30,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Refactoring;
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Navigation;
@@ -54,7 +55,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return widget;
 			}

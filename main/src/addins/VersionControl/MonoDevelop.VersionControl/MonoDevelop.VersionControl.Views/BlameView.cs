@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
@@ -39,7 +40,7 @@ namespace MonoDevelop.VersionControl.Views
 		BlameWidget widget;
 		VersionControlDocumentInfo info;
 		
-		public override Gtk.Widget Control { 
+		public override Control Control { 
 			get {
 				if (widget == null)
 					widget = new BlameWidget (info);

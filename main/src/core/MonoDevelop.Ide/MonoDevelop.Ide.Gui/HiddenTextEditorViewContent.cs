@@ -26,6 +26,7 @@
 
 using System;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
@@ -42,7 +43,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return null;
 			}

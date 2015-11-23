@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 
@@ -39,7 +40,7 @@ namespace MonoDevelop.VersionControl.Views
 	{
 		DiffWidget widget;
 
-		public override Gtk.Widget Control { 
+		public override Control Control { 
 			get {
 				if (widget == null) {
 					widget = new DiffWidget (info);

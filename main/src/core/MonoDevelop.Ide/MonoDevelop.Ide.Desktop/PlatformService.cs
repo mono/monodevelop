@@ -432,7 +432,7 @@ namespace MonoDevelop.Ide.Desktop
 		/// <summary>
 		/// Grab the desktop focus for the window.
 		/// </summary>
-		public virtual void GrabDesktopFocus (Gtk.Window window)
+		internal virtual void GrabDesktopFocus (Gtk.Window window)
 		{
 			if (Platform.IsWindows && window.IsRealized) {
 				/* On Windows calling Present() will break out of window edge snapping mode. */
@@ -463,9 +463,9 @@ namespace MonoDevelop.Ide.Desktop
 			toolbarBox.PackStart ((MainToolbar)toolbar, true, true, 0);
 		}
 
-		public virtual bool GetIsFullscreen (Gtk.Window window)
+		public virtual bool GetIsFullscreen (Window window)
 		{
-			return ((bool?) window.Data ["isFullScreen"]) ?? false;
+			return ((bool?) window.GetNativeWidget <Gtk.Window> ().Data ["isFullScreen"]) ?? false;
 		}
 
 		public virtual bool IsModalDialogRunning ()
@@ -474,26 +474,27 @@ namespace MonoDevelop.Ide.Desktop
 			return windows.Any (w => w.Modal && w.Visible);
 		}
 
-		public virtual void SetIsFullscreen (Gtk.Window window, bool isFullscreen)
+		public virtual void SetIsFullscreen (Window window, bool isFullscreen)
 		{
-			window.Data ["isFullScreen"] = isFullscreen;
+			Gtk.Window windowControl = window;
+			windowControl.Data ["isFullScreen"] = isFullscreen;
 			if (isFullscreen) {
-				window.Fullscreen ();
+				windowControl.Fullscreen ();
 			} else {
-				window.Unfullscreen ();
-				SetMainWindowDecorations (window);
+				windowControl.Unfullscreen ();
+				SetMainWindowDecorations (windowControl);
 			}
 		}
 
-		public virtual void AddChildWindow (Gtk.Window parent, Gtk.Window child)
+		internal virtual void AddChildWindow (Gtk.Window parent, Gtk.Window child)
 		{
 		}
 
-		public virtual void RemoveChildWindow (Gtk.Window parent, Gtk.Window child)
+		internal virtual void RemoveChildWindow (Gtk.Window parent, Gtk.Window child)
 		{
 		}
 
-		public virtual void PlaceWindow (Gtk.Window window, int x, int y, int width, int height)
+		internal virtual void PlaceWindow (Gtk.Window window, int x, int y, int width, int height)
 		{
 			window.Move (x, y);
 			window.Resize (width, height);
