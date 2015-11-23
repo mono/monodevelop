@@ -87,8 +87,8 @@ namespace MonoDevelop.VersionControl.Views
 			set;
 		}
 		
-		Window window = null;
-		public Func<DropDownBox, Window> WindowRequestFunc = null;
+		Gtk.Window window = null;
+		public Func<DropDownBox, Gtk.Window> WindowRequestFunc = null;
 		
 		
 		public DropDownBox ()

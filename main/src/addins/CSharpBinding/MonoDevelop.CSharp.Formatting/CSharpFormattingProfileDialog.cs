@@ -37,7 +37,7 @@ using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	partial class CSharpFormattingProfileDialog : Dialog
+	partial class CSharpFormattingProfileDialog : Gtk.Dialog
 	{
 		readonly TextEditor texteditor = TextEditorFactory.CreateNewEditor ();
 		readonly CSharpFormattingPolicy profile;

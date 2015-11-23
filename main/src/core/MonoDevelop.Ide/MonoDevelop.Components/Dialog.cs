@@ -1,10 +1,10 @@
-//
-// IdeDialog.cs
+﻿//
+// Dialog.cs
 //
 // Author:
-//       Lluis Sanchez <lluis@xamarin.com>
+//       therzok <marius.ungureanu@xamarin.com>
 //
-// Copyright (c) 2012 Xamarin Inc
+// Copyright (c) 2015 therzok
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,14 +24,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using Gtk;
 
 namespace MonoDevelop.Components
 {
-	public class CompactDialog: Gtk.Dialog
+	public class Dialog : Window
 	{
-		public CompactDialog ()
+		public Dialog (object widget) : base (widget)
 		{
+		}
+
+		public static implicit operator Gtk.Dialog (Dialog d)
+		{
+			return d.GetNativeWidget<Gtk.Dialog> ();
+		}
+
+		public static implicit operator Dialog (Gtk.Dialog d)
+		{
+			return new Dialog (d);
 		}
 	}
 }

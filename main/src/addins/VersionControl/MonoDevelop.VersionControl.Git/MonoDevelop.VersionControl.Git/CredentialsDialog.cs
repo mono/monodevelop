@@ -31,7 +31,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	partial class CredentialsDialog : Dialog
+	partial class CredentialsDialog : Gtk.Dialog
 	{
 		uint r;
 		public CredentialsDialog (string uri, SupportedCredentialTypes type, Credentials cred)

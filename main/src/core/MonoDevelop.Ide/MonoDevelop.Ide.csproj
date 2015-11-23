@@ -3510,6 +3510,8 @@
     <Compile Include="MonoDevelop.Components.Docking\DockPositionType.cs" />
     <Compile Include="MonoDevelop.Components\FileChooserAction.cs" />
     <Compile Include="MonoDevelop.Components\ButtonEvent.cs" />
+    <Compile Include="MonoDevelop.Components\Window.cs" />
+    <Compile Include="MonoDevelop.Components\Dialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

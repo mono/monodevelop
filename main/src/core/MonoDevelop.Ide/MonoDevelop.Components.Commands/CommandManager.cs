@@ -82,9 +82,10 @@ namespace MonoDevelop.Components.Commands
 		{
 		}
 		
-		public CommandManager (Control root)
+		public CommandManager (Window root)
 		{
-			rootWidget = root.GetNativeWidget<Gtk.Window> ();
+			if (root != null)
+				rootWidget = root;
 			bindings = new KeyBindingManager ();
 			ActionCommand c = new ActionCommand (CommandSystemCommands.ToolbarList, "Toolbar List", null, null, ActionType.Check);
 			c.CommandArray = true;
@@ -410,12 +411,12 @@ namespace MonoDevelop.Components.Commands
 		/// <summary>
 		/// Sets the root window. The manager will start the command route at this window, if no other is active.
 		/// </summary>
-		public void SetRootWindow (Control root)
+		public void SetRootWindow (Window root)
 		{
 			if (rootWidget != null)
 				rootWidget.KeyPressEvent -= OnKeyPressed;
 			
-			rootWidget = root.GetNativeWidget<Gtk.Window> ();
+			rootWidget = root;
 			rootWidget.AddAccelGroup (AccelGroup);
 			RegisterTopWindow (rootWidget);
 		}

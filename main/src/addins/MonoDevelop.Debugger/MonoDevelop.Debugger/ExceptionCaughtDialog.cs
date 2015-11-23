@@ -43,7 +43,7 @@ using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Debugger
 {
-	class ExceptionCaughtDialog : Dialog
+	class ExceptionCaughtDialog : Gtk.Dialog
 	{
 		static readonly Xwt.Drawing.Image WarningIconPixbuf = Xwt.Drawing.Image.FromResource ("exception-48.png");
 		protected ObjectValueTreeView ExceptionValueTreeView { get; private set; }

@@ -87,13 +87,13 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			TreeIter previousIter = TreeIter.Zero;
 
 			//dialogue and buttons
-			Dialog dialog = new Dialog () {
+			var dialog = new Gtk.Dialog () {
 				Title = displayName + " Editor",
 				Modal = true,
 				AllowGrow = true,
 				AllowShrink = true,
 			};
-			var toplevel = this.Container.Toplevel as Window;
+			var toplevel = this.Container.Toplevel as Gtk.Window;
 			if (toplevel != null)
 				dialog.TransientFor = toplevel;
 			

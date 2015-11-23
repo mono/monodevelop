@@ -31,7 +31,7 @@ using LibGit2Sharp;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	partial class StashManagerDialog : Dialog
+	partial class StashManagerDialog : Gtk.Dialog
 	{
 		readonly GitRepository repository;
 		readonly ListStore store;

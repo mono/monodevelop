@@ -76,7 +76,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return this;
 			}
 
-			Window window = resultWidget as Window;
+			var window = resultWidget as Gtk.Window;
 			if (window != null) {
 				if (window.Title != null && window.Title.IndexOf (mark) > -1) {
 					return this;

@@ -35,7 +35,7 @@ using System.ComponentModel;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	partial class GitConfigurationDialog : Dialog
+	partial class GitConfigurationDialog : Gtk.Dialog
 	{
 		readonly GitRepository repo;
 		readonly ListStore storeBranches;
