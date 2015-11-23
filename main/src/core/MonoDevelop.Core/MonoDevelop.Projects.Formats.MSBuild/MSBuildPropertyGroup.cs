@@ -306,7 +306,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			AssertCanModify ();
 			var prop = GetProperty (name, condition);
-			var isDefault = !defaultValue.IsNull && value.CanonicalPath == defaultValue.CanonicalPath;
+			var isDefault = value.CanonicalPath == defaultValue.CanonicalPath;
 			if (isDefault && !mergeToMainGroup) {
 				// if the value is default, only remove the property if it was not already the default
 				// to avoid unnecessary project file churn
