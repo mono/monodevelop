@@ -24,7 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using MonoDevelop.Components.Extensions;
+
 
 namespace MonoDevelop.Components
 {
@@ -37,11 +39,11 @@ namespace MonoDevelop.Components
 		{
 		}
 		
-		public SelectFileDialog (string title): this (title, SelectFileDialogAction.Open)
+		public SelectFileDialog (string title): this (title, FileChooserAction.Open)
 		{
 		}
 		
-		public SelectFileDialog (string title, SelectFileDialogAction action)
+		public SelectFileDialog (string title, FileChooserAction action)
 		{
 			Title = title;
 			Action = action;

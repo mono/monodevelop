@@ -25,18 +25,19 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Collections.Generic;
 
 using AppKit;
 
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.MacInterop;
-using MonoDevelop.Components.Extensions;
+
 
 namespace MonoDevelop.MacIntegration
 {
@@ -47,12 +48,12 @@ namespace MonoDevelop.MacIntegration
 			NSSavePanel panel = null;
 			
 			try {
-				if (data.Action == SelectFileDialogAction.Save) {
+				if (data.Action == FileChooserAction.Save) {
 					panel = new NSSavePanel ();
 				} else {
 					panel = new NSOpenPanel {
-						CanChooseDirectories = (data.Action & SelectFileDialogAction.FolderFlags) != 0,
-						CanChooseFiles = (data.Action & SelectFileDialogAction.FileFlags) != 0,
+						CanChooseDirectories = (data.Action & FileChooserAction.FolderFlags) != 0,
+						CanChooseFiles = (data.Action & FileChooserAction.FileFlags) != 0,
 					};
 				}
 				
@@ -67,7 +68,7 @@ namespace MonoDevelop.MacIntegration
 				List<FileViewer> currentViewers = null;
 				var labels = new List<MDAlignment> ();
 				
-				if ((data.Action & SelectFileDialogAction.FileFlags) != 0) {
+				if ((data.Action & FileChooserAction.FileFlags) != 0) {
 					var filterPopup = MacSelectFileDialogHandler.CreateFileFilterPopup (data, panel);
 
 					if (filterPopup != null) {
@@ -81,7 +82,7 @@ namespace MonoDevelop.MacIntegration
 					}
 
 					if (data.ShowEncodingSelector) {
-						encodingSelector = new SelectEncodingPopUpButton (data.Action != SelectFileDialogAction.Save);
+						encodingSelector = new SelectEncodingPopUpButton (data.Action != FileChooserAction.Save);
 						encodingSelector.SelectedEncodingId = data.Encoding != null ? data.Encoding.CodePage : 0;
 						
 						var encodingLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Encoding:")), true);

@@ -341,7 +341,7 @@ namespace MonoDevelop.Components.MainToolbar
 		bool SelectActiveRuntime (ref bool selected, ref ExecutionTarget defaultTarget, ref int defaultIter)
 		{
 			var runtimes = ToolbarView.RuntimeModel.Cast<RuntimeModel> ().ToList ();
-			string lastRuntimeForProject = currentStartupProject.UserProperties.GetValue<string> ("PreferredExecutionTarget", defaultValue: null);
+			string lastRuntimeForProject = currentStartupProject != null ? currentStartupProject.UserProperties.GetValue<string> ("PreferredExecutionTarget", defaultValue: null) : null;
 			var activeTarget = IdeApp.Workspace.ActiveExecutionTarget;
 			var activeTargetId = activeTarget != null ? activeTarget.Id : null;
 
