@@ -1,6 +1,7 @@
 ﻿namespace MonoDevelop.FSharp
 
 open Gtk
+open MonoDevelop.Components
 open MonoDevelop.Ide.Gui.Dialogs
 
 type FSharpFormattingPolicyPanel() =
@@ -10,7 +11,7 @@ type FSharpFormattingPolicyPanel() =
     override __.CreatePanelWidget() =
         panel <- new FSharpFormattingPolicyPanelWidget()
         panel.Initialize()
-        panel :> Widget
+        Control.op_Implicit panel
 
     override __.LoadFrom(p : FSharpFormattingPolicy) =
         policy <- p.Clone()

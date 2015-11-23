@@ -8,6 +8,7 @@ open Gtk
 open Gdk
 open System
 open System.IO
+open MonoDevelop.Components
 open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Projects
@@ -64,7 +65,7 @@ type FSharpSettingsPanel() =
     // Implement "Browse.." button for F# Interactive path
     widget.ButtonBrowse.Clicked.Add(fun _ ->
       let args = [| box "Cancel"; box ResponseType.Cancel; box "Open"; box ResponseType.Accept |]
-      use dlg = new FileChooserDialog("Browser for F# Interactive", null, FileChooserAction.Open, args)
+      use dlg = new FileChooserDialog("Browser for F# Interactive", null, Gtk.FileChooserAction.Open, args)
       if dlg.Run() = int ResponseType.Accept then
         widget.EntryPath.Text <- dlg.Filename
       dlg.Hide() )
@@ -72,7 +73,7 @@ type FSharpSettingsPanel() =
     // Implement "Browse..." button for F# Compiler path
     widget.ButtonCompilerBrowse.Clicked.Add(fun _ ->
       let args = [| box "Cancel"; box ResponseType.Cancel; box "Open"; box ResponseType.Accept |]
-      use dlg = new FileChooserDialog("Browse for F# Compiler", null, FileChooserAction.Open, args)
+      use dlg = new FileChooserDialog("Browse for F# Compiler", null, Gtk.FileChooserAction.Open, args)
       if dlg.Run() = int ResponseType.Accept then
         widget.EntryCompilerPath.Text <- dlg.Filename
       dlg.Hide() )
@@ -118,7 +119,7 @@ type FSharpSettingsPanel() =
     widget.CheckCompilerUseDefault.Toggled.Add (fun _ -> setCompilerDisplay widget.CheckCompilerUseDefault.Active)
 
     widget.Show()
-    upcast widget 
+    Control.op_Implicit widget 
   
   override x.ApplyChanges() =
     PropertyService.Set (fscPathPropName, if widget.CheckCompilerUseDefault.Active then null else widget.EntryCompilerPath.Text)
@@ -176,7 +177,7 @@ type CodeGenerationPanel() =
     debugCheckedHandler <- widget.CheckDebugInformation.Clicked.Subscribe(fun _ -> widget.ComboDebugInformation.Sensitive <- widget.CheckDebugInformation.Active )
 
     widget.Show ()
-    upcast widget 
+    Control.op_Implicit widget 
   
   override x.LoadConfigData() =
     let config = x.CurrentConfiguration :?> DotNetProjectConfiguration

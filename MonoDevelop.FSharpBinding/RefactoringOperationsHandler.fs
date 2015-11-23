@@ -4,6 +4,7 @@ open System.IO
 open System.Collections.Generic
 open MonoDevelop
 open MonoDevelop.Core
+open MonoDevelop.Components
 open MonoDevelop.Components.Commands
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
@@ -149,7 +150,7 @@ module Refactoring =
             links.Add (link)
             editor.StartTextLinkMode (TextLinkModeOptions (links))
         else
-            MessageService.ShowCustomDialog (new Rename.RenameItemDialog("Rename Item", symbol.Symbol.DisplayName, performChanges symbol locations))
+            MessageService.ShowCustomDialog (Dialog.op_Implicit (new Rename.RenameItemDialog("Rename Item", symbol.Symbol.DisplayName, performChanges symbol locations)))
             |> ignore
 
     let getJumpTypePartSearchResult (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse, location: Range.range) =
