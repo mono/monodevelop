@@ -67,9 +67,9 @@ namespace MonoDevelop.Projects
 			assembly = pset.GetValue ("AssemblyName");
 			signAssembly = pset.GetValue<bool> ("SignAssembly");
 			delaySign = pset.GetValue<bool> ("DelaySign");
-			assemblyKeyFile = pset.GetPathValue ("AssemblyOriginatorKeyFile");
+			assemblyKeyFile = pset.GetPathValue ("AssemblyOriginatorKeyFile", FilePath.Empty);
 			if (string.IsNullOrEmpty (assemblyKeyFile))
-				assemblyKeyFile = pset.GetPathValue ("AssemblyKeyFile");
+				assemblyKeyFile = pset.GetPathValue ("AssemblyKeyFile", FilePath.Empty);
 			if (compilationParameters != null)
 				compilationParameters.Read (pset, toolsVersion);
 		}
@@ -80,7 +80,7 @@ namespace MonoDevelop.Projects
 			pset.SetValue ("AssemblyName", assembly, mergeToMainGroup: true);
 			pset.SetValue ("SignAssembly", signAssembly, defaultValue:false, mergeToMainGroup: true);
 			pset.SetValue ("DelaySign", delaySign, defaultValue:false, mergeToMainGroup:true);
-			pset.SetValue ("AssemblyOriginatorKeyFile", assemblyKeyFile, mergeToMainGroup:true);
+			pset.SetValue ("AssemblyOriginatorKeyFile", assemblyKeyFile, defaultValue:FilePath.Empty, mergeToMainGroup:true);
 			if (compilationParameters != null)
 				compilationParameters.Write (pset, toolsVersion);
 		}
