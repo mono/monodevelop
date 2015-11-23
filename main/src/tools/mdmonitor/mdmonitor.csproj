@@ -54,13 +54,11 @@
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CounterSelectorDialog.cs" />
-    <Compile Include="InstrumenationChartView.cs" />
     <Compile Include="InstrumentationViewerDialog.cs" />
     <Compile Include="TimeLineView.cs" />
     <Compile Include="TimeLineViewWindow.cs" />
     <Compile Include="NewProfile.cs" />
     <Compile Include="gtk-gui\Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs" />
-    <Compile Include="gtk-gui\Mono.Instrumentation.Monitor.InstrumenationChartView.cs" />
     <Compile Include="gtk-gui\Mono.Instrumentation.Monitor.NewProfile.cs" />
     <Compile Include="gtk-gui\Mono.Instrumentation.Monitor.CounterSelectorDialog.cs" />
     <Compile Include="gtk-gui\Mono.Instrumentation.Monitor.TimeLineViewWindow.cs" />
@@ -81,6 +79,8 @@
     <Compile Include="..\..\addins\MacPlatform\MacInterop\CoreFoundation.cs">
       <Link>MacIntegration\CoreFoundation.cs</Link>
     </Compile>
+    <Compile Include="InstrumentationChartView.cs" />
+    <Compile Include="gtk-gui\Mono.Instrumentation.Monitor.InstrumentationChartView.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

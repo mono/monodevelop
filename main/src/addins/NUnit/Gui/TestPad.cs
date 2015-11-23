@@ -146,10 +146,12 @@ namespace MonoDevelop.NUnit
 			VBox boxPaned1 = new VBox ();
 			
 			chart = new TestChart ();
-			chart.ButtonPressEvent += OnChartButtonPress;
 			chart.SelectionChanged += new EventHandler (OnChartDateChanged);
-			chart.HeightRequest = 50;
-			
+
+			var chartWidget = chart.GetNativeWidget<Widget> ();
+			chartWidget.ButtonPressEvent += OnChartButtonPress;
+			chartWidget.HeightRequest = 50;
+
 			Toolbar toolbar = new Toolbar ();
 			toolbar.IconSize = IconSize.SmallToolbar;
 			toolbar.ToolbarStyle = ToolbarStyle.Icons;
