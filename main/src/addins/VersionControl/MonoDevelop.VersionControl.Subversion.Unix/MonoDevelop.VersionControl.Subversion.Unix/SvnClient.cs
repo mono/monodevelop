@@ -195,6 +195,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public override string GetDirectoryDotSvn (FilePath path)
 		{
+			if (path.IsNullOrEmpty)
+				return string.Empty;
+
 			if (Pre_1_7)
 				return base.GetDirectoryDotSvn (path);
 
