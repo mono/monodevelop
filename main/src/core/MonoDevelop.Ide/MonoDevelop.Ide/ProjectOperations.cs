@@ -714,7 +714,7 @@ namespace MonoDevelop.Ide
 			WorkspaceItem res = null;
 			
 			var dlg = new SelectFileDialog () {
-				Action = SelectFileDialogAction.Open,
+				Action = FileChooserAction.Open,
 				CurrentFolder = parentWorkspace.BaseDirectory,
 				SelectMultiple = false,
 			};
@@ -776,7 +776,7 @@ namespace MonoDevelop.Ide
 			SolutionFolderItem res = null;
 			
 			var dlg = new SelectFileDialog () {
-				Action = SelectFileDialogAction.Open,
+				Action = FileChooserAction.Open,
 				CurrentFolder = parentFolder.BaseDirectory,
 				SelectMultiple = false,
 			};
@@ -1523,7 +1523,7 @@ namespace MonoDevelop.Ide
 		{
 			var dlg = new SelectFileDialog () {
 				SelectMultiple = true,
-				Action = SelectFileDialogAction.Open,
+				Action = FileChooserAction.Open,
 				CurrentFolder = folder.BaseDirectory,
 				TransientFor = MessageService.RootWindow,
 			};

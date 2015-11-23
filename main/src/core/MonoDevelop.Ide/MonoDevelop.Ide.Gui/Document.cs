@@ -423,7 +423,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 				
 			if (filename == null) {
-				var dlg = new OpenFileDialog (GettextCatalog.GetString ("Save as..."), SelectFileDialogAction.Save) {
+				var dlg = new OpenFileDialog (GettextCatalog.GetString ("Save as..."), MonoDevelop.Components.FileChooserAction.Save) {
 					TransientFor = IdeApp.Workbench.RootWindow,
 					Encoding = encoding,
 					ShowEncodingSelector = (tbuffer != null),

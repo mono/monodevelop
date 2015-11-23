@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using System.Linq;
 using MonoDevelop.Core;
@@ -287,7 +288,7 @@ namespace MonoDevelop.AnalysisCore
 		{
 			var lang = "text/x-csharp";
 
-			OpenFileDialog dlg = new OpenFileDialog ("Export Rules", SelectFileDialogAction.Save);
+			OpenFileDialog dlg = new OpenFileDialog ("Export Rules", MonoDevelop.Components.FileChooserAction.Save);
 			dlg.InitialFileName = "rules.html";
 			if (!dlg.Run ())
 				return;

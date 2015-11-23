@@ -287,7 +287,7 @@ namespace Mono.Instrumentation.Monitor
 		
 		protected virtual void OnOpenActionActivated (object sender, System.EventArgs e)
 		{
-			FileChooserDialog fdiag  = new FileChooserDialog ("Open Data File", this, FileChooserAction.Open);
+			FileChooserDialog fdiag  = new FileChooserDialog ("Open Data File", this, Gtk.FileChooserAction.Open);
 			fdiag.AddButton (Gtk.Stock.Cancel, ResponseType.Cancel);
 			fdiag.AddButton (Gtk.Stock.Open, ResponseType.Ok);
 			fdiag.SelectMultiple = false;

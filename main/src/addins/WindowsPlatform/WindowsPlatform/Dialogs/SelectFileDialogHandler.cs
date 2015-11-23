@@ -29,8 +29,8 @@
 using System;
 using System.IO;
 using System.Linq;
-using Gtk;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using MonoDevelop.Components;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -44,7 +44,7 @@ namespace MonoDevelop.Platform
 			var parent = data.TransientFor ?? MessageService.RootWindow;
 
 			CommonFileDialog dialog;
-			if ((data.Action & (SelectFileDialogAction.Open | SelectFileDialogAction.SelectFolder)) != 0)
+			if ((data.Action & (FileChooserAction.Open | FileChooserAction.SelectFolder)) != 0)
 				dialog = new CustomCommonOpenFileDialog ();
 			else
 				dialog = new CommonSaveFileDialog ();

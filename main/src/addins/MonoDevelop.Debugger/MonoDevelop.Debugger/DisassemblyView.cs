@@ -43,7 +43,6 @@ using MonoDevelop.Ide;
 using System.Security.Cryptography;
 using Gdk;
 using MonoDevelop.Components;
-using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.Debugger
 {
@@ -122,7 +121,7 @@ namespace MonoDevelop.Debugger
 			editor.AddOverlay (messageOverlayContent,() => openButton.SizeRequest ().Width + w + hbox.Spacing * 5 + containerPadding * 2);
 
 			openButton.Clicked += delegate {
-				var dlg = new OpenFileDialog (GettextCatalog.GetString ("File to Open"), SelectFileDialogAction.Open) {
+				var dlg = new OpenFileDialog (GettextCatalog.GetString ("File to Open"), MonoDevelop.Components.FileChooserAction.Open) {
 					TransientFor = IdeApp.Workbench.RootWindow,
 					ShowEncodingSelector = true,
 					ShowViewerSelector = true

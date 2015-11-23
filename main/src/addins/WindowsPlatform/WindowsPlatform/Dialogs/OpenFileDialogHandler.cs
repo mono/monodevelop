@@ -34,6 +34,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Microsoft.WindowsAPICodePack.Dialogs.Controls;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.Ide;
@@ -42,7 +43,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Text;
 using Microsoft.WindowsAPICodePack.Shell;
 using System.Windows;
-using Gtk;
 
 namespace MonoDevelop.Platform
 {
@@ -52,7 +52,7 @@ namespace MonoDevelop.Platform
 		{
 			var parent = data.TransientFor ?? MessageService.RootWindow;
 			CommonFileDialog dialog;
-			if (data.Action == SelectFileDialogAction.Open) {
+			if (data.Action == FileChooserAction.Open) {
 				dialog = new CustomCommonOpenFileDialog {
 					EnsureFileExists = true
 				};
@@ -66,7 +66,7 @@ namespace MonoDevelop.Platform
 				var group = new CommonFileDialogGroupBox ("encoding", "Encoding:");
 				encodingCombo = new CustomCommonFileDialogComboBox ();
 
-				BuildEncodingsCombo (encodingCombo, data.Action != SelectFileDialogAction.Save, data.Encoding);
+				BuildEncodingsCombo (encodingCombo, data.Action != FileChooserAction.Save, data.Encoding);
 				group.Items.Add (encodingCombo);
 				dialog.Controls.Add (group);
 
@@ -78,7 +78,7 @@ namespace MonoDevelop.Platform
 							SizeToContent = SizeToContent.WidthAndHeight
 						};
 						if (dlg.ShowDialog ().Value) {
-							BuildEncodingsCombo (encodingCombo, data.Action != SelectFileDialogAction.Save, data.Encoding);
+							BuildEncodingsCombo (encodingCombo, data.Action != FileChooserAction.Save, data.Encoding);
 							dialog.ApplyControlPropertyChange ("Items", encodingCombo);
 						}
 					}
@@ -87,7 +87,7 @@ namespace MonoDevelop.Platform
 
 			CustomCommonFileDialogComboBox viewerCombo = null;
 			CommonFileDialogCheckBox closeSolution = null;
-			if (data.ShowViewerSelector && data.Action == SelectFileDialogAction.Open) {
+			if (data.ShowViewerSelector && data.Action == FileChooserAction.Open) {
 				var group = new CommonFileDialogGroupBox ("openWith", "Open with:");
 
 				viewerCombo = new CustomCommonFileDialogComboBox {
