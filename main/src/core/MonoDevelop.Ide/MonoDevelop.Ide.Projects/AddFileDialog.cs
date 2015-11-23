@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.Projects
 		public AddFileDialog (string title)
 		{
 			Title = title;
-			Action = SelectFileDialogAction.Open;
+			Action = FileChooserAction.Open;
 			data.SelectMultiple = true;
 		}
 		

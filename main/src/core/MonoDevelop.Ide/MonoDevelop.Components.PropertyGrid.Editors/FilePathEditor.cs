@@ -26,9 +26,8 @@
 
 using System;
 using System.Linq;
-
+using Gtk;
 using MonoDevelop.Core;
-using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 {
@@ -42,17 +41,16 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 		public override void LaunchDialogue ()
 		{
 			var kindAtt = this.Property.Attributes.OfType<FilePathIsFolderAttribute> ().FirstOrDefault ();
-			SelectFileDialogAction action;
-
+			FileChooserAction action;
 			string title;
 			if (kindAtt == null) {
-				action = SelectFileDialogAction.Open;
+				action = FileChooserAction.Open;
 				title = GettextCatalog.GetString ("Select File...");
 			} else {
-				action = SelectFileDialogAction.SelectFolder;
+				action = FileChooserAction.SelectFolder;
 				title = GettextCatalog.GetString ("Select Folder...");
 			}
-			var fs = new SelectFileDialog (title, action);
+			var fs = new MonoDevelop.Components.SelectFileDialog (title, action);
 			if (fs.Run ())
 				Property.SetValue (Instance, fs.SelectedFile);
 		}

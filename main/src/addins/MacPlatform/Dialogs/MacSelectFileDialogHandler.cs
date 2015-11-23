@@ -48,19 +48,21 @@ namespace MonoDevelop.MacIntegration
 			NSSavePanel panel = null;
 			
 			try {
-				if (data.Action == SelectFileDialogAction.Save) {
+				bool directoryMode = data.Action != Gtk.FileChooserAction.Open;
+				
+				if (data.Action == Gtk.FileChooserAction.Save) {
 					panel = new NSSavePanel ();
 				} else {
 					panel = new NSOpenPanel {
-						CanChooseDirectories = (data.Action & SelectFileDialogAction.FolderFlags) != 0,
-						CanChooseFiles = (data.Action & SelectFileDialogAction.FileFlags) != 0,
+						CanChooseDirectories = directoryMode,
+						CanChooseFiles = !directoryMode,
 						ResolvesAliases = false,
 					};
 				}
 				
 				SetCommonPanelProperties (data, panel);
 				
-				if ((data.Action & SelectFileDialogAction.FileFlags) != 0) {
+				if (!directoryMode) {
 					var popup = CreateFileFilterPopup (data, panel);
 					if (popup != null) {
 						panel.AccessoryView = popup;

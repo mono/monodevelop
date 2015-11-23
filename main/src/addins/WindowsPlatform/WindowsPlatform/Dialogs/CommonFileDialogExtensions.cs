@@ -55,7 +55,7 @@ namespace MonoDevelop.Platform
 			var fileDialog = dialog as CommonOpenFileDialog;
 			if (fileDialog != null) {
 				fileDialog.Multiselect = data.SelectMultiple;
-				if (data.Action == SelectFileDialogAction.SelectFolder) {
+				if (data.Action == FileChooserAction.SelectFolder) {
 					fileDialog.IsFolderPicker = true;
 					return;
 				}
@@ -86,7 +86,7 @@ namespace MonoDevelop.Platform
 				return;
 			// FileDialog doesn't show the file extension when saving a file,
 			// so we try to look for the precise filter if none was specified.
-			if (!string.IsNullOrEmpty (data.InitialFileName) && data.Action == SelectFileDialogAction.Save && defExt == "*") {
+			if (!string.IsNullOrEmpty (data.InitialFileName) && data.Action == FileChooserAction.Save && defExt == "*") {
 				string ext = Path.GetExtension (data.InitialFileName);
 				if (!string.IsNullOrEmpty (ext)) {
 					var pattern = "*" + ext;

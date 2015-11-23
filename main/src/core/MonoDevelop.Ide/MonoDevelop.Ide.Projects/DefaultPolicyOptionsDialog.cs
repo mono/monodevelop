@@ -37,7 +37,6 @@ using MonoDevelop.Components;
 using Gtk;
 using System.Linq;
 using MonoDevelop.Projects;
-using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -222,7 +221,7 @@ namespace MonoDevelop.Ide.Projects
 		void HandleFromFile (object sender, EventArgs e)
 		{
 			OpenFileDialog dlg = new OpenFileDialog (GettextCatalog.GetString ("Select Policy File"));
-			dlg.Action = SelectFileDialogAction.Open;
+			dlg.Action = FileChooserAction.Open;
 			dlg.TransientFor = this;
 			dlg.AddFilter (BrandingService.BrandApplicationName (GettextCatalog.GetString ("MonoDevelop policy files")), "*.mdpolicy");
 			dlg.AddAllFilesFilter ();
@@ -281,7 +280,7 @@ namespace MonoDevelop.Ide.Projects
 			OpenFileDialog dlg = new OpenFileDialog (GettextCatalog.GetString ("Select Policy File"));
 			dlg.TransientFor = this;
 			dlg.InitialFileName = currentSet.Name + ".mdpolicy";
-			dlg.Action = SelectFileDialogAction.Save;
+			dlg.Action = FileChooserAction.Save;
 			dlg.AddFilter (BrandingService.BrandApplicationName (GettextCatalog.GetString ("MonoDevelop policy files")), "*.mdpolicy");
 			dlg.AddAllFilesFilter ();
 			dlg.CurrentFolder = ExportProjectPolicyDialog.DefaultFileDialogPolicyDir;
