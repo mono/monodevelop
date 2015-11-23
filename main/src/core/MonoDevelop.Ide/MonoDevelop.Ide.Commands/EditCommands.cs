@@ -331,7 +331,7 @@ namespace MonoDevelop.Ide.Commands
 			info.Enabled = (focus is Gtk.Editable || focus is Gtk.TextView); 
 
 			#if MAC
-			var macfocus = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder;
+			var macfocus = AppKit.NSApplication.SharedApplication?.KeyWindow?.FirstResponder;
 			info.Enabled |= macfocus is AppKit.NSText;
 			#endif
 		}
