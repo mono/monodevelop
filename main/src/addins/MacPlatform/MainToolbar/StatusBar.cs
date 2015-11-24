@@ -568,7 +568,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 
 		static CGColor xamBlue = new CGColor (52f / 255, 152f / 255, 219f / 255);
-		static nfloat verticalOffset = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 4 : 2;
+		static nfloat verticalOffset = 2;
 		CALayer CreateProgressBarLayer (double width)
 		{
 			CALayer progress = progressLayer;
