@@ -877,7 +877,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var docId in GetOpenDocumentIds (id).ToList ()) {
 					ClearOpenDocument (docId);
 				}
-				OnProjectRemoved (id);
 				ProjectId val;
 				projectIdMap.TryRemove (project, out val);
 				ProjectData val2;
