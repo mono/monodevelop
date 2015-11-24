@@ -174,13 +174,15 @@ namespace MonoDevelop.AssemblyBrowser
 		static string GetGlobal (IUnresolvedEntity entity)
 		{
 			switch (entity.SymbolKind) {
-				case SymbolKind.Field:
-				case SymbolKind.Method:
-				case SymbolKind.Constructor:
-				case SymbolKind.Destructor:
-				case SymbolKind.Operator:
-				case SymbolKind.Property:
-				case SymbolKind.Indexer:
+			case SymbolKind.Field:
+				var field = (IUnresolvedField)entity;
+				return field.IsStatic && !field.IsConst ? "static-" : "";
+			case SymbolKind.Method:
+			case SymbolKind.Constructor:
+			case SymbolKind.Destructor:
+			case SymbolKind.Operator:
+			case SymbolKind.Property:
+			case SymbolKind.Indexer:
 				return entity.IsStatic ? "static-" : "";
 			}
 			return "";
