@@ -69,13 +69,13 @@ namespace MonoDevelop.Core
 
 		const int PATHMAX = 4096 + 1;
 
-		static readonly char[] invalidPathChars = Path.GetInvalidPathChars ().Concat ("#%&").ToArray ();
+		static readonly char[] invalidPathChars = Path.GetInvalidPathChars ().Concat ("#%").ToArray ();
 		public static char[] GetInvalidPathChars()
 		{
 			return (char[])invalidPathChars.Clone();
 		}
 
-		static readonly char[] invalidFileNameChars = Path.GetInvalidFileNameChars ().Concat ("#%&").ToArray ();
+		static readonly char[] invalidFileNameChars = Path.GetInvalidFileNameChars ().Concat ("#%").ToArray ();
 		public static char[] GetInvalidFileNameChars ()
 		{
 			return (char[])invalidFileNameChars.Clone ();

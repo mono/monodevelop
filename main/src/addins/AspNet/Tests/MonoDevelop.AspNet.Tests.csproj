@@ -55,6 +55,7 @@
     <Compile Include="Razor\RazorCompletionTests.cs" />
     <Compile Include="Html\HtmlParsingTests.cs" />
     <Compile Include="Html\HtmlImplicitClosingTests.cs" />
+    <Compile Include="WebForms\WebFormsSyntaxModeTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

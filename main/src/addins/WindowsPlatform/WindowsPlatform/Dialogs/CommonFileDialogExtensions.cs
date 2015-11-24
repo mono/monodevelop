@@ -26,8 +26,8 @@
 using System;
 using System.IO;
 using System.Linq;
-using Gtk;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using MonoDevelop.Components;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.Core;
 
@@ -50,11 +50,11 @@ namespace MonoDevelop.Platform
 				dialog.Title = data.Title;
 
 			dialog.InitialDirectory = data.CurrentFolder;
+			dialog.ShowHiddenItems = data.ShowHidden;
 
 			var fileDialog = dialog as CommonOpenFileDialog;
 			if (fileDialog != null) {
 				fileDialog.Multiselect = data.SelectMultiple;
-				fileDialog.ShowHiddenItems = data.ShowHidden;
 				if (data.Action == FileChooserAction.SelectFolder) {
 					fileDialog.IsFolderPicker = true;
 					return;

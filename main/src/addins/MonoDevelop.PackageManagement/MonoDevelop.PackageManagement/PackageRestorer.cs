@@ -77,7 +77,7 @@ namespace MonoDevelop.PackageManagement
 					RestoreWithProgressMonitor (progressMessage);
 				}
 			} catch (Exception ex) {
-				LoggingService.LogInternalError (ex);
+				LoggingService.LogError ("Package restore failed", ex);
 				RestoreFailed = true;
 			}
 		}

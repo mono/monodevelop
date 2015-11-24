@@ -471,21 +471,28 @@ namespace MonoDevelop.Projects
 			for (int n=0; n<References.Count; n++) {
 				ProjectReference pr = References [n];
 				if (pr.ReferenceType == ReferenceType.Assembly && DefaultConfiguration != null) {
-					if (pr.GetReferencedFileNames (DefaultConfiguration.Selector).Any (f => f == updatedFile))
+					if (pr.GetReferencedFileNames (DefaultConfiguration.Selector).Any (f => f == updatedFile)) {
+						SetFastBuildCheckDirty ();
 						pr.NotifyStatusChanged ();
+					}
 				} else if (pr.HintPath == updatedFile) {
+					SetFastBuildCheckDirty ();
 					var nr = pr.GetRefreshedReference ();
 					if (nr != null)
 						References [n] = nr;
 				}
 			}
 
+			/* Removed because it is very slow. SetFastBuildCheckDirty() is being called above. It is not the perfect solution but it is good enough
+			 * In the new project model GetReferencedAssemblies is asynchronous, so the code can be uncommented there. 
+ 
 			// If a referenced assembly changes, dirtify the project.
 			foreach (var asm in GetReferencedAssemblies (DefaultConfiguration.Selector))
 				if (asm == updatedFile) {
 					SetFastBuildCheckDirty ();
 					break;
 				}
+				*/
 		}
 
 		internal override void OnFileChanged (object source, MonoDevelop.Core.FileEventArgs e)
@@ -960,8 +967,11 @@ namespace MonoDevelop.Projects
 
 			// Hack to keep backwards compatibility with the old behavior. For example, a MonoDroid project is a library, but OnGetSupportsExecute
 			// is not overriden, so it depends on DotNetProject to return true by default.
-			if (compileTarget == CompileTarget.Library && GetType () == typeof (DotNetAssemblyProject))
-				return false;
+			if (compileTarget == CompileTarget.Library) {
+				Type thisType = GetType ();
+				if (thisType == typeof (DotNetAssemblyProject) || thisType == typeof (PortableDotNetProject))
+					return false;
+			}
 
 			return true;
 		}

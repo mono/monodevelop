@@ -349,12 +349,11 @@ namespace MonoDevelop.Ide.Navigation
 			bool closedHistoryChanged = false;
 			foreach (ProjectFileRenamedEventInfo args in e) {
 				foreach (NavigationHistoryItem point in history) {
-					DocumentNavigationPoint dp = point.NavigationPoint as DocumentNavigationPoint;
+					var dp = point.NavigationPoint as DocumentNavigationPoint;
 					historyChanged &= (dp != null && dp.HandleRenameEvent (args.OldName, args.NewName));
-				}
-				foreach (NavigationHistoryItem point in history) {
-					DocumentNavigationPoint cdp = point.NavigationPoint as DocumentNavigationPoint;
-					closedHistoryChanged &= (cdp != null && cdp.HandleRenameEvent (args.OldName, args.NewName));
+					closedHistoryChanged &= (dp != null && dp.HandleRenameEvent (args.OldName, args.NewName));
+					if (historyChanged && closedHistoryChanged)
+						break;
 				}
 			}
 			if (historyChanged)

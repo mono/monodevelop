@@ -78,7 +78,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Model (string column)
 		{
-			return null;
+			var columnNumber = GetColumnNumber (column, TModel);
+			if (columnNumber == -1)
+				return null;
+			Column = columnNumber;
+			return this;
 		}
 
 		bool CheckForText (TreeModel model, TreeIter iter, bool exact)
@@ -234,6 +238,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 			if (ParentWidget is TreeView) {
 				TreeView treeView = (TreeView) ParentWidget;
 				treeView.Selection.UnselectAll ();
+				treeView.ExpandRow (TModel.GetPath (resultIter.Value), false);
 				treeView.Selection.SelectIter ((TreeIter) resultIter);
 				treeView.SetCursor (TModel.GetPath ((TreeIter) resultIter), treeView.Columns [0], false);
 
@@ -256,23 +261,15 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return false;
 		}
 
-		public override bool TypeKey (char key, string state = "")
-		{
-			return false;
-		}
-
-		public override bool TypeKey (string keyString, string state = "")
-		{
-			throw new NotImplementedException ();
-		}
-
-		public override bool EnterText (string text)
-		{
-			return false;
-		}
-
 		public override bool Toggle (bool active)
 		{
+			if (resultIter.HasValue) {
+				var modelValue = TModel.GetValue ((TreeIter)resultIter, Column);
+				if (modelValue is bool) {
+					TModel.SetValue ((TreeIter)resultIter, Column, active);
+					return true;
+				}
+			}
 			return false;
 		}
 	}

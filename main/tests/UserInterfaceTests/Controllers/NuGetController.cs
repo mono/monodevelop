@@ -46,31 +46,49 @@ namespace UserInterfaceTests
 		readonly Func<AppQuery,AppQuery> resultList;
 		readonly Func<AppQuery,AppQuery> includePreRelease;
 
-		public static void AddPackage (NuGetPackageOptions packageOptions, Action<string> takeScreenshot = null)
+		public static void AddPackage (NuGetPackageOptions packageOptions, UITestBase testContext = null)
 		{
-			AddUpdatePackage (packageOptions, takeScreenshot, false);
+			Action<string> screenshotAction = delegate { };
+			if (testContext != null) {
+				testContext.ReproStep (string.Format ("Add NuGet package '{0}'", packageOptions.PackageName), packageOptions);
+				screenshotAction = testContext.TakeScreenShot;
+			}
+			AddUpdatePackage (packageOptions, screenshotAction, false);
 		}
 
-		public static void UpdatePackage (NuGetPackageOptions packageOptions, Action<string> takeScreenshot = null)
+		public static void UpdatePackage (NuGetPackageOptions packageOptions, UITestBase testContext = null)
 		{
-			AddUpdatePackage (packageOptions, takeScreenshot, true);
+			Action<string> screenshotAction = delegate { };
+			if (testContext != null) {
+				testContext.ReproStep (string.Format ("Update NuGet package '{0}'", packageOptions.PackageName), packageOptions);
+				screenshotAction = testContext.TakeScreenShot;
+			}
+			AddUpdatePackage (packageOptions, screenshotAction, true);
 		}
 
-		public static void UpdateAllNuGetPackages (Action<string> takeScreenshot = null)
+		public static void UpdateAllNuGetPackages (UITestBase testContext = null)
 		{
 			Session.ExecuteCommand ("MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolution");
 			WaitForNuGet.UpdateSuccess (string.Empty);
-			if (takeScreenshot != null)
-				takeScreenshot ("All-NuGet-Packages-Updated");
+			if (testContext != null)
+				testContext.TakeScreenShot ("All-NuGet-Packages-Updated");
 		}
 
 		static void AddUpdatePackage (NuGetPackageOptions packageOptions, Action<string> takeScreenshot, bool isUpdate = false)
 		{
-			takeScreenshot = takeScreenshot ?? delegate {};
+			packageOptions.PrintData ();
 			var nuget = new NuGetController (takeScreenshot, isUpdate);
 			nuget.Open ();
 			nuget.EnterSearchText (packageOptions.PackageName, packageOptions.Version, packageOptions.IsPreRelease);
-			nuget.SelectResultByPackageName (packageOptions.PackageName, packageOptions.Version);
+			for (int i = 0; i < packageOptions.RetryCount; i++) {
+				try {
+					nuget.SelectResultByPackageName (packageOptions.PackageName, packageOptions.Version);
+					break;
+				} catch (NuGetException e) {
+					if (i == packageOptions.RetryCount - 1)
+						Assert.Inconclusive ("Unable to find NuGet package, could be network related.", e);
+				}
+			}
 			nuget.ClickAdd ();
 			Session.WaitForNoElement (nugetWindow);
 			takeScreenshot ("NuGet-Update-Is-"+isUpdate);
@@ -134,7 +152,7 @@ namespace UserInterfaceTests
 					return;
 			}
 			takeScreenshot ("Package-Failed-To-Be-Found");
-			Assert.Fail ("No package '{0}' with version: '{1}' found", packageName, version);
+			throw new NuGetException (string.Format ("No package '{0}' with version: '{1}' found", packageName, version));
 		}
 
 		public void ClickAdd ()

@@ -31,7 +31,7 @@ using MonoDevelop.Components.AutoTest;
 
 namespace UserInterfaceTests
 {
-	[TestFixture]
+	[TestFixture, Timeout(60000)]
 	[Category ("Git")]
 	[Category ("StashManager")]
 	public class GitStashManagerTests : GitBase
@@ -92,7 +92,7 @@ namespace UserInterfaceTests
 			ComvertToBranch (0, branchName);
 			OpenStashManager ();
 			TakeScreenShot ("Asserting-if-Stash-Still-Present");
-			Assert.IsNotEmpty (Session.Query (StashEntries));
+			Assert.IsEmpty (Session.Query (StashEntries));
 			CloseStashManager ();
 
 			OpenRepositoryConfiguration ("Branches");
@@ -111,7 +111,7 @@ namespace UserInterfaceTests
 			GitCreateAndCommit (templateOptions, "First commit");
 			var changeDescription = MakeSomeChangesAndSaveAll ("Program.cs");
 			TestGitStash (changeDescription);
-			Session.WaitForElement (IdeQuery.TextArea);
+			Session.WaitForElement (IdeQuery.TextArea, 20000);
 			TakeScreenShot ("After-Stash");
 		}
 	}

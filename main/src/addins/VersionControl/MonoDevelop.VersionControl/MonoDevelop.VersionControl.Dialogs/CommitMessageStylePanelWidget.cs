@@ -44,8 +44,7 @@ namespace MonoDevelop.VersionControl
 		public CommitMessageStylePanelWidget()
 		{
 			this.Build();
-			
-			textview.ModifyFont (FontService.MonospaceFont.CopyModified (0.8d));
+
 			textview.AcceptsTab = true;
 		}
 		

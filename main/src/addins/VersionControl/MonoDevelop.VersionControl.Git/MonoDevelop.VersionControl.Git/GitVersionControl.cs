@@ -63,11 +63,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override FilePath OnGetRepositoryPath (FilePath path, string id)
 		{
-			if (path.IsEmpty || path.ParentDirectory.IsEmpty || path.IsNull || path.ParentDirectory.IsNull)
-				return null;
-			if (path.IsGitRepository ())
-				return path;
-			return OnGetRepositoryPath (path.ParentDirectory, id);
+			return LibGit2Sharp.Repository.Discover (path.ResolveLinks ());
 		}
 
 		internal void UnregisterRepo (GitRepository repo)

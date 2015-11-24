@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var tcs = new TaskCompletionSource<bool>();
 			if (parentType == null)
 				return tcs.Task;
-			part = part ?? parentType.Parts.FirstOrDefault ();
+			part = part ?? FindCurrentPart (parentType);
 			if (part == null)
 				return tcs.Task;
 			var loadedDocument = IdeApp.Workbench.OpenDocument (part.Region.FileName);
@@ -160,7 +160,24 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			return tcs.Task;
 		}
-		
+
+		public static IUnresolvedTypeDefinition FindCurrentPart (ITypeDefinition type)
+		{
+			var active = IdeApp.Workbench.ActiveDocument;
+			if (active != null) {
+				var partsInFile = type.Parts.Where (p => p.Region.FileName == active.FileName).ToList ();
+
+				foreach (var p in partsInFile) {
+					if (p.Region.Contains (active.Editor.Caret.Location))
+						return p;
+				}
+				if (partsInFile.Count > 0)
+					return partsInFile[0];
+			}
+
+			return type.Parts.FirstOrDefault ();
+		}
+
 		public static Task<bool> InsertMember (
 			ITypeDefinition parentType, IUnresolvedTypeDefinition part,
 			IUnresolvedMember newMember, bool implementExplicit = false)
@@ -168,7 +185,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var tcs = new TaskCompletionSource<bool>();
 			if (parentType == null)
 				return tcs.Task;
-			part = part ?? parentType.Parts.FirstOrDefault ();
+			part = part ?? FindCurrentPart (parentType);
 			if (part == null)
 				return tcs.Task;
 

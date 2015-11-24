@@ -62,14 +62,14 @@ namespace MonoDevelop.VersionControl.Git
 		public GitRepository (VersionControlSystem vcs, FilePath path, string url) : base (vcs)
 		{
 			RootPath = path;
-			string discovered = LibGit2Sharp.Repository.Discover (path);
-			if (!string.IsNullOrEmpty (discovered))
-				RootRepository = new LibGit2Sharp.Repository (discovered);
+			RootRepository = new LibGit2Sharp.Repository (path);
 			Url = url;
 		}
 
 		public override void Dispose ()
 		{
+			base.Dispose ();
+
 			if (VersionControlSystem != null)
 				((GitVersionControl)VersionControlSystem).UnregisterRepo (this);
 
@@ -77,7 +77,6 @@ namespace MonoDevelop.VersionControl.Git
 				RootRepository.Dispose ();
 			foreach (var rep in cachedSubmodules)
 				rep.Item2.Dispose ();
-			base.Dispose ();
 		}
 
 		public override string[] SupportedProtocols {
@@ -163,33 +162,49 @@ namespace MonoDevelop.VersionControl.Git
 			return true;
 		}
 
+		const int progressThrottle = 200;
+		static System.Diagnostics.Stopwatch throttleWatch = new System.Diagnostics.Stopwatch ();
 		static bool OnTransferProgress (TransferProgress tp, IProgressMonitor monitor, ref int progress)
 		{
-			if (progress == 0 && tp.ReceivedObjects == 0)
+			if (progress == 0 && tp.ReceivedObjects == 0) {
 				monitor.BeginTask ("Receiving and indexing objects", 2 * tp.TotalObjects);
+				throttleWatch.Restart ();
+			}
 
 			int currentProgress = tp.ReceivedObjects + tp.IndexedObjects;
 			int steps = currentProgress - progress;
-			monitor.Step (steps);
+			if (throttleWatch.ElapsedMilliseconds > progressThrottle) {
+				monitor.Step (steps);
+				throttleWatch.Restart ();
+			}
 			progress = currentProgress;
 
-			if (tp.IndexedObjects >= tp.TotalObjects)
+			if (tp.IndexedObjects >= tp.TotalObjects) {
 				monitor.EndTask ();
+				throttleWatch.Stop ();
+			}
 
 			return !monitor.IsCancelRequested;
 		}
 
 		static void OnCheckoutProgress (int completedSteps, int totalSteps, IProgressMonitor monitor, ref int progress)
 		{
-			if (progress == 0 && completedSteps == 0)
+			if (progress == 0 && completedSteps == 0) {
 				monitor.BeginTask ("Checking out files", totalSteps);
+				throttleWatch.Restart ();
+			}
 
 			int steps = completedSteps - progress;
-			monitor.Step (steps);
+			if (throttleWatch.ElapsedMilliseconds > progressThrottle) {
+				monitor.Step (steps);
+				throttleWatch.Restart ();
+			}
 			progress = completedSteps;
 
-			if (completedSteps >= totalSteps)
+			if (completedSteps >= totalSteps) {
 				monitor.EndTask ();
+				throttleWatch.Stop ();
+			}
 		}
 
 		void NotifyFilesChangedForStash (Stash stash)
@@ -215,7 +230,7 @@ namespace MonoDevelop.VersionControl.Git
 					OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
 					OnCheckoutNotify = RefreshFile,
 					CheckoutNotifyFlags = refreshFlags,
-				}
+				},
 			});
 
 			NotifyFilesChangedForStash (RootRepository.Stashes [stashIndex]);
@@ -237,7 +252,7 @@ namespace MonoDevelop.VersionControl.Git
 					OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
 					OnCheckoutNotify = RefreshFile,
 					CheckoutNotifyFlags = refreshFlags,
-				}
+				},
 			});
 			NotifyFilesChangedForStash (stash);
 			if (monitor != null)
@@ -559,18 +574,16 @@ namespace MonoDevelop.VersionControl.Git
 
 			RootRepository.Branches.Update (RootRepository.Branches ["master"], branch => branch.TrackedBranch = "refs/remotes/origin/master");
 
-			RetryUntilSuccess (monitor, delegate {
-				RootRepository.Network.Push (RootRepository.Head, new PushOptions {
-					OnPushStatusError = delegate (PushStatusError e) {
-						RootRepository.Dispose ();
-						RootRepository = null;
-						if (RootPath.Combine (".git").IsDirectory)
-							Directory.Delete (RootPath.Combine (".git"), true);
-						throw new VersionControlException (e.Message);
-					},
-					CredentialsProvider = GitCredentials.TryGet
-				});
-			});
+			RetryUntilSuccess (monitor, credType => RootRepository.Network.Push (RootRepository.Head, new PushOptions {
+				OnPushStatusError = delegate (PushStatusError e) {
+					RootRepository.Dispose ();
+					RootRepository = null;
+					if (RootPath.Combine (".git").IsDirectory)
+						Directory.Delete (RootPath.Combine (".git"), true);
+					throw new VersionControlException (e.Message);
+				},
+				CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType)
+			}));
 
 			return this;
 		}
@@ -595,34 +608,35 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.EndTask ();
 		}
 
-		static void RetryUntilSuccess (IProgressMonitor monitor, Action func)
+		static void RetryUntilSuccess (IProgressMonitor monitor, Action<GitCredentialsType> func)
 		{
 			bool retry;
 			using (var tfsSession = new TfsSmartSession ()) {
 				do {
+					var credType = tfsSession.Disposed ? GitCredentialsType.Normal : GitCredentialsType.Tfs;
 					try {
-						func ();
-						GitCredentials.StoreCredentials ();
+						func (credType);
+						GitCredentials.StoreCredentials (credType);
 						retry = false;
 					} catch (AuthenticationException) {
-						GitCredentials.InvalidateCredentials ();
+						GitCredentials.InvalidateCredentials (credType);
 						retry = true;
 					} catch (VersionControlException e) {
-						GitCredentials.InvalidateCredentials ();
+						GitCredentials.InvalidateCredentials (credType);
 						if (monitor != null)
 							monitor.ReportError (e.Message, null);
 						retry = false;
 					} catch (UserCancelledException) {
-						GitCredentials.StoreCredentials ();
+						GitCredentials.StoreCredentials (credType);
 						retry = false;
 					} catch (LibGit2SharpException e) {
+						GitCredentials.InvalidateCredentials (credType);
+
 						if (!tfsSession.Disposed) {
 							retry = true;
 							tfsSession.Dispose ();
 							continue;
 						}
-
-						GitCredentials.InvalidateCredentials ();
 
 						string message;
 						// TODO: Remove me once https://github.com/libgit2/libgit2/pull/3137 goes in.
@@ -645,12 +659,10 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Fetching from '{0}'", remote));
 			int progress = 0;
-			RetryUntilSuccess (monitor, delegate {
-				RootRepository.Fetch (remote, new FetchOptions {
-					CredentialsProvider = GitCredentials.TryGet,
-					OnTransferProgress = (tp) => OnTransferProgress (tp, monitor, ref progress),
-				});
-			});
+			RetryUntilSuccess (monitor, credType => RootRepository.Fetch (remote, new FetchOptions {
+				CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType),
+				OnTransferProgress = tp => OnTransferProgress (tp, monitor, ref progress),
+			}));
 			monitor.Step (1);
 		}
 
@@ -690,26 +702,27 @@ namespace MonoDevelop.VersionControl.Git
 			return true;
 		}
 
-		void ConflictResolver(IProgressMonitor monitor, Commit resetToIfFail, string message)
+		bool ConflictResolver(IProgressMonitor monitor, Commit resetToIfFail, string message)
 		{
-			bool commit = true;
 			foreach (var conflictFile in RootRepository.Index.Conflicts) {
 				ConflictResult res = ResolveConflict (RootRepository.FromGitPath (conflictFile.Ancestor.Path));
 				if (res == ConflictResult.Abort) {
 					RootRepository.Reset (ResetMode.Hard, resetToIfFail);
-					commit = false;
-					break;
+					return false;
 				}
 				if (res == ConflictResult.Skip) {
 					Revert (RootRepository.FromGitPath (conflictFile.Ancestor.Path), false, monitor);
 					break;
 				}
 			}
-			if (commit)
-				RootRepository.Commit (message);
+			if (!string.IsNullOrEmpty (message)) {
+				var sig = GetSignature ();
+				RootRepository.Commit (message, sig, sig);
+			}
+			return true;
 		}
 
-		void CommonPostMergeRebase(int stashIndex, GitUpdateOptions options, IProgressMonitor monitor)
+		void CommonPostMergeRebase(int stashIndex, GitUpdateOptions options, IProgressMonitor monitor, Commit oldHead)
 		{
 			if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges) {
 				monitor.Step (1);
@@ -717,7 +730,13 @@ namespace MonoDevelop.VersionControl.Git
 				// Restore local changes
 				if (stashIndex != -1) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Restoring local changes"));
-					PopStash (monitor, stashIndex);
+					ApplyStash (monitor, stashIndex);
+					// FIXME: No StashApplyStatus.Conflicts here.
+					if (RootRepository.Index.Conflicts.Any () && !ConflictResolver (monitor, oldHead, string.Empty))
+						PopStash (monitor, stashIndex);
+					else
+						RootRepository.Stashes.Remove (stashIndex);
+
 					monitor.Step (1);
 				}
 			}
@@ -727,6 +746,8 @@ namespace MonoDevelop.VersionControl.Git
 		public void Rebase (string branch, GitUpdateOptions options, IProgressMonitor monitor)
 		{
 			int stashIndex = -1;
+			var oldHead = RootRepository.Head.Tip;
+
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Rebasing"), 5);
 				if (!CommonPreMergeRebase (options, monitor, out stashIndex))
@@ -735,14 +756,14 @@ namespace MonoDevelop.VersionControl.Git
 				// Do a rebase.
 				var divergence = RootRepository.ObjectDatabase.CalculateHistoryDivergence (RootRepository.Head.Tip, RootRepository.Branches [branch].Tip);
 				var toApply = RootRepository.Commits.QueryBy (new CommitFilter {
-					Since = RootRepository.Head.Tip,
-					Until = divergence.CommonAncestor,
-					SortBy = CommitSortStrategies.Topological
-				});
+					IncludeReachableFrom = RootRepository.Head.Tip,
+					ExcludeReachableFrom = divergence.CommonAncestor,
+					SortBy = CommitSortStrategies.Topological | CommitSortStrategies.Reverse
+				}).ToArray ();
 
 				RootRepository.Reset (ResetMode.Hard, divergence.Another);
 
-				int count = toApply.Count ();
+				int count = toApply.Length;
 				int i = 1;
 				foreach (var com in toApply) {
 					monitor.Log.WriteLine ("Cherry-picking {0} - {1}/{2}", com.Id, i, count);
@@ -755,13 +776,14 @@ namespace MonoDevelop.VersionControl.Git
 					++i;
 				}
 			} finally {
-				CommonPostMergeRebase (stashIndex, options, monitor);
+				CommonPostMergeRebase (stashIndex, options, monitor, oldHead);
 			}
 		}
 
 		public void Merge (string branch, GitUpdateOptions options, IProgressMonitor monitor)
 		{
 			int stashIndex = -1;
+			var oldHead = RootRepository.Head.Tip;
 
 			Signature sig = GetSignature ();
 			if (sig == null)
@@ -780,7 +802,7 @@ namespace MonoDevelop.VersionControl.Git
 				if (mergeResult.Status == MergeStatus.Conflicts)
 					ConflictResolver (monitor, RootRepository.Head.Tip, RootRepository.Info.Message);
 			} finally {
-				CommonPostMergeRebase (stashIndex, GitUpdateOptions.SaveLocalChanges, monitor);
+				CommonPostMergeRebase (stashIndex, GitUpdateOptions.SaveLocalChanges, monitor, oldHead);
 			}
 		}
 
@@ -832,7 +854,7 @@ namespace MonoDevelop.VersionControl.Git
 					(string)changeSet.ExtendedProperties ["Git.AuthorEmail"],
 					DateTimeOffset.Now), sig);
 			else
-				repo.RootRepository.Commit (message, sig);
+				repo.RootRepository.Commit (message, sig, sig);
 		}
 
 		public bool IsUserInfoDefault ()
@@ -885,9 +907,9 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			int transferProgress = 0;
 			int checkoutProgress = 0;
-			RetryUntilSuccess (monitor, delegate {
+			RetryUntilSuccess (monitor, credType => {
 				RootPath = LibGit2Sharp.Repository.Clone (Url, targetLocalPath, new CloneOptions {
-					CredentialsProvider = GitCredentials.TryGet,
+					CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType),
 
 					OnTransferProgress = (tp) => OnTransferProgress (tp, monitor, ref transferProgress),
 					OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref checkoutProgress),
@@ -1103,10 +1125,10 @@ namespace MonoDevelop.VersionControl.Git
 				RootRepository.Branches.Update (branch, b => b.TrackedBranch = "refs/remotes/" + remote + "/" + remoteBranch);
 			}
 
-			RetryUntilSuccess (monitor, () =>
+			RetryUntilSuccess (monitor, credType =>
 				RootRepository.Network.Push (RootRepository.Network.Remotes [remote], "refs/heads/" + remoteBranch, new PushOptions {
 					OnPushStatusError = pushStatusErrors => success = false,
-					CredentialsProvider = GitCredentials.TryGet
+					CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType)
 				})
 			);
 
@@ -1225,11 +1247,9 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void PushTag (string name)
 		{
-			RetryUntilSuccess (null, delegate {
-				RootRepository.Network.Push (RootRepository.Network.Remotes [GetCurrentRemote ()], "refs/tags/" + name + ":refs/tags/" + name, new PushOptions {
-					CredentialsProvider = GitCredentials.TryGet,
-				});
-			});
+			RetryUntilSuccess (null, credType => RootRepository.Network.Push (RootRepository.Network.Remotes [GetCurrentRemote ()], "refs/tags/" + name + ":refs/tags/" + name, new PushOptions {
+				CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType),
+			}));
 		}
 
 		public IEnumerable<string> GetRemoteBranches (string remoteName)
@@ -1388,6 +1408,9 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override void OnMoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
 		{
+			var srcRepo = GetRepository (localSrcPath);
+			var dstRepo = GetRepository (localDestPath);
+
 			VersionInfo vi = GetVersionInfo (localSrcPath, VersionInfoQueryFlags.IgnoreCache);
 			if (vi == null || !vi.IsVersioned) {
 				base.OnMoveFile (localSrcPath, localDestPath, force, monitor);
@@ -1396,10 +1419,16 @@ namespace MonoDevelop.VersionControl.Git
 
 			vi = GetVersionInfo (localDestPath, VersionInfoQueryFlags.IgnoreCache);
 			if (vi != null && ((vi.Status & (VersionStatus.ScheduledDelete | VersionStatus.ScheduledReplace)) != VersionStatus.Unversioned))
-				RootRepository.Unstage (localDestPath);
+				dstRepo.Unstage (localDestPath);
 
-			RootRepository.Move (localSrcPath, localDestPath);
-			ClearCachedVersionInfo (localSrcPath, localDestPath);
+			if (srcRepo == dstRepo) {
+				srcRepo.Move (localSrcPath, localDestPath);
+				ClearCachedVersionInfo (localSrcPath, localDestPath);
+			} else {
+				File.Copy (localSrcPath, localDestPath);
+				srcRepo.Remove (localSrcPath, true);
+				dstRepo.Stage (localDestPath);
+			}
 		}
 
 		protected override void OnMoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
@@ -1433,7 +1462,7 @@ namespace MonoDevelop.VersionControl.Git
 			repositoryPath = repository.ToGitPath (repositoryPath);
 			var status = repository.RetrieveStatus (repositoryPath);
 			if (status != FileStatus.NewInIndex && status != FileStatus.NewInWorkdir) {
-				foreach (var hunk in repository.Blame (repositoryPath, new BlameOptions { Strategy = BlameStrategy.FollowExactRenames })) {
+				foreach (var hunk in repository.Blame (repositoryPath, new BlameOptions { FindExactRenames = true, })) {
 					var commit = hunk.FinalCommit;
 					var author = hunk.FinalSignature;
 					working = new Annotation (commit.Sha, author.Name, author.When.LocalDateTime, String.Format ("<{0}>", author.Email));

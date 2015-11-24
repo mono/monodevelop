@@ -192,7 +192,7 @@ namespace MonoDevelop.PackageManagement
 
 		public void ReportError (ProgressMonitorStatusMessage progressMessage, Exception ex)
 		{
-			LoggingService.LogInternalError (ex);
+			LoggingService.LogError (progressMessage.Error, ex);
 			progressMonitor.Log.WriteLine (ex.Message);
 			progressMonitor.ReportError (progressMessage.Error, null);
 			ShowPackageConsole (progressMonitor);

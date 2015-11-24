@@ -65,7 +65,6 @@ namespace MonoDevelop.PackageManagement
 
 		public void CheckForUpdatesCompleted ()
 		{
-			ProgressMonitor.ReportSuccess (projectsWithUpdatedPackages.Any ());
 			updatedPackagesInSolution.CheckForUpdatesCompleted (this);
 		}
 
@@ -73,22 +72,11 @@ namespace MonoDevelop.PackageManagement
 			get { return projectsWithUpdatedPackages; }
 		}
 
-		public CheckForUpdatesProgressMonitor ProgressMonitor { get; set; }
-
 		public void Dispose ()
 		{
 			if (!disposed) {
 				disposed = true;
-				if (ProgressMonitor != null) {
-					ProgressMonitor.Dispose ();
-					ProgressMonitor = null;
-				}
 			}
-		}
-
-		public void ReportError (Exception ex)
-		{
-			ProgressMonitor.ReportError (ex);
 		}
 	}
 }

@@ -30,11 +30,24 @@ namespace UserInterfaceTests
 {
 	public class NuGetPackageOptions
 	{
+		public NuGetPackageOptions ()
+		{
+			RetryCount = 3;
+		}
+
 		public string PackageName { get; set;}
 
 		public string Version { get; set;}
 
 		public bool IsPreRelease { get; set;}
+
+		public int RetryCount { get; set;}
+
+		public override string ToString ()
+		{
+			return string.Format ("PackageName={0}, Version={1}, IsPreRelease={2}, RetryCount={3}",
+				PackageName, Version, IsPreRelease, RetryCount);
+		}
 	}
 
 	public enum NuGetOperations
@@ -66,24 +79,35 @@ namespace UserInterfaceTests
 
 		public int PollStepSeconds  { get; set;}
 
-		public static void UpdateSuccess (string packageName, bool waitForWarning = true)
+		public override string ToString ()
 		{
-			Success (packageName, NuGetOperations.Update, waitForWarning);
+			return string.Format ("Operation={0}, PackageName={1}, WaitForSuccess={2}, WaitForWarning={3}, WaitForError={4}, TimeOutSeconds={5}, PollStepSeconds={6}",
+				Operation, PackageName, WaitForSuccess, WaitForWarning, WaitForError, TimeOutSeconds, PollStepSeconds);
 		}
 
-		public static void AddSuccess (string packageName, bool waitForWarning = true)
+		public static void UpdateSuccess (string packageName, bool waitForWarning = true, UITestBase testContext = null)
 		{
-			Success (packageName, NuGetOperations.Add, waitForWarning);
+			Success (packageName, NuGetOperations.Update, waitForWarning, testContext);
 		}
 
-		public static void Success (string packageName, NuGetOperations operation, bool waitForWarning = true)
+		public static void AddSuccess (string packageName, bool waitForWarning = true, UITestBase testContext = null)
 		{
-			new WaitForNuGet {
+			Success (packageName, NuGetOperations.Add, waitForWarning, testContext);
+		}
+
+		public static void Success (string packageName, NuGetOperations operation, bool waitForWarning = true, UITestBase testContext = null)
+		{
+			var waitPackage = new WaitForNuGet {
 				Operation = operation,
 				PackageName = packageName,
 				WaitForSuccess = true,
 				WaitForWarning = waitForWarning
-			}.Wait ();
+			};
+			if (testContext != null) {
+				testContext.ReproStep (string.Format ("Wait for one of these messages:\n\t{0}",
+					string.Join ("\t\n", waitPackage.ToMessages ())));
+			}
+			waitPackage.Wait ();
 		}
 
 		public void Wait ()

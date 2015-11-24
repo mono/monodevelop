@@ -42,12 +42,20 @@ namespace UserInterfaceTests
 
 		public NewFileController (Action<string> takeScreenshot = null)
 		{
-			this.takeScreenshot = takeScreenshot ?? delegate { };
+			this.takeScreenshot = Util.GetNonNullAction (takeScreenshot);
 		}
 
-		public static void Create (NewFileOptions options, Action<string> takeScreenshot = null)
+		public static void Create (NewFileOptions options, UITestBase testContext = null)
 		{
-			var ctrl = new NewFileController (takeScreenshot);
+			options.PrintData ();
+			Action<string> screenshotAction = (s) => {};
+			if (testContext != null) {
+				testContext.ReproStep (string.Format ("Add a new file of type '{0}' named '{1}'", 
+					options.FileType, options.FileName), options);
+				screenshotAction = testContext.TakeScreenShot;
+			}
+
+			var ctrl = new NewFileController (screenshotAction);
 			ctrl.Open ();
 			ctrl.ConfigureAddToProject (!string.IsNullOrEmpty (options.AddToProjectName), options.AddToProjectName);
 			ctrl.SelectFileTypeCategory (options.FileTypeCategory, options.FileTypeCategoryRoot);

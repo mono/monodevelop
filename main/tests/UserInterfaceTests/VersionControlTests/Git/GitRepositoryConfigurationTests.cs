@@ -29,11 +29,12 @@ using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
-	[TestFixture]
+	[TestFixture, Timeout(90000)]
 	[Category ("GitConfig")]
 	public class GitRepositoryConfigurationTests : GitBase
 	{
-		string gtkSharpUrl = "git@github.com:mono/gtk-sharp.git";
+		const string gtkSharpUrl = "https://github.com/mono/gtk-sharp.git";
+		const string monoHotdrawUrl = "https://github.com/mono/monocov.git";
 
 		#region Branch Tab
 
@@ -63,7 +64,7 @@ namespace UserInterfaceTests
 		[Description ("Create a New Branch")]
 		public void CreateNewBranchTest ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			OpenRepositoryConfiguration ();
@@ -75,7 +76,7 @@ namespace UserInterfaceTests
 		[Description ("Create a New Branch and switch to it")]
 		public void GitSwitchBranchTest ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			OpenRepositoryConfiguration ();
@@ -88,7 +89,7 @@ namespace UserInterfaceTests
 		[Description ("Create a New Branch, select it and edit the name and switch to it")]
 		public void GitEditBranchTest ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			OpenRepositoryConfiguration ();
@@ -103,7 +104,7 @@ namespace UserInterfaceTests
 		[Description ("Create a new branch, select it and delete it")]
 		public void GitDeleteBranchTest ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			OpenRepositoryConfiguration ();
@@ -193,7 +194,7 @@ namespace UserInterfaceTests
 		[Description ("Clone a repo and select a remote")]
 		public void SelectRemoteTest ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			OpenRepositoryConfiguration ("Remote Sources");
@@ -205,11 +206,11 @@ namespace UserInterfaceTests
 		[Description ("Clone a repo, add a new remote and select that added remote")]
 		public void AddGitRemoteTest ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			const string newRemoteName = "second";
-			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			const string newRemoteUrl = monoHotdrawUrl;
 			OpenRepositoryConfiguration ("Remote Sources");
 			AddRemote (newRemoteName, newRemoteUrl);
 			SelectRemote (newRemoteName, newRemoteUrl);
@@ -220,11 +221,11 @@ namespace UserInterfaceTests
 		[Description ("Clone a repo, add a new remote, select it and delete it")]
 		public void DeleteGitRemoteTest ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			const string newRemoteName = "second";
-			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			const string newRemoteUrl = monoHotdrawUrl;
 			OpenRepositoryConfiguration ("Remote Sources");
 			AddRemote (newRemoteName, newRemoteUrl);
 			SelectRemote (newRemoteName, newRemoteUrl);
@@ -236,18 +237,18 @@ namespace UserInterfaceTests
 		[Description ("Edit only Remote Name, don't edit URL or Push URL")]
 		public void EditGitRemoteNameTest ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			OpenRepositoryConfiguration ("Remote Sources");
 
 			const string newRemoteName = "second";
-			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			const string newRemoteUrl = monoHotdrawUrl;
 			AddRemote (newRemoteName, newRemoteUrl);
 			SelectRemote (newRemoteName, newRemoteUrl);
 
 			const string updatedRemoteName = "second-origin";
-			const string updatedRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			const string updatedRemoteUrl = monoHotdrawUrl;
 			EditRemote (updatedRemoteName, updatedRemoteUrl, updatedRemoteUrl);
 			SelectRemote (updatedRemoteName, updatedRemoteUrl);
 			CloseRepositoryConfiguration ();
@@ -257,18 +258,18 @@ namespace UserInterfaceTests
 		[Description ("Edit only Remote Name and URL, don't edit Push URL")]
 		public void EditGitRemoteNameAndUrlTest ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			OpenRepositoryConfiguration ("Remote Sources");
 
 			const string newRemoteName = "second";
-			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			const string newRemoteUrl = monoHotdrawUrl;
 			AddRemote (newRemoteName, newRemoteUrl);
 			SelectRemote (newRemoteName, newRemoteUrl);
 
 			const string updatedRemoteName = "second-origin";
-			const string updatedRemoteUrl = "git@github.com:mono/monohotdraw-push.git";
+			const string updatedRemoteUrl = monoHotdrawUrl;
 			EditRemote (updatedRemoteName, updatedRemoteUrl, newRemoteUrl);
 			SelectRemote (updatedRemoteName, updatedRemoteUrl);
 			CloseRepositoryConfiguration ();
@@ -278,19 +279,19 @@ namespace UserInterfaceTests
 		[Description ("Edit only Remote Name and Push URL, don't edit URL")]
 		public void EditGitRemoteNameAndPushUrlTest ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			OpenRepositoryConfiguration ("Remote Sources");
 
 			const string newRemoteName = "second";
-			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			const string newRemoteUrl = monoHotdrawUrl;
 			AddRemote (newRemoteName, newRemoteUrl);
 			SelectRemote (newRemoteName, newRemoteUrl);
 
 			const string updatedRemoteName = "second-origin";
-			const string updatedRemoteUrl = "git@github.com:mono/monohotdraw.git";
-			EditRemote (updatedRemoteName, updatedRemoteUrl, "git@github.com:mono/monohotdraw-push.git");
+			const string updatedRemoteUrl = monoHotdrawUrl;
+			EditRemote (updatedRemoteName, updatedRemoteUrl, monoHotdrawUrl);
 			SelectRemote (updatedRemoteName, updatedRemoteUrl);
 			CloseRepositoryConfiguration ();
 		}
@@ -299,17 +300,17 @@ namespace UserInterfaceTests
 		[Description ("Edit only Remote URL and Push URL, don't edit Name")]
 		public void EditGitRemoteUrlTest ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			OpenRepositoryConfiguration ("Remote Sources");
 
 			const string newRemoteName = "second";
-			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			const string newRemoteUrl = monoHotdrawUrl;
 			AddRemote (newRemoteName, newRemoteUrl);
 			SelectRemote (newRemoteName, newRemoteUrl);
 
-			const string updatedRemoteUrl = "git@github.com:mono/monohotdraw-push.git";
+			const string updatedRemoteUrl = monoHotdrawUrl;
 			EditRemote (newRemoteName, updatedRemoteUrl, updatedRemoteUrl);
 			SelectRemote (newRemoteName, updatedRemoteUrl);
 			CloseRepositoryConfiguration ();
@@ -319,11 +320,11 @@ namespace UserInterfaceTests
 		[Description ("Clone a repo, add a new remote and fetch the remote branches for that remote")]
 		public void FetchRemoteBranches ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			const string newRemoteName = "second";
-			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			const string newRemoteUrl = monoHotdrawUrl;
 			OpenRepositoryConfiguration ("Remote Sources");
 			AddRemote (newRemoteName, newRemoteUrl);
 			FetchRemoteBranch (newRemoteName);
@@ -334,11 +335,11 @@ namespace UserInterfaceTests
 		[Description ("Clone a repo, add a new remote, fetch the remote branch, chose a branch and track it in local. Select that branch in Branches tab")]
 		public void TrackRemoteBranchInLocalTest()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
+			TestClone (gtkSharpUrl);
 			Ide.WaitForSolutionCheckedOut ();
 
 			const string newRemoteName = "second";
-			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			const string newRemoteUrl = monoHotdrawUrl;
 			OpenRepositoryConfiguration ("Remote Sources");
 			AddRemote (newRemoteName, newRemoteUrl);
 			FetchRemoteBranch (newRemoteName);

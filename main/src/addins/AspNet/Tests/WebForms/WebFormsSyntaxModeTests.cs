@@ -1,5 +1,5 @@
 ﻿//
-// TestableCheckForUpdatesTaskRunner.cs
+// WebFormsSyntaxModeTests.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,36 +24,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using ICSharpCode.PackageManagement;
-using MonoDevelop.Ide;
-using MonoDevelop.PackageManagement.Tests.Helpers;
+using System.Linq;
+using NUnit.Framework;
+using Mono.TextEditor;
+using Mono.TextEditor.Highlighting;
+using MonoDevelop.AspNet.WebForms;
 
-namespace MonoDevelop.PackageManagement.Tests
+namespace MonoDevelop.AspNet.Tests.WebForms
 {
-	public class TestableCheckForUpdatesTaskRunner : CheckForUpdatesTaskRunner
+	[TestFixture]
+	class WebFormsSyntaxModeTests
 	{
-		public TestableCheckForUpdatesTaskRunner (
-			ITaskFactory taskFactory,
-			IPackageManagementProgressMonitorFactory progressMonitorFactory,
-			IPackageManagementEvents packageManagementEvents)
-			: base (taskFactory, progressMonitorFactory, packageManagementEvents)
+		[Test]
+		public void InvalidMimeTypeInScriptTypeAttribute ()
 		{
-		}
-
-		protected override CheckForUpdatesProgressMonitor CreateProgressMonitor (
-			IPackageManagementProgressMonitorFactory progressMonitorFactory,
-			IPackageManagementEvents packageManagementEvents)
-		{
-			ProgressMonitorCreated = new TestableCheckForUpdatesProgressMonitor (progressMonitorFactory, packageManagementEvents);
-			return ProgressMonitorCreated;
-		}
-
-		public TestableCheckForUpdatesProgressMonitor ProgressMonitorCreated { get; set; }
-
-		protected override void GuiBackgroundDispatch (MessageHandler handler)
-		{
-			handler.Invoke ();
+			var doc = new TextDocument ();
+			var syntaxMode = new WebFormsSyntaxMode ();
+			syntaxMode.Document = doc;
+			doc.Text = 
+@"<%@ Page Language=""C#"" Inherits=""AspnetTest.Default"" %>
+<!DOCTYPE html>
+<html>
+<head runat=""server"">
+	<title>Default</title>
+</head>
+<body>
+	<form id=""form1"" runat=""server"">
+		<asp:Button id=""button1"" runat=""server"" Text=""Click me!"" OnClick=""button1Clicked"" />
+	</form>
+	<script type=""></script>
+</body>
+</html>
+";
+			var style = new ColorScheme ();
+			foreach (DocumentLine line in doc.Lines) {
+				Assert.DoesNotThrow (() => syntaxMode.GetChunks (style, line, line.Offset, line.Length).ToList ());
+			}
 		}
 	}
 }
