@@ -127,7 +127,7 @@ module Patterns =
     match ts with
     | IdentifierSymbol symbolUse -> 
       match symbolUse with
-      | SymbolUse.Field f -> Some (symbolUse.IsFromDefinition, not f.DeclaringEntity.IsEnum && f.IsMutable)
+      | SymbolUse.Field f -> Some (symbolUse.IsFromDefinition, f.IsMutable && not f.DeclaringEntity.IsEnum)
       | _ -> None
     | _ -> None
   
@@ -144,10 +144,7 @@ module Patterns =
     | IdentifierSymbol symbolUse -> 
       match symbolUse with
       | SymbolUse.Val v ->
-        let isMut = 
-          match v.EnclosingEntitySafe with
-          | Some de -> not de.IsEnum && v.IsMutable
-          | None -> v.IsMutable
+        let isMut = v.IsMutable && (match v.EnclosingEntitySafe with Some de -> not de.IsEnum | None -> v.IsMutable)
         Some (symbolUse.IsFromDefinition, isMut)
       | _ -> None
     | _ -> None
