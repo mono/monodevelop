@@ -110,11 +110,13 @@ namespace MonoDevelop.Components
 			return new Control (d);
 		}
 
-		static Type controlType = typeof(Control);
 		public static bool operator ==(Control a, Control b)
 		{
-			if (a?.GetType () != controlType || b?.GetType () != controlType)
-				return (object)a == (object)b;
+			// We want Control to be a transparent box mostly, so we check the native widget when we just box it.
+			var obja = (object)a;
+			var objb = (object)b;
+			if (obja == null || objb == null || !a.objectSet || !b.objectSet)
+				return obja == objb;
 			return a?.nativeWidget == b?.nativeWidget;
 		}
 
@@ -125,17 +127,15 @@ namespace MonoDevelop.Components
 
 		public override int GetHashCode ()
 		{
-			if (nativeWidget == null)
-				return 0;
-			return nativeWidget.GetHashCode ();
+			if (objectSet)
+				return nativeWidget.GetHashCode ();
+			return base.GetHashCode ();
 		}
 
 		public void GrabFocus ()
 		{
 			// TODO
 		}
-
-
 		public bool HasFocus {
 			get
 			{
