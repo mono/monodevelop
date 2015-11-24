@@ -28,6 +28,8 @@
 	<MSBuildValueOrDefault2>$([MSBuild]::ValueOrDefault($(NoProp), "empty"))</MSBuildValueOrDefault2>
 	<Path>\a\b\</Path>
 	<CharTrim>$(Path.Trim (\b))</CharTrim>
+	<OutDir>foo</OutDir>
+	<FullPath>$([System.IO.Path]::GetFullPath(`$([System.IO.Path]::Combine(`$(MSBuildProjectDirectory)`, `$(OutDir)`))`))</FullPath>
 	<P1>AAA</P1>
 	<Files>$(P1);@(File)</Files>
 	<Prefix>Post</Prefix>
@@ -37,7 +39,7 @@
   <PropertyGroup>
   </PropertyGroup>
 	<Target Name="Test">
-		<Message Text="$(CharTrim)" />
+		<Message Text="$(FullPath)" />
 	</Target>
   <ItemGroup>
 	<File Include="$(P1).$(Prefix)Test2" />

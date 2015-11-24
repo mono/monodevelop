@@ -494,7 +494,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 
 				// Trim enclosing quotation marks
-				if (arg.Length > 1 && ((arg [0] == '"' && arg [arg.Length - 1] == '"') || (arg [0] == '\'' && arg [arg.Length - 1] == '\'')))
+				if (arg.Length > 1 && IsQuote(arg [0]) && arg[arg.Length - 1] == arg [0])
 					arg = arg.Substring (1, arg.Length - 2);
 
 				list.Add (Evaluate (arg));
@@ -549,6 +549,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			if (sval != null && parameterType == typeof (char[]))
 				return sval.ToCharArray ();
+
+			if (sval != null && Path.DirectorySeparatorChar != '\\')
+				value = sval.Replace ('\\', Path.DirectorySeparatorChar);
 			
 			var res = Convert.ChangeType (value, parameterType, CultureInfo.InvariantCulture);
 			bool convertPath = false;
@@ -668,7 +671,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					pc++;
 				else if (c == ')' || c == ']')
 					pc--;
-				else if (c == '"' || c == '\'') {
+				else if (IsQuote (c)) {
 					i = str.IndexOf (c, i + 1);
 					if (i == -1)
 						return -1;
@@ -676,6 +679,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				i++;
 			}
 			return -1;
+		}
+
+		bool IsQuote (char c)
+		{
+			return c == '"' || c == '\'' || c == '`';
 		}
 
 		int FindClosingChar (string str, int i, char[] closeChar)
@@ -689,7 +697,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					pc++;
 				else if (c == ')' || c == ']')
 					pc--;
-				else if (c == '"' || c == '\'') {
+				else if (IsQuote (c)) {
 					i = str.IndexOf (c, i + 1);
 					if (i == -1)
 						return -1;
