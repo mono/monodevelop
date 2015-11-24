@@ -27,6 +27,8 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Mono.TextEditor.PopupWindow;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Mono.TextEditor
 {
@@ -547,15 +549,15 @@ namespace Mono.TextEditor
 			this.mode = mode;
 		}
 		#region ITooltipProvider implementation 
-		public override TooltipItem GetItem (MonoTextEditor Editor, int offset)
+		public override Task<TooltipItem> GetItem (MonoTextEditor Editor, int offset, CancellationToken token = default(CancellationToken))
 		{
 			int o = offset - mode.BaseOffset;
 			for (int i = 0; i < mode.Links.Count; i++) {
 				TextLink l = mode.Links [i];
 				if (!l.PrimaryLink.IsInvalid && l.PrimaryLink.Offset <= o && o <= l.PrimaryLink.EndOffset)
-					return new TooltipItem (l, l.PrimaryLink.Offset, l.PrimaryLink.Length);
+					return Task.FromResult (new TooltipItem (l, l.PrimaryLink.Offset, l.PrimaryLink.Length));
 			}
-			return null;
+			return Task.FromResult<TooltipItem> (null);
 			//return mode.Links.First (l => l.PrimaryLink != null && l.PrimaryLink.Offset <= o && o <= l.PrimaryLink.EndOffset);
 		}
 
