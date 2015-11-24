@@ -58,6 +58,7 @@ namespace MonoDevelop.Core
 		static SynchronizationContext mainSynchronizationContext;
 		static SynchronizationContext defaultSynchronizationContext;
 		static RuntimePreferences preferences = new RuntimePreferences ();
+		static Thread mainThread;
 
 		public static void GetAddinRegistryLocation (out string configDir, out string addinsDir, out string databaseDir)
 		{
@@ -85,6 +86,7 @@ namespace MonoDevelop.Core
 
 			Platform.Initialize ();
 
+			mainThread = Thread.CurrentThread;
 			// Set a default sync context
 			if (SynchronizationContext.Current == null) {
 				defaultSynchronizationContext = new SynchronizationContext ();
@@ -317,7 +319,7 @@ namespace MonoDevelop.Core
 		public static Task RunInMainThread (Action action)
 		{
 			var ts = new TaskCompletionSource<int> ();
-			if (SynchronizationContext.Current == MainSynchronizationContext) {
+			if (IsMainThread) {
 				try {
 					action ();
 					ts.SetResult (0);
@@ -343,7 +345,7 @@ namespace MonoDevelop.Core
 		public static Task<T> RunInMainThread<T> (Func<T> func)
 		{
 			var ts = new TaskCompletionSource<T> ();
-			if (SynchronizationContext.Current == MainSynchronizationContext) {
+			if (IsMainThread) {
 				try {
 					ts.SetResult (func ());
 				} catch (Exception ex) {
@@ -368,7 +370,7 @@ namespace MonoDevelop.Core
 		/// thread is asynchronous.</remarks>
 		public static Task<T> RunInMainThread<T> (Func<Task<T>> func)
 		{
-			if (SynchronizationContext.Current == MainSynchronizationContext) {
+			if (IsMainThread) {
 				return func ();
 			} else {
 				var ts = new TaskCompletionSource<T> ();
@@ -397,7 +399,7 @@ namespace MonoDevelop.Core
 		/// thread is asynchronous.</remarks>
 		public static Task RunInMainThread (Func<Task> func)
 		{
-			if (SynchronizationContext.Current == MainSynchronizationContext) {
+			if (IsMainThread) {
 				return func ();
 			} else {
 				var ts = new TaskCompletionSource<int> ();
@@ -420,12 +422,23 @@ namespace MonoDevelop.Core
 		}
 
 		/// <summary>
+		/// Returns true if current thread is GUI thread.
+		/// </summary>
+		public static bool IsMainThread
+		{
+			// TODO: This logic should probably change to:
+			// Compare types, because instances can change (using SynchronizationContext.CreateCopy).
+			// if (SynchronizationContext.Current.GetType () != MainSynchronizationContext.GetType ())
+			// once https://bugzilla.xamarin.com/show_bug.cgi?id=35530 is resolved
+			get { return mainThread == Thread.CurrentThread; }
+		}
+
+		/// <summary>
 		/// Asserts that the current thread is the main thread. It will throw an exception if it isn't.
 		/// </summary>
 		public static void AssertMainThread ()
 		{
-			// Compare types, because instances can change (using SynchronizationContext.CreateCopy).
-			if (SynchronizationContext.Current.GetType () != MainSynchronizationContext.GetType ())
+			if (!IsMainThread)
 				throw new InvalidOperationException ("Operation not supported in background thread");
 		}
 
