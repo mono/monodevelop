@@ -834,25 +834,29 @@ module SymbolTooltips =
 
     let getTooltipInformation symbol =
       async {
-          let tip = getTooltipFromSymbolUse symbol
-          match tip  with
-          | ToolTips.ToolTip (signature, xmldoc, footer) ->
-              let toolTipInfo = new TooltipInformation(SignatureMarkup = signature, FooterMarkup=footer)
-              let result = 
-                match xmldoc with
-                | Full(summary) -> toolTipInfo.SummaryMarkup <- summary
-                                   toolTipInfo
-                | Lookup(key, potentialFilename) ->
-                    let summary = 
-                      maybe {let! filename = potentialFilename
-                             let! markup = TooltipXmlDoc.findDocForEntity(filename, key)
-                             let summary = TooltipsXml.getTooltipSummary Styles.simpleMarkup markup
-                             return summary }
-                    summary |> Option.iter (fun summary -> toolTipInfo.SummaryMarkup <- summary)
-                    toolTipInfo
-                | EmptyDoc -> toolTipInfo
-              return result
-          | _ -> return TooltipInformation() }
+          try
+            let tip = getTooltipFromSymbolUse symbol
+            match tip  with
+            | ToolTips.ToolTip (signature, xmldoc, footer) ->
+                let toolTipInfo = new TooltipInformation(SignatureMarkup = signature, FooterMarkup=footer)
+                let result = 
+                  match xmldoc with
+                  | Full(summary) -> toolTipInfo.SummaryMarkup <- summary
+                                     toolTipInfo
+                  | Lookup(key, potentialFilename) ->
+                      let summary = 
+                        maybe {let! filename = potentialFilename
+                               let! markup = TooltipXmlDoc.findDocForEntity(filename, key)
+                               let summary = TooltipsXml.getTooltipSummary Styles.simpleMarkup markup
+                               return summary }
+                      summary |> Option.iter (fun summary -> toolTipInfo.SummaryMarkup <- summary)
+                      toolTipInfo
+                  | EmptyDoc -> toolTipInfo
+                return result
+            | _ -> return TooltipInformation()
+          with ex ->
+            MonoDevelop.Core.LoggingService.LogError ("F# Tooltip error", ex)
+            return TooltipInformation() }
 
     let getParameterTooltipInformation symbol parameter =
       match symbol with
