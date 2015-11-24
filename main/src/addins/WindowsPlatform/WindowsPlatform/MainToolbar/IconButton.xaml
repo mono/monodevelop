@@ -13,6 +13,8 @@
                 </StackPanel>
             </ControlTemplate>
         </Button.Template>
-        <Image x:Name="RunIcon" Source="{Binding CurrentImage}" UseLayoutRounding="True" />
+        <Image x:Name="RunIcon" Source="{Binding CurrentImage}" UseLayoutRounding="True"
+    		MouseLeftButtonDown="OnMouseLeftButtonDown"
+    		MouseLeftButtonUp="OnMouseLeftButtonUp" />
     </Button>
 </UserControl>
