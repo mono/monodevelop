@@ -49,16 +49,16 @@ module Search =
 
   let getAllProjectSymbols projectFile =
     async {
-    let projectOptions = MDLanguageService.Instance.GetProjectCheckerOptions projectFile
-    let! proj = MDLanguageService.Instance.ParseAndCheckProject projectOptions
-    if not proj.HasCriticalErrors then
       try 
-        let! allSymbols = proj.GetAllUsesOfAllSymbols()
-        return allSymbols |> Array.toSeq
+        let projectOptions = MDLanguageService.Instance.GetProjectCheckerOptions projectFile
+        let! proj = MDLanguageService.Instance.ParseAndCheckProject projectOptions
+        if not proj.HasCriticalErrors then
+          let! allSymbols = proj.GetAllUsesOfAllSymbols()
+          return allSymbols |> Array.toSeq
+        else return Seq.empty 
       with ex ->
         LoggingService.LogError("Global Search (F#) error", ex)
-        return Seq.empty
-    else return Seq.empty }
+        return Seq.empty }
 
   /// constructors have a display name of ( .ctor ) use the enclosing entities display name 
   let correctDisplayName (symbol:FSharpSymbolUse) = 
@@ -192,19 +192,23 @@ type ProjectSearchCategory() =
     async {
       for projFile in getAllProjectFiles() do
         try
-          LoggingService.LogInfo("F# Global Search: Getting all project symbols")
+          LoggingService.LogInfo(sprintf "F# Global Search: Getting all project symbols for %s" (projFile |> IO.Path.GetFileName) )
           let! allProjectSymbols = Search.getAllProjectSymbols projFile
 
-          LoggingService.LogInfo(sprintf "F# Global Serach: Filtering %i project symbols from %s, for definitions" (allProjectSymbols |> Seq.length) projFile )
+          LoggingService.LogInfo(sprintf "F# Global Search: Filtering %i project symbols from %s, for definitions"
+                                  (allProjectSymbols |> Seq.length) (projFile |> IO.Path.GetFileName) )
           let onlyDefinitions = allProjectSymbols |> Seq.filter (fun s -> s.IsFromDefinition)
 
-          LoggingService.LogInfo(sprintf "F# Global Serach: Filtering %i onlyDefinitions for matching tag %s" (onlyDefinitions |> Seq.length) pattern.Tag)
+          LoggingService.LogInfo(sprintf "F# Global Search: Filtering %i matching tag %s for %s"
+                                  (onlyDefinitions |> Seq.length) pattern.Tag (projFile |> IO.Path.GetFileName) )
           let typeFilteredSymbols = onlyDefinitions |> Search.byTag pattern.Tag
 
-          LoggingService.LogInfo(sprintf "F# Global Serach: Caching search on %i typeFilteredSymbols for matching pattern %s" (typeFilteredSymbols |> Seq.length) pattern.Pattern)
+          LoggingService.LogInfo(sprintf "F# Global Search: Caching search on %i typeFilteredSymbols for matching pattern %s on %s"
+                                  (typeFilteredSymbols |> Seq.length) pattern.Pattern (projFile |> IO.Path.GetFileName) )
           let matchedSymbols = typeFilteredSymbols |> cachingSearch pattern.Pattern
 
-          LoggingService.LogInfo(sprintf "F# Global Search: Matching symbols: %i" (matchedSymbols |> Seq.length) )
+          LoggingService.LogInfo(sprintf "F# Global Search: Matched %i symbols from %s"
+                                  (matchedSymbols |> Seq.length) (projFile |> IO.Path.GetFileName) )
           matchedSymbols
           |> Seq.iter (fun (symbol:FSharpSymbolUse, rank) ->
             let sr = SymbolSearchResult(pattern.Pattern, symbol.Symbol.DisplayName, rank, symbol)
