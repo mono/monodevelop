@@ -127,9 +127,9 @@ type FSharpTooltipProvider() =
     let doc = IdeApp.Workbench.ActiveDocument
     if (doc = null) then null else
     match unbox item.Item with 
-    | ToolTips.ToolTip(signature, summary) -> 
+    | ToolTips.ToolTip(signature, summary, footer) -> 
       let result = new TooltipInformationWindow(ShowArrow = true)
-      let toolTipInfo = new TooltipInformation(SignatureMarkup = signature)
+      let toolTipInfo = new TooltipInformation(SignatureMarkup=signature, FooterMarkup=footer)
       match summary with
       | Full(summary) -> toolTipInfo.SummaryMarkup <- summary
       | Lookup(key, potentialFilename) ->

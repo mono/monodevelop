@@ -44,8 +44,7 @@ module Search =
     | _ ->     s
 
   let byTag tag (items: FSharpSymbolUse seq) =
-      let definitions = items |> Seq.filter (fun s -> s.IsFromDefinition)
-      let filtered = definitions |> filter tag
+      let filtered = items |> filter tag
       filtered
 
   let getAllProjectSymbols projectFile =
@@ -53,8 +52,12 @@ module Search =
     let projectOptions = MDLanguageService.Instance.GetProjectCheckerOptions projectFile
     let! proj = MDLanguageService.Instance.ParseAndCheckProject projectOptions
     if not proj.HasCriticalErrors then
-      let! allSymbols = proj.GetAllUsesOfAllSymbols()
-      return allSymbols |> Array.toSeq
+      try 
+        let! allSymbols = proj.GetAllUsesOfAllSymbols()
+        return allSymbols |> Array.toSeq
+      with ex ->
+        LoggingService.LogError("Global Search (F#) error", ex)
+        return Seq.empty
     else return Seq.empty }
 
   /// constructors have a display name of ( .ctor ) use the enclosing entities display name 
@@ -180,29 +183,43 @@ type ProjectSearchCategory() =
   let memberTags = ["member"; "m"; "p"; "f"; "evt"; "ap"; "op"]
   let tags = lazy (List.concat [typeTags; memberTags] |> List.toArray)
 
+  let getAllProjectFiles() =
+    IdeApp.Workspace.GetAllProjects()
+    |> Seq.filter (fun p -> p.SupportedLanguages |> Array.contains "F#")
+    |> Seq.map (fun p -> p.FileName.ToString())
+
+  let getComputation (pattern:SearchPopupSearchPattern) (cachingSearch) (callback:ISearchResultCallback) =
+    async {
+      for projFile in getAllProjectFiles() do
+        try
+          LoggingService.LogInfo("F# Global Serach: Getting all project symbols")
+          let! allProjectSymbols = Search.getAllProjectSymbols projFile
+
+          LoggingService.LogInfo(sprintf "F# Global Serach: Filtering %i project symbols from %s, for definitions" (allProjectSymbols |> Seq.length) projFile )
+          let onlyDefinitions = allProjectSymbols |> Seq.filter (fun s -> s.IsFromDefinition)
+
+          LoggingService.LogInfo(sprintf "F# Global Serach: Filtering %i onlyDefinitions for matching tag %s" (onlyDefinitions |> Seq.length) pattern.Tag)
+          let typeFilteredSymbols = onlyDefinitions |> Search.byTag pattern.Tag
+
+          LoggingService.LogInfo(sprintf "F# Global Serach: Caching search on %i typeFilteredSymbols for matching pattern %s" (typeFilteredSymbols |> Seq.length) pattern.Pattern)
+          let matchedSymbols = typeFilteredSymbols |> cachingSearch pattern.Pattern
+
+          LoggingService.LogInfo(sprintf "F# Global Search: Matching symbols: %i" (matchedSymbols |> Seq.length) )
+          matchedSymbols
+          |> Seq.iter (fun (symbol:FSharpSymbolUse, rank) ->
+            let sr = SymbolSearchResult(pattern.Pattern, symbol.Symbol.DisplayName, rank, symbol)
+            callback.ReportResult sr)
+       
+        with ex -> 
+         LoggingService.LogError("F# Global Serach error", ex) }
+
   override x.get_Tags() = tags.Force()
 
   override x.IsValidTag tag =
     typeTags |> List.contains tag || memberTags |> List.contains tag
 
   override x.GetResults(searchCallback, pattern, token) =
+    let cachingSearch = Search.byPattern (Dictionary<_,_>())
+    let task = getComputation pattern cachingSearch searchCallback
+    Task.Factory.StartNew(fun () ->  Async.StartImmediate(task, token) )
 
-    let addResult (symbol:FSharpSymbolUse, rank) = 
-      if token.IsCancellationRequested then ()
-      else
-        let sr = SymbolSearchResult(pattern.Pattern, symbol.Symbol.DisplayName, rank, symbol)
-        searchCallback.ReportResult sr
-
-    Task.Run(
-      (fun () ->
-          let allProjectFiles =
-            IdeApp.Workspace.GetAllProjects()
-            |> Seq.filter (fun p -> p.SupportedLanguages |> Array.contains "F#")
-            |> Seq.map (fun p -> p.FileName.ToString())
-          let cachingSearch = Search.byPattern (Dictionary<_,_>())
-          async {for projFile in allProjectFiles do
-                   let! allProjectSymbols = Search.getAllProjectSymbols projFile
-                   let typeFilteredSymbols = Search.byTag pattern.Tag allProjectSymbols
-                   let matchedSymbols = typeFilteredSymbols |> cachingSearch pattern.Pattern
-                   matchedSymbols |> Seq.iter addResult }
-          |> Async.Start ), token)
