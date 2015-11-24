@@ -188,31 +188,30 @@ type ProjectSearchCategory() =
     |> Seq.filter (fun p -> p.SupportedLanguages |> Array.contains "F#")
     |> Seq.map (fun p -> p.FileName.ToString())
 
-  let getComputation (pattern:SearchPopupSearchPattern) cachingSearch (callback:ISearchResultCallback) =
+  let getComputation (pattern:SearchPopupSearchPattern) (cachingSearch) (callback:ISearchResultCallback) =
+    async {
+      for projFile in getAllProjectFiles() do
+        try
+          LoggingService.LogInfo("F# Global Serach: Getting all project symbols")
+          let! allProjectSymbols = Search.getAllProjectSymbols projFile
 
-    let addResult (symbol:FSharpSymbolUse, rank)  = 
-      //if not token.IsCancellationRequested then 
-        let sr = SymbolSearchResult(pattern.Pattern, symbol.Symbol.DisplayName, rank, symbol)
-        callback.ReportResult sr
+          LoggingService.LogInfo(sprintf "F# Global Serach: Filtering %i project symbols from %s, for definitions" (allProjectSymbols |> Seq.length) projFile )
+          let onlyDefinitions = allProjectSymbols |> Seq.filter (fun s -> s.IsFromDefinition)
 
-    async {for projFile in getAllProjectFiles() do
-             try
-               LoggingService.LogInfo("F# Global Serach: Getting all project symbols")
-               let! allProjectSymbols = Search.getAllProjectSymbols projFile
+          LoggingService.LogInfo(sprintf "F# Global Serach: Filtering %i onlyDefinitions for matching tag %s" (onlyDefinitions |> Seq.length) pattern.Tag)
+          let typeFilteredSymbols = onlyDefinitions |> Search.byTag pattern.Tag
 
-               LoggingService.LogInfo(sprintf "F# Global Serach: Filtering %i project symbols for definitions" (allProjectSymbols |> Seq.length) )
-               let onlyDefinitions = allProjectSymbols |> Seq.filter (fun s -> s.IsFromDefinition)
+          LoggingService.LogInfo(sprintf "F# Global Serach: Caching search on %i typeFilteredSymbols for matching pattern %s" (typeFilteredSymbols |> Seq.length) pattern.Pattern)
+          let matchedSymbols = typeFilteredSymbols |> cachingSearch pattern.Pattern
 
-               LoggingService.LogInfo(sprintf "F# Global Serach: Filtering %i onlyDefinitions for matching tag %s" (onlyDefinitions |> Seq.length) pattern.Tag)
-               let typeFilteredSymbols = onlyDefinitions |> Search.byTag pattern.Tag
-
-               LoggingService.LogInfo(sprintf "F# Global Serach: Caching search on %i typeFilteredSymbols for matching pattern %s" (typeFilteredSymbols |> Seq.length) pattern.Pattern)
-               let matchedSymbols = typeFilteredSymbols |> cachingSearch pattern.Pattern
-
-               LoggingService.LogInfo(sprintf "F# Global Search: Matching symbols: %i" (matchedSymbols |> Seq.length) )
-               matchedSymbols |> Seq.iter addResult 
-             with ex -> 
-              LoggingService.LogError("F# Global Serach error", ex) }
+          LoggingService.LogInfo(sprintf "F# Global Search: Matching symbols: %i" (matchedSymbols |> Seq.length) )
+          matchedSymbols
+          |> Seq.iter (fun (symbol:FSharpSymbolUse, rank) ->
+            let sr = SymbolSearchResult(pattern.Pattern, symbol.Symbol.DisplayName, rank, symbol)
+            callback.ReportResult sr)
+       
+        with ex -> 
+         LoggingService.LogError("F# Global Serach error", ex) }
 
   override x.get_Tags() = tags.Force()
 
@@ -220,10 +219,7 @@ type ProjectSearchCategory() =
     typeTags |> List.contains tag || memberTags |> List.contains tag
 
   override x.GetResults(searchCallback, pattern, token) =
-    Task.Run(
-      (fun _ ->
-        try
-          let cachingSearch = Search.byPattern (Dictionary<_,_>())
-          Async.Start (getComputation pattern cachingSearch searchCallback)
-        with ex ->
-          LoggingService.LogError("F# Global Serach error", ex)), token)
+    let cachingSearch = Search.byPattern (Dictionary<_,_>())
+    let task = getComputation pattern cachingSearch searchCallback
+    Task.Factory.StartNew(fun () ->  Async.StartImmediate(task, token) )
+
