@@ -77,6 +77,7 @@ type FSharpTooltipProvider() =
           //operate on available results no async gettypeparse results is available quick enough
           Async.RunSynchronously (
             cancellationToken = cancellationToken,
+            timeout = ServiceSettings.blockingTimeout,
             computation = async {
               try 
                 LoggingService.LogDebug "TooltipProvider: Getting tool tip"
@@ -106,7 +107,7 @@ type FSharpTooltipProvider() =
               | :? TimeoutException -> return ParseAndCheckNotFound
               | ex ->
                 LoggingService.LogError ("TooltipProvider: unexpected exception", ex)
-                return ParseAndCheckNotFound}, ServiceSettings.blockingTimeout)
+                return ParseAndCheckNotFound})
 
       match result with
       | ParseAndCheckNotFound -> LoggingService.LogWarning "TooltipProvider: ParseAndCheckResults not found"; null
