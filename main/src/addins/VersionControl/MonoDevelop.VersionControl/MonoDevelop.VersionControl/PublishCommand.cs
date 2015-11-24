@@ -57,7 +57,7 @@ namespace MonoDevelop.VersionControl
 		{
 			// Ensure that we strip out all linked files from outside of the solution/projects path.
 			if (entry is IWorkspaceFileObject)
-				files.AddRange (((IWorkspaceFileObject)entry).GetItemFiles (true).Where (file => file.IsChildPathOf (entry.BaseDirectory)));
+				files.AddRange (((IWorkspaceFileObject)entry).GetItemFiles (true).Where (file => file.CanonicalPath.IsChildPathOf (entry.BaseDirectory)));
 		}
 		
 		public static bool CanPublish (Repository vc, string path, bool isDir) {
