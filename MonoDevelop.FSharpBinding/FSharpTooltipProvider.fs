@@ -76,7 +76,8 @@ type FSharpTooltipProvider() =
           | None ->
           //operate on available results no async gettypeparse results is available quick enough
           Async.RunSynchronously (
-            async {
+            cancellationToken = cancellationToken,
+            computation = async {
               try 
                 LoggingService.LogDebug "TooltipProvider: Getting tool tip"
                 match MDLanguageService.Instance.GetTypedParseResultIfAvailable (projectFile, file, source, AllowStaleResults.MatchingSource) with
