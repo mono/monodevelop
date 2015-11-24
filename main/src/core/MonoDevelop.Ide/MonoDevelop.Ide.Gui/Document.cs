@@ -379,7 +379,6 @@ namespace MonoDevelop.Ide.Gui
 							FileService.NotifyFileChanged (fileName);
 						}
 						Window.ViewContent.Save (fileName);
-						FileService.NotifyFileChanged (fileName);
 						OnSaved (EventArgs.Empty);
 					}
 				}

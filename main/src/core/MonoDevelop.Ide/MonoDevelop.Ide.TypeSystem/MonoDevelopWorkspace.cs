@@ -394,6 +394,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				FilePath fileName = IdeApp.Workspace != null ? p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration) : (FilePath)"";
 				if (fileName.IsNullOrEmpty)
 					fileName = new FilePath (p.Name + ".dll");
+
+				var sourceFiles = await p.GetSourceFilesAsync (config != null ? config.Selector : null).ConfigureAwait (false);
+
 				var info = ProjectInfo.Create (
 					projectId,
 					VersionStamp.Create (),
@@ -404,7 +407,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					fileName,
 					cp != null ? cp.CreateCompilationOptions () : null,
 					cp != null ? cp.CreateParseOptions () : null,
-					CreateDocuments (projectData, p, token),
+					CreateDocuments (projectData, p, token, sourceFiles),
 					CreateProjectReferences (p, token),
 					references
 				);
@@ -460,10 +463,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			public IReadOnlyList<Projection> Projections;
 		}
 
-		IEnumerable<DocumentInfo> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token)
+		IEnumerable<DocumentInfo> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.ProjectFile[] sourceFiles)
 		{
 			var duplicates = new HashSet<DocumentId> ();
-			foreach (var f in p.Files) {
+
+			// use given source files instead of project.Files because there may be additional files added by msbuild targets
+			foreach (var f in sourceFiles) {
 				if (token.IsCancellationRequested)
 					yield break;
 				if (f.Subtype == MonoDevelop.Projects.Subtype.Directory)
