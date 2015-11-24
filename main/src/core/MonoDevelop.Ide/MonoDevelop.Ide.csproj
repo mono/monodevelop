@@ -1535,17 +1535,17 @@
     <EmbeddedResource Include="icons\element-static-overlay-16~dark~sel%402x.png">
       <LogicalName>element-static-overlay-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-web-overlay-32.png">
-      <LogicalName>project-web-overlay-32.png</LogicalName>
+    <EmbeddedResource Include="icons\project-web-32.png">
+      <LogicalName>project-web-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-web-overlay-32%402x.png">
-      <LogicalName>project-web-overlay-32@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\project-web-32%402x.png">
+      <LogicalName>project-web-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-web-overlay-32~dark.png">
-      <LogicalName>project-web-overlay-32~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\project-web-32~dark.png">
+      <LogicalName>project-web-32~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-web-overlay-32~dark%402x.png">
-      <LogicalName>project-web-overlay-32~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\project-web-32~dark%402x.png">
+      <LogicalName>project-web-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\workspace-16.png">
       <LogicalName>workspace-16.png</LogicalName>
@@ -4283,29 +4283,29 @@
     <EmbeddedResource Include="icons\platform-other-16~dark~sel%402x.png">
       <LogicalName>platform-other-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\generic-project.png">
-      <LogicalName>generic-project.png</LogicalName>
+    <EmbeddedResource Include="templates\images\project.png">
+      <LogicalName>project.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\generic-project%402x.png">
-      <LogicalName>generic-project@2x.png</LogicalName>
+    <EmbeddedResource Include="templates\images\project%402x.png">
+      <LogicalName>project@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\generic-project~dark.png">
-      <LogicalName>generic-project~dark.png</LogicalName>
+    <EmbeddedResource Include="templates\images\project~dark.png">
+      <LogicalName>project~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\generic-project~dark%402x.png">
-      <LogicalName>generic-project~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="templates\images\project~dark%402x.png">
+      <LogicalName>project~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\blank-solution.png">
-      <LogicalName>blank-solution.png</LogicalName>
+    <EmbeddedResource Include="templates\images\solution.png">
+      <LogicalName>solution.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\blank-solution%402x.png">
-      <LogicalName>blank-solution@2x.png</LogicalName>
+    <EmbeddedResource Include="templates\images\solution%402x.png">
+      <LogicalName>solution@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\blank-solution~dark.png">
-      <LogicalName>blank-solution~dark.png</LogicalName>
+    <EmbeddedResource Include="templates\images\solution~dark.png">
+      <LogicalName>solution~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\blank-solution~dark%402x.png">
-      <LogicalName>blank-solution~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="templates\images\solution~dark%402x.png">
+      <LogicalName>solution~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="templates\images\console-project.png">
       <LogicalName>console-project.png</LogicalName>
