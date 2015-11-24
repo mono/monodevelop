@@ -81,6 +81,7 @@
 			</Packages>
 			<Files>
 				<Directory name="Controllers" if="UsesAspNetMvc" />
+				<File name="Test.cs" src="Files/Test.cs" />
 			</Files>
 		</Project>
 	</Combine>

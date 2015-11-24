@@ -494,6 +494,9 @@
     <None Include="Templates\WebApiConfig.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Templates\Projects\Files\Test.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Html\Schemas\readme.txt">

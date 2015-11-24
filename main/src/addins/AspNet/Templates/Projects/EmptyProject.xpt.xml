@@ -83,7 +83,10 @@
 				<package id="Newtonsoft.Json" version="6.0.8" if="UsesAspNetWebApi" />
 			</Packages>
 			<Files>
-				<Directory name="Controllers" if="UsesAspNetMvc" />
+				<Directory name="Controllers" if="UsesAspNetMvc">
+					<File name="Test.cs" src="Files/Test.cs" />
+				</Directory>
+				<File name="Test.cs" src="Files/Test.cs" if="!UsesAspNetMvc" />
 			</Files>
 		</Project>
 	</Combine>
