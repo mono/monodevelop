@@ -36,7 +36,7 @@ using Mono.Addins;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
-using MonoDevelop.Components.Extensions;
+using MonoDevelop.Components;
 
 namespace CBinding
 {
@@ -174,7 +174,7 @@ namespace CBinding
 		
 		protected virtual void OnCtagsBrowseClicked (object sender, System.EventArgs e)
 		{
-			OpenFileDialog dialog = new OpenFileDialog (GettextCatalog.GetString ("Choose ctags executable"), SelectFileDialogAction.Open);
+			OpenFileDialog dialog = new OpenFileDialog (GettextCatalog.GetString ("Choose ctags executable"), FileChooserAction.Open);
 			if (dialog.Run ())
 				ctagsEntry.Text = dialog.SelectedFile;
 		}

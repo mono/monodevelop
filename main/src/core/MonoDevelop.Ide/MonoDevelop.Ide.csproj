@@ -3417,6 +3417,7 @@
     <Compile Include="MonoDevelop.Components.AutoTest.Operations\SelectedOperation.cs" />
     <Compile Include="MonoDevelop.Components\Windows\GtkWPFWidget.cs" />
     <Compile Include="MonoDevelop.Components\Windows\GtkWin32Interop.cs" />
+    <Compile Include="MonoDevelop.Components\FileChooserAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
