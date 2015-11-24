@@ -258,6 +258,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("5.5", p.EvaluatedProperties.GetValue ("MSBuildAddDouble"));
 			Assert.AreEqual ("abcdefgh", p.EvaluatedProperties.GetValue ("MSBuildValueOrDefault1"));
 			Assert.AreEqual ("empty", p.EvaluatedProperties.GetValue ("MSBuildValueOrDefault2"));
+			Assert.AreEqual ("a", p.EvaluatedProperties.GetValue ("CharTrim"));
 		}
 
 		[Test]

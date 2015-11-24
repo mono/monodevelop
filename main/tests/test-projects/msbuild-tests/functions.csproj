@@ -26,6 +26,8 @@
 	<MSBuildAddDouble>$([MSBuild]::Add(2.5, 3))</MSBuildAddDouble>
 	<MSBuildValueOrDefault1>$([MSBuild]::ValueOrDefault($(Prop), "empty"))</MSBuildValueOrDefault1>
 	<MSBuildValueOrDefault2>$([MSBuild]::ValueOrDefault($(NoProp), "empty"))</MSBuildValueOrDefault2>
+	<Path>\a\b\</Path>
+	<CharTrim>$(Path.Trim (\b))</CharTrim>
 	<P1>AAA</P1>
 	<Files>$(P1);@(File)</Files>
 	<Prefix>Post</Prefix>
@@ -35,7 +37,7 @@
   <PropertyGroup>
   </PropertyGroup>
 	<Target Name="Test">
-		<Message Text="@(Result)" />
+		<Message Text="$(CharTrim)" />
 	</Target>
   <ItemGroup>
 	<File Include="$(P1).$(Prefix)Test2" />
