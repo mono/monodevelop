@@ -32,20 +32,22 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.SourceEditor;
 using System.Linq;
 using MonoDevelop.Components;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
 	class ResultTooltipProvider : TooltipProvider
 	{
 		#region ITooltipProvider implementation 
-		public override TooltipItem GetItem (TextEditor editor, DocumentContext ctx, int offset)
+		public override Task<TooltipItem> GetItem (TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default (CancellationToken))
 		{
 			foreach (var marker in editor.GetTextSegmentMarkersAt (offset)) {
 				var result = marker.Tag as Result;
 				if (result != null) 
-					return new TooltipItem (result, marker.Offset, marker.Length);
+					return Task.FromResult(new TooltipItem (result, marker.Offset, marker.Length));
 			}
-			return null;
+			return Task.FromResult<TooltipItem> (null);
 
 		}
 
@@ -65,7 +67,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			requiredWidth = win.SetMaxWidth (win.Screen.Width);
 			xalign = 0.5;
 		}
-		#endregion 
+		#endregion
 
 
 	}

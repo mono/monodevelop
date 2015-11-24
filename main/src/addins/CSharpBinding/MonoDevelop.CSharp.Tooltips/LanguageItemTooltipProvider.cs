@@ -41,6 +41,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using Gtk;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -67,29 +68,29 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		#region ITooltipProvider implementation 
-		public override TooltipItem GetItem (TextEditor editor, DocumentContext ctx, int offset)
+		public override Task<TooltipItem> GetItem (TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default(CancellationToken))
 		{
 			if (ctx == null)
-				return null;
+				return Task.FromResult<TooltipItem> (null);
 			var analysisDocument = ctx.ParsedDocument;
 			if (analysisDocument == null)
-				return null;
+				return Task.FromResult<TooltipItem> (null);
 			var unit = analysisDocument.GetAst<SemanticModel> ();
 			if (unit == null)
-				return null;
+				return Task.FromResult<TooltipItem> (null);
 			
-			var root = unit.SyntaxTree.GetRoot ();
-			SyntaxToken token;
+			var root = unit.SyntaxTree.GetRoot (token);
+			SyntaxToken syntaxToken;
 			try {
-				token = root.FindToken (offset);
+				syntaxToken = root.FindToken (offset);
 			} catch (ArgumentOutOfRangeException) {
-				return null;
+				return Task.FromResult<TooltipItem> (null);
 			}
-			if (!token.Span.IntersectsWith (offset))
-				return null;
-			var symbolInfo = unit.GetSymbolInfo (token.Parent);
-			var symbol = symbolInfo.Symbol ?? unit.GetDeclaredSymbol (token.Parent);
-			return new TooltipItem (new ToolTipData (symbolInfo, symbol, token), token.Span.Start, token.Span.Length);
+			if (!syntaxToken.Span.IntersectsWith (offset))
+				return Task.FromResult<TooltipItem> (null);
+			var symbolInfo = unit.GetSymbolInfo (syntaxToken.Parent, token);
+			var symbol = symbolInfo.Symbol ?? unit.GetDeclaredSymbol (syntaxToken.Parent, token);
+			return Task.FromResult (new TooltipItem (new ToolTipData (symbolInfo, symbol, syntaxToken), syntaxToken.Span.Start, syntaxToken.Span.Length));
 		}
 		
 		static TooltipInformationWindow lastWindow = null;

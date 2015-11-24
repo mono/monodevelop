@@ -27,6 +27,8 @@ using System;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.CodeCompletion;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -85,7 +87,7 @@ namespace MonoDevelop.Ide.Editor
 	// TODO: Improve tooltip API - that really looks messy
 	public abstract class TooltipProvider : IDisposable
 	{
-		public abstract TooltipItem GetItem (TextEditor editor, DocumentContext ctx, int offset);
+		public abstract Task<TooltipItem> GetItem (TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default(CancellationToken));
 
 		public virtual bool IsInteractive (TextEditor editor, Control tipWindow)
 		{
