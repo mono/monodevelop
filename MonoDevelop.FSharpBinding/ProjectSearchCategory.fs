@@ -192,7 +192,7 @@ type ProjectSearchCategory() =
     async {
       for projFile in getAllProjectFiles() do
         try
-          LoggingService.LogInfo("F# Global Serach: Getting all project symbols")
+          LoggingService.LogInfo("F# Global Search: Getting all project symbols")
           let! allProjectSymbols = Search.getAllProjectSymbols projFile
 
           LoggingService.LogInfo(sprintf "F# Global Serach: Filtering %i project symbols from %s, for definitions" (allProjectSymbols |> Seq.length) projFile )
