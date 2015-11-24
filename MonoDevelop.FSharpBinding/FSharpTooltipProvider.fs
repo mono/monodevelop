@@ -5,6 +5,7 @@
 namespace MonoDevelop.FSharp
 
 open System
+open System.Threading.Tasks
 open MonoDevelop
 open MonoDevelop.Core
 open MonoDevelop.Components
@@ -24,7 +25,7 @@ type FSharpTooltipProvider() =
   let killTooltipWindow() =
     enterNotify |> Option.iter (fun en -> en.Dispose ())
 
-  override x.GetItem (editor, context, offset) =
+  override x.GetItem (editor, context, offset, cancellationToken) =
     try
       let doc = IdeApp.Workbench.ActiveDocument
       if doc = null then null else
@@ -75,7 +76,9 @@ type FSharpTooltipProvider() =
           | None ->
           //operate on available results no async gettypeparse results is available quick enough
           Async.RunSynchronously (
-            async {
+            cancellationToken = cancellationToken,
+            timeout = ServiceSettings.blockingTimeout,
+            computation = async {
               try 
                 LoggingService.LogDebug "TooltipProvider: Getting tool tip"
                 match MDLanguageService.Instance.GetTypedParseResultIfAvailable (projectFile, file, source, AllowStaleResults.MatchingSource) with
@@ -104,7 +107,7 @@ type FSharpTooltipProvider() =
               | :? TimeoutException -> return ParseAndCheckNotFound
               | ex ->
                 LoggingService.LogError ("TooltipProvider: unexpected exception", ex)
-                return ParseAndCheckNotFound}, ServiceSettings.blockingTimeout)
+                return ParseAndCheckNotFound})
 
       match result with
       | ParseAndCheckNotFound -> LoggingService.LogWarning "TooltipProvider: ParseAndCheckResults not found"; null
@@ -114,7 +117,7 @@ type FSharpTooltipProvider() =
       | NoToolTipData -> sprintf "TooltipProvider: No symbol data found\n   %s\n   %s" lineStr (String.replicate col "-" + "^")
                          |> LoggingService.LogDebug
                          null
-      | Tooltip t -> t
+      | Tooltip t -> Task.FromResult t
      
     with exn ->
       LoggingService.LogError ("TooltipProvider: Error retrieving tooltip", exn)
