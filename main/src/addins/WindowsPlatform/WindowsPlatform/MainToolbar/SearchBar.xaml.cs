@@ -17,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Globalization;
 
 namespace WindowsPlatform.MainToolbar
 {
@@ -49,7 +50,7 @@ namespace WindowsPlatform.MainToolbar
 			}
 			set	{
 				var oldPlaceholderText = placeholderText;
-				placeholderText = value;
+				StringNotNullOrEmptyOrPlaceholderConverter.PlaceholderText = placeholderText = value;
 				if (string.IsNullOrEmpty (SearchText) || searchText == oldPlaceholderText)
 					SearchText = placeholderText;
             }
@@ -84,6 +85,12 @@ namespace WindowsPlatform.MainToolbar
 			}
 		}
 
+		void OnClearClicked (object sender, RoutedEventArgs args)
+		{
+			SearchText = string.Empty;
+			ClearIcon.Visibility = Visibility.Collapsed;
+		}
+
 		void OnIconClicked (object sender, RoutedEventArgs args)
 		{
 			SearchIcon.ContextMenu.IsOpen = true;
@@ -103,5 +110,22 @@ namespace WindowsPlatform.MainToolbar
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
+	}
+
+	public class StringNotNullOrEmptyOrPlaceholderConverter : IValueConverter
+	{
+		internal static string PlaceholderText = null;
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			var str = (string)value;
+			if (string.IsNullOrEmpty(str) || str == PlaceholderText)
+				return Visibility.Collapsed;
+			return Visibility.Visible;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			throw new NotImplementedException ();
+		}
 	}
 }
