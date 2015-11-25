@@ -70,10 +70,10 @@ namespace WindowsPlatform
 			MenuForegroundBrush = SystemColors.MenuTextBrush;
 			MenuBorderBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x99, G = 0x99, B = 0x99 });
 			MenuSeparatorBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0xD7, G = 0xD7, B = 0xD7 });
-			MenuHighlightBackgroundBrush = new SolidColorBrush (new Color { A = 0x3D, R = 0x26, G = 0xA0, B = 0xDA });
-			MenuHighlightBorderBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x26, G = 0xA0, B = 0xDA });
-			MenuSelectedBackgroundBrush = new SolidColorBrush (new Color { A = 0x3D, R = 0x26, G = 0xA0, B = 0xDA });
-			MenuSelectedBorderBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x26, G = 0xA0, B = 0xDA });
+			MenuHighlightBackgroundBrush = new SolidColorBrush (new Color { A = 0x66, R = 0x00, G = 0x8B, B = 0xFF });
+			MenuHighlightBorderBrush = new SolidColorBrush (new Color { A = 0x66, R = 0x00, G = 0x8B, B = 0xFF });
+			MenuSelectedBackgroundBrush = new SolidColorBrush (new Color { A = 0x66, R = 0x00, G = 0x8B, B = 0xFF });
+			MenuSelectedBorderBrush = new SolidColorBrush (new Color { A = 0x66, R = 0x00, G = 0x8B, B = 0xFF });
 			MenuDisabledForegroundBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x70, G = 0x70, B = 0x70 });
 
 			StatusBarBackgroundBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0xE5, G = 0xE5, B = 0xE5 });
