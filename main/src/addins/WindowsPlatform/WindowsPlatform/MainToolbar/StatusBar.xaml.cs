@@ -62,11 +62,11 @@ namespace WindowsPlatform.MainToolbar
 					if (ec > 0) {
 						BuildResultPanelVisibility = Visibility.Visible;
 						BuildResultCount = ec;
-						BuildResultIcon = Stock.Error.GetStockIcon ().WithSize (Xwt.IconSize.Small).GetImageSource();
+						BuildResultIcon = Stock.Error.GetImageSource (Xwt.IconSize.Small);
 					} else if (wc > 0) {
 						BuildResultPanelVisibility = Visibility.Visible;
 						BuildResultCount = wc;
-						BuildResultIcon = Stock.Warning.GetStockIcon ().WithSize (Xwt.IconSize.Small).GetImageSource();
+						BuildResultIcon = Stock.Warning.GetImageSource (Xwt.IconSize.Small);
 					} else
 						BuildResultPanelVisibility = Visibility.Collapsed;
 				});
@@ -182,7 +182,7 @@ namespace WindowsPlatform.MainToolbar
 			if (image.IsNull)
 				image = BrandingService.StatusSteadyIconId;
 
-			StatusImage = image.GetStockIcon ().WithSize (Xwt.IconSize.Small).GetImageSource ();
+			StatusImage = image.GetImageSource (Xwt.IconSize.Small);
 			Message = message;
 		}
 

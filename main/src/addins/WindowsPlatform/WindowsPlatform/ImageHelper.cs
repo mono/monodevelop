@@ -37,7 +37,7 @@ namespace WindowsPlatform
 	{
 		static Dictionary<string, Image> cachedIcons = new Dictionary<string, Image> ();
 
-		public static Image GetStockIcon (this IconId stockId)
+		static Image GetStockIcon (this IconId stockId)
 		{
 			if (stockId.IsNull)
 				return null;
@@ -53,6 +53,18 @@ namespace WindowsPlatform
 				throw new InvalidOperationException ("Icon not found: " + stockId);
 			cachedIcons [stockId] = image;
 			return image;
+		}
+
+		public static ImageSource GetImageSource (this IconId stockId, Xwt.IconSize size)
+		{
+			if (stockId.IsNull)
+				return null;
+			try {
+				return stockId.GetStockIcon ().WithSize (size).GetImageSource ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("Failed loading icon: " + stockId, ex);
+			}
+			return null;
 		}
 
 		public static ImageSource GetImageSource (this Image image)

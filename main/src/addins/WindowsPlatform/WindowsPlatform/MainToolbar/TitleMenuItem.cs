@@ -60,13 +60,9 @@ namespace WindowsPlatform.MainToolbar
 				// FIXME: Use proper keybinding text.
 				if (actionCommand.KeyBinding != null)
 					InputGestureText = actionCommand.KeyBinding.ToString ();
-
-				try {
-					if (!actionCommand.Icon.IsNull)
-						Icon = new Image { Source = ImageService.GetIcon (actionCommand.Icon).WithSize (Xwt.IconSize.Small).GetImageSource () };
-				} catch (Exception ex) {
-					MonoDevelop.Core.LoggingService.LogError ("Failed loading menu icon: " + actionCommand.Icon, ex);
-				}
+				
+				if (!actionCommand.Icon.IsNull)
+					Icon = new Image { Source = actionCommand.Icon.GetImageSource (Xwt.IconSize.Small) };
 				Click += OnMenuClicked;
 			}
 

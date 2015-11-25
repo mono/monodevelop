@@ -218,7 +218,7 @@ namespace WindowsPlatform.MainToolbar
 				try {
 					SetImageFromResource (button.Image + ".png");
 				} catch {
-					Image = button.Image.GetStockIcon ().WithSize (Xwt.IconSize.Medium).GetImageSource ();
+					Image = button.Image.GetImageSource (Xwt.IconSize.Medium);
 				}
 			}
 
@@ -265,7 +265,7 @@ namespace WindowsPlatform.MainToolbar
 				try {
 					SetImageFromResource (button.Image + ".png");
 				} catch {
-					Image = button.Image.GetStockIcon ().WithSize (Xwt.IconSize.Medium).GetImageSource ();
+					Image = button.Image.GetImageSource (Xwt.IconSize.Medium);
 				}
 			}
         }

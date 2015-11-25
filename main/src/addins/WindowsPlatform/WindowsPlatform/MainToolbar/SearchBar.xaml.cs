@@ -39,7 +39,7 @@ namespace WindowsPlatform.MainToolbar
 				IdeApp.Workbench.RootWindow.Present();
 			};
 
-			SearchIcon.Source = Stock.SearchboxSearch.GetStockIcon ().WithSize (Xwt.IconSize.Small).GetImageSource ();
+			SearchIcon.Source = Stock.SearchboxSearch.GetImageSource (Xwt.IconSize.Small);
 		}
 
 		string placeholderText;
