@@ -53,7 +53,7 @@ namespace MonoDevelop.Projects
 
 		internal protected void Initialize<T> (T instance)
 		{
-			if (instance.GetType () != typeof(T))
+			if (!typeof(T).IsAssignableFrom(instance.GetType ()))
 				return;
 			var delayedInitialize = CallContext.LogicalGetData ("MonoDevelop.DelayItemInitialization");
 			if (delayedInitialize != null && (bool)delayedInitialize)
