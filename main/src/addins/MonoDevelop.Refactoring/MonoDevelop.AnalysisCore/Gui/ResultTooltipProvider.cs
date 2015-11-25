@@ -60,7 +60,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			return null;
 		}
 
-		public override MonoDevelop.Components.Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Gdk.ModifierType modifierState)
+		public override MonoDevelop.Components.Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
 		{
 //			//create a message string from all the results
 //			var results = (IList<Result>)item.Item;

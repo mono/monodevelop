@@ -55,7 +55,7 @@ namespace MonoDevelop.SourceEditor
 			return new TooltipItem (errorInformation, editor.GetLineByOffset (offset));
 		}
 
-		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Gdk.ModifierType modifierState)
+		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
 		{
 			var result = new LanguageItemWindow (GetExtensibleTextEditor (editor), modifierState, null, (string)item.Item, null);
 			if (result.IsEmpty)

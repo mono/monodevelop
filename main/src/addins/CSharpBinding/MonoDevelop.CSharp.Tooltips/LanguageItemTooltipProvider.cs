@@ -115,7 +115,7 @@ namespace MonoDevelop.SourceEditor
 		#endregion
 
 
-		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Gdk.ModifierType modifierState)
+		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
 		{
 			var doc = ctx;
 			if (doc == null)
@@ -133,7 +133,7 @@ namespace MonoDevelop.SourceEditor
 			return result;
 		}
 
-		TooltipInformation CreateTooltip (ToolTipData data, TextEditor editor, DocumentContext doc, int offset, Gdk.ModifierType modifierState)
+		TooltipInformation CreateTooltip (ToolTipData data, TextEditor editor, DocumentContext doc, int offset, Xwt.ModifierKeys modifierState)
 		{
 			bool createFooter = true; //(modifierState & Gdk.ModifierType.Mod1Mask) != 0;
 			try {
