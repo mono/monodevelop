@@ -147,6 +147,10 @@ FileReplace ("MonoDevelop.FSharpBinding/MonoDevelop.FSharp.fsproj.orig", fsprojF
 FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDVERSION4", mdVersion)
 FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDVERSIONDEFINE", "MDVERSION_" + mdVersion.Replace(".","_"))
 FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDTAG", tag)
+// Add reference to Xamarin.Mac
+if not isWindows then
+    FileReplace (fsprojFile, fsprojFile, "<!--", "")
+    FileReplace (fsprojFile, fsprojFile, "-->", "")
 
 if File.Exists(GetPath [fsprojFile]) then
     Console.WriteLine ("Created {0}", GetPath [fsprojFile])
