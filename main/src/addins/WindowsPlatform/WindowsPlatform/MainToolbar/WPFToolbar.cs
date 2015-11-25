@@ -115,12 +115,12 @@ namespace WindowsPlatform.MainToolbar
 		}
 		
 		public bool ConfigurationPlatformSensitivity {
-			get { return toolbar.ConfigurationMenu.Focusable; }
-			set { toolbar.ConfigurationMenu.Focusable = toolbar.RuntimeMenu.Focusable = value; }
+			get { return toolbar.ConfigurationMenu.IsEnabled; }
+			set { toolbar.ConfigurationMenu.IsEnabled = toolbar.RuntimeMenu.IsEnabled = value; }
 		}
 
 		public bool PlatformSensitivity {
-			set	{ toolbar.RuntimeMenu.Focusable = value; }
+			set	{ toolbar.RuntimeMenu.IsEnabled = value; }
 		}
 
 		public Gtk.Widget PopupAnchor {
