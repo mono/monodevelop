@@ -36,7 +36,7 @@ namespace MonoDevelop.Components
 {
 	public class Control : IDisposable
 	{
-		internal static Dictionary<object, Control> cache = new Dictionary<object, Control> ();
+		internal static Dictionary<object, WeakReference<Control>> cache = new Dictionary<object, WeakReference<Control>> ();
 		object nativeWidget;
 
 		protected Control ()
@@ -48,7 +48,7 @@ namespace MonoDevelop.Components
 			if (widget == null)
 				throw new ArgumentNullException (nameof (widget));
 			this.nativeWidget = widget;
-			cache.Add (nativeWidget, this);
+			cache.Add (nativeWidget, new WeakReference<Control> (this));
 		}
 
 		protected virtual object CreateNativeWidget ()
@@ -83,12 +83,13 @@ namespace MonoDevelop.Components
 				} else {
 					nativeWidget = w;
 				}
-				Control cached;
-				if (cache.TryGetValue (nativeWidget, out cached)) {
-					if (cached != toCache)
+				WeakReference<Control> cached;
+				Control target;
+				if (cache.TryGetValue (nativeWidget, out cached) && cached.TryGetTarget (out target)) {
+					if (target != toCache)
 						throw new Exception ();
 				} else
-					cache.Add (nativeWidget, toCache);
+					cache.Add (nativeWidget, new WeakReference<Control> (toCache));
 			}
 			if (nativeWidget is T)
 				return (T)nativeWidget;
@@ -129,10 +130,11 @@ namespace MonoDevelop.Components
 
 		internal static T GetImplicit<T, U> (U native) where T : Control where U : class
 		{
-			Control cached;
+			WeakReference<Control> cached;
+			Control target;
 
-			if (cache.TryGetValue (native, out cached))
-				return (T)cached;
+			if (cache.TryGetValue (native, out cached) && cached.TryGetTarget (out target))
+				return (T)target;
 			return null;
 		}
 
