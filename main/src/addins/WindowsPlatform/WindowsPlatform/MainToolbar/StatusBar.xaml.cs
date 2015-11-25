@@ -197,8 +197,8 @@ namespace WindowsPlatform.MainToolbar
 			var icon = new StatusIcon (this) {
 				Image = pixbuf,
 				Margin = new Thickness (5, 5, 5, 5),
-				MaxWidth = 14,
-				MaxHeight = 14,
+				MaxWidth = 16,
+				MaxHeight = 16,
 			};
 
 			StatusIconsPanel.Children.Add (icon);
