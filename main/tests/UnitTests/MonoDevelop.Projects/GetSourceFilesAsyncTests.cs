@@ -51,7 +51,6 @@ namespace MonoDevelop.Projects
 		public void TestTearDown ()
 		{
 			FileService.FileChanged -= FileService_FileChanged;
-			Util.ClearTmpDir ();
 			fileChangeNotification = null;
 		}
 
