@@ -110,10 +110,10 @@ namespace MonoDevelop.VersionControl
 			repo.DeleteDirectory (path, true, new ProgressMonitor (), false);
 		}
 
-		public override void RequestFileEdit (IEnumerable<FilePath> files)
+		public override void RequestFileEdit (FilePath file)
 		{
-			Repository repo = GetRepository (FilePath.GetCommonRootPath (files));
-			repo.RequestFileWritePermission (files.ToArray ());
+			Repository repo = GetRepository (file.FullPath);
+			repo.RequestFileWritePermission (file);
 		}
 		
 		public override void NotifyFilesChanged (IEnumerable<FilePath> files)
