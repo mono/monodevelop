@@ -517,6 +517,14 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		void IViewContent.Suspend ()
+		{
+		}
+
+		void IViewContent.Resume ()
+		{
+		}
+
 		#endregion
 
 		#region IBaseViewContent implementation
