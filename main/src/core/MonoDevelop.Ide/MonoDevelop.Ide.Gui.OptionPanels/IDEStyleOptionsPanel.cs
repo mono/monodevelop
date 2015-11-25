@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		}
 	}
 	
-	public partial class IDEStyleOptionsPanelWidget : Gtk.Bin
+	partial class IDEStyleOptionsPanelWidget : Gtk.Bin
 	{
 		static Lazy<List<string>> themes = new Lazy<List<string>> (() => {
 			var searchDirs = new List<string> ();
