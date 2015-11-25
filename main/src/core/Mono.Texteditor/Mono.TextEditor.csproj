@@ -236,6 +236,7 @@
     <Compile Include="Mono.TextEditor\Gui\LayoutCache.cs" />
     <Compile Include="Mono.TextEditor\Gui\GtkUtil.cs" />
     <Compile Include="Mono.TextEditor\EditModeChangedEventArgs.cs" />
+    <Compile Include="Mono.TextEditor\IKeyHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

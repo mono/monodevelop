@@ -429,5 +429,20 @@ namespace Mono.TextEditor
 				InsertCharacter (unicodeKey);
 			}
 		}
+
+		internal override bool WillHandleKeypress (Gdk.Key key, Gdk.ModifierType modifier)
+		{
+			bool isReservedKey = false;
+
+			// Reserve unmodified Escape, Return, Backspace and the cursor keys
+			if (key == Key.Escape || key == Key.Return || key == Key.BackSpace ||
+				key == Key.Up || key == Key.Down || key == Key.Left || key == Key.Right) {
+				isReservedKey = (modifier == ModifierType.None);
+			}
+
+			uint unicode = Gdk.Keyval.ToUnicode ((uint)key);
+			// Handle unmodified printable chars by default
+			return (unicode != 0 && modifier == ModifierType.None) || isReservedKey;
+		}
 	}
 }

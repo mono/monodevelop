@@ -52,7 +52,13 @@ namespace Mono.TextEditor
 			this.textEditorData = null;
 			this.editor = null;
 		}
-		
+
+		internal virtual bool WillHandleKeypress (Gdk.Key key, Gdk.ModifierType modifier)
+		{
+			// Default doesn't reserve any keys
+			return false;
+		}
+
 		internal virtual void InternalSelectionChanged (TextEditor editor, TextEditorData data)
 		{
 			// only trigger SelectionChanged when event is a result of external stimuli, i.e. when 
