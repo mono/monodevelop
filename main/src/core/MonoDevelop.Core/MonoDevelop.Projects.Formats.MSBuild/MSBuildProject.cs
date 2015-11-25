@@ -893,14 +893,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		public void RemoveItem (MSBuildItem item)
+		public void RemoveItem (MSBuildItem item, bool removeEmptyParentGroup = true)
 		{
 			AssertCanModify ();
 			if (item.ParentGroup != null) {
 				item.RemoveIndent ();
 				var g = item.ParentGroup;
 				g.RemoveItem (item);
-				if (!item.ParentGroup.Items.Any ())
+				if (removeEmptyParentGroup && !item.ParentGroup.Items.Any ())
 					Remove (g);
 			}
 		}
