@@ -423,9 +423,8 @@ namespace MonoDevelop.Projects
 					} catch (Exception ex) {
 						LoggingService.LogInternalError (string.Format ("Error running target {0}", dependTarget), ex);
 					}
-
-					evaluatedCompileItemsTask.SetResult (result.ToArray ());
 				}
+				evaluatedCompileItemsTask.SetResult (result.ToArray ());
 			}
 
 			return await evaluatedCompileItemsTask.Task;
