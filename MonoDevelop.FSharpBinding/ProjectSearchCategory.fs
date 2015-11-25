@@ -115,12 +115,10 @@ type SymbolSearchResult(match', matchedString, rank, symbol:FSharpSymbolUse) =
       | ValueType _ -> "struct"
       | Delegate _ -> "delegate"
       | Union _ -> "union"
-      | Class _ -> "class"
+      | Class c -> if c.IsFSharp then "type" else "class"
       | Namespace _ -> "namespace"
       | Interface _ -> "interface"
       | Enum _ -> "enum"
-      //TODO: check if we can isolate F# specific types
-      // | Type _ -> getImage "md-type"
       | ActivePattern _ -> "active pattern"
       | Field _ -> "field"
       | UnionCase _ -> "union case"
