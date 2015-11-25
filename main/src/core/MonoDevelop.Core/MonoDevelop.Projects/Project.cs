@@ -854,7 +854,8 @@ namespace MonoDevelop.Projects
 		/// build or clean. The default implementation delegates the execution to the more specific OnBuild
 		/// and OnClean methods, or to the item handler for other targets.
 		/// </remarks>
-		internal protected virtual Task<TargetEvaluationResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
+		// REMARKS: This is marked public because I need to call it on the shadow project.
+		public virtual Task<TargetEvaluationResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
 		{
 			if (target == ProjectService.BuildTarget)
 				return RunBuildTarget (monitor, configuration, context);
