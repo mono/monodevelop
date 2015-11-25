@@ -105,6 +105,7 @@ namespace WindowsPlatform.MainToolbar
 			InitializeComponent ();
 
 			DataContext = this;
+			ToolTipService.SetShowOnDisabled (this, true);
 			IsEnabled = false;
 		}
 
