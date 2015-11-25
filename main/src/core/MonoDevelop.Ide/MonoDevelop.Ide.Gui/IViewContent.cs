@@ -62,5 +62,8 @@ namespace MonoDevelop.Ide.Gui
         event EventHandler ContentChanged;
         event EventHandler DirtyChanged;
         event EventHandler BeforeSave;
+
+		void Suspend ();
+		void Resume ();
 	}
 }

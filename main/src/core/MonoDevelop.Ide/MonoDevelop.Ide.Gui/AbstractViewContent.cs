@@ -161,6 +161,14 @@ namespace MonoDevelop.Ide.Gui
 			if (ContentNameChanged != null)
 				ContentNameChanged (this, e);
 		}
+
+		public virtual void Suspend ()
+		{
+		}
+
+		public virtual void Resume ()
+		{
+		}
 	}
 
 	public abstract class AbstractXwtViewContent :AbstractViewContent
