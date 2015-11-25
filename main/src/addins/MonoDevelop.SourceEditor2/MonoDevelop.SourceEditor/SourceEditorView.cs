@@ -1017,7 +1017,12 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (!writeAccessChecked && !IsUntitled) {
 				writeAccessChecked = true;
-				writeAllowed = FileService.RequestFileEdit (ContentName, false);
+				try {
+					writeAllowed = FileService.RequestFileEdit (ContentName);
+				} catch (Exception e) {
+					IdeApp.Workbench.StatusBar.ShowError (e.Message); 
+					writeAllowed = false;
+				}
 			}
 			return IsUntitled || writeAllowed;
 		}
