@@ -29,8 +29,21 @@ namespace MonoDevelop.Components
 {
 	public class Window : Control
 	{
-		public Window (object widget) : base (widget)
+		object widget;
+		public Window (object widget)
 		{
+			this.widget = widget;
+		}
+
+		protected override object CreateNativeWidget ()
+		{
+			return widget;
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			base.Dispose (disposing);
+			widget = null;
 		}
 
 		public static implicit operator Gtk.Window (Window d)
@@ -42,8 +55,8 @@ namespace MonoDevelop.Components
 		{
 			if (d == null)
 				return null;
-			
-			return GetImplicit<Window, Gtk.Window> (d) ?? new Window(d);
+
+			return (Window)(Control)d;
 		}
 	}
 }

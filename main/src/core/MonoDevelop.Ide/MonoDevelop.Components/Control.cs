@@ -43,7 +43,7 @@ namespace MonoDevelop.Components
 		{
 		}
 
-		public Control (object widget)
+		Control (object widget)
 		{
 			if (widget == null)
 				throw new ArgumentNullException (nameof (widget));
@@ -128,7 +128,7 @@ namespace MonoDevelop.Components
 			return GetImplicit<Control, Gtk.Widget>(d) ?? new Control (d);
 		}
 
-		internal static T GetImplicit<T, U> (U native) where T : Control where U : class
+		static T GetImplicit<T, U> (U native) where T : Control where U : class
 		{
 			WeakReference<Control> cached;
 			Control target;

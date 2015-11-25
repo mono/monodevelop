@@ -54,8 +54,21 @@ namespace MonoDevelop.Components
 {
 	public class Menu : Control
 	{
-		public Menu (object widget) : base (widget)
+		object widget;
+		public Menu (object widget)
 		{
+			this.widget = widget;
+		}
+
+		protected override object CreateNativeWidget ()
+		{
+			return widget;
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			widget = null;
+			base.Dispose (disposing);
 		}
 
 		public static implicit operator Gtk.Menu (Menu d)
@@ -68,7 +81,7 @@ namespace MonoDevelop.Components
 			if (d == null)
 				return null;
 
-			return GetImplicit<Menu, Gtk.Menu> (d) ?? new Menu (d);
+			return (Menu)(Control)d;
 		}
 	}
 }

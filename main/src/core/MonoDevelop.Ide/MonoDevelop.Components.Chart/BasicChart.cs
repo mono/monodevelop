@@ -35,10 +35,15 @@ namespace MonoDevelop.Components.Chart
 {
 	public class BasicChart: Control
 	{
-		readonly ChartWidget widget;
-		public BasicChart () : base (new ChartWidget ())
+		ChartWidget widget;
+		public BasicChart ()
 		{
-			widget = GetNativeWidget<ChartWidget> ();
+		}
+
+		protected override object CreateNativeWidget ()
+		{
+			widget = new ChartWidget ();
+			return widget;
 		}
 
 		protected internal virtual void OnSelectionChanged ()

@@ -202,12 +202,17 @@ namespace MonoDevelop.Ide.Gui
 		{
 		}
 
-		public DocumentToolButton (string stockId, string label) : base (new Gtk.Button ())
+		public DocumentToolButton (string stockId, string label)
 		{
-			button = GetNativeWidget<Gtk.Button> ();
+			button = new Button ();
 			Label = label;
 			Image = new Gtk.Image (stockId, IconSize.Menu);
 			button.Image.Show ();
+		}
+
+		protected override object CreateNativeWidget ()
+		{
+			return button;
 		}
 
 		public event EventHandler Clicked {
@@ -221,8 +226,15 @@ namespace MonoDevelop.Ide.Gui
 
 		public class DocumentToolButtonImage : Control
 		{
-			internal DocumentToolButtonImage (Gtk.Image image) : base (image)
+			Gtk.Image image;
+			internal DocumentToolButtonImage (Gtk.Image image)
 			{
+				this.image = image;
+			}
+
+			protected override object CreateNativeWidget ()
+			{
+				return image;
 			}
 
 			public static implicit operator Gtk.Widget (DocumentToolButtonImage d)

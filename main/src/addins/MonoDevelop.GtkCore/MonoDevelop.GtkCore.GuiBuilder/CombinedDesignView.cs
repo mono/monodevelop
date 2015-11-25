@@ -60,7 +60,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			content.DirtyChanged += new EventHandler (OnTextDirtyChanged);
 			
 			CommandRouterContainer crc = new CommandRouterContainer (content.Control, content, true);
-			crc.GetNativeWidget<Gtk.Widget> ().Show ();
+			crc.Show ();
 			control = crc;
 			
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);

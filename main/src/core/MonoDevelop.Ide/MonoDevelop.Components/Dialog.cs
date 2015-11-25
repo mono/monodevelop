@@ -29,7 +29,7 @@ namespace MonoDevelop.Components
 {
 	public class Dialog : Window
 	{
-		public Dialog (object widget) : base (widget)
+		public Dialog (object widget) : base(widget)
 		{
 		}
 
@@ -42,8 +42,8 @@ namespace MonoDevelop.Components
 		{
 			if (d == null)
 				return null;
-			
-			return GetImplicit<Dialog, Gtk.Dialog> (d) ?? new Dialog (d);
+
+			return (Dialog)(Control)d;
 		}
 	}
 }
