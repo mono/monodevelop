@@ -32,68 +32,24 @@ using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.SourceEditor.Wrappers;
 using MonoDevelop.Components;
-
-using Xwt.Drawing;
 using MonoDevelop.Debugger;
+using MonoDevelop.Ide.Editor;
+using Xwt.Drawing;
 
 namespace MonoDevelop.SourceEditor
 {
-	abstract class DebugTextMarker : MarginMarker
+	class DebugIconMarker : MarginMarker
 	{
-		protected DebugTextMarker (MonoTextEditor editor)
-		{
-			Editor = editor;
-		}
+		Image DebugIcon { get; }
 
-		protected abstract Cairo.Color BackgroundColor {
-			get;
-		}
-		
-		protected abstract Cairo.Color BorderColor {
-			get;
-		}
-		
-		protected Cairo.Color GetBorderColor (AmbientColor color) 
+		public DebugIconMarker (Image debugIcon)
 		{
-			if (color.HasBorderColor)
-				return color.BorderColor;
-			return color.Color;
-		}
-
-		protected MonoTextEditor Editor {
-			get; private set;
-		}
-
-		public override bool CanDrawBackground (Margin margin)
-		{
-			return margin is TextViewMargin;
+			DebugIcon = debugIcon;
 		}
 
 		public override bool CanDrawForeground (Margin margin)
 		{
 			return margin is IconMargin;
-		}
-
-		public override bool DrawBackground (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics)
-		{
-			// check, if a message bubble is active in that line.
-			if (LineSegment != null && LineSegment.Markers.Any (m => m != this && (m is IExtendingTextLineMarker)))
-				return false;
-
-			var sidePadding = 4;
-			var rounding = editor.LineHeight / 2 - 1;
-			var y = metrics.LineYRenderStartPosition;
-			var d = metrics.TextRenderEndPosition - metrics.TextRenderStartPosition;
-			if (d > 0) {
-				cr.LineWidth = 1;
-				cr.RoundedRectangle (metrics.TextRenderStartPosition, Math.Floor (y) + 0.5, d + sidePadding, metrics.LineHeight - 1, rounding);
-				cr.SetSourceColor (BackgroundColor); 
-				cr.FillPreserve ();
-				cr.SetSourceColor (BorderColor); 
-				cr.Stroke ();
-			}
-
-			return base.DrawBackground (editor, cr, metrics);
 		}
 
 		public override void DrawForeground (MonoTextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
@@ -104,11 +60,71 @@ namespace MonoDevelop.SourceEditor
 			double x = Math.Floor (metrics.Margin.XOffset - borderLineWidth / 2);
 			double y = Math.Floor (metrics.Y + (metrics.Height - size) / 2);
 
-			DrawMarginIcon (cr, x, y, size);
+			var deltaX = size / 2 - DebugIcon.Width / 2 + 0.5f;
+			var deltaY = size / 2 - DebugIcon.Height / 2 + 0.5f;
+
+			cr.DrawImage (editor, DebugIcon, Math.Round (x + deltaX), Math.Round (y + deltaY));
+		}
+	}
+
+	class DebugTextMarker : TextSegmentMarker
+	{
+		readonly AmbientColor background;
+		readonly ChunkStyle forground;
+
+		public DebugTextMarker (int offset, int length, AmbientColor background, ChunkStyle forground = null)
+			: base (offset, length)
+		{
+			this.forground = forground;
+			this.background = background;
 		}
 
-		protected virtual void SetForegroundColor (ChunkStyle style)
+		public override void DrawBackground (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics, int startOffset, int endOffset)
 		{
+
+			int markerStart = base.Offset;
+			int markerEnd = base.EndOffset;
+
+			if (markerEnd < startOffset || markerStart > endOffset)
+				return;
+
+			double @from;
+			double to;
+			var startXPos = metrics.TextRenderStartPosition;
+			var endXPos = metrics.TextRenderEndPosition;
+			var y = metrics.LineYRenderStartPosition;
+			if (markerStart < startOffset && endOffset < markerEnd) {
+				@from = startXPos;
+				to = endXPos;
+			} else {
+				int start = startOffset < markerStart ? markerStart : startOffset;
+				int end = endOffset < markerEnd ? endOffset : markerEnd;
+
+				uint curIndex = 0, byteIndex = 0;
+				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)(start - startOffset), ref curIndex, ref byteIndex);
+
+				int x_pos = metrics.Layout.Layout.IndexToPos ((int)byteIndex).X;
+
+				@from = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
+
+				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)(end - startOffset), ref curIndex, ref byteIndex);
+				x_pos = metrics.Layout.Layout.IndexToPos ((int)byteIndex).X;
+
+				to = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
+			}
+
+			@from = Math.Max (@from, editor.TextViewMargin.XOffset);
+			to = Math.Max (to, editor.TextViewMargin.XOffset);
+			if (@from < to) {
+				cr.SetSourceColor (background.Color);
+				cr.RoundedRectangle (@from + 0.5, y + 1.5, to - @from - 1, editor.LineHeight - 2, editor.LineHeight / 4);
+				cr.FillPreserve ();
+
+				if (background.HasBorderColor) {
+					cr.SetSourceColor (background.BorderColor);
+					cr.Stroke ();
+				}
+			}
 		}
 
 		public override ChunkStyle GetStyle (ChunkStyle baseStyle)
@@ -117,172 +133,97 @@ namespace MonoDevelop.SourceEditor
 				return null;
 
 			var style = new ChunkStyle (baseStyle);
-			//			style.Background = BackgroundColor;
-			SetForegroundColor (style);
-
+			if (forground != null) {
+				style.Foreground = forground.Foreground;
+			}
 			return style;
 		}
-
-		protected void DrawImage (Cairo.Context cr, Image image, double x, double y, double size)
-		{
-			var deltaX = size / 2 - image.Width / 2 + 0.5f;
-			var deltaY = size / 2 - image.Height / 2 + 0.5f;
-
-			cr.DrawImage (Editor, image, Math.Round (x + deltaX), Math.Round (y + deltaY));
-		}
-
-		protected virtual void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
-		{
-		}
 	}
 
-	class BreakpointTextMarker : DebugTextMarker
+	abstract class DebugMarkerPair
 	{
-		static readonly Image breakpoint = Image.FromResource (typeof(BreakpointPad), "gutter-breakpoint-15.png");
-		static readonly Image tracepoint = Image.FromResource (typeof(BreakpointPad), "gutter-tracepoint-15.png");
+		public DebugIconMarker IconMarker { get; protected set; }
+		public DebugTextMarker TextMarker { get; protected set; }
+		private TextDocument document;
 
-		public BreakpointTextMarker (MonoTextEditor editor, bool tracepoint) : base (editor)
+		internal void AddTo (TextDocument document, DocumentLine line)
 		{
-			IsTracepoint = tracepoint;
+			this.document = document;
+			document.AddMarker (line, IconMarker);
+			document.AddMarker (TextMarker);
 		}
 
-		public bool IsTracepoint {
-			get; private set;
-		}
-
-		protected override Cairo.Color BackgroundColor {
-			get { return Editor.ColorStyle.BreakpointMarker.Color; }
-		}
-		
-		protected override Cairo.Color BorderColor {
-			get { return GetBorderColor (Editor.ColorStyle.BreakpointMarker); }
-		}
-
-		protected override void SetForegroundColor (ChunkStyle style)
+		internal void Remove ()
 		{
-			style.Foreground = Editor.ColorStyle.BreakpointText.Foreground;
-		}
-
-		protected override void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
-		{
-			DrawImage (cr, IsTracepoint ? tracepoint : breakpoint, x, y, size);
-		}
-	}
-
-	class DisabledBreakpointTextMarker : DebugTextMarker
-	{
-		static readonly Image breakpoint = Image.FromResource (typeof(BreakpointPad), "gutter-breakpoint-disabled-15.png");
-		static readonly Image tracepoint = Image.FromResource (typeof(BreakpointPad), "gutter-tracepoint-disabled-15.png");
-
-		public DisabledBreakpointTextMarker (MonoTextEditor editor, bool tracepoint) : base (editor)
-		{
-			IsTracepoint = tracepoint;
-		}
-
-		public bool IsTracepoint {
-			get; private set;
-		}
-
-		protected override Cairo.Color BackgroundColor {
-			get { return Editor.ColorStyle.BreakpointMarkerDisabled.Color; }
-		}
-		
-		protected override Cairo.Color BorderColor {
-			get { return GetBorderColor (Editor.ColorStyle.BreakpointMarkerDisabled); }
-		}
-
-		protected override void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
-		{
-			DrawImage (cr, IsTracepoint ? tracepoint : breakpoint, x, y, size);
-		}
-	}
-
-	class InvalidBreakpointTextMarker : DebugTextMarker
-	{
-		static readonly Image breakpoint = Image.FromResource (typeof(BreakpointPad), "gutter-breakpoint-invalid-15.png");
-		static readonly Image tracepoint = Image.FromResource (typeof(BreakpointPad), "gutter-tracepoint-invalid-15.png");
-
-		public InvalidBreakpointTextMarker (MonoTextEditor editor, bool tracepoint) : base (editor)
-		{
-			IsTracepoint = tracepoint;
-		}
-
-		public bool IsTracepoint {
-			get; private set;
-		}
-
-		protected override Cairo.Color BackgroundColor {
-			get { return Editor.ColorStyle.BreakpointMarkerInvalid.Color; }
-		}
-		
-		protected override Cairo.Color BorderColor {
-			get { return GetBorderColor (Editor.ColorStyle.BreakpointMarkerInvalid); }
-		}
-
-		protected override void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
-		{
-			DrawImage (cr, IsTracepoint ? tracepoint : breakpoint, x, y, size);
-		}
-	}
-
-	class CurrentDebugLineTextMarker : DebugTextMarker, MonoDevelop.Ide.Editor.ICurrentDebugLineTextMarker
-	{
-		static readonly Image currentLine = Image.FromResource (typeof(BreakpointPad), "gutter-execution-15.png");
-
-		public CurrentDebugLineTextMarker (MonoTextEditor editor) : base (editor)
-		{
-		}
-
-		protected override Cairo.Color BackgroundColor {
-			get { return Editor.ColorStyle.DebuggerCurrentLineMarker.Color; }
-		}
-
-		protected override Cairo.Color BorderColor {
-			get { return GetBorderColor (Editor.ColorStyle.DebuggerCurrentLineMarker); }
-		}
-
-		protected override void SetForegroundColor (ChunkStyle style)
-		{
-			style.Foreground = Editor.ColorStyle.DebuggerCurrentLine.Foreground;
-		}
-
-		protected override void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
-		{
-			DrawImage (cr, currentLine, x, y, size);
-		}
-
-		MonoDevelop.Ide.Editor.IDocumentLine MonoDevelop.Ide.Editor.ITextLineMarker.Line {
-			get {
-				return new DocumentLineWrapper (base.LineSegment);
+			if (document != null) {
+				document.RemoveMarker (IconMarker);
+				document.RemoveMarker (TextMarker);
 			}
 		}
 	}
 
-	class DebugStackLineTextMarker : DebugTextMarker
+	class BreakpointTextMarker : DebugMarkerPair
 	{
-		static readonly Image stackLine = Image.FromResource (typeof(BreakpointPad), "gutter-stack-15.png");
+		static readonly Image breakpoint = Image.FromResource (typeof (BreakpointPad), "gutter-breakpoint-15.png");
+		static readonly Image tracepoint = Image.FromResource (typeof (BreakpointPad), "gutter-tracepoint-15.png");
 
-		public DebugStackLineTextMarker (MonoTextEditor editor) : base (editor)
+		public BreakpointTextMarker (MonoTextEditor editor, int offset, int length, bool isTracepoint)
 		{
+			IconMarker = new DebugIconMarker (isTracepoint ? tracepoint : breakpoint);
+			TextMarker = new DebugTextMarker (offset, length, editor.ColorStyle.BreakpointMarker, editor.ColorStyle.BreakpointText);
 		}
+	}
 
-		protected override Cairo.Color BackgroundColor {
-			get { return Editor.ColorStyle.DebuggerStackLineMarker.Color; }
-		}
-		
-		protected override Cairo.Color BorderColor {
-			get { return GetBorderColor (Editor.ColorStyle.DebuggerStackLineMarker); }
-		}
+	class DisabledBreakpointTextMarker : DebugMarkerPair
+	{
+		static readonly Image breakpoint = Image.FromResource (typeof (BreakpointPad), "gutter-breakpoint-disabled-15.png");
+		static readonly Image tracepoint = Image.FromResource (typeof (BreakpointPad), "gutter-tracepoint-disabled-15.png");
 
-		protected override void SetForegroundColor (ChunkStyle style)
+		public DisabledBreakpointTextMarker (MonoTextEditor editor, int offset, int length, bool isTracepoint)
 		{
-			style.Foreground = Editor.ColorStyle.DebuggerStackLine.Foreground;
+			IconMarker = new DebugIconMarker (isTracepoint ? tracepoint : breakpoint);
+			TextMarker = new DebugTextMarker (offset, length, editor.ColorStyle.BreakpointMarkerDisabled);
+		}
+	}
+
+	class InvalidBreakpointTextMarker : DebugMarkerPair
+	{
+		static readonly Image breakpoint = Image.FromResource (typeof (BreakpointPad), "gutter-breakpoint-invalid-15.png");
+		static readonly Image tracepoint = Image.FromResource (typeof (BreakpointPad), "gutter-tracepoint-invalid-15.png");
+
+		public InvalidBreakpointTextMarker (MonoTextEditor editor, int offset, int length, bool isTracepoint)
+		{
+			IconMarker = new DebugIconMarker (isTracepoint ? tracepoint : breakpoint);
+			TextMarker = new DebugTextMarker (offset, length, editor.ColorStyle.BreakpointMarkerInvalid);
+		}
+	}
+
+	class DebugStackLineTextMarker : DebugMarkerPair
+	{
+		static readonly Image stackLine = Image.FromResource (typeof (BreakpointPad), "gutter-stack-15.png");
+
+		public DebugStackLineTextMarker (MonoTextEditor editor, int offset, int length)
+		{
+			IconMarker = new DebugIconMarker (stackLine);
+			TextMarker = new DebugTextMarker (offset, length, editor.ColorStyle.DebuggerStackLineMarker, editor.ColorStyle.DebuggerStackLine);
+		}
+	}
+
+	class CurrentDebugLineTextMarker : DebugMarkerPair, ICurrentDebugLineTextMarker
+	{
+		static readonly Image currentLine = Image.FromResource (typeof (BreakpointPad), "gutter-execution-15.png");
+
+		public CurrentDebugLineTextMarker (MonoTextEditor editor, int offset, int length)
+		{
+			IconMarker = new DebugIconMarker (currentLine);
+			TextMarker = new DebugTextMarker (offset, length, editor.ColorStyle.DebuggerCurrentLineMarker, editor.ColorStyle.DebuggerCurrentLine);
 		}
 
-		protected override void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
-		{
-			DrawImage (cr, stackLine, x, y, size);
-		}
+		public bool IsVisible { get { return IconMarker.IsVisible; } set { IconMarker.IsVisible = value; } }
+
+		IDocumentLine ITextLineMarker.Line { get { return new DocumentLineWrapper (IconMarker.LineSegment); } }
+
+		public object Tag { get { return IconMarker.Tag; } set { IconMarker.Tag = value; } }
 	}
 
 }

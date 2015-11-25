@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.Editor
 	{
 		#region Line marker
 		IUrlTextLineMarker CreateUrlTextMarker (TextEditor editor, IDocumentLine line, string value, UrlType url, string syntax, int startCol, int endCol);
-		ICurrentDebugLineTextMarker CreateCurrentDebugLineTextMarker (TextEditor editor);
+		ICurrentDebugLineTextMarker CreateCurrentDebugLineTextMarker (TextEditor editor, int offset, int length);
 		ITextLineMarker CreateAsmLineMarker (TextEditor editor);
 		IUnitTestMarker CreateUnitTestMarker (TextEditor editor, UnitTestMarkerHost host, UnitTestLocation unitTestLocation);
 		IMessageBubbleLineMarker CreateMessageBubbleLineMarker (TextEditor editor);

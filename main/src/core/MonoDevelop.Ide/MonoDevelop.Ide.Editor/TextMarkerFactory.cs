@@ -42,9 +42,9 @@ namespace MonoDevelop.Ide.Editor
 			return editor.TextMarkerFactory.CreateUrlTextMarker (editor, line, value, url, syntax, startCol, endCol);
 		}
 
-		public static ICurrentDebugLineTextMarker CreateCurrentDebugLineTextMarker (TextEditor editor)
+		public static ICurrentDebugLineTextMarker CreateCurrentDebugLineTextMarker (TextEditor editor, int offset, int length)
 		{
-			return editor.TextMarkerFactory.CreateCurrentDebugLineTextMarker (editor);
+			return editor.TextMarkerFactory.CreateCurrentDebugLineTextMarker (editor, offset, length);
 		}
 
 		public static ITextLineMarker CreateAsmLineMarker (TextEditor editor)

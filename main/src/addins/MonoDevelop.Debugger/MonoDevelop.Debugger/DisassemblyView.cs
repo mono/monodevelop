@@ -85,8 +85,7 @@ namespace MonoDevelop.Debugger
 			sw.ShadowType = Gtk.ShadowType.In;
 			
 			sw.Sensitive = false;
-			
-			currentDebugLineMarker = TextMarkerFactory.CreateCurrentDebugLineTextMarker (editor);
+
 			DebuggingService.StoppedEvent += OnStop;
 		}
 
@@ -174,8 +173,10 @@ namespace MonoDevelop.Debugger
 		public void Update ()
 		{
 			autoRefill = false;
-			
-			editor.RemoveMarker (currentDebugLineMarker);
+			if (currentDebugLineMarker != null) {
+				editor.RemoveMarker (currentDebugLineMarker);
+				currentDebugLineMarker = null;
+			}
 			
 			if (DebuggingService.CurrentFrame == null) {
 				if (messageOverlayContent != null) {
@@ -292,10 +293,15 @@ namespace MonoDevelop.Debugger
 		
 		void UpdateCurrentLineMarker (bool moveCaret)
 		{
-			editor.RemoveMarker (currentDebugLineMarker);
+			if (currentDebugLineMarker != null) {
+				editor.RemoveMarker (currentDebugLineMarker);
+				currentDebugLineMarker = null;
+			}
 			StackFrame sf = DebuggingService.CurrentFrame;
 			int line;
 			if (addressLines.TryGetValue (GetAddrId (sf.Address, sf.AddressSpace), out line)) {
+				var docLine = editor.GetLine (line);
+				currentDebugLineMarker = TextMarkerFactory.CreateCurrentDebugLineTextMarker (editor, docLine.Offset, docLine.Length);
 				editor.AddMarker (line, currentDebugLineMarker);
 				if (moveCaret) {
 					editor.CaretLine = line;

@@ -77,13 +77,10 @@ namespace MonoDevelop.SourceEditor
 		DateTime lastSaveTimeUtc;
 		string loadedMimeType;
 		internal object MemoryProbe = Counters.SourceViewsInMemory.CreateMemoryProbe ();
-		TextLineMarker currentDebugLineMarker;
-		TextLineMarker debugStackLineMarker;
-		int lastDebugLine = -1;
+		DebugMarkerPair currentDebugLineMarker;
+		DebugMarkerPair debugStackLineMarker;
 		BreakpointStore breakpoints;
-		List<DocumentLine> breakpointSegments = new List<DocumentLine> ();
-		DocumentLine debugStackSegment;
-		DocumentLine currentLineSegment;
+		List<DebugMarkerPair> breakpointSegments = new List<DebugMarkerPair> ();
 		List<PinnedWatchInfo> pinnedWatches = new List<PinnedWatchInfo> ();
 		bool writeAllowed;
 		bool writeAccessChecked;
@@ -194,9 +191,6 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Caret.PositionChanged += HandlePositionChanged; 
 			widget.TextEditor.IconMargin.ButtonPressed += OnIconButtonPress;
 
-			debugStackLineMarker = new DebugStackLineTextMarker (widget.TextEditor);
-			currentDebugLineMarker = new CurrentDebugLineTextMarker (widget.TextEditor);
-			
 			WorkbenchWindowChanged += HandleWorkbenchWindowChanged;
 			ContentNameChanged += delegate {
 				Document.FileName = ContentName;
@@ -1076,34 +1070,37 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateExecutionLocation ()
 		{
+			if (currentDebugLineMarker != null || debugStackLineMarker != null) {
+				RemoveDebugMarkers ();
+				widget.TextEditor.QueueDraw ();
+			}
 			if (DebuggingService.IsPaused) {
 				var location = CheckLocationIsInFile (DebuggingService.NextStatementLocation)
 					?? CheckFrameIsInFile (DebuggingService.CurrentFrame)
 					?? CheckFrameIsInFile (DebuggingService.GetCurrentVisibleFrame ());
 				if (location != null) {
-					if (lastDebugLine == location.Line)
-						return;
 					RemoveDebugMarkers ();
-					lastDebugLine = location.Line;
-					var segment = widget.TextEditor.Document.GetLine (lastDebugLine);
+					var segment = widget.TextEditor.Document.GetLine (location.Line);
+					int offset, length;
+					if (location.Line > 0 && location.Column > 0 && location.EndLine > 0 && location.EndColumn > 0) {
+						offset = widget.TextEditor.LocationToOffset (location.Line, location.Column);
+						length = widget.TextEditor.LocationToOffset (location.EndLine, location.EndColumn) - offset;
+					} else {
+						offset = segment.Offset;
+						length = segment.Length;
+					}
 					if (segment != null) {
 						if (DebuggingService.CurrentFrameIndex == 0) {
-							currentLineSegment = segment;
-							widget.TextEditor.Document.AddMarker (segment, currentDebugLineMarker);
+							currentDebugLineMarker = new CurrentDebugLineTextMarker (widget.TextEditor, offset, length);
+							currentDebugLineMarker.AddTo (widget.TextEditor.Document, segment);
 						} else {
-							debugStackSegment = segment;
-							widget.TextEditor.Document.AddMarker (segment, debugStackLineMarker);
+							debugStackLineMarker = new DebugStackLineTextMarker (widget.TextEditor, offset, length);
+							debugStackLineMarker.AddTo (widget.TextEditor.Document, segment);
 						}
 						widget.TextEditor.QueueDraw ();
 					}
 					return;
 				}
-			}
-			
-			if (currentLineSegment != null || debugStackSegment != null) {
-				RemoveDebugMarkers ();
-				lastDebugLine = -1;
-				widget.TextEditor.QueueDraw ();
 			}
 		}
 
@@ -1122,13 +1119,13 @@ namespace MonoDevelop.SourceEditor
 
 		void RemoveDebugMarkers ()
 		{
-			if (currentLineSegment != null) {
-				widget.TextEditor.Document.RemoveMarker (currentDebugLineMarker);
-				currentLineSegment = null;
+			if (currentDebugLineMarker != null) {
+				currentDebugLineMarker.Remove ();
+				currentDebugLineMarker = null;
 			}
-			if (debugStackSegment != null) {
-				widget.TextEditor.Document.RemoveMarker (debugStackLineMarker);
-				debugStackSegment = null;
+			if (debugStackLineMarker != null) {
+				debugStackLineMarker.Remove ();
+				debugStackLineMarker = null;
 			}
 		}
 		
@@ -1244,7 +1241,7 @@ namespace MonoDevelop.SourceEditor
 					foreach (var bp in breakpoints.GetBreakpointsAtFile (fp.FullPath)) {
 						count++;
 						if (i < breakpointSegments.Count) {
-							int lineNumber = document.OffsetToLineNumber (breakpointSegments [i].Offset);
+							int lineNumber = document.OffsetToLineNumber (breakpointSegments [i].TextMarker.Offset);
 							if (lineNumber != bp.Line) {
 								mismatch = true;
 								break;
@@ -1265,10 +1262,12 @@ namespace MonoDevelop.SourceEditor
 			foreach (var line in breakpointSegments) {
 				if (line == null)
 					continue;
-				lineNumbers.Add (document.OffsetToLineNumber (line.Offset));
-				document.RemoveMarker (line, typeof(BreakpointTextMarker));
-				document.RemoveMarker (line, typeof(DisabledBreakpointTextMarker));
-				document.RemoveMarker (line, typeof(InvalidBreakpointTextMarker));
+				var endLine = document.OffsetToLineNumber (line.TextMarker.EndOffset);
+				for (int i = document.OffsetToLineNumber (line.TextMarker.Offset); i <= endLine; i++) {
+					lineNumbers.Add (i);
+				}
+				document.RemoveMarker (line.TextMarker);
+				document.RemoveMarker (line.IconMarker);
 			}
 			
 			breakpointSegments.Clear ();
@@ -1287,7 +1286,6 @@ namespace MonoDevelop.SourceEditor
 			document.CommitDocumentUpdate ();
 			
 			// Ensure the current line marker is drawn at the top
-			lastDebugLine = -1;
 			UpdateExecutionLocation ();
 		}
 		
@@ -1305,7 +1303,7 @@ namespace MonoDevelop.SourceEditor
 			FilePath fp = Name;
 			if (fp.FullPath == bp.FileName) {
 				if (bp.Line <= 0 || bp.Line > textEditor.Document.LineCount) {
-					LoggingService.LogWarning ("Invalid breakpoint :" + bp +" in line " + bp.Line); 
+					LoggingService.LogWarning ("Invalid breakpoint :" + bp + " in line " + bp.Line);
 					return;
 				}
 				DocumentLine line = document.GetLine (bp.Line);
@@ -1315,16 +1313,22 @@ namespace MonoDevelop.SourceEditor
 				if (line == null)
 					return;
 
+				//TODO: 1. When not in debug mode use Microsoft.CodeAnalysis.CSharp.EditAndContinue.BreakpointSpans.TryGetBreakpointSpan
+				//TODO: 2. When in debug mode extend Breakpoint class to have endLine and endColumn set if .mdb/.pdb has endLine/endColumn
+				var offset = line.Offset;
+				var lenght = line.Length;
+				DebugMarkerPair marker;
 				if (!bp.Enabled) {
-					document.AddMarker (line, new DisabledBreakpointTextMarker (textEditor, tracepoint));
+					marker = new DisabledBreakpointTextMarker (textEditor, offset, lenght, tracepoint);
 				} else if (status == BreakEventStatus.Bound || status == BreakEventStatus.Disconnected) {
-					document.AddMarker (line, new BreakpointTextMarker (textEditor, tracepoint));
+					marker = new BreakpointTextMarker (textEditor, offset, lenght, tracepoint);
 				} else {
-					document.AddMarker (line, new InvalidBreakpointTextMarker (textEditor, tracepoint));
+					marker = new InvalidBreakpointTextMarker (textEditor, offset, lenght, tracepoint);
 				}
 
 				textEditor.QueueDraw ();
-				breakpointSegments.Add (line);
+				breakpointSegments.Add (marker);
+				marker.AddTo (document, line);
 			}
 		}
 		
@@ -2652,6 +2656,11 @@ namespace MonoDevelop.SourceEditor
 
 		void ITextEditorImpl.AddMarker (IDocumentLine line, ITextLineMarker lineMarker)
 		{
+			var debugPair = lineMarker as DebugMarkerPair;
+			if (debugPair != null) {
+				debugPair.AddTo (TextEditor.Document, ((DocumentLineWrapper)line).Line);
+				return;
+			}
 			var textLineMarker = lineMarker as TextLineMarker;
 			if (textLineMarker == null)
 				throw new InvalidOperationException ("Tried to add an incompatible text marker. Use the MarkerHost to create compatible ones.");
@@ -2668,6 +2677,11 @@ namespace MonoDevelop.SourceEditor
 
 		void ITextEditorImpl.RemoveMarker (ITextLineMarker lineMarker)
 		{
+			var debugPair = lineMarker as DebugMarkerPair;
+			if (debugPair != null) {
+				debugPair.Remove ();
+				return;
+			}
 			var textLineMarker = lineMarker as TextLineMarker;
 			if (textLineMarker == null)
 				throw new InvalidOperationException ("Tried to add an incompatible text marker.");
@@ -3284,9 +3298,9 @@ namespace MonoDevelop.SourceEditor
 			return new UrlTextLineMarker (TextEditor.Document, line, value, (Mono.TextEditor.UrlType)url, syntax, startCol, endCol);
 		}
 
-		ICurrentDebugLineTextMarker ITextMarkerFactory.CreateCurrentDebugLineTextMarker (MonoDevelop.Ide.Editor.TextEditor editor)
+		ICurrentDebugLineTextMarker ITextMarkerFactory.CreateCurrentDebugLineTextMarker (MonoDevelop.Ide.Editor.TextEditor editor, int offset, int length)
 		{
-			return new CurrentDebugLineTextMarker (TextEditor);
+			return new CurrentDebugLineTextMarker (TextEditor, offset, length);
 		}
 
 		ITextLineMarker ITextMarkerFactory.CreateAsmLineMarker (MonoDevelop.Ide.Editor.TextEditor editor)
