@@ -49,6 +49,7 @@ namespace MonoDevelop.Projects
 		SolutionFolder rootFolder;
 		string defaultConfiguration;
 		MSBuildFileFormat format;
+		bool loadingFromConstructor;
 
 		SolutionItem startupItem;
 		List<SolutionItem> startupItems; 
@@ -78,12 +79,11 @@ namespace MonoDevelop.Projects
 
 		internal Solution (bool loading)
 		{
+			loadingFromConstructor = loading;
 			Counters.SolutionsLoaded++;
 			configurations = new SolutionConfigurationCollection (this);
 			format = MSBuildFileFormat.DefaultFormat;
 			Initialize (this);
-			if (!loading)
-				NotifyItemReady ();
 		}
 
 		public override FilePath FileName {
@@ -107,6 +107,9 @@ namespace MonoDevelop.Projects
 		{
 			itemExtension = ExtensionChain.GetExtension<SolutionExtension> ();
 			base.OnExtensionChainInitialized ();
+
+			if (!loadingFromConstructor)
+				NotifyItemReady ();
 		}
 
 		SolutionExtension itemExtension;
