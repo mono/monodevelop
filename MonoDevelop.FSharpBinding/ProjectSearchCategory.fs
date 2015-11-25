@@ -144,12 +144,11 @@ type SymbolSearchResult(match', matchedString, rank, symbol:FSharpSymbolUse) =
     | ValueType s -> s |> getImageFromAccessibility Stock.Struct.Name Stock.InternalStruct.Name Stock.PrivateStruct.Name
     | Delegate d -> d |> getImageFromAccessibility Stock.Delegate.Name Stock.InternalDelegate.Name Stock.PrivateDelegate.Name
     | Union _ -> getImage "md-type"
-    | Class c -> c |> getImageFromAccessibility Stock.Class.Name Stock.InternalClass.Name Stock.PrivateClass.Name
+    | Class c -> if c.IsFSharp then getImage "md-type"
+                 else c |> getImageFromAccessibility Stock.Class.Name Stock.InternalClass.Name Stock.PrivateClass.Name
     | Namespace _ -> getImage Stock.NameSpace.Name
     | Interface i -> i |> getImageFromAccessibility Stock.Interface.Name Stock.InternalInterface.Name Stock.PrivateInterface.Name
     | Enum e -> e |> getImageFromAccessibility Stock.Enum.Name Stock.InternalEnum.Name Stock.PrivateEnum.Name
-    //TODO: check if we can isolate F# specific types
-    // | Type _ -> getImage "md-type"
     | ActivePattern _ -> getImage "md-type"
     | Field f ->f |> getImageFromAccessibility Stock.Field.Name Stock.InternalField.Name Stock.PrivateField.Name
     | UnionCase _ -> getImage "md-type"
