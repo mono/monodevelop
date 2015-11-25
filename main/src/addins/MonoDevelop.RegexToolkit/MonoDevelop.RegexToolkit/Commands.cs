@@ -68,13 +68,8 @@ namespace MonoDevelop.RegexToolkit
 	class DefaultAttachableViewContent : BaseViewContent
 	{
 		Widget widget;
-<<<<<<< d31689b2197378846e127fd9c38d594f7c7f85e1
 
 		public override Control Control {
-=======
-		
-		public override Components.Control Control {
->>>>>>> ViewContent now creates Controls instead of GTK widgets
 			get {
 				return widget;
 			}
