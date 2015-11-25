@@ -43,21 +43,18 @@ namespace MonoDevelop.Components.Commands
 			set;
 		}
 		
-		protected CommandRouterContainer (bool continueToParent)
+		protected CommandRouterContainer (bool continueToParent) : this(null, null, continueToParent)
 		{
 			this.continueToParent = continueToParent;
 		}
-
-		protected override object CreateNativeWidget ()
-		{
-			return new Gtk.HBox ();
-		}
 		
-		public CommandRouterContainer (Control child, object target, bool continueToParent) : this (continueToParent)
+		public CommandRouterContainer (Control child, object target, bool continueToParent) : base (new Gtk.HBox ())
 		{
 			var hbox = GetNativeWidget<Gtk.HBox> ();
-			if (child != null)
+			if (child != null) {
 				hbox.PackStart (child, true, true, 0);
+				child = null;
+			}
 			Delegated = target;
 		}
 		

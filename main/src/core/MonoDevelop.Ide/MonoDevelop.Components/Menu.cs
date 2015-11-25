@@ -65,7 +65,10 @@ namespace MonoDevelop.Components
 
 		public static implicit operator Menu (Gtk.Menu d)
 		{
-			return new Menu (d);
+			if (d == null)
+				return null;
+
+			return GetImplicit<Menu, Gtk.Menu> (d) ?? new Menu (d);
 		}
 	}
 }

@@ -40,7 +40,10 @@ namespace MonoDevelop.Components
 
 		public static implicit operator Dialog (Gtk.Dialog d)
 		{
-			return new Dialog (d);
+			if (d == null)
+				return null;
+			
+			return GetImplicit<Dialog, Gtk.Dialog> (d) ?? new Dialog (d);
 		}
 	}
 }

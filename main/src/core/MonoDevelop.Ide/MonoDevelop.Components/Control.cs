@@ -36,7 +36,7 @@ namespace MonoDevelop.Components
 {
 	public class Control : IDisposable
 	{
-		static Dictionary<object, Control> cache = new Dictionary<object, Control> ();
+		internal static Dictionary<object, Control> cache = new Dictionary<object, Control> ();
 		object nativeWidget;
 
 		protected Control ()
@@ -59,9 +59,16 @@ namespace MonoDevelop.Components
 		public T GetNativeWidget<T> ()
 		{
 			if (nativeWidget == null) {
+				var toCache = this;
 				var w = CreateNativeWidget ();
-				if (!(w is T))
+				if (!(w is T)) {
+					var temp = w as Control;
+					while (temp != null) {
+						w = temp.GetNativeWidget<T> ();
+						temp = w as Control;
+					}
 					w = ConvertToType (typeof (T), w);
+				}
 				if (w is Gtk.Widget) {
 					var gtkWidget = (Gtk.Widget)w;
 					Gtk.HBox c = new CommandRouterContainer (gtkWidget, this, true).GetNativeWidget<Gtk.HBox> ();
@@ -72,9 +79,16 @@ namespace MonoDevelop.Components
 						GC.SuppressFinalize (this);
 						Dispose (true);
 					};
-				} else
+					toCache = c;
+				} else {
 					nativeWidget = w;
-				cache.Add (nativeWidget, this);
+				}
+				Control cached;
+				if (cache.TryGetValue (nativeWidget, out cached)) {
+					if (cached != toCache)
+						throw new Exception ();
+				} else
+					cache.Add (nativeWidget, toCache);
 			}
 			if (nativeWidget is T)
 				return (T)nativeWidget;
@@ -107,10 +121,19 @@ namespace MonoDevelop.Components
 
 		public static implicit operator Control (Gtk.Widget d)
 		{
+			if (d == null)
+				return null;
+
+			return GetImplicit<Control, Gtk.Widget>(d) ?? new Control (d);
+		}
+
+		internal static T GetImplicit<T, U> (U native) where T : Control where U : class
+		{
 			Control cached;
-			if (cache.TryGetValue (d, out cached))
-				return cached;
-			return new Control (d);
+
+			if (cache.TryGetValue (native, out cached))
+				return (T)cached;
+			return null;
 		}
 
 		public void GrabFocus ()

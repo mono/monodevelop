@@ -40,7 +40,10 @@ namespace MonoDevelop.Components
 
 		public static implicit operator Window (Gtk.Window d)
 		{
-			return new Window (d);
+			if (d == null)
+				return null;
+			
+			return GetImplicit<Window, Gtk.Window> (d) ?? new Window(d);
 		}
 	}
 }
