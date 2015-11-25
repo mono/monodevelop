@@ -52,9 +52,9 @@ namespace MonoDevelop.Ide.Projects
 			
 #if MAC
 			// detect 'locked' files on OS X
-			var attr = Foundation.NSFileManager.DefaultManager.GetAttributes (f) ;
+			var attr = Foundation.NSFileManager.DefaultManager.GetAttributes (file) ;
 			if (attr != null && attr.Immutable.HasValue && attr.Immutable.Value) {
-				throw new UserException (GettextCatalog.GetString ("File '{0}' is locked.", f));
+				throw new UserException (GettextCatalog.GetString ("File '{0}' is locked.", file));
 			}
 #endif
 			var atts = File.GetAttributes (file);
@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.Projects
 
 #if MAC
 			// detect 'locked' files on OS X
-			var attr = Foundation.NSFileManager.DefaultManager.GetAttributes (f) ;
+			var attr = Foundation.NSFileManager.DefaultManager.GetAttributes (file) ;
 			if (attr != null && attr.Immutable.HasValue && attr.Immutable.Value) {
 				return FileWriteableState.Locked;
 			}
