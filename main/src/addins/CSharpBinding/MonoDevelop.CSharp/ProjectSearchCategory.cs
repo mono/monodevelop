@@ -125,6 +125,8 @@ namespace MonoDevelop.CSharp
 
 			static void SearchAsync (ConcurrentDictionary<Microsoft.CodeAnalysis.DocumentId, List<DeclaredSymbolInfo>> result, Microsoft.CodeAnalysis.Project project, CancellationToken cancellationToken)
 			{
+				if (project == null)
+					throw new ArgumentNullException (nameof (project));
 				Parallel.ForEach (project.Documents, async delegate (Microsoft.CodeAnalysis.Document document) {
 					try {
 						cancellationToken.ThrowIfCancellationRequested ();
@@ -173,33 +175,39 @@ namespace MonoDevelop.CSharp
 				var currentSolution = ws.CurrentSolution;
 				if (currentSolution == null)
 					return;
-				switch (e.Kind) {
-				case WorkspaceChangeKind.ProjectAdded:
-					SearchAsync (documentInfos, currentSolution.GetProject (e.ProjectId), default (CancellationToken));
-					break;
-				case WorkspaceChangeKind.ProjectRemoved:
-					var project = currentSolution.GetProject (e.ProjectId);
-					if (project != null) {
-						foreach (var docId in project.DocumentIds)
-							RemoveDocument (documentInfos, docId);
+				try {
+					switch (e.Kind) {
+					case WorkspaceChangeKind.ProjectAdded:
+						var project1 = currentSolution.GetProject (e.ProjectId);
+						if (project1 != null)
+							SearchAsync (documentInfos, project1, default (CancellationToken));
+						break;
+					case WorkspaceChangeKind.ProjectRemoved:
+						var project = currentSolution.GetProject (e.ProjectId);
+						if (project != null) {
+							foreach (var docId in project.DocumentIds)
+								RemoveDocument (documentInfos, docId);
+						}
+						break;
+					case WorkspaceChangeKind.DocumentAdded:
+						var document = currentSolution.GetDocument (e.DocumentId);
+						if (document != null)
+							await UpdateDocument (documentInfos, document, default (CancellationToken));
+						break;
+					case WorkspaceChangeKind.DocumentRemoved:
+						RemoveDocument (documentInfos, e.DocumentId);
+						break;
+					case WorkspaceChangeKind.DocumentChanged:
+						var doc = currentSolution.GetDocument (e.DocumentId);
+						if (doc != null) {
+							Task.Run (async delegate {
+								await UpdateDocument (documentInfos, doc, default (CancellationToken));
+							});
+						}
+						break;
 					}
-					break;
-				case WorkspaceChangeKind.DocumentAdded:
-					var document = currentSolution.GetDocument (e.DocumentId);
-					if (document != null)
-						await UpdateDocument (documentInfos, document, default (CancellationToken));
-					break;
-				case WorkspaceChangeKind.DocumentRemoved:
-					RemoveDocument (documentInfos, e.DocumentId);
-					break;
-				case WorkspaceChangeKind.DocumentChanged:
-					var doc = currentSolution.GetDocument (e.DocumentId);
-					if (doc != null) {
-						Task.Run (async delegate {
-							await UpdateDocument (documentInfos, doc, default (CancellationToken));
-						});
-					}
-					break;
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error while updating navigation symbol cache.", ex);
 				}
 			}
 		}
