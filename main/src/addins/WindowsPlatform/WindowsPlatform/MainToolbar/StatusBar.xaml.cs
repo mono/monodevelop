@@ -51,7 +51,7 @@ namespace WindowsPlatform.MainToolbar
 			updateHandler = delegate {
 				int ec = 0, wc = 0;
 
-				foreach (MonoDevelop.Ide.Tasks.Task t in TaskService.Errors) {
+				foreach (MonoDevelop.Ide.Tasks.TaskListEntry t in TaskService.Errors) {
 					if (t.Severity == TaskSeverity.Error)
 						ec++;
 					else if (t.Severity == TaskSeverity.Warning)
