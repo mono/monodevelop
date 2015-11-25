@@ -698,7 +698,7 @@ namespace MonoDevelop.Components.Commands
 		/// <param name='menu'>
 		/// The menu where to add the commands
 		/// </param>
-		public Menu CreateMenu (CommandEntrySet entrySet, CommandMenu menu)
+		internal Menu CreateMenu (CommandEntrySet entrySet, CommandMenu menu)
 		{
 			foreach (CommandEntry entry in entrySet) {
 				Gtk.MenuItem mi = entry.CreateMenuItem (this);
@@ -931,7 +931,7 @@ namespace MonoDevelop.Components.Commands
 		public void ShowContextMenu (Control parent, ButtonEvent evt, Menu menu,
 			object initialCommandTarget = null)
 		{
-			if (menu is CommandMenu) {
+			if (menu.GetNativeWidget<Gtk.Menu> () is CommandMenu) {
 				((CommandMenu)menu).InitialCommandTarget = initialCommandTarget ?? parent;
 			}
 			
@@ -941,7 +941,7 @@ namespace MonoDevelop.Components.Commands
 		public void ShowContextMenu (Control parent, int x, int y, Menu menu,
 			object initialCommandTarget = null)
 		{
-			if (menu is CommandMenu) {
+			if (menu.GetNativeWidget<Gtk.Menu> () is CommandMenu) {
 				((CommandMenu)menu).InitialCommandTarget = initialCommandTarget ?? parent;
 			}
 
