@@ -104,9 +104,9 @@ namespace WindowsPlatform.MainToolbar
 						separatorMenuItem.Visibility = Visibility.Visible;
 						break;
 					}
-					if (menuEntrySet != null && menuEntrySet.AutoHide)
-						Visibility = Items.Cast<Control> ().Any (item => item.Visibility == Visibility.Visible) ? Visibility.Visible : Visibility.Collapsed;
 				}
+				if (menuEntrySet != null && menuEntrySet.AutoHide)
+					Visibility = Items.Cast<Control> ().Any (item => item.Visibility == Visibility.Visible) ? Visibility.Visible : Visibility.Collapsed;
 				return;
 			}
 
