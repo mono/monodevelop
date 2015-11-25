@@ -71,7 +71,7 @@ namespace MonoDevelop.Components
 				}
 				if (w is Gtk.Widget) {
 					var gtkWidget = (Gtk.Widget)w;
-					Gtk.HBox c = new CommandRouterContainer (gtkWidget, this, true).GetNativeWidget<Gtk.HBox> ();
+					var c = new CommandRouterContainer (gtkWidget, this, true);
 					c.FocusChain = new [] { gtkWidget };
 					c.Show ();
 					nativeWidget = c;
