@@ -145,6 +145,7 @@ namespace WindowsPlatform.MainToolbar
 		{
 			hasCommand = true;
 			Header = info.Text;
+			Icon = new Image { Source = info.Icon.GetImageSource (Xwt.IconSize.Small) };
 			IsEnabled = info.Enabled;
 			Visibility = info.Visible && (menuEntry.DisabledVisible || IsEnabled) ?
 				Visibility.Visible : Visibility.Collapsed;
