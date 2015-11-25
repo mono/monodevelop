@@ -115,6 +115,21 @@ namespace MonoDevelop.Components
 			throw new NotSupportedException ();
 		}
 
+#if MAC
+		public static implicit operator NSView (Control d)
+		{
+			return d.GetNativeWidget<NSView> ();
+		}
+
+		public static implicit operator Control (NSView d)
+		{
+			if (d == null)
+				return null;
+
+			return GetImplicit<Control, NSView> (d) ?? new Control (d);
+		}
+#endif
+
 		public static implicit operator Gtk.Widget (Control d)
 		{
 			return d.GetNativeWidget<Gtk.Widget> ();
