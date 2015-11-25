@@ -109,7 +109,7 @@ namespace MonoDevelop.Components
 			}
 
 			if (creator != null) {
-				Menu menu = creator (this);
+				Gtk.Menu menu = creator (this);
 				
 				if (menu != null) {
 					var oldRelief = MenuOpened ();
@@ -140,7 +140,7 @@ namespace MonoDevelop.Components
 				this.State = StateType.Active;
 		}
 		
-		void PositionFunc (Menu mn, out int x, out int y, out bool push_in)
+		void PositionFunc (Gtk.Menu mn, out int x, out int y, out bool push_in)
 		{
 			this.GdkWindow.GetOrigin (out x, out y);
 			Gdk.Rectangle rect = this.Allocation;

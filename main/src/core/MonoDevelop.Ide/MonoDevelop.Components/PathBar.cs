@@ -475,7 +475,7 @@ namespace MonoDevelop.Components
 			};
 			menuVisible = true;
 			if (menuWidget is Menu) {
-				((Menu)menuWidget).Popup (null, null, PositionFunc, 0, Gtk.Global.CurrentEventTime);
+				((Gtk.Menu)menuWidget).Popup (null, null, PositionFunc, 0, Gtk.Global.CurrentEventTime);
 			} else {
 				var window = menuWidget as Gtk.Window;
 				PositionWidget (menuWidget);
@@ -553,7 +553,7 @@ namespace MonoDevelop.Components
 		
 		
 		
-		void PositionFunc (Menu mn, out int x, out int y, out bool push_in)
+		void PositionFunc (Gtk.Menu mn, out int x, out int y, out bool push_in)
 		{
 			this.GdkWindow.GetOrigin (out x, out y);
 			int w;

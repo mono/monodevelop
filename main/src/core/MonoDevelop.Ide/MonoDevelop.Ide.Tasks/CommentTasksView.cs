@@ -403,7 +403,7 @@ namespace MonoDevelop.Ide.Tasks
 			return TreeIter.Zero;
 		}
 
-		Menu CreateMenu ()
+		Gtk.Menu CreateMenu ()
 		{
 			var group = new ActionGroup ("Popup");
 			
@@ -466,7 +466,7 @@ namespace MonoDevelop.Ide.Tasks
 				+ "</popup></ui>";
 
 			uiManager.AddUiFromString (uiStr);
-			var menu = (Menu)uiManager.GetWidget ("/popup");
+			var menu = (Gtk.Menu)uiManager.GetWidget ("/popup");
 			menu.ShowAll ();
 
 			menu.Shown += delegate (object o, EventArgs args)

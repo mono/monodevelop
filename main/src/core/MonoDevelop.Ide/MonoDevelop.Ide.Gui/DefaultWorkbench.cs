@@ -284,7 +284,7 @@ namespace MonoDevelop.Ide.Gui
 		void CreateMenuBar ()
 		{
 			topMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);
-			var appMenu = IdeApp.CommandService.CreateMenu (appMenuPath);
+			Gtk.Menu appMenu = IdeApp.CommandService.CreateMenu (appMenuPath);
 			if (appMenu != null && appMenu.Children.Length > 0) {
 				var item = new MenuItem (BrandingService.ApplicationName);
 				item.Submenu = appMenu;

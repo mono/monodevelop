@@ -44,7 +44,7 @@ namespace MonoDevelop.Components
 		private HoverImageButton filter_button;
 		private HoverImageButton clear_button;
 
-		private Menu menu;
+		private Gtk.Menu menu;
 		private int active_filter_id = -1;
 
 		private uint changed_timeout_id = 0;
@@ -85,7 +85,7 @@ namespace MonoDevelop.Components
 			}
 		}
 
-		public Menu Menu {
+		public Gtk.Menu Menu {
 			get { return menu; }
 			set { menu = value; menu.Deactivated += OnMenuDeactivated; }
 		}
@@ -209,7 +209,7 @@ namespace MonoDevelop.Components
 
 		private void BuildMenu ()
 		{
-			menu = new Menu ();
+			menu = new Gtk.Menu ();
 			menu.Deactivated += OnMenuDeactivated;
 		}
 
@@ -236,7 +236,7 @@ namespace MonoDevelop.Components
 			entryAlignment.LeftPadding = (uint) (!filter_button.Visible && roundedShape ? 6 : 0);
 		}
 
-		private void OnPositionMenu (Menu menu, out int x, out int y, out bool push_in)
+		private void OnPositionMenu (Gtk.Menu menu, out int x, out int y, out bool push_in)
 		{
 			int origin_x, origin_y, tmp;
 
