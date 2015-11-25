@@ -1269,10 +1269,10 @@ namespace MonoDevelop.Ide.Gui
 			if (force || item.Content == null) {
 				PadContent newContent = padCodon.InitializePadContent (window);
 
-				PadCommandRouterContainer crc = new PadCommandRouterContainer (window, newContent.Control, newContent, true);
+				Gtk.Widget crc = new PadCommandRouterContainer (window, newContent.Control, newContent, true);
 				crc.Show ();
 
-				PadCommandRouterContainer router = new PadCommandRouterContainer (window, crc, toolbarFrame, false);
+				Gtk.Widget router = new PadCommandRouterContainer (window, crc, toolbarFrame, false);
 				router.Show ();
 				item.Content = router;
 			}

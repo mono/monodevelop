@@ -461,7 +461,7 @@ namespace MonoDevelop.Ide.Projects
 		void FocusWidget (Widget widget)
 		{
 			var widgetToFocus = widget; 
-			var commandRouter = widget as CommandRouterContainer;
+			var commandRouter = ((Control)widget as CommandRouterContainer).GetNativeWidget<Gtk.HBox> ();
 			if ((commandRouter != null) && commandRouter.Children.Any ()) {
 				widgetToFocus = commandRouter.Children [0];
 			}

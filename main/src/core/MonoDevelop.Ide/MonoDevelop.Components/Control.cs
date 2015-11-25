@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Components.Commands;
 
 #if MAC
@@ -33,8 +34,9 @@ using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.Components
 {
-	public class Control: IDisposable
+	public class Control : IDisposable
 	{
+		static Dictionary<object, Control> cache = new Dictionary<object, Control> ();
 		object nativeWidget;
 
 		protected Control ()
@@ -44,8 +46,9 @@ namespace MonoDevelop.Components
 		public Control (object widget)
 		{
 			if (widget == null)
-				throw new ArgumentNullException ("widget");
+				throw new ArgumentNullException (nameof (widget));
 			this.nativeWidget = widget;
+			cache.Add (nativeWidget, this);
 		}
 
 		protected virtual object CreateNativeWidget ()
@@ -58,10 +61,10 @@ namespace MonoDevelop.Components
 			if (nativeWidget == null) {
 				var w = CreateNativeWidget ();
 				if (!(w is T))
-					w = ConvertToType (typeof(T), w);
+					w = ConvertToType (typeof (T), w);
 				if (w is Gtk.Widget) {
 					var gtkWidget = (Gtk.Widget)w;
-					var c = new CommandRouterContainer (gtkWidget, this, true);
+					Gtk.HBox c = new CommandRouterContainer (gtkWidget, this, true).GetNativeWidget<Gtk.HBox> ();
 					c.FocusChain = new [] { gtkWidget };
 					c.Show ();
 					nativeWidget = c;
@@ -69,9 +72,9 @@ namespace MonoDevelop.Components
 						GC.SuppressFinalize (this);
 						Dispose (true);
 					};
-				}
-				else
+				} else
 					nativeWidget = w;
+				cache.Add (nativeWidget, this);
 			}
 			if (nativeWidget is T)
 				return (T)nativeWidget;
@@ -84,16 +87,16 @@ namespace MonoDevelop.Components
 			if (t.IsInstanceOfType (w))
 				return w;
 
-			#if MAC
-			if (w is NSView && t == typeof(Gtk.Widget)) {
+#if MAC
+			if (w is NSView && t == typeof (Gtk.Widget)) {
 				var ww = GtkMacInterop.NSViewToGtkWidget ((NSView)w);
 				ww.Show ();
 				return ww;
 			}
-			if (w is Gtk.Widget && t == typeof(NSView)) {
+			if (w is Gtk.Widget && t == typeof (NSView)) {
 				return new GtkEmbed ((Gtk.Widget)w);
 			}
-			#endif
+#endif
 			throw new NotSupportedException ();
 		}
 
@@ -104,6 +107,9 @@ namespace MonoDevelop.Components
 
 		public static implicit operator Control (Gtk.Widget d)
 		{
+			Control cached;
+			if (cache.TryGetValue (d, out cached))
+				return cached;
 			return new Control (d);
 		}
 
@@ -129,16 +135,17 @@ namespace MonoDevelop.Components
 				((Gtk.Widget)nativeWidget).Destroy ();
 				return;
 			}
-			#if MAC
+#if MAC
 			else if (nativeWidget is NSView)
 				((NSView)nativeWidget).Dispose ();
-			#endif
+#endif
 
 			Dispose (true);
 		}
 
 		protected virtual void Dispose (bool disposing)
 		{
+			cache.Remove (nativeWidget);
 		}
 	}
 }

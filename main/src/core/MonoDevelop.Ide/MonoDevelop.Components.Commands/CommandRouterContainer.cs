@@ -34,7 +34,7 @@ namespace MonoDevelop.Components.Commands
 	/// A container which can be used to redirect the command
 	/// route to a different parent
 	/// </summary>
-	public class CommandRouterContainer: Gtk.HBox, ICommandDelegatorRouter
+	public class CommandRouterContainer: Control, ICommandDelegatorRouter
 	{
 		bool continueToParent;
 		
@@ -47,17 +47,23 @@ namespace MonoDevelop.Components.Commands
 		{
 			this.continueToParent = continueToParent;
 		}
-		
-		public CommandRouterContainer (Gtk.Widget child, object target, bool continueToParent) : this (continueToParent)
+
+		protected override object CreateNativeWidget ()
 		{
+			return new Gtk.HBox ();
+		}
+		
+		public CommandRouterContainer (Control child, object target, bool continueToParent) : this (continueToParent)
+		{
+			var hbox = GetNativeWidget<Gtk.HBox> ();
 			if (child != null)
-				PackStart (child, true, true, 0);
+				hbox.PackStart (child, true, true, 0);
 			Delegated = target;
 		}
 		
 		public virtual object GetNextCommandTarget ()
 		{
-			return continueToParent ? Parent : null;
+			return continueToParent ? GetNativeWidget<Gtk.Widget> ().Parent : null;
 		}
 		
 		public virtual object GetDelegatedCommandTarget ()
