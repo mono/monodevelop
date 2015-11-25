@@ -206,7 +206,7 @@ namespace WindowsPlatform.MainToolbar
 			if (!hasCommand)
 				return;
 
-			Runtime.RunInMainThread(() => {
+			Xwt.Application.Invoke(() => {
 				if (commandArrayInfo != null) {
 					manager.DispatchCommand (menuEntry.CommandId, commandArrayInfo.DataItem, initialCommandTarget, commandSource);
 				} else {
