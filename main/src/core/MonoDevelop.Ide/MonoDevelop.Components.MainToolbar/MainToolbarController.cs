@@ -108,9 +108,6 @@ namespace MonoDevelop.Components.MainToolbar
 			IdeApp.ProjectOperations.CurrentSelectedSolutionChanged += HandleCurrentSelectedSolutionChanged;
 
 			AddinManager.ExtensionChanged += OnExtensionChanged;
-			MonoDevelopWorkspace.LoadingFinished += delegate {
-				HandleSearchEntryChanged (null, EventArgs.Empty);
-			};
 		}
 
 		public void Initialize ()
