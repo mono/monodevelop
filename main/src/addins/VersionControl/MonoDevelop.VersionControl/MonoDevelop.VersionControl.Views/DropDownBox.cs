@@ -110,12 +110,12 @@ namespace MonoDevelop.VersionControl.Views
 			window.WidthRequest = Allocation.Width;
 			int width, height;
 			window.GetSizeRequest (out width, out height);
-			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (dx, dy));
+			Xwt.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (dx, dy));
 			
 			if (dy + height > geometry.Bottom)
 				dy = oy + this.Allocation.Y - height;
 			if (dx + width > geometry.Right)
-				dx = geometry.Right - width;
+				dx = (int)geometry.Right - width;
 			
 			window.Move (dx, dy);
 			window.GetSizeRequest (out width, out height);

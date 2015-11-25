@@ -373,8 +373,8 @@ namespace MonoDevelop.Components.MainToolbar
 			Gdk.Size retVal = new Gdk.Size ();
 			int ox, oy;
 			GetPosition (out ox, out oy);
-			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (ox, oy));
-			var maxHeight = geometry.Height * 4 / 5;
+			Xwt.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (ox, oy));
+			int maxHeight = (int)geometry.Height * 4 / 5;
 			double startY = yMargin + ChildAllocation.Y;
 			double y = startY;
 			calculatedItems = 0;
@@ -393,7 +393,7 @@ namespace MonoDevelop.Components.MainToolbar
 					calculatedItems++;
 				}
 			}
-			retVal.Width = Math.Min (geometry.Width * 4 / 5, 480);
+			retVal.Width = Math.Min ((int)geometry.Width * 4 / 5, 480);
 			if (Math.Abs (y - startY) < 1) {
 				layout.SetMarkup (GettextCatalog.GetString ("No matches"));
 				int w, h;

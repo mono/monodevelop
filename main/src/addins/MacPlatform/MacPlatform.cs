@@ -636,11 +636,12 @@ namespace MonoDevelop.MacIntegration
 			}
 		}
 
-		public override Gdk.Rectangle GetUsableMonitorGeometry (Gdk.Screen screen, int monitor)
+		public override Xwt.Rectangle GetUsableMonitorGeometry (int screenNumber, int monitorNumber)
 		{
-			Gdk.Rectangle ygeometry = screen.GetMonitorGeometry (monitor);
+			var screen = Gdk.Display.Default.GetScreen (screenNumber);
+			Gdk.Rectangle ygeometry = screen.GetMonitorGeometry (monitorNumber);
 			Gdk.Rectangle xgeometry = screen.GetMonitorGeometry (0);
-			NSScreen nss = NSScreen.Screens[monitor];
+			NSScreen nss = NSScreen.Screens[monitorNumber];
 			var visible = nss.VisibleFrame;
 			var frame = nss.Frame;
 
@@ -672,7 +673,7 @@ namespace MonoDevelop.MacIntegration
 			width = NMath.Min (visible.Width, frame.Width);
 			x = NMath.Max (visible.X, frame.X);
 
-			return new Gdk.Rectangle ((int) x, (int) y, (int) width, (int) height);
+			return new Xwt.Rectangle ((int) x, (int) y, (int) width, (int) height);
 		}
 
 		internal override void GrabDesktopFocus (Gtk.Window window)

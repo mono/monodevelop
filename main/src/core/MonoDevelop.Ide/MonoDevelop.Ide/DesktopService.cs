@@ -246,10 +246,10 @@ namespace MonoDevelop.Ide
 		{
 			PlatformService.SetFileAttributes (fileName, attributes);
 		}
-		
-		public static Gdk.Rectangle GetUsableMonitorGeometry (Gdk.Screen screen, int monitor)
+
+		public static Xwt.Rectangle GetUsableMonitorGeometry (int screenNumber, int monitorNumber)
 		{
-			return PlatformService.GetUsableMonitorGeometry (screen, monitor);
+			return PlatformService.GetUsableMonitorGeometry (screenNumber, monitorNumber);
 		}
 		
 		public static bool CanOpenTerminal {

@@ -531,18 +531,21 @@ namespace MonoDevelop.Components
 			int dy = oy + this.Allocation.Bottom;
 			
 			var req = widget.SizeRequest ();
-			
-			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (dx, dy));
+
+			Xwt.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (dx, dy));
+			int geomWidth = (int)geometry.Width;
+			int geomLeft = (int)geometry.Left;
+			int geomRight = (int)geometry.Right;
 			int width = System.Math.Max (req.Width, w);
-			if (width >= geometry.Width - spacing * 2) {
-				width = geometry.Width - spacing * 2;
-				dx = geometry.Left + spacing;
+			if (width >= geomWidth - spacing * 2) {
+				width = geomWidth - spacing * 2;
+				dx = geomLeft + spacing;
 			}
 			widget.WidthRequest = width;
 			if (dy + req.Height > geometry.Bottom)
 				dy = oy + this.Allocation.Y - req.Height;
-			if (dx + width > geometry.Right)
-				dx = geometry.Right - width;
+			if (dx + width > geomRight)
+				dx = geomRight - width;
 			(widget as Gtk.Window).Move (dx, dy);
 			(widget as Gtk.Window).Resize (width, req.Height);
 			widget.GrabFocus ();

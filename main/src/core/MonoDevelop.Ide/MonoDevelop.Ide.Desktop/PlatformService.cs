@@ -424,9 +424,17 @@ namespace MonoDevelop.Ide.Desktop
 			return new DesktopApplication[0];
 		}
 		
-		public virtual Gdk.Rectangle GetUsableMonitorGeometry (Gdk.Screen screen, int monitor)
+		public virtual Xwt.Rectangle GetUsableMonitorGeometry (int screenNumber, int monitorNumber)
 		{
-			return screen.GetMonitorGeometry (monitor);
+			var screen = Gdk.Display.Default.GetScreen (screenNumber);
+			var rect = screen.GetMonitorGeometry (monitorNumber);
+
+			return new Xwt.Rectangle {
+				X = rect.X,
+				Y = rect.Y,
+				Width = rect.Width,
+				Height = rect.Height,
+			};
 		}
 		
 		/// <summary>
