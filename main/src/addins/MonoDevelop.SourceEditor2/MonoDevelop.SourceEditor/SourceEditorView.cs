@@ -2563,7 +2563,7 @@ namespace MonoDevelop.SourceEditor
 
 		object ITextEditorImpl.CreateNativeControl ()
 		{
-			return Control;
+			return widget != null ? widget.Vbox : null;
 		}
 
 		string ITextEditorImpl.FormatString (int offset, string code)
