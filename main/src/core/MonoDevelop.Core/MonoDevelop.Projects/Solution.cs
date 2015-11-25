@@ -43,7 +43,7 @@ using MonoDevelop.Projects.Formats.MSBuild;
 namespace MonoDevelop.Projects
 {
 	[ProjectModelDataItem]
-	public sealed class Solution: WorkspaceItem, IConfigurationTarget, IPolicyProvider, IBuildTarget, IMSBuildFileObject
+	public class Solution: WorkspaceItem, IConfigurationTarget, IPolicyProvider, IBuildTarget, IMSBuildFileObject
 	{
 		internal object MemoryProbe = Counters.SolutionsInMemory.CreateMemoryProbe ();
 		SolutionFolder rootFolder;
