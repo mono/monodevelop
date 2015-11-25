@@ -8,6 +8,7 @@ using System.Windows.Input;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using System.Windows;
+using MonoDevelop.Core;
 
 namespace WindowsPlatform.MainToolbar
 {
@@ -205,11 +206,13 @@ namespace WindowsPlatform.MainToolbar
 			if (!hasCommand)
 				return;
 
-			if (commandArrayInfo != null) {
-				manager.DispatchCommand (menuEntry.CommandId, commandArrayInfo.DataItem, initialCommandTarget, commandSource);
-			} else {
-				manager.DispatchCommand (menuEntry.CommandId, null, initialCommandTarget, commandSource);
-			}
+			Runtime.RunInMainThread(() => {
+				if (commandArrayInfo != null) {
+					manager.DispatchCommand (menuEntry.CommandId, commandArrayInfo.DataItem, initialCommandTarget, commandSource);
+				} else {
+					manager.DispatchCommand (menuEntry.CommandId, null, initialCommandTarget, commandSource);
+				}
+			});
 		}
 
 		void OnMenuLinkClicked (object sender, RoutedEventArgs e)
