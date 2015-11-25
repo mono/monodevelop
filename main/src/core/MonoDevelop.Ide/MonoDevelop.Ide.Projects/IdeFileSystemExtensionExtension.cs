@@ -49,12 +49,14 @@ namespace MonoDevelop.Ide.Projects
 
 			List<FilePath> readOnlyFiles = new List<FilePath> ();
 			foreach (var f in files) {
-				if (File.Exists (f) && File.GetAttributes (f).HasFlag (FileAttributes.ReadOnly))
+				if (!File.Exists (f))
+					continue;
+				if (File.GetAttributes (f).HasFlag (FileAttributes.ReadOnly))
 					readOnlyFiles.Add (f);
 				#if MAC
 				// detect 'locked' files on OS X
 				var attr = Foundation.NSFileManager.DefaultManager.GetAttributes (f) ;
-				if (attr.Immutable.HasValue && attr.Immutable.Value) {
+				if (attr != null && attr.Immutable.HasValue && attr.Immutable.Value) {
 					throw new UserException (GettextCatalog.GetString ("File '{0}' is locked.", f));
 				}
 				#endif
