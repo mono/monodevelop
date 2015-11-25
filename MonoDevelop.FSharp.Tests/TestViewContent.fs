@@ -9,7 +9,7 @@ open MonoDevelop.Ide.Gui.Content
 open MonoDevelop.Ide.Editor
 
 type TestViewContent() =
-    inherit AbstractViewContent()
+    inherit ViewContent()
     let caretPositionSet = Event<_>()
     let textChanged = Event<_>()
     let name = FilePath()
@@ -19,15 +19,11 @@ type TestViewContent() =
     member val Contents = ResizeArray([data :> obj]) with get, set
     member val Data = data
 
-    override x.Load(fileName:FileOpenInformation) = ()
+    override x.Load(fileName:FileOpenInformation) = null
     override x.Control = null
-    override x.GetContent(ty) =
-        match x.Contents |> Seq.tryFind ty.IsInstanceOfType with
-        | Some content -> content
-        | None -> base.GetContent (ty)
 
-    override x.GetContents<'a when 'a : not struct > () =
-        x.Contents.OfType<'a> ()
+    override x.OnGetContents (t) =
+        base.OnGetContents(t).Concat(x.Contents)
 
     //interface ITextEditorDataProvider with
     member x.GetTextEditorData() = data

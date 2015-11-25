@@ -14,14 +14,14 @@ type TestWorkbenchWindow(viewContent) =
     interface IWorkbenchWindow with
         member x.SelectWindow () = ()
         member x.SwitchView (viewNumber:int) = ()
-        member x.SwitchView (viewNumber:IAttachableViewContent) = ()
+        member x.SwitchView (viewNumber:BaseViewContent) = ()
         member x.FindView<'a>() = -1
         member val Title = "" with get,set
         member val Document = null with get, set
         member val DocumentType = "" with get, set
         member val ShowNotification = false with get, set
         member x.ViewContent with get() = viewContent
-        member x.ActiveViewContent with get() = viewContent :> IBaseViewContent and set v = ()
+        member x.ActiveViewContent with get() = viewContent :> BaseViewContent and set v = ()
         member x.ExtensionContext with get() = AddinManager.AddinEngine :> _
         member x.CloseWindow (force) = true
         member x.AttachViewContent (subViewContent) = ()
