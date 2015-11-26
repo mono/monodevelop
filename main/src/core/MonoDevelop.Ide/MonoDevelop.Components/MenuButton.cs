@@ -103,6 +103,7 @@ namespace MonoDevelop.Components
 
 				Gdk.Rectangle rect = this.Allocation;
 
+				this.GrabFocus ();
 				// Offset the menu by the height of the rect
 				menu.Show (this, 0, rect.Height, () => MenuClosed (oldRelief)); 
 				return;
