@@ -39,8 +39,6 @@ type internal FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, ove
     |> List.map (fun symbol -> FSharpMemberCompletionData(symbol.Symbol.DisplayName, icon, symbol, []) :> CompletionData)
     |> ResizeArray.ofList :> _
 
-  override x.AddOverload (_data) = () //not currently called
-
   // TODO: what does 'smartWrap' indicate?
   override x.CreateTooltipInformation (_smartWrap, cancel) =
     Async.StartAsTask(SymbolTooltips.getTooltipInformation symbol, cancellationToken = cancel)
