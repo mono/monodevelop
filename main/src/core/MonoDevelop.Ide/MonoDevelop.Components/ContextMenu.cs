@@ -62,28 +62,40 @@ namespace MonoDevelop.Components
 
 		public void Show (Gtk.Widget parent, Gdk.EventButton evt)
 		{
+			Show (parent, evt, null);
+		}
+
+		public void Show (Gtk.Widget parent, Gdk.EventButton evt, Action closeHandler)
+		{
 			#if MAC
 			if (Platform.IsMac) {
-				ContextMenuExtensionsMac.ShowContextMenu (parent, evt, this);
+				ContextMenuExtensionsMac.ShowContextMenu (parent, evt, this, closeHandler);
 				return;
 			}
 			#endif
 
-			ContextMenuExtensionsGtk.ShowContextMenu (parent, evt, this);
+			ContextMenuExtensionsGtk.ShowContextMenu (parent, evt, this, closeHandler);
+		}
+
+		public void Show (Gtk.Widget parent, int x, int y, Action closeHandler)
+		{
+			#if MAC
+			if (Platform.IsMac) {
+				int tx, ty;
+
+				// x, y are in gtk coordinates, so they need to be translated for Cocoa.
+				parent.TranslateCoordinates (parent.Toplevel, x, y, out tx, out ty);
+				ContextMenuExtensionsMac.ShowContextMenu (parent, tx, ty, this, closeHandler);
+				return;
+			}
+			#endif
+
+			ContextMenuExtensionsGtk.ShowContextMenu (parent, x, y, this, closeHandler);
 		}
 
 		public void Show (Gtk.Widget parent, int x, int y)
 		{
-			#if MAC
-			if (Platform.IsMac) {
-				int trans_x, trans_y;
-				parent.TranslateCoordinates (parent.Toplevel, (int)x, (int)y, out trans_x, out trans_y);
-				ContextMenuExtensionsMac.ShowContextMenu (parent, trans_x, trans_y, this);
-				return;
-			}
-			#endif
-
-			ContextMenuExtensionsGtk.ShowContextMenu (parent, x, y, this);
+			Show (parent, x, y, null);
 		}
 
 		public void Add (ContextMenuItem menuItem)

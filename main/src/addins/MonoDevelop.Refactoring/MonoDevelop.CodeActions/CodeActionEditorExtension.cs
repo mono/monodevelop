@@ -47,6 +47,7 @@ using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis;
 using System.Reflection;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.CodeActions
 {
@@ -351,138 +352,51 @@ namespace MonoDevelop.CodeActions
 			ShowFixesMenu (widget, rect, menu);
 		}
 
-#if MAC
-		class ClosingMenuDelegate : AppKit.NSMenuDelegate
-		{
-			readonly TextEditor data;
-
-			public ClosingMenuDelegate (TextEditor editor_data)
-			{
-				data = editor_data;
-			}
-
-			public override void MenuWillHighlightItem (AppKit.NSMenu menu, AppKit.NSMenuItem item)
-			{
-			}
-
-			public override void MenuDidClose (AppKit.NSMenu menu)
-			{
-				data.SuppressTooltips = false;
-			}
-		}
-#endif
-
 		bool ShowFixesMenu (Gtk.Widget parent, Gdk.Rectangle evt, FixMenuDescriptor entrySet)
 		{
-			if (parent == null || parent.GdkWindow == null)
+			if (parent == null || parent.GdkWindow == null) {
+				Editor.SuppressTooltips = false;
 				return true;
+			}
+
 			try {
-				#if MAC
-				Gtk.Application.Invoke (delegate {
 				parent.GrabFocus ();
 				int x, y;
 				x = (int)evt.X;
 				y = (int)evt.Y;
+
 				// Explicitly release the grab because the menu is shown on the mouse position, and the widget doesn't get the mouse release event
 				Gdk.Pointer.Ungrab (Gtk.Global.CurrentEventTime);
-				var menu = CreateNSMenu (entrySet);
-				menu.Delegate = new ClosingMenuDelegate (Editor);
-				var nsview = MonoDevelop.Components.Mac.GtkMacInterop.GetNSView (parent);
-				var toplevel = parent.Toplevel as Gtk.Window;
-				int trans_x, trans_y;
-				parent.TranslateCoordinates (toplevel, (int)x, (int)y, out trans_x, out trans_y);
 
-				// Window coordinates in gtk are the same for cocoa, with the exception of the Y coordinate, that has to be flipped.
-				var pt = new CoreGraphics.CGPoint ((float)trans_x, (float)trans_y);
-				int w,h;
-				toplevel.GetSize (out w, out h);
-				pt.Y = h - pt.Y;
-
-				var tmp_event = AppKit.NSEvent.MouseEvent (AppKit.NSEventType.LeftMouseDown,
-				pt,
-				0, 0,
-				MonoDevelop.Components.Mac.GtkMacInterop.GetNSWindow (toplevel).WindowNumber,
-				null, 0, 0, 0);
-
-				AppKit.NSMenu.PopUpContextMenu (menu, tmp_event, nsview);
-				});
-				#else
-				var menu = CreateGtkMenu (entrySet);
-				menu.Events |= Gdk.EventMask.AllEventsMask;
-				menu.SelectFirst (true);
-
-				menu.Hidden += delegate {
-					// document.Editor.SuppressTooltips = false;
-				};
-				menu.ShowAll ();
-				menu.SelectFirst (true);
-				menu.MotionNotifyEvent += (o, args) => {
-					Gtk.Widget widget = Editor;
-					if (args.Event.Window == widget.GdkWindow) {
-						StartMenuCloseTimer ();
-					} else {
-						CancelMenuCloseTimer ();
-					}
-				};
-
-				GtkWorkarounds.ShowContextMenu (menu, parent, null, evt);
-				#endif
+				var menu = CreateContextMenu (entrySet);
+				menu.Show (parent, x, y, () => Editor.SuppressTooltips = false);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error while context menu popup.", ex);
 			}
 			return true;
 		}
 
-#if MAC
-
-		AppKit.NSMenu CreateNSMenu (FixMenuDescriptor entrySet)
+		ContextMenu CreateContextMenu (FixMenuDescriptor entrySet)
 		{
-			var menu = new AppKit.NSMenu {
-				Font = AppKit.NSFont.MenuFontOfSize (12),
-			};
+			var menu = new ContextMenu ();
+
 			foreach (var item in entrySet.Items) {
 				if (item == FixMenuEntry.Separator) {
-					menu.AddItem (AppKit.NSMenuItem.SeparatorItem);
+					menu.Items.Add (new SeparatorContextMenuItem ());
 					continue;
 				}
-				var subMenu = item as FixMenuDescriptor;
-				if (subMenu != null) {
-					var gtkSubMenu = new AppKit.NSMenuItem (item.Label.Replace ("_", ""));
-					gtkSubMenu.Submenu = CreateNSMenu (subMenu);
-					menu.AddItem (gtkSubMenu); 
-					continue;
-				}
-				var menuItem = new AppKit.NSMenuItem (item.Label.Replace ("_", ""));
-				menuItem.Activated += delegate {
-					item.Action ();
-				};
-				menu.AddItem (menuItem); 
-			}
-			return menu;
-		}
-#endif
 
-		static Menu CreateGtkMenu (FixMenuDescriptor entrySet)
-		{
-			var menu = new Menu ();
-			foreach (var item in entrySet.Items) {
-				if (item == FixMenuEntry.Separator) {
-					menu.Add (new SeparatorMenuItem ());
-					continue;
-				}
+				var menuItem = new ContextMenuItem (item.Label);
+				menuItem.Context = item.Action;
 				var subMenu = item as FixMenuDescriptor;
 				if (subMenu != null) {
-					var gtkSubMenu = new Gtk.MenuItem (item.Label);
-					gtkSubMenu.Submenu = CreateGtkMenu (subMenu);
-					menu.Add (gtkSubMenu);
-					continue;
+					menuItem.SubMenu = CreateContextMenu (subMenu);
+				} else {
+					menuItem.Clicked += (object sender, ContextMenuItemClickedEventArgs e) => ((System.Action)((ContextMenuItem)sender).Context) ();
 				}
-				var menuItem = new Gtk.MenuItem (item.Label);
-				menuItem.Activated += delegate {
-					item.Action ();
-				};
-				menu.Add (menuItem);
+				menu.Items.Add (menuItem);
 			}
+
 			return menu;
 		}
 

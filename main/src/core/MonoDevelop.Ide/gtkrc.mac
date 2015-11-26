@@ -288,7 +288,7 @@ style "notebook" = "default"
     }
 }
 
-style "radio-or-check-box"
+style "radio-or-check-box" = "default"
 {
     ythickness = 6
     GtkCheckButton::indicator-size = 14
