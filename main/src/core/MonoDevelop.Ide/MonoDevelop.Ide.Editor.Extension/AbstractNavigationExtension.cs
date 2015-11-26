@@ -29,13 +29,36 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using ICSharpCode.NRefactory.Editor;
 using System.Threading;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
 	public abstract class AbstractNavigationExtension : TextEditorExtension
 	{
-		uint snooperId;
 		uint timerId;
+
+		#region Key handling
+		static bool linksShown;
+
+		static bool LinksShown {
+			get {
+				return linksShown;
+			}
+			set {
+				linksShown = value;
+				OnLinksShownChanged (EventArgs.Empty);
+			}
+		}
+
+		static void OnLinksShownChanged (EventArgs e)
+		{
+			LinksShownChanged?.Invoke (null, e);
+		}
+
+		public static event EventHandler LinksShownChanged;
+
+		static uint snooperId;
+
 
 		public class NavigationSegment : ISegment
 		{
@@ -59,25 +82,21 @@ namespace MonoDevelop.Ide.Editor.Extension
 			}
 		}
 
-		protected override void Initialize ()
+		static AbstractNavigationExtension ()
 		{
 			snooperId = Gtk.Key.SnooperInstall (TooltipKeySnooper);
+			//if (snooperId != 0)
+			//	Gtk.Key.SnooperRemove (snooperId);
 		}
 
-		protected abstract Task<IEnumerable<NavigationSegment>> RequestLinksAsync (int offset, int length, CancellationToken token);
 
-		int TooltipKeySnooper (Gtk.Widget widget, Gdk.EventKey evnt)
+		static int TooltipKeySnooper (Gtk.Widget widget, Gdk.EventKey evnt)
 		{
-			RemoveTimer ();
 			if (evnt != null && evnt.Type == Gdk.EventType.KeyPress && IsTriggerKey (evnt)) {
-				timerId = GLib.Timeout.Add (250, delegate {
-					timerId = 0;
-					ShowLinks ();
-					return false;
-				});
+				LinksShown = true;
 			}
 			if (evnt != null && evnt.Type == Gdk.EventType.KeyRelease && IsTriggerKey (evnt)) {
-				HideLinks ();
+				LinksShown = false;
 			}
 			return 0; //FALSE
 		}
@@ -90,16 +109,55 @@ namespace MonoDevelop.Ide.Editor.Extension
 			return evnt.Key == Gdk.Key.Control_L || evnt.Key == Gdk.Key.Control_R;
 			#endif
 		}
+		#endregion
+
+		#region Extension API
+
+		protected abstract Task<IEnumerable<NavigationSegment>> RequestLinksAsync (int offset, int length, CancellationToken token);
+
+		#endregion
+
+		protected override void Initialize ()
+		{
+			LinksShownChanged += AbstractNavigationExtension_LinksShownChanged;
+			this.DocumentContext.DocumentParsed += DocumentContext_DocumentParsed;
+			if (LinksShown)
+				ShowLinks ();
+		}
+
+		void AbstractNavigationExtension_LinksShownChanged (object sender, EventArgs e)
+		{
+			RemoveTimer ();
+			if (LinksShown) {
+				timerId = GLib.Timeout.Add (250, delegate {
+					timerId = 0;
+					ShowLinks ();
+					return false;
+				});
+			} else {
+				HideLinks ();
+			}
+		}
+
+		void DocumentContext_DocumentParsed (object sender, EventArgs e)
+		{
+			if (LinksShown)
+				ShowLinks ();
+		}
 
 		List<ITextSegmentMarker> markers = new List<ITextSegmentMarker> ();
 
 		async void ShowLinks ()
 		{
 			HideLinks ();
-			foreach (var segment in await RequestLinksAsync (0, Editor.Length, default(CancellationToken))) {
-				var marker = Editor.TextMarkerFactory.CreateLinkMarker (Editor, segment.Offset, segment.Length, delegate { segment.Activate (); } );
-				Editor.AddMarker (marker);
-				markers.Add (marker); 
+			try {
+				foreach (var segment in await RequestLinksAsync (0, Editor.Length, default (CancellationToken))) {
+					var marker = Editor.TextMarkerFactory.CreateLinkMarker (Editor, segment.Offset, segment.Length, delegate { segment.Activate (); });
+					Editor.AddMarker (marker);
+					markers.Add (marker);
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while retrieving nav links.", e);
 			}
 		}
 
@@ -119,10 +177,10 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		public override void Dispose ()
 		{
+			LinksShownChanged -= AbstractNavigationExtension_LinksShownChanged;
+			DocumentContext.DocumentParsed -= DocumentContext_DocumentParsed;
 			HideLinks ();
 			RemoveTimer ();
-			if (snooperId != 0)
-				Gtk.Key.SnooperRemove (snooperId);
 			base.Dispose ();
 		}
 

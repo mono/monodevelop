@@ -99,7 +99,7 @@ namespace MonoDevelop.CSharp
 			{
 				var info = model.GetSymbolInfo (node); 
 				if (info.Symbol != null) {
-					result.Add (new NavigationSegment (node.Span.Start, node.Span.Length, delegate { Console.WriteLine (Environment.StackTrace); IdeApp.ProjectOperations.JumpToDeclaration (info.Symbol, documentContext.Project); })); 
+					result.Add (new NavigationSegment (node.Span.Start, node.Span.Length, delegate { IdeApp.ProjectOperations.JumpToDeclaration (info.Symbol, documentContext.Project); })); 
 				}
 			}
 
