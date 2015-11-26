@@ -248,6 +248,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static Microsoft.CodeAnalysis.Project GetCodeAnalysisProject (MonoDevelop.Projects.Project project)
 		{
+			project = project.GetRealProject();
+
 			if (project == null)
 				throw new ArgumentNullException ("project");
 			foreach (var w in workspaces) {

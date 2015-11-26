@@ -51,6 +51,11 @@ namespace MonoDevelop.Projects
 			if (target is SolutionItem) {
 				// Get the mapped configuration
 				SolutionItem item = (SolutionItem) target;
+				var project = item as Project;
+				if (project != null) {
+					item = project.GetRealProject();
+				}
+
 				if (item.ParentSolution != null) {
 					SolutionConfiguration config = item.ParentSolution.Configurations [Id];
 					if (config != null) {
