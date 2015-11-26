@@ -21,6 +21,7 @@ using MonoDevelop.Ide.Tasks;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Media.Animation;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace WindowsPlatform.MainToolbar
 {
@@ -177,12 +178,34 @@ namespace WindowsPlatform.MainToolbar
 			ShowMessage (null, message, true);
 		}
 
-		public void ShowMessage (IconId image, string message, bool isMarkup)
+		IconId currentIcon;
+		AnimatedIcon animatedIcon;
+		IDisposable xwtAnimation;
+		public void ShowMessage (IconId iconId, string message, bool isMarkup)
 		{
-			if (image.IsNull)
-				image = BrandingService.StatusSteadyIconId;
+			if (iconId.IsNull)
+				iconId = BrandingService.StatusSteadyIconId;
 
-			StatusImage = image.GetImageSource (Xwt.IconSize.Small);
+			// don't reload same icon
+			if (currentIcon == iconId)
+				return;
+
+			currentIcon = iconId;
+
+			if (xwtAnimation != null) {
+				xwtAnimation.Dispose ();
+				xwtAnimation = null;
+			}
+
+			if (ImageService.IsAnimation (currentIcon, Gtk.IconSize.Menu)) {
+				animatedIcon = ImageService.GetAnimatedIcon (currentIcon, Gtk.IconSize.Menu);
+				StatusImage = animatedIcon.FirstFrame.GetImageSource ();
+				xwtAnimation = animatedIcon.StartAnimation (p => {
+					StatusImage = p.GetImageSource ();
+				});
+			} else
+				StatusImage = currentIcon.GetImageSource (Xwt.IconSize.Small);
+
 			Message = message;
 		}
 
