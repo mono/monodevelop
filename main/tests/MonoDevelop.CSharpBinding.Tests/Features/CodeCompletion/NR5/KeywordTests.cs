@@ -173,6 +173,7 @@ class Test
 			});
 		}
 		
+		[Ignore]
 		[Test()]
 		public void GetSetKeywordTestAfterModifier ()
 		{
@@ -505,6 +506,7 @@ class Test
 			});
 		}
 
+		[Ignore]
 		[Test]
 		public void OverrideCompletionDeclarationBeginTest ()
 		{
@@ -518,6 +520,7 @@ class Test : A
 			Assert.AreEqual(start.Length, data.DeclarationBegin);
 		}
 
+		[Ignore]
 		[Test]
 		public void PartialCompletionDeclarationBeginTest ()
 		{

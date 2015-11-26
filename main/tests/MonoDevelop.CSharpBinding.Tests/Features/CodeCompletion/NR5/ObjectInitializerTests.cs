@@ -525,6 +525,7 @@ class MyTest
 			);
 		}
 
+		[Ignore]
 		[Test()]
 		public void TestArrayInitializersForbiddenInObjectCreation()
 		{

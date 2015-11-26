@@ -73,25 +73,41 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return Task.FromResult (tt);
 		}
 
-		public virtual bool HasOverloads { 
-			get {
-				return false;
-			}
-		}
 
 		public ICompletionDataKeyHandler KeyHandler { get; protected set; }
-		
-		public virtual IReadOnlyList<CompletionData> OverloadedData {
+
+		public virtual bool HasOverloads {
 			get {
-				throw new InvalidOperationException ();
+				return overloads != null;
 			}
 		}
 
-		public virtual void AddOverload (CompletionData data)
+		List<CompletionData> overloads;
+
+		public void AddOverload (CompletionData data)
 		{
-			throw new InvalidOperationException ();
+			if (overloads == null)
+				overloads = new List<CompletionData> ();
+			overloads.Add ((CompletionData)data);
+			sorted = null;
 		}
-		
+
+		List<CompletionData> sorted;
+
+		public virtual IReadOnlyList<CompletionData> OverloadedData {
+			get {
+				if (overloads == null)
+					return new CompletionData[] { this };
+
+				if (sorted == null) {
+					sorted = new List<CompletionData> (overloads);
+					sorted.Add (this);
+					// sorted.Sort (new OverloadSorter ());
+				}
+				return sorted;
+			}
+		}
+
 		public CompletionData (string text) : this (text, null, null) {}
 		public CompletionData (string text, IconId icon) : this (text, icon, null) {}
 		public CompletionData (string text, IconId icon, string description) : this (text, icon, description, text) {}

@@ -69,10 +69,9 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return IsException (type.BaseType);
 		}
 
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, CancellationToken cancellationToken)
+		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
-			var ctx = await completionContext.GetSyntaxContextAsync (engine.Workspace, cancellationToken).ConfigureAwait (false);
-			var semanticModel = await completionContext.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
+			var semanticModel = ctx.SemanticModel;
 			var result = new List<CompletionData> ();
 			if (info.TriggerCharacter == ' ') {
 				var newExpression = ObjectCreationContextHandler.GetObjectCreationNewExpression (ctx.SyntaxTree, completionContext.Position, cancellationToken);

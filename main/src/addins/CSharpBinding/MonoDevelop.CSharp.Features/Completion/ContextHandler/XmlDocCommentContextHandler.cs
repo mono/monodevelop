@@ -40,7 +40,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
 	class XmlDocCommentContextHandler : CompletionContextHandler
 	{
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, CancellationToken cancellationToken)
+		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			if (info.IsDebugger)
 			{

@@ -51,9 +51,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return ch == ' ' || ch == '(' || ch == '{' || ch == '[';
 		}
 
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult result, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, CancellationToken cancellationToken)
+		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult result, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
-			var ctx = await completionContext.GetSyntaxContextAsync (engine.Workspace, cancellationToken).ConfigureAwait (false);
 			var list = new List<CompletionData> ();
 
 			var newExpression = GetObjectCreationNewExpression (ctx.SyntaxTree, completionContext.Position, cancellationToken);

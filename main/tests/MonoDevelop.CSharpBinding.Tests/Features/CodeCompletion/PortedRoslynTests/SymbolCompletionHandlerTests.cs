@@ -263,6 +263,7 @@ class C {
 			VerifyItemIsAbsent (AddUsingDirectives ("using System;", AddInsideMethod ("string s = \"$$")), @"System");
 		}
 
+		[Ignore]
 		[Test]
 		public void OpenStringLiteralInDirective ()
 		{
@@ -277,6 +278,7 @@ class C {
 			VerifyItemIsAbsent (AddUsingDirectives ("using System;", AddInsideMethod ("string s = \"$$\";")), @"String");
 		}
 
+		[Ignore]
 		[Test]
 		public void StringLiteralInDirective ()
 		{

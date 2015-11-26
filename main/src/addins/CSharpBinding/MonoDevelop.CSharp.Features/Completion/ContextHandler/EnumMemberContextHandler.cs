@@ -72,11 +72,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				(/*options.GetOption(CompletionOptions.TriggerOnTypingLetters, LanguageNames.CSharp) && CompletionUtilities.*/IsStartingNewWord(text, position));
 		}
 
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, CancellationToken cancellationToken)
+		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
-			var ctx = await completionContext.GetSyntaxContextAsync (engine.Workspace, cancellationToken).ConfigureAwait(false);
-			var model = await completionContext.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
-			var tree = await completionContext.Document.GetSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
+			var model = ctx.SemanticModel;
+			var tree = ctx.SyntaxTree;
 			if (tree.IsInNonUserCode(completionContext.Position, cancellationToken))
 				return Enumerable.Empty<CompletionData> ();
 
