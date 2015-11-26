@@ -12,7 +12,7 @@
 	</TemplateConfiguration>
 
 	<Conditions>
-		<ParentProject PermittedCreationPaths="/Views" ExcludedFiles="Web.config" />
+		<ParentProject PermittedCreationPaths="Views" ExcludedFiles="Web.config" />
 		<AspNetMvc />
 	</Conditions>
 
