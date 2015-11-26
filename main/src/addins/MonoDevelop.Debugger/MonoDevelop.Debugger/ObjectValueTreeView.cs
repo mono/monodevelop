@@ -1737,10 +1737,10 @@ namespace MonoDevelop.Debugger
 		
 		void CleanPinIcon ()
 		{
-			if (!lastPinIter.Equals (TreeIter.Zero)) {
+			if (!lastPinIter.Equals (TreeIter.Zero) && store.IterIsValid (lastPinIter)) {
 				store.SetValue (lastPinIter, PinIconColumn, null);
-				lastPinIter = TreeIter.Zero;
 			}
+			lastPinIter = TreeIter.Zero;
 		}
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
@@ -1852,9 +1852,8 @@ namespace MonoDevelop.Debugger
 			TreePath path;
 			bool closePreviewWindow = true;
 			
-			if (CanQueryDebugger && evnt.Button == 1 && GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr)) {
-				TreeIter it;
-				store.GetIter (out it, path);
+			TreeIter it;
+			if (CanQueryDebugger && evnt.Button == 1 && GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr) && store.GetIter (out it, path)) {
 				if (cr == crpViewer) {
 					var val = (ObjectValue)store.GetValue (it, ObjectColumn);
 					DebuggingService.ShowValueVisualizer (val);
