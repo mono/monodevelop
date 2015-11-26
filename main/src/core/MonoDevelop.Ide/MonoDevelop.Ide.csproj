@@ -939,11 +939,14 @@
     <EmbeddedResource Include="icons\pad-search-results-16%402x.png">
       <LogicalName>pad-search-results-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-clear-16.png">
-      <LogicalName>searchbox-clear-16.png</LogicalName>
+    <EmbeddedResource Include="icons\searchbox-clear-mac-16.png">
+      <LogicalName>searchbox-clear-mac-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-clear-16%402x.png">
-      <LogicalName>searchbox-clear-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\searchbox-clear-mac-16%402x.png">
+      <LogicalName>searchbox-clear-mac-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-clear-win-16.png">
+      <LogicalName>searchbox-clear-win-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\searchbox-search-mac-16.png">
       <LogicalName>searchbox-search-mac-16.png</LogicalName>
