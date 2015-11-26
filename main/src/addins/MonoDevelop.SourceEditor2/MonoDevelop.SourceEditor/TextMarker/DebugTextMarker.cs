@@ -35,6 +35,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Debugger;
 using MonoDevelop.Ide.Editor;
 using Xwt.Drawing;
+using System.Collections.Generic;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -67,7 +68,7 @@ namespace MonoDevelop.SourceEditor
 		}
 	}
 
-	class DebugTextMarker : TextSegmentMarker
+	class DebugTextMarker : TextSegmentMarker, IChunkMarker
 	{
 		readonly AmbientColor background;
 		readonly ChunkStyle forground;
@@ -138,6 +139,46 @@ namespace MonoDevelop.SourceEditor
 			}
 			return style;
 		}
+
+		#region IChunkMarker implementation
+
+		void IChunkMarker.TransformChunks (List<Chunk> chunks)
+		{
+			if (forground == null) {
+				return;
+			}
+			int markerStart = Segment.Offset;
+			int markerEnd = Segment.EndOffset;
+			for (int i = 0; i < chunks.Count; i++) {
+				var chunk = chunks [i];
+				if (chunk.EndOffset < markerStart || markerEnd <= chunk.Offset) 
+					continue;
+				if (chunk.Offset == markerStart && chunk.EndOffset == markerEnd)
+					return;
+				if (chunk.Offset < markerStart && chunk.EndOffset > markerEnd) {
+					var newChunk = new Chunk (chunk.Offset, markerStart - chunk.Offset, chunk.Style);
+					chunks.Insert (i, newChunk);
+					chunk.Offset += newChunk.Length;
+					chunk.Length -= newChunk.Length;
+					continue;
+				}
+			}
+		}
+
+		void IChunkMarker.ChangeForeColor (MonoTextEditor editor, Chunk chunk, ref Cairo.Color color)
+		{
+			if (forground == null) {
+				return;
+			}
+			int markerStart = Segment.Offset;
+			int markerEnd = Segment.EndOffset;
+			if (chunk.EndOffset <= markerStart || markerEnd <= chunk.Offset) 
+				return;
+			var bgc = editor.ColorStyle.PlainText.Background;
+			color = forground.Foreground;
+		}
+
+		#endregion
 	}
 
 	abstract class DebugMarkerPair
