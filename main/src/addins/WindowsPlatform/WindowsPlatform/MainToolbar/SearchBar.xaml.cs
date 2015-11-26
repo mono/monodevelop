@@ -26,13 +26,15 @@ namespace WindowsPlatform.MainToolbar
 	/// </summary>
 	public partial class SearchBarControl : UserControl, INotifyPropertyChanged
 	{
+		readonly ImageSource searchIcon, clearIcon;
 		public SearchBarControl ()
 		{
 			InitializeComponent ();
 			DataContext = this;
 
 			SearchBar.GotKeyboardFocus += (o, e) => {
-				SearchText = string.Empty;
+				if (searchText == placeholderText)
+					SearchText = string.Empty;
 			};
 			IdeApp.Workbench.RootWindow.SetFocus += (o, e) =>
 			{
@@ -40,7 +42,9 @@ namespace WindowsPlatform.MainToolbar
 				IdeApp.Workbench.RootWindow.Present();
 			};
 
-			SearchIcon.Source = Stock.SearchboxSearch.GetImageSource (Xwt.IconSize.Small);
+			searchIcon = Stock.SearchboxSearch.GetImageSource (Xwt.IconSize.Small);
+			clearIcon = ((MonoDevelop.Core.IconId)"md-searchbox-clear").GetImageSource (Xwt.IconSize.Small);
+			SearchIcon.Source = searchIcon;
 		}
 
 		string placeholderText;
@@ -50,9 +54,10 @@ namespace WindowsPlatform.MainToolbar
 			}
 			set	{
 				var oldPlaceholderText = placeholderText;
-				StringNotNullOrEmptyOrPlaceholderConverter.PlaceholderText = placeholderText = value;
+				placeholderText = value;
 				if (string.IsNullOrEmpty (SearchText) || searchText == oldPlaceholderText)
 					SearchText = placeholderText;
+				UpdateIcon ();
             }
 		}
 
@@ -60,7 +65,25 @@ namespace WindowsPlatform.MainToolbar
 		public string SearchText
 		{
 			get { return searchText; }
-			set	{ searchText = value; RaisePropertyChanged (); }
+			set	{
+					searchText = value;
+					UpdateIcon ();
+					RaisePropertyChanged ();
+			}
+		}
+
+		bool isClearShown = false;
+		void UpdateIcon ()
+		{
+			if (string.IsNullOrEmpty (searchText) || searchText == PlaceholderText) {
+				if (isClearShown) {
+					SearchIcon.Source = searchIcon;
+					isClearShown = false;
+				}
+			} else if (!isClearShown) {
+				SearchIcon.Source = clearIcon;
+				isClearShown = true;
+			}
 		}
 
 		IEnumerable<ISearchMenuModel> searchMenuItems;
@@ -85,15 +108,12 @@ namespace WindowsPlatform.MainToolbar
 			}
 		}
 
-		void OnClearClicked (object sender, RoutedEventArgs args)
-		{
-			SearchText = string.Empty;
-			ClearIcon.Visibility = Visibility.Collapsed;
-		}
-
 		void OnIconClicked (object sender, RoutedEventArgs args)
 		{
-			SearchIcon.ContextMenu.IsOpen = true;
+			if (isClearShown)
+				SearchText = string.Empty;
+			else
+				SearchIcon.ContextMenu.IsOpen = true;
 		}
 
 		void OnMenuItemClicked (object sender, RoutedEventArgs args)
@@ -101,6 +121,7 @@ namespace WindowsPlatform.MainToolbar
 			var menuItem = (MenuItem)sender;
 			var searchModel = (ISearchMenuModel)menuItem.Tag;
 			searchModel.NotifyActivated ();
+			SearchBar.Focus ();
 		}
 
 		void RaisePropertyChanged ([CallerMemberName] string propName = null)
@@ -110,22 +131,5 @@ namespace WindowsPlatform.MainToolbar
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
-	}
-
-	public class StringNotNullOrEmptyOrPlaceholderConverter : IValueConverter
-	{
-		internal static string PlaceholderText = null;
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			var str = (string)value;
-			if (string.IsNullOrEmpty(str) || str == PlaceholderText)
-				return Visibility.Collapsed;
-			return Visibility.Visible;
-		}
-
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			throw new NotImplementedException ();
-		}
 	}
 }
