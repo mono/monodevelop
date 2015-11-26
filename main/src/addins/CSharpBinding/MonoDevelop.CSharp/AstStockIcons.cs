@@ -95,6 +95,9 @@ namespace MonoDevelop.CSharp
 			if (element is TypeDeclarationSyntax && !(element.Parent is TypeDeclarationSyntax))
 				acc = Accessibility.Internal;
 
+			if (element is VariableDeclaratorSyntax)
+				element = element.Parent.Parent;
+			
 			if (element is TypeDeclarationSyntax)
 				AdjustAccessibility (((TypeDeclarationSyntax)element).Modifiers, ref acc, ref isStatic, ref result);
 			if (element is BaseFieldDeclarationSyntax)
@@ -120,7 +123,7 @@ namespace MonoDevelop.CSharp
 
 				return "md-" + GetAccess (acc) + "method";
 			}
-
+			
 			GetAccessibility (element, out acc, out isStatic);
 
 			if (element is EnumDeclarationSyntax) {
