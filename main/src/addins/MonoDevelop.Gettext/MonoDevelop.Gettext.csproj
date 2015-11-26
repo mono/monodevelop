@@ -178,12 +178,6 @@
     <EmbeddedResource Include="templates\Makefile.am.template">
       <LogicalName>Makefile.am.template</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\gettext-overlay-16.png">
-      <LogicalName>gettext-overlay-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\gettext-overlay-32.png">
-      <LogicalName>gettext-overlay-32.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-language-16.png">
       <LogicalName>prefs-language-16.png</LogicalName>
     </EmbeddedResource>
