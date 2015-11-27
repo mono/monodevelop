@@ -871,8 +871,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public async Task AddProject (MonoDevelop.Projects.Project project)
 		{
-			var info = await LoadProject (project, default(CancellationToken)).ConfigureAwait (false);
-			OnProjectAdded (info); 
+			await LoadProject (project, default(CancellationToken)).ConfigureAwait (false);
 		}
 
 		public void RemoveProject (MonoDevelop.Projects.Project project)
