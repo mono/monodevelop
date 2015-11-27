@@ -17,8 +17,8 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=ad22f112e11fd0a4dd4ae52935c5eb37ba52580e
-DEP_BRANCH_AND_REMOTE[0]="xcode7.1 origin/xcode7.1"
+DEP_NEEDED_VERSION[0]=ca871ccb82b7468831f1df2c686b1bf13211bd36
+DEP_BRANCH_AND_REMOTE[0]="xcode7.1-tvos-file-template origin/xcode7.1-tvos-file-template"
 
 # heap-shot
 DEP[1]=heap-shot
