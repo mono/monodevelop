@@ -183,8 +183,11 @@ namespace MonoDevelop.Ide.Projects
 		{
 			var iconRect = new Rectangle (cell_area.X + (int)Xpad, cell_area.Y + (int)Ypad, (int)TemplateIcon.Width, (int)TemplateIcon.Height);
 
+			var img = TemplateIcon;
+			if ((flags & Gtk.CellRendererState.Selected) != 0)
+				img = img.WithStyles ("sel");
 			using (var ctx = CairoHelper.Create (window)) {
-				ctx.DrawImage (widget, TemplateIcon, iconRect.X, iconRect.Y);
+				ctx.DrawImage (widget, img, iconRect.X, iconRect.Y);
 			}
 
 			return iconRect;
