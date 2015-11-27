@@ -223,6 +223,18 @@
     <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32~dark%402x.png">
       <LogicalName>project-nunit-overlay-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32~sel.png">
+      <LogicalName>project-nunit-overlay-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32~sel%402x.png">
+      <LogicalName>project-nunit-overlay-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32~dark~sel.png">
+      <LogicalName>project-nunit-overlay-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32~dark~sel%402x.png">
+      <LogicalName>project-nunit-overlay-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <!--
     <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32.png">
       <LogicalName>project-nunit-overlay-light-32.png</LogicalName>
