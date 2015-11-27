@@ -38,6 +38,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.CSharp.Completion;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
@@ -103,7 +104,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				if (string.IsNullOrEmpty(completionResult.DefaultCompletionString))
 					completionResult.DefaultCompletionString = type.Name;
 
-				result.Add (engine.Factory.CreateSymbolCompletionData(this, type, type.ToMinimalDisplayString(model, completionContext.Position, SymbolDisplayFormat.CSharpErrorMessageFormat)));
+				result.Add (engine.Factory.CreateSymbolCompletionData(this, type, RoslynCompletionData.SafeMinimalDisplayString (type, model, completionContext.Position, SymbolDisplayFormat.CSharpErrorMessageFormat)));
 				foreach (IFieldSymbol field in type.GetMembers().OfType<IFieldSymbol>()) {
 					if (field.DeclaredAccessibility == Accessibility.Public && (field.IsConst || field.IsStatic)) {
 						result.Add (engine.Factory.CreateEnumMemberCompletionData(this, alias, field));

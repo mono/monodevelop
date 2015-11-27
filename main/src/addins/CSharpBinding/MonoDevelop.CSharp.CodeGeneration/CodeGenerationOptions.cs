@@ -41,6 +41,7 @@ using MonoDevelop.Ide.Gui.Content;
 using Microsoft.CodeAnalysis.Formatting;
 using System.Diagnostics;
 using ICSharpCode.NRefactory6.CSharp;
+using MonoDevelop.CSharp.Completion;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -137,7 +138,7 @@ namespace MonoDevelop.CodeGeneration
 
 		public string CreateShortType (ITypeSymbol fullType)
 		{
-			return fullType.ToMinimalDisplayString (CurrentState, offset);
+			return RoslynCompletionData.SafeMinimalDisplayString (fullType, CurrentState, offset);
 		}
 
 		public static CodeGenerationOptions CreateCodeGenerationOptions (TextEditor document, DocumentContext ctx)

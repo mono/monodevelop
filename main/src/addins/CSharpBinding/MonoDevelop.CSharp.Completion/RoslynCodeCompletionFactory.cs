@@ -76,7 +76,7 @@ namespace MonoDevelop.CSharp.Completion
 		ISymbolCompletionData ICompletionDataFactory.CreateEnumMemberCompletionData (ICompletionDataKeyHandler keyHandler, ISymbol alias, IFieldSymbol field)
 		{
 			var model = ext.ParsedDocument.GetAst<SemanticModel> ();
-			return new RoslynSymbolCompletionData (keyHandler, this, field, (alias ?? field.Type).ToMinimalDisplayString (model, ext.Editor.CaretOffset, Ambience.NameFormat) + "." + field.Name);
+			return new RoslynSymbolCompletionData (keyHandler, this, field, RoslynCompletionData.SafeMinimalDisplayString (alias ?? field.Type, model, ext.Editor.CaretOffset, Ambience.NameFormat) + "." + field.Name);
 		}
 		
 		class FormatItemCompletionData : RoslynCompletionData

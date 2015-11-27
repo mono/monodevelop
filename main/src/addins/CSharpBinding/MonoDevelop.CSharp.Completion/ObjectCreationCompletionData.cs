@@ -66,7 +66,7 @@ namespace MonoDevelop.CSharp.Completion
 		public override string DisplayText {
 			get {
 				if (displayText == null) {
-					displayText = CropGlobal(symbol.ToMinimalDisplayString (semanticModel, declarationBegin, Ambience.LabelFormat)) + "()";
+					displayText = CropGlobal(RoslynCompletionData.SafeMinimalDisplayString (symbol, semanticModel, declarationBegin, Ambience.LabelFormat)) + "()";
 					if (!afterKeyword)
 						displayText = "new " + displayText;
 				}
@@ -78,7 +78,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			var model = ext.ParsedDocument.GetAst<SemanticModel> ();
 
-			var result = "<b>" + Ambience.EscapeText (CropGlobal(symbol.ToMinimalDisplayString (model, declarationBegin, HideParameters))) + "</b>()";
+			var result = "<b>" + Ambience.EscapeText (CropGlobal(RoslynCompletionData.SafeMinimalDisplayString (symbol, model, declarationBegin, HideParameters))) + "</b>()";
 			if (!afterKeyword)
 				result = "new " + result;
 			return ApplyDiplayFlagsFormatting (result);
@@ -125,7 +125,7 @@ namespace MonoDevelop.CSharp.Completion
 			var sb = new StringBuilder ();
 			if (!afterKeyword)
 				sb.Append ("new ");
-			sb.Append (CropGlobal (insertSymbol.ToMinimalDisplayString (semanticModel, declarationBegin, HideParameters)));
+			sb.Append (CropGlobal (RoslynCompletionData.SafeMinimalDisplayString (insertSymbol, semanticModel, declarationBegin, HideParameters)));
 			return sb.ToString () ;
 		}
 

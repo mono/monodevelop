@@ -45,6 +45,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor.Highlighting;
 using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.CSharp.Completion;
 
 namespace MonoDevelop.CSharp
 {
@@ -114,7 +115,7 @@ namespace MonoDevelop.CSharp
 				//ToMinimalDisplayString can use little outdated model this is fine
 				//but in case of Sketches where user usually is at end of document when typing text this can throw exception
 				//because offset can be >= Length
-				displayString = model != null ? type.ToMinimalDisplayString (model, Math.Min (model.SyntaxTree.Length - 1, offset), MonoDevelop.Ide.TypeSystem.Ambience.LabelFormat) : type.Name;
+				displayString = model != null ? RoslynCompletionData.SafeMinimalDisplayString (type, model, Math.Min (model.SyntaxTree.Length - 1, offset), MonoDevelop.Ide.TypeSystem.Ambience.LabelFormat) : type.Name;
 			} else {
 				displayString = type.ToDisplayString (MonoDevelop.Ide.TypeSystem.Ambience.LabelFormat);
 			}

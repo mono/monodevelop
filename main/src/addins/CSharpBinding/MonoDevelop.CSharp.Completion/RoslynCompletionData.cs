@@ -65,6 +65,25 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			this.KeyHandler = keyHandler;
 		}
+
+		internal static string SafeMinimalDisplayString (ISymbol symbol, SemanticModel semanticModel, int position)
+		{
+			return SafeMinimalDisplayString (symbol, semanticModel, position, Ambience.LabelFormat);
+		}
+
+		internal static string SafeMinimalDisplayString (ISymbol symbol, SemanticModel semanticModel, int position, SymbolDisplayFormat format)
+		{
+			try {
+				return symbol.ToMinimalDisplayString (semanticModel, position, format);
+			} catch (ArgumentOutOfRangeException) {
+				try {
+					return symbol.ToMinimalDisplayString (semanticModel, 0, format);
+				} catch (ArgumentOutOfRangeException) {
+					return symbol.Name;
+				}
+			}
+		}
+
 		
 //		class OverloadSorter : IComparer<ICompletionData>
 //		{

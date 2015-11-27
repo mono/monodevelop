@@ -36,6 +36,7 @@ using Microsoft.CodeAnalysis.Text;
 using ICSharpCode.NRefactory6.CSharp.ExtractMethod;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.CSharp.Completion;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
@@ -209,7 +210,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					sb.Append (", ");
 					sbWithoutTypes.Append (", ");
 				}
-				sb.Append (delegateMethod.Parameters [k].ToMinimalDisplayString (semanticModel, position, overrideNameFormat));
+				sb.Append (RoslynCompletionData.SafeMinimalDisplayString (delegateMethod.Parameters [k], semanticModel, position, overrideNameFormat));
 				sbWithoutTypes.Append (delegateMethod.Parameters [k].Name);
 			}
 

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MonoDevelop.CSharp.Completion;
 using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6.CSharp
@@ -14,7 +15,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	{
 		public static TypeSyntax ConvertType(SemanticModel model, int position, ITypeSymbol type)
 		{
-			return SyntaxFactory.ParseTypeName(type.ToMinimalDisplayString(model, position));
+			return SyntaxFactory.ParseTypeName(RoslynCompletionData.SafeMinimalDisplayString (type, model, position));
 		}
 
 		static string GetNameProposal(string eventName)
