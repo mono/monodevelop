@@ -347,6 +347,7 @@ namespace MonoDevelop.Components.MainToolbar
 			{
 				results.Clear ();
 				results.AddRange (incompleteResults);
+				List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> failedResults = null;
 				topItem = null;
 
 				for (int i = 0; i < results.Count; i++) {
@@ -358,10 +359,16 @@ namespace MonoDevelop.Components.MainToolbar
 							topItem = new ItemIdentifier(tuple.Item1, tuple.Item2, 0);
 					} catch (Exception e) {
 						LoggingService.LogError ("Error while showing result " + i, e);
+						if (failedResults == null)
+							failedResults = new List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> ();
+						failedResults.Add (results [i]);
 						continue;
 					}
 				}
 				selectedItem = topItem;
+
+				if (failedResults != null)
+					failedResults.ForEach (failedResult => results.Remove (failedResult));
 
 				ShowTooltip ();
 
