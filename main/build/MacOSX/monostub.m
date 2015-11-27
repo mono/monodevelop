@@ -191,7 +191,7 @@ int main (int argc, char **argv)
 
 	NSString *appDir = [[NSBundle mainBundle] bundlePath];
 	// can be overridden with plist string MonoMinVersion
-	NSString *req_mono_version = @"3.10";
+	NSString *req_mono_version = @"4.2";
 	// can be overridden with either plist bool MonoUseSGen or MONODEVELOP_USE_SGEN env
 	bool use_sgen = YES;
 

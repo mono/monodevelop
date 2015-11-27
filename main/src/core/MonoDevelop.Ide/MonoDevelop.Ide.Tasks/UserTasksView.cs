@@ -98,6 +98,7 @@ namespace MonoDevelop.Ide.Tasks
 			cellRendCompleted.Toggled += new ToggledHandler (UserTaskCompletedToggled);
 			cellRendCompleted.Activatable = true;
 			col = view.AppendColumn (String.Empty, cellRendCompleted, "active", Columns.Completed);
+			col.SortColumnId = (int)Columns.Completed;
 
 			cellRendDesc = view.TextRenderer;
 			cellRendDesc.Editable = true;

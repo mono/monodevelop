@@ -1091,7 +1091,7 @@ namespace Mono.TextTemplating
 			}
 
 			var cgType = typeof (CodeGenerator);
-			var cgInit = cgType.GetMethod ("InitOutput", BindingFlags.NonPublic | BindingFlags.Instance);
+			var initializeCodeGenerator = GetInitializeCodeGeneratorAction (cgType);
 			var cgFieldGen = cgType.GetMethod ("GenerateField", BindingFlags.NonPublic | BindingFlags.Instance);
 			var cgPropGen = cgType.GetMethod ("GenerateProperty", BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -1103,17 +1103,40 @@ namespace Mono.TextTemplating
 			foreach (CodeTypeMember member in members) {
 				var f = member as CodeMemberField;
 				if (f != null) {
-					cgInit.Invoke (generator, new object[] { sw, options });
+					initializeCodeGenerator (generator, sw, options);
 					cgFieldGen.Invoke (generator, new object[] { f });
 					continue;
 				}
 				var p = member as CodeMemberProperty;
 				if (p != null) {
-					cgInit.Invoke (generator, new object[] { sw, options });
+					initializeCodeGenerator (generator, sw, options);
 					cgPropGen.Invoke (generator, new object[] { p, dummy });
 					continue;
 				}
 			}
+		}
+
+		static Action<CodeGenerator, StringWriter, CodeGeneratorOptions> GetInitializeCodeGeneratorAction (Type cgType)
+		{
+			var cgInit = cgType.GetMethod ("InitOutput", BindingFlags.NonPublic | BindingFlags.Instance);
+			if (cgInit != null) {
+				return new Action<CodeGenerator, StringWriter, CodeGeneratorOptions> ((generator, sw, options) => {
+					cgInit.Invoke (generator, new object[] { sw, options });
+				});
+			}
+
+			var cgOptions = cgType.GetField ("options", BindingFlags.NonPublic | BindingFlags.Instance);
+			var cgOutput = cgType.GetField ("output", BindingFlags.NonPublic | BindingFlags.Instance);
+
+			if (cgOptions != null && cgOutput != null) {
+				return new Action<CodeGenerator, StringWriter, CodeGeneratorOptions> ((generator, sw, options) => {
+					var output = new IndentedTextWriter (sw);
+					cgOptions.SetValue (generator, options);
+					cgOutput.SetValue (generator, output);
+				});
+			}
+
+			throw new InvalidOperationException ("Unable to initialize CodeGenerator.");
 		}
 
 		public static string GenerateIndentedClassCode (CodeDomProvider provider, params CodeTypeMember[] members)
