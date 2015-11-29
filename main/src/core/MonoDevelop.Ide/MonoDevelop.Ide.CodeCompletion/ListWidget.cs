@@ -551,7 +551,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 					iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
 					if (item == SelectedItem) {
 						var barStyle = SelectionEnabled ? Styles.CodeCompletion.SelectionBackgroundColor : Styles.CodeCompletion.SelectionBackgroundInactiveColor;
-						var barBorderStyle = SelectionEnabled ? Styles.CodeCompletion.SelectionBorderColor : Styles.CodeCompletion.SelectionBorderInactiveColor;
 
 						context.Rectangle (0, ypos, Allocation.Width, rowHeight);
 						context.SetSourceColor (barStyle);

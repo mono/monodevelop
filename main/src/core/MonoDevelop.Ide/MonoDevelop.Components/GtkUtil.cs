@@ -39,7 +39,15 @@ namespace MonoDevelop.Components
 	{
 		static Dictionary<TreeView, TreeViewTooltipsData> treeData = new Dictionary<TreeView, TreeViewTooltipsData> ();
 
-		static readonly Xwt.Toolkit gtkToolkit = Xwt.Toolkit.LoadedToolkits.First (t => t.Type == Xwt.ToolkitType.Gtk);
+		static Xwt.Toolkit gtkToolkit;
+
+		static Xwt.Toolkit GtkToolkit {
+			get {
+				if (gtkToolkit == null)
+					gtkToolkit = Xwt.Toolkit.LoadedToolkits.FirstOrDefault (t => t.Type == Xwt.ToolkitType.Gtk);
+				return gtkToolkit;
+			}
+		}
 
 		public static Cairo.Color ToCairoColor (this Gdk.Color color)
 		{
@@ -117,32 +125,32 @@ namespace MonoDevelop.Components
 		public static Xwt.Drawing.Context CreateXwtContext (this Gtk.Widget w)
 		{
 			var c = Gdk.CairoHelper.Create (w.GdkWindow);
-			return gtkToolkit.WrapContext (w, c);
+			return GtkToolkit.WrapContext (w, c);
 		}
 
 		public static Gtk.Widget ToGtkWidget (this Xwt.Widget widget)
 		{
-			return (Gtk.Widget) gtkToolkit.GetNativeWidget (widget);
+			return (Gtk.Widget) GtkToolkit.GetNativeWidget (widget);
 		}
 
 		public static void DrawImage (this Cairo.Context s, Gtk.Widget widget, Xwt.Drawing.Image image, double x, double y)
 		{
-			gtkToolkit.RenderImage (widget, s, image, x, y);
+			GtkToolkit.RenderImage (widget, s, image, x, y);
 		}
 
 		public static Xwt.Drawing.Image ToXwtImage (this Gdk.Pixbuf pix)
 		{
-			return gtkToolkit.WrapImage (pix);
+			return GtkToolkit.WrapImage (pix);
 		}
 
 		public static Gdk.Pixbuf ToPixbuf (this Xwt.Drawing.Image image)
 		{
-			return (Gdk.Pixbuf)gtkToolkit.GetNativeImage (image);
+			return (Gdk.Pixbuf)GtkToolkit.GetNativeImage (image);
 		}
 
 		public static Gdk.Pixbuf ToPixbuf (this Xwt.Drawing.Image image, Gtk.IconSize size)
 		{
-			return (Gdk.Pixbuf)gtkToolkit.GetNativeImage (image.WithSize (size));
+			return (Gdk.Pixbuf)GtkToolkit.GetNativeImage (image.WithSize (size));
 		}
 
 		public static Xwt.Drawing.Image WithSize (this Xwt.Drawing.Image image, Gtk.IconSize size)

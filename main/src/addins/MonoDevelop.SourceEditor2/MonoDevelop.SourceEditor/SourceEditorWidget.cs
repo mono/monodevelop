@@ -345,8 +345,8 @@ namespace MonoDevelop.SourceEditor
 			
 			void OptionsChanged (object sender, EventArgs e)
 			{
-				var editor = (Mono.TextEditor.MonoTextEditor)sender;
-				scrolledBackground.ModifyBg (StateType.Normal, (HslColor)container.ColorStyle.PlainText.Background);
+				var editor = (Mono.TextEditor.MonoTextEditor)scrolledWindow.Child;
+				scrolledBackground.ModifyBg (StateType.Normal, (HslColor)editor.ColorStyle.PlainText.Background);
 			}
 			
 			void RemoveEvents ()
