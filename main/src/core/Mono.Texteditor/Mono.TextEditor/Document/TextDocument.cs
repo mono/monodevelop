@@ -1430,7 +1430,13 @@ namespace Mono.TextEditor
 
 		#region Text segment markers
 
-		SegmentTree<TextSegmentMarker> textSegmentMarkerTree = new SegmentTree<TextSegmentMarker> (); 
+		int textSegmentInsertId = 0;
+		SegmentTree<TextSegmentMarker> textSegmentMarkerTree = new SegmentTree<TextSegmentMarker> ();
+
+		public static IEnumerable<TextSegmentMarker> OrderTextSegmentMarkersByInsertion (IEnumerable<TextSegmentMarker> enumerable)
+		{
+			return enumerable.OrderBy (m => m.insertId);
+		}
 
 		public IEnumerable<TextSegmentMarker> GetTextSegmentMarkersAt (DocumentLine line)
 		{
@@ -1450,6 +1456,7 @@ namespace Mono.TextEditor
 
 		public void AddMarker (TextSegmentMarker marker)
 		{
+			marker.insertId = textSegmentInsertId++;
 			textSegmentMarkerTree.Add (marker);
 			var startLine = OffsetToLineNumber (marker.Offset);
 			var endLine = OffsetToLineNumber (marker.EndOffset);

@@ -836,7 +836,7 @@ namespace Mono.TextEditor
 			}
 			StringBuilder textBuilder = new StringBuilder ();
 			var chunks = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, offset, length);
-			var markers = Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible).ToArray ();
+			var markers = TextDocument.OrderTextSegmentMarkersByInsertion (Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)).ToArray ();
 			foreach (var marker in markers) {
 				var chunkMarker = marker as IChunkMarker;
 				if (chunkMarker == null)
@@ -1583,7 +1583,8 @@ namespace Mono.TextEditor
 				}
 			}
 
-			foreach (var marker in Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)) {
+			var textSegmentMarkers = TextDocument.OrderTextSegmentMarkersByInsertion (Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)).ToArray ();
+			foreach (var marker in textSegmentMarkers) {
 				if (layout.Layout != null)
 					marker.DrawBackground (textEditor, cr, metrics, offset, offset + length);
 			}
@@ -1769,7 +1770,7 @@ namespace Mono.TextEditor
 					marker.Draw (textEditor, cr, metrics);
 			}
 
-			foreach (var marker in Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)) {
+			foreach (var marker in textSegmentMarkers) {
 				if (layout.Layout != null)
 					marker.Draw (textEditor, cr, metrics, offset, offset + length);
 			}
