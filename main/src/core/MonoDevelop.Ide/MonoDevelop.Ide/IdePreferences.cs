@@ -155,7 +155,38 @@ namespace MonoDevelop.Ide
 		public readonly ConfigurationProperty<bool> EnableSourceAnalysis = ConfigurationProperty.Create ("MonoDevelop.AnalysisCore.AnalysisEnabled", true);
 		public readonly ConfigurationProperty<bool> EnableUnitTestEditorIntegration = ConfigurationProperty.Create ("Testing.EnableUnitTestEditorIntegration", false);
 
-		public readonly ConfigurationProperty<string> ColorScheme = ConfigurationProperty.Create ("ColorScheme", "Default");
+		public readonly ConfigurationProperty<string> ColorScheme = new ColorSchemeProperty ();
+		class ColorSchemeProperty: ConfigurationProperty<string>
+		{
+			ConfigurationProperty<string> lightColorScheme = ConfigurationProperty.Create ("ColorScheme", "Default");
+			ConfigurationProperty<string> darkColorScheme = ConfigurationProperty.Create ("ColorScheme-Dark", "Monokai");
+
+			public ColorSchemeProperty ()
+			{
+				lightColorScheme.Changed += (s,e) => OnChanged ();
+				darkColorScheme.Changed += (s,e) => OnChanged ();
+				PropertyService.PropertyChanged += (sender, e) => {
+					if (e.Key == "MonoDevelop.Ide.UserInterfaceTheme")
+						OnChanged ();
+				};
+			}
+
+			protected override string OnGetValue ()
+			{
+				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+					return lightColorScheme;
+				else
+					return darkColorScheme;
+			}
+
+			protected override bool OnSetValue (string value)
+			{
+				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+					return lightColorScheme.Set (value);
+				else
+					return darkColorScheme.Set (value);
+			}
+		}
 
 		public readonly ConfigurationProperty<string> UserTasksHighPrioColor = ConfigurationProperty.Create ("Monodevelop.UserTasksHighPrioColor", "");
 		public readonly ConfigurationProperty<string> UserTasksNormalPrioColor = ConfigurationProperty.Create ("Monodevelop.UserTasksNormalPrioColor", "");
