@@ -43,7 +43,7 @@ using System.Threading;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
-	class QuickTaskOverviewMode : DrawingArea
+	class QuickTaskOverviewMode : DrawingArea, IMapMode
 	{
 		static Xwt.Drawing.Image searchImage = Xwt.Drawing.Image.FromResource ("issues-busy-16.png");
 		static Xwt.Drawing.Image okImage = Xwt.Drawing.Image.FromResource ("issues-ok-16.png");
@@ -163,10 +163,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		protected override void OnDestroyed ()
 		{
-			if (backgroundSurface != null) {
-				backgroundSurface.Dispose ();
-				backgroundSurface = null;
-			}
+			DestroyBackgroundSurface ();
 			RemoveIndicatorIdleHandler ();
 			DestroyIndicatorSwapSurface ();
 			DestroyIndicatorSurface ();
@@ -191,6 +188,14 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			vadjustment.ValueChanged -= RedrawOnVAdjustmentChange;
 			vadjustment.Changed -= RedrawOnVAdjustmentChange;
 			base.OnDestroyed ();
+		}
+
+		void DestroyBackgroundSurface ()
+		{
+			if (backgroundSurface != null) {
+				backgroundSurface.Dispose ();
+				backgroundSurface = null;
+			}
 		}
 
 		void DestroyIndicatorSurface ()
@@ -1058,6 +1063,15 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				}
 			}
 			DrawLeftBorder (cr);
+		}
+
+		public void ForceDraw ()
+		{
+			DestroyBackgroundSurface ();
+			DestroyIndicatorSwapSurface ();
+			DestroyIndicatorSurface ();
+
+			DrawIndicatorSurface (0);
 		}
 	}
 }

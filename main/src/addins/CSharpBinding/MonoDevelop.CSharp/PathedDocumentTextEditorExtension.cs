@@ -681,22 +681,22 @@ namespace MonoDevelop.CSharp
 			Task.Run(async delegate {
 				var unit = model.SyntaxTree;
 				SyntaxNode root;
-				SyntaxNode token;
+				SyntaxNode node;
 				try {
 					root = await unit.GetRootAsync(cancellationToken).ConfigureAwait(false);
 					if (root.FullSpan.Length <= caretOffset) {
 						return;
 					}
-					token = root.FindNode(TextSpan.FromBounds(caretOffset, caretOffset));
-					if (token.SpanStart != caretOffset)
-						token = root.SyntaxTree.FindTokenOnLeftOfPosition(caretOffset, cancellationToken).Parent;
+					node = root.FindNode(TextSpan.FromBounds(caretOffset, caretOffset));
+					if (node.SpanStart != caretOffset)
+						node = root.SyntaxTree.FindTokenOnLeftOfPosition(caretOffset, cancellationToken).Parent;
 				} catch (Exception ex ) {
 					Console.WriteLine (ex);
 					return;
 				}
 
-				var curMember = token.AncestorsAndSelf ().FirstOrDefault (m => m is VariableDeclaratorSyntax || (m is MemberDeclarationSyntax && !(m is NamespaceDeclarationSyntax)));
-				var curType = token.AncestorsAndSelf ().FirstOrDefault (IsType);
+				var curMember = node != null ? node.AncestorsAndSelf ().FirstOrDefault (m => m is VariableDeclaratorSyntax || (m is MemberDeclarationSyntax && !(m is NamespaceDeclarationSyntax))) : null;
+				var curType = node != null ? node.AncestorsAndSelf ().FirstOrDefault (IsType) : null;
 
 				var curProject = ownerProjects != null && ownerProjects.Count > 1 ? DocumentContext.Project : null;
 

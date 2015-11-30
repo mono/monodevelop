@@ -42,6 +42,7 @@ using System.Diagnostics;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis.Options;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Refactoring
 {
@@ -133,6 +134,18 @@ namespace MonoDevelop.Refactoring
 						}
 					}
 				}
+
+				foreach (var renameChange in changes.OfType<RenameFileChange> ()) {
+					if (fileNames.Contains (renameChange.OldName)) {
+						fileNames.Remove (renameChange.OldName);
+						fileNames.Add (renameChange.NewName);
+					}
+				}
+
+				foreach (var doc in IdeApp.Workbench.Documents) {
+					fileNames.Remove (doc.FileName);
+				}
+
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while applying refactoring changes", e);
 			} finally {

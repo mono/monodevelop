@@ -174,7 +174,6 @@ namespace MonoDevelop.SourceEditor
 			int markerEnd = Segment.EndOffset;
 			if (chunk.EndOffset <= markerStart || markerEnd <= chunk.Offset) 
 				return;
-			var bgc = editor.ColorStyle.PlainText.Background;
 			color = forground.Foreground;
 		}
 
