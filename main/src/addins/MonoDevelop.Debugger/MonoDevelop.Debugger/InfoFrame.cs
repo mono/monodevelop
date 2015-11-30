@@ -27,6 +27,7 @@
 using System;
 
 using Gtk;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Debugger
 {
