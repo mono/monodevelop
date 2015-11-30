@@ -42,6 +42,10 @@ using System.Collections.Immutable;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
+	interface IMapMode
+	{
+		void ForceDraw ();
+	}
 	class QuickTaskStrip : VBox
 	{
 		public readonly static ConfigurationProperty<bool> EnableFancyFeatures = IdeApp.Preferences.EnableSourceAnalysis;
@@ -211,6 +215,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		void TextEditor_EditorOptionsChanged (object sender, EventArgs e)
 		{
+			((IMapMode)mapMode).ForceDraw ();
 			QueueDraw ();
 		}
 
