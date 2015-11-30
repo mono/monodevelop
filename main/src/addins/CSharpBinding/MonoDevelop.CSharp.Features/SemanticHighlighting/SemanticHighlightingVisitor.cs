@@ -92,7 +92,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 
 		protected abstract void Colorize (TextSpan span, TColor color);
 
-		protected SemanticHighlightingVisitor (SemanticModel semanticModel)
+		protected SemanticHighlightingVisitor (SemanticModel semanticModel) : base (SyntaxWalkerDepth.Trivia)
 		{
 			this.semanticModel = semanticModel;
 		}
@@ -274,8 +274,13 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 		
 		public override void VisitClassDeclaration(Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax node)
 		{
-			base.VisitClassDeclaration(node);
-			Colorize(node.Identifier, referenceTypeColor);
+			var symbol = semanticModel.GetDeclaredSymbol(node);
+			if (symbol != null && IsInactiveConditional (symbol)) {
+				Colorize (node, inactiveCodeColor);
+			} else {
+				base.VisitClassDeclaration (node);
+				Colorize (node.Identifier, referenceTypeColor);
+			}
 		}
 		
 		public override void VisitEnumDeclaration(Microsoft.CodeAnalysis.CSharp.Syntax.EnumDeclarationSyntax node)
@@ -304,8 +309,13 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 		
 		public override void VisitMethodDeclaration(Microsoft.CodeAnalysis.CSharp.Syntax.MethodDeclarationSyntax node)
 		{
-			base.VisitMethodDeclaration(node);
-			Colorize(node.Identifier, methodDeclarationColor);
+			var symbol = semanticModel.GetDeclaredSymbol(node);
+			if (symbol != null && IsInactiveConditional (symbol)) {
+				Colorize (node, inactiveCodeColor);
+			} else {
+				base.VisitMethodDeclaration (node);
+				Colorize (node.Identifier, methodDeclarationColor);
+			}
 		}
 		
 		public override void VisitPropertyDeclaration(Microsoft.CodeAnalysis.CSharp.Syntax.PropertyDeclarationSyntax node)
@@ -482,41 +492,12 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 				Colorize(declarations.Identifier, color);
 			}
 		}
-		
-//		public override void VisitComment(Comment comment)
-//		{
-//			if (comment.CommentType == CommentType.InactiveCode) {
-//				Colorize(comment, inactiveCodeColor);
-//			}
-//		}
-//
-//		public override void VisitPreProcessorDirective(PreProcessorDirective preProcessorDirective)
-//		{
-//		}
-		
-//		public override void VisitAttribute(Microsoft.CodeAnalysis.CSharp.Syntax.AttributeSyntax node)
-//		{
-//			var symbol = semanticModel.GetDeclaredSymbol(node) as INamedTypeSymbol;
-//			if (symbol != null && IsInactiveConditional(symbol)) {
-//				Colorize(attribute, inactiveCodeColor);
-//			} else {
-//				base.VisitAttribute(node);
-//			}
-//		}
-		
-		public override void VisitInitializerExpression(Microsoft.CodeAnalysis.CSharp.Syntax.InitializerExpressionSyntax node)
+
+		public override void VisitTrivia (SyntaxTrivia trivia)
 		{
-			base.VisitInitializerExpression(node);
-			
-			foreach (var a in node.Expressions) {
-				// TODO
-//				var namedElement = a as NamedExpression;
-//				if (namedElement != null) {
-//					var result = resolver.Resolve (namedElement, cancellationToken);
-//					if (result.IsError)
-//						Colorize (namedElement.NameToken, syntaxErrorColor);
-//					namedElement.Expression.AcceptVisitor (this);
-//				} 
+			base.VisitTrivia (trivia);
+			if (trivia.IsKind (SyntaxKind.DisabledTextTrivia)) {
+				Colorize(trivia.Span, inactiveCodeColor);
 			}
 		}
 
