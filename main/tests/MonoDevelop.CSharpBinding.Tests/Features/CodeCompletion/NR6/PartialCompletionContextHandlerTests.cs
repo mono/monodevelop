@@ -34,7 +34,6 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.NR6
 	[TestFixture]
 	public class PartialCompletionContextHandlerTests : CompletionTestBase
 	{
-		[Ignore]
 		[Test]
 		public void SimplePartial()
 		{

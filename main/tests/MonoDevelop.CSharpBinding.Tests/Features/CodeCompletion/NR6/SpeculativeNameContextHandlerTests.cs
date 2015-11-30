@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.NR6
 	[TestFixture]
 	public class SpeculativeNameContextHandlerTests : TestBase
 	{
-		[Ignore]
+		[Ignore("FixMe")]
 		[Test]
 		public void TestField()
 		{
@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.NR6
 		}
 
 
-		[Ignore]
+		[Ignore("FixMe")]
 		[Test]
 		public void TestGenericField()
 		{
