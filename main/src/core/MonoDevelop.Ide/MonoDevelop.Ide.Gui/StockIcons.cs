@@ -150,6 +150,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId StatusUpdatesDownloading = "md-status-updates-downloading";
 		public static readonly IconId StatusUpdatesPaused = "md-status-updates-paused";
 		public static readonly IconId StatusUpdatesReady = "md-status-updates-ready";
+		public static readonly IconId StatusInstrumentation = "md-status-instrumentation";
 		public static readonly IconId Broom = "md-clear";
 		public static readonly IconId Stop = "md-stop";
 		public static readonly IconId MessageLog = "md-message-log";
