@@ -7,11 +7,13 @@ open Nessos.FsPickler.Json
 
 type Arguments =
   | Project of string
+  | Log
   with
     interface IArgParserTemplate with
       member s.Usage =
         match s with
         | Project _ -> "specify a F# project file (.fsproj)."
+        | Log -> "Set to return a log of processing"
 
 [<EntryPoint>]
 let main argv =
@@ -42,14 +44,11 @@ let main argv =
       let parser = ArgumentParser.Create<Arguments>()
       let results = parser.Parse argv
       let projectFile = results.GetResult(<@ Project @>)
+      let log = results.Contains(<@ Log @>)
       Environment.CurrentDirectory <- Path.GetDirectoryName projectFile
-      let checker = FSharpChecker.Create()
-      //let projectFileInfo = FSharpProjectFileInfo.Parse(projectFile, enableLogging= true)
-      //let log = projectFileInfo.LogOutput
-      let fsharpProjectOptions = checker.GetProjectOptionsFromProjectFile(projectFile)
+      let fsharpProjectOptions, logs =  CompilerService.ProjectCracker.GetProjectOptionsFromProjectFile(projectFile, enableLogging=log)
       let (_, normalizedProject) = normalizeProject (".", fsharpProjectOptions)
-
-      Choice1Of2 normalizedProject
+      Choice1Of2 (normalizedProject, logs)
     with
     | ex -> Choice2Of2 ex
   pickler.Serialize(outstream, result)

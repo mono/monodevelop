@@ -307,7 +307,8 @@ type LanguageService(dirtyNotify) =
           let processName = 
             if Environment.runningOnMono then Environment.getMonoPath() else filename
           
-          let arguments = 
+          let arguments =
+            //For debug you might want to pass --log, which will populate _log below with a map of project name/msbuild output
             if Environment.runningOnMono then sprintf "\"%s\" --project \"%s\"" filename projFilename
             else sprintf "--project \"%s\"" projFilename
           try
@@ -321,7 +322,7 @@ type LanguageService(dirtyNotify) =
             let serializer =  FsPickler.CreateJsonSerializer()
             let result = serializer.Deserialize(proc.StandardOutput.BaseStream)
             match result with
-            | Choice1Of2 optsNew ->
+            | Choice1Of2(optsNew, _log: Map<string,string>) ->
 
               //let opts = checker.GetProjectOptionsFromProjectFile(projFilename, properties)
               projectInfoCache := cache.Add (key, optsNew)
