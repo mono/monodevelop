@@ -119,6 +119,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			Theme.SetBackgroundColor (Gui.Styles.CodeCompletion.BackgroundColor);
 			Theme.ShadowColor = Gui.Styles.PopoverWindow.ShadowColor;
 			ContentBox.Child.ModifyBg (StateType.Normal, Gui.Styles.CodeCompletion.BackgroundColor.ToGdkColor ());
+			list.ModifyBg (StateType.Normal, Gui.Styles.CodeCompletion.BackgroundColor.ToGdkColor ());
 		}
 
 		protected override void OnDestroyed ()
