@@ -76,7 +76,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			Widget w = CreateWidget (entry);
 			if (w is Button) {
-				buttons.Add (new ToolButtonStatus (entry.CommandId, (Gtk.Button)w, entry.DispayType));
+				buttons.Add (new ToolButtonStatus (entry.CommandId, (Gtk.Button)w, entry.DisplayType));
 				((Gtk.Button) w).Clicked += delegate {
 					IdeApp.CommandService.DispatchCommand (entry.CommandId, null, initialTarget, CommandSource.MainToolbar);
 				};
