@@ -441,8 +441,8 @@ class MainClass
 			Assert.IsNotNull(provider.Find("Foo"), "'Foo' not found.");
 		}
 
+		[Ignore("FixMe")]
 		[Test()]
-		[Ignore]
 		public void TestArrayInitializerObjectCreation()
 		{
 			CodeCompletionBugTests.CombinedProviderTest(
@@ -462,8 +462,8 @@ class MyTest
 			);
 		}
 
+		[Ignore("FixMe")]
 		[Test()]
-		[Ignore]
 		public void TestArrayInitializerObjectCreationNarrowing()
 		{
 			CodeCompletionBugTests.CombinedProviderTest(
@@ -525,7 +525,7 @@ class MyTest
 			);
 		}
 
-		[Ignore]
+		[Ignore("FixMe")]
 		[Test()]
 		public void TestArrayInitializersForbiddenInObjectCreation()
 		{

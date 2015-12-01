@@ -70,61 +70,8 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 		{
 			public class MyCompletionData : CompletionData
 			{
-				#region CompletionData implementation
-				public void AddOverload (CompletionData data)
+				public MyCompletionData (string text) : base(text)
 				{
-					if (overloadedData.Count == 0)
-						overloadedData.Add (this);
-					overloadedData.Add (data);
-				}
-
-				public CompletionCategory CompletionCategory {
-					get;
-					set;
-				}
-
-				public string DisplayText {
-					get;
-					set;
-				}
-
-				public string Description {
-					get;
-					set;
-				}
-
-				public string CompletionText {
-					get;
-					set;
-				}
-
-				public DisplayFlags DisplayFlags {
-					get;
-					set;
-				}
-
-				public bool HasOverloads {
-					get {
-						return overloadedData.Count > 0;
-					}
-				}
-
-				public ICompletionDataKeyHandler KeyHandler { get; set; }
-
-				readonly List<CompletionData> overloadedData = new List<CompletionData> ();
-				public IEnumerable<CompletionData> OverloadedData {
-					get {
-						return overloadedData;
-					}
-					set {
-						throw new InvalidOperationException ();
-					}
-				}
-				#endregion
-
-				public MyCompletionData (string text)
-				{
-					DisplayText = CompletionText = Description = text;
 				}
 			}
 
@@ -633,9 +580,9 @@ public class Test {
 ");
 			Assert.IsFalse(provider.AutoSelect);
 		}
-		
+
+		[Ignore("FixMe")]
 		[Test]
-		[Ignore]
 		public void TestBug318834CaseB ()
 		{
 			CompletionResult provider = CreateProvider (
@@ -1292,8 +1239,8 @@ namespace MyNamespace
 		/// <summary>
 		/// Bug 432434B - Code completion doesn't work with subclasses
 		/// </summary>
+		[Ignore("FixMe")]
 		[Test]
-		[Ignore]
 		public void TestBug432434B ()
 		{
 			CompletionResult provider = CreateProvider (
@@ -1457,7 +1404,6 @@ namespace CCTests
 		/// <summary>
 		/// Bug 460234 - Invalid options shown when typing 'override'
 		/// </summary>
-		[Ignore]
 		[Test]
 		public void TestBug460234 ()
 		{
@@ -1828,7 +1774,6 @@ class A
 ", provider => Assert.IsNull(provider.Find("Finalize"), "'Finalize' found."));
 		}
 		
-		[Ignore]
 		[Test]
 		public void TestBug2800B ()
 		{
@@ -1839,11 +1784,14 @@ class A
 	$public override $
 }
 ", provider => {
+				foreach (var data in provider) {
+					Console.WriteLine (data);
+				}
+				
 				Assert.IsNotNull (provider.Find ("ToString"), "'ToString' not found.");
 				Assert.IsNull (provider.Find ("Finalize"), "'Finalize' found.");
 			});
 		}
-		[Ignore]
 		[Test]
 		public void TestOverrideCompletion ()
 		{
@@ -1879,7 +1827,6 @@ class A : Base
 		/// <summary>
 		/// Bug 3370 -MD ignores member hiding
 		/// </summary>
-		[Ignore]
 		[Test]
 		public void TestBug3370 ()
 		{
@@ -4391,7 +4338,6 @@ void TestMethod ()
 			Assert.IsNotNull (provider.Find ("TF1"));
 		}
 		
-		[Ignore]
 		[Test]
 		public void TestPartialCompletionData ()
 		{
@@ -4628,8 +4574,8 @@ class Program
 				Assert.IsNotNull (provider.Find ("args"), "'args' not found.");
 			});
 		}
-		
-		[Ignore]
+
+		[Ignore("FixMe")]
 		[Test]
 		public void TestCodeCompletionCategorySorting ()
 		{
@@ -4884,8 +4830,8 @@ class MainClass
 			});
 		}
 
+		[Ignore("FixMe")]
 		[Test]
-		[Ignore]
 		public void TestInterfaceReturnType()
 		{
 			var provider = CreateProvider(
@@ -4906,8 +4852,8 @@ class MainClass
 			Assert.IsNull(provider.Find("IEnumerable<string>"), "'IEnumerable<string>' found.");
 		}
 
+		[Ignore("FixMe")]
 		[Test]
-		[Ignore]
 		public void TestInterfaceReturnTypeCase2 ()
 		{
 			var provider = CreateProvider (
@@ -4926,8 +4872,8 @@ class MainClass
 			Assert.IsNull (provider.Find ("IEnumerable"), "'IEnumerable' found.");
 		}
 
+		[Ignore("FixMe")]
 		[Test]
-		[Ignore]
 		public void TestInterfaceReturnTypeCase3 ()
 		{
 			var provider = CreateProvider (
@@ -4950,7 +4896,6 @@ class MainClass
 		/// <summary>
 		/// Bug 3957 - [New Resolver]Override completion doesn't work well for overloaded methods
 		/// </summary>
-		[Ignore]
 		[Test]
 		public void TestBug3957 ()
 		{
@@ -5135,8 +5080,8 @@ public class Test
 		/// <summary>
 		/// Bug 1051 - Code completion can't handle interface return types properly
 		/// </summary>
+		[Ignore("Fix me")]
 		[Test]
-		[Ignore]
 		public void TestBug1051()
 		{
 			CombinedProviderTest(
@@ -5597,8 +5542,8 @@ class C : A
 		/// <summary>
 		/// Bug 7191 - code completion problem with generic interface using nested type
 		/// </summary>
+		[Ignore("FixMe")]
 		[Test]
-		[Ignore]
 		public void TestBug7191()
 		{
 			CombinedProviderTest(
@@ -5680,11 +5625,10 @@ namespace bug
 		/// <summary>
 		/// Bug 6237 - Code completion includes private code 
 		/// </summary>
-		[Ignore]
+		[Ignore("FixMe")]
 		[Test]
 		public void TestBug6237 ()
 		{
-
 			CombinedProviderTest(
 				@"
 namespace bug
@@ -5712,7 +5656,6 @@ namespace bug
 		/// Bug 7795 - Completion cannot handle nested types 
 		/// </summary>
 		[Test]
-		[Ignore]
 		public void TestBug7795 ()
 		{
 
@@ -5747,7 +5690,7 @@ public class Bugged
         Test ($S$);
     }
 }
-", provider => Assert.AreEqual("Foo.Selector", provider.DefaultCompletionString));
+", provider => Assert.NotNull(provider.Find ("Foo.Selector")));
 		}
 
 
@@ -6044,7 +5987,6 @@ public class Test
 		}", provider => Assert.IsNotNull(provider.Find("l")));
 		}
 
-		[Ignore]
 		[Test]
 		public void TestLexerBug ()
 		{

@@ -35,7 +35,6 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.NR6
 	[TestFixture]
 	public class OverrideCompletionContextHandlerTests : CompletionTestBase
 	{
-		[Ignore]
 		[Test]
 		public void InheritedVirtualPublicMethod()
 		{

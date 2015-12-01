@@ -172,8 +172,8 @@ class Test
 				Assert.IsNotNull (provider.Find ("set"), "keyword 'set' not found.");
 			});
 		}
-		
-		[Ignore]
+
+		[Ignore("FixMe")]
 		[Test()]
 		public void GetSetKeywordTestAfterModifier ()
 		{
@@ -506,7 +506,6 @@ class Test
 			});
 		}
 
-		[Ignore]
 		[Test]
 		public void OverrideCompletionDeclarationBeginTest ()
 		{
@@ -520,7 +519,6 @@ class Test : A
 			Assert.AreEqual(start.Length, data.DeclarationBegin);
 		}
 
-		[Ignore]
 		[Test]
 		public void PartialCompletionDeclarationBeginTest ()
 		{
