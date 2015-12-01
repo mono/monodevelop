@@ -148,6 +148,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		{
 			return (!Installed || IsInstallPending);
 		}
+
+		public bool IsReleaseVersion ()
+		{
+			return PackageReference.IsReleaseVersion ();
+		}
 	}
 }
 
