@@ -66,6 +66,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			buttonChange.Clicked += new EventHandler (ChangeToken);
 			buttonRemove.Clicked += new EventHandler (RemoveToken);
 			entryToken.Changed += new EventHandler (Validate);
+
+			IdeApp.Preferences.UserInterfaceSkinChanged += HandleUserInterfaceSkinChanged;
 		}
 		
 		void Validate (object sender, EventArgs args)
@@ -167,7 +169,17 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			foreach (var ctag in CommentTag.SpecialCommentTags)
 				tokensStore.AppendValues (ctag.Tag, ctag.Priority);
-			
+
+			LoadColors ();
+		}
+
+		void HandleUserInterfaceSkinChanged (object sender, PropertyChangedEventArgs e)
+		{
+			LoadColors ();
+		}
+
+		public void LoadColors ()
+		{
 			colorbuttonHighPrio.Color = StringToColor (IdeApp.Preferences.UserTasksHighPrioColor);
 			colorbuttonNormalPrio.Color = StringToColor (IdeApp.Preferences.UserTasksNormalPrioColor);
 			colorbuttonLowPrio.Color = StringToColor (IdeApp.Preferences.UserTasksLowPrioColor);
@@ -208,6 +220,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				color = new Gdk.Color (0, 0, 0);
 			}
 			return color;
+		}
+
+		public override void Destroy ()
+		{
+			IdeApp.Preferences.UserInterfaceSkinChanged -= HandleUserInterfaceSkinChanged;
+			base.Destroy ();
 		}
 	}
 	
