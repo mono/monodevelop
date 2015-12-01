@@ -94,7 +94,10 @@ namespace MonoDevelop.CSharp.Refactoring
 
 				if (inspector.CanDisableWithPragma) {
 					var info = new CommandInfo (GettextCatalog.GetString ("_Suppress with #pragma"));
-					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableWithPragma (editor, ctx, fix.Location.SourceSpan)));
+					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableWithPragma (editor, ctx, fix)));
+
+					info = new CommandInfo (GettextCatalog.GetString ("_Suppress with file"));
+					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableWithFile (editor, ctx, fix)));
 				}
 
 				var configInfo = new CommandInfo (GettextCatalog.GetString ("_Configure Rule"));

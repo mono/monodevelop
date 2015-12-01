@@ -108,6 +108,14 @@
       <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Features">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.Features.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Features">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Features.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -159,6 +167,9 @@
     <Compile Include="MonoDevelop.CodeIssues\CodeDiagnosticFixDescriptor.cs" />
     <Compile Include="MonoDevelop.Refactoring\Commands.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringSymbolInfo.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\ISuppressionFixProvider.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\CodeFix.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\CSharpSuppressionFixProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -293,4 +304,9 @@
     <None Include="MonoDevelop.CodeIssues\Pad\AnalysisStateChangeEventArgs.cs" />
     <None Include="MonoDevelop.CodeIssues\Pad\CategoryGroupingProvider.cs" />
   </ItemGroup>
-</Project>
+
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.Features.dll" DestinationFolder="..\..\..\build\bin" ContinueOnError="true" />
+    <Copy SourceFiles="..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Features.dll" DestinationFolder="..\..\..\build\bin" ContinueOnError="true" />
+  </Target>
+  </Project>
