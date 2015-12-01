@@ -176,62 +176,60 @@ namespace MonoDevelop.NUnit
 				editor.TooltipText = toolTip;
 			}
 
-			static Menu menu;
-
 			public override void InformMousePress (TextEditor editor, Margin margin, MarginMouseEventArgs args)
 			{
 				if (!(margin is ActionMargin))
 					return;
-				if (menu != null) {
-					menu.Destroy ();
-				}
+
 				var debugModeSet = Runtime.ProcessService.GetDebugExecutionMode ();
 
-				menu = new Menu ();
+				var menu = new ContextMenu ();
 				if (unitTest.IsFixture) {
-					var menuItem = new MenuItem ("_Run All");
-					menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, false).Run;
-					menu.Add (menuItem);
+					var menuItem = new ContextMenuItem ("_Run All");
+					menuItem.Clicked += new TestRunner (doc, unitTest.UnitTestIdentifier, false).Run;
+					menu.Items.Add (menuItem);
+
 					if (debugModeSet != null) {
-						menuItem = new MenuItem ("_Debug All");
-						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
-						menu.Add (menuItem);
+						menuItem = new ContextMenuItem ("_Debug All");
+						menuItem.Clicked += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
+						menu.Items.Add (menuItem);
 					}
-					menuItem = new MenuItem ("_Select in Test Pad");
-					menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Select;
-					menu.Add (menuItem);
+
+					menuItem = new ContextMenuItem ("_Select in Test Pad");
+					menuItem.Clicked += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Select;
+					menu.Items.Add (menuItem);
 				} else {
 					if (unitTest.TestCases.Count == 0) {
-						var menuItem = new MenuItem ("_Run");
-						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, false).Run;
-						menu.Add (menuItem);
+						var menuItem = new ContextMenuItem ("_Run");
+						menuItem.Clicked += new TestRunner (doc, unitTest.UnitTestIdentifier, false).Run;
+						menu.Items.Add (menuItem);
 						if (debugModeSet != null) {
-							menuItem = new MenuItem ("_Debug");
-							menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
-							menu.Add (menuItem);
+							menuItem = new ContextMenuItem ("_Debug");
+							menuItem.Clicked += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
+							menu.Items.Add (menuItem);
 						}
-						menuItem = new MenuItem ("_Select in Test Pad");
-						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Select;
-						menu.Add (menuItem);
+						menuItem = new ContextMenuItem ("_Select in Test Pad");
+						menuItem.Clicked += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Select;
+						menu.Items.Add (menuItem);
 					} else {
-						var menuItem = new MenuItem ("_Run All");
-						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, false).Run;
-						menu.Add (menuItem);
+						var menuItem = new ContextMenuItem ("_Run All");
+						menuItem.Clicked += new TestRunner (doc, unitTest.UnitTestIdentifier, false).Run;
+						menu.Items.Add (menuItem);
 						if (debugModeSet != null) {
-							menuItem = new MenuItem ("_Debug All");
-							menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
-							menu.Add (menuItem);
+							menuItem = new ContextMenuItem ("_Debug All");
+							menuItem.Clicked += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
+							menu.Items.Add (menuItem);
 						}
-						menu.Add (new SeparatorMenuItem ());
+						menu.Items.Add (new SeparatorContextMenuItem ());
 						foreach (var id in unitTest.TestCases) {
-							var submenu = new Menu ();
-							menuItem = new MenuItem ("_Run");
-							menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier + id, false).Run;
-							submenu.Add (menuItem);
+							var submenu = new ContextMenu ();
+							menuItem = new ContextMenuItem ("_Run");
+							menuItem.Clicked += new TestRunner (doc, unitTest.UnitTestIdentifier + id, false).Run;
+							submenu.Items.Add (menuItem);
 							if (debugModeSet != null) {
-								menuItem = new MenuItem ("_Debug");
-								menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier + id, true).Run;
-								submenu.Add (menuItem);
+								menuItem = new ContextMenuItem ("_Debug");
+								menuItem.Clicked += new TestRunner (doc, unitTest.UnitTestIdentifier + id, true).Run;
+								submenu.Items.Add (menuItem);
 							}
 
 							var label = "Test" + id;
@@ -245,22 +243,21 @@ namespace MonoDevelop.NUnit
 								}
 							}
 
-							menuItem = new MenuItem ("_Select in Test Pad");
-							menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier + id, true).Select;
-							submenu.Add (menuItem);
+							menuItem = new ContextMenuItem ("_Select in Test Pad");
+							menuItem.Clicked += new TestRunner (doc, unitTest.UnitTestIdentifier + id, true).Select;
+							submenu.Items.Add (menuItem);
 
+							var subMenuItem = new ContextMenuItem (label);
+							//if (!string.IsNullOrEmpty (tooltip))
+							//	subMenuItem.TooltipText = tooltip;
 
-							var subMenuItem = new MenuItem (label);
-							if (!string.IsNullOrEmpty (tooltip))
-								subMenuItem.TooltipText = tooltip;
-							subMenuItem.Submenu = submenu;
-							menu.Add (subMenuItem);
+							subMenuItem.SubMenu = submenu;
+							menu.Items.Add (subMenuItem);
 						}
 					}
 				}
-				menu.ShowAll ();
-				editor.TextArea.ResetMouseState (); 
-				GtkWorkarounds.ShowContextMenu (menu, editor, new Gdk.Rectangle ((int)args.X, (int)args.Y, 1, 1));
+
+				menu.Show (editor, (int)(args.X + margin.XOffset), (int)args.Y);
 			}
 
 			class TestRunner
@@ -291,8 +288,6 @@ namespace MonoDevelop.NUnit
 				List<NUnitProjectTestSuite> testSuites = new List<NUnitProjectTestSuite>();
 				internal void Run (object sender, EventArgs e)
 				{
-					menu.Destroy ();
-					menu = null;
 					if (IdeApp.ProjectOperations.IsBuilding (IdeApp.ProjectOperations.CurrentSelectedSolution) || 
 						IdeApp.ProjectOperations.IsRunning (IdeApp.ProjectOperations.CurrentSelectedSolution))
 						return;
@@ -346,8 +341,6 @@ namespace MonoDevelop.NUnit
 
 				internal void Select (object sender, EventArgs e)
 				{
-					menu.Destroy ();
-					menu = null;
 					var test = NUnitService.Instance.SearchTestById (testCase);
 					if (test == null)
 						return;

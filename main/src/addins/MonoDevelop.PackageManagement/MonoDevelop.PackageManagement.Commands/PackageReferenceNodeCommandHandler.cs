@@ -90,6 +90,7 @@ namespace MonoDevelop.PackageManagement.Commands
 				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id, project);
 				UpdatePackageAction action = project.CreateUpdatePackageAction ();
 				action.PackageId = packageReferenceNode.Id;
+				action.AllowPrereleaseVersions = !packageReferenceNode.IsReleaseVersion ();
 
 				RestoreBeforeUpdateAction.Restore (project, () => {
 					UpdatePackage (progressMessage, action);
