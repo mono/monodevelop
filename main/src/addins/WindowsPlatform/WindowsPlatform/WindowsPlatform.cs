@@ -200,8 +200,9 @@ namespace MonoDevelop.Platform
 		[DllImport (Win32.USER32)]
 		extern static int GetMonitorInfoA (IntPtr hmonitor, ref MonitorInfo info);
 
-		public override Gdk.Rectangle GetUsableMonitorGeometry (Gdk.Screen screen, int monitor_id)
+		public override Xwt.Rectangle GetUsableMonitorGeometry (int screenNumber, int monitor_id)
 		{
+			var screen = Gdk.Display.Default.GetScreen (screenNumber);
 			Gdk.Rectangle geometry = screen.GetMonitorGeometry (monitor_id);
 			List<MonitorInfo> screens = new List<MonitorInfo> ();
 
@@ -232,7 +233,7 @@ namespace MonoDevelop.Platform
 			int y = geometry.Y + (visible.Top - frame.Top);
 			int height = visible.Height;
 
-			return new Gdk.Rectangle (x, y, width, height);
+			return new Xwt.Rectangle (x, y, width, height);
 		}
 
 		static ProcessStartInfo CreateConsoleStartInfo (
