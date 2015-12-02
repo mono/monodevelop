@@ -4,6 +4,7 @@ open System.Text
 open System.IO
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.Ide.Editor
+open ExtCore
 
 module Seq =
   let tryHead items =
@@ -175,3 +176,20 @@ module ConstraintExt =
     member x.IsProperty =
       (x.MemberIsStatic && x.MemberArgumentTypes.Count = 0) ||
       (not x.MemberIsStatic && x.MemberArgumentTypes.Count = 1)
+
+module AsyncChoice =
+  let inline ofOptionWith e =
+    Control.Async.map (Choice.ofOptionWith e)
+
+[<AutoOpen>]
+module AsyncChoiceCE =
+    type ExtCore.Control.AsyncChoiceBuilder with
+        member inline __.ReturnFrom (choice : Choice<'T, 'Error>) : Async<Choice<'T, 'Error>> = async.Return choice
+
+        member inline __.Bind (value : Choice<'T, 'Error>, binder : 'T -> Async<Choice<'U, 'Error>>) : Async<Choice<'U, 'Error>> =
+            async {
+                match value with
+                | Error error -> return Choice2Of2 error
+                | Success x -> return! binder x
+            }
+   
