@@ -456,17 +456,29 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="icons\reference-48.png">
-      <LogicalName>reference-48.png</LogicalName>
+    <EmbeddedResource Include="icons\package-48.png">
+      <LogicalName>package-48.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\reference-48%402x.png">
-      <LogicalName>reference-48@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\package-48%402x.png">
+      <LogicalName>package-48@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\reference-48~dark.png">
-      <LogicalName>reference-48~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\package-48~dark.png">
+      <LogicalName>package-48~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\reference-48~dark%402x.png">
-      <LogicalName>reference-48~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\package-48~dark%402x.png">
+      <LogicalName>package-48~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-48~sel.png">
+      <LogicalName>package-48~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-48~sel%402x.png">
+      <LogicalName>package-48~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-48~dark~sel.png">
+      <LogicalName>package-48~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-48~dark~sel%402x.png">
+      <LogicalName>package-48~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -317,7 +317,7 @@ namespace MonoDevelop.PackageManagement
 		Image checkedCheckBoxWithBackgroundColorImage;
 		Image uncheckedCheckBoxWithBackgroundColorImage;
 
-		static readonly Image defaultPackageImage = Image.FromResource (typeof(PackageCellView), "reference-48.png");
+		static readonly Image defaultPackageImage = Image.FromResource (typeof(PackageCellView), "package-48.png");
 	}
 }
 
