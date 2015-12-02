@@ -144,6 +144,7 @@ namespace MonoDevelop.CSharp
 					cancellationToken.ThrowIfCancellationRequested ();
 					DeclaredSymbolInfo declaredSymbolInfo;
 					if (current.TryGetDeclaredSymbolInfo (out declaredSymbolInfo)) {
+						declaredSymbolInfo.Document = document;
 						infos.Add (declaredSymbolInfo);
 					}
 				}
