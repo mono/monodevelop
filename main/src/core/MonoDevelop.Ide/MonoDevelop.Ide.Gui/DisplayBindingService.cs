@@ -39,12 +39,24 @@ namespace MonoDevelop.Ide.Gui
 {
 	public static class DisplayBindingService
 	{
+		private static List<IDisplayBinding> runtimeBindings = new List<IDisplayBinding>();
+
 		public static IEnumerable<T> GetBindings<T> ()
 		{
-			return AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/DisplayBindings")
-				.OfType<T> ();
+			return runtimeBindings.OfType<T>().Concat(AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/DisplayBindings")
+				.OfType<T> ());
 		}
-		
+
+		public static void RegisterRuntimeDisplayBinding(IDisplayBinding binding)
+		{
+			runtimeBindings.Add(binding);
+		}
+
+		public static void DeregisterRuntimeDisplayBinding(IDisplayBinding binding)
+		{
+			runtimeBindings.Remove(binding);
+		}
+
 		internal static IEnumerable<IDisplayBinding> GetDisplayBindings (FilePath filePath, string mimeType, Project ownerProject)
 		{
 			if (mimeType == null && !filePath.IsNullOrEmpty)

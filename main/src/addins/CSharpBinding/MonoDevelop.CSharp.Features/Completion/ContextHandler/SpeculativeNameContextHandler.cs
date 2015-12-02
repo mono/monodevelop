@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
 	class SpeculativeNameContextHandler : CompletionContextHandler
 	{
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, CancellationToken cancellationToken)
+		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			var tree = await completionContext.Document.GetCSharpSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
 			if (tree.IsInNonUserCode(completionContext.Position, cancellationToken) ||

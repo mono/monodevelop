@@ -34,7 +34,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	class SyntaxContext
+	public class SyntaxContext
 	{
 		readonly CSharpSyntaxContext ctx;
 		readonly List<ITypeSymbol> inferredTypes;
@@ -44,6 +44,9 @@ namespace ICSharpCode.NRefactory6.CSharp
 				return ctx;
 			}
 		}
+
+
+		public SemanticModel SemanticModel { get; internal set; }
 
 		public List<ITypeSymbol> InferredTypes {
 			get {

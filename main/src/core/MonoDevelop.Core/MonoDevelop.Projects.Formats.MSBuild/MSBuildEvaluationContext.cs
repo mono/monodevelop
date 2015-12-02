@@ -418,7 +418,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					for (n = 0; n < numArgs; n++)
 						convertedArgs [n] = ConvertArg (method, n, parameterValues [n], methodParams [n].ParameterType);
 
-					if (paramsArgType != null) {
+					if (methodParams.Length == parameterValues.Length && paramsArgType != null) {
+						// Invoking an method with a params argument, but the number of arguments provided is the same as the
+						// number of arguments of the method, so the last argument can be either one of the values of the
+						// params array, or it can be the whole params array. 
+						try {
+							var last = convertedArgs.Length - 1;
+							convertedArgs [last] = ConvertArg (method, last, parameterValues [last], methodParams [last].ParameterType);
+
+							// Conversion worked. Ignore the params argument.
+							paramsArgType = null;
+						} catch (InvalidCastException) {
+							// Conversion of the last argument failed, so it probably needs to be handled as a single value
+							// for the params argument.
+						}
+					}
+
+					if (paramsArgType != null) {  
 						var argsArray = new object [parameterValues.Length - numArgs];
 						for (int m = 0; m < argsArray.Length; m++)
 							argsArray [m] = ConvertArg (method, n, parameterValues [n++], paramsArgType);
@@ -478,7 +494,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 
 				// Trim enclosing quotation marks
-				if (arg.Length > 1 && ((arg [0] == '"' && arg [arg.Length - 1] == '"') || (arg [0] == '\'' && arg [arg.Length - 1] == '\'')))
+				if (arg.Length > 1 && IsQuote(arg [0]) && arg[arg.Length - 1] == arg [0])
 					arg = arg.Substring (1, arg.Length - 2);
 
 				list.Add (Evaluate (arg));
@@ -527,6 +543,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var sval = value as string;
 			if (sval == "null")
 				return null;
+
+			if (value == null)
+				return null;
+
+			if (sval != null && parameterType == typeof (char[]))
+				return sval.ToCharArray ();
+
+			if (sval != null && Path.DirectorySeparatorChar != '\\')
+				value = sval.Replace ('\\', Path.DirectorySeparatorChar);
 			
 			var res = Convert.ChangeType (value, parameterType, CultureInfo.InvariantCulture);
 			bool convertPath = false;
@@ -646,7 +671,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					pc++;
 				else if (c == ')' || c == ']')
 					pc--;
-				else if (c == '"' || c == '\'') {
+				else if (IsQuote (c)) {
 					i = str.IndexOf (c, i + 1);
 					if (i == -1)
 						return -1;
@@ -654,6 +679,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				i++;
 			}
 			return -1;
+		}
+
+		bool IsQuote (char c)
+		{
+			return c == '"' || c == '\'' || c == '`';
 		}
 
 		int FindClosingChar (string str, int i, char[] closeChar)
@@ -667,7 +697,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					pc++;
 				else if (c == ')' || c == ']')
 					pc--;
-				else if (c == '"' || c == '\'') {
+				else if (IsQuote (c)) {
 					i = str.IndexOf (c, i + 1);
 					if (i == -1)
 						return -1;

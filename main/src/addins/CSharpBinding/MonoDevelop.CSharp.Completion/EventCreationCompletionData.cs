@@ -115,7 +115,7 @@ namespace MonoDevelop.CSharp.Completion
 						if (k > 0) {
 							sb.Append(", ");
 						}
-						sb.Append (delegateMethod.Parameters [k].ToMinimalDisplayString (semanticModel, position, MonoDevelop.Ide.TypeSystem.Ambience.LabelFormat)); 
+						sb.Append (RoslynCompletionData.SafeMinimalDisplayString (delegateMethod.Parameters [k], semanticModel, position, MonoDevelop.Ide.TypeSystem.Ambience.LabelFormat)); 
 					}
 					sb.Append(")");
 

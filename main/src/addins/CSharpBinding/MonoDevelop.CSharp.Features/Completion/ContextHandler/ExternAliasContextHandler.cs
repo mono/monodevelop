@@ -39,12 +39,12 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
 	class ExternAliasContextHandler : CompletionContextHandler
 	{
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, CancellationToken cancellationToken)
+		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			var document = completionContext.Document;
 			var position = completionContext.Position;
 
-			var tree = await document.GetSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
+			var tree = ctx.SyntaxTree;
 
 			if (tree.IsInNonUserCode(position, cancellationToken))
 				return Enumerable.Empty<CompletionData> ();

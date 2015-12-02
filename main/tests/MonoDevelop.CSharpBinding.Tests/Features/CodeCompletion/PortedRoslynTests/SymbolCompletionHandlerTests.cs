@@ -266,8 +266,8 @@ class C {
 		[Test]
 		public void OpenStringLiteralInDirective ()
 		{
-			VerifyItemIsAbsent ("#r \"$$", "String", expectedDescriptionOrNull: null, sourceCodeKind: SourceCodeKind.Interactive);
-			VerifyItemIsAbsent ("#r \"$$", "System", expectedDescriptionOrNull: null, sourceCodeKind: SourceCodeKind.Interactive);
+			VerifyItemIsAbsent ("#r \"$$", "String", expectedDescriptionOrNull: null, sourceCodeKind: SourceCodeKind.Script);
+			VerifyItemIsAbsent ("#r \"$$", "System", expectedDescriptionOrNull: null, sourceCodeKind: SourceCodeKind.Script);
 		}
 
 		[Test]
@@ -280,8 +280,8 @@ class C {
 		[Test]
 		public void StringLiteralInDirective ()
 		{
-			VerifyItemIsAbsent ("#r \"$$\"", "String", expectedDescriptionOrNull: null, sourceCodeKind: SourceCodeKind.Interactive);
-			VerifyItemIsAbsent ("#r \"$$\"", "System", expectedDescriptionOrNull: null, sourceCodeKind: SourceCodeKind.Interactive);
+			VerifyItemIsAbsent ("#r \"$$\"", "String", expectedDescriptionOrNull: null, sourceCodeKind: SourceCodeKind.Script);
+			VerifyItemIsAbsent ("#r \"$$\"", "System", expectedDescriptionOrNull: null, sourceCodeKind: SourceCodeKind.Script);
 		}
 
 		//[Test]

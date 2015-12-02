@@ -62,16 +62,18 @@ namespace ICSharpCode.NRefactory6.CSharp
 		Task<SyntaxContext>  syntaxContext;
 		object syntaxCreationLock = new object ();
 
-		internal async Task<SyntaxContext> GetSyntaxContextAsync  (Workspace workspace, CancellationToken cancellationToken = default (CancellationToken)) 
+		internal Task<SyntaxContext> GetSyntaxContextAsync  (Workspace workspace, CancellationToken cancellationToken = default (CancellationToken)) 
 		{
 			if (syntaxContext == null) {
 				lock (syntaxCreationLock) {
-					syntaxContext = syntaxContext ?? Task.Run (() => {
-						return SyntaxContext.Create (workspace, document, semanticModel, position, cancellationToken);
-					});
+					syntaxContext = syntaxContext ?? Task.FromResult (SyntaxContext.Create (workspace, document, semanticModel, position, cancellationToken));/*Task.Run (() => {
+						var cw = SyntaxContext.Create (workspace, document, semanticModel, position, cancellationToken);
+						System.Console.WriteLine (cw);
+						return cw;
+					})*/;
 				}
 			}
-			return await syntaxContext;
+			return syntaxContext;
 		}
 
 		IEnumerable<CompletionContextHandler> additionalContextHandlers;

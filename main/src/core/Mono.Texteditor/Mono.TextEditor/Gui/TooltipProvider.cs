@@ -24,12 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Mono.TextEditor
 {
 	public abstract class TooltipProvider
 	{
-		public abstract TooltipItem GetItem (MonoTextEditor editor, int offset);
+		public abstract Task<TooltipItem> GetItem (MonoTextEditor editor, int offset, CancellationToken token = default(CancellationToken));
 
 		public virtual bool IsInteractive (MonoTextEditor editor, Gtk.Window tipWindow)
 		{

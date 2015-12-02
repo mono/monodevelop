@@ -279,6 +279,158 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
+		/// Runs the generator target and sends file change notifications if any files were modified, returns the build result
+		/// </summary>
+		public Task<TargetEvaluationResult> PerformGeneratorAsync (ConfigurationSelector configuration, string generatorTarget)
+		{
+			return BindTask<TargetEvaluationResult> (async cancelToken => {
+				var cancelSource = new CancellationTokenSource ();
+				cancelToken.Register (() => cancelSource.Cancel ());
+
+				using (var monitor = new ProgressMonitor (cancelSource)) {
+					return await this.PerformGeneratorAsync (monitor, configuration, generatorTarget);
+				}
+			});
+		}
+
+		/// <summary>
+		/// Runs the generator target and sends file change notifications if any files were modified, returns the build result
+		/// </summary>
+		public async Task<TargetEvaluationResult> PerformGeneratorAsync (ProgressMonitor monitor, ConfigurationSelector configuration, string generatorTarget)
+		{
+			var fileInfo = await GetProjectFileTimestamps (monitor, configuration);
+			var evalResult = await this.RunTarget (monitor, generatorTarget, configuration);
+			SendFileChangeNotifications (monitor, configuration, fileInfo);
+
+			return evalResult;
+		}
+
+		/// <summary>
+		/// Returns a list containing FileInfo for all the source files in the project
+		/// </summary>
+		async Task<List<FileInfo>> GetProjectFileTimestamps (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			var infoList = new List<FileInfo> ();
+			var projectFiles = await this.GetSourceFilesAsync (monitor, configuration);
+
+			foreach (var projectFile in projectFiles) {
+				var info = new FileInfo (projectFile.FilePath);
+				infoList.Add (info);
+			}
+
+			return infoList;
+		}
+
+		/// <summary>
+		/// Sends a file change notification via FileService for any file that has changed since the timestamps in beforeFileInfo
+		/// </summary>
+		void SendFileChangeNotifications (ProgressMonitor monitor, ConfigurationSelector configuration, List<FileInfo> beforeFileInfo)
+		{
+			var changedFiles = new List<FileInfo> ();
+
+			foreach (var file in beforeFileInfo) {
+				var info = new FileInfo (file.FullName);
+
+				if (file.Exists && info.Exists) {
+					if (file.LastWriteTime != info.LastWriteTime) {
+						changedFiles.Add (info);
+					}
+				} else if (info.Exists) {
+					changedFiles.Add (info);
+				} else if (file.Exists) {
+					// not sure if this should or could happen, it doesn't really make much sense
+					FileService.NotifyFileRemoved (file.FullName);
+				}
+			}
+
+			FileService.NotifyFilesChanged (changedFiles.Select (cf => new FilePath (cf.FullName)));
+		}
+
+		/// <summary>
+		/// Gets the source files that are included in the project, including any that are added by `CoreCompileDependsOn`
+		/// </summary>
+		public Task<ProjectFile[]> GetSourceFilesAsync (ConfigurationSelector configuration)
+		{
+			if (sourceProject == null)
+				return Task.FromResult (new ProjectFile [0]);
+
+			return BindTask<ProjectFile []> (async cancelToken => {
+				var cancelSource = new CancellationTokenSource ();
+				cancelToken.Register (() => cancelSource.Cancel ());
+
+				using (var monitor = new ProgressMonitor (cancelSource)) {
+					return await GetSourceFilesAsync (monitor, configuration);
+				}
+			});
+		}
+
+		/// <summary>
+		/// Gets the source files that are included in the project, including any that are added by `CoreCompileDependsOn`
+		/// </summary>
+		public async Task<ProjectFile[]> GetSourceFilesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			// pre-load the results with the current list of files in the project
+			var results = new List<ProjectFile> (this.Files);
+
+			// add in any compile items that we discover from running the CoreCompile dependencies
+			var evaluatedCompileItems = await GetCompileItemsFromCoreCompileDependenciesAsync (monitor, configuration);
+			var addedItems = evaluatedCompileItems.Where (i => results.All (pi => pi.FilePath != i.FilePath)).ToList ();
+			results.AddRange (addedItems);
+
+			return results.ToArray ();
+		}
+
+		bool evaluatedCoreCompileDependencies;
+		readonly TaskCompletionSource<ProjectFile[]> evaluatedCompileItemsTask = new TaskCompletionSource<ProjectFile[]> ();
+
+		/// <summary>
+		/// Gets the list of files that are included as Compile items from the evaluation of the CoreCompile dependecy targets
+		/// </summary>
+		async Task<ProjectFile[]> GetCompileItemsFromCoreCompileDependenciesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			List<ProjectFile> result = null;
+			lock (evaluatedCompileItemsTask) {
+				if (!evaluatedCoreCompileDependencies) {
+					result = new List<ProjectFile> ();
+					evaluatedCoreCompileDependencies = true;
+				}
+			}
+
+			if (result != null) {
+				var coreCompileDependsOn = sourceProject.EvaluatedProperties.GetValue<string> ("CoreCompileDependsOn");
+
+				if (string.IsNullOrEmpty (coreCompileDependsOn)) {
+					evaluatedCompileItemsTask.SetResult (new ProjectFile [0]);
+					return evaluatedCompileItemsTask.Task.Result;
+				}
+
+				var dependsList = coreCompileDependsOn.Split (new [] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+				foreach (var dependTarget in dependsList) {
+					try {
+						// evaluate the Compile targets
+						var ctx = new TargetEvaluationContext ();
+						ctx.ItemsToEvaluate.Add ("Compile");
+
+						var evalResult = await this.RunTarget (monitor, dependTarget, configuration, ctx);
+						if (evalResult != null && !evalResult.BuildResult.HasErrors) {
+							var evalItems = evalResult
+								.Items
+								.Select (i => new ProjectFile (MSBuildProjectService.FromMSBuildPath (sourceProject.BaseDirectory, i.Include), "Compile") { Project = this })
+								.ToList ();
+
+							result.AddRange (evalItems);
+						}
+					} catch (Exception ex) {
+						LoggingService.LogInternalError (string.Format ("Error running target {0}", dependTarget), ex);
+					}
+				}
+				evaluatedCompileItemsTask.SetResult (result.ToArray ());
+			}
+
+			return await evaluatedCompileItemsTask.Task;
+		}
+
+		/// <summary>
 		/// Called just after the MSBuild project is loaded but before it is evaluated.
 		/// </summary>
 		/// <param name="project">The project</param>

@@ -94,7 +94,10 @@ namespace MonoDevelop.CSharp.Refactoring
 
 				if (inspector.CanDisableWithPragma) {
 					var info = new CommandInfo (GettextCatalog.GetString ("_Suppress with #pragma"));
-					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableWithPragma (editor, ctx, fix.Location.SourceSpan)));
+					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableWithPragma (editor, ctx, fix)));
+
+					info = new CommandInfo (GettextCatalog.GetString ("_Suppress with file"));
+					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableWithFile (editor, ctx, fix)));
 				}
 
 				var configInfo = new CommandInfo (GettextCatalog.GetString ("_Configure Rule"));
@@ -160,8 +163,12 @@ namespace MonoDevelop.CSharp.Refactoring
 				added = true;
 			}
 
-			if (IdeApp.ProjectOperations.CanJumpToDeclaration (info.Symbol) || info.Symbol == null && IdeApp.ProjectOperations.CanJumpToDeclaration (info.CandidateSymbols.FirstOrDefault ())) {
-				var type = (info.Symbol ?? info.CandidateSymbols.FirstOrDefault ()) as INamedTypeSymbol;
+			var gotoDeclarationSymbol = info.Symbol;
+			if (gotoDeclarationSymbol == null && info.DeclaredSymbol != null && info.DeclaredSymbol.Locations.Length > 1)
+				gotoDeclarationSymbol = info.DeclaredSymbol;
+			if (IdeApp.ProjectOperations.CanJumpToDeclaration (gotoDeclarationSymbol) || gotoDeclarationSymbol == null && IdeApp.ProjectOperations.CanJumpToDeclaration (info.CandidateSymbols.FirstOrDefault ())) {
+				
+				var type = (gotoDeclarationSymbol ?? info.CandidateSymbols.FirstOrDefault ()) as INamedTypeSymbol;
 				if (type != null && type.Locations.Length > 1) {
 					var declSet = new CommandInfoSet ();
 					declSet.Text = GettextCatalog.GetString ("_Go to Declaration");

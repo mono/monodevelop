@@ -73,6 +73,9 @@ namespace ICSharpCode.PackageManagement
 		{
 			UpdatePackageAction action = CreateDefaultUpdatePackageAction(project);
 			action.PackageId = package.Id;
+			if (!action.AllowPrereleaseVersions && !package.IsReleaseVersion ()) {
+				action.AllowPrereleaseVersions = true;
+			}
 			return action;
 		}
 	}

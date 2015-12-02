@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Mono.TextEditor;
 using MonoDevelop.Ide;
 using Xwt.GtkBackend;
@@ -60,9 +62,15 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			return null;
 		}
 
-		public override TooltipItem GetItem (MonoTextEditor editor, int offset)
+		public override async Task<TooltipItem> GetItem (MonoTextEditor editor, int offset, CancellationToken token = default(CancellationToken))
 		{
-			var item = provider.GetItem (WrapEditor (editor), IdeApp.Workbench.ActiveDocument, offset);
+			var wrappedEditor = WrapEditor (editor);
+			if (wrappedEditor == null)
+				return null;
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null)
+				return null;
+			var item = await provider.GetItem (wrappedEditor, doc, offset, token);
 			if (item == null)
 				return null;
 			if (lastUnwrappedItem != null) {

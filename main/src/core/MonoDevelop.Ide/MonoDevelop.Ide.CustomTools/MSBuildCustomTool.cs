@@ -28,6 +28,9 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using System.CodeDom.Compiler;
 using System.Threading.Tasks;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.Ide.CustomTools
 {
@@ -42,7 +45,8 @@ namespace MonoDevelop.Ide.CustomTools
 
 		public async Task Generate (ProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
-			var buildResult = await file.Project.RunTarget (monitor, targetName, IdeApp.Workspace.ActiveConfiguration);
+			var buildResult = await file.Project.PerformGeneratorAsync (monitor, IdeApp.Workspace.ActiveConfiguration, this.targetName);
+
 			foreach (var err in buildResult.BuildResult.Errors) {
 				result.Errors.Add (new CompilerError (err.FileName, err.Line, err.Column, err.ErrorNumber, err.ErrorText) {
 					IsWarning = err.IsWarning

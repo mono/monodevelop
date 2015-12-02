@@ -40,7 +40,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
 	public abstract class CompletionContextHandler : ICompletionDataKeyHandler
 	{
-		public async Task<IEnumerable<CompletionData>> GetCompletionDataAsync (CompletionResult result, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<IEnumerable<CompletionData>> GetCompletionDataAsync (CompletionResult result, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			// If we were triggered by typign a character, then do a semantic check to make sure
 			// we're still applicable.  If not, then return immediately.
@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					return null;
 			}
 
-			return await GetItemsWorkerAsync(result, engine, completionContext, info, cancellationToken).ConfigureAwait(false);
+			return await GetItemsWorkerAsync(result, engine, completionContext, info, ctx, cancellationToken).ConfigureAwait(false);
 
 		}
 
@@ -60,7 +60,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return Task.FromResult (true);
         }
 
-		protected abstract Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult result, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, CancellationToken cancellationToken);
+		protected abstract Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult result, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken);
 
 		static readonly char[] csharpCommitChars = {
 			' ', '{', '}', '[', ']', '(', ')', '.', ',', ':',

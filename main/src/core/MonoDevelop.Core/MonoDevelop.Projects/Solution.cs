@@ -43,12 +43,13 @@ using MonoDevelop.Projects.Formats.MSBuild;
 namespace MonoDevelop.Projects
 {
 	[ProjectModelDataItem]
-	public sealed class Solution: WorkspaceItem, IConfigurationTarget, IPolicyProvider, IBuildTarget, IMSBuildFileObject
+	public class Solution: WorkspaceItem, IConfigurationTarget, IPolicyProvider, IBuildTarget, IMSBuildFileObject
 	{
 		internal object MemoryProbe = Counters.SolutionsInMemory.CreateMemoryProbe ();
 		SolutionFolder rootFolder;
 		string defaultConfiguration;
 		MSBuildFileFormat format;
+		bool loadingFromConstructor;
 
 		SolutionItem startupItem;
 		List<SolutionItem> startupItems; 
@@ -78,12 +79,11 @@ namespace MonoDevelop.Projects
 
 		internal Solution (bool loading)
 		{
+			loadingFromConstructor = loading;
 			Counters.SolutionsLoaded++;
 			configurations = new SolutionConfigurationCollection (this);
 			format = MSBuildFileFormat.DefaultFormat;
 			Initialize (this);
-			if (!loading)
-				NotifyItemReady ();
 		}
 
 		public override FilePath FileName {
@@ -107,6 +107,9 @@ namespace MonoDevelop.Projects
 		{
 			itemExtension = ExtensionChain.GetExtension<SolutionExtension> ();
 			base.OnExtensionChainInitialized ();
+
+			if (!loadingFromConstructor)
+				NotifyItemReady ();
 		}
 
 		SolutionExtension itemExtension;

@@ -31,6 +31,7 @@ using System.Collections.ObjectModel;
 using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -338,6 +339,21 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (1, sol.Items.Count);
 			Assert.IsInstanceOf<Project> (sol.Items[0]);
+		}
+
+		[Test]
+		public async Task LoadUserPreferences ()
+		{
+			string wsFile = Util.GetSampleProject ("workspace-userprefs", "workspace.mdw");
+			var wsi = await Services.ProjectService.ReadWorkspaceItem (new ProgressMonitor (), wsFile);
+			Assert.IsInstanceOf<Workspace> (wsi);
+			var ws = (Workspace)wsi;
+
+			var userData = ws.UserProperties.GetValue<WorkspaceUserData> ("MonoDevelop.Ide.Workspace");
+
+			Assert.IsFalse (ws.UserProperties.IsEmpty);
+			Assert.IsNotNull (userData);
+			Assert.AreEqual ("Release", userData.ActiveConfiguration);
 		}
 	}
 	

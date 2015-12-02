@@ -29,6 +29,11 @@ using MonoDevelop.Core;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Ide.Editor;
+using System.Threading;
+using MonoDevelop.Ide.TypeSystem;
+using System.Reflection;
+using Microsoft.CodeAnalysis.CodeActions;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -130,6 +135,13 @@ namespace MonoDevelop.CodeIssues
 			PropertyService.Set ("CodeIssues." + Languages + "." + IdString + "." + diagnostic.Id + ".enabled", value);
 		}
 
+		static CodeDiagnosticDescriptor ()
+		{
+			getCodeActionsMethod = typeof (CodeAction).GetMethod ("GetCodeActions", BindingFlags.Instance | BindingFlags.NonPublic);
+			hasCodeActionsProperty = typeof (CodeAction).GetProperty ("HasCodeActions", BindingFlags.Instance | BindingFlags.NonPublic);
+
+		}
+
 		internal CodeDiagnosticDescriptor (Microsoft.CodeAnalysis.DiagnosticDescriptor descriptor, string[] languages, Type codeIssueType)
 		{
 			if (descriptor == null)
@@ -163,20 +175,50 @@ namespace MonoDevelop.CodeIssues
 		public bool CanDisableWithPragma { get { return !string.IsNullOrEmpty (descriptor.Id); } }
 
 		const string analysisDisableTag = "Analysis ";
+		readonly static MethodInfo getCodeActionsMethod;
+		readonly static PropertyInfo hasCodeActionsProperty;
 
-		public void DisableWithPragma (TextEditor editor, DocumentContext context, TextSpan span)
+		public async void DisableWithPragma (TextEditor editor, DocumentContext context, Diagnostic fix, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			using (editor.OpenUndoGroup ()) {
-				var start = editor.OffsetToLocation (span.Start);
-				var end = editor.OffsetToLocation (span.End);
-				editor.InsertText (
-					editor.LocationToOffset (end.Line + 1, 1),
-					editor.GetVirtualIndentationString (end.Line) + "#pragma warning restore " + descriptor.Id + editor.EolMarker
-				); 
-				editor.InsertText (
-					editor.LocationToOffset (start.Line, 1),
-					editor.GetVirtualIndentationString (start.Line) + "#pragma warning disable " + descriptor.Id + editor.EolMarker
-				); 
+			var line = editor.GetLineByOffset (fix.Location.SourceSpan.Start);
+			var span = new TextSpan (line.Offset, line.Length);
+			var fixes = await CSharpSuppressionFixProvider.Instance.GetSuppressionsAsync (context.AnalysisDocument, span, new [] { fix }, cancellationToken ).ConfigureAwait (false);
+			foreach (var f in fixes) {
+				RunAction (context, f.Action, cancellationToken);
+			}
+		}
+
+		public async void DisableWithFile (TextEditor editor, DocumentContext context, Diagnostic fix, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			var p = context.RoslynWorkspace.CurrentSolution.GetProject (TypeSystemService.GetProjectId (context.Project));
+
+			var fixes = await CSharpSuppressionFixProvider.Instance.GetSuppressionsAsync (p, new [] { fix }, cancellationToken ).ConfigureAwait (false);
+
+			foreach (var f in fixes) {
+				RunAction (context, f.Action, cancellationToken);
+			}
+		}
+
+		static async void RunAction (DocumentContext context, CodeAction action, CancellationToken cancellationToken)
+		{
+			var operations = await action.GetOperationsAsync (cancellationToken).ConfigureAwait (false);
+			if (operations == null)
+				return;
+			foreach (var op in operations) {
+				if (op == null)
+					continue;
+				try {
+					op.Apply (context.RoslynWorkspace, cancellationToken);
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while appyling operation : " + op, e);
+				}
+			}
+
+			if ((bool)hasCodeActionsProperty.GetValue (action)) {
+				var result = (ImmutableArray<CodeAction>)getCodeActionsMethod.Invoke (action, null);
+				foreach (var nested in result) {
+					RunAction (context, nested, cancellationToken);
+				}
 			}
 		}
 	}

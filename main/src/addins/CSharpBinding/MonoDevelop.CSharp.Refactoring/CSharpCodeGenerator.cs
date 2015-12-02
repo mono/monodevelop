@@ -34,6 +34,7 @@ using MonoDevelop.Ide;
 using System.Collections.Generic;
 using MonoDevelop.CSharp.Formatting;
 using Microsoft.CodeAnalysis.Options;
+using MonoDevelop.CSharp.Completion;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -111,7 +112,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					return ns + "." + name;
 
 
-				return type.ToMinimalDisplayString(model, Editor.CaretOffset, Ambience.LabelFormat);
+				return RoslynCompletionData.SafeMinimalDisplayString (type, model, Editor.CaretOffset, Ambience.LabelFormat);
 			}
 		}
 
@@ -327,7 +328,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
-			result.Append(type.ToMinimalDisplayString (options.SemanticModel, options.Part.SourceSpan.Start, Ambience.LabelFormat));
+			result.Append(RoslynCompletionData.SafeMinimalDisplayString (type, options.SemanticModel, options.Part.SourceSpan.Start, Ambience.LabelFormat));
 
 			//			var implementingType = options.Part;
 			//			var loc = implementingType.Region.End;

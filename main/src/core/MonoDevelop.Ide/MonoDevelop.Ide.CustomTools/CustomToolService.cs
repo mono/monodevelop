@@ -77,6 +77,14 @@ namespace MonoDevelop.Ide.CustomTools
 				foreach (ProjectFileEventInfo e in args)
 					Update (e.ProjectFile, false);
 			};
+			IdeApp.Workspace.FileRemovedFromProject += delegate (object sender, ProjectFileEventArgs args) {
+				foreach (ProjectFileEventInfo e in args)
+					Update (e.ProjectFile, false);
+			};
+			IdeApp.Workspace.FileAddedToProject += delegate (object sender, ProjectFileEventArgs args) {
+				foreach (ProjectFileEventInfo e in args)
+					Update (e.ProjectFile, false);
+			};
 			//FIXME: handle the rename
 			//MonoDevelop.Ide.Gui.IdeApp.Workspace.FileRenamedInProject
 		}

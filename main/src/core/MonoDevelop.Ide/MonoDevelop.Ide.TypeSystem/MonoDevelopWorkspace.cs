@@ -394,6 +394,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				FilePath fileName = IdeApp.Workspace != null ? p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration) : (FilePath)"";
 				if (fileName.IsNullOrEmpty)
 					fileName = new FilePath (p.Name + ".dll");
+
+				var sourceFiles = await p.GetSourceFilesAsync (config != null ? config.Selector : null).ConfigureAwait (false);
+
 				var info = ProjectInfo.Create (
 					projectId,
 					VersionStamp.Create (),
@@ -404,7 +407,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					fileName,
 					cp != null ? cp.CreateCompilationOptions () : null,
 					cp != null ? cp.CreateParseOptions () : null,
-					CreateDocuments (projectData, p, token),
+					CreateDocuments (projectData, p, token, sourceFiles),
 					CreateProjectReferences (p, token),
 					references
 				);
@@ -460,10 +463,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			public IReadOnlyList<Projection> Projections;
 		}
 
-		IEnumerable<DocumentInfo> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token)
+		IEnumerable<DocumentInfo> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.ProjectFile[] sourceFiles)
 		{
 			var duplicates = new HashSet<DocumentId> ();
-			foreach (var f in p.Files) {
+
+			// use given source files instead of project.Files because there may be additional files added by msbuild targets
+			foreach (var f in sourceFiles) {
 				if (token.IsCancellationRequested)
 					yield break;
 				if (f.Subtype == MonoDevelop.Projects.Subtype.Directory)
@@ -589,25 +594,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			get {
 				return true;
 			}
-		}
-
-		public override void OpenDocument (DocumentId documentId, bool activate = true)
-		{
-			var document = GetDocument (documentId);
-			if (document == null)
-				return;
-			MonoDevelop.Projects.Project prj = null;
-			foreach (var curPrj in IdeApp.Workspace.GetAllProjects ()) {
-				if (GetProjectId (curPrj) == documentId.ProjectId) {
-					prj = curPrj;
-					break;
-				}
-			}
-			IdeApp.Workbench.OpenDocument (new MonoDevelop.Ide.Gui.FileOpenInformation (
-				DetermineFilePath(document.Id, document.Name, document.FilePath, document.Folders),
-				prj,
-				activate
-			)); 
 		}
 
 		List<MonoDevelopSourceTextContainer> openDocuments = new List<MonoDevelopSourceTextContainer>();
@@ -769,15 +755,15 @@ namespace MonoDevelop.Ide.TypeSystem
 		protected override void ApplyDocumentAdded (DocumentInfo info, SourceText text)
 		{
 			var id = info.Id;
-			var path = DetermineFilePath (info.Id, info.Name, info.FilePath, info.Folders, true);
 			MonoDevelop.Projects.Project mdProject = null;
 
 			if (id.ProjectId != null) {
 				var project = CurrentSolution.GetProject (id.ProjectId);
 				mdProject = GetMonoProject (project);
 				if (mdProject == null)
-					LoggingService.LogWarning ("Couldn't find project for newly generated file {0} (Project {1}).", path, info.Id.ProjectId);
+					LoggingService.LogWarning ("Couldn't find project for newly generated file {0} (Project {1}).", info.Name, info.Id.ProjectId);
 			}
+			var path = DetermineFilePath (info.Id, info.Name, info.FilePath, info.Folders, mdProject?.FileName.ParentDirectory, true);
 
 			string formattedText;
 			var formatter = CodeFormatterService.GetFormatter (DesktopService.GetMimeTypeForUri (path)); 
@@ -803,7 +789,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		string DetermineFilePath (DocumentId id, string name, string filePath, IReadOnlyList<string> docFolders, bool createDirectory = false)
+		string DetermineFilePath (DocumentId id, string name, string filePath, IReadOnlyList<string> docFolders, string defaultFolder, bool createDirectory = false)
 		{
 			var path = filePath;
 
@@ -827,7 +813,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					} catch (Exception e) {
 						LoggingService.LogError ("Error while creating directory for a new file : " + baseDirectory, e);
 					}
-                    path = Path.Combine (baseDirectory, name);
+					path = Path.Combine (baseDirectory, name);
+				} else {
+					path = Path.Combine (defaultFolder, name);
 				}
 			}
 			return path;
@@ -866,8 +854,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public async Task AddProject (MonoDevelop.Projects.Project project)
 		{
-			var info = await LoadProject (project, default(CancellationToken)).ConfigureAwait (false);
-			OnProjectAdded (info); 
+			await LoadProject (project, default(CancellationToken)).ConfigureAwait (false);
 		}
 
 		public void RemoveProject (MonoDevelop.Projects.Project project)
@@ -877,7 +864,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var docId in GetOpenDocumentIds (id).ToList ()) {
 					ClearOpenDocument (docId);
 				}
-				OnProjectRemoved (id);
 				ProjectId val;
 				projectIdMap.TryRemove (project, out val);
 				ProjectData val2;

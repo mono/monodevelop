@@ -124,6 +124,8 @@ namespace MonoDevelop.CSharp
 
 			static void SearchAsync (ConcurrentDictionary<Microsoft.CodeAnalysis.DocumentId, List<DeclaredSymbolInfo>> result, Microsoft.CodeAnalysis.Project project, CancellationToken cancellationToken)
 			{
+				if (project == null)
+					throw new ArgumentNullException (nameof (project));
 				Parallel.ForEach (project.Documents, async delegate (Microsoft.CodeAnalysis.Document document) {
 					try {
 						cancellationToken.ThrowIfCancellationRequested ();
@@ -172,33 +174,39 @@ namespace MonoDevelop.CSharp
 				var currentSolution = ws.CurrentSolution;
 				if (currentSolution == null)
 					return;
-				switch (e.Kind) {
-				case WorkspaceChangeKind.ProjectAdded:
-					SearchAsync (documentInfos, currentSolution.GetProject (e.ProjectId), default (CancellationToken));
-					break;
-				case WorkspaceChangeKind.ProjectRemoved:
-					var project = currentSolution.GetProject (e.ProjectId);
-					if (project != null) {
-						foreach (var docId in project.DocumentIds)
-							RemoveDocument (documentInfos, docId);
+				try {
+					switch (e.Kind) {
+					case WorkspaceChangeKind.ProjectAdded:
+						var project1 = currentSolution.GetProject (e.ProjectId);
+						if (project1 != null)
+							SearchAsync (documentInfos, project1, default (CancellationToken));
+						break;
+					case WorkspaceChangeKind.ProjectRemoved:
+						var project = currentSolution.GetProject (e.ProjectId);
+						if (project != null) {
+							foreach (var docId in project.DocumentIds)
+								RemoveDocument (documentInfos, docId);
+						}
+						break;
+					case WorkspaceChangeKind.DocumentAdded:
+						var document = currentSolution.GetDocument (e.DocumentId);
+						if (document != null)
+							await UpdateDocument (documentInfos, document, default (CancellationToken));
+						break;
+					case WorkspaceChangeKind.DocumentRemoved:
+						RemoveDocument (documentInfos, e.DocumentId);
+						break;
+					case WorkspaceChangeKind.DocumentChanged:
+						var doc = currentSolution.GetDocument (e.DocumentId);
+						if (doc != null) {
+							Task.Run (async delegate {
+								await UpdateDocument (documentInfos, doc, default (CancellationToken));
+							});
+						}
+						break;
 					}
-					break;
-				case WorkspaceChangeKind.DocumentAdded:
-					var document = currentSolution.GetDocument (e.DocumentId);
-					if (document != null)
-						await UpdateDocument (documentInfos, document, default (CancellationToken));
-					break;
-				case WorkspaceChangeKind.DocumentRemoved:
-					RemoveDocument (documentInfos, e.DocumentId);
-					break;
-				case WorkspaceChangeKind.DocumentChanged:
-					var doc = currentSolution.GetDocument (e.DocumentId);
-					if (doc != null) {
-						Task.Run (async delegate {
-							await UpdateDocument (documentInfos, doc, default (CancellationToken));
-						});
-					}
-					break;
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error while updating navigation symbol cache.", ex);
 				}
 			}
 		}
@@ -247,10 +255,7 @@ namespace MonoDevelop.CSharp
 				try {
 					var newResult = new WorkerResult ();
 					newResult.pattern = searchPattern.Pattern;
-					newResult.IncludeFiles = true;
 					newResult.Tag = searchPattern.Tag;
-					newResult.IncludeTypes = searchPattern.Tag == null || typeTags.Contains (searchPattern.Tag);
-					newResult.IncludeMembers = searchPattern.Tag == null || memberTags.Contains (searchPattern.Tag);
 					List<DeclaredSymbolInfo> allTypes;
 					if (SymbolInfoTask == null)
 						SymbolInfoTask = Task.FromResult (GetSymbolInfos (token));
@@ -282,49 +287,52 @@ namespace MonoDevelop.CSharp
 				return;
 			uint x = 0;
 			// Search Types
-			if (newResult.IncludeTypes && (newResult.Tag == null || typeTags.Any (t => t == newResult.Tag))) {
-				newResult.filteredSymbols = new List<DeclaredSymbolInfo> ();
-				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern, StringComparison.Ordinal) && lastResult.filteredSymbols != null;
-				var allTypes = startsWithLastFilter ? lastResult.filteredSymbols : completeTypeList;
-				foreach (var type in allTypes) {
-					if (unchecked(x++) % 100 == 0 && token.IsCancellationRequested) {
-						newResult.filteredSymbols = null;
-						return;
-					}
+			newResult.filteredSymbols = new List<DeclaredSymbolInfo> ();
+			bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern, StringComparison.Ordinal) && lastResult.filteredSymbols != null;
+			var allTypes = startsWithLastFilter ? lastResult.filteredSymbols : completeTypeList;
+			foreach (var type in allTypes) {
+				if (unchecked(x++) % 100 == 0 && token.IsCancellationRequested) {
+					newResult.filteredSymbols = null;
+					return;
+				}
 
-					if (type.Kind == DeclaredSymbolInfoKind.Constructor ||
-					    type.Kind == DeclaredSymbolInfoKind.Module ||
-					    type.Kind == DeclaredSymbolInfoKind.Indexer)
+				if (type.Kind == DeclaredSymbolInfoKind.Constructor ||
+				    type.Kind == DeclaredSymbolInfoKind.Module ||
+				    type.Kind == DeclaredSymbolInfoKind.Indexer)
+					continue;
+				
+				if (newResult.Tag != null) {
+					if (newResult.Tag == "type" && type.Kind != DeclaredSymbolInfoKind.Class && type.Kind != DeclaredSymbolInfoKind.Struct && type.Kind != DeclaredSymbolInfoKind.Interface && type.Kind != DeclaredSymbolInfoKind.Enum && type.Kind != DeclaredSymbolInfoKind.Delegate)
+					    continue;
+					
+					if (newResult.Tag == "c" && type.Kind != DeclaredSymbolInfoKind.Class)
+						continue;
+				    if (newResult.Tag == "s" && type.Kind != DeclaredSymbolInfoKind.Struct)
+						continue;
+				    if (newResult.Tag == "i" && type.Kind != DeclaredSymbolInfoKind.Interface)
+						continue;
+				    if (newResult.Tag == "e" && type.Kind != DeclaredSymbolInfoKind.Enum)
+						continue;
+				    if (newResult.Tag == "d" && type.Kind != DeclaredSymbolInfoKind.Delegate)
+						continue;
+
+					if (newResult.Tag == "member" && type.Kind != DeclaredSymbolInfoKind.Method && type.Kind != DeclaredSymbolInfoKind.Property && type.Kind != DeclaredSymbolInfoKind.Field && type.Kind != DeclaredSymbolInfoKind.Event)
+					    continue;
+					if (newResult.Tag == "m" && type.Kind != DeclaredSymbolInfoKind.Method)
+						continue;
+					if (newResult.Tag == "p" && type.Kind != DeclaredSymbolInfoKind.Property)
+						continue;
+					if (newResult.Tag == "f" && type.Kind != DeclaredSymbolInfoKind.Field)
+						continue;
+					if (newResult.Tag == "evt" && type.Kind != DeclaredSymbolInfoKind.Event)
 						continue;
 					
-					if (newResult.Tag != null) {
-						if (newResult.Tag == "c" && type.Kind != DeclaredSymbolInfoKind.Class)
-							continue;
-						if (newResult.Tag == "s" && type.Kind != DeclaredSymbolInfoKind.Struct)
-							continue;
-						if (newResult.Tag == "i" && type.Kind != DeclaredSymbolInfoKind.Interface)
-							continue;
-						if (newResult.Tag == "e" && type.Kind != DeclaredSymbolInfoKind.Enum)
-							continue;
-						if (newResult.Tag == "d" && type.Kind != DeclaredSymbolInfoKind.Delegate)
-							continue;
-
-						if (newResult.Tag == "m" && type.Kind != DeclaredSymbolInfoKind.Method)
-							continue;
-						if (newResult.Tag == "p" && type.Kind != DeclaredSymbolInfoKind.Property)
-							continue;
-						if (newResult.Tag == "f" && type.Kind != DeclaredSymbolInfoKind.Field)
-							continue;
-						if (newResult.Tag == "evt" && type.Kind != DeclaredSymbolInfoKind.Event)
-							continue;
-						
-					}
-					SearchResult curResult = newResult.CheckType (type);
-					if (curResult != null) {
-						newResult.filteredSymbols.Add (type);
-						newResult.results.AddResult (curResult);
-						searchResultCallback.ReportResult (curResult);
-					}
+				}
+				SearchResult curResult = newResult.CheckType (type);
+				if (curResult != null) {
+					newResult.filteredSymbols.Add (type);
+					newResult.results.AddResult (curResult);
+					searchResultCallback.ReportResult (curResult);
 				}
 			}
 		}
@@ -360,7 +368,6 @@ namespace MonoDevelop.CSharp
 			public bool isGotoFilePattern;
 			public ResultsDataSource results;
 			public bool FullSearch;
-			public bool IncludeFiles, IncludeTypes, IncludeMembers;
 			public StringMatcher matcher;
 
 			public WorkerResult ()

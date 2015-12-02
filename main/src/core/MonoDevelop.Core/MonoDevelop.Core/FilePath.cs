@@ -121,7 +121,9 @@ namespace MonoDevelop.Core
 		/// </summary>
 		public FilePath CanonicalPath {
 			get {
-				if (string.IsNullOrEmpty (fileName))
+				if (fileName == null)
+					return FilePath.Null;
+				if (fileName.Length == 0)
 					return FilePath.Empty;
 				string fp = Path.GetFullPath (fileName);
 				if (fp.Length > 0) {
