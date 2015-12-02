@@ -462,9 +462,9 @@ namespace MonoDevelop.CodeActions
 		}
 #endif
 
-		static Gtk.Menu CreateGtkMenu (FixMenuDescriptor entrySet)
+		static Menu CreateGtkMenu (FixMenuDescriptor entrySet)
 		{
-			var menu = new Gtk.Menu ();
+			var menu = new Menu ();
 			foreach (var item in entrySet.Items) {
 				if (item == FixMenuEntry.Separator) {
 					menu.Add (new SeparatorMenuItem ());

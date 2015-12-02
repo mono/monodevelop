@@ -90,11 +90,10 @@ namespace MonoDevelop.Components
 			});
 		}
 
-		public static void ShowContextMenu (Control parentControl, Gdk.EventButton evt, NSMenu menu)
+		public static void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, NSMenu menu)
 		{
 			int x, y;
 
-			Gtk.Widget parent = parentControl;
 			parent.TranslateCoordinates (parent.Toplevel, (int)evt.X, (int)evt.Y, out x, out y);
 
 			ShowContextMenu (parent, x, y, menu);

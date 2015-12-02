@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Projects
 	partial class GtkNewProjectDialogBackend : INewProjectDialogBackend
 	{
 		INewProjectDialogController controller;
-		Gtk.Menu popupMenu;
+		Menu popupMenu;
 
 		public GtkNewProjectDialogBackend ()
 		{
@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Projects
 
 			if (templateTextRenderer.IsLanguageButtonPressed (args.Event)) {
 				if (popupMenu == null) {
-					popupMenu = new Gtk.Menu ();
+					popupMenu = new Menu ();
 					popupMenu.AttachToWidget (this, null);
 				}
 				ClearPopupMenuItems ();
@@ -122,7 +122,7 @@ namespace MonoDevelop.Ide.Projects
 				popupMenu.ModifyBg (StateType.Normal, GtkTemplateCellRenderer.LanguageButtonBackgroundColor);
 				popupMenu.ShowAll ();
 
-				MenuPositionFunc posFunc = (Gtk.Menu m, out int x, out int y, out bool pushIn) => {
+				MenuPositionFunc posFunc = (Menu m, out int x, out int y, out bool pushIn) => {
 					Gdk.Rectangle rect = templateTextRenderer.GetLanguageRect ();
 					Gdk.Rectangle screenRect = GtkUtil.ToScreenCoordinates (templatesTreeView, templatesTreeView.GdkWindow, rect);
 					x = screenRect.X;
@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
-		void AddLanguageMenuItems (Gtk.Menu menu, SolutionTemplate template)
+		void AddLanguageMenuItems (Menu menu, SolutionTemplate template)
 		{
 			foreach (string language in template.AvailableLanguages.OrderBy (item => item)) {
 				var menuItem = new MenuItem (language);

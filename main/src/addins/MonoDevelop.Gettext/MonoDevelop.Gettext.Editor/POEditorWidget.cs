@@ -357,12 +357,12 @@ namespace MonoDevelop.Gettext
 		}
 		#endregion
 		
-		public Gtk.Menu CreateOptionsMenu ()
+		public Menu CreateOptionsMenu ()
 		{
-			Gtk.Menu menu = new Gtk.Menu ();
+			Menu menu = new Menu ();
 			
 			MenuItem searchInMenu = new MenuItem (GettextCatalog.GetString ("_Search in"));
-			Gtk.Menu sub = new Gtk.Menu ();
+			Menu sub = new Menu ();
 			searchInMenu.Submenu = sub;
 			Gtk.RadioMenuItem  original = null, translated = null, both = null;
 			GLib.SList group = new GLib.SList (IntPtr.Zero);

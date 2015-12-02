@@ -119,7 +119,7 @@ namespace MonoDevelop.Components
 		
 		public void ShowQuickInsertMenu (object sender, EventArgs args)
 		{
-			Gtk.Menu menu = manager.CreateMenu (entrySet);
+			var menu = manager.CreateMenu (entrySet);
 			
 			//FIXME: taken from MonoDevelop.Components.MenuButton. should share this.
 			

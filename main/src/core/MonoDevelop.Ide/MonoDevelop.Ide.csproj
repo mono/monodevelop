@@ -3507,7 +3507,6 @@
     <Compile Include="MonoDevelop.Components\ButtonEvent.cs" />
     <Compile Include="MonoDevelop.Components\Window.cs" />
     <Compile Include="MonoDevelop.Components\Dialog.cs" />
-    <Compile Include="MonoDevelop.Components\Menu.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

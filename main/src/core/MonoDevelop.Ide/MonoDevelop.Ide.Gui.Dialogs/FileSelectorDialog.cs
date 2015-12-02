@@ -120,7 +120,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				for (uint n=0; n < TextEncoding.ConversionEncodings.Length; n++) {
 					if (TextEncoding.ConversionEncodings [n].CodePage == value) {
 						encodingMenu.SetHistory (n + (uint)firstEncIndex);
-						Gtk.Menu menu = (Gtk.Menu)encodingMenu.Menu;
+						Menu menu = (Menu)encodingMenu.Menu;
 						RadioMenuItem rm = (RadioMenuItem) menu.Children [n + firstEncIndex];
 						rm.Active = true;
 						return;
@@ -149,7 +149,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			selectOption = -1;
 			RadioMenuItem defaultActivated = null;
 			
-			Gtk.Menu menu = new Gtk.Menu ();
+			Gtk.Menu menu = new Menu ();
 			
 			// Don't show the auto-detection option when saving
 			

@@ -71,7 +71,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		int infoCount;
 		bool initialLogShow = true;
 
-		Gtk.Menu menu;
+		Menu menu;
 		Dictionary<ToggleAction, int> columnsActions = new Dictionary<ToggleAction, int> ();
 		Clipboard clipboard;
 
@@ -413,7 +413,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				+ "</popup></ui>";
 
 			uiManager.AddUiFromString (uiStr);
-			menu = (Gtk.Menu)uiManager.GetWidget ("/popup");
+			menu = (Menu)uiManager.GetWidget ("/popup");
 			menu.ShowAll ();
 
 			menu.Shown += delegate {

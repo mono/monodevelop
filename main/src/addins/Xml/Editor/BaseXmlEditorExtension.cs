@@ -717,7 +717,7 @@ namespace MonoDevelop.Xml.Editor
 			} else {
 				if (ownerProjects.Count > 1)
 					index--;
-				var menu = new Gtk.Menu ();
+				var menu = new Menu ();
 				var mi = new MenuItem (GettextCatalog.GetString ("Select"));
 				mi.Activated += delegate {
 					SelectPath (index);
