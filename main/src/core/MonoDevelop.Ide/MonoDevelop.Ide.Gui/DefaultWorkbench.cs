@@ -1030,6 +1030,12 @@ namespace MonoDevelop.Ide.Gui
 				return dock.CurrentLayout.EndsWith (fullViewModeTag);
 			}
 		}
+
+		protected override void OnStyleSet (Gtk.Style previous_style)
+		{
+			base.OnStyleSet (previous_style);
+			IdeTheme.UpdateStyles ();
+		}
 		
 		protected override bool OnConfigureEvent (Gdk.EventConfigure evnt)
 		{

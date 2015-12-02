@@ -144,7 +144,7 @@ namespace MonoDevelop.Ide
 		public readonly ConfigurationProperty<int> CompletionListRows = ConfigurationProperty.Create ("CompletionListRows", 10);
 
 		public Skin UserInterfaceSkin {
-			get { return UserInterfaceTheme == "Dark" ? Skin.Dark : Skin.Light; }
+			get { return MonoDevelop.Components.IdeTheme.UserInterfaceSkin; }
 		}
 
 		public event EventHandler<PropertyChangedEventArgs> UserInterfaceSkinChanged {

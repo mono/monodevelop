@@ -24,8 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Ide;
 using System.Collections.Generic;
+using System.IO;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 
 #if MAC
 using AppKit;
@@ -37,12 +40,76 @@ namespace MonoDevelop.Components
 {
 	public static class IdeTheme
 	{
+		public static Skin UserInterfaceSkin { get; private set; }
+
 		static IdeTheme ()
 		{
-			IdeApp.Preferences.UserInterfaceSkinChanged += Preferences_UserInterfaceSkinChanged;
+			IdeApp.Preferences.UserInterfaceTheme.Changed += Preferences_UserInterfaceThemeChanged;
+		}
+
+		internal static void SetupXwtTheme ()
+		{
+			Xwt.Drawing.Context.RegisterStyles ("dark", "sel", "disabled");
 			Xwt.Toolkit.CurrentEngine.RegisterBackend <Xwt.Backends.IWindowBackend, ThemedGtkWindowBackend>();
 			Xwt.Toolkit.CurrentEngine.RegisterBackend <Xwt.Backends.IDialogBackend, ThemedGtkDialogBackend>();
 		}
+
+		internal static void UpdateGtkTheme ()
+		{
+			if (!Platform.IsLinux)
+				UserInterfaceSkin = IdeApp.Preferences.UserInterfaceTheme == "Dark" ? Skin.Dark : Skin.Light;
+			
+			// Use the bundled gtkrc only if the Xamarin theme is installed
+			if (File.Exists (Path.Combine (Gtk.Rc.ModuleDir, "libxamarin.so")) || File.Exists (Path.Combine (Gtk.Rc.ModuleDir, "libxamarin.dll"))) {
+
+				var gtkrc = "gtkrc";
+				if (Platform.IsWindows) {
+					gtkrc += ".win32";
+					if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark)
+						gtkrc += "-dark";
+				} else if (Platform.IsMac) {
+					gtkrc += ".mac";
+					if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark)
+						gtkrc += "-dark";
+				}
+
+				var gtkrcf = PropertyService.EntryAssemblyPath.Combine (gtkrc);
+				LoggingService.LogInfo ("GTK: Using gtkrc from {0}", gtkrcf);
+
+				if (Platform.IsWindows) {
+					Environment.SetEnvironmentVariable ("GTK2_RC_FILES", gtkrcf);
+				} else if (Platform.IsMac) {
+					// Generate a dummy rc file and use that to include the real rc. This allows changing the rc
+					// on the fly. All we have to do is rewrite the dummy rc changing the include and call ReparseAll
+					var rcFile = UserProfile.Current.ConfigDir.Combine ("gtkrc");
+					if (!Directory.Exists (UserProfile.Current.ConfigDir))
+						Directory.CreateDirectory (UserProfile.Current.ConfigDir);
+					File.WriteAllText (rcFile, "include \"" + gtkrcf + "\"");
+					Environment.SetEnvironmentVariable ("GTK2_RC_FILES", rcFile);
+				}
+				Gtk.Rc.ReparseAll ();
+			}
+
+			// let Gtk realize the new theme
+			// Style is being updated by DefaultWorkbench.OnStyleSet ()
+			// This ensures that the theme and all styles have been loaded when
+			// the Styles.Changed event is raised.
+			//GLib.Timeout.Add (50, delegate { UpdateStyles(); return false; });
+		}
+
+		internal static void UpdateStyles ()
+		{
+			if (UserInterfaceSkin == Skin.Dark)
+				Xwt.Drawing.Context.SetGlobalStyle ("dark");
+			else
+				Xwt.Drawing.Context.ClearGlobalStyle ("dark");
+
+			Styles.LoadStyle ();
+			#if MAC
+			UpdateMacWindows ();
+			#endif
+		}
+
 #if MAC
 		static Dictionary<NSWindow, NSObject> nsWindows = new Dictionary<NSWindow, NSObject> ();
 
@@ -101,11 +168,9 @@ namespace MonoDevelop.Components
 		}
 #endif
 
-		static void Preferences_UserInterfaceSkinChanged (object sender, Core.PropertyChangedEventArgs e)
+		static void Preferences_UserInterfaceThemeChanged (object sender, EventArgs e)
 		{
-			#if MAC
-			UpdateMacWindows ();
-			#endif
+			UpdateGtkTheme ();
 		}
 
 		public static void ApplyTheme (this Gtk.Window window)
