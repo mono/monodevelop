@@ -325,12 +325,6 @@ module internal Highlight =
     let asUnderline = sprintf "<u>%s</u>"
 
 
-type TooltipResults =
-| ParseAndCheckNotFound
-| NoToolTipText
-| NoToolTipData
-| Tooltip of MonoDevelop.Ide.Editor.TooltipItem
-
 [<AutoOpen>]
 module PrintParameter =
     let print sb = Printf.bprintf sb "%s"
@@ -759,69 +753,69 @@ module SymbolTooltips =
         | Entity fse ->
             try
                 let signature = getEntitySignature symbol.DisplayContext fse
-                ToolTip(signature, getSummaryFromSymbol fse, footerForType symbol)
+                Some(signature, getSummaryFromSymbol fse, footerForType symbol)
             with exn ->
                 MonoDevelop.Core.LoggingService.LogWarning (sprintf "getTooltipFromSymbolUse: Error occured processing %A" fse)
-                ToolTips.EmptyTip
+                None
 
         | Constructor func ->
             match func.EnclosingEntitySafe with
             | Some ent when ent.IsValueType || ent.IsEnum ->
                   //ValueTypes
                   let signature = getFuncSignature symbol.DisplayContext func
-                  ToolTip(signature, getSummaryFromSymbol func, footerForType symbol)
+                  Some(signature, getSummaryFromSymbol func, footerForType symbol)
             | _ ->
                   //ReferenceType constructor
                   let signature = getFuncSignature symbol.DisplayContext func
-                  ToolTip(signature, getSummaryFromSymbol func, footerForType symbol)
+                  Some(signature, getSummaryFromSymbol func, footerForType symbol)
 
         | Operator func ->
             let signature = getFuncSignature symbol.DisplayContext func
-            ToolTip(signature, getSummaryFromSymbol func, footerForType symbol)
+            Some(signature, getSummaryFromSymbol func, footerForType symbol)
 
         | Pattern func ->
             //Active pattern or operator
             let signature = getFuncSignature symbol.DisplayContext func
-            ToolTip(signature, getSummaryFromSymbol func, footerForType symbol)
+            Some(signature, getSummaryFromSymbol func, footerForType symbol)
 
         | ClosureOrNestedFunction func ->
             //represents a closure or nested function
             let signature = getFuncSignature symbol.DisplayContext func
             let summary = getSummaryFromSymbol func
-            ToolTip(signature, summary, footerForType symbol)
+            Some(signature, summary, footerForType symbol)
 
         | Function func ->
             let signature = getFuncSignature symbol.DisplayContext func
-            ToolTip(signature, getSummaryFromSymbol func, footerForType symbol) 
+            Some(signature, getSummaryFromSymbol func, footerForType symbol) 
 
         | Val func ->
             //val name : Type
             let signature = getValSignature symbol.DisplayContext func
-            ToolTip(signature, getSummaryFromSymbol func, footerForType symbol)
+            Some(signature, getSummaryFromSymbol func, footerForType symbol)
 
         | Property prop ->
             let signature = getFuncSignature symbol.DisplayContext prop
-            ToolTip(signature, getSummaryFromSymbol prop, footerForType symbol)
+            Some(signature, getSummaryFromSymbol prop, footerForType symbol)
 
         | Field fsf ->
             let signature = getFieldSignature symbol.DisplayContext fsf
-            ToolTip(signature, getSummaryFromSymbol fsf, footerForType symbol)
+            Some(signature, getSummaryFromSymbol fsf, footerForType symbol)
 
         | UnionCase uc ->
             let signature = getUnioncaseSignature symbol.DisplayContext uc
-            ToolTip(signature, getSummaryFromSymbol uc, footerForType symbol)
+            Some(signature, getSummaryFromSymbol uc, footerForType symbol)
 
         | ActivePatternCase apc ->
             let signature = getAPCaseSignature symbol.DisplayContext apc
-            ToolTip(signature, getSummaryFromSymbol apc, footerForType symbol)
+            Some(signature, getSummaryFromSymbol apc, footerForType symbol)
 
         | ActivePattern ap ->
             let signature = getFuncSignature symbol.DisplayContext ap
-            ToolTip(signature, getSummaryFromSymbol ap, footerForType symbol)
+            Some(signature, getSummaryFromSymbol ap, footerForType symbol)
          
         | other ->
             MonoDevelop.Core.LoggingService.LogWarning (sprintf "F# Tooltip not rendered for: %A" other.Symbol)
-            ToolTips.EmptyTip
+            None
 
     let getTooltipFromParameter (p:FSharpParameter) context =
       let typ = asUserType (escapeText(p.Type.Format(context)))
@@ -837,7 +831,7 @@ module SymbolTooltips =
           try
             let tip = getTooltipFromSymbolUse symbol
             match tip  with
-            | ToolTips.ToolTip (signature, xmldoc, footer) ->
+            | Some (signature, xmldoc, footer) ->
                 let toolTipInfo = new TooltipInformation(SignatureMarkup = signature, FooterMarkup=footer)
                 let result = 
                   match xmldoc with
