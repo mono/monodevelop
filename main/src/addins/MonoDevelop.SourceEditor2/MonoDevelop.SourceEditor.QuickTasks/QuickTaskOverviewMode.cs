@@ -938,6 +938,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 						} else {
 							if (!Debugger.DebuggingService.IsDebugging) {
 								mode.DrawQuickTasks (cr, allUsages, allTasks, ref nextStep, ref severity, lineCache);
+							} else {
+								nextStep = true;
 							}
 						}
 
@@ -946,6 +948,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 						} else {
 							if (!Debugger.DebuggingService.IsDebugging) {
 								mode.DrawQuickTasks (cr, allUsages, allTasks, ref nextStep, ref severity, lineCache);
+							} else {
+								nextStep = true;
 							}
 						}
 					}
