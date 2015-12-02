@@ -394,6 +394,18 @@
     <EmbeddedResource Include="icons\package-source-32~dark%402x.png">
       <LogicalName>package-source-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-source-32~sel.png">
+      <LogicalName>package-source-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-source-32~sel%402x.png">
+      <LogicalName>package-source-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-source-32~dark~sel.png">
+      <LogicalName>package-source-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-source-32~dark~sel%402x.png">
+      <LogicalName>package-source-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-package-16.png">
       <LogicalName>prefs-package-16.png</LogicalName>
     </EmbeddedResource>
