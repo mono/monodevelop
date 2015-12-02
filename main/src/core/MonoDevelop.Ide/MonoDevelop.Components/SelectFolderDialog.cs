@@ -39,7 +39,7 @@ namespace MonoDevelop.Components
 	{
 		public SelectFolderDialog ()
 		{
-			Action = FileChooserAction.SelectFolder;
+			Action = FileChooserAction.SelectFolder | FileChooserAction.CreateFolder;
 		}
 		
 		public SelectFolderDialog (string title): this (title, FileChooserAction.SelectFolder)

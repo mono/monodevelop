@@ -27,6 +27,7 @@
 using System.Web.Services.Discovery;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
 using MonoDevelop.Projects;
 using System.Web.Services.Description;
 using System.IO;
@@ -135,6 +136,7 @@ namespace MonoDevelop.WebReferences.WS
 
 			// Setup the importer and import the service description into the code unit
 			ServiceDescriptionImporter importer = Library.ReadServiceDescriptionImporter (protocol);
+			importer.CodeGenerationOptions = CodeGenerationOptions.GenerateNewAsync;
 			importer.Import (codeNamespace, codeUnit);
 
 			// Add the new Constructor with Url as a paremeter
