@@ -43,7 +43,7 @@ type FSharpResolverProvider() =
 
         let results =
             asyncMaybe {
-                let! tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout (doc.Project.FileName.ToString(), filename, 0, docText, AllowStaleResults.MatchingSource, obsoleteCheck=isObsolete)
+                let! tyRes = languageService.GetTypedParseResultWithTimeout (doc.Project.FileName.ToString(), filename, 0, docText, AllowStaleResults.MatchingSource, obsoleteCheck=isObsolete)
                 LoggingService.LogDebug "ResolverProvider: Getting declaration location"
                 // Get the declaration location from the language service
                 let line, col, lineStr = doc.Editor.GetLineInfoFromOffset offset

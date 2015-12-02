@@ -22,8 +22,6 @@ module Refactoring =
     | External of string
     | Unknown
 
-    let langServ = MDLanguageService.Instance
-
     let private performChanges (symbol:FSharpSymbolUse) (locations:array<string * Microsoft.CodeAnalysis.Text.TextSpan> ) =
         Func<_,_>(fun (renameProperties:Rename.RenameRefactoring.RenameProperties) -> 
         let results =
@@ -126,7 +124,7 @@ module Refactoring =
         let symbols = 
             let activeDocFileName = editor.FileName.ToString ()
             Async.RunSynchronously
-                (langServ.GetUsesOfSymbolInProject (ctx.Project.FileName.ToString(), activeDocFileName, editor.Text, symbol.Symbol),
+                (languageService.GetUsesOfSymbolInProject (ctx.Project.FileName.ToString(), activeDocFileName, editor.Text, symbol.Symbol),
                  ServiceSettings.maximumTimeout)
 
         let locations =
@@ -237,7 +235,7 @@ module Refactoring =
         let dependentProjects = getDependentProjects ctx.Project symbolUse
 
         let! symbolrefs =
-            langServ.GetUsesOfSymbolInProject(ctx.Project.FileName.ToString(), editor.FileName.ToString(), editor.Text, symbolUse.Symbol, dependentProjects)
+            languageService.GetUsesOfSymbolInProject(ctx.Project.FileName.ToString(), editor.FileName.ToString(), editor.Text, symbolUse.Symbol, dependentProjects)
 
         let distinctRefs = 
             symbolrefs
@@ -257,7 +255,7 @@ module Refactoring =
         let dependentProjects = getDependentProjects ctx.Project symbolUse
 
         let! symbolrefs =
-            langServ.GetDerivedSymbolsInProject(ctx.Project.FileName.ToString(), editor.FileName.ToString(), editor.Text, symbolUse.Symbol, dependentProjects)
+            languageService.GetDerivedSymbolsInProject(ctx.Project.FileName.ToString(), editor.FileName.ToString(), editor.Text, symbolUse.Symbol, dependentProjects)
 
         let distinctRefs = 
             symbolrefs
@@ -275,7 +273,7 @@ module Refactoring =
       let monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
       let findAsync = async { 
         //let dependentProjects = getDependentProjects ctx.Project symbolUse
-        let overrides = langServ.GetOverridesForSymbol(symbolUse.Symbol)
+        let overrides = languageService.GetOverridesForSymbol(symbolUse.Symbol)
 
         let distinctRefs = 
             match overrides with
@@ -303,7 +301,7 @@ module Refactoring =
         let dependentProjects = getDependentProjects ctx.Project symbolUse
 
         let! symbolrefs =
-            langServ.GetExtensionMethods(ctx.Project.FileName.ToString(), editor.FileName.ToString(), editor.Text, symbolUse.Symbol, dependentProjects)
+            languageService.GetExtensionMethods(ctx.Project.FileName.ToString(), editor.FileName.ToString(), editor.Text, symbolUse.Symbol, dependentProjects)
 
         let distinctRefs = 
             symbolrefs

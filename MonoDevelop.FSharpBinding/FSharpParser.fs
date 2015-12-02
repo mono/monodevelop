@@ -23,9 +23,6 @@ type FSharpParsedDocument(fileName) =
 type FSharpParser() = 
     inherit TypeSystemParser()
 
-    let languageService = MDLanguageService.Instance 
-
-    
     /// Format errors for the given line (if there are multiple, we collapse them into a single one)
     let formatError (error : FSharpErrorInfo) = 
         // Single error for this line
