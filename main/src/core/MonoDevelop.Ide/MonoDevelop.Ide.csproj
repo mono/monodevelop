@@ -3032,18 +3032,6 @@
     <EmbeddedResource Include="icons\add-16~dark%402x.png">
       <LogicalName>add-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\warning-8.png">
-      <LogicalName>warning-8.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\warning-8%402x.png">
-      <LogicalName>warning-8@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\warning-8~dark.png">
-      <LogicalName>warning-8~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\warning-8~dark%402x.png">
-      <LogicalName>warning-8~dark@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\warning-16.png">
       <LogicalName>warning-16.png</LogicalName>
     </EmbeddedResource>
