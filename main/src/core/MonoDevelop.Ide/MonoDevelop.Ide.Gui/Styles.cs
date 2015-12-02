@@ -150,7 +150,15 @@ namespace MonoDevelop.Ide.Gui
 		public static int ProgressBarInnerPadding { get { return (int)(4 * PixelScale); } }
 		public static int ProgressBarOuterPadding { get { return (int)(4 * PixelScale); } }
 
-		static readonly double PixelScale = GtkWorkarounds.GetPixelScale ();
+		static double? pixelScale = null;
+
+		static double PixelScale {
+			get {
+				if (!pixelScale.HasValue)
+					pixelScale = GtkWorkarounds.GetPixelScale ();
+				return (double)pixelScale;
+			}
+		}
 
 		// Toolbar
 
