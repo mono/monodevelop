@@ -45,7 +45,7 @@ type TestTooltipProvider() =
 
         let signature =
             match tooltip with
-            | ToolTip (tip, _, _) -> tip
+            | Some(tip, _, _) -> tip
             | _ ->  ""
 
         signature |> stripHtml |> htmlDecode
