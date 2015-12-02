@@ -7,7 +7,7 @@ Target "Build" (fun _ ->
 )
 
 let test() =
-  Shell.Exec ("mono", "../../build/bin/mdtool.exe run-md-tests ../../external/fsharpbinding/MonoDevelop.FSharp.Tests/bin/Debug/MonoDevelop.FSharp.Tests.dll -labels") |> ignore
+  Shell.Exec ("mono", "../../build/bin/mdtool.exe run-md-tests ../../external/fsharpbinding/MonoDevelop.FSharp.Tests/bin/Release/MonoDevelop.FSharp.Tests.dll -labels") |> ignore
 
 Target "BuildAndTest" (fun _ ->
   test()

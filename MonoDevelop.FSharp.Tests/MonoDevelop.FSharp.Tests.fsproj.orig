@@ -107,8 +107,7 @@
       <HintPath>INSERT_FSPROJ_MDROOT\AddIns\NUnit\MonoDevelop.NUnit.dll</HintPath>
     </Reference>
     <Reference Include="GuiUnit">
-      <Private>False</Private>
-      <HintPath>..\packages\NUnit\lib\nunit.framework.dll</HintPath>
+      <HintPath>..\..\guiunit\bin\net_4_5\GuiUnit.exe</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
       <HintPath>INSERT_FSPROJ_MDROOT\bin\Microsoft.CodeAnalysis.dll</HintPath>

@@ -77,15 +77,15 @@ module AssemblyLocation =
         let assembly = Assembly.ReflectionOnlyLoad fqn
         assembly.Location
 
-    let (|Fqn|File|) (input:string) = 
+    let (|Fqn|File|) (input:string) =
         if input.Contains "," then Fqn(input)
         else File(input)
 
-type Util = 
+type Util =
     static member TestsRootDir =
         let rootDir = Path.GetDirectoryName (typeof<Util>.Assembly.Location) ++ ".." ++ ".." ++ "tests"
         Path.GetFullPath (rootDir)
-        
+
 type TestBase() =
     static let firstRun = ref true
     do MonoDevelop.FSharp.MDLanguageService.DisableVirtualFileSystem()
@@ -99,9 +99,9 @@ type TestBase() =
                 firstRun := false
                 x.InternalSetup (rootDir)
             with
-            | exn -> 
+            | exn ->
                 // if we encounter an error, try to re create the configuration directory
-                try 
+                try
                     if  Directory.Exists (rootDir) then
                         Directory.Delete (rootDir, true)
                         x.InternalSetup (rootDir)
@@ -109,11 +109,6 @@ type TestBase() =
 
     member x.InternalSetup (rootDir) =
 
-        // Set a synchronization context for the main gtk thread
-        try
-          SynchronizationContext.SetSynchronizationContext (new GtkSynchronizationContext ())
-          Runtime.MainSynchronizationContext <- SynchronizationContext.Current
-        with _ -> ()
         Environment.SetEnvironmentVariable ("MONO_ADDINS_REGISTRY", rootDir)
         Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", rootDir)
         Environment.SetEnvironmentVariable ("MONODEVELOP_CONSOLE_LOG_LEVEL", "Debug")
