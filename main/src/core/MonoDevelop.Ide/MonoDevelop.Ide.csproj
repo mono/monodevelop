@@ -2231,6 +2231,18 @@
     <EmbeddedResource Include="icons\information-16~dark%402x.png">
       <LogicalName>information-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-16~sel.png">
+      <LogicalName>information-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-16~sel%402x.png">
+      <LogicalName>information-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-16~dark~sel.png">
+      <LogicalName>information-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-16~dark~sel%402x.png">
+      <LogicalName>information-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\information-24.png">
       <LogicalName>information-24.png</LogicalName>
     </EmbeddedResource>
@@ -2242,6 +2254,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\information-24~dark%402x.png">
       <LogicalName>information-24~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-24~sel.png">
+      <LogicalName>information-24~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-24~sel%402x.png">
+      <LogicalName>information-24~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-24~dark~sel.png">
+      <LogicalName>information-24~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-24~dark~sel%402x.png">
+      <LogicalName>information-24~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\information-32.png">
       <LogicalName>information-32.png</LogicalName>
@@ -2255,6 +2279,18 @@
     <EmbeddedResource Include="icons\information-32~dark%402x.png">
       <LogicalName>information-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-32~sel.png">
+      <LogicalName>information-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-32~sel%402x.png">
+      <LogicalName>information-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-32~dark~sel.png">
+      <LogicalName>information-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-32~dark~sel%402x.png">
+      <LogicalName>information-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\information-48.png">
       <LogicalName>information-48.png</LogicalName>
     </EmbeddedResource>
@@ -2266,6 +2302,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\information-48~dark%402x.png">
       <LogicalName>information-48~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-48~sel.png">
+      <LogicalName>information-48~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-48~sel%402x.png">
+      <LogicalName>information-48~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-48~dark~sel.png">
+      <LogicalName>information-48~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-48~dark~sel%402x.png">
+      <LogicalName>information-48~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\question-16.png">
       <LogicalName>question-16.png</LogicalName>
@@ -2279,11 +2327,41 @@
     <EmbeddedResource Include="icons\question-16~dark%402x.png">
       <LogicalName>question-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-16~sel.png">
+      <LogicalName>question-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-16~sel%402x.png">
+      <LogicalName>question-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-16~dark~sel.png">
+      <LogicalName>question-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-16~dark~sel%402x.png">
+      <LogicalName>question-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\question-24.png">
       <LogicalName>question-24.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\question-24%402x.png">
       <LogicalName>question-24@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-24~dark.png">
+      <LogicalName>question-24~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-24~dark%402x.png">
+      <LogicalName>question-24~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-24~sel.png">
+      <LogicalName>question-24~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-24~sel%402x.png">
+      <LogicalName>question-24~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-24~dark~sel.png">
+      <LogicalName>question-24~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-24~dark~sel%402x.png">
+      <LogicalName>question-24~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\question-32.png">
       <LogicalName>question-32.png</LogicalName>
@@ -2297,6 +2375,18 @@
     <EmbeddedResource Include="icons\question-32~dark%402x.png">
       <LogicalName>question-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-32~sel.png">
+      <LogicalName>question-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-32~sel%402x.png">
+      <LogicalName>question-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-32~dark~sel.png">
+      <LogicalName>question-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-32~dark~sel%402x.png">
+      <LogicalName>question-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\question-48.png">
       <LogicalName>question-48.png</LogicalName>
     </EmbeddedResource>
@@ -2308,6 +2398,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\question-48~dark%402x.png">
       <LogicalName>question-48~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-48~sel.png">
+      <LogicalName>question-48~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-48~sel%402x.png">
+      <LogicalName>question-48~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-48~dark~sel.png">
+      <LogicalName>question-48~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-48~dark~sel%402x.png">
+      <LogicalName>question-48~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\command-16.png">
       <LogicalName>command-16.png</LogicalName>
@@ -3002,6 +3104,18 @@
     <EmbeddedResource Include="icons\error-16~dark%402x.png">
       <LogicalName>error-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-16~sel.png">
+      <LogicalName>error-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-16~sel%402x.png">
+      <LogicalName>error-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-16~dark~sel.png">
+      <LogicalName>error-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-16~dark~sel%402x.png">
+      <LogicalName>error-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\error-24.png">
       <LogicalName>error-24.png</LogicalName>
     </EmbeddedResource>
@@ -3013,6 +3127,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\error-24~dark%402x.png">
       <LogicalName>error-24~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-24~sel.png">
+      <LogicalName>error-24~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-24~sel%402x.png">
+      <LogicalName>error-24~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-24~dark~sel.png">
+      <LogicalName>error-24~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-24~dark~sel%402x.png">
+      <LogicalName>error-24~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\error-32.png">
       <LogicalName>error-32.png</LogicalName>
@@ -3026,6 +3152,18 @@
     <EmbeddedResource Include="icons\error-32~dark%402x.png">
       <LogicalName>error-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-32~sel.png">
+      <LogicalName>error-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-32~sel%402x.png">
+      <LogicalName>error-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-32~dark~sel.png">
+      <LogicalName>error-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-32~dark~sel%402x.png">
+      <LogicalName>error-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\error-48.png">
       <LogicalName>error-48.png</LogicalName>
     </EmbeddedResource>
@@ -3037,6 +3175,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\error-48~dark%402x.png">
       <LogicalName>error-48~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-48~sel.png">
+      <LogicalName>error-48~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-48~sel%402x.png">
+      <LogicalName>error-48~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-48~dark~sel.png">
+      <LogicalName>error-48~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-48~dark~sel%402x.png">
+      <LogicalName>error-48~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\done-16.png">
       <LogicalName>done-16.png</LogicalName>
@@ -3050,6 +3200,18 @@
     <EmbeddedResource Include="icons\done-16~dark%402x.png">
       <LogicalName>done-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-16~sel.png">
+      <LogicalName>done-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-16~sel%402x.png">
+      <LogicalName>done-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-16~dark~sel.png">
+      <LogicalName>done-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-16~dark~sel%402x.png">
+      <LogicalName>done-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\done-24.png">
       <LogicalName>done-24.png</LogicalName>
     </EmbeddedResource>
@@ -3061,6 +3223,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\done-24~dark%402x.png">
       <LogicalName>done-24~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-24~sel.png">
+      <LogicalName>done-24~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-24~sel%402x.png">
+      <LogicalName>done-24~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-24~dark~sel.png">
+      <LogicalName>done-24~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-24~dark~sel%402x.png">
+      <LogicalName>done-24~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\done-32.png">
       <LogicalName>done-32.png</LogicalName>
@@ -3074,6 +3248,18 @@
     <EmbeddedResource Include="icons\done-32~dark%402x.png">
       <LogicalName>done-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-32~sel.png">
+      <LogicalName>done-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-32~sel%402x.png">
+      <LogicalName>done-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-32~dark~sel.png">
+      <LogicalName>done-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-32~dark~sel%402x.png">
+      <LogicalName>done-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\done-48.png">
       <LogicalName>done-48.png</LogicalName>
     </EmbeddedResource>
@@ -3085,6 +3271,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\done-48~dark%402x.png">
       <LogicalName>done-48~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-48~sel.png">
+      <LogicalName>done-48~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-48~sel%402x.png">
+      <LogicalName>done-48~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-48~dark~sel.png">
+      <LogicalName>done-48~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-48~dark~sel%402x.png">
+      <LogicalName>done-48~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\edit-16.png">
       <LogicalName>edit-16.png</LogicalName>
