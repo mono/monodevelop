@@ -230,6 +230,9 @@ namespace MonoDevelop.PackageManagement
 				image = defaultPackageImage;
 			}
 
+			if (Selected)
+				image = image.WithStyles ("sel");
+
 			if (PackageImageNeedsResizing (image)) {
 				Point imageLocation = GetPackageImageLocation (maxPackageImageSize, cellArea);
 				ctx.DrawImage (
