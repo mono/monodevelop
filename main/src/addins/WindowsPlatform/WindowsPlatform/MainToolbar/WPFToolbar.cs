@@ -34,25 +34,30 @@ namespace WindowsPlatform.MainToolbar
 				if (newModel == null)
 					return;
 
-				if (ConfigurationChanged != null)
-					ConfigurationChanged (o, e);
+				DispatchService.GuiDispatch(() => {
+					ActiveConfiguration = newModel;
 
-				ActiveConfiguration = newModel;
+					if (ConfigurationChanged != null)
+						ConfigurationChanged(o, e);
+				});
 			};
 
 			toolbar.RuntimeMenu.SelectionChanged += (o, e) => {
 				var newModel = e.Added;
 				if (newModel == null)
 					return;
-				
-				using (var mutableModel = newModel.GetMutableModel ()) {
-					ActiveRuntime = newModel;
-					var ea = new MonoDevelop.Components.MainToolbar.HandledEventArgs ();
-					if (RuntimeChanged != null)
-						RuntimeChanged (o, ea);
 
-					if (ea.Handled)
-						ActiveRuntime = e.Removed;
+				using (var mutableModel = newModel.GetMutableModel()) {
+					DispatchService.GuiDispatch(() => {
+						ActiveRuntime = newModel;
+
+						var ea = new MonoDevelop.Components.MainToolbar.HandledEventArgs();
+						if (RuntimeChanged != null)
+							RuntimeChanged(o, ea);
+
+						if (ea.Handled)
+							ActiveRuntime = e.Removed;
+					});
 				}
 			};
 
