@@ -40,7 +40,9 @@ namespace MonoDevelop.PackageManagement
 		public static Xwt.Drawing.Color CellTextColor { get; internal set; }
 		public static Xwt.Drawing.Color CellTextSelectionColor { get; internal set; }
 		public static Cairo.Color PackageSourceUrlTextColor { get; internal set; }
+		public static Cairo.Color PackageSourceUrlSelectedTextColor { get; internal set; }
 		public static Cairo.Color PackageSourceErrorTextColor { get; internal set; }
+		public static Cairo.Color PackageSourceErrorSelectedTextColor { get; internal set; }
 		public static Xwt.Drawing.Color ErrorBackgroundColor { get; internal set; }
 		public static Xwt.Drawing.Color ErrorForegroundColor { get; internal set; }
 
@@ -63,6 +65,8 @@ namespace MonoDevelop.PackageManagement
 				CellTextColor = Xwt.Drawing.Colors.Black;
 				PackageSourceUrlTextColor = CairoExtensions.ParseColor ("#747474");
 				PackageSourceErrorTextColor = CairoExtensions.ParseColor ("#656565");
+				PackageSourceUrlSelectedTextColor = CairoExtensions.ParseColor ("#747474");
+				PackageSourceErrorSelectedTextColor = CairoExtensions.ParseColor ("#656565");
 				ErrorBackgroundColor = Xwt.Drawing.Colors.Orange;
 				ErrorForegroundColor = Xwt.Drawing.Colors.White;
 			} else {
@@ -76,6 +80,8 @@ namespace MonoDevelop.PackageManagement
 				CellTextColor = Xwt.Drawing.Colors.White;
 				PackageSourceUrlTextColor = CairoExtensions.ParseColor ("#656565");
 				PackageSourceErrorTextColor = CairoExtensions.ParseColor ("#ff0000");
+				PackageSourceUrlSelectedTextColor = CairoExtensions.ParseColor ("#656565");
+				PackageSourceErrorSelectedTextColor = CairoExtensions.ParseColor ("#ff0000");
 				ErrorBackgroundColor = Xwt.Drawing.Colors.Orange;
 				ErrorForegroundColor = Xwt.Drawing.Colors.White;
 			}
