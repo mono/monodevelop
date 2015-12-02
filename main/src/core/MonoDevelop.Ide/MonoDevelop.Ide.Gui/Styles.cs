@@ -301,6 +301,13 @@ namespace MonoDevelop.Ide.Gui
 
 		internal static void LoadStyle ()
 		{
+			var defaultStyle = Gtk.Rc.GetStyle (IdeApp.Workbench.RootWindow);
+			var bgColor = defaultStyle.Background (Gtk.StateType.Normal);
+
+			BackgroundColor = defaultStyle.Background (Gtk.StateType.Normal).ToCairoColor ();	// must be the bg color from Gtkrc
+			BaseBackgroundColor = defaultStyle.Base (Gtk.StateType.Normal).ToCairoColor ();	// must be the base color from Gtkrc
+			BaseForegroundColor = defaultStyle.Foreground (Gtk.StateType.Normal).ToCairoColor ();	// must be the text color from Gtkrc
+
 			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
 				LoadLightStyle ();
 			else
@@ -315,10 +322,6 @@ namespace MonoDevelop.Ide.Gui
 
 		internal static void LoadLightStyle ()
 		{
-			BackgroundColor = CairoExtensions.ParseColor ("f5f5f5");	// must be the bg color from Gtkrc
-			BaseBackgroundColor = new Cairo.Color (1, 1, 1);	// must be the base color from Gtkrc
-			BaseForegroundColor = new Cairo.Color (0, 0, 0);	// must be the text color from Gtkrc
-
 			ThinSplitterColor = new Gdk.Color (166, 166, 166);
 
 			TabBarBackgroundColor = CairoExtensions.ParseColor ("c2c2c2");
@@ -490,10 +493,6 @@ namespace MonoDevelop.Ide.Gui
 
 		internal static void LoadDarkStyle ()
 		{
-			BackgroundColor = CairoExtensions.ParseColor ("333333");		// must be the bg color from Gtkrc
-			BaseBackgroundColor = CairoExtensions.ParseColor ("222222");	// must be the base color from Gtkrc
-			BaseForegroundColor = CairoExtensions.ParseColor ("bfbfbf");	// must be the text color from Gtkrc
-
 			ThinSplitterColor = new Gdk.Color (89, 89, 89);
 
 			TabBarBackgroundColor = CairoExtensions.ParseColor ("333333");
