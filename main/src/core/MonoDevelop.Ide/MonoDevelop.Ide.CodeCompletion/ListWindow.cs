@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			Theme.Padding = 0;
 
 			UpdateStyle ();
-			IdeApp.Preferences.UserInterfaceSkinChanged += HandleSkinChanged;
+			Gui.Styles.Changed += HandleSkinChanged;
 			IdeApp.Preferences.ColorScheme.Changed += HandleSkinChanged;
 		}
 
@@ -125,7 +125,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
-			IdeApp.Preferences.UserInterfaceSkinChanged -= HandleSkinChanged;
+			Gui.Styles.Changed -= HandleSkinChanged;
 			IdeApp.Preferences.ColorScheme.Changed -= HandleSkinChanged;
 		}
 

@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			ContentBox.Add (vb2);
 
 			UpdateStyle ();
-			IdeApp.Preferences.UserInterfaceSkinChanged += HandleSkinChanged;
+			Styles.Changed += HandleSkinChanged;
 			IdeApp.Preferences.ColorScheme.Changed += HandleSkinChanged;
 
 			ShowAll ();
@@ -126,7 +126,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
-			IdeApp.Preferences.UserInterfaceSkinChanged -= HandleSkinChanged;
+			Styles.Changed -= HandleSkinChanged;
 			IdeApp.Preferences.ColorScheme.Changed -= HandleSkinChanged;
 		}
 

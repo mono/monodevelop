@@ -288,7 +288,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			vb2.ShowAll ();
 			SetDefaultScheme ();
-			IdeApp.Preferences.UserInterfaceSkinChanged += HandleSkinChanged;
+			Styles.Changed += HandleSkinChanged;
 			IdeApp.Preferences.ColorScheme.Changed += HandleSkinChanged;
 		}
 
@@ -311,7 +311,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
-			IdeApp.Preferences.UserInterfaceSkinChanged -= HandleSkinChanged;
+			Styles.Changed -= HandleSkinChanged;
 			IdeApp.Preferences.ColorScheme.Changed -= HandleSkinChanged;
 		}
 	}

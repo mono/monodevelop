@@ -147,11 +147,6 @@ namespace MonoDevelop.Ide
 			get { return MonoDevelop.Components.IdeTheme.UserInterfaceSkin; }
 		}
 
-		public event EventHandler<PropertyChangedEventArgs> UserInterfaceSkinChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.UserInterfaceTheme", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.UserInterfaceTheme", value); }
-		}
-
 		public readonly ConfigurationProperty<bool> EnableSourceAnalysis = ConfigurationProperty.Create ("MonoDevelop.AnalysisCore.AnalysisEnabled", true);
 		public readonly ConfigurationProperty<bool> EnableUnitTestEditorIntegration = ConfigurationProperty.Create ("Testing.EnableUnitTestEditorIntegration", false);
 
@@ -173,10 +168,7 @@ namespace MonoDevelop.Ide
 
 				lightConfiguration.Changed += (s,e) => OnChanged ();
 				darkConfiguration.Changed += (s,e) => OnChanged ();
-				PropertyService.PropertyChanged += (sender, e) => {
-					if (e.Key == "MonoDevelop.Ide.UserInterfaceTheme")
-						OnChanged ();
-				};
+				MonoDevelop.Ide.Gui.Styles.Changed += (sender, e) => OnChanged ();
 			}
 
 			protected override T OnGetValue ()
