@@ -15,6 +15,34 @@ open MonoDevelop.Ide.Editor
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open ExtCore.Control
 
+module TooltipImpl =
+  let tryKeyword col lineStr =
+    maybe {
+      let! col, identIsland = Parsing.findLongIdents(col, lineStr)
+      match identIsland with
+      | [single] when PrettyNaming.KeywordNames |> List.contains single ->
+        return single
+      | _ -> return! None }
+      
+  let commentStringOrText t =
+     t.CharClass = FSharpTokenCharKind.Comment || t.CharClass = FSharpTokenCharKind.String || t.CharClass = FSharpTokenCharKind.Text
+ 
+  let isTokenAsPosInvalid tokens col pred =
+    tokens
+    |> List.tryFind (fun t -> col >= t.LeftColumn && col <= t.RightColumn)
+    |> Option.map pred
+    |> Option.fill true
+      
+module MDTooltip = 
+  let keywordToTooltip (editor:TextEditor) line col (keyword:string) =
+    async {
+      let startOffset = editor.LocationToOffset(line, col - keyword.Length+1)
+      let endOffset = startOffset + keyword.Length
+      let segment = Text.TextSegment.FromBounds(startOffset, endOffset)
+      let tip = SymbolTooltips.getKeywordTooltip keyword
+      return  TooltipItem( tip, segment :> Text.ISegment) }
+   
+
 /// Resolves locations to tooltip items, and orchestrates their display.
 type FSharpTooltipProvider() = 
   inherit TooltipProvider()
@@ -24,6 +52,14 @@ type FSharpTooltipProvider() =
 
   let killTooltipWindow() =
     enterNotify |> Option.iter (fun en -> en.Dispose ())
+
+  let isTokenInvalid parsedDocument line col=
+    maybe {
+      let! pd = Option.tryCast<FSharpParsedDocument> parsedDocument
+      let! tokens = pd.Tokens
+      let (Tokens.TokenisedLine(_lineDetail, lineTokens, _state)) = tokens.[line-1]
+      return TooltipImpl.isTokenAsPosInvalid lineTokens col TooltipImpl.commentStringOrText }
+    |> Option.fill false
 
   override x.GetItem (editor, context, offset, cancellationToken) =
     try
@@ -39,86 +75,40 @@ type FSharpTooltipProvider() =
       if source = null || offset >= source.Length || offset < 0 then null else
 
       let line, col, lineStr = editor.GetLineInfoFromOffset offset
+          
+      if isTokenInvalid context.ParsedDocument line col then null else 
 
-      let caretToken = 
-        maybe {
-          let! pd = Option.tryCast<FSharpParsedDocument> context.ParsedDocument
-          let! tokens = pd.Tokens
-          let (Tokens.TokenisedLine(_lineDetail, lineTokens, _state)) = tokens.[line-1]
-          return! lineTokens |> List.tryFind (fun t -> col >= t.LeftColumn && col <= t.RightColumn) }
+      let tooltipComputation =
+        asyncChoice {
+          try
+             LoggingService.LogDebug "TooltipProvider: Getting tool tip"
+             let! parseAndCheckResults =
+               languageService.GetTypedParseResultIfAvailable (projectFile, file, source, AllowStaleResults.MatchingSource)
+               |> Choice.ofOptionWith "TooltipProvider: ParseAndCheckResults not found"
+             let! symbol = parseAndCheckResults.GetSymbolAtLocation(line, col, lineStr) |> AsyncChoice.ofOptionWith "TooltipProvider: ParseAndCheckResults not found"
+             let! tip = SymbolTooltips.getTooltipFromSymbolUse symbol
+                        |> Choice.ofOptionWith (sprintf "TooltipProvider: TootipText not returned\n   %s\n   %s" lineStr (String.replicate col "-" + "^"))
 
-      let isTokenInvalid = 
-        match caretToken with
-        | Some token -> token.CharClass = FSharpTokenCharKind.Comment ||
-                        token.CharClass = FSharpTokenCharKind.String ||
-                        token.CharClass = FSharpTokenCharKind.Text
-        | None -> true
+             //get the TextSegment the the symbols range occupies
+             let textSeg = Symbols.getTextSegment editor symbol col lineStr
+             let tooltipItem = TooltipItem(tip, textSeg)
+             return tooltipItem
 
-      if isTokenInvalid then null else 
-      
-      let tryKeyword =
-        let ident = Parsing.findLongIdents(col, lineStr)
-        match ident with
-        | Some (col, identIsland) ->
-          match identIsland with
-          | [single] when PrettyNaming.KeywordNames |> List.contains single ->
-            let startOffset = editor.LocationToOffset(line, col - single.Length+1)
-            let endOffset = startOffset + single.Length
-            let segment = Text.TextSegment.FromBounds(startOffset, endOffset)
-            let tip = SymbolTooltips.getKeywordTooltip single
-            Some (TooltipItem( tip, segment :> Text.ISegment))
-          | _ -> None
-        | None -> None
+           with
+           | :? TimeoutException -> return! AsyncChoice.error "TooltipProvider: timeout"
+           | ex -> return! AsyncChoice.error (sprintf "TooltipProvider: Error: %A" ex) }
+                 
+      Async.StartAsTask(
+          async {
+            match TooltipImpl.tryKeyword col lineStr with
+            | Some t -> return! MDTooltip.keywordToTooltip editor line col t
+            | None ->
+            let! tooltipResult = tooltipComputation
+            match tooltipResult with
+            | Success(tip) -> return tip
+            | Operators.Error(warning) -> LoggingService.LogWarning warning
+                                          return Unchecked.defaultof<_> }, cancellationToken = cancellationToken)
 
-      let result =
-          match tryKeyword with
-          | Some keyword -> Tooltip keyword
-          | None ->
-          //operate on available results no async gettypeparse results is available quick enough
-          Async.RunSynchronously (
-            cancellationToken = cancellationToken,
-            timeout = ServiceSettings.blockingTimeout,
-            computation = async {
-              try 
-                LoggingService.LogDebug "TooltipProvider: Getting tool tip"
-                match MDLanguageService.Instance.GetTypedParseResultIfAvailable (projectFile, file, source, AllowStaleResults.MatchingSource) with
-                | Some parseAndCheckResults ->
-                  let! symbol = parseAndCheckResults.GetSymbolAtLocation(line, col, lineStr)
-
-                  // As the new tooltips are unfinished we match ToolTip here to use the new tooltips and anything else to run through the old tooltip system
-                  // In the section above we return EmptyTip for any tooltips symbols that have not yet ben finished
-                  match symbol with
-                  | Some s -> 
-                    let tt = SymbolTooltips.getTooltipFromSymbolUse s
-                    match tt with
-                    | ToolTip _ as tip ->
-                      //get the TextSegment the the symbols range occupies
-                      let textSeg = Symbols.getTextSegment editor s col lineStr
-                      let tooltipItem = TooltipItem(tip, textSeg)
-                      return Tooltip tooltipItem
-                    | EmptyTip ->
-                      //TODO Support non symbol tooltips?
-                      //Those currently being: '=', '->', '::'
-                      return NoToolTipText
-                  | None -> return NoToolTipData
-                | None -> return ParseAndCheckNotFound
-
-              with
-              | :? TimeoutException -> return ParseAndCheckNotFound
-              | ex ->
-                LoggingService.LogError ("TooltipProvider: unexpected exception", ex)
-                return ParseAndCheckNotFound})
-
-      match result with
-      | ParseAndCheckNotFound -> LoggingService.LogWarning "TooltipProvider: ParseAndCheckResults not found"; null
-      | NoToolTipText -> sprintf "TooltipProvider: TootipText not returned\n   %s\n   %s" lineStr (String.replicate col "-" + "^")
-                         |> LoggingService.LogDebug
-                         null
-      | NoToolTipData -> sprintf "TooltipProvider: No symbol data found\n   %s\n   %s" lineStr (String.replicate col "-" + "^")
-                         |> LoggingService.LogDebug
-                         null
-      | Tooltip t -> Task.FromResult t
-     
     with exn ->
       LoggingService.LogError ("TooltipProvider: Error retrieving tooltip", exn)
       null
@@ -127,7 +117,7 @@ type FSharpTooltipProvider() =
     let doc = IdeApp.Workbench.ActiveDocument
     if (doc = null) then null else
     match unbox item.Item with 
-    | ToolTips.ToolTip(signature, summary, footer) -> 
+    | (signature, summary, footer) -> 
       let result = new TooltipInformationWindow(ShowArrow = true)
       let toolTipInfo = new TooltipInformation(SignatureMarkup=signature, FooterMarkup=footer)
       match summary with
