@@ -920,9 +920,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 						surface.Dispose ();
 					return false;
 				}
-				var lineCache = new List<HashSet<int>> ();
-				lineCache.Add (new HashSet<int> ());
-				lineCache.Add (new HashSet<int> ());
 				bool nextStep = false;
 				switch (drawingStep) {
 				case 0:
