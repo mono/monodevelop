@@ -1142,6 +1142,18 @@
     <EmbeddedResource Include="icons\package-16~dark%402x.png">
       <LogicalName>package-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-16~sel.png">
+      <LogicalName>package-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-16~sel%402x.png">
+      <LogicalName>package-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-16~dark~sel.png">
+      <LogicalName>package-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-16~dark~sel%402x.png">
+      <LogicalName>package-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\package-24.png">
       <LogicalName>package-24.png</LogicalName>
     </EmbeddedResource>
@@ -1153,6 +1165,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\package-24~dark%402x.png">
       <LogicalName>package-24~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-24~sel.png">
+      <LogicalName>package-24~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-24~sel%402x.png">
+      <LogicalName>package-24~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-24~dark~sel.png">
+      <LogicalName>package-24~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-24~dark~sel%402x.png">
+      <LogicalName>package-24~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\package-32.png">
       <LogicalName>package-32.png</LogicalName>
@@ -1166,6 +1190,18 @@
     <EmbeddedResource Include="icons\package-32~dark%402x.png">
       <LogicalName>package-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-32~sel.png">
+      <LogicalName>package-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-32~sel%402x.png">
+      <LogicalName>package-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-32~dark~sel.png">
+      <LogicalName>package-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-32~dark~sel%402x.png">
+      <LogicalName>package-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\package-48.png">
       <LogicalName>package-48.png</LogicalName>
     </EmbeddedResource>
@@ -1177,6 +1213,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\package-48~dark%402x.png">
       <LogicalName>package-48~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-48~sel.png">
+      <LogicalName>package-48~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-48~sel%402x.png">
+      <LogicalName>package-48~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-48~dark~sel.png">
+      <LogicalName>package-48~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-48~dark~sel%402x.png">
+      <LogicalName>package-48~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-task-list-16.png">
       <LogicalName>pad-task-list-16.png</LogicalName>
@@ -1360,6 +1408,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\package-source-16~dark%402x.png">
       <LogicalName>package-source-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-source-16~sel.png">
+      <LogicalName>package-source-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-source-16~sel%402x.png">
+      <LogicalName>package-source-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-source-16~dark~sel.png">
+      <LogicalName>package-source-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-source-16~dark~sel%402x.png">
+      <LogicalName>package-source-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\reference-16.png">
       <LogicalName>reference-16.png</LogicalName>
@@ -3044,6 +3104,18 @@
     <EmbeddedResource Include="icons\warning-16~dark%402x.png">
       <LogicalName>warning-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-16~sel.png">
+      <LogicalName>warning-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-16~sel%402x.png">
+      <LogicalName>warning-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-16~dark~sel.png">
+      <LogicalName>warning-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-16~dark~sel%402x.png">
+      <LogicalName>warning-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\warning-24.png">
       <LogicalName>warning-24.png</LogicalName>
     </EmbeddedResource>
@@ -3055,6 +3127,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\warning-24~dark%402x.png">
       <LogicalName>warning-24~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-24~sel.png">
+      <LogicalName>warning-24~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-24~sel%402x.png">
+      <LogicalName>warning-24~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-24~dark~sel.png">
+      <LogicalName>warning-24~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-24~dark~sel%402x.png">
+      <LogicalName>warning-24~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\warning-32.png">
       <LogicalName>warning-32.png</LogicalName>
@@ -3068,6 +3152,18 @@
     <EmbeddedResource Include="icons\warning-32~dark%402x.png">
       <LogicalName>warning-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-32~sel.png">
+      <LogicalName>warning-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-32~sel%402x.png">
+      <LogicalName>warning-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-32~dark~sel.png">
+      <LogicalName>warning-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-32~dark~sel%402x.png">
+      <LogicalName>warning-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\warning-48.png">
       <LogicalName>warning-48.png</LogicalName>
     </EmbeddedResource>
@@ -3079,6 +3175,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\warning-48~dark%402x.png">
       <LogicalName>warning-48~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-48~sel.png">
+      <LogicalName>warning-48~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-48~sel%402x.png">
+      <LogicalName>warning-48~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-48~dark~sel.png">
+      <LogicalName>warning-48~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-48~dark~sel%402x.png">
+      <LogicalName>warning-48~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\error-16.png">
       <LogicalName>error-16.png</LogicalName>
