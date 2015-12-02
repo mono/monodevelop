@@ -948,6 +948,12 @@
     <EmbeddedResource Include="icons\searchbox-clear-win-16.png">
       <LogicalName>searchbox-clear-win-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-clear-win-16~hover.png">
+      <LogicalName>searchbox-clear-win-16~hover.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-clear-win-16~pressed.png">
+      <LogicalName>searchbox-clear-win-16~pressed.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\searchbox-search-mac-16.png">
       <LogicalName>searchbox-search-mac-16.png</LogicalName>
     </EmbeddedResource>
@@ -956,6 +962,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\searchbox-search-win-16.png">
       <LogicalName>searchbox-search-win-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-search-win-16~hover.png">
+      <LogicalName>searchbox-search-win-16~hover.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-search-win-16~pressed.png">
+      <LogicalName>searchbox-search-win-16~pressed.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tree-popup-button.png">
       <LogicalName>tree-popup-button.png</LogicalName>
