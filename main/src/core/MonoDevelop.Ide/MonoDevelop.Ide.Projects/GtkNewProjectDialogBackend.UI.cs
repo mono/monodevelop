@@ -70,6 +70,32 @@ namespace MonoDevelop.Ide.Projects
 		GtkTemplateCellRenderer templateTextRenderer;
 		GtkTemplateCategoryCellRenderer categoryTextRenderer;
 
+		static GtkNewProjectDialogBackend ()
+		{
+			UpdateStyles ();
+			Styles.Changed += (sender, e) => UpdateStyles ();
+		}
+
+		static void UpdateStyles ()
+		{
+			var categoriesBackgroundColorHex = Styles.NewProjectDialog.CategoriesBackgroundColor.GetHex ();
+			var templateListBackgroundColorHex = Styles.NewProjectDialog.TemplateListBackgroundColor.GetHex ();
+
+			string rcstyle = "style \"templateCategoriesTreeView\"\r\n{\r\n" +
+				"    base[NORMAL] = \"" + categoriesBackgroundColorHex + "\"\r\n" +
+				"    GtkTreeView::even-row-color = \"" + categoriesBackgroundColorHex + "\"\r\n" +
+				"}\r\n";
+			rcstyle += "style \"templatesTreeView\"\r\n{\r\n" +
+				"    base[NORMAL] = \"" + templateListBackgroundColorHex + "\"\r\n" +
+				"    GtkTreeView::even-row-color = \"" + templateListBackgroundColorHex + "\"" +
+				"\r\n}";
+
+			rcstyle += "widget \"*templateCategoriesTreeView*\" style \"templateCategoriesTreeView\"\r\n";
+			rcstyle += "widget \"*templatesTreeView*\" style \"templatesTreeView\"\r\n";
+
+			Rc.ParseString (rcstyle);
+		}
+
 		void Build ()
 		{
 			BorderWidth = 0;
@@ -131,7 +157,7 @@ namespace MonoDevelop.Ide.Projects
 			var templateCategoriesBgBox = new EventBox ();
 			templateCategoriesBgBox.Name = "templateCategoriesVBox";
 			templateCategoriesBgBox.BorderWidth = 0;
-			templateCategoriesBgBox.ModifyBg (StateType.Normal, Styles.NewProjectDialog.CategoriesBackgroundColor);
+			templateCategoriesBgBox.ModifyBg (StateType.Normal, categoriesBackgroundColor);
 			templateCategoriesBgBox.WidthRequest = GtkWorkarounds.ConvertToPixelScale (220);
 			var templateCategoriesScrolledWindow = new ScrolledWindow ();
 			templateCategoriesScrolledWindow.Name = "templateCategoriesScrolledWindow";
@@ -143,7 +169,6 @@ namespace MonoDevelop.Ide.Projects
 			templateCategoriesTreeView.BorderWidth = 0;
 			templateCategoriesTreeView.HeadersVisible = false;
 			templateCategoriesTreeView.Model = templateCategoriesListStore;
-			templateCategoriesTreeView.ModifyBase (StateType.Normal, categoriesBackgroundColor);
 			templateCategoriesTreeView.AppendColumn (CreateTemplateCategoriesTreeViewColumn ());
 			templateCategoriesScrolledWindow.Add (templateCategoriesTreeView);
 			templateCategoriesBgBox.Add (templateCategoriesScrolledWindow);
@@ -151,7 +176,7 @@ namespace MonoDevelop.Ide.Projects
 
 			// Templates.
 			var templatesBgBox = new EventBox ();
-			templatesBgBox.ModifyBg (StateType.Normal, Styles.NewProjectDialog.TemplateListBackgroundColor);
+			templatesBgBox.ModifyBg (StateType.Normal, templateListBackgroundColor);
 			templatesBgBox.Name = "templatesVBox";
 			templatesBgBox.WidthRequest = GtkWorkarounds.ConvertToPixelScale (400);
 			templatesHBox.PackStart (templatesBgBox, false, false, 0);
@@ -164,7 +189,6 @@ namespace MonoDevelop.Ide.Projects
 			templatesTreeView.Name = "templatesTreeView";
 			templatesTreeView.HeadersVisible = false;
 			templatesTreeView.Model = templatesListStore;
-			templatesTreeView.ModifyBase (StateType.Normal, templateListBackgroundColor);
 			templatesTreeView.AppendColumn (CreateTemplateListTreeViewColumn ());
 			templatesScrolledWindow.Add (templatesTreeView);
 			templatesBgBox.Add (templatesScrolledWindow);
