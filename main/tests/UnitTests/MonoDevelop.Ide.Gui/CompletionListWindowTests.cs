@@ -821,6 +821,16 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		/// <summary>
+		/// Bug 36451 - Text input is weird.
+		/// </summary>
+		[Test]
+		public void TestBug36451 ()
+		{
+			string output = RunSimulation ("", "x\"", true, true, false, "X");
+			Assert.AreEqual ("X", output);
+		}
+
+		/// <summary>
 		/// Bug 17779 - Symbol names with multiple successive letters are filtered out too early
 		/// </summary>
 		[Test]
