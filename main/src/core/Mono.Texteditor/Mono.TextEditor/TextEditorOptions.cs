@@ -95,7 +95,7 @@ namespace Mono.TextEditor
 				}
 			}
 		}
-		public event EventHandler ZoomChanged { add { StaticZoomChanged += value; } remove { StaticZoomChanged -= value; } }
+		public event EventHandler ZoomChanged;
 
 		public bool CanZoomIn {
 			get {
@@ -583,6 +583,7 @@ namespace Mono.TextEditor
 		void HandleStaticZoomChanged (object sender, EventArgs e)
 		{
 			DisposeFont ();
+			ZoomChanged?.Invoke (this, EventArgs.Empty);
 			OnChanged (EventArgs.Empty);
 		}
 
