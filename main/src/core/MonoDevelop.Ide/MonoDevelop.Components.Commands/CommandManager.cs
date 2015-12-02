@@ -159,7 +159,7 @@ namespace MonoDevelop.Components.Commands
 		/// <param name='addinPath'>
 		/// Extension path to the definition of the menu
 		/// </param>
-		public void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, string addinPath)
+		public void ShowContextMenu (Control parent, Gdk.EventButton evt, string addinPath)
 		{
 			ShowContextMenu (parent, evt, CreateCommandEntrySet (addinPath));
 		}
@@ -179,7 +179,7 @@ namespace MonoDevelop.Components.Commands
 		/// <param name='addinPath'>
 		/// Extension path to the definition of the menu
 		/// </param>
-		public void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt,
+		public void ShowContextMenu (Control parent, Gdk.EventButton evt,
 			ExtensionContext ctx, string addinPath)
 		{
 			ShowContextMenu (parent, evt, CreateCommandEntrySet (ctx, addinPath));
@@ -851,7 +851,7 @@ namespace MonoDevelop.Components.Commands
 		/// <param name='initialCommandTarget'>
 		/// Initial command route target. The command handler will start looking for command handlers in this object.
 		/// </param>
-		public bool ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, CommandEntrySet entrySet,
+		public bool ShowContextMenu (Control parent, Gdk.EventButton evt, CommandEntrySet entrySet,
 			object initialCommandTarget = null)
 		{
 			return ShowContextMenu (parent, evt, entrySet, initialCommandTarget, null);
@@ -875,7 +875,7 @@ namespace MonoDevelop.Components.Commands
 		/// <param name='closeHandler'>
 		/// An event handler which will be called when the menu closes
 		/// </param>
-		public bool ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, CommandEntrySet entrySet,
+		public bool ShowContextMenu (Control parent, Gdk.EventButton evt, CommandEntrySet entrySet,
 			object initialCommandTarget, EventHandler closeHandler)
 		{
 #if MAC
@@ -898,7 +898,7 @@ namespace MonoDevelop.Components.Commands
 		/// <param name="y">The y coordinate.</param>
 		/// <param name="entrySet">Entry set with the command definitions</param>
 		/// <param name="initialCommandTarget">Initial command target.</param>
-		public bool ShowContextMenu (Gtk.Widget parent, int x, int y, CommandEntrySet entrySet,
+		public bool ShowContextMenu (Control parent, int x, int y, CommandEntrySet entrySet,
 			object initialCommandTarget = null)
 		{
 #if MAC
@@ -928,7 +928,7 @@ namespace MonoDevelop.Components.Commands
 		/// <param name='initialCommandTarget'>
 		/// Initial command route target. The command handler will start looking for command handlers in this object.
 		/// </param>
-		public void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, Gtk.Menu menu,
+		public void ShowContextMenu (Control parent, Gdk.EventButton evt, Gtk.Menu menu,
 			object initialCommandTarget = null)
 		{
 			if (menu is CommandMenu) {
@@ -938,7 +938,7 @@ namespace MonoDevelop.Components.Commands
 			MonoDevelop.Components.GtkWorkarounds.ShowContextMenu (menu, parent, evt);
 		}
 
-		public void ShowContextMenu (Gtk.Widget parent, int x, int y, Gtk.Menu menu,
+		public void ShowContextMenu (Control parent, int x, int y, Gtk.Menu menu,
 			object initialCommandTarget = null)
 		{
 			if (menu is CommandMenu) {
