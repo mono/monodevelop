@@ -49,9 +49,9 @@ namespace MonoDevelop.PackageManagement.Tests
 			updateAllPackagesInSolution = new UpdateAllPackagesInSolution (fakeSolution, fakeSourceRepository);
 		}
 
-		void AddPackageToSolution (string packageId)
+		void AddPackageToSolution (string packageId, string version = "1.0")
 		{
-			var package = new FakePackage (packageId, "1.0");
+			var package = new FakePackage (packageId, version);
 			fakeSolution.FakePackagesInReverseDependencyOrder.Add (package);
 		}
 
@@ -260,6 +260,21 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateUpdateAllPackagesInSolution ();
 
 			Assert.IsTrue (updateAllPackagesInSolution.UpdateDependencies);
+		}
+
+		[Test]
+		public void CreateActions_TwoPackagesOneStableOnePrereleaseInSolutionWithOneProject_ReturnsTwoActionsWithAllowPrereleaseTrueForPrereleasePackage ()
+		{
+			CreateUpdateAllPackagesInSolution ();
+			FakePackageManagementProject project = AddProjectToSolution ("MyProject");
+			AddPackageToSolution ("Test1", "1.0.0-alpha");
+			AddPackageToSolution ("Test2", "1.0");
+			CallCreateActions ();
+
+			Assert.AreEqual ("Test1", project.FirstFakeUpdatePackageActionCreated.PackageId);
+			Assert.AreEqual (true, project.FirstFakeUpdatePackageActionCreated.AllowPrereleaseVersions);
+			Assert.AreEqual ("Test2", project.FakeUpdatePackageActionsCreated [1].PackageId);
+			Assert.AreEqual (false, project.FakeUpdatePackageActionsCreated[1].AllowPrereleaseVersions);
 		}
 	}
 }

@@ -172,12 +172,48 @@ namespace MonoDevelop.PackageManagement
 			LogCheckingForUpdates (project.Name);
 
 			project.Logger = new PackageManagementLogger (packageManagementEvents);
-			var updatedPackages = new UpdatedPackages (project, project.SourceRepository);
-			List<IPackage> packages = updatedPackages.GetUpdatedPackages ().ToList ();
+
+			var packageReferences = project.GetPackageReferences ();
+
+			List<IPackage> packages = GetUpdatedStablePackages (project, packageReferences).ToList ();
+			packages.AddRange (GetUpdatedPrereleasePackages (project, packageReferences));
 
 			LogPackagesFound (packages.Count);
 
 			return new UpdatedPackagesInProject (project.Project, packages);
+		}
+
+		IEnumerable<IPackage> GetUpdatedStablePackages (
+			IPackageManagementProject project,
+			IEnumerable<PackageReference> packageReferences)
+		{
+			return GetUpdatedPackages (project, packageReferences, false, packageRef => packageRef.IsReleaseVersion ());
+		}
+
+		IEnumerable<IPackage> GetUpdatedPrereleasePackages (
+			IPackageManagementProject project,
+			IEnumerable<PackageReference> packageReferences)
+		{
+			return GetUpdatedPackages (project, packageReferences, true, packageRef => !packageRef.IsReleaseVersion ());
+		}
+
+		IEnumerable<IPackage> GetUpdatedPackages (
+			IPackageManagementProject project,
+			IEnumerable<PackageReference> packageReferences,
+			bool includePrerelease,
+			Func<PackageReference, bool> filter)
+		{
+			var filteredPackageReferences = packageReferences.Where (filter).ToList ();
+
+			if (!filteredPackageReferences.Any ())
+				return Enumerable.Empty <IPackage> ();
+
+			var updatedPackages = new UpdatedPackages (
+				filteredPackageReferences,
+				project.SourceRepository,
+				project.ConstraintProvider);
+
+			return updatedPackages.GetUpdatedPackages (includePrerelease);
 		}
 
 		void LogCheckingForUpdates (string projectName)
