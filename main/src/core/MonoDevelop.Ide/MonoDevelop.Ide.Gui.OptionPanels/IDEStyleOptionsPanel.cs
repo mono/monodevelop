@@ -189,7 +189,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					)
 				);
 			}
-			currentTheme = comboTheme.ActiveText;
+			currentTheme = comboTheme.Active == 0 && Platform.IsLinux ? String.Empty : comboTheme.ActiveText;
 			SetTheme ();
 		}
 

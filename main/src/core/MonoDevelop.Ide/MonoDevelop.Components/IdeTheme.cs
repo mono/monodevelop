@@ -99,6 +99,12 @@ namespace MonoDevelop.Components
 
 		internal static void UpdateStyles ()
 		{
+			if (Platform.IsLinux) {
+				var defaultStyle = Gtk.Rc.GetStyle (IdeApp.Workbench.RootWindow);
+				var bgColor = defaultStyle.Background (Gtk.StateType.Normal);
+				UserInterfaceSkin = HslColor.Brightness (bgColor) < 0.5 ? Skin.Dark : Skin.Light;
+			}
+
 			if (UserInterfaceSkin == Skin.Dark)
 				Xwt.Drawing.Context.SetGlobalStyle ("dark");
 			else
