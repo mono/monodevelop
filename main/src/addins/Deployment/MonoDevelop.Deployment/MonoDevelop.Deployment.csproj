@@ -179,6 +179,18 @@
     <EmbeddedResource Include="icons\package-16~dark%402x.png">
       <LogicalName>package-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-16~sel.png">
+      <LogicalName>package-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-16~sel%402x.png">
+      <LogicalName>package-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-16~dark~sel.png">
+      <LogicalName>package-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-16~dark~sel%402x.png">
+      <LogicalName>package-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\package-32.png">
       <LogicalName>package-32.png</LogicalName>
     </EmbeddedResource>
@@ -191,6 +203,18 @@
     <EmbeddedResource Include="icons\package-32~dark%402x.png">
       <LogicalName>package-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-32~sel.png">
+      <LogicalName>package-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-32~sel%402x.png">
+      <LogicalName>package-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-32~dark~sel.png">
+      <LogicalName>package-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-32~dark~sel%402x.png">
+      <LogicalName>package-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\package-48.png">
       <LogicalName>package-48.png</LogicalName>
     </EmbeddedResource>
@@ -202,6 +226,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\package-48~dark%402x.png">
       <LogicalName>package-48~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-48~sel.png">
+      <LogicalName>package-48~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-48~sel%402x.png">
+      <LogicalName>package-48~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-48~dark~sel.png">
+      <LogicalName>package-48~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-48~dark~sel%402x.png">
+      <LogicalName>package-48~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
