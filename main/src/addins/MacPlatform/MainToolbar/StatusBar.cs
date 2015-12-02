@@ -299,7 +299,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return right;
 			}
 
-			right -= 9;
+			right -= 6;
 			if (layer != null) {
 				layer.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 4 : 3, 1, 16);
 				layer.SetNeedsDisplay ();
@@ -343,7 +343,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			nfloat right = DrawSeparatorIfNeeded (LeftMostStatusItemX ());
 			CGSize size = buildResultText.AttributedString.Size;
-			right = right - 6 - size.Width;
+			right = right - 3 - size.Width;
 			buildResultText.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 6 : 5, size.Width, size.Height);
 			if (buildResultText.SuperLayer == null)
 				Layer.AddSublayer (buildResultText);
@@ -358,7 +358,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		internal void RepositionStatusLayers ()
 		{
-			nfloat right = Layer.Frame.Width;
+			nfloat right = Layer.Frame.Width - 5;
 			CATransaction.DisableActions = true;
 			foreach (var item in Layer.Sublayers) {
 				if (item.Name != null && item.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)) {
@@ -366,7 +366,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					if (icon.TrackingArea != null)
 						RemoveTrackingArea (icon.TrackingArea);
 
-					right -= item.Bounds.Width + 6;
+					right -= item.Bounds.Width + 1;
 					item.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 4 : 3, item.Bounds.Width, item.Bounds.Height);
 
 					var area = new NSTrackingArea (item.Frame, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInKeyWindow, this, null);
@@ -376,12 +376,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				}
 			}
 
+			right -= 2;
+
 			nfloat buildResultPosition = DrawBuildResults ();
 			CATransaction.DisableActions = false;
 			if (buildResultPosition < right) { // We have a build result layer.
-				textField.SetFrameSize (new CGSize (buildResultPosition - 6 - textField.Frame.Left, Frame.Height));
+				textField.SetFrameSize (new CGSize (buildResultPosition - 3 - textField.Frame.Left, Frame.Height));
 			} else
-				textField.SetFrameSize (new CGSize (right - 6 - textField.Frame.Left, Frame.Height));
+				textField.SetFrameSize (new CGSize (right - 3 - textField.Frame.Left, Frame.Height));
 		}
 
 		long statusCounter;
