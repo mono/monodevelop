@@ -27,15 +27,14 @@ type FSharpProject() as self =
                   "Profile78",  ("3.78.3.1",  true)
                   "Profile259", ("3.259.3.1", true) ]
 
-    let langServ = MDLanguageService.Instance
     let mutable initialisedAsPortable = false
     
     let invalidateProjectFile() =
       try 
         if File.Exists (self.FileName.ToString()) then
-          let options = langServ.GetProjectCheckerOptions(self.FileName.ToString(), [("Configuration", IdeApp.Workspace.ActiveConfigurationId)])
-          langServ.InvalidateConfiguration(options)
-          langServ.ClearProjectInfoCache()
+          let options = languageService.GetProjectCheckerOptions(self.FileName.ToString(), [("Configuration", IdeApp.Workspace.ActiveConfigurationId)])
+          languageService.InvalidateConfiguration(options)
+          languageService.ClearProjectInfoCache()
       with ex -> LoggingService.LogError ("Could not invalidate configuration", ex)
     
     let invalidateFiles (args:#ProjectFileEventInfo seq) =

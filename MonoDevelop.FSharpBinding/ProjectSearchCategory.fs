@@ -50,8 +50,8 @@ module Search =
   let getAllProjectSymbols projectFile =
     async {
       try 
-        let projectOptions = MDLanguageService.Instance.GetProjectCheckerOptions projectFile
-        let! proj = MDLanguageService.Instance.ParseAndCheckProject projectOptions
+        let projectOptions = languageService.GetProjectCheckerOptions projectFile
+        let! proj = languageService.ParseAndCheckProject projectOptions
         if not proj.HasCriticalErrors then
           let! allSymbols = proj.GetAllUsesOfAllSymbols()
           return allSymbols |> Array.toSeq

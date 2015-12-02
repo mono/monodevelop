@@ -110,6 +110,10 @@ type MDLanguageService() =
   static member SupportedFilePath (filePath:FilePath) = 
       MDLanguageService.SupportedFileName (filePath.ToString())
 
+[<AutoOpen>]
+module MDLanguageServiceImpl =
+  let languageService = MDLanguageService.Instance
+
 /// Various utilities for working with F# language service
 module internal ServiceUtils =
   let map =
