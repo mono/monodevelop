@@ -175,8 +175,8 @@ style "menu" {
     fg[PRELIGHT] = @selected_fg_color
     text[PRELIGHT] = @selected_fg_color
 
-    engine "quartz" {
-    }
+    # engine "quartz" {
+    # }
 }
 
 style "menu-item" = "menu" {

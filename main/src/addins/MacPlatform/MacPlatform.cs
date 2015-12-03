@@ -309,14 +309,13 @@ namespace MonoDevelop.MacIntegration
 
 			string gtkrc = String.Format (@"
 				style ""treeview"" = ""default"" {{
-
 					base[SELECTED] = ""{0}""
 					base[ACTIVE] = ""{0}""
 					text[SELECTED] = ""{1}""
 					text[ACTIVE] = ""{1}""
 					engine ""xamarin"" {{
 						roundness = 0
-						gradient_shades = {{ 1.0, 0.95, 0.95, 0.90 }}
+						gradient_shades = {{ 1.01, 1.01, 1.01, 1.01 }}
 						glazestyle = 1
 					}}
 				}}
