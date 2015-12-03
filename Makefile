@@ -1,6 +1,6 @@
 include main/monodevelop_version
 
-EXTRA_DIST = configure
+EXTRA_DIST = configure code_of_conduct.md
 SPACE := 
 SPACE +=  
 AOT_DIRECTORIES:=$(subst $(SPACE),:,$(shell find main/build/* -type d))
