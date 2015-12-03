@@ -54,6 +54,9 @@ namespace MonoDevelop.CSharp
 			MonoDevelopWorkspace.LoadingFinished += delegate {
 				UpdateSymbolInfos ();
 			};
+			IdeApp.Workspace.LastWorkspaceItemClosed += delegate {
+				DisposeSymbolInfoTask ();
+			};
 		}
 
 		public ProjectSearchCategory () : base (GettextCatalog.GetString ("Solution"))
@@ -75,6 +78,15 @@ namespace MonoDevelop.CSharp
 		static CancellationTokenSource symbolInfoTokenSrc = new CancellationTokenSource();
 		public static void UpdateSymbolInfos ()
 		{
+			DisposeSymbolInfoTask ();
+			CancellationToken token = symbolInfoTokenSrc.Token;
+			SymbolInfoTask = Task.Run (delegate {
+				return GetSymbolInfos (token);
+			}, token);
+		}
+
+		static void DisposeSymbolInfoTask ()
+		{
 			symbolInfoTokenSrc.Cancel ();
 			if (SymbolInfoTask != null) {
 				try {
@@ -86,14 +98,10 @@ namespace MonoDevelop.CSharp
 				} catch (Exception ex) {
 					LoggingService.LogError ("UpdateSymbolInfos failed", ex);
 				}
-            }
+			}
 			symbolInfoTokenSrc = new CancellationTokenSource();
 			lastResult = new WorkerResult (widget);
 			SymbolInfoTask = null;
-			CancellationToken token = symbolInfoTokenSrc.Token;
-			SymbolInfoTask = Task.Run (delegate {
-				return GetSymbolInfos (token);
-			}, token);
 		}
 
 		internal class SymbolCache : IDisposable
