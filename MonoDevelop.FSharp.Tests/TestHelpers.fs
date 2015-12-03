@@ -3,6 +3,7 @@ open System
 open System.IO
 open System.Reflection
 open System.Globalization
+open System.Threading.Tasks
 open Microsoft.FSharp.Reflection
 
 module Reflection =   
@@ -120,10 +121,12 @@ module TestHelpers =
         use solution = new MonoDevelop.Projects.Solution ()
         solution.AddConfiguration ("", true) |> ignore
         solution.DefaultSolutionFolder.AddItem (project)
+        let typeSystemService = typeof<MonoDevelop.Ide.TypeSystem.TypeSystemService>
+
         using ( new MonoDevelop.Core.ProgressMonitor ())
             (fun monitor -> 
-                 let typeSystemService = typeof<MonoDevelop.Ide.TypeSystem.TypeSystemService>
-                 typeSystemService?Load (solution, monitor) |> Async.AwaitTask)
+                 let task: Task = typeSystemService?Load (solution, monitor)
+                 task |> Async.AwaitTask)
 
         content.Project <- project
 
@@ -137,5 +140,5 @@ module TestHelpers =
         content.Contents.Add(compExt)
 
         let pd = doc.UpdateParseDocument()
-        typeof<MonoDevelop.Ide.TypeSystem.TypeSystemService>?Unload(solution)
+        typeSystemService?Unload(solution)
         doc, content
