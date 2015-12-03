@@ -25,7 +25,10 @@ namespace WindowsPlatform.MainToolbar
 	/// </summary>
 	public partial class IconButtonControl : UserControl, INotifyPropertyChanged
 	{
-		ImageSource image, imageHovered, imagePressed, imageDisabled;
+		public static DependencyProperty ImageProperty = DependencyProperty.Register (
+			"Image", typeof (ImageSource), typeof (IconButtonControl));
+		
+		ImageSource imageHovered, imagePressed, imageDisabled;
 
 		ImageSource currentImage;
 		public ImageSource CurrentImage
@@ -36,8 +39,8 @@ namespace WindowsPlatform.MainToolbar
 
 		public ImageSource Image
 		{
-			get { return image; }
-			set { image = value; RaisePropertyChanged (); }
+			get { return (ImageSource)GetValue(ImageProperty); }
+			set { SetValue (ImageProperty, value); }
 		}
 
 		public ImageSource ImageHovered
@@ -100,13 +103,12 @@ namespace WindowsPlatform.MainToolbar
 			ImageDisabled = imageDisabled;
 		}
 
-		internal IconButtonControl ()
+		public IconButtonControl ()
 		{
 			InitializeComponent ();
 
 			DataContext = this;
 			ToolTipService.SetShowOnDisabled (this, true);
-			IsEnabled = false;
 		}
 
 		void OnClick (object sender, RoutedEventArgs args)
@@ -123,30 +125,40 @@ namespace WindowsPlatform.MainToolbar
 				CurrentImage = IsEnabled ? Image : ImageDisabled;
 			else if (e.Property == IsMouseOverProperty && IsEnabled && ImageHovered != null)
 				CurrentImage = IsMouseOver ? ImageHovered : Image;
+			else if (e.Property == ImageProperty)
+				CurrentImage = Image;
+			InvalidateMeasure ();
 		}
 
 		void OnMouseLeftButtonDown (object sender, MouseButtonEventArgs e)
 		{
-			base.OnMouseLeftButtonDown (e);
 			if (ImagePressed == null)
 				return;
 			if (IsEnabled)
 				CurrentImage = ImagePressed;
+			base.OnMouseLeftButtonDown (e);
 		}
 
 		void OnMouseLeftButtonUp (object sender, MouseButtonEventArgs e)
 		{
-			base.OnMouseLeftButtonDown (e);
 			if (Image == null)
 				return;
 			if (IsEnabled)
 				CurrentImage = Image;
+			base.OnMouseLeftButtonUp (e);
 		}
 
 		void RaisePropertyChanged ([CallerMemberName] string propName = null)
 		{
 			if (PropertyChanged != null)
 				PropertyChanged (this, new System.ComponentModel.PropertyChangedEventArgs(propName));
+		}
+
+		protected override Size MeasureOverride (Size constraint)
+		{
+			if (CurrentImage != null)
+				return new Size (CurrentImage.Width, CurrentImage.Width);
+			return base.MeasureOverride (constraint);
 		}
 
 		public event RoutedEventHandler Click;

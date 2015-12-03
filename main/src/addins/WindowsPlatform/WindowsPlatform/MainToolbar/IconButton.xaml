@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WindowsPlatform.MainToolbar"
              mc:Ignorable="d">
-    <Button Click="OnClick" FocusVisualStyle="{x:Null}" UseLayoutRounding="True">
+    <Button Click="OnClick" FocusVisualStyle="{x:Null}" UseLayoutRounding="True" Focusable="{Binding Focusable}">
         <Button.Template>
             <ControlTemplate TargetType="Button">
                 <StackPanel UseLayoutRounding="True">

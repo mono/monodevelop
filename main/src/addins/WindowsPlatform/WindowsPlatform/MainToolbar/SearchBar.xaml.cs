@@ -26,7 +26,9 @@ namespace WindowsPlatform.MainToolbar
 	/// </summary>
 	public partial class SearchBarControl : UserControl, INotifyPropertyChanged
 	{
-		readonly ImageSource searchIcon, clearIcon;
+		readonly ImageSource searchIcon, searchIconHovered, searchIconPressed;
+		readonly ImageSource clearIcon, clearIconHovered, clearIconPressed;
+
 		public SearchBarControl ()
 		{
 			InitializeComponent ();
@@ -43,8 +45,15 @@ namespace WindowsPlatform.MainToolbar
 			};
 
 			searchIcon = Stock.SearchboxSearch.GetImageSource (Xwt.IconSize.Small);
+			searchIconHovered = Xwt.Drawing.Image.FromResource (typeof(IdeApp), "searchbox-search-win-16~hover.png").WithSize (Xwt.IconSize.Small).GetImageSource ();
+			searchIconPressed = Xwt.Drawing.Image.FromResource (typeof(IdeApp), "searchbox-search-win-16~pressed.png").WithSize (Xwt.IconSize.Small).GetImageSource ();
 			clearIcon = ((MonoDevelop.Core.IconId)"md-searchbox-clear").GetImageSource (Xwt.IconSize.Small);
-			SearchIcon.Source = searchIcon;
+			clearIconHovered = Xwt.Drawing.Image.FromResource (typeof(IdeApp),"searchbox-clear-win-16~hover.png").WithSize (Xwt.IconSize.Small).GetImageSource ();
+			clearIconPressed = Xwt.Drawing.Image.FromResource (typeof(IdeApp), "searchbox-clear-win-16~pressed.png").WithSize (Xwt.IconSize.Small).GetImageSource ();
+			SearchIcon.Image = searchIcon;
+			SearchIcon.ImageHovered = searchIconHovered;
+			SearchIcon.ImagePressed = searchIconPressed;
+			SearchIcon.Focusable = false;
 		}
 
 		string placeholderText;
@@ -77,11 +86,15 @@ namespace WindowsPlatform.MainToolbar
 		{
 			if (string.IsNullOrEmpty (searchText) || searchText == PlaceholderText) {
 				if (isClearShown) {
-					SearchIcon.Source = searchIcon;
+					SearchIcon.Image = searchIcon;
+					SearchIcon.ImageHovered = searchIconHovered;
+					SearchIcon.ImagePressed = searchIconPressed;
 					isClearShown = false;
 				}
 			} else if (!isClearShown) {
-				SearchIcon.Source = clearIcon;
+				SearchIcon.Image = clearIcon;
+				SearchIcon.ImageHovered = clearIconHovered;
+				SearchIcon.ImagePressed = clearIconPressed;
 				isClearShown = true;
 			}
 		}
