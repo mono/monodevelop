@@ -108,16 +108,11 @@ type TestBase() =
                 with exn -> printfn "%A" exn
 
     member x.InternalSetup (rootDir) =
-
         Environment.SetEnvironmentVariable ("MONO_ADDINS_REGISTRY", rootDir)
         Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", rootDir)
-        Environment.SetEnvironmentVariable ("MONODEVELOP_CONSOLE_LOG_LEVEL", "Debug")
-        Environment.SetEnvironmentVariable ("MONODEVELOP_LOGGING_PAD_LEVEL", "Debug")
-
         Runtime.Initialize (true)
         Xwt.Application.Initialize ()
         Gtk.Application.Init ()
-        LoggingService.Initialize(true)
         TypeSystem.TypeSystemService.TrackFileChanges <- true
         DesktopService.Initialize ()
         Services.ProjectService.DefaultTargetFramework <- Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_4_5)
