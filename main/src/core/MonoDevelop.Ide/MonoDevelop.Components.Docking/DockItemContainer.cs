@@ -33,10 +33,11 @@ using Gtk;
 using Mono.Unix;
 using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Components.Docking
 {
-	class DockItemContainer: EventBox
+	class DockItemContainer: EventBox, ICommandDelegator
 	{
 		DockItem item;
 		Widget widget;
@@ -167,6 +168,14 @@ namespace MonoDevelop.Components.Docking
 				gc.Dispose ();
 			}
 			return base.OnExposeEvent (evnt);
+		}
+
+		public object GetDelegatedCommandTarget ()
+		{
+			var codon = item.DockLabelProvider as MonoDevelop.Ide.Codons.PadCodon;
+			if (codon == null)
+				return Parent;
+			return codon.PadContent;
 		}
 	}
 
