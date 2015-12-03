@@ -54,9 +54,11 @@ namespace MonoDevelop.CSharp
 			MonoDevelopWorkspace.LoadingFinished += delegate {
 				UpdateSymbolInfos ();
 			};
-			IdeApp.Workspace.LastWorkspaceItemClosed += delegate {
-				DisposeSymbolInfoTask ();
-			};
+			if (IdeApp.IsInitialized) {
+				IdeApp.Workspace.LastWorkspaceItemClosed += delegate {
+					DisposeSymbolInfoTask ();
+				};
+			}
 		}
 
 		public ProjectSearchCategory () : base (GettextCatalog.GetString ("Solution"))
