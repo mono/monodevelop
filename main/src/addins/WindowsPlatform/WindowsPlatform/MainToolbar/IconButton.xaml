@@ -4,17 +4,22 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WindowsPlatform.MainToolbar"
-             mc:Ignorable="d">
-    <Button Click="OnClick" FocusVisualStyle="{x:Null}" UseLayoutRounding="True" Focusable="{Binding Focusable}">
+             xmlns:platform="clr-namespace:WindowsPlatform"
+             mc:Ignorable="d"
+             Background="Transparent" BorderBrush="Transparent">
+    <Button Click="OnClick" FocusVisualStyle="{x:Null}" UseLayoutRounding="True" Focusable="{Binding Focusable}"
+			Background="{Binding Background}" BorderBrush="{Binding BorderBrush}">
         <Button.Template>
             <ControlTemplate TargetType="Button">
-                <StackPanel UseLayoutRounding="True">
+                <Border UseLayoutRounding="True"
+		            BorderThickness="{TemplateBinding BorderThickness}"
+		            Background="{TemplateBinding Background}"
+		            BorderBrush="{TemplateBinding BorderBrush}">
                     <ContentPresenter />
-                </StackPanel>
+                </Border>
             </ControlTemplate>
         </Button.Template>
         <Image x:Name="RunIcon" Source="{Binding CurrentImage}" UseLayoutRounding="True"
-    		MouseLeftButtonDown="OnMouseLeftButtonDown"
-    		MouseLeftButtonUp="OnMouseLeftButtonUp" />
+    		MouseLeftButtonDown="OnMouseLeftButtonDown"/>
     </Button>
 </UserControl>

@@ -132,20 +132,39 @@ namespace WindowsPlatform.MainToolbar
 
 		void OnMouseLeftButtonDown (object sender, MouseButtonEventArgs e)
 		{
-			if (ImagePressed == null)
-				return;
-			if (IsEnabled)
-				CurrentImage = ImagePressed;
+			OnMouseLeftButtonDown (e);
+		}
+
+		protected override void OnMouseLeftButtonDown (MouseButtonEventArgs e)
+		{
+			if (IsEnabled) {
+				if (ImagePressed != null)
+					CurrentImage = ImagePressed;
+				Background = Styles.MainToolbarButtonPressedBackgroundBrush;
+				BorderBrush = Styles.MainToolbarButtonPressedBorderBrush;
+			}
 			base.OnMouseLeftButtonDown (e);
 		}
 
-		void OnMouseLeftButtonUp (object sender, MouseButtonEventArgs e)
+		protected override void OnMouseLeftButtonUp (MouseButtonEventArgs e)
 		{
-			if (Image == null)
-				return;
-			if (IsEnabled)
+			if (ImageHovered != null) {
+				if (CurrentImage != ImageHovered)
+					CurrentImage = ImageHovered;
+			} else if (CurrentImage != Image)
 				CurrentImage = Image;
+			Background = Brushes.Transparent;
+			BorderBrush = Brushes.Transparent;
 			base.OnMouseLeftButtonUp (e);
+		}
+
+		protected override void OnMouseLeave (MouseEventArgs e)
+		{
+			if (CurrentImage != Image)
+				CurrentImage = Image;
+			Background = Brushes.Transparent;
+			BorderBrush = Brushes.Transparent;
+			base.OnMouseLeave (e);
 		}
 
 		void RaisePropertyChanged ([CallerMemberName] string propName = null)

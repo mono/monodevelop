@@ -36,6 +36,8 @@ namespace WindowsPlatform
 		public static Brush MainToolbarDisabledForegroundBrush { get; private set; }
 		public static Brush MainToolbarShadowBrush { get; private set; }
 		public static Brush MainToolbarSeparatorBrush { get; private set; }
+		public static Brush MainToolbarButtonPressedBackgroundBrush { get; private set; }
+		public static Brush MainToolbarButtonPressedBorderBrush { get; private set; }
 
 		public static Brush MenuBackgroundBrush { get; private set; }
 		public static Brush MenuForegroundBrush { get; private set; }
@@ -65,6 +67,8 @@ namespace WindowsPlatform
 			MainToolbarDisabledForegroundBrush = Brushes.Gray;
 			MainToolbarShadowBrush = Brushes.Gray;
 			MainToolbarSeparatorBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x7d, G = 0x7d, B = 0x7d });
+			MainToolbarButtonPressedBackgroundBrush = new SolidColorBrush (new Color { A = 0x66, R = 0x00, G = 0x8B, B = 0xFF });
+			MainToolbarButtonPressedBorderBrush = new SolidColorBrush (new Color { A = 0x66, R = 0x00, G = 0x8B, B = 0xFF });
 
 			MenuBackgroundBrush = SystemColors.MenuBarBrush;
 			MenuForegroundBrush = SystemColors.MenuTextBrush;
