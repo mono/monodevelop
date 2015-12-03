@@ -125,7 +125,7 @@ module TestHelpers =
 
         using ( new MonoDevelop.Core.ProgressMonitor ())
             (fun monitor -> 
-                 let task: Task = typeSystemService?Load (solution, monitor)
+                 let task: Task<_> = typeSystemService?Load (solution, monitor)
                  task |> Async.AwaitTask)
 
         content.Project <- project
