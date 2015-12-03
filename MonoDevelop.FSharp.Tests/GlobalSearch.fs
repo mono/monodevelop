@@ -51,6 +51,8 @@ type MyDelegate = delegate of (int * int) -> int
       match getAllSymbols input |> Async.RunSynchronously with
       | Some xs ->
         let tags = Search.byTag "op" xs
+        for tag in tags do
+          tag.
         tags |> Seq.length |> shouldEqual 1
       | _ -> Assert.Fail "No operator found"
 
@@ -70,17 +72,15 @@ type MyDelegate = delegate of (int * int) -> int
         tags |> Seq.length |> shouldEqual 1
       | _ -> Assert.Fail "No record found"
 
-    [<Test>]
-    member x.Types_Can_Be_Filtered() =
+    [<TestCase("t", 1)>]
+    [<TestCase("type", 1)>]
+    [<TestCase("c", 1)>]
+    member x.Types_Can_Be_Filtered(search, expectedCount) =
       match getAllSymbols input |> Async.RunSynchronously with
       | Some xs ->
-        let ttags = Search.byTag "t" xs
-        let typetags = Search.byTag "type" xs
-        let ctags = Search.byTag "c" xs
+        let tags = Search.byTag "t" xs
 
-        ttags |> Seq.length |> shouldEqual 1
-        typetags |> Seq.length |> shouldEqual 1
-        ctags |> Seq.length |> shouldEqual 1
+        tags |> Seq.length |> shouldEqual expectedCount
       | _ -> Assert.Fail "No type found"
 
     [<Test>]
