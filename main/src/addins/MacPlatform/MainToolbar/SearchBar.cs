@@ -41,7 +41,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		internal Widget gtkWidget;
 		internal event EventHandler<Xwt.KeyEventArgs> KeyPressed;
 		internal event EventHandler LostFocus;
-		new internal event EventHandler Activated;
+		internal event EventHandler SelectionActivated;
 		public event EventHandler GainedFocus;
 
 		/// <summary>
@@ -62,7 +62,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			Initialize ();
 		}
 
-		void LogMessage (string message)
+		internal void LogMessage (string message)
 		{
 			if (!debugSearchbar)
 				return;
@@ -73,15 +73,18 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		void Initialize ()
 		{
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResignKeyNotification, notification => DispatchService.GuiDispatch (() => {
+				var other = (NSWindow)notification.Object;
+
+				LogMessage ($"Lost focus from resign key: {other.DebugDescription}.");
 				if (notification.Object == Window) {
-					LogMessage ("Lost focus from resign key.");
 					if (LostFocus != null)
 						LostFocus (this, null);
 				}
 			}));
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notification => DispatchService.GuiDispatch (() => {
+				var other = (NSWindow)notification.Object;
+				LogMessage ("Lost focus from resize: {other.DebugDescription}.");
 				if (notification.Object == Window) {
-					LogMessage ("Lost focus from resize");
 					if (LostFocus != null)
 						LostFocus (this, null);
 				}
@@ -99,7 +102,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public override bool PerformKeyEquivalent (NSEvent theEvent)
 		{
-			return SendKeyPressed (theEvent.ToXwtKeyEventArgs ()) || base.PerformKeyEquivalent (theEvent);
+			var popupHandled = SendKeyPressed (theEvent.ToXwtKeyEventArgs ());
+			LogMessage ($"Popup handled {popupHandled}");
+			if (popupHandled)
+				return true;
+			var baseHandled = base.PerformKeyEquivalent (theEvent);;
+			LogMessage ($"Base handled {baseHandled}");
+			return baseHandled;
 		}
 
 		public override void DidEndEditing (NSNotification notification)
@@ -117,15 +126,17 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			if (value == (nint)(long)NSTextMovement.Return) {
 				LogMessage ("Activated by enter");
-				if (Activated != null)
-					Activated (this, null);
+				if (SelectionActivated != null)
+					SelectionActivated (this, null);
 				return;
 			}
+
+			LogMessage ($"Got NSTextMovement: {value}");
 
 			// This means we've reached a focus loss event.
 			var replacedWith = notification.UserInfo.ValueForKey ((NSString)"_NSFirstResponderReplacingFieldEditor");
 			if (replacedWith != this && LostFocus != null) {
-				LogMessage ("Mouse focus loss");
+				LogMessage ($"Mouse focus loss to {replacedWith.DebugDescription}");
 				LostFocus (this, null);
 			}
 		}
@@ -134,6 +145,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			base.ViewDidMoveToWindow ();
 
+			LogMessage ("View moved to parent window");
 			// Needs to be grabbed after it's parented.
 			gtkWidget = GtkMacInterop.NSViewToGtkWidget (this);
 		}
