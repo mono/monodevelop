@@ -82,6 +82,14 @@ namespace MonoDevelop.Components
 			IntPtr handle = pango_layout_get_context (layout.Handle);
 			return handle.Equals (IntPtr.Zero) ? null : GLib.Object.GetObject (handle) as Pango.Context;
 		}
+
+		[DllImport(PangoUtil.LIBPANGOCAIRO, CallingConvention=CallingConvention.Cdecl)]
+		static extern int pango_layout_get_baseline (IntPtr layout);
+
+		public static double GetPixelBaseline (this Pango.Layout layout)
+		{
+			return pango_layout_get_baseline (layout.Handle) / Pango.Scale.PangoScale;
+		}
 		
 		public static void DrawLine (this Cairo.Context cr, Cairo.Color color, double x1, double y1, double x2, double y2)
 		{

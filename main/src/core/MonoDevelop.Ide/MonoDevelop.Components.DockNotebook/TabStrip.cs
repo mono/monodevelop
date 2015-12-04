@@ -69,17 +69,18 @@ namespace MonoDevelop.Components.DockNotebook
 		public MenuButton DropDownButton;
 
 		static readonly double PixelScale = GtkWorkarounds.GetPixelScale ();
-		static readonly int TopBarPadding = (int)(3 * PixelScale);
-		static readonly int BottomBarPadding = (int)(3 * PixelScale);
-		static readonly int LeftRightPadding = (int)(10 * PixelScale);
-		static readonly int TopPadding = (int)(8 * PixelScale);
+		static readonly int TotalHeight = (int)(29 * PixelScale);
+		static readonly int LeftPadding = (int)(10 * PixelScale);
+		static readonly int RightPadding = (int)(7 * PixelScale);
+		static readonly int TopPadding = (int)(6 * PixelScale);
 		static readonly int BottomPadding = (int)(8 * PixelScale);
-		static readonly int LeftBarPadding = (int)(58 * PixelScale);
+		static readonly int LeftBarPadding = (int)(44 * PixelScale);
+		static readonly int RightBarPadding = (int)(22 * PixelScale);
 		static readonly int VerticalTextSize = (int)(11 * PixelScale);
-		const int TabSpacing = -1;
-		const int Radius = 2;
-		const int LeanWidth = 18;
-		const int CloseButtonSize = 14;
+		static readonly int ButtonSize = (int)(16 * PixelScale);
+		const int TabSpacing = 0;
+		const int LeanWidth = 14;
+		const int CloseButtonSize = 8;
 
 		const int TextOffset = 1;
 
@@ -249,10 +250,8 @@ namespace MonoDevelop.Components.DockNotebook
 			} else {
 				tabStartX = LeanWidth / 2;
 			}
-			tabEndX = allocation.Width - DropDownButton.SizeRequest ().Width;
-			var height = allocation.Height - BottomBarPadding;
-			if (height < 0)
-				height = 0;
+			tabEndX = allocation.Width - RightBarPadding;
+			var height = allocation.Height;
 
 			PreviousButton.SizeAllocate (new Gdk.Rectangle (
 				0, // allocation.X,
@@ -292,28 +291,20 @@ namespace MonoDevelop.Components.DockNotebook
 			Update ();
 		}
 
-		int totalHeight;
-
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
-			requisition.Height = totalHeight;
+			requisition.Height = TotalHeight;
 			requisition.Width = 0;
 		}
 
 		internal void InitSize ()
 		{
-			Pango.Layout la = CreateSizedLayout ();
-			la.SetText ("H");
-			int w, h;
-			la.GetPixelSize (out w, out h);
-
-			totalHeight = h + TopPadding + BottomPadding;
-			la.Dispose ();
+			return;
 		}
 
 		public int BarHeight {
-			get { return totalHeight - BottomBarPadding + 1; }
+			get { return TotalHeight; }
 		}
 
 		int lastDragX;
@@ -583,23 +574,19 @@ namespace MonoDevelop.Components.DockNotebook
 
 		DockNotebookTab FindTab (int x, int y)
 		{
-			// we will not actually draw anything, just do bounds checking
-			using (var context = CairoHelper.Create (GdkWindow)) {
-				var current = notebook.CurrentTab as DockNotebookTab;
-				if (current != null) {
-					LayoutTabBorder (context, Allocation, current.Allocation.Width, current.Allocation.X, 0, false);
-					if (context.InFill (x, y))
-						return current;
-				}
+			var current = notebook.CurrentTab as DockNotebookTab;
+			if (current != null) {
+				var allocWithLean = current.Allocation;
+				allocWithLean.X -= LeanWidth / 2;
+				allocWithLean.Width += LeanWidth;
+				if (allocWithLean.Contains (x, y))
+					return current;
+			}
 
-				context.NewPath ();
-				for (int n = 0; n < notebook.Tabs.Count; n++) {
-					var tab = (DockNotebookTab)notebook.Tabs [n];
-					LayoutTabBorder (context, Allocation, tab.Allocation.Width, tab.Allocation.X, 0, false);
-					if (context.InFill (x, y))
-						return tab;
-					context.NewPath ();
-				}
+			for (int n = 0; n < notebook.Tabs.Count; n++) {
+				var tab = (DockNotebookTab)notebook.Tabs [n];
+				if (tab.Allocation.Contains (x, y))
+					return tab;
 			}
 			return null;
 		}
@@ -638,29 +625,6 @@ namespace MonoDevelop.Components.DockNotebook
 		static int Clamp (int val, int min, int max)
 		{
 			return Math.Max (min, Math.Min (max, val));
-		}
-
-		void DrawBackground (Context ctx, Gdk.Rectangle region)
-		{
-			var h = region.Height;
-			ctx.Rectangle (0, 0, region.Width, h);
-			using (var gr = new LinearGradient (0, 0, 0, h)) {
-				if (isActiveNotebook) {
-					gr.AddColorStop (0, Styles.TabBarActiveGradientStartColor);
-					gr.AddColorStop (1, Styles.TabBarActiveGradientEndColor);
-				} else {
-					gr.AddColorStop (0, Styles.TabBarGradientStartColor);
-					gr.AddColorStop (1, Styles.TabBarGradientEndColor);
-				}
-				ctx.SetSource (gr);
-				ctx.Fill ();
-			}
-
-			ctx.MoveTo (region.X, 0.5);
-			ctx.LineTo (region.Right + 1, 0.5);
-			ctx.LineWidth = 1;
-			ctx.SetSourceColor (Styles.TabBarGradientShadowColor);
-			ctx.Stroke ();
 		}
 
 		int GetRenderOffset ()
@@ -733,7 +697,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 				if (active) {
 					int tmp = x;
-					drawActive = c => DrawTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, true, draggingTab, CreateTabLayout (tab));
+					drawActive = c => DrawTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, true, draggingTab, CreateTabLayout (tab, true));
 					tab.Allocation = new Gdk.Rectangle (tmp, Allocation.Y, width, Allocation.Height);
 				} else {
 					int tmp = x;
@@ -755,14 +719,15 @@ namespace MonoDevelop.Components.DockNotebook
 			drawCommands.Add (DrawClosingTab (n, new Gdk.Rectangle (x, y, 0, allocation.Height), out tabWidth));
 			drawCommands.Reverse ();
 
-			DrawBackground (ctx, allocation);
+			var image = Xwt.Drawing.Image.FromResource ("tabbar-back.9.png").WithSize (allocation.Width, allocation.Height);
+			ctx.DrawImage (this, image, 0, 0);
 
 			// Draw breadcrumb bar header
-			if (notebook.Tabs.Count > 0) {
-				ctx.Rectangle (0, allocation.Height - BottomBarPadding, allocation.Width, BottomBarPadding);
-				ctx.SetSourceColor (Styles.BreadcrumbBackgroundColor);
-				ctx.Fill ();
-			}
+//			if (notebook.Tabs.Count > 0) {
+//				ctx.Rectangle (0, allocation.Height - BottomBarPadding, allocation.Width, BottomBarPadding);
+//				ctx.SetSourceColor (Styles.BreadcrumbBackgroundColor);
+//				ctx.Fill ();
+//			}
 
 			ctx.Rectangle (tabStartX - LeanWidth / 2, allocation.Y, tabArea + LeanWidth, allocation.Height);
 			ctx.Clip ();
@@ -855,51 +820,24 @@ namespace MonoDevelop.Components.DockNotebook
 				tabBounds.X = (int)(tabBounds.X + (dragX - tabBounds.X) * dragXProgress);
 				tabBounds.X = Clamp (tabBounds.X, tabStartX, tabEndX - tabBounds.Width);
 			}
-			int padding = LeftRightPadding;
-			padding = (int)(padding * Math.Min (1.0, Math.Max (0.5, (tabBounds.Width - 30) / 70.0)));
+			int rightPadding = RightPadding;
+			rightPadding = (int)(rightPadding * Math.Min (1.0, Math.Max (0.5, (tabBounds.Width - 30) / 70.0)));
+			int leftPadding = LeftPadding;
+			leftPadding = (int)(leftPadding * Math.Min (1.0, Math.Max (0.5, (tabBounds.Width - 30) / 70.0)));
+
+			DrawTabBackground (this, ctx, allocation, tabBounds.Width, tabBounds.X, active);
 
 			ctx.LineWidth = 1;
-			LayoutTabBorder (ctx, allocation, tabBounds.Width, tabBounds.X, 0, active);
-			ctx.ClosePath ();
-			using (var gr = new LinearGradient (tabBounds.X, TopBarPadding, tabBounds.X, allocation.Bottom)) {
-				if (active) {
-					gr.AddColorStop (0, Styles.BreadcrumbGradientStartColor.MultiplyAlpha (tab.Opacity));
-					gr.AddColorStop (1, Styles.BreadcrumbBackgroundColor.MultiplyAlpha (tab.Opacity));
-				} else {
-					gr.AddColorStop (0, Styles.TabBarInactiveGradientStartColor.MultiplyAlpha (tab.Opacity));
-					gr.AddColorStop (1, Styles.TabBarInactiveGradientEndColor.MultiplyAlpha (tab.Opacity));
-				}
-				ctx.SetSource (gr);
-			}
-			ctx.Fill ();
-
-			ctx.SetSourceColor (Styles.TabBarInnerBorderColor.MultiplyAlpha (tab.Opacity));
-			LayoutTabBorder (ctx, allocation, tabBounds.Width, tabBounds.X, 1, active);
-			ctx.Stroke ();
-
-			ctx.SetSourceColor (Styles.BreadcrumbBorderColor.MultiplyAlpha (tab.Opacity));
-			LayoutTabBorder (ctx, allocation, tabBounds.Width, tabBounds.X, 0, active);
-			ctx.StrokePreserve ();
-
-			if (tab.GlowStrength > 0) {
-				Gdk.Point mouse = tracker.MousePosition;
-				using (var rg = new RadialGradient (mouse.X, tabBounds.Bottom, 0, mouse.X, tabBounds.Bottom, 100)) {
-					rg.AddColorStop (0, Styles.TabBarGlowGradientStartColor.MultiplyAlpha (tab.Opacity * tab.GlowStrength));
-					rg.AddColorStop (1, Styles.TabBarGlowGradientEndColor);
-
-					ctx.SetSource (rg);
-					ctx.Fill ();
-				}
-			} else {
-				ctx.NewPath ();
-			}
+			ctx.NewPath ();
 
 			// Render Close Button (do this first so we can tell how much text to render)
 
-			var ch = allocation.Height - TopBarPadding - BottomBarPadding + CloseImageTopOffset;
-			var crect = new Gdk.Rectangle (tabBounds.Right - padding - CloseButtonSize + 3,
-				            tabBounds.Y + TopBarPadding + (ch - CloseButtonSize) / 2,
-				            CloseButtonSize, CloseButtonSize);
+			var ch = allocation.Height + CloseImageTopOffset;
+			var crect = new Gdk.Rectangle (tabBounds.Right - rightPadding - CloseButtonSize + 3,
+							tabBounds.Height - BottomPadding - CloseButtonSize,
+							CloseButtonSize, CloseButtonSize);
+			if (active)
+				crect.X -= 1;
 			tab.CloseButtonAllocation = crect;
 			tab.CloseButtonAllocation.Inflate (2, 2);
 
@@ -910,13 +848,17 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 
 			// Render Text
-			int w = tabBounds.Width - (padding * 2 + CloseButtonSize);
+			int w = tabBounds.Width - (leftPadding * 2 + CloseButtonSize);
 			if (!drawCloseButton)
 				w += CloseButtonSize;
 
-			int textStart = tabBounds.X + padding;
+			int textStart = tabBounds.X + leftPadding;
+			var baseline = la.GetLine (0).Layout.GetPixelBaseline ();
+			double lx = tabBounds.Height - BottomPadding - baseline;
+			if (active)
+				lx -= 1;
 
-			ctx.MoveTo (textStart, tabBounds.Y + TopPadding + TextOffset + VerticalTextSize);
+			ctx.MoveTo (textStart, lx);
 			if (!MonoDevelop.Core.Platform.IsMac && !MonoDevelop.Core.Platform.IsWindows) {
 				// This is a work around for a linux specific problem.
 				// A bug in the proprietary ATI driver caused TAB text not to draw.
@@ -924,7 +866,7 @@ namespace MonoDevelop.Components.DockNotebook
 				la.Ellipsize = Pango.EllipsizeMode.End;
 				la.Width = (int)(w * Pango.Scale.PangoScale);
 				ctx.SetSourceColor (tab.Notify ? Styles.TabBarNotifyTextColor : Styles.TabBarActiveTextColor);
-				Pango.CairoHelper.ShowLayoutLine (ctx, la.GetLine (0));
+				Pango.CairoHelper.ShowLayout (ctx, la.GetLine (0).Layout);
 			} else {
 				// ellipses are for space wasting ..., we cant afford that
 				using (var lg = new LinearGradient (textStart + w - 5, 0, textStart + w + 3, 0)) {
@@ -934,62 +876,43 @@ namespace MonoDevelop.Components.DockNotebook
 					color.A = 0;
 					lg.AddColorStop (1, color);
 					ctx.SetSource (lg);
-					Pango.CairoHelper.ShowLayoutLine (ctx, la.GetLine (0));
+					Pango.CairoHelper.ShowLayout (ctx, la.GetLine (0).Layout);
 				}
 			}
 			la.Dispose ();
 		}
 
-		static void LayoutTabBorder (Context ctx, Gdk.Rectangle allocation, int contentWidth, int px, int margin, bool active = true)
+		static void DrawTabBackground (Widget widget, Context ctx, Gdk.Rectangle allocation, int contentWidth, int px, bool active = true)
 		{
-			double x = 0.5 + (double)px;
-			double y = (double)allocation.Height + 0.5 - BottomBarPadding + margin;
-			double height = allocation.Height - TopBarPadding - BottomBarPadding;
-
-			x += TabSpacing + margin;
-			contentWidth -= (TabSpacing + margin) * 2;
-
-			double rightx = x + contentWidth;
-
 			int lean = Math.Min (LeanWidth, contentWidth / 2);
 			int halfLean = lean / 2;
-			const int smoothing = 2;
-			if (active) {
-				ctx.MoveTo (0, y + 0.5);
-				ctx.LineTo (0, y);
-				ctx.LineTo (x - halfLean, y);
-			} else {
-				ctx.MoveTo (x - halfLean, y + 0.5);
-				ctx.LineTo (x - halfLean, y);
-			}
-			ctx.CurveTo (new PointD (x + smoothing, y),
-				new PointD (x - smoothing, y - height),
-				new PointD (x + halfLean, y - height));
-			ctx.LineTo (rightx - halfLean, y - height);
-			ctx.CurveTo (new PointD (rightx + smoothing, y - height),
-				new PointD (rightx - smoothing, y),
-				new PointD (rightx + halfLean, y));
 
-			if (active) {
-				ctx.LineTo (allocation.Width, y);
-				ctx.LineTo (allocation.Width, y + 0.5);
-			} else {
-				ctx.LineTo (rightx + halfLean, y + 0.5);
-			}
+			double x = px + TabSpacing - halfLean;
+			double y = 0;
+			double height = allocation.Height;
+			double width = contentWidth - (TabSpacing * 2) + lean;
+
+			var image = Xwt.Drawing.Image.FromResource ("tabbar-inactive.9.png").WithSize (width, height);
+			ctx.DrawImage (widget, image, x, y);
+
+			ctx.LineWidth = 1;
+			ctx.SetSourceRGB (1, 0, 0);
+			ctx.Rectangle (x, y, width, height);
+			ctx.Stroke ();
 		}
 
-		Pango.Layout CreateSizedLayout ()
+		Pango.Layout CreateSizedLayout (bool active)
 		{
 			var la = new Pango.Layout (PangoContext);
-			la.FontDescription = Pango.FontDescription.FromString ("normal");
+			la.FontDescription = Pango.FontDescription.FromString (active ? "bold" : "normal");
 			la.FontDescription.AbsoluteSize = Pango.Units.FromPixels (VerticalTextSize);
 
 			return la;
 		}
 
-		Pango.Layout CreateTabLayout (DockNotebookTab tab)
+		Pango.Layout CreateTabLayout (DockNotebookTab tab, bool active = false)
 		{
-			Pango.Layout la = CreateSizedLayout ();
+			Pango.Layout la = CreateSizedLayout (active);
 			if (!string.IsNullOrEmpty (tab.Markup))
 				la.SetMarkup (tab.Markup);
 			else if (!string.IsNullOrEmpty (tab.Text))
