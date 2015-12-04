@@ -122,8 +122,6 @@ namespace MonoDevelop.NUnit
 
 		class UnitTestMarkerHostImpl : UnitTestMarkerHost
 		{
-			static ContextMenu menu;
-
 			readonly AbstractUnitTestTextEditorExtension ext;
 
 			public UnitTestMarkerHostImpl (AbstractUnitTestTextEditorExtension ext)
@@ -174,7 +172,7 @@ namespace MonoDevelop.NUnit
 			{
 				var debugModeSet = Runtime.ProcessService.GetDebugExecutionMode ();
 
-				menu = new ContextMenu ();
+				var menu = new ContextMenu ();
 				if (unitTest.IsFixture) {
 					var menuItem = new ContextMenuItem ("_Run All");
 					menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, false).Run;
@@ -275,7 +273,6 @@ namespace MonoDevelop.NUnit
 				List<NUnitProjectTestSuite> testSuites = new List<NUnitProjectTestSuite>();
 				internal void Run (object sender, EventArgs e)
 				{
-					menu = null;
 					if (IdeApp.ProjectOperations.IsBuilding (IdeApp.ProjectOperations.CurrentSelectedSolution) || 
 						IdeApp.ProjectOperations.IsRunning (IdeApp.ProjectOperations.CurrentSelectedSolution))
 						return;
@@ -329,7 +326,6 @@ namespace MonoDevelop.NUnit
 
 				internal void Select (object sender, EventArgs e)
 				{
-					menu = null;
 					var test = NUnitService.Instance.SearchTestById (testCase);
 					if (test == null)
 						return;
