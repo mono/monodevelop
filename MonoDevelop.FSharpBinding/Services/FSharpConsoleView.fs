@@ -14,6 +14,14 @@ open MonoDevelop.Ide
  
 type TokeniserOutput =
   | Token of FSharpTokenInfo * string | EndState of FSharpTokenizerLexState
+  static member PlainHash = Token({LeftColumn=0
+                                   RightColumn=0
+                                   ColorClass=FSharpTokenColorKind.PreprocessorKeyword
+                                   CharClass=FSharpTokenCharKind.Delimiter
+                                   FSharpTokenTriggerClass=FSharpTokenTriggerClass.None
+                                   Tag=0
+                                   TokenName="#"
+                                   FullMatchedLength=1}, "#")
 
 [<RequireQualifiedAccess>]
 type Prompt = Normal | Multiline | None
@@ -86,24 +94,60 @@ type FSharpConsoleView() as x =
     let mutable end' = x.InputLineEnd
     buffer.Delete (&start, &end')
 
-  let highlightLine line state =
-    let tokens = getTokensForLine "temp.fsx" None line state
+  let (|Keyword|_|) t =
+    match t.ColorClass with FSharpTokenColorKind.Keyword -> Some(t) | _ -> None
+    
+  let (|Identifier|_|) t =
+    match t.ColorClass with FSharpTokenColorKind.Identifier -> Some(t) | _ -> None
+    
+  let (|UpperIdentifier|_|) t =
+    match t.ColorClass with FSharpTokenColorKind.UpperIdentifier -> Some(t) | _ -> None
+    
+  let (|Comment|_|) t =
+    match t.ColorClass with FSharpTokenColorKind.Comment -> Some(t) | _ -> None
+    
+  let (|String|_|) (t:FSharpTokenInfo) =
+    match t.ColorClass with
+    | FSharpTokenColorKind.String 
+    | FSharpTokenColorKind.Text when not (t.CharClass = FSharpTokenCharKind.Delimiter || t.CharClass = FSharpTokenCharKind.Operator) -> Some(t)
+    | _ -> None
+    
+  let (|InactiveCode|_|) t =
+    match t.ColorClass with FSharpTokenColorKind.InactiveCode -> Some(t) | _ -> None
+    
+  let (|Number|_|) t =
+    match t.ColorClass with FSharpTokenColorKind.Number -> Some(t) | _ -> None
+    
+  let (|Operator|_|) t =
+    match t.ColorClass, t.CharClass with
+    | FSharpTokenColorKind.Operator, _ -> Some(t)
+    | _, FSharpTokenCharKind.Delimiter
+    | _, FSharpTokenCharKind.Operator -> Some(t)
+    | _ -> None
+    
+  let (|Preprocessor|_|) t =
+    match t.ColorClass with FSharpTokenColorKind.PreprocessorKeyword -> Some(t) | _ -> None
+
+  let highlightLine (line:string) state =
+    let tokens =
+      if line.StartsWith("#") && line.Length > 1 && not (line.StartsWith("#r")) then
+        [  yield TokeniserOutput.PlainHash
+           yield! getTokensForLine "temp.fsx" None line.[1..] state ]
+      else getTokensForLine "temp.fsx" None line state
     tokens |> 
     List.fold (fun state t ->
                match t with
                | Token( t,txt) ->
-                   match t.ColorClass with
-                   | FSharpTokenColorKind.Keyword -> applyToken txt tags.[Keyword]; state
-                   | FSharpTokenColorKind.Identifier -> applyToken txt tags.[User]; state
-                   | FSharpTokenColorKind.UpperIdentifier -> applyToken txt tags.[User]; state
-                   | FSharpTokenColorKind.Comment -> applyToken txt tags.[Comment]; state
-                   | FSharpTokenColorKind.String -> applyToken txt tags.[String]; state
-                   | FSharpTokenColorKind.Text -> applyToken txt tags.[String]; state
-                   | FSharpTokenColorKind.InactiveCode -> applyToken txt tags.[Inactive]; state
-                   | FSharpTokenColorKind.Number -> applyToken txt tags.[Number]; state
-                   | FSharpTokenColorKind.Operator -> applyToken txt tags.[Operator]; state
-                   | FSharpTokenColorKind.PreprocessorKeyword -> applyToken txt tags.[Preprocessor]; state
-                   | FSharpTokenColorKind.Default
+                   match t with
+                   | Keyword _-> applyToken txt tags.[Keyword]; state
+                   | Identifier _-> applyToken txt tags.[User]; state
+                   | UpperIdentifier _-> applyToken txt tags.[User]; state
+                   | Comment _-> applyToken txt tags.[Comment]; state
+                   | String _-> applyToken txt tags.[String]; state
+                   | InactiveCode _-> applyToken txt tags.[Inactive]; state
+                   | Number _-> applyToken txt tags.[Number]; state
+                   | Operator _-> applyToken txt tags.[Operator]; state
+                   | Preprocessor _-> applyToken txt tags.[Preprocessor]; state
                    | _ -> applyToken txt tags.[PlainText]; state
                | EndState state -> state) 0L
   
@@ -115,7 +159,6 @@ type FSharpConsoleView() as x =
 
   let addDisposable =
     disposables.Add
-
 
   let updateColors() =
     let addTag (k:Tags) v = 
@@ -139,7 +182,6 @@ type FSharpConsoleView() as x =
   do updateColors()
      x.Add (textView)
      x.ShowAll ()
-
 
   member x.InitialiseEvents() =
     disposables.Add(
@@ -315,8 +357,9 @@ type FSharpConsoleView() as x =
       | _ ->
         //do our syntax highlighting
         using (startInputProcessing()) (fun _ ->
-        let nextKey = char (Gdk.Keyval.ToUnicode(args.Event.KeyValue))
-        let line = x.InputLine + nextKey.ToString()
+        let nextKey = Gdk.Keyval.ToUnicode(args.Event.KeyValue) |> char |> string
+        buffer.InsertAtCursor(nextKey)
+        let line = x.InputLine
         eraseCurrentLine()
         let lines = line.Split([|'\n'|], StringSplitOptions.None)
         if lines.Length = 1 then tempState <- highlightLine line lastLineState
@@ -351,23 +394,21 @@ type FSharpConsoleView() as x =
   member x.WriteOutput (line:string, highlight) =
     using (startInputProcessing()) (fun _ ->
     if highlight then
-      let tokens = getTokensFromLines "temp.fs" None (line.Split([|'\n';'\r'|], StringSplitOptions.RemoveEmptyEntries)) 0L
+      let tokens = getTokensFromLines "temp.fsx" None (line.Split([|'\n';'\r'|], StringSplitOptions.RemoveEmptyEntries)) 0L
       tokens |>
       List.iter 
         (List.iter (function
                     | Token( t,txt) ->
-                        match t.ColorClass with
-                        | FSharpTokenColorKind.Keyword -> applyToken txt tags.[Keyword]
-                        | FSharpTokenColorKind.Identifier -> applyToken txt tags.[User]
-                        | FSharpTokenColorKind.UpperIdentifier -> applyToken txt tags.[User]
-                        | FSharpTokenColorKind.Comment -> applyToken txt tags.[Comment]
-                        | FSharpTokenColorKind.String -> applyToken txt tags.[String]
-                        | FSharpTokenColorKind.Text -> applyToken txt tags.[String]
-                        | FSharpTokenColorKind.InactiveCode -> applyToken txt tags.[Inactive]
-                        | FSharpTokenColorKind.Number -> applyToken txt tags.[Number]
-                        | FSharpTokenColorKind.Operator -> applyToken txt tags.[Operator]
-                        | FSharpTokenColorKind.PreprocessorKeyword -> applyToken txt tags.[Preprocessor]
-                        | FSharpTokenColorKind.Default
+                        match t with
+                        | Keyword _-> applyToken txt tags.[Keyword]
+                        | Identifier _-> applyToken txt tags.[User]
+                        | UpperIdentifier _-> applyToken txt tags.[User]
+                        | Comment _-> applyToken txt tags.[Comment]
+                        | String _-> applyToken txt tags.[String]
+                        | InactiveCode _-> applyToken txt tags.[Inactive]
+                        | Number _-> applyToken txt tags.[Number]
+                        | Operator _-> applyToken txt tags.[Operator]
+                        | Preprocessor _-> applyToken txt tags.[Preprocessor]
                         | _ -> applyToken txt tags.[PlainText]
                     | EndState _ ->
                         let mutable end' = buffer.EndIter
