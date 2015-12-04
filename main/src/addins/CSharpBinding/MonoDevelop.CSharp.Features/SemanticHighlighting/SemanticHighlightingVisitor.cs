@@ -218,7 +218,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 
 		internal static bool IsRegexMatchMethod (SymbolInfo symbolInfo)
 		{
-			return IsRegexType (symbolInfo.Symbol?.ContainingType) && symbolInfo.Symbol.IsStatic && (symbolInfo.Symbol.Name == "IsMatch" || symbolInfo.Symbol.Name == "Match" || symbolInfo.Symbol.Name == "Matches");
+			var symbol = symbolInfo.Symbol;
+			if (symbol == null)
+				return false;
+			return IsRegexType (symbol.ContainingType) && symbol.IsStatic && (symbol.Name == "IsMatch" || symbol.Name == "Match" || symbol.Name == "Matches");
 		}
 
 		public override void VisitObjectCreationExpression (ObjectCreationExpressionSyntax node)
@@ -242,7 +245,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 
 		internal static bool IsRegexType (INamedTypeSymbol containingType)
 		{
-			return containingType.Name == "Regex" && containingType.ContainingNamespace.GetFullName () == "System.Text.RegularExpressions";
+			return containingType != null && containingType.Name == "Regex" && containingType.ContainingNamespace.GetFullName () == "System.Text.RegularExpressions";
 		}
 
 		void ColorizeRegex (LiteralExpressionSyntax literal)

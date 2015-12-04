@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		public override bool IsTriggerCharacter (Microsoft.CodeAnalysis.Text.SourceText text, int position)
 		{
 			var ch = text [position];
-			return ch == '\\';
+			return ch == '\\' || base.IsTriggerCharacter (text, position);
 		}
 
 		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
@@ -51,31 +51,75 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			var document = completionContext.Document;
 			var position = completionContext.Position;
 			var semanticModel = ctx.SemanticModel;
+			if (info.TriggerCharacter == '\\') {
+				if (ctx.TargetToken.Parent != null && ctx.TargetToken.Parent.Parent != null &&
+				ctx.TargetToken.Parent.Parent.IsKind (SyntaxKind.Argument)) {
+					var argument = ctx.TargetToken.Parent.Parent as ArgumentSyntax;
 
-			if (ctx.TargetToken.Parent != null && ctx.TargetToken.Parent.Parent != null && 
-			    ctx.TargetToken.Parent.Parent.IsKind(SyntaxKind.Argument)) {
-				var argument = ctx.TargetToken.Parent.Parent as ArgumentSyntax;
-
-				var symbolInfo = semanticModel.GetSymbolInfo (ctx.TargetToken.Parent.Parent.Parent.Parent);
-				if (symbolInfo.Symbol == null)
-					return Enumerable.Empty<CompletionData> ();
-				
-				if (SemanticHighlightingVisitor<int>.IsRegexMatchMethod (symbolInfo)) {
-					if (((ArgumentListSyntax)argument.Parent).Arguments[1] != argument)
+					var symbolInfo = semanticModel.GetSymbolInfo (ctx.TargetToken.Parent.Parent.Parent.Parent);
+					if (symbolInfo.Symbol == null)
 						return Enumerable.Empty<CompletionData> ();
-					completionResult.AutoSelect = false;
-					return GetFormatCompletionData(engine, argument.Expression.ToString ()[0] == '@');
-				}
-				if (SemanticHighlightingVisitor<int>.IsRegexConstructor (symbolInfo)) {
-					if (((ArgumentListSyntax)argument.Parent).Arguments[0] != argument)
-						return Enumerable.Empty<CompletionData> ();
-					completionResult.AutoSelect = false;
-					return GetFormatCompletionData(engine, argument.Expression.ToString ()[0] == '@');
-				}
 
+					if (SemanticHighlightingVisitor<int>.IsRegexMatchMethod (symbolInfo)) {
+						if (((ArgumentListSyntax)argument.Parent).Arguments [1] != argument)
+							return Enumerable.Empty<CompletionData> ();
+						completionResult.AutoSelect = false;
+						return GetFormatCompletionData (engine, argument.Expression.ToString () [0] == '@');
+					}
+					if (SemanticHighlightingVisitor<int>.IsRegexConstructor (symbolInfo)) {
+						if (((ArgumentListSyntax)argument.Parent).Arguments [0] != argument)
+							return Enumerable.Empty<CompletionData> ();
+						completionResult.AutoSelect = false;
+						return GetFormatCompletionData (engine, argument.Expression.ToString () [0] == '@');
+					}
+				}
+			} else {
+				var ma = ctx.TargetToken.Parent as MemberAccessExpressionSyntax;
+				if (ma != null) {
+					var symbolInfo = semanticModel.GetSymbolInfo (ma.Expression);
+					var typeInfo = semanticModel.GetTypeInfo (ma.Expression);
+					Console.WriteLine (1);
+					if (typeInfo.Type.Name == "Match"  && typeInfo.Type.ContainingNamespace.GetFullName () == "System.Text.RegularExpressions" ) {
+						var items = new List<CompletionData>();
+						Console.WriteLine (2);
+						foreach (var grp in GetGroups (ctx, symbolInfo.Symbol)) {
+							items.Add (engine.Factory.CreateGenericData (this, "Groups[\"" + grp + "\"]", GenericDataType.Undefined));
+						}
+
+						return items;
+					}
+				}
 			}
-
 			return Enumerable.Empty<CompletionData> ();
+		}
+
+		IEnumerable<string> GetGroups (SyntaxContext ctx, ISymbol symbol)
+		{
+			var root = ctx.SyntaxTree.GetRoot ();
+			foreach (var decl in symbol.DeclaringSyntaxReferences) {
+				var node = root.FindNode (decl.Span) as VariableDeclaratorSyntax;
+				if (node == null)
+					continue;
+				var invocation = node.Initializer.Value as InvocationExpressionSyntax;
+				var invocationSymbol = ctx.SemanticModel.GetSymbolInfo (invocation).Symbol;
+				Console.WriteLine (invocationSymbol);
+				if (invocationSymbol.Name == "Match" && SemanticHighlightingVisitor<int>.IsRegexType (invocationSymbol.ContainingType)) {
+					if (invocation.ArgumentList.Arguments.Count < 2)
+						continue;
+					var val = ctx.SemanticModel.GetConstantValue (invocation.ArgumentList.Arguments [1].Expression);
+					if (!val.HasValue)
+						continue;
+					var str = val.Value.ToString ();
+					int idx = -1;
+					while  ((idx = str.IndexOf ("(?<", idx + 1, StringComparison.Ordinal)) >= 0) {
+						var closingIndex = str.IndexOf (">", idx, StringComparison.Ordinal);
+						if (closingIndex >= idx) {
+							yield return str.Substring (idx + 3, closingIndex - idx - 3);
+							idx = closingIndex - 1;
+						}
+					}
+				}
+			}
 		}
 
 		IEnumerable<CompletionData> GetFormatCompletionData (CompletionEngine engine, bool isVerbatimString)
