@@ -203,26 +203,29 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 			}
 
 			var containingType = symbolInfo.Symbol?.ContainingType;
-			if (IsRegexType (containingType)) {
-				if (symbolInfo.Symbol.IsStatic && (symbolInfo.Symbol.Name == "IsMatch" || symbolInfo.Symbol.Name == "Match" || symbolInfo.Symbol.Name == "Matches")) {
-					if (node.ArgumentList.Arguments.Count > 1) {
-						var pattern = node.ArgumentList.Arguments [1].Expression as LiteralExpressionSyntax;
-						if (pattern != null && pattern.IsKind (SyntaxKind.StringLiteralExpression)) {
-							ColorizeRegex (pattern);
-						}
-
+			if (IsRegexMatchMethod (symbolInfo)) {
+				if (node.ArgumentList.Arguments.Count > 1) {
+					var pattern = node.ArgumentList.Arguments [1].Expression as LiteralExpressionSyntax;
+					if (pattern != null && pattern.IsKind (SyntaxKind.StringLiteralExpression)) {
+						ColorizeRegex (pattern);
 					}
+
 				}
 			}
 
 			base.VisitInvocationExpression (node);
 		}
 
+		internal static bool IsRegexMatchMethod (SymbolInfo symbolInfo)
+		{
+			return IsRegexType (symbolInfo.Symbol?.ContainingType) && symbolInfo.Symbol.IsStatic && (symbolInfo.Symbol.Name == "IsMatch" || symbolInfo.Symbol.Name == "Match" || symbolInfo.Symbol.Name == "Matches");
+		}
+
 		public override void VisitObjectCreationExpression (ObjectCreationExpressionSyntax node)
 		{
 			base.VisitObjectCreationExpression (node);
 			var symbolInfo = semanticModel.GetSymbolInfo (node, cancellationToken);
-			if (symbolInfo.Symbol?.ContainingType is INamedTypeSymbol && IsRegexType (symbolInfo.Symbol.ContainingType)) {
+			if (IsRegexConstructor (symbolInfo)) {
 				if (node.ArgumentList.Arguments.Count > 0) {
 					var pattern = node.ArgumentList.Arguments [0].Expression as LiteralExpressionSyntax;
 					if (pattern != null && pattern.IsKind (SyntaxKind.StringLiteralExpression)) {
@@ -232,7 +235,12 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 			}
 		}
 
-		static bool IsRegexType (INamedTypeSymbol containingType)
+		internal static bool IsRegexConstructor (SymbolInfo symbolInfo)
+		{
+			return symbolInfo.Symbol?.ContainingType is INamedTypeSymbol && IsRegexType (symbolInfo.Symbol.ContainingType);
+		}
+
+		internal static bool IsRegexType (INamedTypeSymbol containingType)
 		{
 			return containingType.Name == "Regex" && containingType.ContainingNamespace.GetFullName () == "System.Text.RegularExpressions";
 		}
