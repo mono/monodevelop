@@ -228,6 +228,19 @@ style "tooltip"
     }
 }
 
+style "treeview" = "default"
+{
+	base[SELECTED] = @selected_bg_color
+	base[ACTIVE] = @selected_bg_color
+	text[SELECTED] = @selected_fg_color
+	text[ACTIVE] = @selected_fg_color
+    engine "xamarin" {
+		roundness = 0
+		gradient_shades = { 1.01, 1.01, 1.01, 1.01 }
+		glazestyle = 1
+    }
+}
+
 style "tree-header" = "wide"
 {
     bg[NORMAL] = "#f2f2f2"
@@ -452,6 +465,7 @@ widget "*.gtk-combobox-popup-menu*" style "combo-box-menu"
 widget_class "*<GtkToolbar>*" style "toolbar"
 widget_class "*ToolButton*" style "toolbar-button"
 
+widget_class "*.<GtkTreeView>*" style "treeview"
 widget_class "*.GtkTreeView.GtkButton" style "tree-header"
 widget_class "*.GtkList.GtkButton" style "tree-header"
 

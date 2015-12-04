@@ -290,40 +290,44 @@ namespace MonoDevelop.MacIntegration
 			IdeApp.Preferences.UserInterfaceTheme.Changed += (s,a) => PatchGtkTheme ();
 		}
 
+		// VV/VK: Disable tint based color generation
 		// This will dynamically generate a gtkrc for certain widgets using system control colors.
 		void PatchGtkTheme ()
 		{
-			string color_hex, text_hex;
-
-			if (MonoDevelop.Core.Platform.OSVersion >= MonoDevelop.Core.MacSystemInformation.Yosemite) {
-				color_hex = "#5189ed";
-				text_hex = "#ffffff";
-			} else {
-				// FIXME: VV: New Windows selection colors
-				color_hex = "#c5d4e0";
-				text_hex = "#000";
-			}
-
-			string gtkrc = String.Format (@"
-				style ""treeview"" = ""default"" {{
-					base[SELECTED] = ""{0}""
-					base[ACTIVE] = ""{0}""
-					text[SELECTED] = ""{1}""
-					text[ACTIVE] = ""{1}""
-					engine ""xamarin"" {{
-						roundness = 0
-						gradient_shades = {{ 1.01, 1.01, 1.01, 1.01 }}
-						glazestyle = 1
-					}}
-				}}
-
-				widget_class ""*.<GtkTreeView>*"" style ""treeview""
-				",
-				color_hex,
-				text_hex
-			);
-
-			Gtk.Rc.ParseString (gtkrc);
+//			string color_hex, text_hex;
+//
+//			if (MonoDevelop.Core.Platform.OSVersion >= MonoDevelop.Core.MacSystemInformation.Yosemite) {
+//				NSControlTint tint = NSColor.CurrentControlTint;
+//				NSColor text = NSColor.SelectedMenuItemText.UsingColorSpace (NSColorSpace.GenericRGBColorSpace);
+//				NSColor color = tint == NSControlTint.Blue ? NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.GenericRGBColorSpace) : NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.DeviceWhite);
+//
+//				color_hex = ConvertColorToHex (color);
+//				text_hex = ConvertColorToHex (text);
+//			} else {
+//				color_hex = "#c5d4e0";
+//				text_hex = "#000";
+//			}
+//
+//			string gtkrc = String.Format (@"
+//				style ""treeview"" = ""default"" {{
+//					base[SELECTED] = ""{0}""
+//					base[ACTIVE] = ""{0}""
+//					text[SELECTED] = ""{1}""
+//					text[ACTIVE] = ""{1}""
+//					engine ""xamarin"" {{
+//						roundness = 0
+//						gradient_shades = {{ 1.01, 1.01, 1.01, 1.01 }}
+//						glazestyle = 1
+//					}}
+//				}}
+//
+//				widget_class ""*.<GtkTreeView>*"" style ""treeview""
+//				",
+//				color_hex,
+//				text_hex
+//			);
+//
+//			Gtk.Rc.ParseString (gtkrc);
 		}
 
 		void GlobalSetup ()

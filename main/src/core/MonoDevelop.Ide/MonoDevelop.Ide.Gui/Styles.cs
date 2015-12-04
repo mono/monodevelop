@@ -309,6 +309,8 @@ namespace MonoDevelop.Ide.Gui
 			BackgroundColor = defaultStyle.Background (Gtk.StateType.Normal).ToCairoColor ();	// must be the bg color from Gtkrc
 			BaseBackgroundColor = defaultStyle.Base (Gtk.StateType.Normal).ToCairoColor ();	// must be the base color from Gtkrc
 			BaseForegroundColor = defaultStyle.Foreground (Gtk.StateType.Normal).ToCairoColor ();	// must be the text color from Gtkrc
+			BaseSelectionBackgroundColor = defaultStyle.Base (Gtk.StateType.Selected).ToCairoColor ();
+			BaseSelectionTextColor = defaultStyle.Text (Gtk.StateType.Selected).ToCairoColor ();
 
 			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
 				LoadLightStyle ();
@@ -324,15 +326,6 @@ namespace MonoDevelop.Ide.Gui
 
 		internal static void LoadLightStyle ()
 		{
-			#if MAC
-			BaseSelectionBackgroundColor = CairoExtensions.ParseColor ("5189ed");
-			BaseSelectionTextColor = CairoExtensions.ParseColor ("ffffff");
-			#else
-			// FIXME: VV: New Windows selection colors
-			BaseSelectionBackgroundColor = CairoExtensions.ParseColor ("3f59e5");
-			BaseSelectionTextColor = CairoExtensions.ParseColor ("ffffff");
-			#endif
-
 			ThinSplitterColor = new Gdk.Color (166, 166, 166);
 
 			TabBarBackgroundColor = CairoExtensions.ParseColor ("c2c2c2");
@@ -505,15 +498,6 @@ namespace MonoDevelop.Ide.Gui
 
 		internal static void LoadDarkStyle ()
 		{
-			#if MAC
-			BaseSelectionBackgroundColor = CairoExtensions.ParseColor ("5189ed");
-			BaseSelectionTextColor = CairoExtensions.ParseColor ("ffffff");
-			#else
-			// FIXME: VV: New Windows selection colors
-			BaseSelectionBackgroundColor = CairoExtensions.ParseColor ("3f59e5");
-			BaseSelectionTextColor = CairoExtensions.ParseColor ("ffffff");
-			#endif
-
 			ThinSplitterColor = new Gdk.Color (89, 89, 89);
 
 			TabBarBackgroundColor = CairoExtensions.ParseColor ("333333");
