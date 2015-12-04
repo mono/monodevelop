@@ -157,14 +157,6 @@ namespace MonoDevelop.Core
 		}
 
 		[Test]
-		public void InvalidCharactersTests ()
-		{
-			// Assert compatibility so we know something changed over here.
-			Assert.That (FilePath.GetInvalidFileNameChars (), Is.EquivalentTo (Path.GetInvalidFileNameChars ().Concat ("#%&")));
-			Assert.That (FilePath.GetInvalidPathChars (), Is.EquivalentTo (Path.GetInvalidPathChars ().Concat ("#%&")));
-		}
-
-		[Test]
 		public void InvalidCharactersAreCloned ()
 		{
 			Assert.AreNotSame (FilePath.GetInvalidFileNameChars (), FilePath.GetInvalidFileNameChars ());
