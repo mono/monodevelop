@@ -130,6 +130,11 @@
         { "name":"String", "fore":"literal-orange" },
         { "name":"String(Escape)", "fore":"literal-escape" },
         { "name":"String(C# @ Verbatim)", "fore":"literal-orange" },
+        { "name":"String(Regex Set Constructs)", "fore":"#ffbd54" },
+        { "name":"String(Regex Character Class)", "fore":"#6fb3f8" },
+        { "name":"String(Regex Grouping Constructs)", "fore":"#2b922b" },
+        { "name":"String(Regex Escape Character)", "fore":"#ff0d80" },
+        { "name":"String(Regex Alt Escape Character)", "fore":"#faafba" },
 
         { "name":"Number", "fore":"literal-orange" },
 
