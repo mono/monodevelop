@@ -236,7 +236,6 @@ namespace MonoDevelop.NUnit
 							menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier + id, true).Select;
 							submenu.Add (menuItem);
 
-
 							var subMenuItem = new ContextMenuItem (label);
 							// if (!string.IsNullOrEmpty (tooltip))
 							//	subMenuItem.TooltipText = tooltip;

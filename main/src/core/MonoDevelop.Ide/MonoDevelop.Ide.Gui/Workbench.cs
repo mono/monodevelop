@@ -347,7 +347,7 @@ namespace MonoDevelop.Ide.Gui
 				GettextCatalog.GetString ("Save the changes to document '{0}' before creating a new solution?",
 					doc.Window.ViewContent.IsUntitled
 					? doc.Window.ViewContent.UntitledName
-					: System.IO.Path.GetFileName (doc.FileName)),
+					: System.IO.Path.GetFileName (doc.Window.ViewContent.ContentName)),
 				"",
 				AlertButton.Cancel, doc.Window.ViewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
 		}
