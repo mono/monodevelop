@@ -121,13 +121,9 @@ namespace Mono.TextTemplating
 		
 		Assembly ResolveReferencedAssemblies (object sender, ResolveEventArgs args)
 		{
-			Assembly asm = null;
-			foreach (var asmFile in assemblyFiles) {
-				var name = System.IO.Path.GetFileNameWithoutExtension (asmFile);
-				if (args.Name.StartsWith (name, StringComparison.Ordinal))
-					asm = Assembly.LoadFrom (asmFile);
-			}
-			return asm;
+			AssemblyName asmName = new AssemblyName(args.Name);
+			var path = host.ResolveAssemblyReference (asmName.Name);
+			return Assembly.LoadFrom (path);
 		}
 		
 		public void Dispose ()
