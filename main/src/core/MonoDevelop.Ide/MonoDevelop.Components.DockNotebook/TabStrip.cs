@@ -73,10 +73,8 @@ namespace MonoDevelop.Components.DockNotebook
 
 		static readonly double PixelScale = GtkWorkarounds.GetPixelScale ();
 		static readonly int TotalHeight = (int)(29 * PixelScale);
-		static readonly int LeftPadding = (int)(10 * PixelScale);
-		static readonly int RightPadding = (int)(7 * PixelScale);
-		static readonly int TopPadding = (int)(6 * PixelScale);
-		static readonly int BottomPadding = (int)(8 * PixelScale);
+		static readonly Xwt.WidgetSpacing TabPadding;
+		static readonly Xwt.WidgetSpacing TabActivePadding;
 		static readonly int LeftBarPadding = (int)(44 * PixelScale);
 		static readonly int RightBarPadding = (int)(22 * PixelScale);
 		static readonly int VerticalTextSize = (int)(11 * PixelScale);
@@ -127,6 +125,12 @@ namespace MonoDevelop.Components.DockNotebook
 					OnSizeAllocated (Allocation);
 				}
 			}
+		}
+
+		static TabStrip ()
+		{
+			TabPadding = ((Xwt.Drawing.NinePatchImage)tabBackImage).Padding;
+			TabActivePadding = ((Xwt.Drawing.NinePatchImage)tabBackImage).Padding;
 		}
 
 		public TabStrip (DockNotebook notebook)
@@ -459,7 +463,7 @@ namespace MonoDevelop.Components.DockNotebook
 				dragX = (int)evnt.X - dragOffset;
 				QueueDraw ();
 
-				var t = FindTab ((int)evnt.X, TopPadding + 3);
+				var t = FindTab ((int)evnt.X, (int)TabPadding.Top + 3);
 				if (t == null) {
 					var last = (DockNotebookTab)notebook.Tabs.Last ();
 					if (dragX > last.Allocation.Right)
@@ -751,7 +755,7 @@ namespace MonoDevelop.Components.DockNotebook
 			return base.OnExposeEvent (evnt);
 		}
 
-		static void DrawCloseButton (Context context, Gdk.Point center, bool hovered, double opacity, double animationProgress)
+		static void DrawCloseButton (Context context, Cairo.PointD center, bool hovered, double opacity, double animationProgress)
 		{
 			if (hovered) {
 				const double radius = 6;
@@ -822,10 +826,11 @@ namespace MonoDevelop.Components.DockNotebook
 				tabBounds.X = (int)(tabBounds.X + (dragX - tabBounds.X) * dragXProgress);
 				tabBounds.X = Clamp (tabBounds.X, tabStartX, tabEndX - tabBounds.Width);
 			}
-			int rightPadding = RightPadding;
-			rightPadding = (int)(rightPadding * Math.Min (1.0, Math.Max (0.5, (tabBounds.Width - 30) / 70.0)));
-			int leftPadding = LeftPadding;
-			leftPadding = (int)(leftPadding * Math.Min (1.0, Math.Max (0.5, (tabBounds.Width - 30) / 70.0)));
+			double rightPadding = (active ? TabActivePadding.Right : TabPadding.Right) - LeanWidth;
+			rightPadding = (rightPadding * Math.Min (1.0, Math.Max (0.5, (tabBounds.Width - 30) / 70.0)));
+			double leftPadding = (active ? TabActivePadding.Left : TabPadding.Left) - LeanWidth;
+			leftPadding = (leftPadding * Math.Min (1.0, Math.Max (0.5, (tabBounds.Width - 30) / 70.0)));
+			double bottomPadding = active ? TabActivePadding.Bottom : TabPadding.Bottom;
 
 			DrawTabBackground (this, ctx, allocation, tabBounds.Width, tabBounds.X, active);
 
@@ -835,30 +840,26 @@ namespace MonoDevelop.Components.DockNotebook
 			// Render Close Button (do this first so we can tell how much text to render)
 
 			var ch = allocation.Height + CloseImageTopOffset;
-			var crect = new Gdk.Rectangle (tabBounds.Right - rightPadding - CloseButtonSize + 3,
-							tabBounds.Height - BottomPadding - CloseButtonSize,
+			var crect = new Cairo.Rectangle (tabBounds.Right - rightPadding - CloseButtonSize + 3,
+							tabBounds.Height - bottomPadding - CloseButtonSize - 0.5,
 							CloseButtonSize, CloseButtonSize);
-			if (active)
-				crect.X -= 1;
-			tab.CloseButtonAllocation = crect;
-			tab.CloseButtonAllocation.Inflate (2, 2);
+			
+			tab.CloseButtonAllocation = crect.Inflate (2, 2);
 
 			bool closeButtonHovered = tracker.Hovered && tab.CloseButtonAllocation.Contains (tracker.MousePosition) && tab.WidthModifier >= 1.0f;
 			bool drawCloseButton = tabBounds.Width > 60 || highlight || closeButtonHovered;
 			if (drawCloseButton) {
-				DrawCloseButton (ctx, new Gdk.Point (crect.X + crect.Width / 2, crect.Y + crect.Height / 2), closeButtonHovered, tab.Opacity, tab.DirtyStrength);
+				DrawCloseButton (ctx, new Cairo.PointD (crect.X + crect.Width / 2, crect.Y + crect.Height / 2), closeButtonHovered, tab.Opacity, tab.DirtyStrength);
 			}
 
 			// Render Text
-			int w = tabBounds.Width - (leftPadding * 2 + CloseButtonSize);
+			double w = tabBounds.Width - (leftPadding * 2 + CloseButtonSize);
 			if (!drawCloseButton)
 				w += CloseButtonSize;
 
-			int textStart = tabBounds.X + leftPadding;
+			double textStart = tabBounds.X + leftPadding;
 			var baseline = la.GetLine (0).Layout.GetPixelBaseline ();
-			double lx = tabBounds.Height - BottomPadding - baseline;
-			if (active)
-				lx -= 1;
+			double lx = tabBounds.Height - bottomPadding - baseline;
 
 			ctx.MoveTo (textStart, lx);
 			if (!MonoDevelop.Core.Platform.IsMac && !MonoDevelop.Core.Platform.IsWindows) {
