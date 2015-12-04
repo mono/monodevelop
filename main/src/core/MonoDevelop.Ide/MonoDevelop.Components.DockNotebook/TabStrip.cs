@@ -42,6 +42,9 @@ namespace MonoDevelop.Components.DockNotebook
 	{
 		static Xwt.Drawing.Image tabbarPrevImage = Xwt.Drawing.Image.FromResource ("tabbar-prev-12.png");
 		static Xwt.Drawing.Image tabbarNextImage = Xwt.Drawing.Image.FromResource ("tabbar-next-12.png");
+		static Xwt.Drawing.Image tabActiveBackImage = Xwt.Drawing.Image.FromResource ("tabbar-active.9.png");
+		static Xwt.Drawing.Image tabBackImage = Xwt.Drawing.Image.FromResource ("tabbar-inactive.9.png");
+		static Xwt.Drawing.Image tabbarBackImage = Xwt.Drawing.Image.FromResource ("tabbar-back.9.png");
 
 		List<Widget> children = new List<Widget> ();
 		readonly DockNotebook notebook;
@@ -719,8 +722,7 @@ namespace MonoDevelop.Components.DockNotebook
 			drawCommands.Add (DrawClosingTab (n, new Gdk.Rectangle (x, y, 0, allocation.Height), out tabWidth));
 			drawCommands.Reverse ();
 
-			var image = Xwt.Drawing.Image.FromResource ("tabbar-back.9.png").WithSize (allocation.Width, allocation.Height);
-			ctx.DrawImage (this, image, 0, 0);
+			ctx.DrawImage (this, tabbarBackImage.WithSize (allocation.Width, allocation.Height), 0, 0);
 
 			// Draw breadcrumb bar header
 //			if (notebook.Tabs.Count > 0) {
@@ -892,7 +894,9 @@ namespace MonoDevelop.Components.DockNotebook
 			double height = allocation.Height;
 			double width = contentWidth - (TabSpacing * 2) + lean;
 
-			var image = Xwt.Drawing.Image.FromResource ("tabbar-inactive.9.png").WithSize (width, height);
+			var image = active ? tabActiveBackImage : tabBackImage;
+			image = image.WithSize (width, height);
+
 			ctx.DrawImage (widget, image, x, y);
 
 			ctx.LineWidth = 1;

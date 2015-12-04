@@ -4871,6 +4871,12 @@
     <EmbeddedResource Include="resources\tabbar-inactive%402x.9.png">
       <LogicalName>tabbar-inactive@2x.9.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-active.9.png">
+      <LogicalName>tabbar-active.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-active%402x.9.png">
+      <LogicalName>tabbar-active@2x.9.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' != 'DebugMac' AND '$(Configuration)' != 'ReleaseMac' ">
     <EmbeddedResource Include="icons\status-building-1-14.png">
