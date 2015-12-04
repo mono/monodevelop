@@ -83,7 +83,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}));
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notification => DispatchService.GuiDispatch (() => {
 				var other = (NSWindow)notification.Object;
-				LogMessage ("Lost focus from resize: {other.DebugDescription}.");
+				LogMessage ($"Lost focus from resize: {other.DebugDescription}.");
 				if (notification.Object == Window) {
 					if (LostFocus != null)
 						LostFocus (this, null);
