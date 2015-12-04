@@ -42,6 +42,7 @@ namespace MonoDevelop.Ide.Projects
 	public class NewProjectConfiguration
 	{
 		string projectName = String.Empty;
+		string errorMessage;
 
 		public NewProjectConfiguration ()
 		{
@@ -136,21 +137,43 @@ namespace MonoDevelop.Ide.Projects
 
 		bool HasErrors ()
 		{
+			errorMessage = String.Empty;
+
 			string solution = SolutionName;
 			string name     = ProjectName;
 
 			if (!FileService.IsValidPath (Location)) {
+				errorMessage = GettextCatalog.GetString ("Illegal characters used in location.");
 				return true;
 			}
 
 			if (CreateSolution && !IsValidSolutionName (solution)) {
+				errorMessage = GettextCatalog.GetString ("Illegal solution name.\nOnly use letters, digits, '.' or '_'.");
 				return true;
 			} else if (IsNewSolutionWithoutProjects) {
 				return false;
 			}
 
-			return !IsValidProjectName (name) || 
-				!FileService.IsValidPath (ProjectLocation);
+			if (!IsValidProjectName (name)) {
+				errorMessage = GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, '.' or '_'.");
+				return true;
+			}
+
+			if (!FileService.IsValidPath (ProjectLocation)) {
+				errorMessage = GettextCatalog.GetString ("Illegal characters used in project location.");
+				return true;
+			}
+
+			return false;
+		}
+
+		internal string GetErrorMessage ()
+		{
+			if (errorMessage == null) {
+				HasErrors ();
+			}
+
+			return errorMessage;
 		}
 
 		static readonly char [] InvalidProjectNameCharacters = "&<*;?>%:#|".ToCharArray ();

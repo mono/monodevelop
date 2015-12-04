@@ -226,6 +226,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return;
 
 			bar.Changed += (o, e) => {
+				bar.LogMessage("Text changed");
 				if (SearchEntryChanged != null)
 					SearchEntryChanged (o, e);
 			};
@@ -237,7 +238,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (SearchEntryLostFocus != null)
 					SearchEntryLostFocus (o, e);
 			};
-			bar.Activated += (o, e) => {
+			bar.SelectionActivated += (o, e) => {
 				if (SearchEntryActivated != null)
 					SearchEntryActivated (o, e);
 			};
@@ -450,6 +451,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public string SearchCategory {
 			set {
 				var entry = searchEntry;
+				entry.LogMessage ("Selecting text '${value}'");
 				entry.SelectText (entry);
 				entry.StringValue = value;
 				entry.CurrentEditor.SelectedRange = new Foundation.NSRange (value.Length, 0);
@@ -461,6 +463,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return searchEntry.StringValue;
 			}
 			set {
+				searchEntry.LogMessage ("Setting text to '${value}'");
 				searchEntry.StringValue = value;
 			}
 		}
