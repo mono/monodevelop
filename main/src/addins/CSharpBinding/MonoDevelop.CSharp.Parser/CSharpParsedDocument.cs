@@ -231,7 +231,7 @@ namespace MonoDevelop.CSharp.Parser
 			{
 			}
 
-			public SemanticTagVisitor (CancellationToken cancellationToken)
+			public SemanticTagVisitor (CancellationToken cancellationToken) : base (SyntaxWalkerDepth.Trivia)
 			{
 				this.cancellationToken = cancellationToken;
 			}
@@ -248,9 +248,9 @@ namespace MonoDevelop.CSharp.Parser
 				if (trivia.IsKind (SyntaxKind.SingleLineCommentTrivia) || 
 					trivia.IsKind (SyntaxKind.MultiLineCommentTrivia) || 
 					trivia.IsKind (SyntaxKind.SingleLineDocumentationCommentTrivia)) {
+					var trimmedContent = trivia.ToString ().TrimStart ('/', ' ', '*');
 					foreach (string tag in tagComments) {
-						var trimmedContent = trivia.ToString ().TrimStart ('/', ' ', '*');
-						if (!trimmedContent.StartsWith (tag))
+						if (!trimmedContent.StartsWith (tag, StringComparison.Ordinal))
 							continue;
 						var loc = trivia.GetLocation ().GetLineSpan ();
 						Tags.Add (new Tag (tag, trimmedContent, new DocumentRegion (loc.StartLinePosition, loc.EndLinePosition)));

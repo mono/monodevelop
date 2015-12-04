@@ -91,15 +91,16 @@ namespace MonoDevelop.VersionControl.Git
 			// We always need to run the TryGet* methods as we need the passphraseItem/passwordItem populated even
 			// if the password store contains an invalid password/no password
 			if ((types & SupportedCredentialTypes.UsernamePassword) != 0) {
-				uri = new Uri (url);
-				string username;
-				string password;
-				if (!state.NativePasswordUsed && TryGetUsernamePassword (uri, out username, out password)) {
-					state.NativePasswordUsed = true;
-					return new UsernamePasswordCredentials {
-						Username = username,
-						Password = password
-					};
+				if (Uri.TryCreate (url, UriKind.RelativeOrAbsolute, out uri)) {
+					string username;
+					string password;
+					if (!state.NativePasswordUsed && TryGetUsernamePassword (uri, out username, out password)) {
+						state.NativePasswordUsed = true;
+						return new UsernamePasswordCredentials {
+							Username = username,
+							Password = password
+						};
+					}
 				}
 			}
 
@@ -176,7 +177,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (result) {
 				if ((types & SupportedCredentialTypes.UsernamePassword) != 0) {
 					var upcred = (UsernamePasswordCredentials)cred;
-					if (!string.IsNullOrEmpty (upcred.Password)) {
+					if (!string.IsNullOrEmpty (upcred.Password) && uri != null) {
 						PasswordService.AddWebUserNameAndPassword (uri, upcred.Username, upcred.Password);
 					}
 				}

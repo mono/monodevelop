@@ -394,7 +394,6 @@ namespace MonoDevelop.CSharp
 
 		string GetNullableMarkup (ITypeSymbol t)
 		{
-			Console.WriteLine ("nullable markup !!!");
 			var result = new StringBuilder ();
 			result.Append (GetTypeReferenceString (t));
 			return result.ToString ();
@@ -1665,7 +1664,7 @@ namespace MonoDevelop.CSharp
 			}
 
 			if (constantValue == null) {
-				if (constantType.TypeKind == TypeKind.Struct) {
+				if (constantType.IsValueType) {
 					// structs can never be == null, therefore it's the default value.
 					sb.Append (Highlight ("default", colorStyle.KeywordSelection) + "(" + GetTypeReferenceString (constantType) + ")");
 				} else {

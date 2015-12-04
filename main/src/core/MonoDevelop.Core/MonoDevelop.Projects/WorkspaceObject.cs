@@ -98,15 +98,14 @@ namespace MonoDevelop.Projects
 		/// <typeparam name="T">Task return type</typeparam>
 		public Task<T> BindTask<T> (Func<CancellationToken, Task<T>> f)
 		{
-			lock (activeTasks) {
-				var t = f (disposeCancellation.Token);
+			var t = f (disposeCancellation.Token);
+			lock (activeTasks)
 				activeTasks.Add (t);
-				t.ContinueWith (tr => {
-					lock (activeTasks)
-						activeTasks.Remove (t);
-				});
-				return t;
-			}
+			t.ContinueWith (tr => {
+				lock (activeTasks)
+					activeTasks.Remove (t);
+			});
+			return t;
 		}
 
 		/// <summary>
@@ -118,15 +117,14 @@ namespace MonoDevelop.Projects
 		/// to be tracked. The provided CancellationToken will be signalled when the object is disposed.</param>
 		public Task BindTask (Func<CancellationToken, Task> f)
 		{
-			lock (activeTasks) {
-				var t = f (disposeCancellation.Token);
+			var t = f (disposeCancellation.Token);
+			lock (activeTasks)
 				activeTasks.Add (t);
-				t.ContinueWith (tr => {
-					lock (activeTasks)
-						activeTasks.Remove (t);
-				});
-				return t;
-			}
+			t.ContinueWith (tr => {
+				lock (activeTasks)
+					activeTasks.Remove (t);
+			});
+			return t;
 		}
 
 		/// <summary>

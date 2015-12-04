@@ -596,25 +596,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public override void OpenDocument (DocumentId documentId, bool activate = true)
-		{
-			var document = GetDocument (documentId);
-			if (document == null)
-				return;
-			MonoDevelop.Projects.Project prj = null;
-			foreach (var curPrj in IdeApp.Workspace.GetAllProjects ()) {
-				if (GetProjectId (curPrj) == documentId.ProjectId) {
-					prj = curPrj;
-					break;
-				}
-			}
-			IdeApp.Workbench.OpenDocument (new MonoDevelop.Ide.Gui.FileOpenInformation (
-				DetermineFilePath(document.Id, document.Name, document.FilePath, document.Folders),
-				prj,
-				activate
-			)); 
-		}
-
 		List<MonoDevelopSourceTextContainer> openDocuments = new List<MonoDevelopSourceTextContainer>();
 		internal void InformDocumentOpen (DocumentId documentId, ITextDocument editor)
 		{
@@ -774,15 +755,15 @@ namespace MonoDevelop.Ide.TypeSystem
 		protected override void ApplyDocumentAdded (DocumentInfo info, SourceText text)
 		{
 			var id = info.Id;
-			var path = DetermineFilePath (info.Id, info.Name, info.FilePath, info.Folders, true);
 			MonoDevelop.Projects.Project mdProject = null;
 
 			if (id.ProjectId != null) {
 				var project = CurrentSolution.GetProject (id.ProjectId);
 				mdProject = GetMonoProject (project);
 				if (mdProject == null)
-					LoggingService.LogWarning ("Couldn't find project for newly generated file {0} (Project {1}).", path, info.Id.ProjectId);
+					LoggingService.LogWarning ("Couldn't find project for newly generated file {0} (Project {1}).", info.Name, info.Id.ProjectId);
 			}
+			var path = DetermineFilePath (info.Id, info.Name, info.FilePath, info.Folders, mdProject?.FileName.ParentDirectory, true);
 
 			string formattedText;
 			var formatter = CodeFormatterService.GetFormatter (DesktopService.GetMimeTypeForUri (path)); 
@@ -808,7 +789,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		string DetermineFilePath (DocumentId id, string name, string filePath, IReadOnlyList<string> docFolders, bool createDirectory = false)
+		string DetermineFilePath (DocumentId id, string name, string filePath, IReadOnlyList<string> docFolders, string defaultFolder, bool createDirectory = false)
 		{
 			var path = filePath;
 
@@ -832,7 +813,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					} catch (Exception e) {
 						LoggingService.LogError ("Error while creating directory for a new file : " + baseDirectory, e);
 					}
-                    path = Path.Combine (baseDirectory, name);
+					path = Path.Combine (baseDirectory, name);
+				} else {
+					path = Path.Combine (defaultFolder, name);
 				}
 			}
 			return path;

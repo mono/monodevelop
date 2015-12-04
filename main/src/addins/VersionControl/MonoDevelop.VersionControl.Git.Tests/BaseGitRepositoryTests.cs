@@ -329,6 +329,8 @@ index 0000000..009b64b
 			//Assert.IsTrue (repo2.IsUrlValid ("ftp://github.com:80/mono/monodevelop.git"));
 			//Assert.IsTrue (repo2.IsUrlValid ("ftps://github.com:80/mono/monodevelop.git"));
 			Assert.IsTrue (repo2.IsUrlValid ("file:///mono/monodevelop.git"));
+			Assert.IsTrue (repo2.IsUrlValid ("git@172.31.118.100:/home/git/my-app.git"));
+			Assert.IsTrue (repo2.IsUrlValid ("git@172.31.118.100:home/git/my-app.git"));
 			//Assert.IsTrue (repo2.IsUrlValid ("rsync://github.com/mono/monodevelpo.git"));
 		}
 

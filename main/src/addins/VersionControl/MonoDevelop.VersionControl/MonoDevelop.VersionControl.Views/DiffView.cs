@@ -96,7 +96,9 @@ namespace MonoDevelop.VersionControl.Views
 			var buffer = info.Document.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
 			if (buffer != null) {
 				var loc = buffer.CaretLocation;
-				ComparisonWidget.OriginalEditor.SetCaretTo (loc.Line, loc.Column);
+				int line = loc.Line < 1 ? 1 : loc.Line;
+				int column = loc.Column < 1 ? 1 : loc.Column;
+				ComparisonWidget.OriginalEditor.SetCaretTo (line, column);
 			}
 			
 			if (ComparisonWidget.Allocation.Height == 1 && ComparisonWidget.Allocation.Width == 1) {

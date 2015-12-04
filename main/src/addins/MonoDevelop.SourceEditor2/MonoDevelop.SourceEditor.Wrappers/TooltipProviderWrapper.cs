@@ -63,7 +63,13 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		public override async Task<TooltipItem> GetItem (MonoTextEditor editor, int offset, CancellationToken token = default(CancellationToken))
 		{
-			var item = await provider.GetItem (WrapEditor (editor), IdeApp.Workbench.ActiveDocument, offset, token);
+			var wrappedEditor = WrapEditor (editor);
+			if (wrappedEditor == null)
+				return null;
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null)
+				return null;
+			var item = await provider.GetItem (wrappedEditor, doc, offset, token);
 			if (item == null)
 				return null;
 			if (lastUnwrappedItem != null) {

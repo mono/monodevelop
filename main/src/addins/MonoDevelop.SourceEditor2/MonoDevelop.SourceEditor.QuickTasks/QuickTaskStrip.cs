@@ -215,7 +215,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		void TextEditor_EditorOptionsChanged (object sender, EventArgs e)
 		{
-			((IMapMode)mapMode).ForceDraw ();
+			(mapMode as IMapMode)?.ForceDraw ();
 			QueueDraw ();
 		}
 

@@ -51,6 +51,25 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return ch == ' ' || ch == '(' || ch == '{' || ch == '[';
 		}
 
+		static string[] primitiveTypesKeywords = {
+			// "void",
+			"object",
+			"bool",
+			"byte",
+			"sbyte",
+			"char",
+			"short",
+			"int",
+			"long",
+			"ushort",
+			"uint",
+			"ulong",
+			"float",
+			"double",
+			"decimal",
+			"string"
+		};
+
 		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult result, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			var list = new List<CompletionData> ();
@@ -86,6 +105,9 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				list.Add (symbolCompletionData);
 				if (string.IsNullOrEmpty (result.DefaultCompletionString))
 					result.DefaultCompletionString = symbolCompletionData.DisplayText;
+			}
+			foreach (var keyword in primitiveTypesKeywords) {
+				list.Add (engine.Factory.CreateGenericData (this, keyword, GenericDataType.Keyword));
 			}
 			return list;
 		}
