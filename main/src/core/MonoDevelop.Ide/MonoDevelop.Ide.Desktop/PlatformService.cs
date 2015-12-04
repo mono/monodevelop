@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.Desktop
 			Process.Start (filename);
 		}
 		
-		public virtual void OpenFolder (FilePath folderPath)
+		public virtual void OpenFolder (FilePath folderPath, FilePath[] selectFiles)
 		{
 			Process.Start (folderPath);
 		}
@@ -434,7 +434,13 @@ namespace MonoDevelop.Ide.Desktop
 		/// </summary>
 		public virtual void GrabDesktopFocus (Gtk.Window window)
 		{
-			window.Present ();
+			if (Platform.IsWindows && window.IsRealized) {
+				/* On Windows calling Present() will break out of window edge snapping mode. */
+				window.GdkWindow.Focus (0);
+				window.GdkWindow.Raise ();
+			} else {
+				window.Present ();
+			}
 		}
 
 		internal virtual void RemoveWindowShadow (Gtk.Window window)
@@ -445,9 +451,16 @@ namespace MonoDevelop.Ide.Desktop
 		{
 		}
 
-		internal virtual MainToolbar CreateMainToolbar (Gtk.Window window)
+		internal virtual IMainToolbarView CreateMainToolbar (Gtk.Window window)
 		{
 			return new MainToolbar ();
+		}
+
+		internal virtual void AttachMainToolbar (Gtk.VBox parent, IMainToolbarView toolbar)
+		{
+			var toolbarBox = new Gtk.HBox ();
+			parent.PackStart (toolbarBox, false, false, 0);
+			toolbarBox.PackStart ((MainToolbar)toolbar, true, true, 0);
 		}
 
 		public virtual bool GetIsFullscreen (Gtk.Window window)

@@ -34,6 +34,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Serialization;
@@ -240,7 +241,10 @@ namespace MonoDevelop.Core.Assemblies
 				return;
 			foreach (string pcfile in GetAllPkgConfigFiles ()) {
 				try {
-					ParsePCFile (FileService.ResolveFullPath (pcfile));
+					var pc = new FilePath (pcfile).ResolveLinks ();
+					if (!string.IsNullOrEmpty (pc))
+						ParsePCFile (pc);
+
 					if (ShuttingDown)
 						return;
 				}

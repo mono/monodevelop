@@ -38,11 +38,7 @@ namespace MonoDevelop.HexEditor
 {
 	public class HexEditorVisualizer : ValueVisualizer
 	{
-		Mono.MHex.HexEditor hexEditor;
-
-		public HexEditorVisualizer ()
-		{
-		}
+		Mono.MHex.HexEditorDebugger hexEditor;
 
 		#region IValueVisualizer implementation
 
@@ -53,22 +49,34 @@ namespace MonoDevelop.HexEditor
 		public override bool CanVisualize (ObjectValue val)
 		{
 			switch (val.TypeName) {
-			case "sbyte[]": return true;
-			case "byte[]": return true;
-			case "char[]": return true;
-			case "string": return true;
-			default: return false;
+			case "MonoTouch.Foundation.NSData":
+			case "MonoMac.Foundation.NSData":
+			case "System.IO.MemoryStream":
+			case "Foundation.NSData":
+			case "sbyte[]":
+			case "byte[]":
+			case "char[]":
+			case "string":
+				return true;
+			default:
+				return false;
 			}
 		}
 
 		public override bool IsDefaultVisualizer (ObjectValue val)
 		{
 			switch (val.TypeName) {
+			case "MonoTouch.Foundation.NSData":
+			case "MonoMac.Foundation.NSData":
+			case "System.IO.MemoryStream":
+			case "Foundation.NSData":
 			case "sbyte[]":
-			case "byte[]": return true;
+			case "byte[]":
+				return true;
 			case "char[]": 
-			case "string": return false;
-			default: return false;
+			case "string":
+			default:
+				return false;
 			}
 		}
 
@@ -85,30 +93,43 @@ namespace MonoDevelop.HexEditor
 			options.AllowTargetInvoke = true;
 			options.ChunkRawStrings = true;
 
+			hexEditor = new Mono.MHex.HexEditorDebugger ();
+			RawValueString rawString;
+			RawValueArray rawArray;
 			IBuffer buffer = null;
 
-			hexEditor = new Mono.MHex.HexEditor ();
-
-			if (val.TypeName != "string") {
-				var raw = (RawValueArray) val.GetRawValue (options);
+			switch (val.TypeName) {
+			case "MonoTouch.Foundation.NSData":
+			case "MonoMac.Foundation.NSData":
+			case "System.IO.MemoryStream":
+			case "Foundation.NSData":
+				var stream = (RawValue) val.GetRawValue (options);
+				rawArray = (RawValueArray) stream.CallMethod ("ToArray");
+				buffer = new RawByteArrayBuffer (rawArray);
+				break;
+			case "string":
+				rawString = (RawValueString) val.GetRawValue (options);
+				buffer = new RawStringBuffer (rawString);
+				break;
+			default:
+				rawArray = (RawValueArray) val.GetRawValue (options);
 
 				switch (val.TypeName) {
 				case "sbyte[]":
-					buffer = new RawSByteArrayBuffer (raw);
+					buffer = new RawSByteArrayBuffer (rawArray);
 					break;
 				case "char[]":
-					buffer = new RawCharArrayBuffer (raw);
+					buffer = new RawCharArrayBuffer (rawArray);
 					break;
 				case "byte[]":
-					buffer = new RawByteArrayBuffer (raw);
+					buffer = new RawByteArrayBuffer (rawArray);
 					break;
 				}
-			} else {
-				buffer = new RawStringBuffer ((RawValueString) val.GetRawValue (options));
+				break;
 			}
 
 			hexEditor.HexEditorData.Buffer = buffer;
-			hexEditor.Sensitive = CanEdit (val);
+			hexEditor.Editor.Sensitive = CanEdit (val);
 
 			var xwtScrollView = new Xwt.ScrollView (hexEditor);
 			var scrollWidget = (Widget) Xwt.Toolkit.CurrentEngine.GetNativeWidget (xwtScrollView);

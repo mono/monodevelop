@@ -38,7 +38,7 @@ namespace Mono.TextTemplating
 			Imports = new HashSet<string> ();
 			Assemblies = new HashSet<string> ();
 			CustomDirectives  = new List<CustomDirective> ();
-			DirectiveProcessors = new Dictionary<string, DirectiveProcessor> ();
+			DirectiveProcessors = new Dictionary<string, IDirectiveProcessor> ();
 		}
 		
 		public bool HostSpecific { get; set; }
@@ -56,12 +56,13 @@ namespace Mono.TextTemplating
 		public string Extension { get; set; }
 		public System.Globalization.CultureInfo Culture { get; set; }
 		public List<CustomDirective> CustomDirectives { get; private set; }
-		public Dictionary<string,DirectiveProcessor> DirectiveProcessors { get; private set; }
+		public Dictionary<string,IDirectiveProcessor> DirectiveProcessors { get; private set; }
 		public bool IncludePreprocessingHelpers { get; set; }
 		public bool IsPreprocessed { get; set; }
 		public bool RelativeLinePragmas { get; set; }
 		public bool NoLinePragmas { get; set; }
 		public bool InternalVisibility { get; set; }
+		public Type HostType { get; set; }
 	}
 	
 	public class CustomDirective

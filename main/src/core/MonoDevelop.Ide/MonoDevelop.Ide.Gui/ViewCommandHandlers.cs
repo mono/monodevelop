@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			// A tab will always hold a file, never a folder.
 			FilePath path = Path.GetDirectoryName (doc.FileName);
-			DesktopService.OpenFolder (path);
+			DesktopService.OpenFolder (path, doc.FileName);
 		}
 		
 		[CommandUpdateHandler (FileCommands.OpenContainingFolder)]

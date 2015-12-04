@@ -77,6 +77,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 				throw new NotImplementedException ();
 			}
 		}
+
+		public bool IsRunning { get; set; }
 	}
 }
 

@@ -112,6 +112,10 @@ namespace MonoDevelop.Xml.Parser
 				rollback = string.Empty;
 				return Parent;
 			}
+
+			if (XmlChar.IsWhitespace (c)) {
+				return null;
+			}
 			
 			if (!ct.IsNamed && (char.IsLetter (c) || c == '_')) {
 				rollback = string.Empty;

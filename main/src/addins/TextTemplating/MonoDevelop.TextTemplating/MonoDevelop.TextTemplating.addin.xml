@@ -40,4 +40,21 @@
 		<Tool name="TextTemplatingFilePreprocessor" type="MonoDevelop.TextTemplating.TextTemplatingFilePreprocessor"/>
 	</Extension>
 
+	<Extension path = "/MonoDevelop/Ide/Commands">
+		<Command id = "MonoDevelop.TextTemplating.Commands.Generate"
+			_label = "Process T4 Templates..."
+			_description = "Process all T4 templates."
+			defaultHandler = "MonoDevelop.TextTemplating.GenerateCommandHandler"
+			/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Tools">
+		<Condition id="ItemType" value="Solution|Project|ProjectFile">
+			<CommandItem id = "MonoDevelop.TextTemplating.Commands.Generate" />
+		</Condition>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
+		<FileTemplateType name = "T4File" class = "MonoDevelop.TextTemplating.T4FileTemplate" />
+	</Extension>
 </ExtensionModel>

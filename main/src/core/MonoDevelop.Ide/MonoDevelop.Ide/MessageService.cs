@@ -35,6 +35,11 @@ using MonoDevelop.Core;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.Ide.Gui;
 
+#if MAC
+using AppKit;
+using MonoDevelop.Components.Mac;
+#endif
+
 namespace MonoDevelop.Ide
 {
 	public class AlertButtonEventArgs : EventArgs
@@ -212,9 +217,8 @@ namespace MonoDevelop.Ide
 				LoggingService.LogError (msg, ex);
 			}
 
-			if (string.IsNullOrEmpty (secondaryText) && (ex is System.IO.IOException)) {
+			if (string.IsNullOrEmpty (secondaryText) && (ex != null))
 				secondaryText = ex.Message;
-			}
 
 			return GenericAlert (parent, MonoDevelop.Ide.Gui.Stock.Error, primaryText, secondaryText, buttons);
 		}
@@ -362,10 +366,38 @@ namespace MonoDevelop.Ide
 			if (dialog.Title == null)
 				dialog.Title = BrandingService.ApplicationName;
 
-			PlaceDialog (dialog, parent);
+			#if MAC
+			DispatchService.GuiSyncDispatch (() => {
+				// If there is a native NSWindow model window running, we need
+				// to show the new dialog over that window.
+				if (NSApplication.SharedApplication.ModalWindow != null)
+					dialog.Shown += HandleShown;
+				else
+					PlaceDialog (dialog, parent);
+			});
+			#endif
 			return Mono.TextEditor.GtkWorkarounds.RunDialogWithNotification (dialog);
 		}
-		
+
+		#if MAC
+		static void HandleShown (object sender, EventArgs e)
+		{
+			var dialog = (Gtk.Window)sender;
+			var nsdialog = GtkMacInterop.GetNSWindow (dialog);
+
+			// Make the GTK window modal WRT the current modal NSWindow
+			var s = NSApplication.SharedApplication.BeginModalSession (nsdialog);
+
+			EventHandler unrealizer = null;
+			unrealizer = delegate {
+				NSApplication.SharedApplication.EndModalSession (s);
+				dialog.Unrealized -= unrealizer;
+			};
+			dialog.Unrealized += unrealizer;
+			dialog.Shown -= HandleShown;
+		}
+		#endif
+
 		/// <summary>
 		/// Gets a default parent for modal dialogs.
 		/// </summary>

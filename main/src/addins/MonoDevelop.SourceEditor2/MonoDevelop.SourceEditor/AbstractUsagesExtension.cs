@@ -67,6 +67,14 @@ namespace MonoDevelop.SourceEditor
 			TextEditorData.Caret.PositionChanged += HandleTextEditorDataCaretPositionChanged;
 			TextEditorData.Document.TextReplaced += HandleTextEditorDataDocumentTextReplaced;
 			TextEditorData.SelectionChanged += HandleTextEditorDataSelectionChanged;
+			PropertyService.PropertyChanged += PropertyService_PropertyChanged;
+		}
+
+		void PropertyService_PropertyChanged (object sender, PropertyChangedEventArgs e)
+		{
+			if (e.Key != "EnableHighlightUsages")
+				return;
+			HandleTextEditorDataCaretPositionChanged (null, null);
 		}
 
 		void HandleTextEditorDataSelectionChanged (object sender, EventArgs e)
@@ -83,7 +91,7 @@ namespace MonoDevelop.SourceEditor
 		public override void Dispose ()
 		{
 			CancelTooltip ();
-
+			PropertyService.PropertyChanged -= PropertyService_PropertyChanged;
 			TextEditorData.SelectionChanged -= HandleTextEditorDataSelectionChanged;
 			TextEditorData.Caret.PositionChanged -= HandleTextEditorDataCaretPositionChanged;
 			TextEditorData.Document.TextReplaced -= HandleTextEditorDataDocumentTextReplaced;
@@ -158,8 +166,11 @@ namespace MonoDevelop.SourceEditor
 
 		void HandleTextEditorDataCaretPositionChanged (object sender, DocumentLocationEventArgs e)
 		{
-			if (!DefaultSourceEditorOptions.Instance.EnableHighlightUsages)
+			if (!DefaultSourceEditorOptions.Instance.EnableHighlightUsages) {
+				RemoveMarkers ();
+				RemoveTimer ();
 				return;
+			}
 			if (!TextEditorData.IsSomethingSelected && markers.Values.Any (m => m.Contains (TextEditorData.Caret.Offset)))
 				return;
 			RemoveMarkers ();

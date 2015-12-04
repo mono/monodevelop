@@ -34,9 +34,9 @@ namespace MonoDevelop.Ide.FindInFiles
 {
 	public interface ISearchProgressMonitor: IProgressMonitor
 	{
-		void SetBasePath (string path);
 		void ReportResult (SearchResult result);
 		void ReportResults (IEnumerable<SearchResult> result);
 		void ReportStatus (string resultMessage);
+		PathMode PathMode { set; }
 	}
 }

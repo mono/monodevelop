@@ -745,6 +745,16 @@ namespace Microsoft.Samples.Debugging.CorDebug
             return sdims;
         }
 
+		public int[] GetBaseIndicies()
+		{
+			Debug.Assert(Rank!=0);
+			uint[] baseIndicies = new uint[Rank];
+			m_arrayVal.GetBaseIndicies((uint)baseIndicies.Length,baseIndicies);
+
+			int[] sdims = Array.ConvertAll<uint,int>( baseIndicies, delegate(uint u) { return (int)u; } );
+			return sdims;
+		}
+
         public CorValue GetElement(int[] indices)
         {
             Debug.Assert(indices!=null);

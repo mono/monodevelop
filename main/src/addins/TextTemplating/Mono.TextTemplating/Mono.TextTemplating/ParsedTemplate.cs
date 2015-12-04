@@ -132,7 +132,7 @@ namespace Mono.TextTemplating
 							if (directive == null) {
 								directive = new Directive (tokeniser.Value, tokeniser.Location);
 								directive.TagStartLocation = tokeniser.TagStartLocation;
-								if (!parseIncludes || directive.Name != "include")
+								if (!parseIncludes || !string.Equals (directive.Name, "include", StringComparison.OrdinalIgnoreCase))
 									segments.Add (directive);
 							} else
 								attName = tokeniser.Value;
@@ -153,7 +153,7 @@ namespace Mono.TextTemplating
 							break;
 						}
 					}
-					if (parseIncludes && directive != null && directive.Name == "include")
+					if (parseIncludes && directive != null && string.Equals (directive.Name, "include", StringComparison.OrdinalIgnoreCase))
 						Import (host, directive, Path.GetDirectoryName (tokeniser.Location.FileName));
 					break;
 				default:

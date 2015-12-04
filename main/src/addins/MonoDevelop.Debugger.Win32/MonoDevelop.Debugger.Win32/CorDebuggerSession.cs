@@ -257,12 +257,12 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			var m = methodInfo.GetCustomAttributes (true);
 			if (Options.ProjectAssembliesOnly) {
-				return methodInfo.GetCustomAttributes (true).Any (v => 
+				return methodInfo.GetCustomAttributes (true).Union (methodInfo.DeclaringType.GetCustomAttributes (true)).Any (v =>
 					v is System.Diagnostics.DebuggerHiddenAttribute ||
 					v is System.Diagnostics.DebuggerStepThroughAttribute ||
 					v is System.Diagnostics.DebuggerNonUserCodeAttribute);
 			} else {
-				return methodInfo.GetCustomAttributes (true).Any (v => 
+				return methodInfo.GetCustomAttributes (true).Union (methodInfo.DeclaringType.GetCustomAttributes (true)).Any (v =>
 					v is System.Diagnostics.DebuggerHiddenAttribute ||
 					v is System.Diagnostics.DebuggerStepThroughAttribute);
 			}
@@ -283,6 +283,11 @@ namespace MonoDevelop.Debugger.Win32
 			(name.StartsWith ("get_", StringComparison.Ordinal) ||
 			name.StartsWith ("set_", StringComparison.Ordinal) ||
 			name.StartsWith ("op_", StringComparison.Ordinal));
+		}
+
+		static bool IsCompilerGenerated (MethodInfo method)
+		{
+			return method.GetCustomAttributes (true).Any (v => v is System.Runtime.CompilerServices.CompilerGeneratedAttribute);
 		}
 
 		void OnStepComplete (object sender, CorStepCompleteEventArgs e)
@@ -330,7 +335,7 @@ namespace MonoDevelop.Debugger.Win32
 				return;
 			}
 
-			if (Options.StepOverPropertiesAndOperators &&
+			if ((Options.StepOverPropertiesAndOperators || IsCompilerGenerated(e.Thread.ActiveFrame.Function.GetMethodInfo (this))) &&
 			    IsPropertyOrOperatorMethod (e.Thread.ActiveFrame.Function.GetMethodInfo (this)) &&
 				e.StepReason == CorDebugStepReason.STEP_CALL) {
 				stepper.StepOut ();
@@ -486,7 +491,7 @@ namespace MonoDevelop.Debugger.Win32
 			string file = e.Module.Assembly.Name;
 			lock (documents) {
 				ISymbolReader reader = null;
-				char[] badPathChars = System.IO.Path.GetInvalidPathChars();
+				char[] badPathChars = MonoDevelop.Core.FilePath.GetInvalidPathChars ();
 				if (file.IndexOfAny (badPathChars) == -1 && System.IO.File.Exists (System.IO.Path.ChangeExtension (file, ".pdb"))) {
 					try {
 						reader = symbolBinder.GetReaderForFile (mi.RawCOMObject, file, ".");
@@ -886,6 +891,9 @@ namespace MonoDevelop.Debugger.Win32
 
 		protected override void OnNextInstruction ( )
 		{
+			MtaThread.Run (delegate {
+				Step (false);
+			});
 		}
 
 		protected override void OnNextLine ( )
@@ -1002,6 +1010,9 @@ namespace MonoDevelop.Debugger.Win32
 
 		protected override void OnStepInstruction ( )
 		{
+			MtaThread.Run (delegate {
+				Step (true);
+			});
 		}
 
 		protected override void OnStepLine ( )
@@ -1099,6 +1110,7 @@ namespace MonoDevelop.Debugger.Win32
 				process.OnEvalException -= exceptionHandler;
 			}
 
+			WaitUntilStopped ();
 			if (exception != null) {
 /*				ValueReference<CorValue, CorType> msg = ctx.Adapter.GetMember (ctx, val, "Message");
 				if (msg != null) {

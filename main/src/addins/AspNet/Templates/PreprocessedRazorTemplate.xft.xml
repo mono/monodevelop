@@ -9,6 +9,7 @@
 		<_Category>Text Templating</_Category>
 		<_Description>A Razor template that will be preprocessed into a C# class.</_Description>
 		<DefaultFilename>Template</DefaultFilename>
+		<Language>C#</Language>
 	</TemplateConfiguration>
 	<TemplateFiles>
 		<File name="${Name}.cshtml" BuildAction="None" CustomTool="RazorTemplatePreprocessor" />

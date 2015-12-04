@@ -28,7 +28,6 @@
     <WarningLevel>4</WarningLevel>
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\bin\MonoDevelop.Projects.Formats.MSBuild.xml</DocumentationFile>
     <DefineConstants>NET_3_5,NET_4_0</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
@@ -37,6 +36,7 @@
     <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Utilities.v4.0" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -51,6 +51,7 @@
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildTargetResult.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildResult.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildEvaluatedItem.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\ProjectBuilder.Shared.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

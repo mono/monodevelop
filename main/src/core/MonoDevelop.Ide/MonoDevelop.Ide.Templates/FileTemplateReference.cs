@@ -33,23 +33,21 @@ using System.Xml;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.Ide.Templates
 {
-	
-	
 	public class FileTemplateReference : FileDescriptionTemplate
 	{
-		
 		FileTemplate innerTemplate;		
 		string name;
-		bool suppressAutoOpen = false;
+		bool suppressAutoOpen;
 		
 		public override void Load (XmlElement filenode, FilePath baseDirectory)
 		{
 			name = filenode.GetAttribute ("name");
 			string templateID = filenode.GetAttribute ("TemplateID");
-			if (templateID == null || templateID.Length == 0)
+			if (string.IsNullOrEmpty (templateID))
 				throw new InvalidOperationException ("TemplateID not set");
 			innerTemplate = FileTemplate.GetFileTemplateByID (templateID);
 			if (innerTemplate == null)
@@ -77,7 +75,7 @@ namespace MonoDevelop.Ide.Templates
 				{"EscapedProjectName", GetDotNetIdentifier (project.Name) }
 			};				
 			
-			string substName = MonoDevelop.Core.StringParserService.Parse (this.name, customTags);
+			string substName = StringParserService.Parse (this.name, customTags);
 			
 			foreach (FileDescriptionTemplate fdt in innerTemplate.Files) {
 				if (!fdt.AddToProject (policyParent, project, language, directory, substName))
@@ -85,10 +83,10 @@ namespace MonoDevelop.Ide.Templates
 			}
 			return true;
 		}
-		
-		string GetDotNetIdentifier (string identifier)
+
+		static string GetDotNetIdentifier (string identifier)
 		{
-			System.Text.StringBuilder sb = new System.Text.StringBuilder ();
+			var sb = new System.Text.StringBuilder ();
 			foreach (char c in identifier)
 				if (char.IsLetter (c) || c == '_' || (sb.Length > 0 && char.IsNumber (c)))
 					sb.Append (c);
@@ -111,6 +109,13 @@ namespace MonoDevelop.Ide.Templates
 		{
 			return innerTemplate.IsValidName (name, language);
 		}
-		
+
+		internal override void SetProjectTagModel (IStringTagModel tagModel)
+		{
+			base.SetProjectTagModel (tagModel);
+			foreach (FileDescriptionTemplate fdt in innerTemplate.Files) {
+				fdt.SetProjectTagModel (tagModel);
+			}
+		}
 	}
 }

@@ -27,7 +27,7 @@
 //
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui.Content;
@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		Gtk.Label viewerLabel;
 		Gtk.ComboBox viewerSelector;
 		Gtk.CheckButton closeWorkspaceCheck;
-		ArrayList currentViewers = new ArrayList ();
+		List<FileViewer> currentViewers = new List<FileViewer> ();
 		
 		public FileSelectorDialog (string title): this (title, Gtk.FileChooserAction.Open)
 		{
@@ -196,8 +196,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		void EncodingChanged (object s, EventArgs args)
 		{
 			if (encodingMenu.History == selectOption) {
-				var dlg = new SelectEncodingsDialog ();
-				MessageService.ShowCustomDialog (dlg, this);
+				using (var dlg = new SelectEncodingsDialog ())
+					MessageService.ShowCustomDialog (dlg, this);
 				FillEncodings ();
 			}
 		}
@@ -276,7 +276,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			get {
 				if (viewerSelector.Active == -1)
 					return null;
-				return currentViewers [viewerSelector.Active] as FileViewer;
+				return currentViewers [viewerSelector.Active];
 			}
 		}
 		

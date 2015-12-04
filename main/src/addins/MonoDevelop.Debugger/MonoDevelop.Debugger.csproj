@@ -40,6 +40,35 @@
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.xml</DocumentationFile>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>..\..\..\build\AddIns\MonoDevelop.Debugger</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>..\..\..\build\AddIns\MonoDevelop.Debugger</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <DebugSymbols>true</DebugSymbols>
+    <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.xml</DocumentationFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
@@ -61,6 +90,7 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -126,7 +156,6 @@
     <Compile Include="MonoDevelop.Debugger\BusyEvaluatorDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Debugger.BusyEvaluatorDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\DebuggerOptionsPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Debugger.DebuggerOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.Debugger\PinnedWatch.cs" />
     <Compile Include="MonoDevelop.Debugger\PinnedWatchStore.cs" />
     <Compile Include="MonoDevelop.Debugger\DebuggerEngine.cs" />
@@ -146,8 +175,17 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.Debugger\IDebuggerExpressionResolver.cs" />
     <Compile Include="MonoDevelop.Debugger\DebuggerEngineBackend.cs" />
+    <Compile Include="MonoDevelop.Debugger.InlineVisualizers\InlineVisualizer.cs" />
+    <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\PreviewVisualizer.cs" />
+    <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\PreviewVisualizerWindow.cs" />
+    <Compile Include="MonoDevelop.Debugger.Converters\DebugValueConverter.cs" />
+    <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\PreviewWindowManager.cs" />
+    <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\GenericPreviewVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger\BreakpointPropertiesDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\TextEntryWithCodeCompletion.cs" />
+    <Compile Include="MonoDevelop.Debugger\SourceCodeLookup.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Debugger.DebugApplicationDialog.cs" />
+    <Compile Include="MonoDevelop.Debugger\DebugApplicationDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">
@@ -209,36 +247,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-watch-16%402x.png">
       <LogicalName>pad-watch-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\pause-16.png">
-      <LogicalName>pause-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\pause-16%402x.png">
-      <LogicalName>pause-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\step-in-16.png">
-      <LogicalName>step-in-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\step-in-16%402x.png">
-      <LogicalName>step-in-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\step-out-16.png">
-      <LogicalName>step-out-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\step-out-16%402x.png">
-      <LogicalName>step-out-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\step-over-16.png">
-      <LogicalName>step-over-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\step-over-16%402x.png">
-      <LogicalName>step-over-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\continue-16.png">
-      <LogicalName>continue-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\continue-16%402x.png">
-      <LogicalName>continue-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-debugger-16.png">
       <LogicalName>prefs-debugger-16.png</LogicalName>
@@ -313,8 +321,75 @@
       <LogicalName>stack-pointer-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)' != 'DebugMac' AND '$(Configuration)' != 'ReleaseMac' ">
+    <EmbeddedResource Include="icons\pause-16.png">
+      <LogicalName>pause-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pause-16%402x.png">
+      <LogicalName>pause-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-in-16.png">
+      <LogicalName>step-in-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-in-16%402x.png">
+      <LogicalName>step-in-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-out-16.png">
+      <LogicalName>step-out-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-out-16%402x.png">
+      <LogicalName>step-out-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-over-16.png">
+      <LogicalName>step-over-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-over-16%402x.png">
+      <LogicalName>step-over-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\continue-16.png">
+      <LogicalName>continue-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\continue-16%402x.png">
+      <LogicalName>continue-16@2x.png</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac' ">
+    <EmbeddedResource Include="icons\mac\pause.png">
+      <LogicalName>pause-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\pause%402x.png">
+      <LogicalName>pause-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\continue-16.png">
+      <LogicalName>continue-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\continue-16%402x.png">
+      <LogicalName>continue-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-in-16%402x.png">
+      <LogicalName>step-in-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-in-16.png">
+      <LogicalName>step-in-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-out-16.png">
+      <LogicalName>step-out-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-out-16%402x.png">
+      <LogicalName>step-out-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-over-16.png">
+      <LogicalName>step-over-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-over-16%402x.png">
+      <LogicalName>step-over-16@2x.png</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="MonoDevelop.Debugger.Visualizer\" />
+    <Folder Include="MonoDevelop.Debugger.PreviewVisualizers\" />
+    <Folder Include="MonoDevelop.Debugger.Converters\" />
+    <Folder Include="icons\mac\" />
   </ItemGroup>
 </Project>

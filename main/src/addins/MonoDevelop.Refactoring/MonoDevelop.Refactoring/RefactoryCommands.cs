@@ -45,6 +45,7 @@ using MonoDevelop.SourceEditor.QuickTasks;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Refactoring
 {
@@ -268,50 +269,49 @@ namespace MonoDevelop.Refactoring
 				}));
 				added = true;
 			}
-			
-			foreach (var refactoring in RefactoringService.Refactorings) {
-				if (refactoring.IsValid (options)) {
-					CommandInfo info = new CommandInfo (refactoring.GetMenuDescription (options));
-					info.AccelKey = refactoring.AccelKey;
-					ciset.CommandInfos.Add (info, new Action (new RefactoringOperationWrapper (refactoring, options).Operation));
-				}
-			}
-			var refactoringInfo = doc.Annotation<RefactoringDocumentInfo> ();
-			if (refactoringInfo == null) {
-				refactoringInfo = new RefactoringDocumentInfo ();
-				doc.AddAnnotation (refactoringInfo);
-			}
-			var loc = doc.Editor.Caret.Location;
-			bool first = true;
-			if (refactoringInfo.lastDocument != doc.ParsedDocument || loc != lastLocation) {
-
-				if (QuickTaskStrip.EnableFancyFeatures) {
-					var ext = doc.GetContent <CodeActionEditorExtension> ();
-					refactoringInfo.validActions = ext != null ? ext.GetCurrentFixes () : null;
-				} else {
-					refactoringInfo.validActions = RefactoringService.GetValidActions (doc, loc).Result;
-				}
-
-				lastLocation = loc;
-				refactoringInfo.lastDocument = doc.ParsedDocument;
-			}
-			if (refactoringInfo.validActions != null && refactoringInfo.lastDocument != null && refactoringInfo.lastDocument.CreateRefactoringContext != null) {
-				var context = refactoringInfo.lastDocument.CreateRefactoringContext (doc, CancellationToken.None);
-
-				foreach (var fix_ in refactoringInfo.validActions.OrderByDescending (i => Tuple.Create (CodeActionEditorExtension.IsAnalysisOrErrorFix(i), (int)i.Severity, CodeActionEditorExtension.GetUsage (i.IdString)))) {
-					if (CodeActionEditorExtension.IsAnalysisOrErrorFix (fix_))
-						continue;
-					var fix = fix_;
-					if (first) {
-						first = false;
-						if (ciset.CommandInfos.Count > 0)
-							ciset.CommandInfos.AddSeparator ();
+			if (RefactoringService.ShowFixes) {
+				foreach (var refactoring in RefactoringService.Refactorings) {
+					if (refactoring.IsValid (options)) {
+						CommandInfo info = new CommandInfo (refactoring.GetMenuDescription (options));
+						info.AccelKey = refactoring.AccelKey;
+						ciset.CommandInfos.Add (info, new Action (new RefactoringOperationWrapper (refactoring, options).Operation));
 					}
+				}
+				var refactoringInfo = doc.Annotation<RefactoringDocumentInfo> ();
+				if (refactoringInfo == null) {
+					refactoringInfo = new RefactoringDocumentInfo ();
+					doc.AddAnnotation (refactoringInfo);
+				}
+				var loc = doc.Editor.Caret.Location;
+				bool first = true;
+				if (refactoringInfo.lastDocument != doc.ParsedDocument || loc != lastLocation) {
+					try {
+						refactoringInfo.validActions = RefactoringService.GetValidActions (doc, loc, new CancellationTokenSource (500).Token);
+					} catch (TaskCanceledException) {
+					} catch (AggregateException ae) {
+						ae.Flatten ().Handle (x => x is TaskCanceledException); 
+					}
+	
+					lastLocation = loc;
+					refactoringInfo.lastDocument = doc.ParsedDocument;
+				}
+				if (refactoringInfo.validActions != null && refactoringInfo.lastDocument != null && refactoringInfo.lastDocument.CreateRefactoringContext != null) {
+					var context = refactoringInfo.lastDocument.CreateRefactoringContext (doc, CancellationToken.None);
 
-					ciset.CommandInfos.Add (fix.Title, new Action (() => RefactoringService.ApplyFix (fix, context)));
+					foreach (var fix_ in refactoringInfo.validActions.OrderByDescending (i => Tuple.Create (CodeActionEditorExtension.IsAnalysisOrErrorFix(i), (int)i.Severity, CodeActionEditorExtension.GetUsage (i.IdString)))) {
+						if (CodeActionEditorExtension.IsAnalysisOrErrorFix (fix_))
+							continue;
+						var fix = fix_;
+						if (first) {
+							first = false;
+							if (ciset.CommandInfos.Count > 0)
+								ciset.CommandInfos.AddSeparator ();
+						}
+
+						ciset.CommandInfos.Add (fix.Title, new Action (() => RefactoringService.ApplyFix (fix, context)));
+					}
 				}
 			}
-
 			if (ciset.CommandInfos.Count > 0) {
 				ainfo.Add (ciset, null);
 				added = true;
@@ -350,12 +350,11 @@ namespace MonoDevelop.Refactoring
 
 			if (item is IMember) {
 				var member = (IMember)item;
-				if (member.IsVirtual || member.IsAbstract || member.DeclaringType.Kind == TypeKind.Interface) {
-					var handler = new FindDerivedSymbolsHandler (doc, member);
-					if (handler.IsValid) {
-						ainfo.Add (GettextCatalog.GetString ("Find Derived Symbols"), new System.Action (handler.Run));
-						added = true;
-					}
+				var handler = new FindDerivedSymbolsHandler (member);
+				if (handler.IsValid) {
+					var a = ainfo.Add (GettextCatalog.GetString ("Find Derived Symbols"), new Action (handler.Run));
+					a.AccelKey = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindDerivedClasses).AccelKey;
+					added = true;
 				}
 			}
 			if (item is IMember) {
@@ -378,7 +377,9 @@ namespace MonoDevelop.Refactoring
 					}
 				}
 				if ((cls.Kind == TypeKind.Class && !cls.IsSealed) || cls.Kind == TypeKind.Interface) {
-					ainfo.Add (cls.Kind != TypeKind.Interface ? GettextCatalog.GetString ("Find _derived classes") : GettextCatalog.GetString ("Find _implementor classes"), new System.Action (new FindDerivedClasses (cls).Run));
+					var label = cls.Kind != TypeKind.Interface ? GettextCatalog.GetString ("Find _derived classes") : GettextCatalog.GetString ("Find _implementor classes");
+					var a = ainfo.Add (label, new System.Action (new FindDerivedClasses (cls).Run));
+					a.AccelKey = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindDerivedClasses).AccelKey;
 				}
 				ainfo.Add (GettextCatalog.GetString ("Find Extension Methods"), new System.Action (new FindExtensionMethodHandler (doc, cls).Run));
 				added = true;

@@ -10,9 +10,12 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCopyright ("LGPL")]
 
 [assembly: InternalsVisibleTo("MacPlatform")]
+[assembly: InternalsVisibleTo("WindowsPlatform")]
 [assembly: InternalsVisibleTo("MonoDevelop.Debugger")]
 [assembly: InternalsVisibleTo("MonoDevelop.DesignerSupport")]
 [assembly: InternalsVisibleTo("Ide.Tests")]
 [assembly: InternalsVisibleTo("UnitTests")]
 [assembly: InternalsVisibleTo("MonoDevelop.Refactoring")]
 [assembly: InternalsVisibleTo("Xamarin.Ide")]
+[assembly: InternalsVisibleTo("MonoDevelop.SourceEditor")]
+[assembly: InternalsVisibleTo("MonoDevelop.SourceEditor2")]

@@ -14826,7 +14826,7 @@ msgid "E_rrors only"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.cs:1
-msgid "Edit color sheme"
+msgid "Edit Color Scheme"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.cs:1

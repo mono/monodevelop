@@ -75,13 +75,24 @@ namespace MonoDevelop.NUnit.External
 			Assembly.LoadFrom (asm);
 		}
 
-		public UnitTestResult Run (IRemoteEventListener listener, ITestFilter filter, string path, string suiteName, List<string> supportAssemblies, string testRunnerType, string testRunnerAssembly)
+		public UnitTestResult Run (IRemoteEventListener listener, ITestFilter filter, string path, string suiteName, List<string> supportAssemblies, string testRunnerType, string testRunnerAssembly, string crashLogFile)
 		{
 			NUnitTestRunner runner = GetRunner (path);
 			EventListenerWrapper listenerWrapper = listener != null ? new EventListenerWrapper (listener) : null;
 			
-			TestResult res = runner.Run (listenerWrapper, filter, path, suiteName, supportAssemblies, testRunnerType, testRunnerAssembly);
-			return listenerWrapper.GetLocalTestResult (res);
+			UnhandledExceptionEventHandler exceptionHandler = (object sender, UnhandledExceptionEventArgs e) => {
+				
+				var ex = new RemoteUnhandledException ((Exception) e.ExceptionObject);
+				File.WriteAllText (crashLogFile, ex.Serialize ());
+			};
+
+			AppDomain.CurrentDomain.UnhandledException += exceptionHandler;
+			try {
+				TestResult res = runner.Run (listenerWrapper, filter, path, suiteName, supportAssemblies, testRunnerType, testRunnerAssembly);
+				return listenerWrapper.GetLocalTestResult (res);
+			} finally {
+				AppDomain.CurrentDomain.UnhandledException -= exceptionHandler;
+			}
 		}
 		
 		public NunitTestInfo GetTestInfo (string path, List<string> supportAssemblies)
@@ -366,7 +377,47 @@ namespace MonoDevelop.NUnit.External
 		{
 			return null;
 		}
-
 	}	
+
+	/// <summary>
+	/// Exception class that can be serialized
+	/// </summary>
+	class RemoteUnhandledException: Exception
+	{
+		string stack;
+
+		public RemoteUnhandledException (string exceptionName, string message, string stack): base (message)
+		{
+			RemoteExceptionName = exceptionName;
+			this.stack = stack;
+		}
+
+		public RemoteUnhandledException (Exception ex): base (ex.Message)
+		{
+			RemoteExceptionName = ex.GetType().Name;
+			this.stack = ex.StackTrace;
+		}
+
+		public string Serialize ()
+		{
+			return RemoteExceptionName + "\n" + Message.Replace ('\r',' ').Replace ('\n',' ') + "\n" + StackTrace;
+		}
+
+		public static RemoteUnhandledException Parse (string s)
+		{
+			int i = s.IndexOf ('\n');
+			string name = s.Substring (0, i++);
+			int i2 = s.IndexOf ('\n', i);
+			return new RemoteUnhandledException (name, s.Substring (i, i2 - i), s.Substring (i2 + 1));
+		}
+
+		public string RemoteExceptionName { get; set; }
+
+		public override string StackTrace {
+			get {
+				return stack;
+			}
+		}
+	}
 }
 

@@ -125,8 +125,8 @@ namespace MonoDevelop.MacIntegration
 		public override Xwt.Toolkit LoadNativeToolkit ()
 		{
 			var path = Path.GetDirectoryName (GetType ().Assembly.Location);
-			System.Reflection.Assembly.LoadFrom (Path.Combine (path, "Xwt.Mac.dll"));
-			var loaded = Xwt.Toolkit.Load (Xwt.ToolkitType.Cocoa);
+			System.Reflection.Assembly.LoadFrom (Path.Combine (path, "Xwt.XamMac.dll"));
+			var loaded = Xwt.Toolkit.Load (Xwt.ToolkitType.XamMac);
 
 			// We require Xwt.Mac to initialize MonoMac before we can execute any code using MonoMac
 			timer.Trace ("Installing App Event Handlers");
@@ -315,12 +315,7 @@ namespace MonoDevelop.MacIntegration
 					}}
 				}}
 
-        style ""menu-item"" {{
-          bg[SELECTED] = ""{0}""
-        }}
-
 				widget_class ""*.<GtkTreeView>*"" style ""treeview""
-        widget_class ""*.<GtkMenuItem>*"" style ""menu-item""
 				",
 				color_hex,
 				text_hex
@@ -734,12 +729,8 @@ namespace MonoDevelop.MacIntegration
 		internal override void SetMainWindowDecorations (Gtk.Window window)
 		{
 			NSWindow w = GtkQuartz.GetWindow (window);
-			w.IsOpaque = false;
-
-			var resource = "maintoolbarbg.png";
-			NSImage img = LoadImage (resource);
-			w.BackgroundColor = NSColor.FromPatternImage (img);
-			w.StyleMask |= NSWindowStyle.TexturedBackground;
+			w.IsOpaque = true;
+			w.StyleMask |= NSWindowStyle.UnifiedTitleAndToolbar;
 		}
 
 		internal override void RemoveWindowShadow (Gtk.Window window)
@@ -750,22 +741,20 @@ namespace MonoDevelop.MacIntegration
 			w.HasShadow = false;
 		}
 
-		internal override MainToolbar CreateMainToolbar (Gtk.Window window)
+		internal override IMainToolbarView CreateMainToolbar (Gtk.Window window)
 		{
-			NSWindow w = GtkQuartz.GetWindow (window);
-			w.IsOpaque = false;
+			return new MonoDevelop.MacIntegration.MainToolbar.MainToolbar (window);
+		}
 
-			var resource = "maintoolbarbg.png";
-			NSImage img = LoadImage (resource);
-			var c = NSColor.FromPatternImage (img);
-			w.BackgroundColor = c;
-			w.StyleMask |= NSWindowStyle.TexturedBackground;
+		internal override void AttachMainToolbar (Gtk.VBox parent, IMainToolbarView toolbar)
+		{
+			var nativeToolbar = (MonoDevelop.MacIntegration.MainToolbar.MainToolbar)toolbar;
+			NSWindow w = GtkQuartz.GetWindow (nativeToolbar.gtkWindow);
+			if (MacSystemInformation.OsVersion >= MacSystemInformation.Yosemite)
+				w.TitleVisibility = NSWindowTitleVisibility.Hidden;
 
-			var result = new MainToolbar () {
-				Background = CairoExtensions.LoadImage (typeof (MacPlatformService).Assembly, resource),
-				TitleBarHeight = GetTitleBarHeight ()
-			};
-			return result;
+			w.Toolbar = nativeToolbar.widget;
+			nativeToolbar.Initialize ();
 		}
 
 		protected override RecentFiles CreateRecentFilesProvider ()
@@ -799,12 +788,8 @@ namespace MonoDevelop.MacIntegration
 		{
 			var toplevels = GtkQuartz.GetToplevels ();
 
-			// When we're looking for modal windows that don't belong to GTK, exclude
-			// NSStatusBarWindow (which is visible on Mavericks when we're in fullscreen) and
-			// NSToolbarFullscreenWindow (which is visible on Yosemite in fullscreen).
-			return toplevels.Any (t => t.Key.IsVisible && (t.Value == null || t.Value.Modal) &&
-				!(t.Key.DebugDescription.StartsWith("<NSStatusBarWindow", StringComparison.Ordinal) ||
-				  t.Key.DebugDescription.StartsWith ("<NSToolbarFullScreenWindow", StringComparison.Ordinal)));
+			// Check GtkWindow's Modal flag or for a visible NSPanel
+			return toplevels.Any (t => (t.Value != null && t.Value.Modal) || (t.Key.IsVisible && (t.Key is NSPanel)));
 		}
 
 		public override void AddChildWindow (Gtk.Window parent, Gtk.Window child)
@@ -845,6 +830,15 @@ namespace MonoDevelop.MacIntegration
 				desktopBounds = desktopBounds.Union (new Gdk.Rectangle ((int)r.X, (int)r.Y, (int)r.Width, (int)r.Height));
 			}
 			return desktopBounds;
+		}
+
+		public override void OpenFolder (FilePath folderPath, FilePath[] selectFiles)
+		{
+			if (selectFiles.Length == 0) {
+				System.Diagnostics.Process.Start (folderPath);
+			} else {
+				NSWorkspace.SharedWorkspace.ActivateFileViewer (selectFiles.Select ((f) => NSUrl.FromFilename (f)).ToArray ());
+			}
 		}
 	}
 }

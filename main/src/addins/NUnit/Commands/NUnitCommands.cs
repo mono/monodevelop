@@ -41,7 +41,8 @@ namespace MonoDevelop.NUnit.Commands
 		ShowTestCode,
 		SelectTestInTree,
 		ShowTestDetails,
-		GoToFailure
+		GoToFailure,
+		RerunTest,
 	}
 	
 	public enum TestChartCommands

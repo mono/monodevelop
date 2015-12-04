@@ -99,7 +99,10 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         mdInterfaceImpl iiImpl,             // [IN] InterfaceImpl token.
         //         mdTypeDef   *pClass,                // [OUT] Put implementing class token here.
         //         mdToken     *ptkIface) PURE;        // [OUT] Put implemented interface token here.
-        void GetInterfaceImplProps_();
+		void GetInterfaceImplProps (
+			[In] int iiImpl,
+			[Out] out int pClass,
+			[Out] out int ptkIface);
 #endif
         //     STDMETHOD(GetTypeRefProps)(             // S_OK or error.
         //         mdTypeRef   tr,                     // [IN] TypeRef token.
@@ -703,7 +706,10 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         mdInterfaceImpl iiImpl,             // [IN] InterfaceImpl token.
         //         mdTypeDef   *pClass,                // [OUT] Put implementing class token here.
         //         mdToken     *ptkIface) PURE;        // [OUT] Put implemented interface token here.
-        new void GetInterfaceImplProps_();
+		new void GetInterfaceImplProps (
+			[In] int iiImpl,
+			[Out] out int pClass,
+			[Out] out int ptkIface);
 #endif
         //     STDMETHOD(GetTypeRefProps)(             // S_OK or error.
         //         mdTypeRef   tr,                     // [IN] TypeRef token.

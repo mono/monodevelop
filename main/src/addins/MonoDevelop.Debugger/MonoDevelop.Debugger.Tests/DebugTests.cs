@@ -65,6 +65,20 @@ namespace MonoDevelop.Debugger.Tests
 			EngineId = engineId;
 		}
 
+		public void IgnoreCorDebugger (string message = "")
+		{
+			if (!(Session is SoftDebuggerSession)) {
+				Assert.Ignore (message);
+			}
+		}
+
+		public void IgnoreSoftDebugger (string message = "")
+		{
+			if (Session is SoftDebuggerSession) {
+				Assert.Ignore (message);
+			}
+		}
+
 		[TestFixtureSetUp]
 		public virtual void SetUp ()
 		{
@@ -210,6 +224,9 @@ namespace MonoDevelop.Debugger.Tests
 			default:
 				throw new Exception ("Timeout while waiting for initial breakpoint");
 			}
+			if (Session is SoftDebuggerSession) {
+				Console.WriteLine ("SDB protocol version:" + ((SoftDebuggerSession)Session).ProtocolVersion);
+			}
 		}
 
 		void GetLineAndColumn (string breakpointMarker, int offset, string statement, out int line, out int col)
@@ -269,6 +286,13 @@ namespace MonoDevelop.Debugger.Tests
 			return Frame.GetExpressionValue (exp, true).Sync ();
 		}
 
+		public void WaitStop (int miliseconds)
+		{
+			if (!targetStoppedEvent.WaitOne (miliseconds)) {
+				Assert.Fail ("WaitStop failure: Target stop timeout");
+			}
+		}
+
 		public bool CheckPosition (string guid, int offset = 0, string statement = null, bool silent = false)
 		{
 			if (!targetStoppedEvent.WaitOne (3000)) {
@@ -315,7 +339,7 @@ namespace MonoDevelop.Debugger.Tests
 		public void StepIn (string guid, int offset = 0, string statement = null)
 		{
 			targetStoppedEvent.Reset ();
-			Session.StepLine ();
+			Session.StepInstruction ();
 			CheckPosition (guid, offset, statement);
 		}
 
@@ -327,7 +351,7 @@ namespace MonoDevelop.Debugger.Tests
 		public void StepOver (string guid, int offset = 0, string statement = null)
 		{
 			targetStoppedEvent.Reset ();
-			Session.NextLine ();
+			Session.NextInstruction ();
 			CheckPosition (guid, offset, statement);
 		}
 
@@ -380,6 +404,13 @@ namespace MonoDevelop.Debugger.Tests
 
 	static class EvalHelper
 	{
+		public static bool AtLeast (this Version ver, int major, int minor) {
+			if ((ver.Major > major) || ((ver.Major == major && ver.Minor >= minor)))
+				return true;
+			else
+				return false;
+		}
+
 		public static ObjectValue Sync (this ObjectValue val)
 		{
 			if (!val.IsEvaluating)

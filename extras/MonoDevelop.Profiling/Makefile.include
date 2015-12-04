@@ -1,4 +1,0 @@
-build_sources = $(addprefix $(srcdir)/, $(FILES)) $(GENERATED_FILES)
-build_resources = $(addprefix $(srcdir)/, $(RES))
-build_test_sources = $(addprefix $(srcdir)/, $(TESTFILES)) $(GENERATED_FILES)
-

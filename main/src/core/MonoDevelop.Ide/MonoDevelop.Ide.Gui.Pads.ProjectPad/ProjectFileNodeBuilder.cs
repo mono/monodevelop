@@ -173,15 +173,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ProjectFile newProjectFile = null;
 			var file = (ProjectFile) CurrentNode.DataItem;
 			
-			FilePath oldPath, newPath, newLink = FilePath.Null;
+			FilePath newPath, newLink = FilePath.Null;
 			if (file.IsLink) {
 				var oldLink = file.ProjectVirtualPath;
 				newLink = oldLink.ParentDirectory.Combine (newName);
-				oldPath = file.Project.BaseDirectory.Combine (oldLink);
 				newPath = file.Project.BaseDirectory.Combine (newLink);
 			} else {
-				oldPath = file.Name;
-				newPath = oldPath.ParentDirectory.Combine (newName);	
+				newPath = file.FilePath.ParentDirectory.Combine (newName);	
 			}
 			
 			try {
@@ -190,16 +188,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 				if (!FileService.IsValidPath (newPath)) {
 					MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
-				} else if (newProjectFile != null && newProjectFile != file) {
+				} else if ((newProjectFile != null && newProjectFile != file) || File.Exists (file.FilePath.ParentDirectory.Combine (newName))) {
 					// If there is already a file under the newPath which is *different*, then throw an exception
 					MessageService.ShowWarning (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
 				} else {
-					if (file.IsLink) {
-						file.Link = newLink;
-					} else {
-						// This could throw an exception if we try to replace another file during the rename.
-						FileService.RenameFile (oldPath, newName);
-					}
+					FileService.RenameFile (file.FilePath, newName);
 					if (file.Project != null)
 						IdeApp.ProjectOperations.Save (file.Project);
 				}
@@ -231,60 +224,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			return DragOperation.Copy | DragOperation.Move;
 		}
 		
-		public override bool CanDropNode (object dataObject, DragOperation operation)
-		{
-			var target = (ProjectFile) CurrentNode.DataItem;
-			var pf = dataObject as ProjectFile;
-
-			return pf != null && pf != target && !pf.HasChildren && target.DependsOn == null;
-		}
-
-		void Drop (ProjectFile pf, DragOperation operation, HashSet<SolutionEntityItem> projectsToSave)
-		{
-			var target = (ProjectFile) CurrentNode.DataItem;
-			var targetDirectory = target.FilePath.ParentDirectory;
-
-			// file dependencies only work if they are in the same physical folder
-			if (pf.FilePath.ParentDirectory != targetDirectory) {
-				var targetPath = targetDirectory.Combine (pf.FilePath.FileName);
-
-				// if copying to the same directory, make a copy with a different name
-				if (targetPath == pf.FilePath)
-					targetPath = ProjectOperations.GetTargetCopyName (targetPath, false);
-
-				if (File.Exists (targetPath))
-					if (!MessageService.Confirm (GettextCatalog.GetString ("The file '{0}' already exists. Do you want to overwrite it?", targetPath.FileName), AlertButton.OverwriteFile))
-						return;
-
-				// unlink the project file from its current parent
-				pf.DependsOn = null;
-
-				projectsToSave.Add (pf.Project);
-
-				bool move = operation == DragOperation.Move;
-				var opText = move ? GettextCatalog.GetString ("Moving file...") : GettextCatalog.GetString ("Copying file...");
-
-				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (opText, Stock.StatusWorking, true))
-					IdeApp.ProjectOperations.TransferFiles (monitor, pf.Project, pf.FilePath, target.Project, targetPath, move, true);
-
-				pf = target.Project.Files.GetFile (targetPath);
-			}
-
-			// the dropped project file now depends on the file it was just dropped onto
-			pf.DependsOn = target.FilePath.FileName;
-			projectsToSave.Add (pf.Project);
-		}
-
-		public override void OnMultipleNodeDrop (object[] dataObjects, DragOperation operation)
-		{
-			var projectsToSave = new HashSet<SolutionEntityItem> ();
-
-			foreach (var dataObject in dataObjects)
-				Drop ((ProjectFile) dataObject, operation, projectsToSave);
-
-			IdeApp.ProjectOperations.Save (projectsToSave);
-		}
-		
 		public override bool CanDeleteItem ()
 		{
 			return true;
@@ -307,10 +246,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 
 			var removeFromProject = new AlertButton (GettextCatalog.GetString ("_Remove from Project"), Gtk.Stock.Remove);
-			string question, secondaryText;
-			
-			secondaryText = GettextCatalog.GetString ("The Delete option permanently removes the file from your hard disk. " +
-				"Click Remove from Project if you only want to remove it from your current solution.");
+			string question;
+			string secondaryText = null;
+
+			bool filesExist = CheckAnyFileExists (files);
+			if (filesExist) {
+				secondaryText = GettextCatalog.GetString ("The Delete option permanently removes the file from your hard disk. " +
+					"Click Remove from Project if you only want to remove it from your current solution.");
+			}
 			
 			if (hasChildren) {
 				if (files.Count == 1)
@@ -328,7 +271,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					question = GettextCatalog.GetString ("Are you sure you want to remove the selected files from the project?");
 			}
 
-			var result = MessageService.AskQuestion (question, secondaryText, AlertButton.Delete, AlertButton.Cancel, removeFromProject);
+			var result = MessageService.AskQuestion (question, secondaryText, GetDeleteConfirmationButtons (filesExist, removeFromProject));
 			if (result != removeFromProject && result != AlertButton.Delete) 
 				return;
 
@@ -358,6 +301,29 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 
 			IdeApp.ProjectOperations.Save (projects);
+		}
+
+		static bool CheckAnyFileExists (IEnumerable<ProjectFile> files)
+		{
+			foreach (ProjectFile file in files) {
+				if (!file.IsLink && File.Exists (file.Name))
+					return true;
+
+				if (file.HasChildren) {
+					foreach (var child in file.DependentChildren.ToArray()) {
+						if (File.Exists (child.Name))
+							return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		static AlertButton[] GetDeleteConfirmationButtons (bool includeDelete, AlertButton removeFromProject)
+		{
+			if (includeDelete)
+				return new [] { AlertButton.Delete, AlertButton.Cancel, removeFromProject };
+			return new [] { AlertButton.Cancel, removeFromProject };
 		}
 		
 		[CommandUpdateHandler (EditCommands.Delete)]

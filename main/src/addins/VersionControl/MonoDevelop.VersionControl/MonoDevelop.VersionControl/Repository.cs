@@ -8,12 +8,16 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using System.Linq;
 using System.Threading;
+using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl
 {
 	[DataItem (FallbackType=typeof(UnknownRepository))]
 	public abstract class Repository: IDisposable
 	{
+		static Counter Repositories = InstrumentationService.CreateCounter ("VersionControl.RepositoryOpened", "Version Control", id:"VersionControl.RepositoryOpened");
+
 		string name;
 		VersionControlSystem vcs;
 		
@@ -38,6 +42,32 @@ namespace MonoDevelop.VersionControl
 		protected Repository (VersionControlSystem vcs): this ()
 		{
 			VersionControlSystem = vcs;
+			Repositories.SetValue (Repositories.Count + 1, string.Format ("Repository #{0}", Repositories.Count + 1), new Dictionary<string, string> {
+				{ "Type", vcs.Name },
+				{ "Type+Version", string.Format ("{0} {1}", vcs.Name, vcs.Version) },
+			});
+		}
+
+		public override bool Equals (object obj)
+		{
+			var other = obj as Repository;
+			return other != null &&
+				other.RootPath == RootPath &&
+				other.VersionControlSystem == VersionControlSystem &&
+				other.LocationDescription == LocationDescription &&
+				other.Name == Name;
+		}
+
+		public override int GetHashCode ()
+		{
+			int result = 0;
+			result ^= RootPath.GetHashCode ();
+			if (VersionControlSystem != null)
+				result ^= VersionControlSystem.GetHashCode ();
+			if (LocationDescription != null)
+				result ^= LocationDescription.GetHashCode ();
+			result ^= Name.GetHashCode ();
+			return result;
 		}
 		
 		public virtual void CopyConfigurationFrom (Repository other)
@@ -64,9 +94,19 @@ namespace MonoDevelop.VersionControl
 			if (--references == 0)
 				Dispose ();
 		}
-		
+
+		internal bool Disposed { get; private set; }
 		public virtual void Dispose ()
 		{
+			Disposed = true;
+			if (!queryRunning)
+				return;
+
+			lock (queryLock) {
+				fileQueryQueue.Clear ();
+				directoryQueryQueue.Clear ();
+				recursiveDirectoryQueryQueue.Clear ();
+			}
 		}
 		
 		// Display name of the repository
@@ -127,13 +167,20 @@ namespace MonoDevelop.VersionControl
 		public virtual bool SupportsRevertRevision {
 			get { return false; }
 		}
+
+		public virtual bool SupportsRevertToRevision {
+			get { return false; }
+		}
 		
 		internal protected virtual VersionControlOperation GetSupportedOperations (VersionInfo vinfo)
 		{
 			VersionControlOperation operations = VersionControlOperation.None;
 			bool exists = !vinfo.LocalPath.IsNullOrEmpty && (File.Exists (vinfo.LocalPath) || Directory.Exists (vinfo.LocalPath));
 			if (vinfo.IsVersioned) {
-				operations = VersionControlOperation.Commit | VersionControlOperation.Update | VersionControlOperation.Log;
+				operations = VersionControlOperation.Commit | VersionControlOperation.Update;
+				if (!vinfo.HasLocalChange (VersionStatus.ScheduledAdd))
+					operations |= VersionControlOperation.Log;
+
 				if (exists) {
 					if (!vinfo.HasLocalChange (VersionStatus.ScheduledDelete))
 						operations |= VersionControlOperation.Remove;
@@ -212,20 +259,40 @@ namespace MonoDevelop.VersionControl
 			return result;
 		}
 
+		RecursiveDirectoryInfoQuery AcquireLockForQuery (FilePath path, bool getRemoteStatus)
+		{
+			RecursiveDirectoryInfoQuery rq;
+			bool query = false;
+			lock (queryLock) {
+				rq = recursiveDirectoryQueryQueue.FirstOrDefault (q => q.Directory == path);
+				if (rq == null) {
+					query = true;
+					var mre = new ManualResetEvent (false);
+					rq = new RecursiveDirectoryInfoQuery {
+						Directory = path,
+						GetRemoteStatus = getRemoteStatus,
+						ResetEvent = mre,
+						Count = 1,
+					};
+				} else
+					Interlocked.Increment (ref rq.Count);
+			}
+			if (query)
+				AddQuery (rq);
+			return rq;
+		}
+
 		public VersionInfo[] GetDirectoryVersionInfo (FilePath localDirectory, bool getRemoteStatus, bool recursive)
 		{
 			try {
 				if (recursive) {
-					using (var mre = new ManualResetEvent (false)) {
-						var rq = new RecursiveDirectoryInfoQuery {
-							Directory = localDirectory,
-							GetRemoteStatus = getRemoteStatus,
-							ResetEvent = mre,
-						};
-						AddQuery (rq);
-						rq.ResetEvent.WaitOne ();
-						return rq.Result;
-					}
+					RecursiveDirectoryInfoQuery rq = AcquireLockForQuery (localDirectory, getRemoteStatus);
+					rq.ResetEvent.WaitOne ();
+
+					lock (queryLock)
+						if (Interlocked.Decrement (ref rq.Count) == 0)
+							rq.ResetEvent.Dispose ();
+					return rq.Result;
 				}
 
 				var status = infoCache.GetDirectoryStatus (localDirectory);
@@ -270,8 +337,9 @@ namespace MonoDevelop.VersionControl
 
 		class RecursiveDirectoryInfoQuery : DirectoryInfoQuery
 		{
-			public VersionInfo[] Result;
+			public VersionInfo[] Result = new VersionInfo[0];
 			public ManualResetEvent ResetEvent;
+			public int Count;
 		}
 
 		Queue<VersionInfoQuery> fileQueryQueue = new Queue<VersionInfoQuery> ();
@@ -797,6 +865,11 @@ namespace MonoDevelop.VersionControl
 		}
 
 		protected abstract void OnUnignore (FilePath[] localPath);
+
+		public virtual bool GetFileIsText (FilePath path)
+		{
+			return DesktopService.GetFileIsText (path);
+		}
 	}
 	
 	public class Annotation

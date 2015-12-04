@@ -31,7 +31,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Projects;
-using NuGet;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
@@ -74,15 +73,10 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		void RefreshAllChildNodes ()
 		{
 			DispatchService.GuiDispatch (() => {
-				foreach (IDotNetProject project in PackageManagementServices.Solution.GetDotNetProjects ()) {
-					RefreshChildNodes (project.DotNetProject);
+				foreach (DotNetProject project in IdeApp.Workspace.GetAllSolutionItems<DotNetProject> ()) {
+					RefreshChildNodes (project);
 				}
 			});
-		}
-
-		void RefreshChildNodes (IPackageManagementProject project)
-		{
-			DispatchService.GuiDispatch (() => RefreshChildNodes (project.DotNetProject));
 		}
 
 		void RefreshChildNodes (DotNetProject project)
@@ -110,29 +104,13 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			return ProjectHasPackages (dataObject);
-		}
-
-		bool ProjectHasPackages (object dataObject)
-		{
-			var project = (DotNetProject) dataObject;
-			return project.HasPackages () || ProjectHasPendingPackages (project);
-		}
-
-		bool ProjectHasPendingPackages (DotNetProject project)
-		{
-			return PackageManagementServices
-				.BackgroundPackageActionRunner
-				.PendingInstallActionsForProject (project)
-				.Any ();
+			return true;
 		}
 
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			var project = (DotNetProject)dataObject;
-			if (ProjectHasPackages (project)) {
-				treeBuilder.AddChild (new ProjectPackagesFolderNode (project));
-			}
+			treeBuilder.AddChild (new ProjectPackagesFolderNode (project));
 		}
 
 		void FileChanged (object sender, FileEventArgs e)

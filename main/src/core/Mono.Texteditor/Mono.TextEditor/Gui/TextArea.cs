@@ -376,12 +376,6 @@ namespace Mono.TextEditor
 #if ATK
 			TextEditorAccessible.Factory.Init (this);
 #endif
-
-			if (GtkGestures.IsSupported) {
-				this.AddGestureMagnifyHandler ((sender, args) => {
-					Options.Zoom += Options.Zoom * (args.Magnification / 4d);
-				});
-			}
 			OptionsChanged (this, EventArgs.Empty);
 		}
 
@@ -1297,7 +1291,9 @@ namespace Mono.TextEditor
 			scrollWindowTimer_mod = mod;
 			if (scrollWindowTimer == 0) {
 				scrollWindowTimer = GLib.Timeout.Add (50, delegate {
-					FireMotionEvent (scrollWindowTimer_x, scrollWindowTimer_y, scrollWindowTimer_mod);
+					if (HasFocus) {
+						FireMotionEvent (scrollWindowTimer_x, scrollWindowTimer_y, scrollWindowTimer_mod);
+					}
 					return true;
 				});
 			}
@@ -1631,17 +1627,28 @@ namespace Mono.TextEditor
 			var hasZoomModifier = (evnt.State & modifier) != 0;
 			if (hasZoomModifier && lastScrollTime != 0 && (evnt.Time - lastScrollTime) < 100)
 				hasZoomModifier = false;
-
+			
 			if (hasZoomModifier) {
 				if (evnt.Direction == ScrollDirection.Up)
 					Options.ZoomIn ();
 				else if (evnt.Direction == ScrollDirection.Down)
 					Options.ZoomOut ();
-				
+
 				this.QueueDraw ();
 				if (isMouseTrapped)
 					FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
 				return true;
+			}
+
+			if (!Platform.IsMac) {
+				if ((evnt.State & ModifierType.ShiftMask) == ModifierType.ShiftMask) {
+					if (evnt.Direction == ScrollDirection.Down)
+						HAdjustment.Value = System.Math.Min (HAdjustment.Upper - HAdjustment.PageSize, HAdjustment.Value + HAdjustment.StepIncrement * 3);
+					else if (evnt.Direction == ScrollDirection.Up)
+						HAdjustment.Value -= HAdjustment.StepIncrement * 3;
+					
+					return true;
+				}
 			}
 			lastScrollTime = evnt.Time;
 			return base.OnScrollEvent (evnt); 
@@ -1740,8 +1747,10 @@ namespace Mono.TextEditor
 			double curY = startY - this.textEditorData.VAdjustment.Value;
 			bool setLongestLine = false;
 			foreach (var margin in this.margins) {
-				if (margin.BackgroundRenderer != null)
-					margin.BackgroundRenderer.Draw (cr, cairoRectangle);
+				if (margin.BackgroundRenderer != null) {
+					var area = new Cairo.Rectangle(0, 0, Allocation.Width, Allocation.Height);
+					margin.BackgroundRenderer.Draw (cr, area);
+				}
 			}
 
 
@@ -2673,7 +2682,7 @@ namespace Mono.TextEditor
 				int wx, ww, wh;
 				tipWindow.GetSize (out ww, out wh);
 				wx = tipX - ww/2;
-				if (xloc >= wx && xloc < wx + ww && yloc >= tipY && yloc < tipY + 20 + wh)
+				if (xloc >= wx && xloc < tipX + ww && yloc >= tipY && yloc < tipY + 20 + wh)
 					return;
 			}
 			if (tipItem != null && !tipItem.ItemSegment.IsInvalid && !tipItem.ItemSegment.Contains (offset)) 
@@ -3111,7 +3120,9 @@ namespace Mono.TextEditor
 			TextEditor.EditorContainerChild info = new TextEditor.EditorContainerChild (this, widget);
 			info.X = x;
 			info.Y = y;
-			containerChildren.Add (info);
+			var newContainerChildren = new List<TextEditor.EditorContainerChild> (containerChildren);
+			newContainerChildren.Add (info);
+			containerChildren = newContainerChildren;
 			ResizeChild (Allocation, info);
 			SetAdjustments ();
 		}
@@ -3165,14 +3176,16 @@ namespace Mono.TextEditor
 		
 		protected override void OnRemoved (Widget widget)
 		{
-			foreach (var info in containerChildren.ToArray ()) {
+			var newContainerChildren = new List<TextEditor.EditorContainerChild> (containerChildren);
+			foreach (var info in newContainerChildren.ToArray ()) {
 				if (info.Child == widget) {
 					widget.Unparent ();
-					containerChildren.Remove (info);
+					newContainerChildren.Remove (info);
 					SetAdjustments ();
 					break;
 				}
 			}
+			containerChildren = newContainerChildren;
 		}
 		
 		protected override void ForAll (bool include_internals, Gtk.Callback callback)

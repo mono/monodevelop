@@ -33,23 +33,22 @@
  */
 
 using System;
-using System.Collections;
-using System.Reflection;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reflection;
 using MonoDevelop.Components.PropertyGrid.PropertyEditors;
-using System.Drawing.Design;
 
 namespace MonoDevelop.Components.PropertyGrid
 {
-	internal class EditorManager
+	class EditorManager
 	{
-		private Hashtable editors = new Hashtable ();
-		private Hashtable inheritingEditors = new Hashtable ();
-		private Hashtable surrogates = new Hashtable ();
-		static PropertyEditorCell Default = new PropertyEditorCell ();
-		static Hashtable cellCache = new Hashtable ();
+		readonly Dictionary<Type,Type> editors = new Dictionary<Type,Type> ();
+		readonly Dictionary<Type,Type> inheritingEditors = new Dictionary<Type, Type>();
+		readonly Dictionary<Type,Type> surrogates = new Dictionary<Type,Type> ();
+		static readonly PropertyEditorCell Default = new PropertyEditorCell ();
+		static readonly Dictionary<Type,PropertyEditorCell> cellCache = new Dictionary<Type,PropertyEditorCell> ();
 
-		internal EditorManager ()
+		public EditorManager ()
 		{
 			LoadEditor (Assembly.GetAssembly (typeof (EditorManager)));
 		}
@@ -59,7 +58,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			foreach (Type t in editorAssembly.GetTypes ()) {
 				foreach (Attribute currentAttribute in Attribute.GetCustomAttributes (t)) {
 					if (currentAttribute.GetType() == typeof (PropertyEditorTypeAttribute)) {
-						PropertyEditorTypeAttribute peta = (PropertyEditorTypeAttribute)currentAttribute;
+						var peta = (PropertyEditorTypeAttribute)currentAttribute;
 						Type editsType = peta.Type;
 						if (t.IsSubclassOf (typeof (PropertyEditorCell)))
 							if (peta.Inherits)
@@ -75,13 +74,13 @@ namespace MonoDevelop.Components.PropertyGrid
 			}
 		}
 
-		public PropertyEditorCell GetEditor (PropertyDescriptor pd)
+		public PropertyEditorCell GetEditor (ITypeDescriptorContext context)
 		{
-			PropertyEditorCell cell = pd.GetEditor (typeof(PropertyEditorCell)) as PropertyEditorCell;
+			var cell = context.PropertyDescriptor.GetEditor (typeof(PropertyEditorCell)) as PropertyEditorCell;
 			if (cell != null)
 				return cell;
 			
-			Type editorType = GetEditorType (pd);
+			Type editorType = GetEditorType (context);
 			if (editorType == null)
 				return Default;
 			
@@ -91,9 +90,9 @@ namespace MonoDevelop.Components.PropertyGrid
 				return Default;
 			}
 
-			cell = cellCache [editorType] as PropertyEditorCell;
-			if (cell != null)
+			if (cellCache.TryGetValue (editorType, out cell)) {
 				return cell;
+			}
 
 			if (!typeof(PropertyEditorCell).IsAssignableFrom (editorType))
 				throw new Exception ("The property editor '" + editorType + "' must be a subclass of Stetic.PropertyEditorCell or implement Stetic.IPropertyEditor");
@@ -102,9 +101,11 @@ namespace MonoDevelop.Components.PropertyGrid
 			cellCache [editorType] = cell;
 			return cell;
 		}
-		
-		public Type GetEditorType (PropertyDescriptor pd)
+
+		public Type GetEditorType (ITypeDescriptorContext context)
 		{
+			var pd = context.PropertyDescriptor;
+
 			//try to find a custom editor
 			//TODO: Find a way to provide a IWindowsFormsEditorService so this can work directly
 			//for now, substitute GTK#-based editors
@@ -117,23 +118,23 @@ namespace MonoDevelop.Components.PropertyGrid
 
 			//does a registered GTK# editor support this natively?
 			Type editType = pd.PropertyType;
-			if (editors.Contains (editType))
-				return (Type) editors [editType];
+			if (editors.ContainsKey (editType))
+				return editors [editType];
 			
 			//editors that edit derived types
-			foreach (DictionaryEntry de in inheritingEditors)
-				if (editType.IsSubclassOf((Type) de.Key))
-					return (Type) de.Value;
-			
+			//TODO: find most derived type?
+			foreach (var kvp in inheritingEditors)
+				if (editType.IsSubclassOf (kvp.Key))
+					return kvp.Value;
+
 			if (pd.PropertyType.IsEnum) {
-				if (pd.PropertyType.IsDefined (typeof (FlagsAttribute), true))
-					return typeof (PropertyEditors.FlagsEditorCell);
-				else
-					return typeof (PropertyEditors.EnumerationEditorCell);
+				if (pd.PropertyType.IsDefined (typeof(FlagsAttribute), true))
+					return typeof(FlagsEditorCell);
+				return typeof(EnumerationEditorCell);
 			}
 			
 			//collections with items of single type that aren't just objects
-			if (typeof(IList).IsAssignableFrom (editType)) {
+			if (typeof(System.Collections.IList).IsAssignableFrom (editType)) {
 				// Iterate through all properties since there may be more than one indexer.
 				if (GetCollectionItemType (editType) != null)
 					return typeof (CollectionEditor);
@@ -146,23 +147,19 @@ namespace MonoDevelop.Components.PropertyGrid
 
 			//can we use a type converter with a built-in editor?
 			TypeConverter tc = pd.Converter;
-			
-			if (typeof (ExpandableObjectConverter).IsAssignableFrom (tc.GetType ()))
-				return typeof(ExpandableObjectEditor);
 
-			//This is a temporary workaround *and* and optimisation
-			//First, most unknown types will be most likely to convert to/from strings
-			//Second, System.Web.UI.WebControls/UnitConverter.cs dies on non-strings
-			if (tc.CanConvertFrom (typeof (string)) && tc.CanConvertTo (typeof(string)))
-				return typeof(TextEditor);
-			
-			foreach (DictionaryEntry editor in editors)
-				if (tc.CanConvertFrom((Type) editor.Key) && tc.CanConvertTo((Type) editor.Key))
-					return (Type) editor.Value;
+			//TODO: find best match, not first
+			foreach (var kvp in editors)
+				if (tc.CanConvertFrom (kvp.Key) && tc.CanConvertTo (kvp.Key))
+					return kvp.Value;
 					
-			foreach (DictionaryEntry de in inheritingEditors)
-				if (tc.CanConvertFrom((Type) de.Key) && tc.CanConvertTo((Type) de.Key))
-					return (Type) de.Value;
+			foreach (var kvp in inheritingEditors)
+				if (tc.CanConvertFrom (kvp.Key) && tc.CanConvertTo (kvp.Key))
+					return kvp.Value;
+
+			if (tc.CanConvertTo (typeof(string)) || tc.GetStandardValuesSupported (context)) {
+				return typeof(TextEditor);
+			}
 
 			//nothing found - just display type
 			return null;

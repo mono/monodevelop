@@ -27,12 +27,36 @@ using System;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Core;
 using Mono.TextEditor;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
 	
 	public partial class MarkerPanel : Gtk.Bin, IOptionsPanel
 	{
+
+		bool showLineNumbers;
+
+		bool underlineErrors;
+
+		bool highlightMatchingBracket;
+
+		bool highlightCurrentLine;
+
+		bool showRuler;
+
+		bool enableAnimation;
+
+		bool enableHighlightUsages;
+
+		bool drawIndentMarkers;
+
+		ShowWhitespaces showWhitespaces;
+
+		bool enableQuickDiff;
+
+		IncludeWhitespaces includeWhitespaces;
+
 		public MarkerPanel()
 		{
 			this.Build();
@@ -40,38 +64,74 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		
 		public virtual Gtk.Widget CreatePanelWidget ()
 		{
-			this.showLineNumbersCheckbutton.Active = DefaultSourceEditorOptions.Instance.ShowLineNumberMargin;
-			this.underlineErrorsCheckbutton.Active = DefaultSourceEditorOptions.Instance.UnderlineErrors;
-			this.highlightMatchingBracketCheckbutton.Active = DefaultSourceEditorOptions.Instance.HighlightMatchingBracket;
-			this.highlightCurrentLineCheckbutton.Active = DefaultSourceEditorOptions.Instance.HighlightCaretLine;
-			this.showRulerCheckbutton.Active = DefaultSourceEditorOptions.Instance.ShowRuler;
-			this.enableAnimationCheckbutton1.Active = DefaultSourceEditorOptions.Instance.EnableAnimations;
-			this.enableHighlightUsagesCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableHighlightUsages;
-			this.drawIndentMarkersCheckbutton.Active = DefaultSourceEditorOptions.Instance.DrawIndentationMarkers;
+			this.showLineNumbersCheckbutton.Active = showLineNumbers = DefaultSourceEditorOptions.Instance.ShowLineNumberMargin;
+			this.showLineNumbersCheckbutton.Toggled += delegate {
+				DefaultSourceEditorOptions.Instance.ShowLineNumberMargin = this.showLineNumbersCheckbutton.Active;
+			};
+
+			this.underlineErrorsCheckbutton.Active = underlineErrors = DefaultSourceEditorOptions.Instance.UnderlineErrors;
+			this.underlineErrorsCheckbutton.Toggled += delegate {
+				DefaultSourceEditorOptions.Instance.UnderlineErrors = this.underlineErrorsCheckbutton.Active;
+				foreach (var doc in IdeApp.Workbench.Documents)
+					doc.StartReparseThread ();
+
+			};
+
+			this.highlightMatchingBracketCheckbutton.Active = highlightMatchingBracket = DefaultSourceEditorOptions.Instance.HighlightMatchingBracket;
+			this.highlightMatchingBracketCheckbutton.Toggled += delegate {
+				DefaultSourceEditorOptions.Instance.HighlightMatchingBracket = this.highlightMatchingBracketCheckbutton.Active;
+			};
+
+			this.highlightCurrentLineCheckbutton.Active = highlightCurrentLine = DefaultSourceEditorOptions.Instance.HighlightCaretLine;
+			this.highlightCurrentLineCheckbutton.Toggled += delegate {
+				DefaultSourceEditorOptions.Instance.HighlightCaretLine = this.highlightCurrentLineCheckbutton.Active;
+			};
+
+			this.showRulerCheckbutton.Active = showRuler = DefaultSourceEditorOptions.Instance.ShowRuler;
+			this.showRulerCheckbutton.Toggled += delegate {
+				DefaultSourceEditorOptions.Instance.ShowRuler = this.showRulerCheckbutton.Active;
+			};
+
+			this.enableAnimationCheckbutton1.Active = enableAnimation = DefaultSourceEditorOptions.Instance.EnableAnimations;
+			this.enableAnimationCheckbutton1.Toggled += delegate {
+				DefaultSourceEditorOptions.Instance.EnableAnimations = this.enableAnimationCheckbutton1.Active;
+			};
+
+			this.enableHighlightUsagesCheckbutton.Active = enableHighlightUsages = DefaultSourceEditorOptions.Instance.EnableHighlightUsages;
+			this.enableHighlightUsagesCheckbutton.Toggled += delegate {
+				DefaultSourceEditorOptions.Instance.EnableHighlightUsages = this.enableHighlightUsagesCheckbutton.Active;
+			};
+
+			this.drawIndentMarkersCheckbutton.Active = drawIndentMarkers = DefaultSourceEditorOptions.Instance.DrawIndentationMarkers;
+			this.drawIndentMarkersCheckbutton.Toggled += delegate {
+				DefaultSourceEditorOptions.Instance.DrawIndentationMarkers = this.drawIndentMarkersCheckbutton.Active;
+			};
 			this.showWhitespacesCombobox.AppendText (GettextCatalog.GetString ("Never"));
 			this.showWhitespacesCombobox.AppendText (GettextCatalog.GetString ("Selection"));
 			this.showWhitespacesCombobox.AppendText (GettextCatalog.GetString ("Always"));
-			this.showWhitespacesCombobox.Active = (int)DefaultSourceEditorOptions.Instance.ShowWhitespaces;
+			this.showWhitespacesCombobox.Active = (int)(showWhitespaces = DefaultSourceEditorOptions.Instance.ShowWhitespaces);
+			this.showWhitespacesCombobox.Changed += delegate {
+				DefaultSourceEditorOptions.Instance.ShowWhitespaces = (ShowWhitespaces) this.showWhitespacesCombobox.Active;
+			};
 			this.checkbuttonSpaces.Active = DefaultSourceEditorOptions.Instance.IncludeWhitespaces.HasFlag (IncludeWhitespaces.Space);
+			this.checkbuttonSpaces.Toggled += CheckbuttonSpaces_Toggled;
+
 			this.checkbuttonTabs.Active = DefaultSourceEditorOptions.Instance.IncludeWhitespaces.HasFlag (IncludeWhitespaces.Tab);
+			this.checkbuttonTabs.Toggled += CheckbuttonSpaces_Toggled;
+
 			this.checkbuttonLineEndings.Active = DefaultSourceEditorOptions.Instance.IncludeWhitespaces.HasFlag (IncludeWhitespaces.LineEndings);
-			this.enableQuickDiffCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableQuickDiff;
+			this.checkbuttonLineEndings.Toggled += CheckbuttonSpaces_Toggled;
+
+			includeWhitespaces = DefaultSourceEditorOptions.Instance.IncludeWhitespaces;
+			this.enableQuickDiffCheckbutton.Active = enableQuickDiff = DefaultSourceEditorOptions.Instance.EnableQuickDiff;
+			this.enableQuickDiffCheckbutton.Toggled += delegate {
+				DefaultSourceEditorOptions.Instance.EnableQuickDiff = this.enableQuickDiffCheckbutton.Active;
+			};
 			return this;
 		}
-		
-		public virtual void ApplyChanges ()
-		{
-			DefaultSourceEditorOptions.Instance.ShowLineNumberMargin = this.showLineNumbersCheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.UnderlineErrors = this.underlineErrorsCheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.HighlightMatchingBracket = this.highlightMatchingBracketCheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.HighlightCaretLine = this.highlightCurrentLineCheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.ShowRuler = this.showRulerCheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.EnableAnimations = this.enableAnimationCheckbutton1.Active;
-			DefaultSourceEditorOptions.Instance.EnableHighlightUsages = this.enableHighlightUsagesCheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.DrawIndentationMarkers = this.drawIndentMarkersCheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.ShowWhitespaces = (ShowWhitespaces) this.showWhitespacesCombobox.Active;
-			DefaultSourceEditorOptions.Instance.EnableQuickDiff = this.enableQuickDiffCheckbutton.Active;
 
+		void CheckbuttonSpaces_Toggled (object sender, EventArgs e)
+		{
 			var include = IncludeWhitespaces.None;
 			if (checkbuttonSpaces.Active)
 				include |= IncludeWhitespaces.Space;
@@ -80,6 +140,45 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			if (checkbuttonLineEndings.Active)
 				include |= IncludeWhitespaces.LineEndings;
 			DefaultSourceEditorOptions.Instance.IncludeWhitespaces = include;
+		}
+
+		public virtual void ApplyChanges ()
+		{
+			showLineNumbers = this.showLineNumbersCheckbutton.Active;
+			underlineErrors = this.underlineErrorsCheckbutton.Active;
+			highlightMatchingBracket = this.highlightMatchingBracketCheckbutton.Active;
+			highlightCurrentLine = this.highlightCurrentLineCheckbutton.Active;
+			showRuler = this.showRulerCheckbutton.Active;
+			enableAnimation = this.enableAnimationCheckbutton1.Active;
+			enableHighlightUsages = this.enableHighlightUsagesCheckbutton.Active;
+			drawIndentMarkers = this.drawIndentMarkersCheckbutton.Active;
+			showWhitespaces = (ShowWhitespaces) this.showWhitespacesCombobox.Active;
+			enableQuickDiff = this.enableQuickDiffCheckbutton.Active;
+
+			var include = IncludeWhitespaces.None;
+			if (checkbuttonSpaces.Active)
+				include |= IncludeWhitespaces.Space;
+			if (checkbuttonTabs.Active)
+				include |= IncludeWhitespaces.Tab;
+			if (checkbuttonLineEndings.Active)
+				include |= IncludeWhitespaces.LineEndings;
+			includeWhitespaces = include;
+		}
+
+		protected override void OnDestroyed ()
+		{
+			DefaultSourceEditorOptions.Instance.ShowLineNumberMargin = showLineNumbers;
+			DefaultSourceEditorOptions.Instance.UnderlineErrors = underlineErrors;
+			DefaultSourceEditorOptions.Instance.HighlightMatchingBracket = highlightMatchingBracket;
+			DefaultSourceEditorOptions.Instance.HighlightCaretLine = highlightCurrentLine;
+			DefaultSourceEditorOptions.Instance.ShowRuler = showRuler;
+			DefaultSourceEditorOptions.Instance.EnableAnimations = enableAnimation;
+			DefaultSourceEditorOptions.Instance.EnableHighlightUsages = enableHighlightUsages;
+			DefaultSourceEditorOptions.Instance.DrawIndentationMarkers = drawIndentMarkers;
+			DefaultSourceEditorOptions.Instance.ShowWhitespaces = showWhitespaces;
+			DefaultSourceEditorOptions.Instance.EnableQuickDiff = enableQuickDiff;
+			DefaultSourceEditorOptions.Instance.IncludeWhitespaces = includeWhitespaces;
+			base.OnDestroyed ();
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)

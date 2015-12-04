@@ -11,8 +11,9 @@ base_color:        #fff
 text_color:        #000
 selected_bg_color: #649dd6
 selected_fg_color: #fff
-tooltip_bg_color:  #fff9e5
-tooltip_fg_color:  #000"
+tooltip_bg_color:  #f2f2f2
+tooltip_fg_color:  #222222
+tooltip_border_color: #b2b2b2"
 
 gtk-button-images     = 0
 gtk-menu-images       = 0
@@ -123,6 +124,7 @@ style "button" {
     GtkWidget::focus-padding = 0
 
     engine "xamarin" {
+        rgba = FALSE
         contrast = 1.0
         gradient_shades     = {0.96, 0.918, 0.926, 0.858}
         focus_color         = shade(0.6, @bg_color)
@@ -149,6 +151,7 @@ style "toggle-button" = "button" {
     bg[PRELIGHT] = shade(0.98, @base_color)
 
     engine "xamarin" {
+        rgba = FALSE
         contrast = 1.0
         gradient_shades     = {0.96, 0.918, 0.926, 0.858}
         focus_color         = shade(0.6, @bg_color)
@@ -165,7 +168,7 @@ style "menu" {
     fg[PRELIGHT] = @selected_fg_color
     text[PRELIGHT] = @selected_fg_color
 
-    engine "xamarin" {
+    engine "quartz" {
     }
 }
 
@@ -201,7 +204,9 @@ style "tooltip"
 
     fg[NORMAL] = @tooltip_fg_color
     bg[NORMAL] = @tooltip_bg_color
-    
+    bg[SELECTED] = @tooltip_border_color
+    font_name = "Lucida Grande 12"
+
     engine "xamarin" {
     	roundness = 0
     }
@@ -283,7 +288,7 @@ style "notebook" = "default"
     }
 }
 
-style "radio-or-check-box"
+style "radio-or-check-box" = "default"
 {
     ythickness = 6
     GtkCheckButton::indicator-size = 14
@@ -298,6 +303,10 @@ style "entry" = "default"
     ythickness = 4
     GtkEntry::inner-border = { 2, 2, 2, 2 }
     base[INSENSITIVE] = shade(1.02, @bg_color)
+
+    engine "xamarin" {
+        rgba = FALSE
+    }
 }
 
 style "search-entry" = "wider"
@@ -364,7 +373,7 @@ class "GtkScrollbar" style "scrollbar"
 class "GtkProgressBar" style "progressbar"
 class "GtkScrolledWindow" style "scrolled-window"
 class "GtkNotebook" style "notebook"
-class "GtkButton" style "dialog-button"
+class "GtkButton" style "button"
 class "GtkToggleButton" style "toggle-button"
 
 class "GtkScale" style "scale"
@@ -373,6 +382,7 @@ class "GtkScale" style "scale"
 widget "*search-entry*" style "search-entry"
 widget "*GtkTextView"   style "entry"
 
+widget_class "<GtkDialog>.*.<GtkButton>" style "dialog-button"
 widget_class "<GtkDialog>*<GtkCheckButton>" style "radio-or-check-box"
 widget_class "<GtkDialog>.<GtkVBox>.<GtkButtonBox>.<GtkButton>*" style "dialog-button"
 widget_class "<GtkDialog>.<GtkVBox>.<GtkHBox>.<GtkButtonBox>.<GtkButton>*" style "dialog-button"
@@ -417,3 +427,4 @@ binding "gtk-mac-expand-collapse-cursor-row"
   bind "Left"  { "expand-collapse-cursor-row" (0, 0, 0) }
   bind "Right" { "expand-collapse-cursor-row" (0, 1, 0) }
 }
+class "GtkTreeView" binding "gtk-mac-expand-collapse-cursor-row"

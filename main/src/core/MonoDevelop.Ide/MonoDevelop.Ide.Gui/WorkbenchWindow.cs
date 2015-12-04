@@ -36,6 +36,7 @@ namespace MonoDevelop.Ide.Gui
 		public WorkbenchWindow (): base (Gtk.WindowType.Toplevel)
 		{
 			Mono.TextEditor.GtkWorkarounds.FixContainerLeak (this);
+			this.Role = "workbench";
 		}
 
 		class TopLevelChild

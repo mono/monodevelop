@@ -28,9 +28,7 @@
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeIssueSource" name = "CodeIssueSource">
 		<ExtensionNode name="Source"/>
 	</ExtensionPoint>
-	
-	<!-- Extensions -->
-	
+
 	<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules">
 		<ExtensionNode name="Category" type="MonoDevelop.Ide.Codons.CategoryNode">
 			<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules" />
@@ -53,6 +51,9 @@
 		<Description>Fix handlers. Classes must implement IAnalysisFixHandler.</Description>
 		<ExtensionNode name="Handler" type="MonoDevelop.AnalysisCore.Extensions.FixHandlerExtensionNode" />
 	</ExtensionPoint>
+
+	<!-- Extensions -->
+
 	<!--
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<Pad id="MonoDevelop.Refactoring.CodeIssuePad" _label="Code Issues" class="MonoDevelop.CodeIssues.CodeIssuePad" defaultPlacement = "Bottom"/>
@@ -65,10 +66,6 @@
 	
 	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
 		<Class id="AnalysisResults" class="MonoDevelop.AnalysisCore.Gui.ResultTooltipProvider" insertafter="Debug" />
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
-		<Rule _name="Code Issue Analysis" input="Document" func="MonoDevelop.CodeIssues.CodeAnalysisRunner.Check" />
 	</Extension>
 	
 	<!-- RefactoryCommands -->
@@ -90,7 +87,7 @@
 					_label = "_Find References of All Overloads" />
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.FindDerivedClasses"
 					defaultHandler = "MonoDevelop.Refactoring.FindDerivedClassesHandler"
-					_label = "Find _Derived Classes" />
+					_label = "Find _Derived Symbols" />
 		</Category>
 		
 		<Category _name = "Refactoring" id = "Refactoring">
@@ -98,7 +95,7 @@
 				defaultHandler = "MonoDevelop.Refactoring.ResolveCommandHandler"
 				type="array"
 				_label = "Resolve"/> 
-		
+
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations"
 				defaultHandler = "MonoDevelop.Refactoring.CurrentRefactoryOperationsHandler"
 				type="array"
@@ -185,7 +182,7 @@
 				func="MonoDevelop.AnalysisCore.Rules.NamingConventions.ClassNaming" />-->
 		</Category>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/AnalysisCore/FixHandlers">
 		<Handler fixName="RenameMember" class = "MonoDevelop.AnalysisCore.Fixes.RenameMemberHandler" />
 		<Handler fixName="Generic" class = "MonoDevelop.AnalysisCore.Fixes.GenericFixHandler" />

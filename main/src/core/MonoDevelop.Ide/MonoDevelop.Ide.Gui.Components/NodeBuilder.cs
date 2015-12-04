@@ -37,7 +37,6 @@ namespace MonoDevelop.Ide.Gui.Components
 	public abstract class NodeBuilder: IDisposable
 	{
 		ITreeBuilderContext context;
-		NodeCommandHandler commandHandler;
 		
 		internal NodeBuilder ()
 		{
@@ -55,10 +54,8 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		internal NodeCommandHandler CommandHandler {
 			get {
-//				if (commandHandler == null) {
-					commandHandler = (NodeCommandHandler) Activator.CreateInstance (CommandHandlerType);
-					commandHandler.Initialize (context.Tree);
-//				}
+				var commandHandler = (NodeCommandHandler) Activator.CreateInstance (CommandHandlerType);
+				commandHandler.Initialize (context.Tree);
 				return commandHandler;
 			}
 		}

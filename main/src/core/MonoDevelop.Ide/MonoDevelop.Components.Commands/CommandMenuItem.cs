@@ -98,8 +98,9 @@ namespace MonoDevelop.Components.Commands
 			base.OnParentSet (parent);
 			if (Parent == null)
 				return;
-			
-			((ICommandUserItem)this).Update (new CommandTargetRoute ());
+
+			if (Parent.Visible)
+				((ICommandUserItem)this).Update (new CommandTargetRoute ());
 			
 			if (!isArrayItem) {
 				// Make sure the accelerators always work for this item

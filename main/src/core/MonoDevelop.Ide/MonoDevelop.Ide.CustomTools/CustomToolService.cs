@@ -25,18 +25,17 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Ide.Extensions;
-using System.Collections.Generic;
-using MonoDevelop.Core;
-using Mono.Addins;
-using MonoDevelop.Projects;
-using System.IO;
-using MonoDevelop.Ide.Tasks;
 using System.CodeDom.Compiler;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Core.ProgressMonitoring;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
+using Mono.Addins;
+using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Ide.Extensions;
+using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.CustomTools
 {
@@ -102,19 +101,145 @@ namespace MonoDevelop.Ide.CustomTools
 			}
 			return null;
 		}
-		
+
+		public static void Update (IEnumerable<ProjectFile> files, bool force)
+		{
+			var monitor = IdeApp.Workbench.ProgressMonitors.GetToolOutputProgressMonitor (false);
+
+			IEnumerator<ProjectFile> fileEnumerator;
+
+			//begin root task
+			monitor.BeginTask (GettextCatalog.GetString ("Generate templates"), 1);
+
+			if (files == null || !(fileEnumerator = files.GetEnumerator ()).MoveNext ()) {
+				monitor.EndTask ();
+				monitor.ReportSuccess (GettextCatalog.GetString ("No templates found"));
+				monitor.Dispose ();
+			} else {
+				Update (monitor, fileEnumerator, force, 0, 0, 0);
+			}
+		}
+
+		static bool ShouldRunGenerator (ProjectFile file, bool force, out ISingleFileCustomTool tool, out ProjectFile genFile)
+		{
+			tool = null;
+			genFile = null;
+
+			//ignore cloned file from shared project in context of referencing project
+			if ((file.Flags & ProjectItemFlags.DontPersist) != 0) {
+				return false;
+			}
+
+			tool = GetGenerator (file.Generator);
+			if (tool == null) {
+				return false;
+			}
+
+			//ignore MSBuild tool for projects that aren't MSBuild or can't build
+			//we could emit a warning but this would get very annoying for Xamarin Forms + SAP
+			//in future we could consider running the MSBuild generator in context of every referencing project
+			if (tool is MSBuildCustomTool) {
+				if (!file.Project.SupportsBuild ()) {
+					return false;
+				}
+				bool byDefault, require;
+				MonoDevelop.Projects.Formats.MSBuild.MSBuildProjectService.CheckHandlerUsesMSBuildEngine (file.Project, out byDefault, out require);
+				var usesMSBuild = require || (file.Project.UseMSBuildEngine ?? byDefault);
+				if (!usesMSBuild) {
+					return false;
+				}
+			}
+
+			if (!string.IsNullOrEmpty (file.LastGenOutput)) {
+				genFile = file.Project.Files.GetFile (file.FilePath.ParentDirectory.Combine (file.LastGenOutput));
+			}
+
+			return force
+				|| genFile == null
+				|| !File.Exists (genFile.FilePath)
+				|| File.GetLastWriteTime (file.FilePath) > File.GetLastWriteTime (genFile.FilePath);
+		}
+
+		static void Update (IProgressMonitor monitor, IEnumerator<ProjectFile> fileEnumerator, bool force, int succeeded, int warnings, int errors)
+		{
+			ProjectFile file = fileEnumerator.Current;
+			ISingleFileCustomTool tool;
+			ProjectFile genFile;
+
+			bool shouldRun;
+			while (!(shouldRun = ShouldRunGenerator (file, force, out tool, out genFile)) && fileEnumerator.MoveNext ())
+				continue;
+
+			//no files which can be generated in remaining elements of the collection, nothing to do
+			if (!shouldRun) {
+				WriteSummaryResults (monitor, succeeded, warnings, errors);
+				return;
+			}
+
+			TaskService.Errors.ClearByOwner (file);
+
+			var result = new SingleFileCustomToolResult ();
+			monitor.BeginTask (GettextCatalog.GetString ("Running generator '{0}' on file '{1}'...", file.Generator, file.Name), 1);
+
+			try {
+				IAsyncOperation op = tool.Generate (monitor, file, result);
+				op.Completed += delegate {
+					if (result.Success) {
+						monitor.Log.WriteLine (GettextCatalog.GetString ("File '{0}' was generated successfully.", result.GeneratedFilePath));
+						succeeded++;
+					} else if (result.SuccessWithWarnings) {
+						monitor.Log.WriteLine (GettextCatalog.GetString ("File '{0}' was generated with warnings.", result.GeneratedFilePath));
+						warnings++;
+					} else {
+						monitor.Log.WriteLine (GettextCatalog.GetString ("Errors in file '{0}' generation.", result.GeneratedFilePath));
+						errors++;
+					}
+
+					//check that we can process further. If UpdateCompleted returns `true` this means no errors or non-fatal errors occured
+					if (UpdateCompleted (monitor, null, file, genFile, result, true) && fileEnumerator.MoveNext ())
+						Update (monitor, fileEnumerator, force, succeeded, warnings, errors);
+					else
+						WriteSummaryResults (monitor, succeeded, warnings, errors);
+				};
+			} catch (Exception ex) {
+				result.UnhandledException = ex;
+				UpdateCompleted (monitor, null, file, genFile, result, true);
+			}
+		}
+
+		static void WriteSummaryResults (IProgressMonitor monitor, int succeeded, int warnings, int errors)
+		{
+			monitor.Log.WriteLine ();
+
+			int total = succeeded + warnings + errors;
+
+			//this might not be correct for languages where pluralization affects the other arguments
+			//but gettext doesn't really have an answer for sentences with multiple plurals
+			monitor.Log.WriteLine (
+				GettextCatalog.GetPluralString (
+					"{0} file processed total. {1} generated successfully, {2} with warnings, {3} with errors",
+					"{0} files processed total. {1} generated successfully, {2} with warnings, {3} with errors",
+					total,
+					total, succeeded, warnings, errors)
+			);
+			//ends the root task
+			monitor.EndTask ();
+
+			if (errors > 0)
+				monitor.ReportError (GettextCatalog.GetString ("Errors in file generation."), null);
+			else if (warnings > 0)
+				monitor.ReportSuccess (GettextCatalog.GetString ("Warnings in file generation."));
+			else
+				monitor.ReportSuccess (GettextCatalog.GetString ("Generated files successfully."));
+
+			monitor.Dispose ();
+		}
+
 		public static void Update (ProjectFile file, bool force)
 		{
-			var tool = GetGenerator (file.Generator);
-			if (tool == null)
-				return;
-			
-			ProjectFile genFile = null;
-			if (!string.IsNullOrEmpty (file.LastGenOutput))
-				genFile = file.Project.Files.GetFile (file.FilePath.ParentDirectory.Combine (file.LastGenOutput));
-			
-			if (!force && genFile != null && File.Exists (genFile.FilePath) && 
-			    File.GetLastWriteTime (file.FilePath) < File.GetLastWriteTime (genFile.FilePath)) {
+			ISingleFileCustomTool tool;
+			ProjectFile genFile;
+			if (!ShouldRunGenerator (file, force, out tool, out genFile)) {
 				return;
 			}
 			
@@ -142,7 +267,7 @@ namespace MonoDevelop.Ide.CustomTools
 						IAsyncOperation runningTask;
 						if (runningTasks.TryGetValue (file.FilePath, out runningTask) && runningTask == op) {
 							runningTasks.Remove (file.FilePath);
-							UpdateCompleted (monitor, aggOp, file, genFile, result);
+							UpdateCompleted (monitor, aggOp, file, genFile, result, false);
 						} else {
 							//it was cancelled because another was run for the same file, so just clean up
 							aggOp.Dispose ();
@@ -154,20 +279,22 @@ namespace MonoDevelop.Ide.CustomTools
 				};
 			} catch (Exception ex) {
 				result.UnhandledException = ex;
-				UpdateCompleted (monitor, aggOp, file, genFile, result);
+				UpdateCompleted (monitor, aggOp, file, genFile, result, false);
 			}
 		}
 		
-		static void UpdateCompleted (IProgressMonitor monitor, AggregatedOperationMonitor aggOp,
-		                             ProjectFile file, ProjectFile genFile, SingleFileCustomToolResult result)
+		static bool UpdateCompleted (IProgressMonitor monitor, AggregatedOperationMonitor aggOp,
+		                             ProjectFile file, ProjectFile genFile, SingleFileCustomToolResult result,
+		                             bool runMultipleFiles)
 		{
 			monitor.EndTask ();
-			aggOp.Dispose ();
+			if (aggOp != null)
+				aggOp.Dispose ();
 			
 			if (monitor.IsCancelRequested) {
 				monitor.ReportError (GettextCatalog.GetString ("Cancelled"), null);
 				monitor.Dispose ();
-				return;
+				return false;
 			}
 			
 			string genFileName;
@@ -187,7 +314,7 @@ namespace MonoDevelop.Ide.CustomTools
 					null : result.GeneratedFilePath.ToRelative (file.FilePath.ParentDirectory);
 				
 				if (!string.IsNullOrEmpty (genFileName)) {
-					bool validName = genFileName.IndexOfAny (new char[] { '/', '\\' }) < 0
+					bool validName = genFileName.IndexOfAny (new [] { '/', '\\' }) < 0
 						&& FileService.IsValidFileName (genFileName);
 					
 					if (!broken && !validName) {
@@ -209,21 +336,23 @@ namespace MonoDevelop.Ide.CustomTools
 				}
 				
 				if (broken)
-					return;
+					return true;
 
-				if (result.Success)
-					monitor.ReportSuccess ("Generated file successfully.");
-				else if (result.SuccessWithWarnings)
-					monitor.ReportSuccess ("Warnings in file generation.");
-				else
-					monitor.ReportError ("Errors in file generation.", null);
-				
+				if (!runMultipleFiles) {
+					if (result.Success)
+						monitor.ReportSuccess ("Generated file successfully.");
+					else if (result.SuccessWithWarnings)
+						monitor.ReportSuccess ("Warnings in file generation.");
+					else
+						monitor.ReportError ("Errors in file generation.", null);
+				}
 			} finally {
-				monitor.Dispose ();
+				if (!runMultipleFiles)
+					monitor.Dispose ();
 			}
 
 			if (result.GeneratedFilePath.IsNullOrEmpty || !File.Exists (result.GeneratedFilePath))
-				return;
+				return true;
 
 			// broadcast a change event so text editors etc reload the file
 			FileService.NotifyFileChanged (result.GeneratedFilePath);
@@ -252,6 +381,8 @@ namespace MonoDevelop.Ide.CustomTools
 				if (projectChanged)
 					IdeApp.ProjectOperations.Save (file.Project);
 			});
+
+			return true;
 		}
 		
 		static void HandleRename (ProjectFileRenamedEventArgs e)
@@ -267,11 +398,11 @@ namespace MonoDevelop.Ide.CustomTools
 		public static string GetFileNamespace (ProjectFile file, string outputFile)
 		{
 			string ns = file.CustomToolNamespace;
-			if (string.IsNullOrEmpty (ns) && !string.IsNullOrEmpty (outputFile)) {
-				var dnp = file.Project as DotNetProject;
-				if (dnp != null)
-					ns = dnp.GetDefaultNamespace (outputFile);
-			}
+			if (!string.IsNullOrEmpty (ns) || string.IsNullOrEmpty (outputFile))
+				return ns;
+			var dnfc = file.Project as IDotNetFileContainer;
+			if (dnfc != null)
+				return dnfc.GetDefaultNamespace (outputFile);
 			return ns;
 		}
 

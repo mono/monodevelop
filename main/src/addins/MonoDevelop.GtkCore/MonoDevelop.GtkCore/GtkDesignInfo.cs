@@ -194,11 +194,10 @@ namespace MonoDevelop.GtkCore
 		
 		public static bool HasDesignedObjects (Project project)
 		{
-			if (project == null)
+			if (project == null || !SupportsDesigner (project))
 				return false;
 
-			string stetic_file = Path.Combine (Path.Combine (project.BaseDirectory, "gtk-gui"), "gui.stetic");
-			return SupportsDesigner (project) && File.Exists (stetic_file);
+			return File.Exists (Path.Combine (project.BaseDirectory, "gtk-gui", "gui.stetic"));
 		}
 
 		public static bool SupportsDesigner (Project project)
@@ -214,8 +213,13 @@ namespace MonoDevelop.GtkCore
 		{
 			if (project == null || project.LanguageBinding == null || project.LanguageBinding.GetCodeDomProvider () == null)
 				return false;
+			if (project.ExtendedProperties.Contains ("GtkRefactoringSupported"))
+				return (bool)project.ExtendedProperties ["GtkRefactoringSupported"];
+
 			var testFileName = project.LanguageBinding.GetFileName ("test");
-			return CodeGenerator.HasGenerator (DesktopService.GetMimeTypeForUri (testFileName));
+			bool hasSupport = CodeGenerator.HasGenerator (DesktopService.GetMimeTypeForUri (testFileName));
+			project.ExtendedProperties ["GtkRefactoringSupported"] = hasSupport;
+			return hasSupport;
 		}
 		
 		static bool IsGtkReference (ProjectReference pref)
@@ -223,20 +227,22 @@ namespace MonoDevelop.GtkCore
 			if (pref.ReferenceType != ReferenceType.Package)
 				return false;
 
-			int idx = pref.StoredReference.IndexOf (",");
-			if (idx == -1)
-				return false;
-
-			string name = pref.StoredReference.Substring (0, idx).Trim ();
-			return name == "gtk-sharp";
+			return pref.StoredReference.StartsWith ("gtk-sharp,");
 		}
 
 		static bool HasGtkReference (DotNetProject project)
 		{
+			if (project.ExtendedProperties.Contains ("GtkReferenceExists"))
+				return (bool)project.ExtendedProperties ["GtkReferenceExists"];
+
+			bool found = false;
 			foreach (ProjectReference pref in project.References)
-				if (IsGtkReference (pref))
-					return true;
-			return false;
+				if (IsGtkReference (pref)) {
+					found = true;
+					break;
+				}
+			project.ExtendedProperties ["GtkReferenceExists"] = found;
+			return found;
 		}
 		
 		public void ForceCodeGenerationOnBuild ()

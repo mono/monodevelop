@@ -36,19 +36,33 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	class ButtonBar : EventBox, ICommandBar
+	class ButtonBar : EventBox
 	{
 		const int SeparatorSpacing = 6;
-		List<ButtonBarButton> buttons = new List<ButtonBarButton> ();
-		ButtonBarButton[] visibleButtons;
+		List<IButtonBarButton> buttons = new List<IButtonBarButton> ();
+		public IEnumerable<IButtonBarButton> Buttons {
+			set {
+				buttons = value.ToList ();
+				foreach (var item in buttons) {
+					item.EnabledChanged += (o, e) => QueueDraw ();
+					item.ImageChanged += (o, e) => QueueDraw ();
+					item.VisibleChanged += (o, e) => {
+						visibleButtons = null;
+						QueueResize ();
+					};
+				}
+				QueueResize ();
+			}
+		}
+		Dictionary<IButtonBarButton, Gdk.Rectangle> allocations = new Dictionary<IButtonBarButton, Gdk.Rectangle> ();
+		IButtonBarButton[] visibleButtons;
 
 		Xwt.Drawing.Image[] btnNormalOriginal;
 		Xwt.Drawing.Image[] btnPressedOriginal;
 		Xwt.Drawing.Image[] btnNormal;
 		Xwt.Drawing.Image[] btnPressed;
 
-		ButtonBarButton pushedButton;
-		object lastCommandTarget;
+		IButtonBarButton pushedButton;
 		int currentImagesHeight;
 
 		public ButtonBar ()
@@ -91,7 +105,7 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		ButtonBarButton[] VisibleButtons {
+		IButtonBarButton[] VisibleButtons {
 			get {
 				if (visibleButtons == null)
 					visibleButtons = buttons.Where (b => b.Visible || b.IsSeparator).ToArray ();
@@ -116,7 +130,7 @@ namespace MonoDevelop.Components.MainToolbar
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
 			if (evnt.Button == 1) {
-				pushedButton = VisibleButtons.FirstOrDefault (b => b.Allocation.Contains (Allocation.X + (int)evnt.X, Allocation.Y + (int)evnt.Y));
+				pushedButton = VisibleButtons.FirstOrDefault (b => allocations [b].Contains (Allocation.X + (int)evnt.X, Allocation.Y + (int)evnt.Y));
 				if (pushedButton != null && pushedButton.Enabled)
 					State = StateType.Selected;
 			}
@@ -125,8 +139,9 @@ namespace MonoDevelop.Components.MainToolbar
 
 		protected override bool OnButtonReleaseEvent (EventButton evnt)
 		{
-			if (State == StateType.Selected && pushedButton != null)
-				IdeApp.CommandService.DispatchCommand (pushedButton.CommandId, null, lastCommandTarget, CommandSource.MainToolbar);
+			if (State == StateType.Selected && pushedButton != null) {
+				pushedButton.NotifyPushed ();
+			}
 			State = StateType.Prelight;
 			leaveState = StateType.Normal;
 			pushedButton = null;
@@ -135,42 +150,16 @@ namespace MonoDevelop.Components.MainToolbar
 
 		protected override bool OnQueryTooltip (int x, int y, bool keyboard_tooltip, Tooltip tooltip)
 		{
-			var button = VisibleButtons.FirstOrDefault (b => b.Allocation.Contains (Allocation.X + (int)x, Allocation.Y + (int)y));
+			var button = VisibleButtons.FirstOrDefault (b => allocations [b].Contains (Allocation.X + (int)x, Allocation.Y + (int)y));
 			if (button != null) {
 				tooltip.Text = button.Tooltip;
-				var rect = button.Allocation;
+				var rect = allocations [button];
 				rect.Offset (-Allocation.X, -Allocation.Y);
 				tooltip.TipArea = rect;
 				return true;
 			} else {
 				return false;
 			}
-		}
-
-		public void Clear ()
-		{
-			buttons.Clear ();
-			visibleButtons = null;
-			pushedButton = null;
-			QueueResize ();
-		}
-
-		public void Add (string commandId)
-		{
-			ButtonBarButton b = new ButtonBarButton (commandId);
-			var ci = IdeApp.CommandService.GetCommandInfo (commandId, new CommandTargetRoute (lastCommandTarget));
-			if (ci != null)
-				UpdateButton (b, ci);
-			buttons.Add (b);
-			visibleButtons = null;
-			QueueResize ();
-		}
-
-		public void AddSeparator ()
-		{
-			buttons.Add (new ButtonBarButton (null));
-			visibleButtons = null;
-			QueueResize ();
 		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)
@@ -187,9 +176,9 @@ namespace MonoDevelop.Components.MainToolbar
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
 				double x = Allocation.X, y = Allocation.Y;
 				for (int i = 0; i < VisibleButtons.Length; i++) {
-					bool nextIsSeparator = (i < VisibleButtons.Length - 1 && VisibleButtons[i + 1].IsSeparator) || i == visibleButtons.Length - 1;
+					bool nextIsSeparator = (i < VisibleButtons.Length - 1 && VisibleButtons[i + 1].IsSeparator) || i == VisibleButtons.Length - 1;
 					bool lastWasSeparator = (i > 0 && VisibleButtons[i - 1].IsSeparator) || i == 0;
-					ButtonBarButton button = VisibleButtons [i];
+					IButtonBarButton button = VisibleButtons [i];
 					if (button.IsSeparator) {
 						if (!lastWasSeparator)
 							x += SeparatorSpacing;
@@ -199,7 +188,7 @@ namespace MonoDevelop.Components.MainToolbar
 					Xwt.Drawing.Image img = images [lastWasSeparator ? 0 : nextIsSeparator ? 2 : 1];
 					context.DrawImage (this, img, x, y);
 
-					button.Allocation = new Gdk.Rectangle ((int)x, (int)y, (int)img.Width, (int)img.Height);
+					allocations [button] = new Gdk.Rectangle ((int)x, (int)y, (int)img.Width, (int)img.Height);
 
 					var icon = ImageService.GetIcon (button.Image, IconSize.Menu);
 					if (!Sensitive || !button.Enabled)
@@ -248,61 +237,6 @@ namespace MonoDevelop.Components.MainToolbar
 			{
 				this.Button = button;
 			}
-		}
-
-		#region ICommandBar implementation
-		void ICommandBar.Update (object activeTarget)
-		{
-			lastCommandTarget = activeTarget;
-			foreach (var b in buttons.Where (bu => !bu.IsSeparator)) {
-				var ci = IdeApp.CommandService.GetCommandInfo (b.CommandId, new CommandTargetRoute (activeTarget));
-				UpdateButton (b, ci);
-			}
-		}
-
-		void UpdateButton (ButtonBarButton b, CommandInfo ci)
-		{
-			if (ci.Icon != b.Image) {
-				b.Image = ci.Icon;
-				QueueDraw ();
-			}
-			if (ci.Visible != b.Visible) {
-				b.Visible = ci.Visible;
-				visibleButtons = null;
-				QueueResize ();
-			}
-			if (ci.Enabled != b.Enabled) {
-				b.Enabled = ci.Enabled;
-				QueueDraw ();
-			}
-			if (ci.Description != b.Tooltip)
-				b.Tooltip = ci.Description;
-		}
-
-		void ICommandBar.SetEnabled (bool enabled)
-		{
-			Sensitive = enabled;
-		}
-		#endregion
-	}
-
-	class ButtonBarButton
-	{
-		public ButtonBarButton (string commandId)
-		{
-			this.CommandId = commandId;
-		}
-
-		public IconId Image { get; set; }
-		public string CommandId { get; set; }
-		internal bool Enabled { get; set; }
-		internal bool Visible { get; set; }
-		public string Tooltip { get; set; }
-
-		public Gdk.Rectangle Allocation;
-
-		public bool IsSeparator {
-			get { return CommandId == null; }
 		}
 	}
 }

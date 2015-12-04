@@ -41,8 +41,20 @@ namespace MonoDevelop.PackageManagement
 		IRegisteredPackageRepositories registeredPackageRepositories;
 		IPackageManagementEvents packageManagementEvents;
 		CheckForUpdatesTaskRunner taskRunner;
-		List<ParentPackageOperationEventArgs> packageOperationsDuringCheckForUpdates = new List<ParentPackageOperationEventArgs> ();
+		List<ParentPackageOperationDuringCheckForUpdates> packageOperationsDuringCheckForUpdates = new List<ParentPackageOperationDuringCheckForUpdates> ();
 		List<UpdatedPackagesInProject> projectsWithUpdatedPackages = new List<UpdatedPackagesInProject> ();
+
+		class ParentPackageOperationDuringCheckForUpdates
+		{
+			public ParentPackageOperationDuringCheckForUpdates (ParentPackageOperationEventArgs eventArgs, bool isInstall)
+			{
+				EventArgs = eventArgs;
+				IsInstall = isInstall;
+			}
+
+			public ParentPackageOperationEventArgs EventArgs { get; set; }
+			public bool IsInstall { get; set; }
+		}
 
 		public UpdatedPackagesInSolution (
 			IPackageManagementSolution solution,
@@ -73,30 +85,33 @@ namespace MonoDevelop.PackageManagement
 
 		void PackageInstalled (object sender, ParentPackageOperationEventArgs e)
 		{
-			RefreshUpdatedPackages (e);
+			RefreshUpdatedPackages (e, true);
 		}
 
 		void PackageUninstalled (object sender, ParentPackageOperationEventArgs e)
 		{
-			RefreshUpdatedPackages (e);
+			RefreshUpdatedPackages (e, false);
 		}
 
-		void RefreshUpdatedPackages (ParentPackageOperationEventArgs e)
+		void RefreshUpdatedPackages (ParentPackageOperationEventArgs e, bool installed)
 		{
 			GuiDispatch (() => {
 				if (taskRunner.IsRunning) {
-					packageOperationsDuringCheckForUpdates.Add (e);
+					packageOperationsDuringCheckForUpdates.Add (
+						new ParentPackageOperationDuringCheckForUpdates (e, installed));
 				} else {
-					RemoveUpdatedPackages (e);
+					RemoveUpdatedPackages (e, installed);
 				}
 			});
 		}
 
-		void RemoveUpdatedPackages (ParentPackageOperationEventArgs e)
+		void RemoveUpdatedPackages (ParentPackageOperationEventArgs e, bool installed)
 		{
 			UpdatedPackagesInProject updatedPackages = GetUpdatedPackages (e.Project.Project);
 			if (updatedPackages.AnyPackages ()) {
-				updatedPackages.RemovePackage (e.Package);
+				if (!installed) {
+					updatedPackages.RemovePackage (e.Package);
+				}
 				updatedPackages.RemoveUpdatedPackages (e.Project.GetPackageReferences ());
 			}
 		}
@@ -105,7 +120,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			taskRunner.Stop ();
 			projectsWithUpdatedPackages = new List<UpdatedPackagesInProject> ();
-			packageOperationsDuringCheckForUpdates = new List<ParentPackageOperationEventArgs> ();
+			packageOperationsDuringCheckForUpdates = new List<ParentPackageOperationDuringCheckForUpdates> ();
 		}
 
 		public void CheckForUpdates ()
@@ -130,8 +145,8 @@ namespace MonoDevelop.PackageManagement
 
 		void RemovePackagesUpdatedDuringCheckForUpdates ()
 		{
-			foreach (ParentPackageOperationEventArgs e in packageOperationsDuringCheckForUpdates) {
-				RemoveUpdatedPackages (e);
+			foreach (ParentPackageOperationDuringCheckForUpdates operation in packageOperationsDuringCheckForUpdates) {
+				RemoveUpdatedPackages (operation.EventArgs, operation.IsInstall);
 			}
 			packageOperationsDuringCheckForUpdates.Clear ();
 		}
@@ -157,12 +172,48 @@ namespace MonoDevelop.PackageManagement
 			LogCheckingForUpdates (project.Name);
 
 			project.Logger = new PackageManagementLogger (packageManagementEvents);
-			var updatedPackages = new UpdatedPackages (project, project.SourceRepository);
-			List<IPackage> packages = updatedPackages.GetUpdatedPackages ().ToList ();
+
+			var packageReferences = project.GetPackageReferences ();
+
+			List<IPackage> packages = GetUpdatedStablePackages (project, packageReferences).ToList ();
+			packages.AddRange (GetUpdatedPrereleasePackages (project, packageReferences));
 
 			LogPackagesFound (packages.Count);
 
 			return new UpdatedPackagesInProject (project.Project, packages);
+		}
+
+		IEnumerable<IPackage> GetUpdatedStablePackages (
+			IPackageManagementProject project,
+			IEnumerable<PackageReference> packageReferences)
+		{
+			return GetUpdatedPackages (project, packageReferences, false, packageRef => packageRef.IsReleaseVersion ());
+		}
+
+		IEnumerable<IPackage> GetUpdatedPrereleasePackages (
+			IPackageManagementProject project,
+			IEnumerable<PackageReference> packageReferences)
+		{
+			return GetUpdatedPackages (project, packageReferences, true, packageRef => !packageRef.IsReleaseVersion ());
+		}
+
+		IEnumerable<IPackage> GetUpdatedPackages (
+			IPackageManagementProject project,
+			IEnumerable<PackageReference> packageReferences,
+			bool includePrerelease,
+			Func<PackageReference, bool> filter)
+		{
+			var filteredPackageReferences = packageReferences.Where (filter).ToList ();
+
+			if (!filteredPackageReferences.Any ())
+				return Enumerable.Empty <IPackage> ();
+
+			var updatedPackages = new UpdatedPackages (
+				filteredPackageReferences,
+				project.SourceRepository,
+				project.ConstraintProvider);
+
+			return updatedPackages.GetUpdatedPackages (includePrerelease);
 		}
 
 		void LogCheckingForUpdates (string projectName)

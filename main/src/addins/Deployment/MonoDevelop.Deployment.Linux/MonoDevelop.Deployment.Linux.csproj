@@ -114,7 +114,6 @@
     <Compile Include="MonoDevelop.Deployment.Linux\LinuxDeployData.cs" />
     <Compile Include="MonoDevelop.Deployment.Linux\LinuxDeployExtension.cs" />
     <Compile Include="MonoDevelop.Deployment.Linux\LinuxTargetDirectory.cs" />
-    <Compile Include="MonoDevelop.Deployment.Linux\LinuxIntegrationProjectFeature.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Deployment.Linux.BasicOptionPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Deployment.Linux.DesktopPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs" />

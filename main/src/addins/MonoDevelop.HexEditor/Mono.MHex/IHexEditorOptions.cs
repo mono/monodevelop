@@ -29,6 +29,11 @@ using Xwt.Drawing;
 
 namespace Mono.MHex
 {
+	enum StringRepresentationTypes{
+		ASCII,
+		UTF16
+	}
+
 	interface IHexEditorOptions
 	{
 		double Zoom { get; set; }
@@ -38,6 +43,7 @@ namespace Mono.MHex
 		void ZoomIn ();
 		void ZoomOut ();
 		void ZoomReset ();
+		StringRepresentationTypes StringRepresentationType { get; set; }
 		
 		bool ShowIconMargin { get; set; }
 		bool ShowLineNumberMargin { get; set; }

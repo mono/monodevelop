@@ -66,26 +66,75 @@ namespace MonoDevelop.Components.PropertyGrid
 		Gdk.Cursor resizeCursor;
 		Gdk.Cursor handCursor;
 
-		class TableRow
+		readonly PropertyGrid parentGrid;
+
+		class TableRow : ITypeDescriptorContext
 		{
+			readonly PropertyGrid parentGrid;
+
+			public TableRow (PropertyGrid parentGrid)
+			{
+				this.parentGrid = parentGrid;
+			}
+
 			public bool IsCategory;
 			public string Label;
-			public object Instace;
+			public object Instance;
 			public PropertyDescriptor Property;
 			public List<TableRow> ChildRows;
 			public bool Expanded;
 			public bool Enabled = true;
 			public Gdk.Rectangle EditorBounds;
+			public Gdk.Rectangle Bounds;
 			public bool AnimatingExpand;
 			public int AnimationHeight;
 			public int ChildrenHeight;
 			public uint AnimationHandle;
+
+			public bool IsExpandable {
+				get {
+					return IsCategory || (ChildRows != null && ChildRows.Count > 0);
+				}
+			}
+
+			bool ITypeDescriptorContext.OnComponentChanging ()
+			{
+				//TODO ITypeDescriptorContext.OnComponentChanging
+				return true;
+			}
+
+			void ITypeDescriptorContext.OnComponentChanged ()
+			{
+				//TODO ITypeDescriptorContext.OnComponentChanged
+			}
+
+			IContainer ITypeDescriptorContext.Container {
+				get {
+					var site = parentGrid.Site;
+					return site != null ? site.Container : null;
+				}
+			}
+
+			object ITypeDescriptorContext.Instance {
+				get { return Instance; }
+			}
+
+			PropertyDescriptor ITypeDescriptorContext.PropertyDescriptor {
+				get { return Property; }
+			}
+
+			object IServiceProvider.GetService (Type serviceType)
+			{
+				var site = parentGrid.Site;
+				return site != null ? site.GetService (serviceType) : null;
+			}
 		}
 
 		public PropertyGridTable (EditorManager editorManager, PropertyGrid parentGrid)
 		{
-			Mono.TextEditor.GtkWorkarounds.FixContainerLeak (this);
+			GtkWorkarounds.FixContainerLeak (this);
 
+			this.parentGrid = parentGrid;
 			this.editorManager = editorManager;
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 			Events |= Gdk.EventMask.PointerMotionMask;
@@ -115,23 +164,72 @@ namespace MonoDevelop.Components.PropertyGrid
 			EndEditing ();
 		}
 
-		HashSet<string> expandedStatus;
+		Dictionary<object,List<string>> expandedStatus;
+
+		class ReferenceEqualityComparer<T> : IEqualityComparer<T>
+		{
+			public bool Equals (T x, T y)
+			{
+				return object.ReferenceEquals (x, y);
+			}
+			public int GetHashCode (T obj)
+			{
+				return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode (obj);
+			}
+		}
 
 		public void SaveStatus ()
 		{
-			expandedStatus = new HashSet<string> ();
-			foreach (var r in rows.Where (r => r.IsCategory))
-				if (!r.Expanded)
-					expandedStatus.Add (r.Label);
+			//when the tree is rebuilt, there isn't a reliable way to match up new nodes to existing nodes
+			//since the tree can be built dynamically, and there can be multiple instances of each type.
+			//make a best attempt using reference equality to match objects and the name to match their properties.
+			expandedStatus = new Dictionary<object,List<string>>(new ReferenceEqualityComparer<object> ());
+			foreach (var r in rows.Where (r => r.IsExpandable)) {
+				object key;
+				string val;
+				bool mark;
+				if (r.IsCategory) {
+					key = this;
+					val = r.Label;
+					mark = !r.Expanded;
+				} else {
+					key = r.Instance;
+					val = r.Property.Name;
+					mark = r.Expanded;
+				}
+				if (key == null || !mark) {
+					continue;
+				}
+				List<string> list;
+				if (!expandedStatus.TryGetValue (key, out list)) {
+					expandedStatus [key] = list = new List<string> ();
+				}
+				list.Add (val);
+			}
 		}
 
 		public void RestoreStatus ()
 		{
-			if (expandedStatus == null)
+			if (expandedStatus == null) {
 				return;
+			}
 
-			foreach (var row in rows.Where (r => r.IsCategory))
-				row.Expanded = !expandedStatus.Contains (row.Label);
+			foreach (var r in rows.Where (r => r.IsExpandable)) {
+				object key;
+				string val;
+				if (r.IsCategory) {
+					key = this;
+					val = r.Label;
+				} else {
+					key = r.Instance;
+					val = r.Property.Name;
+				}
+				List<string> list;
+				var isMarked = expandedStatus.TryGetValue (key, out list) && list.Any (l => string.Equals (l, val));
+				//categories are expanded by default, other things are not
+				//we mark those that deviate from the defauult
+				r.Expanded = r.IsCategory ^ isMarked;
+			}
 
 			expandedStatus = null;
 
@@ -179,7 +277,7 @@ namespace MonoDevelop.Components.PropertyGrid
 
 				foreach (PropertyDescriptor pd in sorted) {
 					if (!string.IsNullOrEmpty (pd.Category) && (lastCat == null || pd.Category != lastCat.Label)) {
-						TableRow row = new TableRow ();
+						TableRow row = new TableRow (parentGrid);
 						row.IsCategory = true;
 						row.Expanded = true;
 						row.Label = pd.Category;
@@ -206,7 +304,7 @@ namespace MonoDevelop.Components.PropertyGrid
 		bool UpdateProperty (PropertyDescriptor pd, object instance, IEnumerable<TableRow> rowList)
 		{
 			foreach (var row in rowList) {
-				if (row.Property != null && row.Property.Name == pd.Name && row.Instace == instance) {
+				if (row.Property != null && row.Property.Name == pd.Name && row.Instance == instance) {
 					row.Property = pd;
 					return true;
 				}
@@ -225,27 +323,31 @@ namespace MonoDevelop.Components.PropertyGrid
 
 		void AppendProperty (List<TableRow> rowList, PropertyDescriptor prop, object instance)
 		{
-			TableRow row = new TableRow () {
+			TableRow row = new TableRow (parentGrid) {
 				IsCategory = false,
 				Property = prop,
 				Label = prop.DisplayName,
-				Instace = instance
+				Instance = instance
 			};
 			rowList.Add (row);
 
 			TypeConverter tc = prop.Converter;
-			if (typeof (ExpandableObjectConverter).IsAssignableFrom (tc.GetType ())) {
+			if (tc.GetPropertiesSupported (row)) {
 				object cob = prop.GetValue (instance);
 				row.ChildRows = new List<TableRow> ();
-				foreach (PropertyDescriptor cprop in TypeDescriptor.GetProperties (cob))
-					AppendProperty (row.ChildRows, cprop, cob);
+				//TODO: should we support TypeDescriptor extensibility? how to merge with TypeConverter?
+				foreach (PropertyDescriptor cprop in tc.GetProperties (row, cob)) {
+					if (cprop.IsBrowsable) {
+						AppendProperty (row.ChildRows, cprop, cob);
+					}
+				}
 			}
 		}
 
 		PropertyEditorCell GetCell (TableRow row)
 		{
-			var e = editorManager.GetEditor (row.Property);
-			e.Initialize (this, editorManager, row.Property, row.Instace);
+			var e = editorManager.GetEditor (row);
+			e.Initialize (this, editorManager, row);
 			return e;
 		}
 
@@ -315,16 +417,18 @@ namespace MonoDevelop.Components.PropertyGrid
 				layout.SetText (r.Label);
 				int w,h;
 				layout.GetPixelSize (out w, out h);
+				var width = Allocation.Width;
 				if (r.IsCategory) {
-					r.EditorBounds = new Gdk.Rectangle (0, y, Allocation.Width, h + CategoryTopBottomPadding * 2);
+					r.Bounds = new Gdk.Rectangle (0, y, width, h + CategoryTopBottomPadding * 2);
 					y += h + CategoryTopBottomPadding * 2;
 				}
 				else {
 					int eh;
-					int dividerX = (int)((double)Allocation.Width * dividerPosition);
+					int dividerX = (int)((double)width * dividerPosition);
 					var cell = GetCell (r);
 					cell.GetSize (Allocation.Width - dividerX, out w, out eh);
 					eh = Math.Max (h + PropertyTopBottomPadding * 2, eh);
+					r.Bounds = new Gdk.Rectangle (0, y, Allocation.Width, eh);
 					r.EditorBounds = new Gdk.Rectangle (dividerX + PropertyContentLeftPadding, y, Allocation.Width - dividerX - PropertyContentLeftPadding, eh);
 					y += eh;
 				}
@@ -416,8 +520,20 @@ namespace MonoDevelop.Components.PropertyGrid
 					Pango.CairoHelper.ShowLayout (ctx, layout);
 					ctx.Restore ();
 
-					if (r != currentEditorRow)
-						cell.Render (GdkWindow, ctx, r.EditorBounds, state);
+					if (r != currentEditorRow) {
+						var bounds = GetInactiveEditorBounds (r);
+
+						cell.Render (GdkWindow, ctx, bounds, state);
+
+						if (r.IsExpandable) {
+							var img = r.Expanded ? discloseUp : discloseDown;
+							ctx.DrawImage (
+								this, img,
+								Allocation.Width - img.Width - PropertyTopBottomPadding,
+								y + Math.Round ((h + PropertyTopBottomPadding * 2 - img.Height) / 2)
+							);
+						}
+					}
 
 					y += r.EditorBounds.Height;
 					indent = PropertyIndent;
@@ -451,6 +567,16 @@ namespace MonoDevelop.Components.PropertyGrid
 			}
 		}
 
+		//when inactive, the editor bounds may be shrunk to make room for an expander
+		Gdk.Rectangle GetInactiveEditorBounds (TableRow row)
+		{
+			var bounds = row.EditorBounds;
+			if (row.IsExpandable) {
+				bounds.Width -= (int) discloseUp.Width + PropertyTopBottomPadding;
+			}
+			return bounds;
+		}
+
 		IEnumerable<TableRow> GetAllRows (bool onlyVisible)
 		{
 			return GetAllRows (rows, onlyVisible);
@@ -472,17 +598,6 @@ namespace MonoDevelop.Components.PropertyGrid
 			if (evnt.Type != EventType.ButtonPress)
 				return base.OnButtonPressEvent (evnt);
 
-			var cat = rows.FirstOrDefault (r => r.IsCategory && r.EditorBounds.Contains ((int)evnt.X, (int)evnt.Y));
-			if (cat != null) {
-				cat.Expanded = !cat.Expanded;
-				if (cat.Expanded)
-					StartExpandAnimation (cat);
-				else
-					StartCollapseAnimation (cat);
-				QueueResize ();
-				return true;
-			}
-
 			int dx = (int)((double)Allocation.Width * dividerPosition);
 			if (Math.Abs (dx - evnt.X) < 4) {
 				draggingDivider = true;
@@ -490,19 +605,27 @@ namespace MonoDevelop.Components.PropertyGrid
 				return true;
 			}
 
-			TableRow clickedEditor = null;
-			foreach (var r in GetAllRows (true).Where (r => !r.IsCategory)) {
-				if (r.EditorBounds.Contains ((int)evnt.X, (int)evnt.Y)) {
-					clickedEditor = r;
-					break;
+			var row = GetAllRows (true).FirstOrDefault (r => r.Bounds.Contains ((int)evnt.X, (int)evnt.Y));
+
+			if (row != null && editSession == null) {
+				var bounds = GetInactiveEditorBounds (row);
+				if (!bounds.IsEmpty && bounds.Contains ((int)evnt.X, (int)evnt.Y)) {
+					StartEditing (row);
+					return true;
+				}
+				if (row.IsExpandable) {
+					row.Expanded = !row.Expanded;
+					if (row.Expanded)
+						StartExpandAnimation (row);
+					else
+						StartCollapseAnimation (row);
+					QueueResize ();
+					return true;
 				}
 			}
-			if (clickedEditor != null && clickedEditor.Enabled)
-				StartEditing (clickedEditor);
-			else {
-				EndEditing ();
-				GrabFocus ();
-			}
+
+			EndEditing ();
+			GrabFocus ();
 
 			return base.OnButtonPressEvent (evnt);
 		}
@@ -529,10 +652,13 @@ namespace MonoDevelop.Components.PropertyGrid
 				return true;
 			}
 
-			var cat = rows.FirstOrDefault (r => r.IsCategory && r.EditorBounds.Contains ((int)evnt.X, (int)evnt.Y));
-			if (cat != null) {
-				GdkWindow.Cursor = handCursor;
-				return true;
+			var row = GetAllRows (true).FirstOrDefault (r => r.Bounds.Contains ((int)evnt.X, (int)evnt.Y));
+			if (row != null && row.IsExpandable) {
+				var bounds = GetInactiveEditorBounds (row);
+				if (bounds.IsEmpty || !bounds.Contains ((int)evnt.X, (int)evnt.Y)) {
+					GdkWindow.Cursor = handCursor;
+					return true;
+				}
 			}
 
 			int dx = (int)((double)Allocation.Width * dividerPosition);
@@ -572,8 +698,7 @@ namespace MonoDevelop.Components.PropertyGrid
 		void ShowTooltipWindow (int x, int y)
 		{
 			tooltipTimeout = 0;
-			int dx = (int)((double)Allocation.Width * dividerPosition);
-			if (x >= dx)
+			if (x >= Allocation.Width)
 				return;
 			var row = GetAllRows (true).FirstOrDefault (r => !r.IsCategory && y >= r.EditorBounds.Y && y <= r.EditorBounds.Bottom);
 			if (row != null) {
@@ -583,8 +708,8 @@ namespace MonoDevelop.Components.PropertyGrid
 				s.AppendLine ();
 				s.AppendLine ();
 				s.Append (GLib.Markup.EscapeText (row.Property.Description));
-				if (row.Property.Converter.CanConvertTo (typeof(string))) {
-					var value = Convert.ToString (row.Property.GetValue (row.Instace));
+				if (row.Property.Converter.CanConvertTo (row, typeof(string))) {
+					var value = Convert.ToString (row.Property.GetValue (row.Instance));
 					if (!string.IsNullOrEmpty (value)) {
 						const int chunkLength = 200;
 						var multiLineValue = string.Join (Environment.NewLine, Enumerable.Range (0, (int)Math.Ceiling ((double)value.Length / chunkLength)).Select (n => string.Concat (value.Skip (n * chunkLength).Take (chunkLength))));
@@ -696,10 +821,21 @@ namespace MonoDevelop.Components.PropertyGrid
 			currentEditor.CanFocus = true;
 			currentEditor.GrabFocus ();
 			ConnectTabEvent (currentEditor);
+
+			var refreshAtt = row.Property.Attributes.OfType<RefreshPropertiesAttribute> ().FirstOrDefault ();
+			var refresh = refreshAtt == null ? RefreshProperties.None : refreshAtt.RefreshProperties;
 			editSession.Changed += delegate {
+				if (refresh == RefreshProperties.Repaint) {
+					parentGrid.Refresh ();
+				} else if (refresh == RefreshProperties.All) {
+					parentGrid.Populate();
+				}
+
 				if (Changed != null)
 					Changed (this, EventArgs.Empty);
+
 			};
+
 			var vs = ((Gtk.Viewport)Parent).Vadjustment;
 			if (row.EditorBounds.Top < vs.Value)
 				vs.Value = row.EditorBounds.Top;

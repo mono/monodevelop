@@ -58,16 +58,10 @@ namespace MonoDevelop.MacIntegration
 					alert.AlertStyle = NSAlertStyle.Informational;
 					stockIcon = data.Message.Icon == MonoDevelop.Ide.Gui.Stock.Information;
 				}
-				
-				//FIXME: use correct size so we don't get horrible scaling?
+
 				if (!stockIcon && !string.IsNullOrEmpty (data.Message.Icon)) {
-					var pix = ImageService.GetIcon (data.Message.Icon, Gtk.IconSize.Dialog).ToPixbuf();
-					byte[] buf = pix.SaveToBuffer ("tiff");
-					unsafe {
-						fixed (byte* b = buf) {
-							alert.Icon = new NSImage (NSData.FromBytes ((IntPtr)b, (uint)buf.Length));
-						}
-					}
+					var img = ImageService.GetIcon (data.Message.Icon, Gtk.IconSize.Dialog);
+					alert.Icon = img.ToNSImage ();
 				} else {
 					//for some reason the NSAlert doesn't pick up the app icon by default
 					alert.Icon = NSApplication.SharedApplication.ApplicationIconImage;

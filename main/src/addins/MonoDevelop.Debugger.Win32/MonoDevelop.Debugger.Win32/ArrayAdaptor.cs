@@ -44,6 +44,15 @@ namespace MonoDevelop.Debugger.Win32
 			this.array = array;
 			this.obj = obj;
 		}
+
+		public int[] GetLowerBounds ()
+		{
+			if (array != null && array.HasBaseIndicies) {
+				return array.GetBaseIndicies ();
+			} else {
+				return new int[GetDimensions ().Length];
+			}
+		}
 		
 		public int[] GetDimensions ()
 		{

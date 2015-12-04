@@ -41,98 +41,26 @@ namespace MonoDevelop.Refactoring
 {
 	class FindDerivedSymbolsHandler 
 	{
-		Ide.Gui.Document doc;
-		readonly IMember entity;
+		readonly IMember member;
 
-
-		public FindDerivedSymbolsHandler (Ide.Gui.Document doc, IMember entity)
+		public FindDerivedSymbolsHandler (IMember member)
 		{
-			this.doc = doc;
-			this.entity = entity;
-		}
-
-		static bool IsReferenced (Project project, Project referencedProject)
-		{
-			return project == referencedProject || 
-				project.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).Contains (referencedProject);
-		}
-
-		Task<HashSet<IAssembly>> GetAllAssemblies (Project referencedProject)
-		{
-			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
-			return Task.Factory.StartNew (delegate {
-				var assemblies = new HashSet<IAssembly> ();
-				foreach (var project in solution.GetAllProjects ()) {
-					if (!IsReferenced (project, referencedProject))
-						continue;
-					var comp = TypeSystemService.GetCompilation (project);
-					if (comp == null)
-						continue;
-					assemblies.Add (comp.MainAssembly);
-				}
-				return assemblies;
-			});
+			this.member = member;
 		}
 
 		public bool IsValid {
 			get {
-				return true;
+				if (IdeApp.ProjectOperations.CurrentSelectedSolution == null)
+					return false;
+				if (TypeSystemService.GetProject (member) == null)
+					return false;
+				return member.IsVirtual || member.IsAbstract || member.DeclaringType.Kind == TypeKind.Interface;
 			}
 		}
 
 		public void Run ()
 		{
-			var assemblies = GetAllAssemblies (doc.Project);
-			assemblies.ContinueWith (delegate(Task<HashSet<IAssembly>> arg) {
-				var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
-				monitor.BeginTask (GettextCatalog.GetString ("Building type graph in solution ..."), 1); 
-				var tg = new TypeGraph (arg.Result);
-				var node = tg.GetNode (entity.DeclaringTypeDefinition); 
-				monitor.EndTask ();
-				if (node == null) {
-					monitor.Dispose ();
-					return;
-				}
-				Gtk.Application.Invoke (delegate {
-					try {
-						Stack<IList<TypeGraphNode>> derivedTypes = new Stack<IList<TypeGraphNode>> ();
-						derivedTypes.Push (node.DerivedTypes); 
-						HashSet<ITypeDefinition> visitedType = new HashSet<ITypeDefinition> ();
-						while (derivedTypes.Count > 0) {
-							foreach (var derived in derivedTypes.Pop ()) {
-								if (visitedType.Contains (derived.TypeDefinition))
-									continue;
-								derivedTypes.Push (tg.GetNode (derived.TypeDefinition).DerivedTypes);
-								visitedType.Add (derived.TypeDefinition);
-								var impMember = derived.TypeDefinition.Compilation.Import (entity);
-								if (impMember == null)
-									continue;
-								IMember derivedMember;
-								if (entity.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
-									derivedMember = derived.TypeDefinition.GetMembers (null, GetMemberOptions.IgnoreInheritedMembers).FirstOrDefault (
-										m => m.ImplementedInterfaceMembers.Any (im => im.Region == entity.Region)
-									);
-								} else {
-									derivedMember = InheritanceHelper.GetDerivedMember (impMember, derived.TypeDefinition);
-								}
-								if (derivedMember == null || string.IsNullOrEmpty (derivedMember.Region.FileName))
-									continue;
-								var tf = TextFileProvider.Instance.GetReadOnlyTextEditorData (derivedMember.Region.FileName);
-								var start = tf.LocationToOffset (derivedMember.Region.Begin); 
-								tf.SearchRequest.SearchPattern = derivedMember.Name;
-								var sr = tf.SearchForward (start); 
-								if (sr != null)
-									start = sr.Offset;
-
-								monitor.ReportResult (new MemberReference (derivedMember, derivedMember.Region, start, derivedMember.Name.Length));
-							}
-						}
-					} finally {
-						monitor.Dispose ();
-					}
-				});
-			});
-	
+			FindDerivedClassesHandler.FindDerivedMembers (member);
 		}
 	}
 }

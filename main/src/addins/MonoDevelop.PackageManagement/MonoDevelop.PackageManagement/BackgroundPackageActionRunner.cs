@@ -37,10 +37,14 @@ namespace MonoDevelop.PackageManagement
 {
 	public class BackgroundPackageActionRunner : IBackgroundPackageActionRunner
 	{
+		static MonoDevelop.Core.Instrumentation.Counter InstallPackageCounter = MonoDevelop.Core.Instrumentation.InstrumentationService.CreateCounter ("Package Installed", "Package Management", id:"PackageManagement.Package.Installed");
+		static MonoDevelop.Core.Instrumentation.Counter UninstallPackageCounter = MonoDevelop.Core.Instrumentation.InstrumentationService.CreateCounter ("Package Uninstalled", "Package Management", id:"PackageManagement.Package.Uninstalled");
+
 		IPackageManagementProgressMonitorFactory progressMonitorFactory;
 		IPackageManagementEvents packageManagementEvents;
 		IProgressProvider progressProvider;
 		List<InstallPackageAction> pendingInstallActions = new List<InstallPackageAction> ();
+		int runCount;
 
 		public BackgroundPackageActionRunner (
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
@@ -50,6 +54,10 @@ namespace MonoDevelop.PackageManagement
 			this.progressMonitorFactory = progressMonitorFactory;
 			this.packageManagementEvents = packageManagementEvents;
 			this.progressProvider = progressProvider;
+		}
+
+		public bool IsRunning {
+			get { return runCount > 0; }
 		}
 
 		public IEnumerable<InstallPackageAction> PendingInstallActions {
@@ -70,7 +78,8 @@ namespace MonoDevelop.PackageManagement
 		{
 			AddInstallActionsToPendingQueue (actions);
 			packageManagementEvents.OnPackageOperationsStarting ();
-			BackgroundDispatch (() => RunActionsWithProgressMonitor (progressMessage, actions.ToList ()));
+			runCount++;
+			BackgroundDispatch (() => TryRunActionsWithProgressMonitor (progressMessage, actions.ToList ()));
 		}
 
 		void AddInstallActionsToPendingQueue (IEnumerable<IPackageAction> actions)
@@ -84,7 +93,19 @@ namespace MonoDevelop.PackageManagement
 		{
 			AddInstallActionsToPendingQueue (actions);
 			packageManagementEvents.OnPackageOperationsStarting ();
-			DispatchService.BackgroundDispatchAndWait (() => RunActionsWithProgressMonitor (progressMessage, actions.ToList ()));
+			runCount++;
+			BackgroundDispatchAndWait (() => TryRunActionsWithProgressMonitor (progressMessage, actions.ToList ()));
+		}
+
+		void TryRunActionsWithProgressMonitor (ProgressMonitorStatusMessage progressMessage, IList<IPackageAction> actions)
+		{
+			try {
+				RunActionsWithProgressMonitor (progressMessage, actions);
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+			} finally {
+				GuiDispatch (() => runCount--);
+			}
 		}
 
 		void RunActionsWithProgressMonitor (ProgressMonitorStatusMessage progressMessage, IList<IPackageAction> installPackageActions)
@@ -126,7 +147,57 @@ namespace MonoDevelop.PackageManagement
 		{
 			foreach (IPackageAction action in packageActions) {
 				action.Execute ();
+				InstrumentPackageAction (action);
 				monitor.Step (1);
+			}
+		}
+
+		protected virtual void InstrumentPackageAction (IPackageAction action) 
+		{
+			try {
+				var addAction = action as InstallPackageAction;
+				if (addAction != null) {
+					InstrumentPackageOperations (addAction.Operations);
+					return;
+				}
+
+				var updateAction = action as UpdatePackageAction;
+				if (updateAction != null) {
+					InstrumentPackageOperations (updateAction.Operations);
+					return;
+				}
+
+				var removeAction = action as UninstallPackageAction;
+				if (removeAction != null) {
+					var metadata = new Dictionary<string, string> ();
+
+					metadata ["PackageId"] = removeAction.GetPackageId ();
+					var version = removeAction.GetPackageVersion ();
+					if (version != null)
+						metadata ["PackageVersion"] = version.ToString ();
+
+					UninstallPackageCounter.Inc (1, null, metadata);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Instrumentation Failure in PackageManagement", ex);
+			}
+		}
+
+		static void InstrumentPackageOperations (IEnumerable<PackageOperation> operations)
+		{
+			foreach (var op in operations) {
+				var metadata = new Dictionary<string, string> ();
+				metadata ["PackageId"] = op.Package.Id;
+				metadata ["Package"] = op.Package.Id + " v" + op.Package.Version.ToString ();
+
+				switch (op.Action) {
+				case PackageAction.Install: 
+					InstallPackageCounter.Inc (1, null, metadata);
+					break;
+				case PackageAction.Uninstall:
+					UninstallPackageCounter.Inc (1, null, metadata);
+					break;
+				}
 			}
 		}
 
@@ -139,7 +210,7 @@ namespace MonoDevelop.PackageManagement
 
 		public void ShowError (ProgressMonitorStatusMessage progressMessage, Exception exception)
 		{
-			LoggingService.LogInternalError (progressMessage.Status, exception);
+			LoggingService.LogError (progressMessage.Error, exception);
 			ShowError (progressMessage, exception.Message);
 		}
 
@@ -155,6 +226,11 @@ namespace MonoDevelop.PackageManagement
 		protected virtual void BackgroundDispatch (MessageHandler handler)
 		{
 			DispatchService.BackgroundDispatch (handler);
+		}
+
+		protected virtual void BackgroundDispatchAndWait (MessageHandler handler)
+		{
+			DispatchService.BackgroundDispatchAndWait (handler);
 		}
 
 		protected virtual void GuiDispatch (MessageHandler handler)

@@ -166,6 +166,7 @@ namespace MonoDevelop.GtkCore {
 
 			if (!gtk) {
 				project.References.Add (new ProjectReference (ReferenceType.Package, "gtk-sharp" + ", " + assm_version));
+				project.ExtendedProperties ["GtkReferenceExists"] = true;
 				changed = true;
 			}
 
@@ -212,6 +213,7 @@ namespace MonoDevelop.GtkCore {
 			if (updating || !IsGtkReference (args.ProjectReference))
 				return;
 
+			args.Project.ExtendedProperties ["GtkReferenceExists"] = true;
 			string sr = args.ProjectReference.StoredReference;
 			string version = sr.Substring (sr.IndexOf (",") + 1).Trim ();
 			ReferenceManager rm = new ReferenceManager (args.Project as DotNetProject);
@@ -225,9 +227,10 @@ namespace MonoDevelop.GtkCore {
 
 			DotNetProject dnp = args.Project as DotNetProject;
 
-			if (MessageService.Confirm (GettextCatalog.GetString ("The Gtk# User Interface designer will be disabled by removing the gtk-sharp reference."), new AlertButton (GettextCatalog.GetString ("Disable Designer"))))
+			if (MessageService.Confirm (GettextCatalog.GetString ("The Gtk# User Interface designer will be disabled by removing the gtk-sharp reference."), new AlertButton (GettextCatalog.GetString ("Disable Designer")))) {
+				dnp.ExtendedProperties ["GtkReferenceExists"] = false;
 				GtkDesignInfo.DisableProject (dnp);
-			else
+			} else
 				dnp.References.Add (new ProjectReference (ReferenceType.Package, args.ProjectReference.StoredReference));
 		}
 

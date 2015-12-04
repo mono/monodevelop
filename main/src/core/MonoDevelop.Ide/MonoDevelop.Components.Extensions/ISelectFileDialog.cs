@@ -50,7 +50,7 @@ namespace MonoDevelop.Components.Extensions
 			FilterSet = new FileFilterSet ();
 		}
 		internal FileFilterSet FilterSet { get; set; } 
-		public Gtk.FileChooserAction Action { get; set; }
+		public FileChooserAction Action { get; set; }
 		public IList<SelectFileDialogFilter> Filters { get { return FilterSet.Filters; } }
 		public FilePath CurrentFolder { get; set; }
 		public bool SelectMultiple { get; set; }
@@ -60,6 +60,7 @@ namespace MonoDevelop.Components.Extensions
 			get { return FilterSet.DefaultFilter; }
 			set { FilterSet.DefaultFilter = value; }
 		}
+		public bool ShowHidden { get; set; }
 	}	
 			
 	/// <summary>
@@ -106,7 +107,7 @@ namespace MonoDevelop.Components.Extensions
 		/// <summary>
 		/// Action to perform with the file dialog.
 		/// </summary>
-		public Gtk.FileChooserAction Action {
+		public FileChooserAction Action {
 			get { return data.Action; }
 			set { data.Action = value; }
 		}
@@ -162,6 +163,16 @@ namespace MonoDevelop.Components.Extensions
 		public SelectFileDialogFilter DefaultFilter {
 			get { return data.DefaultFilter; }
 			set { data.DefaultFilter = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets whether the file dialog will show hidden files and folders.
+		/// show hidden.
+		/// </summary>
+		/// <value><c>true</c> if hidden files are shown; otherwise, <c>false</c>.</value>
+		public bool ShowHidden {
+			get { return data.ShowHidden; }
+			set { data.ShowHidden = value; }
 		}
 		
 		#region File filter utilities
@@ -258,7 +269,7 @@ namespace MonoDevelop.Components.Extensions
 		internal void SetDefaultProperties (FileSelector fdiag)
 		{
 			fdiag.Title = Title;
-			fdiag.Action = Action;
+			fdiag.Action = Action.ToGtkAction ();
 			fdiag.LocalOnly = true;
 			fdiag.SelectMultiple = SelectMultiple;
 			fdiag.TransientFor = TransientFor;
@@ -313,6 +324,7 @@ namespace MonoDevelop.Components.Extensions
 				return result == (int) Gtk.ResponseType.Ok;
 			} finally {
 				fdiag.Destroy ();
+				fdiag.Dispose ();
 			}
 		}
 	}

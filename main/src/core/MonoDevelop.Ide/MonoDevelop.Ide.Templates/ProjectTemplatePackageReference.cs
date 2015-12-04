@@ -35,12 +35,14 @@ namespace MonoDevelop.Ide.Templates
 		{
 			return new ProjectTemplatePackageReference {
 				Id = GetAttribute (xmlElement, "id"),
-				Version = GetAttribute (xmlElement, "version")
+				Version = GetAttribute (xmlElement, "version"),
+				CreateCondition = GetAttribute (xmlElement, "if")
 			};
 		}
 
 		public string Id { get; private set; }
 		public string Version { get; private set; }
+		public string CreateCondition { get; private set; }
 
 		static string GetAttribute (XmlElement xmlElement, string attributeName)
 		{

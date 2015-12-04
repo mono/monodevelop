@@ -71,6 +71,7 @@ namespace VersionControl.Subversion.Unix.Tests
 +++ testfile	(working copy)
 @@ -0,0 +1 @@
 +text
+\ No newline at end of file
 ";
 			Assert.AreEqual (difftext, Repo.GenerateDiff (LocalPath + "testfile", Repo.GetVersionInfo (LocalPath + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content);
 		}
@@ -135,6 +136,11 @@ namespace VersionControl.Subversion.Unix.Tests
 		protected override Repository GetRepo (string path, string url)
 		{
 			return new SubversionRepository (new SvnClient (), url, path);
+		}
+
+		protected override Repository GetRepo ()
+		{
+			return new SubversionRepository (new SvnClient (), string.Empty, FilePath.Empty);
 		}
 	}
 }

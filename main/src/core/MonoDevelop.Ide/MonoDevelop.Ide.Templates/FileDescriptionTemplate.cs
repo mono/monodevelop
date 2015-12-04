@@ -28,18 +28,15 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Xml;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.CodeDom;
-using System.CodeDom.Compiler;
 
 using MonoDevelop.Core;
 using Mono.Addins;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Codons;
+using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -56,8 +53,9 @@ namespace MonoDevelop.Ide.Templates
 			
 			foreach (FileTemplateTypeCodon template in templates) {
 				if (template.ElementName == element.Name) {
-					FileDescriptionTemplate t = (FileDescriptionTemplate) template.CreateInstance (typeof(FileDescriptionTemplate));
+					var t = (FileDescriptionTemplate) template.CreateInstance (typeof(FileDescriptionTemplate));
 					t.Load (element, baseDirectory);
+					t.CreateCondition = element.GetAttribute ("if");
 					return t;
 				}
 			}
@@ -77,10 +75,12 @@ namespace MonoDevelop.Ide.Templates
 		public abstract void Load (XmlElement filenode, FilePath baseDirectory);
 		public abstract bool AddToProject (SolutionItem policyParent, Project project, string language, string directory, string name);
 		public abstract void Show ();
+
+		internal string CreateCondition { get; private set; }
 		
 		public virtual bool IsValidName (string name, string language)
 		{
-			return name.Length > 0 && name.IndexOfAny (Path.GetInvalidFileNameChars ()) == -1;
+			return FileService.IsValidFileName (name);
 /*			if (name.Length > 0) {
 				if (language != null && language.Length > 0) {
 					IDotNetLanguageBinding binding = LanguageBindingService.GetBindingPerLanguageName (language) as IDotNetLanguageBinding;
@@ -99,6 +99,18 @@ namespace MonoDevelop.Ide.Templates
 		public virtual bool SupportsProject (Project project, string projectPath)
 		{
 			return true;
+		}
+
+		protected IStringTagModel ProjectTagModel {
+			get;
+			private set;
+		}
+
+		// FIXME: maybe these should be public/protected, not 100% happy committing to this API right now though
+		// AddProjectTags is called before AddToProject, then called with null afterwards
+		internal virtual void SetProjectTagModel (IStringTagModel tagModel)
+		{
+			ProjectTagModel = tagModel;
 		}
 	}
 }

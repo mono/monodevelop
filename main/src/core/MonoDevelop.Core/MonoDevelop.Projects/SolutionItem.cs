@@ -435,6 +435,9 @@ namespace MonoDevelop.Projects
 		/// </remarks>
 		public virtual void Dispose ()
 		{
+			if (Disposing != null)
+				Disposing (this, EventArgs.Empty);
+			
 			Disposed = true;
 			
 			if (extendedProperties != null) {
@@ -459,7 +462,7 @@ namespace MonoDevelop.Projects
 			// internalChildren = null;
 			// policies = null;
 		}
-		
+
 		/// <summary>
 		/// Gets solution items referenced by this instance (items on which this item depends)
 		/// </summary>
@@ -520,7 +523,7 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public void Clean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			ITimeTracker tt = Counters.BuildProjectTimer.BeginTiming ("Cleaning " + Name);
+			ITimeTracker tt = Counters.CleanProjectTimer.BeginTiming ("Cleaning " + Name, GetProjectEventMetadata (configuration));
 			try {
 				//SolutionFolder handles the begin/end task itself, don't duplicate
 				if (this is SolutionFolder) {
@@ -571,28 +574,30 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public BuildResult Build (IProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences)
 		{
-			ITimeTracker tt = Counters.BuildProjectTimer.BeginTiming ("Building " + Name);
-			try {
-				if (!buildReferences) {
-					//SolutionFolder's OnRunTarget handles the begin/end task itself, don't duplicate
-					if (this is SolutionFolder) {
-						return RunTarget (monitor, ProjectService.BuildTarget, solutionConfiguration);
-					}
+			if (!buildReferences) {
+				//SolutionFolder's OnRunTarget handles the begin/end task itself, don't duplicate
+				if (this is SolutionFolder) {
+					return RunTarget (monitor, ProjectService.BuildTarget, solutionConfiguration);
+				}
+				
+				try {
+					SolutionEntityItem it = this as SolutionEntityItem;
+					SolutionItemConfiguration iconf = it != null ? it.GetConfiguration (solutionConfiguration) : null;
+					string confName = iconf != null ? iconf.Id : solutionConfiguration.ToString ();
+					monitor.BeginTask (GettextCatalog.GetString ("Building: {0} ({1})", Name, confName), 1);
 					
-					try {
-						SolutionEntityItem it = this as SolutionEntityItem;
-						SolutionItemConfiguration iconf = it != null ? it.GetConfiguration (solutionConfiguration) : null;
-						string confName = iconf != null ? iconf.Id : solutionConfiguration.ToString ();
-						monitor.BeginTask (GettextCatalog.GetString ("Building: {0} ({1})", Name, confName), 1);
-						
+					using (Counters.BuildProjectTimer.BeginTiming ("Building " + Name, GetProjectEventMetadata (solutionConfiguration))) {
 						// This will end calling OnBuild ()
 						return RunTarget (monitor, ProjectService.BuildTarget, solutionConfiguration);
-						
-					} finally {
-						monitor.EndTask ();
 					}
-				}
 					
+				} finally {
+					monitor.EndTask ();
+				}
+			}
+				
+			ITimeTracker tt = Counters.BuildProjectAndReferencesTimer.BeginTiming ("Building " + Name, GetProjectEventMetadata (solutionConfiguration));
+			try {
 				// Get a list of all items that need to be built (including this),
 				// and build them in the correct order
 				
@@ -625,7 +630,17 @@ namespace MonoDevelop.Projects
 				tt.End ();
 			}
 		}
-		
+
+		public BuildResult Build (IProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences, ProjectOperationContext context)
+		{
+			try {
+				System.Runtime.Remoting.Messaging.CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", context);
+				return Build (monitor, solutionConfiguration, buildReferences);
+			} finally {
+				System.Runtime.Remoting.Messaging.CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", null);
+			}
+		}
+
 		internal bool ContainsReferences (HashSet<SolutionItem> items, ConfigurationSelector conf)
 		{
 			foreach (SolutionItem it in GetReferencedItems (conf))
@@ -690,8 +705,6 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
-			if (!SupportsExecute ())
-				return false;
 			return Services.ProjectService.GetExtensionChain (this).CanExecute (this, context, configuration);
 		}
 
@@ -897,6 +910,24 @@ namespace MonoDevelop.Projects
 					extendedProperties = new Hashtable ();
 				return extendedProperties;
 			}
+		}
+
+		public IDictionary<string, string> GetProjectEventMetadata (ConfigurationSelector configurationSelector)
+		{
+			var data = new Dictionary<string, string> ();
+			if (configurationSelector != null) {
+				var slnConfig = configurationSelector as SolutionConfigurationSelector;
+				if (slnConfig != null) {
+					data ["Config.Id"] = slnConfig.Id;
+				}
+			}
+
+			OnGetProjectEventMetadata (data);
+			return data;
+		}
+
+		protected virtual void OnGetProjectEventMetadata (IDictionary<string, string> metadata)
+		{
 		}
 		
 		void ILoadController.BeginLoad ()
@@ -1143,6 +1174,11 @@ namespace MonoDevelop.Projects
 		/// Occurs when the item is modified.
 		/// </summary>
 		public event SolutionItemModifiedEventHandler Modified;
+
+		/// <summary>
+		/// Occurs when the object is being disposed
+		/// </summary>
+		public event EventHandler Disposing;
 	}
 	
 	[Mono.Addins.Extension]

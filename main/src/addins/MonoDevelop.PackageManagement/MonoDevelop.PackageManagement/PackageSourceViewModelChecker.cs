@@ -93,6 +93,7 @@ namespace MonoDevelop.PackageManagement
 			} catch (WebException ex) {
 				return CreatePackageSourceViewModelCheckedEventArgs (packageSource, ex);
 			} catch (Exception ex) {
+				LogPackageSourceException (packageSource, ex);
 				return new PackageSourceViewModelCheckedEventArgs (packageSource, ex.Message);
 			}
 		}
@@ -127,7 +128,11 @@ namespace MonoDevelop.PackageManagement
 
 		PackageSourceViewModelCheckedEventArgs CheckFileSystemPackageSource (PackageSourceViewModel packageSource)
 		{
-			if (Directory.Exists (packageSource.SourceUrl)) {
+			var dir = packageSource.SourceUrl;
+			if (dir.StartsWith ("file://", StringComparison.OrdinalIgnoreCase)) {
+				dir = new Uri (dir).LocalPath;
+			}
+			if (Directory.Exists (dir)) {
 				return new PackageSourceViewModelCheckedEventArgs (packageSource);
 			}
 			return new PackageSourceViewModelCheckedEventArgs (packageSource, GettextCatalog.GetString ("Directory not found"));
@@ -155,7 +160,7 @@ namespace MonoDevelop.PackageManagement
 				}
 			}
 
-			LoggingService.LogInfo (String.Format ("Package source '{0}' returned exception.", packageSource.SourceUrl), ex);
+			LogPackageSourceException (packageSource, ex);
 
 			switch (ex.Status) {
 			case WebExceptionStatus.ConnectFailure:
@@ -168,6 +173,11 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			return new PackageSourceViewModelCheckedEventArgs (packageSource, errorMessage);
+		}
+
+		void LogPackageSourceException (PackageSourceViewModel packageSource, Exception ex)
+		{
+			LoggingService.LogInfo (String.Format ("Package source '{0}' returned exception.", packageSource.SourceUrl), ex);
 		}
 
 		void OnPackageSourceChecked (object sender, ITask<PackageSourceViewModelCheckedEventArgs> task)

@@ -55,6 +55,7 @@ using System.Text;
 using Mono.Addins;
 using MonoDevelop.Components;
 using Mono.TextEditor.Utils;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.SourceEditor
 {	
@@ -656,10 +657,20 @@ namespace MonoDevelop.SourceEditor
 			if (PropertyService.Get ("AutoFormatDocumentOnSave", false)) {
 				try {
 					var formatter = CodeFormatterService.GetFormatter (Document.MimeType);
-					if (formatter != null && formatter.SupportsOnTheFlyFormatting) {
-						using (var undo = TextEditor.OpenUndoGroup ()) {
-							formatter.OnTheFlyFormat (WorkbenchWindow.Document, 0, Document.TextLength);
-							wasEdited = false;
+					if (formatter != null) {
+						var document = WorkbenchWindow.Document;
+						if (formatter.SupportsOnTheFlyFormatting) {
+							using (var undo = TextEditor.OpenUndoGroup ()) {
+								formatter.OnTheFlyFormat (document, 0, Document.TextLength);
+								wasEdited = false;
+							}
+						} else {
+							var text = document.Editor.Text;
+							var policies = document.Project != null ? document.Project.Policies : PolicyService.DefaultPolicies;
+							string formattedText = formatter.FormatText (policies, text);
+							if (formattedText != null && formattedText != text) {
+								document.Editor.Replace (0, text.Length, formattedText);
+							}
 						}
 					}
 				} catch (Exception e) {
@@ -1071,7 +1082,12 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (!writeAccessChecked && !IsUntitled) {
 				writeAccessChecked = true;
-				writeAllowed = FileService.RequestFileEdit (ContentName, false);
+				try {
+					writeAllowed = FileService.RequestFileEdit (ContentName);
+				} catch (Exception e) {
+					IdeApp.Workbench.StatusBar.ShowError (e.Message); 
+					writeAllowed = false;
+				}
 			}
 			return IsUntitled || writeAllowed;
 		}
@@ -1192,7 +1208,7 @@ namespace MonoDevelop.SourceEditor
 		void UpdatePinnedWatches ()
 		{
 			foreach (PinnedWatchInfo wi in pinnedWatches) {
-				widget.TextEditor.Remove (wi.Widget);
+				widget.TextEditor.TextArea.Remove (wi.Widget);
 				wi.Widget.Destroy ();
 			}
 			pinnedWatches.Clear ();
@@ -1260,7 +1276,7 @@ namespace MonoDevelop.SourceEditor
 			foreach (PinnedWatchInfo wi in pinnedWatches) {
 				if (wi.Watch == args.Watch) {
 					pinnedWatches.Remove (wi);
-					widget.TextEditor.Remove (wi.Widget);
+					widget.TextEditor.TextArea.Remove (wi.Widget);
 					wi.Widget.Destroy ();
 					break;
 				}
@@ -1272,7 +1288,7 @@ namespace MonoDevelop.SourceEditor
 			foreach (PinnedWatchInfo wi in pinnedWatches) {
 				if (wi.Watch == args.Watch) {
 					wi.Widget.ObjectValue = wi.Watch.Value;
-					widget.TextEditor.MoveTopLevelWidget (wi.Widget, args.Watch.OffsetX, args.Watch.OffsetY);
+					widget.TextEditor.TextArea.MoveTopLevelWidget (wi.Widget, args.Watch.OffsetX, args.Watch.OffsetY);
 					break;
 				}
 			}
@@ -1684,7 +1700,7 @@ namespace MonoDevelop.SourceEditor
 
 		public void DeleteText (int position, int length)
 		{
-			this.widget.TextEditor.Remove (position, length);
+			this.widget.TextEditor.TextArea.Remove (position, length);
 		}
 		#endregion 
 		

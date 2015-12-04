@@ -159,7 +159,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void CheckDisconnected ()
 		{
-			if (engine.CheckDisconnected ()) {
+			if (engine != null && engine.CheckDisconnected ()) {
 				if (Disconnected != null)
 					Disconnected (this, EventArgs.Empty);
 			}
@@ -171,10 +171,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			MSBuildVerbosity verbosity,
 			string[] runTargets,
 			string[] evaluateItems,
-			string[] evaluateProperties)
+			string[] evaluateProperties,
+			Dictionary<string,string> globalProperties)
 		{
 			try {
-				return builder.Run (configurations, logWriter, verbosity, runTargets, evaluateItems, evaluateProperties);
+				return builder.Run (configurations, logWriter, verbosity, runTargets, evaluateItems, evaluateProperties, globalProperties);
 			} catch (Exception ex) {
 				CheckDisconnected ();
 				LoggingService.LogError ("RunTarget failed", ex);
@@ -195,7 +196,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					try {
 						result = builder.Run (
 						            configurations, null, MSBuildVerbosity.Normal,
-						            new[] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null
+						            new[] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null, null
 					            );
 					} catch (Exception ex) {
 						CheckDisconnected ();
@@ -213,6 +214,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 			return refs;
+		}
+
+		public string[] GetSupportedTargets (ProjectConfigurationInfo[] configurations)
+		{
+			try {
+				return builder.GetSupportedTargets (configurations);
+			} catch (Exception ex) {
+				CheckDisconnected ();
+				LoggingService.LogError ("GetSupportedTargets failed", ex);
+				return new string[0];
+			}
 		}
 
 		public void Refresh ()

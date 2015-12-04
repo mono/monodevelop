@@ -26,11 +26,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using ICSharpCode.PackageManagement;
 using NuGet;
 using NUnit.Framework;
 using MonoDevelop.PackageManagement.Tests.Helpers;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Tests
 {
@@ -39,14 +41,17 @@ namespace MonoDevelop.PackageManagement.Tests
 	{
 		PackageManagementEvents packageManagementEvents;
 		FakePackageManagementProject fakeProject;
-		InstallPackageAction action;
+		TestableInstallPackageAction action;
 		InstallPackageHelper installPackageHelper;
+		FakeFileService fileService;
+		FakeFileRemover fileRemover;
 
 		void CreateAction ()
 		{
 			packageManagementEvents = new PackageManagementEvents ();
 			fakeProject = new FakePackageManagementProject ();
-			action = new InstallPackageAction (fakeProject, packageManagementEvents);
+			fileRemover = new FakeFileRemover ();
+			action = new TestableInstallPackageAction (fakeProject, packageManagementEvents, fileRemover);
 			installPackageHelper = new InstallPackageHelper (action);
 		}
 
@@ -59,6 +64,12 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			action.Operations =
 				PackageOperationHelper.CreateListWithOneInstallOperationWithFile (fileName);
+		}
+
+		IOpenPackageReadMeMonitor CreateReadMeMonitor (string packageId)
+		{
+			fileService = new FakeFileService (fakeProject.FakeDotNetProject);
+			return new OpenPackageReadMeMonitor (packageId, fakeProject, fileService);
 		}
 
 		[Test]
@@ -473,7 +484,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void Execute_PackageBeingInstalledHasPowerShellScripts_WarningAboutPowerShellScriptsIsLogged ()
+		public void Execute_PackageBeingInstalledHasPowerShellScripts_MessageAboutPowerShellScriptsIsLogged ()
 		{
 			CreateAction ();
 			FakePackage expectedPackage = fakeProject.FakeSourceRepository.AddFakePackageWithVersion ("Test", "1.0");
@@ -482,16 +493,16 @@ namespace MonoDevelop.PackageManagement.Tests
 			action.PackageId = expectedPackage.Id;
 			action.PackageVersion = expectedPackage.Version;
 			fakeProject.FakeInstallOperations.Add (operation);
-			string messageLogged = null;
+			var messagesLogged = new List<string> ();
 			packageManagementEvents.PackageOperationMessageLogged += (sender, e) => {
-				if (e.Message.Level == MessageLevel.Warning) {
-					messageLogged = e.Message.ToString ();
+				if (e.Message.Level == MessageLevel.Info) {
+					messagesLogged.Add (e.Message.ToString ());
 				}
 			};
 
 			action.Execute ();
 
-			Assert.AreEqual ("Test Package contains PowerShell scripts which will not be run.", messageLogged);
+			Assert.That (messagesLogged, Contains.Item ("WARNING: Test Package contains PowerShell scripts which will not be run."));
 		}
 
 		[Test]
@@ -517,6 +528,162 @@ namespace MonoDevelop.PackageManagement.Tests
 			installPackageHelper.InstallTestPackage ();
 
 			CollectionAssert.AreEqual (action.Operations, actualOperations);
+		}
+
+		[Test]
+		public void Execute_PackageAlreadyExistsWhenInstallingItAgainAndReferenceBeingInstalledOriginallyHadLocalCopyFalse_ReferenceAddedHasLocalCopyFalse ()
+		{
+			CreateAction ();
+			fakeProject.FakePackages.Add (new FakePackage ("Test", "1.0"));
+			action.Package = new FakePackage ("Test", "1.1");
+			var firstReferenceBeingAdded = new ProjectReference (ReferenceType.Assembly, "NewAssembly");
+			var secondReferenceBeingAdded = new ProjectReference (ReferenceType.Assembly, "NUnit.Framework");
+			fakeProject.InstallPackageAction = (p, a) => {
+				var referenceBeingRemoved = new ProjectReference (ReferenceType.Assembly, "NUnit.Framework") {
+					LocalCopy = false
+				};
+				packageManagementEvents.OnReferenceRemoving (referenceBeingRemoved);
+				packageManagementEvents.OnReferenceAdding (firstReferenceBeingAdded);
+				packageManagementEvents.OnReferenceAdding (secondReferenceBeingAdded);
+			};
+			action.Execute ();
+
+			Assert.IsTrue (firstReferenceBeingAdded.LocalCopy);
+			Assert.IsFalse (secondReferenceBeingAdded.LocalCopy);
+			Assert.IsTrue (action.PreserveLocalCopyReferences);
+		}
+
+		[Test]
+		public void Execute_PreserveLocalCopyReferencesSetToFalse_ReferenceThatOriginallyHadLocalCopyFalseIsAddedHasLocalCopySetToTrue ()
+		{
+			CreateAction ();
+			fakeProject.FakePackages.Add (new FakePackage ("Test", "1.0"));
+			action.Package = new FakePackage ("Test", "1.1");
+			var firstReferenceBeingAdded = new ProjectReference (ReferenceType.Assembly, "NewAssembly");
+			var secondReferenceBeingAdded = new ProjectReference (ReferenceType.Assembly, "NUnit.Framework");
+			fakeProject.InstallPackageAction = (p, a) => {
+				var referenceBeingRemoved = new ProjectReference (ReferenceType.Assembly, "NUnit.Framework") {
+					LocalCopy = false
+				};
+				packageManagementEvents.OnReferenceRemoving (referenceBeingRemoved);
+				packageManagementEvents.OnReferenceAdding (firstReferenceBeingAdded);
+				packageManagementEvents.OnReferenceAdding (secondReferenceBeingAdded);
+			};
+			action.PreserveLocalCopyReferences = false;
+			action.Execute ();
+
+			Assert.IsTrue (firstReferenceBeingAdded.LocalCopy);
+			Assert.IsTrue (secondReferenceBeingAdded.LocalCopy);
+		}
+
+		[Test]
+		public void Execute_PackageInstalledSuccessfully_OpenPackageReadmeMonitorCreated ()
+		{
+			CreateAction ();
+			installPackageHelper.TestPackage.Id = "Test";
+			installPackageHelper.InstallTestPackage();
+
+			Assert.AreEqual ("Test", action.OpenPackageReadMeMonitor.PackageId);
+			Assert.IsTrue (action.OpenPackageReadMeMonitor.IsDisposed);
+		}
+
+		[Test]
+		public void OpenReadMeText_DefaultValue_IsTrue ()
+		{
+			CreateAction ();
+			Assert.IsTrue (action.OpenReadMeText);
+		}
+
+		[Test]
+		public void Execute_OpenReadMeTextSetToFalse_NullOpenPackageReadmeMonitorCreated ()
+		{
+			CreateAction ();
+			action.OpenReadMeText = false;
+			installPackageHelper.TestPackage.Id = "Test";
+			installPackageHelper.InstallTestPackage();
+
+			Assert.IsTrue (action.NullOpenPackageReadMeMonitorIsCreated);
+		}
+
+		[Test]
+		public void Execute_PackageInstalledSuccessfullyWithReadmeTxt_ReadmeTxtFileIsOpened ()
+		{
+			CreateAction ();
+			installPackageHelper.TestPackage.Id = "Test";
+			installPackageHelper.TestPackage.AddFile ("readme.txt");
+			action.CreateOpenPackageReadMeMonitorAction = packageId => {
+				return CreateReadMeMonitor (packageId);
+			};
+			string installPath = @"d:\projects\myproject\packages\Test.1.0".ToNativePath ();
+			string readmeFileName = Path.Combine (installPath, "readme.txt");
+			fakeProject.InstallPackageAction = (package, installAction) => {
+				var eventArgs = new PackageOperationEventArgs (package, null, installPath);
+				fakeProject.FirePackageInstalledEvent (eventArgs);
+				fileService.ExistingFileNames.Add (readmeFileName);
+			};
+			installPackageHelper.InstallTestPackage ();
+
+			Assert.IsTrue (fileService.IsOpenFileCalled);
+			Assert.AreEqual (readmeFileName, fileService.FileNamePassedToOpenFile);
+		}
+
+		[Test]
+		public void Execute_PackageWithReadmeTxtIsInstalledButExceptionThrownWhenAddingPackageToProject_ReadmeFileIsNotOpened ()
+		{
+			CreateAction ();
+			installPackageHelper.TestPackage.Id = "Test";
+			installPackageHelper.TestPackage.AddFile ("readme.txt");
+			OpenPackageReadMeMonitor monitor = null;
+			action.CreateOpenPackageReadMeMonitorAction = packageId => {
+				monitor = CreateReadMeMonitor (packageId) as OpenPackageReadMeMonitor;
+				return monitor;
+			};
+			string installPath = @"d:\projects\myproject\packages\Test.1.0".ToNativePath ();
+			string readmeFileName = Path.Combine (installPath, "readme.txt");
+			fakeProject.InstallPackageAction = (package, installAction) => {
+				var eventArgs = new PackageOperationEventArgs (package, null, installPath);
+				fakeProject.FirePackageInstalledEvent (eventArgs);
+				fileService.ExistingFileNames.Add (readmeFileName);
+				throw new ApplicationException ();
+			};
+			Assert.Throws<ApplicationException> (() => {
+				installPackageHelper.InstallTestPackage ();
+			});
+
+			Assert.IsFalse (fileService.IsOpenFileCalled);
+			Assert.IsTrue (monitor.IsDisposed);
+		}
+
+		[Test]
+		public void Execute_PackagesConfigFileDeletedDuringInstall_FileServicePackagesConfigFileDeletionIsCancelled ()
+		{
+			CreateAction ();
+			action.Package = new FakePackage ("Test");
+			string expectedFileName = @"d:\projects\MyProject\packages.config".ToNativePath ();
+			bool? fileRemovedResult = null;
+			fakeProject.InstallPackageAction = (p, a) => {
+				fileRemovedResult = packageManagementEvents.OnFileRemoving (expectedFileName);
+			};
+			action.Execute ();
+
+			Assert.AreEqual (expectedFileName, fileRemover.FileRemoved);
+			Assert.IsFalse (fileRemovedResult.Value);
+		}
+
+		[Test]
+		public void Execute_ScriptFileDeletedDuringInstallFileDeletionIsNotCancelled ()
+		{
+			CreateAction ();
+			action.Package = new FakePackage ("Test");
+			string fileName = @"d:\projects\MyProject\scripts\myscript.js".ToNativePath ();
+			bool? fileRemovedResult = null;
+			fakeProject.InstallPackageAction = (p, a) => {
+				fileRemovedResult = packageManagementEvents.OnFileRemoving (fileName);
+			};
+			action.Execute ();
+
+			Assert.IsTrue (fileRemovedResult.Value);
+			Assert.IsNull (fileRemover.FileRemoved);
 		}
 	}
 }

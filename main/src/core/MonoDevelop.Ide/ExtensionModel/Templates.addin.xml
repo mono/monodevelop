@@ -1,3 +1,4 @@
+
 <ExtensionModel>
 
 <ExtensionPoint path = "/MonoDevelop/Ide/FileTemplates" name = "File templates">
@@ -28,6 +29,34 @@
 <ExtensionPoint path="/MonoDevelop/Ide/ProjectTemplatePackageRepositories">
 	<Description>Defines a path where NuGet packages are searched for when creating a project from a template.</Description>
 	<ExtensionNode name="PackageRepository" type="MonoDevelop.Ide.Templates.PackageRepositoryNode" />
+</ExtensionPoint>
+
+<ExtensionPoint path = "/MonoDevelop/Ide/ProjectTemplateCategories" name = "Project template top level categories">
+	<Description>Project template categories to be shown in the New Project dialog.</Description>
+	<ExtensionNode name="Category" type="MonoDevelop.Ide.Codons.TemplateCategoryCodon">
+		<ExtensionNode name="Category" type="MonoDevelop.Ide.Codons.TemplateCategoryCodon">
+			<ExtensionNode name="Category" type="MonoDevelop.Ide.Codons.TemplateCategoryCodon" />
+		</ExtensionNode>
+	</ExtensionNode>
+</ExtensionPoint>
+
+<ExtensionPoint path = "/MonoDevelop/Ide/ProjectTemplatingProviders" name = "Project templating providers">
+	<Description>Project template providers can load templates and generate projects from the templates.</Description>
+	<ExtensionNode name="Class" objectType="MonoDevelop.Ide.Templates.IProjectTemplatingProvider" />
+</ExtensionPoint>
+
+<ExtensionPoint path = "/MonoDevelop/Ide/ProjectTemplateWizards" name = "Project template wizards">
+	<Description>Project template wizards to be used by the New Project dialog.</Description>
+	<ExtensionNode name="Class" objectType="MonoDevelop.Ide.Templates.TemplateWizard" />
+</ExtensionPoint>
+
+<ExtensionPoint path = "/MonoDevelop/Ide/VersionControlProjectTemplateHandler">
+	<ExtensionNode name="Class" objectType="MonoDevelop.Ide.Templates.IVersionControlProjectTemplateHandler" />
+</ExtensionPoint>
+
+<ExtensionPoint path = "/MonoDevelop/Ide/TemplateImages" name = "Project template images">
+	<Description>Images to be used by project templates.</Description>
+	<ExtensionNode name="Image" type="MonoDevelop.Ide.Codons.ImageCodon" />
 </ExtensionPoint>
 
 <Extension path = "/MonoDevelop/Ide/FileTemplates">
@@ -62,6 +91,42 @@
 	<ProjectTemplate id = "MonoDevelop.BlankSolution" resource = "BlankCombine.xpt.xml"/>
 	<ProjectTemplate id = "MonoDevelop.Workspace" resource = "Workspace.xpt.xml"/>
 	<ProjectTemplate id = "MonoDevelop.GenericProject" resource = "GenericProject.xpt.xml"/>
+</Extension>
+
+<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
+	<Category id="multiplat" name="Multi-platform" icon="md-platform-cross-platform">
+			<Category id="library" name="Library">
+				<Category id="general" name="General" mappedCategories="crossplat/library/general" />
+			</Category>
+		</Category>
+	<Category id="other" name="Other" icon="md-platform-other">
+		<Category id="net" name=".NET">
+			<Category id="general" name="General" mappedCategories="C#" />
+		</Category>
+		<Category id="aspnet" name="ASP.NET">
+			<Category id="general" name="General" mappedCategories="C#/ASP.NET" />
+		</Category>
+		<Category id="misc" name="Miscellaneous">
+			<Category id="generic" name="Generic" />
+			<Category id="c" name="C/C++" />
+			<Category id="general" name="General" default="true" />
+		</Category>
+	</Category>
+</Extension>
+
+<Extension path="/MonoDevelop/Ide/ProjectTemplatingProviders">
+	<Class id="MonoDevelop.ProjectTemplatingProvider" class="MonoDevelop.Ide.Templates.ProjectTemplatingProvider" />
+</Extension>
+
+<Extension path="/MonoDevelop/Ide/TemplateImages">
+	<Image id="md-generic-project" resource="generic-project.png" />
+	<Image id="md-blank-solution" resource="blank-solution.png" />
+	<Image id="md-console-project" resource="console-project.png" />
+	<Image id="md-library-project" resource="library-project.png" />
+	<Image id="md-pcl-project" resource="pcl-project.png" />
+	<Image id="md-shared-project" resource="shared-project.png" />
+	<Image id="md-workspace" resource="workspace.png" />
+	<Image id="md-gtk2-project" resource="gtk2-project.png" />
 </Extension>
 
 </ExtensionModel>

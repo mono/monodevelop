@@ -9,6 +9,9 @@
 	<ConditionType id="ActiveLanguage" type="MonoDevelop.Projects.Extensions.ProjectLanguageCondition">
 		<Description>Language of the project. It will evaluate to false if the project is not a .NET project.</Description>
 	</ConditionType>
+	<ConditionType id="SupportsTarget" type="MonoDevelop.Projects.Extensions.SupportsTargetCondition">
+		<Description>MSBuild Target that a project must have.</Description>
+	</ConditionType>
 </ExtensionPoint>
 	
 <Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
@@ -62,6 +65,13 @@
 				<Panel id = "Configurations" _label = "Configurations" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.SolutionItemConfigurationsPanel"/>
 				<Panel id = "EntryConfigurations" _label = "Configuration Mappings" fill = "true" grouping="Tab" class = "MonoDevelop.Ide.Projects.OptionPanels.CombineConfigurationPanel"/>
 			</Section>
+		</Condition>
+		<Condition id="ItemType" value="Project">
+			<Condition id="SupportsTarget" value="RunCodeAnalysis">
+				<Section id = "CodeAnalysis" _label="Code Analysis">
+					<Panel id = "CodeAnalysisPanel" _label="Code Analysis" class = "MonoDevelop.Ide.Projects.OptionPanels.CodeAnalysisPanel" />
+				</Section>
+			</Condition>
 		</Condition>
 	</Section>
 	<Section id="Run" _label="Run">

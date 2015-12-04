@@ -45,6 +45,7 @@ using System.Collections.Generic;
 using MonoDevelop.Components.AutoTest;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Extensions;
+using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.Ide
 {
@@ -176,7 +177,6 @@ namespace MonoDevelop.Ide
 			commandService = new CommandManager ();
 			ideServices = new IdeServices ();
 			CustomToolService.Init ();
-			AutoTestService.Start (commandService, Preferences.EnableAutomatedTesting);
 			
 			commandService.CommandTargetScanStarted += CommandServiceCommandTargetScanStarted;
 			commandService.CommandTargetScanFinished += CommandServiceCommandTargetScanFinished;
@@ -293,7 +293,10 @@ namespace MonoDevelop.Ide
 			IdeApp.Preferences.EnableInstrumentationChanged += delegate {
 				UpdateInstrumentationIcon ();
 			};
+			AutoTestService.Start (commandService, Preferences.EnableAutomatedTesting);
 			AutoTestService.NotifyEvent ("MonoDevelop.Ide.IdeStart");
+
+			Gtk.LinkButton.SetUriHook ((button, uri) => Xwt.Desktop.OpenUrl (uri));
 		}
 
 		static void KeyBindingFailed (object sender, KeyBindingFailedEventArgs e)
@@ -453,7 +456,7 @@ namespace MonoDevelop.Ide
 				if (instrumentationStatusIcon == null) {
 					instrumentationStatusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.Information));
 					instrumentationStatusIcon.ToolTip = "Instrumentation service enabled";
-					instrumentationStatusIcon.EventBox.ButtonPressEvent += delegate {
+					instrumentationStatusIcon.Clicked += delegate {
 						InstrumentationService.StartMonitor ();
 					};
 				}
@@ -465,8 +468,14 @@ namespace MonoDevelop.Ide
 	
 	public class IdeServices
 	{
+		readonly TemplatingService templatingService = new TemplatingService ();
+
 		public ProjectService ProjectService {
 			get { return MonoDevelop.Projects.Services.ProjectService; }
+		}
+
+		public TemplatingService TemplatingService {
+			get { return templatingService; }
 		}
 	}
 }

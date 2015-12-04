@@ -190,13 +190,15 @@ namespace MonoDevelop.Refactoring.Rename
 			if (options.SelectedItem is IVariable) {
 				var field = options.SelectedItem as IField;
 				if (field != null && (field.Accessibility != Accessibility.Private || field.DeclaringTypeDefinition != null && field.DeclaringTypeDefinition.Parts.Count > 1)) {
-					MessageService.ShowCustomDialog (new RenameItemDialog (options, this));
+					using (var dlg = new RenameItemDialog (options, this))
+						MessageService.ShowCustomDialog (dlg);
 					return;
 				}
 
 				var par = options.SelectedItem as IParameter;
 				if (par != null && par.Owner != null && (par.Owner.Accessibility != Accessibility.Private || par.Owner.DeclaringTypeDefinition != null && par.Owner.DeclaringTypeDefinition.Parts.Count > 1)) {
-					MessageService.ShowCustomDialog (new RenameItemDialog (options, this));
+					using (var dlg = new RenameItemDialog (options, this))
+						MessageService.ShowCustomDialog (dlg);
 					return;
 				}
 
@@ -206,7 +208,8 @@ namespace MonoDevelop.Refactoring.Rename
 				var data = options.Document != null ? options.GetTextEditorData () : IdeApp.Workbench.ActiveDocument.Editor;
 				var editor = data.Parent;
 				if (editor == null) {
-					MessageService.ShowCustomDialog (new RenameItemDialog (options, this));
+					using (var dlg = new RenameItemDialog (options, this))
+						MessageService.ShowCustomDialog (dlg);
 					return;
 				}
 				
@@ -232,12 +235,6 @@ namespace MonoDevelop.Refactoring.Rename
 				tle.SetCaretPosition = false;
 				tle.SelectPrimaryLink = true;
 				if (tle.ShouldStartTextLinkMode) {
-					var helpWindow = new TableLayoutModeHelpWindow ();
-					helpWindow.TitleText = options.SelectedItem is IVariable ? GettextCatalog.GetString ("<b>Local Variable -- Renaming</b>") : GettextCatalog.GetString ("<b>Parameter -- Renaming</b>");
-					helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
-					helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Return</b>"), GettextCatalog.GetString ("<b>Accept</b> this refactoring.")));
-					helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Esc</b>"), GettextCatalog.GetString ("<b>Cancel</b> this refactoring.")));
-					tle.HelpWindow = helpWindow;
 					tle.Cancel += delegate {
 						if (tle.HasChangedText)
 							editor.Document.Undo ();
@@ -247,7 +244,8 @@ namespace MonoDevelop.Refactoring.Rename
 					data.CurrentMode = tle;
 				}
 			} else {
-				MessageService.ShowCustomDialog (new RenameItemDialog (options, this));
+				using (var dlg = new RenameItemDialog (options, this))
+					MessageService.ShowCustomDialog (dlg);
 			}
 		}
 		

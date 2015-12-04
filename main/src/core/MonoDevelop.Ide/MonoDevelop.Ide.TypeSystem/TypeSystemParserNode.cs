@@ -100,6 +100,18 @@ namespace MonoDevelop.Ide.TypeSystem
 				projectType = value;
 			}
 		}
+
+		[NodeAttribute (Description="The language name.")]
+		string languageName;
+
+		public string LanguageName {
+			get {
+				return languageName;
+			}
+			set {
+				languageName = value;
+			}
+		}
 	}
 
 }

@@ -122,11 +122,4 @@
 			<Class class = "MonoDevelop.Autotools.SimpleProjectMakefileHandler"/>
 		</Condition>
 	</Extension>
-
-<!--
-	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
-		<Class class = "MonoDevelop.Autotools.MakefileIntegrationFeature" />
-	</Extension>
--->
-
 </ExtensionModel>

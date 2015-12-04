@@ -39,6 +39,12 @@ using TextEditor = Mono.TextEditor.TextEditor;
 using Mono.TextEditor;
 using Mono.Debugging.Client;
 using Mono.TextEditor.Highlighting;
+using Gtk;
+using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Ide;
+using System.Security.Cryptography;
+using Gdk;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Debugger
 {
@@ -87,6 +93,68 @@ namespace MonoDevelop.Debugger
 			DebuggingService.StoppedEvent += OnStop;
 		}
 		
+
+		OverlayMessageWindow messageOverlayWindow;
+
+		void ShowLoadSourceFile (StackFrame sf)
+		{
+			if (messageOverlayWindow != null) {
+				messageOverlayWindow.Destroy ();
+				messageOverlayWindow = null;
+			}
+			messageOverlayWindow = new OverlayMessageWindow ();
+
+			var hbox = new HBox ();
+			hbox.Spacing = 8;
+			var label = new Label (string.Format ("{0} not found. Find source file at alternative location.", Path.GetFileName (sf.SourceLocation.FileName)));
+			hbox.TooltipText = sf.SourceLocation.FileName;
+			var color = (HslColor)editor.ColorStyle.NotificationText.Foreground;
+			label.ModifyFg (StateType.Normal, color);
+
+			int w, h;
+			label.Layout.GetPixelSize (out w, out h);
+
+			hbox.PackStart (label, true, true, 0);
+			var openButton = new Button (Gtk.Stock.Open);
+			openButton.WidthRequest = 60;
+			hbox.PackEnd (openButton, false, false, 0); 
+
+			var container = new HBox ();
+			const int containerPadding = 8;
+			container.PackStart (hbox, true, true, containerPadding); 
+			messageOverlayWindow.Child = container; 
+			messageOverlayWindow.ShowOverlay (editor);
+
+			messageOverlayWindow.SizeFunc = () => openButton.SizeRequest ().Width + w + hbox.Spacing * 5 + containerPadding * 2;
+			openButton.Clicked += delegate {
+				var dlg = new OpenFileDialog (GettextCatalog.GetString ("File to Open"), MonoDevelop.Components.FileChooserAction.Open) {
+					TransientFor = IdeApp.Workbench.RootWindow,
+					ShowEncodingSelector = true,
+					ShowViewerSelector = true
+				};
+				if (!dlg.Run ())
+					return;
+				var newFilePath = dlg.SelectedFile;
+				try {
+					if (File.Exists (newFilePath)) {
+						if (SourceCodeLookup.CheckFileMd5 (newFilePath, sf.SourceLocation.FileHash)) {
+							SourceCodeLookup.AddLoadedFile (newFilePath, sf.SourceLocation.FileName);
+							sf.UpdateSourceFile (newFilePath);
+							if (IdeApp.Workbench.OpenDocument (newFilePath, null, sf.SourceLocation.Line, 1, OpenDocumentOptions.Debugger) != null) {
+								this.WorkbenchWindow.CloseWindow (false);
+							}
+						} else {
+							MessageService.ShowWarning ("File checksum doesn't match.");
+						}
+					} else {
+						MessageService.ShowWarning ("File not found.");
+					}
+				} catch (Exception) {
+					MessageService.ShowWarning ("Error opening file");
+				}
+			};
+		}
+
 		public override string TabPageLabel {
 			get {
 				return GettextCatalog.GetString ("Disassembly");
@@ -116,13 +184,24 @@ namespace MonoDevelop.Debugger
 			editor.Document.RemoveMarker (currentDebugLineMarker);
 			
 			if (DebuggingService.CurrentFrame == null) {
+				if (messageOverlayWindow != null) {
+					messageOverlayWindow.Destroy ();
+					messageOverlayWindow = null;
+				}
 				sw.Sensitive = false;
 				return;
 			}
 			
 			sw.Sensitive = true;
-			
-			StackFrame sf = DebuggingService.CurrentFrame;
+			var sf = DebuggingService.CurrentFrame;
+			if (!string.IsNullOrWhiteSpace (sf.SourceLocation.FileName) && sf.SourceLocation.Line != -1 && sf.SourceLocation.FileHash != null) {
+				ShowLoadSourceFile (sf);
+			} else {
+				if (messageOverlayWindow != null) {
+					messageOverlayWindow.Destroy ();
+					messageOverlayWindow = null;
+				}
+			}
 			if (!string.IsNullOrEmpty (sf.SourceLocation.FileName) && File.Exists (sf.SourceLocation.FileName))
 				FillWithSource ();
 			else
@@ -324,6 +403,10 @@ namespace MonoDevelop.Debugger
 		{
 			addressLines.Clear ();
 			currentFile = null;
+			if (messageOverlayWindow != null) {
+				messageOverlayWindow.Destroy ();
+				messageOverlayWindow = null;
+			}
 			sw.Sensitive = false;
 			autoRefill = false;
 			editor.Document.Text = string.Empty;
@@ -419,5 +502,98 @@ namespace MonoDevelop.Debugger
 			st.Foreground = new Cairo.Color (125, 125, 125);
 			return st;
 		}
+	}
+
+	//Copy pasted from SourceEditor
+	class OverlayMessageWindow : Gtk.EventBox
+	{
+		const int border = 8;
+
+		public Func<int> SizeFunc;
+
+		TextEditor textEditor;
+
+		public OverlayMessageWindow ()
+		{
+			AppPaintable = true;
+		}
+
+		public void ShowOverlay (TextEditor textEditor)
+		{
+			this.textEditor = textEditor;
+			this.ShowAll ();
+			textEditor.AddTopLevelWidget (this, 0, 0);
+			textEditor.SizeAllocated += HandleSizeAllocated;
+			var child = (TextEditor.EditorContainerChild)textEditor [this];
+			child.FixedPosition = true;
+		}
+
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			if (textEditor != null) {
+				textEditor.SizeAllocated -= HandleSizeAllocated;
+				textEditor = null;
+			}
+		}
+
+		protected override void OnSizeRequested (ref Requisition requisition)
+		{
+			base.OnSizeRequested (ref requisition);
+
+			if (wRequest > 0) {
+				requisition.Width = wRequest;
+			}
+		}
+
+		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+		{
+			base.OnSizeAllocated (allocation);
+			Resize (allocation);
+		}
+
+		int wRequest = -1;
+
+		void HandleSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
+		{
+			if (SizeFunc != null) {
+				var req = Math.Min (SizeFunc (), textEditor.Allocation.Width - border * 2);
+				if (req != wRequest) {
+					wRequest = req;
+					QueueResize ();
+				}
+			} else {
+				if (Allocation.Width > textEditor.Allocation.Width - border * 2) {
+					if (textEditor.Allocation.Width - border * 2 > 0) {
+						QueueResize ();
+					}
+				}
+			}
+			Resize (Allocation);
+		}
+
+		void Resize (Gdk.Rectangle alloc)
+		{
+			textEditor.MoveTopLevelWidget (this, (textEditor.Allocation.Width - alloc.Width) / 2, textEditor.Allocation.Height - alloc.Height - 8);
+		}
+
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			using (var cr = CairoHelper.Create (evnt.Window)) {
+				cr.LineWidth = 1;
+				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+				cr.SetSourceColor (textEditor.ColorStyle.NotificationText.Background);
+				cr.Fill ();
+				cr.RoundedRectangle (0, 0, Allocation.Width, Allocation.Height, 3);
+				cr.SetSourceColor (textEditor.ColorStyle.NotificationText.Background);
+				cr.FillPreserve ();
+
+				cr.SetSourceColor (textEditor.ColorStyle.NotificationBorder.Color);
+				cr.Stroke ();
+			}
+
+			return base.OnExposeEvent (evnt);
+		}
+
 	}
 }

@@ -33,12 +33,13 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.NUnit
 {
 	public class SolutionFolderTestGroup: UnitTestGroup
 	{
-		SolutionFolder combine;
+		SolutionFolder folder;
 		
 		public SolutionFolderTestGroup (SolutionFolder c): base (c.Name, c)
 		{
@@ -46,10 +47,15 @@ namespace MonoDevelop.NUnit
 			string resultsPath = MonoDevelop.NUnit.RootTest.GetTestResultsDirectory (c.BaseDirectory);
 			ResultsStore = new BinaryResultsStore (resultsPath, storeId);
 			
-			combine = c;
-			combine.ItemAdded += OnEntryChanged;
-			combine.ItemRemoved += OnEntryChanged;
-			combine.NameChanged += OnCombineRenamed;
+			folder = c;
+			folder.NameChanged += OnCombineRenamed;
+
+			if (c.IsRoot) {
+				folder.ParentSolution.SolutionItemAdded += OnEntryChanged;
+				folder.ParentSolution.SolutionItemRemoved += OnEntryChanged;
+				IdeApp.Workspace.ReferenceAddedToProject += OnReferenceChanged;
+				IdeApp.Workspace.ReferenceRemovedFromProject += OnReferenceChanged;
+			}
 		}
 		
 		public static SolutionFolderTestGroup CreateTest (SolutionFolder c)
@@ -59,10 +65,20 @@ namespace MonoDevelop.NUnit
 		
 		public override void Dispose ()
 		{
-			combine.ItemAdded -= OnEntryChanged;
-			combine.ItemRemoved -= OnEntryChanged;
-			combine.NameChanged -= OnCombineRenamed;
+			folder.NameChanged -= OnCombineRenamed;
+			if (folder.IsRoot) {
+				folder.ParentSolution.SolutionItemAdded -= OnEntryChanged;
+				folder.ParentSolution.SolutionItemRemoved -= OnEntryChanged;
+				IdeApp.Workspace.ReferenceAddedToProject -= OnReferenceChanged;
+				IdeApp.Workspace.ReferenceRemovedFromProject -= OnReferenceChanged;
+			}
 			base.Dispose ();
+		}
+
+		void OnReferenceChanged (object s, ProjectReferenceEventArgs args)
+		{
+			if (args.Project.ParentSolution == folder.ParentSolution && NUnitProjectTestSuite.IsNUnitReference (args.ProjectReference))
+				UpdateTests ();
 		}
 		
 		void OnEntryChanged (object sender, SolutionItemEventArgs e)
@@ -80,7 +96,7 @@ namespace MonoDevelop.NUnit
 		protected override void OnCreateTests ()
 		{
 			NUnitService testService = NUnitService.Instance;
-			foreach (SolutionItem e in combine.Items) {
+			foreach (SolutionItem e in folder.Items) {
 				UnitTest t = testService.BuildTest (e);
 				if (t != null)
 					Tests.Add (t);

@@ -69,9 +69,21 @@ namespace MonoDevelop.Core
 			WrappedMonitor.BeginTask (name, totalWork);
 		}
 
+		protected virtual void Dispose (bool disposing)
+		{
+			if (!disposing)
+				return;
+
+			if (WrappedMonitor != null) {
+				WrappedMonitor.Dispose ();
+				WrappedMonitor = null;
+			}
+		}
+
 		public void Dispose ()
 		{
-			WrappedMonitor.Dispose ();
+			Dispose (true);
+			GC.SuppressFinalize (this);
 		}
 		
 		public void EndTask ()

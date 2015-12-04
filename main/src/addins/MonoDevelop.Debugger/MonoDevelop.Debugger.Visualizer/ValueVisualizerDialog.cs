@@ -28,62 +28,81 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Mono.Debugging.Client;
+using Gtk;
 
 namespace MonoDevelop.Debugger.Viewers
 {
 	public partial class ValueVisualizerDialog : Gtk.Dialog
 	{
 		List<ValueVisualizer> visualizers;
+		List<ToggleButton> buttons;
 		Gtk.Widget currentWidget;
 		ValueVisualizer currentVisualizer;
 		ObjectValue value;
-		
+
 		public ValueVisualizerDialog ()
 		{
 			this.Build ();
 			this.Modal = true;
 		}
-		
+
 		public void Show (ObjectValue val)
 		{
 			value = val;
 			visualizers = new List<ValueVisualizer> (DebuggingService.GetValueVisualizers (val));
 			visualizers.Sort ((v1, v2) => string.Compare (v1.Name, v2.Name, StringComparison.CurrentCultureIgnoreCase));
+			buttons = new List<ToggleButton> ();
 
-			int defaultVis = 0;
-			int n = 0;
+			Gtk.Button defaultVis = null;
 
-			foreach (ValueVisualizer vis in visualizers) {
-				comboVisualizers.AppendText (vis.Name);
-				if (vis.IsDefaultVisualizer (val))
-					defaultVis = n;
-				n++;
+			for (int i = 0; i < visualizers.Count; i++) {
+				var button = new ToggleButton ();
+				button.Label = visualizers [i].Name;
+				button.Toggled += OnComboVisualizersChanged;
+				if (visualizers [i].IsDefaultVisualizer (val))
+					defaultVis = button;
+				hbox1.PackStart (button, false, false, 0);
+				buttons.Add (button);
+				button.CanFocus = false;
+				button.Show ();
 			}
 
-			comboVisualizers.Active = defaultVis;
+			if (defaultVis != null)
+				defaultVis.Click ();
+			else if (buttons.Count > 0)
+				buttons [0].Click ();
+
 			if (val.IsReadOnly || !visualizers.Any (v => v.CanEdit (val))) {
 				buttonCancel.Label = Gtk.Stock.Close;
 				buttonSave.Hide ();
 			}
 		}
-		
+
 		protected virtual void OnComboVisualizersChanged (object sender, EventArgs e)
 		{
-			if (currentWidget != null)
-				mainBox.Remove (currentWidget);
-
-			if (comboVisualizers.Active == -1) {
-				buttonSave.Sensitive = false;
+			var button = (ToggleButton)sender;
+			if (!button.Active) {//Prevent un-toggling
+				button.Toggled -= OnComboVisualizersChanged;
+				button.Active = true;
+				button.Toggled += OnComboVisualizersChanged;
 				return;
 			}
-
-			currentVisualizer = visualizers [comboVisualizers.Active];
+			if (currentWidget != null)
+				mainBox.Remove (currentWidget);
+			foreach (var b in buttons) {
+				if (b != button && b.Active) {
+					b.Toggled -= OnComboVisualizersChanged;
+					b.Active = false;
+					b.Toggled += OnComboVisualizersChanged;
+				}
+			}
+			currentVisualizer = visualizers [buttons.IndexOf (button)];
 			currentWidget = currentVisualizer.GetVisualizerWidget (value);
 			buttonSave.Sensitive = currentVisualizer.CanEdit (value);
 			mainBox.PackStart (currentWidget, true, true, 0);
 			currentWidget.Show ();
 		}
-		
+
 		protected virtual void OnSaveClicked (object sender, EventArgs e)
 		{
 			if (currentVisualizer == null || currentVisualizer.StoreValue (value))

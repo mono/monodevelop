@@ -63,7 +63,6 @@ namespace MonoDevelop.Debugger
 		static readonly DebugExecutionHandlerFactory executionHandlerFactory;
 		
 		static IConsole console;
-		static string oldLayout;
 
 		static Dictionary<long, SourceLocation> nextStatementLocations = new Dictionary<long, SourceLocation> ();
 		static DebuggerEngine currentEngine;
@@ -99,6 +98,7 @@ namespace MonoDevelop.Debugger
 				IdeApp.Workspace.LoadingUserPreferences += OnLoadUserPrefs;
 				IdeApp.Workspace.LastWorkspaceItemClosed += OnSolutionClosed;
 				busyDialog = new BusyEvaluatorDialog ();
+				busyDialog.Modal = true;
 				busyDialog.TransientFor = MessageService.RootWindow;
 				busyDialog.DestroyWithParent = true;
 			};
@@ -164,7 +164,7 @@ namespace MonoDevelop.Debugger
 			set {
 			}
 		}
-		
+
 		internal static IEnumerable<ValueVisualizer> GetValueVisualizers (ObjectValue val)
 		{
 			foreach (object v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/ValueVisualizers", false)) {
@@ -175,17 +175,87 @@ namespace MonoDevelop.Debugger
 				}
 			}
 		}
-		
+
 		internal static bool HasValueVisualizers (ObjectValue val)
 		{
 			return GetValueVisualizers (val).Any ();
 		}
+
+		internal static InlineVisualizer GetInlineVisualizer (ObjectValue val)
+		{
+			foreach (object v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/InlineVisualizers", true)) {
+				var cv = v as InlineVisualizer;
+				if (cv != null && cv.CanInlineVisualize (val)) {
+					return cv;
+				}
+			}
+			return null;
+		}
+
+		internal static bool HasInlineVisualizer (ObjectValue val)
+		{
+			return GetInlineVisualizer (val) != null;
+		}
+
+		internal static PreviewVisualizer GetPreviewVisualizer (ObjectValue val)
+		{
+			foreach (object v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/PreviewVisualizers", true)) {
+				var cv = v as PreviewVisualizer;
+				if (cv != null && cv.CanVisualize (val)) {
+					return cv;
+				}
+			}
+			return null;
+		}
+
+		internal static bool HasPreviewVisualizer (ObjectValue val)
+		{
+			return GetPreviewVisualizer (val) != null;
+		}
+
+		public static DebugValueConverter<T> GetGetConverter<T> (ObjectValue val)
+		{
+			foreach (object v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/DebugValueConverters", true)) {
+				var cv = v as DebugValueConverter<T>;
+				if (cv != null && cv.CanGetValue (val)) {
+					return cv;
+				}
+			}
+			return null;
+		}
+
+		public static bool HasGetConverter<T> (ObjectValue val)
+		{
+			return GetGetConverter<T> (val) != null;
+		}
+
+		public static DebugValueConverter<T> GetSetConverter<T> (ObjectValue val)
+		{
+			foreach (object v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/DebugValueConverters", true)) {
+				var cv = v as DebugValueConverter<T>;
+				if (cv != null && cv.CanSetValue (val)) {
+					return cv;
+				}
+			}
+			return null;
+		}
+
+		public static bool HasSetConverter<T> (ObjectValue val)
+		{
+			return GetSetConverter<T> (val) != null;
+		}
 		
 		public static void ShowValueVisualizer (ObjectValue val)
 		{
-			var dlg = new ValueVisualizerDialog ();
-			dlg.Show (val);
-			MessageService.ShowCustomDialog (dlg);
+			using (var dlg = new ValueVisualizerDialog ()) {
+				dlg.Show (val);
+				MessageService.ShowCustomDialog (dlg);
+			}
+		}
+
+		public static void ShowPreviewVisualizer (ObjectValue val, MonoDevelop.Components.Control widget, Gdk.Rectangle previewButtonArea)
+		{
+			PreviewWindowManager.Show (val, widget, previewButtonArea);
 		}
 		
 		public static bool ShowBreakpointProperties (ref BreakEvent bp, BreakpointType breakpointType = BreakpointType.Location)
@@ -250,26 +320,30 @@ namespace MonoDevelop.Debugger
 
 		public static void ShowExpressionEvaluator (string expression)
 		{
-			var dlg = new ExpressionEvaluatorDialog ();
+			using (var dlg = new ExpressionEvaluatorDialog ()) {
+				if (expression != null)
+					dlg.Expression = expression;
 
-			if (expression != null)
-				dlg.Expression = expression;
-
-			MessageService.ShowCustomDialog (dlg);
+				MessageService.ShowCustomDialog (dlg);
+			}
 		}
-		
+
 		public static void ShowExceptionCaughtDialog ()
 		{
 			var ops = session.EvaluationOptions.Clone ();
 			ops.MemberEvaluationTimeout = 0;
 			ops.EvaluationTimeout = 0;
 			ops.EllipsizeStrings = false;
-			
+
 			var val = CurrentFrame.GetException (ops);
 			if (val != null) {
 				HideExceptionCaughtDialog ();
 				exceptionDialog = new ExceptionCaughtMessage (val, CurrentFrame.SourceLocation.FileName, CurrentFrame.SourceLocation.Line, CurrentFrame.SourceLocation.Column);
-				exceptionDialog.ShowButton ();
+				if (CurrentFrame.SourceLocation.FileName != null) {
+					exceptionDialog.ShowButton ();
+				} else {
+					exceptionDialog.ShowDialog ();
+				}
 				exceptionDialog.Closed += (o, args) => exceptionDialog = null;
 			}
 		}
@@ -338,12 +412,7 @@ namespace MonoDevelop.Debugger
 				pinnedWatches.InvalidateAll ();
 			}
 
-			if (oldLayout != null) {
-				string layout = oldLayout;
-				oldLayout = null;
-
-				UnsetDebugLayout (layout);
-			}
+			UnsetDebugLayout ();
 
 			currentSession.BusyStateChanged -= OnBusyStateChanged;
 			currentSession.TargetEvent -= OnTargetEvent;
@@ -379,13 +448,16 @@ namespace MonoDevelop.Debugger
 			currentSession.Dispose ();
 		}
 
-		static void UnsetDebugLayout (string layout)
+		static string oldLayout;
+		static void UnsetDebugLayout ()
 		{
 			// Dispatch synchronously to avoid start/stop races
 			DispatchService.GuiSyncDispatch (delegate {
 				IdeApp.Workbench.HideCommandBar ("Debug");
-				if (IdeApp.Workbench.CurrentLayout == "Debug")
-					IdeApp.Workbench.CurrentLayout = layout;
+				if (IdeApp.Workbench.CurrentLayout == "Debug") {
+					IdeApp.Workbench.CurrentLayout = oldLayout ?? "Solution";
+				}
+				oldLayout = null;
 			});
 		}
 
@@ -463,8 +535,19 @@ namespace MonoDevelop.Debugger
 
 		public static IProcessAsyncOperation Run (string file, IConsole console)
 		{
+			return Run (file, null, null, null, console);
+		}
+
+		public static IProcessAsyncOperation Run (string file, string args, string workingDir, IDictionary<string,string> envVars, IConsole console)
+		{
 			var h = new DebugExecutionHandler (null);
 			var cmd = Runtime.ProcessService.CreateCommand (file);
+			if (args != null) 
+				cmd.Arguments = args;
+			if (workingDir != null)
+				cmd.WorkingDirectory = workingDir;
+			if (envVars != null)
+				cmd.EnvironmentVariables = envVars;
 
 			return h.Execute (cmd, console);
 		}
@@ -568,7 +651,7 @@ namespace MonoDevelop.Debugger
 		{
 			Gtk.Application.Invoke (delegate {
 				if (ex is DebuggerException)
-					MessageService.ShowError (ex.Message);
+					MessageService.ShowError (ex.Message, ex);
 				else
 					MessageService.ShowError ("Debugger operation failed", ex);
 			});
@@ -624,8 +707,8 @@ namespace MonoDevelop.Debugger
 					if (busyStatusIcon == null) {
 						busyStatusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon ("md-execute-debug", Gtk.IconSize.Menu));
 						busyStatusIcon.SetAlertMode (100);
-						busyStatusIcon.ToolTip = GettextCatalog.GetString ("The Debugger is waiting for an expression evaluation to finish.");
-						busyStatusIcon.EventBox.ButtonPressEvent += delegate {
+						busyStatusIcon.ToolTip = GettextCatalog.GetString ("The debugger runtime is not responding. You can wait for it to recover, or stop debugging.");
+						busyStatusIcon.Clicked += delegate {
 							MessageService.PlaceDialog (busyDialog, MessageService.RootWindow);
 						};
 					}
@@ -662,6 +745,8 @@ namespace MonoDevelop.Debugger
 		
 		static void OnTargetEvent (object sender, TargetEventArgs args)
 		{
+			if (args.BreakEvent != null && args.BreakEvent.NonUserBreakpoint)
+				return;
 			nextStatementLocations.Clear ();
 
 			try {

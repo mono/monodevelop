@@ -625,8 +625,9 @@
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="Type">TextOnly</property>
-                            <property name="Label" translatable="yes">_Push All Tags</property>
+                            <property name="Label" translatable="yes">_Push</property>
                             <property name="UseUnderline">True</property>
+                            <signal name="Clicked" handler="OnButtonPushTagClicked" />
                           </widget>
                           <packing>
                             <property name="Position">1</property>
@@ -642,6 +643,7 @@
                             <property name="UseStock">True</property>
                             <property name="Type">StockItem</property>
                             <property name="StockId">gtk-delete</property>
+                            <signal name="Clicked" handler="OnButtonRemoveTagClicked" />
                             <property name="label">gtk-delete</property>
                           </widget>
                           <packing>
@@ -782,6 +784,22 @@
                           </widget>
                           <packing>
                             <property name="Position">4</property>
+                            <property name="AutoSize">True</property>
+                            <property name="Expand">False</property>
+                            <property name="Fill">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="Gtk.Button" id="buttonFetch">
+                            <property name="MemberName" />
+                            <property name="CanFocus">True</property>
+                            <property name="Type">TextOnly</property>
+                            <property name="Label" translatable="yes">Fetch</property>
+                            <property name="UseUnderline">True</property>
+                            <signal name="Clicked" handler="OnButtonFetchClicked" />
+                          </widget>
+                          <packing>
+                            <property name="Position">5</property>
                             <property name="AutoSize">True</property>
                             <property name="Expand">False</property>
                             <property name="Fill">False</property>
@@ -947,7 +965,7 @@
               <widget class="Gtk.CheckButton" id="checkTrack">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Label" translatable="yes">Track a branch or tag:</property>
+                <property name="Label" translatable="yes">Track a branch:</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>
                 <property name="UseUnderline">True</property>
@@ -1392,7 +1410,7 @@
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Git Credentials</property>
     <property name="WindowPosition">CenterOnParent</property>
-    <property name="Buttons">4</property>
+    <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
@@ -1432,7 +1450,7 @@
         <property name="MemberName" />
         <property name="Spacing">10</property>
         <property name="BorderWidth">5</property>
-        <property name="Size">4</property>
+        <property name="Size">2</property>
         <property name="LayoutStyle">End</property>
         <child>
           <widget class="Gtk.Button" id="buttonCancel">
@@ -1463,42 +1481,6 @@
           </widget>
           <packing>
             <property name="Position">1</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.Button" id="buttonNo">
-            <property name="MemberName" />
-            <property name="Visible">False</property>
-            <property name="CanFocus">True</property>
-            <property name="UseStock">True</property>
-            <property name="Type">StockItem</property>
-            <property name="StockId">gtk-no</property>
-            <property name="ResponseId">-1</property>
-            <signal name="Clicked" handler="OnButtonNoClicked" />
-            <property name="label">gtk-no</property>
-          </widget>
-          <packing>
-            <property name="Position">2</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.Button" id="buttonYes">
-            <property name="MemberName" />
-            <property name="Visible">False</property>
-            <property name="CanFocus">True</property>
-            <property name="UseStock">True</property>
-            <property name="Type">StockItem</property>
-            <property name="StockId">gtk-yes</property>
-            <property name="ResponseId">-1</property>
-            <signal name="Clicked" handler="OnButtonYesClicked" />
-            <property name="label">gtk-yes</property>
-          </widget>
-          <packing>
-            <property name="Position">3</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
@@ -1998,7 +1980,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.UserGitConfigDialog" design-size="400 184">
+  <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.UserGitConfigDialog" design-size="332 184">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -2013,13 +1995,13 @@
             <property name="MemberName" />
             <property name="Spacing">6</property>
             <child>
-              <widget class="Gtk.VBox" id="vbox5">
+              <widget class="Gtk.HBox" id="hbox5">
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <child>
                   <widget class="Gtk.Label" id="label1">
                     <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">Username</property>
+                    <property name="LabelProp" translatable="yes">Username:</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -2029,18 +2011,24 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.Entry" id="usernameEntry">
+                  <widget class="Gtk.Alignment" id="alignment8">
                     <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="IsEditable">True</property>
-                    <property name="InvisibleChar">●</property>
-                    <signal name="Changed" handler="OnChanged" />
+                    <property name="Xscale">0.9</property>
+                    <property name="Xalign">1</property>
+                    <property name="Yalign">1</property>
+                    <child>
+                      <widget class="Gtk.Entry" id="usernameEntry">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="IsEditable">True</property>
+                        <property name="InvisibleChar">●</property>
+                        <signal name="Changed" handler="OnChanged" />
+                      </widget>
+                    </child>
                   </widget>
                   <packing>
                     <property name="Position">1</property>
                     <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
                   </packing>
                 </child>
               </widget>
@@ -2052,13 +2040,13 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.VBox" id="vbox6">
+              <widget class="Gtk.HBox" id="hbox6">
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <child>
                   <widget class="Gtk.Label" id="label2">
                     <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">Email</property>
+                    <property name="LabelProp" translatable="yes">Email:</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -2068,18 +2056,24 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.Entry" id="emailEntry">
+                  <widget class="Gtk.Alignment" id="alignment7">
                     <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="IsEditable">True</property>
-                    <property name="InvisibleChar">●</property>
-                    <signal name="Changed" handler="OnChanged" />
+                    <property name="Xscale">0.71</property>
+                    <property name="Xalign">1</property>
+                    <property name="Yalign">1</property>
+                    <child>
+                      <widget class="Gtk.Entry" id="emailEntry">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="IsEditable">True</property>
+                        <property name="InvisibleChar">●</property>
+                        <signal name="Changed" handler="OnChanged" />
+                      </widget>
+                    </child>
                   </widget>
                   <packing>
                     <property name="Position">1</property>
                     <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
                   </packing>
                 </child>
               </widget>

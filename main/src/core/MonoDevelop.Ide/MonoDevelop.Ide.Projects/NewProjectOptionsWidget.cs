@@ -183,7 +183,7 @@ namespace MonoDevelop.Ide.Projects
 			var sb = new StringBuilder ();
 			for (int n=0; n<name.Length; n++) {
 				char c = name [n];
-				if (Array.IndexOf (System.IO.Path.GetInvalidPathChars(), c) != -1)
+				if (Array.IndexOf (FilePath.GetInvalidPathChars (), c) != -1)
 					continue;
 				if (c == System.IO.Path.DirectorySeparatorChar || c == System.IO.Path.AltDirectorySeparatorChar || c == System.IO.Path.VolumeSeparatorChar)
 					continue;

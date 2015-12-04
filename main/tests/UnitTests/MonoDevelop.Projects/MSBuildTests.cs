@@ -36,7 +36,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Projects;
 using System.Linq;
-using Mono.CSharp;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects.Formats.MSBuild;
 
@@ -496,6 +495,80 @@ namespace MonoDevelop.Projects
 
 			string projectXml2 = Util.GetXmlFileInfoset (proj);
 			Assert.AreEqual (projectXml1, projectXml2);
+		}
+
+		[Test]
+		public void RunTarget ()
+		{
+			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-custom-target.csproj");
+			var p = (Project) Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+
+			var ctx = new TargetEvaluationContext ();
+			ctx.GlobalProperties.Add ("TestProp", "has");
+			ctx.PropertiesToEvaluate.Add ("GenProp");
+			ctx.PropertiesToEvaluate.Add ("AssemblyName");
+			ctx.ItemsToEvaluate.Add ("GenItem");
+			var res = p.RunTarget (Util.GetMonitor (), "Test", p.Configurations [0].Selector, ctx);
+
+			Assert.AreEqual (1, res.BuildResult.Errors.Count);
+			Assert.AreEqual ("Something failed: has foo bar", res.BuildResult.Errors [0].ErrorText);
+
+			// Verify that properties are returned
+
+			Assert.AreEqual ("ConsoleProject", res.Properties ["AssemblyName"]);
+			Assert.AreEqual ("foo", res.Properties ["GenProp"]);
+
+			// Verify that items are returned
+
+			var items = res.Items.ToArray ();
+			Assert.AreEqual (1, items.Length);
+			Assert.AreEqual ("bar", items [0].ItemSpec);
+			Assert.AreEqual ("Hello", items [0].Metadata["MyMetadata"]);
+		}
+
+		[Test]
+		public void BuildWithCustomProps ()
+		{
+			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-custom-build-target.csproj");
+			var p = (Project) Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+
+			var ctx = new ProjectOperationContext ();
+			ctx.GlobalProperties.Add ("TestProp", "foo");
+			var res = p.Build (Util.GetMonitor (), p.Configurations [0].Selector, true, ctx);
+
+			Assert.AreEqual (1, res.Errors.Count);
+			Assert.AreEqual ("Something failed: foo", res.Errors [0].ErrorText);
+
+			p.Clean (Util.GetMonitor (), p.Configurations [0].Selector);
+			res = p.Build (Util.GetMonitor (), p.Configurations [0].Selector, true);
+
+			// Check that the global property is reset
+			Assert.AreEqual (1, res.Errors.Count);
+			Assert.AreEqual ("Something failed: show", res.Errors [0].ErrorText);
+		}
+
+		[Test]
+		public void Targets ()
+		{
+			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-custom-target.csproj");
+			var p = (Project) Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+
+			Assert.IsTrue (p.SupportsTarget ("Build"));
+			Assert.IsTrue (p.SupportsTarget ("Clean"));
+			Assert.IsTrue (p.SupportsTarget ("Test"));
+			Assert.IsTrue (p.SupportsTarget ("ResolveReferences"));
+			Assert.IsTrue (p.SupportsTarget ("GetReferenceAssemblyPaths"));
+			Assert.IsFalse (p.SupportsTarget ("Foo"));
+		}
+
+		[Test]
+		public void DefaultMSBuildSupport ()
+		{
+			DotNetAssemblyProject project = new DotNetAssemblyProject ("C#");
+			bool byDefault, require;
+			MSBuildProjectService.CheckHandlerUsesMSBuildEngine (project, out byDefault, out require);
+			Assert.IsTrue (byDefault);
+			Assert.IsFalse (require);
 		}
 	}
 }

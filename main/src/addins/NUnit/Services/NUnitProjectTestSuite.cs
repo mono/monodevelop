@@ -36,6 +36,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using System;
+using ProjectReference = MonoDevelop.Projects.ProjectReference;
 
 namespace MonoDevelop.NUnit
 {
@@ -47,7 +48,7 @@ namespace MonoDevelop.NUnit
 
 		public override IList<string> UserAssemblyPaths {
 			get {
-				return project.GetUserAssemblyPaths (project.ParentSolution.DefaultConfigurationSelector);
+				return project.GetUserAssemblyPaths (IdeApp.Workspace.ActiveConfiguration);
 			}
 		}
 
@@ -67,9 +68,14 @@ namespace MonoDevelop.NUnit
 				return null;
 
 			foreach (var p in project.References)
-				if (p.Reference.IndexOf ("GuiUnit", StringComparison.OrdinalIgnoreCase) != -1 || p.Reference.IndexOf ("nunit.framework") != -1 || p.Reference.IndexOf ("nunit.core") != -1 || p.Reference.IndexOf ("nunitlite") != -1)
+				if (IsNUnitReference (p))
 					return new NUnitProjectTestSuite (project);
 			return null;
+		}
+
+		public static bool IsNUnitReference (ProjectReference p)
+		{
+			return p.Reference.IndexOf ("GuiUnit", StringComparison.OrdinalIgnoreCase) != -1 || p.Reference.IndexOf ("nunit.framework") != -1 || p.Reference.IndexOf ("nunit.core") != -1 || p.Reference.IndexOf ("nunitlite") != -1;
 		}
 
 		protected override SourceCodeLocation GetSourceCodeLocation (string fixtureTypeNamespace, string fixtureTypeName, string methodName)
@@ -165,7 +171,7 @@ namespace MonoDevelop.NUnit
 				DotNetProject project = base.OwnerSolutionItem as DotNetProject;
 				if (project != null) {
 					foreach (var pr in project.References) {
-						if (pr.ReferenceType != ReferenceType.Package && !pr.LocalCopy) {
+						if (pr.ReferenceType != ReferenceType.Package && !pr.LocalCopy && pr.ReferenceOutputAssembly) {
 							foreach (string file in pr.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration))
 								yield return file;
 						}

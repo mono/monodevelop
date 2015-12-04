@@ -101,6 +101,7 @@ namespace Mono.MHex
 
 		public HexEditor ()
 		{
+			BackgroundColor = Color.FromBytes (0, 0, 0);
 			CanGetFocus = true;
 			HexEditorData = new HexEditorData ();
 			HexEditorData.EditMode = new SimpleEditMode ();
@@ -586,6 +587,13 @@ namespace Mono.MHex
 						WidthRequest = 10;
 					}
 					break;
+				}
+			}
+			if (Options.StringRepresentationType == StringRepresentationTypes.UTF16 && BytesInRow % 2 == 1) {
+				if (BytesInRow == 1) {
+					BytesInRow = 2;
+				} else {
+					BytesInRow--;
 				}
 			}
 			if (oldBytes != BytesInRow) {

@@ -39,6 +39,7 @@ using MonoDevelop.Core.Serialization;
 
 using MonoDevelop.Core;
 using Mono.Addins;
+using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Assemblies;
@@ -120,7 +121,7 @@ namespace MonoDevelop.Projects
 						einfo.ItemTypeCondition.ObjType = target.GetType ();
 						einfo.ProjectLanguageCondition.TargetProject = target;
 					}
-					ProjectServiceExtension[] extensions = einfo.ExtensionContext.GetExtensionObjects ("/MonoDevelop/ProjectModel/ProjectServiceExtensions", typeof(ProjectServiceExtension)).Cast<ProjectServiceExtension> ().ToArray ();
+					ProjectServiceExtension[] extensions = einfo.ExtensionContext.GetExtensionObjects<ProjectServiceExtension> ("/MonoDevelop/ProjectModel/ProjectServiceExtensions");
 					chain = CreateExtensionChain (extensions);
 				
 					// After creating the chain there is no need to keep the reference to the target
@@ -132,7 +133,7 @@ namespace MonoDevelop.Projects
 					ExtensionContext ctx = AddinManager.CreateExtensionContext ();
 					ctx.RegisterCondition ("ItemType", new ItemTypeCondition (typeof(UnknownItem)));
 					ctx.RegisterCondition ("ProjectLanguage", new ProjectLanguageCondition (UnknownItem.Instance));
-					ProjectServiceExtension[] extensions = ctx.GetExtensionObjects ("/MonoDevelop/ProjectModel/ProjectServiceExtensions", typeof(ProjectServiceExtension)).Cast<ProjectServiceExtension> ().ToArray ();
+					ProjectServiceExtension[] extensions = ctx.GetExtensionObjects<ProjectServiceExtension> ("/MonoDevelop/ProjectModel/ProjectServiceExtensions");
 					defaultExtensionChain = CreateExtensionChain (extensions);
 				}
 				chain = defaultExtensionChain;
@@ -245,13 +246,13 @@ namespace MonoDevelop.Projects
 					return sol.GetSolutionItem (reference.Id);
 			}
 		}
-		
-		public WorkspaceItem ReadWorkspaceItem (IProgressMonitor monitor, string file)
+
+		public WorkspaceItem ReadWorkspaceItem (IProgressMonitor monitor, FilePath file)
 		{
-			file = Path.GetFullPath (file);
+			string fullpath = file.ResolveLinks ().FullPath;
 			using (Counters.ReadWorkspaceItem.BeginTiming ("Read solution " + file)) {
-				file = GetTargetFile (file);
-				WorkspaceItem item = GetExtensionChain (null).LoadWorkspaceItem (monitor, file) as WorkspaceItem;
+				fullpath = GetTargetFile (fullpath);
+				WorkspaceItem item = GetExtensionChain (null).LoadWorkspaceItem (monitor, fullpath) as WorkspaceItem;
 				if (item != null)
 					item.NeedsReload = false;
 				else
@@ -374,9 +375,10 @@ namespace MonoDevelop.Projects
 						obj.ConvertToFormat (format, true);
 					obj.Save (monitor);
 					List<FilePath> newFiles = obj.GetItemFiles (true);
-					
+					var resolvedTargetPath = new FilePath (targetPath).ResolveLinks ().FullPath;
+
 					foreach (FilePath f in newFiles) {
-						if (!f.IsChildPathOf (targetPath)) {
+						if (!f.IsChildPathOf (resolvedTargetPath)) {
 							if (obj is Solution)
 								monitor.ReportError ("The solution '" + obj.Name + "' is referencing the file '" + f.FileName + "' which is located outside the root solution directory.", null);
 							else
@@ -533,23 +535,45 @@ namespace MonoDevelop.Projects
 				return tempSolution;
 			}
 		}
-		
+
+		public bool IsSolutionItemFile (FilePath file)
+		{
+			return IsSolutionItemFileImpl (file.ToString ());
+		}
+
+		[Obsolete ("Use IsSolutionItemFile (FilePath file)")]
 		public bool IsSolutionItemFile (string filename)
 		{
 			if (filename.StartsWith ("file://"))
 				filename = new Uri(filename).LocalPath;
+			return IsSolutionItemFileImpl (filename);
+		}
+
+		private bool IsSolutionItemFileImpl (string filename)
+		{
 			filename = GetTargetFile (filename);
 			return GetExtensionChain (null).IsSolutionItemFile (filename);
 		}
-		
+
+		public bool IsWorkspaceItemFile (FilePath file)
+		{
+			return IsWorkspaceItemFileImpl (file.ToString ());
+		}
+
+		[Obsolete ("Use IsWorkspaceItemFile (FilePath file)")]
 		public bool IsWorkspaceItemFile (string filename)
 		{
 			if (filename.StartsWith ("file://"))
 				filename = new Uri(filename).LocalPath;
+			return IsWorkspaceItemFileImpl (filename);
+		}
+
+		private bool IsWorkspaceItemFileImpl (string filename)
+		{
 			filename = GetTargetFile (filename);
 			return GetExtensionChain (null).IsWorkspaceItemFile (filename);
 		}
-		
+
 		internal bool IsSolutionItemFileInternal (string filename)
 		{
 			return formatManager.GetFileFormats (filename, typeof(SolutionItem)).Length > 0;
@@ -610,6 +634,8 @@ namespace MonoDevelop.Projects
 		{
 			if (args.Change == ExtensionChange.Add)
 				projectBindings.Add (args.ExtensionNode);
+			else if (args.Change == ExtensionChange.Remove)
+				projectBindings.Remove (args.ExtensionNode);
 		}
 		
 		void OnExtensionChanged (object s, ExtensionEventArgs args)
@@ -826,15 +852,24 @@ namespace MonoDevelop.Projects
 		public static Counter ItemsLoaded = InstrumentationService.CreateCounter ("Projects loaded", "Project Model");
 		public static Counter SolutionsInMemory = InstrumentationService.CreateCounter ("Solutions in memory", "Project Model");
 		public static Counter SolutionsLoaded = InstrumentationService.CreateCounter ("Solutions loaded", "Project Model");
-		public static TimerCounter ReadWorkspaceItem = InstrumentationService.CreateTimerCounter ("Workspace item read", "Project Model", id:"Core.ReadWorkspaceItem");
-		public static TimerCounter ReadSolutionItem = InstrumentationService.CreateTimerCounter ("Solution item read", "Project Model");
-		public static TimerCounter ReadMSBuildProject = InstrumentationService.CreateTimerCounter ("MSBuild project read", "Project Model");
-		public static TimerCounter WriteMSBuildProject = InstrumentationService.CreateTimerCounter ("MSBuild project written", "Project Model");
-		public static TimerCounter BuildSolutionTimer = InstrumentationService.CreateTimerCounter ("Solution built", "Project Model");
-		public static TimerCounter BuildProjectTimer = InstrumentationService.CreateTimerCounter ("Project built", "Project Model");
-		public static TimerCounter BuildWorkspaceItemTimer = InstrumentationService.CreateTimerCounter ("Workspace item built", "Project Model");
-		public static TimerCounter NeedsBuildingTimer = InstrumentationService.CreateTimerCounter ("Needs building checked", "Project Model");
+
+		public static TimerCounter ReadWorkspaceItem = InstrumentationService.CreateTimerCounter ("Workspace item read", "Project Model", id:"Projects.WorkspaceItemRead");
+		public static TimerCounter ReadSolutionItem = InstrumentationService.CreateTimerCounter ("Solution item read", "Project Model", id:"Projects.SolutionItemRead");
+		public static TimerCounter ReadMSBuildProject = InstrumentationService.CreateTimerCounter ("MSBuild project read", "Project Model", id:"Projects.MSBuildProjectRead");
+		public static TimerCounter WriteMSBuildProject = InstrumentationService.CreateTimerCounter ("MSBuild project written", "Project Model", id:"Projects.MSBuildProjectWritten");
+
+		public static TimerCounter BuildSolutionTimer = InstrumentationService.CreateTimerCounter ("Build solution", "Project Model", id:"Projects.BuildSolution");
+		public static TimerCounter BuildProjectAndReferencesTimer = InstrumentationService.CreateTimerCounter ("Build project and references", "Project Model", id:"Projects.BuildProjectAndReferences");
+		public static TimerCounter BuildProjectTimer = InstrumentationService.CreateTimerCounter ("Build project", "Project Model", id:"Projects.BuildProject");
+		public static TimerCounter CleanProjectTimer = InstrumentationService.CreateTimerCounter ("Clean project", "Project Model", id:"Projects.CleanProject");
+		public static TimerCounter BuildWorkspaceItemTimer = InstrumentationService.CreateTimerCounter ("Build workspace item", "Project Model");
+		public static TimerCounter NeedsBuildingTimer = InstrumentationService.CreateTimerCounter ("Check needs building", "Project Model");
 		
+		public static TimerCounter BuildMSBuildProjectTimer = InstrumentationService.CreateTimerCounter ("Build MSBuild project", "Project Model", id:"Projects.BuildMSBuildProject");
+		public static TimerCounter CleanMSBuildProjectTimer = InstrumentationService.CreateTimerCounter ("Clean MSBuild project", "Project Model", id:"Projects.CleanMSBuildProject");
+		public static TimerCounter RunMSBuildTargetTimer = InstrumentationService.CreateTimerCounter ("Run MSBuild target", "Project Model", id:"Projects.RunMSBuildTarget");
+		public static TimerCounter ResolveMSBuildReferencesTimer = InstrumentationService.CreateTimerCounter ("Resolve MSBuild references", "Project Model", id:"Projects.ResolveMSBuildReferences");
+
 		public static TimerCounter HelpServiceInitialization = InstrumentationService.CreateTimerCounter ("Help Service initialization", "IDE");
 		public static TimerCounter ParserServiceInitialization = InstrumentationService.CreateTimerCounter ("Parser Service initialization", "IDE");
 	}

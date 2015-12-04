@@ -27,8 +27,8 @@
     "colors":[
         { "name":"Background(Read Only)", "color":"base02" },
 
-        { "name":"Search result background", "color":"base3" },
-        { "name":"Search result background (highlighted)", "color":"base3" },
+        { "name":"Search Result Background", "color":"base3" },
+        { "name":"Search Result Background (highlighted)", "color":"base3" },
 
         { "name":"Column Ruler", "color":"base1" },
 

@@ -95,7 +95,15 @@ namespace MonoDevelop.VersionControl
 
 		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
-			VersionControlSystem vcs = (VersionControlSystem) args.ExtensionObject;
+			VersionControlSystem vcs;
+
+			try {
+				vcs = (VersionControlSystem) args.ExtensionObject;
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to initialize VersionControlSystem type.", e);
+				return;
+			}
+
 			if (args.Change == ExtensionChange.Add) {
 				handlers.Add (vcs);
 				try {
@@ -124,9 +132,10 @@ namespace MonoDevelop.VersionControl
 			
 			switch (status & VersionStatus.LocalChangesMask) {
 				case VersionStatus.Modified:
-				case VersionStatus.ScheduledReplace:
 				case VersionStatus.ScheduledIgnore:
 					return overlay_modified;
+				case VersionStatus.ScheduledReplace:
+					return overlay_renamed;
 				case VersionStatus.Conflicted:
 					return overlay_conflicted;
 				case VersionStatus.ScheduledAdd:
@@ -209,17 +218,29 @@ namespace MonoDevelop.VersionControl
 			
 			return repo;
 		}
-		
+
 		public static Repository GetRepositoryReference (string path, string id)
 		{
+			VersionControlSystem detectedVCS = null;
+			FilePath bestMatch = FilePath.Null;
+
 			foreach (VersionControlSystem vcs in GetVersionControlSystems ()) {
-				Repository repo = vcs.GetRepositoryReference (path, id);
-				if (repo != null) {
-					repo.VersionControlSystem = vcs;
-					return repo;
+				var newPath = vcs.GetRepositoryPath (path, id);
+				if (!newPath.IsNullOrEmpty) {
+					// Check whether we have no match or if a new match is found with a longer path.
+					// TODO: If the repo root is not the same as the repo reference, ask user for input.
+					// TODO: If we have two version control directories in the same place, ask user for input.
+					if (bestMatch.IsNullOrEmpty) {
+						bestMatch = newPath;
+						detectedVCS = vcs;
+					} else if (bestMatch.CompareTo (newPath) <= 0) {
+						bestMatch = newPath;
+						detectedVCS = vcs;
+					}
 				}
 			}
-			return null;
+			return detectedVCS == null ? null : detectedVCS.GetRepositoryReference (bestMatch, id);
+
 		}
 		
 		internal static void SetCommitComment (string file, string comment, bool save)
@@ -710,8 +731,8 @@ namespace MonoDevelop.VersionControl
 		
 		internal static Repository InternalGetRepositoryReference (string path, string id)
 		{
-			string file = Path.Combine (path, id) + ".mdvcs";
-			if (!File.Exists (file))
+			string file = InternalGetRepositoryPath (path, id);
+			if (file == null)
 				return null;
 			
 			XmlDataSerializer ser = new XmlDataSerializer (dataContext);
@@ -721,6 +742,15 @@ namespace MonoDevelop.VersionControl
 			} finally {
 				reader.Close ();
 			}
+		}
+
+		internal static string InternalGetRepositoryPath (string path, string id)
+		{
+			string file = Path.Combine (path, id) + ".mdvcs";
+			if (!File.Exists (file))
+				return null;
+
+			return file;
 		}
 		
 		internal static void InternalStoreRepositoryReference (Repository repo, string path, string id)

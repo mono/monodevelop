@@ -72,7 +72,8 @@ namespace MonoDevelop.Debugger
 			DebuggingService.EvaluationOptionsChanged += OnEvaluationOptionsChanged;
 
 			needsUpdate = true;
-			initialResume = true;
+			//If pad is created/opened while debugging...
+			initialResume = !DebuggingService.IsDebugging;
 		}
 
 		public void Dispose ()
@@ -127,13 +128,14 @@ namespace MonoDevelop.Debugger
 			if (!initialResume)
 				tree.ChangeCheckpoint ();
 
+			tree.ClearValues ();
 			initialResume = false;
 		}
 		
 		protected virtual void OnDebuggerStopped (object s, EventArgs a)
 		{
 			tree.ResetChangeTracking ();
-			tree.Frame = null;
+			tree.ClearAll ();
 			lastFrame = null;
 			initialResume = true;
 		}

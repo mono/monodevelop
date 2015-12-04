@@ -80,9 +80,9 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (p.Files.GetFile (f) != null, "Contains Properties/AssemblyInfo.cs");
 			
 			List<string> refs = new List<string> ();
-			refs.Add ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
-			refs.Add ("System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
-			refs.Add ("System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+			refs.Add ("System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+			refs.Add ("System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+			refs.Add ("System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
 			Assert.AreEqual (3, p.References.Count);
 			
 			ProjectReference xmlRef = null;

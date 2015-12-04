@@ -52,7 +52,6 @@ namespace MonoDevelop.Ide
 //		IParserDatabase parserDatabase;
 		string activeConfiguration;
 		bool useDefaultRuntime;
-		string preferredActiveExecutionTarget;
 
 		ProjectFileEventHandler fileAddedToProjectHandler;
 		ProjectFileEventHandler fileRemovedFromProjectHandler;
@@ -102,7 +101,7 @@ namespace MonoDevelop.Ide
 		public WorkspaceItemCollection Items {
 			get {
 				if (items == null)
-					items = new RootWorkspaceItemCollection (this);
+					items = new RootWorkspaceItemCollection (this, 256);
 				return items; 
 			}
 		}
@@ -136,11 +135,21 @@ namespace MonoDevelop.Ide
 				ActiveConfigurationChanged (this, EventArgs.Empty);
 		}
 
-		public ExecutionTarget ActiveExecutionTarget { get; set; }
+		ExecutionTarget activeExecutionTarget;
+		public ExecutionTarget ActiveExecutionTarget {
+			get { return activeExecutionTarget; }
+			set {
+				if (activeExecutionTarget != value) {
+					activeExecutionTarget = value;
+					OnActiveExecutionTargetChanged ();
+				}
+			}
+		}
 
-		internal string PreferredActiveExecutionTarget {
-			get { return ActiveExecutionTarget != null ? ActiveExecutionTarget.Id : preferredActiveExecutionTarget; }
-			set { preferredActiveExecutionTarget = value; }
+		void OnActiveExecutionTargetChanged ()
+		{
+			if (ActiveExecutionTargetChanged != null)
+				ActiveExecutionTargetChanged (this, EventArgs.Empty);
 		}
 
 		public ConfigurationSelector ActiveConfiguration {
@@ -530,25 +539,22 @@ namespace MonoDevelop.Ide
 			get { return openingItemOper != null && !openingItemOper.IsCompleted; }
 		}
 
-		public IAsyncOperation OpenWorkspaceItem (string filename)
+		public IAsyncOperation OpenWorkspaceItem (FilePath file)
 		{
-			return OpenWorkspaceItem (filename, true);
+			return OpenWorkspaceItem (file, true);
 		}
 		
-		public IAsyncOperation OpenWorkspaceItem (string filename, bool closeCurrent)
+		public IAsyncOperation OpenWorkspaceItem (FilePath file, bool closeCurrent)
 		{
-			return OpenWorkspaceItem (filename, closeCurrent, true);
+			return OpenWorkspaceItem (file, closeCurrent, true);
 		}
-		
-		public IAsyncOperation OpenWorkspaceItem (string filename, bool closeCurrent, bool loadPreferences)
+
+		public IAsyncOperation OpenWorkspaceItem (FilePath file, bool closeCurrent, bool loadPreferences)
 		{
 			if (openingItemOper != null && !openingItemOper.IsCompleted && closeCurrent)
 				openingItemOper.Cancel ();
 
-			if (filename.StartsWith ("file://", StringComparison.Ordinal))
-				filename = new Uri(filename).LocalPath;
-
-			var item = GetAllItems<WorkspaceItem> ().FirstOrDefault (w => w.FileName == filename);
+			var item = GetAllItems<WorkspaceItem> ().FirstOrDefault (w => w.FileName == file.FullPath);
 			if (item != null) {
 				IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = item;
 				IdeApp.Workbench.StatusBar.ShowWarning (GettextCatalog.GetString ("{0} is already opened", item.FileName.FileName));
@@ -572,7 +578,7 @@ namespace MonoDevelop.Ide
 			IdeApp.Workbench.LockGui ();
 
 			DispatchService.BackgroundDispatch (delegate {
-				BackgroundLoadWorkspace (monitor, filename, loadPreferences, reloading);
+				BackgroundLoadWorkspace (monitor, file, loadPreferences, reloading);
 			});
 			return oper;
 		}
@@ -593,7 +599,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		void BackgroundLoadWorkspace (IProgressMonitor monitor, string filename, bool loadPreferences, bool reloading)
+		void BackgroundLoadWorkspace (IProgressMonitor monitor, FilePath file, bool loadPreferences, bool reloading)
 		{
 			WorkspaceItem item = null;
 			ITimeTracker timer = Counters.OpenWorkspaceItemTimer.BeginTiming ();
@@ -602,15 +608,15 @@ namespace MonoDevelop.Ide
 				if (reloading)
 					SetReloading (true);
 
-				if (!File.Exists (filename)) {
-					monitor.ReportError (GettextCatalog.GetString ("File not found: {0}", filename), null);
+				if (!File.Exists (file)) {
+					monitor.ReportError (GettextCatalog.GetString ("File not found: {0}", file), null);
 					monitor.Dispose ();
 					return;
 				}
 
-				if (!Services.ProjectService.IsWorkspaceItemFile (filename)) {
-					if (!Services.ProjectService.IsSolutionItemFile (filename)) {
-						monitor.ReportError (GettextCatalog.GetString ("File is not a project or solution: {0}", filename), null);
+				if (!Services.ProjectService.IsWorkspaceItemFile (file)) {
+					if (!Services.ProjectService.IsSolutionItemFile (file)) {
+						monitor.ReportError (GettextCatalog.GetString ("File is not a project or solution: {0}", file), null);
 						monitor.Dispose ();
 						return;
 					}
@@ -618,12 +624,12 @@ namespace MonoDevelop.Ide
 					// It is a project, not a solution. Try to create a dummy solution and add the project to it
 					
 					timer.Trace ("Getting wrapper solution");
-					item = IdeApp.Services.ProjectService.GetWrapperSolution (monitor, filename);
+					item = IdeApp.Services.ProjectService.GetWrapperSolution (monitor, file.ToString());
 				}
 				
 				if (item == null) {
 					timer.Trace ("Reading item");
-					item = Services.ProjectService.ReadWorkspaceItem (monitor, filename);
+					item = Services.ProjectService.ReadWorkspaceItem (monitor, file);
 					if (monitor.IsCancelRequested) {
 						monitor.Dispose ();
 						return;
@@ -681,7 +687,6 @@ namespace MonoDevelop.Ide
 			try {
 				WorkspaceUserData data = item.UserProperties.GetValue<WorkspaceUserData> ("MonoDevelop.Ide.Workspace");
 				if (data != null) {
-					PreferredActiveExecutionTarget = data.PreferredExecutionTarget;
 					ActiveExecutionTarget = null;
 
 					if (GetConfigurations ().Contains (data.ActiveConfiguration))
@@ -750,8 +755,6 @@ namespace MonoDevelop.Ide
 			WorkspaceUserData data = new WorkspaceUserData ();
 			data.ActiveConfiguration = ActiveConfigurationId;
 			data.ActiveRuntime = UseDefaultRuntime ? null : ActiveRuntime.Id;
-			if (ActiveExecutionTarget != null)
-				data.PreferredExecutionTarget = ActiveExecutionTarget.Id;
 			item.UserProperties.SetValue ("MonoDevelop.Ide.Workspace", data);
 			
 			// Allow add-ins to fill-up data
@@ -1383,6 +1386,11 @@ namespace MonoDevelop.Ide
 		/// Fired when the active solution configuration has changed
 		/// </summary>
 		public event EventHandler ActiveConfigurationChanged;
+
+		/// <summary>
+		/// Fired when the active execution target has changed
+		/// </summary>
+		public event EventHandler ActiveExecutionTargetChanged;
 		
 		/// <summary>
 		/// Fired when the list of solution configurations has changed
@@ -1411,7 +1419,11 @@ namespace MonoDevelop.Ide
 	{
 		RootWorkspace parent;
 		
-		public RootWorkspaceItemCollection (RootWorkspace parent)
+		public RootWorkspaceItemCollection (RootWorkspace parent) : this(parent, 0)
+		{
+		}
+
+		public RootWorkspaceItemCollection (RootWorkspace parent, int capacity) : base(new List<WorkspaceItem> (capacity))
 		{
 			this.parent = parent;
 		}
@@ -1476,8 +1488,6 @@ namespace MonoDevelop.Ide
 		public string ActiveConfiguration;
 		[ItemProperty]
 		public string ActiveRuntime;
-		[ItemProperty]
-		public string PreferredExecutionTarget;
 	}
 	
 	public class ItemUnloadingEventArgs: EventArgs
@@ -1551,7 +1561,7 @@ namespace MonoDevelop.Ide
 				FileService.NotifyFilesChanged (modified);
 		}
 		
-		void IDisposable.Dispose ()
+		public void Dispose ()
 		{
 			NotifyChanges ();
 		}

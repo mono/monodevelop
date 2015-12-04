@@ -36,6 +36,7 @@ using Mono.Addins;
 using MonoDevelop.Core.LogReporting;
 using MonoDevelop.Core.Logging;
 using Mono.Unix.Native;
+using System.Text;
 
 namespace MonoDevelop.Core
 {
@@ -93,6 +94,11 @@ namespace MonoDevelop.Core
 				} catch (Exception e) {
 					LogError ("Error setting custom log file", e);
 				}
+			}
+			try {
+				PurgeOldLogs ();
+			} catch {
+				LogError ("Could not purge old log files");
 			}
 
 			timestamp = DateTime.Now;
@@ -172,8 +178,6 @@ namespace MonoDevelop.Core
 		
 		public static void Initialize (bool redirectOutput)
 		{
-			PurgeOldLogs ();
-
 			// Always redirect on windows otherwise we cannot get output at all
 			if (Platform.IsWindows || redirectOutput)
 				RedirectOutputToLogFile ();
@@ -489,20 +493,39 @@ namespace MonoDevelop.Core
 #endregion
 		
 #region convenience methods (string message, Exception ex)
-		
+
+		static string FormatExceptionText (string message, Exception ex)
+		{
+			if (ex == null)
+				return message;
+
+			var exceptionText = new StringBuilder ();
+			exceptionText.AppendLine (message);
+			exceptionText.Append (ex);
+			if (ex.Data.Count > 0) {
+				exceptionText.AppendLine ();
+				exceptionText.Append ("Exception Data:");
+				foreach (DictionaryEntry item in ex.Data) {
+					exceptionText.AppendLine ();
+					exceptionText.AppendFormat ("{0}: {1}", item.Key, item.Value);
+				}
+			}
+			return exceptionText.ToString ();
+		}
+
 		public static void LogDebug (string message, Exception ex)
 		{
-			Log (LogLevel.Debug, message + (ex != null? Environment.NewLine + ex : string.Empty));
+			Log (LogLevel.Debug, FormatExceptionText (message, ex));
 		}
 		
 		public static void LogInfo (string message, Exception ex)
 		{
-			Log (LogLevel.Info, message + (ex != null? Environment.NewLine + ex : string.Empty));
+			Log (LogLevel.Info, FormatExceptionText (message, ex));
 		}
 		
 		public static void LogWarning (string message, Exception ex)
 		{
-			Log (LogLevel.Warn, message + (ex != null? Environment.NewLine + ex : string.Empty));
+			Log (LogLevel.Warn, FormatExceptionText (message, ex));
 		}
 		
 		public static void LogError (string message, Exception ex)
@@ -513,7 +536,7 @@ namespace MonoDevelop.Core
 		[Obsolete ("Use LogError")]
 		public static void LogUserError (string message, Exception ex)
 		{
-			Log (LogLevel.Error, message + (ex != null? Environment.NewLine + ex : string.Empty));
+			Log (LogLevel.Error, FormatExceptionText (message, ex));
 		}
 
 		/// <summary>
@@ -538,7 +561,7 @@ namespace MonoDevelop.Core
 		/// <param name="ex">Exception</param>
 		public static void LogInternalError (string message, Exception ex)
 		{
-			Log (LogLevel.Error, message + (ex != null? Environment.NewLine + ex : string.Empty));
+			Log (LogLevel.Error, FormatExceptionText (message, ex));
 
 			ReportUnhandledException (ex, false, true, "internal");
 		}
@@ -557,7 +580,7 @@ namespace MonoDevelop.Core
 		/// <param name="ex">Exception</param>
 		public static void LogFatalError (string message, Exception ex)
 		{
-			Log (LogLevel.Error, message + (ex != null? Environment.NewLine + ex : string.Empty));
+			Log (LogLevel.Fatal, FormatExceptionText (message, ex));
 
 			ReportUnhandledException (ex, true, false, "fatal");
 		}

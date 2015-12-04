@@ -50,7 +50,7 @@ namespace MonoDevelop.Core
 		static FileServiceErrorHandler errorHandler;
 		
 		static FileSystemExtension fileSystemChain;
-		static readonly FileSystemExtension defaultExtension = Platform.IsWindows ? new DefaultFileSystemExtension () : new UnixFileSystemExtension () ;
+		static readonly FileSystemExtension defaultExtension = new DefaultFileSystemExtension ();
 		
 		static readonly EventQueue eventQueue = new EventQueue ();
 		
@@ -89,16 +89,34 @@ namespace MonoDevelop.Core
 				fileSystemChain = defaultExtension;
 			}
 		}
-		
-		public static FilePath ResolveFullPath (FilePath path)
+
+		/// <summary>
+		/// Returns true if the folder is in a case sensitive file system
+		/// </summary>
+		public static bool IsFolderCaseSensitive (FilePath path)
 		{
+			var testFile = path.Combine (Guid.NewGuid ().ToString ().ToLower ());
 			try {
-				return GetFileSystemForPath (path, false).ResolveFullPath (path);
-			} catch (Exception e) {
-				if (!HandleError (GettextCatalog.GetString ("Can't resolve full path {0}", path), e))
-					throw;
-				return FilePath.Empty;
+				File.WriteAllText (testFile, "");
+				return !File.Exists (testFile.ToString ().ToUpper ());
+			} catch (Exception ex) {
+				// Don't crashh
+				LoggingService.LogError ("IsFolderCaseSensitive failed", ex);
+				return false;
+			} finally {
+				File.Delete (testFile);
 			}
+		}
+
+		/// <summary>
+		/// Gets the real name of a file. In case insensitive file systems the name may have a different case.
+		/// </summary>
+		public static string GetPhysicalFileName (FilePath path)
+		{
+			if (!File.Exists (path) || IsFolderCaseSensitive (path.ParentDirectory))
+				return path.FileName;
+			var file = Directory.GetFiles (path.ParentDirectory).FirstOrDefault (f => string.Equals (path.FileName, Path.GetFileName (f), StringComparison.CurrentCultureIgnoreCase));
+			return file ?? path.FileName;
 		}
 		
 		public static void DeleteFile (string fileName)
@@ -156,6 +174,7 @@ namespace MonoDevelop.Core
 			Debug.Assert (!String.IsNullOrEmpty (srcFile));
 			Debug.Assert (!String.IsNullOrEmpty (dstFile));
 			GetFileSystemForPath (dstFile, false).CopyFile (srcFile, dstFile, true);
+			OnFileCopied (new FileCopyEventArgs (srcFile, dstFile, false));
 			OnFileCreated (new FileEventArgs (dstFile, false));
 		}
 
@@ -164,6 +183,7 @@ namespace MonoDevelop.Core
 			Debug.Assert (!String.IsNullOrEmpty (srcFile));
 			Debug.Assert (!String.IsNullOrEmpty (dstFile));
 			InternalMoveFile (srcFile, dstFile);
+			OnFileMoved (new FileCopyEventArgs (srcFile, dstFile, false));
 			OnFileCreated (new FileEventArgs (dstFile, false));
 			OnFileRemoved (new FileEventArgs (srcFile, false));
 		}
@@ -217,6 +237,7 @@ namespace MonoDevelop.Core
 			Debug.Assert (!String.IsNullOrEmpty (srcPath));
 			Debug.Assert (!String.IsNullOrEmpty (dstPath));
 			InternalMoveDirectory (srcPath, dstPath);
+			OnFileMoved (new FileCopyEventArgs (srcPath, dstPath, true));
 			OnFileCreated (new FileEventArgs (dstPath, true));
 			OnFileRemoved (new FileEventArgs (srcPath, true));
 		}
@@ -442,21 +463,22 @@ namespace MonoDevelop.Core
 		{
 			return Path.GetFullPath (Path.Combine (baseDirectoryPath, relPath));
 		}
-		
+			
 		public static bool IsValidPath (string fileName)
 		{
 			if (String.IsNullOrEmpty (fileName) || fileName.Trim() == string.Empty) 
 				return false;
-			if (fileName.IndexOfAny (Path.GetInvalidPathChars ()) >= 0)
+			if (fileName.IndexOfAny (FilePath.GetInvalidPathChars ()) >= 0)
 				return false;
 			return true;
 		}
+
 
 		public static bool IsValidFileName (string fileName)
 		{
 			if (String.IsNullOrEmpty (fileName) || fileName.Trim() == string.Empty) 
 				return false;
-			if (fileName.IndexOfAny (Path.GetInvalidFileNameChars ()) >= 0)
+			if (fileName.IndexOfAny (FilePath.GetInvalidFileNameChars ()) >= 0)
 				return false;
 			return true;
 		}
@@ -650,6 +672,18 @@ namespace MonoDevelop.Core
 			}
 
 			eventQueue.RaiseEvent (() => FileCreated, args);
+		}
+
+		public static event EventHandler<FileCopyEventArgs> FileCopied;
+		static void OnFileCopied (FileCopyEventArgs args)
+		{
+			eventQueue.RaiseEvent (() => FileCopied, args);
+		}
+
+		public static event EventHandler<FileCopyEventArgs> FileMoved;
+		static void OnFileMoved (FileCopyEventArgs args)
+		{
+			eventQueue.RaiseEvent (() => FileMoved, args);
 		}
 		
 		public static event EventHandler<FileCopyEventArgs> FileRenamed;

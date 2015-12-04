@@ -176,7 +176,7 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		#region EOL markers
-		public static bool HasMultipleIncorretEolMarkers {
+		public static bool HasMultipleIncorrectEolMarkers {
 			get {
 				int count = 0;
 				foreach (var view in openFiles) {
@@ -192,6 +192,7 @@ namespace MonoDevelop.SourceEditor
 
 		public static void ConvertLineEndingsInAllFiles ()
 		{
+			DefaultSourceEditorOptions.Instance.LineEndingConversion = LineEndingConversion.ConvertAlways;
 			foreach (var view in openFiles) {
 				if (SkipView (view) || !view.SourceEditorWidget.HasIncorrectEolMarker)
 					continue;
@@ -205,6 +206,8 @@ namespace MonoDevelop.SourceEditor
 
 		public static void IgnoreLineEndingsInAllFiles ()
 		{
+			DefaultSourceEditorOptions.Instance.LineEndingConversion = LineEndingConversion.LeaveAsIs;
+
 			foreach (var view in openFiles) {
 				if (SkipView (view) || !view.SourceEditorWidget.HasIncorrectEolMarker)
 					continue;
@@ -218,7 +221,7 @@ namespace MonoDevelop.SourceEditor
 
 		public static void UpdateEolMessages ()
 		{
-			var multiple = HasMultipleIncorretEolMarkers;
+			var multiple = HasMultipleIncorrectEolMarkers;
 			foreach (var view in openFiles) {
 				if (SkipView (view) || !view.SourceEditorWidget.HasIncorrectEolMarker)
 					continue;

@@ -75,15 +75,34 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public void RaiseSolutionLoadedEvent ()
 		{
+			RaiseSolutionLoadedEvent (new FakeSolution ());
+		}
+
+		public void RaiseSolutionLoadedEvent (ISolution solution)
+		{
 			if (SolutionLoaded != null) {
-				SolutionLoaded (this, new EventArgs ());
+				SolutionLoaded (this, new DotNetSolutionEventArgs (solution));
 			}
 		}
 
 		public void RaiseSolutionUnloadedEvent ()
 		{
+			RaiseSolutionUnloadedEvent (new FakeSolution ());
+		}
+
+		public void RaiseSolutionUnloadedEvent (ISolution solution)
+		{
 			if (SolutionUnloaded != null) {
-				SolutionUnloaded (this, new EventArgs ());
+				SolutionUnloaded (this, new DotNetSolutionEventArgs (solution));
+			}
+		}
+
+		public event EventHandler<ProjectReloadedEventArgs> ProjectReloaded;
+
+		public void RaiseProjectReloadedEvent (IDotNetProject oldProject, IDotNetProject newProject)
+		{
+			if (ProjectReloaded != null) {
+				ProjectReloaded (this, new ProjectReloadedEventArgs (oldProject, newProject));
 			}
 		}
 	}

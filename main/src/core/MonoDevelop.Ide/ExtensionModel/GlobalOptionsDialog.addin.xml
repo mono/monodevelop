@@ -44,7 +44,7 @@
 	<Section id = "VersionControl" _label = "Version Control" />
 
 	<Section id = "Other" _label = "Other">
-		<Section id = "LogAgent" _label = "Log Agent" class = "MonoDevelop.Ide.Gui.OptionPanels.LogAgentOptionsPanel" />
+		<Section id = "LogAgent" _label = "Automated Feedback" class = "MonoDevelop.Ide.Gui.OptionPanels.LogAgentOptionsPanel" />
 		<Section id = "MonoDevelopMaintenance" _label = "MonoDevelop Maintenance" class = "MonoDevelop.Ide.Gui.OptionPanels.MaintenanceOptionsPanel" />
 	</Section>
 </Extension>

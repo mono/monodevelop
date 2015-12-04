@@ -60,6 +60,13 @@ namespace MonoDevelop.Ide
 						SolutionName = "SolutionName",
 						SolutionPath = dir
 					};
+					cinfo.Parameters ["CreateSharedAssetsProject"] = "False";
+					cinfo.Parameters ["UseUniversal"] = "True";
+					cinfo.Parameters ["UseIPad"] = "False";
+					cinfo.Parameters ["UseIPhone"] = "False";
+					cinfo.Parameters ["CreateiOSUITest"] = "False";
+					cinfo.Parameters ["CreateAndroidUITest"] = "False";
+
 					template.CreateWorkspaceItem (cinfo);
 				} catch (Exception ex) {
 					builder.AppendFormat (

@@ -34,16 +34,12 @@ namespace UserInterfaceTests
 	{
 		public static AutoTestClientSession Session { get; private set; }
 
-		public static void StartSession ()
+		public static void StartSession (string monoDevelopBinPath = null, string profilePath = null)
 		{
-			Console.WriteLine ("Starting application");
-
 			Session = new AutoTestClientSession ();
 
-			//TODO: support for testing the installed app
-
-			Session.StartApplication (environment: new Dictionary<string,string> {
-				{ "MONODEVELOP_TEST_PROFILE", Util.CreateTmpDir ("profile") }
+			Session.StartApplication (file: monoDevelopBinPath, environment: new Dictionary<string,string> {
+				{ "MONODEVELOP_TEST_PROFILE", profilePath ?? Util.CreateTmpDir ("profile") }
 			});
 
 			Session.SetGlobalValue ("MonoDevelop.Core.Instrumentation.InstrumentationService.Enabled", true);
@@ -52,7 +48,6 @@ namespace UserInterfaceTests
 
 		public static void EndSession ()
 		{
-			Console.WriteLine ("Stopping application");
 			Session.Stop ();
 		}
 	}

@@ -70,6 +70,11 @@ namespace MonoDevelop.Core.Execution
 		/// </remarks>
 		public bool Notable { get; set; }
 
+		/// <summary>
+		/// Target group on which this target is included
+		/// </summary>
+		public ExecutionTargetGroup ParentGroup { get; internal set; }
+
 		public override bool Equals (object obj)
 		{
 			var t = obj as ExecutionTarget;
@@ -116,17 +121,25 @@ namespace MonoDevelop.Core.Execution
 
 		public void Insert (int index, ExecutionTarget target)
 		{
+			target.ParentGroup = this;
 			targets.Insert (index, target);
 		}
 
 		public void RemoveAt (int index)
 		{
+			var t = targets [index];
+			t.ParentGroup = null;
 			targets.RemoveAt (index);
 		}
 
 		public ExecutionTarget this [int index] {
 			get { return targets[index]; }
-			set { targets[index] = value; }
+			set {
+				var t = targets [index];
+				t.ParentGroup = null;
+				targets[index] = value;
+				value.ParentGroup = this;
+			}
 		}
 
 		#endregion
@@ -135,11 +148,14 @@ namespace MonoDevelop.Core.Execution
 
 		public void Add (ExecutionTarget target)
 		{
+			target.ParentGroup = this;
 			targets.Add (target);
 		}
 
 		public void Clear ()
 		{
+			foreach (var t in targets)
+				t.ParentGroup = null;
 			targets.Clear ();
 		}
 
@@ -155,6 +171,7 @@ namespace MonoDevelop.Core.Execution
 
 		public bool Remove (ExecutionTarget target)
 		{
+			target.ParentGroup = null;
 			return targets.Remove (target);
 		}
 

@@ -288,6 +288,21 @@ namespace MonoDevelop.Projects
 			return InternalBuild (monitor, configuration);
 		}
 		
+		public BuildResult Build (IProgressMonitor monitor, string configuration, ProjectOperationContext context)
+		{
+			return Build (monitor, (SolutionConfigurationSelector) configuration, context);
+		}
+
+		public BuildResult Build (IProgressMonitor monitor, ConfigurationSelector solutionConfiguration, ProjectOperationContext context)
+		{
+			try {
+				System.Runtime.Remoting.Messaging.CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", context);
+				return Build (monitor, solutionConfiguration);
+			} finally {
+				System.Runtime.Remoting.Messaging.CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", null);
+			}
+		}
+
 		public void Execute (IProgressMonitor monitor, ExecutionContext context, string configuration)
 		{
 			Execute (monitor, context, (SolutionConfigurationSelector) configuration);
@@ -499,21 +514,23 @@ namespace MonoDevelop.Projects
 			string preferencesFileName = GetPreferencesFileName ();
 			if (!File.Exists (preferencesFileName))
 				return;
-			
-			XmlTextReader reader = new XmlTextReader (preferencesFileName);
-			try {
-				reader.MoveToContent ();
-				if (reader.LocalName != "Properties")
-					return;
 
-				XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
-				ser.SerializationContext.BaseFile = preferencesFileName;
-				userProperties = (PropertyBag) ser.Deserialize (reader, typeof(PropertyBag));
-			} catch (Exception e) {
-				LoggingService.LogError ("Exception while loading user solution preferences.", e);
-				return;
-			} finally {
-				reader.Close ();
+			using (var streamReader = new StreamReader (preferencesFileName)) {
+				XmlTextReader reader = new XmlTextReader (streamReader);
+				try {
+					reader.MoveToContent ();
+					if (reader.LocalName != "Properties")
+						return;
+
+					XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
+					ser.SerializationContext.BaseFile = preferencesFileName;
+					userProperties = (PropertyBag)ser.Deserialize (reader, typeof(PropertyBag));
+				} catch (Exception e) {
+					LoggingService.LogError ("Exception while loading user solution preferences.", e);
+					return;
+				} finally {
+					reader.Close ();
+				}
 			}
 		}
 		

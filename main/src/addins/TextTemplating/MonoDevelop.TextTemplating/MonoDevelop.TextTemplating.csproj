@@ -53,6 +53,10 @@
     <Compile Include="MonoDevelopTemplatingHost.cs" />
     <Compile Include="ProjectFileTemplatingHost.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="GenerateCommandHandler.cs" />
+    <Compile Include="T4FileTemplate.cs" />
+    <Compile Include="FileTemplateDirectiveProcessor.cs" />
+    <Compile Include="FileTemplateHost.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -72,6 +76,7 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Parser\" />

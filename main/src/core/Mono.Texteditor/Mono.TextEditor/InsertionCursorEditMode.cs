@@ -294,7 +294,7 @@ namespace Mono.TextEditor
 		class CursorDrawer : MarginDrawer
 		{
 			InsertionCursorEditMode mode;
-			static readonly Cairo.Color LineColor = HslColor.Parse ("#7f6a00");
+			static readonly Cairo.Color LineColor = HslColor.Parse ("#666666");
 
 
 			public CursorDrawer (InsertionCursorEditMode mode)

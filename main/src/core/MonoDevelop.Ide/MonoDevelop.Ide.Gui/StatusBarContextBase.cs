@@ -71,6 +71,11 @@ namespace MonoDevelop.Ide
 		/// Shows a message in the status bar
 		/// </summary>
 		void ShowMessage (IconId image, string message);
+
+		/// <summary>
+		/// Shows a message in the status bar
+		/// </summary>
+		void ShowMessage (IconId image, string message, bool isMarkup);
 		
 		/// <summary>
 		/// Shows a progress bar, with the provided label next to it

@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Drawing;
 using System.Net;
 
 using MonoDevelop.Core;
@@ -32,6 +31,7 @@ using MonoDevelop.Core.Web;
 using MonoDevelop.Ide;
 
 using AppKit;
+using CoreGraphics;
 using Foundation;
 using MonoDevelop.MacInterop;
 
@@ -123,9 +123,9 @@ namespace MonoDevelop.MacIntegration
 
 					alert.Icon = NSApplication.SharedApplication.ApplicationIconImage;
 
-					var view = new NSView (new RectangleF (0, 0, 313, 91));
+					var view = new NSView (new CGRect (0, 0, 313, 91));
 
-					var usernameLabel = new NSTextField (new RectangleF (17, 55, 71, 17)) {
+					var usernameLabel = new NSTextField (new CGRect (17, 55, 71, 17)) {
 						Identifier = "usernameLabel",
 						StringValue = "Username:",
 						Alignment = NSTextAlignment.Right,
@@ -137,10 +137,10 @@ namespace MonoDevelop.MacIntegration
 					};
 					view.AddSubview (usernameLabel);
 
-					var usernameInput = new NSTextField (new RectangleF (93, 52, 200, 22));
+					var usernameInput = new NSTextField (new CGRect (93, 52, 200, 22));
 					view.AddSubview (usernameInput);
 
-					var passwordLabel = new NSTextField (new RectangleF (22, 23, 66, 17)) {
+					var passwordLabel = new NSTextField (new CGRect (22, 23, 66, 17)) {
 						StringValue = "Password:",
 						Alignment = NSTextAlignment.Right,
 						Editable = false,
@@ -151,7 +151,7 @@ namespace MonoDevelop.MacIntegration
 					};
 					view.AddSubview (passwordLabel);
 
-					var passwordInput = new NSSecureTextField (new RectangleF (93, 20, 200, 22));
+					var passwordInput = new NSSecureTextField (new CGRect (93, 20, 200, 22));
 					view.AddSubview (passwordInput);
 
 					alert.AccessoryView = view;

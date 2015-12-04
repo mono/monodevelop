@@ -150,7 +150,9 @@ namespace MonoDevelop.AspNet.WebForms
  		}
 
 		static readonly string[] defaultAssemblies = {
-			"mscorlib", 
+			//from Mono's 4.5 web.config
+			"mscorlib",
+			"Microsoft.CSharp",
 			"System",
 			"System.Configuration",
 			"System.Web",
@@ -160,6 +162,32 @@ namespace MonoDevelop.AspNet.WebForms
 			"System.Drawing",
 			"System.EnterpriseServices",
 			"System.Web.Mobile",
+			"System.IdentityModel",
+			"System.Runtime.Serialization",
+			"System.Xaml",
+			"System.ServiceModel",
+			"System.ServiceModel.Activation",
+			"System.ServiceModel.Channels",
+			"System.ServiceModel.Web",
+			"System.Activities",
+			"System.ServiceModel.Activities",
+			"System.WorkflowServices",
+			"System.Xaml.Hosting",
+			"System.Core",
+			"System.Web.Extensions",
+			"System.Data.DataSetExtensions",
+			"System.Xml.Linq",
+			"System.ComponentModel.DataAnnotations",
+			"System.Web.DynamicData",
+			"System.Data.Entity",
+			"System.Web.Entity",
+			"System.Data.Linq",
+			"System.Data.Entity.Design",
+			"System.Web.ApplicationServices",
+			//these don't seem to be in Mono as of 3.12
+			"System.Web.Abstractions",
+			"System.Web.Routing",
+			"System.Net.Http",
 		};
 
 		//see http://msdn.microsoft.com/en-us/library/eb44kack.aspx

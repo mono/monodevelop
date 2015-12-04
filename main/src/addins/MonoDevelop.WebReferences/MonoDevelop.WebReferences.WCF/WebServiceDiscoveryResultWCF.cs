@@ -243,8 +243,9 @@ namespace MonoDevelop.WebReferences.WCF
 		
 		ReferenceGroup ConvertMapFile (string mapFile)
 		{
-			var prot = new DiscoveryClientProtocol ();
-			DiscoveryClientResultCollection files = prot.ReadAll (mapFile);
+			DiscoveryClientResultCollection files;
+			using (var prot = new DiscoveryClientProtocol ())
+				files = prot.ReadAll (mapFile);
 			
 			var map = new ReferenceGroup ();
 			

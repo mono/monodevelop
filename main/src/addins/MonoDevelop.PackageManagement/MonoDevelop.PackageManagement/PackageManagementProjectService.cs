@@ -28,7 +28,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using MonoDevelop.Ide;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
@@ -40,30 +39,35 @@ namespace ICSharpCode.PackageManagement
 		public PackageManagementProjectService ()
 		{
 			IdeApp.Workspace.SolutionLoaded += (sender, e) => OnSolutionLoaded (e.Solution);
-			IdeApp.Workspace.SolutionUnloaded += (sender, e) => OnSolutionUnloaded ();
+			IdeApp.Workspace.SolutionUnloaded += (sender, e) => OnSolutionUnloaded (e.Solution);
 		}
 
 		public event EventHandler SolutionLoaded;
 
+
 		void OnSolutionLoaded (Solution solution)
 		{
+			solution.SolutionItemAdded += SolutionItemAdded;
+
 			OpenSolution = new SolutionProxy (solution);
 
 			EventHandler handler = SolutionLoaded;
 			if (handler != null) {
-				handler (this, new EventArgs ());
+				handler (this, new DotNetSolutionEventArgs (OpenSolution));
 			}
 		}
 
 		public event EventHandler SolutionUnloaded;
 
-		void OnSolutionUnloaded ()
+		void OnSolutionUnloaded (Solution solution)
 		{
+			solution.SolutionItemAdded -= SolutionItemAdded;
 			OpenSolution = null;
 
 			var handler = SolutionUnloaded;
 			if (handler != null) {
-				handler (this, new EventArgs ());
+				var proxy = new SolutionProxy (solution);
+				handler (this, new DotNetSolutionEventArgs (proxy));
 			}
 		}
 
@@ -99,6 +103,22 @@ namespace ICSharpCode.PackageManagement
 		{
 			return String.Empty;
 			//return CustomToolsService.GetCompatibleCustomToolNames(projectItem).FirstOrDefault();
+		}
+
+		public event EventHandler<ProjectReloadedEventArgs> ProjectReloaded;
+
+		void SolutionItemAdded (object sender, SolutionItemChangeEventArgs e)
+		{
+			if (!e.Reloading)
+				return;
+
+			var handler = ProjectReloaded;
+			if (handler != null) {
+				ProjectReloadedEventArgs reloadedEventArgs = ProjectReloadedEventArgs.Create (e);
+				if (reloadedEventArgs != null) {
+					handler (this, reloadedEventArgs);
+				}
+			}
 		}
 	}
 }

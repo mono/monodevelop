@@ -69,13 +69,14 @@ namespace MonoDevelop.Components.DockNotebook
 		public Button NextButton;
 		public MenuButton DropDownButton;
 
-		const int TopBarPadding = 3;
-		const int BottomBarPadding = 3;
-		const int LeftRightPadding = 10;
-		const int TopPadding = 8;
-		const int BottomPadding = 8;
-		const int LeftBarPadding = 58;
-		const int VerticalTextSize = 11;
+		static readonly double PixelScale = GtkWorkarounds.GetPixelScale ();
+		static readonly int TopBarPadding = (int)(3 * PixelScale);
+		static readonly int BottomBarPadding = (int)(3 * PixelScale);
+		static readonly int LeftRightPadding = (int)(10 * PixelScale);
+		static readonly int TopPadding = (int)(8 * PixelScale);
+		static readonly int BottomPadding = (int)(8 * PixelScale);
+		static readonly int LeftBarPadding = (int)(58 * PixelScale);
+		static readonly int VerticalTextSize = (int)(11 * PixelScale);
 		const int TabSpacing = -1;
 		const int Radius = 2;
 		const int LeanWidth = 18;
@@ -140,13 +141,19 @@ namespace MonoDevelop.Components.DockNotebook
 
 			var arr = new Xwt.ImageView (tabbarPrevImage);
 			arr.HeightRequest = arr.WidthRequest = 10;
-			PreviousButton = new Button (arr.ToGtkWidget ());
+
+			var alignment = new Alignment (0.5f, 0.5f, 0.0f, 0.0f);
+			alignment.Add (arr.ToGtkWidget ());
+			PreviousButton = new Button (alignment);
 			PreviousButton.Relief = ReliefStyle.None;
 			PreviousButton.CanDefault = PreviousButton.CanFocus = false;
 
 			arr = new Xwt.ImageView (tabbarNextImage);
 			arr.HeightRequest = arr.WidthRequest = 10;
-			NextButton = new Button (arr.ToGtkWidget ());
+
+			alignment = new Alignment (0.5f, 0.5f, 0.0f, 0.0f);
+			alignment.Add (arr.ToGtkWidget ());
+			NextButton = new Button (alignment);
 			NextButton.Relief = ReliefStyle.None;
 			NextButton.CanDefault = NextButton.CanFocus = false;
 
@@ -259,6 +266,21 @@ namespace MonoDevelop.Components.DockNotebook
 				LeftBarPadding / 2,
 				0,
 				LeftBarPadding / 2, height)
+			);
+
+			var image = PreviousButton.Child;
+			int buttonWidth = LeftBarPadding / 2;
+			image.SizeAllocate (new Gdk.Rectangle (
+				(buttonWidth - 12) / 2,
+				(height - 12) / 2,
+				12, 12)
+			);
+
+			image = NextButton.Child;
+			image.SizeAllocate (new Gdk.Rectangle (
+				buttonWidth + (buttonWidth - 12) / 2,
+				(height - 12) / 2,
+				12, 12)
 			);
 
 			DropDownButton.SizeAllocate (new Gdk.Rectangle (
@@ -419,8 +441,10 @@ namespace MonoDevelop.Components.DockNotebook
 
 				// If the user clicks and drags on the 'x' which closes the current
 				// tab we can end up with a null tab here
-				if (t == null)
+				if (t == null) {
+					TooltipText = null;
 					return base.OnMotionNotifyEvent (evnt);
+				}
 				SetHighlightedTab (t);
 
 				var newOver = IsOverCloseButton (t, (int)evnt.X, (int)evnt.Y);

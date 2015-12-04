@@ -120,6 +120,7 @@ namespace MonoDevelop.Components.MainToolbar
 			categories.Add (new ProjectSearchCategory (this));
 			categories.Add (new FileSearchCategory (this));
 			categories.Add (new CommandSearchCategory (this));
+
 			categories.Add (new SearchInSolutionSearchCategory ());
 			categories.AddRange (AddinManager.GetExtensionObjects<SearchCategory> ("/MonoDevelop/Ide/SearchCategories"));
 
@@ -245,14 +246,28 @@ namespace MonoDevelop.Components.MainToolbar
 			if (incompleteResults.Count == categories.Count) {
 				results.Clear ();
 				results.AddRange (incompleteResults);
+				List<Tuple<SearchCategory, ISearchDataSource>> failedResults = null;
 				topItem = null;
+
 				for (int i = 0; i < results.Count; i++) {
-					if (results[i].Item2.ItemCount == 0)
+					var tuple = results [i];
+					try {
+						if (tuple.Item2.ItemCount == 0)
+							continue;
+						if (topItem == null || topItem.DataSource.GetWeight (topItem.Item) < tuple.Item2.GetWeight (0))
+							topItem = new ItemIdentifier(tuple.Item1, tuple.Item2, 0);
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while showing result " + i, e);
+						if (failedResults == null)
+							failedResults = new List<Tuple<SearchCategory, ISearchDataSource>> ();
+						failedResults.Add (results [i]);
 						continue;
-					if (topItem == null || topItem.DataSource.GetWeight (topItem.Item) <  results[i].Item2.GetWeight (0)) 
-						topItem = new ItemIdentifier (results[i].Item1, results[i].Item2, 0);
+					}
 				}
 				selectedItem = topItem;
+
+				if (failedResults != null)
+					failedResults.ForEach (failedResult => results.Remove (failedResult));
 
 				ShowTooltip ();
 				isInSearch = false;
@@ -696,43 +711,42 @@ namespace MonoDevelop.Components.MainToolbar
 			QueueDraw ();
 		}
 
-		internal bool ProcessKey (Gdk.Key key, Gdk.ModifierType state)
+		internal bool ProcessKey (Xwt.Key key, Xwt.ModifierKeys state)
 		{
 			switch (key) {
-			case Gdk.Key.Up:
-				if (state.HasFlag (Gdk.ModifierType.Mod2Mask))
-					goto case Gdk.Key.Page_Up;
-				if (state.HasFlag (Gdk.ModifierType.ControlMask))
-					goto case Gdk.Key.Home;
+			case Xwt.Key.Up:
+				if (state.HasFlag (Xwt.ModifierKeys.Command))
+					goto case Xwt.Key.PageUp;
+				if (state.HasFlag (Xwt.ModifierKeys.Control))
+					goto case Xwt.Key.Home;
 				SelectItemUp ();
 				return true;
-			case Gdk.Key.Down:
-				if (state.HasFlag (Gdk.ModifierType.Mod2Mask))
-					goto case Gdk.Key.Page_Down;
-				if (state.HasFlag (Gdk.ModifierType.ControlMask))
-					goto case Gdk.Key.End;
+			case Xwt.Key.Down:
+				if (state.HasFlag (Xwt.ModifierKeys.Command))
+					goto case Xwt.Key.PageDown;
+				if (state.HasFlag (Xwt.ModifierKeys.Control))
+					goto case Xwt.Key.End;
 				SelectItemDown ();
 				return true;
-			case Gdk.Key.KP_Page_Down:
-			case Gdk.Key.Page_Down:
+			case (Xwt.Key)Gdk.Key.KP_Page_Down:
+			case Xwt.Key.PageDown:
 				SelectNextCategory ();
 				return true;
-			case Gdk.Key.KP_Page_Up:
-			case Gdk.Key.Page_Up:
+			case (Xwt.Key)Gdk.Key.KP_Page_Up:
+			case Xwt.Key.PageUp:
 				SelectPrevCategory ();
 				return true;
-			case Gdk.Key.Home:
+			case Xwt.Key.Home:
 				SelectFirstCategory ();
 				return true;
-			case Gdk.Key.End:
+			case Xwt.Key.End:
 				SelectLastCatgory ();
 				return true;
-			
-			case Gdk.Key.Return:
+			case Xwt.Key.Return:
 				OnItemActivated (EventArgs.Empty);
 				return true;
 			}
-			return true;
+			return false;
 		}
 
 		public event EventHandler ItemActivated;

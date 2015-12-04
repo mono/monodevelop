@@ -25,10 +25,9 @@
 //
 //
 
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using MonoDevelop.Core;
+using System;
 
 namespace MonoDevelop.Projects
 {
@@ -36,12 +35,24 @@ namespace MonoDevelop.Projects
 	{
 		BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration);
 		bool SupportsTarget (string target);
+
+		[Obsolete ("This method will be removed in future releases")]
+		bool NeedsBuilding (ConfigurationSelector configuration);
+
+		[Obsolete ("This method will be removed in future releases")]
+		void SetNeedsBuilding (bool needsBuilding, ConfigurationSelector configuration);
+
+		//TODO: move these to IExecutableWorkspaceObject when we break API
 		void Execute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration);
 		bool CanExecute (ExecutionContext context, ConfigurationSelector configuration);
-		bool NeedsBuilding (ConfigurationSelector configuration);
-		void SetNeedsBuilding (bool needsBuilding, ConfigurationSelector configuration);
-		
-//		ReadOnlyCollection<string> GetConfigurations ();
-//		event EventHandler ConfigurationsChanged;
+	}
+
+	public interface IExecutableWorkspaceObject : IBuildTarget
+	{
+		/// <summary>
+		/// Gets the build targets that should be built before the project is executed.
+		/// If the project itself is not included, it will not be built.
+		/// </summary>
+		IEnumerable<IBuildTarget> GetExecutionDependencies ();
 	}
 }

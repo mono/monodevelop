@@ -126,6 +126,9 @@
 			shortcut = "Control|Shift|J"
 			_description = "Join the current line with the next line"
 			_label = "_Join Lines" />
+	<Command id = "MonoDevelop.Ide.Commands.EditCommands.SortSelectedLines"
+			_description = "Sort the selected lines"
+			_label = "_Sort Lines" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.WordCount"
 			_label = "_Word Count..."
 			description = "Count words in a text file"/>
@@ -352,6 +355,12 @@
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportPolicy"
 			defaultHandler="MonoDevelop.Ide.Commands.ExportPolicyHandler"
 			_label = "Export Policy..." />
+	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RunCodeAnalysisSolution"
+			defaultHandler = "MonoDevelop.Ide.Commands.RunCodeAnalysisSolutionHandler"
+			_label = "Run Code Analysis on Solution" />
+	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RunCodeAnalysisProject"
+			defaultHandler = "MonoDevelop.Ide.Commands.RunCodeAnalysisProjectHandler"
+			_label = "Run Code Analysis on Project" />
 	</Category>
 
 
@@ -478,9 +487,16 @@
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenFolder"
 			_label = "_Open Folder"
 			_description = "Opens the folder in a file manager."/>
-	<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder"
+	<Condition id="Platform" value="!mac">
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder"
 			_label = "O_pen Containing Folder"
 			_description = "Opens the folder that contains this file."/>
+	</Condition>
+	<Condition id="Platform" value="mac">
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder"
+			_label = "Reveal in Finder"
+			_description = "Reveals the file in Finder."/>
+	</Condition>
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.SetBuildAction"
 			type="radio|array"
 			_label = "Build action" />
@@ -495,7 +511,7 @@
 	        _label = "Require Specific Version" />
 	<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAll"
 	         defaultHandler = "MonoDevelop.Ide.Commands.CloseAllHandler"
-			_label = "Close all files"
+			_label = "Close All Files"
 			_description = "Closes all opened files in a tab"/>
 	<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis"
 	         defaultHandler = "MonoDevelop.Ide.Commands.CloseAllButThisHandler"
@@ -603,15 +619,15 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.ZoomIn"
 			_label = "_Zoom In"
 			icon = "gtk-zoom-in"
-			shortcut = "Control|+"
-			macShortcut = "Meta|+"
+			shortcut = "Control|+ Control|="
+			macShortcut = "Meta|+ Meta|="
 			_description = "Zooms view in" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomOut"
 			defaultHandler = "MonoDevelop.Ide.Commands.ZoomOut"
 			_label = "Zoom _Out"
 			icon = "gtk-zoom-out"
-			shortcut = "Control|-"
-			macShortcut = "Meta|-"
+			shortcut = "Control|- Control|_"
+			macShortcut = "Meta|- Meta|_"
 			_description = "Zooms view out" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomReset"
 			defaultHandler = "MonoDevelop.Ide.Commands.ZoomReset"
@@ -667,26 +683,37 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.InstrumentationViewerHandler"
 			_label = "Instrumentation Monitor" />
 
+	<Command id = "MonoDevelop.Ide.Commands.ToolCommands.ToggleSessionRecorder"
+			defaultHandler = "MonoDevelop.Ide.Commands.ToggleSessionRecorderHandler"
+			_label = "Start Session Recorder" />
+
+	<Command id = "MonoDevelop.Ide.Commands.ToolCommands.ReplaySession"
+			defaultHandler = "MonoDevelop.Ide.Commands.ReplaySessionHandler"
+			_label = "Replay Session..." />
 	</Category>
 
 
 	<!-- WindowCommands -->
 	<Category _name = "Window" id = "Window">
 
-	<Command id  = "MonoDevelop.Ide.Commands.WindowCommands.NextWindow"
-			defaultHandler = "MonoDevelop.Ide.Commands.NextWindowHandler"
-			_label = "_Next Window"
+	<Command id  = "MonoDevelop.Ide.Commands.WindowCommands.NextDocument"
+			defaultHandler = "MonoDevelop.Ide.Commands.NextDocumentHandler"
+			_label = "_Next Document"
 			icon = "gtk-go-forward"
-			_description = "Show next window"
+			_description = "Show next document"
 			shortcut = "Control|Page_Down"
 			macShortcut = "Meta|}" />
-	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.PrevWindow"
-			defaultHandler = "MonoDevelop.Ide.Commands.PrevWindowHandler"
-			_label = "_Previous Window"
+	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.PrevDocument"
+			defaultHandler = "MonoDevelop.Ide.Commands.PrevDocumentHandler"
+			_label = "_Previous Document"
 			icon = "gtk-go-back"
-			_description = "Show previous window"
+			_description = "Show previous document"
 			shortcut = "Control|Page_Up"
 			macShortcut = "Meta|{" />
+	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.OpenDocumentList"
+			defaultHandler = "MonoDevelop.Ide.Commands.OpenDocumentListHandler"
+			type="radio|array"
+			_label = "Document List" />
 	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.OpenWindowList"
 			defaultHandler = "MonoDevelop.Ide.Commands.OpenWindowListHandler"
 			type="radio|array"
@@ -818,17 +845,20 @@
 			_description = "Search for and replace text in all files of a directory" />
 
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType"
+			defaultHandler = "MonoDevelop.Components.MainToolbar.GotoTypeHandler"
 	         _label = "Go to Type..."
 			_description = "Jump to the declaration of type in the current workspace"
 	         shortcut = "Control|Shift|T"
 	         macShortcut = "Meta|Shift|T" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoFile"
+			defaultHandler = "MonoDevelop.Components.MainToolbar.GotoFileHandler"
 			_label = "Go to File..."
 			shortcut = "Alt|Shift|O"
 			macShortcut = "Meta|Shift|D"
 			_description = "Jump to a file in the current workspace"
 			icon  = "gtk-open" />
 	<Command id = "MonoDevelop.Components.MainToolbar.Commands.NavigateTo"
+			defaultHandler = "MonoDevelop.Components.MainToolbar.NavigateToHandler"
 			_label = "Navigate To..."
 			_description = "Jump to a item in the current workspace"
 			shortcut = "Control|,"
@@ -919,6 +949,8 @@
 			_label = "Scroll page down"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLine"
 			_label = "Delete entire line" />
+	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineStart"
+		 	_label = "Delete to start of line" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineEnd"
 			_label = "Delete to end of line"
 			_description="Deletes to end of line, or if at end, deletes line ending"

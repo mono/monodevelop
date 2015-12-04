@@ -51,13 +51,11 @@ namespace MonoDevelop.Ide.FindInFiles
 		public bool AllowReuse {
 			get { return outputPad.AllowReuse; }
 		}
-		
-		[FreeDispatch]
-		public void SetBasePath (string path)
-		{
-			outputPad.BasePath = path;
+
+		public PathMode PathMode {
+			set { outputPad.PathMode = value; }
 		}
-		
+
 		[AsyncDispatch]
 		public void ReportResult (SearchResult result)
 		{

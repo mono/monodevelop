@@ -118,6 +118,7 @@ namespace MonoDevelop.Projects
 				string platformSuffix = string.IsNullOrEmpty (platform) ? string.Empty : "|" + platform;
 				DotNetProjectConfiguration configDebug = CreateConfiguration ("Debug" + platformSuffix) as DotNetProjectConfiguration;
 				configDebug.CompilationParameters = languageBinding.CreateCompilationParameters (projectOptions);
+				DefineSymbols (configDebug.CompilationParameters, projectOptions, "DefineConstantsDebug");
 				configDebug.DebugMode = true;
 				configDebug.ExternalConsole = externalConsole;
 				configDebug.PauseConsoleOutput = externalConsole;
@@ -129,6 +130,7 @@ namespace MonoDevelop.Projects
 					XmlElement releaseProjectOptions = (XmlElement)projectOptions.CloneNode (true);
 					releaseProjectOptions.SetAttribute ("Release", "True");
 					configRelease.CompilationParameters = languageBinding.CreateCompilationParameters (releaseProjectOptions);
+					DefineSymbols (configRelease.CompilationParameters, projectOptions, "DefineConstantsRelease");
 				} else {
 					configRelease.CompilationParameters = languageBinding.CreateCompilationParameters (null);
 				}
@@ -159,6 +161,16 @@ namespace MonoDevelop.Projects
 
 				if (projectCreateInfo != null)
 					dotNetProjectConfig.OutputAssembly = projectCreateInfo.ProjectName;
+			}
+		}
+
+		void DefineSymbols (ConfigurationParameters pars, XmlElement projectOptions, string attributeName)
+		{
+			if (projectOptions != null) {
+				string symbols = projectOptions.GetAttribute (attributeName);
+				if (!String.IsNullOrEmpty (symbols)) {
+					pars.AddDefineSymbol (symbols);
+				}
 			}
 		}
 
@@ -459,14 +471,28 @@ namespace MonoDevelop.Projects
 			for (int n=0; n<References.Count; n++) {
 				ProjectReference pr = References [n];
 				if (pr.ReferenceType == ReferenceType.Assembly && DefaultConfiguration != null) {
-					if (pr.GetReferencedFileNames (DefaultConfiguration.Selector).Any (f => f == updatedFile))
+					if (pr.GetReferencedFileNames (DefaultConfiguration.Selector).Any (f => f == updatedFile)) {
+						SetFastBuildCheckDirty ();
 						pr.NotifyStatusChanged ();
+					}
 				} else if (pr.HintPath == updatedFile) {
+					SetFastBuildCheckDirty ();
 					var nr = pr.GetRefreshedReference ();
 					if (nr != null)
 						References [n] = nr;
 				}
 			}
+
+			/* Removed because it is very slow. SetFastBuildCheckDirty() is being called above. It is not the perfect solution but it is good enough
+			 * In the new project model GetReferencedAssemblies is asynchronous, so the code can be uncommented there. 
+ 
+			// If a referenced assembly changes, dirtify the project.
+			foreach (var asm in GetReferencedAssemblies (DefaultConfiguration.Selector))
+				if (asm == updatedFile) {
+					SetFastBuildCheckDirty ();
+					break;
+				}
+				*/
 		}
 
 		internal override void OnFileChanged (object source, MonoDevelop.Core.FileEventArgs e)
@@ -929,6 +955,25 @@ namespace MonoDevelop.Projects
 				cmd.Target = context.ExecutionTarget;
 
 			return (compileTarget == CompileTarget.Exe || compileTarget == CompileTarget.WinExe) && context.ExecutionHandler.CanExecute (cmd);
+		}
+
+		internal protected override bool OnGetSupportsExecute ()
+		{
+			if (compileTarget == CompileTarget.Exe || compileTarget == CompileTarget.WinExe)
+				return true;
+
+			if (Configurations.OfType<DotNetProjectConfiguration> ().Any (c => c.CustomCommands.Any (cc => cc.Type == CustomCommandType.Execute)))
+				return true;
+
+			// Hack to keep backwards compatibility with the old behavior. For example, a MonoDroid project is a library, but OnGetSupportsExecute
+			// is not overriden, so it depends on DotNetProject to return true by default.
+			if (compileTarget == CompileTarget.Library) {
+				Type thisType = GetType ();
+				if (thisType == typeof (DotNetAssemblyProject) || thisType == typeof (PortableDotNetProject))
+					return false;
+			}
+
+			return true;
 		}
 
 		protected internal override List<FilePath> OnGetItemFiles (bool includeReferencedFiles)

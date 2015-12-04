@@ -135,6 +135,7 @@ namespace MonoDevelop.Database.Query
 					Document.MimeType = GetMimeType ();
 				
 			};
+			Document.Text = string.Empty;
 			notebook.Hide ();
 		}
 

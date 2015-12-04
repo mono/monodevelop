@@ -6,8 +6,9 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Blank Solution</_Name>
-		<_Category>Other</_Category>
+		<Category>other/misc/generic</Category>
 		<Icon>md-solution</Icon>
+		<Image id="md-blank-solution" />
 		<LanguageName/>
 		<_Description>A blank solution</_Description>
 	</TemplateConfiguration>

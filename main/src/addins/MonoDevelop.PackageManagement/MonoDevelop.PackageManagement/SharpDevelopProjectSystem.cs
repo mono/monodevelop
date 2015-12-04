@@ -27,7 +27,6 @@
 //
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Versioning;
 
@@ -45,6 +44,7 @@ namespace ICSharpCode.PackageManagement
 		IDotNetProject project;
 		ProjectTargetFramework targetFramework;
 		IPackageManagementFileService fileService;
+		IPackageManagementEvents packageManagementEvents;
 		Action<MessageHandler> guiSyncDispatcher;
 
 		public SharpDevelopProjectSystem(DotNetProject project)
@@ -52,6 +52,7 @@ namespace ICSharpCode.PackageManagement
 				new DotNetProjectProxy (project),
 				new PackageManagementFileService (),
 				PackageManagementServices.ProjectService,
+				PackageManagementServices.PackageManagementEvents,
 				DispatchService.GuiSyncDispatch)
 		{
 		}
@@ -60,11 +61,13 @@ namespace ICSharpCode.PackageManagement
 			IDotNetProject project,
 			IPackageManagementFileService fileService,
 			IPackageManagementProjectService projectService,
+			IPackageManagementEvents packageManagementEvents,
 			Action<MessageHandler> guiSyncDispatcher)
 			: base (AppendTrailingSlashToDirectory (project.BaseDirectory))
 		{
 			this.project = project;
 			this.fileService = fileService;
+			this.packageManagementEvents = packageManagementEvents;
 			this.guiSyncDispatcher = guiSyncDispatcher;
 		}
 		
@@ -109,6 +112,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			GuiSyncDispatch (() => {
 				ProjectReference assemblyReference = CreateReference (referencePath);
+				packageManagementEvents.OnReferenceAdding (assemblyReference);
 				AddReferenceToProject (assemblyReference);
 			});
 		}
@@ -202,6 +206,7 @@ namespace ICSharpCode.PackageManagement
 			GuiSyncDispatch (() => {
 				ProjectReference referenceProjectItem = FindReference (name);
 				if (referenceProjectItem != null) {
+					packageManagementEvents.OnReferenceRemoving (referenceProjectItem);
 					project.References.Remove (referenceProjectItem);
 					project.Save ();
 					LogRemovedReferenceFromProject (referenceProjectItem);
@@ -421,9 +426,10 @@ namespace ICSharpCode.PackageManagement
 
 				using (var updater = new EnsureNuGetPackageBuildImportsTargetUpdater ()) {
 					updater.RemoveImport (relativeTargetPath);
-					project.DisposeProjectBuilder ();
 					project.Save ();
 				}
+
+				packageManagementEvents.OnImportRemoved (project, relativeTargetPath);
 			});
 		}
 

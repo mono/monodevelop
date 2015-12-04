@@ -27,6 +27,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace MonoDevelop.Core
 {
@@ -43,6 +45,9 @@ namespace MonoDevelop.Core
 
 		public FilePath (string name)
 		{
+			if (name != null && name.Length > 6 && name[0] == 'f' && name.StartsWith ("file://", StringComparison.Ordinal))
+				name = new Uri (name).LocalPath;
+
 			fileName = name;
 		}
 
@@ -60,6 +65,40 @@ namespace MonoDevelop.Core
 
 		public bool IsEmpty {
 			get { return fileName != null && fileName.Length == 0; }
+		}
+
+		const int PATHMAX = 4096 + 1;
+
+		static readonly char[] invalidPathChars = Path.GetInvalidPathChars ().Concat ("#%").ToArray ();
+		public static char[] GetInvalidPathChars()
+		{
+			return (char[])invalidPathChars.Clone();
+		}
+
+		static readonly char[] invalidFileNameChars = Path.GetInvalidFileNameChars ().Concat ("#%").ToArray ();
+		public static char[] GetInvalidFileNameChars ()
+		{
+			return (char[])invalidFileNameChars.Clone ();
+		}
+
+		[DllImport ("libc")]
+		static extern IntPtr realpath (string path, IntPtr buffer);
+
+		public FilePath ResolveLinks ()
+		{
+			if (Platform.IsWindows) {
+				return Path.GetFullPath (this);
+			}
+
+			IntPtr buffer = IntPtr.Zero;
+			try {
+				buffer = Marshal.AllocHGlobal (PATHMAX);
+				var result = realpath (this, buffer);
+				return result == IntPtr.Zero ? "" : Marshal.PtrToStringAuto (buffer);
+			} finally {
+				if (buffer != IntPtr.Zero)
+					Marshal.FreeHGlobal (buffer);
+			}
 		}
 
 		public FilePath FullPath {
@@ -84,10 +123,12 @@ namespace MonoDevelop.Core
 				if (string.IsNullOrEmpty (fileName))
 					return FilePath.Empty;
 				string fp = Path.GetFullPath (fileName);
-				if (fp.Length > 0 && fp [fp.Length - 1] == Path.DirectorySeparatorChar)
-					return fp.TrimEnd (Path.DirectorySeparatorChar);
-				if (fp.Length > 0 && fp [fp.Length - 1] == Path.AltDirectorySeparatorChar)
-					return fp.TrimEnd (Path.AltDirectorySeparatorChar);
+				if (fp.Length > 0) {
+					if (fp [fp.Length - 1] == Path.DirectorySeparatorChar)
+						return fp.TrimEnd (Path.DirectorySeparatorChar);
+					if (fp [fp.Length - 1] == Path.AltDirectorySeparatorChar)
+						return fp.TrimEnd (Path.AltDirectorySeparatorChar);
+				}
 				return fp;
 			}
 		}
@@ -150,10 +191,7 @@ namespace MonoDevelop.Core
 
 		public FilePath Combine (params string[] paths)
 		{
-			string path = fileName;
-			foreach (string p in paths)
-				path = Path.Combine (path, p);
-			return new FilePath (path);
+			return new FilePath (Path.Combine (fileName, Path.Combine (paths)));
 		}
 		
 		public void Delete ()

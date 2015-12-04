@@ -6,11 +6,13 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Console Project</_Name>
-		<_Category>VBNet</_Category>
+		<Category>other/net/general</Category>
 		<Icon>md-project-console</Icon>
+		<Image id="md-console-project" />
 		<LanguageName>VBNet</LanguageName>
 		<_Description>Create a console VB.Net project</_Description>
 		<DefaultFilename>ConsoleVBProject</DefaultFilename>
+		<GroupId>md-project-console</GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->

@@ -866,6 +866,9 @@ namespace Mono.TextEditor
 			try {
 				action (GetTextEditorData ());
 			} catch (Exception e) {
+				if (Debugger.IsAttached)
+					Debugger.Break ();
+				//TODO: we should really find a way to log this properly
 				Console.WriteLine ("Error while executing " + action + " :" + e);
 			}
 		}

@@ -230,7 +230,7 @@ namespace MonoDevelop.Core.Web
 			if (basicAuth)
 			{
 				// Add the Authorization header for basic authentication.
-				var networkCredentials = request.Credentials.GetCredential(request.RequestUri, "Basic");
+				NetworkCredential networkCredentials = (request.Credentials != null) ? request.Credentials.GetCredential(request.RequestUri, "Basic") : null;
 				if (networkCredentials != null)
 				{
 					string authInfo = networkCredentials.UserName + ":" + networkCredentials.Password;

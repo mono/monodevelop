@@ -35,6 +35,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using System.Linq;
+using System.IO;
 
 namespace MonoDevelop.Debugger
 {
@@ -85,46 +86,33 @@ namespace MonoDevelop.Debugger
 				IdeApp.ProjectOperations.CurrentRunOperation.WaitForCompleted ();
 			}
 
-			if (!IdeApp.Preferences.BuildBeforeExecuting) {
-				if (IdeApp.Workspace.IsOpen) {
-					var it = GetRunTarget ();
-					CheckResult cr = CheckBeforeDebugging (it);
-					if (cr == DebugHandler.CheckResult.Cancel)
-						return;
-					if (cr == DebugHandler.CheckResult.Run) {
-						ExecuteSolution (it);
-						return;
-					}
-					// Else continue building
-				}
-				else {
-					ExecuteDocument (IdeApp.Workbench.ActiveDocument);
-					return;
-				}
-			}
-
 			if (IdeApp.Workspace.IsOpen) {
 				var it = GetRunTarget ();
-				IAsyncOperation op = IdeApp.ProjectOperations.Build (it);
+				var op = IdeApp.ProjectOperations.CheckAndBuildForExecute (it);
 				op.Completed += delegate {
-					if (op.SuccessWithWarnings && !IdeApp.Preferences.RunWithWarnings)
-						return;
 					if (op.Success)
 						ExecuteSolution (it);
 				};
-			} else {
-				Document doc = IdeApp.Workbench.ActiveDocument;
-				if (doc != null) {
-					doc.Save ();
-					IAsyncOperation op = doc.Build ();
-					op.Completed += delegate {
-						if (op.SuccessWithWarnings && !IdeApp.Preferences.RunWithWarnings)
-							return;
-						if (op.Success)
-							ExecuteDocument (doc);
-					};
-				}
+				return;
 			}
+
+			Document doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null)
+				return;
+
+			if (!IdeApp.Preferences.BuildBeforeExecuting) {
+				ExecuteDocument (doc);
+				return;
+			}
+
+			doc.Save ();
+			IAsyncOperation docOp = doc.Build ();
+			docOp.Completed += delegate {
+				if (docOp.SuccessWithWarnings && !IdeApp.Preferences.RunWithWarnings)
+					return;
+				if (docOp.Success)
+					ExecuteDocument (doc);
+			};
 		}
 
 		static void ExecuteSolution (IBuildTarget target)
@@ -187,44 +175,6 @@ namespace MonoDevelop.Debugger
 				info.Enabled = (doc != null && doc.IsBuildTarget) && (doc.CanRun () || doc.CanDebug ());
 			}
 		}
-		
-		internal static CheckResult CheckBeforeDebugging (IBuildTarget target)
-		{
-			if (IdeApp.Preferences.BuildBeforeExecuting)
-				return CheckResult.BuildBeforeRun;
-			
-			if (!target.NeedsBuilding (IdeApp.Workspace.ActiveConfiguration))
-				return CheckResult.Run;
-			
-			AlertButton bBuild = new AlertButton (GettextCatalog.GetString ("Build"));
-			AlertButton bRun = new AlertButton (Gtk.Stock.Execute, true);
-			AlertButton res = MessageService.AskQuestion (
-			                                 GettextCatalog.GetString ("Outdated Debug Information"), 
-			                                 GettextCatalog.GetString ("The project you are executing has changes done after the last time it was compiled. The debug information may be outdated. Do you want to continue?"),
-			                                 2,
-			                                 AlertButton.Cancel,
-			                                 bBuild,
-			                                 bRun);
-
-			// This call is a workaround for bug #6907. Without it, the main monodevelop window is left it a weird
-			// drawing state after the message dialog is shown. This may be a gtk/mac issue. Still under research.
-			DispatchService.RunPendingEvents ();
-
-			if (res == AlertButton.Cancel)
-				return CheckResult.Cancel;
-
-			if (res == bRun)
-				return CheckResult.Run;
-
-			return CheckResult.BuildBeforeRun;
-		}
-			
-		internal enum CheckResult
-		{
-			Cancel,
-			BuildBeforeRun,
-			Run
-		}
 	}
 	
 	class DebugEntryHandler: CommandHandler
@@ -232,18 +182,12 @@ namespace MonoDevelop.Debugger
 		protected override void Run ()
 		{
 			IBuildTarget entry = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-			DebugHandler.CheckResult cr = DebugHandler.CheckBeforeDebugging (entry);
-			
-			if (cr == DebugHandler.CheckResult.BuildBeforeRun) {
-				IAsyncOperation op = IdeApp.ProjectOperations.Build (entry);
-				op.Completed += delegate {
-					if (op.SuccessWithWarnings && !IdeApp.Preferences.RunWithWarnings)
-						return;
-					if (op.Success)
-						IdeApp.ProjectOperations.Debug (entry);
-				};
-			} else if (cr == DebugHandler.CheckResult.Run)
-				IdeApp.ProjectOperations.Debug (entry);
+
+			var op = IdeApp.ProjectOperations.CheckAndBuildForExecute (entry);
+			op.Completed += delegate {
+				if (op.Success)
+					IdeApp.ProjectOperations.Debug (entry);
+			};
 		}
 		
 		protected override void Update (CommandInfo info)
@@ -259,15 +203,43 @@ namespace MonoDevelop.Debugger
 	{
 		protected override void Run ()
 		{
-			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Application to Debug")) {
-				TransientFor = IdeApp.Workbench.RootWindow,
-			};
-			if (dialog.Run ()) {
-				if (IdeApp.ProjectOperations.CanDebugFile (dialog.SelectedFile))
-					IdeApp.ProjectOperations.DebugApplication (dialog.SelectedFile);
-				else
-					MessageService.ShowError (GettextCatalog.GetString ("The file '{0}' can't be debugged", dialog.SelectedFile));
+			var dlg = new DebugApplicationDialog ();
+
+			try {
+				bool isOK;
+
+				while ((isOK = (MessageService.RunCustomDialog (dlg) == (int)Gtk.ResponseType.Ok)) 
+					&& !Validate (dlg));
+
+				if (isOK)
+					IdeApp.ProjectOperations.DebugApplication (dlg.SelectedFile, dlg.Arguments, dlg.WorkingDirectory, dlg.EnvironmentVariables);
+
+			} finally {
+				dlg.Destroy ();
+				dlg.Dispose ();
 			}
+
+
+		}
+
+		bool Validate (DebugApplicationDialog dlg)
+		{
+			if (String.IsNullOrEmpty (dlg.SelectedFile)) {
+				MessageService.ShowError (GettextCatalog.GetString ("Please select the application to debug"));
+				return false;
+			}
+
+			if (!File.Exists (dlg.SelectedFile)) {
+				MessageService.ShowError (GettextCatalog.GetString ("The file '{0}' does not exist", dlg.SelectedFile));
+				return false;
+			}
+
+			if (!IdeApp.ProjectOperations.CanDebugFile (dlg.SelectedFile)) {
+				MessageService.ShowError (GettextCatalog.GetString ("The file '{0}' can't be debugged", dlg.SelectedFile));
+				return false;
+			}
+
+			return true;
 		}
 		
 		protected override void Update (CommandInfo info)
@@ -288,6 +260,7 @@ namespace MonoDevelop.Debugger
 			}
 			finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 		

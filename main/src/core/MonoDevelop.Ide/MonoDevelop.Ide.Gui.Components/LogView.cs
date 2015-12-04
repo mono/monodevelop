@@ -69,12 +69,71 @@ namespace MonoDevelop.Ide.Gui.Components
 		/// </summary>
 		public class LogTextView : TextView
 		{
+			readonly CommandEntrySet menuSet;
+
 			public LogTextView (TextBuffer buf) : base (buf)
 			{
+				menuSet = new CommandEntrySet ();
+				SetupMenu ();
 			}
 
 			public LogTextView () 
 			{
+				menuSet = new CommandEntrySet ();
+				SetupMenu ();
+			}
+
+			void SetupMenu ()
+			{
+				menuSet.AddItem (EditCommands.Copy);
+				menuSet.AddItem (EditCommands.Cut);
+				menuSet.AddItem (EditCommands.Paste);
+				menuSet.AddItem (EditCommands.SelectAll);
+			}
+
+			[CommandHandler (EditCommands.SelectAll)]
+			void SelectAllText ()
+			{
+				TextIter start;
+				TextIter end;
+
+				Buffer.GetBounds (out start, out end);
+				Buffer.SelectRange (start, end);
+			}
+
+			[CommandHandler (EditCommands.Copy)]
+			void CopyText ()
+			{
+				TextIter start;
+				TextIter end;
+
+				if (Buffer.HasSelection && Buffer.GetSelectionBounds (out start, out end)) {
+					var text = Buffer.GetText (start, end, false);
+					var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+					clipboard.Text = text;
+
+					if (Platform.IsLinux) {
+						// gtk has different clipboards for CLIPBOARD and PRIMARY only on Linux.
+						clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
+						clipboard.Text = text;
+					}
+				}
+			}
+
+			[CommandHandler (EditCommands.Cut)]
+			void CutText ()
+			{
+				if (Buffer.HasSelection) {
+					var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+					Buffer.CutClipboard (clipboard, false);
+				}
+			}
+
+			[CommandHandler (EditCommands.Paste)]
+			void PasteText ()
+			{
+				var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+				Buffer.PasteClipboard (clipboard);
 			}
 
 			static readonly Regex lineRegex = new Regex ("\\b.*\\s(?<file>(\\w:)?[/\\\\].*):(\\w+\\s)?(?<line>\\d+)\\.?\\s*$", RegexOptions.Compiled);
@@ -95,7 +154,11 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 			{
-				if (evnt.Type == Gdk.EventType.TwoButtonPress) {
+				if (evnt.Type == Gdk.EventType.ButtonPress && evnt.Button == 3) {
+					IdeApp.CommandService.ShowContextMenu (this, evnt, menuSet, this);
+
+					return false;
+				} else if (evnt.Type == Gdk.EventType.TwoButtonPress) {
 					var cursorPos = Buffer.GetIterAtOffset (Buffer.CursorPosition);
 					TextIter iterStart;
 					TextIter iterEnd;
@@ -173,22 +236,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			outputDispatcher = new GLib.TimeoutHandler (outputDispatchHandler);
 
 			InitSearchWidget ();
-		}
-
-		[CommandHandler (Ide.Commands.EditCommands.Copy)]
-		void CopyText ()
-		{
-			TextIter start;
-			TextIter end;
-
-			if (buffer.HasSelection && buffer.GetSelectionBounds (out start, out end)) {
-				var text = buffer.GetText (start, end, false);
-				var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
-				clipboard.Text = text;
-
-				clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
-				clipboard.Text = text;
-			}
 		}
 
 		#region Searching

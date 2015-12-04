@@ -30,6 +30,7 @@
 
 using System;
 using System.Xml;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using Gtk;
@@ -861,7 +862,6 @@ namespace MonoDevelop.Components.Docking
 
 			if (UseWindowsForTopLevelFrames) {
 				var win = new Gtk.Window (Gtk.WindowType.Toplevel);
-				win.AcceptFocus = false;
 				win.SkipTaskbarHint = true;
 				win.Decorated = false;
 				win.TypeHint = Gdk.WindowTypeHint.Toolbar;
@@ -877,6 +877,17 @@ namespace MonoDevelop.Components.Docking
 				Ide.DesktopService.AddChildWindow ((Gtk.Window)Toplevel, win);
 				win.AcceptFocus = true;
 				win.Opacity = 1.0;
+
+				/* When we use real windows for frames, it's possible for pads to be over other
+				 * windows. For some reason simply presenting or raising those dialogs doesn't
+				 * seem to work, so we hide/show them in order to force them above the pad. */
+				var toplevels = Gtk.Window.ListToplevels ().Where (t => t.IsRealized && t.Visible && t.TypeHint == WindowTypeHint.Dialog); // && t.TransientFor != null);
+				foreach (var t in toplevels) {
+					t.Hide ();
+					t.Show ();
+				}
+
+				MonoDevelop.Ide.IdeApp.CommandService.RegisterTopWindow (win);
 			} else {
 				w.Parent = this;
 				w.Size = new Size (width, height);

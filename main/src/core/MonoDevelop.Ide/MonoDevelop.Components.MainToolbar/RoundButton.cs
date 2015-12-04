@@ -51,12 +51,6 @@ namespace MonoDevelop.Components.MainToolbar
 		Xwt.Drawing.Image iconStopNormal, iconStopDisabled;
 		Xwt.Drawing.Image iconBuildNormal, iconBuildDisabled;
 
-		public enum OperationIcon {
-			Run,
-			Build,
-			Stop
-		}
-
 		public RoundButton ()
 		{
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;

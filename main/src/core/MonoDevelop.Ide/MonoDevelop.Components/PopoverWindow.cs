@@ -199,12 +199,15 @@ namespace MonoDevelop.Components
 			set;
 		}
 
-		public void RepositionWindow ()
+		public void RepositionWindow (Gdk.Rectangle? newCaret = null)
 		{
 			if (parent == null)
 				return;
 
 			int x, y;
+			if (newCaret.HasValue) {//Update caret if parameter is given
+				currentCaret = newCaret.Value;
+			}
 			Gdk.Rectangle caret = currentCaret;
 			Gdk.Window window = targetWindow;
 			if (targetWindow == null)
@@ -228,7 +231,7 @@ namespace MonoDevelop.Components
 
 			Gtk.Requisition request = SizeRequest ();
 			var screen = parent.Screen;
-			Gdk.Rectangle geometry = GtkWorkarounds.GetUsableMonitorGeometry (screen, screen.GetMonitorAtPoint (x, y));
+			Gdk.Rectangle geometry = GtkWorkarounds.GetUsableMonitorGeometry (screen, screen.GetMonitorAtPoint (caret.X, caret.Y));
 
 			// Add some spacing between the screen border and the popover window
 			geometry.Inflate (-5, -5);

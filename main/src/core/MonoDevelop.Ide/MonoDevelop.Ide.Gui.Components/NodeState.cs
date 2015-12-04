@@ -40,7 +40,13 @@ namespace MonoDevelop.Ide.Gui.Components
 		public string NodeName { get; set; }
 		public bool Expanded { get; set; }
 		public bool Selected { get; set; }
+		public bool IsRoot { get { return NodeName == "__root__"; } }
 		public List<NodeState> ChildrenState { get; set; }
+
+		internal static NodeState CreateRoot ()
+		{
+			return new NodeState { NodeName = "__root__" };
+		}
 
 		internal Dictionary<string,bool> Options { get; set; }
 		
@@ -95,7 +101,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				result.Expanded = Boolean.Parse (reader.GetAttribute (expandedAttribute));
 			if (!String.IsNullOrEmpty (reader.GetAttribute (selectedAttribute)))
 				result.Selected = Boolean.Parse (reader.GetAttribute (selectedAttribute));
-				
+
 			XmlReadHelper.ReadList (reader, reader.LocalName, delegate () {
 				switch (reader.LocalName) {
 				case "Option":
@@ -141,6 +147,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			if (nav.Expanded || childrenState != null || nav.Selected) {
 				NodeState es = new NodeState ();
+				es.NodeName = nav.NodeName;
 				es.Expanded = nav.Expanded;
 				es.Selected = nav.Selected;
 				es.ChildrenState = childrenState;

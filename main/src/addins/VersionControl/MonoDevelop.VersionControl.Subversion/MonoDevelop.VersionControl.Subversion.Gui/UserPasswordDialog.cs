@@ -53,16 +53,17 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			object monitor = new Object ();
 			
 			EventHandler del = delegate {
+					UserPasswordDialog dlg = new UserPasswordDialog (user, realm, may_save, showPwd);
 					try {
-						UserPasswordDialog dlg = new UserPasswordDialog (user, realm, may_save, showPwd);
 						res = (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok);
 						if (res) {
 							s = dlg.SavePassword ? 1 : 0;
 							pwd = dlg.Password;
 							user = dlg.User;
 						}
-						dlg.Destroy ();
 					} finally {
+						dlg.Destroy ();
+						dlg.Dispose ();
 						lock (monitor) {
 							System.Threading.Monitor.Pulse (monitor);
 						}

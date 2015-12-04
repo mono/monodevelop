@@ -150,11 +150,12 @@ namespace MonoDevelop.Ide.Projects
 
 		void HandleClicked (object sender, EventArgs e)
 		{
-			var dlg = new OpenFileDialog (GettextCatalog.GetString ("Select Assembly"), FileChooserAction.Open);
+			var dlg = new OpenFileDialog (GettextCatalog.GetString ("Select Assembly"), MonoDevelop.Components.FileChooserAction.Open);
 //			dlg.AddFilter (GettextCatalog.GetString ("Assemblies"), "*.[Dd][Ll][Ll]", "*.[Ee][Xx][Ee]");
 			dlg.AddFilter (GettextCatalog.GetString ("Assemblies"), "*.dll", "*.exe");
 			dlg.CurrentFolder = basePath;
-
+			dlg.SelectMultiple = true;
+			dlg.TransientFor = selectDialog;
 			if (dlg.Run ()) {
 				basePath = dlg.CurrentFolder;
 				foreach (string file in dlg.SelectedFiles) {

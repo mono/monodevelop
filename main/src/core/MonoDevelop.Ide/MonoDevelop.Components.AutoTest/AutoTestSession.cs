@@ -25,22 +25,39 @@
 // THE SOFTWARE.
 
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Text;
 using System.Collections.Generic;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
+
+using System.Xml;
 
 namespace MonoDevelop.Components.AutoTest
 {
 	public class AutoTestSession: MarshalByRefObject
-	{
-		object currentObject;
-		
+	{		
+		[System.Runtime.InteropServices.DllImport ("/System/Library/Frameworks/QuartzCore.framework/QuartzCore")]
+		static extern IntPtr CGDisplayCreateImage (int displayID);
+
+		[System.Runtime.InteropServices.DllImport("/System/Library/Frameworks/ApplicationServices.framework/Versions/Current/ApplicationServices", EntryPoint="CGMainDisplayID")]
+		internal static extern int MainDisplayID();
+
 		readonly ManualResetEvent syncEvent = new ManualResetEvent (false);
-		
+		public readonly AutoTestSessionDebug SessionDebug = new AutoTestSessionDebug ();
+		public IAutoTestSessionDebug<MarshalByRefObject> DebugObject { 
+			get { return SessionDebug.DebugObject; }
+			set { SessionDebug.DebugObject = value; }
+		}
+
 		public AutoTestSession ()
 		{
 		}
@@ -50,20 +67,51 @@ namespace MonoDevelop.Components.AutoTest
 			return null;
 		}
 
-		public void ExecuteCommand (object cmd)
+		[Serializable]
+		public struct MemoryStats {
+			public long PrivateMemory;
+			public long PeakVirtualMemory;
+			public long PagedSystemMemory;
+			public long PagedMemory;
+			public long NonPagedSystemMemory;
+		};
+
+		public MemoryStats GetMemoryStats ()
+		{
+			MemoryStats stats;
+			using (Process proc = Process.GetCurrentProcess ()) {
+				stats = new MemoryStats {
+					PrivateMemory = proc.PrivateMemorySize64,
+					PeakVirtualMemory = proc.PeakVirtualMemorySize64,
+					PagedSystemMemory = proc.PagedSystemMemorySize64,
+					PagedMemory = proc.PagedMemorySize64,
+					NonPagedSystemMemory = proc.NonpagedSystemMemorySize64
+				};
+				return stats;
+			}
+		}
+
+		public string[] GetCounterStats ()
+		{
+			return Counters.CounterReport ();
+		}
+
+		public void ExecuteCommand (object cmd, object dataItem = null, CommandSource source = CommandSource.Unknown)
 		{
 			Gtk.Application.Invoke (delegate {
-				AutoTestService.CommandManager.DispatchCommand (cmd, null, CurrentObject);
+				AutoTestService.CommandManager.DispatchCommand (cmd, dataItem, null, source);
 			});
 		}
 		
-		object Sync (Func<object> del)
+		object Sync (Func<object> del, bool safe)
 		{
 			object res = null;
 			Exception error = null;
 
-			if (DispatchService.IsGuiThread)
-				return SafeObject (del ());
+			if (DispatchService.IsGuiThread) {
+				res = del ();
+				return safe ? SafeObject (res) : res;
+			}
 
 			syncEvent.Reset ();
 			Gtk.Application.Invoke (delegate {
@@ -76,12 +124,38 @@ namespace MonoDevelop.Components.AutoTest
 				}
 			});
 			if (!syncEvent.WaitOne (20000))
-				throw new Exception ("Timeout while executing synchronized call");
+				throw new TimeoutException ("Timeout while executing synchronized call");
 			if (error != null)
 				throw error;
-			return SafeObject (res);
+			return safe ? SafeObject (res) : res;
 		}
-		
+
+		public object Sync (Func<object> del)
+		{
+			return Sync (del, true);
+		}
+
+		// The difference between Sync and UnsafeSync is that UnsafeSync will return objects
+		// that may not be safe to be serialized across the remoting channel.
+		// But that is ok, so long as we know the places where it is being called from will
+		// not be trying to send the object over the remoting channel.
+		public object UnsafeSync (Func<object> del)
+		{
+			return Sync (del, false);
+		}
+
+		public void ExitApp ()
+		{
+			Sync (delegate {
+				try {
+					IdeApp.Exit ();
+				} catch (Exception e) {
+					Console.WriteLine (e);
+				}
+				return true;
+			});
+		}
+
 		public object GlobalInvoke (string name, object[] args)
 		{
 			return Sync (delegate {
@@ -104,6 +178,45 @@ namespace MonoDevelop.Components.AutoTest
 				return GetGlobalObject (name);
 			});
 		}
+
+		public void TakeScreenshot (string screenshotPath)
+		{
+			#if MAC
+			DispatchService.GuiDispatch (delegate {
+				try {
+					IntPtr handle = CGDisplayCreateImage (MainDisplayID ());
+					CoreGraphics.CGImage screenshot = ObjCRuntime.Runtime.GetINativeObject <CoreGraphics.CGImage> (handle, true);
+					AppKit.NSBitmapImageRep imgRep =  new AppKit.NSBitmapImageRep (screenshot);
+					var imageData = imgRep.RepresentationUsingTypeProperties (AppKit.NSBitmapImageFileType.Png);
+					imageData.Save (screenshotPath, true);
+				} catch (Exception e) {
+					Console.WriteLine (e);
+					throw;
+				}
+			});
+			#else
+			Sync (delegate {
+				try {
+					using (var bmp = new System.Drawing.Bitmap (System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width,
+						System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height)) {
+						using (var g = System.Drawing.Graphics.FromImage(bmp))
+						{
+							g.CopyFromScreen(System.Windows.Forms.Screen.PrimaryScreen.Bounds.X,
+								System.Windows.Forms.Screen.PrimaryScreen.Bounds.Y,
+								0, 0,
+								bmp.Size,
+								System.Drawing.CopyPixelOperation.SourceCopy);
+						}
+						bmp.Save(screenshotPath);
+					}
+					return null;
+				} catch (Exception e) {
+					Console.WriteLine (e);
+					throw;
+				}
+			});
+			#endif
+		}
 		
 		public void SetGlobalValue (string name, object value)
 		{
@@ -122,180 +235,13 @@ namespace MonoDevelop.Components.AutoTest
 				return null;
 			});
 		}
-		
-		public void TypeText (string text)
+			
+		// FIXME: This shouldn't be here.
+		public int ErrorCount (TaskSeverity severity)
 		{
-			foreach (char c in text) {
-				Gdk.Key key;
-				if (c == '\n')
-					key = Gdk.Key.Return;
-				else
-					key = (Gdk.Key) Gdk.Global.UnicodeToKeyval ((uint)c);
-
-				SendKeyPress (key, Gdk.ModifierType.None);
-			}
+			return TaskService.Errors.Count (x => x.Severity == severity);
 		}
 
-		//TODO: expose ATK API over the session, instead of exposing specific widgets
-		public void SelectTreeviewItem (string name)
-		{
-			var accessible = ((Gtk.Widget)currentObject).Accessible;
-			var child = GetAccessibleChildren (accessible).First (c => c.Role == Atk.Role.TableCell && c.Name == name);
-			Atk.ComponentAdapter.GetObject (child).GrabFocus ();
-		}
-
-		public string[] GetTreeviewCells ()
-		{
-			var accessible = ((Gtk.Widget)currentObject).Accessible;
-			return GetAccessibleChildren (accessible)
-				.Where (c => c.Role == Atk.Role.TableCell)
-				.Select (c => c.Name)
-				.ToArray ();
-		}
-
-		IEnumerable<Atk.Object> GetAccessibleChildren (Atk.Object obj)
-		{
-			var count = obj.NAccessibleChildren;
-			for (int i = 0; i < count; i++) {
-				var child = obj.RefAccessibleChild (i);
-				yield return child;
-				foreach (var c in GetAccessibleChildren (child))
-					yield return c;
-			}
-		}
-		
-		public void SendKeyPress (Gdk.Key key, Gdk.ModifierType state)
-		{
-			SendKeyPress (key, state, null);
-		}
-		
-		public void SendKeyPress (Gdk.Key key, Gdk.ModifierType state, string subWindow)
-		{
-			Sync (delegate {
-				SendKeyEvent ((Gtk.Widget)CurrentObject, (uint)key, state, Gdk.EventType.KeyPress, subWindow);
-				return null;
-			});
-			Thread.Sleep (15);
-			Sync (delegate {
-				SendKeyEvent ((Gtk.Widget)CurrentObject, (uint)key, state, Gdk.EventType.KeyRelease, subWindow);
-				return null;
-			});
-			Thread.Sleep (10);
-		}
-		
-		public void SelectObject (string name)
-		{
-			Sync (delegate {
-				currentObject = GetGlobalObject (name);
-				return null;
-			});
-		}
-		
-		public void SelectActiveWidget ()
-		{
-			Sync (delegate {
-				currentObject = GetActiveWidget ();
-				return null;
-			});
-		}
-
-		public bool SelectWidget (string name, bool focus)
-		{
-			return (bool) Sync (delegate {
-				var widget = GetWidget (GetFocusedWindow (), name);
-				currentObject = widget;
-				return widget != null && (!focus || FocusWidget (widget));
-			});
-		}
-
-		bool FocusWidget (Gtk.Widget widget)
-		{
-			if (widget.HasFocus)
-				return true;
-			if (widget.CanFocus) {
-				widget.GrabFocus ();
-				return true;
-			}
-			var container = widget as Gtk.Container;
-			if (container != null) {
-				var chain = container.FocusChain;
-				System.Collections.IEnumerable children = chain.Length > 0 ? chain : container.AllChildren;
-				foreach (Gtk.Widget child in children)
-					if (FocusWidget (child))
-						return true;
-			}
-			return false;
-		}
-		
-		object CurrentObject {
-			get { return currentObject; }
-		}
-
-		static Gtk.Window GetFocusedWindow (bool throwIfNotFound = true)
-		{
-			Gtk.Window win = null;
-			foreach (Gtk.Window w in Gtk.Window.ListToplevels ())
-				if (w.Visible && w.HasToplevelFocus)
-					win = w;
-
-			if (win == null && throwIfNotFound)
-				throw new Exception ("No window is focused");
-
-			return win;
-		}
-
-		Gtk.Widget GetActiveWidget ()
-		{
-			var win = GetFocusedWindow ();
-
-			Gtk.Widget widget = win;
-			while (widget is Gtk.Container) {
-				Gtk.Widget child = ((Gtk.Container)widget).FocusChild;
-				if (child != null)
-					widget = child;
-				else
-					break;
-			}
-			return widget;
-		}
-
-		Gtk.Widget GetWidget (Gtk.Container container, string name)
-		{
-			foreach (Gtk.Widget child in container.Children) {
-				if (child.Name == name)
-					return child;
-				var childContainer = child as Gtk.Container;
-				if (childContainer != null) {
-					var c = GetWidget (childContainer, name);
-					if (c != null)
-						return c;
-				}
-			}
-			return null;
-		}
-		
-		public object GetValue (string name)
-		{
-			return Sync (delegate {
-				return GetValue (CurrentObject, CurrentObject.GetType (), name);
-			});
-		}
-		
-		public void SetValue (string name, object value)
-		{
-			Sync (delegate {
-				SetValue (CurrentObject, CurrentObject.GetType (), name, value);
-				return null;
-			});
-		}
-		
-		public object Invoke (string methodName, object[] args)
-		{
-			return Sync (delegate {
-				return Invoke (CurrentObject, CurrentObject.GetType (), methodName, args);
-			});
-		}
-		
 		object SafeObject (object ob)
 		{
 			if (ob == null)
@@ -328,6 +274,8 @@ namespace MonoDevelop.Components.AutoTest
 			
 			if (remaining == null)
 				return res;
+			else if (res == null)
+				return null;
 			else
 				return GetValue (res, res.GetType (), remaining);
 		}
@@ -338,7 +286,7 @@ namespace MonoDevelop.Components.AutoTest
 			flags |= BindingFlags.SetField | BindingFlags.SetProperty;
 			type.InvokeMember (name, flags, null, target, new object[] { value });
 		}
-		
+			
 		object GetGlobalObject (string name)
 		{
 			int i = 0;
@@ -366,76 +314,360 @@ namespace MonoDevelop.Components.AutoTest
 			
 			return GetValue (null, type, name.Substring (i));
 		}
-		
-		void SendKeyEvent (Gtk.Widget target, uint keyval, Gdk.ModifierType state, Gdk.EventType eventType, string subWindow)
+
+		public AppQuery CreateNewQuery ()
 		{
-			Gdk.KeymapKey[] keyms = Gdk.Keymap.Default.GetEntriesForKeyval (keyval);
-			if (keyms.Length == 0)
-				throw new Exception ("Keyval not found");
-			
-			Gdk.Window win;
-			if (subWindow == null)
-				win = target.GdkWindow;
-			else
-				win = (Gdk.Window) GetValue (target, target.GetType (), subWindow);
-			
-			var nativeEvent = new NativeEventKeyStruct {
-				type = eventType,
-				send_event = 1,
-				window = win.Handle,
-				state = (uint)state,
-				keyval = keyval,
-				group = (byte)keyms [0].Group,
-				hardware_keycode = (ushort)keyms [0].Keycode,
-				length = 0,
-				time = Gtk.Global.CurrentEventTime
-			};
-			
-			IntPtr ptr = GLib.Marshaller.StructureToPtrAlloc (nativeEvent); 
-			try {
-				Gdk.EventHelper.Put (new Gdk.EventKey (ptr));
-			} finally {
-				Marshal.FreeHGlobal (ptr);
+			AppQuery query = new AppQuery ();
+			query.SessionDebug = SessionDebug;
+
+			return query;
+		}
+
+		public void ExecuteOnIdle (Action idleFunc, bool wait = true, int timeout = 20000)
+		{
+			if (DispatchService.IsGuiThread) {
+				idleFunc ();
+				return;
+			}
+
+			if (wait == false) {
+				GLib.Idle.Add (() => {
+					idleFunc ();
+					return false;
+				});
+
+				return;
+			}
+				
+			syncEvent.Reset ();
+			GLib.Idle.Add (() => {
+				idleFunc ();
+				syncEvent.Set ();
+				return false;
+			});
+
+			if (!syncEvent.WaitOne (timeout)) {
+				throw new TimeoutException ("Timeout while executing ExecuteOnIdleAndWait");
 			}
 		}
 
-		public void WaitForWindow (string windowName, int timeout)
+		// Executes the query outside of a syncEvent wait so it is safe to call from
+		// inside an ExecuteOnIdleAndWait
+		internal AppResult[] ExecuteQueryNoWait (AppQuery query)
 		{
-			const int pollTime = 100;
-			syncEvent.Reset ();
+			AppResult[] resultSet = query.Execute ();
+			Sync (() => {
+				DispatchService.RunPendingEvents ();
+				return true;
+			});
 
-			GLib.Timeout.Add ((uint) pollTime, () => {
-				var window = GetFocusedWindow (false);
-				if (window != null && window.Name == windowName) {
+			return resultSet;
+		}
+
+		public AppResult[] ExecuteQuery (AppQuery query, int timeout = 20000)
+		{
+			AppResult[] resultSet = null;
+
+			try {
+				ExecuteOnIdle (() => {
+					resultSet = ExecuteQueryNoWait (query);
+				});
+			} catch (TimeoutException e) {
+				throw new TimeoutException (string.Format ("Timeout while executing ExecuteQuery: {0}", query), e);
+			}
+			return resultSet;
+		}
+
+		public AppResult[] WaitForElement (AppQuery query, int timeout)
+		{
+			const int pollTime = 200;
+			syncEvent.Reset ();
+			AppResult[] resultSet = null;
+
+			GLib.Timeout.Add ((uint)pollTime, () => {
+				resultSet = ExecuteQueryNoWait (query);
+
+				if (resultSet.Length > 0) {
 					syncEvent.Set ();
 					return false;
 				}
+
 				timeout -= pollTime;
 				return timeout > 0;
 			});
 
-			if (!syncEvent.WaitOne (timeout))
-				throw new Exception ("Timeout while executing synchronized call");
+			if (!syncEvent.WaitOne (timeout)) {
+				throw new TimeoutException (String.Format ("Timeout while executing WaitForElement: {0}", query));
+			}
+
+			return resultSet;
+		}
+
+		public void WaitForNoElement (AppQuery query, int timeout)
+		{
+			const int pollTime = 100;
+			syncEvent.Reset ();
+			AppResult[] resultSet = null;
+
+			GLib.Timeout.Add ((uint)pollTime, () => {
+				resultSet = ExecuteQueryNoWait (query);
+				if (resultSet.Length == 0) {
+					syncEvent.Set ();
+					return false;
+				}
+
+				timeout -= pollTime;
+				return timeout > 0;
+			});
+
+			if (!syncEvent.WaitOne (timeout)) {
+				throw new TimeoutException (String.Format ("Timeout while executing WaitForNoElement: {0}", query));
+			}
+		}
+
+		[Serializable]
+		public struct TimerCounterContext {
+			public string CounterName;
+			public TimeSpan TotalTime;
+		};
+
+		Counter GetCounterByIDOrName (string idOrName)
+		{
+			Counter c = InstrumentationService.GetCounterByID (idOrName);
+			return c ?? InstrumentationService.GetCounter (idOrName);
+		}
+
+		public TimerCounterContext CreateNewTimerContext (string counterName)
+		{
+			TimerCounter tc = GetCounterByIDOrName (counterName) as TimerCounter;
+			if (tc == null) {
+				throw new Exception ("Unknown timer counter " + counterName);
+			}
+
+			TimerCounterContext context = new TimerCounterContext {
+				CounterName = counterName,
+				TotalTime = tc.TotalTime
+			};
+
+			return context;
+		}
+
+		public void WaitForTimerContext (TimerCounterContext context, int timeout = 20000, int pollStep = 200)
+		{
+			TimerCounter tc = GetCounterByIDOrName (context.CounterName) as TimerCounter;
+			if (tc == null) {
+				throw new Exception ("Unknown timer counter " + context.CounterName);
+			}
+
+			do {
+				if (tc.TotalTime > context.TotalTime) {
+					return;
+				}
+
+				timeout -= pollStep;
+				Thread.Sleep (pollStep);
+			} while (timeout > 0);
+
+			throw new TimeoutException ("Timed out waiting for event");
+		}
+
+		public bool Select (AppResult result)
+		{
+			bool success = false;
+
+			try {
+				ExecuteOnIdle (() => {
+					success = result.Select ();
+				});
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("Select", result.SourceQuery, result, e);
+			}
+
+			return success;
+		}
+
+		public bool Click (AppResult result, bool wait = true)
+		{
+			bool success = false;
+
+			try {
+				ExecuteOnIdle (() => {
+					success = result.Click ();
+				}, wait);
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("Click", result.SourceQuery, result, e);
+			}
+
+			return success;
+		}
+
+		public bool EnterText (AppResult result, string text)
+		{
+			try {
+				ExecuteOnIdle (() => result.EnterText (text));
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("EnterText", result.SourceQuery, result, e);
+			}
+
+			return true;
+		}
+
+		public bool TypeKey (AppResult result, char key, string modifiers)
+		{
+			try {
+				ExecuteOnIdle (() => result.TypeKey (key, modifiers));
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("TypeKey", result.SourceQuery, result, e);
+			}
+
+			return true;
+		}
+
+		public bool TypeKey (AppResult result, string keyString, string modifiers)
+		{
+			try {
+				ExecuteOnIdle (() => result.TypeKey (keyString, modifiers));
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("TypeKey", result.SourceQuery, result, e);
+			}
+
+			return true;
+		}
+
+		public bool Toggle (AppResult result, bool active)
+		{
+			bool success = false;
+
+			try {
+				ExecuteOnIdle (() => {
+					success = result.Toggle (active);
+				});
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("Toggle", result.SourceQuery, result, e);
+			}
+
+			return success;
+		}
+
+		public void Flash (AppResult result)
+		{
+			try {
+				ExecuteOnIdle (() => result.Flash ());
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("Flash", result.SourceQuery, result, e);
+			}
+		}
+
+		public bool SetActiveConfiguration (AppResult result, string configuration)
+		{
+			bool success = false;
+
+			try {
+				ExecuteOnIdle (() => {
+					success = result.SetActiveConfiguration (configuration);
+				});
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("SetActiveConfiguration", result.SourceQuery, result, e);
+			}
+
+			return success;
+		}
+
+		public bool SetActiveRuntime (AppResult result, string runtime)
+		{
+			bool success = false;
+
+			try {
+				ExecuteOnIdle (() => {
+					success = result.SetActiveRuntime (runtime);
+				});
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("SetActiveRuntime", result.SourceQuery, result, e);
+			}
+
+			return success;
+		}
+
+		void ThrowOperationTimeoutException (string operation, string query, AppResult result, Exception innerException)
+		{
+			throw new TimeoutException (string.Format ("Timeout while executing {0}: {1}\n\ton Element: {2}", operation, query, result), innerException);
+		}
+
+		void AddChildrenToDocument (XmlDocument document, XmlElement parentElement, AppResult children, bool withSiblings = true)
+		{
+			while (children != null) {
+				XmlElement childElement = document.CreateElement ("result");
+				children.ToXml (childElement);
+				parentElement.AppendChild (childElement);
+
+				if (children.FirstChild != null) {
+					AddChildrenToDocument (document, childElement, children.FirstChild);
+				}
+
+				children = withSiblings ? children.NextSibling : null;
+			}
+		}
+
+		class UTF8StringWriter : StringWriter
+		{
+			public override Encoding Encoding {
+				get {
+					return Encoding.UTF8;
+				}
+			}
+		}
+
+		//
+		// The XML result structure
+		// <AutoTest>
+		//   <query>c =&gt; c.Window()</query>
+		//   <results>
+		//     <result type="Gtk.Window" fulltype="Gtk.Window" name="Main Window" visible="true" sensitive="true" allocation="1,1 1024x1024">
+		//       ... contains result elements for all children widgets ...
+		//     </result>
+		//     ... and more result element trees for each of the AppResult in results ...
+		//   </results>
+		// </AutoTest>
+		//
+		public string ResultsAsXml (AppResult[] results)
+		{
+			XmlDocument document = new XmlDocument ();
+			XmlElement rootElement = document.CreateElement ("AutoTest");
+			document.AppendChild (rootElement);
+
+			if (results [0].SourceQuery != null) {
+				XmlElement queryElement = document.CreateElement ("query");
+				queryElement.AppendChild (document.CreateTextNode (results [0].SourceQuery));
+				rootElement.AppendChild (queryElement);
+			}
+
+			XmlElement resultsElement = document.CreateElement ("results");
+			rootElement.AppendChild (resultsElement);
+
+			try {
+				ExecuteOnIdle (() => {
+					foreach (var result in results) {
+						AddChildrenToDocument (document, resultsElement, result, false);
+					}
+				});
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("ResultsAsXml", null, null, e);
+			}
+
+			string output;
+
+			using (var sw = new UTF8StringWriter ()) {
+				using (var xw = XmlWriter.Create (sw, new XmlWriterSettings { Indent = true })) {
+					document.WriteTo (xw);
+				}
+
+				output = sw.ToString ();
+			}
+
+			return output;
 		}
 	}
 
-	
-	// Analysis disable InconsistentNaming
-	[StructLayout (LayoutKind.Sequential)] 
-	struct NativeEventKeyStruct { 
-		public Gdk.EventType type; 
-		public IntPtr window; 
-		public sbyte send_event; 
-		public uint time; 
-		public uint state; 
-		public uint keyval; 
-		public int length;
-		public IntPtr str;
-		public ushort hardware_keycode;
-		public byte group;
-		public uint is_modifier;
-	} 
-	
 	[StructLayout (LayoutKind.Sequential)] 
 	struct NativeEventButtonStruct { 
 		public Gdk.EventType type; 

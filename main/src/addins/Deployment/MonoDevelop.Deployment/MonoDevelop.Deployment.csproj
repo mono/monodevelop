@@ -24,6 +24,7 @@
     <DefineConstants>DEBUG</DefineConstants>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\..\build\AddIns\MonoDevelop.Deployment\MonoDevelop.Deployment.xml</DocumentationFile>
+    <DebugType>full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -142,7 +143,6 @@
     <Compile Include="MonoDevelop.Deployment\DeployPlatformInfo.cs" />
     <Compile Include="MonoDevelop.Deployment.Gui\DeployFileListWidget.cs" />
     <Compile Include="MonoDevelop.Deployment.Gui\PackagingFeatureWidget.cs" />
-    <Compile Include="MonoDevelop.Deployment.Gui\PackagingFeature.cs" />
     <Compile Include="MonoDevelop.Deployment.Gui\BinariesZipEditorWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.LocalFileCopyConfigurationEditorWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector.cs" />
@@ -194,6 +194,15 @@
     <EmbeddedResource Include="MonoDevelop.Deployment.addin.xml">
       <LogicalName>MonoDevelop.Deployment.addin.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\packaging-project.png">
+      <LogicalName>packaging-project.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\packaging-project%402x.png">
+      <LogicalName>packaging-project@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="templates\images\" />
+  </ItemGroup>
 </Project>

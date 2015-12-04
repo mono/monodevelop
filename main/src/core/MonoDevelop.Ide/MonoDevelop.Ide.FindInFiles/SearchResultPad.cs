@@ -72,13 +72,10 @@ namespace MonoDevelop.Ide.FindInFiles
 				return widget.AllowReuse; 
 			}
 		}
-		
-		public string BasePath {
-			get {
-				return widget.BasePath;
-			}
+
+		internal PathMode PathMode {
 			set {
-				widget.BasePath = value;
+				widget.PathMode = value;
 			}
 		}
 		

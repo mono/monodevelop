@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Instrumentation
 {
@@ -42,7 +43,12 @@ namespace MonoDevelop.Core.Instrumentation
 		public TimerCounter (string name, CounterCategory category): base (name, category)
 		{
 		}
-		
+
+		public override string ToString ()
+		{
+			return string.Format ("[TimerCounter: Name={0} Id={1} Category={2} MinSeconds={3}, TotalTime={4}, AverageTime={5}, MinTime={6}, MaxTime={7}, CountWithDuration={8}]",Name, Id, Category, MinSeconds, TotalTime, AverageTime, MinTime, MaxTime, CountWithDuration);
+		}
+
 		public double MinSeconds {
 			get { return this.minSeconds; }
 			set { this.minSeconds = value; }
@@ -87,7 +93,7 @@ namespace MonoDevelop.Core.Instrumentation
 					lastTimer.Trace (message);
 				else {
 					lock (values) {
-						StoreValue (message, null);
+						StoreValue (message, null, null);
 					}
 				}
 			}
@@ -97,10 +103,20 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public ITimeTracker BeginTiming ()
 		{
-			return BeginTiming (null);
+			return BeginTiming (null, null);
 		}
 		
 		public ITimeTracker BeginTiming (string message)
+		{
+			return BeginTiming (message, null);
+		}
+
+		public ITimeTracker BeginTiming (IDictionary<string, string> metadata)
+		{
+			return BeginTiming (null, metadata);
+		}
+
+		public ITimeTracker BeginTiming (string message, IDictionary<string, string> metadata)
 		{
 			ITimeTracker timer;
 			if (!Enabled) {
@@ -110,7 +126,8 @@ namespace MonoDevelop.Core.Instrumentation
 				lock (values) {
 					timer = lastTimer = c;
 					count++;
-					int i = StoreValue (message, lastTimer);
+					totalCount++;
+					int i = StoreValue (message, lastTimer, metadata);
 					lastTimer.TraceList.ValueIndex = i;
 				}
 			}
@@ -118,7 +135,7 @@ namespace MonoDevelop.Core.Instrumentation
 				InstrumentationService.LogMessage (message);
 			return timer;
 		}
-		
+
 		public void EndTiming ()
 		{
 			if (Enabled && lastTimer != null)

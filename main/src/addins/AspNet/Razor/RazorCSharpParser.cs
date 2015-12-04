@@ -221,6 +221,7 @@ namespace MonoDevelop.AspNet.Razor
 				configuration = null;
 			}
 			if (configuration != null) {
+				//TODO: use our assemblies, not the project's
 				var rws = configuration.GetSectionGroup (RazorWebSectionGroup.GroupName) as RazorWebSectionGroup;
 				if (rws != null) {
 					host = WebRazorHostFactory.CreateHostFromConfig (rws, virtualPath, fileName);

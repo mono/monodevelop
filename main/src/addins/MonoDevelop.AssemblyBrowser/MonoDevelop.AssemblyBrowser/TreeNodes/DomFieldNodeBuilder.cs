@@ -82,6 +82,8 @@ namespace MonoDevelop.AssemblyBrowser
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
 			var field = CecilLoader.GetCecilObject ((IUnresolvedField)navigator.DataItem);
+			if (field == null)
+				return null;
 			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleField (field));
 		}
 		
@@ -90,6 +92,8 @@ namespace MonoDevelop.AssemblyBrowser
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
 			var field = CecilLoader.GetCecilObject ((IUnresolvedField)navigator.DataItem);
+			if (field == null)
+				return null;
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), field.DeclaringType, b => b.AddField (field));
 		}
 
@@ -98,6 +102,8 @@ namespace MonoDevelop.AssemblyBrowser
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
 			var field = CecilLoader.GetCecilObject ((IUnresolvedField)navigator.DataItem);
+			if (field == null)
+				return null;
 			return DomMethodNodeBuilder.GetSummary (data, DomMethodNodeBuilder.GetModule (navigator), field.DeclaringType, b => b.AddField (field));
 		}
 

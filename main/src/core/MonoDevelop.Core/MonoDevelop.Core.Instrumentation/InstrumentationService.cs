@@ -47,6 +47,7 @@ namespace MonoDevelop.Core.Instrumentation
 	public static class InstrumentationService
 	{
 		static Dictionary <string, Counter> counters;
+		static Dictionary <string, Counter> countersByID;
 		static List<CounterCategory> categories;
 		static bool enabled = true;
 		static DateTime startTime;
@@ -60,6 +61,7 @@ namespace MonoDevelop.Core.Instrumentation
 		static InstrumentationService ()
 		{
 			counters = new Dictionary <string, Counter> ();
+			countersByID = new Dictionary <string, Counter> ();
 			categories = new List<CounterCategory> ();
 			startTime = DateTime.Now;
 		}
@@ -244,6 +246,9 @@ namespace MonoDevelop.Core.Instrumentation
 
 		static Counter CreateCounter (string name, string category, bool logMessages, string id, bool isTimer)
 		{
+			if (name == null)
+				throw new ArgumentNullException ("name", "Counters must have a Name");
+
 			InitializeHandlers ();
 			
 			if (category == null)
@@ -265,7 +270,10 @@ namespace MonoDevelop.Core.Instrumentation
 				if (counters.TryGetValue (name, out old))
 					old.Disposed = true;
 				counters [name] = c;
-				
+				if (!string.IsNullOrEmpty (id)) {
+					countersByID [id] = c;
+				}
+
 				foreach (var h in handlers) {
 					if (h.SupportsCounter (c))
 						c.Handlers.Add (h);
@@ -336,7 +344,14 @@ namespace MonoDevelop.Core.Instrumentation
 				return c;
 			}
 		}
-		
+
+		public static Counter GetCounterByID (string id)
+		{
+			lock (counters) {
+				return countersByID [id];
+			}
+		}
+
 		public static CounterCategory GetCategory (string name)
 		{
 			lock (counters) {

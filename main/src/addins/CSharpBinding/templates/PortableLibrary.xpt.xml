@@ -6,8 +6,9 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Portable Library</_Name>
-		<_Category>C#</_Category>
+		<Category>multiplat/library/general</Category>
 		<Icon>md-project-library</Icon>
+		<Image id="md-pcl-project" />
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates a C# library that can be used in Windows, Mac, Silverlight, Windows Phone, Xamarin.iOS and Xamarin.Android.</_Description>
 		<DefaultFilename>PortableLibrary</DefaultFilename>

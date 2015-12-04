@@ -48,7 +48,7 @@ using System.Text;
 using ICSharpCode.NRefactory.Completion;
 using System.Diagnostics;
 using MonoDevelop.Projects.SharedAssetsProjects;
-using Mono.CSharp.Nullable;
+using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -160,7 +160,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 	public static class TypeSystemService
 	{
-		const string CurrentVersion = "1.1.8";
+		const string CurrentVersion = "1.1.9";
 		static readonly List<TypeSystemParserNode> parsers;
 		static string[] filesSkippedInParseThread = new string[0];
 
@@ -197,13 +197,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			});
 
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/OutputTracking", delegate (object sender, ExtensionNodeEventArgs args) {
-				var projectType = ((TypeSystemOutputTrackingNode)args.ExtensionNode).ProjectType;
+				var node = (TypeSystemOutputTrackingNode)args.ExtensionNode;
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					outputTrackedProjects.Add (projectType);
+					outputTrackedProjects.Add (node);
 					break;
 				case ExtensionChange.Remove:
-					outputTrackedProjects.Remove (projectType);
+					outputTrackedProjects.Remove (node);
 					break;
 				}
 			});
@@ -260,13 +260,23 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		static readonly List<string> outputTrackedProjects = new List<string> ();
+		static readonly List<TypeSystemOutputTrackingNode> outputTrackedProjects = new List<TypeSystemOutputTrackingNode> ();
+
+		static bool IsOutputTracked (DotNetProject project)
+		{
+			foreach (var projectType in project.GetProjectTypes ()) {
+				if (outputTrackedProjects.Any (otp => otp.ProjectType != null && string.Equals (otp.ProjectType, projectType, StringComparison.OrdinalIgnoreCase))) {
+					return true;
+				}
+			}
+			return outputTrackedProjects.Any (otp => otp.LanguageName != null && string.Equals (otp.LanguageName, project.LanguageName, StringComparison.OrdinalIgnoreCase));
+		}
 
 		static void CheckProjectOutput (DotNetProject project, bool autoUpdate)
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
-			if (project.GetProjectTypes ().Any (p => outputTrackedProjects.Contains (p, StringComparer.OrdinalIgnoreCase))) {
+			if (IsOutputTracked (project)) {
 				var fileName = project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
 
 				var wrapper = GetProjectContentWrapper (project);
@@ -664,6 +674,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			throw new Exception ("Too many cache directories");
 		}
 
+		static string EscapeToXml (string txt)
+		{
+			return new System.Xml.Linq.XText (txt).ToString ();
+		}
+
 		static string CreateCacheDirectory (FilePath fileName)
 		{
 			CanonicalizePath (ref fileName);
@@ -675,7 +690,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				File.WriteAllText (
 					Path.Combine (cacheDir, "data.xml"),
-					string.Format ("<DerivedData><File name=\"{0}\" version =\"{1}\"/></DerivedData>", fileName, CurrentVersion)
+					string.Format ("<DerivedData><File name=\"{0}\" version =\"{1}\"/></DerivedData>", EscapeToXml (fileName), CurrentVersion)
 				);
 
 				return cacheDir;
@@ -1119,10 +1134,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			public bool WasChanged;
 			[NonSerialized]
 			ICompilation compilation;
+			object compilationContentLock = new object ();
 
 			public ICompilation Compilation {
 				get {
-					lock (updateContentLock) {
+					lock (compilationContentLock) {
 						if (compilation == null) {
 							compilation = Content.CreateCompilation ();
 						}
@@ -1536,11 +1552,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				return newReferencedAssemblies;
 			}
 
-			object assemblyReconnectLock = new object();
-
 			public void EnsureReferencesAreLoaded ()
 			{
-				lock (assemblyReconnectLock) {
+				lock (projectContentLock) {
 					if (referencesConnected)
 						return;
 					compilation = null;
@@ -1612,7 +1626,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 			}
-			object reconnectLock = new object();
+			static readonly object reconnectLock = new object();
 			public void ReconnectAssemblyReferences ()
 			{
 				var netProject = Project as DotNetProject;
@@ -1636,7 +1650,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var asm in referencedAssemblies) {
 					asm.Loaded -= HandleReferencedProjectInLoadChange;
 				}
+				foreach (var wrapper in referencedWrappers) {
+					wrapper.Loaded -= HandleReferencedProjectInLoadChange;
+				}
 				loadActions = null;
+				foreach (var wrapper in referencedWrappers) {
+					wrapper.Loaded -= HandleReferencedProjectInLoadChange;
+				}
 				referencedWrappers.Clear ();
 				referencedAssemblies.Clear ();
 				Loaded = null;

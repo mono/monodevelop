@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using NUnit.Framework;
 
@@ -38,6 +39,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		FakePackageManagementProjectService projectService;
 		List<ProjectTargetFrameworkChangedEventArgs> eventArgs;
 		FakeSolution solution;
+		int solutionCount;
 		const string targetFrameworkPropertyName = "TargetFramework";
 
 		void CreateProjectTargetFrameworkMonitor ()
@@ -49,12 +51,14 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		FakeDotNetProject LoadSolutionWithOneProject ()
 		{
-			solution = new FakeSolution ();
+			solutionCount++;
+			string fileName = String.Format (@"d:\projects\MySolution\MySolution{0}.sln", solutionCount);
+			solution = new FakeSolution (fileName);
 			projectService.OpenSolution = solution;
 			var project = new FakeDotNetProject ();
 			projectService.OpenProjects.Add (project);
 			solution.Projects.Add (project);
-			projectService.RaiseSolutionLoadedEvent ();
+			projectService.RaiseSolutionLoadedEvent (solution);
 
 			return project;
 		}
@@ -68,7 +72,12 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void UnloadSolution ()
 		{
-			projectService.RaiseSolutionUnloadedEvent ();
+			UnloadSolution (solution);
+		}
+
+		void UnloadSolution (FakeSolution solutionToUnload)
+		{
+			projectService.RaiseSolutionUnloadedEvent (solutionToUnload);
 		}
 
 		FakeDotNetProject AddNewProjectToSolution ()
@@ -78,6 +87,18 @@ namespace MonoDevelop.PackageManagement.Tests
 			solution.RaiseProjectAddedEvent (project);
 
 			return project;
+		}
+
+		FakeDotNetProject CreateProjectWithTargetFramework (string targetFramework)
+		{
+			var project = new FakeDotNetProject ();
+			project.TargetFrameworkMoniker = TargetFrameworkMoniker.Parse (targetFramework);
+			return project;
+		}
+
+		void RaiseProjectReloadedEvent (FakeDotNetProject oldProject, FakeDotNetProject newProject)
+		{
+			projectService.RaiseProjectReloadedEvent (oldProject, newProject);
 		}
 
 		[Test]
@@ -182,6 +203,112 @@ namespace MonoDevelop.PackageManagement.Tests
 			project.RaiseModifiedEvent (project, targetFrameworkPropertyName);
 
 			Assert.AreEqual (0, eventArgs.Count);
+		}
+
+		[Test]
+		public void ProjectReloaded_TargetFrameworkChanged_EventFires ()
+		{
+			CreateProjectTargetFrameworkMonitor ();
+			FakeDotNetProject project = LoadSolutionWithOneProject ();
+			FakeDotNetProject reloadedProject = CreateProjectWithTargetFramework (".NETFramework,Version=v2.0");
+			CaptureProjectTargetFrameworkChangedEvents ();
+
+			RaiseProjectReloadedEvent (project, reloadedProject);
+
+			Assert.AreEqual (1, eventArgs.Count);
+			Assert.AreEqual (reloadedProject, eventArgs [0].Project);
+		}
+
+		[Test]
+		public void ProjectReloaded_TargetFrameworkNotChanged_EventDoesNotFire ()
+		{
+			CreateProjectTargetFrameworkMonitor ();
+			FakeDotNetProject project = LoadSolutionWithOneProject ();
+			var reloadedProject = new FakeDotNetProject ();
+			reloadedProject.TargetFrameworkMoniker = project.TargetFrameworkMoniker;
+			CaptureProjectTargetFrameworkChangedEvents ();
+
+			RaiseProjectReloadedEvent (project, reloadedProject);
+
+			Assert.AreEqual (0, eventArgs.Count);
+		}
+
+		[Test]
+		public void ProjectReloaded_TargetFrameworkNullInReloadedProject_EventDoesNotFire ()
+		{
+			CreateProjectTargetFrameworkMonitor ();
+			FakeDotNetProject project = LoadSolutionWithOneProject ();
+			var reloadedProject = new FakeDotNetProject ();
+			reloadedProject.TargetFrameworkMoniker = null;
+			CaptureProjectTargetFrameworkChangedEvents ();
+
+			RaiseProjectReloadedEvent (project, reloadedProject);
+
+			Assert.AreEqual (0, eventArgs.Count);
+		}
+
+		[Test]
+		public void SolutionUnloaded_TwoSolutionsLoadedInWorkspaceAndBothSolutionsUnloaded_NullReferenceExceptionIsNotThrown ()
+		{
+			CreateProjectTargetFrameworkMonitor ();
+			LoadSolutionWithOneProject ();
+			projectService.OpenProjects.Clear ();
+			LoadSolutionWithOneProject ();
+			UnloadSolution ();
+
+			Assert.DoesNotThrow (UnloadSolution);
+		}
+
+		[Test]
+		public void ProjectModified_TwoSolutionsLoadedProjectTargetFrameworkChangedInFirstAndSecondSolution_EventFiresForBothProjects ()
+		{
+			CreateProjectTargetFrameworkMonitor ();
+			FakeDotNetProject firstProject = LoadSolutionWithOneProject ();
+			projectService.OpenProjects.Clear ();
+			FakeDotNetProject secondProject = LoadSolutionWithOneProject ();
+			CaptureProjectTargetFrameworkChangedEvents ();
+
+			firstProject.RaiseModifiedEvent (firstProject, targetFrameworkPropertyName);
+			secondProject.RaiseModifiedEvent (secondProject, targetFrameworkPropertyName);
+
+			Assert.AreEqual (2, eventArgs.Count);
+			Assert.AreEqual (firstProject, eventArgs [0].Project);
+			Assert.AreEqual (secondProject, eventArgs [1].Project);
+		}
+
+		[Test]
+		public void ProjectModified_TwoSolutionsLoadedSecondSolutionUnloadedProjectTargetFrameworkChangedInFirstAndSecondSolution_EventFiresForProjectInOpenSolutionOnly ()
+		{
+			CreateProjectTargetFrameworkMonitor ();
+			FakeDotNetProject firstProject = LoadSolutionWithOneProject ();
+			projectService.OpenProjects.Clear ();
+			FakeDotNetProject secondProject = LoadSolutionWithOneProject ();
+			CaptureProjectTargetFrameworkChangedEvents ();
+			UnloadSolution ();
+
+			firstProject.RaiseModifiedEvent (firstProject, targetFrameworkPropertyName);
+			secondProject.RaiseModifiedEvent (secondProject, targetFrameworkPropertyName);
+
+			Assert.AreEqual (1, eventArgs.Count);
+			Assert.AreEqual (firstProject, eventArgs [0].Project);
+		}
+
+		[Test]
+		public void ProjectModified_TwoSolutionsLoadedFirstSolutionUnloadedProjectTargetFrameworkChangedInFirstAndSecondSolution_EventFiresForProjectInOpenSolutionOnly ()
+		{
+			CreateProjectTargetFrameworkMonitor ();
+			FakeDotNetProject firstProject = LoadSolutionWithOneProject ();
+			FakeSolution firstSolution = new FakeSolution (solution.FileName);
+			projectService.OpenProjects.Clear ();
+			FakeDotNetProject secondProject = LoadSolutionWithOneProject ();
+			CaptureProjectTargetFrameworkChangedEvents ();
+			UnloadSolution (firstSolution);
+
+			firstProject.RaiseModifiedEvent (firstProject, targetFrameworkPropertyName);
+			secondProject.RaiseModifiedEvent (secondProject, targetFrameworkPropertyName);
+
+			Assert.AreEqual (1, eventArgs.Count);
+			Assert.AreEqual (secondProject, eventArgs [0].Project);
 		}
 	}
 }

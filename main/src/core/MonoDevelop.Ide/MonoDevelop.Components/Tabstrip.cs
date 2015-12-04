@@ -277,6 +277,7 @@ namespace MonoDevelop.Components
 			this.Label = label;
 			layout = PangoUtil.CreateLayout (parent);
 			layout.SetText (label);
+			layout.Alignment = Pango.Alignment.Center;
 			layout.GetPixelSize (out w, out h);
 
 			if (IsSeparator)
@@ -335,13 +336,26 @@ namespace MonoDevelop.Components
 					cr.Fill ();
 				}
 			}
-			
+
 			if (Active)
 				cr.SetSourceRGB (1, 1, 1);
 			else
 				cr.SetSourceColor (parent.Style.Text (StateType.Normal).ToCairoColor ());
 
-			cr.MoveTo (rectangle.X + (rectangle.Width - w) / 2, (rectangle.Height - h) / 2);
+			if (layout.Width != (int)rectangle.Width)
+				layout.Width = (int)rectangle.Width;
+
+			#if MAC
+			/* On Cocoa, Pango doesn't render text correctly using layout width/height computation.
+			 * For instance here we need to balance some kind of internal padding by two pixels which
+			 * only happens on Mac.
+			 */
+			const int verticalOffset = -2;
+			#else
+			const int verticalOffset = 0;
+			#endif
+
+			cr.MoveTo (rectangle.X + (int)(rectangle.Width / 2), (rectangle.Height - h) / 2 + verticalOffset);
 			Pango.CairoHelper.ShowLayout (cr, layout);
 		}
 		

@@ -53,19 +53,9 @@ namespace MonoDevelop.Components.MainToolbar
 				return this;
 			}
 		}
-		public MainStatusBarContextImpl (StatusArea statusBar): base (statusBar)
+		public MainStatusBarContextImpl (StatusBarContextHandler statusHandler): base (statusHandler)
 		{
 			StatusChanged = true;
-		}
-		
-		public void ShowCaretState (int line, int column, int selectedChars, bool isInInsertMode)
-		{
-			statusBar.ShowCaretState (line, column, selectedChars, isInInsertMode);
-		}
-		
-		public void ClearCaretState ()
-		{
-			statusBar.ClearCaretState ();
 		}
 		
 		public StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)
@@ -81,12 +71,13 @@ namespace MonoDevelop.Components.MainToolbar
 		public void ShowReady ()
 		{
 			statusBar.ShowReady ();
+			statusBar.SetMessageSourcePad (null);
 		}
 		
 		public void SetMessageSourcePad (Pad pad)
 		{
 			StatusSourcePad = pad;
-			if (statusBar.IsCurrentContext (this))
+			if (statusHandler.IsCurrentContext (this))
 				statusBar.SetMessageSourcePad (pad);
 		}
 		

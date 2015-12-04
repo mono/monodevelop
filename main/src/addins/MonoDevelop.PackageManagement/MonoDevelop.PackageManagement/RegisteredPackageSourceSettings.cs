@@ -39,7 +39,9 @@ namespace ICSharpCode.PackageManagement
 {
 	public class RegisteredPackageSourceSettings
 	{
+		public static readonly string PackageSourcesSectionName = "packageSources";
 		public static readonly string ActivePackageSourceSectionName = "activePackageSource";
+		public static readonly string DisabledPackageSourceSectionName = "disabledPackageSources";
 
 		public static readonly PackageSource AggregatePackageSource = 
 			new PackageSource("(Aggregate source)", "All");
@@ -84,8 +86,8 @@ namespace ICSharpCode.PackageManagement
 
 		void ReadActivePackageSource()
 		{
-			IList<KeyValuePair<string, string>> packageSources = settings.GetValues(ActivePackageSourceSectionName);
-			activePackageSource = PackageSourceConverter.ConvertFromFirstKeyValuePair(packageSources);
+			IList<SettingValue> packageSources = settings.GetValues(ActivePackageSourceSectionName, false);
+			activePackageSource = PackageSourceConverter.ConvertFromFirstSetting(packageSources);
 		}
 
 		public RegisteredPackageSources PackageSources {

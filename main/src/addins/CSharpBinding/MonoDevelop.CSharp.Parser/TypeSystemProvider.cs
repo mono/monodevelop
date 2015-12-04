@@ -31,12 +31,12 @@ using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.CSharp.Project;
 using MonoDevelop.Ide.Tasks;
-using Mono.CSharp;
 using System.Linq;
 using ICSharpCode.NRefactory;
 using MonoDevelop.CSharp.Refactoring.CodeActions;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.MonoCSharp;
 
 namespace MonoDevelop.CSharp.Parser
 {
@@ -86,7 +86,14 @@ namespace MonoDevelop.CSharp.Parser
 
 			result.CreateRefactoringContext = delegate (MonoDevelop.Ide.Gui.Document doc, System.Threading.CancellationToken token) {
 				var task = MDRefactoringContext.Create (doc, doc.Editor.Caret.Location, token);
-				task.Wait (5000, token);
+				try {
+					task.Wait (5000, token);
+				} catch (AggregateException ae) {
+					ae.Flatten ().Handle (aex => aex is OperationCanceledException);
+					return null;
+				} catch (OperationCanceledException) {
+					return null;
+				}
 				if (!task.IsCompleted)
 					return null;
 				return task.Result;
@@ -424,8 +431,6 @@ namespace MonoDevelop.CSharp.Parser
 		internal static Version ConvertLanguageVersion (LangVersion ver)
 		{
 			switch (ver) {
-			case LangVersion.Default:
-				return new Version (5, 0, 0, 0);
 			case LangVersion.ISO_1:
 				return new Version (1, 0, 0, 0);
 			case LangVersion.ISO_2:
@@ -436,8 +441,12 @@ namespace MonoDevelop.CSharp.Parser
 				return new Version (4, 0, 0, 0);
 			case LangVersion.Version5:
 				return new Version (5, 0, 0, 0);
+			case LangVersion.Version6:
+				return new Version (6, 0, 0, 0);
+			case LangVersion.Default:
+				break;
 			}
-			return new Version (5, 0, 0, 0);;
+			return new Version (6, 0, 0, 0);;
 		}
 	}
 	

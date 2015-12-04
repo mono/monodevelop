@@ -104,7 +104,7 @@ namespace MonoDevelop.Components
 				loading = true;
 				if (!string.IsNullOrEmpty (value) && displayAsRelativePath)
 					value = ((FilePath)value).ToRelative (DefaultPath);
-				pathEntry.Text = value;
+				pathEntry.Text = value ?? "";
 				loading = false;
 			}
 		}
@@ -131,8 +131,11 @@ namespace MonoDevelop.Components
 				startIn = DefaultPath;
 
 			string path = ShowBrowseDialog (BrowserTitle, startIn);
-			if (path != null)
-				pathEntry.Text = path;
+			if (path != null) {
+				Path = path;
+				// Path setter suppresses change events so fire the event ourselves
+				OnTextChanged (null, null);
+			}
 		}
 		
 		void OnTextChanged (object o, EventArgs args)

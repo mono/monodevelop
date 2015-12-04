@@ -4,8 +4,10 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Packaging project</_Name>
-		<_Category>Other</_Category>
+		<Category>other/misc/generic</Category>
 		<Icon>md-project-package</Icon>
+		<Image id="md-packaging-project" />
+		<FileExtension>.mdproj</FileExtension>
 		<_Description>Create a project which can generate packages for a solution</_Description>
 	</TemplateConfiguration>
 	

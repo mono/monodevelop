@@ -44,6 +44,7 @@ using System.Text.RegularExpressions;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.NUnit.External;
 
 namespace MonoDevelop.NUnit
 {
@@ -104,6 +105,7 @@ namespace MonoDevelop.NUnit
 		public TestResultsPad ()
 		{
 			testService.TestSuiteChanged += new EventHandler (OnTestSuiteChanged);
+			IdeApp.Workspace.WorkspaceItemClosed += OnWorkspaceItemClosed;
 			
 			panel = new VBox ();
 			
@@ -211,7 +213,7 @@ namespace MonoDevelop.NUnit
 			
 			buttonRun = new Button ();
 			buttonRun.Label = GettextCatalog.GetString ("Rerun Tests");
-			buttonRun.Image = new Gtk.Image (Gtk.Stock.Execute, IconSize.Menu);
+			buttonRun.Image = new ImageView (ImageService.GetIcon ("nunit-run", IconSize.Menu));
 			buttonRun.Image.Show ();
 			buttonRun.Sensitive = false;
 			toolbar.Add (buttonRun);
@@ -248,6 +250,8 @@ namespace MonoDevelop.NUnit
 			
 			progressBar.HeightRequest = infoLabel.SizeRequest ().Height;
 			runPanel.ShowAll ();
+			progressBar.Hide ();
+			infoSep.Hide ();
 			resultSummary = new UnitTestResult ();
 			UpdateCounters ();
 		}
@@ -258,14 +262,28 @@ namespace MonoDevelop.NUnit
 		
 		public void OnTestSuiteChanged (object sender, EventArgs e)
 		{
+			if (rootTest != null) {
+				rootTest = testService.SearchTest (rootTest.FullName);
+				if (rootTest == null)
+					buttonRun.Sensitive = false;
+			}
+		}
+
+		void OnWorkspaceItemClosed (object sender, EventArgs e)
+		{
+			ClearResults ();
+		}
+
+		void ClearResults ()
+		{
 			if (failuresTreeView.IsRealized)
 				failuresTreeView.ScrollToPoint (0, 0);
 
 			results.Clear ();
-			
+
 			error = null;
 			errorMessage = null;
-			
+
 			failuresStore.Clear ();
 			outputView.Buffer.Clear ();
 			outIters.Clear ();
@@ -273,12 +291,10 @@ namespace MonoDevelop.NUnit
 			progressBar.Text = "";
 			testsRun = 0;
 			resultSummary = new UnitTestResult ();
+			resultLabel.Markup = "";
+			resultLabel.Hide ();
+			labels.Show ();
 			UpdateCounters ();
-			if (rootTest != null) {
-				rootTest = testService.SearchTest (rootTest.FullName);
-				if (rootTest == null)
-					buttonRun.Sensitive = false;
-			}
 		}
 		
 		bool Running {
@@ -369,13 +385,19 @@ namespace MonoDevelop.NUnit
 
 		public void AddErrorMessage ()
 		{
-			string msg = GettextCatalog.GetString ("Internal error");
-			if (errorMessage != null)
-				msg += ": " + Escape (errorMessage);
+			string msg;
+			if (error is RemoteUnhandledException)
+				msg = Escape (errorMessage);
+			else {
+				msg = GettextCatalog.GetString ("Internal error");
+				if (errorMessage != null)
+					msg += ": " + Escape (errorMessage);
+			}
 
 			var stock = ImageService.GetIcon (Ide.Gui.Stock.Error, Gtk.IconSize.Menu);
 			TreeIter testRow = failuresStore.AppendValues (stock, msg, null, null, 0);
-			failuresStore.AppendValues (testRow, null, Escape (error.GetType ().Name + ": " + error.Message), null);
+			string name = error is RemoteUnhandledException ? ((RemoteUnhandledException)error).RemoteExceptionName : error.GetType ().Name;
+			failuresStore.AppendValues (testRow, null, Escape (name + ": " + error.Message), null);
 			TreeIter row = failuresStore.AppendValues (testRow, null, GettextCatalog.GetString ("Stack Trace"), null, null, 0);
 			AddStackTrace (row, error.StackTrace, null);
 		}
@@ -494,7 +516,7 @@ namespace MonoDevelop.NUnit
 				Gtk.TreeIter iter;
 				if (!failuresTreeView.Selection.GetSelected (out foo, out iter))
 					return;
-
+				
 				int type = (int)failuresStore.GetValue (iter, 5);
 
 				var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
@@ -517,9 +539,23 @@ namespace MonoDevelop.NUnit
 		{
 			UnitTest test = GetSelectedTest ();
 			if (test != null) {
-				var result = test.GetLastResult ();
-				if (result != null) {
-					info.Enabled = !string.IsNullOrEmpty (result.StackTrace);
+				var last = test.GetLastResult ();
+
+				Gtk.TreeModel foo;
+				Gtk.TreeIter iter;
+				if (!failuresTreeView.Selection.GetSelected (out foo, out iter)) {
+					info.Enabled = false;
+					return;
+				}
+
+				int type = (int)failuresStore.GetValue (iter, 5);
+				switch (type) {
+				case ErrorMessage:
+					info.Enabled = !string.IsNullOrEmpty (last.Message);
+					return;
+				case StackTrace:
+				default:
+					info.Enabled = !string.IsNullOrEmpty (last.StackTrace);
 					return;
 				}
 			}
@@ -568,9 +604,19 @@ namespace MonoDevelop.NUnit
 			if (loc != null)
 				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column);
 		}
+
+		[CommandHandler (TestCommands.RerunTest)]
+		protected void OnRerunTest ()
+		{
+			UnitTest test = GetSelectedTest ();
+			if (test == null)
+				return;
+			NUnitService.Instance.RunTest (test, null);
+		}
 		
 		[CommandUpdateHandler (TestCommands.ShowTestCode)]
 		[CommandUpdateHandler (TestCommands.GoToFailure)]
+		[CommandUpdateHandler (TestCommands.RerunTest)]
 		protected void OnUpdateRunTest (CommandInfo info)
 		{
 			UnitTest test = GetSelectedTest ();

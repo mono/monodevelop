@@ -122,6 +122,28 @@ namespace Mono.MHex
 				}
 			}
 		}
+
+		StringRepresentationTypes stringRepresentationType = StringRepresentationTypes.ASCII;
+		public virtual StringRepresentationTypes StringRepresentationType {
+			get { return stringRepresentationType; }
+			set {
+				if (stringRepresentationType != value) {
+					stringRepresentationType = value;
+					OnChanged (EventArgs.Empty);
+					switch (value) {
+					case StringRepresentationTypes.ASCII:
+						GroupBytes = 1;
+						break;
+					case StringRepresentationTypes.UTF16:
+						GroupBytes = 2;
+						break;
+					default:
+						throw new NotImplementedException (value.ToString ());
+					}
+				}
+			}
+		}
+
 		Font font;
 		public Font Font {
 			get {

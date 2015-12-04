@@ -134,9 +134,9 @@ namespace MonoDevelop.Ide
 			PlatformService.OpenFile (filename);
 		}
 
-		public static void OpenFolder (FilePath folderPath)
+		public static void OpenFolder (FilePath folderPath, params FilePath[] selectFiles)
 		{
-			PlatformService.OpenFolder (folderPath);
+			PlatformService.OpenFolder (folderPath, selectFiles);
 		}
 
 		public static string GetMimeTypeForUri (string uri)
@@ -313,9 +313,15 @@ namespace MonoDevelop.Ide
 			PlatformService.SetMainWindowDecorations (window);
 		}
 
-		internal static MainToolbar CreateMainToolbar (Gtk.Window window)
+		internal static MainToolbarController CreateMainToolbar (Gtk.Window window)
 		{
-			return PlatformService.CreateMainToolbar (window);
+			return new MainToolbarController (PlatformService.CreateMainToolbar (window));
+		}
+
+		internal static void AttachMainToolbar (Gtk.VBox parent, MainToolbarController toolbar)
+		{
+			PlatformService.AttachMainToolbar (parent, toolbar.ToolbarView);
+			toolbar.Initialize ();
 		}
 
 		public static bool GetIsFullscreen (Gtk.Window window)

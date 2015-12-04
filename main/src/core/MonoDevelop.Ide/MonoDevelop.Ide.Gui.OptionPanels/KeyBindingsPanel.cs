@@ -431,25 +431,29 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				return;
 			}
 			globalWarningBox.Show ();
-			conflicButton.MenuCreator = delegate {
-				Menu menu = new Menu ();
+
+			conflicButton.ContextMenuRequested = delegate {
+				ContextMenu menu = new ContextMenu ();
+				bool first = true;
+
 				foreach (KeyBindingConflict conf in conflicts) {
-					if (menu.Children.Length > 0) {
-						SeparatorMenuItem it = new SeparatorMenuItem ();
-						it.Show ();
-						menu.Insert (it, -1);
+					if (first == false) {
+						ContextMenuItem item = new SeparatorContextMenuItem ();
+						menu.Items.Add (item);
 					}
+
 					foreach (Command cmd in conf.Commands) {
 						string txt = currentBindings.GetBinding (cmd) + " - " + cmd.Text;
-						MenuItem item = new MenuItem (txt);
+						ContextMenuItem item = new ContextMenuItem (txt);
 						Command localCmd = cmd;
-						item.Activated += delegate {
-							SelectCommand (localCmd);
-						};
-						item.Show ();
-						menu.Insert (item, -1);
+
+						item.Clicked += (sender, e) => SelectCommand (localCmd);
+
+						menu.Items.Add (item);
+						first = false;
 					}
 				}
+
 				return menu;
 			};
 		}
@@ -533,7 +537,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Control+X|Y conflicts with Control+X|Y, Control+X
 			if (b1 == b2)
 				return true;
-			int i = b1.IndexOf ('|');
+
+			int i = -1;
+			// If it ends with | then we're matching something like Cmd-|
+			// and it's not being used as an 'or'.
+			if (!b1.EndsWith ("|"))
+				i = b1.IndexOf ('|');
 			if (i == -1)
 				return b2.StartsWith (b1 + "|");
 			else

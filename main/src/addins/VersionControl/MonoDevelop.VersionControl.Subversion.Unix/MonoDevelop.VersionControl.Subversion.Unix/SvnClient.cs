@@ -134,6 +134,12 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return true;
 		}
 
+		public override string Version {
+			get {
+				return GetVersion ();
+			}
+		}
+
 		internal static bool CheckVersion ()
 		{
 			return GetVersion ().StartsWith ("1.6", StringComparison.Ordinal);

@@ -53,6 +53,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.Text;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.Ide
 {
@@ -339,6 +340,7 @@ namespace MonoDevelop.Ide
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 		
@@ -527,6 +529,7 @@ namespace MonoDevelop.Ide
 				return false;
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 		
@@ -572,6 +575,7 @@ namespace MonoDevelop.Ide
 					}
 				} finally {
 					optionsDialog.Destroy ();
+					optionsDialog.Dispose ();
 				}
 			} else if (entry is Solution) {
 				Solution solution = (Solution) entry;
@@ -587,6 +591,7 @@ namespace MonoDevelop.Ide
 					}
 				} finally {
 					optionsDialog.Destroy ();
+					optionsDialog.Dispose ();
 				}
 			}
 			else {
@@ -606,6 +611,7 @@ namespace MonoDevelop.Ide
 					}
 				} finally {
 					optionsDialog.Destroy ();
+					optionsDialog.Dispose ();
 				}
 			}
 		}
@@ -617,10 +623,13 @@ namespace MonoDevelop.Ide
 		
 		public void NewSolution (string defaultTemplate)
 		{
-			NewProjectDialog pd = new NewProjectDialog (null, true, null);
-			if (defaultTemplate != null)
-				pd.SelectTemplate (defaultTemplate);
-			MessageService.ShowCustomDialog (pd);
+			if (!IdeApp.Workbench.SaveAllDirtyFiles ())
+				return;
+
+			var newProjectDialog = new NewProjectDialogController ();
+			newProjectDialog.OpenSolution = true;
+			newProjectDialog.SelectedTemplateId = defaultTemplate;
+			newProjectDialog.Show ();
 		}
 		
 		public WorkspaceItem AddNewWorkspaceItem (Workspace parentWorkspace)
@@ -630,16 +639,15 @@ namespace MonoDevelop.Ide
 		
 		public WorkspaceItem AddNewWorkspaceItem (Workspace parentWorkspace, string defaultItemId)
 		{
-			NewProjectDialog npdlg = new NewProjectDialog (null, false, parentWorkspace.BaseDirectory);
-			npdlg.SelectTemplate (defaultItemId);
-			try {
-				if (MessageService.RunCustomDialog (npdlg) == (int) Gtk.ResponseType.Ok && npdlg.NewItem != null) {
-					parentWorkspace.Items.Add ((WorkspaceItem) npdlg.NewItem);
-					Save (parentWorkspace);
-					return (WorkspaceItem) npdlg.NewItem;
-				}
-			} finally {
-				npdlg.Destroy ();
+			var newProjectDialog = new NewProjectDialogController ();
+			newProjectDialog.BasePath = parentWorkspace.BaseDirectory;
+			newProjectDialog.SelectedTemplateId = defaultItemId;
+			newProjectDialog.ParentWorkspace = parentWorkspace;
+
+			if (newProjectDialog.Show () && newProjectDialog.NewItem != null) {
+				parentWorkspace.Items.Add ((WorkspaceItem)newProjectDialog.NewItem);
+				Save (parentWorkspace);
+				return (WorkspaceItem)newProjectDialog.NewItem;
 			}
 			return null;
 		}
@@ -649,7 +657,7 @@ namespace MonoDevelop.Ide
 			WorkspaceItem res = null;
 			
 			var dlg = new SelectFileDialog () {
-				Action = Gtk.FileChooserAction.Open,
+				Action = FileChooserAction.Open,
 				CurrentFolder = parentWorkspace.BaseDirectory,
 				SelectMultiple = false,
 			};
@@ -659,6 +667,12 @@ namespace MonoDevelop.Ide
 			
 			if (dlg.Run ()) {
 				try {
+
+					if (WorkspaceContainsWorkspaceItem (parentWorkspace, dlg.SelectedFile)) {
+						MessageService.ShowMessage (GettextCatalog.GetString ("The workspace already contains '{0}'.", Path.GetFileNameWithoutExtension (dlg.SelectedFile)));
+						return res;
+					}
+
 					res = AddWorkspaceItem (parentWorkspace, dlg.SelectedFile);
 				} catch (Exception ex) {
 					MessageService.ShowError (GettextCatalog.GetString ("The file '{0}' could not be loaded.", dlg.SelectedFile), ex);
@@ -667,7 +681,12 @@ namespace MonoDevelop.Ide
 
 			return res;
 		}
-		
+
+		static bool WorkspaceContainsWorkspaceItem (Workspace workspace, FilePath workspaceItemFileName)
+		{
+			return workspace.Items.Any (existingWorkspaceItem => existingWorkspaceItem.FileName == workspaceItemFileName);
+		}
+
 		public WorkspaceItem AddWorkspaceItem (Workspace parentWorkspace, string itemFileName)
 		{
 			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
@@ -683,9 +702,12 @@ namespace MonoDevelop.Ide
 		public SolutionItem CreateProject (SolutionFolder parentFolder)
 		{
 			string basePath = parentFolder != null ? parentFolder.BaseDirectory : null;
-			NewProjectDialog npdlg = new NewProjectDialog (parentFolder, false, basePath);
-			if (MessageService.ShowCustomDialog (npdlg) == (int)Gtk.ResponseType.Ok) {
-				var item = npdlg.NewItem as SolutionItem;
+			var newProjectDialog = new NewProjectDialogController ();
+			newProjectDialog.ParentFolder = parentFolder;
+			newProjectDialog.BasePath = basePath;
+
+			if (newProjectDialog.Show ()) {
+				var item = newProjectDialog.NewItem as SolutionItem;
 				if ((item is Project) && ProjectCreated != null)
 					ProjectCreated (this, new ProjectCreatedEventArgs (item as Project));
 				return item;
@@ -698,7 +720,7 @@ namespace MonoDevelop.Ide
 			SolutionItem res = null;
 			
 			var dlg = new SelectFileDialog () {
-				Action = Gtk.FileChooserAction.Open,
+				Action = FileChooserAction.Open,
 				CurrentFolder = parentFolder.BaseDirectory,
 				SelectMultiple = false,
 			};
@@ -709,6 +731,11 @@ namespace MonoDevelop.Ide
 			if (dlg.Run ()) {
 				if (!Services.ProjectService.IsSolutionItemFile (dlg.SelectedFile)) {
 					MessageService.ShowMessage (GettextCatalog.GetString ("The file '{0}' is not a known project file format.", dlg.SelectedFile));
+					return res;
+				}
+
+				if (SolutionContainsProject (parentFolder, dlg.SelectedFile)) {
+					MessageService.ShowMessage (GettextCatalog.GetString ("The project '{0}' has already been added.", Path.GetFileNameWithoutExtension (dlg.SelectedFile)));
 					return res;
 				}
 
@@ -724,7 +751,13 @@ namespace MonoDevelop.Ide
 
 			return res;
 		}
-		
+
+		static bool SolutionContainsProject (SolutionFolder folder, FilePath projectFileName)
+		{
+			Solution solution = folder.ParentSolution;
+			return solution.GetAllProjects ().Any (existingProject => existingProject.FileName == projectFileName);
+		}
+
 		public SolutionItem AddSolutionItem (SolutionFolder folder, string entryFileName)
 		{
 			AddEntryEventArgs args = new AddEntryEventArgs (folder, entryFileName);
@@ -744,17 +777,20 @@ namespace MonoDevelop.Ide
 		
 		public bool CreateProjectFile (Project parentProject, string basePath, string selectedTemplateId)
 		{
-			NewFileDialog nfd = new NewFileDialog (parentProject, basePath);
-			if (selectedTemplateId != null)
-				nfd.SelectTemplate (selectedTemplateId);
-			return MessageService.ShowCustomDialog (nfd) == (int) Gtk.ResponseType.Ok;
+			using (NewFileDialog nfd = new NewFileDialog (parentProject, basePath)) {
+				if (selectedTemplateId != null)
+					nfd.SelectTemplate (selectedTemplateId);
+				return MessageService.ShowCustomDialog (nfd) == (int)Gtk.ResponseType.Ok;
+			}
 		}
 
 		public bool AddReferenceToProject (DotNetProject project)
 		{
 			try {
-				if (selDialog == null)
+				if (selDialog == null) {
 					selDialog = new SelectReferenceDialog ();
+					selDialog.TransientFor = MessageService.RootWindow;
+				}
 				
 				selDialog.SetProject (project);
 
@@ -832,6 +868,7 @@ namespace MonoDevelop.Ide
 					}
 				} finally {
 					dlg.Destroy ();
+					dlg.Dispose ();
 				}
 			}
 			else if (result == AlertButton.Remove && IdeApp.Workspace.RequestItemUnload (prj)) {
@@ -1074,6 +1111,11 @@ namespace MonoDevelop.Ide
 		
 		public IAsyncOperation Rebuild (IBuildTarget entry)
 		{
+			return Rebuild (entry, null);
+		}
+
+		public IAsyncOperation Rebuild (IBuildTarget entry, ProjectOperationContext context)
+		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) return currentBuildOperation;
 			
 			ITimeTracker tt = Counters.BuildItemTimer.BeginTiming ("Rebuilding " + entry.Name);
@@ -1091,7 +1133,7 @@ namespace MonoDevelop.Ide
 					if (StartBuild != null) {
 						DispatchService.GuiSyncDispatch (() => BeginBuild (monitor, tt, true));
 					}
-					BuildSolutionItemAsync (entry, monitor, tt);
+					BuildSolutionItemAsync (entry, monitor, tt, context:context);
 				}, null);
 				currentBuildOperation = monitor.AsyncOperation;
 				currentBuildOperationOwner = entry;
@@ -1102,9 +1144,260 @@ namespace MonoDevelop.Ide
 			}
 			return currentBuildOperation;
 		}
+
+		public IAsyncOperation CheckAndBuildForExecute (IBuildTarget executionTarget)
+		{
+			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) {
+				return new FinishBuildAndCheckAgainOperation (currentBuildOperation, () => CheckAndBuildForExecute (executionTarget));
+			}
+
+			//saves open documents since it may dirty the "needs building" check
+			var r = DoBeforeCompileAction ();
+			if (r.Failed)
+				return NullAsyncOperation.Failure;
+
+			var configuration = IdeApp.Workspace.ActiveConfiguration;
+
+			var buildTarget = executionTarget;
+			var ewo = buildTarget as IExecutableWorkspaceObject;
+			if (ewo != null) {
+				var buildDeps = ewo.GetExecutionDependencies ().ToList ();
+				if (buildDeps.Count > 1)
+					throw new NotImplementedException ("Multiple execution dependencies not yet supported");
+				buildTarget = buildDeps [0];
+			}
+
+			bool needsBuild = FastCheckNeedsBuild (buildTarget, configuration);
+			if (!needsBuild) {
+				return NullAsyncOperation.Success;
+			}
+
+			if (IdeApp.Preferences.BuildBeforeExecuting) {
+				return new CheckAndBuildForExecuteOperation (Build (buildTarget, true));
+			}
+
+			var bBuild = new AlertButton (GettextCatalog.GetString ("Build"));
+			var bRun = new AlertButton (Gtk.Stock.Execute, true);
+			var res = MessageService.AskQuestion (
+				GettextCatalog.GetString ("Outdated Build"),
+				GettextCatalog.GetString ("The project you are executing has changes done after the last time it was compiled. Do you want to continue?"),
+				2,
+				AlertButton.Cancel,
+				bBuild,
+				bRun);
+
+			// This call is a workaround for bug #6907. Without it, the main monodevelop window is left it a weird
+			// drawing state after the message dialog is shown. This may be a gtk/mac issue. Still under research.
+			DispatchService.RunPendingEvents ();
+
+			if (res == bRun) {
+				return NullAsyncOperation.Success;
+			}
+
+			if (res == bBuild) {
+				return new CheckAndBuildForExecuteOperation (Build (buildTarget, true));
+			}
+
+			return NullAsyncOperation.Failure;
+		}
+
+		class CheckAndBuildForExecuteOperation : IAsyncOperation
+		{
+			IAsyncOperation wrapped;
+
+			public CheckAndBuildForExecuteOperation (IAsyncOperation wrapped)
+			{
+				this.wrapped = wrapped;
+			}
+
+			public event OperationHandler Completed {
+				add { wrapped.Completed += value; }
+				remove {wrapped.Completed -= value; }
+			}
+
+			public void Cancel ()
+			{
+				wrapped.Cancel ();
+			}
+
+			public void WaitForCompleted ()
+			{
+				wrapped.WaitForCompleted ();
+			}
+
+			public bool IsCompleted {
+				get { return wrapped.IsCompleted; }
+			}
+
+			public bool Success {
+				get { return wrapped.Success || (wrapped.SuccessWithWarnings && IdeApp.Preferences.RunWithWarnings); }
+			}
+
+			public bool SuccessWithWarnings {
+				get { return false; }
+			}
+		}
+
+		class FinishBuildAndCheckAgainOperation : IAsyncOperation
+		{
+			object locker = new object ();
+			IAsyncOperation buildOp;
+			IAsyncOperation checkOp;
+			bool cancelled;
+			OperationHandler completedEvt;
+			System.Threading.ManualResetEvent completedSignal;
+
+			public FinishBuildAndCheckAgainOperation (IAsyncOperation build, Func<IAsyncOperation> checkAgain)
+			{
+				buildOp = build;
+				build.Completed += bop => {
+					if (!bop.Success) {
+						MarkCompleted (false);
+						return;
+					}
+					bool alreadyCancelled;
+					lock (locker) {
+						alreadyCancelled = cancelled;
+						if (!alreadyCancelled)
+							checkOp = checkAgain ();
+					}
+
+					if (alreadyCancelled) {
+						MarkCompleted (false);
+					} else {
+						checkOp.Completed += o => MarkCompleted (o.Success);
+					}
+				};
+			}
+
+			void MarkCompleted (bool success)
+			{
+				OperationHandler evt;
+				System.Threading.ManualResetEvent signal;
+
+				lock (locker) {
+					evt = completedEvt;
+					signal = completedSignal;
+					IsCompleted = true;
+					Success = success;
+				}
+
+				if (evt != null)
+					evt (this);
+
+				if (signal != null)
+					signal.Set ();
+			}
+
+			public event OperationHandler Completed {
+				add {
+					bool alreadyCompleted;
+					lock (locker) {
+						completedEvt += value;
+						alreadyCompleted = IsCompleted;
+					}
+					if (alreadyCompleted)
+						value (this);
+				}
+				remove {
+					lock (locker) {
+						completedEvt -= value;
+					}
+				}
+			}
+
+			public void Cancel ()
+			{
+				buildOp.Cancel ();
+
+				bool checkStarted;
+				lock (locker) {
+					cancelled = true;
+					checkStarted = checkOp != null;
+				}
+
+				if (checkStarted) {
+					checkOp.Cancel ();
+				}
+			}
+
+			public void WaitForCompleted ()
+			{
+				if (IsCompleted)
+					return;
+				lock (locker) {
+					if (IsCompleted)
+						return;
+					if (completedSignal == null)
+						completedSignal = new System.Threading.ManualResetEvent (false);
+				}
+				completedSignal.WaitOne ();
+			}
+
+			public bool IsCompleted { get; private set; }
+
+			public bool Success { get; private set; }
+
+			public bool SuccessWithWarnings {
+				get { return false; }
+			}
+		}
+
+		bool FastCheckNeedsBuild (IBuildTarget target, ConfigurationSelector configuration)
+		{
+			var env = Environment.GetEnvironmentVariable ("DisableFastUpToDateCheck");
+			if (!string.IsNullOrEmpty (env) && env != "0" && !env.Equals ("false", StringComparison.OrdinalIgnoreCase))
+				return true;
+
+			var sei = target as SolutionEntityItem;
+			if (sei != null) {
+				if (sei.FastCheckNeedsBuild (configuration))
+					return true;
+				//TODO: respect solution level dependencies
+				var deps = new HashSet<SolutionItem> ();
+				CollectReferencedItems (sei, deps, configuration);
+				foreach (var dep in deps.OfType<SolutionEntityItem> ()) {
+					if (dep.FastCheckNeedsBuild (configuration))
+						return true;
+				}
+				return false;
+			}
+
+			var sln = target as Solution;
+			if (sln != null) {
+				foreach (var item in sln.GetAllSolutionItems<SolutionEntityItem> ()) {
+					if (item.FastCheckNeedsBuild (configuration))
+						return true;
+				}
+				return false;
+			}
+
+			//TODO: handle other IBuildTargets
+			return true;
+		}
+
+		void CollectReferencedItems (SolutionItem item, HashSet<SolutionItem> collected, ConfigurationSelector configuration)
+		{
+			foreach (var refItem in item.GetReferencedItems (configuration)) {
+				if (collected.Add (refItem)) {
+					CollectReferencedItems (refItem, collected, configuration);
+				}
+			}
+		}
 		
 //		bool errorPadInitialized = false;
+
 		public IAsyncOperation Build (IBuildTarget entry)
+		{
+			return Build (entry, false);
+		}
+
+		public IAsyncOperation Build (IBuildTarget entry, ProjectOperationContext context)
+		{
+			return Build (entry, false, context);
+		}
+
+		IAsyncOperation Build (IBuildTarget entry, bool skipPrebuildCheck, ProjectOperationContext context = null)
 		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) return currentBuildOperation;
 			/*
@@ -1129,7 +1422,7 @@ namespace MonoDevelop.Ide
 			try {
 				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
 				BeginBuild (monitor, tt, false);
-				DispatchService.ThreadDispatch (() => BuildSolutionItemAsync (entry, monitor, tt));
+				DispatchService.ThreadDispatch (() => BuildSolutionItemAsync (entry, monitor, tt, skipPrebuildCheck, context));
 				currentBuildOperation = monitor.AsyncOperation;
 				currentBuildOperationOwner = entry;
 				currentBuildOperation.Completed += delegate { currentBuildOperationOwner = null; };
@@ -1140,26 +1433,32 @@ namespace MonoDevelop.Ide
 			return currentBuildOperation;
 		}
 		
-		void BuildSolutionItemAsync (IBuildTarget entry, IProgressMonitor monitor, ITimeTracker tt)
+		void BuildSolutionItemAsync (IBuildTarget entry, IProgressMonitor monitor, ITimeTracker tt, bool skipPrebuildCheck = false, ProjectOperationContext context = null)
 		{
 			BuildResult result = null;
 			try {
-				tt.Trace ("Pre-build operations");
-				result = DoBeforeCompileAction ();
+				if (!skipPrebuildCheck) {
+					tt.Trace ("Pre-build operations");
+					result = DoBeforeCompileAction ();
+				}
 
 				//wait for any custom tools that were triggered by the save, since the build may depend on them
 				MonoDevelop.Ide.CustomTools.CustomToolService.WaitForRunningTools (monitor);
 
-				if (result.ErrorCount == 0) {
+				if (skipPrebuildCheck || result.ErrorCount == 0) {
 					tt.Trace ("Building item");
 					SolutionItem it = entry as SolutionItem;
 					if (it != null)
-						result = it.Build (monitor, IdeApp.Workspace.ActiveConfiguration, true);
+						result = it.Build (monitor, IdeApp.Workspace.ActiveConfiguration, true, context);
+					else if (entry is WorkspaceItem)
+						result = ((WorkspaceItem)entry).Build (monitor, IdeApp.Workspace.ActiveConfiguration, context);
 					else
 						result = entry.RunTarget (monitor, ProjectService.BuildTarget, IdeApp.Workspace.ActiveConfiguration);
 				}
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Build failed."), ex);
+				if (result == null)
+					result = new BuildResult ();
 				result.AddError ("Build failed. See the build log for details.");
 				if (result.SourceTarget == null)
 					result.SourceTarget = entry;
@@ -1326,7 +1625,7 @@ namespace MonoDevelop.Ide
 		{
 			var dlg = new SelectFileDialog () {
 				SelectMultiple = true,
-				Action = Gtk.FileChooserAction.Open,
+				Action = FileChooserAction.Open,
 				CurrentFolder = folder.BaseDirectory,
 				TransientFor = MessageService.RootWindow,
 			};
@@ -1357,12 +1656,6 @@ namespace MonoDevelop.Ide
 				FilePath fp = file;
 				FilePath dest = folder.BaseDirectory.Combine (fp.FileName);
 				
-				if (folder.IsRoot) {
-					// Don't allow adding files to the root folder. VS doesn't allow it
-					// If there is no existing folder, create one
-					folder = folder.ParentSolution.DefaultSolutionFolder;
-				}
-				
 				if (!fp.IsChildPathOf (folder.BaseDirectory)) {
 					msg.Text = GettextCatalog.GetString ("The file {0} is outside the folder directory. What do you want to do?", fp.FileName);
 					AlertButton res = MessageService.AskQuestion (msg);
@@ -1376,6 +1669,13 @@ namespace MonoDevelop.Ide
 						fp = dest;
 					}
 				}
+
+				if (folder.IsRoot) {
+					// Don't allow adding files to the root folder. VS doesn't allow it
+					// If there is no existing folder, create one
+					folder = folder.ParentSolution.DefaultSolutionFolder;
+				}
+
 				folder.Files.Add (fp);
 				someAdded = true;
 			}
@@ -1502,7 +1802,9 @@ namespace MonoDevelop.Ide
 					
 					try {
 						if (!dialogShown || !applyToAll) {
-							if (MessageService.RunCustomDialog (addExternalDialog) == (int) Gtk.ResponseType.Cancel) {
+							int response = MessageService.RunCustomDialog (addExternalDialog);
+							// A dialog emits DeleteEvent rather than Cancel in response to Escape being pressed
+							if (response == (int) Gtk.ResponseType.Cancel || response == (int) Gtk.ResponseType.DeleteEvent) {
 								project.Files.AddRange (newFileList.Where (f => f != null));
 								return newFileList;
 							}
@@ -1546,8 +1848,10 @@ namespace MonoDevelop.Ide
 							newFileList.Add (null);
 						}
 					} finally {
-						if (addExternalDialog != null)
+						if (addExternalDialog != null) {
 							addExternalDialog.Destroy ();
+							addExternalDialog.Dispose ();
+						}
 					}
 				}
 			}
@@ -1584,9 +1888,15 @@ namespace MonoDevelop.Ide
 					FileService.DeleteFile (filename);
 			}
 			return true;
-		}		
-		
+		}
+
 		public void TransferFiles (IProgressMonitor monitor, Project sourceProject, FilePath sourcePath, Project targetProject,
+								   FilePath targetPath, bool removeFromSource, bool copyOnlyProjectFiles)
+		{
+			TransferFilesInternal (monitor, sourceProject, sourcePath, targetProject, targetPath, removeFromSource, copyOnlyProjectFiles);
+		}
+
+		internal static void TransferFilesInternal (IProgressMonitor monitor, Project sourceProject, FilePath sourcePath, Project targetProject,
 		                           FilePath targetPath, bool removeFromSource, bool copyOnlyProjectFiles)
 		{
 			// When transfering directories, targetPath is the directory where the source
@@ -1608,9 +1918,9 @@ namespace MonoDevelop.Ide
 			
 			bool sourceIsFolder = Directory.Exists (sourcePath);
 
-			bool movingFolder = (removeFromSource && sourceIsFolder && (
-					!copyOnlyProjectFiles ||
-					IsDirectoryHierarchyEmpty (sourcePath)));
+			bool movingFolder = removeFromSource && sourceIsFolder && (
+				!copyOnlyProjectFiles ||
+				ContainsOnlyProjectFiles (sourcePath, sourceProject));
 
 			// We need to remove all files + directories from the source project
 			// but when dealing with the VCS addins we need to process only the
@@ -1773,12 +2083,12 @@ namespace MonoDevelop.Ide
 				// Remove all files and directories under 'sourcePath'
 				foreach (var v in filesToRemove)
 					sourceProject.Files.Remove (v);
+			}
 
-				// Moving an empty folder. A new folder object has to be added to the project.
-				if (movingFolder && !sourceProject.Files.GetFilesInVirtualPath (targetPath).Any ()) {
-					var folderFile = new ProjectFile (targetPath) { Subtype = Subtype.Directory };
-					sourceProject.Files.Add (folderFile);
-				}
+			// Moving or copying an empty folder. A new folder object has to be added to the project.
+			if (sourceIsFolder && !targetProject.Files.GetFilesInVirtualPath (targetPath).Any ()) {
+				var folderFile = new ProjectFile (targetPath) { Subtype = Subtype.Directory };
+				targetProject.Files.Add (folderFile);
 			}
 			
 			var pfolder = sourcePath.ParentDirectory;
@@ -1840,7 +2150,7 @@ namespace MonoDevelop.Ide
 			return " (" + string.Format (sc, n) + ")";
 		}
 		
-		void GetAllFilesRecursive (string path, List<ProjectFile> files)
+		static void GetAllFilesRecursive (string path, List<ProjectFile> files)
 		{
 			if (File.Exists (path)) {
 				files.Add (new ProjectFile (path));
@@ -1856,11 +2166,12 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		bool IsDirectoryHierarchyEmpty (string path)
+		static bool ContainsOnlyProjectFiles (string path, Project project)
 		{
-			if (Directory.GetFiles(path).Length > 0) return false;
+			if (Directory.GetFiles (path).Any (f => project.Files.GetFile (f) == null))
+				return false;
 			foreach (string dir in Directory.GetDirectories (path))
-				if (!IsDirectoryHierarchyEmpty (dir)) return false;
+				if (!ContainsOnlyProjectFiles (dir, project)) return false;
 			return true;
 		}
 

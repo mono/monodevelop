@@ -817,10 +817,10 @@ namespace MonoDevelop.Debugger.Win32
 
 				CorReferenceValue refVal = obj.CastToReferenceValue ();
 				if (refVal != null) {
+					cctx.Session.WaitUntilStopped ();
 					if (refVal.IsNull)
 						return refVal;
 					else {
-						cctx.Session.WaitUntilStopped ();
 						return GetRealObject (cctx, refVal.Dereference ());
 					}
 				}
@@ -1329,8 +1329,10 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			// mcs is "<>f__ref"
 			// csc is "CS$<>"
+			// roslyn is "<>8__"
 			return field.Name.StartsWith ("CS$<>", StringComparison.Ordinal) ||
-				field.Name.StartsWith ("<>f__ref", StringComparison.Ordinal);
+			field.Name.StartsWith ("<>f__ref", StringComparison.Ordinal) ||
+			field.Name.StartsWith ("<>8__", StringComparison.Ordinal);
 		}
 
 		static bool IsClosureReferenceLocal (ISymbolVariable local)
@@ -1444,7 +1446,7 @@ namespace MonoDevelop.Debugger.Win32
 			bool isIterator = IsGeneratedType (t);
 
 			var list = new List<ValueReference> ();
-			foreach (FieldInfo field in t.GetFields ()) {
+			foreach (FieldInfo field in t.GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
 				if (IsHoistedThisReference (field))
 					continue;
 				if (IsClosureReferenceField (field)) {
@@ -1509,7 +1511,7 @@ namespace MonoDevelop.Debugger.Win32
 						return exceptionHandle;
 					});
 					
-					return new VariableReference (ctx, vref, "__EXCEPTION_OBJECT__", ObjectValueFlags.Variable);
+					return new VariableReference (ctx, vref, ctx.Options.CurrentExceptionTag, ObjectValueFlags.Variable);
 				}
 				return base.GetCurrentException(ctx);
 			} catch (Exception e) {
@@ -1647,8 +1649,20 @@ namespace MonoDevelop.Debugger.Win32
 				if (((MetadataType)t).DeclaringType != null && ((MetadataType)t).DeclaringType.MetadataToken == token) {
 					var cls = mod.GetClassFromToken (((MetadataType)t).MetadataToken);
 					var returnType = cls.GetParameterizedType (CorElementType.ELEMENT_TYPE_CLASS, new CorType[0]);
-					yield return returnType;
+					if (!IsGeneratedType (returnType.GetTypeInfo (wctx.Session))) {
+						yield return returnType;
+					}
 				}
+			}
+		}
+
+		public override IEnumerable<object> GetImplementedInterfaces (EvaluationContext ctx, object type)
+		{
+			var cType = (CorType)type;
+			var typeInfo = cType.GetTypeInfo (((CorEvaluationContext)ctx).Session);
+			foreach (var iface in typeInfo.GetInterfaces ()) {
+				if (!string.IsNullOrEmpty (iface.FullName))
+					yield return GetType (ctx, iface.FullName);
 			}
 		}
 

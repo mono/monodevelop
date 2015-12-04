@@ -43,6 +43,7 @@ using Mono.TextEditor;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.CodeActions;
 using System.Diagnostics;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -55,7 +56,7 @@ namespace MonoDevelop.CodeIssues
 			return new BaseCodeIssueProvider[] { p };
 		}
 
-		public static IEnumerable<Result> Check (Document input, CancellationToken cancellationToken)
+		public static IEnumerable<Result> Check (Document input, ParsedDocument parsedDocument, CancellationToken cancellationToken)
 		{
 			if (!QuickTaskStrip.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject)
 				return Enumerable.Empty<Result> ();
@@ -70,8 +71,9 @@ namespace MonoDevelop.CodeIssues
 			var result = new BlockingCollection<Result> ();
 		
 			var codeIssueProvider = RefactoringService.GetInspectors (editor.Document.MimeType).ToArray ();
-			var context = input.ParsedDocument.CreateRefactoringContext != null ?
-				input.ParsedDocument.CreateRefactoringContext (input, cancellationToken) : null;
+
+			var context = parsedDocument.CreateRefactoringContext != null ?
+				parsedDocument.CreateRefactoringContext (input, cancellationToken) : null;
 			Parallel.ForEach (codeIssueProvider, (parentProvider) => {
 				try {
 					#if PROFILE
@@ -79,10 +81,12 @@ namespace MonoDevelop.CodeIssues
 					clock.Start ();
 					#endif
 					foreach (var provider in EnumerateProvider (parentProvider)) {
+						cancellationToken.ThrowIfCancellationRequested ();
 						var severity = provider.GetSeverity ();
 						if (severity == Severity.None || !provider.GetIsEnabled ())
 							continue;
 						foreach (var r in provider.GetIssues (context, cancellationToken)) {
+							cancellationToken.ThrowIfCancellationRequested ();
 							var fixes = r.Actions == null ? new List<GenericFix> () : new List<GenericFix> (r.Actions.Where (a => a != null).Select (a => {
 								Action batchAction = null;
 								if (a.SupportsBatchRunning)

@@ -150,7 +150,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			checker.GenerateReport (progressMonitor.Log);
 			if (checker.AnyIncompatiblePackages ()) {
-				progressMonitor.ReportError (GettextCatalog.GetString ("Incompatible packages found. Please see Package Console for details."), null);
+				progressMonitor.ReportError (GettextCatalog.GetString ("Incompatible packages found."), null);
 			} else {
 				progressMonitor.ReportWarning (progressMessage.Warning);
 			}

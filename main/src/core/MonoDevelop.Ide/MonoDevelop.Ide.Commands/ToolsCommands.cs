@@ -25,11 +25,11 @@
 //
 //
 
-
+using MonoDevelop.Components.AutoTest;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Dialogs;
 using System;
 using MonoDevelop.Ide.Updater;
 
@@ -39,7 +39,9 @@ namespace MonoDevelop.Ide.Commands
 	{
 		AddinManager,
 		ToolList,
-		InstrumentationViewer
+		InstrumentationViewer,
+		ToggleSessionRecorder,
+		ReplaySession,
 	}
 
 	internal class AddinManagerHandler : CommandHandler
@@ -136,6 +138,61 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			info.Visible = MonoDevelop.Core.Instrumentation.InstrumentationService.Enabled;
+		}
+	}
+
+	internal class ToggleSessionRecorderHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			if (AutoTestService.CurrentRecordSession == null) {
+				AutoTestService.StartRecordingSession ();
+			} else {
+				var selector = new FileSelectorDialog ("Save session as...", Gtk.FileChooserAction.Save);
+				try {
+					var result = MessageService.RunCustomDialog (selector, MessageService.RootWindow);
+
+					if (result == (int)Gtk.ResponseType.Cancel) {
+						return;
+					}
+
+					AutoTestService.StopRecordingSession (selector.Filename);
+				} finally {
+					selector.Destroy ();
+				}
+			}
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = IdeApp.Preferences.EnableAutomatedTesting;
+			info.Text = AutoTestService.CurrentRecordSession == null ? "Start Session Recorder" : "Stop Session Recorder";
+		}
+	}
+
+	internal class ReplaySessionHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			var selector = new FileSelectorDialog ("Open session");
+			string filename = null;
+			try {
+				var result = MessageService.RunCustomDialog (selector, MessageService.RootWindow);
+
+				if (result == (int)Gtk.ResponseType.Cancel) {
+					return;
+				}
+
+				filename = selector.Filename;
+			} finally {
+				selector.Destroy ();
+			}
+			AutoTestService.ReplaySessionFromFile (filename);
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = IdeApp.Preferences.EnableAutomatedTesting;
 		}
 	}
 }

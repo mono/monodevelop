@@ -69,6 +69,38 @@ test:
 		fi; \
 	fi
 
+uitest:
+	rm -rf $(TEST_DIR)/TestResults
+	@if test -n "$(assembly)"; then \
+		for asm in $(wildcard $(TEST_DIR)/MonoDevelop.UITests*.dll); do \
+			if test `basename $$asm` = $(assembly); then \
+				if test -n "$(categories)"; then \
+					($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml -labels -include=$(categories) $$asm) || exit $?; \
+				fi; \
+				if test -n "$(tests)"; then \
+					($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml -labels -run=$(tests) $$asm) || exit $?; \
+				fi; \
+				if ! test -n "$(categories)" && ! test -n "$(tests)"; then \
+					($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml -labels $$asm) || exit $?; \
+				fi; \
+			fi; \
+		done; \
+	fi
+
+	@if ! test -n "$(assembly)"; then \
+		echo "You must pass 'assembly' argument"; \
+		exit 1; \
+	fi
+
+coverage:
+	if ! test -n "$(assembly)"; then \
+		for asm in $(TEST_ASSEMBLIES); do \
+			echo Generating coverage for `basename $$asm`...; \
+			($(MD_LAUNCH_SETUP) exec -a "mdtool" $(RUNTIME) --debug --profile=log:coverage,onlycoverage,output=CoverageResult_`basename $$asm`.mlpd,covfilter-file=`basename $$asm`.filter "$(MD_BIN_PATH)/mdtool.exe" run-md-tests $$asm); \
+			mprof-report --coverage-out=CoverageResult_`basename $$asm`.xml CoverageResult_`basename $$asm`.mlpd > /dev/null; \
+		done; \
+	fi
+
 include $(top_srcdir)/Makefile.include
 
 EXTRA_DIST = \

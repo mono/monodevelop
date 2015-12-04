@@ -80,8 +80,9 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.RemoveTrailingWhiteSpaces" />
-			<SeparatorItem id = "Separator1" />
+			<SeparatorItem id = "Separator2" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.JoinWithNextLine" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.SortSelectedLines" />
 		</ItemSet>
 
 		<ItemSet id = "Folding" _label = "F_olding">
@@ -174,6 +175,9 @@
 		<SeparatorItem id = "ExportSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
 		<SeparatorItem id = "OptionsSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunCodeAnalysisProject" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunCodeAnalysisSolution" />
+		<SeparatorItem id = "OptionsSeparator" />
 		<ItemSet id = "SelectActiveConfiguration" _label = "Active Configuration" autohide = "true">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SelectActiveConfiguration" />
 		</ItemSet>
@@ -218,6 +222,10 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.InstrumentationViewer" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertGuid" />
+		<ItemSet id = "SessionRecorder" _label = "Session Recorder" autohide = "true">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToggleSessionRecorder" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ReplaySession" />
+		</ItemSet>
 		<SeparatorItem id = "OptionsSection" />
 		<Condition id="Platform" value="windows">
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" />
@@ -226,8 +234,8 @@
 	</ItemSet>
 
 	<ItemSet id = "Window" _label = "_Window">
-		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.NextWindow" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.PrevWindow" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.NextDocument" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.PrevDocument" />
 		<SeparatorItem id ="NxtPrvSeparator" /> 
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles" />
 <!--		<SeparatorItem id ="SplitSeparator" /> 
@@ -237,6 +245,9 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.SwitchSplitWindow" />-->
 		<SeparatorItem id = "contentSep" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenWindowList" />
+		<SeparatorItem id = "windowDocSep" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenDocumentList" />
+		<SeparatorItem id = "docMinimizeSep" />
 	</ItemSet> 
 
 	<ItemSet id = "Help" _label = "_Help">

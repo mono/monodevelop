@@ -121,7 +121,8 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				TranslationProject project = CurrentNode.DataItem as TranslationProject;
 				if (project == null)
 					return;
-				MessageService.ShowCustomDialog (new TranslationProjectOptionsDialog (project));
+				using (var dlg = new TranslationProjectOptionsDialog (project))
+					MessageService.ShowCustomDialog (dlg);
 				IdeApp.Workspace.Save ();
 			}
 			
@@ -152,6 +153,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 					
 				} finally {
 					chooser.Destroy ();
+					chooser.Dispose ();
 				}
 			}
 			static IAsyncOperation currentUpdateTranslationOperation = MonoDevelop.Core.ProgressMonitoring.NullAsyncOperation.Success;

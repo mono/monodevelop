@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IProgressMonitor GetRunProgressMonitor ()
 		{
-			return GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.RunProgramIcon, true, true);
+			return GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.RunProgramIcon, false, true);
 		}
 		
 		public IProgressMonitor GetToolOutputProgressMonitor (bool bringToFront)
@@ -102,7 +102,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IConsole CreateConsole (bool closeOnDispose)
 		{
-			return (IConsole) GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.MessageLog, true, true);
+			return (IConsole) GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.MessageLog, false, true);
 		}
 		
 		/******************************/
@@ -139,7 +139,14 @@ namespace MonoDevelop.Ide.Gui
 			pad.Visible = true;
 			return ((DefaultMonitorPad) pad.Content).BeginProgress (title);
 		}
-		
+
+		public IProgressMonitor GetOutputProgressMonitor (string id, string title, IconId icon, bool bringToFront, bool allowMonitorReuse, bool visible)
+		{
+			Pad pad = CreateMonitorPad (id, title, icon, bringToFront, allowMonitorReuse, true);
+			pad.Visible = visible;
+			return ((DefaultMonitorPad) pad.Content).BeginProgress (title);
+		}
+
 		/// <summary>
 		/// Gets the pad that is showing the output of a progress monitor
 		/// </summary>

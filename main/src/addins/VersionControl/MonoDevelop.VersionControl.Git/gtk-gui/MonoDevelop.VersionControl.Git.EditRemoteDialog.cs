@@ -5,17 +5,27 @@ namespace MonoDevelop.VersionControl.Git
 	internal partial class EditRemoteDialog
 	{
 		private global::Gtk.VBox vbox7;
-		private global::Gtk.Table table3;
-		private global::Gtk.Entry entryName;
-		private global::Gtk.Entry entryPushUrl;
-		private global::Gtk.Entry entryUrl;
-		private global::Gtk.Label label7;
-		private global::Gtk.Label label8;
-		private global::Gtk.Label label9;
-		private global::Gtk.CheckButton checkImportTags;
-		private global::Gtk.Button buttonCancel;
-		private global::Gtk.Button buttonOk;
 		
+		private global::Gtk.Table table3;
+		
+		private global::Gtk.Entry entryName;
+		
+		private global::Gtk.Entry entryPushUrl;
+		
+		private global::Gtk.Entry entryUrl;
+		
+		private global::Gtk.Label label7;
+		
+		private global::Gtk.Label label8;
+		
+		private global::Gtk.Label label9;
+		
+		private global::Gtk.CheckButton checkImportTags;
+		
+		private global::Gtk.Button buttonCancel;
+		
+		private global::Gtk.Button buttonOk;
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

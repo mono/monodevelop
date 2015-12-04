@@ -20,6 +20,7 @@ namespace Application
 			txt = txt.Replace ("@PACKAGE_VERSION@", GetValue (lines, "Version"));
 			txt = txt.Replace ("@PACKAGE_VERSION_LABEL@", GetValue (lines, "Label"));
 			txt = txt.Replace ("@COMPAT_ADDIN_VERSION@", GetValue (lines, "CompatVersion"));
+			txt = txt.Replace ("@BUILD_LANE@", Environment.GetEnvironmentVariable ("BUILD_LANE"));
 			File.WriteAllText (Path.Combine (dir, "BuildVariables.cs"), txt);
 		}
 

@@ -5,6 +5,7 @@
 # Copyright (C) 2007, Renato Felipe Atilio <renatoat@gmail.com>
 # Copyright (C) 2012, Edison Henrique Andreassy <ehasis@hotmail.com>
 # Copyright (C) 2013, Felipe Bernardo Zorzo <felipe.b.zorzo@gmail.com>
+# Copyright (C) 2014, Felipe Mendonça Marques Silva <fmmsilva@gmail.com>
 #
 # This file is distributed under the same license as the MonoDevelop package.
 # Edison Henrique Andreassy <ehasis@hotmail.com>, 2012.
@@ -15,7 +16,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-12 11:17:35-0500\n"
 "PO-Revision-Date: 2013-02-23 16:37-0300\n"
-"Last-Translator: Felipe Bernardo Zorzo <felipe.b.zorzo@gmail.com>\n"
+"Last-Translator: Felipe Mendonça Marques Silva <fmmsilva@gmail.com>\n"
 "Language-Team: Português <>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
@@ -3028,7 +3029,7 @@ msgstr "Compilador"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:1
 msgid "Assembly Signing"
-msgstr "Assinatura da Montaem"
+msgstr "Assinatura da Montagem"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:1
 #: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:1
@@ -3144,12 +3145,12 @@ msgstr "Reportar um Defeito"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MimeTypes.addin.xml:2
 #, fuzzy
 msgid ".NET binary resource"
-msgstr "Recurso .NET"
+msgstr "Recurso Binário .NET"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MimeTypes.addin.xml:2
 #, fuzzy
 msgid ".NET XML resource"
-msgstr "Recurso .NET"
+msgstr "Recurso XML .NET"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MimeTypes.addin.xml:2
 msgid "Add-in manifest"
@@ -3472,7 +3473,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:20
 msgid "An application is already running. Do you want to stop it?"
-msgstr "Uma aplicação já está em execução. Deseja encerra-la?"
+msgstr "Uma aplicação já está em execução. Deseja encerrá-la?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:31
 msgid "C_lean {0}"
@@ -3875,7 +3876,7 @@ msgstr "Adicionar arquivos"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:34
 #, fuzzy
 msgid "Import From Folder"
-msgstr "Importar de Arquivo"
+msgstr "Importar da Pasta"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:35
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:43
@@ -16042,7 +16043,7 @@ msgstr "Apenas e_rros"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.cs:1
 #, fuzzy
-msgid "Edit color sheme"
+msgid "Edit Color Scheme"
 msgstr "O esquema padrão de cores."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.cs:1

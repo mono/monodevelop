@@ -1,21 +1,21 @@
-// 
+//
 // GitCredentials.cs
-//  
+//
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
-// 
+//
 // Copyright (c) 2010 Novell, Inc (http://www.novell.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,113 +24,232 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Linq;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using NGit.Transport;
+using LibGit2Sharp;
+using System.IO;
+using System.Collections.Generic;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	sealed class GitCredentials: CredentialsProvider
+	public enum GitCredentialsType
 	{
-		bool HasReset {
-			get; set;
-		}
-		
-		public override bool IsInteractive ()
+		Normal,
+		Tfs,
+	}
+
+	public class GitCredentialsState
+	{
+		public string UrlUsed { get; set; }
+		public bool AgentUsed { get; set; }
+		public int KeyUsed { get; set; }
+		public bool NativePasswordUsed { get; set; }
+		public Dictionary<string, int> KeyForUrl = new Dictionary<string, int> ();
+		public Dictionary<string, bool> AgentForUrl = new Dictionary<string, bool> ();
+
+		public GitCredentialsState ()
 		{
-			return true;
+			KeyUsed = -1;
 		}
-		
-		public override bool Supports (params CredentialItem[] items)
+	}
+
+	static class GitCredentials
+	{
+		// Gather keys on initialize.
+		static readonly List<string> Keys = new List<string> ();
+
+		static Dictionary<GitCredentialsType, GitCredentialsState> credState = new Dictionary<GitCredentialsType, GitCredentialsState> ();
+
+		static GitCredentials ()
 		{
-			return true;
+			string keyStorage = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), ".ssh");
+			if (!Directory.Exists (keyStorage)) {
+				keyStorage = Path.Combine (Environment.ExpandEnvironmentVariables ("%HOME%"), ".ssh");
+				if (!Directory.Exists (keyStorage))
+					return;
+			}
+
+			foreach (var privateKey in Directory.EnumerateFiles (keyStorage)) {
+				string publicKey = privateKey + ".pub";
+				if (File.Exists (publicKey) && !KeyHasPassphrase (privateKey))
+					Keys.Add (privateKey);
+			}
 		}
 
-		public override bool Get (URIish uri, params CredentialItem[] items)
+		public static Credentials TryGet (string url, string userFromUrl, SupportedCredentialTypes types, GitCredentialsType type)
 		{
-			bool result = false;
-			CredentialItem.Password passwordItem = null;
-			CredentialItem.StringType passphraseItem = null;
-			
+			bool result = true;
+			Uri uri = null;
+
+			GitCredentialsState state;
+			if (!credState.TryGetValue (type, out state))
+				credState [type] = state = new GitCredentialsState ();
+			state.UrlUsed = url;
+
 			// We always need to run the TryGet* methods as we need the passphraseItem/passwordItem populated even
 			// if the password store contains an invalid password/no password
-			if (TryGetUsernamePassword (uri, items, out passwordItem) || TryGetPassphrase (uri, items, out passphraseItem)) {
-				// If the password store has a password and we already tried using it, it could be incorrect.
-				// If this happens, do not return true and ask the user for a new password.
-				if (!HasReset) {
-					return true;
+			if ((types & SupportedCredentialTypes.UsernamePassword) != 0) {
+				uri = new Uri (url);
+				string username;
+				string password;
+				if (!state.NativePasswordUsed && TryGetUsernamePassword (uri, out username, out password)) {
+					state.NativePasswordUsed = true;
+					return new UsernamePasswordCredentials {
+						Username = username,
+						Password = password
+					};
 				}
+			}
+
+			Credentials cred;
+			if ((types & SupportedCredentialTypes.UsernamePassword) != 0)
+				cred = new UsernamePasswordCredentials ();
+			else {
+				// Try ssh-agent on Linux.
+				if (!Platform.IsWindows && !state.AgentUsed) {
+					bool agentUsable;
+					if (!state.AgentForUrl.TryGetValue (url, out agentUsable))
+						state.AgentForUrl [url] = agentUsable = true;
+
+					if (agentUsable) {
+						state.AgentUsed = true;
+						return new SshAgentCredentials {
+							Username = userFromUrl,
+						};
+					}
+				}
+
+				int key;
+				if (!state.KeyForUrl.TryGetValue (url, out key)) {
+					if (state.KeyUsed + 1 < Keys.Count)
+						state.KeyUsed++;
+					else {
+						SelectFileDialog dlg = null;
+						bool success = false;
+
+						DispatchService.GuiSyncDispatch (() => {
+							dlg = new SelectFileDialog (GettextCatalog.GetString ("Select a private SSH key to use."));
+							dlg.ShowHidden = true;
+							dlg.CurrentFolder = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
+							success = dlg.Run ();
+						});
+						if (!success || !File.Exists (dlg.SelectedFile + ".pub"))
+							throw new VersionControlException (GettextCatalog.GetString ("Invalid credentials were supplied. Aborting operation."));
+
+						cred = new SshUserKeyCredentials {
+							Username = userFromUrl,
+							Passphrase = "",
+							PrivateKey = dlg.SelectedFile,
+							PublicKey = dlg.SelectedFile + ".pub",
+						};
+
+						if (KeyHasPassphrase (dlg.SelectedFile)) {
+							DispatchService.GuiSyncDispatch (delegate {
+								using (var credDlg = new CredentialsDialog (url, types, cred))
+									result = MessageService.ShowCustomDialog (credDlg) == (int)Gtk.ResponseType.Ok;
+							});
+						}
+
+						if (result)
+							return cred;
+						throw new VersionControlException (GettextCatalog.GetString ("Invalid credentials were supplied. Aborting operation."));
+					}
+				} else
+					state.KeyUsed = key;
+
+				cred = new SshUserKeyCredentials {
+					Username = userFromUrl,
+					Passphrase = "",
+					PrivateKey = Keys [state.KeyUsed],
+					PublicKey = Keys [state.KeyUsed] + ".pub",
+				};
+				return cred;
 			}
 
 			DispatchService.GuiSyncDispatch (delegate {
-				CredentialsDialog dlg = new CredentialsDialog (uri, items);
-				try {
-					result = MessageService.ShowCustomDialog (dlg) == (int)Gtk.ResponseType.Ok;
-				} finally {
-					dlg.Destroy ();
-				}
+				using (var credDlg = new CredentialsDialog (url, types, cred))
+					result = MessageService.ShowCustomDialog (credDlg) == (int)Gtk.ResponseType.Ok;
 			});
-				
-			HasReset = false;
+
 			if (result) {
-				var user = items.OfType<CredentialItem.Username> ().FirstOrDefault ();
-				if (passwordItem != null) {
-					PasswordService.AddWebUserNameAndPassword (new Uri (uri.ToString ()), user.GetValue (), new string (passwordItem.GetValue ()));
-				} else if (passphraseItem != null) {
-					PasswordService.AddWebPassword (new Uri (uri.ToString ()), passphraseItem.GetValue ());
+				if ((types & SupportedCredentialTypes.UsernamePassword) != 0) {
+					var upcred = (UsernamePasswordCredentials)cred;
+					if (!string.IsNullOrEmpty (upcred.Password)) {
+						PasswordService.AddWebUserNameAndPassword (uri, upcred.Username, upcred.Password);
+					}
 				}
 			}
-			return result;
-		}
-		
-		public override void Reset (URIish uri)
-		{
-			HasReset = true;
-		}
-		
-		static bool TryGetPassphrase (URIish uri, CredentialItem[] items, out CredentialItem.StringType passphraseItem)
-		{
-			var actualUrl = new Uri (uri.ToString ());
-			var passphrase = (CredentialItem.StringType) items.FirstOrDefault (i => i is CredentialItem.StringType);
-			
-			if (items.Length == 1 && passphrase != null) {
-				passphraseItem = passphrase;
 
-				var passphraseValue = PasswordService.GetWebPassword (actualUrl);
-				if (passphraseValue != null) {
-					passphrase.SetValue (passphraseValue);
-					return true;
-				}
-			} else {
-				passphraseItem = null;
+			return cred;
+		}
+
+		static bool KeyHasPassphrase (string key)
+		{
+			return File.ReadAllText (key).Contains ("Proc-Type: 4,ENCRYPTED");
+		}
+
+		static bool TryGetPassphrase (Uri uri, out string passphrase)
+		{
+			var passphraseValue = PasswordService.GetWebPassword (uri);
+			if (passphraseValue != null) {
+				passphrase = passphraseValue;
+				return true;
 			}
-			
+
+			passphrase = null;
 			return false;
 		}
-		
-		static bool TryGetUsernamePassword (URIish uri, CredentialItem[] items, out CredentialItem.Password passwordItem)
+
+		static bool TryGetUsernamePassword (Uri uri, out string username, out string password)
 		{
-			var actualUrl = new Uri (uri.ToString ());
-			var username = (CredentialItem.Username) items.FirstOrDefault (i => i is CredentialItem.Username);
-			var password = (CredentialItem.Password) items.FirstOrDefault (i => i is CredentialItem.Password);
-
-			if (items.Length == 2 && username != null && password != null) {
-				passwordItem = password;
-
-				var cred = PasswordService.GetWebUserNameAndPassword (actualUrl);
-				if (cred != null) {
-					username.SetValue (cred.Item1);
-					password.SetValueNoCopy (cred.Item2.ToArray ());
-					return true;
-				}
-			} else {
-				passwordItem = null;
+			var cred = PasswordService.GetWebUserNameAndPassword (uri);
+			if (cred != null) {
+				username = cred.Item1;
+				password = cred.Item2;
+				return true;
 			}
 
+			username = null;
+			password = null;
 			return false;
+		}
+
+		internal static void StoreCredentials (GitCredentialsType type)
+		{
+			GitCredentialsState state;
+			if (!credState.TryGetValue (type, out state))
+				return;
+
+			var url = state.UrlUsed;
+			var key = state.KeyUsed;
+
+			state.NativePasswordUsed = false;
+
+			if (!string.IsNullOrEmpty (url) && key != -1)
+				state.KeyForUrl [url] = key;
+
+			Cleanup (state);
+		}
+
+		internal static void InvalidateCredentials (GitCredentialsType type)
+		{
+			GitCredentialsState state;
+			if (!credState.TryGetValue (type, out state))
+				return;
+
+			if (!string.IsNullOrEmpty (state.UrlUsed) && state.AgentForUrl.ContainsKey (state.UrlUsed))
+				state.AgentForUrl [state.UrlUsed] &= !state.AgentUsed;
+
+			Cleanup (state);
+		}
+
+		static void Cleanup (GitCredentialsState state)
+		{
+			state.UrlUsed = null;
+			state.AgentUsed = false;
+			state.KeyUsed = -1;
 		}
 	}
 }
-

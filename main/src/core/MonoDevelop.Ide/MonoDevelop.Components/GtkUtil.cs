@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using Gtk;
 using System.Runtime.InteropServices;
 using Mono.Addins;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components
 {
@@ -167,6 +168,15 @@ namespace MonoDevelop.Components
 			return new Gdk.Point (x + p.X, y + p.Y);
 		}
 
+		public static bool IsClickedNodeSelected (this Gtk.TreeView tree, int x, int y)
+		{
+			Gtk.TreePath path;
+			if (tree.GetPathAtPos (x, y, out path))
+				return tree.Selection.PathIsSelected (path);
+
+			return false;
+		}
+
 		public static void EnableAutoTooltips (this Gtk.TreeView tree)
 		{
 			TreeViewTooltipsData data = new TreeViewTooltipsData ();
@@ -298,8 +308,14 @@ namespace MonoDevelop.Components
 		{
 			int ox, oy;
 			w.GetOrigin (out ox, out oy);
-			ox += widget.Allocation.X;
-			oy += widget.Allocation.Y;
+			//Bug 31032 - this is workaround bug in GTK on Windows OS which has widget.Allocation.X/Y
+			//relative to widget.GdkWindow.Toplevel instead to widget.GdkWindow which is GdkWindow decicated
+			//to TreeView so widget.Allocation.X/Y should always be 0,0(which is true on Mac)
+			//hence skipping adding Allocation.X/Y since they should always be 0,0 anyway
+			if (!(widget is TreeView)) {
+				ox += widget.Allocation.X;
+				oy += widget.Allocation.Y;
+			}
 			return new Gdk.Point (ox + x, oy + y);
 		}
 
@@ -417,6 +433,199 @@ namespace MonoDevelop.Components
 		public static IDisposable SubscribeLeaveEvent (this Gtk.Widget w, System.Action leaveHandler)
 		{
 			return new LeaveEventData (w, leaveHandler);
+		}
+
+		public static Gdk.EventKey CreateKeyEvent (uint keyval, Gdk.ModifierType state, Gdk.EventType eventType, Gdk.Window win)
+		{
+			return CreateKeyEvent (keyval, -1, state, eventType, win);
+		}
+
+		public static Gdk.EventKey CreateKeyEventFromKeyCode (ushort keyCode, Gdk.ModifierType state, Gdk.EventType eventType, Gdk.Window win)
+		{
+			return CreateKeyEvent (0, keyCode, state, eventType, win);
+		}
+
+		static Gdk.EventKey CreateKeyEvent (uint keyval, int keyCode, Gdk.ModifierType state, Gdk.EventType eventType, Gdk.Window win)
+		{
+			int effectiveGroup, level;
+			Gdk.ModifierType cmods;
+			if (keyval == 0)
+				Gdk.Keymap.Default.TranslateKeyboardState ((uint)keyCode, state, 0, out keyval, out effectiveGroup, out level, out cmods);
+
+			Gdk.KeymapKey[] keyms = Gdk.Keymap.Default.GetEntriesForKeyval (keyval);
+			if (keyms.Length == 0)
+				return null;
+
+			var nativeEvent = new NativeEventKeyStruct {
+				type = eventType,
+				send_event = 1,
+				window = win != null ? win.Handle : IntPtr.Zero,
+				state = (uint)state,
+				keyval = keyval,
+				group = (byte)keyms [0].Group,
+				hardware_keycode = keyCode == -1 ? (ushort)keyms [0].Keycode : (ushort)keyCode,
+				length = 0,
+				time = Gtk.Global.CurrentEventTime
+			};
+
+			IntPtr ptr = GLib.Marshaller.StructureToPtrAlloc (nativeEvent); 
+			return new EventKeyWrapper (ptr);
+		}
+
+		static IEnumerable<Gtk.Widget> FindAllChildWidgets (this Gtk.Container container)
+		{
+			var widgets = new Stack<Widget> (new[] { container });
+
+			while (widgets.Any ()) {
+				var widget = widgets.Pop ();
+				yield return widget;
+
+				if (widget is Gtk.Container) {
+					var c = (Gtk.Container)widget;
+					foreach (var w in c.Children) {
+						widgets.Push (w);
+					}
+				}
+			}
+		}
+
+		public static void UseNativeContextMenus (this Gtk.Window window)
+		{
+			#if MAC
+			var entries = window.FindAllChildWidgets ().OfType<Gtk.Entry> ();
+			foreach (var entry in entries) {
+				entry.ButtonPressEvent += EntryButtonPressHandler;
+			}
+			#endif
+		}
+
+		static void ShowNativeContextMenu (this Gtk.Entry entry, Gdk.EventButton evt)
+		{
+			var context_menu = new ContextMenu ();
+
+			var cut = new ContextMenuItem { Label = GettextCatalog.GetString ("Cut"), Context = entry };
+			cut.Clicked += CutClicked;
+			context_menu.Items.Add (cut);
+
+			var copy = new ContextMenuItem { Label = GettextCatalog.GetString ("Copy"), Context = entry };
+			copy.Clicked += CopyClicked;
+			context_menu.Items.Add (copy);
+
+			var paste = new ContextMenuItem { Label = GettextCatalog.GetString ("Paste"), Context = entry };
+			paste.Clicked += PasteClicked;
+			context_menu.Items.Add (paste);
+
+			context_menu.Items.Add (new SeparatorContextMenuItem ());
+
+			var delete = new ContextMenuItem { Label = GettextCatalog.GetString ("Delete"), Context = entry };
+			delete.Clicked += DeleteClicked;
+			context_menu.Items.Add (delete);
+
+			context_menu.Items.Add (new SeparatorContextMenuItem ());
+
+			var select_all = new ContextMenuItem { Label = GettextCatalog.GetString ("Select All"), Context = entry };
+			select_all.Clicked += SelectAllClicked;
+			context_menu.Items.Add (select_all);
+
+			/* Update the menu items' sensitivities */
+			copy.Sensitive = select_all.Sensitive = (entry.Text.Length > 0);
+			cut.Sensitive = delete.Sensitive = (entry.Text.Length > 0 && entry.IsEditable);
+			paste.Sensitive = entry.IsEditable;
+
+			context_menu.Show (entry, evt);
+		}
+
+		static void CutClicked (object o, ContextMenuItemClickedEventArgs e)
+		{
+			var entry = (Gtk.Entry)e.Context;
+
+			if (entry.IsEditable) {
+				int selection_start, selection_end;
+
+				if (entry.GetSelectionBounds (out selection_start, out selection_end)) {
+					var text = entry.GetChars (selection_start, selection_end);
+					var clipboard = Gtk.Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+
+					clipboard.Text = text;
+					entry.DeleteText (selection_start, selection_end);
+				}
+			} else {
+				entry.ErrorBell ();
+			}
+		}
+
+		static void CopyClicked (object o, ContextMenuItemClickedEventArgs e)
+		{
+			var entry = (Gtk.Entry)e.Context;
+			int selection_start, selection_end;
+
+			if (entry.GetSelectionBounds (out selection_start, out selection_end)) {
+				var text = entry.GetChars (selection_start, selection_end);
+				var clipboard = Gtk.Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+
+				clipboard.Text = text;
+			}
+		}
+
+		static void PasteClicked (object o, ContextMenuItemClickedEventArgs e)
+		{
+			var entry = (Gtk.Entry)e.Context;
+
+			if (entry.IsEditable) {
+				var clipboard = Gtk.Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+
+				clipboard.RequestText ((cb, text) => {
+					entry.InsertText (text);
+				});
+			} else {
+				entry.ErrorBell ();
+			}
+		}
+
+		static void DeleteClicked (object o, ContextMenuItemClickedEventArgs e)
+		{
+			var entry = (Gtk.Entry)e.Context;
+
+			if (entry.IsEditable) {
+				int selection_start, selection_end;
+
+				if (entry.GetSelectionBounds (out selection_start, out selection_end)) {
+					entry.DeleteText (selection_start, selection_end);
+				}
+			}
+		}
+
+		static void SelectAllClicked (object o, ContextMenuItemClickedEventArgs e)
+		{
+			var entry = (Gtk.Entry)e.Context;
+
+			entry.SelectRegion (0, entry.Text.Length - 1);
+		}
+
+		[GLib.ConnectBefore]
+		static void EntryButtonPressHandler (object o, ButtonPressEventArgs args)
+		{
+			if (args.Event.Button == 3) {
+				var entry = (Gtk.Entry)o;
+
+				entry.ShowNativeContextMenu (args.Event);
+				args.RetVal = true;
+			}
+		}
+	}
+
+	class EventKeyWrapper: Gdk.EventKey
+	{
+		IntPtr ptr;
+
+		public EventKeyWrapper (IntPtr ptr): base (ptr)
+		{
+			this.ptr = ptr;
+		}
+
+		~EventKeyWrapper ()
+		{
+			Marshal.FreeHGlobal (ptr);
 		}
 	}
 
@@ -692,7 +901,23 @@ namespace MonoDevelop.Components
 			return base.OnEnterNotifyEvent (evnt);
 		}
 	}
-	
+
+	// Analysis disable InconsistentNaming
+	[StructLayout (LayoutKind.Sequential)] 
+	struct NativeEventKeyStruct { 
+		public Gdk.EventType type; 
+		public IntPtr window; 
+		public sbyte send_event; 
+		public uint time; 
+		public uint state; 
+		public uint keyval; 
+		public int length;
+		public IntPtr str;
+		public ushort hardware_keycode;
+		public byte group;
+		public uint is_modifier;
+	} 
+
 	[StructLayout (LayoutKind.Sequential)] 
 	struct NativeEventButtonStruct { 
 		public Gdk.EventType type; 

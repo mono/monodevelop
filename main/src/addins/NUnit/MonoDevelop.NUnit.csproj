@@ -30,7 +30,7 @@
     <Optimize>True</Optimize>
     <OutputPath>..\..\..\build\AddIns\NUnit\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>3</WarningLevel>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
@@ -64,16 +64,16 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Core" />
     <Reference Include="nunit.framework">
-      <HintPath>..\..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+      <HintPath>..\..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="nunit.core">
-      <HintPath>..\..\..\packages\NUnit.Runners.2.6.3\tools\lib\nunit.core.dll</HintPath>
+      <HintPath>..\..\..\packages\NUnit.Runners.2.6.4\tools\lib\nunit.core.dll</HintPath>
     </Reference>
     <Reference Include="nunit.core.interfaces">
-      <HintPath>..\..\..\packages\NUnit.Runners.2.6.3\tools\lib\nunit.core.interfaces.dll</HintPath>
+      <HintPath>..\..\..\packages\NUnit.Runners.2.6.4\tools\lib\nunit.core.interfaces.dll</HintPath>
     </Reference>
     <Reference Include="nunit.util">
-      <HintPath>..\..\..\packages\NUnit.Runners.2.6.3\tools\lib\nunit.util.dll</HintPath>
+      <HintPath>..\..\..\packages\NUnit.Runners.2.6.4\tools\lib\nunit.util.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -174,7 +174,7 @@
     <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32.png">
       <LogicalName>project-nunit-overlay-light-32.png</LogicalName>
     </EmbeddedResource><!-- TODO: VV: Duped definition to not break fsharpbinding (https://github.com/fsharp/fsharpbinding/blob/master/monodevelop/MonoDevelop.FSharpBinding/Templates/FSharpNUnitLibraryProject.xpt.xml#L8) -->
-    <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32%402x.png">
+    <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32@2x.png">
       <LogicalName>project-nunit-overlay-light-32@2x.png</LogicalName>
     </EmbeddedResource><!-- TODO: VV: Duped definition to not break fsharpbinding (https://github.com/fsharp/fsharpbinding/blob/master/monodevelop/MonoDevelop.FSharpBinding/Templates/FSharpNUnitLibraryProject.xpt.xml#L8) -->
     <EmbeddedResource Include="gtk-gui\gui.stetic">
@@ -203,6 +203,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\icons\unit-run-16%402x.png">
       <LogicalName>unit-run-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\NUnitProjectVBNet.xpt.xml">
+      <LogicalName>NUnitProjectVBNet.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\nunit-library-project.png">
+      <LogicalName>nunit-library-project.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\nunit-library-project%402x.png">
+      <LogicalName>nunit-library-project@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -263,4 +272,7 @@
     </PropertyGroup>
     <Exec Condition="Exists('$(SolutionDir)\..\.git')" Command="$(NuGet) restore -SolutionDirectory $(SolutionDir)" />
   </Target>
+  <ItemGroup>
+    <Folder Include="templates\images\" />
+  </ItemGroup>
 </Project>

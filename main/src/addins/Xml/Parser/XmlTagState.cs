@@ -64,7 +64,9 @@ namespace MonoDevelop.Xml.Parser
 			XElement element = context.Nodes.Peek () as XElement;
 			
 			if (element == null || element.IsComplete) {
+				var parent = element;
 				element = new XElement (context.LocationMinus (2)); // 2 == < + current char
+				element.Parent = parent;
 				context.Nodes.Push (element);
 			}
 			

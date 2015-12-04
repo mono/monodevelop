@@ -97,6 +97,24 @@ namespace MonoDevelop.Projects
 			get { return pauseExternalConsole; }
 			set { pauseExternalConsole = value; }
 		}
+
+		public string TypeLabel {
+			get {
+				switch (type) {
+				case CustomCommandType.BeforeBuild: return GettextCatalog.GetString ("Before Build");
+				case CustomCommandType.Build: return GettextCatalog.GetString ("Build");
+				case CustomCommandType.AfterBuild: return GettextCatalog.GetString ("After Build");
+				case CustomCommandType.BeforeExecute: return GettextCatalog.GetString ("Before Execute");
+				case CustomCommandType.Execute: return GettextCatalog.GetString ("Execute");
+				case CustomCommandType.AfterExecute: return GettextCatalog.GetString ("After Execute");
+				case CustomCommandType.BeforeClean: return GettextCatalog.GetString ("Before Clean");
+				case CustomCommandType.Clean: return GettextCatalog.GetString ("Clean");
+				case CustomCommandType.AfterClean: return GettextCatalog.GetString ("After Clean");
+				case CustomCommandType.Custom: return GettextCatalog.GetString ("Custom Command");
+				default: return type.ToString ();
+				}
+			}
+		}
 		
 		public string GetCommandFile (IWorkspaceObject entry, ConfigurationSelector configuration)
 		{
@@ -174,6 +192,8 @@ namespace MonoDevelop.Projects
 		
 		public ProcessExecutionCommand CreateExecutionCommand (IWorkspaceObject entry, ConfigurationSelector configuration)
 		{
+			if (string.IsNullOrEmpty (command))
+				throw new UserException (GettextCatalog.GetString ("Invalid custom command for '{0}' step: the path to the command to execute has not been provided.", TypeLabel));
 			string exe, args;
 			StringTagModel tagSource = GetTagModel (entry, configuration);
 			ParseCommand (tagSource, out exe, out args);

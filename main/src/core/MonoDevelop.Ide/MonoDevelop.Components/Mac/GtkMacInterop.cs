@@ -33,7 +33,7 @@ using System;
 
 namespace MonoDevelop.Components.Mac
 {
-	class GtkMacInterop
+	public class GtkMacInterop
 	{
 		const string LibGdk = "libgdk-quartz-2.0.dylib";
 		const string LibGtk = "libgtk-quartz-2.0";
@@ -60,8 +60,11 @@ namespace MonoDevelop.Components.Mac
 
 		public static Gtk.Window GetGtkWindow (NSWindow window)
 		{
+			if (window == null)
+				return null;
+
 			var toplevels = Gtk.Window.ListToplevels ();
-			return toplevels.FirstOrDefault (w => gdk_quartz_window_get_nswindow (w.GdkWindow.Handle) == window.Handle);
+			return toplevels.FirstOrDefault (w => w.IsRealized && gdk_quartz_window_get_nswindow (w.GdkWindow.Handle) == window.Handle);
 		}
 
 		public static IEnumerable<KeyValuePair<NSWindow,Gtk.Window>> GetToplevels ()
@@ -116,6 +119,23 @@ namespace MonoDevelop.Components.Mac
 			var rect = NSWindow.ContentRectFor (frame, NSWindowStyle.Titled);
 			return (int)(frame.Height - rect.Height);
 		}
+
+		internal static Gdk.EventKey ConvertKeyEvent (AppKit.NSEvent ev)
+		{
+			var state = Gdk.ModifierType.None;
+			if ((ev.ModifierFlags & AppKit.NSEventModifierMask.ControlKeyMask) != 0)
+				state |= Gdk.ModifierType.ControlMask;
+			if ((ev.ModifierFlags & AppKit.NSEventModifierMask.ShiftKeyMask) != 0)
+				state |= Gdk.ModifierType.ShiftMask;
+			if ((ev.ModifierFlags & AppKit.NSEventModifierMask.CommandKeyMask) != 0)
+				state |= Gdk.ModifierType.MetaMask;
+			if ((ev.ModifierFlags & AppKit.NSEventModifierMask.AlternateKeyMask) != 0)
+				state |= Gdk.ModifierType.Mod1Mask;
+
+			var w = GetGtkWindow (ev.Window);
+			return GtkUtil.CreateKeyEventFromKeyCode (ev.KeyCode, state, Gdk.EventType.KeyPress, w != null ? w.GdkWindow : null);
+		}
+
 
 		[DllImport (LibGtk)]
 		static extern IntPtr gdk_quartz_window_get_nsview (IntPtr window);

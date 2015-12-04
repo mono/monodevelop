@@ -80,7 +80,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				monitor.BeginTask (GettextCatalog.GetString ("Saving solution: {0}", file), 1);
 				try {
 					if (File.Exists (file))
-						tmpfilename = Path.GetTempFileName ();
+						tmpfilename = Path.GetDirectoryName (file) + Path.DirectorySeparatorChar + ".#" + Path.GetFileName (file);
 				} catch (IOException) {
 				}
 
@@ -89,14 +89,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					WriteFileInternal (file, sol, baseDir, format, saveProjects, monitor);
 				} else {
 					WriteFileInternal (tmpfilename, sol, baseDir, format, saveProjects, monitor);
-					File.Delete (file);
-					File.Move (tmpfilename, file);
+					FileService.SystemRename (tmpfilename, file);
 				}
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
 				LoggingService.LogError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
 
-				if (!String.IsNullOrEmpty (tmpfilename))
+				if (!String.IsNullOrEmpty (tmpfilename) && File.Exists (tmpfilename))
 					File.Delete (tmpfilename);
 				throw;
 			} finally {
@@ -215,7 +214,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		void WriteProjects (SolutionFolder folder, string baseDirectory, StreamWriter writer, bool saveProjects, IProgressMonitor monitor)
 		{
 			monitor.BeginStepTask (GettextCatalog.GetString ("Saving projects"), folder.Items.Count, 1); 
-			foreach (SolutionItem ce in folder.Items)
+			foreach (SolutionItem ce in folder.Items.ToArray ())
 			{
 				string[] l = null;
 				if (ce is SolutionEntityItem) {

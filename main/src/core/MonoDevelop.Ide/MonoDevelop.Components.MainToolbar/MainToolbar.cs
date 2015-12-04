@@ -49,26 +49,17 @@ using System.Text;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	class MainToolbar: Gtk.EventBox, ICommandBar
+	class MainToolbar: Gtk.EventBox, IMainToolbarView
 	{
-		const string ToolbarExtensionPath = "/MonoDevelop/Ide/CommandBar";
-		const string TargetsMenuPath = "/MonoDevelop/Ide/TargetSelectorCommands";
-
-		const int RuntimeExecutionTarget = 0;
-		const int RuntimeIsIndented = 1;
-		const int RuntimeCommand = 2;
-
-		EventHandler executionTargetsChanged;
-
 		HBox contentBox = new HBox (false, 0);
 
 		HBox configurationCombosBox;
 
 		ComboBox configurationCombo;
-		TreeStore configurationStore = new TreeStore (typeof(string), typeof(string));
+		TreeStore configurationStore = new TreeStore (typeof(string), typeof(IConfigurationModel));
 
 		ComboBox runtimeCombo;
-		TreeStore runtimeStore = new TreeStore (typeof (ExecutionTarget), typeof (bool), typeof(ActionCommand));
+		TreeStore runtimeStore = new TreeStore (typeof(IRuntimeModel));
 
 		StatusArea statusArea;
 
@@ -78,17 +69,6 @@ namespace MonoDevelop.Components.MainToolbar
 		ButtonBar buttonBar = new ButtonBar ();
 		RoundButton button = new RoundButton ();
 		Alignment buttonBarBox;
-
-		HashSet<string> visibleBars = new HashSet<string> ();
-
-		ConfigurationMerger configurationMerger = new ConfigurationMerger ();
-
-		Solution currentSolution;
-		bool settingGlobalConfig;
-		SolutionEntityItem currentStartupProject;
-
-		int ignoreConfigurationChangedCount;
-		int ignoreRuntimeChangedCount;
 
 		// attributes for the runtime combo (bold / normal)
 		readonly Pango.AttrList boldAttributes = new Pango.AttrList ();
@@ -104,16 +84,6 @@ namespace MonoDevelop.Components.MainToolbar
 			set;
 		}
 
-		readonly PropertyWrapper<bool> searchForMembers = new PropertyWrapper<bool> ("MainToolbar.Search.IncludeMembers", true);
-		bool SearchForMembers {
-			get {
-				return searchForMembers;
-			}
-			set {
-				searchForMembers.Value = value;
-			}
-		}
-
 		public MonoDevelop.Ide.StatusBar StatusBar {
 			get {
 				return statusArea;
@@ -124,104 +94,44 @@ namespace MonoDevelop.Components.MainToolbar
 			get { return lastCommandTarget != null ? lastCommandTarget.Target : null; }
 		}
 
-		void SetSearchCategory (string category)
-		{
-			IdeApp.Workbench.RootWindow.Present ();
-			matchEntry.Entry.Text = category + ":";
-			matchEntry.Entry.GrabFocus ();
-			var pos = matchEntry.Entry.Text.Length;
-			matchEntry.Entry.SelectRegion (pos, pos);
-		}
-
 		static bool RuntimeIsSeparator (TreeModel model, TreeIter iter)
 		{
-			return model.GetValue (iter, RuntimeExecutionTarget) == null && model.GetValue (iter, RuntimeCommand) == null;
+			var runtime = (IRuntimeModel)model.GetValue (iter, 0);
+			return runtime == null || runtime.IsSeparator;
 		}
 
 		void RuntimeRenderCell (CellLayout layout, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
-			var target = (ExecutionTarget) model.GetValue (iter, RuntimeExecutionTarget);
-			var indent = (bool) model.GetValue (iter, RuntimeIsIndented);
-			var cmd = (ActionCommand) model.GetValue (iter, RuntimeCommand);
+			var runtime = (IRuntimeModel)model.GetValue (iter, 0);
 			var renderer = (CellRendererText) cell;
-			TreeIter parent;
 
-			if (cmd != null) {
-				var ci = IdeApp.CommandService.GetCommandInfo (cmd.Id, new CommandTargetRoute (LastCommandTarget));
-				renderer.Text = RemoveUnderline (ci.Text);
-				renderer.Visible = ci.Visible;
-				renderer.Sensitive = ci.Enabled;
-				renderer.Xpad = 3;
-
-				// it seems that once we add the ExecutionTargetGroups to the drop down then the width
-				// calculation for items needs some help in calculating the correct width
-				// doing this helps.
-				if (Platform.IsMac)
-					renderer.WidthChars = renderer.Text != null ? renderer.Text.Length : 0;
-				return;
-			}
-			renderer.Sensitive = !(target is ExecutionTargetGroup) && (target != null && target.Enabled);
-
-			if (target == null) {
-				renderer.Xpad = (uint) 0;
+			if (runtime == null || runtime.IsSeparator) {
+				renderer.Xpad = (uint)0;
 				return;
 			}
 
-			if (!runtimeCombo.PopupShown) {
-				renderer.Text = target.FullName;
-				renderer.Xpad = 3;
-				renderer.Attributes = normalAttributes;
-			} else {
-				renderer.Xpad = indent ? (uint) 18 : (uint) 3;
-				renderer.Attributes = target.Notable ? boldAttributes : normalAttributes;
+			using (var mutableModel = runtime.GetMutableModel ()) {
+				renderer.Visible = mutableModel.Visible;
+				renderer.Sensitive = mutableModel.Enabled;
+				renderer.Xpad = (uint)(runtime.IsIndented ? 18 : 3);
 
-				if (!runtimeStore.IterParent (out parent, iter))
-					renderer.Text = target.FullName;
-				else
-					renderer.Text = target.Name;
-			}
-
-			if (Platform.IsMac)
-				renderer.WidthChars = renderer.Text != null ? (indent ? renderer.Text.Length + 6 : 0) : 0;
-		}
-
-		string RemoveUnderline (string s)
-		{
-			int i = s.IndexOf ('_');
-			if (i == -1)
-				return s;
-			var sb = new StringBuilder (s.Substring (0, i));
-			for (; i < s.Length; i++) {
-				if (s [i] == '_') {
-					i++;
-					if (i >= s.Length)
-						break;
+				if (!runtimeCombo.PopupShown) {
+					// no need to ident text when the combo dropdown is not showing
+					if (Platform.IsWindows)
+						renderer.Xpad = 3;
+					renderer.Text = mutableModel.FullDisplayString;
+					renderer.Attributes = normalAttributes;
+				} else {
+					renderer.Text = mutableModel.DisplayString;
+					renderer.Attributes = runtime.Notable ? boldAttributes : normalAttributes;
 				}
-				sb.Append (s [i]);
-			}
-			return sb.ToString ();
-		}
 
-		void DestroyPopup ()
-		{
-			if (popup != null) {
-				popup.Destroy ();
-				popup = null;
 			}
 		}
 
+		TreeIter lastSelection = TreeIter.Zero;
 		public MainToolbar ()
 		{
-			executionTargetsChanged = DispatchService.GuiDispatch (new EventHandler (HandleExecutionTargetsChanged));
-
-			IdeApp.Workspace.ActiveConfigurationChanged += (sender, e) => UpdateCombos ();
-			IdeApp.Workspace.ConfigurationsChanged += (sender, e) => UpdateCombos ();
-
-			IdeApp.Workspace.SolutionLoaded += (sender, e) => UpdateCombos ();
-			IdeApp.Workspace.SolutionUnloaded += (sender, e) => UpdateCombos ();
-
-			IdeApp.ProjectOperations.CurrentSelectedSolutionChanged += HandleCurrentSelectedSolutionChanged;
-
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 
 			AddWidget (button);
@@ -291,28 +201,11 @@ namespace MonoDevelop.Components.MainToolbar
 
 			matchEntry = new SearchEntry ();
 
-			var searchFiles = this.matchEntry.AddMenuItem (GettextCatalog.GetString ("Search Files"));
-			searchFiles.Activated += delegate {
-				SetSearchCategory ("files");
-			};
-			var searchTypes = this.matchEntry.AddMenuItem (GettextCatalog.GetString ("Search Types"));
-			searchTypes.Activated += delegate {
-				SetSearchCategory ("type");
-			};
-			var searchMembers = this.matchEntry.AddMenuItem (GettextCatalog.GetString ("Search Members"));
-			searchMembers.Activated += delegate {
-				SetSearchCategory ("member");
-			};
-
 			matchEntry.ForceFilterButtonVisible = true;
-			matchEntry.Entry.FocusOutEvent += delegate {
-				matchEntry.Entry.Text = "";
+			matchEntry.Entry.FocusOutEvent += (o, e) => {
+				if (SearchEntryLostFocus != null)
+					SearchEntryLostFocus (o, e);
 			};
-			var cmd = IdeApp.CommandService.GetCommand (Commands.NavigateTo);
-			cmd.KeyBindingChanged += delegate {
-				UpdateSearchEntryLabel ();
-			};
-			UpdateSearchEntryLabel ();
 
 			matchEntry.Ready = true;
 			matchEntry.Visible = true;
@@ -323,47 +216,12 @@ namespace MonoDevelop.Components.MainToolbar
 				matchEntry.Entry.ModifyFont (Pango.FontDescription.FromString ("Sans 9")); // TODO: VV: "Segoe UI 9"
 			matchEntry.RoundedShape = true;
 			matchEntry.Entry.Changed += HandleSearchEntryChanged;
-			matchEntry.Activated += (sender, e) => {
-				var pattern = SearchPopupSearchPattern.ParsePattern (matchEntry.Entry.Text);
-				if (pattern.Pattern == null && pattern.LineNumber > 0) {
-					DestroyPopup ();
-					var doc = IdeApp.Workbench.ActiveDocument;
-					if (doc != null && doc.Editor != null) {
-						doc.Select ();
-						doc.Editor.Caret.Location = new Mono.TextEditor.DocumentLocation (pattern.LineNumber, pattern.Column > 0 ? pattern.Column : 1);
-						doc.Editor.CenterToCaret ();
-						doc.Editor.Parent.StartCaretPulseAnimation ();
-					}
-					return;
-				}
-				if (popup != null)
-					popup.OpenFile ();
+			matchEntry.Activated += HandleSearchEntryActivated;
+			matchEntry.Entry.KeyPressEvent += HandleSearchEntryKeyPressed;
+			SizeAllocated += (o, e) => {
+				if (SearchEntryResized != null)
+					SearchEntryResized (o, e);
 			};
-			matchEntry.Entry.KeyPressEvent += (o, args) => {
-				if (args.Event.Key == Gdk.Key.Escape) {
-					var doc = IdeApp.Workbench.ActiveDocument;
-					if (doc != null) {
-						DestroyPopup ();
-						doc.Select ();
-					}
-					return;
-				}
-				if (popup != null) {
-					args.RetVal = popup.ProcessKey (args.Event.Key, args.Event.State);
-				}
-			};
-			IdeApp.Workbench.RootWindow.WidgetEvent += delegate(object o, WidgetEventArgs args) {
-				if (args.Event is Gdk.EventConfigure)
-					PositionPopup ();
-			};
-			SizeAllocated += delegate {
-				PositionPopup ();
-			};
-
-			BuildToolbar ();
-			IdeApp.CommandService.RegisterCommandBar (buttonBar);
-
-			AddinManager.ExtensionChanged += OnExtensionChanged;
 
 			contentBox.PackStart (matchEntry, false, false, 0);
 
@@ -376,14 +234,28 @@ namespace MonoDevelop.Components.MainToolbar
 			align.Add (contentBox);
 
 			Add (align);
-			SetDefaultSizes (-1, 21);
+			SetDefaultSizes (-1, (int)(21 * GtkWorkarounds.GetPixelScale ()));
 
-			configurationCombo.Changed += HandleConfigurationChanged;
-			runtimeCombo.Changed += HandleRuntimeChanged;
-			UpdateCombos ();
+			configurationCombo.Changed += (o, e) => {
+				if (ConfigurationChanged != null)
+					ConfigurationChanged (o, e);
+			};
+			runtimeCombo.Changed += (o, e) => {
+				var ea = new HandledEventArgs ();
+				if (RuntimeChanged != null)
+					RuntimeChanged (o, ea);
+
+				TreeIter it;
+				if (runtimeCombo.GetActiveIter (out it)) {
+					if (ea.Handled) {
+						runtimeCombo.SetActiveIter (lastSelection);
+						return;
+					}
+					lastSelection = it;
+				}
+			};
 
 			button.Clicked += HandleStartButtonClicked;
-			IdeApp.CommandService.RegisterCommandBar (this);
 
 			IdeApp.CommandService.ActiveWidgetChanged += (sender, e) => {
 				lastCommandTarget = new WeakReference (e.OldActiveWidget);
@@ -391,12 +263,6 @@ namespace MonoDevelop.Components.MainToolbar
 
 			this.ShowAll ();
 			this.statusArea.statusIconBox.HideAll ();
-		}
-			
-		void OnExtensionChanged (object sender, ExtensionEventArgs args)
-		{
-			if (args.PathChanged (ToolbarExtensionPath))
-				BuildToolbar ();
 		}
 
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
@@ -411,78 +277,11 @@ namespace MonoDevelop.Components.MainToolbar
 			return base.OnButtonPressEvent (evnt);
 		}
 
-		void HandleCurrentSelectedSolutionChanged (object sender, SolutionEventArgs e)
-		{
-			if (currentSolution != null) {
-				currentSolution.StartupItemChanged -= HandleStartupItemChanged;
-				currentSolution.Saved -= HandleSolutionSaved;
-			}
-
-			currentSolution = e.Solution;
-
-			if (currentSolution != null) {
-				currentSolution.StartupItemChanged += HandleStartupItemChanged;
-				currentSolution.Saved += HandleSolutionSaved;
-			}
-
-			TrackStartupProject ();
-
-			UpdateCombos ();
-		}
-
-		void TrackStartupProject ()
-		{
-			if (currentStartupProject != null && ((currentSolution != null && currentStartupProject != currentSolution.StartupItem) || currentSolution == null)) {
-				currentStartupProject.ExecutionTargetsChanged -= executionTargetsChanged;
-				currentStartupProject.Saved -= HandleProjectSaved;
-			}
-
-			if (currentSolution != null) {
-				currentStartupProject = currentSolution.StartupItem;
-				if (currentStartupProject != null) {
-					currentStartupProject.ExecutionTargetsChanged += executionTargetsChanged;
-					currentStartupProject.Saved += HandleProjectSaved;
-				}
-			}
-			else
-				currentStartupProject = null;
-		}
-
-		void HandleProjectSaved (object sender, SolutionItemEventArgs e)
-		{
-			UpdateCombos ();
-		}
-
-		void HandleSolutionSaved (object sender, WorkspaceItemEventArgs e)
-		{
-			UpdateCombos ();
-		}
-
-		void HandleExecutionTargetsChanged (object sender, EventArgs e)
-		{
-			UpdateCombos ();
-		}
-
-		void HandleStartupItemChanged (object sender, EventArgs e)
-		{
-			TrackStartupProject ();
-			UpdateCombos ();
-		}
-
-		void UpdateSearchEntryLabel ()
-		{
-			var info = IdeApp.CommandService.GetCommand (Commands.NavigateTo);
-			if (!string.IsNullOrEmpty (info.AccelKey)) {
-				matchEntry.EmptyMessage = GettextCatalog.GetString ("Press '{0}' to search", KeyBindingManager.BindingToDisplayLabel (info.AccelKey, false));
-			} else {
-				matchEntry.EmptyMessage = GettextCatalog.GetString ("Search solution");
-			}
-		}
-
 		void SetDefaultSizes (int comboHeight, int height)
 		{
 			configurationCombo.SetSizeRequest (150, comboHeight);
-			runtimeCombo.SetSizeRequest (150, comboHeight);
+			// make the windows runtime slightly wider to accomodate select devices text
+			runtimeCombo.SetSizeRequest (Platform.IsWindows ? 175 : 150, comboHeight);
 			statusArea.SetSizeRequest (32, 32);
 			matchEntry.HeightRequest = height + 4;
 			buttonBar.HeightRequest = height + 2;
@@ -496,389 +295,37 @@ namespace MonoDevelop.Components.MainToolbar
 			contentBox.PackStart (la, false, false, 0);
 		}
 
-		void BuildToolbar ()
-		{
-			buttonBar.Clear ();
-			var bars = AddinManager.GetExtensionNodes (ToolbarExtensionPath).Cast<ItemSetCodon> ().Where (n => visibleBars.Contains (n.Id)).ToList ();
-			if (!bars.Any ()) {
-				buttonBarBox.Hide ();
-				return;
-			}
-
-			buttonBarBox.Show ();
-			buttonBar.ShowAll ();
-			foreach (var bar in bars) {
-				foreach (CommandItemCodon node in bar.ChildNodes.OfType<CommandItemCodon> ())
-					buttonBar.Add (node.Id);
-				buttonBar.AddSeparator ();
-			}
-		}
-
-		public void ShowCommandBar (string barId)
-		{
-			visibleBars.Add (barId);
-			BuildToolbar ();
-		}
-
-		public void HideCommandBar (string barId)
-		{
-			visibleBars.Remove (barId);
-			BuildToolbar ();
-		}
-
-		SearchPopupWindow popup = null;
-
-		public SearchPopupWindow SearchPopupWindow {
-			get {
-				return popup;
-			}
-		}
-	
-		static readonly SearchPopupSearchPattern emptyColonPattern = SearchPopupSearchPattern.ParsePattern (":");
-
 		void HandleSearchEntryChanged (object sender, EventArgs e)
 		{
-			if (string.IsNullOrEmpty (matchEntry.Entry.Text)){
-				DestroyPopup ();
-				return;
+			if (SearchEntryActivated != null)
+				SearchEntryChanged (sender, e);
+		}
+
+		void HandleSearchEntryActivated (object sender, EventArgs e)
+		{
+			if (SearchEntryActivated != null)
+				SearchEntryActivated (sender, e);
+		}
+
+		void HandleSearchEntryKeyPressed (object sender, KeyPressEventArgs e)
+		{
+			if (SearchEntryKeyPressed != null) {
+				// TODO: Refactor this in Xwt as an extension method.
+				var k = (Xwt.Key)e.Event.KeyValue;
+				var m = Xwt.ModifierKeys.None;
+				if ((e.Event.State & Gdk.ModifierType.ShiftMask) != 0)
+					m |= Xwt.ModifierKeys.Shift;
+				if ((e.Event.State & Gdk.ModifierType.ControlMask) != 0)
+					m |= Xwt.ModifierKeys.Control;
+				if ((e.Event.State & Gdk.ModifierType.Mod1Mask) != 0)
+					m |= Xwt.ModifierKeys.Alt;
+				// TODO: Backport this one.
+				if ((e.Event.State & Gdk.ModifierType.Mod2Mask) != 0)
+					m |= Xwt.ModifierKeys.Command;
+				var kargs = new Xwt.KeyEventArgs (k, m, false, (long)e.Event.Time);
+				SearchEntryKeyPressed (sender, kargs);
+				e.RetVal = kargs.Handled;
 			}
-			var pattern = SearchPopupSearchPattern.ParsePattern (matchEntry.Entry.Text);
-			if (pattern.Pattern == null && pattern.LineNumber > 0 || pattern == emptyColonPattern) {
-				if (popup != null) {
-					popup.Hide ();
-				}
-				return;
-			} else {
-				if (popup != null && !popup.Visible)
-					popup.Show ();
-			}
-
-			if (popup == null) {
-				popup = new SearchPopupWindow ();
-				popup.SearchForMembers = SearchForMembers;
-				popup.Destroyed += delegate {
-					popup = null;
-					matchEntry.Entry.Text = "";
-				};
-				PositionPopup ();
-				popup.ShowAll ();
-			}
-
-			popup.Update (pattern);
-
-		}
-
-		void PositionPopup ()
-		{
-			if (popup == null)
-				return;
-			popup.ShowPopup (matchEntry, PopupPosition.TopRight);
-		}
-
-		string GetActiveConfiguration ()
-		{
-			TreeIter iter;
-
-			if (!configurationCombo.GetActiveIter (out iter))
-				return null;
-
-			return (string) configurationStore.GetValue (iter, 1);
-		}
-
-		ExecutionTarget GetActiveTarget ()
-		{
-			TreeIter iter;
-
-			if (!runtimeCombo.GetActiveIter (out iter))
-				return null;
-
-			return (ExecutionTarget) runtimeStore.GetValue (iter, RuntimeExecutionTarget);
-		}
-
-		Gtk.TreeIter lastRuntimeSelection = Gtk.TreeIter.Zero;
-
-		void HandleRuntimeChanged (object sender, EventArgs e)
-		{
-			if (ignoreRuntimeChangedCount == 0) {
-				Gtk.TreeIter it;
-				if (runtimeCombo.GetActiveIter (out it)) {
-					var cm = (ActionCommand) runtimeStore.GetValue (it, RuntimeCommand);
-					if (cm != null) {
-						runtimeCombo.SetActiveIter (lastRuntimeSelection);
-						IdeApp.CommandService.DispatchCommand (cm.Id, CommandSource.ContextMenu);
-						return;
-					}
-					lastRuntimeSelection = it;
-				}
-				NotifyConfigurationChange ();
-			}
-		}
-
-		void HandleConfigurationChanged (object sender, EventArgs e)
-		{
-			if (ignoreConfigurationChangedCount == 0)
-				NotifyConfigurationChange ();
-		}
-
-		void UpdateBuildConfiguration ()
-		{
-			var currentConfig = GetActiveConfiguration ();
-			if (currentConfig == null)
-				return;
-
-			ExecutionTarget newTarget;
-			string fullConfig;
-
-			configurationMerger.ResolveConfiguration (currentConfig, GetActiveTarget (), out fullConfig, out newTarget);
-			settingGlobalConfig = true;
-			try {
-				IdeApp.Workspace.ActiveExecutionTarget = newTarget;
-				IdeApp.Workspace.ActiveConfigurationId = fullConfig;
-			} finally {
-				settingGlobalConfig = false;
-			}
-		}
-
-		void NotifyConfigurationChange ()
-		{
-			if (GetActiveConfiguration () == null)
-				return;
-
-			UpdateBuildConfiguration ();
-
-			FillRuntimes ();
-			SelectActiveRuntime ();
-		}
-
-		void SelectActiveConfiguration ()
-		{
-			string name = configurationMerger.GetUnresolvedConfiguration (IdeApp.Workspace.ActiveConfigurationId);
-
-			ignoreConfigurationChangedCount++;
-			try {
-				TreeIter iter;
-
-				if (configurationStore.GetIterFirst (out iter)) {
-					var defaultConfig = (string) configurationStore.GetValue (iter, 1);
-					bool selected = false;
-					int i = 0;
-
-					do {
-						string config = (string) configurationStore.GetValue (iter, 1);
-						if (config == name) {
-							IdeApp.Workspace.ActiveConfigurationId = config;
-							configurationCombo.Active = i;
-							selected = true;
-							break;
-						}
-						i++;
-					} while (configurationStore.IterNext (ref iter));
-
-					if (!selected) {
-						IdeApp.Workspace.ActiveConfigurationId = defaultConfig;
-						configurationCombo.Active = 0;
-					}
-				}
-			} finally {
-				ignoreConfigurationChangedCount--;
-			}
-
-			SelectActiveRuntime ();
-		}
-
-		bool SelectActiveRuntime (TreeIter iter, ref bool selected, ref ExecutionTarget defaultTarget, ref TreeIter defaultIter)
-		{
-			do {
-				var target = (ExecutionTarget) runtimeStore.GetValue (iter, RuntimeExecutionTarget);
-
-				if (target == null || !target.Enabled)
-					continue;
-
-				if (target is ExecutionTargetGroup) {
-					TreeIter child;
-
-					if (runtimeStore.IterHasChild (iter) && runtimeStore.IterChildren (out child, iter)) {
-						if (SelectActiveRuntime (child, ref selected, ref defaultTarget, ref defaultIter))
-							return true;
-					}
-
-					continue;
-				}
-
-				if (defaultTarget == null) {
-					defaultTarget = target;
-					defaultIter = iter;
-				}
-
-				if (target.Id == IdeApp.Workspace.PreferredActiveExecutionTarget) {
-					IdeApp.Workspace.ActiveExecutionTarget = target;
-					runtimeCombo.SetActiveIter (iter);
-					UpdateBuildConfiguration ();
-					selected = true;
-					return true;
-				}
-
-				if (target.Equals (IdeApp.Workspace.ActiveExecutionTarget)) {
-					runtimeCombo.SetActiveIter (iter);
-					UpdateBuildConfiguration ();
-					selected = true;
-				}
-			} while (runtimeStore.IterNext (ref iter));
-
-			return false;
-		}
-
-		void SelectActiveRuntime ()
-		{
-			ignoreRuntimeChangedCount++;
-
-			try {
-				TreeIter iter;
-
-				if (runtimeStore.GetIterFirst (out iter)) {
-					ExecutionTarget defaultTarget = null;
-					TreeIter defaultIter = TreeIter.Zero;
-					bool selected = false;
-
-					if (!SelectActiveRuntime (iter, ref selected, ref defaultTarget, ref defaultIter) && !selected) {
-						if (defaultTarget != null) {
-							IdeApp.Workspace.ActiveExecutionTarget = defaultTarget;
-							runtimeCombo.SetActiveIter (defaultIter);
-						}
-						UpdateBuildConfiguration ();
-					}
-				}
-			} finally {
-				ignoreRuntimeChangedCount--;
-			}
-		}
-
-		void UpdateCombos ()
-		{
-			if (settingGlobalConfig)
-				return;
-
-			configurationMerger.Load (currentSolution);
-
-			ignoreConfigurationChangedCount++;
-			try {
-				configurationStore.Clear ();
-				if (!IdeApp.Workspace.IsOpen) {
-					runtimeStore.Clear ();
-					return;
-				}
-				var values = new HashSet<string> ();
-				foreach (var conf in configurationMerger.SolutionConfigurations) {
-					if (!values.Add (conf))
-						continue;
-					values.Add (conf);
-					configurationStore.AppendValues (conf.Replace ("|", " | "), conf);
-				}
-			} finally {
-				ignoreConfigurationChangedCount--;
-			}
-
-			FillRuntimes ();
-			SelectActiveConfiguration ();
-		}
-
-		void FillRuntimes ()
-		{
-			ignoreRuntimeChangedCount++;
-			try {
-				runtimeStore.Clear ();
-				if (!IdeApp.Workspace.IsOpen || currentSolution == null || !currentSolution.SingleStartup || currentSolution.StartupItem == null)
-					return;
-
-				// Check that the current startup project is enabled for the current configuration
-				var solConf = currentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
-				if (solConf == null || !solConf.BuildEnabledForItem (currentSolution.StartupItem))
-					return;
-
-				ExecutionTarget previous = null;
-				int runtimes = 0;
-
-				foreach (var target in configurationMerger.GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, true)) {
-					if (target is ExecutionTargetGroup) {
-						var devices = (ExecutionTargetGroup) target;
-
-						if (previous != null)
-							runtimeStore.AppendValues (null, false);
-
-						runtimeStore.AppendValues (target, false);
-						foreach (var device in devices) {
-							if (device is ExecutionTargetGroup) {
-								var versions = (ExecutionTargetGroup) device;
-
-								if (versions.Count > 1) {
-									var iter = runtimeStore.AppendValues (device, true);
-
-									foreach (var version in versions) {
-										runtimeStore.AppendValues (iter, version, false);
-										runtimes++;
-									}
-								} else {
-									runtimeStore.AppendValues (versions[0], true);
-									runtimes++;
-								}
-							} else {
-								runtimeStore.AppendValues (device, true);
-								runtimes++;
-							}
-						}
-					} else {
-						if (previous is ExecutionTargetGroup)
-							runtimeStore.AppendValues (null, false);
-
-						runtimeStore.AppendValues (target, false);
-						runtimes++;
-					}
-
-					previous = target;
-				}
-
-				var cmds = IdeApp.CommandService.CreateCommandEntrySet (TargetsMenuPath);
-				if (cmds.Count > 0) {
-					bool needsSeparator = runtimes > 0;
-					foreach (CommandEntry ce in cmds) {
-						if (ce.CommandId == Command.Separator) {
-							needsSeparator = true;
-							continue;
-						}
-						var cmd = ce.GetCommand (IdeApp.CommandService) as ActionCommand;
-						if (cmd != null) {
-							var ci = IdeApp.CommandService.GetCommandInfo (cmd.Id, new CommandTargetRoute (LastCommandTarget));
-							if (ci.Visible) {
-								if (needsSeparator) {
-									runtimeStore.AppendValues (null, false);
-									needsSeparator = false;
-								}
-								runtimeStore.AppendValues (null, false, cmd);
-								runtimes++;
-							}
-						}
-					}
-				}
-
-				runtimeCombo.Sensitive = runtimes > 1;
-			} finally {
-				ignoreRuntimeChangedCount--;
-			}
-		}
-
-		IEnumerable<ExecutionTarget> GetExecutionTargets (string configuration)
-		{
-			var sol = IdeApp.ProjectOperations.CurrentSelectedSolution;
-			if (sol == null || !sol.SingleStartup || sol.StartupItem == null)
-				return new ExecutionTarget [0];
-			var conf = sol.Configurations[configuration];
-			if (conf == null)
-				return new ExecutionTarget [0];
-
-			var project = sol.StartupItem;
-			var confSelector = conf.Selector;
-
-			return project.GetExecutionTargets (confSelector);
 		}
 
 		public void AddWidget (Gtk.Widget widget)
@@ -925,88 +372,16 @@ namespace MonoDevelop.Components.MainToolbar
 			return base.OnExposeEvent (evnt);
 		}
 
-		[CommandHandler(Commands.NavigateTo)]
-		public void NavigateToCommand ()
-		{
-			matchEntry.Entry.GrabFocus ();
-		}
-
-		[CommandHandler(SearchCommands.GotoFile)]
-		public void GotoFileCommand ()
-		{
-			SetSearchCategory ("file");
-		}
-
-		[CommandHandler(SearchCommands.GotoType)]
-		public void GotoTypeCommand ()
-		{
-			SetSearchCategory ("type");
-		}
-
-		CommandInfo GetStartButtonCommandInfo (out RoundButton.OperationIcon operation)
-		{
-			if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted || !IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted) {
-				operation = RoundButton.OperationIcon.Stop;
-				return IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.ProjectCommands.Stop);
-			}
-			else {
-				operation = RoundButton.OperationIcon.Run;
-				var ci = IdeApp.CommandService.GetCommandInfo ("MonoDevelop.Debugger.DebugCommands.Debug");
-				if (!ci.Enabled || !ci.Visible) {
-					// If debug is not enabled, try Run
-					ci = IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.ProjectCommands.Run);
-					if (!ci.Enabled || !ci.Visible) {
-						// Running is not possible, then allow building
-						var bci = IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.ProjectCommands.BuildSolution);
-						if (bci.Enabled && bci.Visible) {
-							operation = RoundButton.OperationIcon.Build;
-							ci = bci;
-						}
-					}
-				}
-				return ci;
-			}
-		}
-		
 		void HandleStartButtonClicked (object sender, EventArgs e)
 		{
-			RoundButton.OperationIcon operation;
-			var ci = GetStartButtonCommandInfo (out operation);
-			if (ci.Enabled)
-				IdeApp.CommandService.DispatchCommand (ci.Command.Id);
+			if (RunButtonClicked != null)
+				RunButtonClicked (sender, e);
 		}
-
-		#region ICommandBar implementation
-		bool toolbarEnabled = true;
-
-		void ICommandBar.Update (object activeTarget)
-		{
-			if (!toolbarEnabled)
-				return;
-			RoundButton.OperationIcon operation;
-			var ci = GetStartButtonCommandInfo (out operation);
-			if (ci.Enabled != button.Sensitive)
-				button.Sensitive = ci.Enabled;
-
-			button.Icon = operation;
-			var stopped = operation != RoundButton.OperationIcon.Stop;
-			if (configurationCombosBox.Sensitive != stopped)
-				configurationCombosBox.Sensitive = stopped;
-		}
-
-		void ICommandBar.SetEnabled (bool enabled)
-		{
-			toolbarEnabled = enabled;
-			button.Sensitive = enabled;
-			matchEntry.Sensitive = enabled;
-		}
-		#endregion
 
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
 
-			AddinManager.ExtensionChanged -= OnExtensionChanged;
 			if (button != null)
 				button.Clicked -= HandleStartButtonClicked;
 
@@ -1015,6 +390,177 @@ namespace MonoDevelop.Components.MainToolbar
 				Background = null;
 			}
 		}
+
+		#region IMainToolbarView implementation
+		public event EventHandler RunButtonClicked;
+
+		public bool RunButtonSensitivity {
+			get { return button.Sensitive; }
+			set { button.Sensitive = value; }
+		}
+
+		public OperationIcon RunButtonIcon {
+			set { button.Icon = value; }
+		}
+
+		public bool ConfigurationPlatformSensitivity {
+			get { return configurationCombosBox.Sensitive; }
+			set { configurationCombosBox.Sensitive = value; }
+		}
+
+		public IConfigurationModel ActiveConfiguration {
+			get {
+				TreeIter iter;
+				if (!configurationCombo.GetActiveIter (out iter))
+					return null;
+
+				return (IConfigurationModel) configurationStore.GetValue (iter, 1);
+			}
+			set {
+				TreeIter iter;
+				bool found = false;
+				if (configurationStore.GetIterFirst (out iter)) {
+					do {
+						if (value.OriginalId == ((IConfigurationModel)configurationStore.GetValue (iter, 1)).OriginalId) {
+							found = true;
+							break;
+						}
+					} while (configurationStore.IterNext (ref iter));
+				}
+				if (found)
+					configurationCombo.SetActiveIter (iter);
+				else
+					configurationCombo.Active = 0;
+			}
+		}
+
+		public IRuntimeModel ActiveRuntime {
+			get {
+				TreeIter iter;
+				if (!runtimeCombo.GetActiveIter (out iter))
+					return null;
+
+				return (IRuntimeModel)runtimeStore.GetValue (iter, 0);
+			}
+			set {
+				TreeIter iter;
+				bool found = false;
+				if (runtimeStore.GetIterFirst (out iter)) {
+					do {
+						if (value == runtimeStore.GetValue (iter, 0)) {
+							found = true;
+							break;
+						}
+					} while (runtimeStore.IterNext (ref iter));
+				}
+				if (found)
+					runtimeCombo.SetActiveIter (iter);
+				else
+					runtimeCombo.Active = 0;
+			}
+		}
+
+		public bool PlatformSensitivity {
+			set { runtimeCombo.Sensitive = value; }
+		}
+
+		IEnumerable<IConfigurationModel> configurationModel;
+		public IEnumerable<IConfigurationModel> ConfigurationModel {
+			get { return configurationModel; }
+			set {
+				configurationModel = value;
+				configurationStore.Clear ();
+				foreach (var item in value) {
+					configurationStore.AppendValues (item.DisplayString, item);
+				}
+			}
+		}
+
+		IEnumerable<IRuntimeModel> runtimeModel;
+		public IEnumerable<IRuntimeModel> RuntimeModel {
+			get { return runtimeModel; }
+			set {
+				runtimeModel = value;
+				runtimeStore.Clear ();
+				foreach (var item in value) {
+					if (item.HasParent)
+						continue;
+
+					var iter = runtimeStore.AppendValues (item);
+					foreach (var subitem in item.Children)
+						runtimeStore.AppendValues (iter, subitem);
+				}
+			}
+		}
+
+		public bool SearchSensivitity {
+			set { matchEntry.Sensitive = value; }
+		}
+
+		public IEnumerable<ISearchMenuModel> SearchMenuItems {
+			set {
+				foreach (var item in value) {
+					var menuItem = matchEntry.AddMenuItem (item.DisplayString);
+					menuItem.Activated += delegate {
+						item.NotifyActivated ();
+					};
+				}
+			}
+		}
+
+		public string SearchCategory {
+			set {
+				matchEntry.Entry.Text = value;
+				matchEntry.Entry.GrabFocus ();
+				var pos = matchEntry.Entry.Text.Length;
+				matchEntry.Entry.SelectRegion (pos, pos);
+			}
+		}
+
+		public void FocusSearchBar ()
+		{
+			matchEntry.Entry.GrabFocus ();
+		}
+
+		public event EventHandler SearchEntryChanged;
+		public event EventHandler SearchEntryActivated;
+		public event EventHandler<Xwt.KeyEventArgs> SearchEntryKeyPressed;
+		public event EventHandler SearchEntryResized;
+		public event EventHandler SearchEntryLostFocus;
+
+		public Widget PopupAnchor {
+			get { return matchEntry; }
+		}
+
+		public string SearchText {
+			get { return matchEntry.Entry.Text; }
+			set { matchEntry.Entry.Text = value; }
+		}
+
+		public string SearchPlaceholderMessage {
+			set { matchEntry.EmptyMessage = value; }
+		}
+
+		public void RebuildToolbar (IEnumerable<IButtonBarButton> buttons)
+		{
+			if (!buttons.Any ()) {
+				buttonBarBox.Hide ();
+				return;
+			}
+
+			buttonBarBox.Show ();
+			buttonBar.ShowAll ();
+			buttonBar.Buttons = buttons;
+		}
+
+		public bool ButtonBarSensitivity {
+			set { buttonBar.Sensitive = value; }
+		}
+
+		public event EventHandler ConfigurationChanged;
+		public event EventHandler<HandledEventArgs> RuntimeChanged;
+
+		#endregion
 	}
 }
 

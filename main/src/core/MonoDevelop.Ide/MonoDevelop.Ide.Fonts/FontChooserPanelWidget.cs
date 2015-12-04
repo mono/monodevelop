@@ -33,12 +33,14 @@ namespace MonoDevelop.Ide.Fonts
 {
 	public partial class FontChooserPanelWidget : Gtk.Bin
 	{
+		Dictionary<string, string> selectedFonts = new Dictionary<string, string> ();
 		Dictionary<string, string> customFonts = new Dictionary<string, string> ();
 
 		
 		public void SetFont (string fontName, string fontDescription)
 		{
 			customFonts [fontName] = fontDescription;
+			FontService.SetFont (fontName, fontDescription);
 		}
 
 		
@@ -53,8 +55,16 @@ namespace MonoDevelop.Ide.Fonts
 		public void Store ()
 		{
 			foreach (var val in customFonts) {
+				selectedFonts[val.Key] = val.Value;
+			}
+		}
+
+		protected override void OnDestroyed ()
+		{
+			foreach (var val in selectedFonts) {
 				FontService.SetFont (val.Key, val.Value);
 			}
+			base.OnDestroyed ();
 		}
 
 		public FontChooserPanelWidget ()
@@ -62,6 +72,7 @@ namespace MonoDevelop.Ide.Fonts
 			this.Build ();
 
 			foreach (var desc in FontService.FontDescriptions) {
+				selectedFonts [desc.Name] = FontService.GetUnderlyingFontName (desc.Name);
 				var fontNameLabel = new Label (GettextCatalog.GetString (desc.DisplayName));
 				fontNameLabel.Justify = Justification.Left;
 				fontNameLabel.Xalign = 0;
@@ -88,6 +99,7 @@ namespace MonoDevelop.Ide.Fonts
 						setFontButton.Label = selectionDialog.FontName;
 					} finally {
 						selectionDialog.Destroy ();
+						selectionDialog.Dispose ();
 					}
 				};
 				hBox.PackStart (setFontButton, true, true, 0);

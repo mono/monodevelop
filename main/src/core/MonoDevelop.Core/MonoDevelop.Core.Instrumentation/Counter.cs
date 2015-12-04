@@ -34,7 +34,7 @@ namespace MonoDevelop.Core.Instrumentation
 	public class Counter: MarshalByRefObject
 	{
 		internal int count;
-		int totalCount;
+		internal int totalCount;
 		int lastStoredCount;
 		string name;
 		bool logMessages;
@@ -82,7 +82,12 @@ namespace MonoDevelop.Core.Instrumentation
 			this.name = name;
 			this.category = category;
 		}
-		
+
+		public override string ToString ()
+		{
+			return string.Format ("[Counter: Name={0}, Enabled={1}, Id={2}, Category={3}, Count={4}, TotalCount={5}, LastValue={6}]", Name, Enabled, Id, Category, Count, TotalCount, LastValue);
+		}
+
 		public string Name {
 			get { return name; }
 		}
@@ -175,7 +180,7 @@ namespace MonoDevelop.Core.Instrumentation
 		{
 			lock (values) {
 				if (values.Count == 0 || time < values[0].TimeStamp)
-					return new CounterValue (0, 0, time);
+					return new CounterValue (0, 0, time, null);
 				if (time >= values[values.Count - 1].TimeStamp)
 					return values[values.Count - 1];
 				for (int n=0; n<values.Count; n++) {
@@ -183,7 +188,7 @@ namespace MonoDevelop.Core.Instrumentation
 						return values [n - 1];
 				}
 			}
-			return new CounterValue (0, 0, time);
+			return new CounterValue (0, 0, time, null);
 		}
 		
 		public CounterValue LastValue {
@@ -192,19 +197,19 @@ namespace MonoDevelop.Core.Instrumentation
 					if (values.Count > 0)
 						return values [values.Count - 1];
 					else
-						return new CounterValue (0, 0, DateTime.MinValue);
+						return new CounterValue (0, 0, DateTime.MinValue, null);
 				}
 			}
 		}
 		
-		internal int StoreValue (string message, TimeCounter timer)
+		internal int StoreValue (string message, TimeCounter timer, IDictionary<string, string> metadata)
 		{
 			DateTime now = DateTime.Now;
 			if (resolution.Ticks != 0) {
 				if (now - lastValueTime < resolution)
 					return -1;
 			}
-			var val = new CounterValue (count, totalCount, count - lastStoredCount, now, message, timer != null ? timer.TraceList : null);
+			var val = new CounterValue (count, totalCount, count - lastStoredCount, now, message, timer != null ? timer.TraceList : null, metadata);
 			lastStoredCount = count;
 
 			if (storeValues)
@@ -249,14 +254,29 @@ namespace MonoDevelop.Core.Instrumentation
 		{
 			Inc (n, null);
 		}
-		
+
 		public void Inc (int n, string message)
+		{
+			Inc (n, message, null);
+		}
+
+		public void Inc (string message, IDictionary<string, string> metadata)
+		{
+			Inc (1, message, metadata);
+		}
+
+		public void Inc (IDictionary<string, string> metadata)
+		{
+			Inc (1, null, metadata);
+		}
+
+		public void Inc (int n, string message, IDictionary<string, string> metadata)
 		{
 			if (enabled) {
 				lock (values) {
 					count += n;
 					totalCount += n;
-					StoreValue (message, null);
+					StoreValue (message, null, metadata);
 				}
 			}
 			if (logMessages && message != null)
@@ -277,13 +297,18 @@ namespace MonoDevelop.Core.Instrumentation
 		{
 			Dec (n, null);
 		}
-		
+
 		public void Dec (int n, string message)
+		{
+			Dec (n, message, null); 
+		}
+
+		public void Dec (int n, string message, IDictionary<string, string> metadata)
 		{
 			if (enabled) {
 				lock (values) {
 					count -= n;
-					StoreValue (message, null);
+					StoreValue (message, null, metadata);
 				}
 			}
 			if (logMessages && message != null)
@@ -297,16 +322,21 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public void SetValue (int value, string message)
 		{
+			SetValue (value, message, null);
+		}
+
+		public void SetValue (int value, string message, IDictionary<string, string> metadata)
+		{
 			if (enabled) {
 				lock (values) {
 					count = value;
-					StoreValue (message, null);
+					StoreValue (message, null, metadata);
 				}
 			}
 			if (logMessages && message != null)
 				InstrumentationService.LogMessage (message);
 		}
-		
+
 		public static Counter operator ++ (Counter c)
 		{
 			c.Inc (1, null);
@@ -328,7 +358,7 @@ namespace MonoDevelop.Core.Instrumentation
 		{
 			if (enabled) {
 				lock (values) {
-					StoreValue (message, null);
+					StoreValue (message, null, null);
 				}
 			}
 			if (logMessages && message != null)
@@ -352,8 +382,9 @@ namespace MonoDevelop.Core.Instrumentation
 		string message;
 		TimerTraceList traces;
 		int threadId;
-		
-		internal CounterValue (int value, int totalCount, DateTime timestamp)
+		IDictionary<string, string> metadata;
+
+		internal CounterValue (int value, int totalCount, DateTime timestamp, IDictionary<string, string> metadata)
 		{
 			this.value = value;
 			this.timestamp = timestamp;
@@ -362,9 +393,10 @@ namespace MonoDevelop.Core.Instrumentation
 			traces = null;
 			threadId = 0;
 			change = 0;
+			this.metadata = metadata;
 		}
-		
-		internal CounterValue (int value, int totalCount, int change, DateTime timestamp, string message, TimerTraceList traces)
+
+		internal CounterValue (int value, int totalCount, int change, DateTime timestamp, string message, TimerTraceList traces, IDictionary<string, string> metadata)
 		{
 			this.value = value;
 			this.timestamp = timestamp;
@@ -373,8 +405,9 @@ namespace MonoDevelop.Core.Instrumentation
 			this.traces = traces;
 			this.change = change;
 			this.threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+			this.metadata = metadata;
 		}
-		
+
 		public DateTime TimeStamp {
 			get { return timestamp; }
 		}
@@ -401,6 +434,10 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public bool HasTimerTraces {
 			get { return traces != null; }
+		}
+
+		public IDictionary<string, string> Metadata {
+			get { return metadata; }
 		}
 		
 		public TimeSpan Duration {

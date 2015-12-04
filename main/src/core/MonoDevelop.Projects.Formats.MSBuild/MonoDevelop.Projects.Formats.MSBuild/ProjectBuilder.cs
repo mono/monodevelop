@@ -3,8 +3,10 @@
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
-// 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+//       Michael Hutchinson <m.j.hutchinson@gmail.com>
+//
+// Copyright (c) 2009-2011 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2011-2015 Xamarin Inc. (http://www.xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +27,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.IO;
 using Microsoft.Build.BuildEngine;
 using Microsoft.Build.Framework;
@@ -40,7 +43,7 @@ using System.Linq;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class ProjectBuilder: MarshalByRefObject, IProjectBuilder
+	public partial class ProjectBuilder: MarshalByRefObject, IProjectBuilder
 	{
 		readonly string file;
 		ILogWriter currentLogWriter;
@@ -54,34 +57,26 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			consoleLogger = new MDConsoleLogger (LoggerVerbosity.Normal, LogWriteLine, null, null);
 		}
 
-		public void Dispose ()
-		{
-			buildEngine.UnloadProject (file);
-		}
-		
-		public void Refresh ()
-		{
-			buildEngine.UnloadProject (file);
-		}
-		
-		public void RefreshWithContent (string projectContent)
-		{
-			buildEngine.UnloadProject (file);
-			buildEngine.SetUnsavedProjectContent (file, projectContent);
-		}
-
-		void LogWriteLine (string txt)
-		{
-			if (currentLogWriter != null)
-				currentLogWriter.WriteLine (txt);
-		}
-
 		//HACK: Mono does not implement 3.5 CustomMetadataNames API
 		FieldInfo evaluatedMetadataField = typeof(BuildItem).GetField ("evaluatedMetadata", BindingFlags.NonPublic | BindingFlags.Instance);
 
+		public string[] GetSupportedTargets (ProjectConfigurationInfo[] configurations)
+		{
+			string[] result = null;
+			BuildEngine.RunSTA (delegate {
+				try {
+					var project = SetupProject (configurations);
+					result = project.Targets.OfType<Target> ().Select (t => t.Name).ToArray ();
+				} catch {
+					result = new string [0];
+				}
+			});
+			return result;
+		}
+
 		public MSBuildResult Run (
 			ProjectConfigurationInfo[] configurations, ILogWriter logWriter, MSBuildVerbosity verbosity,
-			string[] runTargets, string[] evaluateItems, string[] evaluateProperties)
+			string[] runTargets, string[] evaluateItems, string[] evaluateProperties, Dictionary<string,string> globalProperties)
 		{
 			MSBuildResult result = null;
 			BuildEngine.RunSTA (delegate {
@@ -99,9 +94,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					}
 
 					if (runTargets != null && runTargets.Length > 0) {
+						if (globalProperties != null) {
+							foreach (var p in globalProperties)
+								project.GlobalProperties.SetProperty (p.Key, p.Value);
+						}
 						// We are using this BuildProject overload and the BuildSettings.None argument as a workaround to
 						// an xbuild bug which causes references to not be resolved after the project has been built once.
 						buildEngine.Engine.BuildProject (project, runTargets, new Hashtable (), BuildSettings.None);
+
+						if (globalProperties != null) {
+							foreach (var p in globalProperties.Keys) {
+								project.GlobalProperties.RemoveProperty (p);
+								buildEngine.Engine.GlobalProperties.RemoveProperty (p);
+							}
+						}
 					}
 
 					result = new MSBuildResult (logger.BuildResult.ToArray ());
@@ -130,7 +136,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						file, false, ex.ErrorSubcategory, ex.ErrorCode, ex.ProjectFile,
 						ex.LineNumber, ex.ColumnNumber, ex.EndLineNumber, ex.EndColumnNumber,
 						ex.BaseMessage, ex.HelpKeyword);
-					logWriter.WriteLine (r.ToString ());
+					if (logWriter != null)
+						logWriter.WriteLine (r.ToString ());
 					result = new MSBuildResult (new [] { r });
 				} finally {
 					currentLogWriter = null;
@@ -138,26 +145,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			});
 			return result;
 		}
-		
-		LoggerVerbosity GetVerbosity (MSBuildVerbosity verbosity)
-		{
-			switch (verbosity) {
-			case MSBuildVerbosity.Quiet:
-				return LoggerVerbosity.Quiet;
-			case MSBuildVerbosity.Minimal:
-				return LoggerVerbosity.Minimal;
-			default:
-				return LoggerVerbosity.Normal;
-			case MSBuildVerbosity.Detailed:
-				return LoggerVerbosity.Detailed;
-			case MSBuildVerbosity.Diagnostic:
-				return LoggerVerbosity.Diagnostic;
-			}
-		}
-		
+
 		Project SetupProject (ProjectConfigurationInfo[] configurations)
 		{
 			Project project = null;
+
+			var slnConfigContents = GenerateSolutionConfigurationContents (configurations);
 
 			foreach (var pc in configurations) {
 				var p = buildEngine.Engine.GetLoadedProject (pc.ProjectFile);
@@ -190,6 +183,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					}
 				}
 
+				p.GlobalProperties.SetProperty ("CurrentSolutionConfigurationContents", slnConfigContents);
 				p.GlobalProperties.SetProperty ("Configuration", pc.Configuration);
 				if (!string.IsNullOrEmpty (pc.Platform))
 					p.GlobalProperties.SetProperty ("Platform", pc.Platform);
@@ -214,24 +208,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				hasXbuildFileBug = p.FullFileName.Length == 0;
 			}
 			return hasXbuildFileBug.Value;
-		}
-		
-		public override object InitializeLifetimeService ()
-		{
-			return null;
-		}
-
-		//from MSBuildProjectService
-		static string UnescapeString (string str)
-		{
-			int i = str.IndexOf ('%');
-			while (i != -1 && i < str.Length - 2) {
-				int c;
-				if (int.TryParse (str.Substring (i+1, 2), System.Globalization.NumberStyles.HexNumber, null, out c))
-					str = str.Substring (0, i) + (char) c + str.Substring (i + 3);
-				i = str.IndexOf ('%', i + 1);
-			}
-			return str;
 		}
 	}
 }

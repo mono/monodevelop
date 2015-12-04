@@ -88,7 +88,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 
 		public override string[] SupportedLanguages {
 			get {
-				return new [] {languageName};
+				return new [] { "", languageName };
 			}
 		}
 
@@ -116,6 +116,11 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 		}
 
 		internal protected override bool OnGetSupportsExecute ()
+		{
+			return false;
+		}
+
+		public override bool FastCheckNeedsBuild (ConfigurationSelector configuration)
 		{
 			return false;
 		}
@@ -218,7 +223,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			pref.Flags = ProjectItemFlags.DontPersist;
 			pref.SetItemsProjectPath (ProjItemsPath);
 			foreach (var f in Files) {
-				if (pref.OwnerProject.Files.GetFile (f.FilePath) == null) {
+				if (pref.OwnerProject.Files.GetFile (f.FilePath) == null && f.Subtype != Subtype.Directory) {
 					var cf = (ProjectFile)f.Clone ();
 					cf.Flags |= ProjectItemFlags.DontPersist | ProjectItemFlags.Hidden;
 					pref.OwnerProject.Files.Add (cf);

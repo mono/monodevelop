@@ -76,6 +76,18 @@ namespace MonoDevelop.PackageManagement.Tests
 			runner.Run (progressMessage, actions);
 		}
 
+		void RunAndWait ()
+		{
+			runner.InvokeBackgroundDispatchAndWaitImmediately = true;
+			runner.RunAndWait (progressMessage, actions);
+		}
+
+		void RunAndWaitWithoutBackgroundDispatch ()
+		{
+			runner.InvokeBackgroundDispatchAndWaitImmediately = false;
+			runner.RunAndWait (progressMessage, actions);
+		}
+
 		FakeInstallPackageAction AddInstallAction ()
 		{
 			var action = new FakeInstallPackageAction (new FakePackageManagementProject (), packageManagementEvents);
@@ -270,14 +282,14 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void Run_OneInstallActionWithPowerShellScripts_WarningReportedToProgressMonitor ()
+		public void Run_OneInstallActionWithPowerShellScripts_WarningNotReportedToProgressMonitor ()
 		{
 			CreateRunner ();
 			AddInstallActionWithPowerShellScript ();
 
 			Run ();
 
-			Assert.AreEqual ("Warning", progressMonitor.ReportedWarningMessage);
+			Assert.IsNull (progressMonitor.ReportedWarningMessage);
 		}
 
 		[Test]
@@ -288,7 +300,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Run ();
 
-			progressMonitor.AssertMessageIsLogged ("Test Package contains PowerShell scripts which will not be run.");
+			progressMonitor.AssertMessageIsLogged ("WARNING: Test Package contains PowerShell scripts which will not be run.");
 		}
 
 		[Test]
@@ -491,6 +503,115 @@ namespace MonoDevelop.PackageManagement.Tests
 			Run ();
 
 			Assert.IsFalse (runner.EventsMonitor.IsTypeSystemRefreshed);
+		}
+
+		[Test]
+		public void IsRunning_NothingRunning_IsRunningIsFalse ()
+		{
+			CreateRunner ();
+
+			Assert.IsFalse (runner.IsRunning);
+		}
+
+		[Test]
+		public void IsRunning_OneUninstallActionAndRunNotCompleted_IsRunningIsTrue ()
+		{
+			CreateRunner ();
+			AddUninstallAction ();
+
+			RunWithoutBackgroundDispatch ();
+
+			Assert.IsTrue (runner.IsRunning);
+		}
+
+		[Test]
+		public void IsRunning_OneUninstallActionAndRunCompleted_IsRunningIsFalse ()
+		{
+			CreateRunner ();
+			AddUninstallAction ();
+
+			Run ();
+
+			Assert.IsFalse (runner.IsRunning);
+		}
+
+		[Test]
+		public void IsRunning_TwoRunsAndOneCompletes_IsRunningIsTrue ()
+		{
+			CreateRunner ();
+			AddUninstallAction ();
+			RunWithoutBackgroundDispatch ();
+			actions.Clear ();
+			AddInstallAction ();
+			RunWithoutBackgroundDispatch ();
+
+			runner.ExecuteSingleBackgroundDispatch ();
+
+			Assert.IsTrue (runner.IsRunning);
+		}
+
+		[Test]
+		public void IsRunning_TwoRunsAndBothComplete_IsRunningIsFalse ()
+		{
+			CreateRunner ();
+			AddUninstallAction ();
+			RunWithoutBackgroundDispatch ();
+			actions.Clear ();
+			AddInstallAction ();
+			RunWithoutBackgroundDispatch ();
+
+			runner.ExecuteSingleBackgroundDispatch ();
+			runner.ExecuteSingleBackgroundDispatch ();
+
+			Assert.IsFalse (runner.IsRunning);
+		}
+
+		[Test]
+		public void IsRunning_OneUninstallActionAndRunAndWaitCalledButDispatcherNotComplete_IsRunningIsTrue ()
+		{
+			CreateRunner ();
+			AddUninstallAction ();
+			RunAndWaitWithoutBackgroundDispatch ();
+
+			Assert.IsTrue (runner.IsRunning);
+		}
+
+		[Test]
+		public void IsRunning_OneUninstallActionAndRunAndWaitCalledAndDispatcherCompletes_IsRunningIsFalse ()
+		{
+			CreateRunner ();
+			AddUninstallAction ();
+			RunAndWait ();
+
+			Assert.IsFalse (runner.IsRunning);
+		}
+
+		[Test]
+		public void IsRunning_ExceptionThrownRunningBackgroundDispatcher_IsRunningIsFalse ()
+		{
+			CreateRunner ();
+			AddUninstallAction ();
+			runner.CreateEventMonitorAction = (monitor, packageManagementEvents, progressProvider) => {
+				throw new ApplicationException ("Error");
+			};
+
+			Run ();
+
+			Assert.IsFalse (runner.IsRunning);
+		}
+
+		[Test]
+		public void IsRunning_ExceptionThrownRunningBackgroundDispatcherWithRunAndWait_IsRunningIsFalse ()
+		{
+			CreateRunner ();
+			AddUninstallAction ();
+			runner.CreateEventMonitorAction = (monitor, packageManagementEvents, progressProvider) => {
+				throw new ApplicationException ("Error");
+			};
+
+			RunAndWait ();
+
+			Assert.IsFalse (runner.IsRunning);
 		}
 	}
 }

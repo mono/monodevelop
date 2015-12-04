@@ -24,6 +24,7 @@ namespace MonoDevelop.VersionControl
 				}
 			} finally {
 				del.Destroy ();
+				del.Dispose ();
 			}
 		}
 	}
@@ -69,7 +70,7 @@ namespace MonoDevelop.VersionControl
 			try {
 				vc.Checkout (path, null, true, Monitor);
 			} catch (VersionControlException e) {
-				Monitor.ReportError (GettextCatalog.GetString (e.Message), null);
+				Monitor.ReportError (e.Message, null);
 				return;
 			}
 

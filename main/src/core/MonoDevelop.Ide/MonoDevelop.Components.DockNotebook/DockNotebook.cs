@@ -79,22 +79,16 @@ namespace MonoDevelop.Components.DockNotebook
 
 			tabStrip.DropDownButton.Sensitive = false;
 
-			tabStrip.DropDownButton.MenuCreator = delegate {
-				Gtk.Menu menu = new Menu ();
+			tabStrip.DropDownButton.ContextMenuRequested = delegate {
+				ContextMenu menu = new ContextMenu ();
 				foreach (var tab in pages) {
-					var mi = new Gtk.ImageMenuItem ("");
-					menu.Insert (mi, -1);
-					var label = (Gtk.AccelLabel) mi.Child;
-					if (tab.Markup != null)
-						label.Markup = tab.Markup;
-					else
-						label.Text = tab.Text;
+					var item = new ContextMenuItem (tab.Markup ?? tab.Text);
 					var locTab = tab;
-					mi.Activated += delegate {
+					item.Clicked += (object sender, ContextMenuItemClickedEventArgs e) => {
 						CurrentTab = locTab;
 					};
+					menu.Items.Add (item);
 				}
-				menu.ShowAll ();
 				return menu;
 			};
 
@@ -251,13 +245,13 @@ namespace MonoDevelop.Components.DockNotebook
 			foreach (string individualFile in fullData.Split ('\n')) {
 				string file = individualFile.Trim ();
 				if (file.StartsWith ("file://")) {
-					file = new Uri(file).LocalPath;
+					var filePath = new FilePath (file);
 
 					try {
-						if (Services.ProjectService.IsWorkspaceItemFile (file))
-							IdeApp.Workspace.OpenWorkspaceItem(file);
+						if (Services.ProjectService.IsWorkspaceItemFile (filePath))
+							IdeApp.Workspace.OpenWorkspaceItem(filePath);
 						else
-							IdeApp.Workbench.OpenDocument (file, null, -1, -1, MonoDevelop.Ide.Gui.OpenDocumentOptions.Default, null, null, this);
+							IdeApp.Workbench.OpenDocument (filePath, null, -1, -1, MonoDevelop.Ide.Gui.OpenDocumentOptions.Default, null, null, this);
 					} catch (Exception e) {
 						MonoDevelop.Core.LoggingService.LogError ("unable to open file {0} exception was :\n{1}", file, e.ToString());
 					}

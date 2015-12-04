@@ -27,6 +27,7 @@
 using System;
 using Mono.TextTemplating;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.TextTemplating
 {
@@ -55,8 +56,27 @@ namespace MonoDevelop.TextTemplating
 		
 		protected override string ResolveAssemblyReference (string assemblyReference)
 		{
-			//FIXME: resolve from addins
-			return base.ResolveAssemblyReference (SubstitutePlaceholders (assemblyReference));
+			//FIXME: resolve from addins?
+
+			if (System.IO.Path.IsPathRooted (assemblyReference))
+				return assemblyReference;
+
+			foreach (string referencePath in ReferencePaths) {
+				var path = System.IO.Path.Combine (referencePath, assemblyReference);
+				if (System.IO.File.Exists (path))
+					return path;
+			}
+
+			var fx = Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_4_5);
+			var ctx = Runtime.SystemAssemblyService.CurrentRuntime.AssemblyContext;
+
+			var fullname = ctx.FindInstalledAssembly (assemblyReference, null, fx);
+
+			var asm = ctx.GetAssemblyFromFullName (fullname, null, fx);
+			if (asm != null)
+				return asm.Location;
+
+			return null;
 		}
 		
 		protected override bool LoadIncludeText (string requestFileName, out string content, out string location)

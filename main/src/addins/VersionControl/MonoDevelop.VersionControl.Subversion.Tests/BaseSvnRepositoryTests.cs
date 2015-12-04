@@ -50,7 +50,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			svnAdmin = new Process ();
 			info = new ProcessStartInfo ();
 			info.FileName = "svnadmin";
-			info.Arguments = "create " + RemotePath + Path.DirectorySeparatorChar + "repo";
+			info.Arguments = "create " + RemotePath.Combine ("repo");
 			info.WindowStyle = ProcessWindowStyle.Hidden;
 			svnAdmin.StartInfo = info;
 			svnAdmin.Start ();
@@ -68,8 +68,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 				SvnServe.Start ();
 
 				// Create user to auth.
-				using (var perm = File. CreateText (RemotePath + Path.DirectorySeparatorChar + "repo" +
-				                                    Path.DirectorySeparatorChar + "conf" + Path.DirectorySeparatorChar + "svnserve.conf")) {
+				using (var perm = File. CreateText (RemotePath.Combine("repo", "conf", "svnserve.conf"))) {
 					perm.WriteLine ("[general]");
 					perm.WriteLine ("anon-access = write");
 					perm.WriteLine ("[sasl]");
@@ -95,6 +94,19 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 
 		protected override VersionStatus InitialValue {
 			get { return VersionStatus.Unversioned; }
+		}
+
+		protected override void CheckLog (Repository repo)
+		{
+			var revs = repo.GetHistory (LocalPath.Combine ("."), null);
+			for (int i = 0; i < revs.Length - 1; ++i) {
+				var svnRev = (SvnRevision)revs [i];
+				Assert.AreEqual (revs.Length - 1 - i, svnRev.Rev);
+				Assert.AreEqual (string.Format ("Commit #{0}", revs.Length - 2 - i), svnRev.Message);
+			}
+
+			Assert.AreEqual (0, ((SvnRevision)revs [revs.Length - 1]).Rev);
+			Assert.AreEqual (null, revs [revs.Length - 1].Message);
 		}
 
 		protected override void TestValidUrl ()

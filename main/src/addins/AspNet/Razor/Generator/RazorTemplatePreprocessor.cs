@@ -25,27 +25,16 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Ide.CustomTools;
 using System.CodeDom.Compiler;
-using MonoDevelop.Projects;
+using System.Linq;
 using MonoDevelop.Core;
-using MonoDevelop.TextTemplating;
+using MonoDevelop.Ide.CustomTools;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.AspNet.Razor.Generator
 {
 	class RazorTemplatePreprocessor : ISingleFileCustomTool
 	{
-		//from TextTemplatingFilePreprocessor
-		static string GetNamespaceHint (ProjectFile file, string outputFile)
-		{
-			string ns = file.CustomToolNamespace;
-			if (string.IsNullOrEmpty (ns) && !string.IsNullOrEmpty (outputFile)) {
-				var dnp = ((DotNetProject) file.Project);
-				ns = dnp.GetDefaultNamespace (outputFile);
-			}
-			return ns;
-		}
-
 		public IAsyncOperation Generate (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
 			return new ThreadAsyncOperation (delegate {
@@ -57,11 +46,10 @@ namespace MonoDevelop.AspNet.Razor.Generator
 			}, result);
 		}
 
-		void GenerateInternal (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
+		static void GenerateInternal (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
-			var dnp = file.Project as DotNetProject;
-			if (dnp == null || dnp.LanguageName != "C#") {
-				var msg = "Razor templates are only supported in C# projects";
+			if (file.Project.SupportedLanguages.All (l => l != "C#")) {
+				const string msg = "Razor templates are only supported in C# projects";
 				result.Errors.Add (new CompilerError (file.Name, -1, -1, null, msg));
 				monitor.Log.WriteLine (msg);
 				return;
@@ -71,7 +59,7 @@ namespace MonoDevelop.AspNet.Razor.Generator
 
 			var defaultOutputName = file.FilePath.ChangeExtension (".cs");
 
-			var ns = GetNamespaceHint (file, defaultOutputName);
+			var ns = CustomToolService.GetFileNamespace (file, defaultOutputName);
 			host.DefaultNamespace = ns;
 
 			CompilerErrorCollection errors;
@@ -85,7 +73,7 @@ namespace MonoDevelop.AspNet.Razor.Generator
 			result.GeneratedFilePath = defaultOutputName;
 
 			foreach (var err in result.Errors) {
-				monitor.Log.WriteLine (err.ToString ());
+				monitor.Log.WriteLine (err);
 			}
 		}
 	}

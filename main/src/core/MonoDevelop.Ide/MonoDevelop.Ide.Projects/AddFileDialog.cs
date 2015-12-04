@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.Projects
 		public AddFileDialog (string title)
 		{
 			Title = title;
-			Action = FileChooserAction.Open;
+			Action = MonoDevelop.Components.FileChooserAction.Open;
 			data.SelectMultiple = true;
 		}
 		
@@ -64,6 +64,8 @@ namespace MonoDevelop.Ide.Projects
 		protected override bool RunDefault ()
 		{
 			FileSelector fdiag  = new FileSelector (data.Title);
+
+			fdiag.ShowHidden = data.ShowHidden;
 			
 			//add a combo that can be used to override the default build action
 			ComboBox combo = new ComboBox (data.BuildActions ?? new string[0]);
@@ -96,6 +98,7 @@ namespace MonoDevelop.Ide.Projects
 				return result == (int) Gtk.ResponseType.Ok;
 			} finally {
 				fdiag.Destroy ();
+				fdiag.Dispose ();
 			}
 		}
 	}

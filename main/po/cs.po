@@ -15880,7 +15880,7 @@ msgstr "Pouze _chyby"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.cs:1
 #, fuzzy
-msgid "Edit color sheme"
+msgid "Edit Color Scheme"
 msgstr "Výchozí barevné schéma."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.cs:1

@@ -27,9 +27,11 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Xml;
 using MonoDevelop.Core;
-using System.IO;
+using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Templates
@@ -75,6 +77,12 @@ namespace MonoDevelop.Ide.Templates
 		public override string CreateContent (string language)
 		{
 			return contentSrcFile.IsNullOrEmpty? content : File.ReadAllText (contentSrcFile);
+		}
+
+		protected override string ProcessContent (string content, IStringTagModel tags)
+		{
+			content = FileTemplateParser.Parse (content, tags);
+			return base.ProcessContent (content, tags);
 		}
 	}
 	

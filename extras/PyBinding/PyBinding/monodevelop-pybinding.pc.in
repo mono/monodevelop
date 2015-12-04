@@ -1,6 +1,0 @@
-Name: PyBinding
-Description: PyBinding
-Version: 
-
-Requires: 
-Libs: -r:@expanded_libdir@/@PACKAGE@/PyBinding.dll

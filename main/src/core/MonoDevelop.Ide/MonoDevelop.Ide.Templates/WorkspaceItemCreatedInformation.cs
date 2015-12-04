@@ -46,9 +46,9 @@ namespace MonoDevelop.Ide.Templates
 			get { return packageReferencesForCreatedProjects; }
 		}
 
-		public void AddPackageReferenceForCreatedProject (Project project, ProjectDescriptor projectDescriptor)
+		public void AddPackageReferenceForCreatedProject (Project project, ProjectDescriptor projectDescriptor, ProjectCreateInformation createInfo)
 		{
-			var packageReference = new PackageReferencesForCreatedProject (project.Name, projectDescriptor.GetPackageReferences ());
+			var packageReference = new PackageReferencesForCreatedProject (project.Name, projectDescriptor.GetPackageReferences (createInfo));
 			packageReferencesForCreatedProjects.Add (packageReference);
 		}
 	}

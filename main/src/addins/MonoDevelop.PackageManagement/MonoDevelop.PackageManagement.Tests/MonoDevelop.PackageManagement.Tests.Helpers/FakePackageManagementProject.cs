@@ -51,6 +51,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 				return FakePackages.FirstOrDefault (package => package.Id == packageId);
 			};
 
+			InstallPackageAction = (package, installAction) => {
+				PackagePassedToInstallPackage = package;
+				PackageOperationsPassedToInstallPackage = installAction.Operations;
+				IgnoreDependenciesPassedToInstallPackage = installAction.IgnoreDependencies;
+				AllowPrereleaseVersionsPassedToInstallPackage = installAction.AllowPrereleaseVersions;
+			};
+
 			UpdatePackageAction = (package, updateAction) => {
 				PackagePassedToUpdatePackage = package;
 				PackageOperationsPassedToUpdatePackage = updateAction.Operations;
@@ -58,6 +65,14 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 				AllowPrereleaseVersionsPassedToUpdatePackage = updateAction.AllowPrereleaseVersions;
 				IsUpdatePackageCalled = true;
 			};
+
+			UninstallPackageAction = (package, uninstallAction) => {
+				PackagePassedToUninstallPackage = package;
+				ForceRemovePassedToUninstallPackage = uninstallAction.ForceRemove;
+				RemoveDependenciesPassedToUninstallPackage = uninstallAction.RemoveDependencies;
+			};
+
+			CreateUninstallPackageActionFunc = () => FakeUninstallPackageAction;
 
 			this.Name = name;
 
@@ -77,7 +92,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public List<FakeUpdatePackageAction> FakeUpdatePackageActionsCreated = 
 			new List<FakeUpdatePackageAction> ();
 
-		public string Name { get; set; }
+		public string Name {
+			get { return FakeDotNetProject.Name; }
+			set { FakeDotNetProject.Name = value; }
+		}
 
 		public bool IsPackageInstalled (string packageId)
 		{
@@ -117,12 +135,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public bool IgnoreDependenciesPassedToInstallPackage;
 		public bool AllowPrereleaseVersionsPassedToInstallPackage;
 
+		public Action<IPackage, InstallPackageAction> InstallPackageAction;
+
 		public void InstallPackage (IPackage package, InstallPackageAction installAction)
 		{
-			PackagePassedToInstallPackage = package;
-			PackageOperationsPassedToInstallPackage = installAction.Operations;
-			IgnoreDependenciesPassedToInstallPackage = installAction.IgnoreDependencies;
-			AllowPrereleaseVersionsPassedToInstallPackage = installAction.AllowPrereleaseVersions;
+			InstallPackageAction (package, installAction);
 		}
 
 		public FakePackageOperation AddFakeInstallOperation ()
@@ -153,10 +170,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public void UninstallPackage (IPackage package, UninstallPackageAction uninstallAction)
 		{
-			PackagePassedToUninstallPackage = package;
-			ForceRemovePassedToUninstallPackage = uninstallAction.ForceRemove;
-			RemoveDependenciesPassedToUninstallPackage = uninstallAction.RemoveDependencies;
+			UninstallPackageAction (package, uninstallAction);
 		}
+
+		public Action<IPackage, UninstallPackageAction> UninstallPackageAction;
 
 		public IPackage PackagePassedToUpdatePackage;
 		public IEnumerable<PackageOperation> PackageOperationsPassedToUpdatePackage;
@@ -173,16 +190,21 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public FakeInstallPackageAction LastInstallPackageCreated;
 
+		public Action InstallPackageExecuteAction = () => { };
+
 		public virtual InstallPackageAction CreateInstallPackageAction ()
 		{
 			LastInstallPackageCreated = new FakeInstallPackageAction (this);
+			LastInstallPackageCreated.ExecuteAction = InstallPackageExecuteAction;
 			return LastInstallPackageCreated;
 		}
 
 		public virtual UninstallPackageAction CreateUninstallPackageAction ()
 		{
-			return FakeUninstallPackageAction;
+			return CreateUninstallPackageActionFunc ();
 		}
+
+		public Func<UninstallPackageAction> CreateUninstallPackageActionFunc;
 
 		public UpdatePackageAction CreateUpdatePackageAction ()
 		{

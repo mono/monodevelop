@@ -37,13 +37,20 @@ namespace Mono.MHex.Rendering
 		internal double charWidth;
 		public override double Width {
 			get {
-				return charWidth * Editor.BytesInRow;
+				return CalculateWidth (Editor.BytesInRow);
 			}
 		}
 		
 		public override double CalculateWidth (int bytesInRow)
 		{
-			return charWidth * bytesInRow;
+			switch (Editor.Options.StringRepresentationType) {
+			case StringRepresentationTypes.ASCII:
+				return charWidth * bytesInRow;
+			case StringRepresentationTypes.UTF16:
+				return charWidth * bytesInRow / 2;
+			default:
+				throw new NotImplementedException (Editor.Options.StringRepresentationType.ToString ());
+			}
 		}
 		
 		public TextEditorMargin (HexEditor hexEditor) : base (hexEditor)
@@ -68,14 +75,30 @@ namespace Mono.MHex.Rendering
 			long startOffset = line * Editor.BytesInRow;
 			long endOffset   = System.Math.Min (startOffset + Editor.BytesInRow, Data.Length);
 			byte[] lineBytes = Data.GetBytes (startOffset, (int)(endOffset - startOffset));
-			for (int i = 0; i < lineBytes.Length; i++) {
-				byte b = lineBytes[i];
-				char ch = (char)b;
-				if (!char.IsControl (ch)) {
-					sb.Append (ch);
-				} else {
-					sb.Append (".");
+			switch (Editor.Options.StringRepresentationType) {
+			case StringRepresentationTypes.ASCII:
+				for (int i = 0; i < lineBytes.Length; i++) {
+					byte b = lineBytes [i];
+					char ch = (char)b;
+					if (!char.IsControl (ch)) {
+						sb.Append (ch);
+					} else {
+						sb.Append (".");
+					}
 				}
+				break;
+			case StringRepresentationTypes.UTF16:
+				for (int i = 0; i < lineBytes.Length - 1; i += 2) {
+
+					char ch = Encoding.Unicode.GetChars (lineBytes, i, 2) [0];
+					if (char.IsLetterOrDigit (ch) || char.IsWhiteSpace (ch) || char.IsSymbol (ch) || char.IsPunctuation (ch))
+						sb.Append (ch);
+					else
+						sb.Append (".");
+				}
+				break;
+			default:
+				throw new NotImplementedException (Editor.Options.StringRepresentationType.ToString ());
 			}
 			
 			layout.Text = sb.ToString ();
@@ -83,8 +106,8 @@ namespace Mono.MHex.Rendering
 			if (Data.IsSomethingSelected) {
 				ISegment selection = Data.MainSelection.Segment;
 				HandleSelection (selection.Offset, selection.EndOffset, startOffset, endOffset, null, delegate(long start, long end) {
-					result.Layout.SetForeground (Style.Selection, (int)(start - startOffset), (int)(end - start));
-					result.Layout.SetBackground (Style.SelectionBg, (int)(start - startOffset), (int)(end - start));
+					result.Layout.SetForeground (Style.Selection, (int)(start - startOffset)/2, (int)(end - start)/2);
+					result.Layout.SetBackground (Style.SelectionBg, (int)(start - startOffset)/2, (int)(end - start)/2);
 				});
 			}
 			return result;
@@ -99,6 +122,8 @@ namespace Mono.MHex.Rendering
 			LayoutWrapper layout = GetLayout (line);
 			if (!Data.IsSomethingSelected && !Caret.InTextEditor && line == Data.Caret.Line) {
 				var column = (int)(Caret.Offset % BytesInRow);
+				if (Editor.Options.StringRepresentationType == StringRepresentationTypes.UTF16)
+					column /= 2;
 				var xOffset = charWidth * column;
 				ctx.Rectangle (x + xOffset, y, charWidth, Editor.LineHeight);
 				ctx.SetColor (Style.HighlightOffset);
@@ -136,7 +161,11 @@ namespace Mono.MHex.Rendering
 
 		long GetOffset (double x, long line)
 		{
-			return (long)(line * BytesInRow + x / charWidth);
+			if (Editor.Options.StringRepresentationType == StringRepresentationTypes.UTF16) {
+				return (long)(line * BytesInRow + x / charWidth);
+			} else {
+				return (long)(line * BytesInRow + x / (charWidth * 2));
+			}
 		}
 		
 		internal protected override void MouseHover (MarginMouseMovedEventArgs args)

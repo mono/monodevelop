@@ -476,7 +476,9 @@ namespace Mono.TextEditor
 		protected internal override void OptionsChanged ()
 		{
 			DisposeGCs ();
-
+			selectionColor = null;
+			currentLineColor = null;
+		
 			var markerFont = textEditor.Options.Font.Copy ();
 			markerFont.Size = markerFont.Size * 8 / 10;
 			markerLayout.FontDescription = markerFont;
@@ -1377,55 +1379,67 @@ namespace Mono.TextEditor
 
 		public event LineDecorator DecorateLineBg;
 
-		void DrawSpaceMarker (Cairo.Context cr, bool selected, double x, double x2, double y)
-		{
-			var d = textEditor.Options.Zoom * 2;
-			var py = (int)(y + (LineHeight - d) / 2);
-			cr.Rectangle (x + (x2 - x - d) / 2, py, d, d);
-			cr.Fill ();
-		}
-
-		void DrawTabMarker (Cairo.Context cr, bool selected, double x, double x2, double y)
-		{
-			var py = (int)(y + LineHeight / 2);
-			cr.MoveTo (0.5 + x, 0.5 + py);
-			cr.LineTo (0.5 + x2 - charWidth / 2, 0.5 + py);
-			cr.Stroke ();
-		}
-
 		const double whitespaceMarkerAlpha = 0.3;
 
-		void DecorateTabsAndSpaces (Cairo.Context ctx, LayoutWrapper layout, int offset, int length, double xPos, double y, int selectionStart, int selectionEnd)
+		void InnerDecorateTabsAndSpaces (Cairo.Context ctx, LayoutWrapper layout, int offset, double x, double y, int selectionStart, int selectionEnd, char spaceOrTab)
 		{
+			var chars = layout.LineChars;
+			if (Array.IndexOf (chars, spaceOrTab) == -1)
+				return;
+
 			uint curIndex = 0, byteIndex = 0;
 			bool first = true, oldSelected = false;
+			var curchunk = layout.Chunks != null ? layout.Chunks.FirstOrDefault () : null;
+
+			var dotThickness = textEditor.Options.Zoom * 2;
+			var textEditorWidth = textEditor.Allocation.Width;
+
+			//Get 1st visible character index from left based on HAdjustment
 			int index, trailing;
 			layout.Layout.XyToIndex ((int)textEditor.HAdjustment.Value, 0, out index, out trailing);
-			var curchunk = layout.Chunks != null ? layout.Chunks.FirstOrDefault () : null;
-			for (int i = index; i < layout.LineChars.Length; i++) {
-				char ch = layout.LineChars [i];
-				if (ch != ' ' && ch != '\t')
+
+			double ypos;
+			if (spaceOrTab == ' ') {
+				ypos = System.Math.Floor (y + (LineHeight - dotThickness) / 2);
+			} else {
+				ypos = 0.5 + System.Math.Floor (y + LineHeight / 2);
+			}
+
+			var showOnlySelected = textEditor.Options.ShowWhitespaces != ShowWhitespaces.Always;
+
+			var lastColor = new Cairo.Color ();
+			bool firstDraw = true;
+			var foregroundColor = ColorStyle.PlainText.Foreground;
+
+			int lastIndex = -1;
+			int lastPosX = 0;
+
+			for (int i = index; i < chars.Length; i++) {
+				if (spaceOrTab != chars [i])
 					continue;
-				if (ch == ' ' && !textEditor.Options.IncludeWhitespaces.HasFlag (IncludeWhitespaces.Space))
-					continue;
-				if (ch == '\t' && !textEditor.Options.IncludeWhitespaces.HasFlag (IncludeWhitespaces.Tab))
-					continue;
+
 				bool selected = selectionStart <= offset + i && offset + i < selectionEnd;
 				if (first || oldSelected != selected) {
 					first = false;
 					oldSelected = selected;
 				}
-				if (!selected && textEditor.Options.ShowWhitespaces != ShowWhitespaces.Always)
+
+				if (showOnlySelected && !selected)
 					continue;
-				Pango.Rectangle pos = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)i, ref curIndex, ref byteIndex));
-				double ypos = y + pos.Y / Pango.Scale.PangoScale;
-				double xpos = xPos + pos.X / Pango.Scale.PangoScale;
-				if (xpos > textEditor.Allocation.Width)
+				int line, posX;
+				if (lastIndex == i) {
+					posX = lastPosX;
+				} else {
+					layout.Layout.IndexToLineX ((int)TranslateToUTF8Index (chars, (uint)i, ref curIndex, ref byteIndex), false, out line, out posX);
+				}
+				double xpos = x + posX / Pango.Scale.PangoScale;
+				if (xpos > textEditorWidth)
 					break;
-				Pango.Rectangle pos2 = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)i + 1, ref curIndex, ref byteIndex));
-				double ypos2 = y + pos2.Y / Pango.Scale.PangoScale;
-				double xpos2 = xPos + pos2.X / Pango.Scale.PangoScale;
-				Cairo.Color col = new Cairo.Color (0, 0, 0);
+				layout.Layout.IndexToLineX ((int)TranslateToUTF8Index (chars, (uint)i + 1, ref curIndex, ref byteIndex), false, out line, out posX);
+				lastPosX = posX;
+				lastIndex = i + 1;
+				double xpos2 = x + posX / Pango.Scale.PangoScale;
+				var col = new Cairo.Color (0, 0, 0);
 				if (SelectionColor.TransparentForeground) {
 					while (curchunk != null && curchunk.EndOffset < offset + i)
 						curchunk = curchunk.Next;
@@ -1434,18 +1448,41 @@ namespace Mono.TextEditor
 						if (chunkStyle != null)
 							col = ColorStyle.GetForeground (chunkStyle);
 					} else {
-						col = ColorStyle.PlainText.Foreground;
+						col = foregroundColor;
 					}
 				} else {
-					col = selected ? SelectionColor.Foreground : col = ColorStyle.PlainText.Foreground;
+					col = selected ? SelectionColor.Foreground : foregroundColor;
 				}
-				ctx.SetSourceRGBA (col.R, col.G, col.B, whitespaceMarkerAlpha);
 
-				if (ch == '\t') {
-					DrawTabMarker (ctx, selected, xpos, xpos2, ypos);
-				} else {
-					DrawSpaceMarker (ctx, selected, xpos, xpos2, ypos);
+				if (firstDraw || (lastColor.R != col.R && lastColor.G != col.G && lastColor.B != col.B)) {
+					ctx.SetSourceRGBA (col.R, col.G, col.B, whitespaceMarkerAlpha);
+					lastColor = col;
+					firstDraw = false;
 				}
+
+				if (spaceOrTab == ' ') {
+					ctx.Rectangle (xpos + (xpos2 - xpos - dotThickness) / 2, ypos, dotThickness, dotThickness);
+				} else {
+					ctx.MoveTo (0.5 + xpos, ypos);
+					ctx.LineTo (0.5 + xpos2 - charWidth / 2, ypos);
+				}
+			}
+			if (!firstDraw) {//Atleast one draw was called
+				if (spaceOrTab == ' ') {
+					ctx.Fill ();
+				} else {
+					ctx.Stroke ();
+				}
+			}
+		}
+
+		void DecorateTabsAndSpaces (Cairo.Context ctx, LayoutWrapper layout, int offset, double x, double y, int selectionStart, int selectionEnd)
+		{
+			if (textEditor.Options.IncludeWhitespaces.HasFlag (IncludeWhitespaces.Space)) {
+				InnerDecorateTabsAndSpaces (ctx, layout, offset, x, y, selectionStart, selectionEnd, ' ');
+			}
+			if (textEditor.Options.IncludeWhitespaces.HasFlag (IncludeWhitespaces.Tab)) {
+				InnerDecorateTabsAndSpaces (ctx, layout, offset, x, y, selectionStart, selectionEnd, '\t');
 			}
 		}
 
@@ -1710,7 +1747,7 @@ namespace Mono.TextEditor
 			}
 
 			if (textEditor.Options.ShowWhitespaces != ShowWhitespaces.Never && !(BackgroundRenderer != null && textEditor.Options.ShowWhitespaces == ShowWhitespaces.Selection))
-				DecorateTabsAndSpaces (cr, layout, offset, length, xPos, y, selectionStartOffset, selectionEndOffset);
+				DecorateTabsAndSpaces (cr, layout, offset, xPos, y, selectionStartOffset, selectionEndOffset);
 
 
 			if (textEditor.IsSomethingSelected && !isSelectionDrawn && BackgroundRenderer == null) {
@@ -1722,13 +1759,12 @@ namespace Mono.TextEditor
 						endX = position + wrapper.Width + layout.Width;
 						DrawRectangleWithRuler (cr, xPos + textEditor.HAdjustment.Value - TextStartPosition, new Cairo.Rectangle (startX, y, endX - startX, _lineHeight), this.SelectionColor.Background, true);
 
-						if (lineNumber == Caret.Line) {
-							switch (textEditor.Options.ShowWhitespaces) {
-							case ShowWhitespaces.Selection:
-								if (textEditor.IsSomethingSelected && (selectionStartOffset < offset || selectionStartOffset == selectionEndOffset) && BackgroundRenderer == null)
-									DecorateTabsAndSpaces (cr, wrapper, offset, length, xPos, y, selectionStartOffset, selectionEndOffset + wrapper.LineChars.Length);
-								break;
-							}
+						if (lineNumber == Caret.Line &&
+						    textEditor.Options.ShowWhitespaces == ShowWhitespaces.Selection &&
+						    textEditor.IsSomethingSelected &&
+						    (selectionStartOffset < offset || selectionStartOffset == selectionEndOffset) &&
+						    BackgroundRenderer == null) {
+							DecorateTabsAndSpaces (cr, wrapper, offset, xPos, y, selectionStartOffset, selectionEndOffset + wrapper.LineChars.Length);
 						}
 					}
 				}
@@ -1739,6 +1775,7 @@ namespace Mono.TextEditor
 				int caretOffset = Caret.Offset;
 				if (offset <= caretOffset && caretOffset <= offset + length) {
 					int index = caretOffset - offset;
+					//This if means we have temporary indent
 					if (Caret.Column > line.Length + 1) {
 						using (var wrapper = GetVirtualSpaceLayout (line, Caret.Location)) {
 							var x = (position + wrapper.Width) + layout.Width;
@@ -1755,13 +1792,9 @@ namespace Mono.TextEditor
 							if (DecorateLineBg != null)
 								DecorateLineBg (cr, wrapper, offset, length, xPos, y, selectionStartOffset + virtualSpaceMod, selectionEndOffset + wrapper.LineChars.Length);
 
-							switch (textEditor.Options.ShowWhitespaces) {
-							case ShowWhitespaces.Always:
-								DecorateTabsAndSpaces (cr, wrapper, offset, length, xPos, y, selectionStartOffset, selectionEndOffset + wrapper.LineChars.Length);
-								break;
+							if (textEditor.Options.ShowWhitespaces == ShowWhitespaces.Always) {
+								DecorateTabsAndSpaces (cr, wrapper, offset, xPos, y, selectionStartOffset, selectionEndOffset + wrapper.LineChars.Length);
 							}
-//							if (isCaretVirtual)
-							//								position += wrapper.Width;
 						}
 					} else if (index == length && string.IsNullOrEmpty (textEditor.preeditString)) {
 						var x = position + layout.Width;
@@ -1888,7 +1921,7 @@ namespace Mono.TextEditor
 		{
 			VisualLocationTranslator trans = new VisualLocationTranslator (this);
 
-			clickLocation = trans.PointToLocation (x, y);
+			clickLocation = trans.PointToLocation (x, y, snapCharacters: true);
 			if (clickLocation.Line < DocumentLocation.MinLine || clickLocation.Column < DocumentLocation.MinColumn)
 				return false;
 			DocumentLine line = Document.GetLine (clickLocation.Line);
@@ -2012,7 +2045,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			DocumentLocation docLocation = PointToLocation (args.X, args.Y);
+			DocumentLocation docLocation = PointToLocation (args.X, args.Y, snapCharacters: true);
 			if (docLocation.Line < DocumentLocation.MinLine || docLocation.Column < DocumentLocation.MinColumn)
 				return;
 			
@@ -2240,7 +2273,7 @@ namespace Mono.TextEditor
 		List<IActionTextLineMarker> newMarkers = new List<IActionTextLineMarker> ();
 		protected internal override void MouseHover (MarginMouseEventArgs args)
 		{
-			var loc = PointToLocation (args.X, args.Y);
+			var loc = PointToLocation (args.X, args.Y, snapCharacters: true);
 			if (loc.Line < DocumentLocation.MinLine || loc.Column < DocumentLocation.MinColumn)
 				return;
 			var line = Document.GetLine (loc.Line);
@@ -2904,6 +2937,7 @@ namespace Mono.TextEditor
 
 			TextViewMargin.LayoutWrapper layoutWrapper;
 			int index;
+			bool snapCharacters;
 
 			bool ConsumeLayout (int xp, int yp)
 			{
@@ -2916,16 +2950,25 @@ namespace Mono.TextEditor
 					layoutWrapper.Layout.IndexToLineX (index, false, out lineNr, out xp1);
 					layoutWrapper.Layout.IndexToLineX (index + 1, false, out lineNr, out xp2);
 					index = TranslateIndexToUTF8 (layoutWrapper.Layout.Text, index);
+
+					if (snapCharacters && !IsNearX1 (xp, xp1, xp2))
+						index++;
 					return true;
 				}
 				index = line.Length;
 				return false;
 			}
 
-			public DocumentLocation PointToLocation (double xp, double yp, bool endAtEol = false)
+			static bool IsNearX1 (int pos, int x1, int x2)
+			{
+				return System.Math.Abs (x1 - pos) < System.Math.Abs (x2 - pos);
+			}
+
+			public DocumentLocation PointToLocation (double xp, double yp, bool endAtEol = false, bool snapCharacters = false)
 			{
 				lineNumber = System.Math.Min (margin.YToLine (yp + margin.textEditor.VAdjustment.Value), margin.Document.LineCount);
 				line = lineNumber <= margin.Document.LineCount ? margin.Document.GetLine (lineNumber) : null;
+				this.snapCharacters = snapCharacters;
 				if (line == null)
 					return DocumentLocation.Empty;
 				
@@ -3005,19 +3048,19 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public DocumentLocation PointToLocation (double xp, double yp, bool endAtEol = false)
+		public DocumentLocation PointToLocation (double xp, double yp, bool endAtEol = false, bool snapCharacters = false)
 		{
-			return new VisualLocationTranslator (this).PointToLocation (xp, yp, endAtEol);
+			return new VisualLocationTranslator (this).PointToLocation (xp, yp, endAtEol, snapCharacters);
 		}
-		
-		public DocumentLocation PointToLocation (Cairo.Point p, bool endAtEol = false)
+
+		public DocumentLocation PointToLocation (Cairo.Point p, bool endAtEol = false, bool snapCharacters = false)
 		{
-			return new VisualLocationTranslator (this).PointToLocation (p.X, p.Y, endAtEol);
+			return new VisualLocationTranslator (this).PointToLocation (p.X, p.Y, endAtEol, snapCharacters);
 		}
-		
-		public DocumentLocation PointToLocation (Cairo.PointD p, bool endAtEol = false)
+
+		public DocumentLocation PointToLocation (Cairo.PointD p, bool endAtEol = false, bool snapCharacters = false)
 		{
-			return new VisualLocationTranslator (this).PointToLocation (p.X, p.Y, endAtEol);
+			return new VisualLocationTranslator (this).PointToLocation (p.X, p.Y, endAtEol, snapCharacters);
 		}
 		
 		public Cairo.Point LocationToPoint (int line, int column)

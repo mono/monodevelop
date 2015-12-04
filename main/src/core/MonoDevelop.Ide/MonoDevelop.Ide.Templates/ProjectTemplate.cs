@@ -53,11 +53,21 @@ namespace MonoDevelop.Ide.Templates
 	{
 		public static List<ProjectTemplate> ProjectTemplates = new List<ProjectTemplate> ();
 
+		static MonoDevelop.Core.Instrumentation.Counter TemplateCounter = MonoDevelop.Core.Instrumentation.InstrumentationService.CreateCounter ("Template Instantiated", "Project Model", id:"Core.Template.Instantiated");
+
 		private List<string> actions = new List<string> ();
 
 		private string createdSolutionName;
 		IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects = new List<PackageReferencesForCreatedProject> ();
 		private ProjectCreateInformation createdProjectInformation = null;
+
+		internal string CreatedSolutionName {
+			get { return createdSolutionName; }
+		}
+
+		internal IEnumerable<string> Actions {
+			get { return actions; }
+		}
 
 		private SolutionDescriptor solutionDescriptor = null;
 		public SolutionDescriptor SolutionDescriptor
@@ -75,6 +85,18 @@ namespace MonoDevelop.Ide.Templates
 		public string Id
 		{
 			get { return id; }
+		}
+
+		private string groupId;
+		public string GroupId
+		{
+			get { return groupId; }
+		}
+
+		private string condition;
+		public string Condition
+		{
+			get { return condition; }
 		}
 
 		private string category;
@@ -95,6 +117,10 @@ namespace MonoDevelop.Ide.Templates
 			get { return description; }
 		}
 
+		/// <summary>
+		/// The name of the template before localization, used for the instantiation counter
+		/// </summary>
+		private string nonLocalizedName;
 		private string name;
 		public string Name
 		{
@@ -125,7 +151,36 @@ namespace MonoDevelop.Ide.Templates
 			get { return wizardPath; }
 		}
 
+		private string fileExtension;
+		public string FileExtension
+		{
+			get { return fileExtension; }
+		}
 
+		private string supportedParameters;
+		public string SupportedParameters {
+			get { return supportedParameters; }
+		}
+
+		private string defaultParameters;
+		public string DefaultParameters {
+			get { return defaultParameters; }
+		}
+
+		private string imageId;
+		public string ImageId {
+			get { return imageId; }
+		}
+
+		private string imageFile;
+		public string ImageFile {
+			get { return imageFile; }
+		}
+
+		private string visibility;
+		public string Visibility {
+			get { return visibility; }
+		}
 
 		//constructors
 		static ProjectTemplate ()
@@ -139,12 +194,16 @@ namespace MonoDevelop.Ide.Templates
 
 			XmlElement xmlConfiguration = xmlDocument.DocumentElement ["TemplateConfiguration"];
 
+			// Get legacy category.
 			if (xmlConfiguration ["_Category"] != null) {
-				category = addin.Localizer.GetString (xmlConfiguration ["_Category"].InnerText);
+				category = xmlConfiguration ["_Category"].InnerText;
 			}
-			else
-				throw new InvalidOperationException (string.Format ("_Category missing in file template {0}", codon.Id));
 
+			if (xmlConfiguration ["Category"] != null) {
+				category = xmlConfiguration ["Category"].InnerText;
+			} else if (category == null) {
+				LoggingService.LogWarning (string.Format ("Category missing in project template {0}", codon.Id));
+			}
 
 			if (!string.IsNullOrEmpty (overrideLanguage)) {
 				this.languagename = overrideLanguage;
@@ -184,7 +243,8 @@ namespace MonoDevelop.Ide.Templates
 			}
 
 			if (xmlConfiguration ["_Name"] != null) {
-				this.name = addin.Localizer.GetString (xmlConfiguration ["_Name"].InnerText);
+				this.nonLocalizedName = xmlConfiguration ["_Name"].InnerText;
+				this.name = addin.Localizer.GetString (this.nonLocalizedName);
 			}
 
 			if (xmlConfiguration ["_Description"] != null) {
@@ -193,6 +253,36 @@ namespace MonoDevelop.Ide.Templates
 
 			if (xmlConfiguration ["Icon"] != null) {
 				this.icon = ImageService.GetStockId (addin, xmlConfiguration ["Icon"].InnerText, Gtk.IconSize.Dnd);
+			}
+
+			if (xmlConfiguration ["GroupId"] != null) {
+				this.groupId = xmlConfiguration ["GroupId"].InnerText;
+				this.condition = xmlConfiguration ["GroupId"].GetAttribute ("condition");
+			}
+
+			if (xmlConfiguration ["FileExtension"] != null) {
+				this.fileExtension = xmlConfiguration ["FileExtension"].InnerText;
+			}
+
+			if (xmlConfiguration ["SupportedParameters"] != null) {
+				this.supportedParameters = xmlConfiguration ["SupportedParameters"].InnerText;
+			}
+
+			if (xmlConfiguration ["DefaultParameters"] != null) {
+				this.defaultParameters = xmlConfiguration ["DefaultParameters"].InnerText;
+			}
+
+			if (xmlConfiguration ["Image"] != null) {
+				XmlElement imageElement = xmlConfiguration ["Image"];
+				imageId = imageElement.GetAttribute ("id");
+				imageFile = imageElement.GetAttribute ("file");
+				if (!String.IsNullOrEmpty (imageFile)) {
+					imageFile = Path.Combine (codon.BaseDirectory, imageFile);
+				}
+			}
+
+			if (xmlConfiguration ["Visibility"] != null) {
+				visibility = xmlConfiguration ["Visibility"].InnerText;
 			}
 
 			if (xmlDocument.DocumentElement ["Combine"] == null) {
@@ -238,30 +328,78 @@ namespace MonoDevelop.Ide.Templates
 			this.createdProjectInformation = cInfo;
 			this.packageReferencesForCreatedProjects = workspaceItemInfo.PackageReferencesForCreatedProjects;
 
+			var pDesc = this.solutionDescriptor.EntryDescriptors.OfType<ProjectDescriptor> ().ToList ();
+
+			var metadata = new Dictionary<string, string> ();
+			metadata ["Id"] = this.Id;
+			metadata ["Name"] = this.nonLocalizedName;
+			metadata ["Language"] = this.LanguageName;
+			metadata ["Platform"] = pDesc.Count == 1 ? pDesc[0].ProjectType : "Multiple";
+			TemplateCounter.Inc (1, null, metadata);
+
 			return workspaceItemInfo.WorkspaceItem;
 		}
 
-		public SolutionEntityItem CreateProject (SolutionItem policyParent, ProjectCreateInformation cInfo)
+		public IEnumerable<SolutionEntityItem> CreateProjects (SolutionItem policyParent, ProjectCreateInformation cInfo)
 		{
 			if (solutionDescriptor.EntryDescriptors.Length == 0)
 				throw new InvalidOperationException ("Solution template doesn't have any project templates");
 
-			ISolutionItemDescriptor descriptor = solutionDescriptor.EntryDescriptors [0];
-			SolutionEntityItem solutionEntryItem = descriptor.CreateItem (cInfo, this.languagename);
-			descriptor.InitializeItem (policyParent, cInfo, this.languagename, solutionEntryItem);
+			var solutionEntryItems = new List<SolutionEntityItem> ();
+			packageReferencesForCreatedProjects = new List<PackageReferencesForCreatedProject> ();
 
-			SavePackageReferences (solutionEntryItem, descriptor);
+			foreach (ISolutionItemDescriptor solutionItemDescriptor in GetItemsToCreate (solutionDescriptor, cInfo)) {
+				ProjectCreateInformation itemCreateInfo = GetItemSpecificCreateInfo (solutionItemDescriptor, cInfo);
+				itemCreateInfo = new ProjectTemplateCreateInformation (itemCreateInfo, cInfo.ProjectName);
 
-			this.createdProjectInformation = cInfo;
+				SolutionEntityItem solutionEntryItem = solutionItemDescriptor.CreateItem (itemCreateInfo, this.languagename);
+				if (solutionEntryItem != null) {
+					solutionItemDescriptor.InitializeItem (policyParent, itemCreateInfo, this.languagename, solutionEntryItem);
 
-			return solutionEntryItem;
+					SavePackageReferences (solutionEntryItem, solutionItemDescriptor, itemCreateInfo);
+
+					solutionEntryItems.Add (solutionEntryItem);
+				}
+			}
+
+			var pDesc = this.solutionDescriptor.EntryDescriptors.OfType<ProjectDescriptor> ().FirstOrDefault ();
+			var metadata = new Dictionary<string, string> ();
+			metadata ["Id"] = this.Id;
+			metadata ["Name"] = this.nonLocalizedName;
+			metadata ["Language"] = this.LanguageName;
+			metadata ["Platform"] = pDesc != null ? pDesc.ProjectType : "Unknown";
+			TemplateCounter.Inc (1, null, metadata);
+
+			createdProjectInformation = cInfo;
+
+			return solutionEntryItems;
 		}
 
-		void SavePackageReferences (SolutionEntityItem solutionEntryItem, ISolutionItemDescriptor descriptor)
+		static IEnumerable<ISolutionItemDescriptor> GetItemsToCreate (SolutionDescriptor solutionDescriptor, ProjectCreateInformation cInfo)
 		{
-			packageReferencesForCreatedProjects = new List<PackageReferencesForCreatedProject> ();
+			foreach (ISolutionItemDescriptor descriptor in solutionDescriptor.EntryDescriptors) {
+				var projectDescriptor = descriptor as ProjectDescriptor;
+				if ((projectDescriptor != null) && !projectDescriptor.ShouldCreateProject (cInfo)) {
+					// Skip.
+				} else {
+					yield return descriptor;
+				}
+			}
+		}
+
+		static ProjectCreateInformation GetItemSpecificCreateInfo (ISolutionItemDescriptor descriptor, ProjectCreateInformation cInfo)
+		{
+			var entry = descriptor as ICustomProjectCIEntry;
+				if (entry != null)
+					return entry.CreateProjectCI (cInfo);
+
+			return cInfo;
+		}
+
+		void SavePackageReferences (SolutionEntityItem solutionEntryItem, ISolutionItemDescriptor descriptor, ProjectCreateInformation cInfo)
+		{
 			if ((solutionEntryItem is Project) && (descriptor is ProjectDescriptor)) {
-				var projectPackageReferences = new PackageReferencesForCreatedProject (((Project)solutionEntryItem).Name, ((ProjectDescriptor)descriptor).GetPackageReferences ());
+				var projectPackageReferences = new PackageReferencesForCreatedProject (((Project)solutionEntryItem).Name, ((ProjectDescriptor)descriptor).GetPackageReferences (cInfo));
 				packageReferencesForCreatedProjects.Add (projectPackageReferences);
 			}
 		}

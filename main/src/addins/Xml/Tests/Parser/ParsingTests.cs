@@ -159,6 +159,17 @@ namespace MonoDevelop.Xml.Tests.Parser
 			parser.AssertEmpty ();
 			parser.AssertErrorCount (2);
 		}
+
+
+
+		[Test]
+		public void ClosingTagWithWhitespace ()
+		{
+			var parser = new TestXmlParser (CreateRootState ());
+			parser.Parse (@"<doc><a></ a></doc >");
+			parser.AssertEmpty ();
+			parser.AssertErrorCount (0);
+		}
 		
 		[Test]
 		public void Misc ()

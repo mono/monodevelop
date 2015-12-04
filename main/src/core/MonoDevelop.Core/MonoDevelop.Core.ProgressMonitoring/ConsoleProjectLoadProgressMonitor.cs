@@ -37,6 +37,12 @@ namespace MonoDevelop.Core.ProgressMonitoring
 			
 		}
 
+		protected override void Dispose (bool disposing)
+		{
+			CurrentSolution = null;
+			base.Dispose (disposing);
+		}
+
 		public MonoDevelop.Projects.Extensions.MigrationType ShouldMigrateProject ()
 		{
 			Console.WriteLine ("Warning: One or more projects in this solution cannot be ");

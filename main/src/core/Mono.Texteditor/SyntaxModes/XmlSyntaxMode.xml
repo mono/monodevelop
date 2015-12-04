@@ -34,9 +34,8 @@
 		<End>--&gt;</End>
 	</Span>
 	
-	<Span color = "Xml Attribute" rule = "Comment">
+	<Span color = "Preprocessor" rule = "Comment">
 		<Begin>&amp;</Begin>
-	
 		<End>;</End>
 	</Span>
 	
@@ -62,14 +61,10 @@
 	</Span>
 	
 	<Rule name = "Comment">
-		<Span color = "Preprocessor">
-			<Begin>&amp;</Begin>
-			<End>;</End>
-		</Span>
 	</Rule>
 	
 	<Rule name = "InDocType" color = "Html Attribute Name" >
-		<Span color = "Xml Attribute">
+		<Span color = "Preprocessor">
 			<Begin>&amp;</Begin>
 			<End>;</End>
 		</Span>
@@ -79,7 +74,7 @@
 	</Rule>
 	
 	<Rule name = "InTag">
-		<Span color = "Xml Attribute">
+		<Span color = "Preprocessor">
 			<Begin>&amp;</Begin>
 			<End>;</End>
 		</Span>
@@ -108,7 +103,7 @@
 	</Rule>
 	
 	<Rule name = "InLiteral">
-		<Span color = "Xml Attribute">
+		<Span color = "Preprocessor">
 			<Begin>&amp;</Begin>
 			<End>;</End>
 		</Span>

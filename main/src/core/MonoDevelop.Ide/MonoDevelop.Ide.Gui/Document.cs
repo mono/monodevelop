@@ -381,7 +381,9 @@ namespace MonoDevelop.Ide.Gui
 				if (doc != null && doc.ParsedFile != null) {
 					string fileName = Window.ViewContent.ContentName;
 					try {
-						doc.ParsedFile.LastWriteTime = File.GetLastWriteTimeUtc (fileName);
+						// filename could be null if the user cancelled SaveAs and this is a new & unsaved file
+						if (fileName != null)
+							doc.ParsedFile.LastWriteTime = File.GetLastWriteTimeUtc (fileName);
 					} catch (Exception e) {
 						doc.ParsedFile.LastWriteTime = DateTime.UtcNow;
 						LoggingService.LogWarning ("Exception while getting the write time from " + fileName, e); 
@@ -412,7 +414,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 				
 			if (filename == null) {
-				var dlg = new OpenFileDialog (GettextCatalog.GetString ("Save as..."), FileChooserAction.Save) {
+				var dlg = new OpenFileDialog (GettextCatalog.GetString ("Save as..."), MonoDevelop.Components.FileChooserAction.Save) {
 					TransientFor = IdeApp.Workbench.RootWindow,
 					Encoding = encoding,
 					ShowEncodingSelector = (tbuffer != null),

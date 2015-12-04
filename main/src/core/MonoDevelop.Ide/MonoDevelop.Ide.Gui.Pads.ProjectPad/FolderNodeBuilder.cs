@@ -90,6 +90,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			{
 				string dir;
 
+				if (!file.Visible || file.Flags.HasFlag (ProjectItemFlags.Hidden))
+					continue;
+				
 				if (file.Subtype != Subtype.Directory) {
 					if (file.DependsOnFile != null)
 						continue;
@@ -130,6 +133,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			foreach (var file in project.Files) {
 				FilePath path;
 
+				if (!file.Visible || file.Flags.HasFlag (ProjectItemFlags.Hidden))
+					continue;
 				if (file.Subtype != Subtype.Directory)
 					path = file.IsLink ? project.BaseDirectory.Combine (file.ProjectVirtualPath) : file.FilePath;
 				else
@@ -436,18 +441,27 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 			var srcRoot = ofdlg.SelectedFile.CanonicalPath;
 			var foundFiles = Directory.GetFiles (srcRoot, "*", SearchOption.AllDirectories);
-			
-			var impdlg = new IncludeNewFilesDialog (GettextCatalog.GetString ("Select files to add from {0}", srcRoot.FileName), srcRoot);
-			impdlg.AddFiles (foundFiles);
-			if (MessageService.ShowCustomDialog (impdlg) != (int) ResponseType.Ok)
-				return;
-				
-			var srcFiles = impdlg.SelectedFiles;
-			var targetFiles = srcFiles.Select (f => targetRoot.Combine (f.ToRelative (srcRoot)));
 
-			var added = IdeApp.ProjectOperations.AddFilesToProject (project, srcFiles.ToArray (), targetFiles.ToArray (), null).Any ();
-			if (added)
-				IdeApp.ProjectOperations.Save (project);
+			if (foundFiles.Length == 0) {
+				MessageService.GenericAlert (Stock.Information,
+					GettextCatalog.GetString ("Empty directory."), 
+					GettextCatalog.GetString ("Directory {0} is empty, no files have been added.", srcRoot.FileName),
+					AlertButton.Close);
+				return;
+			}
+
+			using (var impdlg = new IncludeNewFilesDialog (GettextCatalog.GetString ("Select files to add from {0}", srcRoot.FileName), srcRoot)) {
+				impdlg.AddFiles (foundFiles);
+				if (MessageService.ShowCustomDialog (impdlg) != (int) ResponseType.Ok)
+					return;
+					
+				var srcFiles = impdlg.SelectedFiles;
+				var targetFiles = srcFiles.Select (f => targetRoot.Combine (f.ToRelative (srcRoot)));
+
+				var added = IdeApp.ProjectOperations.AddFilesToProject (project, srcFiles.ToArray (), targetFiles.ToArray (), null).Any ();
+				if (added)
+					IdeApp.ProjectOperations.Save (project);
+			}
 		}
 
 		///<summary>Adds an existing folder to the current folder</summary>
@@ -487,24 +501,27 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						"There is already a link with the name '{0}' in the target directory", srcRoot.FileName));
 					return;
 				}
-			} else {
-				project.Files.Add (new ProjectFile (targetRoot) { Subtype = Subtype.Directory });
-				changedProject = true;
 			}
 
 			var foundFiles = Directory.GetFiles (srcRoot, "*", SearchOption.AllDirectories);
 			
-			var impdlg = new IncludeNewFilesDialog (GettextCatalog.GetString ("Select files to add from {0}", srcRoot.FileName), srcRoot.ParentDirectory);
-			impdlg.AddFiles (foundFiles);
-			if (MessageService.ShowCustomDialog (impdlg) == (int) ResponseType.Ok) {
-				var srcFiles = impdlg.SelectedFiles;
-				var targetFiles = srcFiles.Select (f => targetRoot.Combine (f.ToRelative (srcRoot)));
-				if (IdeApp.ProjectOperations.AddFilesToProject (project, srcFiles.ToArray (), targetFiles.ToArray (), null).Any ())
-					changedProject = true;
-			}
+			using (var impdlg = new IncludeNewFilesDialog (GettextCatalog.GetString ("Select files to add from {0}", srcRoot.FileName), srcRoot.ParentDirectory)) {
+				impdlg.AddFiles (foundFiles);
+				if (MessageService.ShowCustomDialog (impdlg) == (int)ResponseType.Ok) {
+					var srcFiles = impdlg.SelectedFiles;
+					var targetFiles = srcFiles.Select (f => targetRoot.Combine (f.ToRelative (srcRoot)));
+					if (IdeApp.ProjectOperations.AddFilesToProject (project, srcFiles.ToArray (), targetFiles.ToArray (), null).Any ())
+						changedProject = true;
+					else if (!srcFiles.Any () && existingPf == null) {
+						// Just add empty folder.
+						project.Files.Add (new ProjectFile (targetRoot) { Subtype = Subtype.Directory });
+						changedProject = true;
+					}
+				}
 			
-			if (changedProject)
-				IdeApp.ProjectOperations.Save (project);
+				if (changedProject)
+					IdeApp.ProjectOperations.Save (project);
+			}
 		}
 		
 		[CommandHandler (ProjectCommands.NewFolder)]

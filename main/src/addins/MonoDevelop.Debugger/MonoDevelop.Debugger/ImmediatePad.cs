@@ -41,6 +41,7 @@ namespace MonoDevelop.Debugger
 	{
 		static readonly object mutex = new object();
 		DebuggerConsoleView view;
+		readonly List<uint> timersList = new List<uint>();
 		
 		public void Initialize (IPadWindow container)
 		{
@@ -48,6 +49,10 @@ namespace MonoDevelop.Debugger
 			view.ConsoleInput += OnViewConsoleInput;
 			view.ShadowType = Gtk.ShadowType.None;
 			view.ShowAll ();
+			view.Editable = DebuggingService.IsPaused;
+			DebuggingService.PausedEvent += DebuggerPaused;
+			DebuggingService.ResumedEvent += DebuggerResumed;
+			DebuggingService.StoppedEvent += DebuggerStopped;
 		}
 
 		void OnViewConsoleInput (object sender, ConsoleInputEventArgs e)
@@ -194,11 +199,18 @@ namespace MonoDevelop.Debugger
 		{
 			var mark = view.Buffer.CreateMark (null, view.InputLineEnd, true);
 			var iteration = 0;
+			uint timerId = 0;
 
-			GLib.Timeout.Add (100, () => {
+			timerId = GLib.Timeout.Add (100, () => {
+				if (!timersList.Contains (timerId)) {
+					SetLineText (GettextCatalog.GetString ("Debugging stopped"), mark);
+					FinishPrinting ();
+					return false;
+				}
 				if (!val.IsEvaluating) {
 					if (iteration >= 5)
 						DeleteLineAtMark (mark);
+					timersList.Remove (timerId);
 
 					PrintValue (val);
 
@@ -214,6 +226,7 @@ namespace MonoDevelop.Debugger
 
 				return true;
 			});
+			timersList.Add (timerId);
 		}
 
 		void WaitChildForCompleted (ObjectValue val, IDictionary<ObjectValue, bool> evaluatingList, bool hasMore)
@@ -262,6 +275,25 @@ namespace MonoDevelop.Debugger
 
 		public void Dispose ()
 		{
+			DebuggingService.PausedEvent -= DebuggerPaused;
+			DebuggingService.ResumedEvent -= DebuggerResumed;
+			DebuggingService.StoppedEvent -= DebuggerStopped;
+		}
+
+		void DebuggerResumed (object sender, EventArgs e)
+		{
+			view.Editable = false;
+		}
+
+		void DebuggerPaused (object sender, EventArgs e)
+		{
+			view.Editable = true;
+		}
+
+		void DebuggerStopped (object sender, EventArgs e)
+		{
+			timersList.Clear ();
+			view.Editable = false;
 		}
 	}
 }

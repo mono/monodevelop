@@ -5,6 +5,8 @@ namespace MonoDevelop
 		public const string Version = "@PACKAGE_VERSION@";
 		public const string VersionLabel = "@PACKAGE_VERSION_LABEL@";
 		public const string CompatVersion = "@COMPAT_ADDIN_VERSION@";
+
+		internal const string BuildLane = "@BUILD_LANE@";
 	}
 }
 

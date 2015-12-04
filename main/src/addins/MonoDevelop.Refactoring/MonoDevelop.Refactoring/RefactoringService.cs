@@ -42,6 +42,7 @@ using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
 using System.Diagnostics;
 using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Refactoring
 {
@@ -202,51 +203,49 @@ namespace MonoDevelop.Refactoring
 		static Stopwatch validActionsWatch = new Stopwatch ();
 		static Stopwatch actionWatch = new Stopwatch ();
 
-		public static Task<IEnumerable<CodeAction>> GetValidActions (Document doc, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken))
+		public static IEnumerable<CodeAction> GetValidActions (Document doc, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var editor = doc.Editor;
 			string disabledNodes = editor != null ? PropertyService.Get ("ContextActions." + editor.MimeType, "") ?? "" : "";
-			return Task.Factory.StartNew (delegate {
-				var result = new List<CodeAction> ();
-				var timer = InstrumentationService.CreateTimerCounter ("Source analysis background task", "Source analysis");
-				timer.BeginTiming ();
-				validActionsWatch.Restart ();
-				var timeTable = new Dictionary<CodeActionProvider, long> ();
-				try {
-					var parsedDocument = doc.ParsedDocument;
-					if (editor != null && parsedDocument != null && parsedDocument.CreateRefactoringContext != null) {
-						var ctx = parsedDocument.CreateRefactoringContext (doc, cancellationToken);
-						if (ctx != null) {
-							foreach (var provider in contextActions.Where (fix =>
-								fix.MimeType == editor.MimeType &&
-								disabledNodes.IndexOf (fix.IdString, StringComparison.Ordinal) < 0))
-							{
-								try {
-									actionWatch.Restart ();
-									result.AddRange (provider.GetActions (doc, ctx, loc, cancellationToken));
-									actionWatch.Stop ();
-									timeTable[provider] = actionWatch.ElapsedMilliseconds;
-								} catch (Exception ex) {
-									LoggingService.LogError ("Error in context action provider " + provider.Title, ex);
-								}
+			var result = new List<CodeAction> ();
+			var timer = InstrumentationService.CreateTimerCounter ("Source analysis background task", "Source analysis");
+			timer.BeginTiming ();
+			validActionsWatch.Restart ();
+			var timeTable = new Dictionary<CodeActionProvider, long> ();
+			try {
+				var parsedDocument = doc.ParsedDocument;
+				if (editor != null && parsedDocument != null && parsedDocument.CreateRefactoringContext != null) {
+					var ctx = parsedDocument.CreateRefactoringContext (doc, cancellationToken);
+					if (ctx != null) {
+						foreach (var provider in contextActions.Where (fix =>
+							fix.MimeType == editor.MimeType &&
+							disabledNodes.IndexOf (fix.IdString, StringComparison.Ordinal) < 0))
+						{
+							try {
+								actionWatch.Restart ();
+								result.AddRange (provider.GetActions (doc, ctx, loc, cancellationToken));
+								actionWatch.Stop ();
+								timeTable[provider] = actionWatch.ElapsedMilliseconds;
+							} catch (Exception ex) {
+								LoggingService.LogError ("Error in context action provider " + provider.Title, ex);
 							}
 						}
 					}
-				} catch (Exception ex) {
-					LoggingService.LogError ("Error in analysis service", ex);
-				} finally {
-					timer.EndTiming ();
-					validActionsWatch.Stop ();
-					if (validActionsWatch.ElapsedMilliseconds > 1000) {
-						LoggingService.LogWarning ("Warning slow edit action update."); 
-						foreach (var pair in timeTable) {
-							if (pair.Value > 50)
-								LoggingService.LogInfo ("ACTION '" + pair.Key.Title + "' took " + pair.Value +"ms"); 
-						}
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error in analysis service", ex);
+			} finally {
+				timer.EndTiming ();
+				validActionsWatch.Stop ();
+				if (validActionsWatch.ElapsedMilliseconds > 1000) {
+					LoggingService.LogWarning ("Warning slow edit action update."); 
+					foreach (var pair in timeTable) {
+						if (pair.Value > 50)
+							LoggingService.LogInfo ("ACTION '" + pair.Key.Title + "' took " + pair.Value +"ms"); 
 					}
 				}
-				return (IEnumerable<CodeAction>)result;
-			}, cancellationToken);
+			}
+			return (IEnumerable<CodeAction>)result;
 		}
 
 		public static void QueueQuickFixAnalysis (Document doc, TextLocation loc, CancellationToken token, Action<List<CodeAction>> callback)
@@ -269,7 +268,7 @@ namespace MonoDevelop.Refactoring
 							});
 						}
 					}
-					result.AddRange (GetValidActions (doc, loc).Result);
+					result.AddRange (GetValidActions (doc, loc));
 					callback (result);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error in analysis service", ex);
@@ -295,10 +294,53 @@ namespace MonoDevelop.Refactoring
 				return RunAll (allFixes, refactoringContext, script);
 			}
 		}
-		
+
+		const string EnableRefactorings = "RefactoringSettings.EnableRefactorings";
+
+		internal static bool CheckUserSettings()
+		{
+			var hasRefactoringSettings = IdeApp.ProjectOperations.CurrentSelectedSolution == null ||
+				IdeApp.ProjectOperations.CurrentSelectedSolution.UserProperties.HasValue (EnableRefactorings);
+			if (!hasRefactoringSettings) {
+				var useRefactoringsButton     = new AlertButton (GettextCatalog.GetString("Use refactorings on this solution"));
+				var text = GettextCatalog.GetString (
+@"WARNING: The Xamarin Studio refactoring operations do not yet support C# 6.
+
+You may continue to use refactoring operations with C# 6, however you should check the results carefully to make sure that they have not made incorrect changes to your code. In particular, the ""?."" null propagating dereference will be changed to ""."", a simple dereference, which can cause unexpected NullReferenceExceptions at runtime.");
+				var message = new QuestionMessage (text);
+				message.Buttons.Add (useRefactoringsButton);
+				message.Buttons.Add (AlertButton.Cancel);
+				message.Icon = Gtk.Stock.DialogWarning;
+				message.DefaultButton = 1;
+
+				var result = MessageService.AskQuestion (message);
+				if (result == AlertButton.Cancel)
+					return false;
+				ShowFixes = result == useRefactoringsButton;
+			}
+			return ShowFixes;
+		}
+
+		internal static bool ShowFixes {
+			get {
+				if (Ide.IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
+					var hasRefactoringSettings = IdeApp.ProjectOperations.CurrentSelectedSolution.UserProperties.HasValue (EnableRefactorings);
+					return !hasRefactoringSettings || IdeApp.ProjectOperations.CurrentSelectedSolution.UserProperties.GetValue<bool> (EnableRefactorings);
+				}
+				return true;
+			}
+			set {
+				IdeApp.ProjectOperations.CurrentSelectedSolution.UserProperties.SetValue (EnableRefactorings, value);
+				IdeApp.ProjectOperations.CurrentSelectedSolution.SaveUserProperties ();
+			}
+		}
+
+
 		public static void ApplyFix (CodeAction action, IRefactoringContext context)
 		{
-			using(var script = context.CreateScript ()) {
+			if (!CheckUserSettings ())
+				return;
+			using (var script = context.CreateScript ()) {
 				action.Run (context, script);
 			}
 		}

@@ -243,7 +243,7 @@ namespace MonoDevelop.Components
             return ColorFromHsb(h, s, b);
         }
 
-        public static string ColorGetHex (Cairo.Color color, bool withAlpha)
+        public static string ColorGetHex (Cairo.Color color, bool withAlpha = false)
         {
             if (withAlpha) {
                 return String.Format("#{0:x2}{1:x2}{2:x2}{3:x2}", (byte)(color.R * 255), (byte)(color.G * 255),

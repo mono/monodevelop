@@ -29,6 +29,7 @@
 using System;
 using System.IO;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -61,6 +62,18 @@ namespace ICSharpCode.PackageManagement
 		public void OnFileChanged (string path)
 		{
 			packageManagementEvents.OnFileChanged (path);
+		}
+
+		public bool FileExists (string path)
+		{
+			return File.Exists (path);
+		}
+
+		public void OpenFile (string path)
+		{
+			DispatchService.GuiSyncDispatch (() => {
+				IdeApp.Workbench.OpenDocument (path, null, true);
+			});
 		}
 	}
 }

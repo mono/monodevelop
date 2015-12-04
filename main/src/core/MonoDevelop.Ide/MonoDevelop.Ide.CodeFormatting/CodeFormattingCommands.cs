@@ -29,6 +29,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using Mono.TextEditor;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
@@ -70,7 +71,8 @@ namespace MonoDevelop.Ide.CodeFormatting
 				}
 			} else {
 				var text = doc.Editor.Text;
-				string formattedText = formatter.FormatText (doc.Project.Policies, text);
+				var policies = doc.Project != null ? doc.Project.Policies : PolicyService.DefaultPolicies;
+				string formattedText = formatter.FormatText (policies, text);
 				if (formattedText == null || formattedText == text)
 					return;
 

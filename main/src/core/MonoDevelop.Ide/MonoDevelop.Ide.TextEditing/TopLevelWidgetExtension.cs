@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.TextEditing
 
 		public abstract Gtk.Widget CreateWidget ();
 
-		public TopLevelWidgetExtension ()
+		protected TopLevelWidgetExtension ()
 		{
 			HorizontalAlignment = HorizontalAlignment.LineRight;
 			VerticalAlignment = VerticalAlignment.LineCenter;

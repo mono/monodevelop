@@ -85,6 +85,9 @@
     <Reference Include="System.Web" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core\StringParserService.cs" />
@@ -173,7 +176,6 @@
     <Compile Include="MonoDevelop.Core.Serialization\XmlElementDataType.cs" />
     <Compile Include="MonoDevelop.Core.Serialization\XmlMapAttributeProvider.cs" />
     <Compile Include="MonoDevelop.Core.Collections\Set.cs" />
-    <Compile Include="MonoDevelop.Core.Collections\ReadOnlyDictionary.cs" />
     <Compile Include="MonoDevelop.Core\Gettext.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\AsyncOperation.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\PackageInstalledCondition.cs" />
@@ -419,7 +421,6 @@
     <Compile Include="MonoDevelop.Core\LinuxSystemInformation.cs" />
     <Compile Include="MonoDevelop.Core\UnixSystemInformation.cs" />
     <Compile Include="MonoDevelop.Core\ISystemInformationProvider.cs" />
-    <Compile Include="MonoDevelop.Core.FileSystem\UnixFileSystemExtension.cs" />
     <Compile Include="MonoDevelop.Core.LogReporting\CrashEventArgs.cs" />
     <Compile Include="MonoDevelop.Core.LogReporting\CrashMonitor.cs" />
     <Compile Include="MonoDevelop.Core.LogReporting\ICrashMonitor.cs" />
@@ -471,11 +472,20 @@
     <Compile Include="MonoDevelop.Projects\DotNetProjectImport.cs" />
     <Compile Include="MonoDevelop.Core.LogReporting\CrashReporter.cs" />
     <Compile Include="MonoDevelop.Core.Instrumentation\InstrumentationConsumer.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectCreateParameters.cs" />
+    <Compile Include="MonoDevelop.Projects\BuildError.cs" />
+    <Compile Include="MonoDevelop.Projects\MSBuildErrorParser.cs" />
+    <Compile Include="MonoDevelop.Projects\OperationContext.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectOperationContext.cs" />
+    <Compile Include="MonoDevelop.Projects\TargetEvaluationContext.cs" />
+    <Compile Include="MonoDevelop.Projects\TargetEvaluationResult.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\SupportsTargetCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
     <None Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\InvalidProjectFileException.cs" />
     <None Include="BuildVariables.cs.in" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Core.addin.xml">
@@ -521,10 +531,6 @@
     <ProjectReference Include="..\..\..\external\cecil\symbols\mdb\Mono.Cecil.Mdb.csproj">
       <Project>{8559DD7F-A16F-46D0-A05A-9139FAEBA8FD}</Project>
       <Name>Mono.Cecil.Mdb</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\Newtonsoft.Json\Src\Newtonsoft.Json\Newtonsoft.Json.csproj">
-      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
-      <Name>Newtonsoft.Json</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>

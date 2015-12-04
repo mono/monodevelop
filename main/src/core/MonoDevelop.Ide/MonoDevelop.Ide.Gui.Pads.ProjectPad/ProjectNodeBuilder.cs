@@ -222,6 +222,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 		void AddFile (ProjectFile file, Project project)
 		{
+			if (!file.Visible || file.Flags.HasFlag (ProjectItemFlags.Hidden))
+				return;
+			
 			ITreeBuilder tb = Context.GetTreeBuilder ();
 			
 			if (file.DependsOnFile != null) {
@@ -361,12 +364,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			foreach (Project p in IdeApp.Workspace.GetAllProjects ()) {
 				ITreeBuilder tb = Context.GetTreeBuilder (p);
-				if (tb != null) {
+				if (tb != null)
 					tb.Update ();
-					SolutionConfiguration conf = p.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
-					if (conf == null || !conf.BuildEnabledForItem (p))
-						tb.Expanded = false;
-				}
 			}
 		}
 		
@@ -395,16 +394,23 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void UpdateSetAsStartupProject (CommandInfo ci)
 		{
 			Project project = (Project) CurrentNode.DataItem;
-			ci.Visible = project.CanExecute (new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, null, IdeApp.Workspace.ActiveExecutionTarget), IdeApp.Workspace.ActiveConfiguration);
+
+			// This should check for SupportsExecute only, but we keep the call to CanExecute in order to
+			// be backwards compatible with the old behavior.
+			// TODO NPM: Remove the CanExecute call
+			ci.Visible = project.SupportsExecute () || project.CanExecute (new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, null, IdeApp.Workspace.ActiveExecutionTarget), IdeApp.Workspace.ActiveConfiguration);
 		}
 
 		[CommandHandler (ProjectCommands.SetAsStartupProject)]
 		public void SetAsStartupProject ()
 		{
 			Project project = CurrentNode.DataItem as Project;
-			project.ParentSolution.SingleStartup = true;
 			project.ParentSolution.StartupItem = project;
-			IdeApp.ProjectOperations.Save (project.ParentSolution);
+			if (!project.ParentSolution.SingleStartup) {
+				project.ParentSolution.SingleStartup = true;
+				IdeApp.ProjectOperations.Save (project.ParentSolution);
+			} else
+				project.ParentSolution.SaveUserProperties ();
 		}
 		
 		public override void DeleteItem ()

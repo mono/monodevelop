@@ -23,8 +23,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using System.Linq;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using Mono.Unix;
+
 namespace Mono.TextEditor.PopupWindow
 {
 	public abstract class ModeHelpWindow : Gtk.EventBox
@@ -158,8 +163,6 @@ namespace Mono.TextEditor.PopupWindow
 				g.SetSourceColor (borderColor);
 				g.Stroke ();
 				
-				
-				
 				g.MoveTo (xSpacer + 0.5, height * 2 + yBorder * 2);
 				g.LineTo (xSpacer + 0.5, Allocation.Height - 1);
 				g.SetSourceColor (gridColor);
@@ -216,16 +219,203 @@ namespace Mono.TextEditor.PopupWindow
 		}
 	}
 
+	enum SymbolTokenType {
+		Up,
+		Down,
+		None
+	}
+
+	class TokenRenderer
+	{
+		const int normalFontSize = 11;
+		const int outlinedFontSize = 8;
+		const int outlinePadding = 1;
+		const int textInnerPadding = 1;
+		static readonly Cairo.Color outlineColor = HslColor.Parse ("#666666");
+		static readonly Cairo.Color textColor = HslColor.Parse ("#555555");
+
+		Pango.Layout layout;
+		SymbolTokenType Symbol;
+
+		public int Width { get; private set; }
+		public int Height { get; private set; }
+		public bool Outlined { get; private set; }
+		public int Spacing { get; private set; }
+
+		public TokenRenderer (Pango.Context ctx, string str, bool outlined)
+		{
+			Outlined = outlined;
+			Spacing = 6;
+
+			if (str == "%UP%") {
+				Symbol = SymbolTokenType.Up;
+				Width = 14;
+				Height = 10;
+			} else if (str == "%DOWN%") {
+				Symbol = SymbolTokenType.Down;
+				Width = 14;
+				Height = 10;
+			} else {
+				Symbol = SymbolTokenType.None;
+
+				var desc = ctx.FontDescription.Copy ();
+				desc.AbsoluteSize = Pango.Units.FromPixels (Outlined ? outlinedFontSize : normalFontSize);
+				if (Outlined) {
+					desc.Weight = Pango.Weight.Bold;
+					Spacing += outlinePadding;
+				}
+
+				layout = new Pango.Layout (ctx);
+				layout.FontDescription = desc;
+				layout.Spacing = (int)(Spacing * Pango.Scale.PangoScale);
+				layout.SetMarkup (str);
+
+				int w, h;
+				layout.GetPixelSize (out w, out h);
+				Width = w;
+				Height = h - 1;
+			}
+		}
+
+		public void Render (Cairo.Context cr, double _x, double _y, int max_height)
+		{
+			double x = _x;
+			double y = _y;
+			int w = Width;
+			int h = max_height;
+			int inner_padding = 0;
+
+			if (Outlined) {
+				x -= outlinePadding;
+				y -= outlinePadding;
+				w += outlinePadding * 2;
+				h += outlinePadding * 2;
+
+				cr.MoveTo (x, y);
+				cr.LineWidth = 1;
+				cr.SetSourceColor (outlineColor);
+
+				if (Symbol == SymbolTokenType.None)
+					inner_padding = textInnerPadding;
+
+				// -0.5f to fix the @1x stroke problem:
+				// 1px stroke is rendered on the center of the shape edge, resulting in
+				// two semitransparent pixels. Even worse the rounded rectangle renders
+				// transparency artifacts on edge overlaps. See http://vncr.in/atks
+				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, x - inner_padding - 0.5f, y - 0.5f, 8, w + inner_padding * 2 + 1, h + 1);
+
+				cr.Stroke ();
+
+				if (Symbol == SymbolTokenType.Down) {
+					RenderTriangleDown (cr, x + 4, y + 3, 8, 6);
+				} else if (Symbol == SymbolTokenType.Up) {
+					RenderTriangleUp (cr, x + 4, y + 3, 8, 6);
+				} else {
+					cr.MoveTo (x + outlinePadding, y + (max_height - Height - 0.5));
+					cr.ShowLayout (layout);
+				}
+			} else {
+				cr.MoveTo (x, y);
+				cr.SetSourceColor (textColor);
+				cr.ShowLayout (layout);
+			}
+		}
+
+		void RenderTriangleDown (Cairo.Context cr, double x, double y, double w, double h)
+		{
+			cr.MoveTo (x + w / 2.0, y + h);
+			cr.LineTo (x, y);
+			cr.LineTo (x + w, y);
+			cr.ClosePath ();
+			cr.Fill ();
+		}
+
+		void RenderTriangleUp (Cairo.Context cr, double x, double y, double w, double h)
+		{
+			cr.MoveTo (x + w / 2.0, y);
+			cr.LineTo (x, y + h);
+			cr.LineTo (x + w, y + h);
+			cr.ClosePath ();
+			cr.Fill ();
+		}
+	}
+
+	class LineRenderer
+	{
+		TokenRenderer[] tokens;
+
+		public int Width { get; private set; }
+		public int Height { get; private set; }
+		public int Spacing { get; private set; }
+		static Regex rx = new Regex (@"^\[.+\]$", RegexOptions.Compiled);
+
+		public LineRenderer (Pango.Context ctx, string str)
+		{
+			var pieces = str.Split (null as string[], StringSplitOptions.RemoveEmptyEntries);
+			List<TokenRenderer> line = new List<TokenRenderer> ();
+			var currentLine = "";
+
+			var desc = ctx.FontDescription.Copy ();
+			desc.AbsoluteSize = Pango.Units.FromPixels (14);
+			desc.Weight = Pango.Weight.Bold;
+			var layout = new Pango.Layout (ctx);
+			layout.SetMarkup (" ");
+			int w, h;
+			layout.GetPixelSize (out w, out h);
+			Spacing = w;
+
+			foreach (var token in pieces) {
+				if (rx.IsMatch (token)) {
+					if (!String.IsNullOrEmpty (currentLine))
+						line.Add (new TokenRenderer (ctx, currentLine, false));
+					line.Add (new TokenRenderer (ctx, token.Substring (1, token.Length - 2), true));
+					currentLine = "";
+				} else {
+					if (!String.IsNullOrEmpty (currentLine))
+						currentLine += " ";
+					currentLine += token;
+				}
+			}
+
+			if (!String.IsNullOrEmpty (currentLine))
+				line.Add (new TokenRenderer (ctx, currentLine, false));
+
+			tokens = line.ToArray ();
+
+			Width = tokens.Sum (t => t.Width + t.Spacing);
+			Height = tokens.Max (t => t.Height);
+		}
+
+		public void Render (Cairo.Context cr, double x, double y)
+		{
+			foreach (var token in tokens) {
+				token.Render (cr, x, y, Height);
+				x += token.Width + token.Spacing;
+			}
+		}
+	}
+
 	public class InsertionCursorLayoutModeHelpWindow : ModeHelpWindow
 	{
 		Pango.Layout titleLayout;
-		Pango.Layout descriptionLayout;
+
+		LineRenderer[] descTexts;
 
 		public InsertionCursorLayoutModeHelpWindow ()
 		{
+			// %UP% and %DOWN% should not be translated, those will be rendered as up- or down-facing triangles.
+			// Words surrounded by brackets will be rendered with a rounded-rectangle outline.
+			descTexts = new LineRenderer[] {
+				new LineRenderer (PangoContext, Catalog.GetString ("Use [%UP%] [%DOWN%] to move to another location.")),
+				new LineRenderer (PangoContext, Catalog.GetString ("Press [ENTER] to select the location.")),
+				new LineRenderer (PangoContext, Catalog.GetString ("Press [ESC] to cancel this operation."))
+			};
+
 			titleLayout = new Pango.Layout (PangoContext);
-			descriptionLayout = new Pango.Layout (PangoContext);
-			descriptionLayout.SetMarkup ("<small>Use Up/Down to move to another location.\nPress Enter to select the location\nPress Esc to cancel this operation</small>");
+			var desc = PangoContext.FontDescription.Copy ();
+			desc.AbsoluteSize = Pango.Units.FromPixels (12);
+			desc.Weight = Pango.Weight.Bold;
+			titleLayout.FontDescription = desc;
 		}
 
 		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
@@ -240,9 +430,8 @@ namespace Mono.TextEditor.PopupWindow
 			totalHeight += height;
 			xSpacer = 0;
 
-			int h2;
-			int w2;
-			descriptionLayout.GetPixelSize (out w2, out h2);
+			int h2 = descTexts.Sum (x => x.Height + x.Spacing);
+			int w2 = descTexts.Max (x => x.Width + x.Spacing * 2);
 			totalHeight += h2;
 			xSpacer = System.Math.Max (width, w2);
 
@@ -262,42 +451,37 @@ namespace Mono.TextEditor.PopupWindow
 				titleLayout.Dispose ();
 				titleLayout = null;
 			}
-
-			if (descriptionLayout != null) {
-				descriptionLayout.Dispose ();
-				descriptionLayout = null;
-			}
 		}
 		
 		const int triangleHeight = 16;
 		const int triangleWidth = 8;
 
-		const int xDescriptionBorder = 6;
-		const int yDescriptionBorder = 6;
-		const int yTitleBorder = 2;
-		static readonly Cairo.Color bgColor = HslColor.Parse ("#ffe97f");
-		static readonly Cairo.Color titleBgColor = HslColor.Parse ("#cfb94f");
-		static readonly Cairo.Color titleTextColor = HslColor.Parse ("#000000");
-		static readonly Cairo.Color borderColor = HslColor.Parse ("#7f6a00");
-		static readonly Cairo.Color textColor = HslColor.Parse ("#555753");
+		const int xDescriptionBorder = 12;
+		const int yDescriptionBorder = 8;
+		const int yTitleBorder = 8;
+		static readonly Cairo.Color bgColor = HslColor.Parse ("#f2f2f2");
+		static readonly Cairo.Color titleTextColor = HslColor.Parse ("#242424");
+		static readonly Cairo.Color borderColor = HslColor.Parse ("#d5d5d5");
+		static readonly Cairo.Color textColor = HslColor.Parse ("#4c4c4c");
 
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
 			using (var g = Gdk.CairoHelper.Create (args.Window)) {
 				g.Translate (Allocation.X, Allocation.Y);
-				g.LineWidth = 1.5;
+				g.LineWidth = 1;
 				titleLayout.SetMarkup (TitleText);
 				int width, height;
 				titleLayout.GetPixelSize (out width, out height);
 				var tw = SupportsAlpha ? triangleWidth : 0;
 				var th = SupportsAlpha ? triangleHeight : 0;
 				width += xDescriptionBorder * 2;
+
 				if (SupportsAlpha) {
-					FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, true, false, tw + 0.5, 0.5, height + yTitleBorder * 2 + 1.5, Allocation.Width - 1 - tw, height + yTitleBorder * 2);
+					FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, true, true, tw + 0.5, 0.5, 12, Allocation.Width - 1 - tw, Allocation.Height);
 				} else {
 					g.Rectangle (0, 0, Allocation.Width, height + yTitleBorder * 2);
 				}
-				g.SetSourceColor (titleBgColor);
+				g.SetSourceColor (bgColor);
 				g.FillPreserve ();
 				g.SetSourceColor (borderColor);
 				g.Stroke ();
@@ -308,17 +492,6 @@ namespace Mono.TextEditor.PopupWindow
 				g.ShowLayout (titleLayout);
 
 				if (SupportsAlpha) {
-					FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, false, true, tw + 0.5, height + yTitleBorder * 2 + 0.5, height, Allocation.Width - 1 - tw, Allocation.Height - height - yTitleBorder * 2 - 1);
-				} else {
-					g.Rectangle (0, height + yTitleBorder * 2, Allocation.Width, Allocation.Height - height - yTitleBorder * 2);
-				}
-				g.SetSourceColor (bgColor);
-				g.FillPreserve ();
-				g.SetSourceColor (borderColor);
-				g.Stroke ();
-
-				if (SupportsAlpha) {
-
 					g.MoveTo (tw, Allocation.Height / 2 - th / 2);
 					g.LineTo (0, Allocation.Height / 2);
 					g.LineTo (tw, Allocation.Height / 2 + th / 2);
@@ -327,7 +500,7 @@ namespace Mono.TextEditor.PopupWindow
 					g.ClosePath ();
 					g.SetSourceColor (bgColor);
 					g.Fill ();
-					
+
 					g.MoveTo (tw, Allocation.Height / 2 - th / 2);
 					g.LineTo (0, Allocation.Height / 2);
 					g.LineTo (tw, Allocation.Height / 2 + th / 2);
@@ -335,13 +508,16 @@ namespace Mono.TextEditor.PopupWindow
 					g.Stroke ();
 				}
 
-				int y = height + yTitleBorder * 2 + yDescriptionBorder;
-				g.MoveTo (tw + xDescriptionBorder, y);
+				int y = height + yTitleBorder + yDescriptionBorder;
+				int x = tw + xDescriptionBorder;
 				g.SetSourceColor (textColor);
-				g.ShowLayout (descriptionLayout);
+
+				foreach (var desc in descTexts) {
+					desc.Render (g, x, y + 4);
+					y += desc.Height + 8;
+				}
 			}
 			return base.OnExposeEvent (args);
 		}
 	}
-
 }

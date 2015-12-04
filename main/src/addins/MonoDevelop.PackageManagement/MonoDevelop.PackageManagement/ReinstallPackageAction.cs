@@ -38,11 +38,22 @@ namespace MonoDevelop.PackageManagement
 {
 	public class ReinstallPackageAction : ProcessPackageAction
 	{
+		IFileRemover fileRemover;
+
 		public ReinstallPackageAction (
 			IPackageManagementProject project,
 			IPackageManagementEvents packageManagementEvents)
+			: this (project, packageManagementEvents, new FileRemover ())
+		{
+		}
+
+		public ReinstallPackageAction (
+			IPackageManagementProject project,
+			IPackageManagementEvents packageManagementEvents,
+			IFileRemover fileRemover)
 			: base (project, packageManagementEvents)
 		{
+			this.fileRemover = fileRemover;
 		}
 
 		protected override string StartingMessageFormat {
@@ -51,8 +62,12 @@ namespace MonoDevelop.PackageManagement
 
 		protected override void ExecuteCore ()
 		{
-			UninstallPackage ();
-			InstallPackage ();
+			using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
+				using (IDisposable monitor = CreateFileMonitor (fileRemover)) {
+					UninstallPackage ();
+				}
+				InstallPackage ();
+			}
 		}
 
 		void UninstallPackage ()
@@ -67,6 +82,8 @@ namespace MonoDevelop.PackageManagement
 		{
 			InstallPackageAction action = Project.CreateInstallPackageAction ();
 			action.Package = Package;
+			action.OpenReadMeText = false;
+			action.PreserveLocalCopyReferences = false;
 			action.Execute ();
 		}
 	}

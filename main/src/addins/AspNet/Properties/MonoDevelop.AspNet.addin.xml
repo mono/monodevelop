@@ -398,4 +398,12 @@
 	<Extension path = "/MonoDevelop/Ide/FileTemplateConditionTypes">
 		<FileTemplateConditionType name = "AspNetMvc" class = "MonoDevelop.AspNet.Projects.AspNetMvcFileTemplateCondition"/>
 	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateWizards">
+		<Class id="MonoDevelop.AspNet.ProjectTemplateWizard" class="MonoDevelop.AspNet.Projects.AspNetProjectTemplateWizard" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/TemplateImages">
+		<Image id="md-aspnet-empty-project" resource="aspnet-empty-project.png" />
+	</Extension>
 </ExtensionModel>

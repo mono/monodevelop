@@ -40,6 +40,7 @@ using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.AnalysisCore.Fixes;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.CodeActions
 {
@@ -300,110 +301,55 @@ namespace MonoDevelop.CodeActions
 
 		bool ShowFixesMenu (Gtk.Widget parent, Gdk.Rectangle evt, FixMenuDescriptor entrySet)
 		{
-			#if MAC
-			parent.GrabFocus ();
-			int x, y;
-			x = (int)evt.X;
-			y = (int)evt.Y;
-
-			Gtk.Application.Invoke (delegate {
-			// Explicitly release the grab because the menu is shown on the mouse position, and the widget doesn't get the mouse release event
-			Gdk.Pointer.Ungrab (Gtk.Global.CurrentEventTime);
-			var menu = CreateNSMenu (entrySet);
-			var nsview = MonoDevelop.Components.Mac.GtkMacInterop.GetNSView (parent);
-			var toplevel = parent.Toplevel as Gtk.Window;
-			int trans_x, trans_y;
-			parent.TranslateCoordinates (toplevel, (int)x, (int)y, out trans_x, out trans_y);
-
-			// Window coordinates in gtk are the same for cocoa, with the exception of the Y coordinate, that has to be flipped.
-			var pt = new CoreGraphics.CGPoint ((float)trans_x, (float)trans_y);
-			int w,h;
-			toplevel.GetSize (out w, out h);
-			pt.Y = h - pt.Y;
-
-			var tmp_event = AppKit.NSEvent.MouseEvent (AppKit.NSEventType.LeftMouseDown,
-			pt,
-			0, 0,
-			MonoDevelop.Components.Mac.GtkMacInterop.GetNSWindow (toplevel).WindowNumber,
-			null, 0, 0, 0);
-
-			AppKit.NSMenu.PopUpContextMenu (menu, tmp_event, nsview);
-			});
-			#else
-			var menu = CreateGtkMenu (entrySet);
-			menu.Events |= Gdk.EventMask.AllEventsMask;
-			menu.SelectFirst (true);
-
-			menu.Hidden += delegate {
+			if (parent == null || parent.GdkWindow == null) {
 				document.Editor.SuppressTooltips = false;
-			};
-			menu.ShowAll ();
-			menu.SelectFirst (true);
-			menu.MotionNotifyEvent += (o, args) => {
-				if (args.Event.Window == Editor.Parent.TextArea.GdkWindow) {
-					StartMenuCloseTimer ();
-				} else {
-					CancelMenuCloseTimer ();
-				}
-			};
+				return true;
+			}
 
-			GtkWorkarounds.ShowContextMenu (menu, parent, null, evt);
-			#endif
+			try {
+				parent.GrabFocus ();
+				int x, y;
+				x = (int)evt.X;
+				y = (int)evt.Y;
+
+				// Explicitly release the grab because the menu is shown on the mouse position, and the widget doesn't get the mouse release event
+				Gdk.Pointer.Ungrab (Gtk.Global.CurrentEventTime);
+
+				var menu = CreateContextMenu (entrySet);
+				menu.Show (parent, x, y, () => document.Editor.SuppressTooltips = false);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error while context menu popup.", ex);
+			}
 			return true;
 		}
-		#if MAC
 
-		AppKit.NSMenu CreateNSMenu (FixMenuDescriptor entrySet)
+		ContextMenu CreateContextMenu (FixMenuDescriptor entrySet)
 		{
-			var menu = new AppKit.NSMenu ();
+			var menu = new ContextMenu ();
 			foreach (var item in entrySet.Items) {
 				if (item == FixMenuEntry.Separator) {
-					menu.AddItem (AppKit.NSMenuItem.SeparatorItem);
+					menu.Items.Add (new SeparatorContextMenuItem ());
 					continue;
 				}
-				var subMenu = item as FixMenuDescriptor;
-				if (subMenu != null) {
-					var gtkSubMenu = new AppKit.NSMenuItem (item.Label.Replace ("_", ""));
-					gtkSubMenu.Submenu = CreateNSMenu (subMenu);
-					menu.AddItem (gtkSubMenu); 
-					continue;
-				}
-				var menuItem = new AppKit.NSMenuItem (item.Label.Replace ("_", ""));
-				menuItem.Activated += delegate {
-					item.Action ();
-				};
-				menu.AddItem (menuItem); 
-			}
-			return menu;
-		}
-		#endif
 
-		static Menu CreateGtkMenu (FixMenuDescriptor entrySet)
-		{
-			var menu = new Menu ();
-			foreach (var item in entrySet.Items) {
-				if (item == FixMenuEntry.Separator) {
-					menu.Add (new SeparatorMenuItem ()); 
-					continue;
-				}
+				var menuItem = new ContextMenuItem (item.Label);
+				menuItem.Context = item.Action;
 				var subMenu = item as FixMenuDescriptor;
 				if (subMenu != null) {
-					var gtkSubMenu = new Gtk.MenuItem (item.Label);
-					gtkSubMenu.Submenu = CreateGtkMenu (subMenu);
-					menu.Add (gtkSubMenu); 
-					continue;
+					menuItem.SubMenu = CreateContextMenu (subMenu);
+				} else {
+					menuItem.Clicked += (object sender, ContextMenuItemClickedEventArgs e) => ((System.Action)((ContextMenuItem)sender).Context) ();
 				}
-				var menuItem = new Gtk.MenuItem (item.Label);
-				menuItem.Activated += delegate {
-					item.Action ();
-				};
-				menu.Add (menuItem); 
+				menu.Items.Add (menuItem);
 			}
+
 			return menu;
 		}
 
 		void PopulateFixes (FixMenuDescriptor menu, ref int items)
 		{
+			if (!RefactoringService.ShowFixes)
+				return;
 			int mnemonic = 1;
 			bool gotImportantFix = false, addedSeparator = false;
 			var fixesAdded = new List<string> ();
@@ -720,7 +666,7 @@ namespace MonoDevelop.CodeActions
 		void OnQuickFixCommand ()
 		{
 			if (!QuickTaskStrip.EnableFancyFeatures) {
-				Fixes = RefactoringService.GetValidActions (Document, Document.Editor.Caret.Location).Result;
+				Fixes = RefactoringService.GetValidActions (Document, Document.Editor.Caret.Location);
 				currentSmartTagBegin = Document.Editor.Caret.Location;
 				PopupQuickFixMenu (null, null); 
 
