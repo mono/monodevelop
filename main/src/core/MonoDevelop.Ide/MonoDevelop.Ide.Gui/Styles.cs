@@ -1,21 +1,21 @@
-// 
+//
 // Styles.cs
-//  
+//
 // Author:
 //       Lluis Sanchez <lluis@xamarin.com>
-// 
+//
 // Copyright (c) 2012 Xamarin Inc
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,9 +36,11 @@ namespace MonoDevelop.Ide.Gui
 	{
 		public static event EventHandler Changed;
 
-		public static Cairo.Color BackgroundColor { get; internal set; }		// must be the bg color from Gtkrc
-		public static Cairo.Color BaseBackgroundColor { get; internal set; }	// must be the base color from Gtkrc
-		public static Cairo.Color BaseForegroundColor { get; internal set; }	// must be the text color from Gtkrc
+		public static Cairo.Color BackgroundColor { get; internal set; }        // must be the bg color from Gtkrc
+		public static Cairo.Color BaseBackgroundColor { get; internal set; }    // must be the base color from Gtkrc
+		public static Cairo.Color BaseForegroundColor { get; internal set; }    // must be the text color from Gtkrc
+		public static Cairo.Color BaseSelectionBackgroundColor { get; internal set; }
+		public static Cairo.Color BaseSelectionTextColor { get; internal set; }
 
 		// General
 
@@ -92,7 +94,7 @@ namespace MonoDevelop.Ide.Gui
 		public static Cairo.Color SubTabBarSeparatorColor { get; internal set; }
 
 		// Dock pads
-		
+
 		public static Cairo.Color DockTabBarGradientTop { get; internal set; }
 		public static Cairo.Color DockTabBarGradientStart { get; internal set; }
 		public static Cairo.Color DockTabBarGradientEnd { get; internal set; }
@@ -322,11 +324,22 @@ namespace MonoDevelop.Ide.Gui
 
 		internal static void LoadLightStyle ()
 		{
+			#if MAC
+			BaseSelectionBackgroundColor = CairoExtensions.ParseColor ("5189ed");
+			BaseSelectionTextColor = CairoExtensions.ParseColor ("ffffff");
+			#else
+			// FIXME: VV: New Windows selection colors
+			BaseSelectionBackgroundColor = CairoExtensions.ParseColor ("3f59e5");
+			BaseSelectionTextColor = CairoExtensions.ParseColor ("ffffff");
+			#endif
+
 			ThinSplitterColor = new Gdk.Color (166, 166, 166);
 
 			TabBarBackgroundColor = CairoExtensions.ParseColor ("c2c2c2");
 			TabBarActiveTextColor = new Cairo.Color (0, 0, 0);
 			TabBarNotifyTextColor = new Cairo.Color (0, 0, 1);
+
+			// Document tabs
 
 			TabBarActiveGradientStartColor = Shift (TabBarBackgroundColor, 0.92);
 			TabBarActiveGradientEndColor = TabBarBackgroundColor;
@@ -341,6 +354,8 @@ namespace MonoDevelop.Ide.Gui
 			TabBarInnerBorderColor = new Cairo.Color (1, 1, 1, .5);
 			TabBarInactiveGradientStartColor = CairoExtensions.ParseColor ("f4f4f4");
 			TabBarInactiveGradientEndColor = CairoExtensions.ParseColor ("cecece");
+
+			// Breadcrumb
 
 			BreadcrumbGradientStartColor = CairoExtensions.ParseColor ("FFFFFF");
 			BreadcrumbBackgroundColor = Shift (BreadcrumbGradientStartColor, .95);
@@ -446,23 +461,20 @@ namespace MonoDevelop.Ide.Gui
 
 			#if MAC
 			if(NSColor.CurrentControlTint == NSControlTint.Graphite) {
-				CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("727272");
 				CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("bbbbbb");
-				CodeCompletion.SelectionTextColor = CairoExtensions.ParseColor ("ffffff");
 				CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("ba3373");
 			}
 			else {
-				CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("3f59e5");
 				CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("bbbbbb");
-				CodeCompletion.SelectionTextColor = CairoExtensions.ParseColor ("ffffff");
 				CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("ba3373");
 			}
 			#else
-			CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("647073");
 			CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("bbbbbb");
-			CodeCompletion.SelectionTextColor = CairoExtensions.ParseColor ("ffffff");
 			CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("ba3373");
 			#endif
+
+			CodeCompletion.SelectionBackgroundColor = BaseSelectionBackgroundColor;
+			CodeCompletion.SelectionTextColor = BaseSelectionTextColor;
 
 			// Global Search
 
@@ -493,6 +505,15 @@ namespace MonoDevelop.Ide.Gui
 
 		internal static void LoadDarkStyle ()
 		{
+			#if MAC
+			BaseSelectionBackgroundColor = CairoExtensions.ParseColor ("5189ed");
+			BaseSelectionTextColor = CairoExtensions.ParseColor ("ffffff");
+			#else
+			// FIXME: VV: New Windows selection colors
+			BaseSelectionBackgroundColor = CairoExtensions.ParseColor ("3f59e5");
+			BaseSelectionTextColor = CairoExtensions.ParseColor ("ffffff");
+			#endif
+
 			ThinSplitterColor = new Gdk.Color (89, 89, 89);
 
 			TabBarBackgroundColor = CairoExtensions.ParseColor ("333333");
@@ -621,23 +642,20 @@ namespace MonoDevelop.Ide.Gui
 
 			#if MAC
 			if(NSColor.CurrentControlTint == NSControlTint.Graphite) {
-				CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("404447");
 				CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("bbbbbb");
-				CodeCompletion.SelectionTextColor = CairoExtensions.ParseColor ("ffffff");
 				CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("f9d33c");
 			}
 			else {
-				CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("3d8afa");
 				CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("555555");
-				CodeCompletion.SelectionTextColor = CairoExtensions.ParseColor ("ffffff");
 				CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("f9d33c");
 			}
 			#else
-			CodeCompletion.SelectionBackgroundColor = CairoExtensions.ParseColor ("3e4647");
 			CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("bbbbbb");
-			CodeCompletion.SelectionTextColor = CairoExtensions.ParseColor ("ffffff");
 			CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("f9d33c");
 			#endif
+
+			CodeCompletion.SelectionBackgroundColor = BaseSelectionBackgroundColor;
+			CodeCompletion.SelectionTextColor = BaseSelectionTextColor;
 
 			// Global Search
 

@@ -296,13 +296,10 @@ namespace MonoDevelop.MacIntegration
 			string color_hex, text_hex;
 
 			if (MonoDevelop.Core.Platform.OSVersion >= MonoDevelop.Core.MacSystemInformation.Yosemite) {
-				NSControlTint tint = NSColor.CurrentControlTint;
-				NSColor text = NSColor.SelectedMenuItemText.UsingColorSpace (NSColorSpace.GenericRGBColorSpace);
-				NSColor color = tint == NSControlTint.Blue ? NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.GenericRGBColorSpace) : NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.DeviceWhite);
-
-				color_hex = ConvertColorToHex (color);
-				text_hex = ConvertColorToHex (text);
+				color_hex = "#5189ed";
+				text_hex = "#ffffff";
 			} else {
+				// FIXME: VV: New Windows selection colors
 				color_hex = "#c5d4e0";
 				text_hex = "#000";
 			}
