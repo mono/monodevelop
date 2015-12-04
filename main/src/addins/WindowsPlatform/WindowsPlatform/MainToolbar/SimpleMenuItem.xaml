@@ -29,6 +29,7 @@
 	                    AllowsTransparency="true"
 	                    Focusable="false"
 	                    IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
+	                    MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
 	                    PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}"
 	                    Placement="Bottom"
 	                    PlacementTarget="{Binding ElementName=templateRoot}" >
