@@ -309,14 +309,13 @@ namespace MonoDevelop.MacIntegration
 
 			string gtkrc = String.Format (@"
 				style ""treeview"" = ""default"" {{
-
 					base[SELECTED] = ""{0}""
 					base[ACTIVE] = ""{0}""
 					text[SELECTED] = ""{1}""
 					text[ACTIVE] = ""{1}""
 					engine ""xamarin"" {{
 						roundness = 0
-						gradient_shades = {{ 1.0, 0.95, 0.95, 0.90 }}
+						gradient_shades = {{ 1.01, 1.01, 1.01, 1.01 }}
 						glazestyle = 1
 					}}
 				}}
@@ -795,16 +794,8 @@ namespace MonoDevelop.MacIntegration
 		{
 			var toplevels = GtkQuartz.GetToplevels ();
 
-			// When we're looking for modal windows that don't belong to GTK, exclude
-			// NSStatusBarWindow (which is visible on Mavericks when we're in fullscreen) and
-			// NSToolbarFullscreenWindow (which is visible on Yosemite in fullscreen).
-			// _NSFullScreenTileDividerWindow (which is visible on El Capitan when two apps share the same fullscreen).
-			return toplevels.Any (t => t.Key.IsVisible && (t.Value == null || t.Value.Modal) &&
-				!(t.Key.DebugDescription.StartsWith("<NSStatusBarWindow", StringComparison.Ordinal) ||
-					t.Key.DebugDescription.StartsWith ("<NSToolbarFullScreenWindow", StringComparison.Ordinal) ||
-					t.Key.DebugDescription.StartsWith ("<NSCarbonMenuWindow", StringComparison.Ordinal) ||
-					t.Key.DebugDescription.StartsWith ("<_NSFullScreenTileDividerWindow", StringComparison.Ordinal)
-				));
+			// Check GtkWindow's Modal flag or for a visible NSPanel
+			return toplevels.Any (t => (t.Value != null && t.Value.Modal) || (t.Key.IsVisible && (t.Key is NSPanel)));
 		}
 
 		public override void AddChildWindow (Gtk.Window parent, Gtk.Window child)

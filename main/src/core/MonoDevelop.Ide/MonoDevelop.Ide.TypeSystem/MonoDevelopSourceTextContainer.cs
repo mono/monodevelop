@@ -131,6 +131,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	sealed class MonoDevelopSourceTextContainer : SourceTextContainer, IDisposable
 	{
 		readonly ITextDocument document;
+		bool isDisposed;
 		public DocumentId Id {
 			get;
 			private set;
@@ -160,7 +161,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public void Dispose ()
 		{
+			if (isDisposed)
+				return;
 			document.TextChanging -= HandleTextReplacing;
+			isDisposed = true;
 		}
 
 		#region implemented abstract members of SourceTextContainer

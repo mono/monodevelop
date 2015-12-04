@@ -123,6 +123,7 @@ namespace MonoDevelop.Components
 			BuildMenu ();
 
 			NoShowAll = true;
+			GtkWorkarounds.SetTransparentBgHint (this, true);
 		}
 
 		public Xwt.Drawing.Image FilterButtonPixbuf {
@@ -389,7 +390,10 @@ namespace MonoDevelop.Components
 			var alloc = new Gdk.Rectangle (alignment.Allocation.X, box.Allocation.Y, alignment.Allocation.Width, box.Allocation.Height);
 
 			if (hasFrame && (!roundedShape || (roundedShape && !customRoundedShapeDrawing))) {
-				Style.PaintShadow (entry.Style, GdkWindow, StateType.Normal, ShadowType.In,
+				if (Platform.IsLinux)
+					Style.PaintFlatBox (Style, GdkWindow, entry.State, ShadowType.None,
+					                    evnt.Area, this, "entry_bg", alloc.X + 2, alloc.Y + 2, alloc.Width - 4, alloc.Height - 4);
+				Style.PaintShadow (entry.Style, GdkWindow, entry.State, entry.ShadowType,
 				                   evnt.Area, entry, "entry", alloc.X, alloc.Y, alloc.Width, alloc.Height);
 /*				using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
 					ctx.LineWidth = 1;

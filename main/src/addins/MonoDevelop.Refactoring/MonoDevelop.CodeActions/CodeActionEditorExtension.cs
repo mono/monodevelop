@@ -475,7 +475,12 @@ namespace MonoDevelop.CodeActions
 				if (descriptor.CanDisableWithPragma) {
 					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with #pragma"),
 						delegate {
-							descriptor.DisableWithPragma (Editor, DocumentContext, fix.Location.SourceSpan);
+							descriptor.DisableWithPragma (Editor, DocumentContext, fix);
+						});
+					subMenu.Add (menuItem);
+					menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with file"),
+						delegate {
+							descriptor.DisableWithFile (Editor, DocumentContext, fix);
 						});
 					subMenu.Add (menuItem);
 				}

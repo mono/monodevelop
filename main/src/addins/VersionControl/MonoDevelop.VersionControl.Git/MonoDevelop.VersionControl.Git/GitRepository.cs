@@ -324,8 +324,6 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override Revision[] OnGetHistory (FilePath localFile, Revision since)
 		{
-			var revs = new List<Revision> ();
-
 			var repository = GetRepository (localFile);
 			var hc = GetHeadCommit (repository);
 			if (hc == null)
@@ -337,20 +335,18 @@ namespace MonoDevelop.VersionControl.Git
 				var localPath = repository.ToGitPath (localFile);
 				commits = commits.Where (c => c.Parents.Count () == 1 && c.Tree [localPath] != null &&
 					(c.Parents.FirstOrDefault ().Tree [localPath] == null ||
-					c.Tree [localPath].Target.Id != c.Parents.FirstOrDefault ().Tree [localPath].Target.Id));
+					 c.Tree [localPath].Target.Id != c.Parents.FirstOrDefault ().Tree [localPath].Target.Id));
 			}
 
-			foreach (var commit in commits.TakeWhile (c => c != sinceRev)) {
+			return commits.TakeWhile (c => c != sinceRev).Select (commit => {
 				var author = commit.Author;
 				var rev = new GitRevision (this, repository, commit, author.When.LocalDateTime, author.Name, commit.Message) {
 					Email = author.Email,
 					ShortMessage = commit.MessageShort,
 					FileForChanges = localFile,
 				};
-				revs.Add (rev);
-			}
-
-			return revs.ToArray ();
+				return rev;
+			}).ToArray ();
 		}
 
 		protected override RevisionPath[] OnGetRevisionChanges (Revision revision)

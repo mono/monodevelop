@@ -374,6 +374,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
+			completionWindowWasVisible = CompletionWindowManager.IsVisible;
 			cursorPositionBeforeKeyPress = Editor.CaretOffset;
 			bool isSomethingSelected = Editor.IsSomethingSelected;
 			if (descriptor.SpecialKey == SpecialKey.BackSpace && Editor.CaretOffset == lastInsertedSemicolon) {
@@ -381,6 +382,7 @@ namespace MonoDevelop.CSharp.Formatting
 				lastInsertedSemicolon = -1;
 				return false;
 			}
+
 			lastInsertedSemicolon = -1;
 			if (descriptor.KeyChar == ';' && Editor.EditMode == EditMode.Edit && !DoInsertTemplate () && !isSomethingSelected && PropertyService.Get (
 				    "SmartSemicolonPlacement",
@@ -722,6 +724,8 @@ namespace MonoDevelop.CSharp.Formatting
 				reIndent = true;
 				break;
 			case '\n':
+				if (completionWindowWasVisible) // \n is handled by an open completion window 
+					return;
 				if (FixLineStart (Editor, stateTracker, Editor.OffsetToLineNumber (stateTracker.Offset)))
 					return;
 				//newline always reindents unless it's had special handling
@@ -732,6 +736,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		internal bool wasInStringLiteral;
 		OptionSet optionSet;
+		bool completionWindowWasVisible;
 
 		public bool FixLineStart (TextEditor textEditorData, ICSharpCode.NRefactory6.CSharp.IStateMachineIndentEngine stateTracker, int lineNumber)
 		{

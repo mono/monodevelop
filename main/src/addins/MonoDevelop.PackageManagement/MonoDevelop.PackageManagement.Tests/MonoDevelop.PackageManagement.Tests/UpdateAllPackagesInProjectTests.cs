@@ -47,9 +47,9 @@ namespace MonoDevelop.PackageManagement.Tests
 			updateAllPackagesInProject = new UpdateAllPackagesInProject (fakeProject);
 		}
 
-		void AddPackageToProject (string packageId)
+		void AddPackageToProject (string packageId, string version = "1.0")
 		{
-			var package = new FakePackage (packageId, "1.0");
+			var package = new FakePackage (packageId, version);
 			fakeProject.FakePackagesInReverseDependencyOrder.Add (package);
 		}
 
@@ -226,6 +226,20 @@ namespace MonoDevelop.PackageManagement.Tests
 			bool update = FirstUpdateAction.UpdateDependencies;
 
 			Assert.IsTrue (update);
+		}
+
+		[Test]
+		public void CreateActions_TwoPackagesInProjectOnePrereleaseOneStable_AllowPrereleaseIsTrueForPrereleasePackage ()
+		{
+			CreateUpdateAllPackagesInProject ();
+			AddPackageToProject ("Test1", "1.0.0-alpha");
+			AddPackageToProject ("Test2", "1.0.0");
+			CallCreateActions ();
+
+			Assert.AreEqual ("Test1", updateActions [0].PackageId);
+			Assert.AreEqual ("Test2", updateActions [1].PackageId);
+			Assert.AreEqual (true, updateActions [0].AllowPrereleaseVersions);
+			Assert.AreEqual (false, updateActions [1].AllowPrereleaseVersions);
 		}
 	}
 }

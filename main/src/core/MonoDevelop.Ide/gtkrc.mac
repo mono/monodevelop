@@ -166,7 +166,7 @@ style "toggle-button" = "button" {
 }
 
 style "menu" {
-    xthickness = 0
+    xthickness = 1
     # ythickness = 0
 
     font_name = "Helvetica Neue 14"
@@ -175,14 +175,20 @@ style "menu" {
     fg[PRELIGHT] = @selected_fg_color
     text[PRELIGHT] = @selected_fg_color
 
-    engine "quartz" {
-    }
+    # engine "quartz" {
+    # }
 }
 
 style "menu-item" = "menu" {
     ythickness = 2
 
     GtkWidget::draw-border = { 0, 0, 0, 2 }
+
+    engine "xamarin" {
+        gradient_shades = {1.0, 1.0, 1.0, 1.0}
+        contrast = 0.0
+    	roundness = 0
+    }
 }
 
 style "menu-separator" = "menu-item" {

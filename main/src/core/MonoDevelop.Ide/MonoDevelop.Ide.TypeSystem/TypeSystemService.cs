@@ -730,5 +730,17 @@ namespace MonoDevelop.Ide.TypeSystem
 			return null;
 		}
 
+
+		public static MonoDevelop.Projects.Project GetMonoProject (Microsoft.CodeAnalysis.DocumentId documentId)
+		{
+			foreach (var w in workspaces) {
+				foreach (var p in w.CurrentSolution.Projects) {
+					if (p.GetDocument (documentId) != null)
+						return GetMonoProject (p);
+				}
+			}
+			return null;
+		}
+
 	}
 }

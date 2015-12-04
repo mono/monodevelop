@@ -469,6 +469,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (tree.Selection.GetSelected (out it)) {
 				OptionsDialogSection section = (OptionsDialogSection) store.GetValue (it, 0);
 				ShowPage (section);
+
+				this.UseNativeContextMenus ();
 			}
 		}
 		

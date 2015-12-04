@@ -287,7 +287,7 @@ namespace MonoDevelop.CodeIssues
 			col.Expand = false;
 
 			var comboBoxStore = new ListStore (typeof(string), typeof(DiagnosticSeverity));
-//			comboBoxStore.AppendValues (GetDescription (Severity.None), Severity.None);
+			comboBoxStore.AppendValues (GetDescription (DiagnosticSeverity.Hidden), DiagnosticSeverity.Hidden);
 			comboBoxStore.AppendValues (GetDescription (DiagnosticSeverity.Error), DiagnosticSeverity.Error);
 			comboBoxStore.AppendValues (GetDescription (DiagnosticSeverity.Warning), DiagnosticSeverity.Warning);
 			comboBoxStore.AppendValues (GetDescription (DiagnosticSeverity.Info), DiagnosticSeverity.Info);
