@@ -27,6 +27,7 @@ using System;
 using AppKit;
 using Foundation;
 using Gtk;
+using MonoDevelop.Core;
 using MonoDevelop.Components.Mac;
 using MonoDevelop.Ide;
 using Xwt.Mac;
@@ -36,6 +37,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	[Register]
 	class SearchBar : NSSearchField
 	{
+		bool debugSearchbar;
 		internal Widget gtkWidget;
 		internal event EventHandler<Xwt.KeyEventArgs> KeyPressed;
 		internal event EventHandler LostFocus;
@@ -51,6 +53,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			Cell.Scrollable = true;
 			Initialize ();
+			var debugFilePath = System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), ".xs-searchbar-debug");
+			debugSearchbar = System.IO.File.Exists (debugFilePath);
 		}
 
 		public SearchBar (IntPtr ptr) : base (ptr)
@@ -58,17 +62,29 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			Initialize ();
 		}
 
+		void LogMessage (string message)
+		{
+			if (!debugSearchbar)
+				return;
+
+			LoggingService.LogInfo (message);
+		}
+
 		void Initialize ()
 		{
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResignKeyNotification, notification => DispatchService.GuiDispatch (() => {
-				if (notification.Object == Window)
+				if (notification.Object == Window) {
+					LogMessage ("Lost focus from resign key.");
 					if (LostFocus != null)
 						LostFocus (this, null);
+				}
 			}));
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notification => DispatchService.GuiDispatch (() => {
-				if (notification.Object == Window)
+				if (notification.Object == Window) {
+					LogMessage ("Lost focus from resize");
 					if (LostFocus != null)
 						LostFocus (this, null);
+				}
 			}));
 		}
 
@@ -77,6 +93,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			if (KeyPressed != null)
 				KeyPressed (this, kargs);
 
+			LogMessage ($"KeyPressed with Handled {kargs.Handled}");
 			return kargs.Handled;
 		}
 
@@ -89,13 +106,17 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			base.DidEndEditing (notification);
 
+			LogMessage ("Did end editing");
+
 			nint value = ((NSNumber)notification.UserInfo.ValueForKey ((NSString)"NSTextMovement")).LongValue;
 			if (value == (nint)(long)NSTextMovement.Tab) {
+				LogMessage ("Tab movement");
 				SelectText (this);
 				return;
 			}
 
 			if (value == (nint)(long)NSTextMovement.Return) {
+				LogMessage ("Activated by enter");
 				if (Activated != null)
 					Activated (this, null);
 				return;
@@ -103,8 +124,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			// This means we've reached a focus loss event.
 			var replacedWith = notification.UserInfo.ValueForKey ((NSString)"_NSFirstResponderReplacingFieldEditor");
-			if (replacedWith != this && LostFocus != null)
+			if (replacedWith != this && LostFocus != null) {
+				LogMessage ("Mouse focus loss");
 				LostFocus (this, null);
+			}
 		}
 
 		public override void ViewDidMoveToWindow ()
@@ -117,6 +140,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public override bool BecomeFirstResponder ()
 		{
+			LogMessage ("Becoming first responder");
 			bool firstResponder = base.BecomeFirstResponder ();
 			if (firstResponder)
 				Focus ();
@@ -126,6 +150,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public void Focus ()
 		{
+			LogMessage ("Focused");
 			if (GainedFocus != null)
 				GainedFocus (this, EventArgs.Empty);
 		}
