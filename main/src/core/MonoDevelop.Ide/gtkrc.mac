@@ -75,6 +75,9 @@ style "default" {
     GtkButtonBox::child-min-width = 70
     GtkButtonBox::child-min-height = 22
 
+    GtkCheckButton::indicator-size = 14
+    GtkCheckButton::indicator-spacing = 4
+
     GtkTreeView::odd-row-color = @bg_color
 
     GtkScrolledWindow::scrollbar-spacing = 0
@@ -324,10 +327,14 @@ style "radio-or-check-box" = "default"
 {
     ythickness = 6
 
-    GtkCheckButton::indicator-size = 14
-    GtkCheckButton::indicator-spacing = 4
-
     engine "quartz" {
+    }
+}
+
+style "propertygrid-radio-or-check-box" = "radio-or-check-box"
+{
+    GtkCheckButton::indicator-spacing = 0
+    engine "xamarin" {
     }
 }
 
@@ -497,3 +504,6 @@ binding "gtk-mac-expand-collapse-cursor-row"
 }
 
 class "GtkTreeView" binding "gtk-mac-expand-collapse-cursor-row"
+
+# BooleanEditorCell must always have murrine style
+widget_class "*BooleanEditor*" style "propertygrid-radio-or-check-box"

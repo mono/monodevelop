@@ -75,6 +75,9 @@ style "default" {
     GtkButtonBox::child-min-width = 70
     GtkButtonBox::child-min-height = 22
 
+    GtkCheckButton::indicator-size = 14
+    GtkCheckButton::indicator-spacing = 4
+
     GtkTreeView::odd-row-color = @bg_color
 
     GtkScrolledWindow::scrollbar-spacing = 0
@@ -333,14 +336,34 @@ style "notebook" = "default"
     }
 }
 
-style "radio-or-check-box" = "default"
+style "quartz-radio-or-check-box" = "default"
 {
     ythickness = 6
 
-    GtkCheckButton::indicator-size = 14
-    GtkCheckButton::indicator-spacing = 4
-
     engine "quartz" {
+    }
+}
+
+style "radio-or-check-box" = "toggle-button"
+{
+    bg[NORMAL] = @fg_color
+    bg[PRELIGHT] = @bg_color
+    base[NORMAL] = @bg_color
+    text[ACTIVE] = @text_color
+
+    engine "xamarin" {
+    	#border_colors = { @fg_color, @fg_color }
+    	border_shades = { 1.33, 1.33 }
+    }
+}
+
+style "propertygrid-radio-or-check-box" = "radio-or-check-box"
+{
+    GtkCheckButton::indicator-spacing = 0
+    bg[PRELIGHT] = @base_color
+
+    engine "xamarin" {
+    	border_shades = { 1.33, 1.33 }
     }
 }
 
@@ -444,6 +467,7 @@ class "GtkScrolledWindow" style "scrolled-window"
 class "GtkNotebook" style "notebook"
 class "GtkButton" style "button"
 class "GtkToggleButton" style "toggle-button"
+class "GtkCheckButton" style "radio-or-check-box"
 
 class "GtkScale" style "scale"
 
@@ -453,7 +477,7 @@ widget "*GtkTextView" style "entry"
 
 widget_class "*.GtkButton.*" style "button"
 widget_class "<GtkDialog>.*.<GtkButton>" style "dialog-button"
-widget_class "<GtkDialog>*<GtkCheckButton>" style "radio-or-check-box"
+widget_class "<GtkDialog>*<GtkCheckButton>" style "quartz-radio-or-check-box"
 widget_class "<GtkDialog>.*.<GtkButtonBox>.*.<GtkButton>.*" style "dialog-button"
 widget "*.toggleFindInFiles" style "toggle-button"
 widget "*.toggleReplaceInFiles" style "toggle-button"
@@ -501,3 +525,6 @@ binding "gtk-mac-expand-collapse-cursor-row"
 }
 
 class "GtkTreeView" binding "gtk-mac-expand-collapse-cursor-row"
+
+# BooleanEditorCell must always have murrine style
+widget_class "*BooleanEditor*" style "propertygrid-radio-or-check-box"
