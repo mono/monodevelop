@@ -43,7 +43,7 @@ let localFour = localOne.Property|One"""
     [<TestCase("localOne.Property|One", "localOne.PropertyOne")>]
     member x.TestBasicLocalVariable(localVariable, expected) =
         let basicOffset = getOffset (localVariable)
-        let doc = TestHelpers.createDoc (content.Replace("|" ,"")) [] ""
+        let doc = TestHelpers.createDoc (content.Replace("|" ,"")) ""
 
         let loc = doc.Editor.OffsetToLocation basicOffset
         let lineTxt = doc.Editor.GetLineText(loc.Line, false)

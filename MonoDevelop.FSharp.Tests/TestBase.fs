@@ -2,15 +2,7 @@
 open System
 open System.Reflection
 open System.IO
-open System.Threading
 open NUnit.Framework
-open MonoDevelop.Core
-open MonoDevelop.Core.Assemblies
-open MonoDevelop.Core.Logging
-open MonoDevelop.Ide
-open MonoDevelop.Ide.TypeSystem
-open MonoDevelop.Projects
-open MonoDevelop.Ide.Gui
 
 module FsUnit =
 
