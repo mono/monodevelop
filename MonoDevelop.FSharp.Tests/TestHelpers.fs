@@ -39,7 +39,7 @@ module TestHelpers =
     let options = ParseOptions(FileName = file, Content = StringTextSource(source))
 
     let results = parseAndCheckFile source file
-    let parsedDocument = FSharpParser().GetParsedDocument(options, results, [compilerDefines]) 
+    let parsedDocument = ParsedDocument.create(options, results, [compilerDefines]) 
                          |> Async.RunSynchronously
 
     FixtureSetup().Initialise()

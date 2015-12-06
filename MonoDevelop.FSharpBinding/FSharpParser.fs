@@ -19,17 +19,67 @@ type FSharpParsedDocument(fileName) =
     member val Tokens = None with get,set
     member val AllSymbolsKeyed = Dictionary<_,_>() with get, set
 
+module ParsedDocument =
+  let create (parseOptions: ParseOptions, parseResults: ParseAndCheckResults, defines) =
+    //Try creating tokens
+    async {
+      let fileName = parseOptions.FileName
+      let shortFilename = Path.GetFileName fileName
+      let doc = new FSharpParsedDocument(fileName, Flags = ParsedDocumentFlags.NonSerializable)
+      LoggingService.LogDebug ("FSharpParser: Processing tokens on {0}", shortFilename)
+      try
+        let readOnlyDoc = TextEditorFactory.CreateNewReadonlyDocument (parseOptions.Content, fileName)
+        let lineDetails =
+          [ for i in 1..readOnlyDoc.LineCount do
+              let line = readOnlyDoc.GetLine(i)
+              yield Tokens.LineDetail(line.LineNumber, line.Offset, readOnlyDoc.GetTextAt(line.Offset, line.Length)) ]
+        let tokens = Tokens.getTokens lineDetails fileName defines
+        doc.Tokens <- Some(tokens)
+      with ex ->
+        LoggingService.LogWarning ("FSharpParser: Couldn't update token information", ex)
+      
+      //Get all the symboluses now rather than in semantic highlighting
+      LoggingService.LogDebug ("FSharpParser: Processing symbol uses on {0}", shortFilename)
+  
+      /// Format errors for the given line (if there are multiple, we collapse them into a single one)
+      let formatError (error : FSharpErrorInfo) = 
+        // Single error for this line
+        let errorType = 
+          if error.Severity = FSharpErrorSeverity.Error then ErrorType.Error
+          else ErrorType.Warning
+        Error(errorType, String.wrapText error.Message 80, DocumentRegion (error.StartLineAlternate, error.StartColumn + 1, error.EndLineAlternate, error.EndColumn + 1))
+
+      parseResults.GetErrors() |> (Seq.map formatError >> doc.AddRange)
+      let! allSymbolUses = parseResults.GetAllUsesOfAllSymbolsInFile()
+      match allSymbolUses with
+      | Some symbolUses ->
+        for symbolUse in symbolUses do
+          if not (doc.AllSymbolsKeyed.ContainsKey symbolUse.RangeAlternate.End)
+          then doc.AllSymbolsKeyed.Add(symbolUse.RangeAlternate.End, symbolUse)
+      | None -> ()
+
+      //Set code folding regions, GetNavigationItems may throw in some situations
+      LoggingService.LogDebug ("FSharpParser: processing regions on {0}", shortFilename)
+      try 
+        let regions = 
+          let processDecl (decl : SourceCodeServices.FSharpNavigationDeclarationItem) = 
+            let m = decl.Range
+            FoldingRegion(decl.Name, DocumentRegion(m.StartLine, m.StartColumn + 1, m.EndLine, m.EndColumn + 1))
+
+          seq {for toplevel in parseResults.GetNavigationItems() do
+                 yield processDecl toplevel.Declaration
+                 for next in toplevel.Nested do
+                   yield processDecl next }
+        regions |> doc.AddRange
+      with ex -> LoggingService.LogWarning ("FSharpParser: Couldn't update navigation items.", ex)
+      //Store the AST of active results
+      doc.Ast <- parseResults
+      return doc
+    }
+
 // An instance of this type is created by MonoDevelop (as defined in the .xml for the AddIn) 
 type FSharpParser() = 
     inherit TypeSystemParser()
-
-    /// Format errors for the given line (if there are multiple, we collapse them into a single one)
-    let formatError (error : FSharpErrorInfo) = 
-        // Single error for this line
-        let errorType = 
-            if error.Severity = FSharpErrorSeverity.Error then ErrorType.Error
-            else ErrorType.Warning
-        Error(errorType, String.wrapText error.Message 80, DocumentRegion (error.StartLineAlternate, error.StartColumn + 1, error.EndLineAlternate, error.EndColumn + 1))
 
     let tryGetFilePath fileName (project: MonoDevelop.Projects.Project) = 
         // TriggerParse will work only for full paths
@@ -46,54 +96,6 @@ type FSharpParser() =
                 | null -> None
                 | doc -> let file = doc.FileName.FullPath.ToString()
                          if file = "" then None else Some file
-
-    member x.GetParsedDocument(parseOptions: ParseOptions, parseResults: ParseAndCheckResults, defines) =
-      //Try creating tokens
-      async {
-        let fileName = parseOptions.FileName
-        let shortFilename = Path.GetFileName fileName
-        let doc = new FSharpParsedDocument(fileName, Flags = ParsedDocumentFlags.NonSerializable)
-        LoggingService.LogDebug ("FSharpParser: Processing tokens on {0}", shortFilename)
-        try
-          let readOnlyDoc = TextEditorFactory.CreateNewReadonlyDocument (parseOptions.Content, fileName)
-          let lineDetails =
-            [ for i in 1..readOnlyDoc.LineCount do
-                let line = readOnlyDoc.GetLine(i)
-                yield Tokens.LineDetail(line.LineNumber, line.Offset, readOnlyDoc.GetTextAt(line.Offset, line.Length)) ]
-          let tokens = Tokens.getTokens lineDetails fileName defines
-          doc.Tokens <- Some(tokens)
-        with ex ->
-          LoggingService.LogWarning ("FSharpParser: Couldn't update token information", ex)
-        
-        //Get all the symboluses now rather than in semantic highlighting
-        LoggingService.LogDebug ("FSharpParser: Processing symbol uses on {0}", shortFilename)
-        parseResults.GetErrors() |> (Seq.map formatError >> doc.AddRange)
-        let! allSymbolUses = parseResults.GetAllUsesOfAllSymbolsInFile()
-        match allSymbolUses with
-        | Some symbolUses ->
-          for symbolUse in symbolUses do
-            if not (doc.AllSymbolsKeyed.ContainsKey symbolUse.RangeAlternate.End)
-            then doc.AllSymbolsKeyed.Add(symbolUse.RangeAlternate.End, symbolUse)
-        | None -> ()
-
-        //Set code folding regions, GetNavigationItems may throw in some situations
-        LoggingService.LogDebug ("FSharpParser: processing regions on {0}", shortFilename)
-        try 
-          let regions = 
-            let processDecl (decl : SourceCodeServices.FSharpNavigationDeclarationItem) = 
-              let m = decl.Range
-              FoldingRegion(decl.Name, DocumentRegion(m.StartLine, m.StartColumn + 1, m.EndLine, m.EndColumn + 1))
-
-            seq {for toplevel in parseResults.GetNavigationItems() do
-                   yield processDecl toplevel.Declaration
-                   for next in toplevel.Nested do
-                     yield processDecl next }
-          regions |> doc.AddRange
-        with ex -> LoggingService.LogWarning ("FSharpParser: Couldn't update navigation items.", ex)
-        //Store the AST of active results
-        doc.Ast <- parseResults
-        return doc
-      }
 
     override x.Parse(parseOptions, cancellationToken) =
         let fileName = parseOptions.FileName
@@ -143,7 +145,7 @@ type FSharpParser() =
                   //let pt = match results.ParseTree with Some pt -> sprintf "%A" pt | _ -> "" 
                   LoggingService.LogDebug ("FSharpParser: Parse and check results retieved on {0}", shortFilename)
                   let defines = CompilerArguments.getDefineSymbols filePath (proj |> Option.ofNull)
-                  return! x.GetParsedDocument(parseOptions, results , defines)
+                  return! ParsedDocument.create(parseOptions, results , defines)
               | None -> return FSharpParsedDocument(fileName, Flags = ParsedDocumentFlags.NonSerializable)} |> Async.RunSynchronously
             
             doc.LastWriteTimeUtc <- try File.GetLastWriteTimeUtc(fileName) with _ -> DateTime.UtcNow

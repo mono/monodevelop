@@ -13,7 +13,6 @@ type TestPlatform =
 
 //[<TestFixture>]
 type CompilerArgumentsTests() =
-    //inherit TestBase()
 
     member private x.``Run Only mscorlib referenced`` (assemblyName) =
         use testProject = Services.ProjectService.CreateDotNetProject ("F#")
