@@ -113,9 +113,13 @@
       <HintPath>INSERT_FSPROJ_MDROOT\bin\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TestBase.fs" />
+    <Compile Include="TestDocument.fs" />
     <Compile Include="TestWorkbenchWindow.fs" />
     <Compile Include="TestViewContent.fs" />
     <Compile Include="TestHelpers.fs" />

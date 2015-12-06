@@ -46,95 +46,106 @@ type FSharpParser() =
                 | null -> None
                 | doc -> let file = doc.FileName.FullPath.ToString()
                          if file = "" then None else Some file
-            
+
+    member x.GetParsedDocument(parseOptions: ParseOptions, parseResults: ParseAndCheckResults, defines) =
+      //Try creating tokens
+      async {
+        let fileName = parseOptions.FileName
+        let shortFilename = Path.GetFileName fileName
+        let doc = new FSharpParsedDocument(fileName, Flags = ParsedDocumentFlags.NonSerializable)
+        LoggingService.LogDebug ("FSharpParser: Processing tokens on {0}", shortFilename)
+        try
+          let readOnlyDoc = TextEditorFactory.CreateNewReadonlyDocument (parseOptions.Content, fileName)
+          let lineDetails =
+            [ for i in 1..readOnlyDoc.LineCount do
+                let line = readOnlyDoc.GetLine(i)
+                yield Tokens.LineDetail(line.LineNumber, line.Offset, readOnlyDoc.GetTextAt(line.Offset, line.Length)) ]
+          let tokens = Tokens.getTokens lineDetails fileName defines
+          doc.Tokens <- Some(tokens)
+        with ex ->
+          LoggingService.LogWarning ("FSharpParser: Couldn't update token information", ex)
+        
+        //Get all the symboluses now rather than in semantic highlighting
+        LoggingService.LogDebug ("FSharpParser: Processing symbol uses on {0}", shortFilename)
+        parseResults.GetErrors() |> (Seq.map formatError >> doc.AddRange)
+        let! allSymbolUses = parseResults.GetAllUsesOfAllSymbolsInFile()
+        match allSymbolUses with
+        | Some symbolUses ->
+          for symbolUse in symbolUses do
+            if not (doc.AllSymbolsKeyed.ContainsKey symbolUse.RangeAlternate.End)
+            then doc.AllSymbolsKeyed.Add(symbolUse.RangeAlternate.End, symbolUse)
+        | None -> ()
+
+        //Set code folding regions, GetNavigationItems may throw in some situations
+        LoggingService.LogDebug ("FSharpParser: processing regions on {0}", shortFilename)
+        try 
+          let regions = 
+            let processDecl (decl : SourceCodeServices.FSharpNavigationDeclarationItem) = 
+              let m = decl.Range
+              FoldingRegion(decl.Name, DocumentRegion(m.StartLine, m.StartColumn + 1, m.EndLine, m.EndColumn + 1))
+
+            seq {for toplevel in parseResults.GetNavigationItems() do
+                   yield processDecl toplevel.Declaration
+                   for next in toplevel.Nested do
+                     yield processDecl next }
+          regions |> doc.AddRange
+        with ex -> LoggingService.LogWarning ("FSharpParser: Couldn't update navigation items.", ex)
+        //Store the AST of active results
+        doc.Ast <- parseResults
+        return doc
+      }
+
     override x.Parse(parseOptions, cancellationToken) =
         let fileName = parseOptions.FileName
         let content = parseOptions.Content
+
         let proj = parseOptions.Project
         if fileName = null || not (MDLanguageService.SupportedFileName (fileName)) then null else
+
+        let shortFilename = Path.GetFileName fileName
+        LoggingService.LogDebug ("FSharpParser: Parse starting on {0}", shortFilename)
+
+        let isObsolete filename version cancellationRequested =
+          SourceCodeServices.IsResultObsolete(fun () ->
+            let shortFilename = Path.GetFileName filename
+            try
+              if not cancellationRequested then
+                match MonoDevelop.tryGetVisibleDocument filename with
+                | Some doc ->
+                  let newVersion = doc.Editor.Version
+                  if newVersion.BelongsToSameDocumentAs(version) && newVersion.CompareAge(version) = 0 then
+                    false
+                  else
+                    LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled, file has changed", shortFilename)
+                    true
+                | None ->
+                  LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled, file no longer visible", shortFilename)
+                  true
+              else
+                LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled by cancellationToken", shortFilename)
+                true
+            with ex ->
+              LoggingService.LogDebug ("FSharpParser: Parse {0} unable to determine cancellation due to exception", shortFilename, ex)
+              false ) 
 
         Async.StartAsTask(
             cancellationToken = cancellationToken,
             computation = async {
-            let shortFilename = Path.GetFileName fileName
-            LoggingService.LogDebug ("FSharpParser: Parse starting on {0}", shortFilename)
 
-            let isObsolete filename version =
-                SourceCodeServices.IsResultObsolete(fun () ->
-                try
-                  if not cancellationToken.IsCancellationRequested then
-                    match MonoDevelop.tryGetVisibleDocument filename with
-                    | Some doc ->
-                      let newVersion = doc.Editor.Version
-                      if newVersion.BelongsToSameDocumentAs(version) && newVersion.CompareAge(version) = 0 then
-                        false
-                      else
-                        LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled, file has changed", shortFilename)
-                        true
-                    | None ->
-                      LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled, file no longer visible", shortFilename)
-                      true
-                  else
-                    LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled by cancellationToken", shortFilename)
-                    true
-                with ex ->
-                  LoggingService.LogDebug ("FSharpParser: Parse {0} unable to determine cancellation due to exception", shortFilename, ex)
-                  false ) 
-
-            let doc = new FSharpParsedDocument(fileName, Flags = ParsedDocumentFlags.NonSerializable)
-                                   
-            match tryGetFilePath fileName proj with
-            | Some filePath -> 
-                LoggingService.LogDebug ("FSharpParser: Running ParseAndCheckFileInProject for {0}", shortFilename)
-                let projectFile = proj |> function null -> filePath | proj -> proj.FileName.ToString()
-                let! results = languageService.ParseAndCheckFileInProject(projectFile, filePath, 0, content.Text, isObsolete parseOptions.FileName parseOptions.Content.Version)
-                LoggingService.LogDebug ("FSharpParser: Parse and check results retieved on {0}", shortFilename)
-                results.GetErrors() |> (Seq.map formatError >> doc.AddRange)
-                //if you ever want to see the current parse tree
-                //let pt = match results.ParseTree with Some pt -> sprintf "%A" pt | _ -> "" 
-
-                //Try creating tokens
-                LoggingService.LogDebug ("FSharpParser: Processing tokens on {0}", shortFilename)
-                try
-                  let readOnlyDoc = TextEditorFactory.CreateNewReadonlyDocument (parseOptions.Content, fileName)
-                  let lineDetails =
-                    [ for i in 1..readOnlyDoc.LineCount do
-                        let line = readOnlyDoc.GetLine(i)
-                        yield Tokens.LineDetail(line.LineNumber, line.Offset, readOnlyDoc.GetTextAt(line.Offset, line.Length)) ]
+            let doc = async {                    
+              match tryGetFilePath fileName proj with
+              | Some filePath -> 
+                  LoggingService.LogDebug ("FSharpParser: Running ParseAndCheckFileInProject for {0}", shortFilename)
+                  let projectFile = proj |> function null -> filePath | proj -> proj.FileName.ToString()
+                  let obsolete = isObsolete parseOptions.FileName parseOptions.Content.Version cancellationToken.IsCancellationRequested
+                  let! results = languageService.ParseAndCheckFileInProject(projectFile, filePath, 0, content.Text, obsolete)
+                  //if you ever want to see the current parse tree
+                  //let pt = match results.ParseTree with Some pt -> sprintf "%A" pt | _ -> "" 
+                  LoggingService.LogDebug ("FSharpParser: Parse and check results retieved on {0}", shortFilename)
                   let defines = CompilerArguments.getDefineSymbols filePath (proj |> Option.ofNull)
-                  let tokens = Tokens.getTokens lineDetails filePath defines
-                  doc.Tokens <- Some(tokens)
-                with ex ->
-                  LoggingService.LogWarning ("FSharpParser: Couldn't update token information", ex)
-                
-                //Get all the symboluses now rather than in semantic highlighting
-                LoggingService.LogDebug ("FSharpParser: Processing symbol uses on {0}", shortFilename)
-                let! allSymbolUses = results.GetAllUsesOfAllSymbolsInFile()
-                match allSymbolUses with
-                | Some symbolUses ->
-                  for symbolUse in symbolUses do
-                    if not (doc.AllSymbolsKeyed.ContainsKey symbolUse.RangeAlternate.End)
-                    then doc.AllSymbolsKeyed.Add(symbolUse.RangeAlternate.End, symbolUse)
-                | None -> ()
-
-                //Set code folding regions, GetNavigationItems may throw in some situations
-                LoggingService.LogDebug ("FSharpParser: processing regions on {0}", shortFilename)
-                try 
-                  let regions = 
-                    let processDecl (decl : SourceCodeServices.FSharpNavigationDeclarationItem) = 
-                      let m = decl.Range
-                      FoldingRegion(decl.Name, DocumentRegion(m.StartLine, m.StartColumn + 1, m.EndLine, m.EndColumn + 1))
-                    seq {for toplevel in results.GetNavigationItems() do
-                           yield processDecl toplevel.Declaration
-                           for next in toplevel.Nested do
-                             yield processDecl next }
-                  regions |> doc.AddRange
-                with ex -> LoggingService.LogWarning ("FSharpParser: Couldn't update navigation items.", ex)
-                //Store the AST of active results
-                doc.Ast <- results
-            | None -> ()
-
+                  return! x.GetParsedDocument(parseOptions, results , defines)
+              | None -> return FSharpParsedDocument(fileName, Flags = ParsedDocumentFlags.NonSerializable)} |> Async.RunSynchronously
+            
             doc.LastWriteTimeUtc <- try File.GetLastWriteTimeUtc(fileName) with _ -> DateTime.UtcNow
             LoggingService.LogDebug ("FSharpParser: returning ParsedDocument on {0}", shortFilename)
             return doc :> _})
-

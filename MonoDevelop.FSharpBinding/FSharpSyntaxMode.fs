@@ -335,7 +335,7 @@ type FSharpSyntaxMode(editor, context) =
     //LoggingService.LogInfo (sprintf """Segment: %s S:%i E:%i L:%i - "%s" """ seg.ColorStyleKey seg.Offset seg.EndOffset seg.Length (editor.GetTextBetween (seg.Offset, seg.EndOffset)) )
     seg
 
-  member x.GetProcessedTokens() =
+  member x.GetProcessedTokens(defines) =
     LoggingService.LogDebug "F# semantic highlighting - GetProcessedTokens"
     maybe { 
       let! localParsedDocument = context.ParsedDocument |> Option.ofNull
@@ -346,7 +346,6 @@ type FSharpSyntaxMode(editor, context) =
       let colourisations = checkResults.GetExtraColorizations()
       let lineDetails = 
         editor.GetLines() |> Seq.map (fun line -> Tokens.LineDetail(line.LineNumber, line.Offset, editor.GetLineText line))
-      let defines = CompilerArguments.getDefineSymbols context.Name (context.Project |> Option.ofNull)
       
       let processedTokens = 
         let style = getColourScheme()
@@ -369,7 +368,9 @@ type FSharpSyntaxMode(editor, context) =
   override x.DocumentParsed() =
     if MonoDevelop.isDocumentVisible context.Name then
       LoggingService.LogDebug "F# semantic highlighting - DocumentParsed"
-      let processedTokens = x.GetProcessedTokens()
+      let defines = CompilerArguments.getDefineSymbols context.Name (context.Project |> Option.ofNull)
+      
+      let processedTokens = x.GetProcessedTokens(defines)
       processedTokens |> Option.iter (fun _ ->
                            LoggingService.LogDebug "F# semantic highlighting - DocumentParsed applying coloured segments"
                            segments <- processedTokens

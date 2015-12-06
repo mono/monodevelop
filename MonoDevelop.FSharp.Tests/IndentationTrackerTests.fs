@@ -2,17 +2,11 @@
 open System
 open NUnit.Framework
 open MonoDevelop.FSharp
-open MonoDevelop.Core
-open MonoDevelop.Ide.Gui
-open MonoDevelop.Ide.Gui.Content
-open MonoDevelop.Projects
-open MonoDevelop.Ide.TypeSystem
 open FsUnit
 open MonoDevelop.Debugger
 
 [<TestFixture>]
 type IndentationTrackerTests() =
-    inherit TestBase()
     let content = """
 let a = 
 
@@ -22,7 +16,7 @@ let b = (fun a ->
 """
 
     let docWithCaret (content:string) = 
-        let d = fst(TestHelpers.createDoc(content.Replace("§", "")) [] "")
+        let d = TestHelpers.createDoc(content.Replace("§", "")) [] ""
         d.Editor.SetIndentationTracker (FSharpIndentationTracker(d.Editor))
         do match content.IndexOf('§') with
            | -1 -> ()
@@ -34,7 +28,7 @@ let b = (fun a ->
         let startOffset = content.IndexOf (expr, StringComparison.Ordinal)
         startOffset + (expr.Length / 2)
 
-    let getIndent (doc:Document, content:string, line:int, col) =
+    let getIndent (doc:TestDocument, content:string, line:int, col) =
         doc.Editor.SetCaretLocation (2, 2)
         let column = doc.Editor.GetVirtualIndentationColumn (line)
         column
@@ -42,7 +36,7 @@ let b = (fun a ->
     [<Test>]
     member x.BasicIndents() =
        // let basicOffset = getBasicOffset (localVariable)
-        let doc = fst(TestHelpers.createDoc(content) [] "")
+        let doc = TestHelpers.createDoc(content) [] ""
         doc.Editor.SetIndentationTracker (FSharpIndentationTracker(doc.Editor))
         getIndent (doc, content, 3, 1) |> should equal 5
         getIndent (doc, content, 5, 1) |> should equal 5
@@ -92,9 +86,3 @@ let b = (fun a ->
         doc.Editor.InsertAtCaret("\n")
         doc.Editor.Text 
         |> should equal "  let a = 123\n      123"
-
-
-
-
-   
-

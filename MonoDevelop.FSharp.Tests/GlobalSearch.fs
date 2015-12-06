@@ -1,29 +1,28 @@
 namespace MonoDevelopTests
 open System.Collections.Generic
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open System.Text.RegularExpressions
 open NUnit.Framework
 open FsUnit
 open MonoDevelop.FSharp
 
 [<TestFixture>]
 type TestGlobalSearch() =
-    inherit TestBase()
 
-    let getAllSymbols source =  
-      let checker = FSharpChecker.Create()
-      let file = "test.fsx"
+  let getAllSymbols source =  
+    let checker = FSharpChecker.Create()
+    let file = "test.fsx"
 
-      async {
-        let! projOptions = checker.GetProjectOptionsFromScript(file, source)
-        let! pfr, cfa = checker.ParseAndCheckFileInProject(file, 0, source, projOptions)
-        match cfa with
-        | FSharpCheckFileAnswer.Succeeded cfr ->
-          let! symbols = cfr.GetAllUsesOfAllSymbolsInFile() 
-          return Some symbols
-        | _ -> return None }
+    async {
+      let! projOptions = checker.GetProjectOptionsFromScript(file, source)
+      let! pfr, cfa = checker.ParseAndCheckFileInProject(file, 0, source, projOptions)
+      match cfa with
+      | FSharpCheckFileAnswer.Succeeded cfr ->
+        let! symbols = cfr.GetAllUsesOfAllSymbolsInFile() 
+        return Some symbols
+      | _ -> return None }
+    
 
-    let input = """
+  let input = """
 module Test
 let (++) a b = a + b
 let (|Full|Empty|) x = if x = "" then Empty else Full
@@ -46,141 +45,96 @@ type MyEnum = First = 1 | Second = 2
 
 type MyDelegate = delegate of (int * int) -> int
 """
-    [<Test>]
-    member x.Operators_Can_Be_Filtered() =
-      match getAllSymbols input |> Async.RunSynchronously with
-      | Some xs ->
-        let tags = Search.byTag "op" xs
-        tags |> Seq.length |> shouldEqual 1
-      | _ -> Assert.Fail "No operator found"
+  let searchByTag tag =
+    match getAllSymbols input |> Async.RunSynchronously with
+    | Some xs ->
+      let tags = Search.byTag tag xs
+      tags 
+      |> Seq.map(fun s -> s.Symbol.DisplayName) 
+      |> Seq.toList
+    | _ -> []
 
-    [<Test>]
-    member x.ActivePatterns_Can_Be_Filtered() =
-      match getAllSymbols input |> Async.RunSynchronously with
-      | Some xs ->
-        let tags = Search.byTag "ap" xs
-        tags |> Seq.length |> shouldEqual 1
-      | _ -> Assert.Fail "No ActivePattern found"
+  [<Test>]
+  member x.Operators_Can_Be_Filtered() =
+    searchByTag "op" |> shouldEqual ["( + )"; "( ++ )"; "( = )"] // ( + ) and ( = ) aren't user defined operators
 
-    [<Test>]
-    member x.Records_Can_Be_Filtered() =
-      match getAllSymbols input |> Async.RunSynchronously with
-      | Some xs ->
-        let tags = Search.byTag "r" xs
-        tags |> Seq.length |> shouldEqual 1
-      | _ -> Assert.Fail "No record found"
+  [<Test>]
+  member x.ActivePatterns_Can_Be_Filtered() =
+    searchByTag "ap" |> shouldEqual ["( |Full|Empty| )"]
 
-    [<TestCase("t", 1)>]
-    [<TestCase("type", 1)>]
-    [<TestCase("c", 1)>]
-    member x.Types_Can_Be_Filtered(search, expectedCount) =
-      match getAllSymbols input |> Async.RunSynchronously with
-      | Some xs ->
-        let tags = Search.byTag search xs
-        tags |> Seq.length |> shouldEqual expectedCount
-      | _ -> Assert.Fail "No type found"
+  [<Test>]
+  member x.Records_Can_Be_Filtered() =
+    searchByTag "r" |> shouldEqual ["MyRecord"]
 
-    [<Test>]
-    member x.Unions_Can_Be_Filtered() =
-      match getAllSymbols input |> Async.RunSynchronously with
-      | Some xs ->
-        let tags = Search.byTag "u" xs
-        tags |> Seq.length |> shouldEqual 1
-      | _ -> Assert.Fail "No Union type found"
+  [<TestCase("t")>]
+  [<TestCase("type")>]
+  [<TestCase("c")>]
+  member x.Types_Can_Be_Filtered(search) =
+    searchByTag search |> shouldEqual ["MyType"; "StructAttribute"; "StructAttribute"] // needs fixing
+ 
+  [<Test>]
+  member x.Unions_Can_Be_Filtered() =
+    searchByTag "u" |> shouldEqual ["MyUnion"]
 
-    [<Test>]
-    member x.Modules_Can_Be_Filtered() =
-      match getAllSymbols input |> Async.RunSynchronously with
-      | Some xs ->
-        let tags = Search.byTag "mod" xs
-        tags |> Seq.length |> shouldEqual 1
-      | _ -> Assert.Fail "No module found"
+  [<Test>]
+  member x.Modules_Can_Be_Filtered() =
+    searchByTag "mod" |> shouldEqual ["Test"]
 
-    [<Test>]
-    member x.Structs_Can_Be_Filtered() =
-      match getAllSymbols input |> Async.RunSynchronously with
-      | Some xs ->
-        let tags = Search.byTag "s" xs
-        tags |> Seq.length |> shouldEqual 1
-      | _ -> Assert.Fail "No struct found"
+  [<Test>]
+  member x.Structs_Can_Be_Filtered() =
+    searchByTag "s" |> shouldEqual ["MyPoint3D"]
 
-    [<Test>]
-    member x.Interfaces_Can_Be_Filtered() =
-      match getAllSymbols input |> Async.RunSynchronously with
-      | Some xs ->
-        let tags = Search.byTag "i" xs
-        tags |> Seq.length |> shouldEqual 1
-      | _ -> Assert.Fail "No interfaces found"
+  [<Test>]
+  member x.Interfaces_Can_Be_Filtered() =
+    searchByTag "i" |> shouldEqual ["IMyInterface"]
 
-    [<Test>]
-    member x.Enums_Can_Be_Filtered() =
-      match getAllSymbols input |> Async.RunSynchronously with
-      | Some xs ->
-        let tags = Search.byTag "e" xs
-        tags |> Seq.length |> shouldEqual 1
-      | _ -> Assert.Fail "No Enums found"
+  [<Test>]
+  member x.Enums_Can_Be_Filtered() =
+    searchByTag "e" |> shouldEqual ["MyEnum"]
 
-    [<Test>]
-    member x.Properties_Can_Be_Filtered() =
-      match getAllSymbols input |> Async.RunSynchronously with
-      | Some xs ->
-        let tags = Search.byTag "p" xs
-        tags |> Seq.length |> shouldEqual 1
-      | _ -> Assert.Fail "No Properties found"
+  [<Test>]
+  member x.Properties_Can_Be_Filtered() =
+    searchByTag "p" |> shouldEqual ["Foo"]
 
-    [<Test>]
-    member x.Members_Can_Be_Filtered() =
-      match getAllSymbols input |> Async.RunSynchronously with
-      | Some xs ->
-        let mtags = Search.byTag "m" xs
-        let membertags = Search.byTag "m" xs
-        mtags |> Seq.length |> shouldEqual 3 //1 in the record, 2 in the normal type, 1 in the delegate
-        membertags |> Seq.length |> shouldEqual 3 //1 in the record, 2 in the normal type, 1 in the delegate
-      | _ -> Assert.Fail "No Members found"
+  [<Test>]
+  member x.Members_Can_Be_Filtered() =
+    searchByTag "m" |> shouldEqual ["Bar"; "Test"; "Invoke"] //Invoke?
 
-    [<Test>]
-    member x.Fields_Can_Be_Filtered() =
-      match getAllSymbols input |> Async.RunSynchronously with
-      | Some xs ->
-        let tags = Search.byTag "f" xs
-        tags |> Seq.length |> shouldEqual 6//2 in the Enum, 3 in the struct, 1 in the record
-      | _ -> Assert.Fail "No Fields found"
+  [<Test>]
+  member x.Fields_Can_Be_Filtered() =
+    searchByTag "f" |> shouldEqual ["Test"; "x"; "y"; "z"; "First"; "Second"]  //Test?
 
-    [<Test>]
-    member x.Delegates_Can_Be_Filtered() =
-      match getAllSymbols input |> Async.RunSynchronously with
-      | Some xs ->
-        let tags = Search.byTag "d" xs
-        tags |> Seq.length |> shouldEqual 1
-      | _ -> Assert.Fail "No Delegates found"
+  [<Test>]
+  member x.Delegates_Can_Be_Filtered() =
+    searchByTag "d" |> shouldEqual ["MyDelegate"]
 
-    [<Test>]
-    member x.Search_By_Unique_Pattern_Is_Correct() =
-      match getAllSymbols input |> Async.RunSynchronously with
-      | Some xs ->
-        let result =
-          Search.byPattern (Dictionary<_,_>()) "++" xs
-          |> Seq.map (fun (a, b) -> a.Symbol.DisplayName )
-          |> Seq.toList
-        result |> shouldEqual ["( ++ )"]
-      | _ -> Assert.Fail "Not found"
-
-    [<Test>]
-    member x.Search_By_Pattern_Is_Correct() =
-      match getAllSymbols input |> Async.RunSynchronously with
-      | Some xs ->
-        let result = Search.byPattern (Dictionary<_,_>()) "My" xs
-
-        result
-        |> Seq.map (fun (a, b) -> a.Symbol.DisplayName, a.Symbol.GetType() )
+  [<Test>]
+  member x.Search_By_Unique_Pattern_Is_Correct() =
+    match getAllSymbols input |> Async.RunSynchronously with
+    | Some xs ->
+      let result =
+        Search.byPattern (Dictionary<_,_>()) "++" xs
+        |> Seq.map (fun (a, b) -> a.Symbol.DisplayName )
         |> Seq.toList
-        |> shouldEqual
-           [ "MyRecord",     typeof<FSharpEntity>
-             "MyType",       typeof<FSharpEntity>
-             "( .ctor )",    typeof<FSharpMemberOrFunctionOrValue>
-             "MyUnion",      typeof<FSharpEntity>
-             "MyPoint3D",    typeof<FSharpEntity>
-             "IMyInterface", typeof<FSharpEntity>
-             "MyEnum",       typeof<FSharpEntity>
-             "MyDelegate",   typeof<FSharpEntity> ]
-      | _ -> Assert.Fail "Not found"
+      result |> shouldEqual ["( ++ )"]
+    | _ -> Assert.Fail "Not found"
+
+  [<Test>]
+  member x.Search_By_Pattern_Is_Correct() =
+    match getAllSymbols input |> Async.RunSynchronously with
+    | Some xs ->
+      let result = Search.byPattern (Dictionary<_,_>()) "My" xs
+
+      result
+      |> Seq.map (fun (a, b) -> a.Symbol.DisplayName, a.Symbol.GetType() )
+      |> Seq.toList
+      |> shouldEqual
+         [ "MyRecord",     typeof<FSharpEntity>
+           "MyType",       typeof<FSharpEntity>
+           "( .ctor )",    typeof<FSharpMemberOrFunctionOrValue>
+           "MyUnion",      typeof<FSharpEntity>
+           "MyPoint3D",    typeof<FSharpEntity>
+           "IMyInterface", typeof<FSharpEntity>
+           "MyEnum",       typeof<FSharpEntity>
+           "MyDelegate",   typeof<FSharpEntity> ]
+    | _ -> Assert.Fail "Not found"

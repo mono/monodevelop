@@ -7,7 +7,6 @@ open MonoDevelop.FSharp
 
 [<TestFixture>]
 type TestTooltipProvider() =
-    inherit TestBase()
 
     let stripHtml html = 
         Regex.Replace(html, "<.*?>", "")

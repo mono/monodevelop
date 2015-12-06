@@ -2,17 +2,11 @@
 open System
 open NUnit.Framework
 open MonoDevelop.FSharp
-open MonoDevelop.Core
-open MonoDevelop.Ide.Gui
-open MonoDevelop.Ide.Gui.Content
-open MonoDevelop.Projects
-open MonoDevelop.Ide.TypeSystem
 open FsUnit
 open MonoDevelop.Debugger
 
 [<TestFixture>]
 type DebuggerExpressionResolver() =
-    inherit TestBase()
 
     let content =
       """
@@ -20,37 +14,36 @@ type TestOne() =
   member val PropertyOne = "42" with get, set
   member x.FunctionOne(parameter) = ()
 
-let local§One = TestOne()
-let local§Two = localOne.Prope§rtyOne
-let localThree = local§One.PropertyOne
-let localFour = localOne.Property§One"""
+let local|One = TestOne()
+let local|Two = localOne.Prope|rtyOne
+let localThree = local|One.PropertyOne
+let localFour = localOne.Property|One"""
 
     let getOffset expr =
         let startOffset = content.IndexOf (expr, StringComparison.Ordinal)
         let previousMarkers =
           content
           |> String.toArray
-          |> Array.findIndices((=) '§')
+          |> Array.findIndices((=) '|')
           |> Array.filter(fun i -> i < startOffset-1)
           |> Array.length
-        let offset = content.IndexOf('§',startOffset) - previousMarkers
+        let offset = content.IndexOf('|',startOffset) - previousMarkers
         offset
 
-    let resolveExpression (doc:Document, content:string, offset:int) =
-        let resolvers = doc.GetContents<FSharpTextEditorCompletion> () |> Seq.toArray
-        let resolver = (resolvers.[0] :> IDebuggerExpressionResolver)
-        Async.AwaitTask (resolver.ResolveExpressionAsync(doc.Editor, doc,offset, Async.DefaultCancellationToken))
+    let resolveExpression (doc:TestDocument, content:string, offset:int) =
+        let resolver = new FSharpTextEditorCompletion() :> IDebuggerExpressionResolver
+        Async.AwaitTask (resolver.ResolveExpressionAsync(doc.Editor, doc, offset, Async.DefaultCancellationToken))
         |> Async.RunSynchronously
 
     [<Test>]
-    [<TestCase("local§One","localOne")>]
-    [<TestCase("local§Two", "localTwo")>]
-    [<TestCase("localOne.Prope§rtyOne", "localOne.PropertyOne")>]
-    [<TestCase("local§One.PropertyOne", "localOne")>]
-    [<TestCase("localOne.Property§One", "localOne.PropertyOne")>]
+    [<TestCase("local|One","localOne")>]
+    [<TestCase("local|Two", "localTwo")>]
+    [<TestCase("localOne.Prope|rtyOne", "localOne.PropertyOne")>]
+    [<TestCase("local|One.PropertyOne", "localOne")>]
+    [<TestCase("localOne.Property|One", "localOne.PropertyOne")>]
     member x.TestBasicLocalVariable(localVariable, expected) =
         let basicOffset = getOffset (localVariable)
-        let doc, _viewContent = TestHelpers.createDoc (content.Replace("§" ,"")) [] ""
+        let doc = TestHelpers.createDoc (content.Replace("|" ,"")) [] ""
 
         let loc = doc.Editor.OffsetToLocation basicOffset
         let lineTxt = doc.Editor.GetLineText(loc.Line, false)

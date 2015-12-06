@@ -12,7 +12,6 @@ open System.IO
 
 [<TestFixture>]
 type TestProjectNodeCommandHandler() = 
-    inherit TestBase()
 
     [<Test>]
     member this.Can_reorder_nodes() =
