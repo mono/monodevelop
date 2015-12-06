@@ -49,6 +49,7 @@ module MonoDevelop =
            | null -> MonoDevelop.Projects.ConfigurationSelector.Default
            | config -> config
 
+    
     let visibleDocuments() = 
       IdeApp.Workbench.Documents
       |> Seq.filter (fun doc -> match doc.Window with

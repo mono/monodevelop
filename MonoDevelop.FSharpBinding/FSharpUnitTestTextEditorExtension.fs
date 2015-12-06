@@ -30,14 +30,17 @@ type FSharpUnitTestTextEditorExtension() =
         sb.ToString ()
 
     //only used for testing
+    let mutable testing = false
     member x.Initialize(editor, context) =
         x.DocumentContext <- context
         x.Editor <- editor
+        testing <- true
 
     override x.GatherUnitTests (cancellationToken) =
         let tests = ResizeArray<UnitTestLocation>()
 
         let hasNUnitReference =
+            testing ||
             match x.DocumentContext.Project with
             | null -> false
             | :? MonoDevelop.Projects.DotNetProject as dnp ->

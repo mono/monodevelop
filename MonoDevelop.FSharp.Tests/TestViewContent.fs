@@ -15,7 +15,7 @@ type TestViewContent() =
     let name = FilePath()
 
     let data = MonoDevelop.Ide.Editor.TextEditorFactory.CreateNewEditor ()
-
+   
     member val Contents = ResizeArray([data :> obj]) with get, set
     member val Data = data
 

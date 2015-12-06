@@ -1,29 +1,24 @@
 ﻿namespace MonoDevelopTests
 
 open System
+open Microsoft.FSharp.Compiler.SourceCodeServices
 open NUnit.Framework
 open MonoDevelop.FSharp
-open MonoDevelop.Core
 open MonoDevelop.Ide.Editor
-open MonoDevelop.Ide.Editor.Highlighting
-open MonoDevelop.Ide.Gui
-open MonoDevelop.Ide.Gui.Content
-open MonoDevelop.Projects
-open MonoDevelop.Ide.TypeSystem
 open FsUnit
-open Reflection
 
 [<TestFixture>]
 type SemanticHighlighting() = 
-  inherit TestBase()
-  
+  //inherit TestBase()
+
   let getStyle (content : string) = 
     let fixedc = content.Replace("§", "")
-    let doc, _viewContent = TestHelpers.createDoc fixedc [] "defined"
-    use syntaxMode = new FSharpSyntaxMode(doc.Editor, doc)
 
+    let doc = TestHelpers.createDoc fixedc [] "defined"
+
+    use syntaxMode = new FSharpSyntaxMode(doc.Editor, doc)
     let segments = 
-      syntaxMode.GetProcessedTokens()
+      syntaxMode.GetProcessedTokens(["defined"])
       |> Option.getOrElse (fun _ -> [])
       |> Seq.concat
       |> Seq.distinct

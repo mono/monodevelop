@@ -1,25 +1,35 @@
 ﻿namespace MonoDevelopTests
 open System
-open System.IO
 open NUnit.Framework
 open MonoDevelop.FSharp
-open MonoDevelop.Core
-open MonoDevelop.Ide.Gui
-open MonoDevelop.Ide.Gui.Content
-open MonoDevelop.Projects
-open MonoDevelop.Ide.TypeSystem
 open FsUnit
-open MonoDevelop.Debugger
-
-#if MDVERSION_5_5
-#else
 
 [<TestFixture>]
 type FSharpUnitTestTextEditorExtensionTests() =
-    inherit TestBase()
-    let (++) a b= Path.Combine (a,b)
+    let createDoc (text:string) =
+        let doc = TestHelpers.createDoc(text) [] ""
+        let test = new FSharpUnitTestTextEditorExtension()
+        test.Initialize (doc.Editor, doc)
+        test
 
-    let normalAndDoubleTick = """
+    let createDocWithReference (text:string) =
+        let attributes = """
+namespace NUnit.Framework
+open System
+type TestAttribute() =
+  inherit Attribute()
+type TestFixtureAttribute() =
+  inherit Attribute()
+type IgnoreAttribute() =
+  inherit Attribute()
+type TestCaseAttribute() =
+  inherit Attribute()
+"""
+        createDoc (attributes + text)
+
+    [<Test>]
+    member x.BasicTestCoveringNormalAndDoubleQuotedTestsInATestFixture () =
+        let normalAndDoubleTick = """
 open System
 open NUnit.Framework
 [<TestFixture>]
@@ -31,8 +41,26 @@ type Test() =
     [<Ignore>]
     member x.``Test Two``() = ()
 """
+        let testExtension = createDocWithReference normalAndDoubleTick
+        let res = testExtension.GatherUnitTests (Async.DefaultCancellationToken)
+                  |> Async.AwaitTask
+                  |> Async.RunSynchronously
+                  |> Seq.toList
+        match res with
+        | [fixture;t1;t2] -> 
+            fixture.IsFixture |> should equal true
+            fixture.UnitTestIdentifier |> should equal "NUnit.Framework.Test"
 
-    let noTests = """
+            t1.UnitTestIdentifier |> should equal "NUnit.Framework.Test.TestOne"
+            t1.IsIgnored |> should equal false
+
+            t2.UnitTestIdentifier |> should equal "NUnit.Framework.Test.``Test Two``"
+            t2.IsIgnored |> should equal true
+        | _ -> NUnit.Framework.Assert.Fail "invalid number of tests returned"
+
+    [<Test>]
+    member x.NoTests () =
+        let noTests = """
 open System
 open NUnit.Framework
 
@@ -40,7 +68,15 @@ type Test() =
     member x.TestOne() = ()
 """
 
-    let nestedTests = """
+        let testExtension = createDocWithReference noTests
+        let tests = testExtension.GatherUnitTests(Async.DefaultCancellationToken)
+                    |> Async.AwaitTask
+                    |> Async.RunSynchronously
+        tests.Count |> should equal 0
+
+    [<Test>]
+    member x.NestedTestCoveringNormalAndDoubleQuotedTestsInATestFixture () =
+        let nestedTests = """
 open System
 open NUnit.Framework
 module Test =
@@ -53,57 +89,7 @@ module Test =
         [<Ignore>]
         member x.``Test Two``() = ()
 """
-
-    let nunitRef =
-        ProjectReference.CreateAssemblyFileReference (FilePath (__SOURCE_DIRECTORY__ ++ @"../packages/NUnit.2.6.4/lib/nunit.framework.dll" ) )
-
-    let createDoc (text:string) references =
-        let doc,viewContent = TestHelpers.createDoc(text) references ""
-        let test = new FSharpUnitTestTextEditorExtension()
-        test.Initialize (doc.Editor, doc)
-        viewContent.Contents.Add (test)
-
-        try doc.UpdateParseDocument() |> ignore
-        with exn -> Diagnostics.Debug.WriteLine(exn.ToString())
-        test
-
-    [<TestFixtureSetUp>]
-    override x.Setup() =
-        base.Setup()
-  
-    [<Test;Ignore ("Gather unit tests needs to be refactored so the type sytem service is not involved.  C# has explicit files that dont have to be loaded from disk e.g. /a.cs")>]
-    member x.BasicTestCoveringNormalAndDoubleQuotedTestsInATestFixture () =
-        let testExtension = createDoc normalAndDoubleTick [nunitRef]
-        let res = testExtension.GatherUnitTests (Async.DefaultCancellationToken)
-                  |> Async.AwaitTask
-                  |> Async.RunSynchronously
-                  |> Seq.toList
-        match res with
-        | [fixture;t1;t2] -> 
-            fixture.IsFixture |> should equal true
-            fixture.UnitTestIdentifier |> should equal "A+Test"
-            fixture.Offset |> should equal 5
-
-            t1.UnitTestIdentifier |> should equal "A+Test.TestOne"
-            t1.Offset |> should equal 7
-            t1.IsIgnored |> should equal false
-
-            t2.UnitTestIdentifier |> should equal "A+Test.Test Two"
-            t2.Offset |> should equal 11
-            t2.IsIgnored |> should equal true
-        | _ -> NUnit.Framework.Assert.Fail "invalid number of tests returned"
-
-    [<Test; Ignore ("Gather unit tests needs to be refactored so the type sytem service is not involved.  C# has explicit files that dont have to be loaded from disk e.g. /a.cs")>]
-    member x.NoTests () =
-        let testExtension = createDoc noTests [nunitRef]
-        let tests = testExtension.GatherUnitTests(Async.DefaultCancellationToken)
-                    |> Async.AwaitTask
-                    |> Async.RunSynchronously
-        tests.Count |> should equal 0
-
-    [<Test; Ignore ("Gather unit tests needs to be refactored so the type sytem service is not involved.  C# has explicit files that dont have to be loaded from disk e.g. /a.cs")>]
-    member x.NestedTestCoveringNormalAndDoubleQuotedTestsInATestFixture () =
-        let testExtension = createDoc nestedTests [nunitRef]
+        let testExtension = createDocWithReference nestedTests
 
         match testExtension.GatherUnitTests(Async.DefaultCancellationToken)
               |> Async.AwaitTask
@@ -111,23 +97,31 @@ module Test =
               |> Seq.toList with
         | [fixture;t1;t2] -> 
             fixture.IsFixture |> should equal true
-            fixture.UnitTestIdentifier |> should equal "A+Test+Test"
-            fixture.Offset |> should equal 6
+            fixture.UnitTestIdentifier |> should equal "NUnit.Framework.Test+Test"
 
-            t1.UnitTestIdentifier |> should equal "A+Test+Test.TestOne"
-            t1.Offset |> should equal 8
+            t1.UnitTestIdentifier |> should equal "NUnit.Framework.Test+Test.TestOne"
             t1.IsIgnored |> should equal false
 
-            t2.UnitTestIdentifier |> should equal "A+Test+Test.Test Two"
-            t2.Offset |> should equal 12
+            t2.UnitTestIdentifier |> should equal "NUnit.Framework.Test+Test.``Test Two``"
             t2.IsIgnored |> should equal true
         | _ -> NUnit.Framework.Assert.Fail "invalid number of tests returned"
 
-    [<Test; Ignore ("Gather unit tests needs to be refactored so the type sytem service is not involved.  C# has explicit files that dont have to be loaded from disk e.g. /a.cs")>]
-    member x.TestsPesentButNoNUnitReference () =
-        let testExtension = createDoc normalAndDoubleTick []
+    [<Test>]
+    member x.TestsPresentButNoNUnitReference () =
+        let normalAndDoubleTick = """
+open System
+open NUnit.Framework
+[<TestFixture>]
+type Test() =
+    [<Test>]
+    member x.TestOne() = ()
+
+    [<Test>]
+    [<Ignore>]
+    member x.``Test Two``() = ()
+"""
+        let testExtension = createDoc normalAndDoubleTick
         let tests = testExtension.GatherUnitTests(Async.DefaultCancellationToken)
                     |> Async.AwaitTask
                     |> Async.RunSynchronously
         tests.Count |> should equal 0
-#endif
