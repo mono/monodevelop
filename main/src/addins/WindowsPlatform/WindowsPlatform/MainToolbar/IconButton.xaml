@@ -8,7 +8,7 @@
              mc:Ignorable="d"
              Background="Transparent" BorderBrush="Transparent">
     <Button Click="OnClick" FocusVisualStyle="{x:Null}" UseLayoutRounding="True" Focusable="{Binding Focusable}"
-			Background="{Binding Background}" BorderBrush="{Binding BorderBrush}">
+			Background="{Binding Background}" BorderBrush="{Binding BorderBrush}" Width="24" Height="24">
         <Button.Template>
             <ControlTemplate TargetType="Button">
                 <Border UseLayoutRounding="True"
@@ -20,6 +20,6 @@
             </ControlTemplate>
         </Button.Template>
         <Image x:Name="RunIcon" Source="{Binding CurrentImage}" UseLayoutRounding="True"
-    		MouseLeftButtonDown="OnMouseLeftButtonDown"/>
+    		MouseLeftButtonDown="OnMouseLeftButtonDown" Width="24" Height="24" Margin="-1" />
     </Button>
 </UserControl>
