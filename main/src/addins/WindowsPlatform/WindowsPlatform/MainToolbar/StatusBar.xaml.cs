@@ -183,6 +183,8 @@ namespace WindowsPlatform.MainToolbar
 		IDisposable xwtAnimation;
 		public void ShowMessage (IconId iconId, string message, bool isMarkup)
 		{
+			Message = message;
+
 			if (iconId.IsNull)
 				iconId = BrandingService.StatusSteadyIconId;
 
@@ -205,8 +207,6 @@ namespace WindowsPlatform.MainToolbar
 				});
 			} else
 				StatusImage = currentIcon.GetImageSource (Xwt.IconSize.Small);
-
-			Message = message;
 		}
 
 		public void ShowReady ()
