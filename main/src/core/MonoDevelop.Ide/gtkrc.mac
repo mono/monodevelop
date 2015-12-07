@@ -82,6 +82,7 @@ style "default" {
 
     GtkScrolledWindow::scrollbar-spacing = 0
     GtkScrolledWindow::scrollbars-within-bevel = 1
+    GtkScrolledWindow::draw-child-bg = 1
     GtkScale::slider-length = 14
     GtkRange::trough-side-details = 1
 
@@ -364,34 +365,26 @@ style "scrollbar" = "default"
 {
     GtkScrollbar::has-forward-stepper = 0
     GtkScrollbar::has-backward-stepper = 0
-    GtkRange::slider-width = 15
-    GtkRange::trough-border = 0
+    GtkRange::slider-width = 7
+    GtkRange::trough-border = 2
     GtkRange::trough-side-details = 0
 
-    engine "quartz" {
-    }
+    bg[NORMAL] = "#C0C0C0"
+    bg[PRELIGHT] = "#C0C0C0"
 
-    #engine "xamarin" {
-    #	roundness		= 1
-    #	border_shades	= { 1.0, 1.0 }
-    #	contrast		= 0.5
-    #	trough_shades	= { 1.2, 1.2 }
-    #}
+    engine "xamarin"
+    {
+        roundness		= 1
+        contrast		= 0.0
+        border_colors	= { "#C0C0C0", "#C0C0C0" }
+        trough_shades	= { 1.026, 1.026 }
+        stepperstyle = 1
+    }
 }
 
 style "completion_scrollbar" = "scrollbar"
 {
-    GtkRange::slider-width = 7
-    GtkRange::trough-border = 2
-
-    bg[NORMAL] = @bg_color
-
-    engine "xamarin"
-    {
-        roundness = 1
-        contrast = 0.0
-        trough_shades = { 1.0, 1.0 }
-    }
+	bg[NORMAL] = @bg_color
 }
 
 style "progressbar" = "default"
