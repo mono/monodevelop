@@ -256,13 +256,13 @@ style "treeview" = "default"
     }
 }
 
-style "tree-header" = "wide"
+style "tree-header"
 {
-    bg[NORMAL] = "#f2f2f2"
+    bg[NORMAL] = @bg_color
+    bg[INSENSITIVE] = @bg_color
 
     engine "xamarin" {
-        listviewheaderstyle = 3
-        separatorstyle = 1
+        border_colors = { @base_color, @base_color }
     }
 }
 
@@ -494,8 +494,8 @@ widget_class "*<GtkToolbar>*" style "toolbar"
 widget_class "*ToolButton*" style "toolbar-button"
 
 widget_class "*.<GtkTreeView>*" style "treeview"
-widget_class "*.GtkTreeView.GtkButton" style "tree-header"
-widget_class "*.GtkList.GtkButton" style "tree-header"
+widget_class "*.<GtkTreeView>.<GtkButton>" style "tree-header"
+widget_class "*.<GtkList>.<GtkButton>" style "tree-header"
 
 widget_class "*<GtkIconView>" style "icon-view"
 
