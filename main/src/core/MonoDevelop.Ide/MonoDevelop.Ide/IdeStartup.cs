@@ -62,7 +62,6 @@ namespace MonoDevelop.Ide
 		Socket listen_socket   = null;
 		ArrayList errorsList = new ArrayList ();
 		bool initialized;
-		internal static string DefaultTheme;
 		static readonly int ipcBasePort = 40000;
 		
 		Task<int> IApplication.Run (string[] args)
@@ -105,10 +104,8 @@ namespace MonoDevelop.Ide
 				LoggingService.LogError ("Error initialising GLib logging.", ex);
 			}
 
-			IdeTheme.UpdateGtkTheme ();
-
 			var args = options.RemainingArgs.ToArray ();
-			Gtk.Application.Init (BrandingService.ApplicationName, ref args);
+			IdeTheme.InitializeGtk (BrandingService.ApplicationName, ref args);
 
 			LoggingService.LogInfo ("Using GTK+ {0}", IdeVersionInfo.GetGtkVersion ());
 
@@ -161,13 +158,7 @@ namespace MonoDevelop.Ide
 
 			Counters.Initialization.Trace ("Initializing theme");
 
-			DefaultTheme = Gtk.Settings.Default.ThemeName;
-			string theme = IdeApp.Preferences.UserInterfaceTheme;
-			if (string.IsNullOrEmpty (theme))
-				theme = DefaultTheme;
-			ValidateGtkTheme (ref theme);
-			if (theme != DefaultTheme)
-				Gtk.Settings.Default.ThemeName = theme;
+			IdeTheme.SetupGtkTheme ();
 			
 			ProgressMonitor monitor = new MonoDevelop.Core.ProgressMonitoring.ConsoleProgressMonitor ();
 			
@@ -472,47 +463,6 @@ namespace MonoDevelop.Ide
 			}
 			IdeApp.Workbench.Present ();
 			return false;
-		}
-
-		internal static string[] gtkThemeFallbacks = new string[] {
-			"Xamarin",// the best!
-			"Gilouche", // SUSE
-			"Mint-X", // MINT
-			"Radiance", // Ubuntu 'light' theme (MD looks better with the light theme in 4.0 - if that changes switch this one)
-			"Clearlooks" // GTK theme
-		};
-
-		static void ValidateGtkTheme (ref string theme)
-		{
-			if (!MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.IsBadGtkTheme (theme))
-				return;
-
-			var themes = MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.InstalledThemes;
-
-			string fallback = gtkThemeFallbacks
-				.Select (fb => themes.FirstOrDefault (t => string.Compare (fb, t, StringComparison.OrdinalIgnoreCase) == 0))
-				.FirstOrDefault (t => t != null);
-
-			string message = "Theme Not Supported";
-
-			string detail;
-			if (themes.Count > 0) {
-				detail =
-					"Your system is using the '{0}' GTK+ theme, which is known to be very unstable. MonoDevelop will " +
-					"now switch to an alternate GTK+ theme.\n\n" +
-					"This message will continue to be shown at startup until you set a alternate GTK+ theme as your " +
-					"default in the GTK+ Theme Selector or MonoDevelop Preferences.";
-			} else {
-				detail =
-					"Your system is using the '{0}' GTK+ theme, which is known to be very unstable, and no other GTK+ " +
-					"themes appear to be installed. Please install another GTK+ theme.\n\n" +
-					"This message will continue to be shown at startup until you install a different GTK+ theme and " +
-					"set it as your default in the GTK+ Theme Selector or MonoDevelop Preferences.";
-			}
-
-			MessageService.GenericAlert (Gtk.Stock.DialogWarning, message, BrandingService.BrandApplicationName (detail), AlertButton.Ok);
-
-			theme = fallback ?? themes.FirstOrDefault () ?? theme;
 		}
 		
 		void CheckFileWatcher ()
