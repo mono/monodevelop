@@ -220,9 +220,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				if (closeWorkspaceCheck.Visible)
 					closeWorkspaceCheck.Active = true;
 
+				var isProtobuild = new System.IO.FileInfo(Filename).Name.Equals("Protobuild.exe", StringComparison.OrdinalIgnoreCase);
+
 				// Default exe/dll to AssemblyBrowser, solutions/projects to Solution Workbench.
 				// HACK: Couldn't make it a generic SolutionItemFile based conditional, .csproj fits under this category also.
-				if (!(Filename.EndsWith (".exe", StringComparison.OrdinalIgnoreCase) || Filename.EndsWith (".dll", StringComparison.OrdinalIgnoreCase)))
+				if (!(Filename.EndsWith (".exe", StringComparison.OrdinalIgnoreCase) || Filename.EndsWith (".dll", StringComparison.OrdinalIgnoreCase)) || isProtobuild)
 					selected = 0;
 				i++;
 			}

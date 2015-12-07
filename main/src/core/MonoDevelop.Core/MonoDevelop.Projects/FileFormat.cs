@@ -84,7 +84,7 @@ namespace MonoDevelop.Projects
 			return format.SupportsFramework (framework);
 		}
 		
-		internal IFileFormat Format {
+		public IFileFormat Format {
 			get { return format; }
 		}
 		

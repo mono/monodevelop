@@ -36,7 +36,7 @@ using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.Projects
 {
-	class GtkTemplateCellRenderer : CellRendererText
+	public class GtkTemplateCellRenderer : CellRendererText
 	{
 		public static Color LanguageButtonBackgroundColor = new Color (247, 247, 247);
 

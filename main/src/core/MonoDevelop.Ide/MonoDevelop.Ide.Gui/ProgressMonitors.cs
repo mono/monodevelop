@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Gui
 			return GetBuildProgressMonitor (GettextCatalog.GetString ("Rebuilding..."));
 		}
 		
-		private IProgressMonitor GetBuildProgressMonitor (string statusText)
+		public IProgressMonitor GetBuildProgressMonitor (string statusText)
 		{
 			Pad pad = IdeApp.Workbench.GetPad<ErrorListPad> ();
 			ErrorListPad errorPad = (ErrorListPad) pad.Content;
@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IProgressMonitor GetLoadProgressMonitor (bool lockGui)
 		{
-			return GetStatusProgressMonitor (GettextCatalog.GetString ("Loading..."), Stock.StatusSolutionOperation, true, false, lockGui);
+			return GetStatusProgressMonitor (GettextCatalog.GetString ("Loading..."), Stock.StatusSolutionOperation, true, true, lockGui);
 		}
 		
 		public IProgressMonitor GetProjectLoadProgressMonitor (bool lockGui)

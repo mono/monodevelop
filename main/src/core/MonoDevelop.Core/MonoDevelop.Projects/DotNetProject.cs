@@ -1136,7 +1136,7 @@ namespace MonoDevelop.Projects
 			return BuildAction.DotNetCommonActions;
 		}
 
-		internal override void SetItemHandler (ISolutionItemHandler handler)
+		public override void SetItemHandler (ISolutionItemHandler handler)
 		{
 			if (ProjectExtensionUtil.GetItemHandler (this) == null) {
 				// Initial assignment of the item handler

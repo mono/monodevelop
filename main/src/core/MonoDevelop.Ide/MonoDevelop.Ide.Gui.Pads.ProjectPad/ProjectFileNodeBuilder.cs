@@ -42,7 +42,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
-	class ProjectFileNodeBuilder: TypeNodeBuilder
+	public class ProjectFileNodeBuilder: TypeNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(ProjectFile); }
@@ -159,7 +159,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 	}
 	
-	class ProjectFileNodeCommandHandler: NodeCommandHandler
+	public class ProjectFileNodeCommandHandler: NodeCommandHandler
 	{
 		public override void OnRenameStarting (ref int selectionStart, ref int selectionLength)
 		{

@@ -231,12 +231,15 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var content in projectContents.Values.ToArray ()) {
 					var files = new List<ProjectFile> ();
 					foreach (var file in e) {
+					    if (content == null) {
+					        continue;
+					    }
 						var f = content.Project.GetProjectFile (file.FileName);
 						if (f == null || f.BuildAction == BuildAction.None)
 							continue;
 						files.Add (f);
 					}
-					if (files.Count > 0)
+					if (files.Count > 0 && content != null)
 						QueueParseJob (content, files);
 				}
 
@@ -360,7 +363,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			} catch (Exception) {
 				return null;
 			}
-			
+
 			return ParseFile (project, fileName, DesktopService.GetMimeTypeForUri (fileName), text);
 		}
 
@@ -376,7 +379,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			var t = Counters.ParserService.FileParsed.BeginTiming (fileName);
 			try {
-				var result = parser.Parse (true, fileName, new StringReader (content), project);
+			    if (project != null) {
+			        project = project.GetProjectForTypeSystem ();
+			    }
+			    var result = parser.Parse (true, fileName, new StringReader (content), project);
 				lock (projectWrapperUpdateLock) {
 					ProjectContentWrapper wrapper;
 					if (project != null) {
@@ -1669,6 +1675,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static ProjectContentWrapper LoadProject (Project project)
 		{
+		    project = project.GetProjectForTypeSystem ();
+
 			if (IncLoadCount (project) != 1)
 				return null;
 			lock (projectContentLock) {
@@ -1807,7 +1815,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		internal static void UnloadProject (Project project, bool skipProjectSerialization = false)
-		{
+        {
+            project = project.GetProjectForTypeSystem();
+
 			if (DecLoadCount (project) != 0)
 				return;
 			Counters.ParserService.ProjectsLoaded--;
@@ -2577,7 +2587,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		public static ProjectContentWrapper GetProjectContentWrapper (Project project)
 		{
 			if (project == null)
-				throw new ArgumentNullException ("project");
+                throw new ArgumentNullException("project");
+		    project = project.GetProjectForTypeSystem ();
 			ProjectContentWrapper content;
 			if (projectContents.TryGetValue (project, out content))
 				return content;
@@ -3011,6 +3022,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		#endregion
 
+	    public static void UnloadAllProjects ()
+	    {
+	        foreach (var project in projectContents.ToArray ()) {
+	            UnloadProject (project.Key);
+	        }
+	    }
 	}
 
 	sealed class AssemblyLoadedEventArgs : EventArgs

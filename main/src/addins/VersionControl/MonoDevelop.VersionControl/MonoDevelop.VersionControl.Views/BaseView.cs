@@ -93,5 +93,11 @@ namespace MonoDevelop.VersionControl
 		event EventHandler IViewContent.ContentChanged { add { } remove { } }
 		event EventHandler IViewContent.ContentNameChanged { add { } remove { } }
 		event EventHandler IViewContent.DirtyChanged { add { } remove { } }
+
+		void IViewContent.Suspend() {
+		}
+
+		void IViewContent.Resume() {
+		}
 	}
 }

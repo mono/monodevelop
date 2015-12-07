@@ -72,7 +72,7 @@ namespace MonoDevelop.Projects
 			configurations = new SolutionConfigurationCollection (this);
 		}
 		
-		public SolutionFolder RootFolder {
+		public virtual SolutionFolder RootFolder {
 			get {
 				if (rootFolder == null) {
 					rootFolder = new SolutionFolder ();
@@ -80,7 +80,7 @@ namespace MonoDevelop.Projects
 				}
 				return rootFolder;
 			}
-			internal set {
+			set {
 				rootFolder = value;
 			}
 		}
@@ -88,7 +88,7 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Folder where to add solution files, when none is created
 		/// </summary>
-		public SolutionFolder DefaultSolutionFolder {
+		public virtual SolutionFolder DefaultSolutionFolder {
 			get {
 				var itemsFolder = (SolutionFolder)RootFolder.Items.FirstOrDefault (item => item.Name == "Solution Items");
 				if (itemsFolder == null) {
@@ -101,7 +101,7 @@ namespace MonoDevelop.Projects
 		}
 		
 		// Does not include solution folders
-		public ReadOnlyCollection<SolutionItem> Items {
+		public virtual ReadOnlyCollection<SolutionItem> Items {
 			get {
 				if (solutionItems == null) {
 					List<SolutionItem> list = new List<SolutionItem> ();
@@ -114,7 +114,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public SolutionEntityItem StartupItem {
+		public virtual SolutionEntityItem StartupItem {
 			get {
 				if (startItemFileName != null) {
 					startupItem = FindSolutionItem (startItemFileName);
@@ -136,7 +136,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public bool SingleStartup {
+		public virtual bool SingleStartup {
 			get {
 				if (startItemFileName != null)
 					return true;
@@ -161,7 +161,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public List<SolutionEntityItem> MultiStartupItems {
+		public virtual List<SolutionEntityItem> MultiStartupItems {
 			get {
 				if (multiStartupItems != null) {
 					startupItems = new List<SolutionEntityItem> ();
@@ -180,7 +180,7 @@ namespace MonoDevelop.Projects
 		}
 
 		// Used by serialization only
-		internal string StartupItemFileName {
+		internal virtual string StartupItemFileName {
 			get {
 				if (SingleStartup && StartupItem != null)
 					return StartupItem.FileName;
@@ -190,7 +190,7 @@ namespace MonoDevelop.Projects
 			set { startItemFileName = value; }
 		}
 
-		internal List<string> MultiStartupItemFileNames {
+		internal virtual List<string> MultiStartupItemFileNames {
 			get {
 				if (SingleStartup)
 					return null;
@@ -210,7 +210,7 @@ namespace MonoDevelop.Projects
 		/// Gets the author information for this solution. If no specific information is set for this solution, it
 		/// will return the author defined in the global settings.
 		/// </summary>
-		public AuthorInformation AuthorInformation {
+		public virtual AuthorInformation AuthorInformation {
 			get {
 				return LocalAuthorInformation ?? AuthorInformation.Default;
 			}
@@ -220,7 +220,7 @@ namespace MonoDevelop.Projects
 		/// Gets or sets the author information for this solution. It returns null if no specific information
 		/// has been set for this solution.
 		/// </summary>
-		public AuthorInformation LocalAuthorInformation {
+		public virtual AuthorInformation LocalAuthorInformation {
 			get {
 				return UserProperties.GetValue<AuthorInformation> ("AuthorInfo");
 			}

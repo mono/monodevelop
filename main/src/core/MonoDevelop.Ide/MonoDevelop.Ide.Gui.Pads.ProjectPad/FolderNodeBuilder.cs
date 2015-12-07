@@ -50,7 +50,7 @@ using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
-	abstract class FolderNodeBuilder: TypeNodeBuilder
+	public abstract class FolderNodeBuilder: TypeNodeBuilder
 	{
 		public override void GetNodeAttributes (ITreeNavigator treeNavigator, object dataObject, ref NodeAttributes attributes)
 		{
@@ -148,7 +148,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 	}
 	
-	abstract class FolderCommandHandler: NodeCommandHandler
+	public abstract class FolderCommandHandler: NodeCommandHandler
 	{
 		// CommandHandlers are constantly re-created so it's not possible to cache data inside the instance
 		// Since 'AddExistingFolder' can only be run from the UI thread anyway we can safely just make this static.

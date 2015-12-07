@@ -33,7 +33,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Templates
 {
-	class TemplateWizardProvider
+	public class TemplateWizardProvider
 	{
 		WizardPage currentWizardPage;
 
@@ -129,7 +129,7 @@ namespace MonoDevelop.Ide.Templates
 			return IdeApp.Services.TemplatingService.GetWizard (id);
 		}
 
-		void Reset ()
+	    public void Reset ()
 		{
 			CurrentWizard = null;
 			CurrentPageNumber = 0;
