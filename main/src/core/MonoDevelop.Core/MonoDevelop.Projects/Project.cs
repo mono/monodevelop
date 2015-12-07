@@ -1905,7 +1905,7 @@ namespace MonoDevelop.Projects
 			using (await writeProjectLock.EnterAsync ().ConfigureAwait (false)) {
 				await Task.Run (() => {
 					WriteProject (monitor);
-				});
+				}).ConfigureAwait (false);
 			}
 		}
 
