@@ -78,10 +78,9 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				if (ma != null) {
 					var symbolInfo = semanticModel.GetSymbolInfo (ma.Expression);
 					var typeInfo = semanticModel.GetTypeInfo (ma.Expression);
-					Console.WriteLine (1);
-					if (typeInfo.Type.Name == "Match"  && typeInfo.Type.ContainingNamespace.GetFullName () == "System.Text.RegularExpressions" ) {
+					var type = typeInfo.Type;
+					if (type != null && type.Name == "Match"  && type.ContainingNamespace.GetFullName () == "System.Text.RegularExpressions" ) {
 						var items = new List<CompletionData>();
-						Console.WriteLine (2);
 						foreach (var grp in GetGroups (ctx, symbolInfo.Symbol)) {
 							items.Add (engine.Factory.CreateGenericData (this, "Groups[\"" + grp + "\"]", GenericDataType.Undefined));
 						}
@@ -102,7 +101,6 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					continue;
 				var invocation = node.Initializer.Value as InvocationExpressionSyntax;
 				var invocationSymbol = ctx.SemanticModel.GetSymbolInfo (invocation).Symbol;
-				Console.WriteLine (invocationSymbol);
 				if (invocationSymbol.Name == "Match" && SemanticHighlightingVisitor<int>.IsRegexType (invocationSymbol.ContainingType)) {
 					if (invocation.ArgumentList.Arguments.Count < 2)
 						continue;
