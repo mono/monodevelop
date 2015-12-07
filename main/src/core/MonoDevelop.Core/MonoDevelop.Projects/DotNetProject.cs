@@ -43,6 +43,7 @@ using MonoDevelop.Core.Assemblies;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Collections.Immutable;
+using MonoDevelop.Projects.Formats.MSBuild.Conditions;
 
 namespace MonoDevelop.Projects
 {
@@ -812,7 +813,8 @@ namespace MonoDevelop.Projects
 				return items;
 
 			foreach (ProjectReference pref in References) {
-				if (pref.ReferenceType == ReferenceType.Project) {
+				if (pref.ReferenceType == ReferenceType.Project && (string.IsNullOrEmpty (pref.Condition) ||
+				    ConditionParser.ParseAndEvaluate (pref.Condition, new ProjectParserContext (this, (DotNetProjectConfiguration)GetConfiguration (configuration))))) {
 					Project rp = pref.ResolveProject (ParentSolution);
 					if (rp != null)
 						items.Add (rp);
