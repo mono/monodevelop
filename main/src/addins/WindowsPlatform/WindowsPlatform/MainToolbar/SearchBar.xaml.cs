@@ -124,7 +124,7 @@ namespace WindowsPlatform.MainToolbar
 		void OnIconClicked (object sender, RoutedEventArgs args)
 		{
 			if (isClearShown)
-				SearchText = string.Empty;
+				ClearIconClicked?.Invoke(this, EventArgs.Empty);
 			else
 				SearchIcon.ContextMenu.IsOpen = true;
 		}
@@ -143,6 +143,7 @@ namespace WindowsPlatform.MainToolbar
 				PropertyChanged (this, new PropertyChangedEventArgs (propName));
 		}
 
+		public event EventHandler ClearIconClicked;
 		public event PropertyChangedEventHandler PropertyChanged;
 	}
 }

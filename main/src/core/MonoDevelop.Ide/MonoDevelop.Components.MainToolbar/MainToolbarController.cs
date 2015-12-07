@@ -570,9 +570,9 @@ namespace MonoDevelop.Components.MainToolbar
 		void HandleSearchEntryKeyPressed (object sender, Xwt.KeyEventArgs e)
 		{
 			if (e.Key == Xwt.Key.Escape) {
+				DestroyPopup();
 				var doc = IdeApp.Workbench.ActiveDocument;
 				if (doc != null) {
-					DestroyPopup ();
 					doc.Select ();
 				}
 				return;

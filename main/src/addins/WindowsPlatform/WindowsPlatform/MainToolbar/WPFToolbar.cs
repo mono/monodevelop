@@ -86,15 +86,25 @@ namespace WindowsPlatform.MainToolbar
 			};
 
 			toolbar.SearchBar.SearchBar.PreviewKeyDown += (o, e) => {
-				var ka = new KeyEventArgs (KeyboardUtil.TranslateToXwtKey (e.Key), KeyboardUtil.GetModifiers (), e.IsRepeat, e.Timestamp);
-				if (ka.Key == Xwt.Key.Escape)
-					SearchText = string.Empty;
-
-                if (SearchEntryKeyPressed != null)
-					SearchEntryKeyPressed (o, ka);
+				var ka = new KeyEventArgs(KeyboardUtil.TranslateToXwtKey(e.Key), KeyboardUtil.GetModifiers(), e.IsRepeat, e.Timestamp);
+				SendKeyPress(ka);
 				e.Handled = ka.Handled;
 			};
+
+			toolbar.SearchBar.ClearIconClicked += (o, e) =>
+			{
+				SendKeyPress(new KeyEventArgs(Xwt.Key.Escape, KeyboardUtil.GetModifiers(), false, 0));
+			};
         }
+
+		void SendKeyPress(KeyEventArgs ka)
+		{
+			if (ka.Key == Xwt.Key.Escape)
+				SearchText = string.Empty;
+
+			if (SearchEntryKeyPressed != null)
+				SearchEntryKeyPressed(this, ka);
+		}
 
 		public WPFToolbar () : this (new ToolBar ())
 		{
@@ -128,8 +138,7 @@ namespace WindowsPlatform.MainToolbar
 				toolbar.RuntimeMenu.IsEnabled = value && RuntimeModel.Count() > 1;
             }
 		}
-
-		bool platformSensitivity;
+		
 		public bool PlatformSensitivity {
 			set {
 				toolbar.RuntimeMenu.IsEnabled = value && RuntimeModel.Count() > 1;
