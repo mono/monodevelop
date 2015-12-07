@@ -9,11 +9,10 @@
              Background="{Binding Path=(platform:Styles.SearchBarBackgroundBrush), Mode=OneWay}"
              Foreground="{Binding Path=(platform:Styles.SearchBarTextBrush), Mode=OneWay}"
              BorderBrush="{Binding Path=(platform:Styles.SearchBarBorderBrush), Mode=OneWay}">
-    <Border BorderThickness="1" UseLayoutRounding="True">
-        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Height="24" UseLayoutRounding="True">
+    <Border BorderThickness="0" UseLayoutRounding="True">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Height="26" UseLayoutRounding="True">
             <TextBox x:Name="SearchBar" Text="{Binding Path=SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" MinWidth="180" Margin="5,0,0,0" Background="Transparent" Foreground="{Binding Foreground}" BorderThickness="0" UseLayoutRounding="True" />
-            <local:IconButtonControl x:Name="SearchIcon" Margin="0,0,4,0" Click="OnIconClicked" UseLayoutRounding="True"
-					VerticalContentAlignment="Center" VerticalAlignment="Center" >
+            <local:IconButtonControl x:Name="SearchIcon" Width="24" Height="24" Margin="0,0,1,0" Click="OnIconClicked" UseLayoutRounding="True" VerticalContentAlignment="Center" VerticalAlignment="Center" >
                 <local:IconButtonControl.ContextMenu>
                     <ContextMenu UseLayoutRounding="True" />
                 </local:IconButtonControl.ContextMenu>

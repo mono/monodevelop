@@ -45,11 +45,11 @@ namespace WindowsPlatform.MainToolbar
 			};
 
 			searchIcon = Stock.SearchboxSearch.GetImageSource (Xwt.IconSize.Small);
-			searchIconHovered = Xwt.Drawing.Image.FromResource (typeof(IdeApp), "searchbox-search-win-16~hover.png").WithSize (Xwt.IconSize.Small).GetImageSource ();
-			searchIconPressed = Xwt.Drawing.Image.FromResource (typeof(IdeApp), "searchbox-search-win-16~pressed.png").WithSize (Xwt.IconSize.Small).GetImageSource ();
+			searchIconHovered = Xwt.Drawing.Image.FromResource (typeof(IdeApp), "searchbox-search-win-24~hover.png").WithSize (Xwt.IconSize.Small).GetImageSource ();
+			searchIconPressed = Xwt.Drawing.Image.FromResource (typeof(IdeApp), "searchbox-search-win-24~pressed.png").WithSize (Xwt.IconSize.Small).GetImageSource ();
 			clearIcon = ((MonoDevelop.Core.IconId)"md-searchbox-clear").GetImageSource (Xwt.IconSize.Small);
-			clearIconHovered = Xwt.Drawing.Image.FromResource (typeof(IdeApp),"searchbox-clear-win-16~hover.png").WithSize (Xwt.IconSize.Small).GetImageSource ();
-			clearIconPressed = Xwt.Drawing.Image.FromResource (typeof(IdeApp), "searchbox-clear-win-16~pressed.png").WithSize (Xwt.IconSize.Small).GetImageSource ();
+			clearIconHovered = Xwt.Drawing.Image.FromResource (typeof(IdeApp),"searchbox-clear-win-24~hover.png").WithSize (Xwt.IconSize.Small).GetImageSource ();
+			clearIconPressed = Xwt.Drawing.Image.FromResource (typeof(IdeApp), "searchbox-clear-win-24~pressed.png").WithSize (Xwt.IconSize.Small).GetImageSource ();
 			SearchIcon.Image = searchIcon;
 			SearchIcon.ImageHovered = searchIconHovered;
 			SearchIcon.ImagePressed = searchIconPressed;
