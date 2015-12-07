@@ -38,9 +38,9 @@
             </Grid.ColumnDefinitions>
             <Image Grid.Column="0"
                    x:Name="StatusImageControl"
-                   MaxWidth="14"
+                   MaxWidth="16"
                    Margin="9,5,0,5"
-                   MaxHeight="14"
+                   MaxHeight="16"
                    Source="{Binding StatusImage}"
                    UseLayoutRounding="True"
                    MouseLeftButtonUp="OnShowPad" />

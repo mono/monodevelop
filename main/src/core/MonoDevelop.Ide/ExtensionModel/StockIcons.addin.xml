@@ -291,40 +291,23 @@
 	<StockIcon stockid="md-web-search-icon" resource="web-search-16.png" size="Menu" />
 
 	<!-- Status icons -->
-	<Condition id="Platform" value="mac">
-		<StockIcon stockid="md-status-build" animation="res:status-building-1-16.png;res:status-building-2-16.png;res:status-building-3-16.png;res:status-building-4-16.png;res:status-building-5-16.png" size="Menu" />
-		<StockIcon stockid="md-status-download" animation="res:status-pulling-1-16.png;res:status-pulling-2-16.png;res:status-pulling-3-16.png;res:status-pulling-4-16.png;res:status-pulling-5-16.png;res:status-pulling-6-16.png" size="Menu" />
-		<StockIcon stockid="md-status-upload" animation="res:status-pushing-1-16.png;res:status-pushing-2-16.png;res:status-pushing-3-16.png;res:status-pushing-4-16.png;res:status-pushing-5-16.png;res:status-pushing-6-16.png" size="Menu" />
-		<StockIcon stockid="md-status-open" animation="res:status-opening-1-16.png;res:status-opening-2-16.png;res:status-opening-3-16.png;res:status-opening-4-16.png;res:status-opening-5-16.png;res:status-opening-6-16.png" size="Menu" />
-		<StockIcon stockid="md-status-search" animation="res:status-searching-1-16.png;res:status-searching-2-16.png;res:status-searching-3-16.png;res:status-searching-4-16.png" size="Menu" />
-		<StockIcon stockid="md-status-connecting" animation="res:status-connecting-1-16.png;res:status-connecting-2-16.png;res:status-connecting-3-16.png;res:status-connecting-4-16.png;res:status-connecting-5-16.png;res:status-connecting-6-16.png" size="Menu" />
-		<StockIcon stockid="md-status-waiting" animation="res:status-waiting-1-16.png;res:status-waiting-2-16.png;res:status-waiting-3-16.png;res:status-waiting-4-16.png;res:status-waiting-5-16.png" size="Menu" />
-		<StockIcon stockid="md-status-steady" resource="status-ready-16.png" size="Menu" />
-		<StockIcon stockid="md-status-success" resource="status-success-16.png" size="Menu" />
-		<StockIcon stockid="md-status-warning" resource="status-warning-16.png" size="Menu" />
-		<StockIcon stockid="md-status-error" resource="status-error-16.png" size="Menu" />
-		<StockIcon stockid="md-status-updates-downloading" animation="res:status-updates-downloading-1-16.png;500;res:status-updates-downloading-2-16.png;33;res:status-updates-downloading-3-16.png;33;res:status-updates-downloading-4-16.png;33;res:status-updates-downloading-5-16.png;33;res:status-updates-downloading-6-16.png;33" size="Menu" />
-		<StockIcon stockid="md-status-updates-paused" resource="status-updates-paused-16.png" size="Menu" />
-		<StockIcon stockid="md-status-warning-count" resource="status-warning-count-16.png" size="Menu" />
-		<StockIcon stockid="md-status-error-count" resource="status-error-count-16.png" size="Menu" />
-		<StockIcon stockid="md-updates" resource="status-updates-ready-16.png" size="Menu" />
-		<StockIcon stockid="md-parser" resource="status-parsing-16.png" size="Menu" />
-	</Condition>
-	<Condition id="Platform" value="!mac">
-		<StockIcon stockid="md-status-build" animation="res:status-building-1-14.png;res:status-building-2-14.png;res:status-building-3-14.png;res:status-building-4-14.png;res:status-building-5-14.png" size="Menu" />
-		<StockIcon stockid="md-status-download" animation="res:status-pulling-1-14.png;res:status-pulling-2-14.png;res:status-pulling-3-14.png;res:status-pulling-4-14.png;res:status-pulling-5-14.png;res:status-pulling-6-14.png" size="Menu" />
-		<StockIcon stockid="md-status-upload" animation="res:status-pushing-1-14.png;res:status-pushing-2-14.png;res:status-pushing-3-14.png;res:status-pushing-4-14.png;res:status-pushing-5-14.png;res:status-pushing-6-14.png" size="Menu" />
-		<StockIcon stockid="md-status-open" animation="res:status-opening-1-14.png;res:status-opening-2-14.png;res:status-opening-3-14.png;res:status-opening-4-14.png;res:status-opening-5-14.png;res:status-opening-6-14.png" size="Menu" />
-		<StockIcon stockid="md-status-search" animation="res:status-searching-1-14.png;res:status-searching-2-14.png;res:status-searching-3-14.png;res:status-searching-4-14.png" size="Menu" />
-		<StockIcon stockid="md-status-connecting" animation="res:status-connecting-1-14.png;res:status-connecting-2-14.png;res:status-connecting-3-14.png;res:status-connecting-4-14.png;res:status-connecting-5-14.png;res:status-connecting-6-14.png" size="Menu" />
-		<StockIcon stockid="md-status-waiting" animation="res:status-waiting-1-14.png;res:status-waiting-2-14.png;res:status-waiting-3-14.png;res:status-waiting-4-14.png;res:status-waiting-5-14.png" size="Menu" />
-		<StockIcon stockid="md-status-steady" resource="status-ready-14.png" size="Menu" />
-		<StockIcon stockid="md-status-success" resource="status-success-14.png" size="Menu" />
-		<StockIcon stockid="md-status-warning" resource="status-warning-14.png" size="Menu" />
-		<StockIcon stockid="md-status-error" resource="status-failure-14.png" size="Menu" />
-		<StockIcon stockid="md-updates" resource="updates-16.png" size="Menu" />
-		<StockIcon stockid="md-parser" resource="parser-16.png" size="Menu" />
-	</Condition>
+	<StockIcon stockid="md-status-build" animation="res:status-building-1-16.png;res:status-building-2-16.png;res:status-building-3-16.png;res:status-building-4-16.png;res:status-building-5-16.png" size="Menu" />
+	<StockIcon stockid="md-status-download" animation="res:status-pulling-1-16.png;res:status-pulling-2-16.png;res:status-pulling-3-16.png;res:status-pulling-4-16.png;res:status-pulling-5-16.png;res:status-pulling-6-16.png" size="Menu" />
+	<StockIcon stockid="md-status-upload" animation="res:status-pushing-1-16.png;res:status-pushing-2-16.png;res:status-pushing-3-16.png;res:status-pushing-4-16.png;res:status-pushing-5-16.png;res:status-pushing-6-16.png" size="Menu" />
+	<StockIcon stockid="md-status-open" animation="res:status-opening-1-16.png;res:status-opening-2-16.png;res:status-opening-3-16.png;res:status-opening-4-16.png;res:status-opening-5-16.png;res:status-opening-6-16.png" size="Menu" />
+	<StockIcon stockid="md-status-search" animation="res:status-searching-1-16.png;res:status-searching-2-16.png;res:status-searching-3-16.png;res:status-searching-4-16.png" size="Menu" />
+	<StockIcon stockid="md-status-connecting" animation="res:status-connecting-1-16.png;res:status-connecting-2-16.png;res:status-connecting-3-16.png;res:status-connecting-4-16.png;res:status-connecting-5-16.png;res:status-connecting-6-16.png" size="Menu" />
+	<StockIcon stockid="md-status-waiting" animation="res:status-waiting-1-16.png;res:status-waiting-2-16.png;res:status-waiting-3-16.png;res:status-waiting-4-16.png;res:status-waiting-5-16.png" size="Menu" />
+	<StockIcon stockid="md-status-steady" resource="status-ready-16.png" size="Menu" />
+	<StockIcon stockid="md-status-success" resource="status-success-16.png" size="Menu" />
+	<StockIcon stockid="md-status-warning" resource="status-warning-16.png" size="Menu" />
+	<StockIcon stockid="md-status-error" resource="status-error-16.png" size="Menu" />
+	<StockIcon stockid="md-status-updates-downloading" animation="res:status-updates-downloading-1-16.png;500;res:status-updates-downloading-2-16.png;33;res:status-updates-downloading-3-16.png;33;res:status-updates-downloading-4-16.png;33;res:status-updates-downloading-5-16.png;33;res:status-updates-downloading-6-16.png;33" size="Menu" />
+	<StockIcon stockid="md-status-updates-paused" resource="status-updates-paused-16.png" size="Menu" />
+	<StockIcon stockid="md-status-warning-count" resource="status-warning-count-16.png" size="Menu" />
+	<StockIcon stockid="md-status-error-count" resource="status-error-count-16.png" size="Menu" />
+	<StockIcon stockid="md-updates" resource="status-updates-ready-16.png" size="Menu" />
+	<StockIcon stockid="md-parser" resource="status-parsing-16.png" size="Menu" />
 
 	<!-- Spinners -->
 	<StockIcon stockid="md-spinner-14" animation="res:spinner-14-1.png;60;res:spinner-14-2.png;60;res:spinner-14-3.png;60;res:spinner-14-4.png;60;res:spinner-14-5.png;60" size="Menu" />
