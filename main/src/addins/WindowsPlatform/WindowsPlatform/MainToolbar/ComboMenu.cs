@@ -38,19 +38,18 @@ namespace WindowsPlatform.MainToolbar
 				Mode = BindingMode.OneWay,
 			};
 
-			IsEnabledChanged += (o, e) =>
-				SetBinding (Control.ForegroundProperty, (bool)e.NewValue ? bindingFgColor : bindingDisabledFgColor);
-
 			var content = new StackPanel {
 				Orientation = Orientation.Horizontal,
 				Height = 20,
 			};
 
-			content.Children.Add (new TextBlock {
+			var textBlock = new TextBlock
+			{
 				HorizontalAlignment = HorizontalAlignment.Left,
 				VerticalAlignment = VerticalAlignment.Center,
-				Margin = new Thickness (0, 0, 0, 2),
-			});
+				Margin = new Thickness(0, 0, 0, 2),
+			};
+            content.Children.Add (textBlock);
 
 			var arrow = new Polygon {
 				Margin = new Thickness (5, 0, 0, 2),
@@ -58,6 +57,12 @@ namespace WindowsPlatform.MainToolbar
 				VerticalAlignment = VerticalAlignment.Center,
 			};
 			arrow.SetBinding (Shape.FillProperty, new Binding ("Foreground") { Source = this });
+
+			IsEnabledChanged += (o, e) =>
+			{
+				textBlock.SetBinding(Control.ForegroundProperty, (bool)e.NewValue ? bindingFgColor : bindingDisabledFgColor);
+				arrow.SetBinding(Polygon.FillProperty, (bool)e.NewValue ? bindingFgColor : bindingDisabledFgColor);
+			};
 
 			arrow.Points.Add (new Point (0, 3));
 			arrow.Points.Add (new Point (3, 6));

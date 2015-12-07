@@ -118,14 +118,22 @@ namespace WindowsPlatform.MainToolbar
 			get	{ return toolbar.ConfigurationMenu.Model; }
 			set { toolbar.ConfigurationMenu.Model = value; }
 		}
-		
-		public bool ConfigurationPlatformSensitivity {
-			get { return toolbar.ConfigurationMenu.IsEnabled; }
-			set { toolbar.ConfigurationMenu.IsEnabled = toolbar.RuntimeMenu.IsEnabled = value; }
+
+		bool configurationPlatformSensitivity;
+        public bool ConfigurationPlatformSensitivity {
+			get { return configurationPlatformSensitivity; }
+			set {
+				configurationPlatformSensitivity = value;
+				toolbar.ConfigurationMenu.IsEnabled = value && ConfigurationModel.Count() > 1;
+				toolbar.RuntimeMenu.IsEnabled = value && RuntimeModel.Count() > 1;
+            }
 		}
 
+		bool platformSensitivity;
 		public bool PlatformSensitivity {
-			set	{ toolbar.RuntimeMenu.IsEnabled = value; }
+			set {
+				toolbar.RuntimeMenu.IsEnabled = value && RuntimeModel.Count() > 1;
+			}
 		}
 
 		public Gtk.Widget PopupAnchor {
