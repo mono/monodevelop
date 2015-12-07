@@ -7,7 +7,7 @@ open FsUnit
 [<TestFixture>]
 type FSharpUnitTestTextEditorExtensionTests() =
     let createDoc (text:string) =
-        let doc = TestHelpers.createDoc(text) [] ""
+        let doc = TestHelpers.createDoc(text) ""
         let test = new FSharpUnitTestTextEditorExtension()
         test.Initialize (doc.Editor, doc)
         test

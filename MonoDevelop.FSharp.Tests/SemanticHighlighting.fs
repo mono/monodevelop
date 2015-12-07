@@ -9,16 +9,14 @@ open FsUnit
 
 [<TestFixture>]
 type SemanticHighlighting() = 
-  //inherit TestBase()
 
   let getStyle (content : string) = 
     let fixedc = content.Replace("§", "")
 
-    let doc = TestHelpers.createDoc fixedc [] "defined"
+    let doc = TestHelpers.createDoc fixedc "defined"
 
-    use syntaxMode = new FSharpSyntaxMode(doc.Editor, doc)
     let segments = 
-      syntaxMode.GetProcessedTokens(["defined"])
+      SyntaxMode.getProcessedTokens(doc.Editor, doc, ["defined"])
       |> Option.getOrElse (fun _ -> [])
       |> Seq.concat
       |> Seq.distinct

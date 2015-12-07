@@ -273,10 +273,7 @@ module Keywords =
       |> Option.fill scheme.KeywordTypes
     | None -> scheme.KeywordTypes
 
-type FSharpSyntaxMode(editor, context) = 
-  inherit SemanticHighlighting(editor, context)
-  let mutable segments = None
-  
+module SyntaxMode =
   let makeChunk (symbolsInFile:Dictionary<_,_>) (Tokens.LineDetail(lineNo, lineOffset, _lineText)) colourisations (style : ColorScheme) token = 
     let symbol =
       if token.CharClass = FSharpTokenCharKind.Identifier || token.CharClass = FSharpTokenCharKind.Operator then
@@ -335,7 +332,8 @@ type FSharpSyntaxMode(editor, context) =
     //LoggingService.LogInfo (sprintf """Segment: %s S:%i E:%i L:%i - "%s" """ seg.ColorStyleKey seg.Offset seg.EndOffset seg.Length (editor.GetTextBetween (seg.Offset, seg.EndOffset)) )
     seg
 
-  member x.GetProcessedTokens(defines) =
+
+  let getProcessedTokens(editor:TextEditor, context:DocumentContext, defines) =
     LoggingService.LogDebug "F# semantic highlighting - GetProcessedTokens"
     maybe { 
       let! localParsedDocument = context.ParsedDocument |> Option.ofNull
@@ -365,17 +363,20 @@ type FSharpSyntaxMode(editor, context) =
       return processedTokens
     }
 
+type FSharpSyntaxMode(editor, context) = 
+  inherit SemanticHighlighting(editor, context)
+  let mutable segments = None
+
   override x.DocumentParsed() =
     if MonoDevelop.isDocumentVisible context.Name then
       LoggingService.LogDebug "F# semantic highlighting - DocumentParsed"
       let defines = CompilerArguments.getDefineSymbols context.Name (context.Project |> Option.ofNull)
       
-      let processedTokens = x.GetProcessedTokens(defines)
+      let processedTokens = SyntaxMode.getProcessedTokens(editor, context, defines)
       processedTokens |> Option.iter (fun _ ->
                            LoggingService.LogDebug "F# semantic highlighting - DocumentParsed applying coloured segments"
                            segments <- processedTokens
                            Gtk.Application.Invoke(fun _ _ -> x.NotifySemanticHighlightingUpdate()))
-
 
   override x.GetColoredSegments(segment) = 
     let line = editor.GetLineByOffset segment.Offset

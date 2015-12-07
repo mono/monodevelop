@@ -34,15 +34,15 @@ module TestHelpers =
       with exn ->
         return ParseAndCheckResults(None, None) }  |> Async.RunSynchronously
 
-  let createDoc source references compilerDefines =
+  let createDoc source compilerDefines =
     let file = "test.fsx"
     let options = ParseOptions(FileName = file, Content = StringTextSource(source))
 
     let results = parseAndCheckFile source file
-    let parsedDocument = FSharpParser().GetParsedDocument(options, results, [compilerDefines]) 
+    let parsedDocument = ParsedDocument.create(options, results, [compilerDefines]) 
                          |> Async.RunSynchronously
 
     FixtureSetup().Initialise()
     let editor = MonoDevelop.Ide.Editor.TextEditorFactory.CreateNewEditor ()
     editor.Text <- source
-    TestDocument(file, parsedDocument, editor, references)
+    TestDocument(file, parsedDocument, editor)
