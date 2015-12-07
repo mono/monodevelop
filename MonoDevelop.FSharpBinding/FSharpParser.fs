@@ -102,7 +102,10 @@ type FSharpParser() =
         let content = parseOptions.Content
 
         let proj = parseOptions.Project
-        if fileName = null || not (MDLanguageService.SupportedFileName (fileName)) then null else
+
+        let doc = MonoDevelop.tryGetVisibleDocument fileName
+
+        if doc.IsNone || not (MDLanguageService.SupportedFileName (fileName)) then null else
 
         let shortFilename = Path.GetFileName fileName
         LoggingService.LogDebug ("FSharpParser: Parse starting on {0}", shortFilename)
@@ -134,7 +137,7 @@ type FSharpParser() =
             cancellationToken = cancellationToken,
             computation = async {
 
-            let doc = async {                    
+            let parsedDoc = async {                    
               match tryGetFilePath fileName proj with
               | Some filePath -> 
                   LoggingService.LogDebug ("FSharpParser: Running ParseAndCheckFileInProject for {0}", shortFilename)
@@ -148,6 +151,6 @@ type FSharpParser() =
                   return! ParsedDocument.create(parseOptions, results , defines)
               | None -> return FSharpParsedDocument(fileName, Flags = ParsedDocumentFlags.NonSerializable)} |> Async.RunSynchronously
             
-            doc.LastWriteTimeUtc <- try File.GetLastWriteTimeUtc(fileName) with _ -> DateTime.UtcNow
+            parsedDoc.LastWriteTimeUtc <- try File.GetLastWriteTimeUtc(fileName) with _ -> DateTime.UtcNow
             LoggingService.LogDebug ("FSharpParser: returning ParsedDocument on {0}", shortFilename)
-            return doc :> _})
+            return parsedDoc :> _})
