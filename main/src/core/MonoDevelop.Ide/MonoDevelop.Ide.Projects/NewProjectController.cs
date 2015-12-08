@@ -627,7 +627,7 @@ namespace MonoDevelop.Ide.Projects
 		bool CreateProject ()
 		{
 			if (!projectConfiguration.IsValid ()) {
-				MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, '.' or '_'."));
+				MessageService.ShowError (projectConfiguration.GetErrorMessage ());
 				return false;
 			}
 

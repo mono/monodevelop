@@ -644,6 +644,17 @@ namespace MonoDevelop.Ide.Editor
 			return textEditorImpl.GetTextSegmentMarkersAt (segment);
 		}
 
+		public IEnumerable<ITextSegmentMarker> GetTextSegmentMarkersAt (int offset, int length)
+		{
+			if (offset < 0 || offset >= Length)
+				throw new ArgumentOutOfRangeException (nameof (offset), "needs to be 0 <= offset < Length=" + this.Length);
+
+			if (offset + length < 0 || offset  + length > Length)
+				throw new ArgumentOutOfRangeException (nameof (length), "needs to be 0 <= offset + length (" + length + ") < Length=" + this.Length);
+			
+			return textEditorImpl.GetTextSegmentMarkersAt (new TextSegment (offset, length));
+		}
+
 		public IEnumerable<ITextSegmentMarker> GetTextSegmentMarkersAt (int offset)
 		{
 			return textEditorImpl.GetTextSegmentMarkersAt (offset);

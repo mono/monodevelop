@@ -854,6 +854,39 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task SolutionUnboundWhenUnloadingProject ()
+		{
+			var sol = new Solution ();
+
+			var item = new SomeItem ();
+			item.Name = "SomeItem";
+			Assert.AreEqual (0, item.BoundEvents);
+			Assert.AreEqual (0, item.UnboundEvents);
+
+			sol.RootFolder.AddItem (item);
+			Assert.AreEqual (1, item.BoundEvents);
+			Assert.AreEqual (0, item.UnboundEvents);
+			Assert.AreEqual (1, item.InternalItem.BoundEvents);
+			Assert.AreEqual (0, item.InternalItem.UnboundEvents);
+
+			Assert.IsTrue (item.Enabled);
+
+			item.Reset ();
+
+			item.Enabled = false;
+			await item.ParentFolder.ReloadItem (Util.GetMonitor (), item);
+
+			SolutionItem reloadedItem = sol.GetAllItems<SolutionItem> ().FirstOrDefault (it => it.Name == "SomeItem");
+			Assert.IsNotNull (reloadedItem);
+			Assert.IsFalse (reloadedItem.Enabled);
+			Assert.IsInstanceOf<UnloadedSolutionItem> (reloadedItem);
+			Assert.AreEqual (0, item.BoundEvents);
+			Assert.AreEqual (1, item.UnboundEvents);
+			Assert.AreEqual (0, item.InternalItem.BoundEvents);
+			Assert.AreEqual (1, item.InternalItem.UnboundEvents);
+		}
+
+		[Test]
 		public async Task SolutionBuildOrder ()
 		{
 			string solFile = Util.GetSampleProject ("solution-build-order", "ConsoleApplication3.sln");

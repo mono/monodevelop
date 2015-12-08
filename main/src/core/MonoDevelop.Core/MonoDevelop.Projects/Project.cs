@@ -206,7 +206,7 @@ namespace MonoDevelop.Projects
 		public MSBuildProject MSBuildProject {
 			get { 
 				if (msbuildUpdatePending && !saving)
-					WriteProject (new ProgressMonitor ());
+					WriteProjectAsync (new ProgressMonitor ()).Wait ();
 				return sourceProject;
 			}
 		}
@@ -443,19 +443,16 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		internal protected override Task OnSave (ProgressMonitor monitor)
+		internal protected override async Task OnSave (ProgressMonitor monitor)
 		{
 			SetFastBuildCheckDirty ();
 			modifiedInMemory = false;
 
-			return Task.Run (delegate {
-				WriteProject (monitor);
+			await WriteProjectAsync (monitor);
 
-				// Doesn't save the file to disk if the content did not change
-				if (sourceProject.Save (FileName) && projectBuilder != null) {
-					projectBuilder.Refresh ().Wait ();
-				}
-			});
+			// Doesn't save the file to disk if the content did not change
+			if (await sourceProject.SaveAsync (FileName) && projectBuilder != null)
+				await projectBuilder.Refresh ();
 		}
 
 		protected override IEnumerable<WorkspaceObjectExtension> CreateDefaultExtensions ()
@@ -1096,7 +1093,7 @@ namespace MonoDevelop.Projects
 				}
 				if (modifiedInMemory) {
 					modifiedInMemory = false;
-					WriteProject (new ProgressMonitor ());
+					await WriteProjectAsync (new ProgressMonitor ());
 					await projectBuilder.RefreshWithContent (sourceProject.SaveToString ());
 				}
 			}
@@ -1114,7 +1111,7 @@ namespace MonoDevelop.Projects
 
 			var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0, true);
 			if (modifiedInMemory) {
-				WriteProject (new ProgressMonitor ());
+				await WriteProjectAsync (new ProgressMonitor ());
 				await pb.RefreshWithContent (sourceProject.SaveToString ());
 			}
 			return pb;
@@ -1903,7 +1900,18 @@ namespace MonoDevelop.Projects
 			NeedsReload = false;
 		}
 
-		internal void WriteProject (ProgressMonitor monitor)
+		AsyncCriticalSection writeProjectLock = new AsyncCriticalSection ();
+
+		internal async Task WriteProjectAsync (ProgressMonitor monitor)
+		{
+			using (await writeProjectLock.EnterAsync ().ConfigureAwait (false)) {
+				await Task.Run (() => {
+					WriteProject (monitor);
+				}).ConfigureAwait (false);
+			}
+		}
+
+		void WriteProject (ProgressMonitor monitor)
 		{
 			if (saving) {
 				LoggingService.LogError ("WriteProject called while the project is already being written");

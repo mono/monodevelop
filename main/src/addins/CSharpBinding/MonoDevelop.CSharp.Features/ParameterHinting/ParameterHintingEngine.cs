@@ -133,6 +133,12 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					if (addedMethods.Any (added => SignatureComparer.HaveSameSignature (method, added, true)))
 						continue;
 					if (method.IsAccessibleWithin (within)) {
+						if (info.Symbol != null) {
+							var smethod = (IMethodSymbol)info.Symbol;
+							if (smethod != null && smethod.OriginalDefinition == method) {
+								continue;
+							}
+						}
 						addedMethods.Add (method); 
 						result.AddData (factory.CreateMethodDataProvider (method));
 					}

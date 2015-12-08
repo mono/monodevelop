@@ -63,7 +63,7 @@ namespace MonoDevelop.CSharp.Resolver
 			if (model == null)
 				return null;
 
-			int index = identifier.IndexOf ("`");
+			int index = identifier.IndexOf ("`", System.StringComparison.Ordinal);
 			int arity = 0;
 			if (index != -1) {
 				arity = int.Parse (identifier.Substring (index + 1));
@@ -74,6 +74,10 @@ namespace MonoDevelop.CSharp.Resolver
 				var typeSymbol = symbol as INamedTypeSymbol;
 				if (typeSymbol != null && (arity == 0 || arity == typeSymbol.Arity)) {
 					return symbol;
+				}
+				var namespaceSymbol = symbol as INamespaceSymbol;
+				if (namespaceSymbol != null) {
+					return namespaceSymbol;
 				}
 			}
 			return null;

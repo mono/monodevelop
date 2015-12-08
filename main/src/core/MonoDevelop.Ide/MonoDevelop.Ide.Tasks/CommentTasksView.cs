@@ -88,8 +88,9 @@ namespace MonoDevelop.Ide.Tasks
 
 			MonoDevelopWorkspace.LoadingFinished += OnWorkspaceItemLoaded;
 			IdeApp.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
+			IdeApp.Workspace.LastWorkspaceItemClosed += LastWorkspaceItemClosed;
 			IdeApp.Workbench.DocumentOpened += WorkbenchDocumentOpened;
-			IdeApp.Workbench.DocumentClosed += WorkbenchDocumentClosed;;
+			IdeApp.Workbench.DocumentClosed += WorkbenchDocumentClosed;
 
 			highPrioColor = StringToColor (IdeApp.Preferences.UserTasksHighPrioColor);
 			normalPrioColor = StringToColor (IdeApp.Preferences.UserTasksNormalPrioColor);
@@ -272,7 +273,22 @@ namespace MonoDevelop.Ide.Tasks
 		void OnWorkspaceItemUnloaded (object sender, WorkspaceItemEventArgs e)
 		{
 			comments.RemoveItemTasks (e.Item, true);
-		}		
+
+			var solution = e.Item as Solution;
+			if (solution != null) {
+				loadedSlns.Remove (solution);
+
+				foreach (Project p in solution.GetAllProjects ()) {
+					projectTags.Remove (p);
+				}
+			}
+		}
+
+		void LastWorkspaceItemClosed (object sender, EventArgs e)
+		{
+			loadedSlns.Clear ();
+			projectTags.Clear ();
+		}
 
 		void OnCommentTasksChanged (object sender, CommentTasksChangedEventArgs e)
 		{

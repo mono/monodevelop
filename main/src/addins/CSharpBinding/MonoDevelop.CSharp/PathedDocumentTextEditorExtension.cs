@@ -267,8 +267,10 @@ namespace MonoDevelop.CSharp
 		void UntrackStartupProjectChanges ()
 		{
 			if (ownerProjects != null) {
-				foreach (var sol in ownerProjects.Select (p => p.ParentSolution).Distinct ())
-					sol.StartupItemChanged -= HandleStartupProjectChanged;
+				foreach (var sol in ownerProjects.Select (p => p.ParentSolution).Distinct ()) {
+					if (sol != null)
+						sol.StartupItemChanged -= HandleStartupProjectChanged;
+				}
 			}
 		}
 

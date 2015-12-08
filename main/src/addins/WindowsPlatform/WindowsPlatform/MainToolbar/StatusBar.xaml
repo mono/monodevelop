@@ -1,0 +1,70 @@
+﻿<UserControl x:Class="WindowsPlatform.MainToolbar.StatusBarControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:WindowsPlatform.MainToolbar"
+             xmlns:platform="clr-namespace:WindowsPlatform"
+             mc:Ignorable="d" Background="{Binding Path=(platform:Styles.StatusBarBackgroundBrush), Mode=OneWay}">
+    <UserControl.Style>
+        <Style TargetType="{x:Type local:StatusBarControl}">
+        	<Setter Property="StatusTextBrush" Value="{Binding Path=(platform:Styles.StatusBarTextBrush), Mode=OneWay}" />
+			<Style.Triggers>
+                <Trigger Property="Status" Value="Ready">
+                    <Setter Property="StatusTextBrush" Value="{Binding Path=(platform:Styles.StatusBarReadyTextBrush), Mode=OneWay}"/>
+                </Trigger>
+                <Trigger Property="Status" Value="Warning">
+                    <Setter Property="StatusTextBrush" Value="{Binding Path=(platform:Styles.StatusBarWarningTextBrush), Mode=OneWay}"/>
+                </Trigger>
+                <Trigger Property="Status" Value="Error">
+                    <Setter Property="StatusTextBrush" Value="{Binding Path=(platform:Styles.StatusBarErrorTextBrush), Mode=OneWay}"/>
+                </Trigger>
+			</Style.Triggers>
+		</Style>
+    </UserControl.Style>
+    <Grid VerticalAlignment="Center" Height="26" Width="350" MinWidth="220" MaxWidth="700" UseLayoutRounding="True">
+        <Grid>
+            <ProgressBar Minimum="0" Maximum="1" x:Name="ProgressBar"
+            		Background="Transparent"
+            		BorderBrush="{Binding Path=(platform:Styles.StatusBarProgressBorderBrush), Mode=OneWay}"
+            		Foreground="{Binding Path=(platform:Styles.StatusBarProgressBackgroundBrush), Mode=OneWay}"/>
+        </Grid>
+        <Grid Background="Transparent" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Image Grid.Column="0"
+                   x:Name="StatusImageControl"
+                   MaxWidth="16"
+                   Margin="9,5,0,5"
+                   MaxHeight="16"
+                   Source="{Binding StatusImage}"
+                   UseLayoutRounding="True"
+                   MouseLeftButtonUp="OnShowPad" />
+            <TextBlock Grid.Column="1"
+                VerticalAlignment="Center"
+                Padding="7,1,0,2"
+                Foreground="{Binding StatusTextBrush}"
+                Text="{Binding Message}"
+                UseLayoutRounding="True" 
+                MouseLeftButtonUp="OnShowPad" />
+            <StackPanel x:Name="BuildResultPanel"
+                        Grid.Column="2"
+                        Visibility="{Binding BuildResultPanelVisibility}"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        UseLayoutRounding="True"
+                        MouseLeftButtonUp="OnShowError">
+                <Image Source="{Binding BuildResultIcon}" Margin="0,0,0,0" MaxWidth="16" MaxHeight="16" UseLayoutRounding="True" />
+                <TextBlock
+            	    Text="{Binding BuildResultCount}" 
+	                VerticalAlignment="Center"
+	                Padding="3,2,5,1" />
+            </StackPanel>
+            <StackPanel x:Name="StatusIconsPanel" Grid.Column="3" VerticalAlignment="Center" Orientation="Horizontal" UseLayoutRounding="True" Margin="0,0,3,0" />
+        </Grid>
+    </Grid>
+</UserControl>
