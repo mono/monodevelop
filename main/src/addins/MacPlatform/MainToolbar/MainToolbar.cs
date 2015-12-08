@@ -503,7 +503,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			set { }
 		}
 
-		public MonoDevelop.Ide.StatusBar StatusBar {
+		public IStatusBar StatusBar {
 			get { return statusBar; }
 		}
 		#endregion

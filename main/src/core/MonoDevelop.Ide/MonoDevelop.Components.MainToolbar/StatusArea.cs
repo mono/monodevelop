@@ -41,7 +41,7 @@ using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	class StatusArea : EventBox, StatusBar, Xwt.Motion.IAnimatable
+	class StatusArea : EventBox, IStatusBar, Xwt.Motion.IAnimatable
 	{
 		struct Message
 		{
@@ -107,10 +107,6 @@ namespace MonoDevelop.Components.MainToolbar
 
 		Queue<Message> messageQueue;
 
-		public StatusBar MainContext {
-			get { return ctxHandler.MainContext; }
-		}
-
 		public int MaxWidth { get; set; }
 
 		void messageBoxToolTip (object o, QueryTooltipArgs e)
@@ -138,7 +134,33 @@ namespace MonoDevelop.Components.MainToolbar
 			theme = new StatusAreaTheme ();
 			renderArg = new RenderArg ();
 
-			ctxHandler = new StatusBarContextHandler (this);
+			ctxHandler = new StatusBarContextHandler ();
+			ctxHandler.MessageChanged += (object sender, NotificationContextMessageChangedArgs e) => {
+				if (e.Context != null) {
+					SetMessageSourcePad (e.Context.StatusSourcePad);
+				}
+				ShowMessage (e.Image, e.Message, e.IsMarkup);
+			};
+			ctxHandler.ProgressChanged += (object sender, NotificationContextProgressChangedArgs e) => {
+				switch (e.EventType) {
+				case NotificationContextProgressChangedArgs.ProgressChangedType.Begin:
+					BeginProgress ();
+					break;
+
+				case NotificationContextProgressChangedArgs.ProgressChangedType.Finish:
+					EndProgress ();
+					break;
+
+				case NotificationContextProgressChangedArgs.ProgressChangedType.Fraction:
+					SetProgressFraction (e.Work);
+					break;
+
+				case NotificationContextProgressChangedArgs.ProgressChangedType.Pulse:
+					// Nothing
+					break;
+				}
+			};
+
 			VisibleWindow = false;
 			NoShowAll = true;
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
@@ -412,17 +434,12 @@ namespace MonoDevelop.Components.MainToolbar
 			icon.EventBox.Destroy ();
 		}
 
-		public StatusBarContext CreateContext ()
-		{
-			return ctxHandler.CreateContext ();
-		}
-
-		public void ShowReady ()
+		void ShowReady ()
 		{
 			ShowMessage ("");
 		}
 
-		public void SetMessageSourcePad (Pad pad)
+		void SetMessageSourcePad (Pad pad)
 		{
 			sourcePad = pad;
 		}
@@ -620,32 +637,32 @@ namespace MonoDevelop.Components.MainToolbar
 
 		#region StatusBarContextBase implementation
 
-		public void ShowError (string error)
+		void ShowError (string error)
 		{
 			ShowMessage (StockIcons.StatusError, error);
 		}
 
-		public void ShowWarning (string warning)
+		void ShowWarning (string warning)
 		{
 			ShowMessage (StockIcons.StatusWarning, warning);
 		}
 
-		public void ShowMessage (string message)
+		void ShowMessage (string message)
 		{
 			ShowMessage (null, message, false);
 		}
 
-		public void ShowMessage (string message, bool isMarkup)
+		void ShowMessage (string message, bool isMarkup)
 		{
 			ShowMessage (null, message, isMarkup);
 		}
 
-		public void ShowMessage (IconId image, string message)
+		void ShowMessage (IconId image, string message)
 		{
 			ShowMessage (image, message, false);
 		}
 
-		public void ShowMessage (IconId image, string message, bool isMarkup)
+		void ShowMessage (IconId image, string message, bool isMarkup)
 		{
 			if (this.AnimationIsRunning("Text") || animPauseHandle > 0) {
 				messageQueue.Clear ();
@@ -793,32 +810,24 @@ namespace MonoDevelop.Components.MainToolbar
 			if (handler != null)
 				handler (null, e);
 		}
-
-		public void BeginProgress (string name)
+		
+		void BeginProgress (bool autoPulse = false)
 		{
-			ShowMessage (name);
 			if (!progressBarVisible) {
 				progressBarVisible = true;
 				OnProgressBegin (EventArgs.Empty);
 			}
+
+			AutoPulse = autoPulse;
 		}
 
-		public void BeginProgress (IconId image, string name)
-		{
-			ShowMessage (image, name);
-			if (!progressBarVisible) {
-				progressBarVisible = true;
-				OnProgressBegin (EventArgs.Empty);
-			}
-		}
-
-		public void SetProgressFraction (double work)
+		void SetProgressFraction (double work)
 		{
 			DispatchService.AssertGuiThread ();
 			OnProgressFraction (new FractionEventArgs (work));
 		}
-
-		public void EndProgress ()
+		
+		void EndProgress ()
 		{
 			if (!progressBarVisible)
 				return;
@@ -827,15 +836,15 @@ namespace MonoDevelop.Components.MainToolbar
 			OnProgressEnd (EventArgs.Empty);
 			AutoPulse = false;
 		}
-
-		public void Pulse ()
+		
+		void Pulse ()
 		{
 			DispatchService.AssertGuiThread ();
 			OnProgressPulse (EventArgs.Empty);
 		}
 
 		uint autoPulseTimeoutId;
-		public bool AutoPulse {
+		bool AutoPulse {
 			get { return autoPulseTimeoutId != 0; }
 			set {
 				DispatchService.AssertGuiThread ();

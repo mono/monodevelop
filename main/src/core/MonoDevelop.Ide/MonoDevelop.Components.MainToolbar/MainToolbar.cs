@@ -80,7 +80,7 @@ namespace MonoDevelop.Components.MainToolbar
 			set;
 		}
 
-		public MonoDevelop.Ide.StatusBar StatusBar {
+		public IStatusBar StatusBar {
 			get {
 				return statusArea;
 			}
@@ -170,7 +170,7 @@ namespace MonoDevelop.Components.MainToolbar
 			AddSpace (24);
 
 			statusArea = new StatusArea ();
-			statusArea.ShowMessage (BrandingService.ApplicationName);
+			NotificationService.MainContext.ShowMessage (BrandingService.ApplicationName);
 
 			var statusAreaAlign = new Alignment (0, 0, 1, 1);
 			statusAreaAlign.Add (statusArea);

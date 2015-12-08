@@ -109,13 +109,13 @@ namespace MonoDevelop.Ide.Tasks
 		public static void ShowStatus (TaskListEntry t)
 		{
 			if (t == null)
-				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("No more errors or warnings"));
+				NotificationService.MainContext.ShowMessage (GettextCatalog.GetString ("No more errors or warnings"));
 			else if (t.Severity == TaskSeverity.Error)
-				IdeApp.Workbench.StatusBar.ShowError (t.Description);
+				NotificationService.MainContext.ShowError (t.Description);
 			else if (t.Severity == TaskSeverity.Warning)
-				IdeApp.Workbench.StatusBar.ShowWarning (t.Description);
+				NotificationService.MainContext.ShowWarning (t.Description);
 			else
-				IdeApp.Workbench.StatusBar.ShowMessage (t.Description);
+				NotificationService.MainContext.ShowMessage (t.Description);
 		}
 			
 		static void OnWorkspaceItemLoaded (object sender, WorkspaceItemEventArgs e)

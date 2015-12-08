@@ -44,7 +44,7 @@ namespace MonoDevelop.SourceEditor
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
 			base.HandleKeypress (key, unicodeKey, modifier);
-			IdeApp.Workbench.StatusBar.ShowMessage (ViEditor.Message);
+			NotificationService.MainContext.ShowMessage (ViEditor.Message);
 		}
 	}
 	

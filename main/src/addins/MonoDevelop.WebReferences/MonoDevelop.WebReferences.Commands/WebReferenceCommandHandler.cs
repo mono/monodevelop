@@ -14,7 +14,7 @@ namespace MonoDevelop.WebReferences.Commands
 	/// <summary>Defines the properties and methods for the WebReferenceCommandHandler class.</summary>
 	public class WebReferenceCommandHandler : NodeCommandHandler
 	{
-		StatusBarContext UpdateReferenceContext {
+		NotificationContext UpdateReferenceContext {
 			get; set;
 		}
 		
@@ -86,7 +86,7 @@ namespace MonoDevelop.WebReferences.Commands
 		void UpdateReferences (IList<WebReferenceItem> items)
 		{
 			try {
-				UpdateReferenceContext = IdeApp.Workbench.StatusBar.CreateContext ();
+				UpdateReferenceContext = NotificationService.CreateContext ();
 				UpdateReferenceContext.BeginProgress (GettextCatalog.GetPluralString ("Updating web reference", "Updating web references", items.Count));
 				
 				DispatchService.ThreadDispatch (() => {
@@ -108,7 +108,7 @@ namespace MonoDevelop.WebReferences.Commands
 						foreach (var project in items.Select (i =>i.Project).Distinct ())
 							IdeApp.ProjectOperations.SaveAsync (project);
 						
-						IdeApp.Workbench.StatusBar.ShowMessage(GettextCatalog.GetPluralString ("Updated Web Reference {0}", "Updated Web References", items.Count, items[0].Name));
+						NotificationService.MainContext.ShowMessage (GettextCatalog.GetPluralString ("Updated Web Reference {0}", "Updated Web References", items.Count, items[0].Name));
 						DisposeUpdateContext ();
 					});
 				});
@@ -135,7 +135,7 @@ namespace MonoDevelop.WebReferences.Commands
 				return;
 			item.Delete();
 			IdeApp.ProjectOperations.SaveAsync (item.Project);
-			IdeApp.Workbench.StatusBar.ShowMessage("Deleted Web Reference " + item.Name);
+			NotificationService.MainContext.ShowMessage("Deleted Web Reference " + item.Name);
 		}
 		
 		/// <summary>Execute the command for removing all web references from a project.</summary>
@@ -155,7 +155,7 @@ namespace MonoDevelop.WebReferences.Commands
 				item.Delete();
 
 			IdeApp.ProjectOperations.SaveAsync(project);
-			IdeApp.Workbench.StatusBar.ShowMessage("Deleted all Web References");
+			NotificationService.MainContext.ShowMessage("Deleted all Web References");
 		}
 
 		[CommandUpdateHandler (WebReferenceCommands.Configure)]

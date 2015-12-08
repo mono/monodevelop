@@ -793,9 +793,9 @@ But I leave it in in the case I've missed something. Mike
 			//	error |= !valid;
 			
 			if (!valid) {
-				IdeApp.Workbench.StatusBar.ShowError (errorMsg);
+				NotificationService.MainContext.ShowError (errorMsg);
 			} else {
-				IdeApp.Workbench.StatusBar.ShowReady ();
+				NotificationService.MainContext.ShowReady ();
 			}
 			
 			if (!valid || textEditor.TextViewMargin.SearchResultMatchCount == 0) {
@@ -864,14 +864,11 @@ But I leave it in in the case I've missed something. Mike
 			textEditor.CenterToCaret ();
 
 			if (result == null) {
-				IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Search pattern not found"));
+				NotificationService.MainContext.ShowError (GettextCatalog.GetString ("Search pattern not found"));
 			} else if (result.SearchWrapped) {
-				IdeApp.Workbench.StatusBar.ShowMessage (
-					Stock.Find,
-					GettextCatalog.GetString ("Reached bottom, continued from top")
-				);
+				NotificationService.MainContext.ShowMessage (Stock.Find, GettextCatalog.GetString ("Reached bottom, continued from top"));
 			} else {
-				IdeApp.Workbench.StatusBar.ShowReady ();
+				NotificationService.MainContext.ShowReady ();
 			}
 			return result;
 		}
@@ -884,14 +881,11 @@ But I leave it in in the case I've missed something. Mike
 				return null;
 			textEditor.CenterToCaret ();
 			if (result == null) {
-				IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Search pattern not found"));
+				NotificationService.MainContext.ShowError (GettextCatalog.GetString ("Search pattern not found"));
 			} else if (result.SearchWrapped) {
-				IdeApp.Workbench.StatusBar.ShowMessage (
-					Stock.Find,
-					GettextCatalog.GetString ("Reached top, continued from bottom")
-				);
+				NotificationService.MainContext.ShowMessage (Stock.Find, GettextCatalog.GetString ("Reached top, continued from bottom"));
 			} else {
-				IdeApp.Workbench.StatusBar.ShowReady ();
+				NotificationService.MainContext.ShowReady ();
 			}
 			return result;
 		}
@@ -907,9 +901,9 @@ But I leave it in in the case I've missed something. Mike
 		{
 			int number = textEditor.ReplaceAll (ReplacePattern);
 			if (number == 0) {
-				IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Search pattern not found"));
+				NotificationService.MainContext.ShowError (GettextCatalog.GetString ("Search pattern not found")); 
 			} else {
-				IdeApp.Workbench.StatusBar.ShowMessage (
+				NotificationService.MainContext.ShowMessage (
 					GettextCatalog.GetPluralString ("Found and replaced one occurrence",
 					                                "Found and replaced {0} occurrences", number, number));
 			}

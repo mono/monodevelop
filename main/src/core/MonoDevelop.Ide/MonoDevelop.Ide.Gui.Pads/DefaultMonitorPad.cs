@@ -187,14 +187,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 					buttonClear.Sensitive = false;
 				
 				if (monitor.Errors.Length > 0) {
-					IdeApp.Workbench.StatusBar.ShowMessage (Stock.Error, monitor.Errors [monitor.Errors.Length - 1].Message);
-					IdeApp.Workbench.StatusBar.SetMessageSourcePad (statusSourcePad);
+					NotificationService.MainContext.StatusSourcePad = statusSourcePad;
+					NotificationService.MainContext.ShowError (monitor.Errors[monitor.Errors.Length - 1].Message);
 				} else if (monitor.SuccessMessages.Length > 0) {
-					IdeApp.Workbench.StatusBar.ShowMessage (monitor.SuccessMessages [monitor.SuccessMessages.Length - 1]);
-					IdeApp.Workbench.StatusBar.SetMessageSourcePad (statusSourcePad);
+					NotificationService.MainContext.StatusSourcePad = statusSourcePad;
+					NotificationService.MainContext.ShowMessage (monitor.SuccessMessages [monitor.SuccessMessages.Length - 1]);
 				} else if (monitor.Warnings.Length > 0) {
-					IdeApp.Workbench.StatusBar.ShowMessage (Stock.Warning, monitor.Warnings [monitor.Warnings.Length - 1]);
-					IdeApp.Workbench.StatusBar.SetMessageSourcePad (statusSourcePad);
+					NotificationService.MainContext.StatusSourcePad = statusSourcePad;
+					NotificationService.MainContext.ShowWarning (monitor.Warnings[monitor.Warnings.Length - 1]);
 				}
 			});
 		}

@@ -164,7 +164,7 @@ namespace MonoDevelop.VersionControl.Git
 								}
 
 								DispatchService.GuiDispatch (delegate {
-									IdeApp.Workbench.StatusBar.ShowMessage (msg);
+									NotificationService.MainContext.ShowMessage (msg);
 								});
 							}
 

@@ -1,10 +1,10 @@
 ﻿//
-// StatusBarContextHandler.cs
+// NotificationService.cs
 //
 // Author:
-//       Marius Ungureanu <marius.ungureanu@xamarin.com>
+//       iain holmes <iain@xamarin.com>
 //
-// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
+// Copyright (c) 2015 Xamarin, Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,81 +28,72 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
 
-namespace MonoDevelop.Components.MainToolbar
+namespace MonoDevelop.Ide
 {
-	class StatusBarContextHandler
+	public static class NotificationService
 	{
-		public event EventHandler<NotificationContextMessageChangedArgs> MessageChanged;
-		public event EventHandler<NotificationContextProgressChangedArgs> ProgressChanged;
+		public static event EventHandler<NotificationServiceContextEventArgs> ContextAdded;
+		public static event EventHandler<NotificationServiceContextEventArgs> ContextRemoved;
 
-		readonly List<NotificationContext> activeContexts = new List<NotificationContext> ();
-		Timer changeMessageTimer;
-		int nextContext;
+		readonly static NotificationContext mainContext;
+		readonly static List<NotificationContext> contexts = new List<NotificationContext> ();
+		/*
+		static Timer changeMessageTimer;
+		static int nextContext;
+		*/
 
-		public StatusBarContextHandler ()
+		static NotificationService ()
 		{
-			NotificationService.ContextAdded += NotificationServiceContextAdded;
-			NotificationService.ContextRemoved += NotificationServiceContextRemoved;
-			NotificationService.MainContext.MessageChanged += ContextMessageChanged;
-			NotificationService.MainContext.ProgressChanged += ContextProgressChanged;
+			mainContext = new NotificationContext ();
+			contexts.Add (mainContext);
 		}
 
-		void NotificationServiceContextAdded (object sender, NotificationServiceContextEventArgs e)
-		{
-			e.Context.MessageChanged += ContextMessageChanged;
-			e.Context.ProgressChanged += ContextProgressChanged;
+		public static NotificationContext MainContext {
+			get { return mainContext; }
 		}
 
-		void NotificationServiceContextRemoved (object sender, NotificationServiceContextEventArgs e)
+		public static NotificationContext CreateContext ()
 		{
-			e.Context.MessageChanged -= ContextMessageChanged;
-			e.Context.ProgressChanged -= ContextProgressChanged;
-			activeContexts.Remove (e.Context);
+			var ctx = new NotificationContext ();
+			contexts.Add (ctx);
 
-			UpdateMessage ();
+			OnContextAdded (ctx);
+			return ctx;
 		}
 
-		void ContextMessageChanged (object sender, NotificationContextMessageChangedArgs e)
+		/*
+		static void ContextMessageChanged (object sender, NotificationContextMessageChangedArgs e)
 		{
 			NotificationContext ctx = (NotificationContext)sender;
 			if (!activeContexts.Contains (ctx)) {
-				activeContexts.Add (ctx);
+				activeContexts.Add (ctx); 
 			} else {
 				// Remove it from the list and insert it at the end if it's not an empty context
 				activeContexts.Remove (ctx);
 
 				if (ctx.Message != null && ctx.Image != IconId.Null) {
-					activeContexts.Add (ctx);
+					activeContexts.Add (ctx); 
 				}
 			}
 
 			UpdateMessage ();
 		}
-
-		void ContextProgressChanged (object sender, NotificationContextProgressChangedArgs e)
+		*/
+		/*
+		static void OnMessageChanged (NotificationContext context)
 		{
-			if (ProgressChanged != null) {
-				ProgressChanged (this, e);
-			}
-		}
-
-		void OnMessageChanged (NotificationContext context)
-		{
-			string message = context != null ? context.Message : "";
+			string message = context != null ? context.Message : null;
 			bool isMarkup = context != null && context.IsMarkup;
 			IconId image = context != null ? context.Image : IconId.Null;
 
 			if (MessageChanged != null) {
-				var args = new NotificationContextMessageChangedArgs (context, message, isMarkup, image);
-
-				// Enforce dispatch on GUI thread so clients don't need to care.
-				DispatchService.GuiDispatch (() => MessageChanged (this, args));
+				var args = new NotificationContextMessageChangedArgs (message, isMarkup, image);
+				MessageChanged (this, args);
 			}
 		}
 
-		void UpdateMessage ()
+		static void UpdateMessage ()
 		{
 			if (activeContexts.Count != 0) {
 				// Display the newest active context
@@ -116,7 +107,7 @@ namespace MonoDevelop.Components.MainToolbar
 			ResetUpdateTimer ();
 		}
 
-		void ResetUpdateTimer ()
+		static void ResetUpdateTimer ()
 		{
 			// Shut down the old timer;
 			if (changeMessageTimer != null) {
@@ -132,16 +123,52 @@ namespace MonoDevelop.Components.MainToolbar
 			changeMessageTimer = new Timer { Interval = 5000, AutoReset = true };
 			changeMessageTimer.Elapsed += (object sender, ElapsedEventArgs e) => {
 				var ctx = activeContexts[nextContext];
-
+				OnMessageChanged (ctx);
 				nextContext++;
 				if (nextContext >= activeContexts.Count) {
 					nextContext = 0;
 				}
-
-				OnMessageChanged (ctx);
 			};
 
 			changeMessageTimer.Start ();
 		}
+		*/
+
+		internal static void Remove (NotificationContext ctx)
+		{
+			if (ctx == mainContext) {
+				return;
+			}
+
+			contexts.Remove (ctx);
+			OnContextRemoved (ctx);
+		}
+
+		static void OnContextAdded (NotificationContext ctx)
+		{
+			if (ContextAdded != null) {
+				var args = new NotificationServiceContextEventArgs (ctx);
+				ContextAdded (null, args);
+			}
+		}
+
+		static void OnContextRemoved (NotificationContext ctx)
+		{
+			if (ContextRemoved != null) {
+				var args = new NotificationServiceContextEventArgs (ctx);
+				ContextRemoved (null, args);
+			}
+		}
+	}
+
+	public class NotificationServiceContextEventArgs : EventArgs
+	{
+		public NotificationContext Context { get; private set; }
+
+		public NotificationServiceContextEventArgs (NotificationContext context)
+		{
+			Context = context;
+		}
 	}
 }
+

@@ -94,7 +94,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	}
 
 	[Register]
-	class StatusBar : NSTextField, MonoDevelop.Ide.StatusBar
+	class StatusBar : NSTextField, IStatusBar
 	{
 		const string ProgressLayerId = "ProgressLayer";
 		const string ProgressLayerFadingId = "ProgressLayerFading";
@@ -155,7 +155,32 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			WantsLayer = true;
 			Layer.CornerRadius = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 6 : 4;
-			ctxHandler = new StatusBarContextHandler (this);
+			ctxHandler = new StatusBarContextHandler ();
+			ctxHandler.MessageChanged += (object sender, NotificationContextMessageChangedArgs e) => {
+				if (e.Context != null) {
+					SetMessageSourcePad (e.Context.StatusSourcePad);
+				}
+				ShowMessage (e.Image, e.Message, e.IsMarkup);
+			};
+			ctxHandler.ProgressChanged += (object sender, NotificationContextProgressChangedArgs e) => {
+				switch (e.EventType) {
+				case NotificationContextProgressChangedArgs.ProgressChangedType.Begin:
+					BeginProgress (e.Context.AutoPulse);
+					break;
+
+				case NotificationContextProgressChangedArgs.ProgressChangedType.Finish:
+					EndProgress ();
+					break;
+
+				case NotificationContextProgressChangedArgs.ProgressChangedType.Fraction:
+					SetProgressFraction (e.Work);
+					break;
+
+				case NotificationContextProgressChangedArgs.ProgressChangedType.Pulse:
+					// Nothing
+					break;
+				}
+			};
 
 			updateHandler = delegate {
 				int ec=0, wc=0;
@@ -402,17 +427,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			return statusIcon;
 		}
 
-		public StatusBarContext CreateContext ()
-		{
-			return ctxHandler.CreateContext ();
-		}
-
-		public void ShowReady ()
-		{
-			ShowMessage (null, "", false, NSColor.DisabledControlText);
-		}
-
-		static Pad sourcePad;
+		Pad sourcePad;
 		public void SetMessageSourcePad (Pad pad)
 		{
 			sourcePad = pad;
@@ -508,23 +523,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			iconLoaded = true;
 		}
 
-		public void BeginProgress (string name)
+		void BeginProgress (bool autoPulse = false)
 		{
 			EndProgress ();
-			ShowMessage (name);
 			oldFraction = 0;
 
-			if (AutoPulse)
-				StartProgressAutoPulse ();
-		}
-
-		public void BeginProgress (IconId image, string name)
-		{
-			EndProgress ();
-			ShowMessage (image, name);
-			oldFraction = 0;
-
-			if (AutoPulse)
+			if (autoPulse)
 				StartProgressAutoPulse ();
 		}
 
@@ -532,9 +536,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		double oldFraction;
 		public void SetProgressFraction (double work)
 		{
-			if (AutoPulse)
-				return;
-
 			progressMarks.Push (work);
 			if (!inProgress) {
 				inProgress = true;
@@ -551,23 +552,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					ProgressLayer.RemoveFromSuperLayer ();
 			}
 			inProgress = false;
-			AutoPulse = false;
 		}
 
 		public void Pulse ()
 		{
 			// Nothing to do here.
-		}
-
-		public MonoDevelop.Ide.StatusBar MainContext {
-			get {
-				return ctxHandler.MainContext;
-			}
-		}
-
-		public bool AutoPulse {
-			get;
-			set;
 		}
 
 		static CGColor xamBlue = new CGColor (52f / 255, 152f / 255, 219f / 255);

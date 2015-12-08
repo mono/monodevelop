@@ -256,10 +256,10 @@ namespace MonoDevelop.Ide.Gui
 		public ProgressMonitorManager ProgressMonitors {
 			get { return monitors; }
 		}
-		
-		public StatusBar StatusBar {
+
+		public IStatusBar StatusBar {
 			get {
-				return workbench.StatusBar.MainContext;
+				return workbench.StatusBar;
 			}
 		}
 

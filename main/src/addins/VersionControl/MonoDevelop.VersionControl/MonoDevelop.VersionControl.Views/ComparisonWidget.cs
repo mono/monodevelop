@@ -170,17 +170,21 @@ namespace MonoDevelop.VersionControl.Views
 					RemoveLocal (toEditor.GetTextEditorData ());
 					box.SetItem (string.Format (GettextCatalog.GetString ("Revision {0}\t{1}\t{2}"), result.Key, result.Key.Time, result.Key.Author), null, result.Key);
 					toEditor.Text = result.Value;
-					IdeApp.Workbench.StatusBar.AutoPulse = false;
-					IdeApp.Workbench.StatusBar.EndProgress ();
-					IdeApp.Workbench.StatusBar.ShowReady ();
+
+					// FIXME: Could this be moved on a separate context?
+					NotificationService.MainContext.AutoPulse = false;
+					NotificationService.MainContext.EndProgress ();
+					NotificationService.MainContext.ShowReady ();
 					box.Sensitive = true;
 					UpdateDiff ();
 				});
 			};
 			
 			worker.RunWorkerAsync (rev);
-			IdeApp.Workbench.StatusBar.BeginProgress (string.Format (GettextCatalog.GetString ("Retrieving revision {0}..."), rev.ToString ()));
-			IdeApp.Workbench.StatusBar.AutoPulse = true;
+
+			// FIXME: Could this be moved on a separate context?
+			NotificationService.MainContext.AutoPulse = true;
+			NotificationService.MainContext.BeginProgress (string.Format (GettextCatalog.GetString ("Retrieving revision {0}..."), rev.ToString ()));
 			
 			if (toEditor == editors[0]) {
 				diffRevision = rev;

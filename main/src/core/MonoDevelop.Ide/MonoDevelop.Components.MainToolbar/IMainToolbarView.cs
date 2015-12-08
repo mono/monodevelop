@@ -207,7 +207,7 @@ namespace MonoDevelop.Components.MainToolbar
 		/// Gets the native status bar.
 		/// </summary>
 		/// <value>The native status bar.</value>
-		StatusBar StatusBar { get; }
+		IStatusBar StatusBar { get; }
 	}
 
 	/// <summary>
