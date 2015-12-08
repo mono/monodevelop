@@ -972,6 +972,8 @@
 			_label = "Go to Matching _Brace"
 			description = "Go to Matching Brace"
 			shortcut = "Control|B" />
+	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectUntilMatchingBrace"
+			_label = "Select Until Matching Brace" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveLeft"
 			_label = "Expand selection to the left" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveRight"

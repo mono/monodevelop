@@ -43,9 +43,49 @@ namespace Mono.TextEditor
 				int matchingBracketOffset = data.Document.GetMatchingBracketOffset (data.Caret.Offset);
 				if (matchingBracketOffset == -1 && data.Caret.Offset > 0)
 					matchingBracketOffset = data.Document.GetMatchingBracketOffset (data.Caret.Offset - 1);
-			
+
 				if (matchingBracketOffset != -1)
 					data.Caret.Offset = matchingBracketOffset;
+			}
+		}
+
+		public static void SelectUntilMatchingBracket (TextEditorData data)
+		{
+			using (var undoGroup = data.OpenUndoGroup ()) {
+				int chosenBracketOffset = data.Caret.Offset;
+				int matchingBracketOffset = data.Document.GetMatchingBracketOffset (chosenBracketOffset);
+				bool behind = true;
+
+				if (matchingBracketOffset == -1) {
+					if (chosenBracketOffset > 0)
+						matchingBracketOffset = data.Document.GetMatchingBracketOffset (chosenBracketOffset - 1);
+					behind = false;
+				}
+
+				// Given that there are 4 search patterns and we need a deterministic behaviour, match VS implementation
+				// which also includes braces in the selection. First means text-wise first, second means text-wise second.
+				// Search from behind first brace. The initial caret offset is good, but the destination needs incremented.
+				// Search from behind second brace. The initial caret needs incremented, the destination is good.
+				// Search from after first brace. The initial caret needs decremented, and the destination needs incremented.
+				// Search from after second brace. The initial caret is good, the destination is good.
+				if (matchingBracketOffset != -1) {
+					bool first = chosenBracketOffset < matchingBracketOffset;
+					int chosenOffset = 0;
+					int matchingOffset = 0;
+
+					if (behind) {
+						if (first)
+							matchingOffset = 1;
+						else
+							chosenOffset = 1;
+					} else {
+						if (first) {
+							chosenOffset = -1;
+							matchingOffset = 1;
+						}
+					}
+					data.SetSelection (chosenBracketOffset + chosenOffset, matchingBracketOffset + matchingOffset);
+				}
 			}
 		}
 		
