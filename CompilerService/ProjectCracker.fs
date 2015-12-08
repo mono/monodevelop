@@ -378,7 +378,7 @@ type ProjectCracker =
   static member GetProjectOptionsFromProjectFile(projectFileName, ?properties : (string * string) list, ?loadedTimeStamp, ?enableLogging) =
       let enableLogging = defaultArg enableLogging false
       let rec getOptions file logs =
-          let parsedProject = FSharpProjectFileInfo.Parse(file, ?properties=properties, enableLogging=enableLogging)
+          let parsedProject = ProjectCracking.FSharpProjectFileInfo.Parse(file, ?properties=properties, enableLogging=enableLogging)
           let projectOptions = ProjectCracker.GetProjectOptionsFromCommandLineArgs(file, Array.ofList parsedProject.Options, ?loadedTimeStamp=loadedTimeStamp)
           let newlogs =
             if enableLogging then Map.add file parsedProject.LogOutput logs
