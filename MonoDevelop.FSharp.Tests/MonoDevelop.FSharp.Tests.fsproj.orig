@@ -130,6 +130,7 @@
     <Compile Include="SemanticHighlighting.fs" />
     <Compile Include="TestTooltipProvider.fs" />
     <Compile Include="TestProjectNodeCommandHandler.fs" />
+    <Compile Include="ProjectCracking.fs" />
     <Compile Include="GlobalSearch.fs" />
   </ItemGroup>
   <PropertyGroup>
@@ -144,9 +145,14 @@
       <Project>{4C10F8F9-3816-4647-BA6E-85F5DE39883A}</Project>
       <Name>MonoDevelop.FSharp.INSERT_PROJ_TAG</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CompilerService\CompilerService.fsproj">
+      <Project>{4DC4E86C-49C1-4B7B-89A1-F6432DED847D}</Project>
+      <Name>CompilerService</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="paket.references" />
+    <None Include="Samples\Xamarin.iOS.fsproj" />
   </ItemGroup>
   <Import Project="..\.paket\paket.targets" />
   <Choose>
