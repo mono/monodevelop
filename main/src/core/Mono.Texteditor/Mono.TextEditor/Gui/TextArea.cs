@@ -2668,6 +2668,8 @@ namespace Mono.TextEditor
 
 				//draw the highlight rectangle
 				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 0, 0, corner, width, height);
+
+				// FIXME: VV: Remove gradient features
 				using (var gradient = new Cairo.LinearGradient (0, 0, 0, height)) {
 					color = ColorLerp (
 						TextViewMargin.DimColor (Editor.ColorStyle.SearchResultMain.Color, 1.1),

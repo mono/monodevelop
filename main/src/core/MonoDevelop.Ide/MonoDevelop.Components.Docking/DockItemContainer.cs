@@ -277,6 +277,8 @@ namespace MonoDevelop.Components.Docking
 					cr.RelLineTo (-rect.Width, 0);
 					cr.RelLineTo (0, -rect.Height);
 					cr.ClosePath ();
+
+					// FIXME: VV: Remove gradient features
 					using (Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, bottom)) {
 						pat.AddColorStop (0, bcolor.ToCairoColor ());
 						Xwt.Drawing.Color gcol = bcolor.ToXwtColor ();

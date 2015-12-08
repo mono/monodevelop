@@ -63,13 +63,16 @@ namespace Mono.TextEditor
 				var color2 = editor.ColorStyle.Bookmarks.SecondColor;
 				
 				DrawRoundRectangle (cr, x + 1, y + 1, 8, width - 4, height - 4);
+
+				// FIXME: VV: Remove gradient features
 				using (var pat = new Cairo.LinearGradient (x + width / 4, y, x + width / 2, y + height - 4)) {
 					pat.AddColorStop (0, color1);
 					pat.AddColorStop (1, color2);
 					cr.SetSource (pat);
 					cr.FillPreserve ();
 				}
-				
+
+				// FIXME: VV: Remove gradient features
 				using (var pat = new Cairo.LinearGradient (x, y + height, x + width, y)) {
 					pat.AddColorStop (0, color2);
 					//pat.AddColorStop (1, color1);

@@ -1040,6 +1040,8 @@ namespace MonoDevelop.VersionControl.Views
 			void FillGradient (Cairo.Context cr, double y, double h)
 			{
 				cr.Rectangle (0.5, y, Allocation.Width, h);
+
+				// FIXME: VV: Remove gradient features
 				using (var grad = new Cairo.LinearGradient (0, y, Allocation.Width, y)) {
 					var col = (HslColor)Style.Base (StateType.Normal);
 					col.L *= 0.95;

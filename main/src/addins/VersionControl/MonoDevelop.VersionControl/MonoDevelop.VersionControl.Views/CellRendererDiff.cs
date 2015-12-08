@@ -436,6 +436,8 @@ namespace MonoDevelop.VersionControl.Views
 			ctx.Fill ();
 			
 			ctx.Rectangle (markerx, y, width - markerx, height);
+
+			// FIXME: VV: Remove gradient features
 			using (Cairo.Gradient pat = new Cairo.LinearGradient (x, y, x + width, y)) {
 				pat.AddColorStop (0, color.AddLight (0.21).ToCairoColor ());
 				pat.AddColorStop (1, color.AddLight (0.3).ToCairoColor ());

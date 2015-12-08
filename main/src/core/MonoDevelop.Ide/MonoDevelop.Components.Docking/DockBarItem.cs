@@ -440,6 +440,7 @@ namespace MonoDevelop.Components.Docking
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
 				var alloc = Allocation;
 
+				// FIXME: VV: Remove gradient features
 				Cairo.LinearGradient lg;
 
 				if (bar.Orientation == Orientation.Horizontal) {

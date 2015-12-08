@@ -407,6 +407,8 @@ namespace MonoDevelop.Components.Chart
 
 			if (backgroundDisplay == BackgroundDisplay.Gradient) {
 				ctx.Rectangle (left - 1, top - 1, width + 2, height + 2);
+
+				// FIXME: VV: Remove gradient features
 				using (var pat = new Cairo.LinearGradient (left - 1, top - 1, left - 1, height + 2)) {
 					pat.AddColorStop (0, backroundColor);
 					Cairo.Color endc = new Cairo.Color (1,1,1);

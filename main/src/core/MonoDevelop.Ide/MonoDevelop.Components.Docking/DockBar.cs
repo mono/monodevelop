@@ -213,6 +213,7 @@ namespace MonoDevelop.Components.Docking
 			var alloc = Allocation;
 			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
 				ctx.Rectangle (alloc.X, alloc.Y, alloc.X + alloc.Width, alloc.Y + alloc.Height);
+				// FIXME: VV: Remove gradient features
 				Cairo.LinearGradient gr;
 				if (Orientation == Gtk.Orientation.Vertical)
 					gr = new Cairo.LinearGradient (alloc.X, alloc.Y, alloc.X + alloc.Width, alloc.Y);

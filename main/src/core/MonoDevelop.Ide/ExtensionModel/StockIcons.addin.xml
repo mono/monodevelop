@@ -6,7 +6,7 @@
 </ExtensionPoint>
 
 <Extension path="/MonoDevelop/Core/StockIcons">
-  <!-- GTK icons redefined -->
+	<!-- GTK icons redefined -->
 	<StockIcon stockid="gtk-add" resource="add-16.png" size="Menu" />
 	<StockIcon stockid="gtk-apply" resource="done-16.png" size="Menu" />
 	<StockIcon stockid="gtk-cancel" resource="remove-16.png" size="Menu" />
@@ -40,7 +40,7 @@
 	<StockIcon stockid="gtk-zoom-in" resource="zoom-in-16.png" size="Menu" />
 	<StockIcon stockid="gtk-zoom-out" resource="zoom-out-16.png" size="Menu" />
 
-  <!-- MD icons -->
+	<!-- MD icons -->
 	<StockIcon stockid="md-add" resource="add-16.png" size="Menu" />
 	<StockIcon stockid="md-assembly-project" resource="project-assembly-16.png" size="Menu" />
 	<StockIcon stockid="md-breadcrumb-next" resource="breadcrumb-next-16.png" size="Menu" />
@@ -325,10 +325,10 @@
 	<StockIcon stockid="md-internal-interface" icon="res:element-interface-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-internal-method" icon="res:element-method-16.png|res:element-visibility-internal-square-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-internal-property" icon="res:element-property-16.png|res:element-visibility-internal-square-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-internal-static-event" icon="res:element-event-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-internal-static-field" icon="res:element-field-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-internal-static-method" icon="res:element-method-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-internal-static-property" icon="res:element-property-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
+	<StockIcon stockid="md-internal-static-event" icon="res:element-event-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-internal-static-field" icon="res:element-field-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-internal-static-method" icon="res:element-method-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-internal-static-property" icon="res:element-property-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-internal-struct" icon="res:element-struct-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-InternalAndProtected-class" icon="res:element-class-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-InternalAndProtected-delegate" icon="res:element-delegate-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
@@ -339,10 +339,10 @@
 	<StockIcon stockid="md-InternalAndProtected-interface" icon="res:element-interface-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-InternalAndProtected-method" icon="res:element-method-16.png|res:element-visibility-internal-square-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-InternalAndProtected-property" icon="res:element-property-16.png|res:element-visibility-internal-square-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-InternalAndProtected-static-event" icon="res:element-event-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-InternalAndProtected-static-field" icon="res:element-field-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-InternalAndProtected-static-method" icon="res:element-method-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-InternalAndProtected-static-property" icon="res:element-property-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
+	<StockIcon stockid="md-InternalAndProtected-static-event" icon="res:element-event-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-InternalAndProtected-static-field" icon="res:element-field-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-InternalAndProtected-static-method" icon="res:element-method-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-InternalAndProtected-static-property" icon="res:element-property-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-InternalAndProtected-struct" icon="res:element-struct-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-private-class" icon="res:element-class-16.png|res:element-visibility-private-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-private-delegate" icon="res:element-delegate-16.png|res:element-visibility-private-diamond-overlay-16.png" size="Menu" />
@@ -353,10 +353,10 @@
 	<StockIcon stockid="md-private-interface" icon="res:element-interface-16.png|res:element-visibility-private-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-private-method" icon="res:element-method-16.png|res:element-visibility-private-square-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-private-property" icon="res:element-property-16.png|res:element-visibility-private-square-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-private-static-event" icon="res:element-event-16.png|res:element-visibility-private-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-private-static-field" icon="res:element-field-16.png|res:element-visibility-private-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-private-static-method" icon="res:element-method-16.png|res:element-visibility-private-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-private-static-property" icon="res:element-property-16.png|res:element-visibility-private-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
+	<StockIcon stockid="md-private-static-event" icon="res:element-event-16.png|res:element-visibility-private-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-private-static-field" icon="res:element-field-16.png|res:element-visibility-private-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-private-static-method" icon="res:element-method-16.png|res:element-visibility-private-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-private-static-property" icon="res:element-property-16.png|res:element-visibility-private-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-private-struct" icon="res:element-struct-16.png|res:element-visibility-private-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-project-console" icon="md-project|res:project-console-overlay-32.png" size="Dnd" />
 	<StockIcon stockid="md-project-gui" icon="md-project|res:project-gui-overlay-32.png" size="Dnd" />
@@ -372,10 +372,10 @@
 	<StockIcon stockid="md-protected-interface" icon="res:element-interface-16.png|res:element-visibility-protected-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-protected-method" icon="res:element-method-16.png|res:element-visibility-protected-square-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-protected-property" icon="res:element-property-16.png|res:element-visibility-protected-square-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-protected-static-event" icon="res:element-event-16.png|res:element-visibility-protected-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-protected-static-field" icon="res:element-field-16.png|res:element-visibility-protected-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-protected-static-method" icon="res:element-method-16.png|res:element-visibility-protected-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-protected-static-property" icon="res:element-property-16.png|res:element-visibility-protected-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
+	<StockIcon stockid="md-protected-static-event" icon="res:element-event-16.png|res:element-visibility-protected-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-protected-static-field" icon="res:element-field-16.png|res:element-visibility-protected-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-protected-static-method" icon="res:element-method-16.png|res:element-visibility-protected-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-protected-static-property" icon="res:element-property-16.png|res:element-visibility-protected-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-protected-struct" icon="res:element-struct-16.png|res:element-visibility-protected-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-ProtectedOrInternal-class" icon="res:element-class-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-ProtectedOrInternal-delegate" icon="res:element-delegate-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
@@ -386,15 +386,15 @@
 	<StockIcon stockid="md-ProtectedOrInternal-interface" icon="res:element-interface-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-ProtectedOrInternal-method" icon="res:element-method-16.png|res:element-visibility-internal-square-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-ProtectedOrInternal-property" icon="res:element-property-16.png|res:element-visibility-internal-square-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-ProtectedOrInternal-static-event" icon="res:element-event-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-ProtectedOrInternal-static-field" icon="res:element-field-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-ProtectedOrInternal-static-method" icon="res:element-method-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-ProtectedOrInternal-static-property" icon="res:element-property-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
+	<StockIcon stockid="md-ProtectedOrInternal-static-event" icon="res:element-event-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-ProtectedOrInternal-static-field" icon="res:element-field-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-ProtectedOrInternal-static-method" icon="res:element-method-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-ProtectedOrInternal-static-property" icon="res:element-property-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-ProtectedOrInternal-struct" icon="res:element-struct-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-static-event" icon="res:element-event-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-static-field" icon="res:element-field-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-static-method" icon="res:element-method-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-static-property" icon="res:element-property-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
+	<StockIcon stockid="md-static-event" icon="res:element-event-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-static-field" icon="res:element-field-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-static-method" icon="res:element-method-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-static-property" icon="res:element-property-16.png|res:element-static-overlay-16.png" size="Menu" />
 </Extension>
 
 </ExtensionModel>

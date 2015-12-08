@@ -865,6 +865,8 @@ namespace MonoDevelop.Components.MainToolbar
 				var alloc = Allocation;
 				//alloc.Inflate (0, -2);
 				ctx.Rectangle (alloc.X, alloc.Y, 1, alloc.Height);
+
+				// FIXME: VV: Remove gradient features
 				using (Cairo.LinearGradient gr = new LinearGradient (alloc.X, alloc.Y, alloc.X, alloc.Y + alloc.Height)) {
 					gr.AddColorStop (0, new Cairo.Color (0, 0, 0, 0));
 					gr.AddColorStop (0.5, new Cairo.Color (0, 0, 0, 0.2));

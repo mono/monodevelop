@@ -286,6 +286,7 @@ namespace MonoDevelop.Components
 			}
 			context.Arc(x + r, y + h - r, r, Math.PI * 0.5, Math.PI);
 
+			// FIXME: VV: Remove gradient features
 			using (var lg = new Cairo.LinearGradient (0, y + h - r, 0, y + h)) {
 				lg.AddColorStop (0.5, ShadowColor.MultiplyAlpha (0.0));
 				lg.AddColorStop (1, ShadowColor);

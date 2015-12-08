@@ -1040,6 +1040,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				} else {
 					var col = TextEditor.ColorStyle.PlainText.Background.ToXwtColor ();
 					col.Light *= 0.948;
+
+					// FIXME: VV: Remove gradient features
 					using (var grad = new Cairo.LinearGradient (0, 0, allocation.Width, 0)) {
 						grad.AddColorStop (0, col.ToCairoColor ());
 						grad.AddColorStop (0.7, TextEditor.ColorStyle.PlainText.Background);

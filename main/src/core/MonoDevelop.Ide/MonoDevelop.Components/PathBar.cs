@@ -244,6 +244,7 @@ namespace MonoDevelop.Components
 			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
 
 				ctx.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+				// FIXME: VV: Remove gradient features
 				using (var g = new Cairo.LinearGradient (0, 0, 0, Allocation.Height)) {
 					g.AddColorStop (0, Styles.BreadcrumbBackgroundColor);
 					g.AddColorStop (1, Styles.BreadcrumbGradientEndColor);
