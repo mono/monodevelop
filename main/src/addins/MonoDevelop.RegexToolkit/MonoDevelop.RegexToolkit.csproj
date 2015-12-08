@@ -80,6 +80,7 @@
     </Reference>
     <Reference Include="System.Composition.AttributedModel">
       <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Composition.AttributedModel.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
