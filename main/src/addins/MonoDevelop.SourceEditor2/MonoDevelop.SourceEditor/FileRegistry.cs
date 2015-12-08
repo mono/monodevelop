@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using Services = MonoDevelop.Projects.Services;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -42,7 +43,6 @@ namespace MonoDevelop.SourceEditor
 	{
 		readonly static List<SourceEditorView> openFiles = new List<SourceEditorView> ();
 		readonly static FileSystemWatcher fileSystemWatcher;
-		readonly static StringComparison fileNameComparer = Platform.IsWindows ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
 
 		public static bool SuspendFileWatch {
 			get;
@@ -52,12 +52,11 @@ namespace MonoDevelop.SourceEditor
 		static FileRegistry ()
 		{
 			fileSystemWatcher = new FileSystemWatcher ();
-			fileSystemWatcher.Created += (FileSystemEventHandler)DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
-			fileSystemWatcher.Changed += (FileSystemEventHandler)DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
+			fileSystemWatcher.Created += (s,e) => Runtime.RunInMainThread (() => OnFileChanged (s,e));
+			fileSystemWatcher.Changed += (s,e) => Runtime.RunInMainThread (() => OnFileChanged (s,e));
 
-			var fileChanged = DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (HandleFileServiceChange));
-			FileService.FileCreated += fileChanged;
-			FileService.FileChanged += fileChanged;
+			FileService.FileCreated += HandleFileServiceChange;
+			FileService.FileChanged += HandleFileServiceChange;
 
 		}
 
@@ -80,12 +79,12 @@ namespace MonoDevelop.SourceEditor
 		static void HandleFileServiceChange (object sender, FileEventArgs e)
 		{
 			// The Ide.Document generates a file service changed event this needs to be skipped.
-			if (!TypeSystemService.TrackFileChanges)
+			if (!TypeSystemService.TrackFileChanges || SuspendFileWatch)
 				return;
 			bool foundOneChange = false;
 			foreach (var file in e) {
 				foreach (var view in openFiles) {
-					if (SkipView (view) || !string.Equals (view.ContentName, file.FileName, fileNameComparer))
+					if (SkipView (view) || !string.Equals (view.ContentName, file.FileName, FilePath.PathComparison))
 						continue;
 					if (!view.IsDirty/* && (IdeApp.Workbench.AutoReloadDocuments || file.AutoReload)*/)
 						view.SourceEditorWidget.Reload ();
@@ -130,7 +129,7 @@ namespace MonoDevelop.SourceEditor
 			foreach (var view in openFiles) {
 				if (SkipView (view))
 					continue;
-				if (string.Equals (view.ContentName, fileName, fileNameComparer)) {
+				if (string.Equals (view.ContentName, fileName, FilePath.PathComparison)) {
 					if (view.LastSaveTimeUtc == File.GetLastWriteTimeUtc (fileName))
 						continue;
 					if (!view.IsDirty/* && IdeApp.Workbench.AutoReloadDocuments*/)

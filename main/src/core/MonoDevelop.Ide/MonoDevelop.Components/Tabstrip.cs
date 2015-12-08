@@ -30,7 +30,6 @@ using System.ComponentModel;
 using System.Drawing.Design;
 using Cairo;
 using Gtk;
-using Mono.TextEditor;
 using System.Linq;
 
 namespace MonoDevelop.Components

@@ -37,10 +37,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		void RefreshWithContent (string projectContent);
 		MSBuildResult Run (
 			ProjectConfigurationInfo[] configurations, ILogWriter logWriter, MSBuildVerbosity verbosity,
-			string[] runTargets, string[] evaluateItems, string[] evaluateProperties, Dictionary<string,string> globalProperties
+			string[] runTargets, string[] evaluateItems, string[] evaluateProperties, Dictionary<string,string> globalProperties, int taskId
 		);
-
-		string[] GetSupportedTargets (ProjectConfigurationInfo[] configurations);
 	}
 
 	[Serializable]
@@ -50,5 +48,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public string ProjectGuid;
 		public string Configuration;
 		public string Platform;
+		public bool Enabled;
 	}
 }

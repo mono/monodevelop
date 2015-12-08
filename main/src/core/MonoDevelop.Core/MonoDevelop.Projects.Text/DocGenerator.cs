@@ -26,7 +26,7 @@
 using System;
 using MonoDevelop.Core;
 using Mono.Addins;
-using ICSharpCode.NRefactory.TypeSystem;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Projects.Text
 {
@@ -37,7 +37,7 @@ namespace MonoDevelop.Projects.Text
 			private set;
 		}
 		
-		public abstract string GenerateDocumentation (IMember member, string linePrefix);
+		public abstract string GenerateDocumentation (ISymbol member, string linePrefix);
 		
 		static DocGenerator ()
 		{

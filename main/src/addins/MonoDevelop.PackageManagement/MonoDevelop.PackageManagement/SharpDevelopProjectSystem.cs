@@ -29,6 +29,7 @@
 using System;
 using System.IO;
 using System.Runtime.Versioning;
+using System.Threading.Tasks;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -46,6 +47,7 @@ namespace ICSharpCode.PackageManagement
 		IPackageManagementFileService fileService;
 		IPackageManagementEvents packageManagementEvents;
 		Action<MessageHandler> guiSyncDispatcher;
+		Func<Func<Task>,Task> guiSyncDispatcherFunc;
 
 		public SharpDevelopProjectSystem(DotNetProject project)
 			: this (
@@ -53,7 +55,8 @@ namespace ICSharpCode.PackageManagement
 				new PackageManagementFileService (),
 				PackageManagementServices.ProjectService,
 				PackageManagementServices.PackageManagementEvents,
-				DispatchService.GuiSyncDispatch)
+				DispatchService.GuiSyncDispatch,
+				GuiSyncDispatchWithException)
 		{
 		}
 		
@@ -62,13 +65,15 @@ namespace ICSharpCode.PackageManagement
 			IPackageManagementFileService fileService,
 			IPackageManagementProjectService projectService,
 			IPackageManagementEvents packageManagementEvents,
-			Action<MessageHandler> guiSyncDispatcher)
+			Action<MessageHandler> guiSyncDispatcher,
+			Func<Func<Task>,Task> guiSyncDispatcherFunc)
 			: base (AppendTrailingSlashToDirectory (project.BaseDirectory))
 		{
 			this.project = project;
 			this.fileService = fileService;
 			this.packageManagementEvents = packageManagementEvents;
 			this.guiSyncDispatcher = guiSyncDispatcher;
+			this.guiSyncDispatcherFunc = guiSyncDispatcherFunc;
 		}
 		
 		static string AppendTrailingSlashToDirectory(string directory)
@@ -110,23 +115,23 @@ namespace ICSharpCode.PackageManagement
 
 		public void AddReference(string referencePath, Stream stream)
 		{
-			GuiSyncDispatch (() => {
+			GuiSyncDispatch (async () => {
 				ProjectReference assemblyReference = CreateReference (referencePath);
 				packageManagementEvents.OnReferenceAdding (assemblyReference);
-				AddReferenceToProject (assemblyReference);
+				await AddReferenceToProject (assemblyReference);
 			});
 		}
 		
 		ProjectReference CreateReference(string referencePath)
 		{
 			string fullPath = GetFullPath(referencePath);
-			return new ProjectReference(ReferenceType.Assembly, fullPath);
+			return ProjectReference.CreateAssemblyFileReference (fullPath);
 		}
 		
-		void AddReferenceToProject(ProjectReference assemblyReference)
+		async Task AddReferenceToProject(ProjectReference assemblyReference)
 		{
 			project.References.Add (assemblyReference);
-			project.Save ();
+			await project.SaveAsync ();
 			LogAddedReferenceToProject(assemblyReference);
 		}
 		
@@ -203,12 +208,12 @@ namespace ICSharpCode.PackageManagement
 		
 		public void RemoveReference(string name)
 		{
-			GuiSyncDispatch (() => {
+			GuiSyncDispatch (async () => {
 				ProjectReference referenceProjectItem = FindReference (name);
 				if (referenceProjectItem != null) {
 					packageManagementEvents.OnReferenceRemoving (referenceProjectItem);
 					project.References.Remove (referenceProjectItem);
-					project.Save ();
+					await project.SaveAsync ();
 					LogRemovedReferenceFromProject (referenceProjectItem);
 				}
 			});
@@ -253,7 +258,7 @@ namespace ICSharpCode.PackageManagement
 		public override void AddFile(string path, Stream stream)
 		{
 			PhysicalFileSystemAddFile(path, stream);
-			GuiSyncDispatch (() => AddFileToProject (path));
+			GuiSyncDispatch (async () => await AddFileToProject (path));
 		}
 		
 		protected virtual void PhysicalFileSystemAddFile(string path, Stream stream)
@@ -264,7 +269,7 @@ namespace ICSharpCode.PackageManagement
 		public override void AddFile(string path, Action<Stream> writeToStream)
 		{
 			PhysicalFileSystemAddFile (path, writeToStream);
-			GuiSyncDispatch (() => AddFileToProject (path));
+			GuiSyncDispatch (async () => await AddFileToProject (path));
 		}
 
 		protected virtual void PhysicalFileSystemAddFile (string path, Action<Stream> writeToStream)
@@ -272,10 +277,10 @@ namespace ICSharpCode.PackageManagement
 			base.AddFile(path, writeToStream);
 		}
 
-		void AddFileToProject(string path)
+		async Task AddFileToProject(string path)
 		{
 			if (ShouldAddFileToProject(path)) {
-				AddFileProjectItemToProject(path);
+				await AddFileProjectItemToProject(path);
 			}
 			OnFileChanged (path);
 			LogAddedFileToProject(path);
@@ -305,11 +310,11 @@ namespace ICSharpCode.PackageManagement
 			});
 		}
 		
-		void AddFileProjectItemToProject(string path)
+		async Task AddFileProjectItemToProject(string path)
 		{
 			ProjectFile fileItem = CreateFileProjectItem (path);
 			project.AddFile (fileItem);
-			project.Save ();
+			await project.SaveAsync ();
 		}
 		
 		ProjectFile CreateFileProjectItem(string path)
@@ -334,21 +339,21 @@ namespace ICSharpCode.PackageManagement
 		
 		public override void DeleteDirectory(string path, bool recursive)
 		{
-			GuiSyncDispatch (() => {
+			GuiSyncDispatch (async () => {
 				string directory = GetFullPath (path);
 				fileService.RemoveDirectory (directory);
-				project.Save ();
+				await project.SaveAsync ();
 				LogDeletedDirectory (path);
 			});
 		}
 		
 		public override void DeleteFile(string path)
 		{
-			GuiSyncDispatch (() => {
+			GuiSyncDispatch (async () => {
 				string fileName = GetFullPath (path);
 				project.Files.Remove (fileName);
 				fileService.RemoveFile (fileName);
-				project.Save ();
+				await project.SaveAsync ();
 				LogDeletedFileInfo (path);
 			});
 		}
@@ -381,15 +386,15 @@ namespace ICSharpCode.PackageManagement
 		
 		public void AddFrameworkReference(string name)
 		{
-			GuiSyncDispatch (() => {
+			GuiSyncDispatch (async () => {
 				ProjectReference assemblyReference = CreateGacReference (name);
-				AddReferenceToProject (assemblyReference);
+				await AddReferenceToProject (assemblyReference);
 			});
 		}
 		
 		ProjectReference CreateGacReference(string name)
 		{
-			return new ProjectReference(ReferenceType.Package, name);
+			return ProjectReference.CreateAssemblyReference (name);
 		}
 		
 		public string ResolvePath(string path)
@@ -399,11 +404,11 @@ namespace ICSharpCode.PackageManagement
 		
 		public void AddImport(string targetPath, ProjectImportLocation location)
 		{
-			GuiSyncDispatch (() => {
+			GuiSyncDispatch (async () => {
 				string relativeTargetPath = GetRelativePath (targetPath);
 				string condition = GetCondition (relativeTargetPath);
 				project.AddImportIfMissing (relativeTargetPath, condition);
-				project.Save ();
+				await project.SaveAsync ();
 			});
 		}
 
@@ -419,14 +424,14 @@ namespace ICSharpCode.PackageManagement
 		
 		public void RemoveImport(string targetPath)
 		{
-			GuiSyncDispatch (() => {
+			GuiSyncDispatch (async () => {
 				string relativeTargetPath = GetRelativePath (targetPath);
 				project.RemoveImport (relativeTargetPath);
 				RemoveImportWithForwardSlashes (targetPath);
 
 				using (var updater = new EnsureNuGetPackageBuildImportsTargetUpdater ()) {
 					updater.RemoveImport (relativeTargetPath);
-					project.Save ();
+					await project.SaveAsync ();
 				}
 
 				packageManagementEvents.OnImportRemoved (project, relativeTargetPath);
@@ -464,6 +469,18 @@ namespace ICSharpCode.PackageManagement
 		void GuiSyncDispatch (Action action)
 		{
 			guiSyncDispatcher (() => action ());
+		}
+
+		static Task GuiSyncDispatchWithException (Func<Task> func)
+		{
+			if (DispatchService.IsGuiThread)
+				throw new InvalidOperationException ("GuiSyncDispatch called from GUI thread");
+			return Runtime.RunInMainThread (func);
+		}
+
+		void GuiSyncDispatch (Func<Task> func)
+		{
+			guiSyncDispatcherFunc (func).Wait ();
 		}
 	}
 }

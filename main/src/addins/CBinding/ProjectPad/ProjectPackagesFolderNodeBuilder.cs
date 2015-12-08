@@ -35,14 +35,13 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
+using MonoDevelop.Projects;
+using System.Collections.Generic;
 
 namespace CBinding.ProjectPad
 {	
 	public class ProjectPackagesFolderNodeBuilder : TypeNodeBuilder
 	{
-		ProjectPackageEventHandler addedHandler;
-		ProjectPackageEventHandler removedHandler;
-		
 		public override Type NodeDataType {
 			get { return typeof(ProjectPackageCollection); }
 		}
@@ -51,26 +50,20 @@ namespace CBinding.ProjectPad
 		{
 			CProject project = ((ProjectPackageCollection)dataObject).Project;
 			if (project == null) return;
-			project.PackageAddedToProject += addedHandler;
-			project.PackageRemovedFromProject += removedHandler;
+			project.PackageAddedToProject += OnAddPackage;
+			project.PackageRemovedFromProject += OnRemovePackage;
 		}
 
 		public override void OnNodeRemoved (object dataObject)
 		{
 			CProject project = ((ProjectPackageCollection)dataObject).Project;
 			if (project == null) return;
-			project.PackageAddedToProject -= addedHandler;
-			project.PackageRemovedFromProject -= removedHandler;
+			project.PackageAddedToProject -= OnAddPackage;
+			project.PackageRemovedFromProject -= OnRemovePackage;
 		}
 		
 		public override Type CommandHandlerType {
 			get { return typeof(ProjectPackagesFolderNodeCommandHandler); }
-		}
-		
-		protected override void Initialize ()
-		{
-			addedHandler = (ProjectPackageEventHandler)DispatchService.GuiDispatch (new ProjectPackageEventHandler (OnAddPackage));
-			removedHandler = (ProjectPackageEventHandler)DispatchService.GuiDispatch (new ProjectPackageEventHandler (OnRemovePackage));
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
@@ -133,7 +126,7 @@ namespace CBinding.ProjectPad
 			using (var dlg = new EditPackagesDialog (project))
 				MessageService.ShowCustomDialog (dlg);
 			
-			IdeApp.ProjectOperations.Save (project);
+			IdeApp.ProjectOperations.SaveAsync (project);
 			CurrentNode.Expanded = true;
 		}
 		
@@ -165,6 +158,7 @@ namespace CBinding.ProjectPad
 		
 		public override void OnNodeDrop (object dataObject, DragOperation operation)
 		{
+			List<IWorkspaceFileObject> toSave = new List<IWorkspaceFileObject> ();
 			if (dataObject is Package) {
 				Package package = (Package)dataObject;
 				ITreeNavigator nav = CurrentNode;
@@ -174,11 +168,11 @@ namespace CBinding.ProjectPad
 				CProject source = nav.GetParentDataItem (typeof(CProject), true) as CProject;
 				
 				dest.Packages.Add (package);
-				IdeApp.ProjectOperations.Save (dest);
-				
+				toSave.Add (dest);
+
 				if (operation == DragOperation.Move) {
 					source.Packages.Remove (package);
-					IdeApp.ProjectOperations.Save (source);
+					toSave.Add (source);
 				}
 			} else if (dataObject is CProject) {
 				CProject draggedProject = (CProject)dataObject;
@@ -190,9 +184,10 @@ namespace CBinding.ProjectPad
 				
 				if (!destProject.Packages.Contains (package)) {				
 					destProject.Packages.Add (package);
-					IdeApp.ProjectOperations.Save (destProject);
+					toSave.Add (destProject);
 				}
 			}
+			IdeApp.ProjectOperations.SaveAsync (toSave);
 		}
 	}
 }

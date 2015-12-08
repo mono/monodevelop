@@ -32,7 +32,6 @@ namespace MonoDevelop.Components.AutoTest.Results
 	public class GtkNotebookResult : GtkWidgetResult
 	{
 		Notebook noteBook;
-		Label toBeSelectedLabel;
 		int toBeSelected = -1;
 
 		public GtkNotebookResult (Widget notebookWidget) : base (notebookWidget)
@@ -51,7 +50,6 @@ namespace MonoDevelop.Components.AutoTest.Results
 				var iTab = noteBook.GetNthPage (i);
 				var label = noteBook.GetTabLabelText (iTab);
 				if (CheckForText (label, text, exact)) {
-					toBeSelectedLabel = noteBook.GetTabLabel (iTab) as Label;
 					toBeSelected = i;
 					return this;
 				}

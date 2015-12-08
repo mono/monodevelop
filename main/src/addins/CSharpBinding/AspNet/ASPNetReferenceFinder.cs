@@ -23,12 +23,14 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+/*
 using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.FindInFiles;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Editor;
 using MonoDevelop.AspNet.WebForms;
 
 namespace MonoDevelop.CSharp.Refactoring
@@ -40,7 +42,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			IncludeDocumentation = true;
 		}
 		
-		IEnumerable<DomRegion> SearchMember (IEntity member, ITypeResolveContext dom, FilePath fileName, Mono.TextEditor.TextEditorData editor, Mono.TextEditor.TextDocument buildDocument, List<LocalDocumentInfo.OffsetInfo> offsetInfos, ParsedDocument parsedDocument)
+		IEnumerable<DomRegion> SearchMember (IEntity member, ITypeResolveContext dom, FilePath fileName, TextEditor editor, ITextDocument buildDocument, List<LocalDocumentInfo.OffsetInfo> offsetInfos, ParsedDocument parsedDocument)
 		{ // TODO: Type system conversion.
 			yield break;
 //			var resolver = new NRefactoryResolver (dom, parsedDocument.CompilationUnit, ICSharpCode.OldNRefactory.SupportedLanguage.CSharp, editor, fileName);
@@ -58,7 +60,7 @@ namespace MonoDevelop.CSharp.Refactoring
 //				yield return new DomRegion (fileName, loc.Line, loc.Column, loc.Line, loc.Column + result.Name.Lenhth);
 //			}
 		}
-		public override IEnumerable<MemberReference> FindReferences (MonoDevelop.Projects.Project project, IProjectContent content, IEnumerable<FilePath> files, IProgressMonitor monitor, IEnumerable<object> searchedMembers)
+		public override IEnumerable<MemberReference> FindReferences (MonoDevelop.Projects.Project project, IProjectContent content, IEnumerable<FilePath> files, ProgressMonitor monitor, IEnumerable<object> searchedMembers)
 		{ // TODO: Type system conversion.
 			yield break;
 //			var editor = TextFileProvider.Instance.GetTextEditorData (fileName);
@@ -93,3 +95,4 @@ namespace MonoDevelop.CSharp.Refactoring
 	}
 }
 
+*/

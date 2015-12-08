@@ -51,7 +51,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -66,13 +67,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 		
-		public Tag (string key, DomRegion region)
+		public Tag (string key, DocumentRegion region)
 		{
 			this.key = key;
 			base.Region = region;
 		}
-		
-		public Tag (string key, string comment, DomRegion region)  : base (comment)
+
+		public Tag (string key, string comment, DocumentRegion region)  : base (comment)
 		{
 			this.key = key;
 			base.Region = region;

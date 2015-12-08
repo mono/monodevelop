@@ -30,6 +30,10 @@ using MonoDevelop.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.FindInFiles;
 using System.Linq;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components.MainToolbar
@@ -40,15 +44,25 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 		}
 
-		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token)
+		public override Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern pattern, CancellationToken token)
 		{
-			if (IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
-				return Task.Factory.StartNew (delegate {
-					return (ISearchDataSource)new SearchInSolutionDataSource (searchPattern);
-				});
-			}
+			if (IdeApp.ProjectOperations.CurrentSelectedSolution != null)
+				searchResultCallback.ReportResult (new SearchInSolutionSearchResult (pattern));
+			return SpecializedTasks.EmptyTask;
+		}
 
-			return Task.FromResult<ISearchDataSource> (default(ISearchDataSource));
+		//public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token)
+		//{
+		//	return Task.Factory.StartNew (delegate {
+		//		return (ISearchDataSource)new SearchInSolutionDataSource (searchPattern);
+		//	});
+		//} 
+		static readonly string[] tags = { "search" };
+
+		public override string[] Tags {
+			get {
+				return tags;
+			}
 		}
 
 		public override bool IsValidTag (string tag)
@@ -56,67 +70,33 @@ namespace MonoDevelop.Components.MainToolbar
 			return tag == "search";
 		}
 
-		class SearchInSolutionDataSource : ISearchDataSource
+		class SearchInSolutionSearchResult : SearchResult
 		{
-			readonly SearchPopupSearchPattern searchPattern;
+			SearchPopupSearchPattern pattern;
 
-			public SearchInSolutionDataSource (SearchPopupSearchPattern searchPattern)
-			{
-				this.searchPattern = searchPattern;
+			public override bool CanActivate {
+				get {
+					return true;
+				}
 			}
 
-			#region ISearchDataSource implementation
-
-			Xwt.Drawing.Image ISearchDataSource.GetIcon (int item)
+			public SearchInSolutionSearchResult (SearchPopupSearchPattern pattern) : base ("", "", 0)
 			{
-				return null;
+				this.pattern = pattern;
 			}
 
-			string ISearchDataSource.GetMarkup (int item, bool isSelected)
-			{
-				return GettextCatalog.GetString ("Search in Solution");
-			}
-
-			string ISearchDataSource.GetDescriptionMarkup (int item, bool isSelected)
-			{
-				return null;
-			}
-
-			MonoDevelop.Ide.CodeCompletion.TooltipInformation ISearchDataSource.GetTooltip (int item)
-			{
-				return null;
-			}
-
-			double ISearchDataSource.GetWeight (int item)
-			{
-				return 0;
-			}
-
-			DomRegion ISearchDataSource.GetRegion (int item)
-			{
-				return DomRegion.Empty;
-			}
-
-			bool ISearchDataSource.CanActivate (int item)
-			{
-				return true;
-			}
-
-			void ISearchDataSource.Activate (int item)
+			public override void Activate ()
 			{
 				var options = new FilterOptions ();
 				if (PropertyService.Get ("AutoSetPatternCasing", true))
-					options.CaseSensitive = searchPattern.Pattern.Any (c => char.IsUpper (c));
-				FindInFilesDialog.SearchReplace (searchPattern.Pattern, null, new WholeSolutionScope (), options, null);
+					options.CaseSensitive = pattern.Pattern.Any (c => char.IsUpper (c));
+				FindInFilesDialog.SearchReplace (pattern.Pattern, null, new WholeSolutionScope (), options, null);
 			}
 
-			int ISearchDataSource.ItemCount {
-				get {
-					return 1;
-				}
+			public override string GetMarkupText (Gtk.Widget widget)
+			{
+				return GettextCatalog.GetString ("Search in Solution...");
 			}
-			#endregion
 		}
 	}
 }
-

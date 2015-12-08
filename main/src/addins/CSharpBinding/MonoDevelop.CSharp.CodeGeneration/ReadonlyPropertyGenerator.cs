@@ -25,14 +25,12 @@
 // THE SOFTWARE.
 using System;
 
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Refactoring;
 using System.Text;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
 
 namespace MonoDevelop.CodeGeneration

@@ -27,6 +27,7 @@
 using Gtk;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -37,7 +38,7 @@ namespace MonoDevelop.CSharp.Formatting
 		static CSharpFormattingPolicyPanel ()
 		{
 			// ensure that custom text editor shemes are loaded.
-			MonoDevelop.SourceEditor.SourceEditorDisplayBinding.InitSourceEditor ();
+			TextEditorDisplayBinding.InitSourceEditor ();
 		}
 		
 		public override Widget CreatePanelWidget ()

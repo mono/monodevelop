@@ -38,10 +38,12 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide;
+using System.Xml;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Autotools
 {
-	[DataItem ("MakefileInfo")]
+	[DataItem ("MonoDevelop.Autotools.MakefileInfo")]
 	public class MakefileData : ICloneable
 	{
 		bool integrationEnabled;
@@ -69,6 +71,25 @@ namespace MonoDevelop.Autotools
 			assemblyContext = GetMonoRuntimeContext ();
 			if (assemblyContext == null)
 				integrationEnabled = false;
+		}
+
+		public static MakefileData Read (XmlElement ext)
+		{
+			XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
+			return (MakefileData) ser.Deserialize (new XmlNodeReader (ext), typeof(MakefileData));
+		}
+
+		public XmlElement Write ()
+		{
+			XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
+			ser.Namespace = MSBuildProject.Schema;
+			var sw = new StringWriter ();
+			ser.Serialize (new XmlTextWriter (sw), this);
+			XmlDocument doc = new XmlDocument ();
+			doc.LoadXml (sw.ToString ());
+			var elem = doc.DocumentElement;
+			doc.RemoveChild (elem);
+			return elem;
 		}
 		
 		internal static IAssemblyContext GetMonoRuntimeContext ()
@@ -613,7 +634,7 @@ namespace MonoDevelop.Autotools
 			return customRegex [index];
 		}
 
-		IProgressMonitor monitor = null;
+		ProgressMonitor monitor = null;
 
 		// VarName -> Encode filenames Eg. $(srcdir)
 		Dictionary<string, bool> encodeValues;
@@ -651,7 +672,7 @@ namespace MonoDevelop.Autotools
 		}
 
 		//use events.. 
-		public void UpdateProject (IProgressMonitor monitor, bool promptForRemoval)
+		public void UpdateProject (ProgressMonitor monitor, bool promptForRemoval)
 		{
 			if (!IntegrationEnabled)
 				return;
@@ -1170,14 +1191,14 @@ namespace MonoDevelop.Autotools
 
 		ProjectReference AddNewPackageReference (DotNetProject project, SystemAssembly sa)
 		{
-			ProjectReference pref = new ProjectReference (sa);
+			ProjectReference pref = ProjectReference.CreateAssemblyReference (sa);
 			project.References.Add (pref);
 			newPackageRefs [sa.Location] = pref;
 
 			return pref;
 		}
 
-		public static void ResolveProjectReferences (SolutionFolder folder, IProgressMonitor monitor)
+		public static void ResolveProjectReferences (SolutionFolder folder, ProgressMonitor monitor)
 		{
 			Dictionary<string, DotNetProject> projects = new Dictionary<string, DotNetProject> ();
 			foreach (DotNetProject p in folder.GetAllItems<DotNetProject> ()) {
@@ -1188,7 +1209,7 @@ namespace MonoDevelop.Autotools
 			}
 
 			foreach (DotNetProject sproj in projects.Values) {
-				MakefileData mdata = sproj.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
+				MakefileData mdata = sproj.GetMakefileData ();
 				if (mdata == null)
 					continue;
 
@@ -1216,7 +1237,7 @@ namespace MonoDevelop.Autotools
 						} else {
 							// Try as a project ref
 							if (projects.ContainsKey (refstr)) {
-								sproj.References.Add (new ProjectReference (projects [refstr]));
+								sproj.References.Add (ProjectReference.CreateProjectReference (projects [refstr]));
 								toRemove.Add (refstr);
 							}
 						}
@@ -1227,7 +1248,7 @@ namespace MonoDevelop.Autotools
 
 					// Add all remaining unresolved refs as Assembly refs
 					foreach (string s in mdata.UnresolvedReferences.Keys)
-						sproj.References.Add (new ProjectReference (ReferenceType.Assembly, s));
+						sproj.References.Add (ProjectReference.CreateAssemblyFileReference (s));
 						
 					// Remove asm/project refs not found in UnresolvedReferences
 					foreach (ProjectReference pr in asmProjectRefs.Values)
@@ -1325,7 +1346,7 @@ namespace MonoDevelop.Autotools
 
 		//Writing methods
 
-		public void UpdateMakefile (IProgressMonitor monitor)
+		public void UpdateMakefile (ProgressMonitor monitor)
 		{
 			//FIXME: AssemblyName & OutputDir
 
@@ -1837,6 +1858,22 @@ namespace MonoDevelop.Autotools
 		public PackageContent (string name)
 		{
 			this.Name = name;
+		}
+	}
+
+	internal static class MakefileDataExtension
+	{
+		public static MakefileData GetMakefileData (this Project project)
+		{
+			var ex = project.GetService<MakefileProjectExtension> ();
+			return ex != null ? ex.MakefileData : null;
+		}
+
+		public static void SetMakefileData (this Project project, MakefileData data)
+		{
+			var ex = project.GetService<MakefileProjectExtension> ();
+			if (ex != null)
+				ex.MakefileData = data;
 		}
 	}
 }

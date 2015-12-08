@@ -25,10 +25,13 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
+using System.Linq;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using MonoDevelop.Components.MainToolbar;
 
 namespace MonoDevelop.CSharp
 {
@@ -41,173 +44,176 @@ namespace MonoDevelop.CSharp
 		static readonly IconId Field = "md-field";
 		static readonly IconId Interface = "md-interface";
 		static readonly IconId Method = "md-method";
-		static readonly IconId ExtensionMethod = "md-extensionmethod";
 		static readonly IconId Property = "md-property";
 		static readonly IconId Struct = "md-struct";
 		static readonly IconId Delegate = "md-delegate";
 		public static readonly IconId Namespace = "md-name-space";
 
-		static readonly IconId InternalClass = "md-internal-class";
-		static readonly IconId InternalDelegate = "md-internal-delegate";
-		static readonly IconId InternalEnum = "md-internal-enum";
-		static readonly IconId InternalEvent = "md-internal-event";
-		static readonly IconId InternalField = "md-internal-field";
-		static readonly IconId InternalInterface = "md-internal-interface";
-		static readonly IconId InternalMethod = "md-internal-method";
-		static readonly IconId InternalExtensionMethod = "md-internal-extensionmethod";
-		static readonly IconId InternalProperty = "md-internal-property";
-		static readonly IconId InternalStruct = "md-internal-struct";
-
-		static readonly IconId InternalAndProtectedClass = "md-InternalAndProtected-class";
-		static readonly IconId InternalAndProtectedDelegate = "md-InternalAndProtected-delegate";
-		static readonly IconId InternalAndProtectedEnum = "md-InternalAndProtected-enum";
-		static readonly IconId InternalAndProtectedEvent = "md-InternalAndProtected-event";
-		static readonly IconId InternalAndProtectedField = "md-InternalAndProtected-field";
-		static readonly IconId InternalAndProtectedInterface = "md-InternalAndProtected-interface";
-		static readonly IconId InternalAndProtectedMethod = "md-InternalAndProtected-method";
-		static readonly IconId InternalAndProtectedExtensionMethod = "md-InternalAndProtected-extensionmethod";
-		static readonly IconId InternalAndProtectedProperty = "md-InternalAndProtected-property";
-		static readonly IconId InternalAndProtectedStruct = "md-InternalAndProtected-struct";
-
-		static readonly IconId PrivateClass = "md-private-class";
-		static readonly IconId PrivateDelegate = "md-private-delegate";
-		static readonly IconId PrivateEnum = "md-private-enum";
-		static readonly IconId PrivateEvent = "md-private-event";
-		static readonly IconId PrivateField = "md-private-field";
-		static readonly IconId PrivateInterface = "md-private-interface";
-		static readonly IconId PrivateMethod = "md-private-method";
-		static readonly IconId PrivateExtensionMethod = "md-private-extensionmethod";
-		static readonly IconId PrivateProperty = "md-private-property";
-		static readonly IconId PrivateStruct = "md-private-struct";
-
-		static readonly IconId ProtectedClass = "md-protected-class";
-		static readonly IconId ProtectedDelegate = "md-protected-delegate";
-		static readonly IconId ProtectedEnum = "md-protected-enum";
-		static readonly IconId ProtectedEvent = "md-protected-event";
-		static readonly IconId ProtectedField = "md-protected-field";
-		static readonly IconId ProtectedInterface = "md-protected-interface";
-		static readonly IconId ProtectedMethod = "md-protected-method";
-		static readonly IconId ProtectedExtensionMethod = "md-protected-extensionmethod";
-		static readonly IconId ProtectedProperty = "md-protected-property";
-		static readonly IconId ProtectedStruct = "md-protected-struct";
-		
-		static readonly IconId ProtectedOrInternalClass = "md-ProtectedOrInternal-class";
-		static readonly IconId ProtectedOrInternalDelegate = "md-ProtectedOrInternal-delegate";
-		static readonly IconId ProtectedOrInternalEnum = "md-ProtectedOrInternal-enum";
-		static readonly IconId ProtectedOrInternalEvent = "md-ProtectedOrInternal-event";
-		static readonly IconId ProtectedOrInternalField = "md-ProtectedOrInternal-field";
-		static readonly IconId ProtectedOrInternalInterface = "md-ProtectedOrInternal-interface";
-		static readonly IconId ProtectedOrInternalMethod = "md-ProtectedOrInternal-method";
-		static readonly IconId ProtectedOrInternalExtensionMethod = "md-ProtectedOrInternal-extensionmethod";
-		static readonly IconId ProtectedOrInternalProperty = "md-ProtectedOrInternal-property";
-		static readonly IconId ProtectedOrInternalStruct = "md-ProtectedOrInternal-struct";
-		
-		static IconId[,] typeIconTable = new IconId[,] {
-			{Class,     PrivateClass,		Class,		ProtectedClass,     InternalClass,		ProtectedOrInternalClass, 		InternalAndProtectedClass},     // class
-			{Enum,      PrivateEnum,		Enum,		ProtectedEnum,      InternalEnum,		ProtectedOrInternalEnum, 		InternalAndProtectedEnum},      // enum
-			{Interface, PrivateInterface,	Interface,	ProtectedInterface, InternalInterface,	ProtectedOrInternalInterface,	InternalAndProtectedInterface}, // interface
-			{Struct,    PrivateStruct,		Struct,   	ProtectedStruct,    InternalStruct,		ProtectedOrInternalStruct,		InternalAndProtectedStruct},    // struct
-			{Delegate,  PrivateDelegate,	Delegate, 	ProtectedDelegate,  InternalDelegate,	ProtectedOrInternalDelegate,	InternalAndProtectedDelegate}   // delegate
-		};
-		static readonly IconId[] fieldIconTable = {
-			AstStockIcons.Field, AstStockIcons.PrivateField, AstStockIcons.Field, AstStockIcons.ProtectedField, AstStockIcons.InternalField, AstStockIcons.ProtectedOrInternalField, AstStockIcons.InternalAndProtectedField
-		};
-		static readonly IconId[] methodIconTable = {
-			AstStockIcons.Method, AstStockIcons.PrivateMethod, AstStockIcons.Method, AstStockIcons.ProtectedMethod, AstStockIcons.InternalMethod, AstStockIcons.ProtectedOrInternalMethod, AstStockIcons.InternalAndProtectedMethod
-		};
-		static readonly IconId[] extensionMethodIconTable = {
-			AstStockIcons.ExtensionMethod, AstStockIcons.PrivateExtensionMethod, AstStockIcons.ExtensionMethod, AstStockIcons.ProtectedExtensionMethod, AstStockIcons.InternalExtensionMethod, AstStockIcons.ProtectedOrInternalExtensionMethod, AstStockIcons.InternalAndProtectedExtensionMethod
-		};
-		static readonly IconId[] propertyIconTable = {
-			AstStockIcons.Property, AstStockIcons.PrivateProperty, AstStockIcons.Property, AstStockIcons.ProtectedProperty, AstStockIcons.InternalProperty, AstStockIcons.ProtectedOrInternalProperty, AstStockIcons.InternalAndProtectedProperty
-		};
-		static readonly IconId[] eventIconTable = {
-			AstStockIcons.Event, AstStockIcons.PrivateEvent, AstStockIcons.Event, AstStockIcons.ProtectedEvent, AstStockIcons.InternalEvent, AstStockIcons.ProtectedOrInternalEvent, AstStockIcons.InternalAndProtectedEvent
-		};
-
-		static bool GetAccessibility (EntityDeclaration element, out Accessibility acc)
+		static void AdjustAccessibility (SyntaxTokenList modifiers, ref Accessibility acc, ref bool isStatic, ref bool result)
 		{
-			if (element.Parent is TypeDeclaration && ((TypeDeclaration)element.Parent).ClassType == ClassType.Interface) {
+			isStatic = modifiers.Any (mod => mod.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.StaticKeyword);
+			if (modifiers.Any (mod => mod.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.ProtectedKeyword) &&
+				modifiers.Any (mod => mod.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.InternalKeyword)) {
+				acc = Accessibility.ProtectedOrInternal;
+				result = true;
+				return;
+			}
+
+			foreach (var mod in modifiers) {
+				if (mod.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.PublicKeyword) {
+					acc = Accessibility.Public;
+					result = true;
+					return;
+				}
+				if (mod.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.PrivateKeyword) {
+					acc = Accessibility.Private;
+					result = true;
+					return;
+				}
+				if (mod.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.ProtectedKeyword) {
+					acc = Accessibility.Protected;
+					result = true;
+					return;
+				}
+				if (mod.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.InternalKeyword) {
+					acc = Accessibility.Internal;
+					result = true;
+					return;
+				}
+			}
+		}
+
+		static bool GetAccessibility (SyntaxNode element, out Accessibility acc, out bool isStatic)
+		{
+			isStatic = false;
+			if (element.Parent is TypeDeclarationSyntax && element.Parent is InterfaceDeclarationSyntax) {
 				acc = Accessibility.Public;
 				return true;
 			}
 			bool result = false;
 			acc = Accessibility.Private;
-			if (element is TypeDeclaration && !(element.Parent is TypeDeclaration))
+			if (element is TypeDeclarationSyntax && !(element.Parent is TypeDeclarationSyntax))
 				acc = Accessibility.Internal;
-			if (element.HasModifier (Modifiers.Public)) {
-				acc = Accessibility.Public;
-				result = true;
-			} else if (element.HasModifier (Modifiers.Private)) {
-				acc = Accessibility.Private;
-				result = true;
-			} else if (element.HasModifier (Modifiers.Protected | Modifiers.Internal)) {
-				acc = Accessibility.ProtectedOrInternal;
-				result = true;
-			} else if (element.HasModifier (Modifiers.Protected)) {
-				acc = Accessibility.Protected;
-				result = true;
-			} else if (element.HasModifier (Modifiers.Internal)) {
-				acc = Accessibility.Internal;
-				result = true;
-			} 
+
+			if (element is VariableDeclaratorSyntax)
+				element = element.Parent.Parent;
+			
+			if (element is TypeDeclarationSyntax)
+				AdjustAccessibility (((TypeDeclarationSyntax)element).Modifiers, ref acc, ref isStatic, ref result);
+			if (element is BaseFieldDeclarationSyntax)
+				AdjustAccessibility (((BaseFieldDeclarationSyntax)element).Modifiers, ref acc, ref isStatic, ref result);
+			if (element is BasePropertyDeclarationSyntax)
+				AdjustAccessibility (((BasePropertyDeclarationSyntax)element).Modifiers, ref acc, ref isStatic, ref result);
+			if (element is BaseMethodDeclarationSyntax)
+				AdjustAccessibility (((BaseMethodDeclarationSyntax)element).Modifiers, ref acc, ref isStatic, ref result);
 			return result;
 		}
 		
-		
-		public static string GetStockIcon (this EntityDeclaration element)
+		public static string GetStockIcon (this SyntaxNode element)
 		{
 			Accessibility acc = Accessibility.Public;
+			bool isStatic = false;
 
+			if (element is NamespaceDeclarationSyntax)
+				return Namespace;
 			
-			if (element is Accessor) {
-				if (!GetAccessibility (element, out acc))
-					GetAccessibility (element.Parent as EntityDeclaration, out acc);
+			if (element is AccessorDeclarationSyntax) {
+				if (!GetAccessibility ((MemberDeclarationSyntax)element, out acc, out isStatic))
+					GetAccessibility (element.Parent as MemberDeclarationSyntax, out acc, out isStatic);
 
-				return methodIconTable [(int) (acc)];
+				return "md-" + GetAccess (acc) + "method";
+			}
+			
+			GetAccessibility (element, out acc, out isStatic);
+
+			if (element is EnumDeclarationSyntax) {
+				return "md-" + GetAccess (acc) + "enum";
 			}
 
-			GetAccessibility (element, out acc);
-
-			if (element is TypeDeclaration) {
-				var type = element as TypeDeclaration;
-				
-				switch (type.ClassType) {
-				case ClassType.Class:
-					return typeIconTable [0, (int) (acc)];
-				case ClassType.Struct:
-					return typeIconTable [3, (int) (acc)];
-				case ClassType.Interface:
-					return typeIconTable [2, (int) (acc)];
-				case ClassType.Enum:
-					return typeIconTable [1, (int) (acc)];
+			if (element is TypeDeclarationSyntax) {
+				var type = element as TypeDeclarationSyntax;
+				switch (type.Keyword.Kind ()) {
+				case SyntaxKind.ClassKeyword:
+					return "md-" + GetAccess (acc) + "class";
+				case SyntaxKind.StructKeyword:
+					return "md-" + GetAccess (acc) + "struct";
+				case SyntaxKind.InterfaceKeyword:
+					return "md-" + GetAccess (acc) + "interface";
+				case SyntaxKind.EnumKeyword:
+					return "md-" + GetAccess (acc) + "enum";
 				default:
 					throw new ArgumentOutOfRangeException ();
 				}
 			}
-			if (element is DelegateDeclaration)
-				return typeIconTable [4, (int) (acc)];
+			if (element is DelegateDeclarationSyntax)
+				return "md-" + GetAccess (acc) + "delegate";
 
 			// member accessibility
-			GetAccessibility (element, out acc);
+			GetAccessibility (element, out acc, out isStatic);
 
-			if (element is MethodDeclaration) {
-				var method = element as MethodDeclaration;
-				if (method.IsExtensionMethod)
-					return extensionMethodIconTable [(int) (acc)];
-				return methodIconTable [(int) (acc)];
+			if (element is BaseMethodDeclarationSyntax) {
+				// TODO!
+				// var method = element as MethodDeclarationSyntax;
+				//				if (method.ParameterList.Parameters.First ())
+				//	return extensionMethodIconTable [(int) (acc)];
+
+
+				return "md-" + GetAccess (acc) + GetGlobal (isStatic) + "method";
 			}
-			if (element is OperatorDeclaration || element is ConstructorDeclaration || element is DestructorDeclaration || element is Accessor)
-				return methodIconTable [(int) (acc)];
 
-			if (element is PropertyDeclaration ||  element is IndexerDeclaration)
-				return propertyIconTable [(int) (acc)];
-			if (element is EventDeclaration || element is CustomEventDeclaration)
-				return eventIconTable [(int) (acc)];
-			 if (element.Parent is TypeDeclaration && ((TypeDeclaration)element.Parent).ClassType == ClassType.Enum)
-				acc = Accessibility.Public;
-			return fieldIconTable [(int) (acc)];
+			if (element is PropertyDeclarationSyntax || element is IndexerDeclarationSyntax)
+				return "md-" + GetAccess (acc) + GetGlobal (isStatic) + "property";
+			if (element is EventDeclarationSyntax || element is EventFieldDeclarationSyntax)
+				return "md-" + GetAccess (acc) + GetGlobal (isStatic) + "event";
+			if (element.Parent is EnumDeclarationSyntax)
+				return "md-" + GetAccess (acc) + "enum";
+			return "md-" + GetAccess (acc) + GetGlobal (isStatic) + "field";
+		}
+
+		static string GetGlobal (bool isStatic)
+		{
+			return isStatic ? "static-" : "";
+		}
+
+		static string GetAccess (Accessibility acc)
+		{
+			return MonoDevelop.Ide.TypeSystem.Stock.GetAccess (acc);
+		}
+
+		internal static IconId GetStockIconForSymbolInfo (this DeclaredSymbolInfo symbol)
+		{
+			switch (symbol.Kind) {
+			case DeclaredSymbolInfoKind.Class:
+				return AstStockIcons.Class;
+			case DeclaredSymbolInfoKind.Constant:
+				return AstStockIcons.Field;
+			case DeclaredSymbolInfoKind.Constructor:
+				return AstStockIcons.Method;
+			case DeclaredSymbolInfoKind.Delegate:
+				return AstStockIcons.Delegate;
+			case DeclaredSymbolInfoKind.Enum:
+				return AstStockIcons.Enum;
+			case DeclaredSymbolInfoKind.EnumMember:
+				return AstStockIcons.Field;
+			case DeclaredSymbolInfoKind.Event:
+				return AstStockIcons.Event;
+			case DeclaredSymbolInfoKind.Field:
+				return AstStockIcons.Field;
+			case DeclaredSymbolInfoKind.Indexer:
+				return AstStockIcons.Method;
+			case DeclaredSymbolInfoKind.Interface:
+				return AstStockIcons.Interface;
+			case DeclaredSymbolInfoKind.Method:
+				return AstStockIcons.Method;
+			case DeclaredSymbolInfoKind.Module:
+				return AstStockIcons.Method;
+			case DeclaredSymbolInfoKind.Property:
+				return AstStockIcons.Property;
+			case DeclaredSymbolInfoKind.Struct:
+				return AstStockIcons.Struct;
+			default:
+				throw new ArgumentOutOfRangeException ();
+			}
 		}
 	}
-
 }

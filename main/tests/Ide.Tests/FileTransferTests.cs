@@ -1,4 +1,4 @@
-﻿//
+//
 // FileTransferTests.cs
 //
 // Author:
@@ -29,16 +29,17 @@ using NUnit.Framework;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Ide.Tests
 {
 	public class FileTransferTests: TestBase
 	{
 		[Test]
-		public void MoveEmptyFolder ()
+		public async Task MoveEmptyFolder ()
 		{
 			string solFile = Util.GetSampleProject ("transfer-tests", "console-with-libs.sln");
-			var sol = (Solution) MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var sol = (Solution) await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var lib1 = (DotNetProject) sol.FindProjectByName ("library1");
 			var lib2 = (DotNetProject) sol.FindProjectByName ("library2");
 
@@ -60,10 +61,10 @@ namespace Ide.Tests
 		}
 
 		[Test]
-		public void MoveFolder ()
+		public async Task MoveFolder ()
 		{
 			string solFile = Util.GetSampleProject ("transfer-tests", "console-with-libs.sln");
-			var sol = (Solution) MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var sol = (Solution) await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var lib1 = (DotNetProject) sol.FindProjectByName ("library1");
 			var lib2 = (DotNetProject) sol.FindProjectByName ("library2");
 
@@ -85,6 +86,68 @@ namespace Ide.Tests
 			Assert.IsTrue (lib1.Files.GetFile (targetFile) != null);
 			Assert.IsFalse (lib2.Files.GetFile (sourceDir) != null);
 			Assert.IsFalse (lib2.Files.GetFile (sourceFile) != null);
+		}
+
+		[Test]
+		public async Task MoveFileFromOneFolderToAnotherAndSaveProject ()
+		{
+			string solFile = Util.GetSampleProject ("transfer-tests", "console-with-libs.sln");
+			var sol = (Solution) await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var lib2 = (DotNetProject) sol.FindProjectByName ("library2");
+
+			var sourceDir = lib2.ItemDirectory.Combine ("f2");
+			var targetDir = lib2.ItemDirectory.Combine ("f2-empty");
+			var sourceFile = sourceDir.Combine ("a.cs");
+			var targetFile = targetDir.Combine ("a.cs");
+
+			// Git can't commit empty folders, so that folder has a dummy file that needs to be deleted
+			File.Delete (targetDir.Combine ("delete-me"));
+
+			Assert.IsTrue (lib2.Files.GetFile (sourceFile) != null);
+			Assert.IsFalse (lib2.Files.GetFile (targetFile) != null);
+
+			ProjectOperations.TransferFilesInternal (Util.GetMonitor (), lib2, sourceFile, lib2, targetFile, true, true);
+
+			Assert.IsFalse (lib2.Files.GetFile (sourceFile) != null);
+			Assert.IsTrue (lib2.Files.GetFile (targetFile) != null);
+
+			await lib2.SaveAsync (Util.GetMonitor ());
+			sol = (Solution) await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var reloadedLib2 = (DotNetProject) sol.FindProjectByName ("library2");
+
+			Assert.IsTrue (reloadedLib2.Files.GetFile (targetFile) != null);
+			Assert.IsFalse (reloadedLib2.Files.GetFile (sourceFile) != null);
+		}
+
+		[Test]
+		public async Task CopyFileFromOneFolderToAnotherAndSaveProject ()
+		{
+			string solFile = Util.GetSampleProject ("transfer-tests", "console-with-libs.sln");
+			var sol = (Solution) await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var lib2 = (DotNetProject) sol.FindProjectByName ("library2");
+
+			var sourceDir = lib2.ItemDirectory.Combine ("f2");
+			var targetDir = lib2.ItemDirectory.Combine ("f2-empty");
+			var sourceFile = sourceDir.Combine ("a.cs");
+			var targetFile = targetDir.Combine ("a.cs");
+
+			// Git can't commit empty folders, so that folder has a dummy file that needs to be deleted
+			File.Delete (targetDir.Combine ("delete-me"));
+
+			Assert.IsTrue (lib2.Files.GetFile (sourceFile) != null);
+			Assert.IsFalse (lib2.Files.GetFile (targetFile) != null);
+
+			ProjectOperations.TransferFilesInternal (Util.GetMonitor (), lib2, sourceFile, lib2, targetFile, false, true);
+
+			Assert.IsTrue (lib2.Files.GetFile (sourceFile) != null);
+			Assert.IsTrue (lib2.Files.GetFile (targetFile) != null);
+
+			await lib2.SaveAsync (Util.GetMonitor ());
+			sol = (Solution) await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var reloadedLib2 = (DotNetProject) sol.FindProjectByName ("library2");
+
+			Assert.IsTrue (reloadedLib2.Files.GetFile (targetFile) != null);
+			Assert.IsTrue (reloadedLib2.Files.GetFile (sourceFile) != null);
 		}
 	}
 }

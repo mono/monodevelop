@@ -47,9 +47,12 @@
 
         { "name":"Notification Border", "color":"#989892" },
 
-        { "name":"Completion Matching Substring", "color":"#BA3373" },
-        { "name":"Completion Border", "color":"#C9C9C9" },
-        { "name":"Completion Border(Inactive)", "color":"#bebebe" },
+        { "name":"Completion Window", "color":"monokai-background", "bordercolor":"#989892"},
+		{ "name":"Completion Tooltip Window", "color":"#272725", "bordercolor":"#989892" },
+        { "name":"Completion Selection Bar Border", "color":"monokai-selection" },
+        { "name":"Completion Selection Bar Border(Inactive)", "color":"#383830" },
+        { "name":"Completion Selection Bar Background", "color":"monokai-selection", "secondcolor":"monokai-selection" },
+        { "name":"Completion Selection Bar Background(Inactive)", "color":"#383830", "secondcolor":"#383830" },
 
         { "name":"Bookmarks", "color":"#FDD99B", "secondcolor":"#816647 " },
 
@@ -145,9 +148,14 @@
         { "name":"Tooltip Text", "fore":"monokai-white", "back":"#272725" },
         { "name":"Notification Text", "fore":"monokai-white", "back":"#272725" },
 
-        { "name":"Completion Text", "fore":"#434343", "back":"#F0F6F8" },
-        { "name":"Completion Selected Text", "fore":"#f8fcfc", "back":"#dff4f0" },
-        { "name":"Completion Selected Text(Inactive)", "fore":"white", "back":"white" },
+        { "name":"Completion Text", "fore":"monokai-white" },
+        { "name":"Completion Matching Substring", "fore":"monokai-keyword" },
+        
+        { "name":"Completion Selected Text", "fore":"monokai-white" },
+        { "name":"Completion Selected Matching Substring", "fore":"monokai-keyword" },
+
+        { "name":"Completion Selected Text(Inactive)", "fore":"monokai-white" },
+        { "name":"Completion Selected Matching Substring(Inactive)", "fore":"monokai-keyword" },
 
         { "name":"Keyword(Access)", "fore":"monokai-constant" },
         { "name":"Keyword(Type)", "fore":"monokai-keyword" },

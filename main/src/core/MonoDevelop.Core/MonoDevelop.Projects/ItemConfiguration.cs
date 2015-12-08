@@ -32,17 +32,17 @@ using System.Collections.ObjectModel;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
 	public class ItemConfiguration: IExtendedDataItem
 	{
-		[ItemProperty]
 		string name = null;
 		
 		string platform;
 		
-		[ItemProperty ("CustomCommands")]
+		[ItemProperty ("CustomCommands", SkipEmpty = true)]
 		[ItemProperty ("Command", Scope="*")]
 		CustomCommandCollection customCommands = new CustomCommandCollection ();
 
@@ -107,7 +107,7 @@ namespace MonoDevelop.Projects
 		public CustomCommandCollection CustomCommands {
 			get { return customCommands; }
 		}
-		
+
 		public object Clone()
 		{
 			ItemConfiguration conf = (ItemConfiguration) Activator.CreateInstance (GetType ());

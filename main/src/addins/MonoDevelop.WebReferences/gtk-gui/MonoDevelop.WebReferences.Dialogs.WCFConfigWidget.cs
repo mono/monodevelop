@@ -5,14 +5,23 @@ namespace MonoDevelop.WebReferences.Dialogs
 	public partial class WCFConfigWidget
 	{
 		private global::Gtk.VBox dialog1_VBox;
+		
 		private global::Gtk.Table wcfOptions;
+		
 		private global::Gtk.ComboBox dictionaryCollection;
+		
 		private global::Gtk.Label label1;
+		
 		private global::Gtk.Label label2;
+		
 		private global::Gtk.Label label3;
+		
 		private global::Gtk.Label label4;
+		
 		private global::Gtk.ComboBox listAccess;
+		
 		private global::Gtk.ComboBox listAsync;
+		
 		private global::Gtk.ComboBox listCollection;
 
 		protected virtual void Build ()

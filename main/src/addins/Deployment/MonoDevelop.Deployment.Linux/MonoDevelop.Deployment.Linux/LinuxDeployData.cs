@@ -2,9 +2,13 @@
 using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
+using System.Xml;
+using System.IO;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Deployment.Linux
 {
+	[DataItem ("Deployment.LinuxDeployData")]
 	public class LinuxDeployData
 	{
 		[ItemProperty (DefaultValue=true)]
@@ -22,10 +26,9 @@ namespace MonoDevelop.Deployment.Linux
 		[ItemProperty (DefaultValue=true)]
 		bool generatePcFile = true;
 		
-		SolutionItem entry;
-		bool connected;
-		
-		internal LinuxDeployData (SolutionItem entry)
+		Project entry;
+
+		internal LinuxDeployData (Project entry)
 		{
 			this.entry = entry;
 		}
@@ -34,44 +37,39 @@ namespace MonoDevelop.Deployment.Linux
 		{
 		}
 		
-		public static LinuxDeployData GetLinuxDeployData (SolutionItem entry)
+		public static LinuxDeployData GetLinuxDeployData (Project entry)
 		{
 			LinuxDeployData data = (LinuxDeployData) entry.ExtendedProperties ["Deployment.LinuxDeployData"];
-			if (data != null) {
-				if (data.entry == null) {
-					data.Bind (entry);
-					data.connected = true;
-				}
-				return data;
-			}
-			
-			data = (LinuxDeployData) entry.ExtendedProperties ["Temp.Deployment.LinuxDeployData"];
 			if (data != null)
 				return data;
 			
-			data = CreateDefault (entry);
-			entry.ExtendedProperties ["Temp.Deployment.LinuxDeployData"] = data;
-			data.Bind (entry);
+			var elem = entry.MSBuildProject.GetMonoDevelopProjectExtension ("Deployment.LinuxDeployData");
+			if (elem != null) {
+				XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
+				data = (LinuxDeployData) ser.Deserialize (new XmlNodeReader (elem), typeof(LinuxDeployData));
+			} else {
+				data = CreateDefault (entry);
+			}
+			data.entry = entry;
+			entry.ExtendedProperties ["Deployment.LinuxDeployData"] = data;
 			return data;
 		}
 		
-		internal static LinuxDeployData CreateDefault (SolutionItem entry)
+		internal static LinuxDeployData CreateDefault (Project entry)
 		{
 			return new LinuxDeployData (entry);
 		}
 		
-		void Bind (SolutionItem entry)
-		{
-			this.entry = entry;
-		}
-		
 		void UpdateEntry ()
 		{
-			if (connected)
-				return;
-			entry.ExtendedProperties ["Deployment.LinuxDeployData"] = this;
-			entry.ExtendedProperties.Remove ("Temp.Deployment.LinuxDeployData");
-			connected = true;
+			var ser = new DataSerializer (new DataContext ());
+			var data = ser.Serialize (this);
+
+			XmlDocument doc = new XmlDocument ();
+			var writer = new XmlConfigurationWriter { Namespace = MSBuildProject.Schema };
+			var elem = writer.Write (doc, data);
+
+			entry.MSBuildProject.SetMonoDevelopProjectExtension ("Deployment.LinuxDeployData", elem);
 		}
 		
 		public string PackageName {

@@ -9,7 +9,7 @@ namespace MonoDevelop.Deployment
 	{
 		internal DeployServiceExtension Next;
 		
-		public virtual bool BuildPackage (IProgressMonitor monitor, PackageBuilder builder)
+		public virtual bool BuildPackage (ProgressMonitor monitor, PackageBuilder builder)
 		{
 			if (Next != null)
 				return Next.BuildPackage (monitor, builder);
@@ -17,7 +17,7 @@ namespace MonoDevelop.Deployment
 				return builder.Build (monitor);
 		}
 		
-		public virtual DeployFileCollection GetDeployFiles (DeployContext ctx, SolutionItem entry, ConfigurationSelector configuration)
+		public virtual DeployFileCollection GetDeployFiles (DeployContext ctx, SolutionFolderItem entry, ConfigurationSelector configuration)
 		{
 			if (entry is SolutionFolder)
 				return GetCombineDeployFiles (ctx, (SolutionFolder) entry, configuration);

@@ -33,6 +33,8 @@ using UnitTests;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.CSharp.Project;
+using MonoDevelop.Projects.Formats.MSBuild;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
 {
@@ -146,14 +148,14 @@ namespace MonoDevelop.Projects
 			Solution sol = new Solution ();
 			SolutionConfiguration scDebug = sol.AddConfiguration ("Debug", true);
 			
-			DotNetAssemblyProject project = new DotNetAssemblyProject ("C#");
+			DotNetProject project = Services.ProjectService.CreateDotNetProject ("C#");
 			sol.RootFolder.Items.Add (project);
 			Assert.AreEqual (0, project.Configurations.Count);
 			
 			InitializeProject (dir, project, "TestProject");
-			project.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-			project.References.Add (new ProjectReference (ReferenceType.Package, "System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-			project.References.Add (new ProjectReference (ReferenceType.Package, "System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			project.References.Add (ProjectReference.CreateAssemblyReference ("System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			project.References.Add (ProjectReference.CreateAssemblyReference ("System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			project.References.Add (ProjectReference.CreateAssemblyReference ("System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 			project.Files.Add (new ProjectFile (Path.Combine (dir, "Program.cs")));
 			project.Files.Add (new ProjectFile (Path.Combine (dir, "Resource.xml"), BuildAction.EmbeddedResource));
 			project.Files.Add (new ProjectFile (Path.Combine (dir, "Excluded.xml"), BuildAction.Content));
@@ -214,7 +216,7 @@ namespace Foo {
 		
 		public static DotNetProject CreateProject (string dir, string lang, string name)
 		{
-			DotNetAssemblyProject project = new DotNetAssemblyProject (lang);
+			DotNetProject project = Services.ProjectService.CreateDotNetProject (lang);
 			InitializeProject (dir, project, name);
 			return project;
 		}
@@ -225,16 +227,16 @@ namespace Foo {
 			
 			DotNetProjectConfiguration pcDebug = project.AddNewConfiguration ("Debug") as DotNetProjectConfiguration;
 			CSharpCompilerParameters csparamsDebug = (CSharpCompilerParameters) pcDebug.CompilationParameters;
-			csparamsDebug.DebugType = "full";
+			pcDebug.DebugType = "full";
 			pcDebug.OutputDirectory = Path.Combine (dir, "bin/Debug");
 			pcDebug.OutputAssembly = name;
-			pcDebug.DebugMode = true;
+			pcDebug.DebugSymbols = true;
 			csparamsDebug.DefineSymbols = "DEBUG;TRACE";
 			csparamsDebug.Optimize = false;
 			
 			DotNetProjectConfiguration pcRelease = project.AddNewConfiguration ("Release") as DotNetProjectConfiguration;
 			CSharpCompilerParameters csparamsRelease = (CSharpCompilerParameters) pcRelease.CompilationParameters;
-			csparamsRelease.DebugType = "none";
+			pcRelease.DebugType = "none";
 			pcRelease.OutputDirectory = Path.Combine (dir, "bin/Release");
 			pcRelease.OutputAssembly = name;
 			csparamsRelease.DefineSymbols = "TRACE";
@@ -244,13 +246,15 @@ namespace Foo {
 			project.FileName = pfile;
 		}
 		
-		public static void CheckGenericItemProject (string fileFormat)
+		public static async Task CheckGenericItemProject (MSBuildFileFormat format)
 		{
 			Solution sol = new Solution ();
-			sol.ConvertToFormat (Services.ProjectService.FileFormats.GetFileFormat (fileFormat), true);
-			string dir = Util.CreateTmpDir ("generic-item-" + fileFormat);
+			sol.ConvertToFormat (format);
+			string dir = Util.CreateTmpDir ("generic-item-" + format.Name);
 			sol.FileName = Path.Combine (dir, "TestGenericItem");
 			sol.Name = "TheItem";
+
+			MonoDevelop.Projects.Formats.MSBuild.MSBuildProjectService.RegisterGenericProjectType ("GenericItem", typeof(GenericItem));
 			
 			GenericItem it = new GenericItem ();
 			it.SomeValue = "hi";
@@ -259,27 +263,27 @@ namespace Foo {
 			it.FileName = Path.Combine (dir, "TheItem");
 			it.Name = "TheItem";
 			
-			sol.Save (Util.GetMonitor ());
+			await sol.SaveAsync (Util.GetMonitor ());
 			
-			Solution sol2 = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), sol.FileName);
+			Solution sol2 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), sol.FileName);
 			Assert.AreEqual (1, sol2.Items.Count);
-			Assert.IsTrue (sol2.Items [0] is GenericItem);
+			Assert.IsInstanceOf<GenericItem> (sol2.Items [0]);
 			
 			it = (GenericItem) sol2.Items [0];
 			Assert.AreEqual ("hi", it.SomeValue);
 		}
 		
-		public static void TestLoadSaveSolutionFolders (string fileFormat)
+		public static async Task TestLoadSaveSolutionFolders (MSBuildFileFormat fileFormat)
 		{
 			List<string> ids = new List<string> ();
 			
 			Solution sol = new Solution ();
-			sol.ConvertToFormat (Services.ProjectService.FileFormats.GetFileFormat (fileFormat), true);
-			string dir = Util.CreateTmpDir ("solution-folders-" + fileFormat);
+			sol.ConvertToFormat (fileFormat);
+			string dir = Util.CreateTmpDir ("solution-folders-" + fileFormat.Name);
 			sol.FileName = Path.Combine (dir, "TestSolutionFolders");
 			sol.Name = "TheSolution";
 			
-			DotNetAssemblyProject p1 = new DotNetAssemblyProject ("C#");
+			var p1 = Services.ProjectService.CreateDotNetProject ("C#");
 			p1.FileName = Path.Combine (dir, "p1");
 			sol.RootFolder.Items.Add (p1);
 			string idp1 = p1.ItemId;
@@ -295,7 +299,7 @@ namespace Foo {
 			Assert.IsFalse (ids.Contains (idf1));
 			ids.Add (idf1);
 			
-			DotNetAssemblyProject p2 = new DotNetAssemblyProject ("C#");
+			var p2 = Services.ProjectService.CreateDotNetProject ("C#");
 			p2.FileName = Path.Combine (dir, "p2");
 			f1.Items.Add (p2);
 			string idp2 = p2.ItemId;
@@ -311,7 +315,7 @@ namespace Foo {
 			Assert.IsFalse (ids.Contains (idf2));
 			ids.Add (idf2);
 			
-			DotNetAssemblyProject p3 = new DotNetAssemblyProject ("C#");
+			var p3 = Services.ProjectService.CreateDotNetProject ("C#");
 			p3.FileName = Path.Combine (dir, "p3");
 			f2.Items.Add (p3);
 			string idp3 = p3.ItemId;
@@ -319,7 +323,7 @@ namespace Foo {
 			Assert.IsFalse (ids.Contains (idp3));
 			ids.Add (idp3);
 			
-			DotNetAssemblyProject p4 = new DotNetAssemblyProject ("C#");
+			var p4 = Services.ProjectService.CreateDotNetProject ("C#");
 			p4.FileName = Path.Combine (dir, "p4");
 			f2.Items.Add (p4);
 			string idp4 = p4.ItemId;
@@ -327,12 +331,12 @@ namespace Foo {
 			Assert.IsFalse (ids.Contains (idp4));
 			ids.Add (idp4);
 			
-			sol.Save (Util.GetMonitor ());
+			await sol.SaveAsync (Util.GetMonitor ());
 			
-			Solution sol2 = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), sol.FileName);
+			Solution sol2 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), sol.FileName);
 			Assert.AreEqual (4, sol2.Items.Count);
 			Assert.AreEqual (2, sol2.RootFolder.Items.Count);
-			Assert.AreEqual (typeof(DotNetAssemblyProject), sol2.RootFolder.Items [0].GetType ());
+			Assert.AreEqual (typeof(CSharpProject), sol2.RootFolder.Items [0].GetType ());
 			Assert.AreEqual (typeof(SolutionFolder), sol2.RootFolder.Items [1].GetType ());
 			Assert.AreEqual ("p1", sol2.RootFolder.Items [0].Name);
 			Assert.AreEqual ("f1", sol2.RootFolder.Items [1].Name);
@@ -341,7 +345,7 @@ namespace Foo {
 			
 			f1 = (SolutionFolder) sol2.RootFolder.Items [1];
 			Assert.AreEqual (2, f1.Items.Count);
-			Assert.AreEqual (typeof(DotNetAssemblyProject), f1.Items [0].GetType ());
+			Assert.AreEqual (typeof(CSharpProject), f1.Items [0].GetType ());
 			Assert.AreEqual (typeof(SolutionFolder), f1.Items [1].GetType ());
 			Assert.AreEqual ("p2", f1.Items [0].Name);
 			Assert.AreEqual ("f2", f1.Items [1].Name);
@@ -350,51 +354,51 @@ namespace Foo {
 			
 			f2 = (SolutionFolder) f1.Items [1];
 			Assert.AreEqual (2, f2.Items.Count);
-			Assert.AreEqual (typeof(DotNetAssemblyProject), f2.Items [0].GetType ());
-			Assert.AreEqual (typeof(DotNetAssemblyProject), f2.Items [1].GetType ());
+			Assert.AreEqual (typeof(CSharpProject), f2.Items [0].GetType ());
+			Assert.AreEqual (typeof(CSharpProject), f2.Items [1].GetType ());
 			Assert.AreEqual ("p3", f2.Items [0].Name);
 			Assert.AreEqual ("p4", f2.Items [1].Name);
 			Assert.AreEqual (idp3, f2.Items [0].ItemId, "idp4");
 			Assert.AreEqual (idp4, f2.Items [1].ItemId, "idp4");
 		}
 		
-		public static void TestCreateLoadSaveConsoleProject (string fileFormat)
+		public static async Task TestCreateLoadSaveConsoleProject (MSBuildFileFormat fileFormat)
 		{
 			Solution sol = CreateConsoleSolution ("TestCreateLoadSaveConsoleProject");
-			sol.ConvertToFormat (Services.ProjectService.FileFormats.GetFileFormat (fileFormat), true);
+			sol.ConvertToFormat (fileFormat);
 			
-			sol.Save (Util.GetMonitor ());
+			await sol.SaveAsync (Util.GetMonitor ());
 			string solFile = sol.FileName;
 			
-			sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			CheckConsoleProject (sol);
 
 			// Save over existing file
-			sol.Save (Util.GetMonitor ());
-			sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			await sol.SaveAsync (Util.GetMonitor ());
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			CheckConsoleProject (sol);
 		}
 		
-		public static void TestLoadSaveResources (string fileFormat)
+		public static async Task TestLoadSaveResources (MSBuildFileFormat fileFormat)
 		{
 			string solFile = Util.GetSampleProject ("resources-tester", "ResourcesTester.sln");
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			sol.ConvertToFormat (Services.ProjectService.FileFormats.GetFileFormat (fileFormat), true);
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			sol.ConvertToFormat (fileFormat);
 			ProjectTests.CheckResourcesSolution (sol);
 			
-			sol.Save (Util.GetMonitor ());
+			await sol.SaveAsync (Util.GetMonitor ());
 			solFile = sol.FileName;
 			
-			sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			ProjectTests.CheckResourcesSolution (sol);
 			
 			DotNetProject p = (DotNetProject) sol.Items [0];
 			string f = Path.Combine (p.BaseDirectory, "Bitmap1.bmp");
 			ProjectFile pf = p.Files.GetFile (f);
 			pf.ResourceId = "SomeBitmap.bmp";
-			sol.Save (Util.GetMonitor ());
+			await sol.SaveAsync (Util.GetMonitor ());
 			
-			sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			p = (DotNetProject) sol.Items [0];
 			f = Path.Combine (p.BaseDirectory, "Bitmap1.bmp");
 			pf = p.Files.GetFile (f);
@@ -402,37 +406,14 @@ namespace Foo {
 		}
 	}
 	
-	public class GenericItem: SolutionEntityItem
+	public class GenericItem: Project
 	{
 		[ItemProperty]
 		public string SomeValue;
-		
-		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
+
+		public GenericItem ()
 		{
+			Initialize (this);
 		}
-		
-		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
-		{
-			return null;
-		}
-		
-		protected override BuildResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
-		{
-			return null;
-		}
-		
-		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
-		{
-		}
-		
-		protected override bool OnGetNeedsBuilding (ConfigurationSelector configuration)
-		{
-			return false;
-		}
-		
-		protected override void OnSetNeedsBuilding (bool val, ConfigurationSelector configuration)
-		{
-		}
-		
 	}
 }

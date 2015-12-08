@@ -30,7 +30,6 @@ using System;
 using System.ComponentModel;
 using Gdk;
 using Gtk;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Components.PropertyGrid
 {

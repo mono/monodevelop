@@ -28,7 +28,7 @@
 using System;
 using System.Xml;
 
-namespace Microsoft.Build.BuildEngine {
+namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
 	internal abstract class ConditionExpression {
 	
 		public abstract bool BoolEvaluate (IExpressionContext context);
@@ -38,5 +38,9 @@ namespace Microsoft.Build.BuildEngine {
 		public abstract bool CanEvaluateToBool (IExpressionContext context);
 		public abstract bool CanEvaluateToNumber (IExpressionContext context);
 		public abstract bool CanEvaluateToString (IExpressionContext context);
+
+		public virtual void CollectConditionProperties (ConditionedPropertyCollection properties)
+		{
+		}
 	}
 }

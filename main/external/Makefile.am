@@ -8,7 +8,7 @@ if ENABLE_MACPLATFORM
 all: Xamarin.Mac.dll
 	$(MAKE) -C monomac/src
 
-Xamarin.Mac.dll: /Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/i386/full/Xamarin.Mac.dll
+Xamarin.Mac.dll: /Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/@MAC_ARCHITECTURE@/full/Xamarin.Mac.dll
 	cp -p $< $@
 	cp -p $<.mdb $@.mdb
 	cp -p /Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/libxammac.dylib .

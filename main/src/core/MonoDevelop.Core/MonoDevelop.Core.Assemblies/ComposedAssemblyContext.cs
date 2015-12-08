@@ -26,23 +26,26 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Core.Assemblies
 {
 	public class ComposedAssemblyContext: IAssemblyContext
 	{
-		List<IAssemblyContext> sources = new List<IAssemblyContext> ();
+		ImmutableList<IAssemblyContext> sources = ImmutableList<IAssemblyContext>.Empty;
 		
 		public void Add (IAssemblyContext ctx)
 		{
-			sources.Add (ctx);
+			sources = sources.Add (ctx);
 			ctx.Changed += CtxChanged;
 			CtxChanged (null, null);
 		}
 		
 		public void Remove (IAssemblyContext ctx)
 		{
-			if (sources.Remove (ctx)) {
+			var prev = sources;
+			sources = sources.Remove (ctx);
+			if (sources != prev) {
 				ctx.Changed -= CtxChanged;
 				CtxChanged (null, null);
 			}
@@ -52,7 +55,7 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			int i = sources.IndexOf (oldCtx);
 			if (i != -1) {
-				sources [i] = newCtx;
+				sources = sources.SetItem (i, newCtx);
 				CtxChanged (null, null);
 			}
 		}

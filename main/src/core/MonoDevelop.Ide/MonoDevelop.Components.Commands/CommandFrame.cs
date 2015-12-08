@@ -26,10 +26,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using Mono.Addins;
 using MonoDevelop.Components.DockToolbars;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Components.Commands
 {

@@ -3,47 +3,66 @@ using System;
 using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Ide;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class GtkProjectServiceExtension: ProjectServiceExtension
+	public class GtkProjectServiceExtension: DotNetProjectExtension
 	{
-		public override bool SupportsItem (IBuildTarget item)
+		[ItemProperty ("GtkDesignInfo", IsExternal = true, SkipEmpty = true)]
+		GtkDesignInfo info;
+
+		protected override bool SupportsObject (WorkspaceObject item)
 		{
-			if (!IdeApp.IsInitialized)
-				return false;
-			
-			DotNetProject project = item as DotNetProject;
-			return project != null && project.References.Count != 0 && GtkDesignInfo.HasDesignedObjects (project);
+			return base.SupportsObject (item) && IdeApp.IsInitialized;
 		}
 
-		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, ConfigurationSelector configuration)
+		protected override void OnReadProject (ProgressMonitor monitor, MonoDevelop.Projects.Formats.MSBuild.MSBuildProject msproject)
 		{
-			DotNetProject project = (DotNetProject) entry;
-			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
+			base.OnReadProject (monitor, msproject);
+			if (info != null)
+				info.Project = Project;
+		}
 
-			// The code generator must run in the GUI thread since it needs to
-			// access to Gtk classes
+		public GtkDesignInfo DesignInfo {
+			get {
+				if (info == null)
+					info = new GtkDesignInfo (Project);
+				return info;
+			}
+			set {
+				info = value;
+			}
+		}
+
+		protected async override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
+		{
+			if (Project.References.Count == 0 || !GtkDesignInfo.HasDesignedObjects (Project))
+				return await base.OnBuild (monitor, configuration, operationContext);
+
 			Generator gen = new Generator ();
-			lock (gen) {
-				Gtk.Application.Invoke (delegate { gen.Run (monitor, project, configuration); });
-				Monitor.Wait (gen);
+			if (!await gen.Run (monitor, Project, configuration)) {
+				BuildResult gr = new BuildResult ();
+				foreach (string s in gen.Messages)
+					gr.AddError (DesignInfo.GuiBuilderProject.File, 0, 0, null, s);
+				return gr;
 			}
 					
-			BuildResult res = base.Build (monitor, entry, configuration);
+			BuildResult res = await base.OnBuild (monitor, configuration, operationContext);
 
 			if (gen.Messages != null) {
 				foreach (string s in gen.Messages)
-					res.AddWarning (info.GuiBuilderProject.File, 0, 0, null, s);
+					res.AddWarning (DesignInfo.GuiBuilderProject.File, 0, 0, null, s);
 						
 				if (gen.Messages.Length > 0)
-					info.ForceCodeGenerationOnBuild ();
+					DesignInfo.ForceCodeGenerationOnBuild ();
 			}
 			
 			if (res.Failed && !Platform.IsWindows && !Platform.IsMac) {
 				// Some gtk# packages don't include the .pc file unless you install gtk-sharp-devel
-				if (project.AssemblyContext.GetPackage ("gtk-sharp-2.0") == null) {
+				if (Project.AssemblyContext.GetPackage ("gtk-sharp-2.0") == null) {
 					string msg = GettextCatalog.GetString (
 						"ERROR: MonoDevelop could not find the Gtk# 2.0 development package. " +
 						"Compilation of projects depending on Gtk# libraries will fail. " +
@@ -59,19 +78,18 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	
 	class Generator
 	{
-		public void Run (IProgressMonitor monitor, DotNetProject project, ConfigurationSelector configuration)
+		public async Task<bool> Run (ProgressMonitor monitor, DotNetProject project, ConfigurationSelector configuration)
 		{
-			lock (this) {
-				try {
-					Stetic.CodeGenerationResult res = GuiBuilderService.GenerateSteticCode (monitor, project, configuration);
-					if (res != null)
-						Messages = res.Warnings;
-				} catch (Exception ex) {
-					Error = ex;
-					LoggingService.LogError (ex.ToString ());
-					Messages = new string [] { Error.Message };
-				}
-				Monitor.PulseAll (this);
+			try {
+				Stetic.CodeGenerationResult res = await GuiBuilderService.GenerateSteticCode (monitor, project, configuration);
+				if (res != null)
+					Messages = res.Warnings;
+				return true;
+			} catch (Exception ex) {
+				Error = ex;
+				LoggingService.LogError (ex.ToString ());
+				Messages = new  [] { Error.Message };
+				return false;
 			}
 		}
 		public string[] Messages;

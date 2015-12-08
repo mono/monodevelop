@@ -33,22 +33,58 @@ using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects.Extensions;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public abstract class MSBuildFileFormat: IFileFormat
+	public abstract class MSBuildFileFormat
 	{
-		readonly SlnFileFormat slnFileFormat = new SlnFileFormat ();
+		readonly SlnFileFormat slnFileFormat;
+
+		internal MSBuildFileFormat ()
+		{
+			slnFileFormat = new SlnFileFormat (this);
+		}
+
+		public static readonly MSBuildFileFormat VS2005 = new MSBuildFileFormatVS05 ();
+		public static readonly MSBuildFileFormat VS2008 = new MSBuildFileFormatVS08 ();
+		public static readonly MSBuildFileFormat VS2010 = new MSBuildFileFormatVS10 ();
+		public static readonly MSBuildFileFormat VS2012 = new MSBuildFileFormatVS12 ();
+
+		public static IEnumerable<MSBuildFileFormat> GetSupportedFormats ()
+		{
+			yield return VS2012;
+			yield return VS2010;
+			yield return VS2008;
+			yield return VS2005;
+		}
+
+		public static IEnumerable<MSBuildFileFormat> GetSupportedFormats (IMSBuildFileObject targetItem)
+		{
+			return GetSupportedFormats ().Where (f => f.CanWriteFile (targetItem));
+		}
+
+		public static MSBuildFileFormat DefaultFormat {
+			get { return VS2012; }
+		}
 		
 		public string Name {
 			get { return "MSBuild"; }
 		}
-		
-		public SlnFileFormat SlnFileFormat {
+
+		public abstract Version Version { get; }
+
+		internal SlnFileFormat SlnFileFormat {
 			get { return slnFileFormat; }
 		}
 		
 		public bool SupportsMonikers { get { return SupportedFrameworks == null; } }
+
+		public static bool ToolsSupportMonikers (string toolsVersion)
+		{
+			return new Version (toolsVersion) >= new Version ("4.0");
+		}
 		
 		public bool SupportsFramework (TargetFramework fx)
 		{
@@ -70,7 +106,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (slnFileFormat.CanWriteFile (obj, this))
 				return slnFileFormat.GetValidFormatName (obj, fileName, this);
 			else {
-				string ext = MSBuildProjectService.GetExtensionForItem ((SolutionEntityItem)obj);
+				string ext = MSBuildProjectService.GetExtensionForItem ((SolutionItem)obj);
 				if (!string.IsNullOrEmpty (ext))
 					return fileName.ChangeExtension ("." + ext);
 				else
@@ -78,11 +114,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		public bool CanReadFile (FilePath file, Type expectedType)
+		internal bool CanReadFile (FilePath file, Type expectedType)
 		{
 			if (expectedType.IsAssignableFrom (typeof(Solution)) && slnFileFormat.CanReadFile (file, this))
 				return true;
-			else if (expectedType.IsAssignableFrom (typeof(SolutionEntityItem))) {
+			else if (expectedType.IsAssignableFrom (typeof(SolutionItem))) {
 				if (!MSBuildProjectService.CanReadFile (file))
 					return false;
 				//TODO: check ProductVersion first
@@ -95,12 +131,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			if (slnFileFormat.CanWriteFile (obj, this)) {
 				Solution sol = (Solution) obj;
-				foreach (SolutionEntityItem si in sol.GetAllSolutionItems<SolutionEntityItem> ())
+				foreach (SolutionItem si in sol.GetAllItems<SolutionItem> ())
 					if (!CanWriteFile (si))
 						return false;
 				return true;
 			}
-			else if (obj is SolutionEntityItem) {
+			else if (obj is SolutionItem) {
 				DotNetProject p = obj as DotNetProject;
 				// Check the framework only if the project is not loading, since otherwise the
 				// project may not yet have the framework info set.
@@ -118,7 +154,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			if (obj is Solution) {
 				List<string> msg = new List<string> ();
-				foreach (SolutionEntityItem si in ((Solution)obj).GetAllSolutionItems<SolutionEntityItem> ()) {
+				foreach (SolutionItem si in ((Solution)obj).GetAllItems<SolutionItem> ()) {
 					IEnumerable<string> ws = GetCompatibilityWarnings (si);
 					if (ws != null)
 						msg.AddRange (ws);
@@ -135,55 +171,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return null;
 		}
 
-		public void WriteFile (FilePath file, object obj, IProgressMonitor monitor)
+		internal async Task WriteFile (FilePath file, object obj, ProgressMonitor monitor)
 		{
 			if (slnFileFormat.CanWriteFile (obj, this)) {
-				slnFileFormat.WriteFile (file, obj, this, true, monitor);
+				await slnFileFormat.WriteFile (file, obj, true, monitor);
 			} else {
-				SolutionEntityItem item = (SolutionEntityItem) obj;
-				if (!(item.ItemHandler is MSBuildProjectHandler))
-					MSBuildProjectService.InitializeItemHandler (item);
-				MSBuildProjectHandler handler = (MSBuildProjectHandler) item.ItemHandler;
-				handler.SetSolutionFormat (this, false);
-				handler.Save (monitor);
+				throw new NotSupportedException ();
 			}
 		}
 
-		public object ReadFile (FilePath file, Type expectedType, MonoDevelop.Core.IProgressMonitor monitor)
+		internal async Task<object> ReadFile (FilePath file, Type expectedType, MonoDevelop.Core.ProgressMonitor monitor)
 		{
 			if (slnFileFormat.CanReadFile (file, this))
-				return slnFileFormat.ReadFile (file, this, monitor);
+				return await slnFileFormat.ReadFile (file, monitor);
 			else
-				return MSBuildProjectService.LoadItem (monitor, file, null, null, null);
-		}
-
-		public List<FilePath> GetItemFiles (object obj)
-		{
-			return new List<FilePath> ();
-		}
-
-		public void ConvertToFormat (object obj)
-		{
-			if (obj == null)
-				return;
-			
-			MSBuildHandler handler;
-			SolutionItem item = obj as SolutionItem;
-			if (item != null) {
-				handler = item.GetItemHandler() as MSBuildHandler;
-				if (handler != null) {
-					handler.SetSolutionFormat (this, true);
-					return;
-				}
-			}
-
-			MSBuildProjectService.InitializeItemHandler (item);
-			handler = (MSBuildHandler) item.ItemHandler;
-			handler.SetSolutionFormat (this, true);
-		}
-		
-		public bool SupportsMixedFormats {
-			get { return false; }
+				throw new NotSupportedException (); 
 		}
 
 		public abstract string DefaultToolsVersion { get; }
@@ -233,6 +235,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return "MSBuild05"; }
 		}
 
+		public override Version Version {
+			get { return new Version ("2005"); }
+		}
+
 		public override string DefaultProductVersion {
 			get { return "8.0.50727"; }
 		}
@@ -273,6 +279,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return "MSBuild08"; }
 		}
 
+		public override Version Version {
+			get { return new Version ("2008"); }
+		}
+
 		public override string DefaultProductVersion {
 			get { return "9.0.21022"; }
 		}
@@ -304,6 +314,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return "MSBuild10"; }
 		}
 
+		public override Version Version {
+			get { return new Version ("2010"); }
+		}
+
 		//WTF VS
 		public override string DefaultProductVersion {
 			get { return "8.0.30703"; }
@@ -331,6 +345,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	{
 		public override string Id {
 			get { return "MSBuild12"; }
+		}
+
+		public override Version Version {
+			get { return new Version ("2012"); }
 		}
 
 		public override string DefaultToolsVersion {

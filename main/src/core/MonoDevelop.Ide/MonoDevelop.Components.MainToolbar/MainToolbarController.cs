@@ -35,6 +35,7 @@ using Mono.Addins;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Execution;
 using System.Text;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -52,7 +53,7 @@ namespace MonoDevelop.Components.MainToolbar
 			get { return ToolbarView.StatusBar; }
 		}
 
-		readonly PropertyWrapper<bool> searchForMembers = new PropertyWrapper<bool> ("MainToolbar.Search.IncludeMembers", true);
+		readonly ConfigurationProperty<bool> searchForMembers = ConfigurationProperty.Create ("MainToolbar.Search.IncludeMembers", true);
 		bool SearchForMembers {
 			get { return searchForMembers; }
 			set { searchForMembers.Value = value; }
@@ -62,7 +63,7 @@ namespace MonoDevelop.Components.MainToolbar
 		int ignoreConfigurationChangedCount, ignoreRuntimeChangedCount;
 		Solution currentSolution;
 		bool settingGlobalConfig;
-		SolutionEntityItem currentStartupProject;
+		SolutionItem currentStartupProject;
 		EventHandler executionTargetsChanged;
 
 		public MainToolbarController (IMainToolbarView toolbarView)
@@ -95,7 +96,7 @@ namespace MonoDevelop.Components.MainToolbar
 				UpdateSearchEntryLabel ();
 			};
 
-			executionTargetsChanged = DispatchService.GuiDispatch (new EventHandler ((sender, e) => UpdateCombos ()));
+			executionTargetsChanged = (sender, e) => UpdateCombos ();
 
 			IdeApp.Workspace.LastWorkspaceItemClosed += (sender, e) => StatusBar.ShowReady ();
 			IdeApp.Workspace.ActiveConfigurationChanged += (sender, e) => UpdateCombos ();
@@ -107,6 +108,9 @@ namespace MonoDevelop.Components.MainToolbar
 			IdeApp.ProjectOperations.CurrentSelectedSolutionChanged += HandleCurrentSelectedSolutionChanged;
 
 			AddinManager.ExtensionChanged += OnExtensionChanged;
+			MonoDevelopWorkspace.LoadingFinished += delegate {
+				HandleSearchEntryChanged (null, EventArgs.Empty);
+			};
 		}
 
 		public void Initialize ()
@@ -341,7 +345,7 @@ namespace MonoDevelop.Components.MainToolbar
 		bool SelectActiveRuntime (ref bool selected, ref ExecutionTarget defaultTarget, ref int defaultIter)
 		{
 			var runtimes = ToolbarView.RuntimeModel.Cast<RuntimeModel> ().ToList ();
-			string lastRuntimeForProject = currentStartupProject != null ? currentStartupProject.UserProperties.GetValue<string> ("PreferredExecutionTarget", defaultValue: null) : null;
+			string lastRuntimeForProject = currentStartupProject?.UserProperties.GetValue<string> ("PreferredExecutionTarget", defaultValue: null);
 			var activeTarget = IdeApp.Workspace.ActiveExecutionTarget;
 			var activeTargetId = activeTarget != null ? activeTarget.Id : null;
 
@@ -516,6 +520,9 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void HandleSearchEntryChanged (object sender, EventArgs e)
 		{
+			if (!string.IsNullOrEmpty (ToolbarView.SearchText))
+				lastSearchText = ToolbarView.SearchText;
+			
 			if (string.IsNullOrEmpty (ToolbarView.SearchText)){
 				DestroyPopup ();
 				return;
@@ -553,9 +560,9 @@ namespace MonoDevelop.Components.MainToolbar
 				var doc = IdeApp.Workbench.ActiveDocument;
 				if (doc != null && doc.Editor != null) {
 					doc.Select ();
-					doc.Editor.Caret.Location = new Mono.TextEditor.DocumentLocation (pattern.LineNumber, pattern.Column > 0 ? pattern.Column : 1);
+					doc.Editor.CaretLocation = new MonoDevelop.Ide.Editor.DocumentLocation (pattern.LineNumber, pattern.Column > 0 ? pattern.Column : 1);
 					doc.Editor.CenterToCaret ();
-					doc.Editor.Parent.StartCaretPulseAnimation ();
+					doc.Editor.StartCaretPulseAnimation ();
 				}
 				return;
 			}
@@ -578,9 +585,16 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
+		string lastSearchText = string.Empty;
 		public void FocusSearchBar ()
 		{
 			IdeApp.Workbench.Present ();
+			var text = lastSearchText;
+			var actDoc = IdeApp.Workbench.ActiveDocument;
+			if (actDoc != null && actDoc.Editor.IsSomethingSelected)
+				text = actDoc.Editor.SelectedText;
+
+			ToolbarView.SearchText = text;
 			ToolbarView.FocusSearchBar ();
 		}
 

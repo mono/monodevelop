@@ -75,9 +75,9 @@ namespace CBinding
 		    ProjectFileCollection projectFiles,
 		    ProjectPackageCollection packages,
 		    CProjectConfiguration configuration,
-		    IProgressMonitor monitor);
+		    ProgressMonitor monitor);
 		
-		public abstract void Clean (ProjectFileCollection projectFiles, CProjectConfiguration configuration, IProgressMonitor monitor);
+		public abstract void Clean (ProjectFileCollection projectFiles, CProjectConfiguration configuration, ProgressMonitor monitor);
 		    
 		protected abstract void ParseCompilerOutput (string errorString, CompilerResults cr);
 		

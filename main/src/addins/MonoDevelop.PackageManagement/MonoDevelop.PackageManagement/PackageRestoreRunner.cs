@@ -1,4 +1,4 @@
-﻿//
+//
 // PackageRestoreRunner.cs
 //
 // Author:
@@ -77,7 +77,7 @@ namespace MonoDevelop.PackageManagement
 
 		public void Run (ProgressMonitorStatusMessage progressMessage)
 		{
-			using (IProgressMonitor progressMonitor = CreateProgressMonitor (progressMessage)) {
+			using (ProgressMonitor progressMonitor = CreateProgressMonitor (progressMessage)) {
 				using (PackageManagementEventsMonitor eventMonitor = CreateEventMonitor (progressMonitor)) {
 					try {
 						RestorePackages (progressMonitor, progressMessage);
@@ -95,17 +95,17 @@ namespace MonoDevelop.PackageManagement
 
 		public bool RestoreFailed { get; private set; }
 
-		IProgressMonitor CreateProgressMonitor (ProgressMonitorStatusMessage progressMessage)
+		ProgressMonitor CreateProgressMonitor (ProgressMonitorStatusMessage progressMessage)
 		{
 			return progressMonitorFactory.CreateProgressMonitor (progressMessage.Status);
 		}
 
-		PackageManagementEventsMonitor CreateEventMonitor (IProgressMonitor monitor)
+		PackageManagementEventsMonitor CreateEventMonitor (ProgressMonitor monitor)
 		{
 			return new PackageManagementEventsMonitor (monitor, packageManagementEvents, progressProvider);
 		}
 
-		void RestorePackages (IProgressMonitor progressMonitor, ProgressMonitorStatusMessage progressMessage)
+		void RestorePackages (ProgressMonitor progressMonitor, ProgressMonitorStatusMessage progressMessage)
 		{
 			var msbuildTargetsMonitor = new MSBuildTargetsRestoredMonitor (packageManagementEvents);
 			using (msbuildTargetsMonitor) {
@@ -156,10 +156,11 @@ namespace MonoDevelop.PackageManagement
 
 		void ReconnectAssemblyReferences (DotNetProject dotNetProject)
 		{
-			var projectWrapper = TypeSystemService.GetProjectContentWrapper (dotNetProject);
-			if (projectWrapper != null) {
-				projectWrapper.ReconnectAssemblyReferences ();
-			}
+			// TODO: Roslyn port ?
+//			var projectWrapper = TypeSystemService.GetProjectContentWrapper (dotNetProject);
+//			if (projectWrapper != null) {
+//				projectWrapper.ReconnectAssemblyReferences ();
+//			}
 		}
 	}
 }

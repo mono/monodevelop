@@ -30,7 +30,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Gui
 {
-    public interface IViewContent : IBaseViewContent
+	public interface IViewContent : IBaseViewContent
 	{
         Project Project { get; set; }
 
@@ -45,9 +45,11 @@ namespace MonoDevelop.Ide.Gui
         bool IsDirty { get; set; }
         bool IsReadOnly { get; }
 
-        void Load (string fileName);
+		void Load (FileOpenInformation fileOpenInformation);
+		void Load (string fileName);
 		void LoadNew (System.IO.Stream content, string mimeType);
-        void Save (string fileName);
+		void Save (FileSaveInformation fileSaveInformation);
+		void Save (string fileName);
         void Save ();
 		
 		/// <summary>

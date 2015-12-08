@@ -65,7 +65,7 @@ namespace MonoDevelop.NUnit.Commands
 	{
 		protected override void Run ()
 		{
-			IWorkspaceObject ob = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
+			WorkspaceObject ob = IdeApp.ProjectOperations.CurrentSelectedObject;
 			if (ob != null) {
 				UnitTest test = NUnitService.Instance.FindRootTest (ob);
 				if (test != null)
@@ -75,7 +75,7 @@ namespace MonoDevelop.NUnit.Commands
 		
 		protected override void Update (CommandInfo info)
 		{
-			IWorkspaceObject ob = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
+			WorkspaceObject ob = IdeApp.ProjectOperations.CurrentSelectedObject;
 			if (ob != null) {
 				UnitTest test = NUnitService.Instance.FindRootTest (ob);
 				info.Enabled = (test != null);

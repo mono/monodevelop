@@ -34,7 +34,7 @@ namespace MonoDevelop.PackageManagement
 {
 	public static class ProgressMonitorExtensions
 	{
-		public static void ShowPackageConsole (this IProgressMonitor monitor)
+		public static void ShowPackageConsole (this ProgressMonitor monitor)
 		{
 			DispatchService.GuiDispatch (() => {
 				var aggregatedMonitor = (PackageManagementProgressMonitor)monitor;

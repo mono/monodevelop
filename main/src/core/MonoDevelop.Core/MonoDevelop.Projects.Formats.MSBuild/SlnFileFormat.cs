@@ -27,10 +27,7 @@
 //
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -41,11 +38,19 @@ using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core;
 using System.Reflection;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class SlnFileFormat
+	class SlnFileFormat
 	{
+		MSBuildFileFormat format;
+
+		public SlnFileFormat (MSBuildFileFormat format)
+		{
+			this.format = format;
+		}
+
 		public string GetValidFormatName (object obj, string fileName, MSBuildFileFormat format)
 		{
 			return Path.ChangeExtension (fileName, ".sln");
@@ -54,8 +59,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public bool CanReadFile (string file, MSBuildFileFormat format)
 		{
 			if (String.Compare (Path.GetExtension (file), ".sln", StringComparison.OrdinalIgnoreCase) == 0) {
-				string tmp;
-				string version = GetSlnFileVersion (file, out tmp);
+				string version = SlnFile.GetFileVersion (file);
 				return format.SupportsSlnVersion (version);
 			}
 			return false;
@@ -66,541 +70,276 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return obj is Solution;
 		}
 		
-		public List<string> GetItemFiles (object obj)
+		public Task WriteFile (string file, object obj, bool saveProjects, ProgressMonitor monitor)
 		{
-			return null;
-		}
-		
-		public void WriteFile (string file, object obj, MSBuildFileFormat format, bool saveProjects, IProgressMonitor monitor)
-		{
-			Solution sol = (Solution) obj;
+			return Task.Run (delegate {
+				Solution sol = (Solution)obj;
 
-			string tmpfilename = String.Empty;
-			try {
-				monitor.BeginTask (GettextCatalog.GetString ("Saving solution: {0}", file), 1);
 				try {
-					if (File.Exists (file))
-						tmpfilename = Path.GetDirectoryName (file) + Path.DirectorySeparatorChar + ".#" + Path.GetFileName (file);
-				} catch (IOException) {
+					monitor.BeginTask (GettextCatalog.GetString ("Saving solution: {0}", file), 1);
+					WriteFileInternal (file, file, sol, saveProjects, monitor);
+				} catch (Exception ex) {
+					monitor.ReportError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
+					LoggingService.LogError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
+					throw;
+				} finally {
+					monitor.EndTask ();
 				}
-
-				string baseDir = Path.GetDirectoryName (file);
-				if (tmpfilename == String.Empty) {
-					WriteFileInternal (file, sol, baseDir, format, saveProjects, monitor);
-				} else {
-					WriteFileInternal (tmpfilename, sol, baseDir, format, saveProjects, monitor);
-					FileService.SystemRename (tmpfilename, file);
-				}
-			} catch (Exception ex) {
-				monitor.ReportError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
-				LoggingService.LogError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
-
-				if (!String.IsNullOrEmpty (tmpfilename) && File.Exists (tmpfilename))
-					File.Delete (tmpfilename);
-				throw;
-			} finally {
-				monitor.EndTask ();
-			}
+			});
 		}
 
-		void WriteFileInternal (string file, Solution solution, string baseDir, MSBuildFileFormat format, bool saveProjects, IProgressMonitor monitor)
+		void WriteFileInternal (string file, string sourceFile, Solution solution, bool saveProjects, ProgressMonitor monitor)
+		{
+			if (saveProjects) {
+				var items = solution.GetAllSolutionItems ().ToArray ();
+				monitor.BeginTask (items.Length + 1);
+				foreach (var item in items) {
+					try {
+						monitor.BeginStep ();
+						item.SavingSolution = true;
+						item.SaveAsync (monitor).Wait ();
+					} finally {
+						item.SavingSolution = false;
+					}
+				}
+			} else {
+				monitor.BeginTask (1);
+				monitor.BeginStep ();
+			}
+
+			SlnFile sln = new SlnFile ();
+			sln.FileName = file;
+			if (File.Exists (sourceFile)) {
+				try {
+					sln.Read (sourceFile);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Existing solution can't be updated since it can't be read", ex);
+				}
+			}
+
+			sln.FormatVersion = format.SlnVersion;
+
+			// Don't modify the product description if it already has a value
+			if (string.IsNullOrEmpty (sln.ProductDescription))
+				sln.ProductDescription = format.ProductDescription;
+
+			solution.WriteSolution (monitor, sln);
+
+			sln.Write (file);
+			monitor.EndTask ();
+		}
+
+		internal void WriteFileInternal (SlnFile sln, Solution solution, ProgressMonitor monitor)
 		{
 			SolutionFolder c = solution.RootFolder;
-			
-			using (StreamWriter sw = new StreamWriter (file, false, Encoding.UTF8)) {
-				sw.NewLine = "\r\n";
 
-				SlnData slnData = GetSlnData (c);
-				if (slnData == null) {
-					// If a non-msbuild project is being converted by just
-					// changing the fileformat, then create the SlnData for it
-					slnData = new SlnData ();
-					c.ExtendedProperties [typeof (SlnFileFormat)] = slnData;
+			// Delete data for projects that have been removed from the solution
+
+			var currentProjects = new HashSet<string> (solution.GetAllItems<SolutionFolderItem> ().Select (it => it.ItemId));
+			var removedProjects = new HashSet<string> ();
+			if (solution.LoadedProjects != null)
+				removedProjects.UnionWith (solution.LoadedProjects.Except (currentProjects));
+			var unknownProjects = new HashSet<string> (sln.Projects.Select (p => p.Id).Except (removedProjects).Except (currentProjects));
+
+			foreach (var p in removedProjects) {
+				var ps = sln.Projects.GetProject (p);
+				if (ps != null)
+					sln.Projects.Remove (ps);
+				var pc = sln.ProjectConfigurationsSection.GetPropertySet (p, true);
+				if (pc != null)
+					sln.ProjectConfigurationsSection.Remove (pc);
+			}
+			var secNested = sln.Sections.GetSection ("NestedProjects");
+			if (secNested != null) {
+				foreach (var np in secNested.Properties.ToArray ()) {
+					if (removedProjects.Contains (np.Key) || removedProjects.Contains (np.Value))
+						secNested.Properties.Remove (np.Key);
 				}
+			}
+			solution.LoadedProjects = currentProjects;
 
-				slnData.UpdateVersion (format);
+			//Write the projects
+			using (monitor.BeginTask (GettextCatalog.GetString ("Saving projects"), 1)) {
+				monitor.BeginStep ();
+				WriteProjects (c, sln, monitor, unknownProjects);
+			}
 
-				sw.WriteLine ();
+			//FIXME: SolutionConfigurations?
 
-				//Write Header
-				sw.WriteLine ("Microsoft Visual Studio Solution File, Format Version " + slnData.VersionString);
-				sw.WriteLine (slnData.HeaderComment);
-				if (slnData.VisualStudioVersion != null)
-					sw.WriteLine ("VisualStudioVersion = {0}", slnData.VisualStudioVersion);
-				if (slnData.MinimumVisualStudioVersion != null)
-					sw.WriteLine ("MinimumVisualStudioVersion = {0}", slnData.MinimumVisualStudioVersion);
+			var pset = sln.SolutionConfigurationsSection;
+			foreach (SolutionConfiguration config in solution.Configurations) {
+				var cid = ToSlnConfigurationId (config);
+				pset.SetValue (cid, cid);
+			}
 
-				//Write the projects
-				monitor.BeginTask (GettextCatalog.GetString ("Saving projects"), 1);
-				WriteProjects (c, baseDir, sw, saveProjects, monitor);
-				monitor.EndTask ();
+			WriteProjectConfigurations (solution, sln);
 
-				//Write the lines for unknownProjects
-				foreach (string l in slnData.UnknownProjects)
-					sw.WriteLine (l);
-
-				//Write the Globals
-				sw.WriteLine ("Global");
-
-				//Write SolutionConfigurationPlatforms
-				//FIXME: SolutionConfigurations?
-				sw.WriteLine ("\tGlobalSection(SolutionConfigurationPlatforms) = preSolution");
-
-				foreach (SolutionConfiguration config in solution.Configurations)
-					sw.WriteLine ("\t\t{0} = {0}", ToSlnConfigurationId (config));
-
-				sw.WriteLine ("\tEndGlobalSection");
-
-				//Write ProjectConfigurationPlatforms
-				sw.WriteLine ("\tGlobalSection(ProjectConfigurationPlatforms) = postSolution");
-
-				List<string> list = new List<string> ();
-				WriteProjectConfigurations (solution, list);
-
-				list.Sort (StringComparer.Create (CultureInfo.InvariantCulture, true));
-				foreach (string s in list)
-					sw.WriteLine (s);
-
-				//Write lines for projects we couldn't load
-				if (slnData.SectionExtras.ContainsKey ("ProjectConfigurationPlatforms")) {
-					foreach (string s in slnData.SectionExtras ["ProjectConfigurationPlatforms"])
-						sw.WriteLine ("\t\t{0}", s);
+			//Write Nested Projects
+			ICollection<SolutionFolder> folders = solution.RootFolder.GetAllItems<SolutionFolder> ().ToList ();
+			if (folders.Count > 1) {
+				// If folders ==1, that's the root folder
+				var sec = sln.Sections.GetOrCreateSection ("NestedProjects", SlnSectionType.PreProcess);
+				foreach (SolutionFolder folder in folders) {
+					if (folder.IsRoot)
+						continue;
+					WriteNestedProjects (folder, solution.RootFolder, sec);
 				}
+				// Remove items which don't have a parent folder
+				var toRemove = solution.GetAllItems<SolutionFolderItem> ().Where (it => it.ParentFolder == solution.RootFolder);
+				foreach (var it in toRemove)
+					sec.Properties.Remove (it.ItemId);
+			}
 
-				sw.WriteLine ("\tEndGlobalSection");
-
-				//Write Nested Projects
-				ICollection<SolutionFolder> folders = solution.RootFolder.GetAllItems<SolutionFolder> ();
-				if (folders.Count > 1) {
-					// If folders ==1, that's the root folder
-					sw.WriteLine ("\tGlobalSection(NestedProjects) = preSolution");
-					foreach (SolutionFolder folder in folders) {
-						if (folder.IsRoot)
-							continue;
-						WriteNestedProjects (folder, solution.RootFolder, sw);
-					}
-					sw.WriteLine ("\tEndGlobalSection");
-				}
-				
-				//Write custom properties
-				MSBuildSerializer ser = new MSBuildSerializer (solution.FileName);
-				DataItem data = (DataItem) ser.Serialize (solution, typeof(Solution));
-				if (data.HasItemData) {
-					sw.WriteLine ("\tGlobalSection(MonoDevelopProperties) = preSolution");
-					WriteDataItem (sw, data);
-					sw.WriteLine ("\tEndGlobalSection");
-				}
-				
-				// Write custom properties for configurations
-				foreach (SolutionConfiguration conf in solution.Configurations) {
-					data = (DataItem) ser.Serialize (conf);
-					if (data.HasItemData) {
-						sw.WriteLine ("\tGlobalSection(MonoDevelopProperties." + conf.Id + ") = preSolution");
-						WriteDataItem (sw, data);
-						sw.WriteLine ("\tEndGlobalSection");
-					}
-				}
-
-				//Write 'others'
-				if (slnData.GlobalExtra != null) {
-					foreach (string s in slnData.GlobalExtra)
-						sw.WriteLine (s);
-				}
-				
-				sw.WriteLine ("EndGlobal");
+			// Write custom properties for configurations
+			foreach (SolutionConfiguration conf in solution.Configurations) {
+				string secId = "MonoDevelopProperties." + conf.Id;
+				var sec = sln.Sections.GetOrCreateSection (secId, SlnSectionType.PreProcess);
+				solution.WriteConfigurationData (monitor, sec.Properties, conf);
+				if (sec.IsEmpty)
+					sln.Sections.Remove (sec);
 			}
 		}
 
-		void WriteProjects (SolutionFolder folder, string baseDirectory, StreamWriter writer, bool saveProjects, IProgressMonitor monitor)
+		void WriteProjects (SolutionFolder folder, SlnFile sln, ProgressMonitor monitor, HashSet<string> unknownProjects)
 		{
-			monitor.BeginStepTask (GettextCatalog.GetString ("Saving projects"), folder.Items.Count, 1); 
-			foreach (SolutionItem ce in folder.Items.ToArray ())
+			monitor.BeginTask (folder.Items.Count); 
+			foreach (SolutionFolderItem ce in folder.Items.ToArray ())
 			{
-				string[] l = null;
-				if (ce is SolutionEntityItem) {
+				monitor.BeginStep ();
+				if (ce is SolutionItem) {
 					
-					SolutionEntityItem item = (SolutionEntityItem) ce;
-					MSBuildHandler handler = MSBuildProjectService.GetItemHandler (item);
-					
-					if (saveProjects) {
-						try {
-							handler.SavingSolution = true;
-							item.Save (monitor);
-						} finally {
-							handler.SavingSolution = false;
-						}
-					}
+					SolutionItem item = (SolutionItem) ce;
 
-					l = handler.SlnProjectContent;
+					var proj = sln.Projects.GetOrCreateProject (ce.ItemId);
+					proj.TypeGuid = item.TypeGuid;
+					proj.Name = item.Name;
+					proj.FilePath = FileService.NormalizeRelativePath (FileService.AbsoluteToRelativePath (sln.BaseDirectory, item.FileName)).Replace ('/', '\\');
 
-					writer.WriteLine (@"Project(""{0}"") = ""{1}"", ""{2}"", ""{3}""",
-					    handler.TypeGuid,
-						item.Name, 
-						FileService.NormalizeRelativePath (FileService.AbsoluteToRelativePath (
-							baseDirectory, item.FileName)).Replace ('/', '\\'),
-						ce.ItemId);
-					DataItem data = handler.WriteSlnData ();
-					if (data != null && data.HasItemData) {
-						writer.WriteLine ("\tProjectSection(MonoDevelopProperties) = preProject");
-						WriteDataItem (writer, data);
-						writer.WriteLine ("\tEndProjectSection");
-					}
-					if (item.ItemDependencies.Count > 0 || handler.UnresolvedProjectDependencies != null) {
-						writer.WriteLine ("\tProjectSection(ProjectDependencies) = postProject");
+					var sec = proj.Sections.GetOrCreateSection ("MonoDevelopProperties", SlnSectionType.PreProcess);
+					sec.SkipIfEmpty = true;
+					folder.ParentSolution.WriteSolutionFolderItemData (monitor, sec.Properties, ce);
+
+					if (item.ItemDependencies.Count > 0) {
+						sec = proj.Sections.GetOrCreateSection ("ProjectDependencies", SlnSectionType.PostProcess);
+						sec.Properties.ClearExcept (unknownProjects);
 						foreach (var dep in item.ItemDependencies)
-							writer.WriteLine ("\t\t{0} = {0}", dep.ItemId);
-						if (handler.UnresolvedProjectDependencies != null) {
-							foreach (var dep in handler.UnresolvedProjectDependencies)
-								writer.WriteLine ("\t\t{0} = {0}", dep);
-						}
-						writer.WriteLine ("\tEndProjectSection");
-					}
+							sec.Properties.SetValue (dep.ItemId, dep.ItemId);
+					} else
+						proj.Sections.RemoveSection ("ProjectDependencies");
 				} else if (ce is SolutionFolder) {
-					//Solution
-					SlnData slnData = GetSlnData (ce);
-					if (slnData == null) {
-						// Solution folder
-						slnData = new SlnData ();
-						ce.ExtendedProperties [typeof (SlnFileFormat)] = slnData;
-					}
+					var proj = sln.Projects.GetOrCreateProject (ce.ItemId);
+					proj.TypeGuid = MSBuildProjectService.FolderTypeGuid;
+					proj.Name = ce.Name;
+					proj.FilePath = ce.Name;
 
-					l = slnData.Extra;
-					
-					writer.WriteLine (@"Project(""{0}"") = ""{1}"", ""{2}"", ""{3}""",
-						MSBuildProjectService.FolderTypeGuid,
-						ce.Name, 
-						ce.Name,
-						ce.ItemId);
-					
 					// Folder files
-					WriteFolderFiles (writer, (SolutionFolder) ce);
+					WriteFolderFiles (proj, (SolutionFolder) ce);
 					
 					//Write custom properties
-					MSBuildSerializer ser = new MSBuildSerializer (folder.ParentSolution.FileName);
-					DataItem data = (DataItem) ser.Serialize (ce, typeof(SolutionFolder));
-					if (data.HasItemData) {
-						writer.WriteLine ("\tProjectSection(MonoDevelopProperties) = preProject");
-						WriteDataItem (writer, data);
-						writer.WriteLine ("\tEndProjectSection");
-					}
+					var sec = proj.Sections.GetOrCreateSection ("MonoDevelopProperties", SlnSectionType.PreProcess);
+					sec.SkipIfEmpty = true;
+					folder.ParentSolution.WriteSolutionFolderItemData (monitor, sec.Properties, ce);
 				}
-
-				if (l != null) {
-					foreach (string s in l)
-						writer.WriteLine (s);
-				}
-
-				writer.WriteLine ("EndProject");
 				if (ce is SolutionFolder)
-					WriteProjects (ce as SolutionFolder, baseDirectory, writer, saveProjects, monitor);
-				monitor.Step (1);
+					WriteProjects (ce as SolutionFolder, sln, monitor, unknownProjects);
 			}
 			monitor.EndTask ();
 		}
 		
-		void WriteFolderFiles (StreamWriter writer, SolutionFolder folder)
+		void WriteFolderFiles (SlnProject proj, SolutionFolder folder)
 		{
 			if (folder.Files.Count > 0) {
-				writer.WriteLine ("\tProjectSection(SolutionItems) = preProject");
+				var sec = proj.Sections.GetOrCreateSection ("SolutionItems", SlnSectionType.PreProcess);
+				sec.Properties.Clear ();
 				foreach (FilePath f in folder.Files) {
 					string relFile = MSBuildProjectService.ToMSBuildPathRelative (folder.ParentSolution.ItemDirectory, f);
-					writer.WriteLine ("\t\t" + relFile + " = " + relFile);
+					sec.Properties.SetValue (relFile, relFile);
 				}
-				writer.WriteLine ("\tEndProjectSection");
-			}
+			} else
+				proj.Sections.RemoveSection ("SolutionItems");
 		}
 
-		void WriteProjectConfigurations (Solution sol, List<string> list)
+		void WriteProjectConfigurations (Solution sol, SlnFile sln)
 		{
-			foreach (SolutionConfiguration cc in sol.Configurations) {
+			var col = sln.ProjectConfigurationsSection;
 
-				foreach (SolutionConfigurationEntry cce in cc.Configurations) {
-					SolutionEntityItem p = cce.Item;
+			foreach (var item in sol.GetAllSolutionItems ()) {
+				// Don't save configurations for shared projects
+				if (!item.SupportsConfigurations ())
+					continue;
 
-					// Don't save configurations for shared projects
-					if (!p.SupportsConfigurations ())
+				// <ProjectGuid>...</ProjectGuid> in some Visual Studio generated F# project files 
+				// are missing "{"..."}" in their guid. This is not generally a problem since it
+				// is a valid GUID format. However the solution file format requires that these are present. 
+				string itemGuid = item.ItemId;
+				if (!itemGuid.StartsWith ("{") && !itemGuid.EndsWith ("}"))
+					itemGuid = "{" + itemGuid + "}";
+
+				var pset = col.GetOrCreatePropertySet (itemGuid, ignoreCase:true);
+				var existingKeys = new HashSet<string> (pset.Keys);
+
+				foreach (SolutionConfiguration cc in sol.Configurations) {
+					var cce = cc.GetEntryForItem (item);
+					if (cce == null)
 						continue;
-					
-                    // <ProjectGuid>...</ProjectGuid> in some Visual Studio generated F# project files 
-                    // are missing "{"..."}" in their guid. This is not generally a problem since it
-                    // is a valid GUID format. However the solution file format requires that these are present. 
-                    string itemGuid = p.ItemId;
-                    if (!itemGuid.StartsWith("{") && !itemGuid.EndsWith("}")) 
-                        itemGuid = "{" + itemGuid + "}";
+					var configId = ToSlnConfigurationId (cc);
+					var itemConfigId = ToSlnConfigurationId (cce.ItemConfiguration);
 
-                    list.Add (String.Format (
-                        "\t\t{0}.{1}.ActiveCfg = {2}", itemGuid, ToSlnConfigurationId (cc), ToSlnConfigurationId (cce.ItemConfiguration)));
+					string key;
+					pset.SetValue (key = configId + ".ActiveCfg", itemConfigId);
+					existingKeys.Remove (key);
 
-					if (cce.Build)
-						list.Add (String.Format (
-                            "\t\t{0}.{1}.Build.0 = {2}", itemGuid, ToSlnConfigurationId (cc), ToSlnConfigurationId (cce.ItemConfiguration)));
-					
-					if (cce.Deploy)
-						list.Add (String.Format (
-							"\t\t{0}.{1}.Deploy.0 = {2}", itemGuid, ToSlnConfigurationId (cc), ToSlnConfigurationId (cce.ItemConfiguration)));
+					if (cce.Build) {
+						pset.SetValue (key = configId + ".Build.0", itemConfigId);
+						existingKeys.Remove (key);
+					}
+				
+					if (cce.Deploy) {
+						pset.SetValue (key = configId + ".Deploy.0", itemConfigId);
+						existingKeys.Remove (key);
+					}
 				}
+				foreach (var k in existingKeys)
+					pset.Remove (k);
 			}
-			
 		}
 
-		void WriteNestedProjects (SolutionFolder folder, SolutionFolder root, StreamWriter writer)
+		void WriteNestedProjects (SolutionFolder folder, SolutionFolder root, SlnSection sec)
 		{
-			foreach (SolutionItem ce in folder.Items)
-				writer.WriteLine (@"{0}{1} = {2}", "\t\t", ce.ItemId, folder.ItemId);
+			foreach (SolutionFolderItem ce in folder.Items)
+				sec.Properties.SetValue (ce.ItemId, folder.ItemId);
 		}
 		
-		DataItem GetSolutionItemData (List<string> lines)
+		List<string> ReadSolutionItemDependencies (SlnProject proj)
 		{
-			// Find a project section of type MonoDevelopProperties
-			int start, end;
-			if (!FindSection (lines, "MonoDevelopProperties", true, out start, out end))
-				return null;
-			
-			// Deserialize the object
-			DataItem it = ReadDataItem (start, end - start + 1, lines);
-			
-			// Remove the lines, since they have already been preocessed
-			lines.RemoveRange (start, end - start + 1);
-			return it;
-		}
-		
-		List<string> ReadSolutionItemDependencies (List<string> lines)
-		{
-			// Find a project section of type MonoDevelopProperties
-			int start, end;
-			if (!FindSection (lines, "ProjectDependencies", false, out start, out end))
+			// Find a project section of type ProjectDependencies
+			var sec = proj.Sections.GetSection ("ProjectDependencies");
+			if (sec == null)
 				return null;
 
-			var ids = new List<string> ();
-			for (int n=start + 1; n < end; n++) {
-				string line = lines [n];
-				int i = line.IndexOf ('=');
-				if (i != -1)
-					ids.Add (line.Substring (0, i).Trim ());
-			}
-
-			// Remove the lines, since they have already been preocessed
-			lines.RemoveRange (start, end - start + 1);
-			return ids;
+			return sec.Properties.Keys.ToList ();
 		}
 
-		List<string> ReadFolderFiles (List<string> lines)
+		IEnumerable<string> ReadFolderFiles (SlnProject proj)
 		{
 			// Find a solution item section of type SolutionItems
+			var sec = proj.Sections.GetSection ("SolutionItems");
+			if (sec == null)
+				return new string[0];
 
-			List<string> list = new List<string> ();
-			int start, end;
-			if (!FindSection (lines, "SolutionItems", true, out start, out end))
-				return list;
-			
-			for (int n=start + 1; n < end; n++) {
-				string file = lines [n];
-				int i = file.IndexOf ('=');
-				if (i == -1)
-					continue;
-				file = file.Substring (0, i).Trim (' ','\t');
-				if (file.Length > 0)
-					list.Add (file);
-			}
-			
-			// Remove the lines, since they have already been preocessed
-			lines.RemoveRange (start, end - start + 1);
-			return list;
+			return sec.Properties.Keys.ToList ();
 		}
-		
-		bool FindSection (List<string> lines, string name, bool preProject, out int start, out int end)
-		{
-			start = -1;
-			end = -1;
 
-			string prePost = preProject ? "preProject" : "postProject";
-			var sectionLine = "ProjectSection(" + name + ")=" + prePost;
-			
-			for (int n=0; n<lines.Count && start == -1; n++) {
-				string line = lines [n].Replace ("\t","").Replace (" ", "");
-				if (line == sectionLine)
-					start = n;
-			}
-			if (start == -1)
-				return false;
-
-			for (int n=start+1; n<lines.Count && end == -1; n++) {
-				string line = lines [n].Replace ("\t","").Replace (" ", "");
-				if (line == "EndProjectSection")
-					end = n;
-			}
-			return end != -1;
-		}
-		
-		void DeserializeSolutionItem (Solution sln, SolutionItem item, List<string> lines)
+		void DeserializeSolutionItem (ProgressMonitor monitor, Solution sln, SolutionFolderItem item, SlnProject proj)
 		{
 			// Deserialize the object
-			DataItem it = GetSolutionItemData (lines);
-			if (it == null)
+			var sec = proj.Sections.GetSection ("MonoDevelopProperties");
+			if (sec == null)
 				return;
-			
-			MSBuildSerializer ser = new MSBuildSerializer (sln.FileName);
-			ser.SerializationContext.BaseFile = sln.FileName;
-			ser.Deserialize (item, it);
-		}
-		
-		void WriteDataItem (StreamWriter sw, DataItem item)
-		{
-			int id = 0;
-			foreach (DataNode val in item.ItemData)
-				WriteDataNode (sw, "", val, ref id);
-		}
-		
-		void WriteDataNode (StreamWriter sw, string prefix, DataNode node, ref int id)
-		{
-			string name = node.Name;
-			string newPrefix = prefix.Length > 0 ? prefix + "." + name: name;
-			
-			if (node is DataValue) {
-				DataValue val = (DataValue) node;
-				string value = EncodeString (val.Value);
-				sw.WriteLine ("\t\t" + newPrefix + " = " + value);
-			}
-			else {
-				DataItem it = (DataItem) node;
-				sw.WriteLine ("\t\t" + newPrefix + " = $" + id);
-				newPrefix = "$" + id;
-				id ++;
-				foreach (DataNode cn in it.ItemData)
-					WriteDataNode (sw, newPrefix, cn, ref id);
-			}
-		}
-		
-		string EncodeString (string val)
-		{
-			if (val.Length == 0)
-				return val;
-			
-			int i = val.IndexOfAny (new char[] {'\n','\r','\t'});
-			if (i != -1 || val [0] == '@') {
-				StringBuilder sb = new StringBuilder ();
-				if (i != -1) {
-					int fi = val.IndexOf ('\\');
-					if (fi != -1 && fi < i) i = fi;
-					sb.Append (val.Substring (0,i));
-				} else
-					i = 0;
-				for (int n = i; n < val.Length; n++) {
-					char c = val [n];
-					if (c == '\r')
-						sb.Append (@"\r");
-					else if (c == '\n')
-						sb.Append (@"\n");
-					else if (c == '\t')
-						sb.Append (@"\t");
-					else if (c == '\\')
-						sb.Append (@"\\");
-					else
-						sb.Append (c);
-				}
-				val = "@" + sb.ToString ();
-			}
-			char fc = val [0];
-			char lc = val [val.Length - 1];
-		    if (fc == ' ' || fc == '"' || fc == '$' || lc == ' ')
-				val = "\"" + val + "\"";
-			return val;
-		}
-		
-		string DecodeString (string val)
-		{
-			val = val.Trim (' ', '\t');
-			if (val.Length == 0)
-				return val;
-			if (val [0] == '\"')
-				val = val.Substring (1, val.Length - 2);
-			if (val [0] == '@') {
-				StringBuilder sb = new StringBuilder (val.Length);
-				for (int n = 1; n < val.Length; n++) {
-					char c = val [n];
-					if (c == '\\') {
-						c = val [++n];
-						if (c == 'r') c = '\r';
-						else if (c == 'n') c = '\n';
-						else if (c == 't') c = '\t';
-					}
-					sb.Append (c);
-				}
-				return sb.ToString ();
-			}
-			else
-				return val;
-		}
-		
-		DataItem ReadDataItem (Section sec, List<string> lines)
-		{
-			return ReadDataItem (sec.Start, sec.Count, lines);
-		}
-		
-		DataItem ReadDataItem (int start, int count, List<string> lines)
-		{
-			DataItem it = new DataItem ();
-			int lineNum = start + 1;
-			int lastLine = start + count - 2;
-			while (lineNum <= lastLine) {
-				if (!ReadDataNode (it, lines, lastLine, "", ref lineNum))
-					lineNum++;
-			}
-			return it;
-		}
-		
-		bool ReadDataNode (DataItem item, List<string> lines, int lastLine, string prefix, ref int lineNum)
-		{
-			string s = lines [lineNum].Trim (' ','\t');
-			
-			if (s.Length == 0) {
-				lineNum++;
-				return true;
-			}
-			
-			// Check if the line belongs to the current item
-			if (prefix.Length > 0) {
-				if (!s.StartsWith (prefix + "."))
-					return false;
-				s = s.Substring (prefix.Length + 1);
-			} else {
-				if (s.StartsWith ("$"))
-					return false;
-			}
-			
-			int i = s.IndexOf ('=');
-			if (i == -1) {
-				lineNum++;
-				return true;
-			}
 
-			string name = s.Substring (0, i).Trim (' ','\t');
-			if (name.Length == 0) {
-				lineNum++;
-				return true;
-			}
-			
-			string value = s.Substring (i+1).Trim (' ','\t');
-			if (value.StartsWith ("$")) {
-				// New item
-				DataItem child = new DataItem ();
-				child.Name = name;
-				lineNum++;
-				while (lineNum <= lastLine) {
-					if (!ReadDataNode (child, lines, lastLine, value, ref lineNum))
-						break;
-				}
-				item.ItemData.Add (child);
-			}
-			else {
-				value = DecodeString (value);
-				DataValue val = new DataValue (name, value);
-				item.ItemData.Add (val);
-				lineNum++;
-			}
-			return true;
+			sln.ReadSolutionFolderItemData (monitor, sec.Properties, item);
 		}
-		
+
 		string ToSlnConfigurationId (ItemConfiguration configuration)
 		{
 			if (configuration.Platform.Length == 0)
@@ -628,450 +367,295 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 
 		//Reader
-		public object ReadFile (string fileName, MSBuildFileFormat format, IProgressMonitor monitor)
+		public async Task<object> ReadFile (string fileName, ProgressMonitor monitor)
 		{
 			if (fileName == null || monitor == null)
 				return null;
 
-			Solution sol;
+			var sol = new Solution (true);
+			sol.FileName = fileName;
+			sol.FileFormat = format;
+
 			try {
-				ProjectExtensionUtil.BeginLoadOperation ();
-				sol = new Solution ();
 				monitor.BeginTask (string.Format (GettextCatalog.GetString ("Loading solution: {0}"), fileName), 1);
-				var projectLoadMonitor = monitor as IProjectLoadProgressMonitor;
+				monitor.BeginStep ();
+				await sol.OnBeginLoad ();
+				var projectLoadMonitor = monitor as ProjectLoadProgressMonitor;
 				if (projectLoadMonitor != null)
 					projectLoadMonitor.CurrentSolution = sol;
-				LoadSolution (sol, fileName, format, monitor);
+				await Task.Factory.StartNew (() => {
+					sol.ReadSolution (monitor);
+				});
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not load solution: {0}", fileName), ex);
-				throw;
-			} finally {
-				ProjectExtensionUtil.EndLoadOperation ();
+				sol.OnEndLoad ().Wait ();
+				sol.NotifyItemReady ();
 				monitor.EndTask ();
+				throw;
 			}
+			await sol.OnEndLoad ();
+			sol.NotifyItemReady ();
+			monitor.EndTask ();
 			return sol;
 		}
 
-		//ExtendedProperties
-		//	Per config
-		//		Platform : Eg. Any CPU
-		//		SolutionConfigurationPlatforms
-		//
-		SolutionFolder LoadSolution (Solution sol, string fileName, MSBuildFileFormat format, IProgressMonitor monitor)
+		internal void LoadSolution (Solution sol, SlnFile sln, ProgressMonitor monitor, SolutionLoadContext ctx)
 		{
-			string headerComment;
-			string version = GetSlnFileVersion (fileName, out headerComment);
+			var version = sln.FormatVersion;
 
-			ListDictionary globals = null;
-			SolutionFolder folder = null;
-			SlnData data = null;
-			List<Section> projectSections = null;
-			List<string> lines = null;
-			
-			FileFormat projectFormat = Services.ProjectService.FileFormats.GetFileFormat (format);
-
-			monitor.BeginTask (GettextCatalog.GetString ("Loading solution: {0}", fileName), 1);
 			//Parse the .sln file
-			using (StreamReader reader = new StreamReader(fileName)) {
-				sol.FileName = fileName;
-				sol.ConvertToFormat (projectFormat, false);
-				folder = sol.RootFolder;
-				sol.Version = "0.1"; //FIXME:
-				data = new SlnData ();
-				folder.ExtendedProperties [typeof (SlnFileFormat)] = data;
-				data.VersionString = version;
-				data.HeaderComment = headerComment;
+			var folder = sol.RootFolder;
+			sol.Version = "0.1"; //FIXME:
 
-				string s = null;
-				projectSections = new List<Section> ();
-				lines = new List<string> ();
-				globals = new ListDictionary ();
-				//Parse
-				while (reader.Peek () >= 0) {
-					s = GetNextLine (reader, lines).Trim ();
+			monitor.BeginTask("Loading projects ..", sln.Projects.Count + 1);
+			Dictionary<string, SolutionFolderItem> items = new Dictionary<string, SolutionFolderItem> ();
+			List<string> sortedList = new List<string> ();
 
-					if (String.Compare (s, "Global", StringComparison.OrdinalIgnoreCase) == 0) {
-						ParseGlobal (reader, lines, globals);
-						continue;
-					}
+			List<Task> loadTasks = new List<Task> ();
 
-					if (s.StartsWith ("Project", StringComparison.Ordinal)) {
-						Section sec = new Section ();
-						projectSections.Add (sec);
-
-						sec.Start = lines.Count - 1;
-
-						int e = ReadUntil ("EndProject", reader, lines);
-						sec.Count = (e < 0) ? 1 : (e - sec.Start + 1);
-
-						continue;
-					}
-
-					if (s.StartsWith ("VisualStudioVersion = ", StringComparison.Ordinal)) {
-						Version v;
-						if (Version.TryParse (s.Substring ("VisualStudioVersion = ".Length), out v))
-							data.VisualStudioVersion = v;
-						else
-							monitor.Log.WriteLine ("Ignoring unparseable VisualStudioVersion value in sln file");
-					}
-
-					if (s.StartsWith ("MinimumVisualStudioVersion = ", StringComparison.Ordinal)) {
-						Version v;
-						if (Version.TryParse (s.Substring ("MinimumVisualStudioVersion = ".Length), out v))
-							data.MinimumVisualStudioVersion = v;
-						else
-							monitor.Log.WriteLine ("Ignoring unparseable MinimumVisualStudioVersion value in sln file");
-					}
-				}
-			}
-
-			monitor.BeginTask("Loading projects ..", projectSections.Count + 1);
-			Dictionary<string, SolutionItem> items = new Dictionary<string, SolutionItem> ();
-			List<SolutionItem> sortedList = new List<SolutionItem> ();
-			foreach (Section sec in projectSections) {
-				monitor.Step (1);
-				Match match = ProjectRegex.Match (lines [sec.Start]);
-				if (!match.Success) {
-					LoggingService.LogDebug (GettextCatalog.GetString (
-						"Invalid Project definition on line number #{0} in file '{1}'. Ignoring.",
-						sec.Start + 1,
-						fileName));
-
-					continue;
-				}
-
+			foreach (SlnProject sec in sln.Projects) {
 				try {
 					// Valid guid?
-					new Guid (match.Groups [1].Value);
+					new Guid (sec.TypeGuid);
 				} catch (FormatException) {
+					monitor.Step (1);
 					//Use default guid as projectGuid
 					LoggingService.LogDebug (GettextCatalog.GetString (
 						"Invalid Project type guid '{0}' on line #{1}. Ignoring.",
-						match.Groups [1].Value,
-						sec.Start + 1));
+						sec.Id,
+						sec.Line));
 					continue;
 				}
 
-				string projTypeGuid = match.Groups [1].Value.ToUpper ();
-				string projectName = match.Groups [2].Value;
-				string projectPath = match.Groups [3].Value;
-				string projectGuid = match.Groups [4].Value.ToUpper ();
-				List<string> projLines;
+				string projTypeGuid = sec.TypeGuid.ToUpper ();
+				string projectName = sec.Name;
+				string projectPath = sec.FilePath;
+				string projectGuid = sec.Id;
+
+				lock (items)
+					sortedList.Add (projectGuid);
 
 				if (projTypeGuid == MSBuildProjectService.FolderTypeGuid) {
 					//Solution folder
 					SolutionFolder sfolder = new SolutionFolder ();
 					sfolder.Name = projectName;
-					MSBuildProjectService.InitializeItemHandler (sfolder);
-					MSBuildProjectService.SetId (sfolder, projectGuid);
+					sfolder.ItemId = projectGuid;
 
-					projLines = lines.GetRange (sec.Start + 1, sec.Count - 2);
-					DeserializeSolutionItem (sol, sfolder, projLines);
+					DeserializeSolutionItem (monitor, sol, sfolder, sec);
 					
-					foreach (string f in ReadFolderFiles (projLines))
-						sfolder.Files.Add (MSBuildProjectService.FromMSBuildPath (Path.GetDirectoryName (fileName), f));
-					
-					SlnData slnData = new SlnData ();
-					slnData.Extra = projLines.ToArray ();
-					sfolder.ExtendedProperties [typeof (SlnFileFormat)] = slnData;
+					foreach (string f in ReadFolderFiles (sec))
+						sfolder.Files.Add (MSBuildProjectService.FromMSBuildPath (Path.GetDirectoryName (sol.FileName), f));
 
-					items.Add (projectGuid, sfolder);
-					sortedList.Add (sfolder);
-					
+					lock (items)
+						items.Add (projectGuid, sfolder);
+
+					monitor.Step (1);
 					continue;
 				}
 
 				if (projectPath.StartsWith("http://")) {
 					monitor.ReportWarning (GettextCatalog.GetString (
 						"{0}({1}): Projects with non-local source (http://...) not supported. '{2}'.",
-						fileName, sec.Start + 1, projectPath));
-					data.UnknownProjects.AddRange (lines.GetRange (sec.Start, sec.Count));
+						sol.FileName, sec.Line, projectPath));
+					monitor.Step (1);
 					continue;
 				}
 
-				string path = MSBuildProjectService.FromMSBuildPath (Path.GetDirectoryName (fileName), projectPath);
+				string path = MSBuildProjectService.FromMSBuildPath (Path.GetDirectoryName (sol.FileName), projectPath);
 				if (String.IsNullOrEmpty (path)) {
 					monitor.ReportWarning (GettextCatalog.GetString (
-						"Invalid project path found in {0} : {1}", fileName, projectPath));
+						"Invalid project path found in {0} : {1}", sol.FileName, projectPath));
 					LoggingService.LogWarning (GettextCatalog.GetString (
-						"Invalid project path found in {0} : {1}", fileName, projectPath));
+						"Invalid project path found in {0} : {1}", sol.FileName, projectPath));
+					monitor.Step (1);
 					continue;
 				}
 
 				projectPath = Path.GetFullPath (path);
 				
-				SolutionEntityItem item = null;
-				
-				try {
-					if (sol.IsSolutionItemEnabled (projectPath)) {
-						item = ProjectExtensionUtil.LoadSolutionItem (monitor, projectPath, delegate {
-							return MSBuildProjectService.LoadItem (monitor, projectPath, format, projTypeGuid, projectGuid);
-						});
-						
-						if (item == null) {
+				SolutionItem item = null;
+				Task<SolutionItem> loadTask;
+				DateTime ti = DateTime.Now;
+
+				if (sol.IsSolutionItemEnabled (projectPath)) {
+					loadTask = Services.ProjectService.ReadSolutionItem (monitor, projectPath, format, projTypeGuid, projectGuid, ctx);
+				} else {
+					loadTask = Task.FromResult<SolutionItem> (new UnloadedSolutionItem () {
+						FileName = projectPath
+					});
+				}
+
+				var ft = loadTask.ContinueWith (ta => {
+					try {
+						item = ta.Result;
+						if (item == null)
 							throw new UnknownSolutionItemTypeException (projTypeGuid);
-						}
-					} else {
-						var uitem = new UnloadedSolutionItem () {
-							FileName = projectPath
-						};
-						var h = new MSBuildHandler (projTypeGuid, projectGuid) {
-							Item = uitem,
-						};
-						uitem.SetItemHandler (h);
-						item = uitem;
-					}
-					
-				} catch (Exception e) {
-					// If we get a TargetInvocationException from using Activator.CreateInstance we
-					// need to unwrap the real exception
-					while (e is TargetInvocationException)
-						e = ((TargetInvocationException) e).InnerException;
-					
-					bool loadAsProject = false;
+					} catch (Exception cex) {
+						var e = UnwrapException (cex).First ();
 
-					if (e is UnknownSolutionItemTypeException) {
-						var name = ((UnknownSolutionItemTypeException)e).TypeName;
+						string unsupportedMessage = e.Message;
 
-						var relPath = new FilePath (path).ToRelative (sol.BaseDirectory);
-						if (!string.IsNullOrEmpty (name)) {
-							var guids = name.Split (';');
-							var projectInfo = MSBuildProjectService.GetUnknownProjectTypeInfo (guids, fileName);
-							if (projectInfo != null) {
-								loadAsProject = projectInfo.LoadFiles;
-								LoggingService.LogWarning (string.Format ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.GetInstructions ()));
-								monitor.ReportWarning (GettextCatalog.GetString ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.GetInstructions ()));
-							} else {
-								LoggingService.LogWarning (string.Format ("Could not load project '{0}' with unknown item type '{1}'", relPath, name));
-								monitor.ReportWarning (GettextCatalog.GetString ("Could not load project '{0}' with unknown item type '{1}'", relPath, name));
-							}
+						if (e is UserException) {
+							var ex = (UserException) e;
+							LoggingService.LogError ("{0}: {1}", ex.Message, ex.Details);
+							monitor.ReportError (string.Format ("{0}{1}{1}{2}", ex.Message, Environment.NewLine, ex.Details), null);
 						} else {
-							LoggingService.LogWarning (string.Format ("Could not load project '{0}' with unknown item type", relPath));
-							monitor.ReportWarning (GettextCatalog.GetString ("Could not load project '{0}' with unknown item type", relPath));
+							LoggingService.LogError (string.Format ("Error while trying to load the project {0}", projectPath), e);
+							monitor.ReportWarning (GettextCatalog.GetString (
+								"Error while trying to load the project '{0}': {1}", projectPath, e.Message));
 						}
 
-					} else if (e is UserException) {
-						var ex = (UserException) e;
-						LoggingService.LogError ("{0}: {1}", ex.Message, ex.Details);
-						monitor.ReportError (string.Format ("{0}{1}{1}{2}", ex.Message, Environment.NewLine, ex.Details), null);
-					} else {
-						LoggingService.LogError (string.Format ("Error while trying to load the project {0}", projectPath), e);
-						monitor.ReportWarning (GettextCatalog.GetString (
-							"Error while trying to load the project '{0}': {1}", projectPath, e.Message));
-					}
-
-					SolutionEntityItem uitem;
-					if (loadAsProject) {
-						uitem = new UnknownProject () {
-							FileName = projectPath,
-							LoadError = e.Message,
-						};
-					} else {
+						SolutionItem uitem;
 						uitem = new UnknownSolutionItem () {
 							FileName = projectPath,
-							LoadError = e.Message,
+							LoadError = unsupportedMessage,
 						};
+						item = uitem;
+						item.ItemId = projectGuid;
+						item.TypeGuid = projTypeGuid;
 					}
 
-					var h = new MSBuildHandler (projTypeGuid, projectGuid) {
-						Item = uitem,
-					};
-					uitem.SetItemHandler (h);
-					item = uitem;
-				}
+					item.UnresolvedProjectDependencies = ReadSolutionItemDependencies (sec);
 
-				MSBuildHandler handler = (MSBuildHandler) item.ItemHandler;
-				projLines = lines.GetRange (sec.Start + 1, sec.Count - 2);
-				DataItem it = GetSolutionItemData (projLines);
+					// Deserialize the object
+					DeserializeSolutionItem (monitor, sol, item, sec);
 
-				handler.UnresolvedProjectDependencies = ReadSolutionItemDependencies (projLines);
-				handler.SlnProjectContent = projLines.ToArray ();
-				handler.ReadSlnData (it);
-
-				if (!items.ContainsKey (projectGuid)) {
-					items.Add (projectGuid, item);
-					sortedList.Add (item);
-					data.ItemsByGuid [projectGuid] = item;
-				} else {
-					monitor.ReportError (GettextCatalog.GetString ("Invalid solution file. There are two projects with the same GUID. The project {0} will be ignored.", projectPath), null);
-				}
-			}
-			monitor.EndTask ();
-
-			if (globals != null && globals.Contains ("NestedProjects")) {
-				LoadNestedProjects (globals ["NestedProjects"] as Section, lines, items, monitor);
-				globals.Remove ("NestedProjects");
-			}
-
-			// Resolve project dependencies
-			foreach (var it in items.Values.OfType<SolutionEntityItem> ()) {
-				MSBuildHandler handler = (MSBuildHandler) it.ItemHandler;
-				if (handler.UnresolvedProjectDependencies != null) {
-					foreach (var id in handler.UnresolvedProjectDependencies.ToArray ()) {
-						SolutionItem dep;
-						if (items.TryGetValue (id, out dep) && dep is SolutionEntityItem) {
-							handler.UnresolvedProjectDependencies.Remove (id);
-							it.ItemDependencies.Add ((SolutionEntityItem)dep);
+					lock (items) {
+						if (!items.ContainsKey (projectGuid)) {
+							items.Add (projectGuid, item);
+						} else {
+							monitor.ReportError (GettextCatalog.GetString ("Invalid solution file. There are two projects with the same GUID. The project {0} will be ignored.", projectPath), null);
 						}
 					}
-					if (handler.UnresolvedProjectDependencies.Count == 0)
-						handler.UnresolvedProjectDependencies = null;
+					monitor.Step (1);
+				});
+				loadTasks.Add (ft);
+			}
+
+			Task.WaitAll (loadTasks.ToArray ());
+
+			sol.LoadedProjects = new HashSet<string> (items.Keys);
+
+			var nested = sln.Sections.GetSection ("NestedProjects");
+			if (nested != null)
+				LoadNestedProjects (nested, items, monitor);
+
+			// Resolve project dependencies
+			foreach (var it in items.Values.OfType<SolutionItem> ()) {
+				if (it.UnresolvedProjectDependencies != null) {
+					foreach (var id in it.UnresolvedProjectDependencies.ToArray ()) {
+						SolutionFolderItem dep;
+						if (items.TryGetValue (id, out dep) && dep is SolutionItem) {
+							it.UnresolvedProjectDependencies.Remove (id);
+							it.ItemDependencies.Add ((SolutionItem)dep);
+						}
+					}
+					if (it.UnresolvedProjectDependencies.Count == 0)
+						it.UnresolvedProjectDependencies = null;
 				}
 			}
 
 			//Add top level folders and projects to the main folder
-			foreach (SolutionItem ce in sortedList) {
-				if (ce.ParentFolder == null)
+			foreach (string id in sortedList) {
+				SolutionFolderItem ce;
+				if (items.TryGetValue (id, out ce) && ce.ParentFolder == null)
 					folder.Items.Add (ce);
 			}
 
 			//FIXME: This can be just SolutionConfiguration also!
-			if (globals != null) {
-				if (globals.Contains ("SolutionConfigurationPlatforms")) {
-					LoadSolutionConfigurations (globals ["SolutionConfigurationPlatforms"] as Section, lines,
-						sol, monitor);
-					globals.Remove ("SolutionConfigurationPlatforms");
-				}
+			LoadSolutionConfigurations (sln.SolutionConfigurationsSection, sol, monitor);
 
-				if (globals.Contains ("ProjectConfigurationPlatforms")) {
-					LoadProjectConfigurationMappings (globals ["ProjectConfigurationPlatforms"] as Section, lines,
-						sol, monitor);
-					globals.Remove ("ProjectConfigurationPlatforms");
-				}
+			LoadProjectConfigurationMappings (sln.ProjectConfigurationsSection, sol, items, monitor);
 
-				if (globals.Contains ("MonoDevelopProperties")) {
-					LoadMonoDevelopProperties (globals ["MonoDevelopProperties"] as Section, lines,	sol, monitor);
-					globals.Remove ("MonoDevelopProperties");
+			foreach (var e in sln.Sections) {
+				string name = e.Id;
+				if (name.StartsWith ("MonoDevelopProperties.")) {
+					int i = name.IndexOf ('.');
+					LoadMonoDevelopConfigurationProperties (name.Substring (i+1), e, sol, monitor);
 				}
-				
-				ArrayList toRemove = new ArrayList ();
-				foreach (DictionaryEntry e in globals) {
-					string name = (string) e.Key;
-					if (name.StartsWith ("MonoDevelopProperties.")) {
-						int i = name.IndexOf ('.');
-						LoadMonoDevelopConfigurationProperties (name.Substring (i+1), (Section)e.Value, lines, sol, monitor);
-						toRemove.Add (e.Key);
-					}
-				}
-				foreach (object key in toRemove)
-					globals.Remove (key);
 			}
 
-			//Save the global sections that we dont use
-			List<string> globalLines = new List<string> ();
-			foreach (Section sec in globals.Values)
-				globalLines.InsertRange (globalLines.Count, lines.GetRange (sec.Start, sec.Count));
-
-			data.GlobalExtra = globalLines;
 			monitor.EndTask ();
-
-			// When reloading a project, keep the solution data and item id
-			sol.SolutionItemAdded += delegate(object sender, SolutionItemChangeEventArgs e) {
-				if (e.Reloading) {
-					ItemSlnData.TransferData (e.ReplacedItem, e.SolutionItem);
-					var ih = e.SolutionItem.ItemHandler as MSBuildHandler;
-					if (ih != null)
-						ih.ItemId = e.ReplacedItem.ItemId;
-				}
-			};
-
-			return folder;
 		}
 
-		void ParseGlobal (StreamReader reader, List<string> lines, ListDictionary dict)
+		IEnumerable<Exception> UnwrapException (Exception ex)
 		{
-			//Process GlobalSection-s
-			while (reader.Peek () >= 0) {
-				string s = GetNextLine (reader, lines).Trim ();
-				if (s.Length == 0)
-					//Skip blank lines
-					continue;
-
-				Match m = GlobalSectionRegex.Match (s);
-				if (!m.Success) {
-					if (String.Compare (s, "EndGlobal", true) == 0)
-						return;
-
-					continue;
+			var a = ex as AggregateException;
+			if (a != null) {
+				foreach (var e in a.InnerExceptions) {
+					foreach (var u in UnwrapException (e))
+						yield return u;
 				}
-
-				Section sec = new Section (m.Groups [1].Value, m.Groups [2].Value, lines.Count - 1, 1);
-				dict [sec.Key] = sec;
-
-				sec.Count = ReadUntil ("EndGlobalSection", reader, lines) - sec.Start + 1;
-				//FIXME: sec.Count == -1 : No EndGlobalSection found, ignore entry?
+			} else if (ex is TargetInvocationException) {
+				// If we get a TargetInvocationException from using Activator.CreateInstance we
+				// need to unwrap the real exception
+				ex = ex.InnerException;
+				foreach (var e in UnwrapException (ex))
+					yield return e;
 			}
+			else
+				yield return ex;
 		}
 
-		void LoadProjectConfigurationMappings (Section sec, List<string> lines, Solution sln, IProgressMonitor monitor)
+		void LoadProjectConfigurationMappings (SlnPropertySetCollection sets, Solution sln, Dictionary<string, SolutionFolderItem> items, ProgressMonitor monitor)
 		{
-			if (sec == null || String.Compare (sec.Val, "postSolution", true) != 0)
+			if (sets == null)
 				return;
 
 			Dictionary<string, SolutionConfigurationEntry> cache = new Dictionary<string, SolutionConfigurationEntry> ();
 			Dictionary<string, string> ignoredProjects = new Dictionary<string, string> ();
-			SlnData slnData = GetSlnData (sln.RootFolder);
-			
-			List<string> extras = new List<string> ();
 
-			for (int i = 0; i < sec.Count - 2; i ++) {
-				int lineNum = i + sec.Start + 1;
-				string s = lines [lineNum].Trim ();
-				extras.Add (s);
-				
-				//Format:
-				// {projectGuid}.SolutionConfigName|SolutionPlatform.ActiveCfg = ProjConfigName|ProjPlatform
-				// {projectGuid}.SolutionConfigName|SolutionPlatform.Build.0 = ProjConfigName|ProjPlatform
-				// {projectGuid}.SolutionConfigName|SolutionPlatform.Deploy.0 = ProjConfigName|ProjPlatform
+			foreach (var pset in sets) {
 
-				string [] parts = s.Split (new char [] {'='}, 2);
-				if (parts.Length < 2) {
-					LoggingService.LogDebug ("{0} ({1}) : Invalid format. Ignoring", sln.FileName, lineNum + 1);
-					continue;
-				}
+				var projGuid = pset.Id;
 
-				string action;
-				string projConfig = parts [1].Trim ();
-
-				string left = parts [0].Trim ();
-				if (left.EndsWith (".ActiveCfg")) {
-					action = "ActiveCfg";
-					left = left.Substring (0, left.Length - 10);
-				} else if (left.EndsWith (".Build.0")) {
-					action = "Build.0";
-					left = left.Substring (0, left.Length - 8);
-				} else if (left.EndsWith (".Deploy.0")) {
-					action = "Deploy.0";
-					left = left.Substring (0, left.Length - 9);
-				} else { 
-					LoggingService.LogWarning (GettextCatalog.GetString ("{0} ({1}) : Unknown action. Only ActiveCfg, Build.0 and Deploy.0 supported.",
-						sln.FileName, lineNum + 1));
-					continue;
-				}
-
-				string [] t = left.Split (new char [] {'.'}, 2);
-				if (t.Length < 2) {
-					LoggingService.LogDebug ("{0} ({1}) : Invalid format of the left side. Ignoring",
-						sln.FileName, lineNum + 1);
-					continue;
-				}
-
-				string projGuid = t [0].ToUpper ();
-				string slnConfig = t [1];
-
-				if (!slnData.ItemsByGuid.ContainsKey (projGuid)) {
+				if (!items.ContainsKey (projGuid)) {
 					if (ignoredProjects.ContainsKey (projGuid))
 						// already warned
 						continue;
 
 					LoggingService.LogWarning (GettextCatalog.GetString ("{0} ({1}) : Project with guid = '{2}' not found or not loaded. Ignoring", 
-						sln.FileName, lineNum + 1, projGuid));
+						sln.FileName, pset.Line + 1, projGuid));
 					ignoredProjects [projGuid] = projGuid;
 					continue;
 				}
 
-				SolutionEntityItem item;
-				if (slnData.ItemsByGuid.TryGetValue (projGuid, out item) && item.SupportsConfigurations ()) {
+				SolutionFolderItem it;
+				if (!items.TryGetValue (projGuid, out it))
+					continue;
+
+				SolutionItem item = it as SolutionItem;
+
+				if (item == null || !item.SupportsConfigurations ())
+					continue;
+
+				//Format:
+				// {projectGuid}.SolutionConfigName|SolutionPlatform.ActiveCfg = ProjConfigName|ProjPlatform
+				// {projectGuid}.SolutionConfigName|SolutionPlatform.Build.0 = ProjConfigName|ProjPlatform
+				// {projectGuid}.SolutionConfigName|SolutionPlatform.Deploy.0 = ProjConfigName|ProjPlatform
+
+				foreach (var prop in pset) {
+					string action;
+					string projConfig = prop.Value;
+
+					string left = prop.Key;
+					if (left.EndsWith (".ActiveCfg")) {
+						action = "ActiveCfg";
+						left = left.Substring (0, left.Length - 10);
+					} else if (left.EndsWith (".Build.0")) {
+						action = "Build.0";
+						left = left.Substring (0, left.Length - 8);
+					} else if (left.EndsWith (".Deploy.0")) {
+						action = "Deploy.0";
+						left = left.Substring (0, left.Length - 9);
+					} else { 
+						LoggingService.LogWarning (GettextCatalog.GetString ("{0} ({1}) : Unknown action. Only ActiveCfg, Build.0 and Deploy.0 supported.",
+							sln.FileName, pset.Line));
+						continue;
+					}
+
+					string slnConfig = left;
+
 					string key = projGuid + "." + slnConfig;
 					SolutionConfigurationEntry combineConfigEntry = null;
 					if (cache.ContainsKey (key)) {
@@ -1091,6 +675,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					 * if Build (true/false) for the project will 
 					 * will depend on presence/absence of Build.0 entry
 					 */
+
 					if (action == "ActiveCfg") {
 						combineConfigEntry.ItemConfiguration = FromSlnConfigurationId (projConfig);
 					} else if (action == "Build.0") {
@@ -1099,15 +684,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						combineConfigEntry.Deploy = true;
 					}
 				}
-				extras.RemoveAt (extras.Count - 1);
 			}
-
-			slnData.SectionExtras ["ProjectConfigurationPlatforms"] = extras;
 		}
 
 		/* Gets the CombineConfigurationEntry corresponding to the @entry in its parentCombine's 
 		 * CombineConfiguration. Creates the required bits if not present */
-		SolutionConfigurationEntry GetConfigEntry (Solution sol, SolutionEntityItem item, string configName)
+		SolutionConfigurationEntry GetConfigEntry (Solution sol, SolutionItem item, string configName)
 		{
 			configName = FromSlnConfigurationId (configName);
 			
@@ -1123,21 +705,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return solutionConfig.AddItem (item);
 		}
 
-		void LoadSolutionConfigurations (Section sec, List<string> lines, Solution solution, IProgressMonitor monitor)
+		void LoadSolutionConfigurations (SlnPropertySet sec, Solution solution, ProgressMonitor monitor)
 		{
-			if (sec == null || String.Compare (sec.Val, "preSolution", true) != 0)
+			if (sec == null)
 				return;
 
-			for (int i = 0; i < sec.Count - 2; i ++) {
-				//FIXME: expects both key and val to be on the same line
-				int lineNum = i + sec.Start + 1;
-				string s = lines [lineNum].Trim ();
-				if (s.Length == 0)
-					//Skip blank lines
-					continue;
+			foreach (var pair in sec) {
 
-				KeyValuePair<string, string> pair = SplitKeyValue (s);
-				
 				string configId = FromSlnConfigurationId (pair.Key);
 				SolutionConfiguration config = solution.Configurations [configId];
 				
@@ -1153,37 +727,25 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return new SolutionConfiguration (fullId);
 		}
 
-		void LoadMonoDevelopProperties (Section sec, List<string> lines, Solution sln, IProgressMonitor monitor)
-		{
-			DataItem it = ReadDataItem (sec, lines);
-			MSBuildSerializer ser = new MSBuildSerializer (sln.FileName);
-			ser.SerializationContext.BaseFile = sln.FileName;
-			ser.Deserialize (sln, it);
-		}
-		
-		void LoadMonoDevelopConfigurationProperties (string configName, Section sec, List<string> lines, Solution sln, IProgressMonitor monitor)
+		void LoadMonoDevelopConfigurationProperties (string configName, SlnSection sec, Solution sln, ProgressMonitor monitor)
 		{
 			SolutionConfiguration config = sln.Configurations [configName];
 			if (config == null)
 				return;
-			DataItem it = ReadDataItem (sec, lines);
-			MSBuildSerializer ser = new MSBuildSerializer (sln.FileName);
-			ser.Deserialize (config, it);
+			sln.ReadConfigurationData (monitor, sec.Properties, config);
 		}
 		
-		void LoadNestedProjects (Section sec, List<string> lines,
-			IDictionary<string, SolutionItem> entries, IProgressMonitor monitor)
+		void LoadNestedProjects (SlnSection sec, IDictionary<string, SolutionFolderItem> entries, ProgressMonitor monitor)
 		{
-			if (sec == null || String.Compare (sec.Val, "preSolution", true) != 0)
+			if (sec == null || sec.SectionType != SlnSectionType.PreProcess)
 				return;
 
-			for (int i = 0; i < sec.Count - 2; i ++) {
+			foreach (var kvp in sec.Properties) {
 				// Guids should be upper case for VS compatibility
-				KeyValuePair<string, string> pair = SplitKeyValue (lines [i + sec.Start + 1].Trim ());
-				pair = new KeyValuePair<string, string> (pair.Key.ToUpper (), pair.Value.ToUpper ());
+				var pair = new KeyValuePair<string, string> (kvp.Key.ToUpper (), kvp.Value.ToUpper ());
 
-				SolutionItem folderItem;
-				SolutionItem item;
+				SolutionFolderItem folderItem;
+				SolutionFolderItem item;
 				
 				if (!entries.TryGetValue (pair.Value, out folderItem)) {
 					//Container not found
@@ -1205,134 +767,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 				folder.Items.Add (item);
 			}
-		}
-
-		string GetNextLine (StreamReader reader, List<string> list)
-		{
-			if (reader.Peek () < 0)
-				return null;
-
-			string ret = reader.ReadLine ();
-			list.Add (ret);
-			return ret;
-		}
-
-		int ReadUntil (string end, StreamReader reader, List<string> lines)
-		{
-			int ret = -1;
-			while (reader.Peek () >= 0) {
-				string s = GetNextLine (reader, lines);
-
-				if (String.Compare (s.Trim (), end, true) == 0)
-					return (lines.Count - 1);
-			}
-
-			return ret;
-		}
-
-
-		KeyValuePair<string, string> SplitKeyValue (string s)
-		{
-			string [] pair = s.Split (new char [] {'='}, 2);
-			string key = pair [0].Trim ();
-			string val = String.Empty;
-			if (pair.Length == 2)
-				val = pair [1].Trim ();
-
-			return new KeyValuePair<string, string> (key, val);
-		}
-
-		// Utility function to determine the sln file version
-		string GetSlnFileVersion(string strInSlnFile, out string headerComment)
-		{
-			string strVersion = null;
-			string strInput = null;
-			headerComment = null;
-			Match match;
-			StreamReader reader = new StreamReader(strInSlnFile);
-			
-			strInput = reader.ReadLine();
-			if (strInput == null)
-				return null;
-
-			match = SlnVersionRegex.Match(strInput);
-			if (!match.Success) {
-				strInput = reader.ReadLine();
-				if (strInput == null)
-					return null;
-				match = SlnVersionRegex.Match (strInput);
-			}
-
-			if (match.Success)
-			{
-				strVersion = match.Groups[1].Value;
-				headerComment = reader.ReadLine ();
-			}
-			
-			// Close the stream
-			reader.Close();
-
-			return strVersion;
-		}
-
-		static SlnData GetSlnData (SolutionItem c)
-		{
-			if (c.ExtendedProperties.Contains (typeof (SlnFileFormat)))
-				return c.ExtendedProperties [typeof (SlnFileFormat)] as SlnData;
-			return null;
-		}
-		
-		// static regexes
-		static Regex projectRegex = null;
-		internal static Regex ProjectRegex {
-			get {
-				if (projectRegex == null)
-					projectRegex = new Regex(@"Project\(""(\{[^}]*\})""\) = ""(.*)"", ""(.*)"", ""(\{[^{]*\})""");
-				return projectRegex;
-			}
-		}
-
-		static Regex globalSectionRegex = null;
-		static Regex GlobalSectionRegex {
-			get {
-				if (globalSectionRegex == null)
-					globalSectionRegex = new Regex (@"GlobalSection\s*\(([^)]*)\)\s*=\s*(\w*)"); 
-				return globalSectionRegex;
-			}
-		}
-
-		static Regex slnVersionRegex = null;
-		internal static Regex SlnVersionRegex {
-			get {
-				if (slnVersionRegex == null)
-					slnVersionRegex = new Regex (@"Microsoft Visual Studio Solution File, Format Version (\d?\d.\d\d)");
-				return slnVersionRegex;
-			}
-		}
-
-		public string Name {
-			get { return "MSBuild"; }
-		}
-
-	}
-
-	class Section {
-		public string Key;
-		public string Val;
-
-		public int Start = -1; //Line number
-		public int Count = 0;
-
-		public Section ()
-		{
-		}
-
-		public Section (string Key, string Val, int Start, int Count)
-		{
-			this.Key = Key;
-			this.Val = Val;
-			this.Start = Start;
-			this.Count = Count;
 		}
 	}
 }

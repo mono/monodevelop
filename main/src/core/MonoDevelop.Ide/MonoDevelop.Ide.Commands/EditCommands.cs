@@ -184,7 +184,7 @@ namespace MonoDevelop.Ide.Commands
 			object focus = IdeApp.Workbench.RootWindow.HasToplevelFocus ? IdeApp.Workbench.RootWindow.Focus : null;
 			info.Enabled = (focus is Gtk.Editable || focus is Gtk.TextView);
 			#if MAC
-			var macfocus = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder;
+			var macfocus = AppKit.NSApplication.SharedApplication?.KeyWindow?.FirstResponder;
 			info.Enabled |= macfocus is AppKit.NSText;
 			#endif
 			info.Bypass = !info.Enabled;
@@ -228,7 +228,7 @@ namespace MonoDevelop.Ide.Commands
 				info.Enabled = false;
 
 			#if MAC
-			var macfocus = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder;
+			var macfocus = AppKit.NSApplication.SharedApplication?.KeyWindow?.FirstResponder;
 			info.Enabled |= macfocus is AppKit.NSText;
 			#endif
 
@@ -273,7 +273,7 @@ namespace MonoDevelop.Ide.Commands
 				info.Enabled = false;
 
 			#if MAC
-			var macfocus = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder;
+			var macfocus = AppKit.NSApplication.SharedApplication?.KeyWindow?.FirstResponder;
 			info.Enabled |= macfocus is AppKit.NSText;
 			#endif
 
@@ -287,7 +287,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
 			string header = MonoDevelop.Ide.StandardHeader.StandardHeaderService.GetHeader (doc.Project, doc.Name, false);
-			doc.Editor.Insert (0, header + "\n");
+			doc.Editor.InsertText (0, header + "\n");
 		}
 		
 		protected override void Update (CommandInfo info)
@@ -331,7 +331,7 @@ namespace MonoDevelop.Ide.Commands
 			info.Enabled = (focus is Gtk.Editable || focus is Gtk.TextView); 
 
 			#if MAC
-			var macfocus = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder;
+			var macfocus = AppKit.NSApplication.SharedApplication?.KeyWindow?.FirstResponder;
 			info.Enabled |= macfocus is AppKit.NSText;
 			#endif
 		}

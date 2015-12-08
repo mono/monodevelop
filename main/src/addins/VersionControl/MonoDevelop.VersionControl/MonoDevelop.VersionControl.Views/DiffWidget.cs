@@ -33,7 +33,7 @@ namespace MonoDevelop.VersionControl.Views
 	public partial class DiffWidget : Gtk.Bin
 	{
 		VersionControlDocumentInfo info;
-		Mono.TextEditor.TextEditor diffTextEditor;
+		Mono.TextEditor.MonoTextEditor diffTextEditor;
 		ComparisonWidget comparisonWidget;
 		Gtk.Button buttonNext;
 		Gtk.Button buttonPrev;
@@ -63,7 +63,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		public Mono.TextEditor.TextEditor FocusedEditor {
+		public Mono.TextEditor.MonoTextEditor FocusedEditor {
 			get {
 				return comparisonWidget.FocusedEditor;
 			}
@@ -91,7 +91,7 @@ namespace MonoDevelop.VersionControl.Views
 			};
 			comparisonWidget.SetVersionControlInfo (info);
 			this.buttonDiff.Clicked += HandleButtonDiffhandleClicked;
-			diffTextEditor = new global::Mono.TextEditor.TextEditor (new Mono.TextEditor.TextDocument (), new CommonTextEditorOptions ());
+			diffTextEditor = new global::Mono.TextEditor.MonoTextEditor (new Mono.TextEditor.TextDocument (), CommonTextEditorOptions.Instance);
 			diffTextEditor.Document.MimeType = "text/x-diff";
 			
 			diffTextEditor.Options.ShowFoldMargin = false;
@@ -143,7 +143,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		static string GetRevisionText (Mono.TextEditor.TextEditor editor, Revision rev)
+		static string GetRevisionText (Mono.TextEditor.MonoTextEditor editor, Revision rev)
 		{
 			if (!editor.Document.ReadOnly)
 				return GettextCatalog.GetString ("(working copy)");

@@ -34,7 +34,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;
-using Mono.TextEditor;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.IO;
@@ -69,40 +68,42 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			var project = (Project)dataObject;
 			
-			nodeInfo.Label = project.Name;
+			nodeInfo.Label = Ambience.EscapeText (project.Name);
 			nodeInfo.Icon = Context.GetIcon (project.StockIcon);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			var project = (Project)dataObject;
-			var ctx = TypeSystemService.GetProjectContext (project);
-			if (ctx == null)
-				return;
-			
-			var namespaces = new Dictionary<string, Namespace> ();
-
-			foreach (var type in ctx.TopLevelTypeDefinitions) {
-				string namespaceName = string.IsNullOrEmpty (type.Namespace) ? "-" : type.Namespace;
-				if (!namespaces.ContainsKey (namespaceName))
-					namespaces [namespaceName] = new Namespace (namespaceName);
-				
-				var ns = namespaces [namespaceName];
-				ns.Types.Add (type);
-			}
-			
-			foreach (var ns in namespaces.Values) {
-				builder.AddChild (ns);
-			}
+			//var project = (Project)dataObject;
+			// TODO: Roslyn port.
+//			var ctx = TypeSystemService.GetProjectContext (project);
+//			if (ctx == null)
+//				return;
+//			
+//			var namespaces = new Dictionary<string, Namespace> ();
+//
+//			foreach (var type in ctx.TopLevelTypeDefinitions) {
+//				string namespaceName = string.IsNullOrEmpty (type.Namespace) ? "-" : type.Namespace;
+//				if (!namespaces.ContainsKey (namespaceName))
+//					namespaces [namespaceName] = new Namespace (namespaceName);
+//				
+//				var ns = namespaces [namespaceName];
+//				ns.Types.Add (type);
+//			}
+//			
+//			foreach (var ns in namespaces.Values) {
+//				builder.AddChild (ns);
+//			}
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			var project = (Project)dataObject;
-			var ctx = TypeSystemService.GetProjectContext (project);
-			if (ctx == null)
+			//var project = (Project)dataObject;
+			// TODO: Roslyn port.
+			//var ctx = TypeSystemService.GetProjectContext (project);
+			//if (ctx == null)
 				return false;
-			return ctx.TopLevelTypeDefinitions.Any ();
+			// return ctx.TopLevelTypeDefinitions.Any ();
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)

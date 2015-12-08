@@ -35,7 +35,7 @@ namespace MonoDevelop.VersionControl
 	{
 		VersionInfo versionInfo;
 
-		public VersionControlItem (Repository repository, IWorkspaceObject workspaceObject, FilePath path, bool isDirectory, VersionInfo versionInfo)
+		public VersionControlItem (Repository repository, WorkspaceObject workspaceObject, FilePath path, bool isDirectory, VersionInfo versionInfo)
 		{
 			Path = path;
 			Repository = repository;
@@ -44,7 +44,7 @@ namespace MonoDevelop.VersionControl
 			this.versionInfo = versionInfo;
 		}
 		
-		public IWorkspaceObject WorkspaceObject {
+		public WorkspaceObject WorkspaceObject {
 			get;
 			private set;
 		}

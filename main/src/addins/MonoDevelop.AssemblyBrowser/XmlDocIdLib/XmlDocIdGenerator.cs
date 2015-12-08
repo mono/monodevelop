@@ -7,7 +7,7 @@ using Mono.Cecil;
 namespace XmlDocIdLib
 {
     #region XmlDocIdGenerator
-    class XmlDocIdGenerator
+	class XmlDocIdGenerator
     {
         #region Constructors
         public XmlDocIdGenerator()
@@ -256,9 +256,9 @@ namespace XmlDocIdLib
                     CurrPath.Add("}");
                 }
             }
-            else if (Member is MethodDefinition)
+			else if (Member is MethodReference)
             {
-                MethodDefinition thisMethodDef = Member as MethodDefinition;
+				var thisMethodDef = Member as MethodReference;
 
                 // method, get type's path firstAppend
                 CurrPath.Add("M:");
@@ -269,11 +269,11 @@ namespace XmlDocIdLib
                 // check whether this is constructor method, or explicitly implemented method
                 strExplicitPath = GetXmlDocExplicitIfaceImplPath(Member);
 
-                if (thisMethodDef.IsStatic && thisMethodDef.IsConstructor)
-                    stbTempPath.Append(".#cctor");
-                if (!thisMethodDef.IsStatic && thisMethodDef.IsConstructor)
-                    stbTempPath.Append(".#ctor");
-                else if (strExplicitPath.Length > 0)
+                //if (thisMethodDef.IsStatic && thisMethodDef.IsConstructor)
+                //    stbTempPath.Append(".#cctor");
+                //if (!thisMethodDef.IsStatic && thisMethodDef.IsConstructor)
+                //    stbTempPath.Append(".#ctor");
+                if (strExplicitPath.Length > 0)
                     stbTempPath.Append("." + strExplicitPath);
                 else
                     stbTempPath.Append("." + thisMethodDef.Name);
@@ -299,22 +299,22 @@ namespace XmlDocIdLib
 
                 // check whether this is a conversion operator (implicit or explicit)
                 // if so, we have to read return type and add "~" char.
-                if (IsOperator(thisMethodDef))
-                {
-                    OperatorType OpType = GetOperatorType(thisMethodDef);
+                //if (IsOperator(thisMethodDef))
+                //{
+                //    OperatorType OpType = GetOperatorType(thisMethodDef);
 
-                    if (OpType == OperatorType.op_Implicit || OpType == OperatorType.op_Explicit)
-                    {
-                        // add return type parameter path
-                        stbTempPath.Append("~");
-                        stbTempPath.Append(GetXmlDocParameterPath(thisMethodDef.ReturnType, false));
-                    }
-                }
+                //    if (OpType == OperatorType.op_Implicit || OpType == OperatorType.op_Explicit)
+                //    {
+                //        // add return type parameter path
+                //        stbTempPath.Append("~");
+                //        stbTempPath.Append(GetXmlDocParameterPath(thisMethodDef.ReturnType, false));
+                //    }
+                //}
 
                 // add to path
                 CurrPath.Add(stbTempPath.ToString());
             }
-            else if (Member is FieldDefinition)
+			else if (Member is FieldReference)
             {
                 // field, get type's path name
                 CurrPath.Add("F:");
@@ -324,7 +324,7 @@ namespace XmlDocIdLib
                 // field's path
                 CurrPath.Add("." + Member.Name);
             }
-            else if (Member is PropertyDefinition)
+			else if (Member is PropertyReference)
             {
                 // property or indexer, get declaring type's path 
                 CurrPath.Add("P:");
@@ -359,7 +359,7 @@ namespace XmlDocIdLib
 
                 CurrPath.Add(stbTempPath.ToString());
             }
-            else if (Member is EventDefinition)
+			else if (Member is EventReference)
             {
                 // event, get type's path firstAppend
                 CurrPath.Add("E:");

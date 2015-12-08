@@ -28,11 +28,10 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Text;
-using Mono.TextEditor;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Refactoring
 {
@@ -47,7 +46,7 @@ namespace MonoDevelop.Refactoring
 		{
 		}
 		
-		public abstract void PerformChange (IProgressMonitor monitor, RefactoringOptions rctx);
+		public abstract void PerformChange (ProgressMonitor monitor, RefactoringOptions rctx);
 	}
 	
 	public class TextReplaceChange : Change
@@ -84,26 +83,23 @@ namespace MonoDevelop.Refactoring
 			set;
 		}
 		
-		static List<TextEditorData> textEditorDatas = new List<TextEditorData> ();
+		static List<TextEditor> textEditorDatas = new List<TextEditor> ();
 		static List<IDisposable> undoGroups = new List<IDisposable> ();
 		
 		public static void FinishRefactoringOperation ()
 		{
-			foreach (TextEditorData data in textEditorDatas) {
-				data.Document.CommitUpdateAll ();
-			}
 			textEditorDatas.Clear ();
 			undoGroups.ForEach (grp => grp.Dispose ());
 			undoGroups.Clear ();
 		}
 		
-		internal static TextEditorData GetTextEditorData (string fileName)
+		internal static TextEditor GetTextEditorData (string fileName)
 		{
 			if (IdeApp.Workbench == null)
 				return null;
 			foreach (var doc in IdeApp.Workbench.Documents) {
 				if (doc.FileName == fileName) {
-					TextEditorData result = doc.Editor;
+					var result = doc.Editor;
 					if (result != null) {
 						textEditorDatas.Add (result);
 						undoGroups.Add (result.OpenUndoGroup ());
@@ -113,43 +109,26 @@ namespace MonoDevelop.Refactoring
 			}
 			return null;
 		}
-		protected virtual TextEditorData TextEditorData {
+		protected virtual TextEditor TextEditorData {
 			get {
 				return GetTextEditorData (FileName);
 			}
 		}
-		public override void PerformChange (IProgressMonitor monitor, RefactoringOptions rctx)
+		public override void PerformChange (ProgressMonitor monitor, RefactoringOptions rctx)
 		{
 			if (rctx == null)
 				throw new InvalidOperationException ("Refactory context not available.");
 			
-			TextEditorData textEditorData = this.TextEditorData;
-			bool saveEditor = false;
-			bool hadBom = true;
-			System.Text.Encoding encoding = System.Text.Encoding.UTF8;
+			var textEditorData = this.TextEditorData;
 
 			if (textEditorData == null) {
 				bool open;
-				textEditorData = TextFileProvider.Instance.GetTextEditorData (FileName, out hadBom, out encoding, out open);
-				saveEditor = true;
-			}
-		
-			
-			int offset = textEditorData.Caret.Offset;
-			int charsInserted = textEditorData.Replace (Offset, RemovedChars, InsertedText);
-			if (MoveCaretToReplace) {
-				textEditorData.Caret.Offset = Offset + charsInserted;
+				var data = TextFileProvider.Instance.GetTextEditorData (FileName, out open);
+				data.ReplaceText (Offset, RemovedChars, InsertedText);
+				data.Save ();
 			} else {
-				if (Offset < offset) {
-					int rem = RemovedChars;
-					if (Offset + rem > offset)
-						rem = offset - Offset;
-					textEditorData.Caret.Offset = offset - rem + charsInserted;
-				}
+				textEditorData.ReplaceText (Offset, RemovedChars, InsertedText);
 			}
-			
-			if (saveEditor)
-				Mono.TextEditor.Utils.TextFileUtility.WriteText (FileName, textEditorData.Text, encoding, hadBom);
 		}
 		
 		public override string ToString ()
@@ -177,11 +156,11 @@ namespace MonoDevelop.Refactoring
 			this.Description = string.Format (GettextCatalog.GetString ("Create file '{0}'"), Path.GetFileName (fileName));
 		}
 		
-		public override void PerformChange (IProgressMonitor monitor, RefactoringOptions rctx)
+		public override void PerformChange (ProgressMonitor monitor, RefactoringOptions rctx)
 		{
 			File.WriteAllText (FileName, Content);
-			rctx.Document.Project.AddFile (FileName);
-			IdeApp.ProjectOperations.Save (rctx.Document.Project);
+			rctx.DocumentContext.Project.AddFile (FileName);
+			IdeApp.ProjectOperations.SaveAsync (rctx.DocumentContext.Project);
 		}
 	}
 	
@@ -198,7 +177,7 @@ namespace MonoDevelop.Refactoring
 			this.Description = string.Format (GettextCatalog.GetString ("Open file '{0}'"), Path.GetFileName (fileName));
 		}
 		
-		public override void PerformChange (IProgressMonitor monitor, RefactoringOptions rctx)
+		public override void PerformChange (ProgressMonitor monitor, RefactoringOptions rctx)
 		{
 			IdeApp.Workbench.OpenDocument (FileName);
 		}
@@ -227,7 +206,7 @@ namespace MonoDevelop.Refactoring
 			this.Description = string.Format (GettextCatalog.GetString ("Rename file '{0}' to '{1}'"), Path.GetFileName (oldName), Path.GetFileName (newName));
 		}
 		
-		public override void PerformChange (IProgressMonitor monitor, RefactoringOptions rctx)
+		public override void PerformChange (ProgressMonitor monitor, RefactoringOptions rctx)
 		{
 			if (rctx == null)
 				throw new ArgumentNullException ("rctx");
@@ -235,7 +214,7 @@ namespace MonoDevelop.Refactoring
 			if (IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
 				foreach (var p in IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
 					if (p.GetProjectFile (NewName) != null)
-						IdeApp.ProjectOperations.Save (p);
+						IdeApp.ProjectOperations.SaveAsync (p);
 				}
 			}
 		}
@@ -254,9 +233,9 @@ namespace MonoDevelop.Refactoring
 			this.Description = string.Format (GettextCatalog.GetString ("Save project {0}"), project.Name);
 		}
 		
-		public override void PerformChange (IProgressMonitor monitor, RefactoringOptions rctx)
+		public override void PerformChange (ProgressMonitor monitor, RefactoringOptions rctx)
 		{
-			IdeApp.ProjectOperations.Save (this.Project);
+			IdeApp.ProjectOperations.SaveAsync (this.Project);
 		}
 	}
 }

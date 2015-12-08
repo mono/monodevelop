@@ -26,10 +26,8 @@
 //
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
-using Mono.TextEditor;
 
 // Terminology:
 //   chord: A 'chord' is a key binding prefix / modifier meant to allow a

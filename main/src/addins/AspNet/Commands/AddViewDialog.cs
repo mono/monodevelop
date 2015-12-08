@@ -29,20 +29,22 @@ using System.IO;
 using System.Collections.Generic;
 using PP = System.IO.Path;
 
-using MonoDevelop.Ide;
+using Gtk;
+using Microsoft.CodeAnalysis;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.AspNet.Projects;
-using MonoDevelop.AspNet.WebForms.Dom;
 using MonoDevelop.AspNet.WebForms;
-using Gtk;
+using MonoDevelop.Projects;
+using MonoDevelop.AspNet.WebForms.Dom;
 
 namespace MonoDevelop.AspNet.Commands
 {
 	class AddViewDialog : Dialog
 	{
-		readonly AspNetAppProject project;
+		readonly DotNetProject project;
+		readonly AspNetAppProjectFlavor aspFlavor;
 		IDictionary<string, IList<string>> loadedTemplateList;
 		IDictionary<string, ListStore> templateStore;
 		ListStore dataClassStore;
@@ -61,9 +63,10 @@ namespace MonoDevelop.AspNet.Commands
 		CheckButton partialCheck, stronglyTypedCheck, masterCheck;
 		Alignment typePanel, masterPanel;
 
-		public AddViewDialog (AspNetAppProject project)
+		public AddViewDialog (DotNetProject project)
 		{
 			this.project = project;
+			aspFlavor = project.GetService<AspNetAppProjectFlavor> ();
 
 			Build ();
 			
@@ -73,14 +76,14 @@ namespace MonoDevelop.AspNet.Commands
 			loadedTemplateList = new Dictionary<string, IList<string>> ();
 			foreach (var engine in viewEngines) {
 				viewEngineCombo.AppendText (engine);
-				loadedTemplateList[engine] = project.GetCodeTemplates ("AddView", engine);
+				loadedTemplateList[engine] = aspFlavor.GetCodeTemplates ("AddView", engine);
 			}
 
 			viewEngineCombo.Active = 0;
 			InitializeTemplateStore (loadedTemplateList);
 
 			ContentPlaceHolders = new List<string> ();
-			string siteMaster = project.VirtualToLocalPath ("~/Views/Shared/Site.master", null);
+			string siteMaster = aspFlavor.VirtualToLocalPath ("~/Views/Shared/Site.master", null);
 			if (project.Files.GetFile (siteMaster) != null)
 				masterEntry.Text = "~/Views/Shared/Site.master";
 			
@@ -221,7 +224,7 @@ namespace MonoDevelop.AspNet.Commands
 		IEnumerable<string> GetProperViewEngines ()
 		{
 			yield return "Aspx";
-			if (project.SupportsRazorViewEngine)
+			if (aspFlavor.SupportsRazorViewEngine)
 				yield return "Razor";
 		}
 
@@ -307,7 +310,7 @@ namespace MonoDevelop.AspNet.Commands
 				return false;
 
 			if (!IsPartialView && HasMaster && ActiveViewEngine != "Razor") {
-				if (String.IsNullOrEmpty (MasterFile) || !File.Exists (project.VirtualToLocalPath (oldMaster, null)))
+				if (String.IsNullOrEmpty (MasterFile) || !File.Exists (aspFlavor.VirtualToLocalPath (oldMaster, null)))
 					return false;
 				//PrimaryPlaceHolder can be empty
 				//Layout Page can be empty in Razor Views - it's usually set in _ViewStart.cshtml file
@@ -341,7 +344,7 @@ namespace MonoDevelop.AspNet.Commands
 			};
 			try {
 				if (MessageService.RunCustomDialog (dialog) == (int) ResponseType.Ok)
-					masterEntry.Text = project.LocalToVirtualPath (dialog.SelectedFile.FilePath);
+					masterEntry.Text = aspFlavor.LocalToVirtualPath (dialog.SelectedFile.FilePath);
 			} finally {
 				dialog.Destroy ();
 				dialog.Dispose ();
@@ -360,11 +363,11 @@ namespace MonoDevelop.AspNet.Commands
 			primaryPlaceholderStore.Clear ();
 			ContentPlaceHolders.Clear ();
 			
-			string realPath = project.VirtualToLocalPath (oldMaster, null);
+			string realPath = aspFlavor.VirtualToLocalPath (oldMaster, null);
 			if (!File.Exists (realPath))
 				return;
 			
-			var pd = TypeSystemService.ParseFile (project, realPath) as WebFormsParsedDocument;
+			var pd = TypeSystemService.ParseFile (project, realPath).Result as WebFormsParsedDocument;
 			
 			if (pd != null) {
 				try {
@@ -468,22 +471,18 @@ namespace MonoDevelop.AspNet.Commands
 
 		class TypeDataProvider
 		{
-			public List<ITypeDefinition> TypesList { get; private set; }
+			public List<INamedTypeSymbol> TypesList { get; private set; }
 			public List<string> TypeNamesList { get; private set; }
-			Ambience ambience;
 
 			public TypeDataProvider (MonoDevelop.Projects.DotNetProject project)
 			{
 				TypeNamesList = new List<string> ();
-				var ctx = TypeSystemService.GetCompilation (project);
-				TypesList = new List<ITypeDefinition> (ctx.MainAssembly.GetAllTypeDefinitions ());
-				this.ambience = AmbienceService.GetAmbience (project.LanguageName);
+				var ctx = TypeSystemService.GetCompilationAsync (project).Result;
+				TypesList = new List<INamedTypeSymbol> (ctx.GetAllTypesInMainAssembly ());
 				foreach (var typeDef in TypesList) {
-					TypeNamesList.Add (ambience.GetString ((IEntity)typeDef, OutputFlags.IncludeGenerics | OutputFlags.UseFullName | OutputFlags.IncludeMarkup));
+					TypeNamesList.Add (Ambience.EscapeText (typeDef.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat)));
 				}
 			}
 		}
 	}
 }
-
-		

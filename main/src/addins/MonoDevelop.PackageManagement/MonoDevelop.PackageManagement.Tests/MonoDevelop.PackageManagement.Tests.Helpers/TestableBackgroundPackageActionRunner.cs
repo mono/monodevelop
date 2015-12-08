@@ -84,18 +84,18 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			}
 		}
 
-		protected override void GuiDispatch (MessageHandler handler)
+		protected override void GuiDispatch (Action handler)
 		{
 			handler.Invoke ();
 		}
 
-		public Func<IProgressMonitor,
+		public Func<ProgressMonitor,
 			IPackageManagementEvents,
 			IProgressProvider,
 			PackageManagementEventsMonitor> CreateEventMonitorAction;
 
 		protected override PackageManagementEventsMonitor CreateEventMonitor (
-			IProgressMonitor monitor,
+			ProgressMonitor monitor,
 			IPackageManagementEvents packageManagementEvents,
 			IProgressProvider progressProvider)
 		{

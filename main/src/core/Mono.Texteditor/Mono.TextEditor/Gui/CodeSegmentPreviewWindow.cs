@@ -38,7 +38,7 @@ namespace Mono.TextEditor
 	{
 		const int DefaultPreviewWindowWidth = 320;
 		const int DefaultPreviewWindowHeight = 200;
-		TextEditor editor;
+		MonoTextEditor editor;
 		Pango.FontDescription fontDescription;
 		Pango.Layout layout;
 		Pango.Layout informLayout;
@@ -64,11 +64,11 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public CodeSegmentPreviewWindow (TextEditor editor, bool hideCodeSegmentPreviewInformString, TextSegment segment, bool removeIndent = true) : this(editor, hideCodeSegmentPreviewInformString, segment, DefaultPreviewWindowWidth, DefaultPreviewWindowHeight, removeIndent)
+		public CodeSegmentPreviewWindow (MonoTextEditor editor, bool hideCodeSegmentPreviewInformString, TextSegment segment, bool removeIndent = true) : this(editor, hideCodeSegmentPreviewInformString, segment, DefaultPreviewWindowWidth, DefaultPreviewWindowHeight, removeIndent)
 		{
 		}
 		
-		public CodeSegmentPreviewWindow (TextEditor editor, bool hideCodeSegmentPreviewInformString, TextSegment segment, int width, int height, bool removeIndent = true) : base (Gtk.WindowType.Popup)
+		public CodeSegmentPreviewWindow (MonoTextEditor editor, bool hideCodeSegmentPreviewInformString, TextSegment segment, int width, int height, bool removeIndent = true) : base (Gtk.WindowType.Popup)
 		{
 			this.HideCodeSegmentPreviewInformString = hideCodeSegmentPreviewInformString;
 			this.Segment = segment;
@@ -138,6 +138,7 @@ namespace Mono.TextEditor
 				foldBgGC.Dispose ();
 				textGC = textBgGC = foldGC = foldBgGC = null;
 			}
+			editor = null;
 			base.OnDestroyed ();
 		}
 		

@@ -55,10 +55,10 @@ namespace MonoDevelop.CSharp
 			sb.AppendLine ();
 		}
 
-		public static BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, IProgressMonitor monitor)
+		public static BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, ProgressMonitor monitor)
 		{
 			var compilerParameters = (CSharpCompilerParameters)configuration.CompilationParameters ?? new CSharpCompilerParameters ();
-			var projectParameters = (CSharpProjectParameters)configuration.ProjectParameters ?? new CSharpProjectParameters ();
+			var projectParameters = (CSharpProject) configuration.ParentItem;
 			
 			FilePath outputName = configuration.CompiledOutputName;
 			string responseFileName = Path.GetTempFileName ();
@@ -192,9 +192,9 @@ namespace MonoDevelop.CSharp
 					sb.AppendLine ("/delaySign");
 			}
 
-			var debugType = compilerParameters.DebugType;
+			var debugType = configuration.DebugType;
 			if (string.IsNullOrEmpty (debugType)) {
-				debugType = configuration.DebugMode ? "full" : "none";
+				debugType = configuration.DebugSymbols ? "full" : "none";
 			} else if (string.Equals (debugType, "pdbonly", StringComparison.OrdinalIgnoreCase)) {
 				//old Mono compilers don't support pdbonly
 				if (monoRuntime != null && !monoRuntime.HasMultitargetingMcs)
@@ -418,7 +418,7 @@ namespace MonoDevelop.CSharp
 			return result;
 		}
 		
-		static int DoCompilation (IProgressMonitor monitor, string compilerName, string compilerArgs, string working_dir, ExecutionEnvironment envVars, List<string> gacRoots, ref string output, ref string error)
+		static int DoCompilation (ProgressMonitor monitor, string compilerName, string compilerArgs, string working_dir, ExecutionEnvironment envVars, List<string> gacRoots, ref string output, ref string error)
 		{
 			output = Path.GetTempFileName ();
 			error = Path.GetTempFileName ();
@@ -448,9 +448,9 @@ namespace MonoDevelop.CSharp
 			pinfo.RedirectStandardOutput = true;
 			pinfo.RedirectStandardError = true;
 
-			MonoDevelop.Core.Execution.ProcessWrapper pw = Runtime.ProcessService.StartProcess (pinfo, outwr, errwr, null);
-			using (var mon = new AggregatedOperationMonitor (monitor, pw)) {
-				pw.WaitForOutput ();
+			ProcessWrapper pw = Runtime.ProcessService.StartProcess (pinfo, outwr, errwr, null);
+			using (monitor.CancellationToken.Register (pw.Cancel)) {
+				pw.Task.Wait ();
 			}
 			int exitCode = pw.ExitCode;
 			bool cancelRequested = pw.CancelRequested;

@@ -7,6 +7,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Deployment.Targets
 {
@@ -18,24 +19,24 @@ namespace MonoDevelop.Deployment.Targets
 		[ItemProperty]
 		string format;
 		
-		FileFormat fileFormat;
+		MSBuildFileFormat fileFormat;
 		
 		public override string Description {
 			get { return "Archive of Sources"; }
 		}
 		
-		public override bool CanBuild (SolutionItem entry)
+		public override bool CanBuild (SolutionFolderItem entry)
 		{
-			return entry is SolutionFolder || entry is SolutionEntityItem;
+			return entry is SolutionFolder || entry is SolutionItem;
 		}
 
 		
-		public FileFormat FileFormat {
+		public MSBuildFileFormat FileFormat {
 			get {
 				if (fileFormat == null) {
 					if (string.IsNullOrEmpty (format))
 						return null;
-					foreach (FileFormat f in Services.ProjectService.FileFormats.GetAllFileFormats ()) {
+					foreach (var f in MSBuildFileFormat.GetSupportedFormats ()) {
 						if (f.GetType ().FullName == format) {
 							fileFormat = f;
 							break;
@@ -58,14 +59,14 @@ namespace MonoDevelop.Deployment.Targets
 			set { targetFile = value; }
 		}
 		
-		protected override bool OnBuild (IProgressMonitor monitor, DeployContext ctx)
+		protected override bool OnBuild (ProgressMonitor monitor, DeployContext ctx)
 		{
 			string sourceFile;
-			SolutionItem entry = RootSolutionItem;
+			SolutionFolderItem entry = RootSolutionItem;
 			if (entry is SolutionFolder)
 				sourceFile = entry.ParentSolution.FileName;
 			else
-				sourceFile = ((SolutionEntityItem)entry).FileName;
+				sourceFile = ((SolutionItem)entry).FileName;
 			
 			AggregatedProgressMonitor mon = new AggregatedProgressMonitor ();
 			mon.AddSlaveMonitor (monitor, MonitorAction.WriteLog|MonitorAction.ReportError|MonitorAction.ReportWarning|MonitorAction.ReportSuccess);
@@ -81,13 +82,13 @@ namespace MonoDevelop.Deployment.Targets
 				
 				// Export the project
 				
-				SolutionItem[] ents = GetChildEntries ();
+				SolutionFolderItem[] ents = GetChildEntries ();
 				string[] epaths = new string [ents.Length];
 				for (int n=0; n<ents.Length; n++)
 					epaths [n] = ents [n].ItemId;
 				
-				Services.ProjectService.Export (mon, sourceFile, epaths, folder, FileFormat);
-				if (!mon.AsyncOperation.Success)
+				var r = Services.ProjectService.Export (mon, sourceFile, epaths, folder, FileFormat).Result;
+				if (string.IsNullOrEmpty (r))
 					return false;
 				
 				// Create the archive
@@ -99,12 +100,11 @@ namespace MonoDevelop.Deployment.Targets
 			finally {
 				Directory.Delete (tmpFolder, true);
 			}
-			if (monitor.AsyncOperation.Success)
-				monitor.Log.WriteLine (GettextCatalog.GetString ("Created file: {0}", targetFile));
+			monitor.Log.WriteLine (GettextCatalog.GetString ("Created file: {0}", targetFile));
 			return true;
 		}
 		
-		public override void InitializeSettings (SolutionItem entry)
+		public override void InitializeSettings (SolutionFolderItem entry)
 		{
 			targetFile = Path.Combine (entry.BaseDirectory, entry.Name) + ".tar.gz";
 			if (entry.ParentSolution != null)
@@ -147,14 +147,15 @@ namespace MonoDevelop.Deployment.Targets
 		public override PackageBuilder[] CreateDefaultBuilders ()
 		{
 			List<PackageBuilder> list = new List<PackageBuilder> ();
-			
-			foreach (FileFormat format in Services.ProjectService.FileFormats.GetFileFormatsForObject (RootSolutionItem)) {
+
+			IMSBuildFileObject root = RootSolutionItem is SolutionItem ? (IMSBuildFileObject)RootSolutionItem : (IMSBuildFileObject) RootSolutionItem.ParentSolution;
+			foreach (MSBuildFileFormat format in MSBuildFileFormat.GetSupportedFormats (root)) {
 				SourcesZipPackageBuilder pb = (SourcesZipPackageBuilder) Clone ();
 				pb.FileFormat = format;
 				
 				// The suffix for the archive will be the extension of the file format.
 				// If there is no extension, use the whole file name.
-				string fname = format.GetValidFileName (RootSolutionItem, RootSolutionItem.ParentSolution.FileName);
+				string fname = format.GetValidFormatName (RootSolutionItem, RootSolutionItem.ParentSolution.FileName);
 				string suffix = Path.GetExtension (fname);
 				if (suffix.Length > 0)
 					suffix = suffix.Substring (1).ToLower (); // Remove the initial dot

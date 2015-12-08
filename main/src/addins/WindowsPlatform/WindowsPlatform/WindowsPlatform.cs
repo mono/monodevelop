@@ -263,7 +263,7 @@ namespace MonoDevelop.Platform
 			return psi;
 		}
 
-		public override IProcessAsyncOperation StartConsoleProcess (
+		public override ProcessAsyncOperation StartConsoleProcess (
 			string command, string arguments, string workingDirectory,
 			IDictionary<string, string> environmentVariables,
 			string title, bool pauseWhenFinished)
@@ -274,7 +274,7 @@ namespace MonoDevelop.Platform
 				)
 			};
 			proc.Start ();
-			return proc;
+			return proc.ProcessAsyncOperation;
 		}
 
 		public override bool CanOpenTerminal {
@@ -344,7 +344,7 @@ namespace MonoDevelop.Platform
 
 			//first check for the user's preferred app for this file type and use it as the default
 			using (var key = Registry.CurrentUser.OpenSubKey (@"Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\" + extension + @"\UserChoice")) {
-				var progid = key == null ? null : key.GetValue ("ProgId") as string;
+				var progid = key?.GetValue ("ProgId") as string;
 				if (progid != null)
 					apps[progid] = defaultApp = WindowsAppFromName (progid, true, AssociationFlags.None);
 			}

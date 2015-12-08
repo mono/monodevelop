@@ -165,8 +165,11 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		public static void Initialize (IProgressMonitor monitor)
+		public static void Initialize (ProgressMonitor monitor)
 		{
+			// Already done in IdeSetup, but called again since unit tests don't use IdeSetup.
+			DispatchService.Initialize ();
+
 			Counters.Initialization.Trace ("Creating Workbench");
 			workbench = new Workbench ();
 			Counters.Initialization.Trace ("Creating Root Workspace");
@@ -201,8 +204,6 @@ namespace MonoDevelop.Ide
 			workbench.Initialize (monitor);
 			monitor.Step (1);
 			
-			InternalLog.EnableErrorNotification ();
-
 			MonoDevelop.Ide.WelcomePage.WelcomePageService.Initialize ();
 			MonoDevelop.Ide.WelcomePage.WelcomePageService.ShowWelcomePage ();
 
@@ -222,9 +223,9 @@ namespace MonoDevelop.Ide
 
 			// Perser service initialization
 			TypeSystemService.TrackFileChanges = true;
-			TypeSystemService.ParseProgressMonitorFactory = new ParseProgressMonitorFactory (); 
 
-			Customizer.OnIdeInitialized ();
+			if (Customizer != null)
+				Customizer.OnIdeInitialized ();
 			
 			// Startup commands
 			Counters.Initialization.Trace ("Running Startup Commands");
@@ -290,7 +291,7 @@ namespace MonoDevelop.Ide
 			MonoDevelop.Projects.HelpService.AsyncInitialize ();
 			
 			UpdateInstrumentationIcon ();
-			IdeApp.Preferences.EnableInstrumentationChanged += delegate {
+			IdeApp.Preferences.EnableInstrumentation.Changed += delegate {
 				UpdateInstrumentationIcon ();
 			};
 			AutoTestService.Start (commandService, Preferences.EnableAutomatedTesting);
@@ -343,7 +344,7 @@ namespace MonoDevelop.Ide
 			
 			foreach (var file in filteredFiles) {
 				try {
-					Workbench.OpenDocument (file.FileName, file.Line, file.Column, file.Options);
+					Workbench.OpenDocument (file.FileName, null, file.Line, file.Column, file.Options);
 				} catch (Exception ex) {
 					MessageService.ShowError (GettextCatalog.GetString ("Could not open file: {0}", file.FileName), ex);
 				}
@@ -417,7 +418,7 @@ namespace MonoDevelop.Ide
 		{
 			if (previousRevision <= 3) {
 				// Reset the current runtime when upgrading from <2.2, to ensure the default runtime is not stuck to an old mono install
-				IdeApp.Preferences.DefaultTargetRuntime = Runtime.SystemAssemblyService.CurrentRuntime;
+				IdeApp.Preferences.DefaultTargetRuntime.Value = Runtime.SystemAssemblyService.CurrentRuntime;
 			}
 			if (previousRevision < 5)
 				SetInitialLayout ();

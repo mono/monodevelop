@@ -97,5 +97,10 @@ namespace MonoDevelop.Components
 		{
 			Show (parent, x, y, null);
 		}
+
+		public void Add (ContextMenuItem menuItem)
+		{
+			items.Add (menuItem);
+		}
 	}
 }

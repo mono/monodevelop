@@ -37,7 +37,7 @@ namespace MonoDevelop.PackageManagement
 {
 	public class PackageManagementEventsMonitor : IDisposable
 	{
-		IProgressMonitor progressMonitor;
+		ProgressMonitor progressMonitor;
 		IPackageManagementEvents packageManagementEvents;
 		IProgressProvider progressProvider;
 		FileConflictResolution lastFileConflictResolution;
@@ -48,7 +48,7 @@ namespace MonoDevelop.PackageManagement
 		ISolution solutionContainingProjectBuildersToDispose;
 
 		public PackageManagementEventsMonitor (
-			IProgressMonitor progressMonitor,
+			ProgressMonitor progressMonitor,
 			IPackageManagementEvents packageManagementEvents,
 			IProgressProvider progressProvider)
 		{
@@ -199,7 +199,7 @@ namespace MonoDevelop.PackageManagement
 			packageManagementEvents.OnPackageOperationError (ex);
 		}
 
-		protected virtual void ShowPackageConsole (IProgressMonitor progressMonitor)
+		protected virtual void ShowPackageConsole (ProgressMonitor progressMonitor)
 		{
 			progressMonitor.ShowPackageConsole ();
 		}
@@ -213,10 +213,11 @@ namespace MonoDevelop.PackageManagement
 
 		protected virtual void ReconnectAssemblyReferences (IPackageManagementProject project)
 		{
-			var projectWrapper = TypeSystemService.GetProjectContentWrapper (project.DotNetProject);
-			if (projectWrapper != null) {
-				projectWrapper.ReconnectAssemblyReferences ();
-			}
+			// TODO : Roslyn port ? 
+//			var projectWrapper = TypeSystemService.GetProjectContentWrapper (project.DotNetProject);
+//			if (projectWrapper != null) {
+//				projectWrapper.ReconnectAssemblyReferences ();
+//			}
 		}
 
 		void PackageInstalled (object sender, ParentPackageOperationEventArgs e)

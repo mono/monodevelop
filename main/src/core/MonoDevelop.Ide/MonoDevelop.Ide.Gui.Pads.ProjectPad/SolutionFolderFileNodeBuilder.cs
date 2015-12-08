@@ -113,13 +113,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 			}
 				
-			IdeApp.ProjectOperations.Save (modifiedSolutionsToSave);
+			IdeApp.ProjectOperations.SaveAsync (modifiedSolutionsToSave);
 		}
 		
 		public override void ActivateItem ()
 		{
 			SolutionFolderFileNode file = (SolutionFolderFileNode) CurrentNode.DataItem;
-			IdeApp.Workbench.OpenDocument (file.FileName);
+			IdeApp.Workbench.OpenDocument (file.FileName, project: null);
 		}
 		
 		public override DragOperation CanDragNode ()

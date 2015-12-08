@@ -41,7 +41,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		void CreateMSBuildProject (string xml)
 		{
 			msbuildProject = new MSBuildProject ();
-			msbuildProject.Document.LoadXml (xml);
+			msbuildProject.LoadXml (xml);
 		}
 
 		void CreateUpdaterWithImportToRemove (string import)
@@ -55,7 +55,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			using (updater) {
 				PackageManagementMSBuildExtension.Updater = updater;
 				msbuildExtension = new PackageManagementMSBuildExtension ();
-				msbuildExtension.SaveProject (null, null, msbuildProject);
+				msbuildExtension.UpdateProject (msbuildProject);
 			}
 		}
 

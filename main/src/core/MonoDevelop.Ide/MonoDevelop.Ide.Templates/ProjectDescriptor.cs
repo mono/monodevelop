@@ -34,6 +34,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Xml;
 using System.Linq;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 
 namespace MonoDevelop.Ide.Templates
@@ -65,8 +66,6 @@ namespace MonoDevelop.Ide.Templates
 			projectDescriptor.createCondition = xmlElement.GetAttribute ("if");
 
 			projectDescriptor.type = xmlElement.GetAttribute ("type");
-			if (String.IsNullOrEmpty (projectDescriptor.type))
-				projectDescriptor.type = "DotNet";
 
 			if (xmlElement ["Files"] != null) {
 				foreach (XmlNode xmlNode in xmlElement["Files"].ChildNodes)
@@ -110,24 +109,39 @@ namespace MonoDevelop.Ide.Templates
 			return projectDescriptor;
 		}
 
-		public SolutionEntityItem CreateItem (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
+		public SolutionItem CreateItem (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
 			if (string.IsNullOrEmpty (projectOptions.GetAttribute ("language")) && !string.IsNullOrEmpty (defaultLanguage))
 				projectOptions.SetAttribute ("language", defaultLanguage);
 
-			if (!Services.ProjectService.CanCreateProject (type)) {
-				LoggingService.LogError ("Could not create project of type '" + type + "'. Project skipped");
+			var lang = projectOptions.GetAttribute ("language");
+			var splitType = !string.IsNullOrEmpty (type) ? type.Split (new char [] {','}, StringSplitOptions.RemoveEmptyEntries).Select (t => t.Trim()).ToArray() : null;
+			var projectTypes = splitType != null ? splitType : new string[] {lang};
+
+			var projectType = projectTypes [0];
+
+			string[] flavors;
+
+			if (!Services.ProjectService.CanCreateSolutionItem (projectType, projectCreateInformation, projectOptions) && projectType != lang && !string.IsNullOrEmpty (lang)) {
+				// Maybe the type of the template is just a flavor id. In that case try using the language as project type.
+				projectType = lang;
+				flavors = splitType ?? new string[0];
+			} else
+				flavors = projectTypes.Skip (1).ToArray ();
+
+			if (!Services.ProjectService.CanCreateSolutionItem (projectType, projectCreateInformation, projectOptions)) {
+				LoggingService.LogError ("Could not create project of type '" + string.Join (",", projectTypes) + "'. Project skipped");
 				return null;
 			}
 
 			if (!ShouldCreateProject (projectCreateInformation))
 				return null;
 
-			Project project = Services.ProjectService.CreateProject (type, projectCreateInformation, projectOptions);
+			Project project = Services.ProjectService.CreateProject (projectType, projectCreateInformation, projectOptions, flavors);
 			return project;
 		}
 
-		public void InitializeItem (SolutionItem policyParent, ProjectCreateInformation projectCreateInformation, string defaultLanguage, SolutionEntityItem item)
+		public void InitializeItem (SolutionFolderItem policyParent, ProjectCreateInformation projectCreateInformation, string defaultLanguage, SolutionItem item)
 		{
 			MonoDevelop.Projects.Project project = item as MonoDevelop.Projects.Project;
 
@@ -149,12 +163,13 @@ namespace MonoDevelop.Ide.Templates
 				foreach (var desc in references) {
 					if (!projectCreateInformation.ShouldCreate (desc.CreateCondition))
 						continue;
-					if (desc.ProjectReference.ReferenceType == ReferenceType.Project) {
-						string referencedProjectName = ReplaceParameters (desc.ProjectReference.Reference, substitution, projectCreateInformation);
-						var parsedReference = ProjectReference.RenameReference (desc.ProjectReference, referencedProjectName);
+					var pr = desc.Create ();
+					if (pr.ReferenceType == ReferenceType.Project) {
+						string referencedProjectName = ReplaceParameters (pr.Reference, substitution, projectCreateInformation);
+						var parsedReference = ProjectReference.RenameReference (pr, referencedProjectName);
 						dnp.References.Add (parsedReference);
 					} else
-						dnp.References.Add (desc.ProjectReference);
+						dnp.References.Add (pr);
 				}
 			}
 
@@ -203,7 +218,7 @@ namespace MonoDevelop.Ide.Templates
 			return StringParserService.Parse (updatedText, projectCreateInformation.Parameters);
 		}
 		
-		static void SetClosestSupportedTargetFramework (FileFormat format, DotNetProject project)
+		static void SetClosestSupportedTargetFramework (MSBuildFileFormat format, DotNetProject project)
 		{
 			// If the solution format can't write this project due to an unsupported framework, try finding the
 			// closest valid framework. DOn't worry about whether it's installed, that's up to the user to correct.
@@ -278,23 +293,42 @@ namespace MonoDevelop.Ide.Templates
 
 		class ProjectReferenceDescription
 		{
+			XmlElement elem;
+
 			public ProjectReferenceDescription (XmlElement elem)
 			{
+				this.elem = elem;
 				CreateCondition = elem.GetAttribute ("if");
-				var refType = elem.GetAttribute ("type");
-				ProjectReference = new ProjectReference ((ReferenceType)Enum.Parse (typeof(ReferenceType), refType), elem.GetAttribute ("refto"));
-				string specificVersion = elem.GetAttribute ("SpecificVersion");
-				if (!string.IsNullOrEmpty (specificVersion))
-					ProjectReference.SpecificVersion = bool.Parse (specificVersion);
-				string localCopy = elem.GetAttribute ("LocalCopy");
-				if (!string.IsNullOrEmpty (localCopy) && ProjectReference.CanSetLocalCopy)
-					ProjectReference.LocalCopy = bool.Parse (localCopy);
-				string referenceOutputAssembly = elem.GetAttribute ("ReferenceOutputAssembly");
-				if (!string.IsNullOrEmpty (referenceOutputAssembly))
-					ProjectReference.ReferenceOutputAssembly = bool.Parse (referenceOutputAssembly);
 			}
 
-			public ProjectReference ProjectReference { get; private set; }
+			public ProjectReference Create ()
+			{
+				var refType = elem.GetAttribute ("type");
+				var projectReference = ProjectReference.CreateCustomReference ((ReferenceType)Enum.Parse (typeof(ReferenceType), refType), elem.GetAttribute ("refto"));
+				var hintPath = GetMSBuildReferenceHintPath ();
+				if (hintPath != null)
+					projectReference.Metadata.SetValue ("HintPath", hintPath);
+				
+				string specificVersion = elem.GetAttribute ("SpecificVersion");
+				if (!string.IsNullOrEmpty (specificVersion))
+					projectReference.SpecificVersion = bool.Parse (specificVersion);
+				string localCopy = elem.GetAttribute ("LocalCopy");
+				if (!string.IsNullOrEmpty (localCopy) && projectReference.CanSetLocalCopy)
+					projectReference.LocalCopy = bool.Parse (localCopy);
+				string referenceOutputAssembly = elem.GetAttribute ("ReferenceOutputAssembly");
+				if (!string.IsNullOrEmpty (referenceOutputAssembly))
+					projectReference.ReferenceOutputAssembly = bool.Parse (referenceOutputAssembly);
+				return projectReference;
+			}
+
+			string GetMSBuildReferenceHintPath ()
+			{
+				string hintPath = elem.GetAttribute ("HintPath");
+				if (!string.IsNullOrEmpty (hintPath))
+					return hintPath;
+				return null;
+			}
+
 			public string CreateCondition { get; private set; }
 		}
 	}

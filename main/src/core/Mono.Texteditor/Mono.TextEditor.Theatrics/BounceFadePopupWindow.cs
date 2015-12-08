@@ -37,12 +37,12 @@ namespace Mono.TextEditor.Theatrics
 	{
 		Stage<BounceFadePopupWindow> stage = new Stage<BounceFadePopupWindow> ();
 		Gdk.Pixbuf textImage = null;
-		TextEditor editor;
+		MonoTextEditor editor;
 		
 		protected double scale = 0.0;
 		protected double opacity = 1.0;
 		
-		public BounceFadePopupWindow (TextEditor editor) : base (Gtk.WindowType.Popup)
+		public BounceFadePopupWindow (MonoTextEditor editor) : base (Gtk.WindowType.Popup)
 		{
 			if (!IsComposited)
 				throw new InvalidOperationException ("Only works with composited screen. Check Widget.IsComposited.");
@@ -69,7 +69,7 @@ namespace Mono.TextEditor.Theatrics
 			stage.UpdateFrequency = 10;
 		}
 		
-		protected TextEditor Editor { get { return editor; } }
+		protected MonoTextEditor Editor { get { return editor; } }
 		
 		/// <summary>Duration of the animation, in milliseconds.</summary>
 		public uint Duration { get; set; }
@@ -227,12 +227,12 @@ namespace Mono.TextEditor.Theatrics
 	{
 		Stage<BounceFadePopupWidget> stage = new Stage<BounceFadePopupWidget> ();
 		Gdk.Pixbuf textImage = null;
-		TextEditor editor;
+		MonoTextEditor editor;
 		
 		protected double scale = 0.0;
 		protected double opacity = 1.0;
 		
-		public BounceFadePopupWidget (TextEditor editor)
+		public BounceFadePopupWidget (MonoTextEditor editor)
 		{
 			if (!IsComposited)
 				throw new InvalidOperationException ("Only works with composited screen. Check Widget.IsComposited.");
@@ -256,7 +256,7 @@ namespace Mono.TextEditor.Theatrics
 			stage.UpdateFrequency = 10;
 		}
 		
-		protected TextEditor Editor { get { return editor; } }
+		protected MonoTextEditor Editor { get { return editor; } }
 		
 		/// <summary>Duration of the animation, in milliseconds.</summary>
 		public uint Duration { get; set; }

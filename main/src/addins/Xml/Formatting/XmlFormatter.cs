@@ -32,10 +32,11 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide.CodeFormatting;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Xml.Formatting
 {
-	public class XmlFormatter: ICodeFormatter
+	public class XmlFormatter: AbstractCodeFormatter
 	{
 		public static string FormatXml (TextStylePolicy textPolicy, XmlFormattingPolicy formattingPolicy, string input)
 		{
@@ -43,11 +44,18 @@ namespace MonoDevelop.Xml.Formatting
 			try {
 				doc = new XmlDocument ();
 				doc.LoadXml (input);
+			} catch (XmlException ex) {
+				// handle xml files without root element (https://bugzilla.xamarin.com/show_bug.cgi?id=4748)
+				if (ex.Message == "Root element is missing.")
+					return input;
+				MonoDevelop.Core.LoggingService.LogWarning ("Error formatting XML file", ex);
+				IdeApp.Workbench.StatusBar.ShowError ("Error formatting file: " + ex.Message);
+				return input;
 			} catch (Exception ex) {
 				// Ignore malformed xml
 				MonoDevelop.Core.LoggingService.LogWarning ("Error formatting XML file", ex);
 				IdeApp.Workbench.StatusBar.ShowError ("Error formatting file: " + ex.Message);
-				return null;
+				return input;
 			}
 			
 			var sw = new StringWriter ();
@@ -56,12 +64,14 @@ namespace MonoDevelop.Xml.Formatting
 			xmlWriter.Flush ();
 			return sw.ToString ();
 		}
-		
-		public string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeInheritanceChain, string input)
+
+		protected override Core.Text.ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, Core.Text.ITextSource input, int startOffset, int length)
 		{
-			var txtPol = policyParent.Get<TextStylePolicy> (mimeTypeInheritanceChain);
-			var xmlPol = policyParent.Get<XmlFormattingPolicy> (mimeTypeInheritanceChain);
-			return FormatXml (txtPol, xmlPol, input);
+			if (policyParent == null)
+				policyParent = PolicyService.DefaultPolicies;
+			var txtPol = policyParent.Get<TextStylePolicy> (mimeType);
+			var xmlPol = policyParent.Get<XmlFormattingPolicy> (mimeType);
+			return new StringTextSource(FormatXml (txtPol, xmlPol, input.Text));
 		}
 		
 		public string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeInheritanceChain, string input, int fromOffest, int toOffset)

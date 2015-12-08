@@ -28,7 +28,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Microsoft.Build.BuildEngine {
+namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
 	[Serializable]
 	internal class ExpressionParseException : Exception {
 	
@@ -55,4 +55,3 @@ namespace Microsoft.Build.BuildEngine {
 		}
 	}
 }
-

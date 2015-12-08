@@ -1,4 +1,4 @@
-﻿//
+//
 // SharedProject.cs
 //
 // Author:
@@ -31,34 +31,147 @@ using MonoDevelop.Core;
 using System.IO;
 using System.Xml;
 using MonoDevelop.Projects.Policies;
+using System.Threading.Tasks;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects.SharedAssetsProjects
 {
-	public class SharedAssetsProject: Project, IDotNetFileContainer
+	[ExportProjectType ("{D954291E-2A0B-460D-934E-DC6B0785DB48}", Extension="shproj", Alias="SharedAssetsProject")]
+	public sealed class SharedAssetsProject: Project, IDotNetFileContainer
 	{
 		Solution currentSolution;
-		IDotNetLanguageBinding languageBinding;
+		LanguageBinding languageBinding;
 		string languageName;
 		FilePath projItemsPath;
+		MSBuildProject projitemsProject;
+		HashSet<MSBuildItem> usedMSBuildItems = new HashSet<MSBuildItem> ();
+
+		const string CSharptargets = @"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.CSharp.targets";
+		const string FSharptargets = @"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.FSharp.targets";
 
 		public SharedAssetsProject ()
 		{
+			Initialize (this);
 		}
 
-		public SharedAssetsProject (string language)
+		public SharedAssetsProject (string language): this ()
 		{
 			languageName = language;
 		}
 
-		public SharedAssetsProject (ProjectCreateInformation projectCreateInfo, XmlElement projectOptions)
+		protected override void OnInitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement projectOptions)
 		{
+			base.OnInitializeFromTemplate (projectCreateInfo, projectOptions);
 			languageName = projectOptions.GetAttribute ("language");
 			DefaultNamespace = projectCreateInfo.ProjectName;
 		}
 
-		internal protected override List<FilePath> OnGetItemFiles (bool includeReferencedFiles)
+		protected override void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
-			var list = base.OnGetItemFiles (includeReferencedFiles);
+			base.OnReadProject (monitor, msproject);
+
+			var import = msproject.Imports.FirstOrDefault (im => im.Label == "Shared");
+			if (import == null)
+				return;
+
+			// TODO: load the type from msbuild
+			foreach (var item in msproject.Imports) {
+				if (item.Project.Equals (CSharptargets, StringComparison.OrdinalIgnoreCase)) {
+					LanguageName = "C#";
+					break;
+				}
+				if (item.Project.Equals (FSharptargets, StringComparison.OrdinalIgnoreCase)) {
+					LanguageName = "F#";
+					break;
+				}
+			}
+			//If for some reason the language name is empty default it to C#
+			if (String.IsNullOrEmpty(LanguageName))
+				LanguageName = "C#";
+
+			projItemsPath = MSBuildProjectService.FromMSBuildPath (msproject.BaseDirectory, import.Project);
+
+			MSBuildProject p = new MSBuildProject (msproject.EngineManager);
+			p.Load (projItemsPath);
+			p.Evaluate ();
+
+			var cp = p.PropertyGroups.FirstOrDefault (g => g.Label == "Configuration");
+			if (cp != null)
+				DefaultNamespace = cp.GetValue ("Import_RootNamespace");
+
+			LoadProjectItems (p, ProjectItemFlags.None, usedMSBuildItems);
+
+			projitemsProject = p;
+		}
+
+		internal override void SaveProjectItems (ProgressMonitor monitor, MSBuildProject msproject, HashSet<MSBuildItem> loadedItems, string pathPrefix)
+		{
+			// Save project items in the .projitems file
+			base.SaveProjectItems (monitor, projitemsProject, usedMSBuildItems, "$(MSBuildThisFileDirectory)");
+		}
+
+		protected override void OnWriteProject (ProgressMonitor monitor, MonoDevelop.Projects.Formats.MSBuild.MSBuildProject msproject)
+		{
+			if (projItemsPath == FilePath.Null)
+				projItemsPath = Path.ChangeExtension (FileName, ".projitems");
+
+			if (projitemsProject == null) {
+				projitemsProject = new MSBuildProject (msproject.EngineManager);
+				projitemsProject.FileName = projItemsPath;
+				var grp = projitemsProject.GetGlobalPropertyGroup ();
+				if (grp == null)
+					grp = projitemsProject.AddNewPropertyGroup (false);
+				grp.SetValue ("MSBuildAllProjects", "$(MSBuildAllProjects);$(MSBuildThisFileFullPath)");
+				grp.SetValue ("HasSharedItems", true);
+				grp.SetValue ("SharedGUID", ItemId, preserveExistingCase:true);
+			}
+
+			IMSBuildPropertySet configGrp = projitemsProject.PropertyGroups.FirstOrDefault (g => g.Label == "Configuration");
+			if (configGrp == null) {
+				configGrp = projitemsProject.AddNewPropertyGroup (true);
+				configGrp.Label = "Configuration";
+			}
+			configGrp.SetValue ("Import_RootNamespace", DefaultNamespace);
+
+			base.OnWriteProject (monitor, msproject);
+
+			var newProject = FileName == null || !File.Exists (FileName);
+			if (newProject) {
+				var grp = msproject.GetGlobalPropertyGroup ();
+				if (grp == null)
+					grp = msproject.AddNewPropertyGroup (false);
+				grp.SetValue ("ProjectGuid", ItemId, preserveExistingCase:true);
+				var import = msproject.AddNewImport (@"$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props");
+				import.Condition = @"Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')";
+				msproject.AddNewImport (@"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.Common.Default.props");
+				msproject.AddNewImport (@"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.Common.props");
+				import = msproject.AddNewImport (Path.ChangeExtension (FileName.FileName, ".projitems"));
+				import.Label = "Shared";
+				if (LanguageName.Equals("C#", StringComparison.OrdinalIgnoreCase)) {
+					msproject.AddNewImport (CSharptargets);
+				}
+				else if (LanguageName.Equals("F#", StringComparison.OrdinalIgnoreCase)) {
+					msproject.AddNewImport (FSharptargets);
+				}
+
+			} else {
+				msproject.Load (FileName);
+			}
+
+			// having no ToolsVersion is equivalent to 2.0, roundtrip that correctly
+			if (ToolsVersion != "2.0")
+				msproject.ToolsVersion = ToolsVersion;
+			else if (string.IsNullOrEmpty (msproject.ToolsVersion))
+				msproject.ToolsVersion = null;
+			else
+				msproject.ToolsVersion = "2.0";
+
+			projitemsProject.Save (projItemsPath);
+		}
+
+		protected override IEnumerable<FilePath> OnGetItemFiles (bool includeReferencedFiles)
+		{
+			var list = base.OnGetItemFiles (includeReferencedFiles).ToList ();
 			if (!string.IsNullOrEmpty (FileName))
 				list.Add (ProjItemsPath);
 			return list;
@@ -80,57 +193,56 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			}
 		}
 
-		public override IEnumerable<string> GetProjectTypes ()
+		protected override void OnGetTypeTags (HashSet<string> types)
 		{
-			yield return "SharedAssets";
-			yield return "DotNet";
+			types.Add ("SharedAssets");
+			types.Add ("DotNet");
 		}
 
-		public override string[] SupportedLanguages {
-			get {
-				return new [] { "", languageName };
-			}
+		protected override string[] OnGetSupportedLanguages ()
+		{
+			return new [] { "", languageName };
 		}
 
-		public IDotNetLanguageBinding LanguageBinding {
+		public LanguageBinding LanguageBinding {
 			get {
 				if (languageBinding == null)
-					languageBinding = LanguageBindingService.GetBindingPerLanguageName (languageName) as IDotNetLanguageBinding;
+					languageBinding = LanguageBindingService.GetBindingPerLanguageName (languageName);
 				return languageBinding;
 			}
 		}
 
-		public override bool IsCompileable (string fileName)
+		protected override bool OnGetIsCompileable (string fileName)
 		{
 			return LanguageBinding.IsSourceCodeFile (fileName);
 		}
 
-		protected override BuildResult OnBuild (MonoDevelop.Core.IProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override Task<BuildResult> OnBuild (MonoDevelop.Core.ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
-			return new BuildResult ();
+			return Task.FromResult (BuildResult.CreateSuccess ());
 		}
 
-		internal protected override bool OnGetSupportsTarget (string target)
-		{
-			return false;
-		}
-
-		internal protected override bool OnGetSupportsExecute ()
+		protected override bool OnGetSupportsTarget (string target)
 		{
 			return false;
 		}
 
-		public override bool FastCheckNeedsBuild (ConfigurationSelector configuration)
+		protected override ProjectFeatures OnGetSupportedFeatures ()
+		{
+			return ProjectFeatures.None;
+		}
+
+		protected override bool OnFastCheckNeedsBuild (ConfigurationSelector configuration)
 		{
 			return false;
 		}
 
-		protected override IEnumerable<string> GetStandardBuildActions ()
+		protected override IEnumerable<string> OnGetStandardBuildActions ()
 		{
 			return BuildAction.DotNetActions;
 		}
 
-		protected override IList<string> GetCommonBuildActions ()
+		protected override IList<string> OnGetCommonBuildActions ()
 		{
 			return BuildAction.DotNetCommonActions;
 		}
@@ -139,9 +251,9 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 		/// Gets the default namespace for the file, according to the naming policy.
 		/// </summary>
 		/// <remarks>Always returns a valid namespace, even if the fileName is null.</remarks>
-		public string GetDefaultNamespace (string fileName)
+		public string GetDefaultNamespace (string fileName, bool useVisualStudioNamingPolicy = false)
 		{
-			return DotNetProject.GetDefaultNamespace (this, DefaultNamespace, fileName);
+			return DotNetProject.GetDefaultNamespace (this, DefaultNamespace, fileName, useVisualStudioNamingPolicy);
 		}
 
 		protected override void OnBoundToSolution ()
@@ -158,7 +270,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 
 			// Maybe there is a project that is already referencing this one. It may happen when creating a solution
 			// from a template
-			foreach (var p in ParentSolution.GetAllSolutionItems<DotNetProject> ())
+			foreach (var p in ParentSolution.GetAllItems<DotNetProject> ())
 				ProcessProject (p);
 		}
 
@@ -170,10 +282,12 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 				ProcessProject (p);
 		}
 
-		public override void Dispose ()
+		protected override void OnDispose ()
 		{
-			base.Dispose ();
+			if (projitemsProject != null)
+				projitemsProject.Dispose ();
 			DisconnectFromSolution ();
+			base.OnDispose ();
 		}
 
 		void DisconnectFromSolution ()
@@ -211,7 +325,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			var referencesToFix = p.References.Where (r => r.GetItemsProjectPath () == ProjItemsPath && r.Reference != Name).ToList ();
 			foreach (var r in referencesToFix) {
 				p.References.Remove (r);
-				p.References.Add (new ProjectReference (this));
+				p.References.Add (ProjectReference.CreateProjectReference (this));
 			}
 
 			foreach (var pref in p.References.Where (r => r.ReferenceType == ReferenceType.Project && r.Reference == Name))
@@ -291,7 +405,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			if (ParentSolution == null)
 				return new DotNetProject[0];
 
-			return ParentSolution.GetAllSolutionItems<DotNetProject> ().Where (p => p.References.Any (r => r.GetItemsProjectPath () != null));
+			return ParentSolution.GetAllItems<DotNetProject> ().Where (p => p.References.Any (r => r.GetItemsProjectPath () != null));
 		}
 	}
 

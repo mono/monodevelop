@@ -1,0 +1,30 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "conditional-project-reference", "conditional-project-reference\conditional-project-reference.csproj", "{DAC04D9B-8B03-4EBC-9B3E-609305C22FCA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "commonLib", "commonLib\commonLib.csproj", "{92D8316A-4AE1-41FD-A141-BEEF4C6C2BCB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "windowsLib", "windowsLib\windowsLib.csproj", "{A1183810-06B3-44FB-B779-006C40C546B2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+		DebugWin|Any CPU = DebugWin|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DAC04D9B-8B03-4EBC-9B3E-609305C22FCA}.DebugWin|Any CPU.ActiveCfg = DebugWin|Any CPU
+		{DAC04D9B-8B03-4EBC-9B3E-609305C22FCA}.DebugWin|Any CPU.Build.0 = DebugWin|Any CPU
+		{DAC04D9B-8B03-4EBC-9B3E-609305C22FCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAC04D9B-8B03-4EBC-9B3E-609305C22FCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92D8316A-4AE1-41FD-A141-BEEF4C6C2BCB}.DebugWin|Any CPU.ActiveCfg = DebugWin|Any CPU
+		{92D8316A-4AE1-41FD-A141-BEEF4C6C2BCB}.DebugWin|Any CPU.Build.0 = DebugWin|Any CPU
+		{92D8316A-4AE1-41FD-A141-BEEF4C6C2BCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92D8316A-4AE1-41FD-A141-BEEF4C6C2BCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1183810-06B3-44FB-B779-006C40C546B2}.DebugWin|Any CPU.ActiveCfg = DebugWin|Any CPU
+		{A1183810-06B3-44FB-B779-006C40C546B2}.DebugWin|Any CPU.Build.0 = DebugWin|Any CPU
+		{A1183810-06B3-44FB-B779-006C40C546B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+	EndGlobalSection
+EndGlobal

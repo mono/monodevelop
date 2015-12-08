@@ -24,15 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Xml.Dom
 {
 	public class XDocType : XNode, INamedXObject
 	{
-		public XDocType (TextLocation start) : base (start) {}
-		public XDocType (DomRegion region) : base (region) {}
+		public XDocType (DocumentLocation start) : base (start) {}
+		public XDocType (DocumentRegion region) : base (region) {}
 
 		protected XDocType () {}
 		protected override XObject NewInstance () { return new XDocType (); }
@@ -40,7 +39,7 @@ namespace MonoDevelop.Xml.Dom
 		public XName RootElement { get; set; }
 		public string PublicFpi { get; set; }
 		public bool IsPublic { get { return PublicFpi != null; } }
-		public DomRegion InternalDeclarationRegion { get; set; }
+		public DocumentRegion InternalDeclarationRegion { get; set; }
 		public string Uri { get; set; }
 
 		public override string FriendlyPathRepresentation {

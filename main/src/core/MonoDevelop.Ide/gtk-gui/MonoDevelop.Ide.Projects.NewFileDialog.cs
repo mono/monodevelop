@@ -5,27 +5,49 @@ namespace MonoDevelop.Ide.Projects
 	internal partial class NewFileDialog
 	{
 		private global::Gtk.VBox vbox2;
+		
 		private global::Gtk.HPaned hpaned1;
+		
 		private global::Gtk.ScrolledWindow scrolledwindow1;
+		
 		private global::Gtk.TreeView catView;
+		
 		private global::Gtk.HPaned panedTemplates;
+		
 		private global::Gtk.VBox boxTemplates;
+		
 		private global::Gtk.ScrolledWindow scrolledInfo;
+		
 		private global::Gtk.VBox boxInfo;
+		
 		private global::Gtk.Label labelTemplateTitle;
+		
 		private global::Gtk.Label infoLabel;
+		
 		private global::Gtk.Label label1;
+		
 		private global::Gtk.HBox hbox2;
+		
 		private global::Gtk.Label label2;
+		
 		private global::Gtk.Entry nameEntry;
+		
 		private global::Gtk.VBox boxProject;
+		
 		private global::Gtk.HBox hbox3;
+		
 		private global::Gtk.CheckButton projectAddCheckbox;
+		
 		private global::Gtk.ComboBox projectAddCombo;
+		
 		private global::Gtk.HBox hbox4;
+		
 		private global::Gtk.Label projectPathLabel;
+		
 		private global::MonoDevelop.Components.FolderEntry projectFolderEntry;
+		
 		private global::Gtk.Button cancelButton;
+		
 		private global::Gtk.Button okButton;
 
 		protected virtual void Build ()
@@ -211,6 +233,7 @@ namespace MonoDevelop.Ide.Projects
 			// Container child hbox4.Gtk.Box+BoxChild
 			this.projectFolderEntry = new global::MonoDevelop.Components.FolderEntry ();
 			this.projectFolderEntry.Name = "projectFolderEntry";
+			this.projectFolderEntry.DisplayAsRelativePath = false;
 			this.hbox4.Add (this.projectFolderEntry);
 			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.projectFolderEntry]));
 			w21.Position = 1;

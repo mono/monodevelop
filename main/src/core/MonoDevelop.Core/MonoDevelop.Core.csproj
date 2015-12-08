@@ -70,6 +70,21 @@
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\bin\MonoDevelop.Core.xml</DocumentationFile>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWin32|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\build\bin\</OutputPath>
+    <DefineConstants>DEBUG;WINDOWS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\..\..\build\bin\MonoDevelop.Core.xml</DocumentationFile>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <NoWarn>1591;1573</NoWarn>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="Mono.Posix" />
@@ -85,8 +100,23 @@
     <Reference Include="System.Web" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Build.Engine" />
+    <Reference Include="Microsoft.Build" />
+    <Reference Include="Microsoft.Build.Utilities.v12.0, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection.Metadata">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Reflection.Metadata.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Collections.Immutable.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -104,21 +134,14 @@
     <Compile Include="MonoDevelop.Core.Execution\RemoteProcessObject.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\AggregatedProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\ConsoleProgressMonitor.cs" />
-    <Compile Include="MonoDevelop.Core\IAsyncOperation.cs" />
     <Compile Include="MonoDevelop.Core\IProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\LogTextWriter.cs" />
-    <Compile Include="MonoDevelop.Core.ProgressMonitoring\NullAsyncOperation.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\ProgressTracker.cs" />
     <Compile Include="MonoDevelop.Core.Execution\DefaultExecutionHandler.cs" />
     <Compile Include="MonoDevelop.Core.Execution\ExternalConsoleFactory.cs" />
-    <Compile Include="MonoDevelop.Core.Execution\IConsole.cs" />
-    <Compile Include="MonoDevelop.Core.Execution\IConsoleFactory.cs" />
     <Compile Include="MonoDevelop.Core.Execution\IExecutionHandler.cs" />
-    <Compile Include="MonoDevelop.Core.Execution\IProcessAsyncOperation.cs" />
     <Compile Include="MonoDevelop.Core.Execution\MonoPlatformExecutionHandler.cs" />
     <Compile Include="MonoDevelop.Core.Execution\NativePlatformExecutionHandler.cs" />
-    <Compile Include="MonoDevelop.Core.ProgressMonitoring\AggregatedOperationMonitor.cs" />
-    <Compile Include="MonoDevelop.Core.ProgressMonitoring\SynchronizedProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Core\ClrVersion.cs" />
     <Compile Include="MonoDevelop.Core\FileService.cs" />
     <Compile Include="MonoDevelop.Core\FileEventArgs.cs" />
@@ -164,7 +187,6 @@
     <Compile Include="MonoDevelop.Core.Serialization\ICollectionHandler.cs" />
     <Compile Include="MonoDevelop.Core.Serialization\ICustomDataItemHandler.cs" />
     <Compile Include="MonoDevelop.Core.Serialization\IExtendedDataItem.cs" />
-    <Compile Include="MonoDevelop.Core.Serialization\ILoadController.cs" />
     <Compile Include="MonoDevelop.Core.Serialization\IPropertyFilter.cs" />
     <Compile Include="MonoDevelop.Core.Serialization\ISerializationAttributeProvider.cs" />
     <Compile Include="MonoDevelop.Core.Serialization\ItemProperty.cs" />
@@ -177,7 +199,6 @@
     <Compile Include="MonoDevelop.Core.Serialization\XmlMapAttributeProvider.cs" />
     <Compile Include="MonoDevelop.Core.Collections\Set.cs" />
     <Compile Include="MonoDevelop.Core\Gettext.cs" />
-    <Compile Include="MonoDevelop.Core.ProgressMonitoring\AsyncOperation.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\PackageInstalledCondition.cs" />
     <Compile Include="MonoDevelop.Core\ComponentModelLocalization.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\ITargetRuntimeFactory.cs" />
@@ -223,25 +244,19 @@
     <Compile Include="MonoDevelop.Core.Logging\RemoteLogger.cs" />
     <Compile Include="MonoDevelop.Core.Instrumentation\TimeCounter.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\PlatformCondition.cs" />
-    <Compile Include="MonoDevelop.Core.ProgressMonitoring\AggregatedAsyncOperation.cs" />
     <Compile Include="MonoDevelop.Core.Serialization\BinaryDataSerializer.cs" />
     <Compile Include="MonoDevelop.Core.Execution\LocalConsole.cs" />
     <Compile Include="MonoDevelop.Core\IconId.cs" />
-    <Compile Include="MonoDevelop.Core.ProgressMonitoring\NullProgressMonitor.cs" />
-    <Compile Include="MonoDevelop.Core.ProgressMonitoring\SimpleProgressMonitor.cs" />
     <Compile Include="Mono.Options.cs" />
     <Compile Include="MonoDevelop.Core.Logging\InstrumentationLogger.cs" />
     <Compile Include="MonoDevelop.Core.Instrumentation\TimerCounter.cs" />
-    <Compile Include="MonoDevelop.Projects\FileFormatManager.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectService.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectPathItemPropertyAttribute.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionConfiguration.cs" />
-    <Compile Include="MonoDevelop.Projects\SolutionEntityItem.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionItemEventArgs.cs" />
     <Compile Include="MonoDevelop.Projects\CombineEntryRenamedEventArgs.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionItemConfiguration.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectConfiguration.cs" />
-    <Compile Include="MonoDevelop.Projects\DotNetProjectBinding.cs" />
     <Compile Include="MonoDevelop.Projects\DotNetProjectConfiguration.cs" />
     <Compile Include="MonoDevelop.Projects\Project.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectFile.cs" />
@@ -251,20 +266,15 @@
     <Compile Include="MonoDevelop.Projects\ProjectFileCollection.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectReferenceCollection.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectCreateInformation.cs" />
-    <Compile Include="MonoDevelop.Projects\IProjectBinding.cs" />
-    <Compile Include="MonoDevelop.Projects\IDotNetLanguageBinding.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionItemConfigurationCollection.cs" />
     <Compile Include="MonoDevelop.Projects\ConfigurationEventHandler.cs" />
     <Compile Include="MonoDevelop.Projects\ExecutionContext.cs" />
     <Compile Include="MonoDevelop.Projects\BuildTool.cs" />
     <Compile Include="MonoDevelop.Projects\BuildEventHandler.cs" />
-    <Compile Include="MonoDevelop.Projects\ProjectServiceExtension.cs" />
     <Compile Include="MonoDevelop.Projects\CustomCommandCollection.cs" />
     <Compile Include="MonoDevelop.Projects\CustomCommand.cs" />
     <Compile Include="MonoDevelop.Projects\CustomCommandType.cs" />
     <Compile Include="MonoDevelop.Projects\GenericProject.cs" />
-    <Compile Include="MonoDevelop.Projects\GenericProjectBinding.cs" />
-    <Compile Include="MonoDevelop.Projects\CustomCommandExtension.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectConvertTool.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectsServices.cs" />
     <Compile Include="MonoDevelop.Projects\UnknownSolutionItem.cs" />
@@ -278,16 +288,13 @@
     <Compile Include="MonoDevelop.Projects\WorkspaceItemCollection.cs" />
     <Compile Include="MonoDevelop.Projects\WorkspaceItemEventArgs.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionEventArgs.cs" />
-    <Compile Include="MonoDevelop.Projects\IWorkspaceObject.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionConfigurationCollection.cs" />
     <Compile Include="MonoDevelop.Projects\ItemConfiguration.cs" />
     <Compile Include="MonoDevelop.Projects\ItemConfigurationCollection.cs" />
     <Compile Include="MonoDevelop.Projects\IConfigurationTarget.cs" />
     <Compile Include="MonoDevelop.Projects\ItemCollection.cs" />
-    <Compile Include="MonoDevelop.Projects\SolutionItem.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionFolderItemCollection.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionItemReference.cs" />
-    <Compile Include="MonoDevelop.Projects\FileFormat.cs" />
     <Compile Include="MonoDevelop.Projects\UnknownWorkspaceItem.cs" />
     <Compile Include="MonoDevelop.Projects\BuildResult.cs" />
     <Compile Include="MonoDevelop.Projects\BuildAction.cs" />
@@ -296,14 +303,9 @@
     <Compile Include="MonoDevelop.Projects\FileCopySet.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectItem.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectItemCollection.cs" />
-    <Compile Include="MonoDevelop.Projects\SimpleProjectItem.cs" />
     <Compile Include="MonoDevelop.Projects\IFolderItem.cs" />
     <Compile Include="MonoDevelop.Projects\IFileItem.cs" />
-    <Compile Include="MonoDevelop.Projects\ProjectParameters.cs" />
-    <Compile Include="MonoDevelop.Projects\ConfigurationParameters.cs" />
     <Compile Include="MonoDevelop.Projects\CyclicDependencyException.cs" />
-    <Compile Include="MonoDevelop.Projects\DotNetAssemblyProject.cs" />
-    <Compile Include="MonoDevelop.Projects\DotNetProjectParameters.cs" />
     <Compile Include="MonoDevelop.Projects\ItemConfigurationSelector.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionConfigurationSelector.cs" />
     <Compile Include="MonoDevelop.Projects\DefaultConfigurationSelector.cs" />
@@ -312,43 +314,24 @@
     <Compile Include="MonoDevelop.Projects\CompiledAssemblyProject.cs" />
     <Compile Include="MonoDevelop.Projects\IAssemblyProject.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\ItemPropertyCodon.cs" />
-    <Compile Include="MonoDevelop.Projects.Extensions\LanguageBindingCodon.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\DataTypeCodon.cs" />
-    <Compile Include="MonoDevelop.Projects.Extensions\ProjectBindingCodon.cs" />
-    <Compile Include="MonoDevelop.Projects.Extensions\ItemTypeNode.cs" />
-    <Compile Include="MonoDevelop.Projects.Extensions\DotNetProjectNode.cs" />
-    <Compile Include="MonoDevelop.Projects.Extensions\SolutionItemNode.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\SerlializationMapNode.cs" />
-    <Compile Include="MonoDevelop.Projects.Extensions\IFileFormat.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\FileFormatNode.cs" />
-    <Compile Include="MonoDevelop.Projects.Extensions\ProjectExtensionUtil.cs" />
-    <Compile Include="MonoDevelop.Projects.Extensions\ISolutionItemHandler.cs" />
-    <Compile Include="MonoDevelop.Projects.Extensions\SolutionItemHandler.cs" />
-    <Compile Include="MonoDevelop.Projects.Extensions\DotNetProjectSubtypeNode.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\PolicySetNode.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\PolicyNode.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\ItemTypeCondition.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\MonoDocSourceNode.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\ProjectLanguageCondition.cs" />
-    <Compile Include="MonoDevelop.Projects.Extensions\IResourceHandler.cs" />
-    <Compile Include="MonoDevelop.Projects.Extensions\IPathHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\IAssemblyReferenceHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1DotNetProjectHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1FileFormat.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1SolutionEntityItemHandler.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1SolutionItemHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildFileFormat.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildProjectHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\SlnFileFormat.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildProjectService.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\SlnData.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildProject.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildImportAttribute.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\RemoteProjectBuilder.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IMSBuildImportProvider.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MergeToProjectAttribute.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\CompiledAssemblyProjectMSBuildHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ConditionAndExpression.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ConditionExpression.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ConditionFactorExpresion.cs" />
@@ -368,9 +351,7 @@
     <Compile Include="MonoDevelop.Projects.Policies\PolicyContainer.cs" />
     <Compile Include="MonoDevelop.Projects.Policies\ScopedPolicy.cs" />
     <Compile Include="MonoDevelop.Projects.Policies\PolicyDictionary.cs" />
-    <Compile Include="MonoDevelop.Projects.Text\IEditableTextFile.cs" />
     <Compile Include="MonoDevelop.Projects.Text\ITextFile.cs" />
-    <Compile Include="MonoDevelop.Projects.Text\ITextFileProvider.cs" />
     <Compile Include="MonoDevelop.Projects.Text\TextFile.cs" />
     <Compile Include="MonoDevelop.Projects.Text\TextEncoding.cs" />
     <Compile Include="MonoDevelop.Projects.Text\TextFileReader.cs" />
@@ -407,13 +388,10 @@
     <Compile Include="MonoDevelop.Core\ApplicationService.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\ProgressStatusMonitor.cs" />
     <Compile Include="MonoDevelop.Projects\LanguageBindingService.cs" />
-    <Compile Include="MonoDevelop.Projects\ILanguageBinding.cs" />
     <Compile Include="MonoDevelop.Core\Platform.cs" />
     <Compile Include="MonoDevelop.Core\UserProfile.cs" />
     <Compile Include="MonoDevelop.Core\BrandingService.cs" />
     <Compile Include="MonoDevelop.Projects\CleanEventHandler.cs" />
-    <Compile Include="MonoDevelop.Core.ProgressMonitoring\IProjectLoadProgressMonitor.cs" />
-    <Compile Include="MonoDevelop.Core.ProgressMonitoring\WrappedProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\ConsoleProjectLoadProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Core\SystemInformation.cs" />
     <Compile Include="MonoDevelop.Core\MacSystemInformation.cs" />
@@ -428,10 +406,8 @@
     <Compile Include="MonoDevelop.Core\PasswordService.cs" />
     <Compile Include="MonoDevelop.Core\IPasswordProvider.cs" />
     <Compile Include="MonoDevelop.Projects.Utility\ByteOrderMark.cs" />
-    <Compile Include="MonoDevelop.Projects\PortableDotNetProject.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\FilePathExtensionNode.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\TargetsAvailableCondition.cs" />
-    <Compile Include="MonoDevelop.Projects\PortableDotNetProjectBinding.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\AssemblyInstalledCondition.cs" />
     <Compile Include="MonoDevelop.Core\WebCertificateService.cs" />
     <Compile Include="MonoDevelop.Core\IWebCertificateProvider.cs" />
@@ -445,11 +421,8 @@
     <Compile Include="MonoDevelop.Core.Logging\AssertLoggingTraceListener.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1ProjectService.cs" />
     <Compile Include="MonoDevelop.Projects\UnknownProject.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildExtension.cs" />
     <Compile Include="MonoDevelop.Projects.SharedAssetsProjects\SharedAssetsProject.cs" />
     <Compile Include="MonoDevelop.Projects.SharedAssetsProjects\SharedAssetsProjectMSBuildExtension.cs" />
-    <Compile Include="MonoDevelop.Projects.SharedAssetsProjects\SharedAssetsProjectMSBuildHandler.cs" />
-    <Compile Include="MonoDevelop.Projects.SharedAssetsProjects\SharedAssetsProjectBinding.cs" />
     <Compile Include="MonoDevelop.Core\WebRequestHelper.cs" />
     <Compile Include="MonoDevelop.Core.Web\IProxyAuthenticationHandler.cs" />
     <Compile Include="MonoDevelop.Core.Web\CredentialStore.cs" />
@@ -466,26 +439,157 @@
     <Compile Include="MonoDevelop.Core.Web\STSAuthHelper.cs" />
     <Compile Include="MonoDevelop.Core.Web\WIFTypeProvider.cs" />
     <Compile Include="MonoDevelop.Core.Web\CredentialProviderExtensions.cs" />
-    <Compile Include="MonoDevelop.Core.Execution\IDebugConsole.cs" />
+    <Compile Include="MonoDevelop.Core.Text\ISegment.cs" />
+    <Compile Include="MonoDevelop.Core.Text\UnicodeNewLine.cs" />
+    <Compile Include="MonoDevelop.Core.Text\ITextSource.cs" />
+    <Compile Include="MonoDevelop.Core.Text\TextChangeEventArgs.cs" />
+    <Compile Include="MonoDevelop.Core.Text\StringTextSource.cs" />
+    <Compile Include="MonoDevelop.Core.Text\TextFileUtility.cs" />
+    <Compile Include="MonoDevelop.Core.Text\ITextSourceVersion.cs" />
     <Compile Include="MonoDevelop.Projects\IDotNetFileContainer.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IMSBuildGlobalPropertyProvider.cs" />
     <Compile Include="MonoDevelop.Projects\DotNetProjectImport.cs" />
+    <Compile Include="MonoDevelop.Core.Text\TextSourceVersionProvider.cs" />
     <Compile Include="MonoDevelop.Core.LogReporting\CrashReporter.cs" />
     <Compile Include="MonoDevelop.Core.Instrumentation\InstrumentationConsumer.cs" />
+    <Compile Include="MonoDevelop.Projects\DotNetProjectExtension.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\MSBuildProjectExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Projects\ChainedExtension.cs" />
+    <Compile Include="MonoDevelop.Projects\ExtensionChain.cs" />
+    <Compile Include="MonoDevelop.Projects\SolutionFolderItem.cs" />
+    <Compile Include="MonoDevelop.Projects\SolutionItem.cs" />
+    <Compile Include="MonoDevelop.Projects\SolutionItemExtension.cs" />
+    <Compile Include="MonoDevelop.Projects\WorkspaceItemExtension.cs" />
+    <Compile Include="MonoDevelop.Projects\SolutionExtension.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\ProjectModelExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\SolutionItemExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\FlavorTypeCondition.cs" />
+    <Compile Include="MonoDevelop.Projects\WorkspaceObject.cs" />
+    <Compile Include="MonoDevelop.Projects\WorkspaceObjectExtension.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\ProcessAsyncOperation.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildProperty.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildPropertyGroupMerged.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildPropertyGroup.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildItem.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildItemGroup.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildEvaluationContext.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildImport.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildObject.cs" />
+    <Compile Include="MonoDevelop.Projects\IPropertySet.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IMSBuildPropertySet.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildPropertyGroupEvaluated.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\SlnFile.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\UnknownSolutionItemTypeException.cs" />
+    <Compile Include="MonoDevelop.Projects\DotNetCompilerParameters.cs" />
+    <Compile Include="MonoDevelop.Projects\PortableDotNetProjectFlavor.cs" />
+    <Compile Include="MonoDevelop.Projects\SolutionItemFactory.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\ProjectMigrationHandler.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\ProjectMigrationHandlerNode.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\SolutionItemTypeNode.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\ProjectTypeNode.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\DotNetProjectTypeNode.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectExtension.cs" />
+    <Compile Include="MonoDevelop.Core\ProgressMonitor.cs" />
+    <Compile Include="MonoDevelop.Core.ProgressMonitoring\ProjectLoadProgressMonitor.cs" />
+    <Compile Include="MonoDevelop.Projects\ExportProjectModelExtensionAttribute.cs" />
+    <Compile Include="MonoDevelop.Projects\ExportSolutionItemTypeAttribute.cs" />
+    <Compile Include="MonoDevelop.Projects\ExportProjectFlavorAttribute.cs" />
+    <Compile Include="MonoDevelop.Projects\ExportProjectTypeAttribute.cs" />
+    <Compile Include="MonoDevelop.Projects\ExportDotNetProjectTypeAttribute.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectCreateParameters.cs" />
     <Compile Include="MonoDevelop.Projects\BuildError.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildErrorParser.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectItemMetadata.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectFeature.cs" />
+    <Compile Include="MonoDevelop.Projects\MSBuildSupport.cs" />
+    <Compile Include="MonoDevelop.Projects\ThreadSafeAttribute.cs" />
+    <Compile Include="MonoDevelop.Projects\MSBuildSerializationExtension.cs" />
+    <Compile Include="MonoDevelop.Projects\WorkspaceSerializationExtension.cs" />
+    <Compile Include="MonoDevelop.Projects\IMSBuildFileObject.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\TypeTagCondition.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildEngine.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\ProjectEvaluationException.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\ImportRedirectTypeNode.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\FileUtil.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\DefaultMSBuildEngine.cs" />
+    <Compile Include="MonoDevelop.Projects\SolutionDataSectionAttribute.cs" />
+    <Compile Include="MonoDevelop.Core.Serialization\DataDeletedValue.cs" />
+    <Compile Include="MonoDevelop.Projects\WorkspaceObjectReader.cs" />
+    <Compile Include="MonoDevelop.Projects\LanguageBinding.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\LanguageBindingExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\OperationConsole.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\OutputProgressMonitor.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\OperationConsoleFactory.cs" />
+    <Compile Include="MonoDevelop.Projects\PathBasedProjectItem.cs" />
+    <Compile Include="MonoDevelop.Projects\ExportProjectItemTypeAttribute.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildProjectInstance.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildEngineV12.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildEngineV4.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildEngineManager.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ExpressionEvaluationException.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildValueType.cs" />
+    <Compile Include="MonoDevelop.Projects\ConfigurationKind.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IMetadataProperty.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IMSBuildPropertyEvaluated.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildPropertyEvaluated.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildPropertyCore.cs" />
+    <Compile Include="MonoDevelop.Projects\TargetEvaluationResult.cs" />
+    <Compile Include="MonoDevelop.Projects\TargetEvaluationContext.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildImportGroup.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildChoose.cs" />
     <Compile Include="MonoDevelop.Projects\OperationContext.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectOperationContext.cs" />
-    <Compile Include="MonoDevelop.Projects\TargetEvaluationContext.cs" />
-    <Compile Include="MonoDevelop.Projects\TargetEvaluationResult.cs" />
+    <Compile Include="MonoDevelop.Projects\AsyncCriticalSection.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildTarget.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\SupportsTargetCondition.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildTask.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildProjectExtensions.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildWhitespace.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildXmlReader.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildElement.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildXmlNode.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildFileFormatException.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildXmlElement.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IMSBuildProjectObject.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IntrinsicFunctions.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\EscapingUtilities.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ConditionedPropertyCollection.cs" />
+    <Compile Include="MonoDevelop.Core\FileWriteableState.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
     <None Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\InvalidProjectFileException.cs" />
     <None Include="BuildVariables.cs.in" />
     <None Include="packages.config" />
+    <None Include="MSBuild\CodeSharing.Common.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="MSBuild\CodeSharing.Common.Default.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="MSBuild\CodeSharing.CSharp.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.dll">
+      <Link>Microsoft.CodeAnalysis.CSharp.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.Features.dll">
+      <Link>Microsoft.CodeAnalysis.CSharp.Features.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.Workspaces.dll">
+      <Link>Microsoft.CodeAnalysis.CSharp.Workspaces.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Workspaces.Desktop.dll">
+      <Link>Microsoft.CodeAnalysis.Workspaces.Desktop.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.VisualBasic.dll">
+      <Link>Microsoft.CodeAnalysis.VisualBasic.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Core.addin.xml">
@@ -532,14 +636,6 @@
       <Project>{8559DD7F-A16F-46D0-A05A-9139FAEBA8FD}</Project>
       <Name>Mono.Cecil.Mdb</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
-      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
-      <Name>ICSharpCode.NRefactory</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
-      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
-      <Name>ICSharpCode.NRefactory.CSharp</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
       <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
       <Name>Mono.Addins</Name>
@@ -560,10 +656,6 @@
       <Project>{63E6915C-7EA4-4D76-AB28-0D7191EEA626}</Project>
       <Name>Mono.Cecil.Pdb</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.Cecil\ICSharpCode.NRefactory.Cecil.csproj">
-      <Project>{2B8F4F83-C2B3-4E84-A27B-8DEE1BE0E006}</Project>
-      <Name>ICSharpCode.NRefactory.Cecil</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="MonoDevelop.Core.dll.config">
@@ -572,6 +664,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Projects.SharedAssetsProjects\" />
+    <Folder Include="MSBuild\" />
   </ItemGroup>
   <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; $(MSBuildProjectDirectory)\..\..\..\..\version.config" Outputs="BuildVariables.cs">
     <Csc Sources="BuildVariables.gen.cs" OutputAssembly="BuildVariables.gen.exe" />

@@ -39,9 +39,8 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
-using Mono.TextEditor;
+using MonoDevelop.Ide.Editor.Extension;
 using System.Linq;
-
 
 namespace MonoDevelop.Debugger
 {
@@ -1533,7 +1532,7 @@ namespace MonoDevelop.Debugger
 		void OnEditKeyRelease (object sender, EventArgs e)
 		{
 			if (!wasHandled) {
-				CompletionWindowManager.PostProcessKeyEvent (key, keyChar, modifierState);
+				CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifierState));
 				PopupCompletion ((Entry) sender);
 			}
 		}
@@ -1555,7 +1554,7 @@ namespace MonoDevelop.Debugger
 			keyValue = args.Event.KeyValue;
 
 			if (currentCompletionData != null) {
-				wasHandled  = CompletionWindowManager.PreProcessKeyEvent (key, keyChar, modifierState);
+				wasHandled  = CompletionWindowManager.PreProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifierState));
 				args.RetVal = wasHandled;
 			}
 		}
@@ -1738,10 +1737,10 @@ namespace MonoDevelop.Debugger
 		
 		void CleanPinIcon ()
 		{
-			if (!lastPinIter.Equals (TreeIter.Zero)) {
+			if (!lastPinIter.Equals (TreeIter.Zero) && store.IterIsValid (lastPinIter)) {
 				store.SetValue (lastPinIter, PinIconColumn, null);
-				lastPinIter = TreeIter.Zero;
 			}
+			lastPinIter = TreeIter.Zero;
 		}
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
@@ -1853,9 +1852,8 @@ namespace MonoDevelop.Debugger
 			TreePath path;
 			bool closePreviewWindow = true;
 			
-			if (CanQueryDebugger && evnt.Button == 1 && GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr)) {
-				TreeIter it;
-				store.GetIter (out it, path);
+			TreeIter it;
+			if (CanQueryDebugger && evnt.Button == 1 && GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr) && store.GetIter (out it, path)) {
 				if (cr == crpViewer) {
 					var val = (ObjectValue)store.GetValue (it, ObjectColumn);
 					DebuggingService.ShowValueVisualizer (val);
@@ -2245,7 +2243,13 @@ namespace MonoDevelop.Debugger
 				return ((ICompletionWidget)this).CreateCodeCompletionContext (editEntry.Position);
 			}
 		}
-		
+
+		public double ZoomLevel {
+			get {
+				return 1;
+			}
+		}
+
 		public event EventHandler CompletionContextChanged;
 
 		protected virtual void OnCompletionContextChanged (EventArgs e)
@@ -2279,6 +2283,9 @@ namespace MonoDevelop.Debugger
 		int ICompletionWidget.CaretOffset {
 			get {
 				return editEntry.Position;
+			}
+			set {
+				editEntry.Position = value;
 			}
 		}
 		
@@ -2352,6 +2359,11 @@ namespace MonoDevelop.Debugger
 				return editEntry.Style;
 			}
 		}
+
+		void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
+		{
+			// ignore
+		}
 		#endregion 
 
 		ObjectValue[] GetValues (string[] names)
@@ -2401,8 +2413,9 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	class DebugCompletionDataList: List<ICSharpCode.NRefactory.Completion.ICompletionData>, ICompletionDataList
+	class DebugCompletionDataList: List<MonoDevelop.Ide.CodeCompletion.CompletionData>, ICompletionDataList
 	{
+		public int TriggerWordLength { get; set; }
 		public bool IsSorted { get; set; }
 		public DebugCompletionDataList (Mono.Debugging.Client.CompletionData data)
 		{

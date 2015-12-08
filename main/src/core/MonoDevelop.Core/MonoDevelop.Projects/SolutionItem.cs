@@ -1,4 +1,4 @@
-// SolutionItem.cs
+// SolutionEntityItem.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -26,161 +26,320 @@
 //
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Linq;
 using System.Xml;
+using System.IO;
+using System.Collections;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Diagnostics;
 using System.CodeDom.Compiler;
+
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Extensions;
-using MonoDevelop.Core.Collections;
 using MonoDevelop.Core.StringParsing;
-using MonoDevelop.Core.Instrumentation;
-using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core.Execution;
+using Mono.Addins;
+using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Core.Collections;
+using System.Threading.Tasks;
+using MonoDevelop.Projects.Formats.MSBuild;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Projects
 {
-	public abstract class SolutionItem: IExtendedDataItem, IBuildTarget, ILoadController, IPolicyProvider
+	public abstract class SolutionItem : SolutionFolderItem, IWorkspaceFileObject, IConfigurationTarget, IBuildTarget, IMSBuildFileObject
 	{
-		SolutionFolder parentFolder;
-		Solution parentSolution;
-		ISolutionItemHandler handler;
-		int loading;
-		SolutionFolder internalChildren;
-		
-		[ProjectPathItemProperty ("BaseDirectory", DefaultValue=null)]
-		string baseDirectory;
-		
-		Hashtable extendedProperties;
-		
-		[ItemProperty ("Policies", IsExternal = true, SkipEmpty = true)]
-		MonoDevelop.Projects.Policies.PolicyBag policies;
+		internal object MemoryProbe = Counters.ItemsInMemory.CreateMemoryProbe ();
 
-		[ItemProperty ("UseMSBuildEngine")]
-		public bool? UseMSBuildEngine { get; set; }
+		int loading;
+		ItemCollection<SolutionItem> dependencies = new ItemCollection<SolutionItem> ();
+		SolutionItemEventArgs thisItemArgs;
+		FileStatusTracker<SolutionItemEventArgs> fileStatusTracker;
+		FilePath fileName;
+		string name;
+		SolutionItemExtension itemExtension;
+		MSBuildFileFormat fileFormat;
 		
-		PropertyBag userProperties;
+		SolutionItemConfiguration activeConfiguration;
+		SolutionItemConfigurationCollection configurations;
+
+		public event EventHandler ConfigurationsChanged;
+		public event ConfigurationEventHandler DefaultConfigurationChanged;
+		public event ConfigurationEventHandler ConfigurationAdded;
+		public event ConfigurationEventHandler ConfigurationRemoved;
+		public event EventHandler<ProjectItemEventArgs> ProjectItemAdded;
+		public event EventHandler<ProjectItemEventArgs> ProjectItemRemoved;
+
+		// When set, it means this item is saved as part of a global solution save operation
+		internal bool SavingSolution { get; set; }
 		
-		/// <summary>
-		/// Initializes a new instance of the <see cref="MonoDevelop.Projects.SolutionItem"/> class.
-		/// </summary>
-		public SolutionItem()
+		public SolutionItem ()
 		{
-			ProjectExtensionUtil.LoadControl (this);
+			TypeGuid = MSBuildProjectService.GetTypeGuidForItem (this);
+
+			fileFormat = MSBuildFileFormat.DefaultFormat;
+			thisItemArgs = new SolutionItemEventArgs (this);
+			configurations = new SolutionItemConfigurationCollection (this);
+			configurations.ConfigurationAdded += OnConfigurationAddedToCollection;
+			configurations.ConfigurationRemoved += OnConfigurationRemovedFromCollection;
+			Counters.ItemsLoaded++;
+			fileStatusTracker = new FileStatusTracker<SolutionItemEventArgs> (this, OnReloadRequired, new SolutionItemEventArgs (this));
 		}
-		
-		/// <summary>
-		/// Initializes a new instance of this item, using an xml element as template
-		/// </summary>
-		/// <param name='template'>
-		/// The template
-		/// </param>
-		public virtual void InitializeFromTemplate (XmlElement template)
+
+		protected override void OnExtensionChainInitialized ()
 		{
+			itemExtension = ExtensionChain.GetExtension<SolutionItemExtension> ();
+			base.OnExtensionChainInitialized ();
 		}
-		
-		/// <summary>
-		/// Gets the handler for this solution item
-		/// </summary>
-		/// <value>
-		/// The solution item handler.
-		/// </value>
-		/// <exception cref='InvalidOperationException'>
-		/// Is thrown if there isn't a ISolutionItemHandler for this solution item
-		/// </exception>
-		protected internal ISolutionItemHandler ItemHandler {
+
+		SolutionItemExtension ItemExtension {
 			get {
-				if (handler == null) {
-					InitializeItemHandler ();
-					if (handler == null)
-						throw new InvalidOperationException ("No handler found for solution item of type: " + GetType ());
-				}
-				return handler; 
+				if (itemExtension == null)
+					AssertExtensionChainCreated ();
+				return itemExtension;
+			}
+		}
+
+		protected override IEnumerable<WorkspaceObjectExtension> CreateDefaultExtensions ()
+		{
+			foreach (var e in base.CreateDefaultExtensions ())
+				yield return e;
+			yield return new DefaultMSBuildItemExtension ();
+		}
+
+		internal protected virtual IEnumerable<string> GetItemTypeGuids ()
+		{
+			yield return TypeGuid;
+		}
+
+		protected override void OnDispose ()
+		{
+			if (Disposing != null)
+				Disposing (this, EventArgs.Empty);
+			
+			base.OnDispose ();
+			Counters.ItemsLoaded--;
+
+			// items = null;
+			// wildcardItems = null;
+			// thisItemArgs = null;
+			// fileStatusTracker = null;
+			// fileFormat = null;
+			// activeConfiguration = null;
+			// configurations = null;
+		}
+
+		void HandleSolutionItemAdded (object sender, SolutionItemChangeEventArgs e)
+		{
+			if (e.Reloading && dependencies.Count > 0 && (e.SolutionItem is SolutionItem) && (e.ReplacedItem is SolutionItem)) {
+				int i = dependencies.IndexOf ((SolutionItem)e.ReplacedItem);
+				if (i != -1)
+					dependencies [i] = (SolutionItem) e.SolutionItem;
+			}
+		}
+
+		void HandleSolutionItemRemoved (object sender, SolutionItemChangeEventArgs e)
+		{
+			if (!e.Reloading && (e.SolutionItem is SolutionItem))
+				dependencies.Remove ((SolutionItem)e.SolutionItem);
+		}
+
+		internal void BeginLoad ()
+		{
+			loading++;
+			OnBeginLoad ();
+			ItemExtension.BeginLoad ();
+		}
+
+		internal void EndLoad ()
+		{
+			loading--;
+			ItemExtension.EndLoad ();
+			OnEndLoad ();
+		}
+
+		/// <summary>
+		/// Called when an item has been fully created and/or loaded
+		/// </summary>
+		/// <remarks>>
+		/// This method is invoked when all operations required for creating or loading this item have finished.
+		/// If the item is being created in memory, this method will be called just after OnExtensionChainInitialized.
+		/// If the item is being loaded from a file, it will be called after OnEndLoad.
+		/// If the item is being created from a template, it will be called after InitializeNew
+		/// </remarks>
+		protected virtual void OnItemReady ()
+		{
+		}
+
+		internal void NotifyItemReady ()
+		{
+			ItemExtension.ItemReady ();
+			OnItemReady ();
+		}
+
+		protected override void OnSetShared ()
+		{
+			base.OnSetShared ();
+			configurations.SetShared ();
+		}
+
+
+		/// <summary>
+		/// Called when a load operation for this solution item has started
+		/// </summary>
+		protected virtual void OnBeginLoad ()
+		{
+		}
+
+		/// <summary>
+		/// Called when a load operation for this solution item has finished
+		/// </summary>
+		protected virtual void OnEndLoad ()
+		{
+			fileStatusTracker.ResetLoadTimes ();
+
+			if (syncReleaseVersion && ParentSolution != null)
+				releaseVersion = ParentSolution.Version;
+		}
+
+		[ItemProperty ("ReleaseVersion", DefaultValue="0.1")]
+		string releaseVersion = "0.1";
+		
+		[ItemProperty ("SynchReleaseVersion", DefaultValue = true)]
+		bool syncReleaseVersion = true;
+
+		public string Version {
+			get {
+				// If syncReleaseVersion is set, releaseVersion will already contain the solution's version
+				// That's because the version must be up to date even when loading the project individually
+				return releaseVersion;
+			}
+			set {
+				AssertMainThread ();
+				releaseVersion = value;
+				NotifyModified ("Version");
 			}
 		}
 		
-		/// <summary>
-		/// Sets the handler for this solution item
-		/// </summary>
-		/// <param name='handler'>
-		/// A handler.
-		/// </param>
-		internal virtual void SetItemHandler (ISolutionItemHandler handler)
-		{
-			if (this.handler != null)
-				this.handler.Dispose ();
-			this.handler = handler;
+		public bool SyncVersionWithSolution {
+			get {
+				return syncReleaseVersion;
+			}
+			set {
+				AssertMainThread ();
+				syncReleaseVersion = value;
+				if (syncReleaseVersion && ParentSolution != null)
+					Version = ParentSolution.Version;
+				NotifyModified ("SyncVersionWithSolution");
+			}
 		}
 		
-		internal ISolutionItemHandler GetItemHandler ()
+		[ThreadSafe]
+		protected override string OnGetName ()
 		{
-			// Used to get the handler without lazy loading it
-			return this.handler;
+			return name ?? string.Empty;
 		}
-		
-		/// <summary>
-		/// Gets the author information for this solution item, inherited from the solution and global settings.
-		/// </summary>
-		public AuthorInformation AuthorInformation {
+
+		protected override void OnSetName (string value)
+		{
+			name = value;
+			if (!Loading) {
+				if (string.IsNullOrEmpty (fileName))
+					FileName = value;
+				else {
+					string ext = fileName.Extension;
+					FileName = fileName.ParentDirectory.Combine (value) + ext;
+				}
+			}
+		}
+
+		public virtual FilePath FileName {
+			get {
+				return fileName;
+			}
+			set {
+				if (FileFormat != null)
+					value = FileFormat.GetValidFormatName (this, value);
+				if (value != fileName) {
+					fileName = value;
+					Name = fileName.FileNameWithoutExtension;
+					NotifyModified ("FileName");
+				}
+			}
+		}
+
+		public bool Enabled {
+			get { return ParentSolution != null ? ParentSolution.IsSolutionItemEnabled (FileName) : true; }
+			set { 
+				if (ParentSolution != null)
+					ParentSolution.SetSolutionItemEnabled (FileName, value);
+			}
+		}
+
+		public MSBuildFileFormat FileFormat {
 			get {
 				if (ParentSolution != null)
-					return ParentSolution.AuthorInformation;
-				else
-					return AuthorInformation.Default;
+					return ParentSolution.FileFormat;
+				return fileFormat; 
 			}
-		}
-		
-		/// <summary>
-		/// Gets a service instance of a given type
-		/// </summary>
-		/// <returns>
-		/// The service.
-		/// </returns>
-		/// <typeparam name='T'>
-		/// Type of the service
-		/// </typeparam>
-		/// <remarks>
-		/// This method looks for an imlpementation of a service of the given type.
-		/// </remarks>
-		public T GetService<T> () where T: class
-		{
-			return (T) GetService (typeof(T));
+			internal set {
+				fileFormat = value;
+			}
 		}
 
 		/// <summary>
-		/// Gets a service instance of a given type
+		/// Changes the format of this item. This method doesn't save the item, it only does in memory-changes.
 		/// </summary>
-		/// <returns>
-		/// The service.
-		/// </returns>
-		/// <param name='t'>
-		/// Type of the service
-		/// </param>
-		/// <remarks>
-		/// This method looks for an imlpementation of a service of the given type.
-		/// </remarks>
-		public virtual object GetService (Type t)
+		public void ConvertToFormat (MSBuildFileFormat format)
 		{
-			return Services.ProjectService.GetExtensionChain (this).GetService (this, t);
+			if (format == fileFormat)
+				return;
+
+			if (ParentSolution != null && ParentSolution.FileFormat != format)
+				throw new InvalidOperationException ("The file format can't be changed when the item belongs to a solution.");
+			InternalConvertToFormat (format);
 		}
-		
+
+		internal void InternalConvertToFormat (MSBuildFileFormat format)
+		{
+			ItemExtension.OnSetFormat (format);
+			NeedsReload = false;
+			NotifyModified ("FileFormat");
+		}
+
+		protected virtual void OnSetFormat (MSBuildFileFormat format)
+		{
+			fileFormat = format;
+			if (fileName != FilePath.Null)
+				fileName = fileFormat.GetValidFormatName (this, fileName);
+		}
+
+		public bool SupportsFormat (MSBuildFileFormat format)
+		{
+			return ItemExtension.OnGetSupportsFormat (format);
+		}
+
+		protected virtual bool OnGetSupportsFormat (MSBuildFileFormat format)
+		{
+			return true;
+		}
+			
+		protected override object OnGetService (Type t)
+		{
+			return null;
+		}
+
 		/// <summary>
-		/// Gets the solution to which this item belongs
+		/// Projects that need to be built before building this one
 		/// </summary>
-		public Solution ParentSolution {
-			get {
-				if (parentFolder != null)
-					return parentFolder.ParentSolution;
-				return parentSolution; 
-			}
-			internal set {
-				if (parentSolution != null && parentSolution != value)
-					NotifyUnboundFromSolution (true);
-				parentSolution = value;
-				NotifyBoundToSolution (true);
-			}
+		/// <value>The dependencies.</value>
+		public ItemCollection<SolutionItem> ItemDependencies {
+			get { return dependencies; }
 		}
 
 		/// <summary>
@@ -193,274 +352,15 @@ namespace MonoDevelop.Projects
 		public bool Loading {
 			get { return loading > 0; }
 		}
-		
-		/// <summary>
-		/// Saves the solution item
-		/// </summary>
-		/// <param name='monitor'>
-		/// A progress monitor.
-		/// </param>
-		public abstract void Save (IProgressMonitor monitor);
-		
-		/// <summary>
-		/// Name of the solution item
-		/// </summary>
-		public abstract string Name { get; set; }
-		
-		/// <summary>
-		/// Gets or sets the base directory of this solution item
-		/// </summary>
-		/// <value>
-		/// The base directory.
-		/// </value>
-		/// <remarks>
-		/// The base directory is the directory where files belonging to this project
-		/// are placed. Notice that this directory may be different than the directory
-		/// where the project file is placed.
-		/// </remarks>
-		public FilePath BaseDirectory {
-			get {
-				if (baseDirectory == null) {
-					FilePath dir = GetDefaultBaseDirectory ();
-					if (dir.IsNullOrEmpty)
-						dir = ".";
-					return dir.FullPath;
-				}
-				else
-					return baseDirectory;
-			}
-			set {
-				FilePath def = GetDefaultBaseDirectory ();
-				if (value != FilePath.Null && def != FilePath.Null && value.FullPath == def.FullPath)
-					baseDirectory = null;
-				else if (string.IsNullOrEmpty (value))
-					baseDirectory = null;
-				else
-					baseDirectory = value.FullPath;
-				NotifyModified ("BaseDirectory");
-			}
-		}
-		
-		/// <summary>
-		/// Gets the directory where this solution item is placed
-		/// </summary>
-		public FilePath ItemDirectory {
-			get {
-				FilePath dir = GetDefaultBaseDirectory ();
-				if (string.IsNullOrEmpty (dir))
-					dir = ".";
-				return dir.FullPath;
-			}
-		}
-		
-		internal bool HasCustomBaseDirectory {
-			get { return baseDirectory != null; }
-		}
-		
-		/// <summary>
-		/// Gets the default base directory.
-		/// </summary>
-		/// <remarks>
-		/// The base directory is the directory where files belonging to this project
-		/// are placed. Notice that this directory may be different than the directory
-		/// where the project file is placed.
-		/// </remarks>
-		protected virtual FilePath GetDefaultBaseDirectory ( )
+
+		public IEnumerable<IBuildTarget> GetExecutionDependencies ()
 		{
-			return ParentSolution.BaseDirectory;
+			return ItemExtension.OnGetExecutionDependencies ();
 		}
 
-		/// <summary>
-		/// Gets the identifier of this solution item
-		/// </summary>
-		/// <remarks>
-		/// The identifier is unique inside the solution
-		/// </remarks>
-		public string ItemId {
-			get { return ItemHandler.ItemId; }
-		}
-		
-		/// <summary>
-		/// Gets extended properties.
-		/// </summary>
-		/// <remarks>
-		/// This dictionary can be used by add-ins to store arbitrary information about this solution item.
-		/// Keys and values can be of any type.
-		/// If a value implements IDisposable, the value will be disposed when this solution item is disposed.
-		/// Values in this dictionary won't be serialized, unless they are registered as serializable using
-		/// the /MonoDevelop/ProjectModel/ExtendedProperties extension point.
-		/// </remarks>
-		public IDictionary ExtendedProperties {
-			get { return InternalGetExtendedProperties; }
-		}
-		
-		/// <summary>
-		/// Gets policies.
-		/// </summary>
-		/// <remarks>
-		/// Returns a policy container which can be used to query policies specific for this
-		/// solution item. If a policy is not defined for this item, the inherited value will be returned.
-		/// </remarks>
-		public MonoDevelop.Projects.Policies.PolicyBag Policies {
-			get {
-				//newly created (i.e. not deserialised) SolutionItems may have a null PolicyBag
-				if (policies == null)
-					policies = new MonoDevelop.Projects.Policies.PolicyBag ();
-				//this is the easiest reliable place to associate a deserialised Policybag with its owner
-				policies.Owner = this;
-				return policies;
-			}
-			//setter so that a solution can deserialise the PropertyBag on its RootFolder
-			internal set {
-				policies = value;
-			}
-		}
-		
-		PolicyContainer IPolicyProvider.Policies {
-			get {
-				return Policies;
-			}
-		}
-		
-		/// <summary>
-		/// Gets solution item properties specific to the current user
-		/// </summary>
-		/// <remarks>
-		/// These properties are not stored in the project file, but in a separate file which is not to be shared
-		/// with other users.
-		/// User properties are only loaded when the project is loaded inside the IDE.
-		/// </remarks>
-		public PropertyBag UserProperties {
-			get {
-				if (userProperties == null)
-					userProperties = new PropertyBag ();
-				return userProperties; 
-			}
-		}
-		
-		/// <summary>
-		/// Initializes the user properties of the item
-		/// </summary>
-		/// <param name='properties'>
-		/// Properties to be set
-		/// </param>
-		/// <exception cref='InvalidOperationException'>
-		/// The user properties have already been set
-		/// </exception>
-		/// <remarks>
-		/// This method is used by the IDE to initialize the user properties when a project is loaded.
-		/// </remarks>
-		public void LoadUserProperties (PropertyBag properties)
+		protected virtual IEnumerable<IBuildTarget> OnGetExecutionDependencies ()
 		{
-			if (userProperties != null)
-				throw new InvalidOperationException ("User properties already loaded.");
-			userProperties = properties;
-		}
-		
-		/// <summary>
-		/// Gets the parent solution folder.
-		/// </summary>
-		public SolutionFolder ParentFolder {
-			get {
-				return parentFolder;
-			}
-			internal set {
-				if (parentFolder != null && parentFolder.ParentSolution != null && (value == null || value.ParentSolution != parentFolder.ParentSolution))
-					NotifyUnboundFromSolution (false);
-
-				parentFolder = value;
-				if (internalChildren != null) {
-					internalChildren.ParentFolder = value;
-				}
-				if (value != null && value.ParentSolution != null) {
-					NotifyBoundToSolution (false);
-				}
-			}
-		}
-
-		// Normally, the ParentFolder setter fires OnBoundToSolution. However, when deserializing, child
-		// ParentFolder hierarchies can become connected before the ParentSolution becomes set. This method
-		// enables us to recursively fire the OnBoundToSolution call in those cases.
-		void NotifyBoundToSolution (bool includeInternalChildren)
-		{
-			var folder = this as SolutionFolder;
-			if (folder != null) {
-				var items = folder.GetItemsWithoutCreating ();
-				if (items != null) {
-					foreach (var item in items) {
-						item.NotifyBoundToSolution (true);
-					}
-				}
-			}
-			if (includeInternalChildren && internalChildren != null) {
-				internalChildren.NotifyBoundToSolution (true);
-			}
-			OnBoundToSolution ();
-		}
-
-		void NotifyUnboundFromSolution (bool includeInternalChildren)
-		{
-			var folder = this as SolutionFolder;
-			if (folder != null) {
-				var items = folder.GetItemsWithoutCreating ();
-				if (items != null) {
-					foreach (var item in items) {
-						item.NotifyUnboundFromSolution (true);
-					}
-				}
-			}
-			if (includeInternalChildren && internalChildren != null) {
-				internalChildren.NotifyUnboundFromSolution (true);
-			}
-			OnUnboundFromSolution ();
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether this <see cref="MonoDevelop.Projects.SolutionItem"/> has been disposed.
-		/// </summary>
-		/// <value>
-		/// <c>true</c> if disposed; otherwise, <c>false</c>.
-		/// </value>
-		internal protected bool Disposed { get; private set; }
-
-		/// <summary>
-		/// Releases all resource used by the <see cref="MonoDevelop.Projects.SolutionItem"/> object.
-		/// </summary>
-		/// <remarks>
-		/// Call <see cref="Dispose"/> when you are finished using the <see cref="MonoDevelop.Projects.SolutionItem"/>. The
-		/// <see cref="Dispose"/> method leaves the <see cref="MonoDevelop.Projects.SolutionItem"/> in an unusable state.
-		/// After calling <see cref="Dispose"/>, you must release all references to the
-		/// <see cref="MonoDevelop.Projects.SolutionItem"/> so the garbage collector can reclaim the memory that the
-		/// <see cref="MonoDevelop.Projects.SolutionItem"/> was occupying.
-		/// </remarks>
-		public virtual void Dispose ()
-		{
-			if (Disposing != null)
-				Disposing (this, EventArgs.Empty);
-			
-			Disposed = true;
-			
-			if (extendedProperties != null) {
-				foreach (object ob in extendedProperties.Values) {
-					IDisposable disp = ob as IDisposable;
-					if (disp != null)
-						disp.Dispose ();
-				}
-				extendedProperties = null;
-			}
-			if (handler != null) {
-				handler.Dispose ();
-				// handler = null;
-			}
-			if (userProperties != null) {
-				((IDisposable)userProperties).Dispose ();
-				userProperties = null;
-			}
-			
-			// parentFolder = null;
-			// parentSolution = null;
-			// internalChildren = null;
-			// policies = null;
+			yield break;
 		}
 
 		/// <summary>
@@ -472,94 +372,182 @@ namespace MonoDevelop.Projects
 		/// <param name='configuration'>
 		/// Configuration for which to get the referenced items
 		/// </param>
-		public virtual IEnumerable<SolutionItem> GetReferencedItems (ConfigurationSelector configuration)
+		public IEnumerable<SolutionItem> GetReferencedItems (ConfigurationSelector configuration)
 		{
-			return new SolutionItem [0];
+			return ItemExtension.OnGetReferencedItems (configuration);
 		}
-		
+
+		protected virtual IEnumerable<SolutionItem> OnGetReferencedItems (ConfigurationSelector configuration)
+		{
+			return dependencies;
+		}
+
 		/// <summary>
-		/// Runs a build or execution target.
+		/// Initializes a new instance of this item, using an xml element as template
 		/// </summary>
-		/// <returns>
-		/// The result of the operation
-		/// </returns>
-		/// <param name='monitor'>
-		/// A progress monitor
+		/// <param name='template'>
+		/// The template
 		/// </param>
-		/// <param name='target'>
-		/// Name of the target
-		/// </param>
-		/// <param name='configuration'>
-		/// Configuration to use to run the target
-		/// </param>
-		public BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		public void InitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement template)
 		{
-			return Services.ProjectService.GetExtensionChain (this).RunTarget (monitor, this, target, configuration);
+			// TODO NPM: should be internal
+			ItemExtension.OnInitializeFromTemplate (projectCreateInfo, template);
+		}
+
+		protected virtual void OnInitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement template)
+		{
+		}
+
+		protected sealed override FilePath GetDefaultBaseDirectory ( )
+		{
+			var file = FileName;
+			return file.IsNullOrEmpty ? FilePath.Empty : file.ParentDirectory; 
+		}
+
+		internal Task LoadAsync (ProgressMonitor monitor, FilePath fileName, MSBuildFileFormat format)
+		{
+			fileFormat = format;
+			FileName = fileName;
+			Name = Path.GetFileNameWithoutExtension (fileName);
+			return ItemExtension.OnLoad (monitor);
+		}
+
+		public Task SaveAsync (ProgressMonitor monitor, FilePath fileName)
+		{
+			FileName = fileName;
+			return SaveAsync (monitor);
 		}
 		
-		public bool SupportsTarget (string target)
+		public Task SaveAsync (ProgressMonitor monitor)
 		{
-			return Services.ProjectService.GetExtensionChain (this).SupportsTarget (this, target);
+			return BindTask (ct => Runtime.RunInMainThread (async () => {
+				using (await WriteLock ()) {
+					monitor = monitor.WithCancellationToken (ct);
+					await ItemExtension.OnSave (monitor);
+
+					if (ItemExtension.OnCheckHasSolutionData () && !SavingSolution && ParentSolution != null) {
+						// The project has data that has to be saved in the solution, but the solution is not being saved. Do it now.
+						await SolutionFormat.SlnFileFormat.WriteFile (ParentSolution.FileName, ParentSolution, false, monitor);
+						ParentSolution.NeedsReload = false;
+					}
+				}
+			}));
+		}
+		
+		async Task DoSave (ProgressMonitor monitor)
+		{
+			if (string.IsNullOrEmpty (FileName))
+				throw new InvalidOperationException ("Project does not have a file name");
+
+			try {
+				fileStatusTracker.BeginSave ();
+				await OnSave (monitor);
+				OnSaved (thisItemArgs);
+			} finally {
+				fileStatusTracker.EndSave ();
+			}
+			FileService.NotifyFileChanged (FileName);
+		}
+
+		internal bool IsSaved {
+			get {
+				return !string.IsNullOrEmpty (FileName) && File.Exists (FileName);
+			}
+		}
+		
+		public override bool NeedsReload {
+			get { return fileStatusTracker.NeedsReload; }
+			set { fileStatusTracker.NeedsReload = value; }
+		}
+		
+		public bool ItemFilesChanged {
+			get { return ItemExtension.ItemFilesChanged; }
+		}
+		
+		bool BaseItemFilesChanged {
+			get { return fileStatusTracker.ItemFilesChanged; }
+		}
+
+		bool IBuildTarget.CanBuild (ConfigurationSelector configuration)
+		{
+			return SupportsBuild ();
 		}
 
 		public bool SupportsBuild ()
 		{
-			return SupportsTarget (ProjectService.BuildTarget);
+			return ItemExtension.OnGetSupportedFeatures ().HasFlag (ProjectFeatures.Build);
 		}
 
 		public bool SupportsExecute ()
 		{
-			return Services.ProjectService.GetExtensionChain (this).SupportsExecute (this);
+			return ItemExtension.OnGetSupportedFeatures ().HasFlag (ProjectFeatures.Execute);
+		}
+
+		public bool SupportsConfigurations ()
+		{
+			return ItemExtension.OnGetSupportedFeatures ().HasFlag (ProjectFeatures.Configurations);
+		}
+
+		protected virtual ProjectFeatures OnGetSupportedFeatures ()
+		{
+			if (IsUnsupportedProject)
+				return ProjectFeatures.Configurations;
+			else
+				return ProjectFeatures.Execute | ProjectFeatures.Build | ProjectFeatures.Configurations;
 		}
 
 		/// <summary>
-		/// Cleans the files produced by this solution item
+		/// Gets a value indicating whether this project is supported.
 		/// </summary>
-		/// <param name='monitor'>
-		/// A progress monitor
-		/// </param>
-		/// <param name='configuration'>
-		/// Configuration to use to clean the project
-		/// </param>
-		public void Clean (IProgressMonitor monitor, ConfigurationSelector configuration)
-		{
-			ITimeTracker tt = Counters.CleanProjectTimer.BeginTiming ("Cleaning " + Name, GetProjectEventMetadata (configuration));
-			try {
-				//SolutionFolder handles the begin/end task itself, don't duplicate
-				if (this is SolutionFolder) {
-					RunTarget (monitor, ProjectService.CleanTarget, configuration);
-					return;
-				}
-				
-				try {
-					SolutionEntityItem it = this as SolutionEntityItem;
-					SolutionItemConfiguration iconf = it != null ? it.GetConfiguration (configuration) : null;
-					string confName = iconf != null ? iconf.Id : configuration.ToString ();
-					monitor.BeginTask (GettextCatalog.GetString ("Cleaning: {0} ({1})", Name, confName), 1);
-					RunTarget (monitor, ProjectService.CleanTarget, configuration);
-				} finally {
-					monitor.EndTask ();
-				}
-			}
-			finally {
-				tt.End ();
-			}
+		/// <remarks>
+		/// Unsupported projects are shown in the solution pad, but operations such as building on executing won't be available.
+		/// </remarks>
+		public bool IsUnsupportedProject { get; protected set; }
+
+		/// <summary>
+		/// Gets a message that explain why the project is not supported (when IsUnsupportedProject returns true)
+		/// </summary>
+		public string UnsupportedProjectMessage {
+			get { return IsUnsupportedProject ? (loadError ?? GettextCatalog.GetString ("Unknown project type")) : ""; }
+			set { loadError = value; }
 		}
-		
+		string loadError;
+
+		[Obsolete ("This method will be removed in future releases")]
+		public bool NeedsBuilding (ConfigurationSelector configuration)
+		{
+			return ItemExtension.OnNeedsBuilding (configuration);
+		}
+
+		internal protected virtual bool OnGetNeedsBuilding (ConfigurationSelector configuration)
+		{
+			return false;
+		}
+
+		[Obsolete ("This method will be removed in future releases")]
+		public void SetNeedsBuilding (ConfigurationSelector configuration)
+		{
+			OnSetNeedsBuilding (configuration);
+		}
+
+		protected virtual void OnSetNeedsBuilding (ConfigurationSelector configuration)
+		{
+		}
+
 		/// <summary>
 		/// Builds the solution item
 		/// </summary>
 		/// <param name='monitor'>
 		/// A progress monitor
 		/// </param>
-		/// <param name='configuration'>
+		/// <param name='solutionConfiguration'>
 		/// Configuration to use to build the project
 		/// </param>
-		public BuildResult Build (IProgressMonitor monitor, ConfigurationSelector configuration)
+		public Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector solutionConfiguration)
 		{
-			return Build (monitor, configuration, false);
+			return Build (monitor, solutionConfiguration, false);
 		}
-		
+
 		/// <summary>
 		/// Builds the solution item
 		/// </summary>
@@ -572,283 +560,198 @@ namespace MonoDevelop.Projects
 		/// <param name='buildReferences'>
 		/// When set to <c>true</c>, the referenced items will be built before building this item
 		/// </param>
-		public BuildResult Build (IProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences)
+		public Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences)
+		{
+			return BindTask (ct => BuildTask (monitor.WithCancellationToken (ct), solutionConfiguration, buildReferences, new OperationContext ()));
+		}
+
+		public Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences, OperationContext operationContext)
+		{
+			return BindTask (ct => BuildTask (monitor.WithCancellationToken (ct), solutionConfiguration, buildReferences, operationContext));
+		}
+
+		async Task<BuildResult> BuildTask (ProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences, OperationContext operationContext)
 		{
 			if (!buildReferences) {
-				//SolutionFolder's OnRunTarget handles the begin/end task itself, don't duplicate
-				if (this is SolutionFolder) {
-					return RunTarget (monitor, ProjectService.BuildTarget, solutionConfiguration);
-				}
-				
 				try {
-					SolutionEntityItem it = this as SolutionEntityItem;
-					SolutionItemConfiguration iconf = it != null ? it.GetConfiguration (solutionConfiguration) : null;
+					SolutionItemConfiguration iconf = GetConfiguration (solutionConfiguration);
 					string confName = iconf != null ? iconf.Id : solutionConfiguration.ToString ();
 					monitor.BeginTask (GettextCatalog.GetString ("Building: {0} ({1})", Name, confName), 1);
-					
+
 					using (Counters.BuildProjectTimer.BeginTiming ("Building " + Name, GetProjectEventMetadata (solutionConfiguration))) {
-						// This will end calling OnBuild ()
-						return RunTarget (monitor, ProjectService.BuildTarget, solutionConfiguration);
+						return await InternalBuild (monitor, solutionConfiguration, operationContext);
 					}
-					
+
 				} finally {
 					monitor.EndTask ();
 				}
 			}
-				
+
 			ITimeTracker tt = Counters.BuildProjectAndReferencesTimer.BeginTiming ("Building " + Name, GetProjectEventMetadata (solutionConfiguration));
 			try {
 				// Get a list of all items that need to be built (including this),
 				// and build them in the correct order
-				
-				List<SolutionItem> referenced = new List<SolutionItem> ();
-				Set<SolutionItem> visited = new Set<SolutionItem> ();
+
+				var referenced = new List<SolutionItem> ();
+				var visited = new Set<SolutionItem> ();
 				GetBuildableReferencedItems (visited, referenced, this, solutionConfiguration);
-				
-				ReadOnlyCollection<SolutionItem> sortedReferenced = SolutionFolder.TopologicalSort (referenced, solutionConfiguration);
-				
-				BuildResult cres = new BuildResult ();
-				cres.BuildCount = 0;
-				HashSet<SolutionItem> failedItems = new HashSet<SolutionItem> ();
-				
-				monitor.BeginTask (null, sortedReferenced.Count);
-				foreach (SolutionItem p in sortedReferenced) {
-					if (!p.ContainsReferences (failedItems, solutionConfiguration)) {
-						BuildResult res = p.Build (monitor, solutionConfiguration, false);
-						cres.Append (res);
-						if (res.ErrorCount > 0)
-							failedItems.Add (p);
-					} else
-						failedItems.Add (p);
-					monitor.Step (1);
-					if (monitor.IsCancelRequested)
-						break;
-				}
-				monitor.EndTask ();
-				return cres;
+
+				var sortedReferenced = TopologicalSort (referenced, solutionConfiguration);
+
+				SolutionItemConfiguration iconf = GetConfiguration (solutionConfiguration);
+				string confName = iconf != null ? iconf.Id : solutionConfiguration.ToString ();
+				monitor.BeginTask (GettextCatalog.GetString ("Building: {0} ({1})", Name, confName), sortedReferenced.Count);
+
+				return await SolutionFolder.RunParallelBuildOperation (monitor, solutionConfiguration, sortedReferenced, (ProgressMonitor m, SolutionItem item) => {
+					return item.Build (m, solutionConfiguration, false, operationContext);
+				}, false);
 			} finally {
+				monitor.EndTask ();
 				tt.End ();
 			}
 		}
 
-		public BuildResult Build (IProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences, ProjectOperationContext context)
+		async Task<BuildResult> InternalBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
-			try {
-				System.Runtime.Remoting.Messaging.CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", context);
-				return Build (monitor, solutionConfiguration, buildReferences);
-			} finally {
-				System.Runtime.Remoting.Messaging.CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", null);
+			if (IsUnsupportedProject) {
+				var r = new BuildResult ();
+				r.AddError (UnsupportedProjectMessage);
+				return r;
 			}
+
+			SolutionItemConfiguration conf = GetConfiguration (configuration) as SolutionItemConfiguration;
+			if (conf != null) {
+				if (conf.CustomCommands.CanExecute (this, CustomCommandType.BeforeBuild, null, configuration)) {
+					if (!await conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.BeforeBuild, configuration)) {
+						var r = new BuildResult ();
+						r.AddError (GettextCatalog.GetString ("Custom command execution failed"));
+						return r;
+					}
+				}
+			}
+
+			if (monitor.CancellationToken.IsCancellationRequested)
+				return new BuildResult (new CompilerResults (null), "");
+
+			BuildResult res = await ItemExtension.OnBuild (monitor, configuration, operationContext);
+
+			if (conf != null && !monitor.CancellationToken.IsCancellationRequested && !res.Failed) {
+				if (conf.CustomCommands.CanExecute (this, CustomCommandType.AfterBuild, null, configuration)) {
+					if (!await conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.AfterBuild, configuration))
+						res.AddError (GettextCatalog.GetString ("Custom command execution failed"));
+				}
+			}
+
+			return res;
+		}
+
+		/// <summary>
+		/// Builds the solution item
+		/// </summary>
+		/// <param name='monitor'>
+		/// A progress monitor
+		/// </param>
+		/// <param name='configuration'>
+		/// Configuration to use to build the project
+		/// </param>
+		protected virtual Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
+		{
+			return Task.FromResult (BuildResult.CreateSuccess ());
+		}
+
+		void GetBuildableReferencedItems (Set<SolutionItem> visited, List<SolutionItem> referenced, SolutionItem item, ConfigurationSelector configuration)
+		{
+			if (!visited.Add(item))
+				return;
+
+			referenced.Add (item);
+
+			foreach (var ritem in item.GetReferencedItems (configuration))
+				GetBuildableReferencedItems (visited, referenced, ritem, configuration);
 		}
 
 		internal bool ContainsReferences (HashSet<SolutionItem> items, ConfigurationSelector conf)
 		{
-			foreach (SolutionItem it in GetReferencedItems (conf))
+			foreach (var it in GetReferencedItems (conf))
 				if (items.Contains (it))
 					return true;
 			return false;
 		}
 
 		/// <summary>
-		/// Gets the time of the last build
-		/// </summary>
-		/// <returns>
-		/// The last build time.
-		/// </returns>
-		/// <param name='configuration'>
-		/// Configuration for which to get the last build time.
-		/// </param>
-		public DateTime GetLastBuildTime (ConfigurationSelector configuration)
-		{
-			return OnGetLastBuildTime (configuration);
-		}
-		
-		void GetBuildableReferencedItems (Set<SolutionItem> visited, List<SolutionItem> referenced, SolutionItem item, ConfigurationSelector configuration)
-		{
-			if (!visited.Add(item))
-				return;
-			
-			referenced.Add (item);
-
-			foreach (SolutionItem ritem in item.GetReferencedItems (configuration))
-				GetBuildableReferencedItems (visited, referenced, ritem, configuration);
-		}
-		
-		/// <summary>
-		/// Executes this solution item
+		/// Cleans the files produced by this solution item
 		/// </summary>
 		/// <param name='monitor'>
 		/// A progress monitor
 		/// </param>
-		/// <param name='context'>
-		/// An execution context
-		/// </param>
 		/// <param name='configuration'>
-		/// Configuration to use to execute the item
+		/// Configuration to use to clean the project
 		/// </param>
-		public void Execute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		public Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			Services.ProjectService.GetExtensionChain (this).Execute (monitor, this, context, configuration);
-		}
-		
-		/// <summary>
-		/// Determines whether this solution item can be executed using the specified context and configuration.
-		/// </summary>
-		/// <returns>
-		/// <c>true</c> if this instance can be executed; otherwise, <c>false</c>.
-		/// </returns>
-		/// <param name='context'>
-		/// An execution context
-		/// </param>
-		/// <param name='configuration'>
-		/// Configuration to use to execute the item
-		/// </param>
-		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
-		{
-			return Services.ProjectService.GetExtensionChain (this).CanExecute (this, context, configuration);
+			return BindTask (ct => CleanTask (monitor.WithCancellationToken (ct), configuration, new OperationContext ()));
 		}
 
-		/// <summary>
-		/// Gets the execution targets.
-		/// </summary>
-		/// <returns>The execution targets.</returns>
-		/// <param name="configuration">The configuration.</param>
-		public IEnumerable<ExecutionTarget> GetExecutionTargets (ConfigurationSelector configuration)
+		public Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
-			return Services.ProjectService.GetExtensionChain (this).GetExecutionTargets (this, configuration);
+			return BindTask (ct => CleanTask (monitor.WithCancellationToken (ct), configuration, operationContext));
 		}
 
-		public event EventHandler ExecutionTargetsChanged;
+		async Task<BuildResult> CleanTask (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
+		{
+			ITimeTracker tt = Counters.BuildProjectTimer.BeginTiming ("Cleaning " + Name, GetProjectEventMetadata (configuration));
+			try {
+				try {
+					SolutionItemConfiguration iconf = GetConfiguration (configuration);
+					string confName = iconf != null ? iconf.Id : configuration.ToString ();
+					monitor.BeginTask (GettextCatalog.GetString ("Cleaning: {0} ({1})", Name, confName), 1);
 
-		protected virtual void OnExecutionTargetsChanged ()
-		{
-			if (ExecutionTargetsChanged != null)
-				ExecutionTargetsChanged (this, EventArgs.Empty);
-		}
-		
-		/// <summary>
-		/// Checks if this solution item has modified files and has to be built
-		/// </summary>
-		/// <returns>
-		/// <c>true</c> if the solution item has to be built
-		/// </returns>
-		/// <param name='configuration'>
-		/// Configuration for which to do the check
-		/// </param>
-		[Obsolete ("This method will be removed in future releases")]
-		public bool NeedsBuilding (ConfigurationSelector configuration)
-		{
-			return true;
-		}
+					SolutionItemConfiguration conf = GetConfiguration (configuration);
+					if (conf != null) {
+						if (conf.CustomCommands.CanExecute (this, CustomCommandType.BeforeClean, null, configuration)) {
+							if (!await conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.BeforeClean, configuration)) {
+								var r = new BuildResult ();
+								r.AddError (GettextCatalog.GetString ("Custom command execution failed"));
+								return r;
+							}
+						}
+					}
 
-		internal bool InternalCheckNeedsBuild (ConfigurationSelector configuration)
-		{
-			using (Counters.NeedsBuildingTimer.BeginTiming ("NeedsBuilding check for " + Name)) {
-				return Services.ProjectService.GetExtensionChain (this).GetNeedsBuilding (this, configuration);
+					if (monitor.CancellationToken.IsCancellationRequested)
+						return BuildResult.CreateSuccess ();
+
+					var res = await ItemExtension.OnClean (monitor, configuration, operationContext);
+
+					if (conf != null && !monitor.CancellationToken.IsCancellationRequested) {
+						if (conf.CustomCommands.CanExecute (this, CustomCommandType.AfterClean, null, configuration)) {
+							if (!await conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.AfterClean, configuration))
+								res.AddError (GettextCatalog.GetString ("Custom command execution failed"));
+						}
+					}
+					return res;
+
+				} finally {
+					monitor.EndTask ();
+				}
+			} finally {
+				tt.End ();
 			}
 		}
 
 		/// <summary>
-		/// States whether this solution item needs to be built or not
+		/// Cleans the files produced by this solution item
 		/// </summary>
-		/// <param name='value'>
-		/// Whether this solution item needs to be built or not
+		/// <param name='monitor'>
+		/// A progress monitor
 		/// </param>
 		/// <param name='configuration'>
-		/// Configuration for which to set the flag
+		/// Configuration to use to clean the project
 		/// </param>
-		[Obsolete ("This method will be removed in future releases")]
-		public void SetNeedsBuilding (bool value, ConfigurationSelector configuration)
+		protected virtual Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext buildSession)
 		{
-			// Nothing to be done.
+			return Task.FromResult (BuildResult.CreateSuccess ());
 		}
-		
-		/// <summary>
-		/// Gets or sets a value indicating whether this <see cref="MonoDevelop.Projects.SolutionItem"/> needs to be reload due to changes in project or solution file
-		/// </summary>
-		/// <value>
-		/// <c>true</c> if needs reload; otherwise, <c>false</c>.
-		/// </value>
-		public virtual bool NeedsReload {
-			get {
-				if (ParentSolution != null)
-					return ParentSolution.NeedsReload;
-				else
-					return false;
-			}
-			set {
-			}
-		}
-		
-		/// <summary>
-		/// Registers an internal child item.
-		/// </summary>
-		/// <param name='item'>
-		/// An item
-		/// </param>
-		/// <remarks>
-		/// Some kind of projects may be composed of several child projects.
-		/// By registering those child projects using this method, the child
-		/// projects will be plugged into the parent solution infrastructure
-		/// (so for example, the ParentSolution property for those projects
-		/// will return the correct value)
-		/// </remarks>
-		protected void RegisterInternalChild (SolutionItem item)
-		{
-			if (internalChildren == null) {
-				internalChildren = new SolutionFolder ();
-				internalChildren.ParentFolder = parentFolder;
-			}
-			internalChildren.Items.Add (item);
-		}
-		
-		/// <summary>
-		/// Unregisters an internal child item.
-		/// </summary>
-		/// <param name='item'>
-		/// The item
-		/// </param>
-		protected void UnregisterInternalChild (SolutionItem item)
-		{
-			if (internalChildren != null)
-				internalChildren.Items.Remove (item);
-		}
-		
-		/// <summary>
-		/// Gets the string tag model description for this solution item
-		/// </summary>
-		/// <returns>
-		/// The string tag model description
-		/// </returns>
-		/// <param name='conf'>
-		/// Configuration for which to get the string tag model description
-		/// </param>
-		public virtual StringTagModelDescription GetStringTagModelDescription (ConfigurationSelector conf)
-		{
-			StringTagModelDescription model = new StringTagModelDescription ();
-			model.Add (GetType ());
-			model.Add (typeof(Solution));
-			return model;
-		}
-		
-		/// <summary>
-		/// Gets the string tag model for this solution item
-		/// </summary>
-		/// <returns>
-		/// The string tag model
-		/// </returns>
-		/// <param name='conf'>
-		/// Configuration for which to get the string tag model
-		/// </param>
-		public virtual StringTagModel GetStringTagModel (ConfigurationSelector conf)
-		{
-			StringTagModel source = new StringTagModel ();
-			source.Add (this);
-			if (ParentSolution != null)
-				source.Add (ParentSolution.GetStringTagModel ());
-			return source;
-		}
-		
+
 		/// <summary>
 		/// Sorts a collection of solution items, taking into account the dependencies between them
 		/// </summary>
@@ -871,7 +774,7 @@ namespace MonoDevelop.Projects
 			allItems = items as IList<T>;
 			if (allItems == null)
 				allItems = new List<T> (items);
-			
+
 			List<T> sortedEntries = new List<T> ();
 			bool[] inserted = new bool[allItems.Count];
 			bool[] triedToInsert = new bool[allItems.Count];
@@ -881,18 +784,18 @@ namespace MonoDevelop.Projects
 			}
 			return sortedEntries.AsReadOnly ();
 		}
-		
+
 		static void Insert<T> (int index, IList<T> allItems, List<T> sortedItems, bool[] inserted, bool[] triedToInsert, ConfigurationSelector solutionConfiguration) where T: SolutionItem
 		{
 			if (triedToInsert[index]) {
 				throw new CyclicDependencyException ();
 			}
 			triedToInsert[index] = true;
-			SolutionItem insertItem = allItems[index];
-			
-			foreach (SolutionItem reference in insertItem.GetReferencedItems (solutionConfiguration)) {
+			var insertItem = allItems[index];
+
+			foreach (var reference in insertItem.GetReferencedItems (solutionConfiguration)) {
 				for (int j=0; j < allItems.Count; ++j) {
-					SolutionItem checkItem = allItems[j];
+					SolutionFolderItem checkItem = allItems[j];
 					if (reference == checkItem) {
 						if (!inserted[j])
 							Insert (j, allItems, sortedItems, inserted, triedToInsert, solutionConfiguration);
@@ -900,18 +803,10 @@ namespace MonoDevelop.Projects
 					}
 				}
 			}
-			sortedItems.Add ((T)insertItem);
+			sortedItems.Add (insertItem);
 			inserted[index] = true;
 		}
 		
-		internal virtual IDictionary InternalGetExtendedProperties {
-			get {
-				if (extendedProperties == null)
-					extendedProperties = new Hashtable ();
-				return extendedProperties;
-			}
-		}
-
 		public IDictionary<string, string> GetProjectEventMetadata (ConfigurationSelector configurationSelector)
 		{
 			var data = new Dictionary<string, string> ();
@@ -930,135 +825,6 @@ namespace MonoDevelop.Projects
 		{
 		}
 		
-		void ILoadController.BeginLoad ()
-		{
-			loading++;
-			OnBeginLoad ();
-		}
-		
-		void ILoadController.EndLoad ()
-		{
-			loading--;
-			OnEndLoad ();
-		}
-		
-		/// <summary>
-		/// Called when a load operation for this solution item has started
-		/// </summary>
-		protected virtual void OnBeginLoad ()
-		{
-		}
-		
-		/// <summary>
-		/// Called when a load operation for this solution item has finished
-		/// </summary>
-		protected virtual void OnEndLoad ()
-		{
-		}
-		
-		/// <summary>
-		/// Notifies that this solution item has been modified
-		/// </summary>
-		/// <param name='hint'>
-		/// Hint about which part of the solution item has been modified. This will typically be the property name.
-		/// </param>
-		internal protected void NotifyModified (string hint)
-		{
-			if (!Loading)
-				ItemHandler.OnModified (hint);
-			OnModified (new SolutionItemModifiedEventArgs (this, hint));
-		}
-		
-		/// <summary>
-		/// Raises the modified event.
-		/// </summary>
-		/// <param name='args'>
-		/// Arguments.
-		/// </param>
-		protected virtual void OnModified (SolutionItemModifiedEventArgs args)
-		{
-			if (Modified != null && !Disposed)
-				Modified (this, args);
-		}
-		
-		/// <summary>
-		/// Raises the name changed event.
-		/// </summary>
-		/// <param name='e'>
-		/// Arguments.
-		/// </param>
-		protected virtual void OnNameChanged (SolutionItemRenamedEventArgs e)
-		{
-			NotifyModified ("Name");
-			if (NameChanged != null && !Disposed)
-				NameChanged (this, e);
-		}
-		
-		/// <summary>
-		/// Initializes the item handler.
-		/// </summary>
-		/// <remarks>
-		/// This method is called the first time an item handler is requested.
-		/// Subclasses should override this method use SetItemHandler to
-		/// assign a handler to this item.
-		/// </remarks>
-		protected virtual void InitializeItemHandler ()
-		{
-		}
-		
-		/// <summary>
-		/// Runs a build or execution target.
-		/// </summary>
-		/// <returns>
-		/// The result of the operation
-		/// </returns>
-		/// <param name='monitor'>
-		/// A progress monitor
-		/// </param>
-		/// <param name='target'>
-		/// Name of the target
-		/// </param>
-		/// <param name='configuration'>
-		/// Configuration to use to run the target
-		/// </param>
-		/// <remarks>
-		/// Subclasses can override this method to provide a custom implementation of project operations such as
-		/// build or clean. The default implementation delegates the execution to the more specific OnBuild
-		/// and OnClean methods, or to the item handler for other targets.
-		/// </remarks>
-		internal protected virtual BuildResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
-		{
-			if (target == ProjectService.BuildTarget)
-				return OnBuild (monitor, configuration);
-			else if (target == ProjectService.CleanTarget) {
-				OnClean (monitor, configuration);
-				return new BuildResult ();
-			}
-			return ItemHandler.RunTarget (monitor, target, configuration) ?? new BuildResult ();
-		}
-		
-		/// <summary>
-		/// Cleans the files produced by this solution item
-		/// </summary>
-		/// <param name='monitor'>
-		/// A progress monitor
-		/// </param>
-		/// <param name='configuration'>
-		/// Configuration to use to clean the project
-		/// </param>
-		protected abstract void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration);
-		
-		/// <summary>
-		/// Builds the solution item
-		/// </summary>
-		/// <param name='monitor'>
-		/// A progress monitor
-		/// </param>
-		/// <param name='configuration'>
-		/// Configuration to use to build the project
-		/// </param>
-		protected abstract BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration);
-		
 		/// <summary>
 		/// Executes this solution item
 		/// </summary>
@@ -1071,57 +837,45 @@ namespace MonoDevelop.Projects
 		/// <param name='configuration'>
 		/// Configuration to use to execute the item
 		/// </param>
-		internal protected abstract void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration);
-		
-		/// <summary>
-		/// Checks if this solution item has modified files and has to be built
-		/// </summary>
-		/// <returns>
-		/// <c>true</c> if the solution item has to be built
-		/// </returns>
-		/// <param name='configuration'>
-		/// Configuration for which to do the check
-		/// </param>
-		internal protected virtual bool OnGetNeedsBuilding (ConfigurationSelector configuration)
+		public async Task Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			return true;
-		}
-		
-		/// <summary>
-		/// States whether this solution item needs to be built or not
-		/// </summary>
-		/// <param name='val'>
-		/// Whether this solution item needs to be built or not
-		/// </param>
-		/// <param name='configuration'>
-		/// Configuration for which to set the flag
-		/// </param>
-		internal protected virtual void OnSetNeedsBuilding (bool val, ConfigurationSelector configuration)
-		{
-		}
-		
-		/// <summary>
-		/// Gets the time of the last build
-		/// </summary>
-		/// <returns>
-		/// The last build time.
-		/// </returns>
-		/// <param name='configuration'>
-		/// Configuration for which to get the last build time.
-		/// </param>
-		internal protected virtual DateTime OnGetLastBuildTime (ConfigurationSelector configuration)
-		{
-			return DateTime.MinValue;
-		}
-		
-		internal protected virtual bool OnGetSupportsTarget (string target)
-		{
-			return true;
+			SolutionItemConfiguration conf = GetConfiguration (configuration) as SolutionItemConfiguration;
+			if (conf != null) {
+				ExecutionContext localContext = new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, context.ConsoleFactory, context.ExecutionTarget);
+
+				if (conf.CustomCommands.CanExecute (this, CustomCommandType.BeforeExecute, localContext, configuration)) {
+					if (!await conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.BeforeExecute, localContext, configuration))
+						return;
+				}
+			}
+
+			if (monitor.CancellationToken.IsCancellationRequested)
+				return;
+
+			await ItemExtension.OnExecute (monitor, context, configuration);
+
+			if (conf != null && !monitor.CancellationToken.IsCancellationRequested) {
+				ExecutionContext localContext = new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, context.ConsoleFactory, context.ExecutionTarget);
+
+				if (conf.CustomCommands.CanExecute (this, CustomCommandType.AfterExecute, localContext, configuration))
+					await conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.AfterExecute, localContext, configuration);
+			}
 		}
 
-		internal protected virtual bool OnGetSupportsExecute ()
+		/// <summary>
+		/// Prepares the target for execution
+		/// </summary>
+		/// <returns>The execution.</returns>
+		/// <param name="monitor">Monitor for tracking progress</param>
+		/// <param name="context">Execution context</param>
+		/// <param name="configuration">Configuration to execute</param>
+		/// <remarks>This method can be called (it is not mandatory) before Execute() to give the target a chance
+		/// to asynchronously prepare the execution that is going to be done later on. It can be used for example
+		/// to start the simulator that is going to be used for execution. Calling this method is optional, and
+		/// there is no guarantee that Execute() will actually be called.</remarks>
+		public Task PrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			return true;
+			return BindTask (ct => ItemExtension.OnPrepareExecution (monitor.WithCancellationToken (ct), context, configuration));
 		}
 
 		/// <summary>
@@ -1136,51 +890,606 @@ namespace MonoDevelop.Projects
 		/// <param name='configuration'>
 		/// Configuration to use to execute the item
 		/// </param>
-		internal protected virtual bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
+		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
+		{
+			return !IsUnsupportedProject && ItemExtension.OnGetCanExecute (context, configuration);
+		}
+
+		async Task DoExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		{
+			SolutionItemConfiguration conf = GetConfiguration (configuration) as SolutionItemConfiguration;
+			if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Execute)) {
+				await conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.Execute, context, configuration);
+				return;
+			}
+			await OnExecute (monitor, context, configuration);
+		}
+
+		/// <summary>
+		/// Executes this solution item
+		/// </summary>
+		/// <param name='monitor'>
+		/// A progress monitor
+		/// </param>
+		/// <param name='context'>
+		/// An execution context
+		/// </param>
+		/// <param name='configuration'>
+		/// Configuration to use to execute the item
+		/// </param>
+		protected virtual Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		{
+			return Task.FromResult (0);
+		}
+
+		/// <summary>
+		/// Prepares the target for execution
+		/// </summary>
+		/// <returns>The execution.</returns>
+		/// <param name="monitor">Monitor for tracking progress</param>
+		/// <param name="context">Execution context</param>
+		/// <param name="configuration">Configuration to execute</param>
+		/// <remarks>This method can be called (it is not mandatory) before Execute() to give the target a chance
+		/// to asynchronously prepare the execution that is going to be done later on. It can be used for example
+		/// to start the simulator that is going to be used for execution. Calling this method is optional, and
+		/// there is no guarantee that Execute() will actually be called.</remarks>
+		protected virtual Task OnPrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		{
+			return Task.FromResult (true);
+		}
+
+		protected virtual bool DoGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
+		{
+			SolutionItemConfiguration conf = GetConfiguration (configuration) as SolutionItemConfiguration;
+			if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Execute))
+				return conf.CustomCommands.CanExecute (this, CustomCommandType.Execute, context, configuration);
+			return OnGetCanExecute (context, configuration);
+		}
+
+		/// <summary>
+		/// Determines whether this solution item can be executed using the specified context and configuration.
+		/// </summary>
+		/// <returns>
+		/// <c>true</c> if this instance can be executed; otherwise, <c>false</c>.
+		/// </returns>
+		/// <param name='context'>
+		/// An execution context
+		/// </param>
+		/// <param name='configuration'>
+		/// Configuration to use to execute the item
+		/// </param>
+		protected virtual bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
+		{
+			SolutionItemConfiguration conf = GetConfiguration (configuration) as SolutionItemConfiguration;
+			if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Execute))
+				return conf.CustomCommands.CanExecute (this, CustomCommandType.Execute, context, configuration);
+			return false;
+		}
+
+		/// <summary>
+		/// Gets the execution targets.
+		/// </summary>
+		/// <returns>The execution targets.</returns>
+		/// <param name="configuration">The configuration.</param>
+		public IEnumerable<ExecutionTarget> GetExecutionTargets (ConfigurationSelector configuration)
+		{
+			return ItemExtension.OnGetExecutionTargets (configuration);
+		}
+
+		protected void NotifyExecutionTargetsChanged ()
+		{
+			ItemExtension.OnExecutionTargetsChanged ();
+		}
+
+		public event EventHandler ExecutionTargetsChanged;
+
+		protected virtual void OnExecutionTargetsChanged ()
+		{
+			if (ExecutionTargetsChanged != null)
+				ExecutionTargetsChanged (this, EventArgs.Empty);
+		}
+
+		protected virtual Task OnLoad (ProgressMonitor monitor)
+		{
+			return Task.FromResult (0);
+		}
+
+		protected internal virtual Task OnSave (ProgressMonitor monitor)
+		{
+			return Task.FromResult (0);
+		}
+
+		public FilePath GetAbsoluteChildPath (FilePath relPath)
+		{
+			return relPath.ToAbsolute (BaseDirectory);
+		}
+
+		public FilePath GetRelativeChildPath (FilePath absPath)
+		{
+			return absPath.ToRelative (BaseDirectory);
+		}
+
+		public IEnumerable<FilePath> GetItemFiles (bool includeReferencedFiles)
+		{
+			return ItemExtension.OnGetItemFiles (includeReferencedFiles);
+		}
+
+		protected virtual IEnumerable<FilePath> OnGetItemFiles (bool includeReferencedFiles)
+		{
+			if (!FileName.IsNullOrEmpty)
+				yield return FileName;
+		}
+
+		protected override void OnNameChanged (SolutionItemRenamedEventArgs e)
+		{
+			Solution solution = this.ParentSolution;
+
+			if (solution != null) {
+				foreach (DotNetProject project in solution.GetAllItems<DotNetProject>()) {
+					if (project == this)
+						continue;
+					
+					project.RenameReferences (e.OldName, e.NewName);
+				}
+			}
+			fileStatusTracker.ResetLoadTimes ();
+			base.OnNameChanged (e);
+		}
+		
+		protected virtual void OnSaved (SolutionItemEventArgs args)
+		{
+			if (Saved != null)
+				Saved (this, args);
+		}
+		
+		public SolutionItemConfiguration GetConfiguration (ConfigurationSelector configuration)
+		{
+			return (SolutionItemConfiguration) configuration.GetConfiguration (this) ?? DefaultConfiguration;
+		}
+
+		ItemConfiguration IConfigurationTarget.DefaultConfiguration {
+			get { return DefaultConfiguration; }
+			set { DefaultConfiguration = (SolutionItemConfiguration) value; }
+		}
+
+		public SolutionItemConfiguration DefaultConfiguration {
+			get {
+				if (activeConfiguration == null && configurations.Count > 0) {
+					return configurations[0];
+				}
+				return activeConfiguration;
+			}
+			set {
+				if (activeConfiguration != value) {
+					activeConfiguration = value;
+					NotifyModified ("DefaultConfiguration");
+					OnDefaultConfigurationChanged (new ConfigurationEventArgs (this, value));
+				}
+			}
+		}
+		
+		public string DefaultConfigurationId {
+			get {
+				if (DefaultConfiguration != null)
+					return DefaultConfiguration.Id;
+				else
+					return null;
+			}
+			set {
+				DefaultConfiguration = GetConfiguration (new ItemConfigurationSelector (value));
+			}
+		}
+		
+		public ReadOnlyCollection<string> GetConfigurations ()
+		{
+			List<string> configs = new List<string> ();
+			foreach (SolutionItemConfiguration conf in Configurations)
+				configs.Add (conf.Id);
+			return configs.AsReadOnly ();
+		}
+		
+		public SolutionItemConfigurationCollection Configurations {
+			get {
+				return configurations;
+			}
+		}
+		
+		IItemConfigurationCollection IConfigurationTarget.Configurations {
+			get {
+				return Configurations;
+			}
+		}
+		
+		public SolutionItemConfiguration AddNewConfiguration (string name, ConfigurationKind kind = ConfigurationKind.Blank)
+		{
+			SolutionItemConfiguration config = CreateConfiguration (name, kind);
+			Configurations.Add (config);
+			return config;
+		}
+		
+		ItemConfiguration IConfigurationTarget.CreateConfiguration (string name, ConfigurationKind kind)
+		{
+			return CreateConfiguration (name, kind);
+		}
+
+		public SolutionItemConfiguration CreateConfiguration (string name, ConfigurationKind kind = ConfigurationKind.Blank)
+		{
+			return ItemExtension.OnCreateConfiguration (name, kind);
+		}
+		
+		protected virtual SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind = ConfigurationKind.Blank)
+		{
+			return new SolutionItemConfiguration (name);
+		}
+
+		void OnConfigurationAddedToCollection (object ob, ConfigurationEventArgs args)
+		{
+			NotifyModified ("Configurations");
+			OnConfigurationAdded (new ConfigurationEventArgs (this, args.Configuration));
+			if (ConfigurationsChanged != null)
+				ConfigurationsChanged (this, EventArgs.Empty);
+			if (activeConfiguration == null)
+				DefaultConfigurationId = args.Configuration.Id;
+		}
+		
+		void OnConfigurationRemovedFromCollection (object ob, ConfigurationEventArgs args)
+		{
+			if (activeConfiguration == args.Configuration) {
+				if (Configurations.Count > 0)
+					DefaultConfiguration = Configurations [0];
+				else
+					DefaultConfiguration = null;
+			}
+			NotifyModified ("Configurations");
+			OnConfigurationRemoved (new ConfigurationEventArgs (this, args.Configuration));
+			if (ConfigurationsChanged != null)
+				ConfigurationsChanged (this, EventArgs.Empty);
+		}
+		
+		protected override StringTagModelDescription OnGetStringTagModelDescription (ConfigurationSelector conf)
+		{
+			StringTagModelDescription model = base.OnGetStringTagModelDescription (conf);
+			SolutionItemConfiguration config = GetConfiguration (conf);
+			if (config != null)
+				model.Add (config.GetType ());
+			else
+				model.Add (typeof(SolutionItemConfiguration));
+			return model;
+		}
+
+		protected override StringTagModel OnGetStringTagModel (ConfigurationSelector conf)
+		{
+			var source = base.OnGetStringTagModel (conf);
+			SolutionItemConfiguration config = GetConfiguration (conf);
+			if (config != null)
+				source.Add (config);
+			return source;
+		}
+
+		internal protected override DateTime OnGetLastBuildTime (ConfigurationSelector configuration)
+		{
+			return ItemExtension.OnGetLastBuildTime (configuration);
+		}
+
+		DateTime DoGetLastBuildTime (ConfigurationSelector configuration)
+		{
+			return base.OnGetLastBuildTime (configuration);
+		}
+
+		internal protected virtual void OnItemsAdded (IEnumerable<ProjectItem> objs)
+		{
+			ItemExtension.OnItemsAdded (objs);
+		}
+		
+		void DoOnItemsAdded (IEnumerable<ProjectItem> objs)
+		{
+			NotifyModified ("Items");
+			var args = new ProjectItemEventArgs ();
+			args.AddRange (objs.Select (pi => new ProjectItemEventInfo (this, pi)));
+			if (ProjectItemAdded != null)
+				ProjectItemAdded (this, args);
+		}
+
+		internal protected virtual void OnItemsRemoved (IEnumerable<ProjectItem> objs)
+		{
+			ItemExtension.OnItemsRemoved (objs);
+		}
+		
+		void DoOnItemsRemoved (IEnumerable<ProjectItem> objs)
+		{
+			NotifyModified ("Items");
+			var args = new ProjectItemEventArgs ();
+			args.AddRange (objs.Select (pi => new ProjectItemEventInfo (this, pi)));
+			if (ProjectItemRemoved != null)
+				ProjectItemRemoved (this, args);
+		}
+
+		protected virtual void OnDefaultConfigurationChanged (ConfigurationEventArgs args)
+		{
+			ItemExtension.OnDefaultConfigurationChanged (args);
+		}
+		
+		void DoOnDefaultConfigurationChanged (ConfigurationEventArgs args)
+		{
+			if (DefaultConfigurationChanged != null)
+				DefaultConfigurationChanged (this, args);
+		}
+
+		protected virtual void OnConfigurationAdded (ConfigurationEventArgs args)
+		{
+			AssertMainThread ();
+			ItemExtension.OnConfigurationAdded (args);
+		}
+		
+		void DoOnConfigurationAdded (ConfigurationEventArgs args)
+		{
+			if (ConfigurationAdded != null)
+				ConfigurationAdded (this, args);
+		}
+
+		protected virtual void OnConfigurationRemoved (ConfigurationEventArgs args)
+		{
+			AssertMainThread ();
+			ItemExtension.OnConfigurationRemoved (args);
+		}
+		
+		void DoOnConfigurationRemoved (ConfigurationEventArgs args)
+		{
+			if (ConfigurationRemoved != null)
+				ConfigurationRemoved (this, args);
+		}
+
+		protected virtual void OnReloadRequired (SolutionItemEventArgs args)
+		{
+			ItemExtension.OnReloadRequired (args);
+		}
+		
+		void DoOnReloadRequired (SolutionItemEventArgs args)
+		{
+			fileStatusTracker.FireReloadRequired (args);
+		}
+
+		protected override void OnBoundToSolution ()
+		{
+			ParentSolution.SolutionItemRemoved += HandleSolutionItemRemoved;
+			ParentSolution.SolutionItemAdded += HandleSolutionItemAdded;
+			ItemExtension.OnBoundToSolution ();
+		}
+
+		void DoOnBoundToSolution ()
+		{
+			base.OnBoundToSolution ();
+		}
+
+		protected override void OnUnboundFromSolution ()
+		{
+			ParentSolution.SolutionItemAdded -= HandleSolutionItemAdded;
+			ParentSolution.SolutionItemRemoved -= HandleSolutionItemRemoved;
+			ItemExtension.OnUnboundFromSolution ();
+		}
+
+		void DoOnUnboundFromSolution ()
+		{
+			base.OnUnboundFromSolution ();
+		}
+
+		/// <summary>
+		/// Override to return True if this class needs to store project related data in the solution file
+		/// </summary>
+		protected virtual bool OnCheckHasSolutionData ()
 		{
 			return false;
 		}
 
-		internal protected virtual IEnumerable<ExecutionTarget> OnGetExecutionTargets (ConfigurationSelector configuration)
+		internal void ReadSolutionData (ProgressMonitor monitor, SlnPropertySet properties)
 		{
-			yield break;
+			ItemExtension.OnReadSolutionData (monitor, properties);
 		}
 
 		/// <summary>
-		/// Called just after this item is bound to a solution
+		/// Override to read project related information stored in the solution file
 		/// </summary>
-		protected virtual void OnBoundToSolution ()
+		protected virtual void OnReadSolutionData (ProgressMonitor monitor, SlnPropertySet properties)
 		{
+			// Do nothing by default
+		}
+
+		internal void WriteSolutionData (ProgressMonitor monitor, SlnPropertySet properties)
+		{
+			ItemExtension.OnWriteSolutionData (monitor, properties);
 		}
 
 		/// <summary>
-		/// Called just before this item is removed from a solution (ParentSolution is still valid when this method is called)
+		/// Override to store project related information in the solution file
 		/// </summary>
-		protected virtual void OnUnboundFromSolution ()
+		protected virtual void OnWriteSolutionData (ProgressMonitor monitor, SlnPropertySet properties)
 		{
+			// Do nothing by default
 		}
 
-		internal protected virtual object OnGetService (Type t)
-		{
-			return ItemHandler.GetService (t);
-		}
-
-		/// <summary>
-		/// Occurs when the name of the item changes
-		/// </summary>
-		public event SolutionItemRenamedEventHandler NameChanged;
-		
-		/// <summary>
-		/// Occurs when the item is modified.
-		/// </summary>
-		public event SolutionItemModifiedEventHandler Modified;
+		public event SolutionItemEventHandler Saved;
 
 		/// <summary>
 		/// Occurs when the object is being disposed
 		/// </summary>
 		public event EventHandler Disposing;
-	}
 	
+		class DefaultMSBuildItemExtension: SolutionItemExtension
+		{
+			internal protected override void OnInitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement template)
+			{
+				Item.OnInitializeFromTemplate (projectCreateInfo, template);
+			}
+
+			internal protected override IEnumerable<IBuildTarget> OnGetExecutionDependencies ()
+			{
+				return Item.OnGetExecutionDependencies ();
+			}
+
+			internal protected override IEnumerable<SolutionItem> OnGetReferencedItems (ConfigurationSelector configuration)
+			{
+				return Item.OnGetReferencedItems (configuration);
+			}
+
+			internal protected override void OnSetFormat (MSBuildFileFormat format)
+			{
+				Item.OnSetFormat (format);
+			}
+
+			internal protected override bool OnGetSupportsFormat (MSBuildFileFormat format)
+			{
+				return Item.OnGetSupportsFormat (format);
+			}
+
+			internal protected override IEnumerable<FilePath> OnGetItemFiles (bool includeReferencedFiles)
+			{
+				return Item.OnGetItemFiles (includeReferencedFiles);
+			}
+
+			internal protected override SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind)
+			{
+				return Item.OnCreateConfiguration (name, kind);
+			}
+
+			internal protected override DateTime OnGetLastBuildTime (ConfigurationSelector configuration)
+			{
+				return Item.DoGetLastBuildTime (configuration);
+			}
+
+			internal protected override Task OnLoad (ProgressMonitor monitor)
+			{
+				return Item.OnLoad (monitor);
+			}
+
+			internal protected override Task OnSave (ProgressMonitor monitor)
+			{
+				return Item.DoSave (monitor);
+			}
+
+			internal protected override ProjectFeatures OnGetSupportedFeatures ()
+			{
+				return Item.OnGetSupportedFeatures ();
+			}
+
+			internal protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+			{
+				return Item.DoExecute (monitor, context, configuration);
+			}
+
+			internal protected override Task OnPrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+			{
+				return Item.OnPrepareExecution (monitor, context, configuration);
+			}
+
+			internal protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
+			{
+				return Item.DoGetCanExecute (context, configuration);
+			}
+
+			internal protected override IEnumerable<ExecutionTarget> OnGetExecutionTargets (ConfigurationSelector configuration)
+			{
+				yield break;
+			}
+
+			internal protected override void OnExecutionTargetsChanged ()
+			{
+				Item.OnExecutionTargetsChanged ();
+			}
+
+			internal protected override void OnReloadRequired (SolutionItemEventArgs args)
+			{
+				Item.DoOnReloadRequired (args);
+			}
+
+			internal protected override void OnItemsAdded (IEnumerable<ProjectItem> objs)
+			{
+				Item.DoOnItemsAdded (objs);
+			}
+
+			internal protected override void OnItemsRemoved (IEnumerable<ProjectItem> objs)
+			{
+				Item.DoOnItemsRemoved (objs);
+			}
+
+			internal protected override void OnDefaultConfigurationChanged (ConfigurationEventArgs args)
+			{
+				Item.DoOnDefaultConfigurationChanged (args);
+			}
+
+			internal protected override void OnBoundToSolution ()
+			{
+				Item.DoOnBoundToSolution ();
+			}
+
+			internal protected override void OnUnboundFromSolution ()
+			{
+				Item.DoOnUnboundFromSolution ();
+			}
+
+			internal protected override void OnConfigurationAdded (ConfigurationEventArgs args)
+			{
+				Item.DoOnConfigurationAdded (args);
+			}
+
+			internal protected override void OnConfigurationRemoved (ConfigurationEventArgs args)
+			{
+				Item.DoOnConfigurationRemoved (args);
+			}
+
+			internal protected override void OnModified (SolutionItemModifiedEventArgs args)
+			{
+				Item.OnModified (args);
+			}
+
+			internal protected override void OnNameChanged (SolutionItemRenamedEventArgs e)
+			{
+				Item.OnNameChanged (e);
+			}
+
+			internal protected override IconId StockIcon {
+				get {
+					return "md-project";
+				}
+			}
+
+			internal protected override bool ItemFilesChanged {
+				get {
+					return Item.BaseItemFilesChanged;
+				}
+			}
+
+			internal protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
+			{
+				return Item.OnBuild (monitor, configuration, operationContext);
+			}
+
+			internal protected override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext buildSession)
+			{
+				return Item.OnClean (monitor, configuration, buildSession);
+			}
+
+			internal protected override bool OnNeedsBuilding (ConfigurationSelector configuration)
+			{
+				return Item.OnGetNeedsBuilding (configuration);
+			}
+
+			internal protected override void OnWriteSolutionData (ProgressMonitor monitor, SlnPropertySet properties)
+			{
+				Item.OnWriteSolutionData (monitor, properties);
+			}
+
+			internal protected override void OnReadSolutionData (ProgressMonitor monitor, SlnPropertySet properties)
+			{
+				Item.OnReadSolutionData (monitor, properties);
+			}
+
+			internal protected override bool OnCheckHasSolutionData ()
+			{
+				return Item.OnCheckHasSolutionData ();
+			}
+		}	
+	}
+
 	[Mono.Addins.Extension]
 	class SolutionItemTagProvider: StringTagProvider<SolutionItem>, IStringTagProvider
 	{
@@ -1193,32 +1502,37 @@ namespace MonoDevelop.Projects
 			yield return new StringTagDescription ("AuthorCopyright", "Project Author Copyright");
 			yield return new StringTagDescription ("AuthorCompany", "Project Author Company");
 			yield return new StringTagDescription ("AuthorTrademark", "Project Trademark");
+			yield return new StringTagDescription ("ProjectFile", "Project File");
 		}
-		
+
 		public override object GetTagValue (SolutionItem item, string tag)
 		{
 			switch (tag) {
-				case "ITEMNAME":
-				case "PROJECTNAME":
-					return item.Name;
-				case "AUTHORCOPYRIGHT":
-					AuthorInformation authorInfo = item.AuthorInformation ?? AuthorInformation.Default;
-					return authorInfo.Copyright;
-				case "AUTHORCOMPANY":
-					authorInfo = item.AuthorInformation ?? AuthorInformation.Default;
-					return authorInfo.Company;
-				case "AUTHORTRADEMARK":
-					authorInfo = item.AuthorInformation ?? AuthorInformation.Default;
-					return authorInfo.Trademark;
-				case "AUTHOREMAIL":
-					authorInfo = item.AuthorInformation ?? AuthorInformation.Default;
-					return authorInfo.Email;
-				case "AUTHORNAME":
-					authorInfo = item.AuthorInformation ?? AuthorInformation.Default;
-					return authorInfo.Name;
-				case "ITEMDIR":
-				case "PROJECTDIR":
-					return item.BaseDirectory;
+			case "ITEMNAME":
+			case "PROJECTNAME":
+				return item.Name;
+			case "AUTHORCOPYRIGHT":
+				AuthorInformation authorInfo = item.AuthorInformation ?? AuthorInformation.Default;
+				return authorInfo.Copyright;
+			case "AUTHORCOMPANY":
+				authorInfo = item.AuthorInformation ?? AuthorInformation.Default;
+				return authorInfo.Company;
+			case "AUTHORTRADEMARK":
+				authorInfo = item.AuthorInformation ?? AuthorInformation.Default;
+				return authorInfo.Trademark;
+			case "AUTHOREMAIL":
+				authorInfo = item.AuthorInformation ?? AuthorInformation.Default;
+				return authorInfo.Email;
+			case "AUTHORNAME":
+				authorInfo = item.AuthorInformation ?? AuthorInformation.Default;
+				return authorInfo.Name;
+			case "ITEMDIR":
+			case "PROJECTDIR":
+				return item.BaseDirectory;
+			case "ITEMFILE":
+			case "PROJECTFILE":
+			case "PROJECTFILENAME":
+				return item.FileName;
 			}
 			throw new NotSupportedException ();
 		}

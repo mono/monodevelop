@@ -34,7 +34,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using MonoDevelop.Components.Commands.ExtensionNodes;
-using Mono.TextEditor;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -60,8 +59,6 @@ namespace MonoDevelop.Components.Commands
 		ArrayList visitors = new ArrayList ();
 		LinkedList<Gtk.Window> topLevelWindows = new LinkedList<Gtk.Window> ();
 		Stack delegatorStack = new Stack ();
-
-		List<Gtk.Window> activeWindowStack = new List<Gtk.Window> ();
 
 		HashSet<object> visitedTargets = new HashSet<object> ();
 		
@@ -961,8 +958,8 @@ namespace MonoDevelop.Components.Commands
 			if (menu is CommandMenu) {
 				((CommandMenu)menu).InitialCommandTarget = initialCommandTarget ?? parent;
 			}
-
-			Mono.TextEditor.GtkWorkarounds.ShowContextMenu (menu, parent, evt);
+			
+			MonoDevelop.Components.GtkWorkarounds.ShowContextMenu (menu, parent, evt);
 		}
 
 		public void ShowContextMenu (Gtk.Widget parent, int x, int y, Gtk.Menu menu,
@@ -972,7 +969,7 @@ namespace MonoDevelop.Components.Commands
 				((CommandMenu)menu).InitialCommandTarget = initialCommandTarget ?? parent;
 			}
 
-			Mono.TextEditor.GtkWorkarounds.ShowContextMenu (menu, parent, x, y);
+			MonoDevelop.Components.GtkWorkarounds.ShowContextMenu (menu, parent, x, y);
 		}
 
 		/// <summary>

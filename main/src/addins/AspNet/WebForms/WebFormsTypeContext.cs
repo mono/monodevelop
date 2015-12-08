@@ -34,9 +34,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using Mono.TextEditor;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.TypeSystem;
@@ -45,14 +42,20 @@ using MonoDevelop.Xml.Dom;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Dom;
 using System.Reflection;
+using MonoDevelop.Ide.Editor;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.AspNet.WebForms
 {
 	public class WebFormsTypeContext
 	{
-		ICompilation compilation;
-		AspNetAppProject project;
+		Compilation compilation;
+		DotNetProject project;
 		WebFormsParsedDocument doc;
+		AspNetAppProjectFlavor aspFlavor;
 
 		public WebFormsParsedDocument Doc {
 			get {
@@ -66,7 +69,7 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 		}
 
-		public AspNetAppProject Project {
+		public DotNetProject Project {
 			get {
 				return project;
 			}
@@ -78,7 +81,13 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 		}
 
-		public ICompilation Compilation {
+		public AspNetAppProjectFlavor ProjectFlavor {
+			get {
+				return project != null ? project.GetFlavor<AspNetAppProjectFlavor> () : null;
+			}
+		}
+
+		public Compilation Compilation {
 			get {
 				if (compilation == null)
 					UpdateCompilation ();
@@ -103,11 +112,11 @@ namespace MonoDevelop.AspNet.WebForms
 		void UpdateCompilation ()
 		{
 			const string dummyAsmName = "CompiledAspNetPage";
-			IUnresolvedAssembly asm = new DefaultUnresolvedAssembly (dummyAsmName);
-			compilation = new SimpleCompilation (asm, GetReferencedAssemblies ());
+			compilation = CSharpCompilation.Create (dummyAsmName)
+				.AddReferences (GetReferencedAssemblies ());
 		}
 		
-		public IType GetType (string tagPrefix, string tagName, string htmlTypeAttribute)
+		public INamedTypeSymbol GetType (string tagPrefix, string tagName, string htmlTypeAttribute)
 		{
 			if (tagPrefix == null || tagPrefix.Length < 1)
 				return HtmlControlTypeLookup (tagName, htmlTypeAttribute);
@@ -140,7 +149,7 @@ namespace MonoDevelop.AspNet.WebForms
 			return GetControlCompletionData (AssemblyTypeLookup ("System.Web.UI", "Control"));
 		}
 		
-		public IEnumerable<CompletionData> GetControlCompletionData (IType baseType)
+		public IEnumerable<CompletionData> GetControlCompletionData (INamedTypeSymbol baseType)
 		{
 			var names = new HashSet<string> ();
 
@@ -148,7 +157,7 @@ namespace MonoDevelop.AspNet.WebForms
 				var ard = rd as WebFormsPageInfo.AssemblyRegisterDirective;
 				if (ard != null) {
 					string prefix = ard.TagPrefix + ":";
-					foreach (IType cls in ListControlClasses (baseType, ard.Namespace))
+					foreach (var cls in ListControlClasses (baseType, ard.Namespace, Compilation))
 						if (names.Add (prefix + cls.Name))
 							yield return new AspTagCompletionData (prefix, cls);
 					continue;
@@ -160,7 +169,7 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 		}
 		
-		public IType GetControlType (string tagPrefix, string tagName)
+		public INamedTypeSymbol GetControlType (string tagPrefix, string tagName)
 		{
 			if (String.IsNullOrEmpty (tagPrefix))
 				return null;
@@ -186,14 +195,14 @@ namespace MonoDevelop.AspNet.WebForms
 			return AssemblyTypeLookup ("System.Web.UI", "Control");
 		}
 		
-		public string GetTagPrefix (IType control)
+		public string GetTagPrefix (INamedTypeSymbol control)
 		{
-			if (control.Namespace == "System.Web.UI.HtmlControls")
+			if (control.ContainingNamespace.GetFullName () == "System.Web.UI.HtmlControls")
 				return string.Empty;
 			
 			foreach (var rd in GetControls ()) {
 				var ard = rd as WebFormsPageInfo.AssemblyRegisterDirective;
-				if (ard != null && ard.Namespace == control.Namespace)
+				if (ard != null && ard.Namespace == control.ContainingNamespace.GetFullName ())
 					return ard.TagPrefix;
 			}
 
@@ -208,7 +217,7 @@ namespace MonoDevelop.AspNet.WebForms
 		/// <summary>
 		/// Gets a tag prefix, also returning the directive that would have to be added if necessary.
 		/// </summary>
-		public string GetTagPrefixWithNewDirective (IType control, string assemblyName, string desiredPrefix, 
+		public string GetTagPrefixWithNewDirective (INamedTypeSymbol control, string assemblyName, string desiredPrefix, 
 			out WebFormsPageInfo.RegisterDirective directiveNeededToAdd)
 		{
 			directiveNeededToAdd = null;
@@ -223,14 +232,14 @@ namespace MonoDevelop.AspNet.WebForms
 			
 			var an = SystemAssemblyService.ParseAssemblyName (assemblyName);
 			
-			directiveNeededToAdd = new WebFormsPageInfo.AssemblyRegisterDirective (prefix, control.Namespace, an.Name);
+			directiveNeededToAdd = new WebFormsPageInfo.AssemblyRegisterDirective (prefix, control.ContainingNamespace.GetFullName (), an.Name);
 			
 			return prefix;
 		}
 		
 		#region "Refactoring" operations -- things that modify the file
 		
-		string GetPrefix (IType control)
+		string GetPrefix (INamedTypeSymbol control)
 		{
 			//FIXME: make this work 
 			/*
@@ -264,7 +273,7 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 			*/
 			//generate a new prefix base on initials of namespace
-			string[] namespaces = control.Namespace.Split ('.');
+			string[] namespaces = control.ContainingNamespace.GetFullName ().Split ('.');
 			char[] charr = new char[namespaces.Length];
 			for (int i = 0; i < charr.Length; i++)
 				charr[i] = char.ToLower (namespaces[i][0]);
@@ -288,7 +297,7 @@ namespace MonoDevelop.AspNet.WebForms
 			return p != null? p.Value as string : null;
 		}
 		
-		public void AddRegisterDirective (WebFormsPageInfo.RegisterDirective directive, TextEditorData editor, bool preserveCaretPosition)
+		public void AddRegisterDirective (WebFormsPageInfo.RegisterDirective directive, TextEditor editor, bool preserveCaretPosition)
 		{
 			if (doc == null)
 				return;
@@ -300,16 +309,17 @@ namespace MonoDevelop.AspNet.WebForms
 			doc.Info.RegisteredTags.Add (directive);
 			
 			var line = Math.Max (node.Region.EndLine, node.Region.BeginLine);
-			var pos = editor.Document.LocationToOffset (line, editor.Document.GetLine (line - 1).Length);
+			var pos = editor.LocationToOffset (line, editor.GetLine (line - 1).Length);
 			if (pos < 0)
 				return;
 			
 			using (var undo = editor.OpenUndoGroup ()) {
-				var oldCaret = editor.Caret.Offset;
-				
-				var inserted = editor.Insert (pos, editor.EolMarker + directive);
+				var oldCaret = editor.CaretOffset;
+				var text = editor.FormatString (pos, editor.EolMarker + directive);
+				var inserted = text.Length;
+				editor.InsertText (pos, text);
 				if (preserveCaretPosition) {
-					editor.Caret.Offset = (pos < oldCaret)? oldCaret + inserted : oldCaret;
+					editor.CaretOffset = (pos < oldCaret)? oldCaret + inserted : oldCaret;
 				}
 			}
 		}
@@ -335,8 +345,8 @@ namespace MonoDevelop.AspNet.WebForms
 
 		IList<RegistrationInfo> GetRegistrationInfos ()
 		{
-			if (project != null && doc != null)
-				return project.RegistrationCache.GetInfosForPath (Path.GetDirectoryName (doc.FileName));
+			if (ProjectFlavor != null && doc != null)
+				return ProjectFlavor.RegistrationCache.GetInfosForPath (Path.GetDirectoryName (doc.FileName));
 			return new[] { WebFormsRegistrationCache.MachineRegistrationInfo };
 		}
 
@@ -373,13 +383,15 @@ namespace MonoDevelop.AspNet.WebForms
 			return usings;
 		}
 
-		IEnumerable<IAssemblyReference> GetReferencedAssemblies ()
+		IEnumerable<MetadataReference> GetReferencedAssemblies ()
 		{
-			var references = new HashSet<IAssemblyReference> ();
+			var references = new HashSet<MetadataReference> ();
 
-			if (project != null)
-				references.Add (TypeSystemService.GetCompilation (project).MainAssembly.UnresolvedAssembly);
-
+			if (project != null) {
+				var task = TypeSystemService.GetCompilationAsync (project);
+				if (task.Result != null)
+					references.Add (task.Result.ToMetadataReference ());
+			}
 			if (doc != null)
 				foreach (var asm in doc.Info.Assemblies.Select (a => a.Name).Select (name => GetReferencedAssembly (name)))
 					references.Add (asm);
@@ -390,9 +402,9 @@ namespace MonoDevelop.AspNet.WebForms
 			references.Remove (null);
 
 			return references;
- 		}
+		}
 
-		IAssemblyReference GetReferencedAssembly (string assemblyName)
+		MetadataReference GetReferencedAssembly (string assemblyName)
 		{
 			var parsed = SystemAssemblyService.ParseAssemblyName (assemblyName);
 			if (string.IsNullOrEmpty (parsed.Name))
@@ -404,12 +416,12 @@ namespace MonoDevelop.AspNet.WebForms
 
 			string path = GetAssemblyPath (assemblyName);
 			if (path != null)
-				return TypeSystemService.LoadAssemblyContext (TargetRuntime, TargetFramework, path);
+				return LoadMetadataReference (path);
 
 			return null;
 		}
 
-		IAssemblyReference GetProjectReference (AssemblyName parsed)
+		MetadataReference GetProjectReference (AssemblyName parsed)
 		{
 			if (project == null)
 				return null;
@@ -420,18 +432,27 @@ namespace MonoDevelop.AspNet.WebForms
 				if (reference.ReferenceType == ReferenceType.Package || reference.ReferenceType == ReferenceType.Assembly) {
 					foreach (string refPath in reference.GetReferencedFileNames (null))
 						if (Path.GetFileName (refPath) == dllName)
-							return TypeSystemService.LoadAssemblyContext (project.TargetRuntime, project.TargetFramework, refPath);
+							return LoadMetadataReference (refPath);
 				}
 				else
 					if (reference.ReferenceType == ReferenceType.Project && parsed.Name == reference.Reference) {
 						var p = project.ParentSolution.FindProjectByName (reference.Reference) as DotNetProject;
 						if (p == null)
 							continue;
-						return TypeSystemService.GetCompilation (p).MainAssembly.UnresolvedAssembly;
+						return TypeSystemService.GetCompilationAsync (p).Result.ToMetadataReference ();
 					}
 			}
 
 			return null;
+		}
+
+		MetadataReference LoadMetadataReference (string path)
+		{
+			var projectId = Microsoft.CodeAnalysis.ProjectId.CreateNewId ("WebFormsTypeContext");
+			var reference = MetadataReferenceCache.LoadReference (projectId, path);
+			MetadataReferenceCache.RemoveReferences (projectId);
+
+			return reference;
 		}
 
 		string GetAssemblyPath (string assemblyName)
@@ -543,7 +564,7 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 		}
 
-		IType HtmlControlTypeLookup (string tagName, string typeAttribute)
+		INamedTypeSymbol HtmlControlTypeLookup (string tagName, string typeAttribute)
 		{
 			var str = HtmlControlLookup (tagName, typeAttribute);
 			if (str != null)
@@ -551,41 +572,51 @@ namespace MonoDevelop.AspNet.WebForms
 			return null;
 		}
 
-		static IEnumerable<IType> ListControlClasses (IType baseType, string namespac)
+		static IEnumerable<INamedTypeSymbol> ListControlClasses (INamedTypeSymbol baseType, string namespac, Compilation compilation)
 		{
-			var baseTypeDefinition = baseType.GetDefinition ();
+			var baseTypeDefinition = baseType;
 			if (baseTypeDefinition == null)
 				yield break;
 
 			//return classes if they derive from system.web.ui.control
-			foreach (var type in baseTypeDefinition.GetSubTypeDefinitions ().Where (t => t.Namespace == namespac))
-				if (!type.IsAbstract && type.IsPublic)
+			foreach (var type in GetSubTypes (baseTypeDefinition, compilation).Where (t => TypeHasNamespace (t, namespac)))
+				if (!type.IsAbstract && type.DeclaredAccessibility == Accessibility.Public)
 					yield return type;
 
-			if (!baseTypeDefinition.IsAbstract && baseTypeDefinition.IsPublic && baseTypeDefinition.Namespace == namespac) {
+			if (!baseTypeDefinition.IsAbstract && baseTypeDefinition.DeclaredAccessibility == Accessibility.Public && TypeHasNamespace (baseTypeDefinition, namespac)) {
 				yield return baseType;
 			}
 		}
 
-		IType AssemblyTypeLookup (string namespac, string tagName)
+		static IEnumerable<INamedTypeSymbol> GetSubTypes (INamedTypeSymbol baseType, Compilation compilation)
+		{
+			return compilation.GlobalNamespace.GetAllTypes().Where (t => t.IsDerivedFromClass (baseType));
+		}
+
+		static bool TypeHasNamespace (INamedTypeSymbol type, string namespac)
+		{
+			return type.ContainingNamespace != null && type.ContainingNamespace.GetFullName () == namespac;
+		}
+
+		INamedTypeSymbol AssemblyTypeLookup (string namespac, string tagName)
 		{
 			var fullName = namespac + "." + tagName;
-			var type = ReflectionHelper.ParseReflectionName (fullName).Resolve (Compilation);
-			if (type.Kind == TypeKind.Unknown)
+			var type = Compilation.GetTypeByMetadataName (fullName);
+			if (type == null || type.Kind == SymbolKind.ErrorType)
 				return null;
 			return type;
 		}
 
-		public string GetControlPrefix (IType control)
+		public string GetControlPrefix (INamedTypeSymbol control)
 		{
-			if (control.Namespace == "System.Web.UI.WebControls")
+			if (control.ContainingNamespace.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat) == "System.Web.UI.WebControls")
 				return "asp";
-			if (control.Namespace == "System.Web.UI.HtmlControls")
+			if (control.ContainingNamespace.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat) == "System.Web.UI.HtmlControls")
 				return string.Empty;
 
 			//todo: handle user controls
 			foreach (var info in GetControls ().OfType<WebFormsPageInfo.AssemblyRegisterDirective> ()) {
-				if (info.Namespace == control.Namespace) {
+				if (info.Namespace == control.ContainingNamespace.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat)) {
 					if (AssemblyTypeLookup (info.Namespace, control.Name) != null)
 						return info.TagPrefix;
 				}
@@ -597,18 +628,18 @@ namespace MonoDevelop.AspNet.WebForms
 		public string GetUserControlTypeName (string virtualPath)
 		{
 			string typeName = null;
-			if (project != null && doc != null) {
-				string absolute = project.VirtualToLocalPath (virtualPath, doc.FileName);
-				typeName = project.GetCodebehindTypeName (absolute);
+			if (ProjectFlavor != null && doc != null) {
+				string absolute = ProjectFlavor.VirtualToLocalPath (virtualPath, doc.FileName);
+				typeName = ProjectFlavor.GetCodebehindTypeName (absolute);
 			}
 			return typeName ?? "System.Web.UI.UserControl";
 		}
 
-		IType GetUserControlType (string virtualPath)
+		INamedTypeSymbol GetUserControlType (string virtualPath)
 		{
 			var name = GetUserControlTypeName (virtualPath);
-			var type = ReflectionHelper.ParseReflectionName (name).Resolve (Compilation);
-			if (type.Kind == TypeKind.Unknown)
+			var type = Compilation.GetTypeByMetadataName (name);
+			if (type.Kind == SymbolKind.ErrorType)
 				return null;
 			return type;
 		}
@@ -616,38 +647,38 @@ namespace MonoDevelop.AspNet.WebForms
 
 	class AspTagCompletionData : CompletionData
 	{
-		readonly IType cls;
+		readonly INamedTypeSymbol cls;
 
-		public AspTagCompletionData (string prefix, IType cls)
+		public AspTagCompletionData (string prefix, INamedTypeSymbol cls)
 			: base (prefix + cls.Name, Gtk.Stock.GoForward)
 		{
 			this.cls = cls;
 		}
 
-		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+		public override async Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken token)
 		{
-			var tt = base.CreateTooltipInformation (smartWrap);
-			tt.SignatureMarkup = cls.FullName;
-			tt.SummaryMarkup = AmbienceService.GetSummaryMarkup (cls.GetDefinition ());
+			var tt = await base.CreateTooltipInformation (smartWrap, token);
+			tt.SignatureMarkup = cls.GetFullName ();
+			tt.SummaryMarkup = await Task.Run (() => Ambience.GetSummaryMarkup (cls));
 			return tt;
 		}
 	}
 
 	class AspAttributeCompletionData : CompletionData
 	{
-		readonly IMember member;
+		readonly Microsoft.CodeAnalysis.ISymbol member;
 
-		public AspAttributeCompletionData (IMember member, string name = null)
+		public AspAttributeCompletionData (Microsoft.CodeAnalysis.ISymbol member, string name = null)
 			: base (name ?? member.Name, member.GetStockIcon ())
 		{
 			this.member = member;
 		}
 
-		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+		public override async Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken token)
 		{
-			var tt = base.CreateTooltipInformation (smartWrap);
+			var tt = await base.CreateTooltipInformation (smartWrap, token);
 			tt.SignatureMarkup = member.Name;
-			tt.SummaryMarkup = AmbienceService.GetSummaryMarkup (member);
+			tt.SummaryMarkup = await Task.Run (() => Ambience.GetSummaryMarkup (member));
 			return tt;
 		}
 	}

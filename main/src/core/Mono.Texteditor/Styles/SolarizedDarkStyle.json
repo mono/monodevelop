@@ -48,9 +48,12 @@
 
         { "name":"Notification Border", "color":"base1" },
 
-        { "name":"Completion Matching Substring", "color":"#BA3373" },
-        { "name":"Completion Border", "color":"#C9C9C9" },
-        { "name":"Completion Border(Inactive)", "color":"#bebebe" },
+        { "name":"Completion Window", "color":"base03", "bordercolor":"base1" },
+		{ "name":"Completion Tooltip Window", "color":"#feffe9", "bordercolor":"base1" },
+        { "name":"Completion Selection Bar Border", "color":"base02" },
+        { "name":"Completion Selection Bar Border(Inactive)", "color":"base3" },
+        { "name":"Completion Selection Bar Background", "color":"base02", "secondcolor":"base02" },
+        { "name":"Completion Selection Bar Background(Inactive)", "color":"base3", "secondcolor":"base3" },
 
         { "name":"Bookmarks", "color":"base3", "secondcolor":"blue" },
 
@@ -146,9 +149,14 @@
         { "name":"Tooltip Text", "fore":"black", "back":"#feffe9" },
         { "name":"Notification Text", "fore":"black", "back":"#feffe9" },
 
-        { "name":"Completion Text", "fore":"#434343", "back":"#F0F6F8" },
-        { "name":"Completion Selected Text", "fore":"#f8fcfc", "back":"#dff4f0" },
-        { "name":"Completion Selected Text(Inactive)", "fore":"#434343", "back":"white" },
+        { "name":"Completion Text", "fore":"base00" },
+        { "name":"Completion Matching Substring", "fore":"green" },
+        
+        { "name":"Completion Selected Text", "fore":"base00" },
+        { "name":"Completion Selected Matching Substring", "fore":"green" },
+
+        { "name":"Completion Selected Text(Inactive)", "fore":"base00" },
+        { "name":"Completion Selected Matching Substring(Inactive)", "fore":"green" },
 
         { "name":"Keyword(Access)", "fore":"violet" },
         { "name":"Keyword(Type)", "fore":"green" },

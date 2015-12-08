@@ -315,7 +315,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 		
-		public void AddChildSection (IOptionsPanel parent, OptionsDialogSection section, object dataObject)
+		internal void AddChildSection (IOptionsPanel parent, OptionsDialogSection section, object dataObject)
 		{
 			foreach (SectionPage page in pages.Values) {
 				foreach (PanelInstance pi in page.Panels) {
@@ -328,7 +328,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			throw new InvalidOperationException ("Parent options panel not found in the dialog.");
 		}
 		
-		public void RemoveSection (OptionsDialogSection section)
+		internal void RemoveSection (OptionsDialogSection section)
 		{
 			SectionPage page;
 			if (pages.TryGetValue (section, out page))
@@ -371,12 +371,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			store.Remove (ref it);
 		}
 		
-		protected TreeIter AddSection (OptionsDialogSection section, object dataObject)
+		internal TreeIter AddSection (OptionsDialogSection section, object dataObject)
 		{
 			return AddSection (TreeIter.Zero, section, dataObject);
 		}
 		
-		protected TreeIter AddSection (TreeIter parentIter, OptionsDialogSection section, object dataObject)
+		internal TreeIter AddSection (TreeIter parentIter, OptionsDialogSection section, object dataObject)
 		{
 			TreeIter it;
 			if (parentIter.Equals (TreeIter.Zero)) {
@@ -398,7 +398,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			return it;
 		}
 		
-		protected virtual void AddChildSections (TreeIter parentIter, OptionsDialogSection section, object dataObject)
+		internal virtual void AddChildSections (TreeIter parentIter, OptionsDialogSection section, object dataObject)
 		{
 			foreach (ExtensionNode nod in section.ChildNodes) {
 				if (nod is OptionsDialogSection)
@@ -480,7 +480,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			return false;
 		}
 		
-		public void ShowPage (OptionsDialogSection section)
+		internal void ShowPage (OptionsDialogSection section)
 		{
 			if (!IsRealized) {
 				// Defer this until the dialog is realized due to the sizing logic in CreatePageWidget.
@@ -586,7 +586,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 						nodes.Add (node);
 				}
 			}
-			
+
+			foreach (OptionsPanelNode node in nodes.ToArray ()) {
+				if (!string.IsNullOrEmpty (node.Replaces)) {
+					var replaced = nodes.FindIndex (n => n.Id == node.Replaces);
+					if (replaced != -1) {
+						nodes.Remove (node);
+						nodes [replaced] = node;
+					}
+				}
+			}
+
 			foreach (OptionsPanelNode node in nodes)
 			{
 				PanelInstance pi = null;

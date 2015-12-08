@@ -39,15 +39,6 @@
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/NUnit/UnitTestOptions/GeneralOptions">
-		<ExtensionNodeSet id="MonoDevelop.Ide.OptionsDialogSection"/>
-	</ExtensionPoint>
-
-	<ExtensionPoint path = "/MonoDevelop/NUnit/UnitTestOptions/ConfigurationOptions">
-		<ExtensionNodeSet id="MonoDevelop.Ide.OptionsDialogSection"/>
-	</ExtensionPoint>
-
-
 	<!-- Extensions -->
 
 	<Extension path = "/MonoDevelop/Ide/Pads">
@@ -129,8 +120,6 @@
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.GoToFailure" />
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.ShowTestCode" />
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.ShowTestDetails" />
-		<SeparatorItem id = "s1" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/NUnit/ContextMenu/TestResultsPad">
@@ -154,17 +143,6 @@
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestChartCommands.SingleDayResult" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/NUnit/UnitTestOptions/GeneralOptions">
-		<Section id = "Configurations"
-					 _label = "Configurations" />
-	</Extension>
-
-	<Extension path = "/MonoDevelop/NUnit/UnitTestOptions/ConfigurationOptions">
-		<Section id = "NUnitOptionsPanel"
-					 _label = "${Configuration}"
-					 class = "MonoDevelop.NUnit.NUnitOptionsPanel"/>
-	</Extension>
-
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 <!--		<ProjectTemplate id = "NUnitAssemblyGroup" resource = "NUnitAssemblyGroup.xpt.xml"/>-->
 		<ProjectTemplate id = "NUnitProject" resource = "NUnitProject.xpt.xml"/>
@@ -185,26 +163,12 @@
 		<StockIcon stockid = "nunit-run" resource = "unit-run-16.png" size="Menu" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
 		<Class class = "MonoDevelop.NUnit.NUnitProjectServiceExtension" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.NUnit.NUnitAssemblyGroupProject" />
-		<DataType class = "MonoDevelop.NUnit.NUnitCategoryOptions" />
-	</Extension>
-
-	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
-		<ItemProperty class = "MonoDevelop.Projects.SolutionItemConfiguration"
-			name = "UnitTestInformation" type = "MonoDevelop.NUnit.UnitTestOptionsSet" />
-		<ItemProperty class = "MonoDevelop.Projects.DotNetProject"
-			name = "TestRunnerType" type = "System.String" external="false" />
-		<ItemProperty class = "MonoDevelop.Projects.DotNetProject"
-			name = "TestRunnerAssembly" type = "MonoDevelop.Core.FilePath" external="false" />
-		<ItemProperty class = "MonoDevelop.Projects.DotNetProject"
-			name = "TestRunnerCommand" type = "MonoDevelop.Core.FilePath" external="false" />
-		<ItemProperty class = "MonoDevelop.Projects.DotNetProject"
-			name = "TestRunnerArgs" type = "System.String" external="false" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/TemplateImages">

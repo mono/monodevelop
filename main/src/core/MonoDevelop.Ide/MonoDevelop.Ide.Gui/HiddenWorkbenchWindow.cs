@@ -111,10 +111,10 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		public event EventHandler TitleChanged { add {} remove {} }
-		public event EventHandler DocumentChanged;
-		public event MonoDevelop.Ide.Gui.WorkbenchWindowEventHandler Closing;
-		public event MonoDevelop.Ide.Gui.WorkbenchWindowEventHandler Closed;
-		public event MonoDevelop.Ide.Gui.ActiveViewContentEventHandler ActiveViewContentChanged;
-		public event EventHandler ViewsChanged;
+		public event EventHandler DocumentChanged  { add {} remove {} }
+		public event MonoDevelop.Ide.Gui.WorkbenchWindowEventHandler Closing  { add {} remove {} }
+		public event MonoDevelop.Ide.Gui.WorkbenchWindowEventHandler Closed  { add {} remove {} }
+		public event MonoDevelop.Ide.Gui.ActiveViewContentEventHandler ActiveViewContentChanged  { add {} remove {} }
+		public event EventHandler ViewsChanged { add {} remove {} }
 	}
 }

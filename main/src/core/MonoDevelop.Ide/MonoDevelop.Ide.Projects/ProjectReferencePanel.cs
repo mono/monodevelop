@@ -127,7 +127,7 @@ namespace MonoDevelop.Ide.Projects {
 			
 			if ((bool)store.GetValue (iter, ColSelected) == false) {
 				store.SetValue (iter, ColSelected, true);
-				selectDialog.AddReference (new ProjectReference (project));
+				selectDialog.AddReference (ProjectReference.CreateProjectReference (project));
 				
 			} else {
 				store.SetValue (iter, ColSelected, false);
@@ -180,7 +180,7 @@ namespace MonoDevelop.Ide.Projects {
 			
 			Dictionary<DotNetProject,bool> references = new Dictionary<DotNetProject, bool> ();
 			
-			foreach (Project projectEntry in openSolution.GetAllSolutionItems<Project>()) {
+			foreach (Project projectEntry in openSolution.GetAllItems<Project>()) {
 
 				if (projectEntry == configureProject)
 					continue;

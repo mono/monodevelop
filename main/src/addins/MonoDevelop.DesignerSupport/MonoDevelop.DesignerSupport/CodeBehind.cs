@@ -29,10 +29,11 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-
-using MonoDevelop.Projects;
 using System.Globalization;
-using ICSharpCode.NRefactory.TypeSystem;
+
+using Microsoft.CodeAnalysis;
+using MonoDevelop.Projects;
+using System.Linq;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -102,30 +103,32 @@ namespace MonoDevelop.DesignerSupport
 			return null;
 		}
 		
-		public static IUnresolvedTypeDefinition GetDesignerClass (IType cls)
+//		public static IUnresolvedTypeDefinition GetDesignerClass (IType cls)
+//		{
+//			if (cls.GetDefinition ().Parts.Count == 1)
+//				return null;
+//			
+//			string designerEnding = ".designer" + Path.GetExtension (cls.GetDefinition ().Region.FileName);
+//			
+//			foreach (var c in cls.GetDefinition ().Parts)
+//				if (c.Region.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
+//				    return c;
+//			
+//			return null;
+//		}
+
+		public static Location GetNonDesignerClassLocation (ITypeSymbol cls)
 		{
-			if (cls.GetDefinition ().Parts.Count == 1)
+			if (cls.Locations.Length == 1)
 				return null;
+
+			var foo = cls.ContainingType;
 			
-			string designerEnding = ".designer" + Path.GetExtension (cls.GetDefinition ().Region.FileName);
+			string designerEnding = ".designer" + Path.GetExtension (cls.Locations.First ().SourceTree.FilePath);
 			
-			foreach (var c in cls.GetDefinition ().Parts)
-				if (c.Region.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
-				    return c;
-			
-			return null;
-		}
-		
-		public static IUnresolvedTypeDefinition GetNonDesignerClass (IType cls)
-		{
-			if (cls.GetDefinition ().Parts.Count == 1)
-				return null;
-			
-			string designerEnding = ".designer" + Path.GetExtension (cls.GetDefinition ().Region.FileName);
-			
-			foreach (var c in cls.GetDefinition ().Parts)
-				if (!c.Region.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
-				    return c;
+			foreach (var location in cls.Locations)
+				if (!location.SourceTree.FilePath.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
+					return location;
 			
 			return null;
 		}

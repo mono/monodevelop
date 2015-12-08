@@ -36,32 +36,11 @@ using System.Globalization;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class BuildEngine: MarshalByRefObject, IBuildEngine
+	public partial class BuildEngine: MarshalByRefObject, IBuildEngine
 	{
-		static readonly AutoResetEvent workDoneEvent = new AutoResetEvent (false);
-		static ThreadStart workDelegate;
-		static readonly object workLock = new object ();
-		static Thread workThread;
 		static CultureInfo uiCulture;
-		static Exception workError;
-
-		readonly ManualResetEvent doneEvent = new ManualResetEvent (false);
 		readonly Dictionary<string, string> unsavedProjects = new Dictionary<string, string> ();
-
 		readonly ProjectCollection engine = new ProjectCollection { DefaultToolsVersion = MSBuildConsts.Version };
-
-		public void Dispose ()
-		{
-			doneEvent.Set ();
-		}
-		
-		internal WaitHandle WaitHandle {
-			get { return doneEvent; }
-		}
-
-		public void Ping ()
-		{
-		}
 
 		public void SetCulture (CultureInfo uiCulture)
 		{
@@ -99,11 +78,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return content;
 			}
 		}
-		
-		public override object InitializeLifetimeService ()
-		{
-			return null;
-		}
 
 		internal void UnloadProject (string file)
 		{
@@ -117,49 +91,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				// changed and which are cached.
 				engine.UnloadAllProjects();
 			});
-		}
-
-		internal static void RunSTA (ThreadStart ts)
-		{
-			lock (workLock) {
-				lock (threadLock) {
-					workDelegate = ts;
-					workError = null;
-					if (workThread == null) {
-						workThread = new Thread (STARunner);
-						workThread.SetApartmentState (ApartmentState.STA);
-						workThread.IsBackground = true;
-						workThread.CurrentUICulture = uiCulture;
-						workThread.Start ();
-					}
-					else
-						// Awaken the existing thread
-						Monitor.Pulse (threadLock);
-				}
-				workDoneEvent.WaitOne ();
-			}
-			if (workError != null)
-				throw new Exception ("MSBuild operation failed", workError);
-		}
-
-		static readonly object threadLock = new object ();
-		
-		static void STARunner ()
-		{
-			lock (threadLock) {
-				do {
-					try {
-						workDelegate ();
-					}
-					catch (Exception ex) {
-						workError = ex;
-					}
-					workDoneEvent.Set ();
-				}
-				while (Monitor.Wait (threadLock, 60000));
-				
-				workThread = null;
-			}
 		}
 	}
 }

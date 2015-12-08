@@ -4,6 +4,7 @@
 	<ConditionType id="PackageNotInstalled" type="MonoDevelop.Core.AddIns.PackageNotInstalledCondition" />
 	<ConditionType id="Platform" type="MonoDevelop.Core.AddIns.PlatformCondition" />
 	<ConditionType id="AssemblyInstalled" type="MonoDevelop.Core.AddIns.AssemblyInstalledCondition" />
+	<ConditionType id="MSBuildTargetIsAvailable" type="MonoDevelop.Projects.Formats.MSBuild.TargetsAvailableCondition" />
 
 	
 	<!-- Extension points -->
@@ -77,20 +78,6 @@
 		<ExtensionNode name="Migration" type="MonoDevelop.Core.AddIns.UserDataMigrationNode" />
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/ProjectBindings" name = "Project bindings">
-		<Description>Project bindings</Description>
-		<ExtensionNode name="ProjectBinding" type="MonoDevelop.Projects.Extensions.ProjectBindingCodon">
-			<Description>A project binding. The specified class must implement MonoDevelop.Projects.IProjectBinding.</Description>
-		</ExtensionNode>	
-	</ExtensionPoint>
-
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/FileFormats" name = "Solution file format handlers">
-		<Description>File format handlers for workspaces, solutions and projects</Description>
-		<ExtensionNode name="FileFormat" type="MonoDevelop.Projects.Extensions.FileFormatNode">
-			<Description>A file format handler. The specified class must implement MonoDevelop.Projects.IFileFormat.</Description>
-		</ExtensionNode>	
-	</ExtensionPoint>
-
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/SerializableClasses" name = "Serializable classes">
 		<Description>Classes to be registered for serialization.</Description>
 		<ExtensionNode name="DataType" type="MonoDevelop.Projects.Extensions.DataTypeCodon" customAttributeType="MonoDevelop.Projects.ProjectModelDataItemAttribute">
@@ -98,36 +85,36 @@
 		</ExtensionNode>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/ExtendedProperties" name = "Serializable classes">
-		<Description>Custom properties for projects and other types.</Description>
-		<ExtensionNode name="ItemProperty" type="MonoDevelop.Projects.Extensions.ItemPropertyCodon">
-			<Description>A custom property. The type specified in the 'class' property is the type to which the property has to be added. Only types which implement IExtendedDataItem can be extended in this way.</Description>
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/WorkspaceObjectReaders" name = "Project service extensions">
+		<Description>WorkspaceObject readers. Specified classes must be a subclass of WorkspaceObjectReader</Description>
+		<ExtensionNode name="Class">
+			<Description>A subclass of WorkspaceObjectReader.</Description>
 		</ExtensionNode>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions" name = "Project service extensions">
-		<Description>Project service extensions. Specified classes must be a subclass of ProjectServiceExtension</Description>
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/ProjectModelExtensions" name = "Project model extensions">
+		<Description>Extensions for project model objects</Description>
+		<ExtensionNode name="Class" type="MonoDevelop.Projects.Extensions.ProjectModelExtensionNode">
+			<Description>A subclass of WorkspaceObjectExtension.</Description>
+		</ExtensionNode>
+		<ExtensionNode name="ProjectFlavor" type="MonoDevelop.Projects.Extensions.SolutionItemExtensionNode">
+			<Description>A subclass of ProjectExtension.</Description>
+		</ExtensionNode>
 		<ConditionType id="ItemType" type="MonoDevelop.Core.Gui.Dialogs.OptionPanels.ItemTypeCondition">
 			<Description>Type of the item. If no namespace is provided, MonoDevelop.Projects is assumed.</Description>
 		</ConditionType>
-		<ConditionType id="ActiveLanguage" type="MonoDevelop.Projects.Extensions.ItemTypeCondition">
-			<Description>Language of the project. It will evaluate to false if the project is not a .NET project.</Description>
-		</ConditionType>
-		<ExtensionNode name="Class">
-			<Description>A subclass of ProjectServiceExtension.</Description>
-		</ExtensionNode>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/LanguageBindings" name = "Language bindings">
 		<Description>Language bindings.</Description>
-		<ExtensionNode name="LanguageBinding" type="MonoDevelop.Projects.Extensions.LanguageBindingCodon"/>
+		<ExtensionNode name="LanguageBinding" type="MonoDevelop.Projects.Extensions.LanguageBindingExtensionNode"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildItemTypes" name = "MSBuild item types">
 		<Description>Item types supported by MSBuild</Description>
-		<ExtensionNode name="SolutionItem" type="MonoDevelop.Projects.Extensions.SolutionItemNode"/>
-		<ExtensionNode name="DotNetProject" type="MonoDevelop.Projects.Extensions.DotNetProjectNode"/>
-		<ExtensionNode name="DotNetProjectSubtype" type="MonoDevelop.Projects.Extensions.DotNetProjectSubtypeNode"/>
+		<ExtensionNode name="SolutionItemType" type="MonoDevelop.Projects.Extensions.SolutionItemTypeNode"/>
+		<ExtensionNode name="ProjectType" type="MonoDevelop.Projects.Extensions.ProjectTypeNode"/>
+		<ExtensionNode name="DotNetProjectType" type="MonoDevelop.Projects.Extensions.DotNetProjectTypeNode"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/PolicyTypes" name = "Policy types">
@@ -141,16 +128,8 @@
 		</ExtensionNode>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildImportProviders" name = "MSBuild Import Providers">
-		<ExtensionNode objectType="MonoDevelop.Projects.Formats.MSBuild.IMSBuildImportProvider"/>
-	</ExtensionPoint>
-
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildGlobalPropertyProviders" name = "MSBuild Global Property Providers">
 		<ExtensionNode objectType="MonoDevelop.Projects.Formats.MSBuild.IMSBuildGlobalPropertyProvider"/>
-	</ExtensionPoint>
-	
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildExtensions" name = "MSBuild Extensions">
-		<ExtensionNode name="Class" objectType="MonoDevelop.Projects.Formats.MSBuild.MSBuildExtension"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MonoDocSources" name = "MonoDoc Sources">
@@ -165,7 +144,17 @@
 		<Description>Project types not supported by MonoDevelop</Description>
 		<ExtensionNode name="ProjectType" type="MonoDevelop.Projects.Extensions.UnknownProjectTypeNode"/>
 	</ExtensionPoint>
-	
+
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildImportRedirects" name = "MSBuild import redirects">
+		<Description>Allows replacing an import by another one when a project is evaluated</Description>
+		<ExtensionNode name="Import" type="MonoDevelop.Projects.Extensions.ImportRedirectTypeNode"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildProjectItemTypes" name = "MSBuild project item subclasses">
+		<Description>Allows defining ProjectItem subclasses to be used for specific msbuild project items</Description>
+		<ExtensionNode name="Item" customAttributeType="MonoDevelop.Projects.ExportProjectItemTypeAttribute" />
+	</ExtensionPoint>
+
 	<!-- Extensions -->
 	
 	
@@ -219,43 +208,13 @@
 		<Application id = "project-export" class = "MonoDevelop.Projects.ProjectConvertTool" description = "Project conversion tool"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
-		<ProjectBinding id = "DotNet" class = "MonoDevelop.Projects.DotNetProjectBinding" />
-		<ProjectBinding id = "GenericProject" class = "MonoDevelop.Projects.GenericProjectBinding" />
-		<ProjectBinding id = "PortableDotNet" class = "MonoDevelop.Projects.PortableDotNetProjectBinding" />
-		<ProjectBinding id = "SharedAssetsProject" class = "MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProjectBinding" />
-	</Extension>
-	  
-	<Extension path = "/MonoDevelop/ProjectModel/FileFormats">
-		<FileFormat id = "MSBuild08" 
-			class = "MonoDevelop.Projects.Formats.MSBuild.MSBuildFileFormatVS08"
-			name = "MSBuild (Visual Studio 2008)"
-			canDefault = "true" />
-		<FileFormat id = "MSBuild05" 
-			class = "MonoDevelop.Projects.Formats.MSBuild.MSBuildFileFormatVS05"
-			name = "MSBuild (Visual Studio 2005)"
-			canDefault = "true" />
-		<FileFormat id = "MSBuild10" 
-			class = "MonoDevelop.Projects.Formats.MSBuild.MSBuildFileFormatVS10"
-			name = "MSBuild (Visual Studio 2010)"
-			canDefault = "true" />
-		<FileFormat id = "MSBuild12"
-			class = "MonoDevelop.Projects.Formats.MSBuild.MSBuildFileFormatVS12"
-			name = "MSBuild (Visual Studio 2012)"
-			canDefault = "true" />
-		<FileFormat id = "MD1" 
-			class = "MonoDevelop.Projects.Formats.MD1.MD1FileFormat"
-			name = "MonoDevelop 1.0 (deprecated)" />
-	</Extension>
-
-	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
-	</Extension>
-
-	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
-		<Class id="InitialStep" class = "MonoDevelop.Projects.ProjectServiceExtension" />
-		<Class class = "MonoDevelop.Projects.CompiledAssemblyExtension" />
-		<Class id="MidStep" class = "MonoDevelop.Projects.ProjectServiceExtension" />
-		<Class id="FinalStep" class = "MonoDevelop.Projects.ProjectServiceExtension" />
+	<Extension path = "/MonoDevelop/ProjectModel/WorkspaceObjectReaders">
+		<Class id="InitialStep" class = "MonoDevelop.Projects.DummyWorkspaceObjectReader" />
+		<Class id="CompiledAssembly" class = "MonoDevelop.Projects.CompiledAssemblyExtension" />
+		<Class id="Workspace" class = "MonoDevelop.Projects.WorkspaceSerializationExtension" />
+		<Class id="MSBuild" class = "MonoDevelop.Projects.MSBuildSerializationExtension" />
+		<Class id="MidStep" class = "MonoDevelop.Projects.DummyWorkspaceObjectReader" />
+		<Class id="FinalStep" class = "MonoDevelop.Projects.DummyWorkspaceObjectReader" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/FileSystemExtensions">
@@ -274,18 +233,10 @@
 		<PolicySet id="Invariant" _name="Invariant" visible="false"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
-		<SolutionItem guid = "{8BC9CEB9-8B4A-11D0-8D11-00A0C91BC942}"
-			type = "MonoDevelop.Projects.CompiledAssemblyProject"
-			handlerType = "MonoDevelop.Projects.Formats.MSBuild.CompiledAssemblyProjectMSBuildHandler" />
-		<SolutionItem guid = "{D954291E-2A0B-460D-934E-DC6B0785DB48}"
-			type = "MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProject"
-			extension = "shproj"
-			handlerType = "MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProjectMSBuildHandler" />
-	</Extension>
-
-	<Extension path = "/MonoDevelop/ProjectModel/MSBuildExtensions">
-		<Class class="MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProjectMSBuildExtension"/>
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
+		<Class id="InitialStep" class = "MonoDevelop.Projects.WorkspaceObjectExtension" />
+		<Class id="MidStep" class = "MonoDevelop.Projects.WorkspaceObjectExtension" />
+		<Class id="FinalStep" class = "MonoDevelop.Projects.WorkspaceObjectExtension" />
 	</Extension>
 
 
@@ -361,5 +312,13 @@
 		<ProjectType guid = "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}" name = "Visual C++" extension="vcxproj"/>
 		<ProjectType guid = "{E6FDF86B-F3D1-11D4-8576-0002A516ECE8}" name = "Visual J#" extension="vjsproj"/>
 		<ProjectType guid = "{82B43B9B-A64C-4715-B499-D71E9CA2BD60}" name = "Visual Studio Extension" />
+		<ProjectType guid = "{14182A97-F7F0-4C62-8B27-98AA8AE2109A}" name = "VB.NET Portable Library" />
 	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/MSBuildImportRedirects">
+		<Import project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.Common.Default.props" target="MSBuild/CodeSharing.Common.Default.props" />
+		<Import project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.Common.props" target="MSBuild/CodeSharing.Common.props" />
+		<Import project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.CSharp.targets" target="MSBuild/CodeSharing.CSharp.targets" />
+	</Extension>
+
 </ExtensionModel>

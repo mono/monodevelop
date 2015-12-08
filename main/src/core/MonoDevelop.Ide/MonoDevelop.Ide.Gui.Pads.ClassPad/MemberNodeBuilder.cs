@@ -43,13 +43,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		{
 			return ((IMember)dataObject).Name;
 		}
-		
-		protected Ambience Ambience {
-			get {
-				return AmbienceService.DefaultAmbience;
-			}
-		}
-		
+
 		public override Type CommandHandlerType {
 			get { return typeof(MemberNodeCommandHandler); }
 		}

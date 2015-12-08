@@ -29,8 +29,9 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Xml.Dom;
+using MonoDevelop.Ide.Editor;
+using System.Linq;
 
 namespace MonoDevelop.Xml.Editor
 {
@@ -41,19 +42,24 @@ namespace MonoDevelop.Xml.Editor
 		}
 		
 		public XDocument XDocument { get; set; }
-		
-		public override IEnumerable<FoldingRegion> Foldings {
+
+		public override System.Threading.Tasks.Task<IReadOnlyList<FoldingRegion>> GetFoldingsAsync (System.Threading.CancellationToken cancellationToken)
+		{
+			return System.Threading.Tasks.Task.FromResult((IReadOnlyList<FoldingRegion>)Foldings.ToList ());
+		}
+
+		public IEnumerable<FoldingRegion> Foldings {
 			get {
 				if (XDocument == null)
 					yield break;
-				foreach (var region in Comments.ToFolds ()) 
+				foreach (var region in GetCommentsAsync().Result.ToFolds ()) 
 					yield return region;
 				foreach (XNode node in XDocument.AllDescendentNodes) {
 					if (node is XCData)
 					{
 						if (node.Region.EndLine - node.Region.BeginLine > 2)
 							yield return new FoldingRegion ("<![CDATA[ ]]>", node.Region);
-					}
+					} 
 					else if (node is XComment)
 					{
 						if (node.Region.EndLine - node.Region.BeginLine > 2)
@@ -65,7 +71,7 @@ namespace MonoDevelop.Xml.Editor
 						if (el.IsClosed && el.ClosingTag.Region.EndLine - el.Region.BeginLine > 2) {
 							yield return new FoldingRegion
 								(string.Format ("<{0}...>", el.Name.FullName),
-								 new DomRegion (el.Region.Begin, el.ClosingTag.Region.End));
+								 new DocumentRegion (el.Region.Begin, el.ClosingTag.Region.End));
 						}
 					}
 					else if (node is XDocType)

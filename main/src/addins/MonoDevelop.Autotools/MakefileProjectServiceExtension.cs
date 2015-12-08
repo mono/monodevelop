@@ -38,89 +38,96 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Autotools
 {
-	public class MakefileProjectServiceExtension : ProjectServiceExtension
+	public class MakefileProjectServiceExtension : SolutionExtension
 	{
-		public override WorkspaceItem LoadWorkspaceItem (IProgressMonitor monitor, string fileName)
+		protected override void OnReadSolution (ProgressMonitor monitor, MonoDevelop.Projects.Formats.MSBuild.SlnFile file)
 		{
-			WorkspaceItem item = base.LoadWorkspaceItem (monitor, fileName);
-			
-			Solution sol = item as Solution;
-			if (sol != null) {
-				//Resolve project references
-				try {
-					MakefileData.ResolveProjectReferences (sol.RootFolder, monitor);
-				} catch (Exception e) {
-					LoggingService.LogError (GettextCatalog.GetString (
-						"Error resolving Makefile based project references for solution {0}", sol.Name), e);
-					monitor.ReportError (GettextCatalog.GetString (
-						"Error resolving Makefile based project references for solution {0}", sol.Name), e);
-				}
+			base.OnReadSolution (monitor, file);
+
+			//Resolve project references
+			try {
+				MakefileData.ResolveProjectReferences (Solution.RootFolder, monitor);
+			} catch (Exception e) {
+				LoggingService.LogError (GettextCatalog.GetString (
+					"Error resolving Makefile based project references for solution {0}", Solution.Name), e);
+				monitor.ReportError (GettextCatalog.GetString (
+					"Error resolving Makefile based project references for solution {0}", Solution.Name), e);
 			}
-			
-			return item;
+
+			// All done, dispose myself
+			Dispose ();
+		}
+	}
+
+	public class MakefileProjectExtension: ProjectExtension
+	{
+		MakefileData data;
+
+		public MakefileProjectExtension ()
+		{
 		}
 
-		
-		protected override SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName)
-		{
-			SolutionEntityItem entry = base.LoadSolutionItem (monitor, fileName);
-			if (entry == null)
-				return null;
-			
-			Project project = entry as Project;
-			if (project == null)
-				return entry;
+		public MakefileData MakefileData {
+			get { return data; }
+			set { data = value; }
+		}
 
-			//Project
-			MakefileData data = entry.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
+		protected override void OnReadProject (ProgressMonitor monitor, MonoDevelop.Projects.Formats.MSBuild.MSBuildProject msproject)
+		{
+			base.OnReadProject (monitor, msproject);
+			var ext = msproject.GetMonoDevelopProjectExtension ("MonoDevelop.Autotools.MakefileInfo");
+			if (ext == null)
+				return;
+
+			data = MakefileData.Read (ext);
 			if (data == null)
-				return entry;
+				return;
 
 			monitor.BeginTask (GettextCatalog.GetString ("Updating project from Makefile"), 1);
 			try { 
-				data.OwnerProject = project;
+				data.OwnerProject = Project;
 				if (data.SupportsIntegration)
 					data.UpdateProject (monitor, false);
 				monitor.Step (1);
 			} catch (Exception e) {
 				monitor.ReportError (GettextCatalog.GetString (
-					"Error loading Makefile for project {0}", project.Name), e);
+					"\tError loading Makefile for project {0}", Project.Name), e);
 			} finally {
 				monitor.EndTask ();
 			}
-			return entry;
 		}
 
-		public override void Save (IProgressMonitor monitor, SolutionEntityItem entry)
+		protected override void OnWriteProject (ProgressMonitor monitor, MonoDevelop.Projects.Formats.MSBuild.MSBuildProject msproject)
 		{
-			base.Save (monitor, entry);
-			
-			Project project = entry as Project;
-			if (project == null)
-				return;
-				
-			MakefileData data = project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
-			if (data == null || !data.SupportsIntegration)
+			base.OnWriteProject (monitor, msproject);
+
+			if (data == null)
 				return;
 
+			msproject.SetMonoDevelopProjectExtension ("MonoDevelop.Autotools.MakefileInfo", data.Write ());
+
+			if (!data.SupportsIntegration)
+				return;
+			
 			try {
 				data.UpdateMakefile (monitor);
 			} catch (Exception e) {
 				LoggingService.LogError (GettextCatalog.GetString ("Error saving to Makefile ({0}) for project {1}",
-					data.AbsoluteMakefileName, project.Name, e));
+					data.AbsoluteMakefileName, Project.Name, e));
 				monitor.ReportError (GettextCatalog.GetString (
-					"Error saving to Makefile ({0}) for project {1}", data.AbsoluteMakefileName, project.Name), e);
+					"Error saving to Makefile ({0}) for project {1}", data.AbsoluteMakefileName, Project.Name), e);
 			}
 		}
 
-		public override List<FilePath> GetItemFiles (SolutionEntityItem entry, bool includeReferencedFiles)
+		protected override IEnumerable<FilePath> OnGetItemFiles (bool includeReferencedFiles)
 		{
-			List<FilePath> col = base.GetItemFiles (entry, includeReferencedFiles);
+			List<FilePath> col = base.OnGetItemFiles (includeReferencedFiles).ToList ();
 			
-			MakefileData data = entry.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
 			if (data == null || !data.SupportsIntegration || string.IsNullOrEmpty (data.AbsoluteMakefileName))
 				return col;
 			
@@ -136,31 +143,20 @@ namespace MonoDevelop.Autotools
 		}
 
 
-		//TODO
-		protected override bool GetNeedsBuilding (SolutionEntityItem entry, ConfigurationSelector configuration)
-		{
-			return base.GetNeedsBuilding (entry, configuration);
-		}
-
 		//FIXME: Check whether autogen.sh is required or not
-		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, ConfigurationSelector configuration)
+		protected async override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
-			Project project = entry as Project;
-			if (project == null)
-				return base.Build (monitor, entry, configuration);
-
-			MakefileData data = project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
 			if (data == null || !data.SupportsIntegration || String.IsNullOrEmpty (data.BuildTargetName))
-				return base.Build (monitor, entry, configuration);
+				return await base.OnBuild (monitor, configuration, operationContext);
 
 			//FIXME: Gen autofoo ? autoreconf?
 
 			string output = String.Empty;
 			int exitCode = 0;
-			monitor.BeginTask (GettextCatalog.GetString ("Building {0}", project.Name), 1);
+			monitor.BeginTask (GettextCatalog.GetString ("Building {0}", Project.Name), 1);
 			try
 			{
-				string baseDir = project.BaseDirectory;
+				string baseDir = Project.BaseDirectory;
 				string args = string.Format ("-j {0} {1}", data.ParallelProcesses, data.BuildTargetName);
 	
 				using (var swOutput = new StringWriter ()) {
@@ -174,7 +170,8 @@ namespace MonoDevelop.Autotools
 								chainedOutput, 
 								chainedOutput,
 							null)) {
-							process.WaitForOutput ();
+
+							await process.Task;
 
 							chainedOutput.UnchainWriter (monitor.Log);
 							chainedOutput.UnchainWriter (swOutput);
@@ -200,7 +197,7 @@ namespace MonoDevelop.Autotools
 			Regex regexError = data.GetErrorRegex (false);
 			Regex regexWarning = data.GetWarningRegex (false);
 
-			BuildResult cr = ParseOutput (tf, output, project.BaseDirectory, regexError, regexWarning);
+			BuildResult cr = ParseOutput (tf, output, Project.BaseDirectory, regexError, regexWarning);
 			if (exitCode != 0 && cr.FailedBuildCount == 0)
 				cr.AddError (GettextCatalog.GetString ("Build failed. See Build Output panel."));
 
@@ -330,24 +327,16 @@ namespace MonoDevelop.Autotools
 				return null;
 		}
 
-		protected override void Clean (IProgressMonitor monitor, SolutionEntityItem entry, ConfigurationSelector configuration)
+		protected async override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
-			Project proj = entry as Project;
-			if (proj == null) {
-				base.Clean (monitor, entry, configuration);
-				return;
-			}
-
-			MakefileData data = proj.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
 			if (data == null || !data.SupportsIntegration || String.IsNullOrEmpty (data.CleanTargetName)) {
-				base.Clean (monitor, entry, configuration); 
-				return;
+				return await base.OnClean (monitor, configuration, operationContext); 
 			}
 
 			monitor.BeginTask ( GettextCatalog.GetString( "Cleaning project"), 1);
 			try
 			{
-				string baseDir = proj.BaseDirectory;
+				string baseDir = Project.BaseDirectory;
 	
 				ProcessWrapper process = Runtime.ProcessService.StartProcess ( "make", 
 						data.CleanTargetName,
@@ -355,7 +344,8 @@ namespace MonoDevelop.Autotools
 						monitor.Log, 
 						monitor.Log, 
 						null );
-				process.WaitForOutput ();
+
+				await process.Task;
 
 				if ( process.ExitCode > 0 )
 					throw new Exception ( GettextCatalog.GetString ("An unspecified error occurred while running '{0}'", "make " + data.CleanTargetName) );
@@ -365,52 +355,45 @@ namespace MonoDevelop.Autotools
 			catch ( Exception e )
 			{
 				monitor.ReportError ( GettextCatalog.GetString ("Project could not be cleaned: "), e );
-				return;
+				var res = new BuildResult ();
+				res.AddError (GettextCatalog.GetString ("Project could not be cleaned: ") + e.Message);
+				return res;
 			}
 			finally 
 			{
 				monitor.EndTask ();
 			}
 			monitor.ReportSuccess ( GettextCatalog.GetString ( "Project successfully cleaned"));
+			return BuildResult.CreateSuccess ();
 		}
 
-		protected override bool CanExecute (SolutionEntityItem item, ExecutionContext context, ConfigurationSelector configuration)
+		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
-			Project project = item as Project;
-			if (project != null) {
-				MakefileData data = project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
-				if (data != null && data.SupportsIntegration && !String.IsNullOrEmpty (data.ExecuteTargetName))
-					return true;
-			}
-			return base.CanExecute (item, context, configuration);
+			if (data != null && data.SupportsIntegration && !String.IsNullOrEmpty (data.ExecuteTargetName))
+				return true;
+			return base.OnGetCanExecute (context, configuration);
 		}
 
 
-		protected override void Execute (IProgressMonitor monitor, SolutionEntityItem entry, ExecutionContext context, ConfigurationSelector configuration)
+		protected async override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			Project project = entry as Project;
-			if (project == null) {
-				base.Execute (monitor, entry, context, configuration);
-				return;
-			}
-
-			MakefileData data = project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
 			if (data == null || !data.SupportsIntegration || String.IsNullOrEmpty (data.ExecuteTargetName)) {
-				base.Execute (monitor, entry, context, configuration);
+				await base.OnExecute (monitor, context, configuration);
 				return;
 			}
 
-			IConsole console = context.ConsoleFactory.CreateConsole (true);
-			monitor.BeginTask (GettextCatalog.GetString ("Executing {0}", project.Name), 1);
+			OperationConsole console = context.ConsoleFactory.CreateConsole ();
+			monitor.BeginTask (GettextCatalog.GetString ("Executing {0}", Project.Name), 1);
 			try
 			{
 				ProcessWrapper process = Runtime.ProcessService.StartProcess ("make",
-						data.ExecuteTargetName,
-						project.BaseDirectory,
-						console.Out,
-						console.Error,
-						null);
-				process.WaitForOutput ();
+					data.ExecuteTargetName,
+					Project.BaseDirectory,
+					console.Out,
+					console.Error,
+					null);
+
+				await process.Task;
 
 				monitor.Log.WriteLine (GettextCatalog.GetString ("The application exited with code: {0}", process.ExitCode));
 				monitor.Step (1);

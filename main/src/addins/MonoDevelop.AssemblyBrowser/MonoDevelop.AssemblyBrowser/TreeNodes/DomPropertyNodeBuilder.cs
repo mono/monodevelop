@@ -35,12 +35,12 @@ using MonoDevelop.Projects.Text;
 using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler;
 using System.Threading;
-using Mono.TextEditor;
 using System.Collections.Generic;
 using Mono.Cecil;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -66,7 +66,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var property = (IUnresolvedProperty)dataObject;
 			try {
 				var resolved = Resolve (treeBuilder, property);
-				nodeInfo.Label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
+				nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (Ambience.ConvertSymbol (resolved));
 			} catch (Exception) {
 				nodeInfo.Label = property.Name;
 			}
@@ -87,7 +87,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		#region IAssemblyBrowserNodeBuilder
 
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditorData data, ITreeNavigator navigator)
+		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditor data, ITreeNavigator navigator)
 		{
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
@@ -107,7 +107,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return result;
 		}
 
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Decompile (TextEditorData data, ITreeNavigator navigator, bool publicOnly)
+		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Decompile (TextEditor data, ITreeNavigator navigator, bool publicOnly)
 		{
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
@@ -117,7 +117,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), property.DeclaringType, b => b.AddProperty (property));
 		}
 		
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditorData data, ITreeNavigator navigator, bool publicOnly)
+		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditor data, ITreeNavigator navigator, bool publicOnly)
 		{
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
@@ -133,17 +133,11 @@ namespace MonoDevelop.AssemblyBrowser
 			var resolved = Resolve (navigator, property);
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (Ambience.GetString (resolved, OutputFlags.AssemblyBrowserDescription));
+			result.Append (MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (Ambience.ConvertSymbol (resolved)));
 			result.Append ("</big>");
 			result.AppendLine ();
-			
-			AmbienceService.DocumentationFormatOptions options = new AmbienceService.DocumentationFormatOptions ();
-			options.MaxLineLength = -1;
-			options.BigHeadings = true;
-			options.Ambience = Ambience;
-			result.AppendLine ();
-			
-			result.Append (AmbienceService.GetDocumentationMarkup (resolved, AmbienceService.GetDocumentation (resolved), options));
+
+			//result.Append (AmbienceService.GetDocumentationMarkup (resolved, AmbienceService.GetDocumentation (resolved), options));
 			
 			return result.ToString ();
 		}

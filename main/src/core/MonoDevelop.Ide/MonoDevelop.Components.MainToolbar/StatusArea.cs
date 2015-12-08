@@ -35,8 +35,6 @@ using System.Collections.Generic;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
-using Mono.TextEditor;
-
 using StockIcons = MonoDevelop.Ide.Gui.Stock;
 using Xwt.Motion;
 using MonoDevelop.Ide.Fonts;
@@ -317,7 +315,7 @@ namespace MonoDevelop.Components.MainToolbar
 			TaskEventHandler updateHandler = delegate {
 				int ec=0, wc=0;
 
-				foreach (Task t in TaskService.Errors) {
+				foreach (TaskListEntry t in TaskService.Errors) {
 					if (t.Severity == TaskSeverity.Error)
 						ec++;
 					else if (t.Severity == TaskSeverity.Warning)

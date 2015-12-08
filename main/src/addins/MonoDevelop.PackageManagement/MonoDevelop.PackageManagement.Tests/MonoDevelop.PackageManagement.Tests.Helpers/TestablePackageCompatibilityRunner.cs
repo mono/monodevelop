@@ -65,7 +65,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		}
 
 		protected override PackageManagementEventsMonitor CreateEventMonitor (
-			IProgressMonitor monitor,
+			ProgressMonitor monitor,
 			IPackageManagementEvents packageManagementEvents,
 			IProgressProvider progressProvider)
 		{
@@ -97,7 +97,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public bool PackageConsoleIsShown;
 
-		protected override void ShowPackageConsole (IProgressMonitor progressMonitor)
+		protected override void ShowPackageConsole (ProgressMonitor progressMonitor)
 		{
 			PackageConsoleIsShown = true;
 		}

@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Threading;
 
 namespace MonoDevelop.Core.Execution
 {
@@ -37,7 +38,7 @@ namespace MonoDevelop.Core.Execution
 			return Runtime.ProcessService.GetDefaultExecutionHandler (command) != null;
 		}
 		
-		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		public ProcessAsyncOperation Execute (ExecutionCommand command, OperationConsole console)
 		{
 			IExecutionHandler handler = Runtime.ProcessService.GetDefaultExecutionHandler (command);
 			return handler.Execute (command, console);

@@ -35,6 +35,7 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.StringParsing;
 using System.Collections.Generic;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -47,14 +48,10 @@ namespace MonoDevelop.Projects
 	
 	public class DotNetProjectConfiguration: ProjectConfiguration
 	{
-		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
-		[ItemProperty ("AssemblyName")]
 		string assembly;
-		
-		ConfigurationParameters compilationParameters;
-		
 		string sourcePath;
-		
+		DotNetCompilerParameters compilationParameters;
+
 		public DotNetProjectConfiguration ()
 		{
 		}
@@ -63,32 +60,49 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
-		[ItemProperty("SignAssembly", DefaultValue = false)]
+		internal protected override void Read (IMSBuildEvaluatedPropertyCollection pset, string toolsVersion)
+		{
+			base.Read (pset, toolsVersion);
+
+			assembly = pset.GetValue ("AssemblyName");
+			signAssembly = pset.GetValue<bool> ("SignAssembly");
+			delaySign = pset.GetValue<bool> ("DelaySign");
+			assemblyKeyFile = pset.GetPathValue ("AssemblyOriginatorKeyFile", FilePath.Empty);
+			if (string.IsNullOrEmpty (assemblyKeyFile))
+				assemblyKeyFile = pset.GetPathValue ("AssemblyKeyFile", FilePath.Empty);
+			if (compilationParameters != null)
+				compilationParameters.Read (pset, toolsVersion);
+		}
+
+		internal protected override void Write (IPropertySet pset, string toolsVersion)
+		{
+			base.Write (pset, toolsVersion);
+			pset.SetValue ("AssemblyName", assembly, mergeToMainGroup: true);
+			pset.SetValue ("SignAssembly", signAssembly, defaultValue:false, mergeToMainGroup: true);
+			pset.SetValue ("DelaySign", delaySign, defaultValue:false, mergeToMainGroup:true);
+			pset.SetValue ("AssemblyOriginatorKeyFile", assemblyKeyFile, defaultValue:FilePath.Empty, mergeToMainGroup:true);
+			if (compilationParameters != null)
+				compilationParameters.Write (pset, toolsVersion);
+		}
+
 		private bool signAssembly = false;
 		public bool SignAssembly {
 			get { return signAssembly; }
 			set { signAssembly = value; }
 		}
 		
-		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
-		[ItemProperty("DelaySign", DefaultValue = false)]
 		private bool delaySign = false;
 		public bool DelaySign {
 			get { return delaySign; }
 			set { delaySign = value; }
 		}
 
-		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
-		[ProjectPathItemProperty("AssemblyKeyFile", ReadOnly=true)]
 		internal string OldAssemblyKeyFile {
 			set { assemblyKeyFile = value; }
 		}
 
-		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
-		[ProjectPathItemProperty("AssemblyOriginatorKeyFile", DefaultValue = "")]
-		private string assemblyKeyFile = "";
-		public string AssemblyKeyFile {
+		private FilePath assemblyKeyFile = FilePath.Empty;
+		public FilePath AssemblyKeyFile {
 			get { return assemblyKeyFile; }
 			set { assemblyKeyFile = value; }
 		}
@@ -149,23 +163,12 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		[ItemProperty ("CodeGeneration")]
-		public ConfigurationParameters CompilationParameters {
+		public DotNetCompilerParameters CompilationParameters {
 			get { return compilationParameters; }
 			set {
 				compilationParameters = value; 
 				if (compilationParameters != null)
 					compilationParameters.ParentConfiguration = this;
-			}
-		}
-		
-		public ProjectParameters ProjectParameters {
-			get {
-				DotNetProject dnp = ParentItem as DotNetProject;
-				if (dnp != null)
-					return dnp.LanguageParameters;
-				else
-					return null;
 			}
 		}
 		
@@ -203,24 +206,6 @@ namespace MonoDevelop.Projects
 			if (CompilationParameters != null)
 				return CompilationParameters.GetDefineSymbols ();
 			return new string[0];
-		}
-	}
-	
-	public class UnknownCompilationParameters: ConfigurationParameters, IExtendedDataItem
-	{
-		readonly Hashtable table = new Hashtable ();
-		
-		public IDictionary ExtendedProperties { 
-			get { return table; }
-		}
-	}
-	
-	public class UnknownProjectParameters: ProjectParameters, IExtendedDataItem
-	{
-		readonly Hashtable table = new Hashtable ();
-		
-		public IDictionary ExtendedProperties { 
-			get { return table; }
 		}
 	}
 	

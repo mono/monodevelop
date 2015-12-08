@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Debugger
 {
@@ -51,7 +52,7 @@ namespace MonoDevelop.Debugger
 			TextView.KeyReleaseEvent += OnEditKeyRelease;
 			TextView.FocusOutEvent += TextView_FocusOutEvent;
 
-			IdeApp.Preferences.CustomOutputPadFontChanged += OnCustomOutputPadFontChanged;
+			IdeApp.Preferences.CustomOutputPadFont.Changed += OnCustomOutputPadFontChanged;
 			CompletionWindowManager.WindowClosed += OnCompletionWindowClosed;
 		}
 
@@ -274,7 +275,7 @@ namespace MonoDevelop.Debugger
 			if (keyHandled)
 				return;
 
-			CompletionWindowManager.PostProcessKeyEvent (key, keyChar, modifier);
+			CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
 			PopupCompletion ();
 		}
 
@@ -292,7 +293,7 @@ namespace MonoDevelop.Debugger
 			}
 
 			if (currentCompletionData != null) {
-				if ((keyHandled = CompletionWindowManager.PreProcessKeyEvent (key, keyChar, modifier)))
+				if ((keyHandled = CompletionWindowManager.PreProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier))))
 					return true;
 			}
 
@@ -331,6 +332,9 @@ namespace MonoDevelop.Debugger
 
 		int Position {
 			get { return Cursor.Offset - TokenBegin.Offset; }
+			set { 
+				throw new NotSupportedException ();
+			}
 		}
 
 		#region ICompletionWidget implementation
@@ -369,6 +373,15 @@ namespace MonoDevelop.Debugger
 		int ICompletionWidget.CaretOffset {
 			get {
 				return Position;
+			}
+			set {
+				Position = value;
+			}
+		}
+
+		double ICompletionWidget.ZoomLevel {
+			get {
+				return 1;
 			}
 		}
 
@@ -448,6 +461,10 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
+		{
+			// ignore
+		}
 		#endregion
 
 		void OnCustomOutputPadFontChanged (object sender, EventArgs e)
@@ -457,7 +474,7 @@ namespace MonoDevelop.Debugger
 
 		protected override void OnDestroyed ()
 		{
-			IdeApp.Preferences.CustomOutputPadFontChanged -= OnCustomOutputPadFontChanged;
+			IdeApp.Preferences.CustomOutputPadFont.Changed -= OnCustomOutputPadFontChanged;
 			CompletionWindowManager.WindowClosed -= OnCompletionWindowClosed;
 			CompletionWindowManager.HideWindow ();
 			TextView.FocusOutEvent -= TextView_FocusOutEvent;

@@ -31,15 +31,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
-
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.TypeSystem;
+using System.Threading;
+using System.Threading.Tasks;
 
 using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport; 
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Editor;
 using MonoDevelop.AspNet.Html;
 using MonoDevelop.AspNet.Html.Parser;
 using MonoDevelop.AspNet.Projects;
@@ -48,23 +48,29 @@ using S = MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.WebForms.Dom;
 using MonoDevelop.Xml.Parser;
 using MonoDevelop.Xml.Dom;
+using MonoDevelop.Projects;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor.Projection;
 
 namespace MonoDevelop.AspNet.WebForms
 {
 	public class WebFormsEditorExtension : BaseHtmlEditorExtension
 	{
-		static readonly Regex DocTypeRegex = new Regex (@"(?:PUBLIC|public)\s+""(?<fpi>[^""]*)""\s+""(?<uri>[^""]*)""");
+		static readonly System.Text.RegularExpressions.Regex DocTypeRegex = new System.Text.RegularExpressions.Regex (@"(?:PUBLIC|public)\s+""(?<fpi>[^""]*)""\s+""(?<uri>[^""]*)""");
 
 		WebFormsParsedDocument aspDoc;
-		AspNetAppProject project;
+		DotNetProject project;
 		WebFormsTypeContext refman = new WebFormsTypeContext ();
 
 		ILanguageCompletionBuilder documentBuilder;
-		LocalDocumentInfo localDocumentInfo;
+		Projection localDocumentProjection;
 		DocumentInfo documentInfo;
 
 		ICompletionWidget defaultCompletionWidget;
-		MonoDevelop.Ide.Gui.Document defaultDocument;
+		DocumentContext defaultDocumentContext;
+		TextEditor defaultEditor;
+		TextEditor projectedEditor;
 		
 		bool HasDoc { get { return aspDoc != null; } }
 
@@ -89,54 +95,53 @@ namespace MonoDevelop.AspNet.WebForms
 			aspDoc = CU as WebFormsParsedDocument;
 			if (HasDoc)
 				refman.Doc = aspDoc;
-			
-			var newProj = Document.Project as AspNetAppProject;
+
+			var newProj = base.DocumentContext.Project as DotNetProject;
 			if (newProj != null) {
 				project = newProj;
 				refman.Project = newProj;
 			}
-			
-			documentBuilder = HasDoc ? LanguageCompletionBuilderService.GetBuilder (aspDoc.Info.Language) : null;
-			
-			if (documentBuilder != null) {
-				documentInfo = new DocumentInfo (refman.Compilation, aspDoc, refman.GetUsings ());
-				documentInfo.ParsedDocument = documentBuilder.BuildDocument (documentInfo, Editor);
-				documentInfo.CodeBesideClass = CreateCodeBesideClass (documentInfo, refman);
+
+			if (HasDoc) {
+				documentInfo = new DocumentInfo (aspDoc, refman.GetUsings ());
+//				localDocumentProjection = new MonoDevelop.AspNet.WebForms.CSharp.CSharpProjector ().CreateProjection (documentInfo, Editor, true).Result;
+//				projectedEditor = localDocumentProjection.CreateProjectedEditor (DocumentContext);
+//				Editor.SetOrUpdateProjections (DocumentContext, new [] { localDocumentProjection  });
 			}
 		}
 		
-		static IUnresolvedTypeDefinition CreateCodeBesideClass (DocumentInfo info, WebFormsTypeContext refman)
+		static INamedTypeSymbol CreateCodeBesideClass (DocumentInfo info, WebFormsTypeContext refman)
 		{
-			var memberList = new WebFormsMemberListBuilder (refman, info.AspNetDocument.XDocument);
-			memberList.Build ();
-			var t = new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedTypeDefinition (info.ClassName);
-			var dom = refman.Compilation;
-			var baseType = ReflectionHelper.ParseReflectionName (info.BaseType).Resolve (dom);
-			foreach (var m in WebFormsCodeBehind.GetDesignerMembers (memberList.Members.Values, baseType, null)) {
-				t.Members.Add (new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedField (t, m.Name) {
-					Accessibility = Accessibility.Protected,
-					ReturnType = m.Type.ToTypeReference ()
-				});
-			}
-			return t;
+			//TODO: Roslyn port
+//			var memberList = new WebFormsMemberListBuilder (refman, info.AspNetDocument.XDocument);
+//			memberList.Build ();
+//			var t = new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedTypeDefinition (info.ClassName);
+//			var dom = refman.Compilation;
+//			var baseType = ReflectionHelper.ParseReflectionName (info.BaseType).Resolve (dom);
+//			foreach (var m in WebFormsCodeBehind.GetDesignerMembers (memberList.Members.Values, baseType, null)) {
+//				t.Members.Add (new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedField (t, m.Name) {
+//					Accessibility = Accessibility.Protected,
+//					ReturnType = m.Type.ToTypeReference ()
+//				});
+//			}
+//			return t;
+			return null;
 		}
 
-		protected override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
-		                                                            bool forced, ref int triggerWordLength)
+		protected override Task<ICompletionDataList> HandleCodeCompletion (
+			CodeCompletionContext completionContext, bool forced, CancellationToken token)
 		{
-			ITextBuffer buf = Buffer;
 			// completionChar may be a space even if the current char isn't, when ctrl-space is fired t
-			char currentChar = completionContext.TriggerOffset < 1? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 1);
+			char currentChar = completionContext.TriggerOffset < 1? ' ' : Editor.GetCharAt (completionContext.TriggerOffset - 1);
 			//char previousChar = completionContext.TriggerOffset < 2? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 2);
-			
-			
+
 			//directive names
 			if (Tracker.Engine.CurrentState is WebFormsDirectiveState) {
 				var directive = Tracker.Engine.Nodes.Peek () as WebFormsDirective;
 				if (HasDoc && directive != null && directive.Region.BeginLine == completionContext.TriggerLine &&
 				    directive.Region.BeginColumn + 3 == completionContext.TriggerLineOffset)
 				{
-					return WebFormsDirectiveCompletion.GetDirectives (aspDoc.Type);
+					return Task.FromResult ((ICompletionDataList)WebFormsDirectiveCompletion.GetDirectives (aspDoc.Type));
 				}
 				return null;
 			}
@@ -145,8 +150,9 @@ namespace MonoDevelop.AspNet.WebForms
 				if (HasDoc && directive != null && directive.Region.BeginLine == completionContext.TriggerLine &&
 				    directive.Region.BeginColumn + 4 == completionContext.TriggerLineOffset && char.IsLetter (currentChar))
 				{
-					triggerWordLength = 1;
-					return WebFormsDirectiveCompletion.GetDirectives (aspDoc.Type);
+					completionContext.TriggerWordLength = 1;
+					completionContext.TriggerOffset -= 1;
+					return Task.FromResult ((ICompletionDataList)WebFormsDirectiveCompletion.GetDirectives (aspDoc.Type));
 				}
 				return null;
 			}
@@ -157,14 +163,14 @@ namespace MonoDevelop.AspNet.WebForms
 			if (currentChar == '<' && !(isAspExprState || Tracker.Engine.CurrentState is XmlRootState)) {
 				var list = new CompletionDataList ();
 				AddAspBeginExpressions (list);
-				return list;
+				return Task.FromResult ((ICompletionDataList)list);
 			}
 			
 			if (!HasDoc || aspDoc.Info.DocType == null) {
 				//FIXME: get doctype from master page
 				DocType = null;
 			} else {
-				DocType = new XDocType (TextLocation.Empty);
+				DocType = new XDocType (DocumentLocation.Empty);
 				var matches = DocTypeRegex.Match (aspDoc.Info.DocType);
 				DocType.PublicFpi = matches.Groups["fpi"].Value;
 				DocType.Uri = matches.Groups["uri"].Value;
@@ -192,7 +198,7 @@ namespace MonoDevelop.AspNet.WebForms
 				
 			}
 			
-			return base.HandleCodeCompletion (completionContext, forced, ref triggerWordLength);
+			return base.HandleCodeCompletion (completionContext, forced, token);
 		}
 		
 		//case insensitive, no prefix
@@ -203,56 +209,53 @@ namespace MonoDevelop.AspNet.WebForms
 		
 		public void InitializeCodeCompletion (char ch)
 		{
-			int caretOffset = Document.Editor.Caret.Offset;
+			int caretOffset = Editor.CaretOffset;
 			int start = caretOffset - Tracker.Engine.CurrentStateLength;
-			if (Document.Editor.GetCharAt (start) == '=') 
+			if (Editor.GetCharAt (start) == '=') 
 				start++;
-			string sourceText = Document.Editor.GetTextBetween (start, caretOffset);
+			string sourceText = Editor.GetTextBetween (start, caretOffset);
 			if (ch != '\0')
 				sourceText += ch;
-			string textAfterCaret = Document.Editor.GetTextBetween (caretOffset, Math.Min (Document.Editor.Length, Math.Max (caretOffset, Tracker.Engine.Position + Tracker.Engine.CurrentStateLength - 2)));
+			string textAfterCaret = Editor.GetTextBetween (caretOffset, Math.Min (Editor.Length, Math.Max (caretOffset, Tracker.Engine.Position + Tracker.Engine.CurrentStateLength - 2)));
 
-			if (documentBuilder == null){
-				localDocumentInfo = null;
+			if (documentBuilder == null) {
+				localDocumentProjection = null;
 				return;
 			}
-			localDocumentInfo = documentBuilder.BuildLocalDocument (documentInfo, Editor, sourceText, textAfterCaret, true);
-			
-			var viewContent = new MonoDevelop.Ide.Gui.HiddenTextEditorViewContent ();
-			viewContent.Project = Document.Project;
-			viewContent.ContentName = localDocumentInfo.ParsedLocalDocument.FileName;
-			
-			viewContent.Text = localDocumentInfo.LocalDocument;
-			viewContent.GetTextEditorData ().Caret.Offset = localDocumentInfo.CaretPosition;
 
-			var workbenchWindow = new MonoDevelop.Ide.Gui.HiddenWorkbenchWindow ();
-			workbenchWindow.ViewContent = viewContent;
-			localDocumentInfo.HiddenDocument = new HiddenDocument (workbenchWindow) {
-				HiddenParsedDocument = localDocumentInfo.ParsedLocalDocument
-			};
+//			var viewContent = new MonoDevelop.Ide.Gui.HiddenTextEditorViewContent ();
+//			viewContent.Project = DocumentContext.Project;
+//			viewContent.ContentName = localDocumentInfo.ParsedLocalDocument.FileName;
+//			
+//			viewContent.Text = localDocumentInfo.LocalDocument;
+//			viewContent.Editor.CaretOffset = localDocumentInfo.CaretPosition;
+//
+//			var workbenchWindow = new MonoDevelop.Ide.Gui.HiddenWorkbenchWindow ();
+//			workbenchWindow.ViewContent = viewContent;
+//			localDocumentInfo.HiddenDocument = new HiddenDocument (workbenchWindow) {
+//				HiddenParsedDocument = localDocumentInfo.ParsedLocalDocument
+//			};
 		}
 		
 		
-		public override ICompletionDataList CodeCompletionCommand (CodeCompletionContext completionContext)
+		public override Task<ICompletionDataList> CodeCompletionCommand (CodeCompletionContext completionContext)
 		{
-			//completion for ASP.NET expressions
+/*			//completion for ASP.NET expressions
 			// TODO: Detect <script> state here !!!
 			if (documentBuilder != null && Tracker.Engine.CurrentState is WebFormsExpressionState) {
 				InitializeCodeCompletion ('\0');
-				return documentBuilder.HandlePopupCompletion (defaultDocument, documentInfo, localDocumentInfo);
-			}
+				return documentBuilder.HandlePopupCompletion (defaultEditor, defaultDocumentContext, documentInfo, localDocumentInfo);
+			}*/
 			return base.CodeCompletionCommand (completionContext);
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			defaultCompletionWidget = CompletionWidget;
-			defaultDocument = document;
-			defaultDocument.Editor.Caret.PositionChanged += delegate {
-				OnCompletionContextChanged (CompletionWidget, EventArgs.Empty);
-			};
-			defaultDocument.Saved += AsyncUpdateDesignerFile;
+			defaultDocumentContext = DocumentContext;
+			defaultEditor = Editor;
+			defaultDocumentContext.Saved += AsyncUpdateDesignerFile;
 			OnParsedDocumentUpdated ();
 		}
 
@@ -282,55 +285,51 @@ namespace MonoDevelop.AspNet.WebForms
 				}
 			});
 		}
-		
-		public override ICompletionDataList HandleCodeCompletion (
-		    CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
-		{
-			if (localDocumentInfo == null)
-				return base.HandleCodeCompletion (completionContext, completionChar, ref triggerWordLength);
-			localDocumentInfo.HiddenDocument.Editor.InsertAtCaret (completionChar.ToString ());
-			return documentBuilder.HandleCompletion (defaultDocument, completionContext, documentInfo, localDocumentInfo, completionChar, ref triggerWordLength);
-		}
 
-		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		// TODO: Roslyn port
+//		
+//		public override ICompletionDataList HandleCodeCompletionAsync (
+//		    CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
+//		{
+//			if (localDocumentInfo == null)
+//				return base.HandleCodeCompletionAsync (completionContext, completionChar, ref triggerWordLength);
+//			localDocumentInfo.HiddenDocument.Editor.InsertAtCaret (completionChar.ToString ());
+//			return documentBuilder.HandleCompletion (defaultEditor, defaultDocumentContext, completionContext, documentInfo, localDocumentInfo, completionChar, ref triggerWordLength);
+//		}
+
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
 			Tracker.UpdateEngine ();
 			bool isAspExprState = Tracker.Engine.CurrentState is WebFormsExpressionState;
 			if (documentBuilder == null || !isAspExprState)
-				return base.KeyPress (key, keyChar, modifier);
+				return base.KeyPress (descriptor);
 			InitializeCodeCompletion ('\0');
-			document = localDocumentInfo.HiddenDocument;
-			CompletionWidget = documentBuilder.CreateCompletionWidget (defaultDocument, localDocumentInfo);
+//			DocumentContext = localDocumentInfo.HiddenDocument;
+//			Editor = localDocumentInfo.HiddenDocument.Editor;
+//			CompletionWidget = documentBuilder.CreateCompletionWidget (localDocumentInfo.HiddenDocument.Editor, localDocumentInfo.HiddenDocument, localDocumentInfo);
 			bool result;
 			try {
-				result = base.KeyPress (key, keyChar, modifier);
-				if (PropertyService.Get ("EnableParameterInsight", true) && (keyChar == ',' || keyChar == ')') && CanRunParameterCompletionCommand ()) {
+				result = base.KeyPress (descriptor);
+				if (PropertyService.Get ("EnableParameterInsight", true) && (descriptor.KeyChar == ',' || descriptor.KeyChar == ')') && CanRunParameterCompletionCommand ()) {
 					RunParameterCompletionCommand ();
 				}
 			} finally {
-				document = defaultDocument;
+				DocumentContext = defaultDocumentContext;
+				Editor = defaultEditor;
 				CompletionWidget = defaultCompletionWidget;
 			}
 			return result;
 		}
-		
-		public override bool GetParameterCompletionCommandOffset (out int cpos)
-		{
-			/*if (Tracker.Engine.CurrentState is AspNetExpressionState && documentBuilder != null && localDocumentInfo != null) {
-				var result = documentBuilder.GetParameterCompletionCommandOffset (defaultDocument, documentInfo, localDocumentInfo, out cpos);
-				return result;
-			}*/
-			return base.GetParameterCompletionCommandOffset (out cpos);
-		}
-		
-		public override ParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
-		{
-/*			if (Tracker.Engine.CurrentState is AspNetExpressionState && documentBuilder != null && localDocumentInfo != null) {
-				return documentBuilder.HandleParameterCompletion (defaultDocument, completionContext, documentInfo, localDocumentInfo, completionChar);
-			}*/
-			
-			return base.HandleParameterCompletion (completionContext, completionChar);
-		}
+
+// TODO: Roslyn port
+//		public override ParameterHintingResult HandleParameterCompletionAsync (CodeCompletionContext completionContext, char completionChar)
+//		{
+///*			if (Tracker.Engine.CurrentState is AspNetExpressionState && documentBuilder != null && localDocumentInfo != null) {
+//				return documentBuilder.HandleParameterCompletion (defaultDocument, completionContext, documentInfo, localDocumentInfo, completionChar);
+//			}*/
+//			
+//			return base.HandleParameterCompletionAsync (completionContext, completionChar);
+//		}
 
 		/*public override void RunParameterCompletionCommand ()
 		{
@@ -350,12 +349,13 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 		}*/
 
-		protected override void GetElementCompletions (CompletionDataList list)
+		protected override async Task<CompletionDataList> GetElementCompletions (CancellationToken token)
 		{
+			var list = new CompletionDataList ();
 			XName parentName = GetParentElementName (0);
-			
-			IType controlClass = null;
-			
+
+			INamedTypeSymbol controlClass = null;
+
 			if (parentName.HasPrefix) {
 				controlClass = refman.GetControlType (parentName.Prefix, parentName.Name);
 			} else {
@@ -363,13 +363,13 @@ namespace MonoDevelop.AspNet.WebForms
 				if (grandparentName.IsValid && grandparentName.HasPrefix)
 					controlClass = refman.GetControlType (grandparentName.Prefix, grandparentName.Name);
 			}
-			
+
 			//we're just in HTML
 			if (controlClass == null) {
 				//root element?
 				if (!parentName.IsValid) {
 					if (aspDoc.Info.Subtype == WebSubtype.WebControl) {
-						AddHtmlTagCompletionData (list, Schema, new XName ("div"));
+						await AddHtmlTagCompletionData (list, Schema, new XName ("div"), token);
 						AddAspBeginExpressions (list);
 						list.AddRange (refman.GetControlCompletionData ());
 						AddMiscBeginTags (list);
@@ -380,11 +380,11 @@ namespace MonoDevelop.AspNet.WebForms
 				} else {
 					AddAspBeginExpressions (list);
 					list.AddRange (refman.GetControlCompletionData ());
-					base.GetElementCompletions (list);
+					list.AddRange (await base.GetElementCompletions (token));
 				}
-				return;
+				return list;
 			}
-			
+
 			string defaultProp;
 			bool childrenAsProperties = AreChildrenAsProperties (controlClass, out defaultProp);
 			if (defaultProp != null && defaultProp.Length == 0)
@@ -396,85 +396,86 @@ namespace MonoDevelop.AspNet.WebForms
 				list.AddRange (refman.GetControlCompletionData ());
 				AddMiscBeginTags (list);
 				//TODO: get correct parent for Content tags
-				AddHtmlTagCompletionData (list, Schema, new XName ("body"));
-				return;
+				await AddHtmlTagCompletionData (list, Schema, new XName ("body"), token);
+				return list;
 			}
 			
 			//children of properties
 			if (childrenAsProperties && (!parentName.HasPrefix || defaultProp != null)) {
 				string propName = defaultProp ?? parentName.Name;
-				IProperty property =
-					controlClass.GetProperties ()
+				IPropertySymbol property =
+					controlClass.GetMembers ().OfType<IPropertySymbol> ()
 						.FirstOrDefault (x => string.Equals (propName, x.Name, StringComparison.OrdinalIgnoreCase));
 				
 				if (property == null)
-					return;
+					return list;
 				
 				//sanity checks on attributes
 				switch (GetPersistenceMode (property)) {
 				case System.Web.UI.PersistenceMode.Attribute:
 				case System.Web.UI.PersistenceMode.EncodedInnerDefaultProperty:
-					return;
+					return list;
 					
 				case System.Web.UI.PersistenceMode.InnerDefaultProperty:
 					if (!parentName.HasPrefix)
-						return;
+						return list;
 					break;
 					
 				case System.Web.UI.PersistenceMode.InnerProperty:
 					if (parentName.HasPrefix)
-						return;
+						return list;
 					break;
 				}
 				
 				//check if allows freeform ASP/HTML content
-				if (property.ReturnType.ToString () == "System.Web.UI.ITemplate") {
+				if (property.GetReturnType ().GetFullName () == "System.Web.UI.ITemplate") {
 					AddAspBeginExpressions (list);
 					AddMiscBeginTags (list);
-					AddHtmlTagCompletionData (list, Schema, new XName ("body"));
+					await AddHtmlTagCompletionData (list, Schema, new XName ("body"), token);
 					list.AddRange (refman.GetControlCompletionData ());
-					return;
+					return list;
 				}
-				
+
 				//FIXME:unfortunately ASP.NET doesn't seem to have enough type information / attributes
 				//to be able to resolve the correct child types here
 				//so we assume it's a list and have a quick hack to find arguments of strongly typed ILists
 				
-				IType collectionType = property.ReturnType;
+				ITypeSymbol collectionType = property.GetReturnType ();
 				if (collectionType == null) {
 					list.AddRange (refman.GetControlCompletionData ());
-					return;
+					return list;
 				}
-				
+
 				string addStr = "Add";
-				IMethod meth = collectionType.GetMethods ().FirstOrDefault (m => m.Parameters.Count == 1 && m.Name == addStr);
-				
+				IMethodSymbol meth = collectionType.GetMembers ().OfType<IMethodSymbol> ().FirstOrDefault (m => m.Parameters.Length == 1 && m.Name == addStr);
+
 				if (meth != null) {
-					IType argType = meth.Parameters [0].Type;
-					var type = ReflectionHelper.ParseReflectionName ("System.Web.UI.Control").Resolve (argType.GetDefinition ().Compilation);
-					if (argType != null && argType.IsBaseType (type)) {
+					var argType = meth.Parameters [0].Type as INamedTypeSymbol;
+					INamedTypeSymbol type = refman.Compilation.GetTypeByMetadataName ("System.Web.UI.Control");
+					if (argType != null && type != null && argType.IsDerivedFromClass (type)) {
 						list.AddRange (refman.GetControlCompletionData (argType));
-						return;
+						return list;
 					}
 				}
 				
 				list.AddRange (refman.GetControlCompletionData ());
-				return;
+				return list;
 			}
 			
 			//properties as children of controls
 			if (parentName.HasPrefix && childrenAsProperties) {
-				foreach (IProperty prop in GetUniqueMembers<IProperty> (controlClass.GetProperties ()))
+				foreach (IPropertySymbol prop in GetUniqueMembers<IPropertySymbol> (controlClass.GetMembers ().OfType <IPropertySymbol> ()))
 					if (GetPersistenceMode (prop) != System.Web.UI.PersistenceMode.Attribute)
-						list.Add (prop.Name, prop.GetStockIcon (), AmbienceService.GetSummaryMarkup (prop));
-				return;
+						list.Add (prop.Name, prop.GetStockIcon (), Ambience.GetSummaryMarkup (prop));
 			}
+			return list;
 		}
 		
-		protected override CompletionDataList GetAttributeCompletions (IAttributedXObject attributedOb,
-		                                                 Dictionary<string, string> existingAtts)
+		protected override async Task<CompletionDataList> GetAttributeCompletions (
+			IAttributedXObject attributedOb,
+			Dictionary<string, string> existingAtts, CancellationToken token)
 		{
-			var list = base.GetAttributeCompletions (attributedOb, existingAtts) ?? new CompletionDataList ();
+			var list = (await base.GetAttributeCompletions (attributedOb, existingAtts, token)) ?? new CompletionDataList ();
 			if (attributedOb is XElement) {
 				
 				if (!existingAtts.ContainsKey ("runat"))
@@ -503,9 +504,9 @@ namespace MonoDevelop.AspNet.WebForms
 			return list.Count > 0? list : null;
 		}
 		
-		protected override CompletionDataList GetAttributeValueCompletions (IAttributedXObject ob, XAttribute att)
+		protected override async Task<CompletionDataList> GetAttributeValueCompletions (IAttributedXObject ob, XAttribute att, CancellationToken token)
 		{
-			var list = base.GetAttributeValueCompletions (ob, att) ?? new CompletionDataList ();
+			var list = (await base.GetAttributeValueCompletions (ob, att, token)) ?? new CompletionDataList ();
 			if (ob is XElement) {
 				if (ob.Name.HasPrefix) {
 					string id = ob.GetId ();
@@ -514,7 +515,7 @@ namespace MonoDevelop.AspNet.WebForms
 					AddAspAttributeValueCompletionData (list, ob.Name, att.Name, id);
 				}
 			} else if (ob is WebFormsDirective) {
-				return WebFormsDirectiveCompletion.GetAttributeValues (project, Document.FileName, ob.Name.FullName, att.Name.FullName);
+				return WebFormsDirectiveCompletion.GetAttributeValues (project, DocumentContext.Name, ob.Name.FullName, att.Name.FullName);
 			}
 			return list.Count > 0? list : null;
 		}
@@ -528,26 +529,26 @@ namespace MonoDevelop.AspNet.WebForms
 			if (!(expr is WebFormsBindingExpression || expr is WebFormsRenderExpression))
 				return null;
 
-			IType codeBehindClass;
+			INamedTypeSymbol codeBehindClass;
 			if (!GetCodeBehind (out codeBehindClass))
 				return null;
 			
 			//list just the class's properties, not properties on base types
 			var list = new CompletionDataList ();
-			list.AddRange (from p in codeBehindClass.GetProperties ()
-				where p.IsPublic || p.IsPublic
+			list.AddRange (from p in codeBehindClass.GetMembers ().OfType<IPropertySymbol> ()
+				where p.DeclaredAccessibility == Accessibility.Public
 				select new AspAttributeCompletionData (p));
-			list.AddRange (from p in codeBehindClass.GetFields ()
-				where p.IsProtected || p.IsPublic
+			list.AddRange (from p in codeBehindClass.GetMembers ().OfType<IFieldSymbol> ()
+				where p.DeclaredAccessibility == Accessibility.Protected || p.DeclaredAccessibility == Accessibility.Public
 				select new AspAttributeCompletionData (p));
 			
 			return list.Count > 0? list : null;
 		}
 		
-		bool GetCodeBehind (out IType codeBehindClass)
+		bool GetCodeBehind (out INamedTypeSymbol codeBehindClass)
 		{
 			if (HasDoc && !string.IsNullOrEmpty (aspDoc.Info.InheritedClass)) {
-				codeBehindClass = ReflectionHelper.ParseReflectionName (aspDoc.Info.InheritedClass).Resolve (refman.Compilation);
+				codeBehindClass = refman.Compilation.GetTypeByMetadataName (aspDoc.Info.InheritedClass);
 				return codeBehindClass != null;
 			}
 
@@ -556,7 +557,6 @@ namespace MonoDevelop.AspNet.WebForms
 		}
 		
 		#region ASP.NET data
-		
 		void AddAspBeginExpressions (CompletionDataList list)
 		{
 			list.Add ("%",  "md-literal", GettextCatalog.GetString ("ASP.NET render block"));
@@ -564,12 +564,12 @@ namespace MonoDevelop.AspNet.WebForms
 			list.Add ("%@", "md-literal", GettextCatalog.GetString ("ASP.NET directive"));
 			list.Add ("%#", "md-literal", GettextCatalog.GetString ("ASP.NET databinding expression"));
 			list.Add ("%--", "md-literal", GettextCatalog.GetString ("ASP.NET server-side comment"));
-			
+
 			//valid on 2.0+ runtime only
 			if (ProjClrVersion != ClrVersion.Net_1_1) {
 				list.Add ("%$", "md-literal", GettextCatalog.GetString ("ASP.NET resource expression"));
 			}
-			
+
 			//valid on 4.0+ runtime only
 			if (ProjClrVersion != ClrVersion.Net_4_0) {
 				list.Add ("%:", "md-literal", GettextCatalog.GetString ("ASP.NET HTML encoded expression"));
@@ -580,52 +580,63 @@ namespace MonoDevelop.AspNet.WebForms
 		{
 			Debug.Assert (name.IsValid);
 			Debug.Assert (name.HasPrefix);
-			
-			IType controlClass = refman.GetControlType (name.Prefix, name.Name);
+
+			INamedTypeSymbol controlClass = refman.GetControlType (name.Prefix, name.Name);
 			if(controlClass != null)
 				AddControlMembers (list, controlClass, existingAtts);
 		}
-		
-		void AddControlMembers (CompletionDataList list, IType controlClass, Dictionary<string, string> existingAtts)
+
+		void AddControlMembers (CompletionDataList list, INamedTypeSymbol controlClass, Dictionary<string, string> existingAtts)
 		{
 			//add atts only if they're not already in the tag
-			foreach (var prop in GetUniqueMembers<IProperty> (controlClass.GetProperties ()))
-				if (prop.Accessibility == Accessibility.Public && (existingAtts == null || !existingAtts.ContainsKey (prop.Name)))
-				if (GetPersistenceMode (prop) == System.Web.UI.PersistenceMode.Attribute)
-					list.Add (new AspAttributeCompletionData (prop));
-			
+			foreach (var prop in GetUniqueMembers<IPropertySymbol> (GetAllMembers<IPropertySymbol> (controlClass)))
+				if (prop.DeclaredAccessibility == Accessibility.Public && (existingAtts == null || !existingAtts.ContainsKey (prop.Name)))
+					if (GetPersistenceMode (prop) == System.Web.UI.PersistenceMode.Attribute)
+						list.Add (new AspAttributeCompletionData (prop));
+
 			//similarly add events
-			foreach (var eve in GetUniqueMembers<IEvent> (controlClass.GetEvents ())) {
+			foreach (var eve in GetUniqueMembers<IEventSymbol> (GetAllMembers<IEventSymbol> (controlClass))) {
 				string eveName = "On" + eve.Name;
-				if (eve.Accessibility == Accessibility.Public && (existingAtts == null || !existingAtts.ContainsKey (eveName)))
+				if (eve.DeclaredAccessibility == Accessibility.Public && (existingAtts == null || !existingAtts.ContainsKey (eveName)))
 					list.Add (new AspAttributeCompletionData (eve, eveName));
 			}
 		}
-		
+
+		IEnumerable<T> GetAllMembers<T> (INamedTypeSymbol type)
+		{
+			INamedTypeSymbol currentType = type;
+			while (currentType != null) {
+				foreach (T member in currentType.GetMembers ().OfType<T> ())
+					yield return member;
+
+				currentType = currentType.BaseType;
+			}
+		}
+
 		void AddAspAttributeValueCompletionData (CompletionDataList list, XName tagName, XName attName, string id)
 		{
 			Debug.Assert (tagName.IsValid && tagName.HasPrefix);
 			Debug.Assert (attName.IsValid && !attName.HasPrefix);
-			
-			IType controlClass = refman.GetControlType (tagName.Prefix, tagName.Name);
+
+			INamedTypeSymbol controlClass = refman.GetControlType (tagName.Prefix, tagName.Name);
 			if (controlClass == null)
 				return;
 			
 			//find the codebehind class
-			IType codeBehindClass;
+			INamedTypeSymbol codeBehindClass;
 			GetCodeBehind (out codeBehindClass);
-			
+
 			//if it's an event, suggest compatible methods 
 			if (codeBehindClass != null && attName.Name.StartsWith ("On", StringComparison.Ordinal)) {
 				string eventName = attName.Name.Substring (2);
 				
-				foreach (IEvent ev in controlClass.GetEvents ()) {
+				foreach (IEventSymbol ev in controlClass.GetAccessibleMembersInThisAndBaseTypes<IEventSymbol> (controlClass)) {
 					if (ev.Name == eventName) {
 						var domMethod = BindingService.MDDomToCodeDomMethod (ev);
 						if (domMethod == null)
 							return;
 						
-						foreach (IMethod meth 
+						foreach (IMethodSymbol meth 
 						    in BindingService.GetCompatibleMethodsInClass (codeBehindClass, ev)) {
 							list.Add (meth.Name, "md-method",
 							    GettextCatalog.GetString ("A compatible method in the CodeBehind class"));
@@ -645,7 +656,7 @@ namespace MonoDevelop.AspNet.WebForms
 						
 						list.Add (
 						    new SuggestedHandlerCompletionData (project, domMethod, codeBehindClass,
-						        CodeBehind.GetNonDesignerClass (codeBehindClass))
+						        CodeBehind.GetNonDesignerClassLocation (codeBehindClass))
 						    );
 						return;
 					}
@@ -653,17 +664,17 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 			
 			//if it's a property and is an enum or bool, suggest valid values
-			foreach (IProperty prop in controlClass.GetProperties ()) {
+			foreach (IPropertySymbol prop in GetAllMembers<IPropertySymbol> (controlClass)) {
 				if (prop.Name != attName.Name)
 					continue;
 				
 				//boolean completion
-				if (prop.ReturnType.Equals (refman.Compilation.FindType (KnownTypeCode.Boolean))) {
+				if (prop.GetReturnType ().Equals (refman.Compilation.GetTypeByMetadataName ("System.Boolean"))) {
 					AddBooleanCompletionData (list);
 					return;
 				}
 				//color completion
-				if (prop.ReturnType.Equals (refman.Compilation.FindType (typeof(System.Drawing.Color)))) {
+				if (prop.GetReturnType ().Equals (refman.Compilation.GetTypeByMetadataName ("System.Drawing.Color"))) {
 					var conv = new System.Drawing.ColorConverter ();
 					foreach (System.Drawing.Color c in conv.GetStandardValues (null)) {
 						if (c.IsSystemColor)
@@ -675,17 +686,17 @@ namespace MonoDevelop.AspNet.WebForms
 				}
 				
 				//enum completion
-				IType retCls = prop.ReturnType;
-				if (retCls != null && retCls.Kind == TypeKind.Enum) {
-					foreach (var enumVal in retCls.GetFields ())
-						if (enumVal.IsPublic && enumVal.IsStatic)
-							list.Add (enumVal.Name, "md-literal", AmbienceService.GetSummaryMarkup (enumVal));
+				var retCls = prop.GetReturnType () as INamedTypeSymbol;
+				if (retCls != null && retCls.TypeKind == TypeKind.Enum) {
+					foreach (var enumVal in GetAllMembers<IFieldSymbol> (retCls))
+						if (enumVal.DeclaredAccessibility == Accessibility.Public && enumVal.IsStatic)
+							list.Add (enumVal.Name, "md-literal", Ambience.GetSummaryMarkup (enumVal));
 					return;
 				}
 			}
 		}
-		
-		static IEnumerable<T> GetUniqueMembers<T> (IEnumerable<T> members) where T : IMember
+
+		static IEnumerable<T> GetUniqueMembers<T> (IEnumerable<T> members) where T : ISymbol
 		{
 			var existingItems = new Dictionary<string,bool> ();
 			foreach (T item in members) {
@@ -701,53 +712,51 @@ namespace MonoDevelop.AspNet.WebForms
 			list.Add ("true", "md-literal");
 			list.Add ("false", "md-literal");
 		}
-		
 		#endregion
-		
+
 		#region Querying types' attributes
-		
-		static System.Web.UI.PersistenceMode GetPersistenceMode (IProperty prop)
+		static System.Web.UI.PersistenceMode GetPersistenceMode (IPropertySymbol prop)
 		{
-			foreach (var att in prop.Attributes) {
-				if (att.AttributeType.ReflectionName == "System.Web.UI.PersistenceModeAttribute") {
-					var expr = att.PositionalArguments.FirstOrDefault ();
-					if (expr == null) {
-						LoggingService.LogWarning ("Unknown expression type {0} in IAttribute parameter", expr);
+			foreach (var att in prop.GetAttributes ()) {
+				if (att.AttributeClass.GetFullName () == "System.Web.UI.PersistenceModeAttribute") {
+					var expr = att.ConstructorArguments.FirstOrDefault ();
+					if (expr.IsNull) {
+						LoggingService.LogWarning ("Unknown expression type {0} in Attribute parameter", expr);
 						return System.Web.UI.PersistenceMode.Attribute;
 					}
 					
-					return (System.Web.UI.PersistenceMode) expr.ConstantValue;
+					return (System.Web.UI.PersistenceMode) expr.Value;
 				}
-				if (att.AttributeType.ReflectionName == "System.Web.UI.TemplateContainerAttribute") {
+				if (att.AttributeClass.GetFullName () == "System.Web.UI.TemplateContainerAttribute") {
 					return System.Web.UI.PersistenceMode.InnerProperty;
 				}
 			}
 			return System.Web.UI.PersistenceMode.Attribute;
 		}
-		
-		static bool AreChildrenAsProperties (IType type, out string defaultProperty)
+
+		static bool AreChildrenAsProperties (INamedTypeSymbol type, out string defaultProperty)
 		{
 			bool childrenAsProperties = false;
 			defaultProperty = "";
 			
-			IAttribute att = GetAttributes (type, "System.Web.UI.ParseChildrenAttribute").FirstOrDefault ();
+			AttributeData att = GetAttributes (type, "System.Web.UI.ParseChildrenAttribute").FirstOrDefault ();
 
 			if (att == null)
 				return childrenAsProperties;
 
-			var posArgs = att.PositionalArguments;
-			if (posArgs.Count == 0)
+			var posArgs = att.ConstructorArguments;
+			if (posArgs.Length == 0)
 				return childrenAsProperties;
 			
-			if (posArgs.Count > 0) {
+			if (posArgs.Length > 0) {
 				var expr = posArgs [0];
-				if (expr == null) {
-					LoggingService.LogWarning ("Unknown expression type {0} in IAttribute parameter", expr);
+				if (expr.IsNull) {
+					LoggingService.LogWarning ("Unknown expression type {0} in Attribute parameter", expr);
 					return false;
 				}
 				
-				if (expr.ConstantValue is bool) {
-					childrenAsProperties = (bool)expr.ConstantValue;
+				if (expr.Value is bool) {
+					childrenAsProperties = (bool)expr.Value;
 				} else {
 					//TODO: implement this
 					LoggingService.LogWarning ("ASP.NET completion does not yet handle ParseChildrenAttribute (Type)");
@@ -755,34 +764,34 @@ namespace MonoDevelop.AspNet.WebForms
 				}
 			}
 			
-			if (posArgs.Count > 1) {
+			if (posArgs.Length > 1) {
 				var expr = posArgs [1];
-				if (expr == null || !(expr.ConstantValue is string)) {
+				if (expr.IsNull || !(expr.Value is string)) {
 					LoggingService.LogWarning ("Unknown expression '{0}' in IAttribute parameter", expr);
 					return false;
 				}
-				defaultProperty = (string)expr.ConstantValue;
+				defaultProperty = (string)expr.Value;
 			}
 			
 			var namedArgs = att.NamedArguments;
-			if (namedArgs.Count > 0) {
-				if (namedArgs.Any (p => p.Key.Name == "ChildrenAsProperties")) {
-					var expr = namedArgs.First (p => p.Key.Name == "ChildrenAsProperties").Value;
-					if (expr == null) {
+			if (namedArgs.Length > 0) {
+				if (namedArgs.Any (p => p.Key == "ChildrenAsProperties")) {
+					var expr = namedArgs.First (p => p.Key == "ChildrenAsProperties").Value;
+					if (expr.IsNull) {
 						LoggingService.LogWarning ("Unknown expression type {0} in IAttribute parameter", expr);
 						return false;
 					}
-					childrenAsProperties = (bool)expr.ConstantValue;
+					childrenAsProperties = (bool)expr.Value;
 				}
-				if (namedArgs.Any (p => p.Key.Name == "DefaultProperty")) {
-					var expr = namedArgs.First (p => p.Key.Name == "DefaultProperty").Value;
-					if (expr == null) {
+				if (namedArgs.Any (p => p.Key == "DefaultProperty")) {
+					var expr = namedArgs.First (p => p.Key == "DefaultProperty").Value;
+					if (expr.IsNull) {
 						LoggingService.LogWarning ("Unknown expression type {0} in IAttribute parameter", expr);
 						return false;
 					}
-					defaultProperty = (string)expr.ConstantValue;
+					defaultProperty = (string)expr.Value;
 				}
-				if (namedArgs.Any (p => p.Key.Name == "ChildControlType")) {
+				if (namedArgs.Any (p => p.Key == "ChildControlType")) {
 					//TODO: implement this
 					LoggingService.LogWarning ("ASP.NET completion does not yet handle ParseChildrenAttribute (Type)");
 					return false;
@@ -792,20 +801,19 @@ namespace MonoDevelop.AspNet.WebForms
 			return childrenAsProperties;
 		}
 		
-		static IEnumerable<IAttribute> GetAttributes (IType type, string attName)
+		static IEnumerable<AttributeData> GetAttributes (INamedTypeSymbol type, string attName)
 		{
-			foreach (var att in type.GetDefinition ().Attributes) {
-				if (att.AttributeType.ReflectionName == attName)
+			foreach (AttributeData att in type.GetAttributes()) {
+				if (att.AttributeClass.GetFullName () == attName)
 					yield return att;
 			}
 			
-			foreach (IType t2 in type.GetAllBaseTypes ()) {
-				foreach (IAttribute att in t2.GetDefinition ().Attributes)
-					if (att.AttributeType.ReflectionName == attName)
+			foreach (INamedTypeSymbol t2 in type.GetAllBaseClasses ()) {
+				foreach (AttributeData att in t2.GetAttributes ())
+					if (att.AttributeClass.GetFullName () == attName)
 						yield return att;
 			}
 		}
-		
 		#endregion
 	}
 }

@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using MonoDevelop.CodeIssues;
 using MonoDevelop.Projects;
+using MonoDevelop.CSharp.Project;
 
 namespace MonoDevelop.Refactoring
 {
@@ -41,10 +42,10 @@ namespace MonoDevelop.Refactoring
 		{
 			return new [] {
 				new IssueSummary {
-					Project = new DotNetAssemblyProject { Name = "Project1" }
+					Project = new CSharpProject () { Name = "Project1" }
 				},
 				new IssueSummary {
-					Project = new DotNetAssemblyProject { Name = "Project2" }
+					Project = new CSharpProject () { Name = "Project2" }
 				}
 			};
 		}

@@ -31,16 +31,16 @@ namespace MonoDevelop.Projects
 {
 	public class TargetEvaluationResult
 	{
-		BuildResult buildResult;
-		readonly Dictionary<string,string> properties;
-		readonly IEnumerable<MSBuildEvaluatedItem> items;
+		readonly BuildResult buildResult;
+		readonly IReadOnlyPropertySet properties;
+		readonly IEnumerable<IMSBuildItemEvaluated> items;
 
 		public TargetEvaluationResult (BuildResult buildResult)
 		{
 			this.buildResult = buildResult;
 		}
 
-		public TargetEvaluationResult (BuildResult buildResult, IEnumerable<MSBuildEvaluatedItem> items, Dictionary<string,string> properties)
+		public TargetEvaluationResult (BuildResult buildResult, IEnumerable<IMSBuildItemEvaluated> items, IReadOnlyPropertySet properties)
 		{
 			this.buildResult = buildResult;
 			this.items = items;
@@ -49,14 +49,13 @@ namespace MonoDevelop.Projects
 
 		public BuildResult BuildResult {
 			get { return buildResult; }
-			internal set { buildResult = value; }
 		}
 
-		public IEnumerable<MSBuildEvaluatedItem> Items {
+		public IEnumerable<IMSBuildItemEvaluated> Items {
 			get { return items; }
 		}
 
-		public Dictionary<string,string> Properties {
+		public IReadOnlyPropertySet Properties {
 			get { return properties; }
 		}
 	}

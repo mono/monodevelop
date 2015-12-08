@@ -30,51 +30,76 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.TypeSystem;
 using Mono.Cecil;
 using System.Linq;
 using MonoDevelop.Ide.CodeCompletion;
+using Microsoft.CodeAnalysis;
+using System.Threading;
+using System.Xml;
+using Mono.Addins;
+using MonoDevelop.Ide.Extensions;
+using System.Threading.Tasks;
+using System.IO;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	public abstract class Ambience
+
+	public static class Ambience
 	{
-		public string Name {
-			get;
-			private set;
-		}
-
-		
-		public Ambience (string name)
+		public static readonly SymbolDisplayFormat LabelFormat =
+			new SymbolDisplayFormat(
+				globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Omitted,
+				typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+				propertyStyle: SymbolDisplayPropertyStyle.NameOnly,
+				genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters | SymbolDisplayGenericsOptions.IncludeVariance,
+				memberOptions: SymbolDisplayMemberOptions.IncludeParameters | SymbolDisplayMemberOptions.IncludeExplicitInterface,
+				parameterOptions:
+				SymbolDisplayParameterOptions.IncludeDefaultValue |
+				SymbolDisplayParameterOptions.IncludeExtensionThis |
+				SymbolDisplayParameterOptions.IncludeType |
+				SymbolDisplayParameterOptions.IncludeName |
+				SymbolDisplayParameterOptions.IncludeParamsRefOut,
+				miscellaneousOptions:
+				SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers |
+				SymbolDisplayMiscellaneousOptions.UseSpecialTypes
+			);
+		/// <summary>
+		/// Standard format for displaying to the user.
+		/// </summary>
+		/// <remarks>
+		/// No return type.
+		/// </remarks>
+		public static readonly SymbolDisplayFormat NameFormat =
+			new SymbolDisplayFormat(
+				globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Omitted,
+				typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+				propertyStyle: SymbolDisplayPropertyStyle.NameOnly,
+				genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters | SymbolDisplayGenericsOptions.IncludeVariance,
+				memberOptions: SymbolDisplayMemberOptions.IncludeParameters | SymbolDisplayMemberOptions.IncludeExplicitInterface,
+				parameterOptions:
+				SymbolDisplayParameterOptions.IncludeParamsRefOut |
+				SymbolDisplayParameterOptions.IncludeExtensionThis |
+				SymbolDisplayParameterOptions.IncludeType |
+				SymbolDisplayParameterOptions.IncludeName,
+				miscellaneousOptions:
+				SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers |
+				SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
+		static Ambience ()
 		{
-			this.Name = name;
-		}
-		
-		#region To implement
-		public abstract string GetIntrinsicTypeName (string reflectionName);
-		
-		public abstract string SingleLineComment (string text);
-		public abstract string GetString (string nameSpace, OutputSettings settings);
-		
-		protected abstract string GetTypeReferenceString (IType reference, OutputSettings settings);
-		protected abstract string GetTypeString (IType type, OutputSettings settings);
-		protected abstract string GetMethodString (IMethod method, OutputSettings settings);
-		protected abstract string GetConstructorString (IMethod constructor, OutputSettings settings);
-		protected abstract string GetDestructorString (IMethod destructor, OutputSettings settings);
-		protected abstract string GetOperatorString (IMethod op, OutputSettings settings);
-		
-		protected abstract string GetFieldString (IField field, OutputSettings settings);
-		protected abstract string GetEventString (IEvent evt, OutputSettings settings);
-		protected abstract string GetPropertyString (IProperty property, OutputSettings settings);
-		protected abstract string GetIndexerString (IProperty property, OutputSettings settings);
-
-		protected abstract string GetParameterString (IParameterizedMember member, IParameter parameter, OutputSettings settings);
-
-		#endregion
-		
-		public virtual TooltipInformation GetTooltip (IEntity entity)
-		{
-			return null;
+			// may not have been initialized in testing environment.
+			if (AddinManager.IsInitialized) {
+				AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/AmbienceTooltipProviders", delegate(object sender, ExtensionNodeEventArgs args) {
+					var node = args.ExtensionNode as MimeTypeExtensionNode;
+					switch (args.Change) {
+					case ExtensionChange.Add:
+						tooltipProviders.Add ((AmbienceTooltipProvider)node.CreateInstance ());
+						break;
+					case ExtensionChange.Remove:
+						tooltipProviders.Remove ((AmbienceTooltipProvider)node.CreateInstance ());
+						break;
+					}
+				});
+			}
 		}
 
 		public static string Format (string str)
@@ -86,104 +111,542 @@ namespace MonoDevelop.Ide.TypeSystem
 			MarkupUtilities.AppendEscapedString (sb, str);
 			return sb.ToString (); 
 		}
+
+		#region Documentation
 		
-		protected static OutputFlags GetFlags (object settings)
+		public class DocumentationFormatOptions 
 		{
-			if (settings is OutputFlags)
-				return (OutputFlags)settings;
-			return ((OutputSettings)settings).OutputFlags;
-		}
-		
-		protected static OutputSettings GetSettings (object settings)
-		{
-			if (settings is OutputFlags)
-				return new OutputSettings ((OutputFlags)settings);
-			return (OutputSettings)settings;
-		}
-		
-		public string GetString (string nameSpace, OutputFlags flags)
-		{
-			return GetString (nameSpace, new OutputSettings (flags));
-		}
-		
-		public string GetString (IEntity entity, OutputSettings settings)
-		{
-			if (entity == null) {
-				string[] trace = Environment.StackTrace.Split (new [] { Environment.NewLine }, StringSplitOptions.None);
-				return "null entity: " + (trace != null && trace.Length > 2 ? trace [2] : "unknown location");
+			public static readonly DocumentationFormatOptions Empty = new DocumentationFormatOptions ();
+			public string HighlightParameter {
+				get;
+				set;
 			}
-			string result = null;
-			switch (entity.SymbolKind) {
-			case SymbolKind.Constructor:
-				result = GetConstructorString ((IMethod)entity, settings);
-				break;
-			case SymbolKind.Destructor:
-				result = GetDestructorString ((IMethod)entity, settings);
-				break;
-			case SymbolKind.Event:
-				result = GetEventString ((IEvent)entity, settings);
-				break;
-			case SymbolKind.Field:
-				result = GetFieldString ((IField)entity, settings);
-				break;
-			case SymbolKind.Indexer:
-				result = GetPropertyString ((IProperty)entity, settings);
-				break;
-			case SymbolKind.Method:
-				result = GetMethodString ((IMethod)entity, settings);
-				break;
-			case SymbolKind.Operator:
-				result = GetMethodString ((IMethod)entity, settings);
-				break;
-			case SymbolKind.Property:
-				result = GetPropertyString ((IProperty)entity, settings);
-				break;
-			case SymbolKind.TypeDefinition:
-				result = GetTypeString ((ITypeDefinition)entity, settings);
-				break;
-			default:
-				throw new ArgumentOutOfRangeException ("SymbolKind", "Unknown entity type:" + entity.SymbolKind);
+			
+			public int MaxLineLength {
+				get;
+				set;
 			}
-			result = settings.PostProcess (entity, result);
+			
+			public bool BigHeadings {
+				get;
+				set;
+			}
+			
+			public bool BoldHeadings {
+				get;
+				set;
+			}
+			
+			public bool SmallText {
+				get;
+				set;
+			}
+
+			
+			public DocumentationFormatOptions ()
+			{
+				BoldHeadings = true;
+			}
+			
+			public string FormatHeading (string heading)
+			{
+				string result = heading;
+				if (BigHeadings)
+					result = "<big>" + result + "</big>";
+				if (BoldHeadings)
+					result = "<b>" + result + "</b>";
+				return result;
+			}
+			
+			public string FormatBody (string body)
+			{
+				var str = body.Trim ();
+				if (string.IsNullOrEmpty (str))
+					return "";
+				return SmallText ? "<small>" + str + Environment.NewLine + "</small>" : str + Environment.NewLine;
+			}
+		}
+
+		public static string GetSummaryMarkup (ISymbol member, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (member == null)
+				return null;
+			string documentation = GetDocumentation (member);
+			if (string.IsNullOrEmpty (documentation))
+				return null;
+
+			if (!string.IsNullOrEmpty (documentation)) {
+				int idx1 = documentation.IndexOf ("<summary>", StringComparison.Ordinal);
+				int idx2 = documentation.LastIndexOf ("</summary>", StringComparison.Ordinal);
+				string result;
+				if (idx1 >= 0 && idx2 > idx1) {
+					try {
+						var xmlText = documentation.Substring (idx1, idx2 - idx1 + "</summary>".Length);
+						return ParseBody (member,
+							new XmlTextReader (xmlText, XmlNodeType.Element, null),
+							"summary", 
+							DocumentationFormatOptions.Empty
+						);
+					} catch (Exception e) {
+						LoggingService.LogWarning ("Malformed documentation xml detected:" + documentation, e);
+						// may happen on malformed xml.
+						var len = idx2 - idx1 - "</summary>".Length;
+						result = len > 0 ? documentation.Substring (idx1 + "<summary>".Length, len) : documentation;
+					}
+				} else if (idx1 >= 0) {
+					result = documentation.Substring (idx1 + "<summary>".Length);
+				} else if (idx2 >= 0) {
+					result = documentation.Substring (0, idx2 - 1);
+				} else {
+					result = documentation;
+				}
+				return GetDocumentationMarkup (member, CleanEmpty (result));
+			}
+			
+			return GetDocumentationMarkup (member, CleanEmpty (documentation));
+		}
+		
+		static string CleanEmpty (string doc)
+		{
+			return IsEmptyDocumentation (doc)? null : doc;
+		}
+
+		static bool IsEmptyDocumentation (string documentation)
+		{
+			return string.IsNullOrWhiteSpace (documentation) || documentation.StartsWith ("To be added") || documentation == "we have not entered docs yet";
+		}
+		
+		public static string GetDocumentation (ISymbol member)
+		{
+			if (member == null)
+				return null;
+			var documentation = member.GetDocumentationCommentXml ();
+			if (string.IsNullOrEmpty (documentation))
+				documentation = MonoDocDocumentationProvider.GetDocumentation (member);
+			if (documentation != null)
+				return CleanEmpty (documentation);
+			return null;
+		}
+		
+		static string GetCref (ICSharpCode.NRefactory.TypeSystem.ITypeResolveContext ctx, string cref)
+		{
+			if (cref == null)
+				return "";
+
+			if (cref.Length < 2)
+				return cref;
+			try {
+				var entity = new ICSharpCode.NRefactory.Documentation.DocumentationComment ("", ctx).ResolveCref (cref.Replace("<", "{").Replace(">", "}"));
+	
+				if (entity != null) {
+					var ambience = new ICSharpCode.NRefactory.CSharp.CSharpAmbience ();
+					ambience.ConversionFlags = ICSharpCode.NRefactory.TypeSystem.ConversionFlags.ShowParameterList | ICSharpCode.NRefactory.TypeSystem.ConversionFlags.ShowParameterNames | ICSharpCode.NRefactory.TypeSystem.ConversionFlags.ShowTypeParameterList;
+					return ambience.ConvertSymbol (entity);
+				}
+			} catch (Exception e) {
+				LoggingService.LogWarning ("Invalid cref:" + cref, e);
+			}
+
+			if (cref.Substring (1, 1) == ":")
+				return cref.Substring (2, cref.Length - 2);
+			
+			return cref;
+		}
+		
+		static bool IsSpecialChar (int charValue)
+		{
+			return 
+				0x01 <= charValue && charValue <= 0x08 ||
+				0x0B <= charValue && charValue <= 0x0C ||
+				0x0E <= charValue && charValue <= 0x1F ||
+				0x7F <= charValue && charValue <= 0x84 ||
+				0x86 <= charValue && charValue <= 0x9F;
+		}
+		
+		public static string BreakLines (string text, int maxLineLength)
+		{
+			if (maxLineLength <= 0)
+				return text;
+			StringBuilder result = new StringBuilder ();
+			int lineLength = 0;
+			bool inTag = false;
+			bool inAmp = false;
+			foreach (char ch in text) {
+				switch (ch) {
+				case '<':
+					inTag = true;
+					break;
+				case '>':
+					inTag = false;
+					break;
+				case '&':
+					inAmp = true;
+					break;
+				case ';':
+					inAmp = false;
+					break;
+				case '\n':
+					lineLength = 0;
+					break;
+				case '\r':
+					lineLength = 0;
+					break;
+				}
+				
+				result.Append (ch);
+				if (!inTag && !inAmp)
+					lineLength++;
+				if (!Char.IsLetterOrDigit (ch) && lineLength > maxLineLength) {
+					result.AppendLine ();
+					lineLength = 0;
+				}
+			}
+			return result.ToString ();
+		}
+		
+		public static string EscapeText (string text)
+		{
+			if (text == null)
+				return null;
+			StringBuilder result = new StringBuilder ();
+			foreach (char ch in text) {
+				switch (ch) {
+				case '<':
+					result.Append ("&lt;");
+					break;
+				case '>':
+					result.Append ("&gt;");
+					break;
+				case '&':
+					result.Append ("&amp;");
+					break;
+				case '\'':
+					result.Append ("&apos;");
+					break;
+				case '"':
+					result.Append ("&quot;");
+					break;
+				default:
+					int charValue = (int)ch;
+					if (IsSpecialChar (charValue)) {
+						result.AppendFormat ("&#x{0:X};", charValue);
+					} else {
+						result.Append (ch);
+					}
+					break;
+				}
+			}
+			return result.ToString ();
+		}
+		
+		public static string UnescapeText (string text)
+		{
+			var sb = new StringBuilder ();
+			for (int i = 0; i < text.Length; i++) {
+				char ch = text[i];
+				if (ch == '&') {
+					int end = text.IndexOf (';', i);
+					if (end == -1)
+						break;
+					string entity = text.Substring (i + 1, end - i - 1);
+					switch (entity) {
+					case "lt":
+						sb.Append ('<');
+						break;
+					case "gt":
+						sb.Append ('>');
+						break;
+					case "amp":
+						sb.Append ('&');
+						break;
+					case "apos":
+						sb.Append ('\'');
+						break;
+					case "quot":
+						sb.Append ('"');
+						break;
+					}
+					i = end;
+				} else {
+					sb.Append (ch);
+				}
+			}
+			return sb.ToString ();	
+		}
+		
+		
+		public static string GetDocumentationMarkup (ISymbol member, string doc)
+		{
+			return GetDocumentationMarkup (member, doc, DocumentationFormatOptions.Empty);
+		}
+		
+		static string ParseBody (ISymbol member, XmlTextReader xml, string endTagName, DocumentationFormatOptions options)
+		{
+			StringBuilder result = new StringBuilder (); 
+			bool wasWhiteSpace = true;
+			bool appendSpace = false;
+			string listType = "bullet";
+			int listItem = 1;
+			//ITypeResolveContext ctx = member.Compilation.TypeResolveContext;
+			while (xml.Read ()) {
+				switch (xml.NodeType) {
+				case XmlNodeType.EndElement:
+					if (xml.Name == endTagName) 
+						goto end;
+					break;
+				case XmlNodeType.Element:
+					switch (xml.Name.ToLower ()) {
+					case "para":
+						result.AppendLine (ParseBody (member, xml, xml.Name, options));
+						wasWhiteSpace = true;
+						break;
+					case "list":
+						listType = xml ["type"] ?? listType;
+						listItem = 1;
+						result.AppendLine ();
+						result.AppendLine ();
+						break;
+					case "term": {
+						string inner = "<root>" + xml.ReadInnerXml () + "</root>";
+						result.Append ("<i>" + ParseBody (member, new XmlTextReader (new StringReader (inner)), "root", options) + " </i>");
+						break;
+					}
+					case "description": {
+						string inner = "<root>" + xml.ReadInnerXml () + "</root>";
+						result.Append (ParseBody (member, new XmlTextReader (new StringReader (inner)), "root", options));
+						break;
+					}
+					case "listheader":  {
+					string inner = "<root>" + xml.ReadInnerXml () + "</root>";
+						string prefix;
+						switch (listType) {
+						case "number":
+							prefix = "     ";
+							break;
+						case "table":
+							prefix = "    ";
+							break;
+						default: // bullet;
+							prefix = "    ";
+							break;
+						}
+						result.AppendLine (prefix + ParseBody (member, new XmlTextReader (new StringReader (inner)), "root", options));
+						break;
+					}
+					case "item": {
+						string inner = "<root>" + xml.ReadInnerXml () + "</root>";
+							string prefix;
+							switch (listType) {
+							case "number":
+								prefix = string.Format ("  {0:##}. ", listItem++);
+								break;
+							case "table":
+								prefix = "    ";
+								break;
+							default: // bullet;
+								prefix = "  \u2022 ";
+								break;
+							}
+							result.AppendLine (prefix + ParseBody (member, new XmlTextReader (new StringReader (inner)), "root", options));
+						break;
+					}
+					case "see":
+						if (!wasWhiteSpace) {
+							result.Append (' ');
+							wasWhiteSpace = true;
+						}
+						result.Append ("<i>");
+						string name = (xml ["cref"] + xml ["langword"]).Trim ();
+						// if (options.Ambience != null)
+						// 	name = options.Ambience.GetIntrinsicTypeName (name);
+						result.Append (EscapeText (name));
+						result.Append ("</i>");
+						wasWhiteSpace = false;
+						appendSpace = true;
+						break;
+					case "paramref":
+						if (!wasWhiteSpace) {
+							result.Append (' ');
+							wasWhiteSpace = true;
+						}
+						result.Append ("<i>");
+						result.Append (EscapeText (xml ["name"].Trim ()));
+						result.Append ("</i>");
+						appendSpace = true;
+						wasWhiteSpace = false;
+						break;
+					}
+					break;
+				case XmlNodeType.Text:
+					if (IsEmptyDocumentation (xml.Value))
+						break;
+					foreach (char ch in xml.Value) {
+						if (!Char.IsWhiteSpace (ch) && appendSpace) {
+							result.Append (' ');
+							appendSpace = false;
+						}
+						if (Char.IsWhiteSpace (ch) || ch == '\n' || ch == '\r') {
+							if (!wasWhiteSpace) {
+								result.Append (' ');
+								wasWhiteSpace = true;
+							}
+							continue;
+						}
+						wasWhiteSpace = false;
+						result.Append (EscapeText (ch.ToString ()));
+					}
+					break;
+				}
+			}
+		end:
+			return result.ToString ().Trim ();
+		}
+		
+		public static string GetDocumentationMarkup (ISymbol member, string doc, DocumentationFormatOptions options)
+		{
+			if (string.IsNullOrEmpty (doc))
+				return null;
+			System.IO.StringReader reader = new System.IO.StringReader ("<docroot>" + doc + "</docroot>");
+			XmlTextReader xml = new XmlTextReader (reader);
+			StringBuilder ret = new StringBuilder (70);
+			StringBuilder parameterBuilder = new StringBuilder ();
+			StringBuilder exceptions = new StringBuilder ();
+			exceptions.AppendLine (options.FormatHeading (GettextCatalog.GetString ("Exceptions:")));
+			//		ret.Append ("<small>");
+			int paramCount = 0, exceptionCount = 0, summaryEnd = -1;
+			try {
+				xml.Read ();
+				do {
+					if (xml.NodeType == XmlNodeType.Element) {
+						switch (xml.Name.ToLower ()) {
+						case "para":
+							ret.Append (options.FormatBody (ParseBody (member, xml, xml.Name, options)));
+							if (summaryEnd < 0)
+								summaryEnd = ret.Length;
+							break;
+						case "summary":
+							var summary = options.FormatBody (ParseBody (member, xml, xml.Name, options));
+							if (!IsEmptyDocumentation (summary)) {
+								//							ret.AppendLine (GetHeading ("Summary:", options));
+								ret.Append (summary);
+								if (summaryEnd < 0)
+									summaryEnd = ret.Length;
+							}
+							break;
+						case "remarks":
+							if (string.IsNullOrEmpty (options.HighlightParameter)) {
+								ret.AppendLine (options.FormatHeading (GettextCatalog.GetString ("Remarks:")));
+								ret.Append (options.FormatBody (ParseBody (member, xml, xml.Name, options)));
+								if (summaryEnd < 0)
+									summaryEnd = ret.Length;
+							} else {
+								options.FormatBody (ParseBody (member, xml, xml.Name, options));
+							}
+							break;
+						// skip <example>-nodes
+						case "example":
+							xml.Skip ();
+							xml.Skip ();
+							break;
+						case "exception":
+							exceptionCount++;
+							if (options.SmallText)
+								exceptions.Append ("<small>");
+							exceptions.Append ("<b>");
+							exceptions.Append (EscapeText (xml ["cref"]));
+							exceptions.Append (": ");
+							exceptions.Append ("</b>");
+							if (options.SmallText)
+								exceptions.Append ("</small>");
+							
+							exceptions.AppendLine (options.FormatBody (ParseBody (member, xml, xml.Name, options)));
+							break;
+						case "returns":
+							if (string.IsNullOrEmpty (options.HighlightParameter)) {
+								ret.AppendLine (options.FormatHeading (GettextCatalog.GetString ("Returns:")));
+								ret.Append (options.FormatBody (ParseBody (member, xml, xml.Name, options)));
+							} else {
+								options.FormatBody (ParseBody (member, xml, xml.Name, options));
+							}
+							break;
+						case "param":
+							string paramName = xml.GetAttribute ("name") != null ? xml ["name"].Trim () : "";
+								
+							var body = options.FormatBody (ParseBody (member, xml, xml.Name, options));
+							if (!IsEmptyDocumentation (body)) {
+								paramCount++;
+								parameterBuilder.Append ("<i>");
+								if (options.HighlightParameter == paramName)
+									parameterBuilder.Append ("<b>");
+								if (options.SmallText)
+									parameterBuilder.Append ("<small>");
+								parameterBuilder.Append (EscapeText (paramName));
+								if (options.SmallText)
+									parameterBuilder.Append ("</small>");
+								if (options.HighlightParameter == paramName)
+									parameterBuilder.Append ("</b>");
+								parameterBuilder.Append (":</i> ");
+								parameterBuilder.Append (body);
+							} else {
+								return null;
+							}
+							break;
+						case "value":
+							ret.AppendLine (options.FormatHeading (GettextCatalog.GetString ("Value:")));
+							ret.AppendLine (options.FormatBody (ParseBody (member, xml, xml.Name, options)));
+							break;
+						case "seealso":
+							if (string.IsNullOrEmpty (options.HighlightParameter)) {
+								ret.Append (options.FormatHeading (GettextCatalog.GetString ("See also:")));
+								ret.Append (" " + EscapeText (xml ["cref"] + xml ["langword"]));
+							}
+							break;
+						}
+					}
+				} while (xml.Read ());
+			
+			} catch (Exception ex) {
+				MonoDevelop.Core.LoggingService.LogError (ex.ToString ());
+				return EscapeText (doc);
+			}
+
+			if (IsEmptyDocumentation (ret.ToString ()) && IsEmptyDocumentation (parameterBuilder.ToString ()))
+				return EscapeText (doc);
+			if (string.IsNullOrEmpty (options.HighlightParameter) && exceptionCount > 0)
+				ret.Append (exceptions.ToString ());
+			
+			string result = ret.ToString ();
+			if (summaryEnd < 0)
+				summaryEnd = result.Length;
+			if (paramCount > 0) {
+				var paramSb = new StringBuilder ();
+				if (result.Length > 0)
+					paramSb.AppendLine ();/*
+				paramSb.Append ("<small>");
+				paramSb.AppendLine (options.FormatHeading (GettextCatalog.GetPluralString ("Parameter:", "Parameters:", paramCount)));
+				paramSb.Append ("</small>");*/
+				paramSb.Append (parameterBuilder.ToString ());
+				result = result.Insert (summaryEnd, paramSb.ToString ());
+			}
+			result = result.Trim ();
+			if (result.EndsWith (Environment.NewLine + "</small>"))
+				result = result.Substring (0, result.Length - (Environment.NewLine + "</small>").Length) + "</small>";
 			return result;
 		}
-		
-		public string GetString (IType type, OutputSettings settings)
+		#endregion
+
+		#region Tooltips
+		static List<AmbienceTooltipProvider> tooltipProviders = new List<AmbienceTooltipProvider>();
+
+		public static async Task<TooltipInformation> GetTooltip (CancellationToken token, ISymbol symbol)
 		{
-			var result = GetTypeString (type, settings);
-			return settings.PostProcess (type, result);
+			foreach (var tp in tooltipProviders) {
+				var result = await tp.GetTooltip (token, symbol);
+				if (result != null)
+					return result;
+			}
+			return null;
 		}
-	
-/*		public string GetString (ITypeReference reference, OutputSettings settings)
-		{
-			var result = GetTypeReferenceString (reference, settings);
-			return settings.PostProcess (reference, result);
-		}*/
-		
-		public string GetString (IEntity entity, OutputFlags flags)
-		{
-			return GetString (entity, new OutputSettings (flags));
-		}
-		
-		public string GetString (IType type, OutputFlags flags)
-		{
-			return GetString (type, new OutputSettings (flags));
-		}
-		
-		public string GetString (ITypeDefinition type, OutputFlags flags)
-		{
-			return GetString ((IEntity)type, new OutputSettings (flags));
-		}
-		
-		
-		public string GetString (IParameterizedMember member, IParameter parameter, OutputFlags flags)
-		{
-			return GetParameterString (member, parameter, new OutputSettings (flags));
-		}
-		/*
-		public string GetString (ITypeReference reference, OutputFlags flags)
-		{
-			return GetString (reference, new OutputSettings (flags));
-		}*/
+		#endregion
 	}
 }

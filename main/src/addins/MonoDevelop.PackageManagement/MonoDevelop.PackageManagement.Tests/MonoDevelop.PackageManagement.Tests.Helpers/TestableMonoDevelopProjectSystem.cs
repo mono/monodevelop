@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Ide;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
@@ -48,6 +49,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public FileNameAndProjectName FileNameAndProjectNamePassedToLogAddedFileToProject;
 
 		public static Action<MessageHandler> GuiSyncDispatcher = handler => handler.Invoke ();
+		public static Func<Func<Task>,Task> GuiSyncDispatcherFunc = handler => handler.Invoke();
 
 		public TestableMonoDevelopProjectSystem (IDotNetProject project)
 			: this (
@@ -65,7 +67,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			IPackageManagementProjectService projectService,
 			PackageManagementEvents packageManagementEvents,
 			FakeLogger logger)
-			: base (project, fileService, projectService, packageManagementEvents, GuiSyncDispatcher)
+			: base (project, fileService, projectService, packageManagementEvents, GuiSyncDispatcher, GuiSyncDispatcherFunc)
 		{
 			FakeFileService = (FakeFileService)fileService;
 			FakeProjectService = (FakePackageManagementProjectService)projectService;

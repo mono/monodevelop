@@ -88,7 +88,6 @@ namespace MonoDevelop.Ide.Projects
 
 		Rectangle DrawIcon (Drawable window, Widget widget, Rectangle cell_area, CellRendererState flags)
 		{
-			StateType state = GetState (widget, flags);
 			int iconY = cell_area.Y + ((cell_area.Height - (int)CategoryIcon.Height) / 2) + topLevelTemplateHeadingYOffset;
 			var iconRect = new Rectangle (cell_area.X + (int)Xpad, iconY, (int)CategoryIcon.Width, (int)CategoryIcon.Height);
 

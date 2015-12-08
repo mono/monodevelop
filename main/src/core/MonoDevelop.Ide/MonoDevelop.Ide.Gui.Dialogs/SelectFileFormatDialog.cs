@@ -28,14 +28,15 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	public partial class SelectFileFormatDialog : Gtk.Dialog
 	{
-		List<FileFormat> formats = new List<FileFormat> ();
+		List<MSBuildFileFormat> formats = new List<MSBuildFileFormat> ();
 		
-		public SelectFileFormatDialog (IWorkspaceFileObject item)
+		public SelectFileFormatDialog (IMSBuildFileObject item)
 		{
 			this.Build ();
 			string warning = "";
@@ -48,14 +49,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			labelMessage.Text = string.Format (labelMessage.Text, item.Name);
 			labelCurrentFormat.Text = item.FileFormat.Name;
 			
-			foreach (FileFormat format in Services.ProjectService.FileFormats.GetFileFormatsForObject (item)) {
+			foreach (MSBuildFileFormat format in MSBuildFileFormat.GetSupportedFormats (item)) {
 				comboNewFormat.AppendText (format.Name);
 				formats.Add (format);
 			}
 			comboNewFormat.Active = 0;
 		}
 		
-		public FileFormat Format {
+		public MSBuildFileFormat Format {
 			get {
 				if (comboNewFormat.Active == -1)
 					return null;

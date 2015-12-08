@@ -4,6 +4,8 @@ using System.Collections;
 using System.IO;
 using MonoDevelop.Projects;
 using MonoDevelop.Deployment.Targets;
+using MonoDevelop.Projects.Formats.MSBuild;
+using System.Linq;
 
 namespace MonoDevelop.Deployment.Gui
 {
@@ -11,20 +13,20 @@ namespace MonoDevelop.Deployment.Gui
 	[System.ComponentModel.ToolboxItem(true)]
 	internal partial class SourcesZipEditorWidget : Gtk.Bin
 	{
-		FileFormat[] formats;
+		MSBuildFileFormat[] formats;
 		SourcesZipPackageBuilder target;
 		bool loading;
 		
-		public SourcesZipEditorWidget (PackageBuilder target, FileFormat selectedFormat)
+		public SourcesZipEditorWidget (PackageBuilder target, MSBuildFileFormat selectedFormat)
 		{
 			this.Build();
 			this.target = (SourcesZipPackageBuilder) target;
 			loading = true;
 			
 			if (target.RootSolutionItem is SolutionFolder)
-				formats = Services.ProjectService.FileFormats.GetFileFormatsForObject (target.Solution);
+				formats = MSBuildFileFormat.GetSupportedFormats (target.Solution).ToArray ();
 			else
-				formats = Services.ProjectService.FileFormats.GetFileFormatsForObject (target.RootSolutionItem);
+				formats = MSBuildFileFormat.GetSupportedFormats ((SolutionItem)target.RootSolutionItem).ToArray ();
 			
 			if (selectedFormat == null) selectedFormat = this.target.FileFormat;
 			if (selectedFormat == null)
@@ -77,7 +79,7 @@ namespace MonoDevelop.Deployment.Gui
 			UpdateTarget ();
 		}
 		
-		public FileFormat Format {
+		public MSBuildFileFormat Format {
 			get { return formats [comboFormat.Active]; }
 		}
 		

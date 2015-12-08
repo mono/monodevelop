@@ -4,6 +4,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core;
 using MonoDevelop.Deployment;
 using MonoDevelop.Projects;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Autotools
 {
@@ -13,7 +14,7 @@ namespace MonoDevelop.Autotools
 		string defaultConfig = null;
 		string filename = null;
 
-		public int Run (string [] arguments)
+		public async Task<int> Run (string [] arguments)
 		{
 			Console.WriteLine ("MonoDevelop Makefile generator");
 			if (arguments.Length == 0) {
@@ -50,7 +51,7 @@ namespace MonoDevelop.Autotools
 			Console.WriteLine (GettextCatalog.GetString ("Loading solution file {0}", filename));
 			ConsoleProgressMonitor monitor = new ConsoleProgressMonitor ();
 			
-			Solution solution = Services.ProjectService.ReadWorkspaceItem (monitor, filename) as Solution;
+			Solution solution = await Services.ProjectService.ReadWorkspaceItem (monitor, filename) as Solution;
 			if (solution == null) {
 				Console.WriteLine (GettextCatalog.GetString ("Error: Makefile generation supported only for solutions.\n"));
 				return 1;

@@ -32,6 +32,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui.Components;
+using System.Threading.Tasks;
 
 
 namespace MonoDevelop.Ide.Gui
@@ -61,6 +62,32 @@ namespace MonoDevelop.Ide.Gui
 			Assert.AreEqual (line, 385); 
 		}
 
+		[Test]
+		public async Task RunAnimation ()
+		{
+			int n = 0;
+			DateTime t = DateTime.MinValue;
+			int t1 = 0, t2 = 0;
+			DispatchService.RunAnimation (() => {
+				n++;
+				if (n == 1) {
+					t = DateTime.Now;
+					return 100;
+				}
+				else if (n == 2) {
+					t1 = (int)(DateTime.Now - t).TotalMilliseconds;
+					t = DateTime.Now;
+					return 200;
+				}
+				else {
+					t2 = (int)(DateTime.Now - t).TotalMilliseconds;
+					return -1;
+				}
+			});
+			await Task.Delay (1000);
+			Assert.IsTrue (t1 >= 100 && t1 <= 120);
+			Assert.IsTrue (t2 >= 200 && t1 <= 220);
+		}
 	}
 }
 

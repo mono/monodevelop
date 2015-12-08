@@ -67,7 +67,8 @@ namespace MonoDevelop.MacIntegration
 
 		public MacPlatformService ()
 		{
-			if (IntPtr.Size == 8)
+			string safe64 = Environment.GetEnvironmentVariable ("MONODEVELOP_64BIT_SAFE");
+			if (string.IsNullOrEmpty (safe64) && IntPtr.Size == 8)
 				throw new Exception ("Mac integration is not yet 64-bit safe");
 
 			if (initedGlobal)
@@ -562,7 +563,7 @@ namespace MonoDevelop.MacIntegration
 			return res != null ? res.ToXwtImage () : base.OnGetIconForFile (filename);
 		}
 
-		public override IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
+		public override ProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
 		                                                            IDictionary<string, string> environmentVariables,
 		                                                            string title, bool pauseWhenFinished)
 		{

@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Projects;
 using System.Linq;
 using MonoDevelop.Ide;
+using System.Collections.Generic;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -72,12 +73,17 @@ namespace MonoDevelop.AssemblyBrowser
 			IsDisposed = false;
 		}
 		
-		public override void Load (string fileName)
+		public override void Load (FileOpenInformation fileOpenInformation)
 		{
 			ContentName = GettextCatalog.GetString ("Assembly Browser");
-			widget.AddReferenceByFileName (fileName);
+			widget.AddReferenceByFileName (fileOpenInformation.FileName);
 		}
-		
+
+		internal void EnsureDefinitionsLoaded (List<AssemblyLoader> definitions)
+		{
+			widget.EnsureDefinitionsLoaded (definitions);
+		}
+
 		public override bool IsFile {
 			get {
 				return false;
@@ -101,37 +107,26 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public NavigationPoint BuildNavigationPoint ()
 		{
-			return new AssemblyBrowserNavigationPoint ();
+			return widget.BuildNavigationPoint ();
 		}
 		
 		#endregion
 
 		#region IUrlHandler implementation 
 		
-		public void Open (INamedElement element)
+		public void Open (Microsoft.CodeAnalysis.ISymbol element, bool expandNode = true)
 		{
-			var member = element as IUnresolvedEntity;
-			if (member == null) {
-				var entity = element as IMember;
-				if (entity != null)
-					member = entity.UnresolvedMember;
-
-			}
-			if (member == null) {
-				var entity = element as IType;
-				if (entity != null)
-					member = entity.GetDefinition ().Parts [0];
-			}
-			if (member == null)
-				return;
-			var url = AssemblyBrowserWidget.GetIdString (member);
-			try {
-				widget.Open (url);
-			} catch (Exception e) {
-				MessageService.ShowError (GettextCatalog.GetString ("{0} could not be opened", url), e);
-			}
+			var url = element.OriginalDefinition.GetDocumentationCommentId ();//AssemblyBrowserWidget.GetIdString (member); 
+			widget.PublicApiOnly = element.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public;
+			widget.Open (url, expandNode: expandNode);
 		}
-		
+
+		public void Open (string documentationCommentId, bool openInPublicOnlyMode = true, bool expandNode = true)
+		{
+			widget.PublicApiOnly = openInPublicOnlyMode;
+			widget.Open (documentationCommentId, expandNode: expandNode);
+		}
+
 		#endregion 
 
 		[MonoDevelop.Components.Commands.CommandHandler(MonoDevelop.Refactoring.RefactoryCommands.FindReferences)]
@@ -140,7 +135,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var member = widget.ActiveMember as IMember;
 			if (member == null)
 				return;
-			FindReferencesHandler.FindRefs (member);
+			// FindReferencesHandler.FindRefs (member);
 		}
 		
 		[MonoDevelop.Components.Commands.CommandHandler(MonoDevelop.Refactoring.RefactoryCommands.FindDerivedClasses)]
@@ -149,10 +144,10 @@ namespace MonoDevelop.AssemblyBrowser
 			var type = widget.ActiveMember as ITypeDefinition;
 			if (type == null)
 				return;
-			FindDerivedClassesHandler.FindDerivedClasses (type);
+			//FindDerivedClassesHandler.FindDerivedClasses (type);
 		}
 
-		public void FillWidget ()
+		public async void FillWidget ()
 		{
 			if (Ide.IdeApp.ProjectOperations.CurrentSelectedSolution == null) {
 				foreach (var assembly in defaultAssemblies) {
@@ -165,7 +160,7 @@ namespace MonoDevelop.AssemblyBrowser
 					var netProject = project as DotNetProject;
 					if (netProject == null)
 						continue;
-					foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
+					foreach (string file in await netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
 						if (!System.IO.File.Exists (file))
 							continue;
 						Widget.AddReferenceByFileName (file); 
@@ -175,37 +170,5 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 	}
 
-	class AssemblyBrowserNavigationPoint : NavigationPoint
-	{
-		static Document DoShow ()
-		{
-			foreach (var view in Ide.IdeApp.Workbench.Documents) {
-				if (view.GetContent<AssemblyBrowserViewContent> () != null) {
-					view.Window.SelectWindow ();
-					return view;
-				}
-			}
 
-			var binding = DisplayBindingService.GetBindings<AssemblyBrowserDisplayBinding> ().FirstOrDefault ();
-			var assemblyBrowserView = binding != null ? binding.GetViewContent () : new AssemblyBrowserViewContent ();
-			assemblyBrowserView.FillWidget ();
-
-			return Ide.IdeApp.Workbench.OpenDocument (assemblyBrowserView, true);
-		}
-
-		#region implemented abstract members of NavigationPoint
-
-		public override Document ShowDocument ()
-		{
-			return DoShow ();
-		}
-
-		public override string DisplayName {
-			get {
-				return GettextCatalog.GetString ("Assembly Browser");
-			}
-		}
-
-		#endregion
-	}
 }

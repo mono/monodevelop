@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -71,16 +71,6 @@
       <Name>MonoDevelop.SourceEditor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
-      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
-      <Name>ICSharpCode.NRefactory</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
-      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
-      <Name>ICSharpCode.NRefactory.CSharp</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
       <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
       <Name>MonoDevelop.Debugger</Name>
@@ -136,6 +126,36 @@
     </Reference>
     <Reference Include="System.Web.Mvc">
       <HintPath>..\..\..\packages\Microsoft.AspNet.Mvc.5.2.2\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc" Condition="!Exists('$(SolutionDir)\..\.git')" />
+    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <Reference Include="System.Reflection.Metadata">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Reflection.Metadata.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Collections.Immutable.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -195,10 +215,7 @@
     <Compile Include="Razor\EditorParserFixed\RazorEditorParser.cs" />
     <Compile Include="Razor\EditorParserFixed\RazorEditorTrace.cs" />
     <Compile Include="Razor\EditorParserFixed\RazorResources.Designer.cs" />
-    <Compile Include="Projects\AspMvcProject.cs" />
     <Compile Include="Projects\AspMvcProjectConfiguration.cs" />
-    <Compile Include="Projects\AspNetAppProject.cs" />
-    <Compile Include="Projects\AspNetAppProjectBinding.cs" />
     <Compile Include="Projects\AspNetAppProjectConfiguration.cs" />
     <Compile Include="Projects\AspNetMSBuildImportProvider.cs" />
     <Compile Include="WebForms\MasterContentFileDescriptionTemplate.cs" />
@@ -300,10 +317,17 @@
     <Compile Include="Razor\RazorCSharpParsedDocument.cs" />
     <Compile Include="Razor\RazorPageInfo.cs" />
     <Compile Include="WebForms\WebFormsTypeContext.cs" />
+    <Compile Include="Projects\AspMvcProjectFlavor.cs" />
+    <Compile Include="Projects\AspNetAppProjectFlavor.cs" />
+    <Compile Include="WebForms\CSharp\CSharpProjector.cs" />
     <Compile Include="Projects\AspNetProjectTemplateWizard.cs" />
     <Compile Include="Projects\AspNetProjectTemplateWizardPageWidget.cs" />
     <Compile Include="Projects\AspNetProjectTemplateWizardPage.cs" />
     <Compile Include="Projects\AspNetStringTagProvider.cs" />
+    <Compile Include="Commands\MethodDeclarationAtCaret.cs" />
+    <Compile Include="Razor\Dom\RazorWorkbenchService.cs" />
+    <Compile Include="Razor\RazorCSharpParserContext.cs" />
+    <Compile Include="Razor\OpenRazorDocument.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -530,6 +554,7 @@
     <Folder Include="ProjectPad\" />
     <Folder Include="Templates\Projects\" />
     <Folder Include="Templates\images\" />
+    <Folder Include="WebForms\CSharp\" />
   </ItemGroup>
   <Target Name="BeforeBuild">
     <PropertyGroup>

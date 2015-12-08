@@ -103,6 +103,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				root.AppendChild (el);
 				el.SetAttribute ("Project", config.ProjectGuid);
 				el.SetAttribute ("AbsolutePath", config.ProjectFile);
+				el.SetAttribute ("BuildProjectInSolution", config.Enabled ? "True" : "False");
 				el.InnerText = string.Format (config.Configuration + "|" + config.Platform);
 			}
 

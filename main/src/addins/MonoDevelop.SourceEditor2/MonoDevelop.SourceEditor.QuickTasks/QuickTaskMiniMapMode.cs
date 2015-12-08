@@ -33,23 +33,30 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.Commands;
 using ICSharpCode.NRefactory;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
-	public class QuickTaskMiniMapMode : HBox
+	class QuickTaskMiniMapMode : HBox, IMapMode
 	{
+		Minimpap minimap;
 		QuickTaskOverviewMode rightMap;
 
 		public QuickTaskMiniMapMode (QuickTaskStrip parent)
 		{
-			var minimap = new Minimpap (parent);
+			minimap = new Minimpap (parent);
 			PackStart (minimap, true, true, 0);
 			
 			rightMap = new QuickTaskOverviewMode (parent);
 			PackStart (rightMap, true, true, 0);
 		}
 
-		public class Minimpap : QuickTaskOverviewMode
+		public void ForceDraw ()
+		{
+			minimap.RequestRedraw ();
+		}
+
+		class Minimpap : QuickTaskOverviewMode
 		{
 			const double lineHeight = 2;
 
@@ -82,7 +89,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				}
 			}
 	
-			void RequestRedraw ()
+			public void RequestRedraw ()
 			{
 				RemoveRedrawTimer ();
 				redrawTimeout = GLib.Timeout.Add (450, delegate {

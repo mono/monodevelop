@@ -32,24 +32,25 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.DesignerSupport;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
+using MonoDevelop.Ide.Editor.Extension;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.AspNet.WebForms
 {
 	class SuggestedHandlerCompletionData : CompletionData
 	{
-		readonly Project project;
+		readonly MonoDevelop.Projects.Project project;
 		readonly CodeMemberMethod methodInfo;
-		readonly IType codeBehindClass;
-		readonly IUnresolvedTypeDefinition codeBehindClassPart;
+		readonly INamedTypeSymbol codeBehindClass;
+		readonly Location codeBehindClassLocation;
 		
-		public SuggestedHandlerCompletionData (Project project, CodeMemberMethod methodInfo, IType codeBehindClass, IUnresolvedTypeDefinition codeBehindClassPart)
+		public SuggestedHandlerCompletionData (MonoDevelop.Projects.Project project, CodeMemberMethod methodInfo, INamedTypeSymbol codeBehindClass, Location codeBehindClassLocation)
 		{
 			this.project = project;
 			this.methodInfo = methodInfo;
 			this.codeBehindClass = codeBehindClass;
-			this.codeBehindClassPart = codeBehindClassPart;
+			this.codeBehindClassLocation = codeBehindClassLocation;
 		}
 		
 		public override IconId Icon {
@@ -74,22 +75,21 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 		}
 		
-		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
 			//insert the method name
-			MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buf = window.CompletionWidget as MonoDevelop.Ide.Gui.Content.IEditableTextBuffer;
+			var buf = window.CompletionWidget;
 			if (buf != null) {
-				using (var undo = buf.OpenUndoGroup ()) {
-					buf.DeleteText (window.CodeCompletionContext.TriggerOffset, buf.CursorPosition - window.CodeCompletionContext.TriggerOffset);
-					buf.InsertText (buf.CursorPosition, methodInfo.Name);
-				}
+				buf.Replace (window.CodeCompletionContext.TriggerOffset, buf.CaretOffset - window.CodeCompletionContext.TriggerOffset, methodInfo.Name);
 			}
 			
 			//generate the codebehind method
-			if (codeBehindClassPart != null && project != null)
-				BindingService.AddMemberToClass (project, codeBehindClass.GetDefinition (), codeBehindClassPart, methodInfo, false);
-			else
-				BindingService.AddMemberToClass (project, codeBehindClass.GetDefinition (), codeBehindClass.GetDefinition ().Parts.First (), methodInfo, false);
+
+			// TODO: Roslyn port.
+//			if (codeBehindClassLocation != null && project != null)
+//				BindingService.AddMemberToClass (project, codeBehindClass, codeBehindClassLocation, methodInfo, false);
+//			else
+//				BindingService.AddMemberToClass (project, codeBehindClass, codeBehindClass.Locations.First (), methodInfo, false);
 		}
 	}
 }

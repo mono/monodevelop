@@ -29,7 +29,7 @@
 using System;
 using System.Xml;
 
-namespace Microsoft.Build.BuildEngine {
+namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
 	internal sealed class ConditionOrExpression : ConditionExpression {
 	
 		readonly ConditionExpression left;
@@ -82,6 +82,12 @@ namespace Microsoft.Build.BuildEngine {
 		public override bool CanEvaluateToString (IExpressionContext context)
 		{
 			return false;
+		}
+
+		public override void CollectConditionProperties (ConditionedPropertyCollection properties)
+		{
+			left.CollectConditionProperties (properties);
+			right.CollectConditionProperties (properties);
 		}
 	}
 }

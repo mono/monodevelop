@@ -40,13 +40,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	class ShowAllFilesBuilderExtension: NodeBuilderExtension
 	{
-		ProjectFileEventHandler fileAddedHandler;
-		ProjectFileEventHandler fileRemovedHandler;
-		
-		EventHandler<FileEventArgs> createdHandler;
-		EventHandler<FileEventArgs> deletedHandler;
-		EventHandler<FileCopyEventArgs> renamedHandler;
-		
 		List<Project> projects = new List<Project> ();
 		
 		public override bool CanBuildNode (Type dataType)
@@ -63,28 +56,21 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		protected override void Initialize ()
 		{
-			fileAddedHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (OnAddFile));
-			fileRemovedHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (OnRemoveFile));
+			IdeApp.Workspace.FileAddedToProject += OnAddFile;
+			IdeApp.Workspace.FileRemovedFromProject += OnRemoveFile;
 			
-			createdHandler = (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (OnSystemFileAdded));
-			deletedHandler = (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (OnSystemFileDeleted));
-			renamedHandler = (EventHandler<FileCopyEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileCopyEventArgs> (OnSystemFileRenamed));
-			
-			IdeApp.Workspace.FileAddedToProject += fileAddedHandler;
-			IdeApp.Workspace.FileRemovedFromProject += fileRemovedHandler;
-			
-			FileService.FileRenamed += renamedHandler;
-			FileService.FileRemoved += deletedHandler;
-			FileService.FileCreated += createdHandler;
+			FileService.FileRenamed += OnSystemFileRenamed;
+			FileService.FileRemoved += OnSystemFileDeleted;
+			FileService.FileCreated += OnSystemFileAdded;
 		}
 		
 		public override void Dispose ()
 		{
-			IdeApp.Workspace.FileAddedToProject -= fileAddedHandler;
-			IdeApp.Workspace.FileRemovedFromProject -= fileRemovedHandler;
-			FileService.FileRenamed -= renamedHandler;
-			FileService.FileRemoved -= deletedHandler;
-			FileService.FileCreated -= createdHandler;
+			IdeApp.Workspace.FileAddedToProject -= OnAddFile;
+			IdeApp.Workspace.FileRemovedFromProject -= OnRemoveFile;
+			FileService.FileRenamed -= OnSystemFileRenamed;
+			FileService.FileRemoved -= OnSystemFileDeleted;
+			FileService.FileCreated -= OnSystemFileAdded;
 		}
 
 		public override void OnNodeAdded (object dataObject)
@@ -366,7 +352,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (targetPath == source)
 				targetPath = ProjectOperations.GetTargetCopyName (targetPath, false);
 			
-			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString("Copying files..."), Stock.StatusWorking, true))
+			using (ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString("Copying files..."), Stock.StatusWorking, true))
 			{
 				bool move = operation == DragOperation.Move;
 				IdeApp.ProjectOperations.TransferFiles (monitor, null, source, targetProject, targetPath, move, false);

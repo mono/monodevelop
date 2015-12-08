@@ -61,6 +61,18 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Reflection.Metadata">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Reflection.Metadata.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Collections.Immutable.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
@@ -83,19 +95,9 @@
       <Name>MonoDevelop.Deployment.Linux</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
-      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
-      <Name>MonoDevelop.SourceEditor</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
       <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
       <Name>MonoDevelop.DesignerSupport</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
-      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
-      <Name>Mono.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
@@ -200,7 +202,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Project\CProject.cs" />
-    <Compile Include="Project\CProjectBinding.cs" />
     <Compile Include="Project\CProjectConfiguration.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="Gui\CodeGenerationPanel.cs" />
@@ -215,12 +216,10 @@
     <Compile Include="Project\ProjectPackageCollection.cs" />
     <Compile Include="Gui\EditPackagesDialog.cs" />
     <Compile Include="gtk-gui\CBinding.EditPackagesDialog.cs" />
-    <Compile Include="CLanguageBinding.cs" />
     <Compile Include="Project\Package.cs" />
     <Compile Include="Project\ProjectPackageEventArgs.cs" />
     <Compile Include="Gui\OutputOptionsPanel.cs" />
     <Compile Include="gtk-gui\CBinding.OutputOptionsPanel.cs" />
-    <Compile Include="Project\CProjectServiceExtension.cs" />
     <Compile Include="Navigation\ProjectNodeBuilderExtension.cs" />
     <Compile Include="Navigation\NamespaceNodeBuilder.cs" />
     <Compile Include="ProjectPad\ProjectReferencesExtension.cs" />
@@ -260,7 +259,6 @@
     <Compile Include="Parser\Typedef.cs" />
     <Compile Include="Parser\Union.cs" />
     <Compile Include="Parser\Variable.cs" />
-    <Compile Include="CppLanguageBinding.cs" />
     <Compile Include="Gui\GeneralOptionsPanel.cs" />
     <Compile Include="gtk-gui\CBinding.GeneralOptionsPanel.cs" />
     <Compile Include="Parser\Local.cs" />
@@ -268,14 +266,13 @@
     <Compile Include="gtk-gui\CBinding.PackageDetails.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Parser\CDocumentParser.cs" />
-    <Compile Include="ObjCLanguageBinding.cs" />
-    <Compile Include="ObjCppLanguageBinding.cs" />
     <Compile Include="Parser\CompilationUnitDataProvider.cs" />
     <Compile Include="Parser\DataProvider.cs" />
     <Compile Include="Parser\CTagsManager.cs" />
     <Compile Include="Parser\ExuberantCTagsManager.cs" />
     <Compile Include="Parser\BsdCTagsManager.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="Gui\DataWrapper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

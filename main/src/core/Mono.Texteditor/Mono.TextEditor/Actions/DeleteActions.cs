@@ -237,7 +237,35 @@ namespace Mono.TextEditor
 				// Virtual indentation needs to be fixed before to have the same behavior
 				// if it's there or not (otherwise user has to press multiple backspaces in some cases)
 				data.EnsureCaretIsNotVirtual ();
-				DocumentLine line = data.Document.GetLine (data.Caret.Line);
+
+				var line = data.Document.GetLine (data.Caret.Line);
+				// smart backspace (delete indentation)
+				if (data.HasIndentationTracker && (data.IndentationTracker.SupportedFeatures & IndentatitonTrackerFeatures.SmartBackspace) != 0 && (data.Options.IndentStyle == IndentStyle.Smart || data.Options.IndentStyle == IndentStyle.Virtual)) {
+					if (data.Caret.Column == data.GetVirtualIndentationColumn (data.Caret.Location)) {
+						bool isAllIndent = line.GetIndentation (data.Document).Length == data.Caret.Column - 1;
+
+						if (isAllIndent) {
+							var prevLine = line.PreviousLine;
+							var prevLineIsEmpty = prevLine != null && prevLine.Length == 0;
+
+							var startOffset = prevLine != null ? prevLine.EndOffset : 0;
+							data.Remove (startOffset, data.Caret.Offset - startOffset);
+							if (prevLine != null) {
+								if (prevLineIsEmpty) {
+									if (line.Length - data.Caret.Column - 1 > 0 && data.HasIndentationTracker) {
+										data.InsertAtCaret (data.IndentationTracker.GetIndentationString (data.Caret.Offset));
+									} else {
+										data.Caret.Column = data.GetVirtualIndentationColumn (prevLine.Offset);
+									}
+								}
+								data.FixVirtualIndentation ();
+							}
+							return;
+						}
+					}
+				}
+
+				// normal backspace.
 				if (data.Caret.Column > line.Length + 1) {
 					data.Caret.Column = line.Length + 1;
 				} else if (data.Caret.Offset == line.Offset) {
@@ -304,7 +332,21 @@ namespace Mono.TextEditor
 				DocumentLine line = data.Document.GetLine (data.Caret.Line);
 				if (data.Caret.Column == line.Length + 1) {
 					if (data.Caret.Line < data.Document.LineCount) { 
-						data.Remove (line.EndOffsetIncludingDelimiter - line.DelimiterLength, line.DelimiterLength);
+						var deletionLength = line.DelimiterLength;
+						// smart backspace (delete indentation)
+						if (data.Options.IndentStyle == IndentStyle.Smart || data.Options.IndentStyle == IndentStyle.Virtual) {
+							var next = line.NextLine;
+							if (next != null) {
+								if (data.HasIndentationTracker) {
+									var lineIndentation = next.GetIndentation (data.Document);
+									if (lineIndentation.StartsWith (data.IndentationTracker.GetIndentationString (next.Offset))) {
+										deletionLength += lineIndentation.Length;
+									}
+								}
+							}
+						} 
+
+						data.Remove (line.EndOffsetIncludingDelimiter - line.DelimiterLength, deletionLength);
 						if (line.EndOffsetIncludingDelimiter == data.Document.TextLength)
 							line.UnicodeNewline = UnicodeNewline.Unknown;
 					}

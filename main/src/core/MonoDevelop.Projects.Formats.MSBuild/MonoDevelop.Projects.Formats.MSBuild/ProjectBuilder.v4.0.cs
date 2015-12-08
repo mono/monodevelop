@@ -53,29 +53,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			Refresh ();
 		}
 
-		public string[] GetSupportedTargets (ProjectConfigurationInfo[] configurations)
-		{
-			string[] result = null;
-			BuildEngine.RunSTA (delegate {
-				try {
-					var project = SetupProject (configurations);
-					result = project.Targets.Select (t => t.Key).ToArray ();
-				} catch {
-					result = new string [0];
-				}
-			});
-			return result;
-		}
-
 		public MSBuildResult Run (
 			ProjectConfigurationInfo[] configurations, ILogWriter logWriter, MSBuildVerbosity verbosity,
-			string[] runTargets, string[] evaluateItems, string[] evaluateProperties, Dictionary<string,string> globalProperties)
+			string[] runTargets, string[] evaluateItems, string[] evaluateProperties, Dictionary<string,string> globalProperties, int taskId)
 		{
 			if (runTargets == null || runTargets.Length == 0)
 				throw new ArgumentException ("runTargets is empty");
 
 			MSBuildResult result = null;
-			BuildEngine.RunSTA (delegate {
+			BuildEngine.RunSTA (taskId, delegate {
 				try {
 					var project = SetupProject (configurations);
 					currentLogWriter = logWriter;
@@ -95,7 +81,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					if (globalProperties != null)
 						foreach (var p in globalProperties)
 							pi.SetProperty (p.Key, p.Value);
-
+					
 					pi.Build (runTargets, loggers);
 
 					result = new MSBuildResult (logger.BuildResult.ToArray ());

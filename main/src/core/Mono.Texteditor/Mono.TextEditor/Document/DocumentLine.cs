@@ -88,11 +88,6 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public bool WasChanged {
-			get;
-			set;
-		}
-
 		CloneableStack<Span> startSpan;
 		static readonly CloneableStack<Span> EmptySpan = new CloneableStack<Span> ();
 

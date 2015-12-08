@@ -36,10 +36,11 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide
 {
-	public class DispatchService
+	public static class DispatchService
 	{
 		static Queue<GenericMessageContainer> backgroundQueue = new Queue<GenericMessageContainer> ();
 		static ManualResetEvent backgroundThreadWait = new ManualResetEvent (false);
@@ -54,6 +55,9 @@ namespace MonoDevelop.Ide
 
 		internal static void Initialize ()
 		{
+			if (guiContext != null)
+				return;
+			
 			guiContext = new GuiSyncContext ();
 			guiThread = Thread.CurrentThread;
 			
@@ -69,17 +73,54 @@ namespace MonoDevelop.Ide
 			DispatchDebug = Environment.GetEnvironmentVariable ("MONODEVELOP_DISPATCH_DEBUG") != null;
 		}
 		
-		public static void GuiDispatch (MessageHandler cb)
+		public static Task<T> GuiDispatch<T> (Func<T> cb)
 		{
+			TaskCompletionSource<T> ts = new TaskCompletionSource<T> ();
 			if (IsGuiThread) {
-				cb ();
-				return;
+				try {
+					ts.SetResult (cb ());
+				} catch (Exception ex) {
+					ts.SetException (ex);
+				}
+				return ts.Task;
 			}
 
-			QueueMessage (new GenericMessageContainer (cb, false));
+			QueueMessage (new GenericMessageContainer (() => {
+				try {
+					ts.SetResult (cb ());
+				} catch (Exception ex) {
+					ts.SetException (ex);
+				}
+			}, false));
+
+			return ts.Task;
 		}
 
-		public static void GuiDispatch (StatefulMessageHandler cb, object state)
+		public static Task GuiDispatch (Action cb)
+		{
+			TaskCompletionSource<bool> ts = new TaskCompletionSource<bool> ();
+			if (IsGuiThread) {
+				try {
+					cb ();
+					ts.SetResult (true);
+				} catch (Exception ex) {
+					ts.SetException (ex);
+				}
+				return ts.Task;
+			}
+
+			QueueMessage (new GenericMessageContainer (() => {
+				try {
+					cb ();
+				} finally {
+					ts.SetResult (true);
+				}
+			}, false));
+
+			return ts.Task;
+		}
+
+		internal static void GuiDispatch (StatefulMessageHandler cb, object state)
 		{
 			if (IsGuiThread) {
 				cb (state);
@@ -173,12 +214,12 @@ namespace MonoDevelop.Ide
 				throw new InvalidOperationException ("This method can only be called in the GUI thread");
 		}
 		
-		public static Delegate GuiDispatch (Delegate del)
+		public static Delegate GuiDispatchDelegate (Delegate del)
 		{
 			return guiContext.CreateSynchronizedDelegate (del);
 		}
 		
-		public static T GuiDispatch<T> (T theDelegate)
+		public static T GuiDispatchDelegate<T> (T theDelegate)
 		{
 			if (guiContext == null)
 				return theDelegate;
@@ -436,9 +477,11 @@ namespace MonoDevelop.Ide
 		{
 			try {
 				callback ();
+				callback = null;
 			}
 			catch (Exception e) {
 				ex = e;
+				callback = null;
 			}
 		}
 		

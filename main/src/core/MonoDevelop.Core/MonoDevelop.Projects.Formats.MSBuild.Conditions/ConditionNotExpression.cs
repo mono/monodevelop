@@ -30,7 +30,7 @@
 using System;
 using System.Xml;
 
-namespace Microsoft.Build.BuildEngine {
+namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
 	internal sealed class ConditionNotExpression : ConditionExpression {
 	
 		readonly ConditionExpression expression;
@@ -69,6 +69,11 @@ namespace Microsoft.Build.BuildEngine {
 		public override bool CanEvaluateToString (IExpressionContext context)
 		{
 			return false;
+		}
+
+		public override void CollectConditionProperties (ConditionedPropertyCollection properties)
+		{
+			expression.CollectConditionProperties (properties);
 		}
 	}
 }

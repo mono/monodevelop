@@ -60,27 +60,21 @@ namespace MonoDevelop.Gettext.NodeBuilders
 			bool allChecked = true;
 			foreach (ITreeNavigator node in CurrentNodes) {
 				ProjectFile file = (ProjectFile) node.DataItem;
-				object prop = file.ExtendedProperties [scanForTranslationsProperty];
-				bool val = prop == null? true : (bool) prop;
-				if (!val) {
+				if (!file.Metadata.GetValue (scanForTranslationsProperty, true)) {
 					allChecked = false;
 					break;
 				}
 			}
 			
-			Set<SolutionEntityItem> projects = new Set<SolutionEntityItem> ();
+			Set<SolutionItem> projects = new Set<SolutionItem> ();
 			
 			foreach (ITreeNavigator node in CurrentNodes) {
 				ProjectFile file = (ProjectFile) node.DataItem;
 				projects.Add (file.Project);
-				if (allChecked) {
-					file.ExtendedProperties [scanForTranslationsProperty] = false;
-				} else {
-					file.ExtendedProperties.Remove (scanForTranslationsProperty);
-				}
+				file.Metadata.SetValue (scanForTranslationsProperty, !allChecked, true);
 			}
 				
-			IdeApp.ProjectOperations.Save (projects);
+			IdeApp.ProjectOperations.SaveAsync (projects);
 		}
 		
 		[CommandUpdateHandler (Commands.ScanForTranslations)]
@@ -88,9 +82,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 		{
 			foreach (ITreeNavigator node in CurrentNodes) {
 				ProjectFile file = (ProjectFile) node.DataItem;
-				object prop = file.ExtendedProperties [scanForTranslationsProperty];
-				bool val = prop == null? true : (bool) prop;
-				if (val) {
+				if (file.Metadata.GetValue (scanForTranslationsProperty, true)) {
 					cinfo.Checked = true;
 				} else if (cinfo.Checked) {
 					cinfo.CheckedInconsistent = true;

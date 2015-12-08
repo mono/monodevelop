@@ -92,14 +92,18 @@ namespace MonoDevelop.Ide.Commands
 		DuplicateLine,
 		
 		ToggleCompletionSuggestionMode,
-		ToggleBlockSelectionMode
+		ToggleBlockSelectionMode,
+
+		DynamicAbbrev,
+
+		PulseCaret
 	}
 	
 	public class ToggleCompletionSuggestionModeHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
-			MonoDevelop.Ide.CodeCompletion.CompletionWindowManager.ForceSuggestionMode = !MonoDevelop.Ide.CodeCompletion.CompletionWindowManager.ForceSuggestionMode;
+			IdeApp.Preferences.ForceSuggestionMode.Value = !IdeApp.Preferences.ForceSuggestionMode;
 		}
 	}
 }

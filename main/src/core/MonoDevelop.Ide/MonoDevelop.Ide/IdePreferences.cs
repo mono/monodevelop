@@ -30,6 +30,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects.Formats.MSBuild;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide
 {
@@ -65,246 +66,91 @@ namespace MonoDevelop.Ide
 	{
 		internal IdePreferences ()
 		{
-			FontService.RegisterFontChangedCallback ("OutputPad", delegate {
-				if (CustomOutputPadFontChanged != null)
-					CustomOutputPadFontChanged (null, EventArgs.Empty);
-			});
-			FontService.RegisterFontChangedCallback ("Pad", delegate {
-				if (CustomPadFontChanged != null)
-					CustomPadFontChanged (null, EventArgs.Empty);
-			});
-		}
-		
-		public bool LoadPrevSolutionOnStartup {
-			get { return PropertyService.Get ("SharpDevelop.LoadPrevProjectOnStartup", false); }
-			set { PropertyService.Set ("SharpDevelop.LoadPrevProjectOnStartup", value); }
-		}
-		
-		public event EventHandler<PropertyChangedEventArgs> LoadPrevSolutionOnStartupChanged {
-			add { PropertyService.AddPropertyHandler ("SharpDevelop.LoadPrevProjectOnStartup", value); }
-			remove { PropertyService.RemovePropertyHandler ("SharpDevelop.LoadPrevProjectOnStartup", value); }
-		}
-		
-		public bool CreateFileBackupCopies {
-			get { return PropertyService.Get ("SharpDevelop.CreateBackupCopy", false); }
-			set { PropertyService.Set ("SharpDevelop.CreateBackupCopy", value); }
-		}
-		
-		public event EventHandler<PropertyChangedEventArgs> CreateFileBackupCopiesChanged {
-			add { PropertyService.AddPropertyHandler ("SharpDevelop.CreateBackupCopy", value); }
-			remove { PropertyService.RemovePropertyHandler ("SharpDevelop.CreateBackupCopy", value); }
-		}
-		
-		public bool LoadDocumentUserProperties {
-			get { return PropertyService.Get ("SharpDevelop.LoadDocumentProperties", true); }
-			set { PropertyService.Set ("SharpDevelop.LoadDocumentProperties", value); }
-		}
-		
-		public event EventHandler<PropertyChangedEventArgs> LoadDocumentUserPropertiesChanged {
-			add { PropertyService.AddPropertyHandler ("SharpDevelop.LoadDocumentProperties", value); }
-			remove { PropertyService.RemovePropertyHandler ("SharpDevelop.LoadDocumentProperties", value); }
 		}
 
-		public bool BuildBeforeExecuting {
-			get { return PropertyService.Get ("MonoDevelop.Ide.BuildBeforeExecuting", true); }
-			set { PropertyService.Set ("MonoDevelop.Ide.BuildBeforeExecuting", value); }
-		}
+		public readonly ConfigurationProperty<bool> EnableInstrumentation = Runtime.Preferences.EnableInstrumentation;
+		public readonly ConfigurationProperty<bool> EnableAutomatedTesting = Runtime.Preferences.EnableAutomatedTesting;
 
-		public event EventHandler<PropertyChangedEventArgs> BuildBeforeExecutingChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.BuildBeforeExecuting", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.BuildBeforeExecuting", value); }
-		}
-		
-		/*public BuildResultStates ShowOutputPadDuringBuild {
-			get { return PropertyService.Get ("MonoDevelop.Ide.ShowOutputPadDuringBuild", BuildResultStates.Never); }
-			set { PropertyService.Set ("MonoDevelop.Ide.ShowOutputPadDuringBuild", value); }
-		}
+		public readonly ConfigurationProperty<string> ProjectsDefaultPath = ConfigurationProperty.Create ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), "Projects"));
 
-		public event EventHandler<PropertyChangedEventArgs> ShowOutputPadShowOutputPadDuringBuildChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.ShowOutputPadDuringBuild", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.ShowOutputPadDuringBuild", value); }
-		}*/
-		
-		public BuildResultStates ShowOutputPadAfterBuild {
-			get { return PropertyService.Get ("MonoDevelop.Ide.ShowOutputPadAfterBuild", BuildResultStates.Never); }
-			set { PropertyService.Set ("MonoDevelop.Ide.ShowOutputPadAfterBuild", value); }
-		}
+		public readonly ConfigurationProperty<bool> BuildBeforeExecuting = ConfigurationProperty.Create ("MonoDevelop.Ide.BuildBeforeExecuting", true);
+		public readonly ConfigurationProperty<bool> BuildBeforeRunningTests = ConfigurationProperty.Create ("BuildBeforeRunningTests", true);
+		public readonly ConfigurationProperty<BeforeCompileAction> BeforeBuildSaveAction = ConfigurationProperty.Create ("MonoDevelop.Ide.BeforeCompileAction", BeforeCompileAction.SaveAllFiles);
+		public readonly ConfigurationProperty<bool> RunWithWarnings = ConfigurationProperty.Create ("MonoDevelop.Ide.RunWithWarnings", true);
+		public readonly ConfigurationProperty<MSBuildVerbosity> MSBuildVerbosity = Runtime.Preferences.MSBuildVerbosity;
+		public readonly ConfigurationProperty<BuildResultStates> ShowOutputPadAfterBuild = ConfigurationProperty.Create ("MonoDevelop.Ide.ShowOutputPadAfterBuild", BuildResultStates.Never);
+		public readonly ConfigurationProperty<BuildResultStates> ShowErrorPadAfterBuild = ConfigurationProperty.Create ("MonoDevelop.Ide.NewShowErrorPadAfterBuild", BuildResultStates.Never);
+		public readonly ConfigurationProperty<JumpToFirst> JumpToFirstErrorOrWarning = ConfigurationProperty.Create ("MonoDevelop.Ide.NewJumpToFirstErrorOrWarning", JumpToFirst.Error);
+		public readonly ConfigurationProperty<bool> DefaultHideMessageBubbles = ConfigurationProperty.Create ("MonoDevelop.Ide.DefaultHideMessageBubbles", false);
+		public readonly ConfigurationProperty<ShowMessageBubbles> ShowMessageBubbles = ConfigurationProperty.Create ("MonoDevelop.Ide.NewShowMessageBubbles", MonoDevelop.Ide.ShowMessageBubbles.ForErrorsAndWarnings);
 
-		public event EventHandler<PropertyChangedEventArgs> ShowOutputPadAfterBuildChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.ShowOutputPadAfterBuild", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.ShowOutputPadAfterBuild", value); }
-		}
-		/*
-		public BuildResultStates ShowErrorPadDuringBuild {
-			get { return PropertyService.Get ("MonoDevelop.Ide.ShowErrorPadDuringBuild", BuildResultStates.Never); }
-			set { PropertyService.Set ("MonoDevelop.Ide.ShowErrorPadDuringBuild", value); }
-		}
+		public readonly ConfigurationProperty<TargetRuntime> DefaultTargetRuntime = new DefaultTargetRuntimeProperty ();
+		class DefaultTargetRuntimeProperty: ConfigurationProperty<TargetRuntime>
+		{
+			ConfigurationProperty<string> defaultTargetRuntimeText = ConfigurationProperty.Create ("MonoDevelop.Ide.DefaultTargetRuntime", "__current");
 
-		public event EventHandler<PropertyChangedEventArgs> ShowErrorPadDuringBuildChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.ShowErrorPadDuringBuild", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.ShowErrorPadDuringBuild", value); }
-		}*/
-		
-		public BuildResultStates ShowErrorPadAfterBuild {
-			get { return PropertyService.Get ("MonoDevelop.Ide.NewShowErrorPadAfterBuild", BuildResultStates.Never); }
-			set { PropertyService.Set ("MonoDevelop.Ide.NewShowErrorPadAfterBuild", value); }
-		}
+			public DefaultTargetRuntimeProperty ()
+			{
+				defaultTargetRuntimeText.Changed += (s,e) => OnChanged ();
+			}
 
-		public event EventHandler<PropertyChangedEventArgs> ShowErrorPadAfterBuildChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.NewShowErrorPadAfterBuild", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.NewShowErrorPadAfterBuild", value); }
-		}
-		
-		public JumpToFirst JumpToFirstErrorOrWarning {
-			get { return PropertyService.Get ("MonoDevelop.Ide.NewJumpToFirstErrorOrWarning", JumpToFirst.Error); }
-			set { PropertyService.Set ("MonoDevelop.Ide.NewJumpToFirstErrorOrWarning", value); }
-		}
-		
-		public event EventHandler<PropertyChangedEventArgs> AutoHideMessageBubblesChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.NewShowMessageBubbles", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.NewShowMessageBubbles", value); }
-		}
-		
-		public bool DefaultHideMessageBubbles {
-			get { return PropertyService.Get ("MonoDevelop.Ide.DefaultHideMessageBubbles", false); }
-			set { PropertyService.Set ("MonoDevelop.Ide.DefaultHideMessageBubbles", value); }
-		}
-		
-		public event EventHandler<PropertyChangedEventArgs> DefaultHideMessageBubblesChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.DefaultHideMessageBubbles", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.DefaultHideMessageBubbles", value); }
-		}
-		
-		public ShowMessageBubbles ShowMessageBubbles {
-			get { return PropertyService.Get ("MonoDevelop.Ide.NewShowMessageBubbles", ShowMessageBubbles.ForErrorsAndWarnings); }
-			set { PropertyService.Set ("MonoDevelop.Ide.NewShowMessageBubbles", value); }
-		}
-		
-		public event EventHandler<PropertyChangedEventArgs> ShowMessageBubblesChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.NewShowMessageBubbles", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.NewShowMessageBubbles", value); }
-		}
-		
-		public BeforeCompileAction BeforeBuildSaveAction {
-			get { return PropertyService.Get ("MonoDevelop.Ide.BeforeCompileAction", BeforeCompileAction.SaveAllFiles); }
-			set { PropertyService.Set ("MonoDevelop.Ide.BeforeCompileAction", value); }
-		}
-
-		public event EventHandler<PropertyChangedEventArgs> BeforeBuildSaveActionChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.BeforeCompileAction", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.BeforeCompileAction", value); }
-		}
-
-		public bool RunWithWarnings {
-			get { return PropertyService.Get ("MonoDevelop.Ide.RunWithWarnings", true); }
-			set { PropertyService.Set ("MonoDevelop.Ide.RunWithWarnings", value); }
-		}
-
-		public event EventHandler<PropertyChangedEventArgs> RunWithWarningsChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.RunWithWarnings", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.RunWithWarnings", value); }
-		}
-
-		public TargetRuntime DefaultTargetRuntime {
-			get {
-				string id = PropertyService.Get ("MonoDevelop.Ide.DefaultTargetRuntime", "__current"); 
+			protected override TargetRuntime OnGetValue ()
+			{
+				string id = defaultTargetRuntimeText.Value;
 				if (id == "__current")
 					return Runtime.SystemAssemblyService.CurrentRuntime;
 				TargetRuntime tr = Runtime.SystemAssemblyService.GetTargetRuntime (id);
 				return tr ?? Runtime.SystemAssemblyService.CurrentRuntime;
 			}
-			set { PropertyService.Set ("MonoDevelop.Ide.DefaultTargetRuntime", value.IsRunning ? "__current" : value.Id); }
+
+			protected override bool OnSetValue (TargetRuntime value)
+			{
+				defaultTargetRuntimeText.Value = value.IsRunning ? "__current" : value.Id;
+				return true;
+			}
 		}
 
-		public event EventHandler<PropertyChangedEventArgs> DefaultTargetRuntimeChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.DefaultTargetRuntime", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.DefaultTargetRuntime", value); }
-		}
-		
-		public MSBuildVerbosity MSBuildVerbosity {
-			get { return PropertyService.Get ("MonoDevelop.Ide.MSBuildVerbosity", MSBuildVerbosity.Normal); }
-			set { PropertyService.Set ("MonoDevelop.Ide.MSBuildVerbosity", value); }
-		}
+		public readonly ConfigurationProperty<string> UserInterfaceLanguage = Runtime.Preferences.UserInterfaceLanguage;
+		public readonly ConfigurationProperty<string> UserInterfaceTheme = ConfigurationProperty.Create ("MonoDevelop.Ide.UserInterfaceTheme", "");
+		public readonly ConfigurationProperty<WorkbenchCompactness> WorkbenchCompactness = ConfigurationProperty.Create ("MonoDevelop.Ide.WorkbenchCompactness", MonoDevelop.Ide.WorkbenchCompactness.Normal);
+		public readonly ConfigurationProperty<bool> LoadPrevSolutionOnStartup = ConfigurationProperty.Create ("SharpDevelop.LoadPrevProjectOnStartup", false);
+		public readonly ConfigurationProperty<bool> CreateFileBackupCopies = ConfigurationProperty.Create ("SharpDevelop.CreateBackupCopy", false);
+		public readonly ConfigurationProperty<bool> LoadDocumentUserProperties = ConfigurationProperty.Create ("SharpDevelop.LoadDocumentProperties", true);
+		public readonly ConfigurationProperty<bool> EnableDocumentSwitchDialog = ConfigurationProperty.Create ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", true);
+		public readonly ConfigurationProperty<bool> ShowTipsAtStartup = ConfigurationProperty.Create ("MonoDevelop.Core.Gui.Dialog.TipOfTheDayView.ShowTipsAtStartup", false);
 
-		public bool EnableInstrumentation {
-			get { return PropertyService.Get ("MonoDevelop.EnableInstrumentation", false); }
-			set { PropertyService.Set ("MonoDevelop.EnableInstrumentation", value); }
-		}
+		internal readonly ConfigurationProperty<Properties> WorkbenchMemento = ConfigurationProperty.Create ("SharpDevelop.Workbench.WorkbenchMemento", new Properties ());
 
-		public event EventHandler<PropertyChangedEventArgs> EnableInstrumentationChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.EnableInstrumentation", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.EnableInstrumentation", value); }
-		}
-		
-		public bool EnableAutomatedTesting {
-			get { return PropertyService.Get ("MonoDevelop.EnableAutomatedTesting", false); }
-			set { PropertyService.Set ("MonoDevelop.EnableAutomatedTesting", value); }
-		}
-
-		public event EventHandler<PropertyChangedEventArgs> EnableAutomatedTestingChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.EnableAutomatedTesting", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.EnableAutomatedTesting", value); }
-		}
-		
 		/// <summary>
 		/// Font to use for treeview pads. Returns null if no custom font is set.
 		/// </summary>
-		public Pango.FontDescription CustomPadFont {
-			get { return FontService.GetFontDescription ("Pad", false); }
-		}
-
-		public event EventHandler<EventArgs> CustomPadFontChanged;
+		public readonly ConfigurationProperty<Pango.FontDescription> CustomPadFont = FontService.GetFontProperty ("Pad");
 
 		/// <summary>
 		/// Font to use for output pads. Returns null if no custom font is set.
 		/// </summary>
-		public Pango.FontDescription CustomOutputPadFont {
-			get { return FontService.GetFontDescription ("OutputPad", false); }
-		}
+		public readonly ConfigurationProperty<Pango.FontDescription> CustomOutputPadFont = FontService.GetFontProperty ("OutputPad");
 
-		public event EventHandler CustomOutputPadFontChanged;
+		public readonly ConfigurationProperty<bool> EnableCompletionCategoryMode = ConfigurationProperty.Create ("EnableCompletionCategoryMode", false);
+		public readonly ConfigurationProperty<bool> ForceSuggestionMode = ConfigurationProperty.Create ("ForceCompletionSuggestionMode", false);
+		public readonly ConfigurationProperty<bool> EnableAutoCodeCompletion = ConfigurationProperty.Create ("EnableAutoCodeCompletion", true);
+		public readonly ConfigurationProperty<bool> AddImportedItemsToCompletionList = ConfigurationProperty.Create ("AddImportedItemsToCompletionList", false);
+		public readonly ConfigurationProperty<bool> IncludeKeywordsInCompletionList = ConfigurationProperty.Create ("IncludeKeywordsInCompletionList", true);
+		public readonly ConfigurationProperty<bool> IncludeCodeSnippetsInCompletionList = ConfigurationProperty.Create ("IncludeCodeSnippetsInCompletionList", true);
+		public readonly ConfigurationProperty<bool> AddParenthesesAfterCompletion = ConfigurationProperty.Create ("AddParenthesesAfterCompletion", false);
+		public readonly ConfigurationProperty<bool> AddOpeningOnly = ConfigurationProperty.Create ("AddOpeningOnly", false);
+		public readonly ConfigurationProperty<bool> FilterCompletionListByEditorBrowsable = ConfigurationProperty.Create ("FilterCompletionListByEditorBrowsable", true);
+		public readonly ConfigurationProperty<bool> IncludeEditorBrowsableAdvancedMembers = ConfigurationProperty.Create ("IncludeEditorBrowsableAdvancedMembers", true);
+		public readonly ConfigurationProperty<int> CompletionListRows = ConfigurationProperty.Create ("CompletionListRows", 7);
 
-		public string UserInterfaceLanguage {
-			get { return PropertyService.Get ("MonoDevelop.Ide.UserInterfaceLanguage", ""); }
-			set { PropertyService.Set ("MonoDevelop.Ide.UserInterfaceLanguage", value); }
-		}
-		
-		public event EventHandler<PropertyChangedEventArgs> UserInterfaceLanguageChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.UserInterfaceLanguage", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.UserInterfaceLanguage", value); }
-		}
-		
-		public string UserInterfaceTheme {
-			get { return PropertyService.Get ("MonoDevelop.Ide.UserInterfaceTheme", ""); }
-			set { PropertyService.Set ("MonoDevelop.Ide.UserInterfaceTheme", value); }
-		}
-		
-		public event EventHandler<PropertyChangedEventArgs> UserInterfaceThemeChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.UserInterfaceTheme", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.UserInterfaceTheme", value); }
-		}
-		
-		public WorkbenchCompactness WorkbenchCompactness {
-			get { return PropertyService.Get ("MonoDevelop.Ide.WorkbenchCompactness", WorkbenchCompactness.Normal); }
-			set { PropertyService.Set ("MonoDevelop.Ide.WorkbenchCompactness", value); }
-		}
-		
-		public event EventHandler<PropertyChangedEventArgs> WorkbenchCompactnessChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.WorkbenchCompactness", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.WorkbenchCompactness", value); }
-		}
-		
-		public string ColorScheme {
-			get { return PropertyService.Get ("ColorScheme", "Default"); }
-			set { PropertyService.Set ("ColorScheme", value); }
-		}
-		
-		public event EventHandler<PropertyChangedEventArgs> ColorSchemeChanged {
-			add { PropertyService.AddPropertyHandler ("ColorScheme", value); }
-			remove { PropertyService.RemovePropertyHandler ("ColorScheme", value); }
-		}
+		public readonly ConfigurationProperty<bool> EnableSourceAnalysis = ConfigurationProperty.Create ("MonoDevelop.AnalysisCore.AnalysisEnabled", true);
+		public readonly ConfigurationProperty<bool> EnableUnitTestEditorIntegration = ConfigurationProperty.Create ("Testing.EnableUnitTestEditorIntegration", false);
 
-		public readonly PropertyWrapper<bool> BuildBeforeRunningTests = new PropertyWrapper<bool> ("BuildBeforeRunningTests", true);
+		public readonly ConfigurationProperty<string> ColorScheme = ConfigurationProperty.Create ("ColorScheme", "Default");
+
+		public readonly ConfigurationProperty<string> UserTasksHighPrioColor = ConfigurationProperty.Create ("Monodevelop.UserTasksHighPrioColor", "");
+		public readonly ConfigurationProperty<string> UserTasksNormalPrioColor = ConfigurationProperty.Create ("Monodevelop.UserTasksNormalPrioColor", "");
+		public readonly ConfigurationProperty<string> UserTasksLowPrioColor = ConfigurationProperty.Create ("Monodevelop.UserTasksLowPrioColor", "");
 	}
 	
 	public enum BeforeCompileAction {

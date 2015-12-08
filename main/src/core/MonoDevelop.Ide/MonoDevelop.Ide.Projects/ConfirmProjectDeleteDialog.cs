@@ -109,10 +109,10 @@ namespace MonoDevelop.Ide.Projects
 				}
 			}
 
-			if (item is SolutionItem) {
-				var sol = ((SolutionItem)item).ParentSolution;
+			if (item is SolutionFolderItem) {
+				var sol = ((SolutionFolderItem)item).ParentSolution;
 				var bdir = item.BaseDirectory;
-				if (sol.GetItemFiles (false).Any (f => f.IsChildPathOf (bdir)) || sol.GetAllSolutionItems<SolutionEntityItem> ().Any (it => it != item && it.GetItemFiles (true).Any (f => f.IsChildPathOf (bdir)))) {
+				if (sol.GetItemFiles (false).Any (f => f.IsChildPathOf (bdir)) || sol.GetAllItems<SolutionItem> ().Any (it => it != item && it.GetItemFiles (true).Any (f => f.IsChildPathOf (bdir)))) {
 					radioDeleteAll.Sensitive = false;
 					labelProjectDir.Text = GettextCatalog.GetString ("Project directory can't be deleted since it contains files from other projects or solutions");
 				}

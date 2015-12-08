@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -171,19 +172,19 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			base.Dispose ();
 		}
 		
-		public override void Load (string fileName)
+		public override void Load (FileOpenInformation fileOpenInformation)
 		{
-			ContentName = fileName;
-			content.Load (fileName);
+			ContentName = fileOpenInformation.FileName;
+			content.Load (ContentName);
 		}
 		
 		public override Gtk.Widget Control {
 			get { return control; }
 		}
 		
-		public override void Save (string fileName)
+		public override void Save (FileSaveInformation fileSaveInformation)
 		{
-			content.Save (fileName);
+			content.Save (fileSaveInformation);
 		}
 		
 		public override bool IsDirty {
@@ -246,10 +247,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 		public void JumpTo (int line, int column)
 		{
-			IEditableTextBuffer ip = (IEditableTextBuffer) content.GetContent (typeof(IEditableTextBuffer));
+			var ip = (TextEditor) content.GetContent (typeof(TextEditor));
 			if (ip != null) {
 				ShowPage (0);
-				ip.SetCaretTo (line, column);
+				ip.SetCaretLocation (line, column);
 			}
 		}
 	}

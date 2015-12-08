@@ -29,35 +29,28 @@ using System.Collections.Generic;
 using Mono.TextTemplating;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.Editor;
+using System.Linq;
 
 namespace MonoDevelop.TextTemplating.Parser
 {
 	
 	
-	public class T4ParsedDocument : ParsedDocument
+	public class T4ParsedDocument : DefaultParsedDocument
 	{
-		string fileName;
-		IList<Error> errors;
+		IList<MonoDevelop.Ide.TypeSystem.Error> errors;
 
-		public override string FileName {
-			get {
-				return fileName;
-			}
-		}
-
-		public T4ParsedDocument (string fileName, List<ISegment> segments, IList<Error> errors)
+		public T4ParsedDocument (string fileName, List<ISegment> segments, IList<MonoDevelop.Ide.TypeSystem.Error> errors) : base(fileName)
 		{
-			this.fileName = fileName;
 			this.errors = errors;
 			TemplateSegments = segments;
 		}
 
-		public override IList<Error> Errors {
-			get {
-				return errors;
-			}
+		public override System.Threading.Tasks.Task<IReadOnlyList<MonoDevelop.Ide.TypeSystem.Error>> GetErrorsAsync (System.Threading.CancellationToken cancellationToken)
+		{
+			return System.Threading.Tasks.Task.FromResult((IReadOnlyList<MonoDevelop.Ide.TypeSystem.Error>)errors);
 		}
-		
+
 		public List<ISegment> TemplateSegments { get; private set; }
 		
 		public IEnumerable<Directive> TemplateDirectives {
@@ -79,10 +72,15 @@ namespace MonoDevelop.TextTemplating.Parser
 				}
 			}
 		}
+
+		public override System.Threading.Tasks.Task<IReadOnlyList<FoldingRegion>> GetFoldingsAsync (System.Threading.CancellationToken cancellationToken)
+		{
+			return System.Threading.Tasks.Task.FromResult((IReadOnlyList<FoldingRegion>)Foldings.ToList ());
+		}
 		
-		public override IEnumerable<FoldingRegion> Foldings {
+		public IEnumerable<FoldingRegion> Foldings {
 			get {
-				foreach (var region in Comments.ToFolds ()) 
+				foreach (var region in GetCommentsAsync().Result.ToFolds ()) 
 					yield return region;
 				foreach (ISegment seg in TemplateSegments) {
 					if (seg.EndLocation.Line - seg.TagStartLocation.Line < 1)
@@ -105,7 +103,7 @@ namespace MonoDevelop.TextTemplating.Parser
 						name = "<#@" + dir.Name + "...#>";
 					}
 					
-					DomRegion region = new DomRegion (seg.TagStartLocation.Line, seg.TagStartLocation.Column,
+					var region = new DocumentRegion (seg.TagStartLocation.Line, seg.TagStartLocation.Column,
 				                                      seg.EndLocation.Line, seg.EndLocation.Column);
 					
 					yield return new FoldingRegion (name, region, false);
