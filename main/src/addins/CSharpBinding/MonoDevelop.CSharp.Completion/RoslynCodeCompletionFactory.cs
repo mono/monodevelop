@@ -169,8 +169,11 @@ namespace MonoDevelop.CSharp.Completion
 			{
 				var currentWord = GetCurrentWord (window);
 				var text = CompletionText;
-				if (descriptor.KeyChar != '>')
-					text += ">";
+				if (descriptor.KeyChar == '>' && text.EndsWith (">", StringComparison.Ordinal))
+					text = text.Substring (0, text.Length - 1);
+				if (text.StartsWith ("<", StringComparison.Ordinal))
+					text = text.Substring (1);
+				
 				window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, currentWord, text);
 			}
 		}
