@@ -199,7 +199,7 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
-		static async void RunAction (DocumentContext context, CodeAction action, CancellationToken cancellationToken)
+		internal static async void RunAction (DocumentContext context, CodeAction action, CancellationToken cancellationToken)
 		{
 			var operations = await action.GetOperationsAsync (cancellationToken).ConfigureAwait (false);
 			if (operations == null)

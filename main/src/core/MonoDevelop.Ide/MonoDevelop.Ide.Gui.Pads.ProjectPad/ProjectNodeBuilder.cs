@@ -452,9 +452,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				foreach (ITreeNavigator nav in CurrentNodes) {
 					Project p = (Project) nav.DataItem;
 					p.Enabled = false;
+					solutions.Add (p.ParentSolution);
 					await p.ParentFolder.ReloadItem (m, p);
 					m.Step (1);
-					solutions.Add (p.ParentSolution);
 				}
 				m.EndTask ();
 			}

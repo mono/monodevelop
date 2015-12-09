@@ -1540,6 +1540,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("int[,,]", val.TypeName);
 			Assert.IsFalse (val.IsNull);
 
+			IgnoreSoftDebugger ("Randomly fails, tracked as Bug 36712");
 			val = Eval ("nulledByteArray");
 			Assert.AreEqual ("(null)", val.Value);
 			Assert.AreEqual ("byte[]", val.TypeName);

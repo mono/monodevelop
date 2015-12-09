@@ -718,6 +718,24 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (0, res.ErrorCount);
 		}
 
+		[Test ()]
+		public async Task ProjectReferencingConditionalReferences ()
+		{
+			string solFile = Util.GetSampleProject ("conditional-project-reference", "conditional-project-reference.sln");
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = sol.Items.FirstOrDefault (pr => pr.Name == "conditional-project-reference");
+
+			Assert.AreEqual (2, p.GetReferencedItems ((SolutionConfigurationSelector)"DebugWin").Count ());
+			Assert.AreEqual (1, p.GetReferencedItems ((SolutionConfigurationSelector)"Debug").Count ());
+
+			//We have intentional compile error in windowsLib project
+			var res = await p.Build (Util.GetMonitor (), (SolutionConfigurationSelector)"DebugWin", true);
+			Assert.AreEqual (1, res.ErrorCount);
+
+			res = await p.Build (Util.GetMonitor (), (SolutionConfigurationSelector)"Debug", true);
+			Assert.AreEqual (0, res.ErrorCount);
+		}
+
 		[Test()]
 		public async Task ProjectReferencingDisabledProject_ProjectBuildFails ()
 		{

@@ -102,6 +102,11 @@ namespace MonoDevelop.AspNet.Execution
 					evars.Add (v.Key, v.Value);
 			}
 
+			//HACK: work around Mono trying to create registry in non-writable location
+			if (cmd.TargetRuntime is MonoTargetRuntime && !Platform.IsWindows) {
+				evars ["MONO_REGISTRY_PATH"] = UserProfile.Current.TempDir.Combine ("aspnet-registry");
+			}
+
 			//if it's a script, use a native execution handler
 			if (xspPath.Extension != ".exe") {
 				//set mono debug mode if project's in debug mode

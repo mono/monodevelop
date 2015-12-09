@@ -537,6 +537,7 @@
     <Compile Include="MonoDevelop.Projects\TargetEvaluationContext.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildImportGroup.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildChoose.cs" />
+    <Compile Include="MonoDevelop.Core.StringParsing\StringTagModelExtensions.cs" />
     <Compile Include="MonoDevelop.Projects\OperationContext.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectOperationContext.cs" />
     <Compile Include="MonoDevelop.Projects\AsyncCriticalSection.cs" />

@@ -87,9 +87,7 @@ namespace MonoDevelop.Components.MainToolbar
 						if (matcher.CalcMatchRank (matchString, out rank))
 							searchResultCallback.ReportResult (new CommandResult (cmd, null, route, pattern.Pattern, matchString, rank));
 					}
-				} catch {
-					token.ThrowIfCancellationRequested ();
-					throw;
+				} catch (OperationCanceledException) {
 				}
 			});
 		}

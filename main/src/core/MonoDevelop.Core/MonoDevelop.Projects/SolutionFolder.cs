@@ -244,7 +244,8 @@ namespace MonoDevelop.Projects
 
 				// Replace in the file list
 				Items.Replace (item, newItem);
-				
+
+				item.ParentFolder = null;
 				DisconnectChildEntryEvents (item);
 				ConnectChildEntryEvents (newItem);
 	

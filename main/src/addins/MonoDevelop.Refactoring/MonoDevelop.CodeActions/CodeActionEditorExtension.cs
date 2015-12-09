@@ -48,6 +48,7 @@ using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis;
 using System.Reflection;
 using MonoDevelop.Ide.Gui;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace MonoDevelop.CodeActions
 {
@@ -180,12 +181,12 @@ namespace MonoDevelop.CodeActions
 
 				var diagnosticsAtCaret =
 					Editor.GetTextSegmentMarkersAt (Editor.CaretOffset)
-						.OfType<IGenericTextSegmentMarker> ()
-						.Select (rm => rm.Tag)
-						.OfType<DiagnosticResult> ()
-						.Select (dr => dr.Diagnostic)
-						.ToList ();
-
+					      .OfType<IGenericTextSegmentMarker> ()
+					      .Select (rm => rm.Tag)
+					      .OfType<DiagnosticResult> ()
+					      .Select (dr => dr.Diagnostic)
+					      .ToList ();
+				
 				var errorList = Editor
 					.GetTextSegmentMarkersAt (Editor.CaretOffset)
 					.OfType<IErrorMarker> ()
@@ -218,7 +219,7 @@ namespace MonoDevelop.CodeActions
 									var validDiagnostics = g.Where (d => provider.FixableDiagnosticIds.Contains (d.Id)).ToImmutableArray ();
 									if (validDiagnostics.Length == 0)
 										continue;
-									await provider.RegisterCodeFixesAsync (new CodeFixContext (ad, diagnosticSpan, validDiagnostics, (ca, d) => codeIssueFixes.Add (new ValidCodeDiagnosticAction (cfp, ca, diagnosticSpan)), token));
+									await provider.RegisterCodeFixesAsync (new CodeFixContext (ad, diagnosticSpan, validDiagnostics, (ca, d) => codeIssueFixes.Add (new ValidCodeDiagnosticAction (cfp, ca, validDiagnostics, diagnosticSpan)), token));
 
 									// TODO: Is that right ? Currently it doesn't really make sense to run one code fix provider on several overlapping diagnostics at the same location
 									//       However the generate constructor one has that case and if I run it twice the same code action is generated twice. So there is a dupe check problem there.
@@ -410,10 +411,56 @@ namespace MonoDevelop.CodeActions
 			#endif
 		}
 
+		internal class FixAllDiagnosticProvider : FixAllContext.DiagnosticProvider
+		{
+			private readonly ImmutableHashSet<string> _diagnosticIds;
+
+			/// <summary>
+			/// Delegate to fetch diagnostics for any given document within the given fix all scope.
+			/// This delegate is invoked by <see cref="GetDocumentDiagnosticsAsync(Document, CancellationToken)"/> with the given <see cref="_diagnosticIds"/> as arguments.
+			/// </summary>
+			private readonly Func<Microsoft.CodeAnalysis.Document, ImmutableHashSet<string>, CancellationToken, Task<IEnumerable<Diagnostic>>> _getDocumentDiagnosticsAsync;
+
+			/// <summary>
+			/// Delegate to fetch diagnostics for any given project within the given fix all scope.
+			/// This delegate is invoked by <see cref="GetProjectDiagnosticsAsync(Project, CancellationToken)"/> and <see cref="GetAllDiagnosticsAsync(Project, CancellationToken)"/>
+			/// with the given <see cref="_diagnosticIds"/> as arguments.
+			/// The boolean argument to the delegate indicates whether or not to return location-based diagnostics, i.e.
+			/// (a) False => Return only diagnostics with <see cref="Location.None"/>.
+			/// (b) True => Return all project diagnostics, regardless of whether or not they have a location.
+			/// </summary>
+			private readonly Func<Project, bool, ImmutableHashSet<string>, CancellationToken, Task<IEnumerable<Diagnostic>>> _getProjectDiagnosticsAsync;
+
+			public FixAllDiagnosticProvider(
+				ImmutableHashSet<string> diagnosticIds,
+				Func<Microsoft.CodeAnalysis.Document, ImmutableHashSet<string>, CancellationToken, Task<IEnumerable<Diagnostic>>> getDocumentDiagnosticsAsync,
+				Func<Project, bool, ImmutableHashSet<string>, CancellationToken, Task<IEnumerable<Diagnostic>>> getProjectDiagnosticsAsync)
+			{
+				_diagnosticIds = diagnosticIds;
+				_getDocumentDiagnosticsAsync = getDocumentDiagnosticsAsync;
+				_getProjectDiagnosticsAsync = getProjectDiagnosticsAsync;
+			}
+
+			public override Task<IEnumerable<Diagnostic>> GetDocumentDiagnosticsAsync(Microsoft.CodeAnalysis.Document document, CancellationToken cancellationToken)
+			{
+				return _getDocumentDiagnosticsAsync(document, _diagnosticIds, cancellationToken);
+			}
+
+			public override Task<IEnumerable<Diagnostic>> GetAllDiagnosticsAsync(Project project, CancellationToken cancellationToken)
+			{
+				return _getProjectDiagnosticsAsync(project, true, _diagnosticIds, cancellationToken);
+			}
+
+			public override Task<IEnumerable<Diagnostic>> GetProjectDiagnosticsAsync(Project project, CancellationToken cancellationToken)
+			{
+				return _getProjectDiagnosticsAsync(project, false, _diagnosticIds, cancellationToken);
+			}
+		}
 		void PopulateFixes (FixMenuDescriptor menu, ref int items)
 		{
 			int mnemonic = 1;
 			bool gotImportantFix = false, addedSeparator = false;
+
 			foreach (var fix_ in GetCurrentFixes ().CodeFixActions.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix (i.CodeAction), (int)0, GetUsage (i.CodeAction.EquivalenceKey)))) {
 				// filter out code actions that are already resolutions of a code issue
 				if (IsAnalysisOrErrorFix (fix_.CodeAction))
@@ -474,9 +521,9 @@ namespace MonoDevelop.CodeActions
 
 				if (descriptor.CanDisableWithPragma) {
 					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with #pragma"),
-						delegate {
-							descriptor.DisableWithPragma (Editor, DocumentContext, fix);
-						});
+													 delegate {
+														 descriptor.DisableWithPragma (Editor, DocumentContext, fix);
+													 });
 					subMenu.Add (menuItem);
 					menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with file"),
 						delegate {
@@ -484,7 +531,6 @@ namespace MonoDevelop.CodeActions
 						});
 					subMenu.Add (menuItem);
 				}
-
 				var optionsMenuItem = new FixMenuEntry (GettextCatalog.GetString ("_Configure Rule"),
 					delegate {
 						IdeApp.Workbench.ShowGlobalPreferencesDialog (null, "C#", dialog => {
@@ -496,9 +542,57 @@ namespace MonoDevelop.CodeActions
 					});
 				subMenu.Add (optionsMenuItem);
 
+
+				foreach (var fix2 in GetCurrentFixes ().CodeFixActions.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix (i.CodeAction), (int)0, GetUsage (i.CodeAction.EquivalenceKey)))) {
+
+					var provider = fix2.Diagnostic.GetCodeFixProvider ().GetFixAllProvider ();
+					if (provider == null)
+						continue;
+					if (!provider.GetSupportedFixAllScopes ().Contains (FixAllScope.Document))
+						continue;
+					var subMenu2 = new FixMenuDescriptor (GettextCatalog.GetString ("Fix all"));
+					var diagnosticAnalyzer = fix2.Diagnostic.GetCodeDiagnosticDescriptor (LanguageNames.CSharp).GetProvider ();
+					if (!diagnosticAnalyzer.SupportedDiagnostics.Contains (fix.Descriptor))
+						continue;
+
+					var menuItem = new FixMenuEntry (
+						GettextCatalog.GetString ("In _Document"),
+						async delegate {
+							var fixAllDiagnosticProvider = new FixAllDiagnosticProvider (diagnosticAnalyzer.SupportedDiagnostics.Select (d => d.Id).ToImmutableHashSet (), async (Microsoft.CodeAnalysis.Document doc, ImmutableHashSet<string> diagnostics, CancellationToken token) => {
+
+								var model = await doc.GetSemanticModelAsync (token);
+								var compilationWithAnalyzer = model.Compilation.WithAnalyzers (new [] { diagnosticAnalyzer }.ToImmutableArray (), null, token);
+
+								return await compilationWithAnalyzer.GetAnalyzerSemanticDiagnosticsAsync (model, null, token);
+							}, (Project arg1, bool arg2, ImmutableHashSet<string> arg3, CancellationToken arg4) => {
+								return Task.FromResult ((IEnumerable<Diagnostic>)new Diagnostic[] { });
+							});
+							var ctx = new FixAllContext (
+								this.DocumentContext.AnalysisDocument,
+								fix2.Diagnostic.GetCodeFixProvider (),
+								FixAllScope.Document,
+								fix2.CodeAction.EquivalenceKey,
+								diagnosticAnalyzer.SupportedDiagnostics.Select (d => d.Id),
+								fixAllDiagnosticProvider,
+								default (CancellationToken)
+							);
+							var fixAll = await provider.GetFixAsync (ctx);
+							using (var undo = Editor.OpenUndoGroup ()) {
+								CodeDiagnosticDescriptor.RunAction (DocumentContext, fixAll, default (CancellationToken));
+							}
+						});
+					subMenu2.Add (menuItem);
+					subMenu.Add (FixMenuEntry.Separator); 
+					subMenu.Add (subMenu2);
+				}
+
 				menu.Add (subMenu);
 				items++;
 			}
+
+
+
+
 		}
 
 		internal class ContextActionRunner

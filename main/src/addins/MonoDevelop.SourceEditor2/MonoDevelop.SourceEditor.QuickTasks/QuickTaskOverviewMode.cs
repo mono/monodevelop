@@ -246,8 +246,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 			const ModifierType buttonMask = ModifierType.Button1Mask | ModifierType.Button2Mask |
 				ModifierType.Button3Mask | ModifierType.Button4Mask | ModifierType.Button5Mask;
-
-			if ((evnt.State & buttonMask & ModifierType.ShiftMask) == ModifierType.ShiftMask) {
+			if ((evnt.State & ModifierType.ShiftMask) == ModifierType.ShiftMask) {
 				int line = YToLine (evnt.Y);
 
 				line = Math.Max (1, line - 2);
@@ -913,7 +912,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			bool RunHandler ()
 			{
 				tokenExit:
-				if (token.IsCancellationRequested) {
+				if (token.IsCancellationRequested || mode.TextEditor.GetTextEditorData () == null) {
 					cr.Dispose ();
 					// if the surface was newly created dispose it otherwise it'll leak.
 					if (surface != mode.swapIndicatorSurface)

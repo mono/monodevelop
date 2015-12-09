@@ -233,3 +233,6 @@ Thumbs.db
 
 #dotCover
 *.dotCover
+
+#Visual Studio 2015
+main/.vs/
