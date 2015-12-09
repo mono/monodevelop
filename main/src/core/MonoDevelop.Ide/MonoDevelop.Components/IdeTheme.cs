@@ -156,8 +156,6 @@ namespace MonoDevelop.Components
 					Environment.SetEnvironmentVariable ("GTK2_RC_FILES", rcFile);
 
 					Gtk.Rc.ReparseAll ();
-
-					Environment.SetEnvironmentVariable ("GTK2_RC_FILES", DefaultGtk2RcFiles);
 				}
 
 			} else if (Gtk.Settings.Default != null && current_theme != Gtk.Settings.Default.ThemeName) {
