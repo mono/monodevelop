@@ -172,11 +172,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (!IsVisible)
 				return;
-			if (wnd.IsInCompletion)
+			if (wnd.IsInCompletion || isShowing)
 				return;
 			var caretOffset = wnd.CompletionWidget.CaretOffset;
-			if (caretOffset < wnd.StartOffset || caretOffset > wnd.EndOffset)
+			if (caretOffset < wnd.StartOffset || caretOffset > wnd.EndOffset) {
 				HideWindow ();
+			}
 		}
 
 		public static void UpdateWordSelection (string text)
