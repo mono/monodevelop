@@ -317,8 +317,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					baseDir = "";
 				else if (!baseDir.EndsWith ("\\", StringComparison.Ordinal))
 					baseDir += '\\';
+				var recursiveDir = baseRecursiveDir.IsNullOrEmpty ? FilePath.Null : basePath.ToRelative (baseRecursiveDir);
 				res = res.Concat (Directory.GetFiles (basePath, path).Select (f => {
-					context.SetItemContext (f, basePath.ToRelative (baseRecursiveDir));
+					context.SetItemContext (f, recursiveDir);
 					var ev = baseDir + Path.GetFileName (f);
 					return CreateEvaluatedItem (context, project, sourceItem, ev);
 				}));

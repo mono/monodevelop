@@ -523,7 +523,6 @@ namespace MonoDevelop.Projects
 			await LoadBuildVSConsoleProject ("2012", "4.0");
 		}
 
-		[Ignore ("ToolsVersion 12.0 does not yet work w/ xbuild")]
 		[Test]
 		public async Task LoadBuildVS2013ConsoleProject ()
 		{
@@ -975,7 +974,7 @@ namespace MonoDevelop.Projects
 			var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 
 			var mp = (Project) sol.Items [0];
-			Assert.AreEqual (4, mp.Files.Count);
+			Assert.AreEqual (6, mp.Files.Count);
 
 			var f1 = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "Xamagon_1.png");
 			var f2 = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "Xamagon_2.png");
@@ -1009,6 +1008,30 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (Path.Combine ("Data", "t1.txt"), f1.Link.ToString ());
 			Assert.AreEqual (Path.Combine ("Data", "t2.txt"), f2.Link.ToString ());
+		}
+
+		[Test]
+		public async Task LoadProjectWithWildcardLinks3 ()
+		{
+			// %(RecursiveDir) is empty when used in a non-recursive include
+
+			string solFile = Util.GetSampleProject ("project-with-wildcard-links", "PortableTest.sln");
+
+			var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var mp = (Project) sol.Items [0];
+
+			var f1 = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "t1.dat");
+			Assert.IsNotNull (f1);
+
+			var f2 = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "t2.dat");
+			Assert.IsNotNull (f2);
+
+			Assert.AreEqual (Path.GetFullPath (Path.Combine (mp.BaseDirectory, "..","test", "t1.dat")), Path.GetFullPath (f1.FilePath));
+			Assert.AreEqual (Path.GetFullPath (Path.Combine (mp.BaseDirectory, "..","test", "t2.dat")), Path.GetFullPath (f2.FilePath));
+
+			Assert.AreEqual ("t1.dat", f1.Link.ToString ());
+			Assert.AreEqual ("t2.dat", f2.Link.ToString ());
 		}
 
 		[Test]

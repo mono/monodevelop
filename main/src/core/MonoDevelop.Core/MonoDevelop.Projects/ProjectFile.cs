@@ -320,7 +320,7 @@ namespace MonoDevelop.Projects
 			set {
 				if (link != value) {
 					if (value.IsAbsolute || value.ToString ().StartsWith ("..", StringComparison.Ordinal))
-						throw new ArgumentException ("value");
+						throw new ArgumentException ("Invalid value for Link property");
 
 					var oldLink = link;
 					link = value;

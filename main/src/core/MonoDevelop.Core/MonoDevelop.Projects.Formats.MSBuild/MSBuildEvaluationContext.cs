@@ -193,7 +193,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						return ToMSBuildDir (Path.GetFullPath (itemFile).Substring (root.Length));
 					return ToMSBuildDir (Path.GetFullPath (itemFile));
 				}
-			case "recursivedir": return ToMSBuildDir (recursiveDir);
+			case "recursivedir": return recursiveDir != null ? ToMSBuildDir (recursiveDir) : "";
 			case "identity": return ToMSBuildPath (itemFile);
 			case "modifiedtime": {
 					try {
