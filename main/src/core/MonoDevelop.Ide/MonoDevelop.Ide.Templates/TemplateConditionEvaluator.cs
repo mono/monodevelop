@@ -1,10 +1,11 @@
 ﻿//
-// RouteConfig.cs
+// TemplateConditionEvaluator.cs
 //
 // Author:
-//       Michael Hutchinson <mhutch@xamarin.com>
+//       Michael Hutchinson <m.j.hutchinson@gmail.com>
+//       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2015 Xamarin Inc.
+// Copyright (c) 2014-2015 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,14 +24,37 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 
-namespace MonoDevelop.AspNet.Templates.Projects.Files
+using System;
+using MonoDevelop.Core.StringParsing;
+
+namespace MonoDevelop.Ide.Templates
 {
-	public class RouteConfig
+	static class TemplateConditionEvaluator
 	{
-		public RouteConfig ()
+		public static bool EvaluateCondition (IStringTagModel model, string condition)
 		{
+			// This logic is duplicated in the ProjectCreateInformation.ShouldCreate method.
+			if (string.IsNullOrWhiteSpace (condition))
+				return true;
+
+			condition = condition.Trim ();
+
+			string parameter = GetNotConditionParameterName (condition);
+			if (parameter != null) {
+				return !model.GetBoolValue (parameter);
+			}
+
+			return model.GetBoolValue (condition);
+		}
+
+		static string GetNotConditionParameterName (string createCondition)
+		{
+			if (createCondition.StartsWith ("!", StringComparison.Ordinal)) {
+				return createCondition.Substring (1).TrimStart ();
+			}
+
+			return null;
 		}
 	}
 }

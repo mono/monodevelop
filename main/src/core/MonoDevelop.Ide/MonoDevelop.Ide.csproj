@@ -3296,6 +3296,7 @@
     <Compile Include="MonoDevelop.Components.AutoTest\PropertyMetadata.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\ObjectProperties.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\ISearchResultCallback.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TemplateConditionEvaluator.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest.Operations\SelectedOperation.cs" />
     <Compile Include="MonoDevelop.Components\Windows\GtkWPFWidget.cs" />
     <Compile Include="MonoDevelop.Components\Windows\GtkWin32Interop.cs" />
