@@ -26,11 +26,8 @@ pack/*
 
 Makefile
 
-/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml
-/MonoDevelop.FSharpBinding/MonoDevelop.FSharp.*.fsproj
 /packages
 
-/MonoDevelop.FSharp.Tests/MonoDevelop.FSharp.Tests.fsproj
 /MonoDevelop.FSharp.Tests/tests
 
 .paket/paket.exe
