@@ -2,7 +2,7 @@
 open Fake
 
 Target "Build" (fun _ ->
-  MSBuildWithDefaults "Build" ["./MonoDevelop.FSharp.mac-linux.sln"]
+  MSBuildWithDefaults "Build" ["./MonoDevelop.FSharp.sln"]
   |> Log "AppBuild-Output: "
 )
 
