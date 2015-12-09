@@ -102,6 +102,11 @@ namespace MonoDevelop.Projects
 			return next.OnGetDefaultResourceId (projectFile);
 		}
 
+		internal protected virtual Task OnExecuteCommand (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, ExecutionCommand executionCommand)
+		{
+			return next.OnExecuteCommand (monitor, context, configuration, executionCommand);
+		}
+
 		#region Framework management
 
 		internal protected virtual TargetFrameworkMoniker OnGetDefaultTargetFrameworkId ()
