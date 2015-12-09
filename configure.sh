@@ -1,4 +1,3 @@
 #! /bin/bash -e
 echo "Configuring..."
-fsharpi configure.fsx "$@"
-mozroots --import --sync --quiet || echo 'Could not import mozroots, proceeding anyway'
+# MonoDevelop's configure script expects to find a configure script in each folder
