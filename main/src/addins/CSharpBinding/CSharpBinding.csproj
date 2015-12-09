@@ -150,7 +150,7 @@
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
     <Reference Include="System.Composition.AttributedModel">
-      <HintPath>..\..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.AttributedModel.dll</HintPath>
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Composition.AttributedModel.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Reflection.Metadata">
