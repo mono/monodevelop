@@ -964,11 +964,15 @@ namespace MonoDevelop.Ide
 			if (WorkspaceItemClosed != null)
 				WorkspaceItemClosed (this, args);
 
-			if (Items.Count == 0 && !reloading) {
+			bool lastWorkspaceItemClosing = Items.Count == 0 && !reloading;
+			if (lastWorkspaceItemClosing) {
 				if (LastWorkspaceItemClosed != null)
 					LastWorkspaceItemClosed (this, EventArgs.Empty);
 			}
 			MonoDevelop.Ide.TypeSystem.TypeSystemService.Unload (item);
+
+			if (lastWorkspaceItemClosing)
+				MonoDevelop.Ide.TypeSystem.MetadataReferenceCache.Clear ();
 
 			NotifyDescendantItemRemoved (this, args);
 		}
