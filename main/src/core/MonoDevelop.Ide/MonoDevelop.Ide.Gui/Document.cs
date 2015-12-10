@@ -165,8 +165,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void TypeSystemService_WorkspaceItemLoaded (object sender, EventArgs e)
 		{
-			if (adhocProject == null)
-				analysisDocument = null;
+			analysisDocument = null;
 			EnsureAnalysisDocumentIsOpen ().ContinueWith (delegate {
 				if (analysisDocument != null)
 					StartReparseThread ();

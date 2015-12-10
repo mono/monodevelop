@@ -331,6 +331,8 @@ namespace MonoDevelop.CSharp.Completion
 				//}
 				return InternalHandleCodeCompletion (completionContext, triggerCharacter, true, triggerWordLength, token).ContinueWith ( t => {
 					var result = (CompletionDataList)t.Result;
+					if (result == null)
+						return null;
 					result.AutoCompleteUniqueMatch = false;
 					result.AutoCompleteEmptyMatch = false;
 					return (ICompletionDataList)result;
@@ -427,7 +429,7 @@ namespace MonoDevelop.CSharp.Completion
 		Task<ICompletionDataList> InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, int triggerWordLength, CancellationToken token, bool forceSymbolCompletion = false)
 		{
 			if (Editor.EditMode != MonoDevelop.Ide.Editor.EditMode.Edit)
-				return null;
+				return Task.FromResult ((ICompletionDataList)null);
 //			var data = Editor;
 //			if (data.CurrentMode is TextLinkEditMode) {
 //				if (((TextLinkEditMode)data.CurrentMode).TextLinkMode == TextLinkMode.EditIdentifier)
@@ -439,7 +441,7 @@ namespace MonoDevelop.CSharp.Completion
 			list.TriggerWordLength = triggerWordLength;
 			var analysisDocument = DocumentContext.AnalysisDocument;
 			if (analysisDocument == null)
-				return null;
+				return Task.FromResult ((ICompletionDataList)null);
 			return Task.Run (async delegate {
 				try {
 					
