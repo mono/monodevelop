@@ -374,8 +374,8 @@ namespace MonoDevelop.Projects
 
 			var buildActions = GetBuildActions ().Where (a => a != "Folder" && a != "--").ToArray ();
 
-			var config = GetConfiguration (configuration);
-			var pri = await CreateProjectInstaceForConfiguration (config.Name, config.Platform, false);
+			var config = configuration != null ? GetConfiguration (configuration) : null;
+			var pri = await CreateProjectInstaceForConfiguration (config?.Name, config?.Platform, false);
 			foreach (var it in pri.EvaluatedItems.Where (i => buildActions.Contains (i.Name)))
 				results.Add (CreateProjectFile (it));
 
@@ -2214,11 +2214,14 @@ namespace MonoDevelop.Projects
 		{
 			var pi = sourceProject.CreateInstance ();
 			pi.SetGlobalProperty ("BuildingInsideVisualStudio", "true");
-			pi.SetGlobalProperty ("Configuration", conf);
-			if (platform == string.Empty)
-				pi.SetGlobalProperty ("Platform", "AnyCPU");
-			else
-				pi.SetGlobalProperty ("Platform", platform);
+			if (conf != null)
+				pi.SetGlobalProperty ("Configuration", conf);
+			if (platform != null) {
+				if (platform == string.Empty)
+					pi.SetGlobalProperty ("Platform", "AnyCPU");
+				else
+					pi.SetGlobalProperty ("Platform", platform);
+			}
 			pi.OnlyEvaluateProperties = onlyEvaluateProperties;
 			pi.Evaluate ();
 			return Task.FromResult (pi);
