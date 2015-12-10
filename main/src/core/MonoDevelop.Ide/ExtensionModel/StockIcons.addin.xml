@@ -7,6 +7,8 @@
 
 <Extension path="/MonoDevelop/Core/StockIcons">
 	<Condition id="Platform" value="!windows">
+		<StockIcon stockid="md-folder-assets" resource="folder-assets-mac-16.png" size="Menu" />
+
 		<StockIcon stockid="md-closed-folder" resource="folder-generic-mac-16.png" size="Menu" />
 		<StockIcon stockid="md-closed-reference-folder" resource="folder-special-mac-16.png" size="Menu" />
 		<StockIcon stockid="md-closed-resource-folder" resource="folder-special-mac-16.png" size="Menu" />
@@ -24,6 +26,8 @@
 	</Condition>
 
 	<Condition id="Platform" value="windows">
+		<StockIcon stockid="md-folder-assets" resource="folder-assets-win-16.png" size="Menu" />
+
 		<StockIcon stockid="md-closed-folder" resource="folder-generic-win-16.png" size="Menu" />
 		<StockIcon stockid="md-closed-reference-folder" resource="folder-special-win-16.png" size="Menu" />
 		<StockIcon stockid="md-closed-resource-folder" resource="folder-special-win-16.png" size="Menu" />

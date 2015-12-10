@@ -33,6 +33,7 @@ namespace MonoDevelop.Ide.Gui
 {
 	public class Stock
 	{
+		public static readonly IconId AssetsFolder = "md-folder-assets";
 		public static readonly IconId AddNamespace = "md-add-namespace";
 		public static readonly IconId BreakPoint = "md-break-point";
 		public static readonly IconId BuildCombine = "md-build-combine";

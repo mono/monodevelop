@@ -2013,6 +2013,18 @@
     <EmbeddedResource Include="icons\platform-watchos-16%402x.png">
       <LogicalName>platform-watchos-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-assets-mac-16.png">
+      <LogicalName>folder-assets-mac-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-assets-mac-16%402x.png">
+      <LogicalName>folder-assets-mac-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-assets-win-16.png">
+      <LogicalName>folder-assets-win-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-assets-win-16%402x.png">
+      <LogicalName>folder-assets-win-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\parser-16.png">
       <LogicalName>parser-16.png</LogicalName>
     </EmbeddedResource>
