@@ -502,8 +502,16 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Run ()
 		{
-			using (ApplyPolicyDialog dlg = new ApplyPolicyDialog ((IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolutionItem ?? (IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolution))
-				MessageService.ShowCustomDialog (dlg);
+			Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
+			Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			using (var dlg = new ApplyPolicyDialog ((IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolutionItem ?? (IPolicyProvider)solution)) {
+				if (MessageService.ShowCustomDialog (dlg) == (int)Gtk.ResponseType.Ok) {
+					if (project != null)
+						IdeApp.ProjectOperations.SaveAsync (project);
+					else
+						IdeApp.ProjectOperations.SaveAsync (solution);
+				}
+			}
 		}
 	}
 	

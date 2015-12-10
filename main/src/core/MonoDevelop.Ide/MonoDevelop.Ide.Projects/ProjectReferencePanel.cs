@@ -235,12 +235,15 @@ namespace MonoDevelop.Ide.Projects {
 			if (references.TryGetValue (project, out res))
 				return res;
 			foreach (ProjectReference pr in project.References) {
+				if (pr.ReferenceType != ReferenceType.Project) {
+					continue;
+				}
 				if (pr.Reference == targetProject) {
 					references [project] = true;
 					return true;
 				}
-				
-				DotNetProject pref = project.ParentSolution.FindProjectByName (pr.Reference) as DotNetProject;
+
+				DotNetProject pref = pr.ResolveProject (project.ParentSolution) as DotNetProject;
 				if (pref != null) {
 					if (parentDeps == null) {
 						parentDeps = new HashSet<string> ();

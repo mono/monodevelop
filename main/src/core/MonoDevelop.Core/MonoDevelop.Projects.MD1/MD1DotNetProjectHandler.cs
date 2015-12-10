@@ -99,7 +99,7 @@ namespace MonoDevelop.Projects.MD1
 				
 				if (pr.ReferenceType == ReferenceType.Project) {
 					// Ignore non-dotnet projects
-					Project p = project.ParentSolution != null ? project.ParentSolution.FindProjectByName (pr.Reference) : null;
+					Project p = project.ParentSolution != null ? pr.ResolveProject (project.ParentSolution) : null;
 					if (p != null && !(p is DotNetProject))
 						continue;
 
