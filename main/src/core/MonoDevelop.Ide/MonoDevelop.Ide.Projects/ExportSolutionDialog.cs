@@ -30,7 +30,7 @@ using System;
 using System.IO;
 using MonoDevelop.Components;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using System.Linq;
 
 namespace MonoDevelop.Ide.Projects

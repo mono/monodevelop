@@ -40,7 +40,7 @@ using System.Linq;
 
 #pragma warning disable 618
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	public partial class ProjectBuilder: MarshalByRefObject, IProjectBuilder
 	{

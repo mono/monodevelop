@@ -29,7 +29,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using System.Xml;
 using MonoDevelop.Core.Serialization;
-using MonoDevelop.Projects.Formats.MD1;
+using MonoDevelop.Projects.MD1;
 
 namespace MonoDevelop.Projects
 {

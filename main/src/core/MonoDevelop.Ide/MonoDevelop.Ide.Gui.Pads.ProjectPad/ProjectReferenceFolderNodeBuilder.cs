@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (((ProjectReferenceCollection) dataObject).Count > 0)
 				return true;
 
-			var p = (DotNetProject) builder.GetParentDataItem (typeof(DotNetProject), false);
+			var p = (DotNetProject) builder.GetParentDataItem (typeof(DotNetProject), true);
 			return p != null && p.IsPortableLibrary;
 		}
 		

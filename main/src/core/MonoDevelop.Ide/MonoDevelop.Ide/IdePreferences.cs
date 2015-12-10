@@ -28,7 +28,7 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Editor;
 

@@ -29,7 +29,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -100,6 +100,11 @@ namespace MonoDevelop.Projects
 		internal protected virtual string OnGetDefaultResourceId (ProjectFile projectFile)
 		{
 			return next.OnGetDefaultResourceId (projectFile);
+		}
+
+		internal protected virtual Task OnExecuteCommand (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, ExecutionCommand executionCommand)
+		{
+			return next.OnExecuteCommand (monitor, context, configuration, executionCommand);
 		}
 
 		#region Framework management

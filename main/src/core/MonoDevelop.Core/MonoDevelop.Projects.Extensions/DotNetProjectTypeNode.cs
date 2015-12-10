@@ -28,7 +28,7 @@
 using System;
 using Mono.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using MonoDevelop.Projects.Extensions;
 using System.Threading.Tasks;
 using System.Collections.Generic;

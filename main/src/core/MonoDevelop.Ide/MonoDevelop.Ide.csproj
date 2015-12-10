@@ -3303,6 +3303,12 @@
     <EmbeddedResource Include="icons\error-48~dark~sel%402x.png">
       <LogicalName>error-48~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\execute-16.png">
+      <LogicalName>execute-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\execute-16%402x.png">
+      <LogicalName>execute-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\done-16.png">
       <LogicalName>done-16.png</LogicalName>
     </EmbeddedResource>
@@ -5579,6 +5585,90 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-warning-count-16~dark%402x.png">
       <LogicalName>status-warning-count-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-100-16.png">
+      <LogicalName>zoom-100-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-100-16%402x.png">
+      <LogicalName>zoom-100-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\unindent-16%402x.png">
+      <LogicalName>unindent-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\unindent-16.png">
+      <LogicalName>unindent-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\about-16.png">
+      <LogicalName>about-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\about-16%402x.png">
+      <LogicalName>about-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\cut-16.png">
+      <LogicalName>cut-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\cut-16%402x.png">
+      <LogicalName>cut-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\fullscreen-16.png">
+      <LogicalName>fullscreen-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\fullscreen-16%402x.png">
+      <LogicalName>fullscreen-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\help-16.png">
+      <LogicalName>help-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\help-16%402x.png">
+      <LogicalName>help-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\indent-16.png">
+      <LogicalName>indent-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\indent-16%402x.png">
+      <LogicalName>indent-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\page-setup-16.png">
+      <LogicalName>page-setup-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\page-setup-16%402x.png">
+      <LogicalName>page-setup-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\paste-16.png">
+      <LogicalName>paste-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\paste-16%402x.png">
+      <LogicalName>paste-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\print-16.png">
+      <LogicalName>print-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\print-16%402x.png">
+      <LogicalName>print-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\print-preview-16.png">
+      <LogicalName>print-preview-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\print-preview-16%402x.png">
+      <LogicalName>print-preview-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\quit-16.png">
+      <LogicalName>quit-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\quit-16%402x.png">
+      <LogicalName>quit-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\redo-16.png">
+      <LogicalName>redo-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\redo-16%402x.png">
+      <LogicalName>redo-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\revert-to-saved-16.png">
+      <LogicalName>revert-to-saved-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\revert-to-saved-16%402x.png">
+      <LogicalName>revert-to-saved-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -26,7 +26,7 @@
 using System;
 using NUnit.Framework;
 using UnitTests;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using System.Linq;
 
 namespace MonoDevelop.Projects

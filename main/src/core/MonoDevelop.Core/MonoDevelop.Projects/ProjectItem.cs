@@ -28,7 +28,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using MonoDevelop.Core.Serialization;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {

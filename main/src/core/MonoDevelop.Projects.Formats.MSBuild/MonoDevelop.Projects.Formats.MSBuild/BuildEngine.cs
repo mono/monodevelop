@@ -33,7 +33,7 @@ using System.Globalization;
 //this is the builder for the deprecated build engine API
 #pragma warning disable 618
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	public partial class BuildEngine: MarshalByRefObject, IBuildEngine
 	{

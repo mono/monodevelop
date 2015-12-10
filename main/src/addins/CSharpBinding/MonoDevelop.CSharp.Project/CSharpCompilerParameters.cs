@@ -33,7 +33,7 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using Mono.Collections.Generic;
 using System.Linq;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
