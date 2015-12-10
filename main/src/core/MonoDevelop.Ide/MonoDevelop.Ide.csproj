@@ -2979,12 +2979,6 @@
     <EmbeddedResource Include="icons\folder-component-16~dark~sel%402x.png">
       <LogicalName>folder-component-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-component-win-16.png">
-      <LogicalName>folder-component-win-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-component-win-16%402x.png">
-      <LogicalName>folder-component-win-16@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\folder-generic-16.png">
       <LogicalName>folder-generic-16.png</LogicalName>
     </EmbeddedResource>
@@ -3008,12 +3002,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\folder-generic-16~dark~sel%402x.png">
       <LogicalName>folder-generic-16~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-generic-win-16.png">
-      <LogicalName>folder-generic-win-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-generic-win-16%402x.png">
-      <LogicalName>folder-generic-win-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\folder-special-16.png">
       <LogicalName>folder-special-16.png</LogicalName>
