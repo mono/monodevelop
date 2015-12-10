@@ -1,4 +1,4 @@
-#r @"FakeLib.dll"
+#r @"./packages/FAKE/tools/FakeLib.dll"
 open Fake
 open System.IO
 
@@ -13,7 +13,7 @@ Target "Default" (fun _ ->
 let mdpath = "../../build/bin/mdtool.exe"
 
 let mdtool args =
-  let result = 
+  let result =
     if isWindows then
       Shell.Exec (mdpath, args)
     else
@@ -55,7 +55,7 @@ Target "Run" (fun _ ->
 "Default"
   ==> "Run"
 
-"Pack" 
+"Pack"
   ==> "Install"
 
 RunTargetOrDefault "Default"
