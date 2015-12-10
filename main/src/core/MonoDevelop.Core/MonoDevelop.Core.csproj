@@ -332,17 +332,17 @@
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildImportAttribute.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\RemoteProjectBuilder.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MergeToProjectAttribute.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ConditionAndExpression.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ConditionExpression.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ConditionFactorExpresion.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ConditionFunctionExpression.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ConditionNotExpression.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ConditionOrExpression.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ConditionParser.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ConditionRelationalExpression.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ConditionTokenizer.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ExpressionParseException.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\Token.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild.Conditions\ConditionAndExpression.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild.Conditions\ConditionExpression.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild.Conditions\ConditionFactorExpresion.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild.Conditions\ConditionFunctionExpression.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild.Conditions\ConditionNotExpression.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild.Conditions\ConditionOrExpression.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild.Conditions\ConditionParser.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild.Conditions\ConditionRelationalExpression.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild.Conditions\ConditionTokenizer.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild.Conditions\ExpressionParseException.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild.Conditions\Token.cs" />
     <Compile Include="MonoDevelop.Projects.Policies\PolicyBag.cs" />
     <Compile Include="MonoDevelop.Projects.Policies\PolicyService.cs" />
     <Compile Include="MonoDevelop.Projects.Policies\PolicySet.cs" />
@@ -526,7 +526,7 @@
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildEngineV12.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildEngineV4.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildEngineManager.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ExpressionEvaluationException.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild.Conditions\ExpressionEvaluationException.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildValueType.cs" />
     <Compile Include="MonoDevelop.Projects\ConfigurationKind.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\IMetadataProperty.cs" />
@@ -554,12 +554,12 @@
     <Compile Include="MonoDevelop.Projects.MSBuild\IMSBuildProjectObject.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\IntrinsicFunctions.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\EscapingUtilities.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ConditionedPropertyCollection.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild.Conditions\ConditionedPropertyCollection.cs" />
     <Compile Include="MonoDevelop.Core\FileWriteableState.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
-    <None Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\InvalidProjectFileException.cs" />
+    <None Include="MonoDevelop.Projects.MSBuild.Conditions\InvalidProjectFileException.cs" />
     <None Include="BuildVariables.cs.in" />
     <None Include="packages.config" />
     <None Include="MSBuild\CodeSharing.Common.props">
