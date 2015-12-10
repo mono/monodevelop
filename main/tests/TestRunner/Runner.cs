@@ -69,7 +69,7 @@ namespace MonoDevelop.Tests.TestRunner
 				var sc = new Xwt.XwtSynchronizationContext ();
 				System.Threading.SynchronizationContext.SetSynchronizationContext (sc);
 				Runtime.MainSynchronizationContext = sc;
-				var runnerType = guiUnitAsm.GetType ("GuiUnit.TestRunner, GuiUnit");
+				var runnerType = guiUnitAsm.GetType ("GuiUnit.TestRunner");
 				var method = runnerType.GetMethod ("Main", BindingFlags.Public | BindingFlags.Static);
 				return Task.FromResult ((int)method.Invoke (null, new [] { args.ToArray () }));
 			}
