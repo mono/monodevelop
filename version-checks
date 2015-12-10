@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=d4efa3a06f8920644b25a6c4f2958250787bf0b1
+DEP_NEEDED_VERSION[0]=e0cfcb87880d73a4d4a3ae3689416b37031ef685
 DEP_BRANCH_AND_REMOTE[0]="roslyn-dark-skin origin/roslyn-dark-skin"
 
 # heap-shot
