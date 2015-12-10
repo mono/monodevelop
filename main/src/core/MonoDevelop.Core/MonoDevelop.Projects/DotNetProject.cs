@@ -667,7 +667,7 @@ namespace MonoDevelop.Projects
 					continue;
 
 				if (ParentSolution != null && projectReference.ReferenceType == ReferenceType.Project) {
-					DotNetProject p = ParentSolution.FindProjectByName (projectReference.Reference) as DotNetProject;
+					DotNetProject p = projectReference.ResolveProject (ParentSolution) as DotNetProject;
 
 					if (p == null) {
 						LoggingService.LogWarning ("Project '{0}' referenced from '{1}' could not be found", projectReference.Reference, this.Name);

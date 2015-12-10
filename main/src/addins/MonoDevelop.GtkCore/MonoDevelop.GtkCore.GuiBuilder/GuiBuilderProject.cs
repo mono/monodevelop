@@ -429,7 +429,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			string path = null;
 			
 			if (pref.ReferenceType == ReferenceType.Project) {
-				DotNetProject p = project.ParentSolution.FindProjectByName (pref.Reference) as DotNetProject;
+				DotNetProject p = pref.ResolveProject (project.ParentSolution) as DotNetProject;
 				if (p != null)
 					path = p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
 			} else if (pref.ReferenceType == ReferenceType.Assembly) {
