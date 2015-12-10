@@ -17,8 +17,8 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
-    <Optimize>true</Optimize>
-    <Tailcalls>true</Tailcalls>
+    <Optimize>false</Optimize>
+    <Tailcalls>false</Tailcalls>
     <OutputPath>..\bin\</OutputPath>
     <DefineConstants>TRACE;DEBUG;$(DefineConstants)</DefineConstants>
     <WarningLevel>3</WarningLevel>
@@ -26,8 +26,8 @@
     <StartAction>Program</StartAction>
     <OtherFlags>--warnon:1182</OtherFlags>
     <StartAction>Program</StartAction>
-    <StartProgram>$(MSBuildProjectDirectory)..\..\..\..\main\build\bin\MonoDevelop.exe</StartProgram>
-    <StartWorkingDirectory>$(MSBuildProjectDirectory)..\..\..\..\main\build</StartWorkingDirectory>
+    <StartProgram>$(MSBuildProjectDirectory)\..\..\..\build\bin\MonoDevelop.exe</StartProgram>
+    <StartWorkingDirectory>$(MSBuildProjectDirectory)\..\..\..\build</StartWorkingDirectory>
     <CustomCommands>
       <CustomCommands>
         <Command type="Execute" command="../../../../main/build/bin/MonoDevelop.exe --no-redirects" workingdir="../../../../main/build">
