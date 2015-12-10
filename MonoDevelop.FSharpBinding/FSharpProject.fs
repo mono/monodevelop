@@ -4,7 +4,7 @@ open System
 open System.IO
 open MonoDevelop.Core
 open MonoDevelop.Projects
-open MonoDevelop.Projects.Formats.MSBuild
+open MonoDevelop.Projects.MSBuild
 open MonoDevelop.Ide
 open System.Xml
 open MonoDevelop.Core.Assemblies

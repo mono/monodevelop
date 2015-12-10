@@ -24,8 +24,6 @@ pack/*
 
 .DS_Store
 
-Makefile
-
 /packages
 
 /MonoDevelop.FSharp.Tests/tests

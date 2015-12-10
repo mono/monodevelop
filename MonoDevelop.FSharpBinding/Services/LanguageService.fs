@@ -317,8 +317,8 @@ type LanguageService(dirtyNotify) =
                                                RedirectStandardInput = true, UseShellExecute = false, CreateNoWindow = true)
               new Process(EnableRaisingEvents = true, StartInfo = startInfo)
 
-            let started = proc.Start()
-            let exited = proc.WaitForExit(ServiceSettings.maximumTimeout)
+            let _started = proc.Start()
+            let _exited = proc.WaitForExit(ServiceSettings.maximumTimeout)
             let serializer =  FsPickler.CreateJsonSerializer()
             let result = serializer.Deserialize(proc.StandardOutput.BaseStream)
             match result with
