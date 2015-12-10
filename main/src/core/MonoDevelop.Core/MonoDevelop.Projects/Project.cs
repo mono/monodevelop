@@ -2210,7 +2210,7 @@ namespace MonoDevelop.Projects
 			Configurations.Add (config);
 		}
 
-		Task<MSBuildProjectInstance> CreateProjectInstaceForConfiguration (string conf, string platform, bool onlyEvaluateProperties = true)
+		async Task<MSBuildProjectInstance> CreateProjectInstaceForConfiguration (string conf, string platform, bool onlyEvaluateProperties = true)
 		{
 			var pi = sourceProject.CreateInstance ();
 			pi.SetGlobalProperty ("BuildingInsideVisualStudio", "true");
@@ -2223,8 +2223,8 @@ namespace MonoDevelop.Projects
 					pi.SetGlobalProperty ("Platform", platform);
 			}
 			pi.OnlyEvaluateProperties = onlyEvaluateProperties;
-			pi.Evaluate ();
-			return Task.FromResult (pi);
+			await pi.EvaluateAsync ();
+			return pi;
 		}
 
 		protected virtual void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildEvaluatedPropertyCollection grp)

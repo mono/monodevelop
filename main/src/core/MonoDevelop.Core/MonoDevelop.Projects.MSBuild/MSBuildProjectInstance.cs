@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Xml;
 using MonoDevelop.Core;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects.MSBuild
 {
@@ -74,11 +75,16 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal bool OnlyEvaluateProperties { get; set; }
 
+		public Task EvaluateAsync ()
+		{
+			return Task.Run (() => Evaluate ());
+		}
+
 		public void Evaluate ()
 		{
 			if (projectInstance != null)
 				engine.DisposeProjectInstance (projectInstance);
-			
+
 			info = msproject.LoadNativeInstance ();
 
 			engine = info.Engine;
@@ -91,8 +97,7 @@ namespace MonoDevelop.Projects.MSBuild
 				engine.Evaluate (projectInstance);
 
 				SyncBuildProject (info.ItemMap, info.Engine, projectInstance);
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				// If the project can't be evaluated don't crash
 				LoggingService.LogError ("MSBuild project could not be evaluated", ex);
 				throw new ProjectEvaluationException (msproject, ex.Message);

@@ -419,6 +419,14 @@ namespace MonoDevelop.Projects.MSBuild
 			conditionedProperties = mainProjectInstance.GetConditionedProperties ();
 		}
 
+		public Task EvaluateAsync ()
+		{
+			mainProjectInstance = new MSBuildProjectInstance (this);
+			return mainProjectInstance.EvaluateAsync ().ContinueWith (t => {
+				conditionedProperties = mainProjectInstance.GetConditionedProperties ();
+			});
+		}
+
 		public MSBuildProjectInstance CreateInstance ()
 		{
 			return new MSBuildProjectInstance (this);
