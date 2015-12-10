@@ -97,16 +97,21 @@ namespace MonoDevelop.CSharp
 
 			public override void VisitIdentifierName (IdentifierNameSyntax node)
 			{
-				var info = model.GetSymbolInfo (node); 
-				if (info.Symbol != null) {
-					result.Add (new NavigationSegment (node.Span.Start, node.Span.Length, delegate { IdeApp.ProjectOperations.JumpToDeclaration (info.Symbol, documentContext.Project); })); 
+				var info = model.GetSymbolInfo (node);
+				if (IsNavigatable (info)) {
+					result.Add (new NavigationSegment (node.Span.Start, node.Span.Length, delegate { IdeApp.ProjectOperations.JumpToDeclaration (info.Symbol, documentContext.Project); }));
 				}
+			}
+
+			static bool IsNavigatable (SymbolInfo info)
+			{
+				return info.Symbol != null && info.Symbol.Kind != SymbolKind.Namespace;
 			}
 
 			public override void VisitMemberAccessExpression (MemberAccessExpressionSyntax node)
 			{
 				var info = model.GetSymbolInfo (node); 
-				if (info.Symbol != null) {
+				if (IsNavigatable(info)) {
 					result.Add (new NavigationSegment (node.Name.Span.Start, node.Name.Span.Length, delegate { IdeApp.ProjectOperations.JumpToDeclaration (info.Symbol, documentContext.Project); })); 
 				}
 
