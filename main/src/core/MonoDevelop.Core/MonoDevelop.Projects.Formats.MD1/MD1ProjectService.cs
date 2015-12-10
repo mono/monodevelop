@@ -28,7 +28,7 @@
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 
-namespace MonoDevelop.Projects.Formats.MD1
+namespace MonoDevelop.Projects.MD1
 {
 	static class MD1ProjectService
 	{

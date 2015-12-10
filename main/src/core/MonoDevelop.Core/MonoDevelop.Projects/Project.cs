@@ -1014,7 +1014,7 @@ namespace MonoDevelop.Projects
 			else {
 				CleanupProjectBuilder ();
 				if (this is DotNetProject) {
-					var handler = new MonoDevelop.Projects.Formats.MD1.MD1DotNetProjectHandler ((DotNetProject)this);
+					var handler = new MonoDevelop.Projects.MD1.MD1DotNetProjectHandler ((DotNetProject)this);
 					return new TargetEvaluationResult (await handler.RunTarget (monitor, target, configuration));
 				}
 			}

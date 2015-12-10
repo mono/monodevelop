@@ -36,7 +36,7 @@ using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects.Policies;
-using MonoDevelop.Projects.Formats.MD1;
+using MonoDevelop.Projects.MD1;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Projects.MSBuild;
 using MonoDevelop.Core.Assemblies;

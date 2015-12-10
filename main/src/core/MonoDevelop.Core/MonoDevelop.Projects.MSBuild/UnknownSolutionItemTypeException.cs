@@ -34,7 +34,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.Assemblies;
-using MonoDevelop.Projects.Formats.MD1;
+using MonoDevelop.Projects.MD1;
 using MonoDevelop.Projects.Extensions;
 using Mono.Addins;
 using System.Linq;

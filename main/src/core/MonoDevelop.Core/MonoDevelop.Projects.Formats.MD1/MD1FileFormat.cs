@@ -35,7 +35,7 @@ using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
 
-namespace MonoDevelop.Projects.Formats.MD1
+namespace MonoDevelop.Projects.MD1
 {
 	class MD1FileFormat
 	{

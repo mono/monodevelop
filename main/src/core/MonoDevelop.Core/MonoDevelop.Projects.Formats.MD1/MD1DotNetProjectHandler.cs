@@ -38,7 +38,7 @@ using Microsoft.Build.BuildEngine;
 using System.Threading.Tasks;
 using MonoDevelop.Projects.MSBuild.Conditions;
 	
-namespace MonoDevelop.Projects.Formats.MD1
+namespace MonoDevelop.Projects.MD1
 {
 	class MD1DotNetProjectHandler
 	{
