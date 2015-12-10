@@ -3,7 +3,7 @@ open Fake
 open System.IO
 
 let isWindows = (Path.DirectorySeparatorChar = '\\')
-let config = "Release"
+let config = "Debug"
 
 Target "Default" (fun _ ->
   MSBuildWithDefaults "Build" ["./MonoDevelop.FSharp.sln"]
@@ -25,7 +25,8 @@ let test() =
 
 Target "Pack" (fun _ ->
   let dir = "pack/" + config
-  Directory.Delete (dir, true)
+  if Directory.Exists dir then
+    Directory.Delete (dir, true)
   Directory.CreateDirectory dir |> ignore
   mdtool ("setup pack bin/FSharpBinding.dll -d:pack/" + config)
 )
