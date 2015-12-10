@@ -1017,7 +1017,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if ((runtime is MsNetTargetRuntime) && int.Parse (toolsVersion.Split ('.')[0]) >= 4)
 				toolsVersion = "dotnet." + toolsVersion;
 
-			var exe = sourceExe.ParentDirectory.Combine ("MSBuild", toolsVersion, "MonoDevelop.Projects.MSBuild.exe");
+			var exe = sourceExe.ParentDirectory.Combine ("MSBuild", toolsVersion, "MonoDevelop.Projects.Formats.MSBuild.exe");
 			if (File.Exists (exe))
 				return exe;
 			
