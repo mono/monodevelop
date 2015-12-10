@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{4C10F8F9-3816-4647-BA6E-85F5DE39883A}</ProjectGuid>
+    <ProjectGuid>{4c10f8f9-3816-4647-ba6e-85f5de39883a}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>FSharp.MonoDevelop</RootNamespace>
     <AssemblyName>FSharpBinding</AssemblyName>
@@ -30,7 +30,7 @@
     <StartWorkingDirectory>$(MSBuildProjectDirectory)\..\..\..\build</StartWorkingDirectory>
     <CustomCommands>
       <CustomCommands>
-        <Command type="Execute" command="../../../../main/build/bin/MonoDevelop.exe --no-redirects" workingdir="../../../../main/build">
+        <Command type="Execute" command="../../../../main/build/bin/MonoDevelop.exe --no-redirect" workingdir="../../../../main/build">
           <EnvironmentVariables>
             <Variable name="MONODEVELOP_DEV_ADDINS" value="${TargetDir}" />
           </EnvironmentVariables>
