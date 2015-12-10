@@ -196,6 +196,7 @@ namespace WindowsPlatform
 
 		static Styles ()
 		{
+			Xwt.Drawing.Context.RegisterStyles ("hover", "pressed", "disabled");
 			LoadStyles ();
 			MonoDevelop.Ide.Gui.Styles.Changed += (o, e) => LoadStyles ();
 		}
