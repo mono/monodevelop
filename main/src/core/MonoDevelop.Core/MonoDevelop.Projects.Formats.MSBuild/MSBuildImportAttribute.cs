@@ -26,7 +26,7 @@
 
 using System;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	[AttributeUsage (AttributeTargets.Class)]
 	public class MSBuildImportAttribute: Attribute

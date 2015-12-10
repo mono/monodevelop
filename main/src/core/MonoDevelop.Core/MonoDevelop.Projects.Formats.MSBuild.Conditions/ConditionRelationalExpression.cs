@@ -29,7 +29,7 @@ using System;
 using System.Collections;
 using System.Xml;
 
-namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
+namespace MonoDevelop.Projects.MSBuild.Conditions {
 	internal sealed class ConditionRelationalExpression : ConditionExpression {
 	
 		readonly ConditionExpression left;

@@ -28,7 +28,7 @@
 using System;
 using System.Xml;
 
-namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
+namespace MonoDevelop.Projects.MSBuild.Conditions {
 	internal sealed class ConditionAndExpression : ConditionExpression {
 	
 		readonly ConditionExpression left;

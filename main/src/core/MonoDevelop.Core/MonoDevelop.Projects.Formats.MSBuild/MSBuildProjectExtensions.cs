@@ -29,7 +29,7 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	public class MSBuildProjectExtensions: MSBuildElement
 	{

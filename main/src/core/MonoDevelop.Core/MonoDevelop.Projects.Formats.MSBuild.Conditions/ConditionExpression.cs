@@ -28,7 +28,7 @@
 using System;
 using System.Xml;
 
-namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
+namespace MonoDevelop.Projects.MSBuild.Conditions {
 	internal abstract class ConditionExpression {
 	
 		public abstract bool BoolEvaluate (IExpressionContext context);

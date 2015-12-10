@@ -34,7 +34,7 @@ using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Projects.Policies;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {

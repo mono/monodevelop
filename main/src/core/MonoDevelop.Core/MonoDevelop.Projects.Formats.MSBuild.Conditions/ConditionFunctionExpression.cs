@@ -31,7 +31,7 @@ using System.IO;
 using System.Reflection;
 using System.Xml;
 
-namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
+namespace MonoDevelop.Projects.MSBuild.Conditions {
 	internal sealed class ConditionFunctionExpression : ConditionExpression {
 	
 		List <ConditionFactorExpression> 	args;

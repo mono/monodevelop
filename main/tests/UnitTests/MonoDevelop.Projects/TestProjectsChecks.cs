@@ -33,7 +33,7 @@ using UnitTests;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.CSharp.Project;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
@@ -254,7 +254,7 @@ namespace Foo {
 			sol.FileName = Path.Combine (dir, "TestGenericItem");
 			sol.Name = "TheItem";
 
-			MonoDevelop.Projects.Formats.MSBuild.MSBuildProjectService.RegisterGenericProjectType ("GenericItem", typeof(GenericItem));
+			MonoDevelop.Projects.MSBuild.MSBuildProjectService.RegisterGenericProjectType ("GenericItem", typeof(GenericItem));
 			
 			GenericItem it = new GenericItem ();
 			it.SomeValue = "hi";

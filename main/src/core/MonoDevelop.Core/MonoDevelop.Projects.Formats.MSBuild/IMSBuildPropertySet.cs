@@ -38,7 +38,7 @@ using System.Reflection;
 using MonoDevelop.Core.Serialization;
 using System.Globalization;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	public interface IMSBuildPropertySet: IPropertySet
 	{

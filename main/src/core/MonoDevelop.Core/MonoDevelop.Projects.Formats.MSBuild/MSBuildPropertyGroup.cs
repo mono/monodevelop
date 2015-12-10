@@ -34,7 +34,7 @@ using System.Xml.Linq;
 using Microsoft.Build.BuildEngine;
 using System.Collections.Immutable;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	public class MSBuildPropertyGroup: MSBuildElement, IMSBuildPropertySet, IMSBuildEvaluatedPropertyCollection
 	{

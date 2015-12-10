@@ -42,7 +42,7 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Core.ProgressMonitoring;
 using System.Threading.Tasks;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	
 	class UnknownSolutionItemTypeException : InvalidOperationException

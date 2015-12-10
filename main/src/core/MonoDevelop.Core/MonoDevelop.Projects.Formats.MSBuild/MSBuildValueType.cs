@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 using System;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	class MSBuildValueType
 	{

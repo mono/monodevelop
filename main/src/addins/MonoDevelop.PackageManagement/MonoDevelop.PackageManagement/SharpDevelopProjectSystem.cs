@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement

@@ -38,12 +38,12 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Projects.Formats.MD1;
 using MonoDevelop.Projects.Extensions;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using MonoDevelop.Core.Assemblies;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Collections.Immutable;
-using MonoDevelop.Projects.Formats.MSBuild.Conditions;
+using MonoDevelop.Projects.MSBuild.Conditions;
 
 namespace MonoDevelop.Projects
 {

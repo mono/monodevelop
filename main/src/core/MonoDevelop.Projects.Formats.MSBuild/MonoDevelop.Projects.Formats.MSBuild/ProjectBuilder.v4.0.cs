@@ -36,7 +36,7 @@ using Microsoft.Build.Logging;
 using Microsoft.Build.Execution;
 using System.Xml;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	public partial class ProjectBuilder: MarshalByRefObject, IProjectBuilder
 	{

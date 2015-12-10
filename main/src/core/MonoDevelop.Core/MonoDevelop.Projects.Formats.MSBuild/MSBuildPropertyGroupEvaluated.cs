@@ -28,7 +28,7 @@ using System.Collections.Generic;
 using System.Xml.Linq;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	class MSBuildPropertyGroupEvaluated: IMSBuildPropertyGroupEvaluated, IMSBuildProjectObject
 	{

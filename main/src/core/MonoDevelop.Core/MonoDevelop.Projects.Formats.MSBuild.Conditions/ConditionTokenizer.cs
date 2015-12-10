@@ -33,7 +33,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 
-namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
+namespace MonoDevelop.Projects.MSBuild.Conditions {
 
 	internal sealed class ConditionTokenizer {
 	

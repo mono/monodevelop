@@ -31,7 +31,7 @@ using System.Xml.Linq;
 using MonoDevelop.Core;
 using System.Globalization;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 
 	public interface IMetadataProperty

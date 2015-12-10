@@ -34,7 +34,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Xml;
 using System.Linq;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 
 namespace MonoDevelop.Ide.Templates

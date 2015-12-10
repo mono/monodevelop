@@ -33,7 +33,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Build.BuildEngine;
 
-namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
+namespace MonoDevelop.Projects.MSBuild.Conditions {
 
 	internal class ConditionParser {
 	

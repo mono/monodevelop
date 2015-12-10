@@ -32,7 +32,7 @@ using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	public class TargetsAvailableCondition : ConditionType
 	{

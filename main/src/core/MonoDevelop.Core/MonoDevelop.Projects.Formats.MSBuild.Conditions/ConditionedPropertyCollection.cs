@@ -26,7 +26,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace MonoDevelop.Projects.Formats.MSBuild.Conditions
+namespace MonoDevelop.Projects.MSBuild.Conditions
 {
 	class ConditionedPropertyCollection : Dictionary<string, List<string>>
 	{

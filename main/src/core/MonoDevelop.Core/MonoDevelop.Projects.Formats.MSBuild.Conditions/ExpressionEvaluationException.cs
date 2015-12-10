@@ -28,7 +28,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
+namespace MonoDevelop.Projects.MSBuild.Conditions {
 	[Serializable]
 	internal class ExpressionEvaluationException : Exception {
 

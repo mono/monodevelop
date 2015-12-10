@@ -37,7 +37,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 using System.Threading.Tasks;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using System.Xml;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Core.Assemblies;

@@ -30,7 +30,7 @@ using Microsoft.Build.Framework;
 using System.Xml;
 using System.IO;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	partial class ProjectBuilder
 	{

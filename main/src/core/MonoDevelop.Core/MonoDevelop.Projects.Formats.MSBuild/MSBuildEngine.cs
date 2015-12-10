@@ -38,7 +38,7 @@ using Microsoft.Build.BuildEngine;
 using MSProject = Microsoft.Build.BuildEngine.Project;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	abstract class MSBuildEngine: IDisposable
 	{

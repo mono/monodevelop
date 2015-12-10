@@ -30,7 +30,7 @@ using System.Runtime.Serialization;
 using System.Security.Permissions;
 using System.Xml;
 
-namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
+namespace MonoDevelop.Projects.MSBuild.Conditions {
 	[Serializable]
 	public sealed class InvalidProjectFileException : Exception {
 		

@@ -29,7 +29,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {

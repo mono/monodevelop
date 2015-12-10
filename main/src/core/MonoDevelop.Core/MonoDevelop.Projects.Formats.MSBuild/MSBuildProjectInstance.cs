@@ -29,7 +29,7 @@ using System.Xml;
 using MonoDevelop.Core;
 using System.Linq;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	public sealed class MSBuildProjectInstance: IDisposable
 	{

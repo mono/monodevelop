@@ -30,7 +30,7 @@ using System;
 using System.Collections.Immutable;
 
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	public class MSBuildItem: MSBuildElement
 	{

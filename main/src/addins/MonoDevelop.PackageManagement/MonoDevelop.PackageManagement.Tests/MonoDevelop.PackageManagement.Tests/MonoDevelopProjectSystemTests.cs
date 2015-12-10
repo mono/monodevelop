@@ -33,7 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using NuGet;
 using NUnit.Framework;
 

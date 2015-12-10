@@ -44,7 +44,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	public static class MSBuildProjectService
 	{
@@ -956,7 +956,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 							engine = (IBuildEngine)bf.Deserialize (ms);
 						} else {
 							var asm = System.Reflection.Assembly.LoadFrom (exe);
-							var t = asm.GetType ("MonoDevelop.Projects.Formats.MSBuild.BuildEngine");
+							var t = asm.GetType ("MonoDevelop.Projects.MSBuild.BuildEngine");
 							engine = (IBuildEngine)Activator.CreateInstance (t);
 						}
 						engine.SetCulture (GettextCatalog.UICulture);
@@ -1017,7 +1017,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if ((runtime is MsNetTargetRuntime) && int.Parse (toolsVersion.Split ('.')[0]) >= 4)
 				toolsVersion = "dotnet." + toolsVersion;
 
-			var exe = sourceExe.ParentDirectory.Combine ("MSBuild", toolsVersion, "MonoDevelop.Projects.Formats.MSBuild.exe");
+			var exe = sourceExe.ParentDirectory.Combine ("MSBuild", toolsVersion, "MonoDevelop.Projects.MSBuild.exe");
 			if (File.Exists (exe))
 				return exe;
 			

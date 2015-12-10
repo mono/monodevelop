@@ -27,7 +27,7 @@ using System;
 using System.IO;
 using MonoDevelop.Projects.Utility;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	static class FileUtil
 	{

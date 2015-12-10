@@ -19,7 +19,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return base.SupportsObject (item) && IdeApp.IsInitialized;
 		}
 
-		protected override void OnReadProject (ProgressMonitor monitor, MonoDevelop.Projects.Formats.MSBuild.MSBuildProject msproject)
+		protected override void OnReadProject (ProgressMonitor monitor, MonoDevelop.Projects.MSBuild.MSBuildProject msproject)
 		{
 			base.OnReadProject (monitor, msproject);
 			if (info != null)

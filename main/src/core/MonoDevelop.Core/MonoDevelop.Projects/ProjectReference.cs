@@ -37,7 +37,7 @@ using System.ComponentModel;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.Assemblies;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {

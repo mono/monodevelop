@@ -30,7 +30,7 @@ using System.IO;
 using System.Text;
 using System.Xml;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 
 	class MSBuildXmlElement : MSBuildObject

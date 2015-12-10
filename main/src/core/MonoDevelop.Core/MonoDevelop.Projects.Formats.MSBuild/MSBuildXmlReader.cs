@@ -36,7 +36,7 @@ using System.Linq;
 using MonoDevelop.Projects.Text;
 using System.Threading.Tasks;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 
 	class MSBuildXmlReader

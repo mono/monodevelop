@@ -34,7 +34,7 @@ using MonoDevelop.CSharp.Project;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Projects;
 using System.Linq;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using System.Threading.Tasks;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Extensions;

@@ -33,7 +33,7 @@ using System.Linq;
 using System.Xml;
 
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	public abstract class MSBuildObject: MSBuildNode
 	{

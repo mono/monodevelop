@@ -32,7 +32,7 @@ using System.IO;
 using System.Xml;
 using MonoDevelop.Projects.Policies;
 using System.Threading.Tasks;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects.SharedAssetsProjects
 {
@@ -110,7 +110,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			base.SaveProjectItems (monitor, projitemsProject, usedMSBuildItems, "$(MSBuildThisFileDirectory)");
 		}
 
-		protected override void OnWriteProject (ProgressMonitor monitor, MonoDevelop.Projects.Formats.MSBuild.MSBuildProject msproject)
+		protected override void OnWriteProject (ProgressMonitor monitor, MonoDevelop.Projects.MSBuild.MSBuildProject msproject)
 		{
 			if (projItemsPath == FilePath.Null)
 				projItemsPath = Path.ChangeExtension (FileName, ".projitems");

@@ -28,7 +28,7 @@ using System.Xml;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	public class MSBuildChoose: MSBuildElement
 	{

@@ -26,7 +26,7 @@
 using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.CSharp.Project
 {

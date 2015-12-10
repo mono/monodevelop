@@ -32,7 +32,7 @@ using System.Xml;
 using MonoDevelop.Core;
 using System.Xml.Linq;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	
 	class MSBuildPropertyGroupMerged: IMSBuildPropertySet

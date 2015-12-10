@@ -36,7 +36,7 @@ using Mono.Cecil.Mdb;
 using Mono.Cecil.Cil;
 using System.Threading.Tasks;
 using MonoDevelop.Core.Serialization;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {

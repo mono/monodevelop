@@ -33,8 +33,9 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using System.IO;
 using System.Linq;
+using MonoDevelop.Projects.MSBuild;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	class RemoteBuildEngine: IBuildEngine
 	{

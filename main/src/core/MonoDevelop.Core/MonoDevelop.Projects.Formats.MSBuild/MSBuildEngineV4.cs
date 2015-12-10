@@ -34,7 +34,7 @@ using Microsoft.Build.BuildEngine;
 using MSProject = Microsoft.Build.BuildEngine.Project;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	#if !WINDOWS
 	class MSBuildEngineV4: MSBuildEngine

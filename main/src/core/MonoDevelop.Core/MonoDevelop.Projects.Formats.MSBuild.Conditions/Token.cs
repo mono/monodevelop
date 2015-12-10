@@ -29,7 +29,7 @@
 
 using System;
 
-namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
+namespace MonoDevelop.Projects.MSBuild.Conditions {
 
 	internal class Token {
 	

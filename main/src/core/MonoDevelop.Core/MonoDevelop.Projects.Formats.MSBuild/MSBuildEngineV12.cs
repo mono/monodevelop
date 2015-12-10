@@ -36,7 +36,7 @@ using MSProject = Microsoft.Build.Evaluation.Project;
 using MSProjectItem = Microsoft.Build.Evaluation.ProjectItem;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 
 	class MSBuildEngineV12: MSBuildEngine

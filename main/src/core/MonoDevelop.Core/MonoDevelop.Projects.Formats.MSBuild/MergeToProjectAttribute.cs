@@ -26,7 +26,7 @@
 
 using System;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	/// <summary>
 	/// Specifies that a property of a project configuration has to be stored as a project property

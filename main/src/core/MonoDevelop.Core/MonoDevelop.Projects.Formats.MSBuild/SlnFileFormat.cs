@@ -40,7 +40,7 @@ using System.Reflection;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	class SlnFileFormat
 	{

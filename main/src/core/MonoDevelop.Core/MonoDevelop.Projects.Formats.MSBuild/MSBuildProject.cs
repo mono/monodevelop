@@ -37,7 +37,7 @@ using System.Linq;
 using MonoDevelop.Projects.Text;
 using System.Threading.Tasks;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	public sealed partial class MSBuildProject : MSBuildObject, IDisposable
 	{

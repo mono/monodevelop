@@ -31,7 +31,7 @@ using System.Collections.Specialized;
 using System.Globalization;
 using System.Xml;
 
-namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
+namespace MonoDevelop.Projects.MSBuild.Conditions {
 	internal sealed class ConditionFactorExpression : ConditionExpression {
 	
 		readonly Token token;

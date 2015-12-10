@@ -10,7 +10,7 @@ using MonoDevelop.Projects.Text;
 using System.Text.RegularExpressions;
 using System.Globalization;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	public class SlnFile
 	{

@@ -36,7 +36,7 @@ using MonoDevelop.Projects.Extensions;
 using System.Threading.Tasks;
 using System.Linq;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	public abstract class MSBuildFileFormat
 	{

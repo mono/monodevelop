@@ -35,11 +35,11 @@ using Microsoft.Build.BuildEngine;
 using MonoDevelop.Core;
 using System.Reflection;
 using Microsoft.Build.Utilities;
-using MonoDevelop.Projects.Formats.MSBuild.Conditions;
+using MonoDevelop.Projects.MSBuild.Conditions;
 using System.Globalization;
 using Microsoft.Build.Evaluation;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	class MSBuildEvaluationContext: IExpressionContext
 	{
