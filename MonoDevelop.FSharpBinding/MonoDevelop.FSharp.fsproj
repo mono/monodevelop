@@ -25,8 +25,9 @@
     <Externalconsole>true</Externalconsole>
     <StartAction>Program</StartAction>
     <OtherFlags>--warnon:1182</OtherFlags>
-    <StartProgram>../../../../main/build/bin/MonoDevelop.exe</StartProgram>
-    <StartWorkingDirectory>../../../../main/build</StartWorkingDirectory>
+    <StartAction>Program</StartAction>
+    <StartProgram>$(MSBuildProjectDirectory)..\..\..\..\main\build\bin\MonoDevelop.exe</StartProgram>
+    <StartWorkingDirectory>$(MSBuildProjectDirectory)..\..\..\..\main\build</StartWorkingDirectory>
     <CustomCommands>
       <CustomCommands>
         <Command type="Execute" command="../../../../main/build/bin/MonoDevelop.exe --no-redirects" workingdir="../../../../main/build">
