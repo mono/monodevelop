@@ -370,7 +370,14 @@ namespace MonoDevelop.Projects
 		public async Task<ProjectFile[]> GetSourceFilesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			// pre-load the results with the current list of files in the project
-			var results = new List<ProjectFile> (this.Files);
+			var results = new List<ProjectFile> ();
+
+			var buildActions = GetBuildActions ().Where (a => a != "Folder" && a != "--").ToArray ();
+
+			var config = GetConfiguration (configuration);
+			var pri = await CreateProjectInstaceForConfiguration (config.Name, config.Platform, false);
+			foreach (var it in pri.EvaluatedItems.Where (i => buildActions.Contains (i.Name)))
+				results.Add (CreateProjectFile (it));
 
 			// add in any compile items that we discover from running the CoreCompile dependencies
 			var evaluatedCompileItems = await GetCompileItemsFromCoreCompileDependenciesAsync (monitor, configuration);
@@ -415,7 +422,7 @@ namespace MonoDevelop.Projects
 						if (evalResult != null && !evalResult.BuildResult.HasErrors) {
 							var evalItems = evalResult
 								.Items
-								.Select (i => new ProjectFile (MSBuildProjectService.FromMSBuildPath (sourceProject.BaseDirectory, i.Include), "Compile") { Project = this })
+								.Select (i => CreateProjectFile (i))
 								.ToList ();
 
 							result.AddRange (evalItems);
@@ -428,6 +435,11 @@ namespace MonoDevelop.Projects
 			}
 
 			return await evaluatedCompileItemsTask.Task;
+		}
+
+		ProjectFile CreateProjectFile (IMSBuildItemEvaluated item)
+		{
+			return new ProjectFile (MSBuildProjectService.FromMSBuildPath (sourceProject.BaseDirectory, item.Include), item.Name) { Project = this };
 		}
 
 		/// <summary>
@@ -1927,7 +1939,7 @@ namespace MonoDevelop.Projects
 				// We use a dummy configuration and platform to avoid loading default values from the configurations
 				// while evaluating
 				var c = Guid.NewGuid ().ToString ();
-				pi = CreateProjectInstaceForConfiguration (c, c);
+				pi = CreateProjectInstaceForConfiguration (c, c).Result;
 
 				IMSBuildPropertySet globalGroup = sourceProject.GetGlobalPropertyGroup ();
 
@@ -2191,24 +2203,25 @@ namespace MonoDevelop.Projects
 			if (cgrp.FullySpecified)
 				config.Properties = cgrp.Group;
 
-			var pi = CreateProjectInstaceForConfiguration (conf, platform);
+			var pi = CreateProjectInstaceForConfiguration (conf, platform).Result;
 
 			config.Platform = platform;
 			projectExtension.OnReadConfiguration (monitor, config, pi.EvaluatedProperties);
 			Configurations.Add (config);
 		}
 
-		MSBuildProjectInstance CreateProjectInstaceForConfiguration (string conf, string platform)
+		Task<MSBuildProjectInstance> CreateProjectInstaceForConfiguration (string conf, string platform, bool onlyEvaluateProperties = true)
 		{
 			var pi = sourceProject.CreateInstance ();
+			pi.SetGlobalProperty ("BuildingInsideVisualStudio", "true");
 			pi.SetGlobalProperty ("Configuration", conf);
 			if (platform == string.Empty)
 				pi.SetGlobalProperty ("Platform", "AnyCPU");
 			else
 				pi.SetGlobalProperty ("Platform", platform);
-			pi.OnlyEvaluateProperties = true;
+			pi.OnlyEvaluateProperties = onlyEvaluateProperties;
 			pi.Evaluate ();
-			return pi;
+			return Task.FromResult (pi);
 		}
 
 		protected virtual void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildEvaluatedPropertyCollection grp)
@@ -2405,7 +2418,7 @@ namespace MonoDevelop.Projects
 						MSBuildPropertyGroup pg = (MSBuildPropertyGroup)conf.Properties;
 						ConfigData cdata = configData.FirstOrDefault (cd => cd.Group == pg);
 
-						var pi = CreateProjectInstaceForConfiguration (conf.Name, conf.Platform);
+						var pi = CreateProjectInstaceForConfiguration (conf.Name, conf.Platform).Result;
 
 						if (cdata == null) {
 							msproject.AddPropertyGroup (pg, true);
