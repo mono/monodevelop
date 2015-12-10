@@ -31,8 +31,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Gtk;
 using Gdk;
-using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -47,7 +47,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		static ParameterInformationWindowManager ()
 		{
-			IdeApp.Workbench.RootWindow.Destroyed += (sender, e) => DestroyWindow ();
+			if (IdeApp.Workbench != null)
+				IdeApp.Workbench.RootWindow.Destroyed += (sender, e) => DestroyWindow ();
 		}
 
 		static void DestroyWindow ()
@@ -60,14 +61,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		// Called when a key is pressed in the editor.
 		// Returns false if the key press has to continue normal processing.
-		public static bool ProcessKeyEvent (CompletionTextEditorExtension ext, ICompletionWidget widget, Gdk.Key key, Gdk.ModifierType modifier)
+		internal static bool ProcessKeyEvent (CompletionTextEditorExtension ext, ICompletionWidget widget, KeyDescriptor descriptor)
 		{
 			if (methods.Count == 0)
 				return false;
 
 			MethodData cmd = methods [methods.Count - 1];
-			
-			if (key == Gdk.Key.Down) {
+
+			if (descriptor.SpecialKey == SpecialKey.Down) {
 				if (cmd.MethodProvider.Count <= 1)
 					return false;
 				if (cmd.CurrentOverload < cmd.MethodProvider.Count - 1)
@@ -77,7 +78,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				window.ChangeOverload ();
 				UpdateWindow (ext, widget);
 				return true;
-			} else if (key == Gdk.Key.Up) {
+			} else if (descriptor.SpecialKey == SpecialKey.Up) {
 				if (cmd.MethodProvider.Count <= 1)
 					return false;
 				if (cmd.CurrentOverload > 0)
@@ -88,18 +89,18 @@ namespace MonoDevelop.Ide.CodeCompletion
 				UpdateWindow (ext, widget);
 				return true;
 			}
-			else if (key == Gdk.Key.Escape) {
+			else if (descriptor.SpecialKey == SpecialKey.Escape) {
 				HideWindow (ext, widget);
 				return true;
 			}
 			return false;
 		}
 		
-		public static void PostProcessKeyEvent (CompletionTextEditorExtension ext, ICompletionWidget widget, Gdk.Key key, Gdk.ModifierType modifier)
+		internal static void PostProcessKeyEvent (CompletionTextEditorExtension ext, ICompletionWidget widget, KeyDescriptor descriptor)
 		{
 		}
 
-		public static void UpdateCursorPosition (CompletionTextEditorExtension ext, ICompletionWidget widget)
+		internal static void UpdateCursorPosition (CompletionTextEditorExtension ext, ICompletionWidget widget)
 		{	
 			// Called after the key has been processed by the editor
 			if (methods.Count == 0)
@@ -124,12 +125,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			UpdateWindow (ext, widget);
 		}
 
-		public static void RepositionWindow (CompletionTextEditorExtension ext, ICompletionWidget widget)
+		internal static void RepositionWindow (CompletionTextEditorExtension ext, ICompletionWidget widget)
 		{
 			UpdateWindow (ext, widget);
 		}
 		
-		public static void ShowWindow (CompletionTextEditorExtension ext, ICompletionWidget widget, CodeCompletionContext ctx, ParameterDataProvider provider)
+		internal static void ShowWindow (CompletionTextEditorExtension ext, ICompletionWidget widget, CodeCompletionContext ctx, ParameterHintingResult provider)
 		{
 			if (provider.Count == 0)
 				return;
@@ -147,7 +148,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			UpdateWindow (ext, widget);
 		}
 		
-		public static void HideWindow (CompletionTextEditorExtension ext, ICompletionWidget widget)
+		internal static void HideWindow (CompletionTextEditorExtension ext, ICompletionWidget widget)
 		{
 			methods.Clear ();
 			if (window != null)
@@ -162,7 +163,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return methods [methods.Count - 1].CurrentOverload;
 		}
 		
-		public static IParameterDataProvider GetCurrentProvider ()
+		public static ParameterHintingResult GetCurrentProvider ()
 		{
 			if (methods.Count == 0)
 				return null;
@@ -220,7 +221,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var geometry2 = DesktopService.GetUsableMonitorGeometry (window.Screen, window.Screen.GetMonitorAtPoint (X, Y));
 				window.ShowParameterInfo (lastMethod.MethodProvider, lastMethod.CurrentOverload, curParam - 1, geometry2.Width);
 				PositionParameterInfoWindow (window.Allocation);
-				window.Show ();
 			}
 			
 			if (methods.Count == 0) {
@@ -284,7 +284,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 	class MethodData
 	{
-		public ParameterDataProvider MethodProvider;
+		public ParameterHintingResult MethodProvider;
 		public CodeCompletionContext CompletionContext;
 		int currentOverload;
 		public int CurrentOverload {

@@ -530,7 +530,7 @@ namespace MonoDevelop.Core
 		
 		public static void LogError (string message, Exception ex)
 		{
-			LogUserError (message, ex);
+			Log (LogLevel.Error, message + (ex != null? Environment.NewLine + ex : string.Empty));
 		}
 
 		[Obsolete ("Use LogError")]

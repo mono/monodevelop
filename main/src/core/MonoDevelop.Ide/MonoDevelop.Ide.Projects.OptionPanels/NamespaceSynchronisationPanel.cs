@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				return slnFolder.GetAllItems<DotNetProject> ().Any ();
 			
 			// Global options case
-			return !(item is IWorkspaceObject);
+			return !(item is WorkspaceObject);
 		}
 		
 		public override Widget CreatePanelWidget ()
@@ -98,15 +98,15 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		{
 			base.ApplyChanges ();
 			
-			if (widget.ResourceNamingChanged) {
+			if (widget.ResourceNamingChanged && migrateIds) {
 				if (ConfiguredProject is DotNetProject) {
-					((DotNetProject)ConfiguredProject).UpdateResourceHandler (migrateIds);
+					((DotNetProject)ConfiguredProject).MigrateResourceIds (widget.InitialResourceNaming);
 				} else if (DataObject is SolutionFolder) {
 					foreach (DotNetProject prj in ((SolutionFolder)DataObject).GetAllItems<DotNetProject> ())
-						prj.UpdateResourceHandler (migrateIds);
+						prj.MigrateResourceIds (widget.InitialResourceNaming);
 				} else if (ConfiguredSolution != null) {
-					foreach (DotNetProject prj in ConfiguredSolution.GetAllSolutionItems<DotNetProject> ())
-						prj.UpdateResourceHandler (migrateIds);
+					foreach (DotNetProject prj in ConfiguredSolution.GetAllItems<DotNetProject> ())
+						prj.MigrateResourceIds (widget.InitialResourceNaming);
 				}
 			}
 		}
@@ -228,6 +228,10 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 						? ResourceNamePolicy.MSBuild
 						: ResourceNamePolicy.FileName);
 			}
+		}
+
+		public ResourceNamePolicy InitialResourceNaming {
+			get { return initialResourceNaming; }
 		}
 		
 		void UpdateNamespaceSensitivity (object sender, EventArgs args)

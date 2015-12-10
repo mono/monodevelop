@@ -25,21 +25,17 @@
 //
 //
 
-using Gtk;
-using Gdk;
-using Pango;
 using System;
-using System.Xml;
-using System.Linq;
-using System.Text;
 using System.Collections.Generic;
 using MonoDevelop.Core.Text;
-using ICSharpCode.NRefactory.Completion;
-using Mono.TextEditor;
 using MonoDevelop.Ide.Gui.Content;
+using System.Linq;
+using Gdk;
+using Gtk;
 using MonoDevelop.Components;
-using Mono.TextEditor.Highlighting;
-using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -60,7 +56,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 		ListWidget list;
 		Widget footer;
 		protected VBox vbox;
-		
+		internal MruCache cache = new MruCache();
+		protected ICompletionDataList completionDataList;
+
 		public CompletionTextEditorExtension Extension {
 			get;
 			set;
@@ -101,8 +99,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.AutoSelect = true;
 			this.TypeHint = WindowTypeHint.Menu;
 			Theme.CornerRadius = 4;
+		}
+
+		protected override void OnShown ()
+		{
 			var style = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
-			Theme.SetFlatColor (style.CompletionText.Background);
+			Theme.SetFlatColor (style.CompletionWindow.Color);
+			if (style.CompletionWindow.HasBorderColor)
+				Theme.BorderColor = style.CompletionWindow.BorderColor;
+			base.OnShown ();
 		}
 
 		protected virtual void DoubleClick ()
@@ -129,7 +134,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		/// This method is used to set the completion window to it's inital state.
 		/// This is required for re-using the window object.
 		/// </summary>
-		protected virtual void ResetState ()
+		protected internal virtual void ResetState ()
 		{
 			HideWhenWordDeleted = false;
 			lastCommitCharEndoffset = -1;
@@ -226,7 +231,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			set;
 		}
 
-		public ICompletionWidget CompletionWidget {
+		internal ICompletionWidget CompletionWidget {
 			get {
 				return list.CompletionWidget;
 			}
@@ -273,21 +278,22 @@ namespace MonoDevelop.Ide.CodeCompletion
 			private set;
 		}
 
-		public KeyActions PostProcessKey (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public KeyActions PostProcessKey (KeyDescriptor descriptor)
 		{
-			if (StartOffset > CompletionWidget.CaretOffset)
+			if (CompletionWidget == null || StartOffset > CompletionWidget.CaretOffset) // CompletionWidget == null may happen in unit tests.
 				return KeyActions.CloseWindow | KeyActions.Process;
 
 			if (HideWhenWordDeleted && StartOffset >= CompletionWidget.CaretOffset)
 				return KeyActions.CloseWindow | KeyActions.Process;
-			switch (key) {
-			case Gdk.Key.BackSpace:
+			switch (descriptor.SpecialKey) {
+			case SpecialKey.BackSpace:
 				ResetSizes ();
 				UpdateWordSelection ();
 				return KeyActions.Process;
 			}
-			
-			const string commitChars = " <>()[]{}=+-*/%~&^|!.,;:";
+			var keyChar = descriptor.KeyChar;
+
+			const string commitChars = " <>()[]{}=+-*/%~&^|!.,;:?\"'";
 			if (keyChar == '[' && CloseOnSquareBrackets)
 				return KeyActions.Process | KeyActions.CloseWindow;
 			
@@ -306,12 +312,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 					if (!text.ToUpper ().StartsWith (curword.ToUpper (), StringComparison.Ordinal))
 						match = -1;	 
 				}
-				if (match >= 0 && !hasMismatches && keyChar != '<') {
+				if (match >= 0 && !hasMismatches && keyChar != '<' && keyChar != ' ') {
 					ResetSizes ();
 					UpdateWordSelection ();
 					return KeyActions.Process;
 				}
-				if (keyChar == '.')
+				if (keyChar == '.' && !list.AutoCompleteEmptyMatch && PartialWord == ".")
 					list.AutoSelect = list.AutoCompleteEmptyMatch = true;
 				lastCommitCharEndoffset = CompletionWidget.CaretOffset - 1;
 
@@ -322,30 +328,48 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 				return KeyActions.CloseWindow | KeyActions.Process;
 			}
-			
+
+			if (char.IsPunctuation (descriptor.KeyChar) && descriptor.KeyChar != '_') {
+				if (descriptor.KeyChar == ':') {
+					foreach (var item in FilteredItems) {
+						if (DataProvider.GetText (item).EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal)) {
+							list.SelectedItem = item;
+							return KeyActions.Complete | KeyActions.CloseWindow | KeyActions.Ignore;
+						}
+					}
+				} else {
+					var selectedItem = list.SelectedItem;
+					if (selectedItem < 0 || selectedItem >= DataProvider.ItemCount)
+						return KeyActions.CloseWindow;
+					var text = DataProvider.GetText (selectedItem);
+					if (!text.Substring (0, Math.Min (text.Length , CurrentPartialWord.Length)).EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal))
+						return KeyActions.Process | KeyActions.CloseWindow;
+				}
+			}
 			return KeyActions.Process;
 		}
 		
-		public KeyActions PreProcessKey (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public KeyActions PreProcessKey (KeyDescriptor descriptor)
 		{
-			switch (key) {
-			case Gdk.Key.Home:
-				if ((modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask)
+			switch (descriptor.SpecialKey) {
+			case SpecialKey.Home:
+				if ((descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift)
 					return KeyActions.Process;
 				List.SelectionFilterIndex = 0;
 				return KeyActions.Ignore;
-			case Gdk.Key.End:
-				if ((modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask)
+			case SpecialKey.End:
+				if ((descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift)
 					return KeyActions.Process;
 				List.SelectionFilterIndex = List.filteredItems.Count - 1;
 				return KeyActions.Ignore;
 				
-			case Gdk.Key.Up:
-				if ((modifier & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask) {
+			case SpecialKey.Up:
+				if ((descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift) {
 					if (!SelectionEnabled /*&& !CompletionWindowManager.ForceSuggestionMode*/)
 						AutoCompleteEmptyMatch = AutoSelect = true;
 					if (!List.InCategoryMode) {
-						List.InCategoryMode = true;
+						IdeApp.Preferences.EnableCompletionCategoryMode.Set (true);
+						List.UpdateCategoryMode ();
 						return KeyActions.Ignore;
 					}
 					List.MoveToCategory (-1);
@@ -360,25 +384,23 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 				return KeyActions.Ignore;
 
-			case Gdk.Key.Tab:
+			case SpecialKey.Tab:
 				//tab always completes current item even if selection is disabled
 				if (!AutoSelect)
 					AutoSelect = true;
-				goto case Gdk.Key.Return;
+				goto case SpecialKey.Return;
 
-			case Gdk.Key.Return:
-			case Gdk.Key.ISO_Enter:
-			case Gdk.Key.Key_3270_Enter:
-			case Gdk.Key.KP_Enter:
+			case SpecialKey.Return:
 				lastCommitCharEndoffset = CompletionWidget.CaretOffset;
-				WasShiftPressed = (modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask;
+				WasShiftPressed = (descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift;
 				return KeyActions.Complete | KeyActions.Ignore | KeyActions.CloseWindow;
-			case Gdk.Key.Down:
-				if ((modifier & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask) {
+			case SpecialKey.Down:
+				if ((descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift) {
 					if (!SelectionEnabled /*&& !CompletionWindowManager.ForceSuggestionMode*/)
 						AutoCompleteEmptyMatch = AutoSelect = true;
 					if (!List.InCategoryMode) {
-						List.InCategoryMode = true;
+						IdeApp.Preferences.EnableCompletionCategoryMode.Set (true);
+						List.UpdateCategoryMode ();
 						return KeyActions.Ignore;
 					}
 					List.MoveToCategory (1);
@@ -394,8 +416,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 				return KeyActions.Ignore;
 
-			case Gdk.Key.Page_Up:
-				if ((modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask)
+			case SpecialKey.PageUp:
+				if ((descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift)
 					return KeyActions.Process;
 				if (list.filteredItems.Count < 2)
 					return KeyActions.CloseWindow | KeyActions.Process;
@@ -403,8 +425,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				list.MoveCursor (-8);
 				return KeyActions.Ignore;
 
-			case Gdk.Key.Page_Down:
-				if ((modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask)
+			case SpecialKey.PageDown:
+				if ((descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift)
 					return KeyActions.Process;
 				if (list.filteredItems.Count < 2)
 					return KeyActions.CloseWindow | KeyActions.Process;
@@ -412,42 +434,42 @@ namespace MonoDevelop.Ide.CodeCompletion
 				list.MoveCursor (8);
 				return KeyActions.Ignore;
 
-			case Gdk.Key.Left:
+			case SpecialKey.Left:
 				//if (curPos == 0) return KeyActions.CloseWindow | KeyActions.Process;
 				//curPos--;
 				return KeyActions.Process;
 
-			case Gdk.Key.Right:
+			case SpecialKey.Right:
 				//if (curPos == word.Length) return KeyActions.CloseWindow | KeyActions.Process;
 				//curPos++;
 				return KeyActions.Process;
 
-			case Gdk.Key.Caps_Lock:
-			case Gdk.Key.Num_Lock:
-			case Gdk.Key.Scroll_Lock:
-				return KeyActions.Ignore;
-
-			case Gdk.Key.Control_L:
-			case Gdk.Key.Control_R:
-			case Gdk.Key.Alt_L:
-			case Gdk.Key.Alt_R:
-			case Gdk.Key.Shift_L:
-			case Gdk.Key.Shift_R:
-			case Gdk.Key.ISO_Level3_Shift:
-				// AltGr
-				return KeyActions.Process;
+//			case Gdk.Key.Caps_Lock:
+//			case Gdk.Key.Num_Lock:
+//			case Gdk.Key.Scroll_Lock:
+//				return KeyActions.Ignore;
+//
+//			case Gdk.Key.Control_L:
+//			case Gdk.Key.Control_R:
+//			case Gdk.Key.Alt_L:
+//			case Gdk.Key.Alt_R:
+//			case Gdk.Key.Shift_L:
+//			case Gdk.Key.Shift_R:
+//			case Gdk.Key.ISO_Level3_Shift:
+//				// AltGr
+//				return KeyActions.Process;
 			}
-			if (keyChar == '\0')
+			if (descriptor.KeyChar == '\0')
 				return KeyActions.Process;
 
-			if (keyChar == ' ' && (modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask)
+			if (descriptor.KeyChar == ' ' && (descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift)
 				return KeyActions.CloseWindow | KeyActions.Process;
 
 			// special case end with punctuation like 'param:' -> don't input double punctuation, otherwise we would end up with 'param::'
-			if (char.IsPunctuation (keyChar) && keyChar != '_') {
-				if (keyChar == ':') {
+			if (char.IsPunctuation (descriptor.KeyChar) && descriptor.KeyChar != '_') {
+				if (descriptor.KeyChar == ':') {
 					foreach (var item in FilteredItems) {
-						if (DataProvider.GetText (item).EndsWith (keyChar.ToString (), StringComparison.Ordinal)) {
+						if (DataProvider.GetText (item).EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal)) {
 							list.SelectedItem = item;
 							return KeyActions.Complete | KeyActions.CloseWindow | KeyActions.Ignore;
 						}
@@ -456,13 +478,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 					var selectedItem = list.SelectedItem;
 					if (selectedItem < 0 || selectedItem >= DataProvider.ItemCount)
 						return KeyActions.CloseWindow;
-					if (DataProvider.GetText (selectedItem).EndsWith (keyChar.ToString (), StringComparison.Ordinal)) {
+					if (DataProvider.GetText (selectedItem).EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal)) {
 						return KeyActions.Complete | KeyActions.CloseWindow | KeyActions.Ignore;
 					}
 				}
 			}
-
-
 
 	/*		//don't input letters/punctuation etc when non-shift modifiers are active
 			bool nonShiftModifierActive = ((Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask
@@ -544,75 +564,67 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			// default - word with highest match rating in the list.
 			hasMismatches = true;
-			if (partialWord == null)
-				return -1;
-			
 			int idx = -1;
-			var matcher = CompletionMatcher.CreateCompletionMatcher (partialWord);
-			string bestWord = null;
-			int bestRank = int.MinValue;
-			int bestIndex = 0;
+
+			StringMatcher matcher = null;
 			if (!string.IsNullOrEmpty (partialWord)) {
+				matcher = CompletionMatcher.CreateCompletionMatcher (partialWord);
+				string bestWord = null;
+				int bestRank = int.MinValue;
+				int bestIndex = 0;
+				int bestIndexPriority = int.MinValue;
 				for (int i = 0; i < list.filteredItems.Count; i++) {
-					int index = list.filteredItems[i];
-					string text = DataProvider.GetText (index);
+					int index = list.filteredItems [i];
+					var data = DataProvider.GetCompletionData (index);
+					if (bestIndexPriority > data.PriorityGroup)
+						continue;
+					string text = data.DisplayText;
 					int rank;
 					if (!matcher.CalcMatchRank (text, out rank))
 						continue;
-					if (rank > bestRank) {
+					if (rank > bestRank || data.PriorityGroup > bestIndexPriority) {
 						bestWord = text;
 						bestRank = rank;
 						bestIndex = i;
+						bestIndexPriority = data.PriorityGroup;
 					}
 				}
+
+				if (bestWord != null) {
+					idx = bestIndex;
+					hasMismatches = false;
+					// exact match found.
+					if (string.Compare (bestWord, partialWord ?? "", true) == 0)
+						return idx;
+				}
 			}
-			if (bestWord != null) {
-				idx = bestIndex;
-				hasMismatches = false;
-				// exact match found.
-				if (string.Compare (bestWord, partialWord ?? "", true) == 0) 
-					return idx;
+
+			CompletionData currentData;
+			int bestMruIndex;
+			if (idx >= 0) {
+				currentData = completionDataList [list.filteredItems [idx]];
+				bestMruIndex = cache.GetIndex (currentData);
+			} else {
+				bestMruIndex = int.MaxValue;
+				currentData = null;
 			}
-			
-			if (string.IsNullOrEmpty (partialWord) || partialWord.Length <= 2) {
-				// Search for history matches.
-				string historyWord;
-				if (wordHistory.TryGetValue (partialWord, out historyWord)) {
-					for (int xIndex = 0; xIndex < list.filteredItems.Count; xIndex++) {
-						string currentWord = DataProvider.GetCompletionText (list.filteredItems[xIndex]);
-						if (currentWord == historyWord) {
-							idx = xIndex;
-							break;
+			for (int i = 0; i < list.filteredItems.Count; i++) {
+				var mruData = completionDataList [list.filteredItems [i]];
+				int curMruIndex = cache.GetIndex (mruData);
+				if (curMruIndex == 1)
+					continue;
+				if (curMruIndex < bestMruIndex) {
+					int r1 = 0, r2 = 0;
+					if (currentData == null || matcher != null && matcher.CalcMatchRank (mruData.DisplayText, out r1) && matcher.CalcMatchRank (currentData.DisplayText, out r2)) {
+						if (r1 >= r2 || PartialWord.Length <= 1) {
+							bestMruIndex = curMruIndex;
+							idx = i;
+							currentData = mruData;
 						}
 					}
 				}
 			}
 			return idx;
-		}
-
-		static Dictionary<string,string> wordHistory = new Dictionary<string,string> ();
-		static List<string> partalWordHistory = new List<string> ();
-		const int maxHistoryLength = 500;
-		protected void AddWordToHistory (string partialWord, string word)
-		{
-			if (!wordHistory.ContainsKey (partialWord)) {
-				wordHistory.Add (partialWord, word);
-				partalWordHistory.Add (partialWord);
-				while (partalWordHistory.Count > maxHistoryLength) {
-					string first = partalWordHistory [0];
-					partalWordHistory.RemoveAt (0);
-					wordHistory.Remove (first);
-				}
-			} else {
-				partalWordHistory.Remove (partialWord);
-				partalWordHistory.Add (partialWord);
-				wordHistory [partialWord] = word;
-			}
-		}
-		public static void ClearHistory ()
-		{
-			wordHistory.Clear ();
-			partalWordHistory.Clear ();
 		}
 
 		void SelectEntry (int n)
@@ -698,6 +710,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		CompletionCategory GetCompletionCategory (int n);
 		bool HasMarkup (int n);
 		string GetCompletionText (int n);
+		CompletionData GetCompletionData (int n);
 		string GetDescription (int n, bool isSelected);
 		string GetRightSideDescription (int n, bool isSelected);
 		Xwt.Drawing.Image GetIcon (int n);

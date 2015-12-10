@@ -234,7 +234,7 @@ namespace MonoDevelop.Debugger
 		
 		void OnRowActivated (object s, RowActivatedArgs args)
 		{
-			TreeIter iter, selected;
+			TreeIter selected;
 
 			if (!tree.Selection.GetSelected (out selected))
 				return;

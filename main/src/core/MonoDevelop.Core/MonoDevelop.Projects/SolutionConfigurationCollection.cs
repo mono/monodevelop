@@ -47,22 +47,24 @@ namespace MonoDevelop.Projects
 			this.parentSolution = parentSolution;
 		}
 		
-		protected override void OnItemAdded (SolutionConfiguration conf)
+		protected override void OnItemsAdded (IEnumerable<SolutionConfiguration> confs)
 		{
 			if (parentSolution != null) {
-				conf.ParentSolution = parentSolution;
+				foreach (var conf in confs)
+					conf.ParentSolution = parentSolution;
 				parentSolution.NotifyConfigurationsChanged ();
 			}
-			base.OnItemAdded (conf);
+			base.OnItemsAdded (confs);
 		}
 		
-		protected override void OnItemRemoved (SolutionConfiguration conf)
+		protected override void OnItemsRemoved (IEnumerable<SolutionConfiguration> confs)
 		{
 			if (parentSolution != null) {
-				conf.ParentSolution = null;
+				foreach (var conf in confs)
+					conf.ParentSolution = null;
 				parentSolution.NotifyConfigurationsChanged ();
 			}
-			base.OnItemRemoved (conf);
+			base.OnItemsRemoved (confs);
 		}
 	}
 }

@@ -37,6 +37,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
+using MonoDevelop.Projects.MSBuild;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Projects
 {
@@ -55,37 +57,106 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		public ProjectFile (string filename)
+		public ProjectFile (string filename): this (filename, MonoDevelop.Projects.BuildAction.Compile)
 		{
-			this.filename = FileService.GetFullPath (filename);
-			subtype = Subtype.Code;
-			buildaction = MonoDevelop.Projects.BuildAction.Compile;
 		}
 
 		public ProjectFile (string filename, string buildAction)
 		{
 			this.filename = FileService.GetFullPath (filename);
 			subtype = Subtype.Code;
-			buildaction = buildAction;
+			BuildAction = buildAction;
 		}
 
-		[ItemProperty("subtype")]
+		public override string Include {
+			get {
+				if (Project != null) {
+					string path = MSBuildProjectService.ToMSBuildPath (Project.ItemDirectory, FilePath);
+					if (path.Length > 0) {
+						//directory paths must end with '/'
+						if ((Subtype == Subtype.Directory) && path [path.Length - 1] != '\\')
+							path = path + "\\";
+						return path;
+					}
+				}
+				return base.Include;
+			}
+			protected set {
+				base.Include = value;
+			}
+		}
+
+		internal protected override void Read (Project project, IMSBuildItemEvaluated buildItem)
+		{
+			base.Read (project, buildItem);
+
+			if (buildItem.Name == "Folder") {
+				// Read folders
+				string path = MSBuildProjectService.FromMSBuildPath (project.ItemDirectory, buildItem.Include);
+				Name = Path.GetDirectoryName (path);
+				Subtype = Subtype.Directory;
+				return;
+			}
+
+			Name = MSBuildProjectService.FromMSBuildPath (project.ItemDirectory, buildItem.Include);
+			BuildAction = buildItem.Name;
+
+			DependsOn = buildItem.Metadata.GetPathValue ("DependentUpon", relativeToPath:FilePath.ParentDirectory);
+
+			string copy = buildItem.Metadata.GetValue ("CopyToOutputDirectory");
+			if (!string.IsNullOrEmpty (copy)) {
+				switch (copy) {
+				case "None": break;
+				case "Always": CopyToOutputDirectory = FileCopyMode.Always; break;
+				case "PreserveNewest": CopyToOutputDirectory = FileCopyMode.PreserveNewest; break;
+				default:
+					LoggingService.LogWarning (
+						"Unrecognised value {0} for CopyToOutputDirectory MSBuild property",
+						copy);
+					break;
+				}
+			}
+
+			Visible = buildItem.Metadata.GetValue ("Visible", true);
+			resourceId = buildItem.Metadata.GetValue ("LogicalName");
+			contentType = buildItem.Metadata.GetValue ("SubType");
+			generator = buildItem.Metadata.GetValue ("Generator");
+			customToolNamespace = buildItem.Metadata.GetValue ("CustomToolNamespace");
+			lastGenOutput = buildItem.Metadata.GetValue ("LastGenOutput");
+			Link = buildItem.Metadata.GetPathValue ("Link", relativeToProject:false);
+		}
+
+		internal protected override void Write (Project project, MSBuildItem buildItem)
+		{
+			base.Write (project, buildItem);
+
+			buildItem.Metadata.SetValue ("DependentUpon", DependsOn, FilePath.Empty, relativeToPath:FilePath.ParentDirectory);
+			buildItem.Metadata.SetValue ("SubType", ContentType, "");
+			buildItem.Metadata.SetValue ("Generator", Generator, "");
+			buildItem.Metadata.SetValue ("CustomToolNamespace", CustomToolNamespace, "");
+			buildItem.Metadata.SetValue ("LastGenOutput", LastGenOutput, "");
+			buildItem.Metadata.SetValue ("Link", Link, FilePath.Empty, relativeToProject:false);
+			buildItem.Metadata.SetValue ("CopyToOutputDirectory", CopyToOutputDirectory.ToString (), "None");
+			buildItem.Metadata.SetValue ("Visible", Visible, true);
+
+			var resId = ResourceId;
+
+			// For EmbeddedResource, emit LogicalName only when it does not match the default msbuild resource Id
+			if (project is DotNetProject && BuildAction == MonoDevelop.Projects.BuildAction.EmbeddedResource && ((DotNetProject)project).GetDefaultMSBuildResourceId (this) == resId)
+				resId = "";
+
+			buildItem.Metadata.SetValue ("LogicalName", resId, "");
+		}
+
+
 		Subtype subtype;
 		public Subtype Subtype {
 			get { return subtype; }
 			set {
 				subtype = value;
+				if (subtype == Subtype.Directory)
+					ItemName = "Folder";
 				OnChanged ("Subtype");
-			}
-		}
-
-		[ItemProperty("data", DefaultValue = "")]
-		string data = "";
-		public string Data {
-			get { return data; }
-			set {
-				data = value;
-				OnChanged ("Data");
 			}
 		}
 
@@ -109,31 +180,35 @@ namespace MonoDevelop.Projects
 				if (IsLink && Link.FileName == oldPath.FileName)
 					link = Path.Combine (Path.GetDirectoryName (link), filename.FileName);
 
+				// If a file that belongs to a project is being renamed, update the value of UnevaluatedInclude
+				// since that is used when saving
+				if (Project != null)
+					UnevaluatedInclude = Include;
+
 				OnPathChanged (oldPath, filename, oldVirtualPath, ProjectVirtualPath);
 
-				if (project != null)
-					project.NotifyFileRenamedInProject (new ProjectFileRenamedEventArgs (project, this, oldPath));
+				if (Project != null)
+					Project.NotifyFileRenamedInProject (new ProjectFileRenamedEventArgs (Project, this, oldPath));
 			}
 		}
 
-
-		[ItemProperty("buildaction")]
-		string buildaction = MonoDevelop.Projects.BuildAction.None;
 		public string BuildAction {
-			get { return buildaction; }
+			get { return ItemName; }
 			set {
-				buildaction = string.IsNullOrEmpty (value) ? MonoDevelop.Projects.BuildAction.None : value;
+				ItemName = string.IsNullOrEmpty (value) ? MonoDevelop.Projects.BuildAction.None : value;
 				OnChanged ("BuildAction");
 			}
 		}
 
-		[ItemProperty("resource_id", DefaultValue = "")]
 		string resourceId = String.Empty;
 
-		internal string GetResourceId (IResourceHandler resourceHandler)
+		/// <summary>
+		/// Gets the resource id of this file for the provided policy
+		/// </summary>
+		internal string GetResourceId (ResourceNamePolicy policy)
 		{
-			if (string.IsNullOrEmpty (resourceId))
-				return resourceHandler.GetDefaultResourceId (this);
+			if (string.IsNullOrEmpty (resourceId) && (Project is DotNetProject))
+				return ((DotNetProject)Project).GetDefaultResourceIdForPolicy (this, policy);
 			return resourceId;
 		}
 
@@ -147,15 +222,6 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
-		/// Set to true if this ProjectFile was created at load time by
-		/// a ProjectFile containing wildcards.  If true, this instance
-		/// should not be saved to a csproj file.
-		/// </summary>
-		internal bool IsOriginatedFromWildcard {
-			get; set;
-		}
-
-		/// <summary>
 		/// The file should be treated as effectively having this relative path within the project. If the file is
 		/// a link or outside the project root, this will not be the same as the physical file.
 		/// </summary>
@@ -163,8 +229,8 @@ namespace MonoDevelop.Projects
 			get {
 				if (!Link.IsNullOrEmpty)
 					return Link;
-				if (project != null) {
-					var rel = project.GetRelativeChildPath (FilePath);
+				if (Project != null) {
+					var rel = Project.GetRelativeChildPath (FilePath);
 					if (!rel.ToString ().StartsWith ("..", StringComparison.Ordinal))
 						return rel;
 				}
@@ -173,22 +239,15 @@ namespace MonoDevelop.Projects
 		}
 
 
-		Project project;
-		public Project Project {
-			get { return project; }
-		}
-
-		[ItemProperty("SubType")]
-		string contentType = String.Empty;
+		string contentType;
 		public string ContentType {
-			get { return contentType; }
+			get { return contentType ?? ""; }
 			set {
 				contentType = value;
 				OnChanged ("ContentType");
 			}
 		}
 
-		[ItemProperty("Visible", DefaultValue = true)]
 		bool visible = true;
 		
 		/// <summary>
@@ -204,14 +263,13 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		[ItemProperty("Generator", DefaultValue = "")]
 		string generator;
 		
 		/// <summary>
 		/// The ID of a custom code generator.
 		/// </summary>
 		public string Generator {
-			get { return generator; }
+			get { return generator ?? ""; }
 			set {
 				if (generator != value) {
 					generator = value;
@@ -220,14 +278,13 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		[ItemProperty("CustomToolNamespace", DefaultValue = "")]
 		string customToolNamespace;
 		
 		/// <summary>
 		/// Overrides the namespace in which the custom code generator should generate code.
 		/// </summary>
 		public string CustomToolNamespace {
-			get { return customToolNamespace; }
+			get { return customToolNamespace ?? ""; }
 			set {
 				if (customToolNamespace != value) {
 					customToolNamespace = value;
@@ -237,14 +294,13 @@ namespace MonoDevelop.Projects
 		}
 		
 		
-		[ItemProperty("LastGenOutput", DefaultValue = "")]
 		string lastGenOutput;
 		
 		/// <summary>
 		/// The file most recently generated by the custom tool. Relative to this file's parent directory.
 		/// </summary>
 		public string LastGenOutput {
-			get { return lastGenOutput; }
+			get { return lastGenOutput ?? ""; }
 			set {
 				if (lastGenOutput != value) {
 					lastGenOutput = value;
@@ -253,8 +309,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		
-		[RelativeProjectPathItemProperty("Link", DefaultValue = "")]
 		string link;
 		
 		/// <summary>
@@ -262,11 +316,11 @@ namespace MonoDevelop.Projects
 		/// within the project root. Use ProjectVirtualPath to read the effective virtual path for any file.
 		/// </summary>
 		public FilePath Link {
-			get { return link; }
+			get { return link ?? ""; }
 			set {
 				if (link != value) {
 					if (value.IsAbsolute || value.ToString ().StartsWith ("..", StringComparison.Ordinal))
-						throw new ArgumentException ("value");
+						throw new ArgumentException ("Invalid value for Link property");
 
 					var oldLink = link;
 					link = value;
@@ -282,7 +336,7 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		public bool IsLink {
 			get {
-				return !Link.IsNullOrEmpty || (project != null && !FilePath.IsChildPathOf (project.BaseDirectory));
+				return !Link.IsNullOrEmpty || (Project != null && !FilePath.IsChildPathOf (Project.BaseDirectory));
 			}
 		}
 		
@@ -291,12 +345,11 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		public bool IsExternalToProject {
 			get {
-				return !FilePath.IsChildPathOf (project.BaseDirectory);
+				return !FilePath.IsChildPathOf (Project.BaseDirectory);
 			}
 		}
 
-		[ItemProperty("copyToOutputDirectory", DefaultValue = FileCopyMode.None)]
-		FileCopyMode copyToOutputDirectory;
+		FileCopyMode copyToOutputDirectory = FileCopyMode.None;
 		public FileCopyMode CopyToOutputDirectory {
 			get { return copyToOutputDirectory; }
 			set {
@@ -310,7 +363,7 @@ namespace MonoDevelop.Projects
 		#region File grouping
 		string dependsOn;
 		public string DependsOn {
-			get { return dependsOn; }
+			get { return dependsOn ?? ""; }
 
 			set {
 				if (dependsOn != value) {
@@ -324,8 +377,8 @@ namespace MonoDevelop.Projects
 						dependsOnFile = null;
 					}
 	
-					if (project != null && value != null)
-						project.UpdateDependency (this, oldPath);
+					if (Project != null && value != null)
+						Project.UpdateDependency (this, oldPath);
 	
 					OnChanged ("DependsOn");
 				}
@@ -367,7 +420,7 @@ namespace MonoDevelop.Projects
 
 		internal bool ResolveParent ()
 		{
-			if (dependsOnFile == null && (!string.IsNullOrEmpty (dependsOn) && project != null)) {
+			if (dependsOnFile == null && (!string.IsNullOrEmpty (dependsOn) && Project != null)) {
 				//NOTE also that the dependent files are always assumed to be in the same directory
 				//This matches VS behaviour
 				var parentPath = DependencyPath;
@@ -376,12 +429,12 @@ namespace MonoDevelop.Projects
 				if (parentPath == FilePath) {
 					LoggingService.LogWarning (
 						"Cyclic dependency in project '{0}': file '{1}' depends on '{2}'",
-						project == null ? "(none)" : project.Name, FilePath, parentPath
+						Project == null ? "(none)" : Project.Name, FilePath, parentPath
 					);
 					return true;
 				}
 
-				dependsOnFile = project.Files.GetFile (parentPath);
+				dependsOnFile = Project.Files.GetFile (parentPath);
 				if (dependsOnFile != null) {
 					if (dependsOnFile.dependentChildren == null)
 						dependsOnFile.dependentChildren = new List<ProjectFile> ();
@@ -399,8 +452,9 @@ namespace MonoDevelop.Projects
 		// FIXME: rename this to LogicalName for a better mapping to the MSBuild property
 		public string ResourceId {
 			get {
-				if (BuildAction == MonoDevelop.Projects.BuildAction.EmbeddedResource && string.IsNullOrEmpty (resourceId) && project is DotNetProject)
-					return ((DotNetProject)project).ResourceHandler.GetDefaultResourceId (this);
+				// If the resource id is not set, return the project's default
+				if (BuildAction == MonoDevelop.Projects.BuildAction.EmbeddedResource && string.IsNullOrEmpty (resourceId) && Project is DotNetProject)
+					return ((DotNetProject)Project).GetDefaultResourceId (this);
 
 				return resourceId;
 			}
@@ -414,11 +468,10 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal void SetProject (Project project)
+		protected override void OnProjectSet ()
 		{
-			this.project = project;
-
-			if (project != null)
+			base.OnProjectSet ();
+			if (Project != null)
 				OnVirtualPathChanged (FilePath.Null, ProjectVirtualPath);
 		}
 
@@ -432,9 +485,10 @@ namespace MonoDevelop.Projects
 			ProjectFile pf = (ProjectFile)MemberwiseClone ();
 			pf.dependsOnFile = null;
 			pf.dependentChildren = null;
-			pf.project = null;
+			pf.Project = null;
 			pf.VirtualPathChanged = null;
 			pf.PathChanged = null;
+			pf.BackingItem = null;
 			return pf;
 		}
 
@@ -464,8 +518,8 @@ namespace MonoDevelop.Projects
 
 		protected virtual void OnChanged (string property)
 		{
-			if (project != null)
-				project.NotifyFilePropertyChangedInProject (this, property);
+			if (Project != null)
+				Project.NotifyFilePropertyChangedInProject (this, property);
 		}
 	}
 

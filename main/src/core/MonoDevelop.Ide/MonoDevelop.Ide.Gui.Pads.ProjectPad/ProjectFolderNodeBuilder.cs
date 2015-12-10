@@ -47,9 +47,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		Xwt.Drawing.Image folderOpenIcon;
 		Xwt.Drawing.Image folderClosedIcon;
 		
-		EventHandler<FileCopyEventArgs> fileRenamedHandler;
-		EventHandler<FileEventArgs> fileRemovedHandler;
-		
 		public override Type NodeDataType {
 			get { return typeof(ProjectFolder); }
 		}
@@ -74,17 +71,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 			folderOpenIcon = Context.GetIcon (Stock.OpenFolder);
 			folderClosedIcon = Context.GetIcon (Stock.ClosedFolder);
-			
-			fileRenamedHandler = DispatchService.GuiDispatch<EventHandler<FileCopyEventArgs>> (OnFolderRenamed);
-			fileRemovedHandler = DispatchService.GuiDispatch<EventHandler<FileEventArgs>> (OnFolderRemoved);
 		}
 		
 		public override void OnNodeAdded (object dataObject)
 		{
 			base.OnNodeAdded (dataObject);
 			ProjectFolder folder = (ProjectFolder) dataObject;
-			folder.FolderRenamed += fileRenamedHandler;
-			folder.FolderRemoved += fileRemovedHandler;
+			folder.FolderRenamed += OnFolderRenamed;
+			folder.FolderRemoved += OnFolderRemoved;
 			folder.TrackChanges = true;
 		}
 		
@@ -92,8 +86,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			base.OnNodeRemoved (dataObject);
 			ProjectFolder folder = (ProjectFolder) dataObject;
-			folder.FolderRenamed -= fileRenamedHandler;
-			folder.FolderRemoved -= fileRemovedHandler;
+			folder.FolderRenamed -= OnFolderRenamed;
+			folder.FolderRemoved -= OnFolderRemoved;
 			folder.Dispose ();
 		}
 		
@@ -149,7 +143,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			return ((ProjectFolder)dataObject).Path;
 		}
 		
-		public override void RenameItem (string newName)
+		public async override void RenameItem (string newName)
 		{
 			ProjectFolder folder = (ProjectFolder) CurrentNode.DataItem as ProjectFolder;
 			string oldFoldername = folder.Path;
@@ -174,7 +168,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 					FileService.RenameDirectory (oldFoldername, newName);
 					if (folder.Project != null)
-						IdeApp.ProjectOperations.Save (folder.Project);
+						await IdeApp.ProjectOperations.SaveAsync (folder.Project);
 
 				} catch (System.ArgumentException) { // new file name with wildcard (*, ?) characters in it
 					MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
@@ -186,7 +180,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override void DeleteMultipleItems ()
 		{
-			var projects = new Set<SolutionEntityItem> ();
+			var projects = new Set<SolutionItem> ();
 			var folders = new List<ProjectFolder> ();
 			foreach (ITreeNavigator node in CurrentNodes)
 				folders.Add ((ProjectFolder) node.DataItem);
@@ -273,7 +267,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					}
 				}
 			}
-			IdeApp.ProjectOperations.Save (projects);
+			IdeApp.ProjectOperations.SaveAsync (projects);
 		}
 
 		static void DeleteFolder (ProjectFolder folder)
@@ -299,7 +293,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[AllowMultiSelection]
 		public void IncludeToProject ()
 		{
-			Set<SolutionEntityItem> projects = new Set<SolutionEntityItem> ();
+			Set<SolutionItem> projects = new Set<SolutionItem> ();
 			foreach (ITreeNavigator node in CurrentNodes) {
 				Project project = node.GetParentDataItem (typeof(Project), true) as Project;
 				if (node.HasChildren ()) {
@@ -319,7 +313,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					}
 				}
 			}
-			IdeApp.ProjectOperations.Save (projects);
+			IdeApp.ProjectOperations.SaveAsync (projects);
 		}
 
 		[CommandUpdateHandler (ProjectCommands.IncludeToProject)]

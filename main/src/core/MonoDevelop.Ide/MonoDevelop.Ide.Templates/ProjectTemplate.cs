@@ -46,6 +46,7 @@ using MonoDevelop.Ide.Codons;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -307,17 +308,14 @@ namespace MonoDevelop.Ide.Templates
 		}
 
 		//methods
-		public IAsyncOperation OpenCreatedSolution ()
+		public async Task<bool> OpenCreatedSolution ()
 		{
-			IAsyncOperation asyncOperation = IdeApp.Workspace.OpenWorkspaceItem (createdSolutionName);
-			asyncOperation.Completed += delegate {
-				if (asyncOperation.Success) {
-					foreach (string action in actions) {
-						IdeApp.Workbench.OpenDocument (Path.Combine (createdProjectInformation.ProjectBasePath, action));
-					}
-				}
-			};
-			return asyncOperation;
+			if (await IdeApp.Workspace.OpenWorkspaceItem (createdSolutionName)) {
+				foreach (string action in actions)
+					IdeApp.Workbench.OpenDocument (Path.Combine (createdProjectInformation.ProjectBasePath, action), project:null);
+				return true;
+			}
+			return false;
 		}
 
 		public WorkspaceItem CreateWorkspaceItem (ProjectCreateInformation cInfo)
@@ -340,19 +338,19 @@ namespace MonoDevelop.Ide.Templates
 			return workspaceItemInfo.WorkspaceItem;
 		}
 
-		public IEnumerable<SolutionEntityItem> CreateProjects (SolutionItem policyParent, ProjectCreateInformation cInfo)
+		public IEnumerable<SolutionItem> CreateProjects (SolutionFolderItem policyParent, ProjectCreateInformation cInfo)
 		{
 			if (solutionDescriptor.EntryDescriptors.Length == 0)
 				throw new InvalidOperationException ("Solution template doesn't have any project templates");
 
-			var solutionEntryItems = new List<SolutionEntityItem> ();
+			var solutionEntryItems = new List<SolutionItem> ();
 			packageReferencesForCreatedProjects = new List<PackageReferencesForCreatedProject> ();
 
 			foreach (ISolutionItemDescriptor solutionItemDescriptor in GetItemsToCreate (solutionDescriptor, cInfo)) {
 				ProjectCreateInformation itemCreateInfo = GetItemSpecificCreateInfo (solutionItemDescriptor, cInfo);
 				itemCreateInfo = new ProjectTemplateCreateInformation (itemCreateInfo, cInfo.ProjectName);
 
-				SolutionEntityItem solutionEntryItem = solutionItemDescriptor.CreateItem (itemCreateInfo, this.languagename);
+				SolutionItem solutionEntryItem = solutionItemDescriptor.CreateItem (itemCreateInfo, this.languagename);
 				if (solutionEntryItem != null) {
 					solutionItemDescriptor.InitializeItem (policyParent, itemCreateInfo, this.languagename, solutionEntryItem);
 
@@ -396,7 +394,7 @@ namespace MonoDevelop.Ide.Templates
 			return cInfo;
 		}
 
-		void SavePackageReferences (SolutionEntityItem solutionEntryItem, ISolutionItemDescriptor descriptor, ProjectCreateInformation cInfo)
+		void SavePackageReferences (SolutionItem solutionEntryItem, ISolutionItemDescriptor descriptor, ProjectCreateInformation cInfo)
 		{
 			if ((solutionEntryItem is Project) && (descriptor is ProjectDescriptor)) {
 				var projectPackageReferences = new PackageReferencesForCreatedProject (((Project)solutionEntryItem).Name, ((ProjectDescriptor)descriptor).GetPackageReferences (cInfo));
@@ -439,9 +437,8 @@ namespace MonoDevelop.Ide.Templates
 			//Template can match all CodeDom .NET languages with a "*"
 			if (list.Contains ("*")) {
 				foreach (var lb in LanguageBindingService.LanguageBindings) {
-					IDotNetLanguageBinding dnlang = lb as IDotNetLanguageBinding;
-					if (dnlang != null && dnlang.GetCodeDomProvider () != null)
-						list.Add (dnlang.Language);
+					if (lb.GetCodeDomProvider () != null)
+						list.Add (lb.Language);
 					list.Remove ("*");
 				}
 			}

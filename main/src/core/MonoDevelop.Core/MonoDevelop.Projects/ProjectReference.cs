@@ -37,6 +37,7 @@ using System.ComponentModel;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -52,7 +53,6 @@ namespace MonoDevelop.Projects
 	/// <summary>
 	/// This class represent a reference information in an Project object.
 	/// </summary>
-	[DataItem (FallbackType=typeof(UnknownProjectReference))]
 	public class ProjectReference : ProjectItem, ICloneable
 	{
 		ReferenceType referenceType = ReferenceType.Custom;
@@ -73,18 +73,21 @@ namespace MonoDevelop.Projects
 		string package;
 		SystemPackage cachedPackage;
 		string customError;
-		string hintPath;
-		
+		FilePath hintPath;
+		bool hasBeenRead;
+
+		string originalMSBuildReferenceHintPath;
+
 		public event EventHandler StatusChanged;
 		
-		[ItemProperty ("Package", DefaultValue="")]
+		[ItemProperty ("Package", DefaultValue=null)]
 		internal string packageName {
 			get {
 				SystemPackage sp = Package;
 				if (sp != null && !sp.IsGacPackage)
 					return sp.Name;
 				else
-					return string.Empty;
+					return null;
 			}
 			set {
 				package = value;
@@ -100,12 +103,73 @@ namespace MonoDevelop.Projects
 			ownerProject = project;
 			UpdatePackageReference ();
 		}
+
+		public sealed override string Include {
+			get {
+				if (referenceType == ReferenceType.Project && OwnerProject != null) {
+					Project refProj = OwnerProject != null && OwnerProject.ParentSolution != null ? OwnerProject.ParentSolution.FindProjectByName (Reference) : null;
+					if (refProj != null)
+						return MSBuildProjectService.ToMSBuildPath (OwnerProject.ItemDirectory, refProj.FileName);
+					else
+						return Reference;
+				}
+				return base.Include;
+			}
+			protected set { base.Include = value; }
+		}
 		
-		public ProjectReference (ReferenceType referenceType, string reference): this (referenceType, reference, null)
+		ProjectReference (ReferenceType referenceType, string reference, string hintPath)
 		{
+			Init (referenceType, reference, hintPath);
+		}
+		
+		ProjectReference (Project referencedProject)
+		{
+			Init (ReferenceType.Project, referencedProject.Name, null);
+			specificVersion = true;
 		}
 
-		public ProjectReference (ReferenceType referenceType, string reference, string hintPath)
+		ProjectReference (SystemAssembly asm)
+		{
+			Init (ReferenceType.Package, asm.FullName, null);
+			if (asm.Package.IsFrameworkPackage)
+				specificVersion = false;
+			if (!asm.Package.IsGacPackage)
+				package = asm.Package.Name;
+			UpdatePackageReference ();
+		}
+
+		public static ProjectReference CreateCustomReference (ReferenceType referenceType, string reference, string hintPath = null)
+		{
+			return new ProjectReference (referenceType, reference, hintPath);
+		}
+
+		public static ProjectReference CreateAssemblyReference (SystemAssembly asm)
+		{
+			return new ProjectReference (asm);
+		}
+
+		public static ProjectReference CreateAssemblyReference (string assemblyName, string hintPath = null)
+		{
+			return new ProjectReference (ReferenceType.Package, assemblyName, hintPath);
+		}
+
+		public static ProjectReference CreateAssemblyFileReference (FilePath path)
+		{
+			return new ProjectReference (ReferenceType.Assembly, path, null);
+		}
+
+		public static ProjectReference CreateProjectReference (Project project)
+		{
+			return new ProjectReference (project);
+		}
+
+		public static ProjectReference CreateProjectReference (FilePath projectFile)
+		{
+			return new ProjectReference (ReferenceType.Project, projectFile.FileNameWithoutExtension, null);
+		}
+
+		void Init (ReferenceType referenceType, string reference, string hintPath)
 		{
 			if (referenceType == ReferenceType.Assembly) {
 				specificVersion = false;
@@ -113,32 +177,156 @@ namespace MonoDevelop.Projects
 					hintPath = reference;
 					reference = Path.GetFileNameWithoutExtension (reference);
 				}
+
+				if (Include == null) {
+					if (File.Exists (HintPath)) {
+						try {
+							var aname = System.Reflection.AssemblyName.GetAssemblyName (HintPath);
+							if (SpecificVersion) {
+								Include = aname.FullName;
+							} else {
+								Include = aname.Name;
+							}
+						} catch (Exception ex) {
+							string msg = string.Format ("Could not get full name for assembly '{0}'.", Reference);
+							LoggingService.LogError (msg, ex);
+						}
+					}
+					if (Include == null)
+						Include = Path.GetFileNameWithoutExtension (hintPath);
+				}
+			}
+
+			switch (referenceType) {
+			case ReferenceType.Package: 
+			case ReferenceType.Assembly: 
+				ItemName = "Reference";
+				break;
+			case ReferenceType.Project:
+				ItemName = "ProjectReference";
+				break;
 			}
 
 			this.referenceType = referenceType;
 			this.reference = reference;
 			this.hintPath = hintPath;
 			UpdatePackageReference ();
+
+			if (Include == null)
+				Include = reference;
 		}
-		
-		public ProjectReference (Project referencedProject)
+
+		internal protected override void Read (Project project, IMSBuildItemEvaluated buildItem)
 		{
-			referenceType = ReferenceType.Project;
-			reference = referencedProject.Name;
-			specificVersion = true;
+			base.Read (project, buildItem);
+
+			if (buildItem.Name == "Reference")
+				ReadReference (project, buildItem);
+			else if (buildItem.Name == "ProjectReference")
+				ReadProjectReference (project, buildItem);
+
+			LocalCopy = buildItem.Metadata.GetValue ("Private", DefaultLocalCopy);
+			ReferenceOutputAssembly = buildItem.Metadata.GetValue ("ReferenceOutputAssembly", true);
 		}
-		
-		public ProjectReference (SystemAssembly asm)
+
+		void ReadReference (Project project, IMSBuildItemEvaluated buildItem)
 		{
-			referenceType = ReferenceType.Package;
-			reference = asm.FullName;
-			if (asm.Package.IsFrameworkPackage)
-				specificVersion = false;
-			if (!asm.Package.IsGacPackage)
-				package = asm.Package.Name;
-			UpdatePackageReference ();
+			if (buildItem.Metadata.HasProperty ("HintPath")) {
+				FilePath path;
+				var p = buildItem.Metadata.GetProperty ("HintPath");
+				if (p != null)
+					originalMSBuildReferenceHintPath = p.UnevaluatedValue;
+				if (!buildItem.Metadata.TryGetPathValue ("HintPath", out path)) {
+					var hp = buildItem.Metadata.GetValue ("HintPath");
+					Init (ReferenceType.Assembly, hp, null);
+					SetInvalid (GettextCatalog.GetString ("Invalid file path"));
+				} else {
+					var type = File.Exists (path) ? ReferenceType.Assembly : ReferenceType.Package;
+					Init (type, buildItem.Include, path);
+				}
+			} else {
+				string asm = buildItem.Include;
+				// This is a workaround for a VS bug. Looks like it is writing this assembly incorrectly
+				if (asm == "System.configuration")
+					asm = "System.Configuration";
+				else if (asm == "System.XML")
+					asm = "System.Xml";
+				else if (asm == "system")
+					asm = "System";
+				Init (ReferenceType.Package, asm, null);
+			}
+
+			string specificVersion = buildItem.Metadata.GetValue ("SpecificVersion");
+			if (string.IsNullOrWhiteSpace (specificVersion)) {
+				// If the SpecificVersion element isn't present, check if the Assembly Reference specifies a Version
+				SpecificVersion = ReferenceStringHasVersion (buildItem.Include);
+			}
+			else {
+				bool value;
+				// if we can't parse the value, default to false which is more permissive
+				SpecificVersion = bool.TryParse (specificVersion, out value) && value;
+			}
+			hasBeenRead = true;
 		}
-		
+
+		void ReadProjectReference (Project project, IMSBuildItemEvaluated buildItem)
+		{
+			// Get the project name from the path, since the Name attribute may other stuff other than the name
+			string path = MSBuildProjectService.FromMSBuildPath (project.ItemDirectory, buildItem.Include);
+			string name = buildItem.Metadata.GetValue ("Name", Path.GetFileNameWithoutExtension (path));
+			Init (ReferenceType.Project, name, null);
+		}
+
+		internal protected override void Write (Project project, MSBuildItem buildItem)
+		{
+			// If the project is not supported, don't try to update any metadata of the property,
+			// just leave what was read
+			if (OwnerProject.IsUnsupportedProject)
+				return;
+
+			base.Write (project, buildItem);
+
+			if (ReferenceType == ReferenceType.Assembly) {
+				if (!hasBeenRead && !HintPath.IsNullOrEmpty)
+					buildItem.Metadata.SetValue ("HintPath", HintPath);
+
+				buildItem.Metadata.SetValue ("SpecificVersion", SpecificVersion || !ReferenceStringHasVersion (Include), true);
+			}
+			else if (ReferenceType == ReferenceType.Package) {
+				buildItem.Metadata.SetValue ("SpecificVersion", SpecificVersion || !ReferenceStringHasVersion (Include), true);
+
+				//RequiredTargetFramework is undocumented, maybe only a hint for VS. Only seems to be used for .NETFramework
+				var dnp = OwnerProject as DotNetProject;
+				IList supportedFrameworks = project.FileFormat.SupportedFrameworks;
+				if (supportedFrameworks != null && dnp != null && Package != null
+					&& dnp.TargetFramework.Id.Identifier == TargetFrameworkMoniker.ID_NET_FRAMEWORK
+					&& Package.IsFrameworkPackage && supportedFrameworks.Contains (Package.TargetFramework)
+					&& Package.TargetFramework.Version != "2.0" && supportedFrameworks.Count > 1)
+				{
+					TargetFramework fx = Runtime.SystemAssemblyService.GetTargetFramework (Package.TargetFramework);
+					buildItem.Metadata.SetValue ("RequiredTargetFramework", fx.Id.Version);
+				} else {
+					buildItem.Metadata.RemoveProperty ("RequiredTargetFramework");
+				}
+			}
+			else if (ReferenceType == ReferenceType.Project) {
+				Project refProj = OwnerProject.ParentSolution != null ? OwnerProject.ParentSolution.FindProjectByName (Reference) : null;
+				if (refProj != null) {
+					buildItem.Metadata.SetValue ("Project", refProj.ItemId, preserveExistingCase:true);
+					buildItem.Metadata.SetValue ("Name", refProj.Name);
+					buildItem.Metadata.SetValue ("ReferenceOutputAssembly", ReferenceOutputAssembly, true);
+				}
+			}
+
+			buildItem.Metadata.SetValue ("Private", LocalCopy, DefaultLocalCopy);
+		}
+
+		bool ReferenceStringHasVersion (string asmName)
+		{
+			int commaPos = asmName.IndexOf (',');
+			return commaPos >= 0 && asmName.IndexOf ("Version", commaPos) >= 0;
+		}
+
 		protected void InitCustomReference (string reference)
 		{
 			Reference = reference;
@@ -149,6 +337,7 @@ namespace MonoDevelop.Projects
 		{
 			ProjectReference newRef = (ProjectReference) pref.MemberwiseClone ();
 			newRef.reference = newReference;
+			newRef.Include = newReference;
 			return newRef;
 		}
 		
@@ -267,8 +456,7 @@ namespace MonoDevelop.Projects
 					if (notFound) {
 						if (ownerProject != null) {
 							bool isDefaultRuntime = Runtime.SystemAssemblyService.DefaultRuntime == TargetRuntime;
-							var hintPath = ExtendedProperties ["_OriginalMSBuildReferenceHintPath"] as string;
-							bool probablyFrameworkAssembly = string.IsNullOrEmpty (hintPath);
+							bool probablyFrameworkAssembly = string.IsNullOrEmpty (originalMSBuildReferenceHintPath);
 
 							if (TargetRuntime.IsInstalled (TargetFramework) || !probablyFrameworkAssembly) {
 								if (isDefaultRuntime)
@@ -318,7 +506,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public string HintPath {
+		public FilePath HintPath {
 			get { return hintPath; }
 		}
 		
@@ -345,12 +533,14 @@ namespace MonoDevelop.Projects
 				if (!string.IsNullOrEmpty (hintPath) && File.Exists (hintPath)) {
 					var res = (ProjectReference) MemberwiseClone ();
 					res.referenceType = ReferenceType.Assembly;
+					res.Project = null;
 					return res;
 				}
 			} else if (ReferenceType == ReferenceType.Assembly) {
 				if (!string.IsNullOrEmpty (hintPath) && !File.Exists (hintPath)) {
 					var res = (ProjectReference) MemberwiseClone ();
 					res.referenceType = ReferenceType.Package;
+					res.Project = null;
 					return res;
 				}
 			}
@@ -435,6 +625,14 @@ namespace MonoDevelop.Projects
 					reference = cref;
 				}
 				cachedPackage = null;
+
+				SystemPackage pkg = Package;
+				if (pkg != null && pkg.IsFrameworkPackage) {
+					int i = Include.IndexOf (',');
+					if (i != -1)
+						Include = Include.Substring (0, i).Trim ();
+				}
+
 				OnStatusChanged ();
 			}
 		}
@@ -472,7 +670,7 @@ namespace MonoDevelop.Projects
 					if (cachedPackage != null)
 						return cachedPackage;
 					
-					if (package != null)
+					if (!string.IsNullOrEmpty (package))
 						return AssemblyContext.GetPackage (package);
 
 					// No package is specified, get any of the registered assemblies, giving priority to gaced assemblies

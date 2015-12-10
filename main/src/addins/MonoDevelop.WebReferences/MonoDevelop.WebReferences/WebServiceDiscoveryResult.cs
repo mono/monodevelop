@@ -128,7 +128,7 @@ namespace MonoDevelop.WebReferences
 				string targetName = project.TargetRuntime.AssemblyContext.GetAssemblyNameForVersion (refName, null, project.TargetFramework);
 				//FIXME: warn when we could not find a matching target assembly
 				if (targetName != null) {
-					packageRef = new ProjectReference (ReferenceType.Package, targetName);
+					packageRef = ProjectReference.CreateAssemblyReference (targetName);
 					if (!project.References.Contains (packageRef))
 						project.References.Add (packageRef);
 				}

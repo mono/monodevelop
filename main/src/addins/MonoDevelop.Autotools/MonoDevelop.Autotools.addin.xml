@@ -23,9 +23,10 @@
 		<NodeBuilder id = "AutotoolNodeExtension" class = "MonoDevelop.Autotools.NodeExtension"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
 		<Condition id="Platform" value="!windows">
-			<Class class = "MonoDevelop.Autotools.MakefileProjectServiceExtension" id="MakefileProjectServiceExtension" insertafter="FinalStep"/>
+			<Class class = "MonoDevelop.Autotools.MakefileProjectServiceExtension" insertafter="FinalStep"/>
+			<Class class = "MonoDevelop.Autotools.MakefileProjectExtension" insertafter="FinalStep"/>
 		</Condition>
 	</Extension>
 
@@ -97,11 +98,6 @@
 					class = "MonoDevelop.Autotools.MakefileOptionPanel" />
 			</Condition>
 		</Condition>
-	</Extension>
-
-	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
-		<ItemProperty class = "MonoDevelop.Projects.Project"
-			name = "MonoDevelop.Autotools.MakefileInfo" type = "MonoDevelop.Autotools.MakefileData" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/DesignerSupport/PropertyProviders">

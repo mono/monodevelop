@@ -33,11 +33,11 @@ namespace MonoDevelop.Ide.Tasks
 {
 	public class CommentTasksChangedEventArgs : EventArgs
 	{
-		string filename;
-		IList<Tag> tagComments;
-		Project project;
+		readonly string filename;
+		readonly IReadOnlyList<Tag> tagComments;
+		readonly Project project;
 		
-		public CommentTasksChangedEventArgs (string filename, IList<Tag> tagComments, Project project)
+		public CommentTasksChangedEventArgs (string filename, IReadOnlyList<Tag> tagComments, Project project)
 		{
 			this.filename = filename;
 			this.tagComments = tagComments;
@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Tasks
 		
 		public string FileName { get { return filename; } }
 
-		public IList<Tag> TagComments { get { return tagComments; } }
+		public IReadOnlyList<Tag> TagComments { get { return tagComments; } }
 
 		public Project Project { get { return project; } }
 	}

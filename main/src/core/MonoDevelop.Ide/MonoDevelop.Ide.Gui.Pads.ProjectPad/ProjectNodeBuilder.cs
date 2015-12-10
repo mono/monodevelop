@@ -45,13 +45,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	class ProjectNodeBuilder: FolderNodeBuilder
 	{
-		ProjectFileEventHandler fileAddedHandler;
-		ProjectFileEventHandler fileRemovedHandler;
-		ProjectFileRenamedEventHandler fileRenamedHandler;
-		ProjectFileEventHandler filePropertyChangedHandler;
-		SolutionItemModifiedEventHandler projectChanged;
-		EventHandler<FileEventArgs> deletedHandler;
-
 		public override Type NodeDataType {
 			get { return typeof(Project); }
 		}
@@ -62,43 +55,36 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		protected override void Initialize ()
 		{
-			fileAddedHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (OnAddFile));
-			fileRemovedHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (OnRemoveFile));
-			filePropertyChangedHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (OnFilePropertyChanged));
-			fileRenamedHandler = (ProjectFileRenamedEventHandler) DispatchService.GuiDispatch (new ProjectFileRenamedEventHandler (OnRenameFile));
-			projectChanged = (SolutionItemModifiedEventHandler) DispatchService.GuiDispatch (new SolutionItemModifiedEventHandler (OnProjectModified));
-			deletedHandler = (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (OnSystemFileDeleted));
-
-			IdeApp.Workspace.FileAddedToProject += fileAddedHandler;
-			IdeApp.Workspace.FileRemovedFromProject += fileRemovedHandler;
-			IdeApp.Workspace.FileRenamedInProject += fileRenamedHandler;
-			IdeApp.Workspace.FilePropertyChangedInProject += filePropertyChangedHandler;
+			IdeApp.Workspace.FileAddedToProject += OnAddFile;
+			IdeApp.Workspace.FileRemovedFromProject += OnRemoveFile;
+			IdeApp.Workspace.FileRenamedInProject += OnRenameFile;
+			IdeApp.Workspace.FilePropertyChangedInProject += OnFilePropertyChanged;
 			IdeApp.Workspace.ActiveConfigurationChanged += IdeAppWorkspaceActiveConfigurationChanged;
-			FileService.FileRemoved += deletedHandler;
+			FileService.FileRemoved += OnSystemFileDeleted;
 		}
 
 		public override void Dispose ()
 		{
-			IdeApp.Workspace.FileAddedToProject -= fileAddedHandler;
-			IdeApp.Workspace.FileRemovedFromProject -= fileRemovedHandler;
-			IdeApp.Workspace.FileRenamedInProject -= fileRenamedHandler;
-			IdeApp.Workspace.FilePropertyChangedInProject -= filePropertyChangedHandler;
+			IdeApp.Workspace.FileAddedToProject -= OnAddFile;
+			IdeApp.Workspace.FileRemovedFromProject -= OnRemoveFile;
+			IdeApp.Workspace.FileRenamedInProject -= OnRenameFile;
+			IdeApp.Workspace.FilePropertyChangedInProject -= OnFilePropertyChanged;
 			IdeApp.Workspace.ActiveConfigurationChanged -= IdeAppWorkspaceActiveConfigurationChanged;
-			FileService.FileRemoved -= deletedHandler;
+			FileService.FileRemoved -= OnSystemFileDeleted;
 		}
 
 		public override void OnNodeAdded (object dataObject)
 		{
 			base.OnNodeAdded (dataObject);
 			Project project = (Project) dataObject;
-			project.Modified += projectChanged;
+			project.Modified += OnProjectModified;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
 			base.OnNodeRemoved (dataObject);
 			Project project = (Project) dataObject;
-			project.Modified -= projectChanged;
+			project.Modified -= OnProjectModified;
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
@@ -129,7 +115,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			} else if (p is UnknownProject) {
 				var up = (UnknownProject)p;
 				nodeInfo.StatusSeverity = TaskSeverity.Warning;
-				nodeInfo.StatusMessage = up.LoadError.TrimEnd ('.');
+				nodeInfo.StatusMessage = up.UnsupportedProjectMessage.TrimEnd ('.');
 				nodeInfo.Label = escapedProjectName;
 				nodeInfo.DisabledStyle = true;
 				nodeInfo.Icon = Context.GetIcon (p.StockIcon);
@@ -177,7 +163,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override object GetParentObject (object dataObject)
 		{
-			SolutionItem it = (SolutionItem) dataObject;
+			SolutionFolderItem it = (SolutionFolderItem) dataObject;
 			if (it.ParentFolder == null)
 				return null;
 			
@@ -394,23 +380,19 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void UpdateSetAsStartupProject (CommandInfo ci)
 		{
 			Project project = (Project) CurrentNode.DataItem;
-
-			// This should check for SupportsExecute only, but we keep the call to CanExecute in order to
-			// be backwards compatible with the old behavior.
-			// TODO NPM: Remove the CanExecute call
-			ci.Visible = project.SupportsExecute () || project.CanExecute (new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, null, IdeApp.Workspace.ActiveExecutionTarget), IdeApp.Workspace.ActiveConfiguration);
+			ci.Visible = project.SupportsExecute ();
 		}
 
 		[CommandHandler (ProjectCommands.SetAsStartupProject)]
-		public void SetAsStartupProject ()
+		public async void SetAsStartupProject ()
 		{
 			Project project = CurrentNode.DataItem as Project;
 			project.ParentSolution.StartupItem = project;
 			if (!project.ParentSolution.SingleStartup) {
 				project.ParentSolution.SingleStartup = true;
-				IdeApp.ProjectOperations.Save (project.ParentSolution);
+				await IdeApp.ProjectOperations.SaveAsync (project.ParentSolution);
 			} else
-				project.ParentSolution.SaveUserProperties ();
+				await project.ParentSolution.SaveUserProperties ();
 		}
 		
 		public override void DeleteItem ()
@@ -420,11 +402,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		[CommandHandler (ProjectCommands.AddReference)]
-		public void AddReferenceToProject ()
+		public async void AddReferenceToProject ()
 		{
 			DotNetProject p = (DotNetProject) CurrentNode.DataItem;
 			if (IdeApp.ProjectOperations.AddReferenceToProject (p))
-				IdeApp.ProjectOperations.Save (p);
+				await IdeApp.ProjectOperations.SaveAsync (p);
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.AddReference)]
@@ -437,7 +419,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[AllowMultiSelection]
 		public void OnReload ()
 		{
-			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
+			using (ProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
 				m.BeginTask (null, CurrentNodes.Length);
 				foreach (ITreeNavigator nav in CurrentNodes) {
 					Project p = (Project) nav.DataItem;
@@ -462,21 +444,21 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 		[CommandHandler (ProjectCommands.Unload)]
 		[AllowMultiSelection]
-		public void OnUnload ()
+		public async void OnUnload ()
 		{
 			HashSet<Solution> solutions = new HashSet<Solution> ();
-			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
+			using (ProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
 				m.BeginTask (null, CurrentNodes.Length);
 				foreach (ITreeNavigator nav in CurrentNodes) {
 					Project p = (Project) nav.DataItem;
 					p.Enabled = false;
-					p.ParentFolder.ReloadItem (m, p);
-					m.Step (1);
 					solutions.Add (p.ParentSolution);
+					await p.ParentFolder.ReloadItem (m, p);
+					m.Step (1);
 				}
 				m.EndTask ();
 			}
-			IdeApp.ProjectOperations.Save (solutions);
+			await IdeApp.ProjectOperations.SaveAsync (solutions);
 		}
 
 		[CommandUpdateHandler (ProjectCommands.Unload)]

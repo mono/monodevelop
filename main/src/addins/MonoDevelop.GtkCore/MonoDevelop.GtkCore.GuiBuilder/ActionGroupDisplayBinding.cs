@@ -35,8 +35,16 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.GtkCore.Dialogs;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using System.Linq;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using ICSharpCode.NRefactory6.CSharp.Completion;
+using ICSharpCode.NRefactory6.CSharp;
+using System.Linq;
+using MonoDevelop.CSharp.Refactoring;
+using MonoDevelop.Refactoring;
 
 
 namespace MonoDevelop.GtkCore.GuiBuilder
@@ -53,7 +61,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			get { return true; }
 		}
 		
-		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
+		public bool CanHandle (FilePath fileName, string mimeType, MonoDevelop.Projects.Project ownerProject)
 		{
 			if (excludeThis)
 				return false;
@@ -73,7 +81,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return db != null;
 		}
 		
-		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
+		public IViewContent CreateContent (FilePath fileName, string mimeType, MonoDevelop.Projects.Project ownerProject)
 		{
 			excludeThis = true;
 			var db = DisplayBindingService.GetDefaultViewBinding (fileName, mimeType, ownerProject);
@@ -87,14 +95,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		Stetic.ActionGroupInfo GetActionGroup (string file)
 		{
-			Project project = IdeApp.Workspace.GetProjectContainingFile (file);
+			var project = IdeApp.Workspace.GetProjectsContainingFile (file).FirstOrDefault ();
 			if (!GtkDesignInfo.HasDesignedObjects (project))
 				return null;
 				
 			return GtkDesignInfo.FromProject (project).GuiBuilderProject.GetActionGroupForFile (file);
 		}
 		
-		internal static string BindToClass (Project project, Stetic.ActionGroupInfo group)
+		internal static string BindToClass (MonoDevelop.Projects.Project project, Stetic.ActionGroupInfo group)
 		{
 			GuiBuilderProject gproject = GtkDesignInfo.FromProject (project).GuiBuilderProject;
 			string file = gproject.GetSourceCodeFile (group);
@@ -105,9 +113,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			ArrayList list = new ArrayList ();
 			var ctx = gproject.GetParserContext ();
-			foreach (var cls in ctx.MainAssembly.GetAllTypeDefinitions ())
+			foreach (var cls in ctx.GetAllTypesInMainAssembly ())
 				if (IsValidClass (cls))
-					list.Add (cls.FullName);
+					list.Add (cls.GetFullName ());
 		
 			// Ask what to do
 			
@@ -124,44 +132,63 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return gproject.GetSourceCodeFile (group);
 		}
 		
-		static IUnresolvedTypeDefinition CreateClass (Project project, Stetic.ActionGroupComponent group, string name, string namspace, string folder)
+		static ITypeSymbol CreateClass (MonoDevelop.Projects.Project project, Stetic.ActionGroupComponent group, string name, string namspace, string folder)
 		{
 			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
 			
-			var type = new CodeTypeDeclaration ();
-			type.Name = name;
-			type.IsClass = true;
-			type.BaseTypes.Add (new CodeTypeReference ("Gtk.ActionGroup"));
+			var type = SyntaxFactory.ClassDeclaration (name)
+				.AddBaseListTypes (SyntaxFactory.SimpleBaseType (SyntaxFactory.ParseTypeName ("Gtk.ActionGroup")));
 			
 			// Generate the constructor. It contains the call that builds the widget.
+			var members = new SyntaxList<MemberDeclarationSyntax> ();
 			
-			var ctor = new CodeConstructor ();
-			ctor.Attributes = MemberAttributes.Public | MemberAttributes.Final;
-			ctor.BaseConstructorArgs.Add (new CodePrimitiveExpression (fullName));
-			
-			var call = new CodeMethodInvokeExpression (
-				new CodeMethodReferenceExpression (
-					new CodeTypeReferenceExpression ("Stetic.Gui"),
-					"Build"
-				),
-				new CodeThisReferenceExpression (),
-				new CodeTypeOfExpression (fullName)
+			var ctor = SyntaxFactory.ConstructorDeclaration (
+				new SyntaxList<AttributeListSyntax> (),
+				SyntaxFactory.TokenList (SyntaxFactory.Token (SyntaxKind.PublicKeyword)),
+				SyntaxFactory.Identifier (name),
+				SyntaxFactory.ParameterList (),
+				SyntaxFactory.ConstructorInitializer (SyntaxKind.BaseKeyword, SyntaxFactory.ArgumentList (new SeparatedSyntaxList<ArgumentSyntax> { SyntaxFactory.Argument (SyntaxFactory.ParseExpression (fullName)) } )),
+				SyntaxFactory.Block (
+					SyntaxFactory.ExpressionStatement (
+						SyntaxFactory.InvocationExpression (
+							SyntaxFactory.ParseExpression ("Stetic.Gui.Build"),
+							SyntaxFactory.ArgumentList (
+								new SeparatedSyntaxList<ArgumentSyntax> {
+									SyntaxFactory.Argument (SyntaxFactory.ThisExpression ()),
+									SyntaxFactory.Argument (SyntaxFactory.ParseExpression (fullName))
+								}
+							)
+						) 
+					)
+				)
 			);
-			ctor.Statements.Add (call);
-			type.Members.Add (ctor);
+			
+			type = type.AddMembers (ctor);
 			
 			// Add signal handlers
 			foreach (Stetic.ActionComponent action in group.GetActions ()) {
 				foreach (Stetic.Signal signal in action.GetSignals ()) {
-					CodeMemberMethod met = new CodeMemberMethod ();
-					met.Name = signal.Handler;
-					met.Attributes = MemberAttributes.Family;
-					met.ReturnType = new CodeTypeReference (signal.SignalDescriptor.HandlerReturnTypeName);
 					
-					foreach (Stetic.ParameterDescriptor pinfo in signal.SignalDescriptor.HandlerParameters)
-						met.Parameters.Add (new CodeParameterDeclarationExpression (pinfo.TypeName, pinfo.Name));
+					var parameters = new SeparatedSyntaxList<ParameterSyntax> ();
+					foreach (var p in signal.SignalDescriptor.HandlerParameters) {
+						parameters = parameters.Add (SyntaxFactory.Parameter (new SyntaxList<AttributeListSyntax> (), SyntaxFactory.TokenList (), SyntaxFactory.ParseTypeName (p.TypeName), SyntaxFactory.Identifier (p.Name), null)); 
+					}
+					
+					var met = SyntaxFactory.MethodDeclaration (
+				          new SyntaxList<AttributeListSyntax> (),
+				          SyntaxFactory.TokenList (SyntaxFactory.Token (SyntaxKind.ProtectedKeyword)),
+				          SyntaxFactory.ParseTypeName (signal.SignalDescriptor.HandlerReturnTypeName),
+				          null,
+				          SyntaxFactory.Identifier (signal.Handler),
+				          null,
+				          SyntaxFactory.ParameterList (parameters),
+				          new SyntaxList<TypeParameterConstraintClauseSyntax> (),
+				          SyntaxFactory.Block (),
+				          null
+			          );
+					
 						
-					type.Members.Add (met);
+					type = type.AddMembers (met);
 				}
 			}
 			
@@ -169,17 +196,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return CodeGenerationService.AddType ((DotNetProject)project, folder, namspace, type);
 		}
 		
-		internal static bool IsValidClass (IType cls)
+		internal static bool IsValidClass (ITypeSymbol cls)
 		{
-			foreach (var bt in cls.DirectBaseTypes) {
-				if (bt.ReflectionName == "Gtk.ActionGroup")
-					return true;
-				
-				var baseCls = bt;
-				if (baseCls != null && IsValidClass (baseCls))
-					return true;
-			}
-			return false;
+			if (cls.SpecialType == SpecialType.System_Object)
+				return false;
+			if (cls.BaseType.GetFullName () == "Gtk.ActionGroup")
+				return true;
+			return IsValidClass (cls.BaseType);
 		}
 	}
 }

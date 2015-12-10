@@ -12,6 +12,7 @@
     <WarningLevel>4</WarningLevel>
     <DebugSymbols>True</DebugSymbols>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <LangVersion>Default</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
   </PropertyGroup>
@@ -26,8 +27,8 @@
     <Optimize>True</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <DebugSymbols>false</DebugSymbols>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <LangVersion>5</LangVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

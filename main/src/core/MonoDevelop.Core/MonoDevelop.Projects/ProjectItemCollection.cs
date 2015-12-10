@@ -37,7 +37,7 @@ namespace MonoDevelop.Projects
 		{
 		}
 		
-		internal ProjectItemCollection (SolutionEntityItem parent): base (parent)
+		internal ProjectItemCollection (Project parent): base (parent)
 		{
 		}
 	}
@@ -51,11 +51,11 @@ namespace MonoDevelop.Projects
 	
 	public class ProjectItemCollection<T>: ItemCollection<T>, IItemListHandler where T: ProjectItem
 	{
-		SolutionEntityItem parent;
+		SolutionItem parent;
 		IItemListHandler parentCollection;
 		List<IItemListHandler> subCollections;
 		
-		internal ProjectItemCollection (SolutionEntityItem parent)
+		internal ProjectItemCollection (Project parent)
 		{
 			this.parent = parent;
 		}
@@ -64,34 +64,9 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		protected virtual void AddItem (T item)
-		{
-			Items.Add (item);
-		}
-		
-		public void AddRange (IEnumerable<T> items)
-		{
-			foreach (var item in items)
-				AddItem (item);
-			NotifyAdded (items, false);
-			NotifyAdded (items, true);
-		}
-
-		protected virtual void RemoveItem (T item)
-		{
-			Items.Remove (item);
-		}
-		
-		public void RemoveRange (IEnumerable<T> items)
-		{
-			foreach (var item in items)
-				RemoveItem (item);
-			NotifyRemoved (items, false);
-			NotifyRemoved (items, true);
-		}
-		
 		public void Bind<U> (ProjectItemCollection<U> subCollection) where U:T
 		{
+			AssertCanWrite ();
 			if (subCollections == null)
 				subCollections = new List<IItemListHandler> ();
 			subCollections.Add (subCollection);
@@ -116,33 +91,43 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		protected override void OnItemAdded (T item)
+		protected override void OnItemsAdded (IEnumerable<T> items)
 		{
-			var items = new T [] { item };
-			NotifyAdded (items, true);
-			NotifyAdded (items, false);
+			if (!ignoreChangeEvents) {
+				NotifyAdded (items, true);
+				NotifyAdded (items, false);
+			}
 		}
 		
-		protected override void OnItemRemoved (T item)
+		protected override void OnItemsRemoved (IEnumerable<T> items)
 		{
-			var items = new T [] { item };
-			NotifyRemoved (items, true);
-			NotifyRemoved (items, false);
+			if (!ignoreChangeEvents) {
+				NotifyRemoved (items, true);
+				NotifyRemoved (items, false);
+			}
 		}
-		
+
+		bool ignoreChangeEvents;
+
 		void IItemListHandler.InternalAdd (IEnumerable<ProjectItem> items, bool comesFromParent)
 		{
-			foreach (var item in items)
-				AddItem ((T) item);
-
+			try {
+				ignoreChangeEvents = true;
+				AddRange (items.Cast<T> ());
+			} finally {
+				ignoreChangeEvents = false;
+			}
 			NotifyAdded (items, comesFromParent);
 		}
 		
 		void IItemListHandler.InternalRemove (IEnumerable<ProjectItem> items, bool comesFromParent)
 		{
-			foreach (var item in items)
-				RemoveItem ((T) item);
-
+			try {
+				ignoreChangeEvents = true;
+				RemoveRange (items.Cast<T> ());
+			} finally {
+				ignoreChangeEvents = false;
+			}
 			NotifyRemoved (items, comesFromParent);
 		}
 		

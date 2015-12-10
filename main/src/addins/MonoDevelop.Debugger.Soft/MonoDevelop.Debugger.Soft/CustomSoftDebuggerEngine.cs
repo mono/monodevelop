@@ -103,7 +103,7 @@ namespace MonoDevelop.Debugger.Soft
 		
 		class CustomSoftDebuggerSession : SoftDebuggerSession
 		{
-			IProcessAsyncOperation process;
+			ProcessAsyncOperation process;
 			bool usingExternalConsole;
 			
 			protected override void OnRun (DebuggerStartInfo startInfo)
@@ -133,8 +133,7 @@ namespace MonoDevelop.Debugger.Soft
 					usingExternalConsole = true;
 					var console = ExternalConsoleFactory.Instance.CreateConsole (info.CloseExternalConsoleOnExit);
 					process = Runtime.ProcessService.StartConsoleProcess (
-						info.Command, info.Arguments, info.WorkingDirectory, info.EnvironmentVariables,
-						console, null);
+						info.Command, info.Arguments, info.WorkingDirectory, console, info.EnvironmentVariables);
 				} else {
 					var psi = new ProcessStartInfo (info.Command, info.Arguments) {
 						WorkingDirectory = info.WorkingDirectory,
@@ -143,7 +142,7 @@ namespace MonoDevelop.Debugger.Soft
 					foreach (KeyValuePair<string,string> kvp in info.EnvironmentVariables)
 						psi.EnvironmentVariables [kvp.Key] = kvp.Value;
 					
-					process = Runtime.ProcessService.StartProcess (psi, ProcessOutput, ProcessError, null);
+					process = Runtime.ProcessService.StartProcess (psi, ProcessOutput, ProcessError, null).ProcessAsyncOperation;
 				}
 			}
 			

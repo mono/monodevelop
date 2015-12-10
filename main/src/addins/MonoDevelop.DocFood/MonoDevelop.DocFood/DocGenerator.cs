@@ -28,10 +28,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
-using Mono.TextEditor;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
-using ICSharpCode.NRefactory.TypeSystem;
+using Microsoft.CodeAnalysis;
+using ICSharpCode.NRefactory6.CSharp;
+using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.DocFood
@@ -47,37 +48,38 @@ namespace MonoDevelop.DocFood
 			
 		}
 		
-		public DocGenerator (TextEditorData data)
+		public DocGenerator (IReadonlyTextDocument data)
 		{
 //			this.data = data;
 		}
 		
-		public static string GetBaseDocumentation (IEntity member)
+		public static string GetBaseDocumentation (ISymbol member)
 		{
-			if (member.DeclaringTypeDefinition == null)
+			if (member.ContainingType == null)
 				return null;
-			if (member is IMethod && (((IMethod)member).IsConstructor || ((IMethod)member).IsDestructor))
-				return null;
-			foreach (var type in member.DeclaringTypeDefinition.GetAllBaseTypeDefinitions ()) {
-				if (type.Equals (member.DeclaringTypeDefinition))
-					continue;
-				IMember documentMember = null;
-				foreach (var searchedMember in type.Members.Where (m => m.Name == member.Name)) {
-					if (searchedMember.SymbolKind == member.SymbolKind && searchedMember.Name == member.Name) {
-						if ((searchedMember is IParameterizedMember) && ((IParameterizedMember)searchedMember).Parameters.Count != ((IParameterizedMember)member).Parameters.Count)
-							continue;
-						if (searchedMember.Accessibility != member.Accessibility)
-							continue;
-						documentMember = searchedMember;
-						break;
-					}
-				}
-				if (documentMember != null) {
-					string documentation = AmbienceService.GetDocumentation (documentMember);
-					if (documentation != null)
-						return documentation;
-				}
-			}
+			// TODO: Roslyn port!
+//			if (member is IMethodSymbol && (((IMethodSymbol)member).IsConstructor || ((IMethodSymbol)member).IsDestructor))
+//				return null;
+//			foreach (var type in member.ContainingType.GetAllBaseTypeDefinitions ()) {
+//				if (type.Equals (member.ContainingType))
+//					continue;
+//				IMember documentMember = null;
+//				foreach (var searchedMember in type.Members.Where (m => m.Name == member.Name)) {
+//					if (searchedMember.SymbolKind == member.SymbolKind && searchedMember.Name == member.Name) {
+//						if ((searchedMember is IParameterizedMember) && ((IParameterizedMember)searchedMember).Parameters.Count != ((IParameterizedMember)member).Parameters.Count)
+//							continue;
+//						if (searchedMember.Accessibility != member.Accessibility)
+//							continue;
+//						documentMember = searchedMember;
+//						break;
+//					}
+//				}
+//				if (documentMember != null) {
+//					string documentation = AmbienceService.GetDocumentation (documentMember);
+//					if (documentation != null)
+//						return documentation;
+//				}
+//			}
 			return null;
 		}
 
@@ -124,34 +126,38 @@ namespace MonoDevelop.DocFood
 			}
 		}
 
-		public INamedElement member;
+		public ISymbol member;
 //		MemberVisitor visitor = new MemberVisitor ();
 		string currentType;
 		int wordCount;
 		
-		static string GetType (IEntity member)
+		static string GetType (ISymbol member)
 		{
-			switch (member.SymbolKind) {
+			switch (member.Kind) {
 			case SymbolKind.Event:
 				return "event";
 			case SymbolKind.Field:
 				return "field";
-			case SymbolKind.Constructor:
-				return "constructor";
-			case SymbolKind.Destructor:
-				return "destructor";
-			case SymbolKind.Operator:
-				return "operator";
 			case SymbolKind.Method:
+				switch (((IMethodSymbol)member).MethodKind) {
+				case MethodKind.StaticConstructor:
+				case MethodKind.Constructor:
+					return "constructor";
+				case MethodKind.Destructor:
+					return "destructor";
+				case MethodKind.UserDefinedOperator:
+				case MethodKind.BuiltinOperator:
+					return "operator";
+				}
 				return "method";
-//			case MemberType.Parameter:
-//				return "parameter";
-			case SymbolKind.Indexer:
-				return "indexer";
+			case SymbolKind.Parameter:
+				return "parameter";
 			case SymbolKind.Property:
+				if (((IPropertySymbol)member).IsIndexer)
+					return "indexer";
 				return "property";
-			case SymbolKind.TypeDefinition:
-				switch (((ITypeDefinition)member).Kind) {
+			case SymbolKind.NamedType:
+				switch (((INamedTypeSymbol)member).TypeKind) {
 				case TypeKind.Class:
 					return "class";
 				case TypeKind.Delegate:
@@ -228,14 +234,12 @@ namespace MonoDevelop.DocFood
 			return null;
 		}
 
-		static string GetName (object member)
+		static string GetName (ISymbol member)
 		{
-			if (member is IParameter)
-				return ((IParameter)member).Name;
-			return ((INamedElement)member).Name;
+			return member.Name;
 		}
 		
-		public bool EvaluateCondition (List<KeyValuePair<string, string>> conditions, object member)
+		public bool EvaluateCondition (List<KeyValuePair<string, string>> conditions, ISymbol member)
 		{
 			foreach (var condition in conditions) {
 				bool result = false;
@@ -245,42 +249,38 @@ namespace MonoDevelop.DocFood
 						result |= val == currentType;
 						break;
 					case "modifier":
-						if (member is IMember) {
-							if (val.ToUpperInvariant () == "STATIC"){
-								result |= ((IMember)member).IsStatic;
-							} else {
-								try {
-									var mod = (Accessibility)Enum.Parse (typeof(Accessibility), val);
-									result |=  ((IMember)member).Accessibility == mod;
-								} catch (Exception) {
-								}
+						if (val.ToUpperInvariant () == "STATIC"){
+							result |= member.IsStatic;
+						} else {
+							try {
+								var mod = (Accessibility)Enum.Parse (typeof(Accessibility), val);
+								result |=  member.DeclaredAccessibility == mod;
+							} catch (Exception) {
 							}
 						}
 						break;
 					case "paramCount":
-						if (member is IParameterizedMember)
-							result |= Int32.Parse (val) == ((IParameterizedMember)member).Parameters.Count;
+						var parameters = member.GetParameters ();
+						result |= Int32.Parse (val) == parameters.Length;
 						break;
 					case "parameter":
-						if (!(member is IParameterizedMember))
-							break;
+						parameters = member.GetParameters ();
 						string[] par = val.Split(':');
 						int idx = Int32.Parse (par[0]);
 						string name = par[1];
-						result |= idx < ((IParameterizedMember)member).Parameters.Count && name == ((IParameterizedMember)member).Parameters[idx].Name;
+						result |= idx < parameters.Length && name == parameters[idx].Name;
 						break;
 					case "returns":
-						if (member is IParameter) {
-							result |= val == ((IParameter)member).Type.ToString ();
+						if (member is IParameterSymbol) {
+							result |= val == ((IParameterSymbol)member).Type.ToString ();
 							break;
 						}
-						if ((member as IMember) == null)
-							break;
-						result |= val == ((IMember)member).ReturnType.ToString ();
+
+						result |= val == member.GetReturnType ().ToString ();
 						break;
 					case "name":
-						IMethod method = member as IMethod;
-						if (method != null && method.IsSynthetic) {
+						var method = member as IMethodSymbol;
+						if (method != null && method.MethodKind == MethodKind.UserDefinedOperator) {
 							string op = GetOperator (method.Name);
 							if (op != null) {
 								result |= val == op;
@@ -293,17 +293,18 @@ namespace MonoDevelop.DocFood
 					case "endsWith":
 						if (member == null)
 							break;
-						result |= GetName (member).EndsWith (val);
+						result |= GetName (member).EndsWith (val, StringComparison.Ordinal);
 						break;
 					case "startsWith":
 						if (member == null)
 							break;
-						result |= GetName (member).StartsWith (val);
+						result |= GetName (member).StartsWith (val, StringComparison.Ordinal);
 						break;
 					case "startsWithWord":
 						if (member == null)
 							break;
-						result |= GetName (member).StartsWith (val);
+						var name2 = SeparateWords (GetName (member));
+						result |= name2.StartsWith (val + " ");
 						break;
 					case "wordCount":
 						result |= Int32.Parse (val) == wordCount;
@@ -319,7 +320,7 @@ namespace MonoDevelop.DocFood
 		}
 		
 		internal string curName;
-		public void GenerateDoc (IEntity member)
+		public void GenerateDoc (ISymbol member)
 		{
 			Init (member);
 			
@@ -327,9 +328,9 @@ namespace MonoDevelop.DocFood
 			this.currentType = GetType (member);
 			DocConfig.Instance.Rules.ForEach (r => r.Run (this, member));
 			
-			if (member is IParameterizedMember) {
+			if (member is IPropertySymbol || member is IMethodSymbol) {
 				this.currentType = "parameter";
-				foreach (var p in ((IParameterizedMember)member).Parameters) {
+				foreach (var p in member.GetParameters ()) {
 					curName = p.Name;
 					this.member = member;
 					SplitWords (p, p.Name);
@@ -337,8 +338,8 @@ namespace MonoDevelop.DocFood
 				}
 			}
 			
-			if (member is IMethod) {
-				IMethod method = (IMethod)member;
+			if (member is IMethodSymbol) {
+				var method = (IMethodSymbol)member;
 				int count = 1;
 				foreach (var param in method.TypeParameters) {
 					this.currentType = "typeparam";
@@ -398,7 +399,7 @@ namespace MonoDevelop.DocFood
 //			}
 		}
 
-		void Init (IEntity member)
+		void Init (ISymbol member)
 		{
 			if (member == null)
 				throw new ArgumentNullException ("member");
@@ -414,9 +415,9 @@ namespace MonoDevelop.DocFood
 			foreach (var macro in DocConfig.Instance.Macros) {
 				tags.Add (macro.Key, macro.Value);
 			}
-			if (member.DeclaringTypeDefinition != null) {
-				tags ["DeclaringType"] = "<see cref=\"" + member.DeclaringTypeDefinition.ReflectionName + "\"/>";
-				switch (member.DeclaringTypeDefinition.Kind) {
+			if (member.ContainingType != null) {
+				tags ["DeclaringType"] = "<see cref=\"" + member.ContainingType.GetDocumentationCommentId () + "\"/>";
+				switch (member.ContainingType.TypeKind) {
 				case TypeKind.Class:
 					tags ["DeclaringTypeKind"] = "class";
 					break;
@@ -434,13 +435,14 @@ namespace MonoDevelop.DocFood
 					break;
 				}
 			}
-			if (member is IMember)
-				tags ["ReturnType"] = ((IMember)member).ReturnType != null ? "<see cref=\"" + ((IMember)member).ReturnType + "\"/>" : "";
+			var returnType = member.GetReturnType ();
+			tags ["ReturnType"] = returnType != null ? "<see cref=\"" + returnType.GetDocumentationCommentId () + "\"/>" : "";
 			tags ["Member"] = "<see cref=\"" + member.Name + "\"/>";
 
 			
-			if (member is IParameterizedMember) {
-				List<string> parameterNames = new List<string> (from p in ((IParameterizedMember)member).Parameters select p.Name);
+			if (member is IPropertySymbol || member is IMethodSymbol) {
+				var parameters = member.GetParameters ();
+				var parameterNames = new List<string> (from p in parameters select p.Name);
 				tags ["ParameterSentence"] = string.Join (" ", parameterNames.ToArray ());
 				StringBuilder paramList = new StringBuilder ();
 				for (int i = 0; i < parameterNames.Count; i++) {
@@ -454,25 +456,25 @@ namespace MonoDevelop.DocFood
 					paramList.Append (parameterNames [i]);
 				}
 				tags ["ParameterList"] = paramList.ToString ();
-				for (int i = 0; i < ((IParameterizedMember)member).Parameters.Count; i++) {
-					tags ["Parameter" + i + ".Type"] = ((IParameterizedMember)member).Parameters [i].Type != null ? "<see cref=\"" + ((IParameterizedMember)member).Parameters [i].Type + "\"/>" : "";
-					tags ["Parameter" + i + ".Name"] = "<c>" + ((IParameterizedMember)member).Parameters [i].Name + "</c>";
+				for (int i = 0; i < parameters.Length; i++) {
+					tags ["Parameter" + i + ".Type"] = parameters [i].Type != null ? "<see cref=\"" + parameters [i].Type + "\"/>" : "";
+					tags ["Parameter" + i + ".Name"] = "<c>" + parameters [i].Name + "</c>";
 				}
 				
-				var property = member as IProperty;
+				var property = member as IPropertySymbol;
 				if (property != null) {
-					var hasPublicGetter = property.Getter != null && property.Getter.Accessibility != Accessibility.Private;
-					var hasPublicSetter = property.Setter != null && property.Setter.Accessibility != Accessibility.Private;
+					var hasPublicGetter = property.GetMethod != null && property.GetMethod.DeclaredAccessibility != Accessibility.Private;
+					var hasPublicSetter = property.SetMethod != null && property.SetMethod.DeclaredAccessibility != Accessibility.Private;
 
-					if (property.CanGet && property.CanSet && hasPublicGetter && hasPublicSetter) {
+					if (property.GetMethod != null && property.SetMethod != null && hasPublicGetter && hasPublicSetter) {
 						tags ["AccessText"] = "Gets or sets";
-					} else if (property.CanGet && hasPublicGetter) {
+					} else if (property.GetMethod != null && hasPublicGetter) {
 						tags ["AccessText"] = "Gets";
 					} else if (hasPublicSetter) {
 						tags ["AccessText"] = "Sets";
-					} else if (property.CanGet && property.CanSet) {
+					} else if (property.GetMethod != null && property.SetMethod != null) {
 						tags ["AccessText"] = "Gets or sets";
-					} else if (property.CanGet) {
+					} else if (property.GetMethod != null) {
 						tags ["AccessText"] = "Gets";
 					} else {
 						tags ["AccessText"] = "Sets";
@@ -875,7 +877,68 @@ namespace MonoDevelop.DocFood
 		
 		void SplitWords (object obj, string name)
 		{
-			StringBuilder result = new StringBuilder ();
+			if (obj is ITypeSymbol){
+				var type = (ITypeSymbol)obj;
+				if (type.TypeKind == TypeKind.Interface && name.Length > 1 && name[0] == 'I' && char.IsUpper (name[1])) {
+					name = name.Substring (1);
+				}
+			}
+
+			List<string> words = new List<string> (SeparateWords (name).Split (' '));
+			wordCount = words.Count;
+			for (int i = 0; i < words.Count; i++) {
+				string lowerWord = words [i].ToLower ();
+				if (DocConfig.Instance.WordExpansions.ContainsKey (lowerWord)) {
+					words [i] = DocConfig.Instance.WordExpansions [lowerWord];
+				} else if (DocConfig.Instance.WordLists ["acronyms"].Contains (words [i].ToUpper ())) {
+					words [i] = words [i].ToUpper ();
+				}
+			}
+			tags ["First"] = words [0];
+			tags ["AllWords"] = string.Join (" ", words.ToArray ());
+			tags ["AllWordsExceptFirst"] = string.Join (" ", words.ToArray (), 1, words.Count - 1);
+
+			int theIndex = 0;
+			int ofTheIndex = 0;
+			if (obj is IMethodSymbol) {
+				theIndex = ofTheIndex = 1;
+			}
+
+			if (ofTheIndex < words.Count && DocConfig.Instance.WordLists ["prefixThe"].Contains (words [ofTheIndex].ToLower ()))
+				ofTheIndex++;
+
+			int ofIndex = words.Count - 1;
+			if (ofTheIndex + 1 < words.Count && DocConfig.Instance.WordLists ["ofThe"].Contains (words [ofIndex].ToLower ())) {
+				string word = words [ofIndex];
+				words.RemoveAt (ofIndex);
+				words.Insert (ofTheIndex, "the");
+				words.Insert (ofTheIndex, "of");
+				words.Insert (ofTheIndex, word);
+			}
+
+			tags ["FirstAsVerbPastParticiple"] = GetPastParticipleVerb (words [0]);
+			if (obj is IMethodSymbol && words.Count > 1) {
+				if (words [0].EndsWith ("s")) {
+					words [0] += "es";
+				} else if (words [0].EndsWith ("y")) {
+					words [0] = words [0].Substring (0, words [0].Length - 1) + "ies";
+				} else {
+					words [0] += "s";
+				}
+				theIndex = 1;
+			}
+
+			tags ["FirstAsVerb"] = words [0];
+
+			if (theIndex < words.Count && !DocConfig.Instance.WordLists ["noThe"].Contains (words [theIndex].ToLower ()))
+				words.Insert (theIndex, "the");
+
+			tags ["Sentence"] = string.Join (" ", words.ToArray ());
+		}
+
+		static string SeparateWords (string name)
+		{
+			var result = new StringBuilder ();
 			bool wasUnderscore = false;
 			for (int i = 0; i < name.Length; i++) {
 				char ch = name [i];
@@ -887,14 +950,21 @@ namespace MonoDevelop.DocFood
 					wasUnderscore = false;
 					if (result.Length > 0)
 						result.Append (" ");
-					if (i + 1 < name.Length && char.IsUpper (name[i + 1])) {
-						while (i + 1 < name.Length && char.IsUpper (name[i + 1])) {
-							result.Append (name[i]);
+					if (i + 1 < name.Length && char.IsUpper (name [i + 1])) {
+						int j = i;
+						while (i < name.Length && char.IsUpper (name [i])) {
 							i++;
 						}
+						if (i >= name.Length || name [i] == '_') {
+							if (i != j)
+								result.Append (name.Substring (j, i - j).ToLower ());
+							continue;
+						}
+						if (i != j)
+							result.Append (name.Substring (j, i - j));
 						if (i + 1 < name.Length) {
 							result.Append (" ");
-							result.Append (char.ToLower (name[i]));
+							result.Append (char.ToLower (name [i]));
 						}
 						continue;
 					}
@@ -902,63 +972,17 @@ namespace MonoDevelop.DocFood
 				wasUnderscore = false;
 				result.Append (char.ToLower (ch));
 			}
-			
-			List<string> words = new List<string> (result.ToString ().Split (' '));
-			wordCount = words.Count;
-			for (int i = 0; i < words.Count; i++) {
-				string lowerWord = words[i].ToLower ();
-				if (DocConfig.Instance.WordExpansions.ContainsKey (lowerWord)) {
-					words[i] = DocConfig.Instance.WordExpansions[lowerWord];
-				} else if (DocConfig.Instance.WordLists["acronyms"].Contains (words[i].ToUpper ())) {
-					words[i] = words[i].ToUpper ();
-				}
-			}
-			tags["First"] = words[0];
-			tags["AllWords"] = string.Join (" ", words.ToArray ());
-			tags["AllWordsExceptFirst"] = string.Join (" ", words.ToArray (), 1, words.Count - 1);
-			
-			int theIndex = 0;
-			int ofTheIndex = 0;
-			if (obj is IMethod) {
-				theIndex = ofTheIndex = 1;
-			}
-			
-			if (ofTheIndex < words.Count && DocConfig.Instance.WordLists["prefixThe"].Contains (words[ofTheIndex].ToLower ()))
-				ofTheIndex++;
-			
-			int ofIndex = words.Count - 1;
-			if (ofTheIndex + 1 < words.Count && DocConfig.Instance.WordLists["ofThe"].Contains (words[ofIndex].ToLower ())) {
-				string word = words[ofIndex];
-				words.RemoveAt (ofIndex);
-				words.Insert (ofTheIndex, "the");
-				words.Insert (ofTheIndex, "of");
-				words.Insert (ofTheIndex, word);
-			} 
 
-			tags["FirstAsVerbPastParticiple"] = GetPastParticipleVerb (words[0]);
-			if (obj is IMethod && words.Count > 1) {
-				if (words[0].EndsWith("s")) {
-					words[0] += "es";
-				} else if (words[0].EndsWith("y")) {
-					words[0] = words[0].Substring (0, words[0].Length - 1) + "ies";
-				} else {
-					words[0] += "s";
-				}
-				theIndex = 1;
-			}
-			
-			tags["FirstAsVerb"] = words[0];
-			
-			if (theIndex < words.Count && !DocConfig.Instance.WordLists["noThe"].Contains (words[theIndex].ToLower ()))
-				words.Insert (theIndex, "the");
-			
-			tags["Sentence"] = string.Join (" ", words.ToArray ());
+			return result.ToString ();
 		}
-		
+
+
 		public void Set (string name, string parameterName, string doc)
 		{
-			if (name.StartsWith ("param") && name.Length > "param".Length) {
-				parameterName = ((IParameterizedMember)member).Parameters[int.Parse (name.Substring("param".Length))].Name;
+			if (name.StartsWith ("param", StringComparison.Ordinal) && name.Length > "param".Length) {
+				var parameters = member.GetParameters ();
+				var idx = int.Parse (name.Substring ("param".Length));
+				parameterName = idx < parameters.Length ? parameters [idx].Name : "unknown";
 				name = "param";
 			}
 			Section newSection = new Section (name);
@@ -981,7 +1005,7 @@ namespace MonoDevelop.DocFood
 		}
 		
 		#region implemented abstract members of MonoDevelop.Projects.Text.DocGenerator
-		public override string GenerateDocumentation (IMember member, string linePrefix)
+		public override string GenerateDocumentation (ISymbol member, string linePrefix)
 		{
 			return DocumentBufferHandler.GenerateDocumentation (null, member, "", linePrefix);
 		}

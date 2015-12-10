@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{74FADC4E-C9A8-456E-9A2C-DB933220E073}</ProjectGuid>
+    <SimpleData>Test</SimpleData>
+    <DataProperty>
+      <DataProperty Foo="rep" />
+    </DataProperty>
+  </PropertyGroup>
+</Project>

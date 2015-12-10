@@ -37,9 +37,12 @@ using System.CodeDom.Compiler;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using System.Linq;
+using Microsoft.CodeAnalysis;
+using ICSharpCode.NRefactory6.CSharp.Completion;
+using ICSharpCode.NRefactory6.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -114,7 +117,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (System.IO.File.Exists (fileName)) {
 				watcher.Path = Path.GetDirectoryName (fileName);
 				watcher.Filter = Path.GetFileName (fileName);
-				watcher.Changed += (FileSystemEventHandler) DispatchService.GuiDispatch (new FileSystemEventHandler (OnSteticFileChanged));
+				watcher.Changed += DispatchService.GuiDispatchDelegate (new FileSystemEventHandler (OnSteticFileChanged));
 				watcher.EnableRaisingEvents = true;
 			}
 		}	
@@ -219,7 +222,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 				
 			if (GtkDesignInfo.FromProject (project).UpdateGtkFolder () && saveMdProject)
-				IdeApp.ProjectOperations.Save (project);
+				IdeApp.ProjectOperations.SaveAsync (project);
 		}
 		
 		public string File {
@@ -337,16 +340,23 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		void OnFileAdded (object sender, ProjectFileEventArgs e)
 		{
 			foreach (ProjectFileEventInfo args in e) {
-				var doc = TypeSystemService.ParseFile (args.Project, args.ProjectFile.Name);
+				var docId = TypeSystemService.GetDocumentId (args.Project, args.ProjectFile.Name);
+				if (docId == null)
+					continue;
+				var doc = TypeSystemService.GetCodeAnalysisDocument (docId);
 				if (doc == null)
 					continue;
 	
 				string dir = Path.Combine (Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData), "stetic"), "deleted-designs");
 				if (!Directory.Exists (dir) || Directory.GetFiles (dir).Length == 0)
 					continue;
-	
-				foreach (var t in doc.TopLevelTypeDefinitions) {
-					string path = Path.Combine (dir, t.FullName + ".xml");
+				var semanticModel = doc.GetSemanticModelAsync ().Result;
+				if (semanticModel == null)
+					continue;
+
+				foreach (var classDeclaration in semanticModel.SyntaxTree.GetRoot ().DescendantNodesAndSelf (child => !(child is BaseTypeDeclarationSyntax)).OfType<ClassDeclarationSyntax> ()) {
+					var c = semanticModel.GetDeclaredSymbol (classDeclaration);
+					string path = Path.Combine (dir, c.ToDisplayString (Microsoft.CodeAnalysis.SymbolDisplayFormat.CSharpErrorMessageFormat) + ".xml");
 					if (!System.IO.File.Exists (path))
 						continue;
 					XmlDocument xmldoc = new XmlDocument ();
@@ -362,12 +372,21 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			ArrayList toDelete = new ArrayList ();
 
 			foreach (ProjectFileEventInfo args in e) {
-				var doc = TypeSystemService.ParseFile (args.Project, args.ProjectFile.Name);
+
+				var docId = TypeSystemService.GetDocumentId (args.Project, args.ProjectFile.Name);
+				if (docId == null)
+					continue;
+				var doc = TypeSystemService.GetCodeAnalysisDocument (docId);
 				if (doc == null)
 					continue;
+				var semanticModel = doc.GetSemanticModelAsync ().Result;
+				if (semanticModel == null)
+					continue;
+
 	
-				foreach (var t in doc.TopLevelTypeDefinitions) {
-					GuiBuilderWindow win = GetWindowForClass (t.FullName);
+				foreach (var classDeclaration in semanticModel.SyntaxTree.GetRoot ().DescendantNodesAndSelf (child => !(child is BaseTypeDeclarationSyntax)).OfType<ClassDeclarationSyntax> ()) {
+					var c = semanticModel.GetDeclaredSymbol (classDeclaration);
+					GuiBuilderWindow win = GetWindowForClass (c.ToDisplayString (Microsoft.CodeAnalysis.SymbolDisplayFormat.MinimallyQualifiedFormat));
 					if (win != null)
 						toDelete.Add (win);
 				}
@@ -491,56 +510,59 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			var cls = GetClass (obj, getUserClass);
 			if (cls != null)
-				return cls.Region.FileName;
+				return cls.Locations.First ().SourceTree.FilePath;
 			return null;
 		}
 		
-		IUnresolvedTypeDefinition GetClass (Stetic.ProjectItemInfo obj, bool getUserClass)
+		INamedTypeSymbol GetClass (Stetic.ProjectItemInfo obj, bool getUserClass)
 		{
 			string name = CodeBinder.GetClassName (obj);
 			return FindClass (name, getUserClass);
 		}
 		
-		public IUnresolvedTypeDefinition FindClass (string className)
+		public INamedTypeSymbol FindClass (string className)
 		{
 			return FindClass (className, true);
 		}
 		
-		public IUnresolvedTypeDefinition FindClass (string className, bool getUserClass)
+		public INamedTypeSymbol FindClass (string className, bool getUserClass)
 		{
 			FilePath gui_folder = GtkDesignInfo.FromProject (project).GtkGuiFolder;
 			var ctx = GetParserContext ();
 			if (ctx == null)
 				return null;
-			var classes = ctx.MainAssembly.GetAllTypeDefinitions ();
-			if (classes == null)
-				return null;
-			foreach (var cls in classes) {
-				if (cls.FullName == className) {
+			foreach (var cls in ctx.GetAllTypesInMainAssembly ()) {
+				if (cls.GetFullName() == className) {
 					if (getUserClass) {
 						// Return this class only if it is declared outside the gtk-gui
 						// folder. Generated partial classes will be ignored.
-						foreach (var part in cls.Parts) {
-							if (!string.IsNullOrEmpty (part.Region.FileName) && !((FilePath)cls.Region.FileName).IsChildPathOf (gui_folder)) {
-								return part;
+						foreach (var part in cls.Locations) {
+							var filePath = part.SourceTree.FilePath;
+							if (!string.IsNullOrEmpty (filePath) && !((FilePath)filePath).IsChildPathOf (gui_folder)) {
+								return cls;
 							}
 						}
 						continue;
 					}
-					if (getUserClass && !string.IsNullOrEmpty (cls.Region.FileName) && ((FilePath)cls.Region.FileName).IsChildPathOf (gui_folder))
+					if (getUserClass && !string.IsNullOrEmpty (cls.Locations.First ().SourceTree.FilePath) && ((FilePath)cls.Locations.First ().SourceTree.FilePath).IsChildPathOf (gui_folder))
 						continue;
-					return cls.Parts.First ();
+					return cls;
 				}
 			}
 			return null;
 		}
 		
-		public ICompilation GetParserContext ()
+		public Compilation GetParserContext ()
 		{
-			var dom = TypeSystemService.GetCompilation (Project);
+			System.Threading.Tasks.Task<Compilation> task;
+			do {
+				task = TypeSystemService.GetCompilationAsync (Project);
+				task.Wait (500);
+			} while (!task.IsCompleted);
+
+			var dom = task.Result;
 			if (dom != null && needsUpdate) {
 				needsUpdate = false;
-//				dom.ForceUpdate ();
 			}
 			return dom;
 		}
@@ -629,7 +651,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (hasError)
 				return files;
 
-			IDotNetLanguageBinding binding = LanguageBindingService.GetBindingPerLanguageName (project.LanguageName) as IDotNetLanguageBinding;
+			var binding = LanguageBindingService.GetBindingPerLanguageName (project.LanguageName);
 			string path = Path.Combine (guiFolder, binding.GetFileName ("generated"));
 			if (!System.IO.File.Exists (path)) {
 				// Generate an empty build class

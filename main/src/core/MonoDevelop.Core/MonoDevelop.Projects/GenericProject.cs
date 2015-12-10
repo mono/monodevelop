@@ -28,6 +28,7 @@
 
 using System.Xml;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Projects
 {
@@ -42,16 +43,22 @@ namespace MonoDevelop.Projects
 		{
 			Configurations.Add (CreateConfiguration ("Default"));
 		}
-		
-		public override SolutionItemConfiguration CreateConfiguration (string name)
+
+		protected override void OnInitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement template)
+		{
+			Configurations.Add (CreateConfiguration ("Default"));
+		}
+
+		protected override SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind)
 		{
 			GenericProjectConfiguration conf = new GenericProjectConfiguration (name);
 			return conf;
 		}
 
-		public override IEnumerable<string> GetProjectTypes ()
+		protected override void OnGetTypeTags (HashSet<string> types)
 		{
-			yield return "GenericProject";
+			base.OnGetTypeTags (types);
+			types.Add ("GenericProject");
 		}
 	}
 	

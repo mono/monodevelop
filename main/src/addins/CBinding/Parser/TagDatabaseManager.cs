@@ -455,7 +455,10 @@ namespace CBinding.Parser
 		/// </summary>
 		void OnFileUpdated (ClassPadEventArgs args)
 		{
-			if (null != FileUpdated){ FileUpdated(args); }
+			Runtime.RunInMainThread (() => {
+				if (null != FileUpdated)
+					FileUpdated(args);
+			});
 		}
 		
 		private class ProjectFilePair

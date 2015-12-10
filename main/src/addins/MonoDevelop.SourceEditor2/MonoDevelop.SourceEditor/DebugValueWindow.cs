@@ -34,10 +34,11 @@ using Gtk;
 using Mono.TextEditor;
 using Gdk;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class BaseWindow : Gtk.Window
+	class BaseWindow : Gtk.Window
 	{
 		public BaseWindow () : base (Gtk.WindowType.Toplevel)
 		{
@@ -64,20 +65,19 @@ namespace MonoDevelop.SourceEditor
 		}
 	}
 
-	public class DebugValueWindow : PopoverWindow
+	class DebugValueWindow : PopoverWindow
 	{
 		ObjectValueTreeView tree;
 		ScrolledWindow sw;
 
-		public DebugValueWindow (Mono.TextEditor.TextEditor editor, int offset, StackFrame frame, ObjectValue value, PinnedWatch watch) : base (Gtk.WindowType.Toplevel)
+		public DebugValueWindow (TextEditor editor, int offset, StackFrame frame, ObjectValue value, PinnedWatch watch) : base (Gtk.WindowType.Toplevel)
 		{
 			this.TypeHint = WindowTypeHint.PopupMenu;
 			this.AllowShrink = false;
 			this.AllowGrow = false;
 			this.Decorated = false;
 
-			TransientFor = (Gtk.Window)editor.Toplevel;
-
+			TransientFor = (Gtk.Window) ((Gtk.Widget)editor).Toplevel;
 			// Avoid getting the focus when the window is shown. We'll get it when the mouse enters the window
 			AcceptFocus = false;
 
@@ -97,9 +97,9 @@ namespace MonoDevelop.SourceEditor
 			tree.AllowPinning = true;
 			tree.RootPinAlwaysVisible = true;
 			tree.PinnedWatch = watch;
-			DocumentLocation location = editor.Document.OffsetToLocation (offset);
+			var location = editor.OffsetToLocation (offset);
 			tree.PinnedWatchLine = location.Line;
-			tree.PinnedWatchFile = ((ExtensibleTextEditor)editor).View.ContentName;
+			tree.PinnedWatchFile = editor.FileName;
 
 			tree.AddValue (value);
 			tree.Selection.UnselectAll ();

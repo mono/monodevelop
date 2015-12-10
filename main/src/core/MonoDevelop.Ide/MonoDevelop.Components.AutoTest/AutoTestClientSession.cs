@@ -127,7 +127,7 @@ namespace MonoDevelop.Components.AutoTest
 			else
 				try {
 					process.Kill ();
-				} catch (InvalidOperationException invalidExp) {
+				} catch (InvalidOperationException) {
 					Console.WriteLine ("Process has already exited");
 				}
 		}

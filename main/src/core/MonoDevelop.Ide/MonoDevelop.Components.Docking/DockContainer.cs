@@ -56,7 +56,7 @@ namespace MonoDevelop.Components.Docking
 		
 		public DockContainer (DockFrame frame)
 		{
-			Mono.TextEditor.GtkWorkarounds.FixContainerLeak (this);
+			GtkWorkarounds.FixContainerLeak (this);
 			
 			this.Events = EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask | EventMask.LeaveNotifyMask;
 			this.frame = frame;

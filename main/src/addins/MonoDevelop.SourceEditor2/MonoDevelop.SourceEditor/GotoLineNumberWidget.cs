@@ -35,7 +35,7 @@ namespace MonoDevelop.SourceEditor
 {
 	public partial class GotoLineNumberWidget : Gtk.Bin
 	{
-		readonly TextEditor textEditor;
+		readonly MonoTextEditor textEditor;
 		readonly Widget frame;
 
 		double vSave, hSave;
@@ -45,7 +45,7 @@ namespace MonoDevelop.SourceEditor
 		void HandleViewTextEditorhandleSizeAllocated (object o, SizeAllocatedArgs args)
 		{
 			int newX = textEditor.Allocation.Width - this.Allocation.Width - 8;
-			var containerChild = ((TextEditor.EditorContainerChild)textEditor [frame]);
+			var containerChild = ((MonoTextEditor.EditorContainerChild)textEditor [frame]);
 			if (newX != containerChild.X) {
 				this.entryLineNumber.WidthRequest = textEditor.Allocation.Width / 4;
 				containerChild.X = newX;
@@ -58,7 +58,7 @@ namespace MonoDevelop.SourceEditor
 			Destroy ();
 		}
 
-		public GotoLineNumberWidget (TextEditor textEditor, Widget frame)
+		public GotoLineNumberWidget (MonoTextEditor textEditor, Widget frame)
 		{
 			this.textEditor = textEditor;
 			this.frame = frame;

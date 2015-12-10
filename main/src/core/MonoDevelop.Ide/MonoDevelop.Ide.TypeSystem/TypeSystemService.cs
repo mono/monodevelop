@@ -28,137 +28,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using MonoDevelop.Projects;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using ICSharpCode.NRefactory.TypeSystem;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using Mono.TextEditor;
 using System.Threading;
-using MonoDevelop.Core.ProgressMonitoring;
 using System.Xml;
 using ICSharpCode.NRefactory.Utils;
-using ICSharpCode.NRefactory;
 using System.Threading.Tasks;
-using ICSharpCode.NRefactory.Documentation;
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Core.Assemblies;
 using System.Text;
-using ICSharpCode.NRefactory.Completion;
-using System.Diagnostics;
-using MonoDevelop.Projects.SharedAssetsProjects;
-using MonoDevelop.Ide.Templates;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
+using Microsoft.CodeAnalysis.Text;
+using Mono.Posix;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	public static class TypeSystemServiceExt
-	{
-		/// <summary>
-		/// Tries to the get source project for a given type definition. This operation may fall if it was called on an outdated
-		/// compilation unit or the correspondening project was unloaded.
-		/// </summary>
-		/// <returns><c>true</c>, if get source project was found, <c>false</c> otherwise.</returns>
-		/// <param name="type">The type definition.</param>
-		/// <param name="project">The project or null if it wasn't found.</param>
-		public static bool TryGetSourceProject (this ITypeDefinition type, out Project project)
-		{
-			var location = type.Compilation.MainAssembly.UnresolvedAssembly.Location;
-			if (string.IsNullOrEmpty (location)) {
-				project = null;
-				return false;
-			}
-			project = TypeSystemService.GetProject (location);
-			return project != null;
-		}
-
-		/// <summary>
-		/// Tries to the get source project for a given type. This operation may fall if it was called on an outdated
-		/// compilation unit or the correspondening project was unloaded.
-		/// </summary>
-		/// <returns><c>true</c>, if get source project was found, <c>false</c> otherwise.</returns>
-		/// <param name="type">The type.</param>
-		/// <param name="project">The project or null if it wasn't found.</param>
-		public static bool TryGetSourceProject (this IType type, out Project project)
-		{
-			var def = type.GetDefinition ();
-			if (def == null) {
-				project = null;
-				return false;
-			}
-			return def.TryGetSourceProject (out project);
-		}
-
-
-		internal static Project GetProjectWhereTypeIsDefined (this ITypeDefinition type)
-		{
-			var location = type.ParentAssembly.UnresolvedAssembly.Location;
-			if (string.IsNullOrEmpty (location))
-				return null;
-			return TypeSystemService.GetProject (location);
-		}
-
-		internal static Project GetProjectWhereTypeIsDefined (this IType type)
-		{
-			Project project;
-			TryGetSourceProject (type, out project);
-			return project;
-		}
-
-		public static TextLocation GetLocation (this IType type)
-		{
-			return type.GetDefinition ().Region.Begin;
-		}
-
-		public static bool IsBaseType (this IType type, IType potentialBase)
-		{
-			return type.GetAllBaseTypes ().Any (t => t.Equals (potentialBase));
-		}
-
-		public static bool IsObsolete (this IEntity member)
-		{
-			return member != null && member.Attributes.Any (a => a.AttributeType.FullName == "System.ObsoleteAttribute");
-		}
-
-		public static bool IsObsolete (this IEntity member, out string reason)
-		{
-			if (member == null) {
-				reason = null;
-				return false;
-			}
-			var attr = member.Attributes.FirstOrDefault (a => a.AttributeType.FullName == "System.ObsoleteAttribute");
-			if (attr == null) {
-				reason = null;
-				return false;
-			}
-			reason = attr.PositionalArguments.Count > 0 ? attr.PositionalArguments [0].ConstantValue.ToString () : null;
-			return true;
-		}
-
-		public static IType Resolve (this IUnresolvedTypeDefinition def, Project project)
-		{
-			if (project == null)
-				throw new ArgumentNullException ("project");
-			var compilation = TypeSystemService.GetCompilation (project);
-			var ctx = new SimpleTypeResolveContext (compilation.MainAssembly);
-			var resolvedType = def.Resolve (ctx);
-			return resolvedType;
-		}
-	}
-
-	/// <summary>
-	/// The folding parser is used for generating a preliminary parsed document that does not
-	/// contain a full dom - only some basic lexical constructs like comments or pre processor directives.
-	/// 
-	/// This is useful for opening a document the first time to have some folding regions as start that are folded by default.
-	/// Otherwise an irritating screen update will occur.
-	/// </summary>
-	public interface IFoldingParser
-	{
-		ParsedDocument Parse (string fileName, string content);
-	}
-
-	public static class TypeSystemService
+	public static partial class TypeSystemService
 	{
 		const string CurrentVersion = "1.1.9";
 		static readonly List<TypeSystemParserNode> parsers;
@@ -168,6 +55,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			get {
 				return parsers;
 			}
+		}
+
+		public static bool TrackFileChanges {
+			get;
+			set;
 		}
 
 		public static void RemoveSkippedfile (FilePath fileName)
@@ -195,7 +87,55 @@ namespace MonoDevelop.Ide.TypeSystem
 					break;
 				}
 			});
+			try {
+				emptyWorkspace = new MonoDevelopWorkspace ();
+			} catch (Exception e) {
+				LoggingService.LogFatalError ("Can't create roslyn workspace", e); 
+			}
 
+			FileService.FileChanged += delegate(object sender, FileEventArgs e) {
+				//				if (!TrackFileChanges)
+				//					return;
+
+				var filesToUpdate = new List<string> ();
+				foreach (var file in e) {
+					// Open documents are handled by the Document class itself.
+					if (IdeApp.Workbench != null && IdeApp.Workbench.GetDocument (file.FileName) != null)
+						continue;
+					
+					foreach (var w in workspaces) {
+						foreach (var p in w.CurrentSolution.ProjectIds) {
+							if (w.GetDocumentId (p, file.FileName) != null) {
+								filesToUpdate.Add (file.FileName);
+								goto found;
+							}
+						}
+					}
+				found:;
+					
+				}
+				if (filesToUpdate.Count == 0)
+					return;
+
+				Task.Run (delegate {
+					try {
+						foreach (var file in filesToUpdate) {
+							var text = MonoDevelop.Core.Text.StringTextSource.ReadFrom (file).Text;
+							foreach (var w in workspaces)
+								w.UpdateFileContent (file, text);
+							Gtk.Application.Invoke (delegate {
+								if (IdeApp.Workbench != null)
+									foreach (var w in IdeApp.Workbench.Documents)
+										w.StartReparseThread ();
+							});
+						}
+					} catch (FileNotFoundException) {}
+				});
+			};
+
+			IntitializeTrackedProjectHandling ();
+		}
+/*
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/OutputTracking", delegate (object sender, ExtensionNodeEventArgs args) {
 				var node = (TypeSystemOutputTrackingNode)args.ExtensionNode;
 				switch (args.Change) {
@@ -207,58 +147,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					break;
 				}
 			});
-
-			FileService.FileChanged += delegate(object sender, FileEventArgs e) {
-				if (!TrackFileChanges)
-					return;
-				foreach (var file in e) {
-					// Open documents are handled by the Document class itself.
-					if (IdeApp.Workbench != null && IdeApp.Workbench.GetDocument (file.FileName) != null)
-						continue;
-					//
-					lock (projectWrapperUpdateLock) {
-						foreach (var wrapper in projectContents.Values) {
-							var projectFile = wrapper.Project.Files.GetFile (file.FileName);
-							if (projectFile != null)
-								QueueParseJob (wrapper, new [] { projectFile });
-						}
-						UnresolvedAssemblyProxy ctx;
-						if (cachedAssemblyContents.TryGetValue (file.FileName, out ctx))
-							CheckModifiedFile (ctx);
-					}
-				}
-
-				foreach (var content in projectContents.Values.ToArray ()) {
-					var files = new List<ProjectFile> ();
-					foreach (var file in e) {
-						var f = content.Project.GetProjectFile (file.FileName);
-						if (f == null || f.BuildAction == BuildAction.None)
-							continue;
-						files.Add (f);
-					}
-					if (files.Count > 0)
-						QueueParseJob (content, files);
-				}
-
-			};
-			if (IdeApp.ProjectOperations != null) {
-				IdeApp.ProjectOperations.EndBuild += HandleEndBuild;
-			}
-			if (IdeApp.Workspace != null) {
-				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
-			}
-		}
-
-		static void HandleActiveConfigurationChanged (object sender, EventArgs e)
-		{
-			foreach (var pr in projectContents.ToArray ()) {
-				var project = pr.Key as DotNetProject;
-				if (project != null)
-					CheckProjectOutput (project, true);
-
-				pr.Value.referencesConnected = false;
-			}
-		}
 
 		static readonly List<TypeSystemOutputTrackingNode> outputTrackedProjects = new List<TypeSystemOutputTrackingNode> ();
 
@@ -272,35 +160,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return outputTrackedProjects.Any (otp => otp.LanguageName != null && string.Equals (otp.LanguageName, project.LanguageName, StringComparison.OrdinalIgnoreCase));
 		}
 
-		static void CheckProjectOutput (DotNetProject project, bool autoUpdate)
-		{
-			if (project == null)
-				throw new ArgumentNullException ("project");
-			if (IsOutputTracked (project)) {
-				var fileName = project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
-
-				var wrapper = GetProjectContentWrapper (project);
-				if (wrapper == null)
-					return;
-				bool update = wrapper.UpdateTrackedOutputAssembly (fileName);
-				if (autoUpdate && update) {
-					wrapper.ReconnectAssemblyReferences ();
-
-					// update documents
-					foreach (var openDocument in IdeApp.Workbench.Documents) {
-						openDocument.ReparseDocument ();
-					}
-				}
-			}
-		}
-
-		static void HandleEndBuild (object sender, BuildEventArgs args)
-		{
-			var project = args.SolutionItem as DotNetProject;
-			if (project == null)
-				return;
-			CheckProjectOutput (project, true);
-		}
+*/
 
 		public static TypeSystemParser GetParser (string mimeType, string buildAction = BuildAction.Compile)
 		{
@@ -308,7 +168,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return n != null ? n.Parser : null;
 		}
 
-		static TypeSystemParserNode GetTypeSystemParserNode (string mimeType, string buildAction)
+		internal static TypeSystemParserNode GetTypeSystemParserNode (string mimeType, string buildAction)
 		{
 			foreach (var mt in DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
 				var provider = Parsers.FirstOrDefault (p => p.CanParse (mt, buildAction));
@@ -318,6 +178,131 @@ namespace MonoDevelop.Ide.TypeSystem
 			return null;
 		}
 
+		public static Task<ParsedDocument> ParseFile (Project project, string fileName, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			StringTextSource text;
+
+			try {
+				if (!File.Exists (fileName))
+					return TaskUtil.Default<ParsedDocument>();
+				text = StringTextSource.ReadFrom (fileName);
+			} catch (Exception) {
+				return TaskUtil.Default<ParsedDocument>();
+			}
+
+			return ParseFile (project, fileName, DesktopService.GetMimeTypeForUri (fileName), text, cancellationToken);
+		}
+
+		public static Task<ParsedDocument> ParseFile (ParseOptions options, string mimeType, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (options == null)
+				throw new ArgumentNullException ("options");
+			if (options.FileName == null)
+				throw new ArgumentNullException ("options.FileName");
+
+			var parser = GetParser (mimeType);
+			if (parser == null)
+				return TaskUtil.Default<ParsedDocument>();
+
+			var t = Counters.ParserService.FileParsed.BeginTiming (options.FileName);
+			try {
+				var result = parser.Parse (options, cancellationToken);
+				return result ?? TaskUtil.Default<ParsedDocument>();
+			} catch (OperationCanceledException) {
+				return TaskUtil.Default<ParsedDocument>();
+			} catch (Exception e) {
+				LoggingService.LogError ("Exception while parsing: " + e);
+				return TaskUtil.Default<ParsedDocument>();
+			} finally {
+				t.Dispose ();
+			}
+		}
+
+		internal static bool CanParseProjections (Project project, string mimeType, string fileName)
+		{
+			var projectFile = project.GetProjectFile (fileName);
+			if (projectFile == null)
+				return false;
+			var parser = GetParser (mimeType, projectFile.BuildAction);
+			if (parser == null)
+				return false;
+			return parser.CanGenerateProjection (mimeType, projectFile.BuildAction, project.SupportedLanguages);
+		}
+
+		public static Task<ParsedDocument> ParseFile (Project project, string fileName, string mimeType, ITextSource content, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return ParseFile (new ParseOptions { FileName = fileName, Project = project, Content = content }, mimeType, cancellationToken);
+		}
+
+		public static Task<ParsedDocument> ParseFile (Project project, string fileName, string mimeType, TextReader content, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return ParseFile (project, fileName, mimeType, new StringTextSource (content.ReadToEnd ()), cancellationToken);
+		}
+
+		public static Task<ParsedDocument> ParseFile (Project project, IReadonlyTextDocument data, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return ParseFile (project, data.FileName, data.MimeType, data, cancellationToken);
+		}
+
+		internal static Task<ParsedDocumentProjection> ParseProjection (ParseOptions options, string mimeType, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (options == null)
+				throw new ArgumentNullException ("options");
+			if (options.FileName == null)
+				throw new ArgumentNullException ("fileName");
+
+			var parser = GetParser (mimeType, options.BuildAction);
+			if (parser == null || !parser.CanGenerateProjection (mimeType, options.BuildAction, options.Project?.SupportedLanguages))
+				return Task.FromResult ((ParsedDocumentProjection)null);
+
+			var t = Counters.ParserService.FileParsed.BeginTiming (options.FileName);
+			try {
+				var result = parser.GenerateParsedDocumentProjection (options, cancellationToken);
+				if (options.Project != null) {
+					var ws = workspaces.First () ;
+					var projectId = ws.GetProjectId (options.Project);
+
+					if (projectId != null) {
+						ws.UpdateProjectionEnntry (options.Project.GetProjectFile (options.FileName), result.Result.Projections);
+						foreach (var projection in result.Result.Projections) {
+							var docId = ws.GetDocumentId (projectId, projection.Document.FileName);
+							if (docId != null) {
+								ws.InformDocumentTextChange (docId, new MonoDevelopSourceText (projection.Document));
+							}
+						}
+					}
+				}
+				return result;
+			} catch (AggregateException ae) {
+				ae.Flatten ().Handle (x => x is OperationCanceledException);
+				return Task.FromResult ((ParsedDocumentProjection)null);
+			} catch (OperationCanceledException) {
+				return Task.FromResult ((ParsedDocumentProjection)null);
+			} catch (Exception e) {
+				LoggingService.LogError ("Exception while parsing: " + e);
+				return Task.FromResult ((ParsedDocumentProjection)null);
+			} finally {
+				t.Dispose ();
+			}
+		}
+
+		internal static Task<ParsedDocumentProjection> ParseProjection (Project project, string fileName, string mimeType, ITextSource content, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return ParseProjection (new ParseOptions { FileName = fileName, Project = project, Content = content }, mimeType, cancellationToken);
+		}
+
+		internal static Task<ParsedDocumentProjection> ParseProjection (Project project, string fileName, string mimeType, TextReader content, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return ParseProjection (project, fileName, mimeType, new StringTextSource (content.ReadToEnd ()), cancellationToken);
+		}
+
+		internal static Task<ParsedDocumentProjection> ParseProjection (Project project, IReadonlyTextDocument data, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return ParseProjection (project, data.FileName, data.MimeType, data, cancellationToken);
+		}
+
+	
+		#region Folding parsers
 		static List<MimeTypeExtensionNode> foldingParsers;
 
 		static IEnumerable<MimeTypeExtensionNode> FoldingParsers {
@@ -348,142 +333,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			return null;
 		}
-
-		public static ParsedDocument ParseFile (Project project, string fileName)
-		{
-			string text;
-			
-			try {
-				if (!File.Exists (fileName))
-					return null;
-				text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (fileName);
-			} catch (Exception) {
-				return null;
-			}
-			
-			return ParseFile (project, fileName, DesktopService.GetMimeTypeForUri (fileName), text);
-		}
-
-		static readonly object projectWrapperUpdateLock = new object ();
-		
-		public static ParsedDocument ParseFile (Project project, string fileName, string mimeType, string content)
-		{
-			if (fileName == null)
-				throw new ArgumentNullException ("fileName");
-			var parser = GetParser (mimeType);
-			if (parser == null)
-				return null;
-
-			var t = Counters.ParserService.FileParsed.BeginTiming (fileName);
-			try {
-				var result = parser.Parse (true, fileName, new StringReader (content), project);
-				lock (projectWrapperUpdateLock) {
-					ProjectContentWrapper wrapper;
-					if (project != null) {
-						projectContents.TryGetValue (project, out wrapper);
-					} else {
-						wrapper = null;
-					}
-					if (wrapper != null && (result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable) {
-						var oldFile = wrapper._content.GetFile (fileName);
-						wrapper.UpdateContent (c => c.AddOrUpdateFiles (result.ParsedFile));
-						UpdateProjectCommentTasks (wrapper, result);
-						if (oldFile != null)
-							wrapper.InformFileRemoved (new ParsedFileEventArgs (oldFile));
-						wrapper.InformFileAdded (new ParsedFileEventArgs (result.ParsedFile));
-					}
-
-					// The parsed file could be included in other projects as well, therefore
-					// they need to be updated.
-					foreach (var cnt in projectContents.ToArray ()) {
-						if (cnt.Key == project)
-							continue;
-						// Use the project context because file lookup is faster there than in the project class.
-						var pcnt = cnt.Value;
-						var file = pcnt._content.GetFile (fileName);
-						if (file != null) {
-							var newResult = parser.Parse (false, fileName, new StringReader (content), pcnt.Project);
-							if ((newResult.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable) {
-								pcnt.UpdateContent (c => c.AddOrUpdateFiles (newResult.ParsedFile));
-								pcnt.InformFileRemoved (new ParsedFileEventArgs (file));
-								pcnt.InformFileAdded (new ParsedFileEventArgs (newResult.ParsedFile));
-							}
-						}
-					}
-				}
-				return result;
-			} catch (Exception e) {
-				LoggingService.LogError ("Exception while parsing: " + e);
-				return null;
-			} finally {
-				t.Dispose ();
-			}
-		}
-
-		public static ParsedDocument ParseFile (Project project, string fileName, string mimeType, TextReader content)
-		{
-			return ParseFile (project, fileName, mimeType, content.ReadToEnd ());
-		}
-
-		public static ParsedDocument ParseFile (Project project, TextEditorData data)
-		{
-			return ParseFile (project, data.FileName, data.MimeType, data.Text);
-		}
-
-		public static ParsedDocument ParseFile (string fileName, string mimeType, string text, ProjectContentWrapper wrapper = null)
-		{
-			using (var reader = new StringReader (text))
-				return ParseFile (fileName, mimeType, reader, wrapper);
-		}
-
-		public static ParsedDocument ParseFile (string fileName, string mimeType, TextReader content, ProjectContentWrapper wrapper = null)
-		{
-			var parser = GetParser (mimeType);
-			if (parser == null)
-				return null;
-			var t = Counters.ParserService.FileParsed.BeginTiming (fileName);
-			try {
-				var result = parser.Parse (true, fileName, content);
-				lock (projectWrapperUpdateLock) {
-					if (wrapper != null && (result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable) {
-						var oldFile = wrapper._content.GetFile (fileName);
-						wrapper.UpdateContent (c => c.AddOrUpdateFiles (result.ParsedFile));
-						UpdateProjectCommentTasks (wrapper, result);
-						if (oldFile != null)
-							wrapper.InformFileRemoved (new ParsedFileEventArgs (oldFile));
-						wrapper.InformFileAdded (new ParsedFileEventArgs (result.ParsedFile));
-					}
-				}
-				return result;
-			} catch (Exception e) {
-				LoggingService.LogError ("Exception while parsing :" + e);
-				return null;
-			} finally {
-				t.Dispose ();
-			}
-		}
-
-		public static event EventHandler ParseOperationStarted;
-
-		internal static void StartParseOperation ()
-		{
-			if ((parseStatus++) == 0) {
-				if (ParseOperationStarted != null)
-					ParseOperationStarted (null, EventArgs.Empty);
-			}
-		}
-
-		public static event EventHandler ParseOperationFinished;
-
-		internal static void EndParseOperation ()
-		{
-			if (parseStatus == 0)
-				return;
-			if (--parseStatus == 0) {
-				if (ParseOperationFinished != null)
-					ParseOperationFinished (null, EventArgs.Empty);
-			}
-		}
+		#endregion
 
 		#region Parser Database Handling
 
@@ -706,7 +556,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var t = Counters.ParserService.ObjectDeserialized.BeginTiming (path);
 			try {
-				using (var fs = new FileStream (path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan)) {
+				using (var fs = new FileStream (path, System.IO.FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan)) {
 					using (var reader = new BinaryReaderWith7BitEncodedInts (fs)) {
 						lock (sharedSerializer) {
 							return (T)sharedSerializer.Deserialize (reader);
@@ -728,7 +578,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			var t = Counters.ParserService.ObjectSerialized.BeginTiming (path);
 			try {
-				using (var fs = new FileStream (path, FileMode.Create, FileAccess.Write)) {
+				using (var fs = new FileStream (path, System.IO.FileMode.Create, FileAccess.Write)) {
 					using (var writer = new BinaryWriterWith7BitEncodedInts (fs)) {
 						lock (sharedSerializer) {
 							sharedSerializer.Serialize (writer, obj);
@@ -809,2231 +659,88 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		static void StoreProjectCache (Project project, ProjectContentWrapper wrapper)
-		{
-			if (!wrapper.WasChanged)
-				return;
-			string cacheDir = GetCacheDirectory (project, true);
-			string fileName = Path.GetTempFileName ();
-			
-			SerializeObject (fileName, wrapper.Content.RemoveAssemblyReferences (wrapper.Content.AssemblyReferences));
-			
-			string cacheFile = Path.Combine (cacheDir, "completion.cache");
-			
-			try {
-				if (File.Exists (cacheFile))
-					File.Delete (cacheFile);
-				File.Move (fileName, cacheFile);
-			} catch (Exception e) {
-				LoggingService.LogError ("Error whil saving cache " + cacheFile, e);
-			}
-
-			foreach (var extensionObject in wrapper.ExtensionObjects) {
-				StoreExtensionObject (cacheDir, extensionObject);
-			}
-		}
-
 		#endregion
 
-		#region Project loading
-
-		public static void Load (WorkspaceItem item)
+		internal static void InformDocumentClose (Microsoft.CodeAnalysis.DocumentId analysisDocument, FilePath fileName)
 		{
-			using (Counters.ParserService.WorkspaceItemLoaded.BeginTiming ()) {
-				InternalLoad (item);
-				CleanupCache ();
-			}
-		}
-		static CancellationTokenSource loadCancellationSource = new CancellationTokenSource ();
-		static bool loadWs = false;
-		static void InternalLoad (WorkspaceItem item)
-		{
-			var ws = item as Workspace;
-			if (ws != null) {
-				loadWs = true;
-				loadCancellationSource.Cancel ();
-				loadCancellationSource = new CancellationTokenSource ();
-				foreach (WorkspaceItem it in ws.Items)
-					InternalLoad (it);
-				ws.ItemAdded += OnWorkspaceItemAdded;
-				ws.ItemRemoved += OnWorkspaceItemRemoved;
-			} else {
-				if (!loadWs) {
-					loadCancellationSource.Cancel ();
-					loadCancellationSource = new CancellationTokenSource ();
-				}
-				var solution = item as Solution;
-				if (solution != null) {
-					Parallel.ForEach (solution.GetAllProjects (), project => LoadProject (project));
-					var list = projectContents.Values.ToList ();
-					Task.Factory.StartNew (delegate {
-						foreach (var wrapper in list) {
-							CheckModifiedFiles (wrapper.Project, wrapper.Project.Files.ToArray (), wrapper, loadCancellationSource.Token);
-						}
-					});
+			foreach (var w in workspaces) {
+				if (w.GetOpenDocumentIds ().Contains (analysisDocument) )
+					w.InformDocumentClose (analysisDocument, fileName); 
 
-					solution.SolutionItemAdded += OnSolutionItemAdded;
-					solution.SolutionItemRemoved += OnSolutionItemRemoved;
-					OnSolutionLoaded (new SolutionEventArgs (solution));
-				}
 			}
 		}
 
-		public static event EventHandler<SolutionEventArgs> SolutionLoaded;
-
-		static void OnSolutionLoaded (SolutionEventArgs e)
+		internal static void InformDocumentOpen (Microsoft.CodeAnalysis.DocumentId analysisDocument, TextEditor editor)
 		{
-			var handler = SolutionLoaded;
-			if (handler != null)
-				handler (null, e);
-		}
-
-		[Serializable]
-		public class UnresolvedAssemblyDecorator : IUnresolvedAssembly
-		{
-			readonly ProjectContentWrapper wrapper;
-
-			IUnresolvedAssembly assembly {
-				get {
-					if (wrapper.OutputAssembly != null)
-						return wrapper.OutputAssembly;
-					return wrapper.Compilation.MainAssembly.UnresolvedAssembly;
-				}
-			}
-
-			public UnresolvedAssemblyDecorator (ProjectContentWrapper wrapper)
-			{
-				this.wrapper = wrapper;
-			}
-
-			#region IUnresolvedAssembly implementation
-
-			public string AssemblyName {
-				get {
-					return assembly.AssemblyName;
-				}
-			}
-
-			public string FullAssemblyName {
-				get {
-					return assembly.FullAssemblyName;
-				}
-			}
-
-			public string Location {
-				get {
-					return assembly.Location;
-				}
-			}
-
-			public IEnumerable<IUnresolvedAttribute> AssemblyAttributes {
-				get {
-					return assembly.AssemblyAttributes;
-				}
-			}
-
-			public IEnumerable<IUnresolvedAttribute> ModuleAttributes {
-				get {
-					return assembly.ModuleAttributes;
-				}
-			}
-
-			public IEnumerable<IUnresolvedTypeDefinition> TopLevelTypeDefinitions {
-				get {
-					return assembly.TopLevelTypeDefinitions;
-				}
-			}
-
-			#endregion
-
-			#region IAssemblyReference implementation
-
-			public IAssembly Resolve (ITypeResolveContext context)
-			{
-				return assembly.Resolve (context);
-			}
-
-			#endregion
-
-		}
-
-		[Serializable]
-		public class ProjectContentWrapper
-		{
-			readonly Dictionary<Type, object> extensionObjects = new Dictionary<Type, object> ();
-			List<ProjectContentWrapper> referencedWrappers = new List<ProjectContentWrapper>();
-			List<UnresolvedAssemblyProxy> referencedAssemblies = new List<UnresolvedAssemblyProxy>();
-			internal IProjectContent _content;
-			internal bool referencesConnected;
-
-			/*
-			static bool GetReferencesConnected (ProjectContentWrapper pcw, HashSet<ProjectContentWrapper> wrapper)
-			{
-				if (wrapper.Contains (pcw))
-					return true;
-				wrapper.Add (pcw); 
-				return pcw.referencesConnected && pcw.referencedWrappers.All (w => GetReferencesConnected (w, wrapper));
-			}*/
-
-			public IProjectContent Content {
-				get {
-					if (!referencesConnected) {
-						EnsureReferencesAreLoaded ();
-					}
-					return _content;
-				}
-				private set {
-					if (value == null)
-						throw new InvalidOperationException ("Project content can't be null");
-					_content = value;
-				}
-			}
-
-			/// <summary>
-			/// Gets the extension objects attached to the content wrapper.
-			/// </summary>
-			public IEnumerable<object> ExtensionObjects {
-				get {
-					return extensionObjects.Values;
-				}
-			}
-
-			/// <summary>
-			/// Updates an extension object for the wrapper. Note that only one extension object of a certain
-			/// type may be stored inside the project content wrapper.
-			/// 
-			/// The extension objects need to be serializable and are stored in the project cache on project unload.
-			/// </summary>
-			public void UpdateExtensionObject (object ext)
-			{
-				if (ext == null)
-					throw new ArgumentNullException ("ext");
-				extensionObjects [ext.GetType ()] = ext;
-			}
-
-			/// <summary>
-			/// Gets a specific extension object. This may lazy load an existing extension object from disk,
-			/// if called the first time and a serialized extension object exists.
-			/// </summary>
-			/// <returns>
-			/// The extension object. Or null, if no extension object of the specified type was registered.
-			/// </returns>
-			/// <typeparam name='T'>
-			/// The type of the extension object.
-			/// </typeparam>
-			public T GetExtensionObject<T> () where T : class
-			{
-				object result;
-				if (extensionObjects.TryGetValue (typeof(T), out result))
-					return (T)result;
-
-				string cacheDir = GetCacheDirectory (Project);
-				if (cacheDir == null)
-					return default(T);
-
-				try {
-					string fileName = Path.Combine (cacheDir, typeof(T).FullName + ".cache");
-					if (File.Exists (fileName)) {
-						var deserialized = DeserializeObject<T> (fileName);
-						extensionObjects [typeof(T)] = deserialized;
-						return deserialized;
-					}
-				} catch (Exception) {
-					Console.WriteLine ("Can't deserialize :" + typeof(T).FullName);
-				}
-
-				return default (T);
-			}
-
-			List<Action<IProjectContent>> loadActions = new List<Action<IProjectContent>> ();
-
-			public void RunWhenLoaded (Action<IProjectContent> act)
-			{
-				lock (updateContentLock) {
-					var lazyProjectLoader = _content as LazyProjectLoader;
-					if (loadActions != null) {
-						lock (loadActions) {
-							if (lazyProjectLoader != null && !lazyProjectLoader.ContextTask.IsCompleted) {
-								loadActions.Add (act);
-								return;
-							}
-						}
-					}
-				}
-				act (Content);
-			}
-
-			void ClearCachedCompilations ()
-			{
-				// Need to clear this compilation & all compilations that reference this directly or indirectly
-				var stack = new Stack<ProjectContentWrapper> ();
-				stack.Push (this);
-				var cleared = new HashSet<ProjectContentWrapper> ();
-				while (stack.Count > 0) {
-					var cur = stack.Pop ();
-					if (cleared.Contains (cur))
-						continue;
-					cleared.Add (cur);
-					cur.compilation = null;
-					foreach (var project in cur.ReferencedProjects) {
-						var projectContentWrapper = GetProjectContentWrapper (project);
-						if (projectContentWrapper != null)
-							stack.Push (projectContentWrapper);
-					}
-				}
-			}
-
-			readonly object updateContentLock = new object ();
-
-			void RunLoadActions ()
-			{
-				if (loadActions == null)
+			foreach (var w in workspaces) {
+				if (w.Contains (analysisDocument.ProjectId)) {
+					w.InformDocumentOpen (analysisDocument, editor); 
 					return;
-				Action<IProjectContent>[] actions;
-				lock (loadActions) {
-					actions = loadActions.ToArray ();
-					loadActions = null;
-				}
-				foreach (var action in actions)
-					action (Content);
-			}
-
-			public void UpdateContent (Func<IProjectContent, IProjectContent> updateFunc)
-			{
-				LazyProjectLoader lazyProjectLoader;
-				lock (updateContentLock) {
-					lazyProjectLoader = _content as LazyProjectLoader;
-					if (lazyProjectLoader != null) {
-						lazyProjectLoader.ContextTask.Wait ();
-					}
-					_content = updateFunc (_content);
-					ClearCachedCompilations ();
-					WasChanged = true;
-					if (lazyProjectLoader != null && !(_content is LazyProjectLoader)) {
-						RunLoadActions ();
-					}
 				}
 			}
-
-			public void InformFileRemoved (ParsedFileEventArgs e)
-			{
-				var handler = FileRemoved;
-				if (handler != null)
-					handler (this, e);
-			}
-
-			public void InformFileAdded (ParsedFileEventArgs e)
-			{
-				var handler = FileAdded;
-				if (handler != null)
-					handler (this, e);
-			}
-
-			public EventHandler<ParsedFileEventArgs> FileAdded;
-			public EventHandler<ParsedFileEventArgs> FileRemoved;
-			public bool WasChanged;
-			[NonSerialized]
-			ICompilation compilation;
-			object compilationContentLock = new object ();
-
-			public ICompilation Compilation {
-				get {
-					lock (compilationContentLock) {
-						if (compilation == null) {
-							compilation = Content.CreateCompilation ();
-						}
-						return compilation;
-					}
-				}
-			}
-
-			public Project Project {
-				get;
-				private set;
-			}
-
-			[NonSerialized]
-			int loadOperationDepth = 0;
-			[NonSerialized]
-			readonly object loadOperationLocker = new object ();
-
-			internal void BeginLoadOperation ()
-			{
-				lock (loadOperationLocker) {
-					loadOperationDepth++;
-					if (loadOperationDepth == 1)
-						UpdateLoadState ();
-				}
-			}
-
-			internal void EndLoadOperation ()
-			{
-				lock (loadOperationLocker) {
-					if (loadOperationDepth > 0) {
-						loadOperationDepth--;
-					}
-					if (loadOperationDepth == 0)
-						UpdateLoadState ();
-				}
-			}
-
-			bool isLoaded;
-			public bool IsLoaded {
-				get {
-					return isLoaded;
-				}
-			}
-
-			[NonSerialized]
-			CancellationTokenSource src;
-
-			internal void CancelLoad ()
-			{
-				if (src != null)
-					src.Cancel ();
-			}
-
-			void UpdateLoadState ()
-			{
-				bool wasLoaded = isLoaded;
-				isLoaded = loadOperationDepth == 0 && referencesConnected && !referencedAssemblies.Any (a => a.InLoad);
-				if (isLoaded && !wasLoaded)
-					OnLoad (EventArgs.Empty);
-			}
-
-			internal void RequestLoad ()
-			{
-				BeginLoadOperation ();
-				EnsureReferencesAreLoaded ();
-				CancelLoad ();
-				src = new CancellationTokenSource ();
-				var token = src.Token;
-				//Task.Factory.StartNew (delegate {
-					try {
-						foreach (var asm in referencedAssemblies.ToArray ()) {
-							if (token.IsCancellationRequested)
-								break;
-							var ctxLoader = asm.CtxLoader;
-							if (ctxLoader != null)
-								ctxLoader.EnsureAssemblyLoaded ();
-						}
-					} finally {
-						EndLoadOperation ();
-					}
-				//});
-			}
-
-			public event EventHandler Loaded;
-
-			protected virtual void OnLoad (EventArgs e)
-			{
-				var handler = Loaded;
-				if (handler != null)
-					handler (this, e);
-			}
-
-			[NonSerialized]
-			internal LazyAssemblyLoader OutputAssembly;
-
-			internal bool UpdateTrackedOutputAssembly (FilePath fileName)
-			{
-				if (File.Exists (fileName)) {
-					OutputAssembly = new LazyAssemblyLoader (fileName, null);
-					// a clean operation could remove the assembly, thefore we need to load it.
-					OutputAssembly.EnsureAssemblyLoaded ();
-					return true;
-				}
-				return false;
-			}
-
-			public ProjectContentWrapper (Project project)
-			{
-				if (project == null)
-					throw new ArgumentNullException ("project");
-				this.Project = project;
-				var lazyProjectLoader = new LazyProjectLoader (this);
-				this.Content = lazyProjectLoader;
-			}
-
-			public IEnumerable<Project> ReferencedProjects {
-				get {
-					return Project.GetReferencedItems (ConfigurationSelector.Default).OfType<DotNetProject> ();
-				}
-			}
-
-			class LazyProjectLoader : IProjectContent
-			{
-				readonly ProjectContentWrapper wrapper;
-				readonly Task<IProjectContent> contextTask;
-
-				public Task<IProjectContent> ContextTask {
-					get {
-						return contextTask;
-					}
-				}
-				object contentLock = new object ();
-				IProjectContent contentWithReferences;
-				public IProjectContent Content {
-					get {
-						lock (contentLock) {
-							if (References != null) {
-								return contentWithReferences ?? (contentWithReferences = contextTask.Result.AddAssemblyReferences (References)); 
-							}
-							return contextTask.Result;
-						}
-					}
-				}
-
-				List<IAssemblyReference> references;
-				public List<IAssemblyReference> References {
-					get {
-						return references;
-					}
-					set {
-						lock (contentLock) {
-							references = value;
-						}
-					}
-				}
-
-				public LazyProjectLoader (ProjectContentWrapper wrapper)
-				{
-					this.wrapper = wrapper;
-					contextTask = Task.Factory.StartNew (delegate {
-						try {
-							this.wrapper.BeginLoadOperation ();
-							var p = this.wrapper.Project;
-							var context = LoadProjectCache (p);
-
-							var assemblyName = p.ParentSolution != null ? p.GetOutputFileName (p.ParentSolution.DefaultConfigurationSelector).FileNameWithoutExtension : p.Name;
-							if (string.IsNullOrEmpty (assemblyName))
-								assemblyName = p.Name;
-
-							if (context != null) {
-								return context.SetAssemblyName (assemblyName) ?? context;
-							}
-
-							context = new MonoDevelopProjectContent (p);
-							context = context.SetLocation (p.FileName);
-							context = context.SetAssemblyName (assemblyName);
-
-							QueueParseJob (this.wrapper);
-							return context;
-						} finally {
-							this.wrapper.EndLoadOperation ();
-						}
-					});
-				}
-
-				static IProjectContent LoadProjectCache (Project project)
-				{
-					string cacheDir = GetCacheDirectory (project);
-					if (cacheDir == null)
-						return null;
-					
-					var cacheFile = Path.Combine (cacheDir, "completion.cache");
-					if (!File.Exists (cacheFile))
-						return null;
-					try {
-						var cache = DeserializeObject<IProjectContent> (cacheFile);
-						var monoDevelopProjectContent = cache as MonoDevelopProjectContent;
-						if (monoDevelopProjectContent != null)
-							monoDevelopProjectContent.Project = project;
-						return cache;
-					} catch (Exception e) {
-						LoggingService.LogWarning ("Error while reading completion cache, regenerating", e); 
-						Directory.Delete (cacheDir, true);
-						return null;
-					}
-				}
-
-				#region IAssemblyReference implementation
-
-				IAssembly IAssemblyReference.Resolve (ITypeResolveContext context)
-				{
-					return Content.Resolve (context);
-				}
-
-				#endregion
-
-				#region IUnresolvedAssembly implementation
-
-				string IUnresolvedAssembly.AssemblyName {
-					get {
-						return Content.AssemblyName;
-					}
-				}
-
-				string IUnresolvedAssembly.FullAssemblyName {
-					get {
-						return Content.FullAssemblyName;
-					}
-				}
-
-				string IUnresolvedAssembly.Location {
-					get {
-						return Content.Location;
-					}
-				}
-
-				IEnumerable<IUnresolvedAttribute> IUnresolvedAssembly.AssemblyAttributes {
-					get {
-						return Content.AssemblyAttributes;
-					}
-				}
-
-				IEnumerable<IUnresolvedAttribute> IUnresolvedAssembly.ModuleAttributes {
-					get {
-						return Content.ModuleAttributes;
-					}
-				}
-
-				IEnumerable<IUnresolvedTypeDefinition> IUnresolvedAssembly.TopLevelTypeDefinitions {
-					get {
-						return Content.TopLevelTypeDefinitions;
-					}
-				}
-
-				#endregion
-
-				#region IProjectContent implementation
-
-				string IProjectContent.ProjectFileName { get { return Content.ProjectFileName; } }
-
-				IUnresolvedFile IProjectContent.GetFile (string fileName)
-				{
-					return Content.GetFile (fileName);
-				}
-
-				ICompilation IProjectContent.CreateCompilation ()
-				{
-					return Content.CreateCompilation ();
-				}
-
-				public ICompilation CreateCompilation (ISolutionSnapshot solutionSnapshot)
-				{
-					return Content.CreateCompilation (solutionSnapshot);
-				}
-
-				IProjectContent IProjectContent.SetAssemblyName (string newAssemblyName)
-				{
-					return Content.SetAssemblyName (newAssemblyName);
-				}
-
-				IProjectContent IProjectContent.SetLocation (string newLocation)
-				{
-					return Content.SetLocation (newLocation);
-				}
-
-				IProjectContent IProjectContent.AddAssemblyReferences (IEnumerable<IAssemblyReference> references)
-				{
-					return Content.AddAssemblyReferences (references);
-				}
-
-				IProjectContent IProjectContent.AddAssemblyReferences (params IAssemblyReference[] references)
-				{
-					return Content.AddAssemblyReferences (references);
-				}
-
-				IProjectContent IProjectContent.RemoveAssemblyReferences (IEnumerable<IAssemblyReference> references)
-				{
-					return Content.RemoveAssemblyReferences (references);
-				}
-
-				IProjectContent IProjectContent.RemoveAssemblyReferences (params IAssemblyReference[] references)
-				{
-					return Content.RemoveAssemblyReferences (references);
-				}
-				#pragma warning disable 618
-				IProjectContent IProjectContent.UpdateProjectContent (IUnresolvedFile oldFile, IUnresolvedFile newFile)
-				{
-					return Content.UpdateProjectContent (oldFile, newFile);
-				}
-
-				public IProjectContent UpdateProjectContent (IEnumerable<IUnresolvedFile> oldFiles, IEnumerable<IUnresolvedFile> newFiles)
-				{
-					return Content.UpdateProjectContent (oldFiles, newFiles);
-				}
-				#pragma warning restore 618
-
-				public IProjectContent AddOrUpdateFiles (IEnumerable<IUnresolvedFile> newFiles)
-				{
-					return Content.AddOrUpdateFiles (newFiles);
-				}
-
-				public IProjectContent AddOrUpdateFiles (params IUnresolvedFile[] newFiles)
-				{
-					return Content.AddOrUpdateFiles (newFiles);
-				}
-
-				IEnumerable<IUnresolvedFile> IProjectContent.Files {
-					get {
-						return Content.Files;
-					}
-				}
-
-				IEnumerable<IAssemblyReference> IProjectContent.AssemblyReferences {
-					get {
-						return Content.AssemblyReferences;
-					}
-				}
-
-				IProjectContent IProjectContent.SetProjectFileName (string newProjectFileName)
-				{
-					return Content.SetProjectFileName (newProjectFileName);
-				}
-
-				IProjectContent IProjectContent.RemoveFiles (IEnumerable<string> fileNames)
-				{
-					return Content.RemoveFiles (fileNames);
-				}
-
-				IProjectContent IProjectContent.RemoveFiles (params string[] fileNames)
-				{
-					return Content.RemoveFiles (fileNames);
-				}
-
-				#endregion
-
-				object compilerSettings;
-
-				public IProjectContent SetCompilerSettings (object compilerSettings)
-				{
-					this.compilerSettings = compilerSettings;
-					return this;
-				}
-
-				public object CompilerSettings {
-					get {
-						return compilerSettings;
-					}
-				}
-			}
-
-			bool HasCyclicRefs (ProjectContentWrapper wrapper, HashSet<Project> nonCyclicCache)
-			{
-				if (nonCyclicCache.Contains (wrapper.Project))
-					return false;
-				nonCyclicCache.Add (wrapper.Project);
-				foreach (var referencedProject in wrapper.ReferencedProjects) {
-					ProjectContentWrapper w;
-					if (referencedProject == Project || referencedProject == wrapper.Project || projectContents.TryGetValue (referencedProject, out w) && HasCyclicRefs (w, nonCyclicCache)) {
-						return true;
-					}
-				}
-				return false;
-			}
-
-			List<UnresolvedAssemblyProxy> LoadReferencedAssemblies (DotNetProject netProject)
-			{
-				var newReferencedAssemblies = new List<UnresolvedAssemblyProxy> ();
-				try {
-					foreach (string file in netProject.GetReferencedAssemblies (IdeApp.IsInitialized ? IdeApp.Workspace.ActiveConfiguration : ConfigurationSelector.Default, false)) {
-						string fileName;
-						if (!Path.IsPathRooted (file)) {
-							fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);
-						}
-						else {
-							fileName = Path.GetFullPath (file);
-						}
-						var ctx = LoadAssemblyContext (fileName);
-						if (ctx != null) {
-							newReferencedAssemblies.Add (ctx);
-							ctx.Loaded += HandleReferencedProjectInLoadChange;
-						}
-						else {
-							LoggingService.LogWarning ("TypeSystemService: Can't load assembly context for:" + file);
-						}
-					}
-				}
-				catch (Exception e) {
-					LoggingService.LogError ("Error while getting assembly references", e);
-				}
-				return newReferencedAssemblies;
-			}
-
-			public void EnsureReferencesAreLoaded ()
-			{
-				lock (projectContentLock) {
-					if (referencesConnected)
-						return;
-					compilation = null;
-					referencesConnected = true;
-					var netProject = Project as DotNetProject;
-					if (netProject == null)
-						return;
-					try {
-						var contexts = new List<IAssemblyReference> ();
-						var nonCyclicCache = new HashSet<Project> ();
-						foreach (var referencedWrapper in referencedWrappers) {
-							referencedWrapper.Loaded -= HandleReferencedProjectInLoadChange;
-						}
-						var newReferencedWrappers = new List<ProjectContentWrapper> ();
-						foreach (var referencedProject in ReferencedProjects) {
-							ProjectContentWrapper wrapper;
-							if (projectContents.TryGetValue (referencedProject, out wrapper)) {
-								if (HasCyclicRefs (wrapper, nonCyclicCache))
-									continue;
-								wrapper.Loaded += HandleReferencedProjectInLoadChange;
-								newReferencedWrappers.Add (wrapper);
-								contexts.Add (new UnresolvedAssemblyDecorator (wrapper));
-							}
-						}
-						this.referencedWrappers = newReferencedWrappers;
-						UnresolvedAssemblyProxy ctx;
-						// Add mscorlib reference
-						var config = IdeApp.Workspace != null ? netProject.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration : null;
-						bool noStdLib = false;
-						if (config != null) {
-							var parameters = config.CompilationParameters as DotNetConfigurationParameters;
-							if (parameters != null) {
-								noStdLib = parameters.NoStdLib;
-							}
-						}
-						if (!noStdLib && netProject.TargetRuntime != null && netProject.TargetRuntime.AssemblyContext != null) {
-							var corLibRef = netProject.TargetRuntime.AssemblyContext.GetAssemblyForVersion (typeof(object).Assembly.FullName, null, netProject.TargetFramework);
-							if (corLibRef != null) {
-								ctx = LoadAssemblyContext (corLibRef.Location);
-								if (ctx != null)
-									contexts.Add (ctx);
-							}
-						}
-						// Get the assembly references throught the project, since it may have custom references
-						foreach (var asm in referencedAssemblies) {
-							asm.Loaded += HandleReferencedProjectInLoadChange;
-						}
-						var newReferencedAssemblies = LoadReferencedAssemblies (netProject);
-						contexts.AddRange (newReferencedAssemblies);
-						referencedAssemblies = newReferencedAssemblies;
-						bool changed = WasChanged;
-						var lazyProjectLoader = Content as LazyProjectLoader;
-						if (lazyProjectLoader != null) {
-							lazyProjectLoader.References = contexts;
-						}
-						else {
-							UpdateContent (c => c.RemoveAssemblyReferences (Content.AssemblyReferences).AddAssemblyReferences (contexts));
-						}
-						WasChanged = changed;
-					} catch (Exception e) {
-						if (netProject.TargetRuntime == null) {
-							LoggingService.LogError ("Target runtime was null: " + Project.Name);
-						} else if (netProject.TargetRuntime.AssemblyContext == null) {
-							LoggingService.LogError ("Target runtime assembly context was null: " + Project.Name);
-						}
-						LoggingService.LogError ("Error while reloading all references of project: " + Project.Name, e);
-					} finally {
-						UpdateLoadState ();
-					}
-				}
-			}
-			static readonly object reconnectLock = new object();
-			public void ReconnectAssemblyReferences ()
-			{
-				var netProject = Project as DotNetProject;
-				if (netProject == null)
-					return;
-				lock (reconnectLock) {
-					CancelLoad ();
-					this.referencesConnected = false;
-					RequestLoad ();
-				}
-			}
-
-			void HandleReferencedProjectInLoadChange (object sender, EventArgs e)
-			{
-				UpdateLoadState ();
-			}
-
-			internal void Unload ()
-			{
-				CancelLoad ();
-				foreach (var asm in referencedAssemblies) {
-					asm.Loaded -= HandleReferencedProjectInLoadChange;
-				}
-				foreach (var wrapper in referencedWrappers) {
-					wrapper.Loaded -= HandleReferencedProjectInLoadChange;
-				}
-				loadActions = null;
-				foreach (var wrapper in referencedWrappers) {
-					wrapper.Loaded -= HandleReferencedProjectInLoadChange;
-				}
-				referencedWrappers.Clear ();
-				referencedAssemblies.Clear ();
-				Loaded = null;
-				Content = new CSharpProjectContent ();
+			if (!gotDocumentRequestError) {
+				gotDocumentRequestError = true;
+				LoggingService.LogWarning ("Can't open requested document : " + analysisDocument + ":" + editor.FileName);
 			}
 		}
 
-		static readonly object projectContentLock = new object ();
-		static readonly Dictionary<Project, ProjectContentWrapper> projectContents = new Dictionary<Project, ProjectContentWrapper> ();
-
-		public static ProjectContentWrapper LoadProject (Project project)
+		internal static void InformDocumentOpen (Microsoft.CodeAnalysis.Workspace ws, Microsoft.CodeAnalysis.DocumentId analysisDocument, TextEditor editor)
 		{
-			if (IncLoadCount (project) != 1)
-				return null;
-			lock (projectContentLock) {
-				if (projectContents.ContainsKey (project))
-					return null;
-				try {
-					Counters.ParserService.ProjectsLoaded++;
-					ProjectContentWrapper wrapper;
-					projectContents [project] = wrapper = new ProjectContentWrapper (project);
-					var dotNetProject = project as DotNetProject;
-					if (dotNetProject != null)
-						CheckProjectOutput (dotNetProject, false);
-
-					project.FileAddedToProject += OnFileAdded;
-					project.FileRemovedFromProject += OnFileRemoved;
-					project.FileRenamedInProject += OnFileRenamed;
-					project.Modified += OnProjectModified;
-
-					if (dotNetProject != null) {
-						StartFrameworkLookup (dotNetProject);
-					}
-					return wrapper;
-				} catch (Exception ex) {
-					LoggingService.LogError ("Parser database for project '" + project.Name + " could not be loaded", ex);
-				}
-				return null;
-			}
+			((MonoDevelopWorkspace)ws).InformDocumentOpen (analysisDocument, editor); 
 		}
 
-		public static Project GetProject (IEntity entity)
-		{
-			if (entity == null)
-				throw new ArgumentNullException ("entity");
-			return GetProject (entity.ParentAssembly.UnresolvedAssembly.Location);
-		}
+		static bool gotDocumentRequestError = false;
 
-		public static Project GetProject (string location)
-		{
-			foreach (var wrapper in projectContents)
-				if (wrapper.Value.Compilation.MainAssembly.UnresolvedAssembly.Location == location)
-					return wrapper.Key;
-			return null;
-		}
-
-		#region Project modification handlers
-
-		static void OnFileAdded (object sender, ProjectFileEventArgs args)
-		{
-			var project = (Project)sender;
-			foreach (ProjectFileEventInfo fargs in args) {
-				QueueParseJob (projectContents [project], new [] { fargs.ProjectFile });
-			}
-		}
-
-		static void OnFileRemoved (object sender, ProjectFileEventArgs args)
-		{
-			var project = (Project)sender;
-			foreach (ProjectFileEventInfo fargs in args) {
-				var wrapper = projectContents [project];
-				var fileName = fargs.ProjectFile.Name;
-				var file = wrapper._content.GetFile (fileName);
-				if (file == null)
-					continue;
-				wrapper.UpdateContent (c => c.RemoveFiles (fileName));
-				wrapper.InformFileRemoved (new ParsedFileEventArgs (file));
-
-				var tags = wrapper.GetExtensionObject <ProjectCommentTags> ();
-				if (tags != null)
-					tags.RemoveFile (wrapper.Project, fileName);
-			}
-		}
-
-		static void OnFileRenamed (object sender, ProjectFileRenamedEventArgs args)
-		{
-			var project = (Project)sender;
-			foreach (ProjectFileRenamedEventInfo fargs in args) {
-				var content = projectContents [project];
-				var file = content._content.GetFile (fargs.OldName);
-				if (file == null)
-					continue;
-				content.UpdateContent (c => c.RemoveFiles (fargs.OldName));
-				content.InformFileRemoved (new ParsedFileEventArgs (file));
-
-				var tags = content.GetExtensionObject <ProjectCommentTags> ();
-				if (tags != null)
-					tags.RemoveFile (project, fargs.OldName);
-
-				QueueParseJob (content, new [] { fargs.ProjectFile });
-			}
-		}
-
-		static void OnProjectModified (object sender, SolutionItemModifiedEventArgs args)
-		{
-			if (!args.Any (x => x.Hint == "TargetFramework" || x.Hint == "References"))
-				return;
-			var project = (Project)sender;
-			
-			ProjectContentWrapper wrapper;
-			projectContents.TryGetValue (project, out wrapper);
-			if (wrapper == null)
-				return;
-			wrapper.ReconnectAssemblyReferences ();
-		}
-
-		#endregion
-
-		internal static void Unload (WorkspaceItem item)
-		{
-			var ws = item as Workspace;
-			TrackFileChanges = false;
-			loadCancellationSource.Cancel ();
-			if (ws != null) {
-				foreach (WorkspaceItem it in ws.Items)
-					Unload (it);
-				ws.ItemAdded -= OnWorkspaceItemAdded;
-				ws.ItemRemoved -= OnWorkspaceItemRemoved;
-				projectContents.Clear ();
-				loadWs = false;
-			} else {
-				var solution = item as Solution;
-				if (solution != null) {
-					foreach (var project in solution.GetAllProjects ()) {
-						UnloadProject (project);
-					}
-					solution.SolutionItemAdded -= OnSolutionItemAdded;
-					solution.SolutionItemRemoved -= OnSolutionItemRemoved;
-				}
-			}
-
-			cachedAssemblyContents.Clear ();
-			lock (parseQueueLock) {
-				parseQueueIndex.Clear ();
-				parseQueue.Clear ();
-			}
-			TrackFileChanges = true;
-		}
-
-		internal static void UnloadProject (Project project, bool skipProjectSerialization = false)
-		{
-			if (DecLoadCount (project) != 0)
-				return;
-			Counters.ParserService.ProjectsLoaded--;
-			project.FileAddedToProject -= OnFileAdded;
-			project.FileRemovedFromProject -= OnFileRemoved;
-			project.FileRenamedInProject -= OnFileRenamed;
-			project.Modified -= OnProjectModified;
-				
-			ProjectContentWrapper wrapper;
-			lock (projectWrapperUpdateLock) {
-				if (!projectContents.TryGetValue (project, out wrapper))
-					return;
-				projectContents.Remove (project);
-			}
-			if (!skipProjectSerialization)
-				StoreProjectCache (project, wrapper);
-			OnProjectUnloaded (new ProjectUnloadEventArgs (project, wrapper));
-			wrapper.Unload ();
-		}
-
-		public static event EventHandler<ProjectUnloadEventArgs> ProjectUnloaded;
-
-		static void OnProjectUnloaded (ProjectUnloadEventArgs e)
-		{
-			var handler = ProjectUnloaded;
-			if (handler != null)
-				handler (null, e);
-		}
-
-		static void OnWorkspaceItemAdded (object s, WorkspaceItemEventArgs args)
-		{
-			Load (args.Item);
-		}
-
-		static void OnWorkspaceItemRemoved (object s, WorkspaceItemEventArgs args)
-		{
-			Unload (args.Item);
-		}
-
-		static void OnSolutionItemAdded (object sender, SolutionItemChangeEventArgs args)
-		{
-			var project = args.SolutionItem as Project;
-			if (project != null) {
-				var wrapper = LoadProject (project);
-				if (wrapper != null) {
-					var files = wrapper.Project.Files.ToArray ();
-					Task.Factory.StartNew (delegate {
-						CheckModifiedFiles (wrapper.Project, files, wrapper);
-						wrapper.RequestLoad ();
-					});
-				}
-			}
-		}
-
-		static void OnSolutionItemRemoved (object sender, SolutionItemChangeEventArgs args)
-		{
-			var project = args.SolutionItem as Project;
-			if (project != null)
-				UnloadProject (project);
-		}
-
-		#endregion
-
-		#region Reference Counting
-
-		static readonly Dictionary<Project,int> loadCount = new Dictionary<Project,int> ();
-		static readonly object rwLock = new object ();
-
-		static int DecLoadCount (Project ob)
-		{
-			lock (rwLock) {
-				int c;
-				if (loadCount.TryGetValue (ob, out c)) {
-					c--;
-					if (c == 0)
-						loadCount.Remove (ob);
-					else
-						loadCount [ob] = c;
-					return c;
-				}
-				LoggingService.LogError ("DecLoadCount: Object not registered.");
-				return 0;
-			}
-		}
-
-		static int IncLoadCount (Project ob)
-		{
-			lock (rwLock) {
-				int c;
-				if (loadCount.TryGetValue (ob, out c)) {
-					c++;
-					loadCount [ob] = c;
-					return c;
-				}
-				loadCount [ob] = 1;
-				return 1;
-			}
-		}
-
-		#endregion
-
-		static bool GetXml (string baseName, TargetRuntime runtime, out FilePath xmlFileName)
-		{
-			try {
-				xmlFileName = LookupLocalizedXmlDoc (baseName);
-				if (!xmlFileName.IsNull)
-					return true;
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while looking up XML docs.", e);
-			}
-			
-			if (MonoDevelop.Core.Platform.IsWindows) {
-				string windowsFileName = FindWindowsXmlDocumentation (baseName, runtime);
-				if (File.Exists (windowsFileName)) {
-					xmlFileName = windowsFileName;
-					return true;
-				}
-			}
-			
-			xmlFileName = "";
-			return false;
-		}
-
-		#region Lookup XML documentation
-
-		// ProgramFilesX86 is broken on 32-bit WinXP, this is a workaround
-		static string GetProgramFilesX86 ()
-		{
-			return Environment.GetFolderPath (IntPtr.Size == 8 ?
-				Environment.SpecialFolder.ProgramFilesX86 : Environment.SpecialFolder.ProgramFiles);
-		}
-
-		static readonly string referenceAssembliesPath = Path.Combine (GetProgramFilesX86 (), @"Reference Assemblies\Microsoft\\Framework");
-		static readonly string frameworkPath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Windows), @"Microsoft.NET\Framework");
-
-		static string FindWindowsXmlDocumentation (string assemblyFileName, TargetRuntime runtime)
-		{
-			string fileName;
-			ClrVersion version = runtime != null && runtime.CustomFrameworks.Any () ? runtime.CustomFrameworks.First ().ClrVersion : ClrVersion.Default;
-			switch (version) {
-//			case "1.0":
-//				fileName = LookupLocalizedXmlDoc (Path.Combine (frameworkPath, "v1.0.3705", assemblyFileName));
-//				break;
-			case ClrVersion.Net_1_1:
-				fileName = LookupLocalizedXmlDoc (Path.Combine (frameworkPath, "v1.1.4322", assemblyFileName));
-				break;
-			case ClrVersion.Net_2_0:
-			case ClrVersion.Clr_2_1:
-				fileName = LookupLocalizedXmlDoc (Path.Combine (frameworkPath, "v2.0.50727", assemblyFileName))
-				?? LookupLocalizedXmlDoc (Path.Combine (referenceAssembliesPath, "v3.5"))
-				?? LookupLocalizedXmlDoc (Path.Combine (referenceAssembliesPath, "v3.0"))
-				?? LookupLocalizedXmlDoc (Path.Combine (referenceAssembliesPath, @".NETFramework\v3.5\Profile\Client"));
-				break;
-			default:
-				fileName = LookupLocalizedXmlDoc (Path.Combine (referenceAssembliesPath, @".NETFramework\v4.0", assemblyFileName))
-				?? LookupLocalizedXmlDoc (Path.Combine (frameworkPath, "v4.0.30319", assemblyFileName));
-				break;
-			}
-			return fileName;
-		}
-
-		static string LookupLocalizedXmlDoc (string fileName)
-		{
-			return XmlDocumentationProvider.LookupLocalizedXmlDoc (fileName);
-		}
-
-		#endregion
-
-		class UnresolvedAssemblyProxy : IUnresolvedAssembly
-		{
-			public readonly string FileName;
-			internal LazyAssemblyLoader CtxLoader;
-
-			public IUnresolvedAssembly Ctx {
-				get {
-					return CtxLoader;
-				}
-			}
-
-			public bool InLoad {
-				get {
-					return CtxLoader == null || CtxLoader.InLoad;
-				}
-			}
-
-			public event EventHandler Loaded {
-				add {
-					var ctxLoader = CtxLoader;
-					if (ctxLoader != null)
-						ctxLoader.Loaded += value;
-				}
-				remove { 
-					var ctxLoader = CtxLoader;
-					if (ctxLoader != null)
-						ctxLoader.Loaded -= value;
-				}
-			}
-
-			public UnresolvedAssemblyProxy (string fileName)
-			{
-				if (fileName == null)
-					throw new ArgumentNullException ("fileName");
-				this.FileName = fileName;
-			}
-
-			#region IUnresolvedAssembly implementation
-
-			string IUnresolvedAssembly.AssemblyName {
-				get {
-					return Ctx.AssemblyName;
-				}
-			}
-
-			string IUnresolvedAssembly.FullAssemblyName {
-				get {
-					return Ctx.FullAssemblyName;
-				}
-			}
-
-			string IUnresolvedAssembly.Location {
-				get {
-					return Ctx.Location;
-				}
-			}
-
-			IEnumerable<IUnresolvedAttribute> IUnresolvedAssembly.AssemblyAttributes {
-				get {
-					return Ctx.AssemblyAttributes;
-				}
-			}
-
-			IEnumerable<IUnresolvedAttribute> IUnresolvedAssembly.ModuleAttributes {
-				get {
-					return Ctx.ModuleAttributes;
-				}
-			}
-
-			IEnumerable<IUnresolvedTypeDefinition> IUnresolvedAssembly.TopLevelTypeDefinitions {
-				get {
-					return Ctx.TopLevelTypeDefinitions;
-				}
-			}
-
-			#endregion
-
-			#region IAssemblyReference implementation
-
-			IAssembly IAssemblyReference.Resolve (ITypeResolveContext context)
-			{
-				var ctx = Ctx;
-				if (ctx == null)
-					return null;
-				return ctx.Resolve (context);
-			}
-
-			#endregion
-
-			public override string ToString ()
-			{
-				return string.Format ("[UnresolvedAssemblyProxy: FileName={0}]", FileName);
-			}
-		}
-
-		internal class LazyAssemblyLoader : IUnresolvedAssembly
-		{
-			class LazyAssembly : IAssembly
-			{
-				readonly LazyAssemblyLoader loader;
-				readonly ITypeResolveContext context;
-				IAssembly assembly;
-
-				IAssembly Assembly {
-					get {
-						lock (loader) {
-							if (assembly == null) {
-								loader.EnsureAssemblyLoaded ();
-								assembly = loader.assembly.Resolve (context);
-							}
-							return assembly;
-						}
-					}
-				}
-
-
-				public LazyAssembly (LazyAssemblyLoader loader, ITypeResolveContext context)
-				{
-					this.loader = loader;
-					this.context = context;
-				}
-
-				#region IAssembly implementation
-
-				bool IAssembly.InternalsVisibleTo (IAssembly assembly)
-				{
-					return Assembly.InternalsVisibleTo (assembly);
-				}
-
-				ITypeDefinition IAssembly.GetTypeDefinition (TopLevelTypeName typeName)
-				{
-					return Assembly.GetTypeDefinition (typeName);
-				}
-
-				IUnresolvedAssembly IAssembly.UnresolvedAssembly {
-					get {
-						return Assembly.UnresolvedAssembly;
-					}
-				}
-
-				bool IAssembly.IsMainAssembly {
-					get {
-						return Assembly.IsMainAssembly;
-					}
-				}
-
-				string IAssembly.AssemblyName {
-					get {
-						return Assembly.AssemblyName;
-					}
-				}
-
-				string IAssembly.FullAssemblyName {
-					get {
-						return Assembly.FullAssemblyName;
-					}
-				}
-
-				IList<IAttribute> IAssembly.AssemblyAttributes {
-					get {
-						return Assembly.AssemblyAttributes;
-					}
-				}
-
-				IList<IAttribute> IAssembly.ModuleAttributes {
-					get {
-						return Assembly.ModuleAttributes;
-					}
-				}
-
-				INamespace IAssembly.RootNamespace {
-					get {
-						return Assembly.RootNamespace;
-					}
-				}
-
-				IEnumerable<ITypeDefinition> IAssembly.TopLevelTypeDefinitions {
-					get {
-						return Assembly.TopLevelTypeDefinitions;
-					}
-				}
-
-				#endregion
-
-				#region ICompilationProvider implementation
-
-				ICompilation ICompilationProvider.Compilation {
-					get {
-						return Assembly.Compilation;
-					}
-				}
-
-				#endregion
-
-			}
-
-			#region IAssemblyReference implementation
-
-			IAssembly IAssemblyReference.Resolve (ITypeResolveContext context)
-			{
-				if (assembly != null)
-					return assembly.Resolve (context);
-				return new LazyAssembly (this, context);
-			}
-
-			#endregion
-
-			#region IUnresolvedAssembly implementation
-
-			readonly object assemblyLock = new object ();
-
-			string IUnresolvedAssembly.AssemblyName {
-				get {
-					lock (assemblyLock) {
-						EnsureAssemblyLoaded ();
-						return assembly.AssemblyName;
-					}
-				}
-			}
-
-			string IUnresolvedAssembly.FullAssemblyName {
-				get {
-					lock (assemblyLock) {
-						EnsureAssemblyLoaded ();
-						return assembly.FullAssemblyName;
-					}
-				}
-			}
-
-			string IUnresolvedAssembly.Location {
-				get {
-					lock (assemblyLock) {
-						EnsureAssemblyLoaded ();
-						return assembly.Location;
-					}
-				}
-			}
-
-			IEnumerable<IUnresolvedAttribute> IUnresolvedAssembly.AssemblyAttributes {
-				get {
-					lock (assemblyLock) {
-						EnsureAssemblyLoaded ();
-						return assembly.AssemblyAttributes;
-					}
-				}
-			}
-
-			IEnumerable<IUnresolvedAttribute> IUnresolvedAssembly.ModuleAttributes {
-				get {
-					lock (assemblyLock) {
-						EnsureAssemblyLoaded ();
-						return assembly.ModuleAttributes;
-					}
-				}
-			}
-
-			IEnumerable<IUnresolvedTypeDefinition> IUnresolvedAssembly.TopLevelTypeDefinitions {
-				get {
-					lock (assemblyLock) {
-						EnsureAssemblyLoaded ();
-						return assembly.TopLevelTypeDefinitions;
-					}
-				}
-			}
-
-			#endregion
-
-			readonly string fileName;
-			readonly string cache;
-			IUnresolvedAssembly assembly;
-
-			readonly object asmLocker = new object ();
-			internal void EnsureAssemblyLoaded ()
-			{
-				lock (asmLocker) {
-					if (assembly != null)
-						return;
-					var loadedAssembly = LoadAssembly ();
-					if (loadedAssembly == null) {
-						LoggingService.LogWarning ("Assembly " + fileName + " could not be loaded cleanly.");
-						assembly = new DefaultUnresolvedAssembly (fileName);
-					} else {
-						assembly = loadedAssembly;
-					}
-
-					OnLoad (EventArgs.Empty);
-				}
-			}
-
-			public override string ToString ()
-			{
-				return string.Format ("[LazyAssemblyLoader: fileName={0}, assembly={1}]", fileName, assembly);
-			}
-			
-			public bool InLoad {
-				get {
-					return assembly == null;
-				}
-			}
-
-			public event EventHandler Loaded;
-
-			protected virtual void OnLoad (EventArgs e)
-			{
-				var handler = Loaded;
-				if (handler != null)
-					handler (this, e);
-			}
-
-			public LazyAssemblyLoader (string fileName, string cache)
-			{
-				this.fileName = fileName;
-				this.cache = cache;
-			}
-
-
-			IUnresolvedAssembly LoadAssembly ()
-			{
-				var assemblyPath = cache != null ? Path.Combine (cache, "assembly.data") : null;
-				var assemblyTag = cache != null ? Path.Combine (cache, "assembly.tag") : null;
-				try {
-					if (assemblyPath != null && assemblyTag != null && File.Exists (assemblyPath) && File.Exists (assemblyTag)) {
-						var deserializedAssembly = DeserializeObject <IUnresolvedAssembly> (assemblyPath);
-						if (deserializedAssembly != null) {
-							return deserializedAssembly;
-						}
-					}
-				} catch (Exception) {
-				}
-				IUnresolvedAssembly result;
-				try {
-					var loader = new IkvmLoader ();
-					loader.IncludeInternalMembers = true;
-					loader.DocumentationProvider = new CombinedDocumentationProvider (fileName);
-					result = loader.LoadAssemblyFile (fileName);
-				} catch (Exception e) {
-					LoggingService.LogError ("Can't convert assembly: " + fileName, e);
-					return null;
-				}
-
-				if (cache != null) {
-					var writeTime = File.GetLastWriteTimeUtc (fileName);
-					SerializeObject (assemblyPath, result);
-					SerializeObject (assemblyTag, new AssemblyTag (writeTime));
-				}
-				return result;
-			}
-		}
-
-		[Serializable]
-		class CombinedDocumentationProvider : IDocumentationProvider
-		{
-			readonly string fileName;
-			[NonSerialized]
-			IDocumentationProvider baseProvider;
-
-			public IDocumentationProvider BaseProvider {
-				get {
-					if (baseProvider == null) {
-						FilePath xmlDocFile;
-						if (GetXml (fileName, null, out xmlDocFile)) {
-							try {
-								baseProvider = new XmlDocumentationProvider (xmlDocFile);
-							} catch (Exception ex) {
-								LoggingService.LogWarning ("Ignoring error while reading xml doc from " + xmlDocFile, ex);
-							} 
-						}
-						if (baseProvider == null)
-							baseProvider = new MonoDocDocumentationProvider ();
-					}
-					return baseProvider;
-				}
-			}
-
-			public CombinedDocumentationProvider (string fileName)
-			{
-				this.fileName = fileName;
-			}
-
-			#region IDocumentationProvider implementation
-
-			public DocumentationComment GetDocumentation (IEntity entity)
-			{
-				var provider = BaseProvider;
-				return provider != null ? provider.GetDocumentation (entity) : null;
-			}
-
-			#endregion
-
-		}
-
-		static readonly object assemblyContextLock = new object ();
-
-		static UnresolvedAssemblyProxy LoadAssemblyContext (FilePath fileName)
-		{
-			CanonicalizePath (ref fileName);
-
-			UnresolvedAssemblyProxy loadedContext;
-			if (cachedAssemblyContents.TryGetValue (fileName, out loadedContext)) {
-				return loadedContext;
-			}
-			if (!File.Exists (fileName))
-				return null;
-			lock (assemblyContextLock) {
-				if (cachedAssemblyContents.TryGetValue (fileName, out loadedContext)) {
-					CheckModifiedFile (loadedContext);
-					return loadedContext;
-				}
-
-				string cache = GetCacheDirectory (fileName, true);
-
-				try {
-					var result = new UnresolvedAssemblyProxy (fileName);
-					result.CtxLoader = new LazyAssemblyLoader (fileName, cache);
-					CheckModifiedFile (result);
-					var newcachedAssemblyContents = new Dictionary<string, UnresolvedAssemblyProxy> (cachedAssemblyContents);
-					newcachedAssemblyContents [fileName] = result;
-					cachedAssemblyContents = newcachedAssemblyContents;
-					OnAssemblyLoaded (new AssemblyLoadedEventArgs (result.CtxLoader));
-					return result;
-				} catch (Exception ex) {
-					LoggingService.LogError ("Error loading assembly " + fileName, ex);
-					return null;
-				}
-			}
-		}
-
-		internal static event EventHandler<AssemblyLoadedEventArgs> AssemblyLoaded;
-
-		static  void OnAssemblyLoaded (AssemblyLoadedEventArgs e)
-		{
-			var handler = AssemblyLoaded;
-			if (handler != null)
-				handler (null, e);
-		}
-
-		public static IUnresolvedAssembly LoadAssemblyContext (TargetRuntime runtime, TargetFramework fx, string fileName)
-		{
-			if (File.Exists (fileName))
-				return LoadAssemblyContext (fileName);
-			var corLibRef = runtime.AssemblyContext.GetAssemblyForVersion (fileName, null, fx);
-			return corLibRef == null ? null : LoadAssemblyContext (corLibRef.Location);
-		}
-
-		public static IProjectContent GetProjectContext (Project project)
+		public static Microsoft.CodeAnalysis.ProjectId GetProjectId (MonoDevelop.Projects.Project project)
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
-			var content = GetProjectContentWrapper (project);
-			if (content == null)
-				return null;
-			return content.Content;
-		}
-
-		public static ICompilation GetCompilation (Project project)
-		{
-			if (project == null)
-				throw new ArgumentNullException ("project");
-			var content = GetProjectContentWrapper (project);
-			if (content == null)
-				return null;
-			return content.Compilation;
-		}
-
-		public static ICompilation GetCompilation (SystemAssembly assembly, ICompilation compilation)
-		{
-			var ctx = LoadAssemblyContext (assembly.Location);
-			var list = compilation.ReferencedAssemblies.Select (r => r.UnresolvedAssembly).ToList ();
-			list.Add (compilation.MainAssembly.UnresolvedAssembly);
-			var	result = new SimpleCompilation (ctx, list);
-			return result;
-		}
-
-		static IEnumerable<SystemAssembly> GetFrameworkAssemblies (DotNetProject netProject)
-		{
-			var assemblies = new Dictionary<string, SystemAssembly> ();
-			foreach (var assembly in netProject.AssemblyContext.GetAssemblies ()) {
-				SystemAssembly existing;
-				if (assemblies.TryGetValue (assembly.Name, out existing)) {
-					Version v1, v2;
-					if (!Version.TryParse (existing.Version, out v1))
-						continue;
-					if (!Version.TryParse (assembly.Version, out v2))
-						continue;
-					if (v1 > v2)
-						continue;
+			foreach (var w in workspaces) {
+				var projectId = w.GetProjectId (project);
+				if (projectId != null) {
+					return projectId;
 				}
-				assemblies [assembly.Name] = assembly;
-			}
-			return assemblies.Values;
-		}
-
-		class FrameworkTask
-		{
-			public int RetryCount { get; set; }
-
-			public Task<FrameworkLookup> Task { get; set; }
-		}
-
-		readonly static Dictionary<string, FrameworkTask> frameworkLookup = new Dictionary<string, FrameworkTask> ();
-
-		static void StartFrameworkLookup (DotNetProject netProject)
-		{
-			if (netProject == null)
-				throw new ArgumentNullException ("netProject");
-			lock (frameworkLookup) {
-				FrameworkTask result;
-				if (netProject.TargetFramework == null)
-					return;
-				var frameworkName = netProject.TargetFramework.Name;
-				if (!frameworkLookup.TryGetValue (frameworkName, out result))
-					frameworkLookup [frameworkName] = result = new FrameworkTask ();
-				if (result.Task != null)
-					return;
-				result.Task = Task.Factory.StartNew (delegate {
-					return GetFrameworkLookup (netProject);
-				});
-			}
-		}
-
-		public static bool TryGetFrameworkLookup (DotNetProject project, out FrameworkLookup lookup)
-		{
-			lock (frameworkLookup) {
-				FrameworkTask result;
-				if (frameworkLookup.TryGetValue (project.TargetFramework.Name, out result)) {
-					if (!result.Task.IsCompleted) {
-						lookup = null;
-						return false;
-					}
-					lookup = result.Task.Result;
-					return true;
-				}
-			}
-			lookup = null;
-			return false;
-		}
-
-		public static bool RecreateFrameworkLookup (DotNetProject netProject)
-		{
-			lock (frameworkLookup) {
-				FrameworkTask result;
-				var frameworkName = netProject.TargetFramework.Name;
-				if (!frameworkLookup.TryGetValue (frameworkName, out result))
-					return false;
-				if (result.RetryCount > 5) {
-					LoggingService.LogError ("Can't create framework lookup for:" + frameworkName);
-					return false;
-				}
-				result.RetryCount++;
-				LoggingService.LogInfo ("Trying to recreate framework lookup for {0}, try {1}.", frameworkName, result.RetryCount);
-				result.Task = null;
-				StartFrameworkLookup (netProject);
-				return true;
-			}
-		}
-
-		static FrameworkLookup GetFrameworkLookup (DotNetProject netProject)
-		{
-			FrameworkLookup result;
-			string fileName;
-			var cache = GetCacheDirectory (netProject.TargetFramework);
-			fileName = Path.Combine (cache, "FrameworkLookup_" + FrameworkLookup.CurrentVersion + ".dat");
-			try {
-				if (File.Exists (fileName)) {
-					result = FrameworkLookup.Load (fileName);
-					if (result != null) {
-						return result;
-					}
-				}
-			} catch (Exception e) {
-				LoggingService.LogWarning ("Can't read framework cache - recreating...", e);
-			}
-
-			try {
-				using (var creator = FrameworkLookup.Create (fileName)) {
-					foreach (var assembly in GetFrameworkAssemblies (netProject)) {
-						var ctx = LoadAssemblyContext (assembly.Location);
-						foreach (var type in ctx.Ctx.GetAllTypeDefinitions ()) {
-							if (!type.IsPublic)
-								continue;
-							creator.AddLookup (assembly.Package.Name, assembly.FullName, type);
-						}
-					}
-				}
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while storing framework lookup", e);
-				return FrameworkLookup.Empty;
-			}
-
-			try {
-				result = FrameworkLookup.Load (fileName);
-				return result;
-			} catch (Exception e) {
-				LoggingService.LogError ("Error loading framework lookup", e);
-				return FrameworkLookup.Empty;
-			}
-		}
-
-		public static ProjectContentWrapper GetProjectContentWrapper (Project project)
-		{
-			if (project == null)
-				throw new ArgumentNullException ("project");
-			ProjectContentWrapper content;
-			if (projectContents.TryGetValue (project, out content))
-				return content;
-			// in case of outdated projects try to get the most recent project wrapper.
-			foreach (var cnt in projectContents) {
-				if (cnt.Key.FileName == project.FileName)
-					return cnt.Value;
 			}
 			return null;
 		}
 
-		public static IProjectContent GetContext (FilePath file, string mimeType, string text)
+		public static Microsoft.CodeAnalysis.Document GetCodeAnalysisDocument (Microsoft.CodeAnalysis.DocumentId docId, CancellationToken cancellationToken = default (CancellationToken))
 		{
-			using (var reader = new StringReader (text)) {
-				var parsedDocument = ParseFile (file, mimeType, reader);
-				
-				var content = new CSharpProjectContent ();
-				return content.AddOrUpdateFiles (parsedDocument.ParsedFile);
-			}
-		}
-
-		static Dictionary<string, UnresolvedAssemblyProxy> cachedAssemblyContents = new Dictionary<string, UnresolvedAssemblyProxy> ();
-
-		/// <summary>
-		/// Force the update of a project context. Note: This method blocks the thread.
-		/// It was just implemented for use inside unit tests.
-		/// </summary>
-		public static void ForceUpdate (ProjectContentWrapper context)
-		{
-			CheckModifiedFiles ();
-			while (!context.IsLoaded) {
-				Thread.Sleep (10);
-			}
-		}
-
-		#region Parser queue
-
-		static bool threadRunning;
-
-		public static IProgressMonitorFactory ParseProgressMonitorFactory {
-			get;
-			set;
-		}
-
-		class InternalProgressMonitor
-		: NullProgressMonitor
-		{
-			public InternalProgressMonitor ()
-			{
-				StartParseOperation ();
-			}
-
-			public override void Dispose ()
-			{
-				EndParseOperation ();
-			}
-		}
-
-		internal static IProgressMonitor GetParseProgressMonitor ()
-		{
-			var mon = ParseProgressMonitorFactory != null ? ParseProgressMonitorFactory.CreateProgressMonitor () : new NullProgressMonitor ();
-			
-			return new AggregatedProgressMonitor (mon, new InternalProgressMonitor ());
-		}
-
-		static readonly Queue<ParsingJob> parseQueue = new Queue<ParsingJob> ();
-
-		class ParsingJob
-		{
-			public ProjectContentWrapper Context;
-			public IEnumerable<ProjectFile> FileList;
-			//			public Action<string, IProgressMonitor> ParseCallback;
-			public void Run (IProgressMonitor monitor, CancellationToken token)
-			{
-				TypeSystemParserNode node = null;
-				TypeSystemParser parser = null;
-				var tags = Context.GetExtensionObject <ProjectCommentTags> ();
-				try {
-					Context.BeginLoadOperation ();
-					var parsedFiles = new List<Tuple<ParsedDocument, IUnresolvedFile>> ();
-					foreach (var file in (FileList ?? Context.Project.Files)) {
-						if (token.IsCancellationRequested)
-							return;
-						var fileName = file.FilePath;
-						if (filesSkippedInParseThread.Any (f => f == fileName)) {
-							continue;
-						}
-						if (node == null || !node.CanParse (fileName, file.BuildAction)) {
-							var newNode = GetTypeSystemParserNode (DesktopService.GetMimeTypeForUri (fileName), file.BuildAction);
-							var newParser = newNode != null ? newNode.Parser : null;
-							if (newParser == null)
-								continue;
-							node = newNode;
-							parser = newParser;
-						}
-
-						if (parser == null || !File.Exists (fileName))
-							continue;
-						ParsedDocument parsedDocument;
-						try {
-							parsedDocument = parser.Parse (false, fileName, Context.Project);
-						} catch (Exception e) {
-							LoggingService.LogError ("Error while parsing " + fileName, e);
-							continue;
-						} 
-						if (token.IsCancellationRequested)
-							return;
-						if (tags != null)
-							tags.UpdateTags (Context.Project, parsedDocument.FileName, parsedDocument.TagComments);
-						if (token.IsCancellationRequested)
-							return;
-						parsedFiles.Add (Tuple.Create (parsedDocument, Context._content.GetFile (fileName))); 
-					}
-					Context.UpdateContent (c => c.AddOrUpdateFiles (parsedFiles.Where (f => (f.Item1.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable).Select (p => p.Item1.ParsedFile)));
-					foreach (var file in parsedFiles) {
-						if (token.IsCancellationRequested)
-							return;
-						if (file.Item2 != null)
-							Context.InformFileRemoved (new ParsedFileEventArgs (file.Item2));
-						var parsedDocument = file.Item1;
-						if ((parsedDocument.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable)
-							Context.InformFileAdded (new ParsedFileEventArgs (parsedDocument.ParsedFile));
-					}
-				} finally {
-					Context.EndLoadOperation ();
+			if (docId == null)
+				throw new ArgumentNullException ("docId");
+			foreach (var w in workspaces) {
+				var documentId = w.GetDocument (docId, cancellationToken);
+				if (documentId != null) {
+					return documentId;
 				}
 			}
+			return null;
 		}
 
-		static void UpdateProjectCommentTasks (ProjectContentWrapper context, ParsedDocument parsedDocument)
+		public static MonoDevelop.Projects.Project GetMonoProject (Microsoft.CodeAnalysis.Project project)
 		{
-			var tags = context.GetExtensionObject <ProjectCommentTags> ();
-			if (tags != null) // When tags are not there they're updated first time the tasks are requested.
-				tags.UpdateTags (context.Project, parsedDocument.FileName, parsedDocument.TagComments);
-		}
-		//		public static event EventHandler<ProjectFileEventArgs> FileParsed;
-		static readonly object parseQueueLock = new object ();
-		static readonly AutoResetEvent parseEvent = new AutoResetEvent (false);
-		static readonly ManualResetEvent queueEmptied = new ManualResetEvent (true);
-		static bool trackingFileChanges;
-
-		public static bool TrackFileChanges {
-			get {
-				return trackingFileChanges;
-			}
-			set {
-				lock (parseQueueLock) {
-					if (value != trackingFileChanges) {
-						trackingFileChanges = value;
-						if (value)
-							StartParserThread ();
-					}
+			if (project == null)
+				throw new ArgumentNullException ("project");
+			foreach (var w in workspaces) {
+				var documentId = w.GetMonoProject (project);
+				if (documentId != null) {
+					return documentId;
 				}
 			}
+			return null;
 		}
 
-		static int parseStatus;
 
-		public static bool IsParsing {
-			get { return parseStatus > 0; }
-		}
-
-		static readonly Dictionary<ProjectContentWrapper, ParsingJob> parseQueueIndex = new Dictionary<ProjectContentWrapper, ParsingJob> ();
-
-		internal static int PendingJobCount {
-			get {
-				lock (parseQueueLock) {
-					return parseQueueIndex.Count;
+		public static MonoDevelop.Projects.Project GetMonoProject (Microsoft.CodeAnalysis.DocumentId documentId)
+		{
+			foreach (var w in workspaces) {
+				foreach (var p in w.CurrentSolution.Projects) {
+					if (p.GetDocument (documentId) != null)
+						return GetMonoProject (p);
 				}
 			}
+			return null;
 		}
 
-		static void QueueParseJob (ProjectContentWrapper context, IEnumerable<ProjectFile> fileList = null)
-		{
-			var job = new ParsingJob {
-				Context = context,
-				FileList = fileList
-			};
-			lock (parseQueueLock) {
-				RemoveParseJob (context);
-				context.BeginLoadOperation ();
-				parseQueueIndex [context] = job;
-				parseQueue.Enqueue (job);
-				parseEvent.Set ();
-				
-				if (parseQueueIndex.Count == 1)
-					queueEmptied.Reset ();
-			}
-		}
-
-		static bool WaitForParseJob (int timeout = 5000)
-		{
-			return parseEvent.WaitOne (timeout, true);
-		}
-
-		static ParsingJob DequeueParseJob ()
-		{
-			lock (parseQueueLock) {
-				if (parseQueue.Count > 0) {
-					var job = parseQueue.Dequeue ();
-					parseQueueIndex.Remove (job.Context);
-					return job;
-				}
-				return null;
-			}
-		}
-
-		internal static void WaitForParseQueue ()
-		{
-			queueEmptied.WaitOne ();
-		}
-
-		static void RemoveParseJob (ProjectContentWrapper project)
-		{
-			lock (parseQueueLock) {
-				ParsingJob job;
-				if (parseQueueIndex.TryGetValue (project, out job)) {
-					parseQueueIndex.Remove (project);
-					project.EndLoadOperation ();
-				}
-			}
-		}
-
-		static void StartParserThread ()
-		{
-			lock (parseQueueLock) {
-				if (!threadRunning) {
-					threadRunning = true;
-					var t = new Thread (new ThreadStart (ParserUpdateThread));
-					t.Name = "Background parser";
-					t.IsBackground = true;
-					t.Priority = ThreadPriority.AboveNormal;
-					t.Start ();
-				}
-			}
-		}
-
-		static void ParserUpdateThread ()
-		{
-			try {
-				while (trackingFileChanges) {
-					WaitForParseJob ();
-//						CheckModifiedFiles ();
-					if (trackingFileChanges)
-						ConsumeParsingQueue ();
-				}
-			} catch (Exception ex) {
-				LoggingService.LogError ("Unhandled error in parsing thread", ex);
-			}
-			lock (parseQueueLock) {
-				threadRunning = false;
-				if (trackingFileChanges)
-					StartParserThread ();
-			}
-		}
-
-		static bool IsFileModified (ProjectFile file, IUnresolvedFile parsedFile)
-		{
-			if (parsedFile == null || !parsedFile.LastWriteTime.HasValue)
-				return true;
-			try {
-				return File.GetLastWriteTimeUtc (file.FilePath) != parsedFile.LastWriteTime;
-			} catch (Exception) {
-				return true;
-			}
-		}
-
-		static void CheckModifiedFiles (Project project, ProjectFile[] projectFiles, ProjectContentWrapper content, CancellationToken token = default (CancellationToken))
-		{
-			if (token.IsCancellationRequested) {
-				return;
-			}
-//			Console.WriteLine ("add modified file check for :" + project.Name);
-			content.RunWhenLoaded (delegate(IProjectContent cnt) {
-				try {
-//					Console.WriteLine ("check for " + project.Name);
-					content.BeginLoadOperation ();
-					var modifiedFiles = new List<ProjectFile> ();
-					var oldFileNewFile = new List<Tuple<ProjectFile, IUnresolvedFile>> ();
-					foreach (var file in projectFiles) {
-						if (token.IsCancellationRequested) {
-							return;
-						}
-						if (file.BuildAction == null)
-							continue;
-						// if the file is already inside the content a parser exists for it, if not check if it can be parsed.
-						var oldFile = cnt.GetFile (file.Name);
-						oldFileNewFile.Add (Tuple.Create (file, oldFile));
-					}
-
-					// This is disk intensive and slow
-					oldFileNewFile.RemoveAll (t => !IsFileModified (t.Item1, t.Item2));
-
-					foreach (var v in oldFileNewFile) {
-						var file = v.Item1;
-						var oldFile = v.Item2;
-						if (oldFile == null) {
-							var parser = TypeSystemService.GetParser (DesktopService.GetMimeTypeForUri (file.Name), file.BuildAction);
-							if (parser == null)
-								continue;
-						}
-						modifiedFiles.Add (file);
-					}
-					var tags = content.GetExtensionObject <ProjectCommentTags> ();
-
-					// check if file needs to be removed from project content 
-					foreach (var file in cnt.Files) {
-						if (token.IsCancellationRequested) {
-							return;
-						}
-						if (project.GetProjectFile (file.FileName) == null) {
-							content.UpdateContent (c => c.RemoveFiles (file.FileName));
-							content.InformFileRemoved (new ParsedFileEventArgs (file));
-							if (tags != null)
-								tags.RemoveFile (project, file.FileName);
-						}
-					}
-					if (token.IsCancellationRequested) {
-						return;
-					}
-					if (modifiedFiles.Count > 0)  {
-						QueueParseJob (content, modifiedFiles);
-						WaitForParseJob ();
-					}
-				} catch (Exception e) {
-					LoggingService.LogError ("Exception in check modified files.", e);
-				} finally {
-					content.EndLoadOperation ();
-				}
-			});
-		}
-
-		/// <summary>
-		/// Used to store meta data information about the assembly.
-		/// </summary>
-		[Serializable]
-		class AssemblyTag
-		{
-			public DateTime LastWriteTimeUTC { get; set; }
-
-			public AssemblyTag (DateTime lastWriteTimeUTC)
-			{
-				this.LastWriteTimeUTC = lastWriteTimeUTC;
-			}
-		}
-
-		static void CheckModifiedFile (UnresolvedAssemblyProxy context)
-		{
-			try {
-				string cache = GetCacheDirectory (context.FileName);
-				if (cache == null)
-					return;
-				var assemblyDataDirectory = Path.Combine (cache, "assembly.tag");
-				var writeTime = File.GetLastWriteTimeUtc (context.FileName);
-				var cacheTime = File.Exists (assemblyDataDirectory) ? DeserializeObject<AssemblyTag> (assemblyDataDirectory) : new AssemblyTag (writeTime);
-				if (writeTime != cacheTime.LastWriteTimeUTC) {
-					cache = GetCacheDirectory (context.FileName);
-					if (cache != null) {
-						try {
-							// Files will be reloaded by the lazy loader
-							File.Delete (assemblyDataDirectory);
-							File.Delete (Path.Combine (cache, "assembly.data"));
-						} catch {
-						}
-						context.CtxLoader = new LazyAssemblyLoader (context.FileName, cache);
-					}
-				}
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while updating assembly " + context.FileName, e);
-			}
-		}
-
-		static void CheckModifiedFiles ()
-		{
-			Queue<KeyValuePair<Project, ProjectContentWrapper>> list;
-
-			lock (projectContentLock) {
-				list = new Queue<KeyValuePair<Project, ProjectContentWrapper>> (projectContents);
-			}
-
-			while (list.Count > 0) {
-				var readydb = list.Dequeue ();
-				var files = readydb.Key.Files.ToArray ();
-				CheckModifiedFiles (readydb.Key, files, readydb.Value);
-			}
-			
-			var assemblyList = new Queue<KeyValuePair<string, UnresolvedAssemblyProxy>> (cachedAssemblyContents);
-
-			while (assemblyList.Count > 0) {
-				var readydb = assemblyList.Dequeue ();
-				CheckModifiedFile (readydb.Value);
-			}
-		}
-
-		static void ConsumeParsingQueue ()
-		{
-			int pending = 0;
-			IProgressMonitor monitor = null;
-			var token = loadCancellationSource.Token;
-			StartParseOperation ();
-			try {
-				do {
-					if (pending > 5 && monitor == null) {
-						monitor = GetParseProgressMonitor ();
-						monitor.BeginTask (GettextCatalog.GetString ("Generating database"), 0);
-					}
-					var job = DequeueParseJob ();
-					if (job != null) {
-						try {
-							job.Run (monitor, token);
-						} catch (Exception ex) {
-							if (monitor == null)
-								monitor = GetParseProgressMonitor ();
-							monitor.ReportError (null, ex);
-						} finally {
-							job.Context.EndLoadOperation ();
-						}
-					}
-					
-					if (token.IsCancellationRequested)
-						break;
-					pending = PendingJobCount;
-				} while (pending > 0);
-				queueEmptied.Set ();
-			} finally {
-				if (monitor != null)
-					monitor.Dispose ();
-				EndParseOperation ();
-			}
-		}
-
-		#endregion
-
-	}
-
-	sealed class AssemblyLoadedEventArgs : EventArgs
-	{
-		public readonly TypeSystemService.LazyAssemblyLoader Assembly;
-
-		public AssemblyLoadedEventArgs (TypeSystemService.LazyAssemblyLoader assembly)
-		{
-			this.Assembly = assembly;
-		}
-	}
-
-	public sealed class ProjectUnloadEventArgs : EventArgs
-	{
-		public readonly Project Project;
-		public readonly TypeSystemService.ProjectContentWrapper Wrapper;
-
-		public ProjectUnloadEventArgs (Project project, TypeSystemService.ProjectContentWrapper wrapper)
-		{
-			this.Project = project;
-			this.Wrapper = wrapper;
-		}
 	}
 }
-
-

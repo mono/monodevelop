@@ -43,19 +43,19 @@ namespace MonoDevelop.VersionControl.Views
 	{
 		internal DropDownBox originalComboBox, diffComboBox;
 		
-		public TextEditor OriginalEditor {
+		public MonoTextEditor OriginalEditor {
 			get {
 				return editors[1];
 			}
 		}
 
-		public TextEditor DiffEditor {
+		public MonoTextEditor DiffEditor {
 			get {
 				return editors[0];
 			}
 		}
 
-		protected override TextEditor MainEditor {
+		protected override MonoTextEditor MainEditor {
 			get {
 				return editors[1];
 			}
@@ -69,8 +69,8 @@ namespace MonoDevelop.VersionControl.Views
 		protected override void CreateComponents ()
 		{
 			this.editors = new [] {
-				new TextEditor (new TextDocument (), new CommonTextEditorOptions ()),
-				new TextEditor (new TextDocument (), new CommonTextEditorOptions ()),
+				new MonoTextEditor (new TextDocument (), CommonTextEditorOptions.Instance),
+				new MonoTextEditor (new TextDocument (), CommonTextEditorOptions.Instance),
 			};
 
 			if (!viewOnly) {
@@ -148,7 +148,7 @@ namespace MonoDevelop.VersionControl.Views
 			QueueDraw ();
 		}
 		
-		public void SetRevision (TextEditor toEditor, Revision rev)
+		public void SetRevision (MonoTextEditor toEditor, Revision rev)
 		{
 			BackgroundWorker worker = new BackgroundWorker ();
 			worker.DoWork += delegate(object sender, DoWorkEventArgs e) {
@@ -237,14 +237,14 @@ namespace MonoDevelop.VersionControl.Views
 			{
 				if (n == 0) {
 					box.SetItem ("Local", null, new object());
-					widget.SetLocal (((TextEditor)box.Tag).GetTextEditorData ());
+					widget.SetLocal (((MonoTextEditor)box.Tag).GetTextEditorData ());
 					return;
 				}
-				widget.RemoveLocal (((TextEditor)box.Tag).GetTextEditorData ());
-				((TextEditor)box.Tag).Document.ReadOnly = true;
+				widget.RemoveLocal (((MonoTextEditor)box.Tag).GetTextEditorData ());
+				((MonoTextEditor)box.Tag).Document.ReadOnly = true;
 				if (n == 1) {
 					box.SetItem ("Base", null, new object());
-					if (((TextEditor)box.Tag) == widget.editors[0]) {
+					if (((MonoTextEditor)box.Tag) == widget.editors[0]) {
 						widget.diffRevision = null;
 					} else {
 						widget.originalRevision = null;
@@ -257,13 +257,13 @@ namespace MonoDevelop.VersionControl.Views
 						MessageService.ShowError (text);
 					}
 					
-					((TextEditor)box.Tag).Document.Text = text;
+					((MonoTextEditor)box.Tag).Document.Text = text;
 					widget.CreateDiff ();
 					return;
 				}
 				
 				Revision rev = widget.info.History[n - 2];
-				widget.SetRevision ((TextEditor)box.Tag, rev);
+				widget.SetRevision ((MonoTextEditor)box.Tag, rev);
 			}
 
 			public int IconCount {

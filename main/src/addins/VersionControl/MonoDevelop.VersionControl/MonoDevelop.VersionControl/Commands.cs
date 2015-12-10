@@ -37,7 +37,7 @@ namespace MonoDevelop.VersionControl
 		{
 			VersionControlItemList list = new VersionControlItemList ();
 			
-			IWorkspaceObject wob;
+			WorkspaceObject wob;
 			Repository repo = null;
 			wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
 			if (wob != null)

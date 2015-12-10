@@ -39,7 +39,7 @@ namespace MonoDevelop.Components
 	{
 		static Dictionary<TreeView, TreeViewTooltipsData> treeData = new Dictionary<TreeView, TreeViewTooltipsData> ();
 
-		static readonly Xwt.Toolkit gtkToolkit = Xwt.Toolkit.Load (Xwt.ToolkitType.Gtk);
+		static readonly Xwt.Toolkit gtkToolkit = Xwt.Toolkit.LoadedToolkits.First (t => t.Type == Xwt.ToolkitType.Gtk);
 
 		public static Cairo.Color ToCairoColor (this Gdk.Color color)
 		{
@@ -87,6 +87,19 @@ namespace MonoDevelop.Components
 			var c = color.ToXwtColor ();
 			c.Light += lightAmount;
 			return c.ToGdkColor ();
+		}
+
+		/// <summary>
+		/// Makes a color lighter or darker
+		/// </summary>
+		/// <param name='lightAmount'>
+		/// Amount of lightness to add. If the value is positive, the color will be lighter,
+		/// if negative it will be darker. Value must be between 0 and 1.
+		/// </param>
+		public static HslColor AddLight (this HslColor color, double lightAmount)
+		{
+			color.L += lightAmount;
+			return color;
 		}
 
 		public static Cairo.Color AddLight (this Cairo.Color color, double lightAmount)
@@ -515,9 +528,13 @@ namespace MonoDevelop.Components
 			paste.Clicked += PasteClicked;
 			context_menu.Items.Add (paste);
 
+			context_menu.Items.Add (new SeparatorContextMenuItem ());
+
 			var delete = new ContextMenuItem { Label = GettextCatalog.GetString ("Delete"), Context = entry };
 			delete.Clicked += DeleteClicked;
 			context_menu.Items.Add (delete);
+
+			context_menu.Items.Add (new SeparatorContextMenuItem ());
 
 			var select_all = new ContextMenuItem { Label = GettextCatalog.GetString ("Select All"), Context = entry };
 			select_all.Clicked += SelectAllClicked;

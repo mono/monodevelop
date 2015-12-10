@@ -40,8 +40,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 	{
 		public override void ActivateItem ()
 		{			
-			var member = CurrentNode.DataItem as IEntity;
-			IdeApp.ProjectOperations.JumpToDeclaration(member);
+//			var member = CurrentNode.DataItem as IEntity;
+//			IdeApp.ProjectOperations.JumpToDeclaration(member);
 		}
 	}
 }

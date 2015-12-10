@@ -13,4 +13,4 @@ MD_LAUNCH_SETUP= \
 	MONODEVELOP_LOCALE_PATH="$(abs_top_builddir)/build/locale" \
 	MONODEVELOP_TEST_PROFILE="$(MD_BIN_PATH)/test-profile"
 
-MDTOOL_RUN=$(MD_LAUNCH_SETUP) exec -a "mdtool" $(RUNTIME) --debug "$(MD_BIN_PATH)/mdtool.exe"
+MDTOOL_RUN=$(MD_LAUNCH_SETUP) exec -a "mdtool" $(RUNTIME)$(SGEN_SUFFIX) --debug "$(MD_BIN_PATH)/mdtool.exe"

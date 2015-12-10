@@ -32,13 +32,13 @@ using Gtk;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class PinnedWatchWidget : EventBox
+	class PinnedWatchWidget : EventBox
 	{
 		readonly ObjectValueTreeView valueTree;
 		ScrolledWindow sw;
 		ObjectValue objectValue;
 
-		TextEditor Editor {
+		MonoTextEditor Editor {
 			get; set;
 		}
 		
@@ -66,7 +66,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public PinnedWatchWidget (TextEditor editor, PinnedWatch watch)
+		public PinnedWatchWidget (MonoTextEditor editor, PinnedWatch watch)
 		{
 			objectValue = watch.Value;
 			Editor = editor;

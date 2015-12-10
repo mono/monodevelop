@@ -10,7 +10,7 @@ namespace MonoDevelop.VersionControl
 {
 	internal class PublishCommand 
 	{
-		public static bool Publish (IWorkspaceObject entry, FilePath localPath, bool test)
+		public static bool Publish (WorkspaceObject entry, FilePath localPath, bool test)
 		{
 			if (test)
 				return VersionControlService.CheckVersionControlInstalled () && VersionControlService.GetRepository (entry) == null;
@@ -53,7 +53,7 @@ namespace MonoDevelop.VersionControl
 			return true;
 		}
 
-		static void GetFiles (List<FilePath> files, IWorkspaceObject entry)
+		static void GetFiles (List<FilePath> files, WorkspaceObject entry)
 		{
 			// Ensure that we strip out all linked files from outside of the solution/projects path.
 			if (entry is IWorkspaceFileObject)
@@ -70,7 +70,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 	
-	internal class PublishWorker : Task {
+	internal class PublishWorker : VersionControlTask {
 		Repository vc;
 		FilePath path;
 		string moduleName;

@@ -28,6 +28,7 @@
 using System;
 using MonoDevelop.Ide.CodeCompletion;
 using Gtk;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Debugger
 {
@@ -112,7 +113,7 @@ namespace MonoDevelop.Debugger
 			if (keyHandled)
 				return;
 
-			CompletionWindowManager.PostProcessKeyEvent (key, keyChar, modifier);
+			CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
 			PopupCompletion ((Entry) sender);
 		}
 
@@ -131,7 +132,7 @@ namespace MonoDevelop.Debugger
 			}
 
 			if (currentCompletionData != null)
-				args.RetVal = keyHandled = CompletionWindowManager.PreProcessKeyEvent (key, keyChar, modifier);
+				args.RetVal = keyHandled = CompletionWindowManager.PreProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
 		}
 
 		void OnEditFocusOut (object sender, FocusOutEventArgs args)
@@ -180,6 +181,9 @@ namespace MonoDevelop.Debugger
 		int ICompletionWidget.CaretOffset {
 			get {
 				return entry.Position;
+			}
+			set {
+				entry.Position = value;
 			}
 		}
 		
@@ -253,6 +257,17 @@ namespace MonoDevelop.Debugger
 		Style ICompletionWidget.GtkStyle {
 			get {
 				return entry.Style;
+			}
+		}
+
+		void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
+		{
+			// ignore
+		}
+
+		double ICompletionWidget.ZoomLevel {
+			get {
+				return 1;
 			}
 		}
 		#endregion 

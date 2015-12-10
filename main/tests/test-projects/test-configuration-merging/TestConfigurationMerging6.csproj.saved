@@ -13,7 +13,6 @@
     <DebugSymbols>True</DebugSymbols>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
-    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
   </PropertyGroup>

@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.StandardHeader
 {
 	public static class StandardHeaderService
 	{
-		public static string GetHeader (SolutionItem policyParent, string fileName, bool newFile)
+		public static string GetHeader (SolutionFolderItem policyParent, string fileName, bool newFile)
 		{
 			StandardHeaderPolicy headerPolicy = policyParent != null ? policyParent.Policies.Get<StandardHeaderPolicy> () : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<StandardHeaderPolicy> ();
 			TextStylePolicy textPolicy = policyParent != null ? policyParent.Policies.Get<TextStylePolicy> ("text/plain") : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> ("text/plain");

@@ -50,14 +50,14 @@ namespace MonoDeveloper
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Visible = MonoMakefileFormat.IsMonoProject (IdeApp.ProjectOperations.CurrentSelectedProject);
+			info.Visible = IdeApp.ProjectOperations.CurrentSelectedItem is MonoMakefileProjectExtension;
 		}
 		
-		void Install (object prj)
+		async void Install (object prj)
 		{
 			DotNetProject p = prj as DotNetProject;
-			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ()) {
-				p.RunTarget (monitor, "install", IdeApp.Workspace.ActiveConfiguration);
+			using (ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ()) {
+				await p.RunTarget (monitor, "install", IdeApp.Workspace.ActiveConfiguration);
 			}
 		}
 

@@ -38,12 +38,12 @@ namespace MonoDevelop.DesignerSupport.Projects
 			if (obj is WorkspaceItem)
 				return new WorkspaceItemDescriptor ((WorkspaceItem)obj);
 			else
-				return new SolutionItemDescriptor ((SolutionItem)obj);
+				return new SolutionItemDescriptor ((SolutionFolderItem)obj);
 		}
 
 		public bool SupportsObject (object obj)
 		{
-			return obj is SolutionItem || obj is WorkspaceItem;
+			return obj is SolutionFolderItem || obj is WorkspaceItem;
 		}
 	}
 }

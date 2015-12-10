@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Gui
 			this.resizer = resizer;
 			
 			if (styleSource != null) {
-				IdeApp.Preferences.CustomPadFontChanged += PropertyChanged;
+				IdeApp.Preferences.CustomPadFont.Changed += PropertyChanged;
 			}
 			
 			Update ();
@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.Gui
 		public void Dispose ()
 		{
 			if (styleSource != null) {
-				IdeApp.Preferences.CustomPadFontChanged -= PropertyChanged;
+				IdeApp.Preferences.CustomPadFont.Changed -= PropertyChanged;
 				styleSource = null;
 			}
 		}

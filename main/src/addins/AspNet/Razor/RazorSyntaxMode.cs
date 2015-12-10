@@ -40,12 +40,13 @@ using MonoDevelop.AspNet.Razor.Parser;
 using MonoDevelop.Ide;
 using RazorSpan = System.Web.Razor.Parser.SyntaxTree.Span;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.Razor
 {
 	public class RazorSyntaxMode : SyntaxMode, IDisposable
 	{
-		public RazorSyntaxMode (Document doc)
+		public RazorSyntaxMode (DocumentContext doc)
 		{
 			this.guiDocument = doc;
 			guiDocument.DocumentParsed += HandleDocumentParsed; 
@@ -80,7 +81,7 @@ namespace MonoDevelop.AspNet.Razor
 		IList<RazorSpan> currentSpans;
 		State currentState;
 		IList<Chunk> chunks;
-		Document guiDocument;
+		DocumentContext guiDocument;
 
 		public override IEnumerable<Chunk> GetChunks (ColorScheme style, DocumentLine line, int offset, int length)
 		{

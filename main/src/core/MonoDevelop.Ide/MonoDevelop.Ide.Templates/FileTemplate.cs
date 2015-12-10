@@ -226,7 +226,7 @@ namespace MonoDevelop.Ide.Templates
 			return null;
 		}
 
-		public virtual bool Create (SolutionItem policyParent, Project project, string directory, string language, string name)
+		public virtual bool Create (SolutionFolderItem policyParent, Project project, string directory, string language, string name)
 		{
 			if (!String.IsNullOrEmpty (WizardPath)) {
 				return false;
@@ -266,7 +266,7 @@ namespace MonoDevelop.Ide.Templates
 			return mimeType;
 		}
 
-		public virtual bool CanCreateUnsavedFiles (FileDescriptionTemplate newfile, SolutionItem policyParent, Project project, string directory, string language, string name)
+		public virtual bool CanCreateUnsavedFiles (FileDescriptionTemplate newfile, SolutionFolderItem policyParent, Project project, string directory, string language, string name)
 		{
 			if (project != null) {
 				return true;
@@ -285,7 +285,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 
-		protected virtual bool CreateFile (FileDescriptionTemplate newfile, SolutionItem policyParent, Project project, string directory, string language, string name)
+		protected virtual bool CreateFile (FileDescriptionTemplate newfile, SolutionFolderItem policyParent, Project project, string directory, string language, string name)
 		{
 			if (project != null) {
 				var model = project.GetStringTagModel (new DefaultConfigurationSelector ());
@@ -337,7 +337,7 @@ namespace MonoDevelop.Ide.Templates
 
 			//filter on conditions
 			if (project != null) {
-				if (!string.IsNullOrEmpty (ProjectType) && project.GetProjectTypes ().All (p => p != ProjectType))
+				if (!string.IsNullOrEmpty (ProjectType) && project.GetTypeTags ().All (p => p != ProjectType))
 					return false;
 
 				foreach (FileTemplateCondition condition in Conditions)
@@ -419,9 +419,8 @@ namespace MonoDevelop.Ide.Templates
 			//Template can match all CodeDom .NET languages with a "*"
 			if (list.Contains ("*")) {
 				foreach (var lb in LanguageBindingService.LanguageBindings) {
-					var dnlang = lb as IDotNetLanguageBinding;
-					if (dnlang != null && dnlang.GetCodeDomProvider () != null)
-						list.Add (dnlang.Language);
+					if (lb.GetCodeDomProvider () != null)
+						list.Add (lb.Language);
 					list.Remove ("*");
 				}
 			}

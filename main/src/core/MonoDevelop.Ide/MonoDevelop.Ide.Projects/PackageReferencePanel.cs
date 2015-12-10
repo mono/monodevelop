@@ -135,7 +135,7 @@ namespace MonoDevelop.Ide.Projects
         {
             store.Clear ();
 
-			bool isPcl = configureProject is PortableDotNetProject;
+			bool isPcl = configureProject.IsPortableLibrary;
 
             foreach (SystemAssembly systemAssembly in targetContext.GetAssemblies (targetVersion)) {
 				if (systemAssembly.Package.IsFrameworkPackage && (isPcl || systemAssembly.Name == "mscorlib"))
@@ -178,7 +178,7 @@ namespace MonoDevelop.Ide.Projects
 				
 				Dictionary<DotNetProject,bool> references = new Dictionary<DotNetProject, bool> ();
 				
-				foreach (Project projectEntry in openSolution.GetAllSolutionItems<Project>()) {
+				foreach (Project projectEntry in openSolution.GetAllItems<Project>()) {
 	
 					if (projectEntry == configureProject)
 						continue;
@@ -205,7 +205,7 @@ namespace MonoDevelop.Ide.Projects
 					    if (!configureProject.CanReferenceProject (netProject, out reason))
 							continue;
 					}
-					store.AppendValues (name, "", null, selected, projectEntry.Name, "", projectEntry.StockIcon, matchRank, ReferenceType.Project);
+					store.AppendValues (name, "", null, selected, projectEntry.FileName.ToString(), "", projectEntry.StockIcon, matchRank, ReferenceType.Project);
 				}
 				
 				foreach (FilePath file in selectDialog.GetRecentFileReferences ()) {
@@ -240,7 +240,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			StringBuilder result = new StringBuilder ();
 			int lastPos = 0;
-			var color = Mono.TextEditor.HslColor.GenerateHighlightColors (widget.Style.Base (StateType.Normal), 
+			var color = HslColor.GenerateHighlightColors (widget.Style.Base (StateType.Normal), 
 				widget.Style.Text (StateType.Normal), 3)[2];
 			for (int n=0; n < matches.Length; n++) {
 				int pos = matches[n] - startIndex;
@@ -278,11 +278,14 @@ namespace MonoDevelop.Ide.Projects
 								found = true;
 							break;
 						case ReferenceType.Project:
-							if ((string)store.GetValue (iter, ColFullName) == refInfo.Reference)
+							var path = (FilePath)(string) store.GetValue (iter, ColFullName);
+							var project = refInfo.ResolveProject (configureProject.ParentSolution);
+							if (project != null && path.CanonicalPath == project.FileName.CanonicalPath)
 								found = true;
 							break;
 						case ReferenceType.Assembly:
-							if ((string)store.GetValue (iter, ColFullName) == refInfo.Reference)
+							var file = (FilePath)(string) store.GetValue (iter, ColFullName);
+							if (file.CanonicalPath == refInfo.HintPath.CanonicalPath)
 								found = true;
 							break;
 						}
@@ -333,10 +336,17 @@ namespace MonoDevelop.Ide.Projects
 			string fullName = (string)store.GetValue (iter, ColFullName);
             if ((bool)store.GetValue (iter, ColSelected) == false) {
                 store.SetValue (iter, ColSelected, true);
-				if (rt == ReferenceType.Package)
-					selectDialog.AddReference (new ProjectReference ((SystemAssembly)store.GetValue (iter, ColAssembly)));
-				else
-					selectDialog.AddReference (new ProjectReference (rt, fullName));
+				switch (rt) {
+				case ReferenceType.Package:
+					selectDialog.AddReference (ProjectReference.CreateAssemblyReference ((SystemAssembly)store.GetValue (iter, ColAssembly)));
+					break;
+				case ReferenceType.Assembly:
+					selectDialog.AddReference (ProjectReference.CreateAssemblyFileReference (fullName));
+					break;
+				case ReferenceType.Project:
+					selectDialog.AddReference (ProjectReference.CreateProjectReference (fullName));
+					break;
+				}
             }
             else {
                 store.SetValue (iter, ColSelected, false);

@@ -109,16 +109,20 @@ namespace MonoDevelop.Projects
 		
 #endregion
 		
-		protected override void OnItemAdded (T conf)
+		protected override void OnItemsAdded (IEnumerable<T> confs)
 		{
-			if (ConfigurationAdded != null)
-				ConfigurationAdded (this, new ConfigurationEventArgs (null, conf));
+			foreach (var conf in confs) {
+				if (ConfigurationAdded != null)
+					ConfigurationAdded (this, new ConfigurationEventArgs (null, conf));
+			}
 		}
 		
-		protected override void OnItemRemoved (T conf)
+		protected override void OnItemsRemoved (IEnumerable<T> confs)
 		{
-			if (ConfigurationRemoved != null)
-				ConfigurationRemoved (this, new ConfigurationEventArgs (null, conf));
+			foreach (var conf in confs) {
+				if (ConfigurationRemoved != null)
+					ConfigurationRemoved (this, new ConfigurationEventArgs (null, conf));
+			}
 		}
 		
 #pragma warning disable 67

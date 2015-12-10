@@ -35,7 +35,7 @@ namespace Mono.TextEditor.Vi
 	public class NewViEditMode : EditMode
 	{
 		ViStatusArea statusArea;
-		TextEditor viTextEditor;
+		MonoTextEditor viTextEditor;
 
 		protected ViEditor ViEditor { get ; private set ;}
 
@@ -75,7 +75,7 @@ namespace Mono.TextEditor.Vi
 			}
 		}
 
-		public override void AllocateTextArea (TextEditor textEditor, TextArea textArea, Gdk.Rectangle allocation)
+		public override void AllocateTextArea (MonoTextEditor textEditor, TextArea textArea, Gdk.Rectangle allocation)
 		{
 			statusArea.AllocateArea (textArea, allocation);
 		}
@@ -85,7 +85,7 @@ namespace Mono.TextEditor.Vi
 			ViEditor.ProcessKey (modifier, key, (char)unicodeKey);
 		}
 
-		public new TextEditor Editor { get { return base.Editor; } }
+		public new MonoTextEditor Editor { get { return base.Editor; } }
 		public new TextEditorData Data { get { return base.Data; } }
 
 		public override bool WantsToPreemptIM {

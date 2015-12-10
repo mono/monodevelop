@@ -72,7 +72,7 @@ namespace MonoDevelop.Components
 			if (menu == null)
 				throw new ArgumentNullException ("menu");
 
-			Mono.TextEditor.GtkWorkarounds.ShowContextMenu (menu, parent, evt);
+			GtkWorkarounds.ShowContextMenu (menu, parent, evt);
 		}
 
 		public static void ShowContextMenu (Gtk.Widget parent, int x, int y, Gtk.Menu menu)
@@ -82,7 +82,7 @@ namespace MonoDevelop.Components
 			if (menu == null)
 				throw new ArgumentNullException ("menu");
 
-			Mono.TextEditor.GtkWorkarounds.ShowContextMenu (menu, parent, x, y, parent.Allocation);
+			GtkWorkarounds.ShowContextMenu (menu, parent, x, y, parent.Allocation);
 		}
 
 		static Gtk.MenuItem CreateMenuItem (ContextMenuItem item)
@@ -125,7 +125,7 @@ namespace MonoDevelop.Components
 					var img = new ImageView (item.Image);
 					img.ShowAll ();
 					imageItem.Image = img;
-					GtkWorkarounds.ForceImageOnMenuItem (imageItem);
+					Xwt.GtkBackend.GtkWorkarounds.ForceImageOnMenuItem (imageItem);
 				}
 			}
 

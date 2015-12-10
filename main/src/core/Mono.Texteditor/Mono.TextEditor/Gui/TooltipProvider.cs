@@ -24,35 +24,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Mono.TextEditor
 {
 	public abstract class TooltipProvider
 	{
-		public abstract TooltipItem GetItem (TextEditor editor, int offset);
+		public abstract Task<TooltipItem> GetItem (MonoTextEditor editor, int offset, CancellationToken token = default(CancellationToken));
 
-		public virtual bool IsInteractive (TextEditor editor, Gtk.Window tipWindow)
+		public virtual bool IsInteractive (MonoTextEditor editor, Gtk.Window tipWindow)
 		{
 			return false;
 		}
 
-		protected virtual void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
+		protected virtual void GetRequiredPosition (MonoTextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
 		{
 			requiredWidth = tipWindow.SizeRequest ().Width;
 			xalign = 0.5;
 		}
 
-		protected virtual Gtk.Window CreateTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
+		public virtual Gtk.Window CreateTooltipWindow (MonoTextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
 		{
 			return null;
 		}
 
-		public virtual Gtk.Window ShowTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, TooltipItem item)
+		public virtual Gtk.Window ShowTooltipWindow (MonoTextEditor editor, Gtk.Window tipWindow, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, TooltipItem item)
 		{
-			Gtk.Window tipWindow = CreateTooltipWindow (editor, offset, modifierState, item);
-			if (tipWindow == null)
-				return null;
-
 			int ox = 0, oy = 0;
 			if (editor.GdkWindow != null)
 				editor.GdkWindow.GetOrigin (out ox, out oy);

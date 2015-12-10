@@ -24,7 +24,7 @@ namespace MonoDevelop.VersionControl
 			return typeof(ProjectFile).IsAssignableFrom (dataType)
 				|| typeof(SystemFile).IsAssignableFrom (dataType)
 				|| typeof(ProjectFolder).IsAssignableFrom (dataType)
-				|| typeof(IWorkspaceObject).IsAssignableFrom (dataType);
+				|| typeof(WorkspaceObject).IsAssignableFrom (dataType);
 		}
 		
 		protected override void Initialize ()
@@ -46,8 +46,8 @@ namespace MonoDevelop.VersionControl
 		
 			// Add status overlays
 			
-			if (dataObject is IWorkspaceObject) {
-				IWorkspaceObject ce = (IWorkspaceObject) dataObject;
+			if (dataObject is WorkspaceObject) {
+				WorkspaceObject ce = (WorkspaceObject) dataObject;
 				Repository rep = VersionControlService.GetRepository (ce);
 				if (rep != null) {
 					rep.GetDirectoryVersionInfo (ce.BaseDirectory, false, false);
@@ -66,7 +66,7 @@ namespace MonoDevelop.VersionControl
 				return;
 			}
 			
-			IWorkspaceObject prj;
+			WorkspaceObject prj;
 			FilePath file;
 			
 			if (dataObject is ProjectFile) {
@@ -202,8 +202,8 @@ namespace MonoDevelop.VersionControl
 				return ((ProjectFile) dataObject).FilePath;
 			} else if (dataObject is SystemFile) {
 				return ((SystemFile) dataObject).Path;
-			} else if (dataObject is IWorkspaceObject) {
-				return ((IWorkspaceObject)dataObject).BaseDirectory;
+			} else if (dataObject is WorkspaceObject) {
+				return ((WorkspaceObject)dataObject).BaseDirectory;
 			} else if (dataObject is ProjectFolder) {
 				return ((ProjectFolder)dataObject).Path;
 			}

@@ -117,19 +117,6 @@
 		<Class class = "MonoDevelop.Deployment.Gui.PropertyProvider"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
-		<ItemProperty class = "MonoDevelop.Projects.ProjectFile"
-			name = "DeployService.Deploy" type = "System.Boolean" />
-		<ItemProperty class = "MonoDevelop.Projects.ProjectFile"
-			name = "DeployService.TargetDirectoryId" type = "System.String" />
-		<ItemProperty class = "MonoDevelop.Projects.ProjectFile"
-			name = "DeployService.RelativeDeployPath" type = "System.String" />
-		<ItemProperty class = "MonoDevelop.Projects.ProjectFile"
-			name = "DeployService.HasPathReferences" type = "System.Boolean" />
-		<ItemProperty class = "MonoDevelop.Projects.ProjectFile"
-			name = "DeployService.UseProjectRelativePath" type = "System.Boolean" />
-	</Extension>
-
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id = "PackagingProject" resource = "PackagingProject.xpt.xml"/>
 	</Extension>

@@ -358,8 +358,7 @@ namespace Mono.TextEditor
 								data.Caret.PreserveSelection = true;
 								result = text.Length;
 								DocumentLine curLine = data.Document.GetLine (data.Caret.Line);
-
-								result = PastePlainText (data, curLine.Offset,  text + data.EolMarker, preserveSelection, copyData);
+								result = PastePlainText (data, curLine.Offset, text + data.EolMarker, preserveSelection, copyData);
 								if (!preserveState)
 									data.ClearSelection ();
 								data.Caret.PreserveSelection = false;
@@ -434,6 +433,14 @@ namespace Mono.TextEditor
 			if (!data.CanEditSelection)
 				return;
 			PasteFrom (Clipboard.Get (CopyOperation.CLIPBOARD_ATOM), data, false, data.IsSomethingSelected ? data.SelectionRange.Offset : data.Caret.Offset);
+		}
+
+		public static string GetClipboardContent()
+		{
+			var clipboard = Clipboard.Get (CopyOperation.CLIPBOARD_ATOM);
+			if (!clipboard.WaitIsTextAvailable ())
+				return null;
+			return clipboard.WaitForText ();
 		}
 	}
 }

@@ -32,7 +32,6 @@ using System.Collections.ObjectModel;
 using Gtk;
 using Pango;
 using Gdk;
-using Mono.TextEditor;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 

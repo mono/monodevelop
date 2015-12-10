@@ -28,44 +28,104 @@
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Runtime.InteropServices;
 
 namespace MonoDevelop.NUnit
 {
-	public class NUnitProjectServiceExtension: ProjectServiceExtension
+	public class NUnitProjectServiceExtension: ProjectExtension
 	{
-		public override void Execute (MonoDevelop.Core.IProgressMonitor monitor, IBuildTarget item, ExecutionContext context, ConfigurationSelector configuration)
+		bool checkingCanExecute;
+		object canExecuteCheckLock = new object ();
+
+		bool unitTestChecked;
+		UnitTest unitTestFound;
+
+		protected override bool SupportsObject (WorkspaceObject item)
 		{
-			if (base.CanExecute (item, context, configuration)) {
-				// It is executable by default
-				base.Execute(monitor, item, context, configuration);
-				return;
-			} else if (item is IWorkspaceObject) {
-				UnitTest test = NUnitService.Instance.FindRootTest ((IWorkspaceObject)item);
-				if (test != null) {
-					IAsyncOperation oper = null;
-					DispatchService.GuiSyncDispatch (delegate {
-						oper = NUnitService.Instance.RunTest (test, context.ExecutionHandler, false, false);
-					});
-					if (oper != null) {
-						monitor.CancelRequested += delegate {
-							oper.Cancel ();
-						};
-						oper.WaitForCompleted ();
-					}
+			return IdeApp.IsInitialized && base.SupportsObject (item);
+		}
+
+		protected override void Initialize ()
+		{
+			base.Initialize ();
+			if (IdeApp.IsInitialized)
+				NUnitService.Instance.TestSuiteChanged += TestSuiteChanged;
+		}
+
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			if (IdeApp.IsInitialized)
+				NUnitService.Instance.TestSuiteChanged -= TestSuiteChanged;
+		}
+
+		void TestSuiteChanged (object sender, System.EventArgs e)
+		{
+			unitTestChecked = false;
+			unitTestFound = null;
+		}
+
+		UnitTest FindRootTest ()
+		{
+			if (!unitTestChecked) {
+				unitTestFound = NUnitService.Instance.FindRootTest (Project);
+				unitTestChecked = true;
+			}
+			return unitTestFound;
+		}
+
+		protected override async Task OnExecute (MonoDevelop.Core.ProgressMonitor monitor, MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration)
+		{
+			bool defaultCanExecute;
+
+			lock (canExecuteCheckLock) {
+				try {
+					checkingCanExecute = true;
+					defaultCanExecute = Project.CanExecute (context, configuration);
+				} finally {
+					checkingCanExecute = false;
 				}
 			}
+			if (defaultCanExecute) {
+				// It is executable by default
+				await base.OnExecute (monitor, context, configuration);
+				return;
+			}
+			UnitTest test = FindRootTest ();
+			if (test != null) {
+				var cs = new CancellationTokenSource ();
+				using (monitor.CancellationToken.Register (cs.Cancel))
+					await NUnitService.Instance.RunTest (test, context.ExecutionHandler, false, false, cs);
+			}
+		}
+
+		protected override ProjectFeatures OnGetSupportedFeatures ()
+		{
+			var sf = base.OnGetSupportedFeatures ();
+			if (!sf.HasFlag (ProjectFeatures.Execute)) {
+				// Unit test projects support execution
+				UnitTest test = FindRootTest ();
+				if (test != null)
+					sf |= ProjectFeatures.Execute;
+			}
+			return sf;
 		}
 		
-		public override bool CanExecute (IBuildTarget item, ExecutionContext context, ConfigurationSelector configuration)
+		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration)
 		{
 			// We check for DefaultExecutionHandlerFactory because the tests can't run using any other execution mode
 			
-			bool res = base.CanExecute (item, context, configuration);
-			if (!res && (item is IWorkspaceObject)) {
-				UnitTest test = NUnitService.Instance.FindRootTest ((IWorkspaceObject)item);
-				return (test != null) && test.CanRun (context.ExecutionHandler);
-			} else
-				return res;
+			var res = base.OnGetCanExecute (context, configuration);
+			lock (canExecuteCheckLock) {
+				if (checkingCanExecute)
+					return res;
+			}
+			if (res)
+				return true;
+			UnitTest test = FindRootTest ();
+			return (test != null) && test.CanRun (context.ExecutionHandler);
 		}
 	}
 }

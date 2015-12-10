@@ -30,35 +30,33 @@ using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.AspNet.Execution
 {
-	class XspBrowserLauncherConsole : IConsole
+	class XspBrowserLauncherConsole : OperationConsole
 	{
-		readonly IConsole real;
+		readonly OperationConsole real;
 		LineInterceptingTextWriter outWriter;
 		Action <string> launchBrowser;
+		IDisposable cancelReg;
 		
 		const int MAX_WATCHED_LINES = 30;
 		
-		public XspBrowserLauncherConsole (IConsole real, Action <string> launchBrowser)
+		public XspBrowserLauncherConsole (OperationConsole real, Action <string> launchBrowser)
 		{
 			this.real = real;
 			this.launchBrowser = launchBrowser;
+			cancelReg = real.CancellationToken.Register (CancellationSource.Cancel);
 		}
 		
-		public void Dispose ()
+		public override void Dispose ()
 		{
+			cancelReg.Dispose ();
 			real.Dispose ();
 		}
-		
-		public event EventHandler CancelRequested {
-			add { real.CancelRequested += value; }
-			remove { real.CancelRequested -= value; }
-		}
-		
-		public TextReader In {
+
+		public override TextReader In {
 			get { return real.In; }
 		}
 		
-		public TextWriter Out {
+		public override TextWriter Out {
 			get {
 				if (outWriter == null)
 					outWriter = new LineInterceptingTextWriter (real.Out, delegate {
@@ -75,16 +73,12 @@ namespace MonoDevelop.AspNet.Execution
 			}
 		}
 		
-		public TextWriter Error {
+		public override TextWriter Error {
 			get { return real.Error; }
 		}
 		
-		public TextWriter Log {
+		public override TextWriter Log {
 			get { return real.Log; }
-		}
-		
-		public bool CloseOnDispose {
-			get { return real.CloseOnDispose; }
 		}
 	}
 }

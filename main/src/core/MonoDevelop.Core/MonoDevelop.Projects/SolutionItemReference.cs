@@ -43,10 +43,10 @@ namespace MonoDevelop.Projects
 		{
 		}
 		
-		public SolutionItemReference (SolutionItem item)
+		public SolutionItemReference (SolutionFolderItem item)
 		{
-			if (item is SolutionEntityItem) {
-				path = ((SolutionEntityItem)item).FileName;
+			if (item is SolutionItem) {
+				path = ((SolutionItem)item).FileName;
 			} else {
 				path = item.ParentSolution.FileName;
 				if ((item is SolutionFolder) && ((SolutionFolder)item).IsRoot)

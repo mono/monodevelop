@@ -39,13 +39,6 @@ namespace MonoDevelop.Deployment.NodeBuilders
 {
 	internal class PackageNodeBuilder: TypeNodeBuilder
 	{
-		EventHandler configsChanged;
-		
-		public PackageNodeBuilder ()
-		{
-			configsChanged = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnConfigurationsChanged));
-		}
-		
 		public override Type CommandHandlerType {
 			get { return typeof(PackageNodeCommandHandler); }
 		}
@@ -81,13 +74,13 @@ namespace MonoDevelop.Deployment.NodeBuilders
 		public override void OnNodeAdded (object dataObject)
 		{
 			Package package = dataObject as Package;
-			package.Changed += configsChanged;
+			package.Changed += OnConfigurationsChanged;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
 			Package package = dataObject as Package;
-			package.Changed -= configsChanged;
+			package.Changed -= OnConfigurationsChanged;
 		}
 		
 		public void OnConfigurationsChanged (object sender, EventArgs args)
@@ -123,7 +116,7 @@ namespace MonoDevelop.Deployment.NodeBuilders
 			Package package = CurrentNode.DataItem as Package;
 			if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to delete the package '{0}'?", package.Name), AlertButton.Cancel, AlertButton.Delete) == AlertButton.Delete) {
 				package.ParentProject.Packages.Remove (package);
-				IdeApp.ProjectOperations.Save (package.ParentProject);
+				IdeApp.ProjectOperations.SaveAsync (package.ParentProject);
 			}
 		}
 		

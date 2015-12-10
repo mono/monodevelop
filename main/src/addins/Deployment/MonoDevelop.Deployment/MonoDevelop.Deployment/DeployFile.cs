@@ -44,7 +44,7 @@ namespace MonoDevelop.Deployment
 		string targetDirectoryID;
 		DeployContext deployContext;
 		bool isTemplate;
-		SolutionItem sourceSolutionItem;
+		SolutionFolderItem sourceSolutionItem;
 		string displayName;
 		DeployFileAttributes attributes;
 		
@@ -60,12 +60,12 @@ namespace MonoDevelop.Deployment
 			sourceSolutionItem = pfile.Project;
 		}
 
-		public DeployFile (SolutionItem sourceSolutionItem, FilePath sourcePath, FilePath relativeTargetPath)
+		public DeployFile (SolutionFolderItem sourceSolutionItem, FilePath sourcePath, FilePath relativeTargetPath)
 		 : this (sourceSolutionItem, sourcePath, relativeTargetPath, TargetDirectory.ProgramFiles)
 		{
 		}
 
-		public DeployFile (SolutionItem sourceSolutionItem, FilePath sourcePath, FilePath relativeTargetPath, string targetDirectoryID)
+		public DeployFile (SolutionFolderItem sourceSolutionItem, FilePath sourcePath, FilePath relativeTargetPath, string targetDirectoryID)
 		{
 			this.targetDirectoryID = targetDirectoryID;
 			this.sourcePath = sourcePath;
@@ -78,7 +78,7 @@ namespace MonoDevelop.Deployment
 			this.deployContext = deployContext;
 		}
 		
-		public SolutionItem SourceSolutionItem {
+		public SolutionFolderItem SourceSolutionItem {
 			get { return sourceSolutionItem; }
 		}
 		

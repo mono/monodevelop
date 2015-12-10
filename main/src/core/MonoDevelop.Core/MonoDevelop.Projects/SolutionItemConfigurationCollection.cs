@@ -38,29 +38,33 @@ namespace MonoDevelop.Projects
 {
 	public class SolutionItemConfigurationCollection : ItemConfigurationCollection<SolutionItemConfiguration>
 	{
-		SolutionEntityItem parentItem;
+		SolutionItem parentItem;
 
 		public SolutionItemConfigurationCollection ()
 		{
 		}
 		
-		internal SolutionItemConfigurationCollection (SolutionEntityItem parentItem)
+		internal SolutionItemConfigurationCollection (SolutionItem parentItem)
 		{
 			this.parentItem = parentItem;
 		}
 
-		protected override void OnItemAdded (SolutionItemConfiguration conf)
+		protected override void OnItemsAdded (IEnumerable<SolutionItemConfiguration> confs)
 		{
-			if (parentItem != null)
-				conf.SetParentItem (parentItem);
-			base.OnItemAdded (conf);
+			if (parentItem != null) {
+				foreach (var conf in confs)
+					conf.SetParentItem (parentItem);
+			}
+			base.OnItemsAdded (confs);
 		}
 		
-		protected override void OnItemRemoved (SolutionItemConfiguration conf)
+		protected override void OnItemsRemoved (IEnumerable<SolutionItemConfiguration> confs)
 		{
-			if (parentItem != null)
-				conf.SetParentItem (null);
-			base.OnItemRemoved (conf);
+			if (parentItem != null) {
+				foreach (var conf in confs)
+					conf.SetParentItem (null);
+			}
+			base.OnItemsRemoved (confs);
 		}
 	}
 }

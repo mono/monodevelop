@@ -25,63 +25,30 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.CodeIssues;
 using MonoDevelop.Ide;
-using Mono.TextEditor;
-using ICSharpCode.NRefactory.Refactoring;
+using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Ide.Editor;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.AnalysisCore.Fixes
 {
-	public class InspectorResults : GenericResults
-	{
-		public BaseCodeIssueProvider Inspector { get; private set; }
-
-		public InspectorResults (BaseCodeIssueProvider inspector, DomRegion region, string message, Severity level, IssueMarker mark, params GenericFix[] fixes)
-			: base (region, message, level, mark, fixes)
-		{
-			this.Inspector = inspector;
-		}
-
-		public override bool HasOptionsDialog { get { return true; } }
-		public override string OptionsTitle { get { return GetTitle (Inspector); } }
-		public override void ShowResultOptionsDialog ()
-		{
-			IdeApp.Workbench.ShowGlobalPreferencesDialog (null, "C#", dialog => {
-				var panel = dialog.GetPanel<CodeIssuePanel> ("C#");
-				if (panel == null)
-					return;
-				panel.Widget.SelectCodeIssue (Inspector.IdString);
-			});
-		}
-
-		public static string GetTitle (BaseCodeIssueProvider inspector)
-		{
-			if (inspector.Parent == null)
-				return inspector.Title;
-			return inspector.Parent.Title + " -> " + inspector.Title;
-		}
-
-
-	}
-
-	public class GenericResults : FixableResult
-	{
-		public GenericResults (DomRegion region, string message, Severity level,
-			IssueMarker mark, params GenericFix[] fixes)
-			: base (region, message, level, mark)
-		{
-			this.Fixes = fixes;
-		}
-	}
+//	public class GenericResults : FixableResult
+//	{
+//		public GenericResults (TextSpan region, string message, DiagnosticSeverity level,
+//			IssueMarker mark, params GenericFix[] fixes)
+//			: base (region, message, level, mark)
+//		{
+//			this.Fixes = fixes;
+//		}
+//	}
 	
 	public class GenericFix : IAnalysisFix, IAnalysisFixAction
 	{
 		Action fix;
 		Action batchFix;
 		string label;
-		public DocumentRegion DocumentRegion { get; set; }
+		public TextSpan DocumentRegion { get; set; }
 		public string IdString { get; set; }
 
 		public GenericFix (string label, Action fix, Action batchFix = null)
@@ -130,7 +97,7 @@ namespace MonoDevelop.AnalysisCore.Fixes
 	public class GenericFixHandler : IFixHandler
 	{
 		#region IFixHandler implementation
-		public IEnumerable<IAnalysisFixAction> GetFixes (MonoDevelop.Ide.Gui.Document doc, object fix)
+		public IEnumerable<IAnalysisFixAction> GetFixes (TextEditor editor, DocumentContext context, object fix)
 		{
 			yield return (GenericFix)fix;
 		}

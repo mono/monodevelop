@@ -25,44 +25,47 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Gui;
-using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.Razor
 {
 	// Based on MonoDevelop.AspNet.Gui.ILanguageCompletionBuilder
 
-	public interface IRazorCompletionBuilder
+	interface IRazorCompletionBuilder
 	{
 		bool SupportsLanguage (string language);
-		ICompletionWidget CreateCompletionWidget (Document document, UnderlyingDocumentInfo docInfo);
-		ICompletionDataList HandlePopupCompletion (Document realDocument, UnderlyingDocumentInfo docInfo);
-		ICompletionDataList HandleCompletion (Document realDocument, CodeCompletionContext completionContext,
-			UnderlyingDocumentInfo docInfo, char currentChar, ref int triggerWordLength);
-		ParameterDataProvider HandleParameterCompletion (Document realDocument, CodeCompletionContext completionContext,
+		ICompletionWidget CreateCompletionWidget (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo);
+		Task<ICompletionDataList> HandlePopupCompletion (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo);
+		Task<ICompletionDataList> HandleCompletion (TextEditor editor, DocumentContext context, CodeCompletionContext completionContext,
+			UnderlyingDocumentInfo docInfo, char currentChar, CancellationToken token);
+		Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> HandleParameterCompletion (TextEditor editor, DocumentContext context, CodeCompletionContext completionContext,
 			UnderlyingDocumentInfo docInfo, char completionChar);
-		bool GetParameterCompletionCommandOffset (Document realDocument, UnderlyingDocumentInfo docInfo, out int cpos);
-		int GetCurrentParameterIndex (Document realDocument, UnderlyingDocumentInfo docInfo, int startOffset);
+	//	bool GetParameterCompletionCommandOffset (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo, out int cpos);
+		int GetCurrentParameterIndex (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo, int startOffset);
 	}
 
 	public class UnderlyingDocument : Document
 	{
 		internal ParsedDocument HiddenParsedDocument;
-		internal ICompilation HiddenCompilation;
 
 		public override ParsedDocument ParsedDocument {
 			get	{ return HiddenParsedDocument; }
 		}
 
-		public override ICompilation Compilation {
-			get { return HiddenCompilation; }
-		}
-
 		public UnderlyingDocument (IWorkbenchWindow window)
 			: base (window)
 		{
+		}
+
+		internal Microsoft.CodeAnalysis.Document HiddenAnalysisDocument;
+
+		public override Microsoft.CodeAnalysis.Document AnalysisDocument {
+			get { return HiddenAnalysisDocument; }
 		}
 	}
 
@@ -73,7 +76,7 @@ namespace MonoDevelop.AspNet.Razor
 		public UnderlyingDocument UnderlyingDocument { get; set; }
 	}
 
-	public static class RazorCompletionBuilderService
+	static class RazorCompletionBuilderService
 	{
 		static List<IRazorCompletionBuilder> builder = new List<IRazorCompletionBuilder> ();
 

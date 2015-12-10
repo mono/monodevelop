@@ -124,6 +124,11 @@ namespace MonoDevelop.Ide.Gui.Components
 				}
 			}
 	
+			public T GetParentDataItem<T> (bool includeCurrent)
+			{
+				return (T)GetParentDataItem (typeof(T), includeCurrent);
+			}
+
 			public object GetParentDataItem (Type type, bool includeCurrent)
 			{
 				if (includeCurrent && type.IsInstanceOfType (DataItem))
@@ -909,7 +914,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 	
-		public void ScrollToCell (Gtk.TreePath treePath)
+		internal void ScrollToCell (Gtk.TreePath treePath)
 		{
 			Tree.ScrollToCell (treePath, null, true, 0, 0);
 		}

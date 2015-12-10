@@ -1,4 +1,3 @@
-using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
@@ -52,7 +51,7 @@ namespace MonoDevelop.Xml.Tests.Schema
 		{
 			bool Contains = false;
 			
-			foreach (ICompletionData data in items) {
+			foreach (var data in items) {
 				if (data.DisplayText == name) {
 					Contains = true;
 					break;
@@ -70,12 +69,12 @@ namespace MonoDevelop.Xml.Tests.Schema
 		{
 			bool Contains = false;
 			
-			foreach (ICompletionData data in items) {
+			foreach (var data in items) {
 				if (data.DisplayText == name) {
-					if (data.Description == description) {
+					//if (data.DisplayText == description) {
 						Contains = true;
 						break;						
-					}
+					//}
 				}
 			}
 				
@@ -90,7 +89,7 @@ namespace MonoDevelop.Xml.Tests.Schema
 		{
 			int count = 0;
 			
-			foreach (ICompletionData data in items) {
+			foreach (var data in items) {
 				if (data.DisplayText == name) {
 					++count;
 				}

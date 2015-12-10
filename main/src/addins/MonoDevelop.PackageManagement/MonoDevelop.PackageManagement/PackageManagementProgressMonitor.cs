@@ -1,4 +1,4 @@
-﻿//
+//
 // PackageManagementProgressMonitor.cs
 //
 // Author:
@@ -30,119 +30,84 @@ using System.IO;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
+using System.Threading;
 using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementProgressMonitor : IProgressMonitor, IAsyncOperation
+	public class PackageManagementProgressMonitor : ProgressMonitor
 	{
-		IProgressMonitor consoleMonitor;
-		IProgressMonitor statusMonitor;
-		List<string> warnings = new List<string> ();
-		List<string> errors = new List<string> ();
+		OutputProgressMonitor consoleMonitor;
+		CancellationTokenRegistration consoleMonitorReg;
+		CancellationTokenRegistration statusMonitorReg;
 
-		public IProgressMonitor ConsoleMonitor {
+		public ProgressMonitor ConsoleMonitor {
 			get { return consoleMonitor; }
 		}
 
-		public IConsole Console {
-			get { return (IConsole)this.consoleMonitor; }
+		public OperationConsole Console {
+			get { return consoleMonitor.Console; }
 		}
 
-		public PackageManagementProgressMonitor (IProgressMonitor consoleMonitor, IProgressMonitor statusMonitor)
+		public PackageManagementProgressMonitor (OutputProgressMonitor consoleMonitor, ProgressMonitor statusMonitor)
 		{
+			AddSlaveMonitor (statusMonitor);
 			this.consoleMonitor = consoleMonitor;
-			this.statusMonitor = statusMonitor;
 
-			consoleMonitor.CancelRequested += OnCancelRequested;
-			statusMonitor.CancelRequested += OnCancelRequested;
+			consoleMonitorReg = consoleMonitor.CancellationToken.Register (OnCancelRequested);
+			statusMonitorReg = statusMonitor.CancellationToken.Register (OnCancelRequested);
 		}
 
-		public void BeginTask (string name, int totalWork)
+		protected override void OnWriteLog (string message)
 		{
-			statusMonitor.BeginTask (name, totalWork);
+			consoleMonitor.Log.Write (message);
 		}
 
-		public void BeginStepTask (string name, int totalWork, int stepSize)
+		protected override void OnWriteErrorLog (string message)
 		{
-			statusMonitor.BeginStepTask (name, totalWork, stepSize);
+			consoleMonitor.ErrorLog.Write (message);
 		}
 
-		public void EndTask ()
+		public override void Dispose ()
 		{
-			statusMonitor.EndTask ();
-		}
+			consoleMonitorReg.Dispose ();
+			statusMonitorReg.Dispose ();
 
-		public void Step (int work)
-		{
-			statusMonitor.Step (work);
-		}
-
-		public TextWriter Log
-		{
-			get { return consoleMonitor.Log; }
-		}
-
-		public void ReportSuccess (string message)
-		{
-			consoleMonitor.ReportSuccess (message);
-			statusMonitor.ReportSuccess (message);
-		}
-
-		public void ReportWarning (string message)
-		{
-			warnings.Add (message);
-			statusMonitor.ReportWarning (message);
-		}
-
-		public void ReportError (string message, Exception ex)
-		{
-			errors.Add (message);
-			statusMonitor.ReportError (message, ex);
-		}
-
-		public void Dispose ()
-		{
-			consoleMonitor.CancelRequested -= OnCancelRequested;
-			statusMonitor.CancelRequested -= OnCancelRequested;
+			foreach (var m in SuccessMessages)
+				consoleMonitor.ReportSuccess (m);
 
 			// Do not report warnings if there are errors otherwise the warnings will
 			// appear at the end of the Package Console and hide the error which 
 			// should be the last line of text visible to the user.
-			if (errors.Count == 0) {
+			if (Errors.Length == 0) {
 				ReportAllWarningsButLastToConsole ();
 			}
 
 			ReportAllErrorsButLastToConsole ();
 
 			consoleMonitor.Dispose ();
-			statusMonitor.Dispose ();
+
+			base.Dispose ();
 		}
 
 		void ReportAllWarningsButLastToConsole ()
 		{
-			warnings = warnings.Distinct ().ToList ();
+			var warnings = Warnings.Distinct ().ToList ();
 			RemoveLastItem (warnings);
 			warnings.ForEach (warning => consoleMonitor.ReportWarning (warning));
 		}
 
 		void ReportAllErrorsButLastToConsole ()
 		{
+			var errors = Errors.ToList ();
 			RemoveLastItem (errors);
-			errors.ForEach (error => consoleMonitor.ReportError (error, null));
+			errors.ForEach (error => consoleMonitor.ReportError (error.Message, error.Exception));
 		}
 
-		static void RemoveLastItem (List<string> items)
+		static void RemoveLastItem<T> (List<T> items)
 		{
 			if (items.Count > 0) {
 				items.RemoveAt (items.Count - 1);
-			}
-		}
-
-		public bool IsCancelRequested
-		{
-			get {
-				return consoleMonitor.IsCancelRequested || statusMonitor.IsCancelRequested;
 			}
 		}
 
@@ -150,46 +115,9 @@ namespace MonoDevelop.PackageManagement
 			get { return this; }
 		}
 
-		void OnCancelRequested (IProgressMonitor sender)
+		void OnCancelRequested ()
 		{
-			AsyncOperation.Cancel ();
-		}
-
-		public IAsyncOperation AsyncOperation
-		{
-			get { return this; }
-		}
-
-		void IAsyncOperation.Cancel ()
-		{
-			consoleMonitor.AsyncOperation.Cancel ();
-		}
-
-		void IAsyncOperation.WaitForCompleted ()
-		{
-			consoleMonitor.AsyncOperation.WaitForCompleted ();
-		}
-
-		public bool IsCompleted {
-			get { return consoleMonitor.AsyncOperation.IsCompleted; }
-		}
-
-		bool IAsyncOperation.Success { 
-			get { return consoleMonitor.AsyncOperation.Success; }
-		}
-
-		bool IAsyncOperation.SuccessWithWarnings { 
-			get { return consoleMonitor.AsyncOperation.SuccessWithWarnings; }
-		}
-
-		public event MonitorHandler CancelRequested {
-			add { consoleMonitor.CancelRequested += value; }
-			remove { consoleMonitor.CancelRequested -= value; }
-		}
-
-		public event OperationHandler Completed {
-			add { consoleMonitor.AsyncOperation.Completed += value; }
-			remove { consoleMonitor.AsyncOperation.Completed -= value; }
+			CancellationTokenSource.Cancel ();
 		}
 	}
 }

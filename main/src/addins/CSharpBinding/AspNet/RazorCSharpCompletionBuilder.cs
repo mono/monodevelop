@@ -25,11 +25,15 @@
 // THE SOFTWARE.
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.CSharp.Completion;
 using MonoDevelop.Ide.CodeCompletion;
-using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
+//using ICSharpCode.NRefactory6.CSharp.Completion;
 using MonoDevelop.AspNet.Razor;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -42,7 +46,7 @@ namespace MonoDevelop.CSharp.Completion
 			return language == "C#";
 		}
 
-		CSharpCompletionTextEditorExtension CreateCompletion (Document realDocument, UnderlyingDocumentInfo docInfo,
+		CSharpCompletionTextEditorExtension CreateCompletion (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo,
 			out CodeCompletionContext codeCompletionContext)
 		{
 			var documentLocation = docInfo.UnderlyingDocument.Editor.OffsetToLocation (docInfo.CaretPosition);
@@ -54,69 +58,73 @@ namespace MonoDevelop.CSharp.Completion
 			};
 
 			return new CSharpCompletionTextEditorExtension (docInfo.UnderlyingDocument) {
-				CompletionWidget = CreateCompletionWidget (realDocument, docInfo)
+				CompletionWidget = CreateCompletionWidget (editor, context, docInfo)
 			};
 		}
 
-		CSharpCompletionTextEditorExtension CreateCompletionAndUpdate (Document realDocument, UnderlyingDocumentInfo docInfo,
+		CSharpCompletionTextEditorExtension CreateCompletionAndUpdate (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo,
 			out CodeCompletionContext codeCompletionContext)
 		{
-			var completion = CreateCompletion (realDocument, docInfo, out codeCompletionContext);
+			var completion = CreateCompletion (editor, context, docInfo, out codeCompletionContext);
 			completion.UpdateParsedDocument ();
 			return completion;
 		}
 
-		public ICompletionWidget CreateCompletionWidget (Document realDocument,	UnderlyingDocumentInfo docInfo)
+		public ICompletionWidget CreateCompletionWidget (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context,	UnderlyingDocumentInfo docInfo)
 		{
-			return new RazorCompletionWidget (realDocument, docInfo);
+			return new RazorCompletionWidget (editor, context, docInfo);
 		}
 
-		public ICompletionDataList HandlePopupCompletion (Document realDocument, UnderlyingDocumentInfo docInfo)
+		public Task<ICompletionDataList> HandlePopupCompletion (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo)
 		{
 			CodeCompletionContext ccc;
-			var completion = CreateCompletionAndUpdate (realDocument, docInfo, out ccc);
+			var completion = CreateCompletionAndUpdate (editor, context, docInfo, out ccc);
 			return completion.CodeCompletionCommand (ccc);
 		}
 
-		public ICompletionDataList HandleCompletion (Document realDocument,	CodeCompletionContext completionContext,
-			UnderlyingDocumentInfo docInfo, char currentChar, ref int triggerWordLength)
+		public Task<ICompletionDataList> HandleCompletion (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context,	CodeCompletionContext completionContext,
+			UnderlyingDocumentInfo docInfo, char currentChar, CancellationToken token)
 		{
 			CodeCompletionContext ccc;
-			var completion = CreateCompletionAndUpdate (realDocument, docInfo, out ccc);
-			return completion.HandleCodeCompletion (completionContext, currentChar, ref triggerWordLength);
+			var completion = CreateCompletionAndUpdate (editor, context, docInfo, out ccc);
+			return completion.HandleCodeCompletionAsync (completionContext, currentChar, token);
 		}
 
-		public ParameterDataProvider HandleParameterCompletion (Document realDocument,	CodeCompletionContext completionContext,
+		public Task<ParameterHintingResult> HandleParameterCompletion (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context,	CodeCompletionContext completionContext,
 			UnderlyingDocumentInfo docInfo, char completionChar)
 		{
 			CodeCompletionContext ccc;
-			var completion = CreateCompletionAndUpdate (realDocument, docInfo, out ccc);
-			return completion.HandleParameterCompletion (completionContext, completionChar);
+			var completion = CreateCompletionAndUpdate (editor, context, docInfo, out ccc);
+			return completion.HandleParameterCompletionAsync (completionContext, completionChar);
 		}
 
-		public bool GetParameterCompletionCommandOffset (Document realDocument,	UnderlyingDocumentInfo docInfo, out int cpos)
-		{
-			CodeCompletionContext ccc;
-			var completion = CreateCompletionAndUpdate (realDocument, docInfo, out ccc);
-			return completion.GetParameterCompletionCommandOffset (out cpos);
-		}
+//		public bool GetParameterCompletionCommandOffset (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context,	UnderlyingDocumentInfo docInfo, out int cpos)
+//		{
+//			CodeCompletionContext ccc;
+//			var completion = CreateCompletionAndUpdate (editor, context, docInfo, out ccc);
+//			return completion.GetParameterCompletionCommandOffset (out cpos);
+//		}
 
-		public int GetCurrentParameterIndex (Document realDocument, UnderlyingDocumentInfo docInfo, int startOffset)
+		public int GetCurrentParameterIndex (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo, int startOffset)
 		{
 			CodeCompletionContext ccc;
-			var completion = CreateCompletionAndUpdate (realDocument, docInfo, out ccc);
+			var completion = CreateCompletionAndUpdate (editor, context, docInfo, out ccc);
 			return completion.GetCurrentParameterIndex (startOffset);
 		}
 	}
 
 	class RazorCompletionWidget : ICompletionWidget
 	{
-		Document realDocument;
+		DocumentContext realDocumentContext;
+
+		MonoDevelop.Ide.Editor.TextEditor realEditor;
+
 		UnderlyingDocumentInfo docInfo;
 
-		public RazorCompletionWidget (Document realDocument, UnderlyingDocumentInfo docInfo)
+		public RazorCompletionWidget (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo)
 		{
-			this.realDocument = realDocument;
+			this.realEditor = editor;
+			this.realDocumentContext = context;
 			this.docInfo = docInfo;
 		}
 
@@ -130,6 +138,13 @@ namespace MonoDevelop.CSharp.Completion
 		}
 
 		public event EventHandler CompletionContextChanged;
+
+		protected virtual void OnCompletionContextChanged (EventArgs e)
+		{
+			var handler = CompletionContextChanged;
+			if (handler != null)
+				handler (this, e);
+		}
 
 		public string GetText (int startOffset, int endOffset)
 		{
@@ -156,11 +171,11 @@ namespace MonoDevelop.CSharp.Completion
 
 		public CodeCompletionContext CreateCodeCompletionContext (int triggerOffset)
 		{
-			var savedCtx = realDocument.GetContent<ICompletionWidget> ().CreateCodeCompletionContext (
-				realDocument.Editor.Caret.Offset + triggerOffset - docInfo.CaretPosition);
+			var savedCtx = realDocumentContext.GetContent<ICompletionWidget> ().CreateCodeCompletionContext (
+				realEditor.CaretOffset + triggerOffset - docInfo.CaretPosition);
 			var result = new CodeCompletionContext ();
 			result.TriggerOffset = triggerOffset;
-			var loc = docInfo.UnderlyingDocument.Editor.Document.OffsetToLocation (triggerOffset);
+			var loc = docInfo.UnderlyingDocument.Editor.OffsetToLocation (triggerOffset);
 			result.TriggerLine = loc.Line;
 			result.TriggerLineOffset = loc.Column - 1;
 
@@ -177,7 +192,7 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 			int min = Math.Min (ctx.TriggerOffset, CaretOffset);
 			int max = Math.Max (ctx.TriggerOffset, CaretOffset);
-			return docInfo.UnderlyingDocument.Editor.Document.GetTextBetween (min, max);
+			return docInfo.UnderlyingDocument.Editor.GetTextBetween (min, max);
 		}
 
 		public void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word)
@@ -193,25 +208,28 @@ namespace MonoDevelop.CSharp.Completion
 
 			var translatedCtx = new CodeCompletionContext ();
 			translatedCtx.TriggerOffset = offset;
-			var loc = docInfo.UnderlyingDocument.Editor.Document.OffsetToLocation (offset);
+			var loc = docInfo.UnderlyingDocument.Editor.OffsetToLocation (offset);
 			translatedCtx.TriggerLine = loc.Line;
 			translatedCtx.TriggerLineOffset = loc.Column - 1;
 			translatedCtx.TriggerWordLength = ctx.TriggerWordLength;
-				realDocument.GetContent<ICompletionWidget> ().SetCompletionText (
+				realDocumentContext.GetContent<ICompletionWidget> ().SetCompletionText (
 				translatedCtx, partial_word, complete_word, wordOffset);
 		}
 
 		public int CaretOffset
 		{
 			get	{
-				return docInfo.UnderlyingDocument.Editor.Caret.Offset;
+				return docInfo.UnderlyingDocument.Editor.CaretOffset;
+			}
+			set {
+				docInfo.UnderlyingDocument.Editor.CaretOffset = value;
 			}
 		}
 
 		public int TextLength
 		{
 			get	{
-				return docInfo.UnderlyingDocument.Editor.Document.TextLength;
+				return docInfo.UnderlyingDocument.Editor.Length;
 			}
 		}
 
@@ -229,6 +247,16 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
+		void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
+		{
+			// ignore
+		}
+
+		public double ZoomLevel {
+			get {
+				return 1d;
+			}
+		}
 		#endregion
 	}
 }

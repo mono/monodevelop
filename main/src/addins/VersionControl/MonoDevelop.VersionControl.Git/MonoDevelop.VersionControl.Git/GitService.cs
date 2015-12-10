@@ -29,6 +29,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.ProgressMonitoring;
 using System.Threading;
+using System.Threading.Tasks;
 using LibGit2Sharp;
 
 namespace MonoDevelop.VersionControl.Git
@@ -63,7 +64,7 @@ namespace MonoDevelop.VersionControl.Git
 				string remote = dlg.SelectedRemote;
 				string branch = dlg.SelectedRemoteBranch ?? repo.GetCurrentBranch ();
 
-				IProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Pushing changes..."), VersionControlOperationType.Push);
+				ProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Pushing changes..."), VersionControlOperationType.Push);
 				ThreadPool.QueueUserWorkItem (delegate {
 					try {
 						repo.Push (monitor, remote, branch);
@@ -92,13 +93,13 @@ namespace MonoDevelop.VersionControl.Git
 				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 					dlg.Hide ();
 					if (rebasing) {
-						using (IProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Rebasing branch '{0}'...", dlg.SelectedBranch))) {
+						using (ProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Rebasing branch '{0}'...", dlg.SelectedBranch))) {
 							if (dlg.IsRemote)
 								repo.Fetch (monitor, dlg.RemoteName);
 							repo.Rebase (dlg.SelectedBranch, dlg.StageChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor);
 						}
 					} else {
-						using (IProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Merging branch '{0}'...", dlg.SelectedBranch))) {
+						using (ProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Merging branch '{0}'...", dlg.SelectedBranch))) {
 							if (dlg.IsRemote)
 								repo.Fetch (monitor, dlg.RemoteName);
 							repo.Merge (dlg.SelectedBranch, dlg.StageChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor);
@@ -123,7 +124,7 @@ namespace MonoDevelop.VersionControl.Git
 			try {
 				IdeApp.Workbench.AutoReloadDocuments = true;
 				IdeApp.Workbench.LockGui ();
-				ThreadPool.QueueUserWorkItem (delegate {
+				Task.Run (delegate {
 					try {
 						repo.SwitchToBranch (monitor, branch);
 					} catch (Exception ex) {
@@ -131,31 +132,33 @@ namespace MonoDevelop.VersionControl.Git
 					} finally {
 						monitor.Dispose ();
 					}
-				});
-				monitor.AsyncOperation.WaitForCompleted ();
+				}).Wait ();
 			} finally {
 				IdeApp.Workbench.AutoReloadDocuments = false;
 				IdeApp.Workbench.UnlockGui ();
 			}
 		}
 
-		public static IAsyncOperation ApplyStash (GitRepository repo, int s)
+		public static Task<bool> ApplyStash (GitRepository repo, int s)
 		{
 			var monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
-			ThreadPool.QueueUserWorkItem (delegate {
+			var t = Task.Run (delegate {
 				try {
-					ReportStashResult (repo.ApplyStash (monitor, s));
+					var res = repo.ApplyStash (monitor, s);
+					ReportStashResult (res);
+					return true;
 				} catch (Exception ex) {
 					string msg = GettextCatalog.GetString ("Stash operation failed.");
 					monitor.ReportError (msg, ex);
+					return false;
 				}
 				finally {
 					monitor.Dispose ();
 					statusTracker.Dispose ();
 				}
 			});
-			return monitor.AsyncOperation;
+			return t;
 		}
 
 		public static void ReportStashResult (StashApplyStatus status)

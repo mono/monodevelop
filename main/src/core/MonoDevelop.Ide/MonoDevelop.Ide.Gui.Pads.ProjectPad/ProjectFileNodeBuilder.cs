@@ -168,7 +168,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			selectionLength = Path.GetFileNameWithoutExtension(name).Length;
 		}
 
-		public override void RenameItem (string newName)
+		public async override void RenameItem (string newName)
 		{
 			ProjectFile newProjectFile = null;
 			var file = (ProjectFile) CurrentNode.DataItem;
@@ -194,7 +194,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				} else {
 					FileService.RenameFile (file.FilePath, newName);
 					if (file.Project != null)
-						IdeApp.ProjectOperations.Save (file.Project);
+						await IdeApp.ProjectOperations.SaveAsync (file.Project);
 				}
 			} catch (ArgumentException) { // new file name with wildcard (*, ?) characters in it
 				MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
@@ -233,7 +233,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[AllowMultiSelection]
 		public override void DeleteMultipleItems ()
 		{
-			var projects = new Set<SolutionEntityItem> ();
+			var projects = new Set<SolutionItem> ();
 			var files = new List<ProjectFile> ();
 			bool hasChildren = false;
 
@@ -300,7 +300,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					FileService.DeleteFile (file.Name);
 			}
 
-			IdeApp.ProjectOperations.Save (projects);
+			IdeApp.ProjectOperations.SaveAsync (projects);
 		}
 
 		static bool CheckAnyFileExists (IEnumerable<ProjectFile> files)
@@ -378,7 +378,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[AllowMultiSelection]
 		public void OnSetBuildAction (object ob)
 		{
-			Set<SolutionEntityItem> projects = new Set<SolutionEntityItem> ();
+			Set<SolutionItem> projects = new Set<SolutionItem> ();
 			string action = (string)ob;
 			
 			foreach (ITreeNavigator node in CurrentNodes) {
@@ -386,7 +386,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				file.BuildAction = action;
 				projects.Add (file.Project);
 			}
-			IdeApp.ProjectOperations.Save (projects);
+			IdeApp.ProjectOperations.SaveAsync (projects);
 		}
 		
 		[CommandUpdateHandler (FileCommands.SetBuildAction)]
@@ -452,7 +452,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 			}
 			
-			Set<SolutionEntityItem> projects = new Set<SolutionEntityItem> ();
+			Set<SolutionItem> projects = new Set<SolutionItem> ();
 			
 			foreach (ITreeNavigator node in CurrentNodes) {
 				ProjectFile file = (ProjectFile) node.DataItem;
@@ -464,7 +464,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 			}
 				
-			IdeApp.ProjectOperations.Save (projects);
+			IdeApp.ProjectOperations.SaveAsync (projects);
 		}
 		
 		[CommandUpdateHandler (FileCommands.CopyToOutputDirectory)]

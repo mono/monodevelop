@@ -38,7 +38,8 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Components.MainToolbar;
-using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Core.Text;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -134,10 +135,16 @@ namespace MonoDevelop.Components.MainToolbar
 			return this [item].GetDescriptionMarkupText (widget);
 		}
 
-		ICSharpCode.NRefactory.TypeSystem.DomRegion ISearchDataSource.GetRegion (int item)
+		ISegment ISearchDataSource.GetRegion (int item)
 		{
 			var result = this [item];
-			return new DomRegion (result.File, result.Row, result.Column, result.Row, result.Column);
+			return new TextSegment (result.Offset, result.Length);
+		}
+
+		string ISearchDataSource.GetFileName (int item)
+		{
+			var result = this [item];
+			return result.File;
 		}
 
 		bool ISearchDataSource.CanActivate (int item)
@@ -163,9 +170,9 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		TooltipInformation ISearchDataSource.GetTooltip (int item)
+		Task<TooltipInformation> ISearchDataSource.GetTooltip (CancellationToken token, int item)
 		{
-			return this [item].TooltipInformation;
+			return this [item].GetTooltipInformation (token);
 		}
 		#endregion
 

@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Core;
+using System.Threading;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -46,7 +47,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		int ident = 0;
 		List<TextTag> tags = new List<TextTag> ();
 		Stack<string> indents = new Stack<string> ();
-		IAsyncOperation asyncOperation;
+		CancellationTokenSource asyncOperation;
 		
 		CellRendererText textRenderer;
 		CellRendererProgress progressRenderer;
@@ -99,7 +100,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			Resize (w, 1);
 		}
 		
-		public IAsyncOperation AsyncOperation {
+		public CancellationTokenSource CancellationTokenSource {
 			get { return asyncOperation; }
 			set { asyncOperation = value; }
 		}

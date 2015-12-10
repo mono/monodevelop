@@ -25,18 +25,20 @@
 // THE SOFTWARE.
 using System;
 using NUnit.Framework;
-using MonoDevelop.Ide.CodeCompletion;
-using ICSharpCode.NRefactory.CSharp;
 using System.Text;
-using ICSharpCode.NRefactory.Editor;
-using MonoDevelop.SourceEditor.JSon;
-using Mono.TextEditor;
+using MonoDevelop.JSon;
+using UnitTests;
+using ICSharpCode.NRefactory6.CSharp;
+using MonoDevelop.CSharpBinding;
+using MonoDevelop.CSharpBinding.Tests;
 
 namespace MonoDevelop.SourceEditor
 {
 	[TestFixture]
-	public class JSonIndentEngineTests
+	public class JSonIndentEngineTests : TestBase
 	{
+		const string indentString = "    ";
+
 		public static IDocumentIndentEngine CreateEngine (string text)
 		{
 			var sb = new StringBuilder ();
@@ -50,11 +52,18 @@ namespace MonoDevelop.SourceEditor
 				sb.Append (ch);
 			}
 
-			var data = new TextEditorData ();
-			data.Text = sb.ToString ();
-			var csi = new JSonIndentEngine (data);
+			var tww = new TestWorkbenchWindow ();
+			var content = new TestViewContent ();
+			tww.ViewContent = content;
+			content.ContentName = "/a.json";
+			content.Data.MimeType = "application/json";
+
+			content.Data.Text = sb.ToString ();
+			var doc = new MonoDevelop.Ide.Gui.Document (tww);
+
+			var csi = new JSonIndentEngine (content.Data, doc);
 			var result = new CacheIndentEngine (csi);
-			result.Update (offset);
+			result.Update (content.Data, offset);
 			return result;
 		}
 
@@ -66,8 +75,8 @@ namespace MonoDevelop.SourceEditor
 {
 $
 ");
-			Assert.AreEqual ("\t", engine.ThisLineIndent);
-			Assert.AreEqual ("\t", engine.NextLineIndent);
+			Assert.AreEqual (indentString, engine.ThisLineIndent);
+			Assert.AreEqual (indentString, engine.NextLineIndent);
 		}
 
 		[Test]
@@ -79,8 +88,8 @@ $
 	""foo"":""bar"",
 $
 ");
-			Assert.AreEqual ("\t", engine.ThisLineIndent);
-			Assert.AreEqual ("\t", engine.NextLineIndent);
+			Assert.AreEqual (indentString, engine.ThisLineIndent);
+			Assert.AreEqual (indentString, engine.NextLineIndent);
 		}
 
 		[Test]
@@ -92,16 +101,16 @@ $
 	""test"":[
 $
 ");
-			Assert.AreEqual ("\t\t", engine.ThisLineIndent);
-			Assert.AreEqual ("\t\t", engine.NextLineIndent);
+			Assert.AreEqual (indentString + indentString, engine.ThisLineIndent);
+			Assert.AreEqual (indentString + indentString, engine.NextLineIndent);
 		}
 
 		[Test]
 		public void TestWindowsEOL ()
 		{
 			var engine = CreateEngine ("\r\n{\r\n$\r\n");
-			Assert.AreEqual ("\t", engine.ThisLineIndent);
-			Assert.AreEqual ("\t", engine.NextLineIndent);
+			Assert.AreEqual (indentString, engine.ThisLineIndent);
+			Assert.AreEqual (indentString, engine.NextLineIndent);
 		}
 	}
 }

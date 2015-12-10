@@ -26,6 +26,8 @@
 using System;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
@@ -52,10 +54,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		Gtk.Widget IOptionsPanel.CreatePanelWidget ()
 		{
-			spinbutton1.Value = CompletionTextEditorExtension.CompletionListRows;
-			filterByBrowsableCheckbutton.Active = CompletionTextEditorExtension.FilterCompletionListByEditorBrowsable;
-			normalOnlyRadiobutton.Active = !CompletionTextEditorExtension.IncludeEditorBrowsableAdvancedMembers;
-			includeAdvancedRadiobutton.Active = CompletionTextEditorExtension.IncludeEditorBrowsableAdvancedMembers;
+			filterByBrowsableCheckbutton.Active = IdeApp.Preferences.FilterCompletionListByEditorBrowsable;
+			normalOnlyRadiobutton.Active = !IdeApp.Preferences.IncludeEditorBrowsableAdvancedMembers;
+			includeAdvancedRadiobutton.Active = IdeApp.Preferences.IncludeEditorBrowsableAdvancedMembers;
 			FilterToggled (this, EventArgs.Empty);
 			return this;
 		}
@@ -72,9 +73,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		void IOptionsPanel.ApplyChanges ()
 		{
-			CompletionTextEditorExtension.CompletionListRows.Value = spinbutton1.ValueAsInt;
-			CompletionTextEditorExtension.FilterCompletionListByEditorBrowsable.Value = filterByBrowsableCheckbutton.Active;
-			CompletionTextEditorExtension.IncludeEditorBrowsableAdvancedMembers.Value = includeAdvancedRadiobutton.Active;
+			IdeApp.Preferences.FilterCompletionListByEditorBrowsable.Value = filterByBrowsableCheckbutton.Active;
+			IdeApp.Preferences.IncludeEditorBrowsableAdvancedMembers.Value = includeAdvancedRadiobutton.Active;
 		}
 
 		#endregion

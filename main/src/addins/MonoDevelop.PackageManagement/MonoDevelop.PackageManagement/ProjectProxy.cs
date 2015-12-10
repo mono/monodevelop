@@ -29,6 +29,9 @@ using System.Collections;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using System.Collections.Generic;
+using MonoDevelop.Ide;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -61,9 +64,13 @@ namespace MonoDevelop.PackageManagement
 			get { return project.ExtendedProperties; }
 		}
 
-		public void Save ()
+		public IEnumerable<string> FlavorGuids {
+			get { return project.FlavorGuids; }
+		}
+
+		public async Task SaveAsync ()
 		{
-			project.Save ();
+			await project.SaveAsync ();
 		}
 	}
 }

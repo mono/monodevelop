@@ -33,7 +33,7 @@ using MonoDevelop.Core;
 namespace MonoDevelop.Ide.Extensions
 {
 	[ExtensionNode ("Panel")]
-	public class OptionsPanelNode: TypeExtensionNode
+	class OptionsPanelNode: TypeExtensionNode
 	{
 		[NodeAttribute ("class")]
 		protected string typeName;
@@ -47,6 +47,9 @@ namespace MonoDevelop.Ide.Extensions
 		[NodeAttribute]
 		protected bool fill = false;
 		
+		[NodeAttribute]
+		protected string replaces;
+
 		Type panelType;
 		
 		public OptionsPanelNode ()
@@ -85,7 +88,7 @@ namespace MonoDevelop.Ide.Extensions
 			}
 		}
 
-		public string TypeName {
+		public new string TypeName {
 			get {
 				return typeName;
 			}
@@ -93,6 +96,12 @@ namespace MonoDevelop.Ide.Extensions
 		
 		internal bool CustomNode {
 			get { return panelType != null; }
+		}
+
+		public string Replaces {
+			get {
+				return this.replaces;
+			}
 		}
 		
 		public virtual IOptionsPanel CreatePanel ()

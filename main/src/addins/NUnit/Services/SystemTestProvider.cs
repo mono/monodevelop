@@ -33,7 +33,7 @@ namespace MonoDevelop.NUnit
 {
 	public class SystemTestProvider: ITestProvider
 	{
-		public UnitTest CreateUnitTest (IWorkspaceObject entry)
+		public UnitTest CreateUnitTest (WorkspaceObject entry)
 		{
 			UnitTest test = null;
 			
@@ -49,18 +49,12 @@ namespace MonoDevelop.NUnit
 				test = ((NUnitAssemblyGroupProject)entry).RootTest;
 			
 			UnitTestGroup grp = test as UnitTestGroup;
-			if (grp != null && !grp.HasTests)
+			if (grp != null && !grp.HasTests) {
+				test.Dispose ();
 				return null;
+			}
 			
 			return test;
-		}
-		
-		public Type[] GetOptionTypes ()
-		{
-			return new Type[] {
-				typeof(GeneralTestOptions),
-				typeof(NUnitCategoryOptions)
-			};
 		}
 	}
 }

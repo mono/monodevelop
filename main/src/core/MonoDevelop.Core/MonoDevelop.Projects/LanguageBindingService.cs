@@ -29,70 +29,54 @@ using System.Collections.Generic;
 using System.Linq;
 using Mono.Addins;
 using MonoDevelop.Projects.Extensions;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
 	public static class LanguageBindingService
 	{
-		static List<LanguageBindingCodon> languageBindingCodons = new List<LanguageBindingCodon> ();
-		
-		static LanguageBindingService ()
+		const string LanguageBindingExtensionPath = "/MonoDevelop/ProjectModel/LanguageBindings";
+		static LanguageBinding[] extensions;
+
+		static void InitExtensions ()
 		{
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/LanguageBindings", delegate(object sender, ExtensionNodeEventArgs args) {
-				LanguageBindingCodon languageBindingCodon = (LanguageBindingCodon)args.ExtensionNode;
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					languageBindingCodons.Add (languageBindingCodon);
-					IDotNetLanguageBinding dotNetBinding = languageBindingCodon as IDotNetLanguageBinding;
-					if (dotNetBinding != null) {
-						object par = dotNetBinding.CreateCompilationParameters (null);
-						if (par != null)
-							Services.ProjectService.DataContext.IncludeType (par.GetType ());
-						par = dotNetBinding.CreateProjectParameters (null);
-						if (par != null)
-							Services.ProjectService.DataContext.IncludeType (par.GetType ());
-					}
-					break;
-				case ExtensionChange.Remove:
-					languageBindingCodons.Remove (languageBindingCodon);
-					break;
-				}
-				languageBindings = null;
-			});
+			if (extensions == null) {
+				AddinManager.ExtensionChanged += (sender, args) => {
+					if (args.Path == LanguageBindingExtensionPath)
+						LoadExtensions ();
+				};
+				Runtime.RunInMainThread ((Action)LoadExtensions).Wait ();
+			}
 		}
-		
-		static List<ILanguageBinding> languageBindings = null;
-		public static IEnumerable<ILanguageBinding> LanguageBindings {
+
+		static void LoadExtensions ()
+		{
+			extensions = AddinManager.GetExtensionNodes<LanguageBindingExtensionNode> (LanguageBindingExtensionPath).Select (b => b.LanguageBinding).ToArray ();
+		}
+
+		public static IEnumerable<LanguageBinding> LanguageBindings {
 			get {
-				CheckBindings ();
-				return languageBindings;
+				InitExtensions ();
+				return extensions;
 			}
 		}
 		
-		static void CheckBindings ()
-		{
-			if (languageBindings == null)
-				languageBindings = new List<ILanguageBinding> (from codon in languageBindingCodons select codon.LanguageBinding);
-		}
-		
-		public static ILanguageBinding GetBindingPerFileName (string fileName)
+		public static LanguageBinding GetBindingPerFileName (string fileName)
 		{
 			if (String.IsNullOrEmpty (fileName)) {
 				MonoDevelop.Core.LoggingService.LogWarning ("Cannot get binding for null filename at {0}", Environment.StackTrace);
 				return null;
 			}
-			CheckBindings ();
-			return languageBindings.FirstOrDefault (binding => binding.IsSourceCodeFile (fileName));
+			return LanguageBindings.FirstOrDefault (binding => binding.IsSourceCodeFile (fileName));
 		}
 		
-		public static ILanguageBinding GetBindingPerLanguageName (string language)
+		public static LanguageBinding GetBindingPerLanguageName (string language)
 		{
 			if (String.IsNullOrEmpty (language)) {
 				MonoDevelop.Core.LoggingService.LogWarning ("Cannot get binding for null language at {0}", Environment.StackTrace);
 				return null;
 			}
-			CheckBindings ();
-			return languageBindings.FirstOrDefault (binding => binding.Language == language);
+			return LanguageBindings.FirstOrDefault (binding => binding.Language == language);
 		}
 	}
 }

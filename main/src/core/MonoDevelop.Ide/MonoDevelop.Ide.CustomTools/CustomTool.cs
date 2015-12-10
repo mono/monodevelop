@@ -28,12 +28,13 @@ using System;
 using MonoDevelop.Projects;
 using System.CodeDom.Compiler;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.CustomTools
 {
 	public interface ISingleFileCustomTool
 	{
-		IAsyncOperation Generate (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result);
+		Task Generate (ProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result);
 	}
 	
 	public class SingleFileCustomToolResult

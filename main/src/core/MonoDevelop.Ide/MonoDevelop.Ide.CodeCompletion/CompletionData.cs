@@ -29,12 +29,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.Completion;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	public class CompletionData : ICompletionData, IComparable
+	public class CompletionData : IComparable
 	{
 		protected CompletionData () {}
 		
@@ -42,6 +44,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public virtual string DisplayText { get; set; }
 		public virtual string Description { get; set; }
 		public virtual string CompletionText { get; set; }
+
+		/// <summary>
+		/// int.MaxValue == highest prioriy,
+		/// -int.MaxValue == lowest priority
+		/// </summary>
+		/// <value>The priority group.</value>
+		public virtual int PriorityGroup { get { return 0; } }
 
 		public virtual string GetDisplayDescription (bool isSelected)
 		{
@@ -56,31 +65,49 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public virtual CompletionCategory CompletionCategory { get; set; }
 		public virtual DisplayFlags DisplayFlags { get; set; }
 
-		public virtual TooltipInformation CreateTooltipInformation (bool smartWrap)
+		public virtual Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken cancelToken)
 		{
 			var tt = new TooltipInformation ();
 			if (!string.IsNullOrEmpty (Description))
 				tt.AddCategory (null, Description);
-			return tt;
+			return Task.FromResult (tt);
 		}
 
-		public virtual bool HasOverloads { 
+
+		public ICompletionDataKeyHandler KeyHandler { get; protected set; }
+
+		public virtual bool HasOverloads {
 			get {
-				return false;
+				return overloads != null;
 			}
 		}
-		
-		public virtual IEnumerable<ICompletionData> OverloadedData {
-			get {
-				throw new InvalidOperationException ();
-			}
-		}
-		
-		public virtual void AddOverload (ICompletionData data)
+
+		List<CompletionData> overloads;
+
+		public void AddOverload (CompletionData data)
 		{
-			throw new InvalidOperationException ();
+			if (overloads == null)
+				overloads = new List<CompletionData> ();
+			overloads.Add ((CompletionData)data);
+			sorted = null;
 		}
-		
+
+		List<CompletionData> sorted;
+
+		public virtual IReadOnlyList<CompletionData> OverloadedData {
+			get {
+				if (overloads == null)
+					return new CompletionData[] { this };
+
+				if (sorted == null) {
+					sorted = new List<CompletionData> (overloads);
+					sorted.Add (this);
+					// sorted.Sort (new OverloadSorter ());
+				}
+				return sorted;
+			}
+		}
+
 		public CompletionData (string text) : this (text, null, null) {}
 		public CompletionData (string text, IconId icon) : this (text, icon, null) {}
 		public CompletionData (string text, IconId icon, string description) : this (text, icon, description, text) {}
@@ -97,12 +124,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			int partialWordLength = window.PartialWord != null ? window.PartialWord.Length : 0;
 			int replaceLength = window.CodeCompletionContext.TriggerWordLength + partialWordLength - window.InitialWordLength;
-			int endOffset = Math.Min (window.CodeCompletionContext.TriggerOffset + replaceLength, window.CompletionWidget.TextLength);
-			var result = window.CompletionWidget.GetText (window.CodeCompletionContext.TriggerOffset, endOffset);
+			int endOffset = Math.Min (window.StartOffset + replaceLength, window.CompletionWidget.TextLength);
+			var result = window.CompletionWidget.GetText (window.StartOffset, endOffset);
 			return result;
 		}
 
-		public virtual void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+		public virtual void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
 			var currentWord = GetCurrentWord (window);
 			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, currentWord, CompletionText);
@@ -117,12 +144,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public virtual int CompareTo (object obj)
 		{
-			if (!(obj is ICompletionData))
+			if (!(obj is CompletionData))
 				return 0;
-			return Compare (this, (ICompletionData)obj);
+			return Compare (this, (CompletionData)obj);
 		}
 
-		public static int Compare (ICompletionData a, ICompletionData b)
+		public static int Compare (CompletionData a, CompletionData b)
 		{
 			var result =  ((a.DisplayFlags & DisplayFlags.Obsolete) == (b.DisplayFlags & DisplayFlags.Obsolete)) ? StringComparer.OrdinalIgnoreCase.Compare (a.DisplayText, b.DisplayText) : (a.DisplayFlags & DisplayFlags.Obsolete) != 0 ? 1 : -1;
 			if (result == 0) {
@@ -133,16 +160,58 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (aIsImport && !bIsImport)
 					return 1;
 				if (aIsImport && bIsImport)
-					return StringComparer.Ordinal.Compare (a.Description, b.Description);
+					return StringComparer.Ordinal.Compare (((CompletionData)a).Description, ((CompletionData)b).Description);
 				var ca = a as CompletionData;
 				var cb = b as CompletionData;
 				if (ca != null && cb != null && !ca.Icon.IsNull && !cb.Icon.IsNull) {
-					return cb.Icon.Name.CompareTo (ca.Icon.Name);
+					return string.Compare(cb.Icon.Name, ca.Icon.Name, StringComparison.Ordinal);
 				}
 			}
 			return result;
 		}
 
 		#endregion
+
+		protected string ApplyDiplayFlagsFormatting (string markup)
+		{
+			if (!HasOverloads && (DisplayFlags & DisplayFlags.Obsolete) != 0 || HasOverloads && OverloadedData.All (data => (data.DisplayFlags & DisplayFlags.Obsolete) != 0))
+				return "<s>" + markup + "</s>";
+			if ((DisplayFlags & DisplayFlags.MarkedBold) != 0)
+				return "<b>" + markup + "</b>";
+			return markup;
+		}
+
+		public virtual string GetDisplayTextMarkup ()
+		{
+			return ApplyDiplayFlagsFormatting (GLib.Markup.EscapeText (DisplayText));
+		}
+	}
+
+	public class ISymbolCompletionData : CompletionData
+	{
+		public virtual Microsoft.CodeAnalysis.ISymbol Symbol {
+			get;
+			protected set;
+		}
+
+		public ISymbolCompletionData ()
+		{
+		}
+
+		public ISymbolCompletionData (string text) : base (text)
+		{
+		}
+
+		public ISymbolCompletionData (string text, MonoDevelop.Core.IconId icon) : base (text, icon)
+		{
+		}
+
+		public ISymbolCompletionData (string text, MonoDevelop.Core.IconId icon, string description) : base (text, icon, description)
+		{
+		}
+
+		public ISymbolCompletionData (string displayText, MonoDevelop.Core.IconId icon, string description, string completionText) : base (displayText, icon, description, completionText)
+		{
+		}
 	}
 }

@@ -186,7 +186,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			try {
 				if (uri.StartsWith ("project://")) {
 					string file = uri.Substring ("project://".Length);
-					Gdk.ModifierType mtype = Mono.TextEditor.GtkWorkarounds.GetCurrentKeyModifiers ();
+					Gdk.ModifierType mtype = GtkWorkarounds.GetCurrentKeyModifiers ();
 					bool inWorkspace = (mtype & Gdk.ModifierType.ControlMask) != 0;
 					IdeApp.Workspace.OpenWorkspaceItem (file, !inWorkspace);
 				} else if (uri.StartsWith ("monodevelop://")) {

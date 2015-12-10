@@ -26,148 +26,155 @@
 using System.Linq;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using System;
 using System.Threading;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.Simplification;
+using MonoDevelop.Ide.Editor;
+using Microsoft.CodeAnalysis.Options;
+using MonoDevelop.Ide.Gui.Content;
+using Microsoft.CodeAnalysis.Formatting;
+using System.Diagnostics;
+using ICSharpCode.NRefactory6.CSharp;
+using MonoDevelop.CSharp.Completion;
 
 namespace MonoDevelop.CodeGeneration
 {
-	public class CodeGenerationOptions
+	sealed class CodeGenerationOptions
 	{
-		public Document Document {
+		readonly int offset;
+
+		public TextEditor Editor
+		{
 			get;
 			private set;
 		}
-		
-		public ITypeDefinition EnclosingType {
+
+		public DocumentContext DocumentContext
+		{
 			get;
 			private set;
 		}
-		
-		public IUnresolvedTypeDefinition EnclosingPart {
+
+		public ITypeSymbol EnclosingType
+		{
 			get;
 			private set;
 		}
-		
-		public IMember EnclosingMember {
+
+		public SyntaxNode EnclosingMemberSyntax
+		{
 			get;
 			private set;
 		}
-		
-		public string MimeType {
-			get {
-				return DesktopService.GetMimeTypeForUri (Document.FileName);
+
+		public TypeDeclarationSyntax EnclosingPart
+		{
+			get;
+			private set;
+		}
+
+		public ISymbol EnclosingMember
+		{
+			get;
+			private set;
+		}
+
+		public string MimeType
+		{
+			get
+			{
+				return DesktopService.GetMimeTypeForUri (DocumentContext.Name);
 			}
 		}
-		
-		public CSharpFormattingOptions FormattingOptions {
-			get {
-				var doc = Document;
+
+		public OptionSet FormattingOptions
+		{
+			get
+			{
+				var doc = DocumentContext;
 				var policyParent = doc.Project != null ? doc.Project.Policies : null;
-				var types = DesktopService.GetMimeTypeInheritanceChain (doc.Editor.MimeType);
+				var types = DesktopService.GetMimeTypeInheritanceChain (Editor.MimeType);
 				var codePolicy = policyParent != null ? policyParent.Get<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
-				return codePolicy.CreateOptions ();
+				var textPolicy = policyParent != null ? policyParent.Get<TextStylePolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (types);
+				return codePolicy.CreateOptions (textPolicy);
 			}
 		}
-		
-		static AstNode FirstExpressionChild (AstNode parent)
+
+		public SemanticModel CurrentState
 		{
-			AstNode node = parent.FirstChild;
-			if (node == null)
-				return null;
-			while (node != null && !(node is Expression || node is Statement)) {
-				node = node.NextSibling;
-			}
-			return node;
+			get;
+			private set;
 		}
-		
-		static AstNode NextExpression (AstNode parent)
+
+		internal CodeGenerationOptions (TextEditor editor, DocumentContext ctx)
 		{
-			AstNode node = parent.GetNextNode ();
-			if (node == null)
-				return null;
-			while (node != null && !(node is Expression || node is Statement)) {
-				node = node.GetNextNode ();
-			}
-			return node;
-		}
-		
-		readonly Lazy<CSharpResolver> currentState;
-		public CSharpResolver CurrentState {
-			get {
-				return currentState.Value;
-			}
-		}
-		
-		public CodeGenerationOptions ()
-		{
-			currentState = new Lazy<CSharpResolver> (() => {
-				var parsedDocument = Document.ParsedDocument;
-				if (parsedDocument == null)
-					return null;
-				var unit = parsedDocument.GetAst<SyntaxTree> ().Clone ();
-				var file = parsedDocument.ParsedFile as CSharpUnresolvedFile;
-				
-				var resolvedNode = unit.GetNodeAt<BlockStatement> (Document.Editor.Caret.Location);
-				if (resolvedNode == null)
-					return null;
-				
-				var expr = new IdentifierExpression ("foo");
-				resolvedNode.Add (expr);
-				
-				var ctx = file.GetTypeResolveContext (Document.Compilation, Document.Editor.Caret.Location);
-				
-				var resolver = new CSharpResolver (ctx);
-				
-				var astResolver = new CSharpAstResolver (resolver, unit, file);
-				astResolver.ApplyNavigator (new NodeListResolveVisitorNavigator (expr), CancellationToken.None);
-				astResolver.Resolve (expr);
-				return astResolver.GetResolverStateBefore (expr);
-			});
-		}
-		
-		public AstType CreateShortType (IType fullType)
-		{
-			var parsedFile = Document.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
-			
-			var compilation = Document.Compilation;
-			fullType = compilation.Import (fullType);
-			var csResolver = parsedFile.GetResolver (compilation, Document.Editor.Caret.Location);
-			
-			var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
-			return builder.ConvertType (fullType);
-		}
-		
-		public CodeGenerator CreateCodeGenerator ()
-		{
-			var result = CodeGenerator.CreateGenerator (Document);
-			if (result == null)
-				LoggingService.LogError ("Generator can't be generated for : " + Document.Editor.MimeType);
-			return result;
-		}
-		
-		public static CodeGenerationOptions CreateCodeGenerationOptions (Document document)
-		{
-			document.UpdateParseDocument ();
-			var options = new CodeGenerationOptions {
-				Document = document
-			};
-			if (document.ParsedDocument != null && document.ParsedDocument.ParsedFile != null) {
-				options.EnclosingPart = document.ParsedDocument.ParsedFile.GetInnermostTypeDefinition (document.Editor.Caret.Location);
-				var project = document.Project;
-				if (options.EnclosingPart != null && project != null)
-					options.EnclosingType = options.EnclosingPart.Resolve (project).GetDefinition ();
-				if (options.EnclosingType != null) {
-					options.EnclosingMember = options.EnclosingType.Members.FirstOrDefault (m => !m.IsSynthetic && m.Region.FileName == document.FileName && m.Region.IsInside (document.Editor.Caret.Location));
+			Editor = editor;
+			DocumentContext = ctx;
+			if (ctx.ParsedDocument != null)
+				CurrentState = ctx.ParsedDocument.GetAst<SemanticModel> ();
+			offset = editor.CaretOffset;
+			var tree = CurrentState.SyntaxTree;
+			EnclosingPart = tree.GetContainingTypeDeclaration (offset, default(CancellationToken));
+			if (EnclosingPart != null) {
+				EnclosingType = CurrentState.GetDeclaredSymbol (EnclosingPart) as ITypeSymbol;
+
+				foreach (var member in EnclosingPart.Members) {
+					if (member.Span.Contains (offset)) {
+						EnclosingMemberSyntax = member;
+						break;
+					}
+
 				}
+				if (EnclosingMemberSyntax != null)
+					EnclosingMember = CurrentState.GetDeclaredSymbol (EnclosingMemberSyntax);
 			}
-			return options;
 		}
-		
+
+		public string CreateShortType (ITypeSymbol fullType)
+		{
+			return RoslynCompletionData.SafeMinimalDisplayString (fullType, CurrentState, offset);
+		}
+
+		public static CodeGenerationOptions CreateCodeGenerationOptions (TextEditor document, DocumentContext ctx)
+		{
+			return new CodeGenerationOptions (document, ctx);
+		}
+
+		public async Task<string> OutputNode (SyntaxNode node, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			node = Formatter.Format (node, TypeSystemService.Workspace, FormattingOptions, cancellationToken);
+			node = node.WithAdditionalAnnotations (Formatter.Annotation, Simplifier.Annotation);
+
+			var text = Editor.Text;
+			string nodeText = node.ToString ();
+			text = text.Insert (offset, nodeText);
+
+
+			var backgroundDocument = DocumentContext.AnalysisDocument.WithText (SourceText.From (text));
+
+			var currentRoot = await backgroundDocument.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
+
+			node = currentRoot.FindNode (TextSpan.FromBounds(offset, offset + nodeText.Length));
+
+			currentRoot = currentRoot.TrackNodes (node);
+			backgroundDocument = backgroundDocument.WithSyntaxRoot (currentRoot);
+			backgroundDocument = await Simplifier.ReduceAsync (backgroundDocument, TextSpan.FromBounds (offset, offset + nodeText.Length), FormattingOptions, cancellationToken).ConfigureAwait(false);
+			backgroundDocument = await Formatter.FormatAsync (backgroundDocument, Formatter.Annotation, FormattingOptions, cancellationToken).ConfigureAwait(false);
+
+			var newRoot = await backgroundDocument.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
+
+			var formattedNode = newRoot.GetCurrentNode (node);
+			if (formattedNode == null) {
+				LoggingService.LogError ("Fatal error: Can't find current formatted node in code generator document.");
+				return nodeText;
+			}
+			return formattedNode.ToString ();
+		}
 	}
 }

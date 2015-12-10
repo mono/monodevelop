@@ -26,78 +26,116 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.Ide.FindInFiles;
-using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.CSharp;
 using System.Threading;
 using MonoDevelop.SourceEditor;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.Ide;
+using MonoDevelop.Refactoring;
+using Microsoft.CodeAnalysis.FindSymbols;
+using MonoDevelop.Ide.TypeSystem;
+using System.Threading.Tasks;
+using System.Collections.Immutable;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Linq;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
-	public class HighlightUsagesExtension : AbstractUsagesExtension<ResolveResult>
+	class UsageData
+	{
+		public RefactoringSymbolInfo SymbolInfo;
+		public Document Document;
+
+		public ISymbol Symbol {
+			get { return SymbolInfo != null ? SymbolInfo.Symbol ?? SymbolInfo.DeclaredSymbol : null; }
+		}
+	}
+	
+	class HighlightUsagesExtension : AbstractUsagesExtension<UsageData>
 	{
 		CSharpSyntaxMode syntaxMode;
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
-
-			TextEditorData.SelectionSurroundingProvider = new CSharpSelectionSurroundingProvider (Document);
-			syntaxMode = new CSharpSyntaxMode (Document);
-			TextEditorData.Document.SyntaxMode = syntaxMode;
+			Editor.SetSelectionSurroundingProvider (new CSharpSelectionSurroundingProvider (Editor, DocumentContext));
+			syntaxMode = new CSharpSyntaxMode (Editor, DocumentContext);
+			Editor.SemanticHighlighting = syntaxMode;
 		}
 
 		public override void Dispose ()
 		{
 			if (syntaxMode != null) {
-				TextEditorData.Document.SyntaxMode = null;
+				Editor.SemanticHighlighting = null;
 				syntaxMode.Dispose ();
 				syntaxMode = null;
 			}
 			base.Dispose ();
 		}
-
-		protected override bool TryResolve (out ResolveResult resolveResult)
+		
+		protected async override Task<UsageData> ResolveAsync (CancellationToken token)
 		{
-			AstNode node;
-			resolveResult = null;
-			if (!Document.TryResolveAt (Document.Editor.Caret.Location, out resolveResult, out node)) {
-				return false;
-			}
-			if (node is PrimitiveType) {
-				return false;
-			}
-			return true;
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null || doc.FileName == FilePath.Null)
+				return new UsageData ();
+			var analysisDocument = doc.AnalysisDocument;
+			if (analysisDocument == null)
+				return new UsageData ();
+
+			var symbolInfo = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset, token);
+			if (symbolInfo.Symbol == null && symbolInfo.DeclaredSymbol == null)
+				return new UsageData ();
+			if (symbolInfo.Symbol != null && !symbolInfo.Node.IsKind (SyntaxKind.IdentifierName)) 
+				return new UsageData ();
+			return new UsageData {
+				Document = analysisDocument,
+				SymbolInfo = symbolInfo
+			};
 		}
 
-
-		protected override IEnumerable<MemberReference> GetReferences (ResolveResult resolveResult, CancellationToken token)
+		protected override async Task<IEnumerable<MemberReference>> GetReferencesAsync (UsageData resolveResult, CancellationToken token)
 		{
-			var finder = new MonoDevelop.CSharp.Refactoring.CSharpReferenceFinder ();
-			if (resolveResult is MemberResolveResult) {
-				finder.SetSearchedMembers (new [] { ((MemberResolveResult)resolveResult).Member });
-			} else if (resolveResult is TypeResolveResult) {
-				finder.SetSearchedMembers (new [] { resolveResult.Type });
-			} else if (resolveResult is MethodGroupResolveResult) { 
-				finder.SetSearchedMembers (((MethodGroupResolveResult)resolveResult).Methods);
-			} else if (resolveResult is NamespaceResolveResult) { 
-				finder.SetSearchedMembers (new [] { ((NamespaceResolveResult)resolveResult).Namespace });
-			} else if (resolveResult is LocalResolveResult) { 
-				finder.SetSearchedMembers (new [] { ((LocalResolveResult)resolveResult).Variable });
-			} else if (resolveResult is NamedArgumentResolveResult) { 
-				finder.SetSearchedMembers (new [] { ((NamedArgumentResolveResult)resolveResult).Parameter });
-			} else {
-				return EmptyList;
+			var result = new List<MemberReference> ();
+			if (resolveResult.Symbol == null)
+				return result;
+			var doc = resolveResult.Document;
+			var documents = ImmutableHashSet.Create (doc); 
+			var symbol = resolveResult.Symbol;
+			foreach (var loc in symbol.Locations) {
+				if (loc.IsInSource && loc.SourceTree.FilePath == doc.FilePath)
+					result.Add (new MemberReference (symbol, doc.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length) {
+						ReferenceUsageType = ReferenceUsageType.Declariton	
+					});
 			}
-
-			try {
-				return new List<MemberReference> (finder.FindInDocument (Document, token));
-			} catch (Exception e) {
-				LoggingService.LogError ("Error in highlight usages extension.", e);
+			foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, TypeSystemService.Workspace.CurrentSolution, documents, token)) {
+				foreach (var loc in mref.Locations) {
+					result.Add (new MemberReference (symbol, doc.FilePath, loc.Location.SourceSpan.Start, loc.Location.SourceSpan.Length) {
+						ReferenceUsageType = GetUsage (loc.Location.SourceTree.GetRoot ().FindNode (loc.Location.SourceSpan))
+					});
+				}
 			}
-			return EmptyList;
+			return result;
 		}
+
+		static ReferenceUsageType GetUsage (SyntaxNode node)
+		{
+			if (node == null)
+				return ReferenceUsageType.Read;
+			
+			var parent = node.AncestorsAndSelf ().OfType<ExpressionSyntax> ().FirstOrDefault();
+			if (parent == null)
+				return ReferenceUsageType.Read;
+			if (parent.IsOnlyWrittenTo ())
+				return ReferenceUsageType.Write;
+			if (parent.IsWrittenTo ())
+				return ReferenceUsageType.ReadWrite;
+			return ReferenceUsageType.Read;
+		}
+
 	}
 }
 

@@ -61,12 +61,12 @@ namespace MonoDevelop.CSharp.Project
 			warningLevelSpinButton.Value               = compilerParameters.WarningLevel;
 			ignoreWarningsEntry.Text                   = compilerParameters.NoWarnings;
 			
-			int i = CSharpLanguageBinding.SupportedPlatforms.IndexOf (compilerParameters.PlatformTarget);
+			int i = CSharpProject.SupportedPlatforms.IndexOf (compilerParameters.PlatformTarget);
 			comboPlatforms.Active = i != -1 ? i : 0;
 
-			if (!configuration.DebugMode || string.Equals ("none", compilerParameters.DebugType, StringComparison.OrdinalIgnoreCase)) {
+			if (!configuration.DebugSymbols || string.Equals ("none", configuration.DebugType, StringComparison.OrdinalIgnoreCase)) {
 				comboDebug.Active = DEBUG_NONE;
-			} else if (string.Equals ("pdbonly", compilerParameters.DebugType, StringComparison.OrdinalIgnoreCase)) {
+			} else if (string.Equals ("pdbonly", configuration.DebugType, StringComparison.OrdinalIgnoreCase)) {
 				comboDebug.Active = DEBUG_PDB_ONLY;
 			} else {
 				comboDebug.Active = DEBUG_FULL;
@@ -91,23 +91,23 @@ namespace MonoDevelop.CSharp.Project
 			compilerParameters.TreatWarningsAsErrors  = warningsAsErrorsCheckButton.Active;
 			compilerParameters.WarningLevel           = warningLevelSpinButton.ValueAsInt;
 			compilerParameters.NoWarnings             = ignoreWarningsEntry.Text;
-			compilerParameters.PlatformTarget         = CSharpLanguageBinding.SupportedPlatforms [comboPlatforms.Active];
+			compilerParameters.PlatformTarget         = CSharpProject.SupportedPlatforms [comboPlatforms.Active];
 
 			switch (comboDebug.Active) {
 			case DEBUG_FULL:
-				configuration.DebugMode = true;
-				if (!string.Equals (compilerParameters.DebugType, "full", StringComparison.OrdinalIgnoreCase)) {
-					compilerParameters.DebugType = "";
+				configuration.DebugSymbols = true;
+				if (!string.Equals (configuration.DebugType, "full", StringComparison.OrdinalIgnoreCase)) {
+					configuration.DebugType = "";
 				}
 				break;
 			case DEBUG_PDB_ONLY:
-				configuration.DebugMode = true;
-				compilerParameters.DebugType = "pdbonly";
+				configuration.DebugSymbols = true;
+				configuration.DebugType = "pdbonly";
 				break;
 			case DEBUG_NONE:
-				configuration.DebugMode = false;
-				if (!string.Equals (compilerParameters.DebugType, "none", StringComparison.OrdinalIgnoreCase)) {
-					compilerParameters.DebugType = "";
+				configuration.DebugSymbols = false;
+				if (!string.Equals (configuration.DebugType, "none", StringComparison.OrdinalIgnoreCase)) {
+					configuration.DebugType = "";
 				}
 				break;
 			}

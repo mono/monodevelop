@@ -110,7 +110,7 @@ namespace MonoDevelop.PackageManagement
 
 		void RunActionsWithProgressMonitor (ProgressMonitorStatusMessage progressMessage, IList<IPackageAction> installPackageActions)
 		{
-			using (IProgressMonitor monitor = progressMonitorFactory.CreateProgressMonitor (progressMessage.Status)) {
+			using (ProgressMonitor monitor = progressMonitorFactory.CreateProgressMonitor (progressMessage.Status)) {
 				using (PackageManagementEventsMonitor eventMonitor = CreateEventMonitor (monitor)) {
 					try {
 						monitor.BeginTask (null, installPackageActions.Count);
@@ -130,20 +130,20 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		PackageManagementEventsMonitor CreateEventMonitor (IProgressMonitor monitor)
+		PackageManagementEventsMonitor CreateEventMonitor (ProgressMonitor monitor)
 		{
 			return CreateEventMonitor (monitor, packageManagementEvents, progressProvider);
 		}
 
 		protected virtual PackageManagementEventsMonitor CreateEventMonitor (
-			IProgressMonitor monitor,
+			ProgressMonitor monitor,
 			IPackageManagementEvents packageManagementEvents,
 			IProgressProvider progressProvider)
 		{
 			return new PackageManagementEventsMonitor (monitor, packageManagementEvents, progressProvider);
 		}
 
-		void RunActionsWithProgressMonitor (IProgressMonitor monitor, IList<IPackageAction> packageActions)
+		void RunActionsWithProgressMonitor (ProgressMonitor monitor, IList<IPackageAction> packageActions)
 		{
 			foreach (IPackageAction action in packageActions) {
 				action.Execute ();
@@ -216,7 +216,7 @@ namespace MonoDevelop.PackageManagement
 
 		public void ShowError (ProgressMonitorStatusMessage progressMessage, string error)
 		{
-			using (IProgressMonitor monitor = progressMonitorFactory.CreateProgressMonitor (progressMessage.Status)) {
+			using (ProgressMonitor monitor = progressMonitorFactory.CreateProgressMonitor (progressMessage.Status)) {
 				monitor.Log.WriteLine (error);
 				monitor.ReportError (progressMessage.Error, null);
 				monitor.ShowPackageConsole ();
@@ -233,7 +233,7 @@ namespace MonoDevelop.PackageManagement
 			DispatchService.BackgroundDispatchAndWait (handler);
 		}
 
-		protected virtual void GuiDispatch (MessageHandler handler)
+		protected virtual void GuiDispatch (Action handler)
 		{
 			DispatchService.GuiDispatch (handler);
 		}

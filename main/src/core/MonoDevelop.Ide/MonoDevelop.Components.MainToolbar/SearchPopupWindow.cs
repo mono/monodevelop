@@ -30,11 +30,12 @@ using MonoDevelop.Core;
 using System.Collections.Generic;
 using Gtk;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeCompletion;
 using Mono.Addins;
-using Mono.TextEditor;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Text;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -49,8 +50,8 @@ namespace MonoDevelop.Components.MainToolbar
 		const int headerMarginSize = 100;
 
 		List<SearchCategory> categories = new List<SearchCategory> ();
-		List<Tuple<SearchCategory, ISearchDataSource>> results = new List<Tuple<SearchCategory, ISearchDataSource>> ();
-		List<Tuple<SearchCategory, ISearchDataSource>> incompleteResults = new List<Tuple<SearchCategory, ISearchDataSource>> ();
+		List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> results = new List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> ();
+		List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> incompleteResults = new List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> ();
 		Pango.Layout layout, headerLayout;
 		CancellationTokenSource src;
 		Cairo.Color headerColor;
@@ -76,7 +77,7 @@ namespace MonoDevelop.Components.MainToolbar
 			{
 				throw new NotImplementedException ();
 			}
-			TooltipInformation ISearchDataSource.GetTooltip (int item)
+			Task<TooltipInformation> ISearchDataSource.GetTooltip (CancellationToken token, int item)
 			{
 				throw new NotImplementedException ();
 			}
@@ -84,7 +85,13 @@ namespace MonoDevelop.Components.MainToolbar
 			{
 				throw new NotImplementedException ();
 			}
-			DomRegion ISearchDataSource.GetRegion (int item)
+			
+			ISegment ISearchDataSource.GetRegion (int item)
+			{
+				throw new NotImplementedException ();
+			}
+			
+			string ISearchDataSource.GetFileName (int item)
 			{
 				throw new NotImplementedException ();
 			}
@@ -117,12 +124,16 @@ namespace MonoDevelop.Components.MainToolbar
 			this.AllowShrink = false;
 			this.AllowGrow = false;
 
-			categories.Add (new ProjectSearchCategory (this));
 			categories.Add (new FileSearchCategory (this));
 			categories.Add (new CommandSearchCategory (this));
 
 			categories.Add (new SearchInSolutionSearchCategory ());
-			categories.AddRange (AddinManager.GetExtensionObjects<SearchCategory> ("/MonoDevelop/Ide/SearchCategories"));
+			foreach (var cat in AddinManager.GetExtensionObjects<SearchCategory> ("/MonoDevelop/Ide/SearchCategories")) {
+				categories.Add (cat);
+				cat.Initialize (this);
+			}
+
+			categories.Sort ();
 
 			layout = new Pango.Layout (PangoContext);
 			headerLayout = new Pango.Layout (PangoContext);
@@ -166,27 +177,29 @@ namespace MonoDevelop.Components.MainToolbar
 
 		internal void OpenFile ()
 		{
-			if (selectedItem == null || selectedItem.Item < 0 || selectedItem.Item >= selectedItem.DataSource.ItemCount)
+			if (selectedItem == null || selectedItem.Item < 0 || selectedItem.Item >= selectedItem.DataSource.Count)
 				return;
 
-			if (selectedItem.DataSource.CanActivate (selectedItem.Item)) {
+			if (selectedItem.DataSource[selectedItem.Item].CanActivate) {
 				Destroy ();
-				selectedItem.DataSource.Activate (selectedItem.Item);
+				selectedItem.DataSource[selectedItem.Item].Activate ();
 			}
 			else {
 				var region = SelectedItemRegion;
 				Destroy ();
 
-				if (string.IsNullOrEmpty (region.FileName))
+				if (string.IsNullOrEmpty (SelectedItemFileName))
 					return;
-				if (region.Begin.IsEmpty) {
+				if (region.Length <= 0) {
 					if (Pattern.LineNumber == 0) {
-						IdeApp.Workbench.OpenDocument (region.FileName);
+						IdeApp.Workbench.OpenDocument (SelectedItemFileName, project: null);
 					} else {
-						IdeApp.Workbench.OpenDocument (region.FileName, Pattern.LineNumber, Pattern.HasColumn ? Pattern.Column : 1);
+						IdeApp.Workbench.OpenDocument (SelectedItemFileName, null, Pattern.LineNumber, Pattern.HasColumn ? Pattern.Column : 1);
 					}
 				} else {
-					IdeApp.Workbench.OpenDocument (region.FileName, region.BeginLine, region.BeginColumn);
+					IdeApp.Workbench.OpenDocument (new FileOpenInformation (SelectedItemFileName, null) {
+						Offset = region.Offset
+					});
 				}
 			}
 		}
@@ -197,7 +210,71 @@ namespace MonoDevelop.Components.MainToolbar
 				return pattern;
 			}
 		}
+		static readonly SearchCategory.DataItemComparer cmp = new SearchCategory.DataItemComparer ();
 
+		class SearchResultCollector : ISearchResultCallback
+		{
+			readonly SearchPopupWindow parent;
+			ImmutableList<SearchResult> searchResults = ImmutableList<SearchResult>.Empty;
+
+			public IReadOnlyList<SearchResult> Results {
+				get {
+					return searchResults;
+				}	
+			}
+
+			public SearchCategory Category { get; private set;}
+
+			public SearchResultCollector (SearchPopupWindow parent, SearchCategory cat)
+			{
+				this.parent = parent;
+				this.Category = cat;
+			}
+
+			public Task Task { get; set; }
+
+			#region ISearchResultCallback implementation
+			void ISearchResultCallback.ReportResult (SearchResult result)
+			{
+				int i = Math.Min (maxItems, searchResults.Count);
+				while (i > 0) {
+					if (cmp.Compare (result, searchResults [i - 1]) > 0)
+						break;
+					i--;
+				}
+
+				if (i >= maxItems || !result.IsValid)
+					return;
+				searchResults = searchResults.Insert (i, result);
+				parent.UpdateSearchCollectors ();
+
+			}
+
+			#endregion
+		}
+		uint timeout;
+
+		void UpdateSearchCollectors()
+		{
+			RemoveTimeout ();
+			timeout = GLib.Timeout.Add (200, delegate {
+				foreach (var col in collectors) {
+					ShowResult (col.Category, col.Results);
+				}
+				QueueResize ();
+				timeout = 0;
+				return false;
+			});
+		}
+
+		void RemoveTimeout ()
+		{
+			if (timeout == 0)
+				return;
+			GLib.Source.Remove (timeout);
+			timeout = 0;
+		}
+		List<SearchResultCollector> collectors = new List<SearchResultCollector> ();
 		public void Update (SearchPopupSearchPattern pattern)
 		{
 			// in case of 'string:' it's not clear if the user ment 'tag:pattern'  or 'pattern:line' therefore guess
@@ -209,7 +286,7 @@ namespace MonoDevelop.Components.MainToolbar
 			this.pattern = pattern;
 			if (src != null)
 				src.Cancel ();
-
+			RemoveTimeout ();
 			HideTooltip ();
 			src = new CancellationTokenSource ();
 			isInSearch = true;
@@ -217,49 +294,73 @@ namespace MonoDevelop.Components.MainToolbar
 				QueueDraw ();
 			}
 			incompleteResults.Clear ();
+			var collectors = new List<SearchResultCollector> ();
+			var token = src.Token;
 			foreach (var _cat in categories) {
 				var cat = _cat;
-				var token = src.Token;
-				cat.GetResults (pattern, maxItems, token).ContinueWith (t => {
-					if (t.IsCanceled)
-						return;
-					if (t.IsFaulted) {
-						LoggingService.LogError ("Error getting search results", t.Exception);
-					} else {
-						Application.Invoke (delegate {
-							ShowResult (cat, t.Result ?? new NullDataSource ());
-						});
-					}
-				}, token);
+				var col = new SearchResultCollector (this, _cat);
+				collectors.Add (col);
+				col.Task = cat.GetResults (col, pattern, token);
 			}
+
+			Task.WhenAll (collectors.Select (c => c.Task)).ContinueWith (t => {
+				if (t.IsCanceled)
+					return;
+				Application.Invoke (delegate {
+					RemoveTimeout ();
+					if (token.IsCancellationRequested)
+						return;
+					foreach (var col in collectors) {
+						if (col.Task.IsCanceled) {
+							continue;
+						} else if (col.Task.IsFaulted) {
+							LoggingService.LogError ($"Error getting search results for {col.Category}", col.Task.Exception);
+						} else {
+							ShowResult (col.Category, col.Results);
+						}
+					}
+					isInSearch = false;
+					AnimatedResize ();
+				});
+			}, token);
 		}
 
-		void ShowResult (SearchCategory cat, ISearchDataSource result)
+		void ShowResult (SearchCategory cat, IReadOnlyList<SearchResult> result)
 		{
-			incompleteResults.Add (Tuple.Create (cat, result));
-
-			incompleteResults.Sort ((x, y) => {
-				return categories.IndexOf (x.Item1).CompareTo (categories.IndexOf (y.Item1));
+			bool found = false;
+			for (int i = 0; i < incompleteResults.Count; i++) {
+				var ir = incompleteResults [i];
+				if (ir.Item1 == cat) {
+					incompleteResults[i] = Tuple.Create (cat, result);
+					found = true;
+					break;
+				}
 			}
-			);
+			if (!found) {
+				incompleteResults.Add (Tuple.Create (cat, result));
+				incompleteResults.Sort ((x, y) => {
+					return categories.IndexOf (x.Item1).CompareTo (categories.IndexOf (y.Item1));
+				});
+			}
 
-			if (incompleteResults.Count == categories.Count) {
+			//if (incompleteResults.Count == categories.Count) 
+			{
 				results.Clear ();
 				results.AddRange (incompleteResults);
-				List<Tuple<SearchCategory, ISearchDataSource>> failedResults = null;
+				List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> failedResults = null;
 				topItem = null;
 
 				for (int i = 0; i < results.Count; i++) {
 					var tuple = results [i];
 					try {
-						if (tuple.Item2.ItemCount == 0)
+						if (tuple.Item2.Count == 0)
 							continue;
-						if (topItem == null || topItem.DataSource.GetWeight (topItem.Item) < tuple.Item2.GetWeight (0))
+						if (topItem == null || topItem.DataSource[topItem.Item].Weight < tuple.Item2[0].Weight)
 							topItem = new ItemIdentifier(tuple.Item1, tuple.Item2, 0);
 					} catch (Exception e) {
 						LoggingService.LogError ("Error while showing result " + i, e);
 						if (failedResults == null)
-							failedResults = new List<Tuple<SearchCategory, ISearchDataSource>> ();
+							failedResults = new List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> ();
 						failedResults.Add (results [i]);
 						continue;
 					}
@@ -270,8 +371,7 @@ namespace MonoDevelop.Components.MainToolbar
 					failedResults.ForEach (failedResult => results.Remove (failedResult));
 
 				ShowTooltip ();
-				isInSearch = false;
-				AnimatedResize ();
+
 			}
 		}
 
@@ -288,11 +388,11 @@ namespace MonoDevelop.Components.MainToolbar
 			calculatedItems = 0;
 			foreach (var result in results) {
 				var dataSrc = result.Item2;
-				if (dataSrc.ItemCount == 0)
+				if (dataSrc.Count == 0)
 					continue;
 				
-				for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
-					layout.SetMarkup (GetRowMarkup (dataSrc, i));
+				for (int i = 0; i < maxItems && i < dataSrc.Count; i++) {
+					layout.SetMarkup (GetRowMarkup (dataSrc[i]));
 					int w, h;
 					layout.GetPixelSize (out w, out h);
 					if (y + h + itemSeparatorHeight > maxHeight)
@@ -314,7 +414,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			var calculatedHeight = Math.Min (
 				maxHeight, 
-				(int)y + yMargin + results.Count (res => res.Item2.ItemCount > 0) * categorySeparatorHeight
+				(int)y + yMargin + results.Count (res => res.Item2.Count > 0) * categorySeparatorHeight
 			);
 			retVal.Height = calculatedHeight;
 			return retVal;
@@ -336,7 +436,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			double y = ChildAllocation.Y + yMargin;
 			if (topItem != null){
-				layout.SetMarkup (GetRowMarkup (topItem.DataSource, topItem.Item));
+				layout.SetMarkup (GetRowMarkup (topItem.DataSource[topItem.Item]));
 				int w, h;
 				layout.GetPixelSize (out w, out h);
 				y += h + itemSeparatorHeight;
@@ -347,10 +447,10 @@ namespace MonoDevelop.Components.MainToolbar
 				var category = result.Item1;
 				var dataSrc = result.Item2;
 				int itemsAdded = 0;
-				for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
+				for (int i = 0; i < maxItems && i < dataSrc.Count; i++) {
 					if (topItem != null && topItem.DataSource == dataSrc && topItem.Item == i)
 						continue;
-					layout.SetMarkup (GetRowMarkup (dataSrc, i));
+					layout.SetMarkup (GetRowMarkup (dataSrc[i]));
 
 					int w, h;
 					layout.GetPixelSize (out w, out h);
@@ -359,13 +459,13 @@ namespace MonoDevelop.Components.MainToolbar
 						return new ItemIdentifier (category, dataSrc, i);
 					}
 
-					var region = dataSrc.GetRegion (i);
-					if (!region.Begin.IsEmpty) {
-						layout.SetMarkup (region.BeginLine.ToString ());
-						int w2, h2;
-						layout.GetPixelSize (out w2, out h2);
-						w += w2;
-					}
+//					var region = dataSrc.GetRegion (i);
+//					if (!region.IsEmpty) {
+//						layout.SetMarkup (region.BeginLine.ToString ());
+//						int w2, h2;
+//						layout.GetPixelSize (out w2, out h2);
+//						w += w2;
+//					}
 					itemsAdded++;
 				}
 				if (itemsAdded > 0)
@@ -427,20 +527,20 @@ namespace MonoDevelop.Components.MainToolbar
 						selectedItem = new ItemIdentifier (
 							results [i].Item1,
 							results [i].Item2,
-							Math.Min (maxItems, results [i].Item2.ItemCount) - 1
+							Math.Min (maxItems, results [i].Item2.Count) - 1
 						);
 						if (selectedItem.Category == topItem.Category && selectedItem.Item == topItem.Item && i > 0) {
 							i--;
 							selectedItem = new ItemIdentifier (
 								results [i].Item1,
 								results [i].Item2,
-								Math.Min (maxItems, results [i].Item2.ItemCount) - 1
+								Math.Min (maxItems, results [i].Item2.Count) - 1
 							);
 						}
 							
-					} while (i > 0 && selectedItem.DataSource.ItemCount <= 0);
+					} while (i > 0 && selectedItem.DataSource.Count <= 0);
 
-					if (selectedItem.DataSource.ItemCount <= 0) {
+					if (selectedItem.DataSource.Count <= 0) {
 						selectedItem = topItem;
 					}
 				}
@@ -456,7 +556,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			if (selectedItem.Equals (topItem)) {
 				for (int j = 0; j < results.Count; j++) {
-					if (results[j].Item2.ItemCount == 0 || results[j].Item2.ItemCount == 1 && topItem.DataSource == results[j].Item2)
+					if (results[j].Item2.Count == 0 || results[j].Item2.Count == 1 && topItem.DataSource == results[j].Item2)
 						continue;
 					selectedItem = new ItemIdentifier (
 						results [j].Item1,
@@ -478,21 +578,21 @@ namespace MonoDevelop.Components.MainToolbar
 			if (selectedItem != null) {
 				var curAbsoluteIndex = selectedItem == topItem ? 1 : 0;
 				for (int j = 0; j < i; j++) {
-					curAbsoluteIndex += Math.Min (maxItems, results [j].Item2.ItemCount);
+					curAbsoluteIndex += Math.Min (maxItems, results [j].Item2.Count);
 				}
 				curAbsoluteIndex += selectedItem.Item + 1;
 				if (curAbsoluteIndex + 1 > calculatedItems)
 					return;
 			}
 
-			var upperBound = Math.Min (maxItems, selectedItem.DataSource.ItemCount);
+			var upperBound = Math.Min (maxItems, selectedItem.DataSource.Count);
 			if (selectedItem.Item + 1 < upperBound) {
 				if (topItem.DataSource == selectedItem.DataSource && selectedItem.Item == upperBound - 1)
 					return;
 				selectedItem = new ItemIdentifier (selectedItem.Category, selectedItem.DataSource, selectedItem.Item + 1);
 			} else {
 				for (int j = i + 1; j < results.Count; j++) {
-					if (results[j].Item2.ItemCount == 0 || results[j].Item2.ItemCount == 1 && topItem.DataSource == results[j].Item2)
+					if (results[j].Item2.Count == 0 || results[j].Item2.Count == 1 && topItem.DataSource == results[j].Item2)
 						continue;
 					selectedItem = new ItemIdentifier (
 						results [j].Item1,
@@ -540,14 +640,14 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		CancellationTokenSource tooltipSrc = null;
-		void ShowTooltip ()
+		async void ShowTooltip ()
 		{
 			HideTooltip ();
 			var currentSelectedItem = selectedItem;
 			if (currentSelectedItem == null || currentSelectedItem.DataSource == null)
 				return;
 			var i = currentSelectedItem.Item;
-			if (i < 0 || i >= currentSelectedItem.DataSource.ItemCount)
+			if (i < 0 || i >= currentSelectedItem.DataSource.Count)
 				return;
 
 			if (tooltipSrc != null)
@@ -555,26 +655,21 @@ namespace MonoDevelop.Components.MainToolbar
 			tooltipSrc = new CancellationTokenSource ();
 			var token = tooltipSrc.Token;
 
-			ThreadPool.QueueUserWorkItem (delegate {
-				TooltipInformation tooltip;
-				try {
-					tooltip = currentSelectedItem.DataSource.GetTooltip (i);
-				} catch (Exception e) {
-					LoggingService.LogError ("Error while creating search popup window tooltip", e);
-					return;
-				}
-				if (tooltip == null || string.IsNullOrEmpty (tooltip.SignatureMarkup) || token.IsCancellationRequested)
-					return;
-				Application.Invoke (delegate {
-					if (token.IsCancellationRequested)
-						return;
-					declarationviewwindow.Clear ();
-					declarationviewwindow.AddOverload (tooltip);
-					declarationviewwindow.CurrentOverload = 0;
-					declarationViewTimer = GLib.Timeout.Add (250, DelayedTooltipShow);
-				});
+			TooltipInformation tooltip;
+			try {
+				tooltip = await currentSelectedItem.DataSource[i].GetTooltipInformation (token);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while creating search popup window tooltip", e);
+				return;
+			}
+			if (tooltip == null || string.IsNullOrEmpty (tooltip.SignatureMarkup) || token.IsCancellationRequested)
+				return;
+			Application.Invoke (delegate {
+				declarationviewwindow.Clear ();
+				declarationviewwindow.AddOverload (tooltip);
+				declarationviewwindow.CurrentOverload = 0;
+				declarationViewTimer = GLib.Timeout.Add (250, DelayedTooltipShow);
 			});
-
 		}
 
 		bool DelayedTooltipShow ()
@@ -632,7 +727,7 @@ namespace MonoDevelop.Components.MainToolbar
 					);
 
 				} else {
-					if (topItem.DataSource.ItemCount > 1) {
+					if (topItem.DataSource.Count > 1) {
 						selectedItem = new ItemIdentifier (
 							results [0].Item1,
 							results [0].Item2,
@@ -647,7 +742,7 @@ namespace MonoDevelop.Components.MainToolbar
 					}
 				}
 			} else {
-				while (i < results.Count - 1 && results [i + 1].Item2.ItemCount == 0)
+				while (i < results.Count - 1 && results [i + 1].Item2.Count == 0)
 					i++;
 				if (i < results.Count - 1) {
 					selectedItem = new ItemIdentifier (
@@ -672,7 +767,7 @@ namespace MonoDevelop.Components.MainToolbar
 					0
 				);
 				if (selectedItem.Equals (topItem)) {
-					if (topItem.DataSource.ItemCount > 1) {
+					if (topItem.DataSource.Count> 1) {
 						selectedItem = new ItemIdentifier (
 							results [i - 1].Item1,
 							results [i - 1].Item2,
@@ -700,13 +795,13 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void SelectLastCatgory ()
 		{
-			var r = results.LastOrDefault (r2 => r2.Item2.ItemCount > 0 && !(r2.Item2.ItemCount == 1 && topItem.Category == r2.Item1));
+			var r = results.LastOrDefault (r2 => r2.Item2.Count > 0 && !(r2.Item2.Count == 1 && topItem.Category == r2.Item1));
 			if (r == null)
 				return;
 			selectedItem = new ItemIdentifier (
 				r.Item1,
 				r.Item2,
-				r.Item2.ItemCount - 1
+				r.Item2.Count - 1
 			);
 			QueueDraw ();
 		}
@@ -758,20 +853,28 @@ namespace MonoDevelop.Components.MainToolbar
 				handler (this, e);
 		}
 
-		public DomRegion SelectedItemRegion {
+		public ISegment SelectedItemRegion {
 			get {
-				if (selectedItem == null || selectedItem.Item < 0 || selectedItem.Item >= selectedItem.DataSource.ItemCount)
-					return DomRegion.Empty;
-				return selectedItem.DataSource.GetRegion (selectedItem.Item);
+				if (selectedItem == null || selectedItem.Item < 0 || selectedItem.Item >= selectedItem.DataSource.Count)
+					return TextSegment.Invalid;
+				return selectedItem.DataSource[selectedItem.Item].Segment;
+			}
+		}
+
+		public string SelectedItemFileName {
+			get {
+				if (selectedItem == null || selectedItem.Item < 0 || selectedItem.Item >= selectedItem.DataSource.Count)
+					return null;
+				return selectedItem.DataSource[selectedItem.Item].File;
 			}
 		}
 
 		class ItemIdentifier {
 			public SearchCategory Category { get; private set; }
-			public ISearchDataSource DataSource { get; private set; }
+			public IReadOnlyList<SearchResult> DataSource { get; private set; }
 			public int Item { get; private set; }
 
-			public ItemIdentifier (SearchCategory category, ISearchDataSource dataSource, int item)
+			public ItemIdentifier (SearchCategory category, IReadOnlyList<SearchResult> dataSource, int item)
 			{
 				this.Category = category;
 				this.DataSource = dataSource;
@@ -799,7 +902,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			public override string ToString ()
 			{
-				return string.Format ("[ItemIdentifier: Category={0}, DataSource=#{1}, Item={2}]", Category.Name, DataSource.ItemCount, Item);
+				return string.Format ("[ItemIdentifier: Category={0}, DataSource=#{1}, Item={2}]", Category.Name, DataSource.Count, Item);
 			}
 		}
 
@@ -812,7 +915,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 				double y = ChildAllocation.Y + yMargin;
 				if (topItem != null){
-					layout.SetMarkup (GetRowMarkup (topItem.DataSource, topItem.Item));
+					layout.SetMarkup (GetRowMarkup (topItem.DataSource[topItem.Item]));
 					int w, h;
 					layout.GetPixelSize (out w, out h);
 					if (topItem.Category == selectedItem.Category && topItem.Item == selectedItem.Item)
@@ -823,10 +926,10 @@ namespace MonoDevelop.Components.MainToolbar
 					var category = result.Item1;
 					var dataSrc = result.Item2;
 					int itemsAdded = 0;
-					for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
+					for (int i = 0; i < maxItems && i < dataSrc.Count; i++) {
 						if (topItem != null && topItem.DataSource == dataSrc && topItem.Item == i)
 							continue;
-						layout.SetMarkup (GetRowMarkup (dataSrc, i));
+						layout.SetMarkup (GetRowMarkup (dataSrc[i]));
 
 						int w, h;
 						layout.GetPixelSize (out w, out h);
@@ -835,13 +938,13 @@ namespace MonoDevelop.Components.MainToolbar
 							return new Cairo.Rectangle (0, y, Allocation.Width, h + itemSeparatorHeight);
 						y += h + itemSeparatorHeight;
 
-						var region = dataSrc.GetRegion (i);
-						if (!region.Begin.IsEmpty) {
-							layout.SetMarkup (region.BeginLine.ToString ());
-							int w2, h2;
-							layout.GetPixelSize (out w2, out h2);
-							w += w2;
-						}
+//						var region = dataSrc.GetRegion (i);
+//						if (!region.IsEmpty) {
+//							layout.SetMarkup (region.BeginLine.ToString ());
+//							int w2, h2;
+//							layout.GetPixelSize (out w2, out h2);
+//							w += w2;
+//						}
 						itemsAdded++;
 					}
 					if (itemsAdded > 0)
@@ -857,7 +960,7 @@ namespace MonoDevelop.Components.MainToolbar
 			var alloc = ChildAllocation;
 			var adjustedMarginSize = alloc.X - Allocation.X  + headerMarginSize;
 
-			var r = results.Where (res => res.Item2.ItemCount > 0).ToArray ();
+			var r = results.Where (res => res.Item2.Count > 0).ToArray ();
 			if (r.Any ()) {
 				context.SetSourceColor (lightSearchBackground);
 				context.Rectangle (Allocation.X, Allocation.Y, adjustedMarginSize, Allocation.Height);
@@ -891,7 +994,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 				double x = alloc.X + xMargin + headerMarginSize;
 				context.SetSourceRGB (0, 0, 0);
-				layout.SetMarkup (GetRowMarkup (dataSrc, i));
+				layout.SetMarkup (GetRowMarkup (dataSrc[i]));
 				layout.GetPixelSize (out w, out h);
 				if (selectedItem != null && selectedItem.Category == category && selectedItem.Item == i) {
 					context.SetSourceColor (selectionBackgroundColor);
@@ -900,7 +1003,7 @@ namespace MonoDevelop.Components.MainToolbar
 					context.SetSourceRGB (1, 1, 1);
 				}
 
-				var px = dataSrc.GetIcon (i);
+				var px = dataSrc[i].Icon;
 				if (px != null) {
 					context.DrawImage (this, px, (int)x + marginIconSpacing, (int)y + (h - px.Height) / 2);
 					x += px.Width + iconTextSpacing + marginIconSpacing;
@@ -917,9 +1020,9 @@ namespace MonoDevelop.Components.MainToolbar
 			foreach (var result in r) {
 				var category = result.Item1;
 				var dataSrc = result.Item2;
-				if (dataSrc.ItemCount == 0)
+				if (dataSrc.Count == 0)
 					continue;
-				if (dataSrc.ItemCount == 1 && topItem != null && topItem.DataSource == dataSrc)
+				if (dataSrc.Count == 1 && topItem != null && topItem.DataSource == dataSrc)
 					continue;
 				headerLayout.SetText (category.Name);
 				headerLayout.GetPixelSize (out w, out h);
@@ -933,12 +1036,12 @@ namespace MonoDevelop.Components.MainToolbar
 
 				layout.Width = Pango.Units.FromPixels (Allocation.Width - adjustedMarginSize - 35);
 
-				for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
+				for (int i = 0; i < maxItems && i < dataSrc.Count; i++) {
 					if (topItem != null && topItem.Category == category && topItem.Item == i)
 						continue;
 					double x = alloc.X + xMargin + headerMarginSize;
 					context.SetSourceRGB (0, 0, 0);
-					layout.SetMarkup (GetRowMarkup (dataSrc, i));
+					layout.SetMarkup (GetRowMarkup (dataSrc[i]));
 					layout.GetPixelSize (out w, out h);
 					if (y + h + itemSeparatorHeight > Allocation.Height)
 						break;
@@ -949,7 +1052,7 @@ namespace MonoDevelop.Components.MainToolbar
 						context.SetSourceRGB (1, 1, 1);
 					}
 
-					var px = dataSrc.GetIcon (i);
+					var px = dataSrc[i].Icon;
 					if (px != null) {
 						context.DrawImage (this, px, (int)x + marginIconSpacing, (int)y + (h - px.Height) / 2);
 						x += px.Width + iconTextSpacing + marginIconSpacing;
@@ -973,10 +1076,10 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		string GetRowMarkup (ISearchDataSource dataSrc, int i)
+		string GetRowMarkup (SearchResult result)
 		{
-			string txt = "<span foreground=\"#606060\">" + dataSrc.GetMarkup (i, false) +"</span>";
-			string desc = dataSrc.GetDescriptionMarkup (i, false);
+			string txt = "<span foreground=\"#606060\">" + result.GetMarkupText(this) +"</span>";
+			string desc = result.GetDescriptionMarkupText (this);
 			if (!string.IsNullOrEmpty (desc))
 				txt += "<span foreground=\"#8F8F8F\" size=\"small\">\n" + desc + "</span>";
 			return txt;

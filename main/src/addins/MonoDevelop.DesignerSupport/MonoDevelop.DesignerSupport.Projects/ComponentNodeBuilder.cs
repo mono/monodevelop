@@ -42,9 +42,9 @@ namespace MonoDevelop.DesignerSupport.Projects
 			// Don't use the CurrentNode property here since it may not be properly initialized when the event is fired.
 			ITreeNavigator nav = Tree.GetNodeAtObject (obj);
 			if (nav != null) {
-				IWorkspaceFileObject ce = (IWorkspaceFileObject) nav.GetParentDataItem (typeof(IWorkspaceFileObject), true);
+				var ce = nav.GetParentDataItem<WorkspaceObject> (true);
 				if (ce != null) {
-					IdeApp.ProjectOperations.Save (ce);
+					IdeApp.ProjectOperations.SaveAsync (ce);
 					return;
 				}
 			}

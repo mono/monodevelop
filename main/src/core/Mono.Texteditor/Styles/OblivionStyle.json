@@ -59,9 +59,12 @@
 
         { "name":"Notification Border", "color":"aluminium1" },
 
-        { "name":"Completion Matching Substring", "color":"#BA3373" },
-        { "name":"Completion Border", "color":"#C9C9C9" },
-        { "name":"Completion Border(Inactive)", "color":"#bebebe" },
+        { "name":"Completion Window", "color":"aluminium6", "bordercolor":"aluminium1" },
+		{ "name":"Completion Tooltip Window", "color":"aluminium5", "bordercolor":"aluminium1" },
+        { "name":"Completion Selection Bar Border", "color":"aluminium5" },
+        { "name":"Completion Selection Bar Border(Inactive)", "color":"aluminium7" },
+        { "name":"Completion Selection Bar Background", "color":"aluminium5", "secondcolor":"aluminium5" },
+        { "name":"Completion Selection Bar Background(Inactive)", "color":"aluminium7", "secondcolor":"aluminium7" },
 
         { "name":"Bookmarks", "color":"aluminium1", "secondcolor":"aluminium4" },
 
@@ -157,9 +160,14 @@
         { "name":"Tooltip Text", "fore":"aluminium2", "back":"aluminium5" },
         { "name":"Notification Text", "fore":"aluminium2", "back":"aluminium5" },
 
-        { "name":"Completion Text", "fore":"#434343", "back":"#F0F6F8" },
-        { "name":"Completion Selected Text", "fore":"#f8fcfc", "back":"#dff4f0" },
-        { "name":"Completion Selected Text(Inactive)", "fore":"#434343", "back":"white" },
+        { "name":"Completion Text", "fore":"aluminium2" },
+        { "name":"Completion Matching Substring", "fore":"plum1" },
+        
+        { "name":"Completion Selected Text", "fore":"aluminium2" },
+        { "name":"Completion Selected Matching Substring", "fore":"plum1" },
+
+        { "name":"Completion Selected Text(Inactive)", "fore":"aluminium2" },
+        { "name":"Completion Selected Matching Substring(Inactive)", "fore":"plum1" },
 
         { "name":"Keyword(Access)", "fore":"plum1", "weight":"bold"  },
         { "name":"Keyword(Type)", "fore":"plum1", "weight":"bold"  },

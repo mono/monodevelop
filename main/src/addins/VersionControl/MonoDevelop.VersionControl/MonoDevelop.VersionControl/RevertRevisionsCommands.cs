@@ -75,7 +75,7 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 
-		private class RevertWorker : Task {
+		private class RevertWorker : VersionControlTask {
 			Repository vc;
 			string path;
 			Revision revision;

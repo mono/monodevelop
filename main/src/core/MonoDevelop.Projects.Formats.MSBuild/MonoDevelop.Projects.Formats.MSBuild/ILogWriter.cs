@@ -28,7 +28,7 @@ using System;
 using System.IO;
 using System.Runtime.Remoting.Messaging;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	public interface ILogWriter
 	{

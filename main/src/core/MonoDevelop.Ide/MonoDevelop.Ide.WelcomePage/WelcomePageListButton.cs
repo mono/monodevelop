@@ -27,7 +27,6 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using Gtk;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.WelcomePage
 {

@@ -53,7 +53,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			listAccess.Active = options.GenerateInternalTypes ? 1 : 0;
 			listAsync.Active = AsyncOptionToIndex;
 
-			if (project is PortableDotNetProject) {
+			if (project.IsPortableLibrary) {
 				listAccess.Sensitive = false;
 				listAsync.Sensitive = false;
 			}

@@ -289,7 +289,7 @@
 			</Condition>
 			<ComplexCondition>
 				<Or>
-					<Condition id="ItemType" value="SolutionItem" />
+					<Condition id="ItemType" value="SolutionFolderItem" />
 					<Condition id="ItemType" value="Solution" />
 				</Or>
 				<Section id="VersionControlGeneral" _label="Commit Message Style" fill="true" class="MonoDevelop.VersionControl.VersionControlPolicyPanel" icon="md-prefs-commit-message-style" />

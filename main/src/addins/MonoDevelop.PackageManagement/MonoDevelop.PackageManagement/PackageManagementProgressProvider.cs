@@ -33,16 +33,16 @@ namespace MonoDevelop.PackageManagement
 {
 	public class PackageManagementProgressProvider : IProgressProvider
 	{
-		Action<MessageHandler> guiDispatcher;
+		Action<Action> guiDispatcher;
 
 		public PackageManagementProgressProvider (IPackageRepositoryFactoryEvents repositoryFactoryEvents)
-			: this (repositoryFactoryEvents, DispatchService.GuiDispatch)
+			: this (repositoryFactoryEvents, h => DispatchService.GuiDispatch (h))
 		{
 		}
 
 		public PackageManagementProgressProvider (
 			IPackageRepositoryFactoryEvents repositoryFactoryEvents,
-			Action<MessageHandler> guiDispatcher)
+			Action<Action> guiDispatcher)
 		{
 			repositoryFactoryEvents.RepositoryCreated += RepositoryCreated;
 			this.guiDispatcher = guiDispatcher;

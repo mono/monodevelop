@@ -51,12 +51,12 @@ namespace MonoDevelop.Deployment.Targets
 			return new LocalFileCopyConfiguration ();
 		}
 		
-		public virtual void CopyFiles (IProgressMonitor monitor, IFileReplacePolicy replacePolicy, FileCopyConfiguration copyConfig, DeployFileCollection deployFiles, DeployContext context)
+		public virtual void CopyFiles (ProgressMonitor monitor, IFileReplacePolicy replacePolicy, FileCopyConfiguration copyConfig, DeployFileCollection deployFiles, DeployContext context)
 		{
 			InternalCopyFiles (monitor, replacePolicy, copyConfig, deployFiles, context, null);
 		}
 		
-		internal void InternalCopyFiles (IProgressMonitor monitor, IFileReplacePolicy replacePolicy, FileCopyConfiguration copyConfig, DeployFileCollection deployFiles, DeployContext context, string realPrefix)
+		internal void InternalCopyFiles (ProgressMonitor monitor, IFileReplacePolicy replacePolicy, FileCopyConfiguration copyConfig, DeployFileCollection deployFiles, DeployContext context, string realPrefix)
 		{
 			string targetDirectory = ((LocalFileCopyConfiguration) copyConfig).TargetDirectory;
 			
@@ -111,7 +111,7 @@ namespace MonoDevelop.Deployment.Targets
 			long carry = 0; 
 			monitor.BeginTask (copyConfig.FriendlyLocation, progressBarLength);
 			CopyReportCallback copyCallback = delegate (long bytes) {
-				if (monitor.IsCancelRequested)
+				if (monitor.CancellationToken.IsCancellationRequested)
 					return false;
 				int steps = (int) (bytes / stepSize);
 				carry += bytes % stepSize;
@@ -127,7 +127,7 @@ namespace MonoDevelop.Deployment.Targets
 			//now the actual copy
 			foreach (DeployFileConf file in files) {
 				//abort the copy if cancelling
-				if (monitor.IsCancelRequested)
+				if (monitor.CancellationToken.IsCancellationRequested)
 					break;
 				
 				EnsureDirectoryExists (Path.GetDirectoryName (file.InternalTargetFile));

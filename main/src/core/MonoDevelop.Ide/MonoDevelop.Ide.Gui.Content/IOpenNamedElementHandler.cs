@@ -30,8 +30,9 @@ using System;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
-	public interface IOpenNamedElementHandler
+	interface IOpenNamedElementHandler
 	{
-		void Open (ICSharpCode.NRefactory.TypeSystem.INamedElement element);
+		void Open (Microsoft.CodeAnalysis.ISymbol element, bool expandNode = true);
+		void Open (string documentationCommentId, bool openInPublicOnlyMode = true, bool expandNode = true);
 	}
 }

@@ -30,6 +30,7 @@ using System.Linq;
 
 namespace MonoDevelop.Core
 {
+	[TestFixture]
 	public class BacktrackingStringMatcherTests
 	{
 		[Test()]
@@ -86,6 +87,20 @@ namespace MonoDevelop.Core
 			var match = matcher.GetMatch("foo:bar");
 			CompareMatch(match,          "*****--");
 		}
+
+
+		[Test()]
+		public void TestBacktrackBug ()
+		{
+			var matcher = StringMatcher.GetMatcher ("dlli", true);
+			var match = matcher.GetMatch("DllList");
+			CompareMatch(match,          "**-**--");
+
+			matcher = StringMatcher.GetMatcher ("dLli", true);
+			match = matcher.GetMatch("DllList");
+			Assert.IsNull (match, "match found");
+		}
+
 
 		[Test()]
 		public void TestUnderscoreAtEnd ()

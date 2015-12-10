@@ -9,7 +9,7 @@
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll" />
     <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
-    <widget-library name="../../../../build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll" internal="true" />
+    <widget-library name="../../../../build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel" design-size="454 364">
     <property name="MemberName" />
@@ -2430,64 +2430,10 @@
   <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel" design-size="427 423">
     <property name="MemberName" />
     <property name="Visible">False</property>
-    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox1">
         <property name="MemberName" />
         <property name="Spacing">6</property>
-        <child>
-          <widget class="Gtk.HBox" id="hbox1">
-            <property name="MemberName" />
-            <property name="Spacing">6</property>
-            <child>
-              <widget class="Gtk.Label" id="label2">
-                <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">Completion list has</property>
-              </widget>
-              <packing>
-                <property name="Position">0</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.SpinButton" id="spinbutton1">
-                <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="Upper">100</property>
-                <property name="PageIncrement">10</property>
-                <property name="StepIncrement">1</property>
-                <property name="ClimbRate">1</property>
-                <property name="Numeric">True</property>
-              </widget>
-              <packing>
-                <property name="Position">1</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.Label" id="label3">
-                <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">rows</property>
-              </widget>
-              <packing>
-                <property name="Position">2</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">0</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
         <child>
           <widget class="Gtk.Alignment" id="alignment3">
             <property name="MemberName" />
@@ -2635,7 +2581,7 @@
             </child>
           </widget>
           <packing>
-            <property name="Position">1</property>
+            <property name="Position">0</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>

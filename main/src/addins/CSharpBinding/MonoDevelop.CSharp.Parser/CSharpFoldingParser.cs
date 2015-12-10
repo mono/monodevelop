@@ -26,9 +26,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp.Parser
 {
@@ -94,14 +92,14 @@ namespace MonoDevelop.CSharp.Parser
 
 		public unsafe ParsedDocument Parse (string fileName, string content)
 		{
-			var regionStack = new Stack<Tuple<string, TextLocation>> ();
+			var regionStack = new Stack<Tuple<string, DocumentLocation>> ();
 			var result = new DefaultParsedDocument (fileName);
 			bool inSingleComment = false, inMultiLineComment = false;
 			bool inString = false, inVerbatimString = false;
 			bool inChar = false;
 			bool inLineStart = true, hasStartedAtLine = false;
 			int line = 1, column = 1;
-			var startLoc = TextLocation.Empty;
+			var startLoc = DocumentLocation.Empty;
 			
 			fixed (char* startPtr = content) {
 				char* endPtr = startPtr + content.Length;
@@ -116,7 +114,7 @@ namespace MonoDevelop.CSharp.Parser
 						ptr++;
 
 						if (StartsIdentifier (ptr, endPtr, "region")) {
-							var regionLocation = new TextLocation (line, column);
+							var regionLocation = new DocumentLocation (line, column);
 							column++;
 							ptr += "region".Length;
 							column += "region".Length;
@@ -131,7 +129,7 @@ namespace MonoDevelop.CSharp.Parser
 								var beginRegion = regionStack.Pop ();
 								result.Add (new FoldingRegion (
 									beginRegion.Item1, 
-									new DomRegion (beginRegion.Item2.Line, beginRegion.Item2.Column, line, column),
+									new DocumentRegion (beginRegion.Item2.Line, beginRegion.Item2.Column, line, column),
 									FoldType.UserRegion,
 									true));
 							}
@@ -150,14 +148,14 @@ namespace MonoDevelop.CSharp.Parser
 							if (nextCh == '/') {
 								hasStartedAtLine = inLineStart;
 								beginPtr = ptr + 2;
-								startLoc = new TextLocation (line, column);
+								startLoc = new DocumentLocation (line, column);
 								ptr++;
 								column++;
 								inSingleComment = true;
 							} else if (nextCh == '*') {
 								hasStartedAtLine = inLineStart;
 								beginPtr = ptr + 2;
-								startLoc = new TextLocation (line, column);
+								startLoc = new DocumentLocation (line, column);
 								ptr++;
 								column++;
 								inMultiLineComment = true;
@@ -175,7 +173,7 @@ namespace MonoDevelop.CSharp.Parser
 								column += 2;
 								inMultiLineComment = false;
 								result.Add (new MonoDevelop.Ide.TypeSystem.Comment () {
-									Region = new DomRegion (startLoc, new TextLocation (line, column)),
+									Region = new DocumentRegion (startLoc, new DocumentLocation (line, column)),
 									OpenTag = "/*",
 									CommentType = MonoDevelop.Ide.TypeSystem.CommentType.Block,
 									Text = content.Substring ((int)(beginPtr - startPtr), (int)(ptr - beginPtr)),
@@ -202,7 +200,7 @@ namespace MonoDevelop.CSharp.Parser
 								beginPtr++;
 							
 							result.Add (new MonoDevelop.Ide.TypeSystem.Comment () { 
-								Region = new DomRegion (startLoc, new TextLocation (line, column)),
+								Region = new DocumentRegion (startLoc, new DocumentLocation (line, column)),
 								CommentType = MonoDevelop.Ide.TypeSystem.CommentType.SingleLine, 
 								OpenTag = "//",
 								Text = content.Substring ((int)(beginPtr - startPtr), (int)(ptr - beginPtr)),
@@ -254,7 +252,7 @@ namespace MonoDevelop.CSharp.Parser
 					ptr++;
 				}
 			}
-			foreach (var fold in result.Comments.ToFolds ()) {
+			foreach (var fold in result.GetCommentsAsync().Result.ToFolds ()) {
 				result.Add (fold);
 			}
 			return result;

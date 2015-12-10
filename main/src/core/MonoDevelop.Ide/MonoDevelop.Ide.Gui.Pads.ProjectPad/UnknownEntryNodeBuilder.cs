@@ -94,7 +94,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void OnReload ()
 		{
 			var solutions = new HashSet<Solution> ();
-			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
+			using (ProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
 				m.BeginTask (null, CurrentNodes.Length);
 				foreach (ITreeNavigator node in CurrentNodes) {
 					UnknownSolutionItem entry = (UnknownSolutionItem) node.DataItem;
@@ -107,7 +107,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 				m.EndTask ();
 			}
-			IdeApp.ProjectOperations.Save (solutions);
+			IdeApp.ProjectOperations.SaveAsync (solutions);
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.Reload)]
@@ -127,7 +127,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void OnUnload ()
 		{
 			HashSet<Solution> solutions = new HashSet<Solution> ();
-			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
+			using (ProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
 				m.BeginTask (null, CurrentNodes.Length);
 				foreach (ITreeNavigator nav in CurrentNodes) {
 					UnknownSolutionItem p = (UnknownSolutionItem) nav.DataItem;
@@ -138,7 +138,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 				m.EndTask ();
 			}
-			IdeApp.ProjectOperations.Save (solutions);
+			IdeApp.ProjectOperations.SaveAsync (solutions);
 		}
 
 		[CommandUpdateHandler (ProjectCommands.Unload)]
@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void OnEditUnknownSolutionItem ()
 		{
 			UnknownSolutionItem si = (UnknownSolutionItem) CurrentNode.DataItem;
-			IdeApp.Workbench.OpenDocument (si.FileName);
+			IdeApp.Workbench.OpenDocument (si.FileName, project: null);
 		}
 
 		[CommandUpdateHandler (ProjectCommands.EditSolutionItem)]
@@ -174,7 +174,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (yes) {
 				cmb.Items.Remove (item);
 				item.Dispose ();
-				IdeApp.ProjectOperations.Save (cmb.ParentSolution);
+				IdeApp.ProjectOperations.SaveAsync (cmb.ParentSolution);
 			}
 		}
 	}
