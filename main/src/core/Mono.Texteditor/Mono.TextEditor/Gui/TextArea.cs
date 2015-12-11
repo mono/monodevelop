@@ -1775,6 +1775,8 @@ namespace Mono.TextEditor
 		
 		internal void SetAdjustments ()
 		{
+			if (textEditorData == null)
+				return;
 			SetAdjustments (Allocation);
 		}
 		
