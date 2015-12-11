@@ -123,6 +123,7 @@ namespace MonoDevelop.Configuration
         public readonly string ProductVersion;
         public readonly string ProductVersionText;
         public readonly string CompatVersion;
+		public readonly string SourceUrl;
         public readonly string AssemblyVersion = "4.0.0.0";
         public readonly string ReleaseId;
         public readonly PlatformInfo PlatformInfo;
@@ -135,6 +136,7 @@ namespace MonoDevelop.Configuration
             Version = SystemUtil.Grep(versionTxt, @"Version=(.*)");
             ProductVersionText = SystemUtil.Grep(versionTxt, "Label=(.*)");
             CompatVersion = SystemUtil.Grep(versionTxt, "CompatVersion=(.*)");
+			SourceUrl = SystemUtil.Grep(versionTxt, "SourceUrl=(.*)", true);
 
             Version ver = new Version(Version);
             int vbuild = ver.Build != -1 ? ver.Build : 0;
@@ -153,8 +155,12 @@ namespace MonoDevelop.Configuration
 				pinfo = (PlatformInfo)ser.Deserialize (sr);
 			}
 
-			if (pinfo.AppId != null)
-				File.WriteAllText (Path.Combine (targetDir, "updateinfo"), pinfo.AppId + " " + ReleaseId);
+			if (pinfo.AppId != null) {
+				var content = pinfo.AppId + " " + ReleaseId;
+				if (SourceUrl != null)
+					content += "\nsource-url:" + SourceUrl;
+				File.WriteAllText (Path.Combine (targetDir, "updateinfo"), content);
+			}
 
 			if (pinfo.UpdaterId != null)
 				File.WriteAllText (Path.Combine (targetDir, "updateinfo.updater"), pinfo.UpdaterId + " " + pinfo.UpdaterVersion);
@@ -264,12 +270,15 @@ namespace MonoDevelop.Configuration
 
 		public static Platform Platform { get; private set; }
 
-        public static string Grep(string file, string regex)
+        public static string Grep(string file, string regex, bool optional = false)
         {
             string txt = File.ReadAllText(file);
             var m = Regex.Match(txt, regex);
-            if (m == null)
-                throw new UserException("Match not found for regex: " + regex);
+			if (m == null || !m.Success) {
+				if (!optional)
+					throw new UserException ("Match not found for regex: " + regex);
+				return null;
+			}
             if (m.Groups.Count != 2)
                 throw new UserException("Invalid regex: expression must have a single capture group: " + regex);
             Group cap = m.Groups[1];

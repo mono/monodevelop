@@ -34,14 +34,15 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Microsoft.WindowsAPICodePack.Dialogs.Controls;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Components.Extensions;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Text;
 using Microsoft.WindowsAPICodePack.Shell;
 using System.Windows;
-using Gtk;
 
 namespace MonoDevelop.Platform
 {
@@ -229,19 +230,46 @@ namespace MonoDevelop.Platform
 				return false;
 			}
 
+			int selected = -1;
+			int i = 0;
 			bool hasBench = false;
 			var projectService = IdeApp.Services.ProjectService;
 			if (projectService.IsWorkspaceItemFile (fileName) || projectService.IsSolutionItemFile (fileName)) {
 				hasBench = true;
 				combo.Items.Add (new ViewerComboItem (null, GettextCatalog.GetString ("Solution Workbench")));
+				if (!CanBeOpenedInAssemblyBrowser (fileName))
+					selected = 0;
+				i++;
 			}
 
 			foreach (var vw in DisplayBindingService.GetFileViewers (fileName, null))
-				if (!vw.IsExternal)
+				if (!vw.IsExternal) {
 					combo.Items.Add (new ViewerComboItem (vw, vw.Title));
 
+					if (vw.CanUseAsDefault && selected == -1)
+						selected = i;
+
+					i++;
+				}
+
+			if (selected == -1)
+				selected = 0;
+
 			combo.Enabled = combo.Items.Count >= 1;
+			if (selected > 0) {
+				// Unable to set SelectedIndex until ApplyControlPropertyChange called for Items
+				// which causes the combo box selection to visibly change selection twice. Instead just
+				// make the default item the first one in the combo.
+				var item = combo.Items[selected];
+				combo.Items.RemoveAt (selected);
+				combo.Items.Insert (0, item);
+			}
 			return hasBench;
+		}
+
+		static bool CanBeOpenedInAssemblyBrowser (FilePath filename)
+		{
+			return filename.Extension.ToLower () == ".exe" || filename.Extension.ToLower () == ".dll";
 		}
 
 		class ViewerComboItem : CommonFileDialogComboBoxItem

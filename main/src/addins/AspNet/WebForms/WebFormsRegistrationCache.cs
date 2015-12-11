@@ -38,9 +38,9 @@ using MonoDevelop.AspNet.Projects;
 
 namespace MonoDevelop.AspNet.WebForms
 {	
-	class WebFormsRegistrationCache : ProjectFileCache<AspNetAppProject,RegistrationInfo>
+	class WebFormsRegistrationCache : ProjectFileCache<DotNetProject,RegistrationInfo>
 	{
-		public WebFormsRegistrationCache (AspNetAppProject project) : base (project)
+		public WebFormsRegistrationCache (DotNetProject project) : base (project)
 		{
 		}
 		

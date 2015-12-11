@@ -28,11 +28,11 @@ using System;
 using System.IO;
 using System.Runtime.Remoting.Messaging;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	public interface ILogWriter
 	{
-		void WriteLine (string text);
+		void Write (string text);
 	}
 	
 	public class LogWriter: MarshalByRefObject, ILogWriter
@@ -44,10 +44,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			this.writer = writer;
 		}
 
-		[OneWayAttribute]
-		public void WriteLine (string text)
+		public void Write (string text)
 		{
-			writer.WriteLine (text);
+			writer.Write (text);
 		}
 		
 		public override object InitializeLifetimeService ()

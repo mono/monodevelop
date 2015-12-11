@@ -126,8 +126,10 @@ namespace MonoDevelop.Debugger
 					if (!sf.IsExternalCode &&
 					    sf.SourceLocation.Line != -1 &&
 					    !string.IsNullOrEmpty (sf.SourceLocation.FileName) &&
-						//Uncomment condition below once logic for ProjectOnlyCode in runtime is fixed
-						(/*DebuggingService.CurrentSessionSupportsFeature (DebuggerFeatures.Disassembly) ||*/ System.IO.File.Exists (sf.SourceLocation.FileName))) {
+					    //Uncomment condition below once logic for ProjectOnlyCode in runtime is fixed
+					    (/*DebuggingService.CurrentSessionSupportsFeature (DebuggerFeatures.Disassembly) ||*/
+					        System.IO.File.Exists (sf.SourceLocation.FileName) ||
+					        SourceCodeLookup.FindSourceFile (sf.SourceLocation.FileName, sf.SourceLocation.FileHash).IsNotNull)) {
 						if (n != DebuggingService.CurrentFrameIndex)
 							DebuggingService.CurrentFrameIndex = n;
 						break;

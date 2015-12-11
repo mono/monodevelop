@@ -39,13 +39,6 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 {
 	public class WindowsFolderNodeBuilder: TypeNodeBuilder
 	{
-		EventHandler updateDelegate;
-		
-		public WindowsFolderNodeBuilder ()
-		{
-			updateDelegate = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnUpdateFiles));
-		}
-		
 		public override Type NodeDataType {
 			get { return typeof(WindowsFolder); }
 		}
@@ -105,13 +98,13 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		public override void OnNodeAdded (object dataObject)
 		{
 			WindowsFolder w = (WindowsFolder) dataObject;
-			w.Changed += updateDelegate;
+			w.Changed += OnUpdateFiles;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
 			WindowsFolder w = (WindowsFolder)dataObject;
-			w.Changed -= updateDelegate;
+			w.Changed -= OnUpdateFiles;
 			w.Dispose ();
 		}
 		

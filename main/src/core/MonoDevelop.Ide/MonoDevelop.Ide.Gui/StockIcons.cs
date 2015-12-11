@@ -33,6 +33,7 @@ namespace MonoDevelop.Ide.Gui
 {
 	public class Stock
 	{
+		public static readonly IconId AssetsFolder = "md-folder-assets";
 		public static readonly IconId AddNamespace = "md-add-namespace";
 		public static readonly IconId BreakPoint = "md-break-point";
 		public static readonly IconId BuildCombine = "md-build-combine";
@@ -159,5 +160,6 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId Add = "md-add";
 		public static readonly IconId Clear = "md-clear";
 		public static readonly IconId Execute = Gtk.Stock.Execute;
+		public static readonly IconId SearchboxSearch = "md-searchbox-search";
 	}
 }

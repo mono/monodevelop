@@ -33,12 +33,12 @@ namespace MonoDevelop.Autotools
 		bool generateAutotools = true;
 
 		// Recurses into children and tests if they are deployable.
-		public bool CanDeploy (SolutionItem entry, MakefileType type)
+		public bool CanDeploy (SolutionFolderItem entry, MakefileType type)
 		{
 			return entry is SolutionFolder;
 		}
 
-		public Makefile Deploy (AutotoolsContext ctx, SolutionItem entry, IProgressMonitor monitor)
+		public Makefile Deploy (AutotoolsContext ctx, SolutionFolderItem entry, ProgressMonitor monitor)
 		{
 			generateAutotools = ctx.MakefileType == MakefileType.AutotoolsMakefile;
 			
@@ -78,10 +78,10 @@ namespace MonoDevelop.Autotools
 
 					subdirs.Append (" SUBDIRS = ");
 					
-					foreach (SolutionItem ce in CalculateSubDirOrder (ctx, solutionFolder, config))
+					foreach (SolutionFolderItem ce in CalculateSubDirOrder (ctx, solutionFolder, config))
 					{
 						string baseDirectory;
-						if (!(ce is SolutionEntityItem) && !(ce is SolutionFolder))
+						if (!(ce is SolutionItem) && !(ce is SolutionFolder))
 							continue;
 						
 						// Ignore projects which can't be deployed
@@ -118,7 +118,7 @@ namespace MonoDevelop.Autotools
 				string includedProject = null;
 
 				// deploy recursively
-				foreach (SolutionItem ce in children)
+				foreach (SolutionFolderItem ce in children)
 				{
 					IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( ce, ctx.MakefileType );
 					Makefile makefile;
@@ -206,11 +206,11 @@ namespace MonoDevelop.Autotools
 		}
 		
 		// utility function for finding the correct order to process directories
-		List<SolutionItem> CalculateSubDirOrder (AutotoolsContext ctx, SolutionFolder folder, SolutionConfiguration config)
+		List<SolutionFolderItem> CalculateSubDirOrder (AutotoolsContext ctx, SolutionFolder folder, SolutionConfiguration config)
 		{
-			List<SolutionItem> resultOrder = new List<SolutionItem>();
-			Set<SolutionItem> dependenciesMet = new Set<SolutionItem>();
-			Set<SolutionItem> inResult = new Set<SolutionItem>();
+			List<SolutionFolderItem> resultOrder = new List<SolutionFolderItem>();
+			Set<SolutionFolderItem> dependenciesMet = new Set<SolutionFolderItem>();
+			Set<SolutionFolderItem> inResult = new Set<SolutionFolderItem>();
 			
 			// We don't have to worry about projects built in parent combines
 			dependenciesMet.Union (ctx.GetBuiltProjects ());
@@ -222,24 +222,24 @@ namespace MonoDevelop.Autotools
 				added = false;
 				notMet = null;
 				
-				List<SolutionItem> items = new List<SolutionItem> ();
+				List<SolutionFolderItem> items = new List<SolutionFolderItem> ();
 				GetSubItems (items, folder);
 
-				foreach (SolutionItem item in items) 
+				foreach (SolutionFolderItem item in items) 
 				{
-					Set<SolutionItem> references, provides;
+					Set<SolutionFolderItem> references, provides;
 					
 					if (inResult.Contains (item))
 						continue;
 					
-					if (item is SolutionEntityItem)
+					if (item is SolutionItem)
 					{
-						SolutionEntityItem entry = (SolutionEntityItem) item;
+						SolutionItem entry = (SolutionItem) item;
 						if (!config.BuildEnabledForItem (entry))
 							continue;
 						
-						references = new Set<SolutionItem> ();
-						provides = new Set<SolutionItem>();
+						references = new Set<SolutionFolderItem> ();
+						provides = new Set<SolutionFolderItem>();
 						references.Union (entry.GetReferencedItems (config.Selector));
 						provides.Add (entry);
 					}
@@ -266,12 +266,12 @@ namespace MonoDevelop.Autotools
 			return resultOrder;
 		}
 		
-		void GetSubItems (List<SolutionItem> list, SolutionFolder folder)
+		void GetSubItems (List<SolutionFolderItem> list, SolutionFolder folder)
 		{
 			// This method returns the subitems of a folder.
 			// If a folder does not match a phisical folder, it will be ignored.
 			
-			foreach (SolutionItem item in folder.Items) {
+			foreach (SolutionFolderItem item in folder.Items) {
 				if (item is SolutionFolder) {
 					if (item.BaseDirectory != folder.BaseDirectory)
 						list.Add (item);
@@ -290,25 +290,25 @@ namespace MonoDevelop.Autotools
 		 * returns a set of projects that a combine contains and a set of projects
 		 * that are referenced from combine projects but not part of the combine
 		 */
-		void GetAllProjects (SolutionFolder folder, SolutionConfiguration config, out Set<SolutionItem> projects, out Set<SolutionItem> references)
+		void GetAllProjects (SolutionFolder folder, SolutionConfiguration config, out Set<SolutionFolderItem> projects, out Set<SolutionFolderItem> references)
 		{
-			List<SolutionItem> subitems = new List<SolutionItem> ();
+			List<SolutionFolderItem> subitems = new List<SolutionFolderItem> ();
 			GetSubItems (subitems, folder);
 
-			projects = (Set<SolutionItem>) combineProjects [folder];
+			projects = (Set<SolutionFolderItem>) combineProjects [folder];
 			if (projects != null) {
-				references = (Set<SolutionItem>) combineReferences [folder];
+				references = (Set<SolutionFolderItem>) combineReferences [folder];
 				return;
 			}
 
-			projects = new Set<SolutionItem>();
-			references = new Set<SolutionItem>();
+			projects = new Set<SolutionFolderItem>();
+			references = new Set<SolutionFolderItem>();
 			
-			foreach (SolutionItem item in subitems) 
+			foreach (SolutionFolderItem item in subitems) 
 			{
-				if (item is SolutionEntityItem)
+				if (item is SolutionItem)
 				{
-					SolutionEntityItem entry = (SolutionEntityItem) item;
+					SolutionItem entry = (SolutionItem) item;
 					if (!config.BuildEnabledForItem (entry))
 						continue;
 					projects.Add (entry);
@@ -316,8 +316,8 @@ namespace MonoDevelop.Autotools
 				}
 				else if (item is SolutionFolder) 
 				{
-					Set<SolutionItem> subProjects;
-					Set<SolutionItem> subReferences;
+					Set<SolutionFolderItem> subProjects;
+					Set<SolutionFolderItem> subReferences;
 					GetAllProjects ((SolutionFolder)item, config, out subProjects, out subReferences);
 					projects.Union (subProjects);
 					references.Union (subReferences);

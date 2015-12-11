@@ -41,7 +41,7 @@ using MonoDevelop.Core.Setup;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 using System.Net;
-using MonoDevelop.Core.Web;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 
@@ -55,6 +55,9 @@ namespace MonoDevelop.Core
 		static ApplicationService applicationService;
 		static bool initialized;
 		static SynchronizationContext mainSynchronizationContext;
+		static SynchronizationContext defaultSynchronizationContext;
+		static RuntimePreferences preferences = new RuntimePreferences ();
+		static Thread mainThread;
 
 		public static void GetAddinRegistryLocation (out string configDir, out string addinsDir, out string databaseDir)
 		{
@@ -81,10 +84,15 @@ namespace MonoDevelop.Core
 			SetupInstrumentation ();
 
 			Platform.Initialize ();
-			
+
+			mainThread = Thread.CurrentThread;
 			// Set a default sync context
-			if (SynchronizationContext.Current == null)
-				SynchronizationContext.SetSynchronizationContext (new SynchronizationContext ());
+			if (SynchronizationContext.Current == null) {
+				defaultSynchronizationContext = new SynchronizationContext ();
+				SynchronizationContext.SetSynchronizationContext (defaultSynchronizationContext);
+			} else
+				defaultSynchronizationContext = SynchronizationContext.Current;
+
 
 			// Hook up the SSL certificate validation codepath
 			ServicePointManager.ServerCertificateValidationCallback += delegate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
@@ -183,7 +191,7 @@ namespace MonoDevelop.Core
 		
 		static void SetupInstrumentation ()
 		{
-			InstrumentationService.Enabled = PropertyService.Get ("MonoDevelop.EnableInstrumentation", false);
+			InstrumentationService.Enabled = Runtime.Preferences.EnableInstrumentation;
 			if (InstrumentationService.Enabled) {
 				LoggingService.LogInfo ("Instrumentation Service started");
 				try {
@@ -193,9 +201,7 @@ namespace MonoDevelop.Core
 					LoggingService.LogError ("Instrumentation service could not be published", ex);
 				}
 			}
-			PropertyService.AddPropertyHandler ("MonoDevelop.EnableInstrumentation", delegate {
-				InstrumentationService.Enabled = PropertyService.Get ("MonoDevelop.EnableInstrumentation", false);
-			});
+			Runtime.Preferences.EnableInstrumentation.Changed += (s,e) => InstrumentationService.Enabled = Runtime.Preferences.EnableInstrumentation;
 		}
 		
 		static void OnLoadError (object s, AddinErrorEventArgs args)
@@ -262,6 +268,10 @@ namespace MonoDevelop.Core
 				return applicationService;
 			}
 		}
+
+		public static RuntimePreferences Preferences {
+			get { return preferences; }
+		}
 		
 		static Version version;
 
@@ -282,13 +292,153 @@ namespace MonoDevelop.Core
 
 		public static SynchronizationContext MainSynchronizationContext {
 			get {
-				return mainSynchronizationContext ?? SynchronizationContext.Current;
+				return mainSynchronizationContext ?? defaultSynchronizationContext;
 			}
 			set {
 				if (mainSynchronizationContext != null && value != null)
 					throw new InvalidOperationException ("The main synchronization context has already been set");
 				mainSynchronizationContext = value;
+				taskScheduler = null;
 			}
+		}
+
+
+		static TaskScheduler taskScheduler;
+		public static TaskScheduler MainTaskScheduler {
+			get {
+				if (taskScheduler == null)
+					RunInMainThread (() => taskScheduler = TaskScheduler.FromCurrentSynchronizationContext ()).Wait ();
+				return taskScheduler;
+			}
+		}
+
+		/// <summary>
+		/// Runs an action in the main thread (usually the UI thread). The method returns a task, so it can be awaited.
+		/// </summary>
+		public static Task RunInMainThread (Action action)
+		{
+			var ts = new TaskCompletionSource<int> ();
+			if (IsMainThread) {
+				try {
+					action ();
+					ts.SetResult (0);
+				} catch (Exception ex) {
+					ts.SetException (ex);
+				}
+			} else {
+				MainSynchronizationContext.Post (delegate {
+					try {
+						action ();
+						ts.SetResult (0);
+					} catch (Exception ex) {
+						ts.SetException (ex);
+					}
+				}, null);
+			}
+			return ts.Task;
+		}
+
+		/// <summary>
+		/// Runs a function in the main thread (usually the UI thread). The method returns a task, so it can be awaited.
+		/// </summary>
+		public static Task<T> RunInMainThread<T> (Func<T> func)
+		{
+			var ts = new TaskCompletionSource<T> ();
+			if (IsMainThread) {
+				try {
+					ts.SetResult (func ());
+				} catch (Exception ex) {
+					ts.SetException (ex);
+				}
+			} else {
+				MainSynchronizationContext.Post (delegate {
+					try {
+						ts.SetResult (func ());
+					} catch (Exception ex) {
+						ts.SetException (ex);
+					}
+				}, null);
+			}
+			return ts.Task;
+		}
+
+		/// <summary>
+		/// Runs an action in the main thread (usually the UI thread). The method returns a task, so it can be awaited.
+		/// </summary>
+		/// <remarks>This version of the method is useful when the operation to be executed in the main
+		/// thread is asynchronous.</remarks>
+		public static Task<T> RunInMainThread<T> (Func<Task<T>> func)
+		{
+			if (IsMainThread) {
+				return func ();
+			} else {
+				var ts = new TaskCompletionSource<T> ();
+				MainSynchronizationContext.Post (delegate {
+					try {
+						var t = func ();
+						t.ContinueWith (ta => {
+							try {
+								ts.SetResult (ta.Result);
+							} catch (Exception ex) {
+								ts.SetException (ex);
+							}
+						});
+					} catch (Exception ex) {
+						ts.SetException (ex);
+					}
+				}, null);
+				return ts.Task;
+			}
+		}
+
+		/// <summary>
+		/// Runs an action in the main thread (usually the UI thread). The method returns a task, so it can be awaited.
+		/// </summary>
+		/// <remarks>This version of the method is useful when the operation to be executed in the main
+		/// thread is asynchronous.</remarks>
+		public static Task RunInMainThread (Func<Task> func)
+		{
+			if (IsMainThread) {
+				return func ();
+			} else {
+				var ts = new TaskCompletionSource<int> ();
+				MainSynchronizationContext.Post (delegate {
+					try {
+						var t = func ();
+						t.ContinueWith (ta => {
+							try {
+								ts.SetResult (0);
+							} catch (Exception ex) {
+								ts.SetException (ex);
+							}
+						});
+					} catch (Exception ex) {
+						ts.SetException (ex);
+					}
+				}, null);
+				return ts.Task;
+			}
+		}
+
+		/// <summary>
+		/// Returns true if current thread is GUI thread.
+		/// </summary>
+		public static bool IsMainThread
+		{
+			// TODO: This logic should probably change to:
+			// Compare types, because instances can change (using SynchronizationContext.CreateCopy).
+			// if (SynchronizationContext.Current.GetType () != MainSynchronizationContext.GetType ())
+			// once https://bugzilla.xamarin.com/show_bug.cgi?id=35530 is resolved
+			get { return mainThread == Thread.CurrentThread; }
+		}
+
+		/// <summary>
+		/// Asserts that the current thread is the main thread. It will throw an exception if it isn't.
+		/// </summary>
+		public static void AssertMainThread ()
+		{
+			if (!IsMainThread)
+				throw new InvalidOperationException ("Operation not supported in background thread");
 		}
 
 		public static void SetProcessName (string name)
@@ -353,5 +503,22 @@ namespace MonoDevelop.Core
 		public static Counter LogMessages = InstrumentationService.CreateCounter ("Information messages", "Log");
 		public static Counter LogFatalErrors = InstrumentationService.CreateCounter ("Fatal errors", "Log");
 		public static Counter LogDebug = InstrumentationService.CreateCounter ("Debug messages", "Log");
+	}
+
+	public class RuntimePreferences
+	{
+		internal RuntimePreferences () { }
+
+		public readonly ConfigurationProperty<bool> EnableInstrumentation = ConfigurationProperty.Create ("MonoDevelop.EnableInstrumentation", false);
+		public readonly ConfigurationProperty<bool> EnableAutomatedTesting = ConfigurationProperty.Create ("MonoDevelop.EnableAutomatedTesting", false);
+		public readonly ConfigurationProperty<string> UserInterfaceLanguage = ConfigurationProperty.Create ("MonoDevelop.Ide.UserInterfaceLanguage", "");
+		public readonly ConfigurationProperty<MonoDevelop.Projects.MSBuild.MSBuildVerbosity> MSBuildVerbosity = ConfigurationProperty.Create ("MonoDevelop.Ide.MSBuildVerbosity", MonoDevelop.Projects.MSBuild.MSBuildVerbosity.Normal);
+		public readonly ConfigurationProperty<bool> ParallelBuild = ConfigurationProperty.Create ("MonoDevelop.ParallelBuild", true);
+
+		public readonly ConfigurationProperty<string> AuthorName = ConfigurationProperty.Create ("Author.Name", Environment.UserName, oldName:"ChangeLogAddIn.Name");
+		public readonly ConfigurationProperty<string> AuthorEmail = ConfigurationProperty.Create ("Author.Email", "", oldName:"ChangeLogAddIn.Email");
+		public readonly ConfigurationProperty<string> AuthorCopyright = ConfigurationProperty.Create ("Author.Copyright", (string) null);
+		public readonly ConfigurationProperty<string> AuthorCompany = ConfigurationProperty.Create ("Author.Company", "");
+		public readonly ConfigurationProperty<string> AuthorTrademark = ConfigurationProperty.Create ("Author.Trademark", "");
 	}
 }

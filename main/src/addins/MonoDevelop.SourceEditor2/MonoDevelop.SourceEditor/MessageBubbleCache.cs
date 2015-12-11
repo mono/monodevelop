@@ -43,7 +43,7 @@ namespace MonoDevelop.SourceEditor
 		internal Dictionary<string, LayoutDescriptor> textWidthDictionary = new Dictionary<string, LayoutDescriptor> ();
 		internal Dictionary<DocumentLine, double> lineWidthDictionary = new Dictionary<DocumentLine, double> ();
 		
-		internal TextEditor editor;
+		internal MonoTextEditor editor;
 
 		internal Pango.FontDescription fontDescription;
 		internal Pango.FontDescription tooltipFontDescription;
@@ -51,7 +51,7 @@ namespace MonoDevelop.SourceEditor
 
 		public MessageBubbleTextMarker CurrentSelectedTextMarker;
 
-		public MessageBubbleCache (TextEditor editor)
+		public MessageBubbleCache (MonoTextEditor editor)
 		{
 			this.editor = editor;
 			errorPixbuf = Xwt.Drawing.Image.FromResource ("gutter-error-15.png");

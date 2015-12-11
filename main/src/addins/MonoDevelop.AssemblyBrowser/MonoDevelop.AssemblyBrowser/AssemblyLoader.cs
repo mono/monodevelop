@@ -43,9 +43,9 @@ namespace MonoDevelop.AssemblyBrowser
 			private set;
 		}
 		
-		Task<AssemblyDefinition> assemblyLoaderTask;
+		Task<Tuple<AssemblyDefinition, IUnresolvedAssembly>> assemblyLoaderTask;
 
-		public Task<AssemblyDefinition> LoadingTask {
+		public Task<Tuple<AssemblyDefinition, IUnresolvedAssembly>> LoadingTask {
 			get {
 				return assemblyLoaderTask;
 			}
@@ -56,46 +56,37 @@ namespace MonoDevelop.AssemblyBrowser
 
 		public AssemblyDefinition Assembly {
 			get {
-				return assemblyLoaderTask.Result;
+				return assemblyLoaderTask.Result.Item1;
 			}
 		}
-		
-		readonly Lazy<IUnresolvedAssembly> unresolvedAssembly;
+
 		public IUnresolvedAssembly UnresolvedAssembly {
 			get {
-				return unresolvedAssembly.Value;
+				return assemblyLoaderTask.Result.Item2;
 			}
 		}
 		
 		public AssemblyLoader (AssemblyBrowserWidget widget, string fileName)
 		{
 			if (widget == null)
-				throw new ArgumentNullException ("widget");
+				throw new ArgumentNullException (nameof (widget));
 			if (fileName == null)
-				throw new ArgumentNullException ("fileName");
+				throw new ArgumentNullException (nameof (fileName));
 			this.widget = widget;
-			this.FileName = fileName;
+			FileName = fileName;
 			if (!File.Exists (fileName))
-				throw new ArgumentException ("File doesn't exist.", "fileName");
-			this.assemblyLoaderTask = Task.Factory.StartNew<AssemblyDefinition> (() => {
+				throw new ArgumentException ("File doesn't exist.", nameof (fileName));
+			assemblyLoaderTask = Task.Run (() => {
 				try {
-					return AssemblyDefinition.ReadAssembly (FileName, new ReaderParameters {
+					var asm = AssemblyDefinition.ReadAssembly (FileName, new ReaderParameters {
 						AssemblyResolver = this
 					});
+					return Tuple.Create (asm, widget.CecilLoader.LoadAssembly (asm));
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while reading assembly " + FileName, e);
 					return null;
 				}
 			}, src.Token);
-			
-			this.unresolvedAssembly = new Lazy<IUnresolvedAssembly> (delegate {
-				try {
-					return widget.CecilLoader.LoadAssembly (Assembly);
-				} catch (Exception e) {
-					LoggingService.LogError ("Error while loading assembly", e);
-					return new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedAssembly (FileName);
-				}
-			});
 		}
 		
 		#region IAssemblyResolver implementation
@@ -127,7 +118,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public string LookupAssembly (string fullAssemblyName)
 		{
 			var assemblyFile = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (fullAssemblyName, null);
-			if (assemblyFile != null && System.IO.File.Exists (assemblyFile))
+			if (assemblyFile != null && File.Exists (assemblyFile))
 				return assemblyFile;
 			
 			var name = AssemblyNameReference.Parse (fullAssemblyName);

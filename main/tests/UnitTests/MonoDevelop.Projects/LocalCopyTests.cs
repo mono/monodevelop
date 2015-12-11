@@ -34,6 +34,7 @@ using UnitTests;
 using MonoDevelop.Core;
 using System.Linq;
 using MonoDevelop.Core.ProgressMonitoring;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
 {
@@ -43,16 +44,16 @@ namespace MonoDevelop.Projects
 	{
 		[Test]
 		[Platform (Exclude = "Win")]
-		public void CheckLocalCopy ()
+		public async Task CheckLocalCopy ()
 		{
 			string solFile = Util.GetSampleProject ("vs-local-copy", "VSLocalCopyTest.sln");
 			
-			WorkspaceItem item = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			WorkspaceItem item = await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			Assert.IsTrue (item is Solution);
 			Solution sol = (Solution) item;
 			
-			AssertCleanBuild (sol, "Debug");
-			AssertCleanBuild (sol, "Release");
+			await AssertCleanBuild (sol, "Debug");
+			await AssertCleanBuild (sol, "Release");
 
 			string dllDebug = Platform.IsWindows ? ".pdb" : ".dll.mdb";
 			string exeDebug = Platform.IsWindows ? ".pdb" : ".exe.mdb";
@@ -186,9 +187,9 @@ namespace MonoDevelop.Projects
 			return String.Concat (arr);
 		}
 		
-		static void AssertCleanBuild (Solution sol, string configuration)
+		static async Task AssertCleanBuild (Solution sol, string configuration)
 		{
-			BuildResult cr = sol.Build (Util.GetMonitor (), configuration);
+			BuildResult cr = await sol.Build (Util.GetMonitor (), configuration);
 			Assert.IsNotNull (cr);
 			Assert.AreEqual (0, cr.ErrorCount);
 
@@ -205,11 +206,11 @@ namespace MonoDevelop.Projects
 
 		[Test]
 		[Platform (Exclude = "Win")]
-		public void LocalCopyDefault ()
+		public async Task LocalCopyDefault ()
 		{
 			string solFile = Util.GetSampleProject ("local-copy-package", "ConsoleProject.sln");
 
-			WorkspaceItem item = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			WorkspaceItem item = await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			Solution sol = (Solution) item;
 			var p = (DotNetProject)sol.Items [0];
 
@@ -237,8 +238,8 @@ namespace MonoDevelop.Projects
 			ar.LocalCopy = false;
 			Assert.AreEqual (false, ar.LocalCopy);
 
-			sol.Save (new NullProgressMonitor ());
-			sol.Build (new NullProgressMonitor (), "Debug");
+			await sol.SaveAsync (new ProgressMonitor ());
+			await sol.Build (new ProgressMonitor (), "Debug");
 
 			string exeDebug = Platform.IsWindows ? ".pdb" : ".exe.mdb";
 

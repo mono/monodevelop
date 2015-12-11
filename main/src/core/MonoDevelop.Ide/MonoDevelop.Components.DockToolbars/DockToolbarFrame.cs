@@ -26,14 +26,11 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using Gtk;
 using Gdk;
-using System.Collections;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Collections.Generic;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Components.DockToolbars
 {

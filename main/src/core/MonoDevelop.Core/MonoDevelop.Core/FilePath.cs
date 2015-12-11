@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Linq;
 
@@ -35,8 +36,8 @@ namespace MonoDevelop.Core
 	[Serializable]
 	public struct FilePath: IComparable<FilePath>, IComparable, IEquatable<FilePath>
 	{
-		static readonly StringComparer PathComparer = (Platform.IsWindows || Platform.IsMac) ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
-		static readonly StringComparison PathComparison = (Platform.IsWindows || Platform.IsMac) ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+		public static readonly StringComparer PathComparer = (Platform.IsWindows || Platform.IsMac) ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
+		public static readonly StringComparison PathComparison = (Platform.IsWindows || Platform.IsMac) ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
 
 		readonly string fileName;
 
@@ -69,13 +70,13 @@ namespace MonoDevelop.Core
 
 		const int PATHMAX = 4096 + 1;
 
-		static readonly char[] invalidPathChars = Path.GetInvalidPathChars ().Concat ("#%").ToArray ();
+		static readonly char[] invalidPathChars = Path.GetInvalidPathChars ();
 		public static char[] GetInvalidPathChars()
 		{
 			return (char[])invalidPathChars.Clone();
 		}
 
-		static readonly char[] invalidFileNameChars = Path.GetInvalidFileNameChars ().Concat ("#%").ToArray ();
+		static readonly char[] invalidFileNameChars = Path.GetInvalidFileNameChars ();
 		public static char[] GetInvalidFileNameChars ()
 		{
 			return (char[])invalidFileNameChars.Clone ();
@@ -94,7 +95,7 @@ namespace MonoDevelop.Core
 			try {
 				buffer = Marshal.AllocHGlobal (PATHMAX);
 				var result = realpath (this, buffer);
-				return result == IntPtr.Zero ? "" : Marshal.PtrToStringAuto (buffer);
+				return result == IntPtr.Zero ? Path.GetFullPath (this) : Marshal.PtrToStringAuto (buffer);
 			} finally {
 				if (buffer != IntPtr.Zero)
 					Marshal.FreeHGlobal (buffer);
@@ -120,7 +121,9 @@ namespace MonoDevelop.Core
 		/// </summary>
 		public FilePath CanonicalPath {
 			get {
-				if (string.IsNullOrEmpty (fileName))
+				if (fileName == null)
+					return FilePath.Null;
+				if (fileName.Length == 0)
 					return FilePath.Empty;
 				string fp = Path.GetFullPath (fileName);
 				if (fp.Length > 0) {
@@ -194,6 +197,11 @@ namespace MonoDevelop.Core
 			return new FilePath (Path.Combine (fileName, Path.Combine (paths)));
 		}
 		
+		public Task DeleteAsync ()
+		{
+			return Task.Run ((System.Action)Delete);
+		}
+
 		public void Delete ()
 		{
 			// Ensure that this file/directory and all children are writable

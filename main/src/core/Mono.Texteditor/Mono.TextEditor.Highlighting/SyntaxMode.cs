@@ -38,7 +38,7 @@ namespace Mono.TextEditor.Highlighting
 	{
 		protected TextDocument doc;
 
-		public TextDocument Document {
+		public virtual TextDocument Document {
 			get {
 				return doc;
 			}
@@ -226,6 +226,8 @@ namespace Mono.TextEditor.Highlighting
 				}
 			}
 
+			Stack<int> interpolatedBraces = new Stack<int> ();
+
 			public Stack<Rule> RuleStack {
 				get {
 					return ruleStack;
@@ -286,6 +288,8 @@ namespace Mono.TextEditor.Highlighting
 				ruleStack.Push (rule);
 				CurRule = rule;
 				CurSpan = span;
+				if (rule.Name == "InterpolatedString" || rule.Name == "InterpolatedVerbatimString")
+					interpolatedBraces.Push(0);
 			}
 
 			public Span PopSpan ()
@@ -294,8 +298,13 @@ namespace Mono.TextEditor.Highlighting
 				if (spanStack.Count > 0) {
 					result = spanStack.Pop ();
 				}
-				if (ruleStack.Count > 1)
-					ruleStack.Pop ();
+				if (ruleStack.Count > 1) {
+					var poppedRule = ruleStack.Pop ();
+					if (poppedRule.Name == "InterpolatedString" || poppedRule.Name == "InterpolatedVerbatimString") {
+						if (interpolatedBraces.Count > 0)
+							interpolatedBraces.Pop();
+					}
+				}
 				CurRule = ruleStack.Peek ();
 				CurSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
 				return result;
@@ -373,6 +382,7 @@ namespace Mono.TextEditor.Highlighting
 					}
 					if (mismatch)
 						continue;
+					
 					FoundSpanBegin (span, i, match.Length);
 					i += System.Math.Max (0, match.Length - 1);
 					return true;
@@ -385,6 +395,15 @@ namespace Mono.TextEditor.Highlighting
 				int textOffset = i - StartOffset;
 				
 				if (cur.End != null) {
+					if (interpolatedBraces.Count > 0) {
+						char ch = CurText [textOffset];
+						if (ch == '{')
+							interpolatedBraces.Push (interpolatedBraces.Pop () + 1);
+						else if (ch == '}')
+							interpolatedBraces.Push (interpolatedBraces.Pop () - 1);
+						if (interpolatedBraces.Peek () >= 1)
+							return false;
+					}
 					RegexMatch match = cur.End.TryMatch (CurText, textOffset);
 					if (match.Success) {
 						FoundSpanEnd (cur, i, match.Length);
@@ -743,6 +762,9 @@ namespace Mono.TextEditor.Highlighting
 					string extends = reader.GetAttribute ("extends");
 					if (!String.IsNullOrEmpty (extends)) {
 						result = (SyntaxMode)SyntaxModeService.GetSyntaxMode (null, extends).MemberwiseClone ();
+						spanList.AddRange (result.spans);
+						prevMarkerList.AddRange (result.prevMarker);
+						matches.AddRange (result.matches);
 					}
 					result.Name = reader.GetAttribute ("name");
 					result.MimeType = reader.GetAttribute (MimeTypesAttribute);

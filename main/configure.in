@@ -33,22 +33,28 @@ if test "x$PKG_CONFIG" = "xno"; then
         AC_MSG_ERROR([You need to install pkg-config])
 fi
 
-MONO_REQUIRED_VERSION=3.0.4
+MONO_REQUIRED_VERSION=4.0
 
 if ! $PKG_CONFIG --atleast-version=$MONO_REQUIRED_VERSION mono; then
 	AC_MSG_ERROR([You need mono $MONO_REQUIRED_VERSION or newer])
 fi
 
-#ensure we have the same env as when configured
-AC_SUBST(PATH)
-AC_SUBST(PKG_CONFIG_PATH)
-AC_SUBST(LD_LIBRARY_PATH)
-AC_SUBST(DYLD_FALLBACK_LIBRARY_PATH)
-AC_SUBST(MONO_GAC_PREFIX)
+###
+# Disable the environment capturing as it breaks on El Capitan and we end up storing empty env vars
+# which means we break things like `DYLD_FALLBACK_LIBRARY_PATH` because that env has a default meaning
+# when it is *not set*, but this code causes it to be set to an empty value so we can't load libc.
+###
+##ensure we have the same env as when configured
+#AC_SUBST(PATH)
+#AC_SUBST(PKG_CONFIG_PATH)
+#AC_SUBST(LD_LIBRARY_PATH)
+#AC_SUBST(DYLD_FALLBACK_LIBRARY_PATH)
+#AC_SUBST(MONO_GAC_PREFIX)
 
 default_gnomeplatform=no
 default_windowsplatform=no
 default_macplatform=no
+default_macarch=i386
 
 case `uname` in
     Darwin) default_macplatform=yes ;;
@@ -180,8 +186,8 @@ AM_CONDITIONAL(ENABLE_GIT, test x$enable_git = xyes)
 
 AC_ARG_ENABLE(release,
 	AC_HELP_STRING([--enable-release],
-		[build release mode [default=no]]),
-		enable_release=${enableval}, enable_release=no)
+		[build release mode [default=yes]]),
+		enable_release=${enableval}, enable_release=yes)
 
 AM_CONDITIONAL(RELEASE_BUILDS, [test x$enable_release = xyes])
 
@@ -215,10 +221,28 @@ AC_ARG_ENABLE(macplatform,
 		enable_macplatform=${enableval}, enable_macplatform=$default_macplatform)
 
 if test x$enable_macplatform = xyes; then
-	platform_bindings="${platform_bindings}Mac "
+	platform_bindings="${platform_bindings}Mac ${with_macarch}"
 fi
 
 AM_CONDITIONAL(ENABLE_MACPLATFORM, [test x$enable_macplatform = xyes])
+
+# What architecture for Mac
+AC_ARG_WITH(macarch,
+	AC_HELP_STRING([--with-macarch],
+		[which architecture for mac: i386, x86_64 [default=i386]]),
+	with_macarch=${withval}, with_macarch=$default_macarch)
+
+SGEN_SUFFIX=
+MONOSTUB_ARCH=32
+if test x$with_macarch = xx86_64; then
+	SGEN_SUFFIX=64
+	MONOSTUB_ARCH=64
+fi
+AC_SUBST(SGEN_SUFFIX)
+AC_SUBST(MONOSTUB_ARCH)
+
+MAC_ARCHITECTURE=${with_macarch}
+AC_SUBST(MAC_ARCHITECTURE)
 
 # Windows platform addin
 AC_ARG_ENABLE(windowsplatform,

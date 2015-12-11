@@ -2,7 +2,7 @@ include $(top_srcdir)/xbuild.include
 
 SUBDIRS=UnitTests MacPlatform.Tests UserInterfaceTests TestRunner Ide.Tests
 
-MONO=mono
+MONO=mono$(SGEN_SUFFIX)
 RUN_TEST=$(MDTOOL_RUN) run-md-tests
 TEST_DIR=$(top_builddir)/build/tests
 EXTERNAL=$(top_builddir)/external
@@ -31,8 +31,15 @@ TEST_ASSEMBLIES_COMMON = \
 	$(TEST_DIR)/MonoDevelop.PackageManagement.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.TextEditor.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.Xml.Tests.dll \
-	$(TEST_DIR)/MonoDevelop.AspNet.Tests.dll \
-	$(EXTERNAL)/nrefactory/bin/Debug/ICSharpCode.NRefactory.Tests.dll
+	$(TEST_DIR)/MonoDevelop.AspNet.Tests.dll
+
+if RELEASE_BUILDS
+TEST_ASSEMBLIES_COMMON += $(EXTERNAL)/nrefactory/bin/Release/ICSharpCode.NRefactory.Tests.dll
+TEST_ASSEMBLIES_COMMON += $(EXTERNAL)/fsharpbinding/MonoDevelop.FSharp.Tests/bin/Release/MonoDevelop.FSharp.Tests.dll
+else
+TEST_ASSEMBLIES_COMMON += $(EXTERNAL)/nrefactory/bin/Debug/ICSharpCode.NRefactory.Tests.dll
+TEST_ASSEMBLIES_COMMON += $(EXTERNAL)/fsharpbinding/MonoDevelop.FSharp.Tests/bin/Debug/MonoDevelop.FSharp.Tests.dll
+endif
 
 ALL_CSPROJ = $(TEST_PROJECTS_COMMON)
 TEST_ASSEMBLIES = $(TEST_ASSEMBLIES_COMMON)

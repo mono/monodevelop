@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<Template Originator="Piotr Dowgiallo"
+          Created="2012/05/16"
+          LastModified="2012/05/16">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>ASP.NET Global.asax</_Name>
+		<_Category>ASP.NET</_Category>
+		<Icon>md-html-file-icon</Icon>
+		<LanguageName>C#</LanguageName>
+		<ProjectType>AspNetApp</ProjectType>
+		<DefaultFilename IsFixed="True">Global.asax</DefaultFilename>
+		<_Description>Creates an ASP.NET Global.asax file.</_Description>
+	</TemplateConfiguration>
+
+	<Conditions>
+		<ParentProject PermittedCreationPaths="" ExcludedFiles="/Global.asax:/App_Start/WebApiConfig.cs:/App_Start/RouteConfig.cs" />
+	</Conditions>
+
+	<!-- Template Content -->
+	<TemplateFiles>
+		<File name="Global.asax"  SuppressAutoOpen="true">
+<![CDATA[<%@ Application Inherits="${Namespace}.Global" %>
+]]>
+		</File>
+		<T4File name="Global.asax.cs" DependsOn="Global.asax" src="Global.tt" AddStandardHeader="true" />
+		<Directory name="App_Start" if="UsesAspNetWebApi">
+			<File name="WebApiConfig.cs" src="WebApiConfig.cs" SuppressAutoOpen="true" />
+		</Directory>
+		<Directory name="App_Start" if="UsesAspNetMvc">
+			<File name="RouteConfig.cs" src="RouteConfig.cs" SuppressAutoOpen="true" />
+		</Directory>
+	</TemplateFiles>
+</Template>

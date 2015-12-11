@@ -39,13 +39,6 @@ namespace MonoDevelop.NUnit
 {
 	public class NUnitAssemblyGroupNodeBuilder: TypeNodeBuilder
 	{
-		ConfigurationEventHandler configsChanged;
-		
-		public NUnitAssemblyGroupNodeBuilder ()
-		{
-			configsChanged = (ConfigurationEventHandler) DispatchService.GuiDispatch (new ConfigurationEventHandler (OnConfigurationsChanged));
-		}
-		
 		public override Type CommandHandlerType {
 			get { return typeof(NUnitAssemblyGroupNodeCommandHandler); }
 		}
@@ -87,15 +80,15 @@ namespace MonoDevelop.NUnit
 		public override void OnNodeAdded (object dataObject)
 		{
 			NUnitAssemblyGroupProject project = dataObject as NUnitAssemblyGroupProject;
-			project.ConfigurationAdded += configsChanged;
-			project.ConfigurationRemoved += configsChanged;
+			project.ConfigurationAdded += OnConfigurationsChanged;
+			project.ConfigurationRemoved += OnConfigurationsChanged;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
 			NUnitAssemblyGroupProject project = dataObject as NUnitAssemblyGroupProject;
-			project.ConfigurationAdded -= configsChanged;
-			project.ConfigurationRemoved -= configsChanged;
+			project.ConfigurationAdded -= OnConfigurationsChanged;
+			project.ConfigurationRemoved -= OnConfigurationsChanged;
 		}
 		
 		public void OnConfigurationsChanged (object sender, ConfigurationEventArgs args)
@@ -117,7 +110,7 @@ namespace MonoDevelop.NUnit
 			NUnitAssemblyGroupProject project = CurrentNode.DataItem as NUnitAssemblyGroupProject;
 			project.ParentFolder.Items.Remove (project);
 			project.Dispose ();
-			IdeApp.Workspace.Save ();
+			IdeApp.Workspace.SaveAsync ();
 		}
 	}
 }

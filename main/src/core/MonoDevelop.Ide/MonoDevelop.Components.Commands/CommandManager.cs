@@ -34,7 +34,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using MonoDevelop.Components.Commands.ExtensionNodes;
-using Mono.TextEditor;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -60,8 +59,6 @@ namespace MonoDevelop.Components.Commands
 		ArrayList visitors = new ArrayList ();
 		LinkedList<Gtk.Window> topLevelWindows = new LinkedList<Gtk.Window> ();
 		Stack delegatorStack = new Stack ();
-
-		List<Gtk.Window> activeWindowStack = new List<Gtk.Window> ();
 
 		HashSet<object> visitedTargets = new HashSet<object> ();
 		
@@ -354,6 +351,18 @@ namespace MonoDevelop.Components.Commands
 			e.RetVal = ProcessKeyEvent (e.Event);
 		}
 
+		[GLib.ConnectBefore]
+		void OnKeyReleased (object o, Gtk.KeyReleaseEventArgs e)
+		{
+			bool complete;
+			KeyboardShortcut[] accels = KeyBindingManager.AccelsFromKey (e.Event, out complete);
+
+			if (!complete) {
+				// incomplete accel
+				NotifyIncompleteKeyReleased (e.Event);
+			}
+		}
+
 		internal bool ProcessKeyEvent (Gdk.EventKey ev)
 		{
 			if (!IsEnabled)
@@ -366,6 +375,7 @@ namespace MonoDevelop.Components.Commands
 
 			if (!complete) {
 				// incomplete accel
+				NotifyIncompleteKeyPressed (ev);
 				return true;
 			}
 			
@@ -434,6 +444,18 @@ namespace MonoDevelop.Components.Commands
 			if (KeyPressed != null)
 				KeyPressed (this, new KeyPressArgs () { Key = ev.Key, KeyValue = ev.KeyValue, Modifiers = ev.State });
 		}
+
+		void NotifyIncompleteKeyPressed (Gdk.EventKey ev)
+		{
+			if (IncompleteKeyPressed != null)
+				IncompleteKeyPressed (this, new KeyPressArgs () { Key = ev.Key, KeyValue = ev.KeyValue, Modifiers = ev.State });
+		}
+
+		void NotifyIncompleteKeyReleased (Gdk.EventKey ev)
+		{
+			if (IncompleteKeyReleased != null)
+				IncompleteKeyReleased (this, new KeyPressArgs () { Key = ev.Key, KeyValue = ev.KeyValue, Modifiers = ev.State });
+		}
 		
 		/// <summary>
 		/// Sets the root window. The manager will start the command route at this window, if no other is active.
@@ -470,6 +492,7 @@ namespace MonoDevelop.Components.Commands
 			} else {
 				topLevelWindows.AddFirst (win);
 				win.KeyPressEvent += OnKeyPressed;
+				win.KeyReleaseEvent += OnKeyReleased;
 				win.ButtonPressEvent += HandleButtonPressEvent;
 				win.Destroyed += TopLevelDestroyed;
 			}
@@ -488,6 +511,7 @@ namespace MonoDevelop.Components.Commands
 			Gtk.Window w = (Gtk.Window) o;
 			w.Destroyed -= TopLevelDestroyed;
 			w.KeyPressEvent -= OnKeyPressed;
+			w.KeyReleaseEvent -= OnKeyReleased;
 			w.ButtonPressEvent -= HandleButtonPressEvent;
 			topLevelWindows.Remove (w);
 			if (w == lastFocused)
@@ -961,8 +985,8 @@ namespace MonoDevelop.Components.Commands
 			if (menu is CommandMenu) {
 				((CommandMenu)menu).InitialCommandTarget = initialCommandTarget ?? parent;
 			}
-
-			Mono.TextEditor.GtkWorkarounds.ShowContextMenu (menu, parent, evt);
+			
+			MonoDevelop.Components.GtkWorkarounds.ShowContextMenu (menu, parent, evt);
 		}
 
 		public void ShowContextMenu (Gtk.Widget parent, int x, int y, Gtk.Menu menu,
@@ -972,7 +996,7 @@ namespace MonoDevelop.Components.Commands
 				((CommandMenu)menu).InitialCommandTarget = initialCommandTarget ?? parent;
 			}
 
-			Mono.TextEditor.GtkWorkarounds.ShowContextMenu (menu, parent, x, y);
+			MonoDevelop.Components.GtkWorkarounds.ShowContextMenu (menu, parent, x, y);
 		}
 
 		/// <summary>
@@ -2143,6 +2167,16 @@ namespace MonoDevelop.Components.Commands
 		/// Fired when a key is pressed
 		/// </summary>
 		public event EventHandler<KeyPressArgs> KeyPressed;
+
+		/// <summary>
+		/// Occurs when incomplete key is pressed.
+		/// </summary>
+		public event EventHandler<KeyPressArgs> IncompleteKeyPressed;
+
+		/// <summary>
+		/// Occurs when incomplete key is released.
+		/// </summary>
+		public event EventHandler<KeyPressArgs> IncompleteKeyReleased;
 
 		/// <summary>
 		/// Occurs when active widget (the current command target) changes

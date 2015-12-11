@@ -24,22 +24,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using ICSharpCode.NRefactory.CSharp;
 using System.Collections.Generic;
 
 namespace MonoDevelop.DocFood
 {
-	class MemberVisitor : DepthFirstAstVisitor<object, object>
-	{
-		public List<AstType> Exceptions = new List<AstType> ();
-		
-		public override object VisitThrowStatement (ThrowStatement throwStatement, object data)
-		{
-			var oce = throwStatement.Expression as ObjectCreateExpression;
-			if (oce != null)
-				Exceptions.Add (oce.Type);
-			return null;
-		}
-	}
+//	class MemberVisitor : DepthFirstAstVisitor<object, object>
+//	{
+//		public List<AstType> Exceptions = new List<AstType> ();
+//		
+//		public override object VisitThrowStatement (ThrowStatement throwStatement, object data)
+//		{ 
+//			var oce = throwStatement.Expression as ObjectCreateExpression;
+//			if (oce != null)
+//				Exceptions.Add (oce.Type);
+//			return null;
+//		}
+//	}
 }
 

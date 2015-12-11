@@ -1,30 +1,58 @@
 <ExtensionModel>
-	
-	<ConditionType id="MSBuildTargetIsAvailable" type="MonoDevelop.Projects.Formats.MSBuild.TargetsAvailableCondition" />
+
+	<!-- Extension Points -->
+	<ExtensionPoint path = "/MonoDevelop/CSharp/Completion/ContextHandler">
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
+
+	<!-- Extensions -->
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id = "MonoDevelop.CodeGeneration.CodeGenerationCommands.ShowCodeGenerationWindow"
 				_label = "S_how Code Generation Window"
 				shortcut = "Alt|Insert"
 				macShortcut = "Meta|I" />
+		<Command id = "MonoDevelop.CSharp.Refactoring.FindProjectReferenceUsages"
+			defaultHandler = "MonoDevelop.CSharp.Refactoring.FindProjectReferenceUsagesHandler"
+			_label = "_Find reference usages"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/Commands/Refactoring">
+<!--		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.Resolve"
+				defaultHandler = "MonoDevelop.CSharp.Refactoring.ResolveCommandHandler"
+				type="array"
+				_label = "Resolve"/> -->
+		<Command id = "MonoDevelop.CSharp.Refactoring.ExtractMethodCommand"
+			defaultHandler = "MonoDevelop.CSharp.Refactoring.ExtractMethodCommandHandler"
+			_label = "Extract Method" 
+			_description = "Extracts a method"
+		/>
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations"
+			defaultHandler = "MonoDevelop.CSharp.Refactoring.CurrentRefactoryOperationsHandler"
+			type="array"
+			_label = "Refactory Operations" /> 
 	</Extension>
 
+	<Extension path = "/MonoDevelop/Ide/Commands/CodeNavigation">
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration"
+						_label = "_Go to Declaration" 
+						shortcut = "F12"
+						macShortcut = "Meta|D"/>
+	</Extension>
+		
+	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
-		<DotNetProject
+		<DotNetProjectType
 			language="C#"
 			extension="csproj"
 			guid="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-			import="$(MSBuildBinPath)\Microsoft.CSharp.targets"
-			resourceHandler="MonoDevelop.CSharp.Project.CSharpResourceIdBuilder"
+			type="MonoDevelop.CSharp.Project.CSharpProject"
 			/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
 		<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath)\Microsoft\Portable\v4.0\Microsoft.Portable.CSharp.targets">
-			<DotNetProjectSubtype
-				guid="{786C830F-07A1-408B-BD7F-6EE04809D6DB}"
-				type="MonoDevelop.Projects.PortableDotNetProject"
-				useXBuild="true">
-				<AddImport language="C#" projects="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-				<RemoveImport language="C#" projects="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-			</DotNetProjectSubtype>
+			<ProjectFlavor guid="{786C830F-07A1-408B-BD7F-6EE04809D6DB}" type="MonoDevelop.CSharp.Project.PortableCSharpProjectFlavor" alias="C#PortableLibrary"/>
 		</Condition>
 	</Extension>
 
@@ -52,7 +80,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/General">
-		<Condition id="ActiveLanguage" value="C#">
+		<Condition id="ProjectTypeId" value="C#">
 			<Panel id = "CSharpCompilerOptionsPanel"
 			             _label = "C#"
 			             class = "MonoDevelop.CSharp.Project.CompilerOptionsPanel"/>
@@ -60,7 +88,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/Compiler">
-		<Condition id="ActiveLanguage" value="C#">
+		<Condition id="ProjectTypeId" value="C#">
 			<Panel id = "CSharpCodeGenerationPanel"
 			             _label = "Compiler"
 			             class = "MonoDevelop.CSharp.Project.CodeGenerationPanel"/>
@@ -68,19 +96,17 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
-		<LanguageBinding id    = "CSharp"
-		                 supportedextensions = ".cs"
-		                 class = "MonoDevelop.CSharp.CSharpLanguageBinding" />
+		<LanguageBinding id = "C#"
+		                 extensions = ".cs"
+		                 singleLineCommentTag = "//"
+		                 blockCommentStartTag = "/*"
+		                 blockCommentEndTag = "*/" 
+		                 codeDomType = "MonoDevelop.CSharp.CSharpEnhancedCodeProvider" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ReferenceFinder">
 		<ReferenceFinder supportedmimetypes = "text/x-csharp"
 		                 class = "MonoDevelop.CSharp.Refactoring.CSharpReferenceFinder" />
-	</Extension>
-
-	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
-		<DataType class = "MonoDevelop.CSharp.Project.CSharpCompilerParameters" />
-		<DataType class = "MonoDevelop.CSharp.Project.CSharpProjectParameters" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
@@ -102,6 +128,9 @@
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Highlighting.HighlightUsagesExtension" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.PathedDocumentTextEditorExtension" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.UnitTestTextEditorExtension" />
+		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.ClassOutline.CSharpOutlineTextEditorExtension" />
+		<Class fileExtensions = ".json" class = "MonoDevelop.JSon.JSonTextEditorExtension" />
+		<Class class = "MonoDevelop.CSharp.Refactoring.CSharpFeaturesTextEditorExtension" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">
@@ -122,8 +151,8 @@
 		<Formatter mimeType="text/x-csharp" class="MonoDevelop.CSharp.Formatting.CSharpFormatter" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/TypeSystem/Ambiences">
-		<Ambience mimeType="text/x-csharp" class = "MonoDevelop.CSharp.CSharpAmbience" />
+	<Extension path = "/MonoDevelop/TypeSystem/AmbienceTooltipProviders">
+		<Provider mimeType="text/x-csharp" class = "MonoDevelop.CSharp.CSharpAmbience" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/TypeSystem/Parser">
@@ -152,7 +181,7 @@
 
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
 		<PolicySet id="1TBS" _name="SharpDevelop style (1TBS)" allowDiffSerialize="false">
-			<Policies resource="SharpDevelopCSharpPolicy.xml" />
+			<Policies resource="KRCSharpPolicy.xml" />
 			<Policies resource="InvariantTextStylePolicy.xml" />
 		</PolicySet>
 	</Extension>
@@ -161,24 +190,11 @@
 		<Policies resource="AllmanCSharpPolicy.xml" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
-		<PolicySet id="Whitesmiths" _name="Whitesmiths style" allowDiffSerialize="false">
-			<Policies resource="WhitesmithsCSharpPolicy.xml" />
-			<Policies resource="InvariantTextStylePolicy.xml" />
-		</PolicySet>
-	</Extension>
-
-	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
-		<PolicySet id="GNU" _name="GNU style" allowDiffSerialize="false">
-			<Policies resource="GNUCSharpPolicy.xml" />
-			<Policies resource="GNUTextStylePolicy.xml" />
-		</PolicySet>
-	</Extension>
-
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels">
 		<Panel id = "CSharpFormatting" _label = "C# Format" mimeType="text/x-csharp" class = "MonoDevelop.CSharp.Formatting.CSharpFormattingPolicyPanel" />
 	</Extension>
 
+<!--	
 	<Extension path = "/MonoDevelop/Refactoring/CodeActions">
 		<Action mimeType="text/x-csharp"
 			_title = "Move type to another file"
@@ -189,10 +205,10 @@
 			_description = "Converts constant fields to enumeration"
 			class = "MonoDevelop.CSharp.Refactoring.CodeActions.ConvertToEnumAction" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Refactoring/CodeIssues">
 		<CodeIssue mimeType="text/x-csharp" severity = "Error" class="MonoDevelop.CSharp.Refactoring.CodeIssues.MonoTODOIssue"/>
-	</Extension>
+	</Extension> -->
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorResolver">
 		<Resolver class = "MonoDevelop.CSharp.Resolver.TextEditorResolverProvider" mimeType="text/x-csharp" />
@@ -224,36 +240,29 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Refactoring/CodeGenerators">
+
 		<Class class = "MonoDevelop.CodeGeneration.CreateConstructorGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.ReadonlyPropertyGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.PropertyGenerator" />
-		<Class class = "MonoDevelop.CodeGeneration.ImplementInterfaceMembersGenerator" />
+<!--	<Class class = "MonoDevelop.CodeGeneration.ImplementInterfaceMembersGenerator" /> -->
 		<Class class = "MonoDevelop.CodeGeneration.RequiredProtocolMemberGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.OptionalProtocolMemberGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.PartialGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.OverrideMembersGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.ToStringGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.RaiseEventMethodGenerator" />
-		<Class class = "MonoDevelop.CodeGeneration.EqualityMembersGenerator" />
+<!--		<Class class = "MonoDevelop.CodeGeneration.EqualityMembersGenerator" /> -->
 		<Class class = "MonoDevelop.CodeGeneration.WriteLineGenerator" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Refactoring/CodeActionSource">
-		<Source class ="MonoDevelop.CSharp.Refactoring.CodeActions.NRefactoryCodeActionSource"/>
-	</Extension>
-
-	<Extension path = "/MonoDevelop/Refactoring/CodeIssueSource">
-		<Source class ="MonoDevelop.CSharp.Refactoring.CodeIssues.NRefactoryCodeIssueSource"/>
-	</Extension>
-
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels/SourceCode">
-		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanel" icon="md-prefs-name-conventions" />
+		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Diagnostics.InconsistentNaming.NameConventionPanel" icon="md-prefs-name-conventions" />
 	</Extension>
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/SourceCode">
-		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanel" icon="md-prefs-name-conventions" />
+		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Diagnostics.InconsistentNaming.NameConventionPanel" icon="md-prefs-name-conventions" />
 	</Extension>
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/SourceCode">
-		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanel" icon="md-prefs-name-conventions" />
+		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Diagnostics.InconsistentNaming.NameConventionPanel" icon="md-prefs-name-conventions" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
@@ -262,5 +271,28 @@
 	
 	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
 		<Complete language="C#" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
+		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
+<!--		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.Resolve" insertbefore="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations"/>-->
+	</Extension>
+
+	<Extension path = "/MonoDevelop/CSharp/Completion/ContextHandler">
+		<Class class="MonoDevelop.CSharp.Completion.ProtocolMemberContextHandler" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/BraceMatcher">
+		<Class class="MonoDevelop.CSharp.CSharpBraceMatcher" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
+		<Condition id="ItemType" value="ProjectReference|Reference">
+			<CommandItem id = "MonoDevelop.CSharp.Refactoring.FindProjectReferenceUsages" />
+		</Condition>
+	</Extension>
+	
+	<Extension path="/MonoDevelop/Ide/SearchCategories">
+		<Class class="MonoDevelop.CSharp.ProjectSearchCategory" />
 	</Extension>
 </ExtensionModel>

@@ -22,15 +22,19 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
 using Gdk;
-using Mono.TextEditor;
+using Gtk;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.CodeCompletion;
+using System;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Xml.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Xml.Completion
 {
@@ -104,18 +108,21 @@ namespace MonoDevelop.Xml.Completion
 			}
 		}
 
-		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, ModifierType modifier)
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
 			if (XmlEditorOptions.AutoInsertFragments && dataType == DataType.XmlAttribute) {
-				var textEditorDataProvier = window.CompletionWidget as ITextEditorDataProvider;
-				var textBuffer = window.CompletionWidget as ITextBuffer;
-				base.InsertCompletionText (window, ref ka, closeChar, keyChar, modifier);
-				if (textEditorDataProvier != null && textBuffer != null)
-					textEditorDataProvier.GetTextEditorData ().SetSkipChar (textBuffer.CursorPosition, '"');
-				IdeApp.CommandService.DispatchCommand (TextEditorCommands.ShowCompletionWindow);
+				//This temporary variable is needed because
+				//base.InsertCompletionText sets window.CompletionWidget to null
+				var completionWidget = window.CompletionWidget;
+				base.InsertCompletionText (window, ref ka, descriptor);
+				completionWidget.AddSkipChar (completionWidget.CaretOffset, '"');
+
+				//Even if we are on UI thread call Application.Invoke to postpone calling command
+				//otherwise code calling InsertCompletionText will close completion window created by this command
+				Application.Invoke ((s,e) => IdeApp.CommandService.DispatchCommand (TextEditorCommands.ShowCompletionWindow));
 				ka &= ~KeyActions.CloseWindow;
 			} else {
-				base.InsertCompletionText (window, ref ka, closeChar, keyChar, modifier);
+				base.InsertCompletionText (window, ref ka, descriptor);
 			}
 		}
 		

@@ -26,17 +26,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 
 using MonoDevelop.Ide.Gui.Content;
-using Mono.TextEditor.PopupWindow;
-using Mono.TextEditor;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.CodeCompletion;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using MonoDevelop.Ide.Tasks;
+using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
+using System.Linq;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -47,17 +47,15 @@ namespace MonoDevelop.Ide.CodeTemplates
 			set;
 		}
 		
-		public ICompilation Compilation {
+		public SemanticModel Compilation {
 			get {
-				return Document.Compilation;
+				var analysisDocument = DocumentContext.ParsedDocument;
+				if (analysisDocument == null)
+					return null;
+				return analysisDocument.GetAst<SemanticModel> ();
 			}
 		}
-		
-		public IUnresolvedFile ParsedDocument {
-			get;
-			set;
-		}
-		
+
 		public DocumentLocation InsertPosition {
 			get;
 			set;
@@ -78,7 +76,12 @@ namespace MonoDevelop.Ide.CodeTemplates
 			set;
 		}
 		
-		public MonoDevelop.Ide.Gui.Document Document {
+		public DocumentContext DocumentContext {
+			get;
+			set;
+		}
+
+		public TextEditor Editor {
 			get;
 			set;
 		}
@@ -93,36 +96,28 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public string GetCurrentClassName ()
 		{
-			if (CurrentContext.ParsedDocument == null)
+			var compilation = CurrentContext.Compilation;
+			if (compilation == null)
 				return null;
-			IUnresolvedTypeDefinition type = null;
-			var provider = CurrentContext.Document.GetContent<ITextEditorMemberPositionProvider>();
-			if (provider == null) {
-				type = CurrentContext.ParsedDocument.GetInnermostTypeDefinition (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
-			} else {
-				type = provider.GetTypeAt (CurrentContext.Document.Editor.LocationToOffset (CurrentContext.InsertPosition));
-			}
-			
-			if (type == null)
-				return null;
-			return type.Name;
+			var enclosingSymbol = compilation.GetEnclosingSymbol (CurrentContext.Editor.CaretOffset);
+
+			if (!(enclosingSymbol is ITypeSymbol))
+				enclosingSymbol = enclosingSymbol.ContainingType;
+
+			return enclosingSymbol != null ? enclosingSymbol.Name : null;
 		}
 		
 		public string GetConstructorModifier ()
 		{
-			if (CurrentContext.ParsedDocument == null)
+			var compilation = CurrentContext.Compilation;
+			if (compilation == null)
 				return null;
-			IUnresolvedTypeDefinition type = null;
-			var provider = CurrentContext.Document.GetContent<ITextEditorMemberPositionProvider>();
-			if (provider == null) {
-				type = CurrentContext.ParsedDocument.GetInnermostTypeDefinition (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
-			} else {
-				type = provider.GetTypeAt (CurrentContext.Document.Editor.LocationToOffset (CurrentContext.InsertPosition));
-			}
-			
-			if (type == null)
-				return "";
-			return type.IsStatic ? "static " : "public ";
+			var enclosingSymbol = compilation.GetEnclosingSymbol (CurrentContext.Editor.CaretOffset);
+
+			if (!(enclosingSymbol is ITypeSymbol))
+				enclosingSymbol = enclosingSymbol.ContainingType;
+
+			return enclosingSymbol != null && enclosingSymbol.IsStatic ? "static " : "public ";
 		}
 		
 		public string GetLengthProperty (Func<string, string> callback, string varName)
@@ -132,101 +127,93 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			string var = callback (varName);
 			
-			ITextEditorResolver textEditorResolver = CurrentContext.Document.GetContent <ITextEditorResolver> ();
+			ITextEditorResolver textEditorResolver = CurrentContext.DocumentContext.GetContent <ITextEditorResolver> ();
 			if (textEditorResolver != null) {
-				var result = textEditorResolver.GetLanguageItem (CurrentContext.Document.Editor.Document.LocationToOffset (CurrentContext.InsertPosition), var);
-				if (result.Type.IsReferenceType.HasValue && !result.Type.IsReferenceType.Value)
-					return "Length";
+				var result = textEditorResolver.GetLanguageItem (CurrentContext.Editor.LocationToOffset (CurrentContext.InsertPosition), var);
+				if (result != null) {
+					var returnType = result.GetReturnType ();
+					if (returnType != null && !returnType.IsReferenceType)
+						return "Length";
+				}
 			}
 			return "Count";
 		}
 		
-		IType GetElementType (IType result)
+		ITypeSymbol GetElementType (Compilation compilation, ITypeSymbol type)
 		{
-			IType tmp = null;
-			foreach (var baseType in result.GetAllBaseTypes ()) {
-				var baseTypeDef = baseType.GetDefinition();
-				if (baseTypeDef != null && baseTypeDef.Name == "IEnumerable") {
-					if (baseTypeDef.Namespace == "System.Collections.Generic" && baseTypeDef.TypeParameterCount == 1) {
-						if (baseType.TypeArguments.Count > 0)
-							return baseType.TypeArguments[0];
-					} else if (baseTypeDef.Namespace == "System.Collections" && baseTypeDef.TypeParameterCount == 0) {
-						tmp = CurrentContext.Compilation.FindType (KnownTypeCode.Object);
+			ITypeSymbol tmp = type;
+			foreach (var baseType in type.AllInterfaces) {
+				if (baseType != null && baseType.Name == "IEnumerable") {
+					if (baseType.TypeArguments.Length > 0) {
+						return baseType.TypeArguments [0];
+					} else if (baseType.ContainingNamespace.ToDisplayString (Ambience.LabelFormat) == "System.Collections") {
+						tmp = compilation.GetSpecialType (SpecialType.System_Object);
 					}
 				}
 			}
-			return tmp == null ? new UnknownType ("", "", 0) : tmp;
+			return tmp;
 		}
-		
 		
 		public string GetComponentTypeOf (Func<string, string> callback, string varName)
 		{
 			if (callback == null)
 				return "var";
-			
+			var compilation = CurrentContext.Compilation;
+			if (compilation == null)
+				return null;
+		
 			string var = callback (varName);
-			ITextEditorResolver textEditorResolver = CurrentContext.Document.GetContent <ITextEditorResolver> ();
-			if (textEditorResolver != null) {
-				var result = textEditorResolver.GetLanguageItem (CurrentContext.Document.Editor.Caret.Offset, var);
-				if (result != null) {
-					var componentType = GetElementType (result.Type);
-					if (componentType.Kind != TypeKind.Unknown) {
-						var generator = CodeGenerator.CreateGenerator (CurrentContext.Document);
-						if (generator != null)
-							return generator.GetShortTypeString (CurrentContext.Document, componentType);
-					}
-				}
-			}
-			
+
+			var offset = CurrentContext.Editor.CaretOffset;
+			var sym = compilation.LookupSymbols (offset).First (s => s.Name == var);
+			if (sym == null)
+				return "var";
+			var rt = sym.GetReturnType ();
+			if (rt != null)
+				return rt.ToMinimalDisplayString (compilation, offset);
 			return "var";
 		}
-		MonoDevelop.Ide.CodeCompletion.ICompletionDataList list;
+
+		ICompletionDataList list;
 		public IListDataProvider<string> GetCollections ()
 		{
 			var result = new List<CodeTemplateVariableValue> ();
-			var ext = CurrentContext.Document.GetContent <CompletionTextEditorExtension> ();
+			var ext = CurrentContext.DocumentContext.GetContent <CompletionTextEditorExtension> ();
+			var analysisProject = TypeSystemService.GetCodeAnalysisProject (CurrentContext.DocumentContext.Project);
+			var compilation = analysisProject != null ? analysisProject.GetCompilationAsync ().Result : null;
+
 			if (ext != null) {
 				if (list == null)
 					list = ext.CodeCompletionCommand (
-						CurrentContext.Document.GetContent <MonoDevelop.Ide.CodeCompletion.ICompletionWidget> ().CurrentCodeCompletionContext);
+						CurrentContext.DocumentContext.GetContent <MonoDevelop.Ide.CodeCompletion.ICompletionWidget> ().CurrentCodeCompletionContext).Result;
 				
-				foreach (object o in list) {
-					var data = o as IEntityCompletionData;
-					if (data == null)
-						continue;
-					
-					if (data.Entity is IMember) {
-						var m = data.Entity as IMember;
-						if (GetElementType (m.ReturnType).Kind != TypeKind.Unknown) {
-							if (m is IMethod) {
-								if (((IMethod)m).Parameters.Count == 0)
-									result.Add (new CodeTemplateVariableValue (m.Name + " ()", ((CompletionData)data).Icon));
-								continue;
-							}
-
-							result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)data).Icon));
+				foreach (var data in list.OfType<ISymbolCompletionData> ()) {
+					if (GetElementType (compilation, data.Symbol.GetReturnType ()).TypeKind != TypeKind.Error) {
+						var method = data as IMethodSymbol;
+						if (method != null) {
+							if (method.Parameters.Length == 0)
+								result.Add (new CodeTemplateVariableValue (data.Symbol.Name + " ()", ((CompletionData)data).Icon));
+							continue;
 						}
+
+						result.Add (new CodeTemplateVariableValue (data.Symbol.Name, ((CompletionData)data).Icon));
 					}
 				}
 				
-				foreach (object o in list) {
-					var data = o as IEntityCompletionData;
-					if (data == null)
-						continue;
-					if (data.Entity is IParameter) {
-						var m = data.Entity as IParameter;
-						if (GetElementType (m.Type).Kind != TypeKind.Unknown)
+				foreach (var data in list.OfType<ISymbolCompletionData> ()) {
+					var m = data.Symbol as IParameterSymbol;
+					if (m != null) {
+						if (GetElementType (compilation, m.Type).TypeKind != TypeKind.Error)
 							result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)data).Icon));
 					}
 				}
 				
-				foreach (object o in list) {
-					var data = o as IVariableCompletionData;
-					if (data == null)
+				foreach (var sym in list.OfType<ISymbolCompletionData> ()) {
+					var m = sym.Symbol as ILocalSymbol;
+					if (m == null)
 						continue;
-					var m = data.Variable;
-					if (GetElementType (m.Type).Kind != TypeKind.Unknown)
-						result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)data).Icon));
+					if (GetElementType (compilation, m.Type).TypeKind != TypeKind.Error)
+						result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)m).Icon));
 				}
 			}
 			return new CodeTemplateListDataProvider (result);
@@ -234,7 +221,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public string GetSimpleTypeName (string fullTypeName)
 		{
-			if (CurrentContext.ParsedDocument == null)
+			var compilation = CurrentContext.Compilation;
+			if (compilation == null)
 				return fullTypeName.Replace ("#", ".");
 			string ns = "";
 			string name = "";
@@ -250,31 +238,21 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			idx = name.IndexOf ('.');
 			if (idx >= 0) {
-				member = name.Substring (idx);
+				member = name.Substring (idx + 1);
 				name = name.Substring (0, idx);
 			}
 
-			var type = new GetClassTypeReference (ns, name, 0).Resolve (new SimpleTypeResolveContext (CurrentContext.Document.Compilation.MainAssembly));
-			bool stripAttribute = false;
-			if (type == null || type.Kind == TypeKind.Unknown) {
-				type = new GetClassTypeReference (ns, name + "Attribute", 0).Resolve (
-					new SimpleTypeResolveContext (CurrentContext.Document.Compilation.MainAssembly)
-				);	
-				stripAttribute = true;
-			}
-			if (type == null || type.Kind == TypeKind.Unknown)
-				return fullTypeName.Replace ("#", ".");
-			var generator = CodeGenerator.CreateGenerator (CurrentContext.Document);
-			if (generator != null) {
-				var result = generator.GetShortTypeString (CurrentContext.Document, type) + member;
-				if (stripAttribute && result.EndsWith ("Attribute", StringComparison.Ordinal))
-				    result = result.Substring (0, result.Length - "Attribute".Length);
-				return result;
+			var metadataName = string.IsNullOrEmpty (ns) ? name : ns + "." + name;
+			var type = compilation.Compilation.GetTypeByMetadataName (metadataName);
+			if (type != null) {
+				var minimalName = type.ToMinimalDisplayString (compilation, CurrentContext.Editor.CaretOffset);
+				return string.IsNullOrEmpty (member) ? minimalName :  minimalName + "." + member;
 			}
 			return fullTypeName.Replace ("#", ".");
 		}
 		
-		static Regex functionRegEx = new Regex ("([^(]*)\\(([^(]*)\\)", RegexOptions.Compiled);
+
+		static System.Text.RegularExpressions.Regex functionRegEx = new System.Text.RegularExpressions.Regex ("([^(]*)\\(([^(]*)\\)", RegexOptions.Compiled);
 		
 		
 		// We should use reflection here (but for 5 functions it doesn't hurt) !!! - Mike
@@ -295,7 +273,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		public virtual IListDataProvider<string> RunFunction (TemplateContext context, Func<string, string> callback, string function)
 		{
 			this.CurrentContext = context;
-			Match match = functionRegEx.Match (function);
+			var match = functionRegEx.Match (function);
 			if (!match.Success)
 				return null;
 			string name = match.Groups[1].Value;

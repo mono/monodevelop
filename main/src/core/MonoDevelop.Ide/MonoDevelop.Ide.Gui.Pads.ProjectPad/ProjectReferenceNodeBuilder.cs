@@ -130,7 +130,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 		}
 				
-		public override void DeleteMultipleItems ()
+		public async override void DeleteMultipleItems ()
 		{
 			Dictionary<Project,Project> projects = new Dictionary<Project,Project> ();
 			foreach (ITreeNavigator nav in CurrentNodes) {
@@ -140,12 +140,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				projects [project] = project;
 			}
 			foreach (Project p in projects.Values)
-				IdeApp.ProjectOperations.Save (p);
+				await IdeApp.ProjectOperations.SaveAsync (p);
 		}
 		
 		[CommandHandler (ProjectCommands.LocalCopyReference)]
 		[AllowMultiSelection]
-		public void ChangeLocalReference ()
+		public async void ChangeLocalReference ()
 		{
 			var projects = new Dictionary<Project,Project> ();
 			ProjectReference firstRef = null;
@@ -162,7 +162,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				projects [project] = project;
 			}
 			foreach (Project p in projects.Values)
-				IdeApp.ProjectOperations.Save (p);
+				await IdeApp.ProjectOperations.SaveAsync (p);
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.LocalCopyReference)]
@@ -184,7 +184,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		[CommandHandler (ProjectCommands.SpecificAssemblyVersion)]
 		[AllowMultiSelection]
-		public void RequireSpecificAssemblyVersion ()
+		public async void RequireSpecificAssemblyVersion ()
 		{
 			var projects = new Dictionary<Project,Project> ();
 			ProjectReference firstRef = null;
@@ -201,7 +201,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				projects [project] = project;
 			}
 			foreach (Project p in projects.Values)
-				IdeApp.ProjectOperations.Save (p);
+				await IdeApp.ProjectOperations.SaveAsync (p);
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.SpecificAssemblyVersion)]

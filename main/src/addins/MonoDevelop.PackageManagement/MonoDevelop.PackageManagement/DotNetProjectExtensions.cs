@@ -33,6 +33,7 @@ using System.IO;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using NuGet;
+using System.Linq;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -47,7 +48,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			return project.HasProjectType(WebApplication) || project.HasProjectType(WebSite);
 		}
-		
+
 		public static bool HasProjectType(this IDotNetProject project, Guid projectTypeGuid)
 		{
 			foreach (string guid in project.GetProjectTypeGuids()) {
@@ -57,13 +58,13 @@ namespace ICSharpCode.PackageManagement
 			}
 			return false;
 		}
-		
+
 		public static string[] GetProjectTypeGuids(this IDotNetProject project)
 		{
 			string projectTypeGuids = project.GetProjectTypeGuidPropertyValue();
 			return projectTypeGuids.Split(new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
 		}
-		
+
 		static bool IsMatch(Guid guid, string guidStringToMatch)
 		{
 			Guid result;
@@ -72,7 +73,7 @@ namespace ICSharpCode.PackageManagement
 			}
 			return false;
 		}
-		
+
 		public static string GetProjectTypeGuidPropertyValue (this IDotNetProject project)
 		{
 			string propertyValue = null;

@@ -37,10 +37,10 @@ namespace Mono.TextEditor
 		//NOTE: the behaviour of this class is actually stateless; these variables are used to make the API
 		// friendlier for subclassers of this class
 		protected TextEditorData textEditorData;
-		protected TextEditor editor;
+		protected MonoTextEditor editor;
 	//	string status;
 		
-		public void InternalHandleKeypress (TextEditor editor, TextEditorData data, Gdk.Key key, 
+		public void InternalHandleKeypress (MonoTextEditor editor, TextEditorData data, Gdk.Key key, 
 		                                      uint unicodeChar, Gdk.ModifierType modifier)
 		{
 			this.editor = editor; 
@@ -53,7 +53,7 @@ namespace Mono.TextEditor
 			this.editor = null;
 		}
 		
-		internal virtual void InternalSelectionChanged (TextEditor editor, TextEditorData data)
+		internal virtual void InternalSelectionChanged (MonoTextEditor editor, TextEditorData data)
 		{
 			// only trigger SelectionChanged when event is a result of external stimuli, i.e. when 
 			// not already running HandleKeypress
@@ -66,7 +66,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		internal void InternalCaretPositionChanged (TextEditor editor, TextEditorData data)
+		internal void InternalCaretPositionChanged (MonoTextEditor editor, TextEditorData data)
 		{
 			// only trigger CaretPositionChanged when event is a result of external stimuli, i.e. when 
 			// not already running HandleKeypress
@@ -95,7 +95,7 @@ namespace Mono.TextEditor
 
 		protected Caret Caret { get { return textEditorData.Caret; } }
 		protected TextDocument Document { get { return textEditorData.Document; } }
-		protected TextEditor Editor { get { return editor; } }
+		protected MonoTextEditor Editor { get { return editor; } }
 		protected TextEditorData Data { get { return textEditorData; } }
 		
 		protected abstract void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier);
@@ -266,7 +266,7 @@ namespace Mono.TextEditor
 		}
 
 		#region TextAreaControl
-		public virtual void AllocateTextArea (TextEditor textEditor, TextArea textArea, Rectangle allocation)
+		public virtual void AllocateTextArea (MonoTextEditor textEditor, TextArea textArea, Rectangle allocation)
 		{
 			if (textArea.Allocation != allocation)
 				textArea.SizeAllocate (allocation);

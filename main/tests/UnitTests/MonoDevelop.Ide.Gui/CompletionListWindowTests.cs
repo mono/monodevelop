@@ -32,6 +32,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -92,6 +93,9 @@ namespace MonoDevelop.Ide.Gui
 				get {
 					return sb.Length;
 				}
+				set {
+					throw new NotSupportedException ();
+				}
 			}
 			
 			public int TextLength {
@@ -111,6 +115,17 @@ namespace MonoDevelop.Ide.Gui
 					return null;
 				}
 			}
+
+			double ICompletionWidget.ZoomLevel {
+				get {
+					return 1;
+				}
+			}
+
+			void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
+			{
+				// ignore
+			}
 			#endregion
 			public void AddChar (char ch)
 			{
@@ -125,43 +140,51 @@ namespace MonoDevelop.Ide.Gui
 		
 		static void SimulateInput (CompletionListWindow listWindow, string input)
 		{
+			var testCompletionWidget = ((TestCompletionWidget)listWindow.CompletionWidget);
+			bool isClosed = false;
+			listWindow.WindowClosed += delegate {
+				isClosed = true;
+			};
 			foreach (char ch in input) {
 				switch (ch) {
 				case '8':
-					listWindow.PreProcessKeyEvent (Gdk.Key.Up, '\0', Gdk.ModifierType.None);
-					listWindow.PostProcessKeyEvent (Gdk.Key.Up, '\0', Gdk.ModifierType.None);
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Up, '\0', Gdk.ModifierType.None));
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Up, '\0', Gdk.ModifierType.None));
 					break;
 				case '2':
-					listWindow.PreProcessKeyEvent (Gdk.Key.Down, '\0', Gdk.ModifierType.None);
-					listWindow.PostProcessKeyEvent (Gdk.Key.Down, '\0', Gdk.ModifierType.None);
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Down, '\0', Gdk.ModifierType.None));
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Down, '\0', Gdk.ModifierType.None));
 					break;
 				case '4':
-					listWindow.PreProcessKeyEvent (Gdk.Key.Left, '\0', Gdk.ModifierType.None);
-					listWindow.PostProcessKeyEvent (Gdk.Key.Left, '\0', Gdk.ModifierType.None);
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Left, '\0', Gdk.ModifierType.None));
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Left, '\0', Gdk.ModifierType.None));
 					break;
 				case '6':
-					listWindow.PreProcessKeyEvent (Gdk.Key.Right, '\0', Gdk.ModifierType.None);
-					listWindow.PostProcessKeyEvent (Gdk.Key.Right, '\0', Gdk.ModifierType.None);
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Right, '\0', Gdk.ModifierType.None));
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Right, '\0', Gdk.ModifierType.None));
 					break;
 				case '\t':
-					listWindow.PreProcessKeyEvent (Gdk.Key.Tab, '\t', Gdk.ModifierType.None);
-					listWindow.PostProcessKeyEvent (Gdk.Key.Tab, '\t', Gdk.ModifierType.None);
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Tab, '\t', Gdk.ModifierType.None));
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Tab, '\t', Gdk.ModifierType.None));
 					break;
 				case '\b':
-					listWindow.PreProcessKeyEvent (Gdk.Key.BackSpace, '\b', Gdk.ModifierType.None);
-					((TestCompletionWidget)listWindow.CompletionWidget).Backspace ();
-					listWindow.PostProcessKeyEvent (Gdk.Key.BackSpace, '\b', Gdk.ModifierType.None);
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.BackSpace, '\b', Gdk.ModifierType.None));
+					testCompletionWidget.Backspace ();
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.BackSpace, '\b', Gdk.ModifierType.None));
 					break;
 				case '\n':
-					listWindow.PreProcessKeyEvent (Gdk.Key.Return, '\n', Gdk.ModifierType.None);
-					listWindow.PostProcessKeyEvent (Gdk.Key.Return, '\n', Gdk.ModifierType.None);
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Return, '\n', Gdk.ModifierType.None));
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Return, '\n', Gdk.ModifierType.None));
 					break;
 				default:
-					listWindow.PreProcessKeyEvent ((Gdk.Key)ch, ch, Gdk.ModifierType.None);
-					((TestCompletionWidget)listWindow.CompletionWidget).AddChar (ch);
-					listWindow.PostProcessKeyEvent ((Gdk.Key)ch, ch, Gdk.ModifierType.None);
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk ((Gdk.Key)ch, ch, Gdk.ModifierType.None));
+					testCompletionWidget.AddChar (ch);
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk ((Gdk.Key)ch, ch, Gdk.ModifierType.None));
 					break;
 				}
+				// window closed.
+				if (isClosed)
+					break;
 			}
 		}
 		
@@ -194,8 +217,9 @@ namespace MonoDevelop.Ide.Gui
 		static string RunSimulation (SimulationSettings settings)
 		{
 			CompletionListWindow listWindow = CreateListWindow (settings);
+			var testCompletionWidget = (TestCompletionWidget)listWindow.CompletionWidget;
 			SimulateInput (listWindow, settings.SimulatedInput);
-			return ((TestCompletionWidget)listWindow.CompletionWidget).CompletedWord;
+			return testCompletionWidget.CompletedWord;
 		}
 
 		static CompletionListWindow CreateListWindow (CompletionListWindowTests.SimulationSettings settings)
@@ -204,7 +228,6 @@ namespace MonoDevelop.Ide.Gui
 			dataList.AutoSelect = settings.AutoSelect;
 			dataList.AddRange (settings.CompletionData);
 			dataList.DefaultCompletionString = settings.DefaultCompletionString;
-			ListWindow.ClearHistory ();
 			CompletionListWindow listWindow = new CompletionListWindow () {
 				CompletionDataList = dataList,
 				CompletionWidget = new TestCompletionWidget (),
@@ -480,7 +503,7 @@ namespace MonoDevelop.Ide.Gui
 			Assert.AreEqual ("/AbAb", output);
 		}
 
-		[Ignore("Behavior was changed - commit with '.' now works everytime")]
+		[Ignore]
 		[Test]
 		public void TestMatchPunctuationCommitOnSpaceAndPunctuation3 ()
 		{
@@ -591,8 +614,8 @@ namespace MonoDevelop.Ide.Gui
 		[Test]
 		public void TestBug543984 ()
 		{
-			string output = RunSimulation ("", "foo b\n", true, true, false, "foo bar", "foo bar baz");
-			Assert.AreEqual ("foo bar", output);
+			string output = RunSimulation ("", "foo#b\n", true, true, false, "foo#bar", "foo#bar#baz");
+			Assert.AreEqual ("foo#bar", output);
 		}
 		
 		[Test]
@@ -798,6 +821,16 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		/// <summary>
+		/// Bug 36451 - Text input is weird.
+		/// </summary>
+		[Test]
+		public void TestBug36451 ()
+		{
+			string output = RunSimulation ("", "x\"", true, true, false, "X");
+			Assert.AreEqual ("X", output);
+		}
+
+		/// <summary>
 		/// Bug 17779 - Symbol names with multiple successive letters are filtered out too early
 		/// </summary>
 		[Test]
@@ -815,6 +848,110 @@ namespace MonoDevelop.Ide.Gui
 		{
 			string output = RunSimulation ("", "d)", true, true, false, "d", "delegate ()");
 			Assert.AreEqual ("d", output);
+		}
+
+		[Test]
+		public void TestSpaceCommits ()
+		{
+			string output = RunSimulation ("", "over ", true, true, 
+				"override",
+				"override foo");
+
+			Assert.AreEqual ("override", output);
+		}
+
+
+
+		[Test]
+		public void TestNumberInput ()
+		{
+			string output = RunSimulation ("", "1.", true, true, false, "foo1");
+			Assert.IsTrue (string.IsNullOrEmpty (output), "output was " + output);
+		}
+
+		static void ContinueSimulation (CompletionListWindow listWindow, ICompletionDataList list, ref TestCompletionWidget testCompletionWidget, string simulatedInput)
+		{
+			listWindow.ResetState ();
+			listWindow.CodeCompletionContext = new CodeCompletionContext ();
+			listWindow.CompletionDataList = list;
+			listWindow.CompletionWidget = testCompletionWidget = new TestCompletionWidget ();
+			listWindow.List.FilterWords ();
+			listWindow.ResetSizes ();
+			listWindow.UpdateWordSelection ();
+			SimulateInput (listWindow, simulatedInput);
+			listWindow.CompleteWord ();
+		}
+
+		[Test]
+		public void TestMruSimpleLastItem ()
+		{
+			var settings = new SimulationSettings () {
+				AutoSelect = true,
+				CompleteWithSpaceOrPunctuation = true,
+				AutoCompleteEmptyMatch = true,
+				CompletionData = new[] { "FooBar1", "Bar", "FooFoo2"}
+			};
+
+			var listWindow = CreateListWindow (settings);
+			var list = listWindow.CompletionDataList;
+			var testCompletionWidget = (TestCompletionWidget)listWindow.CompletionWidget;
+
+			SimulateInput (listWindow, "FooBar\t");
+			Assert.AreEqual ("FooBar1", testCompletionWidget.CompletedWord);
+
+			ContinueSimulation (listWindow, list, ref testCompletionWidget, "FooFoo\t");
+			Assert.AreEqual ("FooFoo2", testCompletionWidget.CompletedWord);
+
+			ContinueSimulation (listWindow, list, ref testCompletionWidget, "F\t");
+			Assert.AreEqual ("FooFoo2", testCompletionWidget.CompletedWord);
+		}
+
+		[Test]
+		public void TestMruEmptyMatch ()
+		{
+			var settings = new SimulationSettings () {
+				AutoSelect = true,
+				CompleteWithSpaceOrPunctuation = true,
+				AutoCompleteEmptyMatch = true,
+				CompletionData = new[] { "Foo", "Bar", "Test"}
+			};
+
+			var listWindow = CreateListWindow (settings);
+			var list = listWindow.CompletionDataList;
+			var testCompletionWidget = (TestCompletionWidget)listWindow.CompletionWidget;
+			SimulateInput (listWindow, "Foo\t");
+			ContinueSimulation (listWindow, list, ref testCompletionWidget, "F\t");
+			Assert.AreEqual ("Foo", testCompletionWidget.CompletedWord);
+
+			ContinueSimulation (listWindow, list, ref testCompletionWidget, "Bar\t");
+			Assert.AreEqual ("Bar", testCompletionWidget.CompletedWord);
+
+			ContinueSimulation (listWindow, list, ref testCompletionWidget, "\t");
+			Assert.AreEqual ("Bar", testCompletionWidget.CompletedWord);
+		}
+
+		[Test]
+		public void TestCloseWithPunctiation ()
+		{
+			var output = RunSimulation ("", "\"\t", true, true, false, punctuationData);
+			Assert.AreEqual (null, output);
+		}
+
+		[Test]
+		public void TestPreference ()
+		{
+			string output = RunSimulation ("", "expr\t", true, true, false, "expression", "PostfixExpressionStatementSyntax");
+			Assert.AreEqual ("expression", output);
+		}
+
+		/// <summary>
+		/// Bug 30591 - [Roslyn] Enum code-completion doesn't generate type on "."(dot)
+		/// </summary>
+		[Test]
+		public void TestBug30591 ()
+		{
+			var output = RunSimulation ("", ".", false, false, false, new [] { "foo" } );
+			Assert.AreEqual ("foo", output);
 		}
 
 

@@ -32,6 +32,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -41,10 +42,11 @@ namespace MonoDevelop.AssemblyBrowser
 			get; 
 			private set; 
 		}
-		
-		protected MonoDevelop.Ide.TypeSystem.Ambience Ambience {
+		readonly static CSharpAmbience ambience = new CSharpAmbience ();
+
+		protected CSharpAmbience Ambience {
 			get {
-				return Widget.Ambience; 
+				return ambience; 
 			}
 		}
 		
@@ -104,9 +106,11 @@ namespace MonoDevelop.AssemblyBrowser
 				var simpleCompilation = new SimpleCompilation (mainAssembly);
 				return new SimpleTypeResolveContext (simpleCompilation.MainAssembly);
 			}
-			var project = (Project)treeBuilder.GetParentDataItem (typeof(Project), true);
-			var compilation = TypeSystemService.GetCompilation (project);
-			return new SimpleTypeResolveContext (compilation.MainAssembly);
+			// TODO: roslyn port ?
+			// var project = (Project)treeBuilder.GetParentDataItem (typeof(Project), true);
+			// var compilation = TypeSystemService.GetCompilation (project);
+			// return new SimpleTypeResolveContext (compilation.MainAssembly);
+			return null;
 		}
 		
 		protected IMember Resolve (ITreeNavigator treeBuilder, IUnresolvedMember member, ITypeDefinition currentType = null)
@@ -122,9 +126,11 @@ namespace MonoDevelop.AssemblyBrowser
 				var simpleCompilation = new SimpleCompilation (mainAssembly);
 				return type.Resolve (new SimpleTypeResolveContext (simpleCompilation.MainAssembly));
 			}
-			var project = (Project)treeBuilder.GetParentDataItem (typeof(Project), true);
-			var ctx = TypeSystemService.GetCompilation (project);
-			return ctx.MainAssembly.GetTypeDefinition (type.Namespace, type.Name, type.TypeParameters.Count);
+			// TODO: roslyn port ?
+			// var project = (Project)treeBuilder.GetParentDataItem (typeof(Project), true);
+			// var ctx = TypeSystemService.GetCompilation (project);
+			// return ctx.MainAssembly.GetTypeDefinition (type.Namespace, type.Name, type.TypeParameters.Count);
+			return null;
 		}
 	}
 }

@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.Templates
 			if (proj == null)
 				return !requireExists;
 			
-			if (projectType != null && proj.GetProjectTypes ().All (p => p != projectType))
+			if (projectType != null && proj.GetTypeTags ().All (p => p != projectType))
 				return false;
 			
 			//check for permitted creation paths

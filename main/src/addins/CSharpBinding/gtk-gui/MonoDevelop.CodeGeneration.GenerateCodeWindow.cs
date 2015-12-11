@@ -5,9 +5,13 @@ namespace MonoDevelop.CodeGeneration
 	public partial class GenerateCodeWindow
 	{
 		private global::Gtk.VBox vbox1;
+		
 		private global::Gtk.Label label2;
+		
 		private global::Gtk.ScrolledWindow scrolledwindow1;
+		
 		private global::Gtk.Label labelDescription;
+		
 		private global::Gtk.ScrolledWindow scrolledwindow2;
 
 		protected virtual void Build ()

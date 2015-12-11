@@ -29,7 +29,6 @@ using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Templates;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.Projects
 {

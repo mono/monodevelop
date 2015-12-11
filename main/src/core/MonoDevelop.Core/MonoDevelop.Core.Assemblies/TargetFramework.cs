@@ -364,7 +364,7 @@ namespace MonoDevelop.Core.Assemblies
 						if (reader.MoveToAttribute ("InGac") && reader.ReadAttributeValue ())
 							ainfo.InGac = reader.ReadContentAsBoolean ();
 					} while (reader.ReadToFollowing ("File"));
-				} else {
+				} else if (Directory.Exists (dir)) {
 
 					// HACK: we were using EnumerateFiles but it's broken in some Mono releases
 					// https://bugzilla.xamarin.com/show_bug.cgi?id=2975

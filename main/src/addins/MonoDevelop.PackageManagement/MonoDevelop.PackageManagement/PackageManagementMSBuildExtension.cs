@@ -27,19 +27,25 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementMSBuildExtension : MSBuildExtension
+	public class PackageManagementMSBuildExtension : ProjectExtension
 	{
 		public static EnsureNuGetPackageBuildImportsTargetUpdater Updater;
 
-		public override void SaveProject (IProgressMonitor monitor, SolutionEntityItem item, MSBuildProject project)
+		protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
+		{
+			UpdateProject (msproject);
+			base.OnWriteProject (monitor, msproject);
+		}
+
+		public void UpdateProject (MSBuildProject msproject)
 		{
 			EnsureNuGetPackageBuildImportsTargetUpdater currentUpdater = Updater;
 			if (currentUpdater != null) {
-				currentUpdater.UpdateProject (project);
+				currentUpdater.UpdateProject (msproject);
 			}
 		}
 	}

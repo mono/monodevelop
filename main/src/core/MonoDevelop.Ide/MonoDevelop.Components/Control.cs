@@ -43,12 +43,9 @@ namespace MonoDevelop.Components
 
 		public Control (object widget)
 		{
+			if (widget == null)
+				throw new ArgumentNullException ("widget");
 			this.nativeWidget = widget;
-		}
-
-		~Control ()
-		{
-			Dispose (false);
 		}
 
 		protected virtual object CreateNativeWidget ()
@@ -63,7 +60,9 @@ namespace MonoDevelop.Components
 				if (!(w is T))
 					w = ConvertToType (typeof(T), w);
 				if (w is Gtk.Widget) {
-					var c = new CommandRouterContainer ((Gtk.Widget)w, this, true);
+					var gtkWidget = (Gtk.Widget)w;
+					var c = new CommandRouterContainer (gtkWidget, this, true);
+					c.FocusChain = new [] { gtkWidget };
 					c.Show ();
 					nativeWidget = c;
 					c.Destroyed += delegate {
@@ -124,7 +123,6 @@ namespace MonoDevelop.Components
 				((NSView)nativeWidget).Dispose ();
 			#endif
 
-			GC.SuppressFinalize (this);
 			Dispose (true);
 		}
 

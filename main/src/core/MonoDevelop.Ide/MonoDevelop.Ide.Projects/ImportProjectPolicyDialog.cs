@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			this.Build ();
 			selector.RootItem = IdeApp.Workspace;
-			selector.SelectedItem = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
+			selector.SelectedItem = IdeApp.ProjectOperations.CurrentSelectedObject;
 			selector.SelectableItemTypes = new Type[] { typeof(IPolicyProvider) };
 			UpdateOk ();
 		}

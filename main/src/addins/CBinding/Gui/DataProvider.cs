@@ -39,48 +39,44 @@ using MonoDevelop.Ide.CodeCompletion;
 
 using CBinding.Parser;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.Completion;
+using MonoDevelop.Ide.Editor;
 
 namespace CBinding
 {
-	public class ParameterDataProvider : MonoDevelop.Ide.CodeCompletion.ParameterDataProvider
+	public class ParameterDataProvider : MonoDevelop.Ide.CodeCompletion.ParameterHintingResult
 	{
-		private Mono.TextEditor.TextEditorData editor;
+		private TextEditor editor;
 		private List<Function> functions = new List<Function> ();
 
-		public ParameterDataProvider (int startOffset, Document document, ProjectInformation info, string functionName) :base (startOffset)
+		public ParameterDataProvider (int startOffset, TextEditor editor, ProjectInformation info, string functionName) :base (startOffset)
 		{
-			this.editor = document.Editor;
+			this.editor = editor;
 			
 			foreach (Function f in info.Functions) {
 				if (f.Name == functionName) {
-					functions.Add (f);
+					data.Add (new DataWrapper (f));
 				}
 			}
 			
-			string currentFile = document.FileName;
+			string currentFile = editor.FileName;
 			
 			if (info.IncludedFiles.ContainsKey (currentFile)) {
 				foreach (CBinding.Parser.FileInformation fi in info.IncludedFiles[currentFile]) {
 					foreach (Function f in fi.Functions) {
 						if (f.Name == functionName) {
-							functions.Add (f);
+							data.Add (new DataWrapper (f));
 						}
 					}
 				}
 			}
 		}
 		
-		// Returns the number of methods
-		public override int Count {
-			get { return functions.Count; }
-		}
 		
 		// Returns the index of the parameter where the cursor is currently positioned.
 		// -1 means the cursor is outside the method parameter list
 		// 0 means no parameter entered
 		// > 0 is the index of the parameter (1-based)
-		public int GetCurrentParameterIndex (ICompletionWidget widget, CodeCompletionContext ctx)
+		internal int GetCurrentParameterIndex (ICompletionWidget widget, CodeCompletionContext ctx)
 		{
 			int cursor = widget.CurrentCodeCompletionContext.TriggerOffset;
 			int i = ctx.TriggerOffset;
@@ -111,7 +107,7 @@ namespace CBinding
 		// in the parameter information window.
 		public string GetHeading (int overload, string[] parameterMarkup, int currentParameter)
 		{
-			Function function = functions[overload];
+			Function function = ((DataWrapper)this[overload]).Function;
 			string paramTxt = string.Join (", ", parameterMarkup);
 			
 			int len = function.FullName.LastIndexOf ("::");
@@ -136,23 +132,9 @@ namespace CBinding
 		// Returns the text to use to represent the specified parameter
 		public string GetParameterDescription (int overload, int paramIndex)
 		{
-			Function function = functions[overload];
+			Function function = ((DataWrapper)this[overload]).Function;
 			
 			return GLib.Markup.EscapeText (function.Parameters[paramIndex]);
-		}
-		
-		// Returns the number of parameters of the specified method
-		public override int GetParameterCount (int overload)
-		{
-			return functions[overload].Parameters.Length;
-		}
-		public override string GetParameterName (int overload, int paramIndex)
-		{
-			return "";
-		}
-		public override bool AllowParameterList (int overload)
-		{
-			return false;
 		}
 	}
 	

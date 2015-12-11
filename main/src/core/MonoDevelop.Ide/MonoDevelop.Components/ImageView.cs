@@ -70,7 +70,7 @@ namespace MonoDevelop.Components
 		}
 
 		double IconScale {
-			get { return Mono.TextEditor.GtkWorkarounds.GetPixelScale (); }
+			get { return GtkWorkarounds.GetPixelScale (); }
 		}
 
 		protected override void OnSizeRequested (ref Gtk.Requisition requisition)

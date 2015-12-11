@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace MonoDevelop.Core.Execution
 {
@@ -44,7 +45,7 @@ namespace MonoDevelop.Core.Execution
 			this.monoPath = monoPath;
 		}
 		
-		public override IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		public override ProcessAsyncOperation Execute (ExecutionCommand command, OperationConsole console)
 		{
 			DotNetExecutionCommand dotcmd = (DotNetExecutionCommand) command;
 			

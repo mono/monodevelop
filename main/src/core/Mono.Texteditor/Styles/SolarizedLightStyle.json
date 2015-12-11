@@ -48,9 +48,12 @@
 
         { "name":"Notification Border", "color":"base1" },
 
-        { "name":"Completion Matching Substring", "color":"#BA3373" },
-        { "name":"Completion Border", "color":"#C9C9C9" },
-        { "name":"Completion Border(Inactive)", "color":"#bebebe" },
+        { "name":"Completion Window", "color":"base3", "bordercolor":"base1" },
+        { "name":"Completion Tooltip Window", "color":"#feffe9", "bordercolor":"base1" },
+        { "name":"Completion Selection Bar Border", "color":"base03" },
+        { "name":"Completion Selection Bar Border(Inactive)", "color":"base2" },
+        { "name":"Completion Selection Bar Background", "color":"base03", "secondcolor":"base03" },
+        { "name":"Completion Selection Bar Background(Inactive)", "color":"base2", "secondcolor":"base2" },
 
         { "name":"Bookmarks", "color":"base3", "secondcolor":"blue" },
 
@@ -98,8 +101,8 @@
 
     "text":[
         { "name":"Plain Text", "fore":"base00", "back":"base3" },
-        { "name":"Selected Text", "back":"base02" },
-        { "name":"Selected Text(Inactive)", "back":"base3" },
+        { "name":"Selected Text", "back":"base03" },
+        { "name":"Selected Text(Inactive)", "back":"base2" },
 
         { "name":"Collapsed Text", "fore":"base01", "back":"base3" },
 
@@ -146,9 +149,14 @@
         { "name":"Tooltip Text", "fore":"black", "back":"#feffe9" },
         { "name":"Notification Text", "fore":"black", "back":"#feffe9" },
 
-        { "name":"Completion Text", "fore":"#434343", "back":"#F0F6F8" },
-        { "name":"Completion Selected Text", "fore":"#f8fcfc", "back":"#dff4f0" },
-        { "name":"Completion Selected Text(Inactive)", "fore":"#434343", "back":"white" },
+        { "name":"Completion Text", "fore":"base00" },
+        { "name":"Completion Matching Substring", "fore":"green" },
+        
+        { "name":"Completion Selected Text", "fore":"base00" },
+        { "name":"Completion Selected Matching Substring", "fore":"green" },
+
+        { "name":"Completion Selected Text(Inactive)", "fore":"base00" },
+        { "name":"Completion Selected Matching Substring(Inactive)", "fore":"green" },
 
         { "name":"Keyword(Access)", "fore":"violet" },
         { "name":"Keyword(Type)", "fore":"green" },

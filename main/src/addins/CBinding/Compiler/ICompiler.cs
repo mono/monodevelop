@@ -69,8 +69,8 @@ namespace CBinding
 		    ProjectFileCollection projectFiles,
 		    ProjectPackageCollection packages,
 		    CProjectConfiguration configuration,
-		    IProgressMonitor monitor);
+		    ProgressMonitor monitor);
 		
-		void Clean (ProjectFileCollection projectFiles, CProjectConfiguration configuration, IProgressMonitor monitor);
+		void Clean (ProjectFileCollection projectFiles, CProjectConfiguration configuration, ProgressMonitor monitor);
 	}
 }

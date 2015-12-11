@@ -5,10 +5,11 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Deployment
 {
-	public class PackagingProject: SolutionEntityItem
+	public class PackagingProject: Project
 	{
 		PackageCollection packages;
 		
@@ -16,6 +17,7 @@ namespace MonoDevelop.Deployment
 		
 		public PackagingProject()
 		{
+			Initialize (this);
 			packages = new PackageCollection (this);
 		}
 		
@@ -33,28 +35,26 @@ namespace MonoDevelop.Deployment
 			get { return packages; }
 		}
 		
-		public override SolutionItemConfiguration CreateConfiguration (string name)
+		protected override SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind)
 		{
 			PackagingProjectConfiguration conf = new PackagingProjectConfiguration ();
 			conf.Name = name;
 			return conf;
 		}
 		
-		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
 			foreach (Package p in packages)
 				p.Clean (monitor);
+			return Task.FromResult (BuildResult.CreateSuccess ());
 		}
 		
-		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
+		protected async override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
 			foreach (Package p in packages)
-				p.Build (monitor);
-			return null;
-		}
-		
-		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
-		{
+				if (!await p.Build (monitor))
+					break;
+			return BuildResult.CreateSuccess ();
 		}
 		
 		protected override bool OnGetNeedsBuilding (ConfigurationSelector configuration)
@@ -65,14 +65,9 @@ namespace MonoDevelop.Deployment
 			return false;
 		}
 		
-		protected override void OnSetNeedsBuilding (bool val, ConfigurationSelector configuration)
-		{
-			foreach (Package p in packages)
-				p.NeedsBuilding = val;
-		}
-		
 		internal void NotifyPackagesChanged ()
 		{
+			AssertMainThread ();
 			if (PackagesChanged != null)
 				PackagesChanged (this, EventArgs.Empty);
 		}

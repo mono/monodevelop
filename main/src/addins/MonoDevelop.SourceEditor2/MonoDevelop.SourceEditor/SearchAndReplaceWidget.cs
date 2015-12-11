@@ -48,13 +48,35 @@ namespace MonoDevelop.SourceEditor
 			get;
 			set;
 		}
+		bool isInSelectionSearchMode;
+		TextSegmentMarker selectionMarker;
 
 		public bool IsInSelectionSearchMode {
-			get;
-			set;
+			get {
+				return isInSelectionSearchMode;
+			}
+
+			set {
+				if (value) {
+					Console.WriteLine ("add marker");
+					selectionMarker = new SearchInSelectionMarker (SelectionSegment);
+					this.textEditor.Document.AddMarker (selectionMarker);
+				} else {
+					RemoveSelectionMarker ();
+				}
+				isInSelectionSearchMode = value;
+			}
 		}
 
-		readonly TextEditor textEditor;
+		void RemoveSelectionMarker ()
+		{
+			if (selectionMarker == null)
+				return;
+			this.textEditor.Document.RemoveMarker (selectionMarker);
+			selectionMarker = null;
+		}
+
+		readonly MonoTextEditor textEditor;
 		readonly Widget frame;
 		bool isReplaceMode = true;
 		Widget[] replaceWidgets;
@@ -101,7 +123,7 @@ namespace MonoDevelop.SourceEditor
 			if (frame == null || textEditor == null)
 				return;
 			int newX = textEditor.Allocation.Width - Allocation.Width - 8;
-			TextEditor.EditorContainerChild containerChild = ((TextEditor.EditorContainerChild)textEditor [frame]);
+			MonoTextEditor.EditorContainerChild containerChild = ((MonoTextEditor.EditorContainerChild)textEditor [frame]);
 			if (newX != containerChild.X) {
 				searchEntry.WidthRequest = textEditor.Allocation.Width / 3;
 				containerChild.X = newX;
@@ -118,7 +140,7 @@ namespace MonoDevelop.SourceEditor
 			return "(" + nextShortcut + ")";
 		}
 		
-		public SearchAndReplaceWidget (TextEditor textEditor, Widget frame)
+		public SearchAndReplaceWidget (MonoTextEditor textEditor, Widget frame)
 		{
 			if (textEditor == null)
 				throw new ArgumentNullException ("textEditor");
@@ -284,11 +306,11 @@ namespace MonoDevelop.SourceEditor
 			searchEntry.FilterButtonPixbuf = Xwt.Drawing.Image.FromResource ("searchoptions.png");
 
 			if (textEditor.IsSomethingSelected) {
-				if (textEditor.MainSelection.MinLine == textEditor.MainSelection.MaxLine) {
+				if (textEditor.MainSelection.MinLine == textEditor.MainSelection.MaxLine || ClipboardContainsSelection()) {
 					SetSearchPattern ();
 				} else {
-					IsInSelectionSearchMode = true;
 					SelectionSegment = textEditor.SelectionRange;
+					IsInSelectionSearchMode = true;
 					SetSearchOptions ();
 				}
 			}
@@ -302,6 +324,11 @@ namespace MonoDevelop.SourceEditor
 
 			SearchAndReplaceOptions.SearchPatternChanged += HandleSearchPatternChanged;
 			SearchAndReplaceOptions.ReplacePatternChanged += HandleReplacePatternChanged;
+		}
+
+		bool ClipboardContainsSelection ()
+		{
+			return textEditor.SelectedText == ClipboardActions.GetClipboardContent ();
 		}
 
 		void HandleReplacePatternChanged (object sender, EventArgs e)
@@ -611,6 +638,7 @@ But I leave it in in the case I've missed something. Mike
 		
 		protected override void OnDestroyed ()
 		{
+			RemoveSelectionMarker ();
 			SearchAndReplaceOptions.SearchPatternChanged -= HandleSearchPatternChanged;
 			SearchAndReplaceOptions.ReplacePatternChanged -= HandleReplacePatternChanged;
 
@@ -827,7 +855,7 @@ But I leave it in in the case I've missed something. Mike
 			textEditor.SearchPattern = searchPattern;
 		}
 
-		public static SearchResult FindNext (TextEditor textEditor)
+		public static SearchResult FindNext (MonoTextEditor textEditor)
 		{
 			textEditor.SearchPattern = SearchAndReplaceOptions.SearchPattern;
 			SearchResult result = textEditor.FindNext (true);
@@ -848,7 +876,7 @@ But I leave it in in the case I've missed something. Mike
 			return result;
 		}
 
-		public static SearchResult FindPrevious (TextEditor textEditor)
+		public static SearchResult FindPrevious (MonoTextEditor textEditor)
 		{
 			textEditor.SearchPattern = SearchAndReplaceOptions.SearchPattern;
 			SearchResult result = textEditor.FindPrevious (true);

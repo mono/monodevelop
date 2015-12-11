@@ -27,10 +27,11 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects
 {
-	public class SolutionFolderItemCollection: ItemCollection<SolutionItem>
+	public class SolutionFolderItemCollection: ItemCollection<SolutionFolderItem>
 	{
 		SolutionFolder parentFolder;
 		
@@ -43,53 +44,52 @@ namespace MonoDevelop.Projects
 			this.parentFolder = parentFolder;
 		}
 		
-		internal void Replace (SolutionItem item, SolutionItem newItem)
+		internal void Replace (SolutionFolderItem item, SolutionFolderItem newItem)
 		{
 			int i = IndexOf (item);
-			Items [i] = newItem;
+			List = List.SetItem (i, newItem);
 			newItem.ParentFolder = parentFolder;
 		}
 		
-		protected override void OnItemAdded (SolutionItem item)
+		protected override void OnItemsAdded (IEnumerable<SolutionFolderItem> items)
 		{
 			if (parentFolder != null) {
-				// If the item belongs to another solution, remove it from there.
-				// If it belongs to the same solution, just move the item, avoiding
-				// the global item added/removed events.
-				if (item.ParentFolder != null && item.ParentSolution != null) {
-					if (item.ParentSolution != parentFolder.ParentSolution)
-						item.ParentFolder.Items.Remove (item);
-					else {
-						SolutionFolder oldFolder = item.ParentFolder;
-						item.ParentFolder = null;
-						oldFolder.Items.InternalRemove (item);
-						oldFolder.NotifyItemRemoved (item, false);
-						item.ParentFolder = parentFolder;
-						parentFolder.NotifyItemAdded (item, false);
-						return;
+				foreach (var item in items) {
+					// If the item belongs to another solution, remove it from there.
+					// If it belongs to the same solution, just move the item, avoiding
+					// the global item added/removed events.
+					if (item.ParentFolder != null && item.ParentSolution != null) {
+						if (item.ParentSolution != parentFolder.ParentSolution)
+							item.ParentFolder.Items.Remove (item);
+						else {
+							SolutionFolder oldFolder = item.ParentFolder;
+							item.ParentFolder = null;
+							oldFolder.Items.InternalRemove (item);
+							oldFolder.NotifyItemRemoved (item, false);
+							item.ParentFolder = parentFolder;
+							parentFolder.NotifyItemAdded (item, false);
+							return;
+						}
 					}
+					item.ParentFolder = parentFolder;
+					parentFolder.NotifyItemAdded (item, true);
 				}
-				item.ParentFolder = parentFolder;
-				parentFolder.NotifyItemAdded (item, true);
 			}
 		}
 		
-		protected override void OnItemRemoved (SolutionItem item)
+		protected override void OnItemsRemoved (IEnumerable<SolutionFolderItem> items)
 		{
 			if (parentFolder != null) {
-				item.ParentFolder = null;
-				parentFolder.NotifyItemRemoved (item, true);
+				foreach (var item in items) {
+					item.ParentFolder = null;
+					parentFolder.NotifyItemRemoved (item, true);
+				}
 			}
 		}
-		
-		internal void InternalAdd (SolutionItem item)
+
+		internal void InternalRemove (SolutionFolderItem item)
 		{
-			Items.Add (item);
-		}
-		
-		internal void InternalRemove (SolutionItem item)
-		{
-			Items.Remove (item);
+			List = List.Remove (item);
 		}
 	}
 }

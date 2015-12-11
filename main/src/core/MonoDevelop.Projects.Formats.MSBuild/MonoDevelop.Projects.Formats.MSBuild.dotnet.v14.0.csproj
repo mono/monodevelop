@@ -9,7 +9,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>MonoDevelop.Projects.Formats.MSBuild</RootNamespace>
     <AssemblyName>MonoDevelop.Projects.Formats.MSBuild</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -26,7 +26,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
+    <OutputPath>..\..\..\build\bin\MSBuild\dotnet.14.0\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ExternalConsole>true</ExternalConsole>
@@ -34,7 +34,7 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>MonoDevelop.Projects.Formats.MSBuild.MainClass</StartupObject>
+    <StartupObject>MonoDevelop.Projects.MSBuild.MainClass</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -45,7 +45,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="app.v14.0.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>MonoDevelop.Projects.Formats.MSBuild.exe.config</Link>

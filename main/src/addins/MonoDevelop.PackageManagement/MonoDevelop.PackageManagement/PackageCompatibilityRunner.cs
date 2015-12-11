@@ -40,7 +40,7 @@ namespace MonoDevelop.PackageManagement
 		IRegisteredPackageRepositories registeredRepositories;
 		IPackageManagementProgressMonitorFactory progressMonitorFactory;
 		ProgressMonitorStatusMessage progressMessage;
-		IProgressMonitor progressMonitor;
+		ProgressMonitor progressMonitor;
 		IPackageManagementEvents packageManagementEvents;
 		IProgressProvider progressProvider;
 
@@ -101,18 +101,18 @@ namespace MonoDevelop.PackageManagement
 			return ProgressMonitorStatusMessageFactory.CreateCheckingPackageCompatibilityMessage ();
 		}
 
-		IProgressMonitor CreateProgressMonitor ()
+		ProgressMonitor CreateProgressMonitor ()
 		{
 			return progressMonitorFactory.CreateProgressMonitor (progressMessage.Status);
 		}
 
-		PackageManagementEventsMonitor CreateEventMonitor (IProgressMonitor monitor)
+		PackageManagementEventsMonitor CreateEventMonitor (ProgressMonitor monitor)
 		{
 			return CreateEventMonitor (monitor, packageManagementEvents, progressProvider);
 		}
 
 		protected virtual PackageManagementEventsMonitor CreateEventMonitor (
-			IProgressMonitor monitor,
+			ProgressMonitor monitor,
 			IPackageManagementEvents packageManagementEvents,
 			IProgressProvider progressProvider)
 		{
@@ -157,7 +157,7 @@ namespace MonoDevelop.PackageManagement
 			ShowPackageConsole (progressMonitor);
 		}
 
-		protected virtual void ShowPackageConsole (IProgressMonitor progressMonitor)
+		protected virtual void ShowPackageConsole (ProgressMonitor progressMonitor)
 		{
 			progressMonitor.ShowPackageConsole ();
 		}

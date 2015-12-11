@@ -35,6 +35,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.ChangeLogAddIn
 {
@@ -80,7 +81,7 @@ namespace MonoDevelop.ChangeLogAddIn
 		
 		static void InsertEntry(Document document)
 		{
-			IEditableTextBuffer textBuffer = document.GetContent<IEditableTextBuffer>();					
+			var textBuffer = document.GetContent<TextEditor>();					
 			if (textBuffer == null) return;
 
 			string changeLogFileName = document.FileName;
@@ -98,16 +99,16 @@ namespace MonoDevelop.ChangeLogAddIn
 				textBuffer.InsertText (insertPos, text);
 				
 				insertPos += text.Length;
-				textBuffer.Select (insertPos, insertPos);
-				textBuffer.CursorPosition = insertPos;
-				
+				textBuffer.CaretOffset = insertPos;
+				textBuffer.SetSelection (insertPos, insertPos);
+
 				document.Select ();
 			}
 		}
 		
 		static bool InsertHeader (Document document)
 		{
-			IEditableTextBuffer textBuffer = document.GetContent<IEditableTextBuffer>();					
+			var textBuffer = document.Editor;					
 			if (textBuffer == null) return false;
 			
 			AuthorInformation userInfo = document.Project != null ? document.Project.AuthorInformation : AuthorInformation.Default;
@@ -126,19 +127,19 @@ namespace MonoDevelop.ChangeLogAddIn
 			// Read the first line and compare it with the header: if they are
 			// the same don't insert a new header.
 			int pos = GetHeaderEndPosition(document);
-			if (pos < 0 || (pos + 2 > textBuffer.Length) || textBuffer.GetText (0, pos + 2) != text)
+			if (pos < 0 || (pos + 2 > textBuffer.Length) || textBuffer.GetTextAt (0, pos + 2) != text)
 				textBuffer.InsertText (0, text);
 			return true;
 		}
         
 		static int GetHeaderEndPosition(Document document)
 		{
-			IEditableTextBuffer textBuffer = document.GetContent<IEditableTextBuffer>();					
+			var textBuffer = document.Editor;				
 			if (textBuffer == null) return 0;
 			
 			// This is less than optimal, we simply read 1024 chars hoping to
 			// find a newline there: if we don't find it we just return 0.
-			string text = textBuffer.GetText (0, Math.Min (textBuffer.Length, 1023));
+			string text = textBuffer.GetTextAt (0, Math.Min (textBuffer.Length, 1023));
 			string eol = document.Editor != null ? document.Editor.EolMarker : Environment.NewLine;
 			
 			return text.IndexOf (eol + eol, StringComparison.Ordinal);

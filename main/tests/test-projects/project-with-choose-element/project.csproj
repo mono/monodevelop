@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+  </PropertyGroup>
+   <Choose>
+      <When Condition="'$(Configuration)' == 'Debug'">
+         <PropertyGroup>
+         	<Foo>One</Foo>
+         </PropertyGroup>
+      </When>
+      <When Condition="'$(Configuration)' == 'Release'">
+         <PropertyGroup>
+         	<Foo>Two</Foo>
+         </PropertyGroup>
+      </When>
+      <Otherwise>
+         <PropertyGroup>
+         	<Foo>Three</Foo>
+         </PropertyGroup>
+      </Otherwise>
+   </Choose>
+</Project>

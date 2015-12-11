@@ -83,13 +83,16 @@
 
         { "name":"Notification Border", "color":"#989892" },
 
-        { "name":"Completion Matching Substring", "color":"#BA3373" },
-        { "name":"Completion Border", "color":"#C9C9C9" },
-        { "name":"Completion Border(Inactive)", "color":"#666666" },
+        { "name":"Completion Window", "color":"BlackVim", "bordercolor":"#989892" },
+		{ "name":"Completion Tooltip Window", "color":"#0a0a0a", "bordercolor":"#989892" },
+        { "name":"Completion Selection Bar Border", "color":"#2647DD" },
+        { "name":"Completion Selection Bar Border(Inactive)", "color":"aluminium4" },
+        { "name":"Completion Selection Bar Background", "color":"#2647DD", "secondcolor":"#2647DD" },
+        { "name":"Completion Selection Bar Background(Inactive)", "color":"aluminium4", "secondcolor":"aluminium4" },
 
         { "name":"Bookmarks", "color":"aluminium1", "secondcolor":"aluminium4" },
 
-        { "name":"Underline(Error)", "color":"invalid-red" },
+        { "name":"Underline(Error)", "color":"scarletred2" },
         { "name":"Underline(Warning)", "color":"skyblue1" },
         { "name":"Underline(Suggestion)", "color":"chameleon3" },
         { "name":"Underline(Hint)", "color":"chameleon1" },
@@ -181,9 +184,14 @@
         { "name":"Tooltip Text", "fore":"NormalVim", "back":"#0a0a0a" },
         { "name":"Notification Text", "fore":"NormalVim", "back":"#0a0a0a" },
 
-        { "name":"Completion Text", "fore":"#434343", "back":"#F0F6F8" },
-        { "name":"Completion Selected Text", "fore":"#f8fcfc", "back":"#dff4f0" },
-        { "name":"Completion Selected Text(Inactive)", "fore":"#434343", "back":"white" },
+        { "name":"Completion Text", "fore":"NormalVim" },
+        { "name":"Completion Matching Substring", "fore":"StatementVim" },
+        
+        { "name":"Completion Selected Text", "fore":"NormalVim" },
+        { "name":"Completion Selected Matching Substring", "fore":"StatementVim" },
+
+        { "name":"Completion Selected Text(Inactive)", "fore":"NormalVim" },
+        { "name":"Completion Selected Matching Substring(Inactive)", "fore":"StatementVim" },
 
         { "name":"Keyword(Access)", "fore":"TypeVim" },
         { "name":"Keyword(Type)", "fore":"TypeVim" },

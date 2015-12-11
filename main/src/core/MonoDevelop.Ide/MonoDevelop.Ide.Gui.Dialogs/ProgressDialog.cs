@@ -28,6 +28,7 @@ using System;
 using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using System.Threading;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -40,9 +41,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		int ident = 0;
 		List<TextTag> tags = new List<TextTag> ();
 		Stack<string> indents = new Stack<string> ();
-		IAsyncOperation asyncOperation;
-		public event EventHandler OperationCancelled;
-		
+		CancellationTokenSource cancellationTokenSource;
+
 		public ProgressDialog (bool allowCancel, bool showDetails): this (null, allowCancel, showDetails)
 		{
 		}
@@ -74,9 +74,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			tags.Add (tag);
 		}
 		
-		public IAsyncOperation AsyncOperation {
-			get { return asyncOperation; }
-			set { asyncOperation = value; }
+		public CancellationTokenSource CancellationTokenSource {
+			get { return cancellationTokenSource; }
+			set { cancellationTokenSource = value; }
 		}
 		
 		public string Message {
@@ -168,11 +168,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		protected void OnBtnCancelClicked (object sender, EventArgs e)
 		{
-			if (asyncOperation != null)
-				asyncOperation.Cancel ();
-
-			if (OperationCancelled != null)
-				OperationCancelled (this, null);
+			if (cancellationTokenSource != null)
+				cancellationTokenSource.Cancel ();
 		}
 		
 		bool UpdateSize ()

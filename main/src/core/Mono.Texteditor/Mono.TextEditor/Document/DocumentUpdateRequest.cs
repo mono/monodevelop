@@ -29,7 +29,7 @@ namespace Mono.TextEditor
 {
 	public abstract class DocumentUpdateRequest
 	{
-		public abstract void Update (TextEditor editor);
+		public abstract void Update (MonoTextEditor editor);
 	}
 	
 	public class SinglePositionUpdate : DocumentUpdateRequest
@@ -42,7 +42,7 @@ namespace Mono.TextEditor
 			this.column = column;
 		}
 		
-		public override void Update (TextEditor editor)
+		public override void Update (MonoTextEditor editor)
 		{
 			editor.RedrawPosition (line, column);
 		}
@@ -50,7 +50,7 @@ namespace Mono.TextEditor
 	
 	public class UpdateAll : DocumentUpdateRequest
 	{
-		public override void Update (TextEditor editor)
+		public override void Update (MonoTextEditor editor)
 		{
 			editor.QueueDraw ();
 		}
@@ -65,7 +65,7 @@ namespace Mono.TextEditor
 			this.line = line;
 		}
 		
-		public override void Update (TextEditor editor)
+		public override void Update (MonoTextEditor editor)
 		{
 			editor.RedrawLine (line);
 		}
@@ -81,9 +81,9 @@ namespace Mono.TextEditor
 			this.end   = end;
 		}
 		
-		public override void Update (TextEditor editor)
+		public override void Update (MonoTextEditor editor)
 		{
-			editor.TextViewMargin.PurgeLayoutCache ();
+			//editor.TextViewMargin.PurgeLayoutCache ();
 			editor.RedrawLines (start, end);
 		}
 	}

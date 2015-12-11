@@ -67,7 +67,8 @@ namespace MonoDevelop.MacIntegration
 
 		public MacPlatformService ()
 		{
-			if (IntPtr.Size == 8)
+			string safe64 = Environment.GetEnvironmentVariable ("MONODEVELOP_64BIT_SAFE");
+			if (string.IsNullOrEmpty (safe64) && IntPtr.Size == 8)
 				throw new Exception ("Mac integration is not yet 64-bit safe");
 
 			if (initedGlobal)
@@ -562,7 +563,7 @@ namespace MonoDevelop.MacIntegration
 			return res != null ? res.ToXwtImage () : base.OnGetIconForFile (filename);
 		}
 
-		public override IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
+		public override ProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
 		                                                            IDictionary<string, string> environmentVariables,
 		                                                            string title, bool pauseWhenFinished)
 		{
@@ -788,16 +789,8 @@ namespace MonoDevelop.MacIntegration
 		{
 			var toplevels = GtkQuartz.GetToplevels ();
 
-			// When we're looking for modal windows that don't belong to GTK, exclude
-			// NSStatusBarWindow (which is visible on Mavericks when we're in fullscreen) and
-			// NSToolbarFullscreenWindow (which is visible on Yosemite in fullscreen).
-			// _NSFullScreenTileDividerWindow (which is visible on El Capitan when two apps share the same fullscreen).
-			return toplevels.Any (t => t.Key.IsVisible && (t.Value == null || t.Value.Modal) &&
-				!(t.Key.DebugDescription.StartsWith("<NSStatusBarWindow", StringComparison.Ordinal) ||
-					t.Key.DebugDescription.StartsWith ("<NSToolbarFullScreenWindow", StringComparison.Ordinal) ||
-					t.Key.DebugDescription.StartsWith ("<NSCarbonMenuWindow", StringComparison.Ordinal) ||
-					t.Key.DebugDescription.StartsWith ("<_NSFullScreenTileDividerWindow", StringComparison.Ordinal)
-				));
+			// Check GtkWindow's Modal flag or for a visible NSPanel
+			return toplevels.Any (t => (t.Value != null && t.Value.Modal && t.Value.Visible) || (t.Key.IsVisible && (t.Key is NSPanel)));
 		}
 
 		public override void AddChildWindow (Gtk.Window parent, Gtk.Window child)

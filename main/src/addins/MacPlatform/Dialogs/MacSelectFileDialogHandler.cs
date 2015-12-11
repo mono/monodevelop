@@ -34,6 +34,7 @@ using Foundation;
 using CoreGraphics;
 using AppKit;
 
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.Extensions;
@@ -48,21 +49,20 @@ namespace MonoDevelop.MacIntegration
 			NSSavePanel panel = null;
 			
 			try {
-				bool directoryMode = data.Action != Gtk.FileChooserAction.Open;
-				
-				if (data.Action == Gtk.FileChooserAction.Save) {
+				if (data.Action == FileChooserAction.Save) {
 					panel = new NSSavePanel ();
 				} else {
 					panel = new NSOpenPanel {
-						CanChooseDirectories = directoryMode,
-						CanChooseFiles = !directoryMode,
+						CanChooseDirectories = (data.Action & FileChooserAction.FolderFlags) != 0,
+						CanChooseFiles = (data.Action & FileChooserAction.FileFlags) != 0,
+						CanCreateDirectories = (data.Action & FileChooserAction.CreateFolder) != 0,
 						ResolvesAliases = false,
 					};
 				}
 				
 				SetCommonPanelProperties (data, panel);
 				
-				if (!directoryMode) {
+				if ((data.Action & FileChooserAction.FileFlags) != 0) {
 					var popup = CreateFileFilterPopup (data, panel);
 					if (popup != null) {
 						panel.AccessoryView = popup;

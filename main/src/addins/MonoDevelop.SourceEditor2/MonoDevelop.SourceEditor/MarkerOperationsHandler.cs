@@ -35,7 +35,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class MarkerOperationsHandler : CommandHandler
+	class MarkerOperationsHandler : CommandHandler
 	{
 		protected override void Run (object data)
 		{

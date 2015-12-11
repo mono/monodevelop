@@ -27,7 +27,7 @@
 using System;
 using System.Linq;
 using System.Xml;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -73,10 +73,10 @@ namespace MonoDevelop.PackageManagement
 			if (msbuildTask == null)
 				return;
 
-			RemoveFromProject (msbuildTask.Element);
+			nugetImportTarget.RemoveTask (msbuildTask);
 
 			if (nugetImportTarget.Tasks.Count () == 0) {
-				RemoveFromProject (nugetImportTarget.Element);
+				project.Remove (nugetImportTarget);
 			}
 		}
 

@@ -37,6 +37,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		string NodeName { get; }
 
 		object GetParentDataItem (Type type, bool includeCurrent);
+		T GetParentDataItem<T> (bool includeCurrent);
 		bool Selected { get; set; }
 		bool Expanded { get; set; }
 		void ExpandToNode ();

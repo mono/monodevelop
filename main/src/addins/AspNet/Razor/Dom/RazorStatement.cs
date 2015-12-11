@@ -24,15 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using ICSharpCode.NRefactory;
 using MonoDevelop.Xml.Dom;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.Razor.Dom
 {
 
 	public class RazorStatement : RazorCodeFragment
 	{
-		public RazorStatement (TextLocation start) : base (start)
+		public RazorStatement (DocumentLocation start) : base (start)
 		{
 		}
 

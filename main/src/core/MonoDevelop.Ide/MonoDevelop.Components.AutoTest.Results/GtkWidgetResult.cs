@@ -446,12 +446,13 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return;
 			}
 
-			Cairo.Context cr = Gdk.CairoHelper.Create (resultWidget.GdkWindow);
-			cr.SetSourceRGB (1.0, 0.0, 0.0);
+			using (var cr = Gdk.CairoHelper.Create (resultWidget.GdkWindow)) {
+				cr.SetSourceRGB (1.0, 0.0, 0.0);
 
-			Gdk.Rectangle allocation = resultWidget.Allocation;
-			Gdk.CairoHelper.Rectangle (cr, allocation);
-			cr.Stroke ();
+				Gdk.Rectangle allocation = resultWidget.Allocation;
+				Gdk.CairoHelper.Rectangle (cr, allocation);
+				cr.Stroke ();
+			}
 		}
 
 		public override void Flash ()

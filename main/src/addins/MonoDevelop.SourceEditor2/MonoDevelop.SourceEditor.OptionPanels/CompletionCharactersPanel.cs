@@ -32,7 +32,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
-	public class CompletionCharactersPanel : VBox, IOptionsPanel
+	class CompletionCharactersPanel : VBox, IOptionsPanel
 	{
 		ListView list;
 		ListStore store;

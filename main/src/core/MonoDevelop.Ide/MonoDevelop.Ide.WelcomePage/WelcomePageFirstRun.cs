@@ -31,7 +31,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
 using System.Collections.Generic;
 using Xwt.Motion;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.WelcomePage
 {

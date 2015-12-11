@@ -26,19 +26,18 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Xml.Dom;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.WebForms.Dom
 {
 	public class WebFormsRenderBlock : XNode
 	{
-		public WebFormsRenderBlock (DomRegion region) : base (region)
+		public WebFormsRenderBlock (DocumentRegion region) : base (region)
 		{
 		}
 
-		public WebFormsRenderBlock (TextLocation start) : base (start)
+		public WebFormsRenderBlock (DocumentLocation start) : base (start)
 		{
 		}
 

@@ -75,6 +75,9 @@
     <Reference Include="Mono.Cairo" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mono.TextEditor.Highlighting\Rule.cs" />
@@ -168,9 +171,7 @@
     <Compile Include="Mono.TextEditor\Document\DocumentLocation.cs" />
     <Compile Include="Mono.TextEditor\Document\DocumentRegion.cs" />
     <Compile Include="Mono.TextEditor\Document\DocumentUpdateRequest.cs" />
-    <Compile Include="Mono.TextEditor\Document\IBuffer.cs" />
     <Compile Include="Mono.TextEditor\Gui\ITooltipProvider.cs" />
-    <Compile Include="Mono.TextEditor\Document\GapBuffer.cs" />
     <Compile Include="Mono.TextEditor\Document\FoldSegment.cs" />
     <Compile Include="Mono.TextEditor\Document\LineEventArgs.cs" />
     <Compile Include="Mono.TextEditor\Document\LineSplitter.cs" />
@@ -183,12 +184,10 @@
     <Compile Include="Mono.TextEditor\Document\PrimitiveLineSplitter.cs" />
     <Compile Include="Mono.TextEditor\Document\IWordFindStrategy.cs" />
     <Compile Include="Mono.TextEditor\Actions\SelectionActions.cs" />
-    <Compile Include="Mono.TextEditor\Document\StringBuffer.cs" />
     <Compile Include="Mono.TextEditor\Document\TextSegment.cs" />
     <Compile Include="Mono.TextEditor\Gui\TextViewMargin.cs" />
     <Compile Include="Mono.TextEditor\Document\SharpDevelopWordFindStrategy.cs" />
     <Compile Include="Mono.TextEditor\Document\EmacsWordFindStrategy.cs" />
-    <Compile Include="Mono.TextEditor\Document\BufferedTextReader.cs" />
     <Compile Include="Mono.TextEditor\Document\SyntaxModeChangeEventArgs.cs" />
     <Compile Include="Mono.TextEditor\Document\DocumentLine.cs" />
     <Compile Include="Mono.TextEditor\Standalone\TextSourceVersionProvider.cs" />
@@ -207,7 +206,6 @@
     <Compile Include="Mono.TextEditor\TextSegmentMarker.cs" />
     <Compile Include="Mono.TextEditor\Gui\FoldMarkerMargin.cs" />
     <Compile Include="Mono.TextEditor\Gui\TextArea.cs" />
-    <Compile Include="Mono.TextEditor\Gui\TextEditor.cs" />
     <Compile Include="Mono.TextEditor\Standalone\StringTextSource.cs" />
     <Compile Include="Mono.TextEditor.Utils\HtmlWriter.cs" />
     <Compile Include="Mono.TextEditor.PopupWindow\WindowTransparencyDecorator.cs" />
@@ -231,11 +229,14 @@
     <Compile Include="Mono.TextEditor\Document\OperationType.cs" />
     <Compile Include="Mono.TextEditor\Document\DiffTracker.cs" />
     <Compile Include="Mono.TextEditor.Utils\CompressingTreeList.cs" />
-    <Compile Include="Mono.TextEditor.Utils\AvlTree.cs" />
     <Compile Include="Mono.TextEditor.Utils\FileSettingsStore.cs" />
     <Compile Include="Mono.TextEditor\Gui\LayoutCache.cs" />
     <Compile Include="Mono.TextEditor\Gui\GtkUtil.cs" />
     <Compile Include="Mono.TextEditor\EditModeChangedEventArgs.cs" />
+    <Compile Include="Mono.TextEditor\Gui\MonoTextEditor.cs" />
+    <Compile Include="Mono.TextEditor\Document\LazyLineSplitter.cs" />
+    <Compile Include="Mono.TextEditor.Utils\ImmutableText.cs" />
+    <Compile Include="Mono.TextEditor.Utils\ImmutableTextTextReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

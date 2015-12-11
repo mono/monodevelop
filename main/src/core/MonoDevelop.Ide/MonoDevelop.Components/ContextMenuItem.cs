@@ -64,7 +64,11 @@ namespace MonoDevelop.Components
 
 		public ContextMenuItem (string label) : this()
 		{
+			#if MAC
+			Label = label.Replace ("_", "");
+			#else
 			Label = label;
+			#endif
 		}
 
 		public bool IsSeparator {

@@ -95,7 +95,7 @@ namespace Mono.TextEditor
 		/// </summary>
 		public event EventHandler<EditModeChangedEventArgs> EditModeChanged;
 		
-		public TextEditor Parent {
+		public MonoTextEditor Parent {
 			get;
 			set;
 		}
@@ -207,24 +207,27 @@ namespace Mono.TextEditor
 			caret.PositionChanged += CaretPositionChanged;
 
 			options = TextEditorOptions.DefaultOptions;
-			
 			document = doc;
-			document.BeginUndo += OnBeginUndo;
-			document.EndUndo += OnEndUndo;
-
-			document.Undone += DocumentHandleUndone;
-			document.Redone += DocumentHandleRedone;
-			document.LineChanged += HandleDocLineChanged;
-			document.TextReplaced += HandleTextReplaced;
-
-			document.TextSet += HandleDocTextSet;
-			document.Folded += HandleTextEditorDataDocumentFolded;
-			document.FoldTreeUpdated += HandleFoldTreeUpdated;
+			AttachDocument ();
 			SearchEngine = new BasicSearchEngine ();
 
 			HeightTree = new HeightTree (this);
 			HeightTree.Rebuild ();
 			IndentationTracker = new DefaultIndentationTracker (document);
+		}
+
+		void AttachDocument ()
+		{
+			if (document == null)
+				return;
+			document.BeginUndo += OnBeginUndo;
+			document.EndUndo += OnEndUndo;
+			document.Undone += DocumentHandleUndone;
+			document.Redone += DocumentHandleRedone;
+			document.TextReplaced += HandleTextReplaced;
+			document.TextSet += HandleDocTextSet;
+			document.Folded += HandleTextEditorDataDocumentFolded;
+			document.FoldTreeUpdated += HandleFoldTreeUpdated;
 		}
 
 		void HandleFoldTreeUpdated (object sender, EventArgs e)
@@ -256,16 +259,16 @@ namespace Mono.TextEditor
 				return LineHeight;
 			return Parent.GetLineHeight (line);
 		}
-
-		void HandleDocLineChanged (object sender, LineEventArgs e)
-		{
-			e.Line.WasChanged = true;
-		}
-
 		
 		public TextDocument Document {
 			get {
 				return document;
+			}
+			set {
+				DetachDocument ();
+				document = value;
+				this.caret.SetDocument (document);
+				AttachDocument ();
 			}
 		}
 
@@ -284,13 +287,28 @@ namespace Mono.TextEditor
 			get {
 				if (Options.OverrideDocumentEolMarker)
 					return Options.DefaultEolMarker;
-				string eol = null;
 				if (Document.LineCount > 0) {
-					DocumentLine line = Document.GetLine (DocumentLocation.MinLine);
-					if (line.DelimiterLength > 0) 
-						eol = Document.GetTextAt (line.Length, line.DelimiterLength);
-				}
-				return !String.IsNullOrEmpty (eol) ? eol : Options.DefaultEolMarker;
+					var line = Document.GetLine (DocumentLocation.MinLine);
+					switch (line.UnicodeNewline) {
+					case ICSharpCode.NRefactory.UnicodeNewline.LF:
+						return "\u000A";
+					case ICSharpCode.NRefactory.UnicodeNewline.CRLF:
+						return "\u000D\u000A";
+					case ICSharpCode.NRefactory.UnicodeNewline.CR:
+						return "\u000D";
+					case ICSharpCode.NRefactory.UnicodeNewline.NEL:
+						return "\u0085";
+					case ICSharpCode.NRefactory.UnicodeNewline.VT:
+						return "\u000B";
+					case ICSharpCode.NRefactory.UnicodeNewline.FF:
+						return "\u000C";
+					case ICSharpCode.NRefactory.UnicodeNewline.LS:
+						return "\u2028";
+					case ICSharpCode.NRefactory.UnicodeNewline.PS:
+						return "\u2029";
+					}
+				} 
+				return Options.DefaultEolMarker;
 			}
 		}
 		
@@ -372,6 +390,8 @@ namespace Mono.TextEditor
 				var styleStack = new Stack<ChunkStyle> ();
 
 				foreach (var chunk in mode.GetChunks (style, line, curOffset, toOffset - curOffset)) {
+					if (chunk.Length == 0)
+						continue;
 					var chunkStyle = style.GetChunkStyle (chunk);
 					bool setBold = (styleStack.Count > 0 && styleStack.Peek ().FontWeight != chunkStyle.FontWeight) || 
 						chunkStyle.FontWeight != FontWeight.Normal;
@@ -544,7 +564,6 @@ namespace Mono.TextEditor
 
 			document.Undone -= DocumentHandleUndone;
 			document.Redone -= DocumentHandleRedone;
-			document.LineChanged -= HandleDocLineChanged;
 			document.TextReplaced -= HandleTextReplaced;
 
 			document.TextSet -= HandleDocTextSet;
@@ -805,6 +824,26 @@ namespace Mono.TextEditor
 			}
 		}
 
+		public int SelectionLead {
+			get {
+				if (MainSelection.IsEmpty)
+					return -1;
+				return MainSelection.GetLeadOffset (this);
+			}
+			set {
+				DocumentLocation location = Document.OffsetToLocation (value);
+				if (mainSelection.IsEmpty) {
+					MainSelection = new Selection (location, location);
+				} else {
+					if (MainSelection.Anchor == location) {
+						MainSelection = MainSelection.WithAnchor (MainSelection.Lead);
+					} else {
+						MainSelection = MainSelection.WithLead (location);
+					}
+				}
+			}
+		}
+
 		/// <summary>
 		/// Gets or sets the selection range. If nothing is selected (Caret.Offset, 0) is returned.
 		/// </summary>
@@ -872,8 +911,6 @@ namespace Mono.TextEditor
 		
 		public void ClearSelection ()
 		{
-			if (!IsSomethingSelected)
-				return;
 			MainSelection = Selection.Empty;
 		}
 		
@@ -888,6 +925,10 @@ namespace Mono.TextEditor
 		
 		public void SetSelection (int anchorOffset, int leadOffset)
 		{
+			if (anchorOffset == leadOffset) {
+				MainSelection = Selection.Empty;
+				return;
+			}
 			var anchor = document.OffsetToLocation (anchorOffset);
 			var lead = document.OffsetToLocation (leadOffset);
 			MainSelection = new Selection (anchor, lead);
@@ -895,7 +936,7 @@ namespace Mono.TextEditor
 
 		public void SetSelection (DocumentLocation anchor, DocumentLocation lead)
 		{
-			MainSelection = new Selection (anchor, lead);
+			MainSelection = anchor == lead ? Selection.Empty : new Selection (anchor, lead);
 		}
 
 		public void SetSelection (int anchorLine, int anchorColumn, int leadLine, int leadColumn)
@@ -927,7 +968,6 @@ namespace Mono.TextEditor
 				EnsureCaretIsNotVirtual ();
 				if (len > 0)
 					Remove (segment.Offset, len);
-				caret.Location = loc;
 				break;
 			case SelectionMode.Block:
 				DocumentLocation visStart = LogicalToVisualLocation (selection.Anchor);

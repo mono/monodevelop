@@ -138,7 +138,7 @@ namespace MonoDevelop.SourceEditor
 
 				CancelTooltip ();
 				var token = tooltipCancelSrc.Token;
-				Task.Factory.StartNew (delegate {
+				Task.Run (delegate {
 					var list = GetReferences (result, token).ToList ();
 					if (!token.IsCancellationRequested) {
 						Gtk.Application.Invoke (delegate {
@@ -251,7 +251,7 @@ namespace MonoDevelop.SourceEditor
 			OnUsagesUpdated (EventArgs.Empty);
 		}
 
-		public class UsageMarker : TextLineMarker
+		class UsageMarker : TextLineMarker
 		{
 			List<UsageSegment> usages = new List<UsageSegment> ();
 
@@ -324,7 +324,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public class UsageSegment
+		class UsageSegment
 		{
 			public readonly ReferenceUsageType UsageType;
 			public readonly TextSegment TextSegment;

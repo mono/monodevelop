@@ -32,7 +32,6 @@ using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Templates;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -184,7 +183,6 @@ namespace MonoDevelop.Ide.Projects
 
 		Rectangle DrawIcon (Drawable window, Widget widget, Rectangle cell_area, CellRendererState flags)
 		{
-			StateType state = GetState (widget, flags);
 			var iconRect = new Rectangle (cell_area.X + (int)Xpad, cell_area.Y + (int)Ypad, (int)TemplateIcon.Width, (int)TemplateIcon.Height);
 
 			using (var ctx = CairoHelper.Create (window)) {

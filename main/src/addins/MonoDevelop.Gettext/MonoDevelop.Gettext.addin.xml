@@ -105,11 +105,6 @@
 	<Extension path = "/MonoDevelop/DesignerSupport/PropertyProviders">
 		<Class class = "MonoDevelop.Gettext.PropertyProvider"/>
 	</Extension>
-	
-	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
-		<ItemProperty class = "MonoDevelop.Projects.ProjectFile"
-			name = "Gettext.ScanForTranslations" type = "System.Boolean" />
-	</Extension>
 
 	<Extension path = "/MonoDevelop/Autotools/MakefileHandlers">
 		<Class class = "MonoDevelop.Gettext.MakefileHandler"/>

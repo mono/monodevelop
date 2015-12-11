@@ -34,7 +34,6 @@ using Gdk;
 using Gtk;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
-using Mono.TextEditor;
 using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide
@@ -262,8 +261,8 @@ namespace MonoDevelop.Ide
 		{
 			Gdk.Key key;
 			Gdk.ModifierType mod;
-			Mono.TextEditor.KeyboardShortcut[] accels;
-			Mono.TextEditor.GtkWorkarounds.MapKeys (evnt, out key, out mod, out accels);
+			KeyboardShortcut[] accels;
+			GtkWorkarounds.MapKeys (evnt, out key, out mod, out accels);
 			
 			switch (accels [0].Key) {
 			case Gdk.Key.Left:

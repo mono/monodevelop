@@ -28,14 +28,14 @@ using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
-using Mono.TextEditor;
+using MonoDevelop.Core.Text;
 using MonoDevelop.Projects.Policies;
+using System.Linq;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
 	public enum CodeFormattingCommands {
-		FormatBuffer,
-		FormatSelection
+		FormatBuffer
 	}
 	
 	public class FormatBufferHandler : CommandHandler
@@ -56,6 +56,10 @@ namespace MonoDevelop.Ide.CodeFormatting
 			Document doc;
 			var formatter = GetFormatter (out doc);
 			info.Enabled = formatter != null;
+
+			if (formatter != null && formatter.SupportsPartialDocumentFormatting && doc.Editor.IsSomethingSelected) {
+				info.Text = GettextCatalog.GetString ("_Format Selection");
+			}
 		}
 		
 		protected override void Run (object tool)
@@ -64,71 +68,58 @@ namespace MonoDevelop.Ide.CodeFormatting
 			var formatter = GetFormatter (out doc);
 			if (formatter == null)
 				return;
-
-			if (formatter.SupportsOnTheFlyFormatting) {
-				using (var undo = doc.Editor.OpenUndoGroup ()) {
-					formatter.OnTheFlyFormat (doc, 0, doc.Editor.Length);
-				}
-			} else {
-				var text = doc.Editor.Text;
-				var policies = doc.Project != null ? doc.Project.Policies : PolicyService.DefaultPolicies;
-				string formattedText = formatter.FormatText (policies, text);
-				if (formattedText == null || formattedText == text)
-					return;
-
-				doc.Editor.Replace (0, text.Length, formattedText);
-			}
-			doc.Editor.Document.CommitUpdateAll ();
-		}
-	}
-	
-	public class FormatSelectionHandler : CommandHandler
-	{
-		protected override void Update (CommandInfo info)
-		{
-			Document doc;
-			var formatter = FormatBufferHandler.GetFormatter (out doc);
-			info.Enabled = formatter != null && !formatter.IsDefault;
-		}
-		
-		protected override void Run (object tool)
-		{
-			Document doc;
-			var formatter = FormatBufferHandler.GetFormatter (out doc);
-			if (formatter == null)
-				return;
-
-			TextSegment selection;
 			var editor = doc.Editor;
-			if (editor.IsSomethingSelected) {
-				selection = editor.SelectionRange;
-			} else {
-				selection = editor.GetLine (editor.Caret.Line).Segment;
-			}
-			
-			using (var undo = editor.OpenUndoGroup ()) {
-				var version = editor.Version;
 
-				if (formatter.SupportsOnTheFlyFormatting) {
-					formatter.OnTheFlyFormat (doc, selection.Offset, selection.EndOffset);
-				} else {
-					var pol = doc.Project != null ? doc.Project.Policies : null;
-					try {
-						var editorText = editor.Text;
-						string text = formatter.FormatText (pol, editorText, selection.Offset, selection.EndOffset);
-						if (text != null && editorText.Substring (selection.Offset, selection.Length) != text) {
-							editor.Replace (selection.Offset, selection.Length, text);
+			if (editor.IsSomethingSelected && formatter.SupportsPartialDocumentFormatting) {
+				ISegment selection = editor.SelectionRange;
+
+				using (var undo = editor.OpenUndoGroup ()) {
+					var version = editor.Version;
+
+					if (formatter.SupportsOnTheFlyFormatting) {
+						formatter.OnTheFlyFormat (doc.Editor, doc, selection);
+					} else {
+						var pol = doc.Project != null ? doc.Project.Policies : null;
+						try {
+							var editorText = editor.Text;
+							string text = formatter.FormatText (pol, editorText, selection);
+							if (text != null && editorText.Substring (selection.Offset, selection.Length) != text) {
+								editor.ReplaceText (selection.Offset, selection.Length, text);
+							}
+						} catch (Exception e) {
+							LoggingService.LogError ("Error during format.", e); 
 						}
-					} catch (Exception e) {
-						LoggingService.LogError ("Error during format.", e); 
 					}
-				}
 
-				if (editor.IsSomethingSelected) { 
 					int newOffset = version.MoveOffsetTo (editor.Version, selection.Offset);
 					int newEndOffset = version.MoveOffsetTo (editor.Version, selection.EndOffset);
 					editor.SetSelection (newOffset, newEndOffset);
 				}
+				return;
+			}
+
+			if (formatter.SupportsOnTheFlyFormatting) {
+				using (var undo = doc.Editor.OpenUndoGroup ()) {
+					formatter.OnTheFlyFormat (doc.Editor, doc, new TextSegment (0, doc.Editor.Length));
+				}
+			} else {
+				var text = editor.Text;
+				var oldOffsetWithoutWhitespaces = editor.GetTextBetween (0, editor.CaretOffset).Count (c => !char.IsWhiteSpace (c));
+				var policies = doc.Project != null ? doc.Project.Policies : PolicyService.DefaultPolicies;
+				string formattedText = formatter.FormatText (policies, text);
+				if (formattedText == null || formattedText == text)
+					return;
+				
+				editor.ReplaceText (0, text.Length, formattedText);
+				text = editor.Text;
+				var currentOffsetWithoutWhitepspaces = 0;
+				int i = 0;
+				for (; i < text.Length && currentOffsetWithoutWhitepspaces < oldOffsetWithoutWhitespaces; i++) {
+					if (!char.IsWhiteSpace(text [i])) {
+						currentOffsetWithoutWhitepspaces++;
+					}
+				}
+				editor.SetCaretLocation (editor.OffsetToLocation (i));
 			}
 		}
 	}

@@ -96,7 +96,7 @@ namespace MonoDevelop.NUnit
 		protected override void OnCreateTests ()
 		{
 			NUnitService testService = NUnitService.Instance;
-			foreach (SolutionItem e in folder.Items) {
+			foreach (SolutionFolderItem e in folder.Items) {
 				UnitTest t = testService.BuildTest (e);
 				if (t != null)
 					Tests.Add (t);

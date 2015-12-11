@@ -65,7 +65,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				entryName.Visible = false;
 				boxMessage.Visible = false;
 				labelMessage.Visible = false;
-				defaultPath = PropertyService.Get ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", Environment.GetFolderPath (Environment.SpecialFolder.Personal));
+				defaultPath = IdeApp.Preferences.ProjectsDefaultPath;
 				entryFolder.Text = defaultPath;
 			} else {
 				labelTargetDir.Visible = false;

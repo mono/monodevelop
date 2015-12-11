@@ -33,7 +33,7 @@ using Gtk;
 
 namespace MonoDevelop.Ide.Gui
 {
-	class BackgroundProgressMonitor: SimpleProgressMonitor
+	class BackgroundProgressMonitor: ProgressMonitor
 	{
 		string title;
 		StatusBarIcon icon;
@@ -56,10 +56,10 @@ namespace MonoDevelop.Ide.Gui
 			if (icon == null)
 				return;
 			string tip;
-			if (Tracker.UnknownWork)
-				tip = string.Format ("{0}\n{1}", title, Tracker.CurrentTask);
+			if (ProgressIsUnknown)
+				tip = string.Format ("{0}\n{1}", title, CurrentTaskName);
 			else
-				tip = string.Format ("{0} ({1}%)\n{2}", title, (int)(Tracker.GlobalWork * 100), Tracker.CurrentTask);
+				tip = string.Format ("{0} ({1}%)\n{2}", title, (int)(Progress * 100), CurrentTaskName);
 				
 			Application.Invoke (delegate {
 				if (icon != null)

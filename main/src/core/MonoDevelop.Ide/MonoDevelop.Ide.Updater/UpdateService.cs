@@ -30,6 +30,7 @@ using System;
 using Mono.Addins;
 using MonoDevelop.Core.ProgressMonitoring;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Updater
 {
@@ -128,22 +129,18 @@ namespace MonoDevelop.Ide.Updater
 			CheckForUpdates (false);
 		}
 
-		static void CheckForUpdates (bool automatic)
+		static async void CheckForUpdates (bool automatic)
 		{
 			PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.LastCheck", DateTime.Now);
 			PropertyService.SaveProperties ();
 			var handlers = AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/Updater/UpdateHandlers");
 
-			IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Looking for updates", "md-updates");
+			ProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Looking for updates", "md-updates");
 
-			Thread t = new Thread (delegate () {
-				CheckUpdates (mon, handlers, automatic);
-			});
-			t.Name = "Addin updater";
-			t.Start ();
+			await CheckUpdates (mon, handlers, automatic);
 		}
 
-		static void CheckUpdates (IProgressMonitor monitor, object[] handlers, bool automatic)
+		static async Task CheckUpdates (ProgressMonitor monitor, object[] handlers, bool automatic)
 		{
 			using (monitor) {
 				// The handler to use is the last one declared in the extension point
@@ -151,7 +148,7 @@ namespace MonoDevelop.Ide.Updater
 					return;
 				try {
 					IUpdateHandler uh = (IUpdateHandler) handlers [handlers.Length - 1];
-					uh.CheckUpdates (monitor, automatic);
+					await uh.CheckUpdates (monitor, automatic);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Updates check failed for handler of type '" + handlers [handlers.Length - 1].GetType () + "'", ex);
 				}

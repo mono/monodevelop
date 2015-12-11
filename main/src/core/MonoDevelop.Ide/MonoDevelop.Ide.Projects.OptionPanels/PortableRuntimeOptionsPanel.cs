@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		
 		public override Widget CreatePanelWidget ()
 		{
-			return (widget = new PortableRuntimeOptionsPanelWidget ((PortableDotNetProject) ConfiguredProject, ItemConfigurations));
+			return (widget = new PortableRuntimeOptionsPanelWidget ((DotNetProject) ConfiguredProject, ItemConfigurations));
 		}
 		
 		public override void ApplyChanges ()
@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		readonly SortedDictionary<string, List<SupportedFramework>> supportedFrameworks;
 		readonly List<OptionCombo> options;
 
-		PortableDotNetProject project;
+		DotNetProject project;
 		TargetFramework target;
 		HBox warningHBox;
 		Label warning;
@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			}
 		}
 		
-		public PortableRuntimeOptionsPanelWidget (PortableDotNetProject project, IEnumerable<ItemConfiguration> configurations)
+		public PortableRuntimeOptionsPanelWidget (DotNetProject project, IEnumerable<ItemConfiguration> configurations)
 		{
 			this.target = project.TargetFramework;
 			this.project = project;
@@ -667,7 +667,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		{
 			if (target != null && target != project.TargetFramework) {
 				project.TargetFramework = target;
-				IdeApp.ProjectOperations.Save (project);
+				IdeApp.ProjectOperations.SaveAsync (project);
 			}
 		}
 	}

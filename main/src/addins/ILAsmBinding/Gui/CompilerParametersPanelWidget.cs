@@ -53,13 +53,13 @@ namespace ILAsmBinding
 			this.project       = project;
 			this.configuration = configuration;
 			compileTargetCombo.Active          = configuration.CompileTarget == CompileTarget.Exe ? 0 : 1;
-			checkbuttonIncludeDebugInfo.Active = configuration.DebugMode;
+			checkbuttonIncludeDebugInfo.Active = configuration.DebugSymbols;
 		}
 		
 		public void Store ()
 		{
 			project.CompileTarget = compileTargetCombo.Active == 0 ? CompileTarget.Exe : CompileTarget.Library;
-			configuration.DebugMode = checkbuttonIncludeDebugInfo.Active;
+			configuration.DebugSymbols = checkbuttonIncludeDebugInfo.Active;
 		}
 	}
 	

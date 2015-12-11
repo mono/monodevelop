@@ -34,13 +34,13 @@ namespace Mono.TextEditor
 {
 	public class GutterMargin : Margin
 	{
-		TextEditor editor;
+		MonoTextEditor editor;
 		int width;
 		int oldLineCountLog10 = -1;
 
 		double fontHeight;
 		
-		public GutterMargin (TextEditor editor)
+		public GutterMargin (MonoTextEditor editor)
 		{
 			this.editor = editor;
 
@@ -183,6 +183,7 @@ namespace Mono.TextEditor
 			base.cursor.Dispose ();
 			base.cursor = null;
 			
+			this.editor.Caret.PositionChanged -= EditorCarethandlePositionChanged;
 			this.editor.Document.TextSet -= HandleEditorDocumenthandleTextSet;
 			this.editor.Document.LineChanged -= UpdateWidth;
 //			layout = layout.Kill ();

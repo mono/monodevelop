@@ -32,6 +32,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Gettext.NodeBuilders
 {
@@ -121,9 +122,10 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				TranslationProject project = CurrentNode.DataItem as TranslationProject;
 				if (project == null)
 					return;
+				
 				using (var dlg = new TranslationProjectOptionsDialog (project))
 					MessageService.ShowCustomDialog (dlg);
-				IdeApp.Workspace.Save ();
+				IdeApp.Workspace.SaveAsync ();
 			}
 			
 			[CommandUpdateHandler (Commands.AddTranslation)]
@@ -145,7 +147,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 					if (MessageService.RunCustomDialog (chooser) == (int)ResponseType.Ok) {
 						string language = chooser.Language + (chooser.HasCountry ? "_" + chooser.Country : "");
 					
-						using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (monitorTitle, "md-package", true, true)) {
+						using (ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (monitorTitle, "md-package", true, true)) {
 							project.AddNewTranslation (language, monitor);
 							UpdateTranslations (project);
 						}
@@ -156,14 +158,10 @@ namespace MonoDevelop.Gettext.NodeBuilders
 					chooser.Dispose ();
 				}
 			}
-			static IAsyncOperation currentUpdateTranslationOperation = MonoDevelop.Core.ProgressMonitoring.NullAsyncOperation.Success;
+			static Task currentUpdateTranslationOperation = Task.FromResult (0);
 			
-			void UpdateTranslationsAsync (object ob)
+			void UpdateTranslationsAsync (ProgressMonitor monitor, TranslationProject project)
 			{
-				object[] data = (object[]) ob;
-				IProgressMonitor monitor = (IProgressMonitor) data [0];
-				TranslationProject project = (TranslationProject) data [1];
-				
 				try {
 					project.UpdateTranslations (monitor);
 					Gtk.Application.Invoke (delegate {
@@ -182,9 +180,8 @@ namespace MonoDevelop.Gettext.NodeBuilders
 			{
 				if (currentUpdateTranslationOperation != null && !currentUpdateTranslationOperation.IsCompleted) 
 					return;
-				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
-				currentUpdateTranslationOperation = monitor.AsyncOperation;
-				DispatchService.BackgroundDispatch (new StatefulMessageHandler (UpdateTranslationsAsync), new object[] {monitor, project});
+				ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
+				currentUpdateTranslationOperation = Task.Run (() => UpdateTranslationsAsync (monitor, project));
 			}
 			
 			[CommandHandler (Commands.UpdateTranslations)]

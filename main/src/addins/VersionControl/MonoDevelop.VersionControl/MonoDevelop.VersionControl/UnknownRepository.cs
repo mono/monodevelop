@@ -45,52 +45,52 @@ namespace MonoDevelop.VersionControl
 		}
 
 
-		protected override Repository OnPublish (string serverPath, FilePath localPath, FilePath[] FilePath, string message, IProgressMonitor monitor)
+		protected override Repository OnPublish (string serverPath, FilePath localPath, FilePath[] FilePath, string message, ProgressMonitor monitor)
 		{
 			return null;
 		}
 
-		protected override void OnUpdate (FilePath[] paths, bool recurse, IProgressMonitor monitor)
+		protected override void OnUpdate (FilePath[] paths, bool recurse, ProgressMonitor monitor)
 		{
 		}
 		
-		protected override void OnCommit (ChangeSet changeSet, IProgressMonitor monitor)
+		protected override void OnCommit (ChangeSet changeSet, ProgressMonitor monitor)
 		{
 		}
 
-		protected override void OnCheckout (FilePath path, Revision rev, bool recurse, IProgressMonitor monitor)
+		protected override void OnCheckout (FilePath path, Revision rev, bool recurse, ProgressMonitor monitor)
 		{
 		}
 
-		protected override void OnRevert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
+		protected override void OnRevert (FilePath[] localPaths, bool recurse, ProgressMonitor monitor)
 		{
 		}
 
-		protected override void OnRevertRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
+		protected override void OnRevertRevision (FilePath localPath, Revision revision, ProgressMonitor monitor)
 		{
 		}
 
-		protected override void OnRevertToRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
+		protected override void OnRevertToRevision (FilePath localPath, Revision revision, ProgressMonitor monitor)
 		{
 		}
 
-		protected override void OnAdd (FilePath[] paths, bool recurse, IProgressMonitor monitor)
+		protected override void OnAdd (FilePath[] paths, bool recurse, ProgressMonitor monitor)
 		{
 		}
 
-		protected override void OnMoveFile (FilePath srcPath, FilePath destPath, bool force, IProgressMonitor monitor)
+		protected override void OnMoveFile (FilePath srcPath, FilePath destPath, bool force, ProgressMonitor monitor)
 		{
 		}
 
-		protected override void OnMoveDirectory (FilePath srcPath, FilePath destPath, bool force, IProgressMonitor monitor)
+		protected override void OnMoveDirectory (FilePath srcPath, FilePath destPath, bool force, ProgressMonitor monitor)
 		{
 		}
 
-		protected override void OnDeleteFiles (FilePath[] path, bool force, IProgressMonitor monitor, bool keepLocal)
+		protected override void OnDeleteFiles (FilePath[] path, bool force, ProgressMonitor monitor, bool keepLocal)
 		{
 		}
 
-		protected override void OnDeleteDirectories (FilePath[] path, bool force, IProgressMonitor monitor, bool keepLocal)
+		protected override void OnDeleteDirectories (FilePath[] path, bool force, ProgressMonitor monitor, bool keepLocal)
 		{
 		}
 

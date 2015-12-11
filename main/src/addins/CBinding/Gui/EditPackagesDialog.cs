@@ -192,7 +192,7 @@ namespace CBinding
 			List<Package> packages = new List<Package>();
 			Package package;
 			
-			foreach (SolutionItem c in project.ParentFolder.Items) {
+			foreach (SolutionFolderItem c in project.ParentFolder.Items) {
 				if (null != c && c is CProject) {
 					CProject cproj = (CProject)c;
 					CProjectConfiguration conf = (CProjectConfiguration)cproj.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);

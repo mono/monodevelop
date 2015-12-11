@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using Gtk;
 using MonoDevelop.Components.Extensions;
 
 
@@ -44,7 +43,7 @@ namespace MonoDevelop.Components
 		{
 		}
 		
-		public SelectFileDialog (string title, Gtk.FileChooserAction action)
+		public SelectFileDialog (string title, FileChooserAction action)
 		{
 			Title = title;
 			Action = action;

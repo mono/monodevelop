@@ -18,16 +18,12 @@ namespace MonoDevelop.Deployment
 			get {
 				if (MarkedCopyToOutput)
 					return true;
-				
-				object val = file.ExtendedProperties ["DeployService.Deploy"];
-				return val != null && (bool) val;
+
+				return file.Metadata.GetValue<bool> ("DeployService.Deploy", false);
 			}
 			set {
 				AssertNotCopyToOutput ();
-				if (!value)
-					file.ExtendedProperties.Remove ("DeployService.Deploy");
-				else
-					file.ExtendedProperties ["DeployService.Deploy"] = true;
+				file.Metadata.SetValue ("DeployService.Deploy", value, false);
 			}
 		
 		}
@@ -36,19 +32,13 @@ namespace MonoDevelop.Deployment
 			get {
 				if (MarkedCopyToOutput)
 					return MonoDevelop.Deployment.TargetDirectory.ProgramFiles;
-				
-				string d = file.ExtendedProperties ["DeployService.TargetDirectoryId"] as string;
-				if (string.IsNullOrEmpty (d))
-					return MonoDevelop.Deployment.TargetDirectory.ProgramFiles;
-				else
-					return d;
+				return file.Metadata.GetValue ("DeployService.TargetDirectoryId", MonoDevelop.Deployment.TargetDirectory.ProgramFiles);
 			}
 			set {
 				AssertNotCopyToOutput ();
-				if (string.IsNullOrEmpty (value) || value == MonoDevelop.Deployment.TargetDirectory.ProgramFiles)
-					file.ExtendedProperties.Remove ("DeployService.TargetDirectoryId");
-				else
-					file.ExtendedProperties ["DeployService.TargetDirectoryId"] = value;
+				if (string.IsNullOrEmpty (value))
+					value = MonoDevelop.Deployment.TargetDirectory.ProgramFiles;
+				file.Metadata.SetValue ("DeployService.TargetDirectoryId", value, MonoDevelop.Deployment.TargetDirectory.ProgramFiles);
 			}
 		}
 		
@@ -59,18 +49,14 @@ namespace MonoDevelop.Deployment
 				
 				if (UseProjectRelativePath)
 					return file.ProjectVirtualPath;
-				string s = file.ExtendedProperties ["DeployService.RelativeDeployPath"] as string;
-				if (string.IsNullOrEmpty (s))
-					return Path.GetFileName (file.Name);
-				else
-					return s;
+				return file.Metadata.GetValue ("DeployService.RelativeDeployPath", Path.GetFileName (file.Name));
 			}
 			set {
 				AssertNotCopyToOutput ();
-				if (string.IsNullOrEmpty (value) || value == Path.GetFileName (file.Name))
-					file.ExtendedProperties.Remove ("DeployService.RelativeDeployPath");
-				else
-					file.ExtendedProperties ["DeployService.RelativeDeployPath"] = value;
+				var defname = Path.GetFileName (file.Name);
+				if (string.IsNullOrEmpty (value))
+					value = defname;
+				file.Metadata.SetValue ("DeployService.RelativeDeployPath", value, defname);
 			}
 		}
 		
@@ -78,16 +64,11 @@ namespace MonoDevelop.Deployment
 			get {
 				if (MarkedCopyToOutput)
 					return false;
-				
-				object val = file.ExtendedProperties ["DeployService.HasPathReferences"];
-				return val != null && (bool) val;
+				return file.Metadata.GetValue ("DeployService.HasPathReferences", false);
 			}
 			set {
 				AssertNotCopyToOutput ();
-				if (!value)
-					file.ExtendedProperties.Remove ("DeployService.HasPathReferences");
-				else
-					file.ExtendedProperties ["DeployService.HasPathReferences"] = true;
+				file.Metadata.SetValue ("DeployService.HasPathReferences", value, false);
 			}
 		}
 		
@@ -97,17 +78,13 @@ namespace MonoDevelop.Deployment
 				if (MarkedCopyToOutput)
 					return false;
 				
-				object val = file.ExtendedProperties ["DeployService.UseProjectRelativePath"];
-				return val != null && (bool) val;
+				return file.Metadata.GetValue ("DeployService.UseProjectRelativePath", false);
 			}
 			set {
 				AssertNotCopyToOutput ();
-				if (!value)
-					file.ExtendedProperties.Remove ("DeployService.UseProjectRelativePath");
-				else {
+				if (value)
 					RelativeDeployPath = "";
-					file.ExtendedProperties ["DeployService.UseProjectRelativePath"] = true;
-				}
+				file.Metadata.SetValue ("DeployService.UseProjectRelativePath", value, false);
 			}
 		}
 		
@@ -115,16 +92,12 @@ namespace MonoDevelop.Deployment
 			get {
 				if (MarkedCopyToOutput)
 					return DeployFileAttributes.None;
-				
-				object val = file.ExtendedProperties ["DeployService.FileAttributes"];
-				return val != null ? (DeployFileAttributes) val : DeployFileAttributes.None;
+
+				return file.Metadata.GetValue ("DeployService.FileAttributes", DeployFileAttributes.None);
 			}
 			set {
 				AssertNotCopyToOutput ();
-				if (value == DeployFileAttributes.None)
-					file.ExtendedProperties.Remove ("DeployService.FileAttributes");
-				else
-					file.ExtendedProperties ["DeployService.FileAttributes"] = value;
+				file.Metadata.SetValue ("DeployService.FileAttributes", value, DeployFileAttributes.None);
 			}
 		}
 		

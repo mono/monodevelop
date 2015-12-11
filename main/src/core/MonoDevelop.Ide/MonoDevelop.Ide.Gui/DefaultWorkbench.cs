@@ -25,7 +25,6 @@
 
 using System;
 using System.IO;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Diagnostics;
@@ -39,12 +38,10 @@ using MonoDevelop.Ide.Codons;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Components.Docking;
 
-using GLib;
 using MonoDevelop.Components.DockToolbars;
 using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Extensions;
-using Mono.TextEditor;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Components.DockNotebook;
 
@@ -257,10 +254,10 @@ namespace MonoDevelop.Ide.Gui
 		public void InitializeWorkspace()
 		{
 			// FIXME: GTKize
-			IdeApp.ProjectOperations.CurrentProjectChanged += (ProjectEventHandler) DispatchService.GuiDispatch (new ProjectEventHandler(SetProjectTitle));
+			IdeApp.ProjectOperations.CurrentProjectChanged += (s,a) => SetWorkbenchTitle ();
 
-			FileService.FileRemoved += (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs>(CheckRemovedFile));
-			FileService.FileRenamed += (EventHandler<FileCopyEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileCopyEventArgs>(CheckRenamedFile));
+			FileService.FileRemoved += CheckRemovedFile;
+			FileService.FileRenamed += CheckRenamedFile;
 			
 //			TopMenu.Selected   += new CommandHandler(OnTopMenuSelected);
 //			TopMenu.Deselected += new CommandHandler(OnTopMenuDeselected);
@@ -343,7 +340,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			viewContentCollection.Add (content);
 
-			if (PropertyService.Get ("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
+			if (IdeApp.Preferences.LoadDocumentUserProperties && content is IMementoCapable) {
 				try {
 					Properties memento = GetStoredMemento(content);
 					if (memento != null) {
@@ -368,7 +365,7 @@ namespace MonoDevelop.Ide.Gui
 			return mimeimage;
 		}
 
-		public virtual void ShowView (IViewContent content, bool bringToFront, DockNotebook notebook = null)
+		public virtual void ShowView (IViewContent content, bool bringToFront, IViewDisplayBinding binding = null, DockNotebook notebook = null)
 		{
 			bool isFile = content.IsFile;
 			if (!isFile) {
@@ -404,6 +401,10 @@ namespace MonoDevelop.Ide.Gui
 			sdiWorkspaceWindow.TitleChanged += delegate { SetWorkbenchTitle (); };
 			sdiWorkspaceWindow.Closed += CloseWindowEvent;
 			sdiWorkspaceWindow.Show ();
+			if (binding != null)
+				DisplayBindingService.AttachSubWindows (sdiWorkspaceWindow, binding);
+
+			sdiWorkspaceWindow.CreateCommandHandler ();
 
 			tab.Content = sdiWorkspaceWindow;
 			if (mimeimage != null)
@@ -731,11 +732,6 @@ namespace MonoDevelop.Ide.Gui
 			return true;
 		}
 		
-		void SetProjectTitle(object sender, ProjectEventArgs e)
-		{
-			SetWorkbenchTitle ();
-		}
-
 		int activeWindowChangeLock = 0;
 
 		public void LockActiveWindowChangeEvent ()
@@ -821,9 +817,9 @@ namespace MonoDevelop.Ide.Gui
 			// Create the docking widget and add it to the window.
 			dock = new DockFrame ();
 			
-			dock.CompactGuiLevel = ((int)IdeApp.Preferences.WorkbenchCompactness) + 1;
-			IdeApp.Preferences.WorkbenchCompactnessChanged += delegate {
-				dock.CompactGuiLevel = ((int)IdeApp.Preferences.WorkbenchCompactness) + 1;
+			dock.CompactGuiLevel = ((int)IdeApp.Preferences.WorkbenchCompactness.Value) + 1;
+			IdeApp.Preferences.WorkbenchCompactness.Changed += delegate {
+				dock.CompactGuiLevel = ((int)IdeApp.Preferences.WorkbenchCompactness.Value) + 1;
 			};
 			
 			/* Side bar is experimental. Disabled for now
@@ -1333,7 +1329,6 @@ namespace MonoDevelop.Ide.Gui
 			item.DefaultLocation = location;
 			item.DefaultVisible = false;
 			item.DefaultStatus = defaultStatus;
-			item.DockLabelProvider = padCodon;
 			window.Item = item;
 			
 			if (padCodon.Initialized) {

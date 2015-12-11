@@ -29,7 +29,7 @@ namespace Mono.TextEditor
 {
 	public class CodeSegmentEditorWindow : Gtk.Window
 	{
-		TextEditor codeSegmentEditor = new TextEditor ();
+		MonoTextEditor codeSegmentEditor = new MonoTextEditor ();
 		
 		public ISyntaxMode SyntaxMode {
 			get {
@@ -49,7 +49,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public CodeSegmentEditorWindow (TextEditor editor) : base (Gtk.WindowType.Toplevel)
+		public CodeSegmentEditorWindow (MonoTextEditor editor) : base (Gtk.WindowType.Toplevel)
 		{
 			Gtk.ScrolledWindow scrolledWindow = new Gtk.ScrolledWindow ();
 			scrolledWindow.Child = codeSegmentEditor;

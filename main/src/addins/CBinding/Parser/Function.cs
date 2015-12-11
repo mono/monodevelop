@@ -35,8 +35,35 @@ using MonoDevelop.Projects;
 
 namespace CBinding.Parser
 {
-	public class Function : LanguageItem
+	public class Function : LanguageItem //, IParameterHintingData
 	{
+		#region IParameterHintingData implementation
+
+		public string GetParameterName (int currentParameter)
+		{
+			return parameters [currentParameter];
+		}
+
+		public Microsoft.CodeAnalysis.ISymbol Symbol {
+			get {
+				return null;
+			}
+		}
+
+		public int ParameterCount {
+			get {
+				return parameters.Length;
+			}
+		}
+
+		public bool IsParameterListAllowed {
+			get {
+				return false;
+			}
+		}
+
+		#endregion
+
 		private string[] parameters;
 		private string signature;
 		private bool is_const = false;

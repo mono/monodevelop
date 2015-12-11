@@ -29,14 +29,18 @@
 using System;
 using MonoDevelop.Core;
 using System.IO;
-using MonoDevelop.Core.Serialization;
 using System.Collections.Generic;
 using MonoDevelop.Core.StringParsing;
+using System.Xml.Linq;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {
 	public class ProjectConfiguration : SolutionItemConfiguration
 	{
+		bool debugTypeWasNone;
+		IMSBuildEvaluatedPropertyCollection evaluatedProperties;
+		IPropertySet properties;
 
 		public ProjectConfiguration ()
 		{
@@ -46,8 +50,110 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		[ProjectPathItemProperty("IntermediateOutputPath")]
-		private FilePath intermediateOutputDirectory;
+		internal protected virtual void Read (IMSBuildEvaluatedPropertyCollection pset, string toolsVersion)
+		{
+			evaluatedProperties = pset;
+
+			intermediateOutputDirectory = pset.GetPathValue ("IntermediateOutputPath");
+			outputDirectory = pset.GetPathValue ("OutputPath", defaultValue:"." + Path.DirectorySeparatorChar);
+			debugMode = pset.GetValue<bool> ("DebugSymbols", false);
+			pauseConsoleOutput = pset.GetValue ("ConsolePause", true);
+			externalConsole = pset.GetValue<bool> ("ExternalConsole");
+			commandLineParameters = pset.GetValue ("Commandlineparameters", "");
+			runWithWarnings = pset.GetValue ("RunWithWarnings", true);
+
+			// Special case: when DebugType=none, xbuild returns an empty string
+			debugType = pset.GetValue ("DebugType");
+			if (string.IsNullOrEmpty (debugType)) {
+				debugType = "none";
+				debugTypeReadAsEmpty = true;
+			}
+			debugTypeWasNone = debugType == "none";
+
+			var svars = pset.GetValue ("EnvironmentVariables");
+			if (svars != null) {
+				var vars = XElement.Parse (svars);
+				if (vars != null) {
+					foreach (var val in vars.Elements (XName.Get ("Variable", MSBuildProject.Schema))) {
+						var name = (string)val.Attribute ("name");
+						if (name != null)
+							environmentVariables [name] = (string)val.Attribute ("value");
+					}
+				}
+			}
+			pset.ReadObjectProperties (this, GetType (), true);
+		}
+
+		internal protected virtual void Write (IPropertySet pset, string toolsVersion)
+		{
+			pset.SetPropertyOrder ("DebugSymbols", "DebugType", "Optimize", "OutputPath", "DefineConstants", "ErrorReport");
+
+			FilePath defaultImPath;
+			if (!string.IsNullOrEmpty (Platform))
+				defaultImPath = ParentItem.BaseIntermediateOutputPath.Combine (Platform, Name);
+			else
+				defaultImPath = ParentItem.BaseIntermediateOutputPath.Combine (Name);
+
+			pset.SetValue ("IntermediateOutputPath", IntermediateOutputDirectory, defaultImPath);
+
+			// xbuild returns 'false' for DebugSymbols if DebugType==none, no matter which value is defined
+			// in the project file. Here we avoid overwriting the value if it has not changed.
+			if (debugType != "none" || !debugTypeWasNone)
+				pset.SetValue ("DebugSymbols", debugMode, false);
+			
+			pset.SetValue ("OutputPath", outputDirectory);
+			pset.SetValue ("ConsolePause", pauseConsoleOutput, true);
+			pset.SetValue ("ExternalConsole", externalConsole, false);
+			pset.SetValue ("Commandlineparameters", commandLineParameters, "");
+			pset.SetValue ("RunWithWarnings", runWithWarnings, true);
+
+			if (debugType != "none" || !debugTypeReadAsEmpty)
+				pset.SetValue ("DebugType", debugType, "");
+			
+			if (environmentVariables.Count > 0) {
+				XElement e = new XElement (XName.Get ("EnvironmentVariables", MSBuildProject.Schema));
+				foreach (var v in environmentVariables) {
+					var val = new XElement (XName.Get ("Variable", MSBuildProject.Schema));
+					val.SetAttributeValue ("name", v.Key);
+					val.SetAttributeValue ("value", v.Value);
+					e.Add (val);
+				}
+				pset.SetValue ("EnvironmentVariables", e.ToString (SaveOptions.DisableFormatting));
+			} else
+				pset.RemoveProperty ("EnvironmentVariables");
+
+			pset.WriteObjectProperties (this, GetType (), true);
+		}
+
+		/// <summary>
+		/// Properties obtained while evaluating this configuration
+		/// </summary>
+		/// <remarks>This property set contains all properties resulting from evaluating
+		/// the project with the Configuration and Platform properties set for this
+		/// configuration.</remarks>
+		public IReadOnlyPropertySet EvaluatedProperties {
+			get { return evaluatedProperties ?? MSBuildEvaluatedPropertyCollection.Empty; }
+		}
+
+		/// <summary>
+		/// Property set where the properties for this configuration are defined.
+		/// </summary>
+		public IPropertySet Properties {
+			get {
+				if (properties == null) {
+					if (ParentItem == null)
+						properties = new MSBuildPropertyGroup ();
+					else
+						properties = ParentItem.MSBuildProject.CreatePropertyGroup ();
+				}
+				return properties; 
+			}
+			internal set {
+				properties = value;
+			}
+		}
+
+		FilePath intermediateOutputDirectory = FilePath.Empty;
 
 		public virtual FilePath IntermediateOutputDirectory {
 			get {
@@ -66,46 +172,45 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		[ProjectPathItemProperty("OutputPath")]
-		private FilePath outputDirectory = "." + Path.DirectorySeparatorChar;
+		FilePath outputDirectory = "." + Path.DirectorySeparatorChar;
 		public virtual FilePath OutputDirectory {
 			get { return outputDirectory; }
 			set { outputDirectory = value; }
 		}
 
-		[ItemProperty("DebugSymbols", DefaultValue = false)]
-		private bool debugMode = false;
-		public bool DebugMode {
+		bool debugMode = false;
+		public bool DebugSymbols {
 			get { return debugMode; }
 			set { debugMode = value; }
 		}
 
-		[ItemProperty("ConsolePause", DefaultValue = true)]
-		private bool pauseConsoleOutput = true;
+		bool pauseConsoleOutput = true;
 		public bool PauseConsoleOutput {
 			get { return pauseConsoleOutput; }
 			set { pauseConsoleOutput = value; }
 		}
 
-		[ItemProperty("Externalconsole", DefaultValue = false)]
-		private bool externalConsole = false;
+		bool externalConsole = false;
 		public bool ExternalConsole {
 			get { return externalConsole; }
 			set { externalConsole = value; }
 		}
 
-		[ItemProperty("Commandlineparameters", DefaultValue = "")]
-		private string commandLineParameters = "";
+		string commandLineParameters = "";
 		public string CommandLineParameters {
 			get { return commandLineParameters; }
 			set { commandLineParameters = value; }
 		}
 
-		[ItemProperty("EnvironmentVariables", SkipEmpty = true)]
-		[ItemProperty("Variable", Scope = "item")]
-		[ItemProperty("name", Scope = "key")]
-		[ItemProperty("value", Scope = "value")]
-		private Dictionary<string, string> environmentVariables = new Dictionary<string, string> ();
+		bool debugTypeReadAsEmpty;
+		string debugType = "";
+		public string DebugType {
+			get { return debugType; }
+			set { debugType = value; }
+		}
+
+
+		Dictionary<string, string> environmentVariables = new Dictionary<string, string> ();
 		public Dictionary<string, string> EnvironmentVariables {
 			get { return environmentVariables; }
 		}
@@ -122,8 +227,7 @@ namespace MonoDevelop.Projects
 			return vars;
 		}
 
-		[ItemProperty("RunWithWarnings", DefaultValue = true)]
-		private bool runWithWarnings = true;
+		bool runWithWarnings = true;
 		public virtual bool RunWithWarnings {
 			get { return runWithWarnings; }
 			set { runWithWarnings = value; }
@@ -141,6 +245,9 @@ namespace MonoDevelop.Projects
 			pauseConsoleOutput = projectConf.pauseConsoleOutput;
 			externalConsole = projectConf.externalConsole;
 			commandLineParameters = projectConf.commandLineParameters;
+			debugType = projectConf.debugType;
+			debugTypeWasNone = projectConf.debugTypeWasNone;
+			debugTypeReadAsEmpty = projectConf.debugTypeReadAsEmpty;
 
 			environmentVariables.Clear ();
 			foreach (KeyValuePair<string, string> el in projectConf.environmentVariables) {
@@ -148,6 +255,8 @@ namespace MonoDevelop.Projects
 			}
 
 			runWithWarnings = projectConf.runWithWarnings;
+
+			((MSBuildPropertyGroup)Properties).CopyFrom ((MSBuildPropertyGroup)projectConf.Properties);
 		}
 
 		public new Project ParentItem {

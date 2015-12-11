@@ -27,16 +27,18 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
 	public class CompletionWindowManager
 	{
 		static CompletionListWindow wnd;
+		static bool isShowing;
 		
 		public static bool IsVisible {
 			get {
-				return wnd != null && wnd.Visible;
+				return isShowing || wnd != null && wnd.Visible;
 			}
 		}
 		
@@ -62,56 +64,68 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
-		static PropertyWrapper<bool> forceSuggestionMode = PropertyService.Wrap ("ForceCompletionSuggestionMode", false);
-		public static bool ForceSuggestionMode {
-			get { return forceSuggestionMode; }
-			set {
-				forceSuggestionMode.Value = value; 
-				if (wnd != null) {
-					wnd.AutoCompleteEmptyMatch = wnd.AutoSelect = !forceSuggestionMode;
-				}
-			}
-		}
-		
 		static CompletionWindowManager ()
 		{
 			if (IdeApp.Workbench != null)
 				IdeApp.Workbench.RootWindow.Destroyed += (sender, e) => DestroyWindow ();
+			
+			IdeApp.Preferences.ForceSuggestionMode.Changed += (s,a) => {
+				if (wnd != null)
+					wnd.AutoCompleteEmptyMatch = wnd.AutoSelect = !IdeApp.Preferences.ForceSuggestionMode;
+			};
 		}
-		
+
 		// ext may be null, but then parameter completion don't work
-		public static bool ShowWindow (CompletionTextEditorExtension ext, char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, CodeCompletionContext completionContext)
+		internal static bool ShowWindow (CompletionTextEditorExtension ext, char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, CodeCompletionContext completionContext)
 		{
+			PrepareShowWindow (ext, firstChar, completionWidget, completionContext);
+			return ShowWindow (list, completionContext);
+		}
+
+		// ext may be null, but then parameter completion don't work
+		internal static void PrepareShowWindow (CompletionTextEditorExtension ext, char firstChar, ICompletionWidget completionWidget, CodeCompletionContext completionContext)
+		{
+			isShowing = true;
+
+			if (wnd == null) {
+				wnd = new CompletionListWindow ();
+				wnd.WordCompleted += HandleWndWordCompleted;
+			}
+			if (ext != null) {
+				var widget = ext.Editor.GetNativeWidget<Gtk.Widget> ();
+				wnd.TransientFor = widget?.Parent?.Toplevel as Gtk.Window;
+			} else {
+				var widget = completionWidget as Gtk.Widget;
+				if (widget != null) {
+					var window = widget.Toplevel as Gtk.Window;
+					if (window != null)
+						wnd.TransientFor = window;
+				}
+			}
+			wnd.Extension = ext;
+
+			wnd.InitializeListWindow (completionWidget, completionContext);
+		}
+
+		internal static bool ShowWindow (ICompletionDataList list, CodeCompletionContext completionContext)
+		{
+			if (wnd == null || !isShowing)
+				throw new InvalidOperationException ("PrepareShowWindow not called");
+			
+			var completionWidget = wnd.CompletionWidget;
+			var ext = wnd.Extension;
+
 			try {
-				if (ext != null) {
-					int inserted = ext.document.Editor.EnsureCaretIsNotVirtual ();
-					if (inserted > 0)
-						completionContext.TriggerOffset = ext.document.Editor.Caret.Offset;
-				}
-				if (wnd == null) {
-					wnd = new CompletionListWindow ();
-					wnd.WordCompleted += HandleWndWordCompleted;
-				}
-				if (ext != null) {
-					wnd.TransientFor = ext.document.Editor.Parent.Toplevel as Gtk.Window;
-				} else {
-					var widget = completionWidget as Gtk.Widget;
-					if (widget != null) {
-						var window = widget.Toplevel as Gtk.Window;
-						if (window != null)
-							wnd.TransientFor = window;
-					}
-				}
-				wnd.Extension = ext;
 				try {
-					if (!wnd.ShowListWindow (firstChar, list, completionWidget, completionContext)) {
+					isShowing = false;
+					if (!wnd.ShowListWindow (list, completionContext)) {
 						if (list is IDisposable)
 							((IDisposable)list).Dispose ();
 						HideWindow ();
 						return false;
 					}
 					
-					if (ForceSuggestionMode)
+					if (IdeApp.Preferences.ForceSuggestionMode)
 						wnd.AutoSelect = false;
 					wnd.Show ();
 					DesktopService.RemoveWindowShadow (wnd);
@@ -144,24 +158,26 @@ namespace MonoDevelop.Ide.CodeCompletion
 			OnWindowClosed (EventArgs.Empty);
 		}
 		
-		public static bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public static bool PreProcessKeyEvent (KeyDescriptor descriptor)
 		{
 			if (!IsVisible)
 				return false;
-			if (keyChar != '\0') {
+			if (descriptor.KeyChar != '\0') {
 				wnd.EndOffset = wnd.StartOffset + wnd.CurrentPartialWord.Length + 1;
 			}
-			return wnd.PreProcessKeyEvent (key, keyChar, modifier);
+			return wnd.PreProcessKeyEvent (descriptor);
 		}
 
 		public static void UpdateCursorPosition ()
 		{
 			if (!IsVisible)
 				return;
-
+			if (wnd.IsInCompletion || isShowing)
+				return;
 			var caretOffset = wnd.CompletionWidget.CaretOffset;
-			if (caretOffset < wnd.StartOffset || caretOffset > wnd.EndOffset)
+			if (caretOffset < wnd.StartOffset || caretOffset > wnd.EndOffset) {
 				HideWindow ();
+			}
 		}
 
 		public static void UpdateWordSelection (string text)
@@ -172,11 +188,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
-		public static void PostProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public static void PostProcessKeyEvent (KeyDescriptor descriptor)
 		{
 			if (!IsVisible)
 				return;
-			wnd.PostProcessKeyEvent (key, keyChar, modifier);
+			wnd.PostProcessKeyEvent (descriptor);
 		}
 
 		public static void RepositionWindow ()
@@ -188,11 +204,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public static void HideWindow ()
 		{
+			isShowing = false;
 			if (!IsVisible)
 				return;
+			if (wnd == null)
+				return;
 			ParameterInformationWindowManager.UpdateWindow (wnd.Extension, wnd.CompletionWidget);
-			if (wnd.Extension != null)
-				wnd.Extension.document.Editor.FixVirtualIndentation ();
 			wnd.HideWindow ();
 			OnWindowClosed (EventArgs.Empty);
 			//DestroyWindow ();

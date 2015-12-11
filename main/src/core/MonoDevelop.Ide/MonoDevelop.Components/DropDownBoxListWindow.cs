@@ -58,7 +58,15 @@ namespace MonoDevelop.Components
 			set {
 				list.MaxVisibleRows = value;
 				list.CalcVisibleRows ();
-				SetSizeRequest (list.WidthRequest, list.HeightRequest);
+				SetSizeRequest (list.WidthRequest + WidthModifier, list.HeightRequest);
+			}
+		}
+
+		const int padding = 5;
+
+		int WidthModifier {
+			get {
+				return padding + 2 * (int)BorderWidth;
 			}
 		}
 
@@ -81,7 +89,7 @@ namespace MonoDevelop.Components
 					Destroy ();
 				}
 			};
-			SetSizeRequest (list.WidthRequest, list.HeightRequest);
+			SetSizeRequest (list.WidthRequest + WidthModifier, list.HeightRequest);
 			vScrollbar = new ScrolledWindow ();
 			vScrollbar.VScrollbar.SizeAllocated += (o, args) => {
 				var minWidth = list.WidthRequest + args.Allocation.Width;
@@ -200,8 +208,9 @@ namespace MonoDevelop.Components
 
 		internal class ListWidget: DrawingArea
 		{
-			const int margin = 0;
+			const int leftXAlignment = 1;
 			const int padding = 4;
+			const int iconTextDistance = 4;
 			int listWidth = 300;
 			Pango.Layout layout;
 			readonly DropDownBoxListWindow win;
@@ -378,12 +387,12 @@ namespace MonoDevelop.Components
 				int winWidth, winHeight;
 				GdkWindow.GetSize (out winWidth, out winHeight);
 
-				int lineWidth = winWidth - margin * 2;
-				const int xpos = margin + padding;
+				int lineWidth = winWidth - leftXAlignment * 2;
+				const int xpos = leftXAlignment + padding;
 
 				int n = (int)(vAdjustment.Value / rowHeight);
-				int ypos = (int)(margin + n * rowHeight - vAdjustment.Value);
-				while (ypos < winHeight - margin && n < win.DataProvider.IconCount) {
+				int ypos = (int)(leftXAlignment + n * rowHeight - vAdjustment.Value);
+				while (ypos < winHeight - leftXAlignment && n < win.DataProvider.IconCount) {
 					string text = win.DataProvider.GetMarkup (n) ?? "&lt;null&gt;";
 
 					var icon = win.DataProvider.GetIcon (n);
@@ -391,7 +400,7 @@ namespace MonoDevelop.Components
 					int iconWidth = icon != null ? (int)icon.Width : 0;
 
 					layout.Ellipsize = Pango.EllipsizeMode.End;
-					layout.Width = (Allocation.Width - xpos - iconWidth - 2) * (int)Pango.Scale.PangoScale;
+					layout.Width = (Allocation.Width - xpos - iconWidth - iconTextDistance) * (int)Pango.Scale.PangoScale;
 					layout.SetMarkup (PathBar.GetFirstLineFromMarkup (text));
 
 					int wi, he, typos, iypos;
@@ -402,18 +411,18 @@ namespace MonoDevelop.Components
 					if (n == selection) {
 						if (!disableSelection) {
 							GdkWindow.DrawRectangle (Style.BaseGC (StateType.Selected), 
-								true, margin, ypos, lineWidth, rowHeight);
+								true, leftXAlignment, ypos, lineWidth, rowHeight);
 							GdkWindow.DrawLayout (Style.TextGC (StateType.Selected), 
-							                      xpos + iconWidth + 2, typos, layout);
+							                      xpos + iconWidth + iconTextDistance, typos, layout);
 						} else {
 							GdkWindow.DrawRectangle (Style.BaseGC (StateType.Selected), 
-								false, margin, ypos, lineWidth, rowHeight);
+								false, leftXAlignment, ypos, lineWidth, rowHeight);
 							GdkWindow.DrawLayout (Style.TextGC (StateType.Normal), 
-							                      xpos + iconWidth + 2, typos, layout);
+							                      xpos + iconWidth + iconTextDistance, typos, layout);
 						}
 					} else
 						GdkWindow.DrawLayout (Style.TextGC (StateType.Normal), 
-						                      xpos + iconWidth + 2, typos, layout);
+						                      xpos + iconWidth + iconTextDistance, typos, layout);
 					
 					if (icon != null) {
 						using (var ctx = Gdk.CairoHelper.Create (this.GdkWindow))
@@ -454,8 +463,8 @@ namespace MonoDevelop.Components
 					return;
 				int newHeight;
 				newHeight = win.DataProvider.IconCount > MaxVisibleRows ? 
-								(rowHeight * MaxVisibleRows) + margin * 2 :
-								(rowHeight * win.DataProvider.IconCount) + margin * 2;
+								(rowHeight * MaxVisibleRows) + leftXAlignment * 2 :
+								(rowHeight * win.DataProvider.IconCount) + leftXAlignment * 2;
 				newHeight += 2;
 				listWidth = Math.Min (450, CalcWidth ());
 				SetSizeRequest (listWidth, newHeight);
@@ -476,13 +485,15 @@ namespace MonoDevelop.Components
 					}
 				}
 				layout.SetMarkup (win.DataProvider.GetMarkup (longest) ?? "&lt;null&gt;");
-				int w, h;
-				layout.GetPixelSize (out w, out h);
+				Pango.Rectangle inkRec, logRect;
+				layout.GetExtents (out inkRec, out logRect);
 				var icon = win.DataProvider.GetIcon (longest);
 				int iconWidth = icon != null ? (int) icon.Width : 24;
-				w += iconWidth + 2 + padding * 2 + margin;
-				return w;
+				return iconWidth + iconTextDistance + padding * 2 + leftXAlignment +
+					(int)(inkRec.Width / Pango.Scale.PangoScale);
 			}
+
+
 
 			void SetBounds ()
 			{
@@ -501,7 +512,6 @@ namespace MonoDevelop.Components
 			protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 			{
 				base.OnSizeAllocated (allocation);
-
 				hAdjustment.SetBounds (0, allocation.Width, 0, 0, allocation.Width);
 
 				SetBounds ();

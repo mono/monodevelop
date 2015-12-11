@@ -44,7 +44,7 @@ namespace MonoDevelop.Deployment.Targets
 			get { throw new NotImplementedException ("Inheriting classes must override this."); }
 		}
 		
-		public override void CopyFiles (IProgressMonitor monitor, IFileReplacePolicy replacePolicy, FileCopyConfiguration copyConfig, DeployFileCollection deployFiles, DeployContext context)
+		public override void CopyFiles (ProgressMonitor monitor, IFileReplacePolicy replacePolicy, FileCopyConfiguration copyConfig, DeployFileCollection deployFiles, DeployContext context)
 		{
 			DirectoryInfo tempDir = null;
 			try {
@@ -93,9 +93,9 @@ namespace MonoDevelop.Deployment.Targets
 				tempDir.Delete ();
 		}
 		
-		public abstract void MountTempDirectory (IProgressMonitor monitor, FileCopyConfiguration copyConfig, string tempPath);
+		public abstract void MountTempDirectory (ProgressMonitor monitor, FileCopyConfiguration copyConfig, string tempPath);
 		
-		protected void RunFuseCommand (IProgressMonitor monitor, string command, string args)
+		protected void RunFuseCommand (ProgressMonitor monitor, string command, string args)
 		{
 			LoggingService.LogInfo ("Running FUSE command: {0} {1}", command, args);
 			var log = new StringWriter ();
@@ -104,13 +104,12 @@ namespace MonoDevelop.Deployment.Targets
 				RedirectStandardOutput = true,
 				UseShellExecute = false,
 			};
-			using (var opMon = new AggregatedOperationMonitor (monitor)) {
-				using (var pWrapper = MonoDevelop.Core.Runtime.ProcessService.StartProcess (psi, log, log, null)) {
-					opMon.AddOperation (pWrapper);
-					pWrapper.WaitForOutput ();
-					if (pWrapper.ExitCode != 0)
-						throw new Exception (log.ToString ());
-				}
+
+			using (var pWrapper = Runtime.ProcessService.StartProcess (psi, log, log, null))
+			using (monitor.CancellationToken.Register (pWrapper.Cancel)) {
+				pWrapper.WaitForOutput ();
+				if (pWrapper.ExitCode != 0)
+					throw new Exception (log.ToString ());
 			}
 		}
 

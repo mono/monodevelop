@@ -26,41 +26,31 @@
 
 using System;
 using System.Collections;
-using System.Collections.Specialized;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Xml;
-using System.CodeDom.Compiler;
-using System.Threading;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 
 using MonoDevelop.Core;
 using Mono.Addins;
-using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Projects.Extensions;
 using Mono.Unix;
-using MonoDevelop.Core.StringParsing;
 using System.Linq;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
 {
 	public class ProjectService
 	{
 		DataContext dataContext = new DataContext ();
-		ArrayList projectBindings = new ArrayList ();
-		ProjectServiceExtension defaultExtensionChain;
-		DefaultProjectServiceExtension extensionChainTerminator = new DefaultProjectServiceExtension ();
-		
-		FileFormatManager formatManager = new FileFormatManager ();
-		FileFormat defaultFormat;
+
 		TargetFramework defaultTargetFramework;
 		
 		string defaultPlatformTarget = "x86";
@@ -69,99 +59,36 @@ namespace MonoDevelop.Projects
 		public const string BuildTarget = "Build";
 		public const string CleanTarget = "Clean";
 		
-		const string FileFormatsExtensionPath = "/MonoDevelop/ProjectModel/FileFormats";
 		const string SerializableClassesExtensionPath = "/MonoDevelop/ProjectModel/SerializableClasses";
-		const string ExtendedPropertiesExtensionPath = "/MonoDevelop/ProjectModel/ExtendedProperties";
 		const string ProjectBindingsExtensionPath = "/MonoDevelop/ProjectModel/ProjectBindings";
-		
+		const string WorkspaceObjectReadersPath = "/MonoDevelop/ProjectModel/WorkspaceObjectReaders";
+
+		internal const string ProjectModelExtensionsPath = "/MonoDevelop/ProjectModel/ProjectModelExtensions";
+
 		internal event EventHandler DataContextChanged;
-		
-		class ExtensionChainInfo
-		{
-			public ExtensionContext ExtensionContext;
-			public ItemTypeCondition ItemTypeCondition;
-			public ProjectLanguageCondition ProjectLanguageCondition;
-		}
 		
 		internal ProjectService ()
 		{
-			AddinManager.AddExtensionNodeHandler (FileFormatsExtensionPath, OnFormatExtensionChanged);
 			AddinManager.AddExtensionNodeHandler (SerializableClassesExtensionPath, OnSerializableExtensionChanged);
-			AddinManager.AddExtensionNodeHandler (ExtendedPropertiesExtensionPath, OnPropertiesExtensionChanged);
-			AddinManager.AddExtensionNodeHandler (ProjectBindingsExtensionPath, OnProjectsExtensionChanged);
-			AddinManager.ExtensionChanged += OnExtensionChanged;
-			
-			defaultFormat = formatManager.GetFileFormat (MSBuildProjectService.DefaultFormat);
 		}
 		
 		public DataContext DataContext {
 			get { return dataContext; }
 		}
 		
-		public FileFormatManager FileFormats {
-			get { return formatManager; }
-		}
-		
-		internal ProjectServiceExtension GetExtensionChain (IBuildTarget target)
+		IEnumerable<WorkspaceObjectReader> GetObjectReaders ()
 		{
-			ProjectServiceExtension chain;
-			if (target != null) {
-				lock (target) {
-					ExtensionChainInfo einfo = (ExtensionChainInfo)target.ExtendedProperties [typeof(ExtensionChainInfo)];
-					if (einfo == null) {
-						einfo = new ExtensionChainInfo ();
-						ExtensionContext ctx = AddinManager.CreateExtensionContext ();
-						einfo.ExtensionContext = ctx;
-						einfo.ItemTypeCondition = new ItemTypeCondition (target.GetType ());
-						einfo.ProjectLanguageCondition = new ProjectLanguageCondition (target);
-						ctx.RegisterCondition ("ItemType", einfo.ItemTypeCondition);
-						ctx.RegisterCondition ("ProjectLanguage", einfo.ProjectLanguageCondition);
-						target.ExtendedProperties [typeof(ExtensionChainInfo)] = einfo;
-					} else {
-						einfo.ItemTypeCondition.ObjType = target.GetType ();
-						einfo.ProjectLanguageCondition.TargetProject = target;
-					}
-					ProjectServiceExtension[] extensions = einfo.ExtensionContext.GetExtensionObjects<ProjectServiceExtension> ("/MonoDevelop/ProjectModel/ProjectServiceExtensions");
-					chain = CreateExtensionChain (extensions);
-				
-					// After creating the chain there is no need to keep the reference to the target
-					einfo.ProjectLanguageCondition.TargetProject = null;
-				}
-			}
-			else {
-				if (defaultExtensionChain == null) {
-					ExtensionContext ctx = AddinManager.CreateExtensionContext ();
-					ctx.RegisterCondition ("ItemType", new ItemTypeCondition (typeof(UnknownItem)));
-					ctx.RegisterCondition ("ProjectLanguage", new ProjectLanguageCondition (UnknownItem.Instance));
-					ProjectServiceExtension[] extensions = ctx.GetExtensionObjects<ProjectServiceExtension> ("/MonoDevelop/ProjectModel/ProjectServiceExtensions");
-					defaultExtensionChain = CreateExtensionChain (extensions);
-				}
-				chain = defaultExtensionChain;
-				target = UnknownItem.Instance;
-			}
-			
-			if (chain.SupportsItem (target))
-				return chain;
-			else
-				return chain.GetNext (target);
+			return AddinManager.GetExtensionObjects<WorkspaceObjectReader> (WorkspaceObjectReadersPath);
 		}
-		
-		ProjectServiceExtension CreateExtensionChain (ProjectServiceExtension[] extensions)
-		{
-			var first = new CustomCommandExtension ();
-			
-			for (int n=0; n<extensions.Length - 1; n++)
-				extensions [n].Next = extensions [n + 1];
 
-			if (extensions.Length > 0) {
-				extensions [extensions.Length - 1].Next = extensionChainTerminator;
-				first.Next = extensions [0];
-			} else {
-				first.Next = extensionChainTerminator;
-			}
-			return first;
+		WorkspaceObjectReader GetObjectReaderForFile (FilePath file, Type type)
+		{
+			foreach (var r in GetObjectReaders ())
+				if (r.CanRead (file, type))
+					return r;
+			return null;
 		}
-		
+
 		public string DefaultPlatformTarget {
 			get { return defaultPlatformTarget; }
 			set { defaultPlatformTarget = value; }
@@ -178,181 +105,112 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public FileFormat DefaultFileFormat {
-			get { return defaultFormat; }
-		}
-
-		internal FileFormat GetDefaultFormat (object ob)
+		public async Task<SolutionItem> ReadSolutionItem (ProgressMonitor monitor, string file)
 		{
-			if (defaultFormat.CanWrite (ob))
-				return defaultFormat;
-			FileFormat[] formats = FileFormats.GetFileFormatsForObject (ob);
-			if (formats.Length == 0)
-				throw new InvalidOperationException ("Can't handle objects of type '" + ob.GetType () + "'");
-			return formats [0];
+			using (var ctx = new SolutionLoadContext (null))
+				return await ReadSolutionItem (monitor, file, null, null, null, ctx);
 		}
 		
-		public SolutionEntityItem ReadSolutionItem (IProgressMonitor monitor, string file)
+		public Task<SolutionItem> ReadSolutionItem (ProgressMonitor monitor, string file, MSBuildFileFormat format, string typeGuid = null, string itemGuid = null, SolutionLoadContext ctx = null)
 		{
-			file = Path.GetFullPath (file);
-			using (Counters.ReadSolutionItem.BeginTiming ("Read project " + file)) {
-				file = GetTargetFile (file);
-				SolutionEntityItem loadedItem = GetExtensionChain (null).LoadSolutionItem (monitor, file, delegate {
-					FileFormat format;
-					SolutionEntityItem item = ReadFile (monitor, file, typeof(SolutionEntityItem), out format) as SolutionEntityItem;
+			return Runtime.RunInMainThread (async delegate {
+				if (!File.Exists (file))
+					throw new IOException (GettextCatalog.GetString ("File not found: {0}", file));
+				file = Path.GetFullPath (file);
+				using (Counters.ReadSolutionItem.BeginTiming ("Read project " + file)) {
+					file = GetTargetFile (file);
+					var r = GetObjectReaderForFile (file, typeof(SolutionItem));
+					if (r == null)
+						throw new UnknownSolutionItemTypeException ();
+					SolutionItem loadedItem = await r.LoadSolutionItem (monitor, ctx, file, format, typeGuid, itemGuid);
+					if (loadedItem != null)
+						loadedItem.NeedsReload = false;
+					return loadedItem;
+				}
+			});
+		}
+
+		public Task<SolutionFolderItem> ReadSolutionItem (ProgressMonitor monitor, SolutionItemReference reference, params WorkspaceItem[] workspaces)
+		{
+			return Runtime.RunInMainThread (async delegate {
+				if (reference.Id == null) {
+					FilePath file = reference.Path.FullPath;
+					foreach (WorkspaceItem workspace in workspaces) {
+						foreach (SolutionItem eitem in workspace.GetAllItems<Solution>().SelectMany (s => s.GetAllSolutionItems ()))
+							if (file == eitem.FileName)
+								return eitem;
+					}
+					return await ReadSolutionItem (monitor, reference.Path);
+				} else {
+					Solution sol = null;
+					if (workspaces.Length > 0) {
+						FilePath file = reference.Path.FullPath;
+						foreach (WorkspaceItem workspace in workspaces) {
+							foreach (Solution item in workspace.GetAllItems<Solution>()) {
+								if (item.FileName.FullPath == file) {
+									sol = item;
+									break;
+								}
+							}
+							if (sol != null)
+								break;
+						}
+					}
+					if (sol == null)
+						sol = await ReadWorkspaceItem (monitor, reference.Path) as Solution;
+					
+					if (reference.Id == ":root:")
+						return sol.RootFolder;
+					else
+						return sol.GetSolutionItem (reference.Id);
+				}
+			});
+		}
+
+		public Task<WorkspaceItem> ReadWorkspaceItem (ProgressMonitor monitor, FilePath file)
+		{
+			return Runtime.RunInMainThread (async delegate {
+				if (!File.Exists (file))
+					throw new IOException (GettextCatalog.GetString ("File not found: {0}", file));
+				string fullpath = file.ResolveLinks ().FullPath;
+				using (Counters.ReadWorkspaceItem.BeginTiming ("Read solution " + file)) {
+					fullpath = GetTargetFile (fullpath);
+					var r = GetObjectReaderForFile (file, typeof(WorkspaceItem));
+					if (r == null)
+						throw new InvalidOperationException ("Invalid file format: " + file);
+					WorkspaceItem item = await r.LoadWorkspaceItem (monitor, fullpath);
 					if (item != null)
-						item.FileFormat = format;
+						item.NeedsReload = false;
 					else
 						throw new InvalidOperationException ("Invalid file format: " + file);
 					return item;
-				});
-				loadedItem.NeedsReload = false;
-				return loadedItem;
-			}
-		}
-		
-		public SolutionItem ReadSolutionItem (IProgressMonitor monitor, SolutionItemReference reference, params WorkspaceItem[] workspaces)
-		{
-			if (reference.Id == null) {
-				FilePath file = reference.Path.FullPath;
-				foreach (WorkspaceItem workspace in workspaces) {
-					foreach (SolutionEntityItem eitem in workspace.GetAllSolutionItems<SolutionEntityItem> ())
-						if (file == eitem.FileName)
-							return eitem;
 				}
-				return ReadSolutionItem (monitor, reference.Path);
-			}
-			else {
-				Solution sol = null;
-				if (workspaces.Length > 0) {
-					FilePath file = reference.Path.FullPath;
-					foreach (WorkspaceItem workspace in workspaces) {
-						foreach (Solution item in workspace.GetAllSolutions ()) {
-							if (item.FileName.FullPath == file) {
-								sol = item;
-								break;
-							}
-						}
-						if (sol != null)
-							break;
-					}
-				}
-				if (sol == null)
-					sol = ReadWorkspaceItem (monitor, reference.Path) as Solution;
-				
-				if (reference.Id == ":root:")
-					return sol.RootFolder;
-				else
-					return sol.GetSolutionItem (reference.Id);
-			}
-		}
-
-		public WorkspaceItem ReadWorkspaceItem (IProgressMonitor monitor, FilePath file)
-		{
-			string fullpath = file.ResolveLinks ().FullPath;
-			using (Counters.ReadWorkspaceItem.BeginTiming ("Read solution " + file)) {
-				fullpath = GetTargetFile (fullpath);
-				WorkspaceItem item = GetExtensionChain (null).LoadWorkspaceItem (monitor, fullpath) as WorkspaceItem;
-				if (item != null)
-					item.NeedsReload = false;
-				else
-					throw new InvalidOperationException ("Invalid file format: " + file);
-				return item;
-			}
+			});
 		}
 		
-		internal void InternalWriteSolutionItem (IProgressMonitor monitor, FilePath file, SolutionEntityItem item)
-		{
-			var newFile = WriteFile (monitor, file, item, null);
-			if (newFile != null)
-				item.FileName = newFile;
-			else
-				throw new InvalidOperationException ("FileFormat not provided for solution item '" + item.Name + "'");
-		}
-		
-		internal WorkspaceItem InternalReadWorkspaceItem (string file, IProgressMonitor monitor)
-		{
-			FileFormat format;
-			WorkspaceItem item = ReadFile (monitor, file, typeof(WorkspaceItem), out format) as WorkspaceItem;
-			
-			if (item == null)
-				throw new InvalidOperationException ("Invalid file format: " + file);
-			
-			if (!item.FormatSet)
-				item.ConvertToFormat (format, false);
-
-			return item;
-		}
-		
-		internal void InternalWriteWorkspaceItem (IProgressMonitor monitor, FilePath file, WorkspaceItem item)
-		{
-			var newFile = WriteFile (monitor, file, item, item.FileFormat);
-			if (newFile != null)
-				item.FileName = newFile;
-			else
-				throw new InvalidOperationException ("FileFormat not provided for workspace item '" + item.Name + "'");
-		}
-		
-		object ReadFile (IProgressMonitor monitor, string file, Type expectedType, out FileFormat format)
-		{
-			FileFormat[] formats = formatManager.GetFileFormats (file, expectedType);
-
-			if (formats.Length == 0)
-				throw new InvalidOperationException ("Unknown file format: " + file);
-			
-			format = formats [0];
-			object obj = format.Format.ReadFile (file, expectedType, monitor);
-			if (obj == null)
-				throw new InvalidOperationException ("Invalid file format: " + file);
-
-			return obj;
-		}
-		
-		FilePath WriteFile (IProgressMonitor monitor, FilePath file, object item, FileFormat format)
-		{
-			if (format == null) {
-				if (defaultFormat.CanWrite (item))
-					format = defaultFormat;
-				else {
-					FileFormat[] formats = formatManager.GetFileFormatsForObject (item);
-					format = formats.Length > 0 ? formats [0] : null;
-				}
-				
-				if (format == null)
-					return null;
-
-				file = format.GetValidFileName (item, file);
-			}
-			
-			FileService.RequestFileEdit (file);
-
-			format.Format.WriteFile (file, item, monitor);
-			return file;
-		}
-		
-		public string Export (IProgressMonitor monitor, string rootSourceFile, string targetPath, FileFormat format)
+		public Task<string> Export (ProgressMonitor monitor, string rootSourceFile, string targetPath, MSBuildFileFormat format)
 		{
 			rootSourceFile = GetTargetFile (rootSourceFile);
 			return Export (monitor, rootSourceFile, null, targetPath, format);
 		}
 		
-		public string Export (IProgressMonitor monitor, string rootSourceFile, string[] includedChildIds, string targetPath, FileFormat format)
+		public async Task<string> Export (ProgressMonitor monitor, string rootSourceFile, string[] includedChildIds, string targetPath, MSBuildFileFormat format)
 		{
-			IWorkspaceFileObject obj;
+			IMSBuildFileObject obj = null;
 			
 			if (IsWorkspaceItemFile (rootSourceFile)) {
-				obj = ReadWorkspaceItem (monitor, rootSourceFile) as Solution;
-			} else {
-				obj = ReadSolutionItem (monitor, rootSourceFile);
-				if (obj == null)
-					throw new InvalidOperationException ("File is not a solution or project.");
+				obj = (await ReadWorkspaceItem (monitor, rootSourceFile)) as IMSBuildFileObject;
+			} else if (IsSolutionItemFile (rootSourceFile)) {
+				obj = await ReadSolutionItem (monitor, rootSourceFile);
 			}
+			if (obj == null)
+				throw new InvalidOperationException ("File is not a solution or project.");
 			using (obj) {
-				return Export (monitor, obj, includedChildIds, targetPath, format);
+				return await Export (monitor, obj, includedChildIds, targetPath, format);
 			}
 		}
 		
-		string Export (IProgressMonitor monitor, IWorkspaceFileObject obj, string[] includedChildIds, string targetPath, FileFormat format)
+		async Task<string> Export (ProgressMonitor monitor, IMSBuildFileObject obj, string[] includedChildIds, string targetPath, MSBuildFileFormat format)
 		{
 			string rootSourceFile = obj.FileName;
 			string sourcePath = Path.GetFullPath (Path.GetDirectoryName (rootSourceFile));
@@ -364,17 +222,17 @@ namespace MonoDevelop.Projects
 				
 				string newFile = Path.Combine (targetPath, Path.GetFileName (rootSourceFile));
 				if (IsWorkspaceItemFile (rootSourceFile))
-					obj = ReadWorkspaceItem (monitor, newFile);
+					obj = (Solution) await ReadWorkspaceItem (monitor, newFile);
 				else
-					obj = (SolutionEntityItem) ReadSolutionItem (monitor, newFile);
+					obj = await ReadSolutionItem (monitor, newFile);
 				
 				using (obj) {
-					List<FilePath> oldFiles = obj.GetItemFiles (true);
+					var oldFiles = obj.GetItemFiles (true).ToList ();
 					ExcludeEntries (obj, includedChildIds);
 					if (format != null)
-						obj.ConvertToFormat (format, true);
-					obj.Save (monitor);
-					List<FilePath> newFiles = obj.GetItemFiles (true);
+						obj.ConvertToFormat (format);
+					await obj.SaveAsync (monitor);
+					var newFiles = obj.GetItemFiles (true);
 					var resolvedTargetPath = new FilePath (targetPath).ResolveLinks ().FullPath;
 
 					foreach (FilePath f in newFiles) {
@@ -410,8 +268,8 @@ namespace MonoDevelop.Projects
 				using (obj) {
 					ExcludeEntries (obj, includedChildIds);
 					if (format != null)
-						obj.ConvertToFormat (format, true);
-					obj.Save (monitor);
+						obj.ConvertToFormat (format);
+					await obj.SaveAsync (monitor);
 					return obj.FileName;
 				}
 			}
@@ -427,14 +285,14 @@ namespace MonoDevelop.Projects
 				foreach (string it in includedChildIds)
 					childIds [it] = it;
 				
-				foreach (SolutionItem item in sol.GetAllSolutionItems<SolutionItem> ()) {
+				foreach (SolutionFolderItem item in sol.GetAllItems<SolutionFolderItem> ()) {
 					if (!childIds.ContainsKey (item.ItemId) && item.ParentFolder != null)
 						item.ParentFolder.Items.Remove (item);
 				}
 			}
 		}
 
-		bool CopyFiles (IProgressMonitor monitor, IWorkspaceFileObject obj, IEnumerable<FilePath> files, FilePath targetBasePath, bool ignoreExternalFiles)
+		bool CopyFiles (ProgressMonitor monitor, IWorkspaceFileObject obj, IEnumerable<FilePath> files, FilePath targetBasePath, bool ignoreExternalFiles)
 		{
 			FilePath baseDir = obj.BaseDirectory.FullPath;
 			foreach (FilePath file in files) {
@@ -467,121 +325,69 @@ namespace MonoDevelop.Projects
 			return true;
 		}
 		
-		public bool CanCreateSingleFileProject (string file)
+		public DotNetProject CreateDotNetProject (string language, params string[] flavorGuids)
 		{
-			foreach (ProjectBindingCodon projectBinding in projectBindings) {
-				if (projectBinding.ProjectBinding.CanCreateSingleFileProject (file))
-					return true;
-			}
-			return false;
-		}
-		
-		public Project CreateSingleFileProject (string file)
-		{
-			foreach (ProjectBindingCodon projectBinding in projectBindings) {
-				if (projectBinding.ProjectBinding.CanCreateSingleFileProject (file)) {
-					return projectBinding.ProjectBinding.CreateSingleFileProject (file);
-				}
-			}
-			return null;
-		}
-		
-		public Project CreateProject (string type, ProjectCreateInformation info, XmlElement projectOptions)
-		{
-			foreach (ProjectBindingCodon projectBinding in projectBindings) {
-				if (projectBinding.ProjectBinding.Name == type) {
-					Project project = projectBinding.ProjectBinding.CreateProject (info, projectOptions);
-					return project;
-				}
-			}
-			throw new InvalidOperationException ("Project type '" + type + "' not found");
+			string typeGuid = MSBuildProjectService.GetLanguageGuid (language);
+			return (DotNetProject) MSBuildProjectService.CreateProject (typeGuid, flavorGuids);
 		}
 
-		public bool CanCreateProject (string type)
+		public Project CreateProject (string typeGuid, params string[] flavorGuids)
 		{
-			foreach (ProjectBindingCodon projectBinding in projectBindings) {
-				if (projectBinding.ProjectBinding.Name == type)
-					return true;
-			}
-			return false;
+			return MSBuildProjectService.CreateProject (typeGuid, flavorGuids);
+		}
+
+		public Project CreateProject (string typeAlias, ProjectCreateInformation info, XmlElement projectOptions, params string[] flavorGuids)
+		{
+			return MSBuildProjectService.CreateProject (typeAlias, info, projectOptions, flavorGuids);
+		}
+
+		public bool CanCreateProject (string typeAlias, params string[] flavorGuids)
+		{
+			return MSBuildProjectService.CanCreateProject (typeAlias, flavorGuids);
+		}
+
+		public bool CanCreateSolutionItem (string typeAlias, ProjectCreateInformation info, XmlElement projectOptions)
+		{
+			return MSBuildProjectService.CanCreateSolutionItem (typeAlias, info, projectOptions);
 		}
 
 		//TODO: find solution that contains the project if possible
-		public Solution GetWrapperSolution (IProgressMonitor monitor, string filename)
+		public async Task<Solution> GetWrapperSolution (ProgressMonitor monitor, string filename)
 		{
 			// First of all, check if a solution with the same name already exists
 			
-			FileFormat[] formats = Services.ProjectService.FileFormats.GetFileFormats (filename, typeof(SolutionEntityItem));
-			if (formats.Length == 0)
-				formats = new  [] { DefaultFileFormat };
-			
-			Solution tempSolution = new Solution ();
-			
-			FileFormat solutionFileFormat = formats.FirstOrDefault (f => f.CanWrite (tempSolution)) ?? DefaultFileFormat;
-			
-			string solFileName = solutionFileFormat.GetValidFileName (tempSolution, filename);
+			string solFileName = Path.ChangeExtension (filename, ".sln");
 			
 			if (File.Exists (solFileName)) {
-				return (Solution) Services.ProjectService.ReadWorkspaceItem (monitor, solFileName);
+				return (Solution) await Services.ProjectService.ReadWorkspaceItem (monitor, solFileName);
 			}
 			else {
 				// Create a temporary solution and add the project to the solution
-				tempSolution.SetLocation (Path.GetDirectoryName (filename), Path.GetFileNameWithoutExtension (filename));
-				SolutionEntityItem sitem = Services.ProjectService.ReadSolutionItem (monitor, filename);
-				tempSolution.ConvertToFormat (solutionFileFormat, false);
+				SolutionItem sitem = await Services.ProjectService.ReadSolutionItem (monitor, filename);
+				Solution tempSolution = new Solution ();
+				tempSolution.FileName = solFileName;
+				tempSolution.ConvertToFormat (sitem.FileFormat);
 				tempSolution.RootFolder.Items.Add (sitem);
 				tempSolution.CreateDefaultConfigurations ();
-				tempSolution.Save (monitor);
+				await tempSolution.SaveAsync (monitor);
 				return tempSolution;
 			}
 		}
 
+		public bool FileIsObjectOfType (FilePath file, Type type)
+		{
+			var filename = GetTargetFile (file);
+			return GetObjectReaderForFile (filename, type) != null;
+		}
+
 		public bool IsSolutionItemFile (FilePath file)
 		{
-			return IsSolutionItemFileImpl (file.ToString ());
-		}
-
-		[Obsolete ("Use IsSolutionItemFile (FilePath file)")]
-		public bool IsSolutionItemFile (string filename)
-		{
-			if (filename.StartsWith ("file://"))
-				filename = new Uri(filename).LocalPath;
-			return IsSolutionItemFileImpl (filename);
-		}
-
-		private bool IsSolutionItemFileImpl (string filename)
-		{
-			filename = GetTargetFile (filename);
-			return GetExtensionChain (null).IsSolutionItemFile (filename);
+			return FileIsObjectOfType (file, typeof(SolutionItem));
 		}
 
 		public bool IsWorkspaceItemFile (FilePath file)
 		{
-			return IsWorkspaceItemFileImpl (file.ToString ());
-		}
-
-		[Obsolete ("Use IsWorkspaceItemFile (FilePath file)")]
-		public bool IsWorkspaceItemFile (string filename)
-		{
-			if (filename.StartsWith ("file://"))
-				filename = new Uri(filename).LocalPath;
-			return IsWorkspaceItemFileImpl (filename);
-		}
-
-		private bool IsWorkspaceItemFileImpl (string filename)
-		{
-			filename = GetTargetFile (filename);
-			return GetExtensionChain (null).IsWorkspaceItemFile (filename);
-		}
-
-		internal bool IsSolutionItemFileInternal (string filename)
-		{
-			return formatManager.GetFileFormats (filename, typeof(SolutionItem)).Length > 0;
-		}
-		
-		internal bool IsWorkspaceItemFileInternal (string filename)
-		{
-			return formatManager.GetFileFormats (filename, typeof(WorkspaceItem)).Length > 0;
+			return FileIsObjectOfType (file, typeof(WorkspaceItem));
 		}
 		
 		internal void InitializeDataContext (DataContext ctx)
@@ -589,20 +395,8 @@ namespace MonoDevelop.Projects
 			foreach (DataTypeCodon dtc in AddinManager.GetExtensionNodes (SerializableClassesExtensionPath)) {
 				ctx.IncludeType (dtc.Addin, dtc.TypeName, dtc.ItemName);
 			}
-			foreach (ItemPropertyCodon cls in AddinManager.GetExtensionNodes (ExtendedPropertiesExtensionPath)) {
-				ctx.RegisterProperty (cls.Addin, cls.TypeName, cls.PropertyName, cls.PropertyTypeName, cls.External, cls.SkipEmpty);
-			}
 		}
 
-		void OnFormatExtensionChanged (object s, ExtensionNodeEventArgs args)
-		{
-			FileFormatNode node = (FileFormatNode) args.ExtensionNode;
-			if (args.Change == ExtensionChange.Add)
-				formatManager.RegisterFileFormat ((IFileFormat) args.ExtensionObject, node.Id, node.Name, node.CanDefault);
-			else
-				formatManager.UnregisterFileFormat ((IFileFormat) args.ExtensionObject);
-		}
-		
 		void OnSerializableExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add) {
@@ -614,36 +408,7 @@ namespace MonoDevelop.Projects
 			if (DataContextChanged != null)
 				DataContextChanged (this, EventArgs.Empty);
 		}
-		
-		void OnPropertiesExtensionChanged (object s, ExtensionNodeEventArgs args)
-		{
-			if (args.Change == ExtensionChange.Add) {
-				ItemPropertyCodon cls = (ItemPropertyCodon) args.ExtensionNode;
-				DataContext.RegisterProperty (cls.Addin, cls.TypeName, cls.PropertyName, cls.PropertyTypeName, cls.External, cls.SkipEmpty);
-			}
-			else {
-				ItemPropertyCodon cls = (ItemPropertyCodon) args.ExtensionNode;
-				DataContext.UnregisterProperty (cls.Addin, cls.TypeName, cls.PropertyName);
-			}
-			
-			if (DataContextChanged != null)
-				DataContextChanged (this, EventArgs.Empty);
-		}
-		
-		void OnProjectsExtensionChanged (object s, ExtensionNodeEventArgs args)
-		{
-			if (args.Change == ExtensionChange.Add)
-				projectBindings.Add (args.ExtensionNode);
-			else if (args.Change == ExtensionChange.Remove)
-				projectBindings.Remove (args.ExtensionNode);
-		}
-		
-		void OnExtensionChanged (object s, ExtensionEventArgs args)
-		{
-			if (args.PathChanged ("/MonoDevelop/ProjectModel/ProjectServiceExtensions"))
-				defaultExtensionChain = null;
-		}
-		
+
 		string GetTargetFile (string file)
 		{
 			if (!Platform.IsWindows) {
@@ -657,194 +422,6 @@ namespace MonoDevelop.Projects
 			return file;
 		}
 	}
-	
-	internal class DefaultProjectServiceExtension: ProjectServiceExtension
-	{
-		Dictionary <SolutionItem,bool> needsBuildingCache;
-		
-		public override object GetService (SolutionItem item, Type type)
-		{
-			return item.OnGetService (type);
-		}
-		
-		public override object GetService (WorkspaceItem item, Type type)
-		{
-			return item.OnGetService (type);
-		}
-
-		public override void Save (IProgressMonitor monitor, SolutionEntityItem entry)
-		{
-			FileService.RequestFileEdit (entry.GetItemFiles (false));
-			entry.OnSave (monitor);
-		}
-		
-		public override void Save (IProgressMonitor monitor, WorkspaceItem entry)
-		{
-			entry.OnSave (monitor);
-		}
-
-		public override List<FilePath> GetItemFiles (SolutionEntityItem entry, bool includeReferencedFiles)
-		{
-			return entry.OnGetItemFiles (includeReferencedFiles);
-		}
-		
-		public override bool IsSolutionItemFile (string filename)
-		{
-			return Services.ProjectService.IsSolutionItemFileInternal (filename);
-		}
-		
-		public override bool IsWorkspaceItemFile (string filename)
-		{
-			return Services.ProjectService.IsWorkspaceItemFileInternal (filename);
-		}
-		
-		internal override SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName, ItemLoadCallback callback)
-		{
-			return callback (monitor, fileName);
-		}
-		
-		public override WorkspaceItem LoadWorkspaceItem (IProgressMonitor monitor, string fileName)
-		{
-			return Services.ProjectService.InternalReadWorkspaceItem (fileName, monitor);
-		}
-		
-		public override BuildResult RunTarget (IProgressMonitor monitor, IBuildTarget item, string target, ConfigurationSelector configuration)
-		{
-			BuildResult res;
-			if (item is WorkspaceItem) {
-				res = ((WorkspaceItem)item).OnRunTarget (monitor, target, configuration);
-			}
-			else if (item is SolutionItem)
-				res = ((SolutionItem)item).OnRunTarget (monitor, target, configuration);
-			else
-				throw new InvalidOperationException ("Unknown item type: " + item);
-			
-			if (res != null)
-				res.SourceTarget = item;
-			return res;
-		}
-
-		public override bool SupportsTarget (IBuildTarget item, string target)
-		{
-			if (item is WorkspaceItem)
-				return ((WorkspaceItem)item).OnGetSupportsTarget (target);
-			else if (item is SolutionItem)
-				return ((SolutionItem)item).OnGetSupportsTarget (target);
-			else
-				throw new InvalidOperationException ("Unknown item type: " + item);
-		}
-
-		public override bool SupportsExecute (IBuildTarget item)
-		{
-			if (item is WorkspaceItem)
-				return ((WorkspaceItem)item).OnGetSupportsExecute ();
-			else if (item is SolutionItem)
-				return ((SolutionItem)item).OnGetSupportsExecute ();
-			else
-				throw new InvalidOperationException ("Unknown item type: " + item);
-		}
-
-		public override void Execute (IProgressMonitor monitor, IBuildTarget item, ExecutionContext context, ConfigurationSelector configuration)
-		{
-			if (item is SolutionEntityItem) {
-				SolutionEntityItem entry = (SolutionEntityItem) item;
-				SolutionItemConfiguration conf = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
-				if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Execute)) {
-					conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.Execute, context, configuration);
-					return;
-				}
-				entry.OnExecute (monitor, context, configuration);
-			}
-			else if (item is WorkspaceItem) {
-				((WorkspaceItem)item).OnExecute (monitor, context, configuration);
-			}
-			else if (item is SolutionItem)
-				((SolutionItem)item).OnExecute (monitor, context, configuration);
-			else
-				throw new InvalidOperationException ("Unknown item type: " + item);
-		}
-		
-		public override bool CanExecute (IBuildTarget item, ExecutionContext context, ConfigurationSelector configuration)
-		{
-			if (item is SolutionEntityItem) {
-				SolutionEntityItem entry = (SolutionEntityItem) item;
-				SolutionItemConfiguration conf = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
-				if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Execute))
-					return conf.CustomCommands.CanExecute (entry, CustomCommandType.Execute, context, configuration);
-				return entry.OnGetCanExecute (context, configuration);
-			}
-			else if (item is WorkspaceItem) {
-				return ((WorkspaceItem)item).OnGetCanExecute (context, configuration);
-			}
-			else if (item is SolutionItem)
-				return ((SolutionItem)item).OnGetCanExecute (context, configuration);
-			else
-				throw new InvalidOperationException ("Unknown item type: " + item);
-		}
-		
-		public override IEnumerable<ExecutionTarget> GetExecutionTargets (IBuildTarget item, ConfigurationSelector configuration)
-		{
-			if (item is WorkspaceItem) {
-				return ((WorkspaceItem)item).OnGetExecutionTargets (configuration);
-			}
-			else if (item is SolutionItem)
-				return ((SolutionItem)item).OnGetExecutionTargets (configuration);
-			else
-				throw new InvalidOperationException ("Unknown item type: " + item);
-		}
-
-		public override bool GetNeedsBuilding (IBuildTarget item, ConfigurationSelector configuration)
-		{
-			if (item is SolutionItem) {
-				SolutionItem entry = (SolutionItem) item;
-				// This is a cache to avoid unneeded recursive calls to GetNeedsBuilding.
-				bool cleanCache = false;
-				if (needsBuildingCache == null) {
-					needsBuildingCache = new Dictionary <SolutionItem,bool> ();
-					cleanCache = true;
-				} else {
-					bool res;
-					if (needsBuildingCache.TryGetValue (entry, out res))
-						return res;
-				}
-				
-				bool nb = entry.OnGetNeedsBuilding (configuration);
-				
-				needsBuildingCache [entry] = nb;
-				if (cleanCache)
-					needsBuildingCache = null;
-				return nb;
-			}
-			else if (item is WorkspaceItem) {
-				return ((WorkspaceItem)item).OnGetNeedsBuilding (configuration);
-			}
-			else
-				throw new InvalidOperationException ("Unknown item type: " + item);
-		}
-		
-		public override void SetNeedsBuilding (IBuildTarget item, bool val, ConfigurationSelector configuration)
-		{
-			if (item is SolutionItem) {
-				SolutionItem entry = (SolutionItem) item;
-				entry.OnSetNeedsBuilding (val, configuration);
-			}
-			else if (item is WorkspaceItem) {
-				((WorkspaceItem)item).OnSetNeedsBuilding (val, configuration);
-			}
-			else
-				throw new InvalidOperationException ("Unknown item type: " + item);
-		}
-
-		internal override BuildResult Compile(IProgressMonitor monitor, SolutionEntityItem item, BuildData buildData, ItemCompileCallback callback)
-		{
-			return callback (monitor, item, buildData);
-		}
-
-		public override IEnumerable<string> GetReferencedAssemblies (DotNetProject project, ConfigurationSelector configuration, bool includeProjectReferences)
-		{
-			return project.OnGetReferencedAssemblies (configuration, includeProjectReferences);
-		}
-	}	
 	
 	internal static class Counters
 	{

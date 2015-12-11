@@ -75,8 +75,45 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
     <Reference Include="Mono.Cairo" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' Or '$(Configuration)' == 'ReleaseMac' ">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Composition.AttributedModel">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Composition.AttributedModel.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Collections.Immutable.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Features">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.Features.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Features">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Features.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -96,86 +133,43 @@
     <Compile Include="MonoDevelop.AnalysisCore\AnalysisOptions.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\AnalysisService.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\FixableResult.cs" />
-    <Compile Include="MonoDevelop.AnalysisCore\Rules\Adaptors.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\Result.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\RuleTree.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\RuleTreeType.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\Fixes\GenericFix.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringService.cs" />
-    <Compile Include="MonoDevelop.Refactoring\RefactoryCommands.cs" />
-    <Compile Include="MonoDevelop.Refactoring\RefactoringOperation.cs" />
     <Compile Include="MonoDevelop.Refactoring\Change.cs" />
-    <Compile Include="MonoDevelop.Refactoring\GotoDeclarationHandler.cs" />
-    <Compile Include="MonoDevelop.Refactoring\FindReferencesHandler.cs" />
-    <Compile Include="MonoDevelop.Refactoring.Rename\RenameTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Refactoring.Rename\RenameRefactoring.cs" />
     <Compile Include="MonoDevelop.Refactoring.Rename\RenameItemDialog.cs" />
-    <Compile Include="MonoDevelop.Refactoring.Rename\RenameHandler.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Refactoring.Rename.RenameItemDialog.cs" />
-    <Compile Include="MonoDevelop.Refactoring\AbstractRefactoringCommandHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringOptions.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringPreviewDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Refactoring.RefactoringPreviewDialog.cs" />
-    <Compile Include="MonoDevelop.Refactoring\FindDerivedClassesHandler.cs" />
-    <Compile Include="MonoDevelop.Refactoring\ImportSymbolHandler.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\CodeIssueProvider.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\CodeIssue.cs" />
     <Compile Include="MonoDevelop.CodeActions\CodeActionEditorExtension.cs" />
-    <Compile Include="MonoDevelop.CodeActions\CodeAction.cs" />
-    <Compile Include="MonoDevelop.CodeActions\CodeActionProvider.cs" />
-    <Compile Include="MonoDevelop.CodeActions\CodeActionAddinNode.cs" />
     <Compile Include="MonoDevelop.CodeActions\CodeActionPanelWidget.cs" />
-    <Compile Include="MonoDevelop.CodeActions\AnalysisCodeAction.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CodeActions.ContextActionPanelWidget.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeIssuePanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CodeIssues.CodeIssuePanelWidget.cs" />
-    <Compile Include="MonoDevelop.CodeActions\ICodeActionProviderSource.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\ICodeIssueProviderSource.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\CodeAnalysisRunner.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\DefaultCodeIssueCategories.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\CodeIssueAddinNode.cs" />
-    <Compile Include="MonoDevelop.Refactoring\ResolveCommandHandler.cs" />
-    <Compile Include="MonoDevelop.Refactoring\ExtensionMethods.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\CodeIssuePad.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\IGroupingProvider.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\IssueSummary.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\IssueGroup.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\CategoryGroupingProvider.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\GroupingProviderChainControl.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\GroupingDescriptionAttribute.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\NullGroupingProvider.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\IssueGroupEventArgs.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\GroupingProviderEventArgs.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\AbstractGroupingProvider.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\ProviderGroupingProvider.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\SeverityGroupingProvider.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\AnalysisState.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\AnalysisStateChangeEventArgs.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\CodeAnalysisBatchRunner.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\IIssueTreeNode.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\IIssueSummarySink.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\IssueTreeNodeEventArgs.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\ActionSummary.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\BatchFixer.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\IssueMatch.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\ExactIssueMatcher.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\IActionMatcher.cs" />
     <Compile Include="AddinInfo.cs" />
-    <Compile Include="MonoDevelop.Refactoring\FindDerivedSymbolsHandler.cs" />
-    <Compile Include="MonoDevelop.Refactoring\FindMemberOverloadsHandler.cs" />
-    <Compile Include="MonoDevelop.Refactoring\FindExtensionMethodHandler.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\Runner\IAnalysisJob.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\Runner\AnalysisJobQueue.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\Runner\CodeIssueEventArgs.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\SolutionAnalysisJob.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\Runner\SimpleAnalysisJob.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\Runner\ProgressMonitorWrapperJob.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\Runner\JobContext.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\Runner\IJobContext.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\Runner\JobSlice.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\Runner\JobStatus.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\ProjectGroupingProvider.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\FileGroupingProvider.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\DiagnosticResult.cs" />
+    <Compile Include="MonoDevelop.CodeActions\CodeRefactoringDescriptor.cs" />
+    <Compile Include="MonoDevelop.CodeActions\CodeRefactoringService.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\CodeDiagnosticDescriptor.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\CodeDiagnosticRunner.cs" />
+    <Compile Include="MonoDevelop.CodeActions\CodeActionContainer.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\IssueMarker.cs" />
+    <Compile Include="MonoDevelop.Refactoring\InsertionPointService.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\CodeDiagnosticProvider.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\BuiltInCodeDiagnosticProvider.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\AnalyzersFromAssembly.cs" />
+    <Compile Include="MonoDevelop.CodeActions\ValidCodeAction.cs" />
+    <Compile Include="MonoDevelop.CodeActions\ValidCodeDiagnosticAction.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\CodeDiagnosticFixDescriptor.cs" />
+    <Compile Include="MonoDevelop.Refactoring\Commands.cs" />
+    <Compile Include="MonoDevelop.Refactoring\RefactoringSymbolInfo.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\ISuppressionFixProvider.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\CodeFix.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\CSharpSuppressionFixProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -183,7 +177,8 @@
     <Folder Include="MonoDevelop.AnalysisCore\" />
     <Folder Include="MonoDevelop.CodeIssues\" />
     <Folder Include="MonoDevelop.CodeActions\" />
-    <Folder Include="MonoDevelop.CodeIssues\Runner\" />
+    <Folder Include="MonoDevelop.AnalysisCore\Rules\" />
+    <Folder Include="MonoDevelop.CodeIssues\Pad\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml">
@@ -224,29 +219,9 @@
       <Name>MonoDevelop.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
-      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
-      <Name>Mono.TextEditor</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
       <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
       <Name>MonoDevelop.DesignerSupport</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
-      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
-      <Name>MonoDevelop.SourceEditor</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
-      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
-      <Name>ICSharpCode.NRefactory</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
-      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
-      <Name>ICSharpCode.NRefactory.CSharp</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
@@ -269,15 +244,69 @@
       <Name>Mono.Debugging</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
+      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
+      <Name>MonoDevelop.SourceEditor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\RefactoringEssentials\RefactoringEssentials\RefactoringEssentials.csproj">
+      <Project>{C465A5DC-AD28-49A2-89C0-F81838814A7E}</Project>
+      <Name>RefactoringEssentials</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
+      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
+      <Name>Mono.TextEditor</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="MonoDevelop.AnalysisCore\README.txt" />
     <None Include="MonoDevelop.AnalysisCore\TODO.txt" />
     <None Include="MonoDevelop.Refactoring\QuickFixHandler.cs" />
-    <None Include="MonoDevelop.Refactoring\EncapsulateFieldDialog.cs" />
-    <None Include="MonoDevelop.Refactoring\OverridesImplementsDialog.cs" />
     <None Include="gtk-gui\MonoDevelop.Refactoring.OverridesImplementsDialog.cs" />
     <None Include="gtk-gui\MonoDevelop.Refactoring.EncapsulateFieldDialog.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\Runner\AnalysisJobQueue.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\Runner\CodeIssueEventArgs.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\Runner\IAnalysisJob.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\Runner\IJobContext.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\Runner\JobContext.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\Runner\JobSlice.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\Runner\JobStatus.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\Runner\ProgressMonitorWrapperJob.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\Runner\SimpleAnalysisJob.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\CodeIssuePad.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\ExactIssueMatcher.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\IActionMatcher.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\IssueMatch.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\SolutionAnalysisJob.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\CodeAnalysisBatchRunner.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\BatchFixer.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\AbstractGroupingProvider.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\FileGroupingProvider.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\GroupingDescriptionAttribute.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\GroupingProviderChainControl.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\GroupingProviderEventArgs.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\IGroupingProvider.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\IIssueSummarySink.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\IIssueTreeNode.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\IssueGroup.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\IssueGroupEventArgs.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\IssueSummary.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\IssueTreeNodeEventArgs.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\NullGroupingProvider.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\ProjectGroupingProvider.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\ProviderGroupingProvider.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\SeverityGroupingProvider.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\ActionSummary.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\AnalysisState.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\AnalysisStateChangeEventArgs.cs" />
+    <None Include="MonoDevelop.CodeIssues\Pad\CategoryGroupingProvider.cs" />
   </ItemGroup>
-</Project>
+
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.Features.dll" DestinationFolder="..\..\..\build\bin" ContinueOnError="true" />
+    <Copy SourceFiles="..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Features.dll" DestinationFolder="..\..\..\build\bin" ContinueOnError="true" />
+  </Target>
+  </Project>
