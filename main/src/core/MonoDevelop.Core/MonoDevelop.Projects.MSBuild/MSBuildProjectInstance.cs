@@ -115,6 +115,11 @@ namespace MonoDevelop.Projects.MSBuild
 
 			if (!OnlyEvaluateProperties) {
 				
+				var xmlImports = msproject.Imports.ToArray ();
+				var buildImports = e.GetImports (project).ToArray ();
+				for (int n = 0; n < xmlImports.Length && n < buildImports.Length; n++)
+					xmlImports [n].SetEvalResult (e.GetImportEvaluatedProjectPath (project, buildImports [n]));
+
 				var evalItems = new Dictionary<string,MSBuildItemEvaluated> ();
 				foreach (var it in e.GetEvaluatedItems (project)) {
 					var xit = it as MSBuildItemEvaluated;
