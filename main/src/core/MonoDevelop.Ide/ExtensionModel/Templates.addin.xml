@@ -69,6 +69,10 @@
 	<FileTemplate id = "EmptyResourceFile" resource = "EmptyResourceFile.xft.xml"/>
 	<FileTemplate id = "EmptyTextFile" resource = "EmptyTextFile.xft.xml"/>
 	<FileTemplate id = "EmptyXMLFile" resource = "EmptyXMLFile.xft.xml"/>
+
+	<Condition id="Platform" value="windows">
+		<FileTemplate id = "AppManifest" resource = "AppManifest.xft.xml"/>
+	</Condition>
 </Extension>
 
 <Extension path = "/MonoDevelop/Ide/FileTemplateTypes">

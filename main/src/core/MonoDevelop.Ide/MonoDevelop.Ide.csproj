@@ -2433,6 +2433,9 @@
     <EmbeddedResource Include="icons\revert-to-saved-16%402x.png">
       <LogicalName>revert-to-saved-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="templates\AppManifest.xft.xml">
+      <LogicalName>AppManifest.xft.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
