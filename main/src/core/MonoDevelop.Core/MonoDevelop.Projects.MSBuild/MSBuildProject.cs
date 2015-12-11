@@ -84,6 +84,8 @@ namespace MonoDevelop.Projects.MSBuild
 			get { return file.ParentDirectory; }
 		}
 
+		public FilePath SolutionDirectory { get; set; }
+
 		public MSBuildFileFormat Format
 		{
 			get;
