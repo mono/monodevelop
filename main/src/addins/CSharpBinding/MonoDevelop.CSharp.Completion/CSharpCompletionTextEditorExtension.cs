@@ -106,11 +106,7 @@ namespace MonoDevelop.CSharp.Completion
 			get {
 				if (policy == null) {
 					IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
-					if (DocumentContext.Project != null && DocumentContext.Project.Policies != null) {
-						policy = base.DocumentContext.Project.Policies.Get<CSharpFormattingPolicy> (types);
-					} else {
-						policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
-					}
+					policy = DocumentContext.GetPolicy<CSharpFormattingPolicy> (types);
 				}
 				return policy;
 			}
