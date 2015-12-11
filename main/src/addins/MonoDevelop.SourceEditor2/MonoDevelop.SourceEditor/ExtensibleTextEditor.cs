@@ -86,13 +86,18 @@ namespace MonoDevelop.SourceEditor
 
 		void UpdateSemanticHighlighting ()
 		{
-			if (Document.SyntaxMode is SemanticHighlightingSyntaxMode)
-				return;
+			var oldSemanticHighighting = Document.SyntaxMode as SemanticHighlightingSyntaxMode;
+
 			if (semanticHighlighting == null) {
-				Document.MimeType = Document.MimeType;
-				return;
+				if (oldSemanticHighighting != null)
+					Document.MimeType = Document.MimeType;
+			} else {
+				if (oldSemanticHighighting == null) {
+					Document.SyntaxMode = new SemanticHighlightingSyntaxMode (this, Document.SyntaxMode, semanticHighlighting);
+				} else {
+					oldSemanticHighighting.UpdateSemanticHighlighting (semanticHighlighting);
+				}
 			}
-			Document.SyntaxMode = new SemanticHighlightingSyntaxMode (this, Document.SyntaxMode, semanticHighlighting);
 		}
 
 		class LastEditorExtension : TextEditorExtension
