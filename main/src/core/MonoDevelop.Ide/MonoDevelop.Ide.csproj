@@ -5734,12 +5734,14 @@
     <EmbeddedResource Include="icons\redo-16%402x.png">
       <LogicalName>redo-16@2x.png</LogicalName>
     </EmbeddedResource>
+	<!-- REMOVE
     <EmbeddedResource Include="icons\revert-to-saved-16.png">
       <LogicalName>revert-to-saved-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\revert-to-saved-16%402x.png">
       <LogicalName>revert-to-saved-16@2x.png</LogicalName>
     </EmbeddedResource>
+	-->
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />

@@ -53,7 +53,6 @@
 	<StockIcon stockid="gtk-redo" resource="redo-16.png" size="Menu" />
 	<StockIcon stockid="gtk-refresh" resource="refresh-16.png" size="Menu" />
 	<StockIcon stockid="gtk-remove" resource="remove-16.png" size="Menu" />
-	<StockIcon stockid="gtk-revert-to-saved" resource="revert-to-saved-16.png" size="Menu" />
 	<StockIcon stockid="gtk-save" resource="save-16.png" size="Menu" />
 	<StockIcon stockid="gtk-save-as" resource="save-16.png" size="Menu" />
 	<StockIcon stockid="gtk-stop" resource="stop-16.png" size="Menu" />

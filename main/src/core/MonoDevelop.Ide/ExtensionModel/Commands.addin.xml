@@ -430,7 +430,7 @@
 			_label = "_Revert"
 			_description = "Revert to a saved version of the file"
 			macShortcut = "Meta|U"
-			icon = "gtk-revert-to-saved" />
+			icon = "gtk-undo" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.SaveAs"
 			_label = "Save _As..."
 			icon = "gtk-save-as"
