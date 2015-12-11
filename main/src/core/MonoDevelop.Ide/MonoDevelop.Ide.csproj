@@ -5702,12 +5702,14 @@
     <EmbeddedResource Include="icons\indent-16%402x.png">
       <LogicalName>indent-16@2x.png</LogicalName>
     </EmbeddedResource>
+	<!-- REMOVE
     <EmbeddedResource Include="icons\page-setup-16.png">
       <LogicalName>page-setup-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\page-setup-16%402x.png">
       <LogicalName>page-setup-16@2x.png</LogicalName>
     </EmbeddedResource>
+	-->
     <EmbeddedResource Include="icons\paste-16.png">
       <LogicalName>paste-16.png</LogicalName>
     </EmbeddedResource>

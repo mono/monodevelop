@@ -451,8 +451,7 @@
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.PrintPageSetup"
 			defaultHandler = "MonoDevelop.Ide.Commands.PrintPageSetupHandler"
 			_label = "Page Set_up"
-			_description = "Show page setup"
-			icon  = "gtk-page-setup" />
+			_description = "Show page setup" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.RecentFileList"
 			defaultHandler = "MonoDevelop.Ide.Commands.RecentFileListHandler"
 			type="array"

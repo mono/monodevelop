@@ -35,7 +35,6 @@
 	<StockIcon stockid="gtk-new" resource="add-16.png" size="Menu" />
 	<StockIcon stockid="gtk-ok" resource="done-16.png" size="Menu" />
 	<StockIcon stockid="gtk-open" resource="open-16.png" size="Menu" />
-	<StockIcon stockid="gtk-page-setup" resource="page-setup-16.png" size="Menu" />
 	<StockIcon stockid="gtk-paste" resource="paste-16.png" size="Menu" />
 	<StockIcon stockid="gtk-preferences" resource="preferences-16.png" size="Menu" />
 	<StockIcon stockid="gtk-print" resource="print-16.png" size="Menu" />
