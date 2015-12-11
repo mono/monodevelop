@@ -2040,8 +2040,17 @@
     <EmbeddedResource Include="icons\searchbox-search-win-24~pressed.png">
       <LogicalName>searchbox-search-win-24~pressed.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\clear-all-bookmarks-16.png">
-      <LogicalName>clear-all-bookmarks-16.png</LogicalName>
+    <EmbeddedResource Include="icons\bookmark-clear-all-16.png">
+      <LogicalName>bookmark-clear-all-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-clear-all-16%402x.png">
+      <LogicalName>bookmark-clear-all-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-clear-all-16~dark.png">
+      <LogicalName>bookmark-clear-all-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-clear-all-16~dark%402x.png">
+      <LogicalName>bookmark-clear-all-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\close-all-documents-16.png">
       <LogicalName>close-all-documents-16.png</LogicalName>
@@ -2073,8 +2082,6 @@
     <EmbeddedResource Include="icons\find-in-files-16.png">
       <LogicalName>find-in-files-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\goto-next-bookmark-16.png">
-      <LogicalName>goto-next-bookmark-16.png</LogicalName>
     <EmbeddedResource Include="icons\find-in-files-16%402x.png">
       <LogicalName>find-in-files-16@2x.png</LogicalName>
     </EmbeddedResource>
@@ -2084,9 +2091,29 @@
     <EmbeddedResource Include="icons\find-in-files-16~dark%402x.png">
       <LogicalName>find-in-files-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-next-16.png">
+      <LogicalName>bookmark-next-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\goto-prev-bookmark-16.png">
-      <LogicalName>goto-prev-bookmark-16.png</LogicalName>
+    <EmbeddedResource Include="icons\bookmark-next-16%402x.png">
+      <LogicalName>bookmark-next-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-next-16~dark.png">
+      <LogicalName>bookmark-next-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-next-16~dark%402x.png">
+      <LogicalName>bookmark-next-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-prev-16.png">
+      <LogicalName>bookmark-prev-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-prev-16%402x.png">
+      <LogicalName>bookmark-prev-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-prev-16~dark.png">
+      <LogicalName>bookmark-prev-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-prev-16~dark%402x.png">
+      <LogicalName>bookmark-prev-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-application-output-16.png">
       <LogicalName>pad-application-output-16.png</LogicalName>
@@ -2220,8 +2247,17 @@
     <EmbeddedResource Include="icons\file-text-16~dark~sel%402x.png">
       <LogicalName>file-text-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\toggle-bookmark-16.png">
-      <LogicalName>toggle-bookmark-16.png</LogicalName>
+    <EmbeddedResource Include="icons\bookmark-toggle-16.png">
+      <LogicalName>bookmark-toggle-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-toggle-16%402x.png">
+      <LogicalName>bookmark-toggle-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-toggle-16~dark.png">
+      <LogicalName>bookmark-toggle-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-toggle-16~dark%402x.png">
+      <LogicalName>bookmark-toggle-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\web-search-16.png">
       <LogicalName>web-search-16.png</LogicalName>

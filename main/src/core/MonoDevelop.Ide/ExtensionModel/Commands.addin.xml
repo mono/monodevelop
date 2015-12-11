@@ -859,22 +859,22 @@
 			icon  = "gtk-open" />
 
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark"
-			icon = "md-toggle-bookmark"
+			icon = "md-bookmark-toggle"
 			shortcut = "Control|F2"
 			_description = "Toggle bookmark"
 			_label = "_Toggle Bookmark" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.PrevBookmark"
-			icon = "md-goto-prevbookmark"
+			icon = "md-bookmark-prev"
 			shortcut = "Shift|F2"
 			_description = "Go to previous bookmark"
 			_label = "Pre_vious Bookmark" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.NextBookmark"
-			icon = "md-goto-nextbookmark"
+			icon = "md-bookmark-next"
 			shortcut = "F2"
 			_description = "Go to next bookmark"
 			_label = "Ne_xt Bookmark" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.ClearBookmarks"
-			icon = "md-clear-all-bookmarks"
+			icon = "md-bookmark-clear-all"
 			_description = "Clear bookmarks"
 			_label = "_Clear Bookmarks" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoLineNumber"
