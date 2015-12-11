@@ -67,7 +67,7 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		string[] validTags = new [] { "file"};
+		string[] validTags = new [] { "file" , "f" };
 
 		public override string [] Tags {
 			get {

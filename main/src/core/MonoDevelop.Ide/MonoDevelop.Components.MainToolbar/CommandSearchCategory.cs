@@ -56,7 +56,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 		}
 
-		string[] validTags = new [] { "cmd", "command" };
+		string[] validTags = new [] { "cmd", "command", "c" };
 
 		public override string [] Tags {
 			get {
