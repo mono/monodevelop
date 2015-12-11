@@ -1397,8 +1397,10 @@ namespace MonoDevelop.Ide
 			foreach (var doc in new List<MonoDevelop.Ide.Gui.Document> (IdeApp.Workbench.Documents)) {
 				if (doc.IsDirty && doc.Project != null) {
 					doc.Save ();
-					if (doc.IsDirty)
+					if (doc.IsDirty) {
+						doc.Select ();
 						result.AddError (string.Format (couldNotSaveError, Path.GetFileName (doc.FileName)), doc.FileName);
+					}
 				}
 			}
 		}
