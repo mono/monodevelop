@@ -298,7 +298,6 @@ namespace MonoDevelop.CSharp
 			if (newResult.isGotoFilePattern)
 				return;
 			uint x = 0;
-			Console.WriteLine ("tag:"+newResult.Tag);
 			// Search Types
 			newResult.filteredSymbols = new List<DeclaredSymbolInfo> ();
 			bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern, StringComparison.Ordinal) && lastResult.filteredSymbols != null;
