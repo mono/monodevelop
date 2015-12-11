@@ -90,6 +90,12 @@ namespace MonoDevelop.Ide.Commands
 		{
 			CommonAboutDialog.ShowAboutDialog ();
 		}
+
+		protected override void Update (CommandInfo info)
+		{
+			base.Update (info);
+			info.Icon = MonoDevelop.Core.BrandingService.HelpAboutIconId;
+		}
 	}
 	
 	class SendFeedbackHandler : CommandHandler
