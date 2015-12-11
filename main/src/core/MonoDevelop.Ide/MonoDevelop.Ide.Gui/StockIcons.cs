@@ -117,7 +117,6 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId Reference = "md-reference";
 		public static readonly IconId ReferenceWarning = "md-reference-warning";
 		public static readonly IconId ReplaceIcon = Gtk.Stock.FindAndReplace;
-		public static readonly IconId ReplaceInFiles = "md-replace-in-files";
 		public static readonly IconId ResourceFileIcon = "md-resource-file-icon";
 		public static readonly IconId Console = "md-console";
 		public static readonly IconId RunProgramIcon = Gtk.Stock.Execute;

@@ -2124,9 +2124,6 @@
     <EmbeddedResource Include="icons\pad-generic-pad-16~dark%402x.png">
       <LogicalName>pad-generic-pad-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\replace-in-files-16.png">
-      <LogicalName>replace-in-files-16.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-resource-16.png">
       <LogicalName>file-resource-16.png</LogicalName>
     </EmbeddedResource>
@@ -5704,7 +5701,8 @@
     <EmbeddedResource Include="icons\print-16%402x.png">
       <LogicalName>print-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\print-preview-16.png">
+    <!-- REMOVE
+	<EmbeddedResource Include="icons\print-preview-16.png">
       <LogicalName>print-preview-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\print-preview-16%402x.png">
@@ -5716,6 +5714,7 @@
     <EmbeddedResource Include="icons\quit-16%402x.png">
       <LogicalName>quit-16@2x.png</LogicalName>
     </EmbeddedResource>
+	-->
     <EmbeddedResource Include="icons\redo-16.png">
       <LogicalName>redo-16.png</LogicalName>
     </EmbeddedResource>

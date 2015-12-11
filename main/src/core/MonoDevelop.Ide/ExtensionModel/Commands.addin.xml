@@ -446,7 +446,6 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.PrintPreviewHandler"
 			_label = "Print Previe_w"
 			_description = "Show print preview"
-			icon  = "gtk-print-preview"
 			shortcut = "Shift|Control|P" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.PrintPageSetup"
 			defaultHandler = "MonoDevelop.Ide.Commands.PrintPageSetupHandler"
@@ -473,7 +472,6 @@
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.Exit"
 			defaultHandler = "MonoDevelop.Ide.Commands.ExitHandler"
 			_label = "_Quit"
-			icon = "gtk-quit"
 			_description = "Quit MonoDevelop"
 			macShortcut = "Meta|Q"
 			shortcut = "Control|Q" />
@@ -835,7 +833,6 @@
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles"
 			defaultHandler = "MonoDevelop.Ide.FindInFiles.ReplaceInFilesHandler"
 			_label = "R_eplace in Files..."
-			icon = "md-replace-in-files"
 			shortcut = "Control|Shift|H"
 			macShortcut = "Alt|Meta|Shift|F"
 			_description = "Search for and replace text in all files of a directory" />

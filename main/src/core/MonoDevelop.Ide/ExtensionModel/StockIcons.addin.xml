@@ -47,8 +47,6 @@
 	<StockIcon stockid="gtk-paste" resource="paste-16.png" size="Menu" />
 	<StockIcon stockid="gtk-preferences" resource="preferences-16.png" size="Menu" />
 	<StockIcon stockid="gtk-print" resource="print-16.png" size="Menu" />
-	<StockIcon stockid="gtk-print-preview" resource="print-preview-16.png" size="Menu" />
-	<StockIcon stockid="gtk-quit" resource="quit-16.png" size="Menu" />
 	<StockIcon stockid="gtk-redo" resource="redo-16.png" size="Menu" />
 	<StockIcon stockid="gtk-refresh" resource="refresh-16.png" size="Menu" />
 	<StockIcon stockid="gtk-remove" resource="remove-16.png" size="Menu" />
@@ -287,7 +285,6 @@
 	<StockIcon stockid="md-new-project" resource="project-new-16.png" size="Menu" />
 	<StockIcon stockid="md-new-solution" resource="solution-new-16.png" size="Menu" />
 	<StockIcon stockid="md-new-solution-folder" resource="solution-folder-new-16.png" size="Menu" />
-	<StockIcon stockid="md-replace-in-files" resource="replace-in-files-16.png" size="Menu" />
 	<StockIcon stockid="md-select-all" resource="edit-select-all-16.png" size="Menu" />
 	<StockIcon stockid="md-toggle-bookmark" resource="toggle-bookmark-16.png" size="Menu" />
 	<StockIcon stockid="md-web-search-icon" resource="web-search-16.png" size="Menu" />
