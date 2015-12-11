@@ -66,9 +66,11 @@ namespace MonoDevelop.Projects.MSBuild
 		void InitLogger (ILogWriter logWriter)
 		{
 			currentLogWriter = logWriter;
-			log.Clear ();
-			flushingLog = false;
-			flushTimer = new Timer (o => FlushLog ());
+			if (currentLogWriter != null) {
+				log.Clear ();
+				flushingLog = false;
+				flushTimer = new Timer (o => FlushLog ());
+			}
 		}
 
 		/// <summary>
@@ -76,10 +78,12 @@ namespace MonoDevelop.Projects.MSBuild
 		/// </summary>
 		void DisposeLogger ()
 		{
-			flushTimer.Dispose ();
-			flushTimer = null;
-			FlushLog ();
-			currentLogWriter = null;
+			if (currentLogWriter != null) {
+				flushTimer.Dispose ();
+				flushTimer = null;
+				FlushLog ();
+				currentLogWriter = null;
+			}
 		}
 
 		void LogWriteLine (string txt)
