@@ -588,8 +588,6 @@
     <EmbeddedResource Include="icons\find-next-16.png">
       <LogicalName>find-next-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\edit-select-all-16.png">
-      <LogicalName>edit-select-all-16.png</LogicalName>
     <EmbeddedResource Include="icons\find-next-16%402x.png">
       <LogicalName>find-next-16@2x.png</LogicalName>
     </EmbeddedResource>
@@ -599,6 +597,17 @@
     <EmbeddedResource Include="icons\find-next-16~dark%402x.png">
       <LogicalName>find-next-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\select-all-16.png">
+      <LogicalName>select-all-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\select-all-16%402x.png">
+      <LogicalName>select-all-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\select-all-16~dark.png">
+      <LogicalName>select-all-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\select-all-16~dark%402x.png">
+      <LogicalName>select-all-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-class-16.png">
       <LogicalName>element-class-16.png</LogicalName>
@@ -1515,11 +1524,29 @@
     <EmbeddedResource Include="icons\solution-32~dark~sel%402x.png">
       <LogicalName>solution-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-folder-new-16.png">
-      <LogicalName>solution-folder-new-16.png</LogicalName>
+    <EmbeddedResource Include="icons\new-solution-folder-16.png">
+      <LogicalName>new-solution-folder-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-new-16.png">
-      <LogicalName>solution-new-16.png</LogicalName>
+    <EmbeddedResource Include="icons\new-solution-folder-16%402x.png">
+      <LogicalName>new-solution-folder-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-solution-folder-16~dark.png">
+      <LogicalName>new-solution-folder-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-solution-folder-16~dark%402x.png">
+      <LogicalName>new-solution-folder-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-solution-16.png">
+      <LogicalName>new-solution-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-solution-16%402x.png">
+      <LogicalName>new-solution-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-solution-16~dark.png">
+      <LogicalName>new-solution-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-solution-16~dark%402x.png">
+      <LogicalName>new-solution-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-visibility-private-diamond-overlay-16.png">
       <LogicalName>element-visibility-private-diamond-overlay-16.png</LogicalName>
