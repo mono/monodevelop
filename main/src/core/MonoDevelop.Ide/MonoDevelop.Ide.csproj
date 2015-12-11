@@ -2046,17 +2046,17 @@
     <EmbeddedResource Include="icons\pad-search-results-16~dark%402x.png">
       <LogicalName>pad-search-results-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-clear-16.png">
-      <LogicalName>searchbox-clear-16.png</LogicalName>
+    <EmbeddedResource Include="icons\searchbox-clear-mac-16.png">
+      <LogicalName>searchbox-clear-mac-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-clear-16%402x.png">
-      <LogicalName>searchbox-clear-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\searchbox-clear-mac-16%402x.png">
+      <LogicalName>searchbox-clear-mac-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-clear-16~dark.png">
-      <LogicalName>searchbox-clear-16~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\searchbox-clear-mac-16~dark.png">
+      <LogicalName>searchbox-clear-mac-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-clear-16~dark%402x.png">
-      <LogicalName>searchbox-clear-16~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\searchbox-clear-mac-16~dark%402x.png">
+      <LogicalName>searchbox-clear-mac-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\searchbox-clear-win-24.png">
       <LogicalName>searchbox-clear-win-24.png</LogicalName>
@@ -2067,17 +2067,17 @@
     <EmbeddedResource Include="icons\searchbox-clear-win-24~pressed.png">
       <LogicalName>searchbox-clear-win-24~pressed.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-search-16.png">
-      <LogicalName>searchbox-search-16.png</LogicalName>
+    <EmbeddedResource Include="icons\searchbox-search-mac-16.png">
+      <LogicalName>searchbox-search-mac-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-search-16%402x.png">
-      <LogicalName>searchbox-search-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\searchbox-search-mac-16%402x.png">
+      <LogicalName>searchbox-search-mac-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-search-16~dark.png">
-      <LogicalName>searchbox-search-16~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\searchbox-search-mac-16~dark.png">
+      <LogicalName>searchbox-search-mac-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-search-16~dark%402x.png">
-      <LogicalName>searchbox-search-16~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\searchbox-search-mac-16~dark%402x.png">
+      <LogicalName>searchbox-search-mac-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\searchbox-search-win-24.png">
       <LogicalName>searchbox-search-win-24.png</LogicalName>
