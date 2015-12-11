@@ -82,7 +82,7 @@
       <HintPath>..\..\..\build\bin\MonoDevelop.Core.dll</HintPath>
     </Reference>
     <Reference Include="monodoc">
-      <HintPath>../../../../main/build\bin\monodoc.dll</HintPath>
+      <HintPath>..\..\..\..\main\build\bin\monodoc.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Ide">
       <Private>False</Private>
@@ -116,6 +116,9 @@
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces">
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Core">
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
