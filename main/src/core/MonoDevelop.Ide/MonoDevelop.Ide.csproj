@@ -2061,11 +2061,20 @@
     <EmbeddedResource Include="icons\searchbox-clear-win-24.png">
       <LogicalName>searchbox-clear-win-24.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-clear-win-24~dark.png">
+      <LogicalName>searchbox-clear-win-24~dark.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\searchbox-clear-win-24~hover.png">
       <LogicalName>searchbox-clear-win-24~hover.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-clear-win-24~hover~dark.png">
+      <LogicalName>searchbox-clear-win-24~hover~dark.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\searchbox-clear-win-24~pressed.png">
       <LogicalName>searchbox-clear-win-24~pressed.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-clear-win-24~pressed~dark.png">
+      <LogicalName>searchbox-clear-win-24~pressed~dark.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\searchbox-search-mac-16.png">
       <LogicalName>searchbox-search-mac-16.png</LogicalName>
@@ -2082,11 +2091,20 @@
     <EmbeddedResource Include="icons\searchbox-search-win-24.png">
       <LogicalName>searchbox-search-win-24.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-search-win-24~dark.png">
+      <LogicalName>searchbox-search-win-24~dark.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\searchbox-search-win-24~hover.png">
       <LogicalName>searchbox-search-win-24~hover.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-search-win-24~hover~dark.png">
+      <LogicalName>searchbox-search-win-24~hover~dark.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\searchbox-search-win-24~pressed.png">
       <LogicalName>searchbox-search-win-24~pressed.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-search-win-24~pressed~dark.png">
+      <LogicalName>searchbox-search-win-24~pressed~dark.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\bookmark-clear-all-16.png">
       <LogicalName>bookmark-clear-all-16.png</LogicalName>
