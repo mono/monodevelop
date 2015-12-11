@@ -2205,6 +2205,16 @@ namespace MonoDevelop.Projects
 
 			var pi = CreateProjectInstaceForConfiguration (conf, platform).Result;
 
+			// Set the evaluated value for each property in the property group.
+			// When saving the project, if the property is assigned the same evaluated value,
+			// the change won't be saved
+
+			foreach (var p in cgrp.Group.GetProperties ()) {
+				var ep = pi.EvaluatedProperties.GetProperty (p.Name);
+				if (ep != null)
+					p.InitEvaluatedValue (ep.Value);
+			}
+
 			config.Platform = platform;
 			projectExtension.OnReadConfiguration (monitor, config, pi.EvaluatedProperties);
 			Configurations.Add (config);

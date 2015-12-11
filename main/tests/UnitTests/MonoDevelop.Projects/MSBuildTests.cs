@@ -1192,7 +1192,9 @@ namespace MonoDevelop.Projects
 				"text-spacing.csproj",
 				"inconsistent-line-endings.csproj",
 				"attribute-order.csproj",
-				"custom-namespace.csproj"
+				"custom-namespace.csproj",
+				"multiple-prop-definition.csproj",
+				"env-vars-prop.csproj"
 				//"ICSharpCode.NRefactory.Cecil.csproj"
 			)]
 			string project)

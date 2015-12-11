@@ -43,6 +43,7 @@ namespace MonoDevelop.Projects.MSBuild
 		string value;
 		string rawValue, textValue;
 		string name;
+		string unevaluatedValue;
 
 		static readonly string EmptyElementMarker = new string ('e', 1);
 
@@ -64,7 +65,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal override void ReadContent (MSBuildXmlReader reader)
 		{
-			value = ReadValue (reader);
+			value = unevaluatedValue = ReadValue (reader);
 		}
 
 		internal override void WriteContent (XmlWriter writer, WriteContext context)
@@ -80,7 +81,7 @@ namespace MonoDevelop.Projects.MSBuild
 			} else if (textValue != null) {
 				writer.WriteValue (textValue);
 			} else {
-				WriteValue (writer, context, value);
+				WriteValue (writer, context, unevaluatedValue);
 			}
 			MSBuildWhitespace.Write (EndInnerWhitespace, writer);
 		}
@@ -189,6 +190,12 @@ namespace MonoDevelop.Projects.MSBuild
 			return name;
 		}
 
+		/// <summary>
+		/// Gets or sets the value
+		/// </summary>
+		/// <value>The loaded value.</value>
+		public string LoadedValue { get; set; }
+
 		public bool IsImported {
 			get;
 			set;
@@ -288,20 +295,34 @@ namespace MonoDevelop.Projects.MSBuild
 				SetValue (Convert.ToString (value, CultureInfo.InvariantCulture), false, mergeToMainGroup);
 		}
 
-		internal virtual void SetPropertyValue (string value)
+		internal void InitEvaluatedValue (string value)
 		{
 			this.value = value;
-			this.rawValue = null;
-			this.textValue = null;
-			StartInnerWhitespace = null;
-			EndInnerWhitespace = null;
-			if (ParentProject != null && NotifyChanges)
-				ParentProject.NotifyChanged ();
+		}
+
+		internal virtual void SetPropertyValue (string value)
+		{
+			if (this.value != value) {
+				this.value = value;
+				this.unevaluatedValue = value;
+				this.rawValue = null;
+				this.textValue = null;
+				StartInnerWhitespace = null;
+				EndInnerWhitespace = null;
+				if (ParentProject != null && NotifyChanges)
+					ParentProject.NotifyChanged ();
+			}
 		}
 
 		internal override string GetPropertyValue ()
 		{
 			return value;
+		}
+
+		public override string UnevaluatedValue {
+			get {
+				return unevaluatedValue;
+			}
 		}
 
 		// This code is from Microsoft.Build.Internal.Utilities
@@ -362,12 +383,6 @@ namespace MonoDevelop.Projects.MSBuild
 
 			// Didn't find any tags, except possibly comments
 			return true;
-		}
-
-		public override string UnevaluatedValue {
-			get {
-				return Value;
-			}
 		}
 	}
 
