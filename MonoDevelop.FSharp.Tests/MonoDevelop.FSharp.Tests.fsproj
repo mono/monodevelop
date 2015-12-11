@@ -20,9 +20,14 @@
     <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>TRACE;DEBUG;$(DefineConstants)</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <PlatformTarget></PlatformTarget>
-    <ConsolePause>false</ConsolePause>
-    <Optimize>true</Optimize>
+    <PlatformTarget>
+    </PlatformTarget>
+    <ConsolePause>true</ConsolePause>
+    <Optimize>false</Optimize>
+    <Tailcalls>false</Tailcalls>
+    <StartAction>Program</StartAction>
+    <StartProgram>$(MSBuildProjectDirectory)\..\..\..\build\bin\mdtool</StartProgram>
+    <StartArguments>run-md-tests $(MSBuildProjectDirectory)\bin\Debug\MonoDevelop.FSharp.Tests.dll</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -77,7 +82,7 @@
       <HintPath>..\..\..\build\bin\MonoDevelop.Core.dll</HintPath>
     </Reference>
     <Reference Include="monodoc">
-      <HintPath>../../../../main/build\bin\monodoc.dll</HintPath>
+      <HintPath>..\..\..\..\main\build\bin\monodoc.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Ide">
       <Private>False</Private>
@@ -111,6 +116,9 @@
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces">
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Core">
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
