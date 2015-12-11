@@ -43,8 +43,8 @@ type FSharpProject() as self =
           invalidateProjectFile()
 
     let isPortable (project:MSBuildProject) = 
-      project.Imports
-      |> Seq.tryFind (fun i -> i.EvaluatedProject.EndsWith "Microsoft.Portable.FSharp.Targets" )
+      project.EvaluatedProperties.Properties
+      |> Seq.tryFind (fun i -> i.UnevaluatedValue.Equals(".NETPortable"))
       |> Option.isSome
 
     [<ProjectPathItemProperty ("TargetProfile", DefaultValue = "mscorlib")>]
@@ -57,15 +57,11 @@ type FSharpProject() as self =
       base.OnInitialize()
 
     override x.OnReadProject(progress, project) =
-      project.Imports
-      |> Seq.tryFind (fun i -> Path.GetFileName(i.EvaluatedProject) = "Microsoft.Portable.FSharp.Targets" )
-      |> Option.iter (fun _ -> initialisedAsPortable <- true)
+      initialisedAsPortable <- isPortable project
       base.OnReadProject(progress, project)
 
     override x.OnReadProjectHeader(progress, project) =
-      project.Imports
-      |> Seq.tryFind (fun i -> Path.GetFileName(i.EvaluatedProject) = "Microsoft.Portable.FSharp.Targets" )
-      |> Option.iter (fun _ -> initialisedAsPortable <- true)
+      initialisedAsPortable <- isPortable project
       base.OnReadProjectHeader(progress, project)
 
     override x.OnSupportsFramework (framework) =
