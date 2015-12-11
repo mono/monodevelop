@@ -74,6 +74,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public new void Dispose ()
 		{
 			bar.RemoveStatusIcon (this);
+			RemoveFromSuperview ();
 			base.Dispose ();
 		}
 
@@ -325,6 +326,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		internal void RemoveStatusIcon (StatusIcon icon)
 		{
 			statusIcons.Remove (icon);
+
 			icon.Entered -= ShowPopoverForIcon;
 			icon.Exited -= DestroyPopover;
 			icon.Clicked -= DestroyPopover;
@@ -353,24 +355,23 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 
 		IconId buildImageId;
-		nfloat PositionBuildResults ()
+		void PositionBuildResults (nfloat right)
 		{
-			nfloat right = DrawSeparatorIfNeeded (LeftMostStatusItemX ());
+			right = DrawSeparatorIfNeeded (right);
 			right -= (6 + buildResults.Frame.Width);
 			buildResults.SetFrameOrigin (new CGPoint (right, buildResults.Frame.Y));
-
-			return right;
 		}
 
 		internal void RepositionStatusIcons ()
 		{
 			nfloat right = Frame.Width;
+
 			foreach (var item in statusIcons) {
 				right -= item.Bounds.Width + 6;
 				item.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 5 : 4, item.Bounds.Width, item.Bounds.Height);
 			}
 
-			PositionBuildResults ();
+			PositionBuildResults (right);
 
 			if (!buildResults.Hidden) { // We have a build result layer.
 				textField.SetFrameSize (new CGSize (buildResults.Frame.X - 6 - textField.Frame.Left, Frame.Height));
