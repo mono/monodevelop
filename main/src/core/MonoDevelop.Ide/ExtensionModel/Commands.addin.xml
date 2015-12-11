@@ -243,7 +243,7 @@
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder"
 			_label = "New _Folder"
 			_description = "Create a new folder"
-			icon  = "md-new-folder-icon" />
+			icon  = "md-new-folder" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeToProject"
 			_description = "Add existing file to the project"
 			_label = "_Include To Project" />

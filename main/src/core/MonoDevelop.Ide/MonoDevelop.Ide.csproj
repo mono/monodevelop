@@ -411,8 +411,17 @@
     <EmbeddedResource Include="MonoDevelop.Ide.CodeFormatting\InvariantTextStylePolicy.xml">
       <LogicalName>InvariantTextStylePolicy.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\add-namespace-16.png">
-      <LogicalName>add-namespace-16.png</LogicalName>
+    <EmbeddedResource Include="icons\new-namespace-16.png">
+      <LogicalName>new-namespace-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-namespace-16%402x.png">
+      <LogicalName>new-namespace-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-namespace-16~dark.png">
+      <LogicalName>new-namespace-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-namespace-16~dark%402x.png">
+      <LogicalName>new-namespace-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\project-assembly-16.png">
       <LogicalName>project-assembly-16.png</LogicalName>
@@ -1086,8 +1095,17 @@
     <EmbeddedResource Include="icons\file-script-32~dark~sel%402x.png">
       <LogicalName>file-script-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-new-16.png">
-      <LogicalName>folder-new-16.png</LogicalName>
+    <EmbeddedResource Include="icons\new-folder-16.png">
+      <LogicalName>new-folder-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-folder-16%402x.png">
+      <LogicalName>new-folder-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-folder-16~dark.png">
+      <LogicalName>new-folder-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-folder-16~dark%402x.png">
+      <LogicalName>new-folder-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-keyword-16.png">
       <LogicalName>element-keyword-16.png</LogicalName>
@@ -5731,25 +5749,23 @@
     <EmbeddedResource Include="icons\print-16%402x.png">
       <LogicalName>print-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <!-- REMOVE
-	<EmbeddedResource Include="icons\print-preview-16.png">
-      <LogicalName>print-preview-16.png</LogicalName>
+    <EmbeddedResource Include="icons\print-16~dark.png">
+      <LogicalName>print-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\print-preview-16%402x.png">
-      <LogicalName>print-preview-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\print-16~dark%402x.png">
+      <LogicalName>print-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\quit-16.png">
-      <LogicalName>quit-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\quit-16%402x.png">
-      <LogicalName>quit-16@2x.png</LogicalName>
-    </EmbeddedResource>
-	-->
     <EmbeddedResource Include="icons\redo-16.png">
       <LogicalName>redo-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\redo-16%402x.png">
       <LogicalName>redo-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\redo-16~dark.png">
+      <LogicalName>redo-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\redo-16~dark%402x.png">
+      <LogicalName>redo-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
 	<!-- REMOVE
     <EmbeddedResource Include="icons\revert-to-saved-16.png">

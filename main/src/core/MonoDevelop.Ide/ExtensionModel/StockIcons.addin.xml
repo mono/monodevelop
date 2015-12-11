@@ -62,6 +62,7 @@
 	<!-- MD icons -->
 	<StockIcon stockid="md-about" resource="about-16.png" size="Menu" />
 	<StockIcon stockid="md-add" resource="add-16.png" size="Menu" />
+	<StockIcon stockid="md-add-namespace" resource="new-namespace-16.png" />
 	<StockIcon stockid="md-assembly-project" resource="project-assembly-16.png" size="Menu" />
 	<StockIcon stockid="md-bookmark-clear-all" resource="bookmark-clear-all-16.png" size="Menu" />
 	<StockIcon stockid="md-bookmark-next" resource="bookmark-next-16.png" size="Menu" />
@@ -129,6 +130,7 @@
 	<StockIcon stockid="md-navigate-back" resource="breadcrumb-prev-16.png" size="Menu" />
 	<StockIcon stockid="md-navigate-forward" resource="breadcrumb-next-16.png" size="Menu" />
 	<StockIcon stockid="md-newmethod" resource="element-method-new-16.png" size="Menu" />
+	<StockIcon stockid="md-new-folder" resource="new-folder-16.png" size="Menu" />
 	<StockIcon stockid="md-nunit-overlay" resource="project-nunit-overlay-32.png" size="Dnd" />
 	<StockIcon stockid="md-other-declaration" resource="element-other-declaration-16.png" size="Menu" />
 	<StockIcon stockid="md-output-icon" resource="pad-application-output-16.png" size="Menu" />
@@ -269,7 +271,6 @@
 	<StockIcon stockid="md-warning" resource="warning-48.png" size="Dialog" />
 
 	<!-- Unprocessed icons -->
-	<StockIcon stockid="md-add-namespace" resource="add-namespace-16.png" />
 	<StockIcon stockid="md-build-combine" resource="build-solution-16.png" size="Menu" />
 	<StockIcon stockid="md-build-current-selected-project" resource="build-project-16.png" size="Menu" />
 	<StockIcon stockid="md-close-combine-icon" resource="close-solution-16.png" size="Menu" />
