@@ -48,7 +48,6 @@
 	<StockIcon stockid="gtk-preferences" resource="preferences-16.png" size="Menu" />
 	<StockIcon stockid="gtk-print" resource="print-16.png" size="Menu" />
 	<StockIcon stockid="gtk-print-preview" resource="print-preview-16.png" size="Menu" />
-	<StockIcon stockid="gtk-properties" resource="properties-16.png" size="Menu" />
 	<StockIcon stockid="gtk-quit" resource="quit-16.png" size="Menu" />
 	<StockIcon stockid="gtk-redo" resource="redo-16.png" size="Menu" />
 	<StockIcon stockid="gtk-refresh" resource="refresh-16.png" size="Menu" />
@@ -170,7 +169,6 @@
 	<StockIcon stockid="md-reference-project" resource="reference-project-16.png" size="Menu" />
 	<StockIcon stockid="md-reference-invalid" resource="reference-invalid-16.png" size="Menu" />
 	<StockIcon stockid="md-reference-warning" resource="reference-invalid-16.png" size="Menu" />
-	<StockIcon stockid="md-properties" resource="properties-16.png" size="Menu" />
 	<StockIcon stockid="md-property" resource="element-property-16.png" size="Menu" />
 	<StockIcon stockid="md-reference" resource="reference-16.png" size="Menu" />
 	<StockIcon stockid="md-reference-package" resource="reference-16.png" size="Menu" />

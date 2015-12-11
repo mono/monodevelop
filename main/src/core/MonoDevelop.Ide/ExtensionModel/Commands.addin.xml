@@ -497,7 +497,7 @@
 			type="radio|array"
 			_label = "Build action" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.ShowProperties"
-			icon="gtk-properties"
+			icon="gtk-preferences"
 			_label = "_Properties" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.CopyToOutputDirectory"
 	         type = "check"
