@@ -127,7 +127,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void RenameItem (string newName)
 		{
 			Workspace sol = (Workspace) CurrentNode.DataItem;
-			IdeApp.ProjectOperations.RenameItem (sol, newName);
+			if (sol.Name != newName)
+				IdeApp.ProjectOperations.RenameItem (sol, newName);
 		}
 		
 		public override DragOperation CanDragNode ()
