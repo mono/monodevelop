@@ -106,6 +106,7 @@
 	<StockIcon stockid="md-file-source" resource="file-source-16.png" size="Menu" />
 	<StockIcon stockid="md-file-source" resource="file-source-32.png" size="Dnd" />
 	<StockIcon stockid="md-file-unit-test" resource="file-unit-test-32.png" size="Dnd" />
+	<StockIcon stockid="md-find-next" resource="find-next-16.png" size="Menu" />
 	<StockIcon stockid="md-reference-assembly" resource="reference-assembly-16.png" size="Menu" />
 	<StockIcon stockid="md-reference-folder" resource="reference-assembly-16.png" size="Menu" />
 	<StockIcon stockid="md-fs-field" resource="element-fs-field-16.png" size="Menu" />
@@ -276,7 +277,6 @@
 	<StockIcon stockid="md-close-combine-icon" resource="close-solution-16.png" size="Menu" />
 	<StockIcon stockid="md-empty" resource="empty-16.png" size="Menu" />
 	<StockIcon stockid="md-find-in-files" resource="find-in-files-16.png" size="Menu" />
-	<StockIcon stockid="md-find-next-icon" resource="edit-find-next-16.png" size="Menu" />
 	<StockIcon stockid="md-monodevelop" resource="monodevelop-16.png" size="Menu" />
 	<StockIcon stockid="md-monodevelop" resource="monodevelop-22.png" />
 	<StockIcon stockid="md-monodevelop" resource="monodevelop-22.png" size="Button" />

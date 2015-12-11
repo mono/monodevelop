@@ -795,7 +795,7 @@
 
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindNext"
 			_label = "Find _Next"
-			icon = "md-find-next-icon"
+			icon = "md-find-next"
 			_description = "Search forwards for the same text"
 			shortcut = "Control|G"
 			macShortcut = "Meta|G" />
@@ -807,7 +807,7 @@
 
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.EmacsFindNext"
 			_label = "Find _Next (Emacs behavior)"
-			icon = "md-find-next-icon"
+			icon = "md-find-next"
 			_description = "Search forwards for the same text with emacs behavior"/>
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.EmacsFindPrevious"
 			_label = "Find _Previous (Emacs behavior)"

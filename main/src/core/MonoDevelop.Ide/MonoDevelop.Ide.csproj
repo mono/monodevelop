@@ -585,11 +585,20 @@
     <EmbeddedResource Include="icons\comment-16~dark%402x.png">
       <LogicalName>comment-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\edit-find-next-16.png">
-      <LogicalName>edit-find-next-16.png</LogicalName>
+    <EmbeddedResource Include="icons\find-next-16.png">
+      <LogicalName>find-next-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\edit-select-all-16.png">
       <LogicalName>edit-select-all-16.png</LogicalName>
+    <EmbeddedResource Include="icons\find-next-16%402x.png">
+      <LogicalName>find-next-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\find-next-16~dark.png">
+      <LogicalName>find-next-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\find-next-16~dark%402x.png">
+      <LogicalName>find-next-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-class-16.png">
       <LogicalName>element-class-16.png</LogicalName>
