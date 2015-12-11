@@ -118,7 +118,7 @@
                                         <child>
                                           <widget class="MonoDevelop.Components.ImageView" id="buttonStartIcon">
                                             <property name="MemberName" />
-                                            <property name="IconId">gtk-media-play</property>
+                                            <property name="IconId">gtk-execute</property>
                                             <property name="IconSize">Menu</property>
                                           </widget>
                                           <packing>
