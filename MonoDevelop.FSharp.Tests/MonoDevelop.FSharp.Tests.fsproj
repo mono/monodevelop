@@ -20,9 +20,14 @@
     <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>TRACE;DEBUG;$(DefineConstants)</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <PlatformTarget></PlatformTarget>
-    <ConsolePause>false</ConsolePause>
-    <Optimize>true</Optimize>
+    <PlatformTarget>
+    </PlatformTarget>
+    <ConsolePause>true</ConsolePause>
+    <Optimize>false</Optimize>
+    <Tailcalls>false</Tailcalls>
+    <StartAction>Program</StartAction>
+    <StartProgram>$(MSBuildProjectDirectory)\..\..\..\build\bin\mdtool</StartProgram>
+    <StartArguments>run-md-tests $(MSBuildProjectDirectory)\bin\Debug\MonoDevelop.FSharp.Tests.dll</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
