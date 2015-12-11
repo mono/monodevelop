@@ -51,7 +51,7 @@
 	<StockIcon stockid="gtk-stop" resource="stop-16.png" size="Menu" />
 	<StockIcon stockid="gtk-undo" resource="undo-16.png" size="Menu" />
 	<StockIcon stockid="gtk-unindent" resource="unindent-16.png" size="Menu" />
-	<StockIcon stockid="gtk-zoom-100" resource="zoom-100-16.png" size="Menu" />
+	<StockIcon stockid="gtk-zoom-100" resource="zoom-actual-16.png" size="Menu" />
 	<StockIcon stockid="gtk-zoom-in" resource="zoom-in-16.png" size="Menu" />
 	<StockIcon stockid="gtk-zoom-out" resource="zoom-out-16.png" size="Menu" />
 
