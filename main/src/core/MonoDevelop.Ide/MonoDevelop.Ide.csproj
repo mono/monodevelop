@@ -375,12 +375,6 @@
     <EmbeddedResource Include="options\KeyBindingSchemeMonoDevelop1.xml">
       <LogicalName>KeyBindingSchemeMonoDevelop1.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\navigate-next-16.png">
-      <LogicalName>navigate-next-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\navigate-previous-16.png">
-      <LogicalName>navigate-previous-16.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="options\KeyBindingSchemeMonoDevelop2.xml">
       <LogicalName>KeyBindingSchemeMonoDevelop2.xml</LogicalName>
     </EmbeddedResource>
