@@ -299,7 +299,7 @@ namespace MonoDevelop.Components.MainToolbar
 			var token = src.Token;
 			foreach (var _cat in categories) {
 				var cat = _cat;
-				if (!cat.IsValidTag (pattern.Tag))
+				if (!string.IsNullOrEmpty (pattern.Tag) && !cat.IsValidTag (pattern.Tag))
 					continue;
 				var col = new SearchResultCollector (this, _cat);
 				collectors.Add (col);
