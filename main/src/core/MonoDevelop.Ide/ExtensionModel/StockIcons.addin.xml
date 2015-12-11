@@ -6,6 +6,16 @@
 </ExtensionPoint>
 
 <Extension path="/MonoDevelop/Core/StockIcons">
+	<Condition id="Platform" value="!windows">
+		<StockIcon stockid="md-searchbox-search" resource="searchbox-search-mac-16.png" size="Menu" />
+		<StockIcon stockid="md-searchbox-clear" resource="searchbox-clear-mac-16.png" size="Menu" />
+	</Condition>
+	
+	<Condition id="Platform" value="windows">
+		<StockIcon stockid="md-searchbox-search" resource="searchbox-search-win-24.png" size="Menu" />
+		<StockIcon stockid="md-searchbox-clear" resource="searchbox-clear-win-24.png" size="Menu" />
+	</Condition>
+
 	<!-- GTK icons redefined -->
 	<StockIcon stockid="gtk-about" resource="about-16.png" size="Menu" />
 	<StockIcon stockid="gtk-add" resource="add-16.png" size="Menu" />
