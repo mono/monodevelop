@@ -31,7 +31,6 @@ namespace MonoDevelop.Projects.MSBuild
 {
 	public class MSBuildImport: MSBuildElement
 	{
-		string evaluatedProjectPath;
 		string target;
 
 		static readonly string [] knownAttributes = { "Project", "Condition", "Label" };
@@ -65,15 +64,6 @@ namespace MonoDevelop.Projects.MSBuild
 		public string Project {
 			get { return target; }
 			set { AssertCanModify (); target = value; NotifyChanged (); }
-		}
-
-		public string EvaluatedProject {
-			get { return evaluatedProjectPath ?? target; }
-		}
-
-		internal void SetEvalResult (string evaluatedProjectPath)
-		{
-			this.evaluatedProjectPath = evaluatedProjectPath;
 		}
 
 		internal override void Write (XmlWriter writer, WriteContext context)
