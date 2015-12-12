@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.Templates
 
 		public override bool AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
 		{
-			var model = GetTagModel (policyParent, project, language, name, null);
+			var model = CombinedTagModel.GetTagModel (ProjectTagModel, policyParent, project, language, name, null);
 			var fileName = StringParserService.Parse (name, model);
 
 			project.ProjectProperties.SetValue (typeAtt.Value, string.IsNullOrEmpty (fileName) ? propertyInnerText : string.Concat (fileName, extension));

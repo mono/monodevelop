@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.Templates
 				ProjectFile projectFile = project.AddFile (generatedFile, buildAction);
 				
 				if (!string.IsNullOrEmpty (dependsOn)) {
-					var model = GetTagModel (policyParent, project, language, name, generatedFile);
+					var model = CombinedTagModel.GetTagModel (ProjectTagModel, policyParent, project, language, name, generatedFile);
 					string parsedDepName = StringParserService.Parse (dependsOn, model);
 					if (projectFile.DependsOn != parsedDepName)
 						projectFile.DependsOn = parsedDepName;
@@ -233,7 +233,7 @@ namespace MonoDevelop.Ide.Templates
 			
 			//substitute tags
 			if ((name != null) && (name.Length > 0)) {
-				var model = GetTagModel (policyParent, project, language, entryName ?? name, null);
+				var model = CombinedTagModel.GetTagModel (ProjectTagModel, policyParent, project, language, entryName ?? name, null);
 				fileName = StringParserService.Parse (name, model);
 			}
 			
@@ -266,7 +266,7 @@ namespace MonoDevelop.Ide.Templates
 		// project and language parameters are optional
 		public virtual Stream CreateFileContent (SolutionFolderItem policyParent, Project project, string language, string fileName, string identifier)
 		{
-			var model = GetTagModel (policyParent, project, language, identifier, fileName);
+			var model = CombinedTagModel.GetTagModel (ProjectTagModel, policyParent, project, language, identifier, fileName);
 
 			//HACK: for API compat, CreateContent just gets the override, not the base model
 			// but ProcessContent gets the entire model

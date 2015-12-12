@@ -117,28 +117,5 @@ namespace MonoDevelop.Ide.Templates
 		{
 			return TemplateConditionEvaluator.EvaluateCondition (ProjectTagModel, CreateCondition);
 		}
-
-		protected class CombinedTagModel : IStringTagModel
-		{
-			public IStringTagModel BaseModel;
-			public Dictionary<string, string> OverrideTags = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase);
-
-			public object GetValue (string name)
-			{
-				string val;
-				if (OverrideTags.TryGetValue (name, out val))
-					return val;
-				if (BaseModel != null)
-					return BaseModel.GetValue (name);
-				return null;
-			}
-		}
-
-		protected CombinedTagModel GetTagModel (SolutionFolderItem policyParent, Project project, string language, string identifier, string fileName)
-		{
-			var model = new CombinedTagModel { BaseModel = ProjectTagModel };
-			FileTemplateTagsModifier.ModifyTags (policyParent, project, language, identifier, fileName, ref model.OverrideTags);
-			return model;
-		}
 	}
 }
