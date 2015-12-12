@@ -26,7 +26,7 @@
 
 using System;
 using NUnit.Framework;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 
 namespace MonoDevelop.PackageManagement.Tests

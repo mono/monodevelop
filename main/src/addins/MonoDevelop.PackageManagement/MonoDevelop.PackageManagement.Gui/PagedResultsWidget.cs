@@ -29,7 +29,7 @@
 using System;
 using System.Collections.Generic;
 using Gtk;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using System.ComponentModel;
 
 namespace MonoDevelop.PackageManagement

@@ -32,7 +32,7 @@ using System.Collections.Generic;
 using MonoDevelop.PackageManagement;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public class PackageRepositoryCache : IPackageRepositoryCache, IPackageRepositoryFactoryEvents
 	{

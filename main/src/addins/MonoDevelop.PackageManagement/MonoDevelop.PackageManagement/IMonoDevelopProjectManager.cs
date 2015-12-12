@@ -30,7 +30,7 @@ using System;
 using System.Collections.Generic;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public interface IMonoDevelopProjectManager : IProjectManager
 	{

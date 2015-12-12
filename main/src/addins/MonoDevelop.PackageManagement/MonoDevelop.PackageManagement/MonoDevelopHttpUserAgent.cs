@@ -31,7 +31,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public class MonoDevelopHttpUserAgent
 	{

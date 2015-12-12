@@ -31,7 +31,7 @@ using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public class PackageManagementFileService : IPackageManagementFileService
 	{

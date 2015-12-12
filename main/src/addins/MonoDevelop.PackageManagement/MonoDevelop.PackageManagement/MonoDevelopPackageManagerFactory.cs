@@ -30,7 +30,7 @@ using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public class MonoDevelopPackageManagerFactory : IPackageManagerFactory
 	{

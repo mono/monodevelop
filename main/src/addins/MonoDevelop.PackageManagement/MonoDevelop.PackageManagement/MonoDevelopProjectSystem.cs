@@ -38,7 +38,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public class MonoDevelopProjectSystem : PhysicalFileSystem, IProjectSystem
 	{

@@ -26,7 +26,7 @@
 
 using System;
 using System.Collections;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using System.Collections.Generic;

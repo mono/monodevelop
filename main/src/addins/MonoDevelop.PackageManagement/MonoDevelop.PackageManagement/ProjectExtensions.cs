@@ -33,7 +33,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public static class ProjectExtensions
 	{

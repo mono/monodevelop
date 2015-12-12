@@ -31,7 +31,7 @@ using Mono.Addins;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Ide.Templates;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public class RegisteredProjectTemplatePackageSources
 	{
