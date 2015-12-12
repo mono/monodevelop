@@ -1,10 +1,10 @@
 ﻿// 
-// ISharpDevelopProjectManager.cs
+// MonoDevelopProjectManager.cs
 // 
 // Author:
 //   Matt Ward <ward.matt@gmail.com>
 // 
-// Copyright (C) 2012-2013 Matthew Ward
+// Copyright (C) 2012 Matthew Ward
 // 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -32,11 +32,33 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public interface ISharpDevelopProjectManager : IProjectManager
+	public class MonoDevelopProjectManager : ProjectManager, IMonoDevelopProjectManager
 	{
-		IPackagePathResolver PathResolver { get; }
-		bool IsInstalled(string packageId);
-		bool HasOlderPackageInstalled(IPackage package);
-		IEnumerable<PackageReference> GetPackageReferences ();
+		public MonoDevelopProjectManager(
+			IPackageRepository sourceRepository,
+			IPackagePathResolver pathResolver,
+			IProjectSystem project,
+			IPackageRepository localRepository)
+			: base(sourceRepository, pathResolver, project, localRepository)
+		{
+		}
+		
+		public bool IsInstalled(string packageId)
+		{
+			return LocalRepository.Exists(packageId);
+		}
+		
+		public bool HasOlderPackageInstalled(IPackage package)
+		{
+			IPackage installedPackage = LocalRepository.FindPackage(package.Id);
+			return (installedPackage != null) &&
+				(installedPackage.Version < package.Version);
+		}
+
+		public IEnumerable<PackageReference> GetPackageReferences ()
+		{
+			var repository = LocalRepository as PackageReferenceRepository;
+			return repository.ReferenceFile.GetPackageReferences ();
+		}
 	}
 }

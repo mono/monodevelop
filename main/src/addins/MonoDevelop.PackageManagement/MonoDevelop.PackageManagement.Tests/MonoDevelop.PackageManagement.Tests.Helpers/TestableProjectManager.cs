@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestableProjectManager : SharpDevelopProjectManager
+	public class TestableProjectManager : MonoDevelopProjectManager
 	{
 		public IPackage PackagePassedToAddPackageReference;
 		public bool IgnoreDependenciesPassedToAddPackageReference;

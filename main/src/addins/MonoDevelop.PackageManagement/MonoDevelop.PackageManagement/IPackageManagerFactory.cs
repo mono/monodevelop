@@ -34,7 +34,7 @@ namespace ICSharpCode.PackageManagement
 {
 	public interface IPackageManagerFactory
 	{
-		ISharpDevelopPackageManager CreatePackageManager (
+		IMonoDevelopPackageManager CreatePackageManager (
 			IPackageRepository sourceRepository, 
 			IDotNetProject project);
 

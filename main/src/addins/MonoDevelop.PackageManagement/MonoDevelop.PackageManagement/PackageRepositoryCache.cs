@@ -36,7 +36,7 @@ namespace ICSharpCode.PackageManagement
 {
 	public class PackageRepositoryCache : IPackageRepositoryCache, IPackageRepositoryFactoryEvents
 	{
-		ISharpDevelopPackageRepositoryFactory factory;
+		IMonoDevelopPackageRepositoryFactory factory;
 		RegisteredPackageSources packageSources;
 		PackageManagementOptions options;
 		IList<RecentPackageInfo> recentPackages;
@@ -48,7 +48,7 @@ namespace ICSharpCode.PackageManagement
 		public PackageRepositoryCache (
 			PackageManagementOptions options,
 			IPackageRepository machineCache,
-			ISharpDevelopPackageRepositoryFactory factory)
+			IMonoDevelopPackageRepositoryFactory factory)
 		{
 			this.options = options;
 			this.machineCache = machineCache;
@@ -58,7 +58,7 @@ namespace ICSharpCode.PackageManagement
 
 		public PackageRepositoryCache (
 			PackageManagementOptions options,
-			ISharpDevelopPackageRepositoryFactory factory)
+			IMonoDevelopPackageRepositoryFactory factory)
 			: this (
 				options,
 				MachineCache.Default,
@@ -69,7 +69,7 @@ namespace ICSharpCode.PackageManagement
 		public PackageRepositoryCache (PackageManagementOptions options)
 			: this(
 				options,
-				new SharpDevelopPackageRepositoryFactory ())
+				new MonoDevelopPackageRepositoryFactory ())
 		{
 		}
 
@@ -77,7 +77,7 @@ namespace ICSharpCode.PackageManagement
 			RegisteredPackageSources packageSources,
 			IList<RecentPackageInfo> recentPackages)
 		{
-			this.factory = new SharpDevelopPackageRepositoryFactory ();
+			this.factory = new MonoDevelopPackageRepositoryFactory ();
 			this.recentPackages = recentPackages;
 			this.packageSources = packageSources;
 		}

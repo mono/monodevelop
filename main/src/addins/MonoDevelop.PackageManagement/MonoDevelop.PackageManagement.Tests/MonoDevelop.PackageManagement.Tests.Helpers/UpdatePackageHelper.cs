@@ -63,7 +63,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return package;
 		}
 
-		public PackageSource PackageSource = new PackageSource ("http://sharpdevelop/packages");
+		public PackageSource PackageSource = new PackageSource ("http://monodevelop/packages");
 		public bool UpdateDependencies;
 		public bool AllowPrereleaseVersions;
 		public SemanticVersion Version;

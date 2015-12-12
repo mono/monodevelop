@@ -96,7 +96,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public PackageSource AddOnePackageSource (string name)
 		{
-			var source = new PackageSource ("http://sharpdevelop.codeplex.com", name);
+			var source = new PackageSource ("http://monodevelop.codeplex.com", name);
 			PackageSources.Add (source);
 			return source;
 		}

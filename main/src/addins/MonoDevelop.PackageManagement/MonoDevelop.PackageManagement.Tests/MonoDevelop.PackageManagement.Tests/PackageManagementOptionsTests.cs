@@ -228,11 +228,11 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void ActivePackageSource_SourceChanged_ActivePackageSourceUpdatedInSettings ()
 		{
 			CreateOptions ();
-			var packageSource = new PackageSource ("http://sharpdevelop.com", "Test");
+			var packageSource = new PackageSource ("http://monodevelop.com", "Test");
 
 			options.ActivePackageSource = packageSource;
 
-			var expectedSetting = new SettingValue ("Test", "http://sharpdevelop.com", false);
+			var expectedSetting = new SettingValue ("Test", "http://monodevelop.com", false);
 			SettingValue actualSetting = fakeSettings.GetValuePassedToSetValueForActivePackageSourceSection ();
 
 			Assert.AreEqual (expectedSetting, actualSetting);
@@ -285,7 +285,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateOptions ();
 
-			options.ActivePackageSource = new PackageSource ("http://sharpdevelop.com", "Test");
+			options.ActivePackageSource = new PackageSource ("http://monodevelop.com", "Test");
 
 			bool sectionDeleted = fakeSettings.IsActivePackageSourceSectionDeleted;
 

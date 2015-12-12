@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeProjectSystemFactory : ISharpDevelopProjectSystemFactory
+	public class FakeProjectSystemFactory : IMonoDevelopProjectSystemFactory
 	{
 		public FakeProjectSystem FakeProjectSystem = new FakeProjectSystem ();
 

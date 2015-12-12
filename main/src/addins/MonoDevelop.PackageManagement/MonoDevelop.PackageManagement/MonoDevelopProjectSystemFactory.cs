@@ -1,5 +1,5 @@
 ﻿// 
-// SharpDevelopProjectManager.cs
+// MonoDevelopProjectSystemFactory.cs
 // 
 // Author:
 //   Matt Ward <ward.matt@gmail.com>
@@ -27,38 +27,16 @@
 //
 
 using System;
-using System.Collections.Generic;
+using MonoDevelop.Projects;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class SharpDevelopProjectManager : ProjectManager, ISharpDevelopProjectManager
+	public class MonoDevelopProjectSystemFactory : IMonoDevelopProjectSystemFactory
 	{
-		public SharpDevelopProjectManager(
-			IPackageRepository sourceRepository,
-			IPackagePathResolver pathResolver,
-			IProjectSystem project,
-			IPackageRepository localRepository)
-			: base(sourceRepository, pathResolver, project, localRepository)
+		public IProjectSystem CreateProjectSystem(DotNetProject project)
 		{
-		}
-		
-		public bool IsInstalled(string packageId)
-		{
-			return LocalRepository.Exists(packageId);
-		}
-		
-		public bool HasOlderPackageInstalled(IPackage package)
-		{
-			IPackage installedPackage = LocalRepository.FindPackage(package.Id);
-			return (installedPackage != null) &&
-				(installedPackage.Version < package.Version);
-		}
-
-		public IEnumerable<PackageReference> GetPackageReferences ()
-		{
-			var repository = LocalRepository as PackageReferenceRepository;
-			return repository.ReferenceFile.GetPackageReferences ();
+			return new MonoDevelopProjectSystem(project);
 		}
 	}
 }

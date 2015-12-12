@@ -1,5 +1,5 @@
 ﻿// 
-// SharpDevelopPackageManagerFactory.cs
+// MonoDevelopPackageManagerFactory.cs
 // 
 // Author:
 //   Matt Ward <ward.matt@gmail.com>
@@ -32,23 +32,23 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class SharpDevelopPackageManagerFactory : IPackageManagerFactory
+	public class MonoDevelopPackageManagerFactory : IPackageManagerFactory
 	{
 		PackageManagementOptions options;
-		ISharpDevelopPackageRepositoryFactory packageRepositoryFactory;
-		ISharpDevelopProjectSystemFactory projectSystemFactory;
+		IMonoDevelopPackageRepositoryFactory packageRepositoryFactory;
+		IMonoDevelopProjectSystemFactory projectSystemFactory;
 		
-		public SharpDevelopPackageManagerFactory()
+		public MonoDevelopPackageManagerFactory()
 			: this(
-				new SharpDevelopPackageRepositoryFactory(),
-				new SharpDevelopProjectSystemFactory(),
+				new MonoDevelopPackageRepositoryFactory(),
+				new MonoDevelopProjectSystemFactory(),
 				PackageManagementServices.Options)
 		{
 		}
 		
-		public SharpDevelopPackageManagerFactory(
-			ISharpDevelopPackageRepositoryFactory packageRepositoryFactory,
-		    ISharpDevelopProjectSystemFactory projectSystemFactory,
+		public MonoDevelopPackageManagerFactory(
+			IMonoDevelopPackageRepositoryFactory packageRepositoryFactory,
+		    IMonoDevelopProjectSystemFactory projectSystemFactory,
 		    PackageManagementOptions options)
 		{
 			this.packageRepositoryFactory = packageRepositoryFactory;
@@ -56,7 +56,7 @@ namespace ICSharpCode.PackageManagement
 			this.options = options;
 		}
 		
-		public ISharpDevelopPackageManager CreatePackageManager(
+		public IMonoDevelopPackageManager CreatePackageManager(
 			IPackageRepository sourceRepository,
 			IDotNetProject project)
 		{
@@ -64,7 +64,7 @@ namespace ICSharpCode.PackageManagement
 			IProjectSystem projectSystem = CreateProjectSystem (project.DotNetProject);
 			PackageOperationsResolverFactory packageOperationResolverFactory = new PackageOperationsResolverFactory();
 			
-			return new SharpDevelopPackageManager(
+			return new MonoDevelopPackageManager(
 				sourceRepository,
 				projectSystem,
 				solutionPackageRepository,

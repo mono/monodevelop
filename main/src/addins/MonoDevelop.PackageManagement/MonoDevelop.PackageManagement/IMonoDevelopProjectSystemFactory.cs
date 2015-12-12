@@ -1,5 +1,5 @@
 ﻿// 
-// SharpDevelopProjectSystemFactory.cs
+// IMonoDevelopProjectSystemFactory.cs
 // 
 // Author:
 //   Matt Ward <ward.matt@gmail.com>
@@ -32,11 +32,8 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class SharpDevelopProjectSystemFactory : ISharpDevelopProjectSystemFactory
+	public interface IMonoDevelopProjectSystemFactory
 	{
-		public IProjectSystem CreateProjectSystem(DotNetProject project)
-		{
-			return new SharpDevelopProjectSystem(project);
-		}
+		IProjectSystem CreateProjectSystem(DotNetProject project);
 	}
 }

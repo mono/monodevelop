@@ -1,5 +1,5 @@
 ﻿// 
-// SharpDevelopProjectSystem.cs
+// MonoDevelopProjectSystem.cs
 // 
 // Author:
 //   Matt Ward <ward.matt@gmail.com>
@@ -40,7 +40,7 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class SharpDevelopProjectSystem : PhysicalFileSystem, IProjectSystem
+	public class MonoDevelopProjectSystem : PhysicalFileSystem, IProjectSystem
 	{
 		IDotNetProject project;
 		ProjectTargetFramework targetFramework;
@@ -49,7 +49,7 @@ namespace ICSharpCode.PackageManagement
 		Action<MessageHandler> guiSyncDispatcher;
 		Func<Func<Task>,Task> guiSyncDispatcherFunc;
 
-		public SharpDevelopProjectSystem(DotNetProject project)
+		public MonoDevelopProjectSystem(DotNetProject project)
 			: this (
 				new DotNetProjectProxy (project),
 				new PackageManagementFileService (),
@@ -60,7 +60,7 @@ namespace ICSharpCode.PackageManagement
 		{
 		}
 		
-		public SharpDevelopProjectSystem (
+		public MonoDevelopProjectSystem (
 			IDotNetProject project,
 			IPackageManagementFileService fileService,
 			IPackageManagementProjectService projectService,

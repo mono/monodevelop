@@ -38,7 +38,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public IDotNetProject ProjectPassedToCreateRepository;
 		public ISolutionPackageRepository SolutionPackageRepositoryPassedToCreatePackageManager;
 
-		public ISharpDevelopPackageManager CreatePackageManager (IPackageRepository sourceRepository, IDotNetProject project)
+		public IMonoDevelopPackageManager CreatePackageManager (IPackageRepository sourceRepository, IDotNetProject project)
 		{
 			PackageRepositoryPassedToCreatePackageManager = sourceRepository;
 			ProjectPassedToCreateRepository = project;

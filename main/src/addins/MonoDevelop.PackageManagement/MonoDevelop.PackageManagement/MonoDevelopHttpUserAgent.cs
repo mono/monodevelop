@@ -1,5 +1,5 @@
 ﻿// 
-// SharpDevelopHttpUserAgent.cs
+// MonoDevelopHttpUserAgent.cs
 // 
 // Author:
 //   Matt Ward <ward.matt@gmail.com>

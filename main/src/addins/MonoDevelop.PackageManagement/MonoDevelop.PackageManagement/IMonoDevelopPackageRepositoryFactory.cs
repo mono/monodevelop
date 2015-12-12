@@ -1,10 +1,10 @@
 ﻿// 
-// ISharpDevelopPackageManager.cs
+// IMonoDevelopPackageRepositoryFactory.cs
 // 
 // Author:
 //   Matt Ward <ward.matt@gmail.com>
 // 
-// Copyright (C) 2012-2013 Matthew Ward
+// Copyright (C) 2012 Matthew Ward
 // 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -28,26 +28,21 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public interface ISharpDevelopPackageManager : IPackageManager
+	public interface IMonoDevelopPackageRepositoryFactory : IPackageRepositoryFactory
 	{
-		ISharpDevelopProjectManager ProjectManager { get; }
+		ISharedPackageRepository CreateSharedRepository(
+			IPackagePathResolver pathResolver,
+			IFileSystem fileSystem,
+			IFileSystem configSettingsFileSystem);
 		
-		void InstallPackage(IPackage package, InstallPackageAction installAction);
-		void UninstallPackage(IPackage package, UninstallPackageAction uninstallAction);
-		void UpdatePackage(IPackage package, UpdatePackageAction updateAction);
-		void UpdatePackages(UpdatePackagesAction updateAction);
-		void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings);
-		void AddPackageReference (IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions);
-
-		IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction);
-		IEnumerable<PackageOperation> GetUpdatePackageOperations(IEnumerable<IPackage> packages, IUpdatePackageSettings settings);
-		ReinstallPackageOperations GetReinstallPackageOperations (IEnumerable<IPackage> packages);
+		IRecentPackageRepository CreateRecentPackageRepository(
+			IList<RecentPackageInfo> recentPackages,
+			IPackageRepository aggregateRepository);
 		
-		void RunPackageOperations(IEnumerable<PackageOperation> operations);
+		IPackageRepository CreateAggregateRepository(IEnumerable<IPackageRepository> repositories);
 	}
 }

@@ -56,7 +56,7 @@ namespace MonoDevelop.PackageManagement
 				solution,
 				packageManagementEvents,
 				PackageManagementServices.PackageRepositoryCache,
-				new SharpDevelopPackageManagerFactory ())
+				new MonoDevelopPackageManagerFactory ())
 		{
 		}
 

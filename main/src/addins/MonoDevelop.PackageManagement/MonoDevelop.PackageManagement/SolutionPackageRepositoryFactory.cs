@@ -35,7 +35,7 @@ namespace ICSharpCode.PackageManagement
 {
 	public class SolutionPackageRepositoryFactory : ISolutionPackageRepositoryFactory
 	{
-		ISharpDevelopPackageRepositoryFactory repositoryFactory;
+		IMonoDevelopPackageRepositoryFactory repositoryFactory;
 		PackageManagementOptions options;
 		
 		public SolutionPackageRepositoryFactory()
@@ -44,7 +44,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public SolutionPackageRepositoryFactory(
-			ISharpDevelopPackageRepositoryFactory repositoryFactory,
+			IMonoDevelopPackageRepositoryFactory repositoryFactory,
 			PackageManagementOptions options)
 		{
 			this.repositoryFactory = repositoryFactory;

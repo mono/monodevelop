@@ -38,7 +38,7 @@ namespace ICSharpCode.PackageManagement
 	public class SolutionPackageRepository : ISolutionPackageRepository
 	{
 		SolutionPackageRepositoryPath repositoryPath;
-		ISharpDevelopPackageRepositoryFactory repositoryFactory;
+		IMonoDevelopPackageRepositoryFactory repositoryFactory;
 		DefaultPackagePathResolver packagePathResolver;
 		PhysicalFileSystem fileSystem;
 		ISharedPackageRepository repository;
@@ -46,14 +46,14 @@ namespace ICSharpCode.PackageManagement
 		public SolutionPackageRepository (ISolution solution)
 			: this (
 				solution,
-				new SharpDevelopPackageRepositoryFactory(),
+				new MonoDevelopPackageRepositoryFactory(),
 				PackageManagementServices.Options)
 		{
 		}
 		
 		public SolutionPackageRepository (
 			ISolution solution,
-			ISharpDevelopPackageRepositoryFactory repositoryFactory,
+			IMonoDevelopPackageRepositoryFactory repositoryFactory,
 			PackageManagementOptions options)
 		{
 			this.repositoryFactory = repositoryFactory;
