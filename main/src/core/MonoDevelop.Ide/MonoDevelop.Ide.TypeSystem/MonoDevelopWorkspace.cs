@@ -687,7 +687,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out isOpen);
-			var changes = text.GetTextChanges (new MonoDevelopSourceText (data)).OrderByDescending (c => c.Span.Start).ToList ();
+			var oldFile = isOpen ? document.GetTextAsync ().Result : new MonoDevelopSourceText (data);
+			var changes = text.GetTextChanges (oldFile).OrderByDescending (c => c.Span.Start).ToList ();
 			int delta = 0;
 			if (!isOpen) {
 				delta = ApplyChanges (projection, data, changes);
@@ -762,7 +763,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (projection.TryConvertFromProjectionToOriginal (offset, out originalOffset))
 						offset = originalOffset;
 				}
-
 				data.ReplaceText (offset, change.Span.Length, change.NewText);
 				delta += change.Span.Length - change.NewText.Length;
 			}
