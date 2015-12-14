@@ -227,7 +227,7 @@ namespace MonoDevelop.Ide.Gui
 			this.orientation = orientation;
 			
 			if (string.IsNullOrEmpty (icon)) {
-//				if (label == "Debug") icon = "md-execute-debug";
+//				if (label == "Debug") icon = "md-bug";
 //				if (label == "Default") icon = "md-solution";
 			}
 			this.label = label;

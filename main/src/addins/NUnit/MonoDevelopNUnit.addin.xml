@@ -67,6 +67,7 @@
 		<Category _name = "NUnit" id = "NUnit">
 		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.RunAllTests"
 			_label = "Run Unit Tests"
+			icon = "md-run-unit-tests"
 			_description="Runs all tests of the current selected project."
 			shortcut="Control|T"
 			defaultHandler="MonoDevelop.NUnit.Commands.RunAllTestsHandler"/>

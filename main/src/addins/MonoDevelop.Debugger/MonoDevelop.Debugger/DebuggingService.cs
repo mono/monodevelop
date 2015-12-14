@@ -709,7 +709,7 @@ namespace MonoDevelop.Debugger
 				busyDialog.UpdateBusyState (args);
 				if (args.IsBusy) {
 					if (busyStatusIcon == null) {
-						busyStatusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon ("md-execute-debug", Gtk.IconSize.Menu));
+						busyStatusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon ("md-bug", Gtk.IconSize.Menu));
 						busyStatusIcon.SetAlertMode (100);
 						busyStatusIcon.ToolTip = GettextCatalog.GetString ("The debugger runtime is not responding. You can wait for it to recover, or stop debugging.");
 						busyStatusIcon.Clicked += delegate {

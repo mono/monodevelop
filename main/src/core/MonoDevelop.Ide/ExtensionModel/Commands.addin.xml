@@ -216,15 +216,18 @@
 			_description = "Show options window" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.SolutionOptions"
 			defaultHandler = "MonoDevelop.Ide.Commands.SolutionOptionsHandler"
+			icon = "gtk-preferences"
 			_label = "_Solution Options"
 			_description = "Show solution options window" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.ProjectOptions"
 			defaultHandler = "MonoDevelop.Ide.Commands.ProjectOptionsHandler"
+			icon = "gtk-preferences"
 			_label = "Project _Options"
 			_description = "Show project options window" />
 
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
 			_description = "Add and remove project references"
+			icon = "md-reference"
 			_label = "_Edit References..."
 			defaultHandler = "MonoDevelop.Ide.Commands.EditReferencesHandler" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles"
@@ -378,7 +381,7 @@
 			shortcut = "Control|N"
 			macShortcut = "Meta|N"
 			_description = "Create a new file"
-			icon = "gtk-new" />
+			icon = "md-regular-file" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.Save"
 			icon = "gtk-save"
 			shortcut = "Control|S"
@@ -402,7 +405,8 @@
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewWorkspace"
 			defaultHandler = "MonoDevelop.Ide.Commands.NewWorkspaceHandler"
 			_label = "_Workspace..."
-			_description = "Create a new workspace"/>
+			_description = "Create a new workspace"
+			icon  = "md-new-workspace" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile"
 			defaultHandler = "MonoDevelop.Ide.Commands.CloseFileHandler"
 			_label = "_Close File"
@@ -430,8 +434,7 @@
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.ReloadFile"
 			_label = "_Revert"
 			_description = "Revert to a saved version of the file"
-			macShortcut = "Meta|U"
-			icon = "gtk-undo" />
+			macShortcut = "Meta|U" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.SaveAs"
 			_label = "Save _As..."
 			_description = "Save the current file with a different name" />
@@ -633,12 +636,14 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.SideBySideModeHandler"
 			_label = "2 Columns"
 			shortcut = "Control|Shift|2"
-			macShortcut = "Alt|Meta|2"/>
+			macShortcut = "Alt|Meta|2"
+			icon = "md-columns-two" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.SingleMode"
 			defaultHandler = "MonoDevelop.Ide.Commands.SingleModeHandler"
 			_label = "1 Column"
 			shortcut = "Control|Shift|1"
-			macShortcut = "Alt|Meta|1"/>
+			macShortcut = "Alt|Meta|1"
+			icon = "md-columns-one" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.NextNotebook"
 			defaultHandler = "MonoDevelop.Ide.Commands.NextNotebookHandler"
 			_label = "Move to Next Notebook"
@@ -757,7 +762,7 @@
 	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.OpenLogDirectory"
 			defaultHandler = "MonoDevelop.Ide.Commands.OpenLogDirectoryHandler"
 			_label = "Open Log Directory"
-			icon = "gtk-dialog-info"
+			icon = "md-open-folder"
 			_description = "Opens the directory where the diagnostic logs are stored" />
 	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.About"
 			defaultHandler = "MonoDevelop.Ide.Commands.AboutHandler"
@@ -767,6 +772,7 @@
 	<Command id  = "MonoDevelop.Ide.Updater.UpdateCommands.CheckForUpdates"
 			defaultHandler = "MonoDevelop.Ide.Updater.CheckForUpdatesHandler"
 			_label = "_Check for Updates..."
+			icon = "md-updates"
 			_description = "Check for updates to MonoDevelop and packages it requires" />
 	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.SendFeedback"
 			defaultHandler = "MonoDevelop.Ide.Commands.SendFeedbackHandler"
@@ -799,6 +805,7 @@
 			macShortcut = "Meta|G" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindPrevious"
 			_label = "Find _Previous"
+			icon = "md-find-prev"
 			_description = "Search backwards for the same text"
 			shortcut = "Control|Shift|G"
 			macShortcut = "Meta|Shift|G" />
@@ -809,6 +816,7 @@
 			_description = "Search forwards for the same text with emacs behavior"/>
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.EmacsFindPrevious"
 			_label = "Find _Previous (Emacs behavior)"
+			icon = "md-find-prev"
 			_description = "Search backwards for the same text with emacs behavior"/>
 
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindNextSelection"
@@ -845,15 +853,13 @@
 			_label = "Go to File..."
 			shortcut = "Alt|Shift|O"
 			macShortcut = "Meta|Shift|D"
-			_description = "Jump to a file in the current workspace"
-			icon  = "gtk-open" />
+			_description = "Jump to a file in the current workspace" />
 	<Command id = "MonoDevelop.Components.MainToolbar.Commands.NavigateTo"
 			defaultHandler = "MonoDevelop.Components.MainToolbar.NavigateToHandler"
 			_label = "Navigate To..."
 			_description = "Jump to a item in the current workspace"
 			shortcut = "Control|,"
-			macShortcut = "Meta|."
-			icon  = "gtk-open" />
+			macShortcut = "Meta|." />
 
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark"
 			icon = "md-bookmark-toggle"
@@ -876,10 +882,10 @@
 			_label = "_Clear Bookmarks" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoLineNumber"
 			_label = "_Go to Line..."
+			icon = "md-go-to-line"
 			_description = "Go to a specific line"
 			shortcut = "Control|I"
-			macShortcut = "Meta|L"
-			icon = "gtk-jump-to" />
+			macShortcut = "Meta|L" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.UseSelectionForFind"
 			_label = "Use Selection for Find"
 			_description = "Uses the current selection as find string"/>
@@ -960,6 +966,7 @@
 			shortcut = "Control|Shift|space" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace"
 			_label = "Go to Matching _Brace"
+			icon = "md-go-to-matching-brace"
 			description = "Go to Matching Brace"
 			shortcut = "Control|B" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveLeft"
