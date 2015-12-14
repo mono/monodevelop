@@ -79,7 +79,8 @@ namespace MonoDevelop.Components.MainToolbar
 					var matcher = StringMatcher.GetMatcher (pattern.Pattern, false);
 
 					foreach (var cmdTuple in allCommands) {
-						token.ThrowIfCancellationRequested ();
+						if (token.IsCancellationRequested)
+							break;
 						var cmd = cmdTuple.Item1;
 						var matchString = cmdTuple.Item2;
 						int rank;
