@@ -679,11 +679,10 @@ module SymbolTooltips =
             | Some fullname -> "\n\n<small>Full name: " + escapeText fullname + "</small>"
             | None -> "\n\n<small>Full name: " + fse.QualifiedName + "</small>"
 
-        match fse.IsFSharpUnion, fse.IsEnum, fse.IsDelegate with
-        | true, false, false -> typeDisplay + uniontip () + fullName
-        | false, true, false -> typeDisplay + enumtip () + fullName
-        | false, false, true -> typeDisplay + delegateTip () + fullName
-        | _ -> typeDisplay + fullName
+        if fse.IsFSharpUnion then typeDisplay + uniontip () + fullName
+        elif fse.IsEnum then typeDisplay + enumtip () + fullName
+        elif fse.IsDelegate then typeDisplay + delegateTip () + fullName
+        else typeDisplay + fullName
 
     let getValSignature displayContext (v:FSharpMemberOrFunctionOrValue) =
         let retType = asUserType (escapeText(v.FullType.Format(displayContext)))
