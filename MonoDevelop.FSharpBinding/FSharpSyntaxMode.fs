@@ -127,7 +127,7 @@ module Patterns =
     match ts with
     | IdentifierSymbol symbolUse -> 
       match symbolUse with
-      | SymbolUse.Field f -> Some (symbolUse.IsFromDefinition, f.IsMutable && not f.IsLiteral)
+      | SymbolUse.Field f -> Some (symbolUse.IsFromDefinition, f.IsMutable)
       | _ -> None
     | _ -> None
   
