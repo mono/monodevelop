@@ -910,8 +910,11 @@ namespace MonoDevelop.Projects.MSBuild
 				item.RemoveIndent ();
 				var g = item.ParentGroup;
 				g.RemoveItem (item);
-				if (removeEmptyParentGroup && !item.ParentGroup.Items.Any ())
+				if (removeEmptyParentGroup && !item.ParentGroup.Items.Any ()) {
 					Remove (g);
+					if (bestGroups != null)
+						bestGroups.Remove (item.Name);
+				}
 			}
 		}
 	}
