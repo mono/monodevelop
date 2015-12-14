@@ -35,12 +35,12 @@ using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public class PackageManagementProject : IPackageManagementProject
 	{
-		ISharpDevelopPackageManager packageManager;
-		ISharpDevelopProjectManager projectManager;
+		IMonoDevelopPackageManager packageManager;
+		IMonoDevelopProjectManager projectManager;
 		IPackageManagementEvents packageManagementEvents;
 		IDotNetProject project;
 		ProjectTargetFramework targetFramework;

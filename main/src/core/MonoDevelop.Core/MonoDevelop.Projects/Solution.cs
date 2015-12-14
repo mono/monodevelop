@@ -38,7 +38,7 @@ using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core.Execution;
 using System.Threading.Tasks;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {

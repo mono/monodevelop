@@ -33,7 +33,7 @@ using System.Runtime.Versioning;
 
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public class PackageFromRepository : IPackageFromRepository
 	{

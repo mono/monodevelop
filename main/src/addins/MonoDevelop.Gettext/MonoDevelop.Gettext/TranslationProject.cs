@@ -43,7 +43,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Gettext
 {	
-	class TranslationProject : SolutionItem, IDeployable
+	class TranslationProject : Project, IDeployable
 	{
 		[ItemProperty("packageName")]
 		string packageName = null;
@@ -87,15 +87,10 @@ namespace MonoDevelop.Gettext
 		
 		public TranslationProject ()
 		{
+			Initialize (this);
 			translations = new TranslationCollection (this);
-			
-			//NOTE: we don't really need multiple configurations for this project type, since nothing actually uses them
-			//but it makes the solution configuration mapping look more consistent
-			//Perhaps in future there will be some per-config settings
-			foreach (string config in new [] { "Debug", "Release"})
-				Configurations.Add (new TranslationProjectConfiguration (config));
 		}
-		
+
 		protected override IEnumerable<FilePath> OnGetItemFiles (bool includeReferencedFiles)
 		{
 			List<FilePath> col = base.OnGetItemFiles (includeReferencedFiles).ToList();
@@ -130,6 +125,12 @@ namespace MonoDevelop.Gettext
 		
 		protected override void OnInitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement template)
 		{
+			//NOTE: we don't really need multiple configurations for this project type, since nothing actually uses them
+			//but it makes the solution configuration mapping look more consistent
+			//Perhaps in future there will be some per-config settings
+			foreach (string config in new [] { "Debug", "Release"})
+				Configurations.Add (new TranslationProjectConfiguration (config));
+
 			OutputType  = (TranslationOutputType)Enum.Parse (typeof(TranslationOutputType), template.GetAttribute ("outputType"));
 			PackageName = template.GetAttribute ("packageName");
 			RelPath     = template.GetAttribute ("relPath");
@@ -437,7 +438,7 @@ namespace MonoDevelop.Gettext
 		SystemPath
 	}
 	
-	class TranslationProjectConfiguration : SolutionItemConfiguration
+	class TranslationProjectConfiguration : ProjectConfiguration
 	{
 		public TranslationProjectConfiguration ()
 		{

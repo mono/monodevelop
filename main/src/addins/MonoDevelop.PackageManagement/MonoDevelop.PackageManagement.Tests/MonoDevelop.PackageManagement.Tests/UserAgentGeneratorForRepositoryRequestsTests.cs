@@ -26,7 +26,7 @@
 
 using System;
 using System.Net;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using NuGet;

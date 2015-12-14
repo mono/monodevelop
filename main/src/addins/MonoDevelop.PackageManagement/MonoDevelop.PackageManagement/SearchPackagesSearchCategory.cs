@@ -27,7 +27,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;

@@ -26,7 +26,7 @@
 
 using System;
 using Gtk;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Components;
 using MonoDevelop.Ide;
 using Gdk;

@@ -93,7 +93,7 @@ namespace MonoDevelop.Platform
 				HeightRequest = System.Windows.Forms.SystemInformation.CaptionHeight,
 			};
 			commandManager.IncompleteKeyPressed += (sender, e) => {
-				if (e.Key == Gdk.Key.Alt_L || e.Key == Gdk.Key.Alt_R) {
+				if (e.Key == Gdk.Key.Alt_L) {
 					Keyboard.Focus(titleBar.DockTitle.Children[0]);
 				}
 			};

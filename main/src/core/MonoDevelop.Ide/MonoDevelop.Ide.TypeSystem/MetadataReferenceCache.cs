@@ -80,6 +80,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		public static void Clear ()
+		{
+			lock (cache) {
+				cache.Clear ();
+			}
+		}
+
 		//static Timer timer;
 
 		static MetadataReferenceCache ()

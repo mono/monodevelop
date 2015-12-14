@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 using System.Linq;
 
 using Gtk;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 

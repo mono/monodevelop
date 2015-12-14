@@ -47,7 +47,7 @@ using Mono.Addins;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Core.Collections;
 using System.Threading.Tasks;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using System.Collections.Immutable;
 
 namespace MonoDevelop.Projects

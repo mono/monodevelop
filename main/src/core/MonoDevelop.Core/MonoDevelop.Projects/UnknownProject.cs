@@ -27,7 +27,7 @@ using System;
 using MonoDevelop.Core;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {

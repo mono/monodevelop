@@ -171,8 +171,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void TypeSystemService_WorkspaceItemLoaded (object sender, EventArgs e)
 		{
-			if (adhocProject == null)
-				analysisDocument = null;
+			analysisDocument = null;
 			EnsureAnalysisDocumentIsOpen ().ContinueWith (delegate {
 				if (analysisDocument != null)
 					StartReparseThread ();
@@ -979,6 +978,13 @@ namespace MonoDevelop.Ide.Gui
 			if (start != null && end != null)
 				return new [] { start[0], end[0] };
 			return null;
+		}
+
+		public override T GetPolicy<T> (IEnumerable<string> types)
+		{	
+			if (adhocProject !=	null)
+				return MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<T> (types);
+			return base.GetPolicy<T> (types);
 		}
 	
 //		public MonoDevelop.Projects.CodeGeneration.CodeGenerator CreateCodeGenerator ()

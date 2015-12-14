@@ -32,7 +32,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.PackageManagement;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public class LicenseAcceptanceService : ILicenseAcceptanceService
 	{

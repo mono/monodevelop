@@ -464,6 +464,10 @@ namespace MonoDevelop.SourceEditor
 			}
 			x += widgetExtension.OffsetX;
 			y += widgetExtension.OffsetY;
+
+			//We don't want Widget to appear outside TextArea(cut off)...
+			x = Math.Max (0, x);
+			y = Math.Max (0, y);
 			return true;
 		}
 

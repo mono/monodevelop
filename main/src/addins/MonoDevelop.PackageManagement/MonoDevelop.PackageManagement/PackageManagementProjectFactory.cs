@@ -30,11 +30,11 @@ using System;
 using MonoDevelop.PackageManagement;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public class PackageManagementProjectFactory : IPackageManagementProjectFactory
 	{
-		SharpDevelopPackageManagerFactory factory = new SharpDevelopPackageManagerFactory();
+		MonoDevelopPackageManagerFactory factory = new MonoDevelopPackageManagerFactory();
 		IPackageManagementEvents packageManagementEvents;
 		
 		public PackageManagementProjectFactory(IPackageManagementEvents packageManagementEvents)

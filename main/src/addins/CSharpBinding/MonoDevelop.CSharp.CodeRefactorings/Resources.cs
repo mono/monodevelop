@@ -89,6 +89,10 @@ namespace ICSharpCode.NRefactory6.CSharp
 		public static string RemoveAndSortUsingsWithAccelerator = "Remove _and Sort Usings";
 		public static string SortUsingsWithAccelerator = "_Sort Usings";
 		public static string RemoveUnnecessaryUsingsWithAccelerator = "_Remove Unnecessary Usings";
+		public static string EncapsulateFieldsUsages = "Encapsulate fields (and use property)";
+		public static string EncapsulateFields = "Encapsulate fields (but still use field)";
+		public static string EncapsulateFieldUsages = "Encapsulate field: '{0}' (and use property)";
+		public static string EncapsulateField = "Encapsulate field: '{0}' (but still use field)";
 	}
 }
 

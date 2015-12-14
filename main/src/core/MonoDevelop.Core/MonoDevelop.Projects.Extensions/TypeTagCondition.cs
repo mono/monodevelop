@@ -26,7 +26,7 @@
 using System;
 using System.Linq;
 using Mono.Addins;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects.Extensions
 {

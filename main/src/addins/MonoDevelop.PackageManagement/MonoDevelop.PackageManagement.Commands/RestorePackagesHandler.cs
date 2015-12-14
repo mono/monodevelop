@@ -27,7 +27,7 @@
 //
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide;

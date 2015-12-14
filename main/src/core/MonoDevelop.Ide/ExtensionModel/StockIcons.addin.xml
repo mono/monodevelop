@@ -7,6 +7,8 @@
 
 <Extension path="/MonoDevelop/Core/StockIcons">
 	<Condition id="Platform" value="!windows">
+		<StockIcon stockid="md-folder-assets" resource="folder-assets-mac-16.png" size="Menu" />
+
 		<StockIcon stockid="md-closed-folder" resource="folder-generic-mac-16.png" size="Menu" />
 		<StockIcon stockid="md-closed-reference-folder" resource="folder-special-mac-16.png" size="Menu" />
 		<StockIcon stockid="md-closed-resource-folder" resource="folder-special-mac-16.png" size="Menu" />
@@ -24,6 +26,8 @@
 	</Condition>
 
 	<Condition id="Platform" value="windows">
+		<StockIcon stockid="md-folder-assets" resource="folder-assets-win-16.png" size="Menu" />
+
 		<StockIcon stockid="md-closed-folder" resource="folder-generic-win-16.png" size="Menu" />
 		<StockIcon stockid="md-closed-reference-folder" resource="folder-special-win-16.png" size="Menu" />
 		<StockIcon stockid="md-closed-resource-folder" resource="folder-special-win-16.png" size="Menu" />
@@ -41,33 +45,50 @@
 	</Condition>
 
   <!-- GTK icons redefined -->
+	<StockIcon stockid="gtk-about" resource="about-16.png" size="Menu" />
 	<StockIcon stockid="gtk-add" resource="add-16.png" size="Menu" />
 	<StockIcon stockid="gtk-apply" resource="done-16.png" size="Menu" />
 	<StockIcon stockid="gtk-cancel" resource="remove-16.png" size="Menu" />
 	<StockIcon stockid="gtk-clear" resource="clear-16.png" size="Menu" />
 	<StockIcon stockid="gtk-close" resource="remove-16.png" size="Menu" />
 	<StockIcon stockid="gtk-copy" resource="copy-16.png" size="Menu" />
+	<StockIcon stockid="gtk-cut" resource="cut-16.png" size="Menu" />
 	<StockIcon stockid="gtk-delete" resource="remove-16.png" size="Menu" />
 	<StockIcon stockid="gtk-edit" resource="edit-16.png" size="Menu" />
+	<StockIcon stockid="gtk-execute" resource="execute-16.png" size="Menu" />
 	<StockIcon stockid="gtk-find" resource="find-16.png" size="Menu" />
 	<StockIcon stockid="gtk-find-and-replace" resource="find-and-replace-16.png" size="Menu" />
+	<StockIcon stockid="gtk-fullscreen" resource="fullscreen-16.png" size="Menu" />
 	<StockIcon stockid="gtk-go-back" resource="go-back-16.png" size="Menu" />
 	<StockIcon stockid="gtk-go-down" resource="go-down-16.png" size="Menu" />
 	<StockIcon stockid="gtk-go-forward" resource="go-forward-16.png" size="Menu" />
 	<StockIcon stockid="gtk-go-up" resource="go-up-16.png" size="Menu" />
+	<StockIcon stockid="gtk-help" resource="help-16.png" size="Menu" />
 	<StockIcon stockid="gtk-home" resource="home-16.png" size="Menu" />
+	<StockIcon stockid="gtk-indent" resource="indent-16.png" size="Menu" />
 	<StockIcon stockid="gtk-jump-to" resource="jump-to-16.png" size="Menu" />
 	<StockIcon stockid="gtk-media-play" resource="media-play-16.png" size="Menu" />
 	<StockIcon stockid="gtk-missing-image" resource="missing-image-16.png" size="Menu" />
 	<StockIcon stockid="gtk-new" resource="add-16.png" size="Menu" />
 	<StockIcon stockid="gtk-ok" resource="done-16.png" size="Menu" />
 	<StockIcon stockid="gtk-open" resource="open-16.png" size="Menu" />
+	<StockIcon stockid="gtk-page-setup" resource="page-setup-16.png" size="Menu" />
+	<StockIcon stockid="gtk-paste" resource="paste-16.png" size="Menu" />
+	<StockIcon stockid="gtk-preferences" resource="preferences-16.png" size="Menu" />
+	<StockIcon stockid="gtk-print" resource="print-16.png" size="Menu" />
+	<StockIcon stockid="gtk-print-preview" resource="print-preview-16.png" size="Menu" />
 	<StockIcon stockid="gtk-properties" resource="properties-16.png" size="Menu" />
+	<StockIcon stockid="gtk-quit" resource="quit-16.png" size="Menu" />
+	<StockIcon stockid="gtk-redo" resource="redo-16.png" size="Menu" />
 	<StockIcon stockid="gtk-refresh" resource="refresh-16.png" size="Menu" />
 	<StockIcon stockid="gtk-remove" resource="remove-16.png" size="Menu" />
+	<StockIcon stockid="gtk-revert-to-saved" resource="revert-to-saved-16.png" size="Menu" />
 	<StockIcon stockid="gtk-save" resource="save-16.png" size="Menu" />
+	<StockIcon stockid="gtk-save-as" resource="save-16.png" size="Menu" />
 	<StockIcon stockid="gtk-stop" resource="stop-16.png" size="Menu" />
 	<StockIcon stockid="gtk-undo" resource="undo-16.png" size="Menu" />
+	<StockIcon stockid="gtk-unindent" resource="unindent-16.png" size="Menu" />
+	<StockIcon stockid="gtk-zoom-100" resource="zoom-100-16.png" size="Menu" />
 	<StockIcon stockid="gtk-zoom-in" resource="zoom-in-16.png" size="Menu" />
 	<StockIcon stockid="gtk-zoom-out" resource="zoom-out-16.png" size="Menu" />
 

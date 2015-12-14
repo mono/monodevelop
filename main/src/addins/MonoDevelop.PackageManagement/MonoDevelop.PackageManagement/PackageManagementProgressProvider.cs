@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 using MonoDevelop.Ide;
 

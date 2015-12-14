@@ -49,6 +49,7 @@
                 Padding="7,1,0,2"
                 Foreground="{Binding StatusTextBrush}"
                 Text="{Binding Message}"
+                TextTrimming="WordEllipsis"
                 UseLayoutRounding="True" 
                 MouseLeftButtonUp="OnShowPad" />
             <StackPanel x:Name="BuildResultPanel"

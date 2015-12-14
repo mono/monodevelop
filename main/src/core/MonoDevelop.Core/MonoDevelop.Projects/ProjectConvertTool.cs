@@ -31,7 +31,7 @@ using System.IO;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using System.Linq;
 using System.Threading.Tasks;
 

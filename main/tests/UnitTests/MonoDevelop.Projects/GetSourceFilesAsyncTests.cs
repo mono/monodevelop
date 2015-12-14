@@ -55,21 +55,41 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test()]
-		public async Task GetSourceFilesFromProjectWithAddedCompileItems()
+		public async Task GetSourceFilesFromProjectWithImportedCompileItems()
 		{
-			string projectFile = Util.GetSampleProject ("project-with-corecompiledepends", "project.csproj");
+			string projectFile = Util.GetSampleProject ("project-with-corecompiledepends", "project-with-imported-files.csproj");
 			var project = (Project) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile);
 
-			var projectFiles = project.Files.ToList ();
+			var projectFiles = project.Files.Where (f => f.Subtype != Subtype.Directory).ToList ();
 			var sourceFiles = await project.GetSourceFilesAsync (project.Configurations[0].Selector);
 
-			var msg = "When a project does specify CoreCompileDependsOn that adds Compile items, then GetSourceFilesAsync should include the added item(s)";
+			var msg = "GetSourceFilesAsync should include imported items";
 			Assert.AreEqual (projectFiles.Count + 1, sourceFiles.Length, msg);
 
 			msg = "When a project does specify CoreCompileDependsOn that adds Compile items, then GetSourceFilesAsync should include all of Files as well";
 			foreach (var file in projectFiles) {
 				var sourceFile = sourceFiles.FirstOrDefault (sf => sf.FilePath == file.FilePath);
 				Assert.IsNotNull (sourceFile, msg);
+			}
+			Assert.IsTrue (sourceFiles.Any (f => f.FilePath.FileName == "Foo.cs"));
+		}
+
+		[Test()]
+		public async Task GetSourceFilesFromProjectWithAddedCompileItems()
+		{
+			string projectFile = Util.GetSampleProject ("project-with-corecompiledepends", "project.csproj");
+			var project = (Project) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile);
+
+			var projectFiles = project.Files.Where (f => f.Subtype != Subtype.Directory).ToList ();
+			var sourceFiles = await project.GetSourceFilesAsync (project.Configurations[0].Selector);
+
+			var msg = "When a project does specify CoreCompileDependsOn that adds Compile items, then GetSourceFilesAsync should include the added item(s)";
+			Assert.AreEqual (projectFiles.Count + 2, sourceFiles.Length, msg);
+
+			msg = "When a project does specify CoreCompileDependsOn that adds Compile items, then GetSourceFilesAsync should include all of Files as well";
+			foreach (var file in projectFiles) {
+				var sourceFile = sourceFiles.FirstOrDefault (sf => sf.FilePath == file.FilePath);
+				Assert.IsNotNull (sourceFile, msg + ": " + file.FilePath.FileName + " not found");
 			}
 		}
 
@@ -107,7 +127,7 @@ namespace MonoDevelop.Projects
 			string projectFile = Util.GetSampleProject ("project-without-corecompiledepends", "project.csproj");
 			var project = (Project) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile);
 
-			var projectFiles = project.Files.ToList ();
+			var projectFiles = project.Files.Where (f => f.Subtype != Subtype.Directory).ToList ();
 			var sourceFiles = await project.GetSourceFilesAsync (project.Configurations[0].Selector);
 
 			const string msg = "When a project does not specify CoreCompileDependsOn, then GetSourceFilesAsync should be identical to Files";

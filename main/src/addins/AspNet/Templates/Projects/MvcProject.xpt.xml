@@ -1,7 +1,7 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <Template originator="Piotr Dowgiallo"
-          created="2012/05/16"
-          lastModified="2012/05/16">
+          created="2012/06/05"
+          lastModified="2012/06/05">
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -10,7 +10,10 @@
 		<Icon>md-project-web</Icon>
 		<Image id="md-aspnet-empty-project" />
 		<LanguageName>C#</LanguageName>
-		<_Description>Creates an ASP.NET MVC Web Project.</_Description>
+		<_Description>Creates an ASP.NET MVC Web Project with Razor Views.</_Description>
+		<Wizard>MonoDevelop.AspNet.ProjectTemplateWizard</Wizard>
+		<DefaultParameters>UsesAspNetMvc=true</DefaultParameters>
+		<SupportedParameters>UsesAspNetWebApi</SupportedParameters>
 	</TemplateConfiguration>
 
 
@@ -42,7 +45,9 @@
 				<Reference type="Package" refto="Microsoft.CSharp, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
 			</References>
 			<Packages>
-				<Package ID="Microsoft.AspNet.Mvc" Version="5.2" />
+				<Package ID="Microsoft.AspNet.Mvc" Version="5.2.3" />
+				<Package id="Microsoft.AspNet.WebApi" version="5.2.3"  if="UsesAspNetWebApi" />
+				<package id="Newtonsoft.Json" version="6.0.8"  if="UsesAspNetWebApi" />
 			</Packages>
 			<Files>
 				<Directory name="Content" />
@@ -54,38 +59,45 @@
 				<Directory name="Views">
 					<FileTemplateReference TemplateID="AspMvcWebConfigViews" name="Web.config" SuppressAutoOpen="true"  />
 					<Directory name="Home">
-						<File name="Index.aspx">
-<![CDATA[<%@ Page Language="C#" Inherits="System.Web.Mvc.ViewPage" %>
-<!DOCTYPE html>
-<html>
-<head runat="server">
-	<title></title>
-</head>
-<body>
-	<h2>Welcome to ASP.NET MVC <%: ViewData["Version"] %> on <%: ViewData["Runtime"] %>!</h2>
-</body>
-]]>
-						</File>
+						<File name="Index.cshtml" src="../MvcCommon/Index.cshtml" />
 					</Directory>
 					<Directory name="Shared">
-						<File name="Error.aspx">
-<![CDATA[<%@ Page Language="C#" Inherits="System.Web.Mvc.ViewPage" %>
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Error</title>
-</head>
-<body>
-	<div>
-		<h2>An error occurred while processing your request.</h2>
-	</div>
-</body>
-]]>
-						</File>
+						<File name="_Layout.cshtml" src="../MvcCommon/_Layout.cshtml" />
+						<File name="Error.cshtml" src="../MvcCommon/Error.cshtml" />
 					</Directory>
+					<File name="_ViewStart.cshtml" src="../MvcCommon/_ViewStart.cshtml" />
 				</Directory>
-				<FileTemplateReference TemplateID="AspMvcWebConfigApp" name="Web.config" SuppressAutoOpen="true" />
-				<FileTemplateReference TemplateID="AspMvcGlobalAsax" name="Global.asax" SuppressAutoOpen="true"  />
+				<FileTemplateReference TemplateID="WebConfig-Application" name="Web.config" SuppressAutoOpen="true" />
+				<FileTemplateReference TemplateID="GlobalAsax" name="Global.asax" SuppressAutoOpen="true"  />
+			</Files>
+		</Project>
+		<Project name = "${ProjectName}.Tests" directory = "${ProjectName}.Tests" if="IncludeTestProject">
+			<Options Target = "Library" TargetFrameworkVersion = "4.5" />
+			<References>
+				<Reference type="Package" refto="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+				<Reference type="Package" refto="System.Web, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+				<Reference type="Package" refto="System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+				<Reference type="Package" refto="System.Core" />
+				<Reference type="Package" refto="System.Web.Services, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+				<Reference type="Package" refto="System.Web.Routing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" SpecificVersion="false"  />
+				<Reference type="Package" refto="System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+				<Reference type="Package" refto="System.Web.Abstractions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" SpecificVersion="false"  />
+				<Reference type="Package" refto="System.Web.DynamicData, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+				<Reference type="Package" refto="System.ComponentModel.DataAnnotations, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" SpecificVersion="false" />
+				<Reference type="Package" refto="System.Xml.Linq" />
+				<Reference type="Package" refto="Microsoft.CSharp, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+				<Reference type="Project" refto="${ProjectName}" />
+			</References>
+			<Packages>
+				<Package ID="NUnit" Version="2.6.4" />
+				<Package ID="Microsoft.AspNet.Mvc" Version="5.2.3" />
+				<Package id="Microsoft.AspNet.WebApi" version="5.2.3"  if="UsesAspNetWebApi" />
+				<package id="Newtonsoft.Json" version="6.0.8"  if="UsesAspNetWebApi" />
+			</Packages>
+			<Files>
+				<Directory name="Controllers">
+					<File name="HomeControllerTest.cs" src="../MvcCommon/HomeControllerTest.cs" />
+				</Directory>
 			</Files>
 		</Project>
 	</Combine>

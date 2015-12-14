@@ -29,6 +29,7 @@ using System.Threading.Tasks;
 using Mono.TextEditor;
 using MonoDevelop.Ide;
 using Xwt.GtkBackend;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.SourceEditor.Wrappers
 {
@@ -47,7 +48,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		public TooltipProviderWrapper (MonoDevelop.Ide.Editor.TooltipProvider provider)
 		{
 			if (provider == null)
-				throw new ArgumentNullException ("provider");
+				throw new ArgumentNullException (nameof (provider));
 			this.provider = provider;
 		}
 
@@ -70,7 +71,12 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
 				return null;
-			var item = await provider.GetItem (wrappedEditor, doc, offset, token);
+			var task = provider.GetItem (wrappedEditor, doc, offset, token);
+			if (task == null) {
+				LoggingService.LogWarning ("Tooltip provider " + provider + " gave back null on GetItem (should always return a non null task).");
+				return null;
+			}
+			var item = await task;
 			if (item == null)
 				return null;
 			if (lastUnwrappedItem != null) {

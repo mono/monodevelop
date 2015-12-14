@@ -37,7 +37,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 using System.Threading.Tasks;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using System.Xml;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Core.Assemblies;
@@ -370,7 +370,14 @@ namespace MonoDevelop.Projects
 		public async Task<ProjectFile[]> GetSourceFilesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			// pre-load the results with the current list of files in the project
-			var results = new List<ProjectFile> (this.Files);
+			var results = new List<ProjectFile> ();
+
+			var buildActions = GetBuildActions ().Where (a => a != "Folder" && a != "--").ToArray ();
+
+			var config = configuration != null ? GetConfiguration (configuration) : null;
+			var pri = await CreateProjectInstaceForConfigurationAsync (config?.Name, config?.Platform, false);
+			foreach (var it in pri.EvaluatedItems.Where (i => buildActions.Contains (i.Name)))
+				results.Add (CreateProjectFile (it));
 
 			// add in any compile items that we discover from running the CoreCompile dependencies
 			var evaluatedCompileItems = await GetCompileItemsFromCoreCompileDependenciesAsync (monitor, configuration);
@@ -415,7 +422,7 @@ namespace MonoDevelop.Projects
 						if (evalResult != null && !evalResult.BuildResult.HasErrors) {
 							var evalItems = evalResult
 								.Items
-								.Select (i => new ProjectFile (MSBuildProjectService.FromMSBuildPath (sourceProject.BaseDirectory, i.Include), "Compile") { Project = this })
+								.Select (i => CreateProjectFile (i))
 								.ToList ();
 
 							result.AddRange (evalItems);
@@ -428,6 +435,11 @@ namespace MonoDevelop.Projects
 			}
 
 			return await evaluatedCompileItemsTask.Task;
+		}
+
+		ProjectFile CreateProjectFile (IMSBuildItemEvaluated item)
+		{
+			return new ProjectFile (MSBuildProjectService.FromMSBuildPath (sourceProject.BaseDirectory, item.Include), item.Name) { Project = this };
 		}
 
 		/// <summary>
@@ -1004,7 +1016,7 @@ namespace MonoDevelop.Projects
 			else {
 				CleanupProjectBuilder ();
 				if (this is DotNetProject) {
-					var handler = new MonoDevelop.Projects.Formats.MD1.MD1DotNetProjectHandler ((DotNetProject)this);
+					var handler = new MonoDevelop.Projects.MD1.MD1DotNetProjectHandler ((DotNetProject)this);
 					return new TargetEvaluationResult (await handler.RunTarget (monitor, target, configuration));
 				}
 			}
@@ -2195,21 +2207,48 @@ namespace MonoDevelop.Projects
 
 			var pi = CreateProjectInstaceForConfiguration (conf, platform);
 
+			// Set the evaluated value for each property in the property group.
+			// When saving the project, if the property is assigned the same evaluated value,
+			// the change won't be saved
+
+			foreach (var p in cgrp.Group.GetProperties ()) {
+				var ep = pi.EvaluatedProperties.GetProperty (p.Name);
+				if (ep != null)
+					p.InitEvaluatedValue (ep.Value);
+			}
+
 			config.Platform = platform;
 			projectExtension.OnReadConfiguration (monitor, config, pi.EvaluatedProperties);
 			Configurations.Add (config);
 		}
 
-		MSBuildProjectInstance CreateProjectInstaceForConfiguration (string conf, string platform)
+		MSBuildProjectInstance CreateProjectInstaceForConfiguration (string conf, string platform, bool onlyEvaluateProperties = true)
+		{
+			var pi = PrepareProjectInstaceForConfiguration (conf, platform, onlyEvaluateProperties);
+			pi.Evaluate ();
+			return pi;
+		}
+
+		async Task<MSBuildProjectInstance> CreateProjectInstaceForConfigurationAsync (string conf, string platform, bool onlyEvaluateProperties = true)
+		{
+			var pi = PrepareProjectInstaceForConfiguration (conf, platform, onlyEvaluateProperties);
+			await pi.EvaluateAsync ();
+			return pi;
+		}
+
+		MSBuildProjectInstance PrepareProjectInstaceForConfiguration (string conf, string platform, bool onlyEvaluateProperties)
 		{
 			var pi = sourceProject.CreateInstance ();
-			pi.SetGlobalProperty ("Configuration", conf);
-			if (platform == string.Empty)
-				pi.SetGlobalProperty ("Platform", "AnyCPU");
-			else
-				pi.SetGlobalProperty ("Platform", platform);
-			pi.OnlyEvaluateProperties = true;
-			pi.Evaluate ();
+			pi.SetGlobalProperty ("BuildingInsideVisualStudio", "true");
+			if (conf != null)
+				pi.SetGlobalProperty ("Configuration", conf);
+			if (platform != null) {
+				if (platform == string.Empty)
+					pi.SetGlobalProperty ("Platform", "AnyCPU");
+				else
+					pi.SetGlobalProperty ("Platform", platform);
+			}
+			pi.OnlyEvaluateProperties = onlyEvaluateProperties;
 			return pi;
 		}
 

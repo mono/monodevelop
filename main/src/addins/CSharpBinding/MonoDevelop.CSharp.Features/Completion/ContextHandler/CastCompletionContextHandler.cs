@@ -85,7 +85,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		{
 			var startType = type;
 
-			while (type.SpecialType != SpecialType.System_Object) {
+			while (type != null && type.SpecialType != SpecialType.System_Object) {
 				foreach (var member in type.GetMembers ()) {
 					cancellationToken.ThrowIfCancellationRequested ();
 					if (member.IsImplicitlyDeclared || member.IsStatic)

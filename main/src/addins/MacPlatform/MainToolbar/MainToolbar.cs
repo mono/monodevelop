@@ -463,7 +463,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return searchEntry.StringValue;
 			}
 			set {
-				searchEntry.LogMessage ("Setting text to '${value}'");
+				searchEntry.LogMessage ($"Setting text to '{value}'");
 				searchEntry.StringValue = value;
 			}
 		}

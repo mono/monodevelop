@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp.CodeRefactorings.EncapsulateField
 {
-	public class EncapsulateFieldResult
+	class EncapsulateFieldResult
 	{
 		private readonly Func<CancellationToken, Task<AbstractEncapsulateFieldService.Result>> _resultGetter;
 
@@ -22,12 +22,12 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeRefactorings.EncapsulateField
 			var result = await _resultGetter(cancellationToken).ConfigureAwait(false);
 			return result.Name;
 		}
-//
-//		public async Task<Glyph> GetGlyphAsync(CancellationToken cancellationToken)
-//		{
-//			var result = await _resultGetter(cancellationToken).ConfigureAwait(false);
-//			return result.Glyph;
-//		}
+
+		public async Task<Glyph> GetGlyphAsync(CancellationToken cancellationToken)
+		{
+			var result = await _resultGetter(cancellationToken).ConfigureAwait(false);
+			return result.Glyph;
+		}
 
 		public async Task<Solution> GetSolutionAsync(CancellationToken cancellationToken)
 		{

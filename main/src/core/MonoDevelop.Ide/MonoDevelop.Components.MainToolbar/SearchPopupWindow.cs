@@ -245,8 +245,9 @@ namespace MonoDevelop.Components.MainToolbar
 				if (i >= maxItems || !result.IsValid)
 					return;
 				searchResults = searchResults.Insert (i, result);
-				parent.UpdateSearchCollectors ();
-
+				Runtime.RunInMainThread (delegate {
+					parent.UpdateSearchCollectors ();
+				});
 			}
 
 			#endregion
@@ -297,6 +298,8 @@ namespace MonoDevelop.Components.MainToolbar
 			var token = src.Token;
 			foreach (var _cat in categories) {
 				var cat = _cat;
+				if (!string.IsNullOrEmpty (pattern.Tag) && !cat.IsValidTag (pattern.Tag))
+					continue;
 				var col = new SearchResultCollector (this, _cat);
 				collectors.Add (col);
 				col.Task = cat.GetResults (col, pattern, token);

@@ -26,7 +26,7 @@
 
 using System;
 using MonoDevelop.CodeIssues;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using System.Linq;
 using System.IO;

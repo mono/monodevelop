@@ -32,7 +32,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using MonoDevelop.Core.ProgressMonitoring;
 using System.Threading.Tasks;
 using MonoDevelop.Core.Serialization;

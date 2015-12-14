@@ -80,6 +80,10 @@ namespace WindowsPlatform.MainToolbar
 				toolbar.SearchBar.SearchText = toolbar.SearchBar.PlaceholderText;
 			};
 
+			toolbar.SearchBar.SearchBar.GotKeyboardFocus += (o, e) => {
+				SearchEntryActivated?.Invoke (o, e);
+			};
+
 			toolbar.SearchBar.SearchBar.SizeChanged += (o, e) => {
 				if (SearchEntryResized != null)
 					SearchEntryResized (o, e);
@@ -99,9 +103,6 @@ namespace WindowsPlatform.MainToolbar
 
 		void SendKeyPress(KeyEventArgs ka)
 		{
-			if (ka.Key == Xwt.Key.Escape)
-				SearchText = string.Empty;
-
 			if (SearchEntryKeyPressed != null)
 				SearchEntryKeyPressed(this, ka);
 		}
@@ -168,6 +169,7 @@ namespace WindowsPlatform.MainToolbar
 		public string SearchCategory {
 			set	{
 				toolbar.SearchBar.SearchText = value;
+				FocusSearchBar ();
 				toolbar.SearchBar.SearchBar.SelectAll ();
 			}
 		}
@@ -189,7 +191,13 @@ namespace WindowsPlatform.MainToolbar
 
 		public string SearchText {
 			get { return toolbar.SearchBar.SearchText; }
-			set { toolbar.SearchBar.SearchText = value; }
+			set {
+				toolbar.SearchBar.SearchText = value;
+
+				if (value != SearchPlaceholderMessage) {
+					toolbar.SearchBar.SearchBar.SelectAll ();
+				}
+			}
 		}
 
 		public StatusBar StatusBar {

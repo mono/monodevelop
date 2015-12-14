@@ -244,7 +244,21 @@ namespace MonoDevelop.CSharp.Formatting
 		// nothing
 	}
 }
-");
+"
+);
+
+			AddOption (newLineOptions, category, "NewLinesForBracesInAccessors", GettextCatalog.GetString ("Place open brace on new line for property accessors"), @"int Example { 
+	get  { 
+		return 1;
+	}
+	set {
+		// nothing
+	}
+}
+"
+);
+
+
 			AddOption (newLineOptions, category, "NewLinesForBracesInAnonymousMethods", GettextCatalog.GetString ("Place open brace on new line for anonymous methods"), @"void Example()
 {
 	var del = new delegate (int i, int j) {

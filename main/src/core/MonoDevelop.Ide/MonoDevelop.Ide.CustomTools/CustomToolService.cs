@@ -159,7 +159,7 @@ namespace MonoDevelop.Ide.CustomTools
 					return false;
 				}
 				bool byDefault, require;
-				MonoDevelop.Projects.Formats.MSBuild.MSBuildProjectService.CheckHandlerUsesMSBuildEngine (file.Project, out byDefault, out require);
+				MonoDevelop.Projects.MSBuild.MSBuildProjectService.CheckHandlerUsesMSBuildEngine (file.Project, out byDefault, out require);
 				var usesMSBuild = require || (file.Project.UseMSBuildEngine ?? byDefault);
 				if (!usesMSBuild) {
 					return false;

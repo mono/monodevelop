@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
