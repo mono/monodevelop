@@ -54,9 +54,16 @@ namespace MonoDevelop.CSharp.Refactoring
 				var project = workspace.CurrentSolution.GetProject (documentId.ProjectId);
 				if (project == null)
 					return false;
-
-				IdeApp.Workbench.OpenDocument (new FileOpenInformation (project.GetDocument (documentId).FilePath, TypeSystemService.GetMonoProject (project)) {
-					Offset = textSpan.Start
+				var fileName = project.GetDocument (documentId).FilePath;
+				var offset = textSpan.Start;
+				string projectedName;
+				int projectedOffset;
+				if (TypeSystemService.GetWorkspace (TypeSystemService.GetMonoProject(project).ParentSolution).TryGetOriginalFileFromProjection (fileName, offset, out projectedName, out projectedOffset)) {
+					fileName = projectedName;
+					offset = projectedOffset;
+				}
+				IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName, TypeSystemService.GetMonoProject (project)) {
+					Offset = offset
 				});
 				return true;
 			};
