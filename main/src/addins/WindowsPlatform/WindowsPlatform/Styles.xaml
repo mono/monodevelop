@@ -36,12 +36,12 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Menu}">
                     <Border 
-                        Background="{Binding Path=(platform:Styles.MenuBackgroundBrush), Mode=OneWay}"
+                        Background="{Binding Path=(platform:Styles.MainToolbarMenuBackgroundBrush), Mode=OneWay}"
                         BorderBrush="{Binding Path=(platform:Styles.MenuBorderBrush), Mode=OneWay}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         Padding="{TemplateBinding Padding}" 
                         SnapsToDevicePixels="true"
-            			TextElement.Foreground="{Binding Path=(platform:Styles.MenuForegroundBrush), Mode=OneWay}">
+                        TextElement.Foreground="{Binding Path=(platform:Styles.MainToolbarMenuForegroundBrush), Mode=OneWay}">
                         <ItemsPresenter 
                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                     </Border>
@@ -287,8 +287,8 @@
                 <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
             </Trigger>
             <Trigger Property="IsHighlighted" Value="True">
-                <Setter TargetName="templateRoot" Property="Background" Value="{Binding Path=(platform:Styles.MenuHighlightBackgroundBrush), Mode=OneWay}" />
-                <Setter TargetName="templateRoot" Property="BorderBrush" Value="{Binding Path=(platform:Styles.MenuHighlightBorderBrush), Mode=OneWay}" />
+                <Setter TargetName="templateRoot" Property="Background" Value="{Binding Path=(platform:Styles.MainToolbarMenuHighlightBackgroundBrush), Mode=OneWay}" />
+                <Setter TargetName="templateRoot" Property="BorderBrush" Value="{Binding Path=(platform:Styles.MainToolbarMenuHighlightBorderBrush), Mode=OneWay}" />
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter TargetName="templateRoot" Property="TextElement.Foreground" Value="{Binding Path=(platform:Styles.MenuDisabledForegroundBrush), Mode=OneWay}" />

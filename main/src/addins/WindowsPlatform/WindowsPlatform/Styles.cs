@@ -41,8 +41,12 @@ namespace WindowsPlatform
 		static Brush mainToolbarSeparatorBrush;
 		static Brush mainToolbarButtonPressedBackgroundBrush;
 		static Brush mainToolbarButtonPressedBorderBrush;
+		static Brush mainToolbarMenuBackgroundBrush;
+		static Brush mainToolbarMenuForegroundBrush;
+		static Brush mainToolbarMenuHighlightBackgroundBrush;
+		static Brush mainToolbarMenuHighlightBorderBrush;
 
-		static Brush menuBackgroundBrush;
+        static Brush menuBackgroundBrush;
 		static Brush menuForegroundBrush;
 		static Brush menuBorderBrush;
 		static Brush menuHighlightBackgroundBrush;
@@ -97,6 +101,26 @@ namespace WindowsPlatform
 		public static Brush MainToolbarButtonPressedBorderBrush {
 			get { return mainToolbarButtonPressedBorderBrush; }
 			set { mainToolbarButtonPressedBorderBrush = value; RaisePropertyChanged (); }
+		}
+		
+		public static Brush MainToolbarMenuBackgroundBrush {
+			get { return mainToolbarMenuBackgroundBrush; }
+			private set { mainToolbarMenuBackgroundBrush = value; RaisePropertyChanged (); }
+		}
+
+		public static Brush MainToolbarMenuForegroundBrush {
+			get { return mainToolbarMenuForegroundBrush; }
+			private set { mainToolbarMenuForegroundBrush = value; RaisePropertyChanged (); }
+		}
+
+		public static Brush MainToolbarMenuHighlightBackgroundBrush {
+			get { return mainToolbarMenuHighlightBackgroundBrush; }
+			private set { mainToolbarMenuHighlightBackgroundBrush = value; RaisePropertyChanged (); }
+		}
+
+		public static Brush MainToolbarMenuHighlightBorderBrush {
+			get { return mainToolbarMenuHighlightBorderBrush; }
+			private set { mainToolbarMenuHighlightBorderBrush = value; RaisePropertyChanged (); }
 		}
 
 		public static Brush MenuBackgroundBrush {
@@ -211,16 +235,20 @@ namespace WindowsPlatform
 				MainToolbarSeparatorBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x7d, G = 0x7d, B = 0x7d });
 				MainToolbarButtonPressedBackgroundBrush = new SolidColorBrush (new Color { A = 0x66, R = 0x00, G = 0x8B, B = 0xFF });
 				MainToolbarButtonPressedBorderBrush = new SolidColorBrush (new Color { A = 0x66, R = 0x00, G = 0x8B, B = 0xFF });
+				MainToolbarMenuBackgroundBrush = SystemColors.MenuBarBrush;
+				MainToolbarMenuForegroundBrush = SystemColors.MenuTextBrush;
+				MainToolbarMenuHighlightBackgroundBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0xC3, G = 0xE3, B = 0xFE });
+				MainToolbarMenuHighlightBorderBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0xC3, G = 0xE3, B = 0xFE });
 
-				MenuBackgroundBrush = SystemColors.MenuBarBrush;
-				MenuForegroundBrush = SystemColors.MenuTextBrush;
+				MenuBackgroundBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0xFF, G = 0xFF, B = 0xFF });
+				MenuForegroundBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x00, G = 0x00, B = 0x00 });
 				MenuBorderBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x99, G = 0x99, B = 0x99 });
-				MenuSeparatorBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0xD7, G = 0xD7, B = 0xD7 });
-				MenuHighlightBackgroundBrush = new SolidColorBrush (new Color { A = 0x66, R = 0x00, G = 0x8B, B = 0xFF });
-				MenuHighlightBorderBrush = new SolidColorBrush (new Color { A = 0x66, R = 0x00, G = 0x8B, B = 0xFF });
-				MenuSelectedBackgroundBrush = new SolidColorBrush (new Color { A = 0x66, R = 0x00, G = 0x8B, B = 0xFF });
-				MenuSelectedBorderBrush = new SolidColorBrush (new Color { A = 0x66, R = 0x00, G = 0x8B, B = 0xFF });
-				MenuDisabledForegroundBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x70, G = 0x70, B = 0x70 });
+				MenuSeparatorBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0xEA, G = 0xEA, B = 0xEA });
+				MenuHighlightBackgroundBrush = new SolidColorBrush (new Color { A = 0x33, R = 0x00, G = 0x8B, B = 0xFF });
+				MenuHighlightBorderBrush = new SolidColorBrush (new Color { A = 0x33, R = 0x00, G = 0x8B, B = 0xFF });
+				MenuSelectedBackgroundBrush = new SolidColorBrush (new Color { A = 0x33, R = 0x00, G = 0x8B, B = 0xFF });
+				MenuSelectedBorderBrush = new SolidColorBrush (new Color { A = 0x33, R = 0x00, G = 0x8B, B = 0xFF });
+				MenuDisabledForegroundBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0xA0, G = 0xA0, B = 0xA0 });
 
 				StatusBarBackgroundBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0xE5, G = 0xE5, B = 0xE5 });
 				StatusBarTextBrush = MainToolbarForegroundBrush;
@@ -240,13 +268,17 @@ namespace WindowsPlatform
 				MainToolbarSeparatorBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x7d, G = 0x7d, B = 0x7d });
 				MainToolbarButtonPressedBackgroundBrush = new SolidColorBrush (new Color { A = 0x66, R = 0x00, G = 0x8B, B = 0xFF });
 				MainToolbarButtonPressedBorderBrush = new SolidColorBrush (new Color { A = 0x66, R = 0x00, G = 0x8B, B = 0xFF });
+				MainToolbarMenuBackgroundBrush = MainToolbarBackgroundBrush;
+				MainToolbarMenuForegroundBrush = MainToolbarForegroundBrush;
+				MainToolbarMenuHighlightBackgroundBrush = new SolidColorBrush (new Color { A = 0x4D, R = 0x8E, G = 0xCA, B = 0xFF });
+				MainToolbarMenuHighlightBorderBrush = new SolidColorBrush (new Color { A = 0x4D, R = 0x8E, G = 0xCA, B = 0xFF });
 
 				MenuBackgroundBrush = MainToolbarBackgroundBrush;
 				MenuForegroundBrush = MainToolbarForegroundBrush;
-				MenuBorderBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x74, G = 0x74, B = 0x74 });
+				MenuBorderBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x5D, G = 0x5D, B = 0x5D });
 				MenuSeparatorBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x44, G = 0x44, B = 0x44 });
-				MenuHighlightBackgroundBrush = new SolidColorBrush (new Color { A = 0x40, R = 0x51, G = 0xB3, B = 0xE1 });
-				MenuHighlightBorderBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x51, G = 0xB3, B = 0xE1 });
+				MenuHighlightBackgroundBrush = new SolidColorBrush (new Color { A = 0x4D, R = 0x8E, G = 0xCA, B = 0xFF });
+				MenuHighlightBorderBrush = new SolidColorBrush (new Color { A = 0x4D, R = 0x8E, G = 0xCA, B = 0xFF });
 				MenuSelectedBackgroundBrush = MenuHighlightBackgroundBrush;
 				MenuSelectedBorderBrush = MenuHighlightBorderBrush;
 				MenuDisabledForegroundBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x70, G = 0x70, B = 0x70 });
