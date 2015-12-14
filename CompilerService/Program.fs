@@ -30,11 +30,12 @@ let main argv =
       options
       |> Array.map (fun o -> match o with
                              | Prefix "-r:" rest -> "-r:" + Path.GetFullPath(rest)
+                             | Prefix "--out:" rest -> "--out:" + Path.GetFullPath(rest)
                              | _ -> o)
 
   let rec normalizeProject (path, options) =
       let fullPath = Path.GetFullPath(path)
-      fullPath, { options with ProjectFileName = fullPath
+      fullPath, { options with ProjectFileName = Path.GetFullPath options.ProjectFileName
                                OtherOptions = normalizeOptions options.OtherOptions
                                ReferencedProjects = options.ReferencedProjects 
                                                     |> Array.map normalizeProject }
@@ -47,7 +48,7 @@ let main argv =
       let log = results.Contains(<@ Log @>)
       Environment.CurrentDirectory <- Path.GetDirectoryName projectFile
       let fsharpProjectOptions, logs =  CompilerService.ProjectCracker.GetProjectOptionsFromProjectFile(projectFile, enableLogging=log)
-      let (_, normalizedProject) = normalizeProject (".", fsharpProjectOptions)
+      let (_, normalizedProject) = normalizeProject (projectFile, fsharpProjectOptions)
       Choice1Of2 (normalizedProject, logs)
     with
     | ex -> Choice2Of2 ex
