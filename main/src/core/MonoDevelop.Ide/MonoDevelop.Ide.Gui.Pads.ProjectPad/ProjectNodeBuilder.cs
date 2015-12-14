@@ -78,6 +78,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			base.OnNodeAdded (dataObject);
 			Project project = (Project) dataObject;
 			project.Modified += OnProjectModified;
+			project.ParentSolution.ConfigurationsChanged += OnSolutionConfigurationsChanged;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
@@ -85,6 +86,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			base.OnNodeRemoved (dataObject);
 			Project project = (Project) dataObject;
 			project.Modified -= OnProjectModified;
+			project.ParentSolution.ConfigurationsChanged -= OnSolutionConfigurationsChanged;
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
@@ -345,16 +347,26 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				if (tb != null) tb.UpdateAll ();
 			}
 		}
-		
+
 		void IdeAppWorkspaceActiveConfigurationChanged (object sender, EventArgs e)
 		{
-			foreach (Project p in IdeApp.Workspace.GetAllProjects ()) {
+			UpdateProjects (IdeApp.Workspace.GetAllProjects ());
+		}
+
+		void UpdateProjects (IEnumerable<Project> projects)
+		{
+			foreach (Project p in projects) {
 				ITreeBuilder tb = Context.GetTreeBuilder (p);
 				if (tb != null)
 					tb.Update ();
 			}
 		}
-		
+
+		void OnSolutionConfigurationsChanged (object sender, EventArgs e)
+		{
+			var solution = (Solution)sender;
+			UpdateProjects (solution.GetAllProjects ());
+		}
 	}
 	
 	class ProjectNodeCommandHandler: FolderCommandHandler

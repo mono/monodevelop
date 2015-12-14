@@ -196,8 +196,10 @@ namespace MonoDevelop.Projects
 			foreach (SolutionConfigurationEntry entry in conf.configurations)
 				configurations.Add (new SolutionConfigurationEntry (this, entry));
 
-			if (parentSolution != null)
+			if (parentSolution != null) {
 				parentSolution.UpdateDefaultConfigurations ();
+				parentSolution.NotifyConfigurationsChanged ();
+			}
 		}
 	}
 	
