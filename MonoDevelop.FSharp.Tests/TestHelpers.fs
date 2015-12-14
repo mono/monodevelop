@@ -39,8 +39,8 @@ module TestHelpers =
     let options = ParseOptions(FileName = file, Content = StringTextSource(source))
 
     let results = parseAndCheckFile source file
-    let parsedDocument = ParsedDocument.create(options, results, [compilerDefines]) 
-                         |> Async.RunSynchronously
+    let parsedDocument =
+      ParsedDocument.create options results [compilerDefines] |> Async.RunSynchronously
 
     FixtureSetup().Initialise()
     let editor = MonoDevelop.Ide.Editor.TextEditorFactory.CreateNewEditor ()
