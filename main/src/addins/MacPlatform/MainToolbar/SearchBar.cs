@@ -136,7 +136,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			// This means we've reached a focus loss event.
 			var replacedWith = notification.UserInfo.ValueForKey ((NSString)"_NSFirstResponderReplacingFieldEditor");
 			if (replacedWith != this && LostFocus != null) {
-				LogMessage ($"Mouse focus loss to {replacedWith.DebugDescription}");
+				if (replacedWith != null)
+					LogMessage ($"Mouse focus loss to {replacedWith.DebugDescription}");
 				LostFocus (this, null);
 			}
 		}
