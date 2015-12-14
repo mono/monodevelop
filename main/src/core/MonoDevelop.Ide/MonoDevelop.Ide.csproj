@@ -2166,17 +2166,9 @@
     <EmbeddedResource Include="icons\empty-16.png">
       <LogicalName>empty-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\find-in-files-16.png">
-      <LogicalName>find-in-files-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\find-in-files-16%402x.png">
-      <LogicalName>find-in-files-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\find-in-files-16~dark.png">
-      <LogicalName>find-in-files-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\find-in-files-16~dark%402x.png">
-      <LogicalName>find-in-files-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\bookmark-next-16.png">
       <LogicalName>bookmark-next-16.png</LogicalName>

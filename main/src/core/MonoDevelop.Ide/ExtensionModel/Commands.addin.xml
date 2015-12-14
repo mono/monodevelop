@@ -434,7 +434,6 @@
 			icon = "gtk-undo" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.SaveAs"
 			_label = "Save _As..."
-			icon = "gtk-save-as"
 			_description = "Save the current file with a different name" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.PrintDocument"
 			defaultHandler = "MonoDevelop.Ide.Commands.PrintHandler"
@@ -666,7 +665,6 @@
 
 	<Command id = "MonoDevelop.Ide.Commands.ToolCommands.AddinManager"
 			defaultHandler = "MonoDevelop.Ide.Commands.AddinManagerHandler"
-			icon = "md-updates"
 			_description = "Manage add-ins"
 			_label = "_Add-in Manager" />
 	<Command id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList"
@@ -755,7 +753,6 @@
 	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay"
 			defaultHandler = "MonoDevelop.Ide.Commands.TipOfTheDayHandler"
 			_label = "_Tip of the Day"
-			icon = "gtk-dialog-info"
 			_description = "Show tip of the day" />
 	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.OpenLogDirectory"
 			defaultHandler = "MonoDevelop.Ide.Commands.OpenLogDirectoryHandler"
@@ -827,7 +824,6 @@
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles"
 			defaultHandler = "MonoDevelop.Ide.FindInFiles.FindInFilesHandler"
 			_label = "F_ind in Files..."
-			icon = "md-find-in-files"
 			shortcut = "Control|Shift|F"
 			macShortcut = "Meta|Shift|F"
 			_description = "Search for text in all files of a directory" />
