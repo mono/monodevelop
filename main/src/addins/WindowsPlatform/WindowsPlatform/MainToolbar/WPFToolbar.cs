@@ -169,6 +169,7 @@ namespace WindowsPlatform.MainToolbar
 		public string SearchCategory {
 			set	{
 				toolbar.SearchBar.SearchText = value;
+				FocusSearchBar ();
 				toolbar.SearchBar.SearchBar.SelectAll ();
 			}
 		}
