@@ -330,6 +330,10 @@ style "radio-or-check-box" = "default"
 
 style "propertygrid-radio-or-check-box" = "radio-or-check-box"
 {
+	base[ACTIVE]   = @base_color
+	base[SELECTED] = @base_color
+	base[PRELIGHT] = @base_color
+	text[SELECTED] = @fg_color
     GtkCheckButton::indicator-spacing = 0
     engine "xamarin" {
     }
@@ -437,6 +441,7 @@ class "GtkScrolledWindow" style "scrolled-window"
 class "GtkNotebook" style "notebook"
 class "GtkButton" style "button"
 class "GtkToggleButton" style "toggle-button"
+class "GtkCheckButton" style "radio-or-check-box"
 
 class "GtkScale" style "scale"
 

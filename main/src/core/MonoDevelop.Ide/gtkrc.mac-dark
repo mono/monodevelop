@@ -345,23 +345,14 @@ style "quartz-radio-or-check-box" = "default"
     }
 }
 
-style "radio-or-check-box" = "toggle-button"
-{
-    bg[NORMAL] = @fg_color
-    bg[PRELIGHT] = @bg_color
-    base[NORMAL] = @bg_color
-    text[ACTIVE] = @text_color
-
-    engine "xamarin" {
-    	#border_colors = { @fg_color, @fg_color }
-    	border_shades = { 1.33, 1.33 }
-    }
-}
-
-style "propertygrid-radio-or-check-box" = "radio-or-check-box"
+style "propertygrid-radio-or-check-box" = "default"
 {
     GtkCheckButton::indicator-spacing = 0
-    bg[PRELIGHT] = @base_color
+    base[NORMAL] = "#fff"
+    base[ACTIVE] = "#fff"
+	base[SELECTED] = "#fff"
+	base[PRELIGHT] = "#fff"
+	text[SELECTED] = @base_color
 
     engine "xamarin" {
     	border_shades = { 1.33, 1.33 }
@@ -469,7 +460,7 @@ class "GtkScrolledWindow" style "scrolled-window"
 class "GtkNotebook" style "notebook"
 class "GtkButton" style "button"
 class "GtkToggleButton" style "toggle-button"
-class "GtkCheckButton" style "radio-or-check-box"
+class "GtkCheckButton" style "quartz-radio-or-check-box"
 
 class "GtkScale" style "scale"
 
