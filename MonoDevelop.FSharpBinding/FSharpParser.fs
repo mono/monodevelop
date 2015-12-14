@@ -20,7 +20,7 @@ type FSharpParsedDocument(fileName) =
     member val AllSymbolsKeyed = Dictionary<_,_>() with get, set
 
 module ParsedDocument =
-  let create (parseOptions: ParseOptions, parseResults: ParseAndCheckResults, defines) =
+  let create (parseOptions: ParseOptions) (parseResults: ParseAndCheckResults) defines =
     //Try creating tokens
     async {
       let fileName = parseOptions.FileName
@@ -48,15 +48,12 @@ module ParsedDocument =
           if error.Severity = FSharpErrorSeverity.Error then ErrorType.Error
           else ErrorType.Warning
         Error(errorType, String.wrapText error.Message 80, DocumentRegion (error.StartLineAlternate, error.StartColumn + 1, error.EndLineAlternate, error.EndColumn + 1))
-
       parseResults.GetErrors() |> (Seq.map formatError >> doc.AddRange)
       let! allSymbolUses = parseResults.GetAllUsesOfAllSymbolsInFile()
-      match allSymbolUses with
-      | Some symbolUses ->
+      allSymbolUses |> Option.iter (fun symbolUses ->
         for symbolUse in symbolUses do
           if not (doc.AllSymbolsKeyed.ContainsKey symbolUse.RangeAlternate.End)
-          then doc.AllSymbolsKeyed.Add(symbolUse.RangeAlternate.End, symbolUse)
-      | None -> ()
+          then doc.AllSymbolsKeyed.Add(symbolUse.RangeAlternate.End, symbolUse))
 
       //Set code folding regions, GetNavigationItems may throw in some situations
       LoggingService.LogDebug ("FSharpParser: processing regions on {0}", shortFilename)
@@ -74,7 +71,8 @@ module ParsedDocument =
       with ex -> LoggingService.LogWarning ("FSharpParser: Couldn't update navigation items.", ex)
       //Store the AST of active results
       doc.Ast <- parseResults
-      return doc
+      doc.LastWriteTimeUtc <- try File.GetLastWriteTimeUtc(fileName) with _ -> DateTime.UtcNow
+      return doc :> ParsedDocument
     }
 
 // An instance of this type is created by MonoDevelop (as defined in the .xml for the AddIn) 
@@ -104,17 +102,17 @@ type FSharpParser() =
         let proj = parseOptions.Project
 
         let doc = MonoDevelop.tryGetVisibleDocument fileName
-
+       
         if doc.IsNone || not (MDLanguageService.SupportedFileName (fileName)) then null else
 
         let shortFilename = Path.GetFileName fileName
         LoggingService.LogDebug ("FSharpParser: Parse starting on {0}", shortFilename)
 
-        let isObsolete filename version cancellationRequested =
+        let isObsolete filename version (token:CancellationToken) =
           SourceCodeServices.IsResultObsolete(fun () ->
             let shortFilename = Path.GetFileName filename
             try
-              if not cancellationRequested then
+              if not token.IsCancellationRequested then
                 match MonoDevelop.tryGetVisibleDocument filename with
                 | Some doc ->
                   let newVersion = doc.Editor.Version
@@ -135,22 +133,22 @@ type FSharpParser() =
 
         Async.StartAsTask(
             cancellationToken = cancellationToken,
-            computation = async {
-
-            let parsedDoc = async {                    
-              match tryGetFilePath fileName proj with
-              | Some filePath -> 
-                  LoggingService.LogDebug ("FSharpParser: Running ParseAndCheckFileInProject for {0}", shortFilename)
-                  let projectFile = proj |> function null -> filePath | proj -> proj.FileName.ToString()
-                  let obsolete = isObsolete parseOptions.FileName parseOptions.Content.Version cancellationToken.IsCancellationRequested
-                  let! results = languageService.ParseAndCheckFileInProject(projectFile, filePath, 0, content.Text, obsolete)
-                  //if you ever want to see the current parse tree
-                  //let pt = match results.ParseTree with Some pt -> sprintf "%A" pt | _ -> "" 
-                  LoggingService.LogDebug ("FSharpParser: Parse and check results retieved on {0}", shortFilename)
-                  let defines = CompilerArguments.getDefineSymbols filePath (proj |> Option.ofNull)
-                  return! ParsedDocument.create(parseOptions, results , defines)
-              | None -> return FSharpParsedDocument(fileName, Flags = ParsedDocumentFlags.NonSerializable)} |> Async.RunSynchronously
-            
-            parsedDoc.LastWriteTimeUtc <- try File.GetLastWriteTimeUtc(fileName) with _ -> DateTime.UtcNow
-            LoggingService.LogDebug ("FSharpParser: returning ParsedDocument on {0}", shortFilename)
-            return parsedDoc :> _})
+            computation = 
+              async {                    
+                match tryGetFilePath fileName proj with
+                | Some filePath -> 
+                    LoggingService.LogDebug ("FSharpParser: Running ParseAndCheckFileInProject for {0}", shortFilename)
+                    let projectFile = proj |> function null -> filePath | proj -> proj.FileName.ToString()
+                    let obsolete = isObsolete parseOptions.FileName parseOptions.Content.Version cancellationToken
+                    try
+                      let! pendingParseResults = Async.StartChild(languageService.ParseAndCheckFileInProject(projectFile, filePath, 0, content.Text, obsolete), ServiceSettings.maximumTimeout)
+                      //if you ever want to see the current parse tree
+                      //let pt = match results.ParseTree with Some pt -> sprintf "%A" pt | _ -> "" 
+                      LoggingService.LogDebug ("FSharpParser: Parse and check results retieved on {0}", shortFilename)
+                      let defines = CompilerArguments.getDefineSymbols filePath (proj |> Option.ofNull)
+                      let! results = pendingParseResults
+                      return! ParsedDocument.create parseOptions results defines
+                    with exn -> 
+                      LoggingService.LogError ("FSharpParser: Error ParsedDocument on {0}", shortFilename, exn)
+                      return FSharpParsedDocument(fileName, Flags = ParsedDocumentFlags.NonSerializable) :> _
+                | None -> return FSharpParsedDocument(fileName, Flags = ParsedDocumentFlags.NonSerializable) :> _ })
