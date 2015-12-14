@@ -90,6 +90,10 @@ namespace MonoDevelop.VersionControl.Git
 				httpClient = new HttpClient (new HttpClientHandler { Credentials = new System.Net.NetworkCredential (cred.Username, cred.Password) }) {
 					Timeout = TimeSpan.FromMinutes (1.0),
 				};
+				res = httpClient.GetAsync (serviceUri).Result;
+				if (res.StatusCode == System.Net.HttpStatusCode.OK) {
+					GitCredentials.StoreCredentials (GitCredentialsType.Tfs);
+				}
 			}
 
 			return new TfsSmartSubtransportStream(this) {
