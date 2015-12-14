@@ -71,7 +71,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public override Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern pattern, CancellationToken token)
 		{
-			return Task.Run (async delegate {
+			return Task.Run (delegate {
 				try {
 					if (pattern.HasLineNumber)
 						return;

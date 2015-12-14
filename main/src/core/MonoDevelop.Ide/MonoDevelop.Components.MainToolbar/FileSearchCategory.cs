@@ -82,7 +82,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public override Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern pattern, CancellationToken token)
 		{
-			return Task.Run (async delegate {
+			return Task.Run (delegate {
 				var files = AllFiles.ToList ();
 				var matcher = StringMatcher.GetMatcher (pattern.Pattern, false);
 				savedMatches = new Dictionary<string, MatchResult> ();
