@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.StandardHeader
 	partial class StandardHeaderPolicyPanelWidget : Gtk.Bin
 	{
 		StandardHeaderPolicyPanel parent;
-		TreeStore store = new Gtk.TreeStore (typeof (string));
+		Gtk.TreeStore store = new Gtk.TreeStore (typeof (string));
 
 		static readonly string [] templates = {
 			"FileName",
@@ -92,7 +92,7 @@ namespace MonoDevelop.Ide.StandardHeader
 			this.Build ();
 			headerText.Buffer.Changed += NotifyChanged; 
 			includeAutoCheck.Toggled += NotifyChanged;
-			this.treeviewTemplates.AppendColumn (GettextCatalog.GetString ("Templates"), new CellRendererText (), "text", 0);
+			this.treeviewTemplates.AppendColumn (GettextCatalog.GetString ("Templates"), new Gtk.CellRendererText (), "text", 0);
 			foreach (var template in templates) {
 				store.AppendValues ("${"+template+"}"); 
 			}
@@ -104,9 +104,9 @@ namespace MonoDevelop.Ide.StandardHeader
 			treeviewTemplates.QueueResize ();
 		}
 
-		void TreeviewTemplates_RowActivated (object o, RowActivatedArgs args)
+		void TreeviewTemplates_RowActivated (object o, Gtk.RowActivatedArgs args)
 		{
-			TreeIter iter;
+			Gtk.TreeIter iter;
 			store.GetIter (out iter, args.Path); 
 			headerText.Buffer.InsertAtCursor ((string)store.GetValue (iter, 0));
 		}
