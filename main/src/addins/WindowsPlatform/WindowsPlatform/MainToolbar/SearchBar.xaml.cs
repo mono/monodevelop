@@ -77,9 +77,9 @@ namespace WindowsPlatform.MainToolbar
 		{
 			get { return searchText; }
 			set	{
-					searchText = value;
-					UpdateIcon ();
-					RaisePropertyChanged ();
+				searchText = value;
+				UpdateIcon ();
+				RaisePropertyChanged ();
 			}
 		}
 

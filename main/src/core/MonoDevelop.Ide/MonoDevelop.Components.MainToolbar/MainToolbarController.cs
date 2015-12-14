@@ -597,8 +597,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public void SetSearchCategory (string category)
 		{
-			IdeApp.Workbench.Present ();
 			ToolbarView.SearchCategory = category + ":";
+			FocusSearchBar ();
 		}
 
 		HashSet<string> visibleBars = new HashSet<string> ();
