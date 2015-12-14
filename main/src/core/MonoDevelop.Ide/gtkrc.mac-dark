@@ -109,6 +109,7 @@ style "default" {
         colorize_scrollbar = FALSE
         progressbarstyle = 0
         trough_shades = { 0.842, 0.886 }
+        fill_shade		= 1.0
 
         focusstyle = 0
     }
@@ -396,6 +397,7 @@ style "scrollbar" = "default"
     GtkRange::slider-width = 7
     GtkRange::trough-border = 2
     GtkRange::trough-side-details = 0
+    GtkWidget::draw-border = { 0, 0, 0, 0 }
 
     bg[NORMAL] = @fg_color
     bg[PRELIGHT] = @fg_color
