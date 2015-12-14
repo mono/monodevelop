@@ -82,8 +82,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public override Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern pattern, CancellationToken token)
 		{
-			var files = AllFiles.ToList ();
-			return Task.Run (delegate {
+			return Task.Run (async delegate {
+				var files = AllFiles.ToList ();
 				var matcher = StringMatcher.GetMatcher (pattern.Pattern, false);
 				savedMatches = new Dictionary<string, MatchResult> ();
 				foreach (ProjectFile file in files) {
@@ -99,7 +99,7 @@ namespace MonoDevelop.Components.MainToolbar
 					
 				}
 				savedMatches = null;
-			});
+			}, token);
 		}
 
 		bool MatchName (StringMatcher matcher, string name, out int matchRank)
