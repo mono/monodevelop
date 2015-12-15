@@ -283,22 +283,16 @@ style "notebook" = "default"
     }
 }
 
-style "radio-button" = "default"
+style "radio-check-box" = "default"
 {
     GtkCheckButton::indicator-size = 15
+	
+    base[SELECTED] = @base_color
+    text[SELECTED] = @fg_color
 
-    text[NORMAL] = lighter (@text_color)
-    base[NORMAL] = @base_color
-    text[ACTIVE] = lighter(@text_color)
-}
-
-style "check-box" = "default"
-{
-    GtkCheckButton::indicator-size = 15
-
-    base[NORMAL] = "#f8f8f8"
-    text[NORMAL] = "#404040"
-    text[ACTIVE] = "#404040"
+    engine "xamarin" {
+		focusstyle = 0
+    }
 }
 
 style "entry" = "default"
