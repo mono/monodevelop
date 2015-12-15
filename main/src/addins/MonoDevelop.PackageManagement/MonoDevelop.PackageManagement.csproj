@@ -190,7 +190,6 @@
     <Compile Include="MonoDevelop.PackageManagement\ProcessPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProcessPackageOperationsAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectBrowserUpdater.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ProjectExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectTargetFramework.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectTemplatePackageRepositoryCache.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectTemplatePackageSettingsFileName.cs" />
