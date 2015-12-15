@@ -33,7 +33,6 @@ type FSharpOutlineTextEditorExtension() as x =
                               return ast }
 
             Runtime.AssertMainThread()
-            Gdk.Threads.Enter()
             refreshingOutline <- false
 
             if treeView.IsRealized then

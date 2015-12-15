@@ -70,6 +70,7 @@ module unitTestGatherer =
                             |> Seq.map createTestCase
                             |> test.TestCases.AddRange
                             test.UnitTestIdentifier <- typeName + "." + methName
+
                             test.IsIgnored <- isIgnored
                             Some test
                         | :? FSharpEntity as entity ->
