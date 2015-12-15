@@ -209,13 +209,10 @@
       <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <!--
     <Reference Include="Xamarin.Mac">
-      <HintPath>INSERT_FSPROJ_MDROOT\bin\Xamarin.Mac.dll</HintPath>
+      <HintPath>..\..\..\build\bin\Xamarin.Mac.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    -->
-</ItemGroup>
     <Reference Include="FSharp.Core">
       <Private>True</Private>
     </Reference>
