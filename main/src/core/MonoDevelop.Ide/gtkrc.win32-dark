@@ -294,10 +294,15 @@ style "notebook" = "default"
     }
 }
 
-style "radio-check-box" = "default"
+style "radio-check-box" = "button"
 {
     GtkCheckButton::indicator-size = 15
 
+    bg[ACTIVE] 		= @bg_color
+    fg[NORMAL]      = @fg_color
+    fg[PRELIGHT]    = @fg_color
+    fg[ACTIVE]      = @fg_color
+	
     base[NORMAL] = "#fff"
     base[SELECTED] = "#fff"
 	text[SELECTED] = @base_color

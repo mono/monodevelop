@@ -283,7 +283,7 @@ style "notebook" = "default"
     }
 }
 
-style "radio-check-box" = "default"
+style "radio-check-box" = "button"
 {
     GtkCheckButton::indicator-size = 15
 	
@@ -397,8 +397,8 @@ class "GtkNotebook" style "notebook"
 class "GtkButton" style "button"
 class "GtkComboBox" style "combo-box"
 
-class "GtkRadioButton" style "radio-button"
-class "GtkCheckButton" style "check-box"
+class "GtkRadioButton" style "radio-check-box"
+class "GtkCheckButton" style "radio-check-box"
 class "GtkScale" style "scale"
 
 widget "*GtkEntry" style:highest "entry"
