@@ -32,7 +32,7 @@ type FSharpOutlineTextEditorExtension() as x =
                               let! ast = parsedDocument.Ast |> Option.tryCast<ParseAndCheckResults>
                               return ast }
 
-            DispatchService.AssertGuiThread()
+            Runtime.AssertMainThread()
             Gdk.Threads.Enter()
             refreshingOutline <- false
 

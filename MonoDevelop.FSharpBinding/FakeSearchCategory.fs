@@ -56,7 +56,7 @@ type FakePad() =
             LoggingService.LogDebug (sprintf "Interactive: received %s" de.Data)
 
             async {
-              do! DispatchService.GuiDispatch(fun _ -> view.WriteOutput (de.Data + "\n", false))
+              do! Runtime.RunInMainThread(fun _ -> view.WriteOutput (de.Data + "\n", false))
                   |> Async.AwaitTask
             } |> Async.RunSynchronously)
 

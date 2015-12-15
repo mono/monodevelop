@@ -56,8 +56,8 @@ type FSharpInteractivePad() as this =
   let setupSession() =
     try
         let ses = InteractiveSession()
-        let textReceived = ses.TextReceived.Subscribe(fun t -> DispatchService.GuiDispatch(fun () -> view.WriteOutput(t, promptReceived) ) |> ignore)
-        let promptReady = ses.PromptReady.Subscribe(fun () -> DispatchService.GuiDispatch(fun () -> promptReceived<- true; view.Prompt(true, Prompt.Normal) ) |> ignore)
+        let textReceived = ses.TextReceived.Subscribe(fun t -> Runtime.RunInMainThread(fun () -> view.WriteOutput(t, promptReceived) ) |> ignore)
+        let promptReady = ses.PromptReady.Subscribe(fun () -> Runtime.RunInMainThread(fun () -> promptReceived<- true; view.Prompt(true, Prompt.Normal) ) |> ignore)
         let colourSchemChanged =
             PropertyService.PropertyChanged.Subscribe
                 (fun _ (eventArgs:PropertyChangedEventArgs) -> 
@@ -69,11 +69,11 @@ type FSharpInteractivePad() as this =
           promptReady.Dispose()
           colourSchemChanged.Dispose()
           if killIntent = NoIntent then
-            DispatchService.GuiDispatch(fun () ->
+            Runtime.RunInMainThread(fun () ->
               LoggingService.LogDebug ("Interactive: process stopped")
               view.WriteOutput("\nSession termination detected. Press Enter to restart.", false)) |> ignore
           elif killIntent = Restart then 
-            DispatchService.GuiDispatch view.Clear |> ignore
+            Runtime.RunInMainThread view.Clear |> ignore
           killIntent <- NoIntent
           promptReceived <- false)
         ses.StartReceiving()
