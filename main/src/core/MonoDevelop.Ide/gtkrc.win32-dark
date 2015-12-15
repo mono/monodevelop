@@ -146,6 +146,13 @@ style "button" = "default" {
     }
 }
 
+style "toggle-button" = "button" {
+    bg[NORMAL] = @base_color
+    bg[ACTIVE] = @bg_color
+    bg[PRELIGHT] = @bg_color
+    fg[ACTIVE] = "#fff"
+}
+
 style "menu" = "default" {
     xthickness = 0
     ythickness = 0
@@ -413,6 +420,7 @@ class "GtkProgressBar" style "progressbar"
 class "GtkScrolledWindow" style "scrolled-window"
 class "GtkNotebook" style "notebook"
 class "GtkButton" style "button"
+class "GtkToggleButton" style "toggle-button"
 class "GtkComboBox" style "combo-box"
 
 class "GtkRadioButton" style "radio-check-box"
