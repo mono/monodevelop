@@ -104,6 +104,7 @@ style "default" {
         progressbarstyle = 0
         trough_shades = { 0.842, 0.886 }
         gradient_shades = { 1.0, 1.0, 1.0, 1.0}
+        fill_shade = 1.0
     }
 }
 
@@ -131,7 +132,6 @@ style "button" = "default" {
     fg[ACTIVE] = "black"
     fg[INSENSITIVE] = lighter ("#595959")
 
-    GtkWidget::draw-border = { 1, 1, 1, 1 }
     GtkWidget::focus-padding = 0
     GtkWidget::focus-line-width = 1
 
@@ -141,10 +141,8 @@ style "button" = "default" {
         contrast = 1.0
         focus_color = shade(1.4, @bg_color)
         focusstyle = 3
-        border_colors = { @bg_color, @bg_color }
         textstyle = 0
         default_button_color = lighter ("#595959")
-        fill_shade = 1.0
     }
 }
 
@@ -348,9 +346,10 @@ style "scrollbar" = "default"
 {
     GtkRange::slider-width = 14
     GtkRange::trough-border = 0
+    GtkWidget::draw-border = { 0, 0, 0, 0 }
 
     fg[INSENSITIVE] = lighter (@base_color) # inactive arrow
-    fg[NORMAL]      = @fg_color             # active arrow
+    fg[NORMAL]      = "black"             # active arrow
     bg[NORMAL]      = @fg_color             # default slider/stepper color
     bg[INSENSITIVE] = @fg_color             # disabled slider/stepper color
     bg[PRELIGHT]    = shade (0.8, @fg_color) # hover slider/stepper color
