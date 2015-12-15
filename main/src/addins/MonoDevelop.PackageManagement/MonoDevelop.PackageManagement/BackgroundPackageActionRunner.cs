@@ -235,7 +235,7 @@ namespace MonoDevelop.PackageManagement
 
 		protected virtual void GuiDispatch (Action handler)
 		{
-			DispatchService.GuiDispatch (handler);
+			Runtime.RunInMainThread (handler);
 		}
 	}
 }

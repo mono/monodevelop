@@ -32,6 +32,7 @@ using System.Runtime.Versioning;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Ide;
 using NuGet;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -120,7 +121,7 @@ namespace MonoDevelop.PackageManagement
 
 		protected virtual void GuiDispatch (Action handler)
 		{
-			DispatchService.GuiDispatch (handler);
+			Runtime.RunInMainThread (handler);
 		}
 
 		public void GenerateReport (TextWriter writer)

@@ -87,7 +87,7 @@ namespace MonoDevelop.VersionControl.Views
 						LoggingService.LogError ("Error retrieving history", ex);
 					}
 					
-					DispatchService.GuiDispatch (delegate {
+					Runtime.RunInMainThread (delegate {
 						OnUpdated (EventArgs.Empty);
 					});
 					mre.Set ();
@@ -110,7 +110,7 @@ namespace MonoDevelop.VersionControl.Views
 				mre.WaitOne ();
 				mre.Dispose ();
 				mre = null;
-				DispatchService.GuiDispatch (delegate {
+				Runtime.RunInMainThread (delegate {
 					act ();
 				});
 			});

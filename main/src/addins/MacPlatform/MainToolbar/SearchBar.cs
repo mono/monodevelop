@@ -72,7 +72,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		void Initialize ()
 		{
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResignKeyNotification, notification => DispatchService.GuiDispatch (() => {
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResignKeyNotification, notification => Runtime.RunInMainThread (() => {
 				var other = (NSWindow)notification.Object;
 
 				LogMessage ($"Lost focus from resign key: {other.DebugDescription}.");
@@ -81,7 +81,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						LostFocus (this, null);
 				}
 			}));
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notification => DispatchService.GuiDispatch (() => {
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notification => Runtime.RunInMainThread (() => {
 				var other = (NSWindow)notification.Object;
 				LogMessage ($"Lost focus from resize: {other.DebugDescription}.");
 				if (notification.Object == Window) {

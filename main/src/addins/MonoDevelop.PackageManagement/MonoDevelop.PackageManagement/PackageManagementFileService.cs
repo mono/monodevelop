@@ -71,9 +71,9 @@ namespace MonoDevelop.PackageManagement
 
 		public void OpenFile (string path)
 		{
-			DispatchService.GuiSyncDispatch (() => {
+			Runtime.RunInMainThread (() => {
 				IdeApp.Workbench.OpenDocument (path, null, true);
-			});
+			}).Wait ();
 		}
 	}
 }

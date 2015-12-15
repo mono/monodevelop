@@ -108,7 +108,7 @@ namespace MonoDevelop.Components.AutoTest
 			object res = null;
 			Exception error = null;
 
-			if (DispatchService.IsGuiThread) {
+			if (Runtime.IsMainThread) {
 				res = del ();
 				return safe ? SafeObject (res) : res;
 			}
@@ -182,7 +182,7 @@ namespace MonoDevelop.Components.AutoTest
 		public void TakeScreenshot (string screenshotPath)
 		{
 			#if MAC
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				try {
 					IntPtr handle = CGDisplayCreateImage (MainDisplayID ());
 					CoreGraphics.CGImage screenshot = ObjCRuntime.Runtime.GetINativeObject <CoreGraphics.CGImage> (handle, true);
@@ -325,7 +325,7 @@ namespace MonoDevelop.Components.AutoTest
 
 		public void ExecuteOnIdle (Action idleFunc, bool wait = true, int timeout = 20000)
 		{
-			if (DispatchService.IsGuiThread) {
+			if (Runtime.IsMainThread) {
 				idleFunc ();
 				return;
 			}

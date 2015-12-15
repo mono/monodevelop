@@ -1,5 +1,6 @@
 ﻿using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Components.Windows;
+using MonoDevelop.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +35,7 @@ namespace WindowsPlatform.MainToolbar
 				if (newModel == null)
 					return;
 
-				DispatchService.GuiDispatch(() => {
+				Runtime.RunInMainThread(() => {
 					ActiveConfiguration = newModel;
 
 					if (ConfigurationChanged != null)
@@ -48,7 +49,7 @@ namespace WindowsPlatform.MainToolbar
 					return;
 
 				using (var mutableModel = newModel.GetMutableModel()) {
-					DispatchService.GuiDispatch(() => {
+					Runtime.RunInMainThread(() => {
 						ActiveRuntime = newModel;
 
 						var ea = new MonoDevelop.Components.MainToolbar.HandledEventArgs();

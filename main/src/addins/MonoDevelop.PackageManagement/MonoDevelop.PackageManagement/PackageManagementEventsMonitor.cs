@@ -101,7 +101,7 @@ namespace MonoDevelop.PackageManagement
 
 		protected virtual void GuiSyncDispatch (MessageHandler handler)
 		{
-			DispatchService.GuiSyncDispatch (handler);
+			Runtime.RunInMainThread (() => handler ()).Wait ();
 		}
 
 		void PackageOperationMessageLogged (object sender, PackageOperationMessageLoggedEventArgs e)

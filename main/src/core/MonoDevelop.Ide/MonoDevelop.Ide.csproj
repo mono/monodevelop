@@ -2994,7 +2994,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\GtkErrorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\DefaultCodeFormatter.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormatterExtensionNode.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\GtkSynchronizationContext.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\NewPolicySetDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.NewPolicySetDialog.cs" />
     <Compile Include="MonoDevelop.Components\HeaderBox.cs" />

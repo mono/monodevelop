@@ -454,7 +454,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			// Put it back on the GUI thread so the correct synchronization context
 			// is used. The image loading will be done on a background thread.
-			DispatchService.GuiDispatch (() => imageLoader.LoadFrom (iconUrl, row));
+			Runtime.RunInMainThread (() => imageLoader.LoadFrom (iconUrl, row));
 		}
 
 		bool IsOddRow (int row)

@@ -139,7 +139,7 @@ namespace MonoDevelop.PackageManagement
 		/// </summary>
 		void RefreshProjectReferences (bool refreshMSBuildTargets)
 		{
-			DispatchService.GuiDispatch (() => {
+			Runtime.RunInMainThread (() => {
 				foreach (IDotNetProject projectInSolution in solution.GetDotNetProjects ()) {
 					if (refreshMSBuildTargets) {
 						projectInSolution.RefreshProjectBuilder ();
