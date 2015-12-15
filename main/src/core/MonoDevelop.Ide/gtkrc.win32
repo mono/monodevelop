@@ -266,9 +266,6 @@ style "combo-box-entry" = "entry"
 
 style "combo-box-entry-button" = "combo-box-button"
 {
-    xthickness = 4
-    ythickness = 4
-    GtkButton::inner-border = { 0, 0, 0, 0 }
 }
 
 style "notebook" = "default"
@@ -396,6 +393,7 @@ class "GtkScrolledWindow" style "scrolled-window"
 class "GtkNotebook" style "notebook"
 class "GtkButton" style "button"
 class "GtkComboBox" style "combo-box"
+class "GtkComboBoxEntry" style "combo-box-entry"
 
 class "GtkRadioButton" style "radio-check-box"
 class "GtkCheckButton" style "radio-check-box"
@@ -426,10 +424,9 @@ widget_class "*<GtkIconView>" style "icon-view"
 widget_class "*<GtkComboBox>*" style "combo-box"
 widget_class "*.<GtkComboBox>*<GtkButton>*" style "combo-box-button"
 
-class "<GtkComboBoxEntry>" style "combo-box-entry"
-widget_class "*.<GtkComboBoxText>*<GtkEntry>" style "combo-box-entry"
+widget_class "*<GtkComboBoxText>*" style "combo-box-entry"
 widget_class "*.<GtkComboBoxText>*<GtkButton>*" style "combo-box-entry-button"
-widget_class "*.<GtkComboBoxEntry>*<GtkEntry>" style "combo-box-entry"
+widget_class "*<GtkComboBoxEntry>*" style "combo-box-entry"
 widget_class "*.<GtkComboBoxEntry>*<GtkButton>*" style "combo-box-entry-button"
 
 # Comboboxes within toolbars
