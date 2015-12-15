@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide
 		}
 		
 		static DateTime lastPendingEvents;
-		public static void RunPendingEvents ()
+		internal static void RunPendingEvents ()
 		{
 			// The loop is limited to 1000 iterations as a workaround for an issue that some users
 			// have experienced. Sometimes EventsPending starts return 'true' for all iterations,
