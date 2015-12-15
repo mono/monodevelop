@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using MonoDevelop.PackageManagement;
 using Mono.Unix;
 using MonoDevelop.Core;
@@ -446,7 +447,7 @@ namespace MonoDevelop.PackageManagement
 				// Workaround: Image loading is incorrectly being done on GUI thread
 				// since the wrong synchronization context seems to be used. So
 				// here we switch to a background thread and then back to the GUI thread.
-				DispatchService.BackgroundDispatch (() => LoadImage (packageViewModel.IconUrl, row));
+				Task.Run (() => LoadImage (packageViewModel.IconUrl, row));
 			}
 		}
 

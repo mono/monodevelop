@@ -62,7 +62,7 @@ namespace MonoDevelop.PackageManagement.Commands
 				// the check for updates starts. Otherwise the check for updates finishes
 				// before the solution loads and the status bar never reports that
 				// package updates were being checked.
-				DispatchService.BackgroundDispatch (() => {
+				PackageManagementBackgroundDispatcher.Dispatch (() => {
 					CheckForUpdates ();
 				});
 			}
@@ -91,7 +91,7 @@ namespace MonoDevelop.PackageManagement.Commands
 			bool checkUpdatesAfterRestore = ShouldCheckForUpdates && AnyProjectHasPackages ();
 
 			var restorer = new PackageRestorer (projectService.OpenSolution.Solution);
-			DispatchService.BackgroundDispatch (() => {
+			PackageManagementBackgroundDispatcher.Dispatch (() => {
 				restorer.Restore ();
 				if (checkUpdatesAfterRestore && !restorer.RestoreFailed) {
 					CheckForUpdates ();

@@ -374,6 +374,7 @@
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopProjectManager.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopProjectSystem.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopProjectSystemFactory.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageManagementBackgroundDispatcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

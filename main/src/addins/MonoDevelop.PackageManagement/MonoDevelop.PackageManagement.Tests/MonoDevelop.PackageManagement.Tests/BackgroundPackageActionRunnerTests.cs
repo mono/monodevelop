@@ -76,18 +76,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			runner.Run (progressMessage, actions);
 		}
 
-		void RunAndWait ()
-		{
-			runner.InvokeBackgroundDispatchAndWaitImmediately = true;
-			runner.RunAndWait (progressMessage, actions);
-		}
-
-		void RunAndWaitWithoutBackgroundDispatch ()
-		{
-			runner.InvokeBackgroundDispatchAndWaitImmediately = false;
-			runner.RunAndWait (progressMessage, actions);
-		}
-
 		FakeInstallPackageAction AddInstallAction ()
 		{
 			var action = new FakeInstallPackageAction (new FakePackageManagementProject (), packageManagementEvents);
@@ -567,26 +555,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void IsRunning_OneUninstallActionAndRunAndWaitCalledButDispatcherNotComplete_IsRunningIsTrue ()
-		{
-			CreateRunner ();
-			AddUninstallAction ();
-			RunAndWaitWithoutBackgroundDispatch ();
-
-			Assert.IsTrue (runner.IsRunning);
-		}
-
-		[Test]
-		public void IsRunning_OneUninstallActionAndRunAndWaitCalledAndDispatcherCompletes_IsRunningIsFalse ()
-		{
-			CreateRunner ();
-			AddUninstallAction ();
-			RunAndWait ();
-
-			Assert.IsFalse (runner.IsRunning);
-		}
-
-		[Test]
 		public void IsRunning_ExceptionThrownRunningBackgroundDispatcher_IsRunningIsFalse ()
 		{
 			CreateRunner ();
@@ -596,20 +564,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			};
 
 			Run ();
-
-			Assert.IsFalse (runner.IsRunning);
-		}
-
-		[Test]
-		public void IsRunning_ExceptionThrownRunningBackgroundDispatcherWithRunAndWait_IsRunningIsFalse ()
-		{
-			CreateRunner ();
-			AddUninstallAction ();
-			runner.CreateEventMonitorAction = (monitor, packageManagementEvents, progressProvider) => {
-				throw new ApplicationException ("Error");
-			};
-
-			RunAndWait ();
 
 			Assert.IsFalse (runner.IsRunning);
 		}

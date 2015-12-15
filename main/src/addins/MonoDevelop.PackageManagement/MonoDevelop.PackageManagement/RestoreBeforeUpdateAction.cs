@@ -83,7 +83,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesBeforeUpdateMessage ();
 
-			DispatchService.BackgroundDispatch (() => {
+			PackageManagementBackgroundDispatcher.Dispatch (() => {
 				restorer.Restore (progressMessage);
 				if (!restorer.RestoreFailed) {
 					afterRestore ();

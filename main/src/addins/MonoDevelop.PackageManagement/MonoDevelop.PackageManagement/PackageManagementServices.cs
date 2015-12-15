@@ -81,6 +81,7 @@ namespace MonoDevelop.PackageManagement
 			projectOperations = new PackageManagementProjectOperations (solution, registeredPackageRepositories, backgroundPackageActionRunner, packageManagementEvents);
 
 			InitializeCredentialProvider();
+			PackageManagementBackgroundDispatcher.Initialize ();
 		}
 		
 		public static void InitializeCredentialProvider()

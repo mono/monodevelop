@@ -40,7 +40,6 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementSolution solution;
 		IRegisteredPackageRepositories registeredPackageRepositories;
 		BackgroundPackageActionRunner backgroundActionRunner;
-		IPackageManagementEvents packageManagementEvents;
 
 		public PackageManagementProjectOperations (
 			IPackageManagementSolution solution,
@@ -51,7 +50,6 @@ namespace MonoDevelop.PackageManagement
 			this.solution = solution;
 			this.registeredPackageRepositories = registeredPackageRepositories;
 			this.backgroundActionRunner = backgroundActionRunner;
-			this.packageManagementEvents = packageManagementEvents;
 
 			packageManagementEvents.ParentPackageInstalled += PackageInstalled;
 			packageManagementEvents.ParentPackageUninstalled += PackageUninstalled;
@@ -79,7 +77,7 @@ namespace MonoDevelop.PackageManagement
 			}).Wait ();
 
 			ProgressMonitorStatusMessage progressMessage = GetProgressMonitorStatusMessages (actions);
-			backgroundActionRunner.RunAndWait (progressMessage, actions);
+			backgroundActionRunner.Run (progressMessage, actions);
 		}
 
 		IPackageRepository CreatePackageRepository (string packageSourceUrl)
@@ -103,11 +101,31 @@ namespace MonoDevelop.PackageManagement
 				string url = RegisteredPackageSources.DefaultPackageSourceUrl;
 				var repository = registeredPackageRepositories.CreateRepository (new PackageSource (url));
 				IPackageManagementProject packageManagementProject = solution.GetProject (repository, new DotNetProjectProxy ((DotNetProject)project));
-				return packageManagementProject
+
+				var packages = packageManagementProject
 					.GetPackageReferences ()
 					.Select (packageReference => new PackageManagementPackageReference (packageReference.Id, packageReference.Version.ToString ()))
 					.ToList ();
+
+				packages.AddRange (GetMissingPackagesBeingInstalled (packages, (DotNetProject)project));
+				return packages;
 			}).Result;
+		}
+
+		IEnumerable<PackageManagementPackageReference> GetMissingPackagesBeingInstalled (
+			IEnumerable<PackageManagementPackageReference> existingPackages,
+			DotNetProject project)
+		{
+			return GetPackagesBeingInstalled (project)
+				.Where (package => !existingPackages.Any (existingPackage => existingPackage.Id == package.Id));
+		}
+
+		static IEnumerable<PackageManagementPackageReference> GetPackagesBeingInstalled (DotNetProject project)
+		{
+			return PackageManagementServices.BackgroundPackageActionRunner.PendingInstallActionsForProject (project)
+				.Select (installAction => new PackageManagementPackageReference (
+					installAction.GetPackageId (), 
+					installAction.GetPackageVersion ().ToString ()));
 		}
 
 		void PackageUninstalled (object sender, ParentPackageOperationEventArgs e)

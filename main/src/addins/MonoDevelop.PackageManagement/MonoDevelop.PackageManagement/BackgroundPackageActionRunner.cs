@@ -89,14 +89,6 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		public void RunAndWait (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions)
-		{
-			AddInstallActionsToPendingQueue (actions);
-			packageManagementEvents.OnPackageOperationsStarting ();
-			runCount++;
-			BackgroundDispatchAndWait (() => TryRunActionsWithProgressMonitor (progressMessage, actions.ToList ()));
-		}
-
 		void TryRunActionsWithProgressMonitor (ProgressMonitorStatusMessage progressMessage, IList<IPackageAction> actions)
 		{
 			try {
@@ -223,14 +215,9 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		protected virtual void BackgroundDispatch (MessageHandler handler)
+		protected virtual void BackgroundDispatch (Action action)
 		{
-			DispatchService.BackgroundDispatch (handler);
-		}
-
-		protected virtual void BackgroundDispatchAndWait (MessageHandler handler)
-		{
-			DispatchService.BackgroundDispatchAndWait (handler);
+			PackageManagementBackgroundDispatcher.Dispatch (action);
 		}
 
 		protected virtual void GuiDispatch (Action handler)
