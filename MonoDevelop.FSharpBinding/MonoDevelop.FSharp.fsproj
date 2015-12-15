@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{4c10f8f9-3816-4647-ba6e-85f5de39883a}</ProjectGuid>
+    <ProjectGuid>{4C10F8F9-3816-4647-BA6E-85F5DE39883A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>FSharp.MonoDevelop</RootNamespace>
     <AssemblyName>FSharpBinding</AssemblyName>
@@ -185,18 +185,6 @@
       <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
       <Name>MonoDevelop.FSharp.Gui</Name>
     </ProjectReference>
-    <Reference Include="System.Runtime">
-      <HintPath>$(MSBuildExtensionsPath32)\..\4.5\Facades\System.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="System.IO">
-      <HintPath>$(MSBuildExtensionsPath32)\..\4.5\Facades\System.IO.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Globalization">
-      <HintPath>$(MSBuildExtensionsPath32)\..\4.5\Facades\System.GLobalization.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading.Tasks">
-      <HintPath>$(MSBuildExtensionsPath32)\..\4.5\Facades\System.Threading.Tasks.dll</HintPath>
-    </Reference>
     <ProjectReference Include="..\CompilerService\CompilerService.fsproj">
       <Project>{4DC4E86C-49C1-4B7B-89A1-F6432DED847D}</Project>
       <Name>CompilerService</Name>
