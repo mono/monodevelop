@@ -6,13 +6,17 @@ open FsUnit
 
 [<TestFixture>]
 type FSharpUnitTestTextEditorExtensionTests() =
-    let createDoc (text:string) =
-        let doc = TestHelpers.createDoc(text) ""
-        let test = new FSharpUnitTestTextEditorExtension()
-        test.Initialize (doc.Editor, doc)
-        test
+    let gatherTests (text:string) =
+      FixtureSetup().Initialise()
+      let editor = MonoDevelop.Ide.Editor.TextEditorFactory.CreateNewEditor ()
+      editor.Text <- text
+      let ast = TestHelpers.parseAndCheckFile text "test.fsx"
+      let symbols = ast.GetAllUsesOfAllSymbolsInFile() |> Async.RunSynchronously
 
-    let createDocWithReference (text:string) =
+      unitTestGatherer.gatherUnitTests (editor, symbols) 
+      |> Seq.toList
+
+    let gatherTestsWithReference (text:string) =
         let attributes = """
 namespace NUnit.Framework
 open System
@@ -25,7 +29,7 @@ type IgnoreAttribute() =
 type TestCaseAttribute() =
   inherit Attribute()
 """
-        createDoc (attributes + text)
+        gatherTests (attributes + text)
 
     [<Test>]
     member x.BasicTestCoveringNormalAndDoubleQuotedTestsInATestFixture () =
@@ -41,11 +45,7 @@ type Test() =
     [<Ignore>]
     member x.``Test Two``() = ()
 """
-        let testExtension = createDocWithReference normalAndDoubleTick
-        let res = testExtension.GatherUnitTests (Async.DefaultCancellationToken)
-                  |> Async.AwaitTask
-                  |> Async.RunSynchronously
-                  |> Seq.toList
+        let res = gatherTestsWithReference normalAndDoubleTick
         match res with
         | [fixture;t1;t2] -> 
             fixture.IsFixture |> should equal true
@@ -68,11 +68,23 @@ type Test() =
     member x.TestOne() = ()
 """
 
-        let testExtension = createDocWithReference noTests
-        let tests = testExtension.GatherUnitTests(Async.DefaultCancellationToken)
-                    |> Async.AwaitTask
-                    |> Async.RunSynchronously
-        tests.Count |> should equal 0
+        let tests = gatherTestsWithReference noTests
+        tests.Length |> should equal 0
+    
+    [<Test>]
+    member x.``Module tests without TestFixtureAttribute are detected`` () =
+        let noTests = """
+module someModule =
+
+  open NUnit.Framework
+
+  [<Test>]
+  let atest () =
+      ()
+"""
+
+        let tests = gatherTestsWithReference noTests
+        tests.Length |> should equal 1
 
     [<Test>]
     member x.NestedTestCoveringNormalAndDoubleQuotedTestsInATestFixture () =
@@ -89,12 +101,9 @@ module Test =
         [<Ignore>]
         member x.``Test Two``() = ()
 """
-        let testExtension = createDocWithReference nestedTests
+        let tests = gatherTestsWithReference nestedTests
 
-        match testExtension.GatherUnitTests(Async.DefaultCancellationToken)
-              |> Async.AwaitTask
-              |> Async.RunSynchronously
-              |> Seq.toList with
+        match tests with
         | [fixture;t1;t2] -> 
             fixture.IsFixture |> should equal true
             fixture.UnitTestIdentifier |> should equal "NUnit.Framework.Test+Test"
@@ -120,8 +129,6 @@ type Test() =
     [<Ignore>]
     member x.``Test Two``() = ()
 """
-        let testExtension = createDoc normalAndDoubleTick
-        let tests = testExtension.GatherUnitTests(Async.DefaultCancellationToken)
-                    |> Async.AwaitTask
-                    |> Async.RunSynchronously
-        tests.Count |> should equal 0
+        let tests = gatherTests normalAndDoubleTick
+
+        tests.Length |> should equal 0
