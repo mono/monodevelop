@@ -64,6 +64,7 @@ namespace MonoDevelop.Components.AutoTest
 		public abstract bool EnterText (string text);
 		public abstract bool Toggle (bool active);
 		public abstract void Flash ();
+		public abstract void SetProperty (string propertyName, object value);
 
 		// More specific actions for complicated widgets
 
@@ -103,6 +104,17 @@ namespace MonoDevelop.Components.AutoTest
 			AddChildrenToList (children, FirstChild, recursive);
 
 			return children;
+		}
+
+		public void SetProperty (object o, string propertyName, object value)
+		{
+			// Find the property for the name
+			PropertyInfo propertyInfo = o.GetType().GetProperty(propertyName,
+				BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic);
+
+			if (propertyInfo != null && propertyInfo.CanRead && !propertyInfo.GetIndexParameters ().Any ()) {
+				propertyInfo.SetValue (o, value);
+			}
 		}
 
 		/// <summary>

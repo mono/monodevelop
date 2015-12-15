@@ -558,6 +558,15 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 
+		public void SetProperty (AppResult result, string name, object o)
+		{
+			try {
+				ExecuteOnIdle (() => result.SetProperty (name, o));
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("SetProperty", result.SourceQuery, result, e);
+			}
+		}
+
 		public bool SetActiveConfiguration (AppResult result, string configuration)
 		{
 			bool success = false;
