@@ -11,11 +11,11 @@ using MonoDevelop.Ide;
 using Xwt;
 using Xwt.WPFBackend;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows.Threading;
 using System.Globalization;
 using System.Windows.Data;
-using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -255,7 +255,7 @@ namespace WindowsPlatform.MainToolbar
 		void RaisePropertyChanged ([CallerMemberName] string propName = null)
 		{
 			if (PropertyChanged != null)
-				PropertyChanged (this, new PropertyChangedEventArgs (propName));
+				PropertyChanged (this, new System.ComponentModel.PropertyChangedEventArgs (propName));
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
