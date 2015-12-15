@@ -17,21 +17,20 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
-    <Tailcalls>true</Tailcalls>
-    <OutputPath>..\bin\INSERT_FSPROJ_MDTAG\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;INSERT_FSPROJ_MDVERSIONDEFINE;$(DefineConstants)</DefineConstants>
+    <Optimize>false</Optimize>
+    <Tailcalls>false</Tailcalls>
+    <OutputPath>..\bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;$(DefineConstants)</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <StartAction>Program</StartAction>
     <OtherFlags>--warnon:1182</OtherFlags>
-
-    <StartProgram>INSERT_FSPROJ_MDEXE</StartProgram>
-    <StartWorkingDirectory>INSERT_FSPROJ_MDROOT</StartWorkingDirectory>
+    <StartAction>Program</StartAction>
+    <StartProgram>$(MSBuildProjectDirectory)\..\..\..\build\bin\MonoDevelop.exe</StartProgram>
+    <StartWorkingDirectory>$(MSBuildProjectDirectory)\..\..\..\build</StartWorkingDirectory>
     <CustomCommands>
       <CustomCommands>
-        <Command type="Execute" command="&quot;INSERT_FSPROJ_MDEXE&quot; --no-redirects" workingdir="INSERT_FSPROJ_MDROOT">
+        <Command type="Execute" command="../../../../main/build/bin/MonoDevelop.exe --no-redirect" workingdir="../../../../main/build">
           <EnvironmentVariables>
             <Variable name="MONODEVELOP_DEV_ADDINS" value="${TargetDir}" />
           </EnvironmentVariables>
@@ -46,8 +45,8 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
-    <OutputPath>..\bin\INSERT_FSPROJ_MDTAG\Release\</OutputPath>
-    <DefineConstants>TRACE;INSERT_FSPROJ_MDVERSIONDEFINE;$(DefineConstants)</DefineConstants>
+    <OutputPath>..\bin\</OutputPath>
+    <DefineConstants>TRACE;$(DefineConstants)</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <OptimizeCode>true</OptimizeCode>
     <GenerateXmlDoc>false</GenerateXmlDoc>
@@ -115,13 +114,14 @@
     <None Include="CompilerService.exe.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Compile Include="Properties\AddinInfo.fs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="pango-sharp"/>
-    <Reference Include="atk-sharp"/>
-    <Reference Include="gdk-sharp"/>
-    <Reference Include="gtk-sharp"/>
-    <Reference Include="glib-sharp"/>
+    <Reference Include="pango-sharp" />
+    <Reference Include="atk-sharp" />
+    <Reference Include="gdk-sharp" />
+    <Reference Include="gtk-sharp" />
+    <Reference Include="glib-sharp" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
@@ -130,65 +130,61 @@
     <Reference Include="mscorlib" />
     <Reference Include="Mono.Cairo" />
     <Reference Include="Mono.Posix" />
-	<Reference Include="MonoDevelop.DesignerSupport">
-      <HintPath>INSERT_FSPROJ_MDROOT\AddIns\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.dll</HintPath>
+    <Reference Include="MonoDevelop.DesignerSupport">
+      <HintPath>..\..\..\build\AddIns\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Mono.Addins">
       <Private>False</Private>
-      <HintPath>INSERT_FSPROJ_MDROOT\bin\Mono.Addins.dll</HintPath>
+      <HintPath>..\..\..\build\bin\Mono.Addins.dll</HintPath>
     </Reference>
     <Reference Include="Xwt">
       <Private>False</Private>
-      <HintPath>INSERT_FSPROJ_MDROOT\bin\Xwt.dll</HintPath>
+      <HintPath>..\..\..\build\bin\Xwt.dll</HintPath>
     </Reference>
     <Reference Include="Xwt.Gtk">
       <Private>False</Private>
-      <HintPath>INSERT_FSPROJ_MDROOT\bin\Xwt.Gtk.dll</HintPath>
+      <HintPath>..\..\..\build\bin\Xwt.Gtk.dll</HintPath>
     </Reference>
     <Reference Include="Mono.TextEditor">
       <Private>False</Private>
-      <HintPath>INSERT_FSPROJ_MDROOT\bin\Mono.TextEditor.dll</HintPath>
+      <HintPath>..\..\..\build\bin\Mono.TextEditor.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Core">
       <Private>False</Private>
-      <HintPath>INSERT_FSPROJ_MDROOT\bin\MonoDevelop.Core.dll</HintPath>
+      <HintPath>..\..\..\build\bin\MonoDevelop.Core.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Projects.Formats.MSBuild">
       <Private>False</Private>
-      <HintPath>INSERT_FSPROJ_MDROOT\bin\MonoDevelop.Projects.Formats.MSBuild.dll</HintPath>
+      <HintPath>..\..\..\build\bin\MonoDevelop.Projects.Formats.MSBuild.dll</HintPath>
     </Reference>
     <Reference Include="monodoc">
-      <Private>False</Private>
-      <HintPath>INSERT_FSPROJ_MDROOT\bin\monodoc.dll</HintPath>
+      <HintPath>../../../../main/build\bin\monodoc.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Ide">
       <Private>False</Private>
-      <HintPath>INSERT_FSPROJ_MDROOT\bin\MonoDevelop.Ide.dll</HintPath>
+      <HintPath>..\..\..\build\bin\MonoDevelop.Ide.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.NRefactory">
       <Private>False</Private>
-      <HintPath>INSERT_FSPROJ_MDROOT\bin\ICSharpCode.NRefactory.dll</HintPath>
+      <HintPath>..\..\..\build\bin\ICSharpCode.NRefactory.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Refactoring">
       <Private>False</Private>
-      <HintPath>INSERT_FSPROJ_MDROOT\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.dll</HintPath>
+      <HintPath>..\..\..\build\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Debugger">
       <Private>False</Private>
-      <HintPath>INSERT_FSPROJ_MDROOT\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.dll</HintPath>
+      <HintPath>..\..\..\build\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.NUnit">
       <Private>False</Private>
-      <HintPath>INSERT_FSPROJ_MDROOT\AddIns\NUnit\MonoDevelop.NUnit.dll</HintPath>
+      <HintPath>..\..\..\build\AddIns\NUnit\MonoDevelop.NUnit.dll</HintPath>
     </Reference>
     <ProjectReference Include="..\MonoDevelop.FSharp.Gui\MonoDevelop.FSharp.Gui.csproj">
       <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
       <Name>MonoDevelop.FSharp.Gui</Name>
     </ProjectReference>
-    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Runtime">
       <HintPath>$(MSBuildExtensionsPath32)\..\4.5\Facades\System.Runtime.dll</HintPath>
     </Reference>
@@ -206,11 +202,11 @@
       <Name>CompilerService</Name>
     </ProjectReference>
     <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>INSERT_FSPROJ_MDROOT\bin\Microsoft.CodeAnalysis.dll</HintPath>
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Collections.Immutable">
-      <HintPath>INSERT_FSPROJ_MDROOT\bin\System.Collections.Immutable.dll</HintPath>
+      <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <!--
@@ -220,47 +216,60 @@
     </Reference>
     -->
 </ItemGroup>
+    <Reference Include="FSharp.Core">
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
   <Choose>
-    <When Condition="($(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6')) Or ($(TargetFrameworkIdentifier) == 'MonoAndroid') Or ($(TargetFrameworkIdentifier) == 'MonoTouch')">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0')">
+      <ItemGroup>
+        <Reference Include="ExtCore">
+          <HintPath>..\packages\ExtCore\lib\net40\ExtCore.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1')">
       <ItemGroup>
         <Reference Include="ExtCore">
           <HintPath>..\packages\ExtCore\lib\net45\ExtCore.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
-    </Reference>
+        </Reference>
       </ItemGroup>
     </When>
   </Choose>
   <Choose>
-    <When Condition="($(TargetFrameworkIdentifier) == 'WindowsPhone') Or ($(TargetFrameworkIdentifier) == 'WindowsPhoneApp') Or ($(TargetFrameworkIdentifier) == 'Silverlight') Or ($(TargetFrameworkIdentifier) == '.NETCore') Or ($(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6')) Or ($(TargetFrameworkIdentifier) == 'MonoAndroid') Or ($(TargetFrameworkIdentifier) == 'MonoTouch')">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1')">
       <ItemGroup>
-    <Reference Include="FantomasLib">
+        <Reference Include="FantomasLib">
           <HintPath>..\packages\Fantomas\lib\FantomasLib.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
-    </Reference>
+        </Reference>
       </ItemGroup>
     </When>
   </Choose>
   <Choose>
-    <When Condition="($(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6')) Or ($(TargetFrameworkIdentifier) == 'MonoAndroid') Or ($(TargetFrameworkIdentifier) == 'MonoTouch')">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1')">
       <ItemGroup>
-    <Reference Include="FSharp.Compiler.CodeDom">
+        <Reference Include="FSharp.Compiler.CodeDom">
           <HintPath>..\packages\FSharp.Compiler.CodeDom\lib\net40\FSharp.Compiler.CodeDom.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
-    </Reference>
+        </Reference>
       </ItemGroup>
     </When>
   </Choose>
   <Choose>
-    <When Condition="($(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6')) Or ($(TargetFrameworkIdentifier) == 'MonoAndroid') Or ($(TargetFrameworkIdentifier) == 'MonoTouch')">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1')">
       <ItemGroup>
         <Reference Include="FSharp.Compiler.Service">
           <HintPath>..\packages\FSharp.Compiler.Service\lib\net45\FSharp.Compiler.Service.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
-    </Reference>
+        </Reference>
       </ItemGroup>
     </When>
   </Choose>
@@ -289,7 +298,7 @@
         </Reference>
       </ItemGroup>
     </When>
-    <When Condition="($(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6')) Or ($(TargetFrameworkIdentifier) == 'MonoAndroid') Or ($(TargetFrameworkIdentifier) == 'MonoTouch')">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1')">
       <ItemGroup>
         <Reference Include="FsPickler">
           <HintPath>..\packages\FsPickler\lib\net45\FsPickler.dll</HintPath>
@@ -321,7 +330,7 @@
         </Reference>
       </ItemGroup>
     </When>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6')">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1')">
       <ItemGroup>
         <Reference Include="FsPickler.Json">
           <HintPath>..\packages\FsPickler.Json\lib\net45\FsPickler.Json.dll</HintPath>
@@ -332,21 +341,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == 'Silverlight' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v5.0')">
-      <ItemGroup>
-        <Reference Include="Mono.Cecil.Rocks">
-          <HintPath>..\packages\Mono.Cecil\lib\sl40\Mono.Cecil.Rocks.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Mono.Cecil">
-          <HintPath>..\packages\Mono.Cecil\lib\sl40\Mono.Cecil.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="($(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6')) Or ($(TargetFrameworkIdentifier) == 'MonoAndroid') Or ($(TargetFrameworkIdentifier) == 'MonoTouch')">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0')">
       <ItemGroup>
         <Reference Include="Mono.Cecil.Mdb">
           <HintPath>..\packages\Mono.Cecil\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
@@ -365,6 +360,30 @@
         </Reference>
         <Reference Include="Mono.Cecil">
           <HintPath>..\packages\Mono.Cecil\lib\net40\Mono.Cecil.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1')">
+      <ItemGroup>
+        <Reference Include="Mono.Cecil.Mdb">
+          <HintPath>..\packages\Mono.Cecil\lib\net45\Mono.Cecil.Mdb.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Mono.Cecil.Pdb">
+          <HintPath>..\packages\Mono.Cecil\lib\net45\Mono.Cecil.Pdb.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Mono.Cecil.Rocks">
+          <HintPath>..\packages\Mono.Cecil\lib\net45\Mono.Cecil.Rocks.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Mono.Cecil">
+          <HintPath>..\packages\Mono.Cecil\lib\net45\Mono.Cecil.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -399,7 +418,7 @@
         </Reference>
       </ItemGroup>
     </When>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6')">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1')">
       <ItemGroup>
         <Reference Include="Newtonsoft.Json">
           <HintPath>..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -427,4 +446,7 @@
       </ItemGroup>
     </When>
   </Choose>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
 </Project>

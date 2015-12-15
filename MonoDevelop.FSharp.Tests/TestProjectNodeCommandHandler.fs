@@ -6,7 +6,7 @@ open MonoDevelop.Core
 open MonoDevelop.FSharp
 open MonoDevelop.Ide.Gui.Components
 open MonoDevelop.Projects
-open MonoDevelop.Projects.Formats.MSBuild
+open MonoDevelop.Projects.MSBuild
 open System
 open System.IO
 

@@ -4,17 +4,16 @@
 #   run 'make install' to compile and install the plugin against the installed version of MonoDevelop detected by ./configure.sh
 #   run 'make pack-all' to create a deployment binary packages for the known set of supported MonoDevelop versions
 
-VERSION=INSERT_VERSION
+VERSION=6.0.0
 
-MDTOOL = mono 'INSERT_MDROOT/bin/mdtool.exe'
+MDTOOL = mono '../../build/bin/mdtool.exe'
 
 # (MDVERSION4) can be set to something like (3.0.4, 3.0.4.7) to compile
 # against the dependencies/... binaries for a specific version of MonoDevelop. This allows
 # us to prepare new editions of the binding for several different versions of MonoDevelop.
-MDVERSION4=INSERT_MDVERSION4
+MDVERSION4=6.0
 
-MDROOT=INSERT_MDROOT
-MDTAG=mac-linux
+MDROOT=../../build
 
 
 # The default configuration is Release since Roslyn
@@ -26,16 +25,16 @@ endif
 
 all: build
 
-build: MonoDevelop.FSharpBinding/MonoDevelop.FSharp.$(MDTAG).fsproj MonoDevelop.FSharpBinding/FSharpBinding.addin.xml
-	(xbuild MonoDevelop.FSharp.$(MDTAG).sln /p:Configuration=$(config))
+build: MonoDevelop.FSharpBinding/MonoDevelop.FSharp.fsproj MonoDevelop.FSharpBinding/FSharpBinding.addin.xml
+	(xbuild MonoDevelop.FSharp.sln /p:Configuration=$(config))
 
 pack: build
-	-rm -fr pack/$(VERSION)/$(MDTAG)/$(config)
-	@-mkdir -p pack/$(VERSION)/$(MDTAG)/$(config)
-	$(MDTOOL) setup pack bin/$(MDTAG)/$(config)/FSharpBinding.dll -d:pack/$(VERSION)/$(MDTAG)/$(config)
+	-rm -fr pack/$(config)
+	@-mkdir -p pack/$(config)
+	$(MDTOOL) setup pack bin/FSharpBinding.dll -d:pack/$(config)
 
 install: pack
-	$(MDTOOL) setup install -y pack/$(VERSION)/$(MDTAG)/$(config)/MonoDevelop.FSharpBinding_$(VERSION).mpack 
+	$(MDTOOL) setup install -y pack/$(config)/MonoDevelop.FSharpBinding_$(MDVERSION4).mpack 
 
 uninstall:
 	$(MDTOOL) setup uninstall MonoDevelop.FSharpBinding

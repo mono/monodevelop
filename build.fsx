@@ -1,13 +1,41 @@
-#r @"FakeLib.dll"
+#r @"./packages/FAKE/tools/FakeLib.dll"
 open Fake
+open System.IO
 
-Target "Build" (fun _ ->
-  MSBuildWithDefaults "Build" ["./MonoDevelop.FSharp.mac-linux.sln"]
+let isWindows = (Path.DirectorySeparatorChar = '\\')
+let config = "Debug"
+
+Target "Default" (fun _ ->
+  MSBuildWithDefaults "Build" ["./MonoDevelop.FSharp.sln"]
   |> Log "AppBuild-Output: "
 )
 
+let mdpath = "../../build/bin/mdtool.exe"
+
+let mdtool args =
+  let result =
+    if isWindows then
+      Shell.Exec (mdpath, args)
+    else
+      Shell.Exec ("mono", mdpath + " " + args)
+  result |> ignore
+
 let test() =
-  Shell.Exec ("mono", "../../build/bin/mdtool.exe run-md-tests ../../external/fsharpbinding/MonoDevelop.FSharp.Tests/bin/Release/MonoDevelop.FSharp.Tests.dll -labels") |> ignore
+  mdtool ("run-md-tests ../../external/fsharpbinding/MonoDevelop.FSharp.Tests/bin/" + config + "/MonoDevelop.FSharp.Tests.dll -labels")
+
+Target "Pack" (fun _ ->
+  let dir = "pack/" + config
+  if Directory.Exists dir then
+    Directory.Delete (dir, true)
+  Directory.CreateDirectory dir |> ignore
+  mdtool ("setup pack bin/FSharpBinding.dll -d:pack/" + config)
+)
+
+Target "Install" (fun _ ->
+  let versionConfig = File.ReadAllLines("../../../version.config")
+  let version = versionConfig.[0].Replace("Version=", "")
+  mdtool ("setup install -y pack/" + config + "/MonoDevelop.FSharpBinding_" + version + ".mpack")
+)
 
 Target "BuildAndTest" (fun _ ->
   test()
@@ -21,10 +49,13 @@ Target "Run" (fun _ ->
   Shell.Exec ("make", "run", "../..") |> ignore
 )
 
-"Build"
+"Default"
   ==> "BuildAndTest"
 
-"Build"
+"Default"
   ==> "Run"
 
-RunTargetOrDefault "Build"
+"Pack"
+  ==> "Install"
+
+RunTargetOrDefault "Default"
