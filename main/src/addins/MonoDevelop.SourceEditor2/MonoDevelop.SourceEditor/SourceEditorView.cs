@@ -2882,13 +2882,13 @@ namespace MonoDevelop.SourceEditor
 		
 		void ITextEditorImpl.SetTextPasteHandler (TextPasteHandler textPasteHandler)
 		{
-			if (textPasteHandler == null) {
-				TextEditor.GetTextEditorData ().TextPasteHandler = null;
-				return;
-			}
 			var data = TextEditor.GetTextEditorData ();
 			if (data.TextPasteHandler != null)
 				((TextPasteHandlerWrapper)data.TextPasteHandler).Dispose ();
+			if (textPasteHandler == null) {
+				data.TextPasteHandler = null;
+				return;
+			}
 			data.TextPasteHandler = new TextPasteHandlerWrapper (data, textPasteHandler);
 		}
 
