@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-15 14:34:47-0500\n"
+"POT-Creation-Date: 2015-12-15 15:35:25-0500\n"
 "PO-Revision-Date: 2011-02-19 19:10+0800\n"
 "Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
 "Language-Team: Chinese/Traditional <zh-l10n@linux.org.tw>\n"
@@ -8447,6 +8447,10 @@ msgstr "搜索型態(_T)"
 #, fuzzy
 msgid "Search Members"
 msgstr "正在搜索成員..."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:77
+msgid "Press ‘{0}’ to search"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:77
 #, fuzzy

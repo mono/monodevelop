@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.14\n"
 "Report-Msgid-Bugs-To: Vitor Hugo Barros <vitor.h.barros@gmail>\n"
-"POT-Creation-Date: 2015-12-15 14:34:47-0500\n"
+"POT-Creation-Date: 2015-12-15 15:35:25-0500\n"
 "PO-Revision-Date: 2006-04-06 16:24-0300\n"
 "Last-Translator: Vitor Hugo Barros <vitor.h.barros@gmail>\n"
 "Language-Team: \n"
@@ -8990,6 +8990,10 @@ msgstr "Procurar _tipos"
 #, fuzzy
 msgid "Search Members"
 msgstr "Guardando..."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:77
+msgid "Press ‘{0}’ to search"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:77
 #, fuzzy

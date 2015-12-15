@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-15 14:34:47-0500\n"
+"POT-Creation-Date: 2015-12-15 15:35:25-0500\n"
 "PO-Revision-Date: 2007-02-18 14:50+0100\n"
 "Last-Translator: Marek Sieradzki <marek.sieradzki@gmail.com>\n"
 "Language-Team: Polish <gnomepl@pandora.info.bielsko.pl>\n"
@@ -8967,6 +8967,10 @@ msgstr "Wyniki wyszukiwania"
 #, fuzzy
 msgid "Search Members"
 msgstr "Zapisywanie..."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:77
+msgid "Press ‘{0}’ to search"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:77
 #, fuzzy

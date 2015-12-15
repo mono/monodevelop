@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fr_FR\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-15 14:34:47-0500\n"
+"POT-Creation-Date: 2015-12-15 15:35:25-0500\n"
 "PO-Revision-Date: 2014-03-01 23:55+0100\n"
 "Last-Translator: François DORIN <f.dorin@free.fr>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
@@ -8761,6 +8761,10 @@ msgstr "Chercher des _types"
 #, fuzzy
 msgid "Search Members"
 msgstr "Recherche d'un membre..."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:77
+msgid "Press ‘{0}’ to search"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:77
 #, fuzzy

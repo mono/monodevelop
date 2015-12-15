@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-15 14:34:47-0500\n"
+"POT-Creation-Date: 2015-12-15 15:35:25-0500\n"
 "PO-Revision-Date: 2006-11-18 01:38+0100\n"
 "Last-Translator: Matej Urbas <matej.urbas@gmail.com>\n"
 "Language-Team: Slovene\n"
@@ -8996,6 +8996,10 @@ msgstr "Rezultati iskanja"
 #, fuzzy
 msgid "Search Members"
 msgstr "Shranjujem..."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:77
+msgid "Press ‘{0}’ to search"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:77
 #, fuzzy

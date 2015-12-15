@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Monodevelop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-15 14:34:47-0500\n"
+"POT-Creation-Date: 2015-12-15 15:35:25-0500\n"
 "PO-Revision-Date: 2014-12-23 19:57+0100\n"
 "Last-Translator: Matthias Mailänder <mailaender@opensuse.org>\n"
 "Language-Team: German <kde-i18n-de@kde.org>\n"
@@ -8403,6 +8403,11 @@ msgstr "Typen suchen"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:16
 msgid "Search Members"
 msgstr "Suche Member"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:77
+#, fuzzy
+msgid "Press ‘{0}’ to search"
+msgstr "Drücken Sie F3, um zu blättern"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:77
 #, fuzzy
@@ -28486,10 +28491,6 @@ msgstr "Kategorien anzeigen"
 
 #~ msgid "Search (Control+F)"
 #~ msgstr "Suchen (Strg+F)"
-
-#, fuzzy
-#~ msgid "Press '{0}' to search"
-#~ msgstr "Drücken Sie F3, um zu blättern"
 
 #~ msgid "_Commit"
 #~ msgstr "Ü_bergeben"

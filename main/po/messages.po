@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2015-12-15 14:34:47-0500\n"
-"PO-Revision-Date: 2015-12-15 14:35:02-0500\n"
+"POT-Creation-Date: 2015-12-15 15:35:25-0500\n"
+"PO-Revision-Date: 2015-12-15 15:35:37-0500\n"
 "Last-Translator: mhutch <m.j.hutchinson@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -7992,6 +7992,10 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:16
 msgid "Search Members"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:77
+msgid "Press ‘{0}’ to search"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:77

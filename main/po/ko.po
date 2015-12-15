@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-15 14:34:47-0500\n"
+"POT-Creation-Date: 2015-12-15 15:35:25-0500\n"
 "PO-Revision-Date: 2013-07-31 20:50:30+0900\n"
 "Last-Translator: Junil Um <powerumc@gmail.com>\n"
 "Language-Team: Junil Um <powerumc@gmail.com>\n"
@@ -8309,6 +8309,11 @@ msgstr "검색 유형"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:16
 msgid "Search Members"
 msgstr "맴버 검색"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:77
+#, fuzzy
+msgid "Press ‘{0}’ to search"
+msgstr "'{0}'을 눌러 검색"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:77
 #, fuzzy
@@ -28006,9 +28011,6 @@ msgstr "카테고리 보기"
 
 #~ msgid "The {0} framework is not installed."
 #~ msgstr "{0} 프레임워크가 설치되지 않았습니다."
-
-#~ msgid "Press '{0}' to search"
-#~ msgstr "'{0}'을 눌러 검색"
 
 #~ msgid "_Commit"
 #~ msgstr "커밋 (_C)"

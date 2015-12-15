@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 2.4.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-15 14:34:47-0500\n"
+"POT-Creation-Date: 2015-12-15 15:35:25-0500\n"
 "PO-Revision-Date: 2010-12-26 12:47+0300\n"
 "Last-Translator: Semen Soldatov <simplexe@mail.ru>\n"
 "Language-Team: Russian <ru@li.org>\n"
@@ -8790,6 +8790,10 @@ msgstr "_Типы"
 #, fuzzy
 msgid "Search Members"
 msgstr "Поиск члена.."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:77
+msgid "Press ‘{0}’ to search"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:77
 #, fuzzy
