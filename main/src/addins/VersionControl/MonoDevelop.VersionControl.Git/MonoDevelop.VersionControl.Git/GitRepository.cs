@@ -745,11 +745,11 @@ namespace MonoDevelop.VersionControl.Git
 					IncludeReachableFrom = RootRepository.Head.Tip,
 					ExcludeReachableFrom = divergence.CommonAncestor,
 					SortBy = CommitSortStrategies.Topological
-				});
+				}).Reverse ().ToArray ();
 
 				RootRepository.Reset (ResetMode.Hard, divergence.Another);
 
-				int count = toApply.Count ();
+				int count = toApply.Length;
 				int i = 1;
 				foreach (var com in toApply) {
 					monitor.Log.WriteLine ("Cherry-picking {0} - {1}/{2}", com.Id, i, count);
