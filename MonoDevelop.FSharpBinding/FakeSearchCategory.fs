@@ -52,13 +52,7 @@ type FakePad() =
     do 
       Event.merge fsiProcess.OutputDataReceived fsiProcess.ErrorDataReceived
         |> Event.filter (fun de -> de.Data <> null)
-        |> Event.add (fun de -> 
-            LoggingService.LogDebug (sprintf "Interactive: received %s" de.Data)
-
-            async {
-              do! Runtime.RunInMainThread(fun _ -> view.WriteOutput (de.Data + "\n", false))
-                  |> Async.AwaitTask
-            } |> Async.RunSynchronously)
+        |> Event.add (fun de -> Runtime.RunInMainThread(fun _ -> view.WriteOutput (de.Data + "\n", false)) |> ignore)
 
       fsiProcess.EnableRaisingEvents <- true
       fsiProcess.BeginOutputReadLine()  
