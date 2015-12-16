@@ -104,7 +104,7 @@ style "default" {
         progressbarstyle = 0
         trough_shades = { 0.842, 0.886 }
         gradient_shades = { 1.0, 1.0, 1.0, 1.0}
-        fill_shade = 1.0
+        #fill_shade = 1.0
     }
 }
 

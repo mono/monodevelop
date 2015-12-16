@@ -109,7 +109,7 @@ style "default" {
         colorize_scrollbar = FALSE
         progressbarstyle = 0
         trough_shades = { 0.842, 0.886 }
-        fill_shade		= 1.0
+        #fill_shade		= 1.0
 
         focusstyle = 0
     }
