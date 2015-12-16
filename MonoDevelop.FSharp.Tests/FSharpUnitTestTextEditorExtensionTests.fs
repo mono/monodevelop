@@ -8,12 +8,11 @@ open FsUnit
 type FSharpUnitTestTextEditorExtensionTests() =
     let gatherTests (text:string) =
       FixtureSetup().Initialise()
-      let editor = MonoDevelop.Ide.Editor.TextEditorFactory.CreateNewEditor ()
-      editor.Text <- text
-      let ast = TestHelpers.parseAndCheckFile text "test.fsx"
+      let editor = TestHelpers.createDoc text ""
+      let ast = editor.ParsedDocument.Ast :?> ParseAndCheckResults
       let symbols = ast.GetAllUsesOfAllSymbolsInFile() |> Async.RunSynchronously
 
-      unitTestGatherer.gatherUnitTests (editor, symbols) 
+      unitTestGatherer.gatherUnitTests (editor.Editor, symbols) 
       |> Seq.toList
 
     let gatherTestsWithReference (text:string) =
