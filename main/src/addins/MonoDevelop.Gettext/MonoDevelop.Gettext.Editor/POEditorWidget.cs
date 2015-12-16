@@ -482,10 +482,10 @@ namespace MonoDevelop.Gettext
 						this.currentEntry.SetTranslation (escapedText, index);
 						AddChange (this.currentEntry, oldText, escapedText, index);
 					}
-					NotificationService.MainContext.ShowReady ();
+					StatusService.MainContext.ShowReady ();
 					window.Child.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Normal));
 				} catch (System.Exception e) {
-					NotificationService.MainContext.ShowError (e.Message);
+					StatusService.MainContext.ShowError (e.Message);
 					window.Child.ModifyBase (Gtk.StateType.Normal, errorColor);
 				}
 				treeviewEntries.QueueDraw ();
@@ -808,7 +808,7 @@ namespace MonoDevelop.Gettext
 						options |= RegexOptions.IgnoreCase;
 					regex = new System.Text.RegularExpressions.Regex (filter, options);
 				} catch (Exception e) {
-					NotificationService.MainContext.ShowError (e.Message);
+					StatusService.MainContext.ShowError (e.Message);
 					this.searchEntryFilter.Entry.ModifyBase (StateType.Normal, errorColor);
 					return;
 				}
@@ -844,7 +844,7 @@ namespace MonoDevelop.Gettext
 				CatalogEntry entry2 = (CatalogEntry)model.GetValue (iter2, 0);
 				return entry1.GetTranslation (0).CompareTo (entry2.GetTranslation (0));
 			});
-			NotificationService.MainContext.ShowMessage (string.Format (GettextCatalog.GetPluralString ("Found {0} catalog entry.", "Found {0} catalog entries.", found), found));
+			StatusService.MainContext.ShowMessage (string.Format (GettextCatalog.GetPluralString ("Found {0} catalog entry.", "Found {0} catalog entries.", found), found));
 			store.Dispose ();
 			treeviewEntries.Model = store = newStore;
 		}

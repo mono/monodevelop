@@ -164,7 +164,7 @@ namespace MonoDevelop.VersionControl.Git
 								}
 
 								DispatchService.GuiDispatch (delegate {
-									NotificationService.MainContext.ShowMessage (msg);
+									StatusService.MainContext.ShowMessage (msg);
 								});
 							}
 

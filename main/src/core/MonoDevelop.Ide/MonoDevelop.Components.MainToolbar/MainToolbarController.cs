@@ -98,7 +98,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			executionTargetsChanged = (sender, e) => UpdateCombos ();
 
-			IdeApp.Workspace.LastWorkspaceItemClosed += (sender, e) => NotificationService.MainContext.ShowMessage (null, "", false);
+			IdeApp.Workspace.LastWorkspaceItemClosed += (sender, e) => StatusService.MainContext.ShowMessage (null, "", false);
 			IdeApp.Workspace.ActiveConfigurationChanged += (sender, e) => UpdateCombos ();
 			IdeApp.Workspace.ConfigurationsChanged += (sender, e) => UpdateCombos ();
 

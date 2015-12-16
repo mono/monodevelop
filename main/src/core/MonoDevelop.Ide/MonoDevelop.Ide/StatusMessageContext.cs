@@ -32,15 +32,15 @@ using StockIcons = MonoDevelop.Ide.Gui.Stock;
 
 namespace MonoDevelop.Ide
 {
-	public class NotificationContext : IDisposable
+	public class StatusMessageContext : IDisposable
 	{
-		internal NotificationContext ()
+		internal StatusMessageContext ()
 		{
 		}
 
 		public void Dispose ()
 		{
-			NotificationService.Remove (this);
+			StatusService.Remove (this);
 		}
 
 		public event EventHandler<NotificationContextMessageChangedArgs> MessageChanged;
@@ -185,12 +185,12 @@ namespace MonoDevelop.Ide
 
 	public class NotificationContextMessageChangedArgs : EventArgs
 	{
-		public NotificationContext Context { get; private set; }
+		public StatusMessageContext Context { get; private set; }
 		public string Message { get; private set; }
 		public IconId Image { get; private set; }
 		public bool IsMarkup { get; private set; }
 
-		public NotificationContextMessageChangedArgs (NotificationContext context, string message, bool isMarkup, IconId image)
+		public NotificationContextMessageChangedArgs (StatusMessageContext context, string message, bool isMarkup, IconId image)
 		{
 			Context = context;
 			Message = message;
@@ -208,11 +208,11 @@ namespace MonoDevelop.Ide
 			Pulse
 		};
 
-		public NotificationContext Context { get; private set; }
+		public StatusMessageContext Context { get; private set; }
 		public ProgressChangedType EventType { get; private set; }
 		public double Work { get; private set; }
 
-		public NotificationContextProgressChangedArgs (NotificationContext context, ProgressChangedType type, double work)
+		public NotificationContextProgressChangedArgs (StatusMessageContext context, ProgressChangedType type, double work)
 		{
 			Context = context;
 			EventType = type;

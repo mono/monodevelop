@@ -1154,14 +1154,14 @@ namespace MonoDevelop.Debugger
 		public void SetMessage (DebuggerStartInfo dsi, string message, bool listening, int attemptNumber)
 		{
 			Gtk.Application.Invoke (delegate {
-				NotificationService.MainContext.ShowMessage (Ide.Gui.Stock.StatusConnecting, message);
+				StatusService.MainContext.ShowMessage (Ide.Gui.Stock.StatusConnecting, message);
 			});
 		}
 
 		public void Dispose ()
 		{
 			Gtk.Application.Invoke (delegate {
-				NotificationService.MainContext.ShowMessage (null, "", false);
+				StatusService.MainContext.ShowMessage (null, "", false);
 			});
 		}
 	}

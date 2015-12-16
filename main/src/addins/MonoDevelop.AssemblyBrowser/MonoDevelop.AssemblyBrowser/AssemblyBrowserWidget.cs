@@ -788,19 +788,19 @@ namespace MonoDevelop.AssemblyBrowser
 			
 			switch (searchMode) {
 			case SearchMode.Member:
-				NotificationService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching member..."));
+				StatusService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching member..."));
 				break;
 			case SearchMode.Disassembler:
-				NotificationService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching string in disassembled code..."));
+				StatusService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching string in disassembled code..."));
 				break;
 			case SearchMode.Decompiler:
-				NotificationService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching string in decompiled code..."));
+				StatusService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching string in decompiled code..."));
 				break;
 			case SearchMode.Type:
-				NotificationService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching type..."));
+				StatusService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching type..."));
 				break;
 			case SearchMode.TypeAndMembers:
-		       		NotificationService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching types and members..."));
+		       		StatusService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching types and members..."));
 				break;
 			}
 			memberListStore.Clear ();
@@ -851,7 +851,7 @@ namespace MonoDevelop.AssemblyBrowser
 						memberDict [unit] = members;
 					}
 					Gtk.Application.Invoke (delegate {
-						NotificationService.MainContext.SetProgressFraction ((double)curType / types);
+						StatusService.MainContext.SetProgressFraction ((double)curType / types);
 						foreach (var kv in memberDict) {
 							foreach (var member in kv.Value) {
 								if (worker.CancellationPending)
@@ -868,7 +868,7 @@ namespace MonoDevelop.AssemblyBrowser
 					break;
 				case SearchMode.Disassembler:
 					Gtk.Application.Invoke (delegate {
-						NotificationService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching string in disassembled code..."));
+						StatusService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching string in disassembled code..."));
 					}
 					);
 					foreach (var unit in this.definitions) {
@@ -886,7 +886,7 @@ namespace MonoDevelop.AssemblyBrowser
 						}
 					}
 					Gtk.Application.Invoke (delegate {
-						NotificationService.MainContext.SetProgressFraction ((double)curType / types);
+						StatusService.MainContext.SetProgressFraction ((double)curType / types);
 						foreach (var kv in memberDict) {
 							foreach (var member in kv.Value) {
 								if (worker.CancellationPending)
@@ -916,7 +916,7 @@ namespace MonoDevelop.AssemblyBrowser
 						}
 					}
 					Gtk.Application.Invoke (delegate {
-						NotificationService.MainContext.SetProgressFraction ((double)curType / types);
+						StatusService.MainContext.SetProgressFraction ((double)curType / types);
 						foreach (var kv in memberDict) {
 							foreach (var member in kv.Value) {
 								if (worker.CancellationPending)
@@ -1006,8 +1006,8 @@ namespace MonoDevelop.AssemblyBrowser
 				}
 			} finally {
 				Gtk.Application.Invoke (delegate {
-					NotificationService.MainContext.EndProgress ();
-					NotificationService.MainContext.ShowReady ();
+					StatusService.MainContext.EndProgress ();
+					StatusService.MainContext.ShowReady ();
 				});
 			}
 		}

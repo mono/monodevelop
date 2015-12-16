@@ -793,9 +793,9 @@ But I leave it in in the case I've missed something. Mike
 			//	error |= !valid;
 			
 			if (!valid) {
-				NotificationService.MainContext.ShowError (errorMsg);
+				StatusService.MainContext.ShowError (errorMsg);
 			} else {
-				NotificationService.MainContext.ShowReady ();
+				StatusService.MainContext.ShowReady ();
 			}
 			
 			if (!valid || textEditor.TextViewMargin.SearchResultMatchCount == 0) {
@@ -864,11 +864,11 @@ But I leave it in in the case I've missed something. Mike
 			textEditor.CenterToCaret ();
 
 			if (result == null) {
-				NotificationService.MainContext.ShowError (GettextCatalog.GetString ("Search pattern not found"));
+				StatusService.MainContext.ShowError (GettextCatalog.GetString ("Search pattern not found"));
 			} else if (result.SearchWrapped) {
-				NotificationService.MainContext.ShowMessage (Stock.Find, GettextCatalog.GetString ("Reached bottom, continued from top"));
+				StatusService.MainContext.ShowMessage (Stock.Find, GettextCatalog.GetString ("Reached bottom, continued from top"));
 			} else {
-				NotificationService.MainContext.ShowReady ();
+				StatusService.MainContext.ShowReady ();
 			}
 			return result;
 		}
@@ -881,11 +881,11 @@ But I leave it in in the case I've missed something. Mike
 				return null;
 			textEditor.CenterToCaret ();
 			if (result == null) {
-				NotificationService.MainContext.ShowError (GettextCatalog.GetString ("Search pattern not found"));
+				StatusService.MainContext.ShowError (GettextCatalog.GetString ("Search pattern not found"));
 			} else if (result.SearchWrapped) {
-				NotificationService.MainContext.ShowMessage (Stock.Find, GettextCatalog.GetString ("Reached top, continued from bottom"));
+				StatusService.MainContext.ShowMessage (Stock.Find, GettextCatalog.GetString ("Reached top, continued from bottom"));
 			} else {
-				NotificationService.MainContext.ShowReady ();
+				StatusService.MainContext.ShowReady ();
 			}
 			return result;
 		}
@@ -901,9 +901,9 @@ But I leave it in in the case I've missed something. Mike
 		{
 			int number = textEditor.ReplaceAll (ReplacePattern);
 			if (number == 0) {
-				NotificationService.MainContext.ShowError (GettextCatalog.GetString ("Search pattern not found")); 
+				StatusService.MainContext.ShowError (GettextCatalog.GetString ("Search pattern not found")); 
 			} else {
-				NotificationService.MainContext.ShowMessage (
+				StatusService.MainContext.ShowMessage (
 					GettextCatalog.GetPluralString ("Found and replaced one occurrence",
 					                                "Found and replaced {0} occurrences", number, number));
 			}

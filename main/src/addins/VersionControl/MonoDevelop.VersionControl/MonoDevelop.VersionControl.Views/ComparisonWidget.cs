@@ -172,9 +172,9 @@ namespace MonoDevelop.VersionControl.Views
 					toEditor.Text = result.Value;
 
 					// FIXME: Could this be moved on a separate context?
-					NotificationService.MainContext.AutoPulse = false;
-					NotificationService.MainContext.EndProgress ();
-					NotificationService.MainContext.ShowReady ();
+					StatusService.MainContext.AutoPulse = false;
+					StatusService.MainContext.EndProgress ();
+					StatusService.MainContext.ShowReady ();
 					box.Sensitive = true;
 					UpdateDiff ();
 				});
@@ -183,8 +183,8 @@ namespace MonoDevelop.VersionControl.Views
 			worker.RunWorkerAsync (rev);
 
 			// FIXME: Could this be moved on a separate context?
-			NotificationService.MainContext.AutoPulse = true;
-			NotificationService.MainContext.BeginProgress (string.Format (GettextCatalog.GetString ("Retrieving revision {0}..."), rev.ToString ()));
+			StatusService.MainContext.AutoPulse = true;
+			StatusService.MainContext.BeginProgress (string.Format (GettextCatalog.GetString ("Retrieving revision {0}..."), rev.ToString ()));
 			
 			if (toEditor == editors[0]) {
 				diffRevision = rev;

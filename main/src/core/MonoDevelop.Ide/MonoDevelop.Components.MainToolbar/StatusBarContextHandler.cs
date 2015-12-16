@@ -37,16 +37,16 @@ namespace MonoDevelop.Components.MainToolbar
 		public event EventHandler<NotificationContextMessageChangedArgs> MessageChanged;
 		public event EventHandler<NotificationContextProgressChangedArgs> ProgressChanged;
 
-		readonly List<NotificationContext> activeContexts = new List<NotificationContext> ();
+		readonly List<StatusMessageContext> activeContexts = new List<StatusMessageContext> ();
 		Timer changeMessageTimer;
 		int nextContext;
 
 		public StatusBarContextHandler ()
 		{
-			NotificationService.ContextAdded += NotificationServiceContextAdded;
-			NotificationService.ContextRemoved += NotificationServiceContextRemoved;
-			NotificationService.MainContext.MessageChanged += ContextMessageChanged;
-			NotificationService.MainContext.ProgressChanged += ContextProgressChanged;
+			StatusService.ContextAdded += NotificationServiceContextAdded;
+			StatusService.ContextRemoved += NotificationServiceContextRemoved;
+			StatusService.MainContext.MessageChanged += ContextMessageChanged;
+			StatusService.MainContext.ProgressChanged += ContextProgressChanged;
 		}
 
 		void NotificationServiceContextAdded (object sender, NotificationServiceContextEventArgs e)
@@ -66,7 +66,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void ContextMessageChanged (object sender, NotificationContextMessageChangedArgs e)
 		{
-			NotificationContext ctx = (NotificationContext)sender;
+			StatusMessageContext ctx = (StatusMessageContext)sender;
 			if (!activeContexts.Contains (ctx)) {
 				activeContexts.Add (ctx);
 			} else {
@@ -88,7 +88,7 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		void OnMessageChanged (NotificationContext context)
+		void OnMessageChanged (StatusMessageContext context)
 		{
 			string message = context != null ? context.Message : "";
 			bool isMarkup = context != null && context.IsMarkup;

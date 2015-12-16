@@ -1020,7 +1020,7 @@ namespace MonoDevelop.Ide
 
 			var error = monitor.Errors.FirstOrDefault ();
 			if (error != null)
-				NotificationService.MainContext.ShowError (error.Message);
+				StatusService.MainContext.ShowError (error.Message);
 			currentRunOperationOwner = null;
 		}
 		

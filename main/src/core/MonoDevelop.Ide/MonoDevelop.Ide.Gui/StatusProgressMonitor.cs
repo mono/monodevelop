@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Gui
 		bool showTaskTitles;
 		bool lockGui;
 		string title;
-		NotificationContext notificationContext;
+		StatusMessageContext notificationContext;
 		Pad statusSourcePad;
 		
 		public StatusProgressMonitor (string title, string iconName, bool showErrorDialogs, bool showTaskTitles, bool lockGui, Pad statusSourcePad): base (Runtime.MainSynchronizationContext)
@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Gui
 			this.title = title;
 			this.statusSourcePad = statusSourcePad;
 			icon = iconName;
-			notificationContext = NotificationService.CreateContext ();
+			notificationContext = StatusService.CreateContext ();
 			notificationContext.StatusSourcePad = statusSourcePad;
 			notificationContext.BeginProgress (iconName, title);
 			if (lockGui)
@@ -95,9 +95,9 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				if (Errors.Length > 0 || Warnings.Length > 0) {
 					if (Errors.Length > 0) {
-						NotificationService.MainContext.ShowError (Errors [Errors.Length - 1].Message);
+						StatusService.MainContext.ShowError (Errors [Errors.Length - 1].Message);
 					} else if (SuccessMessages.Length == 0) {
-						NotificationService.MainContext.ShowWarning (Warnings [Warnings.Length - 1]);
+						StatusService.MainContext.ShowWarning (Warnings [Warnings.Length - 1]);
 					}
 
 					DesktopService.ShowGlobalProgressError ();
@@ -110,10 +110,10 @@ namespace MonoDevelop.Ide.Gui
 				}
 
 				if (SuccessMessages.Length > 0)
-					NotificationService.MainContext.ShowMessage (MonoDevelop.Ide.Gui.Stock.StatusSuccess, SuccessMessages [SuccessMessages.Length - 1]);
+					StatusService.MainContext.ShowMessage (MonoDevelop.Ide.Gui.Stock.StatusSuccess, SuccessMessages [SuccessMessages.Length - 1]);
 
 			} finally {
-				NotificationService.MainContext.StatusSourcePad = statusSourcePad;
+				StatusService.MainContext.StatusSourcePad = statusSourcePad;
 			}
 
 			DesktopService.SetGlobalProgress (Progress);

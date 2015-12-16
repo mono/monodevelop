@@ -31,31 +31,31 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide
 {
-	public static class NotificationService
+	public static class StatusService
 	{
 		public static event EventHandler<NotificationServiceContextEventArgs> ContextAdded;
 		public static event EventHandler<NotificationServiceContextEventArgs> ContextRemoved;
 
-		readonly static NotificationContext mainContext;
-		readonly static List<NotificationContext> contexts = new List<NotificationContext> ();
+		readonly static StatusMessageContext mainContext;
+		readonly static List<StatusMessageContext> contexts = new List<StatusMessageContext> ();
 		/*
 		static Timer changeMessageTimer;
 		static int nextContext;
 		*/
 
-		static NotificationService ()
+		static StatusService ()
 		{
-			mainContext = new NotificationContext ();
+			mainContext = new StatusMessageContext ();
 			contexts.Add (mainContext);
 		}
 
-		public static NotificationContext MainContext {
+		public static StatusMessageContext MainContext {
 			get { return mainContext; }
 		}
 
-		public static NotificationContext CreateContext ()
+		public static StatusMessageContext CreateContext ()
 		{
-			var ctx = new NotificationContext ();
+			var ctx = new StatusMessageContext ();
 			contexts.Add (ctx);
 
 			OnContextAdded (ctx);
@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide
 		}
 		*/
 
-		internal static void Remove (NotificationContext ctx)
+		internal static void Remove (StatusMessageContext ctx)
 		{
 			if (ctx == mainContext) {
 				return;
@@ -144,7 +144,7 @@ namespace MonoDevelop.Ide
 			OnContextRemoved (ctx);
 		}
 
-		static void OnContextAdded (NotificationContext ctx)
+		static void OnContextAdded (StatusMessageContext ctx)
 		{
 			if (ContextAdded != null) {
 				var args = new NotificationServiceContextEventArgs (ctx);
@@ -152,7 +152,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		static void OnContextRemoved (NotificationContext ctx)
+		static void OnContextRemoved (StatusMessageContext ctx)
 		{
 			if (ContextRemoved != null) {
 				var args = new NotificationServiceContextEventArgs (ctx);
@@ -163,9 +163,9 @@ namespace MonoDevelop.Ide
 
 	public class NotificationServiceContextEventArgs : EventArgs
 	{
-		public NotificationContext Context { get; private set; }
+		public StatusMessageContext Context { get; private set; }
 
-		public NotificationServiceContextEventArgs (NotificationContext context)
+		public NotificationServiceContextEventArgs (StatusMessageContext context)
 		{
 			Context = context;
 		}

@@ -1094,7 +1094,7 @@ namespace MonoDevelop.SourceEditor
 				searchAndReplaceWidget = null;
 				result = true;
 				//clears any message it may have set
-				NotificationService.MainContext.ShowMessage (null, "", false);
+				StatusService.MainContext.ShowMessage (null, "", false);
 			}
 			
 			if (gotoLineNumberWidgetFrame != null) {

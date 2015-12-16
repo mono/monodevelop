@@ -3295,9 +3295,9 @@
     <Compile Include="MonoDevelop.Components\Windows\GtkWPFWidget.cs" />
     <Compile Include="MonoDevelop.Components\Windows\GtkWin32Interop.cs" />
     <Compile Include="MonoDevelop.Components\FileChooserAction.cs" />
-    <Compile Include="MonoDevelop.Ide\NotificationService.cs" />
-    <Compile Include="MonoDevelop.Ide\NotificationContext.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\IStatusBar.cs" />
+    <Compile Include="MonoDevelop.Ide\StatusService.cs" />
+    <Compile Include="MonoDevelop.Ide\StatusMessageContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
