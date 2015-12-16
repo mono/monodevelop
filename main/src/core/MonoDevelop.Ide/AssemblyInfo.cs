@@ -32,4 +32,3 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("MonoDevelop.CSharpBinding.AspNet")]
 [assembly: InternalsVisibleTo("MonoDevelop.GtkCore")]
 [assembly: InternalsVisibleTo("MonoDevelop.PackageManagement")]
-[assembly: InternalsVisibleTo("mdtool")]
