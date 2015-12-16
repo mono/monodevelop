@@ -156,27 +156,27 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			WantsLayer = true;
 			Layer.CornerRadius = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 6 : 4;
 			ctxHandler = new StatusBarContextHandler ();
-			ctxHandler.MessageChanged += (object sender, NotificationContextMessageChangedArgs e) => {
+			ctxHandler.MessageChanged += (object sender, StatusMessageContextMessageChangedArgs e) => {
 				if (e.Context != null) {
 					SetMessageSourcePad (e.Context.StatusSourcePad);
 				}
 				ShowMessage (e.Image, e.Message, e.IsMarkup);
 			};
-			ctxHandler.ProgressChanged += (object sender, NotificationContextProgressChangedArgs e) => {
+			ctxHandler.ProgressChanged += (object sender, StatusMessageContextProgressChangedArgs e) => {
 				switch (e.EventType) {
-				case NotificationContextProgressChangedArgs.ProgressChangedType.Begin:
+				case StatusMessageContextProgressChangedArgs.ProgressChangedType.Begin:
 					BeginProgress (e.Context.AutoPulse);
 					break;
 
-				case NotificationContextProgressChangedArgs.ProgressChangedType.Finish:
+				case StatusMessageContextProgressChangedArgs.ProgressChangedType.Finish:
 					EndProgress ();
 					break;
 
-				case NotificationContextProgressChangedArgs.ProgressChangedType.Fraction:
+				case StatusMessageContextProgressChangedArgs.ProgressChangedType.Fraction:
 					SetProgressFraction (e.Work);
 					break;
 
-				case NotificationContextProgressChangedArgs.ProgressChangedType.Pulse:
+				case StatusMessageContextProgressChangedArgs.ProgressChangedType.Pulse:
 					// Nothing
 					break;
 				}

@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Gui
 			if (!iconName.IsNull) {
 				Application.Invoke (delegate {
 					var img = ImageService.GetIcon (iconName, IconSize.Menu);
-					icon = IdeApp.Workbench.StatusBar.ShowStatusIcon (img);
+					icon = StatusService.ShowStatusIcon (img);
 					if (icon == null)
 						LoggingService.LogError ("Icon '" + iconName + "' not found.");
 				});

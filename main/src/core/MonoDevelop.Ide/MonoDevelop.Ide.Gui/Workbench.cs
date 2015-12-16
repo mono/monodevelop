@@ -257,7 +257,7 @@ namespace MonoDevelop.Ide.Gui
 			get { return monitors; }
 		}
 
-		public IStatusBar StatusBar {
+		internal IStatusBar StatusBar {
 			get {
 				return workbench.StatusBar;
 			}

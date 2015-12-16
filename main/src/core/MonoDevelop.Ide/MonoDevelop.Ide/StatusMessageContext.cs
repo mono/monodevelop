@@ -43,8 +43,8 @@ namespace MonoDevelop.Ide
 			StatusService.Remove (this);
 		}
 
-		public event EventHandler<NotificationContextMessageChangedArgs> MessageChanged;
-		public event EventHandler<NotificationContextProgressChangedArgs> ProgressChanged;
+		public event EventHandler<StatusMessageContextMessageChangedArgs> MessageChanged;
+		public event EventHandler<StatusMessageContextProgressChangedArgs> ProgressChanged;
 
 		public Pad StatusSourcePad { get; set; }
 
@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide
 		void OnMessageChanged ()
 		{
 			if (MessageChanged != null) {
-				NotificationContextMessageChangedArgs args = new NotificationContextMessageChangedArgs (this, Message, IsMarkup, Image);
+				StatusMessageContextMessageChangedArgs args = new StatusMessageContextMessageChangedArgs (this, Message, IsMarkup, Image);
 				MessageChanged (this, args);
 			}
 		}
@@ -135,7 +135,7 @@ namespace MonoDevelop.Ide
 		{
 			ShowMessage (image, name);
 
-			var args = new NotificationContextProgressChangedArgs (this, NotificationContextProgressChangedArgs.ProgressChangedType.Begin, 0.0);
+			var args = new StatusMessageContextProgressChangedArgs (this, StatusMessageContextProgressChangedArgs.ProgressChangedType.Begin, 0.0);
 			OnProgressChanged (args);
 		}
 
@@ -148,7 +148,7 @@ namespace MonoDevelop.Ide
 			if (!AutoPulse)
 				return;
 			
-			var args = new NotificationContextProgressChangedArgs (this, NotificationContextProgressChangedArgs.ProgressChangedType.Fraction, work);
+			var args = new StatusMessageContextProgressChangedArgs (this, StatusMessageContextProgressChangedArgs.ProgressChangedType.Fraction, work);
 			OnProgressChanged (args);
 		}
 
@@ -157,7 +157,7 @@ namespace MonoDevelop.Ide
 		/// </summary>
 		public void EndProgress ()
 		{
-			var args = new NotificationContextProgressChangedArgs (this, NotificationContextProgressChangedArgs.ProgressChangedType.Finish, 0.0);
+			var args = new StatusMessageContextProgressChangedArgs (this, StatusMessageContextProgressChangedArgs.ProgressChangedType.Finish, 0.0);
 			OnProgressChanged (args);
 		}
 
@@ -166,7 +166,7 @@ namespace MonoDevelop.Ide
 		/// </summary>
 		public void Pulse ()
 		{
-			var args = new NotificationContextProgressChangedArgs (this, NotificationContextProgressChangedArgs.ProgressChangedType.Pulse, 0.0);
+			var args = new StatusMessageContextProgressChangedArgs (this, StatusMessageContextProgressChangedArgs.ProgressChangedType.Pulse, 0.0);
 			OnProgressChanged (args);
 		}
 
@@ -175,7 +175,7 @@ namespace MonoDevelop.Ide
 		/// </summary>
 		public bool AutoPulse { get; set; }
 
-		void OnProgressChanged (NotificationContextProgressChangedArgs args)
+		void OnProgressChanged (StatusMessageContextProgressChangedArgs args)
 		{
 			if (ProgressChanged != null) {
 				ProgressChanged (this, args);
@@ -183,14 +183,14 @@ namespace MonoDevelop.Ide
 		}
 	}
 
-	public class NotificationContextMessageChangedArgs : EventArgs
+	public class StatusMessageContextMessageChangedArgs : EventArgs
 	{
 		public StatusMessageContext Context { get; private set; }
 		public string Message { get; private set; }
 		public IconId Image { get; private set; }
 		public bool IsMarkup { get; private set; }
 
-		public NotificationContextMessageChangedArgs (StatusMessageContext context, string message, bool isMarkup, IconId image)
+		public StatusMessageContextMessageChangedArgs (StatusMessageContext context, string message, bool isMarkup, IconId image)
 		{
 			Context = context;
 			Message = message;
@@ -199,7 +199,7 @@ namespace MonoDevelop.Ide
 		}
 	}
 
-	public class NotificationContextProgressChangedArgs : EventArgs
+	public class StatusMessageContextProgressChangedArgs : EventArgs
 	{
 		public enum ProgressChangedType {
 			Begin,
@@ -212,7 +212,7 @@ namespace MonoDevelop.Ide
 		public ProgressChangedType EventType { get; private set; }
 		public double Work { get; private set; }
 
-		public NotificationContextProgressChangedArgs (StatusMessageContext context, ProgressChangedType type, double work)
+		public StatusMessageContextProgressChangedArgs (StatusMessageContext context, ProgressChangedType type, double work)
 		{
 			Context = context;
 			EventType = type;

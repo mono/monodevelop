@@ -34,8 +34,8 @@ namespace MonoDevelop.Components.MainToolbar
 {
 	class StatusBarContextHandler
 	{
-		public event EventHandler<NotificationContextMessageChangedArgs> MessageChanged;
-		public event EventHandler<NotificationContextProgressChangedArgs> ProgressChanged;
+		public event EventHandler<StatusMessageContextMessageChangedArgs> MessageChanged;
+		public event EventHandler<StatusMessageContextProgressChangedArgs> ProgressChanged;
 
 		readonly List<StatusMessageContext> activeContexts = new List<StatusMessageContext> ();
 		Timer changeMessageTimer;
@@ -49,13 +49,13 @@ namespace MonoDevelop.Components.MainToolbar
 			StatusService.MainContext.ProgressChanged += ContextProgressChanged;
 		}
 
-		void NotificationServiceContextAdded (object sender, NotificationServiceContextEventArgs e)
+		void NotificationServiceContextAdded (object sender, StatusServiceContextEventArgs e)
 		{
 			e.Context.MessageChanged += ContextMessageChanged;
 			e.Context.ProgressChanged += ContextProgressChanged;
 		}
 
-		void NotificationServiceContextRemoved (object sender, NotificationServiceContextEventArgs e)
+		void NotificationServiceContextRemoved (object sender, StatusServiceContextEventArgs e)
 		{
 			e.Context.MessageChanged -= ContextMessageChanged;
 			e.Context.ProgressChanged -= ContextProgressChanged;
@@ -64,7 +64,7 @@ namespace MonoDevelop.Components.MainToolbar
 			UpdateMessage ();
 		}
 
-		void ContextMessageChanged (object sender, NotificationContextMessageChangedArgs e)
+		void ContextMessageChanged (object sender, StatusMessageContextMessageChangedArgs e)
 		{
 			StatusMessageContext ctx = (StatusMessageContext)sender;
 			if (!activeContexts.Contains (ctx)) {
@@ -81,7 +81,7 @@ namespace MonoDevelop.Components.MainToolbar
 			UpdateMessage ();
 		}
 
-		void ContextProgressChanged (object sender, NotificationContextProgressChangedArgs e)
+		void ContextProgressChanged (object sender, StatusMessageContextProgressChangedArgs e)
 		{
 			if (ProgressChanged != null) {
 				ProgressChanged (this, e);
@@ -95,7 +95,7 @@ namespace MonoDevelop.Components.MainToolbar
 			IconId image = context != null ? context.Image : IconId.Null;
 
 			if (MessageChanged != null) {
-				var args = new NotificationContextMessageChangedArgs (context, message, isMarkup, image);
+				var args = new StatusMessageContextMessageChangedArgs (context, message, isMarkup, image);
 
 				// Enforce dispatch on GUI thread so clients don't need to care.
 				DispatchService.GuiDispatch (() => MessageChanged (this, args));
