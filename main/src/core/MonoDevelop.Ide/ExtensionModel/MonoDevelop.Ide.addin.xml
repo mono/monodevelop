@@ -151,13 +151,46 @@
 		<ExtensionNode name="Parser" type="MonoDevelop.Ide.Extensions.MimeTypeExtensionNode"/>
 	</ExtensionPoint>	
 
-	<ExtensionPoint path = "/MonoDevelop/TypeSystem/Ambiences" name = "Language ambiences">
+	<ExtensionPoint path = "/MonoDevelop/TypeSystem/AmbienceTooltipProviders" name = "Language ambiences">
 		<Description>Language ambiences. Specified classes must implement IAmbience.</Description>
-		<ExtensionNode name="Ambience" type="MonoDevelop.Ide.Extensions.MimeTypeExtensionNode" />
+		<ExtensionNode name="Provider" type="MonoDevelop.Ide.Extensions.MimeTypeExtensionNode" />
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/TypeSystem/CodeGenerators">
 		<ExtensionNode name="Generator" type="MonoDevelop.Ide.Extensions.MimeTypeExtensionNode"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/SyntaxModes" name = "Text editor syntax modes">
+		<Description>Syntax modes</Description>
+		<ExtensionNode name="Templates" type="MonoDevelop.Ide.Editor.Highlighting.TemplateCodon"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/Styles" name = "Text editor styles">
+		<Description>Styles</Description>
+		<ExtensionNode name="Templates" type="MonoDevelop.Ide.Editor.Highlighting.TemplateCodon"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/CustomModes" name = "Text editor custom syntax modes">
+		<Description>Styles</Description>
+		<ExtensionNode name="SyntaxMode" type="MonoDevelop.Ide.Editor.Highlighting.SyntaxModeCodon"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/EditorFactory" name = "Editor factories">
+		<Description>Allows providing a platform-specific implementation for the text editor</Description>
+		<ExtensionNode name="Class" />
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/TooltipProviders" name = "Tooltip providers">
+		<Description>Tooltip providers. Classes must implement ITooltipProvider.</Description>
+		<ExtensionNode name="Class" type="MonoDevelop.Ide.Editor.TooltipExtensionNode" />
+		<ConditionType id="FileType" type="MonoDevelop.Ide.Extensions.FileTypeCondition">
+			<Description>Type of the file being edited.</Description>
+		</ConditionType>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/Ide/BraceMatcher" name = "Brace matcher">
+		<Description>Algorithm for providing matching braces in a file.</Description>
+		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 
 	<!-- Extensions -->
@@ -175,6 +208,8 @@
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id    = "DefaultDisplayBinding"
 		                class = "MonoDevelop.Ide.Gui.DefaultDisplayBinding"/>
+		<DisplayBinding id = "TextEditor"
+						class = "MonoDevelop.Ide.Editor.TextEditorDisplayBinding" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
@@ -224,9 +259,10 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class id="InitialStep" class = "MonoDevelop.Ide.Gui.Content.TextEditorExtensionMarker" />
-		<Class id="MidStep" class = "MonoDevelop.Ide.Gui.Content.TextEditorExtensionMarker" />
-		<Class id="FinalStep" class = "MonoDevelop.Ide.Gui.Content.TextEditorExtensionMarker" />
+		<Class id="InitialStep" class = "MonoDevelop.Ide.Editor.Extension.TextEditorExtensionMarker" />
+		<Class id="MidStep" class = "MonoDevelop.Ide.Editor.Extension.TextEditorExtensionMarker" />
+		<Class class = "MonoDevelop.Ide.Editor.Extension.BraceMatcherTextEditorExtension" />
+		<Class id="FinalStep" class = "MonoDevelop.Ide.Editor.Extension.TextEditorExtensionMarker" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/DocumentTab">
@@ -292,11 +328,6 @@
 	
 	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
 		<Complete id="Other" language="Other" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
-	</Extension>
-
-	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
-		<ItemProperty class = "MonoDevelop.Projects.DotNetProjectConfiguration"
-			name = "RunCodeAnalysis" type = "System.Boolean" defaultValue="false" />
 	</Extension>
 	
 </ExtensionModel>

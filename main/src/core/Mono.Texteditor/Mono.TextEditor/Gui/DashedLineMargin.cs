@@ -30,7 +30,7 @@ namespace Mono.TextEditor
 {
 	public class DashedLineMargin : Margin
 	{
-		TextEditor editor;
+		MonoTextEditor editor;
 		Cairo.Color color;
 		
 		public override double Width {
@@ -39,7 +39,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public DashedLineMargin (TextEditor editor)
+		public DashedLineMargin (MonoTextEditor editor)
 		{
 			this.editor = editor;
 		}

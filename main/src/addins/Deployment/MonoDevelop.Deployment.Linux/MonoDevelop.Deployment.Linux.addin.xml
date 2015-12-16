@@ -3,9 +3,6 @@
 	<Extension path = "/MonoDevelop/Ide/Commands">
 	</Extension>	
 
-	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
-	</Extension>
-
 	<Extension path = "/MonoDevelop/Deployment/DeployDirectoryResolvers">
 	</Extension>
 
@@ -13,11 +10,6 @@
 		<Class id="Deployment.Linux" insertbefore="PrepareDeploy" class = "MonoDevelop.Deployment.Linux.LinuxDeployExtension" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
-<!--		<ItemProperty class = "MonoDevelop.Projects.ProjectFile"
-			name = "DeployService.TargetDirectoryId" type = "System.String" />
--->	</Extension>
-
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 <!--		<NodeBuilder class = "MonoDevelop.Deployment.NodeBuilders.PackagingProjectNodeBuilder"/>
 		<NodeBuilder class = "MonoDevelop.Deployment.NodeBuilders.PackageNodeBuilder"/>
@@ -47,11 +39,6 @@
 		<Condition id="Platform" value="linux">
 			<Class class = "MonoDevelop.Deployment.Linux.LinuxDirectoryResolver" />
 		</Condition>
-	</Extension>
-
-	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
-		<ItemProperty class = "MonoDevelop.Projects.SolutionItem"
-			name = "Deployment.LinuxDeployData" type = "MonoDevelop.Deployment.Linux.LinuxDeployData" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Deployment/DeployDirectories">

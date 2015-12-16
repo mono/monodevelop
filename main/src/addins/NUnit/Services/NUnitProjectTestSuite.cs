@@ -34,8 +34,9 @@ using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem;
 using System;
+using Microsoft.CodeAnalysis;
+using System.Threading;
 using ProjectReference = MonoDevelop.Projects.ProjectReference;
 
 namespace MonoDevelop.NUnit
@@ -58,8 +59,8 @@ namespace MonoDevelop.NUnit
 			resultsPath = MonoDevelop.NUnit.RootTest.GetTestResultsDirectory (project.BaseDirectory);
 			ResultsStore = new BinaryResultsStore (resultsPath, storeId);
 			this.project = project;
-			project.NameChanged += new SolutionItemRenamedEventHandler (OnProjectRenamed);
-			IdeApp.ProjectOperations.EndBuild += new BuildEventHandler (OnProjectBuilt);
+			project.NameChanged += OnProjectRenamed;
+			IdeApp.ProjectOperations.EndBuild += OnProjectBuilt;
 		}
 		
 		public static NUnitProjectTestSuite CreateTest (DotNetProject project)
@@ -82,33 +83,51 @@ namespace MonoDevelop.NUnit
 		{
 			if (string.IsNullOrEmpty (fixtureTypeName) || string.IsNullOrEmpty (fixtureTypeName))
 				return null;
-			var ctx = TypeSystemService.GetCompilation (project);
-			var cls = ctx.MainAssembly.GetTypeDefinition (fixtureTypeNamespace ?? "", fixtureTypeName, 0);
+			var csc = new CancellationTokenSource ();
+			var task = TypeSystemService.GetCompilationAsync (project, csc.Token);
+			task.Wait (2000);
+			if (!task.IsCompleted) {
+				csc.Cancel ();
+				return null;
+			}
+			var ctx = task.Result;
+			var cls = ctx.Assembly.GetTypeByMetadataName (string.IsNullOrEmpty (fixtureTypeNamespace) ? fixtureTypeName : fixtureTypeNamespace + "." + fixtureTypeName);
 			if (cls == null)
 				return null;
 			
 			if (cls.Name != methodName) {
-				foreach (var met in cls.GetMethods ()) {
-					if (met.Name == methodName)
-						return new SourceCodeLocation (met.Region.FileName, met.Region.BeginLine, met.Region.BeginColumn);
+				foreach (var met in cls.GetMembers ().OfType<IMethodSymbol> ()) {
+					if (met.Name == methodName) {
+						var loc = met.Locations.FirstOrDefault (l => l.IsInSource);
+						return ConvertToSourceCodeLocation (loc);
+					}
 				}
 				
 				int idx = methodName != null ? methodName.IndexOf ('(') : -1;
 				if (idx > 0) {
 					methodName = methodName.Substring (0, idx);
-					foreach (var met in cls.GetMethods ()) {
-						if (met.Name == methodName)
-							return new SourceCodeLocation (met.Region.FileName, met.Region.BeginLine, met.Region.BeginColumn);
+					foreach (var met in cls.GetMembers ().OfType<IMethodSymbol> ()) {
+						if (met.Name == methodName){
+							var loc = met.Locations.FirstOrDefault (l => l.IsInSource);
+							return ConvertToSourceCodeLocation (loc);
+						}
 					}
 				}
 			}
-			return new SourceCodeLocation (cls.Region.FileName, cls.Region.BeginLine, cls.Region.BeginColumn);
+			var classLoc = cls.Locations.FirstOrDefault (l => l.IsInSource);
+			return ConvertToSourceCodeLocation (classLoc);
+		}
+
+		SourceCodeLocation ConvertToSourceCodeLocation (Location loc)
+		{
+			var lineSpan = loc.GetLineSpan ();
+			return new SourceCodeLocation (loc.SourceTree.FilePath, lineSpan.StartLinePosition.Line, lineSpan.StartLinePosition.Character);
 		}
 		
 		public override void Dispose ()
 		{
-			project.NameChanged -= new SolutionItemRenamedEventHandler (OnProjectRenamed);
-			IdeApp.ProjectOperations.EndBuild -= new BuildEventHandler (OnProjectBuilt);
+			project.NameChanged -= OnProjectRenamed;
+			IdeApp.ProjectOperations.EndBuild -= OnProjectBuilt;
 			base.Dispose ();
 		}
 		
@@ -132,16 +151,16 @@ namespace MonoDevelop.NUnit
 
 		public override void GetCustomTestRunner (out string assembly, out string type)
 		{
-			type = (string) project.ExtendedProperties ["TestRunnerType"];
-			var asm = project.ExtendedProperties ["TestRunnerAssembly"];
+			type = project.ProjectProperties.GetValue ("TestRunnerType");
+			var asm = project.ProjectProperties.GetValue ("TestRunnerAssembly");
 			assembly = asm != null ? project.BaseDirectory.Combine (asm.ToString ()).ToString () : null;
 		}
 
 		public override void GetCustomConsoleRunner (out string command, out string args)
 		{
-			var r = project.ExtendedProperties ["TestRunnerCommand"];
-			command = r != null ? project.BaseDirectory.Combine (r.ToString ()).ToString () : null;
-			args = (string)project.ExtendedProperties ["TestRunnerArgs"];
+			var r = project.ProjectProperties.GetPathValue ("TestRunnerCommand");
+			command = !string.IsNullOrEmpty (r) ? project.BaseDirectory.Combine (r).ToString () : null;
+			args = project.ProjectProperties.GetValue ("TestRunnerArgs");
 			if (command == null && args == null) {
 				var guiUnit = project.References.FirstOrDefault (pref => pref.ReferenceType == ReferenceType.Assembly && StringComparer.OrdinalIgnoreCase.Equals (Path.GetFileName (pref.Reference), "GuiUnit.exe"));
 				if (guiUnit != null) {

@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {

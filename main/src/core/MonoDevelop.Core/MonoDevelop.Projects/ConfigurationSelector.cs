@@ -36,6 +36,10 @@ namespace MonoDevelop.Projects
 		/// A configuration selector which selects the default (active) project or solution configuration
 		/// </summary>
 		public static readonly ConfigurationSelector Default = new DefaultConfigurationSelector ();
+
+		internal ConfigurationSelector ()
+		{
+		}
 		
 		/// <summary>
 		/// Gets the configuration selected by this instance for a given target

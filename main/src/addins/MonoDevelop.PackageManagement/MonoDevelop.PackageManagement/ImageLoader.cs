@@ -30,7 +30,7 @@ using System.Net;
 using System.Threading.Tasks;
 using MonoDevelop.Ide;
 using NuGet;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using Xwt.Drawing;
 using System.Collections.Generic;
 

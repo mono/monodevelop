@@ -26,7 +26,7 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Components;
@@ -72,8 +72,8 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		void RefreshAllChildNodes ()
 		{
-			DispatchService.GuiDispatch (() => {
-				foreach (DotNetProject project in IdeApp.Workspace.GetAllSolutionItems<DotNetProject> ()) {
+			Runtime.RunInMainThread (() => {
+				foreach (DotNetProject project in IdeApp.Workspace.GetAllItems<DotNetProject> ()) {
 					RefreshChildNodes (project);
 				}
 			});

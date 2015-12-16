@@ -1,5 +1,5 @@
 ﻿//
-// SharpDevelopProjectSystemTests.cs
+// MonoDevelopProjectSystemTests.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -28,12 +28,12 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using NuGet;
 using NUnit.Framework;
 
@@ -117,7 +117,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		MSBuildProject CreateMSBuildProject (string xml)
 		{
 			var msbuildProject = new MSBuildProject ();
-			msbuildProject.Document.LoadXml (xml);
+			msbuildProject.LoadXml (xml);
 			return msbuildProject;
 		}
 
@@ -402,7 +402,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			ProjectReference actualReference = project.References [0];
 			Assert.AreEqual ("nunit.framework", actualReference.Reference);
-			Assert.AreEqual (fileName, actualReference.HintPath);
+			Assert.AreEqual (fileName, actualReference.HintPath.ToString());
 		}
 
 		[Test]
@@ -417,7 +417,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			ProjectReference actualReference = project.References [0];
 			Assert.AreEqual ("nunit.framework", actualReference.Reference);
-			Assert.AreEqual (fullFileName, actualReference.HintPath);
+			Assert.AreEqual (fullFileName, actualReference.HintPath.ToString());
 		}
 
 		[Test]
@@ -1172,7 +1172,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			int targetCountBeforeSave = msbuildProject.Targets.Count ();
 			project.SaveAction = () => {
 				var msbuildExtension = new PackageManagementMSBuildExtension ();
-				msbuildExtension.SaveProject (null, null, msbuildProject);
+				msbuildExtension.UpdateProject (msbuildProject);
 			};
 
 			projectSystem.RemoveImport (targetPath);
@@ -1195,7 +1195,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll".ToNativePath ();
 			projectSystem.AddReference (fileName, null);
 
-			Assert.AreEqual (fileName, referenceBeingAdded.HintPath);
+			Assert.AreEqual (fileName, referenceBeingAdded.HintPath.ToString ());
 			Assert.IsTrue (referenceBeingAdded.LocalCopy);
 		}
 
@@ -1215,7 +1215,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			projectSystem.RemoveReference (fileName);
 
-			Assert.AreEqual (fileName, referenceBeingRemoved.HintPath);
+			Assert.AreEqual (fileName, referenceBeingRemoved.HintPath.ToString ());
 			Assert.IsFalse (projectIsSaved);
 		}
 	}

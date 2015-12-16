@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DAC04D9B-8B03-4EBC-9B3E-609305C22FCA}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>conditionalprojectreference</RootNamespace>
+    <AssemblyName>conditional-project-reference</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWin|AnyCPU' ">
+    <Optimize>false</Optimize>
+    <OutputPath>bin\DebugWin</OutputPath>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ExternalConsole>true</ExternalConsole>
+    <PlatformTarget>x86</PlatformTarget>
+    <IntermediateOutputPath>obj\x86\Debug</IntermediateOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\commonLib\commonLib.csproj">
+      <Project>{92D8316A-4AE1-41FD-A141-BEEF4C6C2BCB}</Project>
+      <Name>commonLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\windowsLib\windowsLib.csproj" Condition="'$(Configuration)'=='DebugWin'">
+      <Project>{A1183810-06B3-44FB-B779-006C40C546B2}</Project>
+      <Name>windowsLib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

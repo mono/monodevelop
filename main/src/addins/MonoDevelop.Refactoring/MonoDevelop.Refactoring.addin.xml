@@ -12,21 +12,9 @@
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/ASTProvider" name = "ASTProviders">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
-	
-	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeActions" name = "CodeAction">
-		<ExtensionNode name="Action" type ="MonoDevelop.CodeActions.CodeActionAddinNode"/>
-	</ExtensionPoint>
-	
-	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeActionSource" name = "CodeActionSource">
-		<ExtensionNode name="Source"/>
-	</ExtensionPoint>
-	
-	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeIssues" name = "CodeIssue">
-		<ExtensionNode name="CodeIssue" type ="MonoDevelop.CodeIssues.CodeIssueAddinNode"/>
-	</ExtensionPoint>
-	
-	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeIssueSource" name = "CodeIssueSource">
-		<ExtensionNode name="Source"/>
+
+	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeDiagnosticProvider" name = "Code Diagnostic Provider">
+		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 
 	<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules">
@@ -70,44 +58,26 @@
 	
 	<!-- RefactoryCommands -->
 	<Extension path = "/MonoDevelop/Ide/Commands">
-	
+
 		<Category _name = "Code Navigation" id = "CodeNavigation">
-		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration"
-					defaultHandler = "MonoDevelop.Refactoring.GotoDeclarationHandler"
-					_label = "_Go to Declaration" 
-					shortcut = "F12"
-					macShortcut = "Meta|D"/>
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences"
-					defaultHandler = "MonoDevelop.Refactoring.FindReferencesHandler"
 					_label = "_Find References" 
 					shortcut = "Shift|F12"
 					macShortcut = "Shift|Meta|R"/>
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.FindAllReferences"
-					defaultHandler = "MonoDevelop.Refactoring.FindAllReferencesHandler"
 					_label = "_Find References of All Overloads" />
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.FindDerivedClasses"
-					defaultHandler = "MonoDevelop.Refactoring.FindDerivedClassesHandler"
 					_label = "Find _Derived Symbols" />
 		</Category>
 		
 		<Category _name = "Refactoring" id = "Refactoring">
-		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.Resolve"
-				defaultHandler = "MonoDevelop.Refactoring.ResolveCommandHandler"
-				type="array"
-				_label = "Resolve"/> 
 
-		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations"
-				defaultHandler = "MonoDevelop.Refactoring.CurrentRefactoryOperationsHandler"
-				type="array"
-				_label = "Refactory Operations" /> 
-		
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.QuickFix"
 					_label = "Quick Fix..."
 					shortcut = "Alt|Return"
 					macShortcut = "Alt|Return" />
 		
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.ImportSymbol"
-					defaultHandler = "MonoDevelop.Refactoring.ImportSymbolHandler"
 					_label = "Import Symbol..."
 					shortcut = "Control|Alt|space"
 					macShortcut = "Control|Alt|space" />
@@ -120,20 +90,7 @@
 		</Category>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
-		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.Resolve" insertbefore="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations"/>
-		
-		<ItemSet id = "Fix" _label = "Fix" autohide="true"
-			insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator">
-			<CommandItem id = "MonoDevelop.AnalysisCore.AnalysisCommands.FixOperations" />
-		</ItemSet>
-		
-		
-		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class class = "MonoDevelop.Refactoring.Rename.RenameTextEditorExtension" />
 		<Class class = "MonoDevelop.CodeActions.CodeActionEditorExtension" />
 	</Extension>
 	
@@ -145,9 +102,6 @@
 	<!-- Quick fix commands -->
 
 	<Extension path = "/MonoDevelop/Ide/Commands/Refactoring">
-		<Command id = "MonoDevelop.AnalysisCore.AnalysisCommands.FixOperations" type="array" 
-			defaultHandler="MonoDevelop.AnalysisCore.FixOperationsHandler"
-			_label = "Fixes" />
 		<Command id = "MonoDevelop.AnalysisCore.AnalysisCommands.ShowFixes"
 			defaultHandler="MonoDevelop.AnalysisCore.ShowFixesHandler"
 			_label = "Show Fixes"
@@ -170,13 +124,13 @@
 	<!-- Extensions to the addin points defined by this addin -->
 	
 	<Extension path = "/MonoDevelop/AnalysisCore/Types">
-		<Type name="Document" class="MonoDevelop.Ide.Gui.Document" />
+		<Type name="AnalysisDocument" class="MonoDevelop.AnalysisCore.Gui.AnalysisDocument" />
 		<Type name="CompilationUnit" class="MonoDevelop.Projects.Dom.ICompilationUnit" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
 		<Adaptor func="MonoDevelop.AnalysisCore.Rules.Adapters.GetCompilationUnit"
-			input="Document" output="CompilationUnit" />
+			input="AnalysisDocument" output="CompilationUnit" />
 		<Category _name="Design Guidelines" id="Design">
 <!--			<Rule _name="Naming Conventions" input="CompilationUnit" 
 				func="MonoDevelop.AnalysisCore.Rules.NamingConventions.ClassNaming" />-->

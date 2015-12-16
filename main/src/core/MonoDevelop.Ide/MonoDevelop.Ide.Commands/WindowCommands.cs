@@ -250,9 +250,8 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected static void Switch (bool next)
 		{
-			//FIXME: does this option need to exist?
-			if (!PropertyService.Get ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", true)) {
-				IdeApp.CommandService.DispatchCommand (next? WindowCommands.NextDocument : WindowCommands.PrevDocument);
+			if (!IdeApp.Preferences.EnableDocumentSwitchDialog) {
+				IdeApp.CommandService.DispatchCommand (next? WindowCommands.NextDocument : WindowCommands.NextDocument);
 				return;
 			}
 			

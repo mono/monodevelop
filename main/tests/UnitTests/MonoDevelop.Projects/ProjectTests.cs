@@ -31,6 +31,9 @@ using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Core;
 using System.Linq;
+using System.Xml;
+using System.Threading.Tasks;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Projects
 {
@@ -40,7 +43,7 @@ namespace MonoDevelop.Projects
 		[Test()]
 		public void ProjectFilePaths ()
 		{
-			DotNetProject project = new DotNetAssemblyProject ("C#");
+			DotNetProject project = Services.ProjectService.CreateDotNetProject ("C#");
 			string dir = Environment.CurrentDirectory;
 			
 			ProjectFile file1 = project.AddFile (Util.Combine (dir, "test1.cs"), BuildAction.Compile);
@@ -64,13 +67,13 @@ namespace MonoDevelop.Projects
 		
 		[Test()]
 		[Platform (Exclude = "Win")]
-		public void Resources ()
+		public async Task Resources ()
 		{
 			string solFile = Util.GetSampleProject ("resources-tester", "ResourcesTester.sln");
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			CheckResourcesSolution (sol);
 
-			BuildResult res = sol.Build (Util.GetMonitor (), "Debug");
+			BuildResult res = await sol.Build (Util.GetMonitor (), "Debug");
 			Assert.AreEqual (0, res.ErrorCount);
 			Assert.AreEqual (0, res.WarningCount);
 			Assert.AreEqual (1, res.BuildCount);
@@ -78,7 +81,7 @@ namespace MonoDevelop.Projects
 			string spath = Util.Combine (sol.BaseDirectory, "ResourcesTester", "bin", "Debug", "ca", "ResourcesTesterApp.resources.dll");
 			Assert.IsTrue (File.Exists (spath), "Satellite assembly not generated");
 
-			sol.Clean (Util.GetMonitor (), "Debug");
+			await sol.Clean (Util.GetMonitor (), "Debug");
 			Assert.IsFalse (File.Exists (spath), "Satellite assembly not removed");
 
 			// msbuild doesn't delete this directory
@@ -173,7 +176,10 @@ namespace MonoDevelop.Projects
 			ProjectCreateInformation info = new ProjectCreateInformation ();
 			info.ProjectName = "Some.Test";
 			info.ProjectBasePath = "/tmp/test";
-			DotNetProject p = new DotNetAssemblyProject ("C#", info, null);
+			var doc = new XmlDocument ();
+			var projectOptions = doc.CreateElement ("Options");
+			projectOptions.SetAttribute ("language", "C#");
+			DotNetProject p = (DotNetProject) Services.ProjectService.CreateProject ("C#", info, projectOptions);
 
 			Assert.AreEqual (2, p.Configurations.Count);
 			Assert.AreEqual ("Debug", p.Configurations [0].Name);
@@ -186,7 +192,7 @@ namespace MonoDevelop.Projects
 		[Test()]
 		public void NewConfigurationsHaveAnAssemblyName ()
 		{
-			DotNetProject p = new DotNetAssemblyProject ("C#");
+			DotNetProject p = Services.ProjectService.CreateDotNetProject ("C#");
 			p.Name = "HiThere";
 			DotNetProjectConfiguration c = (DotNetProjectConfiguration) p.CreateConfiguration ("First");
 			Assert.AreEqual ("HiThere", c.OutputAssembly);
@@ -195,7 +201,7 @@ namespace MonoDevelop.Projects
 		[Test()]
 		public void CustomCommands ()
 		{
-			DotNetProject p = new DotNetAssemblyProject ("C#");
+			DotNetProject p = Services.ProjectService.CreateDotNetProject ("C#");
 			p.Name = "SomeProject";
 			DotNetProjectConfiguration c = (DotNetProjectConfiguration) p.CreateConfiguration ("First");
 			
@@ -217,10 +223,10 @@ namespace MonoDevelop.Projects
 		}
 		
 		[Test()]
-		public void FileDependencies ()
+		public async Task FileDependencies ()
 		{
 			string solFile = Util.GetSampleProject ("file-dependencies", "ConsoleProject.sln");
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 
 			Project p = (Project) sol.Items [0];
 			var dir = p.BaseDirectory;
@@ -284,12 +290,12 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
-		public void RefreshReferences ()
+		public async Task RefreshReferences ()
 		{
 			string solFile = Util.GetSampleProject ("reference-refresh", "ConsoleProject.sln");
 
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			DotNetProject project = sol.GetAllSolutionItems<DotNetProject> ().FirstOrDefault ();
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			DotNetProject project = sol.GetAllItems<DotNetProject> ().FirstOrDefault ();
 
 			Assert.AreEqual (4, project.References.Count);
 
@@ -435,17 +441,76 @@ namespace MonoDevelop.Projects
 		[Test]
 		public void AssemblyReferenceHintPath ()
 		{
-			var file = GetType ().Assembly.Location;
+			var file = (FilePath) GetType ().Assembly.Location;
 			var asmName = Path.GetFileNameWithoutExtension (file);
 
-			var r = new ProjectReference (ReferenceType.Assembly, file);
+			var r = ProjectReference.CreateAssemblyFileReference (file);
 			Assert.AreEqual (asmName, r.Reference);
 			Assert.AreEqual (file, r.HintPath);
 
-			r = new ProjectReference (ReferenceType.Assembly, "Foo", file);
+			r = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "Foo", file);
 			Assert.AreEqual ("Foo", r.Reference);
 			Assert.AreEqual (file, r.HintPath);
 
+		}
+
+		[Test]
+		public async Task LoadPortableLibrary ()
+		{
+			string solFile = Util.GetSampleProject ("portable-library", "portable-library.sln");
+
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = sol.FindProjectByName ("PortableLibrary");
+
+			Assert.IsInstanceOf<DotNetProject> (p);
+
+			var pl = (DotNetProject)p;
+			Assert.AreEqual (".NETPortable", pl.GetDefaultTargetFrameworkId ().Identifier);
+		}
+
+		[Test]
+		public async Task BuildPortableLibrary ()
+		{
+			string solFile = Util.GetSampleProject ("portable-library", "portable-library.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var res = await sol.Build (Util.GetMonitor (), "Debug");
+			Assert.AreEqual (0, res.Errors.Count);
+		}
+
+		[Test]
+		public async Task PortableLibraryImplicitReferences ()
+		{
+			string solFile = Util.GetSampleProject ("portable-library", "portable-library.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject) sol.FindProjectByName ("PortableLibrary");
+			var refs = (await p.GetReferencedAssemblies (p.Configurations [0].Selector)).Select (r => Path.GetFileName (r)).ToArray ();
+		}
+
+		[Test]
+		public void CreateGenericProject ()
+		{
+			var info = new ProjectCreateInformation ();
+			info.ProjectName = "Some.Test";
+			info.ProjectBasePath = "/tmp/test";
+			var doc = new XmlDocument ();
+			var projectOptions = doc.CreateElement ("Options");
+			var p = (GenericProject) Services.ProjectService.CreateProject ("GenericProject", info, projectOptions);
+			Assert.AreEqual ("Default", p.Configurations [0].Name);
+			Assert.AreEqual (MSBuildSupport.NotSupported, p.MSBuildEngineSupport);
+		}
+
+		[Test]
+		public async Task LoadGenericProject ()
+		{
+			string solFile = Util.GetSampleProject ("generic-project", "generic-project.sln");
+
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = sol.FindProjectByName ("GenericProject");
+
+			Assert.IsInstanceOf<GenericProject> (p);
+
+			var pl = (GenericProject)p;
+			Assert.AreEqual ("Default", pl.Configurations [0].Name);
 		}
 
 		[Test]
@@ -455,12 +520,307 @@ namespace MonoDevelop.Projects
 				ProjectBasePath = "/tmp/test",
 				ProjectName = "abc.0"
 			};
-			var project = new DotNetAssemblyProject ("C#", info, null);
+
+			var doc = new XmlDocument ();
+			var projectOptions = doc.CreateElement ("Options");
+			projectOptions.SetAttribute ("language", "C#");
+
+			DotNetProject project = (DotNetProject) Services.ProjectService.CreateProject ("C#", info, projectOptions);
 			Assert.AreEqual ("abc", project.DefaultNamespace);
 
 			info.ProjectName = "a.";
-			project = new DotNetAssemblyProject ("C#", info, null);
+			project = (DotNetProject) Services.ProjectService.CreateProject ("C#", info, projectOptions);
 			Assert.AreEqual ("a", project.DefaultNamespace);
+		}
+
+		[Test]
+		public async Task RefreshInMemoryProjectFirstTime ()
+		{
+			// Check that the in-memory project data is used when the builder is loaded for the first time.
+
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var p = (DotNetProject) sol.Items [0];
+			p.References.Add (ProjectReference.CreateAssemblyReference ("System.Xml.Linq"));
+
+			var refs = (await p.GetReferencedAssemblies (ConfigurationSelector.Default)).ToArray ();
+
+			Assert.IsTrue (refs.Any (r => r.Contains ("System.Xml.Linq.dll")));
+		}
+
+		[Test]
+		public async Task RefreshInMemoryProject ()
+		{
+			// Check that the builder is refreshed when the file has been modified in memory.
+
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var p = (DotNetProject) sol.Items [0];
+
+			// This will force the loading of the builder
+			(await p.GetReferencedAssemblies (ConfigurationSelector.Default)).ToArray ();
+
+			p.References.Add (ProjectReference.CreateAssemblyReference ("System.Xml.Linq"));
+
+			var refs = (await p.GetReferencedAssemblies (ConfigurationSelector.Default)).ToArray ();
+
+			// Check that the in-memory project data is used when the builder is loaded for the first time.
+			Assert.IsTrue (refs.Any (r => r.Contains ("System.Xml.Linq.dll")));
+		}
+
+		[Test]
+		public async Task DefaultMSBuildSupport ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject) sol.Items [0];
+			Assert.AreEqual (MSBuildSupport.Supported, p.MSBuildEngineSupport);
+		}
+
+		[Test]
+		public async Task SerializedWrite ()
+		{
+			var node = new CustomItemNode<SerializedSaveTestExtension> ();
+			WorkspaceObject.RegisterCustomExtension (node);
+
+			try {
+				string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+				Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+				var p = (DotNetProject) sol.Items [0];
+
+				var op1 = p.SaveAsync (Util.GetMonitor ());
+				var op2 = p.SaveAsync (Util.GetMonitor ());
+				await op1;
+				await op2;
+				Assert.AreEqual (2, SerializedSaveTestExtension.SaveCount);
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (node);
+			}
+		}
+
+		[Test]
+		public async Task MSBuildResourceNamingPolicy ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject) sol.Items [0];
+
+			var pol = new DotNetNamingPolicy (DirectoryNamespaceAssociation.Flat, ResourceNamePolicy.MSBuild);
+			p.Policies.Set (pol);
+
+			var f = p.AddFile (p.BaseDirectory.Combine ("foo/SomeFile.txt"), BuildAction.EmbeddedResource);
+			Assert.AreEqual ("ConsoleProject.foo.SomeFile.txt", f.ResourceId);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			var p2 = (DotNetProject) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), p.FileName);
+			f = p2.GetProjectFile (f.FilePath);
+			Assert.AreEqual ("ConsoleProject.foo.SomeFile.txt", f.ResourceId);
+		}
+
+		[Test]
+		public async Task MDResourceNamingPolicy ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject) sol.Items [0];
+
+			var pol = new DotNetNamingPolicy (DirectoryNamespaceAssociation.Flat, ResourceNamePolicy.FileName);
+			p.Policies.Set (pol);
+
+			var f = p.AddFile (p.BaseDirectory.Combine ("foo/SomeFile.txt"), BuildAction.EmbeddedResource);
+			Assert.AreEqual ("SomeFile.txt", f.ResourceId);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			var p2 = (DotNetProject) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), p.FileName);
+			f = p2.GetProjectFile (f.FilePath);
+			Assert.AreEqual ("SomeFile.txt", f.ResourceId);
+		}
+
+		[Test]
+		public async Task LoadResourceWithCorrectId ()
+		{
+			string projFile = Util.GetSampleProject ("test-resource-id", "ConsoleProject.csproj");
+			var p = (DotNetProject) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+
+			var f = p.Files.FirstOrDefault (pf => pf.FilePath.FileName == "SomeFile.txt");
+			Assert.AreEqual ("ConsoleProject.foo.SomeFile.txt", f.ResourceId);
+
+			var pol = p.Policies.Get<DotNetNamingPolicy> ();
+			Assert.AreEqual (ResourceNamePolicy.FileName, pol.ResourceNamePolicy);
+		}
+
+		[Test]
+		public async Task AddReference ()
+		{
+			// Check that the in-memory project data is used when the builder is loaded for the first time.
+
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var p = (DotNetProject) sol.Items [0];
+			p.References.Add (ProjectReference.CreateAssemblyReference ("System.Xml.Linq"));
+
+			var asm = p.AssemblyContext.GetAssemblies ().FirstOrDefault (a => a.Name == "System.Net");
+			p.References.Add (ProjectReference.CreateAssemblyReference (asm));
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			var refXml = Util.ToSystemEndings (File.ReadAllText (p.FileName + ".reference-added"));
+			var savedXml = File.ReadAllText (p.FileName);
+
+			Assert.AreEqual (refXml, savedXml);
+		}
+
+		[Test]
+		public async Task ChangeBuildAction ()
+		{
+			// Check that the in-memory project data is used when the builder is loaded for the first time.
+
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var p = (DotNetProject) sol.Items [0];
+			var f = p.Files.FirstOrDefault (fi => fi.FilePath.FileName == "Program.cs");
+			f.BuildAction = BuildAction.EmbeddedResource;
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			var refXml = Util.ToSystemEndings (File.ReadAllText (p.FileName + ".build-action-change1"));
+			var savedXml = File.ReadAllText (p.FileName);
+
+			Assert.AreEqual (refXml, savedXml);
+
+			f.BuildAction = BuildAction.Compile;
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			refXml = Util.ToSystemEndings (File.ReadAllText (p.FileName + ".build-action-change2"));
+			savedXml = File.ReadAllText (p.FileName);
+
+			Assert.AreEqual (refXml, savedXml);
+		}
+
+		[Test()]
+		public async Task ProjectReferencingDisabledProject_SolutionBuildWorks ()
+		{
+			// If a project references another project that is disabled for the solution configuration it should
+			// not be built when building the solution as a whole.
+
+			// Build the solution. It should work.
+			string solFile = Util.GetSampleProject ("invalid-reference-resolution", "InvalidReferenceResolution.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var res = await sol.Build (Util.GetMonitor (), "Debug");
+			Assert.AreEqual (0, res.ErrorCount);
+		}
+
+		[Test ()]
+		public async Task ProjectReferencingConditionalReferences ()
+		{
+			string solFile = Util.GetSampleProject ("conditional-project-reference", "conditional-project-reference.sln");
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = sol.Items.FirstOrDefault (pr => pr.Name == "conditional-project-reference");
+
+			Assert.AreEqual (2, p.GetReferencedItems ((SolutionConfigurationSelector)"DebugWin").Count ());
+			Assert.AreEqual (1, p.GetReferencedItems ((SolutionConfigurationSelector)"Debug").Count ());
+
+			//We have intentional compile error in windowsLib project
+			var res = await p.Build (Util.GetMonitor (), (SolutionConfigurationSelector)"DebugWin", true);
+			Assert.AreEqual (1, res.ErrorCount);
+
+			res = await p.Build (Util.GetMonitor (), (SolutionConfigurationSelector)"Debug", true);
+			Assert.AreEqual (0, res.ErrorCount);
+		}
+
+		[Test()]
+		public async Task ProjectReferencingDisabledProject_ProjectBuildFails ()
+		{
+			// If a project references another project that is disabled for the solution configuration, the referenced
+			// project should build when directly building the referencing project.
+
+			// Build the solution. It should work.
+			string solFile = Util.GetSampleProject ("invalid-reference-resolution", "InvalidReferenceResolution.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = sol.Items.FirstOrDefault (pr => pr.Name == "ReferencingProject");
+
+			var res = await p.Build (Util.GetMonitor (), (SolutionConfigurationSelector) "Debug", true);
+			Assert.AreEqual (1, res.ErrorCount);
+		}
+
+		[Test]
+		public async Task UserProperties ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject) sol.Items [0];
+			sol.UserProperties.SetValue ("SolProp", "foo");
+			p.UserProperties.SetValue ("ProjectProp", "bar");
+			await sol.SaveUserProperties ();
+			sol.Dispose ();
+
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			p = (DotNetProject) sol.Items [0];
+
+			Assert.AreEqual ("foo", sol.UserProperties.GetValue<string> ("SolProp"));
+			Assert.AreEqual ("bar", p.UserProperties.GetValue<string> ("ProjectProp"));
+		}
+
+		/// <summary>
+		/// With a PCL project having no references if you add a reference, then remove, then add it
+		/// again then the saved project file will end up no references.
+		/// </summary>
+		[Test]
+		public async Task AddingRemovingAndThenAddingReferenceToPortableLibrarySavesReferenceToFile ()
+		{
+			string solFile = Util.GetSampleProject ("portable-library", "portable-library.sln");
+
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = sol.FindProjectByName ("PortableLibrary") as DotNetProject;
+
+			Assert.AreEqual (0, p.References.Count);
+
+			// Add System.Xml reference.
+			p.References.Add (ProjectReference.CreateAssemblyReference ("System.Xml"));
+			await p.SaveAsync (Util.GetMonitor ());
+			Assert.AreEqual (1, p.References.Count);
+
+			// Remove System.Xml reference so no references remain.
+			p.References.RemoveAt (0);
+			await p.SaveAsync (Util.GetMonitor ());
+			Assert.AreEqual (0, p.References.Count);
+
+			// Add System.Xml reference again.
+			p.References.Add (ProjectReference.CreateAssemblyReference ("System.Xml"));
+			await p.SaveAsync (Util.GetMonitor ());
+			Assert.AreEqual (1, p.References.Count);
+
+			// Ensure the references are saved to the file.
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			p = sol.FindProjectByName ("PortableLibrary") as DotNetProject;
+
+			Assert.AreEqual (1, p.References.Count);
+			Assert.AreEqual ("System.Xml", p.References[0].Include);
+		}
+	}
+
+	class SerializedSaveTestExtension: SolutionItemExtension
+	{
+		static bool Running = false;
+		public static int SaveCount = 0;
+
+		internal protected override async Task OnSave (ProgressMonitor monitor)
+		{
+			if (Running)
+				Assert.Fail ("A save operation is already running");
+			Running = true;
+			await Task.Delay (500);
+			Running = false;
+			SaveCount++;
+			await base.OnSave (monitor);
 		}
 	}
 }

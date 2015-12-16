@@ -41,20 +41,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	class WorkspaceNodeBuilder: TypeNodeBuilder
 	{
-		EventHandler<WorkspaceItemChangeEventArgs> combineEntryAdded;
-		EventHandler<WorkspaceItemChangeEventArgs> combineEntryRemoved;
-		EventHandler<WorkspaceItemRenamedEventArgs> combineNameChanged;
-		
-		public WorkspaceNodeBuilder ()
-		{
-			combineEntryAdded = OnEntryAdded;
-			combineEntryRemoved = OnEntryRemoved;
-			combineNameChanged = OnCombineRenamed;
-			combineEntryAdded = DispatchService.GuiDispatch (combineEntryAdded);
-			combineEntryRemoved = DispatchService.GuiDispatch (combineEntryRemoved);
-			combineNameChanged = DispatchService.GuiDispatch (combineNameChanged);
-		}
-
 		public override Type NodeDataType {
 			get { return typeof(Workspace); }
 		}
@@ -100,17 +86,17 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void OnNodeAdded (object dataObject)
 		{
 			Workspace ws = (Workspace) dataObject;
-			ws.ItemAdded += combineEntryAdded;
-			ws.ItemRemoved += combineEntryRemoved;
-			ws.NameChanged += combineNameChanged;
+			ws.ItemAdded += OnEntryAdded;
+			ws.ItemRemoved += OnEntryRemoved;
+			ws.NameChanged += OnCombineRenamed;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
 			Workspace ws = (Workspace) dataObject;
-			ws.ItemAdded -= combineEntryAdded;
-			ws.ItemRemoved -= combineEntryRemoved;
-			ws.NameChanged -= combineNameChanged;
+			ws.ItemAdded -= OnEntryAdded;
+			ws.ItemRemoved -= OnEntryRemoved;
+			ws.NameChanged -= OnCombineRenamed;
 		}
 		
 		void OnEntryAdded (object sender, WorkspaceItemEventArgs e)
@@ -141,7 +127,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void RenameItem (string newName)
 		{
 			Workspace sol = (Workspace) CurrentNode.DataItem;
-			IdeApp.ProjectOperations.RenameItem (sol, newName);
+			if (sol.Name != newName)
+				IdeApp.ProjectOperations.RenameItem (sol, newName);
 		}
 		
 		public override DragOperation CanDragNode ()
@@ -182,7 +169,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					toSave.Add (ws);
 				}
 			}
-			IdeApp.ProjectOperations.Save (toSave);
+			IdeApp.ProjectOperations.SaveAsync (toSave);
 		}
 			
 		public override void ActivateItem ()
@@ -193,7 +180,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 		[CommandHandler (EditCommands.Delete)]
 		[AllowMultiSelection]
-		public void RemoveItem ()
+		public async void RemoveItem ()
 		{
 			foreach (ITreeNavigator node in CurrentNodes) {
 				Workspace ws = node.DataItem as Workspace;
@@ -205,7 +192,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					ws.Dispose ();
 				}
 			}
-			IdeApp.Workspace.Save();
+			await IdeApp.Workspace.SaveAsync ();
 		}
 		
 		[CommandUpdateHandler (EditCommands.Delete)]
@@ -222,40 +209,48 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		[CommandHandler (ProjectCommands.AddNewSolution)]
-		public void AddNewSolutionToWorkspace ()
+		public async void AddNewSolutionToWorkspace ()
 		{
 			Workspace ws = (Workspace) CurrentNode.DataItem;
-			WorkspaceItem ce = IdeApp.ProjectOperations.AddNewWorkspaceItem (ws);
-			if (ce == null) return;
-			Tree.AddNodeInsertCallback (ce, new TreeNodeCallback (OnEntryInserted));
-			CurrentNode.Expanded = true;
+			var res = await IdeApp.ProjectOperations.AddNewWorkspaceItem (ws);
+			if (res == null)
+				return;
+			Tree.AddNodeInsertCallback (res, new TreeNodeCallback (OnEntryInserted));
+			var node = Tree.GetNodeAtObject (ws);
+			if (node != null)
+				node.Expanded = true;
 		}
 		
 		[CommandHandler (ProjectCommands.AddNewWorkspace)]
-		public void AddNewWorkspaceToWorkspace ()
+		public async void AddNewWorkspaceToWorkspace ()
 		{
 			Workspace ws = (Workspace) CurrentNode.DataItem;
-			WorkspaceItem ce = IdeApp.ProjectOperations.AddNewWorkspaceItem (ws, "MonoDevelop.Workspace");
-			if (ce == null) return;
-			Tree.AddNodeInsertCallback (ce, new TreeNodeCallback (OnEntryInserted));
-			CurrentNode.Expanded = true;
+			var res = await IdeApp.ProjectOperations.AddNewWorkspaceItem (ws, "MonoDevelop.Workspace");
+			if (res == null) return;
+			Tree.AddNodeInsertCallback (res, new TreeNodeCallback (OnEntryInserted));
+			var node = Tree.GetNodeAtObject (ws);
+			if (node != null)
+				node.Expanded = true;
 		}
 		
 		[CommandHandler (ProjectCommands.AddItem)]
-		public void AddProjectToCombine()
+		public async void AddProjectToCombine()
 		{
 			Workspace ws = (Workspace) CurrentNode.DataItem;
-			WorkspaceItem ce = IdeApp.ProjectOperations.AddWorkspaceItem (ws);
-			if (ce == null) return;
-			Tree.AddNodeInsertCallback (ce, new TreeNodeCallback (OnEntryInserted));
-			CurrentNode.Expanded = true;
+			var res = await IdeApp.ProjectOperations.AddWorkspaceItem (ws);
+			if (res == null)
+				return;
+			Tree.AddNodeInsertCallback (res, new TreeNodeCallback (OnEntryInserted));
+			var node = Tree.GetNodeAtObject (ws);
+			if (node != null)
+				node.Expanded = true;
 		}
 		
 		[CommandHandler (ProjectCommands.Reload)]
 		[AllowMultiSelection]
 		public void OnReload ()
 		{
-			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
+			using (ProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
 				m.BeginTask (null, CurrentNodes.Length);
 				foreach (ITreeNavigator node in CurrentNodes) {
 					Workspace ws = (Workspace) node.DataItem;

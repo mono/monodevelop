@@ -5,7 +5,6 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../external/xwt/Xwt.Gtk/bin/Debug/Xwt.Gtk.dll" />
     <widget-library name="../../../../external/mono-addins/bin/Mono.Addins.Gui.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" internal="true" />
@@ -929,6 +928,22 @@
           </packing>
         </child>
         <child>
+          <widget class="Gtk.CheckButton" id="parallelBuildCheckbox">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Label" translatable="yes">Enable parallel build of projects</property>
+            <property name="DrawIndicator">True</property>
+            <property name="HasLabel">True</property>
+            <property name="UseUnderline">True</property>
+          </widget>
+          <packing>
+            <property name="Position">2</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
           <widget class="Gtk.CheckButton" id="buildBeforeTestCheckBox">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
@@ -938,7 +953,7 @@
             <property name="UseUnderline">True</property>
           </widget>
           <packing>
-            <property name="Position">2</property>
+            <property name="Position">3</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -991,7 +1006,7 @@ Diagnostic</property>
             </child>
           </widget>
           <packing>
-            <property name="Position">3</property>
+            <property name="Position">4</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -1006,7 +1021,7 @@ Diagnostic</property>
             <property name="UseMarkup">True</property>
           </widget>
           <packing>
-            <property name="Position">4</property>
+            <property name="Position">5</property>
             <property name="AutoSize">False</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -1093,7 +1108,7 @@ Diagnostic</property>
             </child>
           </widget>
           <packing>
-            <property name="Position">5</property>
+            <property name="Position">6</property>
             <property name="AutoSize">False</property>
           </packing>
         </child>
@@ -3679,22 +3694,48 @@ Diagnostic</property>
   <widget class="Gtk.Bin" id="MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget" design-size="541 409">
     <property name="MemberName" />
     <property name="Visible">False</property>
-    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />
         <property name="Spacing">6</property>
         <child>
-          <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
+          <widget class="Gtk.HBox" id="hbox2">
             <property name="MemberName" />
-            <property name="ShadowType">In</property>
+            <property name="Spacing">6</property>
             <child>
-              <widget class="Gtk.TextView" id="headerText">
+              <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
                 <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="ShowScrollbars">True</property>
-                <property name="Text" translatable="yes" />
+                <property name="ShadowType">In</property>
+                <child>
+                  <widget class="Gtk.TextView" id="headerText">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="ShowScrollbars">True</property>
+                    <property name="Text" translatable="yes" />
+                  </widget>
+                </child>
               </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow1">
+                <property name="MemberName" />
+                <property name="ShadowType">In</property>
+                <child>
+                  <widget class="Gtk.TreeView" id="treeviewTemplates">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="ShowScrollbars">True</property>
+                  </widget>
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">True</property>
+              </packing>
             </child>
           </widget>
           <packing>
@@ -3717,9 +3758,6 @@ Diagnostic</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
-        </child>
-        <child>
-          <placeholder />
         </child>
       </widget>
     </child>
@@ -4803,6 +4841,7 @@ Diagnostic</property>
                     <property name="Tooltip" translatable="yes">Switch to Find in Files</property>
                     <property name="CanFocus">True</property>
                     <property name="Label" translatable="yes">Find in Files</property>
+                    <property name="Active">True</property>
                     <property name="DrawIndicator">False</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>
@@ -10926,42 +10965,6 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
           </widget>
           <packing>
             <property name="Position">1</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-      </widget>
-    </child>
-  </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Ide.ProgressMonitoring.ProgressBarMonitor" design-size="300 28">
-    <property name="MemberName" />
-    <property name="Visible">False</property>
-    <child>
-      <widget class="Gtk.HBox" id="hbox1">
-        <property name="MemberName" />
-        <property name="Spacing">3</property>
-        <child>
-          <widget class="Gtk.ProgressBar" id="progressBar">
-            <property name="MemberName" />
-          </widget>
-          <packing>
-            <property name="Position">0</property>
-            <property name="AutoSize">True</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.Button" id="buttonCancel">
-            <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="Type">TextAndIcon</property>
-            <property name="Icon">stock:gtk-cancel Menu</property>
-            <property name="Label" translatable="yes" />
-            <property name="UseUnderline">True</property>
-            <property name="Relief">None</property>
-          </widget>
-          <packing>
-            <property name="Position">1</property>
-            <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>

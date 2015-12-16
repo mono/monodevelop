@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -34,7 +34,7 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>MonoDevelop.Projects.Formats.MSBuild.MainClass</StartupObject>
+    <StartupObject>MonoDevelop.Projects.MSBuild.MainClass</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -51,6 +51,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\BuildEngine.Shared.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\BuildEngine.v4.0.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IBuildEngine.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\ILogWriter.cs" />

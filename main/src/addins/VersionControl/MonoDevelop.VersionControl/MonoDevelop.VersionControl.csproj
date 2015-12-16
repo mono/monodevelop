@@ -112,6 +112,18 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
+    <Reference Include="System.Reflection.Metadata">
+      <HintPath>..\..\..\..\external\roslyn\Binaries\Release\System.Reflection.Metadata.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\..\external\roslyn\Binaries\Release\System.Collections.Immutable.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\added-overlay-16.png">
@@ -341,7 +353,6 @@
     <Compile Include="MonoDevelop.VersionControl\Repository.cs" />
     <Compile Include="MonoDevelop.VersionControl\RevertCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl\Revision.cs" />
-    <Compile Include="MonoDevelop.VersionControl\Task.cs" />
     <Compile Include="MonoDevelop.VersionControl\UnknownRepository.cs" />
     <Compile Include="MonoDevelop.VersionControl\UpdateCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl\UrlBasedRepository.cs" />
@@ -407,6 +418,8 @@
     <Compile Include="MonoDevelop.VersionControl.Dialogs\VersionControlSolutionOptionsPanel.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlException.cs" />
+    <Compile Include="MonoDevelop.VersionControl\VersionControlTask.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Views\CommonTextEditorOptions.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\BaseView.cs" />
   </ItemGroup>
   <ItemGroup>

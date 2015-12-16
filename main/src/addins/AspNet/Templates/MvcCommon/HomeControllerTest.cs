@@ -24,7 +24,7 @@ namespace ${Namespace}
 			var mvcName = typeof(Controller).Assembly.GetName ();
 			var isMono = Type.GetType ("Mono.Runtime") != null;
 
-			var expectedVersion = mvcName.Version.Major;
+			var expectedVersion = mvcName.Version.Major + "." + mvcName.Version.Minor;
 			var expectedRuntime = isMono? "Mono" : ".NET";
 
 			// Assert

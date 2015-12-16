@@ -25,19 +25,18 @@
 // THE SOFTWARE.
 
 
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Xml.Dom;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.WebForms.Dom
 {
 	public abstract class WebFormsExpression : XNode
 	{
-		protected WebFormsExpression (DomRegion region) : base (region)
+		protected WebFormsExpression (DocumentRegion region) : base (region)
 		{
 		}
 
-		protected WebFormsExpression (TextLocation start) : base (start)
+		protected WebFormsExpression (DocumentLocation start) : base (start)
 		{
 		}
 

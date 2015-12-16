@@ -394,7 +394,7 @@ namespace MonoDevelop.Core.Instrumentation
 			}
 		}
 		
-		public static IProgressMonitor GetInstrumentedMonitor (IProgressMonitor monitor, TimerCounter counter)
+		public static ProgressMonitor GetInstrumentedMonitor (ProgressMonitor monitor, TimerCounter counter)
 		{
 			if (enabled) {
 				AggregatedProgressMonitor mon = new AggregatedProgressMonitor (monitor);
@@ -405,61 +405,39 @@ namespace MonoDevelop.Core.Instrumentation
 		}
 	}
 	
-	class IntrumentationMonitor: NullProgressMonitor
+	class IntrumentationMonitor: ProgressMonitor
 	{
 		TimerCounter counter;
 		Stack<ITimeTracker> timers = new Stack<ITimeTracker> ();
-		LogTextWriter logger = new LogTextWriter ();
-		
+
 		public IntrumentationMonitor (TimerCounter counter)
 		{
 			this.counter = counter;
-			logger.TextWritten += HandleLoggerTextWritten;
 		}
 
-		void HandleLoggerTextWritten (string writtenText)
+		protected override void OnWriteLog (string message)
 		{
 			if (timers.Count > 0)
-				timers.Peek ().Trace (writtenText);
-		}
-		
-		public override void BeginTask (string name, int totalWork)
-		{
-			if (!string.IsNullOrEmpty (name)) {
-				ITimeTracker c = counter.BeginTiming (name);
-				c.Trace (name);
-				timers.Push (c);
-			} else {
-				timers.Push (null);
-			}
-			base.BeginTask (name, totalWork);
-		}
-		
-		public override void BeginStepTask (string name, int totalWork, int stepSize)
-		{
-			if (!string.IsNullOrEmpty (name)) {
-				ITimeTracker c = counter.BeginTiming (name);
-				c.Trace (name);
-				timers.Push (c);
-			} else {
-				timers.Push (null);
-			}
-			base.BeginStepTask (name, totalWork, stepSize);
+				timers.Peek ().Trace (message);
 		}
 
-		public override void EndTask ()
+		protected override void OnBeginTask (string name, int totalWork, int stepWork)
+		{
+			if (!string.IsNullOrEmpty (name)) {
+				ITimeTracker c = counter.BeginTiming (name);
+				c.Trace (name);
+				timers.Push (c);
+			} else {
+				timers.Push (null);
+			}
+		}
+
+		protected override void OnEndTask (string name, int totalWork, int stepWork)
 		{
 			if (timers.Count > 0) {
 				ITimeTracker c = timers.Pop ();
 				if (c != null)
 					c.End ();
-			}
-			base.EndTask ();
-		}
-		
-		public override System.IO.TextWriter Log {
-			get {
-				return logger;
 			}
 		}
 	}

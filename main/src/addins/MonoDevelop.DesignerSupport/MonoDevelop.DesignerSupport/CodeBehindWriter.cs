@@ -44,7 +44,7 @@ namespace MonoDevelop.DesignerSupport
 		List<KeyValuePair<FilePath,string>> filesToWrite = new List<KeyValuePair<FilePath,string>> ();
 		CodeDomProvider provider;
 		CodeGeneratorOptions options;
-		IProgressMonitor monitor;
+		ProgressMonitor monitor;
 		
 		public CodeDomProvider Provider { get { return provider; } }
 		public CodeGeneratorOptions GeneratorOptions { get { return options; } }
@@ -59,14 +59,14 @@ namespace MonoDevelop.DesignerSupport
 		{
 		}
 		
-		CodeBehindWriter (IProgressMonitor monitor, CodeDomProvider provider, CodeGeneratorOptions options)
+		CodeBehindWriter (ProgressMonitor monitor, CodeDomProvider provider, CodeGeneratorOptions options)
 		{
 			this.provider = provider;
 			this.options = options;
 			this.monitor = monitor;
 		}
 		
-		public static CodeBehindWriter CreateForProject (IProgressMonitor monitor, DotNetProject project)
+		public static CodeBehindWriter CreateForProject (ProgressMonitor monitor, DotNetProject project)
 		{
 			var pol = project.Policies.Get<TextStylePolicy> ();
 			var options = new CodeGeneratorOptions () {
@@ -84,11 +84,11 @@ namespace MonoDevelop.DesignerSupport
 					openFiles = new List<string> ();
 					if (!IdeApp.IsInitialized)
 						return openFiles;
-					DispatchService.GuiSyncDispatch (delegate {
+					Runtime.RunInMainThread (delegate {
 						foreach (var doc in IdeApp.Workbench.Documents)
-						if (doc.GetContent<IEditableTextBuffer> () != null)
-							openFiles.Add (doc.FileName);
-					});
+							if (doc.Editor != null)
+								openFiles.Add (doc.FileName);
+					}).Wait ();
 				}
 				return openFiles;
 			}
@@ -116,9 +116,15 @@ namespace MonoDevelop.DesignerSupport
 				});
 				WrittenCount++;
 			} catch (IOException ex) {
-				monitor.ReportError (GettextCatalog.GetString ("Failed to write file '{0}'.", path), ex);
+				if (monitor != null)
+					monitor.ReportError (GettextCatalog.GetString ("Failed to write file '{0}'.", path), ex);
+				else
+					LoggingService.LogError ("CodeBehindWriter failed", ex);
 			} catch (Exception ex) {
-				monitor.ReportError (GettextCatalog.GetString ("Failed to generate code for file '{0}'.", path), ex);
+				if (monitor != null)
+					monitor.ReportError (GettextCatalog.GetString ("Failed to generate code for file '{0}'.", path), ex);
+				else
+					LoggingService.LogError ("CodeBehindWriter failed", ex);
 			}
 		}
 
@@ -145,9 +151,15 @@ namespace MonoDevelop.DesignerSupport
 				});
 				WrittenCount++;
 			} catch (IOException ex) {
-				monitor.ReportError (GettextCatalog.GetString ("Failed to write file '{0}'.", path), ex);
+				if (monitor != null)
+					monitor.ReportError (GettextCatalog.GetString ("Failed to write file '{0}'.", path), ex);
+				else
+					LoggingService.LogError ("CodeBehindWriter failed", ex);
 			} catch (Exception ex) {
-				monitor.ReportError (GettextCatalog.GetString ("Failed to generate code for file '{0}'.", path), ex);
+				if (monitor != null)
+					monitor.ReportError (GettextCatalog.GetString ("Failed to generate code for file '{0}'.", path), ex);
+				else
+					LoggingService.LogError ("CodeBehindWriter failed", ex);
 			}
 		}
 		
@@ -163,14 +175,14 @@ namespace MonoDevelop.DesignerSupport
 			}
 			
 			//these documents are open, so needs to run in GUI thread
-			DispatchService.GuiSyncDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				foreach (KeyValuePair<FilePath, string> item in filesToWrite) {
 					try {
 						
 						bool updated = false;
 						foreach (MonoDevelop.Ide.Gui.Document doc in IdeApp.Workbench.Documents) {
 							if (doc.FileName == item.Key) {
-								var textFile = doc.GetContent<MonoDevelop.Projects.Text.IEditableTextFile> ();
+								var textFile = doc.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
 								if (textFile == null)
 									continue;
 								
@@ -195,12 +207,13 @@ namespace MonoDevelop.DesignerSupport
 						WrittenCount++;
 						
 					} catch (IOException ex) {
-						monitor.ReportError (
-							GettextCatalog.GetString ("Failed to write file '{0}'.", item.Key),
-							ex);
+						if (monitor != null)
+							monitor.ReportError (GettextCatalog.GetString ("Failed to write file '{0}'.", item.Key), ex);
+						else
+							LoggingService.LogError ("CodeBehindWriter failed", ex);
 					}
 				}
-			});
+			}).Wait ();
 			
 			filesToWrite = null;
 		}

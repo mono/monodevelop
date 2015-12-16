@@ -34,7 +34,7 @@ using System.Collections.Generic;
 
 namespace Mono.TextEditor
 {
-	public static class HelperMethods
+	public static class PublicHelperMethods
 	{
 		public static TextSegment AdjustSegment (this TextSegment segment, DocumentChangeEventArgs args)
 		{
@@ -50,7 +50,10 @@ namespace Mono.TextEditor
 				yield return segment.AdjustSegment (args);
 			}
 		}
+	}
 
+	static class HelperMethods
+	{
 		public static T Kill<T>(this T gc) where T : IDisposable
 		{
 			if (gc != null) 

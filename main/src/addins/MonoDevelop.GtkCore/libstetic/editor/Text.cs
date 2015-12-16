@@ -2,7 +2,7 @@ using System;
 
 namespace Stetic.Editor 
 {
-	public class Text : TextEditor 
+	public class Text : PropertyTextEditor 
 	{
 		public Text ()
 		{

@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Versioning;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 using NUnit.Framework;
 using MonoDevelop.PackageManagement.Tests.Helpers;

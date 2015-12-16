@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -71,16 +71,6 @@
       <Name>MonoDevelop.SourceEditor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
-      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
-      <Name>ICSharpCode.NRefactory</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
-      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
-      <Name>ICSharpCode.NRefactory.CSharp</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
       <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
       <Name>MonoDevelop.Debugger</Name>
@@ -120,22 +110,52 @@
       <HintPath>..\..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Razor">
-      <HintPath>..\..\..\packages\Microsoft.AspNet.Razor.3.2.2\lib\net45\System.Web.Razor.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Helpers">
-      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.Helpers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.WebPages">
-      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages.Deployment">
-      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages">
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages.Razor">
-      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Mvc">
-      <HintPath>..\..\..\packages\Microsoft.AspNet.Mvc.5.2.2\lib\net45\System.Web.Mvc.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc" Condition="!Exists('$(SolutionDir)\..\.git')" />
+    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <Reference Include="System.Reflection.Metadata">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Reflection.Metadata.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Collections.Immutable.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -177,6 +197,15 @@
     <EmbeddedResource Include="Templates\images\aspnet-empty-project%402x.png">
       <LogicalName>aspnet-empty-project@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\images\aspnet-wizard-page.png">
+      <LogicalName>aspnet-wizard-page.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\images\aspnet-wizard-page%402x.png">
+      <LogicalName>aspnet-wizard-page@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Html\HtmlSchemaService.cs" />
@@ -195,10 +224,7 @@
     <Compile Include="Razor\EditorParserFixed\RazorEditorParser.cs" />
     <Compile Include="Razor\EditorParserFixed\RazorEditorTrace.cs" />
     <Compile Include="Razor\EditorParserFixed\RazorResources.Designer.cs" />
-    <Compile Include="Projects\AspMvcProject.cs" />
     <Compile Include="Projects\AspMvcProjectConfiguration.cs" />
-    <Compile Include="Projects\AspNetAppProject.cs" />
-    <Compile Include="Projects\AspNetAppProjectBinding.cs" />
     <Compile Include="Projects\AspNetAppProjectConfiguration.cs" />
     <Compile Include="Projects\AspNetMSBuildImportProvider.cs" />
     <Compile Include="WebForms\MasterContentFileDescriptionTemplate.cs" />
@@ -300,10 +326,19 @@
     <Compile Include="Razor\RazorCSharpParsedDocument.cs" />
     <Compile Include="Razor\RazorPageInfo.cs" />
     <Compile Include="WebForms\WebFormsTypeContext.cs" />
+    <Compile Include="Projects\AspMvcProjectFlavor.cs" />
+    <Compile Include="Projects\AspNetAppProjectFlavor.cs" />
+    <Compile Include="WebForms\CSharp\CSharpProjector.cs" />
     <Compile Include="Projects\AspNetProjectTemplateWizard.cs" />
-    <Compile Include="Projects\AspNetProjectTemplateWizardPageWidget.cs" />
     <Compile Include="Projects\AspNetProjectTemplateWizardPage.cs" />
     <Compile Include="Projects\AspNetStringTagProvider.cs" />
+    <Compile Include="Commands\MethodDeclarationAtCaret.cs" />
+    <Compile Include="Razor\Dom\RazorWorkbenchService.cs" />
+    <Compile Include="Razor\RazorCSharpParserContext.cs" />
+    <Compile Include="Razor\OpenRazorDocument.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="Projects\GtkAspNetProjectTemplateWizardPageWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AspNet.Projects.GtkAspNetProjectTemplateWizardPageWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -324,9 +359,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Templates\Mvc\Controller.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Mvc\GlobalAsax.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Templates\Mvc\LayoutPage.xft.xml">
@@ -350,9 +382,6 @@
     <None Include="Templates\Mvc\ViewPageRazor.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Templates\Mvc\WebConfigApp.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Templates\Mvc\WebConfigViews.xft.xml">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -361,12 +390,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Templates\WebConfig-SubDir.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\WebForms\GlobalAsax-Empty.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\WebForms\GlobalAsax-CodeBehind.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Templates\WebForms\MasterPage-CodeBehind.xft.xml">
@@ -435,50 +458,27 @@
     <None Include="Templates\MvcCommon\ViewPageRazor.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Templates\Projects\MvcProjectWithUnitTest.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\MvcProject.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\EmptyProject.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\EmptyMvcProject.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\MvcRazorProject.xpt.xml">
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\MvcRazorProjectWithUnitTest.xpt.xml">
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\WebApplication.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\..\packages\Microsoft.AspNet.Mvc.5.2.2\lib\net45\System.Web.Mvc.dll">
+    <None Include="..\..\..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll">
       <Link>System.Web.Mvc.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\packages\Microsoft.AspNet.Razor.3.2.2\lib\net45\System.Web.Razor.dll">
+    <None Include="..\..\..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll">
       <Link>System.Web.Razor.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.Helpers.dll">
+    <None Include="..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll">
       <Link>System.Web.Helpers.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.Deployment.dll">
+    <None Include="..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll">
       <Link>System.Web.WebPages.Deployment.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.dll">
+    <None Include="..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll">
       <Link>System.Web.WebPages.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.Razor.dll">
+    <None Include="..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll">
       <Link>System.Web.WebPages.Razor.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -487,6 +487,40 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+    <None Include="Templates\Projects\MvcProject.xpt.xml">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Projects\EmptyProject.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Projects\WebFormsProject.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Projects\Files\Default.aspx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Projects\Files\Default.aspx.designer.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Projects\Files\Default.aspx.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\GlobalAsax.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Global.tt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\RouteConfig.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WebApiConfig.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Projects\Files\Test.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Html\Schemas\readme.txt">
@@ -529,7 +563,9 @@
     <Folder Include="Commands\" />
     <Folder Include="ProjectPad\" />
     <Folder Include="Templates\Projects\" />
+    <Folder Include="Templates\Projects\Files\" />
     <Folder Include="Templates\images\" />
+    <Folder Include="WebForms\CSharp\" />
   </ItemGroup>
   <Target Name="BeforeBuild">
     <PropertyGroup>

@@ -64,6 +64,7 @@ namespace MonoDevelop.Xml.Parser
 					return Parent;
 				} else {
 					context.LogWarning ("The string '--' should not appear within comments.");
+					context.StateTag = NOMATCH;
 				}
 			} else {
 				// not any part of a '-->', so make sure matching is reset

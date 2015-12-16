@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Ide;
+using ProgressMonitor = MonoDevelop.Core.ProgressMonitor;
 using LibGit2Sharp;
 
 namespace MonoDevelop.VersionControl.Git
@@ -61,8 +62,8 @@ namespace MonoDevelop.VersionControl.Git
 
 		public GitRepository (VersionControlSystem vcs, FilePath path, string url) : base (vcs)
 		{
-			RootPath = path;
 			RootRepository = new LibGit2Sharp.Repository (path);
+			RootPath = RootRepository.Info.WorkingDirectory;
 			Url = url;
 		}
 
@@ -164,7 +165,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		const int progressThrottle = 200;
 		static System.Diagnostics.Stopwatch throttleWatch = new System.Diagnostics.Stopwatch ();
-		static bool OnTransferProgress (TransferProgress tp, IProgressMonitor monitor, ref int progress)
+		static bool OnTransferProgress (TransferProgress tp, ProgressMonitor monitor, ref int progress)
 		{
 			if (progress == 0 && tp.ReceivedObjects == 0) {
 				monitor.BeginTask ("Receiving and indexing objects", 2 * tp.TotalObjects);
@@ -184,10 +185,10 @@ namespace MonoDevelop.VersionControl.Git
 				throttleWatch.Stop ();
 			}
 
-			return !monitor.IsCancelRequested;
+			return !monitor.CancellationToken.IsCancellationRequested;
 		}
 
-		static void OnCheckoutProgress (int completedSteps, int totalSteps, IProgressMonitor monitor, ref int progress)
+		static void OnCheckoutProgress (int completedSteps, int totalSteps, ProgressMonitor monitor, ref int progress)
 		{
 			if (progress == 0 && completedSteps == 0) {
 				monitor.BeginTask ("Checking out files", totalSteps);
@@ -219,7 +220,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		public StashApplyStatus ApplyStash (IProgressMonitor monitor, int stashIndex)
+		public StashApplyStatus ApplyStash (ProgressMonitor monitor, int stashIndex)
 		{
 			if (monitor != null)
 				monitor.BeginTask ("Applying stash", 1);
@@ -240,7 +241,7 @@ namespace MonoDevelop.VersionControl.Git
 			return res;
 		}
 
-		public StashApplyStatus PopStash (IProgressMonitor monitor, int stashIndex)
+		public StashApplyStatus PopStash (ProgressMonitor monitor, int stashIndex)
 		{
 			if (monitor != null)
 				monitor.BeginTask ("Applying stash", 1);
@@ -261,7 +262,7 @@ namespace MonoDevelop.VersionControl.Git
 			return res;
 		}
 
-		public bool TryCreateStash (IProgressMonitor monitor, string message, out Stash stash)
+		public bool TryCreateStash (ProgressMonitor monitor, string message, out Stash stash)
 		{
 			Signature sig = GetSignature ();
 			stash = null;
@@ -323,8 +324,6 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override Revision[] OnGetHistory (FilePath localFile, Revision since)
 		{
-			var revs = new List<Revision> ();
-
 			var repository = GetRepository (localFile);
 			var hc = GetHeadCommit (repository);
 			if (hc == null)
@@ -336,20 +335,18 @@ namespace MonoDevelop.VersionControl.Git
 				var localPath = repository.ToGitPath (localFile);
 				commits = commits.Where (c => c.Parents.Count () == 1 && c.Tree [localPath] != null &&
 					(c.Parents.FirstOrDefault ().Tree [localPath] == null ||
-					c.Tree [localPath].Target.Id != c.Parents.FirstOrDefault ().Tree [localPath].Target.Id));
+					 c.Tree [localPath].Target.Id != c.Parents.FirstOrDefault ().Tree [localPath].Target.Id));
 			}
 
-			foreach (var commit in commits.TakeWhile (c => c != sinceRev)) {
+			return commits.TakeWhile (c => c != sinceRev).Select (commit => {
 				var author = commit.Author;
 				var rev = new GitRevision (this, repository, commit, author.When.LocalDateTime, author.Name, commit.Message) {
 					Email = author.Email,
 					ShortMessage = commit.MessageShort,
 					FileForChanges = localFile,
 				};
-				revs.Add (rev);
-			}
-
-			return revs.ToArray ();
+				return rev;
+			}).ToArray ();
 		}
 
 		protected override RevisionPath[] OnGetRevisionChanges (Revision revision)
@@ -554,7 +551,7 @@ namespace MonoDevelop.VersionControl.Git
 				.Select (f => new FilePath (f)));
 		}
 
-		protected override Repository OnPublish (string serverPath, FilePath localPath, FilePath[] files, string message, IProgressMonitor monitor)
+		protected override Repository OnPublish (string serverPath, FilePath localPath, FilePath[] files, string message, ProgressMonitor monitor)
 		{
 			// Initialize the repository
 			RootRepository = new LibGit2Sharp.Repository (LibGit2Sharp.Repository.Init (localPath));
@@ -588,7 +585,7 @@ namespace MonoDevelop.VersionControl.Git
 			return this;
 		}
 
-		protected override void OnUpdate (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
+		protected override void OnUpdate (FilePath[] localPaths, bool recurse, ProgressMonitor monitor)
 		{
 			// TODO: Make it work differently for submodules.
 			monitor.BeginTask (GettextCatalog.GetString ("Updating"), 5);
@@ -608,7 +605,7 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.EndTask ();
 		}
 
-		static void RetryUntilSuccess (IProgressMonitor monitor, Action<GitCredentialsType> func)
+		static void RetryUntilSuccess (ProgressMonitor monitor, Action<GitCredentialsType> func)
 		{
 			bool retry;
 			using (var tfsSession = new TfsSmartSession ()) {
@@ -655,7 +652,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		public void Fetch (IProgressMonitor monitor, string remote)
+		public void Fetch (ProgressMonitor monitor, string remote)
 		{
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Fetching from '{0}'", remote));
 			int progress = 0;
@@ -666,7 +663,7 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.Step (1);
 		}
 
-		bool CommonPreMergeRebase (GitUpdateOptions options, IProgressMonitor monitor, out int stashIndex)
+		bool CommonPreMergeRebase (GitUpdateOptions options, ProgressMonitor monitor, out int stashIndex)
 		{
 			stashIndex = -1;
 			monitor.Step (1);
@@ -702,7 +699,7 @@ namespace MonoDevelop.VersionControl.Git
 			return true;
 		}
 
-		bool ConflictResolver(IProgressMonitor monitor, Commit resetToIfFail, string message)
+		bool ConflictResolver(ProgressMonitor monitor, Commit resetToIfFail, string message)
 		{
 			foreach (var conflictFile in RootRepository.Index.Conflicts) {
 				ConflictResult res = ResolveConflict (RootRepository.FromGitPath (conflictFile.Ancestor.Path));
@@ -722,7 +719,7 @@ namespace MonoDevelop.VersionControl.Git
 			return true;
 		}
 
-		void CommonPostMergeRebase(int stashIndex, GitUpdateOptions options, IProgressMonitor monitor, Commit oldHead)
+		void CommonPostMergeRebase(int stashIndex, GitUpdateOptions options, ProgressMonitor monitor, Commit oldHead)
 		{
 			if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges) {
 				monitor.Step (1);
@@ -743,7 +740,7 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.EndTask ();
 		}
 
-		public void Rebase (string branch, GitUpdateOptions options, IProgressMonitor monitor)
+		public void Rebase (string branch, GitUpdateOptions options, ProgressMonitor monitor)
 		{
 			int stashIndex = -1;
 			var oldHead = RootRepository.Head.Tip;
@@ -780,7 +777,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		public void Merge (string branch, GitUpdateOptions options, IProgressMonitor monitor)
+		public void Merge (string branch, GitUpdateOptions options, ProgressMonitor monitor)
 		{
 			int stashIndex = -1;
 			var oldHead = RootRepository.Head.Tip;
@@ -809,7 +806,7 @@ namespace MonoDevelop.VersionControl.Git
 		static ConflictResult ResolveConflict (string file)
 		{
 			ConflictResult res = ConflictResult.Abort;
-			DispatchService.GuiSyncDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				var dlg = new ConflictResolutionDialog ();
 				try {
 					dlg.Load (file);
@@ -831,11 +828,11 @@ namespace MonoDevelop.VersionControl.Git
 					dlg.Destroy ();
 					dlg.Dispose ();
 				}
-			});
+			}).Wait ();
 			return res;
 		}
 
-		protected override void OnCommit (ChangeSet changeSet, IProgressMonitor monitor)
+		protected override void OnCommit (ChangeSet changeSet, ProgressMonitor monitor)
 		{
 			string message = changeSet.GlobalComment;
 			if (string.IsNullOrEmpty (message))
@@ -878,7 +875,7 @@ namespace MonoDevelop.VersionControl.Git
 			} catch {
 				string dlgName = null, dlgEmail = null;
 
-				DispatchService.GuiSyncDispatch (() => {
+				Runtime.RunInMainThread (() => {
 					var dlg = new UserGitConfigDialog ();
 					try {
 						if ((Gtk.ResponseType)MessageService.RunCustomDialog (dlg) == Gtk.ResponseType.Ok) {
@@ -890,7 +887,7 @@ namespace MonoDevelop.VersionControl.Git
 						dlg.Destroy ();
 						dlg.Dispose ();
 					}
-				});
+				}).Wait ();
 
 				name = dlgName;
 				email = dlgEmail;
@@ -903,7 +900,7 @@ namespace MonoDevelop.VersionControl.Git
 			RootRepository.Config.Set ("user.email", email);
 		}
 
-		protected override void OnCheckout (FilePath targetLocalPath, Revision rev, bool recurse, IProgressMonitor monitor)
+		protected override void OnCheckout (FilePath targetLocalPath, Revision rev, bool recurse, ProgressMonitor monitor)
 		{
 			int transferProgress = 0;
 			int checkoutProgress = 0;
@@ -917,14 +914,14 @@ namespace MonoDevelop.VersionControl.Git
 				});
 			});
 
-			if (monitor.IsCancelRequested || RootPath.IsNull)
+			if (monitor.CancellationToken.IsCancellationRequested || RootPath.IsNull)
 				return;
 			
 			RootPath = RootPath.ParentDirectory;
 			RootRepository = new LibGit2Sharp.Repository (RootPath);
 		}
 
-		protected override void OnRevert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
+		protected override void OnRevert (FilePath[] localPaths, bool recurse, ProgressMonitor monitor)
 		{
 			foreach (var group in GroupByRepository (localPaths)) {
 				var repository = group.Key;
@@ -980,17 +977,17 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		protected override void OnRevertRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
+		protected override void OnRevertRevision (FilePath localPath, Revision revision, ProgressMonitor monitor)
 		{
 			throw new NotSupportedException ();
 		}
 
-		protected override void OnRevertToRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
+		protected override void OnRevertToRevision (FilePath localPath, Revision revision, ProgressMonitor monitor)
 		{
 			throw new NotSupportedException ();
 		}
 
-		protected override void OnAdd (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
+		protected override void OnAdd (FilePath[] localPaths, bool recurse, ProgressMonitor monitor)
 		{
 			foreach (var group in GroupByRepository (localPaths)) {
 				var repository = group.Key;
@@ -1000,7 +997,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		protected override void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
+		protected override void OnDeleteFiles (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal)
 		{
 			DeleteCore (localPaths, keepLocal);
 
@@ -1020,7 +1017,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		protected override void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
+		protected override void OnDeleteDirectories (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal)
 		{
 			DeleteCore (localPaths, keepLocal);
 
@@ -1116,7 +1113,7 @@ namespace MonoDevelop.VersionControl.Git
 			return remotes.Contains ("origin") ? "origin" : remotes [0];
 		}
 
-		public void Push (IProgressMonitor monitor, string remote, string remoteBranch)
+		public void Push (ProgressMonitor monitor, string remote, string remoteBranch)
 		{
 			bool success = true;
 
@@ -1264,7 +1261,7 @@ namespace MonoDevelop.VersionControl.Git
 			return RootRepository.Head.FriendlyName;
 		}
 
-		public void SwitchToBranch (IProgressMonitor monitor, string branch)
+		public void SwitchToBranch (ProgressMonitor monitor, string branch)
 		{
 			Signature sig = GetSignature ();
 			Stash stash;
@@ -1315,7 +1312,7 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.EndTask ();
 		}
 
-		void NotifyFileChanges (IProgressMonitor monitor, TreeChanges statusList)
+		void NotifyFileChanges (ProgressMonitor monitor, TreeChanges statusList)
 		{
 			// Files added to source branch not present to target branch.
 			var removed = statusList.Where (c => c.Status == ChangeKind.Added).Select (c => GetRepository (c.Path).FromGitPath (c.Path)).ToList ();
@@ -1406,7 +1403,7 @@ namespace MonoDevelop.VersionControl.Git
 			return diffs.ToArray ();
 		}
 
-		protected override void OnMoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
+		protected override void OnMoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)
 		{
 			var srcRepo = GetRepository (localSrcPath);
 			var dstRepo = GetRepository (localDestPath);
@@ -1431,7 +1428,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		protected override void OnMoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
+		protected override void OnMoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)
 		{
 			VersionInfo[] versionedFiles = GetDirectoryVersionInfo (localSrcPath, false, true);
 			base.OnMoveDirectory (localSrcPath, localDestPath, force, monitor);

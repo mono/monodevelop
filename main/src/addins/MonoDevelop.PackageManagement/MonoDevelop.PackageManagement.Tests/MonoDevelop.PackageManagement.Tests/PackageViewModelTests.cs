@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using NuGet;
 using NUnit.Framework;
@@ -221,7 +221,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void HasLicenseUrl_PackageHasLicenseUrl_ReturnsTrue ()
 		{
 			CreateViewModel ();
-			fakePackage.LicenseUrl = new Uri ("http://sharpdevelop.com");
+			fakePackage.LicenseUrl = new Uri ("http://monodevelop.com");
 
 			Assert.IsTrue (viewModel.HasLicenseUrl);
 		}
@@ -239,7 +239,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void HasProjectUrl_PackageHasProjectUrl_ReturnsTrue ()
 		{
 			CreateViewModel ();
-			fakePackage.ProjectUrl = new Uri ("http://sharpdevelop.com");
+			fakePackage.ProjectUrl = new Uri ("http://monodevelop.com");
 
 			Assert.IsTrue (viewModel.HasProjectUrl);
 		}
@@ -257,7 +257,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void HasReportAbuseUrl_PackageHasReportAbuseUrl_ReturnsTrue ()
 		{
 			CreateViewModel ();
-			fakePackage.ReportAbuseUrl = new Uri ("http://sharpdevelop.com");
+			fakePackage.ReportAbuseUrl = new Uri ("http://monodevelop.com");
 
 			Assert.IsTrue (viewModel.HasReportAbuseUrl);
 		}

@@ -51,6 +51,9 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Components.Extensions;
+using MonoDevelop.Ide.Desktop;
+using System.Threading.Tasks;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide
 {
@@ -62,12 +65,12 @@ namespace MonoDevelop.Ide
 		internal static string DefaultTheme;
 		static readonly int ipcBasePort = 40000;
 		
-		int IApplication.Run (string[] args)
+		Task<int> IApplication.Run (string[] args)
 		{
 			var options = MonoDevelopOptions.Parse (args);
 			if (options.Error != null || options.ShowHelp)
-				return options.Error != null? -1 : 0;
-			return Run (options);
+				return Task.FromResult (options.Error != null? -1 : 0);
+			return Task.FromResult (Run (options));
 		}
 		
 		int Run (MonoDevelopOptions options)
@@ -117,21 +120,20 @@ namespace MonoDevelop.Ide
 			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarDialogBackend,GtkExtendedTitleBarDialogBackend> ();
 
 			//default to Windows IME on Windows
-			if (Platform.IsWindows && Mono.TextEditor.GtkWorkarounds.GtkMinorVersion >= 16) {
+			if (Platform.IsWindows && GtkWorkarounds.GtkMinorVersion >= 16) {
 				var settings = Gtk.Settings.Default;
-				var val = Mono.TextEditor.GtkWorkarounds.GetProperty (settings, "gtk-im-module");
+				var val = GtkWorkarounds.GetProperty (settings, "gtk-im-module");
 				if (string.IsNullOrEmpty (val.Val as string))
-					Mono.TextEditor.GtkWorkarounds.SetProperty (settings, "gtk-im-module", new GLib.Value ("ime"));
+					GtkWorkarounds.SetProperty (settings, "gtk-im-module", new GLib.Value ("ime"));
 			}
 			
-			InternalLog.Initialize ();
 			string socket_filename = null;
 			EndPoint ep = null;
 			
 			DispatchService.Initialize ();
 
 			// Set a synchronization context for the main gtk thread
-			SynchronizationContext.SetSynchronizationContext (new GtkSynchronizationContext ());
+			SynchronizationContext.SetSynchronizationContext (DispatchService.SynchronizationContext);
 			Runtime.MainSynchronizationContext = SynchronizationContext.Current;
 			
 			AddinManager.AddinLoadError += OnAddinError;
@@ -166,7 +168,7 @@ namespace MonoDevelop.Ide
 			if (theme != DefaultTheme)
 				Gtk.Settings.Default.ThemeName = theme;
 			
-			IProgressMonitor monitor = new MonoDevelop.Core.ProgressMonitoring.ConsoleProgressMonitor ();
+			ProgressMonitor monitor = new MonoDevelop.Core.ProgressMonitoring.ConsoleProgressMonitor ();
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Starting {0}", BrandingService.ApplicationName), 2);
 
@@ -203,12 +205,6 @@ namespace MonoDevelop.Ide
 			}
 			
 			Counters.Initialization.Trace ("Checking System");
-			string version = Assembly.GetEntryAssembly ().GetName ().Version.Major + "." + Assembly.GetEntryAssembly ().GetName ().Version.Minor;
-			
-			if (Assembly.GetEntryAssembly ().GetName ().Version.Build != 0)
-				version += "." + Assembly.GetEntryAssembly ().GetName ().Version.Build;
-			if (Assembly.GetEntryAssembly ().GetName ().Version.Revision != 0)
-				version += "." + Assembly.GetEntryAssembly ().GetName ().Version.Revision;
 
 			CheckFileWatcher ();
 			
@@ -237,20 +233,18 @@ namespace MonoDevelop.Ide
 				if (!CheckSCPlugin ())
 					return 1;
 
-				// no alternative for Application.ThreadException?
-				// Application.ThreadException += new ThreadExceptionEventHandler(ShowErrorBox);
-
 				// Load requested files
 				Counters.Initialization.Trace ("Opening Files");
 
 				// load previous combine
+				RecentFile openedProject = null;
 				if (IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen) {
-					var proj = DesktopService.RecentFiles.GetProjects ().FirstOrDefault ();
-					if (proj != null)
-						IdeApp.Workspace.OpenWorkspaceItem (proj.FileName).WaitForCompleted ();
+					openedProject = DesktopService.RecentFiles.GetProjects ().FirstOrDefault ();
+					if (openedProject != null)
+						IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName).ContinueWith (t => IdeApp.OpenFiles (startupInfo.RequestedFileList), TaskScheduler.FromCurrentSynchronizationContext ());
 				}
-
-				IdeApp.OpenFiles (startupInfo.RequestedFileList);
+				if (openedProject == null)
+					IdeApp.OpenFiles (startupInfo.RequestedFileList);
 				
 				monitor.Step (1);
 			
@@ -616,6 +610,14 @@ namespace MonoDevelop.Ide
 		static void HandleException (Exception ex, bool willShutdown)
 		{
 			var msg = String.Format ("An unhandled exception has occured. Terminating {0}? {1}", BrandingService.ApplicationName, willShutdown);
+			var aggregateException = ex as AggregateException;
+			if (aggregateException != null) {
+				aggregateException.Flatten ().Handle (innerEx => {
+					HandleException (innerEx, willShutdown);
+					return true;
+				});
+				return;
+			}
 
 			if (willShutdown)
 				LoggingService.LogFatalError (msg, ex);
@@ -647,6 +649,12 @@ namespace MonoDevelop.Ide
 			if (customizer == null)
 				customizer = LoadBrandingCustomizer ();
 			options.IdeCustomizer = customizer;
+
+			if (!Platform.IsWindows) {
+				// Limit maximum threads when running on mono
+				int threadCount = 8 * Environment.ProcessorCount;
+				ThreadPool.SetMaxThreads (threadCount, threadCount);
+			}
 
 			int ret = -1;
 			try {

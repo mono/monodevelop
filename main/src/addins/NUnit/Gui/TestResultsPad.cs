@@ -42,6 +42,7 @@ using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide;
 using System.Text.RegularExpressions;
 using MonoDevelop.Components;
+using System.Threading;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.NUnit.External;
@@ -801,51 +802,52 @@ namespace MonoDevelop.NUnit
 	{
 		ITestProgressMonitor monitor;
 		TestResultsPad pad;
-		
-		public TestMonitor (TestResultsPad pad)
+
+		public TestMonitor (TestResultsPad pad, CancellationTokenSource cs)
 		{
 			this.pad = pad;
 			this.monitor = pad;
+			cs.Token.Register (Cancel);
 		}
 		public void InitializeTestRun (UnitTest test)
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				pad.InitializeTestRun (test);
 			});
 		}
 		public void FinishTestRun ()
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				pad.FinishTestRun ();
 			});
 		}
 		public void Cancel ()
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				pad.Cancel ();
 			});
 		}
 		public void BeginTest (UnitTest test)
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				monitor.BeginTest (test);
 			});
 		}
 		public void EndTest (UnitTest test, UnitTestResult result)
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				monitor.EndTest (test, result);
 			});
 		}
 		public void ReportRuntimeError (string message, Exception exception)
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				monitor.ReportRuntimeError (message, exception);
 			});
 		}
 		public void WriteGlobalLog (string message)
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				monitor.WriteGlobalLog (message);
 			});
 		}

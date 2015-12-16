@@ -26,26 +26,23 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.SourceEditor;
-using MonoDevelop.SourceEditor.QuickTasks;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
-using Mono.TextEditor;
-using ICSharpCode.NRefactory.Refactoring;
+using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Ide.Editor;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.AnalysisCore
 {
-	public class FixableResult : Result
-	{
-		public FixableResult (DomRegion region, string message, Severity level,
-			IssueMarker mark, params IAnalysisFix[] fixes)
-			: base (region, message, level, mark)
-		{
-			this.Fixes = fixes;
-		}
-		
-		public IAnalysisFix[] Fixes { get; protected set; }
-	}
+//	public class FixableResult : Result
+//	{
+//		public FixableResult (TextSpan region, string message, DiagnosticSeverity level,
+//			IssueMarker mark, params IAnalysisFix[] fixes)
+//			: base (region, message, level, mark)
+//		{
+//			this.Fixes = fixes;
+//		}
+//		
+//		public IAnalysisFix[] Fixes { get; protected set; }
+//	}
 	
 	//FIXME: should this really use MonoDevelop.Ide.Gui.Document? Fixes could be more generic.
 	public interface IAnalysisFix
@@ -55,14 +52,14 @@ namespace MonoDevelop.AnalysisCore
 	
 	public interface IFixHandler
 	{
-		IEnumerable<IAnalysisFixAction> GetFixes (MonoDevelop.Ide.Gui.Document doc, object fix);
+		IEnumerable<IAnalysisFixAction> GetFixes (TextEditor editor, DocumentContext doc, object fix);
 	}
 	
 	public interface IAnalysisFixAction
 	{
 		string Label { get; }
 		bool SupportsBatchFix { get; }
-		DocumentRegion DocumentRegion { get; }
+		TextSpan DocumentRegion { get; }
 		string IdString { get; }
 		void Fix ();
 		void BatchFix ();

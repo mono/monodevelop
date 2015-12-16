@@ -458,7 +458,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			ThreadPool.QueueUserWorkItem (delegate {
 				if (fileList != null) {
-					var group = fileList.GroupBy (v => v.IsDirectory || v.WorkspaceObject is SolutionItem);
+					var group = fileList.GroupBy (v => v.IsDirectory || v.WorkspaceObject is SolutionFolderItem);
 					foreach (var item in group) {
 						// Is directory.
 						if (item.Key) {
@@ -472,7 +472,7 @@ namespace MonoDevelop.VersionControl.Views
 				}
 				List<VersionInfo> newList = new List<VersionInfo> ();
 				newList.AddRange (vc.GetDirectoryVersionInfo (filepath, remoteStatus, true));
-				DispatchService.GuiDispatch (delegate {
+				Runtime.RunInMainThread (delegate {
 					if (!disposed)
 						LoadStatus (newList);
 				});
@@ -816,7 +816,7 @@ namespace MonoDevelop.VersionControl.Views
 			string[] files = GetCurrentFiles ();
 			VersionControlItemList items = new VersionControlItemList ();
 			foreach (string file in files) {
-				Project prj = IdeApp.Workspace.GetProjectContainingFile (file);
+				Project prj = IdeApp.Workspace.GetProjectsContainingFile (file).FirstOrDefault ();
 				items.Add (new VersionControlItem (vc, prj, file, Directory.Exists (file), null));
 			}
 			return items;

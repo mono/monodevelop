@@ -55,7 +55,7 @@ namespace Mono.TextEditor.Vi
 		Dictionary<char,string> registers = new Dictionary<char,string> ();
 		Dictionary<char,ViMark> marks = new Dictionary<char, ViMark> ();
 		
-		public TextEditor Editor { get { return editMode.Editor; } }
+		public MonoTextEditor Editor { get { return editMode.Editor; } }
 		public TextEditorData Data { get { return editMode.Data; } }
 		public TextDocument Document { get { return Data.Document; } }
 		ViBuilderContext Context { get; set; }

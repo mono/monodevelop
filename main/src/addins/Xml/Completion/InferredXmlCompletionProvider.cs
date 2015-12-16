@@ -26,6 +26,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Dom;
 
@@ -67,60 +69,60 @@ namespace MonoDevelop.Xml.Completion
 			}
 		}
 		
-		public CompletionDataList GetElementCompletionData ()
+		public Task<CompletionDataList> GetElementCompletionData (CancellationToken token)
 		{
-			return GetChildElementCompletionData ("");
+			return GetChildElementCompletionData ("", token);
 		}
 		
-		public CompletionDataList GetElementCompletionData (string namespacePrefix)
+		public Task<CompletionDataList> GetElementCompletionData (string namespacePrefix, CancellationToken token)
 		{
-			return new CompletionDataList ();
+			return Task.FromResult (new CompletionDataList ());
 		}
 		
-		public CompletionDataList GetChildElementCompletionData (XmlElementPath path)
+		public Task<CompletionDataList> GetChildElementCompletionData (XmlElementPath path, CancellationToken token)
 		{
 			return GetCompletions (elementCompletions, path, XmlCompletionData.DataType.XmlElement);
 		}
 		
-		public CompletionDataList GetAttributeCompletionData (XmlElementPath path)
+		public Task<CompletionDataList> GetAttributeCompletionData (XmlElementPath path, CancellationToken token)
 		{
 			return GetCompletions (attributeCompletions, path, XmlCompletionData.DataType.XmlAttribute);
 		}
 		
-		public CompletionDataList GetAttributeValueCompletionData (XmlElementPath path, string name)
+		public Task<CompletionDataList> GetAttributeValueCompletionData (XmlElementPath path, string name, CancellationToken token)
 		{
-			return new CompletionDataList ();
+			return Task.FromResult (new CompletionDataList ());
 		}
 		
-		public CompletionDataList GetChildElementCompletionData (string tagName)
+		public Task<CompletionDataList> GetChildElementCompletionData (string tagName, CancellationToken token)
 		{
 			return GetCompletions (elementCompletions, tagName, XmlCompletionData.DataType.XmlElement);
 		}
 		
-		public CompletionDataList GetAttributeCompletionData (string tagName)
+		public Task<CompletionDataList> GetAttributeCompletionData (string tagName, CancellationToken token)
 		{
 			return GetCompletions (attributeCompletions, tagName, XmlCompletionData.DataType.XmlAttribute);
 		}
 		
-		public CompletionDataList GetAttributeValueCompletionData (string tagName, string name)
+		public Task<CompletionDataList> GetAttributeValueCompletionData (string tagName, string name, CancellationToken token)
 		{
-			return new CompletionDataList ();
+			return Task.FromResult (new CompletionDataList ());
 		}
 		
-		static CompletionDataList GetCompletions (Dictionary<string,HashSet<string>> map, string tagName, XmlCompletionData.DataType type)
+		static Task<CompletionDataList> GetCompletions (Dictionary<string,HashSet<string>> map, string tagName, XmlCompletionData.DataType type)
 		{
 			var data = new CompletionDataList ();
 			HashSet<string> values;
 			if (map.TryGetValue (tagName, out values))
 				foreach (string s in values)
 					data.Add (new XmlCompletionData (s, type));
-			return data;
+			return Task.FromResult (data);
 		}
 		
-		static CompletionDataList GetCompletions (Dictionary<string,HashSet<string>> map, XmlElementPath path, XmlCompletionData.DataType type)
+		static Task<CompletionDataList> GetCompletions (Dictionary<string,HashSet<string>> map, XmlElementPath path, XmlCompletionData.DataType type)
 		{
 			if (path == null || path.Elements.Count == 0)
-				return new CompletionDataList ();
+				return Task.FromResult (new CompletionDataList ());
 			return GetCompletions (map, path.Elements[path.Elements.Count - 1].Name, type);
 		}
 	}

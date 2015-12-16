@@ -100,8 +100,13 @@ namespace MonoDevelop.Ide.Gui
 			OnBeforeSave (EventArgs.Empty);
 			this.Save (contentName);
 		}
-
-		public virtual void Save (string fileName)
+		
+		public void Save (string fileName)
+		{
+			Save (new FileSaveInformation (fileName)); 
+		}
+		
+		public virtual void Save (FileSaveInformation fileSaveInformation)
 		{
 			throw new NotImplementedException ();
 		}
@@ -110,7 +115,12 @@ namespace MonoDevelop.Ide.Gui
 		{
 		}
 
-		public abstract void Load (string fileName);
+		public abstract void Load (FileOpenInformation fileOpenInformation);
+		
+		public void Load (string fileName)
+		{
+			Load (new FileOpenInformation (fileName, null));
+		}
 		
 		public virtual void LoadNew (System.IO.Stream content, string mimeType)
 		{

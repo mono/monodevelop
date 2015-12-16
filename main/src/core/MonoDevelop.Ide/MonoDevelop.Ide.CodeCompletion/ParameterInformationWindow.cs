@@ -25,16 +25,17 @@
 //
 //
 
-
 using System;
-using System.Text;
 using MonoDevelop.Core;
 using Gtk;
 using MonoDevelop.Components;
-using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.Gui.Content;
-using System.Collections.Generic;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.Editor.Extension;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -74,7 +75,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.AllowGrow = false;
 			this.CanFocus = false;
 			this.CanDefault = false;
-			Mono.TextEditor.PopupWindow.WindowTransparencyDecorator.Attach (this);
+			WindowTransparencyDecorator.Attach (this);
 
 			headlabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
 			headlabel.Indent = -20;
@@ -92,58 +93,98 @@ namespace MonoDevelop.Ide.CodeCompletion
 			HBox hb = new HBox (false, 0);
 			hb.PackStart (vb, true, true, 0);
 			
-			
 			vb2.Spacing = 4;
 			vb2.PackStart (hb, true, true, 0);
 			ContentBox.Add (vb2);
-			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
-			Theme.SetSchemeColors (scheme);
-
-			foreColor = scheme.PlainText.Foreground;
-			headlabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
 			ShowAll ();
 			DesktopService.RemoveWindowShadow (this);
+		}
 
+		protected override void OnShown ()
+		{
+			var scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			Theme.SetSchemeColors (scheme);
+			foreColor = scheme.PlainText.Foreground;
+			headlabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
+
+			base.OnShown ();
 		}
 
 		int lastParam = -2;
-		public void ShowParameterInfo (ParameterDataProvider provider, int overload, int _currentParam, int maxSize)
+		TooltipInformation currentTooltipInformation;
+		CancellationTokenSource cancellationTokenSource;
+
+		public async void ShowParameterInfo (ParameterHintingResult provider, int overload, int _currentParam, int maxSize)
 		{
 			if (provider == null)
 				throw new ArgumentNullException ("provider");
-			int numParams = System.Math.Max (0, provider.GetParameterCount (overload));
+			int numParams = System.Math.Max (0, provider [overload].ParameterCount);
 			var currentParam = System.Math.Min (_currentParam, numParams - 1);
 			if (numParams > 0 && currentParam < 0)
 				currentParam = 0;
-			if (lastParam == currentParam) {
+			if (lastParam == currentParam && (currentTooltipInformation != null)) {
 				return;
 			}
 
 			lastParam = currentParam;
+			var parameterHintingData = (ParameterHintingData)provider [overload];
+
+			ResetTooltipInformation ();
 			ClearDescriptions ();
-			var o = provider.CreateTooltipInformation (overload, currentParam, false);
+			if (ext == null) {
+				// ext == null means HideParameterInfo was called aka. we are not in valid context to display tooltip anymore
+				lastParam = -2;
+				return;
+			}
+			var ct = new CancellationTokenSource ();
+			try {
+				cancellationTokenSource = ct;
+				currentTooltipInformation = await parameterHintingData.CreateTooltipInformation (ext.Editor, ext.DocumentContext, currentParam, false, ct.Token);
+			} catch (Exception ex) {
+				if (!(ex is TaskCanceledException))
+					LoggingService.LogError ("Error while getting tooltip information", ex);
+				return;
+			}
+
+			if (ct.IsCancellationRequested)
+				return;
+
+			cancellationTokenSource = null;
 
 			Theme.NumPages = provider.Count;
 			Theme.CurrentPage = overload;
+
 			if (provider.Count > 1) {
 				Theme.DrawPager = true;
 				Theme.PagerVertical = true;
 			}
 
-			headlabel.Markup = o.SignatureMarkup;
+			ShowTooltipInfo ();
+		}
+
+		void ShowTooltipInfo ()
+		{
+			ClearDescriptions ();
+			headlabel.Markup = currentTooltipInformation.SignatureMarkup;
 			headlabel.Visible = true;
 			if (Theme.DrawPager)
 				headlabel.WidthRequest = headlabel.RealWidth + 70;
 			
-			foreach (var cat in o.Categories) {
-				descriptionBox.PackStart (CreateCategory (cat.Item1, cat.Item2), true, true, 4);
+			foreach (var cat in currentTooltipInformation.Categories) {
+				descriptionBox.PackStart (CreateCategory (TooltipInformationWindow.GetHeaderMarkup (cat.Item1), cat.Item2), true, true, 4);
 			}
 			
-			if (!string.IsNullOrEmpty (o.SummaryMarkup)) {
-				descriptionBox.PackStart (CreateCategory (GettextCatalog.GetString ("Summary"), o.SummaryMarkup), true, true, 4);
+			if (!string.IsNullOrEmpty (currentTooltipInformation.SummaryMarkup)) {
+				descriptionBox.PackStart (CreateCategory (TooltipInformationWindow.GetHeaderMarkup (GettextCatalog.GetString ("Summary")), currentTooltipInformation.SummaryMarkup), true, true, 4);
 			}
 			descriptionBox.ShowAll ();
 			QueueResize ();
+			Show ();
+		}
+
+		void CurrentTooltipInformation_Changed (object sender, EventArgs e)
+		{
+			ShowTooltipInfo ();
 		}
 
 		void ClearDescriptions ()
@@ -155,36 +196,24 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
+		void ResetTooltipInformation ()
+		{
+			if (cancellationTokenSource != null) {
+				cancellationTokenSource.Cancel ();
+				cancellationTokenSource = null;
+			}
+			currentTooltipInformation = null;
+		}
+
 		VBox CreateCategory (string categoryName, string categoryContentMarkup)
 		{
-			var vbox = new VBox ();
-			
-			vbox.Spacing = 2;
-			
-			var catLabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
-			catLabel.Text = categoryName;
-			catLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
-			catLabel.FontDescription = FontService.GetFontDescription ("Editor");
-			
-			vbox.PackStart (catLabel, false, true, 0);
-			
-			var contentLabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
-			contentLabel.MaxWidth = Math.Max (440, this.Allocation.Width);
-			contentLabel.Wrap = Pango.WrapMode.WordChar;
-			contentLabel.BreakOnCamelCasing = true;
-			contentLabel.BreakOnPunctuation = true;
-			contentLabel.Markup = categoryContentMarkup.Trim ();
-			contentLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
-			contentLabel.FontDescription = FontService.GetFontDescription ("Editor");
-			
-			vbox.PackStart (contentLabel, true, true, 0);
-			
-			return vbox;
+			return TooltipInformationWindow.CreateCategory (categoryName, categoryContentMarkup, foreColor);
 		}
 
 		public void ChangeOverload ()
 		{
 			lastParam = -2;
+			ResetTooltipInformation ();
 		}
 		
 		public void HideParameterInfo ()

@@ -30,21 +30,20 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using ICSharpCode.NRefactory.TypeSystem;
-
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using MonoDevelop.Xml.Dom;
 using MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.Html.Parser;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.AspNet.Html
 {
 	public class HtmlParser : TypeSystemParser
 	{
-		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader tr, Project project = null)
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (ParseOptions parseOptions, System.Threading.CancellationToken cancellationToken)
 		{
-			var doc = new MonoDevelop.Xml.Editor.XmlParsedDocument (fileName);
+			var doc = new MonoDevelop.Xml.Editor.XmlParsedDocument (parseOptions.FileName);
 			doc.Flags = ParsedDocumentFlags.NonSerializable;
 			
 			try {
@@ -52,16 +51,16 @@ namespace MonoDevelop.AspNet.Html
 					new XmlRootState (new HtmlTagState (), new HtmlClosingTagState (true)),
 					true);
 				
-				xmlParser.Parse (tr);
+				xmlParser.Parse (parseOptions.Content.CreateReader ());
 				doc.XDocument = xmlParser.Nodes.GetRoot ();
-				doc.Add (xmlParser.Errors);
+				doc.AddRange (xmlParser.Errors);
 				if (doc.XDocument != null)
-					doc.Add (Validate (doc.XDocument));
+					doc.AddRange (Validate (doc.XDocument));
 			}
 			catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Unhandled error parsing HTML document", ex);
 			}
-			return doc;
+			return System.Threading.Tasks.Task.FromResult((ParsedDocument)doc);
 		}
 		
 		IEnumerable<Error> Validate (XDocument doc)

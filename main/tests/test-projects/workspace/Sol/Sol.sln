@@ -1,0 +1,17 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cons", "Cons\Cons.csproj", "{C34D6D75-6F2F-4F5A-968D-3B2D1F0E290B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C34D6D75-6F2F-4F5A-968D-3B2D1F0E290B}.Debug|x86.ActiveCfg = Debug|x86
+		{C34D6D75-6F2F-4F5A-968D-3B2D1F0E290B}.Debug|x86.Build.0 = Debug|x86
+		{C34D6D75-6F2F-4F5A-968D-3B2D1F0E290B}.Release|x86.ActiveCfg = Release|x86
+		{C34D6D75-6F2F-4F5A-968D-3B2D1F0E290B}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+EndGlobal

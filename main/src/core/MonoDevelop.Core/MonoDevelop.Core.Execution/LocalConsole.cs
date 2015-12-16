@@ -36,7 +36,7 @@ namespace MonoDevelop.Core.Execution
 	/// This is an implementation of the IConsole interface which allows reading
 	/// the output generated from a process, and writing its input.
 	/// </summary>
-	public class LocalConsole: IConsole
+	public class LocalConsole: OperationConsole
 	{
 		InternalWriter cin;
 		InternalWriter cout;
@@ -51,12 +51,13 @@ namespace MonoDevelop.Core.Execution
 			cin = new InternalWriter ();
 		}
 		
-		public void Dispose ()
+		public override void Dispose ()
 		{
 			cout.Dispose ();
 			cerror.Dispose ();
 			clog.Dispose ();
 			cin.Dispose ();
+			base.Dispose ();
 		}
 
 		/// <summary>
@@ -73,14 +74,14 @@ namespace MonoDevelop.Core.Execution
 		/// <summary>
 		/// This writer can be used to provide the input of the console.
 		/// </summary>
-		public TextWriter In {
+		public TextWriter InWriter {
 			get { return cin; }
 		}
 		
 		/// <summary>
 		/// Output of the process.
 		/// </summary>
-		public TextReader Out {
+		public TextReader OutReader {
 			get {
 				return cout.DataReader;
 			}
@@ -89,7 +90,7 @@ namespace MonoDevelop.Core.Execution
 		/// <summary>
 		/// Error log of the process
 		/// </summary>
-		public TextReader Error {
+		public TextReader ErrorReader {
 			get {
 				return cerror.DataReader;
 			}
@@ -98,45 +99,34 @@ namespace MonoDevelop.Core.Execution
 		/// <summary>
 		/// Log of the process
 		/// </summary>
-		public TextReader Log {
+		public TextReader LogReader {
 			get {
 				return clog.DataReader;
 			}
 		}
 		
-		TextReader IConsole.In {
+		public override TextReader In {
 			get {
 				return cin.DataReader;
 			}
 		}
 		
-		TextWriter IConsole.Out {
+		public override TextWriter Out {
 			get {
 				return cout;
 			}
 		}
 		
-		TextWriter IConsole.Error {
+		public override TextWriter Error {
 			get {
 				return cerror;
 			}
 		}
 		
-		TextWriter IConsole.Log {
+		public override TextWriter Log {
 			get {
 				return clog;
 			}
-		}
-		
-		bool IConsole.CloseOnDispose {
-			get {
-				return true;
-			}
-		}
-
-		public event EventHandler CancelRequested {
-			add { }
-			remove { }
 		}
 	}
 	

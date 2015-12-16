@@ -57,9 +57,12 @@
 
         { "name":"Notification Border", "color":"#D2B457" },
 
-        { "name":"Completion Matching Substring", "color":"#BA3373" },
-        { "name":"Completion Border", "color":"#C9C9C9" },
-        { "name":"Completion Border(Inactive)", "color":"#666666" },
+        { "name":"Completion Window", "color":"#F0F6F8", "bordercolor":"#b2b2b2" },
+		{ "name":"Completion Tooltip Window", "color":"#fafae2", "bordercolor":"#b2b2b2" },
+        { "name":"Completion Selection Bar Border", "color":"#C9C9C9" },
+        { "name":"Completion Selection Bar Border(Inactive)", "color":"#666666" },
+        { "name":"Completion Selection Bar Background", "color":"#f8fcfc", "secondcolor":"#dff4f0" },
+        { "name":"Completion Selection Bar Background(Inactive)", "color":"white", "secondcolor":"white" },
 
         { "name":"Bookmarks", "color":"white", "secondcolor":"skyblue" },
 
@@ -155,9 +158,14 @@
         { "name":"Tooltip Text", "fore":"text-black", "back":"#feffe9" },
         { "name":"Notification Text", "fore":"text-black", "back":"#feffe9" },
 
-        { "name":"Completion Text", "fore":"#434343", "back":"#F0F6F8" },
-        { "name":"Completion Selected Text", "fore":"#f8fcfc", "back":"#dff4f0" },
-        { "name":"Completion Selected Text(Inactive)", "fore":"#434343", "back":"#FFFFFF" },
+        { "name":"Completion Text", "fore":"#434343" },
+        { "name":"Completion Matching Substring", "fore":"#BA3373" },
+        
+        { "name":"Completion Selected Text", "fore":"#434343" },
+        { "name":"Completion Selected Matching Substring", "fore":"#BA3373" },
+
+        { "name":"Completion Selected Text(Inactive)", "fore":"#434343" },
+        { "name":"Completion Selected Matching Substring(Inactive)", "fore":"#BA3373" },
 
         { "name":"Keyword(Access)", "fore":"keyword-teal" },
         { "name":"Keyword(Type)", "fore":"keyword-teal" },
@@ -183,6 +191,7 @@
         { "name":"User Types(Delegates)", "fore":"skyblue2" },
         { "name":"User Types(Value types)", "fore":"skyblue2" },
         { "name":"User Types(Type parameters)", "fore":"skyblue2" },
+		{ "name":"User Types(Mutable)", "fore":"aluminium1", "back":"invalid-red" },
 
         { "name":"User Field Usage", "fore":"text-black" },
         { "name":"User Field Declaration", "fore":"text-black" },

@@ -29,6 +29,7 @@ using System;
 using Gtk;
 
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components
 {
@@ -80,7 +81,7 @@ namespace MonoDevelop.Components
 				this.SetCurrentFolder (Environment.GetFolderPath (Environment.SpecialFolder.Personal));
 
 			// add default project path as a MD bookmark
-			string pathName = PropertyService.Get ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", Environment.GetFolderPath (Environment.SpecialFolder.Personal));
+			string pathName = IdeApp.Preferences.ProjectsDefaultPath;
 
 			if (FileService.IsDirectory (pathName)) {
 				try {

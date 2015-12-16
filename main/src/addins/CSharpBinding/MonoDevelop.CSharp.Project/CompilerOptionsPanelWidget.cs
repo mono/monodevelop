@@ -35,8 +35,8 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.CSharp.Project
 {
@@ -53,7 +53,7 @@ namespace MonoDevelop.CSharp.Project
 			this.project = project;
 			DotNetProjectConfiguration configuration = (DotNetProjectConfiguration) project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
 			CSharpCompilerParameters compilerParameters = (CSharpCompilerParameters) configuration.CompilationParameters;
-			CSharpProjectParameters projectParameters = (CSharpProjectParameters) configuration.ProjectParameters;
+			var csproject = (CSharpProject)project;
 			
 			ListStore store = new ListStore (typeof (string));
 			store.AppendValues (GettextCatalog.GetString ("Executable"));
@@ -75,7 +75,7 @@ namespace MonoDevelop.CSharp.Project
 				classListStore = new ListStore (typeof(string));
 				mainClassEntry.Model = classListStore;
 				mainClassEntry.TextColumn = 0;
-				((Entry)mainClassEntry.Child).Text = projectParameters.MainClass ?? string.Empty;
+				((Entry)mainClassEntry.Child).Text = csproject.MainClass ?? string.Empty;
 			
 				UpdateTarget ();
 			}
@@ -85,16 +85,16 @@ namespace MonoDevelop.CSharp.Project
 			foreach (TextEncoding e in TextEncoding.SupportedEncodings) {
 				if (e.CodePage == -1)
 					continue;
-				if (e.CodePage == projectParameters.CodePage)
+				if (e.CodePage == csproject.CodePage)
 					foundEncoding = e.Id;
 				codepageEntry.AppendText (e.Id);
 			}
 			if (foundEncoding != null)
 				codepageEntry.Entry.Text = foundEncoding;
-			else if (projectParameters.CodePage != 0)
-				codepageEntry.Entry.Text = projectParameters.CodePage.ToString ();
+			else if (csproject.CodePage != 0)
+				codepageEntry.Entry.Text = csproject.CodePage.ToString ();
 			
-			iconEntry.Path = projectParameters.Win32Icon;
+			iconEntry.Path = csproject.Win32Icon;
 			iconEntry.DefaultPath = project.BaseDirectory;
 			allowUnsafeCodeCheckButton.Active = compilerParameters.UnsafeCode;
 			noStdLibCheckButton.Active = compilerParameters.NoStdLib;
@@ -172,15 +172,15 @@ namespace MonoDevelop.CSharp.Project
 			
 			project.CompileTarget = compileTarget;
 			
-			CSharpProjectParameters projectParameters = (CSharpProjectParameters) project.LanguageParameters; 
+			var csproject = (CSharpProject)project; 
 			
-			projectParameters.CodePage = codePage;
+			csproject.CodePage = codePage;
 
 			if (iconEntry.Sensitive)
-				projectParameters.Win32Icon = iconEntry.Path;
+				csproject.Win32Icon = iconEntry.Path;
 			
 			if (mainClassEntry.Sensitive)
-				projectParameters.MainClass = mainClassEntry.Entry.Text;
+				csproject.MainClass = mainClassEntry.Entry.Text;
 			
 			foreach (DotNetProjectConfiguration configuration in configs) {
 				CSharpCompilerParameters compilerParameters = (CSharpCompilerParameters) configuration.CompilationParameters; 
@@ -209,16 +209,14 @@ namespace MonoDevelop.CSharp.Project
 		void FillClasses ()
 		{
 			try {
-				var ctx = TypeSystemService.GetCompilation (project);
+				var ctx = TypeSystemService.GetCompilationAsync (project).Result;
 				if (ctx == null)
 					// Project not found in parser database
 					return;
-				foreach (var c in ctx.GetAllTypeDefinitions ()) {
-					if (c.Methods != null) {
-						foreach (var m in c.Methods) {
-							if (m.IsStatic && m.Name == "Main")
-								classListStore.AppendValues (c.FullName);
-						}
+				foreach (var c in ctx.Assembly.GlobalNamespace.GetTypeMembers ()) {
+					foreach (var m in c.GetMembers().OfType<IMethodSymbol> ()) {
+						if (m.IsStatic && m.Name == "Main")
+							classListStore.AppendValues (c.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat));
 					}
 				}
 				classListFilled = true;

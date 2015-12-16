@@ -1,7 +1,3 @@
-set filename=%ProgramFiles(x86)%\MSBuild\14.0\Bin\MSBuild.exe
-
-if not exist "%filename%" (
-	set filename=%WinDir%\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe
-)
-
-"%filename%" Main.sln /m /p:Configuration=DebugWin32 /p:Platform="Any CPU"
+".nuget\NuGet.exe" restore Main.sln
+"external\RefactoringEssentials\.nuget\NuGet.exe" restore external\RefactoringEssentials\RefactoringEssentials.sln
+"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe" Main.sln /m /p:Configuration=ReleaseWin32 /p:Platform="Any CPU"

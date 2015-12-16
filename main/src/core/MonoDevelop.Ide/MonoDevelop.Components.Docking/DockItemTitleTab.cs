@@ -32,7 +32,6 @@ using MonoDevelop.Ide.Gui;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using Mono.TextEditor;
 using MonoDevelop.Components;
 
 namespace MonoDevelop.Components.Docking
@@ -53,6 +52,8 @@ namespace MonoDevelop.Components.Docking
 		DockItem item;
 		bool allowPlaceholderDocking;
 		bool mouseOver;
+
+		IDisposable subscribedLeaveEvent;
 
 		static Gdk.Cursor fleurCursor = new Gdk.Cursor (Gdk.CursorType.Fleur);
 
@@ -89,7 +90,7 @@ namespace MonoDevelop.Components.Docking
 			KeyPressEvent += HeaderKeyPress;
 			KeyReleaseEvent += HeaderKeyRelease;
 
-			this.SubscribeLeaveEvent (OnLeave);
+			subscribedLeaveEvent = this.SubscribeLeaveEvent (OnLeave);
 		}
 
 		public DockVisualStyle VisualStyle {
@@ -99,6 +100,12 @@ namespace MonoDevelop.Components.Docking
 				UpdateVisualStyle ();
 				QueueDraw ();
 			}
+		}
+
+		protected override void OnDestroyed ()
+		{
+			subscribedLeaveEvent.Dispose ();
+			base.OnDestroyed ();
 		}
 
 		void UpdateVisualStyle ()

@@ -160,14 +160,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			updateHandler = delegate {
 				int ec=0, wc=0;
 
-				foreach (Task t in TaskService.Errors) {
+				foreach (var t in TaskService.Errors) {
 					if (t.Severity == TaskSeverity.Error)
 						ec++;
 					else if (t.Severity == TaskSeverity.Warning)
 						wc++;
 				}
 
-				DispatchService.GuiDispatch (delegate {
+				Runtime.RunInMainThread (delegate {
 					if (ec > 0) {
 						buildResultVisible = true;
 						buildResultText.AttributedString = new NSAttributedString (ec.ToString (), foregroundColor: NSColor.Text,
@@ -197,7 +197,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			TaskService.Errors.TasksAdded += updateHandler;
 			TaskService.Errors.TasksRemoved += updateHandler;
 
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification, notif => DispatchService.GuiDispatch (() => {
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification, notif => Runtime.RunInMainThread (() => {
 				if (Window == null)
 					return;
 
@@ -450,7 +450,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public void ShowMessage (IconId image, string message, bool isMarkup, NSColor color)
 		{
-			DispatchService.AssertGuiThread ();
+			Runtime.AssertMainThread ();
 
 			bool changed = LoadText (message, isMarkup, color);
 			LoadPixbuf (image);

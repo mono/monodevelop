@@ -93,11 +93,6 @@
     <Folder Include="MonoDevelop.HexEditor\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
-      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
-      <Name>Mono.TextEditor</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
       <Name>MonoDevelop.Core</Name>
@@ -106,11 +101,6 @@
     <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
       <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
       <Name>MonoDevelop.Ide</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
-      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
-      <Name>MonoDevelop.SourceEditor</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
@@ -126,21 +116,6 @@
     <ProjectReference Include="..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
       <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
       <Name>MonoDevelop.Refactoring</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.AssemblyBrowser\MonoDevelop.AssemblyBrowser.csproj">
-      <Project>{0EA3AD14-404A-4D3F-979B-F087E2E70C82}</Project>
-      <Name>MonoDevelop.AssemblyBrowser</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
-      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
-      <Name>ICSharpCode.NRefactory</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\CSharpBinding\CSharpBinding.csproj">
-      <Project>{07CC7654-27D6-421D-A64C-0FFA40456FA2}</Project>
-      <Name>CSharpBinding</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">

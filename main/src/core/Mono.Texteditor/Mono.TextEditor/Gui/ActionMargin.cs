@@ -30,7 +30,7 @@ namespace Mono.TextEditor
 {
 	public class ActionMargin : Margin
 	{
-		readonly TextEditor editor;
+		readonly MonoTextEditor editor;
 
 		double marginWidth;
 		public override double Width {
@@ -39,7 +39,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public ActionMargin (TextEditor editor)
+		public ActionMargin (MonoTextEditor editor)
 		{
 			if (editor == null)
 				throw new ArgumentNullException ("editor");
@@ -47,6 +47,12 @@ namespace Mono.TextEditor
 			marginWidth = 20;
 			IsVisible = false;
 			this.editor.Caret.PositionChanged += HandlePositionChanged;;
+		}
+
+		public override void Dispose ()
+		{
+			editor.Caret.PositionChanged -= HandlePositionChanged;;
+			base.Dispose ();
 		}
 
 		void HandlePositionChanged (object sender, DocumentLocationEventArgs e)

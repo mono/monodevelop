@@ -31,7 +31,7 @@ using Gdk;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class OverlayMessageWindow : Gtk.EventBox
+	class OverlayMessageWindow : Gtk.EventBox
 	{
 		const int border = 8;
 
@@ -50,7 +50,7 @@ namespace MonoDevelop.SourceEditor
 			this.ShowAll (); 
 			textEditor.AddTopLevelWidget (this, 0, 0); 
 			textEditor.SizeAllocated += HandleSizeAllocated;
-			var child = (TextEditor.EditorContainerChild)textEditor [this];
+			var child = (MonoTextEditor.EditorContainerChild)textEditor [this];
 			child.FixedPosition = true;
 		}
 

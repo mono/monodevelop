@@ -26,7 +26,6 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using MonoDevelop.AspNet.Projects;
@@ -38,23 +37,21 @@ namespace MonoDevelop.AspNet.Commands
 		public static void Update (CommandInfo info)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			AspNetAppProject project;
-			if (doc == null || (project = doc.Project as AspNetAppProject) == null || !project.IsAspMvcProject || doc.ParsedDocument == null) {
+			if (doc == null || doc.Project == null || doc.ParsedDocument == null) {
+				info.Enabled = info.Visible = false;
+				return;
+			}
+			var aspFlavor = doc.Project.GetService<AspNetAppProjectFlavor> ();
+			if (aspFlavor == null || !aspFlavor.IsAspMvcProject) {
 				info.Enabled = info.Visible = false;
 				return;
 			}
 
-			var currentLocation = doc.Editor.Caret.Location;
-			var topLevelType = doc.ParsedDocument.GetTopLevelTypeDefinition (currentLocation);
-			if (topLevelType == null || !topLevelType.Name.EndsWith ("Controller", StringComparison.Ordinal)) {
-				info.Enabled = info.Visible = false;
+			var method = MethodDeclarationAtCaret.Create (doc);
+			if (method.IsMethodFound && method.IsParentMvcController () && method.IsMvcViewMethod ())
 				return;
-			}
 
-			var correctReturnTypes = new [] { "ActionResult", "ViewResultBase", "ViewResult", "PartialViewResult" };
-			var member = doc.ParsedDocument.GetMember (currentLocation) as IUnresolvedMethod;
-			if (member == null || !member.IsPublic || correctReturnTypes.All (t => t != member.ReturnType.ToString ()))
-				info.Enabled = info.Visible = false;
+			info.Enabled = info.Visible = false;
 		}
 	}
 }

@@ -168,9 +168,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			foreach (var ctag in CommentTag.SpecialCommentTags)
 				tokensStore.AppendValues (ctag.Tag, ctag.Priority);
 			
-			colorbuttonHighPrio.Color = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksHighPrioColor", ""));
-			colorbuttonNormalPrio.Color = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksNormalPrioColor", ""));
-			colorbuttonLowPrio.Color = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksLowPrioColor", ""));
+			colorbuttonHighPrio.Color = StringToColor (IdeApp.Preferences.UserTasksHighPrioColor);
+			colorbuttonNormalPrio.Color = StringToColor (IdeApp.Preferences.UserTasksNormalPrioColor);
+			colorbuttonLowPrio.Color = StringToColor (IdeApp.Preferences.UserTasksLowPrioColor);
 		}
 		
 		public void Store ()
@@ -181,9 +181,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 			CommentTag.SpecialCommentTags = tags;
 			
-			PropertyService.Set ("Monodevelop.UserTasksHighPrioColor", ColorToString (colorbuttonHighPrio.Color));
-			PropertyService.Set ("Monodevelop.UserTasksNormalPrioColor", ColorToString (colorbuttonNormalPrio.Color));
-			PropertyService.Set ("Monodevelop.UserTasksLowPrioColor", ColorToString (colorbuttonLowPrio.Color));
+			IdeApp.Preferences.UserTasksHighPrioColor.Value = ColorToString (colorbuttonHighPrio.Color);
+			IdeApp.Preferences.UserTasksNormalPrioColor.Value = ColorToString (colorbuttonNormalPrio.Color);
+			IdeApp.Preferences.UserTasksLowPrioColor.Value = ColorToString (colorbuttonLowPrio.Color);
 		}
 		
 		static string ColorToString (Gdk.Color color)

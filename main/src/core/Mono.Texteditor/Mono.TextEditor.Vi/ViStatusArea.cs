@@ -31,18 +31,18 @@ namespace Mono.TextEditor.Vi
 {
 	class ViStatusArea : Gtk.DrawingArea
 	{
-		TextEditor editor;
+		MonoTextEditor editor;
 		bool showCaret;
 		string statusText;
 
-		public ViStatusArea (TextEditor editor)
+		public ViStatusArea (MonoTextEditor editor)
 		{
 			this.editor = editor;
 			editor.TextViewMargin.CaretBlink += HandleCaretBlink;
 			editor.Caret.PositionChanged += HandlePositionChanged;
 
 			editor.AddTopLevelWidget (this, 0, 0);
-			((TextEditor.EditorContainerChild)editor[this]).FixedPosition = true;
+			((MonoTextEditor.EditorContainerChild)editor[this]).FixedPosition = true;
 			Show ();
 		}
 
@@ -83,7 +83,7 @@ namespace Mono.TextEditor.Vi
 			if (textArea.Allocation != allocation) {
 				textArea.SizeAllocate (allocation);
 				SetSizeRequest (allocation.Width, (int)editor.LineHeight);
-				var pos = ((TextEditor.EditorContainerChild)editor [this]);
+				var pos = ((MonoTextEditor.EditorContainerChild)editor [this]);
 				if (pos.X != 0 || pos.Y != allocation.Height)
 					editor.MoveTopLevelWidget (this, 0, allocation.Height);
 			}

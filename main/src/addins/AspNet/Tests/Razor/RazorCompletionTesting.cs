@@ -25,10 +25,13 @@
 // THE SOFTWARE.
 
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.Razor;
 using MonoDevelop.AspNet.Razor.Parser;
+using MonoDevelop.Core.Text;
 using MonoDevelop.CSharpBinding;
 using MonoDevelop.CSharpBinding.Tests;
 using MonoDevelop.Ide.CodeCompletion;
@@ -42,46 +45,77 @@ namespace MonoDevelop.AspNet.Tests.Razor
 
 	static class RazorCompletionTesting
 	{
+// TODO: Roslyn port
 		static readonly string extension = ".cshtml";
 
-		public static CompletionDataList CreateRazorCtrlSpaceProvider (string text, bool isInCSharpContext)
+		public static Task<CompletionDataList> CreateRazorCtrlSpaceProvider (string text, bool isInCSharpContext)
 		{
 			return CreateProvider (text, isInCSharpContext, true);
 		}
 
-		public static CompletionDataList CreateProvider (string text, bool isInCSharpContext = false, bool isCtrlSpace = false)
+		public static async Task<CompletionDataList> CreateProvider (string text, bool isInCSharpContext = false, bool isCtrlSpace = false)
 		{
-			string editorText;
-			TestViewContent sev;
-
-			var textEditorCompletion = CreateEditor (text, isInCSharpContext, out editorText, out sev);
+			var ed = await CreateEditor (text, isInCSharpContext);
 			int cursorPosition = text.IndexOf ('$');
 
-			int triggerWordLength = 1;
-			var ctx = textEditorCompletion.GetCodeCompletionContext (isInCSharpContext, sev);
+			var ctx = GetCodeCompletionContext (isInCSharpContext, ed.View, ed.Extension.hiddenInfo.UnderlyingDocument);
 
-			if (isCtrlSpace)
-				return textEditorCompletion.CodeCompletionCommand (ctx) as CompletionDataList;
+			if (isCtrlSpace) {
+				var result = ed.Extension.CodeCompletionCommand (ctx).Result as CompletionDataList;
+				TypeSystemServiceTestExtensions.UnloadSolution (solution);
+				return result;
+			} else {
+				var task = ed.Extension.HandleCodeCompletionAsync (ctx, ed.EditorText [cursorPosition - 1], default(CancellationToken));
+				TypeSystemServiceTestExtensions.UnloadSolution (solution);
+				if (task != null) {
+					return task.Result as CompletionDataList;
+				}
+				return null;
+			}
+		}
+
+		static CodeCompletionContext GetCodeCompletionContext (bool cSharpContext, TestViewContent sev, UnderlyingDocument underlyingDocument)
+		{
+			var ctx = new CodeCompletionContext ();
+			if (!cSharpContext)
+				ctx.TriggerOffset = sev.CursorPosition;
 			else
-				return textEditorCompletion.HandleCodeCompletion (ctx, editorText[cursorPosition - 1], ref triggerWordLength) as CompletionDataList;
+				ctx.TriggerOffset = underlyingDocument.Editor.CaretOffset;
+
+			int line, column;
+			sev.GetLineColumnFromPosition (ctx.TriggerOffset, out line, out column);
+			ctx.TriggerLine = line;
+			ctx.TriggerLineOffset = column - 1;
+
+			return ctx;
 		}
 
-		public static IParameterDataProvider CreateProvider (string text)
+		public static async Task<ParameterHintingResult> CreateParameterProvider (string text)
 		{
-			string editorText;
-			TestViewContent sev;
+			var ed = await CreateEditor (text, true);
 
-			var textEditorCompletion = CreateEditor (text, true, out editorText, out sev);
 			int cursorPosition = text.IndexOf ('$');
 
-			var ctx = textEditorCompletion.GetCodeCompletionContext (true, sev);
-			return textEditorCompletion.HandleParameterCompletion (ctx, editorText[cursorPosition - 1]);
+			var ctx = GetCodeCompletionContext (true, ed.View, ed.Extension.hiddenInfo.UnderlyingDocument);
+			var task = ed.Extension.HandleParameterCompletionAsync (ctx, ed.EditorText[cursorPosition - 1], default(CancellationToken));
+			if (task != null) {
+				return task.Result;
+			}
+			return null;
 		}
 
-		static RazorTestingEditorExtension CreateEditor (string text, bool isInCSharpContext, out string editorText,
-			out TestViewContent sev)
+		static Solution solution;
+
+		class EditorInfo
 		{
-			string parsedText;
+			public RazorCSharpEditorExtension Extension;
+			public string EditorText;
+			public TestViewContent View;
+		}
+
+		static async Task<EditorInfo> CreateEditor (string text, bool isInCSharpContext)
+		{
+			string parsedText, editorText;
 			int cursorPosition = text.IndexOf ('$');
 			int endPos = text.IndexOf ('$', cursorPosition + 1);
 			if (endPos == -1)
@@ -92,17 +126,13 @@ namespace MonoDevelop.AspNet.Tests.Razor
 				cursorPosition = endPos - 1;
 			}
 
-			var project = new AspNetAppProject ("C#");
+			var project = Services.ProjectService.CreateProject ("C#", "AspNetApp");
 
 			project.FileName = UnitTests.TestBase.GetTempFile (".csproj");
 			string file = UnitTests.TestBase.GetTempFile (extension);
 			project.AddFile (file);
 
-			var pcw = TypeSystemService.LoadProject (project);
-			TypeSystemService.ForceUpdate (pcw);
-			pcw.ReconnectAssemblyReferences ();
-
-			sev = new TestViewContent ();
+			var sev = new TestViewContent ();
 			sev.Project = project;
 			sev.ContentName = file;
 			sev.Text = editorText;
@@ -111,13 +141,32 @@ namespace MonoDevelop.AspNet.Tests.Razor
 			var tww = new TestWorkbenchWindow ();
 			tww.ViewContent = sev;
 
-			var doc = new Document (tww);
+			var doc = new TestDocument (tww);
+			doc.Editor.FileName = sev.ContentName;
+			doc.UpdateProject (project);
+
+			solution = new MonoDevelop.Projects.Solution ();
+			solution.DefaultSolutionFolder.AddItem (project);
+			solution.AddConfiguration ("", true);
+			await TypeSystemServiceTestExtensions.LoadSolution (solution);
+
 			var parser = new RazorTestingParser {
 				Doc = doc
 			};
-			var parsedDoc = parser.Parse (false, sev.ContentName, new StringReader (parsedText), project);
+			var options = new ParseOptions {
+				Project = project,
+				FileName = sev.ContentName,
+				Content = new StringTextSource (parsedText)
+			};
+			var parsedDoc = (RazorCSharpParsedDocument)parser.Parse (options, default(CancellationToken)).Result;
+			doc.HiddenParsedDocument = parsedDoc;
 
-			return new RazorTestingEditorExtension (doc, parsedDoc as RazorCSharpParsedDocument, isInCSharpContext);
+			var editorExtension = new RazorCSharpEditorExtension (doc, parsedDoc as RazorCSharpParsedDocument, isInCSharpContext);
+			return new EditorInfo {
+				Extension = editorExtension,
+				EditorText = editorText,
+				View = sev
+			};
 		}
 	}
 
@@ -125,40 +174,11 @@ namespace MonoDevelop.AspNet.Tests.Razor
 	{
 		public Document	Doc { get; set; }
 
-		public override ParsedDocument Parse (bool storeAst, string fileName, System.IO.TextReader content, Project project = null)
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (ParseOptions parseOptions, System.Threading.CancellationToken cancellationToken)
 		{
-			Doc.Editor.Document.FileName = fileName;
-			OpenDocuments.Add (Doc.Editor.Document);
-			return base.Parse (storeAst, fileName, content, project);
-		}
-	}
-
-	public class RazorTestingEditorExtension : RazorCSharpEditorExtension
-	{
-		public RazorTestingEditorExtension (Document doc, RazorCSharpParsedDocument parsedDoc, bool cSharpContext)
-		{
-			razorDocument = parsedDoc;
-			Initialize (doc);
-			if (cSharpContext) {
-				InitializeCodeCompletion ();
-				SwitchToHidden ();
-			}
-		}
-
-		public CodeCompletionContext GetCodeCompletionContext (bool cSharpContext, TestViewContent sev)
-		{
-			var ctx = new CodeCompletionContext ();
-			if (!cSharpContext)
-				ctx.TriggerOffset = sev.CursorPosition;
-			else
-				ctx.TriggerOffset = hiddenInfo.UnderlyingDocument.Editor.Caret.Offset;
-
-			int line, column;
-			sev.GetLineColumnFromPosition (ctx.TriggerOffset, out line, out column);
-			ctx.TriggerLine = line;
-			ctx.TriggerLineOffset = column - 1;
-
-			return ctx;
+			Doc.Editor.FileName = parseOptions.FileName;
+			OpenDocuments.Add (new OpenRazorDocument (Doc.Editor));
+			return base.Parse (parseOptions, cancellationToken);
 		}
 	}
 }

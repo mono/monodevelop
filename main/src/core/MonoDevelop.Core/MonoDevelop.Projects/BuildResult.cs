@@ -29,6 +29,7 @@
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
@@ -39,7 +40,7 @@ namespace MonoDevelop.Projects
 		int buildCount = 1;
 		List<BuildError> errors = new List<BuildError> ();
 		IBuildTarget sourceTarget;
-		
+
 		public BuildResult()
 		{
 		}
@@ -61,7 +62,25 @@ namespace MonoDevelop.Projects
 				}
 			}
 		}
-		
+
+		public bool HasErrors {
+			get { return ErrorCount > 0; }
+		}
+
+		public bool HasWarnings {
+			get { return WarningCount > 0; }
+		}
+
+		public static BuildResult CreateSuccess ()
+		{
+			return new BuildResult ();
+		}
+
+		public static BuildResult CreateCancelled ()
+		{
+			return new BuildResult ().AddError (GettextCatalog.GetString ("Cancelled"));
+		}
+
 		public ReadOnlyCollection<BuildError> Errors {
 			get { return errors.AsReadOnly (); }
 		}
@@ -76,36 +95,42 @@ namespace MonoDevelop.Projects
 			sourceTarget = null;
 		}
 		
-		public void AddError (string file, int line, int col, string errorNum, string text)
+		public BuildResult AddError (string file, int line, int col, string errorNum, string text)
 		{
 			Append (new BuildError (file, line, col, errorNum, text));
+			return this;
 		}
 		
-		public void AddError (string text)
+		public BuildResult AddError (string text)
 		{
 			Append (new BuildError (null, 0, 0, null, text));
+			return this;
 		}
 		
-		public void AddError (string text, string file)
+		public BuildResult AddError (string text, string file)
 		{
 			Append (new BuildError (file, 0, 0, null, text));
+			return this;
 		}
 		
-		public void AddWarning (string file, int line, int col, string errorNum, string text)
+		public BuildResult AddWarning (string file, int line, int col, string errorNum, string text)
 		{
 			var ce = new BuildError (file, line, col, errorNum, text);
 			ce.IsWarning = true;
 			Append (ce);
+			return this;
 		}
 		
-		public void AddWarning (string text)
+		public BuildResult AddWarning (string text)
 		{
 			AddWarning (text, null);
+			return this;
 		}
 		
-		public void AddWarning (string text, string file)
+		public BuildResult AddWarning (string text, string file)
 		{
 			AddWarning (file, 0, 0, null, text);
+			return this;
 		}
 		
 		public BuildResult Append (BuildResult res)
@@ -143,6 +168,12 @@ namespace MonoDevelop.Projects
 				if (FailedBuildCount == 0)
 					FailedBuildCount = 1;
 			}
+			return this;
+		}
+
+		internal BuildResult SetSource (IBuildTarget source)
+		{
+			SourceTarget = source;
 			return this;
 		}
 

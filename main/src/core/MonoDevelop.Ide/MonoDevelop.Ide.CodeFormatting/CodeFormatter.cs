@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Formatter.cs
 //  
 // Author:
@@ -26,92 +26,116 @@
 
 using System;
 using MonoDevelop.Projects.Policies;
-using Mono.TextEditor;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
 	public sealed class CodeFormatter
 	{
-		ICodeFormatter formatter;
-		IList<string> mimeTypeChain;
-		
-		internal CodeFormatter (IList<string> mimeTypeChain, ICodeFormatter formatter)
-		{
-			this.mimeTypeChain = mimeTypeChain;
-			this.formatter = formatter;
-		}
-		
-		public string FormatText (PolicyContainer policyParent, string input)
-		{
-			try {
-				return formatter.FormatText (policyParent ?? PolicyService.DefaultPolicies, mimeTypeChain, input);
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while formatting text.", e);
-			}
-			return input;
-		}
-		
-		/// <summary>Formats a subrange of the input text.</summary>
-		/// <returns>The formatted text of the range.</returns>
-		/// <exception cref="T:System.ArgumentOutOfRangeException">When the offsets are out of bounds.</exception>
-		public string FormatText (PolicyContainer policyParent, string input, int fromOffset, int toOffset)
-		{
-			if (fromOffset < 0 || fromOffset > input.Length)
-				throw new ArgumentOutOfRangeException ("fromOffset", "should be >= 0 && < " + input.Length + " was:" + fromOffset);
-			if (toOffset < 0 || toOffset > input.Length)
-				throw new ArgumentOutOfRangeException ("fromOffset", "should be >= 0 && < " + input.Length + " was:" + toOffset);
-			try {
-				return formatter.FormatText (policyParent ?? PolicyService.DefaultPolicies, mimeTypeChain, input, fromOffset, toOffset);
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while formatting text.", e);
-			}
-			return input.Substring (fromOffset, toOffset - fromOffset);
-		}
-		
-		public bool SupportsOnTheFlyFormatting {
-			get {
-				var adv = formatter as IAdvancedCodeFormatter;
-				return adv != null && adv.SupportsOnTheFlyFormatting;
-			}
-		}
-		
-		public bool SupportsCorrectingIndent {
-			get {
-				var adv = formatter as IAdvancedCodeFormatter;
-				return adv != null && adv.SupportsCorrectingIndent;
-			}
-		}
-		
+		readonly AbstractCodeFormatter formatter;
+		readonly string mimeType;
+
 		public bool IsDefault {
 			get {
 				return formatter is DefaultCodeFormatter;
 			}
 		}
-		
-		/// <summary>
-		/// Formats a text document directly with insert/remove operations.
-		/// </summary>
-		public void OnTheFlyFormat (MonoDevelop.Ide.Gui.Document doc, int startOffset, int endOffset)
+
+		public bool SupportsPartialDocumentFormatting { get { return formatter.SupportsPartialDocumentFormatting; }  }
+
+		internal CodeFormatter (string mimeType, AbstractCodeFormatter formatter)
 		{
-			var adv = formatter as IAdvancedCodeFormatter;
-			if (adv == null || !adv.SupportsOnTheFlyFormatting)
-				throw new InvalidOperationException ("On the fly formatting not supported");
-			
-			adv.OnTheFlyFormat (doc, startOffset, endOffset);
+			this.mimeType = mimeType;
+			this.formatter = formatter;
 		}
-		
-		public void CorrectIndenting (PolicyContainer policyParent, TextEditorData data, int line)
+
+		[Obsolete("Use Format (PolicyContainer policyParent, ITextSource input, ISegment segment = null) instead. This function is going to be removed.")]
+		public ITextSource Format (PolicyContainer policyParent, ITextSource input, int fromOffset, int toOffset)
 		{
-			var adv = formatter as IAdvancedCodeFormatter;
-			if (adv == null || !adv.SupportsCorrectingIndent)
-				throw new InvalidOperationException ("Indent correction not supported");
-			adv.CorrectIndenting (policyParent ?? PolicyService.DefaultPolicies, mimeTypeChain, data, line);
+			return formatter.Format (policyParent, mimeType, input, fromOffset, toOffset);
+		}
+
+		public ITextSource Format (PolicyContainer policyParent, ITextSource input, ISegment segment = null)
+		{
+			try {
+				if (segment == null)
+					return formatter.Format (policyParent, mimeType, input);
+				return formatter.Format (policyParent, mimeType, input, segment.Offset, segment.EndOffset);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while formatting text.", e);
+				if (segment == null)
+					return input;
+				return input.CreateSnapshot (segment.Offset, segment.Length);
+			}
+		}
+
+		[Obsolete("Use FormatText (PolicyContainer policyParent, string input, ISegment segment) instead. This function is going to be removed.")]
+		public string FormatText (PolicyContainer policyParent, string input, int fromOffset, int toOffset)
+		{
+			return formatter.FormatText (policyParent, mimeType, input, fromOffset, toOffset);
+		}
+
+		public string FormatText (PolicyContainer policyParent, string input, ISegment segment = null)
+		{
+			try {
+				if (segment == null)
+					return formatter.FormatText (policyParent, mimeType, input, 0, input.Length);
+				return formatter.FormatText (policyParent, mimeType, input, segment.Offset, segment.EndOffset);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while formatting text.", e);
+				if (segment == null)
+					return input;
+				return input.Substring (segment.Offset, segment.Length);
+			}
+		}
+
+		public bool SupportsOnTheFlyFormatting { get { return formatter.SupportsOnTheFlyFormatting; } }
+
+		[Obsolete("Use OnTheFlyFormat (TextEditor editor, DocumentContext context, ISegment segment) instead. This function is going to be removed.")]
+		public void OnTheFlyFormat (TextEditor editor, DocumentContext context, int startOffset, int endOffset)
+		{
+			formatter.OnTheFlyFormat (editor, context, startOffset, endOffset - startOffset);
+		}
+
+		public void OnTheFlyFormat (TextEditor editor, DocumentContext context, ISegment segment = null)
+		{
+			try {
+				if (segment == null) {
+					formatter.OnTheFlyFormat (editor, context, 0, editor.Length);
+				} else {
+					formatter.OnTheFlyFormat (editor, context, segment.Offset, segment.Length);
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while on the fly format.", e);
+			}
+		}
+
+		[Obsolete("Use OnTheFlyFormat (TextEditor editor, DocumentContext context, ISegment segment) instead. This function is going to be removed.")]
+		public void OnTheFlyFormat (Document ideDocument, int startOffset, int endOffset)
+		{
+			formatter.OnTheFlyFormat (ideDocument.Editor, ideDocument, startOffset, endOffset - startOffset);
+		}
+
+		public bool SupportsCorrectingIndent { get { return formatter.SupportsCorrectingIndent; } }
+
+		public void CorrectIndenting (PolicyContainer policyParent, TextEditor editor, int line)
+		{
+			formatter.CorrectIndenting (policyParent, editor, line);
+		}
+
+		public void CorrectIndenting (PolicyContainer policyParent, TextEditor editor, IDocumentLine line)
+		{
+			try {
+				if (line == null)
+					throw new ArgumentNullException (nameof (line));
+				formatter.CorrectIndenting (policyParent, editor, line.LineNumber);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while indenting.", e);
+			}
 		}
 	}
 }
-

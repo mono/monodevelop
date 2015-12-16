@@ -105,10 +105,15 @@ namespace MonoDevelop.Core.FileSystem
 			Directory.Delete (path, true);
 		}
 		
-		public override void RequestFileEdit (IEnumerable<FilePath> files)
+		public override void RequestFileEdit (FilePath file)
 		{
 		}
-		
+
+		public override FileWriteableState GetWriteableState (FilePath file)
+		{
+			return FileWriteableState.Unknown;
+		}
+
 		public override void NotifyFilesChanged (IEnumerable<FilePath> file)
 		{
 		}

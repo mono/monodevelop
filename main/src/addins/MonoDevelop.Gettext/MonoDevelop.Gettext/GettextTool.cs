@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Gettext
 {
@@ -40,7 +41,7 @@ namespace MonoDevelop.Gettext
 		string file;
 		string project;
 		
-		public int Run (string[] arguments)
+		public async Task<int> Run (string[] arguments)
 		{
 			Console.WriteLine (BrandingService.BrandApplicationName ("MonoDevelop Gettext Update Tool"));
 			foreach (string s in arguments)
@@ -74,7 +75,7 @@ namespace MonoDevelop.Gettext
 			ConsoleProgressMonitor monitor = new ConsoleProgressMonitor ();
 			monitor.IgnoreLogMessages = true;
 			
-			WorkspaceItem centry = Services.ProjectService.ReadWorkspaceItem (monitor, file);
+			WorkspaceItem centry = await Services.ProjectService.ReadWorkspaceItem (monitor, file);
 			monitor.IgnoreLogMessages = false;
 			
 			Solution solution = centry as Solution;
@@ -84,7 +85,7 @@ namespace MonoDevelop.Gettext
 			}
 			
 			if (project != null) {
-				SolutionEntityItem item = solution.FindProjectByName (project);
+				SolutionItem item = solution.FindProjectByName (project);
 				
 				if (item == null) {
 					Console.WriteLine ("The project '" + project + "' could not be found in " + file);
@@ -98,7 +99,7 @@ namespace MonoDevelop.Gettext
 				tp.UpdateTranslations (monitor);
 			}
 			else {
-				foreach (TranslationProject p in solution.GetAllSolutionItems <TranslationProject>())
+				foreach (TranslationProject p in solution.GetAllItems <TranslationProject>())
 					p.UpdateTranslations (monitor);
 			}
 			

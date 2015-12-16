@@ -37,17 +37,18 @@ using System.Xml;
 using System.Xml.Serialization;
 
 using MonoDevelop.Core;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Core
 {
 	public class Properties : ICustomXmlSerializer
 	{
-		Dictionary<string, object> properties    = new Dictionary<string, object> ();
-		Dictionary<string, object> defaultValues = new Dictionary<string, object> ();
-		Dictionary<Type, TypeConverter> cachedConverters = new Dictionary<Type, TypeConverter> ();
+		ImmutableDictionary<string, object> properties    = ImmutableDictionary<string, object>.Empty;
+		ImmutableDictionary<string, object> defaultValues = ImmutableDictionary<string, object>.Empty;
+		ImmutableDictionary<Type, TypeConverter> cachedConverters = ImmutableDictionary<Type, TypeConverter>.Empty;
 		Dictionary<string,EventHandler<PropertyChangedEventArgs>> propertyListeners;
 		
-		public ICollection<string> Keys {
+		public IEnumerable<string> Keys {
 			get {
 				return properties.Keys;
 			}
@@ -95,18 +96,18 @@ namespace MonoDevelop.Core
 			TypeConverter converter;
 			if (!cachedConverters.TryGetValue (type, out converter)) {
 				converter = TypeDescriptor.GetConverter (type);
-				cachedConverters [type] = converter;
+				cachedConverters = cachedConverters.SetItem (type, converter);
 			}
 			return converter;
 		}
 		
 		public T Get<T> (string property, T defaultValue)
 		{
-			defaultValues[property] = defaultValue;
+			defaultValues = defaultValues.SetItem (property, defaultValue);
 			object val;
 			if (GetPropertyValue<T> (property, out val))
 				return Convert<T> (val);
-			properties[property] = defaultValue;
+			properties = properties.SetItem (property, defaultValue);
 			return defaultValue;
 		}
 		
@@ -127,7 +128,7 @@ namespace MonoDevelop.Core
 					// Deserialize the data and store it in the dictionary, so
 					// following calls return the same object
 					val = ((LazyXmlDeserializer)val).Deserialize<T> ();
-					properties[property] = val;
+					properties = properties.SetItem (property, val);
 				}
 				return true;
 			} else {
@@ -149,16 +150,16 @@ namespace MonoDevelop.Core
 				if (old == null)
 					return;
 				if (properties.ContainsKey (key)) 
-					properties.Remove (key);
+					properties = properties.Remove (key);
 			} else {
 				//avoid emitting the event if not necessary
 				if (val.Equals (old))
 					return;
-				properties[key] = val;
+				properties = properties.SetItem (key, val);
 				if (!val.GetType ().IsClass ||(val is string)) {
 					if (defaultValues.ContainsKey (key)) {
 						if (defaultValues[key] == val)
-							properties.Remove (key);
+							properties = properties.Remove (key);
 					}
 				}
 			}
@@ -355,7 +356,7 @@ namespace MonoDevelop.Core
 		public Properties Clone ()
 		{
 			Properties result = new Properties ();
-			result.properties = new Dictionary<string, object> (properties);
+			result.properties = properties;
 			return result;
 		}
 		

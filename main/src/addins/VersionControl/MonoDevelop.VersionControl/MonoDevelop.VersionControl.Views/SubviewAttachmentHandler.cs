@@ -48,10 +48,10 @@ namespace MonoDevelop.VersionControl.Views
 				if (document == null || !document.IsFile || document.Window.FindView<IDiffView> () >= 0)
 					return;
 
-				IWorkspaceObject project = document.Project;
+				WorkspaceObject project = document.Project;
 				if (project == null) {
 					// Fix for broken .csproj and .sln files not being seen as having a project.
-					foreach (var projItem in Ide.IdeApp.Workspace.GetAllSolutionItems<UnknownSolutionItem> ()) {
+					foreach (var projItem in Ide.IdeApp.Workspace.GetAllItems<UnknownSolutionItem> ()) {
 						if (projItem.FileName == document.FileName) {
 							project = projItem;
 						}

@@ -38,8 +38,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
 using MonoDevelop.Debugger.Viewers;
-using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.TypeSystem;
 
 /*
  * Some places we should be doing some error handling we used to toss
@@ -47,6 +45,8 @@ using ICSharpCode.NRefactory.TypeSystem;
  */
 using MonoDevelop.Ide.TextEditing;
 using System.Linq;
+using System.Threading.Tasks;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Debugger
 {
@@ -62,7 +62,8 @@ namespace MonoDevelop.Debugger
 		static readonly BreakpointStore breakpoints = new BreakpointStore ();
 		static readonly DebugExecutionHandlerFactory executionHandlerFactory;
 		
-		static IConsole console;
+		static OperationConsole console;
+		static IDisposable cancelRegistration;
 
 		static Dictionary<long, SourceLocation> nextStatementLocations = new Dictionary<long, SourceLocation> ();
 		static DebuggerEngine currentEngine;
@@ -75,6 +76,8 @@ namespace MonoDevelop.Debugger
 		static BusyEvaluatorDialog busyDialog;
 		static StatusBarIcon busyStatusIcon;
 		static bool isBusy;
+
+		static DebugAsyncOperation currentDebugOperation = new DebugAsyncOperation ();
 
 		static public event EventHandler DebugSessionStarted;
 		static public event EventHandler PausedEvent;
@@ -378,10 +381,11 @@ namespace MonoDevelop.Debugger
 			session.ConnectionDialogCreator = delegate {
 				return new StatusBarConnectionDialog ();
 			};
+			currentDebugOperation = new DebugAsyncOperation ();
 
-			console.CancelRequested += OnCancelRequested;
+			cancelRegistration = console.CancellationToken.Register (Stop);
 			
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				if (DebugSessionStarted != null)
 					DebugSessionStarted (null, EventArgs.Empty);
 				NotifyLocationChanged ();
@@ -394,7 +398,7 @@ namespace MonoDevelop.Debugger
 		{
 			DebuggerSession currentSession;
 			StatusBarIcon currentIcon;
-			IConsole currentConsole;
+			OperationConsole currentConsole;
 
 			lock (cleanup_lock) {
 				if (!IsDebugging)
@@ -423,13 +427,14 @@ namespace MonoDevelop.Debugger
 			currentSession.TypeResolverHandler = null;
 			currentSession.OutputWriter = null;
 			currentSession.LogWriter = null;
-			
+			currentDebugOperation.Cleanup ();
+
 			if (currentConsole != null) {
-				currentConsole.CancelRequested -= OnCancelRequested;
+				cancelRegistration.Dispose ();
 				currentConsole.Dispose ();
 			}
 			
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				HideExceptionCaughtDialog ();
 
 				if (currentIcon != null) {
@@ -452,23 +457,23 @@ namespace MonoDevelop.Debugger
 		static void UnsetDebugLayout ()
 		{
 			// Dispatch synchronously to avoid start/stop races
-			DispatchService.GuiSyncDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				IdeApp.Workbench.HideCommandBar ("Debug");
 				if (IdeApp.Workbench.CurrentLayout == "Debug") {
 					IdeApp.Workbench.CurrentLayout = oldLayout ?? "Solution";
 				}
 				oldLayout = null;
-			});
+			}).Wait ();
 		}
 
 		static void SetDebugLayout ()
 		{
 			// Dispatch synchronously to avoid start/stop races
-			DispatchService.GuiSyncDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				oldLayout = IdeApp.Workbench.CurrentLayout;
 				IdeApp.Workbench.CurrentLayout = "Debug";
 				IdeApp.Workbench.ShowCommandBar ("Debug");
-			});
+			}).Wait ();
 		}
 
 		public static bool IsDebugging {
@@ -502,6 +507,7 @@ namespace MonoDevelop.Debugger
 
 		public static void Resume ()
 		{
+			Runtime.AssertMainThread ();
 			if (CheckIsBusy ())
 				return;
 
@@ -511,6 +517,7 @@ namespace MonoDevelop.Debugger
 
 		public static void RunToCursor (string fileName, int line, int column)
 		{
+			Runtime.AssertMainThread ();
 			if (CheckIsBusy ())
 				return;
 
@@ -523,6 +530,7 @@ namespace MonoDevelop.Debugger
 
 		public static void SetNextStatement (string fileName, int line, int column)
 		{
+			Runtime.AssertMainThread ();
 			if (!IsDebugging || IsRunning || CheckIsBusy ())
 				return;
 
@@ -533,14 +541,14 @@ namespace MonoDevelop.Debugger
 			NotifyLocationChanged ();
 		}
 
-		public static IProcessAsyncOperation Run (string file, IConsole console)
+		public static ProcessAsyncOperation Run (string file, OperationConsole console)
 		{
-			return Run (file, null, null, null, console);
+			var cmd = Runtime.ProcessService.CreateCommand (file);
+			return Run (cmd, console);
 		}
 
-		public static IProcessAsyncOperation Run (string file, string args, string workingDir, IDictionary<string,string> envVars, IConsole console)
+		public static ProcessAsyncOperation Run (string file, string args, string workingDir, IDictionary<string,string> envVars, OperationConsole console)
 		{
-			var h = new DebugExecutionHandler (null);
 			var cmd = Runtime.ProcessService.CreateCommand (file);
 			if (args != null) 
 				cmd.Arguments = args;
@@ -548,24 +556,29 @@ namespace MonoDevelop.Debugger
 				cmd.WorkingDirectory = workingDir;
 			if (envVars != null)
 				cmd.EnvironmentVariables = envVars;
+			return Run (cmd, console);
+		}
 
-			return h.Execute (cmd, console);
+		public static ProcessAsyncOperation Run (ExecutionCommand cmd, OperationConsole console, DebuggerEngine engine = null)
+		{
+			InternalRun (cmd, engine, console);
+			return currentDebugOperation;
 		}
 		
-		public static IAsyncOperation AttachToProcess (DebuggerEngine debugger, ProcessInfo proc)
+		public static AsyncOperation AttachToProcess (DebuggerEngine debugger, ProcessInfo proc)
 		{
 			currentEngine = debugger;
 			session = debugger.CreateSession ();
 			session.ExceptionHandler = ExceptionHandler;
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
-			console = monitor as IConsole;
+			var monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
+			console = monitor.Console;
 			SetupSession ();
 			session.TargetExited += delegate {
 				monitor.Dispose ();
 			};
 			SetDebugLayout ();
 			session.AttachToProcess (proc, GetUserOptions ());
-			return monitor.AsyncOperation;
+			return currentDebugOperation;
 		}
 		
 		public static DebuggerSessionOptions GetUserOptions ()
@@ -610,7 +623,7 @@ namespace MonoDevelop.Debugger
 				DisassemblyRequested (null, EventArgs.Empty);
 		}
 		
-		internal static void InternalRun (ExecutionCommand cmd, DebuggerEngine factory, IConsole c)
+		internal static void InternalRun (ExecutionCommand cmd, DebuggerEngine factory, OperationConsole c)
 		{
 			if (factory == null) {
 				factory = GetFactoryForCommand (cmd);
@@ -623,7 +636,8 @@ namespace MonoDevelop.Debugger
 
 			DebuggerStartInfo startInfo = factory.CreateDebuggerStartInfo (cmd);
 			startInfo.UseExternalConsole = c is ExternalConsole;
-			startInfo.CloseExternalConsoleOnExit = c.CloseOnDispose;
+			if (startInfo.UseExternalConsole)
+				startInfo.CloseExternalConsoleOnExit = ((ExternalConsole)c).CloseOnDispose;
 			currentEngine = factory;
 			session = factory.CreateSession ();
 			session.ExceptionHandler = ExceptionHandler;
@@ -631,7 +645,7 @@ namespace MonoDevelop.Debugger
 			// When using an external console, create a new internal console which will be used
 			// to show the debugger log
 			if (startInfo.UseExternalConsole)
-				console = (IConsole) IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
+				console = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ().Console;
 			else
 				console = c;
 			
@@ -671,19 +685,9 @@ namespace MonoDevelop.Debugger
 		static void DebugWriter (int level, string category, string message)
 		{
 			var logger = console;
-			var debugLogger = logger as IDebugConsole;
 
-			if (logger != null) {
-				if (debugLogger != null) {
-					debugLogger.Debug (level, category, message);
-				} else {
-					if (level == 0 && string.IsNullOrEmpty (category)) {
-						logger.Log.Write (message);
-					} else {
-						logger.Log.Write (string.Format ("[{0}:{1}] {2}", level, category, message));
-					}
-				}
-			}
+			if (logger != null)
+				logger.Debug (level, category, message);
 		}
 
 		static void OutputWriter (bool iserr, string text)
@@ -701,7 +705,7 @@ namespace MonoDevelop.Debugger
 		static void OnBusyStateChanged (object s, BusyStateEventArgs args)
 		{
 			isBusy = args.IsBusy;
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				busyDialog.UpdateBusyState (args);
 				if (args.IsBusy) {
 					if (busyStatusIcon == null) {
@@ -733,7 +737,7 @@ namespace MonoDevelop.Debugger
 			nextStatementLocations.Clear ();
 			currentBacktrace = null;
 
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				HideExceptionCaughtDialog ();
 				if (ResumedEvent != null)
 					ResumedEvent (null, a);
@@ -781,7 +785,7 @@ namespace MonoDevelop.Debugger
 
 		static void NotifyPaused ()
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				if (PausedEvent != null)
 					PausedEvent (null, EventArgs.Empty);
 				NotifyLocationChanged ();
@@ -792,7 +796,7 @@ namespace MonoDevelop.Debugger
 		static void NotifyException (TargetEventArgs args)
 		{
 			if (args.Type == TargetEventType.UnhandledException || args.Type == TargetEventType.ExceptionThrown) {
-				DispatchService.GuiDispatch (delegate {
+				Runtime.RunInMainThread (delegate {
 					if (CurrentFrame != null) {
 						ShowExceptionCaughtDialog ();
 					}
@@ -802,6 +806,7 @@ namespace MonoDevelop.Debugger
 		
 		static void NotifyLocationChanged ()
 		{
+			Runtime.AssertMainThread ();
 			if (ExecutionLocationChanged != null)
 				ExecutionLocationChanged (null, EventArgs.Empty);
 		}
@@ -820,11 +825,6 @@ namespace MonoDevelop.Debugger
 				CallStackChanged (null, EventArgs.Empty);
 		}
 		
-		static void OnCancelRequested (object sender, EventArgs args)
-		{
-			Stop ();
-		}
-
 		public static void Stop ()
 		{
 			if (!IsDebugging)
@@ -836,6 +836,8 @@ namespace MonoDevelop.Debugger
 
 		public static void StepInto ()
 		{
+			Runtime.AssertMainThread ();
+
 			if (!IsDebugging || IsRunning || CheckIsBusy ())
 				return;
 
@@ -845,6 +847,8 @@ namespace MonoDevelop.Debugger
 
 		public static void StepOver ()
 		{
+			Runtime.AssertMainThread ();
+
 			if (!IsDebugging || IsRunning || CheckIsBusy ())
 				return;
 
@@ -854,6 +858,8 @@ namespace MonoDevelop.Debugger
 
 		public static void StepOut ()
 		{
+			Runtime.AssertMainThread ();
+
 			if (!IsDebugging || IsRunning || CheckIsBusy ())
 				return;
 
@@ -907,7 +913,7 @@ namespace MonoDevelop.Debugger
 			set {
 				if (currentBacktrace != null && value < currentBacktrace.FrameCount) {
 					currentFrame = value;
-					DispatchService.GuiDispatch (delegate {
+					Runtime.RunInMainThread (delegate {
 						NotifyCurrentFrameChanged ();
 					});
 				}
@@ -934,7 +940,7 @@ namespace MonoDevelop.Debugger
 			else
 				currentFrame = -1;
 
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				NotifyCallStackChanged ();
 				NotifyCurrentFrameChanged ();
 				NotifyLocationChanged ();
@@ -943,6 +949,7 @@ namespace MonoDevelop.Debugger
 		
 		public static void ShowCurrentExecutionLine ()
 		{
+			Runtime.AssertMainThread ();
 			if (currentBacktrace != null) {
 				var sf = GetCurrentVisibleFrame ();
 				if (sf != null && !string.IsNullOrEmpty (sf.SourceLocation.FileName) && System.IO.File.Exists (sf.SourceLocation.FileName) && sf.SourceLocation.Line != -1) {
@@ -954,6 +961,7 @@ namespace MonoDevelop.Debugger
 
 		public static void ShowNextStatement ()
 		{
+			Runtime.AssertMainThread ();
 			var location = NextStatementLocation;
 
 			if (location != null && System.IO.File.Exists (location.FileName)) {
@@ -1067,13 +1075,18 @@ namespace MonoDevelop.Debugger
 			if (doc != null) {
 				ITextEditorResolver textEditorResolver = doc.GetContent <ITextEditorResolver> ();
 				if (textEditorResolver != null) {
-					var rr = textEditorResolver.GetLanguageItem (doc.Editor.Document.LocationToOffset (location.Line, 1), identifier);
-					var ns = rr as NamespaceResolveResult;
+					var rr = textEditorResolver.GetLanguageItem (doc.Editor.LocationToOffset (location.Line, 1), identifier);
+					var ns = rr as Microsoft.CodeAnalysis.INamespaceSymbol;
 					if (ns != null)
-						return ns.NamespaceName;
-					var result = rr as TypeResolveResult;
-					if (result != null && !result.IsError && !(result.Type.Kind == TypeKind.Dynamic && result.Type.FullName == "dynamic"))
-						return result.Type.FullName;
+						return ns.ToDisplayString (Microsoft.CodeAnalysis.SymbolDisplayFormat.CSharpErrorMessageFormat);
+					var result = rr as Microsoft.CodeAnalysis.INamedTypeSymbol;
+					if (result != null && !(result.TypeKind == Microsoft.CodeAnalysis.TypeKind.Dynamic && result.ToDisplayString (Microsoft.CodeAnalysis.SymbolDisplayFormat.CSharpErrorMessageFormat) == "dynamic")) {
+						return result.ToDisplayString (new Microsoft.CodeAnalysis.SymbolDisplayFormat (
+							typeQualificationStyle: Microsoft.CodeAnalysis.SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+							miscellaneousOptions:
+							Microsoft.CodeAnalysis.SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers |
+							Microsoft.CodeAnalysis.SymbolDisplayMiscellaneousOptions.UseSpecialTypes));
+					}
 				}
 			}
 			return null;
@@ -1107,7 +1120,7 @@ namespace MonoDevelop.Debugger
 			return SupportedFeatures != DebuggerFeatures.None;
 		}
 
-		public IProcessAsyncOperation Execute (ExecutionCommand cmd, IConsole console)
+		public ProcessAsyncOperation Execute (ExecutionCommand cmd, OperationConsole console)
 		{
 			// Never called
 			throw new NotImplementedException ();
@@ -1128,10 +1141,9 @@ namespace MonoDevelop.Debugger
 			return engine.CanDebugCommand (command);
 		}
 
-		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		public ProcessAsyncOperation Execute (ExecutionCommand command, OperationConsole console)
 		{
-			var h = new DebugExecutionHandler (engine);
-			return h.Execute (command, console);
+			return DebuggingService.Run (command, console, engine);
 		}
 	}
 
@@ -1142,7 +1154,7 @@ namespace MonoDevelop.Debugger
 		public void SetMessage (DebuggerStartInfo dsi, string message, bool listening, int attemptNumber)
 		{
 			Gtk.Application.Invoke (delegate {
-				IdeApp.Workbench.StatusBar.ShowMessage (Stock.StatusConnecting, message);
+				IdeApp.Workbench.StatusBar.ShowMessage (Ide.Gui.Stock.StatusConnecting, message);
 			});
 		}
 

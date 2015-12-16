@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Execution
 			return Handler.CanExecute (command);
 		}
 
-		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		public ProcessAsyncOperation Execute (ExecutionCommand command, OperationConsole console)
 		{
 			return Handler.Execute (command, console);
 		}

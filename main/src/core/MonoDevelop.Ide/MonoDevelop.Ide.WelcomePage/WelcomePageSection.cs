@@ -28,7 +28,6 @@ using Gtk;
 using System.Xml.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
@@ -128,7 +127,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			try {
 				if (uri.StartsWith ("project://")) {
 					string file = uri.Substring ("project://".Length);
-					Gdk.ModifierType mtype = Mono.TextEditor.GtkWorkarounds.GetCurrentKeyModifiers ();
+					Gdk.ModifierType mtype = GtkWorkarounds.GetCurrentKeyModifiers ();
 					bool inWorkspace = (mtype & Gdk.ModifierType.ControlMask) != 0;
 
 					// Notify the RecentFiles that this item does not exist anymore.

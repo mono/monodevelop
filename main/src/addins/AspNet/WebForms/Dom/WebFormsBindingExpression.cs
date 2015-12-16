@@ -24,19 +24,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Xml.Dom;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.WebForms.Dom
 {
 	public class WebFormsBindingExpression : WebFormsExpression
 	{
-		public WebFormsBindingExpression (DomRegion region) : base (region)
+		public WebFormsBindingExpression (DocumentRegion region) : base (region)
 		{
 		}
 
-		public WebFormsBindingExpression (TextLocation start) : base (start)
+		public WebFormsBindingExpression (DocumentLocation start) : base (start)
 		{
 		}
 

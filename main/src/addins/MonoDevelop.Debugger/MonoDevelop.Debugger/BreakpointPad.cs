@@ -51,11 +51,6 @@ namespace MonoDevelop.Debugger
 		CommandEntrySet menuSet;
 		TreeViewState treeState;
 		
-		EventHandler<BreakpointEventArgs> breakpointUpdatedHandler;
-		EventHandler<BreakpointEventArgs> breakpointRemovedHandler;
-		EventHandler<BreakpointEventArgs> breakpointAddedHandler;
-		EventHandler breakpointChangedHandler;
-		
 		enum Columns
 		{
 			Icon,
@@ -162,15 +157,10 @@ namespace MonoDevelop.Debugger
 			
 			UpdateDisplay ();
 
-			breakpointUpdatedHandler = DispatchService.GuiDispatch<EventHandler<BreakpointEventArgs>> (OnBreakpointUpdated);
-			breakpointRemovedHandler = DispatchService.GuiDispatch<EventHandler<BreakpointEventArgs>> (OnBreakpointRemoved);
-			breakpointAddedHandler = DispatchService.GuiDispatch<EventHandler<BreakpointEventArgs>> (OnBreakpointAdded);
-			breakpointChangedHandler = DispatchService.GuiDispatch<EventHandler> (OnBreakpointChanged);
-			
-			breakpoints.BreakpointAdded += breakpointAddedHandler;
-			breakpoints.BreakpointRemoved += breakpointRemovedHandler;
-			breakpoints.Changed += breakpointChangedHandler;
-			breakpoints.BreakpointUpdated += breakpointUpdatedHandler;
+			breakpoints.BreakpointAdded += OnBreakpointAdded;
+			breakpoints.BreakpointRemoved += OnBreakpointRemoved;
+			breakpoints.Changed += OnBreakpointChanged;
+			breakpoints.BreakpointUpdated += OnBreakpointUpdated;
 			
 			DebuggingService.PausedEvent += OnDebuggerStatusCheck;
 			DebuggingService.ResumedEvent += OnDebuggerStatusCheck;
@@ -185,10 +175,10 @@ namespace MonoDevelop.Debugger
 		
 		public void Dispose ()
 		{
-			breakpoints.BreakpointAdded -= breakpointAddedHandler;
-			breakpoints.BreakpointRemoved -= breakpointRemovedHandler;
-			breakpoints.Changed -= breakpointChangedHandler;
-			breakpoints.BreakpointUpdated -= breakpointUpdatedHandler;
+			breakpoints.BreakpointAdded -= OnBreakpointAdded;
+			breakpoints.BreakpointRemoved -= OnBreakpointRemoved;
+			breakpoints.Changed -= OnBreakpointChanged;
+			breakpoints.BreakpointUpdated -= OnBreakpointUpdated;
 			
 			DebuggingService.PausedEvent -= OnDebuggerStatusCheck;
 			DebuggingService.ResumedEvent -= OnDebuggerStatusCheck;
@@ -226,7 +216,7 @@ namespace MonoDevelop.Debugger
 		[CommandHandler (DebugCommands.EnableDisableBreakpoint)]
 		protected void OnEnableDisable ()
 		{
-			breakpoints.Changed -= breakpointChangedHandler;
+			breakpoints.Changed -= OnBreakpointChanged;
 
 			try {
 				bool enable = false;
@@ -258,7 +248,7 @@ namespace MonoDevelop.Debugger
 					store.SetValue (iter, (int) Columns.Selected, enable);
 				}
 			} finally {
-				breakpoints.Changed += breakpointChangedHandler;
+				breakpoints.Changed += OnBreakpointChanged;
 			}
 		}
 		
@@ -282,7 +272,7 @@ namespace MonoDevelop.Debugger
 		{
 			bool deleted = false;
 
-			breakpoints.BreakpointRemoved -= breakpointRemovedHandler;
+			breakpoints.BreakpointRemoved -= OnBreakpointRemoved;
 
 			try {
 				// Note: since we'll be modifying the list of breakpoints, we need to sort
@@ -302,7 +292,7 @@ namespace MonoDevelop.Debugger
 					deleted = true;
 				}
 			} finally {
-				breakpoints.BreakpointRemoved += breakpointRemovedHandler;
+				breakpoints.BreakpointRemoved += OnBreakpointRemoved;
 			}
 
 			return deleted;
@@ -369,7 +359,7 @@ namespace MonoDevelop.Debugger
 		
 		void ItemToggled (object o, ToggledArgs args)
 		{
-			breakpoints.Changed -= breakpointChangedHandler;
+			breakpoints.Changed -= OnBreakpointChanged;
 			
 			try {
 				TreeIter iter;
@@ -382,7 +372,7 @@ namespace MonoDevelop.Debugger
 					store.SetValue (iter, (int) Columns.Selected, bp.Enabled);
 				}
 			} finally {
-				breakpoints.Changed += breakpointChangedHandler;
+				breakpoints.Changed += OnBreakpointChanged;
 			}
 		}
 		
@@ -430,36 +420,38 @@ namespace MonoDevelop.Debugger
 		
 		void OnBreakpointUpdated (object s, BreakpointEventArgs args)
 		{
-			TreeIter it;
+			Runtime.RunInMainThread (() => {
+				TreeIter it;
 
-			if (!store.GetIterFirst (out it))
-				return;
+				if (!store.GetIterFirst (out it))
+					return;
 
-			do {
-				var bp = (BreakEvent) store.GetValue (it, (int) Columns.Breakpoint);
-				if (bp == args.Breakpoint) {
-					string hitCount = bp.HitCountMode != HitCountMode.None ? bp.CurrentHitCount.ToString () : "";
-					string traceVal = (bp.HitAction & HitAction.PrintExpression) != HitAction.None ? bp.LastTraceValue : "";
-					store.SetValue (it, (int) Columns.HitCount, hitCount);
-					store.SetValue (it, (int) Columns.LastTrace, traceVal);
-					break;
-				}
-			} while (store.IterNext (ref it));
+				do {
+					var bp = (BreakEvent) store.GetValue (it, (int) Columns.Breakpoint);
+					if (bp == args.Breakpoint) {
+						string hitCount = bp.HitCountMode != HitCountMode.None ? bp.CurrentHitCount.ToString () : "";
+						string traceVal = (bp.HitAction & HitAction.PrintExpression) != HitAction.None ? bp.LastTraceValue : "";
+						store.SetValue (it, (int) Columns.HitCount, hitCount);
+						store.SetValue (it, (int) Columns.LastTrace, traceVal);
+						break;
+					}
+				} while (store.IterNext (ref it));
+			});
 		}
 		
 		protected void OnBreakpointAdded (object o, EventArgs args)
 		{
-			UpdateDisplay ();	
+			Runtime.RunInMainThread ((System.Action)UpdateDisplay);
 		}
 		
 		protected void OnBreakpointRemoved (object o, EventArgs args)
 		{
-			UpdateDisplay ();	
+			Runtime.RunInMainThread ((System.Action)UpdateDisplay);
 		}
 		
 		protected void OnBreakpointChanged (object o, EventArgs args)
 		{
-			UpdateDisplay ();	
+			Runtime.RunInMainThread ((System.Action)UpdateDisplay);
 		}
 		
 		void OnDebuggerStatusCheck (object s, EventArgs a)

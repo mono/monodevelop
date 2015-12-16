@@ -31,16 +31,17 @@ using Mono.Addins;
 using Mono.Addins.Setup;
 using Mono.Addins.Gui;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	class SetupApp: IApplication
 	{
-		public int Run (string[] arguments)
+		public Task<int> Run (string[] arguments)
 		{
 			Gtk.Application.Init ();
 			AddinManagerWindow.Run (null);
-			return 0;
+			return Task.FromResult (0);
 		}
 	}
 }

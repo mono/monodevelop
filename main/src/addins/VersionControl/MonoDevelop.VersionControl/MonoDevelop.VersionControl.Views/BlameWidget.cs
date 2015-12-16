@@ -34,6 +34,7 @@ using MonoDevelop.Ide;
 using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -53,7 +54,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		BlameRenderer overview;
 		
-		TextEditor editor;
+		MonoTextEditor editor;
 		List<ContainerChild> children = new List<ContainerChild> ();
 		
 		public Adjustment Vadjustment {
@@ -74,7 +75,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		public TextEditor Editor {
+		public MonoTextEditor Editor {
 			get {
 				return this.editor;
 			}
@@ -123,7 +124,7 @@ namespace MonoDevelop.VersionControl.Views
 			hScrollBar = new HScrollbar (hAdjustment);
 			AddChild (hScrollBar);
 			
-			editor = new TextEditor (sourceEditor.TextEditor.Document, sourceEditor.TextEditor.Options);
+			editor = new MonoTextEditor (sourceEditor.TextEditor.Document, sourceEditor.TextEditor.Options);
 			AddChild (editor);
 			editor.SetScrollAdjustments (hAdjustment, vAdjustment);
 			
@@ -541,7 +542,7 @@ namespace MonoDevelop.VersionControl.Views
 						LoggingService.LogError ("Error retrieving history", ex);
 					}
 					
-					DispatchService.GuiDispatch (delegate {
+					Runtime.RunInMainThread (delegate {
 						ctx.Dispose ();
 						UpdateWidth ();
 						QueueDraw ();
@@ -731,7 +732,7 @@ namespace MonoDevelop.VersionControl.Views
 								e.Window.DrawLayout (Style.BlackGC, Allocation.Width - revisionWidth - margin - revisionWidth - dateRevisionSpacing, (int)(curY + (widget.Editor.LineHeight - h) / 2), layout);
 							}
 
-							using (var authorLayout = PangoUtil.CreateLayout (this)) {
+							using (var authorLayout = MonoDevelop.Components.PangoUtil.CreateLayout (this)) {
 								var description = Pango.FontDescription.FromString ("Tahoma " + (int)(10 * widget.Editor.Options.Zoom));
 								authorLayout.FontDescription = description;
 								authorLayout.SetText (ann.Author);

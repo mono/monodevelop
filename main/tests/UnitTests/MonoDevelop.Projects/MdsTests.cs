@@ -28,6 +28,7 @@
 using System.IO;
 using NUnit.Framework;
 using UnitTests;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
 {
@@ -35,7 +36,7 @@ namespace MonoDevelop.Projects
 	public class MdsTests: TestBase
 	{
 		[Test]
-		public void TestSaveWorkspace ()
+		public async Task TestSaveWorkspace ()
 		{
 			// Saving a workspace must save all solutions and projects it contains
 			
@@ -47,11 +48,11 @@ namespace MonoDevelop.Projects
 			sol.FileName = Path.Combine (dir, "thesolution");
 			ws.Items.Add (sol);
 			
-			DotNetAssemblyProject p = new DotNetAssemblyProject ("C#");
+			DotNetProject p = Services.ProjectService.CreateDotNetProject ("C#");
 			p.FileName = Path.Combine (dir, "theproject");
 			sol.RootFolder.Items.Add (p);
 			
-			ws.Save (Util.GetMonitor ());
+			await ws.SaveAsync (Util.GetMonitor ());
 			
 			Assert.IsTrue (File.Exists (ws.FileName));
 			Assert.IsTrue (File.Exists (sol.FileName));

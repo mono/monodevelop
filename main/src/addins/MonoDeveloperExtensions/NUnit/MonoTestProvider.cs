@@ -36,19 +36,17 @@ namespace MonoDeveloper
 {	
 	class MonoTestProvider: ITestProvider
 	{
-		public UnitTest CreateUnitTest (IWorkspaceObject entry)
+		public UnitTest CreateUnitTest (WorkspaceObject entry)
 		{
-			if (entry is DotNetProject) {
-				DotNetProject project = (DotNetProject) entry;
-				MonoSolutionItemHandler handler = ProjectExtensionUtil.GetItemHandler (project) as MonoSolutionItemHandler;
-				if (handler != null) {
-					if (handler.UnitTest != null)
-						return (UnitTest) handler.UnitTest;
-					string testFileBase = handler.GetTestFileBase ();
-					UnitTest testSuite = new MonoTestSuite (project, project.Name, testFileBase);
-					handler.UnitTest = testSuite;
-					return testSuite;
-				}
+			var ext = entry.GetService<MonoMakefileProjectExtension> ();
+			if (ext != null) {
+				var project = (DotNetProject) entry;
+				if (ext.UnitTest != null)
+					return (UnitTest) ext.UnitTest;
+				string testFileBase = ext.GetTestFileBase ();
+				UnitTest testSuite = new MonoTestSuite (project, project.Name, testFileBase);
+				ext.UnitTest = testSuite;
+				return testSuite;
 			}
 			return null;
 		}
@@ -63,7 +61,7 @@ namespace MonoDeveloper
 	{
 		string basePath;
 		
-		public MonoTestSuite (Project p, string name, string basePath): base (name, p)
+		public MonoTestSuite (DotNetProject p, string name, string basePath): base (name, p)
 		{
 			this.basePath = basePath;
 		}

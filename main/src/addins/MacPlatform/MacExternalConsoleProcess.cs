@@ -33,10 +33,12 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.MacInterop;
+using System.Threading.Tasks;
+using System.IO;
 
 namespace MonoDevelop.MacIntegration
 {
-	internal class MacExternalConsoleProcess : IProcessAsyncOperation
+	internal class MacExternalConsoleProcess : ProcessAsyncOperation
 	{
 /*
 NOTES ON CONTROLLING A TERMINAL WITH APPLESCRIPT	 
@@ -79,25 +81,37 @@ where running an explicit exec causes it to quit after the exec runs, so we can'
 bash pause on exit trick
 */ 
 		string tabId, windowId;
-		bool cancelled;
-		
+
 		public MacExternalConsoleProcess (string command, string arguments, string workingDirectory,
 			IDictionary<string, string> environmentVariables,
 			string title, bool pauseWhenFinished)
 		{
-			RunTerminal (
+			CancellationTokenSource = new CancellationTokenSource ();
+			CancellationTokenSource.Token.Register (CloseTerminal);
+
+			// FIXME set value of ProcessId, if possible
+
+			var intTask = RunTerminal (
 				command, arguments, workingDirectory, environmentVariables, title, pauseWhenFinished,
-				out tabId, out windowId
+				out tabId, out windowId, CancellationTokenSource.Token
 			);
+			intTask.ContinueWith (delegate {
+				ExitCode = intTask.Result;
+			});
+			Task = intTask;
 		}
 
 		#region AppleScript terminal manipulation
 
-		internal static void RunTerminal (
+		internal static Task<int> RunTerminal (
 			string command, string arguments, string workingDirectory,
 			IDictionary<string, string> environmentVariables,
-			string title, bool pauseWhenFinished, out string tabId, out string windowId)
+			string title, bool pauseWhenFinished, out string tabId, out string windowId, CancellationToken cancelToken = default(CancellationToken))
 		{
+			TaskCompletionSource<int> taskSource = new TaskCompletionSource<int> ();
+			cancelToken.Register (delegate {
+				taskSource.SetCanceled ();
+			});
 			//build the sh command
 			var sb = new StringBuilder ("clear; ");
 			if (!string.IsNullOrEmpty (workingDirectory))
@@ -112,6 +126,19 @@ bash pause on exit trick
 			}
 			if (command != null) {
 				sb.AppendFormat ("\"{0}\" {1}", Escape (command), arguments);
+				var tempFileName = Path.GetTempFileName ();
+				sb.Append ($"; echo $? > {tempFileName}");
+				var fileWatcher = new FileSystemWatcher (Path.GetDirectoryName (tempFileName), Path.GetFileName (tempFileName));
+				fileWatcher.EnableRaisingEvents = true;
+				fileWatcher.Changed += delegate {
+					lock(taskSource) {
+						if (taskSource.Task.IsCompleted)
+							return;
+						taskSource.SetResult (int.Parse (File.ReadAllText (tempFileName)));
+						File.Delete (tempFileName);
+					}
+				};
+				
 				if (pauseWhenFinished)
 					sb.Append ("; echo; read -p 'Press any key to continue...' -n1");
 				sb.Append ("; exit");
@@ -135,9 +162,10 @@ bash pause on exit trick
 
 			try {
 				AppleScript.Run (sb.ToString ());
-			} catch (AppleScriptException) {
-				//it may already have closed
+			} catch (Exception ex) {
+				taskSource.SetException (ex);
 			}
+			return taskSource.Task;
 		}
 		
 		//FIXME: make escaping work properly
@@ -168,67 +196,14 @@ end tell", tabId, windowId);
 
 		#endregion
 
-		#region IProcessAsyncOperation implementation
-
-		public void Dispose ()
-		{
-		}
-		
-		public int ExitCode {
-			get {
-				//FIXME: implement. is it possible?
-				return 0;
-			}
-		}
-		
-		public int ProcessId {
-			get {
-				//FIXME: implement. is it possible?
-				return 0;
-			}
-		}
-		
-		#endregion
-		
 		#region IAsyncOperation implementation
 		
-		public event OperationHandler Completed;
-		
-		public void Cancel ()
+		void CloseTerminal ()
 		{
-			cancelled = true;
 			//FIXME: try to kill the process without closing the window, if pauseWhenFinished is true
 			CloseTerminalWindow (tabId, windowId);
 		}
-		
-		public void WaitForCompleted ()
-		{
-			while (!IsCompleted) {
-				Thread.Sleep (1000);
-			}
-		}
-		
-		public bool IsCompleted {
-			get {
-				//FIXME: get the status of the process, not the whole script
-				return !TabExists (tabId, windowId);
-			}
-		}
-		
-		public bool Success {
-			get {
-				//FIXME: any way to get the real result?
-				return !cancelled;
-			}
-		}
-		
-		
-		public bool SuccessWithWarnings {
-			get {
-				return Success;
-			}
-		}
-		
+
 		#endregion
 	}
 }

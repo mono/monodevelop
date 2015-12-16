@@ -31,7 +31,7 @@ namespace Mono.TextEditor
 {
 	public class FoldingScreenbackgroundRenderer : IBackgroundRenderer, IDisposable
 	{
-		TextEditor editor;
+		MonoTextEditor editor;
 		List<FoldSegment> foldSegments;
 		[Flags]
 		enum Roles
@@ -54,7 +54,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public FoldingScreenbackgroundRenderer (TextEditor editor, IEnumerable<FoldSegment> foldSegments)
+		public FoldingScreenbackgroundRenderer (MonoTextEditor editor, IEnumerable<FoldSegment> foldSegments)
 		{
 			this.editor = editor;
 			this.foldSegments = new List<FoldSegment> (foldSegments);

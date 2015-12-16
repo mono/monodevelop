@@ -30,7 +30,6 @@ using System;
 using System.ComponentModel;
 using System.Drawing.Design;
 
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Serialization;
@@ -124,9 +123,9 @@ namespace MonoDevelop.AspNet.WebForms
 			//FIXME: only do this on the insert, not the preview - or remove it afterwards
 			RegisterReference (document.Project);
 			
-			var database = document.Compilation;
+			var database = document.GetCompilationAsync ().Result;
 			
-			var cls = database.FindType (Type.Load ());
+			var cls = database.GetTypeByMetadataName (Type.Load ().FullName);
 			if (cls == null)
 				return tag;
 
@@ -157,7 +156,7 @@ namespace MonoDevelop.AspNet.WebForms
 		
 		public bool IsCompatibleWith (MonoDevelop.Ide.Gui.Document document)
 		{
-			switch (AspNetAppProject.DetermineWebSubtype (document.FileName)) {
+			switch (AspNetAppProjectFlavor.DetermineWebSubtype (document.FileName)) {
 			case WebSubtype.WebForm:
 			case WebSubtype.MasterPage:
 			case WebSubtype.WebControl:
@@ -167,7 +166,7 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 			
 			var clrVersion = ClrVersion.Net_2_0;
-			var aspProj = document.Project as AspNetAppProject;
+			var aspProj = document.Project as DotNetProject;
 			if (aspProj != null && aspProj.TargetFramework.ClrVersion != ClrVersion.Default)
 				clrVersion = aspProj.TargetFramework.ClrVersion;
 			

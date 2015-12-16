@@ -103,13 +103,11 @@ namespace MonoDevelop.VersionControl.Git
 			return (Stash) store.GetValue (it, 0);
 		}
 
-		void ApplyStashAndRemove(int s)
+		async void ApplyStashAndRemove(int s)
 		{
 			using (IdeApp.Workspace.GetFileStatusTracker ()) {
-				GitService.ApplyStash (repository, s).Completed += delegate(IAsyncOperation op) {
-					if (op.Success)
-						stashes.Remove (s);
-				};
+				if (await GitService.ApplyStash (repository, s))
+					stashes.Remove (s);
 			}
 		}
 
@@ -117,7 +115,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			int s = GetSelectedIndex ();
 			if (s != -1) {
-				GitService.ApplyStash (repository, s);
+				GitService.ApplyStash (repository, s).Wait ();
 				Respond (ResponseType.Ok);
 			}
 		}

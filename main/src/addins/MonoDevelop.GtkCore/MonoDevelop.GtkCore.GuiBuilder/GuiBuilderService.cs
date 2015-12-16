@@ -42,6 +42,8 @@ using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.TypeSystem;
+using System.Threading.Tasks;
+using MonoDevelop.Ide.Editor;
 
 
 namespace MonoDevelop.GtkCore.GuiBuilder
@@ -111,7 +113,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public static Stetic.Application SteticApp {
 			get {
 				// Stetic is not thread safe, so all has to be done in the gui thread
-				DispatchService.AssertGuiThread ();
+				Runtime.AssertMainThread ();
 				if (steticApp == null) {
 					steticApp = Stetic.ApplicationFactory.CreateApplication (Stetic.IsolationMode.None);
 					steticApp.AllowInProcLibraries = false;
@@ -323,7 +325,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				component = item.Component;
 			
 			CodeCompileUnit cu = new CodeCompileUnit ();
-			
 			if (project.UsePartialTypes) {
 				CodeNamespace cns = new CodeNamespace (ns);
 				cu.Namespaces.Add (cns);
@@ -333,6 +334,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				type.Attributes = MemberAttributes.Public;
 				type.TypeAttributes = System.Reflection.TypeAttributes.Public;
 				cns.Types.Add (type);
+				type.Members.Add (
+					new CodeMemberMethod () {
+						Name = "Build"
+					}
+				);
 				
 				foreach (Stetic.ObjectBindInfo binfo in component.GetObjectBindInfo ()) {
 					// When a component is being renamed, we have to generate the 
@@ -369,10 +375,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				text = fileStream.ToString ();
 				text = FormatGeneratedFile (fileName, text, project, provider);
 			}
-			
 			if (saveToFile)
 				File.WriteAllText (fileName, text);
-			TypeSystemService.ParseFile (project, fileName);
+			TypeSystemService.NotifyFileChange (fileName, text);
 //			
 //			if (ProjectDomService.HasDom (project)) {
 //				// Only update the parser database if the project is actually loaded in the IDE.
@@ -385,7 +390,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		}
 		
 		
-		public static Stetic.CodeGenerationResult GenerateSteticCode (IProgressMonitor monitor, DotNetProject project, ConfigurationSelector configuration)
+		public async static Task<Stetic.CodeGenerationResult> GenerateSteticCode (ProgressMonitor monitor, DotNetProject project, ConfigurationSelector configuration)
 		{
 			if (generating || !GtkDesignInfo.HasDesignedObjects (project))
 				return null;
@@ -422,9 +427,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					return null;
 				
 				if (info.GuiBuilderProject.HasError) {
-					monitor.ReportError (GettextCatalog.GetString ("GUI code generation failed for project '{0}'. The file '{1}' could not be loaded.", project.Name, info.SteticFile), null);
-					monitor.AsyncOperation.Cancel ();
-					return null;
+					var error = GettextCatalog.GetString ("GUI code generation failed for project '{0}'. The file '{1}' could not be loaded.", project.Name, info.SteticFile);
+					monitor.ReportError (error, null);
+					throw new UserException (error);
 				}
 				
 				if (info.GuiBuilderProject.IsEmpty) 
@@ -454,8 +459,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				if (!canGenerateInProcess) {
 					timer.Trace ("Generating out of process");
 				
-					// Run the generation in another thread to avoid freezing the GUI
-					System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+					await Task.Run (delegate {
 						try {
 							// Generate the code in another process if stetic is not isolated
 							CodeGeneratorProcess cob = (CodeGeneratorProcess)Runtime.ProcessService.CreateExternalProcessObject (typeof(CodeGeneratorProcess), false);
@@ -469,10 +473,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						}
 					});
 				
-					while (generating) {
-						DispatchService.RunPendingEvents ();
-						System.Threading.Thread.Sleep (100);
-					}
 				} else {
 					timer.Trace ("Generating in-process");
 					// No need to create another process, since stetic has its own backend process
@@ -544,7 +544,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				// Make sure the generated files are added to the project
 				if (info.UpdateGtkFolder ()) {
 					Gtk.Application.Invoke (delegate {
-						IdeApp.ProjectOperations.Save (project);
+						IdeApp.ProjectOperations.SaveAsync (project);
 					});
 				}
 				
@@ -592,7 +592,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		static string StripHeaderAndBlankLines (string text, CodeDomProvider provider)
 		{
-			Mono.TextEditor.TextDocument doc = new Mono.TextEditor.TextDocument ();
+			var doc = TextEditorFactory.CreateNewDocument ();
 			doc.Text = text;
 			int realStartLine = 0;
 			for (int i = 1; i <= doc.LineCount; i++) {
@@ -610,11 +610,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (provider is Microsoft.CSharp.CSharpCodeProvider) {
 				bool previousWasBlank = false;
 				for (int i = 1; i <= doc.LineCount; i++) {
-					Mono.TextEditor.DocumentLine line = doc.GetLine (i);
+					var line = doc.GetLine (i);
 					bool isBlank, isBracket;
 					CheckLine (doc, line, out isBlank, out isBracket);
 					if (isBlank && previousWasBlank && line.LengthIncludingDelimiter > 0) {
-						doc.Remove (line.Offset, line.LengthIncludingDelimiter);
+						doc.RemoveText (line.Offset, line.LengthIncludingDelimiter);
 						i--;
 					}
 					previousWasBlank = isBlank || isBracket;
@@ -622,10 +622,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			
 			int offset = doc.GetLine (realStartLine).Offset;
-			return doc.GetTextAt (offset, doc.TextLength - offset);
+			return doc.GetTextAt (offset, doc.Length - offset);
 		}
 
-		static void CheckLine (Mono.TextEditor.TextDocument doc, Mono.TextEditor.DocumentLine line, out bool isBlank, out bool isBracket)
+		static void CheckLine (IReadonlyTextDocument doc, IDocumentLine line, out bool isBlank, out bool isBracket)
 		{
 			isBlank = true;
 			isBracket = false;

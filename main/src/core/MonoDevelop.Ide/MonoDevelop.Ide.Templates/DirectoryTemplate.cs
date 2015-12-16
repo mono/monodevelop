@@ -85,7 +85,7 @@ namespace MonoDevelop.Ide.Templates
 				t.Show ();
 		}
 			
-		public override bool AddToProject (SolutionItem policyParent, Project project,
+		public override bool AddToProject (SolutionFolderItem policyParent, Project project,
 		                                   string language, string directory, string name)
 		{
 			bool addedSomething = false;

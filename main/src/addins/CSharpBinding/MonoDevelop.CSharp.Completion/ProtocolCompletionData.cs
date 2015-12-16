@@ -28,60 +28,138 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.CodeGeneration;
+using MonoDevelop.Ide.Editor.Extension;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.CSharp.Refactoring;
+using System.Linq;
+using MonoDevelop.CSharp.Formatting;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	class ProtocolCompletionData : CompletionData
+	class ProtocolCompletionData : RoslynSymbolCompletionData
 	{
-		readonly MonoCSharpCompletionEngine engine;
-		readonly IMember member;
-		readonly static Ambience ambience = new CSharpAmbience ();
-		readonly int    declarationBegin;
+		readonly int declarationBegin;
+		readonly ITypeSymbol currentType;
 
 		public bool GenerateBody { get; set; }
 
-		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
-		{
-			return MemberCompletionData.CreateTooltipInformation (engine.Ext, null, member, smartWrap);
+		static readonly SymbolDisplayFormat NameFormat =
+			new SymbolDisplayFormat(
+				globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Omitted,
+				typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+				propertyStyle: SymbolDisplayPropertyStyle.NameOnly,
+				genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters | SymbolDisplayGenericsOptions.IncludeVariance,
+				memberOptions: SymbolDisplayMemberOptions.IncludeParameters | SymbolDisplayMemberOptions.IncludeExplicitInterface,
+				parameterOptions:
+				SymbolDisplayParameterOptions.IncludeParamsRefOut |
+				SymbolDisplayParameterOptions.IncludeExtensionThis |
+				SymbolDisplayParameterOptions.IncludeType |
+				SymbolDisplayParameterOptions.IncludeName,
+				miscellaneousOptions:
+				SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers |
+				SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
+
+		internal static readonly SymbolDisplayFormat overrideNameFormat = NameFormat.WithParameterOptions(
+			SymbolDisplayParameterOptions.IncludeDefaultValue |
+			SymbolDisplayParameterOptions.IncludeExtensionThis |
+			SymbolDisplayParameterOptions.IncludeType |
+			SymbolDisplayParameterOptions.IncludeName |
+			SymbolDisplayParameterOptions.IncludeParamsRefOut);
+
+		string displayText;
+
+		bool afterKeyword;
+
+		public override string DisplayText {
+			get {
+				if (displayText == null) {
+					var model = ext.ParsedDocument.GetAst<SemanticModel> ();
+					displayText = RoslynCompletionData.SafeMinimalDisplayString (base.Symbol, model, ext.Editor.CaretOffset, overrideNameFormat);
+					if (!afterKeyword)
+						displayText = "override " + displayText;
+				}
+
+				return displayText;
+			}
 		}
 
-		public ProtocolCompletionData (MonoCSharpCompletionEngine engine, int declarationBegin, IMember member) : base (null)
+		public override string GetDisplayTextMarkup ()
 		{
-			this.engine = engine;
-			this.member = member;
+			var model = ext.ParsedDocument.GetAst<SemanticModel> ();
 
+			var result = RoslynCompletionData.SafeMinimalDisplayString (base.Symbol, model, declarationBegin, Ambience.LabelFormat) + " {...}";
+			var idx = result.IndexOf (Symbol.Name);
+			if (idx >= 0) {
+				result = 
+					result.Substring(0, idx) +
+					      "<b>" + Symbol.Name + "</b>"+
+					      result.Substring(idx + Symbol.Name.Length);
+			}
+
+			if (!afterKeyword)
+				result = "override " + result;
+
+			return ApplyDiplayFlagsFormatting (result);
+		}
+
+		public ProtocolCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, int declarationBegin, ITypeSymbol currentType, Microsoft.CodeAnalysis.ISymbol member, bool afterKeyword) : base (keyHandler, factory, member, member.ToDisplayString ())
+		{
+			this.afterKeyword = afterKeyword;
+			this.currentType = currentType;
 			this.declarationBegin = declarationBegin;
 			this.GenerateBody = true;
-			this.Icon = member.GetStockIcon ();
-			this.DisplayText = ambience.GetString (member, OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName | OutputFlags.IncludeGenerics | OutputFlags.HideExtensionsParameter| OutputFlags.IncludeAccessor);
-			this.CompletionText = member.SymbolKind == SymbolKind.Indexer ? "this" : member.Name;
 		}
 
-		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
-			var ext = engine.Ext;
-			var editor = ext.TextEditorData;
-			var generator = CodeGenerator.CreateGenerator (ext.Document);
-			if (ext.Project != null)
-				generator.PolicyParent = ext.Project.Policies;
-			var builder = engine.MDRefactoringCtx.CreateTypeSystemAstBuilder ();
+			var editor = ext.Editor;
+			bool isExplicit = false;
+			//			if (member.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
+			//				foreach (var m in type.Members) {
+			//					if (m.Name == member.Name && !m.ReturnType.Equals (member.ReturnType)) {
+			//						isExplicit = true;
+			//						break;
+			//					}
+			//				}
+			//			}
+			//			var resolvedType = type.Resolve (ext.Project).GetDefinition ();
+			//			if (ext.Project != null)
+			//				generator.PolicyParent = ext.Project.Policies;
 
-			string sb = BaseExportCodeGenerator.GenerateMemberCode (engine.MDRefactoringCtx, builder, member);
+			var result = CSharpCodeGenerator.CreateProtocolMemberImplementation (ext.DocumentContext, ext.Editor, currentType, currentType.Locations.First (), Symbol, isExplicit, factory.SemanticModel);
+			string sb = result.Code.TrimStart ();
+			int trimStart = result.Code.Length - sb.Length;
 			sb = sb.TrimEnd ();
 
-			string indent = editor.GetIndentationString (editor.Caret.Location); 
-			sb = sb.Replace (editor.EolMarker, editor.EolMarker + indent);
+			var lastRegion = result.BodyRegions.LastOrDefault ();
+			var region = lastRegion == null? null
+				: new CodeGeneratorBodyRegion (lastRegion.StartOffset - trimStart, lastRegion.EndOffset - trimStart);
 
-			int targetCaretPosition = sb.LastIndexOf ("throw", StringComparison.Ordinal);
-			int selectionEndPosition = sb.LastIndexOf (";", StringComparison.Ordinal);
-
-			editor.Replace (declarationBegin, editor.Caret.Offset - declarationBegin, sb);
-			if (selectionEndPosition > 0) {
-				targetCaretPosition += declarationBegin;
-				selectionEndPosition += declarationBegin;
-				editor.Caret.Offset = selectionEndPosition;
-				editor.SetSelection (targetCaretPosition, selectionEndPosition);
+			int targetCaretPosition;
+			int selectionEndPosition = -1;
+			if (region != null && region.IsValid) {
+				targetCaretPosition = declarationBegin + region.StartOffset;
+				if (region.Length > 0) {
+					if (GenerateBody) {
+						selectionEndPosition = declarationBegin + region.EndOffset;
+					} else {
+						//FIXME: if there are multiple regions, remove all of them
+						sb = sb.Substring (0, region.StartOffset) + sb.Substring (region.EndOffset); 
+					}
+				}
+			} else {
+				targetCaretPosition = declarationBegin + sb.Length;
 			}
+
+			editor.ReplaceText (declarationBegin, editor.CaretOffset - declarationBegin, sb);
+			if (selectionEndPosition > 0) {
+				editor.CaretOffset = selectionEndPosition;
+				editor.SetSelection (targetCaretPosition, selectionEndPosition);
+			} else {
+				editor.CaretOffset = targetCaretPosition;
+			}
+
+			OnTheFlyFormatter.Format (editor, ext.DocumentContext, declarationBegin, declarationBegin + sb.Length);
 		}
 	}
 }

@@ -12,7 +12,7 @@ namespace MonoDevelop.Autotools
 		{
 			ProjectFile file = obj as ProjectFile;
 			if (file != null && file.Project != null) {
-				MakefileData data = file.Project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
+				MakefileData data = file.Project.GetMakefileData ();
 				if (data != null && data.IsFileIntegrationEnabled (file.BuildAction))
 					return true;
 			}
@@ -33,7 +33,7 @@ namespace MonoDevelop.Autotools
 		public ProjectFileWrapper (ProjectFile file)
 		{
 			this.file = file;
-			data = file.Project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
+			data = file.Project.GetMakefileData ();
 		}
 		
 		[LocalizedCategory ("Makefile Integration")]

@@ -41,35 +41,30 @@ using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Refactoring;
 using MonoDevelop.CSharp.Parser;
-using Mono.TextEditor;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.Completion;
-using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
-using ICSharpCode.NRefactory.CSharp.Resolver;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Components.PropertyGrid.PropertyEditors;
+using MonoDevelop.Ide.Editor;
+using Microsoft.CodeAnalysis.Options;
 
 namespace MonoDevelop.CSharp
 {
 	static class HelperMethods
 	{
-		public static void SetText (this CompletionData data, string text)
-		{
-			if (data is CompletionData) {
-				((CompletionData)data).CompletionText = text;
-			} else if (data is IEntityCompletionData) {
-				((IEntityCompletionData)data).CompletionText = text;
-			} else {
-				System.Console.WriteLine("Unknown completion data:" + data);
-			}
-		}
+//		public static void SetText (this CompletionData data, string text)
+//		{
+//			if (data is CompletionData) {
+//				((CompletionData)data).CompletionText = text;
+//			} else if (data is IEntityCompletionData) {
+//				((IEntityCompletionData)data).CompletionText = text;
+//			} else {
+//				System.Console.WriteLine("Unknown completion data:" + data);
+//			}
+//		}
 		
-		public static ICSharpCode.NRefactory.CSharp.SyntaxTree Parse (this ICSharpCode.NRefactory.CSharp.CSharpParser parser, TextEditorData data)
-		{
-			using (var stream = data.OpenStream ()) {
-				return parser.Parse (stream, data.Document.FileName);
-			}
-		}
+//		public static ICSharpCode.NRefactory.CSharp.SyntaxTree Parse (this ICSharpCode.NRefactory.CSharp.CSharpParser parser, IReadonlyTextDocument data)
+//		{
+//			return parser.Parse (new ICSharpCode.NRefactory.Editor.StringTextSource (data.Text), data.FileName);
+//		}
 		
 //		public static AstNode ParseSnippet (this ICSharpCode.NRefactory.CSharp.CSharpParser parser, TextEditorData data)
 //		{
@@ -90,7 +85,7 @@ namespace MonoDevelop.CSharp
 //			}
 //		}
 		
-		internal static MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy GetFormattingPolicy (this MonoDevelop.Ide.Gui.Document doc)
+		internal static MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy GetFormattingPolicy (this DocumentContext doc)
 		{
 			var policyParent = doc.Project != null ? doc.Project.Policies : null;
 			var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
@@ -98,43 +93,45 @@ namespace MonoDevelop.CSharp
 			return codePolicy;
 		}
 
-		public static CSharpFormattingOptions GetFormattingOptions (this MonoDevelop.Ide.Gui.Document doc)
+		public static OptionSet GetFormattingOptions (this DocumentContext doc)
 		{
-			return GetFormattingPolicy (doc).CreateOptions ();
+			return GetFormattingOptions (doc.Project);
 		}
 		
-		public static CSharpFormattingOptions GetFormattingOptions (this MonoDevelop.Projects.Project project)
+		public static OptionSet GetFormattingOptions (this MonoDevelop.Projects.Project project)
 		{
 			var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
 			var codePolicy = project != null ? project.Policies.Get<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types) :
 				MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
-			return codePolicy.CreateOptions ();
+			var textPolicy = project != null ? project.Policies.Get<TextStylePolicy> (types) :
+				MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (types);
+			return codePolicy.CreateOptions (textPolicy);
 		}
 		
-		public static bool TryResolveAt (this Document doc, DocumentLocation loc, out ResolveResult result, out AstNode node)
-		{
-			if (doc == null)
-				throw new ArgumentNullException ("doc");
-			result = null;
-			node = null;
-			var parsedDocument = doc.ParsedDocument;
-			if (parsedDocument == null)
-				return false;
-
-			var unit = parsedDocument.GetAst<SyntaxTree> ();
-			var parsedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
-			
-			if (unit == null || parsedFile == null)
-				return false;
-			try {
-				result = ResolveAtLocation.Resolve (new Lazy<ICompilation>(() => doc.Compilation), parsedFile, unit, loc, out node);
-				if (result == null || node is Statement)
-					return false;
-			} catch (Exception e) {
-				Console.WriteLine ("Got resolver exception:" + e);
-				return false;
-			}
-			return true;
-		}
+//		public static bool TryResolveAt (this DocumentContext documentContext, DocumentLocation loc, out ResolveResult result, out AstNode node)
+//		{
+//			if (documentContext == null)
+//				throw new ArgumentNullException ("documentContext");
+//			result = null;
+//			node = null;
+//			var parsedDocument = documentContext.ParsedDocument;
+//			if (parsedDocument == null)
+//				return false;
+//
+//			var unit = parsedDocument.GetAst<SyntaxTree> ();
+//			var parsedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
+//			
+//			if (unit == null || parsedFile == null)
+//				return false;
+//			try {
+//				result = ResolveAtLocation.Resolve (new Lazy<ICompilation>(() => documentContext.Compilation), parsedFile, unit, loc, out node);
+//				if (result == null || node is Statement)
+//					return false;
+//			} catch (Exception e) {
+//				Console.WriteLine ("Got resolver exception:" + e);
+//				return false;
+//			}
+//			return true;
+//		}
 	}
 }

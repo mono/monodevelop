@@ -8,6 +8,7 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
 using MonoDevelop.Core.Assemblies;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.WebReferences.Commands
 {
@@ -47,7 +48,7 @@ namespace MonoDevelop.WebReferences.Commands
 					return;
 
 				dialog.SelectedService.GenerateFiles (project, dialog.Namespace, dialog.ReferenceName);
-				IdeApp.ProjectOperations.Save(project);
+				IdeApp.ProjectOperations.SaveAsync(project);
 			} catch (Exception exception) {
 				MessageService.ShowError ("The web reference could not be added", exception);
 			} finally {
@@ -89,24 +90,24 @@ namespace MonoDevelop.WebReferences.Commands
 				UpdateReferenceContext = IdeApp.Workbench.StatusBar.CreateContext ();
 				UpdateReferenceContext.BeginProgress (GettextCatalog.GetPluralString ("Updating web reference", "Updating web references", items.Count));
 				
-				DispatchService.ThreadDispatch (() => {
+				Task.Run (() => {
 					for (int i = 0; i < items.Count; i ++) {
-						DispatchService.GuiDispatch (() => UpdateReferenceContext.SetProgressFraction (Math.Max (0.1, (double)i / items.Count)));
+						Runtime.RunInMainThread (() => UpdateReferenceContext.SetProgressFraction (Math.Max (0.1, (double)i / items.Count)));
 						try {
 							items [i].Update();
 						} catch (Exception ex) {
-							DispatchService.GuiSyncDispatch (() => {
+							Runtime.RunInMainThread (() => {
 								MessageService.ShowError (GettextCatalog.GetString ("Failed to update Web Reference '{0}'", items [i].Name), ex);
 								DisposeUpdateContext ();
-							});
+							}).Wait ();
 							return;
 						}
 					}
 					
-					DispatchService.GuiDispatch (() => {
+					Runtime.RunInMainThread (() => {
 						// Make sure that we save all relevant projects, there should only be 1 though
 						foreach (var project in items.Select (i =>i.Project).Distinct ())
-							IdeApp.ProjectOperations.Save (project);
+							IdeApp.ProjectOperations.SaveAsync (project);
 						
 						IdeApp.Workbench.StatusBar.ShowMessage(GettextCatalog.GetPluralString ("Updated Web Reference {0}", "Updated Web References", items.Count, items[0].Name));
 						DisposeUpdateContext ();
@@ -134,7 +135,7 @@ namespace MonoDevelop.WebReferences.Commands
 			if (!MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to delete the web service reference '{0}'?", item.Name), AlertButton.Delete))
 				return;
 			item.Delete();
-			IdeApp.ProjectOperations.Save (item.Project);
+			IdeApp.ProjectOperations.SaveAsync (item.Project);
 			IdeApp.Workbench.StatusBar.ShowMessage("Deleted Web Reference " + item.Name);
 		}
 		
@@ -154,7 +155,7 @@ namespace MonoDevelop.WebReferences.Commands
 			foreach (var item in items.ToList ())
 				item.Delete();
 
-			IdeApp.ProjectOperations.Save(project);
+			IdeApp.ProjectOperations.SaveAsync(project);
 			IdeApp.Workbench.StatusBar.ShowMessage("Deleted all Web References");
 		}
 

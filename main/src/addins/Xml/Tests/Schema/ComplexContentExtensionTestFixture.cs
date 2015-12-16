@@ -1,3 +1,5 @@
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
@@ -13,68 +15,77 @@ namespace MonoDevelop.Xml.Tests.Schema
 		CompletionDataList bodyChildElements;
 		CompletionDataList bodyAttributes;
 		
-		public override void FixtureInit()
+		async Task Init ()
 		{
+			if (bodyChildElements != null)
+				return;
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("body", "http://www.w3schools.com")); 
 			
-			bodyChildElements = SchemaCompletionData.GetChildElementCompletionData(path);
-			bodyAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			bodyChildElements = await SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None);
+			bodyAttributes = await SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None);
 		}	
 		
 		[Test]
-		public void TitleHasNoChildElements()
+		public async Task TitleHasNoChildElements()
 		{
+			await Init ();
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("body", "http://www.w3schools.com")); 
 			path.Elements.Add(new QualifiedName("title", "http://www.w3schools.com")); 
 
-			Assert.AreEqual(0, SchemaCompletionData.GetChildElementCompletionData(path).Count,
+			Assert.AreEqual(0, (await SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None)).Count,
 			                "Should be no child elements.");
 		}
 		
 		[Test]
-		public void TextHasNoChildElements()
+		public async Task TextHasNoChildElements()
 		{
+			await Init ();
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("body", "http://www.w3schools.com")); 
 			path.Elements.Add(new QualifiedName("text", "http://www.w3schools.com")); 
 
-			Assert.AreEqual(0, SchemaCompletionData.GetChildElementCompletionData(path).Count,
+			Assert.AreEqual(0, (await SchemaCompletionData.GetChildElementCompletionData(path, CancellationToken.None)).Count,
 			                "Should be no child elements.");
 		}		
 		
 		[Test]
-		public void BodyHasTwoChildElements()
+		public async Task BodyHasTwoChildElements()
 		{
+			await Init ();
 			Assert.AreEqual(2, bodyChildElements.Count, 
 			                "Should be two child elements.");
 		}
 		
 		[Test]
-		public void BodyChildElementIsText()
+		public async Task BodyChildElementIsText()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(bodyChildElements, "text"), 
 			              "Should have a child element called text.");
 		}
 		
 		[Test]
-		public void BodyChildElementIsTitle()
+		public async Task BodyChildElementIsTitle()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(bodyChildElements, "title"), 
 			              "Should have a child element called title.");
 		}		
 		
 		[Test]
-		public void BodyAttributeCount()
+		public async Task BodyAttributeCount()
 		{
+			await Init ();
 			Assert.AreEqual(1, bodyAttributes.Count, 
 			                "Should be one attribute.");
 		}
 		
 		[Test]
-		public void BodyAttributeName()
+		public async Task BodyAttributeName()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(bodyAttributes, "id"), "Attribute id not found.");
 		}
 		

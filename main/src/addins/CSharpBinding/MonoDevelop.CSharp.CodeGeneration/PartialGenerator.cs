@@ -23,11 +23,14 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
+
+using System.Linq;
 using System.Collections.Generic;
 using Gtk;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Core;
+using System.Threading;
+using ICSharpCode.NRefactory6.CSharp;
+using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CodeGeneration
@@ -76,21 +79,37 @@ namespace MonoDevelop.CodeGeneration
 				if (type == null || Options.EnclosingMember != null)
 					yield break;
 
-				foreach (var method in Options.EnclosingType.Methods) {
-					if (method.IsPartial && method.BodyRegion.IsEmpty) {
+				foreach (var method in Options.EnclosingType.GetMembers ().OfType<Microsoft.CodeAnalysis.IMethodSymbol> ()) {
+					if (method.MethodKind != Microsoft.CodeAnalysis.MethodKind.Ordinary)
+						continue;
+					if (IsEmptyPartialMethod(method)) {
 						yield return method;
 					}
 				}	
 			}
 
+			static bool IsEmptyPartialMethod(Microsoft.CodeAnalysis.ISymbol member, CancellationToken cancellationToken = default(CancellationToken))
+			{
+				var method = member as Microsoft.CodeAnalysis.IMethodSymbol;
+				if (method == null || method.IsDefinedInMetadata ())
+					return false;
+				foreach (var r in method.DeclaringSyntaxReferences) {
+					var node = r.GetSyntax (cancellationToken) as Microsoft.CodeAnalysis.CSharp.Syntax.MethodDeclarationSyntax;
+					if (node == null)
+						continue;
+					if (node.Body != null || !node.Modifiers.Any(m => m.IsKind (Microsoft.CodeAnalysis.CSharp.SyntaxKind.PartialKeyword)))
+						return false;
+				}
+
+				return true;
+			}
+
+
 			protected override IEnumerable<string> GenerateCode (List<object> includedMembers)
 			{
-				var generator = Options.CreateCodeGenerator ();
-				generator.AutoIndent = false;
-				foreach (IMethod member in includedMembers) 
-					yield return generator.CreateMemberImplementation (Options.EnclosingType, Options.EnclosingPart, member, false).Code;
+				foreach (Microsoft.CodeAnalysis.IMethodSymbol member in includedMembers)
+					yield return CSharpCodeGenerator.CreatePartialMemberImplementation (Options.DocumentContext, Options.Editor, Options.EnclosingType, Options.EnclosingPart.GetLocation (), member, false, null).Code;
 			}
 		}
 	}
 }
-

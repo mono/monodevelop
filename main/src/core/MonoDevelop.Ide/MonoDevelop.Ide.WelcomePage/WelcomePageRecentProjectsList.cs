@@ -37,23 +37,20 @@ namespace MonoDevelop.Ide.WelcomePage
 	public class WelcomePageRecentProjectsList : WelcomePageSection
 	{
 		bool destroyed;
-		readonly EventHandler recentChangesHandler;
 		readonly VBox box;
 		int itemCount = 10;
 		readonly Xwt.Drawing.Image openProjectIcon;
 		readonly Xwt.Drawing.Image newProjectIcon;
-		
+
 		public WelcomePageRecentProjectsList (string title = null, int count = 10): base (title)
 		{
 			openProjectIcon = Xwt.Drawing.Image.FromResource ("open_solution.png");
 			newProjectIcon = Xwt.Drawing.Image.FromResource ("new_solution.png");
-
 			box = new VBox ();
 
 			itemCount = count;
 			
-			recentChangesHandler = DispatchService.GuiDispatch (new EventHandler (RecentFilesChanged));
-			DesktopService.RecentFiles.Changed += recentChangesHandler;
+			DesktopService.RecentFiles.Changed += RecentFilesChanged;
 			RecentFilesChanged (null, null);
 
 			SetContent (box);
@@ -66,7 +63,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			destroyed = true;
 			base.OnDestroyed ();
-			DesktopService.RecentFiles.Changed -= recentChangesHandler;
+			DesktopService.RecentFiles.Changed -= RecentFilesChanged;
 		}
 
 		void RecentFilesChanged (object sender, EventArgs e)
@@ -115,16 +112,51 @@ namespace MonoDevelop.Ide.WelcomePage
 				//button.HasTooltip = true;
 				button.TooltipText = filename + "\n" + TimeSinceEdited (accessed);
 				box.PackStart (button, false, false, 0);
-				button.PinClicked += delegate {
-					DesktopService.RecentFiles.SetFavoriteFile (filename, button.Pinned);
-				};
+				var pinClickHandler = new PinClickHandler (filename);
+				pinClickHandler.Register (button);
 			}
-			
-
 
 			this.ShowAll ();
 		}
-		
+
+		class PinClickHandler : IDisposable
+		{
+			WelcomePageListButton button;
+			string filename;
+
+			public PinClickHandler (string filename)
+			{
+				this.filename = filename;
+			}
+
+			public void Dispose ()
+			{
+				if (button == null)
+					return;
+				button.PinClicked -= Button_PinClicked;
+				button.Destroyed -= Button_Destroyed;
+				button = null;
+			}
+
+			internal void Register (WelcomePageListButton button)
+			{
+				this.button = button;
+				button.PinClicked += Button_PinClicked;
+				button.Destroyed += Button_Destroyed;
+			}
+
+			void Button_PinClicked (object sender, EventArgs e)
+			{
+				DesktopService.RecentFiles.SetFavoriteFile (filename, button.Pinned);
+			}
+
+			void Button_Destroyed (object sender, EventArgs e)
+			{
+				Dispose ();
+			}
+		}
+
+
 		static string TimeSinceEdited (DateTime prjtime)
 		{
 			TimeSpan sincelast = DateTime.UtcNow - prjtime;

@@ -30,7 +30,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
- 
+using System.Threading.Tasks;
 
 namespace MonoDeveloper
 {	
@@ -45,19 +45,19 @@ namespace MonoDeveloper
 		{
 			DotNetProject p = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
 			if (p != null)
-				DispatchService.BackgroundDispatch (new StatefulMessageHandler (Install), p);
+				Task.Run (() => Install (p));
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Visible = MonoMakefileFormat.IsMonoProject (IdeApp.ProjectOperations.CurrentSelectedProject);
+			info.Visible = IdeApp.ProjectOperations.CurrentSelectedItem is MonoMakefileProjectExtension;
 		}
 		
-		void Install (object prj)
+		async void Install (object prj)
 		{
 			DotNetProject p = prj as DotNetProject;
-			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ()) {
-				p.RunTarget (monitor, "install", IdeApp.Workspace.ActiveConfiguration);
+			using (ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ()) {
+				await p.RunTarget (monitor, "install", IdeApp.Workspace.ActiveConfiguration);
 			}
 		}
 

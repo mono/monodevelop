@@ -874,6 +874,7 @@ namespace MonoDevelop.Debugger.Tests
 		public void CatchPointTest2 ()
 		{
 			IgnoreSoftDebugger ("I'm having problem testing this because. There is error nonstop happening in framework about CurrentCulture featching.");
+			IgnoreCorDebugger ("Randomly fails");
 
 			InitializeTest ();
 			AddCatchpoint ("System.Exception", true);

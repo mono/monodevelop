@@ -1,4 +1,4 @@
-// ExtendibleTextEditor.cs
+﻿// ExtendibleTextEditor.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -41,15 +41,18 @@ using Mono.Addins;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeFormatting;
-using MonoDevelop.SourceEditor.Extension;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.SourceEditor.Wrappers;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class ExtensibleTextEditor : Mono.TextEditor.TextEditor
+	class ExtensibleTextEditor : Mono.TextEditor.MonoTextEditor
 	{
 		internal object MemoryProbe = Counters.EditorsInMemory.CreateMemoryProbe ();
 		
@@ -57,20 +60,71 @@ namespace MonoDevelop.SourceEditor
 		ExtensionContext extensionContext;
 		Adjustment cachedHAdjustment, cachedVAdjustment;
 		
-		public ITextEditorExtension Extension {
-			get;
-			set;
+		TextEditorExtension editorExtension;
+		bool needToAddLastExtension;
+
+		public TextEditorExtension EditorExtension {
+			get {
+				return editorExtension;
+			}
+			set {
+				editorExtension = value;
+				needToAddLastExtension = true;
+			}
 		}
-		
-		public new ISourceEditorOptions Options {
-			get { return (ISourceEditorOptions)base.Options; }
+
+		SemanticHighlighting semanticHighlighting;
+		public SemanticHighlighting SemanticHighlighting {
+			get {
+				return semanticHighlighting;
+			}
+			set {
+				semanticHighlighting = value;
+				UpdateSemanticHighlighting ();
+			}
+		}
+
+		void UpdateSemanticHighlighting ()
+		{
+			var oldSemanticHighighting = Document.SyntaxMode as SemanticHighlightingSyntaxMode;
+
+			if (semanticHighlighting == null) {
+				if (oldSemanticHighighting != null)
+					Document.MimeType = Document.MimeType;
+			} else {
+				if (oldSemanticHighighting == null) {
+					Document.SyntaxMode = new SemanticHighlightingSyntaxMode (this, Document.SyntaxMode, semanticHighlighting);
+				} else {
+					oldSemanticHighighting.UpdateSemanticHighlighting (semanticHighlighting);
+				}
+			}
+		}
+
+		class LastEditorExtension : TextEditorExtension
+		{
+			readonly ExtensibleTextEditor ext;
+			public LastEditorExtension (ExtensibleTextEditor ext)
+			{
+				if (ext == null)
+					throw new ArgumentNullException ("ext");
+				this.ext = ext;
+			}
+			
+			public override bool KeyPress (KeyDescriptor descriptor)
+			{
+				var native =(Tuple<Gdk.Key, Gdk.ModifierType>)descriptor.NativeKeyChar;
+				ext.SimulateKeyPress (native.Item1, (uint)descriptor.KeyChar, native.Item2);
+				if (descriptor.SpecialKey == SpecialKey.Escape)
+					return true;
+				return false;
+			}
 		}
 
 		static ExtensibleTextEditor ()
 		{
 			var icon = Xwt.Drawing.Image.FromResource ("gutter-bookmark-15.png");
 
-			BookmarkMarker.DrawBookmarkFunc = delegate(TextEditor editor, Cairo.Context cr, DocumentLine lineSegment, double x, double y, double width, double height) {
+			BookmarkMarker.DrawBookmarkFunc = delegate(Mono.TextEditor.MonoTextEditor editor, Cairo.Context cr, DocumentLine lineSegment, double x, double y, double width, double height) {
 				if (!lineSegment.IsBookmarked)
 					return;
 				cr.DrawImage (
@@ -83,14 +137,14 @@ namespace MonoDevelop.SourceEditor
 
 		}
 		
-		public ExtensibleTextEditor (SourceEditorView view, ISourceEditorOptions options, Mono.TextEditor.TextDocument doc) : base(doc, options)
+		public ExtensibleTextEditor (SourceEditorView view, Mono.TextEditor.ITextEditorOptions options, Mono.TextEditor.TextDocument doc) : base(doc, options)
 		{
 			Initialize (view);
 		}
 
 		public ExtensibleTextEditor (SourceEditorView view)
 		{
-			base.Options = new StyledSourceEditorOptions (view.Project, null);
+			base.Options = new StyledSourceEditorOptions (DefaultSourceEditorOptions.Instance);
 			Initialize (view);
 		}
 		
@@ -101,17 +155,11 @@ namespace MonoDevelop.SourceEditor
 		void Initialize (SourceEditorView view)
 		{
 			this.view = view;
-			Caret.PositionChanged += delegate {
-				if (Extension != null) {
-					try {
-						Extension.CursorPositionChanged ();
-					} catch (Exception ex) {
-						ReportExtensionError (ex);
-					}
-				}
-			};
-			
+
 			Document.TextReplaced += HandleSkipCharsOnReplace;
+			Document.SyntaxModeChanged += delegate {
+				UpdateSemanticHighlighting ();
+			};
 
 			UpdateEditMode ();
 			this.DoPopupMenu = ShowPopup;
@@ -133,21 +181,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public ExtensionContext ExtensionContext {
-			get {
-				return extensionContext;
-			}
-			set {
-				if (extensionContext != null) {
-					extensionContext.RemoveExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
-					ClearTooltipProviders ();
-				}
-				extensionContext = value;
-				if (extensionContext != null)
-					extensionContext.AddExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
-			}
-		}
-		
+
 		static bool? testNewViMode = null;
 		static bool TestNewViMode {
 			get {
@@ -159,7 +193,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateEditMode ()
 		{
-			if (Options.UseViModes) {
+			if (MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.UseViModes) {
 				if (TestNewViMode) {
 					if (!(CurrentMode is NewIdeViMode))
 					CurrentMode = new NewIdeViMode (this);
@@ -170,8 +204,8 @@ namespace MonoDevelop.SourceEditor
 			} else {
 		//		if (!(CurrentMode is SimpleEditMode)){
 					SimpleEditMode simpleMode = new SimpleEditMode ();
-					simpleMode.KeyBindings [EditMode.GetKeyCode (Gdk.Key.Tab)] = new TabAction (this).Action;
-					simpleMode.KeyBindings [EditMode.GetKeyCode (Gdk.Key.BackSpace)] = EditActions.AdvancedBackspace;
+					simpleMode.KeyBindings [Mono.TextEditor.EditMode.GetKeyCode (Gdk.Key.Tab)] = new TabAction (this).Action;
+					simpleMode.KeyBindings [Mono.TextEditor.EditMode.GetKeyCode (Gdk.Key.BackSpace)] = EditActions.AdvancedBackspace;
 					CurrentMode = simpleMode;
 		//		}
 			}
@@ -187,35 +221,26 @@ namespace MonoDevelop.SourceEditor
 			cachedVAdjustment = null;
 		}
 
+		internal bool IsDestroyed { get; private set; }
+
 		protected override void OnDestroyed ()
 		{
+			IsDestroyed = true;
 			UnregisterAdjustments ();
-			Extension = null;
-			ExtensionContext = null;
+			extensionContext = null;
 			view = null;
+			var disposableSyntaxMode = Document.SyntaxMode as IDisposable;
+			if (disposableSyntaxMode != null)  {
+				disposableSyntaxMode.Dispose ();
+				Document.SyntaxMode = null;
+			}
 			base.OnDestroyed ();
 			if (Options != null) {
 				Options.Dispose ();
 				base.Options = null;
 			}
 		}
-		
-		void OnTooltipProviderChanged (object s, ExtensionNodeEventArgs a)
-		{
-			TooltipProvider provider;
-			try {
-				provider = (TooltipProvider) a.ExtensionObject;
-			} catch (Exception e) {
-				LoggingService.LogError ("Can't create tooltip provider:"+ a.ExtensionNode, e);
-				return;
-			}
-			if (a.Change == ExtensionChange.Add) {
-				AddTooltipProvider (provider);
-			} else {
-				RemoveTooltipProvider (provider);
-			}
-		}
-		
+
 		public void FireOptionsChange ()
 		{
 			this.OptionsChanged (null, null);
@@ -255,7 +280,14 @@ namespace MonoDevelop.SourceEditor
 		{
 			isInKeyStroke = true;
 			try {
-				return Extension.KeyPress (key, (char)ch, state);
+				if (needToAddLastExtension) {
+					var ext = EditorExtension;
+					while (ext.Next != null)
+						ext = ext.Next;
+					ext.Next = new LastEditorExtension (this);
+					needToAddLastExtension = false;
+				}
+				return EditorExtension.KeyPress (KeyDescriptor.FromGtk (key, (char)ch, state));
 			} catch (Exception ex) {
 				ReportExtensionError (ex);
 			} finally {
@@ -268,17 +300,12 @@ namespace MonoDevelop.SourceEditor
 		{
 			LoggingService.LogInternalError ("Error in text editor extension chain", ex);
 		}
-		
-		IEnumerable<char> TextWithoutCommentsAndStrings {
-			get {
-				return from p in GetTextWithoutCommentsAndStrings (Document, 0, Document.TextLength) select p.Key;
-			}
-		}
-		
-		static IEnumerable<KeyValuePair <char, int>> GetTextWithoutCommentsAndStrings (Mono.TextEditor.TextDocument doc, int start, int end) 
+
+		static IEnumerable<char> GetTextWithoutCommentsAndStrings (Mono.TextEditor.TextDocument doc, int start, int end) 
 		{
 			bool isInString = false, isInChar = false;
 			bool isInLineComment = false, isInBlockComment = false;
+			int escaping = 0;
 			
 			for (int pos = start; pos < end; pos++) {
 				char ch = doc.GetCharAt (pos);
@@ -300,18 +327,25 @@ namespace MonoDevelop.SourceEditor
 						}
 						break;
 					case '"':
-						if (!(isInChar || isInLineComment || isInBlockComment)) 
-							isInString = !isInString;
+						if (!(isInChar || isInLineComment || isInBlockComment))
+							if (!isInString || escaping != 1)
+								isInString = !isInString;
 						break;
 					case '\'':
-						if (!(isInString || isInLineComment || isInBlockComment)) 
-							isInChar = !isInChar;
+						if (!(isInString || isInLineComment || isInBlockComment))
+							if (!isInChar || escaping != 1)
+								isInChar = !isInChar;
+						break;
+					case '\\':
+						if (escaping != 1)
+							escaping = 2;
 						break;
 					default :
 						if (!(isInString || isInChar || isInLineComment || isInBlockComment))
-							yield return new KeyValuePair<char, int> (ch, pos);
+							yield return ch;
 						break;
 				}
+				escaping--;
 			}
 		}
 		
@@ -320,7 +354,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			bool result = true;
 			if (key == Gdk.Key.Escape) {
-				bool b = Extension != null ? ExtensionKeyPress (key, ch, state) : base.OnIMProcessedKeyPressEvent (key, ch, state);
+				bool b = EditorExtension != null ? ExtensionKeyPress (key, ch, state) : base.OnIMProcessedKeyPressEvent (key, ch, state);
 				if (b) {
 					view.SourceEditorWidget.RemoveSearchWidget ();
 					return true;
@@ -385,13 +419,13 @@ namespace MonoDevelop.SourceEditor
 			char insertionChar = '\0';
 			bool insertMatchingBracket = false;
 			IDisposable undoGroup = null;
-			if (skipChar == null && Options.AutoInsertMatchingBracket && braceIndex >= 0 && !IsSomethingSelected) {
+			if (skipChar == null && MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket && braceIndex >= 0 && !IsSomethingSelected) {
 				if (!inStringOrComment) {
 					char closingBrace = closingBrackets [braceIndex];
 					char openingBrace = openBrackets [braceIndex];
 
 					int count = 0;
-					foreach (char curCh in TextWithoutCommentsAndStrings) {
+					foreach (char curCh in GetTextWithoutCommentsAndStrings(Document, 0, Document.TextLength)) {
 						if (curCh == openingBrace) {
 							count++;
 						} else if (curCh == closingBrace) {
@@ -421,8 +455,8 @@ namespace MonoDevelop.SourceEditor
 				Caret.IsInInsertMode = false;
 				skipChars.Remove (skipChar);
 			}
-			if (Extension != null) {
-				if (!DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep) {
+			if (EditorExtension != null) {
+				if (!MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep) {
 					using (var undo = Document.OpenUndoGroup ()) {
 						if (ExtensionKeyPress (key, ch, state))
 							result = base.OnIMProcessedKeyPressEvent (key, ch, state);
@@ -465,29 +499,21 @@ namespace MonoDevelop.SourceEditor
 		
 		internal string GetErrorInformationAt (int offset)
 		{
-			DocumentLocation location = Document.OffsetToLocation (offset);
+			var location = Document.OffsetToLocation (offset);
 			DocumentLine line = Document.GetLine (location.Line);
 			if (line == null)
 				return null;
-			var error = line.Markers.FirstOrDefault (m => m is ErrorMarker) as ErrorMarker;
+
+			var error = Document.GetTextSegmentMarkersAt (offset).OfType<ErrorMarker> ().FirstOrDefault ();
 			
 			if (error != null) {
-				if (error.Info.ErrorType == ErrorType.Warning)
-					return GettextCatalog.GetString ("<b>Parser Warning</b>: {0}",
-					                                 GLib.Markup.EscapeText (error.Info.Message));
-				return GettextCatalog.GetString ("<b>Parser Error</b>: {0}",
-				                                 GLib.Markup.EscapeText (error.Info.Message));
+				if (error.Error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Warning)
+					return GettextCatalog.GetString ("<b>Warning</b>: {0}",
+						GLib.Markup.EscapeText (error.Error.Message));
+				return GettextCatalog.GetString ("<b>Error</b>: {0}",
+					GLib.Markup.EscapeText (error.Error.Message));
 			}
 			return null;
-		}
-		
-		internal ParsedDocument ParsedDocument {
-			get {
-				var doc = IdeApp.Workbench.ActiveDocument;
-				if (doc != null) 
-					return doc.ParsedDocument;
-				return null;
-			}
 		}
 		
 		public MonoDevelop.Projects.Project Project {
@@ -501,10 +527,10 @@ namespace MonoDevelop.SourceEditor
 		
 		int           oldOffset = -1;
 
-		public ResolveResult GetLanguageItem (int offset, out DomRegion region)
+		public Microsoft.CodeAnalysis.ISymbol GetLanguageItem (int offset, out MonoDevelop.Ide.Editor.DocumentRegion region)
 		{
 			oldOffset = offset;
-			region = DomRegion.Empty;
+			region = MonoDevelop.Ide.Editor.DocumentRegion.Empty;
 
 			if (textEditorResolverProvider != null) {
 				return textEditorResolverProvider.GetLanguageItem (view.WorkbenchWindow.Document, offset, out region);
@@ -516,7 +542,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (IsSomethingSelected) {
 				var result = GetLanguageItem (Caret.Offset, Document.GetTextAt (SelectionRange));
-				if (result != null && !result.IsError)
+				if (result != null)
 					return CodeTemplateContext.InExpression;
 			}
 			return CodeTemplateContext.Standard;
@@ -529,7 +555,7 @@ namespace MonoDevelop.SourceEditor
 			internal set { this.textEditorResolverProvider = value; }
 		}
 		
-		public ResolveResult GetLanguageItem (int offset, string expression)
+		public Microsoft.CodeAnalysis.ISymbol GetLanguageItem (int offset, string expression)
 		{
 			oldOffset = offset;
 			
@@ -580,7 +606,7 @@ namespace MonoDevelop.SourceEditor
 			ParameterInformationWindowManager.HideWindow (null, view);
 			HideTooltip ();
 			const string menuPath = "/MonoDevelop/SourceEditor2/ContextMenu/Editor";
-			var ctx = ExtensionContext ?? AddinManager.AddinEngine;
+			var ctx = view.WorkbenchWindow?.ExtensionContext ?? AddinManager.AddinEngine;
 
 			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet (ctx, menuPath);
 
@@ -624,28 +650,15 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 #region Templates
-		int FindPrevWordStart (int offset)
-		{
-			while (--offset >= 0 && !Char.IsWhiteSpace (Document.GetCharAt (offset))) 
-				;
-			return ++offset;
-		}
 
-		public string GetWordBeforeCaret ()
-		{
-			int offset = this.Caret.Offset;
-			int start  = FindPrevWordStart (offset);
-			return Document.GetTextAt (start, offset - start);
-		}
-		
 		public bool IsTemplateKnown ()
 		{
-			string word = GetWordBeforeCaret ();
+			string shortcut = CodeTemplate.GetTemplateShortcutBeforeCaret (EditorExtension.Editor);
 			bool result = false;
 			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplates (Document.MimeType)) {
-				if (template.Shortcut == word) {
+				if (template.Shortcut == shortcut) {
 					result = true;
-				} else if (template.Shortcut.StartsWith (word)) {
+				} else if (template.Shortcut.StartsWith (shortcut)) {
 					result = false;
 					break;
 				}
@@ -655,10 +668,10 @@ namespace MonoDevelop.SourceEditor
 		
 		public bool DoInsertTemplate ()
 		{
-			string word = GetWordBeforeCaret ();
+			string shortcut = CodeTemplate.GetTemplateShortcutBeforeCaret (EditorExtension.Editor);
 			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplates (Document.MimeType)) {
-				if (template.Shortcut == word) {
-					InsertTemplate (template, view.WorkbenchWindow.Document);
+				if (template.Shortcut == shortcut) {
+					InsertTemplate (template, view.WorkbenchWindow.Document.Editor, view.WorkbenchWindow.Document);
 					return true;
 				}
 			}
@@ -666,13 +679,16 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 
-		internal void InsertTemplate (CodeTemplate template, MonoDevelop.Ide.Gui.Document document)
+		internal void InsertTemplate (CodeTemplate template, MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext context)
 		{
-			using (var undo = Document.OpenUndoGroup ()) {
-				var result = template.InsertTemplateContents (document);
+			using (var undo = editor.OpenUndoGroup ()) {
+				var result = template.InsertTemplateContents (editor, context);
 
-				var links = result.TextLinks;
-
+				var links = result.TextLinks.Select (l => new Mono.TextEditor.TextLink (l.Name) {
+					Links = l.Links.Select (s => new TextSegment (s.Offset, s.Length)).ToList (),
+					IsEditable = l.IsEditable,
+					IsIdentifier = l.IsIdentifier
+				}).ToList ();
 				var tle = new TextLinkEditMode (this, result.InsertPosition, links);
 				tle.TextLinkMode = TextLinkMode.General;
 				if (tle.ShouldStartTextLinkMode) {
@@ -1021,7 +1037,7 @@ namespace MonoDevelop.SourceEditor
 			RunAction (SelectionActions.MovePageUp);
 		}
 		
-		[CommandHandler (MonoDevelop.SourceEditor.SourceEditorCommands.PulseCaret)]
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.PulseCaret)]
 		internal void OnPulseCaretCommand ()
 		{
 			StartCaretPulseAnimation ();
@@ -1051,18 +1067,6 @@ namespace MonoDevelop.SourceEditor
 			using (var undo = Document.OpenUndoGroup ()) {
 				RunAction (Mono.TextEditor.Vi.ViActions.Join);
 			}
-		}
-
-		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.SortSelectedLines)]
-		void SortSelectedLines ()
-		{
-			RunAction (MiscActions.SortSelectedLines);
-		}
-
-		[CommandUpdateHandler (MonoDevelop.Ide.Commands.EditCommands.SortSelectedLines)]
-		void UpdateSortSelectedLines (CommandInfo ci)
-		{
-			ci.Enabled = GetTextEditorData ().IsMultiLineSelection;
 		}
 #endregion
 	

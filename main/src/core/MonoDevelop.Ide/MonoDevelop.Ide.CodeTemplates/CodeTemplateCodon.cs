@@ -32,7 +32,7 @@ using System.IO;
 namespace MonoDevelop.Ide.CodeTemplates
 {
 	[ExtensionNode (Description="A template for color and syntax shemes.")]
-	public class CodeTemplateCodon : ExtensionNode
+	class CodeTemplateCodon : ExtensionNode
 	{
 		[NodeAttribute("resource", "Name of the resource where the template is stored.")]
 		string resource;

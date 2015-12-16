@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using NuGet;
@@ -255,7 +255,7 @@ namespace MonoDevelop.PackageManagement
 
 		protected virtual void GuiDispatch (MessageHandler handler)
 		{
-			DispatchService.GuiSyncDispatch (handler);
+			Runtime.RunInMainThread (() => handler ()).Wait ();
 		}
 
 		T GuiSyncDispatch<T> (Func<T> action)

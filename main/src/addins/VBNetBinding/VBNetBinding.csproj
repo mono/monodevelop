@@ -80,7 +80,6 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="VBBindingCompilerServices.cs" />
-    <Compile Include="VBLanguageBinding.cs" />
     <Compile Include="Project\VBCompilerParameters.cs" />
     <Compile Include="VBCodeGenerator.cs" />
     <Compile Include="gtk-gui\generated.cs" />
@@ -95,8 +94,9 @@
     <Compile Include="Gui\ImportsOptionsPanelWidget.cs" />
     <Compile Include="Gui\ImportsOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VBNetBinding.ImportsOptionsPanelWidget.cs" />
-    <Compile Include="Project\VBProjectParameters.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="Project\VBProjectExtension.cs" />
+    <Compile Include="Project\ImprovedCodeDomProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="templates\EmptyVBFile.xft.xml">

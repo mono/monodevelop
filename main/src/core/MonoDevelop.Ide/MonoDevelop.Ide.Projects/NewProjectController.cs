@@ -35,11 +35,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using Xwt.Drawing;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -251,7 +253,7 @@ namespace MonoDevelop.Ide.Projects
 		void SetDefaultLocation ()
 		{
 			if (BasePath == null)
-				BasePath = IdeApp.ProjectOperations.ProjectsDefaultPath;
+				BasePath = IdeApp.Preferences.ProjectsDefaultPath;
 
 			projectConfiguration.Location = new FilePath (BasePath).ResolveLinks ();
 		}
@@ -520,7 +522,7 @@ namespace MonoDevelop.Ide.Projects
 			IsLastPage = false;
 		}
 
-		public void Create ()
+		public async Task Create ()
 		{
 			if (wizardProvider.HasWizard)
 				wizardProvider.BeforeProjectIsCreated ();
@@ -548,48 +550,48 @@ namespace MonoDevelop.Ide.Projects
 				// Make sure the new item is saved before adding. In this way the
 				// version control add-in will be able to put it under version control.
 				foreach (SolutionItem currentEntry in currentEntries) {
-					var eitem = currentEntry as SolutionEntityItem;
+					var eitem = currentEntry as SolutionItem;
 					if (eitem != null) {
 						// Inherit the file format from the solution
-						eitem.FileFormat = ParentFolder.ParentSolution.FileFormat;
+						eitem.ConvertToFormat (ParentFolder.ParentSolution.FileFormat);
 
-						// Remove any references to other projects and add them back after the
-						// project is saved because a project reference cannot be resolved until
-						// the project has a parent solution.
-						List<ProjectReference> projectReferences = GetProjectReferences (eitem);
-						if (projectReferences.Any ())
-							eitem.Items.RemoveRange (projectReferences);
+						var project = eitem as Project;
+						if (project != null) {
+							// Remove any references to other projects and add them back after the
+							// project is saved because a project reference cannot be resolved until
+							// the project has a parent solution.
+							List<ProjectReference> projectReferences = GetProjectReferences (project);
+							if (projectReferences.Any ())
+								project.Items.RemoveRange (projectReferences);
 
-						IdeApp.ProjectOperations.Save (eitem);
+							await IdeApp.ProjectOperations.SaveAsync (eitem);
 
-						if (projectReferences.Any ())
-							eitem.Items.AddRange (projectReferences);
+							if (projectReferences.Any ())
+								project.Items.AddRange (projectReferences);
+						}
 					}
 					ParentFolder.AddItem (currentEntry, true);
 				}
 			}
 
 			if (ParentFolder != null)
-				IdeApp.ProjectOperations.Save (ParentFolder.ParentSolution);
+				await IdeApp.ProjectOperations.SaveAsync (ParentFolder.ParentSolution);
 			else
-				IdeApp.ProjectOperations.Save (processedTemplate.WorkspaceItems);
+				await IdeApp.ProjectOperations.SaveAsync (processedTemplate.WorkspaceItems);
 
 			CreateVersionControlItems ();
 
 			if (OpenSolution) {
 				DisposeExistingNewItems ();
 				TemplateWizard wizard = wizardProvider.CurrentWizard;
-				var op = OpenCreatedSolution (processedTemplate);
-				op.Completed += delegate {
-					if (op.Success) {
-						var sol = IdeApp.Workspace.GetAllSolutions ().FirstOrDefault ();
-						if (sol != null) {
-							if (wizard != null)
-								wizard.ItemsCreated (new [] { sol });
-							InstallProjectTemplatePackages (sol);
-						}
+				if (await OpenCreatedSolution (processedTemplate)) {
+					var sol = IdeApp.Workspace.GetAllSolutions ().FirstOrDefault ();
+					if (sol != null) {
+						if (wizard != null)
+							wizard.ItemsCreated (new [] { sol });
+						InstallProjectTemplatePackages (sol);
 					}
-				};
+				}
 			}
 			else {
 				// The item is not a solution being opened, so it is going to be added to
@@ -616,7 +618,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
-		List<ProjectReference> GetProjectReferences (SolutionEntityItem solutionItem)
+		List<ProjectReference> GetProjectReferences (Project solutionItem)
 		{
 			return solutionItem.Items.OfType<ProjectReference> ()
 				.Where (item => item.ReferenceType == ReferenceType.Project)
@@ -626,7 +628,7 @@ namespace MonoDevelop.Ide.Projects
 		bool CreateProject ()
 		{
 			if (!projectConfiguration.IsValid ()) {
-				MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, '.' or '_'."));
+				MessageService.ShowError (projectConfiguration.GetErrorMessage ());
 				return false;
 			}
 
@@ -637,6 +639,12 @@ namespace MonoDevelop.Ide.Projects
 
 			if (ParentWorkspace != null && SolutionAlreadyExistsInParentWorkspace ()) {
 				MessageService.ShowError (GettextCatalog.GetString ("A solution with that filename is already in your workspace"));
+				return false;
+			}
+
+			SolutionTemplate template = GetTemplateForProcessing ();
+			if (ProjectNameIsLanguageKeyword (template.Language, projectConfiguration.ProjectName)) {
+				MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nName cannot contain a language keyword."));
 				return false;
 			}
 
@@ -662,16 +670,16 @@ namespace MonoDevelop.Ide.Projects
 			DisposeExistingNewItems ();
 
 			try {
-				result = IdeApp.Services.TemplatingService.ProcessTemplate (GetTemplateForProcessing (), projectConfiguration, ParentFolder);
+				result = IdeApp.Services.TemplatingService.ProcessTemplate (template, projectConfiguration, ParentFolder);
 				if (!result.WorkspaceItems.Any ())
 					return false;
 			} catch (UserException ex) {
 				MessageService.ShowError (ex.Message, ex.Details);
 				return false;
 			} catch (Exception ex) {
-				MessageService.ShowException (ex, GettextCatalog.GetString ("The project could not be created"));
+				MessageService.ShowError (GettextCatalog.GetString ("The project could not be created"), ex);
 				return false;
-			}
+			}	
 			processedTemplate = result;
 			return true;
 		}
@@ -682,7 +690,7 @@ namespace MonoDevelop.Ide.Projects
 				return false;
 
 			string solutionFileName = Path.Combine (projectConfiguration.SolutionLocation, finalConfigurationPage.SolutionFileName);
-			return ParentWorkspace.GetAllSolutions ()
+			return ParentWorkspace.GetChildren ().OfType<Solution> ()
 				.Any (solution => solution.FileName == solutionFileName);
 		}
 
@@ -695,6 +703,42 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
+		static bool ProjectNameIsLanguageKeyword (string language, string projectName)
+		{
+			LanguageBinding binding = LanguageBindingService.GetBindingPerLanguageName (language);
+			if (binding != null) {
+				var codeDomProvider = binding.GetCodeDomProvider ();
+				if (codeDomProvider != null) {
+					projectName = SanitisePotentialNamespace (projectName);
+					return !codeDomProvider.IsValidIdentifier (projectName);
+				}
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Taken from DotNetProject. This is needed otherwise an invalid namespace
+		/// can still be used if digits are used as the start of the project name
+		/// (e.g. '2try').
+		/// </summary>
+		static string SanitisePotentialNamespace (string potential)
+		{
+			var sb = new StringBuilder ();
+			foreach (char c in potential) {
+				if (char.IsLetter (c) || c == '_' || (sb.Length > 0 && (char.IsLetterOrDigit (sb[sb.Length - 1]) || sb[sb.Length - 1] == '_') && (c == '.' || char.IsNumber (c)))) {
+					sb.Append (c);
+				}
+			}
+			if (sb.Length > 0) {
+				if (sb[sb.Length - 1] == '.')
+					sb.Remove (sb.Length - 1, 1);
+
+				return sb.ToString ();
+			} else
+				return "Application";
+		}
+
 		void InstallProjectTemplatePackages (Solution sol)
 		{
 			if (!processedTemplate.HasPackages ())
@@ -705,21 +749,19 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
-		static IAsyncOperation OpenCreatedSolution (ProcessedTemplateResult templateResult)
+		static async Task<bool> OpenCreatedSolution (ProcessedTemplateResult templateResult)
 		{
-			IAsyncOperation asyncOperation = IdeApp.Workspace.OpenWorkspaceItem (templateResult.SolutionFileName);
-			asyncOperation.Completed += delegate {
-				if (asyncOperation.Success) {
-					RunTemplateActions (templateResult);
-				}
-			};
-			return asyncOperation;
+			if (await IdeApp.Workspace.OpenWorkspaceItem (templateResult.SolutionFileName)) {
+				RunTemplateActions (templateResult);
+				return true;
+			}
+			return false;
 		}
 
 		static void RunTemplateActions (ProcessedTemplateResult templateResult)
 		{
 			foreach (string action in templateResult.Actions) {
-				IdeApp.Workbench.OpenDocument (Path.Combine (templateResult.ProjectBasePath, action));
+				IdeApp.Workbench.OpenDocument (Path.Combine (templateResult.ProjectBasePath, action), project: null);
 			}
 		}
 

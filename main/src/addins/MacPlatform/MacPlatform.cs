@@ -67,7 +67,8 @@ namespace MonoDevelop.MacIntegration
 
 		public MacPlatformService ()
 		{
-			if (IntPtr.Size == 8)
+			string safe64 = Environment.GetEnvironmentVariable ("MONODEVELOP_64BIT_SAFE");
+			if (string.IsNullOrEmpty (safe64) && IntPtr.Size == 8)
 				throw new Exception ("Mac integration is not yet 64-bit safe");
 
 			if (initedGlobal)
@@ -562,7 +563,7 @@ namespace MonoDevelop.MacIntegration
 			return res != null ? res.ToXwtImage () : base.OnGetIconForFile (filename);
 		}
 
-		public override IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
+		public override ProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
 		                                                            IDictionary<string, string> environmentVariables,
 		                                                            string title, bool pauseWhenFinished)
 		{
@@ -789,7 +790,7 @@ namespace MonoDevelop.MacIntegration
 			var toplevels = GtkQuartz.GetToplevels ();
 
 			// Check GtkWindow's Modal flag or for a visible NSPanel
-			return toplevels.Any (t => (t.Value != null && t.Value.Modal) || (t.Key.IsVisible && (t.Key is NSPanel)));
+			return toplevels.Any (t => (t.Value != null && t.Value.Modal && t.Value.Visible) || (t.Key.IsVisible && (t.Key is NSPanel)));
 		}
 
 		public override void AddChildWindow (Gtk.Window parent, Gtk.Window child)

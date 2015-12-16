@@ -30,7 +30,7 @@ using System;
 using System.Linq;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public interface IMachinePackageCache
 	{

@@ -307,7 +307,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		bool ConfigurationEquals (Solution sol, SolutionConfiguration s1, SolutionConfiguration s2)
 		{
-			foreach (var p in sol.GetAllSolutionItems<SolutionEntityItem> ()) {
+			foreach (var p in sol.GetAllItems<SolutionItem> ()) {
 				var c1 = s1.GetEntryForItem (p);
 				var c2 = s2.GetEntryForItem (p);
 				if (c1 == null && c2 == null)

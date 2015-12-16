@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Gui.Components;
 using System.Threading.Tasks;
 using System.Net;
 using Xwt.Backends;
+using Gtk;
 
 namespace MonoDevelop.Ide
 {
@@ -212,17 +213,17 @@ namespace MonoDevelop.Ide
 
 		static Gdk.Pixbuf Get2xIconVariant (Gdk.Pixbuf px)
 		{
-			return Mono.TextEditor.GtkWorkarounds.Get2xVariant (px);
+			return GtkWorkarounds.Get2xVariant (px);
 		}
 
 		static void Set2xIconVariant (Gdk.Pixbuf px, Gdk.Pixbuf variant2x)
 		{
-			Mono.TextEditor.GtkWorkarounds.Set2xVariant (px, variant2x);
+			GtkWorkarounds.Set2xVariant (px, variant2x);
 		}
 
 		static Dictionary<string,Xwt.Drawing.Image> icons = new Dictionary<string, Xwt.Drawing.Image> ();
 
-		public static Xwt.Drawing.Image GetIcon (string name, Gtk.IconSize size)
+		public static Xwt.Drawing.Image GetIcon (string name, Gtk.IconSize size = IconSize.Menu)
 		{
 			return GetIcon (name).WithSize (size);
 		}
@@ -489,7 +490,7 @@ namespace MonoDevelop.Ide
 			Gtk.IconSource source2x = null;
 
 			if (Platform.IsWindows) {
-				var pixel_scale = Mono.TextEditor.GtkWorkarounds.GetPixelScale ();
+				var pixel_scale = GtkWorkarounds.GetPixelScale ();
 				source.Pixbuf = pixbuf.ScaleSimple ((int)(pixbuf.Width * pixel_scale), (int)(pixbuf.Height * pixel_scale), Gdk.InterpType.Bilinear);
 			} else {
 				source.Pixbuf = pixbuf;
@@ -499,17 +500,17 @@ namespace MonoDevelop.Ide
 			source.SizeWildcarded = iconSize == Gtk.IconSize.Invalid;
 
 			if (pixbuf2x != null) {
-				if (Mono.TextEditor.GtkWorkarounds.SetSourceScale (source, 1)) {
-					Mono.TextEditor.GtkWorkarounds.SetSourceScaleWildcarded (source, false);
+				if (GtkWorkarounds.SetSourceScale (source, 1)) {
+					GtkWorkarounds.SetSourceScaleWildcarded (source, false);
 					source2x = new Gtk.IconSource ();
 					source2x.Pixbuf = pixbuf2x;
 					source2x.Size = iconSize;
 					source2x.SizeWildcarded = iconSize == Gtk.IconSize.Invalid;
-					Mono.TextEditor.GtkWorkarounds.SetSourceScale (source2x, 2);
-					Mono.TextEditor.GtkWorkarounds.SetSourceScaleWildcarded (source2x, false);
+					GtkWorkarounds.SetSourceScale (source2x, 2);
+					GtkWorkarounds.SetSourceScaleWildcarded (source2x, false);
 				}
 			} else {
-				Mono.TextEditor.GtkWorkarounds.SetSourceScaleWildcarded (source, true);
+				GtkWorkarounds.SetSourceScaleWildcarded (source, true);
 			}
 
 			iconSet.AddSource (source);

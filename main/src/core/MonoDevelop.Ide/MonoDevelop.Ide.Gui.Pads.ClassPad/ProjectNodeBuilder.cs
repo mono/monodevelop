@@ -43,23 +43,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public class ProjectNodeBuilder: TypeNodeBuilder
 	{
-		SolutionItemRenamedEventHandler projectNameChanged;
-
-		public ProjectNodeBuilder ()
-		{
-			projectNameChanged = (SolutionItemRenamedEventHandler) DispatchService.GuiDispatch (new SolutionItemRenamedEventHandler (OnProjectRenamed));
-		}
-
-//		EventHandler<TypeUpdateInformationEventArgs> compilationUnitUpdated;
 		protected override void Initialize ()
 		{
-//			compilationUnitUpdated = (EventHandler<TypeUpdateInformationEventArgs>) DispatchService.GuiDispatch (new EventHandler<TypeUpdateInformationEventArgs> (OnClassInformationChanged));
-//			TypeSystemService.TypesUpdated += compilationUnitUpdated;
+//			TypeSystemService.TypesUpdated += OnClassInformationChanged;
 		}
 		
 		public override void Dispose ()
 		{
-//			TypeSystemService.TypesUpdated -= compilationUnitUpdated;
+//			TypeSystemService.TypesUpdated -= OnClassInformationChanged;
 		}
 		
 		public override Type NodeDataType {
@@ -73,13 +64,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override void OnNodeAdded (object dataObject)
 		{
 			Project project = (Project) dataObject;
-			project.NameChanged += projectNameChanged;
+			project.NameChanged += OnProjectRenamed;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
 			Project project = (Project) dataObject;
-			project.NameChanged -= projectNameChanged;
+			project.NameChanged -= OnProjectRenamed;
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
@@ -106,23 +97,24 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 				builder.AddChild (((DotNetProject)project).References);
 			}
 			bool publicOnly = builder.Options ["PublicApiOnly"];
-			var dom = TypeSystemService.GetCompilation (project);
-			bool nestedNamespaces = builder.Options ["NestedNamespaces"];
-			HashSet<string> addedNames = new HashSet<string> ();
-			foreach (var ns in dom.MainAssembly.RootNamespace.ChildNamespaces) {
-				if (nestedNamespaces) {
-					if (!addedNames.Contains (ns.Name)) {
-						builder.AddChild (new ProjectNamespaceData (project, ns));
-						addedNames.Add (ns.Name);
-					}
-				} else {
-					FillNamespaces (builder, project, ns);
-				}
-			}
-			foreach (var type in dom.MainAssembly.RootNamespace.Types) {
-				if (!publicOnly || type.IsPublic)
-					builder.AddChild (new ClassData (project, type));
-			}
+			// TODO: Roslyn port.
+//			var dom = TypeSystemService.GetCompilation (project);
+//			bool nestedNamespaces = builder.Options ["NestedNamespaces"];
+//			HashSet<string> addedNames = new HashSet<string> ();
+//			foreach (var ns in dom.MainAssembly.RootNamespace.ChildNamespaces) {
+//				if (nestedNamespaces) {
+//					if (!addedNames.Contains (ns.Name)) {
+//						builder.AddChild (new ProjectNamespaceData (project, ns));
+//						addedNames.Add (ns.Name);
+//					}
+//				} else {
+//					FillNamespaces (builder, project, ns);
+//				}
+//			}
+//			foreach (var type in dom.MainAssembly.RootNamespace.Types) {
+//				if (!publicOnly || type.IsPublic)
+//					builder.AddChild (new ClassData (project, type));
+//			}
 		}
 		
 		public static void FillNamespaces (ITreeBuilder builder, Project project, INamespace ns)

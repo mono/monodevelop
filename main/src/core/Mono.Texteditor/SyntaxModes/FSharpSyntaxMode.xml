@@ -70,11 +70,6 @@
 		<End>"</End>
 	</Span>
 	
-	<Span rule="Let" stopateol = "false">
-		<Begin color="Keyword(Iteration)" flags="NewWord">let </Begin>
-		<End>=|(|&lt;</End>
-	</Span>
-
 <!-- 
 	<Span color="String" rule="String" stopateol="true" escape='\'>
 		<Begin>[]</Begin>
@@ -115,6 +110,20 @@
 		<Word>new</Word>
 	</Keywords>
 
+	<Keywords color="Keyword(Modifiers)">
+		<Word>inline</Word>
+		<Word>static</Word>
+		<Word>abstract</Word>
+		<Word>default</Word>
+		<Word>override</Word>
+		<Word>private</Word>
+		<Word>public</Word>
+		<Word>extern</Word>
+		<Word>internal</Word>
+		<Word>mutable</Word>
+		<Word>rec</Word>
+	</Keywords>
+
 	<Keywords color="Keyword(Iteration)">
 		<!-- control flow constructs -->
 		<Word>finally</Word>
@@ -136,21 +145,10 @@
 		<Word>when</Word>
 
 		<!-- object model things -->
-		<Word>inline</Word>
-		<Word>static</Word>
-		<Word>abstract</Word>
-		<Word>override</Word>
-		<Word>private</Word>
-		<Word>public</Word>
-		<Word>extern</Word>
-		<Word>internal</Word>
-		<Word>mutable</Word>
-		<Word>rec</Word>
 		<Word>void</Word>
 
 		<Word>global</Word>
 		<Word>base</Word>
-		<Word>default</Word>
 		<Word>inherit</Word>
 		<Word>member</Word>
 		<Word>type</Word>

@@ -34,12 +34,10 @@ using Mono.Cecil;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;
-using Mono.TextEditor;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.IO;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -67,17 +65,17 @@ namespace MonoDevelop.AssemblyBrowser
 			nodeInfo.Icon = Context.GetIcon (Stock.Reference);
 		}
 		
-		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
+		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			var compilationUnit = (AssemblyLoader)dataObject;
 			
 			var references = new AssemblyReferenceFolder (compilationUnit.Assembly);
 			if (references.AssemblyReferences.Any () || references.ModuleReferences.Any ())
-				builder.AddChild (references);
+				treeBuilder.AddChild (references);
 			
 			var resources = new AssemblyResourceFolder (compilationUnit.Assembly);
 			if (resources.Resources.Any ())
-				builder.AddChild (resources);
+				treeBuilder.AddChild (resources);
 			
 			var namespaces = new Dictionary<string, Namespace> ();
 			bool publicOnly = Widget.PublicApiOnly;
@@ -94,14 +92,14 @@ namespace MonoDevelop.AssemblyBrowser
 			foreach (var ns in namespaces.Values) {
 				if (publicOnly && !ns.Types.Any (t => t.IsPublic))
 					continue;
-				builder.AddChild (ns);
+				treeBuilder.AddChild (ns);
 			}
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			var compilationUnit = (AssemblyLoader)dataObject;
-			return compilationUnit.Assembly.MainModule.HasTypes;
+			return compilationUnit?.Assembly?.MainModule.HasTypes == true;
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
@@ -119,7 +117,7 @@ namespace MonoDevelop.AssemblyBrowser
 				if (e2 == null)
 					return -1;
 				
-				return e1.Assembly.Name.Name.CompareTo (e2.Assembly.Name.Name);
+				return string.Compare (e1.Assembly.Name.Name, e2.Assembly.Name.Name, StringComparison.Ordinal);
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception in assembly browser sort function.", e);
 				return -1;
@@ -130,10 +128,10 @@ namespace MonoDevelop.AssemblyBrowser
 		void PrintAssemblyHeader (StringBuilder result, AssemblyDefinition assemblyDefinition)
 		{
 			result.Append ("<span style=\"comment\">");
-			result.Append (Ambience.SingleLineComment (
-                               String.Format (GettextCatalog.GetString ("Assembly <b>{0}</b>, Version {1}"),
+			result.Append ("// " +
+							   string.Format (GettextCatalog.GetString ("Assembly <b>{0}</b>, Version {1}"),
 			                                  assemblyDefinition.Name.Name,
-			                                  assemblyDefinition.Name.Version)));
+			                                  assemblyDefinition.Name.Version));
 			result.Append ("</span>");
 			result.AppendLine ();
 		}
@@ -151,7 +149,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return GettextCatalog.GetString ("Unknown");
 		}
 		
-		public List<ReferenceSegment> Disassemble (TextEditorData data, ITreeNavigator navigator)
+		public List<ReferenceSegment> Disassemble (TextEditor data, ITreeNavigator navigator)
 		{
 			var assembly = ((AssemblyLoader)navigator.DataItem).UnresolvedAssembly;
 			var compilationUnit = Widget.CecilLoader.GetCecilObject (assembly);
@@ -163,7 +161,7 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		
 		
-		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator, bool publicOnly)
+		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, bool publicOnly)
 		{
 			var assembly = ((AssemblyLoader)navigator.DataItem).UnresolvedAssembly;
 			var compilationUnit = Widget.CecilLoader.GetCecilObject (assembly);
@@ -177,7 +175,7 @@ namespace MonoDevelop.AssemblyBrowser
 			});
 		}
 
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditorData data, ITreeNavigator navigator, bool publicOnly)
+		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditor data, ITreeNavigator navigator, bool publicOnly)
 		{
 			var assembly = ((AssemblyLoader)navigator.DataItem).UnresolvedAssembly;
 			var compilationUnit = Widget.CecilLoader.GetCecilObject (assembly);

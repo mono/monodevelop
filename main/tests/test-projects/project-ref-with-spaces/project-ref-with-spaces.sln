@@ -1,6 +1,6 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "project-ref-with-spaces", "project-ref-with-spaces.csproj", "{8F7C6D09-049C-4454-B527-39D95D7731B2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "some - library", "some - library\some - library.csproj", "{DC13143D-B843-498B-9212-6947F98EAA8A}"

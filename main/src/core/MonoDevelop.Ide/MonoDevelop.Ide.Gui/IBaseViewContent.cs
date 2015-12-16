@@ -27,6 +27,7 @@
 
 using System;
 using Gtk;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -41,7 +42,8 @@ namespace MonoDevelop.Ide.Gui
 		string TabPageLabel { get; }
 
 		object GetContent (Type type);
-		
+		IEnumerable<T> GetContents<T> () where T : class;
+
 		bool CanReuseView (string fileName);
 		void RedrawContent ();
 	}

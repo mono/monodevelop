@@ -39,7 +39,7 @@ namespace MonoDevelop.Projects
 		public void CheckProjectContainsItself ()
 		{
 			var folder = new SolutionFolder ();
-			var project = new DotNetAssemblyProject { Name = "foo" };
+			var project = new MonoDevelop.CSharp.Project.CSharpProject { Name = "foo" };
 			folder.AddItem (project);
 
 			Assert.IsNotNull (folder.GetProjectContainingFile (project.FileName), "#1");

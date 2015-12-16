@@ -90,6 +90,10 @@ namespace MonoDevelop.VersionControl.Git
 				httpClient = new HttpClient (new HttpClientHandler { Credentials = new System.Net.NetworkCredential (cred.Username, cred.Password) }) {
 					Timeout = TimeSpan.FromMinutes (1.0),
 				};
+				res = httpClient.GetAsync (serviceUri).Result;
+				if (res.StatusCode == System.Net.HttpStatusCode.OK) {
+					GitCredentials.StoreCredentials (GitCredentialsType.Tfs);
+				}
 			}
 
 			return new TfsSmartSubtransportStream(this) {
@@ -134,12 +138,18 @@ namespace MonoDevelop.VersionControl.Git
 				return result.EnsureSuccessStatusCode().Content.ReadAsStreamAsync().Result;
 			}
 
+			bool stuck;
 			public override int Read(Stream dataStream, long length, out long bytesRead)
 			{
 				bytesRead = 0L;
 				var buffer = new byte[64 * 1024];
 				int count;
 
+				if (responseStream.Value.Length <= 0) {
+					if (stuck)
+						throw new Exception ("Stuck while trying to read TFS response");
+					stuck = true;
+				}
 				while (length > 0 && (count = responseStream.Value.Read(buffer, 0, (int)Math.Min(buffer.Length, length))) > 0) {
 					dataStream.Write(buffer, 0, count);
 					bytesRead += (long)count;

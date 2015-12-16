@@ -32,6 +32,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Gui.Dialogs;
 using System;
 using MonoDevelop.Ide.Updater;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -84,7 +85,7 @@ namespace MonoDevelop.Ide.Commands
 					argumentsTool = StringParserService.Parse (customerArguments, IdeApp.Workbench.GetStringTagModel ());
 			}
 
-			DispatchService.BackgroundDispatch (delegate {
+			Task.Run (delegate {
 				RunExternalTool (tool, argumentsTool);
 			});
 		}
@@ -95,7 +96,7 @@ namespace MonoDevelop.Ide.Commands
 			string initialDirectoryTool = StringParserService.Parse (tool.InitialDirectory, IdeApp.Workbench.GetStringTagModel ());
 
 			//Execute tool
-			IProgressMonitor progressMonitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
+			ProgressMonitor progressMonitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
 			try {
 				progressMonitor.Log.WriteLine (GettextCatalog.GetString ("Running: {0} {1}", (commandTool), (argumentsTool)));
 				progressMonitor.Log.WriteLine ();

@@ -38,7 +38,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide;
-using Mono.TextEditor;
 using MonoDevelop.Components;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
@@ -229,7 +228,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public void Refresh ()
 		{
 			// GUI assert here is to catch Bug 434065 - Exception while going to the editor
-			DispatchService.AssertGuiThread ();
+			Runtime.AssertMainThread ();
 			
 			if (toolboxService.Initializing) {
 				toolboxWidget.CustomMessage = GettextCatalog.GetString ("Initializing...");

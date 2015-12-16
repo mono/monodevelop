@@ -156,7 +156,7 @@ namespace MonoDevelop.ChangeLogAddIn
 					}
 					if (!cset.ContainsFile (ce.File)) {
 						if (!cset.Repository.GetVersionInfo (ce.File).IsVersioned)
-							cset.Repository.Add (ce.File, false, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
+							cset.Repository.Add (ce.File, false, new MonoDevelop.Core.ProgressMonitor ());
 						cset.AddFile (ce.File);
 					}
 				}
@@ -226,7 +226,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			requireComment = false;
 			
 			foreach (ChangeSetItem item in cset.Items) {
-				SolutionItem parentItem;
+				SolutionFolderItem parentItem;
 				ChangeLogPolicy policy;
 				string logf = ChangeLogService.GetChangeLogForFile (cset.BaseLocalPath, item.LocalPath,
 				                                                    out parentItem, out policy);

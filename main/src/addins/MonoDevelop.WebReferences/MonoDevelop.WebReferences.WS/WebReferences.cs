@@ -29,9 +29,16 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.WebReferences.WS
 {
-	public class WebReferences: ProjectItem
+	[ExportProjectItemType ("WebReferences")]
+	public class WebReferences: PathBasedProjectItem
 	{
-		[ProjectPathItemProperty ("Include")]
-		public FilePath Path;
+		WebReferences ()
+		{
+		}
+
+		public WebReferences (FilePath path)
+		{
+			Path = path;
+		}
 	}
 }

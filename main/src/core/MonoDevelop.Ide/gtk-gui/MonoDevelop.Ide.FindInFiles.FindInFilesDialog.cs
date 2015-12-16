@@ -5,23 +5,41 @@ namespace MonoDevelop.Ide.FindInFiles
 	public partial class FindInFilesDialog
 	{
 		private global::Gtk.VBox vbox2;
+		
 		private global::Gtk.HBox hbox3;
+		
 		private global::Gtk.RadioButton toggleFindInFiles;
+		
 		private global::Gtk.VSeparator vseparator1;
+		
 		private global::Gtk.RadioButton toggleReplaceInFiles;
+		
 		private global::Gtk.HBox hbox1;
+		
 		private global::Gtk.Table tableFindAndReplace;
+		
 		private global::Gtk.ComboBoxEntry comboboxentryFind;
+		
 		private global::Gtk.HBox hbox2;
+		
 		private global::Gtk.ComboBox comboboxScope;
+		
 		private global::Gtk.Label labelFind;
+		
 		private global::Gtk.Label labelScope;
+		
 		private global::Gtk.Table table1;
+		
 		private global::Gtk.CheckButton checkbuttonCaseSensitive;
+		
 		private global::Gtk.CheckButton checkbuttonRegexSearch;
+		
 		private global::Gtk.CheckButton checkbuttonWholeWordsOnly;
+		
 		private global::Gtk.Button buttonStop;
+		
 		private global::Gtk.Button buttonClose;
+		
 		private global::Gtk.Button buttonSearch;
 
 		protected virtual void Build ()

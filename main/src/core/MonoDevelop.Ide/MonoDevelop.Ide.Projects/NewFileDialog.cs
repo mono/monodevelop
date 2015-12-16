@@ -166,10 +166,13 @@ namespace MonoDevelop.Ide.Projects
 		{
 			string key = "Dialogs.NewFileDialog.LastSelectedCategory";
 			if (proj != null) {
-				key += "." + proj.GetProjectTypes ().First ();
-				var dnp = proj as DotNetProject;
-				if (dnp != null)
-					key += "." + dnp.LanguageName;
+				string projectType = proj.GetTypeTags ().FirstOrDefault ();
+				if (projectType != null) {
+					key += "." + projectType;
+					var dnp = proj as DotNetProject;
+					if (dnp != null)
+						key += "." + dnp.LanguageName;
+				}
 			}
 			return key;
 		}
@@ -322,7 +325,7 @@ namespace MonoDevelop.Ide.Projects
 
 		static string GetCategoryForProject (Dictionary<string, string> categories, Project project)
 		{
-			var projectTypes = project.GetProjectTypes ();
+			var projectTypes = project.GetTypeTags ();
 			foreach (var type in projectTypes) {
 				if (categories.ContainsKey (type))
 					return categories [type];
@@ -493,7 +496,7 @@ namespace MonoDevelop.Ide.Projects
 				}
 
 				if (project != null)
-					IdeApp.ProjectOperations.Save (project);
+					IdeApp.ProjectOperations.SaveAsync (project);
 
 				if (OnOked != null)
 					OnOked (null, null);
@@ -609,19 +612,19 @@ namespace MonoDevelop.Ide.Projects
 			infoLabel.Text = string.Empty;
 			labelTemplateTitle.Text = string.Empty;
 			
-			ReadOnlyCollection<Project> projects = null;
+			Project[] projects = null;
 			if (parentProject == null)
-				projects = IdeApp.Workspace.GetAllProjects ();
+				projects = IdeApp.Workspace.GetAllProjects ().ToArray ();
 
-			if (projects != null && projects.Count > 0) {
+			if (projects != null && projects.Length > 0) {
 				Project curProject = IdeApp.ProjectOperations.CurrentSelectedProject;
 
 				boxProject.Visible = true;
 				projectAddCheckbox.Active = curProject != null;
 				projectAddCheckbox.Toggled += new EventHandler (AddToProjectToggled);
 
-				projectNames = new string[projects.Count];
-				projectRefs = new Project[projects.Count];
+				projectNames = new string[projects.Length];
+				projectRefs = new Project[projects.Length];
 				int i = 0;
 
 				bool singleSolution = IdeApp.Workspace.Items.Count == 1 && IdeApp.Workspace.Items[0] is Solution;

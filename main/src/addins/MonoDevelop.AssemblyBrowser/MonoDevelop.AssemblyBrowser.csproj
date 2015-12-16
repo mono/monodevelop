@@ -46,7 +46,6 @@
   <ItemGroup>
     <Reference Include="Mono.Posix" />
     <Reference Include="System" />
-    <Reference Include="System.Xml" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
@@ -64,6 +63,20 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
+    <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Reflection.Metadata">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Reflection.Metadata.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Collections.Immutable.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -74,11 +87,6 @@
     <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
       <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
       <Name>MonoDevelop.Ide</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
-      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
-      <Name>Mono.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
@@ -94,11 +102,6 @@
     <ProjectReference Include="..\..\..\contrib\ICSharpCode.Decompiler\ICSharpCode.Decompiler.csproj">
       <Project>{984CC812-9470-4A13-AFF9-CC44068D666C}</Project>
       <Name>ICSharpCode.Decompiler</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
-      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
-      <Name>MonoDevelop.SourceEditor</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\cecil\Mono.Cecil.csproj">
@@ -129,6 +132,11 @@
     <ProjectReference Include="..\..\..\external\xwt\Xwt\Xwt.csproj">
       <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
       <Name>Xwt</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
+      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
+      <Name>Mono.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
@@ -169,6 +177,9 @@
     <Compile Include="XmlDocIdLib\OperatorType.cs" />
     <Compile Include="XmlDocIdLib\XmlDocIdGenerator.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\NRefactoryStock.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\HelpExtensions.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserNavigationPoint.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

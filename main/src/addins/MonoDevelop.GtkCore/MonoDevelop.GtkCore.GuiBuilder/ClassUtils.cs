@@ -30,32 +30,31 @@ using Gtk;
 using System;
 using System.Collections;
 using System.CodeDom;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.Semantics;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	internal class ClassUtils
 	{
-		public static IField FindWidgetField (ITypeDefinition cls, string name)
+		public static IFieldSymbol FindWidgetField (ITypeSymbol cls, string name)
 		{
-			foreach (IField field in cls.Fields) {
+			foreach (var field in cls.GetMembers ().OfType<IFieldSymbol> ()) {
 				if (name == GetWidgetFieldName (field))
 					return field;
 			}
 			return null;
 		}
 		
-		public static string GetWidgetFieldName (IField field)
+		public static string GetWidgetFieldName (IFieldSymbol field)
 		{
-			foreach (IAttribute att in field.Attributes)	{
-				var type = att.AttributeType;
-				if (type.ReflectionName == "Glade.Widget" || type.ReflectionName == "Widget" || type.ReflectionName == "Glade.WidgetAttribute" || type.ReflectionName == "WidgetAttribute") {
-					var pArgs = att.PositionalArguments;
-					if (pArgs != null && pArgs.Count > 0) {
-						var exp = pArgs[0] as ConstantResolveResult;
+			foreach (AttributeData att in field.GetAttributes ())	{
+				var type = att.AttributeClass;
+				if (type.Name == "Widget" ||  type.Name == "WidgetAttribute") {
+					var pArgs = att.ConstructorArguments;
+					if (pArgs != null && pArgs.Length > 0) {
+						var exp = pArgs[0].Value;
 						if (exp != null)
-							return exp.ConstantValue.ToString ();
+							return exp.ToString ();
 					} else {
 						return field.Name;
 					}

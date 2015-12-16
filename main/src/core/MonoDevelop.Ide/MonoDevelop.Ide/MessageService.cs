@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using MonoDevelop.Components;
 using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Extensions;
@@ -367,16 +368,16 @@ namespace MonoDevelop.Ide
 				dialog.Title = BrandingService.ApplicationName;
 
 			#if MAC
-			DispatchService.GuiSyncDispatch (() => {
+			Runtime.RunInMainThread (() => {
 				// If there is a native NSWindow model window running, we need
 				// to show the new dialog over that window.
 				if (NSApplication.SharedApplication.ModalWindow != null)
 					dialog.Shown += HandleShown;
 				else
 					PlaceDialog (dialog, parent);
-			});
+			}).Wait ();
 			#endif
-			return Mono.TextEditor.GtkWorkarounds.RunDialogWithNotification (dialog);
+			return GtkWorkarounds.RunDialogWithNotification (dialog);
 		}
 
 		#if MAC
@@ -618,7 +619,7 @@ namespace MonoDevelop.Ide
 				AlertButtonClicked (this, args);
 			return args.CloseDialog;
 		}
-		
+
 		public void AddOption (string id, string text, bool setByDefault)
 		{
 			Options.Add (new AlertOption (id, text) { Value = setByDefault });

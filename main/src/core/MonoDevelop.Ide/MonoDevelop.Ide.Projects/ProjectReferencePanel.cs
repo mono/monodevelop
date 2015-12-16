@@ -127,7 +127,7 @@ namespace MonoDevelop.Ide.Projects {
 			
 			if ((bool)store.GetValue (iter, ColSelected) == false) {
 				store.SetValue (iter, ColSelected, true);
-				selectDialog.AddReference (new ProjectReference (project));
+				selectDialog.AddReference (ProjectReference.CreateProjectReference (project));
 				
 			} else {
 				store.SetValue (iter, ColSelected, false);
@@ -180,7 +180,7 @@ namespace MonoDevelop.Ide.Projects {
 			
 			Dictionary<DotNetProject,bool> references = new Dictionary<DotNetProject, bool> ();
 			
-			foreach (Project projectEntry in openSolution.GetAllSolutionItems<Project>()) {
+			foreach (Project projectEntry in openSolution.GetAllItems<Project>()) {
 
 				if (projectEntry == configureProject)
 					continue;
@@ -235,12 +235,15 @@ namespace MonoDevelop.Ide.Projects {
 			if (references.TryGetValue (project, out res))
 				return res;
 			foreach (ProjectReference pr in project.References) {
+				if (pr.ReferenceType != ReferenceType.Project) {
+					continue;
+				}
 				if (pr.Reference == targetProject) {
 					references [project] = true;
 					return true;
 				}
-				
-				DotNetProject pref = project.ParentSolution.FindProjectByName (pr.Reference) as DotNetProject;
+
+				DotNetProject pref = pr.ResolveProject (project.ParentSolution) as DotNetProject;
 				if (pref != null) {
 					if (parentDeps == null) {
 						parentDeps = new HashSet<string> ();

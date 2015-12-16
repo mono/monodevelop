@@ -29,9 +29,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Ide;
 using NuGet;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -118,9 +119,9 @@ namespace MonoDevelop.PackageManagement
 			return packageReferences.Any (packageReference => packageReference.RequireReinstallation);
 		}
 
-		protected virtual void GuiDispatch (MessageHandler handler)
+		protected virtual void GuiDispatch (Action handler)
 		{
-			DispatchService.GuiDispatch (handler);
+			Runtime.RunInMainThread (handler);
 		}
 
 		public void GenerateReport (TextWriter writer)

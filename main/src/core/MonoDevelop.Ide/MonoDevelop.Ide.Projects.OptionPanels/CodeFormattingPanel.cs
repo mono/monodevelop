@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				provider = PolicyService.GetUserDefaultPolicySet ();
 			
 			policyContainer = provider.Policies;
-			if (!(dataObject is SolutionItem) && !(dataObject is Solution)) {
+			if (!(dataObject is SolutionFolderItem) && !(dataObject is Solution)) {
 				globalMimeTypes = new List<string> ();
 				string userTypes = PropertyService.Get<string> ("MonoDevelop.Projects.GlobalPolicyMimeTypes", "");
 				globalMimeTypes.AddRange (userTypes.Split (new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries));
@@ -214,8 +214,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			HashSet<string> types = new HashSet<string> ();
 			if (DataObject is Solution)
 				GetItemMimeTypes (types, ((Solution)DataObject).RootFolder);
-			else if (DataObject is SolutionItem)
-				GetItemMimeTypes (types, (SolutionItem)DataObject);
+			else if (DataObject is SolutionFolderItem)
+				GetItemMimeTypes (types, (SolutionFolderItem)DataObject);
 			else {
 				types.Add ("application/xml");
 				foreach (MimeTypeOptionsPanelNode node in AddinManager.GetExtensionNodes ("/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels")) {
@@ -232,10 +232,10 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			return globalMimeTypes != null && globalMimeTypes.Contains (type);
 		}
 		
-		void GetItemMimeTypes (HashSet<string> types, SolutionItem item)
+		void GetItemMimeTypes (HashSet<string> types, SolutionFolderItem item)
 		{
 			if (item is SolutionFolder) {
-				foreach (SolutionItem it in ((SolutionFolder)item).Items)
+				foreach (SolutionFolderItem it in ((SolutionFolder)item).Items)
 					GetItemMimeTypes (types, it);
 			}
 			else if (item is Project) {

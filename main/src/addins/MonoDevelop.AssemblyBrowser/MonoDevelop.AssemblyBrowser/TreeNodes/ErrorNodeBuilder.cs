@@ -51,7 +51,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			Error error = (Error)dataObject;
-			nodeInfo.Label = error.Message;
+			nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (error.Message);
 			nodeInfo.Icon = Context.GetIcon (Stock.Error);
 		}
 	}

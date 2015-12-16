@@ -29,7 +29,7 @@ using System;
 using System.IO;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public class DefaultProjectTemplatePackageSource
 	{

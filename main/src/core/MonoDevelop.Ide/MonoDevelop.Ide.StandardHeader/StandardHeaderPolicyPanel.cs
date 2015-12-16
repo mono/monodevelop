@@ -66,13 +66,49 @@ namespace MonoDevelop.Ide.StandardHeader
 	partial class StandardHeaderPolicyPanelWidget : Gtk.Bin
 	{
 		StandardHeaderPolicyPanel parent;
-		
-		public StandardHeaderPolicyPanelWidget (StandardHeaderPolicyPanel parent)
+		TreeStore store = new Gtk.TreeStore (typeof (string));
+
+		static readonly string [] templates = {
+			"FileName",
+			"FileNameWithoutExtension",
+			"Directory",
+			"FullFileName",
+			"AuthorName",
+			"AuthorEmail",
+			"CopyrightHolder",
+			"Date",
+			"Time",
+			"Year",
+			"Month",
+			"Day",
+			"Hour",
+			"Minute",
+			"Second"
+		};
+
+		internal StandardHeaderPolicyPanelWidget (StandardHeaderPolicyPanel parent)
 		{
 			this.parent = parent;
 			this.Build ();
 			headerText.Buffer.Changed += NotifyChanged; 
 			includeAutoCheck.Toggled += NotifyChanged;
+			this.treeviewTemplates.AppendColumn (GettextCatalog.GetString ("Templates"), new CellRendererText (), "text", 0);
+			foreach (var template in templates) {
+				store.AppendValues ("${"+template+"}"); 
+			}
+			this.treeviewTemplates.Model = store;
+			treeviewTemplates.RowActivated += TreeviewTemplates_RowActivated;
+			var w4 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.GtkScrolledWindow1]));
+			w4.Expand = false;
+			treeviewTemplates.WidthRequest = 200;
+			treeviewTemplates.QueueResize ();
+		}
+
+		void TreeviewTemplates_RowActivated (object o, RowActivatedArgs args)
+		{
+			TreeIter iter;
+			store.GetIter (out iter, args.Path); 
+			headerText.Buffer.InsertAtCursor ((string)store.GetValue (iter, 0));
 		}
 
 		void NotifyChanged (object sender, EventArgs e)

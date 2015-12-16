@@ -29,6 +29,7 @@ using System;
 
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.AspNet.Projects;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.AspNet.ProjectPad
 {
@@ -36,7 +37,7 @@ namespace MonoDevelop.AspNet.ProjectPad
 	{
 		public override bool CanBuildNode (Type dataType)
 		{
-			return typeof(AspNetAppProject).IsAssignableFrom (dataType);
+			return typeof(DotNetProject).IsAssignableFrom (dataType);
 		}
 		
 		public override Type CommandHandlerType {

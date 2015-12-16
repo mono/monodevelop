@@ -1,11 +1,12 @@
 <ExtensionModel>
 
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
-		<DotNetProject 
+		<DotNetProjectType 
 			language="VBNet" 
 			extension="vbproj" 
 			guid="{F184B08F-C81C-45F6-A57F-5ABD9991F28F}" 
 			import="$(MSBuildBinPath)\Microsoft.VisualBasic.targets"
+			type="MonoDevelop.VBNetBinding.VBProject"
 			resourceHandler="MonoDevelop.VBNetBinding.VBNetResourceIdBuilder"/>
 	</Extension>
 
@@ -28,7 +29,7 @@
 	</Extension>
   
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/General">
-		<Condition id="ActiveLanguage" value="VBNet">
+		<Condition id="ProjectTypeId" value="VBNet">
 			<Panel id = "VBNetProjectOptionsPanel"
 				_label = "General Options" 
 				class = "MonoDevelop.VBNetBinding.ProjectOptionsPanel"/>
@@ -39,7 +40,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/Compiler">
-		<Condition id="ActiveLanguage" value="VBNet">
+		<Condition id="ProjectTypeId" value="VBNet">
 			<Panel id = "VBNetConfigurationOptionsPanel"
 				_label = "Compiler Options" 
 				class = "MonoDevelop.VBNetBinding.ConfigurationOptionsPanel"/>
@@ -58,8 +59,9 @@
 
 	<Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
 		<LanguageBinding id = "VBNet"
-			supportedextensions = ".vb"
-			class = "MonoDevelop.VBNetBinding.VBLanguageBinding" />
+			extensions = ".vb"
+			singleLineCommentTag = "'"
+			codeDomType = "MonoDevelop.VBNetBinding.ImprovedCodeDomProvider" />
 	</Extension>
   
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">

@@ -1,8 +1,7 @@
 <ExtensionModel>
     
-	<Extension path = "/MonoDevelop/ProjectModel/FileFormats">
-		<FileFormat id = "MonoMakefile" name="Mono Makefile"
-						class = "MonoDeveloper.MonoMakefileFormat" />
+	<Extension path = "/MonoDevelop/ProjectModel/WorkspaceObjectReaders">
+		<Class class = "MonoDeveloper.MonoMakefileProjectReader" />
 	</Extension>
 
   <Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">

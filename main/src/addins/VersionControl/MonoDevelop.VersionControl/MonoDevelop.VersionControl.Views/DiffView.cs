@@ -83,7 +83,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		#region IAttachableViewContent implementation
 
-		public int GetLineInCenter (Mono.TextEditor.TextEditor editor)
+		public int GetLineInCenter (Mono.TextEditor.MonoTextEditor editor)
 		{
 			double midY = editor.VAdjustment.Value + editor.Allocation.Height / 2;
 			return editor.YToLine (midY);
@@ -93,11 +93,12 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			info.Start ();
 			ComparisonWidget.UpdateLocalText ();
-			var buffer = info.Document.GetContent<ITextBuffer> ();
+			var buffer = info.Document.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
 			if (buffer != null) {
-				int line, col;
-				buffer.GetLineColumnFromPosition (buffer.CursorPosition, out line, out col);
-				ComparisonWidget.OriginalEditor.SetCaretTo (line, col);
+				var loc = buffer.CaretLocation;
+				int line = loc.Line < 1 ? 1 : loc.Line;
+				int column = loc.Column < 1 ? 1 : loc.Column;
+				ComparisonWidget.OriginalEditor.SetCaretTo (line, column);
 			}
 			
 			if (ComparisonWidget.Allocation.Height == 1 && ComparisonWidget.Allocation.Width == 1) {
