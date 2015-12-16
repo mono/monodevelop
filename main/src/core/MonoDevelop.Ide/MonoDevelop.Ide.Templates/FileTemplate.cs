@@ -356,7 +356,8 @@ namespace MonoDevelop.Ide.Templates
 
 			//filter on conditions
 			if (project != null) {
-				if (ProjectTypes != null && project.GetTypeTags ().All (p => !ProjectTypes.Contains (p)))
+				// When file template's project types don't match the current project's type.
+				if (ProjectTypes.Any () && project.GetTypeTags ().All (p => !ProjectTypes.Contains (p)))
 					return false;
 
 				foreach (FileTemplateCondition condition in Conditions)
