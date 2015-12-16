@@ -355,7 +355,7 @@
                 <TextBlock x:Name="menuGestureText"
                     Grid.Column="4"
                     Text="{TemplateBinding InputGestureText}"
-                    Margin="{TemplateBinding MenuItem.Padding}"
+                    Margin="0,0,0,1"
                     VerticalAlignment="Center"
                     Opacity="0.7" />
             </Grid>
