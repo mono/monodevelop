@@ -156,11 +156,23 @@ namespace MonoDevelop.Components
 		public static Xwt.Drawing.Image WithSize (this Xwt.Drawing.Image image, Gtk.IconSize size)
 		{
 			int w, h;
-			if (!Gtk.Icon.SizeLookup (size, out w, out h))
-				return image;
-			if (size == IconSize.Menu)
-				w = h = 16;
+			size.GetSize (out w, out h);
 			return image.WithSize (w, h);
+		}
+
+		public static Xwt.Size GetSize (this IconSize size)
+		{
+			int w, h;
+			size.GetSize (out w, out h);
+			return new Xwt.Size (w, h);
+		}
+
+		public static void GetSize (this IconSize size, out int width, out int height)
+		{
+			if (!Icon.SizeLookup (size, out width, out height))
+				return;
+			if (size == IconSize.Menu)
+				width = height = 16;
 		}
 
 		public static Gdk.Point GetScreenCoordinates (this Gtk.Widget w, Gdk.Point p)

@@ -2395,6 +2395,31 @@ namespace MonoDevelop.Ide.Gui.Components
 				this.parent = parent;
 			}
 
+			static Xwt.Size defaultIconSize = Gtk.IconSize.Menu.GetSize ();
+
+			static Xwt.Size GetZoomedIconSize (Xwt.Drawing.Image icon, double zoom)
+			{
+				if (icon == null || icon == CellRendererImage.NullImage)
+						return defaultIconSize;
+
+				var size = icon.HasFixedSize ? icon.Size : defaultIconSize;
+
+				if (zoom == 1)
+					return size;
+
+				int w = (int) (zoom * (double) size.Width);
+				int h = (int) (zoom * (double) size.Height);
+				if (w == 0) w = 1;
+				if (h == 0) h = 1;
+				return new Xwt.Size (w, h);
+			}
+
+			static Xwt.Drawing.Image GetResized (Xwt.Drawing.Image icon, double zoom)
+			{
+				var size = GetZoomedIconSize (icon, zoom);
+				return icon.WithSize (size);
+			}
+
 
 			void SetupLayout (Gtk.Widget widget)
 			{
@@ -2440,9 +2465,12 @@ namespace MonoDevelop.Ide.Gui.Components
 				bool hasStatusIcon = StatusIcon != CellRendererImage.NullImage && StatusIcon != null;
 
 				if (hasStatusIcon) {
+					var img = GetResized (StatusIcon, zoom);
+					if (st == Gtk.StateType.Selected)
+						img = img.WithStyles ("sel");
 					var x = tx + w + StatusIconSpacing;
 					using (var ctx = Gdk.CairoHelper.Create (window)) {
-						ctx.DrawImage (widget, StatusIcon, x, cell_area.Y + (cell_area.Height - StatusIcon.Height) / 2);
+						ctx.DrawImage (widget, img, x, cell_area.Y + (cell_area.Height - img.Height) / 2);
 					}
 				}
 
@@ -2458,16 +2486,19 @@ namespace MonoDevelop.Ide.Gui.Components
 				int w, h;
 				layout.GetPixelSize (out w, out h);
 
+				var iconSize = GetZoomedIconSize (StatusIcon, zoom);
 				int tx = cell_area.X + (int)Xpad;
 				var x = tx + w + StatusIconSpacing;
-				return new Gdk.Rectangle (x, cell_area.Y, (int) StatusIcon.Width, (int) cell_area.Height);
+				return new Gdk.Rectangle (x, cell_area.Y, (int) iconSize.Width, (int) cell_area.Height);
 			}
 
 			public override void GetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
 				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
-				if (StatusIcon != CellRendererImage.NullImage && StatusIcon != null)
-					width += (int) StatusIcon.Width + StatusIconSpacing;
+				if (StatusIcon != CellRendererImage.NullImage && StatusIcon != null) {
+					var iconSize = GetZoomedIconSize (StatusIcon, zoom);
+					width += (int)iconSize.Width + StatusIconSpacing;
+				}
 			}
 
 			public double Zoom {
@@ -2657,19 +2688,21 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (value == null || value == CellRendererImage.NullImage)
 				return null;
 
+			var img = value.HasFixedSize ? value : value.WithSize (Gtk.IconSize.Menu);
+
 			if (zoom == 1)
-				return value;
+				return img;
 
 			Xwt.Drawing.Image resized;
-			if (resizedCache.TryGetValue (value, out resized))
+			if (resizedCache.TryGetValue (img, out resized))
 				return resized;
 
-			int w = (int) (zoom * (double) value.Width);
-			int h = (int) (zoom * (double) value.Height);
+			int w = (int) (zoom * (double) img.Width);
+			int h = (int) (zoom * (double) img.Height);
 			if (w == 0) w = 1;
 			if (h == 0) h = 1;
-			resized = value.WithSize (w, h);
-			resizedCache [value] = resized;
+			resized = img.WithSize (w, h);
+			resizedCache [img] = resized;
 			return resized;
 		}
 
