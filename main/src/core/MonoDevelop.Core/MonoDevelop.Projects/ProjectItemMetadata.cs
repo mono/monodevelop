@@ -222,13 +222,17 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 
-		void IPropertySet.SetValue (string name, string value, string defaultValue, bool preserveExistingCase, bool mergeToMainGroup, string condition)
+		void IPropertySet.SetValue (string name, string value, string defaultValue, bool preserveExistingCase, bool mergeToMainGroup, string condition, MSBuildValueType valueType)
 		{
-			SetValue (name, value, defaultValue, preserveExistingCase);
+			SetValue (name, value, defaultValue, preserveExistingCase, valueType);
 		}
 
-		public void SetValue (string name, string value, string defaultValue = null, bool preserveExistingCase = false)
+		public void SetValue (string name, string value, string defaultValue = null, bool preserveExistingCase = false, MSBuildValueType valueType = null)
 		{
+			// If no value type is specified, use the default
+			if (valueType == null)
+				valueType = preserveExistingCase ? MSBuildValueType.DefaultPreserveCase : MSBuildValueType.Default;
+			
 			if (value == null && defaultValue == "")
 				value = "";
 			var prop = (MSBuildProperty) GetProperty (name);
@@ -236,7 +240,7 @@ namespace MonoDevelop.Projects
 			if (isDefault) {
 				// if the value is default, only remove the property if it was not already the default
 				// to avoid unnecessary project file churn
-				if (prop != null && (defaultValue == null || !string.Equals (defaultValue, prop.Value, preserveExistingCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal)))
+				if (prop != null && (defaultValue == null || !valueType.Equals (defaultValue, prop.Value)))
 					RemoveProperty (prop);
 				return;
 			}

@@ -105,9 +105,9 @@ namespace MonoDevelop.Projects.MSBuild
 			groups [0].SetValue (name, value, preserveExistingCase:preserveExistingCase);
 		}
 
-		public void SetValue (string name, string value, string defaultValue = null, bool preserveExistingCase = false, bool mergeToMainGroup = false, string condition = null)
+		public void SetValue (string name, string value, string defaultValue = null, bool preserveExistingCase = false, bool mergeToMainGroup = false, string condition = null, MSBuildValueType valueType = null)
 		{
-			GetGroupForProperty (name).SetValue (name, value, defaultValue, preserveExistingCase, mergeToMainGroup, condition);
+			GetGroupForProperty (name).SetValue (name, value, defaultValue, preserveExistingCase, mergeToMainGroup, condition, valueType);
 		}
 
 		public void SetValue (string name, FilePath value, FilePath defaultValue = default(FilePath), bool relativeToProject = true, FilePath relativeToPath = default(FilePath), bool mergeToMainGroup = false, string condition = null)

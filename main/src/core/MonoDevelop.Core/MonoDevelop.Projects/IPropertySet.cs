@@ -48,7 +48,7 @@ namespace MonoDevelop.Projects
 		IMetadataProperty GetProperty (string name);
 		IEnumerable<IMetadataProperty> GetProperties ();
 
-		void SetValue (string name, string value, string defaultValue = null, bool preserveExistingCase = false, bool mergeToMainGroup = false, string condition = null);
+		void SetValue (string name, string value, string defaultValue = null, bool preserveExistingCase = false, bool mergeToMainGroup = false, string condition = null, MSBuildValueType valueType = null);
 		void SetValue (string name, FilePath value, FilePath defaultValue = default(FilePath), bool relativeToProject = true, FilePath relativeToPath = default(FilePath), bool mergeToMainGroup = false, string condition = null);
 		void SetValue (string name, object value, object defaultValue = null, bool mergeToMainGroup = false, string condition = null);
 

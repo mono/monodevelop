@@ -220,20 +220,25 @@ namespace MonoDevelop.Projects.MSBuild
 			return new MergedProperty (Name, preserverCase, HasDefaultValue);
 		}
 
-		public void SetValue (string value, bool preserveCase = false, bool mergeToMainGroup = false)
+		public void SetValue (string value, bool preserveCase = false, bool mergeToMainGroup = false, MSBuildValueType valueType = null)
 		{
 			AssertCanModify ();
+
+			// If no value type is specified, use the default
+			if (valueType == null)
+				valueType = preserveCase ? MSBuildValueType.DefaultPreserveCase : MSBuildValueType.Default;
+			
 			MergeToMainGroup = mergeToMainGroup;
 			this.preserverCase = preserveCase;
-			valueType = preserveCase ? MSBuildValueType.Default : MSBuildValueType.DefaultPreserveCase;
+			this.valueType = valueType;
 
 			if (value == null)
 				value = String.Empty;
 
-			if (preserveCase) {
+			if (valueType != MSBuildValueType.Default) {
 				var current = GetPropertyValue ();
 				if (current != null) {
-					if (current.Equals (value, preserveCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture))
+					if (valueType.Equals (current, value))
 						return;
 				}
 			}

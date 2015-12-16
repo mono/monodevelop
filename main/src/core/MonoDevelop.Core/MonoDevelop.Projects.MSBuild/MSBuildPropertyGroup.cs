@@ -278,17 +278,23 @@ namespace MonoDevelop.Projects.MSBuild
 			return AddProperty (name, condition);
 		}
 
-		public void SetValue (string name, string value, string defaultValue = null, bool preserveExistingCase = false, bool mergeToMainGroup = false, string condition = null)
+		public void SetValue (string name, string value, string defaultValue = null, bool preserveExistingCase = false, bool mergeToMainGroup = false, string condition = null, MSBuildValueType valueType = null)
 		{
 			AssertCanModify ();
+
+			// If no value type is specified, use the default
+			if (valueType == null)
+				valueType = preserveExistingCase ? MSBuildValueType.DefaultPreserveCase : MSBuildValueType.Default;
+			
 			if (value == null && defaultValue == "")
 				value = "";
+			
 			var prop = GetProperty (name, condition);
 			var isDefault = value == defaultValue;
 			if (isDefault && !mergeToMainGroup) {
 				// if the value is default, only remove the property if it was not already the default
 				// to avoid unnecessary project file churn
-				if (prop != null && string.Equals (defaultValue ?? "", prop.Value, preserveExistingCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
+				if (prop != null && valueType.Equals (defaultValue ?? "", prop.Value))
 					return;
 				if (!IgnoreDefaultValues) {
 					if (prop != null)
@@ -298,7 +304,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 			if (prop == null)
 				prop = AddProperty (name, condition);
-			prop.SetValue (value, preserveExistingCase, mergeToMainGroup);
+			prop.SetValue (value, preserveExistingCase, mergeToMainGroup, valueType);
 			prop.HasDefaultValue = isDefault;
 		}
 

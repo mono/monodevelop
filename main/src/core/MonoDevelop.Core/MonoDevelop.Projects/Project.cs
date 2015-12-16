@@ -2402,7 +2402,7 @@ namespace MonoDevelop.Projects
 			globalGroup.SetValue ("ProductVersion", productVersion);
 			globalGroup.SetValue ("SchemaVersion", schemaVersion);
 
-			globalGroup.SetValue ("ProjectGuid", ItemId);
+			globalGroup.SetValue ("ProjectGuid", ItemId, valueType:MSBuildValueType.Guid);
 
 			if (flavorGuids.Length > 0) {
 				string gg = string.Join (";", flavorGuids);
