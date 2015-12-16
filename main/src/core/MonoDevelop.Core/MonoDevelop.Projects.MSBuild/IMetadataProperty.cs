@@ -50,7 +50,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		bool TryGetPathValue (out FilePath value, bool relativeToProject = true, FilePath relativeToPath = default(FilePath));
 
-		void SetValue (string value, bool preserveCase = false, bool mergeToMainGroup = false);
+		void SetValue (string value, bool preserveCase = false, bool mergeToMainGroup = false, MSBuildValueType valueType = null);
 
 		void SetValue (FilePath value, bool relativeToProject = true, FilePath relativeToPath = default(FilePath), bool mergeToMainGroup = false);
 
