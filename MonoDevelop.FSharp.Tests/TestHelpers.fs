@@ -1,7 +1,7 @@
 ﻿namespace MonoDevelopTests
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open NUnit.Framework
 open MonoDevelop.FSharp
+open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.TypeSystem
 open MonoDevelop.Core.Text
 
@@ -12,6 +12,7 @@ type FixtureSetup() =
       firstRun := false
       MonoDevelop.FSharp.MDLanguageService.DisableVirtualFileSystem()
       MonoDevelop.Ide.DesktopService.Initialize()
+      Xwt.Application.Initialize()
 
 module TestHelpers =
 
@@ -43,6 +44,7 @@ module TestHelpers =
       ParsedDocument.create options results [compilerDefines] |> Async.RunSynchronously
 
     FixtureSetup().Initialise()
-    let editor = MonoDevelop.Ide.Editor.TextEditorFactory.CreateNewEditor ()
-    editor.Text <- source
+    let doc = TextEditorFactory.CreateNewReadonlyDocument(StringTextSource(source), file, "text/fsharp")
+    let editor = MonoDevelop.Ide.Editor.TextEditorFactory.CreateNewEditor (doc)
+
     TestDocument(file, parsedDocument, editor)
