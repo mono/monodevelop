@@ -24,7 +24,7 @@ module Accessibility =
     else getImage priv 
 
 
-module Search =
+module Search = 
 
   let private filter tag (s:FSharpSymbolUse seq) =
     match tag with
@@ -50,12 +50,10 @@ module Search =
   let getAllProjectSymbols projectFile =
     async {
       try 
-        let projectOptions = languageService.GetProjectCheckerOptions projectFile
-        let! proj = languageService.ParseAndCheckProject projectOptions
-        if not proj.HasCriticalErrors then
-          let! allSymbols = proj.GetAllUsesOfAllSymbols()
-          return allSymbols |> Array.toSeq
-        else return Seq.empty 
+        //let projectOptions = languageService.GetProjectCheckerOptions projectFile
+        match languageService.GetAllProjectDeclarations projectFile with
+        | Some v -> return v |> Array.toSeq
+        | None -> return Seq.empty
       with ex ->
         LoggingService.LogError("Global Search (F#) error", ex)
         return Seq.empty }
@@ -73,15 +71,16 @@ module Search =
   let byPattern (cache:Dictionary<_,_>) pattern symbols =
 
     let matchName (matcher:StringMatcher) (name:string) =
-      if name = null then SearchCategory.MatchResult(false, -1)
-      else
-        match cache.TryGetValue(name) with
-        | true, v -> v
-        | false, _ ->
-          let doesMatch, rank = matcher.CalcMatchRank (name)
-          let savedMatch = SearchCategory.MatchResult (doesMatch, rank)
-          cache.Add(name, savedMatch)
-          savedMatch
+      match name with
+      | null -> SearchCategory.MatchResult(false, -1)
+      | name ->
+      match cache.TryGetValue(name) with
+      | true, v -> v
+      | false, _ ->
+        let doesMatch, rank = matcher.CalcMatchRank (name)
+        let savedMatch = SearchCategory.MatchResult (doesMatch, rank)
+        cache.Add(name, savedMatch)
+        savedMatch
 
     let matcher = StringMatcher.GetMatcher (pattern, false)
 
@@ -94,9 +93,7 @@ type SymbolSearchResult(match', matchedString, rank, symbol:FSharpSymbolUse) =
   inherit SearchResult(match', matchedString, rank)
 
   let simpleName = Search.correctDisplayName symbol
-
-  let offsetAndLength =
-    lazy Symbols.getOffsetAndLength simpleName symbol
+  let offsetAndLength = lazy Symbols.getOffsetAndLength simpleName symbol
 
   override x.SearchResultType =
     match symbol with
@@ -142,8 +139,7 @@ type SymbolSearchResult(match', matchedString, rank, symbol:FSharpSymbolUse) =
     | ValueType s -> s |> getImageFromAccessibility Stock.Struct.Name Stock.InternalStruct.Name Stock.PrivateStruct.Name
     | Delegate d -> d |> getImageFromAccessibility Stock.Delegate.Name Stock.InternalDelegate.Name Stock.PrivateDelegate.Name
     | Union _ -> getImage "md-type"
-    | Class c -> if c.IsFSharp then getImage "md-type"
-                 else c |> getImageFromAccessibility Stock.Class.Name Stock.InternalClass.Name Stock.PrivateClass.Name
+    | Class c -> if c.IsFSharp then getImage "md-type" else c |> getImageFromAccessibility Stock.Class.Name Stock.InternalClass.Name Stock.PrivateClass.Name
     | Namespace _ -> getImage Stock.NameSpace.Name
     | Interface i -> i |> getImageFromAccessibility Stock.Interface.Name Stock.InternalInterface.Name Stock.PrivateInterface.Name
     | Enum e -> e |> getImageFromAccessibility Stock.Enum.Name Stock.InternalEnum.Name Stock.PrivateEnum.Name
@@ -161,14 +157,9 @@ type SymbolSearchResult(match', matchedString, rank, symbol:FSharpSymbolUse) =
     | Val _ -> getImage "md-fs-field" //NOTE: Maybe make this a normal field icon?
     | _ -> getImage Stock.Event.Name
 
-  override x.GetTooltipInformation(token) =
-    Async.StartAsTask(SymbolTooltips.getTooltipInformation symbol, cancellationToken = token)
-
-  override x.Offset =
-    fst (offsetAndLength.Force())
-
-  override x.Length = 
-    snd (offsetAndLength.Force())
+  override x.GetTooltipInformation(token) = Async.StartAsTask(SymbolTooltips.getTooltipInformation symbol, cancellationToken = token)
+  override x.Offset = fst (offsetAndLength.Force())
+  override x.Length = snd (offsetAndLength.Force())
 
 type ProjectSearchCategory() =
   inherit SearchCategory(GettextCatalog.GetString ("Solution"), sortOrder = SearchCategory.FirstCategory)
@@ -181,46 +172,41 @@ type ProjectSearchCategory() =
   let tags = lazy (List.concat [typeTags; memberTags] |> List.toArray)
 
   let getAllProjectFiles() =
-    IdeApp.Workspace.GetAllProjects()
-    |> Seq.filter (fun p -> p.SupportedLanguages |> Array.contains "F#")
-    |> Seq.map (fun p -> p.FileName.ToString())
+    seq {
+      for p in IdeApp.Workspace.GetAllProjects() do
+        if p.SupportedLanguages |> Array.contains "F#"
+        then yield p.FileName.ToString() }
 
-  let getComputation (pattern:SearchPopupSearchPattern) (cachingSearch) (callback:ISearchResultCallback) =
-    async {
-      for projFile in getAllProjectFiles() do
-        try
-          LoggingService.LogInfo(sprintf "F# Global Search: Getting all project symbols for %s" (projFile |> IO.Path.GetFileName) )
-          let! allProjectSymbols = Search.getAllProjectSymbols projFile
-
-          LoggingService.LogInfo(sprintf "F# Global Search: Filtering %i project symbols from %s, for definitions"
-                                  (allProjectSymbols |> Seq.length) (projFile |> IO.Path.GetFileName) )
-          let onlyDefinitions = allProjectSymbols |> Seq.filter (fun s -> s.IsFromDefinition)
-
-          LoggingService.LogInfo(sprintf "F# Global Search: Filtering %i matching tag %s for %s"
-                                  (onlyDefinitions |> Seq.length) pattern.Tag (projFile |> IO.Path.GetFileName) )
-          let typeFilteredSymbols = onlyDefinitions |> Search.byTag pattern.Tag
-
-          LoggingService.LogInfo(sprintf "F# Global Search: Caching search on %i typeFilteredSymbols for matching pattern %s on %s"
-                                  (typeFilteredSymbols |> Seq.length) pattern.Pattern (projFile |> IO.Path.GetFileName) )
-          let matchedSymbols = typeFilteredSymbols |> cachingSearch pattern.Pattern
-
-          LoggingService.LogInfo(sprintf "F# Global Search: Matched %i symbols from %s"
-                                  (matchedSymbols |> Seq.length) (projFile |> IO.Path.GetFileName) )
-          matchedSymbols
-          |> Seq.iter (fun (symbol:FSharpSymbolUse, rank) ->
-            let sr = SymbolSearchResult(pattern.Pattern, symbol.Symbol.DisplayName, rank, symbol)
-            callback.ReportResult sr)
-       
-        with ex -> 
-         LoggingService.LogError("F# Global Serach error", ex) }
-
+   
   override x.get_Tags() = tags.Force()
 
   override x.IsValidTag tag =
     typeTags |> List.contains tag || memberTags |> List.contains tag
 
-  override x.GetResults(searchCallback, pattern, token) =
+  override x.GetResults(callback, pattern, token) =
     let cachingSearch = Search.byPattern (Dictionary<_,_>())
-    let task = getComputation pattern cachingSearch searchCallback
-    Task.Factory.StartNew(fun () ->  Async.StartImmediate(task, token) )
+    Task.Run( 
+      (fun () -> async {
+                   for projFile in getAllProjectFiles() do
+                     try
+                       let shortName = projFile |> IO.Path.GetFileName
+                       LoggingService.LogInfo(sprintf "F# Global Search: Getting all project symbols for %s" shortName )
+                       let! allProjectSymbols = Search.getAllProjectSymbols projFile
+
+                       LoggingService.LogInfo(sprintf "F# Global Search: Filtering %i project symbols from %s, for definitions" (allProjectSymbols |> Seq.length) shortName )
+                       let definitions = allProjectSymbols |> Seq.filter (fun s -> s.IsFromDefinition)
+
+                       LoggingService.LogInfo(sprintf "F# Global Search: Filtering %i matching tag %s for %s" (definitions |> Seq.length) pattern.Tag shortName )
+                       let tagFiltered = definitions |> Search.byTag pattern.Tag
+
+                       LoggingService.LogInfo(sprintf "F# Global Search: Caching search on %i typeFilteredSymbols for matching pattern %s on %s" (tagFiltered |> Seq.length) pattern.Pattern shortName )
+                       let matchedSymbols = tagFiltered |> cachingSearch pattern.Pattern
+
+                       LoggingService.LogInfo(sprintf "F# Global Search: Matched %i symbols from %s" (matchedSymbols |> Seq.length) shortName )
+                       for symbol:FSharpSymbolUse, rank in matchedSymbols do
+                         let sr = SymbolSearchResult(pattern.Pattern, symbol.Symbol.DisplayName, rank, symbol)
+                         callback.ReportResult sr
+
+                     with ex -> 
+                      LoggingService.LogError("F# Global Serach error", ex) } |> Async.StartImmediate) , token )
 

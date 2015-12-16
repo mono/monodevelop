@@ -199,11 +199,31 @@ type AllowStaleResults =
 //type Debug = System.Console
 
 /// Provides functionality for working with the F# interactive checker running in background
-type LanguageService(dirtyNotify) =
+type LanguageService(dirtyNotify) as x=
 
   /// Load times used to reset type checking properly on script/project load/unload. It just has to be unique for each project load/reload.
   /// Not yet sure if this works for scripts.
   let fakeDateTimeRepresentingTimeLoaded proj = DateTime(abs (int64 (match proj with null -> 0 | _ -> proj.GetHashCode())) % 103231L)
+  
+  let symbolCache = Collections.Concurrent.ConcurrentDictionary<string, _>()
+    
+  let projectUpdated projectName =
+    if symbolCache.ContainsKey projectName then symbolCache.TryRemove(projectName) |> ignore
+    let projOptions = x.GetProjectCheckerOptions(projectName)
+    let symbols =
+      try
+        async {try
+                 let! (projCheck:FSharpCheckProjectResults) = x.ParseAndCheckProject(projOptions)
+                 return! projCheck.GetAllUsesOfAllSymbols()
+               with exn ->
+                 LoggingService.LogDebug("Error in project update", exn)
+                 return Array.empty
+               } |> Async.RunSynchronously
+      with ex ->
+        LoggingService.LogDebug("Error in project update", exn)
+        Array.empty
+        
+    symbolCache.TryAdd(projectName, symbols) |> ignore
 
   // Create an instance of interactive checker. The callback is called by the F# compiler service
   // when its view of the prior-typechecking-state of the start of a file has changed, for example
@@ -211,7 +231,9 @@ type LanguageService(dirtyNotify) =
   // and its time to re-typecheck the current file.
   let checker = 
     let checker = FSharpChecker.Create()
+    checker.ImplicitlyStartBackgroundWork <- true
     checker.BeforeBackgroundFileCheck.Add dirtyNotify
+    checker.ProjectChecked.Add projectUpdated
     checker
 
   /// When creating new script file on Mac, the filename we get sometimes 
@@ -232,7 +254,7 @@ type LanguageService(dirtyNotify) =
   let projectInfoCache =
     //cache 50 project infos, then start evicting the least recently used entries
     ref (ExtCore.Caching.LruCache.create 50u)
-
+    
   static member IsAScript fileName =
     let ext = Path.GetExtension fileName
     [".fsx";".fsscript";".sketchfs"] |> List.exists ((=) ext)
@@ -568,8 +590,14 @@ type LanguageService(dirtyNotify) =
               
       return filteredSymbols }
 
-  member x.ParseAndCheckProject options=
+  member x.ParseAndCheckProject options =
     checker.ParseAndCheckProject(options)
+                    
+  member x.GetAllProjectDeclarations options =
+    //clear cache on project change
+    match symbolCache.TryGetValue options with
+    | true, v -> Some v
+    | false, _ -> None
            
   /// This function is called when the project is know to have changed for reasons not encoded in the ProjectOptions
   /// e.g. dependent references have changed
