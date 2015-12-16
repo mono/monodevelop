@@ -8,19 +8,6 @@ open MonoDevelop.FSharp
 [<TestFixture>]
 type TestGlobalSearch() =
 
-  let getAllSymbols source =  
-    let checker = FSharpChecker.Create()
-    let file = "test.fsx"
-
-    async {
-      let! projOptions = checker.GetProjectOptionsFromScript(file, source)
-      let! pfr, cfa = checker.ParseAndCheckFileInProject(file, 0, source, projOptions)
-      match cfa with
-      | FSharpCheckFileAnswer.Succeeded cfr ->
-        let! symbols = cfr.GetAllUsesOfAllSymbolsInFile() 
-        return Some symbols
-      | _ -> return None }
-    
 
   let input = """
 module Test
@@ -46,7 +33,7 @@ type MyEnum = First = 1 | Second = 2
 type MyDelegate = delegate of (int * int) -> int
 """
   let searchByTag tag =
-    match getAllSymbols input |> Async.RunSynchronously with
+    match TestHelpers.getAllSymbols input with
     | Some xs ->
       let tags = Search.byTag tag xs
       tags 
@@ -110,7 +97,7 @@ type MyDelegate = delegate of (int * int) -> int
 
   [<Test>]
   member x.Search_By_Unique_Pattern_Is_Correct() =
-    match getAllSymbols input |> Async.RunSynchronously with
+    match TestHelpers.getAllSymbols input with
     | Some xs ->
       let result =
         Search.byPattern (Dictionary<_,_>()) "++" xs
@@ -121,7 +108,7 @@ type MyDelegate = delegate of (int * int) -> int
 
   [<Test>]
   member x.Search_By_Pattern_Is_Correct() =
-    match getAllSymbols input |> Async.RunSynchronously with
+    match TestHelpers.getAllSymbols input with
     | Some xs ->
       let result = Search.byPattern (Dictionary<_,_>()) "My" xs
 
