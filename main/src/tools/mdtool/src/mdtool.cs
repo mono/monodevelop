@@ -135,6 +135,9 @@ class MonoDevelopProcessHost
 				return badInput? 1 : 0;
 			}
 
+			//needed for mimetype service etc
+			MonoDevelop.Ide.DesktopService.Initialize (true);
+
 			var task = tool.Run (toolArgs);
 			task.ContinueWith ((t) => sc.ExitLoop ());
 			sc.RunMainLoop ();

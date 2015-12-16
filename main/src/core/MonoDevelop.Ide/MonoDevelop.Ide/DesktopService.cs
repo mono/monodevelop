@@ -52,6 +52,11 @@ namespace MonoDevelop.Ide
 
 		public static void Initialize ()
 		{
+			Initialize (false);
+		}
+
+		internal static void Initialize (bool noGui)
+		{
 			if (platformService != null)
 				return;
 			object[] platforms = AddinManager.GetExtensionObjects ("/MonoDevelop/Core/PlatformService");
@@ -62,6 +67,10 @@ namespace MonoDevelop.Ide
 				LoggingService.LogFatalError ("A platform service implementation has not been found.");
 			}
 			PlatformService.Initialize ();
+
+			if (noGui)
+				return;
+
 			if (PlatformService.CanOpenTerminal)
 				Runtime.ProcessService.SetExternalConsoleHandler (PlatformService.StartConsoleProcess);
 			
