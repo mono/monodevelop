@@ -7,9 +7,8 @@ open FsUnit
 [<TestFixture>]
 type FSharpUnitTestTextEditorExtensionTests() =
     let gatherTests (text:string) =
-      FixtureSetup().Initialise()
       let editor = TestHelpers.createDoc text ""
-      let ast = editor.ParsedDocument.Ast :?> ParseAndCheckResults
+      let ast = editor.Ast
       let symbols = ast.GetAllUsesOfAllSymbolsInFile() |> Async.RunSynchronously
 
       unitTestGatherer.gatherUnitTests (editor.Editor, symbols) 
