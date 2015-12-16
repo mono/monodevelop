@@ -41,10 +41,11 @@ namespace WindowsPlatform
 		static Brush mainToolbarSeparatorBrush;
 		static Brush mainToolbarButtonPressedBackgroundBrush;
 		static Brush mainToolbarButtonPressedBorderBrush;
-		static Brush mainToolbarMenuBackgroundBrush;
-		static Brush mainToolbarMenuForegroundBrush;
-		static Brush mainToolbarMenuHighlightBackgroundBrush;
-		static Brush mainToolbarMenuHighlightBorderBrush;
+		static Brush menuBarBackgroundBrush;
+		static Brush menuBarForegroundBrush;
+		static Brush menuBarBorderBrush;
+		static Brush menuBarHighlightBackgroundBrush;
+		static Brush menuBarHighlightBorderBrush;
 
         static Brush menuBackgroundBrush;
 		static Brush menuForegroundBrush;
@@ -103,24 +104,29 @@ namespace WindowsPlatform
 			set { mainToolbarButtonPressedBorderBrush = value; RaisePropertyChanged (); }
 		}
 		
-		public static Brush MainToolbarMenuBackgroundBrush {
-			get { return mainToolbarMenuBackgroundBrush; }
-			private set { mainToolbarMenuBackgroundBrush = value; RaisePropertyChanged (); }
+		public static Brush MenuBarBackgroundBrush {
+			get { return menuBarBackgroundBrush; }
+			private set { menuBarBackgroundBrush = value; RaisePropertyChanged (); }
 		}
 
-		public static Brush MainToolbarMenuForegroundBrush {
-			get { return mainToolbarMenuForegroundBrush; }
-			private set { mainToolbarMenuForegroundBrush = value; RaisePropertyChanged (); }
+		public static Brush MenuBarForegroundBrush {
+			get { return menuBarForegroundBrush; }
+			private set { menuBarForegroundBrush = value; RaisePropertyChanged (); }
 		}
 
-		public static Brush MainToolbarMenuHighlightBackgroundBrush {
-			get { return mainToolbarMenuHighlightBackgroundBrush; }
-			private set { mainToolbarMenuHighlightBackgroundBrush = value; RaisePropertyChanged (); }
+		public static Brush MenuBarBorderBrush {
+			get { return menuBarBorderBrush; }
+			private set { menuBarBorderBrush = value; RaisePropertyChanged (); }
 		}
 
-		public static Brush MainToolbarMenuHighlightBorderBrush {
-			get { return mainToolbarMenuHighlightBorderBrush; }
-			private set { mainToolbarMenuHighlightBorderBrush = value; RaisePropertyChanged (); }
+		public static Brush MenuBarHighlightBackgroundBrush {
+			get { return menuBarHighlightBackgroundBrush; }
+			private set { menuBarHighlightBackgroundBrush = value; RaisePropertyChanged (); }
+		}
+
+		public static Brush MenuBarHighlightBorderBrush {
+			get { return menuBarHighlightBorderBrush; }
+			private set { menuBarHighlightBorderBrush = value; RaisePropertyChanged (); }
 		}
 
 		public static Brush MenuBackgroundBrush {
@@ -235,10 +241,12 @@ namespace WindowsPlatform
 				MainToolbarSeparatorBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x7d, G = 0x7d, B = 0x7d });
 				MainToolbarButtonPressedBackgroundBrush = new SolidColorBrush (new Color { A = 0x66, R = 0x00, G = 0x8B, B = 0xFF });
 				MainToolbarButtonPressedBorderBrush = new SolidColorBrush (new Color { A = 0x66, R = 0x00, G = 0x8B, B = 0xFF });
-				MainToolbarMenuBackgroundBrush = SystemColors.MenuBarBrush;
-				MainToolbarMenuForegroundBrush = SystemColors.MenuTextBrush;
-				MainToolbarMenuHighlightBackgroundBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0xC3, G = 0xE3, B = 0xFE });
-				MainToolbarMenuHighlightBorderBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0xC3, G = 0xE3, B = 0xFE });
+
+				MenuBarBackgroundBrush = SystemColors.MenuBarBrush;
+				MenuBarForegroundBrush = SystemColors.MenuTextBrush;
+			    MenuBarBorderBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x99, G = 0x99, B = 0x99 });
+				MenuBarHighlightBackgroundBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0xC3, G = 0xE3, B = 0xFE });
+				MenuBarHighlightBorderBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0xC3, G = 0xE3, B = 0xFE });
 
 				MenuBackgroundBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0xFF, G = 0xFF, B = 0xFF });
 				MenuForegroundBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x00, G = 0x00, B = 0x00 });
@@ -268,10 +276,12 @@ namespace WindowsPlatform
 				MainToolbarSeparatorBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x7d, G = 0x7d, B = 0x7d });
 				MainToolbarButtonPressedBackgroundBrush = new SolidColorBrush (new Color { A = 0x66, R = 0x00, G = 0x8B, B = 0xFF });
 				MainToolbarButtonPressedBorderBrush = new SolidColorBrush (new Color { A = 0x66, R = 0x00, G = 0x8B, B = 0xFF });
-				MainToolbarMenuBackgroundBrush = MainToolbarBackgroundBrush;
-				MainToolbarMenuForegroundBrush = MainToolbarForegroundBrush;
-				MainToolbarMenuHighlightBackgroundBrush = new SolidColorBrush (new Color { A = 0x4D, R = 0x8E, G = 0xCA, B = 0xFF });
-				MainToolbarMenuHighlightBorderBrush = new SolidColorBrush (new Color { A = 0x4D, R = 0x8E, G = 0xCA, B = 0xFF });
+
+				MenuBarBackgroundBrush = MainToolbarBackgroundBrush;
+				MenuBarForegroundBrush = MainToolbarForegroundBrush;
+				MenuBarBorderBrush = new SolidColorBrush (new Color { A = 0xFF, R = 0x5D, G = 0x5D, B = 0x5D });
+				MenuBarHighlightBackgroundBrush = new SolidColorBrush (new Color { A = 0x4D, R = 0x8E, G = 0xCA, B = 0xFF });
+				MenuBarHighlightBorderBrush = new SolidColorBrush (new Color { A = 0x4D, R = 0x8E, G = 0xCA, B = 0xFF });
 
 				MenuBackgroundBrush = MainToolbarBackgroundBrush;
 				MenuForegroundBrush = MainToolbarForegroundBrush;

@@ -56,7 +56,15 @@ namespace MonoDevelop.CSharp.Refactoring
 					foreach (var loc in symbol.Locations) {
 						if (!loc.IsInSource)
 							continue;
-						var sr = new SearchResult (new FileProvider (loc.SourceTree.FilePath), loc.SourceSpan.Start, loc.SourceSpan.Length);
+						var fileName = loc.SourceTree.FilePath;
+						var offset = loc.SourceSpan.Start;
+						string projectedName;
+						int projectedOffset;
+						if (workspace.TryGetOriginalFileFromProjection (fileName, offset, out projectedName, out projectedOffset)) {
+							fileName = projectedName;
+							offset = projectedOffset;
+						}
+						var sr = new SearchResult (new FileProvider (fileName), offset, loc.SourceSpan.Length);
 						antiDuplicatesSet.Add (sr);
 						monitor.ReportResult (sr);
 					}

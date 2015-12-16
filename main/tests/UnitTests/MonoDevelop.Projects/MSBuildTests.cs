@@ -1192,7 +1192,9 @@ namespace MonoDevelop.Projects
 				"text-spacing.csproj",
 				"inconsistent-line-endings.csproj",
 				"attribute-order.csproj",
-				"custom-namespace.csproj"
+				"custom-namespace.csproj",
+				"multiple-prop-definition.csproj",
+				"env-vars-prop.csproj"
 				//"ICSharpCode.NRefactory.Cecil.csproj"
 			)]
 			string project)
@@ -1459,6 +1461,18 @@ namespace MonoDevelop.Projects
 			savedXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (refXml, savedXml);
 		}
+
+		[Test()]
+		public async Task SolutionDirIsSet()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var p = (Project) sol.Items [0];
+			Assert.AreEqual (sol.ItemDirectory.ToString (), p.MSBuildProject.EvaluatedProperties.GetValue ("SolutionDir"));
+		}
+
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode

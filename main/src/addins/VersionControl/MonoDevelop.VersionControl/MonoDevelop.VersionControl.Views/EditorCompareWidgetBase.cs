@@ -242,6 +242,12 @@ namespace MonoDevelop.VersionControl.Views
 				editor.Options.ShowIconMargin = false;
 				editor.Options.DrawIndentationMarkers = PropertyService.Get ("DrawIndentationMarkers", false);
 			}
+
+			OnSetVersionControlInfo (info);
+		}
+
+		protected virtual void OnSetVersionControlInfo (VersionControlDocumentInfo info)
+		{
 		}
 		
 		protected abstract void CreateComponents ();

@@ -536,7 +536,7 @@ namespace MonoDevelop.VersionControl.Views
 						LoggingService.LogError ("Error retrieving history", ex);
 					}
 					
-					DispatchService.GuiDispatch (delegate {
+					Runtime.RunInMainThread (delegate {
 						ctx.Dispose ();
 						UpdateWidth ();
 						QueueDraw ();

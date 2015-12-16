@@ -1,5 +1,5 @@
 ﻿// 
-// ISharpDevelopPackageManager.cs
+// IMonoDevelopPackageManager.cs
 // 
 // Author:
 //   Matt Ward <ward.matt@gmail.com>
@@ -31,11 +31,11 @@ using System.Collections.Generic;
 using MonoDevelop.PackageManagement;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface ISharpDevelopPackageManager : IPackageManager
+	public interface IMonoDevelopPackageManager : IPackageManager
 	{
-		ISharpDevelopProjectManager ProjectManager { get; }
+		IMonoDevelopProjectManager ProjectManager { get; }
 		
 		void InstallPackage(IPackage package, InstallPackageAction installAction);
 		void UninstallPackage(IPackage package, UninstallPackageAction uninstallAction);

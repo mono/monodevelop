@@ -237,11 +237,21 @@ namespace MonoDevelop.Gettext
 					sb.Append ('\t');
 					break;
 				case 'U':
-					//FIXME UNICODE
-					//break;
+					uint Uc;
+					if (!TryParseHex (text, i + 1, 8, out Uc) || NeedsEscaping (Uc)) {
+						throw new FormatException ("Invalid escape '\\" + text.Substring (i, 9) + "' in translatable string.");
+					}
+					sb.Append (char.ConvertFromUtf32 ((int)Uc));
+					i += 8;
+					break;
 				case 'u':
-					//FIXME unicode
-					//break;
+					uint uc;
+					if (!TryParseHex (text, i + 1, 4, out uc) || NeedsEscaping (uc)) {
+						throw new FormatException ("Invalid escape '\\" + text.Substring (i, 5) + "' in translatable string.");
+					}
+					sb.Append ((char)uc);
+					i += 4;
+					break;
 				case 'x':
 					//FIXME hex unicode
 					//break;
@@ -258,6 +268,44 @@ namespace MonoDevelop.Gettext
 				
 			}
 			return sb.ToString ();
+		}
+
+		static bool NeedsEscaping (uint c)
+		{
+			//TODO: there are other chars we should error on?
+			if (c > char.MaxValue)
+				return false;
+			return char.IsControl ((char)c);
+		}
+
+		static bool TryParseHex (string str, int offset, int length, out uint val)
+		{
+			val = 0x0;
+
+			for (int i = offset; i < offset + length; i++) {
+				uint bits;
+				switch (str[i]) {
+					case '0': bits = 0; break;
+					case '1': bits = 1; break;
+					case '2': bits = 2; break;
+					case '3': bits = 3; break;
+					case '4': bits = 4; break;
+					case '5': bits = 5; break;
+					case '6': bits = 6; break;
+					case '7': bits = 7; break;
+					case '8': bits = 8; break;
+					case '9': bits = 9; break;
+					case 'A': case 'a': bits = 10; break;
+					case 'B': case 'b': bits = 11; break;
+					case 'C': case 'c': bits = 12; break;
+					case 'D': case 'd': bits = 13; break;
+					case 'E': case 'e': bits = 14; break;
+					case 'F': case 'f': bits = 15; break;
+					default: return false;
+				}
+				val = (val << 4) | bits;
+			}
+			return true;
 		}
 		
 		public enum EscapeMode

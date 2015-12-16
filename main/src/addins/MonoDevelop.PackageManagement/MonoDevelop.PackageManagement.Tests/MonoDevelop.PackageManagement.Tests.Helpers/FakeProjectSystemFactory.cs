@@ -25,13 +25,13 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeProjectSystemFactory : ISharpDevelopProjectSystemFactory
+	public class FakeProjectSystemFactory : IMonoDevelopProjectSystemFactory
 	{
 		public FakeProjectSystem FakeProjectSystem = new FakeProjectSystem ();
 

@@ -1,5 +1,5 @@
 ﻿// 
-// ISharpDevelopProjectSystemFactory.cs
+// MonoDevelopProjectSystemFactory.cs
 // 
 // Author:
 //   Matt Ward <ward.matt@gmail.com>
@@ -30,10 +30,13 @@ using System;
 using MonoDevelop.Projects;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface ISharpDevelopProjectSystemFactory
+	public class MonoDevelopProjectSystemFactory : IMonoDevelopProjectSystemFactory
 	{
-		IProjectSystem CreateProjectSystem(DotNetProject project);
+		public IProjectSystem CreateProjectSystem(DotNetProject project)
+		{
+			return new MonoDevelopProjectSystem(project);
+		}
 	}
 }

@@ -35,7 +35,7 @@ using MonoDevelop.Projects;
 using NuGet;
 using System.Linq;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public static class DotNetProjectExtensions
 	{

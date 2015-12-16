@@ -1,5 +1,5 @@
 ﻿// 
-// SharpDevelopProjectManager.cs
+// MonoDevelopProjectManager.cs
 // 
 // Author:
 //   Matt Ward <ward.matt@gmail.com>
@@ -30,11 +30,11 @@ using System;
 using System.Collections.Generic;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class SharpDevelopProjectManager : ProjectManager, ISharpDevelopProjectManager
+	public class MonoDevelopProjectManager : ProjectManager, IMonoDevelopProjectManager
 	{
-		public SharpDevelopProjectManager(
+		public MonoDevelopProjectManager(
 			IPackageRepository sourceRepository,
 			IPackagePathResolver pathResolver,
 			IProjectSystem project,

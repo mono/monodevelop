@@ -97,7 +97,7 @@ namespace MonoDevelop.VersionControl
 			}
 			
 			if (projectFn != null) {
-				DispatchService.GuiDispatch (delegate {
+				Runtime.RunInMainThread (delegate {
 					IdeApp.Workspace.OpenWorkspaceItem (projectFn);
 				});
 			}

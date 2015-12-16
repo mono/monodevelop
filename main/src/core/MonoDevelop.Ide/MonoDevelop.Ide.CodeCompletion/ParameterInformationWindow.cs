@@ -151,7 +151,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			ResetTooltipInformation ();
 			ClearDescriptions ();
-
+			if (ext == null) {
+				// ext == null means HideParameterInfo was called aka. we are not in valid context to display tooltip anymore
+				lastParam = -2;
+				return;
+			}
 			var ct = new CancellationTokenSource ();
 			try {
 				cancellationTokenSource = ct;

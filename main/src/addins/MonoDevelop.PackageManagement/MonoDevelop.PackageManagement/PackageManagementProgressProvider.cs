@@ -25,9 +25,10 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 using MonoDevelop.Ide;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -36,7 +37,7 @@ namespace MonoDevelop.PackageManagement
 		Action<Action> guiDispatcher;
 
 		public PackageManagementProgressProvider (IPackageRepositoryFactoryEvents repositoryFactoryEvents)
-			: this (repositoryFactoryEvents, h => DispatchService.GuiDispatch (h))
+			: this (repositoryFactoryEvents, h => Runtime.RunInMainThread (h))
 		{
 		}
 

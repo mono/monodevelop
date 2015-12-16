@@ -84,6 +84,8 @@ namespace MonoDevelop.Projects.MSBuild
 			get { return file.ParentDirectory; }
 		}
 
+		public FilePath SolutionDirectory { get; set; }
+
 		public MSBuildFileFormat Format
 		{
 			get;
@@ -417,6 +419,14 @@ namespace MonoDevelop.Projects.MSBuild
 			mainProjectInstance = new MSBuildProjectInstance (this);
 			mainProjectInstance.Evaluate ();
 			conditionedProperties = mainProjectInstance.GetConditionedProperties ();
+		}
+
+		public Task EvaluateAsync ()
+		{
+			mainProjectInstance = new MSBuildProjectInstance (this);
+			return mainProjectInstance.EvaluateAsync ().ContinueWith (t => {
+				conditionedProperties = mainProjectInstance.GetConditionedProperties ();
+			});
 		}
 
 		public MSBuildProjectInstance CreateInstance ()
@@ -900,8 +910,11 @@ namespace MonoDevelop.Projects.MSBuild
 				item.RemoveIndent ();
 				var g = item.ParentGroup;
 				g.RemoveItem (item);
-				if (removeEmptyParentGroup && !item.ParentGroup.Items.Any ())
+				if (removeEmptyParentGroup && !item.ParentGroup.Items.Any ()) {
 					Remove (g);
+					if (bestGroups != null)
+						bestGroups.Remove (item.Name);
+				}
 			}
 		}
 	}

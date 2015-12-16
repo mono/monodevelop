@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Xml;
 using MonoDevelop.Core;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects.MSBuild
 {
@@ -51,6 +52,8 @@ namespace MonoDevelop.Projects.MSBuild
 			msproject = project;
 			evaluatedItemsIgnoringCondition = new List<IMSBuildItemEvaluated> ();
 			evaluatedProperties = new MSBuildEvaluatedPropertyCollection (msproject);
+			if (!project.SolutionDirectory.IsNullOrEmpty)
+				globalProperties.Add ("SolutionDir", project.SolutionDirectory.ToString ());
 		}
 
 		public void Dispose ()
@@ -74,11 +77,16 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal bool OnlyEvaluateProperties { get; set; }
 
+		public Task EvaluateAsync ()
+		{
+			return Task.Run (() => Evaluate ());
+		}
+
 		public void Evaluate ()
 		{
 			if (projectInstance != null)
 				engine.DisposeProjectInstance (projectInstance);
-			
+
 			info = msproject.LoadNativeInstance ();
 
 			engine = info.Engine;
@@ -91,8 +99,7 @@ namespace MonoDevelop.Projects.MSBuild
 				engine.Evaluate (projectInstance);
 
 				SyncBuildProject (info.ItemMap, info.Engine, projectInstance);
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				// If the project can't be evaluated don't crash
 				LoggingService.LogError ("MSBuild project could not be evaluated", ex);
 				throw new ProjectEvaluationException (msproject, ex.Message);
@@ -108,11 +115,6 @@ namespace MonoDevelop.Projects.MSBuild
 
 			if (!OnlyEvaluateProperties) {
 				
-				var xmlImports = msproject.Imports.ToArray ();
-				var buildImports = e.GetImports (project).ToArray ();
-				for (int n = 0; n < xmlImports.Length && n < buildImports.Length; n++)
-					xmlImports [n].SetEvalResult (e.GetImportEvaluatedProjectPath (project, buildImports [n]));
-
 				var evalItems = new Dictionary<string,MSBuildItemEvaluated> ();
 				foreach (var it in e.GetEvaluatedItems (project)) {
 					var xit = it as MSBuildItemEvaluated;

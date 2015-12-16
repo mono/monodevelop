@@ -181,8 +181,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 			
 			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
-			folder.Name = newName;
-			await IdeApp.Workspace.SaveAsync();
+			if (folder.Name != newName) {
+				folder.Name = newName;
+				await IdeApp.Workspace.SaveAsync ();
+			}
 		}
 		
 		public override DragOperation CanDragNode ()

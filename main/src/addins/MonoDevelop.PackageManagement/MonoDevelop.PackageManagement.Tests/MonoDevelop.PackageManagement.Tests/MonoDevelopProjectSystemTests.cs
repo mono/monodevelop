@@ -1,5 +1,5 @@
 ﻿//
-// SharpDevelopProjectSystemTests.cs
+// MonoDevelopProjectSystemTests.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -28,7 +28,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.PackageManagement.Tests.Helpers;

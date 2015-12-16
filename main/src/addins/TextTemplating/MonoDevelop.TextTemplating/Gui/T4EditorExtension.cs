@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
 using System.Threading.Tasks;
 using System.Threading;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.TextTemplating.Gui
 {
@@ -231,7 +232,7 @@ namespace MonoDevelop.TextTemplating.Gui
 		
 		void RefillOutlineStore ()
 		{
-			DispatchService.AssertGuiThread ();
+			Runtime.AssertMainThread ();
 			Gdk.Threads.Enter ();
 			refreshingOutline = false;
 			if (outlineTreeStore == null || !outlineTreeView.IsRealized)

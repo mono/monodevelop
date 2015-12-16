@@ -224,8 +224,16 @@ namespace MonoDevelop.Ide.FindInFiles
 			comboboxentryFind.GrabFocus ();
 			DeleteEvent += delegate { Destroy (); };
 			UpdateStopButton ();
-			
+			UpdateSensitivity ();
+			if (!buttonSearch.Sensitive) {
+				comboboxScope.Active = (int)SearchScope.Directories;
+			}
+
 			Child.Show ();
+			updateTimer = GLib.Timeout.Add (750, delegate {
+				UpdateSensitivity ();
+				return true;
+			});
 		}
 		
 		static void TableAddRow (Table table, uint row, Widget column1, Widget column2)
@@ -489,10 +497,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			searchentryFileMask = null;
 			labelFileMask = null;
 		}
-		
+
 		void HandleScopeChanged (object sender, EventArgs e)
 		{
-			switch ((SearchScope) comboboxScope.Active) {
+			switch ((SearchScope)comboboxScope.Active) {
 			case SearchScope.WholeWorkspace:
 				HideDirectoryPathUI ();
 				ShowFileMaskUI ();
@@ -518,10 +526,39 @@ namespace MonoDevelop.Ide.FindInFiles
 				HideFileMaskUI ();
 				break;
 			}
-			
+			UpdateSensitivity ();
 			Requisition req = SizeRequest ();
 			Resize (req.Width, req.Height);
 			//this.QueueResize ();
+		}
+
+
+		void UpdateSensitivity ()
+		{
+			bool isSensitive = true;
+			switch ((SearchScope)comboboxScope.Active) {
+			case SearchScope.WholeWorkspace:
+				isSensitive = IdeApp.Workspace.IsOpen;
+				break;
+			case SearchScope.CurrentProject:
+				isSensitive = IdeApp.ProjectOperations.CurrentSelectedProject != null;
+				break;
+			case SearchScope.AllOpenFiles:
+				isSensitive = IdeApp.Workbench.Documents.Count > 0;
+				break;
+			case SearchScope.Directories:
+				isSensitive = true;
+				break;
+			case SearchScope.CurrentDocument:
+				isSensitive = IdeApp.Workbench.ActiveDocument != null;
+				break;
+			case SearchScope.Selection:
+				isSensitive = IdeApp.Workbench.ActiveDocument != null;
+				break;
+			}
+			buttonSearch.Sensitive = isSensitive;
+			if (buttonReplace != null)
+				buttonReplace.Sensitive = isSensitive;
 		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)
@@ -560,7 +597,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		void InitFromProperties ()
 		{
 			comboboxScope.Active = properties.Get ("Scope", (int) SearchScope.WholeWorkspace);
-
+				
 			//checkbuttonRecursively.Active    = properties.Get ("SearchPathRecursively", true);
 			//checkbuttonFileMask.Active       = properties.Get ("UseFileMask", false);
 			checkbuttonCaseSensitive.Active = properties.Get ("CaseSensitive", false);
@@ -642,6 +679,10 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		protected override void OnDestroyed ()
 		{
+			if (updateTimer != 0) {
+				GLib.Source.Remove (updateTimer);
+				updateTimer = 0;
+			}
 			StorePoperties ();
 			base.OnDestroyed ();
 		}
@@ -680,24 +721,12 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			switch ((SearchScope) comboboxScope.Active) {
 			case SearchScope.CurrentDocument:
-				if (IdeApp.Workbench.ActiveDocument == null) {
-					MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open document."));
-					return null;
-				}
 				scope = new DocumentScope ();
 				break;
 			case SearchScope.Selection:
-				if (IdeApp.Workbench.ActiveDocument == null) {
-					MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open document."));
-					return null;
-				}
 				scope = new SelectionScope ();
 				break;
 			case SearchScope.WholeWorkspace:
-				if (!IdeApp.Workspace.IsOpen) {
-					MessageService.ShowError (GettextCatalog.GetString ("Currently there are no open solutions."));
-					return null;
-				}
 				scope = new WholeSolutionScope ();
 				break;
 			case SearchScope.CurrentProject:
@@ -706,23 +735,8 @@ namespace MonoDevelop.Ide.FindInFiles
 					scope = new WholeProjectScope (currentSelectedProject);
 					break;
 				}
-				if (IdeApp.Workspace.IsOpen && IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
-					var question = GettextCatalog.GetString (
-						"Currently there is no project selected. Search in the solution instead ?");
-					if (MessageService.AskQuestion (question, AlertButton.Yes, AlertButton.No) == AlertButton.Yes) {
-						scope = new WholeSolutionScope ();
-						break;
-					} else {
-						return null;
-					}
-				}
-				MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open solution."));
 				return null;
 			case SearchScope.AllOpenFiles:
-				if (IdeApp.Workbench.Documents.Count == 0) {
-					MessageService.ShowError (GettextCatalog.GetString ("Currently there are no open documents."));
-					return null;
-				}
 				scope = new AllOpenFilesScope ();
 				break;
 			case SearchScope.Directories: 
@@ -766,6 +780,8 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 
 		readonly static List<CancellationTokenSource> searchesInProgress = new List<CancellationTokenSource> ();
+		uint updateTimer;
+
 		void UpdateStopButton ()
 		{
 			buttonStop.Sensitive = searchesInProgress.Count > 0;

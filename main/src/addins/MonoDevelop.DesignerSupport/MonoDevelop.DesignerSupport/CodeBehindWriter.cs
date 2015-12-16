@@ -84,11 +84,11 @@ namespace MonoDevelop.DesignerSupport
 					openFiles = new List<string> ();
 					if (!IdeApp.IsInitialized)
 						return openFiles;
-					DispatchService.GuiSyncDispatch (delegate {
+					Runtime.RunInMainThread (delegate {
 						foreach (var doc in IdeApp.Workbench.Documents)
 							if (doc.Editor != null)
 								openFiles.Add (doc.FileName);
-					});
+					}).Wait ();
 				}
 				return openFiles;
 			}
@@ -175,7 +175,7 @@ namespace MonoDevelop.DesignerSupport
 			}
 			
 			//these documents are open, so needs to run in GUI thread
-			DispatchService.GuiSyncDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				foreach (KeyValuePair<FilePath, string> item in filesToWrite) {
 					try {
 						
@@ -213,7 +213,7 @@ namespace MonoDevelop.DesignerSupport
 							LoggingService.LogError ("CodeBehindWriter failed", ex);
 					}
 				}
-			});
+			}).Wait ();
 			
 			filesToWrite = null;
 		}

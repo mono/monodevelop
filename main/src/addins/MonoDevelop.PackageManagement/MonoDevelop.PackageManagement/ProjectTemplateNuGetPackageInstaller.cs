@@ -27,7 +27,7 @@
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Ide;
 using NuGet;
 using System.Linq;

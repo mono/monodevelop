@@ -158,7 +158,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			logView.Clear ();
 			monitor = (LogViewProgressMonitor) logView.GetProgressMonitor ();
 
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				window.HasNewData = false;
 				window.HasErrors = false;
 				window.IsWorking = true;
@@ -174,7 +174,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		public void EndProgress ()
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				if (window != null) {
 					window.IsWorking = false;
 					if (monitor.Errors.Length > 0)

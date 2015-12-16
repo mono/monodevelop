@@ -315,7 +315,15 @@ namespace MonoDevelop.Core
 			if (message != null)
 				currentTask.Step (message, 0);
 
-			ReportProgressChanged ();
+			if (context != null)
+				context.Post ((o) => {
+				OnBeginStep (message, work);
+				ReportProgressChanged ();
+			}, null);
+			else {
+				OnBeginStep (message, work);
+				ReportProgressChanged ();
+			}
 
 			if (slaveMonitors != null) {
 				foreach (var m in slaveMonitors)
@@ -551,6 +559,10 @@ namespace MonoDevelop.Core
 		{
 		}
 
+		protected virtual void OnBeginStep (string message, int work)
+		{
+		}
+
 		protected virtual void OnBeginAsyncStep (string message, int work, ProgressMonitor stepMonitor)
 		{
 		}
@@ -629,7 +641,7 @@ namespace MonoDevelop.Core
 		{
 		}
 
-		void ReportProgressChanged ()
+		internal void ReportProgressChanged ()
 		{
 			if (context != null)
 				context.Post ((o) => OnProgressChanged (), null);

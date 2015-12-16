@@ -1,5 +1,5 @@
 ﻿// 
-// SharpDevelopProjectSystemFactory.cs
+// IMonoDevelopPackageRepositoryFactory.cs
 // 
 // Author:
 //   Matt Ward <ward.matt@gmail.com>
@@ -27,16 +27,22 @@
 //
 
 using System;
-using MonoDevelop.Projects;
+using System.Collections.Generic;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class SharpDevelopProjectSystemFactory : ISharpDevelopProjectSystemFactory
+	public interface IMonoDevelopPackageRepositoryFactory : IPackageRepositoryFactory
 	{
-		public IProjectSystem CreateProjectSystem(DotNetProject project)
-		{
-			return new SharpDevelopProjectSystem(project);
-		}
+		ISharedPackageRepository CreateSharedRepository(
+			IPackagePathResolver pathResolver,
+			IFileSystem fileSystem,
+			IFileSystem configSettingsFileSystem);
+		
+		IRecentPackageRepository CreateRecentPackageRepository(
+			IList<RecentPackageInfo> recentPackages,
+			IPackageRepository aggregateRepository);
+		
+		IPackageRepository CreateAggregateRepository(IEnumerable<IPackageRepository> repositories);
 	}
 }

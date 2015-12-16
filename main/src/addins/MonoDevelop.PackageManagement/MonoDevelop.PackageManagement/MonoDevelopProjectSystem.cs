@@ -1,5 +1,5 @@
 ﻿// 
-// SharpDevelopProjectSystem.cs
+// MonoDevelopProjectSystem.cs
 // 
 // Author:
 //   Matt Ward <ward.matt@gmail.com>
@@ -38,9 +38,9 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class SharpDevelopProjectSystem : PhysicalFileSystem, IProjectSystem
+	public class MonoDevelopProjectSystem : PhysicalFileSystem, IProjectSystem
 	{
 		IDotNetProject project;
 		ProjectTargetFramework targetFramework;
@@ -49,18 +49,18 @@ namespace ICSharpCode.PackageManagement
 		Action<MessageHandler> guiSyncDispatcher;
 		Func<Func<Task>,Task> guiSyncDispatcherFunc;
 
-		public SharpDevelopProjectSystem(DotNetProject project)
+		public MonoDevelopProjectSystem(DotNetProject project)
 			: this (
 				new DotNetProjectProxy (project),
 				new PackageManagementFileService (),
 				PackageManagementServices.ProjectService,
 				PackageManagementServices.PackageManagementEvents,
-				DispatchService.GuiSyncDispatch,
+				DefaultGuiSyncDispatcher,
 				GuiSyncDispatchWithException)
 		{
 		}
 		
-		public SharpDevelopProjectSystem (
+		public MonoDevelopProjectSystem (
 			IDotNetProject project,
 			IPackageManagementFileService fileService,
 			IPackageManagementProjectService projectService,
@@ -473,9 +473,14 @@ namespace ICSharpCode.PackageManagement
 
 		static Task GuiSyncDispatchWithException (Func<Task> func)
 		{
-			if (DispatchService.IsGuiThread)
+			if (Runtime.IsMainThread)
 				throw new InvalidOperationException ("GuiSyncDispatch called from GUI thread");
 			return Runtime.RunInMainThread (func);
+		}
+
+		internal static void DefaultGuiSyncDispatcher (MessageHandler action)
+		{
+			Runtime.RunInMainThread (() => action ()).Wait ();
 		}
 
 		void GuiSyncDispatch (Func<Task> func)

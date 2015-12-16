@@ -61,5 +61,11 @@ namespace MonoDevelop.CSharp.Formatting
 			// return cloned policy
 			return panel.Policy;
 		}
+
+		protected override void OnPolicyStored ()
+		{
+			base.OnPolicyStored ();
+			DefaultSourceEditorOptions.Instance.FireChange ();
+		}
 	}
 }

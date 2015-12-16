@@ -29,11 +29,21 @@
 using Microsoft.Build.Framework;
 using System.Xml;
 using System.IO;
+using System;
+using System.Text;
+using System.Threading;
 
 namespace MonoDevelop.Projects.MSBuild
 {
 	partial class ProjectBuilder
 	{
+		ILogWriter currentLogWriter;
+		StringBuilder log = new StringBuilder ();
+		bool flushingLog;
+		Timer flushTimer;
+		object flushLogLock = new object ();
+		const int LogFlushTimeout = 100;
+
 		public void Dispose ()
 		{
 			buildEngine.UnloadProject (file);
@@ -50,10 +60,65 @@ namespace MonoDevelop.Projects.MSBuild
 			buildEngine.SetUnsavedProjectContent (file, projectContent);
 		}
 
+		/// <summary>
+		/// Prepares the logging infrastructure
+		/// </summary>
+		void InitLogger (ILogWriter logWriter)
+		{
+			currentLogWriter = logWriter;
+			if (currentLogWriter != null) {
+				log.Clear ();
+				flushingLog = false;
+				flushTimer = new Timer (o => FlushLog ());
+			}
+		}
+
+		/// <summary>
+		/// Flushes the log that has not yet been sent and disposes the logging infrastructure
+		/// </summary>
+		void DisposeLogger ()
+		{
+			if (currentLogWriter != null) {
+				flushTimer.Dispose ();
+				flushTimer = null;
+				FlushLog ();
+				currentLogWriter = null;
+			}
+		}
+
 		void LogWriteLine (string txt)
 		{
-			if (currentLogWriter != null)
-				currentLogWriter.WriteLine (txt);
+			if (currentLogWriter != null) {
+				lock (log) {
+					// Append the line to the log, and schedule the flush of the log, unless it has already been done
+					log.AppendLine (txt);
+					if (!flushingLog) {
+						// Flush the log after 100ms
+						flushingLog = true;
+						flushTimer.Change (LogFlushTimeout, Timeout.Infinite);
+					}
+				}
+			}
+		}
+
+		void FlushLog ()
+		{
+			// We need a lock for the whole method here because it is called from the timer
+			// and from DisposeLogger, and we want to make sure a flush is complete before
+			// trying another one
+
+			lock (flushLogLock) {
+				string txt;
+				lock (log) {
+					// Don't flush the log inside the lock since that would prevent LogWriteLine from writing
+					// more log while the current log is being flushed (that would slow down the whole build)
+					txt = log.ToString ();
+					log.Clear ();
+					flushingLog = false;
+				}
+				if (txt.Length > 0 && currentLogWriter != null)
+					currentLogWriter.Write (txt);
+			}
 		}
 
 		LoggerVerbosity GetVerbosity (MSBuildVerbosity verbosity)

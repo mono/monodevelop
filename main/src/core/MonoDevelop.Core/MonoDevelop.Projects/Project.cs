@@ -375,7 +375,7 @@ namespace MonoDevelop.Projects
 			var buildActions = GetBuildActions ().Where (a => a != "Folder" && a != "--").ToArray ();
 
 			var config = configuration != null ? GetConfiguration (configuration) : null;
-			var pri = await CreateProjectInstaceForConfiguration (config?.Name, config?.Platform, false);
+			var pri = await CreateProjectInstaceForConfigurationAsync (config?.Name, config?.Platform, false);
 			foreach (var it in pri.EvaluatedItems.Where (i => buildActions.Contains (i.Name)))
 				results.Add (CreateProjectFile (it));
 
@@ -1939,7 +1939,7 @@ namespace MonoDevelop.Projects
 				// We use a dummy configuration and platform to avoid loading default values from the configurations
 				// while evaluating
 				var c = Guid.NewGuid ().ToString ();
-				pi = CreateProjectInstaceForConfiguration (c, c).Result;
+				pi = CreateProjectInstaceForConfiguration (c, c);
 
 				IMSBuildPropertySet globalGroup = sourceProject.GetGlobalPropertyGroup ();
 
@@ -2203,14 +2203,38 @@ namespace MonoDevelop.Projects
 			if (cgrp.FullySpecified)
 				config.Properties = cgrp.Group;
 
-			var pi = CreateProjectInstaceForConfiguration (conf, platform).Result;
+			var pi = CreateProjectInstaceForConfiguration (conf, platform);
+
+			// Set the evaluated value for each property in the property group.
+			// When saving the project, if the property is assigned the same evaluated value,
+			// the change won't be saved
+
+			foreach (var p in cgrp.Group.GetProperties ()) {
+				var ep = pi.EvaluatedProperties.GetProperty (p.Name);
+				if (ep != null)
+					p.InitEvaluatedValue (ep.Value);
+			}
 
 			config.Platform = platform;
 			projectExtension.OnReadConfiguration (monitor, config, pi.EvaluatedProperties);
 			Configurations.Add (config);
 		}
 
-		Task<MSBuildProjectInstance> CreateProjectInstaceForConfiguration (string conf, string platform, bool onlyEvaluateProperties = true)
+		MSBuildProjectInstance CreateProjectInstaceForConfiguration (string conf, string platform, bool onlyEvaluateProperties = true)
+		{
+			var pi = PrepareProjectInstaceForConfiguration (conf, platform, onlyEvaluateProperties);
+			pi.Evaluate ();
+			return pi;
+		}
+
+		async Task<MSBuildProjectInstance> CreateProjectInstaceForConfigurationAsync (string conf, string platform, bool onlyEvaluateProperties = true)
+		{
+			var pi = PrepareProjectInstaceForConfiguration (conf, platform, onlyEvaluateProperties);
+			await pi.EvaluateAsync ();
+			return pi;
+		}
+
+		MSBuildProjectInstance PrepareProjectInstaceForConfiguration (string conf, string platform, bool onlyEvaluateProperties)
 		{
 			var pi = sourceProject.CreateInstance ();
 			pi.SetGlobalProperty ("BuildingInsideVisualStudio", "true");
@@ -2223,8 +2247,7 @@ namespace MonoDevelop.Projects
 					pi.SetGlobalProperty ("Platform", platform);
 			}
 			pi.OnlyEvaluateProperties = onlyEvaluateProperties;
-			pi.Evaluate ();
-			return Task.FromResult (pi);
+			return pi;
 		}
 
 		protected virtual void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildEvaluatedPropertyCollection grp)
@@ -2421,7 +2444,7 @@ namespace MonoDevelop.Projects
 						MSBuildPropertyGroup pg = (MSBuildPropertyGroup)conf.Properties;
 						ConfigData cdata = configData.FirstOrDefault (cd => cd.Group == pg);
 
-						var pi = CreateProjectInstaceForConfiguration (conf.Name, conf.Platform).Result;
+						var pi = CreateProjectInstaceForConfiguration (conf.Name, conf.Platform);
 
 						if (cdata == null) {
 							msproject.AddPropertyGroup (pg, true);

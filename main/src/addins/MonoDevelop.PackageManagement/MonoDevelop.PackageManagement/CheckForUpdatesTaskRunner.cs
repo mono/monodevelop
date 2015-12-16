@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
@@ -132,9 +132,9 @@ namespace MonoDevelop.PackageManagement
 			return taskToCompare == task;
 		}
 
-		protected virtual void GuiBackgroundDispatch (MessageHandler handler)
+		protected virtual void GuiBackgroundDispatch (Action action)
 		{
-			DispatchService.BackgroundDispatch (handler);
+			PackageManagementBackgroundDispatcher.Dispatch (action);
 		}
 	}
 }

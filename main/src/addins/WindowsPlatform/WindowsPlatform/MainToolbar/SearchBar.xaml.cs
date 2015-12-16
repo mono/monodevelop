@@ -39,8 +39,10 @@ namespace WindowsPlatform.MainToolbar
 			};
 			IdeApp.Workbench.RootWindow.SetFocus += (o, e) =>
 			{
-				Keyboard.ClearFocus();
-				IdeApp.Workbench.RootWindow.Present();
+				if (Keyboard.FocusedElement == SearchBar) {
+					Keyboard.ClearFocus ();
+					IdeApp.Workbench.RootWindow.Present ();
+				}
 			};
 
 			searchIcon = Stock.SearchboxSearch.GetStockIcon ().WithSize (Xwt.IconSize.Small);
@@ -68,9 +70,9 @@ namespace WindowsPlatform.MainToolbar
 		{
 			get { return searchText; }
 			set	{
-					searchText = value;
-					UpdateIcon ();
-					RaisePropertyChanged ();
+				searchText = value;
+				UpdateIcon ();
+				RaisePropertyChanged ();
 			}
 		}
 

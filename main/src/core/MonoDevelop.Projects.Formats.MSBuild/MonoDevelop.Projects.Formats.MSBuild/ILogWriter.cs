@@ -32,7 +32,7 @@ namespace MonoDevelop.Projects.MSBuild
 {
 	public interface ILogWriter
 	{
-		void WriteLine (string text);
+		void Write (string text);
 	}
 	
 	public class LogWriter: MarshalByRefObject, ILogWriter
@@ -44,10 +44,9 @@ namespace MonoDevelop.Projects.MSBuild
 			this.writer = writer;
 		}
 
-		[OneWayAttribute]
-		public void WriteLine (string text)
+		public void Write (string text)
 		{
-			writer.WriteLine (text);
+			writer.Write (text);
 		}
 		
 		public override object InitializeLifetimeService ()

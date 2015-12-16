@@ -1,5 +1,5 @@
 ﻿// 
-// SharpDevelopPackageManager.cs
+// MonoDevelopPackageManager.cs
 // 
 // Author:
 //   Matt Ward <ward.matt@gmail.com>
@@ -31,14 +31,14 @@ using System.Collections.Generic;
 using MonoDevelop.PackageManagement;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class SharpDevelopPackageManager : PackageManager, ISharpDevelopPackageManager
+	public class MonoDevelopPackageManager : PackageManager, IMonoDevelopPackageManager
 	{
 		IProjectSystem projectSystem;
 		IPackageOperationResolverFactory packageOperationResolverFactory;
 		
-		public SharpDevelopPackageManager(
+		public MonoDevelopPackageManager(
 			IPackageRepository sourceRepository,
 			IProjectSystem projectSystem,
 			ISolutionPackageRepository solutionPackageRepository,
@@ -74,11 +74,11 @@ namespace ICSharpCode.PackageManagement
 			return packageRefRepository;
 		}
 		
-		public ISharpDevelopProjectManager ProjectManager { get; set; }
+		public IMonoDevelopProjectManager ProjectManager { get; set; }
 		
-		SharpDevelopProjectManager CreateProjectManager(PackageReferenceRepository packageRefRepository)
+		MonoDevelopProjectManager CreateProjectManager(PackageReferenceRepository packageRefRepository)
 		{
-			return new SharpDevelopProjectManager(LocalRepository, PathResolver, projectSystem, packageRefRepository);
+			return new MonoDevelopProjectManager(LocalRepository, PathResolver, projectSystem, packageRefRepository);
 		}
 		
 		public void InstallPackage(IPackage package)

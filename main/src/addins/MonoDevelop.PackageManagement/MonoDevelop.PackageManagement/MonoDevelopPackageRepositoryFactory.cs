@@ -1,5 +1,5 @@
 ﻿// 
-// ISharpDevelopPackageRepositoryFactory.cs
+// MonoDevelopPackageRepositoryFactory.cs
 // 
 // Author:
 //   Matt Ward <ward.matt@gmail.com>
@@ -28,21 +28,31 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface ISharpDevelopPackageRepositoryFactory : IPackageRepositoryFactory
+	public class MonoDevelopPackageRepositoryFactory : PackageRepositoryFactory, IMonoDevelopPackageRepositoryFactory
 	{
-		ISharedPackageRepository CreateSharedRepository(
+		public ISharedPackageRepository CreateSharedRepository(
 			IPackagePathResolver pathResolver,
 			IFileSystem fileSystem,
-			IFileSystem configSettingsFileSystem);
+			IFileSystem configSettingsFileSystem)
+		{
+			return new SharedPackageRepository(pathResolver, fileSystem, configSettingsFileSystem);
+		}
 		
-		IRecentPackageRepository CreateRecentPackageRepository(
+		public IRecentPackageRepository CreateRecentPackageRepository(
 			IList<RecentPackageInfo> recentPackages,
-			IPackageRepository aggregateRepository);
+			IPackageRepository aggregateRepository)
+		{
+			return new RecentPackageRepository(recentPackages, aggregateRepository);
+		}
 		
-		IPackageRepository CreateAggregateRepository(IEnumerable<IPackageRepository> repositories);
+		public IPackageRepository CreateAggregateRepository(IEnumerable<IPackageRepository> repositories)
+		{
+			return new MonoDevelopAggregateRepository (repositories);
+		}
 	}
 }

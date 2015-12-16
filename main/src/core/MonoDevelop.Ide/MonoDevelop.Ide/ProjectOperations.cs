@@ -289,8 +289,18 @@ namespace MonoDevelop.Ide
 
 				return;
 			}
-			IdeApp.Workbench.OpenDocument (new FileOpenInformation (location.SourceTree.FilePath, project) {
-				Offset = location.SourceSpan.Start
+			var filePath = location.SourceTree.FilePath;
+			var offset = location.SourceSpan.Start;
+			if (project?.ParentSolution != null) {
+				string projectedName;
+				int projectedOffset;
+				if (TypeSystemService.GetWorkspace (project.ParentSolution).TryGetOriginalFileFromProjection (filePath, offset, out projectedName, out projectedOffset)) {
+					filePath = projectedName;
+					offset = projectedOffset;
+				}
+			}
+			IdeApp.Workbench.OpenDocument (new FileOpenInformation (filePath, project) {
+				Offset = offset
 			});
 		}
 		
@@ -1397,8 +1407,10 @@ namespace MonoDevelop.Ide
 			foreach (var doc in new List<MonoDevelop.Ide.Gui.Document> (IdeApp.Workbench.Documents)) {
 				if (doc.IsDirty && doc.Project != null) {
 					doc.Save ();
-					if (doc.IsDirty)
+					if (doc.IsDirty) {
+						doc.Select ();
 						result.AddError (string.Format (couldNotSaveError, Path.GetFileName (doc.FileName)), doc.FileName);
+					}
 				}
 			}
 		}

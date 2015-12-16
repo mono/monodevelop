@@ -375,8 +375,10 @@ namespace MonoDevelop.Core.Assemblies
 							var ainfo = new AssemblyInfo ();
 							ainfo.Update (an);
 							assemblies.Add (ainfo);
+						} catch (BadImageFormatException ex) {
+							LoggingService.LogError ("Invalid assembly in framework '{0}': {1}", fx.Id, f);
 						} catch (Exception ex) {
-							LoggingService.LogError ("Error reading name for assembly '{0}' in framework '{1}':\n{2}",
+							LoggingService.LogError ("Error reading assembly '{0}' in framework '{1}':\n{2}",
 								f, fx.Id, ex.ToString ());
 						}
 					}

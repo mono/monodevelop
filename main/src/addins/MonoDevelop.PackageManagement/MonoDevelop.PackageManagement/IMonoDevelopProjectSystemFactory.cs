@@ -1,5 +1,5 @@
 ﻿// 
-// ProjectExtensions.cs
+// IMonoDevelopProjectSystemFactory.cs
 // 
 // Author:
 //   Matt Ward <ward.matt@gmail.com>
@@ -27,21 +27,13 @@
 //
 
 using System;
-using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
-using MonoDevelop.Ide;
-using MonoDevelop.Core;
-using System.Threading.Tasks;
+using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public static class ProjectExtensions
+	public interface IMonoDevelopProjectSystemFactory
 	{
-		public static Task SaveAsync(this Project project)
-		{
-			return Runtime.RunInMainThread (async () => {
-				await IdeApp.ProjectOperations.SaveAsync (project);
-			});
-		}
+		IProjectSystem CreateProjectSystem(DotNetProject project);
 	}
 }

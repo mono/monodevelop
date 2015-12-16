@@ -1,10 +1,10 @@
 ﻿// 
-// SharpDevelopPackageRepositoryFactory.cs
+// IMonoDevelopProjectManager.cs
 // 
 // Author:
 //   Matt Ward <ward.matt@gmail.com>
 // 
-// Copyright (C) 2012 Matthew Ward
+// Copyright (C) 2012-2013 Matthew Ward
 // 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -28,31 +28,15 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.PackageManagement;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class SharpDevelopPackageRepositoryFactory : PackageRepositoryFactory, ISharpDevelopPackageRepositoryFactory
+	public interface IMonoDevelopProjectManager : IProjectManager
 	{
-		public ISharedPackageRepository CreateSharedRepository(
-			IPackagePathResolver pathResolver,
-			IFileSystem fileSystem,
-			IFileSystem configSettingsFileSystem)
-		{
-			return new SharedPackageRepository(pathResolver, fileSystem, configSettingsFileSystem);
-		}
-		
-		public IRecentPackageRepository CreateRecentPackageRepository(
-			IList<RecentPackageInfo> recentPackages,
-			IPackageRepository aggregateRepository)
-		{
-			return new RecentPackageRepository(recentPackages, aggregateRepository);
-		}
-		
-		public IPackageRepository CreateAggregateRepository(IEnumerable<IPackageRepository> repositories)
-		{
-			return new MonoDevelopAggregateRepository (repositories);
-		}
+		IPackagePathResolver PathResolver { get; }
+		bool IsInstalled(string packageId);
+		bool HasOlderPackageInstalled(IPackage package);
+		IEnumerable<PackageReference> GetPackageReferences ();
 	}
 }

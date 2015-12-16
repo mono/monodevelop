@@ -51,8 +51,10 @@ namespace MonoDevelop.Projects.Extensions
 
 			if (!string.IsNullOrEmpty (fileName)) {
 				p = await MSBuildProject.LoadAsync (fileName);
-				if (ctx != null && ctx.Solution != null)
+				if (ctx != null && ctx.Solution != null) {
 					p.EngineManager = ctx.Solution.MSBuildEngineManager;
+					p.SolutionDirectory = ctx.Solution.ItemDirectory;
+				}
 				
 				var migrators = MSBuildProjectService.GetMigrableFlavors (p.ProjectTypeGuids);
 				if (migrators.Count > 0)

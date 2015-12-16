@@ -9,10 +9,12 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeRefactorings.EncapsulateField
 {
 	public abstract class AbstractEncapsulateFieldRefactoringProvider : CodeRefactoringProvider
 	{
+		CSharpEncapsulateFieldService service = new CSharpEncapsulateFieldService ();
+
 		public sealed override async Task ComputeRefactoringsAsync(CodeRefactoringContext context)
 		{
-			var service = context.Document.GetLanguageService<AbstractEncapsulateFieldService>();
 			var actions = await service.GetEncapsulateFieldCodeActionsAsync(context.Document, context.Span, context.CancellationToken).ConfigureAwait(false);
+
 			context.RegisterRefactorings(actions);
 		}
 	}

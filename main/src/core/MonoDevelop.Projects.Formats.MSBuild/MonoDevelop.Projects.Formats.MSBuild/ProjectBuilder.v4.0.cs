@@ -42,7 +42,6 @@ namespace MonoDevelop.Projects.MSBuild
 	{
 		readonly ProjectCollection engine;
 		readonly string file;
-		ILogWriter currentLogWriter;
 		readonly BuildEngine buildEngine;
 
 		public ProjectBuilder (BuildEngine buildEngine, ProjectCollection engine, string file)
@@ -64,7 +63,7 @@ namespace MonoDevelop.Projects.MSBuild
 			BuildEngine.RunSTA (taskId, delegate {
 				try {
 					var project = SetupProject (configurations);
-					currentLogWriter = logWriter;
+					InitLogger (logWriter);
 
 					ILogger[] loggers;
 					var logger = new LocalLogger (file);
@@ -112,11 +111,10 @@ namespace MonoDevelop.Projects.MSBuild
 						file, false, ex.ErrorSubcategory, ex.ErrorCode, ex.ProjectFile,
 						ex.LineNumber, ex.ColumnNumber, ex.EndLineNumber, ex.EndColumnNumber,
 						ex.BaseMessage, ex.HelpKeyword);
-					if (logWriter != null)
-						logWriter.WriteLine (r.ToString ());
+					LogWriteLine (r.ToString ());
 					result = new MSBuildResult (new [] { r });
 				} finally {
-					currentLogWriter = null;
+					DisposeLogger ();
 				}
 			});
 			return result;

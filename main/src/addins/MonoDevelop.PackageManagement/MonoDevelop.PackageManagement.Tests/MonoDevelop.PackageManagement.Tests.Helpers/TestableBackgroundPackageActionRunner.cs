@@ -26,7 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using NuGet;
@@ -35,7 +35,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
 	public class TestableBackgroundPackageActionRunner : BackgroundPackageActionRunner
 	{
-		public List<MessageHandler> BackgroundDispatchersQueued = new List<MessageHandler> ();
+		public List<Action> BackgroundActionsQueued = new List<Action> ();
 
 		public TestableBackgroundPackageActionRunner (
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
@@ -56,37 +56,26 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public void ExecuteSingleBackgroundDispatch ()
 		{
-			BackgroundDispatchersQueued [0].Invoke ();
-			BackgroundDispatchersQueued.RemoveAt (0);
+			BackgroundActionsQueued [0].Invoke ();
+			BackgroundActionsQueued.RemoveAt (0);
 		}
 
 		public void ExecuteBackgroundDispatch ()
 		{
-			foreach (MessageHandler dispatcher in BackgroundDispatchersQueued) {
-				dispatcher.Invoke ();
+			foreach (Action action in BackgroundActionsQueued) {
+				action ();
 			}
-			BackgroundDispatchersQueued.Clear ();
+			BackgroundActionsQueued.Clear ();
 		}
 
-		protected override void BackgroundDispatch (MessageHandler handler)
+		protected override void BackgroundDispatch (Action action)
 		{
-			BackgroundDispatchersQueued.Add (handler);
+			BackgroundActionsQueued.Add (action);
 		}
 
-		public bool InvokeBackgroundDispatchAndWaitImmediately = true;
-
-		protected override void BackgroundDispatchAndWait (MessageHandler handler)
+		protected override void GuiDispatch (Action action)
 		{
-			if (InvokeBackgroundDispatchAndWaitImmediately) {
-				handler.Invoke ();
-			} else {
-				BackgroundDispatchersQueued.Add (handler);
-			}
-		}
-
-		protected override void GuiDispatch (Action handler)
-		{
-			handler.Invoke ();
+			action ();
 		}
 
 		public Func<ProgressMonitor,

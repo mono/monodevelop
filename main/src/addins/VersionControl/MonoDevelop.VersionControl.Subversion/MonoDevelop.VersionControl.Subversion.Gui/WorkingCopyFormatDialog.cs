@@ -61,12 +61,12 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 					action();
 			};
 
-			if (DispatchService.IsGuiThread) {
+			if (Runtime.IsMainThread) {
 				// Already in GUI thread
 				del ();
 			}
 			else
-				DispatchService.GuiDispatch (del);
+				Runtime.RunInMainThread (del);
 		}
 	}
 }

@@ -380,7 +380,7 @@ namespace MonoDevelop.VersionControl
 		
 		internal static void NotifyPrepareCommit (Repository repo, ChangeSet changeSet)
 		{
-			if (!DispatchService.IsGuiThread) {
+			if (!Runtime.IsMainThread) {
 				Gtk.Application.Invoke (delegate {
 					NotifyPrepareCommit (repo, changeSet);
 				});
@@ -398,7 +398,7 @@ namespace MonoDevelop.VersionControl
 		
 		internal static void NotifyBeforeCommit (Repository repo, ChangeSet changeSet)
 		{
-			if (!DispatchService.IsGuiThread) {
+			if (!Runtime.IsMainThread) {
 				Gtk.Application.Invoke (delegate {
 					NotifyBeforeCommit (repo, changeSet);
 				});
@@ -416,7 +416,7 @@ namespace MonoDevelop.VersionControl
 		
 		internal static void NotifyAfterCommit (Repository repo, ChangeSet changeSet, bool success)
 		{
-			if (!DispatchService.IsGuiThread) {
+			if (!Runtime.IsMainThread) {
 				Gtk.Application.Invoke (delegate {
 					NotifyAfterCommit (repo, changeSet, success);
 				});
@@ -447,7 +447,7 @@ namespace MonoDevelop.VersionControl
 		
 		public static void NotifyFileStatusChanged (FileUpdateEventArgs args) 
 		{
-			if (!DispatchService.IsGuiThread)
+			if (!Runtime.IsMainThread)
 				Gtk.Application.Invoke (delegate {
 					NotifyFileStatusChanged (args);
 				});
