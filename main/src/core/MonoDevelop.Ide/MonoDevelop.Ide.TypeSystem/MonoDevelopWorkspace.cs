@@ -192,11 +192,15 @@ namespace MonoDevelop.Ide.TypeSystem
 			foreach (var proj in mdProjects) {
 				if (token.IsCancellationRequested)
 					return null;
-				var tp = LoadProject (proj, token).ContinueWith (t => {
-					if (!t.IsCanceled)
-						projects.Add (t.Result);
-				});
-				allTasks.Add (tp);
+				if (string.Equals (proj.TypeGuid, "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", StringComparison.OrdinalIgnoreCase) ||
+				    string.Equals (proj.TypeGuid, "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}", StringComparison.OrdinalIgnoreCase)) {
+
+					var tp = LoadProject (proj, token).ContinueWith (t => {
+						if (!t.IsCanceled)
+							projects.Add (t.Result);
+					});
+					allTasks.Add (tp);
+				}
 			}
 			await Task.WhenAll (allTasks.ToArray ());
 			if (token.IsCancellationRequested)
@@ -868,11 +872,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 
 			}
-		}
-
-		public async Task AddProject (MonoDevelop.Projects.Project project)
-		{
-			await LoadProject (project, default(CancellationToken)).ConfigureAwait (false);
 		}
 
 		public void RemoveProject (MonoDevelop.Projects.Project project)
