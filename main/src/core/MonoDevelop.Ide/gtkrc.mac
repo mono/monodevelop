@@ -139,10 +139,10 @@ style "button" = "default" {
     engine "xamarin" {
         rgba = FALSE
         contrast = 1.0
+
+        gradient_shades     = {0.96, 0.918, 0.926, 0.858}
         focus_color = shade(0.6, @bg_color)
         textstyle = 0
-        highlight_shade = 1.0
-        lightborder_shade = 1.0
     }
 }
 
