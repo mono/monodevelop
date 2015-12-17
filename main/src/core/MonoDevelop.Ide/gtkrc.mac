@@ -108,8 +108,7 @@ style "default" {
         spinbuttonstyle = 1
         colorize_scrollbar = FALSE
         progressbarstyle = 0
-        trough_shades = { 0.842, 0.886 }
-        #fill_shade		= 1.0
+        gradient_shades = { 1.0, 1.0, 1.0, 1.0 }
 
         focusstyle = 0
     }
@@ -131,8 +130,8 @@ style "button" = "default" {
 
     font_name = "Helvetica Neue 13"
 
+    bg[NORMAL] = @bg_color
     bg[PRELIGHT] = @bg_color # Mac buttons have no hover state
-    fg[ACTIVE] = @selected_fg_color
 
     GtkWidget::focus-padding = 0
     GtkWidget::focus-line-width = 1
@@ -140,7 +139,6 @@ style "button" = "default" {
     engine "xamarin" {
         rgba = FALSE
         contrast = 1.0
-        gradient_shades = {0.96, 0.918, 0.926, 0.858}
         focus_color = shade(0.6, @bg_color)
         textstyle = 0
         highlight_shade = 1.0
@@ -158,13 +156,11 @@ style "dialog-button" = "button" {
 }
 
 style "toggle-button" = "button" {
-    bg[NORMAL] = @base_color
-    bg[PRELIGHT] = shade(0.98, @base_color)
+    bg[PRELIGHT] = @base_color
 
     engine "xamarin" {
         rgba = FALSE
         contrast = 1.0
-        gradient_shades = {0.96, 0.918, 0.926, 0.858}
         focus_color = shade(0.6, @bg_color)
         textstyle = 1
     }

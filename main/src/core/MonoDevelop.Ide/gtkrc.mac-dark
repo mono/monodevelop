@@ -109,7 +109,7 @@ style "default" {
         colorize_scrollbar = FALSE
         progressbarstyle = 0
         trough_shades = { 0.842, 0.886 }
-        #fill_shade		= 1.0
+        gradient_shades = { 1.0, 1.0, 1.0, 1.0 }
 
         focusstyle = 0
     }
@@ -138,7 +138,7 @@ style "button" = "default" {
 
     fg[NORMAL] = "#fff"
     fg[PRELIGHT] = "#fff"
-    fg[ACTIVE] = "black"
+    fg[ACTIVE] = "#fff"
     fg[INSENSITIVE] = lighter ("#595959")
 
     GtkWidget::draw-border = { 1, 1, 1, 1 }
@@ -148,7 +148,6 @@ style "button" = "default" {
     engine "xamarin" {
         rgba = FALSE
         contrast = 1.0
-        gradient_shades = {0.96, 0.918, 0.926, 0.858}
         focus_color = shade(1.4, @bg_color)
         focusstyle = 3
         border_colors = { @bg_color, @bg_color }
@@ -169,7 +168,8 @@ style "dialog-button" = "button" {
 }
 
 style "toggle-button" = "button" {
-    bg[NORMAL] = @base_color
+    bg[NORMAL] = @bg_color
+    bg[ACTIVE] = shade(0.98, @base_color)
     bg[PRELIGHT] = shade(0.98, @base_color)
 
     engine "xamarin" {
