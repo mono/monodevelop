@@ -1,4 +1,4 @@
-﻿namespace MonoDevelopTests
+namespace MonoDevelopTests
 open System.Text.RegularExpressions
 open NUnit.Framework
 open FsUnit
@@ -50,7 +50,7 @@ type TestTooltipProvider() =
    be       : bool   
            -> unit"""
 
-        signature.ToString() |> should equal expected
+        signature.ToString() |> shouldEqualIgnoringLineEndings expected
 
     [<Test>]
     member this.Formats_forall2_tooltip_arrows_right_aligned() =
@@ -68,7 +68,7 @@ type TestTooltipProvider() =
    source2  : seq<'T2>           
            -> bool"""
         
-        signature.ToString() |> should equal expected
+        signature.ToString() |> shouldEqualIgnoringLineEndings expected
         // Base Type Constraint
 
     [<Test>]
