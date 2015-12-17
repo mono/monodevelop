@@ -73,21 +73,21 @@ module Search =
   let byPattern (cache:Dictionary<_,_>) pattern symbols =
 
     let matchName (matcher:StringMatcher) (name:string) =
-      if name = null then SearchCategory.MatchResult(false, -1)
+      if name = null then (false, -1)
       else
         match cache.TryGetValue(name) with
         | true, v -> v
         | false, _ ->
           let doesMatch, rank = matcher.CalcMatchRank (name)
-          let savedMatch = SearchCategory.MatchResult (doesMatch, rank)
+          let savedMatch = (doesMatch, rank)
           cache.Add(name, savedMatch)
           savedMatch
 
     let matcher = StringMatcher.GetMatcher (pattern, false)
 
     symbols
-    |> Seq.choose (fun s -> let matchres = matchName matcher (correctDisplayName s)
-                            if matchres.Match then Some(s, matchres.Rank)
+    |> Seq.choose (fun s -> let doesMatch, rank = matchName matcher (correctDisplayName s)
+                            if doesMatch then Some(s, rank)
                             else None)
 
 type SymbolSearchResult(match', matchedString, rank, symbol:FSharpSymbolUse) =
