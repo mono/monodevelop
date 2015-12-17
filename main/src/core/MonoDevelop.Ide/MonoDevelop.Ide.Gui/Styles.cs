@@ -461,16 +461,10 @@ namespace MonoDevelop.Ide.Gui
 			CodeCompletion.HighlightColor = CairoExtensions.ParseColor ("ba3373");
 
 			#if MAC
-			if(NSColor.CurrentControlTint == NSControlTint.Graphite) {
-				CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("bbbbbb");
-				CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("ba3373");
-			}
-			else {
-				CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("bbbbbb");
-				CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("ba3373");
-			}
-			#else
 			CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("bbbbbb");
+			CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("ba3373");
+			#else
+			CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("bbbbbb"); // TODO: VV: Windows colors
 			CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("ba3373");
 			#endif
 
@@ -633,16 +627,10 @@ namespace MonoDevelop.Ide.Gui
 			CodeCompletion.HighlightColor = CairoExtensions.ParseColor ("f9d33c");
 
 			#if MAC
-			if(NSColor.CurrentControlTint == NSControlTint.Graphite) {
-				CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("bbbbbb");
-				CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("f9d33c");
-			}
-			else {
-				CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("555555");
-				CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("f9d33c");
-			}
+			CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("555555");
+			CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("f9d33c");
 			#else
-			CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("bbbbbb");
+			CodeCompletion.SelectionBackgroundInactiveColor = CairoExtensions.ParseColor ("bbbbbb"); // TODO: VV: Windows colors
 			CodeCompletion.SelectionHighlightColor = CairoExtensions.ParseColor ("f9d33c");
 			#endif
 
