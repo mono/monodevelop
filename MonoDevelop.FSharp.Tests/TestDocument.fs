@@ -1,7 +1,7 @@
 ﻿namespace MonoDevelopTests
-open System
+
+open MonoDevelop.FSharp
 open MonoDevelop.Ide.Editor
-open MonoDevelop.Projects
 open System.Threading.Tasks
 
 type TestDocument(name, parsedDocument, editor: TextEditor) =
@@ -16,3 +16,4 @@ type TestDocument(name, parsedDocument, editor: TextEditor) =
     override x.GetOptionSet() = null
     override x.UpdateParseDocument() = Task.FromResult parsedDocument
     member x.Editor = editor
+    member x.Ast = parsedDocument.Ast :?> ParseAndCheckResults

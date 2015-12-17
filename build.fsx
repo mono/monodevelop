@@ -3,7 +3,7 @@ open Fake
 open System.IO
 
 let isWindows = (Path.DirectorySeparatorChar = '\\')
-let config = "Debug"
+let config = "Release"
 
 Target "Default" (fun _ ->
   MSBuildWithDefaults "Build" ["./MonoDevelop.FSharp.sln"]

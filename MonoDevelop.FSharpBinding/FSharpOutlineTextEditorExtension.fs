@@ -3,16 +3,11 @@
 open System
 open ExtCore.Control
 open Gtk
-open MonoDevelop.Components.Docking
 open MonoDevelop.Components
 open MonoDevelop.Core
 open MonoDevelop.DesignerSupport
 open MonoDevelop.Ide.Editor.Extension
-open MonoDevelop.Ide.Editor
-open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Gui.Components
-open MonoDevelop.Ide.Gui.Content
-open MonoDevelop.Ide.TypeSystem
 open MonoDevelop.Ide
 open MonoDevelop.Projects
 open Microsoft.FSharp.Compiler.SourceCodeServices
@@ -33,7 +28,6 @@ type FSharpOutlineTextEditorExtension() as x =
                               return ast }
 
             Runtime.AssertMainThread()
-            Gdk.Threads.Enter()
             refreshingOutline <- false
 
             if treeView.IsRealized then
@@ -126,7 +120,7 @@ type FSharpOutlineTextEditorExtension() as x =
                 sw.ShowAll()
                 sw :> Widget
 
-        member x.GetToolbarWidgets() = List.empty<Widget> :> _
+        member x.GetToolbarWidgets() = [] :> _
 
         member x.ReleaseOutlineWidget() =
             treeView |> Option.iter(fun tv -> Option.tryCast<ScrolledWindow>(tv.Parent) 

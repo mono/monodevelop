@@ -1,21 +1,27 @@
 ﻿namespace MonoDevelopTests
+open System
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open NUnit.Framework
 open MonoDevelop.FSharp
+open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.TypeSystem
+open MonoDevelop.Core
 open MonoDevelop.Core.Text
 
 type FixtureSetup() =
   static let firstRun = ref true
+
   member x.Initialise() =
     if !firstRun then
       firstRun := false
       MonoDevelop.FSharp.MDLanguageService.DisableVirtualFileSystem()
       MonoDevelop.Ide.DesktopService.Initialize()
+      if Platform.IsWindows then
+        Xwt.Application.Initialize()
 
 module TestHelpers =
+  let filename = if Platform.IsWindows then "c:\\test.fsx" else "test.fsx"
 
-  let parseAndCheckFile source filename =
+  let parseAndCheckFile source =
     async {
       try
          let checker = FSharpChecker.Create()
@@ -32,17 +38,24 @@ module TestHelpers =
                
          return results
       with exn ->
-        return ParseAndCheckResults(None, None) }  |> Async.RunSynchronously
+        printf "%A" exn
+        return ParseAndCheckResults(None, None) }
 
   let createDoc source compilerDefines =
-    let file = "test.fsx"
-    let options = ParseOptions(FileName = file, Content = StringTextSource(source))
+    FixtureSetup().Initialise()
 
-    let results = parseAndCheckFile source file
+    let results = parseAndCheckFile source |> Async.RunSynchronously
+    let options = ParseOptions(FileName = filename, Content = StringTextSource(source))
     let parsedDocument =
       ParsedDocument.create options results [compilerDefines] |> Async.RunSynchronously
 
-    FixtureSetup().Initialise()
-    let editor = MonoDevelop.Ide.Editor.TextEditorFactory.CreateNewEditor ()
-    editor.Text <- source
-    TestDocument(file, parsedDocument, editor)
+    let doc = TextEditorFactory.CreateNewReadonlyDocument(StringTextSource(source), filename, "text/fsharp")
+    let editor = MonoDevelop.Ide.Editor.TextEditorFactory.CreateNewEditor (doc)
+
+    TestDocument(filename, parsedDocument, editor)
+
+  let getAllSymbols source =
+    async {
+      let! results = parseAndCheckFile source
+      return! results.GetAllUsesOfAllSymbolsInFile()
+    } |> Async.RunSynchronously

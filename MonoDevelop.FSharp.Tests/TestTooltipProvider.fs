@@ -1,5 +1,4 @@
 ﻿namespace MonoDevelopTests
-open Microsoft.FSharp.Compiler.SourceCodeServices
 open System.Text.RegularExpressions
 open NUnit.Framework
 open FsUnit
@@ -16,38 +15,23 @@ type TestTooltipProvider() =
          .Replace("&gt;", ">")
          .Replace("&apos;", "'")
 
-    let getTooltip source displayName =  
-        let checker = FSharpChecker.Create()
+    let getTooltip source displayName =
+      FixtureSetup().Initialise()
+      let allSymbols = TestHelpers.getAllSymbols source
 
-        let file = "test.fsx"
+      let symbol =
+          match allSymbols with
+          | Some symbols -> symbols |> Seq.tryFind (fun s -> s.Symbol.DisplayName.StartsWith(displayName))
+          | None -> None
+      
+      let tooltip = SymbolTooltips.getTooltipFromSymbolUse symbol.Value
 
-        let projOptions = 
-            checker.GetProjectOptionsFromScript(file, source)
-                |> Async.RunSynchronously
+      let signature =
+          match tooltip with
+          | Some(tip, _, _) -> tip
+          | _ ->  ""
 
-        let allSymbols =
-            async {
-                let! pfr, cfa = checker.ParseAndCheckFileInProject(file, 0, source, projOptions)
-                match cfa with
-                | FSharpCheckFileAnswer.Succeeded cfr ->
-                    let! symbols = cfr.GetAllUsesOfAllSymbolsInFile() 
-                    return Some symbols
-                | _ -> return None } |> Async.RunSynchronously
-
-        let symbol =
-            match allSymbols with
-            | Some symbols -> symbols |> Seq.tryFind (fun s -> s.Symbol.DisplayName.StartsWith(displayName))
-            | None -> None
-        
-
-        let tooltip = SymbolTooltips.getTooltipFromSymbolUse symbol.Value
-
-        let signature =
-            match tooltip with
-            | Some(tip, _, _) -> tip
-            | _ ->  ""
-
-        signature |> stripHtml |> htmlDecode
+      signature |> stripHtml |> htmlDecode
 
     [<Test>]
     member this.Formats_tooltip_arrows_right_aligned() =
@@ -57,7 +41,7 @@ type TestTooltipProvider() =
             let toBePartiallyApplied (datNumba: int) (thaString: string) (be: bool) =
                 ()
             """
-        let allEqual coll = Seq.forall2 (fun elem1 elem2 -> elem1 = elem2) coll
+
         let signature = getTooltip input "toBePartiallyApplied"
 
         let expected = """val toBePartiallyApplied :

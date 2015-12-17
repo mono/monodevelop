@@ -1,12 +1,10 @@
 ﻿namespace MonoDevelopTests
-open System.Text.RegularExpressions
 open NUnit.Framework
 open FsUnit
 open MonoDevelop.Core
 open MonoDevelop.FSharp
 open MonoDevelop.Ide.Gui.Components
 open MonoDevelop.Projects
-open MonoDevelop.Projects.MSBuild
 open System
 open System.IO
 
@@ -15,6 +13,7 @@ type TestProjectNodeCommandHandler() =
 
     [<Test>]
     member this.Can_reorder_nodes() =
+      if not MonoDevelop.Core.Platform.IsWindows then
         let xml = 
             """
             <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
