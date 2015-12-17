@@ -108,7 +108,7 @@ style "default" {
         spinbuttonstyle = 1
         colorize_scrollbar = FALSE
         progressbarstyle = 0
-        trough_shades = { 0.842, 0.886 }
+        gradient_shades = { 1.0, 1.0, 1.0, 1.0 }
         fill_shade = 1.0
 
         focusstyle = 0
@@ -140,7 +140,6 @@ style "button" = "default" {
     engine "xamarin" {
         rgba = FALSE
         contrast = 1.0
-        gradient_shades = {0.96, 0.918, 0.926, 0.858}
         focus_color = shade(0.6, @bg_color)
         textstyle = 0
         highlight_shade = 1.0
@@ -164,7 +163,6 @@ style "toggle-button" = "button" {
     engine "xamarin" {
         rgba = FALSE
         contrast = 1.0
-        gradient_shades = {0.96, 0.918, 0.926, 0.858}
         focus_color = shade(0.6, @bg_color)
         textstyle = 1
     }

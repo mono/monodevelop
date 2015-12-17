@@ -109,6 +109,7 @@ style "default" {
         colorize_scrollbar = FALSE
         progressbarstyle = 0
         trough_shades = { 0.842, 0.886 }
+        gradient_shades = { 1.0, 1.0, 1.0, 1.0 }
         fill_shade		= 1.0
 
         focusstyle = 0
@@ -148,7 +149,6 @@ style "button" = "default" {
     engine "xamarin" {
         rgba = FALSE
         contrast = 1.0
-        gradient_shades = {0.96, 0.918, 0.926, 0.858}
         focus_color = shade(1.4, @bg_color)
         focusstyle = 3
         border_colors = { @bg_color, @bg_color }
