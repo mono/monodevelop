@@ -621,7 +621,7 @@ namespace MonoDevelop.Projects.MSBuild
 			get { return mainProjectInstance.EvaluatedItemsIgnoringCondition; }
 		}
 
-		public IEnumerable<MSBuildTarget> EvaluatedTargets
+		public IEnumerable<IMSBuildTargetEvaluated> EvaluatedTargets
 		{
 			get { return mainProjectInstance.Targets; }
 		}
