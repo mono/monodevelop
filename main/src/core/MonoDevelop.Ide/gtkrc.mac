@@ -131,13 +131,14 @@ style "button" = "default" {
 
     font_name = "Helvetica Neue 13"
 
-    bg[PRELIGHT] = @bg_color # Mac buttons have no hover state
-    fg[ACTIVE] = @selected_fg_color
+    bg[NORMAL] = @base_color
+    bg[PRELIGHT] = @base_color # Mac buttons have no hover state
 
     GtkWidget::focus-padding = 0
     GtkWidget::focus-line-width = 1
 
     engine "xamarin" {
+        border_shades = {1.4, 1.3}
         rgba = FALSE
         contrast = 1.0
         focus_color = shade(0.6, @bg_color)

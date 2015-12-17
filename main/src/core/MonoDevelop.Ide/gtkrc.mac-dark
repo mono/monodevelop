@@ -139,7 +139,7 @@ style "button" = "default" {
 
     fg[NORMAL] = "#fff"
     fg[PRELIGHT] = "#fff"
-    fg[ACTIVE] = "black"
+    fg[ACTIVE] = "#fff"
     fg[INSENSITIVE] = lighter ("#595959")
 
     GtkWidget::draw-border = { 1, 1, 1, 1 }
@@ -169,7 +169,8 @@ style "dialog-button" = "button" {
 }
 
 style "toggle-button" = "button" {
-    bg[NORMAL] = @base_color
+    bg[NORMAL] = @bg_color
+    bg[ACTIVE] = shade(0.98, @base_color)
     bg[PRELIGHT] = shade(0.98, @base_color)
 
     engine "xamarin" {
