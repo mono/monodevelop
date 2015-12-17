@@ -391,7 +391,7 @@ style "progressbar" = "default"
 {
     bg[SELECTED] = "#62b3ec"
     fg[SELECTED] = "#3a67a6"
-
+    bg[ACTIVE] = @base_color
     xthickness = 0
     ythickness = 0
 }

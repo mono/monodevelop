@@ -399,7 +399,6 @@ style "completion_scrollbar" = "scrollbar"
 
 style "progressbar" = "default"
 {
-    bg[SELECTED] = "#62b3ec"
     fg[SELECTED] = "#3a67a6"
 
     xthickness = 0
