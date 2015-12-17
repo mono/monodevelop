@@ -45,7 +45,6 @@ release:
 clean:
 	-rm -fr bin
 	-rm -fr pack
-	-rm -fr MonoDevelop.FSharpBinding/FSharpBinding.addin.xml
 	-rm -fr MonoDevelop.FSharpBinding/MonoDevelop.FSharp.*.fsproj
 	-rm -fr MonoDevelop.FSharpBinding/obj
 	(cd MonoDevelop.FSharp.Gui && xbuild MonoDevelop.FSharp.Gui.csproj /target:Clean)
