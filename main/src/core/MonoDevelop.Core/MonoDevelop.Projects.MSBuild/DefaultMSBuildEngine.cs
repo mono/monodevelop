@@ -530,8 +530,17 @@ namespace MonoDevelop.Projects.MSBuild
 
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildTarget target)
 		{
-			// TODO NPM
-			project.Targets.Add (target);
+			if (SafeParseAndEvaluate (project, context, target.Condition)) {
+				var newTarget = new MSBuildTarget (target.Name, target.Tasks);
+				newTarget.AfterTargets = context.EvaluateString (target.AfterTargets);
+				newTarget.Inputs = context.EvaluateString (target.Inputs);
+				newTarget.Outputs = context.EvaluateString (target.Outputs);
+				newTarget.BeforeTargets = context.EvaluateString (target.BeforeTargets);
+				newTarget.DependsOnTargets = context.EvaluateString (target.DependsOnTargets);
+				newTarget.Returns = context.EvaluateString (target.Returns);
+				newTarget.KeepDuplicateOutputs = context.EvaluateString (target.KeepDuplicateOutputs);
+				project.Targets.Add (newTarget);
+			}
 		}
 
 		static bool SafeParseAndEvaluate (ProjectInfo project, MSBuildEvaluationContext context, string condition, bool collectConditionedProperties = false)
