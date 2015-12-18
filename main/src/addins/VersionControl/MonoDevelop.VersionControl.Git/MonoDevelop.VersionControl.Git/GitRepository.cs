@@ -1443,10 +1443,11 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.EndTask ();
 		}
 
-		public override Annotation[] GetAnnotations (FilePath repositoryPath)
+		public override Annotation [] GetAnnotations (FilePath repositoryPath, Revision since)
 		{
 			var repository = GetRepository (repositoryPath);
 			Commit hc = GetHeadCommit (repository);
+			Commit sinceCommit = since != null ? ((GitRevision)since).Commit : null;
 			if (hc == null)
 				return new Annotation [0];
 
@@ -1458,23 +1459,25 @@ namespace MonoDevelop.VersionControl.Git
 			repositoryPath = repository.ToGitPath (repositoryPath);
 			var status = repository.RetrieveStatus (repositoryPath);
 			if (status != FileStatus.NewInIndex && status != FileStatus.NewInWorkdir) {
-				foreach (var hunk in repository.Blame (repositoryPath, new BlameOptions { FindExactRenames = true, })) {
+				foreach (var hunk in repository.Blame (repositoryPath, new BlameOptions { FindExactRenames = true, StartingAt = sinceCommit })) {
 					var commit = hunk.FinalCommit;
 					var author = hunk.FinalSignature;
-					var working = new Annotation (commit.Sha, author.Name, author.When.LocalDateTime, String.Format ("<{0}>", author.Email));
+					var working = new Annotation (new GitRevision (this, repository, commit), author.Name, author.When.LocalDateTime, String.Format ("<{0}>", author.Email));
 					for (int i = 0; i < hunk.LineCount; ++i)
 						list.Add (working);
 				}
 			}
 
-			Annotation nextRev = new Annotation (GettextCatalog.GetString ("working copy"), "<uncommitted>", DateTime.MinValue);
-			foreach (var hunk in baseDocument.Diff (workingDocument)) {
-				list.RemoveRange (hunk.RemoveStart - 1, hunk.Removed);
-				for (int i = 0; i < hunk.Inserted; ++i) {
-					if (hunk.InsertStart + i >= list.Count)
-						list.Add (nextRev);
-					else
-						list.Insert (hunk.InsertStart - 1, nextRev);
+			if (sinceCommit == null) {
+				Annotation nextRev = new Annotation (null, "<uncommitted>", DateTime.MinValue, null, GettextCatalog.GetString ("working copy"));
+				foreach (var hunk in baseDocument.Diff (workingDocument)) {
+					list.RemoveRange (hunk.RemoveStart - 1, hunk.Removed);
+					for (int i = 0; i < hunk.Inserted; ++i) {
+						if (hunk.InsertStart + i >= list.Count)
+							list.Add (nextRev);
+						else
+							list.Insert (hunk.InsertStart - 1, nextRev);
+					}
 				}
 			}
 

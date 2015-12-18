@@ -824,18 +824,21 @@ namespace MonoDevelop.VersionControl
 			}
 			return list.ToArray ();
 		}
-		
+
 		/// <summary>
 		/// Retrieves annotations for a given path in the repository.
 		/// </summary>
 		/// <param name="repositoryPath">
 		/// A <see cref="FilePath"/>
 		/// </param>
+		/// <param name="since">
+		/// A <see cref="Revision"/>
+		/// </param>
 		/// <returns>
-		/// A <see cref="System.String"/> corresponding to each line 
+		/// A <see cref="Annotation"/> corresponding to each line 
 		/// of the file to which repositoryPath points.
 		/// </returns>
-		public virtual Annotation[] GetAnnotations (FilePath repositoryPath)
+		public virtual Annotation [] GetAnnotations (FilePath repositoryPath, Revision since)
 		{
 			return new Annotation[0];
 		}
@@ -874,9 +877,14 @@ namespace MonoDevelop.VersionControl
 	
 	public class Annotation
 	{
-		public string Revision {
+		public Revision Revision {
 			get;
 			private set;
+		}
+
+		string text;
+		public string Text {
+			get { return text != null ? text : Revision?.ToString (); }
 		}
 
 		public string Author {
@@ -902,19 +910,28 @@ namespace MonoDevelop.VersionControl
 			get { return Date != DateTime.MinValue; }
 		}
 
-		public Annotation (string revision, string author, DateTime date)
+		public Annotation (Revision revision, string author, DateTime date)
 		{
 			this.Revision = revision;
 			this.Author = author;
 			this.Date = date;
 		}
 
-		public Annotation (string revision, string author, DateTime date, string email)
+		public Annotation (Revision revision, string author, DateTime date, string email)
 		{
 			this.Revision = revision;
 			this.Author = author;
 			this.Date = date;
 			this.Email = email;
+		}
+
+		public Annotation (Revision revision, string author, DateTime date, string email, string text)
+		{
+			this.Revision = revision;
+			this.Author = author;
+			this.Date = date;
+			this.Email = email;
+			this.text = text;
 		}
 		
 		public override string ToString ()

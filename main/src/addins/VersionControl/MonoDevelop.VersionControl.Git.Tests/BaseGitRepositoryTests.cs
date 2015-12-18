@@ -500,7 +500,7 @@ index 0000000..009b64b
 			AddFile ("init", "init", toVcs, commit);
 
 			Assert.AreEqual (string.Empty, Repo.GetBaseText (added));
-			var revisions = Repo.GetAnnotations (added).Select (a => a.Revision);
+			var revisions = Repo.GetAnnotations (added, null).Select (a => a.Revision);
 			foreach (var rev in revisions)
 				Assert.AreEqual (GettextCatalog.GetString ("working copy"), rev);
 		}

@@ -602,7 +602,7 @@ namespace MonoDevelop.VersionControl.Tests
 			// Working copy.
 			File.AppendAllText (added, "wut2" + Environment.NewLine);
 
-			var annotations = Repo.GetAnnotations (added);
+			var annotations = Repo.GetAnnotations (added, null);
 			for (int i = 0; i < 2; i++) {
 				var annotation = annotations [i];
 				Assert.IsTrue (annotation.HasDate);
