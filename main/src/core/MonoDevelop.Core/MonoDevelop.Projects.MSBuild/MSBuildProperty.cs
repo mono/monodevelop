@@ -472,7 +472,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal override void SetPropertyValue (string value)
 		{
-			if (value != this.value)
+			if (!ValueType.Equals (value, this.value))
 				this.value = unevaluatedValue = value;
 		}
 
