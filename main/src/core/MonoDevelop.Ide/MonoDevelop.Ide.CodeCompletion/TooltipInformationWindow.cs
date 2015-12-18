@@ -253,6 +253,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			Theme.SetSchemeColors (scheme);
 			foreColor = scheme.PlainText.Foreground;
 			headLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
+			headLabel.FontDescription = FontService.GetFontDescription ("Editor").CopyModified (Styles.PopoverWindow.DefaultFontScale);
 			Theme.Font = FontService.SansFont.CopyModified (Styles.PopoverWindow.DefaultFontScale);
 			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor;
 			if (this.Visible)
@@ -272,7 +273,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			headLabel = new FixedWidthWrapLabel ();
 			headLabel.Indent = -20;
-			headLabel.FontDescription = Theme.Font.CopyModified (1.1);
 			headLabel.Wrap = Pango.WrapMode.WordChar;
 			headLabel.BreakOnCamelCasing = false;
 			headLabel.BreakOnPunctuation = false;
