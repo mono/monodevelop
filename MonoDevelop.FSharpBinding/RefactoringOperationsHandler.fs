@@ -602,18 +602,18 @@ type FSharpCommandsTextEditorExtension () =
     override x.IsValidInContext (context) =
         context.Name <> null && MDLanguageService.SupportedFileName context.Name
 
-    [<CommandUpdateHandler(RefactoryCommands.GotoDeclaration)>]
+    [<CommandUpdateHandler("MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration")>]
     member x.GotoDeclarationCommand_Update(ci:CommandInfo) =
         GotoDeclarationHandler().UpdateCommandInfo (ci)
     
-    [<CommandHandler (RefactoryCommands.GotoDeclaration)>]
+    [<CommandHandler ("MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration")>]
     member x.GotoDeclarationCommand () =
         GotoDeclarationHandler().Run(x.Editor, x.DocumentContext)
         
-    [<CommandUpdateHandler(Commands.EditCommands.Rename)>]
+    [<CommandUpdateHandler("MonoDevelop.Ide.Commands.EditCommands.Rename")>]
     member x.RenameCommand_Update(ci:CommandInfo) =
         RenameHandler().UpdateCommandInfo (ci)
     
-    [<CommandHandler (Commands.EditCommands.Rename)>]
+    [<CommandHandler ("MonoDevelop.Ide.Commands.EditCommands.Rename")>]
     member x.RenameCommand () =
         RenameHandler().Run (x.Editor, x.DocumentContext)
