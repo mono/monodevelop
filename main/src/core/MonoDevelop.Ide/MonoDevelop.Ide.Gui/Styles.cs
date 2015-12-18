@@ -169,7 +169,7 @@ namespace MonoDevelop.Ide.Gui
 
 		// Code Completion
 
-		public static readonly int TooltipInfoSpacing = 1;
+		public static readonly int TooltipInfoSpacing = -4;
 
 		// Popover Windows
 

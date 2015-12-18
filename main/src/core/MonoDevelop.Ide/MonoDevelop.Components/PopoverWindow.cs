@@ -103,6 +103,8 @@ namespace MonoDevelop.Components
 			}
 		}
 
+		public int CaretSpacing { get; set; }
+
 		public bool ShowArrow {
 			get { return Theme.ShowArrow; }
 			set { Theme.ShowArrow = value; }
@@ -267,14 +269,14 @@ namespace MonoDevelop.Components
 
 			switch ((PopupPosition)((int)position & 0x0f)) {
 			case PopupPosition.Top:
-				y = caret.Bottom;
+				y = caret.Bottom + CaretSpacing;
 				break;
 			case PopupPosition.Bottom:
-				y = caret.Y - request.Height; break;
+				y = caret.Y - request.Height - CaretSpacing; break;
 			case PopupPosition.Right:
-				x = caret.X - request.Width; break;
+				x = caret.X - request.Width - CaretSpacing; break;
 			case PopupPosition.Left:
-				x = caret.Right; break;
+				x = caret.Right + CaretSpacing; break;
 			}
 			int offset;
 			if ((position & PopupPosition.Top) != 0 || (position & PopupPosition.Bottom) != 0) {
