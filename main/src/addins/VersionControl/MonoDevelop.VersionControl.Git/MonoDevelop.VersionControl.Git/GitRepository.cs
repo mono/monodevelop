@@ -1450,11 +1450,10 @@ namespace MonoDevelop.VersionControl.Git
 			if (hc == null)
 				return new Annotation [0];
 
-			int lines = File.ReadAllLines (repositoryPath).Length;
-			var list = new List<Annotation> (lines);
-			var working = new Annotation (GettextCatalog.GetString ("working copy"), "<uncommitted>", DateTime.Now);
-			for (int i = 0; i < lines; ++i)
-				list.Add (working);
+			var list = new List<Annotation> ();
+
+			var baseDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (GetBaseText (repositoryPath));
+			var workingDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (File.ReadAllText (repositoryPath));
 
 			repositoryPath = repository.ToGitPath (repositoryPath);
 			var status = repository.RetrieveStatus (repositoryPath);
@@ -1462,9 +1461,20 @@ namespace MonoDevelop.VersionControl.Git
 				foreach (var hunk in repository.Blame (repositoryPath, new BlameOptions { FindExactRenames = true, })) {
 					var commit = hunk.FinalCommit;
 					var author = hunk.FinalSignature;
-					working = new Annotation (commit.Sha, author.Name, author.When.LocalDateTime, String.Format ("<{0}>", author.Email));
+					var working = new Annotation (commit.Sha, author.Name, author.When.LocalDateTime, String.Format ("<{0}>", author.Email));
 					for (int i = 0; i < hunk.LineCount; ++i)
-						list [hunk.FinalStartLineNumber + i] = working;
+						list.Add (working);
+				}
+			}
+
+			Annotation nextRev = new Annotation (GettextCatalog.GetString ("working copy"), "<uncommitted>", DateTime.MinValue);
+			foreach (var hunk in baseDocument.Diff (workingDocument)) {
+				list.RemoveRange (hunk.RemoveStart - 1, hunk.Removed);
+				for (int i = 0; i < hunk.Inserted; ++i) {
+					if (hunk.InsertStart + i >= list.Count)
+						list.Add (nextRev);
+					else
+						list.Insert (hunk.InsertStart - 1, nextRev);
 				}
 			}
 
