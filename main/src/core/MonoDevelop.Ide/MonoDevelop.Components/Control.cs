@@ -148,8 +148,12 @@ namespace MonoDevelop.Components
 			WeakReference<Control> cached;
 			Control target;
 
-			if (cache.TryGetValue (native, out cached) && cached.TryGetTarget (out target))
-				return (T)target;
+			if (cache.TryGetValue (native, out cached)) {
+				if (cached.TryGetTarget (out target))
+					return (T)target;
+				else
+					cache.Remove (native);
+			}
 			return null;
 		}
 
