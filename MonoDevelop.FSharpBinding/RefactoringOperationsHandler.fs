@@ -166,11 +166,11 @@ module Refactoring =
     let jumpTo (editor:TextEditor, ctx:DocumentContext, symbolUse, location:Range.range) =
             match getSymbolDeclarationLocation symbolUse editor.FileName ctx.Project.ParentSolution with
             | SymbolDeclarationLocation.CurrentFile ->
-                IdeApp.Workbench.OpenDocument (Gui.FileOpenInformation (FilePath(location.FileName), ctx.Project, Line = location.StartLine, Column = location.StartColumn))
+                IdeApp.Workbench.OpenDocument (Gui.FileOpenInformation (FilePath(location.FileName), ctx.Project, Line = location.StartLine, Column = location.StartColumn + 1))
                 |> ignore
                 
             | SymbolDeclarationLocation.Projects (_projects, _isSymbolLocal) ->
-                IdeApp.Workbench.OpenDocument (Gui.FileOpenInformation (FilePath(location.FileName), ctx.Project, Line = location.StartLine, Column = location.StartColumn))
+                IdeApp.Workbench.OpenDocument (Gui.FileOpenInformation (FilePath(location.FileName), ctx.Project, Line = location.StartLine, Column = location.StartColumn + 1))
                 |> ignore
 
             | SymbolDeclarationLocation.External docId ->
