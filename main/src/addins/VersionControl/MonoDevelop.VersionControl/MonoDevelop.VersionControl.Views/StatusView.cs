@@ -469,7 +469,7 @@ namespace MonoDevelop.VersionControl.Views
 				}
 				List<VersionInfo> newList = new List<VersionInfo> ();
 				newList.AddRange (vc.GetDirectoryVersionInfo (filepath, remoteStatus, true));
-				DispatchService.GuiDispatch (delegate {
+				Runtime.RunInMainThread (delegate {
 					if (!disposed)
 						LoadStatus (newList);
 				});

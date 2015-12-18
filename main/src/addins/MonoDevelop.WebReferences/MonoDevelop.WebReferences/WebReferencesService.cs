@@ -29,6 +29,7 @@ using MonoDevelop.Projects;
 using System.Collections.Generic;
 using MonoDevelop.WebReferences.WCF;
 using MonoDevelop.WebReferences.WS;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.WebReferences
 {
@@ -62,11 +63,11 @@ namespace MonoDevelop.WebReferences
 			// This is called from a background thread when webreferences are being
 			// updated asynchronously, so lets keep things simple for the users of
 			// this event and just ensure we proxy it to the main thread.
-			if (MonoDevelop.Ide.DispatchService.IsGuiThread) {
+			if (Runtime.IsMainThread) {
 				if (WebReferencesChanged != null)
 					WebReferencesChanged (null, new WebReferencesChangedEventArgs (project));
 			} else {
-				MonoDevelop.Ide.DispatchService.GuiDispatch (() => {
+				Runtime.RunInMainThread (() => {
 					if (WebReferencesChanged != null)
 						WebReferencesChanged (null, new WebReferencesChangedEventArgs (project));
 				});

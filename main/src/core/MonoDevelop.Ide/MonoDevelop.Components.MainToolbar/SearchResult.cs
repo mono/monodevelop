@@ -276,10 +276,9 @@ namespace MonoDevelop.Components.MainToolbar
 					if (CommandManager.ToCommandId (IdeApp.CommandService.GetActionCommand (command.Id)) == null) {
 						return false;
 					}
-					DispatchService.GuiSyncDispatch (delegate {
-						
+					Runtime.RunInMainThread (delegate {
 						ci = IdeApp.CommandService.GetCommandInfo (command.Id, new CommandTargetRoute (MainToolbar.LastCommandTarget));
-					});
+					}).Wait ();
 				}
 				return ci.Enabled && ci.Visible;
 			}

@@ -90,7 +90,7 @@ namespace MonoDevelop.Components.MainToolbar
 					}
 				} catch (OperationCanceledException) {
 				}
-			});
+			}, token);
 		}
 	}
 }

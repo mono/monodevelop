@@ -803,43 +803,43 @@ namespace MonoDevelop.NUnit
 		}
 		public void InitializeTestRun (UnitTest test)
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				pad.InitializeTestRun (test);
 			});
 		}
 		public void FinishTestRun ()
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				pad.FinishTestRun ();
 			});
 		}
 		public void Cancel ()
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				pad.Cancel ();
 			});
 		}
 		public void BeginTest (UnitTest test)
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				monitor.BeginTest (test);
 			});
 		}
 		public void EndTest (UnitTest test, UnitTestResult result)
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				monitor.EndTest (test, result);
 			});
 		}
 		public void ReportRuntimeError (string message, Exception exception)
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				monitor.ReportRuntimeError (message, exception);
 			});
 		}
 		public void WriteGlobalLog (string message)
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				monitor.WriteGlobalLog (message);
 			});
 		}

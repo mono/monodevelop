@@ -70,7 +70,9 @@ namespace MonoDevelop.PackageManagement
 
 		public async Task SaveAsync ()
 		{
-			await project.SaveAsync ();
+			using (var monitor = new ProgressMonitor ()) {
+				await project.SaveAsync (monitor);
+			}
 		}
 	}
 }

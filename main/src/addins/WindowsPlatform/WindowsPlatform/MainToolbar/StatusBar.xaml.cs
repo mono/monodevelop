@@ -59,7 +59,7 @@ namespace WindowsPlatform.MainToolbar
 						wc++;
 				}
 
-				DispatchService.GuiDispatch (delegate {
+				Runtime.RunInMainThread (delegate {
 					if (ec > 0) {
 						BuildResultPanelVisibility = Visibility.Visible;
 						BuildResultCount = ec;

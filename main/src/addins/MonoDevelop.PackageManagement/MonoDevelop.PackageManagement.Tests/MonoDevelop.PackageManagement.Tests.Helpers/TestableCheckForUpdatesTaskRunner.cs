@@ -41,11 +41,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 		}
 
-		protected override void GuiBackgroundDispatch (MessageHandler handler)
-		{
-			handler.Invoke ();
-		}
-
 		protected override void LogError (string message, Exception ex)
 		{
 			LoggedErrorMessages.Add (message);

@@ -180,6 +180,11 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		}
 
+		static bool SupportsRoslyn (MonoDevelop.Projects.Project proj)
+		{
+			return string.Equals (proj.TypeGuid, "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", StringComparison.OrdinalIgnoreCase) || string.Equals (proj.TypeGuid, "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}", StringComparison.OrdinalIgnoreCase);
+		}
+
 		SolutionData solutionData;
 		async Task<SolutionInfo> CreateSolutionInfo (MonoDevelop.Projects.Solution solution, CancellationToken token)
 		{
@@ -192,6 +197,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			foreach (var proj in mdProjects) {
 				if (token.IsCancellationRequested)
 					return null;
+				if (!SupportsRoslyn (proj))
+					continue;
 				var tp = LoadProject (proj, token).ContinueWith (t => {
 					if (!t.IsCanceled)
 						projects.Add (t.Result);
@@ -868,11 +875,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 
 			}
-		}
-
-		public async Task AddProject (MonoDevelop.Projects.Project project)
-		{
-			await LoadProject (project, default(CancellationToken)).ConfigureAwait (false);
 		}
 
 		public void RemoveProject (MonoDevelop.Projects.Project project)

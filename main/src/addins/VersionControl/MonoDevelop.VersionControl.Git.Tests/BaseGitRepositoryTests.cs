@@ -131,7 +131,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 				Assert.AreEqual (Author, annotations [i].Author);
 				Assert.AreEqual (String.Format ("<{0}>", Email), annotations [i].Email);
 			}
-			Assert.IsTrue (annotations [2].HasDate);
+			Assert.IsFalse (annotations [2].HasDate);
 		}
 
 		[Test]
@@ -500,7 +500,7 @@ index 0000000..009b64b
 			AddFile ("init", "init", toVcs, commit);
 
 			Assert.AreEqual (string.Empty, Repo.GetBaseText (added));
-			var revisions = Repo.GetAnnotations (added).Select (a => a.Revision);
+			var revisions = Repo.GetAnnotations (added, null).Select (a => a.Revision);
 			foreach (var rev in revisions)
 				Assert.AreEqual (GettextCatalog.GetString ("working copy"), rev);
 		}

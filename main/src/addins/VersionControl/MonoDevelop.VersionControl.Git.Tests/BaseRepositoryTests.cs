@@ -602,7 +602,7 @@ namespace MonoDevelop.VersionControl.Tests
 			// Working copy.
 			File.AppendAllText (added, "wut2" + Environment.NewLine);
 
-			var annotations = Repo.GetAnnotations (added);
+			var annotations = Repo.GetAnnotations (added, null);
 			for (int i = 0; i < 2; i++) {
 				var annotation = annotations [i];
 				Assert.IsTrue (annotation.HasDate);
@@ -614,7 +614,8 @@ namespace MonoDevelop.VersionControl.Tests
 			Assert.False (annotations [2].HasEmail);
 			Assert.IsNotNull (annotations [2].Author);
 			Assert.IsNull (annotations [2].Email);
-			Assert.AreEqual (annotations [2].Revision, GettextCatalog.GetString ("working copy"));
+			Assert.IsNull (annotations [2].Revision);
+			Assert.AreEqual (annotations [2].Text, GettextCatalog.GetString ("working copy"));
 			Assert.AreEqual (annotations [2].Author, "<uncommitted>");
 		}
 

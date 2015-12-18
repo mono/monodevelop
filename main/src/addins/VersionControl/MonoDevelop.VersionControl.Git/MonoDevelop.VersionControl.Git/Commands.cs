@@ -163,7 +163,7 @@ namespace MonoDevelop.VersionControl.Git
 									msg = GettextCatalog.GetString ("No changes were available to stash");
 								}
 
-								DispatchService.GuiDispatch (delegate {
+								Runtime.RunInMainThread (delegate {
 									IdeApp.Workbench.StatusBar.ShowMessage (msg);
 								});
 							}

@@ -55,7 +55,7 @@ namespace MonoDevelop.PackageManagement
 				new PackageManagementFileService (),
 				PackageManagementServices.ProjectService,
 				PackageManagementServices.PackageManagementEvents,
-				DispatchService.GuiSyncDispatch,
+				DefaultGuiSyncDispatcher,
 				GuiSyncDispatchWithException)
 		{
 		}
@@ -473,9 +473,14 @@ namespace MonoDevelop.PackageManagement
 
 		static Task GuiSyncDispatchWithException (Func<Task> func)
 		{
-			if (DispatchService.IsGuiThread)
+			if (Runtime.IsMainThread)
 				throw new InvalidOperationException ("GuiSyncDispatch called from GUI thread");
 			return Runtime.RunInMainThread (func);
+		}
+
+		internal static void DefaultGuiSyncDispatcher (MessageHandler action)
+		{
+			Runtime.RunInMainThread (() => action ()).Wait ();
 		}
 
 		void GuiSyncDispatch (Func<Task> func)

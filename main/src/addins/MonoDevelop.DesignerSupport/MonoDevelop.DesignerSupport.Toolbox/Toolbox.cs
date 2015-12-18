@@ -228,7 +228,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public void Refresh ()
 		{
 			// GUI assert here is to catch Bug 434065 - Exception while going to the editor
-			DispatchService.AssertGuiThread ();
+			Runtime.AssertMainThread ();
 			
 			if (toolboxService.Initializing) {
 				toolboxWidget.CustomMessage = GettextCatalog.GetString ("Initializing...");

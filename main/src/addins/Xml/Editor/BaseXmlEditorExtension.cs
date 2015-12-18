@@ -966,7 +966,7 @@ namespace MonoDevelop.Xml.Editor
 		
 		void refillOutlineStore ()
 		{
-			DispatchService.AssertGuiThread ();
+			Runtime.AssertMainThread ();
 			Gdk.Threads.Enter ();
 			refreshingOutline = false;
 			if (outlineTreeStore == null || !outlineTreeView.IsRealized)

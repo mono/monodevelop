@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Gui.Components;
 using System.Threading.Tasks;
 using System.Net;
 using Xwt.Backends;
+using Gtk;
 
 namespace MonoDevelop.Ide
 {
@@ -222,7 +223,7 @@ namespace MonoDevelop.Ide
 
 		static Dictionary<string,Xwt.Drawing.Image> icons = new Dictionary<string, Xwt.Drawing.Image> ();
 
-		public static Xwt.Drawing.Image GetIcon (string name, Gtk.IconSize size)
+		public static Xwt.Drawing.Image GetIcon (string name, Gtk.IconSize size = IconSize.Menu)
 		{
 			return GetIcon (name).WithSize (size);
 		}

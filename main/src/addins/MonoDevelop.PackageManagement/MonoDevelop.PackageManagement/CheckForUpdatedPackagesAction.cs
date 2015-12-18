@@ -54,7 +54,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			// Queue the check for updates with the background dispatcher so
 			// the NuGet addin does not create another separate Package Console.
-			DispatchService.BackgroundDispatch (() => {
+			PackageManagementBackgroundDispatcher.Dispatch (() => {
 				updatedPackagesInSolution.CheckForUpdates ();
 			});
 		}

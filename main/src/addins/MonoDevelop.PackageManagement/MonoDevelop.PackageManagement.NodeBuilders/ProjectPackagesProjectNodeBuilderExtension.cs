@@ -72,7 +72,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		void RefreshAllChildNodes ()
 		{
-			DispatchService.GuiDispatch (() => {
+			Runtime.RunInMainThread (() => {
 				foreach (DotNetProject project in IdeApp.Workspace.GetAllItems<DotNetProject> ()) {
 					RefreshChildNodes (project);
 				}

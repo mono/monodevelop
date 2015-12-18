@@ -899,7 +899,7 @@ namespace MonoDevelop.Ide
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not load parser database.", ex);
 			}
-			if (DispatchService.IsGuiThread)
+			if (Runtime.IsMainThread)
 				NotifyItemAddedGui (item, IsReloading);
 			else {
 				bool reloading = IsReloading;
@@ -933,7 +933,7 @@ namespace MonoDevelop.Ide
 		
 		internal void NotifyItemRemoved (WorkspaceItem item)
 		{
-			if (DispatchService.IsGuiThread)
+			if (Runtime.IsMainThread)
 				NotifyItemRemovedGui (item, IsReloading);
 			else {
 				bool reloading = IsReloading;
