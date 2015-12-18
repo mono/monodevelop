@@ -610,7 +610,11 @@ namespace MonoDevelop.VersionControl
 
 		public void Add (FilePath[] localPaths, bool recurse, ProgressMonitor monitor)
 		{
-			OnAdd (localPaths, recurse, monitor);
+			try {
+				OnAdd (localPaths, recurse, monitor);
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to add file", e);
+			}
 			ClearCachedVersionInfo (localPaths);
 		}
 
@@ -631,7 +635,12 @@ namespace MonoDevelop.VersionControl
 		public void MoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)
 		{
 			ClearCachedVersionInfo (localSrcPath, localDestPath);
-			OnMoveFile (localSrcPath, localDestPath, force, monitor);
+			try {
+				OnMoveFile (localSrcPath, localDestPath, force, monitor);
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to move file", e);
+				File.Move (localSrcPath, localDestPath);
+			}
 		}
 		
 		protected virtual void OnMoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)
@@ -644,7 +653,12 @@ namespace MonoDevelop.VersionControl
 		public void MoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)
 		{
 			ClearCachedVersionInfo (localSrcPath, localDestPath);
-			OnMoveDirectory (localSrcPath, localDestPath, force, monitor);
+			try {
+				OnMoveDirectory (localSrcPath, localDestPath, force, monitor);
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to move directory", e);
+				FileService.SystemDirectoryRename (localSrcPath, localDestPath);
+			}
 		}
 		
 		protected virtual void OnMoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)
@@ -661,7 +675,14 @@ namespace MonoDevelop.VersionControl
 
 		public void DeleteFiles (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal = true)
 		{
-			OnDeleteFiles (localPaths, force, monitor, keepLocal);
+			try {
+				OnDeleteFiles (localPaths, force, monitor, keepLocal);
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to delete file", e);
+				if (!keepLocal)
+					foreach (var path in localPaths)
+						File.Delete (path);
+			}
 			ClearCachedVersionInfo (localPaths);
 		}
 
@@ -674,7 +695,14 @@ namespace MonoDevelop.VersionControl
 
 		public void DeleteDirectories (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal = true)
 		{
-			OnDeleteDirectories (localPaths, force, monitor, keepLocal);
+			try {
+				OnDeleteDirectories (localPaths, force, monitor, keepLocal);
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to delete directory", e);
+				if (!keepLocal)
+					foreach (var path in localPaths)
+						Directory.Delete (path, true);
+			}
 			ClearCachedVersionInfo (localPaths);
 		}
 
