@@ -343,9 +343,12 @@ style "entry" = "default"
     GtkEntry::inner-border = { 2, 2, 2, 2 }
 
     base[INSENSITIVE] = shade(1.02, @bg_color)
+    bg[SELECTED] = @selected_bg_color
 
     engine "xamarin" {
         rgba = FALSE
+        roundness = 0
+        focusstyle = 2
     }
 }
 
