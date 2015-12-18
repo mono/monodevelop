@@ -48,6 +48,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		int listWidth = minSize;
 		const int minSize = 300;
 		const int maxListWidth = 600;
+		const int rows = 10;
 		Pango.Layout layout, categoryLayout, noMatchLayout;
 		ListWindow win;
 		int selection = 0;
@@ -761,7 +762,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var icon = ImageService.GetIcon (TypeSystem.Stock.Namespace, IconSize.Menu);
 			rowHeight = Math.Max (1, (int)icon.Height + 2);
 
-			int newHeight = rowHeight * IdeApp.Preferences.CompletionListRows;
+			int newHeight = rowHeight * rows;
 			if (Allocation.Width != listWidth || Allocation.Height != newHeight)
 				this.SetSizeRequest (listWidth, newHeight);
 			SetAdjustments ();
