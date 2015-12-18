@@ -153,7 +153,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 					descriptionBox.ShowAll ();
 				}
 				Theme.CurrentPage = current_overload;
-				QueueResize ();
+				// if the target is not on the left or top side, we may loose the arrow alignment on our target
+				// and must reposition
+				if (!CurrentPosition.HasFlag (PopupPosition.Left) &&
+				    !CurrentPosition.HasFlag (PopupPosition.Top))
+					RepositionWindow ();
+				else
+					QueueResize ();
 			}
 		}
 
@@ -301,6 +307,18 @@ namespace MonoDevelop.Ide.CodeCompletion
 				Opacity = 1;
 				return false;
 			});
+		}
+
+		protected override void OnPagerLeftClicked ()
+		{
+			OverloadLeft ();
+			base.OnPagerLeftClicked ();
+		}
+
+		protected override void OnPagerRightClicked ()
+		{
+			OverloadRight ();
+			base.OnPagerRightClicked ();
 		}
 
 		void HandleSkinChanged (object sender, EventArgs e)

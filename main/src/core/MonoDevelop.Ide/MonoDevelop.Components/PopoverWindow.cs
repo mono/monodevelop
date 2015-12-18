@@ -62,6 +62,7 @@ namespace MonoDevelop.Components
 			AppPaintable = true;
 			TypeHint = WindowTypeHint.Tooltip;
 			CheckScreenColormap ();
+			AddEvents ((int)EventMask.ButtonReleaseMask);
 
 			alignment = new Alignment (0, 0, 1f, 1f);
 			alignment.Show ();
@@ -197,6 +198,8 @@ namespace MonoDevelop.Components
 			get;
 			set;
 		}
+
+		protected PopupPosition CurrentPosition { get { return position; }}
 
 		public virtual void RepositionWindow (Gdk.Rectangle? newCaret = null)
 		{
@@ -459,6 +462,35 @@ namespace MonoDevelop.Components
 				}
 				return rect;
 			}
+		}
+
+		public event EventHandler PagerLeftClicked;
+		public event EventHandler PagerRightClicked;
+
+		protected virtual void OnPagerLeftClicked ()
+		{
+			if (PagerLeftClicked != null)
+				PagerLeftClicked (this, null);
+		}
+
+		protected virtual void OnPagerRightClicked ()
+		{
+			if (PagerRightClicked != null)
+				PagerRightClicked (this, null);
+		}
+
+		protected override bool OnButtonReleaseEvent (EventButton evnt)
+		{
+			if (evnt.Button != 1 || !Theme.DrawPager)
+				return base.OnButtonPressEvent (evnt);
+
+			var retval = false;
+			if (retval = Theme.HitTestPagerLeftArrow (PangoContext, BorderAllocation, new Point ((int)evnt.X, (int)evnt.Y)))
+				OnPagerLeftClicked ();
+			else if (retval = Theme.HitTestPagerRightArrow (PangoContext, BorderAllocation, new Point ((int)evnt.X, (int)evnt.Y)))
+				OnPagerRightClicked ();
+
+			return retval;
 		}
 	}
 }

@@ -235,6 +235,20 @@ namespace MonoDevelop.Ide.CodeCompletion
 			lastParam = -2;
 			ResetTooltipInformation ();
 		}
+
+		protected override void OnPagerLeftClicked ()
+		{
+			if (Ext != null && Widget != null)
+				ParameterInformationWindowManager.OverloadUp (Ext, Widget);
+			base.OnPagerRightClicked ();
+		}
+
+		protected override void OnPagerRightClicked ()
+		{
+			if (Ext != null && Widget != null)
+				ParameterInformationWindowManager.OverloadDown (Ext, Widget);
+			base.OnPagerRightClicked ();
+		}
 		
 		public void HideParameterInfo ()
 		{
