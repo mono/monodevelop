@@ -284,7 +284,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 							declarationviewwindow.OverloadLeft ();
 						else
 							declarationviewwindow.OverloadRight ();
-						UpdateDeclarationView ();
 					} else {
 						CompletionWindowManager.HideWindow ();
 						OnWindowClosed (EventArgs.Empty);
