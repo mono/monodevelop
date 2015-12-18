@@ -614,7 +614,8 @@ namespace MonoDevelop.VersionControl.Tests
 			Assert.False (annotations [2].HasEmail);
 			Assert.IsNotNull (annotations [2].Author);
 			Assert.IsNull (annotations [2].Email);
-			Assert.AreEqual (annotations [2].Revision, GettextCatalog.GetString ("working copy"));
+			Assert.IsNull (annotations [2].Revision);
+			Assert.AreEqual (annotations [2].Text, GettextCatalog.GetString ("working copy"));
 			Assert.AreEqual (annotations [2].Author, "<uncommitted>");
 		}
 

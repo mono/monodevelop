@@ -164,7 +164,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public override void CreateDiff () 
 		{
-			Diff = new List<Mono.TextEditor.Utils.Hunk> (DiffEditor.Document.Diff (OriginalEditor.Document));
+			Diff = new List<Mono.TextEditor.Utils.Hunk> (DiffEditor.Document.Diff (OriginalEditor.Document, includeEol: false));
 			ClearDiffCache ();
 			QueueDraw ();
 		}

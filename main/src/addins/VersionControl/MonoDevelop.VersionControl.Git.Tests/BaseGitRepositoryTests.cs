@@ -131,7 +131,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 				Assert.AreEqual (Author, annotations [i].Author);
 				Assert.AreEqual (String.Format ("<{0}>", Email), annotations [i].Email);
 			}
-			Assert.IsTrue (annotations [2].HasDate);
+			Assert.IsFalse (annotations [2].HasDate);
 		}
 
 		[Test]

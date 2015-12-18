@@ -560,7 +560,7 @@ namespace MonoDevelop.VersionControl.Subversion
 
 			// "SubversionException: blame of the WORKING revision is not supported"
 			if (sinceRev == null) {
-				foreach (var hunk in baseDocument.Diff (workingDocument)) {
+				foreach (var hunk in baseDocument.Diff (workingDocument, includeEol: false)) {
 					annotations.RemoveRange (hunk.RemoveStart - 1, hunk.Removed);
 					for (int i = 0; i < hunk.Inserted; ++i) {
 						if (hunk.InsertStart + i >= annotations.Count)

@@ -1470,7 +1470,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			if (sinceCommit == null) {
 				Annotation nextRev = new Annotation (null, "<uncommitted>", DateTime.MinValue, null, GettextCatalog.GetString ("working copy"));
-				foreach (var hunk in baseDocument.Diff (workingDocument)) {
+				foreach (var hunk in baseDocument.Diff (workingDocument, includeEol: false)) {
 					list.RemoveRange (hunk.RemoveStart - 1, hunk.Removed);
 					for (int i = 0; i < hunk.Inserted; ++i) {
 						if (hunk.InsertStart + i >= list.Count)
