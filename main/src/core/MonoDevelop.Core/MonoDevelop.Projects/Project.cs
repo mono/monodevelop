@@ -232,9 +232,24 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		new public ProjectConfiguration CreateConfiguration (string name, string platform, ConfigurationKind kind = ConfigurationKind.Blank)
+		{
+			return (ProjectConfiguration) base.CreateConfiguration (name, platform, kind);
+		}
+
 		new public ProjectConfiguration CreateConfiguration (string id, ConfigurationKind kind = ConfigurationKind.Blank)
 		{
 			return (ProjectConfiguration) base.CreateConfiguration (id, kind);
+		}
+
+		new public ProjectConfiguration CloneConfiguration (SolutionItemConfiguration configuration, string newName, string newPlatform)
+		{
+			return (ProjectConfiguration) base.CloneConfiguration (configuration, newName, newPlatform);
+		}
+
+		new public ProjectConfiguration CloneConfiguration (SolutionItemConfiguration configuration, string newId)
+		{
+			return (ProjectConfiguration) base.CloneConfiguration (configuration, newId);
 		}
 
 		protected override void OnConfigurationAdded (ConfigurationEventArgs args)

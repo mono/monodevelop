@@ -1112,11 +1112,28 @@ namespace MonoDevelop.Projects
 			return CreateConfiguration (id, kind);
 		}
 
+		public SolutionItemConfiguration CreateConfiguration (string name, string platform, ConfigurationKind kind = ConfigurationKind.Blank)
+		{
+			return ItemExtension.OnCreateConfiguration (name + "|" + platform, kind);
+		}
+
 		public SolutionItemConfiguration CreateConfiguration (string id, ConfigurationKind kind = ConfigurationKind.Blank)
 		{
 			return ItemExtension.OnCreateConfiguration (id, kind);
 		}
 		
+		public SolutionItemConfiguration CloneConfiguration (SolutionItemConfiguration configuration, string newName, string newPlatform)
+		{
+			return CloneConfiguration (configuration, newName + "|" + newPlatform);
+		}
+
+		public SolutionItemConfiguration CloneConfiguration (SolutionItemConfiguration configuration, string newId)
+		{
+			var clone = CreateConfiguration (newId);
+			clone.CopyFrom (configuration);
+			return clone;
+		}
+
 		protected virtual SolutionItemConfiguration OnCreateConfiguration (string id, ConfigurationKind kind = ConfigurationKind.Blank)
 		{
 			return new SolutionItemConfiguration (id);

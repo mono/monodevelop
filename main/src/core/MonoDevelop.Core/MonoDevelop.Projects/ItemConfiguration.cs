@@ -99,15 +99,6 @@ namespace MonoDevelop.Projects
 			get { return customCommands; }
 		}
 
-		public object Clone()
-		{
-			ItemConfiguration conf = (ItemConfiguration) Activator.CreateInstance (GetType ());
-			conf.CopyFrom (this);
-			conf.name = name;
-			conf.platform = platform;
-			return conf;
-		}
-		
 		public virtual void CopyFrom (ItemConfiguration configuration)
 		{
 			ItemConfiguration other = (ItemConfiguration) configuration;

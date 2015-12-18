@@ -132,13 +132,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			ConfigurationData data = new ConfigurationData (entry);
 
 			foreach (ItemConfiguration conf in entry.Configurations) {
-				ItemConfiguration copy = (ItemConfiguration) conf.Clone ();
+				ItemConfiguration copy = entry.CloneConfiguration (conf, conf.Id);
 				data.Configurations.Add (copy);
 			}
 			if (entry is Solution) {
 				foreach (SolutionFolderItem e in ((Solution)entry).Items) {
 					if (e is SolutionItem)
-						data.children.Add (ConfigurationData.Build ((SolutionItem) e));
+						data.children.Add (Build ((SolutionItem) e));
 				}
 			}
 			return data;

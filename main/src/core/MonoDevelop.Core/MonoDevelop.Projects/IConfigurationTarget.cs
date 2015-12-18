@@ -39,4 +39,14 @@ namespace MonoDevelop.Projects
 		ItemConfiguration CreateConfiguration (string id, ConfigurationKind kind);
 		string DefaultConfigurationId { get; set; }
 	}
+
+	public static class ConfigurationTargetExtensions
+	{
+		public static ItemConfiguration CloneConfiguration (this IConfigurationTarget target, ItemConfiguration configuration, string newId)
+		{
+			var clone = target.CreateConfiguration (newId, ConfigurationKind.Blank);
+			clone.CopyFrom (configuration);
+			return clone;
+		}
+	}
 }
