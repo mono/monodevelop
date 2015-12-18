@@ -468,7 +468,6 @@
     <Compile Include="MonoDevelop.Projects\WorkspaceObjectExtension.cs" />
     <Compile Include="MonoDevelop.Core.Execution\ProcessAsyncOperation.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildProperty.cs" />
-    <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildPropertyGroupMerged.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildPropertyGroup.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildItem.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildItemGroup.cs" />
