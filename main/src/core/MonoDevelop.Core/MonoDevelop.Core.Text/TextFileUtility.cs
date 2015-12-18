@@ -245,30 +245,21 @@ namespace MonoDevelop.Core.Text
 		#endregion
 
 		#region file methods
-		public static void WriteText (string fileName, string text, Encoding encoding, bool hadBom)
-		{
-			WriteTextAsync (fileName, text, encoding, hadBom).Wait ();
-		}
-
-		public static async Task WriteTextAsync (string fileName, string text, Encoding encoding, bool hadBom)
+		static string WriteTextInit (string fileName, string text, Encoding encoding)
 		{
 			if (fileName == null)
-				throw new ArgumentNullException ("fileName");
+			throw new ArgumentNullException ("fileName");
 			if (text == null)
 				throw new ArgumentNullException ("text");
 			if (encoding == null)
 				throw new ArgumentNullException ("encoding");
 			// atomic rename only works in the same directory on linux. The tmp files may be on another partition -> breaks save.
 			string tmpPath = Path.Combine (Path.GetDirectoryName (fileName), ".#" + Path.GetFileName (fileName));
-			using (var stream = new FileStream (tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)) {
-				if (hadBom) {
-					var bom = encoding.GetPreamble ();
-					if (bom != null && bom.Length > 0)
-						stream.Write (bom, 0, bom.Length);
-				}
-				byte[] bytes = encoding.GetBytes (text);
-				await stream.WriteAsync (bytes, 0, bytes.Length);
-			}
+			return tmpPath;
+		}
+
+		static void WriteTextFinal (string tmpPath, string fileName)
+		{
 			try {
 				SystemRename (tmpPath, fileName);
 			} catch (Exception) {
@@ -279,6 +270,36 @@ namespace MonoDevelop.Core.Text
 				}
 				throw;
 			}
+		}
+
+		public static void WriteText (string fileName, string text, Encoding encoding, bool hadBom)
+		{
+			var tmpPath = WriteTextInit (fileName, text, encoding);
+			using (var stream = new FileStream (tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)) {
+				if (hadBom) {
+					var bom = encoding.GetPreamble ();
+					if (bom != null && bom.Length > 0)
+						stream.Write (bom, 0, bom.Length);
+				}
+				byte[] bytes = encoding.GetBytes (text);
+				stream.Write (bytes, 0, bytes.Length);
+			}
+			WriteTextFinal (tmpPath, fileName);
+		}
+
+		public static async Task WriteTextAsync (string fileName, string text, Encoding encoding, bool hadBom)
+		{
+			var tmpPath = WriteTextInit (fileName, text, encoding);
+			using (var stream = new FileStream (tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)) {
+				if (hadBom) {
+					var bom = encoding.GetPreamble ();
+					if (bom != null && bom.Length > 0)
+						await stream.WriteAsync (bom, 0, bom.Length);
+				}
+				byte[] bytes = encoding.GetBytes (text);
+				await stream.WriteAsync (bytes, 0, bytes.Length);
+			}
+			WriteTextFinal (tmpPath, fileName);
 		}
 
 		/// <summary>
