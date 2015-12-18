@@ -202,6 +202,12 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
+		internal IPropertySet GetPropertiesLinkedToGroup (MSBuildPropertyGroup group)
+		{
+			evaluatedProperties.LinkToGroup (group);
+			return evaluatedProperties;
+		}
+
 		internal IDictionary<string, List<string>> GetConditionedProperties ()
 		{
 			return conditionedProperties;

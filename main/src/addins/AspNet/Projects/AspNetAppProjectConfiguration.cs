@@ -37,11 +37,7 @@ namespace MonoDevelop.AspNet.Projects
 {
 	public class AspNetAppProjectConfiguration : DotNetProjectConfiguration 
 	{
-		public AspNetAppProjectConfiguration (string name) : base (name)
-		{
-		}
-		
-		public AspNetAppProjectConfiguration ()
+		public AspNetAppProjectConfiguration (string id) : base (id)
 		{
 		}
 		

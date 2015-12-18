@@ -248,7 +248,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			ItemConfiguration cc = configurations [oldName];
 			if (cc != null) {
-				cc.Id = newName;
+				ItemConfiguration newConf = entry.CreateConfiguration (newName, ConfigurationKind.Blank);
+				newConf.CopyFrom (cc);
+				configurations.Remove (oldName);
+				configurations.Add (newConf);
 			}
 			if (renameChildConfigurations) {
 				if (entry is Solution) {

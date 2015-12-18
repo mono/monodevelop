@@ -48,10 +48,6 @@ namespace MonoDevelop.Projects
 
 		Hashtable properties;
 		
-		public ItemConfiguration ()
-		{
-		}
-		
 		public ItemConfiguration (string id)
 		{
 			ParseConfigurationId (id, out name, out platform);
@@ -84,7 +80,6 @@ namespace MonoDevelop.Projects
 		
 		public string Name {
 			get { return name; }
-			set { name = value; }
 		}
 		
 		public string Id {
@@ -94,14 +89,10 @@ namespace MonoDevelop.Projects
 				else
 					return name + "|" + platform;
 			}
-			set {
-				ParseConfigurationId (value, out name, out platform);
-			}
 		}
 		
 		public string Platform {
 			get { return platform ?? string.Empty; }
-			set { platform = value; }
 		}
 
 		public CustomCommandCollection CustomCommands {

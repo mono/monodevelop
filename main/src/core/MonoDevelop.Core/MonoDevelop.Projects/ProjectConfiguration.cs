@@ -40,20 +40,16 @@ namespace MonoDevelop.Projects
 	public class ProjectConfiguration : SolutionItemConfiguration
 	{
 		bool debugTypeWasNone;
-		IMSBuildEvaluatedPropertyCollection evaluatedProperties;
 		IPropertySet properties;
+		MSBuildPropertyGroup mainPropertyGroup;
 
-		public ProjectConfiguration ()
+		public ProjectConfiguration (string id) : base(id)
 		{
 		}
 
-		public ProjectConfiguration (string name) : base(name)
+		internal protected virtual void Read (IPropertySet pset, string toolsVersion)
 		{
-		}
-
-		internal protected virtual void Read (IMSBuildEvaluatedPropertyCollection pset, string toolsVersion)
-		{
-			evaluatedProperties = pset;
+			properties = pset;
 
 			intermediateOutputDirectory = pset.GetPathValue ("IntermediateOutputPath");
 			outputDirectory = pset.GetPathValue ("OutputPath", defaultValue:"." + Path.DirectorySeparatorChar);
@@ -143,32 +139,35 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
-		/// Properties obtained while evaluating this configuration
-		/// </summary>
-		/// <remarks>This property set contains all properties resulting from evaluating
-		/// the project with the Configuration and Platform properties set for this
-		/// configuration.</remarks>
-		public IReadOnlyPropertySet EvaluatedProperties {
-			get { return evaluatedProperties ?? MSBuildEvaluatedPropertyCollection.Empty; }
-		}
-
-		/// <summary>
 		/// Property set where the properties for this configuration are defined.
 		/// </summary>
 		public IPropertySet Properties {
 			get {
-				if (properties == null) {
-					if (ParentItem == null)
-						properties = new MSBuildPropertyGroup ();
-					else
-						properties = ParentItem.MSBuildProject.CreatePropertyGroup ();
-				}
-				return properties; 
+				return properties ?? MainPropertyGroup;
 			}
 			internal set {
 				properties = value;
 			}
 		}
+
+		internal MSBuildPropertyGroup MainPropertyGroup {
+			get {
+				if (mainPropertyGroup == null) {
+					if (ParentItem == null)
+						mainPropertyGroup = new MSBuildPropertyGroup ();
+					else
+						mainPropertyGroup = ParentItem.MSBuildProject.CreatePropertyGroup ();
+					mainPropertyGroup.IgnoreDefaultValues = true;
+				}
+				return mainPropertyGroup;
+			}
+			set {
+				mainPropertyGroup = value;
+				mainPropertyGroup.IgnoreDefaultValues = true;
+			}
+		}
+
+		internal MSBuildProjectInstance ProjectInstance { get; set; }
 
 		FilePath intermediateOutputDirectory = FilePath.Empty;
 
@@ -273,7 +272,7 @@ namespace MonoDevelop.Projects
 
 			runWithWarnings = projectConf.runWithWarnings;
 
-			((MSBuildPropertyGroup)Properties).CopyFrom ((MSBuildPropertyGroup)projectConf.Properties);
+			MainPropertyGroup.CopyFrom (projectConf.MainPropertyGroup);
 		}
 
 		public new Project ParentItem {

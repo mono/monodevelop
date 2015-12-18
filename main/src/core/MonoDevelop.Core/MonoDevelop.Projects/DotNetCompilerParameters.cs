@@ -38,7 +38,7 @@ namespace MonoDevelop.Projects
 			get { return ParentConfiguration.ParentItem; }
 		}
 
-		internal protected virtual void Read (IMSBuildEvaluatedPropertyCollection pset, string toolsVersion)
+		internal protected virtual void Read (IPropertySet pset, string toolsVersion)
 		{
 			pset.ReadObjectProperties (this, GetType (), true);
 		}

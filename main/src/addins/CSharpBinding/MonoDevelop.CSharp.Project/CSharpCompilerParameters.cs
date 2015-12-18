@@ -102,7 +102,7 @@ namespace MonoDevelop.CSharp.Project
 				pset.SetValue ("Optimize", optimize.Value);
 		}
 
-		protected override void Read (IMSBuildEvaluatedPropertyCollection pset, string toolsVersion)
+		protected override void Read (IPropertySet pset, string toolsVersion)
 		{
 			base.Read (pset, toolsVersion);
 

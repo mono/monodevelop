@@ -1544,10 +1544,10 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected override void OnWriteConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildPropertySet pset)
+		protected override void OnWriteConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IPropertySet pset)
 		{
 			base.OnWriteConfiguration (monitor, config, pset);
-			if (pset.ParentProject.IsNewProject)
+			if (MSBuildProject.IsNewProject)
 				pset.SetValue ("ErrorReport", "prompt");
 			
 		}

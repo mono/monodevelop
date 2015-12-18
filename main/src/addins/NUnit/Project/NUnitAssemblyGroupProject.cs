@@ -67,11 +67,9 @@ namespace MonoDevelop.NUnit
 			}
 		}
 		
-		protected override SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind)
+		protected override SolutionItemConfiguration OnCreateConfiguration (string id, ConfigurationKind kind)
 		{
-			NUnitAssemblyGroupProjectConfiguration conf = new NUnitAssemblyGroupProjectConfiguration ();
-			conf.Name = name;
-			return conf;
+			return new NUnitAssemblyGroupProjectConfiguration (id);
 		}
 	}
 	
@@ -79,7 +77,7 @@ namespace MonoDevelop.NUnit
 	{
 		TestAssemblyCollection assemblies;
 		
-		public NUnitAssemblyGroupProjectConfiguration ()
+		public NUnitAssemblyGroupProjectConfiguration (string id): base (id)
 		{
 			assemblies = new TestAssemblyCollection (this);
 		}

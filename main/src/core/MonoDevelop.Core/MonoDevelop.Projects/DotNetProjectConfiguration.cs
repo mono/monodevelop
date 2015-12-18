@@ -52,15 +52,11 @@ namespace MonoDevelop.Projects
 		string sourcePath;
 		DotNetCompilerParameters compilationParameters;
 
-		public DotNetProjectConfiguration ()
+		public DotNetProjectConfiguration (string id): base (id)
 		{
 		}
 
-		public DotNetProjectConfiguration (string name): base (name)
-		{
-		}
-
-		internal protected override void Read (IMSBuildEvaluatedPropertyCollection pset, string toolsVersion)
+		internal protected override void Read (IPropertySet pset, string toolsVersion)
 		{
 			base.Read (pset, toolsVersion);
 

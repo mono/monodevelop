@@ -101,6 +101,10 @@ namespace CBinding
 		
 		[ItemProperty ("PrecompileHeaders", DefaultValue=true)]
 		private bool precompileHeaders = true;
+
+		public CProjectConfiguration (string id) : base (id)
+		{
+		}
 		
 		public string Output {
 			get { return output; }

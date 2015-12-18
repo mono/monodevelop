@@ -33,17 +33,18 @@ using System.Globalization;
 using System.Text;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 
 namespace MonoDevelop.Projects.MSBuild
 {
 	public class MSBuildProperty: MSBuildPropertyCore, IMetadataProperty, IMSBuildPropertyEvaluated
 	{
-		bool preserverCase;
 		MSBuildValueType valueType = MSBuildValueType.Default;
 		string value;
 		string rawValue, textValue;
 		string name;
 		string unevaluatedValue;
+		LinkedPropertyFlags flags;
 
 		static readonly string EmptyElementMarker = new string ('e', 1);
 
@@ -55,6 +56,14 @@ namespace MonoDevelop.Projects.MSBuild
 		internal MSBuildProperty (string name): this ()
 		{
 			this.name = name;
+		}
+
+		internal MSBuildProperty (MSBuildNode parentNode, string name, string value, string evaluatedValue): this ()
+		{
+			ParentNode = parentNode;
+			this.name = name;
+			this.unevaluatedValue = value;
+			this.value = evaluatedValue;
 		}
 
 		internal override void Read (MSBuildXmlReader reader)
@@ -190,24 +199,77 @@ namespace MonoDevelop.Projects.MSBuild
 			return name;
 		}
 
-		/// <summary>
-		/// Gets or sets the value
-		/// </summary>
-		/// <value>The loaded value.</value>
-		public string LoadedValue { get; set; }
-
-		public bool IsImported {
-			get;
-			set;
-		}
-
-		public bool MergeToMainGroup { get; set; }
-
-		internal bool Overwritten { get; set; }
-
 		internal MSBuildPropertyGroup Owner { get; set; }
 
-		internal bool HasDefaultValue { get; set; }
+		public bool IsImported {
+			get { return (flags & LinkedPropertyFlags.Imported) != 0; }
+			set {
+				if (value)
+					flags |= LinkedPropertyFlags.Imported;
+				else
+					flags &= ~LinkedPropertyFlags.Imported;
+			}
+		}
+
+		public bool MergeToMainGroup {
+			get { return (flags & LinkedPropertyFlags.MergeToMainGroup) != 0; }
+			set {
+				if (value)
+					flags |= LinkedPropertyFlags.MergeToMainGroup;
+				else
+					flags &= ~LinkedPropertyFlags.MergeToMainGroup;
+			}
+		}
+
+		internal bool Overwritten {
+			get { return (flags & LinkedPropertyFlags.Overwritten) != 0; }
+			set {
+				if (value)
+					flags |= LinkedPropertyFlags.Overwritten;
+				else
+					flags &= ~LinkedPropertyFlags.Overwritten;
+			}
+		}
+
+		internal bool HasDefaultValue {
+			get { return (flags & LinkedPropertyFlags.HasDefaultValue) != 0; }
+			set {
+				if (value)
+					flags |= LinkedPropertyFlags.HasDefaultValue;
+				else
+					flags &= ~LinkedPropertyFlags.HasDefaultValue;
+			}
+		}
+
+		internal bool Modified {
+			get { return (flags & LinkedPropertyFlags.Modified) != 0; }
+			set {
+				if (value)
+					flags |= LinkedPropertyFlags.Modified;
+				else
+					flags &= ~LinkedPropertyFlags.Modified; 
+			}
+		}
+
+		internal bool EvaluatedValueModified {
+			get { return (flags & LinkedPropertyFlags.EvaluatedValueModified) != 0; }
+			set {
+				if (value)
+					flags |= LinkedPropertyFlags.EvaluatedValueModified;
+				else
+					flags &= ~LinkedPropertyFlags.EvaluatedValueModified; 
+			}
+		}
+
+		internal bool IsNew {
+			get { return (flags & LinkedPropertyFlags.IsNew) != 0; }
+			set {
+				if (value)
+					flags |= LinkedPropertyFlags.IsNew;
+				else
+					flags &= ~LinkedPropertyFlags.IsNew; 
+			}
+		}
 
 		internal bool NotifyChanges { get; set; }
 
@@ -217,7 +279,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal MergedProperty CreateMergedProperty ()
 		{
-			return new MergedProperty (Name, preserverCase, HasDefaultValue);
+			return new MergedProperty (Name, valueType, HasDefaultValue);
 		}
 
 		public void SetValue (string value, bool preserveCase = false, bool mergeToMainGroup = false, MSBuildValueType valueType = null)
@@ -229,29 +291,18 @@ namespace MonoDevelop.Projects.MSBuild
 				valueType = preserveCase ? MSBuildValueType.DefaultPreserveCase : MSBuildValueType.Default;
 			
 			MergeToMainGroup = mergeToMainGroup;
-			this.preserverCase = preserveCase;
 			this.valueType = valueType;
 
 			if (value == null)
 				value = String.Empty;
 
-			if (valueType != MSBuildValueType.Default) {
-				var current = GetPropertyValue ();
-				if (current != null) {
-					if (valueType.Equals (current, value))
-						return;
-				}
-			}
 			SetPropertyValue (value);
-			if (ParentProject != null && NotifyChanges)
-				ParentProject.NotifyChanged ();
 		}
 
 		public void SetValue (FilePath value, bool relativeToProject = true, FilePath relativeToPath = default(FilePath), bool mergeToMainGroup = false)
 		{
 			AssertCanModify ();
 			MergeToMainGroup = mergeToMainGroup;
-			this.preserverCase = false;
 			valueType = MSBuildValueType.Path;
 
 			string baseDir = null;
@@ -274,8 +325,6 @@ namespace MonoDevelop.Projects.MSBuild
 				return;
 
 			SetPropertyValue (MSBuildProjectService.ToMSBuildPath (baseDir, value, false));
-			if (ParentProject != null && NotifyChanges)
-				ParentProject.NotifyChanged ();
 		}
 
 		internal void ResolvePath ()
@@ -307,7 +356,12 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal virtual void SetPropertyValue (string value)
 		{
-			if (this.value != value) {
+			if (this.value == null || !valueType.Equals (this.value, value)) {
+				// If the property has an initial evaluated value, then set the EvaluatedValueModified flag
+				if (!Modified && this.value != null)
+					EvaluatedValueModified = true;
+				
+				Modified = true;
 				this.value = value;
 				this.unevaluatedValue = value;
 				this.rawValue = null;
@@ -438,13 +492,13 @@ namespace MonoDevelop.Projects.MSBuild
 	{
 		public readonly string Name;
 		public readonly bool IsDefault;
-		public readonly bool PreserveExistingCase;
+		public readonly MSBuildValueType ValueType;
 
-		public MergedProperty (string name, bool preserveExistingCase, bool isDefault)
+		public MergedProperty (string name, MSBuildValueType valueType, bool isDefault)
 		{
 			this.Name = name;
 			IsDefault = isDefault;
-			this.PreserveExistingCase = preserveExistingCase;
+			ValueType = valueType;
 		}
 	}
 }

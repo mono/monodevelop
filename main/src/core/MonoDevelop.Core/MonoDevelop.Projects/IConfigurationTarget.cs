@@ -36,7 +36,7 @@ namespace MonoDevelop.Projects
 		ReadOnlyCollection<string> GetConfigurations ();
 		IItemConfigurationCollection Configurations { get; }
 		ItemConfiguration DefaultConfiguration { get; set; }
-		ItemConfiguration CreateConfiguration (string name, ConfigurationKind kind);
+		ItemConfiguration CreateConfiguration (string id, ConfigurationKind kind);
 		string DefaultConfigurationId { get; set; }
 	}
 }

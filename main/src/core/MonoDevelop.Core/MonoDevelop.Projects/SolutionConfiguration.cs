@@ -48,10 +48,6 @@ namespace MonoDevelop.Projects
 		
 		List<SolutionConfigurationEntry> configurations = new List<SolutionConfigurationEntry> ();
 		
-		public SolutionConfiguration ()
-		{
-		}
-		
 		public SolutionConfiguration (string id): base (id)
 		{
 		}

@@ -53,7 +53,6 @@ namespace MonoDevelop.Projects
 		void SetValue (string name, object value, object defaultValue = null, bool mergeToMainGroup = false, string condition = null);
 
 		bool RemoveProperty (string name);
-		void RemoveAllProperties ();
 
 		void SetPropertyOrder (params string[] propertyNames);
 	}
