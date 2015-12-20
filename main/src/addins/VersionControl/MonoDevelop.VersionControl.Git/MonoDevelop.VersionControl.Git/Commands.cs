@@ -91,11 +91,9 @@ namespace MonoDevelop.VersionControl.Git
 
 	class SwitchToBranchHandler: GitCommandHandler
 	{
-		protected override void Run (object dataItem)
+		protected async override void Run (object dataItem)
 		{
-			#pragma warning disable 4014
-			GitService.SwitchToBranch (Repository, (string)dataItem).ConfigureAwait (false);
-			#pragma warning restore 4014
+			await GitService.SwitchToBranch (Repository, (string)dataItem).ConfigureAwait (false);
 		}
 
 		protected override void Update (CommandArrayInfo info)
