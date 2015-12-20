@@ -184,7 +184,6 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		MonoDevelop.Ide.Editor.LineEndingConversion lineEndingConversion;
 		public MonoDevelop.Ide.Editor.LineEndingConversion LineEndingConversion {
 			get {
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.LineEndingConversion;

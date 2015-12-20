@@ -70,11 +70,6 @@ namespace MonoDevelop.Ide.Codons
 		[NodeAttribute ("defaultStatus", "Default status ofthe pad. It can be 'Dockable', 'Floating', 'AutoHide'.")]
 		DockItemStatus defaultStatus = DockItemStatus.Dockable;
 		
-		[NodeAttribute("dockLabelProvider", "Name of a class implementing IDockItemLabelProvider. " +
-			"Using this class it is possible to use a custom widget as label when the item" +
-			"is docked in auto-hide mode.")]
-		string dockLabelProvider = null;
-		
 		[NodeAttribute ("defaultLayout", "Name of the layouts (comma separated list) on which this pad should be visible by default")]
 		string[] defaultLayouts;
 		
