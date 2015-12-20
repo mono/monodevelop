@@ -99,6 +99,9 @@ namespace MonoDevelop.VersionControl
 				}
 				return versionInfo;
 			}
+			internal set {
+				versionInfo = value;
+			}
 		}
 	}
 }

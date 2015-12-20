@@ -176,7 +176,7 @@ namespace MonoDevelop.VersionControl.Views
 				Revision workingRevision = (Revision)e.Argument;
 				string text = null;
 				try {
-					text = info.Item.Repository.GetTextAtRevision (info.VersionInfo.LocalPath, workingRevision);
+					text = info.Item.Repository.GetTextAtRevision (info.Item.VersionInfo.LocalPath, workingRevision);
 				} catch (Exception ex) {
 					text = string.Format (GettextCatalog.GetString ("Error while getting the text of revision {0}:\n{1}"), workingRevision, ex.ToString ());
 					MessageService.ShowError (text);
