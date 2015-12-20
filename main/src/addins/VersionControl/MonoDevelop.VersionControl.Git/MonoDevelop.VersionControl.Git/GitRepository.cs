@@ -1261,13 +1261,13 @@ namespace MonoDevelop.VersionControl.Git
 			return RootRepository.Head.FriendlyName;
 		}
 
-		public void SwitchToBranch (ProgressMonitor monitor, string branch)
+		public bool SwitchToBranch (ProgressMonitor monitor, string branch)
 		{
 			Signature sig = GetSignature ();
 			Stash stash;
 			int stashIndex = -1;
 			if (sig == null)
-				return;
+				return false;
 
 			monitor.BeginTask (GettextCatalog.GetString ("Switching to branch {0}", branch), GitService.StashUnstashWhenSwitchingBranches ? 4 : 2);
 
@@ -1282,7 +1282,7 @@ namespace MonoDevelop.VersionControl.Git
 					RootRepository.Stashes.Remove (stashIndex);
 
 				if (!TryCreateStash (monitor, GetStashName (currentBranch), out stash))
-					return;
+					return false;
 				
 				monitor.Step (1);
 			}
@@ -1310,6 +1310,7 @@ namespace MonoDevelop.VersionControl.Git
 				BranchSelectionChanged (this, EventArgs.Empty);
 
 			monitor.EndTask ();
+			return true;
 		}
 
 		void NotifyFileChanges (ProgressMonitor monitor, TreeChanges statusList)

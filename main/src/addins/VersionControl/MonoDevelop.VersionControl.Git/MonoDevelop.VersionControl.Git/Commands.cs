@@ -93,7 +93,9 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		protected override void Run (object dataItem)
 		{
-			GitService.SwitchToBranch (Repository, (string)dataItem);
+			#pragma warning disable 4014
+			GitService.SwitchToBranch (Repository, (string)dataItem).ConfigureAwait (false);
+			#pragma warning restore 4014
 		}
 
 		protected override void Update (CommandArrayInfo info)
