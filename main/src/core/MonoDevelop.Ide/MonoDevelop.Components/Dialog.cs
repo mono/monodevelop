@@ -29,8 +29,17 @@ namespace MonoDevelop.Components
 {
 	public class Dialog : Window
 	{
-		public Dialog (object widget) : base(widget)
+		protected Dialog ()
 		{
+		}
+
+		Dialog (object widget)
+		{
+			if (widget == null)
+				throw new ArgumentNullException (nameof (widget));
+
+			this.nativeWidget = widget;
+			cache.Add (widget, new WeakReference<Control> (this));
 		}
 
 		public static implicit operator Gtk.Dialog (Dialog d)
@@ -43,7 +52,7 @@ namespace MonoDevelop.Components
 			if (d == null)
 				return null;
 
-			return (Dialog)(Control)d;
+			return GetImplicit<Dialog, Gtk.Dialog>(d) ?? new Dialog (d);
 		}
 	}
 }

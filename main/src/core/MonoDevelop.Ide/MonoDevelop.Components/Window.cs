@@ -29,21 +29,17 @@ namespace MonoDevelop.Components
 {
 	public class Window : Control
 	{
-		object widget;
-		public Window (object widget)
+		protected Window ()
 		{
-			this.widget = widget;
 		}
 
-		protected override object CreateNativeWidget ()
+		Window (object widget)
 		{
-			return widget;
-		}
-
-		protected override void Dispose (bool disposing)
-		{
-			base.Dispose (disposing);
-			widget = null;
+			if (widget == null)
+				throw new ArgumentNullException (nameof (widget));
+			
+			this.nativeWidget = widget;
+			cache.Add (widget, new WeakReference<Control> (this));
 		}
 
 		public static implicit operator Gtk.Window (Window d)
@@ -56,7 +52,7 @@ namespace MonoDevelop.Components
 			if (d == null)
 				return null;
 
-			return (Window)(Control)d;
+			return GetImplicit<Window, Gtk.Window>(d) ?? new Window (d);
 		}
 	}
 }

@@ -37,7 +37,7 @@ namespace MonoDevelop.Components
 	public class Control : IDisposable
 	{
 		internal static Dictionary<object, WeakReference<Control>> cache = new Dictionary<object, WeakReference<Control>> ();
-		object nativeWidget;
+		internal object nativeWidget;
 
 		protected Control ()
 		{
@@ -143,7 +143,7 @@ namespace MonoDevelop.Components
 			return GetImplicit<Control, Gtk.Widget>(d) ?? new Control (d);
 		}
 
-		static T GetImplicit<T, U> (U native) where T : Control where U : class
+		internal static T GetImplicit<T, U> (U native) where T : Control where U : class
 		{
 			WeakReference<Control> cached;
 			Control target;
