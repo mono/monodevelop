@@ -32,7 +32,7 @@ module Search =
     
   let private filter tag (s:FSharpSymbolUse seq) =
     match tag with
-    | "type" | "t" | "c"   -> s |> Seq.filter (is (|Constructor|_|))
+    | "type" | "t" | "c" -> s |> Seq.filter (is (|Constructor|_|))
     | "mod" -> s |> Seq.filter (is (|Module|_|))
     | "s" ->   s |> Seq.filter (is (|ValueType|_|))
     | "i" ->   s |> Seq.filter (is (|Interface|_|))
@@ -40,7 +40,7 @@ module Search =
     | "d" ->   s |> Seq.filter (is (|Delegate|_|))
     | "u" ->   s |> Seq.filter (is (|Union|_|))
     | "r" ->   s |> Seq.filter (is (|Record|_|))
-    | "member" | "m" ->   s |> Seq.filter (is (|Method|_|))
+    | "member" | "m" -> s |> Seq.filter (is (|Method|_|))
     | "p" ->   s |> Seq.filter (is (|Property|_|))
     | "f" ->   s |> Seq.filter (is (|Field|_|))
     | "ap" ->  s |> Seq.filter (is (|ActivePattern|_|))
