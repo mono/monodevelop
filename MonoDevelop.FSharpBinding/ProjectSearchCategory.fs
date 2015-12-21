@@ -25,21 +25,26 @@ module Accessibility =
 
 module Search = 
     
+  let inline is expr s =
+    match expr s with
+    | Some _ -> true
+    | None -> false
+    
   let private filter tag (s:FSharpSymbolUse seq) =
     match tag with
-    | "type" | "t" | "c" -> s |> Seq.choose ((|Constructor|_|) >> Option.cast)
-    | "mod" -> s |> Seq.choose ((|Module|_|) >> Option.cast)
-    | "s" ->   s |> Seq.choose ((|ValueType|_|) >> Option.cast)
-    | "i" ->   s |> Seq.choose ((|Interface|_|) >> Option.cast)
-    | "e" ->   s |> Seq.choose ((|Enum|_|) >> Option.cast)
-    | "d" ->   s |> Seq.choose ((|Delegate|_|) >> Option.cast)
-    | "u" ->   s |> Seq.choose ((|Union|_|) >> Option.cast)
-    | "r" ->   s |> Seq.choose ((|Record|_|) >> Option.cast)
-    | "member" | "m" -> s |> Seq.choose ((|Method|_|) >> Option.cast)
-    | "p" ->   s |> Seq.choose ((|Property|_|) >> Option.cast)
-    | "f" ->   s |> Seq.choose ((|Field|_|) >> Option.cast)
-    | "ap" ->  s |> Seq.choose ((|ActivePattern|_|) >> Option.cast)
-    | "op" ->  s |> Seq.choose ((|Operator|_|) >> Option.cast)
+    | "type" | "t" | "c"   -> s |> Seq.filter (is (|Constructor|_|))
+    | "mod" -> s |> Seq.filter (is (|Module|_|))
+    | "s" ->   s |> Seq.filter (is (|ValueType|_|))
+    | "i" ->   s |> Seq.filter (is (|Interface|_|))
+    | "e" ->   s |> Seq.filter (is (|Enum|_|))
+    | "d" ->   s |> Seq.filter (is (|Delegate|_|))
+    | "u" ->   s |> Seq.filter (is (|Union|_|))
+    | "r" ->   s |> Seq.filter (is (|Record|_|))
+    | "member" | "m" ->   s |> Seq.filter (is (|Method|_|))
+    | "p" ->   s |> Seq.filter (is (|Property|_|))
+    | "f" ->   s |> Seq.filter (is (|Field|_|))
+    | "ap" ->  s |> Seq.filter (is (|ActivePattern|_|))
+    | "op" ->  s |> Seq.filter (is (|Operator|_|))
     | _ ->     s
 
   let byTag tag (items: FSharpSymbolUse seq) =
