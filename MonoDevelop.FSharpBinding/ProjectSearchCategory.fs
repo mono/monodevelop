@@ -23,24 +23,23 @@ module Accessibility =
     elif accessibility.IsInternal then getImage inter
     else getImage priv 
 
-
 module Search = 
-
+    
   let private filter tag (s:FSharpSymbolUse seq) =
     match tag with
-    | "type" | "t" | "c" -> s |> Seq.filter (function | Class _ -> true | _ -> false)
-    | "mod" -> s |> Seq.filter (function | Module _ -> true | _ -> false)
-    | "s" ->   s |> Seq.filter (function | ValueType _ -> true | _ -> false)
-    | "i" ->   s |> Seq.filter (function | Interface _ -> true | _ -> false)
-    | "e" ->   s |> Seq.filter (function | Enum _ -> true | _ -> false)
-    | "d" ->   s |> Seq.filter (function | Delegate _ -> true | _ -> false)
-    | "u" ->   s |> Seq.filter (function | Union _ -> true | _ -> false)
-    | "r" ->   s |> Seq.filter (function | Record _ -> true | _ -> false)
-    | "member" | "m" -> s |> Seq.filter (function | Method _ -> true | _ -> false)
-    | "p" ->   s |> Seq.filter (function | Property _ -> true | _ -> false)
-    | "f" ->   s |> Seq.filter (function | Field _ -> true | _ -> false)
-    | "ap" ->  s |> Seq.filter (function | ActivePattern _ -> true | _ -> false)
-    | "op" ->  s |> Seq.filter (function | Operator _ -> true | _ -> false)
+    | "type" | "t" | "c" -> s |> Seq.choose ((|Constructor|_|) >> Option.cast)
+    | "mod" -> s |> Seq.choose ((|Module|_|) >> Option.cast)
+    | "s" ->   s |> Seq.choose ((|ValueType|_|) >> Option.cast)
+    | "i" ->   s |> Seq.choose ((|Interface|_|) >> Option.cast)
+    | "e" ->   s |> Seq.choose ((|Enum|_|) >> Option.cast)
+    | "d" ->   s |> Seq.choose ((|Delegate|_|) >> Option.cast)
+    | "u" ->   s |> Seq.choose ((|Union|_|) >> Option.cast)
+    | "r" ->   s |> Seq.choose ((|Record|_|) >> Option.cast)
+    | "member" | "m" -> s |> Seq.choose ((|Method|_|) >> Option.cast)
+    | "p" ->   s |> Seq.choose ((|Property|_|) >> Option.cast)
+    | "f" ->   s |> Seq.choose ((|Field|_|) >> Option.cast)
+    | "ap" ->  s |> Seq.choose ((|ActivePattern|_|) >> Option.cast)
+    | "op" ->  s |> Seq.choose ((|Operator|_|) >> Option.cast)
     | _ ->     s
 
   let byTag tag (items: FSharpSymbolUse seq) =
@@ -49,10 +48,11 @@ module Search =
 
   let getAllProjectSymbols projectFile =
     async {
-      try 
+      try
         //let projectOptions = languageService.GetProjectCheckerOptions projectFile
-        match languageService.GetAllProjectDeclarations projectFile with
-        | Some v -> return v |> Array.toSeq
+        match languageService.GetCachedProjectCheckResult projectFile with
+        | Some v -> let! allSymbols =  v.GetAllUsesOfAllSymbols()
+                    return allSymbols |> Array.toSeq
         | None -> return Seq.empty
       with ex ->
         LoggingService.LogError("Global Search (F#) error", ex)
@@ -71,22 +71,21 @@ module Search =
   let byPattern (cache:Dictionary<_,_>) pattern symbols =
 
     let matchName (matcher:StringMatcher) (name:string) =
-      match name with
-      | null -> SearchCategory.MatchResult(false, -1)
-      | name ->
-      match cache.TryGetValue(name) with
-      | true, v -> v
-      | false, _ ->
-        let doesMatch, rank = matcher.CalcMatchRank (name)
-        let savedMatch = SearchCategory.MatchResult (doesMatch, rank)
-        cache.Add(name, savedMatch)
-        savedMatch
+      if name = null then (false, -1)
+      else
+        match cache.TryGetValue(name) with
+        | true, v -> v
+        | false, _ ->
+          let doesMatch, rank = matcher.CalcMatchRank (name)
+          let savedMatch = (doesMatch, rank)
+          cache.Add(name, savedMatch)
+          savedMatch
 
     let matcher = StringMatcher.GetMatcher (pattern, false)
 
     symbols
-    |> Seq.choose (fun s -> let matchres = matchName matcher (correctDisplayName s)
-                            if matchres.Match then Some(s, matchres.Rank)
+    |> Seq.choose (fun s -> let doesMatch, rank = matchName matcher (correctDisplayName s)
+                            if doesMatch then Some(s, rank)
                             else None)
 
 type SymbolSearchResult(match', matchedString, rank, symbol:FSharpSymbolUse) =
@@ -186,7 +185,7 @@ type ProjectSearchCategory() =
   override x.GetResults(callback, pattern, token) =
     let cachingSearch = Search.byPattern (Dictionary<_,_>())
     Task.Run( 
-      (fun () -> async {
+      (fun () -> async { 
                    for projFile in getAllProjectFiles() do
                      try
                        let shortName = projFile |> IO.Path.GetFileName
@@ -209,4 +208,3 @@ type ProjectSearchCategory() =
 
                      with ex -> 
                       LoggingService.LogError("F# Global Serach error", ex) } |> Async.StartImmediate) , token )
-
