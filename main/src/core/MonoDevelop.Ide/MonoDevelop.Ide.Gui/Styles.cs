@@ -169,7 +169,7 @@ namespace MonoDevelop.Ide.Gui
 
 		// Code Completion
 
-		public static readonly int TooltipInfoSpacing = -4;
+		public static readonly int TooltipInfoSpacing;
 
 		// Popover Windows
 
@@ -299,6 +299,14 @@ namespace MonoDevelop.Ide.Gui
 		internal static Gdk.Color IncreaseLight (Gdk.Color color, double factor)
 		{
 			return IncreaseLight (color.ToCairoColor (), factor).ToGdkColor ();
+		}
+
+		static Styles ()
+		{
+			if (Core.Platform.IsWindows)
+				TooltipInfoSpacing = 0;
+			else
+				TooltipInfoSpacing = -5;
 		}
 
 		internal static void LoadStyle ()
