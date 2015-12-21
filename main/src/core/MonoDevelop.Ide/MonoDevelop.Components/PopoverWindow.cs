@@ -233,6 +233,8 @@ namespace MonoDevelop.Components
 				caret = GtkUtil.ToScreenCoordinates (parent, parent.GdkWindow, caret);
 			}
 
+			caret.Inflate (CaretSpacing, CaretSpacing);
+
 			Gtk.Requisition request = SizeRequest ();
 			var screen = parent.Screen;
 			Gdk.Rectangle geometry = GtkWorkarounds.GetUsableMonitorGeometry (screen, screen.GetMonitorAtPoint (caret.X, caret.Y));
@@ -269,14 +271,14 @@ namespace MonoDevelop.Components
 
 			switch ((PopupPosition)((int)position & 0x0f)) {
 			case PopupPosition.Top:
-				y = caret.Bottom + CaretSpacing;
+				y = caret.Bottom + 1;
 				break;
 			case PopupPosition.Bottom:
-				y = caret.Y - request.Height - CaretSpacing; break;
+				y = caret.Y - request.Height; break;
 			case PopupPosition.Right:
-				x = caret.X - request.Width - CaretSpacing; break;
+				x = caret.X - request.Width; break;
 			case PopupPosition.Left:
-				x = caret.Right + CaretSpacing; break;
+				x = caret.Right + 1; break;
 			}
 			int offset;
 			if ((position & PopupPosition.Top) != 0 || (position & PopupPosition.Bottom) != 0) {
