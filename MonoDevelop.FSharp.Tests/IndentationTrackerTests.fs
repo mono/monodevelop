@@ -2,18 +2,12 @@
 open NUnit.Framework
 open MonoDevelop.FSharp
 open FsUnit
+open Mono.TextEditor
 
 [<TestFixture>]
 type IndentationTrackerTests() =
-    let content = """
-let a = 
 
-let b = (fun a ->
-
-  let b = a
-"""
-
-    let docWithCaret (content:string) = 
+    let docWithCaretAt (content:string) = 
         let d = TestHelpers.createDoc(content.Replace("§", "")) ""
         d.Editor.SetIndentationTracker (FSharpIndentationTracker(d.Editor))
         do match content.IndexOf('§') with
@@ -23,49 +17,62 @@ let b = (fun a ->
         d
 
     let getIndent (content:string) =
-      let doc = docWithCaret content
+      let doc = docWithCaretAt content
       let tracker = FSharpIndentationTracker(doc.Editor)
       let caretLine = doc.Editor.CaretLine
       tracker.GetIndentationString(caretLine).Length + 1
+      
+    let insertEnterAtSection (text:string) =
+      let idx = text.IndexOf ('§')
+      let doc = TextDocument(text.Substring(0, idx) + text.Substring(idx + 1))
+      use data = new TextEditorData (doc)
+      data.Caret.Offset <- idx
+      MiscActions.InsertNewLine(data)
+      data.Document.Text 
 
     [<Test>]
-    member x.BasicIndents() =
+    member x.``Basic indents``() =
       let getIndent (doc:TestDocument, line:int, col) =
           doc.Editor.SetCaretLocation (2, 2)
           let column = doc.Editor.GetVirtualIndentationColumn (line)
           column
 
-      let doc = TestHelpers.createDoc(content) ""
+      let doc = "" |> TestHelpers.createDoc """
+let a = 
+
+let b = (fun a ->
+
+  let b = a
+"""
       doc.Editor.SetIndentationTracker (FSharpIndentationTracker(doc.Editor))
       getIndent (doc, 3, 1) |> should equal 5
       getIndent (doc, 5, 1) |> should equal 5
       getIndent (doc, 7, 1) |> should equal 3
 
     [<Test>]
-    member x.MatchExpression() =
+    member x.``Match expression``() =
         getIndent("let m = match 123 with\n§") |> should equal 9
 
     [<Test>]
-    member x.IndentedMatchExpression() =
+    member x.``Indented match expression``() =
         getIndent("""let m =
    match 123 with
     §""") |> should equal 4
-  
+     
     [<Test>]
-    [<Ignore("InsertAtCaret doesn't simulate what happens when you press enter in MD, so this test currently fails")>]
-    member x.EnterDoesntChangeIndentationAtIndentPosition() =
-        let doc = docWithCaret("""  let a = 123
-  §let b = 321""")
-        doc.Editor.InsertAtCaret("\n")
-        doc.Editor.Text 
+    member x.``Enter doesnt change indentation at indent position``() =
+        let input = """  let a = 123
+  §let c = 321"""
+        input
+        |> insertEnterAtSection
         |> should equal @"  let a = 123
 
-  let b = 321"
+  let c = 321"
 
     [<Test>]
-    [<Ignore("InsertAtCaret doesn't properly simulate what happens when you press enter in MD, so this test currently fails")>]
-    member x.EnterAfterEqualsIndents() =
-        let doc = docWithCaret """  let a = §123"""
-        doc.Editor.InsertAtCaret("\n")
-        doc.Editor.Text 
-        |> should equal "  let a = 123\n      123"
+    member x.``Enter after equals indents``() =
+        let input = """  let a = §123"""
+        input
+        |> insertEnterAtSection 
+        |> should equal """  let a = 
+  123"""
