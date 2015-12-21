@@ -394,7 +394,7 @@ type FSharpTextEditorCompletion() =
 
   override x.CompletionLanguage = "F#"
   override x.Initialize() = 
-    do x.Editor.SetIndentationTracker (FSharpIndentationTracker(base.Editor))
+    do x.Editor.SetIndentationTracker (FSharpIndentationTracker(x.Editor))
     base.Initialize()
 
   /// Provide parameter and method overload information when you type '(', '<' or ','
