@@ -23,6 +23,11 @@ module FsUnit =
 
     // like "should equal", but validates same-type
     let shouldEqual (x: 'a) (y: 'a) = Assert.AreEqual(x, y, sprintf "Expected: %A\nActual: %A" x y)
+    let replaceLineEnding (s:string) =
+      s.Replace("\r\n", "\n")
+
+    let shouldEqualIgnoringLineEndings (x: string) (y: string) =
+      Assert.AreEqual((replaceLineEnding x), (replaceLineEnding y), sprintf "Expected: %A\nActual: %A" x y)
 
     let notEqual x = new NotConstraint(new EqualConstraint(x))
 
