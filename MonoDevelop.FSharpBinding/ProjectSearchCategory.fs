@@ -25,10 +25,8 @@ module Accessibility =
 
 module Search = 
     
-  let inline is expr s =
-    match expr s with
-    | Some _ -> true
-    | None -> false
+  let inline private is expr s =
+    match expr s with Some _ -> true | None -> false
     
   let private filter tag (s:FSharpSymbolUse seq) =
     match tag with
@@ -54,7 +52,6 @@ module Search =
   let getAllProjectSymbols projectFile =
     async {
       try
-        //let projectOptions = languageService.GetProjectCheckerOptions projectFile
         match languageService.GetCachedProjectCheckResult projectFile with
         | Some v -> let! allSymbols =  v.GetAllUsesOfAllSymbols()
                     return allSymbols |> Array.toSeq
