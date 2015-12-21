@@ -192,4 +192,10 @@ module AsyncChoiceCE =
                 | Error error -> return Choice2Of2 error
                 | Success x -> return! binder x
             }
+            
+module Async =
+  let inline startAsPlainTask (work : Async<unit>) = 
+    System.Threading.Tasks.Task.Factory.StartNew(fun () -> work |> Async.RunSynchronously)
+
+
    

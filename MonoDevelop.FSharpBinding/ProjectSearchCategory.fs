@@ -23,24 +23,23 @@ module Accessibility =
     elif accessibility.IsInternal then getImage inter
     else getImage priv 
 
-
-module Search =
-
+module Search = 
+    
   let private filter tag (s:FSharpSymbolUse seq) =
     match tag with
-    | "type" | "t" | "c" -> s |> Seq.filter (function | Class _ -> true | _ -> false)
-    | "mod" -> s |> Seq.filter (function | Module _ -> true | _ -> false)
-    | "s" ->   s |> Seq.filter (function | ValueType _ -> true | _ -> false)
-    | "i" ->   s |> Seq.filter (function | Interface _ -> true | _ -> false)
-    | "e" ->   s |> Seq.filter (function | Enum _ -> true | _ -> false)
-    | "d" ->   s |> Seq.filter (function | Delegate _ -> true | _ -> false)
-    | "u" ->   s |> Seq.filter (function | Union _ -> true | _ -> false)
-    | "r" ->   s |> Seq.filter (function | Record _ -> true | _ -> false)
-    | "member" | "m" -> s |> Seq.filter (function | Method _ -> true | _ -> false)
-    | "p" ->   s |> Seq.filter (function | Property _ -> true | _ -> false)
-    | "f" ->   s |> Seq.filter (function | Field _ -> true | _ -> false)
-    | "ap" ->  s |> Seq.filter (function | ActivePattern _ -> true | _ -> false)
-    | "op" ->  s |> Seq.filter (function | Operator _ -> true | _ -> false)
+    | "type" | "t" | "c" -> s |> Seq.choose ((|Constructor|_|) >> Option.cast)
+    | "mod" -> s |> Seq.choose ((|Module|_|) >> Option.cast)
+    | "s" ->   s |> Seq.choose ((|ValueType|_|) >> Option.cast)
+    | "i" ->   s |> Seq.choose ((|Interface|_|) >> Option.cast)
+    | "e" ->   s |> Seq.choose ((|Enum|_|) >> Option.cast)
+    | "d" ->   s |> Seq.choose ((|Delegate|_|) >> Option.cast)
+    | "u" ->   s |> Seq.choose ((|Union|_|) >> Option.cast)
+    | "r" ->   s |> Seq.choose ((|Record|_|) >> Option.cast)
+    | "member" | "m" -> s |> Seq.choose ((|Method|_|) >> Option.cast)
+    | "p" ->   s |> Seq.choose ((|Property|_|) >> Option.cast)
+    | "f" ->   s |> Seq.choose ((|Field|_|) >> Option.cast)
+    | "ap" ->  s |> Seq.choose ((|ActivePattern|_|) >> Option.cast)
+    | "op" ->  s |> Seq.choose ((|Operator|_|) >> Option.cast)
     | _ ->     s
 
   let byTag tag (items: FSharpSymbolUse seq) =
@@ -49,13 +48,12 @@ module Search =
 
   let getAllProjectSymbols projectFile =
     async {
-      try 
-        let projectOptions = languageService.GetProjectCheckerOptions projectFile
-        let! proj = languageService.ParseAndCheckProject projectOptions
-        if not proj.HasCriticalErrors then
-          let! allSymbols = proj.GetAllUsesOfAllSymbols()
-          return allSymbols |> Array.toSeq
-        else return Seq.empty 
+      try
+        //let projectOptions = languageService.GetProjectCheckerOptions projectFile
+        match languageService.GetCachedProjectCheckResult projectFile with
+        | Some v -> let! allSymbols =  v.GetAllUsesOfAllSymbols()
+                    return allSymbols |> Array.toSeq
+        | None -> return Seq.empty
       with ex ->
         LoggingService.LogError("Global Search (F#) error", ex)
         return Seq.empty }
@@ -94,9 +92,7 @@ type SymbolSearchResult(match', matchedString, rank, symbol:FSharpSymbolUse) =
   inherit SearchResult(match', matchedString, rank)
 
   let simpleName = Search.correctDisplayName symbol
-
-  let offsetAndLength =
-    lazy Symbols.getOffsetAndLength simpleName symbol
+  let offsetAndLength = lazy Symbols.getOffsetAndLength simpleName symbol
 
   override x.SearchResultType =
     match symbol with
@@ -142,8 +138,7 @@ type SymbolSearchResult(match', matchedString, rank, symbol:FSharpSymbolUse) =
     | ValueType s -> s |> getImageFromAccessibility Stock.Struct.Name Stock.InternalStruct.Name Stock.PrivateStruct.Name
     | Delegate d -> d |> getImageFromAccessibility Stock.Delegate.Name Stock.InternalDelegate.Name Stock.PrivateDelegate.Name
     | Union _ -> getImage "md-type"
-    | Class c -> if c.IsFSharp then getImage "md-type"
-                 else c |> getImageFromAccessibility Stock.Class.Name Stock.InternalClass.Name Stock.PrivateClass.Name
+    | Class c -> if c.IsFSharp then getImage "md-type" else c |> getImageFromAccessibility Stock.Class.Name Stock.InternalClass.Name Stock.PrivateClass.Name
     | Namespace _ -> getImage Stock.NameSpace.Name
     | Interface i -> i |> getImageFromAccessibility Stock.Interface.Name Stock.InternalInterface.Name Stock.PrivateInterface.Name
     | Enum e -> e |> getImageFromAccessibility Stock.Enum.Name Stock.InternalEnum.Name Stock.PrivateEnum.Name
@@ -161,14 +156,9 @@ type SymbolSearchResult(match', matchedString, rank, symbol:FSharpSymbolUse) =
     | Val _ -> getImage "md-fs-field" //NOTE: Maybe make this a normal field icon?
     | _ -> getImage Stock.Event.Name
 
-  override x.GetTooltipInformation(token) =
-    Async.StartAsTask(SymbolTooltips.getTooltipInformation symbol, cancellationToken = token)
-
-  override x.Offset =
-    fst (offsetAndLength.Force())
-
-  override x.Length = 
-    snd (offsetAndLength.Force())
+  override x.GetTooltipInformation(token) = Async.StartAsTask(SymbolTooltips.getTooltipInformation symbol, cancellationToken = token)
+  override x.Offset = fst (offsetAndLength.Force())
+  override x.Length = snd (offsetAndLength.Force())
 
 type ProjectSearchCategory() =
   inherit SearchCategory(GettextCatalog.GetString ("Solution"), sortOrder = SearchCategory.FirstCategory)
@@ -181,46 +171,40 @@ type ProjectSearchCategory() =
   let tags = lazy (List.concat [typeTags; memberTags] |> List.toArray)
 
   let getAllProjectFiles() =
-    IdeApp.Workspace.GetAllProjects()
-    |> Seq.filter (fun p -> p.SupportedLanguages |> Array.contains "F#")
-    |> Seq.map (fun p -> p.FileName.ToString())
+    seq {
+      for p in IdeApp.Workspace.GetAllProjects() do
+        if p.SupportedLanguages |> Array.contains "F#"
+        then yield p.FileName.ToString() }
 
-  let getComputation (pattern:SearchPopupSearchPattern) (cachingSearch) (callback:ISearchResultCallback) =
-    async {
-      for projFile in getAllProjectFiles() do
-        try
-          LoggingService.LogInfo(sprintf "F# Global Search: Getting all project symbols for %s" (projFile |> IO.Path.GetFileName) )
-          let! allProjectSymbols = Search.getAllProjectSymbols projFile
-
-          LoggingService.LogInfo(sprintf "F# Global Search: Filtering %i project symbols from %s, for definitions"
-                                  (allProjectSymbols |> Seq.length) (projFile |> IO.Path.GetFileName) )
-          let onlyDefinitions = allProjectSymbols |> Seq.filter (fun s -> s.IsFromDefinition)
-
-          LoggingService.LogInfo(sprintf "F# Global Search: Filtering %i matching tag %s for %s"
-                                  (onlyDefinitions |> Seq.length) pattern.Tag (projFile |> IO.Path.GetFileName) )
-          let typeFilteredSymbols = onlyDefinitions |> Search.byTag pattern.Tag
-
-          LoggingService.LogInfo(sprintf "F# Global Search: Caching search on %i typeFilteredSymbols for matching pattern %s on %s"
-                                  (typeFilteredSymbols |> Seq.length) pattern.Pattern (projFile |> IO.Path.GetFileName) )
-          let matchedSymbols = typeFilteredSymbols |> cachingSearch pattern.Pattern
-
-          LoggingService.LogInfo(sprintf "F# Global Search: Matched %i symbols from %s"
-                                  (matchedSymbols |> Seq.length) (projFile |> IO.Path.GetFileName) )
-          matchedSymbols
-          |> Seq.iter (fun (symbol:FSharpSymbolUse, rank) ->
-            let sr = SymbolSearchResult(pattern.Pattern, symbol.Symbol.DisplayName, rank, symbol)
-            callback.ReportResult sr)
-       
-        with ex -> 
-         LoggingService.LogError("F# Global Serach error", ex) }
-
+   
   override x.get_Tags() = tags.Force()
 
   override x.IsValidTag tag =
     typeTags |> List.contains tag || memberTags |> List.contains tag
 
-  override x.GetResults(searchCallback, pattern, token) =
+  override x.GetResults(callback, pattern, token) =
     let cachingSearch = Search.byPattern (Dictionary<_,_>())
-    let task = getComputation pattern cachingSearch searchCallback
-    Task.Factory.StartNew(fun () ->  Async.StartImmediate(task, token) )
+    Task.Run( 
+      (fun () -> async { 
+                   for projFile in getAllProjectFiles() do
+                     try
+                       let shortName = projFile |> IO.Path.GetFileName
+                       LoggingService.LogInfo(sprintf "F# Global Search: Getting all project symbols for %s" shortName )
+                       let! allProjectSymbols = Search.getAllProjectSymbols projFile
 
+                       LoggingService.LogInfo(sprintf "F# Global Search: Filtering %i project symbols from %s, for definitions" (allProjectSymbols |> Seq.length) shortName )
+                       let definitions = allProjectSymbols |> Seq.filter (fun s -> s.IsFromDefinition)
+
+                       LoggingService.LogInfo(sprintf "F# Global Search: Filtering %i matching tag %s for %s" (definitions |> Seq.length) pattern.Tag shortName )
+                       let tagFiltered = definitions |> Search.byTag pattern.Tag
+
+                       LoggingService.LogInfo(sprintf "F# Global Search: Caching search on %i typeFilteredSymbols for matching pattern %s on %s" (tagFiltered |> Seq.length) pattern.Pattern shortName )
+                       let matchedSymbols = tagFiltered |> cachingSearch pattern.Pattern
+
+                       LoggingService.LogInfo(sprintf "F# Global Search: Matched %i symbols from %s" (matchedSymbols |> Seq.length) shortName )
+                       for symbol:FSharpSymbolUse, rank in matchedSymbols do
+                         let sr = SymbolSearchResult(pattern.Pattern, symbol.Symbol.DisplayName, rank, symbol)
+                         callback.ReportResult sr
+
+                     with ex -> 
+                      LoggingService.LogError("F# Global Serach error", ex) } |> Async.StartImmediate) , token )
