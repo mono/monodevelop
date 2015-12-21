@@ -83,7 +83,7 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
             return sym |> Option.bind (fun sym -> let start, finish = Symbol.trimSymbolRegion sym (Seq.last identIsland)
                                                   Some (res, (start.Column, finish.Column)))
         | None -> return None }
-      
+
     member x.GetDeclarationLocation(line, col, lineStr) =
       async {
         match infoOpt with 
@@ -92,7 +92,7 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
           | None -> return FSharpFindDeclResult.DeclNotFound FSharpFindDeclFailureReason.Unknown
           | Some(col,identIsland) -> return! checkResults.GetDeclarationLocationAlternate(line, col, lineStr, identIsland, false)
         | None -> return FSharpFindDeclResult.DeclNotFound FSharpFindDeclFailureReason.Unknown }
-      
+
     member x.GetMethods(line, col, lineStr) =
       async { 
         match infoOpt with 
@@ -199,31 +199,36 @@ type AllowStaleResults =
 //type Debug = System.Console
 
 /// Provides functionality for working with the F# interactive checker running in background
-type LanguageService(dirtyNotify) as x=
+type LanguageService(dirtyNotify) as x =
 
   /// Load times used to reset type checking properly on script/project load/unload. It just has to be unique for each project load/reload.
   /// Not yet sure if this works for scripts.
   let fakeDateTimeRepresentingTimeLoaded proj = DateTime(abs (int64 (match proj with null -> 0 | _ -> proj.GetHashCode())) % 103231L)
-  
-  let symbolCache = Collections.Concurrent.ConcurrentDictionary<string, _>()
-    
-  let projectUpdated projectName =
-    if symbolCache.ContainsKey projectName then symbolCache.TryRemove(projectName) |> ignore
-    let projOptions = x.GetProjectCheckerOptions(projectName)
-    let symbols =
-      try
-        async {try
-                 let! (projCheck:FSharpCheckProjectResults) = x.ParseAndCheckProject(projOptions)
-                 return! projCheck.GetAllUsesOfAllSymbols()
-               with exn ->
-                 LoggingService.LogDebug("Error in project update", exn)
-                 return Array.empty
-               } |> Async.RunSynchronously
-      with ex ->
-        LoggingService.LogDebug("Error in project update", exn)
-        Array.empty
-        
-    symbolCache.TryAdd(projectName, symbols) |> ignore
+  let checkProjectResultsCache = Collections.Generic.Dictionary<string, _>()
+
+  let projectChecked filename =
+    let computation =
+      async {
+         let displayname = Path.GetFileName filename
+         LoggingService.LogDebug(sprintf "LanguageService: Project checked: %s" displayname)
+         if checkProjectResultsCache.ContainsKey filename then
+           LoggingService.LogDebug(sprintf "LanguageService: Removing project check results for: %s" displayname)
+           checkProjectResultsCache.Remove(filename) |> ignore
+           
+         LoggingService.LogDebug(sprintf "LanguageService: Getting project checker options for: %s" displayname)
+         let projOptions = x.GetProjectCheckerOptions(filename)
+         
+         LoggingService.LogDebug(sprintf "LanguageService: Getting CheckProjectResults for: %s" displayname)
+         try
+           let! (projCheck:FSharpCheckProjectResults) = x.ParseAndCheckProject(projOptions)
+           if not projCheck.HasCriticalErrors then
+             LoggingService.LogDebug(sprintf "LanguageService: Adding CheckProjectResults to cache for: %s" displayname)
+             checkProjectResultsCache.Add(filename, projCheck) |> ignore
+           else
+             LoggingService.LogDebug(sprintf "LanguageService: NOT adding CheckProjectResults to cache for: %s due to critical errors" displayname)
+         with exn ->
+           LoggingService.LogDebug(sprintf "LanguageService: Error", exn) }
+    Async.Start computation  
 
   // Create an instance of interactive checker. The callback is called by the F# compiler service
   // when its view of the prior-typechecking-state of the start of a file has changed, for example
@@ -231,9 +236,12 @@ type LanguageService(dirtyNotify) as x=
   // and its time to re-typecheck the current file.
   let checker = 
     let checker = FSharpChecker.Create()
-    checker.ImplicitlyStartBackgroundWork <- true
     checker.BeforeBackgroundFileCheck.Add dirtyNotify
-    checker.ProjectChecked.Add projectUpdated
+#if DEBUG
+    checker.FileParsed.Add (fun filename -> LoggingService.LogDebug(sprintf "LanguageService: File parsed: %s" filename))
+    checker.FileChecked.Add (fun filename -> LoggingService.LogDebug(sprintf "LanguageService: File type checked: %s" filename))
+#endif
+    checker.ProjectChecked.Add projectChecked 
     checker
 
   /// When creating new script file on Mac, the filename we get sometimes 
@@ -254,7 +262,7 @@ type LanguageService(dirtyNotify) as x=
   let projectInfoCache =
     //cache 50 project infos, then start evicting the least recently used entries
     ref (ExtCore.Caching.LruCache.create 50u)
-    
+
   static member IsAScript fileName =
     let ext = Path.GetExtension fileName
     [".fsx";".fsscript";".sketchfs"] |> List.exists ((=) ext)
@@ -312,7 +320,7 @@ type LanguageService(dirtyNotify) as x=
     // LoggingService.LogDebug(sprintf "GetScriptCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
     //                      opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
     opts
-   
+
   /// Constructs options for the interactive checker for a project under the given configuration. 
   member x.GetProjectCheckerOptions(projFilename, ?properties) =
     let properties = defaultArg properties ["Configuration", "Debug"]
@@ -326,9 +334,7 @@ type LanguageService(dirtyNotify) as x=
       | None, cache ->
           LoggingService.LogDebug ("LanguageService: GetProjectCheckerOptions: Generating ProjectOptions for:{0}", Path.GetFileName(projFilename))
           let filename = Path.Combine(Reflection.Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName, "CompilerService.exe")
-          let processName = 
-            if Environment.runningOnMono then Environment.getMonoPath() else filename
-          
+          let processName = if Environment.runningOnMono then Environment.getMonoPath() else filename
           let arguments =
             //For debug you might want to pass --log, which will populate _log below with a map of project name/msbuild output
             if Environment.runningOnMono then sprintf "\"%s\" --project \"%s\"" filename projFilename
@@ -345,12 +351,10 @@ type LanguageService(dirtyNotify) as x=
             let result = serializer.Deserialize(proc.StandardOutput.BaseStream)
             match result with
             | Choice1Of2(optsNew, _log: Map<string,string>) ->
-
               //let opts = checker.GetProjectOptionsFromProjectFile(projFilename, properties)
               projectInfoCache := cache.Add (key, optsNew)
               optsNew
-            | Choice2Of2 (ex) ->
-              raise ex
+            | Choice2Of2 (ex) -> raise ex
           with ex -> LoggingService.LogDebug("LanguageService: GetProjectCheckerOptions Exception: {0}", ex.ToString())
                      reraise())
 
@@ -394,7 +398,7 @@ type LanguageService(dirtyNotify) as x=
            | FSharpCheckFileAnswer.Aborted ->
              LoggingService.LogDebug("LanguageService: ParseAndCheckFile check aborted for {0}", Path.GetFileName(fileName))
              ParseAndCheckResults(None, Some parseResults)
-               
+
          return results
       with exn ->
         LoggingService.LogDebug("LanguageService agent: Exception: {0}", exn.ToString())
@@ -418,7 +422,6 @@ type LanguageService(dirtyNotify) as x=
           LoggingService.LogDebug("LanguageService: GetTypedParseResultWithTimeout: using stale results")
           return results
       | None -> 
-          
           // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
           match timeout with
           | Some timeout ->
@@ -469,16 +472,14 @@ type LanguageService(dirtyNotify) as x=
         |> List.map (fun checkedProj -> checkedProj.GetUsesOfSymbol(symbol))
         |> Async.Parallel
         |> Async.map Array.concat
-    
+
      return allSymbolUses }
 
   /// Get all symbols derived from the specified symbol in the current project and optionally all dependent projects
   member x.GetDerivedSymbolsInProject(projectFilename, file, source, symbolAtCaret:FSharpSymbol, ?dependentProjects) =
-
     let predicate (symbolUse: FSharpSymbolUse) =
       try
         match symbolAtCaret with
-
         | :? FSharpMemberOrFunctionOrValue as caretmfv ->
             match symbolUse.Symbol with
             | :? FSharpMemberOrFunctionOrValue as mfv ->
@@ -498,7 +499,6 @@ type LanguageService(dirtyNotify) as x=
               let allmatch = nameMatch && isOverrideOrDefault && baseTypeMatch().IsSome && parameterMatch()
               allmatch
             | _ -> false
-
         | :? FSharpEntity as ent -> 
             match symbolUse.Symbol with
             | :? FSharpEntity as fse ->
@@ -507,7 +507,6 @@ type LanguageService(dirtyNotify) as x=
                     basetype.TypeDefinition.IsEffectivelySameAs ent
                 | _ -> false
             | _ -> false
-
         | _ -> false
       with ex ->
         false
@@ -528,7 +527,7 @@ type LanguageService(dirtyNotify) as x=
         |> Async.map Array.concat
       
       let filteredSymbols = allSymbolUses |> Array.filter predicate 
-              
+
       return filteredSymbols }
 
   /// Get all overloads derived from the specified symbol in the current project
@@ -561,7 +560,6 @@ type LanguageService(dirtyNotify) as x=
     let predicate (symbolUse: FSharpSymbolUse) =
       try
         match symbolAtCaret with
-
         | :? FSharpEntity as caretEntity ->
             match symbolUse.Symbol with
             | :? FSharpMemberOrFunctionOrValue as mfv ->
@@ -586,19 +584,19 @@ type LanguageService(dirtyNotify) as x=
         |> Async.Parallel
         |> Async.map Array.concat
       
-      let filteredSymbols = allSymbolUses |> Array.filter predicate 
-              
+      let filteredSymbols = allSymbolUses |> Array.filter predicate     
       return filteredSymbols }
 
   member x.ParseAndCheckProject options =
     checker.ParseAndCheckProject(options)
-                    
-  member x.GetAllProjectDeclarations options =
-    //clear cache on project change
-    match symbolCache.TryGetValue options with
+
+  member x.GetCachedProjectCheckResult projectfile =
+    //TODO clear cache on project invalidation
+    //should we?  Or just wait for the checker to finish which will update it anyway.
+    match checkProjectResultsCache.TryGetValue projectfile with
     | true, v -> Some v
     | false, _ -> None
-           
+
   /// This function is called when the project is know to have changed for reasons not encoded in the ProjectOptions
   /// e.g. dependent references have changed
   member x.InvalidateConfiguration(options) =
@@ -609,3 +607,5 @@ type LanguageService(dirtyNotify) as x=
   member x.ClearRootCaches() =
     LoggingService.LogDebug("LanguageService: Clearing root caches and finalizing transients")
     checker.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients()
+    checkProjectResultsCache.Clear()
+    x.ClearProjectInfoCache()
