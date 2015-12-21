@@ -32,20 +32,20 @@ module Search =
     
   let private filter tag (s:FSharpSymbolUse seq) =
     match tag with
-    | "type" | "t" | "c" -> s |> Seq.filter (is (|Constructor|_|))
+    | "type" | "t" | "c" -> s |> Seq.filter (is (|Class|_|))
     | "mod" -> s |> Seq.filter (is (|Module|_|))
-    | "s" ->   s |> Seq.filter (is (|ValueType|_|))
-    | "i" ->   s |> Seq.filter (is (|Interface|_|))
-    | "e" ->   s |> Seq.filter (is (|Enum|_|))
-    | "d" ->   s |> Seq.filter (is (|Delegate|_|))
-    | "u" ->   s |> Seq.filter (is (|Union|_|))
-    | "r" ->   s |> Seq.filter (is (|Record|_|))
+    | "s" -> s |> Seq.filter (is (|ValueType|_|))
+    | "i" -> s |> Seq.filter (is (|Interface|_|))
+    | "e" -> s |> Seq.filter (is (|Enum|_|))
+    | "d" -> s |> Seq.filter (is (|Delegate|_|))
+    | "u" -> s |> Seq.filter (is (|Union|_|))
+    | "r" -> s |> Seq.filter (is (|Record|_|))
     | "member" | "m" -> s |> Seq.filter (is (|Method|_|))
-    | "p" ->   s |> Seq.filter (is (|Property|_|))
-    | "f" ->   s |> Seq.filter (is (|Field|_|))
-    | "ap" ->  s |> Seq.filter (is (|ActivePattern|_|))
-    | "op" ->  s |> Seq.filter (is (|Operator|_|))
-    | _ ->     s
+    | "p" -> s |> Seq.filter (is (|Property|_|))
+    | "f" -> s |> Seq.filter (is (|Field|_|))
+    | "ap" -> s |> Seq.filter (is (|ActivePattern|_|))
+    | "op" -> s |> Seq.filter (is (|Operator|_|))
+    | _ -> s
 
   let byTag tag (items: FSharpSymbolUse seq) =
       let filtered = items |> filter tag
