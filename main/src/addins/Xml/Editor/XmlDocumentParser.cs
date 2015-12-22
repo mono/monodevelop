@@ -27,36 +27,42 @@
 //
 
 using System;
-using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Xml.Parser;
-using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Xml.Editor
 {
 	class XmlDocumentParser : TypeSystemParser
 	{
-		public override System.Threading.Tasks.Task<ParsedDocument> Parse (ParseOptions parseOptions, System.Threading.CancellationToken cancellationToken)
+		public override Task<ParsedDocument> Parse (ParseOptions options, CancellationToken cancellationToken)
 		{
-			var doc = new XmlParsedDocument (parseOptions.FileName);
+			return Task.Run (() => ParseInternal (options, cancellationToken));
+		}
+
+		ParsedDocument ParseInternal (ParseOptions options, CancellationToken cancellationToken)
+		{
+			var doc = new XmlParsedDocument (options.FileName);
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;
+			var xmlParser = new XmlParser (new XmlRootState (), true);
+
 			try {
-				var xmlParser = new XmlParser (new XmlRootState (), true);
-				xmlParser.Parse (parseOptions.Content.CreateReader ());
-				doc.XDocument = xmlParser.Nodes.GetRoot ();
-				// TODO error conversion!
-				//doc.Add (xmlParser.Errors);
-				
-				if (doc.XDocument != null && doc.XDocument.RootElement != null) {
-					if (!doc.XDocument.RootElement.IsEnded)
-						doc.XDocument.RootElement.End (xmlParser.Location);
-				}
+				xmlParser.Parse (options.Content.CreateReader ());
+			} catch (Exception ex) {
+				Core.LoggingService.LogError ("Unhandled error parsing xml document", ex);
 			}
-			catch (Exception ex) {
-				MonoDevelop.Core.LoggingService.LogError ("Unhandled error parsing xml document", ex);
+
+			doc.XDocument = xmlParser.Nodes.GetRoot ();
+			doc.AddRange (xmlParser.Errors);
+
+			if (doc.XDocument != null && doc.XDocument.RootElement != null) {
+				if (!doc.XDocument.RootElement.IsEnded)
+					doc.XDocument.RootElement.End (xmlParser.Location);
 			}
-			return System.Threading.Tasks.Task.FromResult((ParsedDocument)doc);
+
+			return doc;
 		}
 	}
 }
