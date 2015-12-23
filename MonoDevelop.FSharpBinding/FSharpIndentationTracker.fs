@@ -61,4 +61,6 @@ type FSharpIndentationTracker(data:TextEditor) =
         with
         | ex ->   LoggingService.LogError ("FSharpIndentationTracker", ex)
                   ""
+
+    override x.SupportedFeatures = IndentatitonTrackerFeatures.None
        
