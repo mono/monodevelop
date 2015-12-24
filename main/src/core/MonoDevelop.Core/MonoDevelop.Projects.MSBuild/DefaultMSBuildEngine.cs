@@ -50,6 +50,7 @@ namespace MonoDevelop.Projects.MSBuild
 		class ProjectInfo
 		{
 			public MSBuildProject Project;
+			public List<MSBuildPropertyGroup> ImportedConfigurations = new List<MSBuildPropertyGroup> ();
 			public List<MSBuildItemEvaluated> EvaluatedItemsIgnoringCondition = new List<MSBuildItemEvaluated> ();
 			public List<MSBuildItemEvaluated> EvaluatedItems = new List<MSBuildItemEvaluated> ();
 			public Dictionary<string,PropertyInfo> Properties = new Dictionary<string, PropertyInfo> ();
@@ -155,10 +156,37 @@ namespace MonoDevelop.Projects.MSBuild
 				EvaluateProject (pi, context);
 			}
 			finally {
+				// Before disposing all the imported projects we need to add all the imported configurations
+				// to the parent Project
+				MergeImportedConfigurations (pi, pi.Project);
+
 				foreach (var p in oldRefProjects)
 					UnloadProject (p);
 				DisposeImportedProjects (pi);
 				pi.ImportedProjects.Clear ();
+			}
+		}
+
+		void MergeImportedConfigurations (ProjectInfo pi, MSBuildProject parentProject)
+		{
+			List<MSBuildPropertyGroup> configurationsGroups = new List<MSBuildPropertyGroup> ();
+			GetImportedConfigurations (pi, configurationsGroups);
+
+			foreach (var config in configurationsGroups) {
+				var newPG = parentProject.AddNewPropertyGroup (true);
+				newPG.Condition = config.Condition;
+
+				foreach (var prop in config.GetProperties ()) {
+					newPG.SetValue (prop.Name, prop.Value, condition: prop.Condition);
+				}
+			}
+		}
+
+		void GetImportedConfigurations (ProjectInfo pi, List<MSBuildPropertyGroup> configs)
+		{
+			foreach (var p in pi.ImportedProjects.Values.SelectMany (i => i)) {
+				configs.AddRange (p.ImportedConfigurations);
+				GetImportedConfigurations (p, configs);
 			}
 		}
 
@@ -508,6 +536,12 @@ namespace MonoDevelop.Projects.MSBuild
 			var prefProject = new ProjectInfo { Project = pref };
 			AddImportedProject (project, import, prefProject);
 
+			// We need to get the pre-evaluated Configuration PropertyGroups so we can add them to the parent
+			foreach (var pg in pref.PropertyGroups) {
+				if (IsConfigCondition (pg.Condition))
+					prefProject.ImportedConfigurations.Add (pg);
+			}
+
 			var refCtx = new MSBuildEvaluationContext (context);
 
 			EvaluateProject (prefProject, refCtx, false);
@@ -516,6 +550,27 @@ namespace MonoDevelop.Projects.MSBuild
 				p.Value.IsImported = true;
 				project.Properties [p.Key] = p.Value;
 			}
+		}
+
+		bool IsConfigCondition (string cond)
+		{
+			if (string.IsNullOrEmpty (cond))
+				return false;
+
+			int i = cond.IndexOf ("==", StringComparison.Ordinal);
+			if (i == -1)
+				return false;
+
+			switch (cond.Substring (0, i).Trim ()) {
+			case "'$(Configuration)|$(Platform)'":
+				return true;
+			case "'$(Configuration)'":
+				return true;
+			case "'$(Platform)'":
+				return true;
+			}
+
+			return false;
 		}
 
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildChoose choose, bool evalItems)
