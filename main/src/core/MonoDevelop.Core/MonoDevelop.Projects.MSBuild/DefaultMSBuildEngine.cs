@@ -139,9 +139,13 @@ namespace MonoDevelop.Projects.MSBuild
 
 			pi.EvaluatedItemsIgnoringCondition.Clear ();
 			pi.EvaluatedItems.Clear ();
+			pi.ImportedConfigurations.Clear ();
 			pi.Properties.Clear ();
 			pi.Imports.Clear ();
 			pi.Targets.Clear ();
+
+			// Remove imported configurations so they don't get readded every time the project is evaluated
+			RemoveImportedConfigurations (pi);
 
 			// Unload referenced projects after evaluating to avoid unnecessary unload + load
 			var oldRefProjects = pi.ReferencedProjects;
@@ -167,6 +171,15 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
+		void RemoveImportedConfigurations (ProjectInfo pi)
+		{
+			foreach (var pgroup in pi.Project.PropertyGroups) {
+				if (pgroup.IsImported) {
+					pi.Project.RemovePropertyGroup (pgroup);
+				}
+			}
+		}
+
 		void MergeImportedConfigurations (ProjectInfo pi, MSBuildProject parentProject)
 		{
 			List<MSBuildPropertyGroup> configurationsGroups = new List<MSBuildPropertyGroup> ();
@@ -175,6 +188,7 @@ namespace MonoDevelop.Projects.MSBuild
 			foreach (var config in configurationsGroups) {
 				var newPG = parentProject.AddNewPropertyGroup (true);
 				newPG.Condition = config.Condition;
+				newPG.IsImported = true;
 
 				foreach (var prop in config.GetProperties ()) {
 					newPG.SetValue (prop.Name, prop.Value, condition: prop.Condition);

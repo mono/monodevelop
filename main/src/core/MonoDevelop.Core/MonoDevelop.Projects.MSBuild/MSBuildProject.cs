@@ -682,6 +682,17 @@ namespace MonoDevelop.Projects.MSBuild
 			NotifyChanged ();
 		}
 
+		public void RemovePropertyGroup (MSBuildPropertyGroup group)
+		{
+			AssertCanModify ();
+			if (group.ParentProject != this)
+				throw new InvalidOperationException ("Group belongs to different project");
+
+			ChildNodes = ChildNodes.Remove (group);
+
+			NotifyChanged ();
+		}
+
 		public IEnumerable<MSBuildObject> GetAllObjects ()
 		{
 			return ChildNodes.OfType<MSBuildObject> ();
