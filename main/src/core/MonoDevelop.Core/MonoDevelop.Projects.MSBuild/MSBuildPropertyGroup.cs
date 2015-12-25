@@ -77,6 +77,14 @@ namespace MonoDevelop.Projects.MSBuild
 			properties [prop.Name] = prop; // If a property is defined more than once, we only care about the last registered value
 		}
 
+		// Only write this element if it is not imported
+		internal override void Write (XmlWriter writer, WriteContext context)
+		{
+			if (!IsImported) {
+				base.Write (writer, context);
+			}
+		}
+
 		internal override string GetElementName ()
 		{
 			return "PropertyGroup";
