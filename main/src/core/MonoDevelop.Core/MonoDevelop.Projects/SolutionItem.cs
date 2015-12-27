@@ -664,10 +664,16 @@ namespace MonoDevelop.Projects
 			if (!visited.Add(item))
 				return;
 
-			referenced.Add (item);
+			// Only add a reference if it can be built for the current configuration
+			foreach (var config in item.Configurations) {
+				if (configuration.ToString () == config.Id) {
+					referenced.Add (item);
 
-			foreach (var ritem in item.GetReferencedItems (configuration))
-				GetBuildableReferencedItems (visited, referenced, ritem, configuration);
+					foreach (var ritem in item.GetReferencedItems (configuration)) {
+						GetBuildableReferencedItems (visited, referenced, ritem, configuration);
+					}
+				}
+			}
 		}
 
 		internal bool ContainsReferences (HashSet<SolutionItem> items, ConfigurationSelector conf)
