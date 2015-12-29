@@ -108,9 +108,6 @@ namespace MonoDevelop.Components.MainToolbar
 			IdeApp.ProjectOperations.CurrentSelectedSolutionChanged += HandleCurrentSelectedSolutionChanged;
 
 			AddinManager.ExtensionChanged += OnExtensionChanged;
-			MonoDevelopWorkspace.LoadingFinished += delegate {
-				HandleSearchEntryChanged (null, EventArgs.Empty);
-			};
 		}
 
 		public void Initialize ()
@@ -486,7 +483,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			var info = IdeApp.CommandService.GetCommand (Commands.NavigateTo);
 			ToolbarView.SearchPlaceholderMessage = !string.IsNullOrEmpty (info.AccelKey) ?
-				GettextCatalog.GetString ("Press '{0}' to search", KeyBindingManager.BindingToDisplayLabel (info.AccelKey, false)) :
+				GettextCatalog.GetString ("Press \u2018{0}\u2019 to search", KeyBindingManager.BindingToDisplayLabel (info.AccelKey, false)) :
 				GettextCatalog.GetString ("Search solution");
 		}
 
@@ -573,9 +570,9 @@ namespace MonoDevelop.Components.MainToolbar
 		void HandleSearchEntryKeyPressed (object sender, Xwt.KeyEventArgs e)
 		{
 			if (e.Key == Xwt.Key.Escape) {
+				DestroyPopup();
 				var doc = IdeApp.Workbench.ActiveDocument;
 				if (doc != null) {
-					DestroyPopup ();
 					doc.Select ();
 				}
 				return;
@@ -591,8 +588,11 @@ namespace MonoDevelop.Components.MainToolbar
 			IdeApp.Workbench.Present ();
 			var text = lastSearchText;
 			var actDoc = IdeApp.Workbench.ActiveDocument;
-			if (actDoc != null && actDoc.Editor.IsSomethingSelected)
-				text = actDoc.Editor.SelectedText;
+			if (actDoc != null && actDoc.Editor.IsSomethingSelected) {
+				string selected = actDoc.Editor.SelectedText;
+				int whitespaceIndex = selected.TakeWhile (c => !char.IsWhiteSpace (c)).Count ();
+				text = selected.Substring (0, whitespaceIndex);
+			}
 
 			ToolbarView.SearchText = text;
 			ToolbarView.FocusSearchBar ();

@@ -248,6 +248,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static Microsoft.CodeAnalysis.Project GetCodeAnalysisProject (MonoDevelop.Projects.Project project)
 		{
+			project = project.GetRealProject();
+
 			if (project == null)
 				throw new ArgumentNullException ("project");
 			foreach (var w in workspaces) {
@@ -288,8 +290,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var project = args.SolutionItem as MonoDevelop.Projects.Project;
 			if (project != null) {
-				var ws = GetWorkspace (project.ParentSolution);
-				await ws.AddProject (project);
+				Unload (project.ParentSolution);
+				await Load (project.ParentSolution,  new ProgressMonitor()); 
 			}
 		}
 

@@ -102,7 +102,7 @@ namespace MonoDevelop.VersionControl
 		{
 		}
 		
-		public override Annotation[] GetAnnotations (FilePath repositoryPath)
+		public override Annotation[] GetAnnotations (FilePath repositoryPath, Revision since)
 		{
 			return new Annotation[0];
 		}

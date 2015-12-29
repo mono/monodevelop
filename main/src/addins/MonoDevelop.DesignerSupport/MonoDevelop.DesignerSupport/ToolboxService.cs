@@ -184,7 +184,7 @@ namespace MonoDevelop.DesignerSupport
 							ctx.Dispose ();
 					}
 
-					DispatchService.GuiDispatch (delegate {
+					Runtime.RunInMainThread (delegate {
 						AddUserItems (nodes);
 						initializing--;
 						SaveConfiguration ();

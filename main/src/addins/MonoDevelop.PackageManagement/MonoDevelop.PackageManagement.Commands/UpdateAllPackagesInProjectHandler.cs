@@ -27,9 +27,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -40,7 +41,7 @@ namespace MonoDevelop.PackageManagement.Commands
 			try {
 				IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
 				RestoreBeforeUpdateAction.Restore (project, () => {
-					DispatchService.GuiSyncDispatch (() => Update (project));
+					Runtime.RunInMainThread (() => Update (project)).Wait ();
 				});
 			} catch (Exception ex) {
 				ShowStatusBarError (ex);

@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Gtk;
 using System.Linq;
 
@@ -271,6 +272,15 @@ namespace MonoDevelop.Components.AutoTest.Results
 				}
 			}
 			return false;
+		}
+
+		public override void SetProperty (string propertyName, object value)
+		{
+			if (resultIter.HasValue) {
+				var modelValue = TModel.GetValue ((TreeIter)resultIter, Column);
+
+				SetProperty (modelValue, propertyName, value);
+			}
 		}
 	}
 }

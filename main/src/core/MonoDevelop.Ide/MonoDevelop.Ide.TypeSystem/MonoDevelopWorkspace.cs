@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				IdeApp.Workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
 			}
 			if (currentMonoDevelopSolution != null) {
-				foreach (var prj in currentMonoDevelopSolution.GetAllProjects ()) {
+				foreach (var prj in currentMonoDevelopSolution.GetAllProjects ().Select(x => x.GetRealProject())) {
 					UnloadMonoProject (prj);
 				}
 				currentMonoDevelopSolution = null;
@@ -180,11 +180,16 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		}
 
+		static bool SupportsRoslyn (MonoDevelop.Projects.Project proj)
+		{
+			return string.Equals (proj.TypeGuid, "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", StringComparison.OrdinalIgnoreCase) || string.Equals (proj.TypeGuid, "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}", StringComparison.OrdinalIgnoreCase);
+		}
+
 		SolutionData solutionData;
 		async Task<SolutionInfo> CreateSolutionInfo (MonoDevelop.Projects.Solution solution, CancellationToken token)
 		{
 			var projects = new ConcurrentBag<ProjectInfo> ();
-			var mdProjects = solution.GetAllProjects ();
+			var mdProjects = solution.GetAllProjects ().Select(x => x.GetRealProject()).ToList();
 			projectionList.Clear ();
 			solutionData = new SolutionData ();
 
@@ -192,6 +197,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			foreach (var proj in mdProjects) {
 				if (token.IsCancellationRequested)
 					return null;
+				if (!SupportsRoslyn (proj))
+					continue;
 				var tp = LoadProject (proj, token).ContinueWith (t => {
 					if (!t.IsCanceled)
 						projects.Add (t.Result);
@@ -687,26 +694,15 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out isOpen);
-			var changes = text.GetTextChanges (document.GetTextAsync ().Result).OrderByDescending (c => c.Span.Start).ToList ();
-
+			var oldFile = isOpen ? document.GetTextAsync ().Result : new MonoDevelopSourceText (data);
+			var changes = text.GetTextChanges (oldFile).OrderByDescending (c => c.Span.Start).ToList ();
 			int delta = 0;
-			foreach (var change in changes) {
-				var offset = change.Span.Start;
-
-				if (projection != null) {
-					int originalOffset;
-					if (projection.TryConvertFromProjectionToOriginal (offset, out originalOffset))
-						offset = originalOffset;
-				}
-
-				data.ReplaceText (offset, change.Span.Length, change.NewText);
-				delta += change.Span.Length - change.NewText.Length;
-			}
-
 			if (!isOpen) {
-				var formatter = CodeFormatterService.GetFormatter (data.MimeType); 
+				delta = ApplyChanges (projection, data, changes);
+				var formatter = CodeFormatterService.GetFormatter (data.MimeType);
 				var mp = GetMonoProject (CurrentSolution.GetProject (id.ProjectId));
 				string currentText = data.Text;
+
 				foreach (var change in changes) {
 					delta -= change.Span.Length - change.NewText.Length;
 					var startOffset = change.Span.Start - delta;
@@ -727,29 +723,58 @@ namespace MonoDevelop.Ide.TypeSystem
 					data.ReplaceText (startOffset, change.NewText.Length, str);
 				}
 				data.Save ();
+				OnDocumentTextChanged (id, new MonoDevelopSourceText (data), PreservationMode.PreserveValue);
 				FileService.NotifyFileChanged (filePath);
 			} else {
 				var formatter = CodeFormatterService.GetFormatter (data.MimeType); 
 				var documentContext = IdeApp.Workbench.Documents.FirstOrDefault (d => FilePath.PathComparer.Compare (d.FileName, filePath) == 0);
 				if (documentContext != null) {
-					foreach (var change in changes) {
-						delta -= change.Span.Length - change.NewText.Length;
-						var startOffset = change.Span.Start - delta;
-							
-						if (projection != null) {
-							int originalOffset;
-							if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
-								startOffset = originalOffset;
-						}
-						if (change.NewText.Length == 0) {
-							formatter.OnTheFlyFormat ((TextEditor)data, documentContext, TextSegment.FromBounds (Math.Max (0, startOffset - 1), Math.Min (data.Length, startOffset + 1)));
-						} else {
-								formatter.OnTheFlyFormat ((TextEditor)data, documentContext, new TextSegment (startOffset, change.NewText.Length));
+					var editor = (TextEditor)data;
+					using (var undo = editor.OpenUndoGroup ()) {
+						delta = ApplyChanges (projection, data, changes);
+
+						foreach (var change in changes) {
+							delta -= change.Span.Length - change.NewText.Length;
+							var startOffset = change.Span.Start - delta;
+
+							if (projection != null) {
+								int originalOffset;
+								if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
+									startOffset = originalOffset;
+							}
+							if (change.NewText.Length == 0) {
+								formatter.OnTheFlyFormat (editor, documentContext, TextSegment.FromBounds (Math.Max (0, startOffset - 1), Math.Min (data.Length, startOffset + 1)));
+							} else {
+								formatter.OnTheFlyFormat (editor, documentContext, new TextSegment (startOffset, change.NewText.Length));
+							}
 						}
 					}
 				}
+				OnDocumentTextChanged (id, new MonoDevelopSourceText(data.CreateDocumentSnapshot ()), PreservationMode.PreserveValue);
+				Runtime.RunInMainThread (() => {
+					if (IdeApp.Workbench != null)
+						foreach (var w in IdeApp.Workbench.Documents)
+							w.StartReparseThread ();
+				});
 			}
-			OnDocumentTextChanged (id, new MonoDevelopSourceText(data), PreservationMode.PreserveValue);
+		}
+
+		static int ApplyChanges (Projection projection, ITextDocument data, List<TextChange> changes)
+		{
+			int delta = 0;
+			foreach (var change in changes) {
+				var offset = change.Span.Start;
+
+				if (projection != null) {
+					int originalOffset;
+					if (projection.TryConvertFromProjectionToOriginal (offset, out originalOffset))
+						offset = originalOffset;
+				}
+				data.ReplaceText (offset, change.Span.Length, change.NewText);
+				delta += change.Span.Length - change.NewText.Length;
+			}
+
+			return delta;
 		}
 
 		protected override void ApplyDocumentAdded (DocumentInfo info, SourceText text)
@@ -850,11 +875,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 
 			}
-		}
-
-		public async Task AddProject (MonoDevelop.Projects.Project project)
-		{
-			await LoadProject (project, default(CancellationToken)).ConfigureAwait (false);
 		}
 
 		public void RemoveProject (MonoDevelop.Projects.Project project)

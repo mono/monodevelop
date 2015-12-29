@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		                                
 		public MultiTaskProgressDialog (bool allowCancel, bool showDetails, IDictionary<string, string> taskLabelAliases)
 		{
-			DispatchService.AssertGuiThread ();
+			Runtime.AssertMainThread ();
 			this.Build();
 			this.allowCancel = allowCancel;
 			

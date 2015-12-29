@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="WindowsPlatform.MainToolbar.IconButtonControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WindowsPlatform.MainToolbar"
+             xmlns:platform="clr-namespace:WindowsPlatform"
+             mc:Ignorable="d"
+             Background="Transparent" BorderBrush="Transparent">
+    <Button Click="OnClick" FocusVisualStyle="{x:Null}" UseLayoutRounding="True" Focusable="{Binding Focusable}"
+			Background="{Binding Background}" BorderBrush="{Binding BorderBrush}" Width="24" Height="24">
+        <Button.Template>
+            <ControlTemplate TargetType="Button">
+                <Border UseLayoutRounding="True"
+		            BorderThickness="{TemplateBinding BorderThickness}"
+		            Background="{TemplateBinding Background}"
+		            BorderBrush="{TemplateBinding BorderBrush}">
+                    <ContentPresenter />
+                </Border>
+            </ControlTemplate>
+        </Button.Template>
+        <Image x:Name="RunIcon" Source="{Binding CurrentImage}" UseLayoutRounding="True"
+    		MouseLeftButtonDown="OnMouseLeftButtonDown" Width="24" Height="24" Margin="-1" />
+    </Button>
+</UserControl>

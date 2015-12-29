@@ -176,8 +176,6 @@ namespace MonoDevelop.Ide.Projects
 			return errorMessage;
 		}
 
-		static readonly char [] InvalidProjectNameCharacters = "&<*;?>%:#|".ToCharArray ();
-
 		public static bool IsValidProjectName (string name)
 		{
 			return IsValidSolutionName (name) &&
@@ -186,9 +184,23 @@ namespace MonoDevelop.Ide.Projects
 
 		public static bool IsValidSolutionName (string name)
 		{
-			return FileService.IsValidPath (name) && 
-				FileService.IsValidFileName (name) && 
-				name.IndexOfAny (InvalidProjectNameCharacters) < 0;
+			return FileService.IsValidPath (name) &&
+				FileService.IsValidFileName (name) &&
+				HasValidProjectNameCharacters (name);
+		}
+
+		static bool HasValidProjectNameCharacters (string name)
+		{
+			foreach (char c in name.ToCharArray ()) {
+				if (!IsValidProjectNameCharacter (c))
+					return false;
+			}
+			return true;
+		}
+
+		static bool IsValidProjectNameCharacter (char c)
+		{
+			return Char.IsLetterOrDigit (c) || c == '.' || c == '_';
 		}
 
 		bool CreateSeparateSolutionDirectory {

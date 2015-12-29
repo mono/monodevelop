@@ -221,14 +221,14 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		protected virtual void OnButtonSetDefaultBranchClicked (object sender, EventArgs e)
+		protected virtual async void OnButtonSetDefaultBranchClicked (object sender, EventArgs e)
 		{
 			TreeIter it;
 			if (!listBranches.Selection.GetSelected (out it))
 				return;
 			var b = (Branch) storeBranches.GetValue (it, 0);
-			GitService.SwitchToBranch (repo, b.FriendlyName);
-			FillBranches ();
+			if (await GitService.SwitchToBranch (repo, b.FriendlyName))
+				FillBranches ();
 		}
 
 		protected virtual void OnButtonAddRemoteClicked (object sender, EventArgs e)

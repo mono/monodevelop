@@ -38,7 +38,7 @@ using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core.Execution;
 using System.Threading.Tasks;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -537,14 +537,6 @@ namespace MonoDevelop.Projects
 			set {
 				defaultConfiguration = value;
 				UpdateDefaultConfigurations ();
-			}
-		}
-
-		public ConfigurationSelector DefaultConfigurationSelector {
-			get {
-				if (defaultConfiguration == null && configurations.Count > 0)
-					DefaultConfigurationId = configurations [0].Id;
-				return new SolutionConfigurationSelector (DefaultConfigurationId);
 			}
 		}
 

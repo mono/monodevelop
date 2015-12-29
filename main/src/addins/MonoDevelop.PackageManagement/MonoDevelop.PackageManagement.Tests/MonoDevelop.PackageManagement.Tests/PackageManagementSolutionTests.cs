@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.PackageManagement.Tests.Helpers;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 using NUnit.Framework;
 
@@ -101,7 +101,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void GetActiveProject_ProjectIsSelected_CreatesProjectUsingCurrentProjectSelectedInSharpDevelop ()
+		public void GetActiveProject_ProjectIsSelected_CreatesProjectUsingCurrentProjectSelectedInMonoDevelop ()
 		{
 			CreateSolution ();
 
@@ -196,7 +196,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateSolution ();
 			FakeDotNetProject expectedProject = AddProjectToOpenProjects ("Test");
-			var source = new PackageSource ("http://sharpdevelop.net");
+			var source = new PackageSource ("http://monodevelop.net");
 
 			solution.GetProject (source, "Test");
 
@@ -210,7 +210,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateSolution ();
 			FakeDotNetProject expectedProject = AddProjectToOpenProjects ("Test");
-			var source = new PackageSource ("http://sharpdevelop.net");
+			var source = new PackageSource ("http://monodevelop.net");
 
 			solution.GetProject (source, "TEST");
 
@@ -224,7 +224,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateSolution ();
 			AddProjectToOpenProjects ("Test");
-			var source = new PackageSource ("http://sharpdevelop.net");
+			var source = new PackageSource ("http://monodevelop.net");
 			IPackageManagementProject project = solution.GetProject (source, "Test");
 
 			FakePackageManagementProject expectedProject = fakeProjectFactory.FirstFakeProjectCreated;
@@ -237,7 +237,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateSolution ();
 			AddProjectToOpenProjects ("Test");
-			var expectedSource = new PackageSource ("http://sharpdevelop.net");
+			var expectedSource = new PackageSource ("http://monodevelop.net");
 			solution.GetProject (expectedSource, "Test");
 
 			PackageSource actualSource = fakeRegisteredPackageRepositories.PackageSourcePassedToCreateRepository;

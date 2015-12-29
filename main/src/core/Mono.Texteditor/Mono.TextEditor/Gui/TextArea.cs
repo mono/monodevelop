@@ -1775,6 +1775,8 @@ namespace Mono.TextEditor
 		
 		internal void SetAdjustments ()
 		{
+			if (textEditorData == null)
+				return;
 			SetAdjustments (Allocation);
 		}
 		
@@ -1963,7 +1965,7 @@ namespace Mono.TextEditor
 		
 		public Mono.TextEditor.Highlighting.ColorScheme ColorStyle {
 			get {
-				return this.textEditorData.ColorStyle;
+				return this.textEditorData?.ColorStyle;
 			}
 		}
 		

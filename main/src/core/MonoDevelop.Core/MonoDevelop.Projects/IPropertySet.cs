@@ -27,7 +27,7 @@ using System;
 using System.Xml;
 using MonoDevelop.Core;
 using System.Xml.Linq;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using System.Collections.Generic;
 
 namespace MonoDevelop.Projects

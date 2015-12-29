@@ -44,7 +44,7 @@ namespace MonoDevelop.WebReferences.WS
 			UpdateFromURL = url;
 		}
 
-		protected override void Read (Project project, MonoDevelop.Projects.Formats.MSBuild.IMSBuildItemEvaluated buildItem)
+		protected override void Read (Project project, MonoDevelop.Projects.MSBuild.IMSBuildItemEvaluated buildItem)
 		{
 			base.Read (project, buildItem);
 		}

@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Extensions;
@@ -34,7 +34,7 @@ using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.CSharp.Project
 {
-	class CSharpProject: DotNetProject, ICSharpProject
+	public class CSharpProject: DotNetProject, ICSharpProject
 	{
 		[ItemProperty ("StartupObject", DefaultValue = "")]
 		string mainclass = string.Empty;

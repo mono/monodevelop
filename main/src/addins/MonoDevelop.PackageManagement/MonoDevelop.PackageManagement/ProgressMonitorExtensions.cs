@@ -36,7 +36,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		public static void ShowPackageConsole (this ProgressMonitor monitor)
 		{
-			DispatchService.GuiDispatch (() => {
+			Runtime.RunInMainThread (() => {
 				var aggregatedMonitor = (PackageManagementProgressMonitor)monitor;
 				Pad pad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (aggregatedMonitor.ConsoleMonitor);
 				if (pad != null) {

@@ -44,7 +44,7 @@ using MonoDevelop.Projects.Extensions;
 using Mono.Addins;
 using System.Linq;
 using System.Threading.Tasks;
-using MonoDevelop.Projects.Formats.MD1;
+using MonoDevelop.Projects.MD1;
 
 namespace MonoDevelop.Projects
 {

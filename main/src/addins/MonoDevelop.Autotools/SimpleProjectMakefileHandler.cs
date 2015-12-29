@@ -297,8 +297,10 @@ namespace MonoDevelop.Autotools
 					{
 						if (reference.ReferenceType != ReferenceType.Project)
 							continue;
-						Project refp = GetProjectFromName (reference.Reference, ctx.TargetSolution);
-
+						Project refp = reference.ResolveProject (ctx.TargetSolution);
+						if (refp == null) {
+							throw new Exception (GettextCatalog.GetString ("Couldn't find referenced project '{0}'", reference.Reference));
+						}
 						if (!(refp is DotNetProject))
 							continue;
 						
@@ -771,18 +773,6 @@ endif", s.SwitchName.Replace ('-', '_').ToUpperInvariant (), s.Define));
 
 			dict [extName] = filePath;
 			return extName;
-		}
-
-		Project GetProjectFromName (string name, Solution targetSolution)
-		{
-			Project refp = null;
-			if (targetSolution != null) refp = targetSolution.FindProjectByName (name);
-
-			if (refp == null)
-				throw new Exception ( GettextCatalog.GetString ("Couldn't find referenced project '{0}'", 
-							name ) );
-			
-			return refp;
 		}
 	}
 	

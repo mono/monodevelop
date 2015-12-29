@@ -1,5 +1,5 @@
 ﻿//
-// SharpDevelopPackageManagerFactoryTests.cs
+// MonoDevelopPackageManagerFactoryTests.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 using NUnit.Framework;
 using MonoDevelop.PackageManagement.Tests.Helpers;
@@ -35,7 +35,7 @@ namespace MonoDevelop.PackageManagement.Tests
 	[TestFixture]
 	public class MonoDevelopPackageManagerFactoryTests
 	{
-		SharpDevelopPackageManagerFactory factory;
+		MonoDevelopPackageManagerFactory factory;
 		IPackageManager packageManager;
 		FakePackageRepository fakePackageRepository;
 		FakeDotNetProject testProject;
@@ -48,7 +48,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			options = new TestablePackageManagementOptions ();
 			fakePackageRepositoryFactory = new FakePackageRepositoryFactory ();
 			fakeProjectSystemFactory = new FakeProjectSystemFactory ();
-			factory = new SharpDevelopPackageManagerFactory (fakePackageRepositoryFactory, fakeProjectSystemFactory, options);
+			factory = new MonoDevelopPackageManagerFactory (fakePackageRepositoryFactory, fakeProjectSystemFactory, options);
 		}
 
 		void CreateTestProject ()
@@ -131,8 +131,8 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			string expectedDirectory = @"c:\projects\MyProject\packages\TestPackage.1.0.0.0".ToNativePath ();
 
-			SharpDevelopPackageManager sharpDevelopPackageManager = packageManager as SharpDevelopPackageManager;
-			string actualDirectory = sharpDevelopPackageManager.PathResolver.GetInstallPath (package);
+			MonoDevelopPackageManager monoDevelopPackageManager = packageManager as MonoDevelopPackageManager;
+			string actualDirectory = monoDevelopPackageManager.PathResolver.GetInstallPath (package);
 
 			Assert.AreEqual (expectedDirectory, actualDirectory);
 		}

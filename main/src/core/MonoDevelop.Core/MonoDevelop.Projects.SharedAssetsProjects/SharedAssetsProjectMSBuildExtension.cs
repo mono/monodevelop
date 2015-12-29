@@ -28,7 +28,7 @@ using System.Linq;
 using System.IO;
 using MonoDevelop.Core;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects.SharedAssetsProjects
 {

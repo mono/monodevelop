@@ -4,7 +4,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using System.Xml;
 using System.IO;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Deployment.Linux
 {

@@ -26,7 +26,7 @@
 
 using System;
 using System.IO;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 using MonoDevelop.Core;
 

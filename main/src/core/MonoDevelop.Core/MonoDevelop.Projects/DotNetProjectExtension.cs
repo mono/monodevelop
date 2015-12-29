@@ -29,7 +29,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -47,11 +47,33 @@ namespace MonoDevelop.Projects
 
 		internal protected override bool SupportsObject (WorkspaceObject item)
 		{
-			return base.SupportsObject (item) && (item is DotNetProject);
+			if (base.SupportsObject (item)) {
+				if (item is DotNetProject) {
+					return true;
+				}
+
+				var project = item as Project;
+				if (project != null) {
+					return project.GetRealProject() is DotNetProject;
+				}
+			}
+
+			return false;
 		}
 
 		new public DotNetProject Project {
-			get { return (DotNetProject)base.Item; }
+			get {
+				if (base.Item is DotNetProject) {
+					return (DotNetProject)base.Item;
+				}
+
+				var project = base.Item as Project;
+				if (project.GetRealProject() is DotNetProject) {
+					return (DotNetProject)project.GetRealProject();
+				}
+
+				throw new InvalidOperationException();
+			}
 		}
 
 
@@ -100,6 +122,11 @@ namespace MonoDevelop.Projects
 		internal protected virtual string OnGetDefaultResourceId (ProjectFile projectFile)
 		{
 			return next.OnGetDefaultResourceId (projectFile);
+		}
+
+		internal protected virtual Task OnExecuteCommand (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, ExecutionCommand executionCommand)
+		{
+			return next.OnExecuteCommand (monitor, context, configuration, executionCommand);
 		}
 
 		#region Framework management

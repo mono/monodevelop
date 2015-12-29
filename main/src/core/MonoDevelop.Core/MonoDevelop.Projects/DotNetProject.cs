@@ -36,14 +36,14 @@ using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects.Policies;
-using MonoDevelop.Projects.Formats.MD1;
+using MonoDevelop.Projects.MD1;
 using MonoDevelop.Projects.Extensions;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using MonoDevelop.Core.Assemblies;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Collections.Immutable;
-using MonoDevelop.Projects.Formats.MSBuild.Conditions;
+using MonoDevelop.Projects.MSBuild.Conditions;
 
 namespace MonoDevelop.Projects
 {
@@ -667,7 +667,7 @@ namespace MonoDevelop.Projects
 					continue;
 
 				if (ParentSolution != null && projectReference.ReferenceType == ReferenceType.Project) {
-					DotNetProject p = ParentSolution.FindProjectByName (projectReference.Reference) as DotNetProject;
+					DotNetProject p = projectReference.ResolveProject (ParentSolution) as DotNetProject;
 
 					if (p == null) {
 						LoggingService.LogWarning ("Project '{0}' referenced from '{1}' could not be found", projectReference.Reference, this.Name);
@@ -1440,39 +1440,46 @@ namespace MonoDevelop.Projects
 		protected async override Task DoExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			DotNetProjectConfiguration dotNetProjectConfig = GetConfiguration (configuration) as DotNetProjectConfiguration;
+			if (dotNetProjectConfig == null) {
+				monitor.ReportError (GettextCatalog.GetString ("Configuration '{0}' not found in project '{1}'", configuration, Name), null);
+				return;
+			}
+
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Running {0} ...", dotNetProjectConfig.CompiledOutputName));
 
-			OperationConsole console = dotNetProjectConfig.ExternalConsole
-				? context.ExternalConsoleFactory.CreateConsole (!dotNetProjectConfig.PauseConsoleOutput, monitor.CancellationToken)
-				: context.ConsoleFactory.CreateConsole (monitor.CancellationToken);
+			ExecutionCommand executionCommand = CreateExecutionCommand (configuration, dotNetProjectConfig);
+			if (context.ExecutionTarget != null)
+				executionCommand.Target = context.ExecutionTarget;
+
+			if (!context.ExecutionHandler.CanExecute (executionCommand)) {
+				monitor.ReportError (GettextCatalog.GetString ("Can not execute \"{0}\". The selected execution mode is not supported for .NET projects.", dotNetProjectConfig.CompiledOutputName), null);
+				return;
+			}
 
 			try {
-				try {
-					ExecutionCommand executionCommand = CreateExecutionCommand (configuration, dotNetProjectConfig);
-					if (context.ExecutionTarget != null)
-						executionCommand.Target = context.ExecutionTarget;
-
-					if (!context.ExecutionHandler.CanExecute (executionCommand)) {
-						monitor.ReportError (GettextCatalog.GetString ("Can not execute \"{0}\". The selected execution mode is not supported for .NET projects.", dotNetProjectConfig.CompiledOutputName), null);
-						return;
-					}
-
-					ProcessAsyncOperation asyncOp = context.ExecutionHandler.Execute (executionCommand, console);
-					var stopper = monitor.CancellationToken.Register (asyncOp.Cancel);
-
-					await asyncOp.Task;
-
-					stopper.Dispose ();
-
-					monitor.Log.WriteLine (GettextCatalog.GetString ("The application exited with code: {0}", asyncOp.ExitCode));
-				} finally {
-					console.Dispose ();
-				}
+				await ProjectExtension.OnExecuteCommand (monitor, context, configuration, executionCommand);
 			} catch (Exception ex) {
 				LoggingService.LogError (string.Format ("Cannot execute \"{0}\"", dotNetProjectConfig.CompiledOutputName), ex);
 				monitor.ReportError (GettextCatalog.GetString ("Cannot execute \"{0}\"", dotNetProjectConfig.CompiledOutputName), ex);
 			}
 		}
+
+		protected virtual async Task OnExecuteCommand (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, ExecutionCommand executionCommand)
+		{
+			var dotNetProjectConfig = GetConfiguration (configuration) as DotNetProjectConfiguration;
+			var console = dotNetProjectConfig.ExternalConsole
+			                                                  ? context.ExternalConsoleFactory.CreateConsole (!dotNetProjectConfig.PauseConsoleOutput, monitor.CancellationToken)
+			                                                  : context.ConsoleFactory.CreateConsole (monitor.CancellationToken);
+			using (console) {
+				ProcessAsyncOperation asyncOp = context.ExecutionHandler.Execute (executionCommand, console);
+
+				using (var stopper = monitor.CancellationToken.Register (asyncOp.Cancel))
+					await asyncOp.Task;
+
+				monitor.Log.WriteLine (GettextCatalog.GetString ("The application exited with code: {0}", asyncOp.ExitCode));
+			}
+		}
+
 
 		protected override void OnReadProjectHeader (ProgressMonitor monitor, MSBuildProject msproject)
 		{
@@ -1595,6 +1602,11 @@ namespace MonoDevelop.Projects
 			internal protected override string OnGetDefaultResourceId (ProjectFile projectFile)
 			{
 				return Project.OnGetDefaultResourceId (projectFile);
+			}
+
+			internal protected override Task OnExecuteCommand (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, ExecutionCommand executionCommand)
+			{
+				return Project.OnExecuteCommand (monitor, context, configuration, executionCommand);
 			}
 
 			#region Framework management

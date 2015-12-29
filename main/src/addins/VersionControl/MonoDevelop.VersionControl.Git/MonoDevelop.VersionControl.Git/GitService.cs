@@ -118,21 +118,23 @@ namespace MonoDevelop.VersionControl.Git
 				MessageService.ShowCustomDialog (dlg);
 		}
 
-		public static void SwitchToBranch (GitRepository repo, string branch)
+		public async static Task<bool> SwitchToBranch (GitRepository repo, string branch)
 		{
 			var monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			try {
 				IdeApp.Workbench.AutoReloadDocuments = true;
 				IdeApp.Workbench.LockGui ();
-				Task.Run (delegate {
+				var t = await Task.Run (delegate {
 					try {
-						repo.SwitchToBranch (monitor, branch);
+						return repo.SwitchToBranch (monitor, branch);
 					} catch (Exception ex) {
 						monitor.ReportError ("Branch switch failed", ex);
+						return false;
 					} finally {
 						monitor.Dispose ();
 					}
-				}).Wait ();
+				});
+				return t;
 			} finally {
 				IdeApp.Workbench.AutoReloadDocuments = false;
 				IdeApp.Workbench.UnlockGui ();
@@ -165,13 +167,13 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			if (status == StashApplyStatus.Conflicts) {
 				string msg = GettextCatalog.GetString ("Stash applied with conflicts");
-				DispatchService.GuiDispatch (delegate {
+				Runtime.RunInMainThread (delegate {
 					IdeApp.Workbench.StatusBar.ShowWarning (msg);
 				});
 			}
 			else {
 				string msg = GettextCatalog.GetString ("Stash successfully applied");
-				DispatchService.GuiDispatch (delegate {
+				Runtime.RunInMainThread (delegate {
 					IdeApp.Workbench.StatusBar.ShowMessage (msg);
 				});
 			}

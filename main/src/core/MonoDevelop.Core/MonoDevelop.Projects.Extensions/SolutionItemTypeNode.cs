@@ -29,7 +29,7 @@ using System;
 using System.IO;
 using System.Xml;
 using Mono.Addins;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
 using MonoDevelop.Core.ProgressMonitoring;
