@@ -768,6 +768,43 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("foo", sol.UserProperties.GetValue<string> ("SolProp"));
 			Assert.AreEqual ("bar", p.UserProperties.GetValue<string> ("ProjectProp"));
 		}
+
+		/// <summary>
+		/// With a PCL project having no references if you add a reference, then remove, then add it
+		/// again then the saved project file will end up no references.
+		/// </summary>
+		[Test]
+		public async Task AddingRemovingAndThenAddingReferenceToPortableLibrarySavesReferenceToFile ()
+		{
+			string solFile = Util.GetSampleProject ("portable-library", "portable-library.sln");
+
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = sol.FindProjectByName ("PortableLibrary") as DotNetProject;
+
+			Assert.AreEqual (0, p.References.Count);
+
+			// Add System.Xml reference.
+			p.References.Add (ProjectReference.CreateAssemblyReference ("System.Xml"));
+			await p.SaveAsync (Util.GetMonitor ());
+			Assert.AreEqual (1, p.References.Count);
+
+			// Remove System.Xml reference so no references remain.
+			p.References.RemoveAt (0);
+			await p.SaveAsync (Util.GetMonitor ());
+			Assert.AreEqual (0, p.References.Count);
+
+			// Add System.Xml reference again.
+			p.References.Add (ProjectReference.CreateAssemblyReference ("System.Xml"));
+			await p.SaveAsync (Util.GetMonitor ());
+			Assert.AreEqual (1, p.References.Count);
+
+			// Ensure the references are saved to the file.
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			p = sol.FindProjectByName ("PortableLibrary") as DotNetProject;
+
+			Assert.AreEqual (1, p.References.Count);
+			Assert.AreEqual ("System.Xml", p.References[0].Include);
+		}
 	}
 
 	class SerializedSaveTestExtension: SolutionItemExtension

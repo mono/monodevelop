@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 using NUnit.Framework;
 using MonoDevelop.PackageManagement.Tests.Helpers;
@@ -62,7 +62,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateCacheUsingPackageSources (fakePackageRepositoryFactory);
 		}
 
-		void CreateCacheUsingPackageSources (ISharpDevelopPackageRepositoryFactory repositoryFactory)
+		void CreateCacheUsingPackageSources (IMonoDevelopPackageRepositoryFactory repositoryFactory)
 		{
 			nuGetPackageSource = new PackageSource ("http://nuget.org", "NuGet");
 			machineCache = new FakePackageRepository ();
@@ -92,10 +92,10 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void CreateRepository_CacheCastToISharpDevelopPackageRepositoryFactory_CreatesPackageRepositoryUsingPackageRepositoryFactoryPassedInConstructor ()
+		public void CreateRepository_CacheCastToIMonoDevelopPackageRepositoryFactory_CreatesPackageRepositoryUsingPackageRepositoryFactoryPassedInConstructor ()
 		{
 			CreateCache ();
-			var factory = cache as ISharpDevelopPackageRepositoryFactory;
+			var factory = cache as IMonoDevelopPackageRepositoryFactory;
 			IPackageRepository repository = factory.CreateRepository (nuGetPackageSource.Source);
 
 			Assert.AreEqual (fakePackageRepositoryFactory.FakePackageRepository, repository);
@@ -451,7 +451,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			packageSourcesHelper.RegisteredPackageSources.Clear ();
 			var invalidPackageSource = new PackageSource (String.Empty, "InvalidSource");
 			packageSourcesHelper.RegisteredPackageSources.Add (invalidPackageSource);
-			var factory = new SharpDevelopPackageRepositoryFactory ();
+			var factory = new MonoDevelopPackageRepositoryFactory ();
 			CreateCacheUsingPackageSources (factory);
 			IPackageRepository repository = cache.CreateAggregateRepository ();
 			var aggregateRepository = (MonoDevelopAggregateRepository)repository;
@@ -468,7 +468,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			packageSourcesHelper.RegisteredPackageSources.Clear ();
 			var invalidPackageSource = new PackageSource (String.Empty, "InvalidSource");
 			packageSourcesHelper.RegisteredPackageSources.Add (invalidPackageSource);
-			var factory = new SharpDevelopPackageRepositoryFactory ();
+			var factory = new MonoDevelopPackageRepositoryFactory ();
 			CreateCacheUsingPackageSources (factory);
 			IPackageRepository repository = cache.CreateAggregateRepository ();
 			var aggregateRepository = (MonoDevelopAggregateRepository)repository;

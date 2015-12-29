@@ -34,7 +34,7 @@ using Microsoft.Build.Construction;
 using System.Linq;
 using System.Globalization;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	public partial class BuildEngine: MarshalByRefObject, IBuildEngine
 	{

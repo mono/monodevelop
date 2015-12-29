@@ -133,7 +133,7 @@ namespace MonoDevelop.Ide
 			DispatchService.Initialize ();
 
 			// Set a synchronization context for the main gtk thread
-			SynchronizationContext.SetSynchronizationContext (new GtkSynchronizationContext ());
+			SynchronizationContext.SetSynchronizationContext (DispatchService.SynchronizationContext);
 			Runtime.MainSynchronizationContext = SynchronizationContext.Current;
 			
 			AddinManager.AddinLoadError += OnAddinError;
@@ -649,6 +649,12 @@ namespace MonoDevelop.Ide
 			if (customizer == null)
 				customizer = LoadBrandingCustomizer ();
 			options.IdeCustomizer = customizer;
+
+			if (!Platform.IsWindows) {
+				// Limit maximum threads when running on mono
+				int threadCount = 8 * Environment.ProcessorCount;
+				ThreadPool.SetMaxThreads (threadCount, threadCount);
+			}
 
 			int ret = -1;
 			try {

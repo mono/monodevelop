@@ -242,9 +242,8 @@ namespace MonoDevelop.Ide.Execution
 		
 		internal static CustomExecutionMode ShowParamtersDialog (CommandExecutionContext ctx, IExecutionMode mode, CustomExecutionMode currentMode)
 		{
-			CustomExecutionMode cmode = null;
-			
-			DispatchService.GuiSyncDispatch (delegate {
+			return Runtime.RunInMainThread (delegate {
+				CustomExecutionMode cmode = null;
 				CustomExecutionModeDialog dlg = new CustomExecutionModeDialog ();
 				try {
 					dlg.Initialize (ctx, mode, currentMode);
@@ -254,12 +253,12 @@ namespace MonoDevelop.Ide.Execution
 						if (dlg.Save)
 							SaveCustomCommand (ctx.Project, cmode);
 					}
+					return cmode;
 				} finally {
 					dlg.Destroy ();
 					dlg.Dispose ();
 				}
-			});
-			return cmode;
+			}).Result;
 		}
 		
 		internal class CommandItem

@@ -106,11 +106,7 @@ namespace MonoDevelop.CSharp.Completion
 			get {
 				if (policy == null) {
 					IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
-					if (DocumentContext.Project != null && DocumentContext.Project.Policies != null) {
-						policy = base.DocumentContext.Project.Policies.Get<CSharpFormattingPolicy> (types);
-					} else {
-						policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
-					}
+					policy = DocumentContext.GetPolicy<CSharpFormattingPolicy> (types);
 				}
 				return policy;
 			}
@@ -312,6 +308,43 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
+
+		public override Task<ICompletionDataList> HandleBackspaceOrDeleteCodeCompletionAsync (CodeCompletionContext completionContext, SpecialKey key, char triggerCharacter, CancellationToken token = default(CancellationToken))
+		{
+			if (!IdeApp.Preferences.EnableAutoCodeCompletion)
+				return null;
+			if (!char.IsLetterOrDigit (triggerCharacter) && triggerCharacter != '_')
+				return null;
+			//char completionChar = Editor.GetCharAt (completionContext.TriggerOffset - 1);
+			//Console.WriteLine ("completion char: " + completionChar);
+			//	var timer = Counters.ResolveTime.BeginTiming ();
+			try {
+				int triggerWordLength = 0;
+				//if (char.IsLetterOrDigit (completionChar) || completionChar == '_') {
+				//	if (completionContext.TriggerOffset > 1 && char.IsLetterOrDigit (Editor.GetCharAt (completionContext.TriggerOffset - 2)))
+				//		return null;
+				//	triggerWordLength = 1;
+				//}
+				return InternalHandleCodeCompletion (completionContext, triggerCharacter, true, triggerWordLength, token).ContinueWith ( t => {
+					var result = (CompletionDataList)t.Result;
+					if (result == null)
+						return null;
+					result.AutoCompleteUniqueMatch = false;
+					result.AutoCompleteEmptyMatch = false;
+					return (ICompletionDataList)result;
+				});
+			} catch (Exception e) {
+				LoggingService.LogError ("Unexpected code completion exception." + Environment.NewLine + 
+				                         "FileName: " + DocumentContext.Name + Environment.NewLine + 
+				                         "Position: line=" + completionContext.TriggerLine + " col=" + completionContext.TriggerLineOffset + Environment.NewLine + 
+				                         "Line text: " + Editor.GetLineText (completionContext.TriggerLine), 
+				                         e);
+				return null;
+			} finally {
+				//			if (timer != null)
+				//				timer.Dispose ();
+			}		}
+
 		class CSharpCompletionDataList : CompletionDataList
 		{
 		}
@@ -392,7 +425,7 @@ namespace MonoDevelop.CSharp.Completion
 		Task<ICompletionDataList> InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, int triggerWordLength, CancellationToken token, bool forceSymbolCompletion = false)
 		{
 			if (Editor.EditMode != MonoDevelop.Ide.Editor.EditMode.Edit)
-				return null;
+				return Task.FromResult ((ICompletionDataList)null);
 //			var data = Editor;
 //			if (data.CurrentMode is TextLinkEditMode) {
 //				if (((TextLinkEditMode)data.CurrentMode).TextLinkMode == TextLinkMode.EditIdentifier)
@@ -404,7 +437,7 @@ namespace MonoDevelop.CSharp.Completion
 			list.TriggerWordLength = triggerWordLength;
 			var analysisDocument = DocumentContext.AnalysisDocument;
 			if (analysisDocument == null)
-				return null;
+				return Task.FromResult ((ICompletionDataList)null);
 			return Task.Run (async delegate {
 				try {
 					

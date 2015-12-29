@@ -65,6 +65,8 @@ namespace MonoDevelop.Ide.Gui
 		[Test]
 		public async Task RunAnimation ()
 		{
+			Assert.Ignore ("This test is *far* too strict to reliably pass on different machines. A 20ms window is not enough");
+
 			int n = 0;
 			DateTime t = DateTime.MinValue;
 			int t1 = 0, t2 = 0;

@@ -67,6 +67,16 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		WorkspaceId workspaceId = WorkspaceId.Empty;
+
+		public virtual T GetPolicy<T> (IEnumerable<string> types) where T : class, IEquatable<T>, new ()
+		{
+			var project = Project;
+			if (project != null && project.Policies != null) {
+				return project.Policies.Get<T> (types);
+			}
+			return MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<T> (types);
+		}
+
 		public Microsoft.CodeAnalysis.Workspace RoslynWorkspace
 		{
 			get { return TypeSystemService.GetWorkspace (workspaceId); }

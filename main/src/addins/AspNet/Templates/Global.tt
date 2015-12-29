@@ -1,0 +1,32 @@
+﻿<#@ template language="C#" #>
+<#
+bool webApi = IsTrue ("UsesAspNetWebApi");
+bool mvc = IsTrue ("UsesAspNetMvc");
+#>
+using System.Web;
+<# if (mvc) { #>
+using System.Web.Mvc;
+using System.Web.Routing;
+<# } #>
+<# if (webApi) { #>
+using System.Web.Http;
+<# } #>
+
+namespace <#=Tags["Namespace"]#>
+{
+	public class Global : HttpApplication
+	{
+		protected void Application_Start()
+		{
+<# if (mvc) { #>
+			AreaRegistration.RegisterAllAreas();
+<# } #>
+<# if (webApi) { #>
+			GlobalConfiguration.Configure(WebApiConfig.Register);
+<# } #>
+<# if (mvc) { #>
+			RouteConfig.RegisterRoutes(RouteTable.Routes);
+<# } #>
+		}
+	}
+}

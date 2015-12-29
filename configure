@@ -196,7 +196,10 @@ configure_packages ()
 		elif test -a $path/configure.sh; then
 			sct=./configure.sh
 		else
-			echo Configuration script not found in directory: $p
+			echo -en '\033[0;31m'
+			echo Configuration script not found in directory: $path
+			echo Try running $ git submodule update --init --recursive
+			echo -en '\033[0m'
 			exit 1
 		fi
 		pushd $path > /dev/null

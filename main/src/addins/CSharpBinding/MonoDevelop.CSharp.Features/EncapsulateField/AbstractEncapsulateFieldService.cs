@@ -18,11 +18,19 @@ using Microsoft.CodeAnalysis.Text;
 using Roslyn.Utilities;
 using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp.CodeGeneration;
+using System.Globalization;
+using System.Reflection;
+using Microsoft.CodeAnalysis.Options;
 
 namespace ICSharpCode.NRefactory6.CSharp.CodeRefactorings.EncapsulateField
 {
-	public abstract class AbstractEncapsulateFieldService : ILanguageService
+	internal abstract class AbstractEncapsulateFieldService : ILanguageService
 	{
+		static AbstractEncapsulateFieldService()
+		{
+			renameSymbolMethod = typeof (Renamer).GetMethod ("RenameSymbolAsync", new Type [] { typeof(Solution), typeof(ISymbol), typeof(string), typeof(OptionSet), typeof(Func<Location, bool>), typeof(Func<IEnumerable<ISymbol>, bool?>), typeof(CancellationToken) });
+		}
+
 		public async Task<EncapsulateFieldResult> EncapsulateFieldAsync(Document document, TextSpan span, bool useDefaultBehavior, CancellationToken cancellationToken)
 		{
 			var fields = await GetFieldsAsync(document, span, cancellationToken).ConfigureAwait(false);
@@ -92,6 +100,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeRefactorings.EncapsulateField
 		private async Task<Result> SingleEncapsulateFieldResultAsync(Document document, TextSpan span, int index, bool updateReferences, CancellationToken cancellationToken)
 		{
 			var fields = (await GetFieldsAsync(document, span, cancellationToken).ConfigureAwait(false)).ToImmutableArrayOrEmpty();
+			//Contract.Requires(fields.Length > index);
 
 			var field = fields[index];
 			var result = await EncapsulateFieldAsync(field, document, updateReferences, cancellationToken).ConfigureAwait(false);
@@ -109,6 +118,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeRefactorings.EncapsulateField
 			var failedFieldSymbols = new List<IFieldSymbol>();
 
 			var fields = await GetFieldsAsync(document, span, cancellationToken).ConfigureAwait(false);
+			//Contract.Requires(fields.Any());
 
 			// For now, build up the multiple field case by encapsulating one at a time.
 			Result result = null;
@@ -155,7 +165,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeRefactorings.EncapsulateField
 			var fieldDeclaration = field.DeclaringSyntaxReferences.First();
 			var declarationAnnotation = new SyntaxAnnotation();
 			document = document.WithSyntaxRoot(fieldDeclaration.SyntaxTree.GetRoot(cancellationToken).ReplaceNode(fieldDeclaration.GetSyntax(cancellationToken),
-				fieldDeclaration.GetSyntax(cancellationToken).WithAdditionalAnnotations(declarationAnnotation)));
+			                                                                                                      fieldDeclaration.GetSyntax(cancellationToken).WithAdditionalAnnotations(declarationAnnotation)));
 
 			var solution = document.Project.Solution;
 
@@ -180,7 +190,8 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeRefactorings.EncapsulateField
 			var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
 			var compilation = semanticModel.Compilation;
 			field = field.GetSymbolKey().Resolve(compilation, cancellationToken: cancellationToken).Symbol as IFieldSymbol;
-			Solution solutionNeedingProperty = null;
+
+			var solutionNeedingProperty = solution;
 
 			// We couldn't resolve field after annotating its declaration. Bail
 			if (field == null)
@@ -188,53 +199,9 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeRefactorings.EncapsulateField
 				return null;
 			}
 
-			if (updateReferences)
-			{
-				var locationsToIgnore = SpecializedCollections.EmptySet<TextSpan>();
-				var optionSet = document.Project.Solution.Workspace.Options;
-
-				if (field.IsReadOnly)
-				{
-					var locationSet = await RenameLocationSet.FindAsync(field, document.Project.Solution, optionSet, cancellationToken).ConfigureAwait(false);
-					var constructorSyntaxes = GetConstructorNodes(field.ContainingType);
-					var locations = locationSet.Locations.Where(l => constructorSyntaxes.Any(c => c.Span.IntersectsWith(l.Location.SourceSpan)));
-
-					if (locations.Any())
-					{
-						locationsToIgnore = locations.Select(l => l.Location.SourceSpan).ToSet();
-						locationSet = new RenameLocationSet(locations.ToSet(), field, document.Project.Solution, locationSet.ReferencedSymbols, locationSet.ImplicitLocations);
-
-						var resolution = await ConflictResolver.ResolveConflictsAsync(locationSet, field.Name, finalFieldName, optionSet, cancellationToken).ConfigureAwait(false);
-						document = resolution.NewSolution.GetDocument(document.Id);
-
-						semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
-						compilation = semanticModel.Compilation;
-						field = field.GetSymbolKey().Resolve(compilation, cancellationToken: cancellationToken).Symbol as IFieldSymbol;
-					}
-				}
-
-				var renameLocationSet = await RenameLocationSet.FindAsync(field, document.Project.Solution, optionSet, cancellationToken).ConfigureAwait(false);
-				renameLocationSet = new RenameLocationSet(renameLocationSet.Locations.Where(l => !locationsToIgnore.Contains(l.Location.SourceSpan)).ToSet(),
-					renameLocationSet.Symbol, renameLocationSet.Solution, renameLocationSet.ReferencedSymbols, renameLocationSet.ImplicitLocations);
-
-				if (renameLocationSet.Locations.Any() || renameLocationSet.ImplicitLocations.Any())
-				{
-					var conflictResolution = await ConflictResolver.ResolveConflictsAsync(renameLocationSet, field.Name, generatedPropertyName, optionSet, cancellationToken).ConfigureAwait(false);
-
-					if (!conflictResolution.ReplacementTextValid)
-					{
-						return null;
-					}
-
-					solutionNeedingProperty = conflictResolution.NewSolution;
-					document = solutionNeedingProperty.GetDocument(document.Id);
-				}
-			}
-			else
-			{
-				solutionNeedingProperty = document.Project.Solution;
-				document = solutionNeedingProperty.GetDocument(document.Id);
-			}
+			solutionNeedingProperty = await UpdateReferencesAsync(
+				updateReferences, solution, document, field, finalFieldName, generatedPropertyName, cancellationToken).ConfigureAwait(false);
+			document = solutionNeedingProperty.GetDocument(document.Id);
 
 			var markFieldPrivate = field.DeclaredAccessibility != Accessibility.Private;
 			var rewrittenFieldDeclaration = await RewriteFieldNameAndAccessibility(finalFieldName, markFieldPrivate, document, declarationAnnotation, cancellationToken).ConfigureAwait(false);
@@ -261,9 +228,49 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeRefactorings.EncapsulateField
 
 			var generatedProperty = GenerateProperty(generatedPropertyName, finalFieldName, originalField.DeclaredAccessibility, originalField, field.ContainingType, new SyntaxAnnotation(), document, cancellationToken);
 
+			var codeGenerationService = new CSharpCodeGenerationService (document.Project.Solution.Workspace);
 			var solutionWithProperty = await AddPropertyAsync(document, document.Project.Solution, field, generatedProperty, cancellationToken).ConfigureAwait(false);
 
-			return new Result(solutionWithProperty, originalField.ToDisplayString(), originalField);
+			return new Result(solutionWithProperty, originalField.ToDisplayString(), Glyph.FieldPublic);
+		}
+
+		static Task<Solution> RenameSymbolAsync (Solution solution, ISymbol symbol, string newName, OptionSet options, Func<Location, bool> filter, Func<IEnumerable<ISymbol>, bool?> hasConflict = null, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return (Task<Solution>)renameSymbolMethod.Invoke (null, new object [] { solution, symbol, newName, options, filter, hasConflict, cancellationToken });
+		}
+
+		private async Task<Solution> UpdateReferencesAsync(
+			bool updateReferences, Solution solution, Document document, IFieldSymbol field, string finalFieldName, string generatedPropertyName, CancellationToken cancellationToken)
+		{
+			if (!updateReferences)
+			{
+				return solution;
+			}
+
+			if (field.IsReadOnly)
+			{
+				// Inside the constructor we want to rename references the field to the final field name.
+				var constructorSyntaxes = GetConstructorNodes(field.ContainingType).ToSet();
+				if (finalFieldName != field.Name && constructorSyntaxes.Count > 0)
+				{
+					solution = await RenameSymbolAsync(solution, field, finalFieldName, solution.Workspace.Options,
+					                                           location => constructorSyntaxes.Any(c => c.Span.IntersectsWith(location.SourceSpan)), cancellationToken: cancellationToken).ConfigureAwait(false);
+					document = solution.GetDocument(document.Id);
+
+					var compilation = await document.Project.GetCompilationAsync(cancellationToken).ConfigureAwait(false);
+
+					field = field.GetSymbolKey().Resolve(compilation, cancellationToken: cancellationToken).Symbol as IFieldSymbol;
+				}
+
+				// Outside the constructor we want to rename references to the field to final property name.
+				return await RenameSymbolAsync(solution, field, generatedPropertyName, solution.Workspace.Options,
+				                                       location => !constructorSyntaxes.Any(c => c.Span.IntersectsWith(location.SourceSpan)), cancellationToken: cancellationToken).ConfigureAwait(false);
+			}
+			else
+			{
+				// Just rename everything.
+				return await Renamer.RenameSymbolAsync(solution, field, generatedPropertyName, solution.Workspace.Options, cancellationToken).ConfigureAwait(false);
+			}
 		}
 
 		internal abstract IEnumerable<SyntaxNode> GetConstructorNodes(INamedTypeSymbol containingType);
@@ -273,11 +280,11 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeRefactorings.EncapsulateField
 			var codeGenerationService = new CSharpCodeGenerationService (document.Project.Solution.Workspace);
 
 			var fieldDeclaration = field.DeclaringSyntaxReferences.First();
-			var options = new CodeGenerationOptions(contextLocation: fieldDeclaration.SyntaxTree.GetLocation(fieldDeclaration.Span), generateDefaultAccessibility:false);
+			var options = new CodeGenerationOptions(contextLocation: fieldDeclaration.SyntaxTree.GetLocation(fieldDeclaration.Span));
 
 			var destination = field.ContainingType;
 			var updatedDocument = await codeGenerationService.AddPropertyAsync(destinationSolution, destination, property, options, cancellationToken)
-				.ConfigureAwait(false);
+			                                                 .ConfigureAwait(false);
 
 			updatedDocument = await Formatter.FormatAsync(updatedDocument, Formatter.Annotation, cancellationToken: cancellationToken).ConfigureAwait(false);
 			updatedDocument = await Simplifier.ReduceAsync(updatedDocument, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -285,20 +292,20 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeRefactorings.EncapsulateField
 			return updatedDocument.Project.Solution;
 		}
 
-		protected IPropertySymbol GenerateProperty(string propertyName, string fieldName, Accessibility accessiblity, IFieldSymbol field, INamedTypeSymbol containingSymbol, SyntaxAnnotation annotation, Document document, CancellationToken cancellationToken)
+		protected IPropertySymbol GenerateProperty(string propertyName, string fieldName, Accessibility accessibility, IFieldSymbol field, INamedTypeSymbol containingSymbol, SyntaxAnnotation annotation, Document document, CancellationToken cancellationToken)
 		{
 			var factory = document.GetLanguageService<SyntaxGenerator>();
 
 			var propertySymbol = annotation.AddAnnotationToSymbol(CodeGenerationSymbolFactory.CreatePropertySymbol(containingType: containingSymbol,
-				attributes: SpecializedCollections.EmptyList<AttributeData>(),
-				accessibility: ComputeAccesibility(accessiblity, field.Type),
-				modifiers: new DeclarationModifiers(isStatic: field.IsStatic, isReadOnly: field.IsReadOnly, isUnsafe: field.IsUnsafe()),
-				type: field.Type,
-				explicitInterfaceSymbol: null,
-				name: propertyName,
-				parameters: SpecializedCollections.EmptyList<IParameterSymbol>(),
-				getMethod: CreateGet(fieldName, field, factory),
-				setMethod: field.IsReadOnly || field.IsConst ? null : CreateSet(fieldName, field, factory)));
+			                                                                                                       attributes: SpecializedCollections.EmptyList<AttributeData>(),
+			                                                                                                       accessibility: ComputeAccessibility(accessibility, field.Type),
+			                                                                                                       modifiers: new DeclarationModifiers().WithIsStatic (field.IsStatic).WithIsReadOnly (field.IsReadOnly).WithIsUnsafe (field.IsUnsafe()),
+			                                                                                                       type: field.Type,
+			                                                                                                       explicitInterfaceSymbol: null,
+			                                                                                                       name: propertyName,
+			                                                                                                       parameters: SpecializedCollections.EmptyList<IParameterSymbol>(),
+			                                                                                                       getMethod: CreateGet(fieldName, field, factory),
+			                                                                                                       setMethod: field.IsReadOnly || field.IsConst ? null : CreateSet(fieldName, field, factory)));
 
 			return Simplifier.Annotation.AddAnnotationToSymbol(
 				Formatter.Annotation.AddAnnotationToSymbol(propertySymbol));
@@ -306,26 +313,26 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeRefactorings.EncapsulateField
 
 		protected abstract Tuple<string, string> GeneratePropertyAndFieldNames(IFieldSymbol field);
 
-		protected Accessibility ComputeAccesibility(Accessibility accessibility, ITypeSymbol type)
+		protected Accessibility ComputeAccessibility(Accessibility accessibility, ITypeSymbol type)
 		{
-			var computedAccessbility = accessibility;
+			var computedAccessibility = accessibility;
 			if (accessibility == Accessibility.NotApplicable || accessibility == Accessibility.Private)
 			{
-				computedAccessbility = Accessibility.Public;
+				computedAccessibility = Accessibility.Public;
 			}
 
 			var returnTypeAccessibility = type.DetermineMinimalAccessibility();
 
-			return CommonAccessibilityUtilities.Minimum(computedAccessbility, returnTypeAccessibility);
+			return AccessibilityUtilities.Minimum(computedAccessibility, returnTypeAccessibility);
 		}
 
 		protected IMethodSymbol CreateSet(string originalFieldName, IFieldSymbol field, SyntaxGenerator factory)
 		{
 			var assigned = !field.IsStatic
-				? factory.MemberAccessExpression(
-					factory.ThisExpression(),
-					factory.IdentifierName(originalFieldName))
-				: factory.IdentifierName(originalFieldName);
+			                     ? factory.MemberAccessExpression(
+				                     factory.ThisExpression(),
+				                     factory.IdentifierName(originalFieldName))
+			                     : factory.IdentifierName(originalFieldName);
 
 			var body = factory.ExpressionStatement(
 				factory.AssignmentStatement(
@@ -333,8 +340,8 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeRefactorings.EncapsulateField
 					factory.IdentifierName("value")));
 
 			return CodeGenerationSymbolFactory.CreateAccessorSymbol(SpecializedCollections.EmptyList<AttributeData>(),
-				Accessibility.NotApplicable,
-				new[] { body }.ToList());
+			                                                        Accessibility.NotApplicable,
+			                                                        new[] { body }.ToList());
 		}
 
 		protected IMethodSymbol CreateGet(string originalFieldName, IFieldSymbol field, SyntaxGenerator factory)
@@ -343,8 +350,8 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeRefactorings.EncapsulateField
 				factory.IdentifierName(originalFieldName));
 
 			return CodeGenerationSymbolFactory.CreateAccessorSymbol(SpecializedCollections.EmptyList<AttributeData>(),
-				Accessibility.NotApplicable,
-				new[] { body }.ToList());
+			                                                        Accessibility.NotApplicable,
+			                                                        new[] { body }.ToList());
 		}
 
 		private static readonly char[] s_underscoreCharArray = new[] { '_' };
@@ -366,37 +373,42 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeRefactorings.EncapsulateField
 				baseName = fieldName;
 			}
 
-			// Make uppercase the first letter
-			return char.ToUpper(baseName[0]).ToString() + baseName.Substring(1);
+			// Make the first character upper case using the "en-US" culture.  See discussion at
+			// https://github.com/dotnet/roslyn/issues/5524.
+			var firstCharacter = EnUSCultureInfo.TextInfo.ToUpper(baseName[0]);
+			return firstCharacter.ToString() + baseName.Substring(1);
 		}
+
+		internal static readonly CultureInfo EnUSCultureInfo = new CultureInfo("en-US");
+		static MethodInfo renameSymbolMethod;
 
 		protected abstract Task<SyntaxNode> RewriteFieldNameAndAccessibility(string originalFieldName, bool makePrivate, Document document, SyntaxAnnotation declarationAnnotation, CancellationToken cancellationToken);
 		protected abstract Task<IEnumerable<IFieldSymbol>> GetFieldsAsync(Document document, TextSpan span, CancellationToken cancellationToken);
 
-		public class Result
+		internal class Result
 		{
-			public Result(Solution solutionWithProperty, string name, IFieldSymbol glyph)
+			public Result(Solution solutionWithProperty, string name, Glyph glyph)
 			{
 				this.Solution = solutionWithProperty;
 				this.Name = name;
 				this.Glyph = glyph;
 			}
 
-			public Result(Solution solutionWithProperty, string name, IFieldSymbol glyph, List<IFieldSymbol> failedFieldSymbols) :
+			public Result(Solution solutionWithProperty, string name, Glyph glyph, List<IFieldSymbol> failedFieldSymbols) :
 			this(solutionWithProperty, name, glyph)
 			{
 				this.FailedFields = failedFieldSymbols.ToImmutableArrayOrEmpty();
 			}
 
 			public Result(Solution originalSolution, params IFieldSymbol[] fields) :
-			this(originalSolution, string.Empty, null)
+			this(originalSolution, string.Empty, Glyph.Error)
 			{
 				this.FailedFields = fields.ToImmutableArrayOrEmpty();
 			}
 
 			public Solution Solution { get; }
 			public string Name { get; }
-			public IFieldSymbol Glyph { get; }
+			public Glyph Glyph { get; }
 			public ImmutableArray<IFieldSymbol> FailedFields { get; }
 
 			public Result WithFailedFields(List<IFieldSymbol> failedFieldSymbols)

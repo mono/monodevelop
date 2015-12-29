@@ -26,6 +26,7 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.Projects
 {
@@ -84,6 +85,7 @@ namespace MonoDevelop.Projects
 
 		public bool ShouldCreate (string createCondition)
 		{
+			// This logic is duplicated in the TemplateConditionEvaluator.
 			if (string.IsNullOrWhiteSpace (createCondition))
 				return true;
 

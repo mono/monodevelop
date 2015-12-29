@@ -91,9 +91,15 @@ namespace MonoDevelop.VersionControl.Subversion
 		public VersionInfo GetVersionInfo (Repository repo, FilePath localPath, bool getRemoteStatus)
 		{
 			// Check for directory before checking for file, since directory links may appear as files
-			if (Directory.Exists (localPath))
-				return GetDirStatus (repo, localPath, getRemoteStatus);
-			return GetFileStatus (repo, localPath, getRemoteStatus);
+			var isDir = Directory.Exists (localPath);
+			try {
+				if (isDir)
+					return GetDirStatus (repo, localPath, getRemoteStatus);
+				return GetFileStatus (repo, localPath, getRemoteStatus);
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to query subversion status", e);
+				return VersionInfo.CreateUnversioned (localPath, isDir);
+			}
 		}
 
 		private VersionInfo GetFileStatus (Repository repo, FilePath sourcefile, bool getRemoteStatus)
@@ -137,7 +143,12 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		public VersionInfo[] GetDirectoryVersionInfo (Repository repo, FilePath sourcepath, bool getRemoteStatus, bool recursive)
 		{
-			return Status (repo, sourcepath, SvnRevision.Head, recursive, true, getRemoteStatus).ToArray ();
+			try {
+				return Status (repo, sourcepath, SvnRevision.Head, recursive, true, getRemoteStatus).ToArray ();
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to get subversion directory status", e);
+				return new VersionInfo [0];
+			}
 		}
 
 		public abstract IEnumerable<VersionInfo> Status (Repository repo, FilePath path, SvnRevision revision, bool descendDirs, bool changedItemsOnly, bool remoteStatus);

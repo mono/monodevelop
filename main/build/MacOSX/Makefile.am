@@ -16,11 +16,7 @@ CLEANFILES = render.exe monostub monostub-test
 #DISTCLEANFILES =
 EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh render.cs
 
-if RELEASE_BUILDS
-FSHARP_BIN=../../external/fsharpbinding/bin/mac-linux/Release
-else
-FSHARP_BIN=../../external/fsharpbinding/bin/mac-linux/Debug
-endif
+FSHARP_BIN=../../external/fsharpbinding/bin/
 MONOSTUB_EXTRA_SOURCES = monostub-utils.h
 
 all: monostub monostub-test

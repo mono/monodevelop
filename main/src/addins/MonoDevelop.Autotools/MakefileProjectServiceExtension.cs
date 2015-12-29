@@ -45,7 +45,7 @@ namespace MonoDevelop.Autotools
 {
 	public class MakefileProjectServiceExtension : SolutionExtension
 	{
-		protected override void OnReadSolution (ProgressMonitor monitor, MonoDevelop.Projects.Formats.MSBuild.SlnFile file)
+		protected override void OnReadSolution (ProgressMonitor monitor, MonoDevelop.Projects.MSBuild.SlnFile file)
 		{
 			base.OnReadSolution (monitor, file);
 
@@ -77,7 +77,7 @@ namespace MonoDevelop.Autotools
 			set { data = value; }
 		}
 
-		protected override void OnReadProject (ProgressMonitor monitor, MonoDevelop.Projects.Formats.MSBuild.MSBuildProject msproject)
+		protected override void OnReadProject (ProgressMonitor monitor, MonoDevelop.Projects.MSBuild.MSBuildProject msproject)
 		{
 			base.OnReadProject (monitor, msproject);
 			var ext = msproject.GetMonoDevelopProjectExtension ("MonoDevelop.Autotools.MakefileInfo");
@@ -102,7 +102,7 @@ namespace MonoDevelop.Autotools
 			}
 		}
 
-		protected override void OnWriteProject (ProgressMonitor monitor, MonoDevelop.Projects.Formats.MSBuild.MSBuildProject msproject)
+		protected override void OnWriteProject (ProgressMonitor monitor, MonoDevelop.Projects.MSBuild.MSBuildProject msproject)
 		{
 			base.OnWriteProject (monitor, msproject);
 

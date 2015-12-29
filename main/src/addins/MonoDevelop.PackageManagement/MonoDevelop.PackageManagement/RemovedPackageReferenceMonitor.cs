@@ -30,14 +30,14 @@ using System;
 using System.Collections.Generic;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public class RemovedPackageReferenceMonitor : IDisposable
 	{
-		ISharpDevelopProjectManager projectManager;
+		IMonoDevelopProjectManager projectManager;
 		List<IPackage> packagesRemoved = new List<IPackage>();
 		
-		public RemovedPackageReferenceMonitor(ISharpDevelopProjectManager projectManager)
+		public RemovedPackageReferenceMonitor(IMonoDevelopProjectManager projectManager)
 		{
 			this.projectManager = projectManager;
 			projectManager.PackageReferenceRemoved += PackageReferenceRemoved;

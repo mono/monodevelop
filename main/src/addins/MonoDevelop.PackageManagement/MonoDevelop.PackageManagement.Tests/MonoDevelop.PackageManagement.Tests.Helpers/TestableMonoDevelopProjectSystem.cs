@@ -26,13 +26,13 @@
 
 using System;
 using System.IO;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Ide;
 using System.Threading.Tasks;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestableMonoDevelopProjectSystem : SharpDevelopProjectSystem
+	public class TestableMonoDevelopProjectSystem : MonoDevelopProjectSystem
 	{
 		public string PathPassedToPhysicalFileSystemAddFile;
 		public Stream StreamPassedToPhysicalFileSystemAddFile;

@@ -133,8 +133,8 @@ namespace MonoDevelop.Ide.Projects
 		{
 			Solution c = configureProject.ParentSolution;
 			if (c == null) return TreeIter.Zero;
-			
-			Project p = c.FindProjectByName (refInfo.Reference);
+
+			Project p = refInfo.ResolveProject (c);
 			if (p == null) return TreeIter.Zero;
 			
 			string txt = GLib.Markup.EscapeText (System.IO.Path.GetFileName (refInfo.Reference)) + "\n";

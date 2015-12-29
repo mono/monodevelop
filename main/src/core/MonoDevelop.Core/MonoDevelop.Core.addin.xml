@@ -4,7 +4,7 @@
 	<ConditionType id="PackageNotInstalled" type="MonoDevelop.Core.AddIns.PackageNotInstalledCondition" />
 	<ConditionType id="Platform" type="MonoDevelop.Core.AddIns.PlatformCondition" />
 	<ConditionType id="AssemblyInstalled" type="MonoDevelop.Core.AddIns.AssemblyInstalledCondition" />
-	<ConditionType id="MSBuildTargetIsAvailable" type="MonoDevelop.Projects.Formats.MSBuild.TargetsAvailableCondition" />
+	<ConditionType id="MSBuildTargetIsAvailable" type="MonoDevelop.Projects.MSBuild.TargetsAvailableCondition" />
 
 	
 	<!-- Extension points -->
@@ -129,7 +129,7 @@
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildGlobalPropertyProviders" name = "MSBuild Global Property Providers">
-		<ExtensionNode objectType="MonoDevelop.Projects.Formats.MSBuild.IMSBuildGlobalPropertyProvider"/>
+		<ExtensionNode objectType="MonoDevelop.Projects.MSBuild.IMSBuildGlobalPropertyProvider"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MonoDocSources" name = "MonoDoc Sources">
@@ -313,6 +313,7 @@
 		<ProjectType guid = "{E6FDF86B-F3D1-11D4-8576-0002A516ECE8}" name = "Visual J#" extension="vjsproj"/>
 		<ProjectType guid = "{82B43B9B-A64C-4715-B499-D71E9CA2BD60}" name = "Visual Studio Extension" />
 		<ProjectType guid = "{14182A97-F7F0-4C62-8B27-98AA8AE2109A}" name = "VB.NET Portable Library" />
+		<ProjectType guid = "{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A}" name = "Universal Windows Platform (UWP)" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildImportRedirects">

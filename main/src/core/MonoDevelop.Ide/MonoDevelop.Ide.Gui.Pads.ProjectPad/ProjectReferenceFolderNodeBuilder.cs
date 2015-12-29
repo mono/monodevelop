@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (((ProjectReferenceCollection) dataObject).Count > 0)
 				return true;
 
-			var p = (DotNetProject) builder.GetParentDataItem (typeof(DotNetProject), false);
+			var p = (DotNetProject) builder.GetParentDataItem (typeof(DotNetProject), true);
 			return p != null && p.IsPortableLibrary;
 		}
 		
@@ -163,7 +163,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 				// Check if there is a cyclic reference after removing from the source project
 				if (pref.ReferenceType == ReferenceType.Project) {
-					DotNetProject pdest = p.ParentSolution.FindProjectByName (pref.Reference) as DotNetProject;
+					DotNetProject pdest = pref.ResolveProject (p.ParentSolution) as DotNetProject;
 					if (pdest == null || ProjectReferencesProject (pdest, p2.Name)) {
 						// Restore the dep
 						p.References.Add (pref);
@@ -180,7 +180,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				
 				// Check for cyclic referencies
 				if (pref.ReferenceType == ReferenceType.Project) {
-					DotNetProject pdest = p.ParentSolution.FindProjectByName (pref.Reference) as DotNetProject;
+					DotNetProject pdest = pref.ResolveProject (p.ParentSolution) as DotNetProject;
 					if (pdest == null)
 						return;
 					if (HasCircularReference (pdest, p.Name))
@@ -224,7 +224,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				return true;
 			
 			foreach (ProjectReference pr in project.References) {
-				DotNetProject pref = project.ParentSolution.FindProjectByName (pr.Reference) as DotNetProject;
+				if (pr.ReferenceType != ReferenceType.Project) {
+					continue;
+				}
+				DotNetProject pref = pr.ResolveProject (project.ParentSolution) as DotNetProject;
 				if (pref != null && ProjectReferencesProject (pref, targetProject))
 					return true;
 			}

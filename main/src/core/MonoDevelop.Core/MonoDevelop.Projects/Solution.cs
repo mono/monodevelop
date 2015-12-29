@@ -38,7 +38,7 @@ using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core.Execution;
 using System.Threading.Tasks;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -110,6 +110,11 @@ namespace MonoDevelop.Projects
 
 			if (!loadingFromConstructor)
 				NotifyItemReady ();
+		}
+
+		public virtual string GetDefaultConfiguration()
+		{
+			return null;
 		}
 
 		SolutionExtension itemExtension;

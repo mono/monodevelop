@@ -189,6 +189,8 @@
 			_label = "_Show diff"/>
 		<Command id = "MonoDevelop.VersionControl.Views.BlameCommands.ShowLog"
 			_label = "S_how log"/>
+		<Command id = "MonoDevelop.VersionControl.Views.BlameCommands.ShowBlameBefore"
+			_label = "Show _blame before"/>
 		</Category>
 	</Extension>
 

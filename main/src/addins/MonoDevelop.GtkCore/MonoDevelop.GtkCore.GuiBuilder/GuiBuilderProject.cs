@@ -117,7 +117,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (System.IO.File.Exists (fileName)) {
 				watcher.Path = Path.GetDirectoryName (fileName);
 				watcher.Filter = Path.GetFileName (fileName);
-				watcher.Changed += DispatchService.GuiDispatchDelegate (new FileSystemEventHandler (OnSteticFileChanged));
+				watcher.Changed += OnSteticFileChanged;
 				watcher.EnableRaisingEvents = true;
 			}
 		}	
@@ -161,17 +161,19 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnSteticFileChanged (object s, FileSystemEventArgs args)
 		{
-			lock (fileSaveLock) {
-				if (lastSaveTime == System.IO.File.GetLastWriteTime (fileName))
-					return;
-			}
-			
-			if (GuiBuilderService.HasOpenDesigners (project, true)) {
-				if (MessageService.AskQuestion (GettextCatalog.GetString ("The project '{0}' has been modified by an external application. Do you want to reload it?", project.Name), GettextCatalog.GetString ("Unsaved changes in the open GTK designers will be lost."), AlertButton.Cancel, AlertButton.Reload) != AlertButton.Reload)
-					return;
-			}
-			if (!disposed)
-				Reload ();
+			Runtime.RunInMainThread (() => {
+				lock (fileSaveLock) {
+					if (lastSaveTime == System.IO.File.GetLastWriteTime (fileName))
+						return;
+				}
+
+				if (GuiBuilderService.HasOpenDesigners (project, true)) {
+					if (MessageService.AskQuestion (GettextCatalog.GetString ("The project '{0}' has been modified by an external application. Do you want to reload it?", project.Name), GettextCatalog.GetString ("Unsaved changes in the open GTK designers will be lost."), AlertButton.Cancel, AlertButton.Reload) != AlertButton.Reload)
+						return;
+				}
+				if (!disposed)
+					Reload ();
+			});
 		}
 		
 		public void Reload ()
@@ -429,7 +431,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			string path = null;
 			
 			if (pref.ReferenceType == ReferenceType.Project) {
-				DotNetProject p = project.ParentSolution.FindProjectByName (pref.Reference) as DotNetProject;
+				DotNetProject p = pref.ResolveProject (project.ParentSolution) as DotNetProject;
 				if (p != null)
 					path = p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
 			} else if (pref.ReferenceType == ReferenceType.Assembly) {

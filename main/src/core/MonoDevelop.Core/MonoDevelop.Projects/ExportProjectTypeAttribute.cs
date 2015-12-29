@@ -26,7 +26,7 @@
 using System;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using Mono.Addins;
 
 namespace MonoDevelop.Projects

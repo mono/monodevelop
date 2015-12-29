@@ -26,7 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
@@ -39,11 +39,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public TestableCheckForUpdatesTaskRunner (ITaskFactory taskFactory)
 			: base (taskFactory)
 		{
-		}
-
-		protected override void GuiBackgroundDispatch (MessageHandler handler)
-		{
-			handler.Invoke ();
 		}
 
 		protected override void LogError (string message, Exception ex)

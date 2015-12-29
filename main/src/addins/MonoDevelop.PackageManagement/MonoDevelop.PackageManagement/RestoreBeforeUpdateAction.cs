@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
@@ -83,7 +83,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesBeforeUpdateMessage ();
 
-			DispatchService.BackgroundDispatch (() => {
+			PackageManagementBackgroundDispatcher.Dispatch (() => {
 				restorer.Restore (progressMessage);
 				if (!restorer.RestoreFailed) {
 					afterRestore ();

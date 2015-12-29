@@ -631,11 +631,16 @@ namespace MonoDevelop.Ide
 		
 		string GetBestDefaultConfiguration ()
 		{
+			// Pick the solution default if it is provided, otherwise
 			// 'Debug' is always the best candidate. If there is no debug, pick
 			// the configuration with the highest number of built projects.
 			int nbuilds = 0;
 			string bestConfig = null;
 			foreach (Solution sol in GetAllSolutions ()) {
+				var solutionDefault = sol.GetDefaultConfiguration();
+				if (solutionDefault != null) { 
+					return solutionDefault;
+				}
 				foreach (string conf in sol.GetConfigurations ()) {
 					if (conf == "Debug")
 						return conf;
@@ -905,7 +910,7 @@ namespace MonoDevelop.Ide
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not load parser database.", ex);
 			}
-			if (DispatchService.IsGuiThread)
+			if (Runtime.IsMainThread)
 				NotifyItemAddedGui (item, IsReloading);
 			else {
 				bool reloading = IsReloading;
@@ -939,7 +944,7 @@ namespace MonoDevelop.Ide
 		
 		internal void NotifyItemRemoved (WorkspaceItem item)
 		{
-			if (DispatchService.IsGuiThread)
+			if (Runtime.IsMainThread)
 				NotifyItemRemovedGui (item, IsReloading);
 			else {
 				bool reloading = IsReloading;
@@ -964,11 +969,15 @@ namespace MonoDevelop.Ide
 			if (WorkspaceItemClosed != null)
 				WorkspaceItemClosed (this, args);
 
-			if (Items.Count == 0 && !reloading) {
+			bool lastWorkspaceItemClosing = Items.Count == 0 && !reloading;
+			if (lastWorkspaceItemClosing) {
 				if (LastWorkspaceItemClosed != null)
 					LastWorkspaceItemClosed (this, EventArgs.Empty);
 			}
 			MonoDevelop.Ide.TypeSystem.TypeSystemService.Unload (item);
+
+			if (lastWorkspaceItemClosing)
+				MonoDevelop.Ide.TypeSystem.MetadataReferenceCache.Clear ();
 
 			NotifyDescendantItemRemoved (this, args);
 		}

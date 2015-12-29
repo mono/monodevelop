@@ -31,7 +31,7 @@ using System.Collections.Generic;
 using MonoDevelop.Ide;
 using MonoDevelop.PackageManagement;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public class SelectProjectsService : ISelectProjectsService
 	{

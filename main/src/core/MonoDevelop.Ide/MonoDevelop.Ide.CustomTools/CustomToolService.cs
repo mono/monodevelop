@@ -159,7 +159,7 @@ namespace MonoDevelop.Ide.CustomTools
 					return false;
 				}
 				bool byDefault, require;
-				MonoDevelop.Projects.Formats.MSBuild.MSBuildProjectService.CheckHandlerUsesMSBuildEngine (file.Project, out byDefault, out require);
+				MonoDevelop.Projects.MSBuild.MSBuildProjectService.CheckHandlerUsesMSBuildEngine (file.Project, out byDefault, out require);
 				var usesMSBuild = require || (file.Project.UseMSBuildEngine ?? byDefault);
 				if (!usesMSBuild) {
 					return false;
@@ -377,7 +377,7 @@ namespace MonoDevelop.Ide.CustomTools
 				}
 				
 				if (result.Errors.Count > 0) {
-					DispatchService.GuiDispatch (delegate {
+					Runtime.RunInMainThread (delegate {
 						foreach (CompilerError err in result.Errors)
 							TaskService.Errors.Add (new TaskListEntry (file.FilePath, err.ErrorText, err.Column, err.Line,
 								err.IsWarning? TaskSeverity.Warning : TaskSeverity.Error,

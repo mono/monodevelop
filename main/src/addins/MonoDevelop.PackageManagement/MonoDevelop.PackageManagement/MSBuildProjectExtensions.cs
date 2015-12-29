@@ -31,10 +31,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public static class MSBuildProjectExtensions
 	{

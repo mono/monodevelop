@@ -912,7 +912,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			bool RunHandler ()
 			{
 				tokenExit:
-				if (token.IsCancellationRequested) {
+				if (token.IsCancellationRequested || mode.TextEditor.GetTextEditorData () == null) {
 					cr.Dispose ();
 					// if the surface was newly created dispose it otherwise it'll leak.
 					if (surface != mode.swapIndicatorSurface)

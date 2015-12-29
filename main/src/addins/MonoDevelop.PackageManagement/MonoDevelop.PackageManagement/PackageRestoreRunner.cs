@@ -26,7 +26,7 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
@@ -139,7 +139,7 @@ namespace MonoDevelop.PackageManagement
 		/// </summary>
 		void RefreshProjectReferences (bool refreshMSBuildTargets)
 		{
-			DispatchService.GuiDispatch (() => {
+			Runtime.RunInMainThread (() => {
 				foreach (IDotNetProject projectInSolution in solution.GetDotNetProjects ()) {
 					if (refreshMSBuildTargets) {
 						projectInSolution.RefreshProjectBuilder ();

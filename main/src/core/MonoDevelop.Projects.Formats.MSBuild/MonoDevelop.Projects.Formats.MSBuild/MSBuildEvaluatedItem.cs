@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 
 	[Serializable]

@@ -25,13 +25,13 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 using System.Collections.Generic;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeProjectManager : ISharpDevelopProjectManager
+	public class FakeProjectManager : IMonoDevelopProjectManager
 	{
 		public FakePackageRepository FakeLocalRepository {
 			get { return LocalRepository as FakePackageRepository; }

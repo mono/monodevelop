@@ -27,7 +27,7 @@
 //
 
 using System;
-
+using MonoDevelop.Core;
 using MonoDevelop.Deployment;
 using MonoDevelop.Ide;
 
@@ -58,10 +58,10 @@ namespace MonoDevelop.Deployment.Gui
 			
 			//IFileReplacePolicy is not likely to be running in the GUI thread
 			//so use some DispatchService magic to synchronously call the dialog in the GUI thread
-			DispatchService.GuiSyncDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				using (var dialog = new FileReplaceDialog (response, source, sourceModified.ToString (), target, targetModified.ToString ()))
 					response = (FileReplaceDialog.ReplaceResponse) MessageService.ShowCustomDialog (dialog);
-			});
+			}).Wait ();
 			
 			switch (response) {
 			case FileReplaceDialog.ReplaceResponse.Replace:

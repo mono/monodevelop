@@ -127,7 +127,7 @@ namespace MonoDevelop.CSharp
 					var ownerProject = lib.OwnerProject;
 					if (ownerProject != null) {
 						var parentSolution = ownerProject.ParentSolution;
-						if (parentSolution != null && !(parentSolution.FindProjectByName (lib.Reference) is DotNetProject))
+						if (parentSolution != null && !(lib.ResolveProject (parentSolution) is DotNetProject))
 							continue;
 					}
 				} 
