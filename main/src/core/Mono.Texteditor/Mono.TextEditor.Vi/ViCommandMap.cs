@@ -45,6 +45,8 @@ namespace Mono.TextEditor.Vi
 				BuilderAction b;
 				if (builders.TryGetValue (ctx.LastKey, out b)) {
 					ctx.Builder = b.Builder;
+					ctx.Transformer = b.Transformer;
+					//ctx.Transformer = (Action<ViEditor> action) => b.Transformer(ctx.Transformer(action));
 					if (b.RunInstantly)
 						ctx.Builder (ctx);
 					return true;
@@ -57,7 +59,13 @@ namespace Mono.TextEditor.Vi
 		{
 			Add (key, map.Builder);
 		}
-		
+
+		public void Add (ViKey key, EditorActionTransformer transformer, ViCommandMap map, bool runInstantly = false)
+		{
+			Console.WriteLine ("Adding map with transformer");
+			Add (key, transformer, map.Builder, runInstantly);
+		}
+
 		public void Add (ViKey key, Action<ViEditor> action)
 		{
 			this.actions[key] = action;
@@ -75,7 +83,12 @@ namespace Mono.TextEditor.Vi
 		
 		public void Add (ViKey key, ViBuilder builder, bool runInstantly)
 		{
-			this.builders[key] = new BuilderAction (builder, runInstantly);
+			this.builders[key] = new BuilderAction (builder, runInstantly, ViBuilderContext.DefaultTransformer);
+		}
+
+		public void Add (ViKey key, EditorActionTransformer transformer, ViBuilder builder, bool runInstantly = false)
+		{
+			this.builders[key] = new BuilderAction (builder, runInstantly, transformer);
 		}
 		
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
@@ -90,13 +103,15 @@ namespace Mono.TextEditor.Vi
 		
 		struct BuilderAction
 		{
-			public BuilderAction (ViBuilder builder, bool runInstantly)
+			public BuilderAction (ViBuilder builder, bool runInstantly, EditorActionTransformer transformer)
 			{
 				this.Builder = builder;
 				this.RunInstantly = runInstantly;
+				this.Transformer = transformer;
 			}
 			
 			public readonly ViBuilder Builder;
+			public readonly EditorActionTransformer Transformer;
 			public readonly bool RunInstantly;
 		}
 	}
