@@ -979,6 +979,7 @@ namespace MonoDevelop.Components.Commands
 		/// <param name='initialCommandTarget'>
 		/// Initial command route target. The command handler will start looking for command handlers in this object.
 		/// </param>
+		[Obsolete ("This will be removed in future revisions. Please use the overload with ShowContextMenu(Gtk.Widget, Gdk.EventButton, CommandEntrySet, object)")]
 		public void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, Gtk.Menu menu,
 			object initialCommandTarget = null)
 		{
