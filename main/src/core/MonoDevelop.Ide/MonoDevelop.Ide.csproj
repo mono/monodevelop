@@ -2067,17 +2067,17 @@
     <EmbeddedResource Include="icons\disclose-arrow-up-16~dark%402x.png">
       <LogicalName>disclose-arrow-up-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pad-search-results-16.png">
-      <LogicalName>pad-search-results-16.png</LogicalName>
+    <EmbeddedResource Include="icons\pad-search-16.png">
+      <LogicalName>pad-search-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pad-search-results-16%402x.png">
-      <LogicalName>pad-search-results-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\pad-search-16%402x.png">
+      <LogicalName>pad-search-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pad-search-results-16~dark.png">
-      <LogicalName>pad-search-results-16~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\pad-search-16~dark.png">
+      <LogicalName>pad-search-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pad-search-results-16~dark%402x.png">
-      <LogicalName>pad-search-results-16~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\pad-search-16~dark%402x.png">
+      <LogicalName>pad-search-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\searchbox-clear-mac-16.png">
       <LogicalName>searchbox-clear-mac-16.png</LogicalName>
@@ -2250,17 +2250,17 @@
     <EmbeddedResource Include="icons\pad-immediate-16~dark%402x.png">
       <LogicalName>pad-immediate-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pad-generic-pad-16.png">
-      <LogicalName>pad-generic-pad-16.png</LogicalName>
+    <EmbeddedResource Include="icons\pad-generic-16.png">
+      <LogicalName>pad-generic-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pad-generic-pad-16%402x.png">
-      <LogicalName>pad-generic-pad-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\pad-generic-16%402x.png">
+      <LogicalName>pad-generic-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pad-generic-pad-16~dark.png">
-      <LogicalName>pad-generic-pad-16~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\pad-generic-16~dark.png">
+      <LogicalName>pad-generic-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pad-generic-pad-16~dark%402x.png">
-      <LogicalName>pad-generic-pad-16~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\pad-generic-16~dark%402x.png">
+      <LogicalName>pad-generic-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-resource-16.png">
       <LogicalName>file-resource-16.png</LogicalName>
