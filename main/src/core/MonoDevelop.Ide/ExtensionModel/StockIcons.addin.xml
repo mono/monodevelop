@@ -22,7 +22,7 @@
 	<StockIcon stockid="gtk-about" resource="about-md-16.png" size="Menu" />
 	<StockIcon stockid="gtk-add" resource="add-16.png" size="Menu" />
 	<StockIcon stockid="gtk-apply" resource="done-16.png" size="Menu" />
-	<StockIcon stockid="gtk-cancel" resource="remove-16.png" size="Menu" />
+	<StockIcon stockid="gtk-cancel" resource="error-16.png" size="Menu" />
 	<StockIcon stockid="gtk-clear" resource="clear-16.png" size="Menu" />
 	<StockIcon stockid="gtk-close" resource="remove-16.png" size="Menu" />
 	<StockIcon stockid="gtk-copy" resource="copy-16.png" size="Menu" />
