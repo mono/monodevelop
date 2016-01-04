@@ -94,8 +94,8 @@ namespace MonoDevelop.Debugger
 			toolbarSet.AddSeparator ();
 			toolbarSet.Add (propertiesCmd);
 			toolbarSet.AddSeparator ();
-			toolbarSet.Add (new CommandEntry (DebugCommands.NewFunctionBreakpoint){ DispayType = CommandEntryDisplayType.IconAndText });
-			toolbarSet.Add (new CommandEntry (DebugCommands.NewCatchpoint){ DispayType = CommandEntryDisplayType.IconAndText });
+			toolbarSet.Add (new CommandEntry (DebugCommands.NewFunctionBreakpoint){ DisplayType = CommandEntryDisplayType.IconAndText });
+			toolbarSet.Add (new CommandEntry (DebugCommands.NewCatchpoint){ DisplayType = CommandEntryDisplayType.IconAndText });
 			
 			// The breakpoint list
 			

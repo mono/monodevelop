@@ -920,17 +920,16 @@ namespace MonoDevelop.SourceEditor
 	
 		void UpdateMimeType (string fileName)
 		{
-			// Look for a mime type for which there is a syntax mode
-			string mimeType = DesktopService.GetMimeTypeForUri (fileName);
-			if (loadedMimeType != mimeType) {
-				loadedMimeType = mimeType;
-				if (mimeType != null) {
-					foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (loadedMimeType)) {
-						if (Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (null, mt) != null) {
-							Document.MimeType = mt;
-							widget.TextEditor.TextEditorResolverProvider = TextEditorResolverService.GetProvider (mt);
-							break;
-						}
+			Document.MimeType = DesktopService.GetMimeTypeForUri (fileName);
+
+			//if the mimetype doesn't have a syntax mode, try to load one for its base mimetypes
+			var sm = Document.SyntaxMode as Mono.TextEditor.Highlighting.SyntaxMode;
+			if (sm != null && sm.MimeType == null) {
+				foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (Document.MimeType)) {
+					var syntaxMode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (null, mt);
+					if (syntaxMode != null) {
+						Document.SyntaxMode = syntaxMode;
+						break;
 					}
 				}
 			}

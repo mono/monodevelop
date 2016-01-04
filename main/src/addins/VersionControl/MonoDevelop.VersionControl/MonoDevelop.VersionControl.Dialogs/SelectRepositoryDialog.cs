@@ -25,7 +25,8 @@ namespace MonoDevelop.VersionControl.Dialogs
 		List<Repository> loadingRepos = new List<Repository> ();
 		IRepositoryEditor currentEditor;
 		string defaultPath;
-		
+		public readonly ConfigurationProperty<string> VersionControlDefaultPath = ConfigurationProperty.Create ("MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.DefaultPath", System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), "Projects"));
+
 		const int RepositoryCol = 0;
 		const int RepoNameCol = 1;
 		const int VcsName = 2;
@@ -59,14 +60,15 @@ namespace MonoDevelop.VersionControl.Dialogs
 			repoTree.AppendColumn (GettextCatalog.GetString ("Type"), new CellRendererText (), "text", VcsName);
 			repoTree.TestExpandRow += new Gtk.TestExpandRowHandler (OnTestExpandRow);
 			LoadRepositories ();
-			
+
 			if (mode == SelectRepositoryMode.Checkout) {
 				labelName.Visible = false;
 				entryName.Visible = false;
 				boxMessage.Visible = false;
 				labelMessage.Visible = false;
-				defaultPath = IdeApp.Preferences.ProjectsDefaultPath;
+				defaultPath = VersionControlDefaultPath;
 				entryFolder.Text = defaultPath;
+				buttonOk.Label = "_Checkout";
 			} else {
 				labelTargetDir.Visible = false;
 				boxFolder.Visible = false;
@@ -322,6 +324,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			var dlg = new MonoDevelop.Components.SelectFolderDialog (GettextCatalog.GetString ("Select target directory"));
 			if (dlg.Run ()) {
 				defaultPath = dlg.SelectedFile;
+				VersionControlDefaultPath.Value = defaultPath;
 				AppendRelativePath ();
 			}
 		}

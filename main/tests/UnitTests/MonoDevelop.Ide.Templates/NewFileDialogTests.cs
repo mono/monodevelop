@@ -1,10 +1,10 @@
-//
-// ResolveConflictsCommands.cs
+﻿//
+// NewFileDialogTests.cs
 //
 // Author:
-//       Therzok <teromario@yahoo.com>
+//       Vincent Dondain <vincent.dondain@xamarin.com>
 //
-// Copyright (c) 2013 Therzok
+// Copyright (c) 2015 Xamarin Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,30 +23,19 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System.Linq;
+using MonoDevelop.Ide.Projects;
+using NUnit.Framework;
+using UnitTests;
 
-using MonoDevelop.Ide;
-using MonoDevelop.VersionControl.Views;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
-
-namespace MonoDevelop.VersionControl
+namespace MonoDevelop.Ide.Templates
 {
-	public class ResolveConflictsCommand
+	[TestFixture]
+	public class NewFileDialogTests
 	{
-		public static bool ResolveConflicts (VersionControlItemList list, bool test)
+		[SetUp]
+		public void Init ()
 		{
-			if (test)
-				return list.All (s => (s.VersionInfo.Status & VersionStatus.Conflicted) == VersionStatus.Conflicted);
-
-			foreach (var item in list.Where (s => (s.VersionInfo.Status & VersionStatus.Conflicted) == VersionStatus.Conflicted)) {
-				Document doc = IdeApp.Workbench.OpenDocument (item.Path, item.ContainerProject, true);
-				foreach (var view in doc.Views) {
-					if (view.GetContent <MergeView> () != null)
-						view.Select ();
-				}
-			}
-			return true;
+			//var nfd = new NewFileDialog (Util.GetSampleProject (""), basePath);
 		}
 	}
 }
