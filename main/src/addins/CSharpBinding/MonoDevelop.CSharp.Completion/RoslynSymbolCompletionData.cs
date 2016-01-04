@@ -159,7 +159,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, MonoDevelop.Ide.Editor.Extension.KeyDescriptor descriptor)
 		{
-			string partialWord = GetCurrentWord (window);
+			string partialWord = GetCurrentWord (window, descriptor);
 			int skipChars = 0;
 			bool runParameterCompletionCommand = false;
 			bool runCompletionCompletionCommand = false;
