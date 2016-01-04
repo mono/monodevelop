@@ -69,7 +69,6 @@ namespace MonoDevelop.SourceEditor
 		static IWordFindStrategy monoDevelopWordFindStrategy = new EmacsWordFindStrategy (false);
 		static IWordFindStrategy emacsWordFindStrategy = new EmacsWordFindStrategy (true);
 		static IWordFindStrategy sharpDevelopWordFindStrategy = new SharpDevelopWordFindStrategy ();
-		static IWordFindStrategy viWordFindStrategy = new Mono.TextEditor.Vi.ViWordFindStrategy ();
 
 		public override IWordFindStrategy WordFindStrategy {
 			get {
@@ -80,8 +79,6 @@ namespace MonoDevelop.SourceEditor
 					return emacsWordFindStrategy;
 				case MonoDevelop.Ide.Editor.WordFindStrategy.SharpDevelop:
 					return sharpDevelopWordFindStrategy;
-				case MonoDevelop.Ide.Editor.WordFindStrategy.Vim:
-					return viWordFindStrategy;
 				default:
 					throw new ArgumentOutOfRangeException ();
 				}

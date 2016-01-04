@@ -194,13 +194,6 @@ namespace MonoDevelop.VersionControl.Views
 
 
 		#endregion
-		public bool UseViModes {
-			get {
-				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.UseViModes;
-			}
-			set {
-			}
-		}
 
 		public bool OnTheFlyFormatting {
 			get {
@@ -238,11 +231,6 @@ namespace MonoDevelop.VersionControl.Views
 
 		void SetWordFindStrategy ()
 		{
-			if (UseViModes) {
-				this.wordFindStrategy = new Mono.TextEditor.Vi.ViWordFindStrategy ();
-				return;
-			}
-
 			switch (WordNavigationStyle) {
 			case MonoDevelop.Ide.Editor.WordNavigationStyle.Unix:
 				this.wordFindStrategy = new EmacsWordFindStrategy (true);

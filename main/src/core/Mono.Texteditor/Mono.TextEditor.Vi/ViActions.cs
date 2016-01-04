@@ -34,16 +34,6 @@ namespace Mono.TextEditor.Vi
 {
 	public static class ViActions
 	{
-		public static void NextSubwordEnd (TextEditorData data)
-		{
-			data.Caret.Offset = ViWordFindStrategy.FindNextSubwordEndOffset (data.Document, data.Caret.Offset);
-		}
-
-		public static void NextWordEnd (TextEditorData data)
-		{
-			data.Caret.Offset = ViWordFindStrategy.FindNextWordEndOffset (data.Document, data.Caret.Offset);
-		}
-
 		public static void MoveToNextEmptyLine (TextEditorData data)
 		{
 			if (data.Caret.Line == data.Document.LineCount) {
@@ -305,7 +295,7 @@ namespace Mono.TextEditor.Vi
 			                              || matchingEndBrace != endTokenOffset.GetValueOrDefault ()))
 				endTokenOffset = matchingEndBrace;
 
-			if (!startTokenOffset.HasValue || !endTokenOffset.HasValue) throw new ViModeAbortException();
+			if (!startTokenOffset.HasValue || !endTokenOffset.HasValue) throw new Exception();
 
 			result = new SymbolBlock 
 			{ 

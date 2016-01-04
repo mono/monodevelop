@@ -31,8 +31,7 @@ namespace MonoDevelop.Ide.Editor
 	{
 		MonoDevelop,
 		Emacs,
-		SharpDevelop,
-		Vim
+		SharpDevelop
 	}
 }
 
