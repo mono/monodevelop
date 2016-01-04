@@ -704,11 +704,15 @@ namespace MonoDevelop.Ide.Editor
 		///  it doesn't require creating a String object.</remarks>
 		public char GetCharAt (int offset)
 		{
+			if (offset < 0 || offset >= Length)
+				throw new ArgumentOutOfRangeException (nameof (offset), "offset needs to be >= 0 && < " + Length + ", was :" + offset);
 			return ReadOnlyTextDocument.GetCharAt (offset);
 		}
 
 		public string GetTextAt (int offset, int length)
 		{
+			if (offset < 0 || offset >= Length)
+				throw new ArgumentOutOfRangeException (nameof (offset), "offset needs to be >= 0 && < " + Length + ", was :" + offset);
 			return ReadOnlyTextDocument.GetTextAt (offset, length);
 		}
 
