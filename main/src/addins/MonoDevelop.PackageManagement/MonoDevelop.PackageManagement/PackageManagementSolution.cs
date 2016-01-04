@@ -32,7 +32,7 @@ using System.Linq;
 using MonoDevelop.PackageManagement;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public class PackageManagementSolution : IPackageManagementSolution
 	{

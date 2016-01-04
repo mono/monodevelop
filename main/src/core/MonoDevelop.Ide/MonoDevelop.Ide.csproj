@@ -139,6 +139,7 @@
     <Reference Include="PresentationCore" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
     <Reference Include="PresentationFramework" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
     <Reference Include="WindowsBase" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
+    <Reference Include="WindowsFormsIntegration" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Reflection.Metadata">
       <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Reflection.Metadata.dll</HintPath>
@@ -374,12 +375,6 @@
     <EmbeddedResource Include="options\KeyBindingSchemeMonoDevelop1.xml">
       <LogicalName>KeyBindingSchemeMonoDevelop1.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\navigate-next-16.png">
-      <LogicalName>navigate-next-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\navigate-previous-16.png">
-      <LogicalName>navigate-previous-16.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="options\KeyBindingSchemeMonoDevelop2.xml">
       <LogicalName>KeyBindingSchemeMonoDevelop2.xml</LogicalName>
     </EmbeddedResource>
@@ -416,8 +411,17 @@
     <EmbeddedResource Include="MonoDevelop.Ide.CodeFormatting\InvariantTextStylePolicy.xml">
       <LogicalName>InvariantTextStylePolicy.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\add-namespace-16.png">
-      <LogicalName>add-namespace-16.png</LogicalName>
+    <EmbeddedResource Include="icons\new-namespace-16.png">
+      <LogicalName>new-namespace-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-namespace-16%402x.png">
+      <LogicalName>new-namespace-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-namespace-16~dark.png">
+      <LogicalName>new-namespace-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-namespace-16~dark%402x.png">
+      <LogicalName>new-namespace-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\project-assembly-16.png">
       <LogicalName>project-assembly-16.png</LogicalName>
@@ -581,11 +585,41 @@
     <EmbeddedResource Include="icons\comment-16~dark%402x.png">
       <LogicalName>comment-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\edit-find-next-16.png">
-      <LogicalName>edit-find-next-16.png</LogicalName>
+    <EmbeddedResource Include="icons\find-next-16.png">
+      <LogicalName>find-next-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\edit-select-all-16.png">
-      <LogicalName>edit-select-all-16.png</LogicalName>
+    <EmbeddedResource Include="icons\find-next-16%402x.png">
+      <LogicalName>find-next-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\find-next-16~dark.png">
+      <LogicalName>find-next-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\find-next-16~dark%402x.png">
+      <LogicalName>find-next-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\find-prev-16.png">
+      <LogicalName>find-prev-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\find-prev-16%402x.png">
+      <LogicalName>find-prev-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\find-prev-16~dark.png">
+      <LogicalName>find-prev-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\find-prev-16~dark%402x.png">
+      <LogicalName>find-prev-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\select-all-16.png">
+      <LogicalName>select-all-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\select-all-16%402x.png">
+      <LogicalName>select-all-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\select-all-16~dark.png">
+      <LogicalName>select-all-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\select-all-16~dark%402x.png">
+      <LogicalName>select-all-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-class-16.png">
       <LogicalName>element-class-16.png</LogicalName>
@@ -1091,8 +1125,17 @@
     <EmbeddedResource Include="icons\file-script-32~dark~sel%402x.png">
       <LogicalName>file-script-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-new-16.png">
-      <LogicalName>folder-new-16.png</LogicalName>
+    <EmbeddedResource Include="icons\new-folder-16.png">
+      <LogicalName>new-folder-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-folder-16%402x.png">
+      <LogicalName>new-folder-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-folder-16~dark.png">
+      <LogicalName>new-folder-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-folder-16~dark%402x.png">
+      <LogicalName>new-folder-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-keyword-16.png">
       <LogicalName>element-keyword-16.png</LogicalName>
@@ -1394,8 +1437,29 @@
     <EmbeddedResource Include="icons\project-package-overlay-32~dark~sel%402x.png">
       <LogicalName>project-package-overlay-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-new-16.png">
-      <LogicalName>project-new-16.png</LogicalName>
+    <EmbeddedResource Include="icons\new-project-16.png">
+      <LogicalName>new-project-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-project-16%402x.png">
+      <LogicalName>new-project-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-project-16~dark.png">
+      <LogicalName>new-project-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-project-16~dark%402x.png">
+      <LogicalName>new-project-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-workspace-16.png">
+      <LogicalName>new-workspace-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-workspace-16%402x.png">
+      <LogicalName>new-workspace-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-workspace-16~dark.png">
+      <LogicalName>new-workspace-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-workspace-16~dark%402x.png">
+      <LogicalName>new-workspace-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\package-source-16.png">
       <LogicalName>package-source-16.png</LogicalName>
@@ -1493,11 +1557,29 @@
     <EmbeddedResource Include="icons\solution-32~dark~sel%402x.png">
       <LogicalName>solution-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-folder-new-16.png">
-      <LogicalName>solution-folder-new-16.png</LogicalName>
+    <EmbeddedResource Include="icons\new-solution-folder-16.png">
+      <LogicalName>new-solution-folder-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-new-16.png">
-      <LogicalName>solution-new-16.png</LogicalName>
+    <EmbeddedResource Include="icons\new-solution-folder-16%402x.png">
+      <LogicalName>new-solution-folder-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-solution-folder-16~dark.png">
+      <LogicalName>new-solution-folder-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-solution-folder-16~dark%402x.png">
+      <LogicalName>new-solution-folder-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-solution-16.png">
+      <LogicalName>new-solution-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-solution-16%402x.png">
+      <LogicalName>new-solution-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-solution-16~dark.png">
+      <LogicalName>new-solution-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\new-solution-16~dark%402x.png">
+      <LogicalName>new-solution-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-visibility-private-diamond-overlay-16.png">
       <LogicalName>element-visibility-private-diamond-overlay-16.png</LogicalName>
@@ -1985,62 +2067,164 @@
     <EmbeddedResource Include="icons\disclose-arrow-up-16~dark%402x.png">
       <LogicalName>disclose-arrow-up-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pad-search-results-16.png">
-      <LogicalName>pad-search-results-16.png</LogicalName>
+    <EmbeddedResource Include="icons\pad-search-16.png">
+      <LogicalName>pad-search-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pad-search-results-16%402x.png">
-      <LogicalName>pad-search-results-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\pad-search-16%402x.png">
+      <LogicalName>pad-search-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pad-search-results-16~dark.png">
-      <LogicalName>pad-search-results-16~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\pad-search-16~dark.png">
+      <LogicalName>pad-search-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pad-search-results-16~dark%402x.png">
-      <LogicalName>pad-search-results-16~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\pad-search-16~dark%402x.png">
+      <LogicalName>pad-search-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-clear-16.png">
-      <LogicalName>searchbox-clear-16.png</LogicalName>
+    <EmbeddedResource Include="icons\searchbox-clear-mac-16.png">
+      <LogicalName>searchbox-clear-mac-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-clear-16%402x.png">
-      <LogicalName>searchbox-clear-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\searchbox-clear-mac-16%402x.png">
+      <LogicalName>searchbox-clear-mac-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-clear-16~dark.png">
-      <LogicalName>searchbox-clear-16~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\searchbox-clear-mac-16~dark.png">
+      <LogicalName>searchbox-clear-mac-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-clear-16~dark%402x.png">
-      <LogicalName>searchbox-clear-16~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\searchbox-clear-mac-16~dark%402x.png">
+      <LogicalName>searchbox-clear-mac-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-search-16.png">
-      <LogicalName>searchbox-search-16.png</LogicalName>
+    <EmbeddedResource Include="icons\searchbox-clear-win-24.png">
+      <LogicalName>searchbox-clear-win-24.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-search-16%402x.png">
-      <LogicalName>searchbox-search-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\searchbox-clear-win-24~dark.png">
+      <LogicalName>searchbox-clear-win-24~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-search-16~dark.png">
-      <LogicalName>searchbox-search-16~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\searchbox-clear-win-24~hover.png">
+      <LogicalName>searchbox-clear-win-24~hover.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\searchbox-search-16~dark%402x.png">
-      <LogicalName>searchbox-search-16~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\searchbox-clear-win-24~hover~dark.png">
+      <LogicalName>searchbox-clear-win-24~hover~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\clear-all-bookmarks-16.png">
-      <LogicalName>clear-all-bookmarks-16.png</LogicalName>
+    <EmbeddedResource Include="icons\searchbox-clear-win-24~pressed.png">
+      <LogicalName>searchbox-clear-win-24~pressed.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-clear-win-24~pressed~dark.png">
+      <LogicalName>searchbox-clear-win-24~pressed~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-search-mac-16.png">
+      <LogicalName>searchbox-search-mac-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-search-mac-16%402x.png">
+      <LogicalName>searchbox-search-mac-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-search-mac-16~dark.png">
+      <LogicalName>searchbox-search-mac-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-search-mac-16~dark%402x.png">
+      <LogicalName>searchbox-search-mac-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-search-win-24.png">
+      <LogicalName>searchbox-search-win-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-search-win-24~dark.png">
+      <LogicalName>searchbox-search-win-24~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-search-win-24~hover.png">
+      <LogicalName>searchbox-search-win-24~hover.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-search-win-24~hover~dark.png">
+      <LogicalName>searchbox-search-win-24~hover~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-search-win-24~pressed.png">
+      <LogicalName>searchbox-search-win-24~pressed.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-search-win-24~pressed~dark.png">
+      <LogicalName>searchbox-search-win-24~pressed~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-clear-all-16.png">
+      <LogicalName>bookmark-clear-all-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-clear-all-16%402x.png">
+      <LogicalName>bookmark-clear-all-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-clear-all-16~dark.png">
+      <LogicalName>bookmark-clear-all-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-clear-all-16~dark%402x.png">
+      <LogicalName>bookmark-clear-all-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\close-all-documents-16.png">
       <LogicalName>close-all-documents-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\close-all-documents-16%402x.png">
+      <LogicalName>close-all-documents-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\close-all-documents-16~dark.png">
+      <LogicalName>close-all-documents-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\close-all-documents-16~dark%402x.png">
+      <LogicalName>close-all-documents-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\close-solution-16.png">
       <LogicalName>close-solution-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\close-solution-16%402x.png">
+      <LogicalName>close-solution-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\close-solution-16~dark.png">
+      <LogicalName>close-solution-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\close-solution-16~dark%402x.png">
+      <LogicalName>close-solution-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\columns-one-16.png">
+      <LogicalName>columns-one-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\columns-one-16%402x.png">
+      <LogicalName>columns-one-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\columns-one-16~dark.png">
+      <LogicalName>columns-one-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\columns-one-16~dark%402x.png">
+      <LogicalName>columns-one-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\columns-two-16.png">
+      <LogicalName>columns-two-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\columns-two-16%402x.png">
+      <LogicalName>columns-two-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\columns-two-16~dark.png">
+      <LogicalName>columns-two-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\columns-two-16~dark%402x.png">
+      <LogicalName>columns-two-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\empty-16.png">
       <LogicalName>empty-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\find-in-files-16.png">
-      <LogicalName>find-in-files-16.png</LogicalName>
+    <EmbeddedResource Include="icons\bookmark-next-16.png">
+      <LogicalName>bookmark-next-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\goto-next-bookmark-16.png">
-      <LogicalName>goto-next-bookmark-16.png</LogicalName>
+    <EmbeddedResource Include="icons\bookmark-next-16%402x.png">
+      <LogicalName>bookmark-next-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\goto-prev-bookmark-16.png">
-      <LogicalName>goto-prev-bookmark-16.png</LogicalName>
+    <EmbeddedResource Include="icons\bookmark-next-16~dark.png">
+      <LogicalName>bookmark-next-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-next-16~dark%402x.png">
+      <LogicalName>bookmark-next-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-prev-16.png">
+      <LogicalName>bookmark-prev-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-prev-16%402x.png">
+      <LogicalName>bookmark-prev-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-prev-16~dark.png">
+      <LogicalName>bookmark-prev-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-prev-16~dark%402x.png">
+      <LogicalName>bookmark-prev-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-application-output-16.png">
       <LogicalName>pad-application-output-16.png</LogicalName>
@@ -2066,20 +2250,17 @@
     <EmbeddedResource Include="icons\pad-immediate-16~dark%402x.png">
       <LogicalName>pad-immediate-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pad-generic-pad-16.png">
-      <LogicalName>pad-generic-pad-16.png</LogicalName>
+    <EmbeddedResource Include="icons\pad-generic-16.png">
+      <LogicalName>pad-generic-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pad-generic-pad-16%402x.png">
-      <LogicalName>pad-generic-pad-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\pad-generic-16%402x.png">
+      <LogicalName>pad-generic-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pad-generic-pad-16~dark.png">
-      <LogicalName>pad-generic-pad-16~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\pad-generic-16~dark.png">
+      <LogicalName>pad-generic-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pad-generic-pad-16~dark%402x.png">
-      <LogicalName>pad-generic-pad-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\replace-in-files-16.png">
-      <LogicalName>replace-in-files-16.png</LogicalName>
+    <EmbeddedResource Include="icons\pad-generic-16~dark%402x.png">
+      <LogicalName>pad-generic-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-resource-16.png">
       <LogicalName>file-resource-16.png</LogicalName>
@@ -2177,11 +2358,29 @@
     <EmbeddedResource Include="icons\file-text-16~dark~sel%402x.png">
       <LogicalName>file-text-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\toggle-bookmark-16.png">
-      <LogicalName>toggle-bookmark-16.png</LogicalName>
+    <EmbeddedResource Include="icons\bookmark-toggle-16.png">
+      <LogicalName>bookmark-toggle-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-toggle-16%402x.png">
+      <LogicalName>bookmark-toggle-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-toggle-16~dark.png">
+      <LogicalName>bookmark-toggle-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bookmark-toggle-16~dark%402x.png">
+      <LogicalName>bookmark-toggle-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\web-search-16.png">
       <LogicalName>web-search-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\web-search-16%402x.png">
+      <LogicalName>web-search-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\web-search-16~dark.png">
+      <LogicalName>web-search-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\web-search-16~dark%402x.png">
+      <LogicalName>web-search-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-generic-16.png">
       <LogicalName>file-generic-16.png</LogicalName>
@@ -3284,6 +3483,18 @@
     <EmbeddedResource Include="icons\error-48~dark~sel%402x.png">
       <LogicalName>error-48~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\execute-16.png">
+      <LogicalName>execute-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\execute-16%402x.png">
+      <LogicalName>execute-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\execute-16~dark.png">
+      <LogicalName>execute-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\execute-16~dark%402x.png">
+      <LogicalName>execute-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\done-16.png">
       <LogicalName>done-16.png</LogicalName>
     </EmbeddedResource>
@@ -3440,17 +3651,17 @@
     <EmbeddedResource Include="icons\remove-16~dark%402x.png">
       <LogicalName>remove-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\properties-16.png">
-      <LogicalName>properties-16.png</LogicalName>
+    <EmbeddedResource Include="icons\run-unit-tests-16.png">
+      <LogicalName>run-unit-tests-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\properties-16%402x.png">
-      <LogicalName>properties-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\run-unit-tests-16%402x.png">
+      <LogicalName>run-unit-tests-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\properties-16~dark.png">
-      <LogicalName>properties-16~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\run-unit-tests-16~dark.png">
+      <LogicalName>run-unit-tests-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\properties-16~dark%402x.png">
-      <LogicalName>properties-16~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\run-unit-tests-16~dark%402x.png">
+      <LogicalName>run-unit-tests-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-load-save-16.png">
       <LogicalName>prefs-load-save-16.png</LogicalName>
@@ -3896,18 +4107,6 @@
     <EmbeddedResource Include="icons\copy-16~dark%402x.png">
       <LogicalName>copy-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\copy-16~sel.png">
-      <LogicalName>copy-16~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\copy-16~sel%402x.png">
-      <LogicalName>copy-16~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\copy-16~dark~sel.png">
-      <LogicalName>copy-16~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\copy-16~dark~sel%402x.png">
-      <LogicalName>copy-16~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\find-16.png">
       <LogicalName>find-16.png</LogicalName>
     </EmbeddedResource>
@@ -3992,6 +4191,30 @@
     <EmbeddedResource Include="icons\go-forward-16~dark%402x.png">
       <LogicalName>go-forward-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\go-to-line-16.png">
+      <LogicalName>go-to-line-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\go-to-line-16%402x.png">
+      <LogicalName>go-to-line-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\go-to-line-16~dark.png">
+      <LogicalName>go-to-line-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\go-to-line-16~dark%402x.png">
+      <LogicalName>go-to-line-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\go-to-matching-brace-16.png">
+      <LogicalName>go-to-matching-brace-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\go-to-matching-brace-16%402x.png">
+      <LogicalName>go-to-matching-brace-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\go-to-matching-brace-16~dark.png">
+      <LogicalName>go-to-matching-brace-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\go-to-matching-brace-16~dark%402x.png">
+      <LogicalName>go-to-matching-brace-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\go-up-16.png">
       <LogicalName>go-up-16.png</LogicalName>
     </EmbeddedResource>
@@ -4052,18 +4275,6 @@
     <EmbeddedResource Include="icons\jump-to-16~dark%402x.png">
       <LogicalName>jump-to-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\media-play-16.png">
-      <LogicalName>media-play-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\media-play-16%402x.png">
-      <LogicalName>media-play-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\media-play-16~dark.png">
-      <LogicalName>media-play-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\media-play-16~dark%402x.png">
-      <LogicalName>media-play-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\missing-image-16.png">
       <LogicalName>missing-image-16.png</LogicalName>
     </EmbeddedResource>
@@ -4078,6 +4289,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\open-16.png">
       <LogicalName>open-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\open-16%402x.png">
+      <LogicalName>open-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\open-16~dark.png">
+      <LogicalName>open-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\open-16~dark%402x.png">
+      <LogicalName>open-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\refresh-16.png">
       <LogicalName>refresh-16.png</LogicalName>
@@ -4094,8 +4314,50 @@
     <EmbeddedResource Include="icons\save-16.png">
       <LogicalName>save-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\save-16%402x.png">
+      <LogicalName>save-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\save-16~dark.png">
+      <LogicalName>save-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\save-16~dark%402x.png">
+      <LogicalName>save-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\save-all-16.png">
       <LogicalName>save-all-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\save-all-16%402x.png">
+      <LogicalName>save-all-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\save-all-16~dark.png">
+      <LogicalName>save-all-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\save-all-16~dark%402x.png">
+      <LogicalName>save-all-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-actual-16.png">
+      <LogicalName>zoom-actual-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-actual-16%402x.png">
+      <LogicalName>zoom-actual-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-actual-16~dark.png">
+      <LogicalName>zoom-actual-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-actual-16~dark%402x.png">
+      <LogicalName>zoom-actual-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-actual-16~sel.png">
+      <LogicalName>zoom-actual-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-actual-16~sel%402x.png">
+      <LogicalName>zoom-actual-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-actual-16~dark~sel.png">
+      <LogicalName>zoom-actual-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-actual-16~dark~sel%402x.png">
+      <LogicalName>zoom-actual-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\zoom-in-16.png">
       <LogicalName>zoom-in-16.png</LogicalName>
@@ -4505,6 +4767,18 @@
     <EmbeddedResource Include="icons\spinner-18-5~sel%402x.png">
       <LogicalName>spinner-18-5~sel@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\bug-16.png">
+      <LogicalName>bug-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bug-16%402x.png">
+      <LogicalName>bug-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bug-16~dark.png">
+      <LogicalName>bug-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bug-16~dark%402x.png">
+      <LogicalName>bug-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\catchpoint-16.png">
       <LogicalName>catchpoint-16.png</LogicalName>
     </EmbeddedResource>
@@ -4528,42 +4802,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\catchpoint-disabled-16~dark%402x.png">
       <LogicalName>catchpoint-disabled-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-status-information-16.png">
-      <LogicalName>project-status-information-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-status-information-16%402x.png">
-      <LogicalName>project-status-information-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-status-information-16~dark.png">
-      <LogicalName>project-status-information-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-status-information-16~dark%402x.png">
-      <LogicalName>project-status-information-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-status-warning-16.png">
-      <LogicalName>project-status-warning-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-status-warning-16%402x.png">
-      <LogicalName>project-status-warning-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-status-warning-16~dark.png">
-      <LogicalName>project-status-warning-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-status-warning-16~dark%402x.png">
-      <LogicalName>project-status-warning-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-status-error-16.png">
-      <LogicalName>project-status-error-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-status-error-16%402x.png">
-      <LogicalName>project-status-error-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-status-error-16~dark.png">
-      <LogicalName>project-status-error-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-status-error-16~dark%402x.png">
-      <LogicalName>project-status-error-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\platform-android-16.png">
       <LogicalName>platform-android-16.png</LogicalName>
@@ -4877,259 +5115,65 @@
     <EmbeddedResource Include="resources\tabbar-active%402x.9.png">
       <LogicalName>tabbar-active@2x.9.png</LogicalName>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup Condition=" '$(Configuration)' != 'DebugMac' AND '$(Configuration)' != 'ReleaseMac' ">
-    <EmbeddedResource Include="icons\status-building-1-14.png">
-      <LogicalName>status-building-1-14.png</LogicalName>
+    <EmbeddedResource Include="icons\platform-tvos-16.png">
+      <LogicalName>platform-tvos-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-1-14%402x.png">
-      <LogicalName>status-building-1-14@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\platform-tvos-16%402x.png">
+      <LogicalName>platform-tvos-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-2-14.png">
-      <LogicalName>status-building-2-14.png</LogicalName>
+    <EmbeddedResource Include="icons\platform-tvos-16~dark.png">
+      <LogicalName>platform-tvos-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-2-14%402x.png">
-      <LogicalName>status-building-2-14@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\platform-tvos-16~dark%402x.png">
+      <LogicalName>platform-tvos-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-3-14.png">
-      <LogicalName>status-building-3-14.png</LogicalName>
+    <EmbeddedResource Include="icons\platform-tvos-16~sel.png">
+      <LogicalName>platform-tvos-16~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-3-14%402x.png">
-      <LogicalName>status-building-3-14@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\platform-tvos-16~sel%402x.png">
+      <LogicalName>platform-tvos-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-4-14.png">
-      <LogicalName>status-building-4-14.png</LogicalName>
+    <EmbeddedResource Include="icons\platform-tvos-16~dark~sel.png">
+      <LogicalName>platform-tvos-16~dark~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-4-14%402x.png">
-      <LogicalName>status-building-4-14@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\platform-tvos-16~dark~sel%402x.png">
+      <LogicalName>platform-tvos-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-5-14.png">
-      <LogicalName>status-building-5-14.png</LogicalName>
+    <EmbeddedResource Include="icons\platform-watchos-16.png">
+      <LogicalName>platform-watchos-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-5-14%402x.png">
-      <LogicalName>status-building-5-14@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\platform-watchos-16%402x.png">
+      <LogicalName>platform-watchos-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-searching-1-14.png">
-      <LogicalName>status-searching-1-14.png</LogicalName>
+    <EmbeddedResource Include="icons\platform-watchos-16~dark.png">
+      <LogicalName>platform-watchos-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-searching-1-14%402x.png">
-      <LogicalName>status-searching-1-14@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\platform-watchos-16~dark%402x.png">
+      <LogicalName>platform-watchos-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-searching-2-14.png">
-      <LogicalName>status-searching-2-14.png</LogicalName>
+    <EmbeddedResource Include="icons\platform-watchos-16~sel.png">
+      <LogicalName>platform-watchos-16~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-searching-2-14%402x.png">
-      <LogicalName>status-searching-2-14@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\platform-watchos-16~sel%402x.png">
+      <LogicalName>platform-watchos-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-searching-3-14.png">
-      <LogicalName>status-searching-3-14.png</LogicalName>
+    <EmbeddedResource Include="icons\platform-watchos-16~dark~sel.png">
+      <LogicalName>platform-watchos-16~dark~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-searching-3-14%402x.png">
-      <LogicalName>status-searching-3-14@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\platform-watchos-16~dark~sel%402x.png">
+      <LogicalName>platform-watchos-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-searching-4-14.png">
-      <LogicalName>status-searching-4-14.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-assets-mac-16.png">
+      <LogicalName>folder-assets-mac-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-searching-4-14%402x.png">
-      <LogicalName>status-searching-4-14@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-assets-mac-16%402x.png">
+      <LogicalName>folder-assets-mac-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pushing-1-14.png">
-      <LogicalName>status-pushing-1-14.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-assets-win-16.png">
+      <LogicalName>folder-assets-win-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pushing-1-14%402x.png">
-      <LogicalName>status-pushing-1-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pushing-2-14.png">
-      <LogicalName>status-pushing-2-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pushing-2-14%402x.png">
-      <LogicalName>status-pushing-2-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pushing-3-14.png">
-      <LogicalName>status-pushing-3-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pushing-3-14%402x.png">
-      <LogicalName>status-pushing-3-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pushing-4-14.png">
-      <LogicalName>status-pushing-4-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pushing-4-14%402x.png">
-      <LogicalName>status-pushing-4-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pushing-5-14.png">
-      <LogicalName>status-pushing-5-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pushing-5-14%402x.png">
-      <LogicalName>status-pushing-5-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pushing-6-14.png">
-      <LogicalName>status-pushing-6-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pushing-6-14%402x.png">
-      <LogicalName>status-pushing-6-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pulling-1-14.png">
-      <LogicalName>status-pulling-1-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pulling-1-14%402x.png">
-      <LogicalName>status-pulling-1-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pulling-2-14.png">
-      <LogicalName>status-pulling-2-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pulling-2-14%402x.png">
-      <LogicalName>status-pulling-2-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pulling-3-14.png">
-      <LogicalName>status-pulling-3-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pulling-3-14%402x.png">
-      <LogicalName>status-pulling-3-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pulling-4-14.png">
-      <LogicalName>status-pulling-4-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pulling-4-14%402x.png">
-      <LogicalName>status-pulling-4-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pulling-5-14.png">
-      <LogicalName>status-pulling-5-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pulling-5-14%402x.png">
-      <LogicalName>status-pulling-5-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pulling-6-14.png">
-      <LogicalName>status-pulling-6-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-pulling-6-14%402x.png">
-      <LogicalName>status-pulling-6-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-1-14.png">
-      <LogicalName>status-opening-1-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-1-14%402x.png">
-      <LogicalName>status-opening-1-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-2-14.png">
-      <LogicalName>status-opening-2-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-2-14%402x.png">
-      <LogicalName>status-opening-2-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-3-14.png">
-      <LogicalName>status-opening-3-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-3-14%402x.png">
-      <LogicalName>status-opening-3-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-4-14.png">
-      <LogicalName>status-opening-4-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-4-14%402x.png">
-      <LogicalName>status-opening-4-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-5-14.png">
-      <LogicalName>status-opening-5-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-5-14%402x.png">
-      <LogicalName>status-opening-5-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-6-14.png">
-      <LogicalName>status-opening-6-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-6-14%402x.png">
-      <LogicalName>status-opening-6-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-ready-14.png">
-      <LogicalName>status-ready-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-ready-14%402x.png">
-      <LogicalName>status-ready-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-success-14.png">
-      <LogicalName>status-success-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-success-14%402x.png">
-      <LogicalName>status-success-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-warning-14.png">
-      <LogicalName>status-warning-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-warning-14%402x.png">
-      <LogicalName>status-warning-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-failure-14.png">
-      <LogicalName>status-failure-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-failure-14%402x.png">
-      <LogicalName>status-failure-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-connecting-1-14.png">
-      <LogicalName>status-connecting-1-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-connecting-1-14%402x.png">
-      <LogicalName>status-connecting-1-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-connecting-2-14.png">
-      <LogicalName>status-connecting-2-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-connecting-2-14%402x.png">
-      <LogicalName>status-connecting-2-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-connecting-3-14.png">
-      <LogicalName>status-connecting-3-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-connecting-3-14%402x.png">
-      <LogicalName>status-connecting-3-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-connecting-4-14.png">
-      <LogicalName>status-connecting-4-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-connecting-4-14%402x.png">
-      <LogicalName>status-connecting-4-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-connecting-5-14.png">
-      <LogicalName>status-connecting-5-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-connecting-5-14%402x.png">
-      <LogicalName>status-connecting-5-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-connecting-6-14.png">
-      <LogicalName>status-connecting-6-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-connecting-6-14%402x.png">
-      <LogicalName>status-connecting-6-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-waiting-1-14.png">
-      <LogicalName>status-waiting-1-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-waiting-1-14%402x.png">
-      <LogicalName>status-waiting-1-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-waiting-2-14.png">
-      <LogicalName>status-waiting-2-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-waiting-2-14%402x.png">
-      <LogicalName>status-waiting-2-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-waiting-3-14.png">
-      <LogicalName>status-waiting-3-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-waiting-3-14%402x.png">
-      <LogicalName>status-waiting-3-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-waiting-4-14.png">
-      <LogicalName>status-waiting-4-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-waiting-4-14%402x.png">
-      <LogicalName>status-waiting-4-14@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-waiting-5-14.png">
-      <LogicalName>status-waiting-5-14.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-waiting-5-14%402x.png">
-      <LogicalName>status-waiting-5-14@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-assets-win-16%402x.png">
+      <LogicalName>folder-assets-win-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\parser-16.png">
       <LogicalName>parser-16.png</LogicalName>
@@ -5155,637 +5199,767 @@
     <EmbeddedResource Include="icons\parser-16~dark~sel%402x.png">
       <LogicalName>parser-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup Condition=" '$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac' ">
-    <EmbeddedResource Include="icons\mac\status-building-1-16.png">
+    <EmbeddedResource Include="icons\status-building-1-16.png">
       <LogicalName>status-building-1-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-building-1-16%402x.png">
+    <EmbeddedResource Include="icons\status-building-1-16%402x.png">
       <LogicalName>status-building-1-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-building-1-16~dark.png">
+    <EmbeddedResource Include="icons\status-building-1-16~dark.png">
       <LogicalName>status-building-1-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-building-1-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-building-1-16~dark%402x.png">
       <LogicalName>status-building-1-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-building-2-16.png">
+    <EmbeddedResource Include="icons\status-building-2-16.png">
       <LogicalName>status-building-2-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-building-2-16%402x.png">
+    <EmbeddedResource Include="icons\status-building-2-16%402x.png">
       <LogicalName>status-building-2-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-building-2-16~dark.png">
+    <EmbeddedResource Include="icons\status-building-2-16~dark.png">
       <LogicalName>status-building-2-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-building-2-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-building-2-16~dark%402x.png">
       <LogicalName>status-building-2-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-building-3-16.png">
+    <EmbeddedResource Include="icons\status-building-3-16.png">
       <LogicalName>status-building-3-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-building-3-16%402x.png">
+    <EmbeddedResource Include="icons\status-building-3-16%402x.png">
       <LogicalName>status-building-3-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-building-3-16~dark.png">
+    <EmbeddedResource Include="icons\status-building-3-16~dark.png">
       <LogicalName>status-building-3-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-building-3-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-building-3-16~dark%402x.png">
       <LogicalName>status-building-3-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-building-4-16.png">
+    <EmbeddedResource Include="icons\status-building-4-16.png">
       <LogicalName>status-building-4-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-building-4-16%402x.png">
+    <EmbeddedResource Include="icons\status-building-4-16%402x.png">
       <LogicalName>status-building-4-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-building-5-16.png">
+    <EmbeddedResource Include="icons\status-building-5-16.png">
       <LogicalName>status-building-5-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-building-5-16%402x.png">
+    <EmbeddedResource Include="icons\status-building-5-16%402x.png">
       <LogicalName>status-building-5-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-building-5-16~dark.png">
+    <EmbeddedResource Include="icons\status-building-5-16~dark.png">
       <LogicalName>status-building-5-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-building-5-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-building-5-16~dark%402x.png">
       <LogicalName>status-building-5-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-1-16.png">
+    <EmbeddedResource Include="icons\status-connecting-1-16.png">
       <LogicalName>status-connecting-1-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-1-16%402x.png">
+    <EmbeddedResource Include="icons\status-connecting-1-16%402x.png">
       <LogicalName>status-connecting-1-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-1-16~dark.png">
+    <EmbeddedResource Include="icons\status-connecting-1-16~dark.png">
       <LogicalName>status-connecting-1-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-1-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-connecting-1-16~dark%402x.png">
       <LogicalName>status-connecting-1-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-2-16.png">
+    <EmbeddedResource Include="icons\status-connecting-2-16.png">
       <LogicalName>status-connecting-2-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-2-16%402x.png">
+    <EmbeddedResource Include="icons\status-connecting-2-16%402x.png">
       <LogicalName>status-connecting-2-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-2-16~dark.png">
+    <EmbeddedResource Include="icons\status-connecting-2-16~dark.png">
       <LogicalName>status-connecting-2-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-2-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-connecting-2-16~dark%402x.png">
       <LogicalName>status-connecting-2-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-3-16.png">
+    <EmbeddedResource Include="icons\status-connecting-3-16.png">
       <LogicalName>status-connecting-3-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-3-16%402x.png">
+    <EmbeddedResource Include="icons\status-connecting-3-16%402x.png">
       <LogicalName>status-connecting-3-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-3-16~dark.png">
+    <EmbeddedResource Include="icons\status-connecting-3-16~dark.png">
       <LogicalName>status-connecting-3-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-3-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-connecting-3-16~dark%402x.png">
       <LogicalName>status-connecting-3-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-4-16.png">
+    <EmbeddedResource Include="icons\status-connecting-4-16.png">
       <LogicalName>status-connecting-4-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-4-16%402x.png">
+    <EmbeddedResource Include="icons\status-connecting-4-16%402x.png">
       <LogicalName>status-connecting-4-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-4-16~dark.png">
+    <EmbeddedResource Include="icons\status-connecting-4-16~dark.png">
       <LogicalName>status-connecting-4-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-4-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-connecting-4-16~dark%402x.png">
       <LogicalName>status-connecting-4-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-5-16.png">
+    <EmbeddedResource Include="icons\status-connecting-5-16.png">
       <LogicalName>status-connecting-5-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-5-16%402x.png">
+    <EmbeddedResource Include="icons\status-connecting-5-16%402x.png">
       <LogicalName>status-connecting-5-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-5-16~dark.png">
+    <EmbeddedResource Include="icons\status-connecting-5-16~dark.png">
       <LogicalName>status-connecting-5-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-5-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-connecting-5-16~dark%402x.png">
       <LogicalName>status-connecting-5-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-6-16.png">
+    <EmbeddedResource Include="icons\status-connecting-6-16.png">
       <LogicalName>status-connecting-6-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-6-16%402x.png">
+    <EmbeddedResource Include="icons\status-connecting-6-16%402x.png">
       <LogicalName>status-connecting-6-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-6-16~dark.png">
+    <EmbeddedResource Include="icons\status-connecting-6-16~dark.png">
       <LogicalName>status-connecting-6-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-connecting-6-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-connecting-6-16~dark%402x.png">
       <LogicalName>status-connecting-6-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-paused-16.png">
+    <EmbeddedResource Include="icons\status-updates-paused-16.png">
       <LogicalName>status-updates-paused-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-paused-16%402x.png">
+    <EmbeddedResource Include="icons\status-updates-paused-16%402x.png">
       <LogicalName>status-updates-paused-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-paused-16~dark.png">
+    <EmbeddedResource Include="icons\status-updates-paused-16~dark.png">
       <LogicalName>status-updates-paused-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-paused-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-updates-paused-16~dark%402x.png">
       <LogicalName>status-updates-paused-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-ready-16.png">
+    <EmbeddedResource Include="icons\status-updates-ready-16.png">
       <LogicalName>status-updates-ready-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-ready-16%402x.png">
+    <EmbeddedResource Include="icons\status-updates-ready-16%402x.png">
       <LogicalName>status-updates-ready-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-ready-16~dark.png">
+    <EmbeddedResource Include="icons\status-updates-ready-16~dark.png">
       <LogicalName>status-updates-ready-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-ready-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-updates-ready-16~dark%402x.png">
       <LogicalName>status-updates-ready-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-error-16.png">
+    <EmbeddedResource Include="icons\status-error-16.png">
       <LogicalName>status-error-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-error-16%402x.png">
+    <EmbeddedResource Include="icons\status-error-16%402x.png">
       <LogicalName>status-error-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-error-16~dark.png">
+    <EmbeddedResource Include="icons\status-error-16~dark.png">
       <LogicalName>status-error-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-error-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-error-16~dark%402x.png">
       <LogicalName>status-error-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-error-count-16.png">
+    <EmbeddedResource Include="icons\status-error-count-16.png">
       <LogicalName>status-error-count-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-error-count-16%402x.png">
+    <EmbeddedResource Include="icons\status-error-count-16%402x.png">
       <LogicalName>status-error-count-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-error-count-16~dark.png">
+    <EmbeddedResource Include="icons\status-error-count-16~dark.png">
       <LogicalName>status-error-count-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-error-count-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-error-count-16~dark%402x.png">
       <LogicalName>status-error-count-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-1-16.png">
+    <EmbeddedResource Include="icons\status-opening-1-16.png">
       <LogicalName>status-opening-1-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-1-16%402x.png">
+    <EmbeddedResource Include="icons\status-opening-1-16%402x.png">
       <LogicalName>status-opening-1-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-1-16~dark.png">
+    <EmbeddedResource Include="icons\status-opening-1-16~dark.png">
       <LogicalName>status-opening-1-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-1-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-opening-1-16~dark%402x.png">
       <LogicalName>status-opening-1-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-2-16.png">
+    <EmbeddedResource Include="icons\status-opening-2-16.png">
       <LogicalName>status-opening-2-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-2-16%402x.png">
+    <EmbeddedResource Include="icons\status-opening-2-16%402x.png">
       <LogicalName>status-opening-2-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-2-16~dark.png">
+    <EmbeddedResource Include="icons\status-opening-2-16~dark.png">
       <LogicalName>status-opening-2-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-2-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-opening-2-16~dark%402x.png">
       <LogicalName>status-opening-2-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-3-16.png">
+    <EmbeddedResource Include="icons\status-opening-3-16.png">
       <LogicalName>status-opening-3-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-3-16%402x.png">
+    <EmbeddedResource Include="icons\status-opening-3-16%402x.png">
       <LogicalName>status-opening-3-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-3-16~dark.png">
+    <EmbeddedResource Include="icons\status-opening-3-16~dark.png">
       <LogicalName>status-opening-3-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-3-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-opening-3-16~dark%402x.png">
       <LogicalName>status-opening-3-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-4-16.png">
+    <EmbeddedResource Include="icons\status-opening-4-16.png">
       <LogicalName>status-opening-4-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-4-16%402x.png">
+    <EmbeddedResource Include="icons\status-opening-4-16%402x.png">
       <LogicalName>status-opening-4-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-4-16~dark.png">
+    <EmbeddedResource Include="icons\status-opening-4-16~dark.png">
       <LogicalName>status-opening-4-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-4-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-opening-4-16~dark%402x.png">
       <LogicalName>status-opening-4-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-5-16.png">
+    <EmbeddedResource Include="icons\status-opening-5-16.png">
       <LogicalName>status-opening-5-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-5-16%402x.png">
+    <EmbeddedResource Include="icons\status-opening-5-16%402x.png">
       <LogicalName>status-opening-5-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-5-16~dark.png">
+    <EmbeddedResource Include="icons\status-opening-5-16~dark.png">
       <LogicalName>status-opening-5-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-5-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-opening-5-16~dark%402x.png">
       <LogicalName>status-opening-5-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-6-16.png">
+    <EmbeddedResource Include="icons\status-opening-6-16.png">
       <LogicalName>status-opening-6-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-6-16%402x.png">
+    <EmbeddedResource Include="icons\status-opening-6-16%402x.png">
       <LogicalName>status-opening-6-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-6-16~dark.png">
+    <EmbeddedResource Include="icons\status-opening-6-16~dark.png">
       <LogicalName>status-opening-6-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-opening-6-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-opening-6-16~dark%402x.png">
       <LogicalName>status-opening-6-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-parsing-16.png">
+    <EmbeddedResource Include="icons\status-parsing-16.png">
       <LogicalName>status-parsing-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-parsing-16%402x.png">
+    <EmbeddedResource Include="icons\status-parsing-16%402x.png">
       <LogicalName>status-parsing-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-parsing-16~dark.png">
+    <EmbeddedResource Include="icons\status-parsing-16~dark.png">
       <LogicalName>status-parsing-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-parsing-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-parsing-16~dark%402x.png">
       <LogicalName>status-parsing-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-1-16.png">
+    <EmbeddedResource Include="icons\status-pulling-1-16.png">
       <LogicalName>status-pulling-1-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-1-16%402x.png">
+    <EmbeddedResource Include="icons\status-pulling-1-16%402x.png">
       <LogicalName>status-pulling-1-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-1-16~dark.png">
+    <EmbeddedResource Include="icons\status-pulling-1-16~dark.png">
       <LogicalName>status-pulling-1-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-1-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-pulling-1-16~dark%402x.png">
       <LogicalName>status-pulling-1-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-2-16.png">
+    <EmbeddedResource Include="icons\status-pulling-2-16.png">
       <LogicalName>status-pulling-2-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-2-16%402x.png">
+    <EmbeddedResource Include="icons\status-pulling-2-16%402x.png">
       <LogicalName>status-pulling-2-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-2-16~dark.png">
+    <EmbeddedResource Include="icons\status-pulling-2-16~dark.png">
       <LogicalName>status-pulling-2-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-2-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-pulling-2-16~dark%402x.png">
       <LogicalName>status-pulling-2-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-3-16.png">
+    <EmbeddedResource Include="icons\status-pulling-3-16.png">
       <LogicalName>status-pulling-3-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-3-16%402x.png">
+    <EmbeddedResource Include="icons\status-pulling-3-16%402x.png">
       <LogicalName>status-pulling-3-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-3-16~dark.png">
+    <EmbeddedResource Include="icons\status-pulling-3-16~dark.png">
       <LogicalName>status-pulling-3-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-3-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-pulling-3-16~dark%402x.png">
       <LogicalName>status-pulling-3-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-4-16.png">
+    <EmbeddedResource Include="icons\status-pulling-4-16.png">
       <LogicalName>status-pulling-4-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-4-16%402x.png">
+    <EmbeddedResource Include="icons\status-pulling-4-16%402x.png">
       <LogicalName>status-pulling-4-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-4-16~dark.png">
+    <EmbeddedResource Include="icons\status-pulling-4-16~dark.png">
       <LogicalName>status-pulling-4-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-4-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-pulling-4-16~dark%402x.png">
       <LogicalName>status-pulling-4-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-5-16.png">
+    <EmbeddedResource Include="icons\status-pulling-5-16.png">
       <LogicalName>status-pulling-5-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-5-16%402x.png">
+    <EmbeddedResource Include="icons\status-pulling-5-16%402x.png">
       <LogicalName>status-pulling-5-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-5-16~dark.png">
+    <EmbeddedResource Include="icons\status-pulling-5-16~dark.png">
       <LogicalName>status-pulling-5-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-5-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-pulling-5-16~dark%402x.png">
       <LogicalName>status-pulling-5-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-6-16.png">
+    <EmbeddedResource Include="icons\status-pulling-6-16.png">
       <LogicalName>status-pulling-6-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-6-16%402x.png">
+    <EmbeddedResource Include="icons\status-pulling-6-16%402x.png">
       <LogicalName>status-pulling-6-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-6-16~dark.png">
+    <EmbeddedResource Include="icons\status-pulling-6-16~dark.png">
       <LogicalName>status-pulling-6-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pulling-6-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-pulling-6-16~dark%402x.png">
       <LogicalName>status-pulling-6-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-1-16.png">
+    <EmbeddedResource Include="icons\status-pushing-1-16.png">
       <LogicalName>status-pushing-1-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-1-16%402x.png">
+    <EmbeddedResource Include="icons\status-pushing-1-16%402x.png">
       <LogicalName>status-pushing-1-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-1-16~dark.png">
+    <EmbeddedResource Include="icons\status-pushing-1-16~dark.png">
       <LogicalName>status-pushing-1-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-1-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-pushing-1-16~dark%402x.png">
       <LogicalName>status-pushing-1-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-2-16.png">
+    <EmbeddedResource Include="icons\status-pushing-2-16.png">
       <LogicalName>status-pushing-2-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-2-16%402x.png">
+    <EmbeddedResource Include="icons\status-pushing-2-16%402x.png">
       <LogicalName>status-pushing-2-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-2-16~dark.png">
+    <EmbeddedResource Include="icons\status-pushing-2-16~dark.png">
       <LogicalName>status-pushing-2-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-2-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-pushing-2-16~dark%402x.png">
       <LogicalName>status-pushing-2-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-3-16.png">
+    <EmbeddedResource Include="icons\status-pushing-3-16.png">
       <LogicalName>status-pushing-3-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-3-16%402x.png">
+    <EmbeddedResource Include="icons\status-pushing-3-16%402x.png">
       <LogicalName>status-pushing-3-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-3-16~dark.png">
+    <EmbeddedResource Include="icons\status-pushing-3-16~dark.png">
       <LogicalName>status-pushing-3-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-3-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-pushing-3-16~dark%402x.png">
       <LogicalName>status-pushing-3-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-4-16.png">
+    <EmbeddedResource Include="icons\status-pushing-4-16.png">
       <LogicalName>status-pushing-4-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-4-16%402x.png">
+    <EmbeddedResource Include="icons\status-pushing-4-16%402x.png">
       <LogicalName>status-pushing-4-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-4-16~dark.png">
+    <EmbeddedResource Include="icons\status-pushing-4-16~dark.png">
       <LogicalName>status-pushing-4-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-4-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-pushing-4-16~dark%402x.png">
       <LogicalName>status-pushing-4-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-5-16.png">
+    <EmbeddedResource Include="icons\status-pushing-5-16.png">
       <LogicalName>status-pushing-5-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-5-16%402x.png">
+    <EmbeddedResource Include="icons\status-pushing-5-16%402x.png">
       <LogicalName>status-pushing-5-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-5-16~dark.png">
+    <EmbeddedResource Include="icons\status-pushing-5-16~dark.png">
       <LogicalName>status-pushing-5-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-5-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-pushing-5-16~dark%402x.png">
       <LogicalName>status-pushing-5-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-6-16.png">
+    <EmbeddedResource Include="icons\status-pushing-6-16.png">
       <LogicalName>status-pushing-6-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-6-16%402x.png">
+    <EmbeddedResource Include="icons\status-pushing-6-16%402x.png">
       <LogicalName>status-pushing-6-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-6-16~dark.png">
+    <EmbeddedResource Include="icons\status-pushing-6-16~dark.png">
       <LogicalName>status-pushing-6-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-pushing-6-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-pushing-6-16~dark%402x.png">
       <LogicalName>status-pushing-6-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-ready-16.png">
+    <EmbeddedResource Include="icons\status-ready-16.png">
       <LogicalName>status-ready-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-ready-16%402x.png">
+    <EmbeddedResource Include="icons\status-ready-16%402x.png">
       <LogicalName>status-ready-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-ready-16~dark.png">
+    <EmbeddedResource Include="icons\status-ready-16~dark.png">
       <LogicalName>status-ready-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-ready-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-ready-16~dark%402x.png">
       <LogicalName>status-ready-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-searching-1-16.png">
+    <EmbeddedResource Include="icons\status-searching-1-16.png">
       <LogicalName>status-searching-1-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-searching-1-16%402x.png">
+    <EmbeddedResource Include="icons\status-searching-1-16%402x.png">
       <LogicalName>status-searching-1-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-searching-1-16~dark.png">
+    <EmbeddedResource Include="icons\status-searching-1-16~dark.png">
       <LogicalName>status-searching-1-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-searching-1-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-searching-1-16~dark%402x.png">
       <LogicalName>status-searching-1-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-searching-2-16.png">
+    <EmbeddedResource Include="icons\status-searching-2-16.png">
       <LogicalName>status-searching-2-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-searching-2-16%402x.png">
+    <EmbeddedResource Include="icons\status-searching-2-16%402x.png">
       <LogicalName>status-searching-2-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-searching-2-16~dark.png">
+    <EmbeddedResource Include="icons\status-searching-2-16~dark.png">
       <LogicalName>status-searching-2-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-searching-2-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-searching-2-16~dark%402x.png">
       <LogicalName>status-searching-2-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-searching-3-16.png">
+    <EmbeddedResource Include="icons\status-searching-3-16.png">
       <LogicalName>status-searching-3-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-searching-3-16%402x.png">
+    <EmbeddedResource Include="icons\status-searching-3-16%402x.png">
       <LogicalName>status-searching-3-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-searching-3-16~dark.png">
+    <EmbeddedResource Include="icons\status-searching-3-16~dark.png">
       <LogicalName>status-searching-3-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-searching-3-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-searching-3-16~dark%402x.png">
       <LogicalName>status-searching-3-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-searching-4-16.png">
+    <EmbeddedResource Include="icons\status-searching-4-16.png">
       <LogicalName>status-searching-4-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-searching-4-16%402x.png">
+    <EmbeddedResource Include="icons\status-searching-4-16%402x.png">
       <LogicalName>status-searching-4-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-searching-4-16~dark.png">
+    <EmbeddedResource Include="icons\status-searching-4-16~dark.png">
       <LogicalName>status-searching-4-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-searching-4-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-searching-4-16~dark%402x.png">
       <LogicalName>status-searching-4-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-success-16.png">
+    <EmbeddedResource Include="icons\status-success-16.png">
       <LogicalName>status-success-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-success-16%402x.png">
+    <EmbeddedResource Include="icons\status-success-16%402x.png">
       <LogicalName>status-success-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-success-16~dark.png">
+    <EmbeddedResource Include="icons\status-success-16~dark.png">
       <LogicalName>status-success-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-success-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-success-16~dark%402x.png">
       <LogicalName>status-success-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-1-16.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-1-16.png">
       <LogicalName>status-updates-downloading-1-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-1-16%402x.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-1-16%402x.png">
       <LogicalName>status-updates-downloading-1-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-1-16~dark.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-1-16~dark.png">
       <LogicalName>status-updates-downloading-1-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-1-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-1-16~dark%402x.png">
       <LogicalName>status-updates-downloading-1-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-2-16.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-2-16.png">
       <LogicalName>status-updates-downloading-2-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-2-16%402x.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-2-16%402x.png">
       <LogicalName>status-updates-downloading-2-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-2-16~dark.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-2-16~dark.png">
       <LogicalName>status-updates-downloading-2-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-2-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-2-16~dark%402x.png">
       <LogicalName>status-updates-downloading-2-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-3-16.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-3-16.png">
       <LogicalName>status-updates-downloading-3-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-3-16%402x.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-3-16%402x.png">
       <LogicalName>status-updates-downloading-3-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-3-16~dark.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-3-16~dark.png">
       <LogicalName>status-updates-downloading-3-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-3-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-3-16~dark%402x.png">
       <LogicalName>status-updates-downloading-3-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-4-16.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-4-16.png">
       <LogicalName>status-updates-downloading-4-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-4-16%402x.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-4-16%402x.png">
       <LogicalName>status-updates-downloading-4-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-4-16~dark.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-4-16~dark.png">
       <LogicalName>status-updates-downloading-4-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-4-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-4-16~dark%402x.png">
       <LogicalName>status-updates-downloading-4-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-5-16.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-5-16.png">
       <LogicalName>status-updates-downloading-5-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-5-16%402x.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-5-16%402x.png">
       <LogicalName>status-updates-downloading-5-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-5-16~dark.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-5-16~dark.png">
       <LogicalName>status-updates-downloading-5-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-5-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-5-16~dark%402x.png">
       <LogicalName>status-updates-downloading-5-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-6-16.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-6-16.png">
       <LogicalName>status-updates-downloading-6-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-6-16%402x.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-6-16%402x.png">
       <LogicalName>status-updates-downloading-6-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-6-16~dark.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-6-16~dark.png">
       <LogicalName>status-updates-downloading-6-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-6-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-updates-downloading-6-16~dark%402x.png">
       <LogicalName>status-updates-downloading-6-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-waiting-1-16.png">
+    <EmbeddedResource Include="icons\status-waiting-1-16.png">
       <LogicalName>status-waiting-1-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-waiting-1-16%402x.png">
+    <EmbeddedResource Include="icons\status-waiting-1-16%402x.png">
       <LogicalName>status-waiting-1-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-waiting-1-16~dark.png">
+    <EmbeddedResource Include="icons\status-waiting-1-16~dark.png">
       <LogicalName>status-waiting-1-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-waiting-1-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-waiting-1-16~dark%402x.png">
       <LogicalName>status-waiting-1-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-waiting-2-16.png">
+    <EmbeddedResource Include="icons\status-waiting-2-16.png">
       <LogicalName>status-waiting-2-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-waiting-2-16%402x.png">
+    <EmbeddedResource Include="icons\status-waiting-2-16%402x.png">
       <LogicalName>status-waiting-2-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-waiting-2-16~dark.png">
+    <EmbeddedResource Include="icons\status-waiting-2-16~dark.png">
       <LogicalName>status-waiting-2-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-waiting-2-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-waiting-2-16~dark%402x.png">
       <LogicalName>status-waiting-2-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-waiting-3-16.png">
+    <EmbeddedResource Include="icons\status-waiting-3-16.png">
       <LogicalName>status-waiting-3-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-waiting-3-16%402x.png">
+    <EmbeddedResource Include="icons\status-waiting-3-16%402x.png">
       <LogicalName>status-waiting-3-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-waiting-3-16~dark.png">
+    <EmbeddedResource Include="icons\status-waiting-3-16~dark.png">
       <LogicalName>status-waiting-3-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-waiting-3-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-waiting-3-16~dark%402x.png">
       <LogicalName>status-waiting-3-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-waiting-4-16.png">
+    <EmbeddedResource Include="icons\status-waiting-4-16.png">
       <LogicalName>status-waiting-4-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-waiting-4-16%402x.png">
+    <EmbeddedResource Include="icons\status-waiting-4-16%402x.png">
       <LogicalName>status-waiting-4-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-waiting-4-16~dark.png">
+    <EmbeddedResource Include="icons\status-waiting-4-16~dark.png">
       <LogicalName>status-waiting-4-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-waiting-4-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-waiting-4-16~dark%402x.png">
       <LogicalName>status-waiting-4-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-waiting-5-16.png">
+    <EmbeddedResource Include="icons\status-waiting-5-16.png">
       <LogicalName>status-waiting-5-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-waiting-5-16%402x.png">
+    <EmbeddedResource Include="icons\status-waiting-5-16%402x.png">
       <LogicalName>status-waiting-5-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-waiting-5-16~dark.png">
+    <EmbeddedResource Include="icons\status-waiting-5-16~dark.png">
       <LogicalName>status-waiting-5-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-waiting-5-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-waiting-5-16~dark%402x.png">
       <LogicalName>status-waiting-5-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-warning-16.png">
+    <EmbeddedResource Include="icons\status-warning-16.png">
       <LogicalName>status-warning-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-warning-16%402x.png">
+    <EmbeddedResource Include="icons\status-warning-16%402x.png">
       <LogicalName>status-warning-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-warning-16~dark.png">
+    <EmbeddedResource Include="icons\status-warning-16~dark.png">
       <LogicalName>status-warning-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-warning-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-warning-16~dark%402x.png">
       <LogicalName>status-warning-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-warning-count-16.png">
+    <EmbeddedResource Include="icons\status-warning-count-16.png">
       <LogicalName>status-warning-count-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-warning-count-16%402x.png">
+    <EmbeddedResource Include="icons\status-warning-count-16%402x.png">
       <LogicalName>status-warning-count-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-warning-count-16~dark.png">
+    <EmbeddedResource Include="icons\status-warning-count-16~dark.png">
       <LogicalName>status-warning-count-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-warning-count-16~dark%402x.png">
+    <EmbeddedResource Include="icons\status-warning-count-16~dark%402x.png">
       <LogicalName>status-warning-count-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\unindent-16.png">
+      <LogicalName>unindent-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\unindent-16%402x.png">
+      <LogicalName>unindent-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\unindent-16~dark.png">
+      <LogicalName>unindent-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\unindent-16~dark%402x.png">
+      <LogicalName>unindent-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\about-md-16.png">
+      <LogicalName>about-md-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\about-md-16%402x.png">
+      <LogicalName>about-md-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\about-md-16~dark.png">
+      <LogicalName>about-md-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\about-md-16~dark%402x.png">
+      <LogicalName>about-md-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\cut-16.png">
+      <LogicalName>cut-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\cut-16%402x.png">
+      <LogicalName>cut-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\cut-16~dark.png">
+      <LogicalName>cut-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\cut-16~dark%402x.png">
+      <LogicalName>cut-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\fullscreen-16.png">
+      <LogicalName>fullscreen-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\fullscreen-16%402x.png">
+      <LogicalName>fullscreen-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\fullscreen-16~dark.png">
+      <LogicalName>fullscreen-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\fullscreen-16~dark%402x.png">
+      <LogicalName>fullscreen-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\fullscreen-16~sel.png">
+      <LogicalName>fullscreen-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\fullscreen-16~sel%402x.png">
+      <LogicalName>fullscreen-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\fullscreen-16~dark~sel.png">
+      <LogicalName>fullscreen-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\fullscreen-16~dark~sel%402x.png">
+      <LogicalName>fullscreen-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\help-16.png">
+      <LogicalName>help-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\help-16%402x.png">
+      <LogicalName>help-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\help-16~dark.png">
+      <LogicalName>help-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\help-16~dark%402x.png">
+      <LogicalName>help-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\help-16~sel.png">
+      <LogicalName>help-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\help-16~sel%402x.png">
+      <LogicalName>help-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\help-16~dark~sel.png">
+      <LogicalName>help-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\help-16~dark~sel%402x.png">
+      <LogicalName>help-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\indent-16.png">
+      <LogicalName>indent-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\indent-16%402x.png">
+      <LogicalName>indent-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\indent-16~dark.png">
+      <LogicalName>indent-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\indent-16~dark%402x.png">
+      <LogicalName>indent-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\paste-16.png">
+      <LogicalName>paste-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\paste-16%402x.png">
+      <LogicalName>paste-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\paste-16~dark.png">
+      <LogicalName>paste-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\paste-16~dark%402x.png">
+      <LogicalName>paste-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\print-16.png">
+      <LogicalName>print-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\print-16%402x.png">
+      <LogicalName>print-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\print-16~dark.png">
+      <LogicalName>print-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\print-16~dark%402x.png">
+      <LogicalName>print-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\redo-16.png">
+      <LogicalName>redo-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\redo-16%402x.png">
+      <LogicalName>redo-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\redo-16~dark.png">
+      <LogicalName>redo-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\redo-16~dark%402x.png">
+      <LogicalName>redo-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -6348,7 +6522,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\GtkErrorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\DefaultCodeFormatter.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormatterExtensionNode.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\GtkSynchronizationContext.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\NewPolicySetDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.NewPolicySetDialog.cs" />
     <Compile Include="MonoDevelop.Components\HeaderBox.cs" />
@@ -6752,6 +6925,7 @@
     <Compile Include="MonoDevelop.Components.AutoTest\PropertyMetadata.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\ObjectProperties.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\ISearchResultCallback.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TemplateConditionEvaluator.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest.Operations\SelectedOperation.cs" />
     <Compile Include="MonoDevelop.Components\Windows\GtkWPFWidget.cs" />
     <Compile Include="MonoDevelop.Components\Windows\GtkWin32Interop.cs" />
@@ -6806,10 +6980,7 @@
     <Folder Include="MonoDevelop.Ide.Editor\Commands\" />
     <Folder Include="MonoDevelop.Ide.Editor\MessageBubbles\" />
     <Folder Include="MonoDevelop.Ide.Editor\Projection\" />
-    <Folder Include="icons\mac\" />
     <Folder Include="MonoDevelop.Components\Windows\" />
-    <Folder Include="icons\dark\" />
-    <Folder Include="resources\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">

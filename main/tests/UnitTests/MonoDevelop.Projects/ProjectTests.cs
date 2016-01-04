@@ -718,6 +718,24 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (0, res.ErrorCount);
 		}
 
+		[Test ()]
+		public async Task ProjectReferencingConditionalReferences ()
+		{
+			string solFile = Util.GetSampleProject ("conditional-project-reference", "conditional-project-reference.sln");
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = sol.Items.FirstOrDefault (pr => pr.Name == "conditional-project-reference");
+
+			Assert.AreEqual (2, p.GetReferencedItems ((SolutionConfigurationSelector)"DebugWin").Count ());
+			Assert.AreEqual (1, p.GetReferencedItems ((SolutionConfigurationSelector)"Debug").Count ());
+
+			//We have intentional compile error in windowsLib project
+			var res = await p.Build (Util.GetMonitor (), (SolutionConfigurationSelector)"DebugWin", true);
+			Assert.AreEqual (1, res.ErrorCount);
+
+			res = await p.Build (Util.GetMonitor (), (SolutionConfigurationSelector)"Debug", true);
+			Assert.AreEqual (0, res.ErrorCount);
+		}
+
 		[Test()]
 		public async Task ProjectReferencingDisabledProject_ProjectBuildFails ()
 		{
@@ -749,6 +767,43 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual ("foo", sol.UserProperties.GetValue<string> ("SolProp"));
 			Assert.AreEqual ("bar", p.UserProperties.GetValue<string> ("ProjectProp"));
+		}
+
+		/// <summary>
+		/// With a PCL project having no references if you add a reference, then remove, then add it
+		/// again then the saved project file will end up no references.
+		/// </summary>
+		[Test]
+		public async Task AddingRemovingAndThenAddingReferenceToPortableLibrarySavesReferenceToFile ()
+		{
+			string solFile = Util.GetSampleProject ("portable-library", "portable-library.sln");
+
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = sol.FindProjectByName ("PortableLibrary") as DotNetProject;
+
+			Assert.AreEqual (0, p.References.Count);
+
+			// Add System.Xml reference.
+			p.References.Add (ProjectReference.CreateAssemblyReference ("System.Xml"));
+			await p.SaveAsync (Util.GetMonitor ());
+			Assert.AreEqual (1, p.References.Count);
+
+			// Remove System.Xml reference so no references remain.
+			p.References.RemoveAt (0);
+			await p.SaveAsync (Util.GetMonitor ());
+			Assert.AreEqual (0, p.References.Count);
+
+			// Add System.Xml reference again.
+			p.References.Add (ProjectReference.CreateAssemblyReference ("System.Xml"));
+			await p.SaveAsync (Util.GetMonitor ());
+			Assert.AreEqual (1, p.References.Count);
+
+			// Ensure the references are saved to the file.
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			p = sol.FindProjectByName ("PortableLibrary") as DotNetProject;
+
+			Assert.AreEqual (1, p.References.Count);
+			Assert.AreEqual ("System.Xml", p.References[0].Include);
 		}
 	}
 

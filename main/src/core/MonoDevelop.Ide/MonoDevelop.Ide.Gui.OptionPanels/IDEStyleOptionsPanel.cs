@@ -133,15 +133,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		void SetTheme (string theme)
 		{
 			if (theme.Length == 0 && Platform.IsLinux) {
-				theme = IdeStartup.DefaultTheme;
+				theme = MonoDevelop.Components.IdeTheme.DefaultTheme;
 				IdeApp.Preferences.UserInterfaceTheme.Value = "";
 			}
 			else {
 				IdeApp.Preferences.UserInterfaceTheme.Value = theme;
 			}
-
-			if (Platform.IsLinux && theme != Gtk.Settings.Default.ThemeName)
-				Gtk.Settings.Default.ThemeName = theme;
 		}
 
 		// Code for getting the list of themes based on f-spot

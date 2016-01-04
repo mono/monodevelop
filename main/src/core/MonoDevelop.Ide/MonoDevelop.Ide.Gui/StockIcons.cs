@@ -33,11 +33,12 @@ namespace MonoDevelop.Ide.Gui
 {
 	public class Stock
 	{
+		public static readonly IconId AssetsFolder = "md-folder-assets";
 		public static readonly IconId AddNamespace = "md-add-namespace";
 		public static readonly IconId BreakPoint = "md-break-point";
 		public static readonly IconId BuildCombine = "md-build-combine";
 		public static readonly IconId Class = "md-class";
-		public static readonly IconId ClearAllBookmarks = "md-clear-all-bookmarks";
+		public static readonly IconId ClearAllBookmarks = "md-bookmark-clear-all";
 		public static readonly IconId CloseAllDocuments = "md-close-all-documents";
 		public static readonly IconId CloseCombine = "md-close-combine-icon";
 		public static readonly IconId CloseIcon = Gtk.Stock.Close;
@@ -58,11 +59,11 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId Field = "md-field";
 		public static readonly IconId FileXmlIcon = "md-file-xml-icon";
 		public static readonly IconId FindIcon = "md-magnify";
-		public static readonly IconId FindInFiles = "md-find-in-files";
-		public static readonly IconId FindNextIcon = "md-find-next-icon";
+		public static readonly IconId FindNextIcon = "md-find-next";
+		public static readonly IconId FindPrevIcon = "md-find-prev";
 		public static readonly IconId FullScreen = Gtk.Stock.Fullscreen;
-		public static readonly IconId GotoNextbookmark = "md-goto-nextbookmark";
-		public static readonly IconId GotoPrevbookmark = "md-goto-prevbookmark";
+		public static readonly IconId GotoNextbookmark = "md-bookmark-next";
+		public static readonly IconId GotoPrevbookmark = "md-bookmark-prev";
 		public static readonly IconId Information = "md-information";
 		public static readonly IconId Interface = "md-interface";
 		public static readonly IconId InternalClass = "md-internal-class";
@@ -117,7 +118,6 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId Reference = "md-reference";
 		public static readonly IconId ReferenceWarning = "md-reference-warning";
 		public static readonly IconId ReplaceIcon = Gtk.Stock.FindAndReplace;
-		public static readonly IconId ReplaceInFiles = "md-replace-in-files";
 		public static readonly IconId ResourceFileIcon = "md-resource-file-icon";
 		public static readonly IconId Console = "md-console";
 		public static readonly IconId RunProgramIcon = Gtk.Stock.Execute;
@@ -129,7 +129,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId Struct = "md-struct";
 		public static readonly IconId TaskListIcon = "md-task-list";
 		public static readonly IconId TextFileIcon = "md-text-file-icon";
-		public static readonly IconId ToggleBookmark = "md-toggle-bookmark";
+		public static readonly IconId ToggleBookmark = "md-bookmark-toggle";
 		public static readonly IconId UndoIcon = Gtk.Stock.Undo;
 		public static readonly IconId Warning = "md-warning";
 		public static readonly IconId XmlFileIcon = "md-xml-file-icon";
@@ -160,5 +160,6 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId Add = "md-add";
 		public static readonly IconId Clear = "md-clear";
 		public static readonly IconId Execute = Gtk.Stock.Execute;
+		public static readonly IconId SearchboxSearch = "md-searchbox-search";
 	}
 }

@@ -29,7 +29,7 @@ using System;
 using MonoDevelop.PackageManagement;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public interface IPackageManagementProjectFactory
 	{

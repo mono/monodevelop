@@ -150,7 +150,11 @@ namespace MonoDevelop.Components
 		
 		Func<int, Widget> createMenuForItem;
 		Widget menuWidget;
-		
+		bool pressMenuWasVisible;
+		int pressHoverIndex;
+		int menuIndex;
+		uint hideTimeout;
+
 		public PathBar (Func<int, Widget> createMenuForItem)
 		{
 			this.Events =  EventMask.ExposureMask | 
@@ -244,6 +248,7 @@ namespace MonoDevelop.Components
 			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
 
 				ctx.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+				// FIXME: VV: Remove gradient features
 				using (var g = new Cairo.LinearGradient (0, 0, 0, Allocation.Height)) {
 					g.AddColorStop (0, Styles.BreadcrumbBackgroundColor);
 					g.AddColorStop (1, Styles.BreadcrumbGradientEndColor);
@@ -433,6 +438,9 @@ namespace MonoDevelop.Components
 
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
+			pressMenuWasVisible = menuVisible;
+			pressHoverIndex = menuIndex;
+
 			HideMenu ();
 			if (hovering) {
 				pressed = true;
@@ -446,6 +454,8 @@ namespace MonoDevelop.Components
 			pressed = false;
 			if (hovering) {
 				QueueDraw ();
+				if (pressMenuWasVisible && pressHoverIndex == hoverIndex)
+					return true;
 				ShowMenu ();
 			}
 			return true;
@@ -457,18 +467,18 @@ namespace MonoDevelop.Components
 				return;
 
 			HideMenu ();
-
+			menuIndex = hoverIndex;
 			menuWidget = createMenuForItem (hoverIndex);
 			if (menuWidget == null)
 				return;
 			menuWidget.Hidden += delegate {
-				
 				menuVisible = false;
 				QueueDraw ();
 				
 				//FIXME: for some reason the menu's children don't get activated if we destroy 
 				//directly here, so use a timeout to delay it
-				GLib.Timeout.Add (100, delegate {
+				hideTimeout = GLib.Timeout.Add (100, delegate {
+					hideTimeout = 0;
 					HideMenu ();
 					return false;
 				});
@@ -490,6 +500,9 @@ namespace MonoDevelop.Components
 
 		public void HideMenu ()
 		{
+			if (hideTimeout != 0) {
+				GLib.Source.Remove (hideTimeout); 
+			}
 			if (menuWidget != null) {
 				menuWidget.Destroy ();
 				menuWidget = null;

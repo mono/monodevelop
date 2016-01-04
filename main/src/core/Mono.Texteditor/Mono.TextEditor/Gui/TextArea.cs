@@ -1779,6 +1779,8 @@ namespace Mono.TextEditor
 		
 		internal void SetAdjustments ()
 		{
+			if (textEditorData == null)
+				return;
 			SetAdjustments (Allocation);
 		}
 		
@@ -1967,7 +1969,7 @@ namespace Mono.TextEditor
 		
 		public Mono.TextEditor.Highlighting.ColorScheme ColorStyle {
 			get {
-				return this.textEditorData.ColorStyle;
+				return this.textEditorData?.ColorStyle;
 			}
 		}
 		
@@ -2668,6 +2670,8 @@ namespace Mono.TextEditor
 
 				//draw the highlight rectangle
 				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 0, 0, corner, width, height);
+
+				// FIXME: VV: Remove gradient features
 				using (var gradient = new Cairo.LinearGradient (0, 0, 0, height)) {
 					color = ColorLerp (
 						TextViewMargin.DimColor (Editor.ColorStyle.SearchResultMain.Color, 1.1),

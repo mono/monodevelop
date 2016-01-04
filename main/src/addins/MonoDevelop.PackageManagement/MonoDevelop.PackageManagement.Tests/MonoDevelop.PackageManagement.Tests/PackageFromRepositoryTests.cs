@@ -126,10 +126,10 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void IconUrl_WrappedPackageIconUrlIsHttpSharpDevelopNet_ReturnsHttpSharpDevelopNet ()
+		public void IconUrl_WrappedPackageIconUrlIsHttpMonoDevelopNet_ReturnsHttpMonoDevelopNet ()
 		{
 			CreatePackage ();
-			var expectedUrl = new Uri ("http://sharpdevelop.net");
+			var expectedUrl = new Uri ("http://monodevelop.net");
 			fakePackage.IconUrl = expectedUrl;
 			Uri url = package.IconUrl;
 
@@ -137,10 +137,10 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void LicenseUrl_WrappedPackageLicenseUrlIsHttpSharpDevelopNet_ReturnsHttpSharpDevelopNet ()
+		public void LicenseUrl_WrappedPackageLicenseUrlIsHttpMonoDevelopNet_ReturnsHttpMonoDevelopNet ()
 		{
 			CreatePackage ();
-			var expectedUrl = new Uri ("http://sharpdevelop.net");
+			var expectedUrl = new Uri ("http://monodevelop.net");
 			fakePackage.LicenseUrl = expectedUrl;
 			Uri url = package.LicenseUrl;
 
@@ -148,10 +148,10 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void ProjectUrl_WrappedPackageProjectUrlIsHttpSharpDevelopNet_ReturnsHttpSharpDevelopNet ()
+		public void ProjectUrl_WrappedPackageProjectUrlIsHttpMonoDevelopNet_ReturnsHttpMonoDevelopNet ()
 		{
 			CreatePackage ();
-			var expectedUrl = new Uri ("http://sharpdevelop.net");
+			var expectedUrl = new Uri ("http://monodevelop.net");
 			fakePackage.ProjectUrl = expectedUrl;
 			Uri url = package.ProjectUrl;
 
@@ -159,10 +159,10 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void ReportAbuseUrl_WrappedPackageReportAbuseUrlIsHttpSharpDevelopNet_ReturnsHttpSharpDevelopNet ()
+		public void ReportAbuseUrl_WrappedPackageReportAbuseUrlIsHttpMonoDevelopNet_ReturnsHttpMonoDevelopNet ()
 		{
 			CreatePackage ();
-			var expectedUrl = new Uri ("http://sharpdevelop.net");
+			var expectedUrl = new Uri ("http://monodevelop.net");
 			fakePackage.ReportAbuseUrl = expectedUrl;
 			Uri url = package.ReportAbuseUrl;
 

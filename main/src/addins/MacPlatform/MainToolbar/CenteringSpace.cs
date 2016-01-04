@@ -27,6 +27,7 @@ using System;
 using AppKit;
 using CoreGraphics;
 using Foundation;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
@@ -43,12 +44,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public override void ViewDidMoveToWindow ()
 		{
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notif =>
-				DispatchService.GuiDispatch (toolbarItem.UpdateWidth));
+			                                                Runtime.RunInMainThread (() => toolbarItem.UpdateWidth ()));
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.WillEnterFullScreenNotification, notif =>
 				CenteringSpaceToolbarItem.WindowFullscreening = true);
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidEnterFullScreenNotification, notif => {
 				CenteringSpaceToolbarItem.WindowFullscreening = false;
-				DispatchService.GuiDispatch (toolbarItem.UpdateWidth);
+				Runtime.RunInMainThread (() => toolbarItem.UpdateWidth ());
 			});
 
 			base.ViewDidMoveToWindow ();

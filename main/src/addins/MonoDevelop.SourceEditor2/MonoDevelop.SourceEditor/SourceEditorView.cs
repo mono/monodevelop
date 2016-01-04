@@ -458,6 +458,10 @@ namespace MonoDevelop.SourceEditor
 			}
 			x += widgetExtension.OffsetX;
 			y += widgetExtension.OffsetY;
+
+			//We don't want Widget to appear outside TextArea(cut off)...
+			x = Math.Max (0, x);
+			y = Math.Max (0, y);
 			return true;
 		}
 
@@ -1081,15 +1085,15 @@ namespace MonoDevelop.SourceEditor
 				if (location != null) {
 					RemoveDebugMarkers ();
 					var segment = widget.TextEditor.Document.GetLine (location.Line);
-					int offset, length;
-					if (location.Line > 0 && location.Column > 0 && location.EndLine > 0 && location.EndColumn > 0) {
-						offset = widget.TextEditor.LocationToOffset (location.Line, location.Column);
-						length = widget.TextEditor.LocationToOffset (location.EndLine, location.EndColumn) - offset;
-					} else {
-						offset = segment.Offset;
-						length = segment.Length;
-					}
 					if (segment != null) {
+						int offset, length;
+						if (location.Line > 0 && location.Column > 0 && location.EndLine > 0 && location.EndColumn > 0) {
+							offset = widget.TextEditor.LocationToOffset (location.Line, location.Column);
+							length = widget.TextEditor.LocationToOffset (location.EndLine, location.EndColumn) - offset;
+						} else {
+							offset = segment.Offset;
+							length = segment.Length;
+						}
 						if (DebuggingService.CurrentFrameIndex == 0) {
 							currentDebugLineMarker = new CurrentDebugLineTextMarker (widget.TextEditor, offset, length);
 							currentDebugLineMarker.AddTo (widget.TextEditor.Document, segment);
@@ -2878,13 +2882,13 @@ namespace MonoDevelop.SourceEditor
 		
 		void ITextEditorImpl.SetTextPasteHandler (TextPasteHandler textPasteHandler)
 		{
-			if (textPasteHandler == null) {
-				TextEditor.GetTextEditorData ().TextPasteHandler = null;
-				return;
-			}
 			var data = TextEditor.GetTextEditorData ();
 			if (data.TextPasteHandler != null)
 				((TextPasteHandlerWrapper)data.TextPasteHandler).Dispose ();
+			if (textPasteHandler == null) {
+				data.TextPasteHandler = null;
+				return;
+			}
 			data.TextPasteHandler = new TextPasteHandlerWrapper (data, textPasteHandler);
 		}
 

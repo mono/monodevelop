@@ -29,6 +29,7 @@ using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using System.Linq;
 
 #if MAC
 using AppKit;
@@ -40,11 +41,30 @@ namespace MonoDevelop.Components
 {
 	public static class IdeTheme
 	{
+		internal static string DefaultTheme;
+		internal static string DefaultGtkDataFolder;
+		internal static string DefaultGtk2RcFiles;
+
 		public static Skin UserInterfaceSkin { get; private set; }
 
 		static IdeTheme ()
 		{
-			IdeApp.Preferences.UserInterfaceTheme.Changed += Preferences_UserInterfaceThemeChanged;
+			DefaultGtkDataFolder = Environment.GetEnvironmentVariable ("GTK_DATA_PREFIX");
+			DefaultGtk2RcFiles = Environment.GetEnvironmentVariable ("GTK2_RC_FILES");
+			IdeApp.Preferences.UserInterfaceTheme.Changed += (sender, e) => UpdateGtkTheme ();
+		}
+
+		internal static void InitializeGtk (string progname, ref string[] args)
+		{
+			if (Gtk.Settings.Default != null)
+				throw new InvalidOperationException ("Gtk already initialized!");
+			
+			//HACK: we must initilize some Gtk rc before Gtk.Application is initialized on Mac
+			//      otherwise it will not be loaded correctly and theme switching won't work.
+			if (Platform.IsMac)
+				UpdateGtkTheme ();
+
+			Gtk.Application.Init (BrandingService.ApplicationName, ref args);
 		}
 
 		internal static void SetupXwtTheme ()
@@ -54,40 +74,93 @@ namespace MonoDevelop.Components
 			Xwt.Toolkit.CurrentEngine.RegisterBackend <Xwt.Backends.IDialogBackend, ThemedGtkDialogBackend>();
 		}
 
+		internal static void SetupGtkTheme ()
+		{
+			if (Gtk.Settings.Default == null)
+				return;
+			
+			if (Platform.IsLinux) {
+				DefaultTheme = Gtk.Settings.Default.ThemeName;
+				string theme = IdeApp.Preferences.UserInterfaceTheme;
+				if (string.IsNullOrEmpty (theme))
+					theme = DefaultTheme;
+				ValidateGtkTheme (ref theme);
+				if (theme != DefaultTheme)
+					Gtk.Settings.Default.ThemeName = theme;
+				LoggingService.LogInfo ("GTK: Using Gtk theme from {0}", Path.Combine (Gtk.Rc.ThemeDir, Gtk.Settings.Default.ThemeName));
+			} else
+				DefaultTheme = "Light";
+
+			// we have loaded the theme in Initialize () already
+			if (Platform.IsWindows)
+				UpdateGtkTheme ();
+		}
+
 		internal static void UpdateGtkTheme ()
 		{
+			if (DefaultTheme == null)
+				SetupGtkTheme ();
+
 			if (!Platform.IsLinux)
 				UserInterfaceSkin = IdeApp.Preferences.UserInterfaceTheme == "Dark" ? Skin.Dark : Skin.Light;
+
+			var current_theme = IdeApp.Preferences.UserInterfaceTheme;
+			var use_bundled_theme = false;
+
 			
 			// Use the bundled gtkrc only if the Xamarin theme is installed
-			if (File.Exists (Path.Combine (Gtk.Rc.ModuleDir, "libxamarin.so")) || File.Exists (Path.Combine (Gtk.Rc.ModuleDir, "libxamarin.dll"))) {
-
-				var gtkrc = "gtkrc";
+			if (File.Exists (Path.Combine (Gtk.Rc.ModuleDir, "libxamarin.so")) || File.Exists (Path.Combine (Gtk.Rc.ModuleDir, "libxamarin.dll")))
+				use_bundled_theme = true;
+			
+			if (use_bundled_theme) {
+				
+				if (!Directory.Exists (UserProfile.Current.ConfigDir))
+					Directory.CreateDirectory (UserProfile.Current.ConfigDir);
+				
 				if (Platform.IsWindows) {
-					gtkrc += ".win32";
+					// HACK: Gtk Bug: Rc.ReparseAll () and the include "[rcfile]" gtkrc statement are broken on Windows.
+					//                We must provide our own XDG folder structure to switch bundled themes.
+					var rc_themes = UserProfile.Current.ConfigDir.Combine ("share", "themes");
+					var rc_theme_light = rc_themes.Combine ("Light", "gtk-2.0", "gtkrc");
+					var rc_theme_dark = rc_themes.Combine ("Dark", "gtk-2.0", "gtkrc");
+					if (!Directory.Exists (rc_theme_light.ParentDirectory))
+						Directory.CreateDirectory (rc_theme_light.ParentDirectory);
+					if (!Directory.Exists (rc_theme_dark.ParentDirectory))
+						Directory.CreateDirectory (rc_theme_dark.ParentDirectory);
+
+					string gtkrc = PropertyService.EntryAssemblyPath.Combine ("gtkrc");
+					File.Copy (gtkrc + ".win32", rc_theme_light, true);
+					File.Copy (gtkrc + ".win32-dark", rc_theme_dark, true);
+
+					Environment.SetEnvironmentVariable ("GTK_DATA_PREFIX", UserProfile.Current.ConfigDir);
+					LoggingService.LogInfo ("GTK: Using Gtk theme from {0}", Path.Combine (Gtk.Rc.ThemeDir, current_theme));
+
+					if (Gtk.Settings.Default != null)
+						Gtk.Settings.Default.ThemeName = current_theme;
+
+					Environment.SetEnvironmentVariable ("GTK_DATA_PREFIX", DefaultGtkDataFolder);
+
+				} else if (Platform.IsMac) {
+					
+					var gtkrc = "gtkrc.mac";
 					if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark)
 						gtkrc += "-dark";
-				} else if (Platform.IsMac) {
-					gtkrc += ".mac";
-					if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark)
-						gtkrc += "-dark";
-				}
+					gtkrc = PropertyService.EntryAssemblyPath.Combine (gtkrc);
 
-				var gtkrcf = PropertyService.EntryAssemblyPath.Combine (gtkrc);
-				LoggingService.LogInfo ("GTK: Using gtkrc from {0}", gtkrcf);
-
-				if (Platform.IsWindows) {
-					Environment.SetEnvironmentVariable ("GTK2_RC_FILES", gtkrcf);
-				} else if (Platform.IsMac) {
+					LoggingService.LogInfo ("GTK: Using gtkrc from {0}", gtkrc);
+					
 					// Generate a dummy rc file and use that to include the real rc. This allows changing the rc
 					// on the fly. All we have to do is rewrite the dummy rc changing the include and call ReparseAll
 					var rcFile = UserProfile.Current.ConfigDir.Combine ("gtkrc");
-					if (!Directory.Exists (UserProfile.Current.ConfigDir))
-						Directory.CreateDirectory (UserProfile.Current.ConfigDir);
-					File.WriteAllText (rcFile, "include \"" + gtkrcf + "\"");
+					File.WriteAllText (rcFile, "include \"" + gtkrc + "\"");
 					Environment.SetEnvironmentVariable ("GTK2_RC_FILES", rcFile);
+
+					Gtk.Rc.ReparseAll ();
 				}
-				Gtk.Rc.ReparseAll ();
+
+			} else if (Gtk.Settings.Default != null && current_theme != Gtk.Settings.Default.ThemeName) {
+				LoggingService.LogInfo ("GTK: Using Gtk theme from {0}", Path.Combine (Gtk.Rc.ThemeDir, current_theme));
+				Gtk.Settings.Default.ThemeName = current_theme;
 			}
 
 			// let Gtk realize the new theme
@@ -114,6 +187,47 @@ namespace MonoDevelop.Components
 			#if MAC
 			UpdateMacWindows ();
 			#endif
+		}
+
+		internal static string[] gtkThemeFallbacks = new string[] {
+			"Xamarin",// the best!
+			"Gilouche", // SUSE
+			"Mint-X", // MINT
+			"Radiance", // Ubuntu 'light' theme (MD looks better with the light theme in 4.0 - if that changes switch this one)
+			"Clearlooks" // GTK theme
+		};
+
+		static void ValidateGtkTheme (ref string theme)
+		{
+			if (!MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.IsBadGtkTheme (theme))
+				return;
+
+			var themes = MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.InstalledThemes;
+
+			string fallback = gtkThemeFallbacks
+				.Select (fb => themes.FirstOrDefault (t => string.Compare (fb, t, StringComparison.OrdinalIgnoreCase) == 0))
+				.FirstOrDefault (t => t != null);
+
+			string message = "Theme Not Supported";
+
+			string detail;
+			if (themes.Count > 0) {
+				detail =
+					"Your system is using the '{0}' GTK+ theme, which is known to be very unstable. MonoDevelop will " +
+					"now switch to an alternate GTK+ theme.\n\n" +
+					"This message will continue to be shown at startup until you set a alternate GTK+ theme as your " +
+					"default in the GTK+ Theme Selector or MonoDevelop Preferences.";
+			} else {
+				detail =
+					"Your system is using the '{0}' GTK+ theme, which is known to be very unstable, and no other GTK+ " +
+					"themes appear to be installed. Please install another GTK+ theme.\n\n" +
+					"This message will continue to be shown at startup until you install a different GTK+ theme and " +
+					"set it as your default in the GTK+ Theme Selector or MonoDevelop Preferences.";
+			}
+
+			MessageService.GenericAlert (Gtk.Stock.DialogWarning, message, BrandingService.BrandApplicationName (detail), AlertButton.Ok);
+
+			theme = fallback ?? themes.FirstOrDefault () ?? theme;
 		}
 
 #if MAC
@@ -173,11 +287,6 @@ namespace MonoDevelop.Components
 				ApplyTheme (nsw);
 		}
 #endif
-
-		static void Preferences_UserInterfaceThemeChanged (object sender, EventArgs e)
-		{
-			UpdateGtkTheme ();
-		}
 
 		public static void ApplyTheme (this Gtk.Window window)
 		{

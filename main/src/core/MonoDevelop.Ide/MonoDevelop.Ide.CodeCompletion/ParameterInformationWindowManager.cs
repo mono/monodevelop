@@ -66,34 +66,48 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (methods.Count == 0)
 				return false;
 
-			MethodData cmd = methods [methods.Count - 1];
-
 			if (descriptor.SpecialKey == SpecialKey.Down) {
-				if (cmd.MethodProvider.Count <= 1)
-					return false;
-				if (cmd.CurrentOverload < cmd.MethodProvider.Count - 1)
-					cmd.CurrentOverload ++;
-				else
-					cmd.CurrentOverload = 0;
-				window.ChangeOverload ();
-				UpdateWindow (ext, widget);
-				return true;
+				return OverloadDown (ext, widget);
 			} else if (descriptor.SpecialKey == SpecialKey.Up) {
-				if (cmd.MethodProvider.Count <= 1)
-					return false;
-				if (cmd.CurrentOverload > 0)
-					cmd.CurrentOverload --;
-				else
-					cmd.CurrentOverload = cmd.MethodProvider.Count - 1;
-				window.ChangeOverload ();
-				UpdateWindow (ext, widget);
-				return true;
+				return OverloadUp (ext, widget);
 			}
 			else if (descriptor.SpecialKey == SpecialKey.Escape) {
 				HideWindow (ext, widget);
 				return true;
 			}
 			return false;
+		}
+
+		internal static bool OverloadDown (CompletionTextEditorExtension ext, ICompletionWidget widget)
+		{
+			if (methods.Count == 0)
+				return false;
+			MethodData cmd = methods [methods.Count - 1];
+			if (cmd.MethodProvider.Count <= 1)
+				return false;
+			if (cmd.CurrentOverload < cmd.MethodProvider.Count - 1)
+				cmd.CurrentOverload ++;
+			else
+				cmd.CurrentOverload = 0;
+			window.ChangeOverload ();
+			UpdateWindow (ext, widget);
+			return true;
+		}
+
+		internal static bool OverloadUp (CompletionTextEditorExtension ext, ICompletionWidget widget)
+		{
+			if (methods.Count == 0)
+				return false;
+			MethodData cmd = methods [methods.Count - 1];
+			if (cmd.MethodProvider.Count <= 1)
+				return false;
+			if (cmd.CurrentOverload > 0)
+				cmd.CurrentOverload --;
+			else
+				cmd.CurrentOverload = cmd.MethodProvider.Count - 1;
+			window.ChangeOverload ();
+			UpdateWindow (ext, widget);
+			return true;
 		}
 		
 		internal static void PostProcessKeyEvent (CompletionTextEditorExtension ext, ICompletionWidget widget, KeyDescriptor descriptor)

@@ -244,6 +244,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			
 		}
 
+		public override void SetProperty (string propertyName, object value)
+		{
+			SetProperty (ResultObject, propertyName, value);
+		}
+
 #region MacPlatform.MacIntegration.MainToolbar.SelectorView
 		public override bool SetActiveConfiguration (string configurationName)
 		{

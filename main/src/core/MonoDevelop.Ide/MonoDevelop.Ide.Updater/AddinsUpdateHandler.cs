@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Updater
 		internal static AddinsUpdateHandler Instance;
 
 		ProgressMonitor updateMonitor;
-		Task currentTask = Task.FromResult (0);
+		Task currentTask = null;
 
 		public AddinsUpdateHandler ()
 		{

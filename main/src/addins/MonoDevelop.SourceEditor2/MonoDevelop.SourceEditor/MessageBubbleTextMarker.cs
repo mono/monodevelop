@@ -446,6 +446,7 @@ namespace MonoDevelop.SourceEditor
 					editor.LineHeight / 2 - 2
 				);
 
+				// FIXME: VV: Remove gradient features
 				using (var lg = new Cairo.LinearGradient (errorCounterX, errorCounterY, errorCounterX, errorCounterY + errorCounterHeight)) {
 					lg.AddColorStop (0, CounterColor.Color);
 					lg.AddColorStop (1, CounterColor.Color.AddLight (-0.1));

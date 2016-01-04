@@ -436,7 +436,7 @@ namespace MonoDevelop.AspNet.WebForms
 				}
 				else
 					if (reference.ReferenceType == ReferenceType.Project && parsed.Name == reference.Reference) {
-						var p = project.ParentSolution.FindProjectByName (reference.Reference) as DotNetProject;
+						var p = reference.ResolveProject (project.ParentSolution) as DotNetProject;
 						if (p == null)
 							continue;
 						return TypeSystemService.GetCompilationAsync (p).Result.ToMetadataReference ();

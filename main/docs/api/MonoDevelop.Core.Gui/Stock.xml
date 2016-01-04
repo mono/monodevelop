@@ -165,14 +165,14 @@
       <ReturnValue><ReturnType>System.String</ReturnType></ReturnValue>
       <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
-    <Member MemberName="FindInFiles">
-      <MemberSignature Language="C#" Value="public static readonly string FindInFiles;" />
+    <Member MemberName="FindNextIcon">
+      <MemberSignature Language="C#" Value="public static readonly string FindNextIcon;" />
       <MemberType>Field</MemberType>
       <ReturnValue><ReturnType>System.String</ReturnType></ReturnValue>
       <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
-    <Member MemberName="FindNextIcon">
-      <MemberSignature Language="C#" Value="public static readonly string FindNextIcon;" />
+    <Member MemberName="FindPrevIcon">
+      <MemberSignature Language="C#" Value="public static readonly string FindPrevIcon;" />
       <MemberType>Field</MemberType>
       <ReturnValue><ReturnType>System.String</ReturnType></ReturnValue>
       <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>

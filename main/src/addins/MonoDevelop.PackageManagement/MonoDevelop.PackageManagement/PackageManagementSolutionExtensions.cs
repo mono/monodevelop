@@ -28,7 +28,7 @@ using System;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public static class PackageManagementSolutionExtensions
 	{

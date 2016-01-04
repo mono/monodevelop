@@ -135,6 +135,8 @@ namespace MonoDevelop.Components
 
 			if ((flags & Gtk.CellRendererState.Selected) != 0)
 				img = img.WithStyles ("sel");
+			if (!img.HasFixedSize)
+				img = img.WithSize (Gtk.IconSize.Menu);
 			
 			using (var ctx = Gdk.CairoHelper.Create (window)) {
 				var x = cell_area.X + cell_area.Width / 2 - (int)(img.Width / 2);
@@ -159,8 +161,11 @@ namespace MonoDevelop.Components
 		{
 			var img = GetImage ();
 			if (img != null) {
-				width = (int)img.Width;
-				height = (int)img.Height;
+				if (img.HasFixedSize) {
+					width = (int)img.Width;
+					height = (int)img.Height;
+				} else
+					Gtk.IconSize.Menu.GetSize(out width, out height);
 			} else
 				width = height = 0;
 

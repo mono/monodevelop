@@ -198,13 +198,12 @@ namespace MonoDevelop.Ide.Gui.Components
 				if (StatusSeverity.HasValue) {
 					switch (StatusSeverity.Value) {
 					case TaskSeverity.Error:
-						return ImageService.GetIcon ("md-project-status-error");
+						return ImageService.GetIcon ("md-error");
 					case TaskSeverity.Warning:
-						return ImageService.GetIcon ("md-project-status-warning");
+						return ImageService.GetIcon ("md-warning");
 					case TaskSeverity.Information:
-						return ImageService.GetIcon ("md-project-status-information");
 					case TaskSeverity.Comment:
-						return ImageService.GetIcon ("md-project-status-information");
+						return ImageService.GetIcon ("md-information");
 					}
 				}
 				return CellRendererImage.NullImage;

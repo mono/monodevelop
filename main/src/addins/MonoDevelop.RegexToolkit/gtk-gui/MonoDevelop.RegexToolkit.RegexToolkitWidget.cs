@@ -165,7 +165,7 @@ namespace MonoDevelop.RegexToolkit
 			// Container child buttonStartHbox.Gtk.Box+BoxChild
 			this.buttonStartIcon = new global::MonoDevelop.Components.ImageView ();
 			this.buttonStartIcon.Name = "buttonStartIcon";
-			this.buttonStartIcon.IconId = "gtk-media-play";
+			this.buttonStartIcon.IconId = "gtk-execute";
 			this.buttonStartIcon.IconSize = ((global::Gtk.IconSize)(1));
 			this.buttonStartHbox.Add (this.buttonStartIcon);
 			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.buttonStartHbox [this.buttonStartIcon]));

@@ -13,7 +13,7 @@ gtk-color-scheme =
 fg_color: #000
 base_color: #fff
 text_color: #000
-selected_bg_color: #649dd6
+selected_bg_color: #5189ed
 selected_fg_color: #fff
 tooltip_bg_color: #f2f2f2
 tooltip_fg_color: #222222
@@ -75,10 +75,14 @@ style "default" {
     GtkButtonBox::child-min-width = 70
     GtkButtonBox::child-min-height = 22
 
+    GtkCheckButton::indicator-size = 14
+    GtkCheckButton::indicator-spacing = 4
+
     GtkTreeView::odd-row-color = @bg_color
 
     GtkScrolledWindow::scrollbar-spacing = 0
     GtkScrolledWindow::scrollbars-within-bevel = 1
+    GtkScrolledWindow::draw-child-bg = 1
     GtkScale::slider-length = 14
     GtkRange::trough-side-details = 1
 
@@ -104,7 +108,7 @@ style "default" {
         spinbuttonstyle = 1
         colorize_scrollbar = FALSE
         progressbarstyle = 0
-        trough_shades = { 0.842, 0.886 }
+        gradient_shades = { 1.0, 1.0, 1.0, 1.0 }
 
         focusstyle = 0
     }
@@ -126,8 +130,8 @@ style "button" = "default" {
 
     font_name = "Helvetica Neue 13"
 
+    bg[NORMAL] = @bg_color
     bg[PRELIGHT] = @bg_color # Mac buttons have no hover state
-    fg[ACTIVE] = @selected_fg_color
 
     GtkWidget::focus-padding = 0
     GtkWidget::focus-line-width = 1
@@ -135,11 +139,10 @@ style "button" = "default" {
     engine "xamarin" {
         rgba = FALSE
         contrast = 1.0
-        gradient_shades = {0.96, 0.918, 0.926, 0.858}
+
+        gradient_shades     = {0.96, 0.918, 0.926, 0.858}
         focus_color = shade(0.6, @bg_color)
         textstyle = 0
-        highlight_shade = 1.0
-        lightborder_shade = 1.0
     }
 }
 
@@ -153,13 +156,11 @@ style "dialog-button" = "button" {
 }
 
 style "toggle-button" = "button" {
-    bg[NORMAL] = @base_color
-    bg[PRELIGHT] = shade(0.98, @base_color)
+    bg[PRELIGHT] = @base_color
 
     engine "xamarin" {
         rgba = FALSE
         contrast = 1.0
-        gradient_shades = {0.96, 0.918, 0.926, 0.858}
         focus_color = shade(0.6, @bg_color)
         textstyle = 1
     }
@@ -228,14 +229,22 @@ style "tooltip"
     }
 }
 
-style "tree-header" = "wide"
+style "treeview" = "default"
+{
+	base[SELECTED] = @selected_bg_color
+	base[ACTIVE] = @selected_bg_color
+	text[SELECTED] = @selected_fg_color
+	text[ACTIVE] = @selected_fg_color
+    engine "xamarin" {
+		roundness = 0
+		gradient_shades = { 1.01, 1.01, 1.01, 1.01 }
+		glazestyle = 1
+    }
+}
+
+style "tree-header"
 {
     bg[NORMAL] = "#f2f2f2"
-
-    engine "xamarin" {
-        listviewheaderstyle = 3
-        separatorstyle = 1
-    }
 }
 
 style "icon-view" = "default"
@@ -311,10 +320,18 @@ style "radio-or-check-box" = "default"
 {
     ythickness = 6
 
-    GtkCheckButton::indicator-size = 14
-    GtkCheckButton::indicator-spacing = 4
-
     engine "quartz" {
+    }
+}
+
+style "propertygrid-radio-or-check-box" = "radio-or-check-box"
+{
+	base[ACTIVE]   = @base_color
+	base[SELECTED] = @base_color
+	base[PRELIGHT] = @base_color
+	text[SELECTED] = @fg_color
+    GtkCheckButton::indicator-spacing = 0
+    engine "xamarin" {
     }
 }
 
@@ -326,9 +343,12 @@ style "entry" = "default"
     GtkEntry::inner-border = { 2, 2, 2, 2 }
 
     base[INSENSITIVE] = shade(1.02, @bg_color)
+    bg[SELECTED] = @selected_bg_color
 
     engine "xamarin" {
         rgba = FALSE
+        roundness = 0
+        focusstyle = 2
     }
 }
 
@@ -344,34 +364,27 @@ style "scrollbar" = "default"
 {
     GtkScrollbar::has-forward-stepper = 0
     GtkScrollbar::has-backward-stepper = 0
-    GtkRange::slider-width = 15
-    GtkRange::trough-border = 0
+    GtkRange::slider-width = 7
+    GtkRange::trough-border = 2
     GtkRange::trough-side-details = 0
+    GtkWidget::draw-border = { 0, 0, 0, 0 }
 
-    engine "quartz" {
+    bg[NORMAL] = "#C0C0C0"
+    bg[PRELIGHT] = "#C0C0C0"
+
+    engine "xamarin"
+    {
+        roundness		= 1
+        contrast		= 0.0
+        border_colors	= { "#C0C0C0", "#C0C0C0" }
+        trough_shades	= { 1.026, 1.026 }
+        stepperstyle = 1
     }
-
-    #engine "xamarin" {
-    #	roundness		= 1
-    #	border_shades	= { 1.0, 1.0 }
-    #	contrast		= 0.5
-    #	trough_shades	= { 1.2, 1.2 }
-    #}
 }
 
 style "completion_scrollbar" = "scrollbar"
 {
-    GtkRange::slider-width = 7
-    GtkRange::trough-border = 2
-
-    bg[NORMAL] = @bg_color
-
-    engine "xamarin"
-    {
-        roundness = 1
-        contrast = 0.0
-        trough_shades = { 1.0, 1.0 }
-    }
+	bg[NORMAL] = @bg_color
 }
 
 style "progressbar" = "default"
@@ -427,6 +440,7 @@ class "GtkScrolledWindow" style "scrolled-window"
 class "GtkNotebook" style "notebook"
 class "GtkButton" style "button"
 class "GtkToggleButton" style "toggle-button"
+class "GtkCheckButton" style "radio-or-check-box"
 
 class "GtkScale" style "scale"
 
@@ -452,8 +466,9 @@ widget "*.gtk-combobox-popup-menu*" style "combo-box-menu"
 widget_class "*<GtkToolbar>*" style "toolbar"
 widget_class "*ToolButton*" style "toolbar-button"
 
-widget_class "*.GtkTreeView.GtkButton" style "tree-header"
-widget_class "*.GtkList.GtkButton" style "tree-header"
+widget_class "*.<GtkTreeView>*" style "treeview"
+widget_class "*.<GtkTreeView>.<GtkButton>" style "tree-header"
+widget_class "*.<GtkList>.<GtkButton>" style "tree-header"
 
 widget_class "*<GtkIconView>" style "icon-view"
 
@@ -483,3 +498,6 @@ binding "gtk-mac-expand-collapse-cursor-row"
 }
 
 class "GtkTreeView" binding "gtk-mac-expand-collapse-cursor-row"
+
+# BooleanEditorCell must always have murrine style
+widget_class "*BooleanEditor*" style "propertygrid-radio-or-check-box"

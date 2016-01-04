@@ -367,7 +367,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void RenameItem (string newName)
 		{
 			Project project = (Project) CurrentNode.DataItem;
-			IdeApp.ProjectOperations.RenameItem (project, newName);
+			if (project.Name != newName)
+				IdeApp.ProjectOperations.RenameItem (project, newName);
 		}
 		
 		public override void ActivateItem ()
@@ -452,9 +453,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				foreach (ITreeNavigator nav in CurrentNodes) {
 					Project p = (Project) nav.DataItem;
 					p.Enabled = false;
+					solutions.Add (p.ParentSolution);
 					await p.ParentFolder.ReloadItem (m, p);
 					m.Step (1);
-					solutions.Add (p.ParentSolution);
 				}
 				m.EndTask ();
 			}

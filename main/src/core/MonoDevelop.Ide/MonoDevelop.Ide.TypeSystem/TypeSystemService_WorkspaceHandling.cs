@@ -288,8 +288,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var project = args.SolutionItem as MonoDevelop.Projects.Project;
 			if (project != null) {
-				var ws = GetWorkspace (project.ParentSolution);
-				await ws.AddProject (project);
+				Unload (project.ParentSolution);
+				Load (project.ParentSolution,  new ProgressMonitor()); 
 			}
 		}
 

@@ -140,6 +140,7 @@ namespace MonoDevelop.SourceEditor
 					context.Fill ();
 
 					// Inset shadow
+					// FIXME: VV: Remove gradient features
 					using (var lg = new Cairo.LinearGradient (0, center.Y - 5, 0, center.Y)) {
 						context.Arc (center.X, center.Y + 1, radius, 0, Math.PI * 2);
 						lg.AddColorStop (0, new Cairo.Color (0, 0, 0, 0.2 * opacity));

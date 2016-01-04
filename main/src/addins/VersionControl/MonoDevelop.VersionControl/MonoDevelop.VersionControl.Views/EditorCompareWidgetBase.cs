@@ -242,6 +242,12 @@ namespace MonoDevelop.VersionControl.Views
 				editor.Options.ShowIconMargin = false;
 				editor.Options.DrawIndentationMarkers = PropertyService.Get ("DrawIndentationMarkers", false);
 			}
+
+			OnSetVersionControlInfo (info);
+		}
+
+		protected virtual void OnSetVersionControlInfo (VersionControlDocumentInfo info)
+		{
 		}
 		
 		protected abstract void CreateComponents ();
@@ -1040,6 +1046,8 @@ namespace MonoDevelop.VersionControl.Views
 			void FillGradient (Cairo.Context cr, double y, double h)
 			{
 				cr.Rectangle (0.5, y, Allocation.Width, h);
+
+				// FIXME: VV: Remove gradient features
 				using (var grad = new Cairo.LinearGradient (0, y, Allocation.Width, y)) {
 					var col = (HslColor)Style.Base (StateType.Normal);
 					col.L *= 0.95;

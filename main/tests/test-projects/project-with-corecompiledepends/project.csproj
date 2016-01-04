@@ -60,6 +60,7 @@
     <Folder Include="Resources\drawable\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="shared.props" />
    
    
 <Target Name="UpdateGeneratedFiles" DependsOnTargets="_UpdateGeneratedFiles">

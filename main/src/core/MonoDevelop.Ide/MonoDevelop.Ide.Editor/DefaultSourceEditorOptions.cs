@@ -80,6 +80,11 @@ namespace MonoDevelop.Ide.Editor
 			PlainEditor = new PlainEditorOptions ();
 		}
 
+		internal void FireChange ()
+		{
+			OnChanged (EventArgs.Empty);
+		}
+
 		class PlainEditorOptions : ITextEditorOptions
 		{
 			#region IDisposable implementation

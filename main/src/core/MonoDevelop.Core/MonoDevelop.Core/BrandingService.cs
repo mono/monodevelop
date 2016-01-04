@@ -46,6 +46,7 @@ namespace MonoDevelop.Core
 		public static readonly string SuiteName;
 		public static readonly string ProfileDirectoryName;
 		public static readonly string StatusSteadyIconId;
+		public static readonly string HelpAboutIconId;
 		
 		static BrandingService ()
 		{
@@ -79,6 +80,7 @@ namespace MonoDevelop.Core
 				SuiteName = GetString ("SuiteName");
 				ProfileDirectoryName = GetString ("ProfileDirectoryName");
 				StatusSteadyIconId = GetString ("StatusAreaSteadyIcon");
+				HelpAboutIconId = GetString ("HelpAboutIcon");
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not read branding document", ex);
 			}
@@ -94,6 +96,9 @@ namespace MonoDevelop.Core
 
 			if (string.IsNullOrEmpty (StatusSteadyIconId))
 				StatusSteadyIconId = "md-status-steady";
+
+			if (string.IsNullOrEmpty (HelpAboutIconId))
+				HelpAboutIconId = "md-about";
 		}
 		
 		public static string GetString (params string[] keyPath)

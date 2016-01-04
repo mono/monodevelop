@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<Template	originator="Michael Hutchinson"
+			created="2006/06/06"
+			lastModified="2006/06/06">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>ASP.NET Web Forms Project</_Name>
+		<Category>other/aspnet/general</Category>
+		<Icon>md-project-web</Icon>
+		<Image id="md-aspnet-empty-project" />
+		<LanguageName>C#</LanguageName>
+		<_Description>Creates a new ASP.NET Web Forms Project.</_Description>
+		<Wizard>MonoDevelop.AspNet.ProjectTemplateWizard</Wizard>
+		<DefaultParameters>UsesAspNetWebForms=true</DefaultParameters>
+		<SupportedParameters>UsesAspNetWebApi;UsesAspNetMvc</SupportedParameters>
+	</TemplateConfiguration>
+
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "Default.aspx"/>
+	</Actions>
+
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+
+		<Project name = "${ProjectName}" directory = "." type = "AspNetApp">
+			<Options />
+			<References>
+				<Reference type="Package" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+				<Reference type="Package" refto="System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+				<Reference type="Package" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+				<Reference type="Package" refto="System.Web.Services, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+			</References>
+			<Packages>
+				<Package Id="Microsoft.AspNet.Mvc" Version="5.2.3" if="UsesAspNetMvc" />
+				<Package id="Microsoft.AspNet.WebApi" version="5.2.3" if="UsesAspNetWebApi" />
+				<package id="Newtonsoft.Json" version="6.0.8" if="UsesAspNetWebApi" />
+			</Packages>
+			<Files>
+				<Directory name="Content" if="UsesAspNetMvc" />
+				<Directory name="Controllers" if="UsesAspNetMvc" />
+				<Directory name="Models" if="UsesAspNetMvc" />
+				<Directory name="Scripts" if="UsesAspNetMvc" />
+				<Directory name="Views" if="UsesAspNetMvc">
+					<FileTemplateReference TemplateID="AspMvcWebConfigViews" name="Web.config" SuppressAutoOpen="true"  />
+				</Directory>
+				<FileTemplateReference TemplateID="GlobalAsax" name="Global.asax" />
+				<FileTemplateReference TemplateID="WebConfig-Application" name="web.config" />
+
+				<File name="Default.aspx" src="Files/Default.aspx" />
+				<File name="Default.aspx.cs" src="Files/Default.aspx.cs" />
+				<File name="Default.aspx.designer.cs" src="Files/Default.aspx.designer.cs" ShowAutogenerationNotice="True" AddStandardHeader="False" SuppressAutoOpen="True" />
+			</Files>
+		</Project>
+		<Project name = "${ProjectName}.Tests" directory = "${ProjectName}.Tests" if="IncludeTestProject">
+			<Options Target = "Library" TargetFrameworkVersion = "4.5" />
+			<References>
+				<Reference type="Package" refto="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+				<Reference type="Package" refto="System.Web, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+				<Reference type="Package" refto="System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+				<Reference type="Package" refto="System.Core" />
+				<Reference type="Package" refto="System.Web.Services, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+				<Reference type="Package" refto="System.Web.Routing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" SpecificVersion="false"  />
+				<Reference type="Package" refto="System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+				<Reference type="Package" refto="System.Web.Abstractions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" SpecificVersion="false"  />
+				<Reference type="Package" refto="System.Web.DynamicData, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+				<Reference type="Package" refto="System.ComponentModel.DataAnnotations, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" SpecificVersion="false" />
+				<Reference type="Package" refto="System.Xml.Linq" />
+				<Reference type="Package" refto="Microsoft.CSharp, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+				<Reference type="Project" refto="${ProjectName}" />
+			</References>
+			<Packages>
+				<Package ID="NUnit" Version="2.6.4" />
+				<Package ID="Microsoft.AspNet.Mvc" Version="5.2.3" if="UsesAspNetMvc"/>
+				<Package id="Microsoft.AspNet.WebApi" version="5.2.3" if=" " />
+				<package id="Newtonsoft.Json" version="6.0.8" if=" " />
+			</Packages>
+			<Files>
+				<Directory name="Controllers" if="UsesAspNetMvc" />
+				<File name="Test.cs" src="Files/Test.cs" />
+			</Files>
+		</Project>
+	</Combine>
+</Template>

@@ -150,7 +150,17 @@ namespace MonoDevelop.MacIntegration
 				}
 				
 				if (!data.Message.CancellationToken.IsCancellationRequested) {
+
+					// HACK: VK The icon is not rendered in dark style correctly
+					//       Use light variant as long as NSAppearance.NameVibrantDark is broken
+					if (IdeTheme.UserInterfaceSkin == Skin.Dark)
+						Xwt.Drawing.Context.ClearGlobalStyle ("dark");
+
 					var result = (int)alert.RunModal () - (long)(int)NSAlertButtonReturn.First;
+
+					if (IdeTheme.UserInterfaceSkin == Skin.Dark)
+						Xwt.Drawing.Context.SetGlobalStyle ("dark");
+					
 					completed = true;
 					if (result >= 0 && result < buttons.Count) {
 						data.ResultButton = buttons [(int)result];
@@ -172,7 +182,9 @@ namespace MonoDevelop.MacIntegration
 				
 				if (applyToAllCheck != null && applyToAllCheck.State != 0)
 					data.ApplyToAll = true;
-				
+
+
+
 				GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 			}
 			

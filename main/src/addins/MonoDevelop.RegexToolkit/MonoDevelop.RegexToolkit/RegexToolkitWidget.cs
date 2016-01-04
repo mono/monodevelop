@@ -59,7 +59,7 @@ namespace MonoDevelop.RegexToolkit
 				if (regexThread != null && regexThread.IsAlive) {
 					regexThread.Abort ();
 					regexThread.Join ();
-					SetButtonStart (GettextCatalog.GetString ("Start Regular E_xpression"), "gtk-media-play");
+					SetButtonStart (GettextCatalog.GetString ("Start Regular E_xpression"), "gtk-execute");
 					regexThread = null;
 					return;
 				}
@@ -171,7 +171,7 @@ namespace MonoDevelop.RegexToolkit
 			} finally {
 				regexThread = null;
 				Application.Invoke (delegate {
-					SetButtonStart (GettextCatalog.GetString ("Start Regular E_xpression"), "gtk-media-play");
+					SetButtonStart (GettextCatalog.GetString ("Start Regular E_xpression"), "gtk-execute");
 				});
 			}
 		}

@@ -27,7 +27,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using Mono.Addins;
 using System.Linq;
 using System.Collections.Immutable;

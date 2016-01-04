@@ -38,7 +38,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 	{
 		readonly ExtensibleTextEditor editor;
 		readonly SyntaxMode syntaxMode;
-		readonly SemanticHighlighting semanticHighlighting;
+		SemanticHighlighting semanticHighlighting;
 
 		public override TextDocument Document {
 			get {
@@ -46,6 +46,12 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			}
 			set {
 				syntaxMode.Document = value;
+			}
+		}
+
+		public Mono.TextEditor.Highlighting.SyntaxMode UnderlyingSyntaxMode {
+			get {
+				return this.syntaxMode;
 			}
 		}
 
@@ -98,6 +104,15 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			this.semanticHighlighting = semanticHighlighting;
 			this.syntaxMode = syntaxMode as SyntaxMode;
 			semanticHighlighting.SemanticHighlightingUpdated += SemanticHighlighting_SemanticHighlightingUpdated;
+		}
+
+		public void UpdateSemanticHighlighting (SemanticHighlighting newHighlighting)
+		{
+			if (semanticHighlighting !=null)
+				semanticHighlighting.SemanticHighlightingUpdated -= SemanticHighlighting_SemanticHighlightingUpdated;
+			semanticHighlighting = newHighlighting;
+			if (semanticHighlighting !=null)
+				semanticHighlighting.SemanticHighlightingUpdated += SemanticHighlighting_SemanticHighlightingUpdated;
 		}
 
 		void SemanticHighlighting_SemanticHighlightingUpdated (object sender, EventArgs e)

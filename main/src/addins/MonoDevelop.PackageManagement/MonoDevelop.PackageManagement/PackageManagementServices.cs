@@ -31,7 +31,7 @@ using NuGet;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public static class PackageManagementServices
 	{
@@ -81,6 +81,7 @@ namespace ICSharpCode.PackageManagement
 			projectOperations = new PackageManagementProjectOperations (solution, registeredPackageRepositories, backgroundPackageActionRunner, packageManagementEvents);
 
 			InitializeCredentialProvider();
+			PackageManagementBackgroundDispatcher.Initialize ();
 		}
 		
 		public static void InitializeCredentialProvider()

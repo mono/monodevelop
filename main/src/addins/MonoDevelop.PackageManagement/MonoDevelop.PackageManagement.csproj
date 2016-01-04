@@ -115,10 +115,6 @@
     <Compile Include="MonoDevelop.PackageManagement\IRegisteredPackageRepositories.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ISelectProjectsService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ISettingsFactory.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ISharpDevelopPackageManager.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ISharpDevelopPackageRepositoryFactory.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ISharpDevelopProjectManager.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ISharpDevelopProjectSystemFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ISolutionPackageRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ISolutionPackageRepositoryFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ITask.cs" />
@@ -194,7 +190,6 @@
     <Compile Include="MonoDevelop.PackageManagement\ProcessPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProcessPackageOperationsAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectBrowserUpdater.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ProjectExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectTargetFramework.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectTemplatePackageRepositoryCache.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectTemplatePackageSettingsFileName.cs" />
@@ -207,12 +202,6 @@
     <Compile Include="MonoDevelop.PackageManagement\RegisteredProjectTemplatePackageSources.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SettingsFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopHttpUserAgent.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\SharpDevelopPackageManager.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\SharpDevelopPackageManagerFactory.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\SharpDevelopPackageRepositoryFactory.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\SharpDevelopProjectManager.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\SharpDevelopProjectSystem.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\SharpDevelopProjectSystemFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SolutionExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SolutionPackageRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SolutionPackageRepositoryFactory.cs" />
@@ -376,6 +365,17 @@
     <Compile Include="MonoDevelop.PackageManagement\LocalCopyReferenceMaintainer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DotNetSolutionEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DotNetProjectImportEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IMonoDevelopProjectManager.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IMonoDevelopPackageManager.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopPackageManagerFactory.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IMonoDevelopPackageRepositoryFactory.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IMonoDevelopProjectSystemFactory.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopPackageRepositoryFactory.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopPackageManager.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopProjectManager.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopProjectSystem.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopProjectSystemFactory.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageManagementBackgroundDispatcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

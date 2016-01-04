@@ -13,7 +13,7 @@ gtk-color-scheme =
 fg_color: #bfbfbf
 base_color: #222
 text_color: #bfbfbf
-selected_bg_color: #649dd6
+selected_bg_color: #5189ed
 selected_fg_color: #fff
 tooltip_bg_color: #5a5a5a
 tooltip_fg_color: #222222
@@ -75,6 +75,9 @@ style "default" {
     GtkButtonBox::child-min-width = 70
     GtkButtonBox::child-min-height = 22
 
+    GtkCheckButton::indicator-size = 14
+    GtkCheckButton::indicator-spacing = 4
+
     GtkTreeView::odd-row-color = @bg_color
 
     GtkScrolledWindow::scrollbar-spacing = 0
@@ -106,6 +109,7 @@ style "default" {
         colorize_scrollbar = FALSE
         progressbarstyle = 0
         trough_shades = { 0.842, 0.886 }
+        gradient_shades = { 1.0, 1.0, 1.0, 1.0 }
 
         focusstyle = 0
     }
@@ -134,7 +138,7 @@ style "button" = "default" {
 
     fg[NORMAL] = "#fff"
     fg[PRELIGHT] = "#fff"
-    fg[ACTIVE] = "black"
+    fg[ACTIVE] = "#fff"
     fg[INSENSITIVE] = lighter ("#595959")
 
     GtkWidget::draw-border = { 1, 1, 1, 1 }
@@ -144,7 +148,6 @@ style "button" = "default" {
     engine "xamarin" {
         rgba = FALSE
         contrast = 1.0
-        gradient_shades = {0.96, 0.918, 0.926, 0.858}
         focus_color = shade(1.4, @bg_color)
         focusstyle = 3
         border_colors = { @bg_color, @bg_color }
@@ -165,7 +168,8 @@ style "dialog-button" = "button" {
 }
 
 style "toggle-button" = "button" {
-    bg[NORMAL] = @base_color
+    bg[NORMAL] = @bg_color
+    bg[ACTIVE] = shade(0.98, @base_color)
     bg[PRELIGHT] = shade(0.98, @base_color)
 
     engine "xamarin" {
@@ -240,13 +244,26 @@ style "tooltip"
     }
 }
 
-style "tree-header" = "wide"
+style "treeview" = "default"
 {
-    bg[NORMAL] = "#f2f2f2"
+	base[SELECTED] = @selected_bg_color
+	base[ACTIVE] = @selected_bg_color
+	text[SELECTED] = @selected_fg_color
+	text[ACTIVE] = @selected_fg_color
+    engine "xamarin" {
+		roundness = 0
+		gradient_shades = { 1.01, 1.01, 1.01, 1.01 }
+		glazestyle = 1
+    }
+}
+
+style "tree-header"
+{
+    bg[NORMAL] = @bg_color
+    bg[INSENSITIVE] = @bg_color
 
     engine "xamarin" {
-        listviewheaderstyle = 3
-        separatorstyle = 1
+        border_colors = { @base_color, @base_color }
     }
 }
 
@@ -320,14 +337,25 @@ style "notebook" = "default"
     }
 }
 
-style "radio-or-check-box" = "default"
+style "quartz-radio-or-check-box" = "default"
 {
     ythickness = 6
 
-    GtkCheckButton::indicator-size = 14
-    GtkCheckButton::indicator-spacing = 4
-
     engine "quartz" {
+    }
+}
+
+style "propertygrid-radio-or-check-box" = "default"
+{
+    GtkCheckButton::indicator-spacing = 0
+    base[NORMAL] = "#fff"
+    base[ACTIVE] = "#fff"
+	base[SELECTED] = "#fff"
+	base[PRELIGHT] = "#fff"
+	text[SELECTED] = @base_color
+
+    engine "xamarin" {
+    	border_shades = { 1.33, 1.33 }
     }
 }
 
@@ -339,9 +367,12 @@ style "entry" = "default"
     GtkEntry::inner-border = { 2, 2, 2, 2 }
 
     base[INSENSITIVE] = shade(1.02, @bg_color)
+    bg[SELECTED] = @selected_bg_color
 
     engine "xamarin" {
         rgba = FALSE
+        roundness = 0
+        focusstyle = 2
     }
 }
 
@@ -360,6 +391,7 @@ style "scrollbar" = "default"
     GtkRange::slider-width = 7
     GtkRange::trough-border = 2
     GtkRange::trough-side-details = 0
+    GtkWidget::draw-border = { 0, 0, 0, 0 }
 
     bg[NORMAL] = @fg_color
     bg[PRELIGHT] = @fg_color
@@ -431,6 +463,7 @@ class "GtkScrolledWindow" style "scrolled-window"
 class "GtkNotebook" style "notebook"
 class "GtkButton" style "button"
 class "GtkToggleButton" style "toggle-button"
+class "GtkCheckButton" style "quartz-radio-or-check-box"
 
 class "GtkScale" style "scale"
 
@@ -440,7 +473,7 @@ widget "*GtkTextView" style "entry"
 
 widget_class "*.GtkButton.*" style "button"
 widget_class "<GtkDialog>.*.<GtkButton>" style "dialog-button"
-widget_class "<GtkDialog>*<GtkCheckButton>" style "radio-or-check-box"
+widget_class "<GtkDialog>*<GtkCheckButton>" style "quartz-radio-or-check-box"
 widget_class "<GtkDialog>.*.<GtkButtonBox>.*.<GtkButton>.*" style "dialog-button"
 widget "*.toggleFindInFiles" style "toggle-button"
 widget "*.toggleReplaceInFiles" style "toggle-button"
@@ -456,8 +489,9 @@ widget "*.gtk-combobox-popup-menu*" style "combo-box-menu"
 widget_class "*<GtkToolbar>*" style "toolbar"
 widget_class "*ToolButton*" style "toolbar-button"
 
-widget_class "*.GtkTreeView.GtkButton" style "tree-header"
-widget_class "*.GtkList.GtkButton" style "tree-header"
+widget_class "*.<GtkTreeView>*" style "treeview"
+widget_class "*.<GtkTreeView>.<GtkButton>" style "tree-header"
+widget_class "*.<GtkList>.<GtkButton>" style "tree-header"
 
 widget_class "*<GtkIconView>" style "icon-view"
 
@@ -487,3 +521,6 @@ binding "gtk-mac-expand-collapse-cursor-row"
 }
 
 class "GtkTreeView" binding "gtk-mac-expand-collapse-cursor-row"
+
+# BooleanEditorCell must always have murrine style
+widget_class "*BooleanEditor*" style "propertygrid-radio-or-check-box"

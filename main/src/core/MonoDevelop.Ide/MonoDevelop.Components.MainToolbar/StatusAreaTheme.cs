@@ -77,6 +77,8 @@ namespace MonoDevelop.Components.MainToolbar
 				context.Clip ();
 				int x1 = arg.Allocation.X + arg.MousePosition.X - 200;
 				int x2 = x1 + 400;
+
+				// FIXME: VV: Remove gradient features
 				using (Cairo.LinearGradient gradient = new LinearGradient (x1, 0, x2, 0))
 				{
 					Cairo.Color targetColor = Styles.StatusBarFill1Color;

@@ -385,7 +385,7 @@ namespace MonoDevelop.Debugger
 
 			cancelRegistration = console.CancellationToken.Register (Stop);
 			
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				if (DebugSessionStarted != null)
 					DebugSessionStarted (null, EventArgs.Empty);
 				NotifyLocationChanged ();
@@ -434,7 +434,7 @@ namespace MonoDevelop.Debugger
 				currentConsole.Dispose ();
 			}
 			
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				HideExceptionCaughtDialog ();
 
 				if (currentIcon != null) {
@@ -457,23 +457,23 @@ namespace MonoDevelop.Debugger
 		static void UnsetDebugLayout ()
 		{
 			// Dispatch synchronously to avoid start/stop races
-			DispatchService.GuiSyncDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				IdeApp.Workbench.HideCommandBar ("Debug");
 				if (IdeApp.Workbench.CurrentLayout == "Debug") {
 					IdeApp.Workbench.CurrentLayout = oldLayout ?? "Solution";
 				}
 				oldLayout = null;
-			});
+			}).Wait ();
 		}
 
 		static void SetDebugLayout ()
 		{
 			// Dispatch synchronously to avoid start/stop races
-			DispatchService.GuiSyncDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				oldLayout = IdeApp.Workbench.CurrentLayout;
 				IdeApp.Workbench.CurrentLayout = "Debug";
 				IdeApp.Workbench.ShowCommandBar ("Debug");
-			});
+			}).Wait ();
 		}
 
 		public static bool IsDebugging {
@@ -705,11 +705,11 @@ namespace MonoDevelop.Debugger
 		static void OnBusyStateChanged (object s, BusyStateEventArgs args)
 		{
 			isBusy = args.IsBusy;
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				busyDialog.UpdateBusyState (args);
 				if (args.IsBusy) {
 					if (busyStatusIcon == null) {
-						busyStatusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon ("md-execute-debug", Gtk.IconSize.Menu));
+						busyStatusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon ("md-bug", Gtk.IconSize.Menu));
 						busyStatusIcon.SetAlertMode (100);
 						busyStatusIcon.ToolTip = GettextCatalog.GetString ("The debugger runtime is not responding. You can wait for it to recover, or stop debugging.");
 						busyStatusIcon.Clicked += delegate {
@@ -737,7 +737,7 @@ namespace MonoDevelop.Debugger
 			nextStatementLocations.Clear ();
 			currentBacktrace = null;
 
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				HideExceptionCaughtDialog ();
 				if (ResumedEvent != null)
 					ResumedEvent (null, a);
@@ -785,7 +785,7 @@ namespace MonoDevelop.Debugger
 
 		static void NotifyPaused ()
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				if (PausedEvent != null)
 					PausedEvent (null, EventArgs.Empty);
 				NotifyLocationChanged ();
@@ -796,7 +796,7 @@ namespace MonoDevelop.Debugger
 		static void NotifyException (TargetEventArgs args)
 		{
 			if (args.Type == TargetEventType.UnhandledException || args.Type == TargetEventType.ExceptionThrown) {
-				DispatchService.GuiDispatch (delegate {
+				Runtime.RunInMainThread (delegate {
 					if (CurrentFrame != null) {
 						ShowExceptionCaughtDialog ();
 					}
@@ -913,7 +913,7 @@ namespace MonoDevelop.Debugger
 			set {
 				if (currentBacktrace != null && value < currentBacktrace.FrameCount) {
 					currentFrame = value;
-					DispatchService.GuiDispatch (delegate {
+					Runtime.RunInMainThread (delegate {
 						NotifyCurrentFrameChanged ();
 					});
 				}
@@ -940,7 +940,7 @@ namespace MonoDevelop.Debugger
 			else
 				currentFrame = -1;
 
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				NotifyCallStackChanged ();
 				NotifyCurrentFrameChanged ();
 				NotifyLocationChanged ();

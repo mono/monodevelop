@@ -47,7 +47,7 @@
 			<PadOption id = "ShowTestCounters" _label = "Show Test Counters" defaultValue = "False" />
 			<NodeBuilder id = "TestNode" class = "MonoDevelop.NUnit.TestNodeBuilder"/>
 		</SolutionPad>
-		<Pad id="MonoDevelop.NUnit.TestResultsPad" _label="Test Results" icon="nunit-results-pad-icon" class="MonoDevelop.NUnit.TestResultsPad" defaultPlacement = "Bottom" defaultLayout="UnitTesting" defaultStatus="AutoHide"/>
+		<Pad id="MonoDevelop.NUnit.TestResultsPad" _label="Test Results" icon="nunit-pad-icon" class="MonoDevelop.NUnit.TestResultsPad" defaultPlacement = "Bottom" defaultLayout="UnitTesting" defaultStatus="AutoHide"/>
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/WorkbenchLayouts">
@@ -67,6 +67,7 @@
 		<Category _name = "NUnit" id = "NUnit">
 		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.RunAllTests"
 			_label = "Run Unit Tests"
+			icon = "md-run-unit-tests"
 			_description="Runs all tests of the current selected project."
 			shortcut="Control|T"
 			defaultHandler="MonoDevelop.NUnit.Commands.RunAllTestsHandler"/>
@@ -159,7 +160,6 @@
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "nunit-pad-icon" resource = "pad-unit-test-16.png" size="Menu" />
-		<StockIcon stockid = "nunit-results-pad-icon" resource = "pad-unit-test-results-16.png" size="Menu" />
 		<StockIcon stockid = "nunit-run" resource = "unit-running-16.png" size="Menu" />
 	</Extension>
 

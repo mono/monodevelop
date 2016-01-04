@@ -109,10 +109,18 @@ namespace MonoDevelop.Ide.Editor
 		{
 			int offset    = editor.LocationToOffset (info.Region.BeginLine, info.Region.BeginColumn);
 			int endOffset = editor.LocationToOffset (info.Region.EndLine, info.Region.EndColumn);
-			if (endOffset < offset) {
+			if (endOffset <= offset) {
 				endOffset = offset + 1;
-				while (endOffset < editor.Length && IsIdentifierPart (editor.GetCharAt (endOffset)))
+				while (endOffset < editor.Length && IsIdentifierPart (editor.GetCharAt (endOffset))) {
 					endOffset++;
+				}
+				if (endOffset == offset + 1) {
+					var c = editor.GetCharAt (endOffset - 1);
+					while ((c == '\n' || c == '\r') && endOffset < editor.Length) {
+						c = editor.GetCharAt (endOffset);
+						endOffset++;
+					}
+				}
 			}
 			return editor.TextMarkerFactory.CreateErrorMarker (editor, info, offset, endOffset - offset);
 		}

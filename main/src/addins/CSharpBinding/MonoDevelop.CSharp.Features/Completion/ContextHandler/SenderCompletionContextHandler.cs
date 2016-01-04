@@ -101,7 +101,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 		static ITypeSymbol CheckParameterList (SemanticModel model, ParameterListSyntax listSyntax, ISymbol parameter, CancellationToken cancellationToken)
 		{
-			var param = listSyntax.Parameters.FirstOrDefault ();
+			var param = listSyntax?.Parameters.FirstOrDefault ();
 			if (param == null)
 				return null;
 			var declared = model.GetDeclaredSymbol (param, cancellationToken);

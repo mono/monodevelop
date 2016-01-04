@@ -124,24 +124,24 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			if (!location.IsNullOrEmpty) {
 				if (panel.ValidateSdkLocation (location)) {
 					messageLabel.Text = GettextCatalog.GetString ("SDK found at specified location.");
-					messageIcon.SetIcon (Gtk.Stock.Apply, IconSize.Button);
+					messageIcon.SetIcon (Gtk.Stock.Apply, IconSize.Menu);
 					return;
 				}
 				messageLabel.Text = GettextCatalog.GetString ("No SDK found at specified location.");
-				messageIcon.SetIcon (Gtk.Stock.Cancel, IconSize.Button);
+				messageIcon.SetIcon (Gtk.Stock.Cancel, IconSize.Menu);
 				return;
 			}
 
 			foreach (var loc in panel.DefaultSdkLocations) {
 				if (panel.ValidateSdkLocation (loc)) {
 					messageLabel.Text = GettextCatalog.GetString ("SDK found at default location.");
-					messageIcon.SetIcon (Gtk.Stock.Apply, IconSize.Button);
+					messageIcon.SetIcon (Gtk.Stock.Apply, IconSize.Menu);
 					return;
 				}
 			}
 
 			messageLabel.Text = GettextCatalog.GetString ("No SDK found at default location.");
-			messageIcon.SetIcon (Gtk.Stock.Cancel, IconSize.Button);
+			messageIcon.SetIcon (Gtk.Stock.Cancel, IconSize.Menu);
 		}
 		
 		FilePath CleanPath (FilePath path)

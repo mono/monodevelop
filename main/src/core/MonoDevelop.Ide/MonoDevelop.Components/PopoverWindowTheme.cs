@@ -64,6 +64,7 @@ namespace MonoDevelop.Components
 		bool pagerVertical;
 		bool showArrow;
 		PopupPosition targetPosition;
+		static readonly int pagerArrowPadding = 4;
 
 		public event EventHandler RedrawNeeded;
 
@@ -286,6 +287,7 @@ namespace MonoDevelop.Components
 			}
 			context.Arc(x + r, y + h - r, r, Math.PI * 0.5, Math.PI);
 
+			// FIXME: VV: Remove gradient features
 			using (var lg = new Cairo.LinearGradient (0, y + h - r, 0, y + h)) {
 				lg.AddColorStop (0.5, ShadowColor.MultiplyAlpha (0.0));
 				lg.AddColorStop (1, ShadowColor);
@@ -364,33 +366,60 @@ namespace MonoDevelop.Components
 			CairoExtensions.RoundedRectangle (context, region.X, region.Y, region.Width, region.Height, CornerRadius);
 			context.Clip ();
 
-			Pango.Layout layout = SetupPagerText (context, pangoContext);
+			Pango.Layout layout = SetupPagerText (pangoContext);
+			var boundingBox = GetPagerBounds (layout, region);
+
+			RenderPagerBackground (context, boundingBox);
+
+			Gdk.Rectangle arrowRect = new Gdk.Rectangle (boundingBox.X + pagerArrowPadding, 
+			                                             boundingBox.Y + (boundingBox.Height - Styles.PopoverWindow.PagerTriangleSize) / 2,
+			                                             Styles.PopoverWindow.PagerTriangleSize,
+			                                             Styles.PopoverWindow.PagerTriangleSize);
+
+			RenderPagerArrow (context, arrowRect, PagerVertical ? ArrowType.Up : ArrowType.Left);
+			arrowRect.X = boundingBox.X + boundingBox.Width - (pagerArrowPadding + Styles.PopoverWindow.PagerTriangleSize);
+			RenderPagerArrow (context, arrowRect, PagerVertical ? ArrowType.Down : ArrowType.Right);
+
+			RenderPagerText (context, layout, boundingBox);
+		}
+
+		Gdk.Rectangle GetPagerBounds (Pango.Layout layout, Gdk.Rectangle region)
+		{
 			int textWidth, textHeight;
 			layout.GetPixelSize (out textWidth, out textHeight);
 
 			int width = textWidth + Styles.PopoverWindow.PagerTriangleSize * 2 + 20;
 			int height = Styles.PopoverWindow.PagerHeight;
 
-			Gdk.Rectangle boundingBox = new Gdk.Rectangle (region.X + region.Width - width, 0, width, height);
-			RenderPagerBackground (context, boundingBox);
+			return new Gdk.Rectangle (region.X + region.Width - width, 0, width, height);
+		}
 
-			int arrowPadding = 4;
-			Gdk.Rectangle arrowRect = new Gdk.Rectangle (boundingBox.X + arrowPadding, 
-			                                             boundingBox.Y + (boundingBox.Height - Styles.PopoverWindow.PagerTriangleSize) / 2,
-			                                             Styles.PopoverWindow.PagerTriangleSize,
-			                                             Styles.PopoverWindow.PagerTriangleSize);
+		public bool HitTestPagerLeftArrow (Pango.Context pangoContext, Gdk.Rectangle region, Gdk.Point hitPoint)
+		{
+			Pango.Layout layout = SetupPagerText (pangoContext);
+			var boundingBox = GetPagerBounds (layout, region);
+			Gdk.Rectangle arrowActiveRect = new Gdk.Rectangle (boundingBox.X,
+			                                                   boundingBox.Y,
+			                                                   Styles.PopoverWindow.PagerTriangleSize + (pagerArrowPadding * 2),
+			                                                   boundingBox.Height);
+			return arrowActiveRect.Contains (hitPoint);
+		}
 
-			RenderPagerArrow (context, arrowRect, PagerVertical ? ArrowType.Up : ArrowType.Left);
-			arrowRect.X = boundingBox.X + boundingBox.Width - (arrowPadding + Styles.PopoverWindow.PagerTriangleSize);
-			RenderPagerArrow (context, arrowRect, PagerVertical ? ArrowType.Down : ArrowType.Right);
-
-			RenderPagerText (context, layout, boundingBox);
+		public bool HitTestPagerRightArrow (Pango.Context pangoContext, Gdk.Rectangle region, Gdk.Point hitPoint)
+		{
+			Pango.Layout layout = SetupPagerText (pangoContext);
+			var boundingBox = GetPagerBounds (layout, region);
+			Gdk.Rectangle arrowActiveRect = new Gdk.Rectangle (boundingBox.X + boundingBox.Width - (pagerArrowPadding * 2 + Styles.PopoverWindow.PagerTriangleSize),
+			                                                   boundingBox.Y,
+			                                                   Styles.PopoverWindow.PagerTriangleSize + (pagerArrowPadding * 2),
+			                                                   boundingBox.Height);
+			return arrowActiveRect.Contains (hitPoint);
 		}
 
 		/// <summary>
 		/// Sets the Pango.Layout for pager text as it will be rendered. This will be used to perform sizing on the rest of the pager.
 		/// </summary>
-		protected virtual Pango.Layout SetupPagerText (Cairo.Context context, Pango.Context pangoContext)
+		protected virtual Pango.Layout SetupPagerText (Pango.Context pangoContext)
 		{
 			Pango.Layout pl = new Pango.Layout (pangoContext);
 			pl.SetText (string.Format ("{0} of {1}", CurrentPage + 1, NumPages));

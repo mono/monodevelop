@@ -6,43 +6,70 @@
 </ExtensionPoint>
 
 <Extension path="/MonoDevelop/Core/StockIcons">
-  <!-- GTK icons redefined -->
+	<Condition id="Platform" value="!windows">
+		<StockIcon stockid="md-folder-assets" resource="folder-assets-mac-16.png" size="Menu" />
+		<StockIcon stockid="md-searchbox-search" resource="searchbox-search-mac-16.png" size="Menu" />
+		<StockIcon stockid="md-searchbox-clear" resource="searchbox-clear-mac-16.png" size="Menu" />
+	</Condition>
+	
+	<Condition id="Platform" value="windows">
+		<StockIcon stockid="md-folder-assets" resource="folder-assets-win-16.png" size="Menu" />
+		<StockIcon stockid="md-searchbox-search" resource="searchbox-search-win-24.png" size="Menu" />
+		<StockIcon stockid="md-searchbox-clear" resource="searchbox-clear-win-24.png" size="Menu" />
+	</Condition>
+
+	<!-- GTK icons redefined -->
+	<StockIcon stockid="gtk-about" resource="about-md-16.png" size="Menu" />
 	<StockIcon stockid="gtk-add" resource="add-16.png" size="Menu" />
 	<StockIcon stockid="gtk-apply" resource="done-16.png" size="Menu" />
 	<StockIcon stockid="gtk-cancel" resource="remove-16.png" size="Menu" />
 	<StockIcon stockid="gtk-clear" resource="clear-16.png" size="Menu" />
 	<StockIcon stockid="gtk-close" resource="remove-16.png" size="Menu" />
 	<StockIcon stockid="gtk-copy" resource="copy-16.png" size="Menu" />
+	<StockIcon stockid="gtk-cut" resource="cut-16.png" size="Menu" />
 	<StockIcon stockid="gtk-delete" resource="remove-16.png" size="Menu" />
 	<StockIcon stockid="gtk-edit" resource="edit-16.png" size="Menu" />
 	<StockIcon stockid="gtk-execute" resource="execute-16.png" size="Menu" />
 	<StockIcon stockid="gtk-find" resource="find-16.png" size="Menu" />
 	<StockIcon stockid="gtk-find-and-replace" resource="find-and-replace-16.png" size="Menu" />
+	<StockIcon stockid="gtk-fullscreen" resource="fullscreen-16.png" size="Menu" />
 	<StockIcon stockid="gtk-go-back" resource="go-back-16.png" size="Menu" />
 	<StockIcon stockid="gtk-go-down" resource="go-down-16.png" size="Menu" />
 	<StockIcon stockid="gtk-go-forward" resource="go-forward-16.png" size="Menu" />
 	<StockIcon stockid="gtk-go-up" resource="go-up-16.png" size="Menu" />
 	<StockIcon stockid="gtk-help" resource="help-16.png" size="Menu" />
 	<StockIcon stockid="gtk-home" resource="home-16.png" size="Menu" />
+	<StockIcon stockid="gtk-indent" resource="indent-16.png" size="Menu" />
 	<StockIcon stockid="gtk-jump-to" resource="jump-to-16.png" size="Menu" />
 	<StockIcon stockid="gtk-info" resource="information-16.png" size="Menu" />
-	<StockIcon stockid="gtk-media-play" resource="media-play-16.png" size="Menu" />
 	<StockIcon stockid="gtk-missing-image" resource="missing-image-16.png" size="Menu" />
 	<StockIcon stockid="gtk-new" resource="add-16.png" size="Menu" />
 	<StockIcon stockid="gtk-ok" resource="done-16.png" size="Menu" />
 	<StockIcon stockid="gtk-open" resource="open-16.png" size="Menu" />
-	<StockIcon stockid="gtk-properties" resource="properties-16.png" size="Menu" />
+	<StockIcon stockid="gtk-paste" resource="paste-16.png" size="Menu" />
+	<StockIcon stockid="gtk-preferences" resource="preferences-16.png" size="Menu" />
+	<StockIcon stockid="gtk-print" resource="print-16.png" size="Menu" />
+	<StockIcon stockid="gtk-redo" resource="redo-16.png" size="Menu" />
 	<StockIcon stockid="gtk-refresh" resource="refresh-16.png" size="Menu" />
 	<StockIcon stockid="gtk-remove" resource="remove-16.png" size="Menu" />
 	<StockIcon stockid="gtk-save" resource="save-16.png" size="Menu" />
+	<StockIcon stockid="gtk-save-as" resource="save-16.png" size="Menu" />
 	<StockIcon stockid="gtk-stop" resource="stop-16.png" size="Menu" />
 	<StockIcon stockid="gtk-undo" resource="undo-16.png" size="Menu" />
+	<StockIcon stockid="gtk-unindent" resource="unindent-16.png" size="Menu" />
+	<StockIcon stockid="gtk-zoom-100" resource="zoom-actual-16.png" size="Menu" />
 	<StockIcon stockid="gtk-zoom-in" resource="zoom-in-16.png" size="Menu" />
 	<StockIcon stockid="gtk-zoom-out" resource="zoom-out-16.png" size="Menu" />
 
-  <!-- MD icons -->
+	<!-- MD icons -->
+	<StockIcon stockid="md-about" resource="about-md-16.png" size="Menu" />
 	<StockIcon stockid="md-add" resource="add-16.png" size="Menu" />
+	<StockIcon stockid="md-add-namespace" resource="new-namespace-16.png" />
 	<StockIcon stockid="md-assembly-project" resource="project-assembly-16.png" size="Menu" />
+	<StockIcon stockid="md-bookmark-clear-all" resource="bookmark-clear-all-16.png" size="Menu" />
+	<StockIcon stockid="md-bookmark-next" resource="bookmark-next-16.png" size="Menu" />
+	<StockIcon stockid="md-bookmark-prev" resource="bookmark-prev-16.png" size="Menu" />
+	<StockIcon stockid="md-bookmark-toggle" resource="bookmark-toggle-16.png" size="Menu" />
 	<StockIcon stockid="md-breadcrumb-next" resource="breadcrumb-next-16.png" size="Menu" />
 	<StockIcon stockid="md-breadcrumb-prev" resource="breadcrumb-prev-16.png" size="Menu" />
 	<StockIcon stockid="md-breakpoint" resource="breakpoint-16.png" size="Menu" />
@@ -51,11 +78,16 @@
 	<StockIcon stockid="md-breakpoint-invalid" resource="breakpoint-invalid-16.png" size="Menu" />
 	<StockIcon stockid="md-breakpoint-new" resource="breakpoint-new-16.png" size="Menu" />
 	<StockIcon stockid="md-breakpoint-on-off" resource="breakpoint-on-off-16.png" size="Menu" />
+	<StockIcon stockid="md-bug" resource="bug-16.png" size="Menu" />
 	<StockIcon stockid="md-catchpoint" resource="catchpoint-16.png" size="Menu" />
 	<StockIcon stockid="md-catchpoint-disabled" resource="catchpoint-disabled-16.png" size="Menu" />
 	<StockIcon stockid="md-class" resource="element-class-16.png" size="Menu" />
 	<StockIcon stockid="md-class-file" resource="file-class-32.png" size="Dnd" />
 	<StockIcon stockid="md-clear" resource="clear-16.png" size="Menu" />
+	<StockIcon stockid="md-close-all-documents" resource="close-all-documents-16.png" size="Menu" />
+	<StockIcon stockid="md-close-combine-icon" resource="close-solution-16.png" size="Menu" />
+	<StockIcon stockid="md-columns-one" resource="columns-one-16.png" size="Menu" />
+	<StockIcon stockid="md-columns-two" resource="columns-two-16.png" size="Menu" />
 	<StockIcon stockid="md-command" resource="command-16.png" size="Menu" />
 	<StockIcon stockid="md-comment" resource="comment-16.png" size="Menu" />
 	<StockIcon stockid="md-console" resource="pad-application-output-16.png" size="Menu" />
@@ -64,6 +96,7 @@
 	<StockIcon stockid="md-disclose-arrow-down" resource="disclose-arrow-down-16.png" size="Menu" />
 	<StockIcon stockid="md-disclose-arrow-up" resource="disclose-arrow-up-16.png" size="Menu" />
 	<StockIcon stockid="md-done" resource="done-16.png" size="Menu" />
+	<StockIcon stockid="md-empty" resource="empty-16.png" size="Menu" />
 	<StockIcon stockid="md-empty-file-icon" resource="file-generic-16.png" size="Menu" />
 	<StockIcon stockid="md-enum" resource="element-enum-16.png" size="Menu" />
 	<StockIcon stockid="md-enum-file" resource="file-enum-32.png" size="Dnd" />
@@ -80,10 +113,14 @@
 	<StockIcon stockid="md-file-source" resource="file-source-16.png" size="Menu" />
 	<StockIcon stockid="md-file-source" resource="file-source-32.png" size="Dnd" />
 	<StockIcon stockid="md-file-unit-test" resource="file-unit-test-32.png" size="Dnd" />
+	<StockIcon stockid="md-find-next" resource="find-next-16.png" size="Menu" />
+	<StockIcon stockid="md-find-prev" resource="find-prev-16.png" size="Menu" />
 	<StockIcon stockid="md-reference-assembly" resource="reference-assembly-16.png" size="Menu" />
 	<StockIcon stockid="md-reference-folder" resource="reference-assembly-16.png" size="Menu" />
 	<StockIcon stockid="md-fs-field" resource="element-fs-field-16.png" size="Menu" />
-	<StockIcon stockid="md-generic-pad" resource="pad-generic-pad-16.png" size="Menu" />
+	<StockIcon stockid="md-generic-pad" resource="pad-generic-16.png" size="Menu" />
+	<StockIcon stockid="md-go-to-line" resource="go-to-line-16.png" size="Menu" />
+	<StockIcon stockid="md-go-to-matching-brace" resource="go-to-matching-brace-16.png" size="Menu" />
 	<StockIcon stockid="md-group-by-category" resource="group-by-category-16.png" size="Menu" />
 	<StockIcon stockid="md-gui-file" resource="file-gtk-32.png" size="Dnd" />
 	<StockIcon stockid="md-help" resource="pad-help-16.png" size="Menu" />
@@ -95,13 +132,25 @@
 	<StockIcon stockid="md-library-overlay" resource="project-library-overlay-32.png" size="Dnd" />
 	<StockIcon stockid="md-link-overlay" resource="link-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-literal" resource="element-constant-16.png" size="Menu" />
-	<StockIcon stockid="md-magnify" resource="pad-search-results-16.png" size="Menu" />
+	<StockIcon stockid="md-magnify" resource="pad-search-16.png" size="Menu" />
 	<StockIcon stockid="md-message-log" resource="pad-application-output-16.png" size="Menu" />
 	<StockIcon stockid="md-method" resource="element-method-16.png" size="Menu" />
 	<StockIcon stockid="md-misc-files" resource="file-generic-16.png" size="Menu" />
 	<StockIcon stockid="md-module" resource="element-module-16.png" size="Menu" />
+	<StockIcon stockid="md-monodevelop" resource="monodevelop-16.png" size="Menu" />
+	<StockIcon stockid="md-monodevelop" resource="monodevelop-22.png" />
+	<StockIcon stockid="md-monodevelop" resource="monodevelop-22.png" size="Button" />
+	<StockIcon stockid="md-monodevelop" resource="monodevelop-32.png" size="Dnd" />
+	<StockIcon stockid="md-monodevelop" resource="monodevelop-48.png" size="Dialog" />
 	<StockIcon stockid="md-name-space" resource="element-namespace-16.png" size="Menu" />
+	<StockIcon stockid="md-navigate-back" resource="breadcrumb-prev-16.png" size="Menu" />
+	<StockIcon stockid="md-navigate-forward" resource="breadcrumb-next-16.png" size="Menu" />
 	<StockIcon stockid="md-newmethod" resource="element-method-new-16.png" size="Menu" />
+	<StockIcon stockid="md-new-folder" resource="new-folder-16.png" size="Menu" />
+	<StockIcon stockid="md-new-project" resource="new-project-16.png" size="Menu" />
+	<StockIcon stockid="md-new-solution" resource="new-solution-16.png" size="Menu" />
+	<StockIcon stockid="md-new-solution-folder" resource="new-solution-folder-16.png" size="Menu" />
+	<StockIcon stockid="md-new-workspace" resource="new-workspace-16.png" size="Menu" />
 	<StockIcon stockid="md-nunit-overlay" resource="project-nunit-overlay-32.png" size="Dnd" />
 	<StockIcon stockid="md-other-declaration" resource="element-other-declaration-16.png" size="Menu" />
 	<StockIcon stockid="md-output-icon" resource="pad-application-output-16.png" size="Menu" />
@@ -111,7 +160,9 @@
 	<StockIcon stockid="md-platform-android" resource="platform-android-16.png" size="Menu" />
 	<StockIcon stockid="md-platform-crossplatform" resource="platform-crossplatform-16.png" size="Menu" />
 	<StockIcon stockid="md-platform-ios" resource="platform-ios-16.png" size="Menu" />
+	<StockIcon stockid="md-platform-tvos" resource="platform-tvos-16.png" size="Menu" />
 	<StockIcon stockid="md-platform-mac" resource="platform-mac-16.png" size="Menu" />
+	<StockIcon stockid="md-platform-watchos" resource="platform-watchos-16.png" size="Menu" />
 	<StockIcon stockid="md-platform-other" resource="platform-other-16.png" size="Menu" />
 	<StockIcon stockid="md-popup-close" resource="popup-close-16.png" size="Menu" />
 	<StockIcon stockid="md-popup-close-hover" resource="popup-close-hover-16.png" size="Menu" />
@@ -140,25 +191,21 @@
 	<StockIcon stockid="md-preview-selected" resource="preview-16~sel.png" size="Menu" />
 	<StockIcon stockid="md-project" resource="project-16.png" size="Menu" />
 	<StockIcon stockid="md-project" resource="project-32.png" size="Dnd" />
-	<StockIcon stockid="md-project-status-information" resource="project-status-information-16.png" size="Menu" />
-	<StockIcon stockid="md-project-status-warning" resource="project-status-warning-16.png" size="Menu" />
-	<StockIcon stockid="md-project-status-error" resource="project-status-error-16.png" size="Menu" />
 	<StockIcon stockid="md-project-web" resource="project-web-32.png" size="Dnd" />
 	<StockIcon stockid="md-reference-project" resource="reference-project-16.png" size="Menu" />
 	<StockIcon stockid="md-reference-invalid" resource="reference-invalid-16.png" size="Menu" />
 	<StockIcon stockid="md-reference-warning" resource="reference-invalid-16.png" size="Menu" />
-	<StockIcon stockid="md-properties" resource="properties-16.png" size="Menu" />
 	<StockIcon stockid="md-property" resource="element-property-16.png" size="Menu" />
 	<StockIcon stockid="md-reference" resource="reference-16.png" size="Menu" />
 	<StockIcon stockid="md-reference-package" resource="reference-16.png" size="Menu" />
 	<StockIcon stockid="md-regular-file" resource="file-generic-16.png" size="Menu" />
 	<StockIcon stockid="md-resource-file-icon" resource="file-resource-16.png" size="Menu" />
 	<StockIcon stockid="md-resource-file-icon" resource="file-resource-32.png" size="Dnd" />
+	<StockIcon stockid="md-run-unit-tests" resource="run-unit-tests-16.png" size="Menu" />
 	<StockIcon stockid="md-save-all" resource="save-all-16.png" size="Menu" />
 	<StockIcon stockid="md-script-file-icon" resource="file-script-16.png" size="Menu" />
 	<StockIcon stockid="md-script-file-icon" resource="file-script-32.png" size="Dnd" />
-	<StockIcon stockid="md-searchbox-clear" resource="searchbox-clear-16.png" size="Menu" />
-	<StockIcon stockid="md-searchbox-search" resource="searchbox-search-16.png" size="Menu" />
+	<StockIcon stockid="md-select-all" resource="select-all-16.png" size="Menu" />
 	<StockIcon stockid="md-solution" resource="solution-16.png" size="Menu" />
 	<StockIcon stockid="md-solution" resource="solution-32.png" size="Dnd" />
 	<StockIcon stockid="md-sort-alphabetically" resource="sort-alphabetically-16.png" size="Menu" />
@@ -187,6 +234,7 @@
 	<StockIcon stockid="md-open-resource-folder" resource="folder-resource-16.png" size="Menu" />
 	<StockIcon stockid="md-solution-folder-open" resource="folder-solution-16.png" size="Menu" />
 	<StockIcon stockid="md-component-folder-open" resource="folder-component-16.png" size="Menu" />
+	<StockIcon stockid="md-web-search" resource="web-search-16.png" size="Menu" />
 
 	<!-- All sizes icons -->
 	<StockIcon stockid="gtk-dialog-error" resource="error-16.png" />
@@ -246,68 +294,27 @@
 	<StockIcon stockid="md-warning" resource="warning-48.png" size="Dialog" />
 
 	<!-- Unprocessed icons -->
-	<StockIcon stockid="md-add-namespace" resource="add-namespace-16.png" />
 	<StockIcon stockid="md-build-combine" resource="build-solution-16.png" size="Menu" />
 	<StockIcon stockid="md-build-current-selected-project" resource="build-project-16.png" size="Menu" />
-	<StockIcon stockid="md-clear-all-bookmarks" resource="clear-all-bookmarks-16.png" size="Menu" />
-	<StockIcon stockid="md-close-all-documents" resource="close-all-documents-16.png" size="Menu" />
-	<StockIcon stockid="md-close-combine-icon" resource="close-solution-16.png" size="Menu" />
-	<StockIcon stockid="md-empty" resource="empty-16.png" size="Menu" />
-	<StockIcon stockid="md-find-in-files" resource="find-in-files-16.png" size="Menu" />
-	<StockIcon stockid="md-find-next-icon" resource="edit-find-next-16.png" size="Menu" />
-	<StockIcon stockid="md-goto-nextbookmark" resource="goto-next-bookmark-16.png" size="Menu" />
-	<StockIcon stockid="md-goto-prevbookmark" resource="goto-prev-bookmark-16.png" size="Menu" />
-	<StockIcon stockid="md-monodevelop" resource="monodevelop-16.png" size="Menu" />
-	<StockIcon stockid="md-monodevelop" resource="monodevelop-22.png" />
-	<StockIcon stockid="md-monodevelop" resource="monodevelop-22.png" size="Button" />
-	<StockIcon stockid="md-monodevelop" resource="monodevelop-32.png" size="Dnd" />
-	<StockIcon stockid="md-monodevelop" resource="monodevelop-48.png" size="Dialog" />
-	<StockIcon stockid="md-navigate-back" resource="navigate-previous-16.png" size="Menu" />
-	<StockIcon stockid="md-navigate-forward" resource="navigate-next-16.png" size="Menu" />
-	<StockIcon stockid="md-new-folder-icon" resource="folder-new-16.png" size="Menu" />
-	<StockIcon stockid="md-new-project" resource="project-new-16.png" size="Menu" />
-	<StockIcon stockid="md-new-solution" resource="solution-new-16.png" size="Menu" />
-	<StockIcon stockid="md-new-solution-folder" resource="solution-folder-new-16.png" size="Menu" />
-	<StockIcon stockid="md-replace-in-files" resource="replace-in-files-16.png" size="Menu" />
-	<StockIcon stockid="md-select-all" resource="edit-select-all-16.png" size="Menu" />
-	<StockIcon stockid="md-toggle-bookmark" resource="toggle-bookmark-16.png" size="Menu" />
-	<StockIcon stockid="md-web-search-icon" resource="web-search-16.png" size="Menu" />
 
 	<!-- Status icons -->
-	<Condition id="Platform" value="mac">
-		<StockIcon stockid="md-status-build" animation="res:status-building-1-16.png;res:status-building-2-16.png;res:status-building-3-16.png;res:status-building-4-16.png;res:status-building-5-16.png" size="Menu" />
-		<StockIcon stockid="md-status-download" animation="res:status-pulling-1-16.png;res:status-pulling-2-16.png;res:status-pulling-3-16.png;res:status-pulling-4-16.png;res:status-pulling-5-16.png;res:status-pulling-6-16.png" size="Menu" />
-		<StockIcon stockid="md-status-upload" animation="res:status-pushing-1-16.png;res:status-pushing-2-16.png;res:status-pushing-3-16.png;res:status-pushing-4-16.png;res:status-pushing-5-16.png;res:status-pushing-6-16.png" size="Menu" />
-		<StockIcon stockid="md-status-open" animation="res:status-opening-1-16.png;res:status-opening-2-16.png;res:status-opening-3-16.png;res:status-opening-4-16.png;res:status-opening-5-16.png;res:status-opening-6-16.png" size="Menu" />
-		<StockIcon stockid="md-status-search" animation="res:status-searching-1-16.png;res:status-searching-2-16.png;res:status-searching-3-16.png;res:status-searching-4-16.png" size="Menu" />
-		<StockIcon stockid="md-status-connecting" animation="res:status-connecting-1-16.png;res:status-connecting-2-16.png;res:status-connecting-3-16.png;res:status-connecting-4-16.png;res:status-connecting-5-16.png;res:status-connecting-6-16.png" size="Menu" />
-		<StockIcon stockid="md-status-waiting" animation="res:status-waiting-1-16.png;res:status-waiting-2-16.png;res:status-waiting-3-16.png;res:status-waiting-4-16.png;res:status-waiting-5-16.png" size="Menu" />
-		<StockIcon stockid="md-status-steady" resource="status-ready-16.png" size="Menu" />
-		<StockIcon stockid="md-status-success" resource="status-success-16.png" size="Menu" />
-		<StockIcon stockid="md-status-warning" resource="status-warning-16.png" size="Menu" />
-		<StockIcon stockid="md-status-error" resource="status-error-16.png" size="Menu" />
-		<StockIcon stockid="md-status-updates-downloading" animation="res:status-updates-downloading-1-16.png;500;res:status-updates-downloading-2-16.png;33;res:status-updates-downloading-3-16.png;33;res:status-updates-downloading-4-16.png;33;res:status-updates-downloading-5-16.png;33;res:status-updates-downloading-6-16.png;33" size="Menu" />
-		<StockIcon stockid="md-status-updates-paused" resource="status-updates-paused-16.png" size="Menu" />
-		<StockIcon stockid="md-status-warning-count" resource="status-warning-count-16.png" size="Menu" />
-		<StockIcon stockid="md-status-error-count" resource="status-error-count-16.png" size="Menu" />
-		<StockIcon stockid="md-updates" resource="status-updates-ready-16.png" size="Menu" />
-		<StockIcon stockid="md-parser" resource="status-parsing-16.png" size="Menu" />
-	</Condition>
-	<Condition id="Platform" value="!mac">
-		<StockIcon stockid="md-status-build" animation="res:status-building-1-14.png;res:status-building-2-14.png;res:status-building-3-14.png;res:status-building-4-14.png;res:status-building-5-14.png" size="Menu" />
-		<StockIcon stockid="md-status-download" animation="res:status-pulling-1-14.png;res:status-pulling-2-14.png;res:status-pulling-3-14.png;res:status-pulling-4-14.png;res:status-pulling-5-14.png;res:status-pulling-6-14.png" size="Menu" />
-		<StockIcon stockid="md-status-upload" animation="res:status-pushing-1-14.png;res:status-pushing-2-14.png;res:status-pushing-3-14.png;res:status-pushing-4-14.png;res:status-pushing-5-14.png;res:status-pushing-6-14.png" size="Menu" />
-		<StockIcon stockid="md-status-open" animation="res:status-opening-1-14.png;res:status-opening-2-14.png;res:status-opening-3-14.png;res:status-opening-4-14.png;res:status-opening-5-14.png;res:status-opening-6-14.png" size="Menu" />
-		<StockIcon stockid="md-status-search" animation="res:status-searching-1-14.png;res:status-searching-2-14.png;res:status-searching-3-14.png;res:status-searching-4-14.png" size="Menu" />
-		<StockIcon stockid="md-status-connecting" animation="res:status-connecting-1-14.png;res:status-connecting-2-14.png;res:status-connecting-3-14.png;res:status-connecting-4-14.png;res:status-connecting-5-14.png;res:status-connecting-6-14.png" size="Menu" />
-		<StockIcon stockid="md-status-waiting" animation="res:status-waiting-1-14.png;res:status-waiting-2-14.png;res:status-waiting-3-14.png;res:status-waiting-4-14.png;res:status-waiting-5-14.png" size="Menu" />
-		<StockIcon stockid="md-status-steady" resource="status-ready-14.png" size="Menu" />
-		<StockIcon stockid="md-status-success" resource="status-success-14.png" size="Menu" />
-		<StockIcon stockid="md-status-warning" resource="status-warning-14.png" size="Menu" />
-		<StockIcon stockid="md-status-error" resource="status-failure-14.png" size="Menu" />
-		<StockIcon stockid="md-updates" resource="updates-16.png" size="Menu" />
-		<StockIcon stockid="md-parser" resource="parser-16.png" size="Menu" />
-	</Condition>
+	<StockIcon stockid="md-status-build" animation="res:status-building-1-16.png;res:status-building-2-16.png;res:status-building-3-16.png;res:status-building-4-16.png;res:status-building-5-16.png" size="Menu" />
+	<StockIcon stockid="md-status-download" animation="res:status-pulling-1-16.png;res:status-pulling-2-16.png;res:status-pulling-3-16.png;res:status-pulling-4-16.png;res:status-pulling-5-16.png;res:status-pulling-6-16.png" size="Menu" />
+	<StockIcon stockid="md-status-upload" animation="res:status-pushing-1-16.png;res:status-pushing-2-16.png;res:status-pushing-3-16.png;res:status-pushing-4-16.png;res:status-pushing-5-16.png;res:status-pushing-6-16.png" size="Menu" />
+	<StockIcon stockid="md-status-open" animation="res:status-opening-1-16.png;res:status-opening-2-16.png;res:status-opening-3-16.png;res:status-opening-4-16.png;res:status-opening-5-16.png;res:status-opening-6-16.png" size="Menu" />
+	<StockIcon stockid="md-status-search" animation="res:status-searching-1-16.png;res:status-searching-2-16.png;res:status-searching-3-16.png;res:status-searching-4-16.png" size="Menu" />
+	<StockIcon stockid="md-status-connecting" animation="res:status-connecting-1-16.png;res:status-connecting-2-16.png;res:status-connecting-3-16.png;res:status-connecting-4-16.png;res:status-connecting-5-16.png;res:status-connecting-6-16.png" size="Menu" />
+	<StockIcon stockid="md-status-waiting" animation="res:status-waiting-1-16.png;res:status-waiting-2-16.png;res:status-waiting-3-16.png;res:status-waiting-4-16.png;res:status-waiting-5-16.png" size="Menu" />
+	<StockIcon stockid="md-status-steady" resource="status-ready-16.png" size="Menu" />
+	<StockIcon stockid="md-status-success" resource="status-success-16.png" size="Menu" />
+	<StockIcon stockid="md-status-warning" resource="status-warning-16.png" size="Menu" />
+	<StockIcon stockid="md-status-error" resource="status-error-16.png" size="Menu" />
+	<StockIcon stockid="md-status-updates-downloading" animation="res:status-updates-downloading-1-16.png;500;res:status-updates-downloading-2-16.png;33;res:status-updates-downloading-3-16.png;33;res:status-updates-downloading-4-16.png;33;res:status-updates-downloading-5-16.png;33;res:status-updates-downloading-6-16.png;33" size="Menu" />
+	<StockIcon stockid="md-status-updates-paused" resource="status-updates-paused-16.png" size="Menu" />
+	<StockIcon stockid="md-status-warning-count" resource="status-warning-count-16.png" size="Menu" />
+	<StockIcon stockid="md-status-error-count" resource="status-error-count-16.png" size="Menu" />
+	<StockIcon stockid="md-updates" resource="status-updates-ready-16.png" size="Menu" />
+	<StockIcon stockid="md-parser" resource="status-parsing-16.png" size="Menu" />
 	<StockIcon stockid="md-status-instrumentation" resource="status-instrumentation-16.png" size="Menu" />
 
 	<!-- Spinners -->
@@ -325,10 +332,10 @@
 	<StockIcon stockid="md-internal-interface" icon="res:element-interface-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-internal-method" icon="res:element-method-16.png|res:element-visibility-internal-square-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-internal-property" icon="res:element-property-16.png|res:element-visibility-internal-square-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-internal-static-event" icon="res:element-event-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-internal-static-field" icon="res:element-field-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-internal-static-method" icon="res:element-method-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-internal-static-property" icon="res:element-property-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
+	<StockIcon stockid="md-internal-static-event" icon="res:element-event-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-internal-static-field" icon="res:element-field-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-internal-static-method" icon="res:element-method-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-internal-static-property" icon="res:element-property-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-internal-struct" icon="res:element-struct-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-InternalAndProtected-class" icon="res:element-class-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-InternalAndProtected-delegate" icon="res:element-delegate-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
@@ -339,10 +346,10 @@
 	<StockIcon stockid="md-InternalAndProtected-interface" icon="res:element-interface-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-InternalAndProtected-method" icon="res:element-method-16.png|res:element-visibility-internal-square-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-InternalAndProtected-property" icon="res:element-property-16.png|res:element-visibility-internal-square-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-InternalAndProtected-static-event" icon="res:element-event-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-InternalAndProtected-static-field" icon="res:element-field-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-InternalAndProtected-static-method" icon="res:element-method-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-InternalAndProtected-static-property" icon="res:element-property-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
+	<StockIcon stockid="md-InternalAndProtected-static-event" icon="res:element-event-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-InternalAndProtected-static-field" icon="res:element-field-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-InternalAndProtected-static-method" icon="res:element-method-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-InternalAndProtected-static-property" icon="res:element-property-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-InternalAndProtected-struct" icon="res:element-struct-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-private-class" icon="res:element-class-16.png|res:element-visibility-private-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-private-delegate" icon="res:element-delegate-16.png|res:element-visibility-private-diamond-overlay-16.png" size="Menu" />
@@ -353,10 +360,10 @@
 	<StockIcon stockid="md-private-interface" icon="res:element-interface-16.png|res:element-visibility-private-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-private-method" icon="res:element-method-16.png|res:element-visibility-private-square-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-private-property" icon="res:element-property-16.png|res:element-visibility-private-square-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-private-static-event" icon="res:element-event-16.png|res:element-visibility-private-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-private-static-field" icon="res:element-field-16.png|res:element-visibility-private-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-private-static-method" icon="res:element-method-16.png|res:element-visibility-private-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-private-static-property" icon="res:element-property-16.png|res:element-visibility-private-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
+	<StockIcon stockid="md-private-static-event" icon="res:element-event-16.png|res:element-visibility-private-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-private-static-field" icon="res:element-field-16.png|res:element-visibility-private-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-private-static-method" icon="res:element-method-16.png|res:element-visibility-private-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-private-static-property" icon="res:element-property-16.png|res:element-visibility-private-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-private-struct" icon="res:element-struct-16.png|res:element-visibility-private-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-project-console" icon="md-project|res:project-console-overlay-32.png" size="Dnd" />
 	<StockIcon stockid="md-project-gui" icon="md-project|res:project-gui-overlay-32.png" size="Dnd" />
@@ -372,10 +379,10 @@
 	<StockIcon stockid="md-protected-interface" icon="res:element-interface-16.png|res:element-visibility-protected-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-protected-method" icon="res:element-method-16.png|res:element-visibility-protected-square-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-protected-property" icon="res:element-property-16.png|res:element-visibility-protected-square-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-protected-static-event" icon="res:element-event-16.png|res:element-visibility-protected-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-protected-static-field" icon="res:element-field-16.png|res:element-visibility-protected-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-protected-static-method" icon="res:element-method-16.png|res:element-visibility-protected-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-protected-static-property" icon="res:element-property-16.png|res:element-visibility-protected-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
+	<StockIcon stockid="md-protected-static-event" icon="res:element-event-16.png|res:element-visibility-protected-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-protected-static-field" icon="res:element-field-16.png|res:element-visibility-protected-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-protected-static-method" icon="res:element-method-16.png|res:element-visibility-protected-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-protected-static-property" icon="res:element-property-16.png|res:element-visibility-protected-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-protected-struct" icon="res:element-struct-16.png|res:element-visibility-protected-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-ProtectedOrInternal-class" icon="res:element-class-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-ProtectedOrInternal-delegate" icon="res:element-delegate-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
@@ -386,15 +393,15 @@
 	<StockIcon stockid="md-ProtectedOrInternal-interface" icon="res:element-interface-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-ProtectedOrInternal-method" icon="res:element-method-16.png|res:element-visibility-internal-square-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-ProtectedOrInternal-property" icon="res:element-property-16.png|res:element-visibility-internal-square-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-ProtectedOrInternal-static-event" icon="res:element-event-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-ProtectedOrInternal-static-field" icon="res:element-field-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-ProtectedOrInternal-static-method" icon="res:element-method-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-ProtectedOrInternal-static-property" icon="res:element-property-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
+	<StockIcon stockid="md-ProtectedOrInternal-static-event" icon="res:element-event-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-ProtectedOrInternal-static-field" icon="res:element-field-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-ProtectedOrInternal-static-method" icon="res:element-method-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-ProtectedOrInternal-static-property" icon="res:element-property-16.png|res:element-visibility-internal-square-overlay-16.png|res:element-static-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-ProtectedOrInternal-struct" icon="res:element-struct-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-static-event" icon="res:element-event-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-static-field" icon="res:element-field-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-static-method" icon="res:element-method-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
-	<StockIcon stockid="md-static-property" icon="res:element-property-16.png|res:element-static-overlay-16.png" size="Menu" /> <!-- VV: FIXME: Unused -->
+	<StockIcon stockid="md-static-event" icon="res:element-event-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-static-field" icon="res:element-field-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-static-method" icon="res:element-method-16.png|res:element-static-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-static-property" icon="res:element-property-16.png|res:element-static-overlay-16.png" size="Menu" />
 </Extension>
 
 </ExtensionModel>

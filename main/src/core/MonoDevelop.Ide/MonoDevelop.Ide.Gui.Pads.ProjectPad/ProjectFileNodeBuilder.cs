@@ -172,7 +172,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			ProjectFile newProjectFile = null;
 			var file = (ProjectFile) CurrentNode.DataItem;
-			
+
+			string oldFileName = file.FilePath;
+			string newFileName = Path.Combine (Path.GetDirectoryName (oldFileName), newName);
+			if (oldFileName == newFileName)
+				return;
+
 			FilePath newPath, newLink = FilePath.Null;
 			if (file.IsLink) {
 				var oldLink = file.ProjectVirtualPath;

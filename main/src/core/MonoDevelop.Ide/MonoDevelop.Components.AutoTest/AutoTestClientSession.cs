@@ -363,6 +363,14 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 
+		public void SetProperty (Func<AppQuery, AppQuery> query, string propertyName, object value)
+		{
+			AppResult[] results = Query (query);
+			foreach (var result in results) {
+				session.SetProperty (result, propertyName, value);
+			}
+		}
+
 		public bool SetActiveConfiguration (Func<AppQuery, AppQuery> query, string configuration)
 		{
 			AppResult[] results = Query (query);

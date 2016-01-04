@@ -98,7 +98,7 @@ namespace MonoDevelop.MacIntegration
 		{
 			NetworkCredential result = null;
 
-			DispatchService.GuiSyncDispatch (() => {
+			Runtime.RunInMainThread (() => {
 
 				using (var ns = new NSAutoreleasePool ()) {
 					var message = credentialType == CredentialType.ProxyCredentials
@@ -163,7 +163,7 @@ namespace MonoDevelop.MacIntegration
 					var password = passwordInput.StringValue;
 					result = new NetworkCredential (username, password);
 				}
-			});
+			}).Wait ();
 
 			// store the obtained credentials in the keychain
 			// but don't store for the root url since it may have other credentials

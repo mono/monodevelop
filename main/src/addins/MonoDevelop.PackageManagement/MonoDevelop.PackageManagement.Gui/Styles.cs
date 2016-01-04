@@ -60,8 +60,6 @@ namespace MonoDevelop.PackageManagement
 				PackageInfoBackgroundColor = Xwt.Drawing.Color.FromBytes (227, 231, 237);
 				CellBackgroundColor = Xwt.Drawing.Color.FromBytes (243, 246, 250);
 				CellSelectionColor = Xwt.Drawing.Color.FromBytes (204, 204, 204);
-				CellStrongSelectionColor = Xwt.Drawing.Color.FromBytes (49, 119, 216);
-				CellTextSelectionColor = Xwt.Drawing.Colors.White;
 				CellTextColor = Xwt.Drawing.Colors.Black;
 				PackageSourceUrlTextColor = CairoExtensions.ParseColor ("#747474");
 				PackageSourceErrorTextColor = CairoExtensions.ParseColor ("#656565");
@@ -75,8 +73,6 @@ namespace MonoDevelop.PackageManagement
 				PackageInfoBackgroundColor = Xwt.Drawing.Color.FromBytes (105, 105, 105);
 				CellBackgroundColor = MonoDevelop.Ide.Gui.Styles.BackgroundColor.ToXwtColor();
 				CellSelectionColor = Xwt.Drawing.Color.FromBytes (90, 90, 90);
-				CellStrongSelectionColor = Xwt.Drawing.Color.FromBytes (49, 119, 216);
-				CellTextSelectionColor = Xwt.Drawing.Colors.White;
 				CellTextColor = Xwt.Drawing.Colors.White;
 				PackageSourceUrlTextColor = CairoExtensions.ParseColor ("#656565");
 				PackageSourceErrorTextColor = CairoExtensions.ParseColor ("#ff0000");
@@ -85,6 +81,9 @@ namespace MonoDevelop.PackageManagement
 				ErrorBackgroundColor = Xwt.Drawing.Colors.Orange;
 				ErrorForegroundColor = Xwt.Drawing.Colors.White;
 			}
+
+			CellStrongSelectionColor = MonoDevelop.Ide.Gui.Styles.BaseSelectionBackgroundColor.ToXwtColor ();
+			CellTextSelectionColor = MonoDevelop.Ide.Gui.Styles.BaseSelectionTextColor.ToXwtColor ();
 		}
 	}
 }

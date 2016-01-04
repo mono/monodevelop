@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
@@ -34,7 +34,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 	{
 		public TestablePackageManagementOptions Options;
 		public FakeSettings FakeSettings;
-		public PackageSource PackageSource = new PackageSource ("http://sharpdevelop.com", "Test Package Source");
+		public PackageSource PackageSource = new PackageSource ("http://monodevelop.com", "Test Package Source");
 
 		public RegisteredPackageSources RegisteredPackageSources {
 			get { return Options.PackageSources; }

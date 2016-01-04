@@ -62,8 +62,8 @@ namespace MonoDevelop.VersionControl.Git
 
 		public GitRepository (VersionControlSystem vcs, FilePath path, string url) : base (vcs)
 		{
-			RootPath = path;
 			RootRepository = new LibGit2Sharp.Repository (path);
+			RootPath = RootRepository.Info.WorkingDirectory;
 			Url = url;
 		}
 
@@ -806,7 +806,7 @@ namespace MonoDevelop.VersionControl.Git
 		static ConflictResult ResolveConflict (string file)
 		{
 			ConflictResult res = ConflictResult.Abort;
-			DispatchService.GuiSyncDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				var dlg = new ConflictResolutionDialog ();
 				try {
 					dlg.Load (file);
@@ -828,7 +828,7 @@ namespace MonoDevelop.VersionControl.Git
 					dlg.Destroy ();
 					dlg.Dispose ();
 				}
-			});
+			}).Wait ();
 			return res;
 		}
 
@@ -875,7 +875,7 @@ namespace MonoDevelop.VersionControl.Git
 			} catch {
 				string dlgName = null, dlgEmail = null;
 
-				DispatchService.GuiSyncDispatch (() => {
+				Runtime.RunInMainThread (() => {
 					var dlg = new UserGitConfigDialog ();
 					try {
 						if ((Gtk.ResponseType)MessageService.RunCustomDialog (dlg) == Gtk.ResponseType.Ok) {
@@ -887,7 +887,7 @@ namespace MonoDevelop.VersionControl.Git
 						dlg.Destroy ();
 						dlg.Dispose ();
 					}
-				});
+				}).Wait ();
 
 				name = dlgName;
 				email = dlgEmail;

@@ -293,8 +293,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void HandleSearchEntryChanged (object sender, EventArgs e)
 		{
-			if (SearchEntryActivated != null)
-				SearchEntryChanged (sender, e);
+			SearchEntryChanged?.Invoke (sender, e);
 		}
 
 		void HandleSearchEntryActivated (object sender, EventArgs e)

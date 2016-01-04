@@ -460,6 +460,8 @@ namespace MonoDevelop.Components.Docking
 				var y = Allocation.Y;
 
 				ctx.Rectangle (x, y + 1, Allocation.Width, Allocation.Height - 1);
+
+				// FIXME: VV: Remove gradient features
 				using (var g = new Cairo.LinearGradient (x, y + 1, x, y + Allocation.Height - 1)) {
 					g.AddColorStop (0, Styles.DockTabBarGradientStart);
 					g.AddColorStop (1, Styles.DockTabBarGradientEnd);
@@ -473,8 +475,9 @@ namespace MonoDevelop.Components.Docking
 				ctx.Stroke ();
 
 				if (active) {
-
 					ctx.Rectangle (x, y + 1, Allocation.Width, Allocation.Height - 1);
+
+					// FIXME: VV: Remove gradient features
 					using (var g = new Cairo.LinearGradient (x, y + 1, x, y + Allocation.Height - 1)) {
 						g.AddColorStop (0, new Cairo.Color (0, 0, 0, 0.01));
 						g.AddColorStop (0.5, new Cairo.Color (0, 0, 0, 0.08));

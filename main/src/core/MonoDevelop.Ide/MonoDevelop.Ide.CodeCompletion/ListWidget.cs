@@ -48,6 +48,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		int listWidth = minSize;
 		const int minSize = 300;
 		const int maxListWidth = 600;
+		const int rows = 10;
 		Pango.Layout layout, categoryLayout, noMatchLayout;
 		ListWindow win;
 		int selection = 0;
@@ -126,7 +127,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
-		FontDescription itemFont, noMatchFont;
+		FontDescription itemFont, noMatchFont, categoryFont;
 
 		const int marginIconSpacing = 4;
 		const int iconTextSpacing = 6;
@@ -139,20 +140,30 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			if (itemFont != null)
 				itemFont.Dispose ();
+
+			if (categoryFont != null)
+				categoryFont.Dispose ();
 			
 			if (noMatchFont != null)
 				noMatchFont.Dispose ();
-			
+
 			itemFont = FontService.MonospaceFont.Copy ();
+			categoryFont = FontService.MonospaceFont.Copy ();
 			noMatchFont = FontService.SansFont.Copy ();
 
 			// VV: prepared for further font tweaks when we have new fonts in
 			var newItemFontSize = itemFont.Size;
+			var newCategoryFontSize = categoryFont.Size;
 			var newNoMatchFontSize = noMatchFont.Size;
 
 			if (newItemFontSize > 0) {
 				itemFont.Size = (int)newItemFontSize;
 				layout.FontDescription = itemFont;
+			}
+
+			if (newCategoryFontSize > 0) {
+				categoryFont.Size = (int)newCategoryFontSize;
+				categoryLayout.FontDescription = categoryFont;
 			}
 
 			if (newNoMatchFontSize > 0) {
@@ -751,7 +762,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var icon = ImageService.GetIcon (TypeSystem.Stock.Namespace, IconSize.Menu);
 			rowHeight = Math.Max (1, (int)icon.Height + 2);
 
-			int newHeight = rowHeight * IdeApp.Preferences.CompletionListRows;
+			int newHeight = rowHeight * rows;
 			if (Allocation.Width != listWidth || Allocation.Height != newHeight)
 				this.SetSizeRequest (listWidth, newHeight);
 			SetAdjustments ();

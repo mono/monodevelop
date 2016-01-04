@@ -42,7 +42,7 @@ using MonoDevelop.Components.Commands;
 using System.Collections.Generic;
 using System.Xml;
 using Mono.Addins;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Ide.Templates
 {
