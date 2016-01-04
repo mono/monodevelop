@@ -606,21 +606,33 @@ namespace MonoDevelop.Ide.TypeSystem
 		List<MonoDevelopSourceTextContainer> openDocuments = new List<MonoDevelopSourceTextContainer>();
 		internal void InformDocumentOpen (DocumentId documentId, ITextDocument editor)
 		{
+			var document = InternalInformDocumentOpen (documentId, editor);
+			foreach (var linkedDoc in document.GetLinkedDocumentIds ()) {
+				InternalInformDocumentOpen (linkedDoc, editor);
+			}
+		}
+
+		Document InternalInformDocumentOpen (DocumentId documentId, ITextDocument editor)
+		{
 			var document = this.GetDocument (documentId);
 			if (document == null) {
-				return;
+				return document;
 			}
 			if (IsDocumentOpen (documentId))
 				InformDocumentClose (documentId, document.FilePath);
-            var monoDevelopSourceTextContainer = new MonoDevelopSourceTextContainer (documentId, editor);
+			var monoDevelopSourceTextContainer = new MonoDevelopSourceTextContainer (documentId, editor);
 			lock (openDocuments) {
 				openDocuments.Add (monoDevelopSourceTextContainer);
 			}
-			OnDocumentOpened (documentId, monoDevelopSourceTextContainer); 
+			OnDocumentOpened (documentId, monoDevelopSourceTextContainer);
+			return document;
 		}
+
+		Dictionary<string, SourceText> changedFiles = new Dictionary<string, SourceText> ();
 
 		public override bool TryApplyChanges (Solution newSolution)
 		{
+			changedFiles.Clear ();
 			return base.TryApplyChanges (newSolution);
 		}
 
@@ -665,7 +677,12 @@ namespace MonoDevelop.Ide.TypeSystem
 		public void InformDocumentClose (DocumentId analysisDocument, string filePath)
 		{
 			try {
-				OnDocumentClosed (analysisDocument, new MonoDevelopTextLoader (filePath)); 
+				var loader = new MonoDevelopTextLoader (filePath);
+				OnDocumentClosed (analysisDocument, loader); 
+				var document = this.GetDocument (analysisDocument);
+				foreach (var linkedDoc in document.GetLinkedDocumentIds ()) {
+					OnDocumentClosed (linkedDoc, loader); 
+				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception while closing document.", e); 
 			}
@@ -675,6 +692,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 		}
 
+
 		protected override void ApplyDocumentTextChanged (DocumentId id, SourceText text)
 		{
 			var document = GetDocument (id);
@@ -682,6 +700,15 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			bool isOpen;
 			var filePath = document.FilePath;
+
+			// Guard against already done changes in linked files.
+			// This shouldn't happen but the roslyn merging seems not to be working correctly in all cases :/
+			SourceText formerText;
+			if (changedFiles.TryGetValue (filePath, out formerText)) {
+				if (formerText.Length == text.Length && formerText.ToString () == text.ToString ())
+					return;
+			}
+			changedFiles [filePath] = text;
 
 			Projection projection = null;
 			foreach (var entry in ProjectionList) {
@@ -712,7 +739,6 @@ namespace MonoDevelop.Ide.TypeSystem
 						if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
 							startOffset = originalOffset;
 					}
-
 
 					string str;
 					if (change.NewText.Length == 0) {
