@@ -101,6 +101,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId PrivateProperty = "md-private-property";
 		public static readonly IconId PrivateStruct = "md-private-struct";
 		public static readonly IconId Property = "md-property";
+		public static readonly IconId Properties = "md-preferences";
 		public static readonly IconId ProtectedClass = "md-protected-class";
 		public static readonly IconId ProtectedDelegate = "md-protected-delegate";
 		public static readonly IconId ProtectedEnum = "md-protected-enum";
