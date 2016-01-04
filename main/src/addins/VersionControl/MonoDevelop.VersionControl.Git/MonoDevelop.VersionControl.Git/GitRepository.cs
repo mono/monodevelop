@@ -67,8 +67,10 @@ namespace MonoDevelop.VersionControl.Git
 			Url = url;
 		}
 
+		internal bool Disposed { get; private set; }
 		public override void Dispose ()
 		{
+			Disposed = true;
 			base.Dispose ();
 
 			if (VersionControlSystem != null)
