@@ -8,15 +8,14 @@ msgstr ""
 "Project-Id-Version: MonoDevelop 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-15 15:35:25-0500\n"
-"PO-Revision-Date: 2013-07-31 20:50:30+0900\n"
+"PO-Revision-Date: 2016-01-06 07:46+0900\n"
 "Last-Translator: Junil Um <powerumc@gmail.com>\n"
 "Language-Team: Junil Um <powerumc@gmail.com>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: MonoDevelop Gettext addin\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:16
 msgid "{0} External Console"
@@ -8081,9 +8080,8 @@ msgid "FirstRunDescription"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/IdeFileSystemExtensionExtension.cs:4
-#, fuzzy
 msgid "File '{0}' is locked."
-msgstr " {0​​}' 잠금을 해제 했습니다"
+msgstr "파일  {0​​}'는 잠겨있습니다."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/IdeFileSystemExtensionExtension.cs:4
 msgid "File {0} is read-only"
@@ -22511,14 +22509,12 @@ msgid "Use 'var' keyword"
 msgstr "'var' 키워드 사용"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/ConvertIfToAndExpressionIssue.cs:1
-#, fuzzy
 msgid "'if' statement can be re-written as '&&' expression"
-msgstr "'?:' 표현식을 '??' 표현식으로 변환할 수 있습니다"
+msgstr "'if' 구을 '%%' 표현으로 작성하십시오."
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/ConvertIfToAndExpressionIssue.cs:7
-#, fuzzy
 msgid "Convert to '&&' expresssion"
-msgstr "'??' 표현식으로 변환"
+msgstr "'&&' 표현으로 변환"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/ConvertIfToAndExpressionIssue.cs:7
 #, fuzzy
@@ -22526,9 +22522,8 @@ msgid "Replace with '&&'"
 msgstr "'{0}'과 '{1}' 교체 "
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/ConvertIfToAndExpressionIssue.cs:7
-#, fuzzy
 msgid "Convert to '&=' expresssion"
-msgstr "'??' 표현식으로 변환"
+msgstr "'&=' 표현으로 변환"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/ConvertIfToAndExpressionIssue.cs:7
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/ConvertIfToAndExpressionAnalyzer.cs:4
@@ -23044,15 +23039,13 @@ msgstr ""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/ConstraintViolations/InconsistentNamingIssue/NamingRule.cs:25
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/ConstraintViolations/InconsistentNaming/NamingRule.cs:36
-#, fuzzy
 msgid "'{0}' should start with an upper case letter. (Rule '{1}')"
-msgstr " '{0}'은(는) 대문자로 시작해야 합니다."
+msgstr " '{0}'은(는) 대문자로 시작해야 합니다. (Rule '{1}')"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/ConstraintViolations/InconsistentNamingIssue/NamingRule.cs:25
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/ConstraintViolations/InconsistentNaming/NamingRule.cs:36
-#, fuzzy
 msgid "'{0}' contains an upper case letter after the first. (Rule '{1}')"
-msgstr " '{0​​}'의 첫 글자 이후에 대문자를 포함합니다."
+msgstr " '{0​​}'의 첫 글자 이후에 대문자를 포함합니다. (Rule '{1}')"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/NUnit/NonPublicMethodWithTestAttributeIssue.cs:1
 msgid "NUnit Test methods should have public visibility"
@@ -23097,35 +23090,29 @@ msgid "'?:' expression can be converted to '??' expression"
 msgstr "'?:' 표현식을 '??' 표현식으로 변환할 수 있습니다"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertConditionalTernaryToNullCoalescingIssue.cs:9
-#, fuzzy
 msgid "'?:' expression can be re-written as '??' expression"
-msgstr "'?:' 표현식을 '??' 표현식으로 변환할 수 있습니다"
+msgstr "'?:' 표현을 '??' 표현으로 작성하십시오."
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertConditionalTernaryToNullCoalescingIssue.cs:9
-#, fuzzy
 msgid "Replace '?:'  operator with '??"
-msgstr "'?:'로 바꾸기"
+msgstr "'??' 를 '?:' 로 변경"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertIfStatementToConditionalTernaryExpressionIssue.cs:1
-#, fuzzy
 msgid "'if' statement can be re-written as '?:' expression"
-msgstr "'?:' 표현식을 '??' 표현식으로 변환할 수 있습니다"
+msgstr "'if' 구문을 '?:' 표현으로 작성하십시오."
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertIfStatementToConditionalTernaryExpressionIssue.cs:10
-#, fuzzy
 msgid "Convert to '?:' expression"
-msgstr "'??' 표현식으로 변환"
+msgstr "'?:' 표현으로 변환"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertIfStatementToNullCoalescingExpressionIssue.cs:1
-#, fuzzy
 msgid "'if' statement can be re-written as '??' expression"
-msgstr "'?:' 표현식을 '??' 표현식으로 변환할 수 있습니다"
+msgstr "'if' 구문을 '??' 표현으로 작성하십시오."
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertIfStatementToNullCoalescingExpressionIssue.cs:4
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertIfStatementToNullCoalescingExpressionAnalyzer.cs:1
-#, fuzzy
 msgid "Convert to '??' expresssion"
-msgstr "'??' 표현식으로 변환"
+msgstr "'??' 표현으로 변환"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertNullableToShortFormIssue.cs:1
 #, fuzzy
@@ -24157,9 +24144,8 @@ msgstr ""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ForCanBeConvertedToForeachIssue.cs:15
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ForCanBeConvertedToForeachAnalyzer.cs:1
-#, fuzzy
 msgid "'for' loop can be converted to 'foreach'"
-msgstr "'?:' 표현식을 '??' 표현식으로 변환할 수 있습니다"
+msgstr "'for' 루프를 'foreach'로 변경할 수 있습니다."
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ForCanBeConvertedToForeachIssue.cs:15
 #, fuzzy
@@ -24325,14 +24311,12 @@ msgid "Remove redundant 'sealed' modifier"
 msgstr "중복 'internal' 한정자 제거"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ConvertIfToOrExpressionIssue.cs:1
-#, fuzzy
 msgid "'if' statement can be re-written as '||' expression"
-msgstr "'?:' 표현식을 '??' 표현식으로 변환할 수 있습니다"
+msgstr "'if' 구문을 '||' 표현으로 작성하십시오."
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ConvertIfToOrExpressionIssue.cs:8
-#, fuzzy
 msgid "Convert to '||' expresssion"
-msgstr "'??' 표현식으로 변환"
+msgstr "'||' 표현으로 변환"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ConvertIfToOrExpressionIssue.cs:8
 #, fuzzy
@@ -24340,9 +24324,8 @@ msgid "Replace with '||'"
 msgstr "'{0}'과 '{1}' 교체 "
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ConvertIfToOrExpressionIssue.cs:8
-#, fuzzy
 msgid "Convert to '|=' expresssion"
-msgstr "'??' 표현식으로 변환"
+msgstr "'|=' 표현으로 변환"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ConvertIfToOrExpressionIssue.cs:8
 #, fuzzy
@@ -24636,9 +24619,8 @@ msgstr "중복된 속성 괄호를 제거"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertToLambdaExpressionIssue.cs:5
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertToLambdaExpressionIssue.cs:7
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToLambdaExpressionAnalyzer.cs:1
-#, fuzzy
 msgid "Can be converted to expression"
-msgstr "'??' 표현식으로 변환"
+msgstr "표현식으로 변환될 수 있습니다."
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantArgumentNameIssue.cs:2
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantArgumentNameAnalyzer.cs:1
@@ -24754,9 +24736,8 @@ msgid "Remove 'true'"
 msgstr "속성 제거"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertToStaticTypeIssue.cs:2
-#, fuzzy
 msgid "Class can be converted to static"
-msgstr "'?:' 표현식을 '??' 표현식으로 변환할 수 있습니다"
+msgstr "클래스는 static 으로 작성하십시오."
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertToStaticTypeIssue.cs:6
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToStaticTypeAnalyzer.cs:1
@@ -25609,9 +25590,8 @@ msgid "To dec"
 msgstr ""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertIfStatementToConditionalTernaryExpressionCodeRefactoringProvider.cs:11
-#, fuzzy
 msgid "To '?:' expression"
-msgstr "'??' 표현식으로 변환"
+msgstr "'?:' 표현으로"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertIfStatementToSwitchStatementCodeRefactoringProvider.cs:5
 #, fuzzy
