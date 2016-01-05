@@ -344,11 +344,9 @@ namespace ICSharpCode.NRefactory6.CSharp
 			/// </summary>
 			public TextPasteStrategies()
 			{
-				strategies = Assembly.GetExecutingAssembly()
-				     .GetTypes()
-				.Where(t => typeof(IPasteStrategy).IsAssignableFrom(t) && t.IsClass)
-				.Select(t => (IPasteStrategy)t.GetProperty("Instance").GetValue(null, null))
-				.ToDictionary(s => s.Type);
+				strategies = new Dictionary<PasteStrategy, IPasteStrategy> ();
+				strategies [PlainTextPasteStrategy.Instance.Type] = PlainTextPasteStrategy.Instance;
+				strategies [StringLiteralPasteStrategy.Instance.Type] = StringLiteralPasteStrategy.Instance;
 			}
 
 			/// <summary>
