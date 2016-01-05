@@ -32,7 +32,7 @@ using System.Text;
 
 namespace MonoDevelop.Ide.Templates
 {
-	public static class FileTemplateTagsModifier
+	static class FileTemplateTagsModifier
 	{
 		internal static void ModifyTags (SolutionFolderItem policyParent, Project project, string language, string identifier, string fileName, ref Dictionary<string,string> tags)
 		{
