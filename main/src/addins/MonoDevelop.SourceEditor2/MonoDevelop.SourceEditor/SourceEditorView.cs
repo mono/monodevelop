@@ -206,6 +206,7 @@ namespace MonoDevelop.SourceEditor
 
 			breakpoints = DebuggingService.Breakpoints;
 			DebuggingService.DebugSessionStarted += OnDebugSessionStarted;
+			DebuggingService.StoppedEvent += HandleTargetExited;
 			DebuggingService.ExecutionLocationChanged += OnExecutionLocationChanged;
 			DebuggingService.CurrentFrameChanged += OnCurrentFrameChanged;
 			DebuggingService.StoppedEvent += OnCurrentFrameChanged;
@@ -980,6 +981,7 @@ namespace MonoDevelop.SourceEditor
 
 			DebuggingService.ExecutionLocationChanged -= OnExecutionLocationChanged;
 			DebuggingService.DebugSessionStarted -= OnDebugSessionStarted;
+			DebuggingService.StoppedEvent -= HandleTargetExited;
 			DebuggingService.CurrentFrameChanged -= OnCurrentFrameChanged;
 			DebuggingService.StoppedEvent -= OnCurrentFrameChanged;
 			DebuggingService.ResumedEvent -= OnCurrentFrameChanged;
@@ -1190,7 +1192,6 @@ namespace MonoDevelop.SourceEditor
 			foreach (var marker in currentErrorMarkers) {
 				marker.IsVisible = false;
 			}
-			DebuggingService.DebuggerSession.TargetExited += HandleTargetExited;
 		}
 
 		void HandleTargetExited (object sender, EventArgs e)
