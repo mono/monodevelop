@@ -216,18 +216,32 @@ type LanguageService(dirtyNotify) as x =
            checkProjectResultsCache.Remove(filename) |> ignore
            
          LoggingService.LogDebug(sprintf "LanguageService: Getting project checker options for: %s" displayname)
-         let projOptions = x.GetProjectCheckerOptions(filename)
-         
-         LoggingService.LogDebug(sprintf "LanguageService: Getting CheckProjectResults for: %s" displayname)
-         try
-           let! (projCheck:FSharpCheckProjectResults) = x.ParseAndCheckProject(projOptions)
-           if not projCheck.HasCriticalErrors then
-             LoggingService.LogDebug(sprintf "LanguageService: Adding CheckProjectResults to cache for: %s" displayname)
-             checkProjectResultsCache.Add(filename, projCheck) |> ignore
-           else
-             LoggingService.LogDebug(sprintf "LanguageService: NOT adding CheckProjectResults to cache for: %s due to critical errors" displayname)
-         with exn ->
-           LoggingService.LogDebug(sprintf "LanguageService: Error", exn) }
+         let projOptions =
+            if File.Exists filename then
+              Some (x.GetProjectCheckerOptions(filename))
+            else
+              let trimmedfilename =
+                let finaldot = filename.LastIndexOf "."
+                if finaldot > 0 then filename.[..finaldot-1] else ""
+              if not (String.IsNullOrWhiteSpace trimmedfilename) && File.Exists trimmedfilename then
+                let source = File.ReadAllText trimmedfilename
+                Some (x.GetScriptCheckerOptions(filename, filename, source))
+              else
+                LoggingService.LogDebug(sprintf "LanguageService: Could not generate project options for: %s file does not exist" filename)
+                None
+         match projOptions with
+         | Some projOptions ->
+           LoggingService.LogDebug(sprintf "LanguageService: Getting CheckProjectResults for: %s" displayname)
+           try
+             let! (projCheck:FSharpCheckProjectResults) = x.ParseAndCheckProject(projOptions)
+             if not projCheck.HasCriticalErrors then
+               LoggingService.LogDebug(sprintf "LanguageService: Adding CheckProjectResults to cache for: %s" displayname)
+               checkProjectResultsCache.Add(filename, projCheck) |> ignore
+             else
+               LoggingService.LogDebug(sprintf "LanguageService: NOT adding CheckProjectResults to cache for: %s due to critical errors" displayname)
+           with exn ->
+             LoggingService.LogDebug(sprintf "LanguageService: Error", exn)
+          | None -> () }
     Async.Start computation  
 
   // Create an instance of interactive checker. The callback is called by the F# compiler service
