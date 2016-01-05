@@ -642,6 +642,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			try {
 				internalChanges = true;
+
 				base.ApplyProjectChanges (projectChanges);
 			} finally {
 				internalChanges = false;
