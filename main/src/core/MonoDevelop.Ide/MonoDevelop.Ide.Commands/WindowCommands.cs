@@ -251,7 +251,7 @@ namespace MonoDevelop.Ide.Commands
 		protected static void Switch (bool next)
 		{
 			if (!IdeApp.Preferences.EnableDocumentSwitchDialog) {
-				IdeApp.CommandService.DispatchCommand (next? WindowCommands.NextDocument : WindowCommands.NextDocument);
+				IdeApp.CommandService.DispatchCommand (next? WindowCommands.NextDocument : WindowCommands.PrevDocument);
 				return;
 			}
 			

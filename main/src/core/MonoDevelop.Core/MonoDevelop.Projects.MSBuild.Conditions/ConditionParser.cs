@@ -231,9 +231,8 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 
 			string ref_type = prefix [0] == '$' ? "a property" : "an item list";
 			int token_pos = tokenizer.Token.Position;
-			IsAtToken (TokenType.LeftParen, String.Format (
-						"Expected {0} at position {1} in condition \"{2}\". Missing opening parantheses after the '{3}'.",
-						ref_type, token_pos, conditionStr, prefix));
+			IsAtToken (TokenType.LeftParen, 
+				$"Expected {ref_type} at position {token_pos} in condition \"{conditionStr}\". Missing opening parantheses after the '{prefix}'.");
 			tokenizer.GetNextToken ();
 
 			sb.AppendFormat ("{0}({1}", prefix, tokenizer.Token.Value);
@@ -251,9 +250,8 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 				}
 			}
 
-			IsAtToken (TokenType.RightParen, String.Format (
-						"Expected {0} at position {1} in condition \"{2}\". Missing closing parantheses'.",
-						ref_type, token_pos, conditionStr, prefix));
+			IsAtToken (TokenType.RightParen,
+				$"Expected {ref_type} at position {token_pos} in condition \"{conditionStr}\". Missing closing parantheses'.");
 			tokenizer.GetNextToken ();
 
 			sb.Append (")");
