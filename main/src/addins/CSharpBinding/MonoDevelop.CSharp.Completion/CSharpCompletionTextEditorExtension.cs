@@ -715,13 +715,14 @@ namespace MonoDevelop.CSharp.Completion
 //			}
 //			return result;
 //		}
-
-		public override int GetCurrentParameterIndex (int startOffset)
+		public override async Task<int> GetCurrentParameterIndex (int startOffset, CancellationToken token)
 		{
 			var analysisDocument = DocumentContext.AnalysisDocument;
-			if (analysisDocument == null)
+			var caretOffset = Editor.CaretOffset;
+			if (analysisDocument == null || startOffset > caretOffset)
 				return -1;
- 			var result = ICSharpCode.NRefactory6.CSharp.ParameterUtil.GetCurrentParameterIndex (analysisDocument, startOffset, Editor.CaretOffset).Result;
+			var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, default(CancellationToken)).ConfigureAwait (false);
+			var result = ParameterUtil.GetCurrentParameterIndex (partialDoc, startOffset, caretOffset).Result;
 			return result.ParameterIndex;
 		}
 
