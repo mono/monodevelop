@@ -69,7 +69,13 @@ namespace MonoDevelop.Components
 
 		internal static void SetupXwtTheme ()
 		{
-			Xwt.Drawing.Context.RegisterStyles ("dark", "sel", "disabled");
+			Xwt.Drawing.Context.RegisterStyles ("dark", "disabled");
+
+			#if MAC
+			if (Platform.IsMac)
+				Xwt.Drawing.Context.RegisterStyles ("sel");
+			#endif
+
 			Xwt.Toolkit.CurrentEngine.RegisterBackend <Xwt.Backends.IWindowBackend, ThemedGtkWindowBackend>();
 			Xwt.Toolkit.CurrentEngine.RegisterBackend <Xwt.Backends.IDialogBackend, ThemedGtkDialogBackend>();
 		}
