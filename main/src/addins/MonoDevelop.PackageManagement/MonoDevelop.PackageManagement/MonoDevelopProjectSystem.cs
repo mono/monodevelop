@@ -46,7 +46,7 @@ namespace MonoDevelop.PackageManagement
 		ProjectTargetFramework targetFramework;
 		IPackageManagementFileService fileService;
 		IPackageManagementEvents packageManagementEvents;
-		Action<MessageHandler> guiSyncDispatcher;
+		Action<Action> guiSyncDispatcher;
 		Func<Func<Task>,Task> guiSyncDispatcherFunc;
 
 		public MonoDevelopProjectSystem(DotNetProject project)
@@ -65,8 +65,8 @@ namespace MonoDevelop.PackageManagement
 			IPackageManagementFileService fileService,
 			IPackageManagementProjectService projectService,
 			IPackageManagementEvents packageManagementEvents,
-			Action<MessageHandler> guiSyncDispatcher,
-			Func<Func<Task>,Task> guiSyncDispatcherFunc)
+			Action<Action> guiSyncDispatcher,
+			Func<Func<Task>, Task> guiSyncDispatcherFunc)
 			: base (AppendTrailingSlashToDirectory (project.BaseDirectory))
 		{
 			this.project = project;
@@ -478,9 +478,9 @@ namespace MonoDevelop.PackageManagement
 			return Runtime.RunInMainThread (func);
 		}
 
-		internal static void DefaultGuiSyncDispatcher (MessageHandler action)
+		internal static void DefaultGuiSyncDispatcher (Action action)
 		{
-			Runtime.RunInMainThread (() => action ()).Wait ();
+			Runtime.RunInMainThread (action).Wait ();
 		}
 
 		void GuiSyncDispatch (Func<Task> func)

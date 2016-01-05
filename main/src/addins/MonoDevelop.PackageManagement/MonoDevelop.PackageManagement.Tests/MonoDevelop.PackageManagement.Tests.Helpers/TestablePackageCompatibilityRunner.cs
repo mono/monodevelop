@@ -34,7 +34,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
 	public class TestablePackageCompatibilityRunner : PackageCompatibilityRunner
 	{
-		MessageHandler backgroundDispatcher;
+		Action backgroundDispatcher;
 
 		public TestablePackageCompatibilityRunner (
 			IDotNetProject project,
@@ -59,9 +59,9 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			backgroundDispatcher.Invoke ();
 		}
 
-		protected override void BackgroundDispatch (MessageHandler handler)
+		protected override void BackgroundDispatch (Action action)
 		{
-			backgroundDispatcher = handler;
+			backgroundDispatcher = action;
 		}
 
 		protected override PackageManagementEventsMonitor CreateEventMonitor (
