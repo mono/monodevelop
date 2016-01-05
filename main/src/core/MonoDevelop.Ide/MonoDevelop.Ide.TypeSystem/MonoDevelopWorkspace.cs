@@ -607,8 +607,10 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal void InformDocumentOpen (DocumentId documentId, ITextDocument editor)
 		{
 			var document = InternalInformDocumentOpen (documentId, editor);
-			foreach (var linkedDoc in document.GetLinkedDocumentIds ()) {
-				InternalInformDocumentOpen (linkedDoc, editor);
+			if (document != null) {
+				foreach (var linkedDoc in document.GetLinkedDocumentIds ()) {
+					InternalInformDocumentOpen (linkedDoc, editor);
+				}
 			}
 		}
 
