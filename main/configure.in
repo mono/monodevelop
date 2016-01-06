@@ -379,6 +379,7 @@ tests/UserInterfaceTests/Makefile
 tests/TestRunner/Makefile
 tests/Ide.Tests/Makefile
 tests/MacPlatform.Tests/Makefile
+tests/MonoDevelop.CSharpBinding.Tests/Makefile
 Makefile
 monodevelop
 mdtool
