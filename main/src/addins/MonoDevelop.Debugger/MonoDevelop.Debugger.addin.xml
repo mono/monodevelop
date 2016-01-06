@@ -30,12 +30,12 @@
 	</ExtensionPoint>
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<Category id="Debug" _name="Debug Windows">
-			<Pad id = "MonoDevelop.Debugger.WatchPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-watch" class = "MonoDevelop.Debugger.WatchPad" _label="Watch" />
-			<Pad id = "MonoDevelop.Debugger.LocalsPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-locals" class = "MonoDevelop.Debugger.LocalsPad" _label="Locals" />
 			<Pad id = "MonoDevelop.Debugger.BreakpointPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-breakpoints" class = "MonoDevelop.Debugger.BreakpointPad" _label="Breakpoints" />
-			<Pad id = "MonoDevelop.Debugger.ThreadsPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-threads" class = "MonoDevelop.Debugger.ThreadsPad" _label="Threads" />
-			<Pad id = "MonoDevelop.Debugger.StackTracePad" defaultLayout="Debug" defaultPlacement = "MonoDevelop.Debugger.WatchPad/Right Bottom" icon="md-view-debug-call-stack" class = "MonoDevelop.Debugger.StackTracePad" _label="Call Stack" />
+			<Pad id = "MonoDevelop.Debugger.LocalsPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-locals" class = "MonoDevelop.Debugger.LocalsPad" _label="Locals" />
+			<Pad id = "MonoDevelop.Debugger.WatchPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-watch" class = "MonoDevelop.Debugger.WatchPad" _label="Watch" />
 			<Pad id = "MonoDevelop.Debugger.ImmediatePad" defaultLayout="Debug" defaultPlacement = "MonoDevelop.Debugger.StackTracePad/Center Bottom" icon="md-view-debug-immediate" class = "MonoDevelop.Debugger.ImmediatePad" _label="Immediate" />
+			<Pad id = "MonoDevelop.Debugger.StackTracePad" defaultLayout="Debug" defaultPlacement = "MonoDevelop.Debugger.WatchPad/Right Bottom" icon="md-view-debug-call-stack" class = "MonoDevelop.Debugger.StackTracePad" _label="Call Stack" />
+			<Pad id = "MonoDevelop.Debugger.ThreadsPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-threads" class = "MonoDevelop.Debugger.ThreadsPad" _label="Threads" />
 		</Category>
 	</Extension>
 
