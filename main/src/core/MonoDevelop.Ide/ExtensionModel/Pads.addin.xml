@@ -63,7 +63,7 @@
 		<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ImplicitFrameworkAssemblyReferenceNodeBuilder"/>
 	</SolutionPad>
 	
-	<SolutionPad id = "ClassPad" _label = "Classes" icon = "md-class" class = "MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPad" defaultPlacement = "Left" defaultStatus="AutoHide">
+	<SolutionPad id = "ClassPad" _label = "Classes" icon = "md-classes-pad" class = "MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPad" defaultPlacement = "Left" defaultStatus="AutoHide">
 		<PadOption id = "NestedNamespaces" _label = "Nested namespaces" defaultValue = "True" />
 		<PadOption id = "ShowProjects" _label = "Show project structure" defaultValue = "True" />
 		<PadOption id = "GroupByAccess" _label = "Group members by access" defaultValue = "False" />

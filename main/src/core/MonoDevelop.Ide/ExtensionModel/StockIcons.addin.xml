@@ -83,6 +83,7 @@
 	<StockIcon stockid="md-catchpoint" resource="catchpoint-16.png" size="Menu" />
 	<StockIcon stockid="md-catchpoint-disabled" resource="catchpoint-disabled-16.png" size="Menu" />
 	<StockIcon stockid="md-class" resource="element-class-16.png" size="Menu" />
+	<StockIcon stockid="md-classes-pad" resource="pad-classes-16.png" size="Menu" />
 	<StockIcon stockid="md-class-file" resource="file-class-32.png" size="Dnd" />
 	<StockIcon stockid="md-clear" resource="clear-16.png" size="Menu" />
 	<StockIcon stockid="md-close-all-documents" resource="close-all-documents-16.png" size="Menu" />
