@@ -39,7 +39,7 @@ namespace MonoDevelop.CSharp.Parser
 	sealed class TypeSystemParser : MonoDevelop.Ide.TypeSystem.TypeSystemParser
 	{
 		static readonly List<Error> emptyList = new List<Error> ();
-		public override System.Threading.Tasks.Task<ParsedDocument> Parse (MonoDevelop.Ide.TypeSystem.ParseOptions options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+		public override async System.Threading.Tasks.Task<ParsedDocument> Parse (MonoDevelop.Ide.TypeSystem.ParseOptions options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 		{
 			var fileName = options.FileName;
 			var project = options.Project;
@@ -67,14 +67,14 @@ namespace MonoDevelop.CSharp.Parser
 				}
 				if (curDoc != null) {
 					try {
-						var model = curDoc.GetSemanticModelAsync (cancellationToken).Result;
+						var model = await curDoc.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
 						unit = model.SyntaxTree;
 						result.Ast = model;
 					} catch (AggregateException ae) {
 						ae.Flatten ().Handle (x => x is OperationCanceledException); 
-						return Task.FromResult ((ParsedDocument)result);
+						return result;
 					} catch (OperationCanceledException) {
-						return Task.FromResult ((ParsedDocument)result);
+						return result;
 					} catch (Exception e) {
 						LoggingService.LogError ("Error while getting the semantic model for " + fileName, e); 
 					}
@@ -94,7 +94,7 @@ namespace MonoDevelop.CSharp.Parser
 				time = DateTime.UtcNow;
 			}
 			result.LastWriteTimeUtc = time;
-			return Task.FromResult ((ParsedDocument)result);
+			return result;
 		}
 
 		public static CSharpParseOptions GetCompilerArguments (MonoDevelop.Projects.Project project)

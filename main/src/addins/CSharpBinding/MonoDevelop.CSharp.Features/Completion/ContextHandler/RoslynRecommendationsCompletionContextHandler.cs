@@ -87,8 +87,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			bool isInUsingDirective = parent != null && parent.Parent != null && parent.Parent.IsKind (SyntaxKind.UsingDirective) && !parent.IsKind (SyntaxKind.QualifiedName);
 			var isInQuery = ctx.CSharpSyntaxContext.IsInQuery;
 			var completionDataLookup = new Dictionary<Tuple<string, SymbolKind>, ISymbolCompletionData> ();
-			bool isInCatchTypeExpression = parent != null && (parent.IsKind (SyntaxKind.CatchDeclaration) || parent.IsKind (SyntaxKind.QualifiedName)) &&
-				parent.Parent != null && parent.Parent.IsKind (SyntaxKind.CatchDeclaration);
+			bool isInCatchTypeExpression = parent != null && parent.IsKind (SyntaxKind.CatchDeclaration) || 
+			                               parent.IsKind (SyntaxKind.QualifiedName) && parent.Parent != null && parent.Parent.IsKind (SyntaxKind.CatchDeclaration);
 			Action<ISymbolCompletionData> addData = d => {
 				var key = Tuple.Create (d.DisplayText, d.Symbol.Kind);
 				ISymbolCompletionData data;
