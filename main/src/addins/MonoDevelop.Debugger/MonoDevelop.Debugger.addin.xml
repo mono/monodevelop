@@ -124,7 +124,7 @@
 		<Command id = "MonoDevelop.Debugger.DebugCommands.NewCatchpoint"
 				defaultHandler = "MonoDevelop.Debugger.NewCatchpointHandler"
 				_label = "New Exception Catchpoint"
-				icon = "md-breakpoint-new" />
+				icon = "md-catchpoint-new" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.ShowBreakpoints"
 				defaultHandler = "MonoDevelop.Debugger.ShowBreakpointsHandler"
 				_label = "View Breakpoints"
