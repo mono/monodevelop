@@ -43,7 +43,7 @@
 		icon="md-help-pad"
 		class = "MonoDevelop.Ide.Gui.Pads.HelpTree"/>
 
-	<SolutionPad id = "ProjectPad" _label = "Solution" icon = "md-solution" class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectSolutionPad" defaultLayout="*" defaultPlacement = "Left">
+	<SolutionPad id = "ProjectPad" _label = "Solution" icon = "md-solution-pad" class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectSolutionPad" defaultLayout="*" defaultPlacement = "Left">
 		<ContextMenu path="/MonoDevelop/Ide/ContextMenu/ProjectPad" />
 		<PadOption id = "ShowAllFiles" _label = "Show All Files" defaultValue = "False" />
 		<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.WorkspaceNodeBuilder"/>
