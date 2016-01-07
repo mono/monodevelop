@@ -104,6 +104,7 @@ namespace MonoDevelop.Ide.Gui
 		public static Gdk.Color PadBackground { get; internal set; }
 		public static Gdk.Color InactivePadBackground { get; internal set; }
 		public static Gdk.Color PadLabelColor { get; internal set; }
+		public static Gdk.Color InactivePadLabelColor { get; internal set; }
 		public static Gdk.Color DockFrameBackground { get; internal set; }
 		public static Gdk.Color DockSeparatorColor { get; internal set; }
 
@@ -336,7 +337,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			ThinSplitterColor = new Gdk.Color (166, 166, 166);
 
-			TabBarBackgroundColor = CairoExtensions.ParseColor ("c2c2c2");
+			TabBarBackgroundColor = CairoExtensions.ParseColor ("c0c0c0");
 			TabBarActiveTextColor = new Cairo.Color (0, 0, 0);
 			TabBarNotifyTextColor = new Cairo.Color (0, 0, 1);
 
@@ -390,9 +391,10 @@ namespace MonoDevelop.Ide.Gui
 			DockTabBarShadowGradientStart = new Cairo.Color (154d / 255d, 154d / 255d, 154d / 255d, 1);
 			DockTabBarShadowGradientEnd = new Cairo.Color (154d / 255d, 154d / 255d, 154d / 255d, 0);
 
-			PadBackground = new Gdk.Color (240, 240, 240);
-			InactivePadBackground = ReduceLight (PadBackground, 0.9);
-			PadLabelColor = new Gdk.Color (92, 99, 102);
+			PadBackground = new Gdk.Color (250, 250, 250);
+			InactivePadBackground = new Gdk.Color (233, 233, 233);
+			PadLabelColor = new Gdk.Color (87, 87, 87);
+			InactivePadLabelColor = new Gdk.Color (151, 151, 151);
 			DockFrameBackground = new Gdk.Color (157, 162, 166);
 			DockSeparatorColor = ThinSplitterColor;
 
@@ -558,7 +560,8 @@ namespace MonoDevelop.Ide.Gui
 
 			PadBackground = new Gdk.Color (90, 90, 90);
 			InactivePadBackground = ReduceLight (PadBackground, 0.9);
-			PadLabelColor = new Gdk.Color (92, 99, 102);
+			PadLabelColor = new Gdk.Color (168, 168, 168);
+			InactivePadLabelColor = new Gdk.Color (151, 151, 151);
 			DockFrameBackground = new Gdk.Color (157, 162, 166);
 			DockSeparatorColor = ThinSplitterColor;
 

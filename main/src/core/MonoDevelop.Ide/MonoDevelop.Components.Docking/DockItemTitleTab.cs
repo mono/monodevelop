@@ -44,7 +44,7 @@ namespace MonoDevelop.Components.Docking
 		ExtendedLabel labelWidget;
 		int labelWidth;
 		DockVisualStyle visualStyle;
-		Gtk.Widget tabIcon;
+		ImageView tabIcon;
 		DockFrame frame;
 		string label;
 		ImageButton btnDock;
@@ -63,12 +63,12 @@ namespace MonoDevelop.Components.Docking
 
 		static double PixelScale = GtkWorkarounds.GetPixelScale ();
 
-		const int TopPadding = 5;
+		const int TopPadding = 9;
 		const int BottomPadding = 7;
-		const int TopPaddingActive = 5;
-		const int BottomPaddingActive = 7;
-		const int LeftPadding = 11;
-		const int RightPadding = 9;
+		const int TopPaddingActive = 8;
+		const int BottomPaddingActive = 8;
+		const int LeftPadding = 8;
+		const int RightPadding = 8;
 
 		static DockItemTitleTab ()
 		{
@@ -123,11 +123,13 @@ namespace MonoDevelop.Components.Docking
 					labelWidget.Xalign = 0;
 			}
 
-			if (tabIcon != null)
+			if (tabIcon != null) {
+				tabIcon.Image = tabIcon.Image.WithAlpha (active ? 1.0 : 0.4);
 				tabIcon.Visible = visualStyle.ShowPadTitleIcon.Value;
+			}
 			if (IsRealized) {
 				if (labelWidget != null)
-					labelWidget.ModifyFg (StateType.Normal, visualStyle.PadTitleLabelColor.Value);
+					labelWidget.ModifyText (StateType.Normal, active ? visualStyle.PadTitleLabelColor.Value : visualStyle.InactivePadTitleLabelColor.Value);
 			}
 			var r = WidthRequest;
 			WidthRequest = -1;
@@ -149,10 +151,10 @@ namespace MonoDevelop.Components.Docking
 			}
 			
 			Gtk.HBox box = new HBox ();
-			box.Spacing = 2;
+			box.Spacing = 3;
 			
 			if (icon != null) {
-				tabIcon = new Xwt.ImageView (icon).ToGtkWidget ();
+				tabIcon = new ImageView (icon);
 				tabIcon.Show ();
 				box.PackStart (tabIcon, false, false, 0);
 			} else
@@ -226,7 +228,8 @@ namespace MonoDevelop.Components.Docking
 			set {
 				if (active != value) {
 					active = value;
-					this.QueueResize ();
+					UpdateVisualStyle ();
+					QueueResize ();
 					QueueDraw ();
 					UpdateBehavior ();
 				}
@@ -416,12 +419,6 @@ namespace MonoDevelop.Components.Docking
 
 		void DrawAsBrowser (Gdk.EventExpose evnt)
 		{
-			var alloc = Allocation;
-
-			Gdk.GC bgc = new Gdk.GC (GdkWindow);
-			var c = VisualStyle.PadBackgroundColor.Value.ToXwtColor ();
-			c.Light *= 0.7;
-			bgc.RgbFgColor = c.ToGdkColor ();
 			bool first = true;
 			bool last = true;
 			TabStrip tabStrip = null;
@@ -433,24 +430,28 @@ namespace MonoDevelop.Components.Docking
 				tabStrip = tsb.TabStrip;
 			}
 
-			if (Active || (first && last)) {
-				Gdk.GC gc = new Gdk.GC (GdkWindow);
-				gc.RgbFgColor = VisualStyle.PadBackgroundColor.Value;
-				evnt.Window.DrawRectangle (gc, true, alloc);
-				if (!first)
-					evnt.Window.DrawLine (bgc, alloc.X, alloc.Y, alloc.X, alloc.Y + alloc.Height - 1);
-				if (!(last && first) && !(tabStrip != null && tabStrip.VisualStyle.ExpandedTabs.Value && last))
-					evnt.Window.DrawLine (bgc, alloc.X + alloc.Width - 1, alloc.Y, alloc.X + alloc.Width - 1, alloc.Y + alloc.Height - 1);
-				gc.Dispose ();
+			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
 
-			} else {
-				Gdk.GC gc = new Gdk.GC (GdkWindow);
-				gc.RgbFgColor = tabStrip != null ? tabStrip.VisualStyle.InactivePadBackgroundColor.Value : frame.DefaultVisualStyle.InactivePadBackgroundColor.Value;
-				evnt.Window.DrawRectangle (gc, true, alloc);
-				gc.Dispose ();
-				evnt.Window.DrawLine (bgc, alloc.X, alloc.Y + alloc.Height - 1, alloc.X + alloc.Width - 1, alloc.Y + alloc.Height - 1);
+				int radius = 3;
+
+				if (first && last) {
+					ctx.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
+					ctx.SetSourceColor (VisualStyle.PadBackgroundColor.Value.ToCairoColor ());
+					ctx.Fill ();
+				} else if (Active) {
+					var x = Allocation.X;
+					var y = Allocation.Y + TopPadding - 6;
+					ctx.RoundedRectangle (x, y, Allocation.Width - 1, Allocation.Height - y, radius, CairoCorners.TopLeft | CairoCorners.TopRight);
+					ctx.SetSourceColor (VisualStyle.PadBackgroundColor.Value.ToCairoColor ());
+					ctx.Fill ();
+				} else {
+					var x = Allocation.X;
+					var y = Allocation.Y + TopPadding - 4;
+					ctx.RoundedRectangle (x, y, Allocation.Width - 1, Allocation.Height - y - 1, radius, CairoCorners.TopLeft | CairoCorners.TopRight);
+					ctx.SetSourceColor (VisualStyle.InactivePadBackgroundColor.Value.ToCairoColor ());
+					ctx.Fill ();
+				}
 			}
-			bgc.Dispose ();
 		}
 
 		void DrawNormal (Gdk.EventExpose evnt)
