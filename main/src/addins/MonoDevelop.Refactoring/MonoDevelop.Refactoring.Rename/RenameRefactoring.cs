@@ -82,8 +82,12 @@ namespace MonoDevelop.Refactoring.Rename
 			var currentSolution = ws.CurrentSolution;
 			var newSolution = Renamer.RenameSymbolAsync (currentSolution, symbol, "_" + symbol.Name + "_", ws.Options).Result;
 			var projectChanges = currentSolution.GetChanges (newSolution).GetProjectChanges ().ToList ();
-
-			if (projectChanges.Count != 1) {
+			var changedDocuments = new HashSet<string> ();
+			foreach (var change in projectChanges)
+				foreach (var changedDoc in change.GetChangedDocuments ()) {
+					changedDocuments.Add (ws.CurrentSolution.GetDocument (changedDoc).FilePath);
+				}
+			if (changedDocuments.Count > 1) {
 				using (var dlg = new RenameItemDialog (symbol, this))
 					MessageService.ShowCustomDialog (dlg);
 				return;
