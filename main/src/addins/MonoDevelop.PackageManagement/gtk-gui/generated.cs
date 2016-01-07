@@ -17,7 +17,7 @@ namespace Stetic
 	internal class BinContainer
 	{
 		private Gtk.Widget child;
-		
+
 		private Gtk.UIManager uimanager;
 
 		public static BinContainer Attach (Gtk.Bin bin)
@@ -60,7 +60,7 @@ namespace Stetic
 				Gtk.Widget w;
 				w = this.child.Toplevel;
 				if (((w != null)
-				    && typeof(Gtk.Window).IsInstanceOfType (w))) {
+							&& typeof (Gtk.Window).IsInstanceOfType (w))) {
 					((Gtk.Window)(w)).AddAccelGroup (this.uimanager.AccelGroup);
 					this.uimanager = null;
 				}
@@ -94,11 +94,11 @@ namespace Stetic
 						gc.SetLineAttributes (3, Gdk.LineStyle.Solid, Gdk.CapStyle.Round, Gdk.JoinStyle.Round);
 						gc.RgbFgColor = new Gdk.Color (255, 0, 0);
 						pmap.DrawLine (gc, (sz / 4), (sz / 4), ((sz - 1)
-						- (sz / 4)), ((sz - 1)
-						- (sz / 4)));
+										- (sz / 4)), ((sz - 1)
+										- (sz / 4)));
 						pmap.DrawLine (gc, ((sz - 1)
-						- (sz / 4)), (sz / 4), (sz / 4), ((sz - 1)
-						- (sz / 4)));
+										- (sz / 4)), (sz / 4), (sz / 4), ((sz - 1)
+										- (sz / 4)));
 						return Gdk.Pixbuf.FromDrawable (pmap, pmap.Colormap, 0, 0, 0, 0, sz, sz);
 					}
 				}
