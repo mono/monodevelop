@@ -665,7 +665,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 
 			Annotation[] annotations = new Annotation [numAnnotations];
-			AnnotationCollector collector = new AnnotationCollector (annotations);
+			AnnotationCollector collector = new AnnotationCollector (annotations, repo);
 
 			IntPtr localpool = IntPtr.Zero;
 			try {
@@ -1666,6 +1666,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		/// </summary>
 		private class AnnotationCollector
 		{
+			readonly Repository repo;
 			readonly Annotation[] annotations;
 			public LibSvnClient.svn_client_blame_receiver_t Func {
 				get; private set;
@@ -1683,14 +1684,15 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					} catch {
 						tdate = DateTime.MinValue;
 					}
-					annotations[(int)line_no] = new Annotation (revision.ToString (), author, tdate);
+					annotations[(int)line_no] = new Annotation (new SvnRevision(repo, (int)revision), author, tdate);
 				}
 				
 				return IntPtr.Zero;
 			}
 			
-			public AnnotationCollector (Annotation[] annotations)
+			public AnnotationCollector (Annotation[] annotations, Repository repo)
 			{
+				this.repo = repo;
 				this.annotations = annotations;
 				Func = CollectorFunc;
 			}

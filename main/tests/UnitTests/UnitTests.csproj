@@ -282,6 +282,9 @@
     <Compile Include="MonoDevelop.Core\BaseCredentialsProviderTests.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\TemplateConditionEvaluatorTests.cs" />
     <Compile Include="MonoDevelop.Core\LoggingServiceTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\FileTemplateTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\FileTemplateSnippets.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\NewFileDialogTests.cs" />
     <Compile Include="MonoDevelop.Projects\PropertyBagTests.cs" />
     <Compile Include="MonoDevelop.Projects\TextFileTests.cs" />
     <Compile Include="MonoDevelop.Projects\GetSourceFilesAsyncTests.cs" />

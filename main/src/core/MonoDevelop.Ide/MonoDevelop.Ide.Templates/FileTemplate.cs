@@ -46,7 +46,9 @@ namespace MonoDevelop.Ide.Templates
 {
 	class FileTemplate
 	{
-		public string Category { get; private set; } = String.Empty;
+		public const string DefaultCategoryKey = "DefaultKey";
+
+		public Dictionary<string, string> Categories { get; private set; } = new Dictionary<string, string> ();
 
 		public List<FileTemplateCondition> Conditions { get; private set; } = new List<FileTemplateCondition> ();
 
@@ -74,15 +76,17 @@ namespace MonoDevelop.Ide.Templates
 
 		public string Originator { get; private set; } = String.Empty;
 
-		public string ProjectType { get; private set; } = String.Empty;
+		public List<string> ProjectTypes { get; private set; } = new List<string> ();
 
 		public string WizardPath { get; private set; } = String.Empty;
 
 		static FileTemplate LoadFileTemplate (RuntimeAddin addin, ProjectTemplateCodon codon)
 		{
-			XmlDocument xmlDocument = codon.GetTemplate ();
-			FilePath baseDirectory = codon.BaseDirectory;
-			
+			return LoadFileTemplate (addin, codon.GetTemplate (), codon.BaseDirectory, codon.Id);
+		}
+
+		internal static FileTemplate LoadFileTemplate (RuntimeAddin addin, XmlDocument xmlDocument, FilePath baseDirectory = new FilePath (), string templateId = "")
+		{
 			//Configuration
 			XmlElement xmlNodeConfig = xmlDocument.DocumentElement ["TemplateConfiguration"];
 
@@ -104,13 +108,7 @@ namespace MonoDevelop.Ide.Templates
 			if (xmlNodeConfig ["_Name"] != null) {
 				fileTemplate.Name = xmlNodeConfig ["_Name"].InnerText;
 			} else {
-				throw new InvalidOperationException (string.Format ("Missing element '_Name' in file template: {0}", codon.Id));
-			}
-
-			if (xmlNodeConfig ["_Category"] != null) {
-				fileTemplate.Category = xmlNodeConfig ["_Category"].InnerText;
-			} else {
-				throw new InvalidOperationException (string.Format ("Missing element '_Category' in file template: {0}", codon.Id));
+				throw new InvalidOperationException (string.Format ("Missing element '_Name' in file template: {0}", templateId));
 			}
 
 			if (xmlNodeConfig ["LanguageName"] != null) {
@@ -118,7 +116,28 @@ namespace MonoDevelop.Ide.Templates
 			}
 
 			if (xmlNodeConfig ["ProjectType"] != null) {
-				fileTemplate.ProjectType = xmlNodeConfig ["ProjectType"].InnerText;
+				var projectTypeList = new List<string> ();
+				foreach (var item in xmlNodeConfig["ProjectType"].InnerText.Split (','))
+					projectTypeList.Add (item.Trim ());
+				fileTemplate.ProjectTypes = projectTypeList;
+			}
+
+			fileTemplate.Categories = new Dictionary<string, string> ();
+			if (xmlNodeConfig ["_Category"] != null) {
+				foreach (XmlNode xmlNode in xmlNodeConfig.GetElementsByTagName ("_Category")) {
+					if (xmlNode is XmlElement) {
+						string projectType = "";
+						if (xmlNode.Attributes ["projectType"] != null)
+							projectType = xmlNode.Attributes ["projectType"].Value;
+
+						if (!string.IsNullOrEmpty (projectType) && fileTemplate.ProjectTypes.Contains (projectType))
+							fileTemplate.Categories.Add (projectType, xmlNode.InnerText);
+						else if (!fileTemplate.Categories.ContainsKey (DefaultCategoryKey))
+							fileTemplate.Categories.Add (DefaultCategoryKey, xmlNode.InnerText);
+					}
+				}
+			} else {
+				throw new InvalidOperationException (string.Format ("Missing element '_Category' in file template: {0}", templateId));
 			}
 
 			if (xmlNodeConfig ["_Description"] != null) {
@@ -337,7 +356,8 @@ namespace MonoDevelop.Ide.Templates
 
 			//filter on conditions
 			if (project != null) {
-				if (!string.IsNullOrEmpty (ProjectType) && project.GetTypeTags ().All (p => p != ProjectType))
+				// When file template's project types don't match the current project's type.
+				if (ProjectTypes.Any () && project.GetTypeTags ().All (p => !ProjectTypes.Contains (p)))
 					return false;
 
 				foreach (FileTemplateCondition condition in Conditions)

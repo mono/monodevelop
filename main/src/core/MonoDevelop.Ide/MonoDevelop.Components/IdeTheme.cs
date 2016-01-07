@@ -59,9 +59,9 @@ namespace MonoDevelop.Components
 			if (Gtk.Settings.Default != null)
 				throw new InvalidOperationException ("Gtk already initialized!");
 			
-			//HACK: we must initilize some Gtk rc before Gtk.Application is initialized on Mac
+			//HACK: we must initilize some Gtk rc before Gtk.Application is initialized on Mac/Windows
 			//      otherwise it will not be loaded correctly and theme switching won't work.
-			if (Platform.IsMac)
+			if (!Platform.IsLinux)
 				UpdateGtkTheme ();
 
 			Gtk.Application.Init (BrandingService.ApplicationName, ref args);
@@ -69,7 +69,12 @@ namespace MonoDevelop.Components
 
 		internal static void SetupXwtTheme ()
 		{
-			Xwt.Drawing.Context.RegisterStyles ("dark", "sel", "disabled");
+			Xwt.Drawing.Context.RegisterStyles ("dark", "disabled");
+
+			#if MAC
+			Xwt.Drawing.Context.RegisterStyles ("sel");
+			#endif
+
 			Xwt.Toolkit.CurrentEngine.RegisterBackend <Xwt.Backends.IWindowBackend, ThemedGtkWindowBackend>();
 			Xwt.Toolkit.CurrentEngine.RegisterBackend <Xwt.Backends.IDialogBackend, ThemedGtkDialogBackend>();
 		}
@@ -91,7 +96,10 @@ namespace MonoDevelop.Components
 			} else
 				DefaultTheme = "Light";
 
-			// we have loaded the theme in Initialize () already
+			// HACK: on Windows we have to load the theme twice on startup. During the first run we
+			//       set the environment variables from InitializeGtk() and after Gtk initialization
+			//       we set the active theme from here. Otherwise Gtk will preload the default theme with
+			//       the Wimp engine, which can break our own configs.
 			if (Platform.IsWindows)
 				UpdateGtkTheme ();
 		}
@@ -133,12 +141,14 @@ namespace MonoDevelop.Components
 					File.Copy (gtkrc + ".win32-dark", rc_theme_dark, true);
 
 					Environment.SetEnvironmentVariable ("GTK_DATA_PREFIX", UserProfile.Current.ConfigDir);
-					LoggingService.LogInfo ("GTK: Using Gtk theme from {0}", Path.Combine (Gtk.Rc.ThemeDir, current_theme));
 
-					if (Gtk.Settings.Default != null)
+					// set the actual theme and reset the environment only after Gtk has been fully
+					// initialized. See SetupGtkTheme ().
+					if (Gtk.Settings.Default != null) {
+						LoggingService.LogInfo ("GTK: Using Gtk theme from {0}", Path.Combine (Gtk.Rc.ThemeDir, current_theme));
 						Gtk.Settings.Default.ThemeName = current_theme;
-
-					Environment.SetEnvironmentVariable ("GTK_DATA_PREFIX", DefaultGtkDataFolder);
+						Environment.SetEnvironmentVariable ("GTK_DATA_PREFIX", DefaultGtkDataFolder);
+					}
 
 				} else if (Platform.IsMac) {
 					

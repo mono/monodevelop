@@ -32,6 +32,7 @@
 //
 
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -710,11 +711,19 @@ namespace MonoDevelop.Ide.Projects
 				var codeDomProvider = binding.GetCodeDomProvider ();
 				if (codeDomProvider != null) {
 					projectName = SanitisePotentialNamespace (projectName);
+					if (projectName.Contains ('.')) {
+						return NameIsLanguageKeyword (codeDomProvider, projectName.Split ('.'));
+					}
 					return !codeDomProvider.IsValidIdentifier (projectName);
 				}
 			}
 
 			return false;
+		}
+
+		static bool NameIsLanguageKeyword (CodeDomProvider codeDomProvider, string[] names)
+		{
+			return names.Any (name => !codeDomProvider.IsValidIdentifier (name));
 		}
 
 		/// <summary>

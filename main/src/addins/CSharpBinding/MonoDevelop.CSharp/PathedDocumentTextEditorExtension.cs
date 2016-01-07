@@ -181,11 +181,13 @@ namespace MonoDevelop.CSharp
 
 		void HandleTypeSegmentTreeUpdated (object sender, EventArgs e)
 		{
-			CancelUpdatePathTimeout ();
-			updatePathTimeoutId = GLib.Timeout.Add (updatePathTimeout, delegate {
-				Update ();
-				updatePathTimeoutId = 0;
-				return false;
+			Runtime.RunInMainThread (() => {
+				CancelUpdatePathTimeout ();
+				updatePathTimeoutId = GLib.Timeout.Add (updatePathTimeout, delegate {
+					Update ();
+					updatePathTimeoutId = 0;
+					return false;
+				});
 			});
 		}
 

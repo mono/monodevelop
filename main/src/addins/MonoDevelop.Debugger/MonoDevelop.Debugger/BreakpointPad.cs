@@ -74,7 +74,7 @@ namespace MonoDevelop.Debugger
 			// Toolbar and menu definitions
 			
 			ActionCommand gotoCmd = new ActionCommand (LocalCommands.GoToFile, GettextCatalog.GetString ("Go to File"));
-			ActionCommand propertiesCmd = new ActionCommand (LocalCommands.Properties, GettextCatalog.GetString ("Properties"), Gtk.Stock.Properties);
+			ActionCommand propertiesCmd = new ActionCommand (LocalCommands.Properties, GettextCatalog.GetString ("Properties"), Stock.Properties);
 			
 			menuSet = new CommandEntrySet ();
 			menuSet.Add (gotoCmd);
@@ -94,8 +94,8 @@ namespace MonoDevelop.Debugger
 			toolbarSet.AddSeparator ();
 			toolbarSet.Add (propertiesCmd);
 			toolbarSet.AddSeparator ();
-			toolbarSet.Add (new CommandEntry (DebugCommands.NewFunctionBreakpoint){ DispayType = CommandEntryDisplayType.IconAndText });
-			toolbarSet.Add (new CommandEntry (DebugCommands.NewCatchpoint){ DispayType = CommandEntryDisplayType.IconAndText });
+			toolbarSet.Add (new CommandEntry (DebugCommands.NewFunctionBreakpoint){ DisplayType = CommandEntryDisplayType.IconAndText });
+			toolbarSet.Add (new CommandEntry (DebugCommands.NewCatchpoint){ DisplayType = CommandEntryDisplayType.IconAndText });
 			
 			// The breakpoint list
 			

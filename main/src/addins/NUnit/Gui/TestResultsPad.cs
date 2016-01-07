@@ -214,7 +214,7 @@ namespace MonoDevelop.NUnit
 			
 			buttonRun = new Button ();
 			buttonRun.Label = GettextCatalog.GetString ("Rerun Tests");
-			buttonRun.Image = new ImageView ("nunit-run", IconSize.Menu);
+			buttonRun.Image = new ImageView ("md-execute-all", IconSize.Menu);
 			buttonRun.Image.Show ();
 			buttonRun.Sensitive = false;
 			toolbar.Add (buttonRun);
