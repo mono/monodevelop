@@ -868,12 +868,12 @@ namespace MonoDevelop.Components.DockNotebook
 				// If that bug get's fixed remove this HACK asap.
 				la.Ellipsize = Pango.EllipsizeMode.End;
 				la.Width = (int)(w * Pango.Scale.PangoScale);
-				ctx.SetSourceColor (tab.Notify ? Styles.TabBarNotifyTextColor : Styles.TabBarActiveTextColor);
+				ctx.SetSourceColor (tab.Notify ? Styles.TabBarNotifyTextColor : (active ? Styles.TabBarActiveTextColor : Styles.TabBarInactiveTextColor));
 				Pango.CairoHelper.ShowLayout (ctx, la.GetLine (0).Layout);
 			} else {
 				// ellipses are for space wasting ..., we cant afford that
 				using (var lg = new LinearGradient (textStart + w - 5, 0, textStart + w + 3, 0)) {
-					var color = tab.Notify ? Styles.TabBarNotifyTextColor : Styles.TabBarActiveTextColor;
+					var color = tab.Notify ? Styles.TabBarNotifyTextColor : (active ? Styles.TabBarActiveTextColor : Styles.TabBarInactiveTextColor);
 					color = color.MultiplyAlpha (tab.Opacity);
 					lg.AddColorStop (0, color);
 					color.A = 0;

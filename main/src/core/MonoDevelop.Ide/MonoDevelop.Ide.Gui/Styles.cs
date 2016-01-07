@@ -338,7 +338,7 @@ namespace MonoDevelop.Ide.Gui
 			ThinSplitterColor = new Gdk.Color (166, 166, 166);
 
 			TabBarBackgroundColor = CairoExtensions.ParseColor ("c0c0c0");
-			TabBarActiveTextColor = new Cairo.Color (0, 0, 0);
+			TabBarActiveTextColor = new Cairo.Color (87d / 255d, 87d / 255d, 87d / 255d);
 			TabBarNotifyTextColor = new Cairo.Color (0, 0, 1);
 
 			// Document tabs
@@ -351,7 +351,7 @@ namespace MonoDevelop.Ide.Gui
 			TabBarGlowGradientStartColor = new Cairo.Color (1, 1, 1, .4);
 			TabBarGlowGradientEndColor = new Cairo.Color (1, 1, 1, 0);
 			TabBarHoverActiveTextColor = TabBarActiveTextColor;
-			TabBarInactiveTextColor = Blend (new Cairo.Color (0, 0, 0), TabBarGradientStartColor, 0.4);
+			TabBarInactiveTextColor = new Cairo.Color (151d / 255d, 151d / 255d, 151d / 255d);
 			TabBarHoverInactiveTextColor = new Cairo.Color (0, 0, 0);
 			TabBarInnerBorderColor = new Cairo.Color (1, 1, 1, .5);
 			TabBarInactiveGradientStartColor = CairoExtensions.ParseColor ("f4f4f4");
