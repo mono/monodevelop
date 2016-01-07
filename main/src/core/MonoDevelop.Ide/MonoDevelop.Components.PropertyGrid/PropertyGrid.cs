@@ -89,6 +89,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			toolbar = tb;
 			
 			catButton = new RadioButton ((Gtk.RadioButton)null);
+			catButton.Name = "MonoDevelop.PropertyGridToolbar.GtkRadioButton";
 			catButton.DrawIndicator = false;
 			catButton.Relief = ReliefStyle.None;
 			catButton.Image = new ImageView (MonoDevelop.Ide.Gui.Stock.GroupByCategory, IconSize.Menu);
@@ -98,6 +99,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			toolbar.Insert (catButton, 0);
 			
 			alphButton = new RadioButton (catButton);
+			alphButton.Name = "MonoDevelop.PropertyGridToolbar.GtkRadioButton";
 			alphButton.DrawIndicator = false;
 			alphButton.Relief = ReliefStyle.None;
 			alphButton.Image = new ImageView (MonoDevelop.Ide.Gui.Stock.SortAlphabetically, IconSize.Menu);
@@ -449,6 +451,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			DrawIndicator = false;
 			Relief = ReliefStyle.None;
 			NoShowAll = true;
+			Name = "MonoDevelop.PropertyGridToolbar.GtkRadioButton";
 		}
 		
 		public PropertyTab Tab;

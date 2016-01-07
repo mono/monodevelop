@@ -499,5 +499,8 @@ binding "gtk-mac-expand-collapse-cursor-row"
 
 class "GtkTreeView" binding "gtk-mac-expand-collapse-cursor-row"
 
+# HACK: PropertyGrid toolbar option buttons must have murrine style
+widget "*MonoDevelop.PropertyGridToolbar.GtkRadioButton" style "toggle-button"
+
 # BooleanEditorCell must always have murrine style
 widget_class "*BooleanEditor*" style "propertygrid-radio-or-check-box"
