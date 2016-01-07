@@ -236,7 +236,7 @@
 		<StockIcon stockid = "md-step-into-debug" resource = "step-in-16.png" size = "Menu"/>
 		<StockIcon stockid = "md-step-out-debug" resource = "step-out-16.png" size = "Menu"/>
 		<StockIcon stockid = "md-step-over-debug" resource = "step-over-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-view-debug-breakpoints" resource = "breakpoint-16.png" size="Menu" />
+		<StockIcon stockid = "md-view-debug-breakpoints" resource = "pad-breakpoints-16.png" size="Menu" />
 		<StockIcon stockid = "md-view-debug-call-stack" resource = "pad-call-stack-16.png" size="Menu" />
 		<StockIcon stockid = "md-view-debug-locals" resource = "pad-locals-16.png" size="Menu" />
 		<StockIcon stockid = "md-view-debug-threads" resource = "pad-threads-16.png" size="Menu" />
