@@ -375,6 +375,8 @@
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopProjectSystem.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopProjectSystemFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementBackgroundDispatcher.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Refactoring\KnownRoslynProviderAssembliesPanelWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.PackageManagement.Refactoring.KnownRoslynProviderAssembliesPanelWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
