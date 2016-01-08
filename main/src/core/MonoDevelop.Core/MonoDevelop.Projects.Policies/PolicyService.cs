@@ -1192,7 +1192,7 @@ namespace MonoDevelop.Projects.Policies
 		
 		static string GetPolicyFile (PolicySet set)
 		{
-			return PoliciesFolder.Combine ((set.Name ?? set.Id) + ".mdpolicy.xml");
+			return PoliciesFolder.Combine ((set.Id ?? set.Name) + ".mdpolicy.xml");
 		}
 		
 		static void LoadPolicies ()
