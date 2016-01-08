@@ -520,7 +520,7 @@
 			_label = "C_opy File Path"/>
 	<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.ToggleMaximize"
 	         defaultHandler = "MonoDevelop.Ide.Commands.ToggleMaximizeHandler"
-			_label = “S_witch Maximized/Normal View“/>
+			_label = "S_witch Maximized/Normal View"/>
 	<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.ReopenClosedTab"
 			defaultHandler = "MonoDevelop.Ide.Commands.ReopenClosedTabHandler"
 			_label = "Reopen Closed Tab"
