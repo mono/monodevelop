@@ -396,7 +396,7 @@ namespace MonoDevelop.Ide.Gui
 			DockFrameBackground = new Gdk.Color (157, 162, 166);
 			DockSeparatorColor = ThinSplitterColor;
 
-			BrowserPadBackground = new Gdk.Color (225, 228, 232);
+			BrowserPadBackground = CairoExtensions.ParseColor("f0f1f3").ToGdkColor ();
 			InactiveBrowserPadBackground = new Gdk.Color (240, 240, 240);
 
 			PadCategoryBackgroundGradientStartColor = new Cairo.Color (248d/255d, 248d/255d, 248d/255d);
