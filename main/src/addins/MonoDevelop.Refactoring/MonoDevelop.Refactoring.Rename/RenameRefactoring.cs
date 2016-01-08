@@ -118,41 +118,16 @@ namespace MonoDevelop.Refactoring.Rename
 					link.AddLink (segment);
 				}
 			}
-			
-			links.Add (link);
-			editor.StartTextLinkMode (new TextLinkModeOptions (links, args => {
-				if (!args.Success)
-					return;
 
-				var version = editor.Version;
-				var span = symbol.Locations.First ().SourceSpan;
-				var newName = link.CurrentText;
-				var textChanges = version.GetChangesTo (oldVersion).ToList ();
-				foreach (var v in textChanges) {
-					editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
+			links.Add (link);
+			editor.StartTextLinkMode (new TextLinkModeOptions (links, (arg) => {
+				//If user cancel renaming revert changes
+				if (!arg.Success) {
+					var textChanges = editor.Version.GetChangesTo (oldVersion).ToList ();
+					foreach (var v in textChanges) {
+						editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
+					}
 				}
-				var parsedDocument = doc.UpdateParseDocument ().Result;
-				if (parsedDocument == null) {
-					Rollback (editor, textChanges);
-					return;
-				}
-				var model = parsedDocument.GetAst<SemanticModel> ();
-				if (model == null) {
-					Rollback (editor, textChanges);
-					return;
-				}
-				var node = model.SyntaxTree.GetRoot ().FindNode (span);
-				if (node == null) {
-					Rollback (editor, textChanges);
-					return;
-				}
-				var sym = model.GetDeclaredSymbol (node);
-				if (sym == null) {
-					Rollback (editor, textChanges);
-					return;
-				}
-				if (!Rename (sym, newName))
-					Rollback (editor, textChanges);
 			}));
 		}
 		
