@@ -215,6 +215,11 @@ namespace MonoDevelop.Ide.Gui
 			}*/
 		}
 
+		internal override bool IsAdHocProject {
+			get { return adhocProject != null; }
+		}
+
+
 		public override bool IsCompileableInProject {
 			get {
 				var project = Project;

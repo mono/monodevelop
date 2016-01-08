@@ -165,8 +165,8 @@ namespace MonoDevelop.Ide.Editor
 			var caretLocation = textEditor.CaretLocation;
 			Task.Run (() => {
 				try {
-					UpdateErrorUndelines (ctx.ParsedDocument, token);
-					UpdateQuickTasks (ctx.ParsedDocument, token);
+					UpdateErrorUndelines (ctx, ctx.ParsedDocument, token);
+					UpdateQuickTasks (ctx, ctx.ParsedDocument, token);
 					UpdateFoldings (ctx.ParsedDocument, caretLocation, false, token);
 				} catch (OperationCanceledException) {
 					// ignore
@@ -205,7 +205,12 @@ namespace MonoDevelop.Ide.Editor
 			errors.Add (error);
 		}
 
-		async void UpdateErrorUndelines (ParsedDocument parsedDocument, CancellationToken token)
+		static string [] filteredErrorsInAdHocMode = {
+			"CS0246", // The type or namespace name 'type/namespace' could not be found
+			"CS0616", // is not an attribute class (case: class Test { [Test]void MyTest() {} } )
+		};
+
+		async void UpdateErrorUndelines (DocumentContext ctx, ParsedDocument parsedDocument, CancellationToken token)
 		{
 			if (!DefaultSourceEditorOptions.Instance.UnderlineErrors || parsedDocument == null || isDisposed)
 				return;
@@ -225,6 +230,8 @@ namespace MonoDevelop.Ide.Editor
 						// Else we underline the error
 						if (errors != null) {
 							foreach (var error in errors) {
+								if (ctx.IsAdHocProject && filteredErrorsInAdHocMode.Contains (error.Id))
+									continue;
 								UnderLineError (error);
 							}
 						}
@@ -876,7 +883,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		async void UpdateQuickTasks (ParsedDocument doc, CancellationToken token)
+		async void UpdateQuickTasks (DocumentContext ctx, ParsedDocument doc, CancellationToken token)
 		{
 			if (isDisposed)
 				return;
@@ -898,6 +905,8 @@ namespace MonoDevelop.Ide.Editor
 				foreach (var error in await doc.GetErrorsAsync(token).ConfigureAwait (false)) {
 					if (token.IsCancellationRequested)
 						return;
+					if (ctx.IsAdHocProject && filteredErrorsInAdHocMode.Contains (error.Id))
+						continue;
 					int offset;
 					try {
 						offset = textEditor.LocationToOffset (error.Region.Begin.Line, error.Region.Begin.Column);
