@@ -121,7 +121,7 @@
 			_label = "_Lowercase Selection" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.RemoveTrailingWhiteSpaces"
 			description = "Remove trailing whitespace"
-			_label = "_Remove trailing whitespace" />
+			_label = "_Remove Trailing Whitespace" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.JoinWithNextLine"
 			shortcut = "Control|Shift|J"
 			_description = "Join the current line with the next line"
@@ -1041,7 +1041,7 @@
 			_description = "Scrolls the editor so that the caret is centered"
 			macShortcut = "Control|L" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleBlockSelectionMode"
-			_label = "Toggle block selection mode"/>
+			_label = "Toggle Block Selection Mode"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DuplicateLine"
 			_label = "Duplicate line"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DynamicAbbrev"
