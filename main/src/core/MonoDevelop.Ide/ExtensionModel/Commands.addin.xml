@@ -517,10 +517,10 @@
 	<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CopyPathName"
 	         defaultHandler = "MonoDevelop.Ide.Commands.CopyPathNameHandler"
 			_description = "Copy the file path to the clipboard"
-			_label = "C_opy file path/name"/>
+			_label = "C_opy File Path"/>
 	<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.ToggleMaximize"
 	         defaultHandler = "MonoDevelop.Ide.Commands.ToggleMaximizeHandler"
-			_label = "S_witch maximize/normal view"/>
+			_label = “S_witch Maximized/Normal View“/>
 	<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.ReopenClosedTab"
 			defaultHandler = "MonoDevelop.Ide.Commands.ReopenClosedTabHandler"
 			_label = "Reopen Closed Tab"
