@@ -44,7 +44,8 @@
                    Source="{Binding StatusImage}"
                    UseLayoutRounding="True"
                    MouseLeftButtonUp="OnShowPad" />
-            <TextBlock Grid.Column="1"
+            <TextBlock x:Name="StatusText"
+                Grid.Column="1"
                 VerticalAlignment="Center"
                 Padding="7,1,0,2"
                 Foreground="{Binding StatusTextBrush}"

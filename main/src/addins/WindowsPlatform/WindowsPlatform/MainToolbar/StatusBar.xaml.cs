@@ -74,6 +74,16 @@ namespace WindowsPlatform.MainToolbar
 			};
 			TaskService.Errors.TasksAdded += updateHandler;
 			TaskService.Errors.TasksRemoved += updateHandler;
+
+			StatusText.ToolTipOpening += (o, e) => {
+				e.Handled = !TextTrimmed ();
+			};
+		}
+
+		bool TextTrimmed ()
+		{
+			StatusText.Measure (new Size (double.PositiveInfinity, double.PositiveInfinity));
+			return StatusText.ActualWidth < StatusText.DesiredSize.Width;
 		}
 
 		public bool AutoPulse {
@@ -184,6 +194,7 @@ namespace WindowsPlatform.MainToolbar
 		public void ShowMessage (IconId iconId, string message, bool isMarkup)
 		{
 			Message = message;
+			StatusText.ToolTip = message;
 
 			if (iconId.IsNull)
 				iconId = BrandingService.StatusSteadyIconId;
