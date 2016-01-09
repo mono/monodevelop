@@ -41,6 +41,8 @@ namespace MonoDevelop.Projects
 		string name = null;
 		
 		string platform;
+
+		bool isImported = false;
 		
 		[ItemProperty ("CustomCommands", SkipEmpty = true)]
 		[ItemProperty ("Command", Scope="*")]
@@ -108,12 +110,18 @@ namespace MonoDevelop.Projects
 			get { return customCommands; }
 		}
 
+		public bool IsImported {
+			get { return isImported; }
+			set { isImported = value; }
+		}
+
 		public object Clone()
 		{
 			ItemConfiguration conf = (ItemConfiguration) Activator.CreateInstance (GetType ());
 			conf.CopyFrom (this);
 			conf.name = name;
 			conf.platform = platform;
+			conf.isImported = isImported;
 			return conf;
 		}
 		
