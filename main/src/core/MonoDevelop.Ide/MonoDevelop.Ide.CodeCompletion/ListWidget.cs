@@ -444,6 +444,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
 			using (var context = Gdk.CairoHelper.Create (args.Window)) {
+				var scalef = GtkWorkarounds.GetScaleFactor (this);
 				context.LineWidth = 1;
 				var alloc = Allocation;
 				int width = alloc.Width;
@@ -559,6 +560,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 
 					typos = he < rowHeight ? ypos + (int)Math.Ceiling((rowHeight - he) / 2.0) : ypos;
+					if (scalef <= 1.0)
+						typos -=  1; // 1px up on non HiDPI
 					iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
 					if (item == SelectedItem) {
 						var barStyle = SelectionEnabled ? Styles.CodeCompletion.SelectionBackgroundColor : Styles.CodeCompletion.SelectionBackgroundInactiveColor;
@@ -594,6 +597,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 						layout.GetPixelSize (out w, out h);
 						wi += w;
 						typos = h < rowHeight ? ypos + (rowHeight - h) / 2 : ypos;
+						if (scalef <= 1.0)
+							typos -=  1; // 1px up on non HiDPI
 						context.MoveTo (Allocation.Width - w, typos);
 						Pango.CairoHelper.ShowLayout (context, layout);
 					}
