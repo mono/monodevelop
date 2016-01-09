@@ -252,11 +252,6 @@ namespace MonoDevelop.Ide.Editor
 							foreach (var error in errors) {
 								if (ctx.IsAdHocProject && !lexicalError.Contains (error.Id))
 									continue;
-								var diagnostic = error.Tag as Diagnostic;
-								Console.WriteLine (diagnostic.Descriptor);
-
-
-								Console.WriteLine (error.Id +"/"+ error.Message);
 								UnderLineError (error);
 							}
 						}
