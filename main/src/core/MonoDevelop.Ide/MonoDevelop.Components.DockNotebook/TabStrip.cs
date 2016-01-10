@@ -130,7 +130,7 @@ namespace MonoDevelop.Components.DockNotebook
 		static TabStrip ()
 		{
 			TabPadding = ((Xwt.Drawing.NinePatchImage)tabBackImage).Padding;
-			TabActivePadding = ((Xwt.Drawing.NinePatchImage)tabBackImage).Padding;
+			TabActivePadding = ((Xwt.Drawing.NinePatchImage)tabActiveBackImage).Padding;
 		}
 
 		public TabStrip (DockNotebook notebook)
@@ -826,9 +826,9 @@ namespace MonoDevelop.Components.DockNotebook
 				tabBounds.X = (int)(tabBounds.X + (dragX - tabBounds.X) * dragXProgress);
 				tabBounds.X = Clamp (tabBounds.X, tabStartX, tabEndX - tabBounds.Width);
 			}
-			double rightPadding = (active ? TabActivePadding.Right : TabPadding.Right) - LeanWidth;
+			double rightPadding = (active ? TabActivePadding.Right : TabPadding.Right) - (LeanWidth / 2);
 			rightPadding = (rightPadding * Math.Min (1.0, Math.Max (0.5, (tabBounds.Width - 30) / 70.0)));
-			double leftPadding = (active ? TabActivePadding.Left : TabPadding.Left) - LeanWidth;
+			double leftPadding = (active ? TabActivePadding.Left : TabPadding.Left) - (LeanWidth / 2);
 			leftPadding = (leftPadding * Math.Min (1.0, Math.Max (0.5, (tabBounds.Width - 30) / 70.0)));
 			double bottomPadding = active ? TabActivePadding.Bottom : TabPadding.Bottom;
 
