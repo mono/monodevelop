@@ -909,7 +909,9 @@ namespace MonoDevelop.Components.DockNotebook
 		Pango.Layout CreateSizedLayout (bool active)
 		{
 			var la = new Pango.Layout (PangoContext);
-			la.FontDescription = Pango.FontDescription.FromString (active ? "bold" : "normal");
+			la.FontDescription = Ide.Fonts.FontService.SansFont.Copy ();
+			if (active && !Core.Platform.IsWindows)
+				la.FontDescription.Weight = Pango.Weight.Bold;
 			la.FontDescription.AbsoluteSize = Pango.Units.FromPixels (VerticalTextSize);
 
 			return la;
