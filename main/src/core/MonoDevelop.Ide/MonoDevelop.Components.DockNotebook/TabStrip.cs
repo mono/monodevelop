@@ -85,9 +85,6 @@ namespace MonoDevelop.Components.DockNotebook
 
 		const int TextOffset = 1;
 
-		// Vertically aligns the close image(s) with the tab label.
-		const int CloseImageTopOffset = 3;
-
 		int TabWidth { get; set; }
 
 		int LastTabWidthAdjustment { get; set; }
@@ -755,15 +752,50 @@ namespace MonoDevelop.Components.DockNotebook
 			return base.OnExposeEvent (evnt);
 		}
 
-		static void DrawCloseButton (Context context, Cairo.PointD center, bool hovered, double opacity, double animationProgress)
+		static void DrawCloseButton (Context context, Cairo.PointD center, bool active, bool hovered, double opacity, double animationProgress)
 		{
-			if (hovered) {
-				const double radius = 6;
+			var dirty = animationProgress > 0.5;
+
+			if (dirty && !hovered) {
+				double lineColor = .63 - .1 * animationProgress;
+				const double fillColor = .74;
+				double partialProg = (animationProgress - 0.5) * 2;
+
+				context.MoveTo (center.X - 3, center.Y);
+				context.LineTo (center.X + 3, center.Y);
+
+				context.LineWidth = 2 - partialProg;
+				context.SetSourceRGBA (lineColor, lineColor, lineColor, opacity);
+				context.Stroke ();
+
+				double radius = partialProg * 3.5;
+
+				// Background
 				context.Arc (center.X, center.Y, radius, 0, Math.PI * 2);
-				context.SetSourceRGBA (.6, .6, .6, opacity);
+				context.SetSourceRGBA (fillColor, fillColor, fillColor, opacity);
 				context.Fill ();
 
-				context.SetSourceRGBA (0.95, 0.95, 0.95, opacity);
+				// Inset shadow
+				using (var lg = new LinearGradient (0, center.Y - 5, 0, center.Y)) {
+					context.Arc (center.X, center.Y + 1, radius, 0, Math.PI * 2);
+					lg.AddColorStop (0, new Cairo.Color (0, 0, 0, 0.2 * opacity));
+					lg.AddColorStop (1, new Cairo.Color (0, 0, 0, 0));
+					context.SetSource (lg);
+					context.Stroke ();
+				}
+
+				// Outline
+				context.Arc (center.X, center.Y, radius, 0, Math.PI * 2);
+				context.SetSourceRGBA (lineColor, lineColor, lineColor, opacity);
+				context.Stroke ();
+			}
+
+			if (hovered || active && !dirty) {
+				if (hovered)
+					context.SetSourceColor (active ? Styles.TabBarActiveTextColor : Styles.TabBarInactiveTextColor);
+				else if (active && !dirty)
+					context.SetSourceColor (Styles.TabBarInactiveTextColor);
+				
 				context.LineWidth = 2;
 
 				context.MoveTo (center.X - 3, center.Y - 3);
@@ -771,51 +803,6 @@ namespace MonoDevelop.Components.DockNotebook
 				context.MoveTo (center.X - 3, center.Y + 3);
 				context.LineTo (center.X + 3, center.Y - 3);
 				context.Stroke ();
-			} else {
-				double lineColor = .63 - .1 * animationProgress;
-				const double fillColor = .74;
-
-				double heightMod = Math.Max (0, 1.0 - animationProgress * 2);
-				context.MoveTo (center.X - 3, center.Y - 3 * heightMod);
-				context.LineTo (center.X + 3, center.Y + 3 * heightMod);
-				context.MoveTo (center.X - 3, center.Y + 3 * heightMod);
-				context.LineTo (center.X + 3, center.Y - 3 * heightMod);
-
-				context.LineWidth = 2;
-				context.SetSourceRGBA (lineColor, lineColor, lineColor, opacity);
-				context.Stroke ();
-
-				if (animationProgress > 0.5) {
-					double partialProg = (animationProgress - 0.5) * 2;
-					context.MoveTo (center.X - 3, center.Y);
-					context.LineTo (center.X + 3, center.Y);
-
-					context.LineWidth = 2 - partialProg;
-					context.SetSourceRGBA (lineColor, lineColor, lineColor, opacity);
-					context.Stroke ();
-
-					double radius = partialProg * 3.5;
-
-					// Background
-					context.Arc (center.X, center.Y, radius, 0, Math.PI * 2);
-					context.SetSourceRGBA (fillColor, fillColor, fillColor, opacity);
-					context.Fill ();
-
-					// Inset shadow
-					using (var lg = new LinearGradient (0, center.Y - 5, 0, center.Y)) {
-						context.Arc (center.X, center.Y + 1, radius, 0, Math.PI * 2);
-						lg.AddColorStop (0, new Cairo.Color (0, 0, 0, 0.2 * opacity));
-						lg.AddColorStop (1, new Cairo.Color (0, 0, 0, 0));
-						context.SetSource (lg);
-						context.Stroke ();
-					}
-
-					// Outline
-					context.Arc (center.X, center.Y, radius, 0, Math.PI * 2);
-					context.SetSourceRGBA (lineColor, lineColor, lineColor, opacity);
-					context.Stroke ();
-
-				}
 			}
 		}
 
@@ -839,9 +826,8 @@ namespace MonoDevelop.Components.DockNotebook
 
 			// Render Close Button (do this first so we can tell how much text to render)
 
-			var ch = allocation.Height + CloseImageTopOffset;
-			var crect = new Cairo.Rectangle (tabBounds.Right - rightPadding - CloseButtonSize + 3,
-							tabBounds.Height - bottomPadding - CloseButtonSize - 0.5,
+			var crect = new Cairo.Rectangle (tabBounds.Right - rightPadding - (CloseButtonSize / 2),
+							tabBounds.Height - bottomPadding - CloseButtonSize + 0.5,
 							CloseButtonSize, CloseButtonSize);
 			
 			tab.CloseButtonAllocation = crect.Inflate (2, 2);
@@ -849,7 +835,7 @@ namespace MonoDevelop.Components.DockNotebook
 			bool closeButtonHovered = tracker.Hovered && tab.CloseButtonAllocation.Contains (tracker.MousePosition) && tab.WidthModifier >= 1.0f;
 			bool drawCloseButton = tabBounds.Width > 60 || highlight || closeButtonHovered;
 			if (drawCloseButton) {
-				DrawCloseButton (ctx, new Cairo.PointD (crect.X + crect.Width / 2, crect.Y + crect.Height / 2), closeButtonHovered, tab.Opacity, tab.DirtyStrength);
+				DrawCloseButton (ctx, new Cairo.PointD (crect.X + crect.Width / 2, crect.Y + crect.Height / 2), active, closeButtonHovered, tab.Opacity, tab.DirtyStrength);
 			}
 
 			// Render Text
