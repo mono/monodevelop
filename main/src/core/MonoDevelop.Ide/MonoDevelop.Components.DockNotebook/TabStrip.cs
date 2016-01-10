@@ -839,26 +839,26 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 
 			// Render Text
-			double w = tabBounds.Width - (leftPadding * 2 + CloseButtonSize);
-			if (!drawCloseButton)
-				w += CloseButtonSize;
+			double tw = tabBounds.Width - (leftPadding + rightPadding);
+			if (drawCloseButton && (active || closeButtonHovered || tab.DirtyStrength > 0.5))
+				tw -= CloseButtonSize / 2;
 
-			double textStart = tabBounds.X + leftPadding;
+			double tx = tabBounds.X + leftPadding;
 			var baseline = la.GetLine (0).Layout.GetPixelBaseline ();
-			double lx = tabBounds.Height - bottomPadding - baseline;
+			double ty = tabBounds.Height - bottomPadding - baseline;
 
-			ctx.MoveTo (textStart, lx);
+			ctx.MoveTo (tx, ty);
 			if (!MonoDevelop.Core.Platform.IsMac && !MonoDevelop.Core.Platform.IsWindows) {
 				// This is a work around for a linux specific problem.
 				// A bug in the proprietary ATI driver caused TAB text not to draw.
 				// If that bug get's fixed remove this HACK asap.
 				la.Ellipsize = Pango.EllipsizeMode.End;
-				la.Width = (int)(w * Pango.Scale.PangoScale);
+				la.Width = (int)(tw * Pango.Scale.PangoScale);
 				ctx.SetSourceColor (tab.Notify ? Styles.TabBarNotifyTextColor : (active ? Styles.TabBarActiveTextColor : Styles.TabBarInactiveTextColor));
 				Pango.CairoHelper.ShowLayout (ctx, la.GetLine (0).Layout);
 			} else {
 				// ellipses are for space wasting ..., we cant afford that
-				using (var lg = new LinearGradient (textStart + w - 5, 0, textStart + w + 3, 0)) {
+				using (var lg = new LinearGradient (tx + tw - 10, 0, tx + tw, 0)) {
 					var color = tab.Notify ? Styles.TabBarNotifyTextColor : (active ? Styles.TabBarActiveTextColor : Styles.TabBarInactiveTextColor);
 					color = color.MultiplyAlpha (tab.Opacity);
 					lg.AddColorStop (0, color);
