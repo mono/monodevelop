@@ -899,11 +899,6 @@ namespace MonoDevelop.Components.DockNotebook
 			image = image.WithSize (width, height);
 
 			ctx.DrawImage (widget, image, x, y);
-
-			ctx.LineWidth = 1;
-			ctx.SetSourceRGB (1, 0, 0);
-			ctx.Rectangle (x, y, width, height);
-			ctx.Stroke ();
 		}
 
 		Pango.Layout CreateSizedLayout (bool active)
