@@ -64,7 +64,7 @@ namespace MonoDevelop.VersionControl.Git
 		protected GitRepository UpdateVisibility (CommandInfo info)
 		{
 			var repo = Repository;
-			info.Visible = Repository != null;
+			info.Visible = repo != null;
 			return repo;
 		}
 
