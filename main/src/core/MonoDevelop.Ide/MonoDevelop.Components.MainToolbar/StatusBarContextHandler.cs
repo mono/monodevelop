@@ -98,7 +98,7 @@ namespace MonoDevelop.Components.MainToolbar
 				var args = new StatusMessageContextMessageChangedArgs (context, message, isMarkup, image);
 
 				// Enforce dispatch on GUI thread so clients don't need to care.
-				DispatchService.GuiDispatch (() => MessageChanged (this, args));
+				Runtime.RunInMainThread (() => MessageChanged (this, args));
 			}
 		}
 
