@@ -253,9 +253,9 @@ namespace MonoDevelop.PackageManagement
 			});
 		}
 
-		protected virtual void GuiDispatch (MessageHandler handler)
+		protected virtual void GuiDispatch (Action action)
 		{
-			Runtime.RunInMainThread (() => handler ()).Wait ();
+			Runtime.RunInMainThread (action).Wait ();
 		}
 
 		T GuiSyncDispatch<T> (Func<T> action)

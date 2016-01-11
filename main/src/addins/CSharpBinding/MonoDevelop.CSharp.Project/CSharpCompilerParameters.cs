@@ -123,6 +123,7 @@ namespace MonoDevelop.CSharp.Project
 
 			return new Microsoft.CodeAnalysis.CSharp.CSharpCompilationOptions (
 				OutputKind.ConsoleApplication,
+				false,
 				null,
 				project.MainClass,
 				"Script",

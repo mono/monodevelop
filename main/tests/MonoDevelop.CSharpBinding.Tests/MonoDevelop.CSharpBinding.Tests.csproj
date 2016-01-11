@@ -107,6 +107,14 @@
     <Compile Include="Features\CodeCompletion\PortedRoslynTests\XmlDocCompletionHandlerTests.cs" />
     <Compile Include="Features\ParameterHinting\ParameterHintingTests.cs" />
     <Compile Include="Features\InspectionActionTestBase.cs" />
+    <Compile Include="Features\IndentationTests\AlignmentTests.cs" />
+    <Compile Include="Features\IndentationTests\BlockTest.cs" />
+    <Compile Include="Features\IndentationTests\CommentTests.cs" />
+    <Compile Include="Features\IndentationTests\GeneralTests.cs" />
+    <Compile Include="Features\IndentationTests\Helper.cs" />
+    <Compile Include="Features\IndentationTests\PreProcessorTests.cs" />
+    <Compile Include="Features\IndentationTests\StringTests.cs" />
+    <Compile Include="Features\IndentationTests\TextPasteIndentEngineTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">
@@ -123,7 +131,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Neuer Ordner\" />
+    <Folder Include="Features\IndentEngine\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

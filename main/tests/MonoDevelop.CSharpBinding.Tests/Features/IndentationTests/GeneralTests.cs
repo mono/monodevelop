@@ -1,10 +1,10 @@
-//
-// ViModeAbortException.cs
+           //
+// GeneralTests.cs
 //
 // Author:
-//       Tim Kellogg <timothy.kellogg@gmail.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 //
-// Copyright (c) 2013 Tim Kellogg
+// Copyright (c) 2013 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,31 +23,37 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
+using NUnit.Framework;
 
-namespace Mono.TextEditor.Vi
+namespace ICSharpCode.NRefactory6.IndentationTests
 {
-	/// <summary>
-	/// Thrown to indicate that the vi parser was unable to recognize the key
-	/// sequence and should abort quietly.
-	/// </summary>
-	public class ViModeAbortException : Exception
+	[TestFixture]
+	public class GeneralTests
 	{
-		/// <summary>
-		/// Thrown to indicate that the vi parser was unable to recognize the key
-		/// sequence and should abort quietly.
-		/// </summary>
-		public ViModeAbortException ()
+		[Test]
+		public void UsingDeclarationTests()
 		{
+			var indent = Helper.CreateEngine("using NUnit.Framework;\n$");
+			Assert.AreEqual("", indent.ThisLineIndent);
+			Assert.AreEqual("", indent.NextLineIndent);
 		}
 
-		/// <summary>
-		/// Thrown to indicate that the vi parser was unable to recognize the key
-		/// sequence and should abort quietly.
-		/// </summary>
-		/// <param name="reason">The reason for the abort. May be displayed to the user</param>
-		public ViModeAbortException (string reason) : base(reason)
+		[Test]
+		public void NestedUsingDeclarationTest()
 		{
+			var indent = Helper.CreateEngine(@"
+namespace Foo {
+	namespace Bar {
+		using NUnit.Framework;$");
+			Assert.AreEqual("\t\t", indent.ThisLineIndent);
+			Assert.AreEqual("\t\t", indent.NextLineIndent);
+		}
+
+		[Test]
+		public void TestMixedLineEndingPosition()
+		{
+			var indent = Helper.CreateEngine("\n\r\n$");
+			Assert.AreEqual(3, indent.Offset);
 		}
 	}
 }

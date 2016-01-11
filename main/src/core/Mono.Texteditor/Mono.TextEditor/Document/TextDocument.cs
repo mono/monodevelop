@@ -653,11 +653,16 @@ namespace Mono.TextEditor
 			public override void Undo (TextDocument doc, bool fireEvent = true)
 			{
 				doc.currentAtomicUndoOperationType.Push (operationType);
-				for (int i = operations.Count - 1; i >= 0; i--) {
-					operations [i].Undo (doc, false);
-					doc.OnUndone (new UndoOperationEventArgs (operations[i]));
+				doc.atomicUndoLevel++;
+				try {
+					for (int i = operations.Count - 1; i >= 0; i--) {
+						operations [i].Undo (doc, false);
+						doc.OnUndone (new UndoOperationEventArgs (operations [i]));
+					}
+				} finally {
+					doc.atomicUndoLevel--;
+					doc.currentAtomicUndoOperationType.Pop ();
 				}
-				doc.currentAtomicUndoOperationType.Pop (); 
 				if (fireEvent)
 					OnUndoDone ();
 			}

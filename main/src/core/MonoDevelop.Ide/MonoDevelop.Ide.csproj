@@ -6003,6 +6003,9 @@
     <EmbeddedResource Include="icons\redo-16~dark%402x.png">
       <LogicalName>redo-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="templates\AppManifest.xft.xml">
+      <LogicalName>AppManifest.xft.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -6975,6 +6978,9 @@
     <Compile Include="MonoDevelop.Components\IdeDialog.cs" />
     <Compile Include="MonoDevelop.Components\IdeWindow.cs" />
     <Compile Include="MonoDevelop.Components\IdeTheme.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\PropertyDescriptionTemplate.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\FileTemplateTagsModifier.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\CombinedTagModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

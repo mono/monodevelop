@@ -289,11 +289,16 @@ namespace MonoDevelop.Ide.Editor.Extension
 			autoHideCompletionWindow = autoHideParameterWindow = true;
 		}
 
-		public virtual int GetCurrentParameterIndex (int startOffset)
+		public virtual Task<int> GetCurrentParameterIndex (int startOffset, CancellationToken token)
 		{
-			return -1;
+			return Task.FromResult (-1);
 		}
 
+		[Obsolete("Use GetCurrentParameterIndex (int startOffset, CancellationToken token)")]
+		public virtual int GetCurrentParameterIndex (int startOffset)
+		{
+			return GetCurrentParameterIndex (startOffset, default(CancellationToken)).Result;
+		}
 
 		internal protected virtual void OnCompletionContextChanged (object o, EventArgs a)
 		{
@@ -543,7 +548,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		public virtual int GuessBestMethodOverload (ParameterHintingResult provider, int currentOverload)
 		{
-			int cparam = GetCurrentParameterIndex (provider.StartOffset);
+			int cparam = GetCurrentParameterIndex (provider.StartOffset, default(CancellationToken)).Result;
 
 			var currentHintingData = provider [currentOverload];
 			if (cparam > currentHintingData.ParameterCount && !currentHintingData.IsParameterListAllowed) {

@@ -203,6 +203,13 @@ namespace MonoDevelop.Ide.Projects
 				popupMenu.Destroy ();
 				popupMenu = null;
 			}
+
+			if (!controller.IsFirstPage)
+				templatesHBox.Destroy ();
+
+			if (!controller.IsLastPage)
+				projectConfigurationWidget.Destroy ();
+
 			base.Destroy ();
 		}
 
