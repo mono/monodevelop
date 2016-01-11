@@ -42,6 +42,9 @@ namespace MonoDevelop.Ide.Gui
 		public static Cairo.Color BaseSelectionBackgroundColor { get; internal set; }
 		public static Cairo.Color BaseSelectionTextColor { get; internal set; }
 
+		public static Pango.FontDescription DefaultFont { get; internal set; }
+		public static string DefaultFontName { get; internal set; }
+
 		// General
 
 		public static Gdk.Color ThinSplitterColor { get; internal set; }
@@ -313,13 +316,15 @@ namespace MonoDevelop.Ide.Gui
 		internal static void LoadStyle ()
 		{
 			var defaultStyle = Gtk.Rc.GetStyle (IdeApp.Workbench.RootWindow);
-			var bgColor = defaultStyle.Background (Gtk.StateType.Normal);
 
 			BackgroundColor = defaultStyle.Background (Gtk.StateType.Normal).ToCairoColor ();	// must be the bg color from Gtkrc
 			BaseBackgroundColor = defaultStyle.Base (Gtk.StateType.Normal).ToCairoColor ();	// must be the base color from Gtkrc
 			BaseForegroundColor = defaultStyle.Foreground (Gtk.StateType.Normal).ToCairoColor ();	// must be the text color from Gtkrc
 			BaseSelectionBackgroundColor = defaultStyle.Base (Gtk.StateType.Selected).ToCairoColor ();
 			BaseSelectionTextColor = defaultStyle.Text (Gtk.StateType.Selected).ToCairoColor ();
+
+			DefaultFont = defaultStyle.FontDescription.Copy ();
+			DefaultFontName = DefaultFont.ToString ();
 
 			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
 				LoadLightStyle ();
