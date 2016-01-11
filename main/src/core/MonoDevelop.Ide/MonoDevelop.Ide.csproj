@@ -3699,6 +3699,18 @@
     <EmbeddedResource Include="icons\remove-16~dark%402x.png">
       <LogicalName>remove-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\remove-16~disabled.png">
+      <LogicalName>remove-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\remove-16~disabled%402x.png">
+      <LogicalName>remove-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\remove-16~dark~disabled.png">
+      <LogicalName>remove-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\remove-16~dark~disabled%402x.png">
+      <LogicalName>remove-16~dark~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\run-unit-tests-16.png">
       <LogicalName>run-unit-tests-16.png</LogicalName>
     </EmbeddedResource>
