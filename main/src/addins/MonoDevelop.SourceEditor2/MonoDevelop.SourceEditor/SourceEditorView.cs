@@ -934,6 +934,9 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 			}
+			if (Document.MimeType != null) {
+				widget.TextEditor.TextEditorResolverProvider = TextEditorResolverService.GetProvider (Document.MimeType);
+			}
 		}
 		
 		public Encoding SourceEncoding {
