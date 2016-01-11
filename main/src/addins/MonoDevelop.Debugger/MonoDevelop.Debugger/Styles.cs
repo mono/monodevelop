@@ -66,45 +66,45 @@ namespace MonoDevelop.Debugger
 		{
 			ExceptionCaughtDialog = new ExceptionCaughtDialogStyle ();
 			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
-				ObjectValueTreeValuesButtonBackground = new Color (233 / 255.0, 242 / 255.0, 252 / 255.0);
-				ObjectValueTreeValuesButtonText = new Color (82 / 255.0, 148 / 255.0, 235 / 255.0);
-				ObjectValueTreeValuesButtonBorder = new Color (82 / 255.0, 148 / 255.0, 235 / 255.0);
-				ObjectValueTreeValueErrorText = new Color (1.0, 0.0, 0.0);
-				ObjectValueTreeValueDisabledText = new Color (0.5, 0.5, 0.5);
-				ObjectValueTreeValueModifiedText = new Color (0.0, 0.0, 1.0);
+				ObjectValueTreeValuesButtonBackground = Color.FromName ("#e9f2fc");
+				ObjectValueTreeValuesButtonText = Color.FromName ("#5294eb");
+				ObjectValueTreeValuesButtonBorder = Color.FromName ("#5294eb");
+				ObjectValueTreeValueErrorText = Color.FromName ("#ff0000");
+				ObjectValueTreeValueDisabledText = Color.FromName ("#7f7f7f");
+				ObjectValueTreeValueModifiedText = Color.FromName ("#0000ff");
 
-				PreviewVisualizerBackgroundColor = new Color (245 / 256.0, 245 / 256.0, 245 / 256.0);
-				PreviewVisualizerHeaderTextColor = new Color (36 / 255.0, 36 / 255.0, 36 / 255.0);
-				PreviewVisualizerTextColor = new Color (85 / 255.0, 85 / 255.0, 85 / 255.0);
+				PreviewVisualizerBackgroundColor = Color.FromName ("#f5f5f5");
+				PreviewVisualizerHeaderTextColor = Color.FromName ("#242424");
+				PreviewVisualizerTextColor = Color.FromName ("#555555");
 
-				ExceptionCaughtDialog.TreeBackgroundColor = new Color (223 / 255.0, 228 / 255.0, 235 / 255.0);
-				ExceptionCaughtDialog.InfoFrameBackgroundColor = new Color (1.00, 0.98, 0.91);
-				ExceptionCaughtDialog.InfoFrameBorderColor = new Color (0.87, 0.83, 0.74);
-				ExceptionCaughtDialog.LineNumberBackgroundColor = new Color (0.77, 0.77, 0.77, 1.0);
-				ExceptionCaughtDialog.LineNumberInUserCodeBackgroundColor = new Color (0.90, 0.60, 0.87, 1.0);
-				ExceptionCaughtDialog.LineNumberBorderColor = new Color (0.0, 0.0, 0.0, 0.11);
-				ExceptionCaughtDialog.LineNumberTextColor = new Color (1.0, 1.0, 1.0, 1.0);
-				ExceptionCaughtDialog.LineNumberTextShadowColor = new Color (0.0, 0.0, 0.0, 0.34);
+				ExceptionCaughtDialog.TreeBackgroundColor = Color.FromName ("#dfe4eb");
+				ExceptionCaughtDialog.InfoFrameBackgroundColor = Color.FromName ("#fffae8");
+				ExceptionCaughtDialog.InfoFrameBorderColor = Color.FromName ("#ded4bd");
+				ExceptionCaughtDialog.LineNumberBackgroundColor = Color.FromName ("#c4c4c4");
+				ExceptionCaughtDialog.LineNumberInUserCodeBackgroundColor = Color.FromName ("#e599de");
+				ExceptionCaughtDialog.LineNumberBorderColor = Color.FromName ("#000000").WithAlpha (.11);
+				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#ffffff");
+				ExceptionCaughtDialog.LineNumberTextShadowColor = Color.FromName ("#000000").WithAlpha (.34);
 			} else {
-				ObjectValueTreeValuesButtonBackground = new Color (233 / 255.0, 242 / 255.0, 252 / 255.0);
-				ObjectValueTreeValuesButtonText = new Color (82 / 255.0, 148 / 255.0, 235 / 255.0);
-				ObjectValueTreeValuesButtonBorder = new Color (82 / 255.0, 148 / 255.0, 235 / 255.0);
-				ObjectValueTreeValueErrorText = new Color (1.0, 0.0, 0.0);
-				ObjectValueTreeValueDisabledText = new Color (0.5, 0.5, 0.5);
-				ObjectValueTreeValueModifiedText = new Color (0.0, 0.0, 1.0);
+				ObjectValueTreeValuesButtonBackground = Color.FromName ("#e9f2fc");
+				ObjectValueTreeValuesButtonText = Color.FromName ("#5294eb");
+				ObjectValueTreeValuesButtonBorder = Color.FromName ("#5294eb");
+				ObjectValueTreeValueErrorText = Color.FromName ("#ff0000");
+				ObjectValueTreeValueDisabledText = Color.FromName ("#7f7f7f");
+				ObjectValueTreeValueModifiedText = Color.FromName ("#0000ff");
 
 				PreviewVisualizerBackgroundColor = MonoDevelop.Ide.Gui.Styles.PopoverWindow.DefaultBackgroundColor;
-				PreviewVisualizerHeaderTextColor = new Color (219 / 255.0, 219 / 255.0, 219 / 255.0);
+				PreviewVisualizerHeaderTextColor = Color.FromName ("#dbdbdb");
 				PreviewVisualizerTextColor = MonoDevelop.Ide.Gui.Styles.PopoverWindow.DefaultTextColor;
 
-				ExceptionCaughtDialog.TreeBackgroundColor = new Color (90 / 255.0, 90 / 255.0, 90 / 255.0);
-				ExceptionCaughtDialog.InfoFrameBackgroundColor = new Color (90d/255d, 90d/255d, 90d/255d);
-				ExceptionCaughtDialog.InfoFrameBorderColor = new Color (157d/255d, 162d/255d, 166d/255d);
-				ExceptionCaughtDialog.LineNumberBackgroundColor = new Color (0.77, 0.77, 0.77, 1.0);
-				ExceptionCaughtDialog.LineNumberInUserCodeBackgroundColor = new Color (0.90, 0.60, 0.87, 1.0);
-				ExceptionCaughtDialog.LineNumberBorderColor = new Color (0.0, 0.0, 0.0, 0.11);
-				ExceptionCaughtDialog.LineNumberTextColor = new Color (1.0, 1.0, 1.0, 1.0);
-				ExceptionCaughtDialog.LineNumberTextShadowColor = new Color (0.0, 0.0, 0.0, 0.34);
+				ExceptionCaughtDialog.TreeBackgroundColor = Color.FromName ("#5a5a5a");
+				ExceptionCaughtDialog.InfoFrameBackgroundColor = Color.FromName ("#5a5a5a");
+				ExceptionCaughtDialog.InfoFrameBorderColor = Color.FromName ("#9da2a6");
+				ExceptionCaughtDialog.LineNumberBackgroundColor = Color.FromName ("#c4c4c4");
+				ExceptionCaughtDialog.LineNumberInUserCodeBackgroundColor = Color.FromName ("#e599de");
+				ExceptionCaughtDialog.LineNumberBorderColor = Color.FromName ("#000000").WithAlpha (.11);
+				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#ffffff");
+				ExceptionCaughtDialog.LineNumberTextShadowColor = Color.FromName ("#000000").WithAlpha (.34);
 			}
 		}
 	}

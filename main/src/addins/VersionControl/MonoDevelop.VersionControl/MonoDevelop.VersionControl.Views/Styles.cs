@@ -80,33 +80,33 @@ namespace MonoDevelop.VersionControl
 			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
 				
 				BlameView = new BlameViewStyle {
-					AnnotationBackgroundColor = new Color (0.95, 0.95, 0.95),
-					AnnotationHighlightColor = new Color (1, 1, 1),
-					AnnotationTextColor = new Color (0, 0, 0),
-					AnnotationSummaryTextColor = new Color (0.7, 0.7, 0.7),
-					AnnotationSplitterColor = new Color (0.6, 0.6, 0.6),
-					AnnotationMarkColor = new Color (0.90, 0.90, 1),
-					AnnotationMarkModifiedColor = new Color (1, 1, 0),
-					RangeHazeColor = new Color (171d/255d, 171d/255d, 171d/255d, 0.1),
-					RangeSplitterColor = new Color (171d/255d, 171d/255d, 171d/255d, 0.2),
+					AnnotationBackgroundColor = Color.FromName ("#f2f2f2"),
+					AnnotationHighlightColor = Color.FromName ("#ffffff"),
+					AnnotationTextColor = Color.FromName ("#000000"),
+					AnnotationSummaryTextColor = Color.FromName ("#b2b2b2"),
+					AnnotationSplitterColor = Color.FromName ("#999999"),
+					AnnotationMarkColor = Color.FromName ("#e5e5ff"),
+					AnnotationMarkModifiedColor = Color.FromName ("#ffff00"),
+					RangeHazeColor = Color.FromName ("#ababab").WithAlpha (.1),
+					RangeSplitterColor = Color.FromName ("#ababab").WithAlpha (.2),
 				};
 
 				LogView = new LogViewStyle {
-					CommitDescBackgroundColor = new Color (255d/255d, 251d/255d, 242d/255d),
-					DiffAddBackgroundColor = new Color (123d/255d, 200d/255d, 123d/255d).AddLight (0.1),
-					DiffRemoveBackgroundColor = new Color (200d/255d, 140d/255d, 140d/255d).AddLight (0.1),
-					DiffHighlightColor = new Color (100d/255d, 157d/255d, 214d/255d).AddLight (0.1),
-					DiffBoxBorderColor = new Color (0.7, 0.7, 0.7),
-					DiffBoxSplitterColor = new Color (0.9, 0.9, 0.9),
+					CommitDescBackgroundColor = Color.FromName ("#fffbf2"),
+					DiffAddBackgroundColor = Color.FromName ("#7bc87b").AddLight (0.1),
+					DiffRemoveBackgroundColor = Color.FromName ("#c88c8c").AddLight (0.1),
+					DiffHighlightColor = Color.FromName ("#649dd6").AddLight (0.1),
+					DiffBoxBorderColor = Color.FromName ("#b2b2b2"),
+					DiffBoxSplitterColor = Color.FromName ("#e5e5e5"),
 				};
 
 				DiffView = new DiffViewStyle {
-					AddBorderColor = new Color (190 / 255.0, 240 / 255.0, 190 / 255.0),
-					AddBackgroundColor = new Color (133 / 255.0, 168 / 255.0, 133 / 255.0),
-					RemoveBorderColor = new Color (255 / 255.0, 200 / 255.0, 200 / 255.0),
-					RemoveBackgroundColor = new Color (178 / 255.0, 140 / 255.0, 140 / 255.0),
-					MergeBorderColor = new Color (190 / 255.0, 190 / 255.0, 240 / 255.0),
-					MergeBackgroundColor = new Color (133 / 255.0, 133 / 255.0, 168 / 255.0),
+					AddBorderColor = Color.FromName ("#bef0be"),
+					AddBackgroundColor = Color.FromName ("#85a885"),
+					RemoveBorderColor = Color.FromName ("#ffffc8"),
+					RemoveBackgroundColor = Color.FromName ("#b28c8c"),
+					MergeBorderColor = Color.FromName ("#bebef0"),
+					MergeBackgroundColor = Color.FromName ("#8585a8"),
 				};
 
 			} else {
@@ -114,31 +114,31 @@ namespace MonoDevelop.VersionControl
 				BlameView = new BlameViewStyle {
 					AnnotationBackgroundColor = MonoDevelop.Ide.Gui.Styles.PadBackground,
 					AnnotationHighlightColor = MonoDevelop.Ide.Gui.Styles.BackgroundColor,
-					AnnotationTextColor = new Color (1, 1, 1),
+					AnnotationTextColor = Color.FromName ("#ffffff"),
 					AnnotationSummaryTextColor = MonoDevelop.Ide.Gui.Styles.BaseForegroundColor,
 					AnnotationSplitterColor = MonoDevelop.Ide.Gui.Styles.ThinSplitterColor,
-					AnnotationMarkColor = new Color (0.90, 0.90, 1),
-					AnnotationMarkModifiedColor = new Color (1, 1, 0),
-					RangeHazeColor = new Color (0.24, 0.24, 0.24, 0.6),
-					RangeSplitterColor = new Color (0.24, 0.24, 0.24, 0.7),
+					AnnotationMarkColor = Color.FromName ("#e5e5ff"),
+					AnnotationMarkModifiedColor = Color.FromName ("#ffff00"),
+					RangeHazeColor = Color.FromName ("#3d3d3d").WithAlpha (.6),
+					RangeSplitterColor = Color.FromName ("#3d3d3d").WithAlpha (.7),
 				};
 
 				LogView = new LogViewStyle () {
 					CommitDescBackgroundColor = MonoDevelop.Ide.Gui.Styles.BaseBackgroundColor,
-					DiffAddBackgroundColor = new Color (123d/255d, 200d/255d, 123d/255d).AddLight (-0.1),
-					DiffRemoveBackgroundColor = new Color (200d/255d, 140d/255d, 140d/255d).AddLight (-0.1),
+					DiffAddBackgroundColor = Color.FromName ("#7bc87b").AddLight (-0.1),
+					DiffRemoveBackgroundColor = Color.FromName ("#c88c8c").AddLight (-0.1),
 					DiffHighlightColor = MonoDevelop.Ide.Gui.Styles.BackgroundColor.AddLight (0.1),
-					DiffBoxBorderColor = new Color (0.3, 0.3, 0.3),
-					DiffBoxSplitterColor = new Color (0.5, 0.5, 0.5),
+					DiffBoxBorderColor = Color.FromName ("#4c4c4c"),
+					DiffBoxSplitterColor = Color.FromName ("#7f7f7f"),
 				};
 
 				DiffView = new DiffViewStyle {
-					AddBorderColor = new Color (190 / 255.0, 240 / 255.0, 190 / 255.0),
-					AddBackgroundColor = new Color (133 / 255.0, 168 / 255.0, 133 / 255.0),
-					RemoveBorderColor = new Color (255 / 255.0, 200 / 255.0, 200 / 255.0),
-					RemoveBackgroundColor = new Color (178 / 255.0, 140 / 255.0, 140 / 255.0),
-					MergeBorderColor = new Color (190 / 255.0, 190 / 255.0, 240 / 255.0),
-					MergeBackgroundColor = new Color (133 / 255.0, 133 / 255.0, 168 / 255.0),
+					AddBorderColor = Color.FromName ("#bef0be"),
+					AddBackgroundColor = Color.FromName ("#85a885"),
+					RemoveBorderColor = Color.FromName ("#ffffc8"),
+					RemoveBackgroundColor = Color.FromName ("#b28c8c"),
+					MergeBorderColor = Color.FromName ("#bebef0"),
+					MergeBackgroundColor = Color.FromName ("#8585a8"),
 				};
 			}
 		}
