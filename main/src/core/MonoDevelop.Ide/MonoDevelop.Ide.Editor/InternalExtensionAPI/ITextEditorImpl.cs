@@ -243,5 +243,8 @@ namespace MonoDevelop.Ide.Editor
 		void AddOverlay (Control messageOverlayContent, Func<int> sizeFunc);
 		void RemoveOverlay (Control messageOverlayContent);
 		void UpdateBraceMatchingResult (BraceMatchingResult? result);
+
+		IEnumerable<IDocumentLine> VisibleLines { get; }
+		event EventHandler<LineEventArgs> LineShown;
 	}
 }

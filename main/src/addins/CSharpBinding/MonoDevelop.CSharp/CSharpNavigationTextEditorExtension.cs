@@ -51,8 +51,8 @@ namespace MonoDevelop.CSharp
 			if (model == null)
 				return emptyList;
 			try {
-				var visitor = new NavigationVisitor (DocumentContext, model, TextSpan.FromBounds (offset, length), token);
-				visitor.Visit (await model.SyntaxTree.GetRootAsync (token));
+				var visitor = new NavigationVisitor (DocumentContext, model, new TextSpan (offset, length), token);
+				visitor.Visit (await model.SyntaxTree.GetRootAsync (token).ConfigureAwait (false));
 				return visitor.result;
 			} catch (OperationCanceledException) {
 				return emptyList;

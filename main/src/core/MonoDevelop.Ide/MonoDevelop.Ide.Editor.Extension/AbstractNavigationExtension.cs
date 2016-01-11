@@ -45,6 +45,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 				return linksShown;
 			}
 			set {
+				if (value == linksShown)
+					return;
 				linksShown = value;
 				OnLinksShownChanged (EventArgs.Empty);
 			}
@@ -92,8 +94,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		static int TooltipKeySnooper (Gtk.Widget widget, Gdk.EventKey evnt)
 		{
-			if (evnt != null && evnt.Type == Gdk.EventType.KeyPress && IsTriggerKey (evnt)) {
-				LinksShown = true;
+			if (evnt != null && evnt.Type == Gdk.EventType.KeyPress) {
+				LinksShown = IsTriggerKey (evnt);
 			}
 			if (evnt != null && evnt.Type == Gdk.EventType.KeyRelease && IsTriggerKey (evnt)) {
 				LinksShown = false;
@@ -121,6 +123,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			LinksShownChanged += AbstractNavigationExtension_LinksShownChanged;
 			this.DocumentContext.DocumentParsed += DocumentContext_DocumentParsed;
+			this.Editor.LineShown += Editor_LineShown;
 			if (LinksShown)
 				ShowLinks ();
 		}
@@ -151,13 +154,29 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			HideLinks ();
 			try {
-				foreach (var segment in await RequestLinksAsync (0, Editor.Length, default (CancellationToken))) {
+				foreach (var line in Editor.VisibleLines) {
+					if (line.Length <= 0)
+						continue;
+					foreach (var segment in await RequestLinksAsync (line.Offset, line.Length, default (CancellationToken))) {
+						var marker = Editor.TextMarkerFactory.CreateLinkMarker (Editor, segment.Offset, segment.Length, delegate { segment.Activate (); });
+						Editor.AddMarker (marker);
+						markers.Add (marker);
+					}
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while retrieving nav links.", e);
+			}
+		}
+
+		async void Editor_LineShown (object sender, Ide.Editor.LineEventArgs e)
+		{
+			if (LinksShown) {
+				var line = e.Line;
+				foreach (var segment in await RequestLinksAsync (line.Offset, line.Length, default (CancellationToken))) {
 					var marker = Editor.TextMarkerFactory.CreateLinkMarker (Editor, segment.Offset, segment.Length, delegate { segment.Activate (); });
 					Editor.AddMarker (marker);
 					markers.Add (marker);
 				}
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while retrieving nav links.", e);
 			}
 		}
 
@@ -179,6 +198,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			LinksShownChanged -= AbstractNavigationExtension_LinksShownChanged;
 			DocumentContext.DocumentParsed -= DocumentContext_DocumentParsed;
+			Editor.LineShown -= Editor_LineShown;
 			HideLinks ();
 			RemoveTimer ();
 			base.Dispose ();

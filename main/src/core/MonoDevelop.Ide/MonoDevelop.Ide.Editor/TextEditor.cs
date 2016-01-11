@@ -1400,5 +1400,9 @@ namespace MonoDevelop.Ide.Editor
 			Runtime.AssertMainThread ();
 			textEditorImpl.UpdateBraceMatchingResult (result);
 		}
+
+
+		internal IEnumerable<IDocumentLine> VisibleLines { get { return textEditorImpl.VisibleLines; } }
+		internal event EventHandler<LineEventArgs> LineShown { add { textEditorImpl.LineShown += value; } remove { textEditorImpl.LineShown -= value; } }
 	}
 }
