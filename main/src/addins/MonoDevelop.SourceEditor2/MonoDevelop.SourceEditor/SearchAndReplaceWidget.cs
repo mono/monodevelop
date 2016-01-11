@@ -296,7 +296,7 @@ namespace MonoDevelop.SourceEditor
 			resultInformLabelEventBox.BorderWidth = 2;
 			resultInformLabel.Xpad = 2;
 			resultInformLabel.Show ();
-			searchEntry.FilterButtonPixbuf = Xwt.Drawing.Image.FromResource ("searchoptions.png");
+			searchEntry.FilterButtonPixbuf = Xwt.Drawing.Image.FromResource ("find-options-22x32.png");
 
 			if (textEditor.IsSomethingSelected) {
 				if (textEditor.MainSelection.MinLine == textEditor.MainSelection.MaxLine || ClipboardContainsSelection()) {
