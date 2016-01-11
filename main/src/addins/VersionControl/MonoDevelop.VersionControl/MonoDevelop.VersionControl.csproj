@@ -327,6 +327,18 @@
     <EmbeddedResource Include="icons\diff-16~dark~disabled%402x.png">
       <LogicalName>diff-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-added-15.png">
+      <LogicalName>gutter-added-15.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-added-15%402x.png">
+      <LogicalName>gutter-added-15@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-removed-15.png">
+      <LogicalName>gutter-removed-15.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-removed-15%402x.png">
+      <LogicalName>gutter-removed-15@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\pull-16.png">
       <LogicalName>pull-16.png</LogicalName>
     </EmbeddedResource>
