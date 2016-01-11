@@ -905,7 +905,7 @@ namespace MonoDevelop.Ide
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not load parser database.", ex);
 			}
-			if (DispatchService.IsGuiThread)
+			if (Runtime.IsMainThread)
 				NotifyItemAddedGui (item, IsReloading);
 			else {
 				bool reloading = IsReloading;
@@ -939,7 +939,7 @@ namespace MonoDevelop.Ide
 		
 		internal void NotifyItemRemoved (WorkspaceItem item)
 		{
-			if (DispatchService.IsGuiThread)
+			if (Runtime.IsMainThread)
 				NotifyItemRemovedGui (item, IsReloading);
 			else {
 				bool reloading = IsReloading;
@@ -964,11 +964,15 @@ namespace MonoDevelop.Ide
 			if (WorkspaceItemClosed != null)
 				WorkspaceItemClosed (this, args);
 
-			if (Items.Count == 0 && !reloading) {
+			bool lastWorkspaceItemClosing = Items.Count == 0 && !reloading;
+			if (lastWorkspaceItemClosing) {
 				if (LastWorkspaceItemClosed != null)
 					LastWorkspaceItemClosed (this, EventArgs.Empty);
 			}
 			MonoDevelop.Ide.TypeSystem.TypeSystemService.Unload (item);
+
+			if (lastWorkspaceItemClosing)
+				MonoDevelop.Ide.TypeSystem.MetadataReferenceCache.Clear ();
 
 			NotifyDescendantItemRemoved (this, args);
 		}

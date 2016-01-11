@@ -80,7 +80,7 @@ namespace MonoDevelop.Debugger.Soft
 		
 		static T InvokeSynch<T> (Func<T> func)
 		{
-			if (MonoDevelop.Ide.DispatchService.IsGuiThread)
+			if (Runtime.IsMainThread)
 				return func ();
 			
 			var ev = new System.Threading.ManualResetEvent (false);

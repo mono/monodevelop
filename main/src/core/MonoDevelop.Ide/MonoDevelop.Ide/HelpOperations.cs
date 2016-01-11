@@ -209,9 +209,8 @@ namespace MonoDevelop.Ide
 								return;
 
 							MessageService.ShowError (
-								String.Format (
-								"MonoDoc exited with exit code {0}.", 
-								pw.ExitCode, errWriter.ToString ()));
+								$"MonoDoc exited with exit code {pw.ExitCode}{Environment.NewLine}{errWriter.ToString()}."
+							);
 							pw = null;
 						}, true);
 				}

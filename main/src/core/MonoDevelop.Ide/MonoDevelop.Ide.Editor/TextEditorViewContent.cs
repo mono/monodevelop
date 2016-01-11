@@ -165,8 +165,8 @@ namespace MonoDevelop.Ide.Editor
 			var caretLocation = textEditor.CaretLocation;
 			Task.Run (() => {
 				try {
-					UpdateErrorUndelines (ctx.ParsedDocument, token);
-					UpdateQuickTasks (ctx.ParsedDocument, token);
+					UpdateErrorUndelines (ctx, ctx.ParsedDocument, token);
+					UpdateQuickTasks (ctx, ctx.ParsedDocument, token);
 					UpdateFoldings (ctx.ParsedDocument, caretLocation, false, token);
 				} catch (OperationCanceledException) {
 					// ignore
@@ -205,7 +205,32 @@ namespace MonoDevelop.Ide.Editor
 			errors.Add (error);
 		}
 
-		async void UpdateErrorUndelines (ParsedDocument parsedDocument, CancellationToken token)
+		static string [] lexicalError = {
+			"CS0594", // ERR_FloatOverflow
+			"CS0595", // ERR_InvalidReal
+			"CS1009", // ERR_IllegalEscape
+			"CS1010", // ERR_NewlineInConst
+			"CS1011", // ERR_EmptyCharConst
+			"CS1012", // ERR_TooManyCharsInConst
+			"CS1015", // ERR_TypeExpected
+			"CS1021", // ERR_IntOverflow
+			"CS1032", // ERR_PPDefFollowsTokenpp
+			"CS1035", // ERR_OpenEndedComment
+			"CS1039", // ERR_UnterminatedStringLit
+			"CS1040", // ERR_BadDirectivePlacementpp
+			"CS1056", // ERR_UnexpectedCharacter
+			"CS1056", // ERR_UnexpectedCharacter_EscapedBackslash
+			"CS1646", // ERR_ExpectedVerbatimLiteral
+			"CS0078", // WRN_LowercaseEllSuffix
+			"CS1002", // ; expected
+			"CS1519", // Invalid token ';' in class, struct, or interface member declaration
+			"CS1031", // Type expected
+			"CS0106", // The modifier 'readonly' is not valid for this item
+			"CS1576", // The line number specified for #line directive is missing or invalid
+			"CS1513" // } expected
+		};
+
+		async void UpdateErrorUndelines (DocumentContext ctx, ParsedDocument parsedDocument, CancellationToken token)
 		{
 			if (!DefaultSourceEditorOptions.Instance.UnderlineErrors || parsedDocument == null || isDisposed)
 				return;
@@ -225,6 +250,8 @@ namespace MonoDevelop.Ide.Editor
 						// Else we underline the error
 						if (errors != null) {
 							foreach (var error in errors) {
+								if (ctx.IsAdHocProject && !lexicalError.Contains (error.Id))
+									continue;
 								UnderLineError (error);
 							}
 						}
@@ -876,7 +903,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		async void UpdateQuickTasks (ParsedDocument doc, CancellationToken token)
+		async void UpdateQuickTasks (DocumentContext ctx, ParsedDocument doc, CancellationToken token)
 		{
 			if (isDisposed)
 				return;
@@ -898,6 +925,8 @@ namespace MonoDevelop.Ide.Editor
 				foreach (var error in await doc.GetErrorsAsync(token).ConfigureAwait (false)) {
 					if (token.IsCancellationRequested)
 						return;
+					if (ctx.IsAdHocProject && !lexicalError.Contains (error.Id))
+						continue;
 					int offset;
 					try {
 						offset = textEditor.LocationToOffset (error.Region.Begin.Line, error.Region.Begin.Column);

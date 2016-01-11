@@ -42,9 +42,23 @@ namespace MonoDevelop.VersionControl
 			WorkspaceObject = workspaceObject;
 			IsDirectory = isDirectory;
 			this.versionInfo = versionInfo;
+
+			var obj = workspaceObject;
+			while (obj != null) {
+				var p = obj as Project;
+				if (p != null)
+					ContainerProject = p;
+
+				obj = obj.ParentObject;
+			}
 		}
 		
 		public WorkspaceObject WorkspaceObject {
+			get;
+			private set;
+		}
+
+		internal Project ContainerProject {
 			get;
 			private set;
 		}
@@ -84,6 +98,9 @@ namespace MonoDevelop.VersionControl
 					}
 				}
 				return versionInfo;
+			}
+			internal set {
+				versionInfo = value;
 			}
 		}
 	}

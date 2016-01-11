@@ -78,11 +78,11 @@ namespace MonoDevelop.Platform.Windows
 		{
 			NetworkCredential result = null;
 
-			DispatchService.GuiSyncDispatch (() => {
+			Runtime.RunInMainThread (() => {
 				var form = new PlaceholderForm (credentialType, uri, null);
 				if (GdkWin32.RunModalWin32Form (form, IdeApp.Workbench.RootWindow))
 					result = new NetworkCredential (form.Username, form.Password, form.Domain);
-			});
+			}).Wait ();
 
 			// store the obtained credentials in the auth store
 			// but don't store for the root url since it may have other credentials

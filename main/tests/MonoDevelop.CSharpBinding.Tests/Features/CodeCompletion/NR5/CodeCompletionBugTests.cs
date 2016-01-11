@@ -278,6 +278,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 						null,
 						new CSharpCompilationOptions (
 							OutputKind.DynamicallyLinkedLibrary,
+							false,
 							"TestProject.dll",
 							"",
 							"Script",

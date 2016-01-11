@@ -32,11 +32,6 @@ namespace MonoDevelop.Components.Commands
 {
 	public abstract class CommandHandler
 	{
-		internal void InternalRun ()
-		{
-			Run ();
-		}
-		
 		internal void InternalRun (object dataItem)
 		{
 			Run (dataItem);

@@ -34,7 +34,7 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>MonoDevelop.Projects.Formats.MSBuild.MainClass</StartupObject>
+    <StartupObject>MonoDevelop.Projects.MSBuild.MainClass</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />

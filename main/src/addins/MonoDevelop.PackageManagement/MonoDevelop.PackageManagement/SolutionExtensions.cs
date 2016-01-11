@@ -32,7 +32,7 @@ using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public static class SolutionExtensions
 	{

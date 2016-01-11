@@ -34,10 +34,8 @@ using Mono.Cecil;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.IO;
 using MonoDevelop.Ide.Editor;
 
@@ -67,17 +65,17 @@ namespace MonoDevelop.AssemblyBrowser
 			nodeInfo.Icon = Context.GetIcon (Stock.Reference);
 		}
 		
-		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
+		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			var compilationUnit = (AssemblyLoader)dataObject;
 			
 			var references = new AssemblyReferenceFolder (compilationUnit.Assembly);
 			if (references.AssemblyReferences.Any () || references.ModuleReferences.Any ())
-				builder.AddChild (references);
+				treeBuilder.AddChild (references);
 			
 			var resources = new AssemblyResourceFolder (compilationUnit.Assembly);
 			if (resources.Resources.Any ())
-				builder.AddChild (resources);
+				treeBuilder.AddChild (resources);
 			
 			var namespaces = new Dictionary<string, Namespace> ();
 			bool publicOnly = Widget.PublicApiOnly;
@@ -94,14 +92,14 @@ namespace MonoDevelop.AssemblyBrowser
 			foreach (var ns in namespaces.Values) {
 				if (publicOnly && !ns.Types.Any (t => t.IsPublic))
 					continue;
-				builder.AddChild (ns);
+				treeBuilder.AddChild (ns);
 			}
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			var compilationUnit = (AssemblyLoader)dataObject;
-			return compilationUnit.Assembly.MainModule.HasTypes;
+			return compilationUnit?.Assembly?.MainModule.HasTypes == true;
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
@@ -119,7 +117,7 @@ namespace MonoDevelop.AssemblyBrowser
 				if (e2 == null)
 					return -1;
 				
-				return e1.Assembly.Name.Name.CompareTo (e2.Assembly.Name.Name);
+				return string.Compare (e1.Assembly.Name.Name, e2.Assembly.Name.Name, StringComparison.Ordinal);
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception in assembly browser sort function.", e);
 				return -1;
@@ -131,7 +129,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			result.Append ("<span style=\"comment\">");
 			result.Append ("// " +
-                               String.Format (GettextCatalog.GetString ("Assembly <b>{0}</b>, Version {1}"),
+							   string.Format (GettextCatalog.GetString ("Assembly <b>{0}</b>, Version {1}"),
 			                                  assemblyDefinition.Name.Name,
 			                                  assemblyDefinition.Name.Version));
 			result.Append ("</span>");

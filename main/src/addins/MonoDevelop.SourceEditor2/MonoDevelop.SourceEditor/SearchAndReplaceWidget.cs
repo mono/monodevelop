@@ -863,9 +863,7 @@ But I leave it in in the case I've missed something. Mike
 				return null;
 			textEditor.CenterToCaret ();
 
-			if (result == null) {
-				StatusService.MainContext.ShowError (GettextCatalog.GetString ("Search pattern not found"));
-			} else if (result.SearchWrapped) {
+			if (result.SearchWrapped) {
 				StatusService.MainContext.ShowMessage (Stock.Find, GettextCatalog.GetString ("Reached bottom, continued from top"));
 			} else {
 				StatusService.MainContext.ShowReady ();
@@ -880,9 +878,7 @@ But I leave it in in the case I've missed something. Mike
 			if (result == null)
 				return null;
 			textEditor.CenterToCaret ();
-			if (result == null) {
-				StatusService.MainContext.ShowError (GettextCatalog.GetString ("Search pattern not found"));
-			} else if (result.SearchWrapped) {
+			if (result.SearchWrapped) {
 				StatusService.MainContext.ShowMessage (Stock.Find, GettextCatalog.GetString ("Reached top, continued from bottom"));
 			} else {
 				StatusService.MainContext.ShowReady ();

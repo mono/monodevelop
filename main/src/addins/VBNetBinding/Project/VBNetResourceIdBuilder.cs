@@ -31,7 +31,7 @@ using System;
 using System.IO;
 using System.Text;
 using MonoDevelop.Projects.Extensions;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.VBNetBinding
 {

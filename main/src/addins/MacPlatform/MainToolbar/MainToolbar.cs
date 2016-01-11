@@ -148,7 +148,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			};
 
 			IDisposable resizeTimer = null;
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.WillStartLiveResizeNotification, notif => DispatchService.GuiDispatch (() => {
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.WillStartLiveResizeNotification, notif => Runtime.RunInMainThread (() => {
 				if (!IsCorrectNotification (selector, notif.Object))
 					return;
 
@@ -162,7 +162,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				});
 			}));
 
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notif => DispatchService.GuiDispatch (() => {
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notif => Runtime.RunInMainThread (() => {
 				if (!IsCorrectNotification (selector, notif.Object))
 					return;
 
@@ -171,7 +171,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				selector.RequestResize ();
 			}));
 
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidEndLiveResizeNotification, notif => DispatchService.GuiDispatch (() => {
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidEndLiveResizeNotification, notif => Runtime.RunInMainThread (() => {
 				if (!IsCorrectNotification (selector, notif.Object))
 					return;
 
@@ -274,7 +274,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				MaxSize = new CGSize (360, 22),
 			};
 
-			Action<NSNotification> resizeAction = notif => DispatchService.GuiDispatch (() => {
+			Action<NSNotification> resizeAction = notif => Runtime.RunInMainThread (() => {
 				// Skip updates with a null Window. Only crashes on Mavericks.
 				// The View gets updated once again when the window resize finishes.
 				if (bar.Window == null)
@@ -463,7 +463,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return searchEntry.StringValue;
 			}
 			set {
-				searchEntry.LogMessage ("Setting text to '${value}'");
+				searchEntry.LogMessage ($"Setting text to '{value}'");
 				searchEntry.StringValue = value;
 			}
 		}

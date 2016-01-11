@@ -72,7 +72,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		void Initialize ()
 		{
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResignKeyNotification, notification => DispatchService.GuiDispatch (() => {
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResignKeyNotification, notification => Runtime.RunInMainThread (() => {
 				var other = (NSWindow)notification.Object;
 
 				LogMessage ($"Lost focus from resign key: {other.DebugDescription}.");
@@ -81,7 +81,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						LostFocus (this, null);
 				}
 			}));
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notification => DispatchService.GuiDispatch (() => {
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notification => Runtime.RunInMainThread (() => {
 				var other = (NSWindow)notification.Object;
 				LogMessage ($"Lost focus from resize: {other.DebugDescription}.");
 				if (notification.Object == Window) {
@@ -136,7 +136,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			// This means we've reached a focus loss event.
 			var replacedWith = notification.UserInfo.ValueForKey ((NSString)"_NSFirstResponderReplacingFieldEditor");
 			if (replacedWith != this && LostFocus != null) {
-				LogMessage ($"Mouse focus loss to {replacedWith.DebugDescription}");
+				if (replacedWith != null)
+					LogMessage ($"Mouse focus loss to {replacedWith.DebugDescription}");
 				LostFocus (this, null);
 			}
 		}

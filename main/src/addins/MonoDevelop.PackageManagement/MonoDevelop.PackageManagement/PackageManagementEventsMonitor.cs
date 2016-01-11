@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using NuGet;
@@ -99,9 +99,9 @@ namespace MonoDevelop.PackageManagement
 				(lastFileConflictResolution == FileConflictResolution.OverwriteAll);
 		}
 
-		protected virtual void GuiSyncDispatch (MessageHandler handler)
+		protected virtual void GuiSyncDispatch (Action action)
 		{
-			DispatchService.GuiSyncDispatch (handler);
+			Runtime.RunInMainThread (action).Wait ();
 		}
 
 		void PackageOperationMessageLogged (object sender, PackageOperationMessageLoggedEventArgs e)

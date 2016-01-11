@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 			arguments = new List<ExpressionSyntax>();
 			var method = symbol as IMethodSymbol;
 
-			if (symbol == null || symbol.Kind != SymbolKind.Method)
+			if (method == null || method.Kind != SymbolKind.Method)
 				return false;
 
 			// Serach for method of type: void Name(string format, params object[] args);

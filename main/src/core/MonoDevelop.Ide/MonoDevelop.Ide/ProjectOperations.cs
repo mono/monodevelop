@@ -52,7 +52,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using ExecutionContext = MonoDevelop.Projects.ExecutionContext;
 using MonoDevelop.Ide.Tasks;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using System.Collections.Immutable;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
@@ -289,8 +289,18 @@ namespace MonoDevelop.Ide
 
 				return;
 			}
-			IdeApp.Workbench.OpenDocument (new FileOpenInformation (location.SourceTree.FilePath, project) {
-				Offset = location.SourceSpan.Start
+			var filePath = location.SourceTree.FilePath;
+			var offset = location.SourceSpan.Start;
+			if (project?.ParentSolution != null) {
+				string projectedName;
+				int projectedOffset;
+				if (TypeSystemService.GetWorkspace (project.ParentSolution).TryGetOriginalFileFromProjection (filePath, offset, out projectedName, out projectedOffset)) {
+					filePath = projectedName;
+					offset = projectedOffset;
+				}
+			}
+			IdeApp.Workbench.OpenDocument (new FileOpenInformation (filePath, project) {
+				Offset = offset
 			});
 		}
 		
@@ -1397,8 +1407,10 @@ namespace MonoDevelop.Ide
 			foreach (var doc in new List<MonoDevelop.Ide.Gui.Document> (IdeApp.Workbench.Documents)) {
 				if (doc.IsDirty && doc.Project != null) {
 					doc.Save ();
-					if (doc.IsDirty)
+					if (doc.IsDirty) {
+						doc.Select ();
 						result.AddError (string.Format (couldNotSaveError, Path.GetFileName (doc.FileName)), doc.FileName);
+					}
 				}
 			}
 		}
@@ -2264,12 +2276,15 @@ namespace MonoDevelop.Ide
 
 		public ITextDocument GetTextEditorData (FilePath filePath, out bool isOpen)
 		{
-			foreach (var doc in IdeApp.Workbench.Documents) {
-				if (doc.FileName == filePath) {
-					isOpen = true;
-					return doc.Editor;
+			if (IdeApp.Workbench != null) {
+				foreach (var doc in IdeApp.Workbench.Documents) {
+					if (doc.FileName == filePath) {
+						isOpen = true;
+						return doc.Editor;
+					}
 				}
 			}
+
 			bool hadBom;
 			Encoding encoding;
 			var text = TextFileUtility.ReadAllText (filePath, out hadBom, out encoding);

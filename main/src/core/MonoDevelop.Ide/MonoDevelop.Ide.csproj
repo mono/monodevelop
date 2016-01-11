@@ -1440,6 +1440,12 @@
     <EmbeddedResource Include="icons\error-48%402x.png">
       <LogicalName>error-48@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\execute-16.png">
+      <LogicalName>execute-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\execute-16%402x.png">
+      <LogicalName>execute-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\done-16.png">
       <LogicalName>done-16.png</LogicalName>
     </EmbeddedResource>
@@ -2007,6 +2013,18 @@
     <EmbeddedResource Include="icons\platform-watchos-16%402x.png">
       <LogicalName>platform-watchos-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-assets-mac-16.png">
+      <LogicalName>folder-assets-mac-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-assets-mac-16%402x.png">
+      <LogicalName>folder-assets-mac-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-assets-win-16.png">
+      <LogicalName>folder-assets-win-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-assets-win-16%402x.png">
+      <LogicalName>folder-assets-win-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\parser-16.png">
       <LogicalName>parser-16.png</LogicalName>
     </EmbeddedResource>
@@ -2330,6 +2348,93 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-warning-count-16%402x.png">
       <LogicalName>status-warning-count-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-100-16.png">
+      <LogicalName>zoom-100-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-100-16%402x.png">
+      <LogicalName>zoom-100-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\unindent-16%402x.png">
+      <LogicalName>unindent-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\unindent-16.png">
+      <LogicalName>unindent-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\about-16.png">
+      <LogicalName>about-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\about-16%402x.png">
+      <LogicalName>about-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\cut-16.png">
+      <LogicalName>cut-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\cut-16%402x.png">
+      <LogicalName>cut-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\fullscreen-16.png">
+      <LogicalName>fullscreen-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\fullscreen-16%402x.png">
+      <LogicalName>fullscreen-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\help-16.png">
+      <LogicalName>help-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\help-16%402x.png">
+      <LogicalName>help-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\indent-16.png">
+      <LogicalName>indent-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\indent-16%402x.png">
+      <LogicalName>indent-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\page-setup-16.png">
+      <LogicalName>page-setup-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\page-setup-16%402x.png">
+      <LogicalName>page-setup-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\paste-16.png">
+      <LogicalName>paste-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\paste-16%402x.png">
+      <LogicalName>paste-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\print-16.png">
+      <LogicalName>print-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\print-16%402x.png">
+      <LogicalName>print-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\print-preview-16.png">
+      <LogicalName>print-preview-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\print-preview-16%402x.png">
+      <LogicalName>print-preview-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\quit-16.png">
+      <LogicalName>quit-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\quit-16%402x.png">
+      <LogicalName>quit-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\redo-16.png">
+      <LogicalName>redo-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\redo-16%402x.png">
+      <LogicalName>redo-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\revert-to-saved-16.png">
+      <LogicalName>revert-to-saved-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\revert-to-saved-16%402x.png">
+      <LogicalName>revert-to-saved-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\AppManifest.xft.xml">
+      <LogicalName>AppManifest.xft.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -2892,7 +2997,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\GtkErrorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\DefaultCodeFormatter.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormatterExtensionNode.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\GtkSynchronizationContext.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\NewPolicySetDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.NewPolicySetDialog.cs" />
     <Compile Include="MonoDevelop.Components\HeaderBox.cs" />
@@ -3291,6 +3395,7 @@
     <Compile Include="MonoDevelop.Components.AutoTest\PropertyMetadata.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\ObjectProperties.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\ISearchResultCallback.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TemplateConditionEvaluator.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest.Operations\SelectedOperation.cs" />
     <Compile Include="MonoDevelop.Components\Windows\GtkWPFWidget.cs" />
     <Compile Include="MonoDevelop.Components\Windows\GtkWin32Interop.cs" />
@@ -3298,6 +3403,9 @@
     <Compile Include="MonoDevelop.Ide.Gui\IStatusBar.cs" />
     <Compile Include="MonoDevelop.Ide\StatusService.cs" />
     <Compile Include="MonoDevelop.Ide\StatusMessageContext.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\PropertyDescriptionTemplate.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\FileTemplateTagsModifier.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\CombinedTagModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -1,5 +1,6 @@
 ﻿using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Components.Windows;
+using MonoDevelop.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +11,11 @@ using MonoDevelop.Ide;
 using Xwt;
 using Xwt.WPFBackend;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows.Threading;
 using System.Globalization;
 using System.Windows.Data;
-using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -34,7 +35,7 @@ namespace WindowsPlatform.MainToolbar
 				if (newModel == null)
 					return;
 
-				DispatchService.GuiDispatch(() => {
+				Runtime.RunInMainThread(() => {
 					ActiveConfiguration = newModel;
 
 					if (ConfigurationChanged != null)
@@ -48,7 +49,7 @@ namespace WindowsPlatform.MainToolbar
 					return;
 
 				using (var mutableModel = newModel.GetMutableModel()) {
-					DispatchService.GuiDispatch(() => {
+					Runtime.RunInMainThread(() => {
 						ActiveRuntime = newModel;
 
 						var ea = new MonoDevelop.Components.MainToolbar.HandledEventArgs();
@@ -80,6 +81,10 @@ namespace WindowsPlatform.MainToolbar
 				toolbar.SearchBar.SearchText = toolbar.SearchBar.PlaceholderText;
 			};
 
+			toolbar.SearchBar.SearchBar.GotKeyboardFocus += (o, e) => {
+				SearchEntryActivated?.Invoke (o, e);
+			};
+
 			toolbar.SearchBar.SearchBar.SizeChanged += (o, e) => {
 				if (SearchEntryResized != null)
 					SearchEntryResized (o, e);
@@ -99,9 +104,6 @@ namespace WindowsPlatform.MainToolbar
 
 		void SendKeyPress(KeyEventArgs ka)
 		{
-			if (ka.Key == Xwt.Key.Escape)
-				SearchText = string.Empty;
-
 			if (SearchEntryKeyPressed != null)
 				SearchEntryKeyPressed(this, ka);
 		}
@@ -168,6 +170,7 @@ namespace WindowsPlatform.MainToolbar
 		public string SearchCategory {
 			set	{
 				toolbar.SearchBar.SearchText = value;
+				FocusSearchBar ();
 				toolbar.SearchBar.SearchBar.SelectAll ();
 			}
 		}
@@ -189,7 +192,13 @@ namespace WindowsPlatform.MainToolbar
 
 		public string SearchText {
 			get { return toolbar.SearchBar.SearchText; }
-			set { toolbar.SearchBar.SearchText = value; }
+			set {
+				toolbar.SearchBar.SearchText = value;
+
+				if (value != SearchPlaceholderMessage) {
+					toolbar.SearchBar.SearchBar.SelectAll ();
+				}
+			}
 		}
 
 		public StatusBar StatusBar {
@@ -246,7 +255,7 @@ namespace WindowsPlatform.MainToolbar
 		void RaisePropertyChanged ([CallerMemberName] string propName = null)
 		{
 			if (PropertyChanged != null)
-				PropertyChanged (this, new PropertyChangedEventArgs (propName));
+				PropertyChanged (this, new System.ComponentModel.PropertyChangedEventArgs (propName));
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;

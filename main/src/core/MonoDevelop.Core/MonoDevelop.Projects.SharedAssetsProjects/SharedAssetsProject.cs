@@ -32,7 +32,7 @@ using System.IO;
 using System.Xml;
 using MonoDevelop.Projects.Policies;
 using System.Threading.Tasks;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects.SharedAssetsProjects
 {
@@ -110,7 +110,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			base.SaveProjectItems (monitor, projitemsProject, usedMSBuildItems, "$(MSBuildThisFileDirectory)");
 		}
 
-		protected override void OnWriteProject (ProgressMonitor monitor, MonoDevelop.Projects.Formats.MSBuild.MSBuildProject msproject)
+		protected override void OnWriteProject (ProgressMonitor monitor, MonoDevelop.Projects.MSBuild.MSBuildProject msproject)
 		{
 			if (projItemsPath == FilePath.Null)
 				projItemsPath = Path.ChangeExtension (FileName, ".projitems");
@@ -280,6 +280,13 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			if (p != null)
 				// Maybe the new project already contains a reference to this shared project
 				ProcessProject (p);
+
+			var folder = e.SolutionItem as SolutionFolder;
+			if (folder != null) {
+				foreach (var proj in folder.GetAllItems<DotNetProject>()) {
+					ProcessProject (proj);
+				}
+			}
 		}
 
 		protected override void OnDispose ()

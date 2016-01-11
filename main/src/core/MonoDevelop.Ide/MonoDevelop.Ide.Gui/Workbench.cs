@@ -800,24 +800,25 @@ namespace MonoDevelop.Ide.Gui
 		
 		void OnWindowClosing (object sender, WorkbenchWindowEventArgs args)
 		{
-			IWorkbenchWindow window = (IWorkbenchWindow) sender;
-			if (!args.Forced && window.ViewContent != null && window.ViewContent.IsDirty) {
+			var window = (IWorkbenchWindow) sender;
+			var viewContent = window.ViewContent;
+			if (!args.Forced && viewContent != null && viewContent.IsDirty) {
 				AlertButton result = MessageService.GenericAlert (Stock.Warning,
 					GettextCatalog.GetString ("Save the changes to document '{0}' before closing?",
-						window.ViewContent.IsUntitled
-							? window.ViewContent.UntitledName
-							: System.IO.Path.GetFileName (window.ViewContent.ContentName)), 
-				    GettextCatalog.GetString ("If you don't save, all changes will be permanently lost."),
-				    AlertButton.CloseWithoutSave, AlertButton.Cancel, window.ViewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
+						viewContent.IsUntitled
+							? viewContent.UntitledName
+							: System.IO.Path.GetFileName (viewContent.ContentName)),
+					GettextCatalog.GetString ("If you don't save, all changes will be permanently lost."),
+					AlertButton.CloseWithoutSave, AlertButton.Cancel, viewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
 				if (result == AlertButton.Save || result == AlertButton.SaveAs) {
 					FindDocument (window).Save ();
-					args.Cancel = window.ViewContent.IsDirty;
+					args.Cancel = viewContent.IsDirty;
 					if (args.Cancel)
 						FindDocument (window).Select ();
 				} else {
 					args.Cancel |= result != AlertButton.CloseWithoutSave;
 					if (!args.Cancel)
-						window.ViewContent.DiscardChanges ();
+						viewContent.DiscardChanges ();
 				}
 			}
 			OnDocumentClosing (FindDocument (window));

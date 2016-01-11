@@ -419,7 +419,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)
 		{
-			DispatchService.AssertGuiThread ();
+			Runtime.AssertMainThread ();
 			StatusIcon icon = new StatusIcon (this, pixbuf);
 			statusIconBox.PackEnd (icon.box);
 			statusIconBox.ShowAll ();
@@ -674,7 +674,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void ShowMessageInner (IconId image, string message, bool isMarkup)
 		{
-			DispatchService.AssertGuiThread ();
+			Runtime.AssertMainThread ();
 
 			if (image == StockIcons.StatusError) {
 				// If the application doesn't have the focus, trigger the animation
@@ -823,7 +823,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void SetProgressFraction (double work)
 		{
-			DispatchService.AssertGuiThread ();
+			Runtime.AssertMainThread ();
 			OnProgressFraction (new FractionEventArgs (work));
 		}
 		
@@ -839,7 +839,7 @@ namespace MonoDevelop.Components.MainToolbar
 		
 		void Pulse ()
 		{
-			DispatchService.AssertGuiThread ();
+			Runtime.AssertMainThread ();
 			OnProgressPulse (EventArgs.Empty);
 		}
 
@@ -847,7 +847,7 @@ namespace MonoDevelop.Components.MainToolbar
 		bool AutoPulse {
 			get { return autoPulseTimeoutId != 0; }
 			set {
-				DispatchService.AssertGuiThread ();
+				Runtime.AssertMainThread ();
 				if (value) {
 					if (autoPulseTimeoutId == 0) {
 						autoPulseTimeoutId = GLib.Timeout.Add (100, delegate {

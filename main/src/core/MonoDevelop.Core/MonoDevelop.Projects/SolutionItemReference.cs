@@ -78,7 +78,7 @@ namespace MonoDevelop.Projects
 		public override bool Equals (object o)
 		{
 			SolutionItemReference sr = o as SolutionItemReference;
-			if (o == null)
+			if (sr == null)
 				return false;
 			return (path == sr.path) && (id == sr.id);
 		}

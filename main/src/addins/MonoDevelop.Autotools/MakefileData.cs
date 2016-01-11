@@ -39,7 +39,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide;
 using System.Xml;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Autotools
 {

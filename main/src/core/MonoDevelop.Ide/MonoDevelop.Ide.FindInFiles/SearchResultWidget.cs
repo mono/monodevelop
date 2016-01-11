@@ -422,14 +422,19 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			return 0;
 		}
-		
+
 		static int CompareFileNames (TreeModel model, TreeIter first, TreeIter second)
 		{
 			var searchResult1 = (SearchResult)model.GetValue (first, SearchResultColumn);
 			var searchResult2 = (SearchResult)model.GetValue (second, SearchResultColumn);
 			if (searchResult1 == null || searchResult2 == null || searchResult1.FileName == null || searchResult2.FileName == null)
 				return -1;
-			return string.Compare (System.IO.Path.GetFileName (searchResult1.FileName), System.IO.Path.GetFileName (searchResult2.FileName), StringComparison.Ordinal);
+			var strCompare = string.Compare (System.IO.Path.GetFileName (searchResult1.FileName), System.IO.Path.GetFileName (searchResult2.FileName), StringComparison.Ordinal);
+			if (strCompare == 0) {
+				return searchResult1.Offset.CompareTo (searchResult2.Offset);
+			} else {
+				return strCompare;
+			}
 		}
 
 		static int CompareProjectFileNames (TreeModel model, TreeIter first, TreeIter second)

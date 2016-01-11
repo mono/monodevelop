@@ -31,7 +31,7 @@ using System.Linq;
 using System.Collections.Generic;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public class InstalledPackagesViewModel : PackagesViewModel
 	{

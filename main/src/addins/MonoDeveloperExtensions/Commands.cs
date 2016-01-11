@@ -30,7 +30,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
- 
+using System.Threading.Tasks;
 
 namespace MonoDeveloper
 {	
@@ -45,7 +45,7 @@ namespace MonoDeveloper
 		{
 			DotNetProject p = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
 			if (p != null)
-				DispatchService.BackgroundDispatch (new StatefulMessageHandler (Install), p);
+				Task.Run (() => Install (p));
 		}
 		
 		protected override void Update (CommandInfo info)

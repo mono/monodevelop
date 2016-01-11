@@ -165,8 +165,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void TypeSystemService_WorkspaceItemLoaded (object sender, EventArgs e)
 		{
-			if (adhocProject == null)
-				analysisDocument = null;
+			analysisDocument = null;
 			EnsureAnalysisDocumentIsOpen ().ContinueWith (delegate {
 				if (analysisDocument != null)
 					StartReparseThread ();
@@ -215,6 +214,11 @@ namespace MonoDevelop.Ide.Gui
 				StartReparseThread ();
 			}*/
 		}
+
+		internal override bool IsAdHocProject {
+			get { return adhocProject != null; }
+		}
+
 
 		public override bool IsCompileableInProject {
 			get {
@@ -536,7 +540,6 @@ namespace MonoDevelop.Ide.Gui
 			if (window.ViewContent.Project != null)
 				window.ViewContent.Project.Modified -= HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
-			TypeSystemService.Workspace.WorkspaceChanged -= HandleWorkspaceChanged;
 			MonoDevelopWorkspace.LoadingFinished -= TypeSystemService_WorkspaceItemLoaded;
 
 			window = null;
@@ -676,15 +679,7 @@ namespace MonoDevelop.Ide.Gui
 			if (project != null)
 				project.Modified += HandleProjectModified;
 			InitializeExtensionChain ();
-			TypeSystemService.Workspace.WorkspaceChanged += HandleWorkspaceChanged;
 			ListenToProjectLoad (project);
-		}
-
-		void HandleWorkspaceChanged (object sender, Microsoft.CodeAnalysis.WorkspaceChangeEventArgs e)
-		{
-			if (e.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.DocumentChanged && e.DocumentId == analysisDocument) {
-				OnDocumentParsed (EventArgs.Empty);
-			}
 		}
 
 		void ListenToProjectLoad (Project project)
@@ -961,6 +956,13 @@ namespace MonoDevelop.Ide.Gui
 			if (start != null && end != null)
 				return new [] { start[0], end[0] };
 			return null;
+		}
+
+		public override T GetPolicy<T> (IEnumerable<string> types)
+		{	
+			if (adhocProject !=	null)
+				return MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<T> (types);
+			return base.GetPolicy<T> (types);
 		}
 	
 //		public MonoDevelop.Projects.CodeGeneration.CodeGenerator CreateCodeGenerator ()

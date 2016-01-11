@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
@@ -50,7 +50,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		}
 
 		public SemanticVersion Version;
-		public PackageSource PackageSource = new PackageSource ("http://sharpdevelop.net");
+		public PackageSource PackageSource = new PackageSource ("http://monodevelop.net");
 		public bool ForceRemove;
 		public bool RemoveDependencies;
 

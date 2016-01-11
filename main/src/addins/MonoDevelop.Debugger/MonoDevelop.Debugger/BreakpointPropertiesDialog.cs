@@ -36,6 +36,7 @@ using Xwt;
 using Xwt.Drawing;
 using System.Linq;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Debugger
 {
@@ -203,7 +204,7 @@ namespace MonoDevelop.Debugger
 		public BreakpointPropertiesDialog (BreakEvent be, BreakpointType breakpointType)
 		{
 			this.be = be;
-			LoadExceptionList ();
+			Task.Run (LoadExceptionList);
 			Initialize ();
 			SetInitialData ();
 			SetLayout ();
@@ -648,7 +649,9 @@ namespace MonoDevelop.Debugger
 				if (!classes.Contains (entryExceptionType.Text)) {
 					warningException.Show ();
 					warningException.ToolTip = GettextCatalog.GetString ("Exception not identified");
-					result = false;
+					//We might be missing some exceptions that are loaded at runtime from outside our project
+					//or we don't have project at all, hence show warning but still allow user to close window
+					result = true;
 				}
 			}
 			return result;
@@ -684,29 +687,35 @@ namespace MonoDevelop.Debugger
 			return true;
 		}
 
-		void LoadExceptionList ()
+		async Task LoadExceptionList ()
 		{
 			classes.Add ("System.Exception");
-			if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
-				var compilation = TypeSystemService.GetCompilationAsync (IdeApp.ProjectOperations.CurrentSelectedProject).Result;
+			try {
+				Microsoft.CodeAnalysis.Compilation compilation = null;
+				Microsoft.CodeAnalysis.ProjectId dummyProjectId = null;
+				if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
+					compilation = await TypeSystemService.GetCompilationAsync (IdeApp.ProjectOperations.CurrentSelectedProject);
+				}
+				if (compilation == null) {
+					//no need to unload this assembly context, it's not cached.
+					dummyProjectId = Microsoft.CodeAnalysis.ProjectId.CreateNewId ("GetExceptionsProject");
+					compilation = Microsoft.CodeAnalysis.CSharp.CSharpCompilation.Create ("GetExceptions")
+											   .AddReferences (MetadataReferenceCache.LoadReference (dummyProjectId, System.Reflection.Assembly.GetAssembly (typeof (object)).Location))//corlib
+											   .AddReferences (MetadataReferenceCache.LoadReference (dummyProjectId, System.Reflection.Assembly.GetAssembly (typeof (Uri)).Location));//System.dll
+				}
 				var exceptionClass = compilation.GetTypeByMetadataName ("System.Exception");
 				foreach (var t in compilation.GlobalNamespace.GetAllTypes ().Where ((arg) => arg.IsDerivedFromClass (exceptionClass))) {
 					classes.Add (t.GetFullMetadataName ());
 				}
-			} else {
-				//no need to unload this assembly context, it's not cached.
-				var dummyProjectId = Microsoft.CodeAnalysis.ProjectId.CreateNewId ("GetExceptionsProject");
-				var compilation = Microsoft.CodeAnalysis.CSharp.CSharpCompilation.Create ("GetExceptions")
-										   .AddReferences (MetadataReferenceCache.LoadReference (dummyProjectId, System.Reflection.Assembly.GetAssembly (typeof(object)).Location))//corlib
-										   .AddReferences (MetadataReferenceCache.LoadReference (dummyProjectId, System.Reflection.Assembly.GetAssembly (typeof(Uri)).Location));//System.dll
-
-				var exceptionClass = compilation.GetTypeByMetadataName ("System.Exception");
-				foreach (var t in compilation.GlobalNamespace.GetAllTypes ().Where ((arg) => arg.IsDerivedFromClass (exceptionClass))) {
-					classes.Add (t.GetFullMetadataName ());
+				if (dummyProjectId != null) {
+					MetadataReferenceCache.RemoveReferences (dummyProjectId);
 				}
-				MetadataReferenceCache.RemoveReferences (dummyProjectId);
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to obtain exceptions list in breakpoint dialog.", e);
 			}
-			entryExceptionType.SetCodeCompletionList (classes.ToList ());
+			await Runtime.RunInMainThread (() => {
+				entryExceptionType.SetCodeCompletionList (classes.ToList ());
+			});
 		}
 
 		public BreakEvent GetBreakEvent ()

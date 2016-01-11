@@ -206,6 +206,7 @@ namespace MonoDevelop.SourceEditor
 
 			breakpoints = DebuggingService.Breakpoints;
 			DebuggingService.DebugSessionStarted += OnDebugSessionStarted;
+			DebuggingService.StoppedEvent += HandleTargetExited;
 			DebuggingService.ExecutionLocationChanged += OnExecutionLocationChanged;
 			DebuggingService.CurrentFrameChanged += OnCurrentFrameChanged;
 			DebuggingService.StoppedEvent += OnCurrentFrameChanged;
@@ -458,6 +459,10 @@ namespace MonoDevelop.SourceEditor
 			}
 			x += widgetExtension.OffsetX;
 			y += widgetExtension.OffsetY;
+
+			//We don't want Widget to appear outside TextArea(cut off)...
+			x = Math.Max (0, x);
+			y = Math.Max (0, y);
 			return true;
 		}
 
@@ -916,17 +921,16 @@ namespace MonoDevelop.SourceEditor
 	
 		void UpdateMimeType (string fileName)
 		{
-			// Look for a mime type for which there is a syntax mode
-			string mimeType = DesktopService.GetMimeTypeForUri (fileName);
-			if (loadedMimeType != mimeType) {
-				loadedMimeType = mimeType;
-				if (mimeType != null) {
-					foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (loadedMimeType)) {
-						if (Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (null, mt) != null) {
-							Document.MimeType = mt;
-							widget.TextEditor.TextEditorResolverProvider = TextEditorResolverService.GetProvider (mt);
-							break;
-						}
+			Document.MimeType = DesktopService.GetMimeTypeForUri (fileName);
+
+			//if the mimetype doesn't have a syntax mode, try to load one for its base mimetypes
+			var sm = Document.SyntaxMode as Mono.TextEditor.Highlighting.SyntaxMode;
+			if (sm != null && sm.MimeType == null) {
+				foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (Document.MimeType)) {
+					var syntaxMode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (null, mt);
+					if (syntaxMode != null) {
+						Document.SyntaxMode = syntaxMode;
+						break;
 					}
 				}
 			}
@@ -977,6 +981,7 @@ namespace MonoDevelop.SourceEditor
 
 			DebuggingService.ExecutionLocationChanged -= OnExecutionLocationChanged;
 			DebuggingService.DebugSessionStarted -= OnDebugSessionStarted;
+			DebuggingService.StoppedEvent -= HandleTargetExited;
 			DebuggingService.CurrentFrameChanged -= OnCurrentFrameChanged;
 			DebuggingService.StoppedEvent -= OnCurrentFrameChanged;
 			DebuggingService.ResumedEvent -= OnCurrentFrameChanged;
@@ -1081,15 +1086,15 @@ namespace MonoDevelop.SourceEditor
 				if (location != null) {
 					RemoveDebugMarkers ();
 					var segment = widget.TextEditor.Document.GetLine (location.Line);
-					int offset, length;
-					if (location.Line > 0 && location.Column > 0 && location.EndLine > 0 && location.EndColumn > 0) {
-						offset = widget.TextEditor.LocationToOffset (location.Line, location.Column);
-						length = widget.TextEditor.LocationToOffset (location.EndLine, location.EndColumn) - offset;
-					} else {
-						offset = segment.Offset;
-						length = segment.Length;
-					}
 					if (segment != null) {
+						int offset, length;
+						if (location.Line > 0 && location.Column > 0 && location.EndLine > 0 && location.EndColumn > 0) {
+							offset = widget.TextEditor.LocationToOffset (location.Line, location.Column);
+							length = widget.TextEditor.LocationToOffset (location.EndLine, location.EndColumn) - offset;
+						} else {
+							offset = segment.Offset;
+							length = segment.Length;
+						}
 						if (DebuggingService.CurrentFrameIndex == 0) {
 							currentDebugLineMarker = new CurrentDebugLineTextMarker (widget.TextEditor, offset, length);
 							currentDebugLineMarker.AddTo (widget.TextEditor.Document, segment);
@@ -1187,7 +1192,6 @@ namespace MonoDevelop.SourceEditor
 			foreach (var marker in currentErrorMarkers) {
 				marker.IsVisible = false;
 			}
-			DebuggingService.DebuggerSession.TargetExited += HandleTargetExited;
 		}
 
 		void HandleTargetExited (object sender, EventArgs e)
@@ -2878,13 +2882,13 @@ namespace MonoDevelop.SourceEditor
 		
 		void ITextEditorImpl.SetTextPasteHandler (TextPasteHandler textPasteHandler)
 		{
-			if (textPasteHandler == null) {
-				TextEditor.GetTextEditorData ().TextPasteHandler = null;
-				return;
-			}
 			var data = TextEditor.GetTextEditorData ();
 			if (data.TextPasteHandler != null)
 				((TextPasteHandlerWrapper)data.TextPasteHandler).Dispose ();
+			if (textPasteHandler == null) {
+				data.TextPasteHandler = null;
+				return;
+			}
 			data.TextPasteHandler = new TextPasteHandlerWrapper (data, textPasteHandler);
 		}
 

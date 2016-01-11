@@ -57,19 +57,13 @@ namespace MonoDevelop.CSharp.Formatting
 
 		CSharpFormattingPolicy Policy {
 			get {
-				if (DocumentContext != null && DocumentContext.Project != null && DocumentContext.Project.Policies != null) {
-					return DocumentContext.Project.Policies.Get<CSharpFormattingPolicy> (types);
-				}
-				return MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
+				return DocumentContext.GetPolicy<CSharpFormattingPolicy> (types);
 			}
 		}
 
 		TextStylePolicy TextStylePolicy {
 			get {
-				if (DocumentContext != null && DocumentContext.Project != null && DocumentContext.Project.Policies != null) {
-					return DocumentContext.Project.Policies.Get<TextStylePolicy> (types);
-				}
-				return MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (types);
+				return DocumentContext.GetPolicy<TextStylePolicy> (types);
 			}
 		}
 

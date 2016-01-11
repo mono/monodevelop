@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using System.Collections.Generic;
 using System.Xml;
 using System.Linq;

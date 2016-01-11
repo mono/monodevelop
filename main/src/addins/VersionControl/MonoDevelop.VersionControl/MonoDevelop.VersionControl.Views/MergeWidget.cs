@@ -173,8 +173,8 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public override void UpdateDiff ()
 		{
-			LeftDiff  = new List<Hunk> (editors[0].Document.Diff (MainEditor.Document));
-			RightDiff = new List<Hunk> (editors[2].Document.Diff (MainEditor.Document));
+			LeftDiff  = new List<Hunk> (editors[0].Document.Diff (MainEditor.Document, includeEol: false));
+			RightDiff = new List<Hunk> (editors[2].Document.Diff (MainEditor.Document, includeEol: false));
 
 			DocumentLine line;
 			LeftDiff.RemoveAll (item => null != (line = MainEditor.Document.GetLine (item.InsertStart)) &&

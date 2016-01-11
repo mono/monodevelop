@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		internal static bool ShowWindow (ICompletionDataList list, CodeCompletionContext completionContext)
 		{
 			if (wnd == null || !isShowing)
-				throw new InvalidOperationException ("PrepareShowWindow not called");
+				return false;
 			
 			var completionWidget = wnd.CompletionWidget;
 			var ext = wnd.Extension;
@@ -172,11 +172,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (!IsVisible)
 				return;
-			if (wnd.IsInCompletion)
+			if (wnd.IsInCompletion || isShowing)
 				return;
 			var caretOffset = wnd.CompletionWidget.CaretOffset;
-			if (caretOffset < wnd.StartOffset || caretOffset > wnd.EndOffset)
+			if (caretOffset < wnd.StartOffset || caretOffset > wnd.EndOffset) {
 				HideWindow ();
+			}
 		}
 
 		public static void UpdateWordSelection (string text)

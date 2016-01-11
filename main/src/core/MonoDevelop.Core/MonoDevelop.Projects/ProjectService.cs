@@ -42,7 +42,7 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Projects.Extensions;
 using Mono.Unix;
 using System.Linq;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects

@@ -44,7 +44,7 @@ namespace MonoDevelop.VersionControl.Views
 			widget = lw;
 			info.Updated += OnInfoUpdated;
 			lw.History = this.info.History;
-			vinfo   = this.info.VersionInfo;
+			vinfo   = this.info.Item.VersionInfo;
 		
 			if (WorkbenchWindow != null)
 				widget.SetToolbar (WorkbenchWindow.GetToolbar (this));
@@ -53,7 +53,7 @@ namespace MonoDevelop.VersionControl.Views
 		void OnInfoUpdated (object sender, EventArgs e)
 		{
 			widget.History = this.info.History;
-			vinfo   = this.info.VersionInfo;
+			vinfo   = this.info.Item.VersionInfo;
 		}
 
 		[Obsolete]
@@ -70,7 +70,7 @@ namespace MonoDevelop.VersionControl.Views
 			// Widget setup
 			VersionControlDocumentInfo info  =new VersionControlDocumentInfo (null, null, vc);
 			info.History = history;
-			info.VersionInfo = vinfo;
+			info.Item.VersionInfo = vinfo;
 			var lw = new LogWidget (info);
 			
 			widget = lw;

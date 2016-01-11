@@ -92,11 +92,11 @@ namespace MonoDevelop.Platform
 			var topMenu = new GtkWPFWidget (titleBar) {
 				HeightRequest = System.Windows.Forms.SystemInformation.CaptionHeight,
 			};
-			commandManager.IncompleteKeyPressed += (sender, e) => {
-				if (e.Key == Gdk.Key.Alt_L || e.Key == Gdk.Key.Alt_R) {
-					Keyboard.Focus(titleBar.DockTitle.Children[0]);
-				}
-			};
+			//commandManager.IncompleteKeyPressed += (sender, e) => {
+			//	if (e.Key == Gdk.Key.Alt_L) {
+			//		Keyboard.Focus(titleBar.DockTitle.Children[0]);
+			//	}
+			//};
 			parent.PackStart (topMenu, false, true, 0);
 			SetupMenu ();
 

@@ -4,7 +4,7 @@ using System.Collections;
 using System.IO;
 using MonoDevelop.Projects;
 using MonoDevelop.Deployment.Targets;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using System.Linq;
 
 namespace MonoDevelop.Deployment.Gui

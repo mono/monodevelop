@@ -402,7 +402,7 @@ namespace MonoDevelop.CSharp
 
 	struct DeclaredSymbolInfo
 	{
-		internal Document Document;
+		internal DocumentId DocumentId;
 
 		public string FilePath { get; }
 		public string Name { get; }
@@ -470,14 +470,14 @@ namespace MonoDevelop.CSharp
 		}
 		Document GetDocument (CancellationToken token)
 		{
-			var doc = type.Document;
+			var doc = type.DocumentId;
 			if (doc == null) {
 				var docId = TypeSystemService.GetDocuments (type.FilePath).FirstOrDefault ();
 				if (docId == null)
 					return null;
 				return TypeSystemService.GetCodeAnalysisDocument (docId, token);
 			}
-			return doc;
+			return TypeSystemService.GetCodeAnalysisDocument (type.DocumentId, token);
 		}
 
 		public override async Task<TooltipInformation> GetTooltipInformation (CancellationToken token)

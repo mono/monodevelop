@@ -8,6 +8,7 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
 using MonoDevelop.Core.Assemblies;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.WebReferences.Commands
 {
@@ -89,21 +90,21 @@ namespace MonoDevelop.WebReferences.Commands
 				UpdateReferenceContext = StatusService.CreateContext ();
 				UpdateReferenceContext.BeginProgress (GettextCatalog.GetPluralString ("Updating web reference", "Updating web references", items.Count));
 				
-				DispatchService.ThreadDispatch (() => {
+				Task.Run (() => {
 					for (int i = 0; i < items.Count; i ++) {
-						DispatchService.GuiDispatch (() => UpdateReferenceContext.SetProgressFraction (Math.Max (0.1, (double)i / items.Count)));
+						Runtime.RunInMainThread (() => UpdateReferenceContext.SetProgressFraction (Math.Max (0.1, (double)i / items.Count)));
 						try {
 							items [i].Update();
 						} catch (Exception ex) {
-							DispatchService.GuiSyncDispatch (() => {
+							Runtime.RunInMainThread (() => {
 								MessageService.ShowError (GettextCatalog.GetString ("Failed to update Web Reference '{0}'", items [i].Name), ex);
 								DisposeUpdateContext ();
-							});
+							}).Wait ();
 							return;
 						}
 					}
 					
-					DispatchService.GuiDispatch (() => {
+					Runtime.RunInMainThread (() => {
 						// Make sure that we save all relevant projects, there should only be 1 though
 						foreach (var project in items.Select (i =>i.Project).Distinct ())
 							IdeApp.ProjectOperations.SaveAsync (project);
