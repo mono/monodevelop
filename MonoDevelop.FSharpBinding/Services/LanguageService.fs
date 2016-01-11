@@ -8,6 +8,7 @@ open ExtCore
 open ExtCore.Control
 open ExtCore.Control.Collections
 open MonoDevelop.Core
+open MonoDevelop.Core
 open Nessos.FsPickler.Json
 
 module Symbol =
