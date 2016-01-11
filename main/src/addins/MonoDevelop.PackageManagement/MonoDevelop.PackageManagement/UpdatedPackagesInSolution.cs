@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using NuGet;
@@ -172,12 +172,48 @@ namespace MonoDevelop.PackageManagement
 			LogCheckingForUpdates (project.Name);
 
 			project.Logger = new PackageManagementLogger (packageManagementEvents);
-			var updatedPackages = new UpdatedPackages (project, project.SourceRepository);
-			List<IPackage> packages = updatedPackages.GetUpdatedPackages ().ToList ();
+
+			var packageReferences = project.GetPackageReferences ();
+
+			List<IPackage> packages = GetUpdatedStablePackages (project, packageReferences).ToList ();
+			packages.AddRange (GetUpdatedPrereleasePackages (project, packageReferences));
 
 			LogPackagesFound (packages.Count);
 
 			return new UpdatedPackagesInProject (project.Project, packages);
+		}
+
+		IEnumerable<IPackage> GetUpdatedStablePackages (
+			IPackageManagementProject project,
+			IEnumerable<PackageReference> packageReferences)
+		{
+			return GetUpdatedPackages (project, packageReferences, false, packageRef => packageRef.IsReleaseVersion ());
+		}
+
+		IEnumerable<IPackage> GetUpdatedPrereleasePackages (
+			IPackageManagementProject project,
+			IEnumerable<PackageReference> packageReferences)
+		{
+			return GetUpdatedPackages (project, packageReferences, true, packageRef => !packageRef.IsReleaseVersion ());
+		}
+
+		IEnumerable<IPackage> GetUpdatedPackages (
+			IPackageManagementProject project,
+			IEnumerable<PackageReference> packageReferences,
+			bool includePrerelease,
+			Func<PackageReference, bool> filter)
+		{
+			var filteredPackageReferences = packageReferences.Where (filter).ToList ();
+
+			if (!filteredPackageReferences.Any ())
+				return Enumerable.Empty <IPackage> ();
+
+			var updatedPackages = new UpdatedPackages (
+				filteredPackageReferences,
+				project.SourceRepository,
+				project.ConstraintProvider);
+
+			return updatedPackages.GetUpdatedPackages (includePrerelease);
 		}
 
 		void LogCheckingForUpdates (string projectName)
@@ -217,9 +253,9 @@ namespace MonoDevelop.PackageManagement
 			});
 		}
 
-		protected virtual void GuiDispatch (MessageHandler handler)
+		protected virtual void GuiDispatch (Action action)
 		{
-			DispatchService.GuiSyncDispatch (handler);
+			Runtime.RunInMainThread (action).Wait ();
 		}
 
 		T GuiSyncDispatch<T> (Func<T> action)

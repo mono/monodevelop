@@ -364,7 +364,7 @@ namespace MonoDevelop.Core.Assemblies
 						if (reader.MoveToAttribute ("InGac") && reader.ReadAttributeValue ())
 							ainfo.InGac = reader.ReadContentAsBoolean ();
 					} while (reader.ReadToFollowing ("File"));
-				} else {
+				} else if (Directory.Exists (dir)) {
 
 					// HACK: we were using EnumerateFiles but it's broken in some Mono releases
 					// https://bugzilla.xamarin.com/show_bug.cgi?id=2975
@@ -375,8 +375,10 @@ namespace MonoDevelop.Core.Assemblies
 							var ainfo = new AssemblyInfo ();
 							ainfo.Update (an);
 							assemblies.Add (ainfo);
+						} catch (BadImageFormatException ex) {
+							LoggingService.LogError ("Invalid assembly in framework '{0}': {1}", fx.Id, f);
 						} catch (Exception ex) {
-							LoggingService.LogError ("Error reading name for assembly '{0}' in framework '{1}':\n{2}",
+							LoggingService.LogError ("Error reading assembly '{0}' in framework '{1}':\n{2}",
 								f, fx.Id, ex.ToString ());
 						}
 					}

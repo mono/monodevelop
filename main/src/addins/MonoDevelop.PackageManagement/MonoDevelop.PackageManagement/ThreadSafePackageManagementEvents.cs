@@ -34,23 +34,21 @@ using NuGet;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public class ThreadSafePackageManagementEvents : IThreadSafePackageManagementEvents
 	{
-		static Action<MessageHandler> defaultGuiSyncDispatcher = DispatchService.GuiSyncDispatch;
-
-		Action<MessageHandler> guiSyncDispatcher;
+		Action<Action> guiSyncDispatcher;
 		IPackageManagementEvents unsafeEvents;
 
 		public ThreadSafePackageManagementEvents (IPackageManagementEvents unsafeEvents)
-			: this (unsafeEvents, defaultGuiSyncDispatcher)
+			: this (unsafeEvents, MonoDevelopProjectSystem.DefaultGuiSyncDispatcher)
 		{
 		}
 
 		public ThreadSafePackageManagementEvents (
 			IPackageManagementEvents unsafeEvents,
-			Action<MessageHandler> guiSyncDispatcher)
+			Action<Action> guiSyncDispatcher)
 		{
 			this.unsafeEvents = unsafeEvents;
 			this.guiSyncDispatcher = guiSyncDispatcher;

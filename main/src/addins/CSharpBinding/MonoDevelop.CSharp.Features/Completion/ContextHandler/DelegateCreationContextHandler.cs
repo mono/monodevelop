@@ -36,6 +36,7 @@ using Microsoft.CodeAnalysis.Text;
 using ICSharpCode.NRefactory6.CSharp.ExtractMethod;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.CSharp.Completion;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
@@ -70,17 +71,15 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return ch == '(' || ch == '[' || ch == ',' || IsTriggerAfterSpaceOrStartOfWordCharacter (text, position);
 		}
 
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult result, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, CancellationToken cancellationToken)
+		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult result, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			var document = completionContext.Document;
 			var position = completionContext.Position;
 
-			var tree = await document.GetSyntaxTreeAsync (cancellationToken).ConfigureAwait (false);
-			var model = await document.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
+			var tree = ctx.SyntaxTree;
+			var model = ctx.SemanticModel;
 			if (tree.IsInNonUserCode (position, cancellationToken))
 				return Enumerable.Empty<CompletionData> ();
-
-			var ctx = await completionContext.GetSyntaxContextAsync (engine.Workspace, cancellationToken).ConfigureAwait (false);
 
 			if (!ctx.CSharpSyntaxContext.IsAnyExpressionContext)
 				return Enumerable.Empty<CompletionData> ();
@@ -211,7 +210,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					sb.Append (", ");
 					sbWithoutTypes.Append (", ");
 				}
-				sb.Append (delegateMethod.Parameters [k].ToMinimalDisplayString (semanticModel, position, overrideNameFormat));
+				sb.Append (RoslynCompletionData.SafeMinimalDisplayString (delegateMethod.Parameters [k], semanticModel, position, overrideNameFormat));
 				sbWithoutTypes.Append (delegateMethod.Parameters [k].Name);
 			}
 

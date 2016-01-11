@@ -206,7 +206,7 @@ namespace MonoDevelop.NUnit
 			ld.Path = AssemblyPath;
 			ld.TestInfoCachePath = cacheLoaded ? null : TestInfoCachePath;
 			ld.Callback = delegate {
-				DispatchService.GuiDispatch (delegate {
+				Runtime.RunInMainThread (delegate {
 					AsyncCreateTests (ld);
 				});
 			};

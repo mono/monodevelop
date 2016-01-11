@@ -6,6 +6,7 @@ using ICSharpCode.NRefactory6.CSharp.Completion;
 
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.Roslyn
 {
+	[Ignore]
 	[TestFixture]
 	public class PartialCompletionProviderTests : CompletionTestBase
 	{

@@ -29,7 +29,7 @@
 using System;
 using MonoDevelop.Components;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public class FolderBrowser : IFolderBrowser
 	{

@@ -45,16 +45,16 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return IsTriggerAfterSpaceOrStartOfWordCharacter (text, position);
 		}
 
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, CancellationToken cancellationToken)
+		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			var document = completionContext.Document;
 			var position = completionContext.Position;
-			var tree = await document.GetSyntaxTreeAsync (cancellationToken).ConfigureAwait (false);
+			var tree = ctx.SyntaxTree;
 
 			//DeclarationModifiers modifiers;
 			SyntaxToken token;
 
-			var semanticModel = await document.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
+			var semanticModel = ctx.SemanticModel;
 			var enclosingSymbol = semanticModel.GetEnclosingSymbol (position, cancellationToken) as INamedTypeSymbol;
 
 			// Only inside classes and structs

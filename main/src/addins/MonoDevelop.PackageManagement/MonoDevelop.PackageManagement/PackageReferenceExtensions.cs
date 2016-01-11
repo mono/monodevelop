@@ -26,7 +26,7 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using NuGet;
 
@@ -51,6 +51,15 @@ namespace MonoDevelop.PackageManagement
 			return repository
 				.GetPackageLookupPaths (packageReference.Id, packageReference.Version)
 				.Any ();
+		}
+
+		public static bool IsReleaseVersion (this PackageReference packageReference)
+		{
+			if (packageReference.Version == null) {
+				return true;
+			}
+
+			return String.IsNullOrEmpty (packageReference.Version.SpecialVersion);
 		}
 	}
 }

@@ -396,7 +396,7 @@ namespace MonoDevelop.AspNet.Projects
 				    continue;
 				//bypass non dotnet projects
 				if ((reference.ReferenceType == ReferenceType.Project) &&
-				    (!(reference.OwnerProject.ParentSolution.FindProjectByName (reference.Reference) is DotNetProject)))
+				    (!(reference.ResolveProject (reference.OwnerProject.ParentSolution) is DotNetProject)))
 						continue;
 				refs.Add (reference.Reference);
 			}

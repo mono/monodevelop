@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Gtk;
 using System.Linq;
 
@@ -121,7 +122,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Property (string propertyName, object value)
 		{
-			if (resultIter != null && resultIter.HasValue) {
+			if (resultIter.HasValue) {
 				var objectToCompare = TModel.GetValue (resultIter.Value, Column);
 				return MatchProperty (propertyName, objectToCompare, value);
 			}
@@ -131,7 +132,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override ObjectProperties Properties ()
 		{
-			if (resultIter != null && resultIter.HasValue) {
+			if (resultIter.HasValue) {
 				var objectForProperties = TModel.GetValue (resultIter.Value, Column);
 				return base.GetProperties (objectForProperties);
 			}
@@ -271,6 +272,15 @@ namespace MonoDevelop.Components.AutoTest.Results
 				}
 			}
 			return false;
+		}
+
+		public override void SetProperty (string propertyName, object value)
+		{
+			if (resultIter.HasValue) {
+				var modelValue = TModel.GetValue ((TreeIter)resultIter, Column);
+
+				SetProperty (modelValue, propertyName, value);
+			}
 		}
 	}
 }

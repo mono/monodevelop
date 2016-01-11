@@ -42,9 +42,9 @@ namespace MonoDevelop.Ide.Editor
 			return editor.TextMarkerFactory.CreateUrlTextMarker (editor, line, value, url, syntax, startCol, endCol);
 		}
 
-		public static ICurrentDebugLineTextMarker CreateCurrentDebugLineTextMarker (TextEditor editor)
+		public static ICurrentDebugLineTextMarker CreateCurrentDebugLineTextMarker (TextEditor editor, int offset, int length)
 		{
-			return editor.TextMarkerFactory.CreateCurrentDebugLineTextMarker (editor);
+			return editor.TextMarkerFactory.CreateCurrentDebugLineTextMarker (editor, offset, length);
 		}
 
 		public static ITextLineMarker CreateAsmLineMarker (TextEditor editor)
@@ -109,10 +109,22 @@ namespace MonoDevelop.Ide.Editor
 		{
 			int offset    = editor.LocationToOffset (info.Region.BeginLine, info.Region.BeginColumn);
 			int endOffset = editor.LocationToOffset (info.Region.EndLine, info.Region.EndColumn);
-			if (endOffset < offset) {
+			if (endOffset <= offset) {
 				endOffset = offset + 1;
-				while (endOffset < editor.Length && IsIdentifierPart (editor.GetCharAt (endOffset)))
+				while (endOffset < editor.Length && IsIdentifierPart (editor.GetCharAt (endOffset))) {
 					endOffset++;
+				}
+				if (endOffset == offset + 1) {
+					if (endOffset - 1 < editor.Length) {
+						var c = editor.GetCharAt (endOffset - 1);
+						while ((c == '\n' || c == '\r') && endOffset < editor.Length) {
+							c = editor.GetCharAt (endOffset);
+							endOffset++;
+						}
+					} else {
+						endOffset = editor.Length;
+					}
+				}
 			}
 			return editor.TextMarkerFactory.CreateErrorMarker (editor, info, offset, endOffset - offset);
 		}

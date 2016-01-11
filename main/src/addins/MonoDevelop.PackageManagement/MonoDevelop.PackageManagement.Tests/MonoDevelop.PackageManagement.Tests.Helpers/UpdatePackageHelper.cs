@@ -26,7 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
@@ -63,7 +63,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return package;
 		}
 
-		public PackageSource PackageSource = new PackageSource ("http://sharpdevelop/packages");
+		public PackageSource PackageSource = new PackageSource ("http://monodevelop/packages");
 		public bool UpdateDependencies;
 		public bool AllowPrereleaseVersions;
 		public SemanticVersion Version;

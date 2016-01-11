@@ -393,8 +393,8 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			TreeIter selectedIter;
 			if (searchTreeview.Selection.GetSelected (out selectedIter)) {
-				var member = (IUnresolvedEntity)(searchMode != SearchMode.Type ? memberListStore.GetValue (selectedIter, 4) : typeListStore.GetValue (selectedIter, 4));
-				
+				var member = (IUnresolvedEntity)(searchMode == SearchMode.Member ? memberListStore.GetValue (selectedIter, 4) : typeListStore.GetValue (selectedIter, 4));
+
 				var nav = SearchMember (member);
 				if (nav != null) {
 					notebook1.Page = 0;
@@ -713,11 +713,14 @@ namespace MonoDevelop.AssemblyBrowser
 				col.PackStart (crt, true);
 				col.AddAttribute (crp, "image", 0);
 				col.AddAttribute (crt, "text", 1);
+				col.SortColumnId = 1;
 				searchTreeview.AppendColumn (col);
 				col.Resizable = true;
 				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Declaring Type"), new Gtk.CellRendererText (), "text", 2);
+				col.SortColumnId = 2;
 				col.Resizable = true;
 				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Assembly"), new Gtk.CellRendererText (), "text", 3);
+				col.SortColumnId = 3;
 				col.Resizable = true;
 				searchTreeview.Model = memberListStore;
 				break;
@@ -730,11 +733,17 @@ namespace MonoDevelop.AssemblyBrowser
 				col.PackStart (crt, true);
 				col.AddAttribute (crp, "image", 0);
 				col.AddAttribute (crt, "text", 1);
+				col.SortColumnId = 1;
+
 				searchTreeview.AppendColumn (col);
 				col.Resizable = true;
 				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Parent"), new Gtk.CellRendererText (), "text", 2);
+				col.SortColumnId = 2;
+
 				col.Resizable = true;
 				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Assembly"), new Gtk.CellRendererText (), "text", 3);
+				col.SortColumnId = 3;
+
 				col.Resizable = true;
 				searchTreeview.Model = typeListStore;
 				break;
@@ -747,11 +756,16 @@ namespace MonoDevelop.AssemblyBrowser
 				col.PackStart (crt, true);
 				col.AddAttribute (crp, "image", 0);
 				col.AddAttribute (crt, "text", 1);
+				col.SortColumnId = 1;
 				searchTreeview.AppendColumn (col);
 				col.Resizable = true;
+
 				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Namespace"), new Gtk.CellRendererText (), "text", 2);
+				col.SortColumnId = 2;
 				col.Resizable = true;
+
 				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Assembly"), new Gtk.CellRendererText (), "text", 3);
+				col.SortColumnId = 3;
 				col.Resizable = true;
 				searchTreeview.Model = typeListStore;
 				break;
@@ -926,7 +940,7 @@ namespace MonoDevelop.AssemblyBrowser
 								return;
 							if (!type.IsPublic && publicOnly)
 								continue;
-							if (type.FullName.ToUpper ().IndexOf (pattern) >= 0)
+							if (type.FullName.ToUpper ().IndexOf (pattern, StringComparison.Ordinal) >= 0)
 								typeList.Add (type);
 						}
 						typeDict [unit] = typeList;
@@ -947,23 +961,25 @@ namespace MonoDevelop.AssemblyBrowser
 					
 					break;
 				case SearchMode.TypeAndMembers:
-					var typeDict2 = new Dictionary<AssemblyLoader, List<IUnresolvedEntity>> ();
+					var typeDict2 = new Dictionary<AssemblyLoader, List<Tuple<IUnresolvedEntity, string>>> ();
 					foreach (var unit in this.definitions) {
-						var typeList = new List<IUnresolvedEntity> ();
+						var typeList = new List<Tuple<IUnresolvedEntity, string>> ();
 						foreach (var type in unit.UnresolvedAssembly.TopLevelTypeDefinitions) {
 							if (worker.CancellationPending)
 								return;
 							if (!type.IsPublic && publicOnly)
 								continue;
-							if (type.FullName.ToUpper ().IndexOf (pattern) >= 0)
-								typeList.Add (type);
+							var parent = type.FullName;
+							if (parent.ToUpper ().IndexOf (pattern, StringComparison.Ordinal) >= 0)
+								typeList.Add (Tuple.Create ((IUnresolvedEntity)type, type.Namespace));
+							
 							foreach (var member in type.Members) {
 								if (worker.CancellationPending)
 									return;
 								if (!member.IsPublic && publicOnly)
 									continue;
 								if (member.Name.ToUpper ().Contains (pattern)) {
-										typeList.Add (member);
+									typeList.Add (Tuple.Create ((IUnresolvedEntity)member, parent));
 								}
 							}
 
@@ -973,13 +989,14 @@ namespace MonoDevelop.AssemblyBrowser
 
 					Gtk.Application.Invoke (delegate {
 						foreach (var kv in typeDict2) {
-							foreach (var type in kv.Value) {
+							foreach (var tuple in kv.Value) {
 								if (worker.CancellationPending)
 									return;
+								var type = tuple.Item1;
 								typeListStore.AppendValues (ImageService.GetIcon (type.GetStockIcon (), Gtk.IconSize.Menu),
 								                        type.Name,
-								                        type.Namespace,
-								                        kv.Key.Assembly.FullName,
+								                        tuple.Item2,
+														kv.Key.Assembly.FullName,
 								                        type);
 							}
 						}

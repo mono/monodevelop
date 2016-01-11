@@ -30,7 +30,7 @@ using UnitTests;
 using System.Threading.Tasks;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using MonoDevelop.Core.ProgressMonitoring;
 using System.Collections.Generic;
 

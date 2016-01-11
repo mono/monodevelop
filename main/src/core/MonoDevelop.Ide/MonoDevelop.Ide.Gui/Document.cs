@@ -54,6 +54,8 @@ using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Components.Extensions;
+using MonoDevelop.Projects.SharedAssetsProjects;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -163,8 +165,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void TypeSystemService_WorkspaceItemLoaded (object sender, EventArgs e)
 		{
-			if (adhocProject == null)
-				analysisDocument = null;
+			analysisDocument = null;
 			EnsureAnalysisDocumentIsOpen ().ContinueWith (delegate {
 				if (analysisDocument != null)
 					StartReparseThread ();
@@ -214,6 +215,11 @@ namespace MonoDevelop.Ide.Gui
 			}*/
 		}
 
+		internal override bool IsAdHocProject {
+			get { return adhocProject != null; }
+		}
+
+
 		public override bool IsCompileableInProject {
 			get {
 				var project = Project;
@@ -237,7 +243,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public Task<Microsoft.CodeAnalysis.Compilation> GetCompilationAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			var project = TypeSystemService.GetCodeAnalysisProject (Project ?? adhocProject); 
+			var project = TypeSystemService.GetCodeAnalysisProject (adhocProject ?? Project); 
 			if (project == null)
 				return new Task<Microsoft.CodeAnalysis.Compilation> (() => null);
 			return project.GetCompilationAsync (cancellationToken);
@@ -377,7 +383,6 @@ namespace MonoDevelop.Ide.Gui
 							FileService.NotifyFileChanged (fileName);
 						}
 						Window.ViewContent.Save (fileName);
-						FileService.NotifyFileChanged (fileName);
 						OnSaved (EventArgs.Empty);
 					}
 				}
@@ -421,7 +426,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 				
 			if (filename == null) {
-				var dlg = new OpenFileDialog (GettextCatalog.GetString ("Save as..."), FileChooserAction.Save) {
+				var dlg = new OpenFileDialog (GettextCatalog.GetString ("Save as..."), MonoDevelop.Components.FileChooserAction.Save) {
 					TransientFor = IdeApp.Workbench.RootWindow,
 					Encoding = encoding,
 					ShowEncodingSelector = (tbuffer != null),
@@ -535,7 +540,6 @@ namespace MonoDevelop.Ide.Gui
 			if (window.ViewContent.Project != null)
 				window.ViewContent.Project.Modified -= HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
-			TypeSystemService.Workspace.WorkspaceChanged -= HandleWorkspaceChanged;
 			MonoDevelopWorkspace.LoadingFinished -= TypeSystemService_WorkspaceItemLoaded;
 
 			window = null;
@@ -675,15 +679,7 @@ namespace MonoDevelop.Ide.Gui
 			if (project != null)
 				project.Modified += HandleProjectModified;
 			InitializeExtensionChain ();
-			TypeSystemService.Workspace.WorkspaceChanged += HandleWorkspaceChanged;
 			ListenToProjectLoad (project);
-		}
-
-		void HandleWorkspaceChanged (object sender, Microsoft.CodeAnalysis.WorkspaceChangeEventArgs e)
-		{
-			if (e.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.DocumentChanged && e.DocumentId == analysisDocument) {
-				OnDocumentParsed (EventArgs.Empty);
-			}
 		}
 
 		void ListenToProjectLoad (Project project)
@@ -720,7 +716,7 @@ namespace MonoDevelop.Ide.Gui
 				TypeSystemService.AddSkippedFile (currentParseFile);
 				var currentParseText = editor.CreateDocumentSnapshot ();
 				CancelOldParsing();
-				var project = Project ?? adhocProject;
+				var project = adhocProject ?? Project;
 
 				var options = new ParseOptions {
 					Project = project,
@@ -763,7 +759,7 @@ namespace MonoDevelop.Ide.Gui
 				analysisDocument = null;
 				return SpecializedTasks.EmptyTask;
 			}
-			if (Project != null && Editor.MimeType == "text/x-csharp") {
+			if (Project != null && Editor.MimeType == "text/x-csharp" && !IsUnreferencedSharedProject(Project)) {
 				RoslynWorkspace = TypeSystemService.GetWorkspace (this.Project.ParentSolution);
 				analysisDocument = TypeSystemService.GetDocumentId (this.Project, this.FileName);
 				if (analysisDocument != null) {
@@ -805,6 +801,12 @@ namespace MonoDevelop.Ide.Gui
 			}
 			return SpecializedTasks.EmptyTask;
 		}
+
+		bool IsUnreferencedSharedProject (Project project)
+		{
+			return project is SharedAssetsProject;
+		}
+
 		object adhocProjectLock = new object();
 
 		void UnloadAdhocProject ()
@@ -855,7 +857,7 @@ namespace MonoDevelop.Ide.Gui
 			string mimeType = editor.MimeType;
 			CancelOldParsing ();
 			var token = parseTokenSource.Token;
-			var project = Project ?? adhocProject;
+			var project = adhocProject ?? Project;
 			var projectFile = project?.GetProjectFile (currentParseFile);
 
 			ThreadPool.QueueUserWorkItem (delegate {
@@ -954,6 +956,13 @@ namespace MonoDevelop.Ide.Gui
 			if (start != null && end != null)
 				return new [] { start[0], end[0] };
 			return null;
+		}
+
+		public override T GetPolicy<T> (IEnumerable<string> types)
+		{	
+			if (adhocProject !=	null)
+				return MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<T> (types);
+			return base.GetPolicy<T> (types);
 		}
 	
 //		public MonoDevelop.Projects.CodeGeneration.CodeGenerator CreateCodeGenerator ()

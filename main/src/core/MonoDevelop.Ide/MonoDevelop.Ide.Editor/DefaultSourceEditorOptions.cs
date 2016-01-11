@@ -80,6 +80,11 @@ namespace MonoDevelop.Ide.Editor
 			PlainEditor = new PlainEditorOptions ();
 		}
 
+		internal void FireChange ()
+		{
+			OnChanged (EventArgs.Empty);
+		}
+
 		class PlainEditorOptions : ITextEditorOptions
 		{
 			#region IDisposable implementation
@@ -393,17 +398,6 @@ namespace MonoDevelop.Ide.Editor
 
 		#endregion
 
-		ConfigurationProperty<bool> useViModes = ConfigurationProperty.Create ("UseViModes", false);
-		public bool UseViModes {
-			get {
-				return useViModes;
-			}
-			set {
-				if (useViModes.Set (value))
-					OnChanged (EventArgs.Empty);
-			}
-		}
-
 		ConfigurationProperty<bool> onTheFlyFormatting = ConfigurationProperty.Create ("OnTheFlyFormatting", true);
 		public bool OnTheFlyFormatting {
 			get {
@@ -442,9 +436,6 @@ namespace MonoDevelop.Ide.Editor
 
 		public WordFindStrategy WordFindStrategy {
 			get {
-				if (useViModes) {
-					return WordFindStrategy.Vim;
-				}
 				switch (WordNavigationStyle) {
 				case WordNavigationStyle.Windows:
 					return WordFindStrategy.SharpDevelop;

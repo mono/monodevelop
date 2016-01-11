@@ -176,8 +176,8 @@ namespace MonoDevelop.AspNet.Razor
 				var closedDocument = currentDocument;
 				guiDoc.Closed += (sender, args) =>
 				{
-					var doc = sender as MonoDevelop.Ide.Gui.Document;
-					if (doc.Editor != null && doc.Editor != null) {
+					var doc = (Ide.Gui.Document)sender;
+					if (doc.Editor != null) {
 						lock (this) {
 							openDocuments = new List<OpenRazorDocument> (openDocuments.Where (d => d.FileName != doc.Editor.FileName));
 						}

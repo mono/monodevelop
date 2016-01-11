@@ -49,11 +49,7 @@ namespace MonoDevelop.CSharp.Completion
 			get {
 				if (displayText == null) {
 					var model = ext.ParsedDocument.GetAst<SemanticModel> ();
-					try {
-						displayText = Ambience.EscapeText (base.Symbol.ToMinimalDisplayString (model, ext.Editor.CaretOffset, Ambience.LabelFormat)) + " {...}";
-					} catch (ArgumentOutOfRangeException) {
-						displayText = Ambience.EscapeText (base.Symbol.ToMinimalDisplayString (model, 0, Ambience.LabelFormat)) + " {...}";
-					}
+					displayText = Ambience.EscapeText (SafeMinimalDisplayString (base.Symbol, model, ext.Editor.CaretOffset, Ambience.LabelFormat)) + " {...}";
 
 					if (!afterKeyword)
 						displayText = "partial " + displayText;
@@ -67,8 +63,8 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			var model = ext.ParsedDocument.GetAst<SemanticModel> ();
 
-			var result = Ambience.EscapeText (base.Symbol.ToMinimalDisplayString (model, ext.Editor.CaretOffset, Ambience.LabelFormat)) + " {...}";
-			var idx = result.IndexOf (Symbol.Name);
+			var result = Ambience.EscapeText (SafeMinimalDisplayString(base.Symbol, model, ext.Editor.CaretOffset, Ambience.LabelFormat)) + " {...}";
+			var idx = result.IndexOf (Symbol.Name, StringComparison.Ordinal);
 			if (idx >= 0) {
 				result = 
 					result.Substring(0, idx) +

@@ -49,12 +49,12 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 
 		public PathMode PathMode {
-			set { DispatchService.GuiDispatch (delegate { outputPad.PathMode = value; }); }
+			set { Runtime.RunInMainThread (delegate { outputPad.PathMode = value; }); }
 		}
 
 		public void ReportResult (SearchResult result)
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				try {
 					outputPad.ReportResult (result);
 				} catch (Exception ex) {
@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public void ReportResults (IEnumerable<SearchResult> results)
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				try {
 					outputPad.ReportResults (results);
 				} catch (Exception ex) {
@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public void ReportStatus (string resultMessage)
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				outputPad.ReportStatus (resultMessage);
 			});
 		}
@@ -85,7 +85,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		protected override void OnWriteLog (string text)
 		{
 			if (outputPad == null) throw GetDisposedException ();
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				outputPad.WriteText (text);
 			});
 		}

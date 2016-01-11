@@ -86,13 +86,18 @@ namespace MonoDevelop.SourceEditor
 
 		void UpdateSemanticHighlighting ()
 		{
-			if (Document.SyntaxMode is SemanticHighlightingSyntaxMode)
-				return;
+			var oldSemanticHighighting = Document.SyntaxMode as SemanticHighlightingSyntaxMode;
+
 			if (semanticHighlighting == null) {
-				Document.MimeType = Document.MimeType;
-				return;
+				if (oldSemanticHighighting != null)
+					Document.MimeType = Document.MimeType;
+			} else {
+				if (oldSemanticHighighting == null) {
+					Document.SyntaxMode = new SemanticHighlightingSyntaxMode (this, Document.SyntaxMode, semanticHighlighting);
+				} else {
+					oldSemanticHighighting.UpdateSemanticHighlighting (semanticHighlighting);
+				}
 			}
-			Document.SyntaxMode = new SemanticHighlightingSyntaxMode (this, Document.SyntaxMode, semanticHighlighting);
 		}
 
 		class LastEditorExtension : TextEditorExtension
@@ -188,22 +193,12 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateEditMode ()
 		{
-			if (MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.UseViModes) {
-				if (TestNewViMode) {
-					if (!(CurrentMode is NewIdeViMode))
-					CurrentMode = new NewIdeViMode (this);
-				} else {
-					if (!(CurrentMode is IdeViMode))
-						CurrentMode = new IdeViMode (this);
-				}
-			} else {
-		//		if (!(CurrentMode is SimpleEditMode)){
-					SimpleEditMode simpleMode = new SimpleEditMode ();
-					simpleMode.KeyBindings [Mono.TextEditor.EditMode.GetKeyCode (Gdk.Key.Tab)] = new TabAction (this).Action;
-					simpleMode.KeyBindings [Mono.TextEditor.EditMode.GetKeyCode (Gdk.Key.BackSpace)] = EditActions.AdvancedBackspace;
-					CurrentMode = simpleMode;
-		//		}
-			}
+	//		if (!(CurrentMode is SimpleEditMode)){
+				SimpleEditMode simpleMode = new SimpleEditMode ();
+				simpleMode.KeyBindings [Mono.TextEditor.EditMode.GetKeyCode (Gdk.Key.Tab)] = new TabAction (this).Action;
+				simpleMode.KeyBindings [Mono.TextEditor.EditMode.GetKeyCode (Gdk.Key.BackSpace)] = EditActions.AdvancedBackspace;
+				CurrentMode = simpleMode;
+	//		}
 		}
 
 		void UnregisterAdjustments ()

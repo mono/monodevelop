@@ -39,6 +39,7 @@ using System.Xml;
 using Mono.Addins;
 using MonoDevelop.Ide.Extensions;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -384,6 +385,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			StringBuilder result = new StringBuilder (); 
 			bool wasWhiteSpace = true;
 			bool appendSpace = false;
+			string listType = "bullet";
+			int listItem = 1;
 			//ITypeResolveContext ctx = member.Compilation.TypeResolveContext;
 			while (xml.Read ()) {
 				switch (xml.NodeType) {
@@ -397,6 +400,56 @@ namespace MonoDevelop.Ide.TypeSystem
 						result.AppendLine (ParseBody (member, xml, xml.Name, options));
 						wasWhiteSpace = true;
 						break;
+					case "list":
+						listType = xml ["type"] ?? listType;
+						listItem = 1;
+						result.AppendLine ();
+						result.AppendLine ();
+						break;
+					case "term": {
+						string inner = "<root>" + xml.ReadInnerXml () + "</root>";
+						result.Append ("<i>" + ParseBody (member, new XmlTextReader (new StringReader (inner)), "root", options) + " </i>");
+						break;
+					}
+					case "description": {
+						string inner = "<root>" + xml.ReadInnerXml () + "</root>";
+						result.Append (ParseBody (member, new XmlTextReader (new StringReader (inner)), "root", options));
+						break;
+					}
+					case "listheader":  {
+					string inner = "<root>" + xml.ReadInnerXml () + "</root>";
+						string prefix;
+						switch (listType) {
+						case "number":
+							prefix = "     ";
+							break;
+						case "table":
+							prefix = "    ";
+							break;
+						default: // bullet;
+							prefix = "    ";
+							break;
+						}
+						result.AppendLine (prefix + ParseBody (member, new XmlTextReader (new StringReader (inner)), "root", options));
+						break;
+					}
+					case "item": {
+						string inner = "<root>" + xml.ReadInnerXml () + "</root>";
+							string prefix;
+							switch (listType) {
+							case "number":
+								prefix = string.Format ("  {0:##}. ", listItem++);
+								break;
+							case "table":
+								prefix = "    ";
+								break;
+							default: // bullet;
+								prefix = "  \u2022 ";
+								break;
+							}
+							result.AppendLine (prefix + ParseBody (member, new XmlTextReader (new StringReader (inner)), "root", options));
+						break;
+					}
 					case "see":
 						if (!wasWhiteSpace) {
 							result.Append (' ');

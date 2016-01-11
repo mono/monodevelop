@@ -231,7 +231,7 @@ namespace MonoDevelop.CSharp.Parser
 			{
 			}
 
-			public SemanticTagVisitor (CancellationToken cancellationToken)
+			public SemanticTagVisitor (CancellationToken cancellationToken) : base (SyntaxWalkerDepth.Trivia)
 			{
 				this.cancellationToken = cancellationToken;
 			}
@@ -248,9 +248,9 @@ namespace MonoDevelop.CSharp.Parser
 				if (trivia.IsKind (SyntaxKind.SingleLineCommentTrivia) || 
 					trivia.IsKind (SyntaxKind.MultiLineCommentTrivia) || 
 					trivia.IsKind (SyntaxKind.SingleLineDocumentationCommentTrivia)) {
+					var trimmedContent = trivia.ToString ().TrimStart ('/', ' ', '*');
 					foreach (string tag in tagComments) {
-						var trimmedContent = trivia.ToString ().TrimStart ('/', ' ', '*');
-						if (!trimmedContent.StartsWith (tag))
+						if (!trimmedContent.StartsWith (tag, StringComparison.Ordinal))
 							continue;
 						var loc = trivia.GetLocation ().GetLineSpan ();
 						Tags.Add (new Tag (tag, trimmedContent, new DocumentRegion (loc.StartLinePosition, loc.EndLinePosition)));
@@ -350,7 +350,7 @@ namespace MonoDevelop.CSharp.Parser
 				base.VisitCompilationUnit (node);
 			}
 
-			void AddFolding (SyntaxToken openBrace, SyntaxToken closeBrace)
+			void AddFolding (SyntaxToken openBrace, SyntaxToken closeBrace, FoldType type)
 			{
 				openBrace = openBrace.GetPreviousToken (false, false, true, true);
 
@@ -359,7 +359,7 @@ namespace MonoDevelop.CSharp.Parser
 					var last = closeBrace.GetLocation ().GetLineSpan ();
 
 					if (first.EndLinePosition.Line != last.EndLinePosition.Line)
-						Foldings.Add (new FoldingRegion (new DocumentRegion (first.EndLinePosition, last.EndLinePosition), FoldType.Undefined));
+						Foldings.Add (new FoldingRegion (new DocumentRegion (first.EndLinePosition, last.EndLinePosition), type));
 				} catch (ArgumentOutOfRangeException) {}
 			}
 
@@ -385,38 +385,38 @@ namespace MonoDevelop.CSharp.Parser
 			public override void VisitNamespaceDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.NamespaceDeclarationSyntax node)
 			{
 				AddUsings (node);
-				AddFolding (node.OpenBraceToken, node.CloseBraceToken);
+				AddFolding (node.OpenBraceToken, node.CloseBraceToken, FoldType.Undefined);
 				base.VisitNamespaceDeclaration (node);
 			}
 
 			public override void VisitClassDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax node)
 			{
-				AddFolding (node.OpenBraceToken, node.CloseBraceToken);
+				AddFolding (node.OpenBraceToken, node.CloseBraceToken, FoldType.Type);
 				base.VisitClassDeclaration (node);
 			}
 
 			public override void VisitStructDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.StructDeclarationSyntax node)
 			{
-				AddFolding (node.OpenBraceToken, node.CloseBraceToken);
+				AddFolding (node.OpenBraceToken, node.CloseBraceToken, FoldType.Type);
 				base.VisitStructDeclaration (node);
 			}
 
 			public override void VisitInterfaceDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.InterfaceDeclarationSyntax node)
 			{
-				AddFolding (node.OpenBraceToken, node.CloseBraceToken);
+				AddFolding (node.OpenBraceToken, node.CloseBraceToken, FoldType.Type);
 				base.VisitInterfaceDeclaration (node);
 			}
 
 			public override void VisitEnumDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.EnumDeclarationSyntax node)
 			{
-				AddFolding (node.OpenBraceToken, node.CloseBraceToken);
+				AddFolding (node.OpenBraceToken, node.CloseBraceToken, FoldType.Type);
 				base.VisitEnumDeclaration (node);
 			}
 
 			public override void VisitBlock (Microsoft.CodeAnalysis.CSharp.Syntax.BlockSyntax node)
 			{
 				cancellationToken.ThrowIfCancellationRequested ();
-				AddFolding (node.OpenBraceToken, node.CloseBraceToken);
+				AddFolding (node.OpenBraceToken, node.CloseBraceToken, node.Parent is MemberDeclarationSyntax ? FoldType.Member : FoldType.Undefined);
 				base.VisitBlock (node);
 			}
 		}

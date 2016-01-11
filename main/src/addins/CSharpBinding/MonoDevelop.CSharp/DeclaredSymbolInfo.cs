@@ -402,6 +402,8 @@ namespace MonoDevelop.CSharp
 
 	struct DeclaredSymbolInfo
 	{
+		internal DocumentId DocumentId;
+
 		public string FilePath { get; }
 		public string Name { get; }
 //		public string ContainerDisplayName { get; }
@@ -466,21 +468,31 @@ namespace MonoDevelop.CSharp
 				return type.Name;
 			}
 		}
+		Document GetDocument (CancellationToken token)
+		{
+			var doc = type.DocumentId;
+			if (doc == null) {
+				var docId = TypeSystemService.GetDocuments (type.FilePath).FirstOrDefault ();
+				if (docId == null)
+					return null;
+				return TypeSystemService.GetCodeAnalysisDocument (docId, token);
+			}
+			return TypeSystemService.GetCodeAnalysisDocument (type.DocumentId, token);
+		}
 
 		public override async Task<TooltipInformation> GetTooltipInformation (CancellationToken token)
 		{
-			var docId = TypeSystemService.GetDocuments (type.FilePath).FirstOrDefault ();
-			if (docId == null)
+			var doc = GetDocument (token);
+			if (doc == null) {
 				return new TooltipInformation ();
-
-			var symbol = await type.GetSymbolAsync (TypeSystemService.GetCodeAnalysisDocument (docId, token), token);
+			}
+			var symbol = await type.GetSymbolAsync (doc, token);
 			return await Ambience.GetTooltip (token, symbol);
 		}
 
 		public override string Description {
 			get {
 				string loc;
-				MonoDevelop.Projects.Project project;
 				//				if (type.TryGetSourceProject (out project)) {
 				//					loc = GettextCatalog.GetString ("project {0}", project.Name);
 				//				} else {
@@ -524,6 +536,23 @@ namespace MonoDevelop.CSharp
 			this.useFullName = useFullName;
 			this.type = type;
 		}
-	}
 
+		public override bool CanActivate {
+			get {
+				var doc = GetDocument (default (CancellationToken));
+				return doc != null;
+			}
+		}
+
+		public override async void Activate ()
+		{
+			var token = default (CancellationToken);
+			var doc = GetDocument (token);
+			if (doc != null) {
+				var symbol = await type.GetSymbolAsync (doc, token);
+				var project = TypeSystemService.GetMonoProject (doc.Id);
+				IdeApp.ProjectOperations.JumpToDeclaration (symbol, project);
+			}
+		}
+	}
 }

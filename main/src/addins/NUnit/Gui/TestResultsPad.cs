@@ -517,19 +517,42 @@ namespace MonoDevelop.NUnit
 				Gtk.TreeIter iter;
 				if (!failuresTreeView.Selection.GetSelected (out foo, out iter))
 					return;
-				
+
 				int type = (int)failuresStore.GetValue (iter, 5);
 
 				var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
 				switch (type) {
-				case ErrorMessage:
+					case ErrorMessage:
 					clipboard.Text = last.Message;
 					break;
-				case StackTrace:
+					case StackTrace:
 					clipboard.Text = last.StackTrace;
 					break;
-				default:
+					default:
 					clipboard.Text = last.Message + Environment.NewLine + "Stack trace:" + Environment.NewLine + last.StackTrace;
+					break;
+				}
+			} else {
+				if (error == null)
+					return;
+				var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+
+				Gtk.TreeModel foo;
+				Gtk.TreeIter iter;
+				if (!failuresTreeView.Selection.GetSelected (out foo, out iter))
+					return;
+
+				int type = (int)failuresStore.GetValue (iter, 5);
+
+				switch (type) {
+				case ErrorMessage:
+					clipboard.Text = error.Message;
+					break;
+				case StackTrace:
+					clipboard.Text = error.StackTrace;
+					break;
+				default:
+					clipboard.Text = error.Message + Environment.NewLine + "Stack trace:" + Environment.NewLine + error.StackTrace;
 					break;
 				}
 			}
@@ -560,7 +583,7 @@ namespace MonoDevelop.NUnit
 					return;
 				}
 			}
-			info.Enabled = false;
+			info.Enabled = error != null;
 		}
 
 		[CommandHandler (TestCommands.SelectTestInTree)]
@@ -811,43 +834,43 @@ namespace MonoDevelop.NUnit
 		}
 		public void InitializeTestRun (UnitTest test)
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				pad.InitializeTestRun (test);
 			});
 		}
 		public void FinishTestRun ()
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				pad.FinishTestRun ();
 			});
 		}
 		public void Cancel ()
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				pad.Cancel ();
 			});
 		}
 		public void BeginTest (UnitTest test)
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				monitor.BeginTest (test);
 			});
 		}
 		public void EndTest (UnitTest test, UnitTestResult result)
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				monitor.EndTest (test, result);
 			});
 		}
 		public void ReportRuntimeError (string message, Exception exception)
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				monitor.ReportRuntimeError (message, exception);
 			});
 		}
 		public void WriteGlobalLog (string message)
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				monitor.WriteGlobalLog (message);
 			});
 		}

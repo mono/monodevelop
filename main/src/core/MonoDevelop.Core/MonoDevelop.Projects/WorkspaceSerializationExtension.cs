@@ -29,7 +29,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using System.Xml;
 using MonoDevelop.Core.Serialization;
-using MonoDevelop.Projects.Formats.MD1;
+using MonoDevelop.Projects.MD1;
 
 namespace MonoDevelop.Projects
 {
@@ -47,8 +47,10 @@ namespace MonoDevelop.Projects
 
 		public override Task<WorkspaceItem> LoadWorkspaceItem (ProgressMonitor monitor, string fileName)
 		{
-			return Task<WorkspaceItem>.Factory.StartNew (delegate {
-				return ReadWorkspaceItemFile (fileName, monitor);
+			return Task.Run (async () => {
+				var workspaceItem = ReadWorkspaceItemFile (fileName, monitor);
+				await workspaceItem.LoadUserProperties ();
+				return workspaceItem;
 			});
 		}
 

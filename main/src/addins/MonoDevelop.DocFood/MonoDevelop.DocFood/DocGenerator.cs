@@ -877,6 +877,13 @@ namespace MonoDevelop.DocFood
 		
 		void SplitWords (object obj, string name)
 		{
+			if (obj is ITypeSymbol){
+				var type = (ITypeSymbol)obj;
+				if (type.TypeKind == TypeKind.Interface && name.Length > 1 && name[0] == 'I' && char.IsUpper (name[1])) {
+					name = name.Substring (1);
+				}
+			}
+
 			List<string> words = new List<string> (SeparateWords (name).Split (' '));
 			wordCount = words.Count;
 			for (int i = 0; i < words.Count; i++) {

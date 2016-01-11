@@ -272,9 +272,13 @@ namespace MonoDevelop.Components.MainToolbar
 		public override bool IsValid {
 			get {
 				if (ci == null) {
-					DispatchService.GuiSyncDispatch (delegate {
+					//GetCommandInfo throws exception if GetActionCommand returns null
+					if (CommandManager.ToCommandId (IdeApp.CommandService.GetActionCommand (command.Id)) == null) {
+						return false;
+					}
+					Runtime.RunInMainThread (delegate {
 						ci = IdeApp.CommandService.GetCommandInfo (command.Id, new CommandTargetRoute (MainToolbar.LastCommandTarget));
-					});
+					}).Wait ();
 				}
 				return ci.Enabled && ci.Visible;
 			}

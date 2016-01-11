@@ -152,11 +152,8 @@ namespace MonoDevelop.Xml.Parser
 
 			element.End (location);
 			if (context.BuildTree) {
-				XContainer container = element.IsClosed? 
-					  (XContainer) context.Nodes.Peek ()
-					: (XContainer) context.Nodes.Peek (1);
-										
-				container.AddChildNode (element);
+				var parent = (XContainer)context.Nodes.Peek (element.IsClosed ? 0 : 1);
+				parent.AddChildNode (element);
 			}
 		}
 	}

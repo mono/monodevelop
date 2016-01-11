@@ -55,11 +55,12 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override string GetDisplayDescription (bool isSelected)
 		{
-			var description = "<small>(cast to " + targetType.ToMinimalDisplayString (semanticModel, nodeToCast.SpanStart, Ambience.LabelFormat) + ")</small>";
+			var description = "<small>(cast to " + SafeMinimalDisplayString (targetType, semanticModel, nodeToCast.SpanStart, Ambience.LabelFormat) + ")</small>";
 			if (isSelected)
 				return description;
 			return "<span foreground=\"darkgray\">" + description + "</span>";
 		}
+
 
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
@@ -68,7 +69,7 @@ namespace MonoDevelop.CSharp.Completion
 			using (var undo = editor.OpenUndoGroup ()) {
 				editor.ReplaceText (offset, editor.CaretOffset - offset, member.Name);
 				var span = nodeToCast.Span;
-				var type = targetType.ToMinimalDisplayString (semanticModel, nodeToCast.SpanStart, Ambience.LabelFormat);
+				var type = SafeMinimalDisplayString (targetType, semanticModel, nodeToCast.SpanStart, Ambience.LabelFormat);
 				editor.ReplaceText (span.Start, span.Length, "((" + type + ")" + nodeToCast + ")");
 			}
 		}

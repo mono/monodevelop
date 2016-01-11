@@ -30,7 +30,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public class PackageManagementTask<TResult> : ITask<TResult>
 	{

@@ -48,7 +48,6 @@
     <Compile Include="Mono.TextEditor.Tests\UndoRedoTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\FoldingTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\SyntaxHighlightingTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\ViTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\VirtualSpacesTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\InsertionModeTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\TextBreakerTests.cs" />

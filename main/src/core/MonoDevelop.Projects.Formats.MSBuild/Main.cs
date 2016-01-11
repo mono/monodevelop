@@ -33,7 +33,7 @@ using System.Runtime.Remoting.Channels.Tcp;
 using System.Threading;
 using System.Diagnostics;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	class MainClass
 	{

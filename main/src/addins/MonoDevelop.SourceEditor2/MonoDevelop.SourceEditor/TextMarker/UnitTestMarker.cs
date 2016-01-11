@@ -90,7 +90,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (!(margin is ActionMargin))
 				return;
-			host.PopupContextMenu (unitTest, (int)args.X, (int)args.Y);
+			host.PopupContextMenu (unitTest, (int)(args.X + margin.XOffset), (int)args.Y);
 			editor.TextArea.ResetMouseState (); 
 		}
 

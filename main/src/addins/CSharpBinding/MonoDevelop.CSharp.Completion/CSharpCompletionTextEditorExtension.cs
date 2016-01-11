@@ -106,11 +106,7 @@ namespace MonoDevelop.CSharp.Completion
 			get {
 				if (policy == null) {
 					IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
-					if (DocumentContext.Project != null && DocumentContext.Project.Policies != null) {
-						policy = base.DocumentContext.Project.Policies.Get<CSharpFormattingPolicy> (types);
-					} else {
-						policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
-					}
+					policy = DocumentContext.GetPolicy<CSharpFormattingPolicy> (types);
 				}
 				return policy;
 			}
@@ -331,6 +327,8 @@ namespace MonoDevelop.CSharp.Completion
 				//}
 				return InternalHandleCodeCompletion (completionContext, triggerCharacter, true, triggerWordLength, token).ContinueWith ( t => {
 					var result = (CompletionDataList)t.Result;
+					if (result == null)
+						return null;
 					result.AutoCompleteUniqueMatch = false;
 					result.AutoCompleteEmptyMatch = false;
 					return (ICompletionDataList)result;
@@ -427,7 +425,7 @@ namespace MonoDevelop.CSharp.Completion
 		Task<ICompletionDataList> InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, int triggerWordLength, CancellationToken token, bool forceSymbolCompletion = false)
 		{
 			if (Editor.EditMode != MonoDevelop.Ide.Editor.EditMode.Edit)
-				return null;
+				return Task.FromResult ((ICompletionDataList)null);
 //			var data = Editor;
 //			if (data.CurrentMode is TextLinkEditMode) {
 //				if (((TextLinkEditMode)data.CurrentMode).TextLinkMode == TextLinkMode.EditIdentifier)
@@ -439,7 +437,7 @@ namespace MonoDevelop.CSharp.Completion
 			list.TriggerWordLength = triggerWordLength;
 			var analysisDocument = DocumentContext.AnalysisDocument;
 			if (analysisDocument == null)
-				return null;
+				return Task.FromResult ((ICompletionDataList)null);
 			return Task.Run (async delegate {
 				try {
 					
@@ -717,13 +715,14 @@ namespace MonoDevelop.CSharp.Completion
 //			}
 //			return result;
 //		}
-
-		public override int GetCurrentParameterIndex (int startOffset)
+		public override async Task<int> GetCurrentParameterIndex (int startOffset, CancellationToken token)
 		{
 			var analysisDocument = DocumentContext.AnalysisDocument;
-			if (analysisDocument == null)
+			var caretOffset = Editor.CaretOffset;
+			if (analysisDocument == null || startOffset > caretOffset)
 				return -1;
- 			var result = ICSharpCode.NRefactory6.CSharp.ParameterUtil.GetCurrentParameterIndex (analysisDocument, startOffset, Editor.CaretOffset).Result;
+			var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, default(CancellationToken)).ConfigureAwait (false);
+			var result = ParameterUtil.GetCurrentParameterIndex (partialDoc, startOffset, caretOffset).Result;
 			return result.ParameterIndex;
 		}
 

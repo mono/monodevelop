@@ -35,7 +35,7 @@ using System.Text;
 using Microsoft.Build.Framework;
 using Microsoft.Build.BuildEngine;
 
-namespace MonoDevelop.Projects.Formats.MSBuild {
+namespace MonoDevelop.Projects.MSBuild {
 	public class MDConsoleLogger : ILogger {
 	
 		string		parameters;

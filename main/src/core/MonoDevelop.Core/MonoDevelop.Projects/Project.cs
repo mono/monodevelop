@@ -37,7 +37,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 using System.Threading.Tasks;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using System.Xml;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Core.Assemblies;
@@ -206,7 +206,7 @@ namespace MonoDevelop.Projects
 		public MSBuildProject MSBuildProject {
 			get { 
 				if (msbuildUpdatePending && !saving)
-					WriteProject (new ProgressMonitor ());
+					WriteProjectAsync (new ProgressMonitor ()).Wait ();
 				return sourceProject;
 			}
 		}
@@ -279,6 +279,170 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
+		/// Runs the generator target and sends file change notifications if any files were modified, returns the build result
+		/// </summary>
+		public Task<TargetEvaluationResult> PerformGeneratorAsync (ConfigurationSelector configuration, string generatorTarget)
+		{
+			return BindTask<TargetEvaluationResult> (async cancelToken => {
+				var cancelSource = new CancellationTokenSource ();
+				cancelToken.Register (() => cancelSource.Cancel ());
+
+				using (var monitor = new ProgressMonitor (cancelSource)) {
+					return await this.PerformGeneratorAsync (monitor, configuration, generatorTarget);
+				}
+			});
+		}
+
+		/// <summary>
+		/// Runs the generator target and sends file change notifications if any files were modified, returns the build result
+		/// </summary>
+		public async Task<TargetEvaluationResult> PerformGeneratorAsync (ProgressMonitor monitor, ConfigurationSelector configuration, string generatorTarget)
+		{
+			var fileInfo = await GetProjectFileTimestamps (monitor, configuration);
+			var evalResult = await this.RunTarget (monitor, generatorTarget, configuration);
+			SendFileChangeNotifications (monitor, configuration, fileInfo);
+
+			return evalResult;
+		}
+
+		/// <summary>
+		/// Returns a list containing FileInfo for all the source files in the project
+		/// </summary>
+		async Task<List<FileInfo>> GetProjectFileTimestamps (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			var infoList = new List<FileInfo> ();
+			var projectFiles = await this.GetSourceFilesAsync (monitor, configuration);
+
+			foreach (var projectFile in projectFiles) {
+				var info = new FileInfo (projectFile.FilePath);
+				infoList.Add (info);
+			}
+
+			return infoList;
+		}
+
+		/// <summary>
+		/// Sends a file change notification via FileService for any file that has changed since the timestamps in beforeFileInfo
+		/// </summary>
+		void SendFileChangeNotifications (ProgressMonitor monitor, ConfigurationSelector configuration, List<FileInfo> beforeFileInfo)
+		{
+			var changedFiles = new List<FileInfo> ();
+
+			foreach (var file in beforeFileInfo) {
+				var info = new FileInfo (file.FullName);
+
+				if (file.Exists && info.Exists) {
+					if (file.LastWriteTime != info.LastWriteTime) {
+						changedFiles.Add (info);
+					}
+				} else if (info.Exists) {
+					changedFiles.Add (info);
+				} else if (file.Exists) {
+					// not sure if this should or could happen, it doesn't really make much sense
+					FileService.NotifyFileRemoved (file.FullName);
+				}
+			}
+
+			FileService.NotifyFilesChanged (changedFiles.Select (cf => new FilePath (cf.FullName)));
+		}
+
+		/// <summary>
+		/// Gets the source files that are included in the project, including any that are added by `CoreCompileDependsOn`
+		/// </summary>
+		public Task<ProjectFile[]> GetSourceFilesAsync (ConfigurationSelector configuration)
+		{
+			if (sourceProject == null)
+				return Task.FromResult (new ProjectFile [0]);
+
+			return BindTask<ProjectFile []> (async cancelToken => {
+				var cancelSource = new CancellationTokenSource ();
+				cancelToken.Register (() => cancelSource.Cancel ());
+
+				using (var monitor = new ProgressMonitor (cancelSource)) {
+					return await GetSourceFilesAsync (monitor, configuration);
+				}
+			});
+		}
+
+		/// <summary>
+		/// Gets the source files that are included in the project, including any that are added by `CoreCompileDependsOn`
+		/// </summary>
+		public async Task<ProjectFile[]> GetSourceFilesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			// pre-load the results with the current list of files in the project
+			var results = new List<ProjectFile> ();
+
+			var buildActions = GetBuildActions ().Where (a => a != "Folder" && a != "--").ToArray ();
+
+			var config = configuration != null ? GetConfiguration (configuration) : null;
+			var pri = await CreateProjectInstaceForConfigurationAsync (config?.Name, config?.Platform, false);
+			foreach (var it in pri.EvaluatedItems.Where (i => buildActions.Contains (i.Name)))
+				results.Add (CreateProjectFile (it));
+
+			// add in any compile items that we discover from running the CoreCompile dependencies
+			var evaluatedCompileItems = await GetCompileItemsFromCoreCompileDependenciesAsync (monitor, configuration);
+			var addedItems = evaluatedCompileItems.Where (i => results.All (pi => pi.FilePath != i.FilePath)).ToList ();
+			results.AddRange (addedItems);
+
+			return results.ToArray ();
+		}
+
+		bool evaluatedCoreCompileDependencies;
+		readonly TaskCompletionSource<ProjectFile[]> evaluatedCompileItemsTask = new TaskCompletionSource<ProjectFile[]> ();
+
+		/// <summary>
+		/// Gets the list of files that are included as Compile items from the evaluation of the CoreCompile dependecy targets
+		/// </summary>
+		async Task<ProjectFile[]> GetCompileItemsFromCoreCompileDependenciesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			List<ProjectFile> result = null;
+			lock (evaluatedCompileItemsTask) {
+				if (!evaluatedCoreCompileDependencies) {
+					result = new List<ProjectFile> ();
+					evaluatedCoreCompileDependencies = true;
+				}
+			}
+
+			if (result != null) {
+				var coreCompileDependsOn = sourceProject.EvaluatedProperties.GetValue<string> ("CoreCompileDependsOn");
+
+				if (string.IsNullOrEmpty (coreCompileDependsOn)) {
+					evaluatedCompileItemsTask.SetResult (new ProjectFile [0]);
+					return evaluatedCompileItemsTask.Task.Result;
+				}
+
+				var dependsList = coreCompileDependsOn.Split (new [] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+				foreach (var dependTarget in dependsList) {
+					try {
+						// evaluate the Compile targets
+						var ctx = new TargetEvaluationContext ();
+						ctx.ItemsToEvaluate.Add ("Compile");
+
+						var evalResult = await this.RunTarget (monitor, dependTarget, configuration, ctx);
+						if (evalResult != null && !evalResult.BuildResult.HasErrors) {
+							var evalItems = evalResult
+								.Items
+								.Select (i => CreateProjectFile (i))
+								.ToList ();
+
+							result.AddRange (evalItems);
+						}
+					} catch (Exception ex) {
+						LoggingService.LogInternalError (string.Format ("Error running target {0}", dependTarget), ex);
+					}
+				}
+				evaluatedCompileItemsTask.SetResult (result.ToArray ());
+			}
+
+			return await evaluatedCompileItemsTask.Task;
+		}
+
+		ProjectFile CreateProjectFile (IMSBuildItemEvaluated item)
+		{
+			return new ProjectFile (MSBuildProjectService.FromMSBuildPath (sourceProject.BaseDirectory, item.Include), item.Name) { Project = this };
+		}
+
+		/// <summary>
 		/// Called just after the MSBuild project is loaded but before it is evaluated.
 		/// </summary>
 		/// <param name="project">The project</param>
@@ -291,19 +455,16 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		internal protected override Task OnSave (ProgressMonitor monitor)
+		internal protected override async Task OnSave (ProgressMonitor monitor)
 		{
 			SetFastBuildCheckDirty ();
 			modifiedInMemory = false;
 
-			return Task.Run (delegate {
-				WriteProject (monitor);
+			await WriteProjectAsync (monitor);
 
-				// Doesn't save the file to disk if the content did not change
-				if (sourceProject.Save (FileName) && projectBuilder != null) {
-					projectBuilder.Refresh ().Wait ();
-				}
-			});
+			// Doesn't save the file to disk if the content did not change
+			if (await sourceProject.SaveAsync (FileName) && projectBuilder != null)
+				await projectBuilder.Refresh ();
 		}
 
 		protected override IEnumerable<WorkspaceObjectExtension> CreateDefaultExtensions ()
@@ -853,7 +1014,7 @@ namespace MonoDevelop.Projects
 			else {
 				CleanupProjectBuilder ();
 				if (this is DotNetProject) {
-					var handler = new MonoDevelop.Projects.Formats.MD1.MD1DotNetProjectHandler ((DotNetProject)this);
+					var handler = new MonoDevelop.Projects.MD1.MD1DotNetProjectHandler ((DotNetProject)this);
 					return new TargetEvaluationResult (await handler.RunTarget (monitor, target, configuration));
 				}
 			}
@@ -942,7 +1103,7 @@ namespace MonoDevelop.Projects
 				}
 				if (modifiedInMemory) {
 					modifiedInMemory = false;
-					WriteProject (new ProgressMonitor ());
+					await WriteProjectAsync (new ProgressMonitor ());
 					await projectBuilder.RefreshWithContent (sourceProject.SaveToString ());
 				}
 			}
@@ -960,7 +1121,7 @@ namespace MonoDevelop.Projects
 
 			var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0, true);
 			if (modifiedInMemory) {
-				WriteProject (new ProgressMonitor ());
+				await WriteProjectAsync (new ProgressMonitor ());
 				await pb.RefreshWithContent (sourceProject.SaveToString ());
 			}
 			return pb;
@@ -1435,10 +1596,7 @@ namespace MonoDevelop.Projects
 			}
 			
 			if (UsingMSBuildEngine (configuration)) {
-				var result = await RunMSBuildTarget (monitor, "Clean", configuration, context);
-				if (!result.BuildResult.Failed)
-					SetFastBuildCheckClean (configuration);
-				return result;			
+				return await RunMSBuildTarget (monitor, "Clean", configuration, context);
 			}
 			
 			monitor.Log.WriteLine ("Removing output files...");
@@ -1752,7 +1910,18 @@ namespace MonoDevelop.Projects
 			NeedsReload = false;
 		}
 
-		internal void WriteProject (ProgressMonitor monitor)
+		AsyncCriticalSection writeProjectLock = new AsyncCriticalSection ();
+
+		internal async Task WriteProjectAsync (ProgressMonitor monitor)
+		{
+			using (await writeProjectLock.EnterAsync ().ConfigureAwait (false)) {
+				await Task.Run (() => {
+					WriteProject (monitor);
+				}).ConfigureAwait (false);
+			}
+		}
+
+		void WriteProject (ProgressMonitor monitor)
 		{
 			if (saving) {
 				LoggingService.LogError ("WriteProject called while the project is already being written");
@@ -2036,21 +2205,48 @@ namespace MonoDevelop.Projects
 
 			var pi = CreateProjectInstaceForConfiguration (conf, platform);
 
+			// Set the evaluated value for each property in the property group.
+			// When saving the project, if the property is assigned the same evaluated value,
+			// the change won't be saved
+
+			foreach (var p in cgrp.Group.GetProperties ()) {
+				var ep = pi.EvaluatedProperties.GetProperty (p.Name);
+				if (ep != null)
+					p.InitEvaluatedValue (ep.Value);
+			}
+
 			config.Platform = platform;
 			projectExtension.OnReadConfiguration (monitor, config, pi.EvaluatedProperties);
 			Configurations.Add (config);
 		}
 
-		MSBuildProjectInstance CreateProjectInstaceForConfiguration (string conf, string platform)
+		MSBuildProjectInstance CreateProjectInstaceForConfiguration (string conf, string platform, bool onlyEvaluateProperties = true)
+		{
+			var pi = PrepareProjectInstaceForConfiguration (conf, platform, onlyEvaluateProperties);
+			pi.Evaluate ();
+			return pi;
+		}
+
+		async Task<MSBuildProjectInstance> CreateProjectInstaceForConfigurationAsync (string conf, string platform, bool onlyEvaluateProperties = true)
+		{
+			var pi = PrepareProjectInstaceForConfiguration (conf, platform, onlyEvaluateProperties);
+			await pi.EvaluateAsync ();
+			return pi;
+		}
+
+		MSBuildProjectInstance PrepareProjectInstaceForConfiguration (string conf, string platform, bool onlyEvaluateProperties)
 		{
 			var pi = sourceProject.CreateInstance ();
-			pi.SetGlobalProperty ("Configuration", conf);
-			if (platform == string.Empty)
-				pi.SetGlobalProperty ("Platform", "AnyCPU");
-			else
-				pi.SetGlobalProperty ("Platform", platform);
-			pi.OnlyEvaluateProperties = true;
-			pi.Evaluate ();
+			pi.SetGlobalProperty ("BuildingInsideVisualStudio", "true");
+			if (conf != null)
+				pi.SetGlobalProperty ("Configuration", conf);
+			if (platform != null) {
+				if (platform == string.Empty)
+					pi.SetGlobalProperty ("Platform", "AnyCPU");
+				else
+					pi.SetGlobalProperty ("Platform", platform);
+			}
+			pi.OnlyEvaluateProperties = onlyEvaluateProperties;
 			return pi;
 		}
 

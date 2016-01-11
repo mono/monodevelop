@@ -45,6 +45,7 @@ using MonoDevelop.Core.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.CSharp
 {
@@ -180,11 +181,13 @@ namespace MonoDevelop.CSharp
 
 		void HandleTypeSegmentTreeUpdated (object sender, EventArgs e)
 		{
-			CancelUpdatePathTimeout ();
-			updatePathTimeoutId = GLib.Timeout.Add (updatePathTimeout, delegate {
-				Update ();
-				updatePathTimeoutId = 0;
-				return false;
+			Runtime.RunInMainThread (() => {
+				CancelUpdatePathTimeout ();
+				updatePathTimeoutId = GLib.Timeout.Add (updatePathTimeout, delegate {
+					Update ();
+					updatePathTimeoutId = 0;
+					return false;
+				});
 			});
 		}
 
@@ -266,8 +269,10 @@ namespace MonoDevelop.CSharp
 		void UntrackStartupProjectChanges ()
 		{
 			if (ownerProjects != null) {
-				foreach (var sol in ownerProjects.Select (p => p.ParentSolution).Distinct ())
-					sol.StartupItemChanged -= HandleStartupProjectChanged;
+				foreach (var sol in ownerProjects.Select (p => p.ParentSolution).Distinct ()) {
+					if (sol != null)
+						sol.StartupItemChanged -= HandleStartupProjectChanged;
+				}
 			}
 		}
 
@@ -680,19 +685,22 @@ namespace MonoDevelop.CSharp
 			Task.Run(async delegate {
 				var unit = model.SyntaxTree;
 				SyntaxNode root;
-				SyntaxNode token;
+				SyntaxNode node;
 				try {
 					root = await unit.GetRootAsync(cancellationToken).ConfigureAwait(false);
 					if (root.FullSpan.Length <= caretOffset) {
 						return;
 					}
-					token = root.FindNode(TextSpan.FromBounds(caretOffset, caretOffset));
+					node = root.FindNode(TextSpan.FromBounds(caretOffset, caretOffset));
+					if (node.SpanStart != caretOffset)
+						node = root.SyntaxTree.FindTokenOnLeftOfPosition(caretOffset, cancellationToken).Parent;
 				} catch (Exception ex ) {
 					Console.WriteLine (ex);
 					return;
 				}
-				var curMember = token.AncestorsAndSelf ().FirstOrDefault (m => m is MemberDeclarationSyntax && !(m is NamespaceDeclarationSyntax));
-				var curType = token.AncestorsAndSelf ().FirstOrDefault (IsType);
+
+				var curMember = node != null ? node.AncestorsAndSelf ().FirstOrDefault (m => m is VariableDeclaratorSyntax || (m is MemberDeclarationSyntax && !(m is NamespaceDeclarationSyntax))) : null;
+				var curType = node != null ? node.AncestorsAndSelf ().FirstOrDefault (IsType) : null;
 
 				var curProject = ownerProjects != null && ownerProjects.Count > 1 ? DocumentContext.Project : null;
 

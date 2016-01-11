@@ -69,10 +69,9 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return IsException (type.BaseType);
 		}
 
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, CancellationToken cancellationToken)
+		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
-			var ctx = await completionContext.GetSyntaxContextAsync (engine.Workspace, cancellationToken).ConfigureAwait (false);
-			var semanticModel = await completionContext.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
+			var semanticModel = ctx.SemanticModel;
 			var result = new List<CompletionData> ();
 			if (info.TriggerCharacter == ' ') {
 				var newExpression = ObjectCreationContextHandler.GetObjectCreationNewExpression (ctx.SyntaxTree, completionContext.Position, cancellationToken);
@@ -88,8 +87,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			bool isInUsingDirective = parent != null && parent.Parent != null && parent.Parent.IsKind (SyntaxKind.UsingDirective) && !parent.IsKind (SyntaxKind.QualifiedName);
 			var isInQuery = ctx.CSharpSyntaxContext.IsInQuery;
 			var completionDataLookup = new Dictionary<Tuple<string, SymbolKind>, ISymbolCompletionData> ();
-			bool isInCatchTypeExpression = parent.IsKind (SyntaxKind.CatchDeclaration) ||
-			                                     parent.IsKind (SyntaxKind.QualifiedName) && parent != null && parent.Parent.IsKind (SyntaxKind.CatchDeclaration);
+			bool isInCatchTypeExpression = parent != null && parent.IsKind (SyntaxKind.CatchDeclaration) || 
+			                               parent.IsKind (SyntaxKind.QualifiedName) && parent.Parent != null && parent.Parent.IsKind (SyntaxKind.CatchDeclaration);
 			Action<ISymbolCompletionData> addData = d => {
 				var key = Tuple.Create (d.DisplayText, d.Symbol.Kind);
 				ISymbolCompletionData data;

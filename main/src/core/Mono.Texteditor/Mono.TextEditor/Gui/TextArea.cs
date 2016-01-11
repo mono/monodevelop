@@ -42,6 +42,7 @@ using Mono.TextEditor.Theatrics;
 using Gdk;
 using Gtk;
 using GLib;
+using System.Threading.Tasks;
 
 namespace Mono.TextEditor
 {
@@ -1775,6 +1776,8 @@ namespace Mono.TextEditor
 		
 		internal void SetAdjustments ()
 		{
+			if (textEditorData == null)
+				return;
 			SetAdjustments (Allocation);
 		}
 		
@@ -1963,7 +1966,7 @@ namespace Mono.TextEditor
 		
 		public Mono.TextEditor.Highlighting.ColorScheme ColorStyle {
 			get {
-				return this.textEditorData.ColorStyle;
+				return this.textEditorData?.ColorStyle;
 			}
 		}
 		
@@ -2787,35 +2790,39 @@ namespace Mono.TextEditor
 
 			// If a tooltip is already scheduled, there is no need to create a new timer.
 			if (tipShowTimeoutId == 0)
-				tipShowTimeoutId = GLib.Timeout.Add (TooltipTimeout, TooltipTimer);
+				tipShowTimeoutId = GLib.Timeout.Add (TooltipTimeout, () => { TooltipTimer (); return false; });
 		}
 		
-		bool TooltipTimer ()
+		async void TooltipTimer ()
 		{
 			// This timer can't be reused, so reset the var now
 			tipShowTimeoutId = 0;
-			
 			// Cancelled?
 			if (nextTipOffset == -1)
-				return false;
+				return;
 			
 			int remainingMs = (int) (nextTipScheduledTime - DateTime.Now).TotalMilliseconds;
 			if (remainingMs > 50) {
 				// Still some significant time left. Re-schedule the timer
-				tipShowTimeoutId = GLib.Timeout.Add ((uint) remainingMs, TooltipTimer);
-				return false;
+				tipShowTimeoutId = GLib.Timeout.Add ((uint) remainingMs, () => { TooltipTimer (); return false; });
+				return;
 			}
-			
+
+			var token = tooltipCancellationSource.Token;
 			// Find a provider
 			TooltipProvider provider = null;
 			TooltipItem item = null;
 			
 			foreach (TooltipProvider tp in textEditorData.tooltipProviders) {
 				try {
-					item = tp.GetItem (editor, nextTipOffset);
+					item = await tp.GetItem (editor, nextTipOffset, token);
+				} catch (OperationCanceledException) {
 				} catch (Exception e) {
 					System.Console.WriteLine ("Exception in tooltip provider " + tp + " GetItem:");
 					System.Console.WriteLine (e);
+				}
+				if (token.IsCancellationRequested) {
+					return;
 				}
 				if (item != null) {
 					provider = tp;
@@ -2826,7 +2833,7 @@ namespace Mono.TextEditor
 				// Tip already being shown for this item?
 				if (tipWindow != null && tipItem != null && tipItem.Equals (item)) {
 					CancelScheduledHide ();
-					return false;
+					return;
 				}
 				
 				tipX = nextTipX;
@@ -2843,10 +2850,10 @@ namespace Mono.TextEditor
 					Console.WriteLine (e);
 				}
 				if (tw == tipWindow)
-					return false;
+					return;
 				HideTooltip ();
 				if (tw == null)
-					return false;
+					return;
 				
 				CancelScheduledShow ();
 
@@ -2856,7 +2863,7 @@ namespace Mono.TextEditor
 				tipShowTimeoutId = 0;
 			} else
 				HideTooltip ();
-			return false;
+			return;
 		}
 		
 		public void HideTooltip (bool checkMouseOver = true)
@@ -2898,9 +2905,12 @@ namespace Mono.TextEditor
 				tipHideTimeoutId = 0;
 			}
 		}
-		
+
+		CancellationTokenSource tooltipCancellationSource = new CancellationTokenSource ();
 		void CancelScheduledShow ()
 		{
+			tooltipCancellationSource.Cancel ();
+			tooltipCancellationSource = new CancellationTokenSource ();
 			// Don't remove the timeout handler since it may be reused
 			nextTipOffset = -1;
 		}

@@ -528,9 +528,13 @@ namespace MonoDevelop.Components
 			paste.Clicked += PasteClicked;
 			context_menu.Items.Add (paste);
 
+			context_menu.Items.Add (new SeparatorContextMenuItem ());
+
 			var delete = new ContextMenuItem { Label = GettextCatalog.GetString ("Delete"), Context = entry };
 			delete.Clicked += DeleteClicked;
 			context_menu.Items.Add (delete);
+
+			context_menu.Items.Add (new SeparatorContextMenuItem ());
 
 			var select_all = new ContextMenuItem { Label = GettextCatalog.GetString ("Select All"), Context = entry };
 			select_all.Clicked += SelectAllClicked;

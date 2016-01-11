@@ -26,14 +26,15 @@
 
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Core;
+using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.AspNet.Projects
 {
 	class AspNetProjectTemplateWizardPage : WizardPage
 	{
-		readonly string title = GettextCatalog.GetString ("Web Project Options");
+		readonly string title = GettextCatalog.GetString ("Configure your Web project");
 		readonly AspNetProjectTemplateWizard wizard;
-		AspNetProjectTemplateWizardPageWidget view;
+		GtkAspNetProjectTemplateWizardPageWidget view;
 
 		bool includeTestProject;
 
@@ -74,7 +75,7 @@ namespace MonoDevelop.AspNet.Projects
 		}
 
 		public bool AspNetMvcEnabled {
-			get { return wizard.Parameters.GetBoolean (aspNetMvc); }
+			get { return wizard.Parameters.GetBoolValue (aspNetMvc); }
 			set {
 				wizard.Parameters [aspNetMvc] = value.ToString ();
 				UpdateCanMoveNext ();
@@ -86,7 +87,7 @@ namespace MonoDevelop.AspNet.Projects
 		}
 
 		public bool AspNetWebFormsEnabled {
-			get { return wizard.Parameters.GetBoolean (aspNetWebForms); }
+			get { return wizard.Parameters.GetBoolValue (aspNetWebForms); }
 			set {
 				wizard.Parameters [aspNetWebForms] = value.ToString ();
 				UpdateCanMoveNext ();
@@ -98,7 +99,7 @@ namespace MonoDevelop.AspNet.Projects
 		}
 
 		public bool AspNetWebApiEnabled {
-			get { return wizard.Parameters.GetBoolean (aspNetWebApi); }
+			get { return wizard.Parameters.GetBoolValue (aspNetWebApi); }
 			set {
 				wizard.Parameters [aspNetWebApi] = value.ToString ();
 				UpdateCanMoveNext ();
@@ -120,7 +121,15 @@ namespace MonoDevelop.AspNet.Projects
 
 		protected override object CreateNativeWidget ()
 		{
-			return view ?? (view = new AspNetProjectTemplateWizardPageWidget (this));
+			return view ?? (view = new GtkAspNetProjectTemplateWizardPageWidget (this));
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			if (view != null) {
+				view.Dispose ();
+				view = null;
+			}
 		}
 	}
 }

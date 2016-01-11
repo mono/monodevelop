@@ -26,7 +26,8 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
+using System.Threading.Tasks;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using NuGet;
@@ -76,9 +77,9 @@ namespace MonoDevelop.PackageManagement
 			BackgroundDispatch (() => RunInternal ());
 		}
 
-		protected virtual void BackgroundDispatch (MessageHandler handler)
+		protected virtual void BackgroundDispatch (Action action)
 		{
-			DispatchService.BackgroundDispatch (() => RunInternal ());
+			PackageManagementBackgroundDispatcher.Dispatch (action);
 		}
 
 		void RunInternal ()

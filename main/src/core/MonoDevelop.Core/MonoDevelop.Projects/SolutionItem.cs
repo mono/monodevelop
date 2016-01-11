@@ -47,7 +47,7 @@ using Mono.Addins;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Core.Collections;
 using System.Threading.Tasks;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using System.Collections.Immutable;
 
 namespace MonoDevelop.Projects
@@ -466,6 +466,11 @@ namespace MonoDevelop.Projects
 		
 		bool BaseItemFilesChanged {
 			get { return fileStatusTracker.ItemFilesChanged; }
+		}
+
+		bool IBuildTarget.CanBuild (ConfigurationSelector configuration)
+		{
+			return SupportsBuild ();
 		}
 
 		public bool SupportsBuild ()

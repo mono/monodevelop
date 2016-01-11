@@ -10,7 +10,7 @@
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id = "MonoDevelop.AssemblyBrowser.ShowAssemblyBrowser"
 		         defaultHandler = "MonoDevelop.AssemblyBrowser.AssemblyBrowserHandler"
-		         _label = "_Assembly browser" />
+		         _label = "_Assembly Browser" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">

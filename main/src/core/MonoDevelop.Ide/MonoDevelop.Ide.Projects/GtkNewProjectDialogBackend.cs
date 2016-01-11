@@ -202,6 +202,13 @@ namespace MonoDevelop.Ide.Projects
 				popupMenu.Destroy ();
 				popupMenu = null;
 			}
+
+			if (!controller.IsFirstPage)
+				templatesHBox.Destroy ();
+
+			if (!controller.IsLastPage)
+				projectConfigurationWidget.Destroy ();
+
 			base.Destroy ();
 		}
 
@@ -364,6 +371,8 @@ namespace MonoDevelop.Ide.Projects
 				var currentCategory = templateCategoriesListStore.GetValue (iter, TemplateCategoryColumn) as TemplateCategory;
 				if (currentCategory == category) {
 					templateCategoriesTreeView.Selection.SelectIter (iter);
+					TreePath path = templateCategoriesListStore.GetPath (iter);
+					templateCategoriesTreeView.ScrollToCell (path, null, true, 1, 0);
 					break;
 				}
 			}

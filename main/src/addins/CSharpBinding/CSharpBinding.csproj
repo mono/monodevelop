@@ -150,7 +150,7 @@
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
     <Reference Include="System.Composition.AttributedModel">
-      <HintPath>..\..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.AttributedModel.dll</HintPath>
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Composition.AttributedModel.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Reflection.Metadata">
@@ -783,6 +783,16 @@
     <Compile Include="MonoDevelop.CSharp.CodeRefactorings\TypeGuessing.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeRefactorings\Resources.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpNavigationTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\EncapsulateField\AbstractEncapsulateFieldRefactoringProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\EncapsulateField\AbstractEncapsulateFieldService.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\EncapsulateField\EncapsulateFieldCodeAction.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\EncapsulateField\EncapsulateFieldResult.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\EncapsulateField\EncapsulateFieldCodeRefactoringProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\EncapsulateField\AbstractEncapsulateFieldRefactoringProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\EncapsulateField\CSharpEncapsulateFieldService.cs" />
+    <Compile Include="Util\ConflictResolver.cs" />
+    <Compile Include="Util\AccessibilityUtilities.cs" />
+    <Compile Include="Util\Glyph.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -791,10 +801,6 @@
     <None Include="MonoDevelop.CSharp.Completion\ArrayTypeParameterDataProvider.cs" />
     <None Include="MonoDevelop.CSharp.Completion\AbstractParameterDataProvider.cs" />
     <None Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumCodeRefactoringProvider.cs" />
-    <None Include="MonoDevelop.CSharp.Features\EncapsulateField\AbstractEncapsulateFieldRefactoringProvider.cs" />
-    <None Include="MonoDevelop.CSharp.Features\EncapsulateField\AbstractEncapsulateFieldService.cs" />
-    <None Include="MonoDevelop.CSharp.Features\EncapsulateField\EncapsulateFieldCodeAction.cs" />
-    <None Include="MonoDevelop.CSharp.Features\EncapsulateField\EncapsulateFieldResult.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -839,5 +845,6 @@
     <Folder Include="MonoDevelop.CSharp.CodeFixes\RemoveUnnecessaryCast\" />
     <Folder Include="MonoDevelop.CSharp.Diagnostics\MonoTODO\" />
     <Folder Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\EncapsulateField\" />
   </ItemGroup>
 </Project>

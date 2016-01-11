@@ -126,6 +126,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			categories.Add (new FileSearchCategory (this));
 			categories.Add (new CommandSearchCategory (this));
+
 			categories.Add (new SearchInSolutionSearchCategory ());
 			foreach (var cat in AddinManager.GetExtensionObjects<SearchCategory> ("/MonoDevelop/Ide/SearchCategories")) {
 				categories.Add (cat);
@@ -245,8 +246,9 @@ namespace MonoDevelop.Components.MainToolbar
 				if (i >= maxItems || !result.IsValid)
 					return;
 				searchResults = searchResults.Insert (i, result);
-				parent.UpdateSearchCollectors ();
-
+				Runtime.RunInMainThread (delegate {
+					parent.UpdateSearchCollectors ();
+				});
 			}
 
 			#endregion
@@ -297,6 +299,8 @@ namespace MonoDevelop.Components.MainToolbar
 			var token = src.Token;
 			foreach (var _cat in categories) {
 				var cat = _cat;
+				if (!string.IsNullOrEmpty (pattern.Tag) && !cat.IsValidTag (pattern.Tag))
+					continue;
 				var col = new SearchResultCollector (this, _cat);
 				collectors.Add (col);
 				col.Task = cat.GetResults (col, pattern, token);
@@ -305,20 +309,22 @@ namespace MonoDevelop.Components.MainToolbar
 			Task.WhenAll (collectors.Select (c => c.Task)).ContinueWith (t => {
 				if (t.IsCanceled)
 					return;
-				if (t.IsFaulted) {
-					LoggingService.LogError ("Error getting search results", t.Exception);
-				} else {
-					Application.Invoke (delegate {
-						RemoveTimeout ();
-						if (token.IsCancellationRequested)
-							return;
-						foreach (var col in collectors) {
+				Application.Invoke (delegate {
+					RemoveTimeout ();
+					if (token.IsCancellationRequested)
+						return;
+					foreach (var col in collectors) {
+						if (col.Task.IsCanceled) {
+							continue;
+						} else if (col.Task.IsFaulted) {
+							LoggingService.LogError ($"Error getting search results for {col.Category}", col.Task.Exception);
+						} else {
 							ShowResult (col.Category, col.Results);
 						}
-						isInSearch = false;
-						AnimatedResize ();
-					});
-				}
+					}
+					isInSearch = false;
+					AnimatedResize ();
+				});
 			}, token);
 		}
 
@@ -344,6 +350,7 @@ namespace MonoDevelop.Components.MainToolbar
 			{
 				results.Clear ();
 				results.AddRange (incompleteResults);
+				List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> failedResults = null;
 				topItem = null;
 
 				for (int i = 0; i < results.Count; i++) {
@@ -355,10 +362,16 @@ namespace MonoDevelop.Components.MainToolbar
 							topItem = new ItemIdentifier(tuple.Item1, tuple.Item2, 0);
 					} catch (Exception e) {
 						LoggingService.LogError ("Error while showing result " + i, e);
+						if (failedResults == null)
+							failedResults = new List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> ();
+						failedResults.Add (results [i]);
 						continue;
 					}
 				}
 				selectedItem = topItem;
+
+				if (failedResults != null)
+					failedResults.ForEach (failedResult => results.Remove (failedResult));
 
 				ShowTooltip ();
 

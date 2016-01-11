@@ -666,19 +666,7 @@ namespace MonoDevelop.Xml.Editor
 		#endregion
 		
 		#region Command handlers
-		
-		[CommandUpdateHandler (MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment)]
-		protected void ToggleCodeCommentCommandUpdate (CommandInfo info)
-		{
-			info.Enabled = false;
-		}
-		
-		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment)]
-		public void ToggleCodeCommentCommand ()
-		{
-			//FIXME: implement
-		}
-		
+
 		[CommandHandler (XmlCommands.CreateSchema)]
 		public void CreateSchemaCommand ()
 		{

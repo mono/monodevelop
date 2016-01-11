@@ -76,7 +76,7 @@ namespace MonoDevelop.Components.Commands
 			set { disabledVisible = value; }
 		}
 
-		public CommandEntryDisplayType DispayType {
+		public CommandEntryDisplayType DisplayType {
 			get;
 			set;
 		}

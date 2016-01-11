@@ -120,7 +120,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		void OnTokenSelectionChanged (object sender, EventArgs args)
 		{
 			TreeSelection selection = sender as TreeSelection;
-			if (sender != null)
+			if (selection != null)
 			{
 				TreeIter iter;
 				TreeModel model = (TreeModel)tokensStore;

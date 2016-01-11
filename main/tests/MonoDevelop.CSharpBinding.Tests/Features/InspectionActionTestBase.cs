@@ -83,7 +83,7 @@ namespace ICSharpCode.NRefactory6
 			string assemblyName = "")
 		{
 			if (compOptions == null) {
-				compOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, "a.dll");
+				compOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, false, "a.dll");
 			}
 
 			return CSharpCompilation.Create(
@@ -114,25 +114,14 @@ namespace ICSharpCode.NRefactory6
 		{
 			readonly static HostServices services;
 
-			static string[] mefHostServices = new [] {
-				"Microsoft.CodeAnalysis.Workspaces",
-				"Microsoft.CodeAnalysis.CSharp.Workspaces",
-				//			"Microsoft.CodeAnalysis.VisualBasic.Workspaces"
-			};
-
 			static TestWorkspace ()
 			{
 				List<Assembly> assemblies = new List<Assembly> ();
-				foreach (var asmName in mefHostServices) {
-					try {
-						var asm = Assembly.Load (asmName);
-						if (asm == null)
-							continue;
-						assemblies.Add (asm);
-					} catch (Exception) {
-					}
-				}
+
 				assemblies.Add (typeof(TypeSystemService).Assembly);
+				assemblies.Add (typeof(Microsoft.CodeAnalysis.AdhocWorkspace).Assembly);
+				assemblies.Add (typeof(Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions).Assembly);
+
 				services = Microsoft.CodeAnalysis.Host.Mef.MefHostServices.Create (assemblies);
 			}
 

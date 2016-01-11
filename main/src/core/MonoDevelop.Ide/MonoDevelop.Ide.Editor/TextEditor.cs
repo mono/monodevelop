@@ -132,6 +132,7 @@ namespace MonoDevelop.Ide.Editor
 				return ReadOnlyTextDocument [offset];
 			}
 			set {
+				Runtime.AssertMainThread ();
 				ReadWriteTextDocument [offset] = value;
 			}
 		}
@@ -156,6 +157,7 @@ namespace MonoDevelop.Ide.Editor
 				return textEditorImpl.Options;
 			}
 			set {
+				Runtime.AssertMainThread ();
 				textEditorImpl.Options = value;
 				OnOptionsChanged (EventArgs.Empty);
 			}
@@ -181,6 +183,7 @@ namespace MonoDevelop.Ide.Editor
 				return textEditorImpl.CaretLocation;
 			}
 			set {
+				Runtime.AssertMainThread ();
 				textEditorImpl.CaretLocation = value;
 			}
 		}
@@ -217,6 +220,7 @@ namespace MonoDevelop.Ide.Editor
 				return textEditorImpl.CaretOffset;
 			}
 			set {
+				Runtime.AssertMainThread ();
 				textEditorImpl.CaretOffset = value;
 			}
 		}
@@ -226,6 +230,7 @@ namespace MonoDevelop.Ide.Editor
 				return ReadOnlyTextDocument.IsReadOnly;
 			}
 			set {
+				Runtime.AssertMainThread ();
 				ReadWriteTextDocument.IsReadOnly = value;
 			}
 		}
@@ -247,6 +252,7 @@ namespace MonoDevelop.Ide.Editor
 				return textEditorImpl.SelectionRange;
 			}
 			set {
+				Runtime.AssertMainThread ();
 				textEditorImpl.SelectionRange = value;
 			}
 		}
@@ -256,6 +262,7 @@ namespace MonoDevelop.Ide.Editor
 				return textEditorImpl.SelectionRegion;
 			}
 			set {
+				Runtime.AssertMainThread ();
 				textEditorImpl.SelectionRegion = value;
 			}
 		}
@@ -265,6 +272,7 @@ namespace MonoDevelop.Ide.Editor
 				return textEditorImpl.SelectionAnchorOffset;
 			}
 			set {
+				Runtime.AssertMainThread ();
 				textEditorImpl.SelectionAnchorOffset = value;
 			}
 		}
@@ -274,6 +282,7 @@ namespace MonoDevelop.Ide.Editor
 				return textEditorImpl.SelectionLeadOffset;
 			}
 			set {
+				Runtime.AssertMainThread ();
 				textEditorImpl.SelectionLeadOffset = value;
 			}
 		}
@@ -283,6 +292,7 @@ namespace MonoDevelop.Ide.Editor
 				return IsSomethingSelected ? ReadOnlyTextDocument.GetTextAt (SelectionRange) : null;
 			}
 			set {
+				Runtime.AssertMainThread ();
 				var selection = SelectionRange;
 				ReplaceText (selection, value);
 				SelectionRange = new TextSegment (selection.Offset, value.Length);
@@ -310,6 +320,7 @@ namespace MonoDevelop.Ide.Editor
 				return ReadOnlyTextDocument.MimeType;
 			}
 			set {
+				Runtime.AssertMainThread ();
 				ReadWriteTextDocument.MimeType = value;
 			}
 		}
@@ -324,6 +335,7 @@ namespace MonoDevelop.Ide.Editor
 				return ReadOnlyTextDocument.Text;
 			}
 			set {
+				Runtime.AssertMainThread ();
 				ReadWriteTextDocument.Text = value;
 			}
 		}
@@ -345,6 +357,7 @@ namespace MonoDevelop.Ide.Editor
 				return ReadOnlyTextDocument.UseBOM;
 			}
 			set {
+				Runtime.AssertMainThread ();
 				ReadWriteTextDocument.UseBOM = value;
 			}
 		}
@@ -354,6 +367,7 @@ namespace MonoDevelop.Ide.Editor
 				return ReadOnlyTextDocument.Encoding;
 			}
 			set {
+				Runtime.AssertMainThread ();
 				ReadWriteTextDocument.Encoding = value;
 			}
 		}
@@ -373,6 +387,7 @@ namespace MonoDevelop.Ide.Editor
 				return ReadOnlyTextDocument.FileName;
 			}
 			set {
+				Runtime.AssertMainThread ();
 				ReadWriteTextDocument.FileName = value;
 			}
 		}
@@ -397,6 +412,7 @@ namespace MonoDevelop.Ide.Editor
 				return textEditorImpl.ZoomLevel;
 			}
 			set {
+				Runtime.AssertMainThread ();
 				textEditorImpl.ZoomLevel = value;
 			}
 		}
@@ -412,21 +428,25 @@ namespace MonoDevelop.Ide.Editor
 
 		public IDisposable OpenUndoGroup ()
 		{
+			Runtime.AssertMainThread ();
 			return ReadWriteTextDocument.OpenUndoGroup ();
 		}
 
 		public void SetSelection (int anchorOffset, int leadOffset)
 		{
+			Runtime.AssertMainThread ();
 			textEditorImpl.SetSelection (anchorOffset, leadOffset);
 		}
 
 		public void SetSelection (DocumentLocation anchor, DocumentLocation lead)
 		{
+			Runtime.AssertMainThread ();
 			SetSelection (LocationToOffset (anchor), LocationToOffset (lead));
 		}
 
 		public void SetCaretLocation (DocumentLocation location, bool usePulseAnimation = false, bool centerCaret = true)
 		{
+			Runtime.AssertMainThread ();
 			CaretLocation = location;
 			if (centerCaret) {
 				CenterTo (CaretLocation);
@@ -439,6 +459,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public void SetCaretLocation (int line, int col, bool usePulseAnimation = false, bool centerCaret = true)
 		{
+			Runtime.AssertMainThread ();
 			CaretLocation = new DocumentLocation (line, col);
 			if (centerCaret) {
 				CenterTo (CaretLocation);
@@ -451,26 +472,31 @@ namespace MonoDevelop.Ide.Editor
 
 		public void ClearSelection ()
 		{
+			Runtime.AssertMainThread ();
 			textEditorImpl.ClearSelection ();
 		}
 
 		public void CenterToCaret ()
 		{
+			Runtime.AssertMainThread ();
 			textEditorImpl.CenterToCaret ();
 		}
 
 		public void StartCaretPulseAnimation ()
 		{
+			Runtime.AssertMainThread ();
 			textEditorImpl.StartCaretPulseAnimation ();
 		}
 
 		public int EnsureCaretIsNotVirtual ()
 		{
+			Runtime.AssertMainThread ();
 			return textEditorImpl.EnsureCaretIsNotVirtual ();
 		}
 
 		public void FixVirtualIndentation ()
 		{
+			Runtime.AssertMainThread ();
 			textEditorImpl.FixVirtualIndentation ();
 		}
 
@@ -495,6 +521,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (insertionModeOptions == null)
 				throw new ArgumentNullException (nameof (insertionModeOptions));
+			Runtime.AssertMainThread ();
 			textEditorImpl.StartInsertionMode (insertionModeOptions);
 		}
 
@@ -502,11 +529,13 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (textLinkModeOptions == null)
 				throw new ArgumentNullException (nameof (textLinkModeOptions));
+			Runtime.AssertMainThread ();
 			textEditorImpl.StartTextLinkMode (textLinkModeOptions);
 		}
 
 		public void InsertAtCaret (string text)
 		{
+			Runtime.AssertMainThread ();
 			InsertText (CaretOffset, text);
 		}
 
@@ -548,16 +577,19 @@ namespace MonoDevelop.Ide.Editor
 
 		public void InsertText (int offset, string text)
 		{
+			Runtime.AssertMainThread ();
 			ReadWriteTextDocument.InsertText (offset, text);
 		}
 
 		public void InsertText (int offset, ITextSource text)
 		{
+			Runtime.AssertMainThread ();
 			ReadWriteTextDocument.InsertText (offset, text);
 		}
 
 		public void RemoveText (int offset, int count)
 		{
+			Runtime.AssertMainThread ();
 			RemoveText (new TextSegment (offset, count));
 		}
 
@@ -565,16 +597,19 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (segment == null)
 				throw new ArgumentNullException (nameof (segment));
+			Runtime.AssertMainThread ();
 			ReadWriteTextDocument.RemoveText (segment);
 		}
 
 		public void ReplaceText (int offset, int count, string value)
 		{
+			Runtime.AssertMainThread ();
 			ReadWriteTextDocument.ReplaceText (offset, count, value);
 		}
 
 		public void ReplaceText (int offset, int count, ITextSource value)
 		{
+			Runtime.AssertMainThread ();
 			ReadWriteTextDocument.ReplaceText (offset, count, value);
 		}
 
@@ -582,6 +617,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (segment == null)
 				throw new ArgumentNullException (nameof (segment));
+			Runtime.AssertMainThread ();
 			ReadWriteTextDocument.ReplaceText (segment.Offset, segment.Length, value);
 		}
 
@@ -589,6 +625,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (segment == null)
 				throw new ArgumentNullException (nameof (segment));
+			Runtime.AssertMainThread ();
 			ReadWriteTextDocument.ReplaceText (segment.Offset, segment.Length, value);
 		}
 
@@ -613,6 +650,7 @@ namespace MonoDevelop.Ide.Editor
 				throw new ArgumentNullException (nameof (line));
 			if (lineMarker == null)
 				throw new ArgumentNullException (nameof (lineMarker));
+			Runtime.AssertMainThread ();
 			textEditorImpl.AddMarker (line, lineMarker);
 		}
 
@@ -620,6 +658,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (lineMarker == null)
 				throw new ArgumentNullException (nameof (lineMarker));
+			Runtime.AssertMainThread ();
 			AddMarker (GetLine (lineNumber), lineMarker);
 		}
 
@@ -627,6 +666,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (lineMarker == null)
 				throw new ArgumentNullException (nameof (lineMarker));
+			Runtime.AssertMainThread ();
 			textEditorImpl.RemoveMarker (lineMarker);
 		}
 
@@ -644,6 +684,17 @@ namespace MonoDevelop.Ide.Editor
 			return textEditorImpl.GetTextSegmentMarkersAt (segment);
 		}
 
+		public IEnumerable<ITextSegmentMarker> GetTextSegmentMarkersAt (int offset, int length)
+		{
+			if (offset < 0 || offset >= Length)
+				throw new ArgumentOutOfRangeException (nameof (offset), "needs to be 0 <= offset < Length=" + this.Length);
+
+			if (offset + length < 0 || offset  + length > Length)
+				throw new ArgumentOutOfRangeException (nameof (length), "needs to be 0 <= offset + length (" + length + ") < Length=" + this.Length);
+			
+			return textEditorImpl.GetTextSegmentMarkersAt (new TextSegment (offset, length));
+		}
+
 		public IEnumerable<ITextSegmentMarker> GetTextSegmentMarkersAt (int offset)
 		{
 			return textEditorImpl.GetTextSegmentMarkersAt (offset);
@@ -653,6 +704,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (marker == null)
 				throw new ArgumentNullException (nameof (marker));
+			Runtime.AssertMainThread ();
 			textEditorImpl.AddMarker (marker);
 		}
 
@@ -660,6 +712,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (marker == null)
 				throw new ArgumentNullException (nameof (marker));
+			Runtime.AssertMainThread ();
 			return textEditorImpl.RemoveMarker (marker);
 		}
 
@@ -667,6 +720,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (foldings == null)
 				throw new ArgumentNullException (nameof (foldings));
+			Runtime.AssertMainThread ();
 			textEditorImpl.SetFoldings (foldings);
 		}
 
@@ -693,11 +747,15 @@ namespace MonoDevelop.Ide.Editor
 		///  it doesn't require creating a String object.</remarks>
 		public char GetCharAt (int offset)
 		{
+			if (offset < 0 || offset >= Length)
+				throw new ArgumentOutOfRangeException (nameof (offset), "offset needs to be >= 0 && < " + Length + ", was :" + offset);
 			return ReadOnlyTextDocument.GetCharAt (offset);
 		}
 
 		public string GetTextAt (int offset, int length)
 		{
+			if (offset < 0 || offset >= Length)
+				throw new ArgumentOutOfRangeException (nameof (offset), "offset needs to be >= 0 && < " + Length + ", was :" + offset);
 			return ReadOnlyTextDocument.GetTextAt (offset, length);
 		}
 
@@ -790,39 +848,46 @@ namespace MonoDevelop.Ide.Editor
 
 		public void ScrollTo (int offset)
 		{
+			Runtime.AssertMainThread ();
 			textEditorImpl.ScrollTo (offset);
 		}
 
 		public void ScrollTo (DocumentLocation loc)
 		{
+			Runtime.AssertMainThread ();
 			ScrollTo (LocationToOffset (loc));
 		}
 
 		public void CenterTo (int offset)
 		{
+			Runtime.AssertMainThread ();
 			textEditorImpl.CenterTo (offset);
 		}
 
 		public void CenterTo (DocumentLocation loc)
 		{
+			Runtime.AssertMainThread ();
 			CenterTo (LocationToOffset (loc));
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public void SetIndentationTracker (IndentationTracker indentationTracker)
 		{
+			Runtime.AssertMainThread ();
 			textEditorImpl.SetIndentationTracker (indentationTracker);
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public void SetSelectionSurroundingProvider (SelectionSurroundingProvider surroundingProvider)
 		{
+			Runtime.AssertMainThread ();
 			textEditorImpl.SetSelectionSurroundingProvider (surroundingProvider);
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public void SetTextPasteHandler (TextPasteHandler textPasteHandler)
 		{
+			Runtime.AssertMainThread ();
 			textEditorImpl.SetTextPasteHandler (textPasteHandler);
 		}
 
@@ -839,6 +904,7 @@ namespace MonoDevelop.Ide.Editor
 		/// </summary>
 		public void AddSkipChar (int offset, char ch)
 		{
+			Runtime.AssertMainThread ();
 			textEditorImpl.AddSkipChar (offset, ch);
 		}
 
@@ -1319,16 +1385,19 @@ namespace MonoDevelop.Ide.Editor
 
 		internal void AddOverlay (Control messageOverlayContent, Func<int> sizeFunc)
 		{
+			Runtime.AssertMainThread ();
 			textEditorImpl.AddOverlay (messageOverlayContent, sizeFunc);
 		}
 
 		internal void RemoveOverlay (Control messageOverlayContent)
 		{
+			Runtime.AssertMainThread ();
 			textEditorImpl.RemoveOverlay (messageOverlayContent);
 		}
 
 		internal void UpdateBraceMatchingResult (BraceMatchingResult? result)
 		{
+			Runtime.AssertMainThread ();
 			textEditorImpl.UpdateBraceMatchingResult (result);
 		}
 	}

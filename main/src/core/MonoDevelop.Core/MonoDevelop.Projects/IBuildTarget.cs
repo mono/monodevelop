@@ -66,6 +66,13 @@ namespace MonoDevelop.Projects
 		bool CanExecute (ExecutionContext context, ConfigurationSelector configuration);
 
 		/// <summary>
+		/// Determines whether this target can be built using the specified configuration.
+		/// </summary>
+		/// <returns><c>true</c> if this instance can be built; otherwise, <c>false</c>.</returns>
+		/// <param name="configuration">Configuration.</param>
+		bool CanBuild (ConfigurationSelector configuration);
+
+		/// <summary>
 		/// Prepares the target for execution
 		/// </summary>
 		/// <returns>The execution.</returns>

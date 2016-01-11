@@ -40,11 +40,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
 	class CastCompletionContextHandler : CompletionContextHandler
 	{
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, CancellationToken cancellationToken)
+		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			var position = completionContext.Position;
 			var document = completionContext.Document;
-			var ctx = await completionContext.GetSyntaxContextAsync (engine.Workspace, cancellationToken).ConfigureAwait (false);
 			var syntaxTree = ctx.SyntaxTree;
 			if (syntaxTree.IsInNonUserCode(position, cancellationToken) ||
 				syntaxTree.IsPreProcessorDirectiveContext(position, cancellationToken))
@@ -86,7 +85,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		{
 			var startType = type;
 
-			while (type.SpecialType != SpecialType.System_Object) {
+			while (type != null && type.SpecialType != SpecialType.System_Object) {
 				foreach (var member in type.GetMembers ()) {
 					cancellationToken.ThrowIfCancellationRequested ();
 					if (member.IsImplicitlyDeclared || member.IsStatic)

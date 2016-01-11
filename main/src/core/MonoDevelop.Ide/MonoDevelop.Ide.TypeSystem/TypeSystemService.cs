@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	public static partial class TypeSystemService
 	{
 		const string CurrentVersion = "1.1.9";
-		static readonly List<TypeSystemParserNode> parsers;
+		static IEnumerable<TypeSystemParserNode> parsers;
 		static string[] filesSkippedInParseThread = new string[0];
 
 		static IEnumerable<TypeSystemParserNode> Parsers {
@@ -76,17 +76,15 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static TypeSystemService ()
 		{
-			parsers = new List<TypeSystemParserNode> ();
+			parsers = AddinManager.GetExtensionNodes<TypeSystemParserNode> ("/MonoDevelop/TypeSystem/Parser");
+			bool initialLoad = true;
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/Parser", delegate (object sender, ExtensionNodeEventArgs args) {
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					parsers.Add ((TypeSystemParserNode)args.ExtensionNode);
-					break;
-				case ExtensionChange.Remove:
-					parsers.Remove ((TypeSystemParserNode)args.ExtensionNode);
-					break;
-				}
+				//refresh entire list to respect insertbefore/insertafter ordering
+				if (!initialLoad)
+					parsers = AddinManager.GetExtensionNodes<TypeSystemParserNode> ("/MonoDevelop/TypeSystem/Parser");
 			});
+			initialLoad = false;
+
 			try {
 				emptyWorkspace = new MonoDevelopWorkspace ();
 			} catch (Exception e) {
@@ -725,6 +723,18 @@ namespace MonoDevelop.Ide.TypeSystem
 				var documentId = w.GetMonoProject (project);
 				if (documentId != null) {
 					return documentId;
+				}
+			}
+			return null;
+		}
+
+
+		public static MonoDevelop.Projects.Project GetMonoProject (Microsoft.CodeAnalysis.DocumentId documentId)
+		{
+			foreach (var w in workspaces) {
+				foreach (var p in w.CurrentSolution.Projects) {
+					if (p.GetDocument (documentId) != null)
+						return GetMonoProject (p);
 				}
 			}
 			return null;

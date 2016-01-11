@@ -40,7 +40,7 @@ namespace MonoDevelop.Components
 
 		public FileEntry (string name) : base (name)
 		{
-			Action = Gtk.FileChooserAction.Open;
+			Action = FileChooserAction.Open;
 		}
 
 		protected override string ShowBrowseDialog (string name, string startIn)
@@ -57,6 +57,6 @@ namespace MonoDevelop.Components
 			return null;
 		}
 
-		public new Gtk.FileChooserAction Action { get; set; }
+		public new FileChooserAction Action { get; set; }
 	}
 }

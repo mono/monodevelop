@@ -28,6 +28,8 @@
 using System;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -42,17 +44,17 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		#region ITooltipProvider implementation 
-		public override TooltipItem GetItem (TextEditor editor, DocumentContext ctx, int offset)
+		public override Task<TooltipItem> GetItem (TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default(CancellationToken))
 		{
 			var ed = GetExtensibleTextEditor (editor);
 			if (ed == null)
-				return null;
+				return Task.FromResult<TooltipItem> (null);
 
 			string errorInformation = ed.GetErrorInformationAt (offset);
 			if (string.IsNullOrEmpty (errorInformation))
-				return null;
+				return Task.FromResult<TooltipItem> (null);
 
-			return new TooltipItem (errorInformation, editor.GetLineByOffset (offset));
+			return Task.FromResult (new TooltipItem (errorInformation, editor.GetLineByOffset (offset)));
 		}
 
 		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Gdk.ModifierType modifierState)

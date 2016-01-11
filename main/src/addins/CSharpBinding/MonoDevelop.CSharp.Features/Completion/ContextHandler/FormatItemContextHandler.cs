@@ -47,12 +47,11 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return ch == ':' || ch == '"';
 		}
 
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, CancellationToken cancellationToken)
+		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
-			var ctx = await completionContext.GetSyntaxContextAsync (engine.Workspace, cancellationToken).ConfigureAwait(false);
 			var document = completionContext.Document;
 			var position = completionContext.Position;
-			var semanticModel = await completionContext.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
+			var semanticModel = ctx.SemanticModel;
 
 			if (ctx.TargetToken.Parent != null && ctx.TargetToken.Parent.Parent != null && 
 			    ctx.TargetToken.Parent.Parent.IsKind(SyntaxKind.Argument)) {

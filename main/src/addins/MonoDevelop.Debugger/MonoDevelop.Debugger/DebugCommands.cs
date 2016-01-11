@@ -152,7 +152,7 @@ namespace MonoDevelop.Debugger
 		{
 			IBuildTarget entry = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
 
-			IdeApp.ProjectOperations.Debug (entry);
+			await IdeApp.ProjectOperations.Debug (entry).Task;
 		}
 		
 		protected override void Update (CommandInfo info)

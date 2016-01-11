@@ -45,6 +45,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor.Highlighting;
 using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.CSharp.Completion;
 
 namespace MonoDevelop.CSharp
 {
@@ -114,7 +115,7 @@ namespace MonoDevelop.CSharp
 				//ToMinimalDisplayString can use little outdated model this is fine
 				//but in case of Sketches where user usually is at end of document when typing text this can throw exception
 				//because offset can be >= Length
-				displayString = model != null ? type.ToMinimalDisplayString (model, Math.Min (model.SyntaxTree.Length - 1, offset), MonoDevelop.Ide.TypeSystem.Ambience.LabelFormat) : type.Name;
+				displayString = model != null ? RoslynCompletionData.SafeMinimalDisplayString (type, model, Math.Min (model.SyntaxTree.Length - 1, offset), MonoDevelop.Ide.TypeSystem.Ambience.LabelFormat) : type.Name;
 			} else {
 				displayString = type.ToDisplayString (MonoDevelop.Ide.TypeSystem.Ambience.LabelFormat);
 			}
@@ -393,7 +394,6 @@ namespace MonoDevelop.CSharp
 
 		string GetNullableMarkup (ITypeSymbol t)
 		{
-			Console.WriteLine ("nullable markup !!!");
 			var result = new StringBuilder ();
 			result.Append (GetTypeReferenceString (t));
 			return result.ToString ();
@@ -1664,7 +1664,7 @@ namespace MonoDevelop.CSharp
 			}
 
 			if (constantValue == null) {
-				if (constantType.TypeKind == TypeKind.Struct) {
+				if (constantType.IsValueType) {
 					// structs can never be == null, therefore it's the default value.
 					sb.Append (Highlight ("default", colorStyle.KeywordSelection) + "(" + GetTypeReferenceString (constantType) + ")");
 				} else {

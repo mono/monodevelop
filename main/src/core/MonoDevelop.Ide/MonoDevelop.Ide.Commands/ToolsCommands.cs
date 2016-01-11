@@ -32,6 +32,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Gui.Dialogs;
 using System;
 using MonoDevelop.Ide.Updater;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -84,7 +85,7 @@ namespace MonoDevelop.Ide.Commands
 					argumentsTool = StringParserService.Parse (customerArguments, IdeApp.Workbench.GetStringTagModel ());
 			}
 
-			DispatchService.BackgroundDispatch (delegate {
+			Task.Run (delegate {
 				RunExternalTool (tool, argumentsTool);
 			});
 		}

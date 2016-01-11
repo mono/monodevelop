@@ -35,6 +35,7 @@ THE SOFTWARE.
 	<NewLinesForBracesInTypes>True</NewLinesForBracesInTypes>
 	<NewLinesForBracesInMethods>True</NewLinesForBracesInMethods>
 	<NewLinesForBracesInProperties>True</NewLinesForBracesInProperties>
+	<NewLinesForBracesInAccessors>True</NewLinesForBracesInAccessors>
 	<NewLinesForBracesInAnonymousMethods>True</NewLinesForBracesInAnonymousMethods>
 	<NewLinesForBracesInControlBlocks>True</NewLinesForBracesInControlBlocks>
 	<NewLinesForBracesInAnonymousTypes>True</NewLinesForBracesInAnonymousTypes>
