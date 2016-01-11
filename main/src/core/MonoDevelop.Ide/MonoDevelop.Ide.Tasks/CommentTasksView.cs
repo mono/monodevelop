@@ -282,23 +282,25 @@ namespace MonoDevelop.Ide.Tasks
 				}
 			}
 		}
-
+		
 		void LastWorkspaceItemClosed (object sender, EventArgs e)
 		{
 			loadedSlns.Clear ();
 			projectTags.Clear ();
 		}
 
-		void OnCommentTasksChanged (object sender, CommentTasksChangedEventArgs e)
+		void OnCommentTasksChanged (object sender, CommentTasksChangedEventArgs args)
 		{
-			//because of parse queueing, it's possible for this event to come in after the solution is closed
-			//so we track which solutions are currently open so that we don't leak memory by holding 
-			// on to references to closed projects
-			if (e.Project != null && e.Project.ParentSolution != null && loadedSlns.Contains (e.Project.ParentSolution)) {
-				Application.Invoke (delegate {
-					UpdateCommentTags (e.Project.ParentSolution, e.FileName, e.TagComments);
-				});
-			}
+			Application.Invoke (delegate {
+				foreach (var e in args.Changes) {
+					//because of parse queueing, it's possible for this event to come in after the solution is closed
+					//so we track which solutions are currently open so that we don't leak memory by holding 
+					// on to references to closed projects
+					if (e.Project != null && e.Project.ParentSolution != null && loadedSlns.Contains (e.Project.ParentSolution)) {
+						UpdateCommentTags (e.Project.ParentSolution, e.FileName, e.TagComments);
+					}
+				}
+			});
 		}
 		
 		void OnCommentTagsChanged (object sender, EventArgs e)

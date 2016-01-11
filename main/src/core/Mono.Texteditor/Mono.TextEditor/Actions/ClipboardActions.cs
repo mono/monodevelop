@@ -179,7 +179,13 @@ namespace Mono.TextEditor
 				newTargets.Add (new TargetEntry ("UTF8_STRING", TargetFlags.App, TextType));
 
 				newTargets.Add (new TargetEntry (RTF_ATOM.Name, TargetFlags.OtherApp, RichTextType));
-				newTargets.Add (new TargetEntry (MD_ATOM.Name, TargetFlags.App, MonoTextType));
+
+				if (!Platform.IsWindows) {
+					// This seems to randomly break pasting on Windows. We'll disable it
+					// for now until we find a better solution
+					// https://bugzilla.xamarin.com/show_bug.cgi?id=23036
+					newTargets.Add (new TargetEntry (MD_ATOM.Name, TargetFlags.App, MonoTextType));
+				}
 
 				newTargets.Add (new TargetEntry ("text/plain;charset=utf-8", TargetFlags.App, TextType));
 				newTargets.Add (new TargetEntry ("text/plain", TargetFlags.App, TextType));

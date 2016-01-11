@@ -58,6 +58,8 @@ namespace ICSharpCode.NRefactory6.CSharp
 			List<string> usedNamedParameters = null;
 			var tree = await document.GetSyntaxTreeAsync (cancellationToken).ConfigureAwait (false);
 			var root = await tree.GetRootAsync (cancellationToken).ConfigureAwait (false);
+			if (startOffset >= root.Span.Length)
+				return ParameterIndexResult.Invalid;
 
 			var token = root.FindToken (startOffset);
 			if (token.Parent == null)

@@ -167,7 +167,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, MonoDevelop.Ide.Editor.Extension.KeyDescriptor descriptor)
 			{
-				var currentWord = GetCurrentWord (window);
+				var currentWord = GetCurrentWord (window, descriptor);
 				var text = CompletionText;
 				if (descriptor.KeyChar == '>' && text.EndsWith (">", StringComparison.Ordinal))
 					text = text.Substring (0, text.Length - 1);

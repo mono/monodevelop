@@ -92,11 +92,11 @@ namespace MonoDevelop.Platform
 			var topMenu = new GtkWPFWidget (titleBar) {
 				HeightRequest = System.Windows.Forms.SystemInformation.CaptionHeight,
 			};
-			commandManager.IncompleteKeyPressed += (sender, e) => {
-				if (e.Key == Gdk.Key.Alt_L) {
-					Keyboard.Focus(titleBar.DockTitle.Children[0]);
-				}
-			};
+			//commandManager.IncompleteKeyPressed += (sender, e) => {
+			//	if (e.Key == Gdk.Key.Alt_L) {
+			//		Keyboard.Focus(titleBar.DockTitle.Children[0]);
+			//	}
+			//};
 			parent.PackStart (topMenu, false, true, 0);
 			SetupMenu ();
 
@@ -116,7 +116,7 @@ namespace MonoDevelop.Platform
 			foreach (CommandEntrySet ce in ces)
 			{
 				var item = new TitleMenuItem(commandManager, ce);
-				item.SubmenuClosed += (o, e) =>
+				item.SubmenuClosing += (o, e) =>
 				{
 					bool shouldFocusIde = !mainMenu.Items.OfType<MenuItem>().Any(mi => mi.IsSubmenuOpen);
 					if (shouldFocusIde)

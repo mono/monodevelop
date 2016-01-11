@@ -85,6 +85,19 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				return Enumerable.Empty<CompletionData> ();
 			var result = new List<CompletionData> ();
 
+			// check if it's the first parameter and set autoselect == false if a parameterless version exists.
+			if (token.IsKind (SyntaxKind.OpenParenToken)) {
+				var symbolInfo = model.GetSymbolInfo (token.Parent.Parent);
+				foreach (var symbol in new [] { symbolInfo.Symbol }.Concat (symbolInfo.CandidateSymbols)) {
+					if (symbol != null && symbol.IsKind (SymbolKind.Method)) {
+						if (symbol.GetParameters ().Length == 0) {
+							completionResult.AutoSelect = false;
+							break;
+						}
+					}
+				}
+			}
+
 			foreach (var _type in ctx.InferredTypes) {
 				var type = _type;
 				if (type.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T) {

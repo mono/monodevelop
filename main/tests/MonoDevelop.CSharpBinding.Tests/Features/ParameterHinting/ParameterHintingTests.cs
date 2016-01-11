@@ -115,6 +115,7 @@ namespace ICSharpCode.NRefactory6.CSharp.ParameterHinting
 						null,
 						new CSharpCompilationOptions (
 							OutputKind.DynamicallyLinkedLibrary,
+							false,
 							"",
 							"",
 							"Script",

@@ -500,7 +500,7 @@ namespace MonoDevelop.VersionControl
 		{
 			foreach (VersionControlItem it in GetItems ()) {
 				if (!it.IsDirectory)
-					IdeApp.Workbench.OpenDocument (it.Path);
+					IdeApp.Workbench.OpenDocument (it.Path, it.ContainerProject);
 			}
 		}
 	}		

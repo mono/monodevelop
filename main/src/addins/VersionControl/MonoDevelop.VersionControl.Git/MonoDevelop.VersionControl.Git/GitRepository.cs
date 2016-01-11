@@ -67,8 +67,10 @@ namespace MonoDevelop.VersionControl.Git
 			Url = url;
 		}
 
+		internal bool Disposed { get; private set; }
 		public override void Dispose ()
 		{
+			Disposed = true;
 			base.Dispose ();
 
 			if (VersionControlSystem != null)
@@ -1261,13 +1263,13 @@ namespace MonoDevelop.VersionControl.Git
 			return RootRepository.Head.FriendlyName;
 		}
 
-		public void SwitchToBranch (ProgressMonitor monitor, string branch)
+		public bool SwitchToBranch (ProgressMonitor monitor, string branch)
 		{
 			Signature sig = GetSignature ();
 			Stash stash;
 			int stashIndex = -1;
 			if (sig == null)
-				return;
+				return false;
 
 			monitor.BeginTask (GettextCatalog.GetString ("Switching to branch {0}", branch), GitService.StashUnstashWhenSwitchingBranches ? 4 : 2);
 
@@ -1282,7 +1284,7 @@ namespace MonoDevelop.VersionControl.Git
 					RootRepository.Stashes.Remove (stashIndex);
 
 				if (!TryCreateStash (monitor, GetStashName (currentBranch), out stash))
-					return;
+					return false;
 				
 				monitor.Step (1);
 			}
@@ -1310,6 +1312,7 @@ namespace MonoDevelop.VersionControl.Git
 				BranchSelectionChanged (this, EventArgs.Empty);
 
 			monitor.EndTask ();
+			return true;
 		}
 
 		void NotifyFileChanges (ProgressMonitor monitor, TreeChanges statusList)
@@ -1443,28 +1446,41 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.EndTask ();
 		}
 
-		public override Annotation[] GetAnnotations (FilePath repositoryPath)
+		public override Annotation [] GetAnnotations (FilePath repositoryPath, Revision since)
 		{
 			var repository = GetRepository (repositoryPath);
 			Commit hc = GetHeadCommit (repository);
+			Commit sinceCommit = since != null ? ((GitRevision)since).Commit : null;
 			if (hc == null)
 				return new Annotation [0];
 
-			int lines = File.ReadAllLines (repositoryPath).Length;
-			var list = new List<Annotation> (lines);
-			var working = new Annotation (GettextCatalog.GetString ("working copy"), "<uncommitted>", DateTime.Now);
-			for (int i = 0; i < lines; ++i)
-				list.Add (working);
+			var list = new List<Annotation> ();
+
+			var baseDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (GetBaseText (repositoryPath));
+			var workingDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (File.ReadAllText (repositoryPath));
 
 			repositoryPath = repository.ToGitPath (repositoryPath);
 			var status = repository.RetrieveStatus (repositoryPath);
 			if (status != FileStatus.NewInIndex && status != FileStatus.NewInWorkdir) {
-				foreach (var hunk in repository.Blame (repositoryPath, new BlameOptions { FindExactRenames = true, })) {
+				foreach (var hunk in repository.Blame (repositoryPath, new BlameOptions { FindExactRenames = true, StartingAt = sinceCommit })) {
 					var commit = hunk.FinalCommit;
 					var author = hunk.FinalSignature;
-					working = new Annotation (commit.Sha, author.Name, author.When.LocalDateTime, String.Format ("<{0}>", author.Email));
+					var working = new Annotation (new GitRevision (this, repository, commit), author.Name, author.When.LocalDateTime, String.Format ("<{0}>", author.Email));
 					for (int i = 0; i < hunk.LineCount; ++i)
-						list [hunk.FinalStartLineNumber + i] = working;
+						list.Add (working);
+				}
+			}
+
+			if (sinceCommit == null) {
+				Annotation nextRev = new Annotation (null, "<uncommitted>", DateTime.MinValue, null, GettextCatalog.GetString ("working copy"));
+				foreach (var hunk in baseDocument.Diff (workingDocument, includeEol: false)) {
+					list.RemoveRange (hunk.RemoveStart - 1, hunk.Removed);
+					for (int i = 0; i < hunk.Inserted; ++i) {
+						if (hunk.InsertStart + i >= list.Count)
+							list.Add (nextRev);
+						else
+							list.Insert (hunk.InsertStart - 1, nextRev);
+					}
 				}
 			}
 

@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		internal static bool ShowWindow (ICompletionDataList list, CodeCompletionContext completionContext)
 		{
 			if (wnd == null || !isShowing)
-				throw new InvalidOperationException ("PrepareShowWindow not called");
+				return false;
 			
 			var completionWidget = wnd.CompletionWidget;
 			var ext = wnd.Extension;

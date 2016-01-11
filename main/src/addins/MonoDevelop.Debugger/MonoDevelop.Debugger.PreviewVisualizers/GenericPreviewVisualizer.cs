@@ -49,7 +49,8 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 			if (DebuggingService.HasInlineVisualizer (val))
 				value = DebuggingService.GetInlineVisualizer (val).InlineVisualize (val);
 
-			var label = new Gtk.Label (value);
+			var label = new Gtk.Label ();
+			label.Text = value;
 			var font = label.Style.FontDescription.Copy ();
 
 			if (font.SizeIsAbsolute) {

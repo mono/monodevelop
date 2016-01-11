@@ -174,7 +174,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			RemoveMarkers ();
 			RemoveTimer ();
 			if (!Editor.IsSomethingSelected)
-				popupTimer = GLib.Timeout.Add (1000, () => { DelayedTooltipShow (); return false; } );
+				popupTimer = GLib.Timeout.Add (250, () => { DelayedTooltipShow (); return false; } );
 		}
 
 		void ClearQuickTasks ()

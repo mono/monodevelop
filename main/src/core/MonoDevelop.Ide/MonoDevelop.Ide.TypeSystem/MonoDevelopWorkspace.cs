@@ -180,6 +180,11 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		}
 
+		static bool SupportsRoslyn (MonoDevelop.Projects.Project proj)
+		{
+			return string.Equals (proj.TypeGuid, "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", StringComparison.OrdinalIgnoreCase) || string.Equals (proj.TypeGuid, "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}", StringComparison.OrdinalIgnoreCase);
+		}
+
 		SolutionData solutionData;
 		async Task<SolutionInfo> CreateSolutionInfo (MonoDevelop.Projects.Solution solution, CancellationToken token)
 		{
@@ -192,6 +197,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			foreach (var proj in mdProjects) {
 				if (token.IsCancellationRequested)
 					return null;
+				if (!SupportsRoslyn (proj))
+					continue;
 				var tp = LoadProject (proj, token).ContinueWith (t => {
 					if (!t.IsCanceled)
 						projects.Add (t.Result);
@@ -599,21 +606,35 @@ namespace MonoDevelop.Ide.TypeSystem
 		List<MonoDevelopSourceTextContainer> openDocuments = new List<MonoDevelopSourceTextContainer>();
 		internal void InformDocumentOpen (DocumentId documentId, ITextDocument editor)
 		{
+			var document = InternalInformDocumentOpen (documentId, editor);
+			if (document != null) {
+				foreach (var linkedDoc in document.GetLinkedDocumentIds ()) {
+					InternalInformDocumentOpen (linkedDoc, editor);
+				}
+			}
+		}
+
+		Document InternalInformDocumentOpen (DocumentId documentId, ITextDocument editor)
+		{
 			var document = this.GetDocument (documentId);
 			if (document == null) {
-				return;
+				return document;
 			}
 			if (IsDocumentOpen (documentId))
 				InformDocumentClose (documentId, document.FilePath);
-            var monoDevelopSourceTextContainer = new MonoDevelopSourceTextContainer (documentId, editor);
+			var monoDevelopSourceTextContainer = new MonoDevelopSourceTextContainer (documentId, editor);
 			lock (openDocuments) {
 				openDocuments.Add (monoDevelopSourceTextContainer);
 			}
-			OnDocumentOpened (documentId, monoDevelopSourceTextContainer); 
+			OnDocumentOpened (documentId, monoDevelopSourceTextContainer);
+			return document;
 		}
+
+		Dictionary<string, SourceText> changedFiles = new Dictionary<string, SourceText> ();
 
 		public override bool TryApplyChanges (Solution newSolution)
 		{
+			changedFiles.Clear ();
 			return base.TryApplyChanges (newSolution);
 		}
 
@@ -621,6 +642,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			try {
 				internalChanges = true;
+
 				base.ApplyProjectChanges (projectChanges);
 			} finally {
 				internalChanges = false;
@@ -658,7 +680,12 @@ namespace MonoDevelop.Ide.TypeSystem
 		public void InformDocumentClose (DocumentId analysisDocument, string filePath)
 		{
 			try {
-				OnDocumentClosed (analysisDocument, new MonoDevelopTextLoader (filePath)); 
+				var loader = new MonoDevelopTextLoader (filePath);
+				OnDocumentClosed (analysisDocument, loader); 
+				var document = this.GetDocument (analysisDocument);
+				foreach (var linkedDoc in document.GetLinkedDocumentIds ()) {
+					OnDocumentClosed (linkedDoc, loader); 
+				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception while closing document.", e); 
 			}
@@ -668,6 +695,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 		}
 
+
 		protected override void ApplyDocumentTextChanged (DocumentId id, SourceText text)
 		{
 			var document = GetDocument (id);
@@ -675,6 +703,15 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			bool isOpen;
 			var filePath = document.FilePath;
+
+			// Guard against already done changes in linked files.
+			// This shouldn't happen but the roslyn merging seems not to be working correctly in all cases :/
+			SourceText formerText;
+			if (changedFiles.TryGetValue (filePath, out formerText)) {
+				if (formerText.Length == text.Length && formerText.ToString () == text.ToString ())
+					return;
+			}
+			changedFiles [filePath] = text;
 
 			Projection projection = null;
 			foreach (var entry in ProjectionList) {
@@ -705,7 +742,6 @@ namespace MonoDevelop.Ide.TypeSystem
 						if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
 							startOffset = originalOffset;
 					}
-
 
 					string str;
 					if (change.NewText.Length == 0) {
@@ -868,11 +904,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 
 			}
-		}
-
-		public async Task AddProject (MonoDevelop.Projects.Project project)
-		{
-			await LoadProject (project, default(CancellationToken)).ConfigureAwait (false);
 		}
 
 		public void RemoveProject (MonoDevelop.Projects.Project project)

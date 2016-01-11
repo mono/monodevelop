@@ -2433,6 +2433,9 @@
     <EmbeddedResource Include="icons\revert-to-saved-16%402x.png">
       <LogicalName>revert-to-saved-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="templates\AppManifest.xft.xml">
+      <LogicalName>AppManifest.xft.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -3401,7 +3404,11 @@
     <Compile Include="MonoDevelop.Components.AutoTest.Operations\SelectedOperation.cs" />
     <Compile Include="MonoDevelop.Components\Windows\GtkWPFWidget.cs" />
     <Compile Include="MonoDevelop.Components\Windows\GtkWin32Interop.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\AbstractNavigationExtension.cs" />
     <Compile Include="MonoDevelop.Components\FileChooserAction.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\PropertyDescriptionTemplate.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\FileTemplateTagsModifier.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\CombinedTagModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

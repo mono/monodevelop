@@ -307,6 +307,13 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			if (p != null)
 				// Maybe the new project already contains a reference to this shared project
 				ProcessProject (p);
+
+			var folder = e.SolutionItem as SolutionFolder;
+			if (folder != null) {
+				foreach (var proj in folder.GetAllItems<DotNetProject>()) {
+					ProcessProject (proj);
+				}
+			}
 		}
 
 		protected override void OnDispose ()

@@ -38,7 +38,7 @@ namespace MonoDevelop.PackageManagement
 {
 	public class ThreadSafePackageManagementEvents : IThreadSafePackageManagementEvents
 	{
-		Action<MessageHandler> guiSyncDispatcher;
+		Action<Action> guiSyncDispatcher;
 		IPackageManagementEvents unsafeEvents;
 
 		public ThreadSafePackageManagementEvents (IPackageManagementEvents unsafeEvents)
@@ -48,7 +48,7 @@ namespace MonoDevelop.PackageManagement
 
 		public ThreadSafePackageManagementEvents (
 			IPackageManagementEvents unsafeEvents,
-			Action<MessageHandler> guiSyncDispatcher)
+			Action<Action> guiSyncDispatcher)
 		{
 			this.unsafeEvents = unsafeEvents;
 			this.guiSyncDispatcher = guiSyncDispatcher;

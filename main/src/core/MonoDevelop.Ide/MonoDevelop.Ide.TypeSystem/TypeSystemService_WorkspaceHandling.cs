@@ -289,7 +289,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var project = args.SolutionItem as MonoDevelop.Projects.Project;
 			if (project != null) {
 				Unload (project.ParentSolution);
-				Load (project.ParentSolution,  new ProgressMonitor()); 
+				await Load (project.ParentSolution,  new ProgressMonitor()); 
 			}
 		}
 

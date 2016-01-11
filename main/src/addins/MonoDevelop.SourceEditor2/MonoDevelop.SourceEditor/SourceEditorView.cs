@@ -183,7 +183,7 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Document.TextReplacing += OnTextReplacing;
 			widget.TextEditor.Document.TextReplaced += OnTextReplaced;
 			widget.TextEditor.Document.ReadOnlyCheckDelegate = CheckReadOnly;
-			
+			widget.TextEditor.TextViewMargin.LineShown += TextViewMargin_LineShown;
 			//			widget.TextEditor.Document.DocumentUpdated += delegate {
 			//				this.IsDirty = Document.IsDirty;
 			//			};
@@ -206,6 +206,7 @@ namespace MonoDevelop.SourceEditor
 
 			breakpoints = DebuggingService.Breakpoints;
 			DebuggingService.DebugSessionStarted += OnDebugSessionStarted;
+			DebuggingService.StoppedEvent += HandleTargetExited;
 			DebuggingService.ExecutionLocationChanged += OnExecutionLocationChanged;
 			DebuggingService.CurrentFrameChanged += OnCurrentFrameChanged;
 			DebuggingService.StoppedEvent += OnCurrentFrameChanged;
@@ -232,6 +233,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			FileRegistry.Add (this);
 		}
+
 
 		void HandleLineChanged (object sender, Mono.TextEditor.LineEventArgs e)
 		{
@@ -920,19 +922,21 @@ namespace MonoDevelop.SourceEditor
 	
 		void UpdateMimeType (string fileName)
 		{
-			// Look for a mime type for which there is a syntax mode
-			string mimeType = DesktopService.GetMimeTypeForUri (fileName);
-			if (loadedMimeType != mimeType) {
-				loadedMimeType = mimeType;
-				if (mimeType != null) {
-					foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (loadedMimeType)) {
-						if (Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (null, mt) != null) {
-							Document.MimeType = mt;
-							widget.TextEditor.TextEditorResolverProvider = TextEditorResolverService.GetProvider (mt);
-							break;
-						}
+			Document.MimeType = DesktopService.GetMimeTypeForUri (fileName);
+
+			//if the mimetype doesn't have a syntax mode, try to load one for its base mimetypes
+			var sm = Document.SyntaxMode as Mono.TextEditor.Highlighting.SyntaxMode;
+			if (sm != null && sm.MimeType == null) {
+				foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (Document.MimeType)) {
+					var syntaxMode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (null, mt);
+					if (syntaxMode != null) {
+						Document.SyntaxMode = syntaxMode;
+						break;
 					}
 				}
+			}
+			if (Document.MimeType != null) {
+				widget.TextEditor.TextEditorResolverProvider = TextEditorResolverService.GetProvider (Document.MimeType);
 			}
 		}
 		
@@ -975,12 +979,14 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Document.TextReplaced -= OnTextReplaced;
 			widget.TextEditor.Document.ReadOnlyCheckDelegate = null;
 			widget.TextEditor.Options.Changed -= HandleWidgetTextEditorOptionsChanged;
+			widget.TextEditor.TextViewMargin.LineShown -= TextViewMargin_LineShown;
 
 			TextEditorService.FileExtensionAdded -= HandleFileExtensionAdded;
 			TextEditorService.FileExtensionRemoved -= HandleFileExtensionRemoved;
 
 			DebuggingService.ExecutionLocationChanged -= OnExecutionLocationChanged;
 			DebuggingService.DebugSessionStarted -= OnDebugSessionStarted;
+			DebuggingService.StoppedEvent -= HandleTargetExited;
 			DebuggingService.CurrentFrameChanged -= OnCurrentFrameChanged;
 			DebuggingService.StoppedEvent -= OnCurrentFrameChanged;
 			DebuggingService.ResumedEvent -= OnCurrentFrameChanged;
@@ -1191,7 +1197,6 @@ namespace MonoDevelop.SourceEditor
 			foreach (var marker in currentErrorMarkers) {
 				marker.IsVisible = false;
 			}
-			DebuggingService.DebuggerSession.TargetExited += HandleTargetExited;
 		}
 
 		void HandleTargetExited (object sender, EventArgs e)
@@ -3065,6 +3070,21 @@ namespace MonoDevelop.SourceEditor
 		{
 			widget.RemoveOverlay (messageOverlayContent.GetNativeWidget<Widget> ());
 		}
+
+		void TextViewMargin_LineShown (object sender, Mono.TextEditor.LineEventArgs e)
+		{
+			LineShown?.Invoke (this, new Ide.Editor.LineEventArgs (new DocumentLineWrapper (e.Line)));
+		}
+
+		public IEnumerable<IDocumentLine> VisibleLines {
+			get {
+				foreach (var v in TextEditor.TextViewMargin.CachedLine) {
+					yield return new DocumentLineWrapper (v);
+				}
+			}
+		}
+
+		public event EventHandler<Ide.Editor.LineEventArgs> LineShown;
 
 		#region IEditorActionHost implementation
 

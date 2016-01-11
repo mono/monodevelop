@@ -40,7 +40,7 @@ namespace MonoDevelop.SourceEditor
 		protected override void Run (object data)
 		{
 			UrlMarker urlMarker = data as UrlMarker;
-			if (data == null)
+			if (urlMarker == null)
 				return;
 			try {
 				if (urlMarker.UrlType == UrlType.Email) {

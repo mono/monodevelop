@@ -102,10 +102,10 @@ namespace MonoDevelop.CSharp.Completion
 			var doc = ext.DocumentContext;
 			using (var undo = ext.Editor.OpenUndoGroup ()) {
 				string text = insertNamespace ? type.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat) + "." + type.Name : type.Name;
-				if (text != GetCurrentWord (window)) {
+				if (text != GetCurrentWord (window, descriptor)) {
 					if (window.WasShiftPressed && generateUsing) 
 						text = type.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat) + "." + text;
-					window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, GetCurrentWord (window), text);
+					window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, GetCurrentWord (window, descriptor), text);
 				}
 
 				if (!window.WasShiftPressed && generateUsing) {
