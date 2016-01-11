@@ -147,4 +147,16 @@
 		<StockIcon stockid="md-prefs-code-rules" resource="prefs-code-rules-16.png" size="Menu" />
 		<StockIcon stockid="md-prefs-code-analysis" resource="prefs-code-analysis-16.png" size="Menu" />
 	</Extension>
+
+	<Extension path = "/MonoDevelop/DesignerSupport/PropertyProviders" extension-nodes="Class">
+		<Class class = "MonoDevelop.Refactoring.NodeBuilders.AnalyzerPropertyProvider"/>
+	</Extension>
+
+
+	<Extension path="/MonoDevelop/Ide/Pads/ProjectPad">
+		<NodeBuilder class="MonoDevelop.Refactoring.NodeBuilders.AnalyzerFolderNodeBuilderExtension" />
+		<NodeBuilder class="MonoDevelop.Refactoring.NodeBuilders.AnalyzerFolderNodeBuilder" />
+		<NodeBuilder class="MonoDevelop.Refactoring.NodeBuilders.AnalyzerNodeBuilder" />
+		<NodeBuilder class="MonoDevelop.Refactoring.NodeBuilders.AnalyzersFromAssemblyNodeBuilder" />
+	</Extension>
 </ExtensionModel>

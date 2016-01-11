@@ -170,6 +170,13 @@
     <Compile Include="MonoDevelop.CodeIssues\ISuppressionFixProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeFix.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CSharpSuppressionFixProvider.cs" />
+    <Compile Include="MonoDevelop.Refactoring.NodeBuilders\AnalyzerFolderNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.Refactoring.NodeBuilders\AnalyzerFolderNode.cs" />
+    <Compile Include="MonoDevelop.Refactoring.NodeBuilders\AnalyzerFolderNodeBuilderExtension.cs" />
+    <Compile Include="MonoDevelop.Refactoring\AnalyzerProjectItem.cs" />
+    <Compile Include="MonoDevelop.Refactoring.NodeBuilders\AnalyzerNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.Refactoring.NodeBuilders\DiagnosticDescriptorPropertyProvider.cs" />
+    <Compile Include="MonoDevelop.Refactoring.NodeBuilders\AnalyzersFromAssemblyNodeBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -179,6 +186,7 @@
     <Folder Include="MonoDevelop.CodeActions\" />
     <Folder Include="MonoDevelop.AnalysisCore\Rules\" />
     <Folder Include="MonoDevelop.CodeIssues\Pad\" />
+    <Folder Include="MonoDevelop.Refactoring.NodeBuilders\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml">
