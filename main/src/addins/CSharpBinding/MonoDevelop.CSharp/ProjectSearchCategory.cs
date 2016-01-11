@@ -51,12 +51,12 @@ namespace MonoDevelop.CSharp
 
 		internal static void Init ()
 		{
-			MonoDevelopWorkspace.LoadingFinished += delegate {
-				UpdateSymbolInfos ();
+			MonoDevelopWorkspace.LoadingFinished += async delegate {
+				await UpdateSymbolInfos ();
 			};
 			if (IdeApp.IsInitialized) {
-				IdeApp.Workspace.LastWorkspaceItemClosed += delegate {
-					DisposeSymbolInfoTask ();
+				IdeApp.Workspace.LastWorkspaceItemClosed += async delegate {
+					await DisposeSymbolInfoTask ();
 				};
 			}
 		}
@@ -78,21 +78,21 @@ namespace MonoDevelop.CSharp
 		static TimerCounter getTypesTimer = InstrumentationService.CreateTimerCounter ("Time to get all types", "NavigateToDialog");
 
 		static CancellationTokenSource symbolInfoTokenSrc = new CancellationTokenSource();
-		public static void UpdateSymbolInfos ()
+		public static async Task UpdateSymbolInfos ()
 		{
-			DisposeSymbolInfoTask ();
+			await DisposeSymbolInfoTask ();
 			CancellationToken token = symbolInfoTokenSrc.Token;
 			SymbolInfoTask = Task.Run (delegate {
 				return GetSymbolInfos (token);
 			}, token);
 		}
 
-		static void DisposeSymbolInfoTask ()
+		static async Task DisposeSymbolInfoTask ()
 		{
 			symbolInfoTokenSrc.Cancel ();
 			if (SymbolInfoTask != null) {
 				try {
-					var old = SymbolInfoTask.Result;
+					var old = await SymbolInfoTask;
 					if (old != null)
 						old.Dispose ();
 				} catch (TaskCanceledException) {
