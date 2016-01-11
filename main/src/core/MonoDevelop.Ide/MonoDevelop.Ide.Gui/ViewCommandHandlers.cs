@@ -159,8 +159,13 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.Cut)]
 		protected void OnUpdateCut (CommandInfo info)
 		{
+			bool inWpf = false;
+			#if WIN32
+			if (System.Windows.Input.Keyboard.FocusedElement != null)
+				inWpf = true;
+			#endif
 			IClipboardHandler handler = GetContent <IClipboardHandler> ();
-			if (handler != null && handler.EnableCut)
+			if (!inWpf && handler != null && handler.EnableCut)
 				info.Enabled = true;
 			else
 				info.Bypass = true;
@@ -177,8 +182,13 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.Copy)]
 		protected void OnUpdateCopy (CommandInfo info)
 		{
+			bool inWpf = false;
+			#if WIN32
+			if (System.Windows.Input.Keyboard.FocusedElement != null)
+				inWpf = true;
+			#endif
 			IClipboardHandler handler = GetContent <IClipboardHandler> ();
-			if (handler != null && handler.EnableCopy)
+			if (!inWpf && handler != null && handler.EnableCopy)
 				info.Enabled = true;
 			else
 				info.Bypass = true;
@@ -195,8 +205,13 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.Paste)]
 		protected void OnUpdatePaste (CommandInfo info)
 		{
+			bool inWpf = false;
+			#if WIN32
+			if (System.Windows.Input.Keyboard.FocusedElement != null)
+				inWpf = true;
+			#endif
 			IClipboardHandler handler = GetContent <IClipboardHandler> ();
-			if (handler != null && handler.EnablePaste)
+			if (!inWpf && handler != null && handler.EnablePaste)
 				info.Enabled = true;
 			else
 				info.Bypass = true;
@@ -231,8 +246,13 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.SelectAll)]
 		protected void OnUpdateSelectAll (CommandInfo info)
 		{
+			bool inWpf = false;
+			#if WIN32
+			if (System.Windows.Input.Keyboard.FocusedElement != null)
+				inWpf = true;
+			#endif
 			IClipboardHandler handler = GetContent <IClipboardHandler> ();
-			if (handler != null)
+			if (!inWpf && handler != null)
 				info.Enabled = handler.EnableSelectAll;
 			else
 				info.Bypass = true;
