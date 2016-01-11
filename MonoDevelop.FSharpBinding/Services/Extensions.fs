@@ -82,6 +82,20 @@ module String =
                 if line.Length <= lineWidth then sb.AppendLine(line) |> ignore
                 else splitLine sb line lineWidth
             sb.ToString()
+            
+  let inline isNotNull v = not (isNull v)      
+  let getLines (str: string) =
+    use reader = new StringReader(str)
+    [|
+    let line = ref (reader.ReadLine())
+    while isNotNull (!line) do
+        yield !line
+        line := reader.ReadLine()
+    if str.EndsWith("\n") then
+        // last trailing space not returned
+        // http://stackoverflow.com/questions/19365404/stringreader-omits-trailing-linebreak
+        yield String.Empty
+    |]
 
 [<AutoOpen>]
 module FSharpSymbolExt =
