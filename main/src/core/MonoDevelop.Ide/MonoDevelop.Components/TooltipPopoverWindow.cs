@@ -40,7 +40,7 @@ namespace MonoDevelop.Components
 
 		public TooltipPopoverWindow ()
 		{
-			Theme.SetBackgroundColor (Styles.PopoverWindow.DefaultBackgroundColor);
+			Theme.SetBackgroundColor (Styles.PopoverWindow.DefaultBackgroundColor.ToCairoColor ());
 			Theme.Font = FontService.SansFont.CopyModified (Styles.PopoverWindow.DefaultFontScale);
 			ShowArrow = true;
 		}
@@ -90,23 +90,23 @@ namespace MonoDevelop.Components
 
 					switch (severity.Value) {
 					case TaskSeverity.Information:
-						Theme.SetBackgroundColor (Styles.PopoverWindow.InformationBackgroundColor);
+						Theme.SetBackgroundColor (Styles.PopoverWindow.InformationBackgroundColor.ToCairoColor ());
 						break;
 
 					case TaskSeverity.Comment:
-						Theme.SetBackgroundColor (Styles.PopoverWindow.InformationBackgroundColor);
+						Theme.SetBackgroundColor (Styles.PopoverWindow.InformationBackgroundColor.ToCairoColor ());
 						break;
 
 					case TaskSeverity.Error:
-						Theme.SetBackgroundColor (Styles.PopoverWindow.ErrorBackgroundColor);
+						Theme.SetBackgroundColor (Styles.PopoverWindow.ErrorBackgroundColor.ToCairoColor ());
 						return;
 
 					case TaskSeverity.Warning:
-						Theme.SetBackgroundColor (Styles.PopoverWindow.WarningBackgroundColor);
+						Theme.SetBackgroundColor (Styles.PopoverWindow.WarningBackgroundColor.ToCairoColor ());
 						return;
 					}
 				} else {
-					Theme.SetBackgroundColor (Styles.PopoverWindow.DefaultBackgroundColor);
+					Theme.SetBackgroundColor (Styles.PopoverWindow.DefaultBackgroundColor.ToCairoColor ());
 				}
 			}
 		}
@@ -131,24 +131,24 @@ namespace MonoDevelop.Components
 			if (severity.HasValue) {
 				switch (severity.Value) {
 				case TaskSeverity.Information:
-					label.Markup = "<b><span color='" + CairoExtensions.ColorGetHex (Styles.PopoverWindow.InformationTextColor) + "'>" + msg + "</span></b>";
+					label.Markup = "<b><span color='" + Styles.ColorGetHex (Styles.PopoverWindow.InformationTextColor) + "'>" + msg + "</span></b>";
 					return;
 
 				case TaskSeverity.Comment:
-					label.Markup = "<b><span color='" + CairoExtensions.ColorGetHex (Styles.PopoverWindow.InformationTextColor) + "'>" + msg + "</span></b>";
+					label.Markup = "<b><span color='" + Styles.ColorGetHex (Styles.PopoverWindow.InformationTextColor) + "'>" + msg + "</span></b>";
 					return;
 
 				case TaskSeverity.Error:
-					label.Markup = "<b><span color='" + CairoExtensions.ColorGetHex (Styles.PopoverWindow.ErrorTextColor) + "'>" + msg + "</span></b>";
+					label.Markup = "<b><span color='" + Styles.ColorGetHex (Styles.PopoverWindow.ErrorTextColor) + "'>" + msg + "</span></b>";
 					return;
 
 				case TaskSeverity.Warning:
-					label.Markup = "<b><span color='" + CairoExtensions.ColorGetHex (Styles.PopoverWindow.WarningTextColor) + "'>" + msg + "</span></b>";
+					label.Markup = "<b><span color='" + Styles.ColorGetHex (Styles.PopoverWindow.WarningTextColor) + "'>" + msg + "</span></b>";
 					return;
 				}
 			}
 
-			label.Markup = "<span color='" + CairoExtensions.ColorGetHex (Styles.PopoverWindow.DefaultTextColor) + "'>" + msg + "</span>";
+			label.Markup = "<span color='" + Styles.ColorGetHex (Styles.PopoverWindow.DefaultTextColor) + "'>" + msg + "</span>";
 		}
 
 		void AdjustSize ()

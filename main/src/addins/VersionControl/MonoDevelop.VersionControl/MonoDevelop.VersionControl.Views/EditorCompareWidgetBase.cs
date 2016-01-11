@@ -522,7 +522,7 @@ namespace MonoDevelop.VersionControl.Views
 
 		public static Cairo.Color GetColor (Hunk hunk, bool removeSide, bool border, double alpha)
 		{
-			Cairo.Color result;
+			Xwt.Drawing.Color result;
 			if (hunk.Removed > 0 && hunk.Inserted > 0) {
 				result = border ? Styles.DiffView.MergeBackgroundColor : Styles.DiffView.MergeBorderColor;
 			} else if (removeSide) {
@@ -538,8 +538,8 @@ namespace MonoDevelop.VersionControl.Views
 					result = border ? Styles.DiffView.RemoveBackgroundColor : Styles.DiffView.RemoveBorderColor;
 				}
 			}
-			result.A = alpha;
-			return result;
+			result.Alpha = alpha;
+			return result.ToCairoColor ();
 		}
 		
 		void PaintEditorOverlay (TextArea editor, PaintEventArgs args, List<Hunk> diff, bool paintRemoveSide)
@@ -902,7 +902,7 @@ namespace MonoDevelop.VersionControl.Views
 								cr.SetSourceColor ((MonoDevelop.Components.HslColor)Style.Dark (StateType.Normal));
 								cr.Stroke ();
 								cr.LineWidth = 1;
-								cr.SetSourceColor (MonoDevelop.Ide.Gui.Styles.BaseForegroundColor);
+								cr.SetSourceColor (MonoDevelop.Ide.Gui.Styles.BaseForegroundColor.ToCairoColor ());
 								if (drawArrow) {
 									DrawArrow (cr, x + w / 1.5, y + h / 2);
 									DrawArrow (cr, x + w / 2.5, y + h / 2);
@@ -1071,11 +1071,9 @@ namespace MonoDevelop.VersionControl.Views
 					h,
 					barWidth / 2);
 				
-				var color = (HslColor)MonoDevelop.Ide.Gui.Styles.BaseBackgroundColor;
-				color.L = 0.5;
-				var c = (Cairo.Color)color;
-				c.A = 0.6;
-				cr.SetSourceColor (c);
+				var color = Ide.Gui.Styles.BaseBackgroundColor;
+				color.Light = 0.5;
+				cr.SetSourceColor (color.WithAlpha (0.6).ToCairoColor ());
 				cr.Fill ();
 			}
 	

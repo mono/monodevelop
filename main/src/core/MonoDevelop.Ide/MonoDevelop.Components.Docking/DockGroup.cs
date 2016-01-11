@@ -872,7 +872,7 @@ namespace MonoDevelop.Components.Docking
 
 			if (areasList == null && oper == DrawSeparatorOperation.Draw) {
 				hgc = new Gdk.GC (Frame.Container.GdkWindow);
-				hgc.RgbFgColor = Styles.DockFrameBackground;
+				hgc.RgbFgColor = Styles.DockFrameBackground.ToGdkColor ();
 			}
 
 			for (int n=0; n<VisibleObjects.Count; n++) {

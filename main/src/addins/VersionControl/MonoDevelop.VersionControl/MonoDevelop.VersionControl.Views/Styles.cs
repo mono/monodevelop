@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
+using Xwt.Drawing;
 
 namespace MonoDevelop.VersionControl
 {
@@ -37,35 +38,35 @@ namespace MonoDevelop.VersionControl
 
 		public class BlameViewStyle
 		{
-			public Cairo.Color AnnotationBackgroundColor { get; internal set; }
-			public Cairo.Color AnnotationHighlightColor { get; internal set; }
-			public Cairo.Color AnnotationTextColor { get; internal set; }
-			public Cairo.Color AnnotationSummaryTextColor { get; internal set; }
-			public Cairo.Color AnnotationSplitterColor { get; internal set; }
-			public Cairo.Color AnnotationMarkColor { get; internal set; }
-			public Cairo.Color AnnotationMarkModifiedColor { get; internal set; }
-			public Cairo.Color RangeSplitterColor { get; internal set; }
-			public Cairo.Color RangeHazeColor { get; internal set; }
+			public Color AnnotationBackgroundColor { get; internal set; }
+			public Color AnnotationHighlightColor { get; internal set; }
+			public Color AnnotationTextColor { get; internal set; }
+			public Color AnnotationSummaryTextColor { get; internal set; }
+			public Color AnnotationSplitterColor { get; internal set; }
+			public Color AnnotationMarkColor { get; internal set; }
+			public Color AnnotationMarkModifiedColor { get; internal set; }
+			public Color RangeSplitterColor { get; internal set; }
+			public Color RangeHazeColor { get; internal set; }
 		}
 
 		public class LogViewStyle
 		{
-			public Gdk.Color CommitDescBackgroundColor { get; internal set; }
-			public Gdk.Color DiffAddBackgroundColor { get; internal set; }
-			public Gdk.Color DiffRemoveBackgroundColor { get; internal set; }
-			public Gdk.Color DiffHighlightColor { get; internal set; }
-			public Cairo.Color DiffBoxBorderColor { get; internal set; }
-			public Cairo.Color DiffBoxSplitterColor { get; internal set; }
+			public Color CommitDescBackgroundColor { get; internal set; }
+			public Color DiffAddBackgroundColor { get; internal set; }
+			public Color DiffRemoveBackgroundColor { get; internal set; }
+			public Color DiffHighlightColor { get; internal set; }
+			public Color DiffBoxBorderColor { get; internal set; }
+			public Color DiffBoxSplitterColor { get; internal set; }
 		}
 
 		public class DiffViewStyle
 		{
-			public Cairo.Color AddBorderColor { get; internal set; }
-			public Cairo.Color AddBackgroundColor { get; internal set; }
-			public Cairo.Color RemoveBorderColor { get; internal set; }
-			public Cairo.Color RemoveBackgroundColor { get; internal set; }
-			public Cairo.Color MergeBorderColor { get; internal set; }
-			public Cairo.Color MergeBackgroundColor { get; internal set; }
+			public Color AddBorderColor { get; internal set; }
+			public Color AddBackgroundColor { get; internal set; }
+			public Color RemoveBorderColor { get; internal set; }
+			public Color RemoveBackgroundColor { get; internal set; }
+			public Color MergeBorderColor { get; internal set; }
+			public Color MergeBackgroundColor { get; internal set; }
 		}
 
 		static Styles ()
@@ -79,65 +80,65 @@ namespace MonoDevelop.VersionControl
 			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
 				
 				BlameView = new BlameViewStyle {
-					AnnotationBackgroundColor = new Cairo.Color (0.95, 0.95, 0.95),
-					AnnotationHighlightColor = new Cairo.Color (1, 1, 1),
-					AnnotationTextColor = new Cairo.Color (0, 0, 0),
-					AnnotationSummaryTextColor = new Cairo.Color (0.7, 0.7, 0.7),
-					AnnotationSplitterColor = new Cairo.Color (0.6, 0.6, 0.6),
-					AnnotationMarkColor = new Cairo.Color (0.90, 0.90, 1),
-					AnnotationMarkModifiedColor = new Cairo.Color (1, 1, 0),
-					RangeHazeColor = new Cairo.Color (171d/255d, 171d/255d, 171d/255d, 0.1),
-					RangeSplitterColor = new Cairo.Color (171d/255d, 171d/255d, 171d/255d, 0.2),
+					AnnotationBackgroundColor = new Color (0.95, 0.95, 0.95),
+					AnnotationHighlightColor = new Color (1, 1, 1),
+					AnnotationTextColor = new Color (0, 0, 0),
+					AnnotationSummaryTextColor = new Color (0.7, 0.7, 0.7),
+					AnnotationSplitterColor = new Color (0.6, 0.6, 0.6),
+					AnnotationMarkColor = new Color (0.90, 0.90, 1),
+					AnnotationMarkModifiedColor = new Color (1, 1, 0),
+					RangeHazeColor = new Color (171d/255d, 171d/255d, 171d/255d, 0.1),
+					RangeSplitterColor = new Color (171d/255d, 171d/255d, 171d/255d, 0.2),
 				};
 
 				LogView = new LogViewStyle {
-					CommitDescBackgroundColor = new Gdk.Color (255, 251, 242),
-					DiffAddBackgroundColor = new Gdk.Color (123, 200, 123).AddLight (0.1),
-					DiffRemoveBackgroundColor = new Gdk.Color (200, 140, 140).AddLight (0.1),
-					DiffHighlightColor = new Gdk.Color (100, 157, 214).AddLight (0.1),
-					DiffBoxBorderColor = new Cairo.Color (0.7, 0.7, 0.7),
-					DiffBoxSplitterColor = new Cairo.Color (0.9, 0.9, 0.9),
+					CommitDescBackgroundColor = new Color (255d/255d, 251d/255d, 242d/255d),
+					DiffAddBackgroundColor = new Color (123d/255d, 200d/255d, 123d/255d).AddLight (0.1),
+					DiffRemoveBackgroundColor = new Color (200d/255d, 140d/255d, 140d/255d).AddLight (0.1),
+					DiffHighlightColor = new Color (100d/255d, 157d/255d, 214d/255d).AddLight (0.1),
+					DiffBoxBorderColor = new Color (0.7, 0.7, 0.7),
+					DiffBoxSplitterColor = new Color (0.9, 0.9, 0.9),
 				};
 
 				DiffView = new DiffViewStyle {
-					AddBorderColor = new Cairo.Color (190 / 255.0, 240 / 255.0, 190 / 255.0),
-					AddBackgroundColor = new Cairo.Color (133 / 255.0, 168 / 255.0, 133 / 255.0),
-					RemoveBorderColor = new Cairo.Color (255 / 255.0, 200 / 255.0, 200 / 255.0),
-					RemoveBackgroundColor = new Cairo.Color (178 / 255.0, 140 / 255.0, 140 / 255.0),
-					MergeBorderColor = new Cairo.Color (190 / 255.0, 190 / 255.0, 240 / 255.0),
-					MergeBackgroundColor = new Cairo.Color (133 / 255.0, 133 / 255.0, 168 / 255.0),
+					AddBorderColor = new Color (190 / 255.0, 240 / 255.0, 190 / 255.0),
+					AddBackgroundColor = new Color (133 / 255.0, 168 / 255.0, 133 / 255.0),
+					RemoveBorderColor = new Color (255 / 255.0, 200 / 255.0, 200 / 255.0),
+					RemoveBackgroundColor = new Color (178 / 255.0, 140 / 255.0, 140 / 255.0),
+					MergeBorderColor = new Color (190 / 255.0, 190 / 255.0, 240 / 255.0),
+					MergeBackgroundColor = new Color (133 / 255.0, 133 / 255.0, 168 / 255.0),
 				};
 
 			} else {
 
 				BlameView = new BlameViewStyle {
-					AnnotationBackgroundColor = MonoDevelop.Ide.Gui.Styles.PadBackground.ToCairoColor (),
+					AnnotationBackgroundColor = MonoDevelop.Ide.Gui.Styles.PadBackground,
 					AnnotationHighlightColor = MonoDevelop.Ide.Gui.Styles.BackgroundColor,
-					AnnotationTextColor = new Cairo.Color (1, 1, 1),
+					AnnotationTextColor = new Color (1, 1, 1),
 					AnnotationSummaryTextColor = MonoDevelop.Ide.Gui.Styles.BaseForegroundColor,
-					AnnotationSplitterColor = MonoDevelop.Ide.Gui.Styles.ThinSplitterColor.ToCairoColor (),
-					AnnotationMarkColor = new Cairo.Color (0.90, 0.90, 1),
-					AnnotationMarkModifiedColor = new Cairo.Color (1, 1, 0),
-					RangeHazeColor = new Cairo.Color (0.24, 0.24, 0.24, 0.6),
-					RangeSplitterColor = new Cairo.Color (0.24, 0.24, 0.24, 0.7),
+					AnnotationSplitterColor = MonoDevelop.Ide.Gui.Styles.ThinSplitterColor,
+					AnnotationMarkColor = new Color (0.90, 0.90, 1),
+					AnnotationMarkModifiedColor = new Color (1, 1, 0),
+					RangeHazeColor = new Color (0.24, 0.24, 0.24, 0.6),
+					RangeSplitterColor = new Color (0.24, 0.24, 0.24, 0.7),
 				};
 
 				LogView = new LogViewStyle () {
-					CommitDescBackgroundColor = MonoDevelop.Ide.Gui.Styles.BaseBackgroundColor.ToGdkColor (),
-					DiffAddBackgroundColor = new Gdk.Color (123, 200, 123).AddLight (-0.1),
-					DiffRemoveBackgroundColor = new Gdk.Color (200, 140, 140).AddLight (-0.1),
-					DiffHighlightColor = MonoDevelop.Ide.Gui.Styles.BackgroundColor.ToGdkColor ().AddLight (0.1),
-					DiffBoxBorderColor = new Cairo.Color (0.3, 0.3, 0.3),
-					DiffBoxSplitterColor = new Cairo.Color (0.5, 0.5, 0.5),
+					CommitDescBackgroundColor = MonoDevelop.Ide.Gui.Styles.BaseBackgroundColor,
+					DiffAddBackgroundColor = new Color (123d/255d, 200d/255d, 123d/255d).AddLight (-0.1),
+					DiffRemoveBackgroundColor = new Color (200d/255d, 140d/255d, 140d/255d).AddLight (-0.1),
+					DiffHighlightColor = MonoDevelop.Ide.Gui.Styles.BackgroundColor.AddLight (0.1),
+					DiffBoxBorderColor = new Color (0.3, 0.3, 0.3),
+					DiffBoxSplitterColor = new Color (0.5, 0.5, 0.5),
 				};
 
 				DiffView = new DiffViewStyle {
-					AddBorderColor = new Cairo.Color (190 / 255.0, 240 / 255.0, 190 / 255.0),
-					AddBackgroundColor = new Cairo.Color (133 / 255.0, 168 / 255.0, 133 / 255.0),
-					RemoveBorderColor = new Cairo.Color (255 / 255.0, 200 / 255.0, 200 / 255.0),
-					RemoveBackgroundColor = new Cairo.Color (178 / 255.0, 140 / 255.0, 140 / 255.0),
-					MergeBorderColor = new Cairo.Color (190 / 255.0, 190 / 255.0, 240 / 255.0),
-					MergeBackgroundColor = new Cairo.Color (133 / 255.0, 133 / 255.0, 168 / 255.0),
+					AddBorderColor = new Color (190 / 255.0, 240 / 255.0, 190 / 255.0),
+					AddBackgroundColor = new Color (133 / 255.0, 168 / 255.0, 133 / 255.0),
+					RemoveBorderColor = new Color (255 / 255.0, 200 / 255.0, 200 / 255.0),
+					RemoveBackgroundColor = new Color (178 / 255.0, 140 / 255.0, 140 / 255.0),
+					MergeBorderColor = new Color (190 / 255.0, 190 / 255.0, 240 / 255.0),
+					MergeBackgroundColor = new Color (133 / 255.0, 133 / 255.0, 168 / 255.0),
 				};
 			}
 		}

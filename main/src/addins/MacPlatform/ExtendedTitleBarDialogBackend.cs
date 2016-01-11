@@ -84,12 +84,12 @@ namespace MonoDevelop.MacIntegration
 					}
 					context.MoveTo (0, Allocation.Height - 0.5);
 					context.RelLineTo (Allocation.Width, 0);
-					context.SetSourceColor (MonoDevelop.Ide.Gui.Styles.ToolbarBottomBorderColor);
+					context.SetSourceColor (MonoDevelop.Ide.Gui.Styles.ToolbarBottomBorderColor.ToCairoColor ());
 					context.Stroke ();
 
 					context.MoveTo (0, Allocation.Height - 1.5);
 					context.RelLineTo (Allocation.Width, 0);
-					context.SetSourceColor (MonoDevelop.Ide.Gui.Styles.ToolbarBottomGlowColor);
+					context.SetSourceColor (MonoDevelop.Ide.Gui.Styles.ToolbarBottomGlowColor.ToCairoColor ());
 					context.Stroke ();
 
 				}

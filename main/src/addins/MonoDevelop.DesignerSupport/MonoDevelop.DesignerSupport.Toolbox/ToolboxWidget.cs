@@ -250,8 +250,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 				// FIXME: VV: Remove gradient features
 				using (var pat = new Cairo.LinearGradient (xpos, ypos, xpos, ypos + itemDimension.Height)) {
-					pat.AddColorStop (0, MonoDevelop.Ide.Gui.Styles.PadCategoryBackgroundGradientStartColor);
-					pat.AddColorStop (1, MonoDevelop.Ide.Gui.Styles.PadCategoryBackgroundGradientEndColor);
+					pat.AddColorStop (0, MonoDevelop.Ide.Gui.Styles.PadCategoryBackgroundGradientStartColor.ToCairoColor ());
+					pat.AddColorStop (1, MonoDevelop.Ide.Gui.Styles.PadCategoryBackgroundGradientEndColor.ToCairoColor ());
 					cr.SetSource (pat);
 					cr.Fill ();
 				}
@@ -261,12 +261,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				}
 				cr.MoveTo (0, ypos + itemDimension.Height - 0.5);
 				cr.LineTo (xpos + Allocation.Width, ypos + itemDimension.Height - 0.5);
-				cr.SetSourceColor (MonoDevelop.Ide.Gui.Styles.PadCategoryBorderColor);
+				cr.SetSourceColor (MonoDevelop.Ide.Gui.Styles.PadCategoryBorderColor.ToCairoColor ());
 				cr.Stroke ();
 
 				headerLayout.SetText (category.Text);
 				int width, height;
-				cr.SetSourceColor (MonoDevelop.Ide.Gui.Styles.PadCategoryLabelColor);
+				cr.SetSourceColor (MonoDevelop.Ide.Gui.Styles.PadCategoryLabelColor.ToCairoColor ());
 				layout.GetPixelSize (out width, out height);
 				cr.MoveTo (xpos + CategoryLeftPadding, ypos + (double)(Math.Round ((double)(itemDimension.Height - height) / 2)));
 				Pango.CairoHelper.ShowLayout (cr, headerLayout);
@@ -314,7 +314,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				// Closing line when animating the last group of the toolbox
 				cr.MoveTo (area.X, ypos + 0.5);
 				cr.RelLineTo (area.Width, 0);
-				cr.SetSourceColor (MonoDevelop.Ide.Gui.Styles.PadCategoryBorderColor);
+				cr.SetSourceColor (MonoDevelop.Ide.Gui.Styles.PadCategoryBorderColor.ToCairoColor ());
 				cr.Stroke ();
 			}
 

@@ -646,11 +646,11 @@ namespace MonoDevelop.Components.DockNotebook
 			ctx.Rectangle (0, 0, region.Width, h);
 			using (var gr = new LinearGradient (0, 0, 0, h)) {
 				if (isActiveNotebook) {
-					gr.AddColorStop (0, Styles.TabBarActiveGradientStartColor);
-					gr.AddColorStop (1, Styles.TabBarActiveGradientEndColor);
+					gr.AddColorStop (0, Styles.TabBarActiveGradientStartColor.ToCairoColor ());
+					gr.AddColorStop (1, Styles.TabBarActiveGradientEndColor.ToCairoColor ());
 				} else {
-					gr.AddColorStop (0, Styles.TabBarGradientStartColor);
-					gr.AddColorStop (1, Styles.TabBarGradientEndColor);
+					gr.AddColorStop (0, Styles.TabBarGradientStartColor.ToCairoColor ());
+					gr.AddColorStop (1, Styles.TabBarGradientEndColor.ToCairoColor ());
 				}
 				ctx.SetSource (gr);
 				ctx.Fill ();
@@ -659,7 +659,7 @@ namespace MonoDevelop.Components.DockNotebook
 			ctx.MoveTo (region.X, 0.5);
 			ctx.LineTo (region.Right + 1, 0.5);
 			ctx.LineWidth = 1;
-			ctx.SetSourceColor (Styles.TabBarGradientShadowColor);
+			ctx.SetSourceColor (Styles.TabBarGradientShadowColor.ToCairoColor ());
 			ctx.Stroke ();
 		}
 
@@ -760,7 +760,7 @@ namespace MonoDevelop.Components.DockNotebook
 			// Draw breadcrumb bar header
 			if (notebook.Tabs.Count > 0) {
 				ctx.Rectangle (0, allocation.Height - BottomBarPadding, allocation.Width, BottomBarPadding);
-				ctx.SetSourceColor (Styles.BreadcrumbBackgroundColor);
+				ctx.SetSourceColor (Styles.BreadcrumbBackgroundColor.ToCairoColor ());
 				ctx.Fill ();
 			}
 
@@ -863,29 +863,29 @@ namespace MonoDevelop.Components.DockNotebook
 			ctx.ClosePath ();
 			using (var gr = new LinearGradient (tabBounds.X, TopBarPadding, tabBounds.X, allocation.Bottom)) {
 				if (active) {
-					gr.AddColorStop (0, Styles.BreadcrumbGradientStartColor.MultiplyAlpha (tab.Opacity));
-					gr.AddColorStop (1, Styles.BreadcrumbBackgroundColor.MultiplyAlpha (tab.Opacity));
+					gr.AddColorStop (0, Styles.BreadcrumbGradientStartColor.ToCairoColor ().MultiplyAlpha (tab.Opacity));
+					gr.AddColorStop (1, Styles.BreadcrumbBackgroundColor.ToCairoColor ().MultiplyAlpha (tab.Opacity));
 				} else {
-					gr.AddColorStop (0, Styles.TabBarInactiveGradientStartColor.MultiplyAlpha (tab.Opacity));
-					gr.AddColorStop (1, Styles.TabBarInactiveGradientEndColor.MultiplyAlpha (tab.Opacity));
+					gr.AddColorStop (0, Styles.TabBarInactiveGradientStartColor.ToCairoColor ().MultiplyAlpha (tab.Opacity));
+					gr.AddColorStop (1, Styles.TabBarInactiveGradientEndColor.ToCairoColor ().MultiplyAlpha (tab.Opacity));
 				}
 				ctx.SetSource (gr);
 			}
 			ctx.Fill ();
 
-			ctx.SetSourceColor (Styles.TabBarInnerBorderColor.MultiplyAlpha (tab.Opacity));
+			ctx.SetSourceColor (Styles.TabBarInnerBorderColor.ToCairoColor ().MultiplyAlpha (tab.Opacity));
 			LayoutTabBorder (ctx, allocation, tabBounds.Width, tabBounds.X, 1, active);
 			ctx.Stroke ();
 
-			ctx.SetSourceColor (Styles.BreadcrumbBorderColor.MultiplyAlpha (tab.Opacity));
+			ctx.SetSourceColor (Styles.BreadcrumbBorderColor.ToCairoColor ().MultiplyAlpha (tab.Opacity));
 			LayoutTabBorder (ctx, allocation, tabBounds.Width, tabBounds.X, 0, active);
 			ctx.StrokePreserve ();
 
 			if (tab.GlowStrength > 0) {
 				Gdk.Point mouse = tracker.MousePosition;
 				using (var rg = new RadialGradient (mouse.X, tabBounds.Bottom, 0, mouse.X, tabBounds.Bottom, 100)) {
-					rg.AddColorStop (0, Styles.TabBarGlowGradientStartColor.MultiplyAlpha (tab.Opacity * tab.GlowStrength));
-					rg.AddColorStop (1, Styles.TabBarGlowGradientEndColor);
+					rg.AddColorStop (0, Styles.TabBarGlowGradientStartColor.ToCairoColor ().MultiplyAlpha (tab.Opacity * tab.GlowStrength));
+					rg.AddColorStop (1, Styles.TabBarGlowGradientEndColor.ToCairoColor ());
 
 					ctx.SetSource (rg);
 					ctx.Fill ();
@@ -923,12 +923,12 @@ namespace MonoDevelop.Components.DockNotebook
 				// If that bug get's fixed remove this HACK asap.
 				la.Ellipsize = Pango.EllipsizeMode.End;
 				la.Width = (int)(w * Pango.Scale.PangoScale);
-				ctx.SetSourceColor (tab.Notify ? Styles.TabBarNotifyTextColor : Styles.TabBarActiveTextColor);
+				ctx.SetSourceColor ((tab.Notify ? Styles.TabBarNotifyTextColor : Styles.TabBarActiveTextColor).ToCairoColor ());
 				Pango.CairoHelper.ShowLayoutLine (ctx, la.GetLine (0));
 			} else {
 				// ellipses are for space wasting ..., we cant afford that
 				using (var lg = new LinearGradient (textStart + w - 5, 0, textStart + w + 3, 0)) {
-					var color = tab.Notify ? Styles.TabBarNotifyTextColor : Styles.TabBarActiveTextColor;
+					var color = (tab.Notify ? Styles.TabBarNotifyTextColor : Styles.TabBarActiveTextColor).ToCairoColor ();
 					color = color.MultiplyAlpha (tab.Opacity);
 					lg.AddColorStop (0, color);
 					color.A = 0;

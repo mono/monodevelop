@@ -26,33 +26,34 @@
 
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
+using Xwt.Drawing;
 
 namespace MonoDevelop.Debugger
 {
 	public static class Styles
 	{
-		public static Cairo.Color ObjectValueTreeValuesButtonBackground { get; internal set; }
-		public static Cairo.Color ObjectValueTreeValuesButtonText { get; internal set; }
-		public static Cairo.Color ObjectValueTreeValuesButtonBorder { get; internal set; }
-		public static Cairo.Color ObjectValueTreeValueErrorText { get; internal set; }
-		public static Cairo.Color ObjectValueTreeValueDisabledText { get; internal set; }
-		public static Cairo.Color ObjectValueTreeValueModifiedText { get; internal set; }
-		public static Cairo.Color PreviewVisualizerBackgroundColor { get; internal set; }
-		public static Gdk.Color PreviewVisualizerTextColor { get; internal set; }
-		public static Gdk.Color PreviewVisualizerHeaderTextColor { get; internal set; }
+		public static Color ObjectValueTreeValuesButtonBackground { get; internal set; }
+		public static Color ObjectValueTreeValuesButtonText { get; internal set; }
+		public static Color ObjectValueTreeValuesButtonBorder { get; internal set; }
+		public static Color ObjectValueTreeValueErrorText { get; internal set; }
+		public static Color ObjectValueTreeValueDisabledText { get; internal set; }
+		public static Color ObjectValueTreeValueModifiedText { get; internal set; }
+		public static Color PreviewVisualizerBackgroundColor { get; internal set; }
+		public static Color PreviewVisualizerTextColor { get; internal set; }
+		public static Color PreviewVisualizerHeaderTextColor { get; internal set; }
 
 		public static ExceptionCaughtDialogStyle ExceptionCaughtDialog { get; internal set; }
 
 		public class ExceptionCaughtDialogStyle
 		{
-			public Gdk.Color TreeBackgroundColor { get; internal set; }
-			public Cairo.Color InfoFrameBackgroundColor { get; internal set; }
-			public Cairo.Color InfoFrameBorderColor { get; internal set; }
-			public Cairo.Color LineNumberBackgroundColor { get; internal set; }
-			public Cairo.Color LineNumberInUserCodeBackgroundColor { get; internal set; }
-			public Cairo.Color LineNumberBorderColor { get; internal set; }
-			public Cairo.Color LineNumberTextColor { get; internal set; }
-			public Cairo.Color LineNumberTextShadowColor { get; internal set; }
+			public Color TreeBackgroundColor { get; internal set; }
+			public Color InfoFrameBackgroundColor { get; internal set; }
+			public Color InfoFrameBorderColor { get; internal set; }
+			public Color LineNumberBackgroundColor { get; internal set; }
+			public Color LineNumberInUserCodeBackgroundColor { get; internal set; }
+			public Color LineNumberBorderColor { get; internal set; }
+			public Color LineNumberTextColor { get; internal set; }
+			public Color LineNumberTextShadowColor { get; internal set; }
 		}
 
 		static Styles ()
@@ -65,45 +66,45 @@ namespace MonoDevelop.Debugger
 		{
 			ExceptionCaughtDialog = new ExceptionCaughtDialogStyle ();
 			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
-				ObjectValueTreeValuesButtonBackground = new Cairo.Color (233 / 255.0, 242 / 255.0, 252 / 255.0);
-				ObjectValueTreeValuesButtonText = new Cairo.Color (82 / 255.0, 148 / 255.0, 235 / 255.0);
-				ObjectValueTreeValuesButtonBorder = new Cairo.Color (82 / 255.0, 148 / 255.0, 235 / 255.0);
-				ObjectValueTreeValueErrorText = new Cairo.Color (1.0, 0.0, 0.0);
-				ObjectValueTreeValueDisabledText = new Cairo.Color (0.5, 0.5, 0.5);
-				ObjectValueTreeValueModifiedText = new Cairo.Color (0.0, 0.0, 1.0);
+				ObjectValueTreeValuesButtonBackground = new Color (233 / 255.0, 242 / 255.0, 252 / 255.0);
+				ObjectValueTreeValuesButtonText = new Color (82 / 255.0, 148 / 255.0, 235 / 255.0);
+				ObjectValueTreeValuesButtonBorder = new Color (82 / 255.0, 148 / 255.0, 235 / 255.0);
+				ObjectValueTreeValueErrorText = new Color (1.0, 0.0, 0.0);
+				ObjectValueTreeValueDisabledText = new Color (0.5, 0.5, 0.5);
+				ObjectValueTreeValueModifiedText = new Color (0.0, 0.0, 1.0);
 
-				PreviewVisualizerBackgroundColor = new Cairo.Color (245 / 256.0, 245 / 256.0, 245 / 256.0);
-				PreviewVisualizerHeaderTextColor = new Gdk.Color (36, 36, 36);
-				PreviewVisualizerTextColor = new Gdk.Color (85, 85, 85);
+				PreviewVisualizerBackgroundColor = new Color (245 / 256.0, 245 / 256.0, 245 / 256.0);
+				PreviewVisualizerHeaderTextColor = new Color (36 / 255.0, 36 / 255.0, 36 / 255.0);
+				PreviewVisualizerTextColor = new Color (85 / 255.0, 85 / 255.0, 85 / 255.0);
 
-				ExceptionCaughtDialog.TreeBackgroundColor = new Gdk.Color (223, 228, 235);
-				ExceptionCaughtDialog.InfoFrameBackgroundColor = new Cairo.Color (1.00, 0.98, 0.91);
-				ExceptionCaughtDialog.InfoFrameBorderColor = new Cairo.Color (0.87, 0.83, 0.74);
-				ExceptionCaughtDialog.LineNumberBackgroundColor = new Cairo.Color (0.77, 0.77, 0.77, 1.0);
-				ExceptionCaughtDialog.LineNumberInUserCodeBackgroundColor = new Cairo.Color (0.90, 0.60, 0.87, 1.0);
-				ExceptionCaughtDialog.LineNumberBorderColor = new Cairo.Color (0.0, 0.0, 0.0, 0.11);
-				ExceptionCaughtDialog.LineNumberTextColor = new Cairo.Color (1.0, 1.0, 1.0, 1.0);
-				ExceptionCaughtDialog.LineNumberTextShadowColor = new Cairo.Color (0.0, 0.0, 0.0, 0.34);
+				ExceptionCaughtDialog.TreeBackgroundColor = new Color (223 / 255.0, 228 / 255.0, 235 / 255.0);
+				ExceptionCaughtDialog.InfoFrameBackgroundColor = new Color (1.00, 0.98, 0.91);
+				ExceptionCaughtDialog.InfoFrameBorderColor = new Color (0.87, 0.83, 0.74);
+				ExceptionCaughtDialog.LineNumberBackgroundColor = new Color (0.77, 0.77, 0.77, 1.0);
+				ExceptionCaughtDialog.LineNumberInUserCodeBackgroundColor = new Color (0.90, 0.60, 0.87, 1.0);
+				ExceptionCaughtDialog.LineNumberBorderColor = new Color (0.0, 0.0, 0.0, 0.11);
+				ExceptionCaughtDialog.LineNumberTextColor = new Color (1.0, 1.0, 1.0, 1.0);
+				ExceptionCaughtDialog.LineNumberTextShadowColor = new Color (0.0, 0.0, 0.0, 0.34);
 			} else {
-				ObjectValueTreeValuesButtonBackground = new Cairo.Color (233 / 255.0, 242 / 255.0, 252 / 255.0);
-				ObjectValueTreeValuesButtonText = new Cairo.Color (82 / 255.0, 148 / 255.0, 235 / 255.0);
-				ObjectValueTreeValuesButtonBorder = new Cairo.Color (82 / 255.0, 148 / 255.0, 235 / 255.0);
-				ObjectValueTreeValueErrorText = new Cairo.Color (1.0, 0.0, 0.0);
-				ObjectValueTreeValueDisabledText = new Cairo.Color (0.5, 0.5, 0.5);
-				ObjectValueTreeValueModifiedText = new Cairo.Color (0.0, 0.0, 1.0);
+				ObjectValueTreeValuesButtonBackground = new Color (233 / 255.0, 242 / 255.0, 252 / 255.0);
+				ObjectValueTreeValuesButtonText = new Color (82 / 255.0, 148 / 255.0, 235 / 255.0);
+				ObjectValueTreeValuesButtonBorder = new Color (82 / 255.0, 148 / 255.0, 235 / 255.0);
+				ObjectValueTreeValueErrorText = new Color (1.0, 0.0, 0.0);
+				ObjectValueTreeValueDisabledText = new Color (0.5, 0.5, 0.5);
+				ObjectValueTreeValueModifiedText = new Color (0.0, 0.0, 1.0);
 
 				PreviewVisualizerBackgroundColor = MonoDevelop.Ide.Gui.Styles.PopoverWindow.DefaultBackgroundColor;
-				PreviewVisualizerHeaderTextColor = new Gdk.Color (219, 219, 219);
-				PreviewVisualizerTextColor = MonoDevelop.Ide.Gui.Styles.PopoverWindow.DefaultTextColor.ToGdkColor();
+				PreviewVisualizerHeaderTextColor = new Color (219 / 255.0, 219 / 255.0, 219 / 255.0);
+				PreviewVisualizerTextColor = MonoDevelop.Ide.Gui.Styles.PopoverWindow.DefaultTextColor;
 
-				ExceptionCaughtDialog.TreeBackgroundColor = new Gdk.Color (90, 90, 90);
-				ExceptionCaughtDialog.InfoFrameBackgroundColor = new Cairo.Color (90d/255d, 90d/255d, 90d/255d);
-				ExceptionCaughtDialog.InfoFrameBorderColor = new Cairo.Color (157d/255d, 162d/255d, 166d/255d);
-				ExceptionCaughtDialog.LineNumberBackgroundColor = new Cairo.Color (0.77, 0.77, 0.77, 1.0);
-				ExceptionCaughtDialog.LineNumberInUserCodeBackgroundColor = new Cairo.Color (0.90, 0.60, 0.87, 1.0);
-				ExceptionCaughtDialog.LineNumberBorderColor = new Cairo.Color (0.0, 0.0, 0.0, 0.11);
-				ExceptionCaughtDialog.LineNumberTextColor = new Cairo.Color (1.0, 1.0, 1.0, 1.0);
-				ExceptionCaughtDialog.LineNumberTextShadowColor = new Cairo.Color (0.0, 0.0, 0.0, 0.34);
+				ExceptionCaughtDialog.TreeBackgroundColor = new Color (90 / 255.0, 90 / 255.0, 90 / 255.0);
+				ExceptionCaughtDialog.InfoFrameBackgroundColor = new Color (90d/255d, 90d/255d, 90d/255d);
+				ExceptionCaughtDialog.InfoFrameBorderColor = new Color (157d/255d, 162d/255d, 166d/255d);
+				ExceptionCaughtDialog.LineNumberBackgroundColor = new Color (0.77, 0.77, 0.77, 1.0);
+				ExceptionCaughtDialog.LineNumberInUserCodeBackgroundColor = new Color (0.90, 0.60, 0.87, 1.0);
+				ExceptionCaughtDialog.LineNumberBorderColor = new Color (0.0, 0.0, 0.0, 0.11);
+				ExceptionCaughtDialog.LineNumberTextColor = new Color (1.0, 1.0, 1.0, 1.0);
+				ExceptionCaughtDialog.LineNumberTextShadowColor = new Color (0.0, 0.0, 0.0, 0.34);
 			}
 		}
 	}

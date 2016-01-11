@@ -258,7 +258,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			headLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
 			headLabel.FontDescription = FontService.GetFontDescription ("Editor").CopyModified (Styles.PopoverWindow.DefaultFontScale);
 			Theme.Font = FontService.SansFont.CopyModified (Styles.PopoverWindow.DefaultFontScale);
-			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor;
+			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor.ToCairoColor ();
 			if (this.Visible)
 				ShowOverload ();
 		}

@@ -220,8 +220,8 @@ namespace MonoDevelop.Components.Docking
 				else
 					gr = new Cairo.LinearGradient (alloc.X, alloc.Y, alloc.X, alloc.Y + alloc.Height);
 				using (gr) {
-					gr.AddColorStop (0, Styles.DockBarBackground1);
-					gr.AddColorStop (1, Styles.DockBarBackground2);
+					gr.AddColorStop (0, Styles.DockBarBackground1.ToCairoColor ());
+					gr.AddColorStop (1, Styles.DockBarBackground2.ToCairoColor ());
 					ctx.SetSource (gr);
 				}
 				ctx.Fill ();
@@ -235,7 +235,7 @@ namespace MonoDevelop.Components.Docking
 				case PositionType.Bottom: ctx.MoveTo (alloc.X, alloc.Y + offs); ctx.RelLineTo (Allocation.Width, 0); break;
 				}
 				ctx.LineWidth = 1;
-				ctx.SetSourceColor (Styles.DockBarSeparatorColorLight);
+				ctx.SetSourceColor (Styles.DockBarSeparatorColorLight.ToCairoColor ());
 				ctx.Stroke ();
 			}
 

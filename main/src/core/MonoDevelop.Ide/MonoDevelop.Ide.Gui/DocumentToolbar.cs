@@ -107,8 +107,8 @@ namespace MonoDevelop.Ide.Gui
 		void ChangeColor (Gtk.Widget w)
 		{
 			w.Realized += delegate {
-				w.ModifyText (StateType.Normal, Styles.BreadcrumbTextColor);
-				w.ModifyFg (StateType.Normal, Styles.BreadcrumbTextColor);
+				w.ModifyText (StateType.Normal, Styles.BreadcrumbTextColor.ToGdkColor ());
+				w.ModifyFg (StateType.Normal, Styles.BreadcrumbTextColor.ToGdkColor ());
 			};
 			if (w is Gtk.Container) {
 				foreach (var c in ((Gtk.Container)w).Children)
@@ -162,15 +162,15 @@ namespace MonoDevelop.Ide.Gui
 
 					// FIXME: VV: Remove gradient features
 					using (Cairo.LinearGradient g = new Cairo.LinearGradient (0, 0, 0, Allocation.Height)) {
-						g.AddColorStop (0, Styles.BreadcrumbBackgroundColor);
-						g.AddColorStop (1, Styles.BreadcrumbGradientEndColor);
+						g.AddColorStop (0, Styles.BreadcrumbBackgroundColor.ToCairoColor ());
+						g.AddColorStop (1, Styles.BreadcrumbGradientEndColor.ToCairoColor ());
 						ctx.SetSource (g);
 						ctx.Fill ();
 					}
 
 					ctx.MoveTo (0.5, Allocation.Height - 0.5);
 					ctx.RelLineTo (Allocation.Width, 0);
-					ctx.SetSourceColor (Styles.BreadcrumbBottomBorderColor);
+					ctx.SetSourceColor (Styles.BreadcrumbBottomBorderColor.ToCairoColor ());
 					ctx.LineWidth = 1;
 					ctx.Stroke ();
 				}

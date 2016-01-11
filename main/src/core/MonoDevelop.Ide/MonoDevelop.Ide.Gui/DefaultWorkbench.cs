@@ -922,22 +922,22 @@ namespace MonoDevelop.Ide.Gui
 			var barHeight = tabControl.BarHeight;
 
 			DockVisualStyle style = new DockVisualStyle ();
-			style.PadTitleLabelColor = Styles.PadLabelColor;
-			style.PadBackgroundColor = Styles.PadBackground;
+			style.PadTitleLabelColor = Styles.PadLabelColor.ToGdkColor ();
+			style.PadBackgroundColor = Styles.PadBackground.ToGdkColor ();
 			style.TreeBackgroundColor = Styles.BaseBackgroundColor.ToGdkColor ();
-			style.InactivePadBackgroundColor = Styles.InactivePadBackground;
+			style.InactivePadBackgroundColor = Styles.InactivePadBackground.ToGdkColor ();
 			style.PadTitleHeight = barHeight;
 			dock.DefaultVisualStyle = style;
 
 			style = new DockVisualStyle ();
-			style.PadTitleLabelColor = Styles.PadLabelColor;
+			style.PadTitleLabelColor = Styles.PadLabelColor.ToGdkColor ();
 			style.PadTitleHeight = barHeight;
 			style.ShowPadTitleIcon = false;
 			style.UppercaseTitles = false;
 			style.ExpandedTabs = true;
-			style.PadBackgroundColor = Styles.BrowserPadBackground;
-			style.InactivePadBackgroundColor = Styles.InactiveBrowserPadBackground;
-			style.TreeBackgroundColor = Styles.BrowserPadBackground;
+			style.PadBackgroundColor = Styles.BrowserPadBackground.ToGdkColor ();
+			style.InactivePadBackgroundColor = Styles.InactiveBrowserPadBackground.ToGdkColor ();
+			style.TreeBackgroundColor = Styles.BrowserPadBackground.ToGdkColor ();
 			dock.SetDockItemStyle ("ProjectPad", style);
 			dock.SetDockItemStyle ("ClassPad", style);
 
