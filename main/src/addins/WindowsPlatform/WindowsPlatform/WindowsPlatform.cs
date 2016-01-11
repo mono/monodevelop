@@ -116,7 +116,7 @@ namespace MonoDevelop.Platform
 			foreach (CommandEntrySet ce in ces)
 			{
 				var item = new TitleMenuItem(commandManager, ce);
-				item.SubmenuClosed += (o, e) =>
+				item.SubmenuClosing += (o, e) =>
 				{
 					bool shouldFocusIde = !mainMenu.Items.OfType<MenuItem>().Any(mi => mi.IsSubmenuOpen);
 					if (shouldFocusIde)
