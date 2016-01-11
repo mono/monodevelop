@@ -251,6 +251,18 @@
     <EmbeddedResource Include="icons\breakpoint-16~dark%402x.png">
       <LogicalName>breakpoint-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\breakpoint-16~disabled.png">
+      <LogicalName>breakpoint-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breakpoint-16~disabled%402x.png">
+      <LogicalName>breakpoint-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breakpoint-16~dark~disabled.png">
+      <LogicalName>breakpoint-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breakpoint-16~dark~disabled%402x.png">
+      <LogicalName>breakpoint-16~dark~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-breakpoints-16.png">
       <LogicalName>pad-breakpoints-16.png</LogicalName>
     </EmbeddedResource>
@@ -346,6 +358,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\lightning-16~dark%402x.png">
       <LogicalName>lightning-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\lightning-16~disabled.png">
+      <LogicalName>lightning-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\lightning-16~disabled%402x.png">
+      <LogicalName>lightning-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\lightning-16~dark~disabled.png">
+      <LogicalName>lightning-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\lightning-16~dark~disabled%402x.png">
+      <LogicalName>lightning-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\exception-48.png">
       <LogicalName>exception-48.png</LogicalName>
@@ -466,6 +490,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\stack-pointer-16~dark%402x.png">
       <LogicalName>stack-pointer-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stack-pointer-16~disabled.png">
+      <LogicalName>stack-pointer-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stack-pointer-16~disabled%402x.png">
+      <LogicalName>stack-pointer-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stack-pointer-16~dark~disabled.png">
+      <LogicalName>stack-pointer-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stack-pointer-16~dark~disabled%402x.png">
+      <LogicalName>stack-pointer-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' != 'DebugMac' AND '$(Configuration)' != 'ReleaseMac' ">
