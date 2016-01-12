@@ -558,7 +558,7 @@ namespace MonoDevelop.Ide.Gui
 					true
 				);
 
-				RealOpenFile (pm, info);
+				await RealOpenFile (pm, info);
 				pm.Dispose ();
 				
 				if (info.NewContent != null) {
@@ -579,7 +579,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		ViewContent BatchOpenDocument (ProgressMonitor monitor, FilePath fileName, Project project, int line, int column, DockNotebook dockNotebook)
+		async Task<ViewContent> BatchOpenDocument (ProgressMonitor monitor, FilePath fileName, Project project, int line, int column, DockNotebook dockNotebook)
 		{
 			if (string.IsNullOrEmpty (fileName))
 				return null;
@@ -592,7 +592,7 @@ namespace MonoDevelop.Ide.Gui
 					DockNotebook = dockNotebook
 				};
 				
-				RealOpenFile (monitor, openFileInfo);
+				await RealOpenFile (monitor, openFileInfo);
 				
 				return openFileInfo.NewContent;
 			}
@@ -864,7 +864,7 @@ namespace MonoDevelop.Ide.Gui
 			return project;
 		}
 		
-		void RealOpenFile (ProgressMonitor monitor, FileOpenInformation openFileInfo)
+		async Task<bool> RealOpenFile (ProgressMonitor monitor, FileOpenInformation openFileInfo)
 		{
 			FilePath fileName;
 			
@@ -874,7 +874,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (origName == null) {
 				monitor.ReportError (GettextCatalog.GetString ("Invalid file name"), null);
-				return;
+				return false;
 			}
 
 			fileName = openFileInfo.FileName;
@@ -884,7 +884,7 @@ namespace MonoDevelop.Ide.Gui
 			//Debug.Assert(FileService.IsValidPath(fileName));
 			if (FileService.IsDirectory (fileName)) {
 				monitor.ReportError (GettextCatalog.GetString ("{0} is a directory", fileName), null);
-				return;
+				return false;
 			}
 			
 			// test, if file fileName exists
@@ -895,14 +895,14 @@ namespace MonoDevelop.Ide.Gui
 						if (doc.Window.ViewContent.IsUntitled && doc.Window.ViewContent.UntitledName == origName) {
 							doc.Select ();
 							openFileInfo.NewContent = doc.Window.ViewContent;
-							return;
+							return true;
 						}
 					}
 				}
 				
 				if (!File.Exists (fileName)) {
 					monitor.ReportError (GettextCatalog.GetString ("File not found: {0}", fileName), null);
-					return;
+					return false;
 				}
 			}
 			
@@ -935,7 +935,7 @@ namespace MonoDevelop.Ide.Gui
 				if (binding != null) {
 					if (viewBinding != null)  {
 						var fw = new LoadFileWrapper (monitor, workbench, viewBinding, project, openFileInfo);
-						fw.Invoke (fileName);
+						await fw.Invoke (fileName);
 					} else {
 						var extBinding = (IExternalDisplayBinding)binding;
 						var app = extBinding.GetApplication (fileName, null, project);
@@ -951,11 +951,14 @@ namespace MonoDevelop.Ide.Gui
 					} catch (Exception ex) {
 						LoggingService.LogError ("Error opening file: " + fileName, ex);
 						MessageService.ShowError (GettextCatalog.GetString ("File '{0}' could not be opened", fileName));
+						return false;
 					}
 				}
 			} catch (Exception ex) {
 				monitor.ReportError ("", ex);
+				return false;
 			}
+			return true;
 		}
 
 		void OnStoringWorkspaceUserPreferences (object s, UserPreferencesEventArgs args)
@@ -1037,7 +1040,7 @@ namespace MonoDevelop.Ide.Gui
 			return dp;
 		}
 
-		void OnLoadingWorkspaceUserPreferences (object s, UserPreferencesEventArgs args)
+		async void OnLoadingWorkspaceUserPreferences (object s, UserPreferencesEventArgs args)
 		{
 			WorkbenchUserPrefs prefs = args.Properties.GetValue<WorkbenchUserPrefs> ("MonoDevelop.Ide.Workbench");
 			if (prefs == null)
@@ -1054,14 +1057,14 @@ namespace MonoDevelop.Ide.Gui
 				using (ProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Loading workspace documents"), Stock.StatusSolutionOperation, true)) {
 
 					var docList = prefs.Files.Distinct (new DocumentUserPrefsFilenameComparer ()).OrderBy (d => d.NotebookId).ToList ();
-					OpenDocumentsInContainer (pm, baseDir, docViews, docList, workbench.TabControl.Container);
+					await OpenDocumentsInContainer (pm, baseDir, docViews, docList, workbench.TabControl.Container);
 
 					foreach (var fw in prefs.FloatingWindows) {
 						var dockWindow = new DockWindow ();
 						dockWindow.Move (fw.X, fw.Y);
 						dockWindow.Resize (fw.Width, fw.Height);
 						docList = fw.Files.Distinct (new DocumentUserPrefsFilenameComparer ()).OrderBy (d => d.NotebookId).ToList ();
-						OpenDocumentsInContainer (pm, baseDir, docViews, docList, dockWindow.Container);
+						await OpenDocumentsInContainer (pm, baseDir, docViews, docList, dockWindow.Container);
 						floatingWindows.Add (dockWindow);
 					}
 
@@ -1105,7 +1108,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		void OpenDocumentsInContainer (ProgressMonitor pm, FilePath baseDir, List<Tuple<ViewContent,string>> docViews, List<DocumentUserPrefs> list, DockNotebookContainer container)
+		async Task<bool> OpenDocumentsInContainer (ProgressMonitor pm, FilePath baseDir, List<Tuple<ViewContent,string>> docViews, List<DocumentUserPrefs> list, DockNotebookContainer container)
 		{
 			int currentNotebook = -1;
 			DockNotebook nb = container.GetFirstNotebook ();
@@ -1119,7 +1122,7 @@ namespace MonoDevelop.Ide.Gui
 						currentNotebook = doc.NotebookId;
 					}
 					// TODO: Get the correct project.
-					var view = IdeApp.Workbench.BatchOpenDocument (pm, fileName, null, doc.Line, doc.Column, nb);
+					var view = await IdeApp.Workbench.BatchOpenDocument (pm, fileName, null, doc.Line, doc.Column, nb);
 
 					if (view != null) {
 						var t = new Tuple<ViewContent,string> (view, fileName);
@@ -1127,6 +1130,7 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 			}
+			return true;
 		}
 		
 		internal Document FindDocument (IWorkbenchWindow window)
@@ -1459,7 +1463,7 @@ namespace MonoDevelop.Ide.Gui
 			this.project = project;
 		}
 		
-		public async void Invoke (string fileName)
+		public async Task<bool> Invoke (string fileName)
 		{
 			try {
 				Counters.OpenDocumentTimer.Trace ("Creating content");
@@ -1471,7 +1475,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 				if (newContent == null) {
 					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
-					return;
+					return false;
 				}
 				
 				if (project != null)
@@ -1483,21 +1487,21 @@ namespace MonoDevelop.Ide.Gui
 					await newContent.Load (fileInfo);
 				} catch (InvalidEncodingException iex) {
 					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. {1}", fileName, iex.Message), null);
-					return;
+					return false;
 				} catch (OverflowException) {
 					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. File too large.", fileName), null);
-					return;
+					return false;
 				}
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), ex);
-				return;
+				return false;
 			}
 			
 			// content got re-used
 			if (newContent.WorkbenchWindow != null) {
 				newContent.WorkbenchWindow.SelectWindow ();
 				fileInfo.NewContent = newContent;
-				return;
+				return true;
 			}
 
 			Counters.OpenDocumentTimer.Trace ("Showing view");
@@ -1514,6 +1518,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			fileInfo.NewContent = newContent;
+			return true;
 		}
 		
 		void JumpToLine ()
