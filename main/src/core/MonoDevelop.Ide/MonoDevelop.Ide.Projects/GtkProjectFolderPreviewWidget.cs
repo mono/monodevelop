@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Projects
 
 		static void UpdateStyles ()
 		{
-			var bgColorHex = Styles.NewProjectDialog.ProjectConfigurationRightHandBackgroundColor.GetHex ();
+			var bgColorHex = Styles.ColorGetHex (Styles.NewProjectDialog.ProjectConfigurationRightHandBackgroundColor);
 
 			string rcstyle = "style \"projectFolderPreviewWidget\"\r\n{\r\n" +
 				"    base[NORMAL] = \"" + bgColorHex + "\"\r\n" +
@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Projects
 
 			previewLabel.LabelProp = String.Format (
 				"<span weight='bold' foreground='{0}'>{1}</span>",
-				CairoExtensions.ColorGetHex (Styles.NewProjectDialog.ProjectConfigurationPreviewLabelColor),
+				Styles.ColorGetHex (Styles.NewProjectDialog.ProjectConfigurationPreviewLabelColor),
 				global::Mono.Unix.Catalog.GetString ("PREVIEW"));
 
 			CreateFolderTreeViewColumns ();

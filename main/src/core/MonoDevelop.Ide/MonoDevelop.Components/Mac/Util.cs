@@ -112,6 +112,13 @@ namespace MonoDevelop.Components.Mac
 				(nfloat)col.R, (nfloat)col.G, (nfloat)col.B, (nfloat)col.A
 			});
 		}
+		
+		public static CoreGraphics.CGColor ToCGColor (this Color col)
+		{
+			return new CoreGraphics.CGColor (DeviceRgbColorSpace, new nfloat[] {
+				(nfloat)col.Red, (nfloat)col.Green, (nfloat)col.Blue, (nfloat)col.Alpha
+			});
+		}
 
 		static Selector applyFontTraits = new Selector ("applyFontTraits:range:");
 

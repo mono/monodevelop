@@ -109,7 +109,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
 			Theme.SetSchemeColors (scheme);
 			Theme.Font = FontService.SansFont.CopyModified (Styles.PopoverWindow.DefaultFontScale);
-			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor;
+			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor.ToCairoColor ();
 			foreColor = scheme.PlainText.Foreground;
 
 			headlabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());

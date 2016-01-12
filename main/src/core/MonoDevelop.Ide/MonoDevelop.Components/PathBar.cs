@@ -250,8 +250,8 @@ namespace MonoDevelop.Components
 				ctx.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 				// FIXME: VV: Remove gradient features
 				using (var g = new Cairo.LinearGradient (0, 0, 0, Allocation.Height)) {
-					g.AddColorStop (0, Styles.BreadcrumbBackgroundColor);
-					g.AddColorStop (1, Styles.BreadcrumbGradientEndColor);
+					g.AddColorStop (0, Styles.BreadcrumbBackgroundColor.ToCairoColor ());
+					g.AddColorStop (1, Styles.BreadcrumbGradientEndColor.ToCairoColor ());
 					ctx.SetSource (g);
 				}
 				ctx.Fill ();
@@ -374,7 +374,7 @@ namespace MonoDevelop.Components
 
 				ctx.MoveTo (0, Allocation.Height - 0.5);
 				ctx.RelLineTo (Allocation.Width, 0);
-				ctx.SetSourceColor (Styles.BreadcrumbBottomBorderColor);
+				ctx.SetSourceColor (Styles.BreadcrumbBottomBorderColor.ToCairoColor ());
 				ctx.LineWidth = 1;
 				ctx.Stroke ();
 			}
@@ -400,11 +400,11 @@ namespace MonoDevelop.Components
 			double height = Allocation.Height - topPadding - bottomPadding + buttonPadding * 2;
 
 			ctx.Rectangle (x, y, width, height);
-			ctx.SetSourceColor (Styles.BreadcrumbButtonFillColor);
+			ctx.SetSourceColor (Styles.BreadcrumbButtonFillColor.ToCairoColor ());
 			ctx.Fill ();
 
 			ctx.Rectangle (x + 0.5, y + 0.5, width - 1, height - 1);
-			ctx.SetSourceColor (Styles.BreadcrumbButtonBorderColor);
+			ctx.SetSourceColor (Styles.BreadcrumbButtonBorderColor.ToCairoColor ());
 			ctx.LineWidth = 1;
 			ctx.Stroke ();
 		}

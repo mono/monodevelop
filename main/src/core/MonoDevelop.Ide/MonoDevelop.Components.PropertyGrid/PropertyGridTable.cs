@@ -446,14 +446,14 @@ namespace MonoDevelop.Components.PropertyGrid
 				int dx = (int)((double)Allocation.Width * dividerPosition);
 				ctx.LineWidth = 1;
 				ctx.Rectangle (0, 0, dx, Allocation.Height);
-				ctx.SetSourceColor (Styles.PropertyPadLabelBackgroundColor);
+				ctx.SetSourceColor (Styles.PropertyPadLabelBackgroundColor.ToCairoColor ());
 				ctx.Fill ();
 				ctx.Rectangle (dx, 0, Allocation.Width - dx, Allocation.Height);
 				ctx.SetSourceColor (Styles.BrowserPadBackground.ToCairoColor());
 				ctx.Fill ();
 				ctx.MoveTo (dx + 0.5, 0);
 				ctx.RelLineTo (0, Allocation.Height);
-				ctx.SetSourceColor (Styles.PropertyPadDividerColor);
+				ctx.SetSourceColor (Styles.PropertyPadDividerColor.ToCairoColor ());
 				ctx.Stroke ();
 
 				int y = 0;
@@ -480,8 +480,8 @@ namespace MonoDevelop.Components.PropertyGrid
 					var rh = h + CategoryTopBottomPadding*2;
 					ctx.Rectangle (0, y, Allocation.Width, rh);
 					using (var gr = new LinearGradient (0, y, 0, rh)) {
-						gr.AddColorStop (0, Styles.PadCategoryBackgroundGradientStartColor);
-						gr.AddColorStop (1, Styles.PadCategoryBackgroundGradientEndColor);
+						gr.AddColorStop (0, Styles.PadCategoryBackgroundGradientStartColor.ToCairoColor ());
+						gr.AddColorStop (1, Styles.PadCategoryBackgroundGradientEndColor.ToCairoColor ());
 						ctx.SetSource (gr);
 						ctx.Fill ();
 					}
@@ -492,11 +492,11 @@ namespace MonoDevelop.Components.PropertyGrid
 					}
 					ctx.MoveTo (0, y + rh - 0.5);
 					ctx.LineTo (Allocation.Width, y + rh - 0.5);
-					ctx.SetSourceColor (Styles.PadCategoryBorderColor);
+					ctx.SetSourceColor (Styles.PadCategoryBorderColor.ToCairoColor ());
 					ctx.Stroke ();
 
 					ctx.MoveTo (x, y + CategoryTopBottomPadding);
-					ctx.SetSourceColor (Styles.PadCategoryLabelColor);
+					ctx.SetSourceColor (Styles.PadCategoryLabelColor.ToCairoColor ());
 					Pango.CairoHelper.ShowLayout (ctx, layout);
 
 					var img = r.Expanded ? discloseUp : discloseDown;
@@ -554,7 +554,7 @@ namespace MonoDevelop.Components.PropertyGrid
 						// Repaing the background because the cairo clip doesn't work for gdk primitives
 						int dx = (int)((double)Allocation.Width * dividerPosition);
 						ctx.Rectangle (0, y, dx, Allocation.Height - y);
-						ctx.SetSourceColor (Styles.PropertyPadLabelBackgroundColor);
+						ctx.SetSourceColor (Styles.PropertyPadLabelBackgroundColor.ToCairoColor ());
 						ctx.Fill ();
 						ctx.Rectangle (dx + 1, y, Allocation.Width - dx - 1, Allocation.Height - y);
 						ctx.SetSourceColor (Styles.BrowserPadBackground.ToCairoColor());

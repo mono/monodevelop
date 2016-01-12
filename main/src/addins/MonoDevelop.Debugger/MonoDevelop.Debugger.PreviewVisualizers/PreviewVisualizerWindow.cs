@@ -44,7 +44,7 @@ namespace MonoDevelop.Debugger
 				this.Modal = true;
 			TransientFor = (Gtk.Window) invokingWidget.Toplevel;
 
-			Theme.SetBackgroundColor (Styles.PreviewVisualizerBackgroundColor);
+			Theme.SetBackgroundColor (Styles.PreviewVisualizerBackgroundColor.ToCairoColor ());
 			Theme.Padding = 3;
 			ShowArrow = true;
 			var mainBox = new VBox ();
@@ -64,7 +64,7 @@ namespace MonoDevelop.Debugger
 			headerTable.Attach (hb, 0, 1, 0, 1);
 
 			var headerTitle = new Label ();
-			headerTitle.ModifyFg (StateType.Normal, Styles.PreviewVisualizerHeaderTextColor);
+			headerTitle.ModifyFg (StateType.Normal, Styles.PreviewVisualizerHeaderTextColor.ToGdkColor ());
 			var font = headerTitle.Style.FontDescription.Copy ();
 			font.Weight = Pango.Weight.Bold;
 			headerTitle.ModifyFont (font);

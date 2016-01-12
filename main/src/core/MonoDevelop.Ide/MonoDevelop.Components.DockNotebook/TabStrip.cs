@@ -792,9 +792,9 @@ namespace MonoDevelop.Components.DockNotebook
 
 			if (hovered || active && !dirty) {
 				if (hovered)
-					context.SetSourceColor (active ? Styles.TabBarActiveTextColor : Styles.TabBarInactiveTextColor);
+					context.SetSourceColor ((active ? Styles.TabBarActiveTextColor : Styles.TabBarInactiveTextColor).ToCairoColor ());
 				else if (active && !dirty)
-					context.SetSourceColor (Styles.TabBarInactiveTextColor);
+					context.SetSourceColor (Styles.TabBarInactiveTextColor.ToCairoColor ());
 				
 				context.LineWidth = 2;
 
@@ -854,12 +854,12 @@ namespace MonoDevelop.Components.DockNotebook
 				// If that bug get's fixed remove this HACK asap.
 				la.Ellipsize = Pango.EllipsizeMode.End;
 				la.Width = (int)(tw * Pango.Scale.PangoScale);
-				ctx.SetSourceColor (tab.Notify ? Styles.TabBarNotifyTextColor : (active ? Styles.TabBarActiveTextColor : Styles.TabBarInactiveTextColor));
+				ctx.SetSourceColor ((tab.Notify ? Styles.TabBarNotifyTextColor : (active ? Styles.TabBarActiveTextColor : Styles.TabBarInactiveTextColor)).ToCairoColor ());
 				Pango.CairoHelper.ShowLayout (ctx, la.GetLine (0).Layout);
 			} else {
 				// ellipses are for space wasting ..., we cant afford that
 				using (var lg = new LinearGradient (tx + tw - 10, 0, tx + tw, 0)) {
-					var color = tab.Notify ? Styles.TabBarNotifyTextColor : (active ? Styles.TabBarActiveTextColor : Styles.TabBarInactiveTextColor);
+					var color = (tab.Notify ? Styles.TabBarNotifyTextColor : (active ? Styles.TabBarActiveTextColor : Styles.TabBarInactiveTextColor)).ToCairoColor ();
 					color = color.MultiplyAlpha (tab.Opacity);
 					lg.AddColorStop (0, color);
 					color.A = 0;

@@ -138,10 +138,10 @@ namespace MonoDevelop.VersionControl.Views
 				Gdk.GC normalGC = widget.Style.TextGC (StateType.Normal);
 				Gdk.GC removedGC = new Gdk.GC (window);
 				removedGC.Copy (normalGC);
-				removedGC.RgbFgColor = Styles.LogView.DiffRemoveBackgroundColor.AddLight (-0.3);
+				removedGC.RgbFgColor = Styles.LogView.DiffRemoveBackgroundColor.AddLight (-0.3).ToGdkColor ();
 				Gdk.GC addedGC = new Gdk.GC (window);
 				addedGC.Copy (normalGC);
-				addedGC.RgbFgColor = Styles.LogView.DiffAddBackgroundColor.AddLight (-0.3);
+				addedGC.RgbFgColor = Styles.LogView.DiffAddBackgroundColor.AddLight (-0.3).ToGdkColor ();
 				Gdk.GC infoGC = new Gdk.GC (window);
 				infoGC.Copy (normalGC);
 				infoGC.RgbFgColor = widget.Style.Text (StateType.Normal).AddLight (0.2);
@@ -348,16 +348,16 @@ namespace MonoDevelop.VersionControl.Views
 			int bottomSpacing = (lineHeight - spacing) / 2;
 			
 			ctx.Rectangle (x + shadowSize + 0.5, firstBlock.YStart + bottomSpacing + spacing - shadowSize + 0.5, width - shadowSize*2, shadowSize);
-			ctx.SetSourceColor (Styles.LogView.DiffBoxSplitterColor);
+			ctx.SetSourceColor (Styles.LogView.DiffBoxSplitterColor.ToCairoColor ());
 			ctx.LineWidth = 1;
 			ctx.Fill ();
 			
 			ctx.Rectangle (x + shadowSize + 0.5, lastBlock.YEnd + bottomSpacing + 0.5, width - shadowSize*2, shadowSize);
-			ctx.SetSourceColor (Styles.LogView.DiffBoxSplitterColor);
+			ctx.SetSourceColor (Styles.LogView.DiffBoxSplitterColor.ToCairoColor ());
 			ctx.Fill ();
 			
 			ctx.Rectangle (x + 0.5, firstBlock.YStart + bottomSpacing + spacing + 0.5, width, lastBlock.YEnd - firstBlock.YStart - spacing);
-			ctx.SetSourceColor (Styles.LogView.DiffBoxBorderColor);
+			ctx.SetSourceColor (Styles.LogView.DiffBoxBorderColor.ToCairoColor ());
 			ctx.Stroke ();
 			
 			string text = lines[firstBlock.FirstLine].Replace ("@","").Replace ("-","");
@@ -375,7 +375,7 @@ namespace MonoDevelop.VersionControl.Views
 			ctx.LineWidth = 1;
 			ctx.SetSourceColor (widget.Style.Base (StateType.Normal).ToCairoColor ());
 			ctx.FillPreserve ();
-			ctx.SetSourceColor (Styles.LogView.DiffBoxBorderColor);
+			ctx.SetSourceColor (Styles.LogView.DiffBoxBorderColor.ToCairoColor ());
 			ctx.Stroke ();
 				
 			window.DrawLayout (gc, (int)(x + 2 + LeftPaddingBlock), firstBlock.YStart + dy, layout);
@@ -395,7 +395,7 @@ namespace MonoDevelop.VersionControl.Views
 			ctx.LineWidth = 1;
 			ctx.SetSourceColor (widget.Style.Base (Gtk.StateType.Normal).ToCairoColor ());
 			ctx.FillPreserve ();
-			ctx.SetSourceColor (Styles.LogView.DiffBoxBorderColor);
+			ctx.SetSourceColor (Styles.LogView.DiffBoxBorderColor.ToCairoColor ());
 			ctx.Stroke ();
 
 			window.DrawLayout (gc, right - tw - 1, top + dy, layout);
@@ -406,7 +406,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (!IsChangeBlock (block.Type))
 				return;
 			
-			Gdk.Color color = block.Type == BlockType.Added ? Styles.LogView.DiffAddBackgroundColor : Styles.LogView.DiffRemoveBackgroundColor;
+			var color = block.Type == BlockType.Added ? Styles.LogView.DiffAddBackgroundColor : Styles.LogView.DiffRemoveBackgroundColor;
 			double y = block.YStart;
 			int height = block.YEnd - block.YStart;
 			
@@ -451,7 +451,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (!IsChangeBlock (block.Type))
 				return;
 			
-			Gdk.Color color = block.Type == BlockType.Added ? Styles.LogView.DiffAddBackgroundColor : Styles.LogView.DiffRemoveBackgroundColor;
+			var color = block.Type == BlockType.Added ? Styles.LogView.DiffAddBackgroundColor : Styles.LogView.DiffRemoveBackgroundColor;
 
 			int ssize = 8;
 			int barSize = 3;

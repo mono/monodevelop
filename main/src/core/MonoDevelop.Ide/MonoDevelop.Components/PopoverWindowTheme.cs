@@ -236,8 +236,8 @@ namespace MonoDevelop.Components
 			Padding = 6;
 			ArrowWidth = 10;
 			ArrowLength = 5;
-			BackgroundColor = Styles.PopoverWindow.DefaultBackgroundColor;
-			ShadowColor = Styles.PopoverWindow.ShadowColor;
+			BackgroundColor = Styles.PopoverWindow.DefaultBackgroundColor.ToCairoColor ();
+			ShadowColor = Styles.PopoverWindow.ShadowColor.ToCairoColor ();
 
 			Font = Pango.FontDescription.FromString ("Normal");
 		}

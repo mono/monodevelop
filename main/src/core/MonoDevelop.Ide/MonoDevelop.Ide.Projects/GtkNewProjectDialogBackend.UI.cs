@@ -35,13 +35,13 @@ namespace MonoDevelop.Ide.Projects
 {
 	partial class GtkNewProjectDialogBackend : IdeDialog
 	{
-		Color bannerBackgroundColor = Styles.NewProjectDialog.BannerBackgroundColor;
-		Color bannerLineColor = Styles.NewProjectDialog.BannerLineColor;
-		Color whiteColor = Styles.NewProjectDialog.BannerForegroundColor;
-		Color categoriesBackgroundColor = Styles.NewProjectDialog.CategoriesBackgroundColor;
-		Color templateListBackgroundColor = Styles.NewProjectDialog.TemplateListBackgroundColor;
-		Color templateBackgroundColor = Styles.NewProjectDialog.TemplateBackgroundColor;
-		Color templateSectionSeparatorColor = Styles.NewProjectDialog.TemplateSectionSeparatorColor;
+		Color bannerBackgroundColor = Styles.NewProjectDialog.BannerBackgroundColor.ToGdkColor ();
+		Color bannerLineColor = Styles.NewProjectDialog.BannerLineColor.ToGdkColor ();
+		Color whiteColor = Styles.NewProjectDialog.BannerForegroundColor.ToGdkColor ();
+		Color categoriesBackgroundColor = Styles.NewProjectDialog.CategoriesBackgroundColor.ToGdkColor ();
+		Color templateListBackgroundColor = Styles.NewProjectDialog.TemplateListBackgroundColor.ToGdkColor ();
+		Color templateBackgroundColor = Styles.NewProjectDialog.TemplateBackgroundColor.ToGdkColor ();
+		Color templateSectionSeparatorColor = Styles.NewProjectDialog.TemplateSectionSeparatorColor.ToGdkColor ();
 
 		VBox centreVBox;
 		HBox templatesHBox;
@@ -78,8 +78,8 @@ namespace MonoDevelop.Ide.Projects
 
 		static void UpdateStyles ()
 		{
-			var categoriesBackgroundColorHex = Styles.NewProjectDialog.CategoriesBackgroundColor.GetHex ();
-			var templateListBackgroundColorHex = Styles.NewProjectDialog.TemplateListBackgroundColor.GetHex ();
+			var categoriesBackgroundColorHex = Styles.ColorGetHex (Styles.NewProjectDialog.CategoriesBackgroundColor);
+			var templateListBackgroundColorHex = Styles.ColorGetHex (Styles.NewProjectDialog.TemplateListBackgroundColor);
 
 			string rcstyle = "style \"templateCategoriesTreeView\"\r\n{\r\n" +
 				"    base[NORMAL] = \"" + categoriesBackgroundColorHex + "\"\r\n" +

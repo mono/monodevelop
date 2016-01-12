@@ -617,7 +617,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				declarationviewwindow.SetDefaultScheme ();
 			}
 			declarationviewwindow.CaretSpacing = Gui.Styles.TooltipInfoSpacing;
-			declarationviewwindow.Theme.SetBackgroundColor (Gui.Styles.CodeCompletion.BackgroundColor);
+			declarationviewwindow.Theme.SetBackgroundColor (Gui.Styles.CodeCompletion.BackgroundColor.ToCairoColor ());
 		}
 
 		void RepositionDeclarationViewWindow ()

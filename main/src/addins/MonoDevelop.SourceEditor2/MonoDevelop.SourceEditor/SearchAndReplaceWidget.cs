@@ -296,7 +296,7 @@ namespace MonoDevelop.SourceEditor
 			resultInformLabelEventBox.BorderWidth = 2;
 			resultInformLabel.Xpad = 2;
 			resultInformLabel.Show ();
-			searchEntry.FilterButtonPixbuf = Xwt.Drawing.Image.FromResource ("searchoptions.png");
+			searchEntry.FilterButtonPixbuf = Xwt.Drawing.Image.FromResource ("find-options-22x32.png");
 
 			if (textEditor.IsSomethingSelected) {
 				if (textEditor.MainSelection.MinLine == textEditor.MainSelection.MaxLine || ClipboardContainsSelection()) {
@@ -856,9 +856,7 @@ But I leave it in in the case I've missed something. Mike
 				return null;
 			textEditor.CenterToCaret ();
 
-			if (result == null) {
-				IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Search pattern not found"));
-			} else if (result.SearchWrapped) {
+			if (result.SearchWrapped) {
 				IdeApp.Workbench.StatusBar.ShowMessage (
 					Stock.Find,
 					GettextCatalog.GetString ("Reached bottom, continued from top")
@@ -876,9 +874,7 @@ But I leave it in in the case I've missed something. Mike
 			if (result == null)
 				return null;
 			textEditor.CenterToCaret ();
-			if (result == null) {
-				IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Search pattern not found"));
-			} else if (result.SearchWrapped) {
+			if (result.SearchWrapped) {
 				IdeApp.Workbench.StatusBar.ShowMessage (
 					Stock.Find,
 					GettextCatalog.GetString ("Reached top, continued from bottom")

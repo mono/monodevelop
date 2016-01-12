@@ -48,9 +48,9 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			};
 		}
 
-		protected override void GuiDispatch (MessageHandler handler)
+		protected override void GuiDispatch (Action action)
 		{
-			handler.Invoke ();
+			action.Invoke ();
 		}
 
 		public Func<string, bool> FileExistsAction;

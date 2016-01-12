@@ -178,15 +178,15 @@ namespace MonoDevelop.Components
 			using (var cr = Gdk.CairoHelper.Create (evnt.Window)) {
 				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 				using (LinearGradient gr = new LinearGradient (0, 0, 0, Allocation.Height)) {
-					gr.AddColorStop (0, Styles.SubTabBarBackgroundGradientStartColor);
-					gr.AddColorStop (1, Styles.SubTabBarBackgroundGradientEndColor);
+					gr.AddColorStop (0, Styles.SubTabBarBackgroundGradientStartColor.ToCairoColor ());
+					gr.AddColorStop (1, Styles.SubTabBarBackgroundGradientEndColor.ToCairoColor ());
 					cr.SetSource (gr);
 				}
 				cr.Fill ();
 
 				cr.MoveTo (0.5, 0.5);
 				cr.Line (0.5, 0.5, Allocation.Width - 1, 0.5);
-				cr.SetSourceColor (Styles.SubTabBarBackgroundGradientTopColor);
+				cr.SetSourceColor (Styles.SubTabBarBackgroundGradientTopColor.ToCairoColor ());
 				cr.LineWidth = 1;
 				cr.Stroke ();
 
@@ -299,7 +299,7 @@ namespace MonoDevelop.Components
 				cr.MoveTo (x, rectangle.Y + 0.5 + 2);
 				cr.RelLineTo (0, rectangle.Height - 1 - 4);
 				cr.ClosePath ();
-				cr.SetSourceColor (Styles.SubTabBarSeparatorColor);
+				cr.SetSourceColor (Styles.SubTabBarSeparatorColor.ToCairoColor ());
 				cr.LineWidth = 1;
 				cr.Stroke ();
 				return;
@@ -309,20 +309,20 @@ namespace MonoDevelop.Components
 				if (Active) {
 					cr.Rectangle (rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 					using (var gr = new LinearGradient (rectangle.X, rectangle.Y, rectangle.X, rectangle.Y + rectangle.Height)) {
-						gr.AddColorStop (0, Styles.SubTabBarActiveGradientStartColor);
-						gr.AddColorStop (1, Styles.SubTabBarActiveGradientEndColor);
+						gr.AddColorStop (0, Styles.SubTabBarActiveGradientStartColor.ToCairoColor ());
+						gr.AddColorStop (1, Styles.SubTabBarActiveGradientEndColor.ToCairoColor ());
 						cr.SetSource (gr);
 					}
 					cr.Fill ();
 					cr.Rectangle (rectangle.X + 0.5, rectangle.Y + 0.5, rectangle.Width - 1, rectangle.Height - 1);
-					cr.SetSourceColor (Styles.SubTabBarActiveGradientTopColor);
+					cr.SetSourceColor (Styles.SubTabBarActiveGradientTopColor.ToCairoColor ());
 					cr.LineWidth = 1;
 					cr.Stroke ();
 				} else if (HoverPosition.X >= 0) {
 					cr.Rectangle (rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 					using (var gr = new LinearGradient (rectangle.X, rectangle.Y, rectangle.X, rectangle.Y + rectangle.Height)) {
-						gr.AddColorStop (0, Styles.SubTabBarHoverGradientStartColor);
-						gr.AddColorStop (1, Styles.SubTabBarHoverGradientEndColor);
+						gr.AddColorStop (0, Styles.SubTabBarHoverGradientStartColor.ToCairoColor ());
+						gr.AddColorStop (1, Styles.SubTabBarHoverGradientEndColor.ToCairoColor ());
 						cr.SetSource (gr);
 					}
 					cr.Fill ();
@@ -330,9 +330,9 @@ namespace MonoDevelop.Components
 			}
 
 			if (Active)
-				cr.SetSourceColor (Styles.SubTabBarActiveTextColor);
+				cr.SetSourceColor (Styles.SubTabBarActiveTextColor.ToCairoColor ());
 			else
-				cr.SetSourceColor (Styles.SubTabBarTextColor);
+				cr.SetSourceColor (Styles.SubTabBarTextColor.ToCairoColor ());
 
 			if (layout.Width != (int)rectangle.Width)
 				layout.Width = (int)rectangle.Width;

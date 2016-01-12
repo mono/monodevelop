@@ -103,7 +103,7 @@ namespace MonoDevelop.Components.Commands
 				this.IconWidget = iconWidget = new ImageView (cmdInfo.Icon, Gtk.IconSize.Menu);
 			}
 			if (IconWidget != null && cmdInfo.Enabled != Sensitive)
-				iconWidget.Image = iconWidget.Image.WithAlpha (cmdInfo.Enabled ? 1.0 : 0.4);
+				iconWidget.Image = iconWidget.Image.WithStyles (cmdInfo.Enabled ? "" : "disabled").WithAlpha (cmdInfo.Enabled ? 1.0 : 0.4);
 			if (cmdInfo.Enabled != Sensitive)
 				Sensitive = cmdInfo.Enabled;
 			if (cmdInfo.Visible != Visible)

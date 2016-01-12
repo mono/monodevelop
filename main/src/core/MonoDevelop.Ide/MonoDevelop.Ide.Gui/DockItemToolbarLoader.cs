@@ -190,7 +190,7 @@ namespace MonoDevelop.Ide.Gui
 				button.Image = image = new ImageView (cmdInfo.Icon, Gtk.IconSize.Menu);
 			}
 			if (button.Image != null && cmdInfo.Enabled != button.Sensitive)
-				image.Image = image.Image.WithAlpha (cmdInfo.Enabled ? 1.0 : 0.4);
+				image.Image = image.Image.WithStyles (cmdInfo.Enabled ? "" : "disabled").WithAlpha (cmdInfo.Enabled ? 1.0 : 0.4);
 			if (cmdInfo.Enabled != button.Sensitive)
 				button.Sensitive = cmdInfo.Enabled;
 			if (cmdInfo.Visible != button.Visible)

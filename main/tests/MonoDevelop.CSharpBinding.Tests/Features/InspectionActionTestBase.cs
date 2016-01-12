@@ -83,7 +83,7 @@ namespace ICSharpCode.NRefactory6
 			string assemblyName = "")
 		{
 			if (compOptions == null) {
-				compOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, "a.dll");
+				compOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, false, "a.dll");
 			}
 
 			return CSharpCompilation.Create(

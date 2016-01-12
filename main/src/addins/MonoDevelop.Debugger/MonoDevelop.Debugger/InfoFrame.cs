@@ -50,10 +50,10 @@ namespace MonoDevelop.Debugger
 				cr.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
 				cr.ClipPreserve ();
 
-				cr.SetSourceColor (Styles.ExceptionCaughtDialog.InfoFrameBackgroundColor);
+				cr.SetSourceColor (Styles.ExceptionCaughtDialog.InfoFrameBackgroundColor.ToCairoColor ());
 				cr.FillPreserve ();
 
-				cr.SetSourceColor (Styles.ExceptionCaughtDialog.InfoFrameBorderColor);
+				cr.SetSourceColor (Styles.ExceptionCaughtDialog.InfoFrameBorderColor.ToCairoColor ());
 				cr.LineWidth = 2;
 				cr.Stroke ();
 			}

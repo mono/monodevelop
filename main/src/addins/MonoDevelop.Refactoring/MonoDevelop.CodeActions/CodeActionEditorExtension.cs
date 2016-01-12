@@ -589,10 +589,6 @@ namespace MonoDevelop.CodeActions
 				menu.Add (subMenu);
 				items++;
 			}
-
-
-
-
 		}
 
 		internal class ContextActionRunner

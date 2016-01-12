@@ -45,24 +45,25 @@ namespace MonoDevelop.Ide.Editor
 		/// The name of the document. It's the file name for files on disc. 
 		/// For unsaved files that name is different.
 		/// </summary>
-		public abstract string Name
-		{
+		public abstract string Name {
 			get;
 		}
 
 		/// <summary>
 		/// Project != null
 		/// </summary>
-		public virtual bool HasProject
-		{
+		public virtual bool HasProject {
 			get { return Project != null; }
+		}
+
+		internal virtual bool IsAdHocProject {
+			get { return false; }
 		}
 
 		/// <summary>
 		/// Gets the project this context is in.
 		/// </summary>
-		public abstract Project Project
-		{
+		public abstract Project Project {
 			get;
 		}
 

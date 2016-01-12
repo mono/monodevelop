@@ -219,7 +219,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var catLabel = new FixedWidthWrapLabel ();
 				catLabel.Markup = categoryName;
 				catLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
-				catLabel.FontDescription = font;
+				catLabel.FontDescription = font.Copy ();
+				catLabel.FontDescription.Weight = Pango.Weight.Bold;
+				catLabel.FontDescription.Size = catLabel.FontDescription.Size + (int)(1 * Pango.Scale.PangoScale);
 				vbox.PackStart (catLabel, false, true, 0);
 			}
 
@@ -230,6 +232,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 
 			contentLabel.Wrap = Pango.WrapMode.WordChar;
+			contentLabel.Spacing = 3;
 			contentLabel.BreakOnCamelCasing = false;
 			contentLabel.BreakOnPunctuation = false;
 			contentLabel.MaxWidth = 400;
@@ -255,7 +258,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			headLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
 			headLabel.FontDescription = FontService.GetFontDescription ("Editor").CopyModified (Styles.PopoverWindow.DefaultFontScale);
 			Theme.Font = FontService.SansFont.CopyModified (Styles.PopoverWindow.DefaultFontScale);
-			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor;
+			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor.ToCairoColor ();
 			if (this.Visible)
 				ShowOverload ();
 		}

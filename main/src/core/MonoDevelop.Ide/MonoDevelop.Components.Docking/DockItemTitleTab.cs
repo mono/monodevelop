@@ -464,15 +464,15 @@ namespace MonoDevelop.Components.Docking
 
 				// FIXME: VV: Remove gradient features
 				using (var g = new Cairo.LinearGradient (x, y + 1, x, y + Allocation.Height - 1)) {
-					g.AddColorStop (0, Styles.DockTabBarGradientStart);
-					g.AddColorStop (1, Styles.DockTabBarGradientEnd);
+					g.AddColorStop (0, Styles.DockTabBarGradientStart.ToCairoColor ());
+					g.AddColorStop (1, Styles.DockTabBarGradientEnd.ToCairoColor ());
 					ctx.SetSource (g);
 					ctx.Fill ();
 				}
 
 				ctx.MoveTo (x + 0.5, y + 0.5);
 				ctx.LineTo (x + Allocation.Width - 0.5d, y + 0.5);
-				ctx.SetSourceColor (Styles.DockTabBarGradientTop);
+				ctx.SetSourceColor (Styles.DockTabBarGradientTop.ToCairoColor ());
 				ctx.Stroke ();
 
 				if (active) {

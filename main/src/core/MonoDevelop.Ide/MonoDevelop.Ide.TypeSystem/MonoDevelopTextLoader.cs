@@ -28,6 +28,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Core.Text;
+using System.IO;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -43,12 +44,15 @@ namespace MonoDevelop.Ide.TypeSystem
 		#region implemented abstract members of TextLoader
 		TextAndVersion GetTextAndVersion (Workspace workspace, DocumentId documentId)
 		{
+			if (!File.Exists (fileName)) {
+				return TextAndVersion.Create (((MonoDevelopWorkspace)workspace).GetDocument (documentId).GetTextAsync ().Result, VersionStamp.Create ());
+			}
 			SourceText text;
 			if (workspace.IsDocumentOpen (documentId)) {
 				text = new MonoDevelopSourceText (TextFileProvider.Instance.GetTextEditorData (fileName).CreateDocumentSnapshot ());
 			}
 			else {
-				text = SourceText.From (MonoDevelop.Core.Text.TextFileUtility.GetText (fileName));
+				text = SourceText.From (TextFileUtility.GetText (fileName));
 			}
 			return TextAndVersion.Create (text, VersionStamp.Create ());
 		}

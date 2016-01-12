@@ -32,14 +32,15 @@ using MonoDevelop.Ide.Tasks;
 using System.Threading;
 using MonoDevelop.Ide.TypeSystem;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Tasks
 {
 	class ProjectCommentTags
 	{
-		readonly Dictionary<string, List<Tag>> tags = new Dictionary<string, List<Tag>> ();
+		Dictionary<string, IReadOnlyList<Tag>> tags = new Dictionary<string, IReadOnlyList<Tag>> ();
 
-		public IDictionary<string, List<Tag>> Tags {
+		public IDictionary<string, IReadOnlyList<Tag>> Tags {
 			get {
 				return tags;
 			}
@@ -49,7 +50,7 @@ namespace MonoDevelop.Ide.Tasks
 		{
 			var list = tagComments == null || tagComments.Count == 0 ? null : new List<Tag> (tagComments);
 			lock (tags) {
-				List<Tag> oldList;
+				IReadOnlyList<Tag> oldList;
 				tags.TryGetValue (fileName, out oldList);
 				if (list == null && oldList == null)
 					return;
@@ -71,13 +72,22 @@ namespace MonoDevelop.Ide.Tasks
 
 		internal async Task UpdateAsync (Project project, ProjectFile[] files, CancellationToken token = default (CancellationToken))
 		{
+			var changes = new List<CommentTaskChange> ();
+			var newTags = new Dictionary<string, IReadOnlyList<Tag>> ();
 			foreach (var file in files) {
 				if (file.BuildAction == BuildAction.None)
 					continue;
 				var pd = await TypeSystemService.ParseFile (project, file.FilePath, token).ConfigureAwait (false);
-				if (pd != null)
-					UpdateTags (project, file.FilePath, await pd.GetTagCommentsAsync (token));
+				if (pd != null) {
+					var commentTagList = await pd.GetTagCommentsAsync (token).ConfigureAwait (false);
+					changes.Add (new CommentTaskChange (file.FilePath, commentTagList, project));
+					newTags[file.FilePath] = commentTagList;
+				}
 			}
+			await Runtime.RunInMainThread (delegate {
+				this.tags = newTags;
+				TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (changes));
+			}).ConfigureAwait (false);
 		}
 	}
 }
