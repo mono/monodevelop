@@ -43,12 +43,12 @@ namespace MonoDevelop.Components.Commands
 			set;
 		}
 		
-		protected CommandRouterContainer (bool continueToParent) : this(null, null, continueToParent)
+		protected CommandRouterContainer (bool continueToParent)
 		{
 			this.continueToParent = continueToParent;
 		}
-		
-		public CommandRouterContainer (Control child, object target, bool continueToParent)
+
+		public CommandRouterContainer (Control child, object target, bool continueToParent) : this (continueToParent)
 		{
 			if (child != null) {
 				PackStart (child, true, true, 0);
