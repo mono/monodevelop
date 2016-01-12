@@ -149,10 +149,13 @@ namespace MonoDevelop.Components
 			Control target;
 
 			if (cache.TryGetValue (native, out cached)) {
-				if (cached.TryGetTarget (out target))
-					return (T)target;
-				else
-					cache.Remove (native);
+				if (cached.TryGetTarget (out target)) {
+					var ret = target as T;
+					if (ret != null)
+						return ret;
+				}
+
+				cache.Remove (native);
 			}
 			return null;
 		}
