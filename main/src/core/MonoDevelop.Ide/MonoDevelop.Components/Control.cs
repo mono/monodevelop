@@ -132,7 +132,7 @@ namespace MonoDevelop.Components
 
 		public static implicit operator Gtk.Widget (Control d)
 		{
-			return d.GetNativeWidget<Gtk.Widget> ();
+			return d?.GetNativeWidget<Gtk.Widget> ();
 		}
 
 		public static implicit operator Control (Gtk.Widget d)
