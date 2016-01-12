@@ -2668,7 +2668,7 @@
       <LogicalName>tabbar-next-hover-12~dark.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tabbar-next-hover-12~dark%402x.png">
-      <LogicalName>tabbar-next-12~dark@2x.png</LogicalName>
+      <LogicalName>tabbar-next-hover-12~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tabbar-menu-12.png">
       <LogicalName>tabbar-menu-12.png</LogicalName>
@@ -2692,7 +2692,7 @@
       <LogicalName>tabbar-menu-hover-12~dark.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tabbar-menu-hover-12~dark%402x.png">
-      <LogicalName>tabbar-menu-12~dark@2x.png</LogicalName>
+      <LogicalName>tabbar-menu-hover-12~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\breadcrumb-prev-16.png">
       <LogicalName>breadcrumb-prev-16.png</LogicalName>
