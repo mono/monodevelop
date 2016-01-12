@@ -73,7 +73,6 @@ namespace MonoDevelop.MacIntegration
 					} else {
 						context.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 
-						// FIXME: VV: Remove gradient features
 						using (var lg = new Cairo.LinearGradient (0, 0, 0, Allocation.Height)) {
 							lg.AddColorStop (0, Style.Light (Gtk.StateType.Normal).ToCairoColor ());
 							lg.AddColorStop (1, Style.Mid (Gtk.StateType.Normal).ToCairoColor ());
