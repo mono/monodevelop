@@ -27,10 +27,10 @@
 //
 
 using System.Linq;
+using NUnit.Framework;
 
 using MonoDevelop.Xml.Dom;
 using MonoDevelop.Xml.Parser;
-using NUnit.Framework;
 using MonoDevelop.Ide.TypeSystem;
 
 
@@ -170,7 +170,17 @@ namespace MonoDevelop.Xml.Tests.Parser
 			parser.AssertEmpty ();
 			parser.AssertErrorCount (0);
 		}
-		
+
+
+		[Test]
+		public void BadClosingTag ()
+		{
+			var parser = new TestXmlParser (CreateRootState ());
+			parser.Parse (@"<doc><x><abc></ab c><cd></cd></x></doc>");
+			parser.AssertEmpty ();
+			parser.AssertErrorCount (2);
+		}
+
 		[Test]
 		public void Misc ()
 		{

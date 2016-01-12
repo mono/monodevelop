@@ -237,9 +237,7 @@ namespace Mono.MHex
 
 		void OptionsChanged (object sender, EventArgs e)
 		{
-			gutterMargin.IsVisible = Options.ShowLineNumberMargin;
-			iconMargin.IsVisible = iconMargin.IsVisible;
-			
+			iconMargin.IsVisible = gutterMargin.IsVisible = Options.ShowLineNumberMargin;
 			
 			Margins.ForEach (margin => { 
 				margin.PurgeLayoutCache (); 

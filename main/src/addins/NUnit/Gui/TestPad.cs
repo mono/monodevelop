@@ -93,7 +93,7 @@ namespace MonoDevelop.NUnit
 			DockItemToolbar topToolbar = Window.GetToolbar (PositionType.Top);
 
 			var hbox = new HBox { Spacing = 6 };
-			hbox.PackStart (new ImageView (ImageService.GetIcon ("nunit-run", IconSize.Menu)), false, false, 0);
+			hbox.PackStart (new ImageView (ImageService.GetIcon ("md-execute-all", IconSize.Menu)), false, false, 0);
 			hbox.PackStart (new Label (GettextCatalog.GetString ("Run All")), false, false, 0);
 			buttonRunAll = new Button (hbox);
 			buttonRunAll.Clicked += new EventHandler (OnRunAllClicked);

@@ -122,6 +122,19 @@ namespace MonoDevelop.Components
 			return c.ToCairoColor ();
 		}
 
+		/// <summary>
+		/// Makes a color lighter or darker
+		/// </summary>
+		/// <param name='lightAmount'>
+		/// Amount of lightness to add. If the value is positive, the color will be lighter,
+		/// if negative it will be darker. Value must be between 0 and 1.
+		/// </param>
+		public static Xwt.Drawing.Color AddLight (this Xwt.Drawing.Color color, double lightAmount)
+		{
+			color.Light += lightAmount;
+			return color;
+		}
+
 		public static Xwt.Drawing.Context CreateXwtContext (this Gtk.Widget w)
 		{
 			var c = Gdk.CairoHelper.Create (w.GdkWindow);

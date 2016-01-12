@@ -120,7 +120,7 @@ namespace MonoDevelop.Ide.Projects
 				}
 				ClearPopupMenuItems ();
 				AddLanguageMenuItems (popupMenu, template);
-				popupMenu.ModifyBg (StateType.Normal, Styles.NewProjectDialog.TemplateLanguageButtonBackground);
+				popupMenu.ModifyBg (StateType.Normal, Styles.NewProjectDialog.TemplateLanguageButtonBackground.ToGdkColor ());
 				popupMenu.ShowAll ();
 
 				MenuPositionFunc posFunc = (Menu m, out int x, out int y, out bool pushIn) => {
@@ -203,6 +203,13 @@ namespace MonoDevelop.Ide.Projects
 				popupMenu.Destroy ();
 				popupMenu = null;
 			}
+
+			if (!controller.IsFirstPage)
+				templatesHBox.Destroy ();
+
+			if (!controller.IsLastPage)
+				projectConfigurationWidget.Destroy ();
+
 			base.Destroy ();
 		}
 

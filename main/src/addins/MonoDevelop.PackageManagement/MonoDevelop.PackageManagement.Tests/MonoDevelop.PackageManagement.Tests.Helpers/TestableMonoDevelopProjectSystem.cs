@@ -48,7 +48,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public ReferenceAndProjectName ReferenceAndProjectNamePassedToLogRemovedReferenceFromProject;
 		public FileNameAndProjectName FileNameAndProjectNamePassedToLogAddedFileToProject;
 
-		public static Action<MessageHandler> GuiSyncDispatcher = handler => handler.Invoke ();
+		public static Action<Action> GuiSyncDispatcher = handler => handler.Invoke ();
 		public static Func<Func<Task>,Task> GuiSyncDispatcherFunc = handler => handler.Invoke();
 
 		public TestableMonoDevelopProjectSystem (IDotNetProject project)

@@ -140,7 +140,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				return;
 			CancelUpdateTimout ();
 			var doc = DocumentContext.ParsedDocument;
-			if (doc == null)
+			if (doc == null || DocumentContext.IsAdHocProject)
 				return;
 			updateTimeout = GLib.Timeout.Add (250, delegate {
 				lock (updateLock) {

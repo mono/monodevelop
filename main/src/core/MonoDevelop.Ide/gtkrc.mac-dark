@@ -358,9 +358,12 @@ style "entry" = "default"
     GtkEntry::inner-border = { 2, 2, 2, 2 }
 
     base[INSENSITIVE] = shade(1.02, @bg_color)
+    bg[SELECTED] = @selected_bg_color
 
     engine "xamarin" {
         rgba = FALSE
+        roundness = 0
+        focusstyle = 2
     }
 }
 
@@ -400,6 +403,7 @@ style "completion_scrollbar" = "scrollbar"
 
 style "progressbar" = "default"
 {
+    bg[SELECTED] = "#62b3ec"
     fg[SELECTED] = "#3a67a6"
 
     xthickness = 0
@@ -504,6 +508,9 @@ binding "gtk-mac-expand-collapse-cursor-row"
 }
 
 class "GtkTreeView" binding "gtk-mac-expand-collapse-cursor-row"
+
+# HACK: PropertyGrid toolbar option buttons must have murrine style
+widget "*MonoDevelop.PropertyGridToolbar.GtkRadioButton" style "toggle-button"
 
 # BooleanEditorCell must always have murrine style
 widget_class "*BooleanEditor*" style "propertygrid-radio-or-check-box"

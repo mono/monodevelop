@@ -77,9 +77,9 @@ namespace MonoDevelop.PackageManagement
 			BackgroundDispatch (() => RunInternal ());
 		}
 
-		protected virtual void BackgroundDispatch (MessageHandler handler)
+		protected virtual void BackgroundDispatch (Action action)
 		{
-			PackageManagementBackgroundDispatcher.Dispatch (() => RunInternal ());
+			PackageManagementBackgroundDispatcher.Dispatch (action);
 		}
 
 		void RunInternal ()

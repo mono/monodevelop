@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide
 			HasResizeGrip = true;
 
 			HeaderBox hb = new HeaderBox (1, 0, 0, 0);
-			hb.BorderColor = Styles.DockSeparatorColor;
+			hb.BorderColor = Styles.DockSeparatorColor.ToGdkColor ();
 			var mainBox = new HBox ();
 			mainBox.PackStart (new Label (""), true, true, 0);
 			hb.Add (mainBox);

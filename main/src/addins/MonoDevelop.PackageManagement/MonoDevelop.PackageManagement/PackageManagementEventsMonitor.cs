@@ -99,9 +99,9 @@ namespace MonoDevelop.PackageManagement
 				(lastFileConflictResolution == FileConflictResolution.OverwriteAll);
 		}
 
-		protected virtual void GuiSyncDispatch (MessageHandler handler)
+		protected virtual void GuiSyncDispatch (Action action)
 		{
-			Runtime.RunInMainThread (() => handler ()).Wait ();
+			Runtime.RunInMainThread (action).Wait ();
 		}
 
 		void PackageOperationMessageLogged (object sender, PackageOperationMessageLoggedEventArgs e)

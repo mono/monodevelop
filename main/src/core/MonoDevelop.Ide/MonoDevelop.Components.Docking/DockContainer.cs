@@ -370,7 +370,7 @@ namespace MonoDevelop.Components.Docking
 			
 			//GdkWindow.SetBackPixmap (null, true);
 
-			ModifyBase (StateType.Normal, Styles.DockFrameBackground);
+			ModifyBase (StateType.Normal, Styles.DockFrameBackground.ToGdkColor ());
 		}
 		
 		protected override void OnUnrealized ()

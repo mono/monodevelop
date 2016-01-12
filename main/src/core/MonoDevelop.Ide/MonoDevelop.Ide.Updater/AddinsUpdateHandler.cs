@@ -94,7 +94,7 @@ namespace MonoDevelop.Ide.Updater
 
 		void OnUpdateClicked (object s, StatusBarIconClickedEventArgs args)
 		{
-			if (args.Button != Xwt.PointerButton.Right && args.Button == Xwt.PointerButton.Left) {
+			if (args.Button == Xwt.PointerButton.Left) {
 				HideAlert ();
 				AddinManagerWindow.Run (IdeApp.Workbench.RootWindow);
 			}

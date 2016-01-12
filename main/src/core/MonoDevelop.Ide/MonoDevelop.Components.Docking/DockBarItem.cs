@@ -450,7 +450,7 @@ namespace MonoDevelop.Components.Docking
 				}
 
 				using (lg) {
-					Cairo.Color primaryColor = Styles.DockBarPrelightColor;
+					Cairo.Color primaryColor = Styles.DockBarPrelightColor.ToCairoColor ();
 					primaryColor.A = hoverProgress;
 
 					Cairo.Color transparent = primaryColor;

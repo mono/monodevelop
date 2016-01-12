@@ -48,6 +48,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		int listWidth = minSize;
 		const int minSize = 300;
 		const int maxListWidth = 600;
+		const int rows = 10;
 		Pango.Layout layout, categoryLayout, noMatchLayout;
 		ListWindow win;
 		int selection = 0;
@@ -126,7 +127,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
-		FontDescription itemFont, noMatchFont;
+		FontDescription itemFont, noMatchFont, categoryFont;
 
 		const int marginIconSpacing = 4;
 		const int iconTextSpacing = 6;
@@ -139,20 +140,30 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			if (itemFont != null)
 				itemFont.Dispose ();
+
+			if (categoryFont != null)
+				categoryFont.Dispose ();
 			
 			if (noMatchFont != null)
 				noMatchFont.Dispose ();
-			
+
 			itemFont = FontService.MonospaceFont.Copy ();
+			categoryFont = FontService.MonospaceFont.Copy ();
 			noMatchFont = FontService.SansFont.Copy ();
 
 			// VV: prepared for further font tweaks when we have new fonts in
 			var newItemFontSize = itemFont.Size;
+			var newCategoryFontSize = categoryFont.Size;
 			var newNoMatchFontSize = noMatchFont.Size;
 
 			if (newItemFontSize > 0) {
 				itemFont.Size = (int)newItemFontSize;
 				layout.FontDescription = itemFont;
+			}
+
+			if (newCategoryFontSize > 0) {
+				categoryFont.Size = (int)newCategoryFontSize;
+				categoryLayout.FontDescription = categoryFont;
 			}
 
 			if (newNoMatchFontSize > 0) {
@@ -433,13 +444,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
 			using (var context = Gdk.CairoHelper.Create (args.Window)) {
+				var scalef = GtkWorkarounds.GetScaleFactor (this);
 				context.LineWidth = 1;
 				var alloc = Allocation;
 				int width = alloc.Width;
 				int height = alloc.Height;
 				context.Rectangle (args.Area.X, args.Area.Y, args.Area.Width, args.Area.Height);
-				var backgroundColor = Styles.CodeCompletion.BackgroundColor;
-				var textColor = Styles.CodeCompletion.TextColor;
+				var backgroundColor = Styles.CodeCompletion.BackgroundColor.ToCairoColor ();
+				var textColor = Styles.CodeCompletion.TextColor.ToCairoColor ();
 				context.SetSourceColor (backgroundColor);
 				context.Fill ();
 				int xpos = iconTextSpacing;
@@ -522,7 +534,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 								if (item != SelectedItem) {
 									var highlightColor = (item == SelectedItem) ? Styles.CodeCompletion.SelectionHighlightColor : Styles.CodeCompletion.HighlightColor;
-									var fg = new AttrForeground ((ushort)(highlightColor.R * ushort.MaxValue), (ushort)(highlightColor.G * ushort.MaxValue), (ushort)(highlightColor.B  * ushort.MaxValue));
+									var fg = new AttrForeground ((ushort)(highlightColor.Red * ushort.MaxValue), (ushort)(highlightColor.Green * ushort.MaxValue), (ushort)(highlightColor.Blue  * ushort.MaxValue));
 									fg.StartIndex = (uint)idx;
 									fg.EndIndex = (uint)(idx + 1);
 									attrList.Insert (fg);
@@ -548,12 +560,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 
 					typos = he < rowHeight ? ypos + (int)Math.Ceiling((rowHeight - he) / 2.0) : ypos;
+					if (scalef <= 1.0)
+						typos -=  1; // 1px up on non HiDPI
 					iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
 					if (item == SelectedItem) {
 						var barStyle = SelectionEnabled ? Styles.CodeCompletion.SelectionBackgroundColor : Styles.CodeCompletion.SelectionBackgroundInactiveColor;
 
 						context.Rectangle (0, ypos, Allocation.Width, rowHeight);
-						context.SetSourceColor (barStyle);
+						context.SetSourceColor (barStyle.ToCairoColor ());
 						context.Fill ();
 					} 
 
@@ -561,7 +575,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 						context.DrawImage (this, icon, xpos, iypos);
 						xpos += iconTextSpacing;
 					}
-					context.SetSourceColor (item == SelectedItem ? Styles.CodeCompletion.SelectionTextColor : Styles.CodeCompletion.TextColor);
+					context.SetSourceColor ((item == SelectedItem ? Styles.CodeCompletion.SelectionTextColor : Styles.CodeCompletion.TextColor).ToCairoColor ());
 					var textXPos = xpos + iconWidth + 2;
 					context.MoveTo (textXPos, typos);
 					layout.Width = (int)((Allocation.Width - textXPos) * Pango.Scale.PangoScale);
@@ -583,6 +597,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 						layout.GetPixelSize (out w, out h);
 						wi += w;
 						typos = h < rowHeight ? ypos + (rowHeight - h) / 2 : ypos;
+						if (scalef <= 1.0)
+							typos -=  1; // 1px up on non HiDPI
 						context.MoveTo (Allocation.Width - w, typos);
 						Pango.CairoHelper.ShowLayout (context, layout);
 					}
@@ -751,7 +767,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var icon = ImageService.GetIcon (TypeSystem.Stock.Namespace, IconSize.Menu);
 			rowHeight = Math.Max (1, (int)icon.Height + 2);
 
-			int newHeight = rowHeight * IdeApp.Preferences.CompletionListRows;
+			int newHeight = rowHeight * rows;
 			if (Allocation.Width != listWidth || Allocation.Height != newHeight)
 				this.SetSizeRequest (listWidth, newHeight);
 			SetAdjustments ();

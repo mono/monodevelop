@@ -232,7 +232,7 @@ namespace MonoDevelop.Ide.Gui
 				var iconsEl = BrandingService.GetElement ("ApplicationIcons");
 				if (iconsEl != null) {
 					try {
-						this.IconList = iconsEl.Elements ("Icon")
+						Gtk.Window.DefaultIconList = iconsEl.Elements ("Icon")
 							.Select (el => new Gdk.Pixbuf (BrandingService.GetFile ((string)el))).ToArray ();
 						return;
 					} catch (Exception ex) {
@@ -243,7 +243,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			//built-ins
 			var appIcon = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.MonoDevelop);
-			this.IconList = new Gdk.Pixbuf[] {
+			Gtk.Window.DefaultIconList = new Gdk.Pixbuf[] {
 				appIcon.ToPixbuf (Gtk.IconSize.Menu),
 				appIcon.ToPixbuf (Gtk.IconSize.Button),
 				appIcon.ToPixbuf (Gtk.IconSize.Dnd),
@@ -922,22 +922,22 @@ namespace MonoDevelop.Ide.Gui
 			var barHeight = tabControl.BarHeight;
 
 			DockVisualStyle style = new DockVisualStyle ();
-			style.PadTitleLabelColor = Styles.PadLabelColor;
-			style.PadBackgroundColor = Styles.PadBackground;
+			style.PadTitleLabelColor = Styles.PadLabelColor.ToGdkColor ();
+			style.PadBackgroundColor = Styles.PadBackground.ToGdkColor ();
 			style.TreeBackgroundColor = Styles.BaseBackgroundColor.ToGdkColor ();
-			style.InactivePadBackgroundColor = Styles.InactivePadBackground;
+			style.InactivePadBackgroundColor = Styles.InactivePadBackground.ToGdkColor ();
 			style.PadTitleHeight = barHeight;
 			dock.DefaultVisualStyle = style;
 
 			style = new DockVisualStyle ();
-			style.PadTitleLabelColor = Styles.PadLabelColor;
+			style.PadTitleLabelColor = Styles.PadLabelColor.ToGdkColor ();
 			style.PadTitleHeight = barHeight;
 			style.ShowPadTitleIcon = false;
 			style.UppercaseTitles = false;
 			style.ExpandedTabs = true;
-			style.PadBackgroundColor = Styles.BrowserPadBackground;
-			style.InactivePadBackgroundColor = Styles.InactiveBrowserPadBackground;
-			style.TreeBackgroundColor = Styles.BrowserPadBackground;
+			style.PadBackgroundColor = Styles.BrowserPadBackground.ToGdkColor ();
+			style.InactivePadBackgroundColor = Styles.InactiveBrowserPadBackground.ToGdkColor ();
+			style.TreeBackgroundColor = Styles.BrowserPadBackground.ToGdkColor ();
 			dock.SetDockItemStyle ("ProjectPad", style);
 			dock.SetDockItemStyle ("ClassPad", style);
 

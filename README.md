@@ -70,7 +70,7 @@ Packaging for OS X
 
 To package MonoDevelop for OS X in a convenient MonoDevelop.app
 file, just do this after MonoDevelop has finished building (with
-`make`): `cd main/build/MacOSX ; make`.
+`make`): `cd main/build/MacOSX ; make app`.
 You can run MonoDevelop: `open MonoDevelop.app` or build dmg package: `./make-dmg-bundle.sh`
 
 Dependencies

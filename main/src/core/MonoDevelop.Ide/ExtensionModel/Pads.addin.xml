@@ -40,10 +40,10 @@
 	<Pad id = "MonoDevelop.Ide.Gui.Pads.HelpTree"
 		defaultPlacement = "Left"
 		_label = "Help"
-		icon="gtk-help"
+		icon="md-help-pad"
 		class = "MonoDevelop.Ide.Gui.Pads.HelpTree"/>
 
-	<SolutionPad id = "ProjectPad" _label = "Solution" icon = "md-solution" class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectSolutionPad" defaultLayout="*" defaultPlacement = "Left">
+	<SolutionPad id = "ProjectPad" _label = "Solution" icon = "md-solution-pad" class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectSolutionPad" defaultLayout="*" defaultPlacement = "Left">
 		<ContextMenu path="/MonoDevelop/Ide/ContextMenu/ProjectPad" />
 		<PadOption id = "ShowAllFiles" _label = "Show All Files" defaultValue = "False" />
 		<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.WorkspaceNodeBuilder"/>
@@ -63,7 +63,7 @@
 		<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ImplicitFrameworkAssemblyReferenceNodeBuilder"/>
 	</SolutionPad>
 	
-	<SolutionPad id = "ClassPad" _label = "Classes" icon = "md-class" class = "MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPad" defaultPlacement = "Left" defaultStatus="AutoHide">
+	<SolutionPad id = "ClassPad" _label = "Classes" icon = "md-classes-pad" class = "MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPad" defaultPlacement = "Left" defaultStatus="AutoHide">
 		<PadOption id = "NestedNamespaces" _label = "Nested namespaces" defaultValue = "True" />
 		<PadOption id = "ShowProjects" _label = "Show project structure" defaultValue = "True" />
 		<PadOption id = "GroupByAccess" _label = "Group members by access" defaultValue = "False" />

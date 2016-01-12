@@ -80,8 +80,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			headlabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
 			headlabel.Indent = -20;
-
-			headlabel.FontDescription = FontService.GetFontDescription ("Editor").CopyModified (1.1);
 			
 			headlabel.Wrap = Pango.WrapMode.WordChar;
 			headlabel.BreakOnCamelCasing = false;
@@ -111,9 +109,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
 			Theme.SetSchemeColors (scheme);
 			Theme.Font = FontService.SansFont.CopyModified (Styles.PopoverWindow.DefaultFontScale);
-			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor;
+			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor.ToCairoColor ();
 			foreColor = scheme.PlainText.Foreground;
+
 			headlabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
+			headlabel.FontDescription = FontService.GetFontDescription ("Editor").CopyModified (Styles.PopoverWindow.DefaultFontScale);
+
 			if (this.Visible)
 				QueueDraw ();
 		}
@@ -234,6 +235,20 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			lastParam = -2;
 			ResetTooltipInformation ();
+		}
+
+		protected override void OnPagerLeftClicked ()
+		{
+			if (Ext != null && Widget != null)
+				ParameterInformationWindowManager.OverloadUp (Ext, Widget);
+			base.OnPagerRightClicked ();
+		}
+
+		protected override void OnPagerRightClicked ()
+		{
+			if (Ext != null && Widget != null)
+				ParameterInformationWindowManager.OverloadDown (Ext, Widget);
+			base.OnPagerRightClicked ();
 		}
 		
 		public void HideParameterInfo ()

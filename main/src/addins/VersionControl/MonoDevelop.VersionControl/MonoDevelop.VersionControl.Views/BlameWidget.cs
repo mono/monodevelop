@@ -42,11 +42,13 @@ namespace MonoDevelop.VersionControl.Views
 	public enum BlameCommands {
 		CopyRevision,
 		ShowDiff,
-		ShowLog
+		ShowLog,
+		ShowBlameBefore
 	}
 	
 	public class BlameWidget : Bin
 	{
+		Revision revision;
 		Adjustment vAdjustment;
 		Gtk.VScrollbar vScrollBar;
 		
@@ -124,8 +126,11 @@ namespace MonoDevelop.VersionControl.Views
 
 			hScrollBar = new HScrollbar (hAdjustment);
 			AddChild (hScrollBar);
-			
-			editor = new MonoTextEditor (sourceEditor.TextEditor.Document, sourceEditor.TextEditor.Options);
+
+			var doc = new TextDocument (sourceEditor.TextEditor.Document.Text) {
+				ReadOnly = true,
+			};
+			editor = new MonoTextEditor (doc, sourceEditor.TextEditor.Options);
 			AddChild (editor);
 			editor.SetScrollAdjustments (hAdjustment, vAdjustment);
 			
@@ -293,7 +298,7 @@ namespace MonoDevelop.VersionControl.Views
 					if (ann != null && overview.highlightAnnotation.Revision == ann.Revision && curStart <= overview.highlightPositon && overview.highlightPositon < curY) {
 					} else {
 						cr.Rectangle (Editor.TextViewMargin.XOffset, curStart + cr.LineWidth, Editor.Allocation.Width - Editor.TextViewMargin.XOffset, curY - curStart - cr.LineWidth);
-						cr.SetSourceColor (Styles.BlameView.RangeHazeColor);
+						cr.SetSourceColor (Styles.BlameView.RangeHazeColor.ToCairoColor ());
 						cr.Fill ();
 						
 					}
@@ -302,7 +307,7 @@ namespace MonoDevelop.VersionControl.Views
 					cr.MoveTo (Editor.TextViewMargin.XOffset, curY + 0.5);
 					cr.LineTo (Editor.Allocation.Width, curY + 0.5);
 					
-					cr.SetSourceColor (Styles.BlameView.RangeSplitterColor);
+					cr.SetSourceColor (Styles.BlameView.RangeSplitterColor.ToCairoColor ());
 					cr.Stroke ();
 				}
 			}
@@ -333,8 +338,6 @@ namespace MonoDevelop.VersionControl.Views
 
 		class BlameRenderer : DrawingArea 
 		{
-			static readonly Annotation locallyModified = new Annotation ("", "?", DateTime.MinValue);
-			
 			BlameWidget widget;
 			internal List<Annotation> annotations;
 			Pango.Layout layout;
@@ -351,8 +354,6 @@ namespace MonoDevelop.VersionControl.Views
 				UpdateAnnotations ();
 	//			widget.Document.Saved += UpdateAnnotations;
 				document = widget.Editor.Document;
-				document.TextReplacing += EditorDocumentTextReplacing;
-				document.LineChanged += EditorDocumentLineChanged;
 				widget.vScrollBar.ValueChanged += OnWidgetChanged;
 				
 				layout = new Pango.Layout (PangoContext);
@@ -378,8 +379,6 @@ namespace MonoDevelop.VersionControl.Views
 				base.OnDestroyed ();
 //				widget.Document.Saved -= UpdateAnnotations;
 				if (document != null) { 
-					document.TextReplacing -= EditorDocumentTextReplacing;
-					document.LineChanged -= EditorDocumentLineChanged;
 					document = null;
 				}
 				if (layout != null) {
@@ -439,6 +438,7 @@ namespace MonoDevelop.VersionControl.Views
 					CommandEntrySet opset = new CommandEntrySet ();
 					opset.AddItem (BlameCommands.ShowDiff);
 					opset.AddItem (BlameCommands.ShowLog);
+					opset.AddItem (BlameCommands.ShowBlameBefore);
 					opset.AddItem (Command.Separator);
 					opset.AddItem (BlameCommands.CopyRevision);
 					IdeApp.CommandService.ShowContextMenu (this, evnt, opset, this);
@@ -475,7 +475,9 @@ namespace MonoDevelop.VersionControl.Views
 					DiffView diffView = view.GetContent<DiffView> ();
 					if (diffView != null) {
 						view.Select ();
-						var rev = widget.info.History.FirstOrDefault (h => h.ToString () == menuAnnotation.Revision);
+						if (menuAnnotation.Revision == null)
+							return;
+						var rev = widget.info.History.FirstOrDefault (h => h == menuAnnotation.Revision);
 						if (rev == null)
 							return;
 						diffView.ComparisonWidget.SetRevision (diffView.ComparisonWidget.DiffEditor, rev.GetPrevious ());
@@ -494,7 +496,9 @@ namespace MonoDevelop.VersionControl.Views
 					LogView logView = view.GetContent<LogView> ();
 					if (logView != null) {
 						view.Select ();
-						var rev = widget.info.History.FirstOrDefault (h => h.ToString () == menuAnnotation.Revision);
+						if (menuAnnotation.Revision == null)
+							return;
+						var rev = widget.info.History.FirstOrDefault (h => h == menuAnnotation.Revision);
 						if (rev == null)
 							return;
 						logView.LogWidget.SelectedRevision = rev;
@@ -502,7 +506,33 @@ namespace MonoDevelop.VersionControl.Views
 					}
 				}
 			}
-		
+
+			[CommandHandler (BlameCommands.ShowBlameBefore)]
+			protected void OnShowBlameBefore ()
+			{
+				var current = menuAnnotation?.Revision;
+				Revision rev;
+
+				if (current == null) {
+					rev = widget.info.History.FirstOrDefault ();
+				} else {
+					rev = current?.GetPrevious ();
+				}
+
+				if (rev == null)
+					return;
+				
+				widget.revision = rev;
+				UpdateAnnotations ();
+			}
+
+			[CommandUpdateHandler (BlameCommands.ShowBlameBefore)]
+			protected void OnUpdateShowBlameBefore (CommandInfo cinfo)
+			{
+				var current = menuAnnotation?.Revision;
+				// If we have a working copy segment or we have a parent commit.
+				cinfo.Enabled = current == null || current.GetPrevious () != null;
+			}
 			
 			protected override bool OnButtonReleaseEvent (EventButton evnt)
 			{
@@ -521,10 +551,10 @@ namespace MonoDevelop.VersionControl.Views
 				StatusBarContext ctx = IdeApp.Workbench.StatusBar.CreateContext ();
 				ctx.AutoPulse = true;
 				ctx.ShowMessage ("md-version-control", GettextCatalog.GetString ("Retrieving history"));
-				
+
 				ThreadPool.QueueUserWorkItem (delegate {
-					try {
-						annotations = new List<Annotation> (widget.VersionControlItem.Repository.GetAnnotations (widget.Document.FileName));
+				try {
+						annotations = new List<Annotation> (widget.VersionControlItem.Repository.GetAnnotations (widget.Document.FileName, widget.revision));
 						
 //						for (int i = 0; i < annotations.Count; i++) {
 //							Annotation varname = annotations[i];
@@ -537,68 +567,14 @@ namespace MonoDevelop.VersionControl.Views
 					}
 					
 					Runtime.RunInMainThread (delegate {
+						if (widget.revision != null) {
+							document.Text = widget.VersionControlItem.Repository.GetTextAtRevision (widget.Document.FileName, widget.revision);
+						}
 						ctx.Dispose ();
 						UpdateWidth ();
 						QueueDraw ();
 					});
 				});
-			}
-	
-			/// <summary>
-			/// Marks a line as locally modified
-			/// </summary>
-			private void EditorDocumentLineChanged (object sender, LineEventArgs e)
-			{
-				int startLine = widget.Editor.Document.OffsetToLineNumber (e.Line.Offset);
-				SetAnnotation (startLine, locallyModified);
-			}
-			
-			/// <summary>
-			/// Marks necessary lines modified when text is replaced
-			/// </summary>
-			private void EditorDocumentTextReplacing (object sender, DocumentChangeEventArgs e)
-			{
-				int startLine = widget.Editor.Document.OffsetToLineNumber (e.Offset),
-					endLine = widget.Editor.Document.OffsetToLineNumber (e.Offset + Math.Max (e.RemovalLength, e.InsertionLength)),
-					lineCount = 0;
-				string[] tokens = null;
-				
-				if (startLine < endLine) {
-					// change crosses line boundary
-					
-					lineCount = endLine - startLine;
-					lineCount = Math.Min (lineCount, annotations.Count - startLine);
-					
-					if (lineCount > 0)
-						annotations.RemoveRange (startLine - 1, lineCount);
-					if (!string.IsNullOrEmpty (e.InsertedText.Text)) {
-						for (int i=0; i<lineCount; ++i)
-							annotations.Insert (startLine - 1, locallyModified);
-					}
-					return;
-				} else if (0 == e.RemovalLength) {
-					// insert
-					tokens = e.InsertedText.Text.Split (new string[]{Environment.NewLine}, StringSplitOptions.None);
-						lineCount = tokens.Length - 1;
-						for (int i=0; i<lineCount; ++i) {
-							annotations.Insert (Math.Min (startLine, annotations.Count), locallyModified);
-						}
-				} else if (startLine > endLine) {
-					// revert
-					UpdateAnnotations ();
-					return;
-				}
-				
-				SetAnnotation (startLine, locallyModified);
-			}
-			
-			void SetAnnotation (int index, Annotation text)
-			{
-				if (index < 0)
-					return;
-				for (int i = annotations.Count; i <= index; ++i)
-					annotations.Add (locallyModified);
-				annotations[index] = text;
 			}
 	
 			/// <summary>
@@ -610,7 +586,7 @@ namespace MonoDevelop.VersionControl.Views
 				var history = widget.info.History;
 				if (null != history && annotation != null) {
 					foreach (Revision rev in history) {
-						if (rev.ToString () == annotation.Revision) {
+						if (rev == annotation.Revision) {
 							if (tooltip && annotation.HasEmail)
 								return String.Format ("Email: {0}{1}{2}", annotation.Email, Environment.NewLine, rev.Message);
 							return rev.Message;
@@ -661,7 +637,7 @@ namespace MonoDevelop.VersionControl.Views
 							layout.SetText (note.Date.ToShortDateString ());
 							layout.GetPixelSize (out dateTimeLength, out height);
 						}
-						layout.SetText (note.Author + TruncRevision (note.Revision));
+						layout.SetText (note.Author + TruncRevision (note.Text));
 						layout.GetPixelSize (out tmpwidth, out height);
 						width = Math.Max (width, tmpwidth);
 					}
@@ -680,7 +656,7 @@ namespace MonoDevelop.VersionControl.Views
 					cr.LineWidth = Math.Max (1.0, widget.Editor.Options.Zoom);
 					
 					cr.Rectangle (leftSpacer, 0, Allocation.Width, Allocation.Height);
-					cr.SetSourceColor (Styles.BlameView.AnnotationBackgroundColor);
+					cr.SetSourceColor (Styles.BlameView.AnnotationBackgroundColor.ToCairoColor ());
 					cr.Fill ();
 					
 					int startLine = widget.Editor.YToLine ((int)widget.Editor.VAdjustment.Value);
@@ -706,14 +682,14 @@ namespace MonoDevelop.VersionControl.Views
 							double nextY = widget.editor.LineToY (line) - widget.editor.VAdjustment.Value;
 							if (highlightAnnotation != null && highlightAnnotation.Revision == ann.Revision && curStart <= highlightPositon && highlightPositon < nextY) {
 								cr.Rectangle (leftSpacer, curStart + cr.LineWidth, Allocation.Width - leftSpacer, nextY - curStart - cr.LineWidth);
-								cr.SetSourceColor (Styles.BlameView.AnnotationHighlightColor);
+								cr.SetSourceColor (Styles.BlameView.AnnotationHighlightColor.ToCairoColor ());
 								cr.Fill ();
 							}
 
 							// use a fixed size revision to get a approx. revision width
 							layout.SetText ("88888888");
 							layout.GetPixelSize (out revisionWidth, out h);
-							layout.SetText (TruncRevision (ann.Revision));
+							layout.SetText (TruncRevision (ann.Text));
 
 							const int dateRevisionSpacing = 16;
 
@@ -750,7 +726,7 @@ namespace MonoDevelop.VersionControl.Views
 								cr.Rectangle (0, 0, maxWidth, Allocation.Height); 
 								cr.Clip ();
 								cr.Translate (leftSpacer + margin, (int)(curY + (widget.Editor.LineHeight - h) / 2)); 
-								cr.SetSourceColor (Styles.BlameView.AnnotationTextColor);
+								cr.SetSourceColor (Styles.BlameView.AnnotationTextColor.ToCairoColor ());
 								cr.ShowLayout (authorLayout);
 								cr.ResetClip ();
 								cr.Restore ();
@@ -780,7 +756,7 @@ namespace MonoDevelop.VersionControl.Views
 						
 						cr.Rectangle (0, curStart, leftSpacer, curY - curStart);
 						
-						if (ann != null && ann != locallyModified && !string.IsNullOrEmpty (ann.Author)) {
+						if (ann != null && !string.IsNullOrEmpty (ann.Author)) {
 							double a;
 							
 							if (ann != null && (maxDate - minDate).TotalHours > 0) {
@@ -788,19 +764,19 @@ namespace MonoDevelop.VersionControl.Views
 							} else {
 								a = 1;
 							}
-							HslColor color = Styles.BlameView.AnnotationMarkColor;
-							color.L = 0.4 + a / 2;
-							color.S = 1 - a / 2;
-							cr.SetSourceColor (color);
+							var color = Styles.BlameView.AnnotationMarkColor;
+							color.Light = 0.4 + a / 2;
+							color.Saturation = 1 - a / 2;
+							cr.SetSourceColor (color.ToCairoColor ());
 						} else {
-							cr.SetSourceColor (ann != null ? Styles.BlameView.AnnotationMarkModifiedColor : Styles.BlameView.AnnotationBackgroundColor);
+							cr.SetSourceColor ((ann != null ? Styles.BlameView.AnnotationMarkModifiedColor : Styles.BlameView.AnnotationBackgroundColor).ToCairoColor ());
 						}
 						cr.Fill ();
 
 						if (ann != null) {
 							cr.MoveTo (0, curY + 0.5);
 							cr.LineTo (Allocation.Width, curY + 0.5);
-							cr.SetSourceColor (Styles.BlameView.AnnotationSplitterColor);
+							cr.SetSourceColor (Styles.BlameView.AnnotationSplitterColor.ToCairoColor ());
 							cr.Stroke ();
 						}
 					}

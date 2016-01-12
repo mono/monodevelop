@@ -167,6 +167,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.openingRadiobutton = new global::Gtk.RadioButton(global::Mono.Unix.Catalog.GetString("_Opening only"));
 			this.openingRadiobutton.CanFocus = true;
 			this.openingRadiobutton.Name = "openingRadiobutton";
+			this.openingRadiobutton.Active = true;
 			this.openingRadiobutton.DrawIndicator = true;
 			this.openingRadiobutton.UseUnderline = true;
 			this.openingRadiobutton.Group = new global::GLib.SList(global::System.IntPtr.Zero);

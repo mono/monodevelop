@@ -214,7 +214,7 @@ namespace MonoDevelop.NUnit
 			
 			buttonRun = new Button ();
 			buttonRun.Label = GettextCatalog.GetString ("Rerun Tests");
-			buttonRun.Image = new ImageView ("nunit-run", IconSize.Menu);
+			buttonRun.Image = new ImageView ("md-execute-all", IconSize.Menu);
 			buttonRun.Image.Show ();
 			buttonRun.Sensitive = false;
 			toolbar.Add (buttonRun);
@@ -517,19 +517,42 @@ namespace MonoDevelop.NUnit
 				Gtk.TreeIter iter;
 				if (!failuresTreeView.Selection.GetSelected (out foo, out iter))
 					return;
-				
+
 				int type = (int)failuresStore.GetValue (iter, 5);
 
 				var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
 				switch (type) {
-				case ErrorMessage:
+					case ErrorMessage:
 					clipboard.Text = last.Message;
 					break;
-				case StackTrace:
+					case StackTrace:
 					clipboard.Text = last.StackTrace;
 					break;
-				default:
+					default:
 					clipboard.Text = last.Message + Environment.NewLine + "Stack trace:" + Environment.NewLine + last.StackTrace;
+					break;
+				}
+			} else {
+				if (error == null)
+					return;
+				var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+
+				Gtk.TreeModel foo;
+				Gtk.TreeIter iter;
+				if (!failuresTreeView.Selection.GetSelected (out foo, out iter))
+					return;
+
+				int type = (int)failuresStore.GetValue (iter, 5);
+
+				switch (type) {
+				case ErrorMessage:
+					clipboard.Text = error.Message;
+					break;
+				case StackTrace:
+					clipboard.Text = error.StackTrace;
+					break;
+				default:
+					clipboard.Text = error.Message + Environment.NewLine + "Stack trace:" + Environment.NewLine + error.StackTrace;
 					break;
 				}
 			}
@@ -560,7 +583,7 @@ namespace MonoDevelop.NUnit
 					return;
 				}
 			}
-			info.Enabled = false;
+			info.Enabled = error != null;
 		}
 
 		[CommandHandler (TestCommands.SelectTestInTree)]

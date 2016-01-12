@@ -2276,12 +2276,15 @@ namespace MonoDevelop.Ide
 
 		public ITextDocument GetTextEditorData (FilePath filePath, out bool isOpen)
 		{
-			foreach (var doc in IdeApp.Workbench.Documents) {
-				if (doc.FileName == filePath) {
-					isOpen = true;
-					return doc.Editor;
+			if (IdeApp.Workbench != null) {
+				foreach (var doc in IdeApp.Workbench.Documents) {
+					if (doc.FileName == filePath) {
+						isOpen = true;
+						return doc.Editor;
+					}
 				}
 			}
+
 			bool hadBom;
 			Encoding encoding;
 			var text = TextFileUtility.ReadAllText (filePath, out hadBom, out encoding);

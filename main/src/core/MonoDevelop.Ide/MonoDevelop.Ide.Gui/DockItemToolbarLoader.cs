@@ -76,7 +76,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			Widget w = CreateWidget (entry);
 			if (w is Button) {
-				buttons.Add (new ToolButtonStatus (entry.CommandId, (Gtk.Button)w, entry.DispayType));
+				buttons.Add (new ToolButtonStatus (entry.CommandId, (Gtk.Button)w, entry.DisplayType));
 				((Gtk.Button) w).Clicked += delegate {
 					IdeApp.CommandService.DispatchCommand (entry.CommandId, null, initialTarget, CommandSource.MainToolbar);
 				};
@@ -142,6 +142,7 @@ namespace MonoDevelop.Ide.Gui
 		string stockId;
 		Button button;
 		object cmdId;
+		ImageView image;
 		CommandEntryDisplayType displayType;
 		
 		public ToolButtonStatus (object cmdId, Button button, CommandEntryDisplayType displayType = CommandEntryDisplayType.Default)
@@ -186,8 +187,10 @@ namespace MonoDevelop.Ide.Gui
 
 			if (displayType != CommandEntryDisplayType.TextOnly && cmdInfo.Icon != stockId) {
 				stockId = cmdInfo.Icon;
-				button.Image = new ImageView (cmdInfo.Icon, Gtk.IconSize.Menu);
+				button.Image = image = new ImageView (cmdInfo.Icon, Gtk.IconSize.Menu);
 			}
+			if (button.Image != null && cmdInfo.Enabled != button.Sensitive)
+				image.Image = image.Image.WithStyles (cmdInfo.Enabled ? "" : "disabled").WithAlpha (cmdInfo.Enabled ? 1.0 : 0.4);
 			if (cmdInfo.Enabled != button.Sensitive)
 				button.Sensitive = cmdInfo.Enabled;
 			if (cmdInfo.Visible != button.Visible)

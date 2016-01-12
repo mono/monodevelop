@@ -53,12 +53,7 @@ namespace MonoDevelop.SourceEditor
 		public DebugValueTooltipProvider ()
 		{
 			DebuggingService.CurrentFrameChanged += CurrentFrameChanged;
-			DebuggingService.DebugSessionStarted += DebugSessionStarted;
-		}
-
-		void DebugSessionStarted (object sender, EventArgs e)
-		{
-			DebuggingService.DebuggerSession.TargetExited += TargetProcessExited;
+			DebuggingService.StoppedEvent += TargetProcessExited;
 		}
 
 		void CurrentFrameChanged (object sender, EventArgs e)
@@ -169,9 +164,7 @@ namespace MonoDevelop.SourceEditor
 			if (IsDisposed)
 				return;
 			DebuggingService.CurrentFrameChanged -= CurrentFrameChanged;
-			DebuggingService.DebugSessionStarted -= DebugSessionStarted;
-			if (DebuggingService.DebuggerSession != null)
-				DebuggingService.DebuggerSession.TargetExited -= TargetProcessExited;
+			DebuggingService.StoppedEvent -= TargetProcessExited;
 			base.Dispose ();
 		}
 	}

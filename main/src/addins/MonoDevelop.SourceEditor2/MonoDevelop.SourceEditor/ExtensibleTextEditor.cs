@@ -193,22 +193,12 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateEditMode ()
 		{
-			if (MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.UseViModes) {
-				if (TestNewViMode) {
-					if (!(CurrentMode is NewIdeViMode))
-					CurrentMode = new NewIdeViMode (this);
-				} else {
-					if (!(CurrentMode is IdeViMode))
-						CurrentMode = new IdeViMode (this);
-				}
-			} else {
-		//		if (!(CurrentMode is SimpleEditMode)){
-					SimpleEditMode simpleMode = new SimpleEditMode ();
-					simpleMode.KeyBindings [Mono.TextEditor.EditMode.GetKeyCode (Gdk.Key.Tab)] = new TabAction (this).Action;
-					simpleMode.KeyBindings [Mono.TextEditor.EditMode.GetKeyCode (Gdk.Key.BackSpace)] = EditActions.AdvancedBackspace;
-					CurrentMode = simpleMode;
-		//		}
-			}
+	//		if (!(CurrentMode is SimpleEditMode)){
+				SimpleEditMode simpleMode = new SimpleEditMode ();
+				simpleMode.KeyBindings [Mono.TextEditor.EditMode.GetKeyCode (Gdk.Key.Tab)] = new TabAction (this).Action;
+				simpleMode.KeyBindings [Mono.TextEditor.EditMode.GetKeyCode (Gdk.Key.BackSpace)] = EditActions.AdvancedBackspace;
+				CurrentMode = simpleMode;
+	//		}
 		}
 
 		void UnregisterAdjustments ()

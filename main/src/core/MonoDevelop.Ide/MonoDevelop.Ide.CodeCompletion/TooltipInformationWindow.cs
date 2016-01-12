@@ -153,7 +153,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 					descriptionBox.ShowAll ();
 				}
 				Theme.CurrentPage = current_overload;
-				QueueResize ();
+				// if the target is not on the left or top side, we may loose the arrow alignment on our target
+				// and must reposition
+				if (!CurrentPosition.HasFlag (PopupPosition.Left) &&
+				    !CurrentPosition.HasFlag (PopupPosition.Top))
+					RepositionWindow ();
+				else
+					QueueResize ();
 			}
 		}
 
@@ -213,7 +219,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var catLabel = new FixedWidthWrapLabel ();
 				catLabel.Markup = categoryName;
 				catLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
-				catLabel.FontDescription = font;
+				catLabel.FontDescription = font.Copy ();
+				catLabel.FontDescription.Weight = Pango.Weight.Bold;
+				catLabel.FontDescription.Size = catLabel.FontDescription.Size + (int)(1 * Pango.Scale.PangoScale);
 				vbox.PackStart (catLabel, false, true, 0);
 			}
 
@@ -224,6 +232,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 
 			contentLabel.Wrap = Pango.WrapMode.WordChar;
+			contentLabel.Spacing = 3;
 			contentLabel.BreakOnCamelCasing = false;
 			contentLabel.BreakOnPunctuation = false;
 			contentLabel.MaxWidth = 400;
@@ -247,8 +256,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			Theme.SetSchemeColors (scheme);
 			foreColor = scheme.PlainText.Foreground;
 			headLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
+			headLabel.FontDescription = FontService.GetFontDescription ("Editor").CopyModified (Styles.PopoverWindow.DefaultFontScale);
 			Theme.Font = FontService.SansFont.CopyModified (Styles.PopoverWindow.DefaultFontScale);
-			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor;
+			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor.ToCairoColor ();
 			if (this.Visible)
 				ShowOverload ();
 		}
@@ -266,7 +276,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			headLabel = new FixedWidthWrapLabel ();
 			headLabel.Indent = -20;
-			headLabel.FontDescription = Theme.Font.CopyModified (1.1);
 			headLabel.Wrap = Pango.WrapMode.WordChar;
 			headLabel.BreakOnCamelCasing = false;
 			headLabel.BreakOnPunctuation = false;
@@ -301,6 +310,18 @@ namespace MonoDevelop.Ide.CodeCompletion
 				Opacity = 1;
 				return false;
 			});
+		}
+
+		protected override void OnPagerLeftClicked ()
+		{
+			OverloadLeft ();
+			base.OnPagerLeftClicked ();
+		}
+
+		protected override void OnPagerRightClicked ()
+		{
+			OverloadRight ();
+			base.OnPagerRightClicked ();
 		}
 
 		void HandleSkinChanged (object sender, EventArgs e)

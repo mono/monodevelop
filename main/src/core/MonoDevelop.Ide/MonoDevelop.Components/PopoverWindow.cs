@@ -62,6 +62,7 @@ namespace MonoDevelop.Components
 			AppPaintable = true;
 			TypeHint = WindowTypeHint.Tooltip;
 			CheckScreenColormap ();
+			AddEvents ((int)EventMask.ButtonReleaseMask);
 
 			alignment = new Alignment (0, 0, 1f, 1f);
 			alignment.Show ();
@@ -101,6 +102,8 @@ namespace MonoDevelop.Components
 				QueueDraw ();
 			}
 		}
+
+		public int CaretSpacing { get; set; }
 
 		public bool ShowArrow {
 			get { return Theme.ShowArrow; }
@@ -198,6 +201,8 @@ namespace MonoDevelop.Components
 			set;
 		}
 
+		protected PopupPosition CurrentPosition { get { return position; }}
+
 		public virtual void RepositionWindow (Gdk.Rectangle? newCaret = null)
 		{
 			if (parent == null)
@@ -227,6 +232,8 @@ namespace MonoDevelop.Components
 					caret = new Gdk.Rectangle (0, 0, alloc.Width, alloc.Height);
 				caret = GtkUtil.ToScreenCoordinates (parent, parent.GdkWindow, caret);
 			}
+
+			caret.Inflate (CaretSpacing, CaretSpacing);
 
 			Gtk.Requisition request = SizeRequest ();
 			var screen = parent.Screen;
@@ -264,14 +271,14 @@ namespace MonoDevelop.Components
 
 			switch ((PopupPosition)((int)position & 0x0f)) {
 			case PopupPosition.Top:
-				y = caret.Bottom;
+				y = caret.Bottom + 1;
 				break;
 			case PopupPosition.Bottom:
 				y = caret.Y - request.Height; break;
 			case PopupPosition.Right:
 				x = caret.X - request.Width; break;
 			case PopupPosition.Left:
-				x = caret.Right; break;
+				x = caret.Right + 1; break;
 			}
 			int offset;
 			if ((position & PopupPosition.Top) != 0 || (position & PopupPosition.Bottom) != 0) {
@@ -459,6 +466,35 @@ namespace MonoDevelop.Components
 				}
 				return rect;
 			}
+		}
+
+		public event EventHandler PagerLeftClicked;
+		public event EventHandler PagerRightClicked;
+
+		protected virtual void OnPagerLeftClicked ()
+		{
+			if (PagerLeftClicked != null)
+				PagerLeftClicked (this, null);
+		}
+
+		protected virtual void OnPagerRightClicked ()
+		{
+			if (PagerRightClicked != null)
+				PagerRightClicked (this, null);
+		}
+
+		protected override bool OnButtonReleaseEvent (EventButton evnt)
+		{
+			if (evnt.Button != 1 || !Theme.DrawPager)
+				return base.OnButtonPressEvent (evnt);
+
+			var retval = false;
+			if (retval = Theme.HitTestPagerLeftArrow (PangoContext, BorderAllocation, new Point ((int)evnt.X, (int)evnt.Y)))
+				OnPagerLeftClicked ();
+			else if (retval = Theme.HitTestPagerRightArrow (PangoContext, BorderAllocation, new Point ((int)evnt.X, (int)evnt.Y)))
+				OnPagerRightClicked ();
+
+			return retval;
 		}
 	}
 }

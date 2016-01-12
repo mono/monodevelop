@@ -215,6 +215,11 @@ namespace MonoDevelop.Ide.Gui
 			}*/
 		}
 
+		internal override bool IsAdHocProject {
+			get { return adhocProject != null; }
+		}
+
+
 		public override bool IsCompileableInProject {
 			get {
 				var project = Project;
@@ -535,7 +540,6 @@ namespace MonoDevelop.Ide.Gui
 			if (window.ViewContent.Project != null)
 				window.ViewContent.Project.Modified -= HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
-			TypeSystemService.Workspace.WorkspaceChanged -= HandleWorkspaceChanged;
 			MonoDevelopWorkspace.LoadingFinished -= TypeSystemService_WorkspaceItemLoaded;
 
 			window = null;
@@ -675,15 +679,7 @@ namespace MonoDevelop.Ide.Gui
 			if (project != null)
 				project.Modified += HandleProjectModified;
 			InitializeExtensionChain ();
-			TypeSystemService.Workspace.WorkspaceChanged += HandleWorkspaceChanged;
 			ListenToProjectLoad (project);
-		}
-
-		void HandleWorkspaceChanged (object sender, Microsoft.CodeAnalysis.WorkspaceChangeEventArgs e)
-		{
-			if (e.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.DocumentChanged && e.DocumentId == analysisDocument) {
-				OnDocumentParsed (EventArgs.Empty);
-			}
 		}
 
 		void ListenToProjectLoad (Project project)

@@ -115,7 +115,7 @@ namespace MonoDevelop.Debugger
 		{
 			ExceptionValueTreeView = new ObjectValueTreeView ();
 			ExceptionValueTreeView.Frame = DebuggingService.CurrentFrame;
-			ExceptionValueTreeView.ModifyBase (StateType.Normal, Styles.ExceptionCaughtDialog.TreeBackgroundColor);
+			ExceptionValueTreeView.ModifyBase (StateType.Normal, Styles.ExceptionCaughtDialog.TreeBackgroundColor.ToGdkColor ());
 			ExceptionValueTreeView.AllowPopupMenu = false;
 			ExceptionValueTreeView.AllowExpanding = true;
 			ExceptionValueTreeView.AllowPinning = false;
@@ -471,14 +471,14 @@ namespace MonoDevelop.Debugger
 			cr.Clip ();
 
 			if (IsUserCode)
-				cr.SetSourceColor (Styles.ExceptionCaughtDialog.LineNumberInUserCodeBackgroundColor); // 230, 152, 223
+				cr.SetSourceColor (Styles.ExceptionCaughtDialog.LineNumberInUserCodeBackgroundColor.ToCairoColor ()); // 230, 152, 223
 			else
-				cr.SetSourceColor (Styles.ExceptionCaughtDialog.LineNumberBackgroundColor); // 197, 197, 197
+				cr.SetSourceColor (Styles.ExceptionCaughtDialog.LineNumberBackgroundColor.ToCairoColor ()); // 197, 197, 197
 
 			cr.RoundedRectangle (0.0, 0.0, RoundedRectangleWidth, RoundedRectangleHeight, RoundedRectangleRadius);
 			cr.Fill ();
 
-			cr.SetSourceColor (Styles.ExceptionCaughtDialog.LineNumberBorderColor);
+			cr.SetSourceColor (Styles.ExceptionCaughtDialog.LineNumberBorderColor.ToCairoColor ());
 			cr.RoundedRectangle (0.0, 0.0, RoundedRectangleWidth, RoundedRectangleHeight, RoundedRectangleRadius);
 			cr.LineWidth = 2;
 			cr.Stroke ();
@@ -497,12 +497,12 @@ namespace MonoDevelop.Debugger
 
 				// render the text shadow
 				cr.Save ();
-				cr.SetSourceColor (Styles.ExceptionCaughtDialog.LineNumberTextShadowColor);
+				cr.SetSourceColor (Styles.ExceptionCaughtDialog.LineNumberTextShadowColor.ToCairoColor ());
 				cr.Translate (x_offset, y_offset + 1);
 				cr.ShowLayout (layout);
 				cr.Restore ();
 
-				cr.SetSourceColor (Styles.ExceptionCaughtDialog.LineNumberTextColor);
+				cr.SetSourceColor (Styles.ExceptionCaughtDialog.LineNumberTextColor.ToCairoColor ());
 				cr.Translate (x_offset, y_offset);
 				cr.ShowLayout (layout);
 			}

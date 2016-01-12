@@ -110,14 +110,14 @@ namespace MonoDevelop.PackageManagement
 				"<b>{0}</b>\n<span foreground='{2}'>{1}</span>",
 				PackageSourceViewModel.Name,
 				PackageSourceViewModel.SourceUrl,
-				CairoExtensions.ColorGetHex (flags.HasFlag (CellRendererState.Selected) ? Styles.PackageSourceUrlSelectedTextColor : Styles.PackageSourceUrlTextColor));
+				Ide.Gui.Styles.ColorGetHex (flags.HasFlag (CellRendererState.Selected) ? Styles.PackageSourceUrlSelectedTextColor : Styles.PackageSourceUrlTextColor));
 		}
 
 		string GetPackageSourceErrorMarkup (CellRendererState flags = CellRendererState.Focused)
 		{
 			return MarkupString.Format (
 				"<span foreground='{0}'>{1}</span>",
-				CairoExtensions.ColorGetHex (flags.HasFlag (CellRendererState.Selected) ? Styles.PackageSourceErrorSelectedTextColor : Styles.PackageSourceErrorTextColor),
+				Ide.Gui.Styles.ColorGetHex (flags.HasFlag (CellRendererState.Selected) ? Styles.PackageSourceErrorSelectedTextColor : Styles.PackageSourceErrorTextColor),
 				PackageSourceViewModel.ValidationFailureMessage);
 		}
 

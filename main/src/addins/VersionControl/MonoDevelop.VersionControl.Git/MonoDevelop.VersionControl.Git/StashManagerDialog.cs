@@ -111,16 +111,16 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		protected void OnButtonApplyClicked (object sender, System.EventArgs e)
+		protected async void OnButtonApplyClicked (object sender, System.EventArgs e)
 		{
 			int s = GetSelectedIndex ();
 			if (s != -1) {
-				GitService.ApplyStash (repository, s).Wait ();
+				await GitService.ApplyStash (repository, s);
 				Respond (ResponseType.Ok);
 			}
 		}
 
-		protected void OnButtonBranchClicked (object sender, System.EventArgs e)
+		protected async void OnButtonBranchClicked (object sender, System.EventArgs e)
 		{
 			Stash s = GetSelected ();
 			int stashIndex = GetSelectedIndex ();
@@ -129,8 +129,8 @@ namespace MonoDevelop.VersionControl.Git
 				try {
 					if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
 						repository.CreateBranchFromCommit (dlg.BranchName, s.Base);
-						GitService.SwitchToBranch (repository, dlg.BranchName);
-						ApplyStashAndRemove (stashIndex);
+						if (await GitService.SwitchToBranch (repository, dlg.BranchName))
+							ApplyStashAndRemove (stashIndex);
 					}
 				} finally {
 					dlg.Destroy ();

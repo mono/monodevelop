@@ -115,10 +115,14 @@ namespace MonoDevelop.Ide.Editor
 					endOffset++;
 				}
 				if (endOffset == offset + 1) {
-					var c = editor.GetCharAt (endOffset - 1);
-					while ((c == '\n' || c == '\r') && endOffset < editor.Length) {
-						c = editor.GetCharAt (endOffset);
-						endOffset++;
+					if (endOffset - 1 < editor.Length) {
+						var c = editor.GetCharAt (endOffset - 1);
+						while ((c == '\n' || c == '\r') && endOffset < editor.Length) {
+							c = editor.GetCharAt (endOffset);
+							endOffset++;
+						}
+					} else {
+						endOffset = editor.Length;
 					}
 				}
 			}
