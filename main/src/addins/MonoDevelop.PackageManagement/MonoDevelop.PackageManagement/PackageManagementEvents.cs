@@ -93,14 +93,23 @@ namespace MonoDevelop.PackageManagement
 		}
 
 		public event EventHandler<ParentPackageOperationEventArgs> ParentPackageUninstalled;
-		
+
 		public void OnParentPackageUninstalled(IPackage package, IPackageManagementProject project)
 		{
 			if (ParentPackageUninstalled != null) {
 				ParentPackageUninstalled(this, new ParentPackageOperationEventArgs(package, project));
 			}
 		}
-		
+
+		public event EventHandler<ParentPackageOperationEventArgs> ParentPackageUninstalling;
+
+		public void OnParentPackageUninstalling(IPackage package, IPackageManagementProject project)
+		{
+			if (ParentPackageUninstalling != null) {
+				ParentPackageUninstalling(this, new ParentPackageOperationEventArgs(package, project));
+			}
+		}
+
 		public event EventHandler<PackageOperationMessageLoggedEventArgs> PackageOperationMessageLogged;
 		
 		public void OnPackageOperationMessageLogged(MessageLevel level, string message, params object[] args)

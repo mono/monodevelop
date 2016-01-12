@@ -354,7 +354,6 @@
     <Compile Include="MonoDevelop.PackageManagement\EnsureNuGetPackageBuildImportsTargetUpdater.cs" />
     <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatesTaskRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatesTask.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Refactoring\PackageCodeDiagnosticProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectReloadedEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\OpenPackageReadmeMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IOpenPackageReadMeMonitor.cs" />
@@ -375,8 +374,6 @@
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopProjectSystem.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopProjectSystemFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementBackgroundDispatcher.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Refactoring\KnownRoslynProviderAssembliesPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.PackageManagement.Refactoring.KnownRoslynProviderAssembliesPanelWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

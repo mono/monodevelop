@@ -1488,21 +1488,4 @@ If you do not agree to the license terms click "Cancel".</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.PackageManagement.Refactoring.KnownRoslynProviderAssembliesPanelWidget" design-size="300 300">
-    <property name="MemberName" />
-    <property name="Visible">False</property>
-    <child>
-      <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
-        <property name="MemberName" />
-        <property name="ShadowType">In</property>
-        <child>
-          <widget class="Gtk.TreeView" id="treeview1">
-            <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="ShowScrollbars">True</property>
-          </widget>
-        </child>
-      </widget>
-    </child>
-  </widget>
 </stetic-interface>

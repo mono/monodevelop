@@ -32,6 +32,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using NuGet;
 using MonoDevelop.Core;
+using Cairo;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -52,6 +53,7 @@ namespace MonoDevelop.PackageManagement
 			this.backgroundActionRunner = backgroundActionRunner;
 
 			packageManagementEvents.ParentPackageInstalled += PackageInstalled;
+			packageManagementEvents.ParentPackageUninstalling += PackageUninstalling;
 			packageManagementEvents.ParentPackageUninstalled += PackageUninstalled;
 		}
 
@@ -128,6 +130,12 @@ namespace MonoDevelop.PackageManagement
 					installAction.GetPackageVersion ().ToString ()));
 		}
 
+		void PackageUninstalling (object sender, ParentPackageOperationEventArgs e)
+		{
+			var installPath = solution.GetInstallPath (e.Package);
+			MonoDevelop.Refactoring.AnalyzerPackageService.RemovePackageFiles (e.Project.DotNetProject, e.Package.GetFiles ().Select (f => System.IO.Path.Combine (installPath, f.Path)));
+		}
+
 		void PackageUninstalled (object sender, ParentPackageOperationEventArgs e)
 		{
 			OnPackageReferencedRemoved (e);
@@ -136,6 +144,8 @@ namespace MonoDevelop.PackageManagement
 		void PackageInstalled (object sender, ParentPackageOperationEventArgs e)
 		{
 			OnPackageReferenceAdded (e);
+			var installPath = solution.GetInstallPath (e.Package);
+			MonoDevelop.Refactoring.AnalyzerPackageService.AddPackageFiles (e.Project.DotNetProject, e.Package.GetFiles ().Select (f => System.IO.Path.Combine (installPath, f.Path)));
 		}
 
 		void OnPackageReferencedRemoved (ParentPackageOperationEventArgs e)

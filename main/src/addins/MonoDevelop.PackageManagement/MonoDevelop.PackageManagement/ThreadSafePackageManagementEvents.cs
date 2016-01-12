@@ -62,6 +62,7 @@ namespace MonoDevelop.PackageManagement
 			unsafeEvents.PackageOperationsFinished += RaisePackageOperationFinishedEventIfHasSubscribers;
 			unsafeEvents.PackageOperationError += RaisePackageOperationErrorEventIfHasSubscribers;
 			unsafeEvents.ParentPackageInstalled += RaiseParentPackageInstalledEventIfHasSubscribers;
+			unsafeEvents.ParentPackageUninstalling += RaiseParentPackageUninstallingEventIfHasSubscribers;
 			unsafeEvents.ParentPackageUninstalled += RaiseParentPackageUninstalledEventIfHasSubscribers;
 			unsafeEvents.ParentPackagesUpdated += RaiseParentPackagesUpdatedEventIfHasSubscribers;
 			unsafeEvents.ResolveFileConflict += RaiseResolveFileConflictEventIfHasSubscribers;
@@ -78,6 +79,7 @@ namespace MonoDevelop.PackageManagement
 			unsafeEvents.PackageOperationsFinished -= RaisePackageOperationFinishedEventIfHasSubscribers;
 			unsafeEvents.PackageOperationError -= RaisePackageOperationErrorEventIfHasSubscribers;
 			unsafeEvents.ParentPackageInstalled -= RaiseParentPackageInstalledEventIfHasSubscribers;
+			unsafeEvents.ParentPackageUninstalling -= RaiseParentPackageUninstallingEventIfHasSubscribers;
 			unsafeEvents.ParentPackageUninstalled -= RaiseParentPackageUninstalledEventIfHasSubscribers;
 			unsafeEvents.ParentPackagesUpdated -= RaiseParentPackagesUpdatedEventIfHasSubscribers;
 			unsafeEvents.ResolveFileConflict -= RaiseResolveFileConflictEventIfHasSubscribers;
@@ -147,14 +149,28 @@ namespace MonoDevelop.PackageManagement
 				guiSyncDispatcher (() => RaiseParentPackageUninstalledEvent(sender, e));
 			}
 		}
-		
+
 		void RaiseParentPackageUninstalledEvent(object sender, ParentPackageOperationEventArgs e)
 		{
 			ParentPackageUninstalled(sender, e);
 		}
-		
+
 		public event EventHandler<ParentPackageOperationEventArgs> ParentPackageUninstalled;
-		
+
+		void RaiseParentPackageUninstallingEvent(object sender, ParentPackageOperationEventArgs e)
+		{
+			ParentPackageUninstalling(sender, e);
+		}
+
+		public event EventHandler<ParentPackageOperationEventArgs> ParentPackageUninstalling;
+
+		void RaiseParentPackageUninstallingEventIfHasSubscribers(object sender, ParentPackageOperationEventArgs e)
+		{
+			if (ParentPackageUninstalling != null) {
+				guiSyncDispatcher (() => RaiseParentPackageUninstallingEvent(sender, e));
+			}
+		}
+
 		public event EventHandler<AcceptLicensesEventArgs> AcceptLicenses {
 			add { unsafeEvents.AcceptLicenses += value; }
 			remove { unsafeEvents.AcceptLicenses -= value; }
@@ -200,11 +216,16 @@ namespace MonoDevelop.PackageManagement
 			unsafeEvents.OnParentPackageInstalled (package, project, operations);
 		}
 
+		public void OnParentPackageUninstalling(IPackage package, IPackageManagementProject project)
+		{
+			unsafeEvents.OnParentPackageUninstalling(package, project);
+		}
+
 		public void OnParentPackageUninstalled(IPackage package, IPackageManagementProject project)
 		{
 			unsafeEvents.OnParentPackageUninstalled(package, project);
 		}
-		
+
 		public void OnPackageOperationMessageLogged(MessageLevel level, string message, params object[] args)
 		{
 			unsafeEvents.OnPackageOperationMessageLogged(level, message, args);

@@ -61,9 +61,10 @@ namespace MonoDevelop.Refactoring.NodeBuilders
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			var folderNode = (AnalyzerFolderNode)dataObject;
+			var shadowLoader = new ShadowCopyAnalyzerAssemblyLoader ();
 			foreach (var item in folderNode.Analyzers) {
 				if (File.Exists (item.FilePath)) {
-					var assembly = Assembly.LoadFrom (item.FilePath);
+					var assembly = shadowLoader.LoadCore (item.FilePath);
 					var loader = new AnalyzersFromAssembly ();
 					loader.AddAssembly (assembly, true);
 					treeBuilder.AddChild (loader);

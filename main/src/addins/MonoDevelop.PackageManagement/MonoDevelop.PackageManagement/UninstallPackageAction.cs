@@ -52,6 +52,7 @@ namespace MonoDevelop.PackageManagement
 		
 		protected override void ExecuteCore()
 		{
+			OnParentPackageUninstalling();
 			Project.UninstallPackage(Package, this);
 			OnParentPackageUninstalled();
 		}

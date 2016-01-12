@@ -152,8 +152,4 @@
 	<Extension path="/MonoDevelop/ProjectModel/ProjectModelExtensions">
 		<Class class="MonoDevelop.PackageManagement.PackageManagementMSBuildExtension" />
 	</Extension>
-
-	<Extension path="/MonoDevelop/Refactoring/CodeDiagnosticProvider">
-		<Class class="MonoDevelop.PackageManagement.Refactoring.PackageCodeDiagnosticProvider" />
-	</Extension>
 </ExtensionModel>

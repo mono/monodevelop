@@ -177,6 +177,8 @@
     <Compile Include="MonoDevelop.Refactoring.NodeBuilders\AnalyzerNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Refactoring.NodeBuilders\AnalyzerPropertyProvider.cs" />
     <Compile Include="MonoDevelop.Refactoring.NodeBuilders\AnalyzersFromAssemblyNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.Refactoring\AnalyzerPackageService.cs" />
+    <Compile Include="MonoDevelop.Refactoring\ShadowCopyAnalyzerAssemblyLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
