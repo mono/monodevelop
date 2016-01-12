@@ -227,8 +227,8 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.Update)]
-		protected void UpdateUpdate(CommandInfo item) {
-			TestCommand(Commands.Update, item);
+		protected async void UpdateUpdate(CommandInfo item) {
+			await TestCommand(Commands.Update, item);
 		}
 		
 		[AllowMultiSelection]
@@ -238,8 +238,8 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.Diff)]
-		protected void UpdateDiff(CommandInfo item) {
-			TestCommand(Commands.Diff, item);
+		protected async void UpdateDiff(CommandInfo item) {
+			await TestCommand(Commands.Diff, item);
 		}
 		
 		[AllowMultiSelection]
@@ -249,8 +249,8 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.Log)]
-		protected void UpdateLog(CommandInfo item) {
-			TestCommand(Commands.Log, item);
+		protected async void UpdateLog(CommandInfo item) {
+			await TestCommand(Commands.Log, item);
 		}
 		
 		[AllowMultiSelection]
@@ -260,8 +260,8 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.Status)]
-		protected void UpdateStatus(CommandInfo item) {
-			TestCommand(Commands.Status, item);
+		protected async void UpdateStatus(CommandInfo item) {
+			await TestCommand(Commands.Status, item);
 		}
 		
 		[AllowMultiSelection]
@@ -271,8 +271,8 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.Add)]
-		protected void UpdateAdd(CommandInfo item) {
-			TestCommand(Commands.Add, item);
+		protected async void UpdateAdd(CommandInfo item) {
+			await TestCommand(Commands.Add, item);
 		}
 		
 		[AllowMultiSelection]
@@ -282,8 +282,8 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.Remove)]
-		protected void UpdateRemove(CommandInfo item) {
-			TestCommand(Commands.Remove, item);
+		protected async void UpdateRemove(CommandInfo item) {
+			await TestCommand(Commands.Remove, item);
 		}
 		
 		[CommandHandler (Commands.Publish)]
@@ -293,8 +293,8 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.Publish)]
-		protected void UpdatePublish(CommandInfo item) {
-			TestCommand(Commands.Publish, item);
+		protected async void UpdatePublish(CommandInfo item) {
+			await TestCommand(Commands.Publish, item);
 		}
 		
 		[AllowMultiSelection]
@@ -304,8 +304,8 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.Revert)]
-		protected void UpdateRevert(CommandInfo item) {
-			TestCommand(Commands.Revert, item, false);
+		protected async void UpdateRevert(CommandInfo item) {
+			await TestCommand(Commands.Revert, item, false);
 		}
 		
 		[AllowMultiSelection]
@@ -315,8 +315,8 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.Lock)]
-		protected void UpdateLock(CommandInfo item) {
-			TestCommand(Commands.Lock, item);
+		protected async void UpdateLock(CommandInfo item) {
+			await TestCommand(Commands.Lock, item);
 		}
 		
 		[AllowMultiSelection]
@@ -326,8 +326,8 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.Unlock)]
-		protected void UpdateUnlock(CommandInfo item) {
-			TestCommand(Commands.Unlock, item);
+		protected async void UpdateUnlock(CommandInfo item) {
+			await TestCommand(Commands.Unlock, item);
 		}
 		
 		[AllowMultiSelection]
@@ -337,8 +337,8 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.Annotate)]
-		protected void UpdateAnnotate(CommandInfo item) {
-			TestCommand(Commands.Annotate, item);
+		protected async void UpdateAnnotate(CommandInfo item) {
+			await TestCommand(Commands.Annotate, item);
 		}
 		
 		[AllowMultiSelection]
@@ -348,8 +348,8 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.CreatePatch)]
-		protected void UpdateCreatePatch(CommandInfo item) {
-			TestCommand(Commands.CreatePatch, item);
+		protected async void UpdateCreatePatch(CommandInfo item) {
+			await TestCommand(Commands.CreatePatch, item);
 		}
 
 		[AllowMultiSelection]
@@ -360,9 +360,9 @@ namespace MonoDevelop.VersionControl
 		}
 
 		[CommandUpdateHandler (Commands.Ignore)]
-		protected void UpdateIgnore (CommandInfo item)
+		protected async void UpdateIgnore (CommandInfo item)
 		{
-			TestCommand(Commands.Ignore, item);
+			await TestCommand(Commands.Ignore, item);
 		}
 
 		[AllowMultiSelection]
@@ -373,9 +373,9 @@ namespace MonoDevelop.VersionControl
 		}
 
 		[CommandUpdateHandler (Commands.Unignore)]
-		protected void UpdateUnignore (CommandInfo item)
+		protected async void UpdateUnignore (CommandInfo item)
 		{
-			TestCommand(Commands.Unignore, item);
+			await TestCommand(Commands.Unignore, item);
 		}
 
 		[CommandHandler (Commands.ResolveConflicts)]
@@ -385,12 +385,12 @@ namespace MonoDevelop.VersionControl
 		}
 
 		[CommandUpdateHandler (Commands.ResolveConflicts)]
-		protected void UpdateResolveConflicts (CommandInfo item)
+		protected async void UpdateResolveConflicts (CommandInfo item)
 		{
-			TestCommand (Commands.ResolveConflicts, item, false);
+			await TestCommand (Commands.ResolveConflicts, item, false);
 		}
 
-		private async void TestCommand(Commands cmd, CommandInfo item, bool projRecurse = true)
+		private async Task<TestResult> TestCommand(Commands cmd, CommandInfo item, bool projRecurse = true)
 		{
 			TestResult res = await RunCommand(cmd, true, projRecurse);
 			if (res == TestResult.NoVersionControl && cmd == Commands.Log) {
@@ -403,6 +403,8 @@ namespace MonoDevelop.VersionControl
 					item.Text = GettextCatalog.GetString ("This project or folder is not under version control");
 			} else
 				item.Visible = res == TestResult.Enable;
+
+			return res;
 		}
 		
 		private async Task<TestResult> RunCommand (Commands cmd, bool test, bool projRecurse = true)
