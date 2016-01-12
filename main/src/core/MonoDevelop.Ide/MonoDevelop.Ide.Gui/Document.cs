@@ -876,6 +876,7 @@ namespace MonoDevelop.Ide.Gui
 			CancelOldParsing ();
 			var token = parseTokenSource.Token;
 			var project = adhocProject ?? Project;
+			project = project.GetRealProject();
 			var projectFile = project?.GetProjectFile (currentParseFile);
 
 			ThreadPool.QueueUserWorkItem (delegate {

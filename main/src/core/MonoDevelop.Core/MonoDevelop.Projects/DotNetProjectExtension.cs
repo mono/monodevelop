@@ -47,11 +47,33 @@ namespace MonoDevelop.Projects
 
 		internal protected override bool SupportsObject (WorkspaceObject item)
 		{
-			return base.SupportsObject (item) && (item is DotNetProject);
+			if (base.SupportsObject (item)) {
+				if (item is DotNetProject) {
+					return true;
+				}
+
+				var project = item as Project;
+				if (project != null) {
+					return project.GetRealProject() is DotNetProject;
+				}
+			}
+
+			return false;
 		}
 
 		new public DotNetProject Project {
-			get { return (DotNetProject)base.Item; }
+			get {
+				if (base.Item is DotNetProject) {
+					return (DotNetProject)base.Item;
+				}
+
+				var project = base.Item as Project;
+				if (project.GetRealProject() is DotNetProject) {
+					return (DotNetProject)project.GetRealProject();
+				}
+
+				throw new InvalidOperationException();
+			}
 		}
 
 

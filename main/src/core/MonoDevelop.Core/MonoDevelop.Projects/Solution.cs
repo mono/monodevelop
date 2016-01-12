@@ -540,14 +540,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public ConfigurationSelector DefaultConfigurationSelector {
-			get {
-				if (defaultConfiguration == null && configurations.Count > 0)
-					DefaultConfigurationId = configurations [0].Id;
-				return new SolutionConfigurationSelector (DefaultConfigurationId);
-			}
-		}
-
 		IItemConfigurationCollection IConfigurationTarget.Configurations {
 			get {
 				return Configurations;

@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				IdeApp.Workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
 			}
 			if (currentMonoDevelopSolution != null) {
-				foreach (var prj in currentMonoDevelopSolution.GetAllProjects ()) {
+				foreach (var prj in currentMonoDevelopSolution.GetAllProjects ().Select(x => x.GetRealProject())) {
 					UnloadMonoProject (prj);
 				}
 				currentMonoDevelopSolution = null;
@@ -189,7 +189,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		async Task<SolutionInfo> CreateSolutionInfo (MonoDevelop.Projects.Solution solution, CancellationToken token)
 		{
 			var projects = new ConcurrentBag<ProjectInfo> ();
-			var mdProjects = solution.GetAllProjects ();
+			var mdProjects = solution.GetAllProjects ().Select(x => x.GetRealProject()).ToList();
 			projectionList.Clear ();
 			solutionData = new SolutionData ();
 

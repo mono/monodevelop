@@ -34,7 +34,7 @@ using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.CSharp.Project
 {
-	class CSharpProject: DotNetProject, ICSharpProject
+	public class CSharpProject: DotNetProject, ICSharpProject
 	{
 		[ItemProperty ("StartupObject", DefaultValue = "")]
 		string mainclass = string.Empty;
