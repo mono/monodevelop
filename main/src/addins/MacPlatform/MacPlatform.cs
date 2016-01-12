@@ -67,10 +67,6 @@ namespace MonoDevelop.MacIntegration
 
 		public MacPlatformService ()
 		{
-			string safe64 = Environment.GetEnvironmentVariable ("MONODEVELOP_64BIT_SAFE");
-			if (string.IsNullOrEmpty (safe64) && IntPtr.Size == 8)
-				throw new Exception ("Mac integration is not yet 64-bit safe");
-
 			if (initedGlobal)
 				throw new Exception ("Only one MacPlatformService instance allowed");
 			initedGlobal = true;
