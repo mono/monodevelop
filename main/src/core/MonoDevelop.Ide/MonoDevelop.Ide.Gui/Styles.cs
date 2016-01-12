@@ -105,8 +105,12 @@ namespace MonoDevelop.Ide.Gui
 		public static Color PadBackground { get; internal set; }
 		public static Color InactivePadBackground { get; internal set; }
 		public static Color PadLabelColor { get; internal set; }
+
 		public static Color DockFrameBackground { get; internal set; }
 		public static Color DockSeparatorColor { get; internal set; }
+		public static Color DockBarBackground { get; internal set; }
+		public static Color DockBarPrelightColor { get; internal set; }
+		public static Color DockBarLabelColor { get; internal set; }
 
 		public static Color BrowserPadBackground { get; internal set; }
 		public static Color InactiveBrowserPadBackground { get; internal set; }
@@ -118,13 +122,6 @@ namespace MonoDevelop.Ide.Gui
 
 		public static Color PropertyPadLabelBackgroundColor { get; internal set; }
 		public static Color PropertyPadDividerColor { get; internal set; }
-
-		public static Color DockBarBackground1 { get; internal set; }
-		public static Color DockBarBackground2 { get; internal set; }
-		public static Color DockBarSeparatorColorDark { get; internal set; }
-		public static Color DockBarSeparatorColorLight { get; internal set; }
-
-		public static Color DockBarPrelightColor { get; internal set; }
 
 		// Status area
 
@@ -320,14 +317,13 @@ namespace MonoDevelop.Ide.Gui
 
 		internal static void LoadLightStyle ()
 		{
-			ThinSplitterColor = Color.FromName ("#a6a6a6");
+			ThinSplitterColor = Color.FromName ("#dadada");
+
+			// Document tabs
 
 			TabBarBackgroundColor = Color.FromName ("#c2c2c2");
 			TabBarActiveTextColor = Color.FromName ("#000000");
 			TabBarNotifyTextColor = Color.FromName ("#0000ff");
-
-			// Document tabs
-
 			TabBarActiveGradientStartColor = Shift (TabBarBackgroundColor, 0.92);
 			TabBarActiveGradientEndColor = TabBarBackgroundColor;
 			TabBarGradientStartColor = Shift (TabBarBackgroundColor, 1.02);
@@ -366,39 +362,36 @@ namespace MonoDevelop.Ide.Gui
 			SubTabBarActiveTextColor = Color.FromName ("#ffffff");
 			SubTabBarHoverGradientStartColor = Color.FromName ("#5c5d5e").WithAlpha (.2);
 			SubTabBarHoverGradientEndColor = Color.FromName ("#868889").WithAlpha (.2);
-			SubTabBarSeparatorColor = Color.FromName ("#ababab");
+			SubTabBarSeparatorColor = Color.FromName ("#FF0000"); // ababab
 
 			// Dock pads
 
-			DockTabBarGradientTop = Color.FromName ("#f8f8f8");
-			DockTabBarGradientStart = Color.FromName ("#f2f2f2");
-			DockTabBarGradientEnd = Color.FromName ("#e6e6e6");
-			DockTabBarShadowGradientStart = Color.FromName ("#9a9a9a");
-			DockTabBarShadowGradientEnd = Color.FromName ("#9a9a9a").WithAlpha (0);
+			DockTabBarGradientTop = Color.FromName ("#FF0000"); // f8f8f8
+			DockTabBarGradientStart = Color.FromName ("#00FF00"); // f2f2f2
+			DockTabBarGradientEnd = Color.FromName ("#0000FF"); // e6e6e6
+			DockTabBarShadowGradientStart = Color.FromName ("#FF00FF"); // 9a9a9a
+			DockTabBarShadowGradientEnd = Color.FromName ("#00FFFF"); // Color.FromName ("#9a9a9a").WithAlpha (0)
 
-			PadBackground = Color.FromName ("#f0f0f0");
+			PadBackground = Color.FromName ("#ff0000"); // f0f0f0
 			InactivePadBackground = ReduceLight (PadBackground, 0.9);
-			PadLabelColor = Color.FromName ("#57656b");
-			DockFrameBackground = Color.FromName ("#9ca1a5");
-			DockSeparatorColor = ThinSplitterColor;
+			PadLabelColor = Color.FromName ("#ff0000"); // 57656b
+
+			DockFrameBackground = Color.FromName ("#bababa");
+			DockSeparatorColor = Color.FromName ("#bababa");
+			DockBarBackground = Color.FromName ("#dddddd");
+			DockBarPrelightColor = Color.FromName ("#eeeeee");
+			DockBarLabelColor = Color.FromName ("#575757");
 
 			BrowserPadBackground = Color.FromName("#f0f1f3");
 			InactiveBrowserPadBackground = Color.FromName ("#f0f0f0");
 
-			PadCategoryBackgroundGradientStartColor = Color.FromName ("#f8f8f8");
-			PadCategoryBackgroundGradientEndColor = Color.FromName ("#f0f0f0");
+			PadCategoryBackgroundGradientStartColor = Color.FromName ("#00ff00"); // f8f8f8
+			PadCategoryBackgroundGradientEndColor = Color.FromName ("#0000ff"); // f0f0f0
 			PadCategoryBorderColor = Color.FromName ("#d9d9d9");
-			PadCategoryLabelColor = Color.FromName ("#808080");
+			PadCategoryLabelColor = Color.FromName ("#00ff00"); // 808080
 
 			PropertyPadLabelBackgroundColor = Color.FromName ("#fafafa");
 			PropertyPadDividerColor = PropertyPadLabelBackgroundColor;
-
-			DockBarBackground1 = PadBackground;
-			DockBarBackground2 = Shift (PadBackground, 0.95);
-			DockBarSeparatorColorDark = Color.FromName ("#000000").WithAlpha (.2);
-			DockBarSeparatorColorLight =  Color.FromName ("#ffffff").WithAlpha (.3);
-
-			DockBarPrelightColor = Color.FromName ("#ffffff");
 
 			// Status area
 
@@ -422,8 +415,8 @@ namespace MonoDevelop.Ide.Gui
 
 			// Toolbar
 
-			ToolbarBottomBorderColor = Color.FromName ("#7f7f7f");
-			ToolbarBottomGlowColor = Color.FromName ("#ffffff").WithAlpha (.2);
+			ToolbarBottomBorderColor = Color.FromName ("#ff0000"); // 7f7f7f
+			ToolbarBottomGlowColor = Color.FromName ("#00ff00"); // ffffff.WithAlpha (.2);
 
 			// Popover window
 
@@ -486,14 +479,13 @@ namespace MonoDevelop.Ide.Gui
 
 		internal static void LoadDarkStyle ()
 		{
-			ThinSplitterColor = Color.FromName ("#595959");
+			ThinSplitterColor = Color.FromName ("#ff0000"); // 353535
+
+			// Document tabs
 
 			TabBarBackgroundColor = Color.FromName ("#333333");
 			TabBarActiveTextColor = Color.FromName ("#ffffff");
 			TabBarNotifyTextColor = Color.FromName ("#ffffff");
-
-			// Document tabs
-
 			TabBarActiveGradientStartColor = Shift (TabBarBackgroundColor, 0.92);
 			TabBarActiveGradientEndColor = TabBarBackgroundColor;
 			TabBarGradientStartColor = Shift (TabBarBackgroundColor, 1.02);
@@ -545,8 +537,12 @@ namespace MonoDevelop.Ide.Gui
 			PadBackground = Color.FromName ("#5a5a5a");
 			InactivePadBackground = ReduceLight (PadBackground, 0.9);
 			PadLabelColor = Color.FromName ("#5c6366");
-			DockFrameBackground = Color.FromName ("#9da2a6");
-			DockSeparatorColor = ThinSplitterColor;
+
+			DockFrameBackground = Color.FromName ("#222222");
+			DockSeparatorColor = Color.FromName ("#222222");
+			DockBarBackground = Color.FromName ("#4a4a4a");
+			DockBarPrelightColor = Color.FromName ("#5a5a5a");
+			DockBarLabelColor = Color.FromName ("#bdbdbd");
 
 			BrowserPadBackground = Color.FromName ("#202020");
 			InactiveBrowserPadBackground = Color.FromName ("#141414");
@@ -558,14 +554,7 @@ namespace MonoDevelop.Ide.Gui
 
 			PropertyPadLabelBackgroundColor = PadBackground;
 			PropertyPadDividerColor = PadBackground;
-
-			DockBarBackground1 = PadBackground;
-			DockBarBackground2 = Shift (PadBackground, 0.95);
-			DockBarSeparatorColorDark = Color.FromName ("#ffffff").WithAlpha (.2);
-			DockBarSeparatorColorLight = Color.FromName ("#000000").WithAlpha (.3);
-
-			DockBarPrelightColor = Color.FromName ("#000000");
-
+			
 			// Status area
 
 			WidgetBorderColor = Color.FromName ("#8c8c8c");
@@ -588,8 +577,8 @@ namespace MonoDevelop.Ide.Gui
 
 			// Toolbar
 
-			ToolbarBottomBorderColor = Color.FromName ("#7f7f7f");
-			ToolbarBottomGlowColor = Color.FromName ("#ffffff").WithAlpha (.2);
+			ToolbarBottomBorderColor = Color.FromName ("#ff0000"); // 7f7f7f
+			ToolbarBottomGlowColor = Color.FromName ("#00ff00"); // ffffff.WithAlpha (.2);
 
 			// Popover window
 

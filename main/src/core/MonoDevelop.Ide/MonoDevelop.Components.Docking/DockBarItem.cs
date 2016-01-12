@@ -207,16 +207,16 @@ namespace MonoDevelop.Components.Docking
 			if (bar.Orientation == Gtk.Orientation.Horizontal) {
 				box = new HBox ();
 				if (bar.AlignToEnd)
-					mainBox.SetPadding (3, 3, 11, 9);
+					mainBox.SetPadding (5, 5, 11, 9);
 				else
-					mainBox.SetPadding (3, 3, 9, 11);
+					mainBox.SetPadding (5, 5, 9, 11);
 			}
 			else {
 				box = new VBox ();
 				if (bar.AlignToEnd)
-					mainBox.SetPadding (11, 9, 3, 3);
+					mainBox.SetPadding (11, 9, 5, 5);
 				else
-					mainBox.SetPadding (9, 11, 3, 3);
+					mainBox.SetPadding (9, 11, 5, 5);
 			}
 			
 			if (it.Icon != null) {
@@ -229,8 +229,18 @@ namespace MonoDevelop.Components.Docking
 			if (!string.IsNullOrEmpty (it.Label)) {
 				label = new Gtk.Label (it.Label);
 				label.UseMarkup = true;
+				label.ModifyFg (StateType.Normal, Styles.DockBarLabelColor.ToGdkColor ());
+
+				var font = label.Style.FontDescription.Copy ();
+				font.Size = (int) (11 * Pango.Scale.PangoScale);
+				label.ModifyFont (font);
+
 				if (bar.Orientation == Gtk.Orientation.Vertical)
 					label.Angle = 270;
+
+				if (bar.Orientation == Gtk.Orientation.Horizontal)
+					label.SetAlignment (0, 0.7f); // needs to be slightly move to fix alignment issues
+
 				box.PackStart (label, true, true, 0);
 			} else
 				label = null;
@@ -440,7 +450,8 @@ namespace MonoDevelop.Components.Docking
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
 				var alloc = Allocation;
 
-				// FIXME: VV: Remove gradient features
+				// TODO: VV: Remove preflight gradient features and replace with a flat color
+
 				Cairo.LinearGradient lg;
 
 				if (bar.Orientation == Orientation.Horizontal) {
