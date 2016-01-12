@@ -2211,6 +2211,10 @@ namespace MonoDevelop.Projects
 			// When saving the project, if the property is assigned the same evaluated value,
 			// the change won't be saved
 
+			var pgroup = cgrp.Group as MSBuildPropertyGroup;
+			if (pgroup != null)
+				config.IsImported = pgroup.IsImported;
+
 			foreach (var p in cgrp.Group.GetProperties ()) {
 				var ep = pi.EvaluatedProperties.GetProperty (p.Name);
 				if (ep != null)
@@ -2239,6 +2243,7 @@ namespace MonoDevelop.Projects
 		MSBuildProjectInstance PrepareProjectInstaceForConfiguration (string conf, string platform, bool onlyEvaluateProperties)
 		{
 			var pi = sourceProject.CreateInstance ();
+
 			pi.SetGlobalProperty ("BuildingInsideVisualStudio", "true");
 			if (conf != null)
 				pi.SetGlobalProperty ("Configuration", conf);
@@ -2434,14 +2439,23 @@ namespace MonoDevelop.Projects
 
 			// Configurations
 
+			// Only need to write out configurations that weren't initially imported.
+			List<ProjectConfiguration> nonImportedConfiguations = null;
 			if (Configurations.Count > 0) {
+				nonImportedConfiguations = new List<ProjectConfiguration> ();
+				foreach (ProjectConfiguration conf in Configurations)
+					if (!conf.IsImported)
+						nonImportedConfiguations.Add (conf);
+			}
+
+			if (nonImportedConfiguations.Count > 0) {
 				
 				List<ConfigData> configData = GetConfigData (msproject, true);
 
 				try {
 					// Write configuration data, creating new property groups if necessary
 
-					foreach (ProjectConfiguration conf in Configurations) {
+					foreach (ProjectConfiguration conf in nonImportedConfiguations) {
 
 						MSBuildPropertyGroup pg = (MSBuildPropertyGroup)conf.Properties;
 						ConfigData cdata = configData.FirstOrDefault (cd => cd.Group == pg);
@@ -2475,13 +2489,13 @@ namespace MonoDevelop.Projects
 					var mergeToProjectProperties = new HashSet<MergedProperty> (GetMergeToProjectProperties (configData));
 					var mergeToProjectPropertyValues = new Dictionary<string, MergedPropertyValue> ();
 
-					foreach (ProjectConfiguration conf in Configurations) {
+					foreach (ProjectConfiguration conf in nonImportedConfiguations) {
 						ConfigData cdata = FindPropertyGroup (configData, conf);
 						var propGroup = (MSBuildPropertyGroup)cdata.Group;
 						CollectMergetoprojectProperties (propGroup, mergeToProjectProperties, mergeToProjectPropertyValues);
 					}
 
-					foreach (ProjectConfiguration conf in Configurations) {
+					foreach (ProjectConfiguration conf in nonImportedConfiguations) {
 						ConfigData cdata = FindPropertyGroup (configData, conf);
 						var propGroup = (MSBuildPropertyGroup)cdata.Group;
 
@@ -2500,7 +2514,7 @@ namespace MonoDevelop.Projects
 							globalGroup.SetValue (prop.Key, prop.Value.XmlValue, defaultValue: prop.Value.XmlValue, preserveExistingCase: prop.Value.PreserveExistingCase);
 						}
 					}
-					foreach (SolutionItemConfiguration conf in Configurations) {
+					foreach (SolutionItemConfiguration conf in nonImportedConfiguations) {
 						var propGroup = FindPropertyGroup (configData, conf).Group;
 						foreach (string mp in mergeToProjectPropertyValues.Keys)
 							propGroup.RemoveProperty (mp);
