@@ -36,13 +36,14 @@ namespace MonoDevelop.Components.Chart
 	public class BasicChart: Control
 	{
 		ChartWidget widget;
+
 		public BasicChart ()
 		{
+			widget = new ChartWidget ();
 		}
 
 		protected override object CreateNativeWidget ()
 		{
-			widget = new ChartWidget ();
 			return widget;
 		}
 
