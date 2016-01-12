@@ -8,12 +8,13 @@ open System.Threading
 open System.Threading.Tasks
 open MonoDevelop.Core
 open MonoDevelop.Core.Text
+open MonoDevelop.Components
 open MonoDevelop.Components.MainToolbar
 open MonoDevelop.Ide
 open MonoDevelop.Projects
 
 type FakePad() =
-  inherit MonoDevelop.Ide.Gui.AbstractPadContent()
+  inherit MonoDevelop.Ide.Gui.PadContent()
   let view = new FSharpConsoleView()
 
   do view.InitialiseEvents()
@@ -58,7 +59,7 @@ type FakePad() =
       fsiProcess.BeginOutputReadLine()  
       fsiProcess.BeginErrorReadLine()
 
-  override x.Control : Gtk.Widget = view :> Gtk.Widget
+  override x.Control : Control = Control.op_Implicit view
   override x.Initialize(_container:MonoDevelop.Ide.Gui.IPadWindow) =
     x.UpdateColors()
     x.UpdateFont()

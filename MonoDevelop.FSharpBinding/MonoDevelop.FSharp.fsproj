@@ -197,6 +197,10 @@
       <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Xamarin.Mac">
+      <HintPath>..\..\..\build\bin\Xamarin.Mac.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="FSharp.Core">
       <Private>True</Private>
     </Reference>

@@ -39,7 +39,7 @@ type KillIntent =
   | NoIntent // Unexpected kill, or from #q/#quit, so we prompt  
 
 type FSharpInteractivePad() as this =
-  inherit MonoDevelop.Ide.Gui.AbstractPadContent()
+  inherit MonoDevelop.Ide.Gui.PadContent()
   let view = new FSharpConsoleView()
 
   do view.InitialiseEvents()
@@ -127,7 +127,7 @@ type FSharpInteractivePad() as this =
       x.Shutdown()
       view.Dispose()
 
-  override x.Control : Gtk.Widget = view :> Gtk.Widget
+  override x.Control : Control = Control.op_Implicit view
   
   override x.Initialize(container:MonoDevelop.Ide.Gui.IPadWindow) = 
       view.ConsoleInput.Add consoleInputHandler
@@ -153,13 +153,13 @@ type FSharpInteractivePad() as this =
       
       x.UpdateColors()
                             
-      let toolbar = container.GetToolbar(Gtk.PositionType.Right)
+      let toolbar = container.GetToolbar(DockPositionType.Right)
 
       let buttonClear = new DockToolButton("gtk-clear")
       buttonClear.Clicked.Add(fun _ -> view.Clear())
       buttonClear.TooltipText <- GettextCatalog.GetString("Clear")
       toolbar.Add(buttonClear)
-      
+
       let buttonRestart = new DockToolButton("gtk-refresh")
       buttonRestart.Clicked.Add(fun _ -> x.RestartFsi())
       buttonRestart.TooltipText <- GettextCatalog.GetString("Reset")

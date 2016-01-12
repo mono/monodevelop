@@ -270,7 +270,7 @@ type FSharpPathExtension() as x =
         let tag = path.[index].Tag
         let window = new DropDownBoxListWindow(FSharpDataProvider(x, tag), FixedRowHeight=22, MaxVisibleRows=14)
         window.SelectItem (path.[index].Tag)
-        window :> _
+        Control.op_Implicit window
 
       member x.add_PathChanged(handler) = pathChanged.Publish.AddHandler(handler)
       member x.remove_PathChanged(handler) = pathChanged.Publish.RemoveHandler(handler)
