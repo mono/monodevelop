@@ -328,8 +328,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			ThinSplitterColor = Color.FromName ("#a6a6a6");
 
-			TabBarBackgroundColor = Color.FromName ("#c2c2c2");
-			TabBarActiveTextColor = Color.FromName ("#575757");
+			TabBarBackgroundColor = Color.FromName ("#bfbfbf");
+			TabBarActiveTextColor = Color.FromName ("#505050");
 			TabBarNotifyTextColor = Color.FromName ("#0000ff");
 
 			// Document tabs
@@ -342,7 +342,7 @@ namespace MonoDevelop.Ide.Gui
 			TabBarGlowGradientStartColor = Color.FromName ("#ffffff").WithAlpha (.4);
 			TabBarGlowGradientEndColor = Color.FromName ("#ffffff").WithAlpha (0);
 			TabBarHoverActiveTextColor = TabBarActiveTextColor;
-			TabBarInactiveTextColor = Color.FromName ("#979797");
+			TabBarInactiveTextColor = Color.FromName ("#888888");
 			TabBarHoverInactiveTextColor = Color.FromName ("#000000");
 			TabBarInnerBorderColor = Color.FromName ("#ffffff").WithAlpha (.5);
 			TabBarInactiveGradientStartColor = Color.FromName ("#f4f4f4");

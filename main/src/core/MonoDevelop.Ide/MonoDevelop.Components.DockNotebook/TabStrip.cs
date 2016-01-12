@@ -72,7 +72,7 @@ namespace MonoDevelop.Components.DockNotebook
 		public MenuButton DropDownButton;
 
 		static readonly double PixelScale = GtkWorkarounds.GetPixelScale ();
-		static readonly int TotalHeight = (int)(29 * PixelScale);
+		static readonly int TotalHeight = (int)(32 * PixelScale);
 		static readonly Xwt.WidgetSpacing TabPadding;
 		static readonly Xwt.WidgetSpacing TabActivePadding;
 		static readonly int LeftBarPadding = (int)(44 * PixelScale);
@@ -80,7 +80,7 @@ namespace MonoDevelop.Components.DockNotebook
 		static readonly int VerticalTextSize = (int)(11 * PixelScale);
 		static readonly int ButtonSize = (int)(16 * PixelScale);
 		const int TabSpacing = 0;
-		const int LeanWidth = 14;
+		const int LeanWidth = 12;
 		const int CloseButtonSize = 8;
 
 		const int TextOffset = 1;
