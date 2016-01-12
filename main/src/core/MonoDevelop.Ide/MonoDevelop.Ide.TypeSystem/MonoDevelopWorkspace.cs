@@ -630,11 +630,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			return document;
 		}
 
-		Dictionary<string, SourceText> changedFiles = new Dictionary<string, SourceText> ();
 
 		public override bool TryApplyChanges (Solution newSolution)
 		{
-			changedFiles.Clear ();
 			return base.TryApplyChanges (newSolution);
 		}
 
@@ -703,16 +701,14 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			bool isOpen;
 			var filePath = document.FilePath;
+			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out isOpen);
 
 			// Guard against already done changes in linked files.
 			// This shouldn't happen but the roslyn merging seems not to be working correctly in all cases :/
-			SourceText formerText;
-			if (changedFiles.TryGetValue (filePath, out formerText)) {
-				if (formerText.Length == text.Length && formerText.ToString () == text.ToString ())
-					return;
+			if (document.GetLinkedDocumentIds ().Length > 0 && isOpen && !(text.GetType ().FullName == "Microsoft.CodeAnalysis.Text.ChangedText")) {
+				return;
 			}
-			changedFiles [filePath] = text;
-
+		
 			Projection projection = null;
 			foreach (var entry in ProjectionList) {
 				var p = entry.Projections.FirstOrDefault (proj => FilePath.PathComparer.Equals (proj.Document.FileName, filePath));
@@ -722,11 +718,16 @@ namespace MonoDevelop.Ide.TypeSystem
 					break;
 				}
 			}
-
-			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out isOpen);
-			var oldFile = isOpen ? document.GetTextAsync ().Result : new MonoDevelopSourceText (data);
+			SourceText oldFile;
+			if (!isOpen || !document.TryGetText (out oldFile)) {
+				oldFile = new MonoDevelopSourceText (data);
+			}
 			var changes = text.GetTextChanges (oldFile).OrderByDescending (c => c.Span.Start).ToList ();
+			if (changes.Count == 1 && changes[0].Span.Start == 0 && changes[0].Span.End == oldFile.Length) {
+				Console.WriteLine ("!!!!");
+			}
 			int delta = 0;
+
 			if (!isOpen) {
 				delta = ApplyChanges (projection, data, changes);
 				var formatter = CodeFormatterService.GetFormatter (data.MimeType);
@@ -765,7 +766,6 @@ namespace MonoDevelop.Ide.TypeSystem
 						foreach (var change in changes) {
 							delta -= change.Span.Length - change.NewText.Length;
 							var startOffset = change.Span.Start - delta;
-
 							if (projection != null) {
 								int originalOffset;
 								if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
