@@ -175,7 +175,7 @@
     <Compile Include="MonoDevelop.Refactoring.NodeBuilders\AnalyzerFolderNodeBuilderExtension.cs" />
     <Compile Include="MonoDevelop.Refactoring\AnalyzerProjectItem.cs" />
     <Compile Include="MonoDevelop.Refactoring.NodeBuilders\AnalyzerNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.Refactoring.NodeBuilders\DiagnosticDescriptorPropertyProvider.cs" />
+    <Compile Include="MonoDevelop.Refactoring.NodeBuilders\AnalyzerPropertyProvider.cs" />
     <Compile Include="MonoDevelop.Refactoring.NodeBuilders\AnalyzersFromAssemblyNodeBuilder.cs" />
   </ItemGroup>
   <ItemGroup>

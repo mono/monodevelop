@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.DesignerSupport;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Core;
+using MonoDevelop.CodeIssues;
 
 namespace MonoDevelop.Refactoring.NodeBuilders
 {
@@ -34,12 +35,36 @@ namespace MonoDevelop.Refactoring.NodeBuilders
 	{
 		public object CreateProvider (object obj)
 		{
+			if (obj is AnalyzersFromAssembly)
+				return new AnalyzersFromAssemblyProvider ((AnalyzersFromAssembly)obj);
 			return new DiagnosticDescriptorProvider ((DiagnosticDescriptor)obj);
 		}
 
 		public bool SupportsObject (object obj)
 		{
-			return obj is DiagnosticDescriptor;
+			return obj is DiagnosticDescriptor || obj is AnalyzersFromAssembly;
+		}
+
+		class AnalyzersFromAssemblyProvider
+		{
+			AnalyzersFromAssembly obj;
+
+			[LocalizedCategory ("Misc")]
+			[LocalizedDisplayName ("Name")]
+			public string Name {
+				get { return obj.Assemblies[0].GetName ().Name; }
+			}
+
+			[LocalizedCategory ("Misc")]
+			[LocalizedDisplayName ("Path")]
+			public string Path {
+				get { return obj.Assemblies[0].Location; }
+			}
+
+			public AnalyzersFromAssemblyProvider (AnalyzersFromAssembly obj)
+			{
+				this.obj = obj;
+			}
 		}
 
 		class DiagnosticDescriptorProvider : CustomDescriptor
@@ -52,9 +77,52 @@ namespace MonoDevelop.Refactoring.NodeBuilders
 			}
 
 			[LocalizedCategory ("Misc")]
-			[LocalizedDisplayName ("Id")]
+			[LocalizedDisplayName ("Category")]
+			public string Category {
+				get { return obj.Category; }
+			}
+
+			[LocalizedCategory ("Misc")]
+			[LocalizedDisplayName ("Default Severity")]
+			public DiagnosticSeverity DefaultSeverity {
+				get { return obj.DefaultSeverity; }
+			}
+
+			[LocalizedCategory ("Misc")]
+			[LocalizedDisplayName ("Description")]
+			public string Description {
+				get { return obj.Description.ToString (); }
+			}
+
+			[LocalizedCategory ("Misc")]
+			[LocalizedDisplayName ("Enabled by default")]
+			public bool IsEnabledByDefault {
+				get { return obj.IsEnabledByDefault; }
+			}
+
+			[LocalizedCategory ("Misc")]
+			[LocalizedDisplayName ("Help link")]
+			public string HelpLinkUri {
+				get { return obj.HelpLinkUri; }
+			}
+
+
+			[LocalizedCategory ("Misc")]
+			[LocalizedDisplayName ("ID")]
 			public string Id {
 				get { return obj.Id; }
+			}
+
+			[LocalizedCategory ("Misc")]
+			[LocalizedDisplayName ("Message")]
+			public string MessageFormat {
+				get { return obj.MessageFormat.ToString (); }
+			}
+
+			[LocalizedCategory ("Misc")]
+			[LocalizedDisplayName ("Tags")]
+			public string Tags {
+				get { return string.Join (",", obj.CustomTags); }
 			}
 
 			[LocalizedCategory ("Misc")]
@@ -62,7 +130,6 @@ namespace MonoDevelop.Refactoring.NodeBuilders
 			public string Title {
 				get { return obj.Title.ToString (); }
 			}
-
 		}
 	}
 }
