@@ -1264,9 +1264,7 @@ namespace MonoDevelop.Ide.Gui
 		void OnDocumentOpened (DocumentEventArgs e)
 		{
 			try {
-				EventHandler<DocumentEventArgs> handler = this.DocumentOpened;
-				if (handler != null)
-					handler (this, e);
+				DocumentOpened?.Invoke (this, e);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Exception while opening documents", ex);
 			}
@@ -1276,9 +1274,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			try {
 				var e = new DocumentEventArgs (doc);
-				EventHandler<DocumentEventArgs> handler = this.DocumentClosed;
-				if (handler != null)
-					handler (this, e);
+				DocumentClosed?.Invoke (this, e);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Exception while closing documents", ex);
 			}
@@ -1288,9 +1284,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			try {
 				var e = new DocumentEventArgs (doc);
-				EventHandler<DocumentEventArgs> handler = this.DocumentClosing;
-				if (handler != null)
-					handler (this, e);
+				DocumentClosing?.Invoke (this, e);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Exception before closing documents", ex);
 			}
