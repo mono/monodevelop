@@ -131,12 +131,12 @@ namespace MonoDevelop.SourceEditor
 			return new TooltipItem (val, startOffset, expression.Length);
 		}
 
-		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Gdk.ModifierType modifierState)
+		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
 		{
 			return new DebugValueWindow (editor, offset, DebuggingService.CurrentFrame, (ObjectValue) item.Item, null);
 		}
 
-		public override void ShowTooltipWindow (TextEditor editor, Control tipWindow, TooltipItem item, Gdk.ModifierType modifierState, int mouseX, int mouseY)
+		public override void ShowTooltipWindow (TextEditor editor, Control tipWindow, TooltipItem item, Xwt.ModifierKeys modifierState, int mouseX, int mouseY)
 		{
 			var location = editor.OffsetToLocation (item.Offset);
 			var point = editor.LocationToPoint (location);

@@ -30,14 +30,14 @@
 
 using System;
 using System.Xml;
-using Gtk;
 using Mono.Unix;
 
 namespace MonoDevelop.Components.Docking
 {
 	public class DockItem
 	{
-		Widget content;
+		Control content;
+		Gtk.Widget gtkContent;
 		DockItemContainer widget;
 		string defaultLocation;
 		bool defaultVisible = true;
@@ -79,11 +79,6 @@ namespace MonoDevelop.Components.Docking
 			currentVisualStyle = regionStyle = frame.GetRegionStyleForItem (this);
 		}
 		
-		internal DockItem (DockFrame frame, Widget w, string id): this (frame, id)
-		{
-			content = w;
-		}
-
 		public string Id {
 			get { return id; }
 		}
@@ -204,35 +199,36 @@ namespace MonoDevelop.Components.Docking
 			UpdateContentVisibleStatus ();
 		}
 		
-		public Widget Content {
+		public Control Content {
 			get {
 				return content;
 			}
 			set {
 				content = value;
+				gtkContent = content.GetNativeWidget<Gtk.Widget> ();
 				if (!gettingContent && widget != null)
 					widget.UpdateContent ();
 			}
 		}
 		
-		public DockItemToolbar GetToolbar (PositionType position)
+		public DockItemToolbar GetToolbar (DockPositionType position)
 		{
 			switch (position) {
-				case PositionType.Top:
-					if (toolbarTop == null)
-						toolbarTop = new DockItemToolbar (this, PositionType.Top);
+				case DockPositionType.Top:
+				if (toolbarTop == null)
+					toolbarTop = new DockItemToolbar (this, DockPositionType.Top);
 					return toolbarTop;
-				case PositionType.Bottom:
+				case DockPositionType.Bottom:
 					if (toolbarBottom == null)
-						toolbarBottom = new DockItemToolbar (this, PositionType.Bottom);
+					                     toolbarBottom = new DockItemToolbar (this, DockPositionType.Bottom);
 					return toolbarBottom;
-				case PositionType.Left:
+				case DockPositionType.Left:
 					if (toolbarLeft == null)
-						toolbarLeft = new DockItemToolbar (this, PositionType.Left);
+					                     toolbarLeft = new DockItemToolbar (this, DockPositionType.Left);
 					return toolbarLeft;
-				case PositionType.Right:
+				case DockPositionType.Right:
 					if (toolbarRight == null)
-						toolbarRight = new DockItemToolbar (this, PositionType.Right);
+					                     toolbarRight = new DockItemToolbar (this, DockPositionType.Right);
 					return toolbarRight;
 				default: throw new ArgumentException ();
 			}
@@ -344,20 +340,20 @@ namespace MonoDevelop.Components.Docking
 
 		internal void SetFocus ()
 		{
-			SetFocus (Content);
+			SetFocus (gtkContent);
 		}
 		
-		internal static void SetFocus (Widget w)
+		internal static void SetFocus (Gtk.Widget w)
 		{
-			w.ChildFocus (DirectionType.Down);
+			w.ChildFocus (Gtk.DirectionType.Down);
 
-			Window win = w.Toplevel as Gtk.Window;
+			Gtk.Window win = w.Toplevel as Gtk.Window;
 			if (win == null)
 				return;
 
 			// Make sure focus is not given to internal children
 			if (win.Focus != null) {
-				Container c = win.Focus.Parent as Container;
+				Gtk.Container c = win.Focus.Parent as Gtk.Container;
 				if (c.Children.Length == 0)
 					win.Focus = c;
 			}
@@ -409,15 +405,15 @@ namespace MonoDevelop.Components.Docking
 				ResetMode ();
 				SetRegionStyle (frame.GetRegionStyleForItem (this));
 
-				floatingWindow = new DockFloatingWindow ((Window)frame.Toplevel, GetWindowTitle ());
+				floatingWindow = new DockFloatingWindow ((Gtk.Window)frame.Toplevel, GetWindowTitle ());
 				Ide.IdeApp.CommandService.RegisterTopWindow (floatingWindow);
 
-				VBox box = new VBox ();
+				Gtk.VBox box = new Gtk.VBox ();
 				box.Show ();
 				box.PackStart (TitleTab, false, false, 0);
 				box.PackStart (Widget, true, true, 0);
 				floatingWindow.Add (box);
-				floatingWindow.DeleteEvent += delegate (object o, DeleteEventArgs a) {
+				floatingWindow.DeleteEvent += delegate (object o, Gtk.DeleteEventArgs a) {
 					if (behavior == DockItemBehavior.CantClose)
 						Status = DockItemStatus.Dockable;
 					else
@@ -534,34 +530,34 @@ namespace MonoDevelop.Components.Docking
 		
 		internal void ShowDockPopupMenu (uint time)
 		{
-			Menu menu = new Menu ();
+			Gtk.Menu menu = new Gtk.Menu ();
 			
 			// Hide menuitem
 			if ((Behavior & DockItemBehavior.CantClose) == 0) {
-				MenuItem mitem = new MenuItem (Catalog.GetString("Hide"));
+				Gtk.MenuItem mitem = new Gtk.MenuItem (Catalog.GetString("Hide"));
 				mitem.Activated += delegate { Visible = false; };
 				menu.Append (mitem);
 			}
 
-			MenuItem citem;
+			Gtk.MenuItem citem;
 
 			// Auto Hide menuitem
 			if ((Behavior & DockItemBehavior.CantAutoHide) == 0 && Status != DockItemStatus.AutoHide) {
-				citem = new MenuItem (Catalog.GetString("Minimize"));
+				citem = new Gtk.MenuItem (Catalog.GetString("Minimize"));
 				citem.Activated += delegate { Status = DockItemStatus.AutoHide; };
 				menu.Append (citem);
 			}
 
 			if (Status != DockItemStatus.Dockable) {
 				// Dockable menuitem
-				citem = new MenuItem (Catalog.GetString("Dock"));
+				citem = new Gtk.MenuItem (Catalog.GetString("Dock"));
 				citem.Activated += delegate { Status = DockItemStatus.Dockable; };
 				menu.Append (citem);
 			}
 
 			// Floating menuitem
 			if ((Behavior & DockItemBehavior.NeverFloating) == 0 && Status != DockItemStatus.Floating) {
-				citem = new MenuItem (Catalog.GetString("Undock"));
+				citem = new Gtk.MenuItem (Catalog.GetString("Undock"));
 				citem.Activated += delegate { Status = DockItemStatus.Floating; };
 				menu.Append (citem);
 			}
@@ -588,13 +584,13 @@ namespace MonoDevelop.Components.Docking
 	// See BXC9883 - Xamarin Studio hides when there is a nonmodal floating window and it loses focus
 	// https://bugzilla.xamarin.com/show_bug.cgi?id=9883
 	//
-	class DockFloatingWindow : Window
+	class DockFloatingWindow : Gtk.Window
 	{
-		public DockFloatingWindow (Window dockParent, string title) : base (title)
+		public DockFloatingWindow (Gtk.Window dockParent, string title) : base (title)
 		{
 			this.DockParent = dockParent;
 		}
 
-		public Window DockParent { get; private set; }
+		public Gtk.Window DockParent { get; private set; }
 	}
 }

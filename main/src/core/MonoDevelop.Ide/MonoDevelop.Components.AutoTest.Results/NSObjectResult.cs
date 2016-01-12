@@ -41,7 +41,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 	{
 		NSObject ResultObject;
 
-		public NSObjectResult (NSObject resultObject)
+		internal NSObjectResult (NSObject resultObject)
 		{
 			ResultObject = resultObject;
 		}

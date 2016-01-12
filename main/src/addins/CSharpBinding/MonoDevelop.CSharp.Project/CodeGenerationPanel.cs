@@ -27,8 +27,8 @@
 //
 
 using System;
+using MonoDevelop.Components;
 using MonoDevelop.Projects;
-using Gtk;
 using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.CSharp.Project
@@ -118,7 +118,7 @@ namespace MonoDevelop.CSharp.Project
 	{
 		CodeGenerationPanelWidget widget;
 		
-		public override Widget CreatePanelWidget()
+		public override Control CreatePanelWidget()
 		{
 			return widget = new  CodeGenerationPanelWidget ();
 		}

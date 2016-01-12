@@ -24,13 +24,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using Mono.TextEditor;
+using MonoDevelop.Components;
+
 namespace MonoDevelop.VersionControl.Views
 {
-	public interface IBlameView : IAttachableViewContent
+	public interface IBlameView
 	{	
 	}
 	
@@ -39,7 +42,7 @@ namespace MonoDevelop.VersionControl.Views
 		BlameWidget widget;
 		VersionControlDocumentInfo info;
 		
-		public override Gtk.Widget Control { 
+		public override Control Control { 
 			get {
 				if (widget == null)
 					widget = new BlameWidget (info);
@@ -53,7 +56,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 		
 		#region IAttachableViewContent implementation
-		public void Selected ()
+		protected override void OnSelected ()
 		{
 			info.Start ();
 			var sourceEditor = info.Document.GetContent <MonoDevelop.SourceEditor.SourceEditorView> ();
@@ -63,7 +66,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		public void Deselected ()
+		protected override void OnDeselected ()
 		{
 			var sourceEditor = info.Document.GetContent <MonoDevelop.SourceEditor.SourceEditorView> ();
 			if (sourceEditor != null) {
@@ -72,13 +75,6 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		public void BeforeSave ()
-		{
-		}
-
-		public void BaseContentChanged ()
-		{
-		}
 		#endregion
 		
 		#region IUndoHandler implementation

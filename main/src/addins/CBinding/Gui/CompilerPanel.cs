@@ -32,6 +32,7 @@
 using System;
 using Mono.Addins;
 
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide;
 
@@ -114,7 +115,7 @@ namespace CBinding
 	{
 		CompilerPanel panel;
 		
-		public override Gtk.Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return panel = new CompilerPanel ((CProject)ConfiguredProject);
 		}

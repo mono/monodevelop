@@ -53,21 +53,21 @@ namespace MonoDevelop.Components.Docking
 			
 			ShowAll ();
 			
-			mainBox.PackStart (item.GetToolbar (PositionType.Top).Container, false, false, 0);
+			mainBox.PackStart (item.GetToolbar (DockPositionType.Top).Container, false, false, 0);
 			
 			HBox hbox = new HBox ();
 			hbox.Show ();
-			hbox.PackStart (item.GetToolbar (PositionType.Left).Container, false, false, 0);
+			hbox.PackStart (item.GetToolbar (DockPositionType.Left).Container, false, false, 0);
 			
 			contentBox = new HBox ();
 			contentBox.Show ();
 			hbox.PackStart (contentBox, true, true, 0);
 			
-			hbox.PackStart (item.GetToolbar (PositionType.Right).Container, false, false, 0);
+			hbox.PackStart (item.GetToolbar (DockPositionType.Right).Container, false, false, 0);
 			
 			mainBox.PackStart (hbox, true, true, 0);
 			
-			mainBox.PackStart (item.GetToolbar (PositionType.Bottom).Container, false, false, 0);
+			mainBox.PackStart (item.GetToolbar (DockPositionType.Bottom).Container, false, false, 0);
 		}
 
 		DockVisualStyle visualStyle;
@@ -119,10 +119,10 @@ namespace MonoDevelop.Components.Docking
 				if (widget != null)
 					SetTreeStyle (widget);
 
-				item.GetToolbar (PositionType.Top).SetStyle (VisualStyle);
-				item.GetToolbar (PositionType.Left).SetStyle (VisualStyle);
-				item.GetToolbar (PositionType.Right).SetStyle (VisualStyle);
-				item.GetToolbar (PositionType.Bottom).SetStyle (VisualStyle);
+				item.GetToolbar (DockPositionType.Top).SetStyle (VisualStyle);
+				item.GetToolbar (DockPositionType.Left).SetStyle (VisualStyle);
+				item.GetToolbar (DockPositionType.Right).SetStyle (VisualStyle);
+				item.GetToolbar (DockPositionType.Bottom).SetStyle (VisualStyle);
 			}
 		}
 
@@ -147,8 +147,8 @@ namespace MonoDevelop.Components.Docking
 		{
 			var w = (Gtk.TreeView)sender;
 			if (VisualStyle.TreeBackgroundColor != null) {
-				w.ModifyBase (StateType.Normal, VisualStyle.TreeBackgroundColor.Value);
-				w.ModifyBase (StateType.Insensitive, VisualStyle.TreeBackgroundColor.Value);
+				w.ModifyBase (StateType.Normal, VisualStyle.TreeBackgroundColor.Value.ToGdkColor ());
+				w.ModifyBase (StateType.Insensitive, VisualStyle.TreeBackgroundColor.Value.ToGdkColor ());
 			} else {
 				w.ModifyBase (StateType.Normal, Parent.Style.Base (StateType.Normal));
 				w.ModifyBase (StateType.Insensitive, Parent.Style.Base (StateType.Insensitive));
@@ -159,7 +159,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			if (VisualStyle.TabStyle == DockTabStyle.Normal) {
 				Gdk.GC gc = new Gdk.GC (GdkWindow);
-				gc.RgbFgColor = VisualStyle.PadBackgroundColor.Value;
+				gc.RgbFgColor = VisualStyle.PadBackgroundColor.Value.ToGdkColor ();
 				evnt.Window.DrawRectangle (gc, true, Allocation);
 				gc.Dispose ();
 			}

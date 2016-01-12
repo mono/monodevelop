@@ -587,7 +587,7 @@ namespace MonoDevelop.CSharp
 
 		}
 
-		public Gtk.Widget CreatePathWidget (int index)
+		public Control CreatePathWidget (int index)
 		{
 			PathEntry[] path = CurrentPath;
 			if (path == null || index < 0 || index >= path.Length)

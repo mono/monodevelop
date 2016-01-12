@@ -31,7 +31,7 @@ namespace MonoDevelop.Components
 {
 	public class ContextMenuItemCollection: Collection<ContextMenuItem>
 	{
-		internal ContextMenuItemCollection (ContextMenu parent)
+		internal ContextMenuItemCollection ()
 		{
 		}
 	}

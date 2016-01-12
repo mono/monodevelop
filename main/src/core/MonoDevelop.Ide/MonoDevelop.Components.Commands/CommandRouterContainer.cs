@@ -43,15 +43,17 @@ namespace MonoDevelop.Components.Commands
 			set;
 		}
 		
-		protected CommandRouterContainer (bool continueToParent)
+		protected CommandRouterContainer (bool continueToParent) : this(null, null, continueToParent)
 		{
 			this.continueToParent = continueToParent;
 		}
 		
-		public CommandRouterContainer (Gtk.Widget child, object target, bool continueToParent) : this (continueToParent)
+		public CommandRouterContainer (Control child, object target, bool continueToParent)
 		{
-			if (child != null)
+			if (child != null) {
 				PackStart (child, true, true, 0);
+				child = null;
+			}
 			Delegated = target;
 		}
 		

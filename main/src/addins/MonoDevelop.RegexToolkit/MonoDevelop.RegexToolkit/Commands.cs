@@ -27,11 +27,13 @@
 //
 
 using System;
+using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using Gtk;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.RegexToolkit
 {
@@ -40,11 +42,11 @@ namespace MonoDevelop.RegexToolkit
 		ShowRegexToolkit
 	}
 	
-	class ViewOnlyContent : AbstractViewContent
+	class ViewOnlyContent : ViewContent
 	{
 		Widget widget;
-		
-		public override Widget Control {
+
+		public override Control Control {
 			get {
 				return widget;
 			}
@@ -54,21 +56,20 @@ namespace MonoDevelop.RegexToolkit
 		{
 			this.widget = widget;
 			this.ContentName = contentName;
-			IsViewOnly = true;
 		}
-		
-		public override void Load (FileOpenInformation fileOpenInformation)
-		{
-			throw new System.NotImplementedException ();
+
+		public override bool IsViewOnly {
+			get {
+				return true;
+			}
 		}
-		
 	}
 	
-	class DefaultAttachableViewContent : AbstractAttachableViewContent
+	class DefaultAttachableViewContent : BaseViewContent
 	{
 		Widget widget;
-		
-		public override Widget Control {
+
+		public override Control Control {
 			get {
 				return widget;
 			}

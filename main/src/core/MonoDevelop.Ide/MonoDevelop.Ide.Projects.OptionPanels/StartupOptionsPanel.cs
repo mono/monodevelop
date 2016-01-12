@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
@@ -192,7 +193,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	{
 		StartupOptionsPanelWidget widget;
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return widget = new StartupOptionsPanelWidget (ConfiguredSolution);
 		}

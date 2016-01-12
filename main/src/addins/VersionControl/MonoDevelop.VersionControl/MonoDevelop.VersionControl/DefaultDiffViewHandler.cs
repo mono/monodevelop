@@ -31,7 +31,7 @@ using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.VersionControl
 {
-	public class DefaultDiffViewHandler : IDiffViewHandler
+	public class DefaultDiffViewHandler : IVersionControlViewHandler
 	{
 		public bool CanHandle (VersionControlItem item, DocumentView primaryView)
 		{
@@ -39,7 +39,7 @@ namespace MonoDevelop.VersionControl
 				&& item.Repository.GetFileIsText (item.Path);
 		}
 
-		public IDiffView CreateView (VersionControlDocumentInfo info)
+		public BaseViewContent CreateView (VersionControlDocumentInfo info)
 		{
 			return new DiffView (info);
 		}

@@ -105,13 +105,6 @@ namespace MonoDevelop.SourceEditor
 				y - y2 < (editor.LineHeight / 2) * editor.Options.Zoom;
 		}
 
-		bool ISmartTagMarker.IsInsideWindow (Gtk.MotionNotifyEventArgs args)
-		{
-			if (editor == null)
-				return false;
-			return args.Event.Window == editor.TextArea.GdkWindow;
-		}
-
 		public event EventHandler<TextMarkerMouseEventArgs> MousePressed;
 		public event EventHandler<TextMarkerMouseEventArgs> MouseHover;
 		public event EventHandler ShowPopup;

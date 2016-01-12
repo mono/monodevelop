@@ -960,7 +960,9 @@ namespace MonoDevelop.Projects
 						builder.Unlock ();
 						if (builder != this.projectBuilder) {
 							// Dispose the builder after a while, so that it can be reused
+							#pragma warning disable 4014
 							Task.Delay (10000).ContinueWith (t => builder.Dispose ());
+							#pragma warning restore 4014
 						}
 						t1.End ();
 						if (t2 != null)

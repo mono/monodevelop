@@ -167,11 +167,12 @@ namespace MonoDevelop.SourceEditor
 				this.GetPosition (out x, out y);
 				oldY = y;
 
-				Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x, y));
+				Xwt.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (x, y));
+				int top = (int)geometry.Top;
 				if (allocation.Height <= geometry.Height && y + allocation.Height >= geometry.Y + geometry.Height - edgeGap)
-					y = geometry.Top + (geometry.Height - allocation.Height - edgeGap);
-				if (y < geometry.Top + edgeGap)
-					y = geometry.Top + edgeGap;
+					y = top + ((int)geometry.Height - allocation.Height - edgeGap);
+				if (y < top + edgeGap)
+					y = top + edgeGap;
 
 				if (y != oldY) {
 					Move (x, y);

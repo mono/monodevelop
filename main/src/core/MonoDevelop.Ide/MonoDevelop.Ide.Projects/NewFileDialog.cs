@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Projects
 	/// <summary>
 	///  This class is for creating a new "empty" file
 	/// </summary>
-	internal partial class NewFileDialog : Dialog
+	internal partial class NewFileDialog : Gtk.Dialog
 	{
 		List<TemplateItem> alltemplates = new List<TemplateItem> ();
 		List<Category> categories = new List<Category> ();

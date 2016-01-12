@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -121,7 +122,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		}
 
 		
-		public override Gtk.Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			AllowMixedConfigurations = true;
 			return (widget = new CommonAssemblySigningPreferences ());

@@ -29,16 +29,16 @@ namespace MonoDevelop.Ide.Gui
 {
 	public class DocumentView
 	{
-		IBaseViewContent content;
+		BaseViewContent content;
 		Document document;
 
-		internal DocumentView (Document doc, IBaseViewContent content)
+		internal DocumentView (Document doc, BaseViewContent content)
 		{
 			document = doc;
 			this.content = content;
 		}
 
-		internal IBaseViewContent BaseContent {
+		internal BaseViewContent BaseContent {
 			get { return content; }
 		}
 
@@ -53,8 +53,8 @@ namespace MonoDevelop.Ide.Gui
 
 		public void Select ()
 		{
-			if (content is IAttachableViewContent)
-				document.Window.SwitchView ((IAttachableViewContent)content);
+			if (content is BaseViewContent)
+				document.Window.SwitchView ((BaseViewContent)content);
 			else
 				document.Window.SwitchView (0);
 		}

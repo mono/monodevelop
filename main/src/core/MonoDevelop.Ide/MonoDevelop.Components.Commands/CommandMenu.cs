@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.Components.Commands
 {
-	public class CommandMenu: Gtk.Menu
+	class CommandMenu: Gtk.Menu
 	{
 		CommandEntrySet commandEntrySet;
 		CommandManager manager;

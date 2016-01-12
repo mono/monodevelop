@@ -29,18 +29,19 @@ using MonoDevelop.Ide;
 using MonoDevelop.VersionControl.Views;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl
 {
 	public class ResolveConflictsCommand
 	{
-		public static bool ResolveConflicts (VersionControlItemList list, bool test)
+		public static async Task<bool> ResolveConflicts (VersionControlItemList list, bool test)
 		{
 			if (test)
 				return list.All (s => (s.VersionInfo.Status & VersionStatus.Conflicted) == VersionStatus.Conflicted);
 
 			foreach (var item in list.Where (s => (s.VersionInfo.Status & VersionStatus.Conflicted) == VersionStatus.Conflicted)) {
-				Document doc = IdeApp.Workbench.OpenDocument (item.Path, item.ContainerProject, true);
+				Document doc = await IdeApp.Workbench.OpenDocument (item.Path, item.ContainerProject, true);
 				foreach (var view in doc.Views) {
 					if (view.GetContent <MergeView> () != null)
 						view.Select ();

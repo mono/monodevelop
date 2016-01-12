@@ -47,6 +47,7 @@ using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.Refactoring;
 using System.Xml.XPath;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -212,7 +213,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		}
 
 		/// Adds a field to the class
-		public void BindToField (Stetic.Component obj)
+		public async Task BindToField (Stetic.Component obj)
 		{
 			if (targetObject == null)
 				return;
@@ -224,11 +225,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return;
 
 			var location = GetSourceLocation(cls);
-			var doc = IdeApp.Workbench.OpenDocument (location.SourceTree.FilePath, project, true);
+			var doc = await IdeApp.Workbench.OpenDocument (location.SourceTree.FilePath, project, true);
 			
 			var editor = doc.Editor;
 			if (editor != null) {
-				CodeGenerationService.AddNewMember (project, cls, cls.Locations.First (), GetFieldCode (cls, obj, name));
+				await CodeGenerationService.AddNewMember (project, cls, cls.Locations.First (), GetFieldCode (cls, obj, name));
 			}
 		}
 		

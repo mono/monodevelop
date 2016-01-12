@@ -78,8 +78,12 @@ namespace MonoDevelop.Ide.Editor
 		}
 	}
 
-	interface ITextEditorImpl : IViewContent, IDisposable
+	interface ITextEditorImpl : IDisposable
 	{
+		ViewContent ViewContent { get; }
+
+		string ContentName { get; set; }
+			
 		EditMode EditMode { get; }
 
 		ITextEditorOptions Options { get; set; }

@@ -28,7 +28,7 @@ using System;
 
 namespace MonoDevelop.Components.Theming
 {
-	public static class ThemeEngine
+	static class ThemeEngine
 	{
 		private static Type theme_type;
 

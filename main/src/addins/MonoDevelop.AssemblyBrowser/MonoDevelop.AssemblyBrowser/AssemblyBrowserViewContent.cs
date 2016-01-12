@@ -30,6 +30,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Refactoring;
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Navigation;
@@ -37,24 +38,26 @@ using MonoDevelop.Projects;
 using System.Linq;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	class AssemblyBrowserViewContent : AbstractViewContent, IOpenNamedElementHandler, INavigable
+	class AssemblyBrowserViewContent : ViewContent, IOpenNamedElementHandler, INavigable
 	{
 		readonly static string[] defaultAssemblies = new string[] { "mscorlib", "System", "System.Core", "System.Xml" };
 		AssemblyBrowserWidget widget;
 		
-		protected override void OnWorkbenchWindowChanged (EventArgs e)
+		protected override void OnWorkbenchWindowChanged ()
 		{
-			base.OnWorkbenchWindowChanged (e);
+			base.OnWorkbenchWindowChanged ();
 			if (WorkbenchWindow != null) {
 				var toolbar = WorkbenchWindow.GetToolbar (this);
 				widget.SetToolbar (toolbar);
 			}
 		}
 
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return widget;
 			}
@@ -73,10 +76,11 @@ namespace MonoDevelop.AssemblyBrowser
 			IsDisposed = false;
 		}
 		
-		public override void Load (FileOpenInformation fileOpenInformation)
+		public override Task Load (FileOpenInformation fileOpenInformation)
 		{
 			ContentName = GettextCatalog.GetString ("Assembly Browser");
 			widget.AddReferenceByFileName (fileOpenInformation.FileName);
+			return Task.FromResult (true);
 		}
 
 		internal void EnsureDefinitionsLoaded (List<AssemblyLoader> definitions)
@@ -100,8 +104,11 @@ namespace MonoDevelop.AssemblyBrowser
 			IsDisposed = true;
 			base.Dispose ();
 			widget = null;
-			GC.Collect ();
+			if (Disposed != null)
+				Disposed (this, EventArgs.Empty);
 		}
+
+		internal event EventHandler Disposed;
 
 		#region INavigable implementation 
 		

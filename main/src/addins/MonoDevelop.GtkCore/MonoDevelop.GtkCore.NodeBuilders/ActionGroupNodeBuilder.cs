@@ -86,14 +86,14 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 	
 	class ActionGroupCommandHandler: NodeCommandHandler
 	{
-		public override void ActivateItem ()
+		public override async void ActivateItem ()
 		{
 			GuiBuilderWindow w = (GuiBuilderWindow) CurrentNode.GetParentDataItem (typeof(GuiBuilderWindow), false);
 			if (w != null) {
 				if (w.SourceCodeFile == FilePath.Null && !w.BindToClass ())
 					return;
 				
-				Document doc = IdeApp.Workbench.OpenDocument (w.SourceCodeFile, true);
+				Document doc = await IdeApp.Workbench.OpenDocument (w.SourceCodeFile, true);
 				if (doc != null) {
 					GuiBuilderView view = doc.GetContent<GuiBuilderView> ();
 					if (view != null)
@@ -103,7 +103,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			else {
 				Project project = (Project) CurrentNode.GetParentDataItem (typeof(Project), false);
 				Stetic.ActionGroupInfo group = (Stetic.ActionGroupInfo) CurrentNode.DataItem;
-				GuiBuilderService.OpenActionGroup (project, group);
+				await GuiBuilderService.OpenActionGroup (project, group);
 			}
 		}
 		

@@ -93,7 +93,7 @@ namespace MonoDevelop.Ide.Editor
 			return false;
 		}
 
-		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
+		public ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			var editor = TextEditorFactory.CreateNewEditor ();
 			editor.MimeType = mimeType;

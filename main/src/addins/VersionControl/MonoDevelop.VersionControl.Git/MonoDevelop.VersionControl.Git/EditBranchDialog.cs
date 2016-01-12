@@ -35,7 +35,7 @@ using System.ComponentModel;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	partial class EditBranchDialog : Dialog
+	partial class EditBranchDialog : Gtk.Dialog
 	{
 		readonly ListStore comboStore;
 		readonly string currentTracking;

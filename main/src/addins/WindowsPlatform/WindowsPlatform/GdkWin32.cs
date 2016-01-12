@@ -58,6 +58,12 @@ namespace MonoDevelop.Platform
 		[DllImport (Win32.USER32, SetLastError=true, CharSet=CharSet.Auto)]
 		static extern uint RegisterWindowMessage (string lpString);
 
+		public static IntPtr HgdiobjGet (MonoDevelop.Components.Window window)
+		{
+			Gtk.Window gtkWindow = window;
+			return HgdiobjGet (gtkWindow.GdkWindow);
+		}
+
 		public static IntPtr HgdiobjGet (Gdk.Drawable drawable)
 		{
 			return gdk_win32_drawable_get_handle (drawable.Handle);

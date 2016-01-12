@@ -38,9 +38,6 @@ namespace MonoDevelop.Components
 	public class RoundedFrame : Bin
 	{
 		private Theme theme;
-		protected Theme Theme {
-			get { return theme; }
-		}
 
 		private int frame_width = 3;
 

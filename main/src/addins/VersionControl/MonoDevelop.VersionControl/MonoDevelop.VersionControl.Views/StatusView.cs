@@ -8,6 +8,7 @@ using Mono.Addins;
 using Gtk;
 
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
@@ -290,9 +291,9 @@ namespace MonoDevelop.VersionControl.Views
 			Init ();
 		}
 
-		protected override void OnWorkbenchWindowChanged (EventArgs e)
+		protected override void OnWorkbenchWindowChanged ()
 		{
-			base.OnWorkbenchWindowChanged (e);
+			base.OnWorkbenchWindowChanged ();
 			if (WorkbenchWindow == null)
 				return;
 
@@ -355,10 +356,6 @@ namespace MonoDevelop.VersionControl.Views
 			btnSelectNone.Clicked += new EventHandler (OnSelectNone);
 			toolbar.Add (btnSelectNone);
 			toolbar.ShowAll ();
-		}
-
-		public override string StockIconId {
-			get { return "vc-status"; }
 		}
 
 		int CompareNodes (Gtk.TreeModel model, Gtk.TreeIter a, Gtk.TreeIter b)
@@ -436,7 +433,7 @@ namespace MonoDevelop.VersionControl.Views
 			base.Dispose ();
 		}
 
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return widget;
 			}

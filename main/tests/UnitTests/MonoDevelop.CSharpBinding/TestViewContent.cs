@@ -29,19 +29,20 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {
-	public class TestViewContent : AbstractViewContent
+	public class TestViewContent : ViewContent
 	{
 		TextEditor data;
 		
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return null;
 			}
@@ -65,19 +66,11 @@ namespace MonoDevelop.CSharpBinding.Tests
 			Contents.Add (data);
 			Name = "";
 		}
-		
-		public override void Load(FileOpenInformation fileOpenInformation)
-		{
-		}
 
-		public override string ContentName {
-			get {
-				return base.ContentName;
-			}
-			set {
-				base.ContentName = value;
-				Name = value;
-			}
+		protected override void OnContentNameChanged ()
+		{
+			base.OnContentNameChanged ();
+			Name = ContentName;
 		}
 		
 		FilePath name;
@@ -212,14 +205,9 @@ namespace MonoDevelop.CSharpBinding.Tests
 		
 		public List<object> Contents = new List<object> ();
 		
-		public override object GetContent (Type type) 
+		protected override IEnumerable<object> OnGetContents (Type type)
 		{
-			return Contents.FirstOrDefault (type.IsInstanceOfType) ??  base.GetContent (type);
-		}
-
-		public override IEnumerable<T> GetContents<T> ()
-		{
-			return Contents.OfType<T> ();
+			return base.OnGetContents(type).Concat (Contents.Where (c => type.IsInstanceOfType (c)));
 		}
 
 		public IDisposable OpenUndoGroup ()

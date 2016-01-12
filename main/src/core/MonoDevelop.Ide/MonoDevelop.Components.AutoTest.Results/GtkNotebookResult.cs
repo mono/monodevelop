@@ -34,7 +34,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 		Notebook noteBook;
 		int toBeSelected = -1;
 
-		public GtkNotebookResult (Widget notebookWidget) : base (notebookWidget)
+		internal GtkNotebookResult (Widget notebookWidget) : base (notebookWidget)
 		{
 			noteBook = notebookWidget as Notebook;
 		}
