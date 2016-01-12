@@ -26,7 +26,7 @@
 //
 
 using System;
-using Gtk;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.dataObject = dataObject;
 		}
 		
-		public abstract Widget CreatePanelWidget ();
+		public abstract Control CreatePanelWidget ();
 		
 		public virtual bool IsVisible ()
 		{

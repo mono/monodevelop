@@ -33,6 +33,7 @@ using System;
 
 using Mono.Addins;
 
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Gui.Dialogs;
@@ -93,7 +94,7 @@ namespace CBinding
 	{
 		private OutputOptionsPanel panel;
 		
-		public override Gtk.Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return panel = new OutputOptionsPanel ();
 		}

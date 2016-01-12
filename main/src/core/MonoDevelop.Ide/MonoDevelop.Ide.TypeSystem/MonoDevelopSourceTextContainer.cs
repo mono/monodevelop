@@ -171,6 +171,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (isDisposed)
 				return;
 			document.TextChanging -= HandleTextReplacing;
+			document.TextChanged -= Document_TextChanged;;
 			isDisposed = true;
 		}
 

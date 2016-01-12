@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	{
 		CombineEntryConfigurationsPanelWidget widget;
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			MultiConfigItemOptionsDialog dlg = (MultiConfigItemOptionsDialog) ParentDialog;
 			return (widget = new CombineEntryConfigurationsPanelWidget (dlg));
@@ -163,7 +163,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			try {
 				bool done = false;
 				do {
-					if (MessageService.RunCustomDialog (dlg, Toplevel as Window) == (int) Gtk.ResponseType.Ok) {
+					if (MessageService.RunCustomDialog (dlg, Toplevel as Gtk.Window) == (int) Gtk.ResponseType.Ok) {
 						configData.RenameConfiguration (cc.Id, dlg.ConfigName, dlg.RenameChildren);
 						store.SetValue (iter, 1, cc.Id);
 						done = true;

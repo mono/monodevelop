@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Components.Commands;
 
 #if MAC
@@ -33,19 +34,21 @@ using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.Components
 {
-	public class Control: IDisposable
+	public class Control : IDisposable
 	{
-		object nativeWidget;
+		internal static Dictionary<object, WeakReference<Control>> cache = new Dictionary<object, WeakReference<Control>> ();
+		internal object nativeWidget;
 
 		protected Control ()
 		{
 		}
 
-		public Control (object widget)
+		Control (object widget)
 		{
 			if (widget == null)
-				throw new ArgumentNullException ("widget");
+				throw new ArgumentNullException (nameof (widget));
 			this.nativeWidget = widget;
+			cache.Add (nativeWidget, new WeakReference<Control> (this));
 		}
 
 		protected virtual object CreateNativeWidget ()
@@ -56,9 +59,16 @@ namespace MonoDevelop.Components
 		public T GetNativeWidget<T> ()
 		{
 			if (nativeWidget == null) {
+				var toCache = this;
 				var w = CreateNativeWidget ();
-				if (!(w is T))
-					w = ConvertToType (typeof(T), w);
+				if (!(w is T)) {
+					var temp = w as Control;
+					while (temp != null) {
+						w = temp.GetNativeWidget<T> ();
+						temp = w as Control;
+					}
+					w = ConvertToType (typeof (T), w);
+				}
 				if (w is Gtk.Widget) {
 					var gtkWidget = (Gtk.Widget)w;
 					var c = new CommandRouterContainer (gtkWidget, this, true);
@@ -69,9 +79,17 @@ namespace MonoDevelop.Components
 						GC.SuppressFinalize (this);
 						Dispose (true);
 					};
-				}
-				else
+					toCache = c;
+				} else {
 					nativeWidget = w;
+				}
+				WeakReference<Control> cached;
+				Control target;
+				if (cache.TryGetValue (nativeWidget, out cached) && cached.TryGetTarget (out target)) {
+					if (target != toCache)
+						throw new Exception ();
+				} else
+					cache.Add (nativeWidget, new WeakReference<Control> (toCache));
 			}
 			if (nativeWidget is T)
 				return (T)nativeWidget;
@@ -84,32 +102,78 @@ namespace MonoDevelop.Components
 			if (t.IsInstanceOfType (w))
 				return w;
 
-			#if MAC
-			if (w is NSView && t == typeof(Gtk.Widget)) {
+#if MAC
+			if (w is NSView && t == typeof (Gtk.Widget)) {
 				var ww = GtkMacInterop.NSViewToGtkWidget ((NSView)w);
 				ww.Show ();
 				return ww;
 			}
-			if (w is Gtk.Widget && t == typeof(NSView)) {
+			if (w is Gtk.Widget && t == typeof (NSView)) {
 				return new GtkEmbed ((Gtk.Widget)w);
 			}
-			#endif
+#endif
 			throw new NotSupportedException ();
 		}
 
+#if MAC
+		public static implicit operator NSView (Control d)
+		{
+			return d.GetNativeWidget<NSView> ();
+		}
+
+		public static implicit operator Control (NSView d)
+		{
+			if (d == null)
+				return null;
+
+			return GetImplicit<Control, NSView> (d) ?? new Control (d);
+		}
+#endif
+
 		public static implicit operator Gtk.Widget (Control d)
 		{
-			return d.GetNativeWidget<Gtk.Widget> ();
+			return d?.GetNativeWidget<Gtk.Widget> ();
 		}
 
 		public static implicit operator Control (Gtk.Widget d)
 		{
-			return new Control (d);
+			if (d == null)
+				return null;
+
+			return GetImplicit<Control, Gtk.Widget>(d) ?? new Control (d);
+		}
+
+		internal static T GetImplicit<T, U> (U native) where T : Control where U : class
+		{
+			WeakReference<Control> cached;
+			Control target;
+
+			if (cache.TryGetValue (native, out cached)) {
+				if (cached.TryGetTarget (out target)) {
+					var ret = target as T;
+					if (ret != null)
+						return ret;
+				}
+
+				cache.Remove (native);
+			}
+			return null;
 		}
 
 		public void GrabFocus ()
 		{
 			// TODO
+		}
+
+
+		public bool HasFocus {
+			get
+			{
+				// TODO
+				if (nativeWidget is Gtk.Widget)
+					return ((Gtk.Widget)nativeWidget).HasFocus;
+				return false;
+			}
 		}
 
 		public void Dispose ()
@@ -118,16 +182,18 @@ namespace MonoDevelop.Components
 				((Gtk.Widget)nativeWidget).Destroy ();
 				return;
 			}
-			#if MAC
+#if MAC
 			else if (nativeWidget is NSView)
 				((NSView)nativeWidget).Dispose ();
-			#endif
+#endif
 
 			Dispose (true);
 		}
 
 		protected virtual void Dispose (bool disposing)
 		{
+			if (nativeWidget != null)
+				cache.Remove (nativeWidget);
 		}
 	}
 }

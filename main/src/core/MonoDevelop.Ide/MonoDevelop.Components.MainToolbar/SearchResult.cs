@@ -55,12 +55,12 @@ namespace MonoDevelop.Components.MainToolbar
 	{
 		protected string match;
 		
-		public virtual string GetMarkupText (Widget widget)
+		public virtual string GetMarkupText ()
 		{
-			return HighlightMatch (widget, PlainText, match);
+			return HighlightMatch (PlainText, match);
 		}
 
-		public virtual string GetDescriptionMarkupText (Widget widget)
+		public virtual string GetDescriptionMarkupText ()
 		{
 			return Ambience.EscapeText (Description);
 		}
@@ -99,7 +99,7 @@ namespace MonoDevelop.Components.MainToolbar
 			Rank = rank;
 		}
 		
-		protected static string HighlightMatch (Widget widget, string text, string toMatch)
+		protected static string HighlightMatch (string text, string toMatch)
 		{
 			var lane = StringMatcher.GetMatcher (toMatch, true).GetMatch (text);
 			StringBuilder result = new StringBuilder ();
@@ -253,9 +253,9 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 		
-		public override string GetMarkupText (Widget widget)
+		public override string GetMarkupText ()
 		{
-			return HighlightMatch (widget, MatchedString, match);
+			return HighlightMatch (MatchedString, match);
 		}
 
 		public override bool CanActivate {

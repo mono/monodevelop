@@ -25,6 +25,9 @@
 	<MimeType id="application/glade+xml" _description="Glade File" baseType="application/xml">
 		<File pattern="*.glade" />
 	</MimeType>
+	<MimeType id="application/manifest+xml" _description="Manifest File" baseType="application/xml">
+		<File pattern="*.manifest" />
+	</MimeType>
 	<MimeType id="text/x-changelog" _description="ChangeLog document" isText="true">
 		<File pattern="ChangeLog|Changelog|CHANGELOG|Changelog"/>
 	</MimeType>

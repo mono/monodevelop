@@ -1,9 +1,10 @@
-// IBaseViewContent.cs
+﻿//
+// ButtonEventArgs.cs
 //
 // Author:
-//   Viktoria Dudka (viktoriad@remobjects.com)
+//       therzok <marius.ungureanu@xamarin.com>
 //
-// Copyright (c) 2009 RemObjects Software
+// Copyright (c) 2015 therzok
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,29 +23,41 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-
 using System;
-using Gtk;
-using System.Collections.Generic;
 
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Components
 {
-	public interface IBaseViewContent : IDisposable
+	public class ButtonEvent : Xwt.ButtonEventArgs
 	{
-		IWorkbenchWindow WorkbenchWindow { get; set; }
-		Widget Control { get; }
-		
-		/// <summary>
-		/// The label used for the subview list.
-		/// </summary>
-		string TabPageLabel { get; }
+		public ButtonEvent ()
+		{
+		}
 
-		object GetContent (Type type);
-		IEnumerable<T> GetContents<T> () where T : class;
+		Gdk.EventButton native;
+		new bool Handled { get; set; }
 
-		bool CanReuseView (string fileName);
-		void RedrawContent ();
+		public static implicit operator ButtonEvent (Gdk.EventButton args)
+		{
+			int numPress;
+			if (args.Type == Gdk.EventType.TwoButtonPress)
+				numPress = 2;
+			else if (args.Type == Gdk.EventType.ThreeButtonPress)
+				numPress = 3;
+			else
+				numPress = 1;
+			return new ButtonEvent {
+				native = args,
+				X = args.X,
+				Y = args.Y,
+				Button = (Xwt.PointerButton)args.Button,
+				MultiplePress = numPress,
+			};
+		}
+
+		public static implicit operator Gdk.EventButton (ButtonEvent args)
+		{
+			return args.native;
+		}
 	}
 }
+

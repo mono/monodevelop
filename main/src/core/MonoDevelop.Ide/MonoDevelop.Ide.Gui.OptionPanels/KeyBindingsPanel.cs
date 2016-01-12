@@ -217,7 +217,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			KeyBindingService.SaveCurrentBindings ();
 		}
 
-		public Gtk.Widget CreatePanelWidget ()
+		public Control CreatePanelWidget ()
 		{
 			SortedDictionary<string, Command> commands = new SortedDictionary<string, Command> ();
 			string translatedOther = GettextCatalog.GetString ("Other");

@@ -81,7 +81,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return db != null;
 		}
 		
-		public IViewContent CreateContent (FilePath fileName, string mimeType, MonoDevelop.Projects.Project ownerProject)
+		public ViewContent CreateContent (FilePath fileName, string mimeType, MonoDevelop.Projects.Project ownerProject)
 		{
 			excludeThis = true;
 			var db = DisplayBindingService.GetDefaultViewBinding (fileName, mimeType, ownerProject);

@@ -996,7 +996,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		TextEditorViewContent viewContent;
-		internal IViewContent GetViewContent ()
+		internal ViewContent GetViewContent ()
 		{
 			if (viewContent == null) {
 				viewContent = new TextEditorViewContent (this, textEditorImpl);
@@ -1130,17 +1130,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public T GetContent<T>() where T : class
 		{
-			T result = textEditorImpl as T;
-			if (result != null)
-				return result;
-			var ext = textEditorImpl.EditorExtension;
-			while (ext != null) {
-				result = ext as T;
-				if (result != null)
-					return result;
-				ext = ext.Next;
-			}
-			return null;
+			return GetContents<T> ().FirstOrDefault ();
 		}
 
 		public IEnumerable<T> GetContents<T>() where T : class
@@ -1156,6 +1146,21 @@ namespace MonoDevelop.Ide.Editor
 				ext = ext.Next;
 			}
 		}
+
+		public IEnumerable<object> GetContents (Type type)
+		{
+			var res = Enumerable.Empty<object> ();
+			if (type.IsInstanceOfType (textEditorImpl))
+				res = res.Concat (textEditorImpl);
+			
+			var ext = textEditorImpl.EditorExtension;
+			while (ext != null) {
+				res = res.Concat (ext.OnGetContents (type));
+				ext = ext.Next;
+			}
+			return res;
+		}
+
 		#endregion
 
 		public string GetPangoMarkup (int offset, int length)
@@ -1329,7 +1334,7 @@ namespace MonoDevelop.Ide.Editor
 					foreach (var tp in projection.ProjectedEditor.allProviders) {
 						if (!tp.IsValidFor (projection.ProjectedEditor.MimeType))
 							continue;
-						var newProvider = new ProjectedTooltipProvider (this, ctx, projection, (TooltipProvider)tp.CreateInstance ());
+						var newProvider = new ProjectedTooltipProvider (projection, (TooltipProvider)tp.CreateInstance ());
 						projectedProviders.Add (newProvider);
 						textEditorImpl.AddTooltipProvider (newProvider);
 					}

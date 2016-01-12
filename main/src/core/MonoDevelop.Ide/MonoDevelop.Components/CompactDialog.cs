@@ -28,7 +28,7 @@ using Gtk;
 
 namespace MonoDevelop.Components
 {
-	public class CompactDialog: Dialog
+	public class CompactDialog: Gtk.Dialog
 	{
 		public CompactDialog ()
 		{

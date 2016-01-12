@@ -130,7 +130,7 @@ namespace MonoDevelop.Ide.Gui
 	//dummy binding, anchor point for extension tree
 	class DefaultDisplayBinding : IViewDisplayBinding
 	{
-		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
+		public ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			throw new InvalidOperationException ();
 		}

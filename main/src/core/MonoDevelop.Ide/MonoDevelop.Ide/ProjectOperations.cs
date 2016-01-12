@@ -56,7 +56,6 @@ using MonoDevelop.Projects.MSBuild;
 using System.Collections.Immutable;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.Ide
@@ -277,7 +276,7 @@ namespace MonoDevelop.Ide
 				}
 				if (fileName == null)
 					return;
-				var doc = IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName, project));
+				var doc = await IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName, project));
 
 				if (doc != null) {
 					doc.RunWhenLoaded (delegate {
@@ -299,7 +298,7 @@ namespace MonoDevelop.Ide
 					offset = projectedOffset;
 				}
 			}
-			IdeApp.Workbench.OpenDocument (new FileOpenInformation (filePath, project) {
+			await IdeApp.Workbench.OpenDocument (new FileOpenInformation (filePath, project) {
 				Offset = offset
 			});
 		}
@@ -340,7 +339,7 @@ namespace MonoDevelop.Ide
 			}
 			if (fileName == null || !File.Exists (fileName))
 				return;
-			var doc = IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName));
+			var doc = await IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName));
 			if (doc != null) {
 				doc.RunWhenLoaded (delegate {
 					var handler = doc.PrimaryView.GetContent<MonoDevelop.Ide.Gui.Content.IOpenNamedElementHandler> ();

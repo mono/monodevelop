@@ -71,10 +71,10 @@ namespace MonoDevelop.VersionControl.Views
 
 				var item = new VersionControlItem (repo, project, document.FileName, false, null);
 				var vcInfo = new VersionControlDocumentInfo (document.PrimaryView, item, item.Repository);
-				TryAttachView <IDiffView> (document, vcInfo, DiffCommand.DiffViewHandlers);
-				TryAttachView <IBlameView> (document, vcInfo, BlameCommand.BlameViewHandlers);
-				TryAttachView <ILogView> (document, vcInfo, LogCommand.LogViewHandlers);
-				TryAttachView <IMergeView> (document, vcInfo, MergeCommand.MergeViewHandlers);
+				TryAttachView (document, vcInfo, DiffCommand.DiffViewHandlers);
+				TryAttachView (document, vcInfo, BlameCommand.BlameViewHandlers);
+				TryAttachView (document, vcInfo, LogCommand.LogViewHandlers);
+				TryAttachView (document, vcInfo, MergeCommand.MergeViewHandlers);
 			} catch (Exception ex) {
 				// If a user is hitting this, it will show a dialog box every time they
 				// switch to a document or open a document, so suppress the crash dialog
@@ -83,10 +83,9 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		static void TryAttachView <T>(Document document, VersionControlDocumentInfo info, string type)
-			where T : IAttachableViewContent
+		static void TryAttachView (Document document, VersionControlDocumentInfo info, string type)
 		{
-			var handler = AddinManager.GetExtensionObjects<IVersionControlViewHandler<T>> (type)
+			var handler = AddinManager.GetExtensionObjects<IVersionControlViewHandler> (type)
 				.FirstOrDefault (h => h.CanHandle (info.Item, info.Document));
 			if (handler != null)
 				document.Window.AttachViewContent (handler.CreateView (info));

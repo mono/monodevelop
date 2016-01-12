@@ -706,7 +706,7 @@ namespace MonoDevelop.Xml.Editor
 		
 		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
 		
-		public Widget CreatePathWidget (int index)
+		public Control CreatePathWidget (int index)
 		{
 			if (ownerProjects.Count > 1 && index == 0) {
 				var window = new DropDownBoxListWindow (new DataProvider (this));

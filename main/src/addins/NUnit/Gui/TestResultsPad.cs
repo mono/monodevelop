@@ -49,7 +49,7 @@ using MonoDevelop.NUnit.External;
 
 namespace MonoDevelop.NUnit
 {
-	public class TestResultsPad: IPadContent, ITestProgressMonitor
+	public class TestResultsPad: PadContent, ITestProgressMonitor
 	{
 		NUnitService testService = NUnitService.Instance;
 		
@@ -154,16 +154,16 @@ namespace MonoDevelop.NUnit
 					"/MonoDevelop/NUnit/ContextMenu/TestResultsPad");
 			};
 			
-			Control.ShowAll ();
+			panel.ShowAll ();
 			
 			outputViewScrolled.Hide ();
 		}
 		
-		void IPadContent.Initialize (IPadWindow window)
+		protected override void Initialize (IPadWindow window)
 		{
 			this.window = window;
 			
-			DockItemToolbar toolbar = window.GetToolbar (PositionType.Top);
+			DockItemToolbar toolbar = window.GetToolbar (DockPositionType.Top);
 			
 			buttonSuccess = new ToggleButton ();
 			buttonSuccess.Label = GettextCatalog.GetString ("Successful Tests");
@@ -228,7 +228,7 @@ namespace MonoDevelop.NUnit
 			
 			// Run panel
 			
-			DockItemToolbar runPanel = window.GetToolbar (PositionType.Bottom);
+			DockItemToolbar runPanel = window.GetToolbar (DockPositionType.Bottom);
 			
 			infoSep = new VSeparator ();
 			
@@ -255,10 +255,6 @@ namespace MonoDevelop.NUnit
 			infoSep.Hide ();
 			resultSummary = new UnitTestResult ();
 			UpdateCounters ();
-		}
-		
-		public void Dispose ()
-		{
 		}
 		
 		public void OnTestSuiteChanged (object sender, EventArgs e)
@@ -306,14 +302,10 @@ namespace MonoDevelop.NUnit
 			}
 		}
 		
-		public Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return panel;
 			}
-		}
-		
-		public void RedrawContent ()
-		{
 		}
 		
 		string GetResultsMarkup ()

@@ -26,12 +26,14 @@
 using System;
 using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	public interface IDiffView : IAttachableViewContent
+	public interface IDiffView
 	{
 	}
 	
@@ -39,7 +41,7 @@ namespace MonoDevelop.VersionControl.Views
 	{
 		DiffWidget widget;
 
-		public override Gtk.Widget Control { 
+		public override Control Control { 
 			get {
 				if (widget == null) {
 					widget = new DiffWidget (info);
@@ -89,7 +91,7 @@ namespace MonoDevelop.VersionControl.Views
 			return editor.YToLine (midY);
 		}
 		
-		public void Selected ()
+		protected override void OnSelected ()
 		{
 			info.Start ();
 			ComparisonWidget.UpdateLocalText ();
@@ -121,7 +123,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		public void Deselected ()
+		protected override void OnDeselected ()
 		{
 			var sourceEditor = info.Document.GetContent <MonoDevelop.SourceEditor.SourceEditorView> ();
 			if (sourceEditor != null) {
@@ -133,14 +135,6 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		public void BeforeSave ()
-		{
-		}
-
-		public void BaseContentChanged ()
-		{
-		}
-		
 		#endregion
 		
 		#region IUndoHandler implementation

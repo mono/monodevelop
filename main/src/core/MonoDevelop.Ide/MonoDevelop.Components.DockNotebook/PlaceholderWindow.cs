@@ -51,7 +51,7 @@ namespace MonoDevelop.Components.DockNotebook
 				var doc = IdeApp.Workbench.ActiveDocument;
 				if (doc == null)
 					return;
-				var rootWindow = doc.Window.ActiveViewContent.Control.Toplevel as DockWindow;
+				var rootWindow = doc.Window.ActiveViewContent.Control.GetNativeWidget<Gtk.Widget> ().Toplevel as DockWindow;
 				if (rootWindow == null)
 					return;
 				

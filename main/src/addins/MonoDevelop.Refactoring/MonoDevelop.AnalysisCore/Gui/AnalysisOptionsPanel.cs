@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Ide.Gui.Dialogs;
 using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
@@ -36,7 +37,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 	{
 		AnalysisOptionsWidget widget;
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return widget = new AnalysisOptionsWidget () {
 				AnalysisEnabled = AnalysisOptions.AnalysisEnabled,

@@ -52,7 +52,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			get { return context; }
 		}
 		
-		public Widget Container {
+		public Control Container {
 			get { return container; }
 		}
 		
@@ -255,7 +255,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			get { return context.PropertyDescriptor; }
 		}
 		
-		public Widget Container {
+		public Control Container {
 			get { return container; }
 		}
 		

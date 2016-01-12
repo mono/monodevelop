@@ -1,9 +1,10 @@
-// AbstractPadContent.cs
+﻿//
+// Window.cs
 //
 // Author:
-//   Viktoria Dudka (viktoriad@remobjects.com)
+//       therzok <marius.ungureanu@xamarin.com>
 //
-// Copyright (c) 2009 RemObjects Software
+// Copyright (c) 2015 therzok
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,71 +23,37 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-
 using System;
-using System.Collections.Generic;
-using System.Text;
-using MonoDevelop.Core;
 
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Components
 {
-	public abstract class AbstractPadContent : IPadContent
+	public class Window : Control
 	{
-		protected AbstractPadContent () : this (null, null)
+		protected Window ()
 		{
 		}
 
-		public AbstractPadContent (string title) : this (title, null)
+		Window (object widget)
 		{
+			if (widget == null)
+				throw new ArgumentNullException (nameof (widget));
+			
+			this.nativeWidget = widget;
+			cache.Add (widget, new WeakReference<Control> (this));
 		}
 
-		private IconId icon;
-		private string title;
-		public AbstractPadContent (string title, IconId icon)
+		public static implicit operator Gtk.Window (Window d)
 		{
-			this.Id = GetType ().FullName;
-			this.icon = icon;
-			this.title = title;
+			return d?.GetNativeWidget<Gtk.Window> ();
 		}
 
-		public string Id { get; set; }
-
-		private IPadWindow window = null;
-		public IPadWindow Window {
-			get { return window; }
-		}
-
-		#region IPadContent Members
-
-		public virtual void Initialize (IPadWindow container)
+		public static implicit operator Window (Gtk.Window d)
 		{
-			if (title != null)
-				container.Title = title;
+			if (d == null)
+				return null;
 
-			if (icon != IconId.Null)
-				container.Icon = icon;
-
-			window = container;
+			return GetImplicit<Window, Gtk.Window>(d) ?? new Window (d);
 		}
-
-		public abstract Gtk.Widget Control {
-			get;
-		}
-
-		public virtual void RedrawContent ()
-		{
-		}
-
-		#endregion
-
-		#region IDisposable Members
-
-		public virtual void Dispose ()
-		{
-		}
-
-		#endregion
 	}
 }
+

@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
@@ -43,7 +44,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 		}
 		
-		public MultiConfigItemOptionsDialog (Gtk.Window parentWindow, object dataObject): base (parentWindow, dataObject)
+		public MultiConfigItemOptionsDialog (Window parentWindow, object dataObject): base (parentWindow, dataObject)
 		{
 			IConfigurationTarget ct = DataObject as IConfigurationTarget;
 			if (ct == null)

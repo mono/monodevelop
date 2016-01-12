@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Projects
 		PolicySet currentSet;
 		bool loading;
 		
-		public DefaultPolicyOptionsDialog (Gtk.Window parentWindow)
+		public DefaultPolicyOptionsDialog (MonoDevelop.Components.Window parentWindow)
 			: base (parentWindow, new PolicySet (),
 			        "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels")
 		{
@@ -329,9 +329,10 @@ namespace MonoDevelop.Ide.Projects
 		
 		void UpdateStatus ()
 		{
+			Gtk.Widget mainBox = MainBox;
 			if (sets.Count == 0) {
 				deleteButton.Sensitive = exportButton.Sensitive = false;
-				MainBox.Sensitive = false;
+				mainBox.Sensitive = false;
 				((ListStore)policiesCombo.Model).Clear ();
 				policiesCombo.Sensitive = false;
 				policiesCombo.AppendText (GettextCatalog.GetString ("No Selection"));
@@ -339,7 +340,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 			else {
 				deleteButton.Sensitive = exportButton.Sensitive = true;
-				MainBox.Sensitive = true;
+				mainBox.Sensitive = true;
 				policiesCombo.Sensitive = true;
 			}
 		}

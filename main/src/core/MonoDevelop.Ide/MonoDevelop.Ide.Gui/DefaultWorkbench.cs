@@ -38,7 +38,7 @@ using MonoDevelop.Ide.Codons;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Components.Docking;
 
-using MonoDevelop.Components.DockToolbars;
+using GLib;
 using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Extensions;
@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.Gui
 		List<string> layouts = new List<string> ();
 		
 		List<PadCodon> padContentCollection      = new List<PadCodon> ();
-		List<IViewContent> viewContentCollection = new List<IViewContent> ();
+		List<ViewContent> viewContentCollection = new List<ViewContent> ();
 		Dictionary<PadCodon, IPadWindow> padWindows = new Dictionary<PadCodon, IPadWindow> ();
 		Dictionary<IPadWindow, PadCodon> padCodons = new Dictionary<IPadWindow, PadCodon> ();
 		
@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Gui
 		Rectangle normalBounds = new Rectangle(0, 0, MinimumWidth, MinimumHeight);
 		
 		Gtk.Container rootWidget;
-		DockToolbarFrame toolbarFrame;
+		CommandFrame toolbarFrame;
 		DockFrame dock;
 		SdiDragNotebook tabControl;
 		Gtk.MenuBar topMenu;
@@ -173,7 +173,7 @@ namespace MonoDevelop.Ide.Gui
 				var oldLayout = dock.CurrentLayout;
 				
 				InitializeLayout (value);
-				toolbarFrame.CurrentLayout = dock.CurrentLayout = value;
+				dock.CurrentLayout = value;
 				
 				DestroyFullViewLayouts (oldLayout);
 				
@@ -195,7 +195,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		internal List<IViewContent> InternalViewContentCollection {
+		internal List<ViewContent> InternalViewContentCollection {
 			get {
 				Debug.Assert(viewContentCollection != null);
 				return viewContentCollection;
@@ -311,7 +311,7 @@ namespace MonoDevelop.Ide.Gui
 			topMenu = null;
 		}
 		
-		public void CloseContent (IViewContent content)
+		public void CloseContent (ViewContent content)
 		{
 			if (viewContentCollection.Contains(content)) {
 				if (content.Project != null)
@@ -324,8 +324,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			try {
 				closeAll = true;
-				List<IViewContent> fullList = new List<IViewContent>(viewContentCollection);
-				foreach (IViewContent content in fullList) {
+				List<ViewContent> fullList = new List<ViewContent>(viewContentCollection);
+				foreach (ViewContent content in fullList) {
 					IWorkbenchWindow window = content.WorkbenchWindow;
 					if (window != null)
 						window.CloseWindow(true);
@@ -336,7 +336,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		private Xwt.Drawing.Image PrepareShowView (IViewContent content)
+		private Xwt.Drawing.Image PrepareShowView (ViewContent content)
 		{
 			viewContentCollection.Add (content);
 
@@ -365,7 +365,7 @@ namespace MonoDevelop.Ide.Gui
 			return mimeimage;
 		}
 
-		public virtual void ShowView (IViewContent content, bool bringToFront, IViewDisplayBinding binding = null, DockNotebook notebook = null)
+		public virtual void ShowView (ViewContent content, bool bringToFront, IViewDisplayBinding binding = null, DockNotebook notebook = null)
 		{
 			bool isFile = content.IsFile;
 			if (!isFile) {
@@ -538,7 +538,7 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				IWorkbenchWindow window = ActiveWorkbenchWindow;
 				if (window != null) {
-					if (window.ActiveViewContent.Control.Toplevel == this)
+					if (window.ActiveViewContent.Control.GetNativeWidget<Gtk.Widget> ().Toplevel == this)
 						Title = GetTitle (window);
 				} else {
 					Title = GetDefaultTitle ();
@@ -557,7 +557,7 @@ namespace MonoDevelop.Ide.Gui
 			return BrandingService.ApplicationName;
 		}
 		
-		public Properties GetStoredMemento (IViewContent content)
+		public Properties GetStoredMemento (ViewContent content)
 		{
 			if (content != null && content.ContentName != null) {
 				string directory = UserProfile.Current.CacheDir.Combine ("temp");
@@ -589,7 +589,6 @@ namespace MonoDevelop.Ide.Gui
 				}
 				memento.WindowState = GdkWindow.State;
 				memento.FullScreen  = fullscreen;
-				memento.ToolbarStatus = toolbarFrame.GetStatus ();
 				return memento.ToProperties ();
 			}
 			set {
@@ -611,7 +610,6 @@ namespace MonoDevelop.Ide.Gui
 					}
 					//GdkWindow.State = memento.WindowState;
 					FullScreen = memento.FullScreen;
-					toolbarFrame.SetStatus (memento.ToolbarStatus);
 				}
 				Decorated = true;
 			}
@@ -621,15 +619,15 @@ namespace MonoDevelop.Ide.Gui
 		{
 			foreach (FileEventInfo e in args) {
 				if (e.IsDirectory) {
-					IViewContent[] views = new IViewContent [viewContentCollection.Count];
+					ViewContent[] views = new ViewContent [viewContentCollection.Count];
 					viewContentCollection.CopyTo (views, 0);
-					foreach (IViewContent content in views) {
+					foreach (ViewContent content in views) {
 						if (content.ContentName.StartsWith (e.FileName)) {
 							((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true);
 						}
 					}
 				} else {
-					foreach (IViewContent content in viewContentCollection) {
+					foreach (ViewContent content in viewContentCollection) {
 						if (content.ContentName != null &&
 							content.ContentName == e.FileName) {
 							((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true);
@@ -644,13 +642,13 @@ namespace MonoDevelop.Ide.Gui
 		{
 			foreach (FileCopyEventInfo e in args) {
 				if (e.IsDirectory) {
-					foreach (IViewContent content in viewContentCollection) {
+					foreach (ViewContent content in viewContentCollection) {
 						if (content.ContentName != null && ((FilePath)content.ContentName).IsChildPathOf (e.SourceFile)) {
 							content.ContentName = e.TargetFile.Combine (((FilePath) content.ContentName).FileName);
 						}
 					}
 				} else {
-					foreach (IViewContent content in viewContentCollection) {
+					foreach (ViewContent content in viewContentCollection) {
 						if (content.ContentName != null &&
 						    content.ContentName == e.SourceFile) {
 							content.ContentName = e.TargetFile;
@@ -702,7 +700,7 @@ namespace MonoDevelop.Ide.Gui
 
 			bool showDirtyDialog = false;
 
-			foreach (IViewContent content in viewContentCollection)
+			foreach (ViewContent content in viewContentCollection)
 			{
 				if (content.IsDirty) {
 					showDirtyDialog = true;
@@ -836,7 +834,7 @@ namespace MonoDevelop.Ide.Gui
 			toolbarFrame.AddContent (hbox);
 			*/
 
-			toolbarFrame.AddContent (dock);
+			toolbarFrame.Add (dock);
 			
 			// Create the notebook for the various documents.
 			tabControl = new SdiDragNotebook (this);
@@ -866,21 +864,21 @@ namespace MonoDevelop.Ide.Gui
 			documentDockItem.Content = new DockNotebookContainer (tabControl, true);
 
 			DockVisualStyle style = new DockVisualStyle ();
-			style.PadTitleLabelColor = Styles.PadLabelColor;
-			style.PadBackgroundColor = Styles.PadBackground;
-			style.InactivePadBackgroundColor = Styles.InactivePadBackground;
+			style.PadTitleLabelColor = Styles.PadLabelColor.ToXwtColor ();
+			style.PadBackgroundColor = Styles.PadBackground.ToXwtColor ();
+			style.InactivePadBackgroundColor = Styles.InactivePadBackground.ToXwtColor ();
 			style.PadTitleHeight = barHeight;
 			dock.DefaultVisualStyle = style;
 
 			style = new DockVisualStyle ();
-			style.PadTitleLabelColor = Styles.PadLabelColor;
+			style.PadTitleLabelColor = Styles.PadLabelColor.ToXwtColor ();
 			style.PadTitleHeight = barHeight;
 			style.ShowPadTitleIcon = false;
 			style.UppercaseTitles = false;
 			style.ExpandedTabs = true;
-			style.PadBackgroundColor = Styles.BrowserPadBackground;
-			style.InactivePadBackgroundColor = Styles.InactiveBrowserPadBackground;
-			style.TreeBackgroundColor = Styles.BrowserPadBackground;
+			style.PadBackgroundColor = Styles.BrowserPadBackground.ToXwtColor ();
+			style.InactivePadBackgroundColor = Styles.InactiveBrowserPadBackground.ToXwtColor ();
+			style.TreeBackgroundColor = Styles.BrowserPadBackground.ToXwtColor ();
 			dock.SetDockItemStyle ("ProjectPad", style);
 			dock.SetDockItemStyle ("ClassPad", style);
 
@@ -1010,11 +1008,6 @@ namespace MonoDevelop.Ide.Gui
 			IdeApp.Workbench.ReorderDocuments (oldPlacement, newPlacement);
 		}
 		
-		public void ResetToolbars ()
-		{
-			toolbarFrame.ResetToolbarPositions ();
-		}
-		
 		bool IsInFullViewMode {
 			get {
 				return dock.CurrentLayout.EndsWith (fullViewModeTag);
@@ -1056,7 +1049,6 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (oldLayout != null && oldLayout.EndsWith (fullViewModeTag)) {
 				dock.DeleteLayout (oldLayout);
-				toolbarFrame.DeleteLayout (oldLayout);
 			}
 		}
 		
@@ -1064,19 +1056,17 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (IsInFullViewMode) {
 				var oldLayout = dock.CurrentLayout;
-				toolbarFrame.CurrentLayout = dock.CurrentLayout = CurrentLayout;
+				dock.CurrentLayout = CurrentLayout;
 				DestroyFullViewLayouts (oldLayout);
 			} else {
 				string fullViewLayout = CurrentLayout + fullViewModeTag;
 				if (!dock.HasLayout (fullViewLayout))
 					dock.CreateLayout (fullViewLayout, true);
-				toolbarFrame.CurrentLayout = dock.CurrentLayout = fullViewLayout;
+				dock.CurrentLayout = fullViewLayout;
 				foreach (DockItem it in dock.GetItems ()) {
 					if (it.Behavior != DockItemBehavior.Locked && it.Visible)
 						it.Status = DockItemStatus.AutoHide;
 				}
-				foreach (var tb in toolbarFrame.Toolbars)
-					tb.Status = new DockToolbarStatus (tb.Id, false, tb.Position);
 			}
 		}
 
@@ -1277,18 +1267,12 @@ namespace MonoDevelop.Ide.Gui
 		void CreatePadContent (bool force, PadCodon padCodon, PadWindow window, DockItem item)
 		{
 			if (force || item.Content == null) {
-				IPadContent newContent = padCodon.InitializePadContent (window);
+				PadContent newContent = padCodon.InitializePadContent (window);
 
-				Gtk.Widget pcontent;
-				if (newContent is Widget) {
-					pcontent = newContent.Control;
-				} else {
-					PadCommandRouterContainer crc = new PadCommandRouterContainer (window, newContent.Control, newContent, true);
-					crc.Show ();
-					pcontent = crc;
-				}
-				
-				PadCommandRouterContainer router = new PadCommandRouterContainer (window, pcontent, toolbarFrame, false);
+				Gtk.Widget crc = new PadCommandRouterContainer (window, newContent.Control, newContent, true);
+				crc.Show ();
+
+				Gtk.Widget router = new PadCommandRouterContainer (window, crc, toolbarFrame, false);
 				router.Show ();
 				item.Content = router;
 			}

@@ -32,6 +32,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Gtk;
 
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
@@ -539,11 +540,11 @@ namespace MonoDevelop.Ide.Tasks
 			OnGenTaskJumpto (null, null);
 		}
 
-		void OnGenTaskDelete (object o, EventArgs args)
+		async void OnGenTaskDelete (object o, EventArgs args)
 		{
 			TaskListEntry task = SelectedTask;
 			if (task != null && ! String.IsNullOrEmpty (task.FileName)) {
-				var doc = IdeApp.Workbench.OpenDocument (task.FileName, null, Math.Max (1, task.Line), Math.Max (1, task.Column));
+				var doc = await IdeApp.Workbench.OpenDocument (task.FileName, null, Math.Max (1, task.Line), Math.Max (1, task.Column));
 				if (doc != null && doc.HasProject && doc.Project is DotNetProject) {
 					string[] commentTags = doc.CommentTags;
 					if (commentTags != null && commentTags.Length == 1) {
@@ -641,14 +642,14 @@ namespace MonoDevelop.Ide.Tasks
 		}
 		
 		#region ITaskListView members
-		TreeView ITaskListView.Content {
+		Control ITaskListView.Content {
 			get {
 				CreateView ();
 				return view; 
 			} 
 		}
 		
-		Widget[] ITaskListView.ToolBarItems {
+		Control[] ITaskListView.ToolBarItems {
 			get { return null; } 
 		}
 		#endregion

@@ -27,7 +27,7 @@
 
 	<ExtensionPoint path = "/MonoDevelop/VersionControl/DiffViewHandler" name = "Diff view handler">
 		<Description>Handler used to create the a diff view which can display the current file.</Description>
-		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.IDiffViewHandler" />
+		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.IVersionControlViewHandler" />
 	</ExtensionPoint>
 
 	<Extension path = "/MonoDevelop/VersionControl/DiffViewHandler">
@@ -36,7 +36,7 @@
 
 	<ExtensionPoint path = "/MonoDevelop/VersionControl/BlameViewHandler" name = "Blame view handler">
 		<Description>Handler used to create the a blame view which can display the current file.</Description>
-		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.IBlameViewHandler" />
+		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.IVersionControlViewHandler" />
 	</ExtensionPoint>
 
 	<Extension path = "/MonoDevelop/VersionControl/BlameViewHandler">
@@ -45,7 +45,7 @@
 
 	<ExtensionPoint path = "/MonoDevelop/VersionControl/LogViewHandler" name = "Log view handler">
 		<Description>Handler used to create the a log view which can display the current file.</Description>
-		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.ILogViewHandler" />
+		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.IVersionControlViewHandler" />
 	</ExtensionPoint>
 
 	<Extension path = "/MonoDevelop/VersionControl/LogViewHandler">
@@ -54,7 +54,7 @@
 
 	<ExtensionPoint path = "/MonoDevelop/VersionControl/MergeViewHandler" name = "Merge view handler">
 		<Description>Handler used to create the a merge view which can display the current file.</Description>
-		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.IMergeViewHandler" />
+		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.IVersionControlViewHandler" />
 	</ExtensionPoint>
 
 	<Extension path = "/MonoDevelop/VersionControl/MergeViewHandler">

@@ -114,13 +114,13 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 	
 	class GladeWindowCommandHandler: NodeCommandHandler
 	{
-		public override void ActivateItem ()
+		public override async void ActivateItem ()
 		{
 			GuiBuilderWindow w = (GuiBuilderWindow) CurrentNode.DataItem;
 			if (w.SourceCodeFile == FilePath.Null && !w.BindToClass ())
 				return;
 			
-			Document doc = IdeApp.Workbench.OpenDocument (w.SourceCodeFile, true);
+			Document doc = await IdeApp.Workbench.OpenDocument (w.SourceCodeFile, true);
 			if (doc != null) {
 				GuiBuilderView view = doc.GetContent<GuiBuilderView> ();
 				if (view != null)
