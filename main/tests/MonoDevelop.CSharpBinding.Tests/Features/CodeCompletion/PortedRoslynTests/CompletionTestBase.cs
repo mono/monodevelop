@@ -35,6 +35,12 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.Roslyn
 {
 	public class CompletionTestBase
 	{
+		[TestFixtureSetUp]
+		public void Setup ()
+		{
+			Xwt.Application.Initialize ();
+			Gtk.Application.Init ();
+		}
 
 		internal virtual CompletionContextHandler CreateContextHandler()
 		{
