@@ -44,7 +44,7 @@ namespace MonoDevelop.Components
 
 		public static implicit operator Gtk.Window (Window d)
 		{
-			return d.GetNativeWidget<Gtk.Window> ();
+			return d?.GetNativeWidget<Gtk.Window> ();
 		}
 
 		public static implicit operator Window (Gtk.Window d)

@@ -44,7 +44,7 @@ namespace MonoDevelop.Components
 
 		public static implicit operator Gtk.Dialog (Dialog d)
 		{
-			return d.GetNativeWidget<Gtk.Dialog> ();
+			return d?.GetNativeWidget<Gtk.Dialog> ();
 		}
 
 		public static implicit operator Dialog (Gtk.Dialog d)
