@@ -723,9 +723,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				oldFile = new MonoDevelopSourceText (data);
 			}
 			var changes = text.GetTextChanges (oldFile).OrderByDescending (c => c.Span.Start).ToList ();
-			if (changes.Count == 1 && changes[0].Span.Start == 0 && changes[0].Span.End == oldFile.Length) {
-				Console.WriteLine ("!!!!");
-			}
 			int delta = 0;
 
 			if (!isOpen) {
