@@ -5571,18 +5571,36 @@
     <EmbeddedResource Include="resources\tabbar-back%402x.9.png">
       <LogicalName>tabbar-back@2x.9.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-back~dark.9.png">
+      <LogicalName>tabbar-back~dark.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-back~dark%402x.9.png">
+      <LogicalName>tabbar-back~dark@2x.9.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="resources\tabbar-inactive.9.png">
       <LogicalName>tabbar-inactive.9.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="resources\tabbar-inactive%402x.9.png">
       <LogicalName>tabbar-inactive@2x.9.png</LogicalName>
     </EmbeddedResource>
+    <!--<EmbeddedResource Include="resources\tabbar-inactive~dark.9.png">
+      <LogicalName>tabbar-inactive~dark.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-inactive~dark%402x.9.png">
+      <LogicalName>tabbar-inactive~dark@2x.9.png</LogicalName>
+    </EmbeddedResource>-->
     <EmbeddedResource Include="resources\tabbar-active.9.png">
       <LogicalName>tabbar-active.9.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="resources\tabbar-active%402x.9.png">
       <LogicalName>tabbar-active@2x.9.png</LogicalName>
     </EmbeddedResource>
+    <!--<EmbeddedResource Include="resources\tabbar-active~dark.9.png">
+      <LogicalName>tabbar-active~dark.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-active~dark%402x.9.png">
+      <LogicalName>tabbar-active~dark@2x.9.png</LogicalName>
+    </EmbeddedResource>-->
     <EmbeddedResource Include="icons\platform-tvos-16.png">
       <LogicalName>platform-tvos-16.png</LogicalName>
     </EmbeddedResource>
