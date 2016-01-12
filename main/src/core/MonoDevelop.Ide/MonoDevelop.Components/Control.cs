@@ -192,7 +192,8 @@ namespace MonoDevelop.Components
 
 		protected virtual void Dispose (bool disposing)
 		{
-			cache.Remove (nativeWidget);
+			if (nativeWidget != null)
+				cache.Remove (nativeWidget);
 		}
 	}
 }
