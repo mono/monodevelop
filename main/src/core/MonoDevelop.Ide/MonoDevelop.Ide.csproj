@@ -2670,30 +2670,6 @@
     <EmbeddedResource Include="icons\tabbar-next-hover-12~dark%402x.png">
       <LogicalName>tabbar-next-12~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\tabbar-next-12.png">
-      <LogicalName>tabbar-next-12.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\tabbar-next-12%402x.png">
-      <LogicalName>tabbar-next-12@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\tabbar-next-12~dark.png">
-      <LogicalName>tabbar-next-12~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\tabbar-next-12~dark%402x.png">
-      <LogicalName>tabbar-next-12~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\tabbar-next-hover-12.png">
-      <LogicalName>tabbar-next-hover-12.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\tabbar-next-hover-12%402x.png">
-      <LogicalName>tabbar-next-hover-12@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\tabbar-next-hover-12~dark.png">
-      <LogicalName>tabbar-next-hover-12~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\tabbar-next-hover-12~dark%402x.png">
-      <LogicalName>tabbar-next-12~dark@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\tabbar-menu-12.png">
       <LogicalName>tabbar-menu-12.png</LogicalName>
     </EmbeddedResource>
