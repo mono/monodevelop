@@ -148,6 +148,8 @@ namespace MonoDevelop.Components.Docking
 				else
 					crossfade.ShowPrimary ();
 			};
+
+			Styles.Changed += UpdateStyle;
 		}
 
 		void IAnimatable.BatchBegin () { }
@@ -178,6 +180,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			base.OnDestroyed ();
 			bar.Frame.SizeAllocated -= HandleBarFrameSizeAllocated;
+			Ide.Gui.Styles.Changed -= UpdateStyle;
 		}
 		
 		
@@ -229,7 +232,6 @@ namespace MonoDevelop.Components.Docking
 			if (!string.IsNullOrEmpty (it.Label)) {
 				label = new Gtk.Label (it.Label);
 				label.UseMarkup = true;
-				label.ModifyFg (StateType.Normal, Styles.DockBarLabelColor.ToGdkColor ());
 
 				var font = label.Style.FontDescription.Copy ();
 				font.Size = (int) (11 * Pango.Scale.PangoScale);
@@ -249,7 +251,14 @@ namespace MonoDevelop.Components.Docking
 			mainBox.Add (box);
 			mainBox.ShowAll ();
 			Add (mainBox);
+			UpdateStyle (this, null); 
 			QueueDraw ();
+		}
+
+		void UpdateStyle (object sender, EventArgs e)
+		{
+			if (label != null)
+				label.ModifyFg (StateType.Normal, Styles.DockBarLabelColor.ToGdkColor ());
 		}
 		
 		public MonoDevelop.Components.Docking.DockItem DockItem {
