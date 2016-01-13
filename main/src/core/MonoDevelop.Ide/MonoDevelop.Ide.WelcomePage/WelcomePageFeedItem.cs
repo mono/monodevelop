@@ -265,7 +265,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			titleLabel.Markup = string.Format (underlined? linkUnderlinedFormat : linkFormat, GLib.Markup.EscapeText (text));
 			subtitleLabel.Markup = string.Format (subtitleFormat, GLib.Markup.EscapeText (subtitle ?? ""));
-			summaryLabel.Markup = string.Format (descFormat, (desc ?? "").Replace ("\n"," "));
+			summaryLabel.Markup = string.Format (descFormat, GLib.Markup.EscapeText ((desc ?? "").Replace ("\n"," ")));
 		}
 		
 		void UpdateImage ()
