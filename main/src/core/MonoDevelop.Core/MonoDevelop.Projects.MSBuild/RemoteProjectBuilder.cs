@@ -294,12 +294,12 @@ namespace MonoDevelop.Projects.MSBuild
 							// FIXME: This lock should not be necessary, but remoting seems to have problems when doing many concurrent calls.
 							result = builder.Run (
 										configurations, null, MSBuildVerbosity.Normal,
-										new [] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null, null, taskId
+										new [] { "ResolveReferences" }, new [] { "ReferencePath" }, null, null, taskId
 									);
 						}
 					} catch (Exception ex) {
 						CheckDisconnected ();
-						LoggingService.LogError ("ResolveAssemblyReferences failed", ex);
+						LoggingService.LogError ("ResolveReferences failed", ex);
 						return new string [0];
 					} finally {
 						EndOperation ();
@@ -307,7 +307,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 					List<MSBuildEvaluatedItem> items;
 					if (result.Items.TryGetValue ("ReferencePath", out items) && items != null) {
-						refs = items.Select (i => i.ItemSpec).ToArray ();
+						refs = items.Where (i => !i.Metadata.ContainsKey ("Project")).Select (i => i.ItemSpec).ToArray ();
 					} else
 						refs = new string[0];
 
