@@ -129,8 +129,22 @@ namespace MonoDevelop.Components.DockNotebook
 
 		static TabStrip ()
 		{
-			TabPadding = ((Xwt.Drawing.NinePatchImage)tabBackImage).Padding;
-			TabActivePadding = ((Xwt.Drawing.NinePatchImage)tabActiveBackImage).Padding;
+			Xwt.Drawing.NinePatchImage tabBackImage9;
+			if (tabBackImage is Xwt.Drawing.ThemedImage) {
+				var img = ((Xwt.Drawing.ThemedImage)tabBackImage).GetImage (Xwt.Drawing.Context.GlobalStyles);
+				tabBackImage9 = img as Xwt.Drawing.NinePatchImage;
+			} else
+				tabBackImage9 = tabBackImage as Xwt.Drawing.NinePatchImage;
+			TabPadding = tabBackImage9.Padding;
+
+
+			Xwt.Drawing.NinePatchImage tabActiveBackImage9;
+			if (tabActiveBackImage is Xwt.Drawing.ThemedImage) {
+				var img = ((Xwt.Drawing.ThemedImage)tabActiveBackImage).GetImage (Xwt.Drawing.Context.GlobalStyles);
+				tabActiveBackImage9 = img as Xwt.Drawing.NinePatchImage;
+			} else
+				tabActiveBackImage9 = tabBackImage as Xwt.Drawing.NinePatchImage;
+			TabActivePadding = tabActiveBackImage9.Padding;
 		}
 
 		public TabStrip (DockNotebook notebook)
