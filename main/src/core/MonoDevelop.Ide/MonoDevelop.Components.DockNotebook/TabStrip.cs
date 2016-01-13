@@ -45,6 +45,8 @@ namespace MonoDevelop.Components.DockNotebook
 		static Xwt.Drawing.Image tabActiveBackImage = Xwt.Drawing.Image.FromResource ("tabbar-active.9.png");
 		static Xwt.Drawing.Image tabBackImage = Xwt.Drawing.Image.FromResource ("tabbar-inactive.9.png");
 		static Xwt.Drawing.Image tabbarBackImage = Xwt.Drawing.Image.FromResource ("tabbar-back.9.png");
+		static Xwt.Drawing.Image tabCloseImage = Xwt.Drawing.Image.FromResource ("tab-close-9.png");
+		static Xwt.Drawing.Image tabDirtyImage = Xwt.Drawing.Image.FromResource ("tab-dirty-9.png");
 
 		List<Widget> children = new List<Widget> ();
 		readonly DockNotebook notebook;
@@ -81,7 +83,8 @@ namespace MonoDevelop.Components.DockNotebook
 		static readonly int ButtonSize = (int)(16 * PixelScale);
 		const int TabSpacing = 0;
 		const int LeanWidth = 12;
-		const int CloseButtonSize = 8;
+		const double CloseButtonMarginRight = 0;
+		const double CloseButtonMarginBottom = -1.0;
 
 		const int TextOffset = 1;
 
@@ -597,7 +600,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		static bool IsOverCloseButton (DockNotebookTab tab, int x, int y)
 		{
-			return tab != null && tab.CloseButtonAllocation.Contains (x, y);
+			return tab != null && tab.CloseButtonActiveArea.Contains (x, y);
 		}
 
 		public void Update ()
@@ -752,60 +755,6 @@ namespace MonoDevelop.Components.DockNotebook
 			return base.OnExposeEvent (evnt);
 		}
 
-		static void DrawCloseButton (Context context, Cairo.PointD center, bool active, bool hovered, double opacity, double animationProgress)
-		{
-			var dirty = animationProgress > 0.5;
-
-			if (dirty && !hovered) {
-				double lineColor = .63 - .1 * animationProgress;
-				const double fillColor = .74;
-				double partialProg = (animationProgress - 0.5) * 2;
-
-				context.MoveTo (center.X - 3, center.Y);
-				context.LineTo (center.X + 3, center.Y);
-
-				context.LineWidth = 2 - partialProg;
-				context.SetSourceRGBA (lineColor, lineColor, lineColor, opacity);
-				context.Stroke ();
-
-				double radius = partialProg * 3.5;
-
-				// Background
-				context.Arc (center.X, center.Y, radius, 0, Math.PI * 2);
-				context.SetSourceRGBA (fillColor, fillColor, fillColor, opacity);
-				context.Fill ();
-
-				// Inset shadow
-				using (var lg = new LinearGradient (0, center.Y - 5, 0, center.Y)) {
-					context.Arc (center.X, center.Y + 1, radius, 0, Math.PI * 2);
-					lg.AddColorStop (0, new Cairo.Color (0, 0, 0, 0.2 * opacity));
-					lg.AddColorStop (1, new Cairo.Color (0, 0, 0, 0));
-					context.SetSource (lg);
-					context.Stroke ();
-				}
-
-				// Outline
-				context.Arc (center.X, center.Y, radius, 0, Math.PI * 2);
-				context.SetSourceRGBA (lineColor, lineColor, lineColor, opacity);
-				context.Stroke ();
-			}
-
-			if (hovered || active && !dirty) {
-				if (hovered)
-					context.SetSourceColor ((active ? Styles.TabBarActiveTextColor : Styles.TabBarInactiveTextColor).ToCairoColor ());
-				else if (active && !dirty)
-					context.SetSourceColor (Styles.TabBarInactiveTextColor.ToCairoColor ());
-				
-				context.LineWidth = 2;
-
-				context.MoveTo (center.X - 3, center.Y - 3);
-				context.LineTo (center.X + 3, center.Y + 3);
-				context.MoveTo (center.X - 3, center.Y + 3);
-				context.LineTo (center.X + 3, center.Y - 3);
-				context.Stroke ();
-			}
-		}
-
 		void DrawTab (Context ctx, DockNotebookTab tab, Gdk.Rectangle allocation, Gdk.Rectangle tabBounds, bool highlight, bool active, bool dragging, Pango.Layout la)
 		{
 			// This logic is stupid to have here, should be in the caller!
@@ -826,22 +775,28 @@ namespace MonoDevelop.Components.DockNotebook
 
 			// Render Close Button (do this first so we can tell how much text to render)
 
-			var crect = new Cairo.Rectangle (tabBounds.Right - rightPadding - (CloseButtonSize / 2),
-							tabBounds.Height - bottomPadding - CloseButtonSize + 0.5,
-							CloseButtonSize, CloseButtonSize);
+			var closeButtonAlloation = new Cairo.Rectangle (tabBounds.Right - rightPadding - (tabCloseImage.Width / 2) - CloseButtonMarginRight,
+			                                 tabBounds.Height - bottomPadding - tabCloseImage.Height - CloseButtonMarginBottom,
+			                                 tabCloseImage.Width, tabCloseImage.Height);
 			
-			tab.CloseButtonAllocation = crect.Inflate (2, 2);
+			tab.CloseButtonActiveArea = closeButtonAlloation.Inflate (2, 2);
 
-			bool closeButtonHovered = tracker.Hovered && tab.CloseButtonAllocation.Contains (tracker.MousePosition) && tab.WidthModifier >= 1.0f;
-			bool drawCloseButton = tabBounds.Width > 60 || highlight || closeButtonHovered;
-			if (drawCloseButton) {
-				DrawCloseButton (ctx, new Cairo.PointD (crect.X + crect.Width / 2, crect.Y + crect.Height / 2), active, closeButtonHovered, tab.Opacity, tab.DirtyStrength);
+			bool closeButtonHovered = tracker.Hovered && tab.CloseButtonActiveArea.Contains (tracker.MousePosition);
+			bool tabHovered = tracker.Hovered && tab.Allocation.Contains (tracker.MousePosition);
+			bool drawCloseButton = active || tabHovered;
+
+			if (!closeButtonHovered && tab.DirtyStrength > 0.5) {
+				ctx.DrawImage (this, tabDirtyImage, closeButtonAlloation.X, closeButtonAlloation.Y);
+				drawCloseButton = false;
 			}
 
+			if (drawCloseButton)
+				ctx.DrawImage (this, tabCloseImage.WithAlpha ((closeButtonHovered ? 1.0 : 0.5) * tab.Opacity), closeButtonAlloation.X, closeButtonAlloation.Y);
+			
 			// Render Text
 			double tw = tabBounds.Width - (leftPadding + rightPadding);
-			if (drawCloseButton && (active || closeButtonHovered || tab.DirtyStrength > 0.5))
-				tw -= CloseButtonSize / 2;
+			if (drawCloseButton || tab.DirtyStrength > 0.5)
+				tw -= closeButtonAlloation.Width / 2;
 
 			double tx = tabBounds.X + leftPadding;
 			var baseline = la.GetLine (0).Layout.GetPixelBaseline ();
