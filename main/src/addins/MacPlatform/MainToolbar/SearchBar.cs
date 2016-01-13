@@ -57,11 +57,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			debugSearchbar = System.IO.File.Exists (debugFilePath);
 		}
 
-		public SearchBar (IntPtr ptr) : base (ptr)
-		{
-			Initialize ();
-		}
-
 		internal void LogMessage (string message)
 		{
 			if (!debugSearchbar)
