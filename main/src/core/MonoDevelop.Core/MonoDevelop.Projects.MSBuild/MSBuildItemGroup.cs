@@ -82,6 +82,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (ChildNodes.Contains (item)) {
 				item.RemoveIndent ();
 				ChildNodes = ChildNodes.Remove (item);
+				item.ParentNode = null;
 				NotifyChanged ();
 			}
 		}
