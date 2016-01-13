@@ -44,11 +44,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		internal event EventHandler SelectionActivated;
 		public event EventHandler GainedFocus;
 
-		/// <summary>
-		/// This tells whether events have been attached when created from the menu.
-		/// </summary>
-		internal bool EventsAttached;
-
 		public SearchBar ()
 		{
 			Cell.Scrollable = true;
