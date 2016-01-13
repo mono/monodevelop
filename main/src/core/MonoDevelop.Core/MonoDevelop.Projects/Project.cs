@@ -314,9 +314,9 @@ namespace MonoDevelop.Projects
 
 		protected override Task OnLoad (ProgressMonitor monitor)
 		{
-			return Task.Run (delegate {
+			return Task.Run (async delegate {
 				if (sourceProject == null || sourceProject.IsNewProject) {
-					sourceProject = MSBuildProject.LoadAsync (FileName).Result;
+					sourceProject = await MSBuildProject.LoadAsync (FileName);
 					if (MSBuildEngineSupport == MSBuildSupport.NotSupported)
 						sourceProject.UseMSBuildEngine = false;
 					sourceProject.Evaluate ();
@@ -463,7 +463,7 @@ namespace MonoDevelop.Projects
 
 				if (string.IsNullOrEmpty (coreCompileDependsOn)) {
 					evaluatedCompileItemsTask.SetResult (new ProjectFile [0]);
-					return evaluatedCompileItemsTask.Task.Result;
+					return await evaluatedCompileItemsTask.Task;
 				}
 
 				var dependsList = coreCompileDependsOn.Split (new [] { ";" }, StringSplitOptions.RemoveEmptyEntries);
