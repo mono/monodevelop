@@ -202,7 +202,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (sourceName != null) {
 				ItemConfiguration sc = configurations [sourceName];
 				if (sc != null)
-					conf.CopyFrom (sc);
+					conf.CopyFrom (sc, true);
 				else
 					sourceName = null;
 			}
@@ -243,13 +243,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				ConfigurationsChanged (this, null);
 		}
 		
-		public void RenameConfiguration (string oldName, string newName, bool renameChildConfigurations)
+		public ItemConfiguration RenameConfiguration (string oldName, string newName, bool renameChildConfigurations)
 		{
 			renameData.Add (new RenameData { OldName = oldName, NewName = newName });
-			
+			ItemConfiguration newConf = null;
+
 			ItemConfiguration cc = configurations [oldName];
 			if (cc != null) {
-				ItemConfiguration newConf = entry.CreateConfiguration (newName, ConfigurationKind.Blank);
+				newConf = entry.CreateConfiguration (newName, ConfigurationKind.Blank);
 				newConf.CopyFrom (cc, true);
 				int i = configurations.IndexOf (cc);
 				configurations [i] = newConf;
@@ -268,6 +269,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			if (ConfigurationsChanged != null)
 				ConfigurationsChanged (this, null);
+			return newConf;
 		}
 		
 		public event EventHandler ConfigurationsChanged;
