@@ -22,13 +22,11 @@ namespace MonoDevelop.CSharp.CodeRefactorings.InlineTemporary
 		{
 			private readonly SemanticModel _semanticModel;
 			private readonly ILocalSymbol _localSymbol;
-			private readonly ExpressionSyntax _initializer;
 
 			private InitializerRewriter(ExpressionSyntax initializer, ILocalSymbol localSymbol, SemanticModel semanticModel)
 			{
 				_semanticModel = semanticModel;
 				_localSymbol = localSymbol;
-				_initializer = initializer;
 			}
 
 			private bool IsReference(SimpleNameSyntax name)

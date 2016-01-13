@@ -54,12 +54,9 @@ namespace MonoDevelop.CodeActions
 {
 	class CodeActionEditorExtension : TextEditorExtension
 	{
-		uint quickFixTimeout;
-
 		const int menuTimeout = 250;
 		uint smartTagPopupTimeoutId;
 		uint menuCloseTimeoutId;
-		FixMenuDescriptor codeActionMenu;
 
 		static CodeActionEditorExtension ()
 		{
@@ -319,8 +316,6 @@ namespace MonoDevelop.CodeActions
 				set;
 			}
 		}
-
-		internal static Action<TextEditor, DocumentContext, FixMenuDescriptor> AddPossibleNamespace;
 
 		void PopupQuickFixMenu (Gdk.EventButton evt, Action<FixMenuDescriptor> menuAction)
 		{
@@ -851,9 +846,7 @@ namespace MonoDevelop.CodeActions
 		{
 			CancelSmartTagPopupTimeout ();
 			smartTagPopupTimeoutId = GLib.Timeout.Add (menuTimeout, delegate {
-				PopupQuickFixMenu (null, menu => {
-					codeActionMenu = menu;
-				});
+				PopupQuickFixMenu (null, menu => {});
 				smartTagPopupTimeoutId = 0;
 				return false;
 			});

@@ -47,8 +47,6 @@ namespace MonoDevelop.CSharp
 {
 	class ProjectSearchCategory : SearchCategory
 	{
-		static Components.PopoverWindow widget;
-
 		internal static void Init ()
 		{
 			MonoDevelopWorkspace.LoadingFinished += async delegate {
@@ -73,7 +71,6 @@ namespace MonoDevelop.CSharp
 
 		internal static Task<SymbolCache> SymbolInfoTask;
 
-		static TimerCounter getMembersTimer = InstrumentationService.CreateTimerCounter ("Time to get all members", "NavigateToDialog");
 		static TimerCounter getTypesTimer = InstrumentationService.CreateTimerCounter ("Time to get all types", "NavigateToDialog");
 
 		static CancellationTokenSource symbolInfoTokenSrc = new CancellationTokenSource();
@@ -210,9 +207,9 @@ namespace MonoDevelop.CSharp
 					case WorkspaceChangeKind.DocumentChanged:
 						var doc = currentSolution.GetDocument (e.DocumentId);
 						if (doc != null) {
-							Task.Run (async delegate {
+							await Task.Run (async delegate {
 								await UpdateDocument (documentInfos, doc, default (CancellationToken));
-							});
+							}).ConfigureAwait (false);
 						}
 						break;
 					}
@@ -294,8 +291,6 @@ namespace MonoDevelop.CSharp
 
 		void AllResults (ISearchResultCallback searchResultCallback, WorkerResult lastResult, WorkerResult newResult, IReadOnlyList<DeclaredSymbolInfo> completeTypeList, CancellationToken token)
 		{
-			if (newResult.isGotoFilePattern)
-				return;
 			uint x = 0;
 			// Search Types
 			newResult.filteredSymbols = new List<DeclaredSymbolInfo> ();
@@ -376,7 +371,6 @@ namespace MonoDevelop.CSharp
 				}
 			}
 
-			public bool isGotoFilePattern;
 			public ResultsDataSource results;
 			public bool FullSearch;
 			public StringMatcher matcher;

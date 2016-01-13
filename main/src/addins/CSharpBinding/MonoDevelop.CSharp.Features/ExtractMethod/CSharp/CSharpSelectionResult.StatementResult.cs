@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
             public override bool ContainingScopeHasAsyncKeyword()
             {
                 var node = this.GetContainingScope();
-                var semanticModel = this.SemanticDocument.SemanticModel;
+                //var semanticModel = this.SemanticDocument.SemanticModel;
 
                 return node.TypeSwitch(
                     (AccessorDeclarationSyntax access) => false,

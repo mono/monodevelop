@@ -136,7 +136,6 @@ namespace MonoDevelop.CSharp.Completion
 		class XmlDocCompletionData : RoslynCompletionData
 		{
 			//readonly CSharpCompletionTextEditorExtension ext;
-			readonly string title;
 			/*
 			#region IListData implementation
 
@@ -155,7 +154,7 @@ namespace MonoDevelop.CSharp.Completion
 			public XmlDocCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory ext, string title, string description, string insertText) : base (keyHandler, title, "md-keyword", description, insertText ?? title)
 			{
 				// this.ext = ext;
-				this.title = title;
+				//this.title = title;
 			}
 //			public override TooltipInformation CreateTooltipInformation (bool smartWrap)
 //			{

@@ -32,8 +32,8 @@ namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 
                     if (first != last)
                     {
-                        var firstUnderContainer = result.GetFirstStatementUnderContainer();
-                        var lastUnderContainer = result.GetLastStatementUnderContainer();
+                        //var firstUnderContainer = result.GetFirstStatementUnderContainer();
+                        //var lastUnderContainer = result.GetLastStatementUnderContainer();
                         //Contract.ThrowIfFalse(firstUnderContainer.Parent == lastUnderContainer.Parent);
                         return true;
                     }

@@ -129,7 +129,6 @@ namespace MonoDevelop.AnalysisCore.Gui
 			new ResultsUpdater (this, new Result[0], CancellationToken.None).Update ();
 		}
 		
-		Task oldTask;
 		CancellationTokenSource src = null;
 		object updateLock = new object();
 		uint updateTimeout = 0;
@@ -148,7 +147,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 					src = new CancellationTokenSource ();
 					var token = src.Token;
 					var ad = new AnalysisDocument (Editor, DocumentContext);
-					oldTask = Task.Run (() => {
+					Task.Run (() => {
 						try {
 							var result = CodeDiagnosticRunner.Check (ad, token);
 							if (token.IsCancellationRequested)

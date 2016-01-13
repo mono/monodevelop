@@ -86,11 +86,11 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return nameColonItems.Concat(nameEqualsItems);
 		}
 
-		protected async Task<bool> IsExclusiveAsync(Document document, int caretPosition, CompletionTriggerInfo triggerInfo, CancellationToken cancellationToken)
+		public override async Task<bool> IsExclusiveAsync(Document document, int position, CompletionTriggerInfo triggerInfo, CancellationToken cancellationToken)
 		{
 			var syntaxTree = await document.GetCSharpSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
-			var token = syntaxTree.FindTokenOnLeftOfPosition(caretPosition, cancellationToken)
-				.GetPreviousTokenIfTouchingWord(caretPosition);
+			var token = syntaxTree.FindTokenOnLeftOfPosition(position, cancellationToken)
+				.GetPreviousTokenIfTouchingWord(position);
 
 			return IsAfterNameColonArgument(token) || IsAfterNameEqualsArgument(token);
 		}
