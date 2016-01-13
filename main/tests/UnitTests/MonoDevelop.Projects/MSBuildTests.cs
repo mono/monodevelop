@@ -220,12 +220,12 @@ namespace MonoDevelop.Projects
 
 			Assert.IsNotNull (p.Configurations ["Debug|x86"]);
 			Assert.IsNotNull (p.Configurations ["Debug|x86-64"]);
-			Assert.IsNotNull (p.Configurations ["Debug|Other"]);
-
 			Assert.IsNotNull (p.Configurations ["Release|x86"]);
 			Assert.IsNotNull (p.Configurations ["Release|x86-64"]);
 			Assert.IsNotNull (p.Configurations ["Release|Other"]);
-			
+			Assert.IsNotNull (p.Configurations ["Test|More"]);
+			Assert.AreEqual (6, p.Configurations.Count);
+
 			string originalContent = File.ReadAllText (p.FileName);
 			
 			await p.SaveAsync (Util.GetMonitor ());
@@ -1181,8 +1181,7 @@ namespace MonoDevelop.Projects
 			savedXml = File.ReadAllText (projFile);
 			Assert.AreEqual (refXml, savedXml);
 
-			c = p.Configurations.FirstOrDefault<SolutionItemConfiguration> (co => co.Id == "Debug");
-			p.Configurations.Remove (c);
+			p.Configurations.RemoveRange (p.Configurations.Where<SolutionItemConfiguration> (co => co.Name == "Debug"));
 
 			await p.SaveAsync (Util.GetMonitor ());
 

@@ -28,6 +28,7 @@
 using System;
 using System.Collections;
 using System.Xml;
+using System.Text;
 
 namespace MonoDevelop.Projects.MSBuild.Conditions {
 	internal sealed class ConditionRelationalExpression : ConditionExpression {
@@ -158,22 +159,30 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			if ((op == RelationOperator.Equal || op == RelationOperator.NotEqual) && left is ConditionFactorExpression && right is ConditionFactorExpression) {
 				var leftString = ((ConditionFactorExpression)left).Token.Value;
 				var rightString = ((ConditionFactorExpression)right).Token.Value;
+				StringBuilder combinedProperty = null;
+				StringBuilder combinedValue = null;
 
 				int il = 0;
 				int rl = 0;
 				while (il < leftString.Length && rl < rightString.Length) {
 					if (il < leftString.Length - 2 && leftString [il] == '$' && leftString [il + 1] == '(')
-						ReadPropertyCondition (properties, leftString, ref il, rightString, ref rl);
+						ReadPropertyCondition (properties, leftString, ref combinedProperty, ref combinedValue, ref il, rightString, ref rl);
 					else if (rl < rightString.Length - 2 && rightString [rl] == '$' && rightString [rl + 1] == '(')
-						ReadPropertyCondition (properties, rightString, ref rl, leftString, ref il);
+						ReadPropertyCondition (properties, rightString, ref combinedProperty, ref combinedValue, ref rl, leftString, ref il);
 					else if (leftString [il] != rightString [rl])
 						return; // Condition can't be true
 					il++; rl++;
 				}
+
+				// This condition sets values for more that one property. In addition to the individual values, also register
+				// the combination of values. So for example if the condition has "$(Configuration)|$(Platform) == Foo|Bar",
+				// the conditioned property collection would contain Configuration=Foo, Platform=Bar, (Configuration|Platfrom)=Foo|Bar
+				if (combinedProperty != null)
+					properties.AddProperty ("(" + combinedProperty.ToString () + ")", combinedValue.ToString ());
 			}
 		}
 
-		void ReadPropertyCondition (ConditionedPropertyCollection properties, string propString, ref int i, string valString, ref int j)
+		void ReadPropertyCondition (ConditionedPropertyCollection properties, string propString, ref StringBuilder combinedProperty, ref StringBuilder combinedValue, ref int i, string valString, ref int j)
 		{ 
 			var prop = ReadPropertyTag (propString, ref i);
 			string val;
@@ -181,6 +190,19 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 				val = ReadPropertyValue (valString, ref j, propString [i]);
 			else
 				val = valString.Substring (j);
+
+			if (combinedProperty == null)
+				combinedProperty = new StringBuilder ();
+			else
+				combinedProperty.Append ('|');
+
+			if (combinedValue == null)
+				combinedValue = new StringBuilder ();
+			else
+				combinedValue.Append ('|');
+
+			combinedProperty.Append (prop);
+			combinedValue.Append (val);
 
 			properties.AddProperty (prop, val);
 		}
