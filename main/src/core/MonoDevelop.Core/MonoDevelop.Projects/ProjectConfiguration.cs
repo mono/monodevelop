@@ -47,7 +47,7 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		internal protected virtual void Read (IPropertySet pset, string toolsVersion)
+		internal protected virtual void Read (IPropertySet pset)
 		{
 			properties = pset;
 
@@ -92,7 +92,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal protected virtual void Write (IPropertySet pset, string toolsVersion)
+		internal protected virtual void Write (IPropertySet pset)
 		{
 			pset.SetPropertyOrder ("DebugSymbols", "DebugType", "Optimize", "OutputPath", "DefineConstants", "ErrorReport");
 

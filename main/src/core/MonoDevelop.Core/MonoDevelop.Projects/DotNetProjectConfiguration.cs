@@ -56,9 +56,9 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		internal protected override void Read (IPropertySet pset, string toolsVersion)
+		internal protected override void Read (IPropertySet pset)
 		{
-			base.Read (pset, toolsVersion);
+			base.Read (pset);
 
 			assembly = pset.GetValue ("AssemblyName");
 			signAssembly = pset.GetValue<bool> ("SignAssembly");
@@ -67,18 +67,18 @@ namespace MonoDevelop.Projects
 			if (string.IsNullOrEmpty (assemblyKeyFile))
 				assemblyKeyFile = pset.GetPathValue ("AssemblyKeyFile", FilePath.Empty);
 			if (compilationParameters != null)
-				compilationParameters.Read (pset, toolsVersion);
+				compilationParameters.Read (pset);
 		}
 
-		internal protected override void Write (IPropertySet pset, string toolsVersion)
+		internal protected override void Write (IPropertySet pset)
 		{
-			base.Write (pset, toolsVersion);
+			base.Write (pset);
 			pset.SetValue ("AssemblyName", assembly, mergeToMainGroup: true);
 			pset.SetValue ("SignAssembly", signAssembly, defaultValue:false, mergeToMainGroup: true);
 			pset.SetValue ("DelaySign", delaySign, defaultValue:false, mergeToMainGroup:true);
 			pset.SetValue ("AssemblyOriginatorKeyFile", assemblyKeyFile, defaultValue:FilePath.Empty, mergeToMainGroup:true);
 			if (compilationParameters != null)
-				compilationParameters.Write (pset, toolsVersion);
+				compilationParameters.Write (pset);
 		}
 
 		private bool signAssembly = false;

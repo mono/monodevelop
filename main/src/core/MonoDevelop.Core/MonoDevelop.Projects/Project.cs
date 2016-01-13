@@ -2288,7 +2288,7 @@ namespace MonoDevelop.Projects
 
 		protected virtual void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IPropertySet grp)
 		{
-			config.Read (grp, ToolsVersion);
+			config.Read (grp);
 		}
 
 		void RemoveDuplicateItems (MSBuildProject msproject)
@@ -2571,7 +2571,7 @@ namespace MonoDevelop.Projects
 
 		protected virtual void OnWriteConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IPropertySet pset)
 		{
-			config.Write (pset, ToolsVersion);
+			config.Write (pset);
 		}
 
 		IEnumerable<MergedProperty> GetMergeToProjectProperties (List<ConfigData> configData)
