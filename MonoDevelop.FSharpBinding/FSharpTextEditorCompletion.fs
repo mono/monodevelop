@@ -489,7 +489,7 @@ type FSharpTextEditorCompletion() =
     if completionChar <> '.' then null else
     let computation = 
       async {
-        if isCurrentTokenInvalid x.Editor x.DocumentContext.ParsedDocument x.DocumentContext.Project context.TriggerOffset then return null else
+        if isCurrentTokenInvalid x.Editor x.DocumentContext.ParsedDocument x.DocumentContext.Project x.Editor.CaretOffset then return null else
         return! codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, true, false, completionChar) }
     Async.StartAsTask (computation =computation, cancellationToken = token)
 
@@ -499,7 +499,7 @@ type FSharpTextEditorCompletion() =
     let completionIsDot = completionChar = '.'
     Async.StartAsTask(
       async {
-        if isCurrentTokenInvalid x.Editor x.DocumentContext.ParsedDocument x.DocumentContext.Project context.TriggerOffset then return null
+        if isCurrentTokenInvalid x.Editor x.DocumentContext.ParsedDocument x.DocumentContext.Project x.Editor.CaretOffset then return null
         else return! codeCompletionCommandImpl(x.Editor, x.DocumentContext,context, completionIsDot, true, completionChar) } )
 
   // Returns the index of the parameter where the cursor is currently positioned.
