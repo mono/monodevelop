@@ -7,8 +7,10 @@ open MonoDevelop.FSharp
 [<TestFixture>]
 type ParsingTests() =
   let checkGetSymbol col lineStr expected expectedColumn =
+    let expected = if expected = "" then [] else expected.Split '.' 
+                                                 |> Array.toList
     match Parsing.findLongIdents(col, lineStr)  with
-    | Some(colu, ident) -> ident |> should equal [expected]
+    | Some(colu, ident) -> ident |> should equal expected
                            colu |> should equal expectedColumn
     | None -> Assert.Fail "Could not find ident"
 
