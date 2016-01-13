@@ -165,10 +165,8 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			const int MaximumCachedLineSegments = 200;
 			SemanticHighlightingSyntaxMode semanticMode;
 
-			int lineNumber;
 			public CSharpChunkParser (SemanticHighlightingSyntaxMode semanticMode, SpanParser spanParser, Mono.TextEditor.Highlighting.ColorScheme style, DocumentLine line) : base (semanticMode, spanParser, style, line)
 			{
-				lineNumber = line.LineNumber;
 				this.semanticMode = semanticMode;
 			}
 

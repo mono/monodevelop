@@ -159,6 +159,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 						continue;
 					foreach (var segment in await RequestLinksAsync (line.Offset, line.Length, default (CancellationToken))) {
 						var marker = Editor.TextMarkerFactory.CreateLinkMarker (Editor, segment.Offset, segment.Length, delegate { segment.Activate (); });
+						marker.OnlyShowLinkOnHover = true;
 						Editor.AddMarker (marker);
 						markers.Add (marker);
 					}
@@ -174,6 +175,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				var line = e.Line;
 				foreach (var segment in await RequestLinksAsync (line.Offset, line.Length, default (CancellationToken))) {
 					var marker = Editor.TextMarkerFactory.CreateLinkMarker (Editor, segment.Offset, segment.Length, delegate { segment.Activate (); });
+					marker.OnlyShowLinkOnHover = true;
 					Editor.AddMarker (marker);
 					markers.Add (marker);
 				}

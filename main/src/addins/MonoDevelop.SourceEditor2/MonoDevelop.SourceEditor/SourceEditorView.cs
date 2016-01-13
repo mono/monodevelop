@@ -75,7 +75,6 @@ namespace MonoDevelop.SourceEditor
 		readonly SourceEditorWidget widget;
 		bool isDisposed = false;
 		DateTime lastSaveTimeUtc;
-		string loadedMimeType;
 		internal object MemoryProbe = Counters.SourceViewsInMemory.CreateMemoryProbe ();
 		DebugMarkerPair currentDebugLineMarker;
 		DebugMarkerPair debugStackLineMarker;
@@ -138,7 +137,6 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 
-		bool wasEdited = false;
 		uint removeMarkerTimeout;
 		Queue<MessageBubbleTextMarker> markersToRemove = new Queue<MessageBubbleTextMarker> ();
 
@@ -261,11 +259,6 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (Document.CurrentAtomicUndoOperationType == OperationType.Format)
 				return;
-			if (!inLoad) {
-				if (widget.TextEditor.Document.IsInAtomicUndo) {
-					wasEdited = true;
-				}
-			}
 
 			int startIndex = args.Offset;
 			foreach (var marker in currentErrorMarkers) {
@@ -284,7 +277,6 @@ namespace MonoDevelop.SourceEditor
 
 		void HandleBeginUndo (object sender, EventArgs e)
 		{
-			wasEdited = false;
 			OnBeginUndo (EventArgs.Empty);
 		}
 
@@ -662,7 +654,6 @@ namespace MonoDevelop.SourceEditor
 						if (formatter.SupportsOnTheFlyFormatting) {
 							using (var undo = TextEditor.OpenUndoGroup ()) {
 								formatter.OnTheFlyFormat (WorkbenchWindow.Document.Editor, WorkbenchWindow.Document);
-								wasEdited = false;
 							}
 						} else {
 							var text = document.Editor.Text;
@@ -820,7 +811,6 @@ namespace MonoDevelop.SourceEditor
 				didLoadCleanly = false;
 			}
 			else {
-				inLoad = true;
 				if (loadEncoding == null) {
 					var res = await MonoDevelop.Core.Text.TextFileUtility.ReadAllTextAsync (fileName);
 					text = res.Text;
@@ -840,7 +830,6 @@ namespace MonoDevelop.SourceEditor
 					Document.Text = text;
 					Document.DiffTracker.SetBaseDocument (Document.CreateDocumentSnapshot ());
 				}
-				inLoad = false;
 				didLoadCleanly = true;
 			}
 			// TODO: Would be much easier if the view would be created after the containers.
@@ -901,7 +890,6 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		bool warnOverwrite = false;
-		bool inLoad = false;
 		Encoding encoding;
 		bool hadBom = false;
 
@@ -914,10 +902,8 @@ namespace MonoDevelop.SourceEditor
 			}
 			UpdateMimeType (fileName);
 			
-			inLoad = true;
 			Document.Replace (0, Document.TextLength, content);
 			Document.DiffTracker.Reset ();
-			inLoad = false;
 			encoding = enc;
 			ContentName = fileName;
 			UpdateExecutionLocation ();
@@ -2731,7 +2717,7 @@ namespace MonoDevelop.SourceEditor
 			return TextEditor.Document.RemoveMarker (textSegmentMarker);
 		}
 
-		IFoldSegment ITextEditorImpl.CreateFoldSegment (int offset, int length, bool isFolded = false)
+		IFoldSegment ITextEditorImpl.CreateFoldSegment (int offset, int length, bool isFolded)
 		{
 			return new FoldSegmentWrapper (TextEditor.Document, "...", offset, length, Mono.TextEditor.FoldingType.None) { IsFolded = isFolded };
 		}
@@ -3358,7 +3344,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public ITextSegmentMarker CreateLinkMarker (MonoDevelop.Ide.Editor.TextEditor editor, int offset, int length, Action<LinkRequest> activateLink)
+		public ILinkTextMarker CreateLinkMarker (MonoDevelop.Ide.Editor.TextEditor editor, int offset, int length, Action<LinkRequest> activateLink)
 		{
 			return new LinkMarker (offset, length, activateLink);
 		}

@@ -71,12 +71,12 @@ namespace MonoDevelop.Ide.Editor
 			return editor.TextMarkerFactory.CreateUsageMarker (editor, usage);
 		}
 
-		public static ITextSegmentMarker CreateLinkMarker (TextEditor editor, int offset, int length, Action<LinkRequest> activateLink)
+		public static ILinkTextMarker CreateLinkMarker (TextEditor editor, int offset, int length, Action<LinkRequest> activateLink)
 		{
 			return editor.TextMarkerFactory.CreateLinkMarker (editor, offset, length, activateLink);
 		}
 
-		public static ITextSegmentMarker CreateLinkMarker (TextEditor editor, ISegment segment, Action<LinkRequest> activateLink)
+		public static ILinkTextMarker CreateLinkMarker (TextEditor editor, ISegment segment, Action<LinkRequest> activateLink)
 		{
 			if (segment == null)
 				throw new ArgumentNullException ("segment");

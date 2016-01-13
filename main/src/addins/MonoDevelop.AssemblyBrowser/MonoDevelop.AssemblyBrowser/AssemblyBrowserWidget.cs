@@ -1266,6 +1266,7 @@ namespace MonoDevelop.AssemblyBrowser
 						this.Open (link, loader);
 					}
 				});
+				marker.OnlyShowLinkOnHover = true;
 				underlineMarkers.Add (marker);
 				inspectEditor.AddMarker (marker);
 			}

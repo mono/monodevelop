@@ -2241,6 +2241,7 @@ namespace Mono.TextEditor
 			var line = Document.GetLine (loc.Line);
 			var oldHoveredLine = HoveredLine;
 			HoveredLine = line;
+			HoveredLocation = loc;
 			OnHoveredLineChanged (new LineEventArgs (oldHoveredLine));
 
 			var hoverResult = new TextLineMarkerHoverResult ();
@@ -2551,6 +2552,8 @@ namespace Mono.TextEditor
 				return 4;
 			}
 		}
+
+		public DocumentLocation HoveredLocation { get; private set; }
 
 		[Flags]
 		public enum CairoCorners

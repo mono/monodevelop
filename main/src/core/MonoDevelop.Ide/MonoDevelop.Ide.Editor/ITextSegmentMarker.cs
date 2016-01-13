@@ -83,5 +83,10 @@ namespace MonoDevelop.Ide.Editor
 		event EventHandler ShowPopup;
 		event EventHandler CancelPopup;
 	}
+
+	public interface ILinkTextMarker : ITextSegmentMarker
+	{
+		bool OnlyShowLinkOnHover { get; set; }
+	}
 }
 
