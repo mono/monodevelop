@@ -584,12 +584,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		IEnumerable<ProjectReference> CreateProjectReferences (MonoDevelop.Projects.Project p, CancellationToken token)
 		{
-			foreach (var pr in p.GetReferencedItems (MonoDevelop.Projects.ConfigurationSelector.Default)) {
+			foreach (var referencedProject in ((MonoDevelop.Projects.DotNetProject)p).GetReferencedAssemblyProjects (IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default)) {
 				if (token.IsCancellationRequested)
 					yield break;
-				var referencedProject = pr as MonoDevelop.Projects.DotNetProject;
-				if (referencedProject == null)
-					continue;
 				if (TypeSystemService.IsOutputTrackedProject (referencedProject))
 					continue;
 				yield return new ProjectReference (GetOrCreateProjectId (referencedProject));
