@@ -164,8 +164,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				bool done = false;
 				do {
 					if (MessageService.RunCustomDialog (dlg, Toplevel as Gtk.Window) == (int) Gtk.ResponseType.Ok) {
-						configData.RenameConfiguration (cc.Id, dlg.ConfigName, dlg.RenameChildren);
-						store.SetValue (iter, 1, cc.Id);
+						var newConf = configData.RenameConfiguration (cc.Id, dlg.ConfigName, dlg.RenameChildren);
+						store.SetValue (iter, 0, newConf);
+						store.SetValue (iter, 1, newConf.Id);
 						done = true;
 					} else
 						done = true;

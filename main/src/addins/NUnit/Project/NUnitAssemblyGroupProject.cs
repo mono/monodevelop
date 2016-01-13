@@ -67,11 +67,9 @@ namespace MonoDevelop.NUnit
 			}
 		}
 		
-		protected override SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind)
+		protected override SolutionItemConfiguration OnCreateConfiguration (string id, ConfigurationKind kind)
 		{
-			NUnitAssemblyGroupProjectConfiguration conf = new NUnitAssemblyGroupProjectConfiguration ();
-			conf.Name = name;
-			return conf;
+			return new NUnitAssemblyGroupProjectConfiguration (id);
 		}
 	}
 	
@@ -79,16 +77,16 @@ namespace MonoDevelop.NUnit
 	{
 		TestAssemblyCollection assemblies;
 		
-		public NUnitAssemblyGroupProjectConfiguration ()
+		public NUnitAssemblyGroupProjectConfiguration (string id): base (id)
 		{
 			assemblies = new TestAssemblyCollection (this);
 		}
 		
-		public override void CopyFrom (ItemConfiguration other)
+		protected override void OnCopyFrom (ItemConfiguration configuration, bool isRename)
 		{
-			base.CopyFrom (other);
-			
-			NUnitAssemblyGroupProjectConfiguration conf = other as NUnitAssemblyGroupProjectConfiguration;
+			base.OnCopyFrom (configuration, isRename);
+
+			NUnitAssemblyGroupProjectConfiguration conf = configuration as NUnitAssemblyGroupProjectConfiguration;
 			if (conf != null) {
 				assemblies.Clear ();
 				foreach (TestAssembly ta in conf.Assemblies) {

@@ -378,7 +378,7 @@ namespace MonoDevelop.Projects.MSBuild
 		static MSBuildItemEvaluated CreateEvaluatedItem (MSBuildEvaluationContext context, MSBuildProject project, MSBuildItem sourceItem, string include)
 		{
 			var it = new MSBuildItemEvaluated (project, sourceItem.Name, sourceItem.Include, include);
-			var md = new Dictionary<string,MSBuildPropertyEvaluated> ();
+			var md = new Dictionary<string,IMSBuildPropertyEvaluated> ();
 			foreach (var c in sourceItem.Metadata.GetProperties ()) {
 				md [c.Name] = new MSBuildPropertyEvaluated (project, c.Name, c.Value, context.EvaluateString (c.Value));
 			}

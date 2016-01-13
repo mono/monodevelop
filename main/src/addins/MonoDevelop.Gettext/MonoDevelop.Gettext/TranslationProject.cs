@@ -440,11 +440,7 @@ namespace MonoDevelop.Gettext
 	
 	class TranslationProjectConfiguration : ProjectConfiguration
 	{
-		public TranslationProjectConfiguration ()
-		{
-		}
-		
-		public TranslationProjectConfiguration (string name): base (name)
+		public TranslationProjectConfiguration (string id): base (id)
 		{
 		}
 	}

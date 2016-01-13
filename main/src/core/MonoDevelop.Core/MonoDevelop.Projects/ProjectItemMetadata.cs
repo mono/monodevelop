@@ -246,7 +246,7 @@ namespace MonoDevelop.Projects
 			}
 			if (prop == null)
 				prop = AddProperty (name);
-			prop.SetValue (value, preserveExistingCase);
+			prop.SetValue (value, valueType:valueType);
 			prop.HasDefaultValue = isDefault;
 		}
 
