@@ -103,6 +103,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return true;
 			var baseHandled = base.PerformKeyEquivalent (theEvent);;
 			LogMessage ($"Base handled {baseHandled}");
+			LogMessage ($"First Reponder {NSApplication.SharedApplication?.KeyWindow?.FirstResponder}");
+			LogMessage ($"Refuses First Responder {RefusesFirstResponder}");
+			LogMessage ($"Editor chain {CurrentEditor}");
 			return baseHandled;
 		}
 
