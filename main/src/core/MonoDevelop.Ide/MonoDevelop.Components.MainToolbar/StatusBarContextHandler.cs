@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
@@ -38,8 +39,6 @@ namespace MonoDevelop.Components.MainToolbar
 		public event EventHandler<StatusMessageContextProgressChangedArgs> ProgressChanged;
 
 		readonly List<StatusMessageContext> activeContexts = new List<StatusMessageContext> ();
-		Timer changeMessageTimer;
-		int nextContext;
 
 		public StatusBarContextHandler ()
 		{
@@ -53,38 +52,46 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			e.Context.MessageChanged += ContextMessageChanged;
 			e.Context.ProgressChanged += ContextProgressChanged;
+
+			// This will be added to the active contexts once a message or progress has been set.
 		}
 
 		void NotificationServiceContextRemoved (object sender, StatusServiceContextEventArgs e)
 		{
 			e.Context.MessageChanged -= ContextMessageChanged;
 			e.Context.ProgressChanged -= ContextProgressChanged;
+
+			bool wasActive = (activeContexts[0] == e.Context);
 			activeContexts.Remove (e.Context);
 
-			UpdateMessage ();
+			if (wasActive) {
+				UpdateMessage ();
+			}
 		}
 
 		void ContextMessageChanged (object sender, StatusMessageContextMessageChangedArgs e)
 		{
 			StatusMessageContext ctx = (StatusMessageContext)sender;
 			if (!activeContexts.Contains (ctx)) {
-				activeContexts.Add (ctx);
-			} else {
-				// Remove it from the list and insert it at the end if it's not an empty context
-				activeContexts.Remove (ctx);
-
-				if (ctx.Message != null && ctx.Image != IconId.Null) {
-					activeContexts.Add (ctx);
-				}
+				activeContexts.Insert (0, ctx);
 			}
 
-			UpdateMessage ();
+			if (activeContexts [0] == ctx) {
+				UpdateMessage ();
+			}
 		}
 
 		void ContextProgressChanged (object sender, StatusMessageContextProgressChangedArgs e)
 		{
-			if (ProgressChanged != null) {
-				ProgressChanged (this, e);
+			StatusMessageContext ctx = (StatusMessageContext)sender;
+			if (!activeContexts.Contains (ctx)) {
+				activeContexts.Insert (0, ctx);
+			}
+
+			if (activeContexts [0] == ctx) {
+				if (ProgressChanged != null) {
+					Runtime.RunInMainThread (() => ProgressChanged (this, e));
+				}
 			}
 		}
 
@@ -101,47 +108,16 @@ namespace MonoDevelop.Components.MainToolbar
 				Runtime.RunInMainThread (() => MessageChanged (this, args));
 			}
 		}
-
+			
 		void UpdateMessage ()
 		{
 			if (activeContexts.Count != 0) {
 				// Display the newest active context
-				var ctx = activeContexts.Last ();
+				var ctx = activeContexts[0];
 				OnMessageChanged (ctx);
 			} else {
 				OnMessageChanged (null);
 			}
-
-			nextContext = 0;
-			ResetUpdateTimer ();
-		}
-
-		void ResetUpdateTimer ()
-		{
-			// Shut down the old timer;
-			if (changeMessageTimer != null) {
-				changeMessageTimer.Dispose ();
-				changeMessageTimer = null;
-			}
-
-			if (activeContexts.Count <= 1) {
-				// If we don't need a new timer, just return
-				return;
-			}
-
-			changeMessageTimer = new Timer { Interval = 5000, AutoReset = true };
-			changeMessageTimer.Elapsed += (object sender, ElapsedEventArgs e) => {
-				var ctx = activeContexts[nextContext];
-
-				nextContext++;
-				if (nextContext >= activeContexts.Count) {
-					nextContext = 0;
-				}
-
-				OnMessageChanged (ctx);
-			};
-
-			changeMessageTimer.Start ();
 		}
 	}
 }

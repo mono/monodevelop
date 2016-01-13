@@ -27,9 +27,27 @@ using System;
 using System.Text;
 using NUnit.Framework;
 using MonoDevelop.Ide;
+using MonoDevelop.Components.MainToolbar;
 
 namespace Ide.Tests
 {
+	static class Utils
+	{
+		public static string MakeRandomString ()
+		{
+			StringBuilder builder = new StringBuilder ();
+			Random random = new Random ();
+			int length = random.Next (32);
+
+			for (int i = 0; i < length; i++) {
+				var ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65))) ;
+				builder.Append(ch);
+			}
+
+			return builder.ToString ();
+		}
+	}
+
 	[TestFixture]
 	public class StatusServiceTests
 	{
@@ -40,6 +58,15 @@ namespace Ide.Tests
 			StatusService.ContextRemoved += ContextRemoved;
 			StatusService.MainContext.MessageChanged += MessageChanged;
 			StatusService.MainContext.ProgressChanged += ProgressChanged;
+		}
+
+		[TestFixtureTearDown]
+		public void RemoveListener ()
+		{
+			StatusService.ContextAdded -= ContextAdded;
+			StatusService.ContextRemoved -= ContextRemoved;
+			StatusService.MainContext.MessageChanged -= MessageChanged;
+			StatusService.MainContext.ProgressChanged -= ProgressChanged;
 		}
 
 		string expectedString;
@@ -81,7 +108,7 @@ namespace Ide.Tests
 				break;
 			}
 		}
-
+			
 		void MessageChanged (object sender, StatusMessageContextMessageChangedArgs e)
 		{
 			Assert.AreEqual (expectedString, e.Message);
@@ -92,14 +119,22 @@ namespace Ide.Tests
 
 		void ContextRemoved (object sender, StatusServiceContextEventArgs e)
 		{
+			Assert.NotNull (e.Context);
 			Assert.AreSame (expectedContextRemoved, e.Context);
 			expectedContextRemoved = null;
+
+			e.Context.MessageChanged -= MessageChanged;
+			e.Context.ProgressChanged -= ProgressChanged;
 		}
 
 		void ContextAdded (object sender, StatusServiceContextEventArgs e)
 		{
 			Assert.True (expectContextAdded);
+			Assert.NotNull (e.Context);
 			contextThatWasAdded = e.Context;
+
+			e.Context.MessageChanged += MessageChanged;
+			e.Context.ProgressChanged += ProgressChanged;
 
 			expectContextAdded = false;
 		}
@@ -107,7 +142,7 @@ namespace Ide.Tests
 		[Test]
 		public void TestMainContextMessage ()
 		{
-			expectedString = MakeRandomString ();
+			expectedString = Utils.MakeRandomString ();
 			expectedContext = StatusService.MainContext;
 			StatusService.MainContext.ShowMessage (expectedString);
 		}
@@ -116,7 +151,7 @@ namespace Ide.Tests
 		public void TestMainContextProgress ()
 		{
 			expectedProgressStarted = true;
-			expectedString = MakeRandomString ();
+			expectedString = Utils.MakeRandomString ();
 			expectedContext = StatusService.MainContext;
 			StatusService.MainContext.BeginProgress (expectedString);
 
@@ -133,49 +168,95 @@ namespace Ide.Tests
 		}
 
 		[Test]
-		public void TestAddContext ()
-		{
-			expectContextAdded = true;
-			var newContext = StatusService.CreateContext ();
-
-			Assert.AreSame (contextThatWasAdded, newContext);
-			contextThatWasAdded = null;
-		}
-
-		[Test]
 		public void TestRemoveContext ()
 		{
 			expectContextAdded = true;
 			var newContext = StatusService.CreateContext ();
 
-			// Assume this worked as it is tested by AddContext
+			Assert.AreSame (contextThatWasAdded, newContext);
 
 			expectedContextRemoved = newContext;
 			expectedContextRemoved.Dispose ();
+
+			Assert.IsNull (expectedContextRemoved);
 		}
 
 		[Test]
 		public void TestMessageOnNewContext ()
 		{
 			expectContextAdded = true;
-			expectedContext = StatusService.CreateContext ();
+			var newContext = expectedContext = StatusService.CreateContext ();
 
-			expectedString = MakeRandomString ();
+			expectedString = Utils.MakeRandomString ();
 			expectedContext.ShowMessage (expectedString);
+
+			Assert.IsNull (expectedString);
+			Assert.IsNull (expectedContext);
+
+			expectedContextRemoved = newContext;
+			newContext.Dispose ();
+
+			Assert.IsNull (expectedContextRemoved);
+		}
+	}
+
+	[TestFixture]
+	public class StatusBarContextHandlerTest
+	{
+		string expectedString;
+		StatusMessageContext expectedContext;
+
+		void MessageChanged (object sender, StatusMessageContextMessageChangedArgs e)
+		{
+			Assert.AreEqual (expectedString, e.Message);
+			Assert.AreSame (expectedContext, e.Context);
+			expectedString = null;
+			expectedContext = null;
 		}
 
-		string MakeRandomString ()
+		[Test]
+		public void TestContextStacking ()
 		{
-			StringBuilder builder = new StringBuilder ();
-			Random random = new Random ();
-			int length = random.Next (32);
+			var contextHandler = new StatusBarContextHandler ();
+			contextHandler.MessageChanged += MessageChanged;
 
-			for (int i = 0; i < length; i++) {
-				var ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65))) ;
-				builder.Append(ch);
-			}
+			var context1 = StatusService.CreateContext ();
+			var context2 = StatusService.CreateContext ();
 
-			return builder.ToString ();
+			var expectedString1 = Utils.MakeRandomString ();
+			var expectedString2 = Utils.MakeRandomString ();
+
+			expectedString = expectedString1;
+			expectedContext = context1;
+			context1.ShowMessage (expectedString);
+
+			Assert.IsNull (expectedString);
+			Assert.IsNull (expectedContext);
+
+			expectedString = expectedString2;
+			expectedContext = context2;
+			context2.ShowMessage (expectedString);
+
+			Assert.IsNull (expectedString);
+			Assert.IsNull (expectedContext);
+
+			// context2 is the top context, changes to context1 should not trigger message changed
+			var expectedString3 = Utils.MakeRandomString ();
+			expectedString = expectedString3;
+			expectedContext = context1;
+
+			context1.ShowMessage (expectedString);
+
+			// If no message changed was received, then expectedString and expectedContext will not be null
+			Assert.IsNotNull (expectedString);
+			Assert.IsNotNull (expectedContext);
+
+			context2.Dispose ();
+
+			// As context2 has been removed a message changed signal should be sent as well
+			// and expectedString/expectedContext will now be null
+			Assert.IsNull (expectedString);
+			Assert.IsNull (expectedContext);
 		}
 	}
 }
