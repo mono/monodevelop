@@ -150,7 +150,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 					});
 				}
 
-			} catch (TaskCanceledException) {
+			} catch (OperationCanceledException) {
 			} catch (Exception e) {
 				LoggingService.LogError ("Unhandled Exception in HighlightingUsagesExtension", e);
 			} finally {
