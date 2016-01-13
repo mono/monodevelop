@@ -35,6 +35,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
 using Xwt.Motion;
 using Animations = Xwt.Motion.AnimationExtensions;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Docking
 {	
@@ -230,18 +231,27 @@ namespace MonoDevelop.Components.Docking
 			}
 				
 			if (!string.IsNullOrEmpty (it.Label)) {
-				label = new Gtk.Label (it.Label);
+				label = new Label (it.Label);
 				label.UseMarkup = true;
 
 				var font = label.Style.FontDescription.Copy ();
-				font.Size = (int) (11 * Pango.Scale.PangoScale);
+				font.Size = (int)((Platform.IsMac ? 0.92f : 1.0) * font.Size);
 				label.ModifyFont (font);
 
-				if (bar.Orientation == Gtk.Orientation.Vertical)
+				if (bar.Orientation == Orientation.Vertical)
 					label.Angle = 270;
 
-				if (bar.Orientation == Gtk.Orientation.Horizontal)
-					label.SetAlignment (0, 0.7f); // needs to be slightly move to fix alignment issues
+				// fine-tune label alignment issues
+				if (Platform.IsMac) {
+					if (bar.Orientation == Orientation.Horizontal)
+						label.SetAlignment (0, 0.7f);
+					else
+						label.SetAlignment (0.3f, 0);
+				} else {
+					if (bar.Orientation == Orientation.Vertical)
+						label.SetAlignment (1, 0);
+				}
+				// TODO: VV: Test Linux
 
 				box.PackStart (label, true, true, 0);
 			} else
