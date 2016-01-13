@@ -209,9 +209,9 @@ namespace CBinding
 			set { define_symbols = value; }
 		}
 		
-		public override void CopyFrom (ItemConfiguration configuration)
+		protected override void OnCopyFrom (ItemConfiguration configuration, bool isRename)
 		{
-			base.CopyFrom (configuration);
+			base.OnCopyFrom (configuration, isRename);
 			CProjectConfiguration conf = (CProjectConfiguration)configuration;
 			
 			output = conf.output;

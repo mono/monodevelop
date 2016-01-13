@@ -82,11 +82,11 @@ namespace MonoDevelop.NUnit
 			assemblies = new TestAssemblyCollection (this);
 		}
 		
-		public override void CopyFrom (ItemConfiguration other)
+		protected override void OnCopyFrom (ItemConfiguration configuration, bool isRename)
 		{
-			base.CopyFrom (other);
-			
-			NUnitAssemblyGroupProjectConfiguration conf = other as NUnitAssemblyGroupProjectConfiguration;
+			base.OnCopyFrom (configuration, isRename);
+
+			NUnitAssemblyGroupProjectConfiguration conf = configuration as NUnitAssemblyGroupProjectConfiguration;
 			if (conf != null) {
 				assemblies.Clear ();
 				foreach (TestAssembly ta in conf.Assemblies) {

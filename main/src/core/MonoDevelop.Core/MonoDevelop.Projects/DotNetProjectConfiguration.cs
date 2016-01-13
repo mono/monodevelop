@@ -178,9 +178,9 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public override void CopyFrom (ItemConfiguration configuration)
+		protected override void OnCopyFrom (ItemConfiguration configuration, bool isRename)
 		{
-			base.CopyFrom (configuration);
+			base.OnCopyFrom (configuration, isRename);
 			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) configuration;
 			
 			assembly = conf.assembly;

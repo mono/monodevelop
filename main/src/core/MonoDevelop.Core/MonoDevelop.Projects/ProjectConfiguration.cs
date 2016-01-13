@@ -175,9 +175,7 @@ namespace MonoDevelop.Projects
 			get {
 				if (!intermediateOutputDirectory.IsNullOrEmpty)
 					return intermediateOutputDirectory;
-				if (!string.IsNullOrEmpty (Platform))
-					return ParentItem.BaseIntermediateOutputPath.Combine (Platform, Name);
-				return ParentItem.BaseIntermediateOutputPath.Combine (Name);
+				return DefaultIntermediateOutputDirectory;
 			}
 			set {
 				if (value.IsNullOrEmpty)
@@ -185,6 +183,16 @@ namespace MonoDevelop.Projects
 				if (intermediateOutputDirectory == value)
 					return;
 				intermediateOutputDirectory = value;
+			}
+		}
+
+		string DefaultIntermediateOutputDirectory {
+			get {
+				if (ParentItem == null)
+					return string.Empty;
+				if (!string.IsNullOrEmpty (Platform))
+					return ParentItem.BaseIntermediateOutputPath.Combine (Platform, Name);
+				return ParentItem.BaseIntermediateOutputPath.Combine (Name);
 			}
 		}
 
@@ -249,14 +257,28 @@ namespace MonoDevelop.Projects
 			set { runWithWarnings = value; }
 		}
 
-		public override void CopyFrom (ItemConfiguration conf)
+		protected override void OnCopyFrom (ItemConfiguration configuration, bool isRename)
 		{
-			base.CopyFrom (conf);
+			base.OnCopyFrom (configuration, isRename);
 
-			ProjectConfiguration projectConf = conf as ProjectConfiguration;
+			ProjectConfiguration projectConf = configuration as ProjectConfiguration;
 
-			intermediateOutputDirectory = projectConf.intermediateOutputDirectory;
+			if (isRename && projectConf.IntermediateOutputDirectory == projectConf.DefaultIntermediateOutputDirectory)
+				intermediateOutputDirectory = null;
+			else
+				intermediateOutputDirectory = projectConf.intermediateOutputDirectory;
+
 			outputDirectory = projectConf.outputDirectory;
+
+			if (isRename && outputDirectory != null) {
+				var ps = outputDirectory.ToString ().Split (Path.DirectorySeparatorChar);
+				int i = Array.IndexOf (ps, configuration.Name);
+				if (i != -1) {
+					ps [i] = Name;
+					outputDirectory = string.Join (Path.DirectorySeparatorChar.ToString (), ps);
+				}
+			}
+
 			debugMode = projectConf.debugMode;
 			pauseConsoleOutput = projectConf.pauseConsoleOutput;
 			externalConsole = projectConf.externalConsole;

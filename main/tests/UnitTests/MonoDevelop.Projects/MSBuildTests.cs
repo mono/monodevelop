@@ -1483,6 +1483,26 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (sol.ItemDirectory.ToString (), p.MSBuildProject.EvaluatedProperties.GetValue ("SolutionDir"));
 		}
 
+		[Test]
+		public async Task RenameConfiguration ()
+		{
+			// When renaming a configuration, paths that use the configuration name should also be renamed
+
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var p = (DotNetProject) sol.Items [0];
+			var c = p.GetConfiguration (new ItemConfigurationSelector ("Release"));
+			var renamed = p.CreateConfiguration ("Test");
+			renamed.CopyFrom (c, true);
+			p.Configurations.Remove (c);
+			p.Configurations.Add (renamed);
+			await p.SaveAsync (Util.GetMonitor ());
+
+			var savedXml = File.ReadAllText (p.FileName);
+			var compXml = Util.ToSystemEndings (File.ReadAllText (p.FileName.ChangeName ("ConsoleProject-conf-renamed")));
+			Assert.AreEqual (compXml, savedXml);
+		}
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode

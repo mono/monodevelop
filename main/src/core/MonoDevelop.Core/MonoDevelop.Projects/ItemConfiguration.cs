@@ -99,12 +99,24 @@ namespace MonoDevelop.Projects
 			get { return customCommands; }
 		}
 
-		public virtual void CopyFrom (ItemConfiguration configuration)
+		/// <summary>
+		/// Copies the data of a configuration into this configuration
+		/// </summary>
+		/// <param name="configuration">Configuration from which to get the data.</param>
+		/// <param name="isRename">If true, it means that the copy is being made as a result of a rename or clone operation. In this case,
+		/// the overriden method may change the value of some properties that depend on the configuration name. For example, if the
+		/// copied configuration is Debug and the OutputPath property has "bin/Debug" as value, then that value may be changed
+		/// to match the new configuration name instead of keeping "bin/Debug"</param>
+		public void CopyFrom (ItemConfiguration configuration, bool isRename = false)
 		{
-			ItemConfiguration other = (ItemConfiguration) configuration;
-			if (other.properties != null) {
+			OnCopyFrom (configuration, isRename);
+		}
+
+		protected virtual void OnCopyFrom (ItemConfiguration configuration, bool isRename)
+		{
+			if (configuration.properties != null) {
 				properties = new Hashtable ();
-				foreach (DictionaryEntry e in other.properties) {
+				foreach (DictionaryEntry e in configuration.properties) {
 					if (e.Value is ICloneable)
 						properties [e.Key] = ((ICloneable)e.Value).Clone ();
 					else
@@ -113,7 +125,7 @@ namespace MonoDevelop.Projects
 			}
 			else
 				properties = null;
-			customCommands = other.customCommands.Clone ();
+			customCommands = configuration.customCommands.Clone ();
 		}
 		
 		public override string ToString()

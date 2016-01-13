@@ -1130,7 +1130,7 @@ namespace MonoDevelop.Projects
 		public SolutionItemConfiguration CloneConfiguration (SolutionItemConfiguration configuration, string newId)
 		{
 			var clone = CreateConfiguration (newId);
-			clone.CopyFrom (configuration);
+			clone.CopyFrom (configuration, true);
 			return clone;
 		}
 
