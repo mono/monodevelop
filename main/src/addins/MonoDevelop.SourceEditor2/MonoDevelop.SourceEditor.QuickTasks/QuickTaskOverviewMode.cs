@@ -721,7 +721,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				if (!lineCache[1].Contains (y)) {
 					lineCache[1].Add (y);
 					cr.SetSourceColor (GetBarColor (task.Severity));
-					cr.Rectangle (0, y - 1, Allocation.Width, 2);
+					cr.Rectangle (1, y - 1, Allocation.Width - 1, 2);
 					cr.Fill ();
 				}
 				if (task.Severity == DiagnosticSeverity.Error)
@@ -740,7 +740,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			if (TextEditor.ColorStyle != null) {
 				var col = TextEditor.ColorStyle.PlainText.Background.ToXwtColor ();
 				if (!MonoDevelop.Core.Platform.IsWindows) {
-					col.Light *= 0.88;
+					col.Light *= 0.95;
 				}
 				cr.SetSourceColor (col.ToCairoColor ());
 			}
@@ -1037,17 +1037,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 						cr.Fill ();
 					}
 				} else {
-					var col = TextEditor.ColorStyle.PlainText.Background.ToXwtColor ();
-					col.Light *= 0.948;
-
-					// FIXME: VV: Remove gradient features
-					using (var grad = new Cairo.LinearGradient (0, 0, allocation.Width, 0)) {
-						grad.AddColorStop (0, col.ToCairoColor ());
-						grad.AddColorStop (0.7, TextEditor.ColorStyle.PlainText.Background);
-						grad.AddColorStop (1, col.ToCairoColor ());
-						cr.SetSource (grad);
-						cr.Fill ();
-					}
+					cr.SetSourceColor (TextEditor.ColorStyle.PlainText.Background);
+					cr.Fill ();
 				}
 			}
 			DrawLeftBorder (cr);
