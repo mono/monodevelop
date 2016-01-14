@@ -32,18 +32,37 @@ using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Core.Assemblies
 {
-	class MonoTargetRuntimeFactory: ITargetRuntimeFactory
+	class MonoTargetRuntimeFactory : ITargetRuntimeFactory
 	{
 		static RuntimeCollection customRuntimes = new RuntimeCollection ();
 		static string configFile = UserProfile.Current.ConfigDir.Combine ("mono-runtimes.xml");
-		static string[] commonLinuxPrefixes = new string[] { "/usr", "/usr/local" };
-		
+		static string [] commonLinuxPrefixes = new string [] { "/usr", "/usr/local" };
+
 		static MonoTargetRuntimeFactory ()
 		{
 			LoadRuntimes ();
 		}
-		
+
 		const string MAC_FRAMEWORK_DIR = "/Library/Frameworks/Mono.framework/Versions";
+
+		static IEnumerable<MonoRuntimeInfo> GetAllArchitecturesOfRuntimes (string dir)
+		{
+			var rinfo64 = new MonoRuntimeInfo (dir, true);
+			var rinfo32 = new MonoRuntimeInfo (dir, false);
+			if (rinfo64.IsValidRuntime && rinfo32.IsValidRuntime) {
+				yield return rinfo64;
+				yield return rinfo32;
+			} else if (rinfo64.IsValidRuntime) {
+				yield return rinfo64;
+			} else if (rinfo32.IsValidRuntime) {
+				yield return rinfo32;
+			} else {
+				var rinfo = new MonoRuntimeInfo (dir, null);
+				if (rinfo.IsValidRuntime) {
+					yield return rinfo;
+				}
+			}
+		}
 
 		public IEnumerable<TargetRuntime> CreateRuntimes ()
 		{
@@ -54,34 +73,36 @@ namespace MonoDevelop.Core.Assemblies
 			if (Platform.IsWindows) {
 				string progs = Environment.GetFolderPath (Environment.SpecialFolder.ProgramFiles);
 				foreach (string dir in Directory.GetDirectories (progs, "Mono*")) {
-					MonoRuntimeInfo info = new MonoRuntimeInfo (dir);
-					if (info.IsValidRuntime)
+					foreach(var info in GetAllArchitecturesOfRuntimes(dir))
 						yield return new MonoTargetRuntime (info);
 				}
 			} else if (Platform.IsMac) {
 				if (!Directory.Exists (MAC_FRAMEWORK_DIR))
 					yield break;
 				foreach (string dir in Directory.GetDirectories (MAC_FRAMEWORK_DIR)) {
-					if (dir.EndsWith ("/Current", StringComparison.Ordinal) || currentRuntime.Prefix == dir)
+					if (dir.EndsWith ("/Current", StringComparison.Ordinal))
 						continue;
-					MonoRuntimeInfo info = new MonoRuntimeInfo (dir);
-					if (info.IsValidRuntime)
+					foreach (var info in GetAllArchitecturesOfRuntimes (dir)) {
+						if (info.Prefix == currentRuntime.Prefix && info.Force64or32bit == currentRuntime.Force64or32bit)
+							continue;
 						yield return new MonoTargetRuntime (info);
+					}
 				}
 			} else {
 				foreach (string pref in commonLinuxPrefixes) {
-					if (currentRuntime != null && currentRuntime.Prefix == pref)
-						continue;
-					MonoRuntimeInfo info = new MonoRuntimeInfo (pref);
-					if (info.IsValidRuntime) {
-						// Clean up old registered runtimes
-						foreach (MonoRuntimeInfo ei in customRuntimes) {
-							if (ei.Prefix == info.Prefix) {
-								customRuntimes.Remove (ei);
-								break;
+					foreach (var info in GetAllArchitecturesOfRuntimes (pref)) {
+						if (info.IsValidRuntime) {
+							if (currentRuntime != null && currentRuntime.Prefix == pref && currentRuntime.Force64or32bit == info.Force64or32bit)
+								continue;
+							// Clean up old registered runtimes
+							foreach (MonoRuntimeInfo ei in customRuntimes) {
+								if (ei.Prefix == info.Prefix) {
+									customRuntimes.Remove (ei);
+									break;
+								}
 							}
+							yield return new MonoTargetRuntime (info);
 						}
-						yield return new MonoTargetRuntime (info);
 					}
 				}
 			}
