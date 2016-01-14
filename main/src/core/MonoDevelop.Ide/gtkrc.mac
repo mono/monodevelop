@@ -78,7 +78,7 @@ style "default" {
     GtkCheckButton::indicator-size = 14
     GtkCheckButton::indicator-spacing = 4
 
-    GtkTreeView::odd-row-color = @bg_color
+    GtkTreeView::odd-row-color = "#fafafa"
 
     GtkScrolledWindow::scrollbar-spacing = 0
     GtkScrolledWindow::scrollbars-within-bevel = 1

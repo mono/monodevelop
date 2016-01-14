@@ -69,42 +69,42 @@ namespace MonoDevelop.Debugger
 				ObjectValueTreeValuesButtonBackground = Color.FromName ("#e9f2fc");
 				ObjectValueTreeValuesButtonText = Color.FromName ("#5294eb");
 				ObjectValueTreeValuesButtonBorder = Color.FromName ("#5294eb");
-				ObjectValueTreeValueErrorText = Color.FromName ("#ff0000");
+				ObjectValueTreeValueErrorText = Color.FromName ("#FA6B46");
 				ObjectValueTreeValueDisabledText = Color.FromName ("#7f7f7f");
-				ObjectValueTreeValueModifiedText = Color.FromName ("#0000ff");
+				ObjectValueTreeValueModifiedText = Color.FromName ("#85B7F3");
 
-				PreviewVisualizerBackgroundColor = Color.FromName ("#f5f5f5");
+				PreviewVisualizerBackgroundColor = Color.FromName ("#f2f2f2");
 				PreviewVisualizerHeaderTextColor = Color.FromName ("#242424");
 				PreviewVisualizerTextColor = Color.FromName ("#555555");
 
-				ExceptionCaughtDialog.TreeBackgroundColor = Color.FromName ("#dfe4eb");
-				ExceptionCaughtDialog.InfoFrameBackgroundColor = Color.FromName ("#fffae8");
-				ExceptionCaughtDialog.InfoFrameBorderColor = Color.FromName ("#ded4bd");
+				ExceptionCaughtDialog.TreeBackgroundColor = Color.FromName ("#ffffff");
+				ExceptionCaughtDialog.InfoFrameBackgroundColor = Color.FromName ("#fbefce");
+				ExceptionCaughtDialog.InfoFrameBorderColor = Color.FromName ("#f0e4c2");
 				ExceptionCaughtDialog.LineNumberBackgroundColor = Color.FromName ("#c4c4c4");
 				ExceptionCaughtDialog.LineNumberInUserCodeBackgroundColor = Color.FromName ("#e599de");
-				ExceptionCaughtDialog.LineNumberBorderColor = Color.FromName ("#000000").WithAlpha (.11);
+				ExceptionCaughtDialog.LineNumberBorderColor = Color.FromName ("#e599de");
 				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#ffffff");
-				ExceptionCaughtDialog.LineNumberTextShadowColor = Color.FromName ("#000000").WithAlpha (.34);
+				ExceptionCaughtDialog.LineNumberTextShadowColor = ExceptionCaughtDialog.LineNumberInUserCodeBackgroundColor;
 			} else {
-				ObjectValueTreeValuesButtonBackground = Color.FromName ("#e9f2fc");
-				ObjectValueTreeValuesButtonText = Color.FromName ("#5294eb");
-				ObjectValueTreeValuesButtonBorder = Color.FromName ("#5294eb");
-				ObjectValueTreeValueErrorText = Color.FromName ("#ff0000");
-				ObjectValueTreeValueDisabledText = Color.FromName ("#7f7f7f");
-				ObjectValueTreeValueModifiedText = Color.FromName ("#0000ff");
+				ObjectValueTreeValuesButtonBackground = Color.FromName ("#e9f2fc"); // TODO
+				ObjectValueTreeValuesButtonText = Color.FromName ("#5294eb"); // TODO
+				ObjectValueTreeValuesButtonBorder = Color.FromName ("#5294eb"); // TODO
+				ObjectValueTreeValueErrorText = Color.FromName ("#ff0000"); // TODO
+				ObjectValueTreeValueDisabledText = Color.FromName ("#7f7f7f"); // TODO
+				ObjectValueTreeValueModifiedText = Color.FromName ("#0000ff"); // TODO
 
-				PreviewVisualizerBackgroundColor = MonoDevelop.Ide.Gui.Styles.PopoverWindow.DefaultBackgroundColor;
-				PreviewVisualizerHeaderTextColor = Color.FromName ("#dbdbdb");
-				PreviewVisualizerTextColor = MonoDevelop.Ide.Gui.Styles.PopoverWindow.DefaultTextColor;
+				PreviewVisualizerBackgroundColor = MonoDevelop.Ide.Gui.Styles.PopoverWindow.DefaultBackgroundColor; // TODO
+				PreviewVisualizerHeaderTextColor = Color.FromName ("#dbdbdb"); // TODO
+				PreviewVisualizerTextColor = MonoDevelop.Ide.Gui.Styles.PopoverWindow.DefaultTextColor; // TODO
 
-				ExceptionCaughtDialog.TreeBackgroundColor = Color.FromName ("#5a5a5a");
-				ExceptionCaughtDialog.InfoFrameBackgroundColor = Color.FromName ("#5a5a5a");
-				ExceptionCaughtDialog.InfoFrameBorderColor = Color.FromName ("#9da2a6");
-				ExceptionCaughtDialog.LineNumberBackgroundColor = Color.FromName ("#c4c4c4");
-				ExceptionCaughtDialog.LineNumberInUserCodeBackgroundColor = Color.FromName ("#e599de");
-				ExceptionCaughtDialog.LineNumberBorderColor = Color.FromName ("#000000").WithAlpha (.11);
-				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#ffffff");
-				ExceptionCaughtDialog.LineNumberTextShadowColor = Color.FromName ("#000000").WithAlpha (.34);
+				ExceptionCaughtDialog.TreeBackgroundColor = Color.FromName ("#5a5a5a"); // TODO
+				ExceptionCaughtDialog.InfoFrameBackgroundColor = Color.FromName ("#5a5a5a"); // TODO
+				ExceptionCaughtDialog.InfoFrameBorderColor = Color.FromName ("#9da2a6"); // TODO
+				ExceptionCaughtDialog.LineNumberBackgroundColor = Color.FromName ("#c4c4c4"); // TODO
+				ExceptionCaughtDialog.LineNumberInUserCodeBackgroundColor = Color.FromName ("#e599de"); // TODO
+				ExceptionCaughtDialog.LineNumberBorderColor = Color.FromName ("#000000").WithAlpha (.11); // TODO
+				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#ffffff"); // TODO
+				ExceptionCaughtDialog.LineNumberTextShadowColor = Color.FromName ("#000000").WithAlpha (.34); // TODO
 			}
 		}
 	}
