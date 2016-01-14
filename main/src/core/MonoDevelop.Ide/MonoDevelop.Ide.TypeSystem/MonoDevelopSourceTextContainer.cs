@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		public MonoDevelopSourceText (ITextSource doc)
 		{
 			if (doc == null)
-				throw new ArgumentNullException ("doc");
+				throw new ArgumentNullException (nameof (doc));
 			this.doc = doc;
 		}
 
@@ -132,6 +132,8 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		readonly ITextDocument document;
 		bool isDisposed;
+		MonoDevelopSourceText currentText;
+
 		public DocumentId Id {
 			get;
 			private set;
@@ -139,16 +141,17 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public MonoDevelopSourceTextContainer (DocumentId documentId, ITextDocument document) : this (document)
 		{
-			this.Id = documentId;
+			Id = documentId;
 		}
 
 		public MonoDevelopSourceTextContainer (ITextDocument document)
 		{
 			this.document = document;
 			this.document.TextChanging += HandleTextReplacing;
+			this.document.TextChanged += Document_TextChanged;;
 		}
 
-		void HandleTextReplacing (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
+		void HandleTextReplacing (object sender, Core.Text.TextChangeEventArgs e)
 		{
 			var handler = TextChanged;
 			if (handler != null) {
@@ -156,7 +159,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				var newText = oldText.Replace (e.Offset, e.RemovalLength, e.InsertedText.Text);
 				handler (this, new Microsoft.CodeAnalysis.Text.TextChangeEventArgs (oldText, newText, new TextChangeRange(TextSpan.FromBounds (e.Offset, e.Offset + e.RemovalLength), e.InsertionLength)));
 			}
-			
+		}
+
+		void Document_TextChanged (object sender, Core.Text.TextChangeEventArgs e)
+		{
+			currentText = null;
 		}
 
 		public void Dispose ()
@@ -164,13 +171,22 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (isDisposed)
 				return;
 			document.TextChanging -= HandleTextReplacing;
+			document.TextChanged -= Document_TextChanged;;
 			isDisposed = true;
 		}
 
 		#region implemented abstract members of SourceTextContainer
 		public override SourceText CurrentText {
 			get {
-				return new MonoDevelopSourceText (document.CreateSnapshot ());
+				if (currentText == null)
+					currentText = new MonoDevelopSourceText (document.CreateDocumentSnapshot ());
+				return currentText;
+			}
+		}
+
+		public ITextDocument Document {
+			get {
+				return document;
 			}
 		}
 

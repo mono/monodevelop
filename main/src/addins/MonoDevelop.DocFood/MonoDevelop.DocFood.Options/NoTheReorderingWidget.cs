@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.DocFood.Options
@@ -44,7 +45,7 @@ namespace MonoDevelop.DocFood.Options
 	{
 		NoTheReorderingWidget panel;
 		
-		public override Gtk.Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			panel = new NoTheReorderingWidget (DocConfig.Instance);
 			return panel;

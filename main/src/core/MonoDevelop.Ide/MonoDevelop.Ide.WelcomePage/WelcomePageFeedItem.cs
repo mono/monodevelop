@@ -30,6 +30,7 @@ using MonoDevelop.Core;
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
 using MonoDevelop.Components;
+using System.Text;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
@@ -265,7 +266,39 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			titleLabel.Markup = string.Format (underlined? linkUnderlinedFormat : linkFormat, GLib.Markup.EscapeText (text));
 			subtitleLabel.Markup = string.Format (subtitleFormat, GLib.Markup.EscapeText (subtitle ?? ""));
-			summaryLabel.Markup = string.Format (descFormat, (desc ?? "").Replace ("\n"," "));
+			summaryLabel.Markup = string.Format (descFormat, SummaryHtmlToPango(desc ?? ""));
+		}
+
+		public static string SummaryHtmlToPango(string summaryHtml)
+		{
+			var result = new StringBuilder ();
+			bool inTag =  false;
+			for (int i = 0; i < summaryHtml.Length; i++) {
+				char ch = summaryHtml [i];
+				if (inTag) {
+					if (ch == '>')
+						inTag = false;
+					continue;
+				}
+				switch (ch) {
+				case '\n':
+					result.Append (" ");
+					break;
+				case '<':
+					inTag = true;
+					break;
+				case '\'':
+					result.Append ("&apos;");
+					break;
+				case '"':
+					result.Append ("&quot;");
+					break;
+				default:
+					result.Append (ch);
+					break;
+				}
+			}
+			return result.ToString ();
 		}
 		
 		void UpdateImage ()

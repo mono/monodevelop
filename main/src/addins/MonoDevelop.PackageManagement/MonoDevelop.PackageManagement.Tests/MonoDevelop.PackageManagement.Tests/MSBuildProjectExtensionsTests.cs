@@ -1,7 +1,7 @@
 ﻿
 using System;
 using System.Xml;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects.MSBuild;
 using NuGet;
 using NUnit.Framework;

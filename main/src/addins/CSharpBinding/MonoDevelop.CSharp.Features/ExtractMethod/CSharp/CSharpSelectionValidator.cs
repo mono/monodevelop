@@ -184,6 +184,7 @@ namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
             {
                 return new SelectionInfo
                 {
+					Status = new OperationStatus(OperationStatusFlag.None, "CSharpFeaturesResources.InvalidContext"),
                     OriginalSpan = adjustedSpan,
                     FirstTokenInOriginalSpan = firstTokenInSelection,
                     LastTokenInOriginalSpan = lastTokenInSelection

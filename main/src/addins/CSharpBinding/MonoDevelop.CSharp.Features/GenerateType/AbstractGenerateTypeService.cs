@@ -102,11 +102,11 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateType
 			State state,
 			CancellationToken cancellationToken)
 		{
-			var generateNewTypeInDialog = false;
+			//var generateNewTypeInDialog = false;
 			if (state.NamespaceToGenerateInOpt != null) {
 				var workspace = document.Project.Solution.Workspace;
 				if (workspace == null || workspace.CanApplyChange (ApplyChangesKind.AddDocument)) {
-					generateNewTypeInDialog = true;
+					//generateNewTypeInDialog = true;
 					yield return new GenerateTypeCodeAction ((TService)this, document.Document, state, intoNamespace: true, inNewFile: true);
 				}
 
@@ -308,7 +308,7 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateType
 				bool inNewFile,
 				string destination)
 			{
-				var finalName = GetTypeName (state);
+				//var finalName = GetTypeName (state);
 
 				if (inNewFile) {
 					return string.Format (Resources.GenerateForInNewFile,
@@ -375,7 +375,7 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateType
 
 			public override object GetOptions (CancellationToken cancellationToken)
 			{
-				var typeKindValue = GetTypeKindOption (_state);
+				//var typeKindValue = GetTypeKindOption (_state);
 				var isPublicOnlyAccessibility = IsPublicOnlyAccessibility (_state, _document.Project);
 
 				// TODO : Callback
@@ -1002,7 +1002,7 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateType
 
 			private async Task<IEnumerable<CodeActionOperation>> GetGenerateIntoTypeOperationsAsync (INamedTypeSymbol namedType)
 			{
-				var codeGenService = GetCodeGenerationService ();
+				//var codeGenService = GetCodeGenerationService ();
 				var solution = _document.Project.Solution;
 				var codeGenResult = await CodeGenerator.AddNamedTypeDeclarationAsync (
 					                    solution,

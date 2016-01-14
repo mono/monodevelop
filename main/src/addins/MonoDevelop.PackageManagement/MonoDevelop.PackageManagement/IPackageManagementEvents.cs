@@ -33,7 +33,7 @@ using MonoDevelop.PackageManagement;
 using NuGet;
 using MonoDevelop.Projects;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public interface IPackageManagementEvents
 	{

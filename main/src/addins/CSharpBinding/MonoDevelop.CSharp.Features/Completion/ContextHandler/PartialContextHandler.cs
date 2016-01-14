@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return IsTriggerAfterSpaceOrStartOfWordCharacter (text, position);
 		}
 
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
+		protected override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			var document = completionContext.Document;
 			var position = completionContext.Position;
@@ -59,17 +59,17 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 			// Only inside classes and structs
 			if (enclosingSymbol == null || !(enclosingSymbol.TypeKind == TypeKind.Struct || enclosingSymbol.TypeKind == TypeKind.Class)) {
-				return Enumerable.Empty<CompletionData> ();
+				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 			}
 
 			if (!IsPartialCompletionContext (tree, position, cancellationToken/*, out modifiers*/, out token)) {
 				if (enclosingSymbol != null && (token.IsKind (SyntaxKind.OpenBraceToken) || token.IsKind (SyntaxKind.CloseBraceToken) || token.IsKind (SyntaxKind.SemicolonToken))) {
-					return CreateCompletionData (engine, semanticModel, position, enclosingSymbol, token, false, cancellationToken);
+					return Task.FromResult (CreateCompletionData (engine, semanticModel, position, enclosingSymbol, token, false, cancellationToken));
 				}
-				return Enumerable.Empty<CompletionData> ();
+				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 			}
 
-			return CreateCompletionData (engine, semanticModel, position, enclosingSymbol, token, true, cancellationToken);
+			return Task.FromResult (CreateCompletionData (engine, semanticModel, position, enclosingSymbol, token, true, cancellationToken));
 		}
 
 		protected virtual IEnumerable<CompletionData> CreateCompletionData (CompletionEngine engine, SemanticModel semanticModel, int position, INamedTypeSymbol enclosingType, SyntaxToken token, bool afterPartialKeyword, CancellationToken cancellationToken)
@@ -142,7 +142,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			var token = touchingToken.GetPreviousToken();
 
 			bool foundPartial = touchingToken.IsKindOrHasMatchingText(SyntaxKind.PartialKeyword);
-			bool foundAsync = false;
+			//bool foundAsync = false;
 
 			while (IsOnSameLine(token, touchingToken, tree.GetText(cancellationToken)))
 			{
@@ -152,10 +152,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					return false;
 				}
 
-				if (token.IsKindOrHasMatchingText(SyntaxKind.AsyncKeyword))
-				{
-					foundAsync = true;
-				}
+				//if (token.IsKindOrHasMatchingText(SyntaxKind.AsyncKeyword))
+				//{
+				//	foundAsync = true;
+				//}
 
 				foundPartial = foundPartial || token.IsKindOrHasMatchingText(SyntaxKind.PartialKeyword);
 

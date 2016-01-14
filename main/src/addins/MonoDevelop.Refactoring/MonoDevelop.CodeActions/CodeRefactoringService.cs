@@ -116,6 +116,8 @@ namespace MonoDevelop.CodeActions
 					codeRefactoringCache = (await GetCodeRefactoringsAsync (doc, MimeTypeToLanguage(editor.MimeType), cancellationToken).ConfigureAwait (false)).ToList ();
 				}
 				foreach (var descriptor in codeRefactoringCache) {
+					if (!descriptor.IsEnabled)
+						continue;
 					var analysisDocument = doc.AnalysisDocument;
 					if (cancellationToken.IsCancellationRequested || analysisDocument == null)
 						return Enumerable.Empty<ValidCodeAction> ();

@@ -27,7 +27,7 @@
 //
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide;
@@ -42,7 +42,7 @@ namespace MonoDevelop.PackageManagement.Commands
 		protected override void Run ()
 		{
 			var runner = new PackageRestoreRunner ();
-			DispatchService.BackgroundDispatch (() => {
+			PackageManagementBackgroundDispatcher.Dispatch (() => {
 				runner.Run ();
 			});
 		}

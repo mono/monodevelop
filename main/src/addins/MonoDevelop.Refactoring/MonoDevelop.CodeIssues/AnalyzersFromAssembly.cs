@@ -68,7 +68,8 @@ namespace MonoDevelop.CodeIssues
 			if (!force) {
 				var assemblyName = asm.GetName ().Name;
 				if (assemblyName == "MonoDevelop.AspNet" ||
-					assemblyName == "Microsoft.CodeAnalysis.CSharp" ||
+				    assemblyName == "Microsoft.CodeAnalysis.CSharp" ||
+				    assemblyName.Contains ("FSharpBinding")  ||
 					assemblyName != "RefactoringEssentials" &&
 					!(asm.GetReferencedAssemblies ().Any (a => a.Name == diagnosticAnalyzerAssembly) && asm.GetReferencedAssemblies ().Any (a => a.Name == "MonoDevelop.Ide")))
 					return;

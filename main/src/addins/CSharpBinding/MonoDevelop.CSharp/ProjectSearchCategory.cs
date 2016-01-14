@@ -47,16 +47,14 @@ namespace MonoDevelop.CSharp
 {
 	class ProjectSearchCategory : SearchCategory
 	{
-		static Components.PopoverWindow widget;
-
 		internal static void Init ()
 		{
-			MonoDevelopWorkspace.LoadingFinished += delegate {
-				UpdateSymbolInfos ();
+			MonoDevelopWorkspace.LoadingFinished += async delegate {
+				await UpdateSymbolInfos ();
 			};
 			if (IdeApp.IsInitialized) {
-				IdeApp.Workspace.LastWorkspaceItemClosed += delegate {
-					DisposeSymbolInfoTask ();
+				IdeApp.Workspace.LastWorkspaceItemClosed += async delegate {
+					await DisposeSymbolInfoTask ();
 				};
 			}
 		}
@@ -68,31 +66,29 @@ namespace MonoDevelop.CSharp
 
 		public override void Initialize (Components.PopoverWindow popupWindow)
 		{
-			widget = popupWindow;
-			lastResult = new WorkerResult (popupWindow);
+			lastResult = new WorkerResult ();
 		}
 
 		internal static Task<SymbolCache> SymbolInfoTask;
 
-		static TimerCounter getMembersTimer = InstrumentationService.CreateTimerCounter ("Time to get all members", "NavigateToDialog");
 		static TimerCounter getTypesTimer = InstrumentationService.CreateTimerCounter ("Time to get all types", "NavigateToDialog");
 
 		static CancellationTokenSource symbolInfoTokenSrc = new CancellationTokenSource();
-		public static void UpdateSymbolInfos ()
+		public static async Task UpdateSymbolInfos ()
 		{
-			DisposeSymbolInfoTask ();
+			await DisposeSymbolInfoTask ();
 			CancellationToken token = symbolInfoTokenSrc.Token;
 			SymbolInfoTask = Task.Run (delegate {
 				return GetSymbolInfos (token);
 			}, token);
 		}
 
-		static void DisposeSymbolInfoTask ()
+		static async Task DisposeSymbolInfoTask ()
 		{
 			symbolInfoTokenSrc.Cancel ();
 			if (SymbolInfoTask != null) {
 				try {
-					var old = SymbolInfoTask.Result;
+					var old = await SymbolInfoTask;
 					if (old != null)
 						old.Dispose ();
 				} catch (TaskCanceledException) {
@@ -102,7 +98,7 @@ namespace MonoDevelop.CSharp
 				}
 			}
 			symbolInfoTokenSrc = new CancellationTokenSource();
-			lastResult = new WorkerResult (widget);
+			lastResult = new WorkerResult ();
 			SymbolInfoTask = null;
 		}
 
@@ -154,7 +150,7 @@ namespace MonoDevelop.CSharp
 					cancellationToken.ThrowIfCancellationRequested ();
 					DeclaredSymbolInfo declaredSymbolInfo;
 					if (current.TryGetDeclaredSymbolInfo (out declaredSymbolInfo)) {
-						declaredSymbolInfo.Document = document;
+						declaredSymbolInfo.DocumentId = document.Id;
 						infos.Add (declaredSymbolInfo);
 					}
 				}
@@ -211,9 +207,9 @@ namespace MonoDevelop.CSharp
 					case WorkspaceChangeKind.DocumentChanged:
 						var doc = currentSolution.GetDocument (e.DocumentId);
 						if (doc != null) {
-							Task.Run (async delegate {
+							await Task.Run (async delegate {
 								await UpdateDocument (documentInfos, doc, default (CancellationToken));
-							});
+							}).ConfigureAwait (false);
 						}
 						break;
 					}
@@ -265,7 +261,7 @@ namespace MonoDevelop.CSharp
 				if (searchPattern.Tag != null && !(typeTags.Contains (searchPattern.Tag) || memberTags.Contains (searchPattern.Tag)) || searchPattern.HasLineNumber)
 					return null;
 				try {
-					var newResult = new WorkerResult (widget);
+					var newResult = new WorkerResult ();
 					newResult.pattern = searchPattern.Pattern;
 					newResult.Tag = searchPattern.Tag;
 					List<DeclaredSymbolInfo> allTypes;
@@ -278,7 +274,7 @@ namespace MonoDevelop.CSharp
 					newResult.FullSearch = toMatch.IndexOf ('.') > 0;
 					var oldLastResult = lastResult;
 					if (newResult.FullSearch && oldLastResult != null && !oldLastResult.FullSearch)
-						oldLastResult = new WorkerResult (widget);
+						oldLastResult = new WorkerResult ();
 //					var now = DateTime.Now;
 
 					AllResults (searchResultCallback, oldLastResult, newResult, allTypes, token);
@@ -295,8 +291,6 @@ namespace MonoDevelop.CSharp
 
 		void AllResults (ISearchResultCallback searchResultCallback, WorkerResult lastResult, WorkerResult newResult, IReadOnlyList<DeclaredSymbolInfo> completeTypeList, CancellationToken token)
 		{
-			if (newResult.isGotoFilePattern)
-				return;
 			uint x = 0;
 			// Search Types
 			newResult.filteredSymbols = new List<DeclaredSymbolInfo> ();
@@ -377,14 +371,13 @@ namespace MonoDevelop.CSharp
 				}
 			}
 
-			public bool isGotoFilePattern;
 			public ResultsDataSource results;
 			public bool FullSearch;
 			public StringMatcher matcher;
 
-			public WorkerResult (Widget widget)
+			public WorkerResult ()
 			{
-				results = new ResultsDataSource (widget);
+				results = new ResultsDataSource ();
 			}
 
 			internal SearchResult CheckType (DeclaredSymbolInfo symbol)

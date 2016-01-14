@@ -124,7 +124,7 @@ namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
             var statement = lastToken.Parent.GetStatementUnderContainer();
 
             //Contract.ThrowIfNull(statement);
-            var firstStatementUnderContainer = this.GetFirstStatementUnderContainer();
+            //var firstStatementUnderContainer = this.GetFirstStatementUnderContainer();
             //Contract.ThrowIfFalse(statement.Parent == firstStatementUnderContainer.Parent);
 
             return statement;

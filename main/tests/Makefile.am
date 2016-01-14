@@ -1,6 +1,6 @@
 include $(top_srcdir)/xbuild.include
 
-SUBDIRS=UnitTests MacPlatform.Tests UserInterfaceTests TestRunner Ide.Tests
+SUBDIRS=UnitTests MacPlatform.Tests UserInterfaceTests TestRunner Ide.Tests MonoDevelop.CSharpBinding.Tests
 
 MONO=mono$(SGEN_SUFFIX)
 RUN_TEST=$(MDTOOL_RUN) run-md-tests

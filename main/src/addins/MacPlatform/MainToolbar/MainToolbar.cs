@@ -69,9 +69,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		void AttachToolbarEvents (SearchBar bar)
 		{
-			if (bar.EventsAttached)
-				return;
-
 			bar.Changed += (o, e) => {
 				bar.LogMessage("Text changed");
 				if (SearchEntryChanged != null)
@@ -89,7 +86,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (SearchEntryActivated != null)
 					SearchEntryActivated (o, e);
 			};
-			bar.EventsAttached = true;
 		}
 
 		public MainToolbar (Gtk.Window window)
@@ -135,7 +131,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				}
 			};
 
-			Action<NSNotification> resizeAction = notif => DispatchService.GuiDispatch (() => {
+			Action<NSNotification> resizeAction = notif => Runtime.RunInMainThread (() => {
 				var win = awesomeBar.Window;
 				if (win == null) {
 					return;

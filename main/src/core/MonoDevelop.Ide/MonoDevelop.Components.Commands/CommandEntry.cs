@@ -76,7 +76,7 @@ namespace MonoDevelop.Components.Commands
 			set { disabledVisible = value; }
 		}
 
-		public CommandEntryDisplayType DispayType {
+		public CommandEntryDisplayType DisplayType {
 			get;
 			set;
 		}
@@ -92,12 +92,12 @@ namespace MonoDevelop.Components.Commands
 			return manager.GetCommand (cmdId);
 		}
 		
-		internal protected virtual Gtk.MenuItem CreateMenuItem (CommandManager manager)
+		internal virtual Gtk.MenuItem CreateMenuItem (CommandManager manager)
 		{
 			return CreateMenuItem (manager, GetCommand (manager), cmdId, true, overrideLabel, disabledVisible);
 		}
 		
-		internal protected virtual Gtk.ToolItem CreateToolItem (CommandManager manager)
+		internal virtual Gtk.ToolItem CreateToolItem (CommandManager manager)
 		{
 			if (cmdId == CommandManager.ToCommandId (Command.Separator))
 				return new Gtk.SeparatorToolItem ();

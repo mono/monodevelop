@@ -64,7 +64,7 @@ namespace MonoDevelop.VersionControl.Git
 		protected GitRepository UpdateVisibility (CommandInfo info)
 		{
 			var repo = Repository;
-			info.Visible = Repository != null;
+			info.Visible = repo != null;
 			return repo;
 		}
 
@@ -91,9 +91,9 @@ namespace MonoDevelop.VersionControl.Git
 
 	class SwitchToBranchHandler: GitCommandHandler
 	{
-		protected override void Run (object dataItem)
+		protected async override void Run (object dataItem)
 		{
-			GitService.SwitchToBranch (Repository, (string)dataItem);
+			await GitService.SwitchToBranch (Repository, (string)dataItem).ConfigureAwait (false);
 		}
 
 		protected override void Update (CommandArrayInfo info)
@@ -163,7 +163,7 @@ namespace MonoDevelop.VersionControl.Git
 									msg = GettextCatalog.GetString ("No changes were available to stash");
 								}
 
-								DispatchService.GuiDispatch (delegate {
+								Runtime.RunInMainThread (delegate {
 									IdeApp.Workbench.StatusBar.ShowMessage (msg);
 								});
 							}

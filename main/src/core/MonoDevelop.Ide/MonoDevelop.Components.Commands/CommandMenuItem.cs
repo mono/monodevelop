@@ -32,7 +32,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Commands
 {
-	public class CommandMenuItem: Gtk.ImageMenuItem, ICommandMenuItem
+	class CommandMenuItem: Gtk.ImageMenuItem, ICommandMenuItem
 	{
 		CommandManager commandManager;
 		object commandId;

@@ -541,8 +541,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Features.ImplementInterface
                     return false;
                 }
 
-                if (member1.DeclaredAccessibility != member1.DeclaredAccessibility ||
-                    member1.IsStatic != member1.IsStatic)
+				if (member1.DeclaredAccessibility != member2.DeclaredAccessibility ||
+				    member1.IsStatic != member2.IsStatic)
                 {
                     return false;
                 }

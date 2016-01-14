@@ -30,22 +30,15 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.MSBuild
 {
-	class MSBuildPropertyGroupEvaluated: IMSBuildPropertyGroupEvaluated, IMSBuildProjectObject
+	class MSBuildPropertyGroupEvaluated: MSBuildNode, IMSBuildPropertyGroupEvaluated, IMSBuildProjectObject
 	{
-		protected Dictionary<string,MSBuildPropertyEvaluated> properties = new Dictionary<string, MSBuildPropertyEvaluated> ();
-		protected MSBuildProject parent;
+		protected Dictionary<string,IMSBuildPropertyEvaluated> properties = new Dictionary<string, IMSBuildPropertyEvaluated> ();
 		object sourceItem;
 		MSBuildEngine engine;
 
 		internal MSBuildPropertyGroupEvaluated (MSBuildProject parent)
 		{
-			this.parent = parent;
-		}
-
-		public MSBuildProject ParentProject {
-			get {
-				return parent;
-			}
+			ParentProject = parent;
 		}
 
 		internal void Sync (MSBuildEngine engine, object item)
@@ -66,11 +59,11 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public IMSBuildPropertyEvaluated GetProperty (string name)
 		{
-			MSBuildPropertyEvaluated prop;
+			IMSBuildPropertyEvaluated prop;
 			if (!properties.TryGetValue (name, out prop)) {
 				if (sourceItem != null) {
 					if (engine.GetItemHasMetadata (sourceItem, name)) {
-						prop = new MSBuildPropertyEvaluated (parent, name, engine.GetItemMetadata (sourceItem, name), engine.GetEvaluatedItemMetadata (sourceItem, name));
+						prop = new MSBuildPropertyEvaluated (ParentProject, name, engine.GetItemMetadata (sourceItem, name), engine.GetEvaluatedItemMetadata (sourceItem, name));
 						properties [name] = prop;
 					}
 				}
@@ -78,15 +71,16 @@ namespace MonoDevelop.Projects.MSBuild
 			return prop;
 		}
 
-		internal void SetProperties (Dictionary<string,MSBuildPropertyEvaluated> properties)
+		internal void SetProperties (Dictionary<string,IMSBuildPropertyEvaluated> properties)
 		{
 			this.properties = properties;
 		}
 
-		internal void RemoveProperty (string name)
+		internal bool RemoveProperty (string name)
 		{
 			if (properties != null)
-				properties.Remove (name);
+				return properties.Remove (name);
+			return false;
 		}
 
 		public string GetValue (string name, string defaultValue = null)
@@ -146,9 +140,11 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 	}
 
-	class MSBuildEvaluatedPropertyCollection: MSBuildPropertyGroupEvaluated, IMSBuildEvaluatedPropertyCollection
+	class MSBuildEvaluatedPropertyCollection: MSBuildPropertyGroupEvaluated, IMSBuildEvaluatedPropertyCollection, IPropertySet, IPropertyGroupListener
 	{
 		public readonly static MSBuildEvaluatedPropertyCollection Empty = new MSBuildEvaluatedPropertyCollection (null);
+
+		public MSBuildPropertyGroup LinkedGroup { get; set; }
 
 		public MSBuildEvaluatedPropertyCollection (MSBuildProject parent): base (parent)
 		{
@@ -160,7 +156,114 @@ namespace MonoDevelop.Projects.MSBuild
 			foreach (var p in e.GetEvaluatedProperties (project)) {
 				string name, value, finalValue;
 				e.GetPropertyInfo (p, out name, out value, out finalValue);
-				properties [name] = new MSBuildPropertyEvaluated (parent, name, value, finalValue);
+				properties [name] = new MSBuildPropertyEvaluated (ParentProject, name, value, finalValue);
+			}
+		}
+
+		public void LinkToGroup (MSBuildPropertyGroup group)
+		{
+			LinkedGroup = group;
+			group.PropertyGroupListener = this;
+			foreach (var p in group.GetProperties ()) {
+				var ep = (MSBuildPropertyEvaluated) GetProperty (p.Name);
+				if (ep == null)
+					ep = AddProperty (p.Name);
+				ep.LinkToProperty (p);
+			}
+		}
+
+		public void RemoveRedundantProperties ()
+		{
+			// Remove properties whose value is the same as the one set in the global group
+			// Remove properties which have the default value and which are not defined in the main group
+
+			foreach (MSBuildProperty prop in LinkedGroup.GetProperties ()) {
+				if (prop.Modified && prop.HasDefaultValue)
+					RemoveProperty (prop.Name);
+			}
+		}
+
+		IMetadataProperty IPropertySet.GetProperty (string name)
+		{
+			AssertLinkedToGroup ();
+			return (IMetadataProperty) GetProperty (name);
+		}
+
+		IEnumerable<IMetadataProperty> IPropertySet.GetProperties ()
+		{
+			AssertLinkedToGroup ();
+			foreach (IMetadataProperty p in Properties)
+				yield return p;
+		}
+
+		void IPropertySet.SetValue (string name, string value, string defaultValue, bool preserveExistingCase, bool mergeToMainGroup, string condition, MSBuildValueType valueType)
+		{
+			AssertLinkedToGroup ();
+			LinkedGroup.SetValue (name, value, defaultValue, preserveExistingCase, mergeToMainGroup, condition, valueType);
+		}
+
+		void IPropertySet.SetValue (string name, FilePath value, FilePath defaultValue, bool relativeToProject, FilePath relativeToPath, bool mergeToMainGroup, string condition)
+		{
+			AssertLinkedToGroup ();
+			LinkedGroup.SetValue (name, value, defaultValue, relativeToProject, relativeToPath, mergeToMainGroup, condition);
+		}
+
+		void IPropertySet.SetValue (string name, object value, object defaultValue, bool mergeToMainGroup, string condition)
+		{
+			AssertLinkedToGroup ();
+			LinkedGroup.SetValue (name, value, defaultValue, mergeToMainGroup, condition);
+		}
+
+		void IPropertySet.SetPropertyOrder (params string [] propertyNames)
+		{
+			// When used as IPropertySet, this collection must be linked to a property group
+			AssertLinkedToGroup ();
+			LinkedGroup.SetPropertyOrder (propertyNames);
+		}
+
+		bool IPropertySet.RemoveProperty (string name)
+		{
+			AssertLinkedToGroup ();
+			return LinkedGroup.RemoveProperty (name);
+		}
+
+		MSBuildPropertyEvaluated AddProperty (string name)
+		{
+			var p = new MSBuildPropertyEvaluated (ParentProject, name, null, null);
+			p.IsNew = true;
+			properties [name] = p;
+			return p;
+		}
+
+		void AssertLinkedToGroup ()
+		{
+			if (LinkedGroup == null)
+				throw new InvalidOperationException ("MSBuildEvaluatedPropertyCollection not linked to a property group");
+		}
+
+		void IPropertyGroupListener.PropertyAdded (MSBuildProperty prop)
+		{
+			var p = (MSBuildPropertyEvaluated) GetProperty (prop.Name);
+			if (p == null || p.LinkedProperty == null) {
+				if (p == null)
+					p = AddProperty (prop.Name);
+				p.LinkToProperty (prop);
+			}
+		}
+
+		void IPropertyGroupListener.PropertyRemoved (MSBuildProperty prop)
+		{
+			var ep = (MSBuildPropertyEvaluated) GetProperty (prop.Name);
+			if (ep == null)
+				return;
+
+			if (ep.LinkedProperty != null) {
+				// Unlink the property
+				ep.LinkToProperty (null);
+				if (ep.IsNew) {
+					ep.IsNew = false;
+					properties.Remove (ep.Name);
+				}
 			}
 		}
 
@@ -172,6 +275,12 @@ namespace MonoDevelop.Projects.MSBuild
 	public interface IMSBuildEvaluatedPropertyCollection: IMSBuildPropertyGroupEvaluated
 	{
 		IEnumerable<IMSBuildPropertyEvaluated> Properties { get; }
+	}
+
+	interface IPropertyGroupListener
+	{
+		void PropertyAdded (MSBuildProperty prop);
+		void PropertyRemoved (MSBuildProperty prop);
 	}
 }
 

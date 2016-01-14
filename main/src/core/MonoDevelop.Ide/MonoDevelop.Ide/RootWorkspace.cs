@@ -819,14 +819,9 @@ namespace MonoDevelop.Ide
 					hasUnsaved = true;
 				if (!doc.IsFile)
 					hasNoFiles = true;
-				ISupportsProjectReload pr = doc.GetContent<ISupportsProjectReload> ();
-				if (pr != null) {
-					ProjectReloadCapability c = pr.ProjectReloadCapability;
-					if ((int) c < (int) prc)
-						prc = c;
-				}
-				else
-					prc = ProjectReloadCapability.None;
+				var c = doc.ProjectReloadCapability;
+				if ((int) c < (int) prc)
+					prc = c;
 			}
 
 			string msg = null;
@@ -857,8 +852,7 @@ namespace MonoDevelop.Ide
 			foreach (Document doc in docs) {
 				if (doc.IsDirty)
 					hasUnsaved = true;
-				ISupportsProjectReload pr = doc.GetContent<ISupportsProjectReload> ();
-				if (pr != null)
+				if (doc.ProjectReloadCapability != ProjectReloadCapability.None)
 					doc.SetProject (null);
 				else {
 					FilePath file = doc.IsFile ? doc.FileName : FilePath.Null;
@@ -905,7 +899,7 @@ namespace MonoDevelop.Ide
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not load parser database.", ex);
 			}
-			if (DispatchService.IsGuiThread)
+			if (Runtime.IsMainThread)
 				NotifyItemAddedGui (item, IsReloading);
 			else {
 				bool reloading = IsReloading;
@@ -939,7 +933,7 @@ namespace MonoDevelop.Ide
 		
 		internal void NotifyItemRemoved (WorkspaceItem item)
 		{
-			if (DispatchService.IsGuiThread)
+			if (Runtime.IsMainThread)
 				NotifyItemRemovedGui (item, IsReloading);
 			else {
 				bool reloading = IsReloading;

@@ -32,7 +32,7 @@ namespace MonoDevelop.Ide.Templates
 	{
 		protected override object CreateNativeWidget ()
 		{
-			return new Control (new Gtk.EventBox ());
+			return new Gtk.EventBox ();
 		}
 
 		public int PageNumber;

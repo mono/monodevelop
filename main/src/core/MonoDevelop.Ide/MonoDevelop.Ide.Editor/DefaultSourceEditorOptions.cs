@@ -385,7 +385,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		ConfigurationProperty<LineEndingConversion> lineEndingConversion = ConfigurationProperty.Create("LineEndingConversion", LineEndingConversion.Ask);
+		ConfigurationProperty<LineEndingConversion> lineEndingConversion = ConfigurationProperty.Create("LineEndingConversion", LineEndingConversion.LeaveAsIs);
 		public LineEndingConversion LineEndingConversion {
 			get {
 				return lineEndingConversion;
@@ -397,17 +397,6 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		#endregion
-
-		ConfigurationProperty<bool> useViModes = ConfigurationProperty.Create ("UseViModes", false);
-		public bool UseViModes {
-			get {
-				return useViModes;
-			}
-			set {
-				if (useViModes.Set (value))
-					OnChanged (EventArgs.Empty);
-			}
-		}
 
 		ConfigurationProperty<bool> onTheFlyFormatting = ConfigurationProperty.Create ("OnTheFlyFormatting", true);
 		public bool OnTheFlyFormatting {
@@ -447,9 +436,6 @@ namespace MonoDevelop.Ide.Editor
 
 		public WordFindStrategy WordFindStrategy {
 			get {
-				if (useViModes) {
-					return WordFindStrategy.Vim;
-				}
 				switch (WordNavigationStyle) {
 				case WordNavigationStyle.Windows:
 					return WordFindStrategy.SharpDevelop;

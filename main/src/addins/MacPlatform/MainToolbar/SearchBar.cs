@@ -44,22 +44,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		internal event EventHandler SelectionActivated;
 		public event EventHandler GainedFocus;
 
-		/// <summary>
-		/// This tells whether events have been attached when created from the menu.
-		/// </summary>
-		internal bool EventsAttached;
-
 		public SearchBar ()
 		{
 			Cell.Scrollable = true;
 			Initialize ();
 			var debugFilePath = System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), ".xs-searchbar-debug");
 			debugSearchbar = System.IO.File.Exists (debugFilePath);
-		}
-
-		public SearchBar (IntPtr ptr) : base (ptr)
-		{
-			Initialize ();
 		}
 
 		internal void LogMessage (string message)
@@ -72,7 +62,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		void Initialize ()
 		{
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResignKeyNotification, notification => DispatchService.GuiDispatch (() => {
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResignKeyNotification, notification => Runtime.RunInMainThread (() => {
 				var other = (NSWindow)notification.Object;
 
 				LogMessage ($"Lost focus from resign key: {other.DebugDescription}.");
@@ -81,7 +71,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						LostFocus (this, null);
 				}
 			}));
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notification => DispatchService.GuiDispatch (() => {
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notification => Runtime.RunInMainThread (() => {
 				var other = (NSWindow)notification.Object;
 				LogMessage ($"Lost focus from resize: {other.DebugDescription}.");
 				if (notification.Object == Window) {
@@ -108,6 +98,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return true;
 			var baseHandled = base.PerformKeyEquivalent (theEvent);;
 			LogMessage ($"Base handled {baseHandled}");
+			LogMessage ($"First Reponder {NSApplication.SharedApplication?.KeyWindow?.FirstResponder}");
+			LogMessage ($"Refuses First Responder {RefusesFirstResponder}");
+			LogMessage ($"Editor chain {CurrentEditor}");
 			return baseHandled;
 		}
 
@@ -136,7 +129,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			// This means we've reached a focus loss event.
 			var replacedWith = notification.UserInfo.ValueForKey ((NSString)"_NSFirstResponderReplacingFieldEditor");
 			if (replacedWith != this && LostFocus != null) {
-				LogMessage ($"Mouse focus loss to {replacedWith.DebugDescription}");
+				if (replacedWith != null)
+					LogMessage ($"Mouse focus loss to {replacedWith.DebugDescription}");
 				LostFocus (this, null);
 			}
 		}

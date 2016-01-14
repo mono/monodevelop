@@ -34,7 +34,7 @@ using System.Xml;
 using MonoDevelop.Projects.MSBuild;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public static class MSBuildProjectExtensions
 	{

@@ -181,11 +181,13 @@ namespace MonoDevelop.CSharp
 
 		void HandleTypeSegmentTreeUpdated (object sender, EventArgs e)
 		{
-			CancelUpdatePathTimeout ();
-			updatePathTimeoutId = GLib.Timeout.Add (updatePathTimeout, delegate {
-				Update ();
-				updatePathTimeoutId = 0;
-				return false;
+			Runtime.RunInMainThread (() => {
+				CancelUpdatePathTimeout ();
+				updatePathTimeoutId = GLib.Timeout.Add (updatePathTimeout, delegate {
+					Update ();
+					updatePathTimeoutId = 0;
+					return false;
+				});
 			});
 		}
 
@@ -585,7 +587,7 @@ namespace MonoDevelop.CSharp
 
 		}
 
-		public Gtk.Widget CreatePathWidget (int index)
+		public Control CreatePathWidget (int index)
 		{
 			PathEntry[] path = CurrentPath;
 			if (path == null || index < 0 || index >= path.Length)

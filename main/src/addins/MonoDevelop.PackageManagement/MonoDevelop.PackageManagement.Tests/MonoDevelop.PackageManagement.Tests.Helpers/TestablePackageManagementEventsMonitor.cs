@@ -26,7 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using NuGet;
@@ -50,9 +50,9 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			FilesChanged.AddRange (files);
 		}
 
-		protected override void GuiSyncDispatch (MessageHandler handler)
+		protected override void GuiSyncDispatch (Action action)
 		{
-			handler.Invoke ();
+			action.Invoke ();
 		}
 
 		protected override void ShowPackageConsole (ProgressMonitor progressMonitor)

@@ -150,7 +150,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var allocWidth = Allocation.Width;
 			if (IsRealized && !Visible) {
 				allocWidth = list.WidthRequest = WindowWidth;
-				Show ();
 			}
 
 			int width = Math.Max (allocWidth, list.WidthRequest + Theme.CornerRadius * 2);

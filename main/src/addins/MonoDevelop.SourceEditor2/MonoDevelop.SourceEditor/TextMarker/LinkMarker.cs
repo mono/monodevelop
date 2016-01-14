@@ -30,11 +30,17 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.SourceEditor
 {
-	class LinkMarker : UnderlineTextSegmentMarker, ITextSegmentMarker, IActionTextLineMarker
+	class LinkMarker : UnderlineTextSegmentMarker, ILinkTextMarker, IActionTextLineMarker
 	{
 		static readonly Gdk.Cursor textLinkCursor = new Gdk.Cursor (Gdk.CursorType.Hand1);
 		static readonly Cairo.Color linkColor = new Cairo.Color (0, 0, 1.0);
 		Action<LinkRequest> activateLink;
+
+		public bool OnlyShowLinkOnHover {
+			get;
+			set;
+		}
+
 
 		public LinkMarker (int offset, int length, Action<LinkRequest> activateLink) : base (linkColor, new TextSegment (offset, length))
 		{
@@ -49,7 +55,6 @@ namespace MonoDevelop.SourceEditor
 			get;
 			set;
 		}
-
 		bool IActionTextLineMarker.MousePressed (MonoTextEditor editor, MarginMouseEventArgs args)
 		{
 			MousePressed?.Invoke (this, new TextEventArgsWrapper (args));
@@ -65,6 +70,42 @@ namespace MonoDevelop.SourceEditor
 		{
 			MouseHover?.Invoke (this, new TextEventArgsWrapper (args));
 			result.Cursor = textLinkCursor;
+			if (OnlyShowLinkOnHover) {
+				editor.GetTextEditorData ().Document.CommitLineUpdate (args.LineSegment);
+				editor.TextViewMargin.HoveredLineChanged += new UpdateOldLine (editor, args.LineSegment).TextViewMargin_HoveredLineChanged;
+			}
+		}
+
+		class UpdateOldLine
+		{
+			MonoTextEditor editor;
+			DocumentLine lineSegment;
+
+			public UpdateOldLine (MonoTextEditor editor, DocumentLine lineSegment)
+			{
+				this.editor = editor;
+				this.lineSegment = lineSegment;
+			}
+
+			public void TextViewMargin_HoveredLineChanged (object sender, Mono.TextEditor.LineEventArgs e)
+			{
+				editor.GetTextEditorData ().Document.CommitLineUpdate (lineSegment);
+				editor.TextViewMargin.HoveredLineChanged -= TextViewMargin_HoveredLineChanged;
+			}
+		}
+
+		public override void Draw (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics, int startOffset, int endOffset)
+		{
+			if (OnlyShowLinkOnHover) {
+				if (editor.TextViewMargin.MarginCursor != textLinkCursor)
+					return;
+				if (editor.TextViewMargin.HoveredLine == null)
+					return;
+				var hoverOffset = editor.LocationToOffset (editor.TextViewMargin.HoveredLocation);
+				if (!Segment.Contains (hoverOffset)) 
+					return; 
+			}
+			base.Draw (editor, cr, metrics, startOffset, endOffset);
 		}
 	}
 }

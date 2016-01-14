@@ -28,7 +28,7 @@ using System;
 using System.Linq;
 using MonoDevelop.Projects;
 using NuGet;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement
 {

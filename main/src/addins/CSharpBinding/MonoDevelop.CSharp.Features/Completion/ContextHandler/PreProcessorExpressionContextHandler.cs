@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return IsTriggerAfterSpaceOrStartOfWordCharacter (text, position);
 		}
 
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
+		protected override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			var model = ctx.SemanticModel;
 
@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					result.Add(engine.Factory.CreateGenericData (this, define, GenericDataType.PreprocessorSymbol));
 				}
 			}
-			return result;
+			return Task.FromResult ((IEnumerable<CompletionData>)result);
 		}
 	}
 }

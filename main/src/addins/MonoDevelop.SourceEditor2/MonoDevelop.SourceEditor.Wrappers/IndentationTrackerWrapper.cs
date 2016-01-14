@@ -33,9 +33,6 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		readonly IReadonlyTextDocument document;
 		readonly MonoDevelop.Ide.Editor.Extension.IndentationTracker indentationTracker;
 
-		readonly Mono.TextEditor.TextEditorData textEditorData;
-
-
 		public IndentationTrackerWrapper (Mono.TextEditor.TextEditorData textEditorData, IReadonlyTextDocument document, MonoDevelop.Ide.Editor.Extension.IndentationTracker indentationTracker)
 		{
 			if (textEditorData == null)
@@ -44,7 +41,6 @@ namespace MonoDevelop.SourceEditor.Wrappers
 				throw new System.ArgumentNullException ("document");
 			if (indentationTracker == null)
 				throw new System.ArgumentNullException ("indentationTracker");
-			this.textEditorData = textEditorData;
 			this.document = document;
 			this.indentationTracker = indentationTracker;
 		}

@@ -196,10 +196,16 @@ namespace MonoDevelop.Projects.MSBuild
 			get { return evaluatedItemsIgnoringCondition; }
 		}
 
-		public IEnumerable<MSBuildTarget> Targets {
+		public IEnumerable<IMSBuildTargetEvaluated> Targets {
 			get {
 				return targets;
 			}
+		}
+
+		internal IPropertySet GetPropertiesLinkedToGroup (MSBuildPropertyGroup group)
+		{
+			evaluatedProperties.LinkToGroup (group);
+			return evaluatedProperties;
 		}
 
 		internal IDictionary<string, List<string>> GetConditionedProperties ()

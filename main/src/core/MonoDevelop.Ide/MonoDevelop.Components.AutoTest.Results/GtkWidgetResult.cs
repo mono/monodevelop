@@ -37,7 +37,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 	{
 		Widget resultWidget;
 
-		public GtkWidgetResult (Widget widget)
+		internal GtkWidgetResult (Widget widget)
 		{
 			resultWidget = widget;
 		}
@@ -76,7 +76,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return this;
 			}
 
-			Window window = resultWidget as Window;
+			var window = resultWidget as Gtk.Window;
 			if (window != null) {
 				if (window.Title != null && window.Title.IndexOf (mark) > -1) {
 					return this;
@@ -472,6 +472,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 				}
 				return true;
 			});
+		}
+
+		public override void SetProperty (string propertyName, object value)
+		{
+			SetProperty (resultWidget, propertyName, value);
 		}
 	}
 }

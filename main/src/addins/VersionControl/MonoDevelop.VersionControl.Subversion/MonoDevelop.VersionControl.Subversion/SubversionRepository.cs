@@ -550,21 +550,24 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 		
-		public override Annotation[] GetAnnotations (FilePath repositoryPath)
+		public override Annotation[] GetAnnotations (FilePath repositoryPath, Revision since)
 		{
-			List<Annotation> annotations = new List<Annotation> (Svn.GetAnnotations (this, repositoryPath, SvnRevision.First, SvnRevision.Base));
-			Annotation nextRev = new Annotation (GettextCatalog.GetString ("working copy"), "<uncommitted>", DateTime.MinValue);
+			SvnRevision sinceRev = since != null ? (SvnRevision)since : null;
+			List<Annotation> annotations = new List<Annotation> (Svn.GetAnnotations (this, repositoryPath, SvnRevision.First, sinceRev ?? SvnRevision.Base));
+			Annotation nextRev = new Annotation (null, "<uncommitted>", DateTime.MinValue, null, GettextCatalog.GetString ("working copy"));
 			var baseDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (GetBaseText (repositoryPath));
 			var workingDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (File.ReadAllText (repositoryPath));
-			
+
 			// "SubversionException: blame of the WORKING revision is not supported"
-			foreach (var hunk in baseDocument.Diff (workingDocument)) {
-				annotations.RemoveRange (hunk.RemoveStart - 1, hunk.Removed);
-				for (int i = 0; i < hunk.Inserted; ++i) {
-					if (hunk.InsertStart + i >= annotations.Count)
-						annotations.Add (nextRev);
-					else
-						annotations.Insert (hunk.InsertStart - 1, nextRev);
+			if (sinceRev == null) {
+				foreach (var hunk in baseDocument.Diff (workingDocument, includeEol: false)) {
+					annotations.RemoveRange (hunk.RemoveStart - 1, hunk.Removed);
+					for (int i = 0; i < hunk.Inserted; ++i) {
+						if (hunk.InsertStart + i >= annotations.Count)
+							annotations.Add (nextRev);
+						else
+							annotations.Insert (hunk.InsertStart - 1, nextRev);
+					}
 				}
 			}
 			

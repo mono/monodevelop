@@ -600,7 +600,7 @@ namespace SubversionAddinWindows
 				var annotations = new Annotation [numAnnotations];
 				foreach (var annotation in list) {
 					if (annotation.LineNumber < annotations.Length)
-						annotations [(int)annotation.LineNumber] = new Annotation (annotation.Revision.ToString (),
+						annotations [(int)annotation.LineNumber] = new Annotation (new SvnRevision(repo, (int)annotation.Revision),
 																					annotation.Author, annotation.Time);
 				}
 				return annotations;

@@ -100,6 +100,11 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeGeneration
 			addMethodAsync = abstractServiceType.GetMethod ("AddMethodAsync", BindingFlags.Instance | BindingFlags.Public);
 			if (addMethodAsync == null)
 				throw new InvalidOperationException ("AddMethodAsync not found.");
+			addPropertyAsync = abstractServiceType.GetMethod ("AddPropertyAsync", BindingFlags.Instance | BindingFlags.Public);
+			if (addPropertyAsync == null)
+				throw new InvalidOperationException ("AddPropertyAsync not found.");
+
+
 
 			addMembersAsync = abstractServiceType.GetMethod ("AddMembersAsync", BindingFlags.Instance | BindingFlags.Public, null, new [] { typeof(Solution), typeof(INamedTypeSymbol), typeof(IEnumerable<ISymbol>), CodeGenerationOptions.typeInfo, typeof(CancellationToken) }, null);
 			if (addMembersAsync == null)
@@ -174,7 +179,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeGeneration
 
 		/// <summary>
 		/// Returns a newly created event declaration node from the provided event.
-		/// </summary
+		/// </summary>
 		public SyntaxNode CreateEventDeclaration(IEventSymbol @event, CodeGenerationDestination destination = CodeGenerationDestination.Unspecified)
 		{
 			try {
@@ -260,6 +265,16 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeGeneration
 			}
 		}
 
+		public Task<Document> AddPropertyAsync(Solution solution, INamedTypeSymbol destination, IPropertySymbol property, CodeGenerationOptions options = null, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			try {
+				return (Task<Document>)addPropertyAsync.Invoke (instance, new object[] { solution, destination, property, options != null ? options.Instance : null, cancellationToken });
+			} catch (TargetInvocationException ex) {
+				ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+				return null;
+			}
+		}
+
 		/// <summary>
 		/// Adds all the provided members into destination.
 		/// </summary>
@@ -274,6 +289,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeGeneration
 		}
 
 		static MethodInfo addFieldAsync;
+		static MethodInfo addPropertyAsync;
 
 		public Task<Document> AddFieldAsync(Solution solution, INamedTypeSymbol destination, IFieldSymbol field, CodeGenerationOptions options, CancellationToken cancellationToken)
 		{

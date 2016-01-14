@@ -29,7 +29,7 @@ using Gtk;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
-	public class DefaultWelcomePage: WelcomePageWidget
+	class DefaultWelcomePage: WelcomePageWidget
 	{
 		protected override void BuildContent (Container parent)
 		{

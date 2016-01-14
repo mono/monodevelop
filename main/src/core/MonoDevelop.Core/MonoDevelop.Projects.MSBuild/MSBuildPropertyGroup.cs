@@ -231,11 +231,12 @@ namespace MonoDevelop.Projects.MSBuild
 				} else {
 					foundProp = FindExistingProperty (i + 1, 1);
 					if (foundProp != null)
-						insertIndex = ChildNodes.IndexOf (foundProp) - 1;
+						insertIndex = ChildNodes.IndexOf (foundProp);
 				}
 			}
 
 			var prop = new MSBuildProperty (name);
+			prop.IsNew = true;
 			prop.ParentNode = PropertiesParent;
 			prop.Owner = this;
 			properties [name] = prop;
@@ -250,9 +251,14 @@ namespace MonoDevelop.Projects.MSBuild
 			
 			prop.ResetIndent (false);
 
+			if (PropertyGroupListener != null)
+				PropertyGroupListener.PropertyAdded (prop);
+
 			NotifyChanged ();
 			return prop;
 		}
+
+		internal IPropertyGroupListener PropertyGroupListener { get; set; }
 
 		MSBuildProperty FindExistingProperty (int index, int inc)
 		{
@@ -278,17 +284,23 @@ namespace MonoDevelop.Projects.MSBuild
 			return AddProperty (name, condition);
 		}
 
-		public void SetValue (string name, string value, string defaultValue = null, bool preserveExistingCase = false, bool mergeToMainGroup = false, string condition = null)
+		public void SetValue (string name, string value, string defaultValue = null, bool preserveExistingCase = false, bool mergeToMainGroup = false, string condition = null, MSBuildValueType valueType = null)
 		{
 			AssertCanModify ();
+
+			// If no value type is specified, use the default
+			if (valueType == null)
+				valueType = preserveExistingCase ? MSBuildValueType.DefaultPreserveCase : MSBuildValueType.Default;
+			
 			if (value == null && defaultValue == "")
 				value = "";
+			
 			var prop = GetProperty (name, condition);
 			var isDefault = value == defaultValue;
 			if (isDefault && !mergeToMainGroup) {
 				// if the value is default, only remove the property if it was not already the default
 				// to avoid unnecessary project file churn
-				if (prop != null && string.Equals (defaultValue ?? "", prop.Value, preserveExistingCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
+				if (prop != null && valueType.Equals (defaultValue ?? "", prop.Value))
 					return;
 				if (!IgnoreDefaultValues) {
 					if (prop != null)
@@ -298,7 +310,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 			if (prop == null)
 				prop = AddProperty (name, condition);
-			prop.SetValue (value, preserveExistingCase, mergeToMainGroup);
+			prop.SetValue (value, preserveExistingCase, mergeToMainGroup, valueType);
 			prop.HasDefaultValue = isDefault;
 		}
 
@@ -359,35 +371,38 @@ namespace MonoDevelop.Projects.MSBuild
 		public void RemoveProperty (MSBuildProperty prop)
 		{
 			AssertCanModify ();
+			if (PropertyGroupListener != null)
+				PropertyGroupListener.PropertyRemoved (prop);
 			prop.RemoveIndent ();
 			properties.Remove (prop.Name);
 			ChildNodes = ChildNodes.Remove (prop);
 			NotifyChanged ();
 		}
 
-		public void RemoveAllProperties ()
+		internal void SetLoadedValues (IMSBuildPropertyGroupEvaluated loadedProps)
 		{
-			AssertCanModify ();
-			properties.Clear ();
-			ChildNodes = ChildNodes.Clear ();
-			NotifyChanged ();
+			foreach (var p in GetProperties ()) {
+				var ep = loadedProps.GetProperty (p.Name);
+				p.InitEvaluatedValue (ep.Value);
+			}
 		}
 
-		public void UnMerge (IMSBuildPropertyGroupEvaluated baseGrp, ISet<string> propsToExclude)
+		internal void ResetIsNewFlags ()
 		{
-			AssertCanModify ();
-			HashSet<string> baseProps = new HashSet<string> ();
 			foreach (MSBuildProperty prop in GetProperties ()) {
-				if (propsToExclude != null && propsToExclude.Contains (prop.Name))
-					continue;
-				baseProps.Add (prop.Name);
-				var baseProp = baseGrp.GetProperty (prop.Name);
+				prop.IsNew = false;
+				prop.Modified = false;
+			}
+		}
 
-				// Remove properties whose value is the same as the one set in the global group
-				// Remove properties which have the default value and which are not defined in the main group
-
-				if ((baseProp != null && prop.ValueType.Equals (prop.Value, baseProp.Value)) || (baseProp == null && prop.HasDefaultValue))
+		internal void PurgeDefaultProperties ()
+		{
+			// Remove properties that have been modified and have the default value. Usually such properties
+			// would be removed when assigning the value, but that won't happen if IgnoreDefaultValues=true
+			foreach (MSBuildProperty prop in GetProperties ()) {
+				if ((prop.Modified && prop.HasDefaultValue && !prop.EvaluatedValueModified) || (!prop.Modified && prop.IsNew))
 					RemoveProperty (prop.Name);
+				prop.Modified = false;
 			}
 		}
 

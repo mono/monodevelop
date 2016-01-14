@@ -29,7 +29,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public interface IPackageActionRunner
 	{

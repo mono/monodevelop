@@ -1054,6 +1054,7 @@ Diagnostic</property>
                   <widget class="Gtk.RadioButton" id="saveChangesRadioButton">
                     <property name="MemberName" />
                     <property name="Label" translatable="yes">_Save changes to open documents</property>
+                    <property name="Active">True</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>
@@ -3089,6 +3090,7 @@ Diagnostic</property>
     </child>
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget" design-size="315 285">
+    <property name="GeneratePublic">False</property>
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox13">
@@ -3693,22 +3695,48 @@ Diagnostic</property>
   <widget class="Gtk.Bin" id="MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget" design-size="541 409">
     <property name="MemberName" />
     <property name="Visible">False</property>
-    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />
         <property name="Spacing">6</property>
         <child>
-          <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
+          <widget class="Gtk.HBox" id="hbox2">
             <property name="MemberName" />
-            <property name="ShadowType">In</property>
+            <property name="Spacing">6</property>
             <child>
-              <widget class="Gtk.TextView" id="headerText">
+              <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
                 <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="ShowScrollbars">True</property>
-                <property name="Text" translatable="yes" />
+                <property name="ShadowType">In</property>
+                <child>
+                  <widget class="Gtk.TextView" id="headerText">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="ShowScrollbars">True</property>
+                    <property name="Text" translatable="yes" />
+                  </widget>
+                </child>
               </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow1">
+                <property name="MemberName" />
+                <property name="ShadowType">In</property>
+                <child>
+                  <widget class="Gtk.TreeView" id="treeviewTemplates">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="ShowScrollbars">True</property>
+                  </widget>
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">True</property>
+              </packing>
             </child>
           </widget>
           <packing>
@@ -3731,9 +3759,6 @@ Diagnostic</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
-        </child>
-        <child>
-          <placeholder />
         </child>
       </widget>
     </child>
@@ -5853,6 +5878,7 @@ All solutions</property>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog" design-size="638 246">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Select File Format</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
@@ -8336,6 +8362,7 @@ All solutions</property>
   <widget class="Gtk.Bin" id="MonoDevelop.Ide.Projects.OptionPanels.BaseDirectoryPanelWidget" design-size="463 44">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />
@@ -11279,6 +11306,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
   <widget class="Gtk.Bin" id="MonoDevelop.Ide.Projects.OptionPanels.PortableRuntimeOptionsPanelWidget" design-size="300 300">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox1">
         <property name="MemberName" />

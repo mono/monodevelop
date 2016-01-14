@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
@@ -34,7 +34,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 	{
 		public TestableSolutionPackageRepository (
 			ISolution solution,
-			ISharpDevelopPackageRepositoryFactory repositoryFactory,
+			IMonoDevelopPackageRepositoryFactory repositoryFactory,
 			PackageManagementOptions options)
 			: base (solution, repositoryFactory, options)
 		{

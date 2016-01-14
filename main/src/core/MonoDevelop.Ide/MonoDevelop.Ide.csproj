@@ -2433,6 +2433,9 @@
     <EmbeddedResource Include="icons\revert-to-saved-16%402x.png">
       <LogicalName>revert-to-saved-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="templates\AppManifest.xft.xml">
+      <LogicalName>AppManifest.xft.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -2467,12 +2470,9 @@
     <Compile Include="MonoDevelop.Ide.Templates\SingleFileDescriptionTemplate.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\SolutionDescriptor.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ResourceFileDescriptionTemplate.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\AbstractBaseViewContent.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\AbstractPadContent.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\AbstractViewContent.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\IBaseViewContent.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\BaseViewContent.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\ViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\PadContent.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\IViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\IWorkbenchWindow.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\ViewCommandHandlers.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IBookmarkBuffer.cs" />
@@ -2636,8 +2636,6 @@
     <Compile Include="MonoDevelop.Ide.FindInFiles\SearchResultWidget.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\ISearchProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\SearchProgressMonitor.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\IAttachableViewContent.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\AbstractAttachableViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormattingCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Execution\ParameterizedExecutionHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Execution\ExecutionModeCommandService.cs" />
@@ -2657,7 +2655,6 @@
     <Compile Include="MonoDevelop.Ide.Tasks\TaskStore.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\AssemblyFoldersPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.AssemblyFoldersPanelWidget.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Content\ISupportsProjectReload.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\BuildMessagePanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\HiddenWorkbenchWindow.cs" />
@@ -2728,7 +2725,6 @@
     <Compile Include="MonoDevelop.Components.Commands\CommandMenuItem.cs" />
     <Compile Include="MonoDevelop.Components.Commands\CommandSystemCommands.cs" />
     <Compile Include="MonoDevelop.Components.Commands\CommandToggleToolButton.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CommandToolbar.cs" />
     <Compile Include="MonoDevelop.Components.Commands\CommandToolButton.cs" />
     <Compile Include="MonoDevelop.Components.Commands\CustomCommand.cs" />
     <Compile Include="MonoDevelop.Components.Commands\CustomMenuItem.cs" />
@@ -2758,21 +2754,6 @@
     <Compile Include="MonoDevelop.Components.Commands.ExtensionNodes\SeparatorItemCodon.cs" />
     <Compile Include="MonoDevelop.Components.Commands.ExtensionNodes\LocalCommandItemCodon.cs" />
     <Compile Include="MonoDevelop.Components.Commands.ExtensionNodes\SchemeExtensionNode.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\ArrowWindow.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\DockedPosition.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\DockGrip.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\DockToolbar.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\DockToolbarFrame.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\DockToolbarFrameLayout.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\DockToolbarFrameStatus.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\DockToolbarPanel.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\DockToolbarPosition.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\DockToolbarStatus.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\FixedPanel.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\FloatingDock.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\FloatingPosition.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\IDockBar.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\PlaceholderWindow.cs" />
     <Compile Include="MonoDevelop.Components.Extensions\PlatformDialog.cs" />
     <Compile Include="MonoDevelop.Components.Extensions\ISelectFileDialog.cs" />
     <Compile Include="MonoDevelop.Components.PropertyGrid\DefaultPropertyTab.cs" />
@@ -2994,7 +2975,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\GtkErrorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\DefaultCodeFormatter.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormatterExtensionNode.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\GtkSynchronizationContext.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\NewPolicySetDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.NewPolicySetDialog.cs" />
     <Compile Include="MonoDevelop.Components\HeaderBox.cs" />
@@ -3402,7 +3382,15 @@
     <Compile Include="MonoDevelop.Components.AutoTest.Operations\SelectedOperation.cs" />
     <Compile Include="MonoDevelop.Components\Windows\GtkWPFWidget.cs" />
     <Compile Include="MonoDevelop.Components\Windows\GtkWin32Interop.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\AbstractNavigationExtension.cs" />
     <Compile Include="MonoDevelop.Components\FileChooserAction.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\PropertyDescriptionTemplate.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\FileTemplateTagsModifier.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\CombinedTagModel.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\DockPositionType.cs" />
+    <Compile Include="MonoDevelop.Components\ButtonEvent.cs" />
+    <Compile Include="MonoDevelop.Components\Window.cs" />
+    <Compile Include="MonoDevelop.Components\Dialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

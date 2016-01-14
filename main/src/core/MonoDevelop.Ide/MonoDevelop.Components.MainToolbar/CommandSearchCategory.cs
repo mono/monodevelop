@@ -52,7 +52,7 @@ namespace MonoDevelop.Components.MainToolbar
 			).ToList();
 		}
 
-		public CommandSearchCategory (Widget widget) : base (GettextCatalog.GetString("Commands"))
+		public CommandSearchCategory () : base (GettextCatalog.GetString("Commands"))
 		{
 		}
 
@@ -79,7 +79,8 @@ namespace MonoDevelop.Components.MainToolbar
 					var matcher = StringMatcher.GetMatcher (pattern.Pattern, false);
 
 					foreach (var cmdTuple in allCommands) {
-						token.ThrowIfCancellationRequested ();
+						if (token.IsCancellationRequested)
+							break;
 						var cmd = cmdTuple.Item1;
 						var matchString = cmdTuple.Item2;
 						int rank;
@@ -89,7 +90,7 @@ namespace MonoDevelop.Components.MainToolbar
 					}
 				} catch (OperationCanceledException) {
 				}
-			});
+			}, token);
 		}
 	}
 }

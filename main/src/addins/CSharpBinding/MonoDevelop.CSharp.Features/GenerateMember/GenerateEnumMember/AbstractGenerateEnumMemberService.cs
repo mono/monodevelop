@@ -48,7 +48,6 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateEnumMember
 
 		private partial class GenerateEnumMemberCodeAction : CodeAction
 		{
-			private readonly TService _service;
 			private readonly Document _document;
 			private readonly State _state;
 
@@ -57,20 +56,17 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateEnumMember
 				Document document,
 				State state)
 			{
-				_service = service;
 				_document = document;
 				_state = state;
 			}
 
 			protected override async Task<Document> GetChangedDocumentAsync(CancellationToken cancellationToken)
 			{
-				var languageServices = _document.Project.Solution.Workspace.Services.GetLanguageServices(_state.TypeToGenerateIn.Language);
 
 				var value = _state.TypeToGenerateIn.LastEnumValueHasInitializer()
 					? EnumValueUtilities.GetNextEnumValue(_state.TypeToGenerateIn, cancellationToken)
 					: null;
 
-				var syntaxTree = await _document.GetSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
 				var result = await new CSharpCodeGenerationService (_document.Project.Solution.Workspace).AddFieldAsync(
 					_document.Project.Solution,
 					_state.TypeToGenerateIn,

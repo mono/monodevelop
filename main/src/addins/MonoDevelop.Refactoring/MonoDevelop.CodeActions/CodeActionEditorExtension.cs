@@ -54,12 +54,9 @@ namespace MonoDevelop.CodeActions
 {
 	class CodeActionEditorExtension : TextEditorExtension
 	{
-		uint quickFixTimeout;
-
 		const int menuTimeout = 250;
 		uint smartTagPopupTimeoutId;
 		uint menuCloseTimeoutId;
-		FixMenuDescriptor codeActionMenu;
 
 		static CodeActionEditorExtension ()
 		{
@@ -319,8 +316,6 @@ namespace MonoDevelop.CodeActions
 				set;
 			}
 		}
-
-		internal static Action<TextEditor, DocumentContext, FixMenuDescriptor> AddPossibleNamespace;
 
 		void PopupQuickFixMenu (Gdk.EventButton evt, Action<FixMenuDescriptor> menuAction)
 		{
@@ -589,10 +584,6 @@ namespace MonoDevelop.CodeActions
 				menu.Add (subMenu);
 				items++;
 			}
-
-
-
-
 		}
 
 		internal class ContextActionRunner
@@ -620,7 +611,7 @@ namespace MonoDevelop.CodeActions
 				if (insertionAction != null) {
 					var insertion = await insertionAction.CreateInsertion (token).ConfigureAwait (false);
 
-					var document = IdeApp.Workbench.OpenDocument (insertion.Location.SourceTree.FilePath, documentContext.Project);
+					var document = await IdeApp.Workbench.OpenDocument (insertion.Location.SourceTree.FilePath, documentContext.Project);
 					var parsedDocument = await document.UpdateParseDocument ();
 					if (parsedDocument != null) {
 						var insertionPoints = InsertionPointService.GetInsertionPoints (
@@ -855,9 +846,7 @@ namespace MonoDevelop.CodeActions
 		{
 			CancelSmartTagPopupTimeout ();
 			smartTagPopupTimeoutId = GLib.Timeout.Add (menuTimeout, delegate {
-				PopupQuickFixMenu (null, menu => {
-					codeActionMenu = menu;
-				});
+				PopupQuickFixMenu (null, menu => {});
 				smartTagPopupTimeoutId = 0;
 				return false;
 			});

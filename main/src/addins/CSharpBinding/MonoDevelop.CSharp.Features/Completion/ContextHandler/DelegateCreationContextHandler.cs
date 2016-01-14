@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return ch == '(' || ch == '[' || ch == ',' || IsTriggerAfterSpaceOrStartOfWordCharacter (text, position);
 		}
 
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult result, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
+		protected override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult result, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			var document = completionContext.Document;
 			var position = completionContext.Position;
@@ -79,10 +79,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			var tree = ctx.SyntaxTree;
 			var model = ctx.SemanticModel;
 			if (tree.IsInNonUserCode (position, cancellationToken))
-				return Enumerable.Empty<CompletionData> ();
+				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 
 			if (!ctx.CSharpSyntaxContext.IsAnyExpressionContext)
-				return Enumerable.Empty<CompletionData> ();
+				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 			var enclosingType = model.GetEnclosingNamedType (position, cancellationToken);
 			var memberMethods = enclosingType.GetMembers ().OfType<IMethodSymbol> ().Where (m => m.MethodKind == MethodKind.Ordinary).ToArray ();
 
@@ -104,7 +104,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			if (list.Count > 0) {
 				result.AutoSelect = false;
 			}
-			return list;
+			return Task.FromResult ((IEnumerable<CompletionData>)list);
 		}
 
 		void AddCompatibleMethods (CompletionEngine engine, List<CompletionData> list, ITypeSymbol delegateType, IMethodSymbol [] memberMethods, CancellationToken cancellationToken)

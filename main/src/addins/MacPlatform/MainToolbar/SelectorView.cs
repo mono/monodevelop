@@ -324,7 +324,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				base.ViewDidMoveToWindow ();
 
 				NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification,
-					notification => DispatchService.GuiDispatch (RealignTexts));
+				                                                notification => Runtime.RunInMainThread ((Action) RealignTexts));
 				RealignTexts ();
 			}
 

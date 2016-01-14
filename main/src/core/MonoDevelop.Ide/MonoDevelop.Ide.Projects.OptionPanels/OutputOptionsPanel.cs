@@ -27,6 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
@@ -47,7 +48,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			return ConfiguredProject is DotNetProject;
 		}
 
-		public override Widget CreatePanelWidget()
+		public override Control CreatePanelWidget()
 		{
 			return (widget = new OutputOptionsPanelWidget ());
 		}

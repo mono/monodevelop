@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Editor.Extension;
@@ -56,7 +57,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 		}
 
-		Gtk.Widget IOptionsPanel.CreatePanelWidget ()
+		Control IOptionsPanel.CreatePanelWidget ()
 		{
 			autoCodeCompletionCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion;
 			showImportsCheckbutton.Active = IdeApp.Preferences.AddImportedItemsToCompletionList;

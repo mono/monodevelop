@@ -367,7 +367,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void RenameItem (string newName)
 		{
 			Project project = (Project) CurrentNode.DataItem;
-			IdeApp.ProjectOperations.RenameItem (project, newName);
+			if (project.Name != newName)
+				IdeApp.ProjectOperations.RenameItem (project, newName);
 		}
 		
 		public override void ActivateItem ()

@@ -112,7 +112,7 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 
 
-			Init (title, symbol.Name, prop => rename.PerformChanges (symbol, prop));
+			Init (title, symbol.Name, prop => { rename.PerformChanges (symbol, prop); return new List<Change> (); });
 
 		}
 

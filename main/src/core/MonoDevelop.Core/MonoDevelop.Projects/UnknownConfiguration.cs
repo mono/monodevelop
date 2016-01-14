@@ -33,9 +33,8 @@ namespace MonoDevelop.Projects
 {
 	public class UnknownConfiguration: SolutionItemConfiguration
 	{
-		public UnknownConfiguration ()
+		public UnknownConfiguration (): base ("Unknown Configuration")
 		{
-			Name = "Unknown Configuration";
 		}
 	}
 }

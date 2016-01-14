@@ -123,7 +123,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 
 		protected override void OnCompleted ()
 		{
-			DispatchService.GuiDispatch (ShowDialogs);
+			Runtime.RunInMainThread ((Action) ShowDialogs);
 			base.OnCompleted ();
 		}
 

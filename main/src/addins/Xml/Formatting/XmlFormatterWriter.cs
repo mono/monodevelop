@@ -1128,7 +1128,7 @@ namespace MonoDevelop.Xml.Formatting
 			if (surrogate &&
 			    ('\uD800' > high || high > '\uDC00' ||
 			     '\uDC00' > ch || ch > '\uDFFF'))
-				throw ArgumentError (String.Format ("Invalid surrogate pair was found. Low: &#x{0:X}; High: &#x{0:X};", (int) ch, (int) high));
+				throw ArgumentError (String.Format ("Invalid surrogate pair was found. Low: &#x{0:X}; High: &#x{1:X};", (int) ch, (int) high));
 			else if (check_character_validity && XmlChar.IsInvalid (ch))
 				throw ArgumentError (String.Format ("Invalid character &#x{0:X};", (int) ch));
 

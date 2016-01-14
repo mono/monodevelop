@@ -264,7 +264,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						wc++;
 				}
 
-				DispatchService.GuiDispatch (delegate {
+				Runtime.RunInMainThread (delegate {
 					buildResults.Hidden = (ec == 0 && wc == 0);
 					buildResults.ResultCount = ec > 0 ? ec : wc;
 
@@ -446,7 +446,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public void ShowMessage (IconId image, string message, bool isMarkup, NSColor color)
 		{
-			DispatchService.AssertGuiThread ();
+			Runtime.AssertMainThread ();
 
 			bool changed = LoadText (message, isMarkup, color);
 			LoadPixbuf (image);

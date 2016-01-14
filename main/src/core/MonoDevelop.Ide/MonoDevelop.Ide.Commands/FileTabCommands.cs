@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Commands
 	
 	class CloseAllHandler : CommandHandler
 	{
-		protected virtual IViewContent GetDocumentException ()
+		protected virtual ViewContent GetDocumentException ()
 		{
 			return null;
 		}
@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.Commands
 	
 	class CloseAllButThisHandler : CloseAllHandler
 	{
-		protected override IViewContent GetDocumentException ()
+		protected override ViewContent GetDocumentException ()
 		{
 			var active = IdeApp.Workbench.ActiveDocument;
 			return active == null ? null : active.Window.ViewContent;

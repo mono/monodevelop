@@ -56,7 +56,6 @@ using MonoDevelop.Projects.MSBuild;
 using System.Collections.Immutable;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.Ide
@@ -277,7 +276,7 @@ namespace MonoDevelop.Ide
 				}
 				if (fileName == null)
 					return;
-				var doc = IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName, project));
+				var doc = await IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName, project));
 
 				if (doc != null) {
 					doc.RunWhenLoaded (delegate {
@@ -289,8 +288,18 @@ namespace MonoDevelop.Ide
 
 				return;
 			}
-			IdeApp.Workbench.OpenDocument (new FileOpenInformation (location.SourceTree.FilePath, project) {
-				Offset = location.SourceSpan.Start
+			var filePath = location.SourceTree.FilePath;
+			var offset = location.SourceSpan.Start;
+			if (project?.ParentSolution != null) {
+				string projectedName;
+				int projectedOffset;
+				if (TypeSystemService.GetWorkspace (project.ParentSolution).TryGetOriginalFileFromProjection (filePath, offset, out projectedName, out projectedOffset)) {
+					filePath = projectedName;
+					offset = projectedOffset;
+				}
+			}
+			await IdeApp.Workbench.OpenDocument (new FileOpenInformation (filePath, project) {
+				Offset = offset
 			});
 		}
 		
@@ -330,7 +339,7 @@ namespace MonoDevelop.Ide
 			}
 			if (fileName == null || !File.Exists (fileName))
 				return;
-			var doc = IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName));
+			var doc = await IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName));
 			if (doc != null) {
 				doc.RunWhenLoaded (delegate {
 					var handler = doc.PrimaryView.GetContent<MonoDevelop.Ide.Gui.Content.IOpenNamedElementHandler> ();
@@ -1397,8 +1406,10 @@ namespace MonoDevelop.Ide
 			foreach (var doc in new List<MonoDevelop.Ide.Gui.Document> (IdeApp.Workbench.Documents)) {
 				if (doc.IsDirty && doc.Project != null) {
 					doc.Save ();
-					if (doc.IsDirty)
+					if (doc.IsDirty) {
+						doc.Select ();
 						result.AddError (string.Format (couldNotSaveError, Path.GetFileName (doc.FileName)), doc.FileName);
+					}
 				}
 			}
 		}
@@ -2264,12 +2275,15 @@ namespace MonoDevelop.Ide
 
 		public ITextDocument GetTextEditorData (FilePath filePath, out bool isOpen)
 		{
-			foreach (var doc in IdeApp.Workbench.Documents) {
-				if (doc.FileName == filePath) {
-					isOpen = true;
-					return doc.Editor;
+			if (IdeApp.Workbench != null) {
+				foreach (var doc in IdeApp.Workbench.Documents) {
+					if (doc.FileName == filePath) {
+						isOpen = true;
+						return doc.Editor;
+					}
 				}
 			}
+
 			bool hadBom;
 			Encoding encoding;
 			var text = TextFileUtility.ReadAllText (filePath, out hadBom, out encoding);

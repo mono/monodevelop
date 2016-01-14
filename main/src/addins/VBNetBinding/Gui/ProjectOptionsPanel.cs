@@ -26,7 +26,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
  */
 
-
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.VBNetBinding
@@ -39,7 +39,7 @@ namespace MonoDevelop.VBNetBinding
 		{
 		}
 		
-		public override Gtk.Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return (widget = new ProjectOptionsPanelWidget (ConfiguredProject));
 		}

@@ -144,7 +144,7 @@ namespace MonoDevelop.SourceEditor
 
 		public override TextLineMarkerFlags Flags {
 			get {
-				if (LineSegment != null && LineSegment.Markers.Any (m => m is DebugTextMarker)) 
+				if (LineSegment != null && editor.Document.GetTextSegmentMarkersAt (LineSegment).Any (m => m is DebugTextMarker)) 
 					return TextLineMarkerFlags.None;
 
 				return TextLineMarkerFlags.DrawsSelection;
@@ -571,7 +571,7 @@ namespace MonoDevelop.SourceEditor
 			if (!IsVisible)
 				return false;
 			bool markerShouldDrawnAsHidden = cache.CurrentSelectedTextMarker != null && cache.CurrentSelectedTextMarker != this;
-			if (metrics.LineSegment.Markers.Any (m => m is DebugTextMarker))
+			if (editor.Document.GetTextSegmentMarkersAt (metrics.LineSegment).Any (m => m is DebugTextMarker))
 				return false;
 
 			EnsureLayoutCreated (editor);

@@ -98,6 +98,11 @@
       <Name>Mono.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\external\xwt\Xwt.Gtk\Xwt.Gtk.csproj">
+      <Project>{C3887A93-B2BD-4097-8E2F-3A063EFF32FD}</Project>
+      <Name>Xwt.Gtk</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -152,7 +157,6 @@
     <Compile Include="MonoDevelop.SourceEditor\CompileErrorTooltipProvider.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugValueWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugValueTooltipProvider.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\IdeViMode.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs" />

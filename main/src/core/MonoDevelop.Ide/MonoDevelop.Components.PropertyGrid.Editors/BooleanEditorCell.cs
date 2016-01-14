@@ -58,7 +58,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 				s = bounds.Height;
 			if (s > bounds.Width)
 				s = bounds.Width;
-			Gtk.Style.PaintCheck (Container.Style, window, state, sh, bounds, Container, "checkbutton", bounds.X + indicatorSpacing - 1, bounds.Y + (bounds.Height - s)/2, s, s);
+			Gtk.Style.PaintCheck (Container.GetNativeWidget<Gtk.Widget> ().Style, window, state, sh, bounds, Container, "checkbutton", bounds.X + indicatorSpacing - 1, bounds.Y + (bounds.Height - s)/2, s, s);
 		}
 		
 		protected override IPropertyEditor CreateEditor (Gdk.Rectangle cell_area, Gtk.StateType state)

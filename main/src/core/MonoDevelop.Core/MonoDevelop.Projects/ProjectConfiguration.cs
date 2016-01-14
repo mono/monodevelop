@@ -33,26 +33,23 @@ using System.Collections.Generic;
 using MonoDevelop.Core.StringParsing;
 using System.Xml.Linq;
 using MonoDevelop.Projects.MSBuild;
+using System.Linq;
 
 namespace MonoDevelop.Projects
 {
 	public class ProjectConfiguration : SolutionItemConfiguration
 	{
 		bool debugTypeWasNone;
-		IMSBuildEvaluatedPropertyCollection evaluatedProperties;
 		IPropertySet properties;
+		MSBuildPropertyGroup mainPropertyGroup;
 
-		public ProjectConfiguration ()
+		public ProjectConfiguration (string id) : base(id)
 		{
 		}
 
-		public ProjectConfiguration (string name) : base(name)
+		internal protected virtual void Read (IPropertySet pset)
 		{
-		}
-
-		internal protected virtual void Read (IMSBuildEvaluatedPropertyCollection pset, string toolsVersion)
-		{
-			evaluatedProperties = pset;
+			properties = pset;
 
 			intermediateOutputDirectory = pset.GetPathValue ("IntermediateOutputPath");
 			outputDirectory = pset.GetPathValue ("OutputPath", defaultValue:"." + Path.DirectorySeparatorChar);
@@ -71,20 +68,31 @@ namespace MonoDevelop.Projects
 			debugTypeWasNone = debugType == "none";
 
 			var svars = pset.GetValue ("EnvironmentVariables");
-			if (svars != null) {
-				var vars = XElement.Parse (svars);
-				if (vars != null) {
-					foreach (var val in vars.Elements (XName.Get ("Variable", MSBuildProject.Schema))) {
-						var name = (string)val.Attribute ("name");
-						if (name != null)
-							environmentVariables [name] = (string)val.Attribute ("value");
-					}
-				}
-			}
+			ParseEnvironmentVariables (svars, environmentVariables);
+
+			// Kep a clone of the loaded env vars, so we can check if they have changed when saving
+			loadedEnvironmentVariables = new Dictionary<string, string> (environmentVariables);
+			
 			pset.ReadObjectProperties (this, GetType (), true);
 		}
 
-		internal protected virtual void Write (IPropertySet pset, string toolsVersion)
+		void ParseEnvironmentVariables (string xml, Dictionary<string, string> dict)
+		{
+			if (string.IsNullOrEmpty (xml)) {
+				dict.Clear ();
+				return;
+			}
+			var vars = XElement.Parse (xml);
+			if (vars != null) {
+				foreach (var val in vars.Elements (XName.Get ("Variable", MSBuildProject.Schema))) {
+					var name = (string)val.Attribute ("name");
+					if (name != null)
+						dict [name] = (string)val.Attribute ("value");
+				}
+			}
+		}
+
+		internal protected virtual void Write (IPropertySet pset)
 		{
 			pset.SetPropertyOrder ("DebugSymbols", "DebugType", "Optimize", "OutputPath", "DefineConstants", "ErrorReport");
 
@@ -109,30 +117,25 @@ namespace MonoDevelop.Projects
 
 			if (debugType != "none" || !debugTypeReadAsEmpty)
 				pset.SetValue ("DebugType", debugType, "");
-			
-			if (environmentVariables.Count > 0) {
-				XElement e = new XElement (XName.Get ("EnvironmentVariables", MSBuildProject.Schema));
-				foreach (var v in environmentVariables) {
-					var val = new XElement (XName.Get ("Variable", MSBuildProject.Schema));
-					val.SetAttributeValue ("name", v.Key);
-					val.SetAttributeValue ("value", v.Value);
-					e.Add (val);
-				}
-				pset.SetValue ("EnvironmentVariables", e.ToString (SaveOptions.DisableFormatting));
-			} else
-				pset.RemoveProperty ("EnvironmentVariables");
+
+			// Save the env vars only if the dictionary has changed.
+
+			if (loadedEnvironmentVariables == null || loadedEnvironmentVariables.Count != environmentVariables.Count || loadedEnvironmentVariables.Any (e => !environmentVariables.ContainsKey (e.Key) || environmentVariables[e.Key] != e.Value)) {
+				if (environmentVariables.Count > 0) {
+					XElement e = new XElement (XName.Get ("EnvironmentVariables", MSBuildProject.Schema));
+					foreach (var v in environmentVariables) {
+						var val = new XElement (XName.Get ("Variable", MSBuildProject.Schema));
+						val.SetAttributeValue ("name", v.Key);
+						val.SetAttributeValue ("value", v.Value);
+						e.Add (val);
+					}
+					pset.SetValue ("EnvironmentVariables", e.ToString (SaveOptions.DisableFormatting));
+				} else
+					pset.RemoveProperty ("EnvironmentVariables");
+				loadedEnvironmentVariables = new Dictionary<string, string> (environmentVariables);
+			}
 
 			pset.WriteObjectProperties (this, GetType (), true);
-		}
-
-		/// <summary>
-		/// Properties obtained while evaluating this configuration
-		/// </summary>
-		/// <remarks>This property set contains all properties resulting from evaluating
-		/// the project with the Configuration and Platform properties set for this
-		/// configuration.</remarks>
-		public IReadOnlyPropertySet EvaluatedProperties {
-			get { return evaluatedProperties ?? MSBuildEvaluatedPropertyCollection.Empty; }
 		}
 
 		/// <summary>
@@ -140,18 +143,31 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		public IPropertySet Properties {
 			get {
-				if (properties == null) {
-					if (ParentItem == null)
-						properties = new MSBuildPropertyGroup ();
-					else
-						properties = ParentItem.MSBuildProject.CreatePropertyGroup ();
-				}
-				return properties; 
+				return properties ?? MainPropertyGroup;
 			}
 			internal set {
 				properties = value;
 			}
 		}
+
+		internal MSBuildPropertyGroup MainPropertyGroup {
+			get {
+				if (mainPropertyGroup == null) {
+					if (ParentItem == null)
+						mainPropertyGroup = new MSBuildPropertyGroup ();
+					else
+						mainPropertyGroup = ParentItem.MSBuildProject.CreatePropertyGroup ();
+					mainPropertyGroup.IgnoreDefaultValues = true;
+				}
+				return mainPropertyGroup;
+			}
+			set {
+				mainPropertyGroup = value;
+				mainPropertyGroup.IgnoreDefaultValues = true;
+			}
+		}
+
+		internal MSBuildProjectInstance ProjectInstance { get; set; }
 
 		FilePath intermediateOutputDirectory = FilePath.Empty;
 
@@ -159,9 +175,7 @@ namespace MonoDevelop.Projects
 			get {
 				if (!intermediateOutputDirectory.IsNullOrEmpty)
 					return intermediateOutputDirectory;
-				if (!string.IsNullOrEmpty (Platform))
-					return ParentItem.BaseIntermediateOutputPath.Combine (Platform, Name);
-				return ParentItem.BaseIntermediateOutputPath.Combine (Name);
+				return DefaultIntermediateOutputDirectory;
 			}
 			set {
 				if (value.IsNullOrEmpty)
@@ -169,6 +183,16 @@ namespace MonoDevelop.Projects
 				if (intermediateOutputDirectory == value)
 					return;
 				intermediateOutputDirectory = value;
+			}
+		}
+
+		string DefaultIntermediateOutputDirectory {
+			get {
+				if (ParentItem == null)
+					return string.Empty;
+				if (!string.IsNullOrEmpty (Platform))
+					return ParentItem.BaseIntermediateOutputPath.Combine (Platform, Name);
+				return ParentItem.BaseIntermediateOutputPath.Combine (Name);
 			}
 		}
 
@@ -209,7 +233,7 @@ namespace MonoDevelop.Projects
 			set { debugType = value; }
 		}
 
-
+		Dictionary<string, string> loadedEnvironmentVariables;
 		Dictionary<string, string> environmentVariables = new Dictionary<string, string> ();
 		public Dictionary<string, string> EnvironmentVariables {
 			get { return environmentVariables; }
@@ -233,14 +257,28 @@ namespace MonoDevelop.Projects
 			set { runWithWarnings = value; }
 		}
 
-		public override void CopyFrom (ItemConfiguration conf)
+		protected override void OnCopyFrom (ItemConfiguration configuration, bool isRename)
 		{
-			base.CopyFrom (conf);
+			base.OnCopyFrom (configuration, isRename);
 
-			ProjectConfiguration projectConf = conf as ProjectConfiguration;
+			ProjectConfiguration projectConf = configuration as ProjectConfiguration;
 
-			intermediateOutputDirectory = projectConf.intermediateOutputDirectory;
+			if (isRename && projectConf.IntermediateOutputDirectory == projectConf.DefaultIntermediateOutputDirectory)
+				intermediateOutputDirectory = null;
+			else
+				intermediateOutputDirectory = projectConf.intermediateOutputDirectory;
+
 			outputDirectory = projectConf.outputDirectory;
+
+			if (isRename && outputDirectory != null) {
+				var ps = outputDirectory.ToString ().Split (Path.DirectorySeparatorChar);
+				int i = Array.IndexOf (ps, configuration.Name);
+				if (i != -1) {
+					ps [i] = Name;
+					outputDirectory = string.Join (Path.DirectorySeparatorChar.ToString (), ps);
+				}
+			}
+
 			debugMode = projectConf.debugMode;
 			pauseConsoleOutput = projectConf.pauseConsoleOutput;
 			externalConsole = projectConf.externalConsole;
@@ -256,7 +294,7 @@ namespace MonoDevelop.Projects
 
 			runWithWarnings = projectConf.runWithWarnings;
 
-			((MSBuildPropertyGroup)Properties).CopyFrom ((MSBuildPropertyGroup)projectConf.Properties);
+			MainPropertyGroup.CopyFrom (projectConf.MainPropertyGroup);
 		}
 
 		public new Project ParentItem {

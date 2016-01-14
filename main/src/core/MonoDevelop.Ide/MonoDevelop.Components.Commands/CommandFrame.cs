@@ -26,48 +26,15 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using Mono.Addins;
-using MonoDevelop.Components.DockToolbars;
+using Gtk;
 
 namespace MonoDevelop.Components.Commands
 {
-	public class CommandFrame: DockToolbarFrame
+	class CommandFrame: EventBox
 	{
-		CommandManager manager;
-		
 		public CommandFrame (CommandManager manager)
 		{
-			this.manager = manager;
 			manager.RegisterGlobalHandler (this);
-		}
-		
-		[CommandHandler (CommandSystemCommands.ToolbarList)]
-		protected void OnViewToolbar (object ob)
-		{
-			IDockToolbar bar = (IDockToolbar) ob;
-			bar.Visible = !bar.Visible;
-		}
-		
-		[CommandUpdateHandler (CommandSystemCommands.ToolbarList)]
-		protected void OnUpdateViewToolbar (CommandArrayInfo info)
-		{
-			foreach (IDockToolbar bar in Toolbars) {
-				CommandInfo cmd = new CommandInfo (bar.Title);
-				cmd.Checked = bar.Visible;
-				cmd.Description = AddinManager.CurrentLocalizer.GetString ("Show toolbar '{0}'", bar.Title);
-				info.Add (cmd, bar);
-			}
-		}
-		
-		protected override void OnPanelClick (Gdk.EventButton e, Placement placement)
-		{
-			if (e.TriggersContextMenu ()) {
-				CommandEntrySet opset = new CommandEntrySet ();
-				opset.AddItem (CommandSystemCommands.ToolbarList);
-				Gtk.Menu menu = manager.CreateMenu (opset);
-				menu.Popup (null, null, null, 0, e.Time);
-			}
-			base.OnPanelClick (e, placement);
 		}
 	}
 }

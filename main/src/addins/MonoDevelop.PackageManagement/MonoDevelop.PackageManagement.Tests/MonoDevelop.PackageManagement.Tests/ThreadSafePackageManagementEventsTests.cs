@@ -26,7 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using NuGet;
 using NUnit.Framework;
@@ -49,10 +49,10 @@ namespace MonoDevelop.PackageManagement.Tests
 			threadSafeEvents = new ThreadSafePackageManagementEvents (unsafeEvents, RunGuiSyncDispatch);
 		}
 
-		void RunGuiSyncDispatch (MessageHandler messageHandler)
+		void RunGuiSyncDispatch (Action action)
 		{
 			isGuiSyncDispatchCalled = true;
-			messageHandler.Invoke ();
+			action.Invoke ();
 		}
 
 		void OnEventHandlerFired (object sender, EventArgs e)

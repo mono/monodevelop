@@ -92,11 +92,11 @@ namespace MonoDevelop.Platform
 			var topMenu = new GtkWPFWidget (titleBar) {
 				HeightRequest = System.Windows.Forms.SystemInformation.CaptionHeight,
 			};
-			commandManager.IncompleteKeyPressed += (sender, e) => {
-				if (e.Key == Gdk.Key.Alt_L) {
-					Keyboard.Focus(titleBar.DockTitle.Children[0]);
-				}
-			};
+			//commandManager.IncompleteKeyPressed += (sender, e) => {
+			//	if (e.Key == Gdk.Key.Alt_L) {
+			//		Keyboard.Focus(titleBar.DockTitle.Children[0]);
+			//	}
+			//};
 			parent.PackStart (topMenu, false, true, 0);
 			SetupMenu ();
 
@@ -116,7 +116,7 @@ namespace MonoDevelop.Platform
 			foreach (CommandEntrySet ce in ces)
 			{
 				var item = new TitleMenuItem(commandManager, ce);
-				item.SubmenuClosed += (o, e) =>
+				item.SubmenuClosing += (o, e) =>
 				{
 					bool shouldFocusIde = !mainMenu.Items.OfType<MenuItem>().Any(mi => mi.IsSubmenuOpen);
 					if (shouldFocusIde)
@@ -289,8 +289,9 @@ namespace MonoDevelop.Platform
 		[DllImport (Win32.USER32)]
 		extern static int GetMonitorInfoA (IntPtr hmonitor, ref MonitorInfo info);
 
-		public override Gdk.Rectangle GetUsableMonitorGeometry (Gdk.Screen screen, int monitor_id)
+		public override Xwt.Rectangle GetUsableMonitorGeometry (int screenNumber, int monitor_id)
 		{
+			var screen = Gdk.Display.Default.GetScreen (screenNumber);
 			Gdk.Rectangle geometry = screen.GetMonitorGeometry (monitor_id);
 			List<MonitorInfo> screens = new List<MonitorInfo> ();
 
@@ -321,7 +322,7 @@ namespace MonoDevelop.Platform
 			int y = geometry.Y + (visible.Top - frame.Top);
 			int height = visible.Height;
 
-			return new Gdk.Rectangle (x, y, width, height);
+			return new Xwt.Rectangle (x, y, width, height);
 		}
 
 		static ProcessStartInfo CreateConsoleStartInfo (

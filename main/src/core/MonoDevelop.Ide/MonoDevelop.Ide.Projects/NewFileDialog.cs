@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Projects
 	/// <summary>
 	///  This class is for creating a new "empty" file
 	/// </summary>
-	internal partial class NewFileDialog : Dialog
+	internal partial class NewFileDialog : Gtk.Dialog
 	{
 		List<TemplateItem> alltemplates = new List<TemplateItem> ();
 		List<Category> categories = new List<Category> ();
@@ -287,22 +287,23 @@ namespace MonoDevelop.Ide.Projects
 				project = parentProject;
 
 			if (project != null) {
+				var catName = GetCategoryForProject (titem.Template.Categories, project);
 				if ((templateLanguage != "") && (activeLangs.Count > 2)) {
 					// The template requires a language, but the project does not have a single fixed
 					// language type (plus empty match), so create a language category
 					cat = GetCategory (templateLanguage);
-					cat = GetCategory (cat.Categories, titem.Template.Category);
+					cat = GetCategory (cat.Categories, catName);
 				} else {
-					cat = GetCategory (titem.Template.Category);
+					cat = GetCategory (catName);
 				}
 			} else {
 				if (templateLanguage != "") {
 					// The template requires a language, but there is no current language set, so
 					// create a category for it
 					cat = GetCategory (templateLanguage);
-					cat = GetCategory (cat.Categories, titem.Template.Category);
+					cat = GetCategory (cat.Categories, titem.Template.Categories.First ().Value);
 				} else {
-					cat = GetCategory (titem.Template.Category);
+					cat = GetCategory (titem.Template.Categories.First ().Value);
 				}
 			}
 
@@ -320,6 +321,17 @@ namespace MonoDevelop.Ide.Projects
 			}
 
 			alltemplates.Add (titem);
+		}
+
+		static string GetCategoryForProject (Dictionary<string, string> categories, Project project)
+		{
+			var projectTypes = project.GetTypeTags ();
+			foreach (var type in projectTypes) {
+				if (categories.ContainsKey (type))
+					return categories [type];
+			}
+
+			return categories.ContainsKey (FileTemplate.DefaultCategoryKey) ? categories [FileTemplate.DefaultCategoryKey] : "Misc";
 		}
 
 		//tree view event handler for double-click

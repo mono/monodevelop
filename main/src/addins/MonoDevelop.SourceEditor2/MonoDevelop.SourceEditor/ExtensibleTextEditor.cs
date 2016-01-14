@@ -57,7 +57,6 @@ namespace MonoDevelop.SourceEditor
 		internal object MemoryProbe = Counters.EditorsInMemory.CreateMemoryProbe ();
 		
 		SourceEditorView view;
-		ExtensionContext extensionContext;
 		Adjustment cachedHAdjustment, cachedVAdjustment;
 		
 		TextEditorExtension editorExtension;
@@ -193,22 +192,12 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateEditMode ()
 		{
-			if (MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.UseViModes) {
-				if (TestNewViMode) {
-					if (!(CurrentMode is NewIdeViMode))
-					CurrentMode = new NewIdeViMode (this);
-				} else {
-					if (!(CurrentMode is IdeViMode))
-						CurrentMode = new IdeViMode (this);
-				}
-			} else {
-		//		if (!(CurrentMode is SimpleEditMode)){
-					SimpleEditMode simpleMode = new SimpleEditMode ();
-					simpleMode.KeyBindings [Mono.TextEditor.EditMode.GetKeyCode (Gdk.Key.Tab)] = new TabAction (this).Action;
-					simpleMode.KeyBindings [Mono.TextEditor.EditMode.GetKeyCode (Gdk.Key.BackSpace)] = EditActions.AdvancedBackspace;
-					CurrentMode = simpleMode;
-		//		}
-			}
+	//		if (!(CurrentMode is SimpleEditMode)){
+				SimpleEditMode simpleMode = new SimpleEditMode ();
+				simpleMode.KeyBindings [Mono.TextEditor.EditMode.GetKeyCode (Gdk.Key.Tab)] = new TabAction (this).Action;
+				simpleMode.KeyBindings [Mono.TextEditor.EditMode.GetKeyCode (Gdk.Key.BackSpace)] = EditActions.AdvancedBackspace;
+				CurrentMode = simpleMode;
+	//		}
 		}
 
 		void UnregisterAdjustments ()
@@ -227,7 +216,6 @@ namespace MonoDevelop.SourceEditor
 		{
 			IsDestroyed = true;
 			UnregisterAdjustments ();
-			extensionContext = null;
 			view = null;
 			var disposableSyntaxMode = Document.SyntaxMode as IDisposable;
 			if (disposableSyntaxMode != null)  {
@@ -525,11 +513,8 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		int           oldOffset = -1;
-
 		public Microsoft.CodeAnalysis.ISymbol GetLanguageItem (int offset, out MonoDevelop.Ide.Editor.DocumentRegion region)
 		{
-			oldOffset = offset;
 			region = MonoDevelop.Ide.Editor.DocumentRegion.Empty;
 
 			if (textEditorResolverProvider != null) {
@@ -557,8 +542,6 @@ namespace MonoDevelop.SourceEditor
 		
 		public Microsoft.CodeAnalysis.ISymbol GetLanguageItem (int offset, string expression)
 		{
-			oldOffset = offset;
-			
 			if (textEditorResolverProvider != null) {
 				return textEditorResolverProvider.GetLanguageItem (view.WorkbenchWindow.Document, offset, expression);
 			}

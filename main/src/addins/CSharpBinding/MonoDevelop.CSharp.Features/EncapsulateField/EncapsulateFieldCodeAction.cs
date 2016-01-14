@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp.CodeRefactorings.EncapsulateField
 {
-	public class EncapsulateFieldCodeAction : CodeAction
+	class EncapsulateFieldCodeAction : CodeAction
 	{
 		private EncapsulateFieldResult _result;
 		private string _title;

@@ -1024,9 +1024,23 @@ namespace Mono.TextEditor
 					layoutDict [line] = descriptor;
 				}
 				//			textEditor.GetTextEditorData ().HeightTree.SetLineHeight (line.LineNumber, System.Math.Max (LineHeight, wrapper.Height));
+				OnLineShown (line);
 				return wrapper;
 			} finally {
 				sw.Stop ();
+			}
+		}
+
+		void OnLineShown (DocumentLine line)
+		{
+			LineShown?.Invoke (this, new LineEventArgs (line));
+		}
+
+		public event EventHandler<LineEventArgs> LineShown;
+
+		public IEnumerable<DocumentLine> CachedLine {
+			get {
+				return layoutDict.Keys;
 			}
 		}
 
@@ -1896,6 +1910,7 @@ namespace Mono.TextEditor
 
 			string link = GetLink != null ? GetLink (args) : null;
 			if (!String.IsNullOrEmpty (link)) {
+				textEditor.ClearSelection ();
 				textEditor.FireLinkEvent (link, args.Button, args.ModifierState);
 				return;
 			}
@@ -2226,6 +2241,7 @@ namespace Mono.TextEditor
 			var line = Document.GetLine (loc.Line);
 			var oldHoveredLine = HoveredLine;
 			HoveredLine = line;
+			HoveredLocation = loc;
 			OnHoveredLineChanged (new LineEventArgs (oldHoveredLine));
 
 			var hoverResult = new TextLineMarkerHoverResult ();
@@ -2536,6 +2552,8 @@ namespace Mono.TextEditor
 				return 4;
 			}
 		}
+
+		public DocumentLocation HoveredLocation { get; private set; }
 
 		[Flags]
 		public enum CairoCorners

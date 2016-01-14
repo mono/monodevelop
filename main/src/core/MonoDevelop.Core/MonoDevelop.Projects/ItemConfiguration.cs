@@ -48,10 +48,6 @@ namespace MonoDevelop.Projects
 
 		Hashtable properties;
 		
-		public ItemConfiguration ()
-		{
-		}
-		
 		public ItemConfiguration (string id)
 		{
 			ParseConfigurationId (id, out name, out platform);
@@ -84,7 +80,6 @@ namespace MonoDevelop.Projects
 		
 		public string Name {
 			get { return name; }
-			set { name = value; }
 		}
 		
 		public string Id {
@@ -94,35 +89,34 @@ namespace MonoDevelop.Projects
 				else
 					return name + "|" + platform;
 			}
-			set {
-				ParseConfigurationId (value, out name, out platform);
-			}
 		}
 		
 		public string Platform {
 			get { return platform ?? string.Empty; }
-			set { platform = value; }
 		}
 
 		public CustomCommandCollection CustomCommands {
 			get { return customCommands; }
 		}
 
-		public object Clone()
+		/// <summary>
+		/// Copies the data of a configuration into this configuration
+		/// </summary>
+		/// <param name="configuration">Configuration from which to get the data.</param>
+		/// <param name="isRename">If true, it means that the copy is being made as a result of a rename or clone operation. In this case,
+		/// the overriden method may change the value of some properties that depend on the configuration name. For example, if the
+		/// copied configuration is Debug and the OutputPath property has "bin/Debug" as value, then that value may be changed
+		/// to match the new configuration name instead of keeping "bin/Debug"</param>
+		public void CopyFrom (ItemConfiguration configuration, bool isRename = false)
 		{
-			ItemConfiguration conf = (ItemConfiguration) Activator.CreateInstance (GetType ());
-			conf.CopyFrom (this);
-			conf.name = name;
-			conf.platform = platform;
-			return conf;
+			OnCopyFrom (configuration, isRename);
 		}
-		
-		public virtual void CopyFrom (ItemConfiguration configuration)
+
+		protected virtual void OnCopyFrom (ItemConfiguration configuration, bool isRename)
 		{
-			ItemConfiguration other = (ItemConfiguration) configuration;
-			if (other.properties != null) {
+			if (configuration.properties != null) {
 				properties = new Hashtable ();
-				foreach (DictionaryEntry e in other.properties) {
+				foreach (DictionaryEntry e in configuration.properties) {
 					if (e.Value is ICloneable)
 						properties [e.Key] = ((ICloneable)e.Value).Clone ();
 					else
@@ -131,7 +125,7 @@ namespace MonoDevelop.Projects
 			}
 			else
 				properties = null;
-			customCommands = other.customCommands.Clone ();
+			customCommands = configuration.customCommands.Clone ();
 		}
 		
 		public override string ToString()

@@ -90,7 +90,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 
 			CompletionData ICompletionDataFactory.CreateFormatItemCompletionData (ICompletionDataKeyHandler keyHandler, string format, string description, object example)
 			{
-				return new CompletionData (format + " - " + description +":" + example);
+				return new CompletionData (format);
 			}
 
 			CompletionData ICompletionDataFactory.CreateXmlDocCompletionData(ICompletionDataKeyHandler keyHandler, string tag, string description, string tagInsertionText)
@@ -278,6 +278,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 						null,
 						new CSharpCompilationOptions (
 							OutputKind.DynamicallyLinkedLibrary,
+							false,
 							"TestProject.dll",
 							"",
 							"Script",

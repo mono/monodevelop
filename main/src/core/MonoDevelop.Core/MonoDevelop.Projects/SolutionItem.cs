@@ -1107,19 +1107,36 @@ namespace MonoDevelop.Projects
 			return config;
 		}
 		
-		ItemConfiguration IConfigurationTarget.CreateConfiguration (string name, ConfigurationKind kind)
+		ItemConfiguration IConfigurationTarget.CreateConfiguration (string id, ConfigurationKind kind)
 		{
-			return CreateConfiguration (name, kind);
+			return CreateConfiguration (id, kind);
 		}
 
-		public SolutionItemConfiguration CreateConfiguration (string name, ConfigurationKind kind = ConfigurationKind.Blank)
+		public SolutionItemConfiguration CreateConfiguration (string name, string platform, ConfigurationKind kind = ConfigurationKind.Blank)
 		{
-			return ItemExtension.OnCreateConfiguration (name, kind);
+			return ItemExtension.OnCreateConfiguration (name + "|" + platform, kind);
+		}
+
+		public SolutionItemConfiguration CreateConfiguration (string id, ConfigurationKind kind = ConfigurationKind.Blank)
+		{
+			return ItemExtension.OnCreateConfiguration (id, kind);
 		}
 		
-		protected virtual SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind = ConfigurationKind.Blank)
+		public SolutionItemConfiguration CloneConfiguration (SolutionItemConfiguration configuration, string newName, string newPlatform)
 		{
-			return new SolutionItemConfiguration (name);
+			return CloneConfiguration (configuration, newName + "|" + newPlatform);
+		}
+
+		public SolutionItemConfiguration CloneConfiguration (SolutionItemConfiguration configuration, string newId)
+		{
+			var clone = CreateConfiguration (newId);
+			clone.CopyFrom (configuration, true);
+			return clone;
+		}
+
+		protected virtual SolutionItemConfiguration OnCreateConfiguration (string id, ConfigurationKind kind = ConfigurationKind.Blank)
+		{
+			return new SolutionItemConfiguration (id);
 		}
 
 		void OnConfigurationAddedToCollection (object ob, ConfigurationEventArgs args)
@@ -1346,9 +1363,9 @@ namespace MonoDevelop.Projects
 				return Item.OnGetItemFiles (includeReferencedFiles);
 			}
 
-			internal protected override SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind)
+			internal protected override SolutionItemConfiguration OnCreateConfiguration (string id, ConfigurationKind kind)
 			{
-				return Item.OnCreateConfiguration (name, kind);
+				return Item.OnCreateConfiguration (id, kind);
 			}
 
 			internal protected override DateTime OnGetLastBuildTime (ConfigurationSelector configuration)

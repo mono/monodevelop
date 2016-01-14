@@ -71,12 +71,12 @@ namespace MonoDevelop.Ide.Editor
 			return editor.TextMarkerFactory.CreateUsageMarker (editor, usage);
 		}
 
-		public static ITextSegmentMarker CreateLinkMarker (TextEditor editor, int offset, int length, Action<LinkRequest> activateLink)
+		public static ILinkTextMarker CreateLinkMarker (TextEditor editor, int offset, int length, Action<LinkRequest> activateLink)
 		{
 			return editor.TextMarkerFactory.CreateLinkMarker (editor, offset, length, activateLink);
 		}
 
-		public static ITextSegmentMarker CreateLinkMarker (TextEditor editor, ISegment segment, Action<LinkRequest> activateLink)
+		public static ILinkTextMarker CreateLinkMarker (TextEditor editor, ISegment segment, Action<LinkRequest> activateLink)
 		{
 			if (segment == null)
 				throw new ArgumentNullException ("segment");
@@ -109,10 +109,22 @@ namespace MonoDevelop.Ide.Editor
 		{
 			int offset    = editor.LocationToOffset (info.Region.BeginLine, info.Region.BeginColumn);
 			int endOffset = editor.LocationToOffset (info.Region.EndLine, info.Region.EndColumn);
-			if (endOffset < offset) {
+			if (endOffset <= offset) {
 				endOffset = offset + 1;
-				while (endOffset < editor.Length && IsIdentifierPart (editor.GetCharAt (endOffset)))
+				while (endOffset < editor.Length && IsIdentifierPart (editor.GetCharAt (endOffset))) {
 					endOffset++;
+				}
+				if (endOffset == offset + 1) {
+					if (endOffset - 1 < editor.Length) {
+						var c = editor.GetCharAt (endOffset - 1);
+						while ((c == '\n' || c == '\r') && endOffset < editor.Length) {
+							c = editor.GetCharAt (endOffset);
+							endOffset++;
+						}
+					} else {
+						endOffset = editor.Length;
+					}
+				}
 			}
 			return editor.TextMarkerFactory.CreateErrorMarker (editor, info, offset, endOffset - offset);
 		}

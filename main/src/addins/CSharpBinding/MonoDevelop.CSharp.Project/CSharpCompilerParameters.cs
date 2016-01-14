@@ -92,19 +92,19 @@ namespace MonoDevelop.CSharp.Project
 		[ItemProperty("WarningsNotAsErrors", DefaultValue="")]
 		string warningsNotAsErrors = "";
 
-		protected override void Write (IPropertySet pset, string toolsVersion)
+		protected override void Write (IPropertySet pset)
 		{
 			pset.SetPropertyOrder ("DebugSymbols", "DebugType", "Optimize", "OutputPath", "DefineConstants", "ErrorReport", "WarningLevel", "TreatWarningsAsErrors", "DocumentationFile");
 
-			base.Write (pset, toolsVersion);
+			base.Write (pset);
 
 			if (optimize.HasValue)
 				pset.SetValue ("Optimize", optimize.Value);
 		}
 
-		protected override void Read (IMSBuildEvaluatedPropertyCollection pset, string toolsVersion)
+		protected override void Read (IPropertySet pset)
 		{
-			base.Read (pset, toolsVersion);
+			base.Read (pset);
 
 			var prop = pset.GetProperty ("GenerateDocumentation");
 			if (prop != null && documentationFile != null) {
@@ -123,6 +123,7 @@ namespace MonoDevelop.CSharp.Project
 
 			return new Microsoft.CodeAnalysis.CSharp.CSharpCompilationOptions (
 				OutputKind.ConsoleApplication,
+				false,
 				null,
 				project.MainClass,
 				"Script",

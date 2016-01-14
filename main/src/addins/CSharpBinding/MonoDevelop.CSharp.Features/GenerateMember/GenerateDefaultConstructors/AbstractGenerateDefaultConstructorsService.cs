@@ -61,7 +61,6 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateDefaultConstruct
 			private readonly IList<IMethodSymbol> _constructors;
 			private readonly Document _document;
 			private readonly State _state;
-			private readonly TService _service;
 			private readonly string _title;
 
 			protected AbstractCodeAction(
@@ -71,7 +70,6 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateDefaultConstruct
 				IList<IMethodSymbol> constructors,
 				string title)
 			{
-				_service = service;
 				_document = document;
 				_state = state;
 				_constructors = constructors;
@@ -217,8 +215,6 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateDefaultConstruct
 				var baseTypeConstructors =
 					baseType.InstanceConstructors
 						.Where(c => c.IsAccessibleWithin(this.ClassType));
-
-				var destinationProvider = document.Project.Solution.Workspace.Services.GetLanguageServices(this.ClassType.Language);
 
 				var missingConstructors =
 					baseTypeConstructors.Where(c1 => !classConstructors.Any(

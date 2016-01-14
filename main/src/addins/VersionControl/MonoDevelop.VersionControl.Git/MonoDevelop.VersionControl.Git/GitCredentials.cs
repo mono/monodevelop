@@ -128,14 +128,12 @@ namespace MonoDevelop.VersionControl.Git
 						state.KeyUsed++;
 					else {
 						SelectFileDialog dlg = null;
-						bool success = false;
-
-						DispatchService.GuiSyncDispatch (() => {
+						bool success = Runtime.RunInMainThread (() => {
 							dlg = new SelectFileDialog (GettextCatalog.GetString ("Select a private SSH key to use."));
 							dlg.ShowHidden = true;
 							dlg.CurrentFolder = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
-							success = dlg.Run ();
-						});
+							return dlg.Run ();
+						}).Result;
 						if (!success || !File.Exists (dlg.SelectedFile + ".pub"))
 							throw new VersionControlException (GettextCatalog.GetString ("Invalid credentials were supplied. Aborting operation."));
 
@@ -147,10 +145,10 @@ namespace MonoDevelop.VersionControl.Git
 						};
 
 						if (KeyHasPassphrase (dlg.SelectedFile)) {
-							DispatchService.GuiSyncDispatch (delegate {
+							result = Runtime.RunInMainThread (delegate {
 								using (var credDlg = new CredentialsDialog (url, types, cred))
-									result = MessageService.ShowCustomDialog (credDlg) == (int)Gtk.ResponseType.Ok;
-							});
+									return MessageService.ShowCustomDialog (credDlg) == (int)Gtk.ResponseType.Ok;
+							}).Result;
 						}
 
 						if (result)
@@ -169,10 +167,10 @@ namespace MonoDevelop.VersionControl.Git
 				return cred;
 			}
 
-			DispatchService.GuiSyncDispatch (delegate {
+			result = Runtime.RunInMainThread (delegate {
 				using (var credDlg = new CredentialsDialog (url, types, cred))
-					result = MessageService.ShowCustomDialog (credDlg) == (int)Gtk.ResponseType.Ok;
-			});
+					return MessageService.ShowCustomDialog (credDlg) == (int)Gtk.ResponseType.Ok;
+			}).Result;
 
 			if (result) {
 				if ((types & SupportedCredentialTypes.UsernamePassword) != 0) {

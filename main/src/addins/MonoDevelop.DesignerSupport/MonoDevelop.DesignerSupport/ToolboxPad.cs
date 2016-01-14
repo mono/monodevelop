@@ -35,11 +35,12 @@ using MonoDevelop.Ide.Gui;
 
 using MonoDevelop.DesignerSupport;
 using MonoDevelop.DesignerSupport.Toolbox;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.DesignerSupport
 {
 	
-	public class ToolboxPad : AbstractPadContent
+	public class ToolboxPad : PadContent
 	{
 		Toolbox.Toolbox toolbox;
 		
@@ -47,7 +48,7 @@ namespace MonoDevelop.DesignerSupport
 		{
 		}
 		
-		public override void Initialize (IPadWindow container)
+		protected override void Initialize (IPadWindow container)
 		{
 			base.Initialize (container);
 			toolbox = new Toolbox.Toolbox (DesignerSupport.Service.ToolboxService, container);
@@ -56,7 +57,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		#region AbstractPadContent implementations
 		
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get { return toolbox; }
 		}
 		

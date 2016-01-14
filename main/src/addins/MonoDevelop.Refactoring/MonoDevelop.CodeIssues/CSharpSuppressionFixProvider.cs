@@ -83,7 +83,7 @@ namespace MonoDevelop.CodeIssues
 
 		public FixAllProvider GetFixAllProvider ()
 		{
-			return (FixAllProvider)canBeSuppressedOrUnsuppressedMethod.Invoke (instance, new object[0]);
+			return (FixAllProvider)canBeSuppressedOrUnsuppressedMethod.Invoke (instance, null);
 		}
 
 		public Task<IEnumerable<CodeFix>> GetSuppressionsAsync (Project project, IEnumerable<Diagnostic> diagnostics, CancellationToken cancellationToken)

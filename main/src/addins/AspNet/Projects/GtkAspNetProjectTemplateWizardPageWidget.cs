@@ -28,6 +28,7 @@
 using System;
 using Gdk;
 using Gtk;
+using Mono.TextEditor;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 
@@ -60,10 +61,12 @@ namespace MonoDevelop.AspNet.Projects
 				includeUnitTestProjectDescriptionLeftHandPadding.WidthRequest = leftPaddingWidth;
 			}
 
+			double scale = GtkWorkarounds.GetPixelScale ();
+
 			backgroundImage = Xwt.Drawing.Image.FromResource ("aspnet-wizard-page.png");
 			backgroundImageView = new ImageView (backgroundImage);
-			backgroundImageView.Xalign = 1;
-			backgroundImageView.Yalign = 1;
+			backgroundImageView.Xalign = (float)(1/scale);
+			backgroundImageView.Yalign = (float)(1/scale);
 			backgroundLargeImageVBox.PackStart (backgroundImageView, true, true, 0);
 
 			var separatorColor = new Color (176, 178, 181);
@@ -74,12 +77,55 @@ namespace MonoDevelop.AspNet.Projects
 			configurationTableEventBox.ModifyBg (StateType.Normal, backgroundColor);
 			configurationBottomEventBox.ModifyBg (StateType.Normal, backgroundColor);
 			backgroundLargeImageEventBox.ModifyBg (StateType.Normal, backgroundColor);
+
+			if (Platform.IsWindows && scale > 1.0)
+				ScaleWidgets (scale);
 		}
 
 		public GtkAspNetProjectTemplateWizardPageWidget (AspNetProjectTemplateWizardPage wizardPage)
 			: this ()
 		{
 			WizardPage = wizardPage;
+		}
+
+		void ScaleWidgets (double scale)
+		{
+			ScaleWidgetsWidth (scale, new Widget[] {
+				leftBorderEventBox,
+				configurationVBox,
+				includeLabelPadding,
+				testingLabelPadding,
+				paddingLabel,
+				testingSeparator,
+				mvcDescriptionLeftHandPadding,
+				mvcDescriptionLabel,
+				webFormsDescriptionLeftHandPadding,
+				webFormsDescriptionLabel,
+				webApiDescriptionLeftHandPadding,
+				webApiDescriptionLabel,
+				includeUnitTestProjectDescriptionLabel,
+				includeUnitTestProjectDescriptionLeftHandPadding
+			});
+
+			ScaleWidgetsHeight (scale, new Widget[] {
+				includeLabelPadding,
+				testingLabelPadding,
+				testingSeparator
+			});
+		}
+
+		void ScaleWidgetsWidth (double scale, Widget[] widgets)
+		{
+			foreach (Widget widget in widgets) {
+				widget.WidthRequest = (int)(widget.WidthRequest * scale);
+			}
+		}
+
+		void ScaleWidgetsHeight (double scale, Widget[] widgets)
+		{
+			foreach (Widget widget in widgets) {
+				widget.HeightRequest = (int)(widget.HeightRequest * scale);
+			}
 		}
 
 		public override void Dispose ()
