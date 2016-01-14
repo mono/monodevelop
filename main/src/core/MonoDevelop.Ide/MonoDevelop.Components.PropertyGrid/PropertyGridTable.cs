@@ -445,11 +445,8 @@ namespace MonoDevelop.Components.PropertyGrid
 			using (Cairo.Context ctx = CairoHelper.Create (evnt.Window)) {
 				int dx = (int)((double)Allocation.Width * dividerPosition);
 				ctx.LineWidth = 1;
-				ctx.Rectangle (0, 0, dx, Allocation.Height);
+				ctx.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 				ctx.SetSourceColor (Styles.PropertyPadLabelBackgroundColor.ToCairoColor ());
-				ctx.Fill ();
-				ctx.Rectangle (dx, 0, Allocation.Width - dx, Allocation.Height);
-				ctx.SetSourceColor (Styles.BrowserPadBackground.ToCairoColor());
 				ctx.Fill ();
 				ctx.MoveTo (dx + 0.5, 0);
 				ctx.RelLineTo (0, Allocation.Height);
@@ -479,12 +476,8 @@ namespace MonoDevelop.Components.PropertyGrid
 				if (r.IsCategory) {
 					var rh = h + CategoryTopBottomPadding*2;
 					ctx.Rectangle (0, y, Allocation.Width, rh);
-					using (var gr = new LinearGradient (0, y, 0, rh)) {
-						gr.AddColorStop (0, Styles.PadCategoryBackgroundGradientStartColor.ToCairoColor ());
-						gr.AddColorStop (1, Styles.PadCategoryBackgroundGradientEndColor.ToCairoColor ());
-						ctx.SetSource (gr);
-						ctx.Fill ();
-					}
+					ctx.SetSourceColor (Styles.PadCategoryBackgroundColor.ToCairoColor ());
+					ctx.Fill ();
 
 					if (lastCategory == null || lastCategory.Expanded || lastCategory.AnimatingExpand) {
 						ctx.MoveTo (0, y + 0.5);
