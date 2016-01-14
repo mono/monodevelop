@@ -15,11 +15,14 @@ module Parsing =
   // for a short identifier forward - this means that when you hover
   // 'B' in 'A.B.C', you will get intellisense for 'A.B' module)
   let findLongIdents (col, lineStr) =
-    match Lexer.getSymbol lineStr 0 col lineStr SymbolLookupKind.ByLongIdent [||] Lexer.queryLexState with
-    | Some sym -> match sym.Text with
-                  | "" -> None
-                  | _ -> Some (sym.RightColumn, sym.Text.Split '.' |> Array.toList)
-    | _ -> None
+    if lineStr = "" then 
+      None
+    else
+      match Lexer.getSymbol lineStr 0 col lineStr SymbolLookupKind.ByLongIdent [||] Lexer.queryLexState with
+      | Some sym -> match sym.Text with
+                    | "" -> None
+                    | _ -> Some (sym.RightColumn, sym.Text.Split '.' |> Array.toList)
+      | _ -> None
 
   /// find the identifier prior to a '(' or ',' once the method tip trigger '(' shows
   let findLongIdentsAtGetMethodsTrigger (col, lineStr) =
