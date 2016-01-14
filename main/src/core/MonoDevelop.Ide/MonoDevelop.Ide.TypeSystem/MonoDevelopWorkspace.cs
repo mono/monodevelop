@@ -189,7 +189,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		async Task<SolutionInfo> CreateSolutionInfo (MonoDevelop.Projects.Solution solution, CancellationToken token)
 		{
 			var projects = new ConcurrentBag<ProjectInfo> ();
-			var mdProjects = solution.GetAllProjects ();
+			var mdProjects = solution.GetAllProjects ().OfType<MonoDevelop.Projects.DotNetProject> ();
 			projectionList.Clear ();
 			solutionData = new SolutionData ();
 
@@ -379,7 +379,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			project.Modified -= OnProjectModified;
 		}
 
-		Task<ProjectInfo> LoadProject (MonoDevelop.Projects.Project p, CancellationToken token)
+		Task<ProjectInfo> LoadProject (MonoDevelop.Projects.DotNetProject p, CancellationToken token)
 		{
 			if (!projectIdMap.ContainsKey (p)) {
 				p.FileAddedToProject += OnFileAdded;
@@ -519,13 +519,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		static async Task<List<MetadataReference>> CreateMetadataReferences (MonoDevelop.Projects.Project p, ProjectId projectId, CancellationToken token)
+		static async Task<List<MetadataReference>> CreateMetadataReferences (MonoDevelop.Projects.DotNetProject netProject, ProjectId projectId, CancellationToken token)
 		{
 			List<MetadataReference> result = new List<MetadataReference> ();
-
-			var netProject = p as MonoDevelop.Projects.DotNetProject;
-			if (netProject == null)
-				return result;
 			
 			var configurationSelector = IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default;
 			var hashSet = new HashSet<string> (FilePath.PathComparer);
@@ -566,7 +562,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			foreach (var pr in p.GetReferencedItems (configurationSelector)) {
+			foreach (var pr in netProject.GetReferencedItems (configurationSelector)) {
 				if (token.IsCancellationRequested)
 					return result;
 				var referencedProject = pr as MonoDevelop.Projects.DotNetProject;
@@ -582,9 +578,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			return result;
 		}
 
-		IEnumerable<ProjectReference> CreateProjectReferences (MonoDevelop.Projects.Project p, CancellationToken token)
+		IEnumerable<ProjectReference> CreateProjectReferences (MonoDevelop.Projects.DotNetProject p, CancellationToken token)
 		{
-			foreach (var referencedProject in ((MonoDevelop.Projects.DotNetProject)p).GetReferencedAssemblyProjects (IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default)) {
+			foreach (var referencedProject in p.GetReferencedAssemblyProjects (IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default)) {
 				if (token.IsCancellationRequested)
 					yield break;
 				if (TypeSystemService.IsOutputTrackedProject (referencedProject))
@@ -996,7 +992,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			if (!args.Any (x => x.Hint == "TargetFramework" || x.Hint == "References"))
 				return;
-			var project = (MonoDevelop.Projects.Project)sender;
+			var project = sender as MonoDevelop.Projects.DotNetProject;
+			if (project == null)
+				return;
 			var projectId = GetProjectId (project);
 			if (CurrentSolution.ContainsProject (projectId)) {
 				OnProjectReloaded (await LoadProject (project, default(CancellationToken)).ConfigureAwait (false));
