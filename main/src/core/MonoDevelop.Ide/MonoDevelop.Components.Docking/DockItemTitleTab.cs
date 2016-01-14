@@ -162,6 +162,13 @@ namespace MonoDevelop.Components.Docking
 				labelWidget = new ExtendedLabel (label);
 				labelWidget.DropShadowVisible = true;
 				labelWidget.UseMarkup = true;
+				labelWidget.SetPadding (0, 5);
+
+				var font = labelWidget.Style.FontDescription.Copy ();
+				font.Size = (int)(0.92f * font.Size);
+				font.Weight = Pango.Weight.Bold;
+				labelWidget.ModifyFont (font);
+
 				box.PackStart (labelWidget, true, true, 0);
 			} else {
 				labelWidget = null;
