@@ -13,6 +13,7 @@ gtk-color-scheme =
 fg_color: #000
 base_color: #fff
 text_color: #000
+link_color: #5189ed
 selected_bg_color: #649dd6
 selected_fg_color: #fff
 tooltip_bg_color: #f2f2f2
@@ -63,6 +64,8 @@ style "default" {
 
     ### style properties
     GtkWidget::new-tooltip-style = 1
+    GtkWidget::link-color = @link_color
+    GtkWidget::visited-link-color = @link_color
 
     GtkEntry::honors-transparent-bg-hint = 1    # transparent search box background
     GtkEntry::inner-border = { 2, 2, 2, 2 }
