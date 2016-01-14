@@ -1502,6 +1502,30 @@ namespace MonoDevelop.Projects
 			var compXml = Util.ToSystemEndings (File.ReadAllText (p.FileName.ChangeName ("ConsoleProject-conf-renamed")));
 			Assert.AreEqual (compXml, savedXml);
 		}
+
+		[Test]
+		public async Task ProjectWithDuplicateConfigGroup ()
+		{
+			// The project has two property groups with Debug|AnyCPU. This has to result in a single
+			// Debug configuration. If a change is done in the configuration, it has to be applied
+			// to the last group.
+
+			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-duplicated-conf.csproj");
+			var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+
+			Assert.AreEqual (2, p.Configurations.Count);
+
+			var c = p.GetConfiguration (new ItemConfigurationSelector ("Debug")) as DotNetProjectConfiguration;
+			Assert.IsNotNull (c);
+			Assert.IsTrue (c.DebugSymbols);
+
+			c.Properties.SetValue ("Test","foo");
+			await p.SaveAsync (Util.GetMonitor ());
+
+			var savedXml = File.ReadAllText (p.FileName);
+			var refXml = File.ReadAllText (p.FileName.ChangeName ("project-with-duplicated-conf-saved"));
+			Assert.AreEqual (refXml, savedXml);
+		}
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode

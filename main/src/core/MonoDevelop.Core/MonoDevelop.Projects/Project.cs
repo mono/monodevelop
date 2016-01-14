@@ -2115,8 +2115,14 @@ namespace MonoDevelop.Projects
 			List<ConfigData> configData = new List<ConfigData> ();
 			foreach (MSBuildPropertyGroup cgrp in msproject.PropertyGroups) {
 				string conf, platform;
-				if (ParseConfigCondition (cgrp.Condition, out conf, out platform) && conf != null && platform != null)
-					configData.Add (new ConfigData (conf, platform, cgrp));
+				if (ParseConfigCondition (cgrp.Condition, out conf, out platform) && conf != null && platform != null) {
+					// If a group for this configuration already was found, set the new group. If there are changes we want to modify the last group.
+					var existing = configData.FirstOrDefault (cd => cd.Config == conf && cd.Platform == platform);
+					if (existing == null)
+						configData.Add (new ConfigData (conf, platform, cgrp));
+					else
+						existing.Group = cgrp;
+				}
 			}
 			if (includeEvaluated) {
 				var confValues = msproject.ConditionedProperties.GetCombinedPropertyValues ("Configuration");
