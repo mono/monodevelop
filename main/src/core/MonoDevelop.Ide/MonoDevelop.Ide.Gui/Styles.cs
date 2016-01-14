@@ -318,61 +318,66 @@ namespace MonoDevelop.Ide.Gui
 			ThinSplitterColor = Color.FromName ("#dadada");
 
 			// Document tabs
+			// TODO: Will be new with roslyn-dark-skin-tabs
 
-			TabBarBackgroundColor = Color.FromName ("#c2c2c2");
-			TabBarActiveTextColor = Color.FromName ("#000000");
-			TabBarNotifyTextColor = Color.FromName ("#0000ff");
-			TabBarActiveGradientStartColor = Shift (TabBarBackgroundColor, 0.92);
-			TabBarActiveGradientEndColor = TabBarBackgroundColor;
-			TabBarGradientStartColor = Shift (TabBarBackgroundColor, 1.02);
-			TabBarGradientEndColor = TabBarBackgroundColor;
-			TabBarGradientShadowColor = Shift (TabBarBackgroundColor, 0.8);
-			TabBarGlowGradientStartColor = Color.FromName ("#ffffff").WithAlpha (.4);
-			TabBarGlowGradientEndColor = Color.FromName ("#ffffff").WithAlpha (0);
-			TabBarHoverActiveTextColor = TabBarActiveTextColor;
-			TabBarInactiveTextColor = Color.FromName ("#000000").BlendWith (TabBarGradientStartColor, 0.4);
-			TabBarHoverInactiveTextColor = Color.FromName ("#000000");
-			TabBarInnerBorderColor = Color.FromName ("#ffffff").WithAlpha (.5);
-			TabBarInactiveGradientStartColor = Color.FromName ("#f4f4f4");
-			TabBarInactiveGradientEndColor = Color.FromName ("#cecece");
+			TabBarBackgroundColor = Color.FromName ("#c2c2c2"); // TODO
+			TabBarActiveTextColor = Color.FromName ("#000000"); // TODO
+			TabBarNotifyTextColor = Color.FromName ("#0000ff"); // TODO
+			TabBarActiveGradientStartColor = Shift (TabBarBackgroundColor, 0.92); // TODO
+			TabBarActiveGradientEndColor = TabBarBackgroundColor; // TODO
+			TabBarGradientStartColor = Shift (TabBarBackgroundColor, 1.02); // TODO
+			TabBarGradientEndColor = TabBarBackgroundColor; // TODO
+			TabBarGradientShadowColor = Shift (TabBarBackgroundColor, 0.8); // TODO
+			TabBarGlowGradientStartColor = Color.FromName ("#ffffff").WithAlpha (.4); // TODO
+			TabBarGlowGradientEndColor = Color.FromName ("#ffffff").WithAlpha (0); // TODO
+			TabBarHoverActiveTextColor = TabBarActiveTextColor; // TODO
+			TabBarInactiveTextColor = Color.FromName ("#000000").BlendWith (TabBarGradientStartColor, 0.4); // TODO
+			TabBarHoverInactiveTextColor = Color.FromName ("#000000"); // TODO
+			TabBarInnerBorderColor = Color.FromName ("#ffffff").WithAlpha (.5); // TODO
+			TabBarInactiveGradientStartColor = Color.FromName ("#f4f4f4"); // TODO
+			TabBarInactiveGradientEndColor = Color.FromName ("#cecece"); // TODO
 
 			// Breadcrumb
+			// TODO: Will be new with roslyn-dark-skin-tabs
 
-			BreadcrumbGradientStartColor = Color.FromName ("#FFFFFF");
-			BreadcrumbBackgroundColor = Shift (BreadcrumbGradientStartColor, .95);
-			BreadcrumbGradientEndColor = Shift (BreadcrumbGradientStartColor, 0.9);
-			BreadcrumbBorderColor = Shift (BreadcrumbBackgroundColor, 0.6);
-			BreadcrumbInnerBorderColor = BaseBackgroundColor.WithAlpha (0.1d);
-			BreadcrumbTextColor = Shift (BaseForegroundColor, 0.8);
-			BreadcrumbButtonBorderColor = Shift (BaseBackgroundColor, 0.8);
-			BreadcrumbButtonFillColor = BaseBackgroundColor.WithAlpha (0.1d);
-			BreadcrumbBottomBorderColor = Shift (BreadcrumbBackgroundColor, 0.7d);
+			BreadcrumbGradientStartColor = Color.FromName ("#ffffff"); // TODO
+			BreadcrumbBackgroundColor = Shift (BreadcrumbGradientStartColor, .95); // TODO
+			BreadcrumbGradientEndColor = Shift (BreadcrumbGradientStartColor, 0.9); // TODO
+			BreadcrumbBorderColor = Shift (BreadcrumbBackgroundColor, 0.6); // TODO
+			BreadcrumbInnerBorderColor = BaseBackgroundColor.WithAlpha (0.1d); // TODO
+			BreadcrumbTextColor = Shift (BaseForegroundColor, 0.8); // TODO
+			BreadcrumbButtonBorderColor = Shift (BaseBackgroundColor, 0.8); // TODO
+			BreadcrumbButtonFillColor = BaseBackgroundColor.WithAlpha (0.1d); // TODO
+			BreadcrumbBottomBorderColor = Shift (BreadcrumbBackgroundColor, 0.7d); // TODO
 
 			// Document Subview Tabs
+			// TODO: Will be new with roslyn-dark-skin-tabs
 
-			SubTabBarBackgroundGradientTopColor = Color.FromName ("#ffffff");
-			SubTabBarBackgroundGradientStartColor = Color.FromName ("#f1f1f1");
-			SubTabBarBackgroundGradientEndColor = SubTabBarBackgroundGradientStartColor;
-			SubTabBarTextColor = BaseForegroundColor;
-			SubTabBarActiveGradientTopColor = Color.FromName ("#ffffff").WithAlpha (.05);
-			SubTabBarActiveGradientStartColor = Color.FromName ("#5c5d5e");
-			SubTabBarActiveGradientEndColor = Color.FromName ("#86888a");
-			SubTabBarActiveTextColor = Color.FromName ("#ffffff");
-			SubTabBarHoverGradientStartColor = Color.FromName ("#5c5d5e").WithAlpha (.2);
-			SubTabBarHoverGradientEndColor = Color.FromName ("#868889").WithAlpha (.2);
-			SubTabBarSeparatorColor = Color.FromName ("#FF0000"); // ababab
+			SubTabBarBackgroundGradientTopColor = Color.FromName ("#ffffff"); // TODO
+			SubTabBarBackgroundGradientStartColor = Color.FromName ("#f1f1f1"); // TODO
+			SubTabBarBackgroundGradientEndColor = SubTabBarBackgroundGradientStartColor; // TODO
+			SubTabBarTextColor = BaseForegroundColor; // TODO
+			SubTabBarActiveGradientTopColor = Color.FromName ("#ffffff").WithAlpha (.05); // TODO
+			SubTabBarActiveGradientStartColor = Color.FromName ("#5c5d5e"); // TODO
+			SubTabBarActiveGradientEndColor = Color.FromName ("#86888a"); // TODO
+			SubTabBarActiveTextColor = Color.FromName ("#ffffff"); // TODO
+			SubTabBarHoverGradientStartColor = Color.FromName ("#5c5d5e").WithAlpha (.2); // TODO
+			SubTabBarHoverGradientEndColor = Color.FromName ("#868889").WithAlpha (.2); // TODO
+			SubTabBarSeparatorColor = Color.FromName ("#ababab"); // TODO
 
 			// Dock pads
+			// FIXME: Seems to be unused, kill
 
-			DockTabBarGradientTop = Color.FromName ("#FF0000"); // f8f8f8
-			DockTabBarGradientStart = Color.FromName ("#00FF00"); // f2f2f2
-			DockTabBarGradientEnd = Color.FromName ("#0000FF"); // e6e6e6
-			DockTabBarShadowGradientStart = Color.FromName ("#FF00FF"); // 9a9a9a
-			DockTabBarShadowGradientEnd = Color.FromName ("#00FFFF"); // Color.FromName ("#9a9a9a").WithAlpha (0)
+			// DockTabBarGradientTop = Color.FromName ("#ff0000"); // f8f8f8 // UNUSED
+			// DockTabBarGradientStart = Color.FromName ("#00ff00"); // f2f2f2 // UNUSED
+			// DockTabBarGradientEnd = Color.FromName ("#0000ff"); // e6e6e6 // UNUSED
+			// DockTabBarShadowGradientStart = Color.FromName ("#00ffff"); // 9a9a9a // UNUSED
+			// DockTabBarShadowGradientEnd = Color.FromName ("#ffff00"); // .WithAlpha (0); // UNUSED
+			// WidgetBorderColor = Color.FromName ("#ff0000"); // 8c8c8c // UNUSED (used for custom drawn `SearchEntry` but it isn’t used anymore, so its deprecated)
 
-			PadBackground = Color.FromName ("#ff0000"); // f0f0f0
-			InactivePadBackground = ReduceLight (PadBackground, 0.9);
-			PadLabelColor = Color.FromName ("#ff0000"); // 57656b
+			PadBackground = Color.FromName ("#fafafa");
+			InactivePadBackground = Color.FromName ("#e8e8e8");
+			PadLabelColor = Color.FromName ("#ff0000"); // 57656b // TODO: Doesn't work currently
 
 			DockFrameBackground = Color.FromName ("#bababa");
 			DockSeparatorColor = Color.FromName ("#bababa");
@@ -387,49 +392,46 @@ namespace MonoDevelop.Ide.Gui
 			PadCategoryBorderColor = Color.FromName ("#e9e9eb");
 			PadCategoryLabelColor = Color.FromName ("#555555");
 
-			PropertyPadLabelBackgroundColor = Color.FromName ("#fafafa");
-			PropertyPadDividerColor = PropertyPadLabelBackgroundColor;
+			PropertyPadLabelBackgroundColor = Color.FromName ("#ffffff");
+			PropertyPadDividerColor = Color.FromName ("#efefef");
 
-			// Status area
+			// Status area (GTK)
 
-			WidgetBorderColor = Color.FromName ("#8c8c8c");
-
-			StatusBarBorderColor = Color.FromName ("#919191");
-
-			StatusBarFill1Color = Color.FromName ("#f5fafc");
-			StatusBarFill2Color = Color.FromName ("#e9f1f3");
-			StatusBarFill3Color = Color.FromName ("#d8e7ea");
-			StatusBarFill4Color = Color.FromName ("#d1e3e7");
-
-			StatusBarErrorColor = Color.FromName ("#FF6363");
-
-			StatusBarInnerColor = Color.FromName ("#000000").WithAlpha (.08);
-			StatusBarShadowColor1 = Color.FromName ("#000000").WithAlpha (.06);
-			StatusBarShadowColor2 = Color.FromName ("#000000").WithAlpha (.02);
-			StatusBarTextColor = Color.FromName ("#555555");
-			StatusBarProgressBackgroundColor = Color.FromName ("#000000").WithAlpha (.1);
-			StatusBarProgressOutlineColor = Color.FromName ("#000000").WithAlpha (.1);
+			StatusBarBorderColor = Color.FromName ("#919191"); // TODO
+			StatusBarFill1Color = Color.FromName ("#f5fafc"); // TODO
+			StatusBarFill2Color = Color.FromName ("#e9f1f3"); // TODO
+			StatusBarFill3Color = Color.FromName ("#d8e7ea"); // TODO
+			StatusBarFill4Color = Color.FromName ("#d1e3e7"); // TODO
+			StatusBarErrorColor = Color.FromName ("#FF6363"); // TODO
+			StatusBarInnerColor = Color.FromName ("#000000").WithAlpha (.08); // TODO
+			StatusBarShadowColor1 = Color.FromName ("#000000").WithAlpha (.06); // TODO
+			StatusBarShadowColor2 = Color.FromName ("#000000").WithAlpha (.02); // TODO
+			StatusBarTextColor = Color.FromName ("#555555"); // TODO
+			StatusBarProgressBackgroundColor = Color.FromName ("#000000").WithAlpha (.1); // TODO
+			StatusBarProgressOutlineColor = Color.FromName ("#000000").WithAlpha (.1); // TODO
 
 			// Toolbar
 
 			ToolbarBottomBorderColor = Color.FromName ("#afafaf");
 
-			// Popover window
+			// Popover Window
 
 			PopoverWindow.DefaultBackgroundColor = Color.FromName ("#f2f2f2");
-			PopoverWindow.ErrorBackgroundColor = Color.FromName ("#E27267");
-			PopoverWindow.WarningBackgroundColor = Color.FromName ("#efd46c");
-			PopoverWindow.InformationBackgroundColor = Color.FromName ("#709DC9");
+			PopoverWindow.ErrorBackgroundColor = Color.FromName ("#f56d4f");
+			PopoverWindow.WarningBackgroundColor = Color.FromName ("#f1c40f");
+			PopoverWindow.InformationBackgroundColor = Color.FromName ("#87b6f0");
 
-			PopoverWindow.DefaultTextColor = Color.FromName ("#665a36");
+			PopoverWindow.DefaultTextColor = Color.FromName ("#888888");
 			PopoverWindow.ErrorTextColor = Color.FromName ("#ffffff");
-			PopoverWindow.WarningTextColor = Color.FromName ("#563b00");
+			PopoverWindow.WarningTextColor = Color.FromName ("#ffffff");
 			PopoverWindow.InformationTextColor = Color.FromName ("#ffffff");
 
-			PopoverWindow.ShadowColor = Color.FromName ("#000000").WithAlpha (.1);
+			PopoverWindow.ShadowColor = Color.FromName ("#000000").WithAlpha (.05);
 
-			PopoverWindow.ParamaterWindows.GradientStartColor = Color.FromName ("#fffee6");
-			PopoverWindow.ParamaterWindows.GradientEndColor = Color.FromName ("#fffcd1");
+			PopoverWindow.ParamaterWindows.GradientStartColor = Color.FromName ("#fffee6"); // TODO
+			PopoverWindow.ParamaterWindows.GradientEndColor = Color.FromName ("#fffcd1"); // TODO
+
+			// Code Completion
 
 			CodeCompletion.BackgroundColor = Color.FromName ("#eef1f2");
 			CodeCompletion.TextColor = Color.FromName ("#646566");
@@ -439,8 +441,8 @@ namespace MonoDevelop.Ide.Gui
 			CodeCompletion.SelectionBackgroundInactiveColor = Color.FromName ("#bbbbbb");
 			CodeCompletion.SelectionHighlightColor = Color.FromName ("#ba3373");
 			#else
-			CodeCompletion.SelectionBackgroundInactiveColor = Color.FromName ("#bbbbbb"); // TODO: VV: Windows colors
-			CodeCompletion.SelectionHighlightColor = Color.FromName ("#ba3373");
+			CodeCompletion.SelectionBackgroundInactiveColor = Color.FromName ("#bbbbbb"); // TODO: VV: Windows colors // TODO
+			CodeCompletion.SelectionHighlightColor = Color.FromName ("#ba3373"); // TODO
 			#endif
 
 			CodeCompletion.SelectionBackgroundColor = BaseSelectionBackgroundColor;
@@ -448,29 +450,29 @@ namespace MonoDevelop.Ide.Gui
 
 			// Global Search
 
-			GlobalSearch.HeaderTextColor = Color.FromName ("#8c8c8c");
-			GlobalSearch.SeparatorLineColor = Color.FromName ("#dedede");
-			GlobalSearch.HeaderBackgroundColor = Color.FromName ("#ffffff");
-			GlobalSearch.BackgroundColor = Color.FromName ("#f7f7f7");
-			GlobalSearch.SelectionBackgroundColor = Color.FromName ("#cccccc");
-			GlobalSearch.ResultTextColor = Color.FromName ("#606060");
-			GlobalSearch.ResultDescriptionTextColor = Color.FromName ("#8F8F8F");
+			GlobalSearch.BackgroundColor = Color.FromName ("#ffffff");
+			GlobalSearch.SeparatorLineColor = Color.FromName ("#e9e9eb");
+			GlobalSearch.HeaderBackgroundColor = Color.FromName ("#f0f1f3");
+			GlobalSearch.HeaderTextColor = Color.FromName ("#aaaaaa");
+			GlobalSearch.SelectionBackgroundColor = Color.FromName ("#5189ed"); // TODO: Needs to be standard Windows light blue on Windows
+			GlobalSearch.ResultTextColor = Color.FromName ("#555555");
+			GlobalSearch.ResultDescriptionTextColor = Color.FromName ("#aaaaaa");
 
 			// New Project Dialog
 
 			NewProjectDialog.BannerBackgroundColor = Color.FromName ("#77828c");
 			NewProjectDialog.BannerLineColor = Color.FromName ("#707a83");
-			NewProjectDialog.BannerForegroundColor = Color.FromName ("#ffffff");
-			NewProjectDialog.CategoriesBackgroundColor = Color.FromName ("#e1e4e8");
-			NewProjectDialog.TemplateListBackgroundColor = Color.FromName ("#f0f0f0");
-			NewProjectDialog.TemplateBackgroundColor = Color.FromName ("#ffffff");
-			NewProjectDialog.TemplateSectionSeparatorColor = Color.FromName ("#d0d0d0");
-			NewProjectDialog.TemplateLanguageButtonBackground = Color.FromName ("#f7f7f7");
-			NewProjectDialog.TemplateLanguageButtonTriangle = Color.FromName ("#535353");
-			NewProjectDialog.ProjectConfigurationLeftHandBackgroundColor = Color.FromName ("#e1e4e8");
-			NewProjectDialog.ProjectConfigurationRightHandBackgroundColor = Color.FromName ("#ffffff");
-			NewProjectDialog.ProjectConfigurationPreviewLabelColor = Color.FromName ("#555555");
-			NewProjectDialog.ProjectConfigurationSeparatorColor = Color.FromName ("#b0b2b5");
+			NewProjectDialog.BannerForegroundColor = Color.FromName ("#ffffff"); // TODO
+			NewProjectDialog.CategoriesBackgroundColor = Color.FromName ("#e1e4e8"); // TODO
+			NewProjectDialog.TemplateListBackgroundColor = Color.FromName ("#f5f5f6");
+			NewProjectDialog.TemplateBackgroundColor = Color.FromName ("#ffffff"); // TODO
+			NewProjectDialog.TemplateSectionSeparatorColor = Color.FromName ("#d0d0d0"); // TODO
+			NewProjectDialog.TemplateLanguageButtonBackground = Color.FromName ("#f7f7f7"); // TODO
+			NewProjectDialog.TemplateLanguageButtonTriangle = Color.FromName ("#535353"); // TODO
+			NewProjectDialog.ProjectConfigurationLeftHandBackgroundColor = Color.FromName ("#e1e4e8"); // TODO
+			NewProjectDialog.ProjectConfigurationRightHandBackgroundColor = Color.FromName ("#ffffff"); // TODO
+			NewProjectDialog.ProjectConfigurationPreviewLabelColor = Color.FromName ("#555555"); // TODO
+			NewProjectDialog.ProjectConfigurationSeparatorColor = Color.FromName ("#b0b2b5"); // TODO
 		}
 
 		internal static void LoadDarkStyle ()
