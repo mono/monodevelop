@@ -33,7 +33,7 @@ namespace MonoDevelop.SourceEditor
 	class LinkMarker : UnderlineTextSegmentMarker, ILinkTextMarker, IActionTextLineMarker
 	{
 		static readonly Gdk.Cursor textLinkCursor = new Gdk.Cursor (Gdk.CursorType.Hand1);
-		static readonly Cairo.Color linkColor = new Cairo.Color (0, 0, 1.0);
+
 		Action<LinkRequest> activateLink;
 
 		public bool OnlyShowLinkOnHover {
@@ -42,7 +42,7 @@ namespace MonoDevelop.SourceEditor
 		}
 
 
-		public LinkMarker (int offset, int length, Action<LinkRequest> activateLink) : base (linkColor, new TextSegment (offset, length))
+		public LinkMarker (int offset, int length, Action<LinkRequest> activateLink) : base (DefaultSourceEditorOptions.Instance.GetColorStyle ().LinkColor.Color, new TextSegment (offset, length))
 		{
 			this.activateLink = activateLink;
 			this.Wave = false;
@@ -55,16 +55,24 @@ namespace MonoDevelop.SourceEditor
 			get;
 			set;
 		}
+
 		bool IActionTextLineMarker.MousePressed (MonoTextEditor editor, MarginMouseEventArgs args)
 		{
 			MousePressed?.Invoke (this, new TextEventArgsWrapper (args));
+			return false;
+		}
+
+		bool IActionTextLineMarker.MouseReleased (MonoTextEditor editor, MarginMouseEventArgs args)
+		{
 			if ((Platform.IsMac && (args.ModifierState & Gdk.ModifierType.Mod2Mask) == Gdk.ModifierType.Mod2Mask) ||
-				(!Platform.IsMac && (args.ModifierState & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask))
+			    (!Platform.IsMac && (args.ModifierState & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask))
 				activateLink?.Invoke (LinkRequest.RequestNewView);
 			else
 				activateLink?.Invoke (LinkRequest.SameView);
+			
 			return false;
 		}
+
 
 		void IActionTextLineMarker.MouseHover (MonoTextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result)
 		{
@@ -97,7 +105,7 @@ namespace MonoDevelop.SourceEditor
 		public override void Draw (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics, int startOffset, int endOffset)
 		{
 			if (OnlyShowLinkOnHover) {
-				if (editor.TextViewMargin.MarginCursor != textLinkCursor)
+					if (editor.TextViewMargin.MarginCursor != textLinkCursor)
 					return;
 				if (editor.TextViewMargin.HoveredLine == null)
 					return;
@@ -105,6 +113,16 @@ namespace MonoDevelop.SourceEditor
 				if (!Segment.Contains (hoverOffset)) 
 					return; 
 			}
+			this.Color = editor.ColorStyle.LinkColor.Color;
+
+			if (!OnlyShowLinkOnHover) {
+				if (editor.TextViewMargin.MarginCursor == textLinkCursor && editor.TextViewMargin.HoveredLine != null) {
+					var hoverOffset = editor.LocationToOffset (editor.TextViewMargin.HoveredLocation);
+					if (Segment.Contains (hoverOffset))
+						this.Color = editor.ColorStyle.ActiveLinkColor.Color;
+				}
+			}
+
 			base.Draw (editor, cr, metrics, startOffset, endOffset);
 		}
 	}

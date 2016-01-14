@@ -208,6 +208,12 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Message Bubble Warning IconMargin")]
 		public AmbientColor MessageBubbleWarningIconMargin { get; private set; }
 
+		[ColorDescription("Link Color")]
+		public AmbientColor LinkColor { get; private set; }
+
+		[ColorDescription("Link Color(Active)")]
+		public AmbientColor ActiveLinkColor { get; private set; }
+
 		#endregion
 
 		#region Text Colors

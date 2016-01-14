@@ -355,6 +355,11 @@ namespace MonoDevelop.SourceEditor
 			return false;
 		}
 
+		bool IActionTextLineMarker.MouseReleased (MonoTextEditor editor, MarginMouseEventArgs args)
+		{
+			return false;
+		}
+
 		public void MouseHover (MonoTextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result)
 		{
 			if (!IsVisible)

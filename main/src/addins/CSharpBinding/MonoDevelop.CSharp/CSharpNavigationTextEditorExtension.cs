@@ -99,7 +99,12 @@ namespace MonoDevelop.CSharp
 			{
 				var info = model.GetSymbolInfo (node);
 				if (IsNavigatable (info)) {
-					result.Add (new NavigationSegment (node.Span.Start, node.Span.Length, delegate { IdeApp.ProjectOperations.JumpToDeclaration (info.Symbol, documentContext.Project); }));
+					result.Add (new NavigationSegment (node.Span.Start, node.Span.Length, delegate { 
+						GLib.Timeout.Add (50, delegate {
+							IdeApp.ProjectOperations.JumpToDeclaration (info.Symbol, documentContext.Project);
+							return false;
+						});
+					}));
 				}
 			}
 
@@ -112,7 +117,12 @@ namespace MonoDevelop.CSharp
 			{
 				var info = model.GetSymbolInfo (node); 
 				if (IsNavigatable(info)) {
-					result.Add (new NavigationSegment (node.Name.Span.Start, node.Name.Span.Length, delegate { IdeApp.ProjectOperations.JumpToDeclaration (info.Symbol, documentContext.Project); })); 
+					result.Add (new NavigationSegment (node.Name.Span.Start, node.Name.Span.Length, delegate {
+						GLib.Timeout.Add (50, delegate {
+							IdeApp.ProjectOperations.JumpToDeclaration (info.Symbol, documentContext.Project);
+							return false;
+						});
+					})); 
 				}
 
 				base.VisitMemberAccessExpression (node);

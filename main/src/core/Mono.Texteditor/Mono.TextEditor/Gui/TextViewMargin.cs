@@ -2054,6 +2054,28 @@ namespace Mono.TextEditor
 		{
 			if (args.Button != 2 && !InSelectionDrag)
 				textEditor.ClearSelection ();
+
+			DocumentLine line = Document.GetLine (clickLocation.Line);
+			bool isHandled = false;
+			if (line != null) {
+				foreach (TextLineMarker marker in line.Markers) {
+					if (marker is IActionTextLineMarker) {
+						isHandled |= ((IActionTextLineMarker)marker).MouseReleased(textEditor, args);
+						if (isHandled)
+							break;
+					}
+				}
+				var locNotSnapped = PointToLocation (args.X, args.Y, snapCharacters: false);
+				foreach (var marker in Document.GetTextSegmentMarkersAt (Document.GetOffset (locNotSnapped)).Where (m => m.IsVisible)) {
+					if (marker is IActionTextLineMarker) {
+						isHandled |= ((IActionTextLineMarker)marker).MouseReleased (textEditor, args);
+						if (isHandled)
+							break;
+					}
+				}
+			}
+
+
 			InSelectionDrag = false;
 			if (inDrag)
 				Caret.Location = clickLocation;
