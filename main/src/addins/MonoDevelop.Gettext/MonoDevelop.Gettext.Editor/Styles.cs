@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using MonoDevelop.Ide;
+using Xwt.Drawing;
 
 namespace MonoDevelop.Gettext
 {
@@ -51,13 +52,13 @@ namespace MonoDevelop.Gettext
 			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
 				POEditor.EntryUntranslatedBackgroundColor = new Gdk.Color (234, 232, 227);
 				POEditor.EntryMissingBackgroundColor = new Gdk.Color (237, 226, 187);
-				POEditor.EntryFuzzyBackgroundColor = new Gdk.Color (237, 167, 167);
+				POEditor.EntryFuzzyBackgroundColor = new Gdk.Color (255, 199, 186);
 				POEditor.TabBarBackgroundColor = new Gdk.Color (241, 241, 241);
 			} else {
-				POEditor.EntryUntranslatedBackgroundColor = new Gdk.Color (51, 51, 51);
-				POEditor.EntryMissingBackgroundColor = new Gdk.Color (51, 51, 51);
-				POEditor.EntryFuzzyBackgroundColor = new Gdk.Color (237, 167, 167);
-				POEditor.TabBarBackgroundColor = new Gdk.Color (51, 51, 51);
+				POEditor.EntryUntranslatedBackgroundColor = new Gdk.Color (51, 51, 51); // TODO
+				POEditor.EntryMissingBackgroundColor = new Gdk.Color (51, 51, 51); // TODO
+				POEditor.EntryFuzzyBackgroundColor = new Gdk.Color (237, 167, 167); // TODO
+				POEditor.TabBarBackgroundColor = new Gdk.Color (51, 51, 51); // TODO
 			}
 		}
 	}
