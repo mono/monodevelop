@@ -464,9 +464,9 @@ type LanguageService(dirtyNotify) as x =
   member x.GetUsesOfSymbolAtLocationInFile(projectFilename, fileName, version, source, line:int, col, lineStr) =
     asyncMaybe {
       LoggingService.LogDebug("LanguageService: GetUsesOfSymbolAtLocationInFile: file:{0}, line:{1}, col:{2}", Path.GetFileName(fileName), line, col)
-      let! colu, identIsland = Parsing.findLongIdents(col, lineStr) |> async.Return
+      let! _colu, identIsland = Parsing.findLongIdents(col, lineStr) |> async.Return
       let! results = x.GetTypedParseResultWithTimeout(projectFilename, fileName, version, source, AllowStaleResults.MatchingSource)
-      let! symbolUse = results.GetSymbolAtLocation(line, colu, lineStr)
+      let! symbolUse = results.GetSymbolAtLocation(line, col, lineStr)
       let lastIdent = Seq.last identIsland
       let! refs = results.GetUsesOfSymbolInFile(symbolUse.Symbol) |> Async.map Some
       return (lastIdent, refs) }
