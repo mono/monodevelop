@@ -79,7 +79,7 @@ namespace RefactoringEssentials.CSharp.CodeRefactorings
 			var oce = argument.Parent?.Parent as ObjectCreationExpressionSyntax;
 			if (oce != null) {
 				var info = model.GetSymbolInfo (oce);
-				if (!IsRegexType (info.Symbol.ContainingType) || list.Arguments [0] != argument)
+				if (info.Symbol == null || !IsRegexType (info.Symbol.ContainingType) || list.Arguments [0] != argument)
 					return;
 			}
 			 

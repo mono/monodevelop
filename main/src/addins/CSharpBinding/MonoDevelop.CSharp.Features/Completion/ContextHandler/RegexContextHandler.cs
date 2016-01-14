@@ -96,15 +96,39 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		{
 			var root = ctx.SyntaxTree.GetRoot ();
 			foreach (var decl in symbol.DeclaringSyntaxReferences) {
+				Optional<object> val = null;
+
 				var node = root.FindNode (decl.Span) as VariableDeclaratorSyntax;
 				if (node == null)
 					continue;
 				var invocation = node.Initializer.Value as InvocationExpressionSyntax;
 				var invocationSymbol = ctx.SemanticModel.GetSymbolInfo (invocation).Symbol;
 				if (invocationSymbol.Name == "Match" && SemanticHighlightingVisitor<int>.IsRegexType (invocationSymbol.ContainingType)) {
-					if (invocation.ArgumentList.Arguments.Count < 2)
-						continue;
-					var val = ctx.SemanticModel.GetConstantValue (invocation.ArgumentList.Arguments [1].Expression);
+					if (invocation.ArgumentList.Arguments.Count == 1) {
+						var memberAccess = invocation.Expression as MemberAccessExpressionSyntax;
+						if (memberAccess == null)
+							continue;
+						var target = ctx.SemanticModel.GetSymbolInfo (memberAccess.Expression).Symbol;
+						if (target.DeclaringSyntaxReferences.Length == 0)
+							continue;
+						var targetNode = root.FindNode (target.DeclaringSyntaxReferences.First ().Span) as VariableDeclaratorSyntax;
+						if (targetNode == null)
+							continue;
+						var objectCreation = targetNode.Initializer.Value as ObjectCreationExpressionSyntax;
+						if (objectCreation == null)
+							continue;
+						var targetNodeSymbol = ctx.SemanticModel.GetSymbolInfo (objectCreation).Symbol;
+						if (SemanticHighlightingVisitor<int>.IsRegexType (targetNodeSymbol.ContainingType)) {
+							if (objectCreation.ArgumentList.Arguments.Count < 1)
+								continue;
+							val = ctx.SemanticModel.GetConstantValue (objectCreation.ArgumentList.Arguments [0].Expression);
+						}
+					} else {
+						if (invocation.ArgumentList.Arguments.Count < 2)
+							continue;
+						val = ctx.SemanticModel.GetConstantValue (invocation.ArgumentList.Arguments [1].Expression);
+					}
+
 					if (!val.HasValue)
 						continue;
 					var str = val.Value.ToString ();
