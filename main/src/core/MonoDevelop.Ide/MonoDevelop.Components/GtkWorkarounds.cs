@@ -1227,10 +1227,7 @@ namespace MonoDevelop.Components
 
 		public static double GetPixelScale ()
 		{
-			if (Platform.IsWindows)
-				return GetScaleFactor ();
-			else
-				return 1d;
+			return 1d;
 		}
 
 		public static int ConvertToPixelScale (int size)
