@@ -462,17 +462,17 @@ namespace MonoDevelop.Ide.Gui
 
 			NewProjectDialog.BannerBackgroundColor = Color.FromName ("#77828c");
 			NewProjectDialog.BannerLineColor = Color.FromName ("#707a83");
-			NewProjectDialog.BannerForegroundColor = Color.FromName ("#ffffff"); // TODO
-			NewProjectDialog.CategoriesBackgroundColor = Color.FromName ("#e1e4e8"); // TODO
-			NewProjectDialog.TemplateListBackgroundColor = Color.FromName ("#f5f5f6");
-			NewProjectDialog.TemplateBackgroundColor = Color.FromName ("#ffffff"); // TODO
-			NewProjectDialog.TemplateSectionSeparatorColor = Color.FromName ("#d0d0d0"); // TODO
-			NewProjectDialog.TemplateLanguageButtonBackground = Color.FromName ("#f7f7f7"); // TODO
-			NewProjectDialog.TemplateLanguageButtonTriangle = Color.FromName ("#535353"); // TODO
-			NewProjectDialog.ProjectConfigurationLeftHandBackgroundColor = Color.FromName ("#e1e4e8"); // TODO
-			NewProjectDialog.ProjectConfigurationRightHandBackgroundColor = Color.FromName ("#ffffff"); // TODO
-			NewProjectDialog.ProjectConfigurationPreviewLabelColor = Color.FromName ("#555555"); // TODO
-			NewProjectDialog.ProjectConfigurationSeparatorColor = Color.FromName ("#b0b2b5"); // TODO
+			NewProjectDialog.BannerForegroundColor = Color.FromName ("#ffffff");
+			NewProjectDialog.CategoriesBackgroundColor = Color.FromName ("#e7eaee");
+			NewProjectDialog.TemplateListBackgroundColor = Color.FromName ("#f9f9fa");
+			NewProjectDialog.TemplateBackgroundColor = Color.FromName ("#ffffff");
+			NewProjectDialog.TemplateSectionSeparatorColor = Color.FromName ("#e2e2e2");
+			NewProjectDialog.TemplateLanguageButtonBackground = Color.FromName ("#ffffff");
+			NewProjectDialog.TemplateLanguageButtonTriangle = Color.FromName ("#575757");
+			NewProjectDialog.ProjectConfigurationLeftHandBackgroundColor = Color.FromName ("#e7eaee");
+			NewProjectDialog.ProjectConfigurationRightHandBackgroundColor = Color.FromName ("#ffffff");
+			NewProjectDialog.ProjectConfigurationPreviewLabelColor = Color.FromName ("#555555");
+			NewProjectDialog.ProjectConfigurationSeparatorColor = Color.FromName ("#d2d5d9");
 		}
 
 		internal static void LoadDarkStyle ()
