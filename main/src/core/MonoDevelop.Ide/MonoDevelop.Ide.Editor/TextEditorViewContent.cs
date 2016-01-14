@@ -164,11 +164,11 @@ namespace MonoDevelop.Ide.Editor
 			CancelDocumentParsedUpdate ();
 			var token = src.Token;
 			var caretLocation = textEditor.CaretLocation;
-			Task.Run (() => {
+			Task.Run (async () => {
 				try {
-					UpdateErrorUndelines (ctx, ctx.ParsedDocument, token);
-					UpdateQuickTasks (ctx, ctx.ParsedDocument, token);
-					UpdateFoldings (ctx.ParsedDocument, caretLocation, false, token);
+					await UpdateErrorUndelines (ctx, ctx.ParsedDocument, token);
+					await UpdateQuickTasks (ctx, ctx.ParsedDocument, token);
+					await UpdateFoldings (ctx.ParsedDocument, caretLocation, false, token);
 				} catch (OperationCanceledException) {
 					// ignore
 				}
@@ -231,7 +231,7 @@ namespace MonoDevelop.Ide.Editor
 			"CS1513" // } expected
 		};
 
-		async void UpdateErrorUndelines (DocumentContext ctx, ParsedDocument parsedDocument, CancellationToken token)
+		async Task UpdateErrorUndelines (DocumentContext ctx, ParsedDocument parsedDocument, CancellationToken token)
 		{
 			if (!DefaultSourceEditorOptions.Instance.UnderlineErrors || parsedDocument == null || isDisposed)
 				return;
@@ -266,7 +266,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 		#endregion
 		CancellationTokenSource src = new CancellationTokenSource ();
-		void UpdateFoldings (ParsedDocument parsedDocument, DocumentLocation caretLocation, bool firstTime = false, CancellationToken token = default (CancellationToken))
+		async Task UpdateFoldings (ParsedDocument parsedDocument, DocumentLocation caretLocation, bool firstTime = false, CancellationToken token = default (CancellationToken))
 		{
 			if (parsedDocument == null || !textEditor.Options.ShowFoldMargin || isDisposed)
 				return;
@@ -277,7 +277,7 @@ namespace MonoDevelop.Ide.Editor
 			try {
 				var foldSegments = new List<IFoldSegment> ();
 
-				foreach (FoldingRegion region in parsedDocument.GetFoldingsAsync(token).Result) {
+				foreach (FoldingRegion region in await parsedDocument.GetFoldingsAsync(token)) {
 					if (token.IsCancellationRequested)
 						return;
 					var type = FoldingType.Unknown;
@@ -339,7 +339,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		void RunFirstTimeFoldUpdate (string text)
+		async Task RunFirstTimeFoldUpdate (string text)
 		{
 			if (string.IsNullOrEmpty (text)) 
 				return;
@@ -351,16 +351,16 @@ namespace MonoDevelop.Ide.Editor
 			} else {
 				var normalParser = TypeSystemService.GetParser (textEditor.MimeType);
 				if (normalParser != null) {
-					parsedDocument = normalParser.Parse(
+					parsedDocument = await normalParser.Parse(
 						new MonoDevelop.Ide.TypeSystem.ParseOptions {
 							FileName = textEditor.FileName,
 							Content = new StringTextSource(text),
 							Project = Project
-						}).Result;
+						});
 				}
 			}
 			if (parsedDocument != null) {
-				UpdateFoldings (parsedDocument, textEditor.CaretLocation, true);
+				await UpdateFoldings (parsedDocument, textEditor.CaretLocation, true);
 			}
 		}
 
@@ -378,7 +378,7 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.ViewContent.DirtyChanged -= HandleDirtyChanged;
 			textEditor.TextChanged -= HandleTextChanged;
 			await textEditorImpl.ViewContent.Load (fileOpenInformation);
-			RunFirstTimeFoldUpdate (textEditor.Text);
+			await RunFirstTimeFoldUpdate (textEditor.Text);
 			textEditorImpl.InformLoadComplete ();
 			textEditor.TextChanged += HandleTextChanged;
 			textEditorImpl.ViewContent.DirtyChanged += HandleDirtyChanged;
@@ -394,7 +394,7 @@ namespace MonoDevelop.Ide.Editor
 				textEditor.Encoding = res.Encoding;
 				textEditor.UseBOM = res.HasBom;
 			}
-			RunFirstTimeFoldUpdate (text);
+			await RunFirstTimeFoldUpdate (text);
 			textEditorImpl.InformLoadComplete ();
 		}
 
@@ -766,7 +766,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		async void UpdateQuickTasks (DocumentContext ctx, ParsedDocument doc, CancellationToken token)
+		async Task UpdateQuickTasks (DocumentContext ctx, ParsedDocument doc, CancellationToken token)
 		{
 			if (isDisposed)
 				return;
