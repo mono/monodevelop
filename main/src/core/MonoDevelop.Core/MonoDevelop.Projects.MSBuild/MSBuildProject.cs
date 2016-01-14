@@ -47,7 +47,7 @@ namespace MonoDevelop.Projects.MSBuild
 		int changeStamp;
 		bool hadXmlDeclaration;
 		bool isShared;
-		IDictionary<string, List<string>> conditionedProperties = new Dictionary<string, List<string>> ();
+		ConditionedPropertyCollection conditionedProperties = new ConditionedPropertyCollection ();
 
 		MSBuildEngineManager engineManager;
 		bool engineManagerIsLocal;
@@ -249,7 +249,7 @@ namespace MonoDevelop.Projects.MSBuild
 			AssertCanModify ();
 			DisposeMainInstance ();
 			ChildNodes = ChildNodes.Clear ();
-			conditionedProperties.Clear ();
+			conditionedProperties = new ConditionedPropertyCollection ();
 			bestGroups = null;
 			hadXmlDeclaration = false;
 			initialWhitespace = null;
@@ -600,7 +600,7 @@ namespace MonoDevelop.Projects.MSBuild
 				((MSBuildImportGroup)import.ParentObject).RemoveImport (import);
 		}
 
-		public IDictionary<string, List<string>> ConditionedProperties {
+		public ConditionedPropertyCollection ConditionedProperties {
 			get {
 				return conditionedProperties;
 			}

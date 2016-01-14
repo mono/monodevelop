@@ -29,6 +29,7 @@ using System;
 using System.Collections;
 using System.Xml;
 using System.Text;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.MSBuild.Conditions {
 	internal sealed class ConditionRelationalExpression : ConditionExpression {
@@ -159,16 +160,16 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			if ((op == RelationOperator.Equal || op == RelationOperator.NotEqual) && left is ConditionFactorExpression && right is ConditionFactorExpression) {
 				var leftString = ((ConditionFactorExpression)left).Token.Value;
 				var rightString = ((ConditionFactorExpression)right).Token.Value;
-				StringBuilder combinedProperty = null;
-				StringBuilder combinedValue = null;
+				List<string> combinedProperty = null;
+				List<string> combinedValue = null;
 
 				int il = 0;
 				int rl = 0;
 				while (il < leftString.Length && rl < rightString.Length) {
 					if (il < leftString.Length - 2 && leftString [il] == '$' && leftString [il + 1] == '(')
-						ReadPropertyCondition (properties, leftString, ref combinedProperty, ref combinedValue, ref il, rightString, ref rl);
+						ReadPropertyCondition (leftString, ref combinedProperty, ref combinedValue, ref il, rightString, ref rl);
 					else if (rl < rightString.Length - 2 && rightString [rl] == '$' && rightString [rl + 1] == '(')
-						ReadPropertyCondition (properties, rightString, ref combinedProperty, ref combinedValue, ref rl, leftString, ref il);
+						ReadPropertyCondition (rightString, ref combinedProperty, ref combinedValue, ref rl, leftString, ref il);
 					else if (leftString [il] != rightString [rl])
 						return; // Condition can't be true
 					il++; rl++;
@@ -178,11 +179,11 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 				// the combination of values. So for example if the condition has "$(Configuration)|$(Platform) == Foo|Bar",
 				// the conditioned property collection would contain Configuration=Foo, Platform=Bar, (Configuration|Platfrom)=Foo|Bar
 				if (combinedProperty != null)
-					properties.AddProperty ("(" + combinedProperty.ToString () + ")", combinedValue.ToString ());
+					properties.AddPropertyValues (combinedProperty.ToArray (), combinedValue.ToArray ());
 			}
 		}
 
-		void ReadPropertyCondition (ConditionedPropertyCollection properties, string propString, ref StringBuilder combinedProperty, ref StringBuilder combinedValue, ref int i, string valString, ref int j)
+		void ReadPropertyCondition (string propString, ref List<string> combinedProperty, ref List<string> combinedValue, ref int i, string valString, ref int j)
 		{ 
 			var prop = ReadPropertyTag (propString, ref i);
 			string val;
@@ -191,20 +192,13 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			else
 				val = valString.Substring (j);
 
-			if (combinedProperty == null)
-				combinedProperty = new StringBuilder ();
-			else
-				combinedProperty.Append ('|');
+			if (combinedProperty == null) {
+				combinedProperty = new List<string> ();
+				combinedValue = new List<string> ();
+			}
 
-			if (combinedValue == null)
-				combinedValue = new StringBuilder ();
-			else
-				combinedValue.Append ('|');
-
-			combinedProperty.Append (prop);
-			combinedValue.Append (val);
-
-			properties.AddProperty (prop, val);
+			combinedProperty.Add (prop);
+			combinedValue.Add (val);
 		}
 
 		string ReadPropertyValue (string valString, ref int j, char v)

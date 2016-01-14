@@ -449,10 +449,7 @@ namespace MonoDevelop.Projects.MSBuild
 						t.IsImported = true;
 						project.Targets.Add (t);
 					}
-					foreach (var cp in p.ConditionedProperties) {
-						foreach (var v in cp.Value)
-							project.ConditionedProperties.AddProperty (cp.Key, v);
-					}
+					project.ConditionedProperties.Append (p.ConditionedProperties);
 				}
 				return;
             }
@@ -665,7 +662,7 @@ namespace MonoDevelop.Projects.MSBuild
 			pi.GlobalProperties.Remove (property);
 		}
 
-		public override IDictionary<string, List<string>> GetConditionedProperties (object projectInstance)
+		public override ConditionedPropertyCollection GetConditionedProperties (object projectInstance)
 		{
 			var pi = (ProjectInfo)projectInstance;
 			return pi.ConditionedProperties;

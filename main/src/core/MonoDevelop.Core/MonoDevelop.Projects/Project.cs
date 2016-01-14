@@ -2119,19 +2119,14 @@ namespace MonoDevelop.Projects
 					configData.Add (new ConfigData (conf, platform, cgrp));
 			}
 			if (includeEvaluated) {
-				List<string> confValues, confPlatValues, platValues;
-				if (!msproject.ConditionedProperties.TryGetValue ("(Configuration)", out confValues))
-					confValues = new List<string> ();
-				if (!msproject.ConditionedProperties.TryGetValue ("(Platform)", out platValues))
-					platValues = new List<string> ();
-				if (!msproject.ConditionedProperties.TryGetValue ("(Configuration|Platform)", out confPlatValues))
-					confPlatValues = new List<string> ();
+				var confValues = msproject.ConditionedProperties.GetCombinedPropertyValues ("Configuration");
+				var platValues = msproject.ConditionedProperties.GetCombinedPropertyValues ("Platform");
+				var confPlatValues = msproject.ConditionedProperties.GetCombinedPropertyValues ("Configuration", "Platform");
 
 				// First of all, add configurations that have been specified using both the Configuration and Platform properties.
 				foreach (var co in confPlatValues) {
-					var i = co.IndexOf ('|');
-					var c = co.Substring (0, i);
-					var ep = co.Substring (i + 1);
+					var c = co.GetValue ("Configuration");
+					var ep = co.GetValue ("Platform");
 					ep = ep == "AnyCPU" ? "" : ep;
 					if (!configData.Any (cd => cd.Config == c && cd.Platform == ep))
 						configData.Add (new ConfigData (c, ep, null));
@@ -2139,9 +2134,9 @@ namespace MonoDevelop.Projects
 
 				// Now add configurations for which a platform has not been specified, but only if no other configuration
 				// exists with the same name. Combine them with individually specified platforms, if available
-				foreach (var c in confValues) {
+				foreach (var c in confValues.Select (v => v.GetValue ("Configuration"))) {
 					if (platValues.Count > 0) {
-						foreach (var plat in platValues) {
+						foreach (var plat in platValues.Select (v => v.GetValue ("Platform"))) {
 							var ep = plat == "AnyCPU" ? "" : plat;
 							if (!configData.Any (cd => cd.Config == c && cd.Platform == ep))
 								configData.Add (new ConfigData (c, ep, null));

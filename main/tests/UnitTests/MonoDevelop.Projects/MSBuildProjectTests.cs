@@ -28,6 +28,7 @@ using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Projects.MSBuild;
 using System.Linq;
+using ValueSet = MonoDevelop.Projects.ConditionedPropertyCollection.ValueSet;
 
 namespace MonoDevelop.Projects
 {
@@ -272,17 +273,47 @@ namespace MonoDevelop.Projects
 			p.Load (projectFile);
 			p.Evaluate ();
 
-			Assert.That (new string [] { "cond1", "cond2", "cond9", "cond10", "cond13"}, Is.EquivalentTo (p.ConditionedProperties.Keys.ToArray ()));
+			Assert.That (new string [] { "cond1", "cond2", "cond9", "cond10", "cond13" }, Is.EquivalentTo (p.ConditionedProperties.GetAllProperties ().ToArray ()));
 
-			Assert.That (new string [] { "val1"}, Is.EquivalentTo (p.ConditionedProperties["cond1"].ToArray ()));
+			Assert.That (new string [] { "val1", "val14_1", "val14_4", "val14_5" }, Is.EquivalentTo (p.ConditionedProperties.GetAllPropertyValues ("cond1").ToArray ()));
 
-			Assert.That (new string [] { "val2_0", "val2_7"}, Is.EquivalentTo (p.ConditionedProperties["cond2"].ToArray ()));
+			Assert.That (new string [] { "val2_0", "val2_7", "val14_2", "val14_3", "val14_6" }, Is.EquivalentTo (p.ConditionedProperties.GetAllPropertyValues ("cond2").ToArray ()));
 
-			Assert.That (new string [] { "val9"}, Is.EquivalentTo (p.ConditionedProperties["cond9"].ToArray ()));
+			Assert.That (new string [] { "val9" }, Is.EquivalentTo (p.ConditionedProperties.GetAllPropertyValues ("cond9").ToArray ()));
 
-			Assert.That (new string [] { "val10_1", "val10_2"}, Is.EquivalentTo (p.ConditionedProperties["cond10"].ToArray ()));
+			Assert.That (new string [] { "val10_1", "val10_2" }, Is.EquivalentTo (p.ConditionedProperties.GetAllPropertyValues ("cond10").ToArray ()));
 
-			Assert.That (new string [] { "val13_4"}, Is.EquivalentTo (p.ConditionedProperties["cond13"].ToArray ()));
+			Assert.That (new string [] { "val13_4" }, Is.EquivalentTo (p.ConditionedProperties.GetAllPropertyValues ("cond13").ToArray ()));
+
+			// Combined values
+
+			Assert.That (new [] {
+				new ValueSet (new [] { "cond1" }, new [] { "val1" })
+			}, Is.EquivalentTo (p.ConditionedProperties.GetCombinedPropertyValues ("cond1").ToArray ()));
+
+			Assert.That (new [] {
+				new ValueSet (new [] { "cond2" }, new [] { "val2_0" }),
+				new ValueSet (new [] { "cond2" }, new [] { "val2_7" }),
+			}, Is.EquivalentTo (p.ConditionedProperties.GetCombinedPropertyValues ("cond2").ToArray ()));
+
+			Assert.That (new [] {
+				new ValueSet (new [] { "cond9" }, new [] { "val9" }),
+			}, Is.EquivalentTo (p.ConditionedProperties.GetCombinedPropertyValues ("cond9").ToArray ()));
+
+			Assert.That (new [] {
+				new ValueSet (new [] { "cond10" }, new [] { "val10_1" }),
+				new ValueSet (new [] { "cond10" }, new [] { "val10_2" }),
+			}, Is.EquivalentTo (p.ConditionedProperties.GetCombinedPropertyValues ("cond10").ToArray ()));
+
+			Assert.That (new [] {
+				new ValueSet (new [] { "cond13" }, new [] { "val13_4" }),
+			}, Is.EquivalentTo (p.ConditionedProperties.GetCombinedPropertyValues ("cond13").ToArray ()));
+
+			Assert.That (new [] {
+				new ValueSet (new [] { "cond1", "cond2" }, new [] { "val14_1", "val14_2" }),
+				new ValueSet (new [] { "cond1", "cond2" }, new [] { "val14_4", "val14_3" }),
+				new ValueSet (new [] { "cond1", "cond2" }, new [] { "val14_5", "val14_6" }),
+			}, Is.EquivalentTo (p.ConditionedProperties.GetCombinedPropertyValues ("cond1", "cond2").ToArray ()));
 		}
 	}
 }
