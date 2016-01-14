@@ -231,8 +231,8 @@ namespace Mono.TextEditor.PopupWindow
 		const int outlinedFontSize = 8;
 		const int outlinePadding = 1;
 		const int textInnerPadding = 1;
-		static readonly Cairo.Color outlineColor = HslColor.Parse ("#666666");
-		static readonly Cairo.Color textColor = HslColor.Parse ("#555555");
+		static readonly Cairo.Color outlineColor = HslColor.Parse ("#666666"); // TODO: VV: Parametrize
+		static readonly Cairo.Color textColor = HslColor.Parse ("#555555"); // TODO: VV: Parametrize
 
 		Pango.Layout layout;
 		SymbolTokenType Symbol;
@@ -459,10 +459,11 @@ namespace Mono.TextEditor.PopupWindow
 		const int xDescriptionBorder = 12;
 		const int yDescriptionBorder = 8;
 		const int yTitleBorder = 8;
-		static readonly Cairo.Color bgColor = HslColor.Parse ("#f2f2f2");
-		static readonly Cairo.Color titleTextColor = HslColor.Parse ("#242424");
-		static readonly Cairo.Color borderColor = HslColor.Parse ("#d5d5d5");
-		static readonly Cairo.Color textColor = HslColor.Parse ("#4c4c4c");
+
+		static readonly Cairo.Color bgColor = HslColor.Parse ("#f2f2f2"); // TODO: VV: Parametrize
+		static readonly Cairo.Color titleTextColor = HslColor.Parse ("#242424"); // TODO: VV: Parametrize
+		static readonly Cairo.Color borderColor = HslColor.Parse ("#d5d5d5"); // TODO: VV: Parametrize
+		static readonly Cairo.Color textColor = HslColor.Parse ("#4c4c4c"); // TODO: VV: Parametrize
 
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
