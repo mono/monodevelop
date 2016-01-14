@@ -52,11 +52,14 @@ namespace MonoDevelop.Components
 			if (d == null)
 				return null;
 
-			var window = GetImplicit<Window, Gtk.Window>(d) ?? new Window (d);
-			d.Destroyed += delegate {
-				GC.SuppressFinalize (window);
-				window.Dispose (true);
-			};
+			var window = GetImplicit<Window, Gtk.Window>(d);
+			if (window == null) {
+				window = new Window (d);
+				d.Destroyed += delegate {
+					GC.SuppressFinalize (window);
+					window.Dispose (true);
+				};
+			}
 			return window;
 		}
 	}
