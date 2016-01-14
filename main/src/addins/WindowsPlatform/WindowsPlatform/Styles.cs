@@ -289,7 +289,7 @@ namespace WindowsPlatform
 				SearchBarTextBrush = MainToolbarForegroundBrush;
 			} else {
 				MainToolbarBackgroundBrush = new SolidColorBrush (ColorFromHex("303030"));
-				MainToolbarForegroundBrush = new SolidColorBrush (ColorFromHex("EEEEEE"));
+				MainToolbarForegroundBrush = new SolidColorBrush (ColorFromHex("bfbfbf"));
 				MainToolbarDisabledForegroundBrush = new SolidColorBrush (ColorFromHex("808080"));
 				MainToolbarShadowBrush = new SolidColorBrush (ColorFromHex("747474"));
 				MainToolbarSeparatorBrush = new SolidColorBrush (ColorFromHex("7D7D7D"));
