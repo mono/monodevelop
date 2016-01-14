@@ -630,9 +630,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			return document;
 		}
 
+		Dictionary<string, SourceText> changedFiles = new Dictionary<string, SourceText> ();
 
 		public override bool TryApplyChanges (Solution newSolution)
 		{
+			changedFiles.Clear ();
 			return base.TryApplyChanges (newSolution);
 		}
 
@@ -708,6 +710,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (document.GetLinkedDocumentIds ().Length > 0 && isOpen && !(text.GetType ().FullName == "Microsoft.CodeAnalysis.Text.ChangedText")) {
 				return;
 			}
+			SourceText formerText;
+			if (changedFiles.TryGetValue (filePath, out formerText)) {
+				if (formerText.Length == text.Length && formerText.ToString () == text.ToString ())
+					return;
+			}
+			changedFiles [filePath] = text;
 		
 			Projection projection = null;
 			foreach (var entry in ProjectionList) {
