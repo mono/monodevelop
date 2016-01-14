@@ -163,7 +163,6 @@ namespace MonoDevelop.Ide.Gui
 		// Toolbar
 
 		public static Color ToolbarBottomBorderColor { get; internal set; }
-		public static Color ToolbarBottomGlowColor { get; internal set; }
 
 		// Code Completion
 
@@ -415,8 +414,7 @@ namespace MonoDevelop.Ide.Gui
 
 			// Toolbar
 
-			ToolbarBottomBorderColor = Color.FromName ("#ff0000"); // 7f7f7f
-			ToolbarBottomGlowColor = Color.FromName ("#00ff00"); // ffffff.WithAlpha (.2);
+			ToolbarBottomBorderColor = Color.FromName ("#afafaf");
 
 			// Popover window
 
@@ -577,8 +575,7 @@ namespace MonoDevelop.Ide.Gui
 
 			// Toolbar
 
-			ToolbarBottomBorderColor = Color.FromName ("#ff0000"); // 7f7f7f
-			ToolbarBottomGlowColor = Color.FromName ("#00ff00"); // ffffff.WithAlpha (.2);
+			ToolbarBottomBorderColor = Color.FromName ("#00ff00"); // ffffff.WithAlpha (.2);
 
 			// Popover window
 
