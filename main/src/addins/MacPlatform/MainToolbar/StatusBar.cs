@@ -422,12 +422,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public void ShowError (string error)
 		{
-			ShowMessage (Stock.StatusError, error, false, NSColor.FromDeviceRgba (228f / 255, 84f / 255, 55f / 255, 1));
+			ShowMessage (Stock.StatusError, error, false, NSColor.FromRgba (0.98f, 0.33f, 0.20f, 1));
 		}
 
 		public void ShowWarning (string warning)
 		{
-			ShowMessage (Stock.StatusWarning, warning, false, NSColor.FromDeviceRgba (235f / 255, 161f / 255, 7f / 255, 1));
+			ShowMessage (Stock.StatusWarning, warning, false, NSColor.FromRgba (0.91f, 0.74f, 0.05f, 1));
 		}
 
 		public void ShowMessage (string message)
