@@ -247,14 +247,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				if (!area.IntersectsWith (new Gdk.Rectangle (new Gdk.Point (xpos, ypos), itemDimension)))
 					return true;
 				cr.Rectangle (xpos, ypos, itemDimension.Width, itemDimension.Height);
+				cr.SetSourceColor (Ide.Gui.Styles.PadCategoryBackgroundColor.ToCairoColor ());
+				cr.Fill ();
 
-				// FIXME: VV: Remove gradient features
-				using (var pat = new Cairo.LinearGradient (xpos, ypos, xpos, ypos + itemDimension.Height)) {
-					pat.AddColorStop (0, MonoDevelop.Ide.Gui.Styles.PadCategoryBackgroundGradientStartColor.ToCairoColor ());
-					pat.AddColorStop (1, MonoDevelop.Ide.Gui.Styles.PadCategoryBackgroundGradientEndColor.ToCairoColor ());
-					cr.SetSource (pat);
-					cr.Fill ();
-				}
 				if (lastCategory == null || lastCategory.IsExpanded || lastCategory.AnimatingExpand) {
 					cr.MoveTo (xpos, ypos + 0.5);
 					cr.LineTo (itemDimension.Width, ypos + 0.5);

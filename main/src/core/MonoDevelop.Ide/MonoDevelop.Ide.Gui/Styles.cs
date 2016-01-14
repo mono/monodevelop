@@ -115,8 +115,7 @@ namespace MonoDevelop.Ide.Gui
 		public static Color BrowserPadBackground { get; internal set; }
 		public static Color InactiveBrowserPadBackground { get; internal set; }
 
-		public static Color PadCategoryBackgroundGradientStartColor { get; internal set; }
-		public static Color PadCategoryBackgroundGradientEndColor { get; internal set; }
+		public static Color PadCategoryBackgroundColor { get; internal set; }
 		public static Color PadCategoryBorderColor { get; internal set; }
 		public static Color PadCategoryLabelColor { get; internal set; }
 
@@ -384,10 +383,9 @@ namespace MonoDevelop.Ide.Gui
 			BrowserPadBackground = Color.FromName("#f0f1f3");
 			InactiveBrowserPadBackground = Color.FromName ("#f0f0f0");
 
-			PadCategoryBackgroundGradientStartColor = Color.FromName ("#00ff00"); // f8f8f8
-			PadCategoryBackgroundGradientEndColor = Color.FromName ("#0000ff"); // f0f0f0
-			PadCategoryBorderColor = Color.FromName ("#d9d9d9");
-			PadCategoryLabelColor = Color.FromName ("#00ff00"); // 808080
+			PadCategoryBackgroundColor = Color.FromName ("#f0f1f3");
+			PadCategoryBorderColor = Color.FromName ("#e9e9eb");
+			PadCategoryLabelColor = Color.FromName ("#555555");
 
 			PropertyPadLabelBackgroundColor = Color.FromName ("#fafafa");
 			PropertyPadDividerColor = PropertyPadLabelBackgroundColor;
@@ -545,8 +543,7 @@ namespace MonoDevelop.Ide.Gui
 			BrowserPadBackground = Color.FromName ("#202020");
 			InactiveBrowserPadBackground = Color.FromName ("#141414");
 
-			PadCategoryBackgroundGradientStartColor = Color.FromName ("#5a5a5a");
-			PadCategoryBackgroundGradientEndColor = Color.FromName ("#525252");
+			PadCategoryBackgroundColor = Color.FromName ("#5a5a5a");
 			PadCategoryBorderColor = Color.FromName ("#606060");
 			PadCategoryLabelColor = Shift (BaseForegroundColor, 0.8);
 
