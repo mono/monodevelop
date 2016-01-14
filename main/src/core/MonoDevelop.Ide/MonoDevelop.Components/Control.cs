@@ -140,7 +140,12 @@ namespace MonoDevelop.Components
 			if (d == null)
 				return null;
 
-			return GetImplicit<Control, Gtk.Widget>(d) ?? new Control (d);
+			var control = GetImplicit<Control, Gtk.Widget>(d) ?? new Control (d);
+			d.Destroyed += delegate {
+				GC.SuppressFinalize (control);
+				control.Dispose (true);
+			};
+			return control;
 		}
 
 		internal static T GetImplicit<T, U> (U native) where T : Control where U : class
