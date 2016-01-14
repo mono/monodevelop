@@ -261,8 +261,8 @@ namespace WindowsPlatform
 				MainToolbarButtonPressedBackgroundBrush = new SolidColorBrush (ColorFromHex("008BFF", 0.4));
 				MainToolbarButtonPressedBorderBrush = new SolidColorBrush (ColorFromHex("008BFF", 0.4));
 
-				MenuBarBackgroundBrush = SystemColors.MenuBarBrush; //new SolidColorBrush (ColorFromHex("F0F0F0"));
-				MenuBarForegroundBrush = SystemColors.MenuTextBrush; //new SolidColorBrush (ColorFromHex("000000"));
+				MenuBarBackgroundBrush = SystemColors.MenuBarBrush;
+				MenuBarForegroundBrush = SystemColors.MenuTextBrush;
 				MenuBarBorderBrush = new SolidColorBrush (ColorFromHex("999999"));
 				MenuBarHighlightBackgroundBrush = new SolidColorBrush (ColorFromHex("C3E3FE"));
 				MenuBarHighlightBorderBrush = new SolidColorBrush (ColorFromHex("C3E3FE"));
