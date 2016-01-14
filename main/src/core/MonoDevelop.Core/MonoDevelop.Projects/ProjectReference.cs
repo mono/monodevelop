@@ -84,6 +84,8 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("Package", DefaultValue=null)]
 		internal string packageName {
 			get {
+				if (!string.IsNullOrEmpty (package))
+					return package;
 				SystemPackage sp = Package;
 				if (sp != null && !sp.IsGacPackage)
 					return sp.Name;
@@ -672,9 +674,12 @@ namespace MonoDevelop.Projects
 				if (referenceType == ReferenceType.Package) {
 					if (cachedPackage != null)
 						return cachedPackage;
-					
-					if (!string.IsNullOrEmpty (package))
-						return AssemblyContext.GetPackage (package);
+
+					if (!string.IsNullOrEmpty (package)) {
+						var p = AssemblyContext.GetPackage (package);
+						if (p != null)
+							return p;
+					}
 
 					// No package is specified, get any of the registered assemblies, giving priority to gaced assemblies
 					// (because non-gac assemblies should have a package name set)

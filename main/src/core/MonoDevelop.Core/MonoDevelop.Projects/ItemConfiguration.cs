@@ -130,7 +130,7 @@ namespace MonoDevelop.Projects
 		
 		public override string ToString()
 		{
-			return name;
+			return Id;
 		}
 		
 		public IDictionary ExtendedProperties {

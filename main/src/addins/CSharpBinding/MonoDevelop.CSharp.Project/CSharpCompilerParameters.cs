@@ -212,7 +212,8 @@ namespace MonoDevelop.CSharp.Project
 				return optimize ?? false;
 			}
 			set {
-				optimize = value;
+				if (value != Optimize)
+					optimize = value;
 			}
 		}
 		

@@ -40,7 +40,7 @@ namespace MonoDevelop.Projects.MSBuild
 		MSBuildEvaluatedPropertyCollection evaluatedProperties;
 		MSBuildTarget[] targets = new MSBuildTarget[0];
 		Dictionary<string,string> globalProperties = new Dictionary<string, string> ();
-		IDictionary<string, List<string>> conditionedProperties;
+		ConditionedPropertyCollection conditionedProperties;
 
 		MSBuildProjectInstanceInfo info;
 
@@ -208,7 +208,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return evaluatedProperties;
 		}
 
-		internal IDictionary<string, List<string>> GetConditionedProperties ()
+		internal ConditionedPropertyCollection GetConditionedProperties ()
 		{
 			return conditionedProperties;
 		}

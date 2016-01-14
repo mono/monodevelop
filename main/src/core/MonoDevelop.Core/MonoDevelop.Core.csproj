@@ -553,9 +553,9 @@
     <Compile Include="MonoDevelop.Projects.MSBuild\IMSBuildProjectObject.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\IntrinsicFunctions.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\EscapingUtilities.cs" />
-    <Compile Include="MonoDevelop.Projects.MSBuild.Conditions\ConditionedPropertyCollection.cs" />
     <Compile Include="CoreExtensions.cs" />
     <Compile Include="MonoDevelop.Core\FileWriteableState.cs" />
+    <Compile Include="MonoDevelop.Projects\ConditionedPropertyCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
