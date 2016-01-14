@@ -860,6 +860,16 @@ namespace MonoDevelop.Projects
 			});
 		}
 
+		/// <summary>
+		/// Gets the referenced assembly projects, but only projects which output are actually referenced
+		/// for example references with ReferenceOutputAssembly=false are excluded
+		/// </summary>
+		/// <param name="configuration">Configuration.</param>
+		public IEnumerable<DotNetProject> GetReferencedAssemblyProjects (ConfigurationSelector configuration)
+		{
+			return ProjectExtension.OnGetReferencedAssemblyProjects (configuration);
+		}
+
 		internal protected virtual async Task<List<string>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
 		{
 			List<string> result = new List<string> ();
@@ -905,6 +915,23 @@ namespace MonoDevelop.Projects
 					result.Add (sa.Location);
 			}
 			return result;
+		}
+
+		internal protected virtual IEnumerable<DotNetProject> OnGetReferencedAssemblyProjects (ConfigurationSelector configuration)
+		{
+			if (ParentSolution == null) {
+				yield break;
+			}
+			foreach (ProjectReference pref in References) {
+				if (pref.ReferenceType == ReferenceType.Project &&
+							(string.IsNullOrEmpty (pref.Condition) || ConditionParser.ParseAndEvaluate (pref.Condition, new ProjectParserContext (this, (DotNetProjectConfiguration)GetConfiguration (configuration))))) {
+					if (!pref.ReferenceOutputAssembly)
+						continue;
+					var rp = pref.ResolveProject (ParentSolution) as DotNetProject;
+					if (rp != null)
+						yield return rp;
+				}
+			}
 		}
 
 		protected override Task<BuildResult> DoBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
@@ -1572,6 +1599,11 @@ namespace MonoDevelop.Projects
 			internal protected override Task<List<string>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
 			{
 				return Project.OnGetReferencedAssemblies (configuration);
+			}
+
+			internal protected override IEnumerable<DotNetProject> OnGetReferencedAssemblyProjects (ConfigurationSelector configuration)
+			{
+				return Project.OnGetReferencedAssemblyProjects (configuration);
 			}
 
 			internal protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration)
