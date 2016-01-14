@@ -334,10 +334,9 @@ namespace MonoDevelop.Ide
 		{
 			Gtk.Dialog dialog = dlg;
 			try {
-				return RunCustomDialog (dialog, parent);
+				return RunCustomDialog (dlg, parent);
 			} finally {
-				if (dialog != null)
-					dialog.Destroy ();
+				dialog?.Destroy ();
 			}
 		}
 		
