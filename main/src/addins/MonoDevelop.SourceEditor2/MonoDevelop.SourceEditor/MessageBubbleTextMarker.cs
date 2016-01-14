@@ -664,7 +664,8 @@ namespace MonoDevelop.SourceEditor
 				while (column < line.Length && char.IsWhiteSpace (editor.GetCharAt (line.Offset + (int)column))) {
 					column++;
 				}
-					
+				if (column >= line.Length)
+					continue;
 				int index = (int)metrics.Layout.TranslateToUTF8Index (column, ref curIndex, ref byteIndex);
 				var pos = metrics.Layout.Layout.IndexToPos (index);
 				var co = o + task.Column - 1;
