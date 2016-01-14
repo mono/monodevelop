@@ -92,18 +92,24 @@ namespace MonoDevelop.RegexToolkit
 	{
 		protected override void Run ()
 		{
+			RunRegexWindow ();
+		}
+
+		public static RegexToolkitWidget RunRegexWindow ()
+		{
 			foreach (var document in IdeApp.Workbench.Documents) {
 				if (document.Window.ViewContent.Control is RegexToolkitWidget) {
 					document.Window.SelectWindow ();
-					return;
+					return (RegexToolkitWidget)document.Window.ViewContent.Control;
 				}
 			}
 			var regexToolkit = new RegexToolkitWidget ();
 			var newDocument = IdeApp.Workbench.OpenDocument (new ViewOnlyContent (regexToolkit, GettextCatalog.GetString ("Regex Toolkit")), true);
-			
+
 			var elementHelp = new ElementHelpWidget (newDocument.Window, regexToolkit);
-			
+
 			newDocument.Window.AttachViewContent (new DefaultAttachableViewContent (elementHelp, GettextCatalog.GetString ("Elements")));
+			return regexToolkit;
 		}
 	}
 	
