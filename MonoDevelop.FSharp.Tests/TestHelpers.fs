@@ -15,6 +15,7 @@ type FixtureSetup() =
       firstRun := false
       MonoDevelop.FSharp.MDLanguageService.DisableVirtualFileSystem()
       MonoDevelop.Ide.DesktopService.Initialize()
+
       if Platform.IsWindows then
         Xwt.Application.Initialize()
 
