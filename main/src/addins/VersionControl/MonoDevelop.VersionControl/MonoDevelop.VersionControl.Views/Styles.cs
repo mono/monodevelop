@@ -78,13 +78,7 @@ namespace MonoDevelop.VersionControl
 		public static void LoadStyles ()
 		{
 			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
-				
 				BlameView = new BlameViewStyle {
-					AnnotationBackgroundColor = Color.FromName ("#e7eaee"),
-					AnnotationHighlightColor = Color.FromName ("#f0f1f3"),
-					AnnotationTextColor = Color.FromName ("#555555"),
-					AnnotationSummaryTextColor = Color.FromName ("#aaaaaa"),
-					AnnotationSplitterColor = Color.FromName ("#e9e9eb"),
 					AnnotationMarkColor = Color.FromName ("#e5f1ff"),
 					AnnotationMarkModifiedColor = Color.FromName ("#ffff00"),
 					RangeHazeColor = Color.FromName ("#ababab").WithAlpha (.1),
@@ -92,31 +86,22 @@ namespace MonoDevelop.VersionControl
 				};
 
 				LogView = new LogViewStyle {
-					CommitDescBackgroundColor = Color.FromName ("#e7eaee"),
 					DiffAddBackgroundColor = Color.FromName ("#7bc87b").AddLight (0.1),
 					DiffRemoveBackgroundColor = Color.FromName ("#c88c8c").AddLight (0.1),
 					DiffHighlightColor = Color.FromName ("#ffffff").WithAlpha (0),
 					DiffBoxBorderColor = Color.FromName ("#eaeaea"),
-					DiffBoxSplitterColor = Color.FromName ("#ffffff"),
 				};
 
 				DiffView = new DiffViewStyle {
-					AddBorderColor = Color.FromName ("#85a885"),
 					AddBackgroundColor = Color.FromName ("#85a885"),
-					RemoveBorderColor = Color.FromName ("#b28c8c"),
+					AddBorderColor = Color.FromName ("#85a885"),
 					RemoveBackgroundColor = Color.FromName ("#b28c8c"),
-					MergeBorderColor = Color.FromName ("#8585a8"),
+					RemoveBorderColor = Color.FromName ("#b28c8c"),
 					MergeBackgroundColor = Color.FromName ("#8585a8"),
+					MergeBorderColor = Color.FromName ("#8585a8"),
 				};
-
 			} else {
-
 				BlameView = new BlameViewStyle {
-					AnnotationBackgroundColor = MonoDevelop.Ide.Gui.Styles.PadBackground, // TODO
-					AnnotationHighlightColor = MonoDevelop.Ide.Gui.Styles.BackgroundColor, // TODO
-					AnnotationTextColor = Color.FromName ("#ffffff"), // TODO
-					AnnotationSummaryTextColor = MonoDevelop.Ide.Gui.Styles.BaseForegroundColor, // TODO
-					AnnotationSplitterColor = MonoDevelop.Ide.Gui.Styles.ThinSplitterColor, // TODO
 					AnnotationMarkColor = Color.FromName ("#e5e5ff"), // TODO
 					AnnotationMarkModifiedColor = Color.FromName ("#ffff00"), // TODO
 					RangeHazeColor = Color.FromName ("#3d3d3d").WithAlpha (.6), // TODO
@@ -124,12 +109,10 @@ namespace MonoDevelop.VersionControl
 				};
 
 				LogView = new LogViewStyle () {
-					CommitDescBackgroundColor = MonoDevelop.Ide.Gui.Styles.BaseBackgroundColor, // TODO
 					DiffAddBackgroundColor = Color.FromName ("#7bc87b").AddLight (-0.1), // TODO
 					DiffRemoveBackgroundColor = Color.FromName ("#c88c8c").AddLight (-0.1), // TODO
 					DiffHighlightColor = MonoDevelop.Ide.Gui.Styles.BackgroundColor.AddLight (0.1), // TODO
 					DiffBoxBorderColor = Color.FromName ("#4c4c4c"), // TODO
-					DiffBoxSplitterColor = Color.FromName ("#7f7f7f"), // TODO
 				};
 
 				DiffView = new DiffViewStyle {
@@ -141,6 +124,17 @@ namespace MonoDevelop.VersionControl
 					MergeBackgroundColor = Color.FromName ("#8585a8"), // TODO
 				};
 			}
+
+			// Shared
+
+			BlameView.AnnotationTextColor = MonoDevelop.Ide.Gui.Styles.BaseForegroundColor;
+			BlameView.AnnotationHighlightColor = MonoDevelop.Ide.Gui.Styles.SecondaryBackgroundLigherColor;
+			BlameView.AnnotationBackgroundColor = MonoDevelop.Ide.Gui.Styles.SecondaryBackgroundDarkerColor;
+			BlameView.AnnotationSplitterColor = MonoDevelop.Ide.Gui.Styles.SeparatorColor;
+			BlameView.AnnotationSummaryTextColor = MonoDevelop.Ide.Gui.Styles.DimTextColor;
+
+			LogView.CommitDescBackgroundColor = MonoDevelop.Ide.Gui.Styles.SecondaryBackgroundDarkerColor;
+			LogView.DiffBoxSplitterColor = MonoDevelop.Ide.Gui.Styles.PrimaryBackgroundColor;
 		}
 	}
 }
