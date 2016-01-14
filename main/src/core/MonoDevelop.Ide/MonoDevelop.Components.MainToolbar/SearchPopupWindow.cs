@@ -43,7 +43,7 @@ namespace MonoDevelop.Components.MainToolbar
 	{
 		const int yMargin = 0;
 		const int xMargin = 6;
-		const int itemSeparatorHeight = 2;
+		const int itemSeparatorHeight = 0;
 		const int marginIconSpacing = 4;
 		const int iconTextSpacing = 6;
 		const int categorySeparatorHeight = 8;
@@ -1001,7 +1001,7 @@ namespace MonoDevelop.Components.MainToolbar
 				layout.GetPixelSize (out w, out h);
 				if (selectedItem != null && selectedItem.Category == category && selectedItem.Item == i) {
 					context.SetSourceColor (selectionBackgroundColor);
-					context.Rectangle (alloc.X + headerMarginSize, y, Allocation.Width - adjustedMarginSize, h);
+					context.Rectangle (alloc.X + headerMarginSize + 1, y, Allocation.Width - adjustedMarginSize - 1, h);
 					context.Fill ();
 					context.SetSourceRGB (1, 1, 1);
 				}
@@ -1050,7 +1050,7 @@ namespace MonoDevelop.Components.MainToolbar
 						break;
 					if (selectedItem != null && selectedItem.Category == category && selectedItem.Item == i) {
 						context.SetSourceColor (selectionBackgroundColor);
-						context.Rectangle (alloc.X + headerMarginSize, y, Allocation.Width - adjustedMarginSize, h);
+						context.Rectangle (alloc.X + headerMarginSize + 1, y, Allocation.Width - adjustedMarginSize - 1, h);
 						context.Fill ();
 						context.SetSourceRGB (1, 1, 1);
 					}
