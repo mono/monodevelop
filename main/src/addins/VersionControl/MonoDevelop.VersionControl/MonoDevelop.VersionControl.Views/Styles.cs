@@ -128,7 +128,7 @@ namespace MonoDevelop.VersionControl
 			// Shared
 
 			BlameView.AnnotationTextColor = MonoDevelop.Ide.Gui.Styles.BaseForegroundColor;
-			BlameView.AnnotationHighlightColor = MonoDevelop.Ide.Gui.Styles.SecondaryBackgroundLigherColor;
+			BlameView.AnnotationHighlightColor = MonoDevelop.Ide.Gui.Styles.SecondaryBackgroundLighterColor;
 			BlameView.AnnotationBackgroundColor = MonoDevelop.Ide.Gui.Styles.SecondaryBackgroundDarkerColor;
 			BlameView.AnnotationSplitterColor = MonoDevelop.Ide.Gui.Styles.SeparatorColor;
 			BlameView.AnnotationSummaryTextColor = MonoDevelop.Ide.Gui.Styles.DimTextColor;
