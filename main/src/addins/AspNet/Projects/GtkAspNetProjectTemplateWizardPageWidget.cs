@@ -61,12 +61,10 @@ namespace MonoDevelop.AspNet.Projects
 				includeUnitTestProjectDescriptionLeftHandPadding.WidthRequest = leftPaddingWidth;
 			}
 
-			double scale = GtkWorkarounds.GetPixelScale ();
-
 			backgroundImage = Xwt.Drawing.Image.FromResource ("aspnet-wizard-page.png");
 			backgroundImageView = new ImageView (backgroundImage);
-			backgroundImageView.Xalign = (float)(1/scale);
-			backgroundImageView.Yalign = (float)(1/scale);
+			backgroundImageView.Xalign = 1.0f;
+			backgroundImageView.Yalign = 1.0f;
 			backgroundLargeImageVBox.PackStart (backgroundImageView, true, true, 0);
 
 			var separatorColor = new Color (176, 178, 181);
@@ -77,9 +75,6 @@ namespace MonoDevelop.AspNet.Projects
 			configurationTableEventBox.ModifyBg (StateType.Normal, backgroundColor);
 			configurationBottomEventBox.ModifyBg (StateType.Normal, backgroundColor);
 			backgroundLargeImageEventBox.ModifyBg (StateType.Normal, backgroundColor);
-
-			if (Platform.IsWindows && scale > 1.0)
-				ScaleWidgets (scale);
 		}
 
 		public GtkAspNetProjectTemplateWizardPageWidget (AspNetProjectTemplateWizardPage wizardPage)

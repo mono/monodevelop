@@ -68,14 +68,13 @@ namespace MonoDevelop.Components.DockNotebook
 		public Button NextButton;
 		public MenuButton DropDownButton;
 
-		static readonly double PixelScale = GtkWorkarounds.GetPixelScale ();
-		static readonly int TopBarPadding = (int)(3 * PixelScale);
-		static readonly int BottomBarPadding = (int)(3 * PixelScale);
-		static readonly int LeftRightPadding = (int)(10 * PixelScale);
-		static readonly int TopPadding = (int)(8 * PixelScale);
-		static readonly int BottomPadding = (int)(8 * PixelScale);
-		static readonly int LeftBarPadding = (int)(58 * PixelScale);
-		static readonly int VerticalTextSize = (int)(11 * PixelScale);
+		static readonly int TopBarPadding = 3;
+		static readonly int BottomBarPadding = 3;
+		static readonly int LeftRightPadding = 10;
+		static readonly int TopPadding = 8;
+		static readonly int BottomPadding = 8;
+		static readonly int LeftBarPadding = 58;
+		static readonly int VerticalTextSize = 11;
 		const int TabSpacing = -1;
 		const int Radius = 2;
 		const int LeanWidth = 18;

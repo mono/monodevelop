@@ -182,12 +182,10 @@ namespace MonoDevelop.Components.MainToolbar
 				if (toplevel == null)
 					return;
 
-				var pixel_scale = GtkWorkarounds.GetPixelScale ();
-
 				int windowWidth = toplevel.Allocation.Width;
 				int center = windowWidth / 2;
-				int left = Math.Max (center - (int)(300 * pixel_scale), args.Allocation.Left);
-				int right = Math.Min (left + (int)(600 * pixel_scale), args.Allocation.Right);
+				int left = Math.Max (center - 300, args.Allocation.Left);
+				int right = Math.Min (left + 600, args.Allocation.Right);
 				uint left_padding = (uint) (left - args.Allocation.Left);
 				uint right_padding = (uint) (args.Allocation.Right - right);
 
@@ -230,7 +228,7 @@ namespace MonoDevelop.Components.MainToolbar
 			align.Add (contentBox);
 
 			Add (align);
-			SetDefaultSizes (-1, (int)(21 * GtkWorkarounds.GetPixelScale ()));
+			SetDefaultSizes (-1, 21);
 
 			configurationCombo.Changed += (o, e) => {
 				if (ConfigurationChanged != null)
