@@ -36,6 +36,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -369,7 +370,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			public void OptionsChanged ()
 			{
-				var description = Pango.FontDescription.FromString ("Tahoma " + (int)(10 * widget.Editor.Options.Zoom));
+				var description = FontService.SansFont.CopyModified (MonoDevelop.Ide.Gui.Styles.FontScale11);
 				layout.FontDescription = description;
 				UpdateWidth ();
 			}
@@ -709,7 +710,7 @@ namespace MonoDevelop.VersionControl.Views
 							}
 
 							using (var authorLayout = MonoDevelop.Components.PangoUtil.CreateLayout (this)) {
-								var description = Pango.FontDescription.FromString ("Tahoma " + (int)(10 * widget.Editor.Options.Zoom));
+								var description = FontService.SansFont.CopyModified (MonoDevelop.Ide.Gui.Styles.FontScale11);
 								authorLayout.FontDescription = description;
 								authorLayout.SetText (ann.Author);
 								authorLayout.GetPixelSize (out authorWidth, out h);
