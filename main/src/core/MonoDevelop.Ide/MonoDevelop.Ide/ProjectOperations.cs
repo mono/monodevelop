@@ -1197,7 +1197,7 @@ namespace MonoDevelop.Ide
 			}
 
 			//saves open documents since it may dirty the "needs building" check
-			var r = DoBeforeCompileAction ();
+			var r = await DoBeforeCompileAction ();
 			if (r.Failed)
 				return false;
 
@@ -1352,7 +1352,7 @@ namespace MonoDevelop.Ide
 			try {
 				if (!skipPrebuildCheck) {
 					tt.Trace ("Pre-build operations");
-					result = DoBeforeCompileAction ();
+					result = await DoBeforeCompileAction ();
 				}
 
 				//wait for any custom tools that were triggered by the save, since the build may depend on them
@@ -1379,7 +1379,7 @@ namespace MonoDevelop.Ide
 		}
 		
 		// Note: This must run in the main thread
-		void PromptForSave (BuildResult result)
+		async Task PromptForSave (BuildResult result)
 		{
 			var couldNotSaveError = "The build has been aborted as the file '{0}' could not be saved";
 			
@@ -1389,7 +1389,7 @@ namespace MonoDevelop.Ide
 					                                GettextCatalog.GetString ("Some of the open documents have unsaved changes."),
 					                                AlertButton.BuildWithoutSave, AlertButton.Save) == AlertButton.Save) {
 						MarkFileDirty (doc.FileName);
-						doc.Save ();
+						await doc.Save ();
 						if (doc.IsDirty)
 							result.AddError (string.Format (couldNotSaveError, Path.GetFileName (doc.FileName)), doc.FileName);
 					} else
@@ -1399,13 +1399,13 @@ namespace MonoDevelop.Ide
 		}
 		
 		// Note: This must run in the main thread
-		void SaveAllFiles (BuildResult result)
+		async Task SaveAllFiles (BuildResult result)
 		{
 			var couldNotSaveError = "The build has been aborted as the file '{0}' could not be saved";
 			
 			foreach (var doc in new List<MonoDevelop.Ide.Gui.Document> (IdeApp.Workbench.Documents)) {
 				if (doc.IsDirty && doc.Project != null) {
-					doc.Save ();
+					await doc.Save ();
 					if (doc.IsDirty) {
 						doc.Select ();
 						result.AddError (string.Format (couldNotSaveError, Path.GetFileName (doc.FileName)), doc.FileName);
@@ -1414,15 +1414,15 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		BuildResult DoBeforeCompileAction ()
+		async Task<BuildResult> DoBeforeCompileAction ()
 		{
 			BeforeCompileAction action = IdeApp.Preferences.BeforeBuildSaveAction;
 			var result = new BuildResult ();
 			
 			switch (action) {
 			case BeforeCompileAction.Nothing: break;
-			case BeforeCompileAction.PromptForSave: PromptForSave (result); break;
-			case BeforeCompileAction.SaveAllFiles: SaveAllFiles (result); break;
+			case BeforeCompileAction.PromptForSave: await PromptForSave (result); break;
+			case BeforeCompileAction.SaveAllFiles: await SaveAllFiles (result); break;
 			default: System.Diagnostics.Debug.Assert (false); break;
 			}
 			

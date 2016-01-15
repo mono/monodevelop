@@ -379,7 +379,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 				
 				if (Window.ViewContent.ContentName == null) {
-					SaveAs ();
+					await SaveAs ();
 				} else {
 					try {
                         FileService.RequestFileEdit ((FilePath)Window.ViewContent.ContentName, true);
@@ -390,7 +390,7 @@ namespace MonoDevelop.Ide.Gui
 					FileAttributes attr = FileAttributes.ReadOnly | FileAttributes.Directory | FileAttributes.Offline | FileAttributes.System;
 	
 					if (!File.Exists ((string)Window.ViewContent.ContentName) || (File.GetAttributes ((string)window.ViewContent.ContentName) & attr) != 0) {
-                        SaveAs();
+                        await SaveAs();
 					} else {
 						string fileName = Window.ViewContent.ContentName;
 						// save backup first						
