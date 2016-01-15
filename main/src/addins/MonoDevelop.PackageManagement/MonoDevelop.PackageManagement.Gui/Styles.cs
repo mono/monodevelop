@@ -79,7 +79,7 @@ namespace MonoDevelop.PackageManagement
 			CellStrongSelectionColor = MonoDevelop.Ide.Gui.Styles.BaseSelectionBackgroundColor;
 			CellTextSelectionColor = MonoDevelop.Ide.Gui.Styles.BaseSelectionTextColor;
 
-			PackageInfoBackgroundColor = MonoDevelop.Ide.Gui.Styles.SecondaryBackgroundLigherColor;
+			PackageInfoBackgroundColor = MonoDevelop.Ide.Gui.Styles.SecondaryBackgroundLighterColor;
 
 			LineBorderColor = MonoDevelop.Ide.Gui.Styles.SeparatorColor;
 

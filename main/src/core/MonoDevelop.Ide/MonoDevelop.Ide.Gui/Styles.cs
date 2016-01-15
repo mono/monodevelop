@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Gui
 		public static Color ThinSplitterColor { get; internal set; }
 		public static Color SeparatorColor { get; internal set; }
 		public static Color PrimaryBackgroundColor { get; internal set; }
-		public static Color SecondaryBackgroundLigherColor { get; internal set; }
+		public static Color SecondaryBackgroundLighterColor { get; internal set; }
 		public static Color SecondaryBackgroundDarkerColor { get; internal set; }
 		public static Color DimTextColor { get; internal set; }
 		public static Color StatusInformationBackgroundColor { get; internal set; }
@@ -321,14 +321,14 @@ namespace MonoDevelop.Ide.Gui
 			DockBarLabelColor = BaseIconColor;
 			PadCategoryBorderColor = SeparatorColor;
 			PadCategoryLabelColor = BaseForegroundColor;
-			PadCategoryBackgroundColor = SecondaryBackgroundLigherColor;
-			BrowserPadBackground = SecondaryBackgroundLigherColor;
+			PadCategoryBackgroundColor = SecondaryBackgroundLighterColor;
+			BrowserPadBackground = SecondaryBackgroundLighterColor;
 
 			CodeCompletion.SelectionBackgroundColor = BaseSelectionBackgroundColor;
 			CodeCompletion.SelectionTextColor = BaseSelectionTextColor;
 
 			GlobalSearch.BackgroundColor = PrimaryBackgroundColor;
-			GlobalSearch.HeaderBackgroundColor = SecondaryBackgroundLigherColor;
+			GlobalSearch.HeaderBackgroundColor = SecondaryBackgroundLighterColor;
 			GlobalSearch.HeaderTextColor = DimTextColor;
 			GlobalSearch.SeparatorLineColor = SeparatorColor;
 			GlobalSearch.SelectionBackgroundColor = BaseSelectionBackgroundColor;
@@ -362,10 +362,10 @@ namespace MonoDevelop.Ide.Gui
 		{
 			BaseIconColor = Color.FromName ("#575757");
 			ThinSplitterColor = Color.FromName ("#dadada");
-			SeparatorColor = Color.FromName ("#e9e9eb");
+			SeparatorColor = Color.FromName ("#f2f2f4");
 			PrimaryBackgroundColor = Color.FromName ("#ffffff");
 			SecondaryBackgroundDarkerColor = Color.FromName ("#e7eaee");
-			SecondaryBackgroundLigherColor = Color.FromName ("#f0f1f3");
+			SecondaryBackgroundLighterColor = Color.FromName ("#f9f9fb");
 			DimTextColor = Color.FromName ("#aaaaaa");
 
 			// these colors need to match colors from status icons
