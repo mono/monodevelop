@@ -163,7 +163,7 @@ namespace MonoDevelop.Components.DockNotebook
 			var arr = new Xwt.ImageView (tabbarPrevImage);
 			arr.HeightRequest = arr.WidthRequest = 10;
 
-			var alignment = new Alignment (0.5f, 0.5f, 0.0f, 0.0f);
+			var alignment = new Alignment (0.5f, 1, 0.0f, 0.0f);
 			alignment.Add (arr.ToGtkWidget ());
 			PreviousButton = new Button (alignment);
 			PreviousButton.Relief = ReliefStyle.None;
@@ -172,7 +172,7 @@ namespace MonoDevelop.Components.DockNotebook
 			arr = new Xwt.ImageView (tabbarNextImage);
 			arr.HeightRequest = arr.WidthRequest = 10;
 
-			alignment = new Alignment (0.5f, 0.5f, 0.0f, 0.0f);
+			alignment = new Alignment (0.5f, 1, 0.0f, 0.0f);
 			alignment.Add (arr.ToGtkWidget ());
 			NextButton = new Button (alignment);
 			NextButton.Relief = ReliefStyle.None;
