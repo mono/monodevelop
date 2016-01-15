@@ -47,6 +47,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static Pango.FontDescription DefaultFont { get; internal set; }
 		public static string DefaultFontName { get; internal set; }
+		public static double FontScale12 = 1; // 12pt
+		public static double FontScale11 = 0.917; // 11pt = default font size * 0.917
 
 		public static Color ThinSplitterColor { get; internal set; }
 		public static Color SeparatorColor { get; internal set; }

@@ -167,7 +167,7 @@ namespace MonoDevelop.Components.Docking
 				labelWidget.SetPadding (0, 5);
 
 				var font = labelWidget.Style.FontDescription.Copy ();
-				font.Size = (int)(0.92f * font.Size);
+				font.Size = (int) (Styles.FontScale11 * font.Size);
 				font.Weight = Pango.Weight.Bold;
 				labelWidget.ModifyFont (font);
 

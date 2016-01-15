@@ -235,7 +235,7 @@ namespace MonoDevelop.Components.Docking
 				label.UseMarkup = true;
 
 				var font = label.Style.FontDescription.Copy ();
-				font.Size = (int)((Platform.IsMac ? 0.92f : 1.0) * font.Size);
+				font.Size = (int)((Platform.IsMac ? Styles.FontScale11 : Styles.FontScale12) * font.Size);
 				label.ModifyFont (font);
 
 				if (bar.Orientation == Orientation.Vertical)

@@ -41,7 +41,7 @@ namespace MonoDevelop.Components
 		public TooltipPopoverWindow ()
 		{
 			Theme.SetBackgroundColor (Styles.PopoverWindow.DefaultBackgroundColor.ToCairoColor ());
-			Theme.Font = FontService.SansFont.CopyModified (Styles.PopoverWindow.DefaultFontScale);
+			Theme.Font = FontService.SansFont.CopyModified (Styles.FontScale11);
 			ShowArrow = true;
 		}
 
