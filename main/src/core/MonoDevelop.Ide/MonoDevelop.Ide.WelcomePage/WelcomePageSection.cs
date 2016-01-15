@@ -43,8 +43,7 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		static WelcomePageSection ()
 		{
-			var face = Platform.IsMac ? Styles.WelcomeScreen.Pad.TitleFontFamilyMac : Styles.WelcomeScreen.Pad.TitleFontFamilyWindows;
-			headerFormat = Styles.GetFormatString (face, Styles.WelcomeScreen.Pad.LargeTitleFontSize, Styles.WelcomeScreen.Pad.LargeTitleFontColor);
+			headerFormat = Styles.GetFormatString (Styles.WelcomeScreen.Pad.LargeTitleFontSize, Styles.WelcomeScreen.Pad.LargeTitleFontColor);
 		}
 
 		public WelcomePageSection (string title = null)
@@ -116,9 +115,9 @@ namespace MonoDevelop.Ide.WelcomePage
 			return true;
 		}
 
-		public static string FormatText (string fontFace, int fontSize, Pango.Weight weight, string color, string text)
+		public static string FormatText (int fontSize, Pango.Weight weight, string color, string text)
 		{
-			var format = Styles.GetFormatString (fontFace, fontSize, color, weight);
+			var format = Styles.GetFormatString (fontSize, color, weight);
 			return string.Format (format, GLib.Markup.EscapeText (text));
 		}
 

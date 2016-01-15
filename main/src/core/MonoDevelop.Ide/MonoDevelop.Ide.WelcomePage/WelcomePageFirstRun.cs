@@ -31,6 +31,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
 using System.Collections.Generic;
 using Xwt.Motion;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
@@ -357,7 +358,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		Pango.Layout ButtonLayout (Pango.Context context)
 		{
 			var layout = new Pango.Layout (context);
-			layout.FontDescription = Pango.FontDescription.FromString (Platform.IsMac ? Styles.WelcomeScreen.FontFamilyMac : Styles.WelcomeScreen.FontFamilyWindows);
+			layout.FontDescription = FontService.SansFont.CopyModified (MonoDevelop.Ide.Gui.Styles.FontScale11);
 			layout.FontDescription.AbsoluteSize = Pango.Units.FromPixels (16);
 			layout.SetText ("Start Building Apps");
 
@@ -367,7 +368,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		Pango.Layout TitleLayout (Pango.Context context)
 		{
 			var layout = new Pango.Layout (context);
-			layout.FontDescription = Pango.FontDescription.FromString (Platform.IsMac ? Styles.WelcomeScreen.FontFamilyMac : Styles.WelcomeScreen.FontFamilyWindows);
+			layout.FontDescription = FontService.SansFont.CopyModified (MonoDevelop.Ide.Gui.Styles.FontScale11);
 			layout.FontDescription.AbsoluteSize = Pango.Units.FromPixels (26);
 
 			layout.SetText ("Welcome To " + BrandingService.SuiteName + "!");
@@ -377,7 +378,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		Pango.Layout TextLayout (Pango.Context context)
 		{
 			var layout = new Pango.Layout (context);
-			layout.FontDescription = Pango.FontDescription.FromString (Platform.IsMac ? Styles.WelcomeScreen.FontFamilyMac : Styles.WelcomeScreen.FontFamilyWindows);
+			layout.FontDescription = FontService.SansFont.CopyModified (MonoDevelop.Ide.Gui.Styles.FontScale11);
 			layout.FontDescription.AbsoluteSize = Pango.Units.FromPixels (15);
 			layout.Width = Pango.Units.FromPixels (420);
 			layout.Wrap = Pango.WrapMode.Word;

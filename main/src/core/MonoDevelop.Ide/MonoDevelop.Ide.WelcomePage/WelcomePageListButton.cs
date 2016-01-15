@@ -78,26 +78,6 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 		}
 
-		string titleFontFace = Platform.IsMac ? Styles.WelcomeScreen.Pad.TitleFontFamilyMac : Styles.WelcomeScreen.Pad.TitleFontFamilyWindows;
-		public string TitleFontFace {
-			get {
-				return titleFontFace;
-			}
-			set {
-				titleFontFace = value;
-			}
-		}
-
-		string smallTitleFontFace = Platform.IsMac ? Styles.WelcomeScreen.Pad.TitleFontFamilyMac : Styles.WelcomeScreen.Pad.TitleFontFamilyWindows;
-		public string SmallTitleFontFace {
-			get {
-				return smallTitleFontFace;
-			}
-			set {
-				smallTitleFontFace = value;
-			}
-		}
-
 		string hoverBackgroundColor = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBackgroundColor;
 		public string HoverBackgroundColor {
 			get {
@@ -298,7 +278,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				Pango.Layout titleLayout = new Pango.Layout (PangoContext);
 				titleLayout.Width = Pango.Units.FromPixels (textWidth);
 				titleLayout.Ellipsize = Pango.EllipsizeMode.End;
-				titleLayout.SetMarkup (WelcomePageSection.FormatText (TitleFontFace, titleFontSize, TitleFontWeight, MediumTitleColor, title));
+				titleLayout.SetMarkup (WelcomePageSection.FormatText (titleFontSize, TitleFontWeight, MediumTitleColor, title));
 
 				Pango.Layout subtitleLayout = null;
 
@@ -306,7 +286,7 @@ namespace MonoDevelop.Ide.WelcomePage
 					subtitleLayout = new Pango.Layout (PangoContext);
 					subtitleLayout.Width = Pango.Units.FromPixels (textWidth);
 					subtitleLayout.Ellipsize = Pango.EllipsizeMode.Start;
-					subtitleLayout.SetMarkup (WelcomePageSection.FormatText (SmallTitleFontFace, smallTitleFontSize, Pango.Weight.Normal, SmallTitleColor, subtitle));
+					subtitleLayout.SetMarkup (WelcomePageSection.FormatText (smallTitleFontSize, Pango.Weight.Normal, SmallTitleColor, subtitle));
 				}
 
 				int height = 0;
@@ -322,11 +302,11 @@ namespace MonoDevelop.Ide.WelcomePage
 
 				int tx = Allocation.X + InternalPadding + LeftTextPadding;
 				int ty = Allocation.Y + (Allocation.Height - height) / 2;
-				DrawLayout (ctx, titleLayout, TitleFontFace, titleFontSize, TitleFontWeight, MediumTitleColor, tx, ty);
+				DrawLayout (ctx, titleLayout, "Sans", titleFontSize, TitleFontWeight, MediumTitleColor, tx, ty);
 
 				if (subtitleLayout != null) {
 					ty += h1 + Styles.WelcomeScreen.Pad.Solutions.SolutionTile.TitleBottomMargin;
-					DrawLayout (ctx, subtitleLayout, SmallTitleFontFace, smallTitleFontSize, Pango.Weight.Normal, SmallTitleColor, tx, ty);
+					DrawLayout (ctx, subtitleLayout, "Sans", smallTitleFontSize, Pango.Weight.Normal, SmallTitleColor, tx, ty);
 				}
 			}
 			return true;

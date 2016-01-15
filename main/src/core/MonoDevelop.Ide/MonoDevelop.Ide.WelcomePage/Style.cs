@@ -6,8 +6,6 @@ namespace MonoDevelop.Ide.WelcomePage
 	{
 		public static class WelcomeScreen
 		{
-			public const string FontFamilyMac = "Lucida Grande";
-			public const string FontFamilyWindows = "Calibri"; // TODO: VV: "Segoe UI"
 			public const int VerticalPadding = 24;
 			public const int HorizontalPadding = 50;
 			public static string BackgroundColor { get; internal set; }
@@ -29,8 +27,6 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			public static class Pad
 			{
-				public const string TitleFontFamilyMac = "Lucida Grande";
-				public const string TitleFontFamilyWindows = "Calibri"; // TODO: VV: "Segoe UI"
 				public const int Padding = 20;
 				public static string BackgroundColor { get; internal set; }
 				public static string BorderColor { get; internal set; }
@@ -48,7 +44,6 @@ namespace MonoDevelop.Ide.WelcomePage
 				public static string SmallTitleColor { get; internal set; }
 				public const int SmallTitleFontSize = 13;
 				public const int SummaryFontSize = 12;
-				public const string SummaryFontFamily = "Arial"; // TODO: VV: "Segoe UI"
 				public const int SummaryLineHeight = 19;
 				public const int SummaryParagraphMarginTop = 8;
 
@@ -142,9 +137,9 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 		}
 
-		public static string GetFormatString (string fontFace, int fontSize, string color, Pango.Weight weight = Pango.Weight.Normal)
+		public static string GetFormatString (int fontSize, string color, Pango.Weight weight = Pango.Weight.Normal)
 		{
-			return "<span font=\"" + fontFace + " " + fontSize + "px\" foreground=\"" + color + "\" font_weight=\"" + weight + "\">{0}</span>";
+			return "<span font=\"Sans " + fontSize + "px\" foreground=\"" + color + "\" font_weight=\"" + weight + "\">{0}</span>";
 		}
 
 	}

@@ -42,7 +42,6 @@ namespace MonoDevelop.Ide.WelcomePage
 		string actionLink;
 		private static Gdk.Cursor hand_cursor = new Gdk.Cursor(Gdk.CursorType.Hand1);
 
-		public string FontFamily { get; set; }
 		public string HoverColor { get; set; }
 		public string Color { get; set; }
 		public int FontSize { get; set; }
@@ -74,7 +73,6 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public WelcomePageBarButton (string title, string href, string iconResource = null)
 		{
-			FontFamily = Platform.IsMac ? Styles.WelcomeScreen.FontFamilyMac : Styles.WelcomeScreen.FontFamilyWindows;
 			HoverColor = Styles.WelcomeScreen.Links.HoverColor;
 			Color = Styles.WelcomeScreen.Links.Color;
 			FontSize = Styles.WelcomeScreen.Links.FontSize;
@@ -159,7 +157,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			if (imageNormal != null)
 				image.Image = mouseOver ? imageHover : imageNormal;
 			var color = mouseOver ? HoverColor : Color;
-			label.Markup = WelcomePageSection.FormatText (FontFamily, FontSize, FontWeight, color, Text);
+			label.Markup = WelcomePageSection.FormatText (FontSize, FontWeight, color, Text);
 		}
 	}
 }
