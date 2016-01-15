@@ -116,6 +116,7 @@ style "default" {
         progressbarstyle = 0
         trough_shades = { 0.842, 0.886 }
         gradient_shades = { 1.0, 1.0, 1.0, 1.0 }
+        fill_shade		= 1.0
 
         focusstyle = 0
     }
@@ -297,34 +298,24 @@ style "toolbar-combo-box" = "default"
     }
 }
 
-style "combo-box" = "default"
+style "combo-box" = "button"
 {
-    fg[NORMAL] = "#616161"
+    #bg[PRELIGHT] = @base_color
+    #fg[NORMAL] = @base_color
+    #fg[PRELIGHT] = @base_color
 
-    xthickness = 2
-    ythickness = 4
-
-    engine "xamarin" {
-        arrowstyle = 4
-        border_colors = { @base_color, @base_color }
-    }
-}
-
-style "wizard-dialog"
-{
-    GtkDialog::content-area-border = 0
-}
-
-style "combo-box-entry" = "combo-box"
-{
     engine "xamarin" {
         arrowstyle = 3
     }
 }
 
-style "combo-box-label" = "combo-box"
+style "combo-box-entry-button" = "combo-box"
 {
-    fg[NORMAL] = "#595959"
+}
+
+style "wizard-dialog"
+{
+    GtkDialog::content-area-border = 0
 }
 
 style "combo-box-menu" = "menu" {
@@ -471,6 +462,7 @@ class "GtkNotebook" style "notebook"
 class "GtkButton" style "button"
 class "GtkToggleButton" style "toggle-button"
 class "GtkCheckButton" style "quartz-radio-or-check-box"
+class "GtkComboBox" style "combo-box"
 
 class "GtkScale" style "scale"
 
@@ -503,15 +495,10 @@ widget_class "*.<GtkList>.<GtkButton>" style "tree-header"
 widget_class "*<GtkIconView>" style "icon-view"
 
 widget_class "*.<GtkComboBox>.*" style "combo-box"
-widget_class "*.<GtkComboBoxText>.*" style "combo-box-entry"
-widget_class "*.<GtkComboBoxEntry>.*" style "combo-box-entry"
 widget_class "*.<GtkComboBoxText>.<GtkEntry>" style "entry"
 widget_class "*.<GtkComboBoxEntry>.<GtkEntry>" style "entry"
-#widget_class "*.<GtkComboBoxText>.<GtkToggleButton>" style "button"
-#widget_class "*.<GtkComboBoxEntry>.<GtkToggleButton>" style "button"
-#widget_class "*.<GtkComboBoxEntry>.GtkEntry" style "entry"
-#widget_class "*.<GtkComboBoxEntry>.<GtkButton>" style "dialog-button"
-widget_class "*.<GtkComboBox>.*.GtkLabel" style "combo-box-label"
+widget_class "*.<GtkComboBoxText>.<GtkToggleButton>" style "combo-box-entry-button"
+widget_class "*.<GtkComboBoxEntry>.<GtkButton>*" style "combo-box-entry-button"
 
 # Comboboxes within toolbars
 widget_class "*.<GtkToolbar>.*.<GtkComboBox>.*" style "toolbar-combo-box"
