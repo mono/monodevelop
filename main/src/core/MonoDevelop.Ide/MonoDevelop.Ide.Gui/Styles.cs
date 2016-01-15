@@ -77,16 +77,11 @@ namespace MonoDevelop.Ide.Gui
 
 		// Document Subview Tabs
 
-		public static Color SubTabBarBackgroundGradientTopColor { get; internal set; }
-		public static Color SubTabBarBackgroundGradientStartColor { get; internal set; }
-		public static Color SubTabBarBackgroundGradientEndColor { get; internal set; }
+		public static Color SubTabBarBackgroundColor { get; internal set; }
 		public static Color SubTabBarTextColor { get; internal set; }
-		public static Color SubTabBarActiveGradientStartColor { get; internal set; }
-		public static Color SubTabBarActiveGradientTopColor { get; internal set; }
-		public static Color SubTabBarActiveGradientEndColor { get; internal set; }
+		public static Color SubTabBarActiveBackgroundColor { get; internal set; }
 		public static Color SubTabBarActiveTextColor { get; internal set; }
-		public static Color SubTabBarHoverGradientStartColor { get; internal set; }
-		public static Color SubTabBarHoverGradientEndColor { get; internal set; }
+		public static Color SubTabBarHoverBackgroundColor { get; internal set; }
 		public static Color SubTabBarSeparatorColor { get; internal set; }
 
 		// Dock pads
@@ -383,17 +378,12 @@ namespace MonoDevelop.Ide.Gui
 			// Document Subview Tabs
 			// FIXME: Doesn't work now, crashes MD
 
-			SubTabBarBackgroundGradientTopColor = Color.FromName ("#ff00ff"); // TODO ffffff
-			SubTabBarBackgroundGradientStartColor = Color.FromName ("#ff00ff"); // TODO f1f1f1
-			SubTabBarBackgroundGradientEndColor = SubTabBarBackgroundGradientStartColor; // TODO
-			SubTabBarTextColor = BaseForegroundColor; // TODO
-			SubTabBarActiveGradientTopColor = Color.FromName ("#ff00ff"); // Color.FromName ("#ffffff").WithAlpha (.05); // TODO
-			SubTabBarActiveGradientStartColor = Color.FromName ("#ff00ff"); // Color.FromName ("#5c5d5e"); // TODO
-			SubTabBarActiveGradientEndColor = Color.FromName ("#ff00ff"); // Color.FromName ("#86888a"); // TODO
-			SubTabBarActiveTextColor = Color.FromName ("#ff00ff"); // Color.FromName ("#ffffff"); // TODO
-			SubTabBarHoverGradientStartColor = Color.FromName ("#ff00ff"); // Color.FromName ("#5c5d5e").WithAlpha (.2); // TODO
-			SubTabBarHoverGradientEndColor = Color.FromName ("#ff00ff"); // Color.FromName ("#868889").WithAlpha (.2); // TODO
-			SubTabBarSeparatorColor = Color.FromName ("#ff00ff"); // Color.FromName ("#ababab"); // TODO
+			SubTabBarBackgroundColor = Color.FromName ("#fafafa");
+			SubTabBarTextColor = Color.FromName ("#555555");
+			SubTabBarActiveBackgroundColor = BaseSelectionBackgroundColor;
+			SubTabBarActiveTextColor = BaseSelectionTextColor; // TODO Windows/Linux is different
+			SubTabBarHoverBackgroundColor = BaseSelectionBackgroundColor.WithAlpha (0.2);
+			SubTabBarSeparatorColor = SubTabBarTextColor;
 
 			// WidgetBorderColor = Color.FromName ("#ff00ff"); // TODO: 8c8c8c - UNUSED (used for custom drawn `SearchEntry` but it isn’t used anymore, so its deprecated)
 
