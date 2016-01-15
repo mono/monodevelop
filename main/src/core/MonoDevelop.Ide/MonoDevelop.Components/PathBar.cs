@@ -246,14 +246,8 @@ namespace MonoDevelop.Components
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
 			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
-
 				ctx.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				// FIXME: VV: Remove gradient features
-				using (var g = new Cairo.LinearGradient (0, 0, 0, Allocation.Height)) {
-					g.AddColorStop (0, Styles.BreadcrumbBackgroundColor.ToCairoColor ());
-					g.AddColorStop (1, Styles.BreadcrumbGradientEndColor.ToCairoColor ());
-					ctx.SetSource (g);
-				}
+				ctx.SetSourceColor (Styles.BreadcrumbBackgroundColor.ToCairoColor ());
 				ctx.Fill ();
 
 				if (widths == null)
@@ -402,11 +396,6 @@ namespace MonoDevelop.Components
 			ctx.Rectangle (x, y, width, height);
 			ctx.SetSourceColor (Styles.BreadcrumbButtonFillColor.ToCairoColor ());
 			ctx.Fill ();
-
-			ctx.Rectangle (x + 0.5, y + 0.5, width - 1, height - 1);
-			ctx.SetSourceColor (Styles.BreadcrumbButtonBorderColor.ToCairoColor ());
-			ctx.LineWidth = 1;
-			ctx.Stroke ();
 		}
 
 		int[] ReduceWidths (int overflow)
