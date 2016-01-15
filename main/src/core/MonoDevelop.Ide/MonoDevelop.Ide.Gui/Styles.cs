@@ -68,33 +68,12 @@ namespace MonoDevelop.Ide.Gui
 		public static Color TabBarBackgroundColor { get; internal set; }
 		public static Color TabBarActiveTextColor { get; internal set; }
 		public static Color TabBarNotifyTextColor { get; internal set; }
-
-		public static Color TabBarActiveGradientStartColor { get; internal set; }
-		public static Color TabBarActiveGradientEndColor { get; internal set; }
-		public static Color TabBarGradientStartColor { get; internal set; }
-		public static Color TabBarGradientEndColor { get; internal set; }
-		public static Color TabBarGradientShadowColor { get; internal set; }
-		public static Color TabBarGlowGradientStartColor { get; internal set; }
-		public static Color TabBarGlowGradientEndColor { get; internal set; }
-		public static Color TabBarHoverActiveTextColor { get; internal set; }
 		public static Color TabBarInactiveTextColor { get; internal set; }
-		public static Color TabBarHoverInactiveTextColor { get; internal set; }
-		public static Color TabBarInnerBorderColor { get; internal set; }
-		public static Color TabBarInactiveGradientStartColor { get; internal set; }
-		public static Color TabBarInactiveGradientEndColor { get; internal set; }
 
-		public static Color BreadcrumbGradientStartColor { get; internal set; }
 		public static Color BreadcrumbBackgroundColor { get; internal set; }
-		public static Color BreadcrumbGradientEndColor { get; internal set; }
-		public static Color BreadcrumbBorderColor { get; internal set; }
-		public static Color BreadcrumbInnerBorderColor { get; internal set; }
 		public static Color BreadcrumbTextColor { get; internal set; }
-		public static Color BreadcrumbButtonBorderColor { get; internal set; }
 		public static Color BreadcrumbButtonFillColor { get; internal set; }
 		public static Color BreadcrumbBottomBorderColor { get; internal set; }
-
-		public static readonly bool BreadcrumbInvertedIcons = false;
-		public static readonly bool BreadcrumbGreyscaleIcons = false;
 
 		// Document Subview Tabs
 
@@ -111,12 +90,6 @@ namespace MonoDevelop.Ide.Gui
 		public static Color SubTabBarSeparatorColor { get; internal set; }
 
 		// Dock pads
-
-		public static Color DockTabBarGradientTop { get; internal set; }
-		public static Color DockTabBarGradientStart { get; internal set; }
-		public static Color DockTabBarGradientEnd { get; internal set; }
-		public static Color DockTabBarShadowGradientStart { get; internal set; }
-		public static Color DockTabBarShadowGradientEnd { get; internal set; }
 
 		public static Color PadBackground { get; internal set; }
 		public static Color InactivePadBackground { get; internal set; }
@@ -189,7 +162,6 @@ namespace MonoDevelop.Ide.Gui
 		{
 			public static readonly int PagerTriangleSize = 6;
 			public static readonly int PagerHeight = 16;
-			public static readonly double DefaultFontScale = 0.917; // 12pt default font size * 0.917 = 11pt
 
 			public static Color DefaultBackgroundColor { get; internal set; }
 			public static Color ErrorBackgroundColor { get; internal set; }
@@ -374,6 +346,17 @@ namespace MonoDevelop.Ide.Gui
 			SecondaryBackgroundDarkerColor = Color.FromName ("#e7eaee");
 			SecondaryBackgroundLighterColor = Color.FromName ("#f9f9fb");
 			DimTextColor = Color.FromName ("#aaaaaa");
+			PadBackground = Color.FromName ("#fafafa");
+			InactivePadBackground = Color.FromName ("#e8e8e8");
+			PadLabelColor = Color.FromName ("#555555");
+			InactivePadLabelColor = Color.FromName ("#979797");
+			DockFrameBackground = Color.FromName ("#bababa");
+			DockSeparatorColor = DockFrameBackground;
+			DockBarBackground = Color.FromName ("#dddddd");
+			DockBarPrelightColor = Color.FromName ("#eeeeee");
+			BrowserPadBackground = Color.FromName ("#ebedf0");
+			InactiveBrowserPadBackground = Color.FromName ("#f0f0f0");
+			PropertyPadDividerColor = Color.FromName ("#efefef");
 
 			// these colors need to match colors from status icons
 			StatusInformationBackgroundColor = Color.FromName ("#87b6f0");
@@ -384,76 +367,38 @@ namespace MonoDevelop.Ide.Gui
 			StatusErrorTextColor = Color.FromName ("#ffffff");
 
 			// Document tabs
-			// TODO: Will be new with roslyn-dark-skin-tabs
 
-			TabBarBackgroundColor = Color.FromName ("#bfbfbf"); // TODO
-			TabBarActiveTextColor = Color.FromName ("#505050"); // TODO
-			TabBarNotifyTextColor = Color.FromName ("#0000ff"); // TODO
-			TabBarActiveGradientStartColor = Shift (TabBarBackgroundColor, 0.92); // TODO
-			TabBarActiveGradientEndColor = TabBarBackgroundColor; // TODO
-			TabBarGradientStartColor = Shift (TabBarBackgroundColor, 1.02); // TODO
-			TabBarGradientEndColor = TabBarBackgroundColor; // TODO
-			TabBarGradientShadowColor = Shift (TabBarBackgroundColor, 0.8); // TODO
-			TabBarGlowGradientStartColor = Color.FromName ("#ffffff").WithAlpha (.4); // TODO
-			TabBarGlowGradientEndColor = Color.FromName ("#ffffff").WithAlpha (0); // TODO
-			TabBarHoverActiveTextColor = TabBarActiveTextColor; // TODO
+			TabBarBackgroundColor = Color.FromName ("#bfbfbf");
+			TabBarActiveTextColor = Color.FromName ("#555555");
+			TabBarNotifyTextColor = Color.FromName ("#ff00ff"); // TODO
 			TabBarInactiveTextColor = Color.FromName ("#888888");
-			TabBarHoverInactiveTextColor = Color.FromName ("#000000"); // TODO
-			TabBarInnerBorderColor = Color.FromName ("#ffffff").WithAlpha (.5); // TODO
-			TabBarInactiveGradientStartColor = Color.FromName ("#f4f4f4"); // TODO
-			TabBarInactiveGradientEndColor = Color.FromName ("#cecece"); // TODO
 
 			// Breadcrumb
-			// TODO: Will be new with roslyn-dark-skin-tabs
 
-			BreadcrumbGradientStartColor = Color.FromName ("#ffffff"); // TODO
-			BreadcrumbBackgroundColor = Shift (BreadcrumbGradientStartColor, .95); // TODO
-			BreadcrumbGradientEndColor = Shift (BreadcrumbGradientStartColor, 0.9); // TODO
-			BreadcrumbBorderColor = Shift (BreadcrumbBackgroundColor, 0.6); // TODO
-			BreadcrumbInnerBorderColor = BaseBackgroundColor.WithAlpha (0.1d); // TODO
-			BreadcrumbTextColor = Shift (BaseForegroundColor, 0.8); // TODO
-			BreadcrumbButtonBorderColor = Shift (BaseBackgroundColor, 0.8); // TODO
-			BreadcrumbButtonFillColor = BaseBackgroundColor.WithAlpha (0.1d); // TODO
-			BreadcrumbBottomBorderColor = Shift (BreadcrumbBackgroundColor, 0.7d); // TODO
+			BreadcrumbBackgroundColor = Color.FromName ("#fafafa");
+			BreadcrumbTextColor = Color.FromName ("#555555");
+			BreadcrumbButtonFillColor = BaseSelectionBackgroundColor.WithAlpha (0.2);
+			BreadcrumbBottomBorderColor = Color.FromName ("#dddddd");
 
 			// Document Subview Tabs
-			// TODO: Will be new with roslyn-dark-skin-tabs
+			// FIXME: Doesn't work now, crashes MD
 
-			SubTabBarBackgroundGradientTopColor = Color.FromName ("#ffffff"); // TODO
-			SubTabBarBackgroundGradientStartColor = Color.FromName ("#f1f1f1"); // TODO
+			SubTabBarBackgroundGradientTopColor = Color.FromName ("#ff00ff"); // TODO ffffff
+			SubTabBarBackgroundGradientStartColor = Color.FromName ("#ff00ff"); // TODO f1f1f1
 			SubTabBarBackgroundGradientEndColor = SubTabBarBackgroundGradientStartColor; // TODO
 			SubTabBarTextColor = BaseForegroundColor; // TODO
-			SubTabBarActiveGradientTopColor = Color.FromName ("#ffffff").WithAlpha (.05); // TODO
-			SubTabBarActiveGradientStartColor = Color.FromName ("#5c5d5e"); // TODO
-			SubTabBarActiveGradientEndColor = Color.FromName ("#86888a"); // TODO
-			SubTabBarActiveTextColor = Color.FromName ("#ffffff"); // TODO
-			SubTabBarHoverGradientStartColor = Color.FromName ("#5c5d5e").WithAlpha (.2); // TODO
-			SubTabBarHoverGradientEndColor = Color.FromName ("#868889").WithAlpha (.2); // TODO
-			SubTabBarSeparatorColor = Color.FromName ("#ababab"); // TODO
+			SubTabBarActiveGradientTopColor = Color.FromName ("#ff00ff"); // Color.FromName ("#ffffff").WithAlpha (.05); // TODO
+			SubTabBarActiveGradientStartColor = Color.FromName ("#ff00ff"); // Color.FromName ("#5c5d5e"); // TODO
+			SubTabBarActiveGradientEndColor = Color.FromName ("#ff00ff"); // Color.FromName ("#86888a"); // TODO
+			SubTabBarActiveTextColor = Color.FromName ("#ff00ff"); // Color.FromName ("#ffffff"); // TODO
+			SubTabBarHoverGradientStartColor = Color.FromName ("#ff00ff"); // Color.FromName ("#5c5d5e").WithAlpha (.2); // TODO
+			SubTabBarHoverGradientEndColor = Color.FromName ("#ff00ff"); // Color.FromName ("#868889").WithAlpha (.2); // TODO
+			SubTabBarSeparatorColor = Color.FromName ("#ff00ff"); // Color.FromName ("#ababab"); // TODO
 
-			// Dock pads
-			// FIXME: Seems to be unused, kill
-
-			// DockTabBarGradientTop = Color.FromName ("#ff0000"); // f8f8f8 // UNUSED
-			// DockTabBarGradientStart = Color.FromName ("#00ff00"); // f2f2f2 // UNUSED
-			// DockTabBarGradientEnd = Color.FromName ("#0000ff"); // e6e6e6 // UNUSED
-			// DockTabBarShadowGradientStart = Color.FromName ("#00ffff"); // 9a9a9a // UNUSED
-			// DockTabBarShadowGradientEnd = Color.FromName ("#ffff00"); // .WithAlpha (0); // UNUSED
-			// WidgetBorderColor = Color.FromName ("#ff0000"); // 8c8c8c // UNUSED (used for custom drawn `SearchEntry` but it isn’t used anymore, so its deprecated)
-
-			PadBackground = Color.FromName ("#fafafa");
-			InactivePadBackground = Color.FromName ("#e8e8e8");
-			PadLabelColor = Color.FromName ("#ff0000"); // 57656b // TODO: Doesn't work currently
-			InactivePadLabelColor = Color.FromName ("#979797");
-			DockFrameBackground = Color.FromName ("#bababa");
-			DockSeparatorColor = DockFrameBackground;
-			DockBarBackground = Color.FromName ("#dddddd");
-			DockBarPrelightColor = Color.FromName ("#eeeeee");
-			BrowserPadBackground = Color.FromName ("#f0f1f3");
-			InactiveBrowserPadBackground = Color.FromName ("#f0f0f0");
-			PropertyPadDividerColor = Color.FromName ("#efefef");
+			// WidgetBorderColor = Color.FromName ("#ff00ff"); // TODO: 8c8c8c - UNUSED (used for custom drawn `SearchEntry` but it isn’t used anymore, so its deprecated)
 
 			// Status area (GTK)
+			// FIXME: Will test after the preview build
 
 			StatusBarBorderColor = Color.FromName ("#919191"); // TODO
 			StatusBarFill1Color = Color.FromName ("#f5fafc"); // TODO
@@ -509,6 +454,17 @@ namespace MonoDevelop.Ide.Gui
 			SecondaryBackgroundDarkerColor = Color.FromName ("#ffff00"); // 555555
 			SecondaryBackgroundLighterColor = Color.FromName ("#00ffff"); // 666666
 			DimTextColor = Color.FromName ("#aaaaaa");
+			PadBackground = Color.FromName ("#5a5a5a");
+			InactivePadBackground = ReduceLight (PadBackground, 0.9);
+			PadLabelColor = Color.FromName ("#ff0000"); // 57656b // TODO: Doesn't work currently
+			InactivePadLabelColor = Color.FromName ("#979797"); // TODO: Test
+			DockFrameBackground = Color.FromName ("#222222");
+			DockSeparatorColor = Color.FromName ("#222222");
+			DockBarBackground = Color.FromName ("#4a4a4a");
+			DockBarPrelightColor = Color.FromName ("#5a5a5a");
+			BrowserPadBackground = Color.FromName ("#484b55");
+			InactiveBrowserPadBackground = Color.FromName ("#141414");
+			PropertyPadDividerColor = PadBackground;
 
 			// these colors need to match colors from status icons
 			StatusInformationBackgroundColor = Color.FromName ("#87b6f0");
@@ -517,18 +473,6 @@ namespace MonoDevelop.Ide.Gui
 			StatusWarningTextColor = Color.FromName ("#ffffff");
 			StatusErrorBackgroundColor = Color.FromName ("#f56d4f");
 			StatusErrorTextColor = Color.FromName ("#ffffff");
-
-			PadBackground = Color.FromName ("#5a5a5a");
-			InactivePadBackground = ReduceLight (PadBackground, 0.9);
-			PadLabelColor = Color.FromName ("#ff0000"); // 57656b // TODO: Doesn't work currently
-			InactivePadLabelColor = Color.FromName ("#979797");
-			DockFrameBackground = Color.FromName ("#222222");
-			DockSeparatorColor = Color.FromName ("#222222");
-			DockBarBackground = Color.FromName ("#4a4a4a");
-			DockBarPrelightColor = Color.FromName ("#5a5a5a");
-			BrowserPadBackground = Color.FromName ("#484b55");
-			InactiveBrowserPadBackground = Color.FromName ("#141414");
-			PropertyPadDividerColor = PadBackground;
 
 			// Toolbar
 
