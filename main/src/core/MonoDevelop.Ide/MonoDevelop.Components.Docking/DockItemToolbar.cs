@@ -179,9 +179,9 @@ namespace MonoDevelop.Components.Docking
 	
 	public class DockToolButton : Control
 	{
-		public DockToolButtonImage Image {
+		public ImageView Image {
 			get { return (ImageView)button.Image; }
-			set { button.Image = (ImageView)value; }
+			set { button.Image = value; }
 		}
 
 		public string TooltipText {
@@ -206,7 +206,7 @@ namespace MonoDevelop.Components.Docking
 			Label = label;
 
 			Image = new ImageView (stockId, IconSize.Menu);
-			button.Image.Show ();
+			Image.Show ();
 		}
 
 		protected override object CreateNativeWidget ()
@@ -220,30 +220,6 @@ namespace MonoDevelop.Components.Docking
 			}
 			remove {
 				button.Clicked -= value;
-			}
-		}
-
-		public class DockToolButtonImage : Control
-		{
-			ImageView image;
-			internal DockToolButtonImage (ImageView image)
-			{
-				this.image = image;
-			}
-
-			protected override object CreateNativeWidget ()
-			{
-				return image;
-			}
-
-			public static implicit operator ImageView (DockToolButtonImage d)
-			{
-				return d.GetNativeWidget<ImageView> ();
-			}
-
-			public static implicit operator DockToolButtonImage (ImageView d)
-			{
-				return new DockToolButtonImage (d);
 			}
 		}
 	}

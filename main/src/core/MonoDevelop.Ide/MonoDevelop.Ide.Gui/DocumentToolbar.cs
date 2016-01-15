@@ -177,9 +177,9 @@ namespace MonoDevelop.Ide.Gui
 
 	public class DocumentToolButton : Control
 	{
-		public DocumentToolButtonImage Image {
+		public ImageView Image {
 			get { return (ImageView)button.Image; }
-			set { button.Image = (ImageView)value; }
+			set { button.Image = value; }
 		}
 
 		public string TooltipText {
@@ -203,7 +203,7 @@ namespace MonoDevelop.Ide.Gui
 			button = new Button ();
 			Label = label;
 			Image = new ImageView (stockId, IconSize.Menu);
-			button.Image.Show ();
+			Image.Show ();
 		}
 
 		protected override object CreateNativeWidget ()
@@ -217,30 +217,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 			remove {
 				button.Clicked -= value;
-			}
-		}
-
-		public class DocumentToolButtonImage : Control
-		{
-			ImageView image;
-			internal DocumentToolButtonImage (ImageView image)
-			{
-				this.image = image;
-			}
-
-			protected override object CreateNativeWidget ()
-			{
-				return image;
-			}
-
-			public static implicit operator ImageView (DocumentToolButtonImage d)
-			{
-				return d.GetNativeWidget<ImageView> ();
-			}
-
-			public static implicit operator DocumentToolButtonImage (ImageView d)
-			{
-				return new DocumentToolButtonImage (d);
 			}
 		}
 	}
