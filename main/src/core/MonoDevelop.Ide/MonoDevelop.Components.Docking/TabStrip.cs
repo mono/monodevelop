@@ -139,6 +139,14 @@ namespace MonoDevelop.Components.Docking
 				}
 			}
 		}
+
+		internal DockItemTitleTab CurrentTitleTab {
+			get {
+				if (currentTab != -1)
+					return (DockItemTitleTab)box.Children [currentTab];
+				return null;
+			}
+		}
 		
 		new public Gtk.Widget CurrentPage {
 			get {
@@ -275,14 +283,15 @@ namespace MonoDevelop.Components.Docking
 				if (TabStrip.VisualStyle.TabStyle == DockTabStyle.Normal) {
 					var alloc = Allocation;
 					Gdk.GC gc = new Gdk.GC (GdkWindow);
-					gc.RgbFgColor = TabStrip.VisualStyle.InactivePadBackgroundColor.Value.ToGdkColor ();
+					gc.RgbFgColor = Styles.TabBarBackgroundColor.ToGdkColor ();
 					evnt.Window.DrawRectangle (gc, true, alloc);
 					gc.Dispose ();
-		
+
 					Gdk.GC bgc = new Gdk.GC (GdkWindow);
-					var c = TabStrip.VisualStyle.PadBackgroundColor.Value;
-					c.Light *= 0.7;
-					bgc.RgbFgColor = c.ToGdkColor ();
+					if (TabStrip.CurrentTitleTab != null)
+						bgc.RgbFgColor = TabStrip.CurrentTitleTab.VisualStyle.PadBackgroundColor.Value.ToGdkColor ();
+					else
+						bgc.RgbFgColor = TabStrip.VisualStyle.PadBackgroundColor.Value.ToGdkColor ();
 					evnt.Window.DrawLine (bgc, alloc.X, alloc.Y + alloc.Height - 1, alloc.X + alloc.Width - 1, alloc.Y + alloc.Height - 1);
 					bgc.Dispose ();
 				}	

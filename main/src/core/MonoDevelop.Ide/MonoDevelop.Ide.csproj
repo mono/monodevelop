@@ -2634,6 +2634,18 @@
     <EmbeddedResource Include="icons\tabbar-prev-12~dark%402x.png">
       <LogicalName>tabbar-prev-12~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-prev-hover-12.png">
+      <LogicalName>tabbar-prev-hover-12.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-prev-hover-12%402x.png">
+      <LogicalName>tabbar-prev-hover-12@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-prev-hover-12~dark.png">
+      <LogicalName>tabbar-prev-hover-12~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-prev-hover-12~dark%402x.png">
+      <LogicalName>tabbar-prev-hover-12~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\tabbar-next-12.png">
       <LogicalName>tabbar-next-12.png</LogicalName>
     </EmbeddedResource>
@@ -2645,6 +2657,66 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tabbar-next-12~dark%402x.png">
       <LogicalName>tabbar-next-12~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-next-hover-12.png">
+      <LogicalName>tabbar-next-hover-12.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-next-hover-12%402x.png">
+      <LogicalName>tabbar-next-hover-12@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-next-hover-12~dark.png">
+      <LogicalName>tabbar-next-hover-12~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-next-hover-12~dark%402x.png">
+      <LogicalName>tabbar-next-hover-12~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tab-close-9.png">
+      <LogicalName>tab-close-9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tab-close-9%402x.png">
+      <LogicalName>tab-close-9@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tab-close-9~dark.png">
+      <LogicalName>tab-close-9~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tab-close-9~dark%402x.png">
+      <LogicalName>tab-close-9~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tab-dirty-9.png">
+      <LogicalName>tab-dirty-9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tab-dirty-9%402x.png">
+      <LogicalName>tab-dirty-9@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tab-dirty-9~dark.png">
+      <LogicalName>tab-dirty-9~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tab-dirty-9~dark%402x.png">
+      <LogicalName>tab-dirty-9~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-menu-12.png">
+      <LogicalName>tabbar-menu-12.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-menu-12%402x.png">
+      <LogicalName>tabbar-menu-12@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-menu-12~dark.png">
+      <LogicalName>tabbar-menu-12~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-menu-12~dark%402x.png">
+      <LogicalName>tabbar-menu-12~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-menu-hover-12.png">
+      <LogicalName>tabbar-menu-hover-12.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-menu-hover-12%402x.png">
+      <LogicalName>tabbar-menu-hover-12@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-menu-hover-12~dark.png">
+      <LogicalName>tabbar-menu-hover-12~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-menu-hover-12~dark%402x.png">
+      <LogicalName>tabbar-menu-hover-12~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\breadcrumb-prev-16.png">
       <LogicalName>breadcrumb-prev-16.png</LogicalName>
@@ -5516,6 +5588,42 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-instrumentation-16~dark%402x.png">
       <LogicalName>status-instrumentation-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-back.9.png">
+      <LogicalName>tabbar-back.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-back%402x.9.png">
+      <LogicalName>tabbar-back@2x.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-back~dark.9.png">
+      <LogicalName>tabbar-back~dark.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-back~dark%402x.9.png">
+      <LogicalName>tabbar-back~dark@2x.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-inactive.9.png">
+      <LogicalName>tabbar-inactive.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-inactive%402x.9.png">
+      <LogicalName>tabbar-inactive@2x.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-inactive~dark.9.png">
+      <LogicalName>tabbar-inactive~dark.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-inactive~dark%402x.9.png">
+      <LogicalName>tabbar-inactive~dark@2x.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-active.9.png">
+      <LogicalName>tabbar-active.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-active%402x.9.png">
+      <LogicalName>tabbar-active@2x.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-active~dark.9.png">
+      <LogicalName>tabbar-active~dark.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-active~dark%402x.9.png">
+      <LogicalName>tabbar-active~dark@2x.9.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\platform-tvos-16.png">
       <LogicalName>platform-tvos-16.png</LogicalName>

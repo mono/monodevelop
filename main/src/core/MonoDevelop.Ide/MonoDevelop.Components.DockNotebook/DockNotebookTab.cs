@@ -40,7 +40,7 @@ namespace MonoDevelop.Components.DockNotebook
 		Widget content;
 
 		internal Gdk.Rectangle Allocation;
-		internal Gdk.Rectangle CloseButtonAllocation;
+		internal Cairo.Rectangle CloseButtonActiveArea;
 
 		public DockNotebook Notebook { get { return notebook; } }
 

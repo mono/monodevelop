@@ -921,6 +921,7 @@ namespace MonoDevelop.Ide.Gui
 
 			DockVisualStyle style = new DockVisualStyle ();
 			style.PadTitleLabelColor = Styles.PadLabelColor;
+			style.InactivePadTitleLabelColor = Styles.InactivePadLabelColor;
 			style.PadBackgroundColor = Styles.PadBackground;
 			style.TreeBackgroundColor = Styles.BaseBackgroundColor;
 			style.InactivePadBackgroundColor = Styles.InactivePadBackground;
@@ -929,6 +930,7 @@ namespace MonoDevelop.Ide.Gui
 
 			style = new DockVisualStyle ();
 			style.PadTitleLabelColor = Styles.PadLabelColor;
+			style.InactivePadTitleLabelColor = Styles.InactivePadLabelColor;
 			style.PadTitleHeight = barHeight;
 			style.ShowPadTitleIcon = false;
 			style.UppercaseTitles = false;

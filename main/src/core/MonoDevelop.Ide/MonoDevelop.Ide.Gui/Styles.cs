@@ -44,6 +44,10 @@ namespace MonoDevelop.Ide.Gui
 		public static Color BaseSelectionBackgroundColor { get; internal set; }
 		public static Color BaseSelectionTextColor { get; internal set; }
 		public static Color BaseIconColor { get; internal set; }
+		
+		public static Pango.FontDescription DefaultFont { get; internal set; }
+		public static string DefaultFontName { get; internal set; }
+
 		public static Color ThinSplitterColor { get; internal set; }
 		public static Color SeparatorColor { get; internal set; }
 		public static Color PrimaryBackgroundColor { get; internal set; }
@@ -115,7 +119,7 @@ namespace MonoDevelop.Ide.Gui
 		public static Color PadBackground { get; internal set; }
 		public static Color InactivePadBackground { get; internal set; }
 		public static Color PadLabelColor { get; internal set; }
-
+		public static Color InactivePadLabelColor { get; internal set; }
 		public static Color DockFrameBackground { get; internal set; }
 		public static Color DockSeparatorColor { get; internal set; }
 		public static Color DockBarBackground { get; internal set; }
@@ -303,13 +307,15 @@ namespace MonoDevelop.Ide.Gui
 		internal static void LoadStyle ()
 		{
 			var defaultStyle = Gtk.Rc.GetStyle (IdeApp.Workbench.RootWindow);
-			var bgColor = defaultStyle.Background (Gtk.StateType.Normal);
 
 			BackgroundColor = defaultStyle.Background (Gtk.StateType.Normal).ToXwtColor ();	// must be the bg color from Gtkrc
 			BaseBackgroundColor = defaultStyle.Base (Gtk.StateType.Normal).ToXwtColor ();	// must be the base color from Gtkrc
 			BaseForegroundColor = defaultStyle.Foreground (Gtk.StateType.Normal).ToXwtColor ();	// must be the text color from Gtkrc
 			BaseSelectionBackgroundColor = defaultStyle.Base (Gtk.StateType.Selected).ToXwtColor ();
 			BaseSelectionTextColor = defaultStyle.Text (Gtk.StateType.Selected).ToXwtColor ();
+
+			DefaultFont = defaultStyle.FontDescription.Copy ();
+			DefaultFontName = DefaultFont.ToString ();
 
 			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
 				LoadLightStyle ();
@@ -378,8 +384,8 @@ namespace MonoDevelop.Ide.Gui
 			// Document tabs
 			// TODO: Will be new with roslyn-dark-skin-tabs
 
-			TabBarBackgroundColor = Color.FromName ("#c2c2c2"); // TODO
-			TabBarActiveTextColor = Color.FromName ("#000000"); // TODO
+			TabBarBackgroundColor = Color.FromName ("#bfbfbf"); // TODO
+			TabBarActiveTextColor = Color.FromName ("#505050"); // TODO
 			TabBarNotifyTextColor = Color.FromName ("#0000ff"); // TODO
 			TabBarActiveGradientStartColor = Shift (TabBarBackgroundColor, 0.92); // TODO
 			TabBarActiveGradientEndColor = TabBarBackgroundColor; // TODO
@@ -389,7 +395,7 @@ namespace MonoDevelop.Ide.Gui
 			TabBarGlowGradientStartColor = Color.FromName ("#ffffff").WithAlpha (.4); // TODO
 			TabBarGlowGradientEndColor = Color.FromName ("#ffffff").WithAlpha (0); // TODO
 			TabBarHoverActiveTextColor = TabBarActiveTextColor; // TODO
-			TabBarInactiveTextColor = Color.FromName ("#000000").BlendWith (TabBarGradientStartColor, 0.4); // TODO
+			TabBarInactiveTextColor = Color.FromName ("#888888");
 			TabBarHoverInactiveTextColor = Color.FromName ("#000000"); // TODO
 			TabBarInnerBorderColor = Color.FromName ("#ffffff").WithAlpha (.5); // TODO
 			TabBarInactiveGradientStartColor = Color.FromName ("#f4f4f4"); // TODO
@@ -436,6 +442,7 @@ namespace MonoDevelop.Ide.Gui
 			PadBackground = Color.FromName ("#fafafa");
 			InactivePadBackground = Color.FromName ("#e8e8e8");
 			PadLabelColor = Color.FromName ("#ff0000"); // 57656b // TODO: Doesn't work currently
+			InactivePadLabelColor = Color.FromName ("#979797");
 			DockFrameBackground = Color.FromName ("#bababa");
 			DockSeparatorColor = DockFrameBackground;
 			DockBarBackground = Color.FromName ("#dddddd");
@@ -512,6 +519,7 @@ namespace MonoDevelop.Ide.Gui
 			PadBackground = Color.FromName ("#5a5a5a");
 			InactivePadBackground = ReduceLight (PadBackground, 0.9);
 			PadLabelColor = Color.FromName ("#ff0000"); // 57656b // TODO: Doesn't work currently
+			InactivePadLabelColor = Color.FromName ("#979797");
 			DockFrameBackground = Color.FromName ("#222222");
 			DockSeparatorColor = Color.FromName ("#222222");
 			DockBarBackground = Color.FromName ("#4a4a4a");

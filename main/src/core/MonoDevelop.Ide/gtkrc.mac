@@ -29,6 +29,7 @@ gtk-toolbar-icon-size = large-toolbar
 gtk-auto-mnemonics = 1
 gtk-error-bell = 0
 gtk-show-input-method-menu = 0
+gtk-font-name = "Helvetica Neue 13"
 
 
 style "default" {
