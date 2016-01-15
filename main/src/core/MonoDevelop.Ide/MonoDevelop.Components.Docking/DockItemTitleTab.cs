@@ -468,33 +468,12 @@ namespace MonoDevelop.Components.Docking
 				var y = Allocation.Y;
 
 				ctx.Rectangle (x, y + 1, Allocation.Width, Allocation.Height - 1);
+				ctx.SetSourceColor (Styles.DockBarBackground.ToCairoColor ());
+				ctx.Fill ();
 
-				// FIXME: VV: Remove gradient features
-				using (var g = new Cairo.LinearGradient (x, y + 1, x, y + Allocation.Height - 1)) {
-					g.AddColorStop (0, Styles.DockTabBarGradientStart.ToCairoColor ());
-					g.AddColorStop (1, Styles.DockTabBarGradientEnd.ToCairoColor ());
-					ctx.SetSource (g);
-					ctx.Fill ();
-				}
-
-				ctx.MoveTo (x + 0.5, y + 0.5);
-				ctx.LineTo (x + Allocation.Width - 0.5d, y + 0.5);
-				ctx.SetSourceColor (Styles.DockTabBarGradientTop.ToCairoColor ());
-				ctx.Stroke ();
-
+				/*
 				if (active) {
-					ctx.Rectangle (x, y + 1, Allocation.Width, Allocation.Height - 1);
-
-					// FIXME: VV: Remove gradient features
-					using (var g = new Cairo.LinearGradient (x, y + 1, x, y + Allocation.Height - 1)) {
-						g.AddColorStop (0, new Cairo.Color (0, 0, 0, 0.01));
-						g.AddColorStop (0.5, new Cairo.Color (0, 0, 0, 0.08));
-						g.AddColorStop (1, new Cairo.Color (0, 0, 0, 0.01));
-						ctx.SetSource (g);
-						ctx.Fill ();
-					}
-
-/*					double offset = Allocation.Height * 0.25;
+					double offset = Allocation.Height * 0.25;
 					var rect = new Cairo.Rectangle (x - Allocation.Height + offset, y, Allocation.Height, Allocation.Height);
 					var cg = new Cairo.RadialGradient (rect.X + rect.Width / 2, rect.Y + rect.Height / 2, 0, rect.X, rect.Y + rect.Height / 2, rect.Height / 2);
 					cg.AddColorStop (0, Styles.DockTabBarShadowGradientStart);
@@ -509,8 +488,9 @@ namespace MonoDevelop.Components.Docking
 					cg.AddColorStop (1, Styles.DockTabBarShadowGradientEnd);
 					ctx.Pattern = cg;
 					ctx.Rectangle (rect);
-					ctx.Fill ();*/
+					ctx.Fill ();
 				}
+				*/
 			}
 		}
 	}
