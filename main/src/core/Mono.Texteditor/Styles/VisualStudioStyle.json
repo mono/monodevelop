@@ -1,6 +1,6 @@
 {
     "name":"Visual Studio",
-    "version":"1.1",
+    "version":"1.1.1",
     "description":"Reminiscent of Microsoft Visual Studio's default colors.",
     "originator":"Jeffrey Stedfast <fejj@novell.com>",
 
@@ -32,8 +32,8 @@
         { "name":"Current Line Marker", "color":"#f7f7f7", "secondcolor":"#f7f7f7" },
         { "name":"Current Line Marker(Inactive)", "color":"#f7f7f7", "secondcolor":"#f7f7f7" },
 
-        { "name":"Indicator Margin", "color":"#F0F0F0" },
-        { "name":"Indicator Margin(Separator)", "color":"#F0F0F0" }
+        { "name":"Indicator Margin", "color":"#f6f6f6" },
+        { "name":"Indicator Margin(Separator)", "color":"#f6f6f6" }
     ],
 
     "text":[

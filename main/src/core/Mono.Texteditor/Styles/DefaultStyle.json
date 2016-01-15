@@ -1,6 +1,6 @@
 {
     "name":"Default",
-    "version":"1.3.1",
+    "version":"1.3.2",
     "description":"Bright and friendly, just like Xamarin.",
     "originator":"Xamarin Inc. (http://xamarin.com)",
 
@@ -46,8 +46,8 @@
 
         { "name":"Indentation Guide", "color":"aluminium2" },
 
-        { "name":"Indicator Margin", "color":"aluminium1" },
-        { "name":"Indicator Margin(Separator)", "color":"aluminium3" },
+        { "name":"Indicator Margin", "color":"#f6f6f6" },
+        { "name":"Indicator Margin(Separator)", "color":"#f6f6f6" },
 
         { "name":"Tooltip Pager Top", "color":"#ffffff" },
         { "name":"Tooltip Pager Triangle", "color":"#737373" },

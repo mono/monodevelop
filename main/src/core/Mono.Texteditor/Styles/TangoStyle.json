@@ -1,6 +1,6 @@
 {
     "name":"Tango",
-    "version":"1.1",
+    "version":"1.1.1",
     "description":"A light scheme using colors from the Tango Project.",
     "originator":"Xamarin Inc. (http://xamarin.com)",
 
@@ -48,8 +48,8 @@
 
         { "name":"Indentation Guide", "color":"aluminium2" },
 
-        { "name":"Indicator Margin", "color":"aluminium1" },
-        { "name":"Indicator Margin(Separator)", "color":"aluminium3" },
+        { "name":"Indicator Margin", "color":"#f6f6f6" },
+        { "name":"Indicator Margin(Separator)", "color":"#f6f6f6" },
 
         { "name":"Tooltip Pager Top", "color":"#ffffff" },
         { "name":"Tooltip Pager Triangle", "color":"#737373" },
