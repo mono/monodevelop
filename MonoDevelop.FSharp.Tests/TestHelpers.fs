@@ -15,9 +15,8 @@ type FixtureSetup() =
       firstRun := false
       MonoDevelop.FSharp.MDLanguageService.DisableVirtualFileSystem()
       MonoDevelop.Ide.DesktopService.Initialize()
-
-      if Platform.IsWindows then
-        Xwt.Application.Initialize()
+      
+      GuiUnit.TestRunner.ExitCode |> ignore // hack to get GuiUnit into the AppDomain
 
 module TestHelpers =
   let filename = if Platform.IsWindows then "c:\\test.fsx" else "test.fsx"
