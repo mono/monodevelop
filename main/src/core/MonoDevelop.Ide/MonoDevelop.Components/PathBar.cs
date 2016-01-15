@@ -32,6 +32,7 @@ using Gdk;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Components
 {
@@ -282,6 +283,7 @@ namespace MonoDevelop.Components
 					}
 					
 					layout.Attributes = (i == activeIndex) ? boldAtts : null;
+					layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11);
 					layout.SetMarkup (GetFirstLineFromMarkup (leftPath [i].Markup));
 
 					ctx.Save ();
@@ -340,6 +342,7 @@ namespace MonoDevelop.Components
 					}
 					
 					layout.Attributes = (i == activeIndex) ? boldAtts : null;
+					layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11);
 					layout.SetMarkup (GetFirstLineFromMarkup (rightPath [i].Markup));
 
 					ctx.Save ();
