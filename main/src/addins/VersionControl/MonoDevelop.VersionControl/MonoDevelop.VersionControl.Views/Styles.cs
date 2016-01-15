@@ -88,7 +88,7 @@ namespace MonoDevelop.VersionControl
 				LogView = new LogViewStyle {
 					DiffAddBackgroundColor = Color.FromName ("#7bc87b").AddLight (0.1),
 					DiffRemoveBackgroundColor = Color.FromName ("#c88c8c").AddLight (0.1),
-					DiffHighlightColor = Color.FromName ("#ffffff").WithAlpha (0),
+					DiffHighlightColor = Color.FromName ("#000000").WithAlpha (0.05),
 					DiffBoxBorderColor = Color.FromName ("#eaeaea"),
 				};
 
