@@ -432,7 +432,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		static async Task<bool> MigrateProject (ProgressMonitor monitor, SolutionItemExtensionNode st, MSBuildProject p, string fileName, string language)
 		{
-			var projectLoadMonitor = monitor as ProjectLoadProgressMonitor;
+			var projectLoadMonitor = GetProjectLoadProgressMonitor (monitor);
 			if (projectLoadMonitor == null) {
 				// projectLoadMonitor will be null when running through md-tool, but
 				// this is not fatal if migration is not required, so just ignore it. --abock
@@ -475,6 +475,19 @@ namespace MonoDevelop.Projects.MSBuild
 				throw new UserException ("Project migration failed");
 
 			return true;
+		}
+
+		static ProjectLoadProgressMonitor GetProjectLoadProgressMonitor (ProgressMonitor monitor)
+		{
+			var projectLoadMonitor = monitor as ProjectLoadProgressMonitor;
+			if (projectLoadMonitor != null)
+				return projectLoadMonitor;
+
+			var aggregatedMonitor = monitor as AggregatedProgressMonitor;
+			if (aggregatedMonitor != null)
+				return aggregatedMonitor.MasterMonitor as ProjectLoadProgressMonitor;
+
+			return null;
 		}
 
 		internal static string GetLanguageGuid (string language)

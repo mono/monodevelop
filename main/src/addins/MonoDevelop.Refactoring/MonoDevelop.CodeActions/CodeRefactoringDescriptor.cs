@@ -32,7 +32,7 @@ using System.Linq;
 namespace MonoDevelop.CodeActions
 {
 	/// <summary>
-	/// This class wraps a roslyn <see cref="ICodeRefactoringProvider"/> and adds required meta data to it.
+	/// This class wraps a roslyn ICodeRefactoringProvider and adds required meta data to it.
 	/// </summary>
 	class CodeRefactoringDescriptor
 	{

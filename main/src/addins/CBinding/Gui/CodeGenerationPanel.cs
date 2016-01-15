@@ -351,7 +351,7 @@ namespace CBinding
 	{
 		private CodeGenerationPanel panel;
 		
-		public override Gtk.Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return panel = new CodeGenerationPanel ();
 		}

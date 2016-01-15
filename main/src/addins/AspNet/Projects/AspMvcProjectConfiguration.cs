@@ -36,9 +36,5 @@ namespace MonoDevelop.AspNet.Projects
 		public AspMvcProjectConfiguration (string name) : base (name)
 		{
 		}
-		
-		public AspMvcProjectConfiguration () : base ()
-		{
-		}
 	}
 }

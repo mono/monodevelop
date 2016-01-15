@@ -30,6 +30,7 @@
 using System;
 using Gtk;
 
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
@@ -230,7 +231,7 @@ namespace MonoDevelop.CSharp.Project
 	{
 		CompilerOptionsPanelWidget widget;
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return (widget = new CompilerOptionsPanelWidget ((DotNetProject) ConfiguredProject));
 		}

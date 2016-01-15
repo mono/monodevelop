@@ -38,7 +38,6 @@ namespace MonoDevelop.CSharp.Parser
 {
 	sealed class TypeSystemParser : MonoDevelop.Ide.TypeSystem.TypeSystemParser
 	{
-		static readonly List<Error> emptyList = new List<Error> ();
 		public override async System.Threading.Tasks.Task<ParsedDocument> Parse (MonoDevelop.Ide.TypeSystem.ParseOptions options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 		{
 			var fileName = options.FileName;

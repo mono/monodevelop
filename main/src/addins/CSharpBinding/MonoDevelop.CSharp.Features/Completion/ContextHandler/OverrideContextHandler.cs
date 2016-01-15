@@ -289,26 +289,23 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			//modifiers = new DeclarationModifiers();
 			seenAccessibility = Accessibility.NotApplicable;
 			var overrideToken = default(SyntaxToken);
-			bool isUnsafe = false;
-			bool isSealed = false;
-			bool isAbstract = false;
 
 			while (IsOnStartLine(token.SpanStart, text, startLine) && !token.IsKind(SyntaxKind.None))
 			{
 				switch (token.Kind())
 				{
-					case SyntaxKind.UnsafeKeyword:
-						       isUnsafe = true;
-					break;
+					//case SyntaxKind.UnsafeKeyword:
+					//	       isUnsafe = true;
+					//break;
 					case SyntaxKind.OverrideKeyword:
 						       overrideToken = token;
 					break;
-					case SyntaxKind.SealedKeyword:
-						       isSealed = true;
-					break;
-					case SyntaxKind.AbstractKeyword:
-						       isAbstract = true;
-					break;
+					//case SyntaxKind.SealedKeyword:
+					//	       isSealed = true;
+					//break;
+					//case SyntaxKind.AbstractKeyword:
+					//	       isAbstract = true;
+					//break;
 					case SyntaxKind.ExternKeyword:
 					break;
 

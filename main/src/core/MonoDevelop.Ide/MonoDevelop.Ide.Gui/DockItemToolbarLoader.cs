@@ -29,6 +29,7 @@ using System.Drawing;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Components.Commands;
 using Gtk;
@@ -39,7 +40,7 @@ namespace MonoDevelop.Ide.Gui
 {
 	public static class DockItemToolbarLoader
 	{
-		public static void Add (this DockItemToolbar toolbar, CommandEntrySet entrySet, Gtk.Widget commandTarget)
+		public static void Add (this DockItemToolbar toolbar, CommandEntrySet entrySet, Control commandTarget)
 		{
 			CommandDockBar dockBar = new CommandDockBar (toolbar, commandTarget);
 			foreach (CommandEntry entry in entrySet) {

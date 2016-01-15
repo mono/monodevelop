@@ -118,8 +118,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				headLabel.Visible = !string.IsNullOrEmpty (o.SignatureMarkup);
 				int x, y;
 				GetPosition (out x, out y);
-				var geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x, y));
-				headLabel.MaxWidth = Math.Max (geometry.Width / 5, 480);
+				var geometry = DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (x, y));
+				headLabel.MaxWidth = Math.Max ((int)geometry.Width / 5, 480);
 
 				if (Theme.DrawPager && overloads.Count > 1) {
 					headLabel.WidthRequest = headLabel.RealWidth + 70;

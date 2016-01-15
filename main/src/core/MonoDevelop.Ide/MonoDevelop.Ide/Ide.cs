@@ -410,7 +410,6 @@ namespace MonoDevelop.Ide
 
 		static void OnInitialRun ()
 		{
-			Workbench.ResetToolbars ();
 			SetInitialLayout ();
 		}
 

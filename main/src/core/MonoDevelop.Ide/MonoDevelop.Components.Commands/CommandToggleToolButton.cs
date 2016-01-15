@@ -31,7 +31,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Commands
 {
-	public class CommandToggleToolButton: Gtk.ToggleToolButton, ICommandUserItem
+	class CommandToggleToolButton: Gtk.ToggleToolButton, ICommandUserItem
 	{
 		CommandManager commandManager;
 		object commandId;

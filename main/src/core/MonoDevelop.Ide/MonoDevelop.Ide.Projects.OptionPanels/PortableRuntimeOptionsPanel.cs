@@ -28,6 +28,7 @@ using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 
+using MonoDevelop.Components;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
@@ -42,7 +43,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	{
 		PortableRuntimeOptionsPanelWidget widget;
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return (widget = new PortableRuntimeOptionsPanelWidget ((DotNetProject) ConfiguredProject, ItemConfigurations));
 		}
@@ -54,7 +55,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	}
 	
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class PortableRuntimeOptionsPanelWidget : Gtk.Bin
+	partial class PortableRuntimeOptionsPanelWidget : Gtk.Bin
 	{
 		readonly TargetFramework missingFramework;
 		readonly List<TargetFramework> targetFrameworks;

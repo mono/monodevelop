@@ -928,12 +928,12 @@ namespace MonoDevelop.SourceEditor
 				view.WorkbenchWindow.ShowNotification = false;
 				RemoveMessageBar ();
 			};
-			okButton.Clicked += delegate {
+			okButton.Clicked += async delegate {
 				switch (combo.Active) {
 				case 0:
 					ConvertLineEndings ();
 					view.WorkbenchWindow.ShowNotification = false;
-					view.Save (fileName, view.SourceEncoding);
+					await view.Save (fileName, view.SourceEncoding);
 					break;
 				case 1:
 					FileRegistry.ConvertLineEndingsInAllFiles ();
@@ -1026,7 +1026,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public void Reload ()
+		public async void Reload ()
 		{
 			try {
 				if (!System.IO.File.Exists (view.ContentName))
@@ -1034,7 +1034,7 @@ namespace MonoDevelop.SourceEditor
 
 				view.StoreSettings ();
 				reloadSettings = true;
-				view.Load (view.ContentName, view.SourceEncoding, true);
+				await view.Load (view.ContentName, view.SourceEncoding, true);
 				view.WorkbenchWindow.ShowNotification = false;
 			} catch (Exception ex) {
 				MessageService.ShowError ("Could not reload the file.", ex);

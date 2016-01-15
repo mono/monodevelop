@@ -387,7 +387,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		ConfigurationProperty<LineEndingConversion> lineEndingConversion = ConfigurationProperty.Create("LineEndingConversion", LineEndingConversion.Ask);
+		ConfigurationProperty<LineEndingConversion> lineEndingConversion = ConfigurationProperty.Create("LineEndingConversion", LineEndingConversion.LeaveAsIs);
 		public LineEndingConversion LineEndingConversion {
 			get {
 				return lineEndingConversion;

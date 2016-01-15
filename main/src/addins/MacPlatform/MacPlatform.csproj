@@ -135,9 +135,10 @@
     <Compile Include="MainToolbar\ButtonBar.cs" />
     <Compile Include="MainToolbar\SelectorView.cs" />
     <Compile Include="MainToolbar\StatusBar.cs" />
-    <Compile Include="MainToolbar\CenteringSpace.cs" />
     <Compile Include="MainToolbar\CALayerExtensions.cs" />
     <Compile Include="MainToolbar\VerticallyCenteredTextFieldCell.cs" />
+    <Compile Include="MainToolbar\AwesomeBar.cs" />
+    <Compile Include="MainToolbar\ButtonBarContainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

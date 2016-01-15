@@ -228,7 +228,6 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeRefactorings.EncapsulateField
 
 			var generatedProperty = GenerateProperty(generatedPropertyName, finalFieldName, originalField.DeclaredAccessibility, originalField, field.ContainingType, new SyntaxAnnotation(), document, cancellationToken);
 
-			var codeGenerationService = new CSharpCodeGenerationService (document.Project.Solution.Workspace);
 			var solutionWithProperty = await AddPropertyAsync(document, document.Project.Solution, field, generatedProperty, cancellationToken).ConfigureAwait(false);
 
 			return new Result(solutionWithProperty, originalField.ToDisplayString(), Glyph.FieldPublic);

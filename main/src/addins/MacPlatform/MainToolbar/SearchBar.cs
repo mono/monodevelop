@@ -44,22 +44,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		internal event EventHandler SelectionActivated;
 		public event EventHandler GainedFocus;
 
-		/// <summary>
-		/// This tells whether events have been attached when created from the menu.
-		/// </summary>
-		internal bool EventsAttached;
-
 		public SearchBar ()
 		{
 			Cell.Scrollable = true;
 			Initialize ();
 			var debugFilePath = System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), ".xs-searchbar-debug");
 			debugSearchbar = System.IO.File.Exists (debugFilePath);
-		}
-
-		public SearchBar (IntPtr ptr) : base (ptr)
-		{
-			Initialize ();
 		}
 
 		internal void LogMessage (string message)
@@ -108,6 +98,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return true;
 			var baseHandled = base.PerformKeyEquivalent (theEvent);;
 			LogMessage ($"Base handled {baseHandled}");
+			LogMessage ($"First Reponder {NSApplication.SharedApplication?.KeyWindow?.FirstResponder}");
+			LogMessage ($"Refuses First Responder {RefusesFirstResponder}");
+			LogMessage ($"Editor chain {CurrentEditor}");
 			return baseHandled;
 		}
 

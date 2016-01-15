@@ -40,7 +40,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Docking
 {
-	public class DockFrame: HBox, IAnimatable
+	class DockFrame: HBox, IAnimatable
 	{
 		internal const double ItemDockCenterArea = 0.4;
 		internal const int GroupDockSeparatorSize = 40;

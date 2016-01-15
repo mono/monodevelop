@@ -1,10 +1,10 @@
 ﻿//
-// ConditionedPropertyCollection.cs
+// Dialog.cs
 //
 // Author:
-//       Lluis Sanchez Gual <lluis@xamarin.com>
+//       therzok <marius.ungureanu@xamarin.com>
 //
-// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
+// Copyright (c) 2015 therzok
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,19 +24,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
 
-namespace MonoDevelop.Projects.MSBuild.Conditions
+namespace MonoDevelop.Components
 {
-	class ConditionedPropertyCollection : Dictionary<string, List<string>>
+	public class Dialog : Window
 	{
-		public void AddProperty (string name, string value)
+		protected Dialog ()
 		{
-			List<string> list;
-			if (!TryGetValue (name, out list))
-				Add (name, list = new List<string> ());
-			if (!list.Contains (value))
-				list.Add (value);
+		}
+
+		Dialog (object widget)
+		{
+			if (widget == null)
+				throw new ArgumentNullException (nameof (widget));
+
+			this.nativeWidget = widget;
+			cache.Add (widget, new WeakReference<Control> (this));
+		}
+
+		public static implicit operator Gtk.Dialog (Dialog d)
+		{
+			return d?.GetNativeWidget<Gtk.Dialog> ();
+		}
+
+		public static implicit operator Dialog (Gtk.Dialog d)
+		{
+			if (d == null)
+				return null;
+
+			var dialog = GetImplicit<Dialog, Gtk.Dialog>(d);
+			if (dialog == null) {
+				dialog = new Dialog (d);
+				d.Destroyed += delegate {
+					GC.SuppressFinalize (dialog);
+					dialog.Dispose (true);
+				};
+			}
+			return dialog;
 		}
 	}
 }

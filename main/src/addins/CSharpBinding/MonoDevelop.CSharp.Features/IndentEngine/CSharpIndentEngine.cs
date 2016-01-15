@@ -258,9 +258,6 @@ namespace ICSharpCode.NRefactory6.CSharp
 		/// <summary>
 		///     Creates a new CSharpIndentEngine instance.
 		/// </summary>
-		/// <param name="document">
-		///     An instance of <see cref="SourceText"/> which is being parsed.
-		/// </param>
 		/// <param name="formattingOptions">
 		///     C# formatting options.
 		/// </param>

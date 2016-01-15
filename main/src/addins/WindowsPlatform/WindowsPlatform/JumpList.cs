@@ -76,7 +76,7 @@ namespace MonoDevelop.Platform
 		{
 			Taskbar.JumpList jumplist = Taskbar.JumpList.CreateJumpListForIndividualWindow (
 				MonoDevelop.Core.BrandingService.ApplicationName,
-				GdkWin32.HgdiobjGet (MessageService.RootWindow.GdkWindow)
+				GdkWin32.HgdiobjGet (MessageService.RootWindow)
 			);
 			jumplist.KnownCategoryToDisplay = Taskbar.JumpListKnownCategoryType.Neither;
 			

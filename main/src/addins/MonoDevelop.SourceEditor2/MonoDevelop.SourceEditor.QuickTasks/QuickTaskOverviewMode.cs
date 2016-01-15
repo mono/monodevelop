@@ -79,7 +79,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		static readonly Cairo.Color win81Background = new Cairo.Color (240 / 255d, 240 / 255d, 240 / 255d);
 		static readonly Cairo.Color win81Slider = new Cairo.Color (205 / 255d, 205 / 255d, 205 / 255d);
 		static readonly Cairo.Color win81SliderPrelight = new Cairo.Color (166 / 255d, 166 / 255d, 166 / 255d);
-		static readonly Cairo.Color win81SliderActive = new Cairo.Color (96 / 255d, 96 / 255d, 96 / 255d);
+		//static readonly Cairo.Color win81SliderActive = new Cairo.Color (96 / 255d, 96 / 255d, 96 / 255d);
 
 		readonly int barPadding = MonoDevelop.Core.Platform.IsWindows ? 1 : 3;
 

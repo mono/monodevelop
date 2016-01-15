@@ -135,9 +135,9 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal protected virtual SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind)
+		internal protected virtual SolutionItemConfiguration OnCreateConfiguration (string id, ConfigurationKind kind)
 		{
-			return next.OnCreateConfiguration (name, kind);
+			return next.OnCreateConfiguration (id, kind);
 		}
 
 		internal protected virtual ProjectFeatures OnGetSupportedFeatures ()

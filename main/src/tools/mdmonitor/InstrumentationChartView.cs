@@ -1,21 +1,21 @@
-// 
+//
 // InstrumenationChartView.cs
-//  
+//
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
-// 
+//
 // Copyright (c) 2010 Novell, Inc (http://www.novell.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -35,46 +35,46 @@ using System.Globalization;
 namespace Mono.Instrumentation.Monitor
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	internal partial class InstrumenationChartView : Gtk.Bin
+	internal partial class InstrumentationChartView : Gtk.Bin
 	{
 		InstrumentationViewerDialog parent;
 		ListStore seriesStore;
 		ChartView view = new ChartView ();
 		ChartView originalView;
-		
+
 		ListStore listViewStore;
 		TreeView listView;
 		ScrolledWindow listViewScrolled;
-		
+
 		BasicChart countChart;
 		BasicChart timeChart;
 		DateTime startTime;
 		DateTime endTime;
-		
+
 		DateTimeAxis countAxisX;
 		IntegerAxis countAxisY;
 		DateTimeAxis timeAxisX;
 		IntegerAxis timeAxisY;
-		
+
 		TimeSpan visibleTime = TimeSpan.FromMinutes (5);
-		
+
 		List<Serie> currentSeries = new List<Serie> ();
-		
-		public InstrumenationChartView (InstrumentationViewerDialog parent)
+
+		public InstrumentationChartView (InstrumentationViewerDialog parent)
 		{
 			Build ();
-			
+
 			this.parent = parent;
-			
+
 			// The list for the List Mode
-			
+
 			listViewStore = new ListStore (typeof(ListViewValueInfo), typeof(Gdk.Pixbuf), typeof (string), typeof(string), typeof(string), typeof (string), typeof (string));
 			listView = new TreeView ();
 			listView.Model = listViewStore;
-			
+
 			CellRendererText crx = new CellRendererText ();
 			listView.AppendColumn ("Timestamp", crx, "text", 3);
-			
+
 			TreeViewColumn col = new TreeViewColumn ();
 			col.Title = "Counter";
 			CellRendererPixbuf crp = new CellRendererPixbuf ();
@@ -83,13 +83,13 @@ namespace Mono.Instrumentation.Monitor
 			col.PackStart (crx, true);
 			col.AddAttribute (crx, "text", 2);
 			listView.AppendColumn (col);
-			
+
 			listView.AppendColumn ("Count", crx, "text", 4);
 			listView.AppendColumn ("Total Count", crx, "text", 5);
 			listView.AppendColumn ("Time", crx, "text", 6);
-			
+
 			listView.RowActivated += HandleListViewRowActivated;
-			
+
 			listViewScrolled = new ScrolledWindow ();
 			listViewScrolled.Add (listView);
 			listViewScrolled.ShadowType = ShadowType.In;
@@ -97,33 +97,33 @@ namespace Mono.Instrumentation.Monitor
 			listViewScrolled.VscrollbarPolicy = PolicyType.Automatic;
 			listViewScrolled.ShowAll ();
 			boxCharts.PackStart (listViewScrolled, true, true, 0);
-			
+
 			// The series list
-			
+
 			seriesStore = new ListStore (typeof(bool), typeof(Gdk.Pixbuf), typeof (string), typeof(ChartSerieInfo), typeof(String), typeof(String), typeof (String));
 			listSeries.Model = seriesStore;
-			
+
 			col = new TreeViewColumn ();
 			col.Title = "Counter";
 			CellRendererToggle crt = new CellRendererToggle ();
 			col.PackStart (crt, false);
 			col.AddAttribute (crt, "active", 0);
-			
+
 			crp = new CellRendererPixbuf ();
 			col.PackStart (crp, false);
 			col.AddAttribute (crp, "pixbuf", 1);
-			
+
 			crx = new CellRendererText ();
 			col.PackStart (crx, true);
 			col.AddAttribute (crx, "text", 2);
 			listSeries.AppendColumn (col);
-			
+
 			listSeries.AppendColumn ("Last", crx, "text", 4);
 			listSeries.AppendColumn ("Sel", crx, "text", 5);
 			listSeries.AppendColumn ("Diff", crx, "text", 6);
-			
+
 			crt.Toggled += SerieToggled;
-			
+
 			countChart = new BasicChart ();
 			countAxisY = new IntegerAxis (true);
 			countAxisX = new DateTimeAxis (true);
@@ -137,7 +137,7 @@ namespace Mono.Instrumentation.Monitor
 			countChart.SelectionStart.LabelAxis = countAxisX;
 			countChart.SelectionEnd.LabelAxis = countAxisX;
 			countChart.SelectionChanged += CountChartSelectionChanged;
-			
+
 			timeChart = new BasicChart ();
 			timeAxisY = new IntegerAxis (true);
 			timeAxisX = new DateTimeAxis (true);
@@ -150,11 +150,11 @@ namespace Mono.Instrumentation.Monitor
 //			timeChart.SetAutoScale (AxisDimension.Y, true, true);
 			timeChart.SelectionStart.LabelAxis = timeAxisX;
 			timeChart.SelectionEnd.LabelAxis = timeAxisX;
-			
+
 			frameCharts.PackStart (countChart, true, true, 0);
 			frameCharts.PackStart (timeChart, true, true, 0);
 			frameCharts.ShowAll ();
-			
+
 			if (App.FromFile) {
 				if (visibleTime > App.Service.EndTime - App.Service.StartTime)
 					visibleTime = App.Service.EndTime - App.Service.StartTime;
@@ -165,31 +165,31 @@ namespace Mono.Instrumentation.Monitor
 				endTime = DateTime.Now;
 				startTime = endTime - visibleTime;
 			}
-			
+
 			DateTime st = App.Service.StartTime;
 			if (st > startTime) st = startTime;
-			
+
 			chartScroller.Adjustment.Lower = st.Ticks;
-			
+
 			UpdateCharts ();
 			chartScroller.Value = chartScroller.Adjustment.Upper;
-			
+
 			if (!App.FromFile)
 				StartAutoscroll ();
-			
+
 			toggleTimeView.Active = true;
 		}
-		
+
 		public void ShowAllTimers ()
 		{
 			hboxChartBar.Visible = hboxSeriesBar.Visible = false;
-			
+
 			view = new ChartView ();
 			foreach (Counter c in App.Service.GetCounters ()) {
 				if (c is TimerCounter)
 					view.Add (c);
 			}
-			
+
 			FillSelectedSeries ();
 			toggleListView.Active = true;
 		}
@@ -205,12 +205,12 @@ namespace Mono.Instrumentation.Monitor
 				win.Show ();
 			}
 		}
-		
+
 		void CountChartSelectionChanged (object sender, EventArgs e)
 		{
 			UpdateListValues ();
 		}
-		
+
 		void FillSelectedSeries ()
 		{
 			seriesStore.Clear ();
@@ -233,34 +233,35 @@ namespace Mono.Instrumentation.Monitor
 				}
 			}
 		}
-		
+
 		void UpdateButtonStatus ()
 		{
 			parent.EnableSave (view.Modified);
 		}
-		
+
 		void UpdateCharts ()
 		{
 			listViewScrolled.Visible = !toggleTimeView.Active;
 			frameCharts.Visible = toggleTimeView.Active;
-			
+
 			if (frameCharts.Visible) {
-				timeChart.Visible = false;
-				countChart.Visible = true;
-				
+				var timeWidget = timeChart.GetNativeWidget<Widget> ();
+				timeWidget.Visible = false;
+				var countWidget = countChart.GetNativeWidget<Widget> ();
+				countWidget.Visible = true;
 				foreach (Serie s in currentSeries) {
 					countChart.RemoveSerie (s);
 					timeChart.RemoveSerie (s);
 				}
-				
+
 				UpdateCharView ();
-				
+
 				foreach (ChartSerieInfo si in view.Series) {
 					si.UpdateSerie ();
 					countChart.AddSerie (si.Serie);
 					currentSeries.Add (si.Serie);
 				}
-	
+
 				DateTime t = DateTime.Now;
 				chartScroller.Adjustment.Upper = t.Ticks;
 				UpdatePageSize ();
@@ -269,28 +270,28 @@ namespace Mono.Instrumentation.Monitor
 				FillValuesList ();
 			}
 		}
-		
+
 		void FillValuesList ()
 		{
 			listViewStore.Clear ();
 			List<ListViewValueInfo> values = new List<ListViewValueInfo> ();
-			
+
 			foreach (var serie in view.Series.Where (s => s.Visible)) {
 				foreach (CounterValue val in serie.Counter.GetValues ())
 					values.Add (new ListViewValueInfo () { Serie=serie, Value=val });
 			}
-			
+
 			values.Sort (delegate (ListViewValueInfo v1, ListViewValueInfo v2) {
 				return v1.Value.TimeStamp.CompareTo (v2.Value.TimeStamp);
 			});
-			
+
 			foreach (ListViewValueInfo vinfo in values) {
 				CounterValue val = vinfo.Value;
 				string time = val.TimeStamp.ToLongTimeString ();
 				listViewStore.AppendValues (vinfo, vinfo.Serie.ColorIcon, vinfo.Serie.Counter.Name, time, val.Value.ToString (), val.TotalCount.ToString (), val.HasTimerTraces ? val.Duration.TotalMilliseconds.ToString () : "");
 			}
 		}
-		
+
 		void UpdateCharView ()
 		{
 			countChart.StartX = startTime.Ticks;
@@ -300,14 +301,14 @@ namespace Mono.Instrumentation.Monitor
 			countChart.OriginX = countChart.StartX;
 			timeChart.OriginX = timeChart.StartX;
 		}
-		
+
 		uint scrollFunc;
-		
+
 		void StartAutoscroll ()
 		{
 			scrollFunc = GLib.Timeout.Add (1000, ScrollCharts);
 		}
-		
+
 		void StopAutoscroll ()
 		{
 			if (scrollFunc != 0) {
@@ -315,13 +316,13 @@ namespace Mono.Instrumentation.Monitor
 				scrollFunc = 0;
 			}
 		}
-		
+
 		bool IsShowingLatest {
 			get {
 				return (chartScroller.Value == chartScroller.Adjustment.Upper - chartScroller.Adjustment.PageSize);
 			}
 		}
-		
+
 		bool ScrollCharts ()
 		{
 			double ticks = DateTime.Now.Ticks;
@@ -330,7 +331,7 @@ namespace Mono.Instrumentation.Monitor
 				chartScroller.Value = chartScroller.Adjustment.Upper - chartScroller.Adjustment.PageSize;
 			} else
 				chartScroller.Adjustment.Upper = ticks;
-			
+
 			// If any of the counters has been disposed, update it
 			foreach (ChartSerieInfo info in view.Series) {
 				if (info.UpdateCounter ()) {
@@ -342,7 +343,7 @@ namespace Mono.Instrumentation.Monitor
 			view.UpdateSeries ();
 			return true;
 		}
-		
+
 		void UpdateListValues ()
 		{
 			TreeIter it;
@@ -353,21 +354,21 @@ namespace Mono.Instrumentation.Monitor
 						continue;
 					CounterValue val = ci.Counter.LastValue;
 					seriesStore.SetValue (it, 4, val.Value.ToString ());
-					
+
 					if (countChart.ActiveCursor != null) {
 						val = ci.Counter.GetValueAt (new DateTime ((long)countChart.ActiveCursor.Value));
 						seriesStore.SetValue (it, 5, val.Value.ToString ());
 					}
-					
+
 					val = ci.Counter.GetValueAt (new DateTime ((long)countChart.SelectionStart.Value));
 					CounterValue val2 = ci.Counter.GetValueAt (new DateTime ((long)countChart.SelectionEnd.Value));
-					
+
 					seriesStore.SetValue (it, 6, (val2.Value - val.Value).ToString ());
 				}
 				while (seriesStore.IterNext (ref it));
 			}
 		}
-		
+
 		protected override void OnDestroyed ()
 		{
 			StopAutoscroll ();
@@ -391,7 +392,7 @@ namespace Mono.Instrumentation.Monitor
 			endTime = startTime + visibleTime;
 			UpdateCharView ();
 		}
-		
+
 		void UpdatePageSize ()
 		{
 			chartScroller.Adjustment.PageSize = visibleTime.Ticks;
@@ -448,7 +449,7 @@ namespace Mono.Instrumentation.Monitor
 		{
 			originalView = v;
 			view = new ChartView ();
-			
+
 			if (v.EditedView != null)
 				view = v.EditedView;
 			else {
@@ -461,7 +462,7 @@ namespace Mono.Instrumentation.Monitor
 		}
 
 		bool uppdatingToggles;
-		
+
 		protected virtual void OnToggleListViewToggled (object sender, System.EventArgs e)
 		{
 			if (uppdatingToggles)
@@ -474,8 +475,8 @@ namespace Mono.Instrumentation.Monitor
 			uppdatingToggles = false;
 			UpdateCharts ();
 		}
-		
-		
+
+
 		protected virtual void OnToggleTimeViewToggled (object sender, System.EventArgs e)
 		{
 			if (uppdatingToggles)
@@ -488,7 +489,7 @@ namespace Mono.Instrumentation.Monitor
 			uppdatingToggles = false;
 			UpdateCharts ();
 		}
-		
+
 		public void Save ()
 		{
 			originalView.CopyFrom (view);
@@ -522,7 +523,7 @@ namespace Mono.Instrumentation.Monitor
 			}
 			FillSelectedSeries ();
 		}
-		
+
 		protected virtual void OnButtonAddCounterClicked (object sender, System.EventArgs e)
 		{
 			CounterSelectorDialog dlg = new CounterSelectorDialog ();
@@ -536,12 +537,10 @@ namespace Mono.Instrumentation.Monitor
 			dlg.Destroy ();
 		}
 	}
-	
+
 	class ListViewValueInfo
 	{
 		public CounterValue Value;
 		public ChartSerieInfo Serie;
 	}
 }
-
-

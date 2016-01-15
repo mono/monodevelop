@@ -65,6 +65,12 @@ namespace MonoDevelop.SourceEditor
 			return false;
 		}
 
+		bool IActionTextLineMarker.MouseReleased (MonoTextEditor editor, MarginMouseEventArgs args)
+		{
+			return false;
+		}
+
+
 		void IActionTextLineMarker.MouseHover (Mono.TextEditor.MonoTextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result)
 		{
 			if (args.Button != 0)
@@ -73,7 +79,7 @@ namespace MonoDevelop.SourceEditor
 			if (line == null)
 				return;
 			var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.TextStartPosition;
-			var y = editor.LineToY (line.LineNumber + 1) - editor.VAdjustment.Value;
+			//var y = editor.LineToY (line.LineNumber + 1) - editor.VAdjustment.Value;
 			const double xAdditionalSpace = tagMarkerWidth;
 			if (args.X - x >= -xAdditionalSpace * editor.Options.Zoom && 
 				args.X - x < (tagMarkerWidth + xAdditionalSpace) * editor.Options.Zoom /*&& 
@@ -100,15 +106,10 @@ namespace MonoDevelop.SourceEditor
 				y - y2 < (editor.LineHeight / 2) * editor.Options.Zoom;
 		}
 
-		bool ISmartTagMarker.IsInsideWindow (Gtk.MotionNotifyEventArgs args)
-		{
-			if (editor == null)
-				return false;
-			return args.Event.Window == editor.TextArea.GdkWindow;
-		}
-
 		public event EventHandler<TextMarkerMouseEventArgs> MousePressed;
+		#pragma warning disable 0067
 		public event EventHandler<TextMarkerMouseEventArgs> MouseHover;
+		#pragma warning restore 0067
 		public event EventHandler ShowPopup;
 		public event EventHandler CancelPopup;
 

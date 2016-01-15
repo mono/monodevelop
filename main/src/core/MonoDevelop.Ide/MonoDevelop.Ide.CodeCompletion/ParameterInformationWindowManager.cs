@@ -232,8 +232,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				wasAbove = false;
 				var lastMethod = methods [methods.Count - 1];
 				int curParam = window.Ext != null ? window.Ext.GetCurrentParameterIndex (lastMethod.MethodProvider.StartOffset) : 0;
-				var geometry2 = DesktopService.GetUsableMonitorGeometry (window.Screen, window.Screen.GetMonitorAtPoint (X, Y));
-				window.ShowParameterInfo (lastMethod.MethodProvider, lastMethod.CurrentOverload, curParam - 1, geometry2.Width);
+				var geometry2 = DesktopService.GetUsableMonitorGeometry (window.Screen.Number, window.Screen.GetMonitorAtPoint (X, Y));
+				window.ShowParameterInfo (lastMethod.MethodProvider, lastMethod.CurrentOverload, curParam - 1, (int)geometry2.Width);
 				PositionParameterInfoWindow (window.Allocation);
 			}
 			
@@ -269,12 +269,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 				Y = ctx.TriggerYCoord;
 			}
 
-			var geometry = DesktopService.GetUsableMonitorGeometry (window.Screen, window.Screen.GetMonitorAtPoint (X, Y));
+			var geometry = DesktopService.GetUsableMonitorGeometry (window.Screen.Number, window.Screen.GetMonitorAtPoint (X, Y));
 
-			window.ShowParameterInfo (md.MethodProvider, md.CurrentOverload, cparam - 1, geometry.Width);
+			window.ShowParameterInfo (md.MethodProvider, md.CurrentOverload, cparam - 1, (int)geometry.Width);
 
 			if (X + allocation.Width > geometry.Right)
-				X = geometry.Right - allocation.Width;
+				X = (int)geometry.Right - allocation.Width;
 			if (Y < geometry.Top)
 				Y = ctx.TriggerYCoord;
 			if (wasAbove || Y + allocation.Height > geometry.Bottom) {

@@ -109,7 +109,7 @@ namespace MonoDevelop.CSharp.Project
 			}
 		}
 
-		protected override void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildEvaluatedPropertyCollection pset)
+		protected override void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IPropertySet pset)
 		{
 			base.OnReadConfiguration (monitor, config, pset);
 

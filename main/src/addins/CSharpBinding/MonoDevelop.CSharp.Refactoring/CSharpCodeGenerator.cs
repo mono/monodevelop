@@ -775,9 +775,9 @@ namespace MonoDevelop.CSharp.Refactoring
 			//if (options.ExplicitDeclaration || options.ImplementingType.Kind == TypeKind.Interface)
 			//	return;
 			result.Append (GetModifiers (options.ImplementingType, options.Part, member));
-			bool isFromInterface = false;
+			//bool isFromInterface = false;
 			if (member.ContainingType != null && member.ContainingType.TypeKind == TypeKind.Interface) {
-				isFromInterface = true;
+				//isFromInterface = true;
 				// TODO: Type system conversion.
 				//				if (options.ImplementingType != null) {
 				//					foreach (var type in options.ImplementingType.BaseTypes) {
@@ -791,7 +791,6 @@ namespace MonoDevelop.CSharp.Refactoring
 				//				}
 			}
 			if (member is IMethodSymbol) {
-				var method = (IMethodSymbol)member;
 				if (!options.CreateProtocolMember)
 					result.Append ("override ");
 			}

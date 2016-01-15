@@ -127,7 +127,7 @@ namespace MonoDevelop.Components.Docking
 				tabIcon.Visible = visualStyle.ShowPadTitleIcon.Value;
 			if (IsRealized) {
 				if (labelWidget != null)
-					labelWidget.ModifyFg (StateType.Normal, visualStyle.PadTitleLabelColor.Value);
+					labelWidget.ModifyFg (StateType.Normal, visualStyle.PadTitleLabelColor.Value.ToGdkColor ());
 			}
 			var r = WidthRequest;
 			WidthRequest = -1;
@@ -426,7 +426,7 @@ namespace MonoDevelop.Components.Docking
 			var alloc = Allocation;
 
 			Gdk.GC bgc = new Gdk.GC (GdkWindow);
-			var c = VisualStyle.PadBackgroundColor.Value.ToXwtColor ();
+			var c = VisualStyle.PadBackgroundColor.Value;
 			c.Light *= 0.7;
 			bgc.RgbFgColor = c.ToGdkColor ();
 			bool first = true;
@@ -442,7 +442,7 @@ namespace MonoDevelop.Components.Docking
 
 			if (Active || (first && last)) {
 				Gdk.GC gc = new Gdk.GC (GdkWindow);
-				gc.RgbFgColor = VisualStyle.PadBackgroundColor.Value;
+				gc.RgbFgColor = VisualStyle.PadBackgroundColor.Value.ToGdkColor ();
 				evnt.Window.DrawRectangle (gc, true, alloc);
 				if (!first)
 					evnt.Window.DrawLine (bgc, alloc.X, alloc.Y, alloc.X, alloc.Y + alloc.Height - 1);
@@ -452,7 +452,7 @@ namespace MonoDevelop.Components.Docking
 
 			} else {
 				Gdk.GC gc = new Gdk.GC (GdkWindow);
-				gc.RgbFgColor = tabStrip != null ? tabStrip.VisualStyle.InactivePadBackgroundColor.Value : frame.DefaultVisualStyle.InactivePadBackgroundColor.Value;
+				gc.RgbFgColor = tabStrip != null ? tabStrip.VisualStyle.InactivePadBackgroundColor.Value.ToGdkColor () : frame.DefaultVisualStyle.InactivePadBackgroundColor.Value.ToGdkColor ();
 				evnt.Window.DrawRectangle (gc, true, alloc);
 				gc.Dispose ();
 				evnt.Window.DrawLine (bgc, alloc.X, alloc.Y + alloc.Height - 1, alloc.X + alloc.Width - 1, alloc.Y + alloc.Height - 1);

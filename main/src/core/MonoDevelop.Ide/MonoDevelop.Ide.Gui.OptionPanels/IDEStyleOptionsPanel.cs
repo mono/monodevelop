@@ -31,11 +31,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components.Commands;
 using Mono.Addins;
-using Gtk;
 using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	{
 		IDEStyleOptionsPanelWidget widget;
 
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return widget = new IDEStyleOptionsPanelWidget ();
 		}
@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		}
 	}
 	
-	public partial class IDEStyleOptionsPanelWidget : Gtk.Bin
+	partial class IDEStyleOptionsPanelWidget : Gtk.Bin
 	{
 		string currentTheme;
 

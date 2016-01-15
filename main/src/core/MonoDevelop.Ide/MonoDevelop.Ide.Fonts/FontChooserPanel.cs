@@ -24,7 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.Fonts
@@ -33,7 +33,7 @@ namespace MonoDevelop.Ide.Fonts
 	{
 		FontChooserPanelWidget widget;
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			
 			return widget = new FontChooserPanelWidget ();

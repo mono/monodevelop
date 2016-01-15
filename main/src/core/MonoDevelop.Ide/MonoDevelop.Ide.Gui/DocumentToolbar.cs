@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 using Gtk;
 using MonoDevelop.Components;
 
@@ -48,29 +49,30 @@ namespace MonoDevelop.Ide.Gui
 			frame = al;
 		}
 		
-		internal Widget Container {
+		internal Control Container {
 			get { return frame; }
 		}
 		
-		public void Add (Widget widget)
+		public void Add (Control widget)
 		{
 			Add (widget, false);
 		}
 		
-		public void Add (Widget widget, bool fill)
+		public void Add (Control widget, bool fill)
 		{
 			Add (widget, fill, -1);
 		}
 		
-		public void Add (Widget widget, bool fill, int padding)
+		public void Add (Control widget, bool fill, int padding)
 		{
 			Add (widget, fill, padding, -1);
 		}
 		
-		void Add (Widget widget, bool fill, int padding, int index)
+		void Add (Control control, bool fill, int padding, int index)
 		{
 			int defaultPadding = 3;
 
+			Gtk.Widget widget = control;
 			if (widget is Button) {
 				((Button)widget).Relief = ReliefStyle.None;
 				((Button)widget).FocusOnClick = false;
@@ -116,12 +118,12 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public void Insert (Widget w, int index)
+		public void Insert (Control w, int index)
 		{
 			Add (w, false, 0, index);
 		}
 		
-		public void Remove (Widget widget)
+		public void Remove (Control widget)
 		{
 			box.Remove (widget);
 		}
@@ -145,8 +147,8 @@ namespace MonoDevelop.Ide.Gui
 			frame.ShowAll ();
 		}
 		
-		public Widget[] Children {
-			get { return box.Children; }
+		public Control[] Children {
+			get { return box.Children.Select (w => (Control)w).ToArray (); }
 		}
 
 		class ToolbarBox: Gtk.Alignment
@@ -179,19 +181,73 @@ namespace MonoDevelop.Ide.Gui
 		}
 	}
 
-	public class DocumentToolButton: Gtk.Button
+	public class DocumentToolButton : Control
 	{
-		public DocumentToolButton (string stockId)
-		{
-			Image = new ImageView (stockId, IconSize.Menu);
-			Image.Show ();
+		public DocumentToolButtonImage Image {
+			get { return (ImageView)button.Image; }
+			set { button.Image = (ImageView)value; }
 		}
-		
+
+		public string TooltipText {
+			get { return button.TooltipText; }
+			set { button.TooltipText = value; }
+		}
+
+		public string Label {
+			get { return button.Label; }
+			set { button.Label = value; }
+		}
+
+		Gtk.Button button;
+
+		public DocumentToolButton (string stockId) : this (stockId, null)
+		{
+		}
+
 		public DocumentToolButton (string stockId, string label)
 		{
+			button = new Button ();
 			Label = label;
 			Image = new ImageView (stockId, IconSize.Menu);
-			Image.Show ();
+			button.Image.Show ();
+		}
+
+		protected override object CreateNativeWidget ()
+		{
+			return button;
+		}
+
+		public event EventHandler Clicked {
+			add {
+				button.Clicked += value;
+			}
+			remove {
+				button.Clicked -= value;
+			}
+		}
+
+		public class DocumentToolButtonImage : Control
+		{
+			ImageView image;
+			internal DocumentToolButtonImage (ImageView image)
+			{
+				this.image = image;
+			}
+
+			protected override object CreateNativeWidget ()
+			{
+				return image;
+			}
+
+			public static implicit operator ImageView (DocumentToolButtonImage d)
+			{
+				return d.GetNativeWidget<ImageView> ();
+			}
+
+			public static implicit operator DocumentToolButtonImage (ImageView d)
+			{
+				return new DocumentToolButtonImage (d);
+			}
 		}
 	}
 }

@@ -468,7 +468,6 @@
     <Compile Include="MonoDevelop.Projects\WorkspaceObjectExtension.cs" />
     <Compile Include="MonoDevelop.Core.Execution\ProcessAsyncOperation.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildProperty.cs" />
-    <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildPropertyGroupMerged.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildPropertyGroup.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildItem.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildItemGroup.cs" />
@@ -554,8 +553,9 @@
     <Compile Include="MonoDevelop.Projects.MSBuild\IMSBuildProjectObject.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\IntrinsicFunctions.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\EscapingUtilities.cs" />
-    <Compile Include="MonoDevelop.Projects.MSBuild.Conditions\ConditionedPropertyCollection.cs" />
+    <Compile Include="CoreExtensions.cs" />
     <Compile Include="MonoDevelop.Core\FileWriteableState.cs" />
+    <Compile Include="MonoDevelop.Projects\ConditionedPropertyCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -42,7 +42,14 @@ namespace MonoDevelop.RegexToolkit
 		TreeStore resultStore;
 		
 		Thread regexThread;
-		
+		public string Regex { 
+			get {
+				return entryRegEx.Text;
+			}
+			set {
+				entryRegEx.Text = value;
+			}
+		}
 		public RegexToolkitWidget ()
 		{
 			this.Build ();

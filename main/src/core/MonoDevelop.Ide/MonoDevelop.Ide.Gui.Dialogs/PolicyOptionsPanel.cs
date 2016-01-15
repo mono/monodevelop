@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using Gtk;
 using System.Linq;
 
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
@@ -57,7 +58,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 		}
 		
-		Widget IOptionsPanel.CreatePanelWidget ()
+		Control IOptionsPanel.CreatePanelWidget ()
 		{
 			HBox hbox = new HBox (false, 6);
 			Label label = new Label ();

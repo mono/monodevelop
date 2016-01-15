@@ -43,10 +43,11 @@ using MonoDevelop.Ide;
 using System.Security.Cryptography;
 using Gdk;
 using MonoDevelop.Components;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Debugger
 {
-	public class DisassemblyView: AbstractViewContent, IClipboardHandler
+	public class DisassemblyView: ViewContent, IClipboardHandler
 	{
 		Gtk.ScrolledWindow sw;
 		TextEditor editor;
@@ -154,14 +155,10 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return sw;
 			}
-		}
-		
-		public override void Load (FileOpenInformation fileOpenInformation)
-		{
 		}
 
 		public override bool IsFile {

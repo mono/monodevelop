@@ -215,6 +215,8 @@ namespace WindowsPlatform.MainToolbar
 			if (!hasCommand)
 				return;
 
+			SubmenuClosing?.Invoke (this, e);
+
 			Xwt.Application.Invoke(() => {
 				if (commandArrayInfo != null) {
 					manager.DispatchCommand (menuEntry.CommandId, commandArrayInfo.DataItem, initialCommandTarget, commandSource);
@@ -229,6 +231,7 @@ namespace WindowsPlatform.MainToolbar
 			DesktopService.ShowUrl (menuLinkEntry.Url);
 		}
 
+		internal event EventHandler SubmenuClosing;
 		readonly MonoDevelop.Components.Commands.CommandManager manager;
 		readonly object initialCommandTarget;
 		readonly CommandSource commandSource;

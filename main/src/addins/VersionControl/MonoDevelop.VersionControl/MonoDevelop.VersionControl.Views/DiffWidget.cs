@@ -35,8 +35,8 @@ namespace MonoDevelop.VersionControl.Views
 		VersionControlDocumentInfo info;
 		Mono.TextEditor.MonoTextEditor diffTextEditor;
 		ComparisonWidget comparisonWidget;
-		Gtk.Button buttonNext;
-		Gtk.Button buttonPrev;
+		DocumentToolButton buttonNext;
+		DocumentToolButton buttonPrev;
 		Gtk.Button buttonDiff;
 		Gtk.Label labelOverview;
 
@@ -114,7 +114,8 @@ namespace MonoDevelop.VersionControl.Views
 		
 		void SetButtonSensitivity ()
 		{
-			this.buttonNext.Sensitive = this.buttonPrev.Sensitive = notebook1.Page == 0 &&  comparisonWidget.Diff != null && comparisonWidget.Diff.Count > 0;
+			this.buttonNext.GetNativeWidget<Gtk.Widget> ().Sensitive = this.buttonPrev.GetNativeWidget<Gtk.Widget> ().Sensitive =
+				notebook1.Page == 0 &&  comparisonWidget.Diff != null && comparisonWidget.Diff.Count > 0;
 		}
 		
 		void HandleButtonDiffhandleClicked (object sender, EventArgs e)

@@ -1,9 +1,10 @@
-// IBaseViewContent.cs
+﻿//
+// Window.cs
 //
 // Author:
-//   Viktoria Dudka (viktoriad@remobjects.com)
+//       therzok <marius.ungureanu@xamarin.com>
 //
-// Copyright (c) 2009 RemObjects Software
+// Copyright (c) 2015 therzok
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,29 +23,45 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-
 using System;
-using Gtk;
-using System.Collections.Generic;
 
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Components
 {
-	public interface IBaseViewContent : IDisposable
+	public class Window : Control
 	{
-		IWorkbenchWindow WorkbenchWindow { get; set; }
-		Widget Control { get; }
-		
-		/// <summary>
-		/// The label used for the subview list.
-		/// </summary>
-		string TabPageLabel { get; }
+		protected Window ()
+		{
+		}
 
-		object GetContent (Type type);
-		IEnumerable<T> GetContents<T> () where T : class;
+		Window (object widget)
+		{
+			if (widget == null)
+				throw new ArgumentNullException (nameof (widget));
+			
+			this.nativeWidget = widget;
+			cache.Add (widget, new WeakReference<Control> (this));
+		}
 
-		bool CanReuseView (string fileName);
-		void RedrawContent ();
+		public static implicit operator Gtk.Window (Window d)
+		{
+			return d?.GetNativeWidget<Gtk.Window> ();
+		}
+
+		public static implicit operator Window (Gtk.Window d)
+		{
+			if (d == null)
+				return null;
+
+			var window = GetImplicit<Window, Gtk.Window>(d);
+			if (window == null) {
+				window = new Window (d);
+				d.Destroyed += delegate {
+					GC.SuppressFinalize (window);
+					window.Dispose (true);
+				};
+			}
+			return window;
+		}
 	}
 }
+

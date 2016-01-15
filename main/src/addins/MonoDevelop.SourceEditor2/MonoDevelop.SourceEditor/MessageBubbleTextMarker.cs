@@ -144,7 +144,7 @@ namespace MonoDevelop.SourceEditor
 
 		public override TextLineMarkerFlags Flags {
 			get {
-				if (LineSegment != null && LineSegment.Markers.Any (m => m is DebugTextMarker)) 
+				if (LineSegment != null && editor.Document.GetTextSegmentMarkersAt (LineSegment).Any (m => m is DebugTextMarker)) 
 					return TextLineMarkerFlags.None;
 
 				return TextLineMarkerFlags.DrawsSelection;
@@ -351,6 +351,11 @@ namespace MonoDevelop.SourceEditor
 
 		#region IActionTextMarker implementation
 		public bool MousePressed (MonoTextEditor editor, MarginMouseEventArgs args)
+		{
+			return false;
+		}
+
+		bool IActionTextLineMarker.MouseReleased (MonoTextEditor editor, MarginMouseEventArgs args)
 		{
 			return false;
 		}
@@ -572,7 +577,7 @@ namespace MonoDevelop.SourceEditor
 			if (!IsVisible)
 				return false;
 			bool markerShouldDrawnAsHidden = cache.CurrentSelectedTextMarker != null && cache.CurrentSelectedTextMarker != this;
-			if (metrics.LineSegment.Markers.Any (m => m is DebugTextMarker))
+			if (editor.Document.GetTextSegmentMarkersAt (metrics.LineSegment).Any (m => m is DebugTextMarker))
 				return false;
 
 			EnsureLayoutCreated (editor);
@@ -660,7 +665,8 @@ namespace MonoDevelop.SourceEditor
 				while (column < line.Length && char.IsWhiteSpace (editor.GetCharAt (line.Offset + (int)column))) {
 					column++;
 				}
-					
+				if (column >= line.Length)
+					continue;
 				int index = (int)metrics.Layout.TranslateToUTF8Index (column, ref curIndex, ref byteIndex);
 				var pos = metrics.Layout.Layout.IndexToPos (index);
 				var co = o + task.Column - 1;

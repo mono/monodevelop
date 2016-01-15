@@ -25,8 +25,9 @@
 // THE SOFTWARE.
 
 using System;
-using Gtk;
 using System.Collections.Generic;
+using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using System.Threading;
 
@@ -47,7 +48,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 		}
 		
-		public ProgressDialog (Window parent, bool allowCancel, bool showDetails)
+		public ProgressDialog (MonoDevelop.Components.Window parent, bool allowCancel, bool showDetails)
 		{
 			MonoDevelop.Components.IdeTheme.ApplyTheme (this);
 			this.Build ();

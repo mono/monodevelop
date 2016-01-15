@@ -59,7 +59,7 @@ namespace MonoDevelop.CodeIssues
 			widget = new CodeIssuePanelWidget ("text/x-csharp");
 		}
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			EnsureWidget ();
 			return widget;

@@ -191,7 +191,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				if (file.Project != null)
 					newProjectFile = file.Project.Files.GetFileWithVirtualPath (newPath.ToRelative (file.Project.BaseDirectory));
 
-				if (!FileService.IsValidPath (newPath)) {
+				if (!FileService.IsValidPath (newPath) || ProjectFolderCommandHandler.ContainsDirectorySeparator (newName)) {
 					MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
 				} else if ((newProjectFile != null && newProjectFile != file) || File.Exists (file.FilePath.ParentDirectory.Combine (newName))) {
 					// If there is already a file under the newPath which is *different*, then throw an exception

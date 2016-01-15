@@ -32,7 +32,6 @@ using Roslyn.Utilities;
 using Microsoft.CodeAnalysis;
 using System;
 using System.Linq;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Diagnostics;
@@ -402,7 +401,7 @@ namespace MonoDevelop.CSharp
 
 	struct DeclaredSymbolInfo
 	{
-		internal Document Document;
+		internal DocumentId DocumentId;
 
 		public string FilePath { get; }
 		public string Name { get; }
@@ -470,14 +469,14 @@ namespace MonoDevelop.CSharp
 		}
 		Document GetDocument (CancellationToken token)
 		{
-			var doc = type.Document;
+			var doc = type.DocumentId;
 			if (doc == null) {
 				var docId = TypeSystemService.GetDocuments (type.FilePath).FirstOrDefault ();
 				if (docId == null)
 					return null;
 				return TypeSystemService.GetCodeAnalysisDocument (docId, token);
 			}
-			return doc;
+			return TypeSystemService.GetCodeAnalysisDocument (type.DocumentId, token);
 		}
 
 		public override async Task<TooltipInformation> GetTooltipInformation (CancellationToken token)
@@ -526,9 +525,9 @@ namespace MonoDevelop.CSharp
 			}
 		}
 
-		public override string GetMarkupText (Widget widget)
+		public override string GetMarkupText ()
 		{
-			return HighlightMatch (widget, useFullName ? type.FullyQualifiedContainerName : type.Name, match);
+			return HighlightMatch (useFullName ? type.FullyQualifiedContainerName : type.Name, match);
 		}
 
 		public DeclaredSymbolInfoResult (string match, string matchedString, int rank, DeclaredSymbolInfo type, bool useFullName)  : base (match, matchedString, rank)

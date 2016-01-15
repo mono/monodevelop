@@ -64,7 +64,7 @@ namespace MonoDevelop.CodeIssues
 			if (instance == null) {
 				try {
 					instance = (CodeFixProvider)Activator.CreateInstance (codeFixProviderType);
-				} catch (InvalidCastException e) {
+				} catch (InvalidCastException) {
 					LoggingService.LogError (codeFixProviderType + " can't be cast to CodeFixProvider.");
 					throw;
 				}

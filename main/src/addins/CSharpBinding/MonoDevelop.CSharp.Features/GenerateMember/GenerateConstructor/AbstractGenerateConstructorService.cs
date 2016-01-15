@@ -180,7 +180,7 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateConstructor
 					return null;
 				}
 
-				var arguments = _state.Arguments.Take(argumentCount).ToList();
+				// var arguments = _state.Arguments.Take(argumentCount).ToList();
 				var remainingArguments = _state.Arguments.Skip(argumentCount).ToList();
 				var remainingAttributeArguments = _state.AttributeArguments != null ? _state.AttributeArguments.Skip(argumentCount).ToList() : null;
 				var remainingParameterTypes = _state.ParameterTypes.Skip(argumentCount).ToList();
@@ -275,7 +275,6 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateConstructor
 				var syntaxFactory = provider.GetService<SyntaxGenerator>();
 				var codeGenerationService = new CSharpCodeGenerationService (_document.Project.Solution.Workspace);
 
-				var syntaxTree = _document.SyntaxTree;
 				var members = syntaxFactory.CreateFieldDelegatingConstructor(
 					_state.TypeToGenerateIn.Name, _state.TypeToGenerateIn, parameters,
 					parameterToExistingFieldMap, parameterToNewFieldMap, _cancellationToken);
@@ -549,8 +548,6 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateConstructor
 					isParams: false,
 					type: t,
 					name: string.Empty)).ToList();
-
-				var destinationProvider = document.Project.Solution.Workspace.Services.GetLanguageServices(this.TypeToGenerateIn.Language);
 
 				return this.TypeToGenerateIn.InstanceConstructors.Any(c => SignatureComparer.HaveSameSignature(parameters, c.Parameters, compareParameterName: true, isCaseSensitive: true));
 			}

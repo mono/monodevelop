@@ -179,7 +179,7 @@ namespace MonoDevelop.Ide.Projects
 			if (startingFolder != null)
 				dialog.CurrentFolder = startingFolder;
 
-			dialog.TransientFor = Toplevel as Window;
+			dialog.TransientFor = Toplevel as Gtk.Window;
 
 			if (dialog.Run ())
 				return dialog.SelectedFile;

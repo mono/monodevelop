@@ -197,7 +197,7 @@ namespace MonoDevelop.Components.AutoTest
 			public abstract void Replay (AutoTestSession testSession);
 		}
 		
-		public class KeyPressEvent: RecordEvent
+		internal class KeyPressEvent: RecordEvent
 		{
 			public Gdk.Key Key { get; set; }
 			public Gdk.ModifierType Modifiers { get; set; }
@@ -238,7 +238,7 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 
-		public class StringEvent: RecordEvent
+		internal class StringEvent: RecordEvent
 		{
 			internal string Text;
 			internal Gdk.ModifierType Modifiers { get; set; }
@@ -278,7 +278,7 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 
-		public class CommandEvent: RecordEvent
+		internal class CommandEvent: RecordEvent
 		{
 			public object CommandId { get; set; }
 			public int DataItemIndex { get; set; }

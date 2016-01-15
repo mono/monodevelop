@@ -30,6 +30,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Navigation;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -85,9 +86,9 @@ namespace MonoDevelop.AssemblyBrowser
 
 		#region implemented abstract members of NavigationPoint
 
-		public override Document ShowDocument ()
+		public override Task<Document> ShowDocument ()
 		{
-			return DoShow ();
+			return Task.FromResult (DoShow ());
 		}
 
 		public override string DisplayName {

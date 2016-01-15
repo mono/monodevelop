@@ -202,6 +202,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		[ColorDescription("Message Bubble Warning IconMargin")]
 		public AmbientColor MessageBubbleWarningIconMargin { get; private set; }
 
+		[ColorDescription("Link Color")]
+		public AmbientColor LinkColor { get; private set; }
+
+		[ColorDescription("Link Color(Active)")]
+		public AmbientColor ActiveLinkColor { get; private set; }
 		#endregion
 
 		#region Text Colors
@@ -627,6 +632,25 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		[ColorDescription(ScriptStringKey, VSSetting="Script String")]
 		public ChunkStyle ScriptString { get; private set; }
 
+		public const string RegexSetConstructsKey = "String(Regex Set Constructs)";
+		[ColorDescription(RegexSetConstructsKey)]
+		public ChunkStyle RegexSetConstructs { get; private set; }
+
+		public const string RegexCharacterClassKey = "String(Regex Character Class)";
+		[ColorDescription(RegexCharacterClassKey)]
+		public ChunkStyle RegexCharacterClass { get; private set; }
+
+		public const string RegexGroupingConstructsKey = "String(Regex Grouping Constructs)";
+		[ColorDescription(RegexGroupingConstructsKey)]
+		public ChunkStyle RegexGroupingConstructs { get; private set; }
+
+		public const string RegexEscapeCharacterKey = "String(Regex Escape Character)";
+		[ColorDescription(RegexEscapeCharacterKey)]
+		public ChunkStyle RegexEscapeCharacter { get; private set; }
+
+		public const string RegexAltEscapeCharacterKey = "String(Regex Alt Escape Character)";
+		[ColorDescription(RegexAltEscapeCharacterKey)]
+		public ChunkStyle RegexAltEscapeCharacter { get; private set; }
 		#endregion
 
 		internal class PropertyDecsription
@@ -656,7 +680,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				return ambientColors.Values;
 			}
 		}
-
 		static ColorScheme ()
 		{
 			foreach (var property in typeof(ColorScheme).GetProperties ()) {

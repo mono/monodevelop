@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.Components.Commands
 {
-	public class MenuToolButton: Gtk.ToolButton
+	internal class MenuToolButton: Gtk.ToolButton
 	{
 		Gtk.Menu menu;
 		

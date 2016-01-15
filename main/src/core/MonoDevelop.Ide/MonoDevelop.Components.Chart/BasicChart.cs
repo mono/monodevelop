@@ -33,7 +33,126 @@ using Gdk;
 
 namespace MonoDevelop.Components.Chart
 {
-	public class BasicChart: DrawingArea
+	public class BasicChart: Control
+	{
+		ChartWidget widget;
+
+		public BasicChart ()
+		{
+			widget = new ChartWidget ();
+		}
+
+		protected override object CreateNativeWidget ()
+		{
+			return widget;
+		}
+
+		protected internal virtual void OnSelectionChanged ()
+		{
+			if (SelectionChanged != null)
+				SelectionChanged (this, EventArgs.Empty);
+		}
+
+		public event EventHandler SelectionChanged;
+
+		public bool AllowSelection {
+			get { return widget.AllowSelection; }
+			set { widget.AllowSelection = value; }
+		}
+
+		public ChartCursor SelectionStart {
+			get { return widget.SelectionStart; }
+		}
+
+		public ChartCursor SelectionEnd {
+			get { return widget.SelectionEnd; }
+		}
+
+		public ChartCursor ActiveCursor {
+			get { return widget.ActiveCursor; }
+		}
+		public bool ReverseXAxis {
+			get { return widget.ReverseXAxis; }
+			set { widget.ReverseXAxis = value; }
+		}
+
+		public bool ReverseYAxis {
+			get { return widget.ReverseYAxis; }
+			set { widget.ReverseYAxis = value; }
+		}
+
+		public double OriginX {
+			get { return widget.OriginX; }
+			set { widget.OriginX = value; }
+		}
+
+		public double OriginY {
+			get { return widget.OriginY; }
+			set { widget.OriginY = value; }
+		}
+
+		public double StartX {
+			get { return widget.StartX; }
+			set { widget.StartX = value; }
+		}
+
+		public double EndX {
+			get { return widget.EndX; }
+			set { widget.EndX = value; }
+		}
+
+		public double StartY {
+			get { return widget.StartY; }
+			set { widget.StartY = value; }
+		}
+
+		public double EndY {
+			get { return widget.EndY; }
+			set { widget.EndY = value; }
+		}
+
+		public void Reset ()
+		{
+			widget.Reset ();
+		}
+
+		public void AddAxis (Axis ax, AxisPosition position)
+		{
+			widget.AddAxis (ax, position);
+		}
+
+		public void AddSerie (Serie serie)
+		{
+			widget.AddSerie (serie);
+		}
+
+		public void RemoveSerie (Serie serie)
+		{
+			widget.RemoveSerie (serie);
+		}
+
+		public void AddCursor (ChartCursor cursor, AxisDimension dimension)
+		{
+			widget.AddCursor (cursor, dimension);
+		}
+
+		public void RemoveCursor (ChartCursor cursor)
+		{
+			widget.RemoveCursor (cursor);
+		}
+
+		public void SetAutoScale (AxisDimension ad, bool autoStart, bool autoEnd)
+		{
+			widget.SetAutoScale (ad, autoStart, autoEnd);
+		}
+
+		public void Clear ()
+		{
+			widget.Clear ();
+		}
+	}
+
+	class ChartWidget : DrawingArea
 	{
 		double startX, endX;
 		double startY, endY;
@@ -67,8 +186,9 @@ namespace MonoDevelop.Components.Chart
 		
 		ChartCursor selectionStart;
 		ChartCursor selectionEnd;
-		
-		public BasicChart ()
+		BasicChart chart;
+
+		public ChartWidget ()
 		{
 			this.Events = EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask; 
 			selectionStart = new ChartCursor ();
@@ -80,9 +200,12 @@ namespace MonoDevelop.Components.Chart
 			selectionStart.ValueChanged += new EventHandler (OnSelectionCursorChanged);
 			selectionEnd.ValueChanged += new EventHandler (OnSelectionCursorChanged);
 		}
-		
-		public event EventHandler SelectionChanged;
-		
+
+		internal void Initialize (BasicChart owner)
+		{
+			chart = owner;
+		}
+
 		public bool AllowSelection {
 			get {
 				return enableSelection;
@@ -832,7 +955,7 @@ namespace MonoDevelop.Components.Chart
 					selectionStart = selectionEnd;
 					selectionEnd = tmp;
 				}
-				OnSelectionChanged ();
+				chart.OnSelectionChanged ();
 			}
 		}
 		
@@ -913,12 +1036,6 @@ namespace MonoDevelop.Components.Chart
 			xrangeChanged = true;
 			yrangeChanged = true;
 			base.OnSizeAllocated (rect);
-		}
-		
-		protected virtual void OnSelectionChanged ()
-		{
-			if (SelectionChanged != null)
-				SelectionChanged (this, EventArgs.Empty);
 		}
 	}
 	

@@ -31,7 +31,7 @@ using System.Text;
 
 namespace MonoDevelop.Components
 {
-	public class DropDownBoxListWindow : Window
+	public class DropDownBoxListWindow : Gtk.Window
 	{
 		readonly ScrolledWindow vScrollbar;
 		internal ListWidget list;

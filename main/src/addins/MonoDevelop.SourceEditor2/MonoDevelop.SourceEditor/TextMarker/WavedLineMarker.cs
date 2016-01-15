@@ -112,9 +112,11 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
+		#pragma warning disable 0067
 		public event EventHandler<MonoDevelop.Ide.Editor.TextMarkerMouseEventArgs> MousePressed;
 
 		public event EventHandler<MonoDevelop.Ide.Editor.TextMarkerMouseEventArgs> MouseHover;
+		#pragma warning restore 0067
 
 		object MonoDevelop.Ide.Editor.ITextSegmentMarker.Tag {
 			get;

@@ -40,25 +40,25 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
 	class CastCompletionContextHandler : CompletionContextHandler
 	{
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
+		protected override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			var position = completionContext.Position;
 			var document = completionContext.Document;
 			var syntaxTree = ctx.SyntaxTree;
 			if (syntaxTree.IsInNonUserCode(position, cancellationToken) ||
 				syntaxTree.IsPreProcessorDirectiveContext(position, cancellationToken))
-				return Enumerable.Empty<CompletionData> ();
+				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 			if (!syntaxTree.IsRightOfDotOrArrowOrColonColon(position, cancellationToken))
-				return Enumerable.Empty<CompletionData> ();
+				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 			var ma = ctx.LeftToken.Parent as MemberAccessExpressionSyntax;
 			if (ma == null)
-				return Enumerable.Empty<CompletionData> ();
+				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 
 			var model = ctx.CSharpSyntaxContext.SemanticModel;
 
 			var symbolInfo = model.GetSymbolInfo (ma.Expression);
 			if (symbolInfo.Symbol == null)
-				return Enumerable.Empty<CompletionData> ();
+				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 
 			var list = new List<CompletionData> ();
 			var within = model.GetEnclosingNamedTypeOrAssembly(position, cancellationToken);
@@ -78,7 +78,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				}
 			}
 
-			return list;
+			return Task.FromResult ((IEnumerable<CompletionData>)list);
 		}
 
 		void Analyze (CompletionEngine engine, SyntaxNode node, ITypeSymbol type, ISymbol within, List<CompletionData> list, HashSet<string> addedSymbols, CancellationToken cancellationToken)

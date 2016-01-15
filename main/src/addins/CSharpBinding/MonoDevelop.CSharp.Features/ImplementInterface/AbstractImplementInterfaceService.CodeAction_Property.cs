@@ -27,7 +27,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Features.ImplementInterface
                 string memberName,
                 CancellationToken cancellationToken)
             {
-                var factory = this.Document.GetLanguageService<SyntaxGenerator>();
+                //var factory = this.Document.GetLanguageService<SyntaxGenerator>();
                 var comAliasNameAttribute = compilation.ComAliasNameAttributeType();
 
                 var getAccessor = property.GetMethod == null

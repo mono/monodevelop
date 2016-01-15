@@ -4,6 +4,8 @@
 	<PropertyGroup>
 		<Test1 Condition="$(cond2) == val2_0">One</Test1>
 		<Test2 Condition="$(cond2) == val2_0">One</Test2>
+		<Test3 Condition="'$(cond1)|$(cond2)' == 'val14_1|val14_2'">One</Test3>
+		<Test3 Condition="'$(cond2)|$(cond1)' == 'val14_3|val14_4'">One</Test3>
 	</PropertyGroup>
 	
 	<PropertyGroup Condition="$(cond1) == 'val1'">
