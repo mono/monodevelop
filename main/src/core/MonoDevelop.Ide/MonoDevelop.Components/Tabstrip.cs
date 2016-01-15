@@ -32,6 +32,7 @@ using Cairo;
 using Gtk;
 using System.Linq;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Components
 {
@@ -177,18 +178,8 @@ namespace MonoDevelop.Components
 		{
 			using (var cr = Gdk.CairoHelper.Create (evnt.Window)) {
 				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				using (LinearGradient gr = new LinearGradient (0, 0, 0, Allocation.Height)) {
-					gr.AddColorStop (0, Styles.SubTabBarBackgroundGradientStartColor.ToCairoColor ());
-					gr.AddColorStop (1, Styles.SubTabBarBackgroundGradientEndColor.ToCairoColor ());
-					cr.SetSource (gr);
-				}
+				cr.SetSourceColor (Styles.SubTabBarBackgroundColor.ToCairoColor ());
 				cr.Fill ();
-
-				cr.MoveTo (0.5, 0.5);
-				cr.Line (0.5, 0.5, Allocation.Width - 1, 0.5);
-				cr.SetSourceColor (Styles.SubTabBarBackgroundGradientTopColor.ToCairoColor ());
-				cr.LineWidth = 1;
-				cr.Stroke ();
 
 				for (int i = tabs.Count; i --> 0;) {
 					if (i == ActiveTab)
@@ -271,7 +262,9 @@ namespace MonoDevelop.Components
 		{
 			this.parent = parent;
 			this.Label = label;
+
 			layout = PangoUtil.CreateLayout (parent);
+			layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11);
 			layout.SetText (label);
 			layout.Alignment = Pango.Alignment.Center;
 			layout.GetPixelSize (out w, out h);
@@ -285,9 +278,9 @@ namespace MonoDevelop.Components
 		public Cairo.PointD Size {
 			get {
 				if (IsSeparator)
-					return new Cairo.PointD (w, h + Padding*2);
+					return new Cairo.PointD (w, h + Padding * 2);
 				else
-					return new Cairo.PointD (Math.Max (45, w + SpacerWidth * 2), h + Padding*2);
+					return new Cairo.PointD (Math.Max (45, w + SpacerWidth * 2), h + Padding * 2);
 			}
 		}
 		
@@ -308,46 +301,26 @@ namespace MonoDevelop.Components
 			if (Active || HoverPosition.X >= 0) {
 				if (Active) {
 					cr.Rectangle (rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
-					using (var gr = new LinearGradient (rectangle.X, rectangle.Y, rectangle.X, rectangle.Y + rectangle.Height)) {
-						gr.AddColorStop (0, Styles.SubTabBarActiveGradientStartColor.ToCairoColor ());
-						gr.AddColorStop (1, Styles.SubTabBarActiveGradientEndColor.ToCairoColor ());
-						cr.SetSource (gr);
-					}
+					cr.SetSourceColor (Styles.SubTabBarActiveBackgroundColor.ToCairoColor ());
 					cr.Fill ();
-					cr.Rectangle (rectangle.X + 0.5, rectangle.Y + 0.5, rectangle.Width - 1, rectangle.Height - 1);
-					cr.SetSourceColor (Styles.SubTabBarActiveGradientTopColor.ToCairoColor ());
-					cr.LineWidth = 1;
-					cr.Stroke ();
 				} else if (HoverPosition.X >= 0) {
 					cr.Rectangle (rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
-					using (var gr = new LinearGradient (rectangle.X, rectangle.Y, rectangle.X, rectangle.Y + rectangle.Height)) {
-						gr.AddColorStop (0, Styles.SubTabBarHoverGradientStartColor.ToCairoColor ());
-						gr.AddColorStop (1, Styles.SubTabBarHoverGradientEndColor.ToCairoColor ());
-						cr.SetSource (gr);
-					}
+					cr.SetSourceColor (Styles.SubTabBarHoverBackgroundColor.ToCairoColor ());
 					cr.Fill ();
 				}
 			}
 
-			if (Active)
+			if (Active) {
 				cr.SetSourceColor (Styles.SubTabBarActiveTextColor.ToCairoColor ());
-			else
+				layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11, Pango.Weight.Bold);
+			} else {
 				cr.SetSourceColor (Styles.SubTabBarTextColor.ToCairoColor ());
+				layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11);
+			}
 
-			if (layout.Width != (int)rectangle.Width)
-				layout.Width = (int)rectangle.Width;
+			layout.Width = (int)rectangle.Width;
 
-			#if MAC
-			/* On Cocoa, Pango doesn't render text correctly using layout width/height computation.
-			 * For instance here we need to balance some kind of internal padding by two pixels which
-			 * only happens on Mac.
-			 */
-			const int verticalOffset = -2;
-			#else
-			const int verticalOffset = 0;
-			#endif
-
-			cr.MoveTo (rectangle.X + (int)(rectangle.Width / 2), (rectangle.Height - h) / 2 + verticalOffset);
+			cr.MoveTo (rectangle.X + (int)(rectangle.Width / 2), (rectangle.Height - h) / 2 - 1);
 			Pango.CairoHelper.ShowLayout (cr, layout);
 		}
 		
