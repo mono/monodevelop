@@ -55,30 +55,26 @@ namespace MonoDevelop.PackageManagement
 		public static void LoadStyles ()
 		{
 			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
-				CellSelectionColor = Xwt.Drawing.Color.FromName ("#cccccc");
-
+				CellBackgroundColor = MonoDevelop.Ide.Gui.Styles.PadBackground;
 				PackageSourceUrlTextColor = Xwt.Drawing.Color.FromName ("#747474");
 				PackageSourceErrorTextColor = Xwt.Drawing.Color.FromName ("#656565");
-				PackageSourceUrlSelectedTextColor = PackageSourceUrlTextColor;
-				PackageSourceErrorSelectedTextColor = PackageSourceErrorTextColor;
 			} else {
-				CellSelectionColor = Xwt.Drawing.Color.FromName ("#5a5a5a"); // TODO
-
+				CellBackgroundColor = Xwt.Drawing.Color.FromName ("#272727");
 				PackageSourceUrlTextColor = Xwt.Drawing.Color.FromName ("#656565"); // TODO
 				PackageSourceErrorTextColor = Xwt.Drawing.Color.FromName ("#ff0000"); // TODO
-				PackageSourceUrlSelectedTextColor = PackageSourceUrlTextColor;
-				PackageSourceErrorSelectedTextColor = PackageSourceErrorTextColor;
 			}
 
 			// Shared
 
 			BackgroundColor = MonoDevelop.Ide.Gui.Styles.PrimaryBackgroundColor;
 
-			CellBackgroundColor = MonoDevelop.Ide.Gui.Styles.PadBackground;
 			CellTextColor = MonoDevelop.Ide.Gui.Styles.BaseForegroundColor;
 			CellStrongSelectionColor = MonoDevelop.Ide.Gui.Styles.BaseSelectionBackgroundColor;
+			CellSelectionColor = MonoDevelop.Ide.Gui.Styles.BaseSelectionBackgroundColor;
 			CellTextSelectionColor = MonoDevelop.Ide.Gui.Styles.BaseSelectionTextColor;
 
+			PackageSourceUrlSelectedTextColor = PackageSourceUrlTextColor;
+			PackageSourceErrorSelectedTextColor = PackageSourceErrorTextColor;
 			PackageInfoBackgroundColor = MonoDevelop.Ide.Gui.Styles.SecondaryBackgroundLighterColor;
 
 			LineBorderColor = MonoDevelop.Ide.Gui.Styles.SeparatorColor;
