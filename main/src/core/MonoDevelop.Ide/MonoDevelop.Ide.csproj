@@ -5601,6 +5601,13 @@
     <EmbeddedResource Include="resources\tabbar-back~dark%402x.9.png">
       <LogicalName>tabbar-back~dark@2x.9.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="resources\padbar-back.9.png">
+      <LogicalName>padbar-back.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\padbar-back%402x.9.png">
+      <LogicalName>padbar-back@2x.9.png</LogicalName>
+    </EmbeddedResource>
+    <!-- TODO: ~dark -->
     <EmbeddedResource Include="resources\tabbar-inactive.9.png">
       <LogicalName>tabbar-inactive.9.png</LogicalName>
     </EmbeddedResource>
@@ -5613,6 +5620,13 @@
     <EmbeddedResource Include="resources\tabbar-inactive~dark%402x.9.png">
       <LogicalName>tabbar-inactive~dark@2x.9.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="resources\padbar-inactive.9.png">
+      <LogicalName>padbar-inactive.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\padbar-inactive%402x.9.png">
+      <LogicalName>padbar-inactive@2x.9.png</LogicalName>
+    </EmbeddedResource>
+    <!-- TODO: ~dark -->
     <EmbeddedResource Include="resources\tabbar-active.9.png">
       <LogicalName>tabbar-active.9.png</LogicalName>
     </EmbeddedResource>
@@ -5625,6 +5639,13 @@
     <EmbeddedResource Include="resources\tabbar-active~dark%402x.9.png">
       <LogicalName>tabbar-active~dark@2x.9.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="resources\padbar-active.9.png">
+      <LogicalName>padbar-active.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\padbar-active%402x.9.png">
+      <LogicalName>padbar-active@2x.9.png</LogicalName>
+    </EmbeddedResource>
+    <!-- TODO: ~dark -->
     <EmbeddedResource Include="icons\platform-tvos-16.png">
       <LogicalName>platform-tvos-16.png</LogicalName>
     </EmbeddedResource>
