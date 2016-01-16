@@ -55,10 +55,10 @@ namespace MonoDevelop.Gettext
 				POEditor.EntryFuzzyBackgroundColor = new Gdk.Color (255, 199, 186);
 				POEditor.TabBarBackgroundColor = new Gdk.Color (241, 241, 241);
 			} else {
-				POEditor.EntryUntranslatedBackgroundColor = new Gdk.Color (51, 51, 51); // TODO
-				POEditor.EntryMissingBackgroundColor = new Gdk.Color (51, 51, 51); // TODO
-				POEditor.EntryFuzzyBackgroundColor = new Gdk.Color (237, 167, 167); // TODO
-				POEditor.TabBarBackgroundColor = new Gdk.Color (51, 51, 51); // TODO
+				POEditor.EntryUntranslatedBackgroundColor = new Gdk.Color (255, 238, 194);
+				POEditor.EntryMissingBackgroundColor = new Gdk.Color (255, 0, 255); // TODO: VV
+				POEditor.EntryFuzzyBackgroundColor = new Gdk.Color (255, 195, 183);
+				POEditor.TabBarBackgroundColor = new Gdk.Color (51, 51, 51);
 			}
 		}
 	}
