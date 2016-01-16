@@ -478,11 +478,6 @@ namespace MonoDevelop.Debugger
 			cr.RoundedRectangle (0.0, 0.0, RoundedRectangleWidth, RoundedRectangleHeight, RoundedRectangleRadius);
 			cr.Fill ();
 
-			cr.SetSourceColor (Styles.ExceptionCaughtDialog.LineNumberBorderColor.ToCairoColor ());
-			cr.RoundedRectangle (0.0, 0.0, RoundedRectangleWidth, RoundedRectangleHeight, RoundedRectangleRadius);
-			cr.LineWidth = 2;
-			cr.Stroke ();
-
 			var lineNumber = !string.IsNullOrEmpty (Frame.File) ? Frame.Line : -1;
 
 			using (var layout = PangoUtil.CreateLayout (widget, lineNumber != -1 ? lineNumber.ToString () : "???")) {
@@ -494,13 +489,6 @@ namespace MonoDevelop.Debugger
 
 				double y_offset = (RoundedRectangleHeight - height) / 2.0;
 				double x_offset = (RoundedRectangleWidth - width) / 2.0;
-
-				// render the text shadow
-				cr.Save ();
-				cr.SetSourceColor (Styles.ExceptionCaughtDialog.LineNumberTextShadowColor.ToCairoColor ());
-				cr.Translate (x_offset, y_offset + 1);
-				cr.ShowLayout (layout);
-				cr.Restore ();
 
 				cr.SetSourceColor (Styles.ExceptionCaughtDialog.LineNumberTextColor.ToCairoColor ());
 				cr.Translate (x_offset, y_offset);
