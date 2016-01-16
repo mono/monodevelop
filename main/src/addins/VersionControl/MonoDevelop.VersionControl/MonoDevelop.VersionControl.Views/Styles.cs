@@ -102,26 +102,26 @@ namespace MonoDevelop.VersionControl
 				};
 			} else {
 				BlameView = new BlameViewStyle {
-					AnnotationMarkColor = Color.FromName ("#e5e5ff"), // TODO
-					AnnotationMarkModifiedColor = Color.FromName ("#ffff00"), // TODO
-					RangeHazeColor = Color.FromName ("#3d3d3d").WithAlpha (.6), // TODO
-					RangeSplitterColor = Color.FromName ("#3d3d3d").WithAlpha (.7), // TODO
+					AnnotationMarkColor = Color.FromName ("#e5f1ff"),
+					AnnotationMarkModifiedColor = Color.FromName ("#ffff00"),
+					RangeHazeColor = Color.FromName ("#111111").WithAlpha (.4),
+					RangeSplitterColor = Color.FromName ("#5b5f68").WithAlpha (.6),
 				};
 
 				LogView = new LogViewStyle () {
-					DiffAddBackgroundColor = Color.FromName ("#7bc87b").AddLight (-0.1), // TODO
-					DiffRemoveBackgroundColor = Color.FromName ("#c88c8c").AddLight (-0.1), // TODO
-					DiffHighlightColor = MonoDevelop.Ide.Gui.Styles.BackgroundColor.AddLight (0.1), // TODO
-					DiffBoxBorderColor = Color.FromName ("#4c4c4c"), // TODO
+					DiffAddBackgroundColor = Color.FromName ("#7bc87b").AddLight (-0.1),
+					DiffRemoveBackgroundColor = Color.FromName ("#c88c8c").AddLight (-0.1),
+					DiffHighlightColor = MonoDevelop.Ide.Gui.Styles.BackgroundColor.AddLight (0.1),
+					DiffBoxBorderColor = Color.FromName ("#4c4c4c"),
 				};
 
 				DiffView = new DiffViewStyle {
-					AddBorderColor = Color.FromName ("#bef0be"), // TODO
-					AddBackgroundColor = Color.FromName ("#85a885"), // TODO
-					RemoveBorderColor = Color.FromName ("#ffffc8"), // TODO
-					RemoveBackgroundColor = Color.FromName ("#b28c8c"), // TODO
-					MergeBorderColor = Color.FromName ("#bebef0"), // TODO
-					MergeBackgroundColor = Color.FromName ("#8585a8"), // TODO
+					AddBackgroundColor = Color.FromName ("#85a885"),
+					AddBorderColor = Color.FromName ("#bef0be"),
+					RemoveBackgroundColor = Color.FromName ("#b28c8c"),
+					RemoveBorderColor = Color.FromName ("#ffffc8"),
+					MergeBackgroundColor = Color.FromName ("#8585a8"),
+					MergeBorderColor = Color.FromName ("#bebef0"),
 				};
 			}
 
