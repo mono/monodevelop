@@ -272,11 +272,16 @@ namespace MonoDevelop.Ide.Gui
 				TooltipInfoSpacing = 0;
 			else
 				TooltipInfoSpacing = -5;
+			LoadStyle ();
 		}
 
 		internal static void LoadStyle ()
 		{
-			var defaultStyle = Gtk.Rc.GetStyle (IdeApp.Workbench.RootWindow);
+			Gtk.Style defaultStyle;
+			if (IdeApp.Workbench == null || IdeApp.Workbench.RootWindow == null)
+				defaultStyle = new Gtk.Label (String.Empty).Style;
+			else
+				defaultStyle = Gtk.Rc.GetStyle (IdeApp.Workbench.RootWindow);
 
 			BackgroundColor = defaultStyle.Background (Gtk.StateType.Normal).ToXwtColor ();	// must be the bg color from Gtkrc
 			BaseBackgroundColor = defaultStyle.Base (Gtk.StateType.Normal).ToXwtColor ();	// must be the base color from Gtkrc
@@ -287,7 +292,7 @@ namespace MonoDevelop.Ide.Gui
 			DefaultFont = defaultStyle.FontDescription.Copy ();
 			DefaultFontName = DefaultFont.ToString ();
 
-			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+			if (IdeApp.Preferences == null || IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
 				LoadLightStyle ();
 			else
 				LoadDarkStyle ();

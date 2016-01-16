@@ -39,8 +39,8 @@ namespace MonoDevelop.Ide.Fonts
 		static Dictionary<string, FontDescription> loadedFonts = new Dictionary<string, FontDescription> ();
 		static Properties fontProperties;
 
-		static string defaultMonospaceFontName;
-		static FontDescription defaultMonospaceFont;
+		static string defaultMonospaceFontName = String.Empty;
+		static FontDescription defaultMonospaceFont = new FontDescription ();
 
 		static void LoadDefaults ()
 		{
