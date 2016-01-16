@@ -10,7 +10,7 @@ type FSharpIndentationTracker(data:TextEditor) =
     let indentSize = data.Options.IndentationSize
 
     // Lines ending in  these strings will be indented
-    let indenters = ["=";" do";"{";"[";"[|";"->";" try"]
+    let indenters = ["=";" do"; "("; "{";"[";"[|";"->";" try"; " then"; " else"; "("]
 
     let (|AddIndent|_|) (x:string) = 
         if indenters |> List.exists(x.EndsWith) then Some ()
@@ -50,7 +50,6 @@ type FSharpIndentationTracker(data:TextEditor) =
           indent.Substring(initialWhiteSpace text 0)
 
     override x.GetIndentationString (lineNumber) =
-
         try
             let line = data.GetLine (lineNumber)
             let indent =
