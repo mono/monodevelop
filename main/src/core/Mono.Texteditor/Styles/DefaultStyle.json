@@ -1,6 +1,6 @@
 {
     "name":"Default",
-    "version":"1.3.2",
+    "version":"1.3.3",
     "description":"Bright and friendly, just like Xamarin.",
     "originator":"Xamarin Inc. (http://xamarin.com)",
 
@@ -39,12 +39,12 @@
         { "name":"Search result background", "color":"#fffeb7" },
         { "name":"Search result background (highlighted)", "color":"#fffc38" },
 
-        { "name":"Column Ruler", "color":"aluminium3" },
+        { "name":"Column Ruler", "color":"#eeeeee" },
 
         { "name":"Fold Square", "color":"aluminium4", "secondcolor":"white" },
         { "name":"Fold Cross", "color":"aluminium4", "secondcolor":"white" },
 
-        { "name":"Indentation Guide", "color":"aluminium2" },
+        { "name":"Indentation Guide", "color":"#e5e5e5" },
 
         { "name":"Indicator Margin", "color":"#f6f6f6" },
         { "name":"Indicator Margin(Separator)", "color":"#f6f6f6" },
@@ -76,9 +76,9 @@
         { "name":"Usages(Rectangle)", "color":"#B1DFF9", "secondcolor":"#B1DFF9", "bordercolor":"#B1DFF9" },
         { "name":"Changing usages(Rectangle)", "color":"#FFD6DD", "secondcolor":"#FFD6DD", "bordercolor":"#FFD6DD" },
 
-        { "name":"Breakpoint Marker", "color":"#f9dbda", "bordercolor":"#ebcccb" },
-        { "name":"Breakpoint Marker(Disabled)", "color":"#e9e9e9", "bordercolor":"#dbdbdb" },
-        { "name":"Breakpoint Marker(Invalid)", "color":"#f1e3e3", "bordercolor":"#e3d5d5" },
+        { "name":"Breakpoint Marker", "color":"#f9dbda", "bordercolor":"#f9dbda" },
+        { "name":"Breakpoint Marker(Disabled)", "color":"#e9e9e9", "bordercolor":"#e9e9e9" },
+        { "name":"Breakpoint Marker(Invalid)", "color":"#f1e3e3", "bordercolor":"#f1e3e3" },
 
         { "name":"Current Line Marker", "color":"#f7f7f7", "secondcolor":"#f7f7f7" },
         { "name":"Current Line Marker(Inactive)", "color":"#f7f7f7", "secondcolor":"#f7f7f7" },
@@ -94,14 +94,14 @@
         { "name":"Message Bubble Error Marker", "color":"#df6962" },
         { "name":"Message Bubble Error Tag", "color":"#d83f3f", "secondcolor":"white" },
         { "name":"Message Bubble Error Counter", "color":"white", "secondcolor":"#d83f3f" },
-        { "name":"Message Bubble Error IconMargin", "color":"#d83f3f", "bordercolor":"#b12a2a" },
+        { "name":"Message Bubble Error IconMargin", "color":"#d83f3f", "bordercolor":"#d83f3f" },
         { "name":"Message Bubble Error Line", "color":"#fbe4e6" },
         { "name":"Message Bubble Error Tooltip", "color":"#D10B0B" },
 
         { "name":"Message Bubble Warning Marker", "color":"#b28d37" },
         { "name":"Message Bubble Warning Tag", "color":"#e68100", "secondcolor":"white" },
         { "name":"Message Bubble Warning Counter", "color":"white", "secondcolor":"#e68100" },
-        { "name":"Message Bubble Warning IconMargin", "color":"#e68100", "bordercolor":"#c76f00" },
+        { "name":"Message Bubble Warning IconMargin", "color":"#e68100", "bordercolor":"#e68100" },
         { "name":"Message Bubble Warning Line", "color":"#fff1da" },
         { "name":"Message Bubble Warning Tooltip", "color":"#D1590B" },
 
