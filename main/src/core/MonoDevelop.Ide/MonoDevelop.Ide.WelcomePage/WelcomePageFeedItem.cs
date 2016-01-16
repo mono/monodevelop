@@ -56,10 +56,11 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		static WelcomePageFeedItem ()
 		{
-			linkUnderlinedFormat = Styles.GetFormatString (Styles.WelcomeScreen.Pad.MediumTitleFontSize, Styles.WelcomeScreen.Pad.News.Item.TitleHoverColor);
-			linkFormat = Styles.GetFormatString (Styles.WelcomeScreen.Pad.MediumTitleFontSize, Styles.WelcomeScreen.Pad.MediumTitleColor);
-			descFormat = Styles.GetFormatString (Styles.WelcomeScreen.Pad.SummaryFontSize, Styles.WelcomeScreen.Pad.TextColor);
-			subtitleFormat = Styles.GetFormatString (Styles.WelcomeScreen.Pad.SmallTitleFontSize, Styles.WelcomeScreen.Pad.SmallTitleColor);
+			var face = Platform.IsMac ? Styles.WelcomeScreen.Pad.TitleFontFamilyMac : Styles.WelcomeScreen.Pad.TitleFontFamilyWindows;
+			linkUnderlinedFormat = Styles.GetFormatString (face, Styles.WelcomeScreen.Pad.MediumTitleFontSize, Styles.WelcomeScreen.Pad.News.Item.TitleHoverColor);
+			linkFormat = Styles.GetFormatString (face, Styles.WelcomeScreen.Pad.MediumTitleFontSize, Styles.WelcomeScreen.Pad.MediumTitleColor);
+			descFormat = Styles.GetFormatString (Styles.WelcomeScreen.Pad.SummaryFontFamily, Styles.WelcomeScreen.Pad.SummaryFontSize, Styles.WelcomeScreen.Pad.TextColor);
+			subtitleFormat = Styles.GetFormatString (face, Styles.WelcomeScreen.Pad.SmallTitleFontSize, Styles.WelcomeScreen.Pad.SmallTitleColor);
 		}
 		
 		public WelcomePageFeedItem (XElement el)
