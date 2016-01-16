@@ -297,6 +297,10 @@ namespace MonoDevelop.Ide.Gui
 			PadCategoryBorderColor = SeparatorColor;
 			PadCategoryLabelColor = BaseForegroundColor;
 			PadCategoryBackgroundColor = SecondaryBackgroundLighterColor;
+			SubTabBarActiveBackgroundColor = BaseSelectionBackgroundColor;
+			SubTabBarActiveTextColor = BaseSelectionTextColor;
+			SubTabBarHoverBackgroundColor = BaseSelectionBackgroundColor.WithAlpha (0.2);
+			SubTabBarSeparatorColor = SubTabBarTextColor;
 
 			CodeCompletion.SelectionBackgroundColor = BaseSelectionBackgroundColor;
 			CodeCompletion.SelectionTextColor = BaseSelectionTextColor;
@@ -345,7 +349,7 @@ namespace MonoDevelop.Ide.Gui
 			InactivePadBackground = Color.FromName ("#e8e8e8");
 			PadLabelColor = Color.FromName ("#555555");
 			InactivePadLabelColor = Color.FromName ("#979797");
-			DockFrameBackground = Color.FromName ("#bababa");
+			DockFrameBackground = Color.FromName ("#bfbfbf");
 			DockSeparatorColor = DockFrameBackground;
 			DockBarBackground = Color.FromName ("#dddddd");
 			DockBarPrelightColor = Color.FromName ("#eeeeee");
@@ -376,14 +380,9 @@ namespace MonoDevelop.Ide.Gui
 			BreadcrumbBottomBorderColor = Color.FromName ("#dddddd");
 
 			// Document Subview Tabs
-			// FIXME: Doesn't work now, crashes MD
 
 			SubTabBarBackgroundColor = Color.FromName ("#fafafa");
 			SubTabBarTextColor = Color.FromName ("#555555");
-			SubTabBarActiveBackgroundColor = BaseSelectionBackgroundColor;
-			SubTabBarActiveTextColor = BaseSelectionTextColor; // TODO Windows/Linux is different
-			SubTabBarHoverBackgroundColor = BaseSelectionBackgroundColor.WithAlpha (0.2);
-			SubTabBarSeparatorColor = SubTabBarTextColor;
 
 			// WidgetBorderColor = Color.FromName ("#ff00ff"); // TODO: 8c8c8c - UNUSED (used for custom drawn `SearchEntry` but it isn’t used anymore, so its deprecated)
 
@@ -463,6 +462,41 @@ namespace MonoDevelop.Ide.Gui
 			StatusWarningTextColor = Color.FromName ("#ffffff");
 			StatusErrorBackgroundColor = Color.FromName ("#f56d4f");
 			StatusErrorTextColor = Color.FromName ("#ffffff");
+
+			// Document tabs
+
+			TabBarBackgroundColor = Color.FromName ("#bfbfbf");
+			TabBarActiveTextColor = Color.FromName ("#555555");
+			TabBarNotifyTextColor = Color.FromName ("#ff00ff"); // TODO
+			TabBarInactiveTextColor = Color.FromName ("#888888");
+
+			// Breadcrumb
+
+			BreadcrumbBackgroundColor = Color.FromName ("#fafafa");
+			BreadcrumbTextColor = Color.FromName ("#555555");
+			BreadcrumbButtonFillColor = BaseSelectionBackgroundColor.WithAlpha (0.2);
+			BreadcrumbBottomBorderColor = Color.FromName ("#dddddd");
+
+			// Document Subview Tabs
+
+			SubTabBarBackgroundColor = Color.FromName ("#fafafa");
+			SubTabBarTextColor = Color.FromName ("#555555");
+
+			// Status area (GTK)
+			// FIXME: Will test after the preview build
+
+			StatusBarBorderColor = Color.FromName ("#919191"); // TODO
+			StatusBarFill1Color = Color.FromName ("#f5fafc"); // TODO
+			StatusBarFill2Color = Color.FromName ("#e9f1f3"); // TODO
+			StatusBarFill3Color = Color.FromName ("#d8e7ea"); // TODO
+			StatusBarFill4Color = Color.FromName ("#d1e3e7"); // TODO
+			StatusBarErrorColor = Color.FromName ("#FF6363"); // TODO
+			StatusBarInnerColor = Color.FromName ("#000000").WithAlpha (.08); // TODO
+			StatusBarShadowColor1 = Color.FromName ("#000000").WithAlpha (.06); // TODO
+			StatusBarShadowColor2 = Color.FromName ("#000000").WithAlpha (.02); // TODO
+			StatusBarTextColor = BaseForegroundColor; // TODO
+			StatusBarProgressBackgroundColor = Color.FromName ("#000000").WithAlpha (.1); // TODO
+			StatusBarProgressOutlineColor = Color.FromName ("#000000").WithAlpha (.1); // TODO
 
 			// Toolbar
 
