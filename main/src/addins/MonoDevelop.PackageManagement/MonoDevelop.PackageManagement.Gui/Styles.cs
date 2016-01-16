@@ -56,12 +56,12 @@ namespace MonoDevelop.PackageManagement
 		{
 			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
 				CellBackgroundColor = MonoDevelop.Ide.Gui.Styles.PadBackground;
-				PackageSourceUrlTextColor = Xwt.Drawing.Color.FromName ("#747474");
-				PackageSourceErrorTextColor = Xwt.Drawing.Color.FromName ("#656565");
+				PackageSourceUrlTextColor = Xwt.Drawing.Color.FromName ("#ff00ff"); // TODO: VV: 747474
+				PackageSourceErrorTextColor = Xwt.Drawing.Color.FromName ("#ff00ff"); // TODO: VV: 656565
 			} else {
 				CellBackgroundColor = Xwt.Drawing.Color.FromName ("#272727");
-				PackageSourceUrlTextColor = Xwt.Drawing.Color.FromName ("#656565"); // TODO
-				PackageSourceErrorTextColor = Xwt.Drawing.Color.FromName ("#ff0000"); // TODO
+				PackageSourceUrlTextColor = Xwt.Drawing.Color.FromName ("#ff00ff"); // TODO: VV: 656565
+				PackageSourceErrorTextColor = Xwt.Drawing.Color.FromName ("#ff00ff"); // TODO: VV: ff0000
 			}
 
 			// Shared
