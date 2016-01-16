@@ -44,6 +44,7 @@ namespace MonoDevelop.Ide.Gui
 		public static Color BaseSelectionBackgroundColor { get; internal set; }
 		public static Color BaseSelectionTextColor { get; internal set; }
 		public static Color BaseIconColor { get; internal set; }
+		public static Color BaseTextColor { get; internal set; }
 		
 		public static Pango.FontDescription DefaultFont { get; internal set; }
 		public static string DefaultFontName { get; internal set; }
@@ -294,31 +295,32 @@ namespace MonoDevelop.Ide.Gui
 			// Shared colors
 
 			DockBarLabelColor = BaseIconColor;
+			DockSeparatorColor = DockFrameBackground;
+			PropertyPadLabelBackgroundColor = PrimaryBackgroundColor;
 			PadCategoryBorderColor = SeparatorColor;
-			PadCategoryLabelColor = BaseForegroundColor;
+			PadCategoryLabelColor = BaseTextColor;
 			PadCategoryBackgroundColor = SecondaryBackgroundLighterColor;
+			PadLabelColor = BaseTextColor;
 			SubTabBarActiveBackgroundColor = BaseSelectionBackgroundColor;
 			SubTabBarActiveTextColor = BaseSelectionTextColor;
-			SubTabBarHoverBackgroundColor = BaseSelectionBackgroundColor.WithAlpha (0.2);
 			SubTabBarSeparatorColor = SubTabBarTextColor;
+			InactiveBrowserPadBackground = InactivePadBackground;
 
-			CodeCompletion.SelectionBackgroundColor = BaseSelectionBackgroundColor;
-			CodeCompletion.SelectionTextColor = BaseSelectionTextColor;
+			// Tabs
 
-			GlobalSearch.BackgroundColor = PrimaryBackgroundColor;
-			GlobalSearch.HeaderBackgroundColor = SecondaryBackgroundLighterColor;
-			GlobalSearch.HeaderTextColor = DimTextColor;
-			GlobalSearch.SeparatorLineColor = SeparatorColor;
-			GlobalSearch.SelectionBackgroundColor = BaseSelectionBackgroundColor;
-			GlobalSearch.ResultTextColor = BaseForegroundColor;
-			GlobalSearch.ResultDescriptionTextColor = DimTextColor;
+			TabBarBackgroundColor = DockFrameBackground;
+			TabBarInactiveTextColor = InactivePadLabelColor;
+			TabBarActiveTextColor = BaseTextColor;
 
-			NewProjectDialog.TemplateBackgroundColor = PrimaryBackgroundColor;
-			NewProjectDialog.TemplateLanguageButtonTriangle = BaseIconColor;
-			NewProjectDialog.ProjectConfigurationPreviewLabelColor = BaseForegroundColor;
-			NewProjectDialog.CategoriesBackgroundColor = SecondaryBackgroundDarkerColor;
-			NewProjectDialog.ProjectConfigurationLeftHandBackgroundColor = SecondaryBackgroundDarkerColor;
-			NewProjectDialog.ProjectConfigurationRightHandBackgroundColor = PrimaryBackgroundColor;
+			// Breadcrumbs
+
+			BreadcrumbTextColor = BaseTextColor;
+
+			// Document Subview Tabs
+
+			SubTabBarTextColor = BaseTextColor;
+
+			// Popover Window
 
 			PopoverWindow.InformationBackgroundColor = StatusInformationBackgroundColor;
 			PopoverWindow.InformationTextColor = StatusInformationTextColor;
@@ -327,7 +329,31 @@ namespace MonoDevelop.Ide.Gui
 			PopoverWindow.ErrorBackgroundColor = StatusErrorBackgroundColor;
 			PopoverWindow.ErrorTextColor = StatusErrorTextColor;
 
-			PropertyPadLabelBackgroundColor = PrimaryBackgroundColor;
+			// Code Completion
+
+			CodeCompletion.SelectionBackgroundColor = BaseSelectionBackgroundColor;
+			CodeCompletion.SelectionTextColor = BaseSelectionTextColor;
+
+			// Global Search
+
+			GlobalSearch.BackgroundColor = PrimaryBackgroundColor;
+			GlobalSearch.HeaderBackgroundColor = SecondaryBackgroundLighterColor;
+			GlobalSearch.HeaderTextColor = DimTextColor;
+			GlobalSearch.SeparatorLineColor = SeparatorColor;
+			GlobalSearch.SelectionBackgroundColor = BaseSelectionBackgroundColor;
+			GlobalSearch.ResultTextColor = BaseTextColor;
+			GlobalSearch.ResultDescriptionTextColor = DimTextColor;
+
+			// New Project Dialog
+
+			NewProjectDialog.TemplateBackgroundColor = PrimaryBackgroundColor;
+			NewProjectDialog.TemplateLanguageButtonTriangle = BaseIconColor;
+			NewProjectDialog.ProjectConfigurationPreviewLabelColor = BaseTextColor;
+			NewProjectDialog.CategoriesBackgroundColor = SecondaryBackgroundDarkerColor;
+			NewProjectDialog.ProjectConfigurationLeftHandBackgroundColor = SecondaryBackgroundDarkerColor;
+			NewProjectDialog.ProjectConfigurationRightHandBackgroundColor = PrimaryBackgroundColor;
+
+			// Editor
 
 			Editor.SmartTagMarkerColorLight = Color.FromName ("#ff70fe").WithAlpha (.5);
 			Editor.SmartTagMarkerColorDark = Color.FromName ("#ffffff").WithAlpha (.5);
@@ -339,6 +365,7 @@ namespace MonoDevelop.Ide.Gui
 		internal static void LoadLightStyle ()
 		{
 			BaseIconColor = Color.FromName ("#575757");
+			BaseTextColor = Color.FromName ("#555555");
 			ThinSplitterColor = Color.FromName ("#dadada");
 			SeparatorColor = Color.FromName ("#f2f2f4");
 			PrimaryBackgroundColor = Color.FromName ("#ffffff");
@@ -347,14 +374,11 @@ namespace MonoDevelop.Ide.Gui
 			DimTextColor = Color.FromName ("#aaaaaa");
 			PadBackground = Color.FromName ("#fafafa");
 			InactivePadBackground = Color.FromName ("#e8e8e8");
-			PadLabelColor = Color.FromName ("#555555");
-			InactivePadLabelColor = Color.FromName ("#979797");
+			InactivePadLabelColor = Color.FromName ("#888888");
 			DockFrameBackground = Color.FromName ("#bfbfbf");
-			DockSeparatorColor = DockFrameBackground;
 			DockBarBackground = Color.FromName ("#dddddd");
 			DockBarPrelightColor = Color.FromName ("#eeeeee");
 			BrowserPadBackground = Color.FromName ("#ebedf0");
-			InactiveBrowserPadBackground = Color.FromName ("#f0f0f0");
 			PropertyPadDividerColor = Color.FromName ("#efefef");
 
 			// these colors need to match colors from status icons
@@ -365,24 +389,20 @@ namespace MonoDevelop.Ide.Gui
 			StatusErrorBackgroundColor = Color.FromName ("#f56d4f");
 			StatusErrorTextColor = Color.FromName ("#ffffff");
 
-			// Document tabs
+			// Tabs
 
-			TabBarBackgroundColor = Color.FromName ("#bfbfbf");
-			TabBarActiveTextColor = Color.FromName ("#555555");
 			TabBarNotifyTextColor = Color.FromName ("#ff00ff"); // TODO
-			TabBarInactiveTextColor = Color.FromName ("#888888");
 
 			// Breadcrumb
 
 			BreadcrumbBackgroundColor = Color.FromName ("#fafafa");
-			BreadcrumbTextColor = Color.FromName ("#555555");
 			BreadcrumbButtonFillColor = BaseSelectionBackgroundColor.WithAlpha (0.2);
 			BreadcrumbBottomBorderColor = Color.FromName ("#dddddd");
 
 			// Document Subview Tabs
 
 			SubTabBarBackgroundColor = Color.FromName ("#fafafa");
-			SubTabBarTextColor = Color.FromName ("#555555");
+			SubTabBarHoverBackgroundColor = BaseSelectionBackgroundColor.WithAlpha (0.2);
 
 			// WidgetBorderColor = Color.FromName ("#ff00ff"); // TODO: 8c8c8c - UNUSED (used for custom drawn `SearchEntry` but it isn’t used anymore, so its deprecated)
 
@@ -436,51 +456,45 @@ namespace MonoDevelop.Ide.Gui
 
 		internal static void LoadDarkStyle ()
 		{
-			BaseIconColor = Color.FromName ("#575757");
-			ThinSplitterColor = Color.FromName ("#ff0000"); // 353535
-			SeparatorColor = Color.FromName ("#00ff00"); // f2f2f4
-			PrimaryBackgroundColor = Color.FromName ("#0000ff"); // 444444
-			SecondaryBackgroundDarkerColor = Color.FromName ("#ffff00"); // 555555
-			SecondaryBackgroundLighterColor = Color.FromName ("#00ffff"); // 666666
-			DimTextColor = Color.FromName ("#aaaaaa");
-			PadBackground = Color.FromName ("#5a5a5a");
-			InactivePadBackground = ReduceLight (PadBackground, 0.9);
-			PadLabelColor = Color.FromName ("#ff0000"); // 57656b // TODO: Doesn't work currently
-			InactivePadLabelColor = Color.FromName ("#979797"); // TODO: Test
-			DockFrameBackground = Color.FromName ("#222222");
-			DockSeparatorColor = Color.FromName ("#222222");
-			DockBarBackground = Color.FromName ("#4a4a4a");
-			DockBarPrelightColor = Color.FromName ("#5a5a5a");
+			BaseIconColor = Color.FromName ("#bfbfbf");
+			BaseTextColor = Color.FromName ("#bababa");
+			ThinSplitterColor = Color.FromName ("#282828");
+			SeparatorColor = Color.FromName ("#4e4e4e");
+			PrimaryBackgroundColor = Color.FromName ("#575757");
+			SecondaryBackgroundDarkerColor = Color.FromName ("#484b55");
+			SecondaryBackgroundLighterColor = Color.FromName ("#616161");
+			DimTextColor = Color.FromName ("#999999");
+			PadBackground = Color.FromName ("#525252");
+			InactivePadBackground = Color.FromName ("#474747");
+			InactivePadLabelColor = Color.FromName ("#808080");
+			DockFrameBackground = Color.FromName ("#303030");
+			DockBarBackground = Color.FromName ("#5a5a5a");
+			DockBarPrelightColor = Color.FromName ("#666666");
 			BrowserPadBackground = Color.FromName ("#484b55");
-			InactiveBrowserPadBackground = Color.FromName ("#141414");
-			PropertyPadDividerColor = PadBackground;
+			PropertyPadDividerColor = SeparatorColor;
 
 			// these colors need to match colors from status icons
-			StatusInformationBackgroundColor = Color.FromName ("#87b6f0");
-			StatusInformationTextColor = Color.FromName ("#ffffff");
-			StatusWarningBackgroundColor = Color.FromName ("#f1c40f");
-			StatusWarningTextColor = Color.FromName ("#ffffff");
-			StatusErrorBackgroundColor = Color.FromName ("#f56d4f");
-			StatusErrorTextColor = Color.FromName ("#ffffff");
+			StatusInformationBackgroundColor = Color.FromName ("#8fc1ff");
+			StatusInformationTextColor = Color.FromName ("#394d66");
+			StatusWarningBackgroundColor = Color.FromName ("#ffcf0f");
+			StatusWarningTextColor = Color.FromName ("#665206");
+			StatusErrorBackgroundColor = Color.FromName ("#ff7152");
+			StatusErrorTextColor = Color.FromName ("#662d20");
 
-			// Document tabs
+			// Tabs
 
-			TabBarBackgroundColor = Color.FromName ("#bfbfbf");
-			TabBarActiveTextColor = Color.FromName ("#555555");
 			TabBarNotifyTextColor = Color.FromName ("#ff00ff"); // TODO
-			TabBarInactiveTextColor = Color.FromName ("#888888");
 
 			// Breadcrumb
 
-			BreadcrumbBackgroundColor = Color.FromName ("#fafafa");
-			BreadcrumbTextColor = Color.FromName ("#555555");
-			BreadcrumbButtonFillColor = BaseSelectionBackgroundColor.WithAlpha (0.2);
-			BreadcrumbBottomBorderColor = Color.FromName ("#dddddd");
+			BreadcrumbBackgroundColor = Color.FromName ("#525252");
+			BreadcrumbButtonFillColor = Color.FromName ("#616161");
+			BreadcrumbBottomBorderColor = BreadcrumbBackgroundColor;
 
 			// Document Subview Tabs
 
-			SubTabBarBackgroundColor = Color.FromName ("#fafafa");
-			SubTabBarTextColor = Color.FromName ("#555555");
+			SubTabBarBackgroundColor = Color.FromName ("#525252");
+			SubTabBarHoverBackgroundColor = Color.FromName ("#616161");
 
 			// Status area (GTK)
 			// FIXME: Will test after the preview build
@@ -500,7 +514,7 @@ namespace MonoDevelop.Ide.Gui
 
 			// Toolbar
 
-			ToolbarBottomBorderColor = Color.FromName ("#00ff00"); // ffffff.WithAlpha (.2);
+			ToolbarBottomBorderColor = Color.FromName ("#444444");
 
 			// Popover window
 
@@ -516,19 +530,18 @@ namespace MonoDevelop.Ide.Gui
 			CodeCompletion.BackgroundColor = Color.FromName ("#5b6365");
 			CodeCompletion.TextColor = Color.FromName ("#c3c5c6");
 			CodeCompletion.HighlightColor = Color.FromName ("#f9d33c");
-
 			CodeCompletion.SelectionBackgroundInactiveColor = Color.FromName ("#bbbbbb");
 			CodeCompletion.SelectionHighlightColor = CodeCompletion.HighlightColor;
 
 			// New Project Dialog
 
 			NewProjectDialog.BannerBackgroundColor = Color.FromName ("#77828c");
-			NewProjectDialog.BannerLineColor = Color.FromName ("#707a83");
+			NewProjectDialog.BannerLineColor = NewProjectDialog.BannerBackgroundColor;
 			NewProjectDialog.BannerForegroundColor = Color.FromName ("#ffffff");
 			NewProjectDialog.TemplateListBackgroundColor = Color.FromName ("#5a5a5a");
 			NewProjectDialog.TemplateSectionSeparatorColor = ThinSplitterColor;
 			NewProjectDialog.TemplateLanguageButtonBackground = Color.FromName ("#616161");
-			NewProjectDialog.ProjectConfigurationSeparatorColor = ThinSplitterColor;
+			NewProjectDialog.ProjectConfigurationSeparatorColor = Color.FromName ("#5d616d");
 		}
 	}
 }
