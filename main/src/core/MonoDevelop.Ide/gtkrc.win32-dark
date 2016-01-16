@@ -77,7 +77,7 @@ style "default" {
     GtkButton::default-border = { 0, 0, 0, 0 }
     GtkButton::inner-border = { 2, 2, 4, 4 }
 
-    GtkTreeView::odd-row-color = @bg_color
+    GtkTreeView::odd-row-color = "#272727"
 
     GtkScrolledWindow::scrollbar-spacing = 0
     GtkScrolledWindow::scrollbars-within-bevel = 1
