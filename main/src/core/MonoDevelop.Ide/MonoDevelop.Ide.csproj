@@ -1413,6 +1413,18 @@
     <EmbeddedResource Include="icons\pad-task-list-16~dark%402x.png">
       <LogicalName>pad-task-list-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-task-list-16~sel.png">
+      <LogicalName>pad-task-list-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-task-list-16~sel%402x.png">
+      <LogicalName>pad-task-list-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-task-list-16~dark~sel.png">
+      <LogicalName>pad-task-list-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-task-list-16~dark~sel%402x.png">
+      <LogicalName>pad-task-list-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\project-16.png">
       <LogicalName>project-16.png</LogicalName>
     </EmbeddedResource>
@@ -2235,6 +2247,18 @@
     <EmbeddedResource Include="icons\pad-search-16~dark%402x.png">
       <LogicalName>pad-search-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-search-16~sel.png">
+      <LogicalName>pad-search-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-search-16~sel%402x.png">
+      <LogicalName>pad-search-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-search-16~dark~sel.png">
+      <LogicalName>pad-search-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-search-16~dark~sel%402x.png">
+      <LogicalName>pad-search-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-solution-16.png">
       <LogicalName>pad-solution-16.png</LogicalName>
     </EmbeddedResource>
@@ -2246,6 +2270,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-solution-16~dark%402x.png">
       <LogicalName>pad-solution-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-solution-16~sel.png">
+      <LogicalName>pad-solution-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-solution-16~sel%402x.png">
+      <LogicalName>pad-solution-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-solution-16~dark~sel.png">
+      <LogicalName>pad-solution-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-solution-16~dark~sel%402x.png">
+      <LogicalName>pad-solution-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\searchbox-clear-mac-16.png">
       <LogicalName>searchbox-clear-mac-16.png</LogicalName>
@@ -2406,6 +2442,18 @@
     <EmbeddedResource Include="icons\pad-application-output-16~dark%402x.png">
       <LogicalName>pad-application-output-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-application-output-16~sel.png">
+      <LogicalName>pad-application-output-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-application-output-16~sel%402x.png">
+      <LogicalName>pad-application-output-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-application-output-16~dark~sel.png">
+      <LogicalName>pad-application-output-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-application-output-16~dark~sel%402x.png">
+      <LogicalName>pad-application-output-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-classes-16.png">
       <LogicalName>pad-classes-16.png</LogicalName>
     </EmbeddedResource>
@@ -2417,6 +2465,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-classes-16~dark%402x.png">
       <LogicalName>pad-classes-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-classes-16~sel.png">
+      <LogicalName>pad-classes-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-classes-16~sel%402x.png">
+      <LogicalName>pad-classes-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-classes-16~dark~sel.png">
+      <LogicalName>pad-classes-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-classes-16~dark~sel%402x.png">
+      <LogicalName>pad-classes-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-immediate-16.png">
       <LogicalName>pad-immediate-16.png</LogicalName>
@@ -2430,6 +2490,18 @@
     <EmbeddedResource Include="icons\pad-immediate-16~dark%402x.png">
       <LogicalName>pad-immediate-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-immediate-16~sel.png">
+      <LogicalName>pad-immediate-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-immediate-16~sel%402x.png">
+      <LogicalName>pad-immediate-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-immediate-16~dark~sel.png">
+      <LogicalName>pad-immediate-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-immediate-16~dark~sel%402x.png">
+      <LogicalName>pad-immediate-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-generic-16.png">
       <LogicalName>pad-generic-16.png</LogicalName>
     </EmbeddedResource>
@@ -2441,6 +2513,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-generic-16~dark%402x.png">
       <LogicalName>pad-generic-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-generic-16~sel.png">
+      <LogicalName>pad-generic-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-generic-16~sel%402x.png">
+      <LogicalName>pad-generic-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-generic-16~dark~sel.png">
+      <LogicalName>pad-generic-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-generic-16~dark~sel%402x.png">
+      <LogicalName>pad-generic-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-resource-16.png">
       <LogicalName>file-resource-16.png</LogicalName>
@@ -3060,6 +3144,18 @@
     <EmbeddedResource Include="icons\pad-error-list-16~dark%402x.png">
       <LogicalName>pad-error-list-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-error-list-16~sel.png">
+      <LogicalName>pad-error-list-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-error-list-16~sel%402x.png">
+      <LogicalName>pad-error-list-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-error-list-16~dark~sel.png">
+      <LogicalName>pad-error-list-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-error-list-16~dark~sel%402x.png">
+      <LogicalName>pad-error-list-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-error-list-errors-16.png">
       <LogicalName>pad-error-list-errors-16.png</LogicalName>
     </EmbeddedResource>
@@ -3084,6 +3180,18 @@
     <EmbeddedResource Include="icons\pad-error-list-errors-16~dark~disabled%402x.png">
       <LogicalName>pad-error-list-errors-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-error-list-errors-16~sel.png">
+      <LogicalName>pad-error-list-errors-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-error-list-errors-16~sel%402x.png">
+      <LogicalName>pad-error-list-errors-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-error-list-errors-16~dark~sel.png">
+      <LogicalName>pad-error-list-errors-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-error-list-errors-16~dark~sel%402x.png">
+      <LogicalName>pad-error-list-errors-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-error-list-warnings-16.png">
       <LogicalName>pad-error-list-warnings-16.png</LogicalName>
     </EmbeddedResource>
@@ -3107,6 +3215,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-error-list-warnings-16~dark~disabled%402x.png">
       <LogicalName>pad-error-list-warnings-16~dark~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-error-list-warnings-16~sel.png">
+      <LogicalName>pad-error-list-warnings-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-error-list-warnings-16~sel%402x.png">
+      <LogicalName>pad-error-list-warnings-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-error-list-warnings-16~dark~sel.png">
+      <LogicalName>pad-error-list-warnings-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-error-list-warnings-16~dark~sel%402x.png">
+      <LogicalName>pad-error-list-warnings-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\starburst.png">
       <LogicalName>starburst.png</LogicalName>
@@ -3554,6 +3674,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-help-16~dark%402x.png">
       <LogicalName>pad-help-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-help-16~sel.png">
+      <LogicalName>pad-help-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-help-16~sel%402x.png">
+      <LogicalName>pad-help-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-help-16~dark~sel.png">
+      <LogicalName>pad-help-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-help-16~dark~sel%402x.png">
+      <LogicalName>pad-help-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\preferences-16.png">
       <LogicalName>preferences-16.png</LogicalName>
