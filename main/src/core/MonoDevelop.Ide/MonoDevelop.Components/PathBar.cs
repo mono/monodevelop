@@ -385,7 +385,7 @@ namespace MonoDevelop.Components
 			ctx.LineTo (x + arrowSize, y + size / 2);
 			ctx.LineTo (x, y + size);
 			ctx.ClosePath ();
-			ctx.SetSourceColor (CairoExtensions.ColorShade (Style.Dark (State).ToCairoColor (), 0.6));
+			ctx.SetSourceColor (Styles.BaseIconColor.ToCairoColor());
 			ctx.Fill ();
 		}
 
