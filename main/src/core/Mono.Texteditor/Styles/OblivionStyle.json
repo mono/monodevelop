@@ -115,7 +115,7 @@
 
         { "name":"Collapsed Text", "fore":"aluminium3", "back":"aluminium6" },
 
-        { "name":"Line Numbers", "fore":"aluminium5", "back":"black"},
+        { "name":"Line Numbers", "fore":"aluminium5", "back":"aluminium6"},
 
         { "name":"Punctuation", "fore":"aluminium2" },
         { "name":"Punctuation(Brackets)", "fore":"aluminium2" },
