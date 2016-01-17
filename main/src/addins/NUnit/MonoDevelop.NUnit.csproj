@@ -250,6 +250,18 @@
     <EmbeddedResource Include="Gui\icons\pad-unit-test-16~dark%402x.png">
       <LogicalName>pad-unit-test-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\pad-unit-test-16~sel.png">
+      <LogicalName>pad-unit-test-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\pad-unit-test-16~sel%402x.png">
+      <LogicalName>pad-unit-test-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\pad-unit-test-16~dark~sel.png">
+      <LogicalName>pad-unit-test-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\pad-unit-test-16~dark~sel%402x.png">
+      <LogicalName>pad-unit-test-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="Gui\icons\unit-inconclusive-16.png">
       <LogicalName>unit-inconclusive-16.png</LogicalName>
     </EmbeddedResource>
