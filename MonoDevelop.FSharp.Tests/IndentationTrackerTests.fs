@@ -20,11 +20,11 @@ type IndentationTrackerTests() =
       let doc = docWithCaretAt content
       let tracker = FSharpIndentationTracker(doc.Editor)
       let caretLine = doc.Editor.CaretLine
-      tracker.GetIndentationString(caretLine).Length + 1
+      tracker.GetIndentationString(caretLine).Length
       
     let insertEnterAtSection (text:string) =
       let idx = text.IndexOf ('§')
-      let doc = TextDocument(text.Substring(0, idx) + text.Substring(idx + 1))
+      let doc = TextDocument(text.Replace("§", ""))
       use data = new TextEditorData (doc)
       data.Caret.Offset <- idx
       MiscActions.InsertNewLine(data)
@@ -51,13 +51,17 @@ let b = (fun a ->
 
     [<Test>]
     member x.``Match expression``() =
-        getIndent("let m = match 123 with\n§") |> should equal 9
+        getIndent("let m = match 123 with\n§") |> should equal 8
+
+    [<Test>]
+    member x.``If then expression``() =
+        getIndent("if true then\n§") |> should equal 4
 
     [<Test>]
     member x.``Indented match expression``() =
         getIndent("""let m =
    match 123 with
-    §""") |> should equal 4
+    §""") |> should equal 3
      
     [<Test>]
     member x.``Enter doesnt change indentation at indent position``() =
