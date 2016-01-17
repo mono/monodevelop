@@ -573,7 +573,7 @@ namespace MonoDevelop.Ide
 			this.WindowPosition = Gtk.WindowPosition.CenterOnParent;
 			this.TypeHint = WindowTypeHint.Dialog;
 			
-			this.ModifyBg (StateType.Normal, this.Style.Base (StateType.Normal));
+			this.ModifyBg (StateType.Normal, Styles.BaseBackgroundColor.ToGdkColor ());
 			
 			VBox vBox = new VBox ();
 			HBox hBox = new HBox ();
