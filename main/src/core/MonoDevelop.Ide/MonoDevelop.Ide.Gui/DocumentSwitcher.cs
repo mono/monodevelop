@@ -238,7 +238,7 @@ namespace MonoDevelop.Ide
 						cr.MoveTo (xPos + item.Icon.Width + 2 + itemPadding, yPos + (iconHeight - h) / 2);
 						layout.SetText (Ellipsize (item.ListTitle ?? item.Title, maxLength));
 						cr.ShowLayout (layout);
-						cr.DrawImage (this, item.Icon, (int)xPos + itemPadding,
+						cr.DrawImage (this, item == ActiveItem ? item.Icon.WithStyles ("sel") : item.Icon, (int)xPos + itemPadding,
 						                                 (int)(yPos + (iconHeight - item.Icon.Height) / 2));
 						yPos += iconHeight;
 						if (++curItem >= maxItems) {
