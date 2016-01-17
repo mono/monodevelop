@@ -275,6 +275,18 @@
     <EmbeddedResource Include="icons\pad-breakpoints-16~dark%402x.png">
       <LogicalName>pad-breakpoints-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-breakpoints-16~sel.png">
+      <LogicalName>pad-breakpoints-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-breakpoints-16~sel%402x.png">
+      <LogicalName>pad-breakpoints-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-breakpoints-16~dark~sel.png">
+      <LogicalName>pad-breakpoints-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-breakpoints-16~dark~sel%402x.png">
+      <LogicalName>pad-breakpoints-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-call-stack-16.png">
       <LogicalName>pad-call-stack-16.png</LogicalName>
     </EmbeddedResource>
@@ -286,6 +298,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-call-stack-16~dark%402x.png">
       <LogicalName>pad-call-stack-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-call-stack-16~sel.png">
+      <LogicalName>pad-call-stack-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-call-stack-16~sel%402x.png">
+      <LogicalName>pad-call-stack-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-call-stack-16~dark~sel.png">
+      <LogicalName>pad-call-stack-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-call-stack-16~dark~sel%402x.png">
+      <LogicalName>pad-call-stack-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-locals-16.png">
       <LogicalName>pad-locals-16.png</LogicalName>
@@ -299,6 +323,18 @@
     <EmbeddedResource Include="icons\pad-locals-16~dark%402x.png">
       <LogicalName>pad-locals-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-locals-16~sel.png">
+      <LogicalName>pad-locals-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-locals-16~sel%402x.png">
+      <LogicalName>pad-locals-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-locals-16~dark~sel.png">
+      <LogicalName>pad-locals-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-locals-16~dark~sel%402x.png">
+      <LogicalName>pad-locals-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-threads-16.png">
       <LogicalName>pad-threads-16.png</LogicalName>
     </EmbeddedResource>
@@ -311,6 +347,18 @@
     <EmbeddedResource Include="icons\pad-threads-16~dark%402x.png">
       <LogicalName>pad-threads-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-threads-16~sel.png">
+      <LogicalName>pad-threads-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-threads-16~sel%402x.png">
+      <LogicalName>pad-threads-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-threads-16~dark~sel.png">
+      <LogicalName>pad-threads-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-threads-16~dark~sel%402x.png">
+      <LogicalName>pad-threads-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-watch-16.png">
       <LogicalName>pad-watch-16.png</LogicalName>
     </EmbeddedResource>
@@ -322,6 +370,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-watch-16~dark%402x.png">
       <LogicalName>pad-watch-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-watch-16~sel.png">
+      <LogicalName>pad-watch-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-watch-16~sel%402x.png">
+      <LogicalName>pad-watch-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-watch-16~dark~sel.png">
+      <LogicalName>pad-watch-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-watch-16~dark~sel%402x.png">
+      <LogicalName>pad-watch-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-debugger-16.png">
       <LogicalName>prefs-debugger-16.png</LogicalName>
