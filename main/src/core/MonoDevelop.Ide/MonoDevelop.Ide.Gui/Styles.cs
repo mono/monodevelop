@@ -545,7 +545,7 @@ namespace MonoDevelop.Ide.Gui
 			NewProjectDialog.BannerForegroundColor = Color.FromName ("#ffffff");
 			NewProjectDialog.TemplateListBackgroundColor = Color.FromName ("#5a5a5a");
 			NewProjectDialog.TemplateSectionSeparatorColor = ThinSplitterColor;
-			NewProjectDialog.TemplateLanguageButtonBackground = Color.FromName ("#616161");
+			NewProjectDialog.TemplateLanguageButtonBackground = SecondaryBackgroundDarkerColor;
 			NewProjectDialog.ProjectConfigurationSeparatorColor = Color.FromName ("#5d616d");
 		}
 	}
