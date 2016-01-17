@@ -183,6 +183,7 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="Mono.Cairo" />
     <Reference Include="Mono.Posix" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Runtime.Serialization" />

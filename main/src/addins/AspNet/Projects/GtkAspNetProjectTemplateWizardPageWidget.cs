@@ -37,8 +37,6 @@ namespace MonoDevelop.AspNet.Projects
 	[System.ComponentModel.ToolboxItem (true)]
 	partial class GtkAspNetProjectTemplateWizardPageWidget : Gtk.Bin
 	{
-		Color backgroundColor = new Color (225, 228, 232);
-
 		AspNetProjectTemplateWizardPage wizardPage;
 		ImageView backgroundImageView;
 		Xwt.Drawing.Image backgroundImage;
@@ -69,7 +67,8 @@ namespace MonoDevelop.AspNet.Projects
 			backgroundImageView.Yalign = (float)(1/scale);
 			backgroundLargeImageVBox.PackStart (backgroundImageView, true, true, 0);
 
-			var separatorColor = new Color (176, 178, 181);
+			var separatorColor = Ide.Gui.Styles.NewProjectDialog.ProjectConfigurationSeparatorColor.ToGdkColor ();
+			var backgroundColor = Ide.Gui.Styles.NewProjectDialog.ProjectConfigurationLeftHandBackgroundColor.ToGdkColor ();
 			testingSeparator.ModifyBg (StateType.Normal, separatorColor);
 
 			leftBorderEventBox.ModifyBg (StateType.Normal, backgroundColor);
