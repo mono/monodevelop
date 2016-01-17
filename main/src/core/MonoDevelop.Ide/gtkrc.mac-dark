@@ -13,7 +13,7 @@ gtk-color-scheme =
 fg_color: #bfbfbf
 base_color: #222
 text_color: #bfbfbf
-link_color: #5189ed
+link_color: #56bbf0
 selected_bg_color: #5189ed
 selected_fg_color: #fff
 tooltip_bg_color: #5a5a5a
