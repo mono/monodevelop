@@ -434,6 +434,11 @@ style "spin-button" = "wider"
     }
 }
 
+style "link-label-fix"
+{
+	base[PRELIGHT] = @bg_color # disable link hover background
+}
+
 
 ### Apply the styles
 
@@ -510,3 +515,6 @@ widget "*MonoDevelop.PropertyGridToolbar.GtkRadioButton" style "toggle-button"
 
 # BooleanEditorCell must always have murrine style
 widget_class "*BooleanEditor*" style "propertygrid-radio-or-check-box"
+
+# disable hover background on link labels
+class "GtkLabel" style "link-label-fix"

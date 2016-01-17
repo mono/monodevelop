@@ -410,6 +410,11 @@ style "scale" = "default"
     }
 }
 
+style "link-label-fix"
+{
+	base[PRELIGHT] = @bg_color # disable link hover background
+}
+
 
 ### Apply the styles
 class "GtkWidget" style "default"
@@ -467,3 +472,6 @@ widget_class "*.<GtkToolbar>.<GtkComboBox>.<GtkButton>" style "toolbar-combo-box
 widget "*MainToolbar*.GtkComboBox.*" style:highest "toolbar-combo-box"
 
 widget "gtk-tooltip*" style "tooltip"
+
+# disable hover background on link labels
+class "GtkLabel" style "link-label-fix"
