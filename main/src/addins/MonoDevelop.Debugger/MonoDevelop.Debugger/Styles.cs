@@ -84,7 +84,7 @@ namespace MonoDevelop.Debugger
 				ObjectValueTreeValuesButtonText = Color.FromName ("#cbe5ff");
 				ObjectValueTreeValuesButtonBorder = Color.FromName ("#a4bbd5");
 				ObjectValueTreeValueErrorText = Color.FromName ("#ff00ff"); // TODO: VV: ff0000
-				ObjectValueTreeValueDisabledText = Color.FromName ("#ff00ff"); // TODO: VV: 7f7f7f
+				ObjectValueTreeValueDisabledText = Color.FromName ("#5a5a5a");
 				ObjectValueTreeValueModifiedText = Color.FromName ("#ff00ff"); // TODO: VV: 0000ff
 
 				PreviewVisualizerHeaderTextColor = Color.FromName ("#ff00ff"); // TODO: VV: dbdbdb
