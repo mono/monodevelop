@@ -23,9 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 using MonoDevelop.Ide;
-using MonoDevelop.Components;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -49,38 +47,36 @@ namespace MonoDevelop.PackageManagement
 		static Styles ()
 		{
 			LoadStyles ();
-			MonoDevelop.Ide.Gui.Styles.Changed +=  (o, e) => LoadStyles ();
+			Ide.Gui.Styles.Changed +=  (o, e) => LoadStyles ();
 		}
 
 		public static void LoadStyles ()
 		{
 			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
-				CellBackgroundColor = MonoDevelop.Ide.Gui.Styles.PadBackground;
-				PackageSourceUrlTextColor = Xwt.Drawing.Color.FromName ("#ff00ff"); // TODO: VV: 747474
-				PackageSourceErrorTextColor = Xwt.Drawing.Color.FromName ("#ff00ff"); // TODO: VV: 656565
+				CellBackgroundColor = Ide.Gui.Styles.PadBackground;
 			} else {
 				CellBackgroundColor = Xwt.Drawing.Color.FromName ("#272727");
-				PackageSourceUrlTextColor = Xwt.Drawing.Color.FromName ("#ff00ff"); // TODO: VV: 656565
-				PackageSourceErrorTextColor = Xwt.Drawing.Color.FromName ("#ff00ff"); // TODO: VV: ff0000
 			}
 
 			// Shared
 
-			BackgroundColor = MonoDevelop.Ide.Gui.Styles.PrimaryBackgroundColor;
+			BackgroundColor = Ide.Gui.Styles.PrimaryBackgroundColor;
 
-			CellTextColor = MonoDevelop.Ide.Gui.Styles.BaseForegroundColor;
-			CellStrongSelectionColor = MonoDevelop.Ide.Gui.Styles.BaseSelectionBackgroundColor;
-			CellSelectionColor = MonoDevelop.Ide.Gui.Styles.BaseSelectionBackgroundColor;
-			CellTextSelectionColor = MonoDevelop.Ide.Gui.Styles.BaseSelectionTextColor;
+			CellTextColor = Ide.Gui.Styles.BaseForegroundColor;
+			CellStrongSelectionColor = Ide.Gui.Styles.BaseSelectionBackgroundColor;
+			CellSelectionColor = Ide.Gui.Styles.BaseSelectionBackgroundColor;
+			CellTextSelectionColor = Ide.Gui.Styles.BaseSelectionTextColor;
 
 			PackageSourceUrlSelectedTextColor = PackageSourceUrlTextColor;
 			PackageSourceErrorSelectedTextColor = PackageSourceErrorTextColor;
-			PackageInfoBackgroundColor = MonoDevelop.Ide.Gui.Styles.SecondaryBackgroundLighterColor;
+			PackageInfoBackgroundColor = Ide.Gui.Styles.SecondaryBackgroundLighterColor;
+			PackageSourceErrorTextColor = Ide.Gui.Styles.StatusErrorBackgroundColor;
+			PackageSourceUrlTextColor = Ide.Gui.Styles.DimTextColor;
 
-			LineBorderColor = MonoDevelop.Ide.Gui.Styles.SeparatorColor;
+			LineBorderColor = Ide.Gui.Styles.SeparatorColor;
 
-			ErrorBackgroundColor = MonoDevelop.Ide.Gui.Styles.StatusWarningBackgroundColor;
-			ErrorForegroundColor = MonoDevelop.Ide.Gui.Styles.StatusWarningTextColor;
+			ErrorBackgroundColor = Ide.Gui.Styles.StatusWarningBackgroundColor;
+			ErrorForegroundColor = Ide.Gui.Styles.StatusWarningTextColor;
 		}
 	}
 }
