@@ -62,7 +62,13 @@ namespace MonoDevelop.MacIntegration
 
 				if (!stockIcon && !string.IsNullOrEmpty (data.Message.Icon)) {
 					var img = ImageService.GetIcon (data.Message.Icon, Gtk.IconSize.Dialog);
-					alert.Icon = img.ToNSImage ();
+					// HACK: VK The icon is not rendered in dark style correctly
+					//       Use light variant and reder it here
+					//       as long as NSAppearance.NameVibrantDark is broken
+					if (IdeTheme.UserInterfaceSkin == Skin.Dark)
+						alert.Icon = img.WithStyles ("-dark").ToBitmap (GtkWorkarounds.GetScaleFactor ()).ToNSImage ();
+					else
+						alert.Icon = img.ToNSImage ();
 				} else {
 					//for some reason the NSAlert doesn't pick up the app icon by default
 					alert.Icon = NSApplication.SharedApplication.ApplicationIconImage;
@@ -151,15 +157,7 @@ namespace MonoDevelop.MacIntegration
 				
 				if (!data.Message.CancellationToken.IsCancellationRequested) {
 
-					// HACK: VK The icon is not rendered in dark style correctly
-					//       Use light variant as long as NSAppearance.NameVibrantDark is broken
-					if (IdeTheme.UserInterfaceSkin == Skin.Dark)
-						Xwt.Drawing.Context.ClearGlobalStyle ("dark");
-
 					var result = (int)alert.RunModal () - (long)(int)NSAlertButtonReturn.First;
-
-					if (IdeTheme.UserInterfaceSkin == Skin.Dark)
-						Xwt.Drawing.Context.SetGlobalStyle ("dark");
 					
 					completed = true;
 					if (result >= 0 && result < buttons.Count) {
