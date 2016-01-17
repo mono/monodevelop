@@ -7,12 +7,19 @@ open MonoDevelop.Ide.Editor.Extension
 
 type FSharpTextPasteHandler(editor:TextEditor) =
     inherit TextPasteHandler()
-    override x.GetCopyData(_offset, _length) = [||]
+    override x.GetCopyData(offset, _length) = 
+        // get the indent level the line was originally at
+        let line = editor.OffsetToLineNumber offset
+        let indent = editor.GetLineIndent line
+        [|byte indent.Length|]
+
     override x.PostFomatPastedText (_offset, _length) = ()
 
-    override x.FormatPlainText(offset, text, _copyData) =
+    override x.FormatPlainText(offset, text, copyData) =
         if editor.Options.IndentStyle = IndentStyle.Smart ||
            editor.Options.IndentStyle = IndentStyle.Virtual then
+            // adjust the original indentation size
+            // for the new location
             let location = editor.OffsetToLocation offset
             if location.Column > 1 then
                 let getIndent (line:string) =
@@ -26,15 +33,21 @@ type FSharpTextPasteHandler(editor:TextEditor) =
 
                 let line = location.Line
 
-                let indent = editor.GetLineIndent line
+                let insertionIndent = editor.GetLineIndent line
                 let lines = String.getLines text
                 let firstLine = lines.[0]
-                let indentDifference = indent.Length - getIndent firstLine
+                let firstLineIndent = if copyData.Length > 0 then
+                                          int copyData.[0]
+                                      else
+                                          getIndent firstLine
+
+                let indentDifference = insertionIndent.Length - firstLineIndent
                 let remainingLines = lines |> Seq.skip (1) 
                                            |> Seq.map(fun line -> fixIndent(line, indentDifference))
                 let lines = remainingLines
                             |> Seq.append (seq [(String.trimStart [|' '|] firstLine)])
                 let res = String.Join (editor.Options.DefaultEolMarker, lines)
+
                 res
             else
                 text
