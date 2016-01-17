@@ -127,6 +127,9 @@ namespace MonoDevelop.Ide
 			// Dock area
 			
 			CustomFrame dfr = new CustomFrame (0, 0, 1, 0);
+			dfr.StyleSet += (o, args) => {
+				dfr.BorderColor = Styles.DockSeparatorColor.ToGdkColor ();
+			};
 			dfr.ShowAll ();
 			DefaultWorkbench wb = (DefaultWorkbench)IdeApp.Workbench.RootWindow;
 			var dockBar = wb.DockFrame.ExtractDockBar (PositionType.Bottom);
