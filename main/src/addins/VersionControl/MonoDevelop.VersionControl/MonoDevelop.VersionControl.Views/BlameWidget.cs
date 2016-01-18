@@ -128,6 +128,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			var doc = new TextDocument (sourceEditor.TextEditor.Document.Text) {
 				ReadOnly = true,
+				SyntaxMode = sourceEditor.TextEditor.Document.SyntaxMode,
 			};
 			editor = new MonoTextEditor (doc, sourceEditor.TextEditor.Options);
 			AddChild (editor);
