@@ -57,6 +57,8 @@ namespace MonoDevelop.VersionControl.Views
 		protected override void OnSelected ()
 		{
 			info.Start ();
+			BlameWidget widget = Control.GetNativeWidget<BlameWidget> ();
+			widget.Reset ();
 			var sourceEditor = info.Document.GetContent <MonoDevelop.SourceEditor.SourceEditorView> ();
 			if (sourceEditor != null) {
 				widget.Editor.Caret.Location = sourceEditor.TextEditor.Caret.Location;

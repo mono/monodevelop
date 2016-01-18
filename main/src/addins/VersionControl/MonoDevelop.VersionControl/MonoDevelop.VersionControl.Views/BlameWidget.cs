@@ -128,7 +128,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			var doc = new TextDocument (sourceEditor.TextEditor.Document.Text) {
 				ReadOnly = true,
-				SyntaxMode = sourceEditor.TextEditor.Document.SyntaxMode,
+				MimeType = sourceEditor.TextEditor.Document.MimeType,
 			};
 			editor = new MonoTextEditor (doc, sourceEditor.TextEditor.Options);
 			AddChild (editor);
@@ -152,6 +152,12 @@ namespace MonoDevelop.VersionControl.Views
 			};
 			editor.DoPopupMenu = ShowPopup;
 			Show ();
+		}
+
+		internal void Reset ()
+		{
+			revision = null;
+			overview.UpdateAnnotations ();
 		}
 		
 		void ShowPopup (EventButton evt)
