@@ -2,6 +2,5 @@
   <Items>
     <Item>extras/extras.mdw</Item>
     <Item>main/Main.sln</Item>
-    <Item>../md-addins/md-addins.sln</Item>
   </Items>
 </WorkspaceItem>
