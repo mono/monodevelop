@@ -89,17 +89,21 @@ namespace MonoDevelop.Components
 					titleBarOffset = MonoDevelop.Components.Mac.GtkMacInterop.GetTitleBarHeight () + 12;
 				}
 
-				var pt = new CoreGraphics.CGPoint (x, nswindow.Frame.Height - y - titleBarOffset);
-
-				var tmp_event = NSEvent.MouseEvent (NSEventType.LeftMouseDown,
-					pt,
-					0, 0,
-					nswindow.WindowNumber,
-					null, 0, 0, 0);
 				if (selectFirstItem) {
-					// TODO : Implement item selection.
+					var pt = new CoreGraphics.CGPoint (x, y);
+					menu.PopUpMenu (menu.ItemAt (0), pt, nsview);
+				} else {
+					var pt = new CoreGraphics.CGPoint (x, nswindow.Frame.Height - y - titleBarOffset);
+
+					var tmp_event = NSEvent.MouseEvent (NSEventType.LeftMouseDown,
+					                                pt,
+					                                0, 0,
+					                                nswindow.WindowNumber,
+					                                null, 0, 0, 0);
+					NSMenu.PopUpContextMenu (menu, tmp_event, nsview);
 				}
-				NSMenu.PopUpContextMenu (menu, tmp_event, nsview);
+
+
 			});
 		}
 
