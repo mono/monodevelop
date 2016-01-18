@@ -184,9 +184,11 @@ namespace MonoDevelop.Components.Docking
 				labelWidget = new ExtendedLabel (label);
 				labelWidget.DropShadowVisible = true;
 				labelWidget.UseMarkup = true;
-				labelWidget.SetPadding (0, 5);
-
-				box.PackStart (labelWidget, true, true, 0);
+				labelWidget.Yalign = 1.0f;
+				var alignLabel = new Alignment (0.0f, 1.0f, 1, 1);
+				alignLabel.BottomPadding = 1;
+				alignLabel.Add (labelWidget);
+				box.PackStart (alignLabel, true, true, 0);
 			} else {
 				labelWidget = null;
 			}
