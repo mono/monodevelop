@@ -110,18 +110,18 @@ namespace MonoDevelop.VersionControl
 		
 		public string Path {
 			get;
-			set;
+			private set;
 		}
 		
 		public RevisionAction Action {
 			get;
-			set;
+			private set;
 		}
 		
 		// To use when Action == RevisionAction.Other
 		public string ActionDescription {
 			get;
-			set;
+			private set;
 		}
 	}
 	
