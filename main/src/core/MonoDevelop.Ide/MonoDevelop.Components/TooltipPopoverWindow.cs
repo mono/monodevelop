@@ -84,7 +84,7 @@ namespace MonoDevelop.Components
 
 					alignment.SetPadding (4, 4, 6, 6);
 
-					var f = Style.FontDescription.Copy ();
+					var f = Style.FontDescription.Copy (); // TODO: VV: Use FontService
 					f.Size = ((f.Size / (int)Pango.Scale.PangoScale) - 1) * (int)Pango.Scale.PangoScale;
 					label.ModifyFont (f);
 

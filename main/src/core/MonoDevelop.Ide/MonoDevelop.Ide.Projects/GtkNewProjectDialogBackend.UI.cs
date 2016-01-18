@@ -132,7 +132,7 @@ namespace MonoDevelop.Ide.Projects
 
 			topBannerLabel = new Label ();
 			topBannerLabel.Name = "topBannerLabel";
-			Pango.FontDescription font = topBannerLabel.Style.FontDescription.Copy ();
+			Pango.FontDescription font = topBannerLabel.Style.FontDescription.Copy (); // TODO: VV: Use FontService
 			font.Size = (int)(font.Size * 1.8);
 			topBannerLabel.ModifyFont (font);
 			topBannerLabel.ModifyFg (StateType.Normal, whiteColor);

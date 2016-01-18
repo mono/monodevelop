@@ -33,6 +33,7 @@ using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -165,11 +166,7 @@ namespace MonoDevelop.Components.Docking
 				labelWidget.DropShadowVisible = true;
 				labelWidget.UseMarkup = true;
 				labelWidget.SetPadding (0, 5);
-
-				var font = labelWidget.Style.FontDescription.Copy ();
-				font.Size = (int) (Styles.FontScale11 * font.Size);
-				font.Weight = Pango.Weight.Bold;
-				labelWidget.ModifyFont (font);
+				labelWidget.ModifyFont (Ide.Fonts.FontService.SansFont.CopyModified (Styles.FontScale11));
 
 				box.PackStart (labelWidget, true, true, 0);
 			} else {

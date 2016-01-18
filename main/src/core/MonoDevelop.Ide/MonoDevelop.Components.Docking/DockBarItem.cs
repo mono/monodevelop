@@ -36,6 +36,7 @@ using MonoDevelop.Components;
 using Xwt.Motion;
 using Animations = Xwt.Motion.AnimationExtensions;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Components.Docking
 {	
@@ -233,10 +234,7 @@ namespace MonoDevelop.Components.Docking
 			if (!string.IsNullOrEmpty (it.Label)) {
 				label = new Label (it.Label);
 				label.UseMarkup = true;
-
-				var font = label.Style.FontDescription.Copy ();
-				font.Size = (int)((Platform.IsMac ? Styles.FontScale11 : Styles.FontScale12) * font.Size);
-				label.ModifyFont (font);
+				label.ModifyFont (FontService.SansFont.CopyModified (Styles.FontScale11));
 
 				if (bar.Orientation == Orientation.Vertical)
 					label.Angle = 270;
@@ -244,9 +242,9 @@ namespace MonoDevelop.Components.Docking
 				// fine-tune label alignment issues
 				if (Platform.IsMac) {
 					if (bar.Orientation == Orientation.Horizontal)
-						label.SetAlignment (0, 0.7f);
+						label.SetAlignment (0, 0.5f);
 					else
-						label.SetAlignment (0.3f, 0);
+						label.SetAlignment (0.6f, 0);
 				} else {
 					if (bar.Orientation == Orientation.Vertical)
 						label.SetAlignment (1, 0);

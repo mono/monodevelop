@@ -298,7 +298,7 @@ namespace MonoDevelop.Debugger
 			Selection.Changed += HandleSelectionChanged;
 			ResetColumnSizes ();
 			
-			Pango.FontDescription newFont = Style.FontDescription.Copy ();
+			Pango.FontDescription newFont = Style.FontDescription.Copy (); // TODO: VV: Use FontService
 			newFont.Size = (newFont.Size * 8) / 10;
 
 			liveIcon = ImageService.GetIcon (Stock.Execute, IconSize.Menu);
@@ -727,7 +727,7 @@ namespace MonoDevelop.Debugger
 				compact = value;
 				Pango.FontDescription newFont;
 				if (compact) {
-					newFont = Style.FontDescription.Copy ();
+					newFont = Style.FontDescription.Copy (); // TODO: VV: Use FontService
 					newFont.Size = (newFont.Size * 8) / 10;
 					valueCol.MaxWidth = 800;
 					crpViewer.Image = ImageService.GetIcon (Stock.Edit).WithSize (12,12);

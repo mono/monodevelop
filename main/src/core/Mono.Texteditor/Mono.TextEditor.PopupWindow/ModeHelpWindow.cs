@@ -258,7 +258,7 @@ namespace Mono.TextEditor.PopupWindow
 			} else {
 				Symbol = SymbolTokenType.None;
 
-				var desc = ctx.FontDescription.Copy ();
+				var desc = ctx.FontDescription.Copy (); // TODO: VV: Use FontService
 				desc.AbsoluteSize = Pango.Units.FromPixels (Outlined ? outlinedFontSize : normalFontSize);
 				if (Outlined) {
 					desc.Weight = Pango.Weight.Bold;
@@ -355,7 +355,7 @@ namespace Mono.TextEditor.PopupWindow
 			List<TokenRenderer> line = new List<TokenRenderer> ();
 			var currentLine = "";
 
-			var desc = ctx.FontDescription.Copy ();
+			var desc = ctx.FontDescription.Copy (); // TODO: VV: Use FontService
 			desc.AbsoluteSize = Pango.Units.FromPixels (14);
 			desc.Weight = Pango.Weight.Bold;
 			var layout = new Pango.Layout (ctx);
@@ -412,7 +412,7 @@ namespace Mono.TextEditor.PopupWindow
 			};
 
 			titleLayout = new Pango.Layout (PangoContext);
-			var desc = PangoContext.FontDescription.Copy ();
+			var desc = PangoContext.FontDescription.Copy (); // TODO: VV: Use FontService
 			desc.AbsoluteSize = Pango.Units.FromPixels (12);
 			desc.Weight = Pango.Weight.Bold;
 			titleLayout.FontDescription = desc;

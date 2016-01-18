@@ -187,7 +187,7 @@ namespace Stetic.Editor
 			bool calcSize = (testx == -1);
 			
 			Pango.Layout layout = new Pango.Layout (this.PangoContext);
-			Pango.FontDescription des = this.Style.FontDescription.Copy();
+			Pango.FontDescription des = this.Style.FontDescription.Copy(); // TODO: VV: Use FontService
 			des.Size = 10 * (int) Pango.Scale.PangoScale;
 			layout.FontDescription = des;
 			layout.SetMarkup (title);

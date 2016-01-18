@@ -51,7 +51,7 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 
 			var label = new Gtk.Label ();
 			label.Text = value;
-			var font = label.Style.FontDescription.Copy ();
+			var font = label.Style.FontDescription.Copy (); // TODO: VV: Use FontService
 
 			if (font.SizeIsAbsolute) {
 				font.AbsoluteSize = font.Size - 1;

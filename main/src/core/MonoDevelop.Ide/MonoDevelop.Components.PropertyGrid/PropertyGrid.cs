@@ -380,7 +380,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			descTextView.LeftMargin = 5;
 			descTextView.RightMargin = 5;
 			
-			Pango.FontDescription font = Style.FontDescription.Copy ();
+			Pango.FontDescription font = Style.FontDescription.Copy (); // TODO: VV: Use FontService
 			font.Size = (font.Size * 8) / 10;
 			descTextView.ModifyFont (font);
 			

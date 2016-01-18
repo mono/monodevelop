@@ -370,8 +370,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			public void OptionsChanged ()
 			{
-				var description = FontService.SansFont.CopyModified (MonoDevelop.Ide.Gui.Styles.FontScale11);
-				layout.FontDescription = description;
+				layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 				UpdateWidth ();
 			}
 			
@@ -710,8 +709,7 @@ namespace MonoDevelop.VersionControl.Views
 							}
 
 							using (var authorLayout = MonoDevelop.Components.PangoUtil.CreateLayout (this)) {
-								var description = FontService.SansFont.CopyModified (MonoDevelop.Ide.Gui.Styles.FontScale11);
-								authorLayout.FontDescription = description;
+								authorLayout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 								authorLayout.SetText (ann.Author);
 								authorLayout.GetPixelSize (out authorWidth, out h);
 

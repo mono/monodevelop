@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide.Gui
 					fd = null;
 				}
 				if (toolbar.IconSize == Gtk.IconSize.Menu || toolbar.IconSize == Gtk.IconSize.SmallToolbar) {
-					fd = Style.FontDescription.Copy ();
+					fd = Style.FontDescription.Copy (); // TODO: VV: Use FontService
 					fd.Size = (int) (fd.Size * Pango.Scale.Small);
 				}
 				combo.ModifyLabelFont (fd);

@@ -409,7 +409,7 @@ namespace MonoDevelop.Debugger
 
 	class StackFrameCellRenderer : CellRenderer
 	{
-		static readonly Pango.FontDescription LineNumberFont = FontService.MonospaceFont.CopyModified (0.9d);
+		static readonly Pango.FontDescription LineNumberFont = FontService.MonospaceFont.CopyModified (Ide.Gui.Styles.FontScale11);
 		const int RoundedRectangleRadius = 2;
 		const int RoundedRectangleHeight = 14;
 		const int RoundedRectangleWidth = 28;

@@ -630,7 +630,7 @@ namespace MonoDevelop.Components.Chart
 			
 			if (showLabels) {
 				layout = new Pango.Layout (this.PangoContext);
-				layout.FontDescription = FontService.SansFont.CopyModified (MonoDevelop.Ide.Gui.Styles.FontScale11);
+				layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 			}
 			
 			bool isX = pos == AxisPosition.Top || pos == AxisPosition.Bottom;
@@ -766,7 +766,7 @@ namespace MonoDevelop.Components.Chart
 		{
 			int max = 0;
 			Pango.Layout layout = new Pango.Layout (this.PangoContext);
-			layout.FontDescription = FontService.SansFont.CopyModified (MonoDevelop.Ide.Gui.Styles.FontScale11);
+			layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 			
 			double start = GetStart (ad);
 			double end = GetEnd (ad);
@@ -877,7 +877,7 @@ namespace MonoDevelop.Components.Chart
 				
 				if (text != null && text.Length > 0) {
 					Pango.Layout layout = new Pango.Layout (this.PangoContext);
-					layout.FontDescription = FontService.SansFont.CopyModified (MonoDevelop.Ide.Gui.Styles.FontScale11);
+					layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 					layout.SetMarkup (text);
 					
 					int tw, th;
