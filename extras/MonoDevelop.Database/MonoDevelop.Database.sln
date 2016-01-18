@@ -29,7 +29,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Database.Compon
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Database.Designer", "MonoDevelop.Database.Designer\MonoDevelop.Database.Designer.csproj", "{8BA96BBA-D7D5-4C72-9AF1-DD816D8D958F}"
 EndProject
-Project("{9344bdbb-3e7f-41fc-a0dd-8665d75ee146}") = "po", "po\po.mdproj", "{0CC523C2-CCB4-4BE6-8050-A20050521093}"
+Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "po", "po\po.mdproj", "{0CC523C2-CCB4-4BE6-8050-A20050521093}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Database.CodeGenerator", "MonoDevelop.Database.CodeGenerator\MonoDevelop.Database.CodeGenerator.csproj", "{D945526C-0897-4FE8-AAFD-29B4BAB4174F}"
 EndProject
