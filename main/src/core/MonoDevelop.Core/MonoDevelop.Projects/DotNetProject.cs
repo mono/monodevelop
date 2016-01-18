@@ -876,7 +876,7 @@ namespace MonoDevelop.Projects
 			if (CheckUseMSBuildEngine (configuration)) {
 				// Get the references list from the msbuild project
 				RemoteProjectBuilder builder = await GetProjectBuilder ();
-				var configs = GetConfigurations (configuration, false);
+				var configs = GetConfigurations (configuration, true);
 
 				string[] refs;
 				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
