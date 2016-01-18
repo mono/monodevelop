@@ -77,7 +77,7 @@ namespace MonoDevelop.Components
 			ContextMenuExtensionsGtk.ShowContextMenu (parent, evt, this, closeHandler);
 		}
 
-		public void Show (Gtk.Widget parent, int x, int y, Action closeHandler)
+		public void Show (Gtk.Widget parent, int x, int y, Action closeHandler, bool selectFirstItem = false)
 		{
 			#if MAC
 			if (Platform.IsMac) {
@@ -90,13 +90,16 @@ namespace MonoDevelop.Components
 			}
 			#endif
 
-			ContextMenuExtensionsGtk.ShowContextMenu (parent, x, y, this, closeHandler);
+			ContextMenuExtensionsGtk.ShowContextMenu (parent, x, y, this, closeHandler, selectFirstItem);
 		}
+
 
 		public void Show (Gtk.Widget parent, int x, int y)
 		{
 			Show (parent, x, y, null);
 		}
+
+
 
 		public void Add (ContextMenuItem menuItem)
 		{
