@@ -211,13 +211,11 @@ namespace MonoDevelop.Components.Docking
 			};
 			btnClose.ButtonPressEvent += (o, args) => args.RetVal = true;
 
-			Gtk.Alignment al = new Alignment (0, 0, 1, 1);
+			Gtk.Alignment al = new Alignment (0, 0.5f, 1, 1);
 			HBox btnBox = new HBox (false, 3);
 			btnBox.PackStart (btnDock, false, false, 0);
 			btnBox.PackStart (btnClose, false, false, 0);
 			al.Add (btnBox);
-			al.LeftPadding = 3;
-			al.TopPadding = 1;
 			box.PackEnd (al, false, false, 0);
 
 			Add (box);
@@ -418,14 +416,12 @@ namespace MonoDevelop.Components.Docking
 			rect.Width -= leftPadding + rightPadding;
 
 			if (Child != null) {
-				if (active) {
-					rect.Y += (int)TabActivePadding.Top;
-					rect.Height = Child.SizeRequest ().Height;
-				}
-				else {
-					rect.Y += (int)TabPadding.Top;
-					rect.Height = Child.SizeRequest ().Height;
-				}
+				var bottomPadding = active ? (int)TabActivePadding.Bottom : (int)TabPadding.Bottom;
+				var topPadding = active ? (int)TabActivePadding.Bottom : (int)TabPadding.Bottom;
+				int centerY = topPadding + ((rect.Height - bottomPadding - topPadding) / 2);
+				var height = Child.SizeRequest ().Height;
+				rect.Y += centerY - (height / 2);
+				rect.Height = height;
 				Child.SizeAllocate (rect);
 			}
 		}
