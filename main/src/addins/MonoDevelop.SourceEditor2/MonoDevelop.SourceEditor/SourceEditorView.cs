@@ -2456,10 +2456,6 @@ namespace MonoDevelop.SourceEditor
 				}
 				return wrapper;
 			}
-			set {
-				wrapper = (TextDocumentWrapper)value;
-				widget.TextEditor.Document = wrapper.Document;
-			}
 		}
 
 		event EventHandler ITextEditorImpl.SelectionChanged {
