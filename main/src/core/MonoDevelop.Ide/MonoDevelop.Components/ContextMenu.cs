@@ -85,7 +85,7 @@ namespace MonoDevelop.Components
 
 				// x, y are in gtk coordinates, so they need to be translated for Cocoa.
 				parent.TranslateCoordinates (parent.Toplevel, x, y, out tx, out ty);
-				ContextMenuExtensionsMac.ShowContextMenu (parent, tx, ty, this, closeHandler);
+				ContextMenuExtensionsMac.ShowContextMenu (parent, tx, ty, this, closeHandler, selectFirstItem);
 				return;
 			}
 			#endif
