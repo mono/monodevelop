@@ -40,6 +40,9 @@ namespace MonoDevelop.Components.Docking
 	
 	class DockItemTitleTab: Gtk.EventBox
 	{
+		static Xwt.Drawing.Image dockTabActiveBackImage = Xwt.Drawing.Image.FromResource ("padbar-active.9.png");
+		static Xwt.Drawing.Image dockTabBackImage = Xwt.Drawing.Image.FromResource ("padbar-inactive.9.png");
+
 		bool active;
 		Gtk.Widget page;
 		ExtendedLabel labelWidget;
@@ -64,18 +67,31 @@ namespace MonoDevelop.Components.Docking
 
 		static double PixelScale = GtkWorkarounds.GetPixelScale ();
 
-		const int TopPadding = 9;
-		const int BottomPadding = 7;
-		const int TopPaddingActive = 8;
-		const int BottomPaddingActive = 8;
-		const int LeftPadding = 8;
-		const int RightPadding = 8;
+		static readonly Xwt.WidgetSpacing TabPadding;
+		static readonly Xwt.WidgetSpacing TabActivePadding;
 
 		static DockItemTitleTab ()
 		{
 			pixClose = Xwt.Drawing.Image.FromResource ("pad-close-9.png");
 			pixAutoHide = Xwt.Drawing.Image.FromResource ("pad-minimize-9.png");
 			pixDock = Xwt.Drawing.Image.FromResource ("pad-dock-9.png");
+
+			Xwt.Drawing.NinePatchImage tabBackImage9;
+			if (dockTabBackImage is Xwt.Drawing.ThemedImage) {
+				var img = ((Xwt.Drawing.ThemedImage)dockTabBackImage).GetImage (Xwt.Drawing.Context.GlobalStyles);
+				tabBackImage9 = img as Xwt.Drawing.NinePatchImage;
+			} else
+				tabBackImage9 = dockTabBackImage as Xwt.Drawing.NinePatchImage;
+			TabPadding = tabBackImage9.Padding;
+
+
+			Xwt.Drawing.NinePatchImage tabActiveBackImage9;
+			if (dockTabActiveBackImage is Xwt.Drawing.ThemedImage) {
+				var img = ((Xwt.Drawing.ThemedImage)dockTabActiveBackImage).GetImage (Xwt.Drawing.Context.GlobalStyles);
+				tabActiveBackImage9 = img as Xwt.Drawing.NinePatchImage;
+			} else
+				tabActiveBackImage9 = dockTabActiveBackImage as Xwt.Drawing.NinePatchImage;
+			TabActivePadding = tabActiveBackImage9.Padding;
 		}
 		
 		public DockItemTitleTab (DockItem item, DockFrame frame)
@@ -374,11 +390,11 @@ namespace MonoDevelop.Components.Docking
 		{
 			if (Child != null) {
 				req = Child.SizeRequest ();
-				req.Width += LeftPadding + RightPadding;
+				req.Width += (int)(TabPadding.Left + TabPadding.Right);
 				if (active)
-					req.Height += TopPaddingActive + BottomPaddingActive;
+					req.Height += (int)(TabActivePadding.Top + TabActivePadding.Bottom);
 				else
-					req.Height += TopPadding + BottomPadding;
+					req.Height += (int)(TabPadding.Top + TabPadding.Bottom);
 			}
 		}
 					
@@ -386,8 +402,8 @@ namespace MonoDevelop.Components.Docking
 		{
 			base.OnSizeAllocated (rect);
 
-			int leftPadding = LeftPadding;
-			int rightPadding = RightPadding;
+			int leftPadding = (int)TabPadding.Left;
+			int rightPadding = (int)TabPadding.Right;
 			if (rect.Width < labelWidth) {
 				int red = (labelWidth - rect.Width) / 2;
 				leftPadding -= red;
@@ -401,11 +417,11 @@ namespace MonoDevelop.Components.Docking
 
 			if (Child != null) {
 				if (active) {
-					rect.Y += TopPaddingActive;
+					rect.Y += (int)TabActivePadding.Top;
 					rect.Height = Child.SizeRequest ().Height;
 				}
 				else {
-					rect.Y += TopPadding;
+					rect.Y += (int)TabPadding.Top;
 					rect.Height = Child.SizeRequest ().Height;
 				}
 				Child.SizeAllocate (rect);
@@ -435,25 +451,20 @@ namespace MonoDevelop.Components.Docking
 			}
 
 			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
-
-				int radius = 3;
-
 				if (first && last) {
 					ctx.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
 					ctx.SetSourceColor (VisualStyle.PadBackgroundColor.Value.ToCairoColor ());
 					ctx.Fill ();
 				} else if (Active) {
-					var x = Allocation.X;
-					var y = Allocation.Y + TopPadding - 6;
-					ctx.RoundedRectangle (x, y, Allocation.Width - 1, Allocation.Height - y, radius, CairoCorners.TopLeft | CairoCorners.TopRight);
-					ctx.SetSourceColor (VisualStyle.PadBackgroundColor.Value.ToCairoColor ());
-					ctx.Fill ();
+					var image = Active ? dockTabActiveBackImage : dockTabBackImage;
+					image = image.WithSize (Allocation.Width, Allocation.Height);
+
+					ctx.DrawImage (this, image, Allocation.X, Allocation.Y);
 				} else {
-					var x = Allocation.X;
-					var y = Allocation.Y + TopPadding - 4;
-					ctx.RoundedRectangle (x, y, Allocation.Width - 1, Allocation.Height - y - 1, radius, CairoCorners.TopLeft | CairoCorners.TopRight);
-					ctx.SetSourceColor (VisualStyle.InactivePadBackgroundColor.Value.ToCairoColor ());
-					ctx.Fill ();
+					var image = Active ? dockTabActiveBackImage : dockTabBackImage;
+					image = image.WithSize (Allocation.Width, Allocation.Height);
+
+					ctx.DrawImage (this, image, Allocation.X, Allocation.Y);
 				}
 			}
 		}
