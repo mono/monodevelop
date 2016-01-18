@@ -17,13 +17,6 @@ namespace MonoDevelop.VersionControl
 			this.name = name;
 		}
 
-		public override Control Control {
-			get
-			{
-				throw new NotImplementedException ();
-			}
-		}
-
 		public override string TabPageLabel {
 			get { return name; }
 		}
