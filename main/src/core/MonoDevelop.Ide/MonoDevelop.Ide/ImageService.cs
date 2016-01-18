@@ -95,11 +95,6 @@ namespace MonoDevelop.Ide
 				iconSizes[(int)Gtk.IconSize.Menu].Width = 16;
 				iconSizes[(int)Gtk.IconSize.Menu].Height = 16;
 			}
-
-			// Preload icons defined in MD.Ide. Ensures that the gtk icon overrides are available.
-			var current = AddinManager.CurrentAddin;
-			foreach (var id in AddinManager.GetExtensionNodes (IconsExtensionPath).OfType<StockIconCodon> ().Where (c => c.Addin == current).Select (c => c.StockId).Distinct ())
-				EnsureStockIconIsLoaded (id);
 		}
 
 		static Xwt.Drawing.Image LoadStockIcon (StockIconCodon iconCodon, bool forceWildcard)
