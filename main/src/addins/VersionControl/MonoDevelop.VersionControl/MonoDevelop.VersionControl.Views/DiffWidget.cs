@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 
@@ -48,7 +49,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		string LabelText {
 			get {
-				if (comparisonWidget.Diff.Count == 0)
+				if (!comparisonWidget.Diff.Any ())
 					return GettextCatalog.GetString ("Both files are equal");
 				int added=0, removed=0;
 				foreach (var h in comparisonWidget.Diff) {
