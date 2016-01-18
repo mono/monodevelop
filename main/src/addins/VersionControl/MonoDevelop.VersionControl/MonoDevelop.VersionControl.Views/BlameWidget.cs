@@ -582,6 +582,8 @@ namespace MonoDevelop.VersionControl.Views
 					Runtime.RunInMainThread (delegate {
 						if (widget.revision != null) {
 							document.Text = widget.VersionControlItem.Repository.GetTextAtRevision (widget.Document.FileName, widget.revision);
+						} else {
+							document.Text = widget.Document.Editor.Text;
 						}
 						ctx.Dispose ();
 						UpdateWidth ();
