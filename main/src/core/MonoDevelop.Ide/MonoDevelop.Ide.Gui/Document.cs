@@ -164,14 +164,14 @@ namespace MonoDevelop.Ide.Gui
 				window.ViewContent.Project.Modified += HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
 			window.ViewContent.ContentNameChanged += delegate {
-				analysisDocument = null;
+				UnsubscibeAnalysisdocument ();
 			};
 			MonoDevelopWorkspace.LoadingFinished += TypeSystemService_WorkspaceItemLoaded;
 		}
 
 		void TypeSystemService_WorkspaceItemLoaded (object sender, EventArgs e)
 		{
-			analysisDocument = null;
+			UnsubscibeAnalysisdocument ();
 			EnsureAnalysisDocumentIsOpen ().ContinueWith (delegate {
 				if (analysisDocument != null)
 					StartReparseThread ();
@@ -544,10 +544,7 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void DisposeDocument ()
 		{
-			if (analysisDocument != null) {
-				TypeSystemService.InformDocumentClose (analysisDocument, FileName);
-				analysisDocument = null;
-			}
+			UnsubscibeAnalysisdocument ();
 			UnloadAdhocProject ();
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).DetachFromPathedDocument ();
@@ -568,7 +565,15 @@ namespace MonoDevelop.Ide.Gui
 			views = null;
 			viewsRO = null;
 		}
-#region document tasks
+
+		void UnsubscibeAnalysisdocument ()
+		{
+			if (analysisDocument != null) {
+				TypeSystemService.InformDocumentClose (analysisDocument, FileName);
+				analysisDocument = null;
+			}
+		}
+		#region document tasks
 		object lockObj = new object ();
 		
 		void ClearTasks ()
@@ -687,7 +692,7 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			UnloadAdhocProject ();
 			if (adhocProject == null) 
-				analysisDocument = null;
+				UnsubscibeAnalysisdocument ();
 			if (Window.ViewContent.ProjectReloadCapability != ProjectReloadCapability.None) {
 				// Unsubscribe project events
 				if (Window.ViewContent.Project != null)
@@ -774,7 +779,7 @@ namespace MonoDevelop.Ide.Gui
 			if (analysisDocument != null)
 				return SpecializedTasks.EmptyTask;
 			if (Editor == null) {
-				analysisDocument = null;
+				UnsubscibeAnalysisdocument ();
 				return SpecializedTasks.EmptyTask;
 			}
 			if (Project != null && Editor.MimeType == "text/x-csharp" && !IsUnreferencedSharedProject(Project)) {
