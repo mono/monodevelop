@@ -144,9 +144,12 @@ namespace MonoDevelop.Components.Docking
 				tabIcon.Image = tabIcon.Image.WithAlpha (active ? 1.0 : 0.4);
 				tabIcon.Visible = visualStyle.ShowPadTitleIcon.Value;
 			}
-			if (IsRealized) {
-				if (labelWidget != null)
-					labelWidget.ModifyText (StateType.Normal, (active ? visualStyle.PadTitleLabelColor.Value : visualStyle.InactivePadTitleLabelColor.Value).ToGdkColor ());
+			if (IsRealized && labelWidget != null) {
+				var font = FontService.SansFont.CopyModified (Styles.FontScale11);
+				if (active && !Core.Platform.IsWindows)
+					font.Weight = Pango.Weight.Bold;
+				labelWidget.ModifyFont (font);
+				labelWidget.ModifyText (StateType.Normal, (active ? visualStyle.PadTitleLabelColor.Value : visualStyle.InactivePadTitleLabelColor.Value).ToGdkColor ());
 			}
 			var r = WidthRequest;
 			WidthRequest = -1;
@@ -182,7 +185,6 @@ namespace MonoDevelop.Components.Docking
 				labelWidget.DropShadowVisible = true;
 				labelWidget.UseMarkup = true;
 				labelWidget.SetPadding (0, 5);
-				labelWidget.ModifyFont (Ide.Fonts.FontService.SansFont.CopyModified (Styles.FontScale11));
 
 				box.PackStart (labelWidget, true, true, 0);
 			} else {
@@ -455,11 +457,6 @@ namespace MonoDevelop.Components.Docking
 					ctx.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
 					ctx.SetSourceColor (VisualStyle.PadBackgroundColor.Value.ToCairoColor ());
 					ctx.Fill ();
-				} else if (Active) {
-					var image = Active ? dockTabActiveBackImage : dockTabBackImage;
-					image = image.WithSize (Allocation.Width, Allocation.Height);
-
-					ctx.DrawImage (this, image, Allocation.X, Allocation.Y);
 				} else {
 					var image = Active ? dockTabActiveBackImage : dockTabBackImage;
 					image = image.WithSize (Allocation.Width, Allocation.Height);
