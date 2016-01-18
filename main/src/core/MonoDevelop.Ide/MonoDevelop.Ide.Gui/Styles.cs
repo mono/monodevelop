@@ -48,10 +48,20 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static Pango.FontDescription DefaultFont { get; internal set; }
 		public static string DefaultFontName { get; internal set; }
+
+		#if MAC
 		public static double FontScale11 = 0.84616;
 		public static double FontScale12 = 0.92308;
 		public static double FontScale13 = 1;
 		public static double FontScale14 = 1.07693;
+		#else
+		// windows and linux fonts need to be +1pt
+		// TODO: VV: Test Linux
+		public static double FontScale11 = 0.92308;
+		public static double FontScale12 = 1;
+		public static double FontScale13 = 1.07693;
+		public static double FontScale14 = 1.15385;
+		#endif
 
 		public static Color ThinSplitterColor { get; internal set; }
 		public static Color SeparatorColor { get; internal set; }
