@@ -235,13 +235,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			{
 				PathComponentCells = new [] {
 					new NSPathComponentCell {
-						Image = ImageService.GetIcon ("project").ToNSImage (),
+						Image = ImageService.GetIcon ("project").ToBitmap ().ToNSImage (),
 						Title = ConfigurationPlaceholder,
 						Enabled = false,
 						TextColor = NSColor.FromRgba (0.34f, 0.34f, 0.34f, 1),
 					},
 					new NSPathComponentCell {
-						Image = ImageService.GetIcon ("device").ToNSImage (),
+						Image = ImageService.GetIcon ("device").ToBitmap ().ToNSImage (),
 						Title = RuntimePlaceholder,
 						Enabled = false,
 						TextColor = NSColor.FromRgba (0.34f, 0.34f, 0.34f, 1),
@@ -342,9 +342,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			void UpdatePathText (int idx, string text)
 			{
 				PathComponentCells [idx].Title = text;
-				PathComponentCells [ConfigurationIdx].Image = ImageService.GetIcon ("project").ToNSImage ();
-				PathComponentCells [RuntimeIdx].Image = ImageService.GetIcon ("device").ToNSImage ();
-
 				RealignTexts ();
 			}
 
