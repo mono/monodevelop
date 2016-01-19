@@ -100,6 +100,7 @@ namespace MonoDevelop.Debugger
 				IdeApp.Workspace.StoringUserPreferences += OnStoreUserPrefs;
 				IdeApp.Workspace.LoadingUserPreferences += OnLoadUserPrefs;
 				IdeApp.Workspace.LastWorkspaceItemClosed += OnSolutionClosed;
+				busyEvaluator = new BusyEvaluator ();
 			};
 			AddinManager.AddExtensionNodeHandler (FactoriesPath, delegate {
 				// Refresh the engines list
