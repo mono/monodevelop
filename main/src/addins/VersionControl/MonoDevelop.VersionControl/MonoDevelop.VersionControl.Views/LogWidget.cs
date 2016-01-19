@@ -254,7 +254,7 @@ namespace MonoDevelop.VersionControl.Views
 			vbox2.PackStart (tb, true, true, 0);
 
 			UpdateStyle ();
-			MonoDevelop.Ide.Gui.Styles.Changed += HandleStylesChanged;
+			Ide.Gui.Styles.Changed += HandleStylesChanged;
 		}
 
 		protected override void OnRealized ()
@@ -277,12 +277,6 @@ namespace MonoDevelop.VersionControl.Views
 			var tcol = Styles.LogView.CommitDescBackgroundColor.ToGdkColor ();
 			textviewDetails.ModifyBase (StateType.Normal, tcol);
 			scrolledwindow1.ModifyBase (StateType.Normal, tcol);
-		}
-
-		protected override void OnDestroyed ()
-		{
-			MonoDevelop.Ide.Gui.Styles.Changed -= HandleStylesChanged;
-			base.OnDestroyed ();
 		}
 
 		internal void SetToolbar (DocumentToolbar toolbar)
@@ -496,6 +490,7 @@ namespace MonoDevelop.VersionControl.Views
 			revertButton.Clicked -= RevertRevisionClicked;
 			revertToButton.Clicked -= RevertToRevisionClicked;
 			refreshButton.Clicked -= RefreshClicked;
+			Ide.Gui.Styles.Changed -= HandleStylesChanged;
 
 			logstore.Dispose ();
 			changedpathstore.Dispose ();
