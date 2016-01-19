@@ -37,7 +37,7 @@ type UnformattedTextFileDescriptionTemplate() =
 
         let ns = project |> function null -> "Application" | project -> getDefaultNs project.Name
         let getSafeName str =
-            let regex = new Regex("[^a-zA-Z0-9]")
+            let regex = new Regex("[^a-zA-Z0-9.]")
             regex.Replace(str, "")
 
         tags.["Namespace"] <- ns
