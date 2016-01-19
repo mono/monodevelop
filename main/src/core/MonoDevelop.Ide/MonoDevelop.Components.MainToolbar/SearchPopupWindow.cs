@@ -1071,7 +1071,7 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 			}
 			if (y == alloc.Y + yMargin) {
-				context.SetSourceRGB (0, 0, 0);
+				context.SetSourceColor (Styles.GlobalSearch.ResultTextColor.ToCairoColor ());
 				layout.SetMarkup (isInSearch ? GettextCatalog.GetString ("Searching...") : GettextCatalog.GetString ("No matches"));
 				context.MoveTo (alloc.X + xMargin, y);
 				Pango.CairoHelper.ShowLayout (context, layout);
