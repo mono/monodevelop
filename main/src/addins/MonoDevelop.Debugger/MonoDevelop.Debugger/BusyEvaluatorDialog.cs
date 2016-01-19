@@ -26,9 +26,34 @@
 
 using System;
 using Mono.Debugging.Client;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Debugger
 {
+	class BusyEvaluator
+	{
+		public BusyEvaluatorDialog Dialog {
+			get;
+			private set;
+		}
+
+		public void UpdateBusyState (BusyStateEventArgs args)
+		{
+			if (!args.IsBusy) {
+				if (Dialog != null) {
+					Dialog.Destroy ();
+					Dialog.Dispose ();
+					Dialog = null;
+				}
+			} else {
+				if (Dialog == null)
+					Dialog = new BusyEvaluatorDialog ();
+				
+				Dialog.Show ();
+			}
+		}
+	}
+
 	public partial class BusyEvaluatorDialog : Gtk.Dialog
 	{
 		public BusyEvaluatorDialog ()
@@ -37,15 +62,9 @@ namespace MonoDevelop.Debugger
 			//Prevent closing dialog via X button, user can either wait with
 			//dialog open or press "Stop Debugger" button
 			DeleteEvent += (o, args) => args.RetVal = true;
-		}
-
-		public void UpdateBusyState (BusyStateEventArgs args)
-		{
-			if (!args.IsBusy) {
-				Hide ();
-			} else {
-				Show ();
-			}
+			Modal = true;
+			TransientFor = MessageService.RootWindow;
+			DestroyWithParent = true;
 		}
 
 		protected virtual void OnButtonCancelClicked (object sender, System.EventArgs e)
