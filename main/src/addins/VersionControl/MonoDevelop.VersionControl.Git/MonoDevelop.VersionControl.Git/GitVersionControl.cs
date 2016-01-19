@@ -26,6 +26,7 @@
 
 using MonoDevelop.Core;
 using System.Collections.Generic;
+using System.IO;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -65,9 +66,12 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override FilePath OnGetRepositoryPath (FilePath path, string id)
 		{
-			FilePath repo = LibGit2Sharp.Repository.Discover (path.ResolveLinks ());
-			if (!repo.IsNullOrEmpty)
-				repo = repo.CanonicalPath.ParentDirectory;
+			string repo = LibGit2Sharp.Repository.Discover (path.ResolveLinks ());
+			if (!string.IsNullOrEmpty (repo)) {
+				repo = repo.TrimEnd ('\\', '/');
+				if (repo.EndsWith (".git", System.StringComparison.OrdinalIgnoreCase))
+					repo = Path.GetDirectoryName (repo);
+			}
 			return repo;
 		}
 
