@@ -235,13 +235,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			{
 				PathComponentCells = new [] {
 					new NSPathComponentCell {
-						Image = ImageService.GetIcon ("project").ToBitmap ().ToNSImage (),
+						Image = ImageService.GetIcon ("project").WithStyles ("disabled").ToBitmap ().ToNSImage (),
 						Title = ConfigurationPlaceholder,
 						Enabled = false,
 						TextColor = NSColor.FromRgba (0.34f, 0.34f, 0.34f, 1),
 					},
 					new NSPathComponentCell {
-						Image = ImageService.GetIcon ("device").ToBitmap ().ToNSImage (),
+						Image = ImageService.GetIcon ("device").WithStyles ("disabled").ToBitmap ().ToNSImage (),
 						Title = RuntimePlaceholder,
 						Enabled = false,
 						TextColor = NSColor.FromRgba (0.34f, 0.34f, 0.34f, 1),
@@ -317,6 +317,20 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						menu.PopUpMenu (null, offs, this);
 					}
 				};
+
+				Ide.Gui.Styles.Changed += HandleStylesChanged;
+			}
+
+			void HandleStylesChanged (object sender, EventArgs e)
+			{
+				UpdateImages ();
+			}
+
+			protected override void Dispose (bool disposing)
+			{
+				if (disposing)
+					Ide.Gui.Styles.Changed -= HandleStylesChanged;
+				base.Dispose (disposing);
 			}
 
 			public override void ViewDidMoveToWindow ()
@@ -342,10 +356,21 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			void UpdatePathText (int idx, string text)
 			{
 				PathComponentCells [idx].Title = text;
+				UpdateImages ();
+			}
 
-				// These need to be set again so that the path selector lays out correctly. Not sure why at the moment.
-				PathComponentCells [ConfigurationIdx].Image = ImageService.GetIcon ("project").ToBitmap ().ToNSImage ();
-				PathComponentCells [RuntimeIdx].Image = ImageService.GetIcon ("device").ToBitmap ().ToNSImage ();
+			void UpdateImages ()
+			{
+				var projectImage = ImageService.GetIcon ("project");
+				if (!PathComponentCells [ConfigurationIdx].Enabled)
+					projectImage = projectImage.WithStyles ("disabled");
+				
+				var deviceImage = ImageService.GetIcon ("device");
+				if (!PathComponentCells [ConfigurationIdx].Enabled)
+					deviceImage = deviceImage.WithStyles ("disabled");
+				
+				PathComponentCells [ConfigurationIdx].Image = projectImage.ToBitmap ().ToNSImage ();
+				PathComponentCells [RuntimeIdx].Image = deviceImage.ToBitmap ().ToNSImage ();
 				RealignTexts ();
 			}
 
@@ -385,11 +410,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				set {
 					configurationModel = value;
 					int count = value.Count ();
+					PathComponentCells [ConfigurationIdx].Enabled = count > 1;
 					if (count == 0) {
 						state |= CellState.ConfigurationShown;
 						UpdatePathText (ConfigurationIdx, ConfigurationPlaceholder);
-					}
-					PathComponentCells [ConfigurationIdx].Enabled = count > 1;
+					} else
+						UpdateImages ();
 					OnSizeChanged ();
 				}
 			}
@@ -400,11 +426,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				set {
 					runtimeModel = value;
 					int count = value.Count ();
+					PathComponentCells [RuntimeIdx].Enabled = count > 1;
 					if (count == 0) {
 						state |= CellState.RuntimeShown;
 						UpdatePathText (RuntimeIdx, RuntimePlaceholder);
-					}
-					PathComponentCells [RuntimeIdx].Enabled = count > 1;
+					} else
+						UpdateImages ();
 					OnSizeChanged ();
 				}
 			}
