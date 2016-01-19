@@ -96,7 +96,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public override void MouseDown (NSEvent theEvent)
 		{
 			base.MouseDown (theEvent);
-			if (theEvent.ClickCount == 2) {
+
+			var locationInSV = Superview.ConvertPointFromView (theEvent.LocationInWindow, null);
+			if (theEvent.ClickCount == 2 && HitTest (locationInSV) == this) {
 				Window.Zoom (this);
 			}
 		}
