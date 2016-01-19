@@ -34,6 +34,7 @@ using System.Linq;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -58,10 +59,10 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 		}
 
-		protected async override void Update (CommandInfo info)
+		protected override void Update (CommandInfo info)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			info.Enabled = await IsValid (doc);
+			info.Enabled = doc.ParsedDocument != null && doc.ParsedDocument.GetAst<SemanticModel> () != null;
 		}
 
 		public async static Task Run (MonoDevelop.Ide.Gui.Document doc)
@@ -69,7 +70,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (!doc.Editor.IsSomethingSelected)
 				return;
 			var ad = doc.AnalysisDocument;
-			if (ad == null)
+			if (ad == null || ! await IsValid (doc))
 				return;
 			try {
 				var selectionRange = doc.Editor.SelectionRange;
