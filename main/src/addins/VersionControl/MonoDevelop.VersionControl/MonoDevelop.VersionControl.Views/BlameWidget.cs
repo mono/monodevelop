@@ -130,6 +130,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			var doc = new TextDocument (sourceEditor.TextEditor.Document.Text) {
 				ReadOnly = true,
+				MimeType = sourceEditor.TextEditor.Document.MimeType,
 			};
 			editor = new MonoTextEditor (doc, sourceEditor.TextEditor.Options);
 			AddChild (editor);
@@ -153,6 +154,12 @@ namespace MonoDevelop.VersionControl.Views
 			};
 			editor.DoPopupMenu = ShowPopup;
 			Show ();
+		}
+
+		internal void Reset ()
+		{
+			revision = null;
+			overview.UpdateAnnotations ();
 		}
 		
 		void ShowPopup (EventButton evt)
@@ -569,7 +576,10 @@ namespace MonoDevelop.VersionControl.Views
 					Runtime.RunInMainThread (delegate {
 						if (widget.revision != null) {
 							document.Text = widget.VersionControlItem.Repository.GetTextAtRevision (widget.Document.FileName, widget.revision);
+						} else {
+							document.Text = widget.Document.Editor.Text;
 						}
+						ctx.AutoPulse = false;
 						ctx.Dispose ();
 						UpdateWidth ();
 						QueueDraw ();

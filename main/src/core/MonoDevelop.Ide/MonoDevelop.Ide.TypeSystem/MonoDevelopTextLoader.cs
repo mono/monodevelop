@@ -44,6 +44,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		#region implemented abstract members of TextLoader
 		async Task<TextAndVersion> GetTextAndVersion (Workspace workspace, DocumentId documentId, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested ();
+
 			if (!File.Exists (fileName)) {
 				var document = ((MonoDevelopWorkspace)workspace).GetDocument (documentId);
 				if (document == null)
@@ -55,7 +57,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				text = new MonoDevelopSourceText (TextFileProvider.Instance.GetTextEditorData (fileName).CreateDocumentSnapshot ());
 			}
 			else {
-				text = SourceText.From (TextFileUtility.GetText (fileName));
+				text = SourceText.From (await TextFileUtility.GetTextAsync (fileName, cancellationToken));
 			}
 			return TextAndVersion.Create (text, VersionStamp.Create ());
 		}

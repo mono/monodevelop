@@ -89,8 +89,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 			snooperId = Gtk.Key.SnooperInstall (TooltipKeySnooper);
 			//if (snooperId != 0)
 			//	Gtk.Key.SnooperRemove (snooperId);
+			IdeApp.Workbench.RootWindow.FocusOutEvent += RootWindow_FocusOutEvent;
 		}
 
+		static void RootWindow_FocusOutEvent (object o, Gtk.FocusOutEventArgs args)
+		{
+			LinksShown = false;
+		}
 
 		static int TooltipKeySnooper (Gtk.Widget widget, Gdk.EventKey evnt)
 		{
@@ -124,6 +129,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			LinksShownChanged += AbstractNavigationExtension_LinksShownChanged;
 			this.DocumentContext.DocumentParsed += DocumentContext_DocumentParsed;
 			this.Editor.LineShown += Editor_LineShown;
+
 			if (LinksShown)
 				ShowLinks ();
 		}

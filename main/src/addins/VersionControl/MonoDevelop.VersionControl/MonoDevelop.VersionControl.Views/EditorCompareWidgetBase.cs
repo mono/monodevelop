@@ -610,7 +610,7 @@ namespace MonoDevelop.VersionControl.Views
 				throw new InvalidOperationException ("Version control info must be set before attaching the merge view to an editor.");
 			dict[data.Document] = data;
 			
-			var editor = info.Document.GetContent <MonoDevelop.Ide.Editor.IReadonlyTextDocument> ();
+			var editor = info.Document.ParentDocument.Editor;
 			if (editor != null) {
 				data.Document.Text = editor.Text;
 				data.Document.ReadOnly = editor.IsReadOnly;
@@ -624,7 +624,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			var data = dict [(TextDocument)sender];
 			localUpdate.Remove (data);
-			var editor = info.Document.GetContent<MonoDevelop.Ide.Editor.ITextDocument> ();
+			var editor = info.Document.ParentDocument.Editor;
 			editor.ReplaceText (e.Offset, e.RemovalLength, e.InsertedText.Text);
 			localUpdate.Add (data);
 			UpdateDiff ();

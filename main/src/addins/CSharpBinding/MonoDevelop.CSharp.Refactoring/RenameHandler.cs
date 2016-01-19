@@ -47,13 +47,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
-			if (doc.ParsedDocument == null || doc.ParsedDocument.GetAst<SemanticModel> () == null) {
-				ci.Enabled = false;
-			}
-			var info = RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result;
-			var sym = info.DeclaredSymbol ?? info.Symbol;
-			if (!CanRename (sym))
-				ci.Bypass = true;
+			ci.Enabled = doc.ParsedDocument != null && doc.ParsedDocument.GetAst<SemanticModel> () != null;
 		}
 
 		internal static bool CanRename (ISymbol symbol)

@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Core.Text
 {
@@ -235,6 +236,11 @@ namespace MonoDevelop.Core.Text
 			return GetText (File.ReadAllBytes (fileName));
 		}
 
+		public static async Task<string> GetTextAsync (string fileName, CancellationToken token)
+		{
+			return GetText (await ReadAllBytesAsync (fileName, token));
+		}
+
 		public static string GetText (string fileName, out Encoding encoding, out bool hadBom)
 		{
 			if (fileName == null)
@@ -417,13 +423,18 @@ namespace MonoDevelop.Core.Text
 			};
 		}
 
-		public static async Task<byte[]> ReadAllBytesAsync (string file)
+		public static async Task<byte []> ReadAllBytesAsync (string file)
+		{
+			return await ReadAllBytesAsync (file, CancellationToken.None);
+		}
+
+		public static async Task<byte[]> ReadAllBytesAsync (string file, CancellationToken token)
 		{
 			using (var f = File.OpenRead (file)) {
 				var res = new byte [f.Length];
 				int nr = 0;
 				int c = 0;
-				while (nr < res.Length && (c = await f.ReadAsync (res, nr, res.Length - nr)) > 0)
+				while (nr < res.Length && (c = await f.ReadAsync (res, nr, res.Length - nr, token)) > 0)
 					nr += c;
 				return res;
 			}

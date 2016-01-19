@@ -610,11 +610,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		Document InternalInformDocumentOpen (DocumentId documentId, ITextDocument editor)
 		{
 			var document = this.GetDocument (documentId);
-			if (document == null) {
+			if (document == null || IsDocumentOpen (documentId)) {
 				return document;
 			}
-			if (IsDocumentOpen (documentId))
-				InformDocumentClose (documentId, document.FilePath);
 			var monoDevelopSourceTextContainer = new MonoDevelopSourceTextContainer (documentId, editor);
 			lock (openDocuments) {
 				openDocuments.Add (monoDevelopSourceTextContainer);

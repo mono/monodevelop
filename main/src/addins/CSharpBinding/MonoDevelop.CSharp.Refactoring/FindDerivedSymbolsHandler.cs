@@ -85,15 +85,10 @@ namespace MonoDevelop.CSharp.Refactoring
 			});
 		}
 
-		public async void Update (CommandInfo info)
+		public void Update (CommandInfo info)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null || doc.ParsedDocument == null) {
-				info.Enabled = false;
-				return;
-			}
-			var rinfo = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset);
-			info.Enabled = rinfo.DeclaredSymbol != null;
+			info.Enabled = doc.ParsedDocument != null && doc.ParsedDocument.GetAst<SemanticModel> () != null;
 		}
 
 		public async void Run (object data)

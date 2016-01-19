@@ -490,17 +490,22 @@ namespace MonoDevelop.VersionControl.Views
 				});
 			});
 		}*/
-		
-		public override void Destroy ()
+
+		protected override void OnDestroyed ()
 		{
-			base.Destroy ();
+			revertButton.Clicked -= RevertRevisionClicked;
+			revertToButton.Clicked -= RevertToRevisionClicked;
+			refreshButton.Clicked -= RefreshClicked;
+
 			logstore.Dispose ();
 			changedpathstore.Dispose ();
-			
+
 			diffRenderer.Dispose ();
 			messageRenderer.Dispose ();
 			textRenderer.Dispose ();
 			treeviewFiles.Dispose ();
+
+			base.OnDestroyed ();
 		}
 		
 		static void DateFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)

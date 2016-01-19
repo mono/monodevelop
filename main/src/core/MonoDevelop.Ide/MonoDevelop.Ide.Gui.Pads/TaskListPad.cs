@@ -119,13 +119,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		override protected void Initialize (IPadWindow window)
 		{
+			separator = new VSeparator ();
 			toolbar = window.GetToolbar (DockPositionType.Top);
 			toolbar.Add (switcherCombo);
 			toolbar.ShowAll ();
 			switcherCombo.Changed += new EventHandler (OnContentSwitched);
 			OnContentSwitched (null, null);
-			
-			separator = new VSeparator ();
 		}
 		
 		void OnContentSwitched (object obj, EventArgs e)

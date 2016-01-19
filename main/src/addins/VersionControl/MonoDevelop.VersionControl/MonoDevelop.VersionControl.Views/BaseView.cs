@@ -14,14 +14,7 @@ namespace MonoDevelop.VersionControl
 		
 		protected BaseView (string name)
 		{
-			this.name = name;
-		}
-
-		public override Control Control {
-			get
-			{
-				throw new NotImplementedException ();
-			}
+			ContentName = this.name = name;
 		}
 
 		public override string TabPageLabel {

@@ -365,7 +365,7 @@ namespace MonoDevelop.CodeActions
 				Gdk.Pointer.Ungrab (Gtk.Global.CurrentEventTime);
 
 				var menu = CreateContextMenu (entrySet);
-				menu.Show (parent, x, y, () => Editor.SuppressTooltips = false);
+				menu.Show (parent, x, y, () => Editor.SuppressTooltips = false, true);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error while context menu popup.", ex);
 			}

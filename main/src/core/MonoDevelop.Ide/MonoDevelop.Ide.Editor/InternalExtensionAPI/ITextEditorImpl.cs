@@ -88,7 +88,7 @@ namespace MonoDevelop.Ide.Editor
 
 		ITextEditorOptions Options { get; set; }
 
-		IReadonlyTextDocument Document { get; set; }
+		IReadonlyTextDocument Document { get; }
 
 		DocumentLocation CaretLocation { get; set; }
 
