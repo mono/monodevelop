@@ -713,6 +713,7 @@ namespace MonoDevelop.Debugger
 					}
 				} else {
 					if (busyStatusIcon != null) {
+						busyStatusIcon.Clicked -= OnBusyStatusIconClicked;
 						busyStatusIcon.Dispose ();
 						busyStatusIcon = null;
 					}
