@@ -150,6 +150,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					}
 				}
 			}
+
 			void WidthsForPathCells (out nfloat configWidth, out nfloat runtimeWidth)
 			{
 				string text;
@@ -341,6 +342,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			void UpdatePathText (int idx, string text)
 			{
 				PathComponentCells [idx].Title = text;
+
+				// These need to be set again so that the path selector lays out correctly. Not sure why at the moment.
+				PathComponentCells [ConfigurationIdx].Image = ImageService.GetIcon ("project").ToBitmap ().ToNSImage ();
+				PathComponentCells [RuntimeIdx].Image = ImageService.GetIcon ("device").ToBitmap ().ToNSImage ();
 				RealignTexts ();
 			}
 
