@@ -526,8 +526,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			var configurationSelector = IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default;
 			var hashSet = new HashSet<string> (FilePath.PathComparer);
 
-			bool addFacadeAssemblies = false;
-
 			try {
 				foreach (string file in await netProject.GetReferencedAssemblies (configurationSelector, false).ConfigureAwait (false)) {
 					if (token.IsCancellationRequested)
@@ -544,22 +542,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (!File.Exists (fileName))
 						continue;
 					result.Add (MetadataReferenceCache.LoadReference (projectId, fileName));
-					addFacadeAssemblies |= MonoDevelop.Core.Assemblies.SystemAssemblyService.ContainsReferenceToSystemRuntime (fileName);
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while getting referenced assemblies", e);
-			}
-			// HACK: Facade assemblies should be added by the project system. Remove that when the project system can do that.
-			if (addFacadeAssemblies) {
-				if (netProject != null) {
-					var runtime = netProject.TargetRuntime ?? MonoDevelop.Core.Runtime.SystemAssemblyService.DefaultRuntime;
-					var facades = runtime.FindFacadeAssembliesForPCL (netProject.TargetFramework);
-					foreach (var facade in facades) {
-						if (!File.Exists (facade))
-							continue;
-						result.Add (MetadataReferenceCache.LoadReference (projectId, facade));
-					}
-				}
 			}
 
 			foreach (var pr in netProject.GetReferencedItems (configurationSelector)) {
