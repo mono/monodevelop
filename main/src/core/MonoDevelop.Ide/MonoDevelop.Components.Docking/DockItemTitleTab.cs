@@ -423,7 +423,7 @@ namespace MonoDevelop.Components.Docking
 
 			if (Child != null) {
 				var bottomPadding = active ? (int)TabActivePadding.Bottom : (int)TabPadding.Bottom;
-				var topPadding = active ? (int)TabActivePadding.Bottom : (int)TabPadding.Bottom;
+				var topPadding = active ? (int)TabActivePadding.Top : (int)TabPadding.Top;
 				int centerY = topPadding + ((rect.Height - bottomPadding - topPadding) / 2);
 				var height = Child.SizeRequest ().Height;
 				rect.Y += centerY - (height / 2);
