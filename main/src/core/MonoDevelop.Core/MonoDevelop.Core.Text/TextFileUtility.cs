@@ -238,11 +238,7 @@ namespace MonoDevelop.Core.Text
 
 		public static async Task<string> GetTextAsync (string fileName, CancellationToken token)
 		{
-			using (var fs = File.OpenRead (fileName)) {
-				var buf = new byte [(int)fs.Length];
-				await fs.ReadAsync (buf, 0, (int)fs.Length, token);
-				return GetText (buf);
-			}
+			return GetText (await ReadAllBytesAsync (fileName, token));
 		}
 
 		public static string GetText (string fileName, out Encoding encoding, out bool hadBom)
@@ -427,13 +423,18 @@ namespace MonoDevelop.Core.Text
 			};
 		}
 
-		public static async Task<byte[]> ReadAllBytesAsync (string file)
+		public static async Task<byte []> ReadAllBytesAsync (string file)
+		{
+			return await ReadAllBytesAsync (file, CancellationToken.None);
+		}
+
+		public static async Task<byte[]> ReadAllBytesAsync (string file, CancellationToken token)
 		{
 			using (var f = File.OpenRead (file)) {
 				var res = new byte [f.Length];
 				int nr = 0;
 				int c = 0;
-				while (nr < res.Length && (c = await f.ReadAsync (res, nr, res.Length - nr)) > 0)
+				while (nr < res.Length && (c = await f.ReadAsync (res, nr, res.Length - nr, token)) > 0)
 					nr += c;
 				return res;
 			}
