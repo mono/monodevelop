@@ -932,7 +932,7 @@ namespace MonoDevelop.Ide.Gui
 			style.PadTitleLabelColor = Styles.PadLabelColor;
 			style.InactivePadTitleLabelColor = Styles.InactivePadLabelColor;
 			style.PadTitleHeight = barHeight;
-			style.ShowPadTitleIcon = false;
+			// style.ShowPadTitleIcon = false; // VV: Now we want to have icons on all pads
 			style.UppercaseTitles = false;
 			style.ExpandedTabs = true;
 			style.PadBackgroundColor = Styles.BrowserPadBackground;
