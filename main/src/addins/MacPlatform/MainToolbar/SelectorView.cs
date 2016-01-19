@@ -73,8 +73,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public override CGSize SizeThatFits (CGSize size)
 		{
-			var p = (PathSelectorView)Subviews [0];
-			var fitSize = p.SizeThatFits (size);
+			var fitSize = RealSelectorView.SizeThatFits (size);
 
 			return new CGSize (fitSize.Width + 12.0, size.Height);
 		}
@@ -82,7 +81,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public override void SetFrameSize (CGSize newSize)
 		{
 			base.SetFrameSize (newSize);
-			Subviews [0].SetFrameSize (newSize);
+			RealSelectorView.SetFrameSize (newSize);
 		}
 
 		internal void OnSizeChanged ()
