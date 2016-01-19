@@ -585,6 +585,7 @@ namespace MonoDevelop.VersionControl.Views
 						} else {
 							document.Text = widget.Document.Editor.Text;
 						}
+						ctx.AutoPulse = false;
 						ctx.Dispose ();
 						UpdateWidth ();
 						QueueDraw ();
