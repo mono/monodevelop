@@ -101,11 +101,21 @@ namespace MonoDevelop.VersionControl
 	
 	public class RevisionPath
 	{
-		public RevisionPath (string path, RevisionAction action, string actionDescription)
+		public RevisionPath (string path, string oldPath, RevisionAction action, string actionDescription)
 		{
 			this.Path = path;
+			this.OldPath = oldPath;
 			this.Action = action;
 			this.ActionDescription = actionDescription;
+		}
+
+		public RevisionPath (string path, RevisionAction action, string actionDescription) : this (path, path, action, actionDescription)
+		{
+		}
+
+		public string OldPath {
+			get;
+			private set;
 		}
 		
 		public string Path {
