@@ -109,10 +109,14 @@ namespace MonoDevelop.Components
 			if (DefaultTheme == null)
 				SetupGtkTheme ();
 
-			if (!Platform.IsLinux)
-				UserInterfaceSkin = IdeApp.Preferences.UserInterfaceTheme == "Dark" ? Skin.Dark : Skin.Light;
+			string current_theme = IdeApp.Preferences.UserInterfaceTheme;
 
-			var current_theme = IdeApp.Preferences.UserInterfaceTheme;
+			if (!Platform.IsLinux) {
+				UserInterfaceSkin = IdeApp.Preferences.UserInterfaceTheme == "Dark" ? Skin.Dark : Skin.Light;
+				if (current_theme != UserInterfaceSkin.ToString ()) // Only Skin names allowed on Win/Mac
+					current_theme = UserInterfaceSkin.ToString ();
+			}
+
 			var use_bundled_theme = false;
 
 			
