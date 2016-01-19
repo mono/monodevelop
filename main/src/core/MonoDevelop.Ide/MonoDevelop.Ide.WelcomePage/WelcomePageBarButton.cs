@@ -78,6 +78,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			HoverColor = Styles.WelcomeScreen.Links.HoverColor;
 			Color = Styles.WelcomeScreen.Links.Color;
 			FontSize = Styles.WelcomeScreen.Links.FontSize;
+			FontWeight = Pango.Weight.Bold;
 
 			VisibleWindow = false;
 			this.Text = GettextCatalog.GetString (title);

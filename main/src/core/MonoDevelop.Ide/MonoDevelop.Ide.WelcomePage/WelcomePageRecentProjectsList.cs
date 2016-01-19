@@ -44,8 +44,8 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public WelcomePageRecentProjectsList (string title = null, int count = 10): base (title)
 		{
-			openProjectIcon = Xwt.Drawing.Image.FromResource ("open_solution.png");
-			newProjectIcon = Xwt.Drawing.Image.FromResource ("new_solution.png");
+			openProjectIcon = Xwt.Drawing.Image.FromResource ("welcome-open-solution-16.png");
+			newProjectIcon = Xwt.Drawing.Image.FromResource ("welcome-new-solution-16.png");
 			box = new VBox ();
 
 			itemCount = count;

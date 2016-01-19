@@ -33,8 +33,8 @@ namespace MonoDevelop.Ide.WelcomePage
 	{
 		protected override void BuildContent (Container parent)
 		{
-			LogoImage = Xwt.Drawing.Image.FromResource ("WelcomePage_Logo.png");
-			TopBorderImage = Xwt.Drawing.Image.FromResource ("WelcomePage_TopBorderRepeat.png");
+			LogoImage = Xwt.Drawing.Image.FromResource ("welcome-logo.png");
+			TopBorderImage = Xwt.Drawing.Image.FromResource ("welcome-tile.png");
 
 			var mainAlignment = new Gtk.Alignment (0.5f, 0.5f, 0f, 1f);
 
@@ -43,10 +43,10 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			var row1 = new WelcomePageRow ();
 			row1.PackStart (new WelcomePageButtonBar (
-				new WelcomePageBarButton ("MonoDevelop.com", "http://www.monodevelop.com", "link-cloud.png"),
-				new WelcomePageBarButton (GettextCatalog.GetString ("Documentation"), "http://www.go-mono.com/docs", "link-info.png"),
-				new WelcomePageBarButton (GettextCatalog.GetString ("Support"), "http://monodevelop.com/index.php?title=Help_%26_Contact", "link-heart.png"),
-				new WelcomePageBarButton (GettextCatalog.GetString ("Q&A"), "http://stackoverflow.com/questions/tagged/monodevelop", "link-chat.png")
+				new WelcomePageBarButton ("MonoDevelop.com", "http://www.monodevelop.com", "welcome-link-md-16.png"),
+				new WelcomePageBarButton (GettextCatalog.GetString ("Documentation"), "http://www.go-mono.com/docs", "welcome-link-info-16.png"),
+				new WelcomePageBarButton (GettextCatalog.GetString ("Support"), "http://monodevelop.com/index.php?title=Help_%26_Contact", "welcome-link-support-16.png"),
+				new WelcomePageBarButton (GettextCatalog.GetString ("Q&A"), "http://stackoverflow.com/questions/tagged/monodevelop", "welcome-link-chat-16.png")
 				)
 			);
 			mainCol.PackStart (row1, false, false, 0);

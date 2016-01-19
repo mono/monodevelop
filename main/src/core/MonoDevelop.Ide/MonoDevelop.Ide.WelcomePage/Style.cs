@@ -6,55 +6,59 @@ namespace MonoDevelop.Ide.WelcomePage
 	{
 		public static class WelcomeScreen
 		{
-			public const string FontFamilyMac = "Lucida Grande";
-			public const string FontFamilyWindows = "Calibri"; // TODO: VV: "Segoe UI"
-			public const int VerticalPadding = 24;
-			public const int HorizontalPadding = 50;
+			public const string FontFamilyMac = "Sans";
+			public const string FontFamilyWindows = "Sans";
+			public const int VerticalPadding = 24; // TODO: VV: Seems to be unused
+			public const int HorizontalPadding = 50; // TODO: VV: Seems to be unused
 			public static string BackgroundColor { get; internal set; }
-			public const string BackgroundTile = "./images/tiny_grid.png";
+			public const string BackgroundTile = "./images/tiny_grid.png"; // TODO: VV: Seems to be unused
 			public static string InnerShadowColor { get; internal set; }
-			public const double InnerShadowOpacity = 0.4;
-			public const int InnerShadowSize = 10;
-			public static int Spacing = 20;
+			public const double InnerShadowOpacity = 0.4; // TODO: VV: Seems to be unused
+			public const int InnerShadowSize = 10; // TODO: VV: Seems to be unused
+			public static int Spacing = 30; // space between header and pads
 
 			public static class Links
 			{
 				public static string Color { get; internal set; }
 				public static string HoverColor { get; internal set; }
-				public const int FontSize = 16;
-				public const int LinkSeparation = 24;
-				public const int BottomMargin = 24;
-				public const int IconTextSpacing = 8;
+				public const int FontSize = 12;
+				public const int LinkSeparation = 30;
+				public const int BottomMargin = 24; // TODO: VV: Seems to be unused
+				public const int IconTextSpacing = 4;
 			}
 
 			public static class Pad
 			{
-				public const string TitleFontFamilyMac = "Lucida Grande";
-				public const string TitleFontFamilyWindows = "Calibri"; // TODO: VV: "Segoe UI"
+				public const string TitleFontFamilyMac = "Sans";
+				public const string TitleFontFamilyWindows = "Sans";
 				public const int Padding = 20;
 				public static string BackgroundColor { get; internal set; }
 				public static string BorderColor { get; internal set; }
 				public static string TextColor { get; internal set; }
 				public static string ShadowColor { get; internal set; }
-				public const double ShadowOpacity = 0.2;
-				public const int ShadowSize = 3;
+				public const double ShadowOpacity = 0.2; // TODO: VV: Seems to be unused
+				public const int ShadowSize = 2;
 				public const int ShadowVerticalOffset = 1;
+
 				public const int LargeTitleFontSize = 22;
 				public static string LargeTitleFontColor { get; internal set; }
-				public const int LargeTitleMarginBottom = 10;
+				public const int LargeTitleMarginBottom = 22;
+
 				public static string MediumTitleColor { get; internal set; }
-				public const int MediumTitleFontSize = 15;
-				public const int MediumTitleMarginBottom = 2;
+				public const int MediumTitleFontSize = 12;
+				public const int MediumTitleMarginBottom = 7;
+
 				public static string SmallTitleColor { get; internal set; }
-				public const int SmallTitleFontSize = 13;
-				public const int SummaryFontSize = 12;
-				public const string SummaryFontFamily = "Arial"; // TODO: VV: "Segoe UI"
-				public const int SummaryLineHeight = 19;
+				public const int SmallTitleFontSize = 10;
+
+				public const int SummaryFontSize = 11;
+				public const string SummaryFontFamily = "Sans";
+				public const int SummaryLineHeight = 19; // TODO: VV: Seems to be unused
 				public const int SummaryParagraphMarginTop = 8;
 
 				public static class FeaturedApp
 				{
-					public const int Width = 400;
+					public const int Width = 370;
 
 					public static class Preview
 					{
@@ -64,13 +68,12 @@ namespace MonoDevelop.Ide.WelcomePage
 
 				public static class News
 				{
-					public const int Width = 500;
+					public const int Width = 470;
 
 					public static class Item
 					{
 						public const int MarginBottom = 26;
 						public static string TitleHoverColor { get; internal set; }
-						public const int FirstMarginTop = 18;
 					}
 				}
 
@@ -85,10 +88,11 @@ namespace MonoDevelop.Ide.WelcomePage
 						public static string HoverBackgroundColor { get; internal set; }
 						public static string HoverBorderColor { get; internal set; }
 						public const int TitleFontSize = 12;
-						public const int PathFontSize = 11;
+						public const int PathFontSize = 10;
 						public const int TextLeftPadding = 38;
-						public const int TitleBottomMargin = 0;
+						public const int TitleBottomMargin = 4;
 
+						// TODO: VV: Seems to be unused
 						public static class PinButton
 						{
 							public const string NormalImage = "unstar-16.png";
@@ -109,35 +113,43 @@ namespace MonoDevelop.Ide.WelcomePage
 			public static void LoadStyles ()
 			{
 				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
-					BackgroundColor = "white";
-					InnerShadowColor = "black";
-					Links.Color = "#555555";
-					Links.HoverColor = "#000000";
-					Pad.BackgroundColor = "#FFF";
-					Pad.BorderColor = "#CCC";
-					Pad.TextColor = "#555555";
+					BackgroundColor = "#fff";
+					InnerShadowColor = "#fff";
+
+					Links.Color = "#888";
+					Links.HoverColor = "#555";
+
+					Pad.BackgroundColor = "#fafafa";
+					Pad.BorderColor = "#fafafa";
+					Pad.TextColor = "#555";
 					Pad.ShadowColor = "#000";
-					Pad.LargeTitleFontColor = "#444444";
-					Pad.MediumTitleColor = "#222222";
-					Pad.SmallTitleColor = "#777777";
-					Pad.News.Item.TitleHoverColor = "#0982B3";
-					Pad.Solutions.SolutionTile.HoverBackgroundColor = "#f9feff";
-					Pad.Solutions.SolutionTile.HoverBorderColor = "#dddddd";
+					Pad.LargeTitleFontColor = "#555";
+					Pad.MediumTitleColor = "#555";
+					Pad.SmallTitleColor = "#aaa";
+
+					Pad.News.Item.TitleHoverColor = "#3496d9";
+
+					Pad.Solutions.SolutionTile.HoverBackgroundColor = "#eee";
+					Pad.Solutions.SolutionTile.HoverBorderColor = "#eee";
 				} else {
-					BackgroundColor = "black";
-					InnerShadowColor = "white";
-					Links.Color = "#555555";
-					Links.HoverColor = "#FFF";
+					BackgroundColor = "#000";
+					InnerShadowColor = "#000";
+
+					Links.Color = "#868686";
+					Links.HoverColor = "#bebebe";
+
 					Pad.BackgroundColor = "#222";
-					Pad.BorderColor = "#CCC";
-					Pad.TextColor = "#555555";
+					Pad.BorderColor = "#222";
+					Pad.TextColor = "#868686";
 					Pad.ShadowColor = "#000";
-					Pad.LargeTitleFontColor = "#444444";
-					Pad.MediumTitleColor = "#444444";
-					Pad.SmallTitleColor = "#777777";
-					Pad.News.Item.TitleHoverColor = "#0982B3";
-					Pad.Solutions.SolutionTile.HoverBackgroundColor = "#f9feff";
-					Pad.Solutions.SolutionTile.HoverBorderColor = "#dddddd";
+					Pad.LargeTitleFontColor = "#868686";
+					Pad.MediumTitleColor = "#bdbdbd";
+					Pad.SmallTitleColor = "#666";
+
+					Pad.News.Item.TitleHoverColor = "#5babed";
+
+					Pad.Solutions.SolutionTile.HoverBackgroundColor = "#333";
+					Pad.Solutions.SolutionTile.HoverBorderColor = "#333";
 				}
 			}
 		}

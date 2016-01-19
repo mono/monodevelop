@@ -2094,14 +2094,23 @@
     <EmbeddedResource Include="icons\updates-16~dark~disabled%402x.png">
       <LogicalName>updates-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="branding\WelcomePage_Logo.png">
-      <LogicalName>WelcomePage_Logo.png</LogicalName>
+    <EmbeddedResource Include="branding\welcome-logo.png">
+      <LogicalName>welcome-logo.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="branding\WelcomePage_TopBorderRepeat.png">
-      <LogicalName>WelcomePage_TopBorderRepeat.png</LogicalName>
+    <EmbeddedResource Include="branding\welcome-logo%402x.png">
+      <LogicalName>welcome-logo@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="branding\AboutImage.png">
-      <LogicalName>AboutImage.png</LogicalName>
+    <EmbeddedResource Include="branding\welcome-tile.png">
+      <LogicalName>welcome-tile.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="branding\welcome-tile%402x.png">
+      <LogicalName>welcome-tile@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="branding\about.png">
+      <LogicalName>about.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="branding\about%402x.png">
+      <LogicalName>about@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\popup-close-16.png">
       <LogicalName>popup-close-16.png</LogicalName>
@@ -3102,23 +3111,77 @@
     <EmbeddedResource Include="icons\clear-16~dark~disabled%402x.png">
       <LogicalName>clear-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\link-chat.png">
-      <LogicalName>link-chat.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-link-chat-16.png">
+      <LogicalName>welcome-link-chat-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\link-cloud.png">
-      <LogicalName>link-cloud.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-link-chat-16%402x.png">
+      <LogicalName>welcome-link-chat-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\link-heart.png">
-      <LogicalName>link-heart.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-link-chat-16~dark.png">
+      <LogicalName>welcome-link-chat-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\link-info.png">
-      <LogicalName>link-info.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-link-chat-16~dark%402x.png">
+      <LogicalName>welcome-link-chat-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\new_solution.png">
-      <LogicalName>new_solution.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-link-md-16.png">
+      <LogicalName>welcome-link-md-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\open_solution.png">
-      <LogicalName>open_solution.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-link-md-16%402x.png">
+      <LogicalName>welcome-link-md-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-link-md-16~dark.png">
+      <LogicalName>welcome-link-md-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-link-md-16~dark%402x.png">
+      <LogicalName>welcome-link-md-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-link-support-16.png">
+      <LogicalName>welcome-link-support-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-link-support-16%402x.png">
+      <LogicalName>welcome-link-support-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-link-support-16~dark.png">
+      <LogicalName>welcome-link-support-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-link-support-16~dark%402x.png">
+      <LogicalName>welcome-link-support-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-link-info-16.png">
+      <LogicalName>welcome-link-info-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-link-info-16%402x.png">
+      <LogicalName>welcome-link-info-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-link-info-16~dark.png">
+      <LogicalName>welcome-link-info-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-link-info-16~dark%402x.png">
+      <LogicalName>welcome-link-info-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-new-solution-16.png">
+      <LogicalName>welcome-new-solution-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-new-solution-16%402x.png">
+      <LogicalName>welcome-new-solution-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-new-solution-16~dark.png">
+      <LogicalName>welcome-new-solution-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-new-solution-16~dark%402x.png">
+      <LogicalName>welcome-new-solution-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-open-solution-16.png">
+      <LogicalName>welcome-open-solution-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-open-solution-16%402x.png">
+      <LogicalName>welcome-open-solution-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-open-solution-16~dark.png">
+      <LogicalName>welcome-open-solution-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-open-solution-16~dark%402x.png">
+      <LogicalName>welcome-open-solution-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\link-overlay-16.png">
       <LogicalName>link-overlay-16.png</LogicalName>
@@ -3227,9 +3290,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-error-list-warnings-16~dark~sel%402x.png">
       <LogicalName>pad-error-list-warnings-16~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\starburst.png">
-      <LogicalName>starburst.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-variable-16.png">
       <LogicalName>element-variable-16.png</LogicalName>
