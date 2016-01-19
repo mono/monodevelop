@@ -39,6 +39,7 @@ using Microsoft.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -109,7 +110,7 @@ namespace MonoDevelop.Components.MainToolbar
 					int pos = lane[n];
 					if (pos - lastPos > 0)
 						MarkupUtilities.AppendEscapedString (result, text.Substring (lastPos, pos - lastPos));
-					result.Append ("<span foreground=\"#4d4d4d\" font_weight=\"bold\">");
+					result.Append ("<span foreground=\"" + Styles.ColorGetHex (Styles.GlobalSearch.ResultMatchTextColor) + "\" font_weight=\"bold\">");
 					MarkupUtilities.AppendEscapedString (result, text[pos].ToString ());
 					result.Append ("</span>");
 					lastPos = pos + 1;

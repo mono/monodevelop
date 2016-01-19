@@ -214,6 +214,7 @@ namespace MonoDevelop.Ide.Gui
 			public static Color SelectionBackgroundColor { get; internal set; }
 			public static Color ResultTextColor { get; internal set; }
 			public static Color ResultDescriptionTextColor { get; internal set; }
+			public static Color ResultMatchTextColor { get; internal set; }
 		}
 
 		// New Project Dialog
@@ -443,6 +444,10 @@ namespace MonoDevelop.Ide.Gui
 
 			ToolbarBottomBorderColor = Color.FromName ("#afafaf");
 
+			// Global Search
+
+			GlobalSearch.ResultMatchTextColor = Color.FromName ("#4d4d4d");
+
 			// Popover Window
 
 			PopoverWindow.DefaultBackgroundColor = Color.FromName ("#f2f2f2");
@@ -532,6 +537,10 @@ namespace MonoDevelop.Ide.Gui
 			// Toolbar
 
 			ToolbarBottomBorderColor = Color.FromName ("#444444");
+
+			// Global Search
+
+			GlobalSearch.ResultMatchTextColor = BaseSelectionTextColor;
 
 			// Popover window
 
