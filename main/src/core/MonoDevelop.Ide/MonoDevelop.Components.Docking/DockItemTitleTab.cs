@@ -127,6 +127,13 @@ namespace MonoDevelop.Components.Docking
 
 		void UpdateVisualStyle ()
 		{
+			double inactiveIconAlpha;
+
+			if (IdeApp.Preferences == null || IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+				inactiveIconAlpha = 0.6;
+			else
+				inactiveIconAlpha = 0.45;
+
 			if (labelWidget != null && label != null) {
 				if (visualStyle.UppercaseTitles.Value)
 					labelWidget.Text = label.ToUpper ();
@@ -141,13 +148,11 @@ namespace MonoDevelop.Components.Docking
 			}
 
 			if (tabIcon != null) {
-				tabIcon.Image = tabIcon.Image.WithAlpha (active ? 1.0 : 0.4);
+				tabIcon.Image = tabIcon.Image.WithAlpha (active ? 1.0 : inactiveIconAlpha);
 				tabIcon.Visible = visualStyle.ShowPadTitleIcon.Value;
 			}
 			if (IsRealized && labelWidget != null) {
 				var font = FontService.SansFont.CopyModified (Styles.FontScale11);
-				if (active && !Core.Platform.IsWindows)
-					font.Weight = Pango.Weight.Bold;
 				labelWidget.ModifyFont (font);
 				labelWidget.ModifyText (StateType.Normal, (active ? visualStyle.PadTitleLabelColor.Value : visualStyle.InactivePadTitleLabelColor.Value).ToGdkColor ());
 			}
@@ -175,12 +180,12 @@ namespace MonoDevelop.Components.Docking
 			}
 			
 			Gtk.HBox box = new HBox ();
-			box.Spacing = 3;
+			box.Spacing = 1;
 			
 			if (icon != null) {
 				tabIcon = new ImageView (icon);
 				tabIcon.Show ();
-				box.PackStart (tabIcon, false, false, 0);
+				box.PackStart (tabIcon, false, false, 3);
 			} else
 				tabIcon = null;
 
@@ -188,9 +193,10 @@ namespace MonoDevelop.Components.Docking
 				labelWidget = new ExtendedLabel (label);
 				labelWidget.DropShadowVisible = true;
 				labelWidget.UseMarkup = true;
-				labelWidget.Yalign = 1.0f;
+				labelWidget.Yalign = 0.85f;
 				var alignLabel = new Alignment (0.0f, 1.0f, 1, 1);
 				alignLabel.BottomPadding = 1;
+				alignLabel.RightPadding = 15;
 				alignLabel.Add (labelWidget);
 				box.PackStart (alignLabel, true, true, 0);
 			} else {
@@ -218,11 +224,11 @@ namespace MonoDevelop.Components.Docking
 			btnClose.ButtonPressEvent += (o, args) => args.RetVal = true;
 
 			Gtk.Alignment al = new Alignment (0, 0.5f, 1, 1);
-			HBox btnBox = new HBox (false, 3);
+			HBox btnBox = new HBox (false, 0);
 			btnBox.PackStart (btnDock, false, false, 0);
-			btnBox.PackStart (btnClose, false, false, 0);
+			btnBox.PackStart (btnClose, false, false, 1);
 			al.Add (btnBox);
-			box.PackEnd (al, false, false, 0);
+			box.PackEnd (al, false, false, 3);
 
 			Add (box);
 			
