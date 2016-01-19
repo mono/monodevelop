@@ -31,7 +31,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.PackageManagement.NodeBuilders;
 using MonoDevelop.Projects;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -90,6 +90,7 @@ namespace MonoDevelop.PackageManagement.Commands
 				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id, project);
 				UpdatePackageAction action = project.CreateUpdatePackageAction ();
 				action.PackageId = packageReferenceNode.Id;
+				action.AllowPrereleaseVersions = !packageReferenceNode.IsReleaseVersion ();
 
 				RestoreBeforeUpdateAction.Restore (project, () => {
 					UpdatePackage (progressMessage, action);

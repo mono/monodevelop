@@ -203,7 +203,15 @@ namespace MonoDevelop.CSharp.Highlighting
 
 			stringFormatItemColor = ColorScheme.StringFormatItemsKey;
 			nameofKeywordColor = ColorScheme.KeywordOtherKey;
-			whenKeywordColor = ColorScheme.KeywordOtherKey;
+			whenKeywordColor = ColorScheme.KeywordOtherKey; 
+
+			stringRegexCharacterClass = ColorScheme.RegexCharacterClassKey;
+			stringRegexGroupingConstructs = ColorScheme.RegexGroupingConstructsKey;
+			stringRegexSetConstructs = ColorScheme.RegexSetConstructsKey;
+			stringRegexErrors = ColorScheme.SyntaxErrorKey;
+			stringRegexComments = ColorScheme.CommentsSingleLineKey;
+			stringRegexEscapeCharacter = ColorScheme.RegexEscapeCharacterKey;
+			stringRegexAltEscapeCharacter = ColorScheme.RegexAltEscapeCharacterKey;
 		}
 
 		protected override void Colorize (TextSpan span, string color)

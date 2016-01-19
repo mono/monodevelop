@@ -37,7 +37,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Projects
@@ -320,7 +320,7 @@ namespace MonoDevelop.Projects
 			set {
 				if (link != value) {
 					if (value.IsAbsolute || value.ToString ().StartsWith ("..", StringComparison.Ordinal))
-						throw new ArgumentException ("value");
+						throw new ArgumentException ("Invalid value for Link property");
 
 					var oldLink = link;
 					link = value;
@@ -488,6 +488,7 @@ namespace MonoDevelop.Projects
 			pf.Project = null;
 			pf.VirtualPathChanged = null;
 			pf.PathChanged = null;
+			pf.BackingItem = null;
 			return pf;
 		}
 

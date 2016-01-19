@@ -184,7 +184,6 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		MonoDevelop.Ide.Editor.LineEndingConversion lineEndingConversion;
 		public MonoDevelop.Ide.Editor.LineEndingConversion LineEndingConversion {
 			get {
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.LineEndingConversion;
@@ -195,13 +194,6 @@ namespace MonoDevelop.VersionControl.Views
 
 
 		#endregion
-		public bool UseViModes {
-			get {
-				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.UseViModes;
-			}
-			set {
-			}
-		}
 
 		public bool OnTheFlyFormatting {
 			get {
@@ -217,9 +209,9 @@ namespace MonoDevelop.VersionControl.Views
 			get { return defaultEolMarker; }
 		}
 
-		public MonoDevelop.Ide.Editor.ControlLeftRightMode ControlLeftRightMode {
+		public MonoDevelop.Ide.Editor.WordNavigationStyle WordNavigationStyle {
 			get {
-				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ControlLeftRightMode;
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.WordNavigationStyle;
 			}
 			set {
 			}
@@ -239,19 +231,11 @@ namespace MonoDevelop.VersionControl.Views
 
 		void SetWordFindStrategy ()
 		{
-			if (UseViModes) {
-				this.wordFindStrategy = new Mono.TextEditor.Vi.ViWordFindStrategy ();
-				return;
-			}
-
-			switch (ControlLeftRightMode) {
-			case MonoDevelop.Ide.Editor.ControlLeftRightMode.MonoDevelop:
+			switch (WordNavigationStyle) {
+			case MonoDevelop.Ide.Editor.WordNavigationStyle.Unix:
 				this.wordFindStrategy = new EmacsWordFindStrategy (true);
 				break;
-			case MonoDevelop.Ide.Editor.ControlLeftRightMode.Emacs:
-				this.wordFindStrategy = new EmacsWordFindStrategy (false);
-				break;
-			case MonoDevelop.Ide.Editor.ControlLeftRightMode.SharpDevelop:
+			case MonoDevelop.Ide.Editor.WordNavigationStyle.Windows:
 				this.wordFindStrategy = new SharpDevelopWordFindStrategy ();
 				break;
 			}

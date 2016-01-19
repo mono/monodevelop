@@ -27,6 +27,8 @@
 //
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Editor;
 
@@ -34,15 +36,15 @@ namespace MonoDevelop.Xml.Completion
 {
 	public interface IXmlCompletionProvider
 	{
-		CompletionDataList GetElementCompletionData ();
-		CompletionDataList GetElementCompletionData (string namespacePrefix);
+		Task<CompletionDataList> GetElementCompletionData (CancellationToken token);
+		Task<CompletionDataList> GetElementCompletionData (string namespacePrefix, CancellationToken token);
 		
-		CompletionDataList GetChildElementCompletionData (XmlElementPath path);
-		CompletionDataList GetAttributeCompletionData (XmlElementPath path);
-		CompletionDataList GetAttributeValueCompletionData (XmlElementPath path, string name);
+		Task<CompletionDataList> GetChildElementCompletionData (XmlElementPath path, CancellationToken token);
+		Task<CompletionDataList> GetAttributeCompletionData (XmlElementPath path, CancellationToken token);
+		Task<CompletionDataList> GetAttributeValueCompletionData (XmlElementPath path, string name, CancellationToken token);
 		
-		CompletionDataList GetChildElementCompletionData (string tagName);
-		CompletionDataList GetAttributeCompletionData (string tagName);
-		CompletionDataList GetAttributeValueCompletionData (string tagName, string name);
+		Task<CompletionDataList> GetChildElementCompletionData (string tagName, CancellationToken token);
+		Task<CompletionDataList> GetAttributeCompletionData (string tagName, CancellationToken token);
+		Task<CompletionDataList> GetAttributeValueCompletionData (string tagName, string name, CancellationToken token);
 	}
 }

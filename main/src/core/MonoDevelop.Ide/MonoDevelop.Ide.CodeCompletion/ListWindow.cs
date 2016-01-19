@@ -150,7 +150,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var allocWidth = Allocation.Width;
 			if (IsRealized && !Visible) {
 				allocWidth = list.WidthRequest = WindowWidth;
-				Show ();
 			}
 
 			int width = Math.Max (allocWidth, list.WidthRequest + Theme.CornerRadius * 2);
@@ -293,7 +292,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			var keyChar = descriptor.KeyChar;
 
-			const string commitChars = " <>()[]{}=+-*/%~&^|!.,;:?";
+			const string commitChars = " <>()[]{}=+-*/%~&^|!.,;:?\"'";
 			if (keyChar == '[' && CloseOnSquareBrackets)
 				return KeyActions.Process | KeyActions.CloseWindow;
 			
@@ -341,7 +340,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 					var selectedItem = list.SelectedItem;
 					if (selectedItem < 0 || selectedItem >= DataProvider.ItemCount)
 						return KeyActions.CloseWindow;
-					if (!DataProvider.GetText (selectedItem).Substring (0, CurrentPartialWord.Length) .EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal))
+					var text = DataProvider.GetText (selectedItem);
+					if (!text.Substring (0, Math.Min (text.Length , CurrentPartialWord.Length)).EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal))
 						return KeyActions.Process | KeyActions.CloseWindow;
 				}
 			}

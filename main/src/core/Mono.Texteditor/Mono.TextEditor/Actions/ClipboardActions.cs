@@ -179,7 +179,13 @@ namespace Mono.TextEditor
 				newTargets.Add (new TargetEntry ("UTF8_STRING", TargetFlags.App, TextType));
 
 				newTargets.Add (new TargetEntry (RTF_ATOM.Name, TargetFlags.OtherApp, RichTextType));
-				newTargets.Add (new TargetEntry (MD_ATOM.Name, TargetFlags.App, MonoTextType));
+
+				if (!Platform.IsWindows) {
+					// This seems to randomly break pasting on Windows. We'll disable it
+					// for now until we find a better solution
+					// https://bugzilla.xamarin.com/show_bug.cgi?id=23036
+					newTargets.Add (new TargetEntry (MD_ATOM.Name, TargetFlags.App, MonoTextType));
+				}
 
 				newTargets.Add (new TargetEntry ("text/plain;charset=utf-8", TargetFlags.App, TextType));
 				newTargets.Add (new TargetEntry ("text/plain", TargetFlags.App, TextType));
@@ -388,36 +394,38 @@ namespace Mono.TextEditor
 		{
 			int inserted = 0;
 			var undo = data.OpenUndoGroup ();
-			var version = data.Document.Version;
-			if (!preserveSelection)
-				data.DeleteSelectedText (!data.IsSomethingSelected || data.MainSelection.SelectionMode != SelectionMode.Block);
-			int startLine = data.Caret.Line;
-			data.EnsureCaretIsNotVirtual ();
-			if (data.IsSomethingSelected && data.MainSelection.SelectionMode == SelectionMode.Block) {
-				var selection = data.MainSelection;
-				var visualInsertLocation = data.LogicalToVisualLocation (selection.Anchor);
-				for (int lineNumber = selection.MinLine; lineNumber <= selection.MaxLine; lineNumber++) {
-					var lineSegment = data.GetLine (lineNumber);
-					int insertOffset = lineSegment.GetLogicalColumn (data, visualInsertLocation.Column) - 1;
-					string textToInsert;
-					if (lineSegment.Length < insertOffset) {
-						int visualLastColumn = lineSegment.GetVisualColumn (data, lineSegment.Length + 1);
-						int charsToInsert = visualInsertLocation.Column - visualLastColumn;
-						int spaceCount = charsToInsert % data.Options.TabSize;
-						textToInsert = new string ('\t', (charsToInsert - spaceCount) / data.Options.TabSize) + new string (' ', spaceCount) + text;
-						insertOffset = lineSegment.Length;
-					} else {
-						textToInsert = text;
+			try {
+				var version = data.Document.Version;
+				if (!preserveSelection)
+					data.DeleteSelectedText (!data.IsSomethingSelected || data.MainSelection.SelectionMode != SelectionMode.Block);
+				int startLine = data.Caret.Line;
+				data.EnsureCaretIsNotVirtual ();
+				if (data.IsSomethingSelected && data.MainSelection.SelectionMode == SelectionMode.Block) {
+					var selection = data.MainSelection;
+					var visualInsertLocation = data.LogicalToVisualLocation (selection.Anchor);
+					for (int lineNumber = selection.MinLine; lineNumber <= selection.MaxLine; lineNumber++) {
+						var lineSegment = data.GetLine (lineNumber);
+						int insertOffset = lineSegment.GetLogicalColumn (data, visualInsertLocation.Column) - 1;
+						string textToInsert;
+						if (lineSegment.Length < insertOffset) {
+							int visualLastColumn = lineSegment.GetVisualColumn (data, lineSegment.Length + 1);
+							int charsToInsert = visualInsertLocation.Column - visualLastColumn;
+							int spaceCount = charsToInsert % data.Options.TabSize;
+							textToInsert = new string ('\t', (charsToInsert - spaceCount) / data.Options.TabSize) + new string (' ', spaceCount) + text;
+							insertOffset = lineSegment.Length;
+						} else {
+							textToInsert = text;
+						}
+						inserted = data.Insert (lineSegment.Offset + insertOffset, textToInsert);
 					}
-					inserted = data.Insert (lineSegment.Offset + insertOffset, textToInsert);
+				} else {
+					offset = version.MoveOffsetTo (data.Document.Version, offset);
+					inserted = data.PasteText (offset, text, copyData, ref undo);
 				}
-			} else {
-				offset = version.MoveOffsetTo (data.Document.Version, offset);
-				inserted = data.PasteText (offset, text, copyData, ref undo);
+				data.FixVirtualIndentation (startLine);
+			} finally {
+				undo.Dispose ();
 			}
-			data.FixVirtualIndentation (startLine); 
-
-			undo.Dispose ();
 			return inserted;
 		}
 		

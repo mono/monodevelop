@@ -37,8 +37,8 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 	[TestFixture()]
 	public class CodeCompletionCSharpTests : TestBase
 	{
+		[Ignore("FixMe")]
 		[Test()]
-		[Ignore]
 		public void TestUsingDeclaration ()
 		{
 			CompletionResult provider = CodeCompletionBugTests.CreateProvider (
@@ -293,8 +293,8 @@ class Test
 			Assert.IsNotNull (provider.Find ("TestProperty"), "property 'TestProperty' not found.");
 		}
 
+		[Ignore("FixMe")]
 		[Test()]
-		[Ignore]
 		public void TestAsCompletionContext ()
 		{
 			CompletionResult provider = CodeCompletionBugTests.CreateProvider (
@@ -346,8 +346,8 @@ public class TestMyLongName
 			Assert.IsNotNull (provider.Find ("name"), "name 'name' not found.");
 		}
 
+		[Ignore("FixMe")]
 		[Test()]
-		[Ignore]
 		public void TestMethodCreationCompletionWithLambda ()
 		{
 			CompletionResult provider = CodeCompletionBugTests.CreateProvider (

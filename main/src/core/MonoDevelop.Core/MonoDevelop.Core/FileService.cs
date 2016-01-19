@@ -267,6 +267,17 @@ namespace MonoDevelop.Core
 			}
 		}
 
+		public static FileWriteableState GetWriteableState (FilePath fileName)
+		{
+			Debug.Assert (!String.IsNullOrEmpty (fileName));
+			try {
+				return GetFileSystemForPath (fileName, false).GetWriteableState (fileName);
+			} catch (Exception ex) {
+				LoggingService.LogError ("File can't be written", ex);
+				return FileWriteableState.Unknown;
+			}
+		}
+
 		/// <summary>
 		/// Requests permission for modifying a file
 		/// </summary>
@@ -276,19 +287,8 @@ namespace MonoDevelop.Core
 		public static bool RequestFileEdit (FilePath fileName, bool throwIfFails = true)
 		{
 			Debug.Assert (!String.IsNullOrEmpty (fileName));
-			return RequestFileEdit (new FilePath[] { fileName }, throwIfFails);
-		}
-
-		/// <summary>
-		/// Requests permission for modifying a set of files
-		/// </summary>
-		/// <param name="fileNames">Files</param>
-		/// <remarks>This method must be called before trying to write any file. It throws an exception if permission is not granted.</remarks>
-		public static bool RequestFileEdit (IEnumerable<FilePath> fileNames, bool throwIfFails = true)
-		{
 			try {
-				foreach (var fg in fileNames.GroupBy (f => GetFileSystemForPath (f, false)))
-					fg.Key.RequestFileEdit (fg);
+				GetFileSystemForPath (fileName, false).RequestFileEdit (fileName);
 				return true;
 			} catch (Exception ex) {
 				if (throwIfFails)
@@ -297,6 +297,7 @@ namespace MonoDevelop.Core
 				return false;
 			}
 		}
+
 
 		public static void NotifyFileChanged (FilePath fileName)
 		{

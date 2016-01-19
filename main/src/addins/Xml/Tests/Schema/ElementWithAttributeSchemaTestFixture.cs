@@ -1,3 +1,5 @@
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
@@ -13,33 +15,38 @@ namespace MonoDevelop.Xml.Tests.Schema
 		CompletionDataList attributeCompletionData;
 		string attributeName;
 		
-		public override void FixtureInit()
+		async Task Init ()
 		{
+			if (attributeCompletionData != null)
+				return;
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 						
-			attributeCompletionData = SchemaCompletionData.GetAttributeCompletionData(path);
+			attributeCompletionData = await SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None);
 			attributeName = attributeCompletionData[0].DisplayText;
 		}
 
 		[Test]
-		public void AttributeCount()
+		public async Task AttributeCount()
 		{
+			await Init ();
 			Assert.AreEqual(1, attributeCompletionData.Count, "Should be one attribute.");
 		}
 		
 		[Test]
-		public void AttributeName()
+		public async Task AttributeName()
 		{
+			await Init ();
 			Assert.AreEqual("name", attributeName, "Attribute name is incorrect.");
 		}
 		
 		[Test]
-		public void NoAttributesForUnknownElement()
+		public async Task NoAttributesForUnknownElement()
 		{
+			await Init ();
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foobar", "http://www.w3schools.com"));
-			CompletionDataList attributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			CompletionDataList attributes = await SchemaCompletionData.GetAttributeCompletionData(path, CancellationToken.None);
 			
 			Assert.AreEqual(0, attributes.Count, "Should not find attributes for unknown element.");
 		}

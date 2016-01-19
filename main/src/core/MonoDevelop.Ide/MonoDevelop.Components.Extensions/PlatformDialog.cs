@@ -35,7 +35,7 @@ namespace MonoDevelop.Components.Extensions
 	public class PlatformDialogData
 	{
 		public string Title { get; set; }
-		public Gtk.Window TransientFor { get; set; }
+		public Window TransientFor { get; set; }
 	}
 	
 	public interface IDialogHandler<T> where T: PlatformDialogData
@@ -84,7 +84,7 @@ namespace MonoDevelop.Components.Extensions
 		/// <summary>
 		/// Parent window.
 		/// </summary>
-		public Gtk.Window TransientFor {
+		public Window TransientFor {
 			get { return data.TransientFor; }
 			set { data.TransientFor = value; }
 		}

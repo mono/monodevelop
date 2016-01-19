@@ -26,40 +26,104 @@
 using System;
 using MonoDevelop.Ide.Editor;
 using Mono.TextEditor;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.SourceEditor
 {
-	class LinkMarker : Mono.TextEditor.UnderlineTextSegmentMarker, ITextSegmentMarker
+	class LinkMarker : UnderlineTextSegmentMarker, ILinkTextMarker, IActionTextLineMarker
 	{
-		static readonly Cairo.Color linkColor = new Cairo.Color (0, 0, 1.0);
+		static readonly Gdk.Cursor textLinkCursor = new Gdk.Cursor (Gdk.CursorType.Hand1);
+
 		Action<LinkRequest> activateLink;
 
-		public LinkMarker (int offset, int length, Action<LinkRequest> activateLink) : base (linkColor, new TextSegment (offset, length))
+		public bool OnlyShowLinkOnHover {
+			get;
+			set;
+		}
+
+
+		public LinkMarker (int offset, int length, Action<LinkRequest> activateLink) : base (DefaultSourceEditorOptions.Instance.GetColorStyle ().LinkColor.Color, new TextSegment (offset, length))
 		{
 			this.activateLink = activateLink;
 			this.Wave = false;
 		}
 
-		event EventHandler<TextMarkerMouseEventArgs> ITextSegmentMarker.MousePressed {
-			add {
-				throw new NotImplementedException ();
-			}
-			remove {
-				throw new NotImplementedException ();
-			}
-		}
-		event EventHandler<TextMarkerMouseEventArgs> ITextSegmentMarker.MouseHover {
-			add {
-				throw new NotImplementedException ();
-			}
-			remove {
-				throw new NotImplementedException ();
-			}
-		}
+		public event EventHandler<TextMarkerMouseEventArgs> MousePressed;
+		public event EventHandler<TextMarkerMouseEventArgs> MouseHover;
 
 		object ITextSegmentMarker.Tag {
 			get;
 			set;
+		}
+
+		bool IActionTextLineMarker.MousePressed (MonoTextEditor editor, MarginMouseEventArgs args)
+		{
+			MousePressed?.Invoke (this, new TextEventArgsWrapper (args));
+			return false;
+		}
+
+		bool IActionTextLineMarker.MouseReleased (MonoTextEditor editor, MarginMouseEventArgs args)
+		{
+			if ((Platform.IsMac && (args.ModifierState & Gdk.ModifierType.Mod2Mask) == Gdk.ModifierType.Mod2Mask) ||
+			    (!Platform.IsMac && (args.ModifierState & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask))
+				activateLink?.Invoke (LinkRequest.RequestNewView);
+			else
+				activateLink?.Invoke (LinkRequest.SameView);
+			
+			return false;
+		}
+
+
+		void IActionTextLineMarker.MouseHover (MonoTextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result)
+		{
+			MouseHover?.Invoke (this, new TextEventArgsWrapper (args));
+			result.Cursor = textLinkCursor;
+			if (OnlyShowLinkOnHover) {
+				editor.GetTextEditorData ().Document.CommitLineUpdate (args.LineSegment);
+				editor.TextViewMargin.HoveredLineChanged += new UpdateOldLine (editor, args.LineSegment).TextViewMargin_HoveredLineChanged;
+			}
+		}
+
+		class UpdateOldLine
+		{
+			MonoTextEditor editor;
+			DocumentLine lineSegment;
+
+			public UpdateOldLine (MonoTextEditor editor, DocumentLine lineSegment)
+			{
+				this.editor = editor;
+				this.lineSegment = lineSegment;
+			}
+
+			public void TextViewMargin_HoveredLineChanged (object sender, Mono.TextEditor.LineEventArgs e)
+			{
+				editor.GetTextEditorData ().Document.CommitLineUpdate (lineSegment);
+				editor.TextViewMargin.HoveredLineChanged -= TextViewMargin_HoveredLineChanged;
+			}
+		}
+
+		public override void Draw (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics, int startOffset, int endOffset)
+		{
+			if (OnlyShowLinkOnHover) {
+					if (editor.TextViewMargin.MarginCursor != textLinkCursor)
+					return;
+				if (editor.TextViewMargin.HoveredLine == null)
+					return;
+				var hoverOffset = editor.LocationToOffset (editor.TextViewMargin.HoveredLocation);
+				if (!Segment.Contains (hoverOffset)) 
+					return; 
+			}
+			this.Color = editor.ColorStyle.LinkColor.Color;
+
+			if (!OnlyShowLinkOnHover) {
+				if (editor.TextViewMargin.MarginCursor == textLinkCursor && editor.TextViewMargin.HoveredLine != null) {
+					var hoverOffset = editor.LocationToOffset (editor.TextViewMargin.HoveredLocation);
+					if (Segment.Contains (hoverOffset))
+						this.Color = editor.ColorStyle.ActiveLinkColor.Color;
+				}
+			}
+
+			base.Draw (editor, cr, metrics, startOffset, endOffset);
 		}
 	}
 }

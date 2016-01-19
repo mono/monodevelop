@@ -38,17 +38,18 @@ using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core.Execution;
 using System.Threading.Tasks;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {
 	[ProjectModelDataItem]
-	public sealed class Solution: WorkspaceItem, IConfigurationTarget, IPolicyProvider, IBuildTarget, IMSBuildFileObject
+	public class Solution: WorkspaceItem, IConfigurationTarget, IPolicyProvider, IBuildTarget, IMSBuildFileObject
 	{
 		internal object MemoryProbe = Counters.SolutionsInMemory.CreateMemoryProbe ();
 		SolutionFolder rootFolder;
 		string defaultConfiguration;
 		MSBuildFileFormat format;
+		bool loadingFromConstructor;
 
 		SolutionItem startupItem;
 		List<SolutionItem> startupItems; 
@@ -78,12 +79,11 @@ namespace MonoDevelop.Projects
 
 		internal Solution (bool loading)
 		{
+			loadingFromConstructor = loading;
 			Counters.SolutionsLoaded++;
 			configurations = new SolutionConfigurationCollection (this);
 			format = MSBuildFileFormat.DefaultFormat;
 			Initialize (this);
-			if (!loading)
-				NotifyItemReady ();
 		}
 
 		public override FilePath FileName {
@@ -107,6 +107,9 @@ namespace MonoDevelop.Projects
 		{
 			itemExtension = ExtensionChain.GetExtension<SolutionExtension> ();
 			base.OnExtensionChainInitialized ();
+
+			if (!loadingFromConstructor)
+				NotifyItemReady ();
 		}
 
 		SolutionExtension itemExtension;
@@ -371,12 +374,12 @@ namespace MonoDevelop.Projects
 			return new SolutionConfiguration (name);
 		}
 
-		public SolutionConfiguration AddConfiguration (string name, bool createConfigForItems)
+		public SolutionConfiguration AddConfiguration (string id, bool createConfigForItems)
 		{
-			SolutionConfiguration conf = new SolutionConfiguration (name);
+			SolutionConfiguration conf = new SolutionConfiguration (id);
 			foreach (SolutionItem item in Items.Where (it => it.SupportsBuild())) {
-				if (createConfigForItems && item.GetConfiguration (new ItemConfigurationSelector (name)) == null) {
-					SolutionItemConfiguration newc = item.CreateConfiguration (name);
+				if (createConfigForItems && item.GetConfiguration (new ItemConfigurationSelector (id)) == null) {
+					SolutionItemConfiguration newc = item.CreateConfiguration (id);
 					if (item.DefaultConfiguration != null)
 						newc.CopyFrom (item.DefaultConfiguration);
 					item.Configurations.Add (newc);
@@ -629,6 +632,11 @@ namespace MonoDevelop.Projects
 				}
 			}
 		}	 
+
+		bool IBuildTarget.CanBuild (ConfigurationSelector configuration)
+		{
+			return true;
+		}
 
 		public Task<BuildResult> Clean (ProgressMonitor monitor, string configuration)
 		{

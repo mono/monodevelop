@@ -89,18 +89,22 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeGeneration
 			if (createPropertyDeclaration == null)
 				throw new InvalidOperationException ("CreatePropertyDeclaration not found.");
 
-
-			createNamedTypeDeclaration = typeInfo.GetMethod ("CreateNamedTypeDeclaration", BindingFlags.Instance | BindingFlags.Public, null, new [] { typeof(INamedTypeSymbol), codeGenerationDestinationType, codeGenerationOptionsType }, null);
+			createNamedTypeDeclaration = typeInfo.GetMethod ("CreateNamedTypeDeclaration", BindingFlags.Instance | BindingFlags.Public, null, new [] { typeof(INamedTypeSymbol), codeGenerationDestinationType, codeGenerationOptionsType, typeof(CancellationToken) }, null);
 			if (createNamedTypeDeclaration == null)
 				throw new InvalidOperationException ("CreateNamedTypeDeclaration not found.");
 
-			createNamespaceDeclaration = typeInfo.GetMethod ("CreateNamespaceDeclaration", BindingFlags.Instance | BindingFlags.Public, null, new [] { typeof(INamespaceSymbol), codeGenerationDestinationType, codeGenerationOptionsType }, null);
+			createNamespaceDeclaration = typeInfo.GetMethod ("CreateNamespaceDeclaration", BindingFlags.Instance | BindingFlags.Public, null, new [] { typeof(INamespaceSymbol), codeGenerationDestinationType, codeGenerationOptionsType, typeof(CancellationToken) }, null);
 			if (createNamespaceDeclaration == null)
 				throw new InvalidOperationException ("CreateNamespaceDeclaration not found.");
 
 			addMethodAsync = abstractServiceType.GetMethod ("AddMethodAsync", BindingFlags.Instance | BindingFlags.Public);
 			if (addMethodAsync == null)
 				throw new InvalidOperationException ("AddMethodAsync not found.");
+			addPropertyAsync = abstractServiceType.GetMethod ("AddPropertyAsync", BindingFlags.Instance | BindingFlags.Public);
+			if (addPropertyAsync == null)
+				throw new InvalidOperationException ("AddPropertyAsync not found.");
+
+
 
 			addMembersAsync = abstractServiceType.GetMethod ("AddMembersAsync", BindingFlags.Instance | BindingFlags.Public, null, new [] { typeof(Solution), typeof(INamedTypeSymbol), typeof(IEnumerable<ISymbol>), CodeGenerationOptions.typeInfo, typeof(CancellationToken) }, null);
 			if (addMembersAsync == null)
@@ -175,7 +179,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeGeneration
 
 		/// <summary>
 		/// Returns a newly created event declaration node from the provided event.
-		/// </summary
+		/// </summary>
 		public SyntaxNode CreateEventDeclaration(IEventSymbol @event, CodeGenerationDestination destination = CodeGenerationDestination.Unspecified)
 		{
 			try {
@@ -228,10 +232,10 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeGeneration
 		/// <summary>
 		/// Returns a newly created named type declaration node from the provided named type.
 		/// </summary>
-		public SyntaxNode CreateNamedTypeDeclaration(INamedTypeSymbol namedType, CodeGenerationDestination destination = CodeGenerationDestination.Unspecified)
+		public SyntaxNode CreateNamedTypeDeclaration(INamedTypeSymbol namedType, CodeGenerationDestination destination, CodeGenerationOptions options, CancellationToken cancellationToken)
 		{
 			try {
-				return (SyntaxNode)createNamedTypeDeclaration.Invoke (instance, new object[] { @namedType, (int)destination, null });
+				return (SyntaxNode)createNamedTypeDeclaration.Invoke (instance, new object[] { @namedType, destination, options != null ? options.Instance : null, cancellationToken });
 			} catch (TargetInvocationException ex) {
 				ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
 				return null;
@@ -241,10 +245,10 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeGeneration
 		/// <summary>
 		/// Returns a newly created namespace declaration node from the provided namespace.
 		/// </summary>
-		public SyntaxNode CreateNamespaceDeclaration(INamespaceSymbol @namespace, CodeGenerationDestination destination = CodeGenerationDestination.Unspecified)
+		public SyntaxNode CreateNamespaceDeclaration(INamespaceSymbol @namespace, CodeGenerationDestination destination, CodeGenerationOptions options, CancellationToken cancellationToken)
 		{
 			try {
-				return (SyntaxNode)createNamespaceDeclaration.Invoke (instance, new object[] { @namespace, (int)destination, null });
+				return (SyntaxNode)createNamespaceDeclaration.Invoke (instance, new object[] { @namespace, (int)destination, options != null ? options.Instance : null, cancellationToken });
 			} catch (TargetInvocationException ex) {
 				ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
 				return null;
@@ -255,6 +259,16 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeGeneration
 		{
 			try {
 				return (Task<Document>)addMethodAsync.Invoke (instance, new object[] { solution, destination, method, options != null ? options.Instance : null, cancellationToken });
+			} catch (TargetInvocationException ex) {
+				ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+				return null;
+			}
+		}
+
+		public Task<Document> AddPropertyAsync(Solution solution, INamedTypeSymbol destination, IPropertySymbol property, CodeGenerationOptions options = null, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			try {
+				return (Task<Document>)addPropertyAsync.Invoke (instance, new object[] { solution, destination, property, options != null ? options.Instance : null, cancellationToken });
 			} catch (TargetInvocationException ex) {
 				ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
 				return null;
@@ -275,6 +289,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeGeneration
 		}
 
 		static MethodInfo addFieldAsync;
+		static MethodInfo addPropertyAsync;
 
 		public Task<Document> AddFieldAsync(Solution solution, INamedTypeSymbol destination, IFieldSymbol field, CodeGenerationOptions options, CancellationToken cancellationToken)
 		{

@@ -43,8 +43,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		CellRendererText   templateCellRenderer;
 		CellRendererImage pixbufCellRenderer;
 		TextEditor textEditor = TextEditorFactory.CreateNewEditor ();
-		ITextEditorOptions options;
-		
+
 		public CodeTemplatePanelWidget (OptionsDialog parent)
 		{
 			this.Build();
@@ -219,12 +218,12 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return templateStore.AppendValues (iter, template, template.Shortcut, null);
 		}
 	}
-	
+
 	internal class CodeTemplatePane : OptionsPanel
 	{
 		CodeTemplatePanelWidget codeTemplatePanelWidget;
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			
 			return codeTemplatePanelWidget = new CodeTemplatePanelWidget (this.ParentDialog);

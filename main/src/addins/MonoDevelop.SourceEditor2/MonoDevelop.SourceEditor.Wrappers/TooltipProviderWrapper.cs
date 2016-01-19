@@ -24,8 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Mono.TextEditor;
 using MonoDevelop.Ide;
+using Xwt.GtkBackend;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.SourceEditor.Wrappers
 {
@@ -44,7 +48,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		public TooltipProviderWrapper (MonoDevelop.Ide.Editor.TooltipProvider provider)
 		{
 			if (provider == null)
-				throw new ArgumentNullException ("provider");
+				throw new ArgumentNullException (nameof (provider));
 			this.provider = provider;
 		}
 
@@ -59,9 +63,20 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			return null;
 		}
 
-		public override TooltipItem GetItem (MonoTextEditor editor, int offset)
+		public override async Task<TooltipItem> GetItem (MonoTextEditor editor, int offset, CancellationToken token = default(CancellationToken))
 		{
-			var item = provider.GetItem (WrapEditor (editor), IdeApp.Workbench.ActiveDocument, offset);
+			var wrappedEditor = WrapEditor (editor);
+			if (wrappedEditor == null)
+				return null;
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null)
+				return null;
+			var task = provider.GetItem (wrappedEditor, doc, offset, token);
+			if (task == null) {
+				LoggingService.LogWarning ("Tooltip provider " + provider + " gave back null on GetItem (should always return a non null task).");
+				return null;
+			}
+			var item = await task;
 			if (item == null)
 				return null;
 			if (lastUnwrappedItem != null) {
@@ -88,7 +103,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			var wrappedEditor = WrapEditor (editor);
 			if (wrappedEditor == null)
 				return null;
-			var control = provider.CreateTooltipWindow (wrappedEditor, IdeApp.Workbench.ActiveDocument, new MonoDevelop.Ide.Editor.TooltipItem (item.Item, item.ItemSegment.Offset, item.ItemSegment.Length), offset, modifierState);
+			var control = provider.CreateTooltipWindow (wrappedEditor, IdeApp.Workbench.ActiveDocument, new MonoDevelop.Ide.Editor.TooltipItem (item.Item, item.ItemSegment.Offset, item.ItemSegment.Length), offset, modifierState.ToXwtValue ());
 			if (control == null)
 				return null;
 			return (Gtk.Window)control;
@@ -111,7 +126,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			if (wrappedEditor == null) {
 				return tipWindow;
 			}
-			provider.ShowTooltipWindow (wrappedEditor, tipWindow, new MonoDevelop.Ide.Editor.TooltipItem (item.Item, item.ItemSegment.Offset, item.ItemSegment.Length), modifierState, mouseX, mouseY);
+			provider.ShowTooltipWindow (wrappedEditor, tipWindow, new MonoDevelop.Ide.Editor.TooltipItem (item.Item, item.ItemSegment.Offset, item.ItemSegment.Length), modifierState.ToXwtValue (), mouseX, mouseY);
 			return tipWindow;
 		}
 

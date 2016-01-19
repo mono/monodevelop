@@ -30,6 +30,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
+using MonoDevelop.Components.AutoTest;
 using NUnit.Framework;
 
 namespace UserInterfaceTests
@@ -212,6 +213,26 @@ namespace UserInterfaceTests
 //					newProject.Open ();
 //			}
 //			newProject.IsSelected (templateOptions);
+		}
+
+		protected void WaitForElement (Func<AppQuery, AppQuery> query, string expected, string actual, int timeoutInSecs = 5)
+		{
+			try {
+				Session.WaitForElement (query, timeoutInSecs * 1000);
+			} catch (TimeoutException) {
+				ReproStep (expected, actual);
+				throw;
+			}
+		}
+
+		protected void WaitForElement (Action action, string expected, string actual)
+		{
+			try {
+				action ();
+			} catch (TimeoutException) {
+				ReproStep (string.Format ("Expected: {0}\nActual:{1}", expected, actual));
+				throw;
+			}
 		}
 
 		void PrintToTestRunner (TemplateSelectionOptions templateOptions,

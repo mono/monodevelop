@@ -43,7 +43,6 @@ namespace MonoDevelop.Components.MainToolbar
 {
 	class CommandSearchCategory : SearchCategory
 	{
-		Widget widget;
 		static readonly List<Tuple<Command, string>> allCommands;
 
 		static CommandSearchCategory ()
@@ -53,12 +52,11 @@ namespace MonoDevelop.Components.MainToolbar
 			).ToList();
 		}
 
-		public CommandSearchCategory (Widget widget) : base (GettextCatalog.GetString("Commands"))
+		public CommandSearchCategory () : base (GettextCatalog.GetString("Commands"))
 		{
-			this.widget = widget;
 		}
 
-		string[] validTags = new [] { "cmd", "command" };
+		string[] validTags = new [] { "cmd", "command", "c" };
 
 		public override string [] Tags {
 			get {
@@ -81,7 +79,8 @@ namespace MonoDevelop.Components.MainToolbar
 					var matcher = StringMatcher.GetMatcher (pattern.Pattern, false);
 
 					foreach (var cmdTuple in allCommands) {
-						token.ThrowIfCancellationRequested ();
+						if (token.IsCancellationRequested)
+							break;
 						var cmd = cmdTuple.Item1;
 						var matchString = cmdTuple.Item2;
 						int rank;
@@ -89,11 +88,9 @@ namespace MonoDevelop.Components.MainToolbar
 						if (matcher.CalcMatchRank (matchString, out rank))
 							searchResultCallback.ReportResult (new CommandResult (cmd, null, route, pattern.Pattern, matchString, rank));
 					}
-				} catch {
-					token.ThrowIfCancellationRequested ();
-					throw;
+				} catch (OperationCanceledException) {
 				}
-			});
+			}, token);
 		}
 	}
 }

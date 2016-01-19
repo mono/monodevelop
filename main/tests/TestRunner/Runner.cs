@@ -41,7 +41,7 @@ namespace MonoDevelop.Tests.TestRunner
 		public Task<int> Run (string[] arguments)
 		{
 			var args = new List<string> (arguments);
-			bool useGuiUnit = false;
+			Assembly guiUnitAsm = null;
 			foreach (var ar in args) {
 				if ((ar.EndsWith (".dll", StringComparison.OrdinalIgnoreCase) || ar.EndsWith (".exe", StringComparison.OrdinalIgnoreCase)) && File.Exists (ar)) {
 					try {
@@ -50,8 +50,8 @@ namespace MonoDevelop.Tests.TestRunner
 						var ids = new HashSet<string> ();
 						foreach (var aname in asm.GetReferencedAssemblies ()) {
 							if (aname.Name == "GuiUnit") {
-								Assembly.LoadFile (Path.Combine (Path.GetDirectoryName (path), "GuiUnit.exe"));
-								useGuiUnit = true;
+								guiUnitAsm = Assembly.LoadFile (Path.Combine (Path.GetDirectoryName (path), "GuiUnit.exe"));
+								continue;
 							}
 							ids.UnionWith (GetAddinsFromReferences (aname));
 						}
@@ -64,12 +64,12 @@ namespace MonoDevelop.Tests.TestRunner
 					}
 				}
 			}
-			if (useGuiUnit) {
+			if (guiUnitAsm != null) {
 				Xwt.XwtSynchronizationContext.AutoInstall = false;
 				var sc = new Xwt.XwtSynchronizationContext ();
 				System.Threading.SynchronizationContext.SetSynchronizationContext (sc);
 				Runtime.MainSynchronizationContext = sc;
-				var runnerType = Type.GetType ("GuiUnit.TestRunner, GuiUnit");
+				var runnerType = guiUnitAsm.GetType ("GuiUnit.TestRunner");
 				var method = runnerType.GetMethod ("Main", BindingFlags.Public | BindingFlags.Static);
 				return Task.FromResult ((int)method.Invoke (null, new [] { args.ToArray () }));
 			}

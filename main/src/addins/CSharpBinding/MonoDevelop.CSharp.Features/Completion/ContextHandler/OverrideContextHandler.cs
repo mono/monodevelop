@@ -47,12 +47,12 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return IsTriggerAfterSpaceOrStartOfWordCharacter (text, position);
 		}
 
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, CancellationToken cancellationToken)
+		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			// var ctx = await completionContext.GetSyntaxContextAsync (engine.Workspace, cancellationToken).ConfigureAwait (false);
 			var document = completionContext.Document;
-			var semanticModel = await completionContext.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
-			var tree = await document.GetSyntaxTreeAsync (cancellationToken).ConfigureAwait (false);
+			var semanticModel = ctx.SemanticModel;
+			var tree = ctx.SyntaxTree;
 			if (tree.IsInNonUserCode(completionContext.Position, cancellationToken))
 				return Enumerable.Empty<CompletionData> ();
 
@@ -289,26 +289,23 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			//modifiers = new DeclarationModifiers();
 			seenAccessibility = Accessibility.NotApplicable;
 			var overrideToken = default(SyntaxToken);
-			bool isUnsafe = false;
-			bool isSealed = false;
-			bool isAbstract = false;
 
 			while (IsOnStartLine(token.SpanStart, text, startLine) && !token.IsKind(SyntaxKind.None))
 			{
 				switch (token.Kind())
 				{
-					case SyntaxKind.UnsafeKeyword:
-						       isUnsafe = true;
-					break;
+					//case SyntaxKind.UnsafeKeyword:
+					//	       isUnsafe = true;
+					//break;
 					case SyntaxKind.OverrideKeyword:
 						       overrideToken = token;
 					break;
-					case SyntaxKind.SealedKeyword:
-						       isSealed = true;
-					break;
-					case SyntaxKind.AbstractKeyword:
-						       isAbstract = true;
-					break;
+					//case SyntaxKind.SealedKeyword:
+					//	       isSealed = true;
+					//break;
+					//case SyntaxKind.AbstractKeyword:
+					//	       isAbstract = true;
+					//break;
 					case SyntaxKind.ExternKeyword:
 					break;
 

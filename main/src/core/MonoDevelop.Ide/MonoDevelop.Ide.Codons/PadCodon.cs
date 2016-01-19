@@ -43,9 +43,9 @@ using System.IO;
 namespace MonoDevelop.Ide.Codons
 {
 	[ExtensionNode ("Pad", "Registers a pad to be shown in the workbench.")]
-	public class PadCodon : ExtensionNode, IDockItemLabelProvider
+	public class PadCodon : ExtensionNode
 	{
-		IPadContent content;
+		PadContent content;
 		string id;
 		
 		[NodeAttribute("_label", "Display name of the pad.", Localizable=true)]
@@ -70,31 +70,25 @@ namespace MonoDevelop.Ide.Codons
 		[NodeAttribute ("defaultStatus", "Default status ofthe pad. It can be 'Dockable', 'Floating', 'AutoHide'.")]
 		DockItemStatus defaultStatus = DockItemStatus.Dockable;
 		
-		[NodeAttribute("dockLabelProvider", "Name of a class implementing IDockItemLabelProvider. " +
-			"Using this class it is possible to use a custom widget as label when the item" +
-			"is docked in auto-hide mode.")]
-		string dockLabelProvider = null;
-		
 		[NodeAttribute ("defaultLayout", "Name of the layouts (comma separated list) on which this pad should be visible by default")]
 		string[] defaultLayouts;
 		
-		IDockItemLabelProvider cachedDockLabelProvider;
 		bool initializeCalled;
 		
-		public IPadContent PadContent {
+		public PadContent PadContent {
 			get {
 				return content; 
 			}
 		}
 		
-		public IPadContent InitializePadContent (IPadWindow window)
+		public PadContent InitializePadContent (IPadWindow window)
 		{
 			if (content == null) {
 				content = CreatePad ();
-				content.Initialize (window);
+				content.Init (window);
 				ApplyPreferences ();
 			} else if (!initializeCalled) {
-				content.Initialize (window);
+				content.Init (window);
 				ApplyPreferences ();
 			}
 			initializeCalled = true;
@@ -148,12 +142,12 @@ namespace MonoDevelop.Ide.Codons
 		{
 		}
 		
-		public PadCodon (IPadContent content, string id, string label, string defaultPlacement, string icon)
+		public PadCodon (PadContent content, string id, string label, string defaultPlacement, string icon)
 			: this (content, id, label, defaultPlacement, DockItemStatus.Dockable, icon)
 		{
 		}
 		
-		public PadCodon (IPadContent content, string id, string label, string defaultPlacement, DockItemStatus defaultStatus, string icon)
+		public PadCodon (PadContent content, string id, string label, string defaultPlacement, DockItemStatus defaultStatus, string icon)
 		{
 			this.id               = id;
 			this.content          = content;
@@ -163,21 +157,12 @@ namespace MonoDevelop.Ide.Codons
 			this.defaultStatus    = defaultStatus;
 		}
 		
-		protected virtual IPadContent CreatePad ()
+		protected virtual PadContent CreatePad ()
 		{
 			Counters.PadsLoaded++;
-			return (IPadContent) Addin.CreateInstance (className, true);
+			return (PadContent) Addin.CreateInstance (className, true);
 		}
 		
-		Gtk.Widget IDockItemLabelProvider.CreateLabel (Gtk.Orientation orientation)
-		{
-			if (dockLabelProvider == null)
-				return null;
-			if (cachedDockLabelProvider == null)
-				cachedDockLabelProvider = (IDockItemLabelProvider) Addin.CreateInstance (dockLabelProvider, true);
-			return cachedDockLabelProvider.CreateLabel (orientation);
-		}
-
 		PadUserPrefs preferences = null;
 
 		internal void SetPreferences (PadUserPrefs pi)

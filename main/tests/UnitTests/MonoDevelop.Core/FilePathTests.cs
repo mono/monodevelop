@@ -157,21 +157,58 @@ namespace MonoDevelop.Core
 		}
 
 		[Test]
-		public void InvalidCharactersTests ()
-		{
-			// Assert compatibility so we know something changed over here.
-			Assert.That (FilePath.GetInvalidFileNameChars (), Is.EquivalentTo (Path.GetInvalidFileNameChars ().Concat ("#%&")));
-			Assert.That (FilePath.GetInvalidPathChars (), Is.EquivalentTo (Path.GetInvalidPathChars ().Concat ("#%&")));
-		}
-
-		[Test]
 		public void InvalidCharactersAreCloned ()
 		{
 			Assert.AreNotSame (FilePath.GetInvalidFileNameChars (), FilePath.GetInvalidFileNameChars ());
 			Assert.AreNotSame (FilePath.GetInvalidPathChars (), FilePath.GetInvalidPathChars ());
 		}
 
-		// TODO: more tests
+		[Test]
+		public void TestResolveLinks ()
+		{
+			// TODO: Check that it resolves links, but for 64bitness we just need to check it runs ok
+			string pathname = "asdf.txt";
+			FilePath path = new FilePath (pathname);
+			path.ResolveLinks ();
+
+			Assert.AreEqual (pathname, (string)path);
+		}
+
+		[Test]
+		public void Equality ()
+		{
+			Assert.IsTrue (new FilePath ("") == FilePath.Empty);
+			Assert.IsTrue (new FilePath () == FilePath.Null);
+			Assert.IsFalse (new FilePath ("") == FilePath.Null);
+
+			var root = Platform.IsWindows ? "c:\\" : "/";
+
+			Assert.IsTrue (new FilePath (Path.Combine (root, "a","b")) == new FilePath (Path.Combine (root, "a","b")));
+			Assert.IsFalse (new FilePath (Path.Combine (root, "a","c")) == new FilePath (Path.Combine (root, "a","b")));
+			Assert.IsFalse (new FilePath (Path.Combine (root, "a","b")) == new FilePath (Path.Combine (root, "a","b") + Path.DirectorySeparatorChar));
+			Assert.IsFalse (new FilePath (Path.Combine (root, "a","b")) == new FilePath (Path.Combine (root, "a","c", "..", "b")));
+
+			if (Platform.IsWindows || Platform.IsMac)
+				Assert.IsTrue (new FilePath (Path.Combine (root, "a","B")) == new FilePath (Path.Combine (root, "a","b")));
+			else
+				Assert.IsFalse (new FilePath (Path.Combine (root, "a","B")) == new FilePath (Path.Combine (root, "a","b")));
+		}
+
+		[Test]
+		public void CanonicalPath ()
+		{
+			var root = Platform.IsWindows ? "c:\\" : "/";
+			var p = new FilePath (Path.Combine (root, "a","c", "..", "b"));
+
+			Assert.AreEqual (new FilePath (Path.Combine (root, "a","b")), p.CanonicalPath);
+
+			// Trailing slashes are removed from canonical path
+			p = new FilePath (Path.Combine (root, "a","b") + Path.DirectorySeparatorChar);
+			Assert.AreEqual (new FilePath (Path.Combine (root, "a","b")), p.CanonicalPath);
+
+			// Canonical path of null is null
+			Assert.AreEqual (FilePath.Null, FilePath.Null.CanonicalPath);
+		}
 	}
 }
 

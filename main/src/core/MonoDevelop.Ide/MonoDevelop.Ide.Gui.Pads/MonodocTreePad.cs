@@ -35,10 +35,11 @@ using Monodoc;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
-	internal class HelpTree : AbstractPadContent
+	internal class HelpTree : PadContent
 	{
 		TreeStore store;
 		MonoDevelop.Ide.Gui.Components.PadTreeView  tree_view;
@@ -46,7 +47,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		ScrolledWindow scroller;
 		TreeIter root_iter;
 	
-		public HelpTree () : base (GettextCatalog.GetString ("Help"), "md-help")
+		public HelpTree () : base (GettextCatalog.GetString ("Help"), Stock.Help)
 		{
 			tree_view = new MonoDevelop.Ide.Gui.Components.PadTreeView ();
 
@@ -78,7 +79,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 					} while (store.IterNext (ref child_iter));
 				}
 			}
-			Control.ShowAll ();
+			scroller.ShowAll ();
 		}
 
 		Hashtable populated = new Hashtable ();
@@ -126,7 +127,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get { return scroller; }
 		}
 	}

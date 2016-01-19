@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	public static partial class TypeSystemService
 	{
 		const string CurrentVersion = "1.1.9";
-		static readonly List<TypeSystemParserNode> parsers;
+		static IEnumerable<TypeSystemParserNode> parsers;
 		static string[] filesSkippedInParseThread = new string[0];
 
 		static IEnumerable<TypeSystemParserNode> Parsers {
@@ -76,17 +76,15 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static TypeSystemService ()
 		{
-			parsers = new List<TypeSystemParserNode> ();
+			parsers = AddinManager.GetExtensionNodes<TypeSystemParserNode> ("/MonoDevelop/TypeSystem/Parser");
+			bool initialLoad = true;
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/Parser", delegate (object sender, ExtensionNodeEventArgs args) {
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					parsers.Add ((TypeSystemParserNode)args.ExtensionNode);
-					break;
-				case ExtensionChange.Remove:
-					parsers.Remove ((TypeSystemParserNode)args.ExtensionNode);
-					break;
-				}
+				//refresh entire list to respect insertbefore/insertafter ordering
+				if (!initialLoad)
+					parsers = AddinManager.GetExtensionNodes<TypeSystemParserNode> ("/MonoDevelop/TypeSystem/Parser");
 			});
+			initialLoad = false;
+
 			try {
 				emptyWorkspace = new MonoDevelopWorkspace ();
 			} catch (Exception e) {
@@ -103,7 +101,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (IdeApp.Workbench != null && IdeApp.Workbench.GetDocument (file.FileName) != null)
 						continue;
 					
-					foreach (var w in Workspaces) {
+					foreach (var w in workspaces) {
 						foreach (var p in w.CurrentSolution.ProjectIds) {
 							if (w.GetDocumentId (p, file.FileName) != null) {
 								filesToUpdate.Add (file.FileName);
@@ -121,7 +119,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					try {
 						foreach (var file in filesToUpdate) {
 							var text = MonoDevelop.Core.Text.StringTextSource.ReadFrom (file).Text;
-							foreach (var w in Workspaces)
+							foreach (var w in workspaces)
 								w.UpdateFileContent (file, text);
 							Gtk.Application.Invoke (delegate {
 								if (IdeApp.Workbench != null)
@@ -259,7 +257,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			try {
 				var result = parser.GenerateParsedDocumentProjection (options, cancellationToken);
 				if (options.Project != null) {
-					var ws = Workspaces.First () ;
+					var ws = workspaces.First () ;
 					var projectId = ws.GetProjectId (options.Project);
 
 					if (projectId != null) {
@@ -663,7 +661,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal static void InformDocumentClose (Microsoft.CodeAnalysis.DocumentId analysisDocument, FilePath fileName)
 		{
-			foreach (var w in Workspaces) {
+			foreach (var w in workspaces) {
 				if (w.GetOpenDocumentIds ().Contains (analysisDocument) )
 					w.InformDocumentClose (analysisDocument, fileName); 
 
@@ -672,7 +670,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal static void InformDocumentOpen (Microsoft.CodeAnalysis.DocumentId analysisDocument, TextEditor editor)
 		{
-			foreach (var w in Workspaces) {
+			foreach (var w in workspaces) {
 				if (w.Contains (analysisDocument.ProjectId)) {
 					w.InformDocumentOpen (analysisDocument, editor); 
 					return;
@@ -695,7 +693,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
-			foreach (var w in Workspaces) {
+			foreach (var w in workspaces) {
 				var projectId = w.GetProjectId (project);
 				if (projectId != null) {
 					return projectId;
@@ -708,7 +706,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (docId == null)
 				throw new ArgumentNullException ("docId");
-			foreach (var w in Workspaces) {
+			foreach (var w in workspaces) {
 				var documentId = w.GetDocument (docId, cancellationToken);
 				if (documentId != null) {
 					return documentId;
@@ -721,10 +719,22 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
-			foreach (var w in Workspaces) {
+			foreach (var w in workspaces) {
 				var documentId = w.GetMonoProject (project);
 				if (documentId != null) {
 					return documentId;
+				}
+			}
+			return null;
+		}
+
+
+		public static MonoDevelop.Projects.Project GetMonoProject (Microsoft.CodeAnalysis.DocumentId documentId)
+		{
+			foreach (var w in workspaces) {
+				foreach (var p in w.CurrentSolution.Projects) {
+					if (p.GetDocument (documentId) != null)
+						return GetMonoProject (p);
 				}
 			}
 			return null;

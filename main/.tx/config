@@ -1,0 +1,9 @@
+[main]
+host = https://www.transifex.com
+type = PO
+
+[monodevelop-2.messagespo]
+source_file = po/messages.po
+source_lang = en
+type = PO
+file_filter = po/<lang>.po

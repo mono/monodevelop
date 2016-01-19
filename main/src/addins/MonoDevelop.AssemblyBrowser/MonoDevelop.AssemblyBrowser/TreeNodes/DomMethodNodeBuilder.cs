@@ -81,7 +81,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var resolved = (DefaultResolvedMethod)Resolve (treeBuilder, method, dt);
 			var ambience = new CSharpAmbience ();
 			try {
-				nodeInfo.Label = ambience.ConvertSymbol (resolved);
+				nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (ambience.ConvertSymbol (resolved));
 			} catch (Exception) {
 				nodeInfo.Label = method.Name;
 			}

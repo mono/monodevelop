@@ -31,7 +31,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using MonoDevelop.Components;
-using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.Ide.Gui;
@@ -331,13 +330,13 @@ namespace MonoDevelop.Ide
 			return ShowCustomDialog (dialog, null);
 		}
 		
-		public static int ShowCustomDialog (Dialog dialog, Window parent)
+		public static int ShowCustomDialog (Dialog dlg, Window parent)
 		{
+			Gtk.Dialog dialog = dlg;
 			try {
-				return RunCustomDialog (dialog, parent);
+				return RunCustomDialog (dlg, parent);
 			} finally {
-				if (dialog != null)
-					dialog.Destroy ();
+				dialog?.Destroy ();
 			}
 		}
 		
@@ -349,9 +348,10 @@ namespace MonoDevelop.Ide
 		/// <summary>
 		/// Places and runs a transient dialog. Does not destroy it, so values can be retrieved from its widgets.
 		/// </summary>
-		public static int RunCustomDialog (Dialog dialog, Window parent)
+		public static int RunCustomDialog (Dialog dlg, Window parent)
 		{
 			// if dialog is modal, make sure it's parented on any existing modal dialog
+			Gtk.Dialog dialog = dlg;
 			if (dialog.Modal) {
 				parent = GetDefaultModalParent ();
 			}
@@ -368,14 +368,14 @@ namespace MonoDevelop.Ide
 				dialog.Title = BrandingService.ApplicationName;
 
 			#if MAC
-			DispatchService.GuiSyncDispatch (() => {
+			Runtime.RunInMainThread (() => {
 				// If there is a native NSWindow model window running, we need
 				// to show the new dialog over that window.
 				if (NSApplication.SharedApplication.ModalWindow != null)
 					dialog.Shown += HandleShown;
 				else
 					PlaceDialog (dialog, parent);
-			});
+			}).Wait ();
 			#endif
 			return GtkWorkarounds.RunDialogWithNotification (dialog);
 		}
@@ -404,26 +404,27 @@ namespace MonoDevelop.Ide
 		/// </summary>
 		public static Window GetDefaultModalParent ()
 		{
-			foreach (Window w in Window.ListToplevels ())
+			foreach (Gtk.Window w in Gtk.Window.ListToplevels ())
 				if (w.Visible && w.HasToplevelFocus && w.Modal)
 					return w;
 			return GetFocusedToplevel ();
 		}
 
-		static Window GetFocusedToplevel ()
+		static Gtk.Window GetFocusedToplevel ()
 		{
-			return Window.ListToplevels ().FirstOrDefault (w => w.HasToplevelFocus) ?? RootWindow;
+			return Gtk.Window.ListToplevels ().FirstOrDefault (w => w.HasToplevelFocus) ?? RootWindow;
 		}
 		
 		/// <summary>
 		/// Positions a dialog relative to its parent on platforms where default placement is known to be poor.
 		/// </summary>
-		public static void PlaceDialog (Window child, Window parent)
+		public static void PlaceDialog (Window childControl, Window parent)
 		{
 			//HACK: this is a workaround for broken automatic window placement on Mac
 			if (!Platform.IsMac)
 				return;
 
+			Gtk.Window child = childControl;
 			//modal windows should always be placed o top of existing modal windows
 			if (child.Modal)
 				parent = GetDefaultModalParent ();
@@ -437,8 +438,10 @@ namespace MonoDevelop.Ide
 		}
 		
 		/// <summary>Centers a window relative to its parent.</summary>
-		static void CenterWindow (Window child, Window parent)
+		static void CenterWindow (Window childControl, Window parentControl)
 		{
+			Gtk.Window child = childControl;
+			Gtk.Window parent = parentControl;
 			child.Child.Show ();
 			int w, h, winw, winh, x, y, winx, winy;
 			child.GetSize (out w, out h);

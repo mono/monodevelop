@@ -43,10 +43,11 @@ using MonoDevelop.Ide;
 using System.Security.Cryptography;
 using Gdk;
 using MonoDevelop.Components;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Debugger
 {
-	public class DisassemblyView: AbstractViewContent, IClipboardHandler
+	public class DisassemblyView: ViewContent, IClipboardHandler
 	{
 		Gtk.ScrolledWindow sw;
 		TextEditor editor;
@@ -85,8 +86,7 @@ namespace MonoDevelop.Debugger
 			sw.ShadowType = Gtk.ShadowType.In;
 			
 			sw.Sensitive = false;
-			
-			currentDebugLineMarker = TextMarkerFactory.CreateCurrentDebugLineTextMarker (editor);
+
 			DebuggingService.StoppedEvent += OnStop;
 		}
 
@@ -121,7 +121,7 @@ namespace MonoDevelop.Debugger
 			editor.AddOverlay (messageOverlayContent,() => openButton.SizeRequest ().Width + w + hbox.Spacing * 5 + containerPadding * 2);
 
 			openButton.Clicked += delegate {
-				var dlg = new OpenFileDialog (GettextCatalog.GetString ("File to Open"), Gtk.FileChooserAction.Open) {
+				var dlg = new OpenFileDialog (GettextCatalog.GetString ("File to Open"), MonoDevelop.Components.FileChooserAction.Open) {
 					TransientFor = IdeApp.Workbench.RootWindow,
 					ShowEncodingSelector = true,
 					ShowViewerSelector = true
@@ -155,14 +155,10 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return sw;
 			}
-		}
-		
-		public override void Load (FileOpenInformation fileOpenInformation)
-		{
 		}
 
 		public override bool IsFile {
@@ -174,8 +170,10 @@ namespace MonoDevelop.Debugger
 		public void Update ()
 		{
 			autoRefill = false;
-			
-			editor.RemoveMarker (currentDebugLineMarker);
+			if (currentDebugLineMarker != null) {
+				editor.RemoveMarker (currentDebugLineMarker);
+				currentDebugLineMarker = null;
+			}
 			
 			if (DebuggingService.CurrentFrame == null) {
 				if (messageOverlayContent != null) {
@@ -292,10 +290,15 @@ namespace MonoDevelop.Debugger
 		
 		void UpdateCurrentLineMarker (bool moveCaret)
 		{
-			editor.RemoveMarker (currentDebugLineMarker);
+			if (currentDebugLineMarker != null) {
+				editor.RemoveMarker (currentDebugLineMarker);
+				currentDebugLineMarker = null;
+			}
 			StackFrame sf = DebuggingService.CurrentFrame;
 			int line;
 			if (addressLines.TryGetValue (GetAddrId (sf.Address, sf.AddressSpace), out line)) {
+				var docLine = editor.GetLine (line);
+				currentDebugLineMarker = TextMarkerFactory.CreateCurrentDebugLineTextMarker (editor, docLine.Offset, docLine.Length);
 				editor.AddMarker (line, currentDebugLineMarker);
 				if (moveCaret) {
 					editor.CaretLine = line;

@@ -28,7 +28,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using MonoDevelop.Core.Serialization;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -62,12 +62,22 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal MSBuildItem BackingItem { get; set; }
+		MSBuildItem backingItem;
+		internal MSBuildItem BackingItem {
+			get {
+				return backingItem;
+			}
+			set {
+				backingItem = value;
+				UnevaluatedInclude = backingItem?.Include;
+			}
+		}
+
 		internal IMSBuildItemEvaluated BackingEvalItem { get; set; }
 
 		internal bool IsFromWildcardItem {
 			get {
-				return BackingEvalItem != null && BackingEvalItem.SourceItem.IsWildcardItem;
+				return BackingItem != null && BackingItem.IsWildcardItem;
 			}
 		}
 
@@ -113,6 +123,8 @@ namespace MonoDevelop.Projects
 						metadata.AddProperty (p);
 					}
 				}
+				if (metadata != null)
+					metadata.OnLoaded ();
 			}
 			buildItem.Metadata.ReadObjectProperties (this, GetType (), true);
 		}

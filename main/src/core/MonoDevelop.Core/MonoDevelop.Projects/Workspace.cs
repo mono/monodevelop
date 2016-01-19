@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using System.Linq;
 using System.Threading.Tasks;
-using MonoDevelop.Projects.Formats.MD1;
+using MonoDevelop.Projects.MD1;
 
 namespace MonoDevelop.Projects
 {
@@ -71,6 +71,11 @@ namespace MonoDevelop.Projects
 			foreach (WorkspaceItem it in Items)
 				it.Dispose ();
 			base.OnDispose ();
+		}
+
+		bool IBuildTarget.CanBuild (ConfigurationSelector configuration)
+		{
+			return true;
 		}
 
 		[ThreadSafe]

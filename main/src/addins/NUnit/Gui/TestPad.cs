@@ -90,7 +90,7 @@ namespace MonoDevelop.NUnit
 			paned = new VPaned ();
 			
 			VBox vbox = new VBox ();
-			DockItemToolbar topToolbar = Window.GetToolbar (PositionType.Top);
+			DockItemToolbar topToolbar = Window.GetToolbar (DockPositionType.Top);
 
 			var hbox = new HBox { Spacing = 6 };
 			hbox.PackStart (new ImageView (ImageService.GetIcon ("nunit-run", IconSize.Menu)), false, false, 0);
@@ -146,10 +146,12 @@ namespace MonoDevelop.NUnit
 			VBox boxPaned1 = new VBox ();
 			
 			chart = new TestChart ();
-			chart.ButtonPressEvent += OnChartButtonPress;
 			chart.SelectionChanged += new EventHandler (OnChartDateChanged);
-			chart.HeightRequest = 50;
-			
+
+			var chartWidget = chart.GetNativeWidget<Widget> ();
+			chartWidget.ButtonPressEvent += OnChartButtonPress;
+			chartWidget.HeightRequest = 50;
+
 			Toolbar toolbar = new Toolbar ();
 			toolbar.IconSize = IconSize.SmallToolbar;
 			toolbar.ToolbarStyle = ToolbarStyle.Icons;
@@ -382,7 +384,7 @@ namespace MonoDevelop.NUnit
 			return TreeView.GetNodeAtObject (t);
 		}
 		
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return paned;
 			}

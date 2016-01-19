@@ -28,11 +28,11 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	public partial class SelectFileFormatDialog : Gtk.Dialog
+	partial class SelectFileFormatDialog : Gtk.Dialog
 	{
 		List<MSBuildFileFormat> formats = new List<MSBuildFileFormat> ();
 		

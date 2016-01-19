@@ -67,9 +67,6 @@ namespace MonoDevelop.MacIntegration
 
 		public MacPlatformService ()
 		{
-			if (IntPtr.Size == 8)
-				throw new Exception ("Mac integration is not yet 64-bit safe");
-
 			if (initedGlobal)
 				throw new Exception ("Only one MacPlatformService instance allowed");
 			initedGlobal = true;
@@ -635,11 +632,12 @@ namespace MonoDevelop.MacIntegration
 			}
 		}
 
-		public override Gdk.Rectangle GetUsableMonitorGeometry (Gdk.Screen screen, int monitor)
+		public override Xwt.Rectangle GetUsableMonitorGeometry (int screenNumber, int monitorNumber)
 		{
-			Gdk.Rectangle ygeometry = screen.GetMonitorGeometry (monitor);
+			var screen = Gdk.Display.Default.GetScreen (screenNumber);
+			Gdk.Rectangle ygeometry = screen.GetMonitorGeometry (monitorNumber);
 			Gdk.Rectangle xgeometry = screen.GetMonitorGeometry (0);
-			NSScreen nss = NSScreen.Screens[monitor];
+			NSScreen nss = NSScreen.Screens[monitorNumber];
 			var visible = nss.VisibleFrame;
 			var frame = nss.Frame;
 
@@ -671,10 +669,10 @@ namespace MonoDevelop.MacIntegration
 			width = NMath.Min (visible.Width, frame.Width);
 			x = NMath.Max (visible.X, frame.X);
 
-			return new Gdk.Rectangle ((int) x, (int) y, (int) width, (int) height);
+			return new Xwt.Rectangle ((int) x, (int) y, (int) width, (int) height);
 		}
 
-		public override void GrabDesktopFocus (Gtk.Window window)
+		internal override void GrabDesktopFocus (Gtk.Window window)
 		{
 			window.Present ();
 			NSApplication.SharedApplication.ActivateIgnoringOtherApps (true);
@@ -762,7 +760,7 @@ namespace MonoDevelop.MacIntegration
 			return new FdoRecentFiles (UserProfile.Current.LocalConfigDir.Combine ("RecentlyUsed.xml"));
 		}
 
-		public override bool GetIsFullscreen (Gtk.Window window)
+		public override bool GetIsFullscreen (Window window)
 		{
 			if (MacSystemInformation.OsVersion < MacSystemInformation.Lion) {
 				return base.GetIsFullscreen (window);
@@ -772,7 +770,7 @@ namespace MonoDevelop.MacIntegration
 			return (nswin.StyleMask & NSWindowStyle.FullScreenWindow) != 0;
 		}
 
-		public override void SetIsFullscreen (Gtk.Window window, bool isFullscreen)
+		public override void SetIsFullscreen (Window window, bool isFullscreen)
 		{
 			if (MacSystemInformation.OsVersion < MacSystemInformation.Lion) {
 				base.SetIsFullscreen (window, isFullscreen);
@@ -788,17 +786,11 @@ namespace MonoDevelop.MacIntegration
 		{
 			var toplevels = GtkQuartz.GetToplevels ();
 
-			// When we're looking for modal windows that don't belong to GTK, exclude
-			// NSStatusBarWindow (which is visible on Mavericks when we're in fullscreen) and
-			// NSToolbarFullscreenWindow (which is visible on Yosemite in fullscreen).
-			return toplevels.Any (t => t.Key.IsVisible && (t.Value == null || t.Value.Modal) &&
-				!(t.Key.DebugDescription.StartsWith("<NSStatusBarWindow", StringComparison.Ordinal) ||
-					t.Key.DebugDescription.StartsWith ("<NSToolbarFullScreenWindow", StringComparison.Ordinal) ||
-					t.Key.DebugDescription.StartsWith ("<NSCarbonMenuWindow", StringComparison.Ordinal)
-				));
+			// Check GtkWindow's Modal flag or for a visible NSPanel
+			return toplevels.Any (t => (t.Value != null && t.Value.Modal && t.Value.Visible) || (t.Key.IsVisible && (t.Key is NSPanel)));
 		}
 
-		public override void AddChildWindow (Gtk.Window parent, Gtk.Window child)
+		internal override void AddChildWindow (Gtk.Window parent, Gtk.Window child)
 		{
 			NSWindow w = GtkQuartz.GetWindow (parent);
 			child.Realize ();
@@ -807,7 +799,7 @@ namespace MonoDevelop.MacIntegration
 			w.AddChildWindow (overlay, NSWindowOrderingMode.Above);
 		}
 
-		public override void PlaceWindow (Gtk.Window window, int x, int y, int width, int height)
+		internal override void PlaceWindow (Gtk.Window window, int x, int y, int width, int height)
 		{
 			if (window.GdkWindow == null)
 				return; // Not yet realized

@@ -48,6 +48,7 @@ namespace UserInterfaceTests
 		readonly string solutionLocation = Environment.GetFolderPath (Environment.SpecialFolder.MyDocuments);
 
 		[Test]
+		[Category ("Cycle6")]
 		[TestCase (true, true, true, TestName = "WithGit--WithGitIgnore--WithProjectWithinSolution")]
 		[TestCase (true, true, false, TestName = "WithGit--WithGitIgnore--WithoutProjectWithinSolution")]
 		[TestCase (true, true, true, TestName = "WithGit--WithGitIgnore--WithProjectWithinSolution")]

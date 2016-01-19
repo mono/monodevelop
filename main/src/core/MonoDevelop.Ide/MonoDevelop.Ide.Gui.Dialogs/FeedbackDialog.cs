@@ -31,7 +31,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	public class FeedbackDialog: Gtk.Window
+	class FeedbackDialog: Gtk.Window
 	{
 		Gtk.VBox mainBox;
 		EntryWithEmptyMessage mailEntry;

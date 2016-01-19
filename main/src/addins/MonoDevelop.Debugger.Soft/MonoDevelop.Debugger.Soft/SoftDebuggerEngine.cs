@@ -92,7 +92,7 @@ namespace MonoDevelop.Debugger.Soft
 					ExternalConsoleFactory.Instance.CreateConsole (dsi.CloseExternalConsoleOnExit), varsCopy);
 				return new ProcessAdapter (oper, Path.GetFileName (info.FileName));
 			};
-
+			startArgs.MonoExecutableFileName = runtime.MonoRuntimeInfo.Force64or32bit.HasValue ? runtime.MonoRuntimeInfo.Force64or32bit.Value ? "mono64" : "mono32" : "mono";
 			return dsi;
 		}
 		
@@ -139,6 +139,18 @@ namespace MonoDevelop.Debugger.Soft
 		
 		class MDLogger : ICustomLogger
 		{
+			public string GetNewDebuggerLogFilename ()
+			{
+				if (PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.DebuggerLogging", false)) {
+					string filename;
+					var logWriter = LoggingService.CreateLogFile ("Debugger", out filename);
+					logWriter.Dispose ();
+					return filename;
+				} else {
+					return null;
+				}
+			}
+
 			public void LogError (string message, Exception ex)
 			{
 				LoggingService.LogError (message, ex);

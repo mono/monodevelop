@@ -41,6 +41,7 @@ using MonoDevelop.Ide.Gui.Content;
 using Microsoft.CodeAnalysis.Formatting;
 using System.Diagnostics;
 using ICSharpCode.NRefactory6.CSharp;
+using MonoDevelop.CSharp.Completion;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -137,7 +138,7 @@ namespace MonoDevelop.CodeGeneration
 
 		public string CreateShortType (ITypeSymbol fullType)
 		{
-			return fullType.ToMinimalDisplayString (CurrentState, offset);
+			return RoslynCompletionData.SafeMinimalDisplayString (fullType, CurrentState, offset);
 		}
 
 		public static CodeGenerationOptions CreateCodeGenerationOptions (TextEditor document, DocumentContext ctx)
@@ -148,24 +149,26 @@ namespace MonoDevelop.CodeGeneration
 		public async Task<string> OutputNode (SyntaxNode node, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			node = Formatter.Format (node, TypeSystemService.Workspace, FormattingOptions, cancellationToken);
-			node = node.WithAdditionalAnnotations (Formatter.Annotation, Simplifier.Annotation);
 
 			var text = Editor.Text;
 			string nodeText = node.ToString ();
 			text = text.Insert (offset, nodeText);
 
-
 			var backgroundDocument = DocumentContext.AnalysisDocument.WithText (SourceText.From (text));
 
 			var currentRoot = await backgroundDocument.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
 
+			// add formatter & simplifier annotations 
+			var oldNode = currentRoot.FindNode (TextSpan.FromBounds(offset, offset + nodeText.Length));
+			currentRoot = currentRoot.ReplaceNode (oldNode, oldNode.WithAdditionalAnnotations (Formatter.Annotation, Simplifier.Annotation)); 
+
+			// get updated node
 			node = currentRoot.FindNode (TextSpan.FromBounds(offset, offset + nodeText.Length));
-
 			currentRoot = currentRoot.TrackNodes (node);
-			backgroundDocument = backgroundDocument.WithSyntaxRoot (currentRoot);
-			backgroundDocument = await Simplifier.ReduceAsync (backgroundDocument, TextSpan.FromBounds (offset, offset + nodeText.Length), FormattingOptions, cancellationToken).ConfigureAwait(false);
-			backgroundDocument = await Formatter.FormatAsync (backgroundDocument, Formatter.Annotation, FormattingOptions, cancellationToken).ConfigureAwait(false);
 
+			backgroundDocument = backgroundDocument.WithSyntaxRoot (currentRoot);
+			backgroundDocument = await Formatter.FormatAsync (backgroundDocument, Formatter.Annotation, cancellationToken: cancellationToken).ConfigureAwait(false);
+			backgroundDocument = await Simplifier.ReduceAsync (backgroundDocument, Simplifier.Annotation, cancellationToken: cancellationToken).ConfigureAwait(false);
 			var newRoot = await backgroundDocument.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
 
 			var formattedNode = newRoot.GetCurrentNode (node);

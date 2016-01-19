@@ -44,7 +44,7 @@ using System.Threading;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor.Highlighting;
-
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -422,14 +422,19 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			return 0;
 		}
-		
+
 		static int CompareFileNames (TreeModel model, TreeIter first, TreeIter second)
 		{
 			var searchResult1 = (SearchResult)model.GetValue (first, SearchResultColumn);
 			var searchResult2 = (SearchResult)model.GetValue (second, SearchResultColumn);
 			if (searchResult1 == null || searchResult2 == null || searchResult1.FileName == null || searchResult2.FileName == null)
 				return -1;
-			return string.Compare (System.IO.Path.GetFileName (searchResult1.FileName), System.IO.Path.GetFileName (searchResult2.FileName), StringComparison.Ordinal);
+			var strCompare = string.Compare (System.IO.Path.GetFileName (searchResult1.FileName), System.IO.Path.GetFileName (searchResult2.FileName), StringComparison.Ordinal);
+			if (strCompare == 0) {
+				return searchResult1.Offset.CompareTo (searchResult2.Offset);
+			} else {
+				return strCompare;
+			}
 		}
 
 		static int CompareProjectFileNames (TreeModel model, TreeIter first, TreeIter second)
@@ -698,7 +703,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (result != null) {
 				var loc = GetLocation (result);
 				store.SetValue (iter, DidReadColumn, true);
-				IdeApp.Workbench.OpenDocument (result.FileName, loc.Line, loc.Column);
+				IdeApp.Workbench.OpenDocument (result.FileName, null, loc.Line, loc.Column);
 			}
 		}
 		
@@ -823,9 +828,9 @@ namespace MonoDevelop.Ide.FindInFiles
 			{
 			}
 			
-			protected override Gui.Document DoShow ()
+			protected override async Task<Gui.Document> DoShow ()
 			{
-				var doc = base.DoShow ();
+				var doc = await base.DoShow ();
 				if (doc == null)
 					return null;
 				

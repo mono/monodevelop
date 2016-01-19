@@ -40,12 +40,11 @@ using System.Linq;
 
 #pragma warning disable 618
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	public partial class ProjectBuilder: MarshalByRefObject, IProjectBuilder
 	{
 		readonly string file;
-		ILogWriter currentLogWriter;
 		readonly MDConsoleLogger consoleLogger;
 		readonly BuildEngine buildEngine;
 
@@ -67,7 +66,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			BuildEngine.RunSTA (taskId, delegate {
 				try {
 					var project = SetupProject (configurations);
-					currentLogWriter = logWriter;
+					InitLogger (logWriter);
 
 					buildEngine.Engine.UnregisterAllLoggers ();
 
@@ -122,11 +121,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						file, false, ex.ErrorSubcategory, ex.ErrorCode, ex.ProjectFile,
 						ex.LineNumber, ex.ColumnNumber, ex.EndLineNumber, ex.EndColumnNumber,
 						ex.BaseMessage, ex.HelpKeyword);
-					if (logWriter != null)
-						logWriter.WriteLine (r.ToString ());
+					LogWriteLine (r.ToString ());
 					result = new MSBuildResult (new [] { r });
 				} finally {
-					currentLogWriter = null;
+					DisposeLogger ();
 				}
 			});
 			return result;

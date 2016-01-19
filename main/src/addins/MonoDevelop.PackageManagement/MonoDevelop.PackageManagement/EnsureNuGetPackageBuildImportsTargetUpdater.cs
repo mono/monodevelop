@@ -27,7 +27,7 @@
 using System;
 using System.Linq;
 using System.Xml;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.PackageManagement
 {

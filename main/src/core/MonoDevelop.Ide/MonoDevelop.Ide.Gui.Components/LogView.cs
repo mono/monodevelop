@@ -111,8 +111,11 @@ namespace MonoDevelop.Ide.Gui.Components
 					var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
 					clipboard.Text = text;
 
-					clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
-					clipboard.Text = text;
+					if (Platform.IsLinux) {
+						// gtk has different clipboards for CLIPBOARD and PRIMARY only on Linux.
+						clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
+						clipboard.Text = text;
+					}
 				}
 			}
 

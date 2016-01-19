@@ -984,6 +984,10 @@ namespace ICSharpCode.NRefactory6.CSharp
 				if (Parent is BracesBodyState)
 					Parent.OnExit();
 			}
+			else if (ch == ':') 
+			{
+				NextLineIndent.ExtraSpaces = 0;
+			}
 
 			base.Push(ch);
 		}
@@ -1135,7 +1139,6 @@ namespace ICSharpCode.NRefactory6.CSharp
 					ThisLineIndent.PopTry();
 				}
 			}
-
 			base.OnExit();
 		}
 	}

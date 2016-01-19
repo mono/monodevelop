@@ -40,40 +40,7 @@ namespace MonoDevelop.CSharp.Completion
 {
 	class RoslynCompletionData : ISymbolCompletionData
 	{
-		List<CompletionData> overloads;
 		
-		public override bool HasOverloads {
-			get {
-				return overloads != null;
-			}
-		}
-
-
-		public override void AddOverload (CompletionData data)
-		{
-			if (overloads == null)
-				overloads = new List<CompletionData> ();
-			overloads.Add ((CompletionData)data);
-			sorted = null;
-		}
-
-		List<CompletionData> sorted;
-
-		public override IReadOnlyList<CompletionData> OverloadedData {
-			get {
-				if (overloads == null)
-					return new CompletionData[] { this };
-
-				if (sorted == null) {
-					sorted = new List<CompletionData> (overloads);
-					sorted.Add (this);
-					// sorted.Sort (new OverloadSorter ());
-				}
-				return sorted;
-			}
-		}
-
-
 		public RoslynCompletionData (ICompletionDataKeyHandler keyHandler)
 		{
 			this.KeyHandler = keyHandler;
@@ -98,6 +65,25 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			this.KeyHandler = keyHandler;
 		}
+
+		internal static string SafeMinimalDisplayString (ISymbol symbol, SemanticModel semanticModel, int position)
+		{
+			return SafeMinimalDisplayString (symbol, semanticModel, position, Ambience.LabelFormat);
+		}
+
+		internal static string SafeMinimalDisplayString (ISymbol symbol, SemanticModel semanticModel, int position, SymbolDisplayFormat format)
+		{
+			try {
+				return symbol.ToMinimalDisplayString (semanticModel, position, format);
+			} catch (ArgumentOutOfRangeException) {
+				try {
+					return symbol.ToMinimalDisplayString (semanticModel, semanticModel.SyntaxTree.Length / 2, format);
+				} catch (ArgumentOutOfRangeException) {
+					return symbol.Name;
+				}
+			}
+		}
+
 		
 //		class OverloadSorter : IComparer<ICompletionData>
 //		{

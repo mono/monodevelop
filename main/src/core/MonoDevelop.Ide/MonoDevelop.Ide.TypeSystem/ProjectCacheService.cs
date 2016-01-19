@@ -13,9 +13,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Diagnostics;
 using System.Collections;
-
 namespace MonoDevelop.Ide.TypeSystem
 {
+/*
 	class ProjectCacheService : IProjectCacheHostService
 	{
 		internal const int ImplicitCacheSize = 3;
@@ -380,7 +380,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 	}
-
+*/
 	internal static class SpecializedTasks
 	{
 		public static readonly Task<bool> True = Task.FromResult<bool> (true);
@@ -438,7 +438,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			Action wrapped = () => {
 				try {
 					action ();
-				} catch (Exception e) {
+				} catch (Exception) {
 					throw new InvalidOperationException ("This program location is thought to be unreachable.");
 				}
 			};
@@ -462,7 +462,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			Func<TResult> wrapped = () => {
 				try {
 					return func ();
-				} catch (Exception e) {
+				} catch (Exception) {
 					throw new InvalidOperationException ("This program location is thought to be unreachable.");
 				}
 			};
@@ -538,8 +538,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		private static Action<Exception> s_fatalHandler;
 		private static Action<Exception> s_nonFatalHandler;
 
-		private static Exception s_reportedException;
-		private static string s_reportedExceptionMessage;
+		//private static Exception s_reportedException;
+		//private static string s_reportedExceptionMessage;
 
 		/// <summary>
 		/// Set by the host to a fail fast trigger, 
@@ -658,8 +658,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		private static void Report (Exception exception, Action<Exception> handler)
 		{
 			// hold onto last exception to make investigation easier
-			s_reportedException = exception;
-			s_reportedExceptionMessage = exception.ToString ();
+			//s_reportedException = exception;
+			//s_reportedExceptionMessage = exception.ToString ();
 
 			handler?.Invoke (exception);
 		}

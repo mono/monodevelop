@@ -123,6 +123,10 @@ namespace MonoDevelop.AspNet.Projects
 
 		#region build/prebuild/execute
 
+		protected override ProjectFeatures OnGetSupportedFeatures ()
+		{
+			return base.OnGetSupportedFeatures () | ProjectFeatures.Execute;
+		}
 
 		protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
@@ -396,7 +400,7 @@ namespace MonoDevelop.AspNet.Projects
 				    continue;
 				//bypass non dotnet projects
 				if ((reference.ReferenceType == ReferenceType.Project) &&
-				    (!(reference.OwnerProject.ParentSolution.FindProjectByName (reference.Reference) is DotNetProject)))
+				    (!(reference.ResolveProject (reference.OwnerProject.ParentSolution) is DotNetProject)))
 						continue;
 				refs.Add (reference.Reference);
 			}

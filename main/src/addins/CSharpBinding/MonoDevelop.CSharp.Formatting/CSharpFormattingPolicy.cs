@@ -195,6 +195,17 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+
+		[ItemProperty]
+		public bool NewLinesForBracesInAccessors {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInAccessors);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInAccessors, value);
+			}
+		}
+
 		[ItemProperty]
 		public bool NewLinesForBracesInAnonymousMethods {
 			get {

@@ -125,8 +125,9 @@ namespace Mono.TextEditor
 		internal protected override void MousePressed (MarginMouseEventArgs args)
 		{
 			base.MousePressed (args);
-			if (args.LineSegment == null)
+			if (args.LineSegment == null || !editor.Options.ShowFoldMargin)
 				return;
+
 			foreach (FoldSegment segment in editor.Document.GetStartFoldings (args.LineSegment)) {
 				segment.IsFolded = !segment.IsFolded; 
 			}
@@ -137,7 +138,9 @@ namespace Mono.TextEditor
 		internal protected override void MouseHover (MarginMouseEventArgs args)
 		{
 			base.MouseHover (args);
-			
+			if (!editor.Options.ShowFoldMargin)
+				return;
+
 			DocumentLine lineSegment = null;
 			if (args.LineSegment != null) {
 				lineSegment = args.LineSegment;

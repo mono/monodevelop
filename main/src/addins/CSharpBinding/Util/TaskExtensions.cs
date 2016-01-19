@@ -127,7 +127,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 				{
 					return continuationFunction(t);
 				}
-				catch (Exception e) //when (FatalError.ReportUnlessCanceled(e))
+				catch (Exception) //when (FatalError.ReportUnlessCanceled(e))
 				{
 					throw new InvalidOperationException ();
 				}

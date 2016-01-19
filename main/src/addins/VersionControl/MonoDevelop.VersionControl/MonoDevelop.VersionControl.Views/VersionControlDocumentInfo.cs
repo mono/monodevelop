@@ -50,16 +50,10 @@ namespace MonoDevelop.VersionControl.Views
 			get;
 			set;
 		}
-
-		[Obsolete ("Use Item.VersionInfo instead of this.")]
-		public VersionInfo VersionInfo {
-			get;
-			set;
-		}
 		
 		public Repository Repository {
-			get;
-			set;
+			get { return Item.Repository; }
+			set { Item.Repository = value; }
 		}
 		
 		public bool Started {
@@ -70,7 +64,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			this.Document = document;
 			this.Item = item;
-			this.Repository = repository;
+			item.Repository = repository;
 		}
 
 		public void Start (bool rerun = false)
@@ -82,12 +76,12 @@ namespace MonoDevelop.VersionControl.Views
 				lock (updateLock) {
 					try {
 						History      = Item.Repository.GetHistory (Item.Path, null);
-						VersionInfo  = Item.Repository.GetVersionInfo (Item.Path, VersionInfoQueryFlags.IgnoreCache);
+						Item.VersionInfo  = Item.Repository.GetVersionInfo (Item.Path, VersionInfoQueryFlags.IgnoreCache);
 					} catch (Exception ex) {
 						LoggingService.LogError ("Error retrieving history", ex);
 					}
 					
-					DispatchService.GuiDispatch (delegate {
+					Runtime.RunInMainThread (delegate {
 						OnUpdated (EventArgs.Empty);
 					});
 					mre.Set ();
@@ -110,7 +104,7 @@ namespace MonoDevelop.VersionControl.Views
 				mre.WaitOne ();
 				mre.Dispose ();
 				mre = null;
-				DispatchService.GuiDispatch (delegate {
+				Runtime.RunInMainThread (delegate {
 					act ();
 				});
 			});

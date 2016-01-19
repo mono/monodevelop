@@ -27,7 +27,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using Mono.Addins;
 using System.Linq;
 using System.Collections.Immutable;
@@ -108,7 +108,7 @@ namespace MonoDevelop.Projects
 			msproject.ReadExternalProjectProperties (this, GetType (), true);
 		}
 
-		internal protected virtual void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildEvaluatedPropertyCollection pset)
+		internal protected virtual void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IPropertySet pset)
 		{
 			next.OnReadConfiguration (monitor, config, pset);
 		}
@@ -120,7 +120,7 @@ namespace MonoDevelop.Projects
 			msproject.WriteExternalProjectProperties (this, GetType (), true);
 		}
 
-		internal protected virtual void OnWriteConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildPropertySet pset)
+		internal protected virtual void OnWriteConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IPropertySet pset)
 		{
 			next.OnWriteConfiguration (monitor, config, pset);
 		}

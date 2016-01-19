@@ -46,6 +46,99 @@ class FooBar
 }
 ", "foobar");
 		}
+
+
+		/// <summary>
+		/// Bug 37124 - [Roslyn] Autocompletion of method with enum parameter and no-parameter overloads
+		/// </summary>
+		[Test]
+		public void TestBug37124 ()
+		{
+			var provider = CreateProvider (
+				@"
+enum FooBar { Foo, Bar }
+
+public class MyClass 
+{
+
+	void Test ()
+	{
+	}
+
+	void Test (FooBar fooBar)
+	{
+
+	}
+
+	public void Bug()
+	{
+		$Test ($
+	}
+}				
+");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (false, provider.AutoSelect);
+		}
+
+		[Test]
+		public void TestBug37124_Case2 ()
+		{
+			var provider = CreateProvider (
+				@"
+enum FooBar { Foo, Bar }
+
+public class MyClass 
+{
+
+	public MyClass ()
+	{
+	}
+
+	public MyClass (FooBar fooBar)
+	{
+
+	}
+
+	public void Bug()
+	{
+		$new MyClass ($
+	}
+}				
+");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (false, provider.AutoSelect);
+		}
+
+		/// <summary>
+		/// Bug 37573 - [roslyn] Excessive namespace prefix inserted by code completion
+		/// </summary>
+		[Test]
+		public void TestBug37573 ()
+		{
+			var provider = CreateProvider (
+				@"
+using System;
+
+namespace TestProject
+{
+	class TestClass
+	{
+		public enum FooBar { Foo, Bar }
+	}
+
+	class MainClass
+	{
+		void Test ()
+		{
+			TestClass.FooBar fb;
+			$if (fb == $
+		}
 	}
 }
-
+");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.IsNull (provider.Find ("TestProject.TestClass.FooBar.Bar"));
+			Assert.IsNotNull (provider.Find ("TestClass.FooBar.Bar"));
+		}
+	}
+}

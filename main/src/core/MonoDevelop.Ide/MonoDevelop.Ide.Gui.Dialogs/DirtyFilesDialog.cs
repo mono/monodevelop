@@ -6,6 +6,7 @@ using Gtk;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -35,7 +36,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				if (!doc.IsDirty)
 					continue;
 				
-				IViewContent viewcontent = doc.Window.ViewContent;
+				ViewContent viewcontent = doc.Window.ViewContent;
 				 
 				if (groupByProject && viewcontent.Project != null) {
 					TreeIter projIter = TreeIter.Zero;
@@ -121,19 +122,28 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			base.OnDestroyed ();
 		}
 		
-		void SaveAndQuit (object o, EventArgs e)
+		async void SaveAndQuit (object o, EventArgs e)
 		{
+			Sensitive = false;
+
+			List<Task> saveTasks = new List<Task> ();
 			tsFiles.Foreach (delegate (TreeModel model, TreePath path, TreeIter iter) {
 				var window = tsFiles.GetValue (iter, 2) as SdiWorkspaceWindow;
 				if (window == null)
 					return false;
 				if ((bool)tsFiles.GetValue (iter, 1)) {
-					window.ViewContent.Save (window.ViewContent.ContentName);
+					saveTasks.Add (window.ViewContent.Save (window.ViewContent.ContentName));
 				} else {
 					window.ViewContent.DiscardChanges ();
 				}
 				return false;
 			});
+
+			try {
+				await Task.WhenAll (saveTasks);
+			} finally {
+				Sensitive = true;
+			}
 	
 			Respond (Gtk.ResponseType.Ok);
 			Hide ();

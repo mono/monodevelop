@@ -40,7 +40,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.Debugger
 {
-	public class BreakpointPad : IPadContent
+	public class BreakpointPad : PadContent
 	{
 		BreakpointStore breakpoints;
 		
@@ -69,8 +69,9 @@ namespace MonoDevelop.Debugger
 			Properties
 		}
 		
-		public void Initialize (IPadWindow window)
+		protected override void Initialize (IPadWindow window)
 		{
+			Id = "MonoDevelop.Debugger.BreakpointPad";
 			// Toolbar and menu definitions
 			
 			ActionCommand gotoCmd = new ActionCommand (LocalCommands.GoToFile, GettextCatalog.GetString ("Go to File"));
@@ -94,8 +95,8 @@ namespace MonoDevelop.Debugger
 			toolbarSet.AddSeparator ();
 			toolbarSet.Add (propertiesCmd);
 			toolbarSet.AddSeparator ();
-			toolbarSet.Add (new CommandEntry (DebugCommands.NewFunctionBreakpoint){ DispayType = CommandEntryDisplayType.IconAndText });
-			toolbarSet.Add (new CommandEntry (DebugCommands.NewCatchpoint){ DispayType = CommandEntryDisplayType.IconAndText });
+			toolbarSet.Add (new CommandEntry (DebugCommands.NewFunctionBreakpoint){ DisplayType = CommandEntryDisplayType.IconAndText });
+			toolbarSet.Add (new CommandEntry (DebugCommands.NewCatchpoint){ DisplayType = CommandEntryDisplayType.IconAndText });
 			
 			// The breakpoint list
 			
@@ -168,12 +169,12 @@ namespace MonoDevelop.Debugger
 			
 			tree.RowActivated += OnRowActivated;
 			
-			DockItemToolbar toolbar = window.GetToolbar (PositionType.Top);
+			DockItemToolbar toolbar = window.GetToolbar (DockPositionType.Top);
 			toolbar.Add (toolbarSet, sw);
 			toolbar.ShowAll ();
 		}
 		
-		public void Dispose ()
+		public override void Dispose ()
 		{
 			breakpoints.BreakpointAdded -= OnBreakpointAdded;
 			breakpoints.BreakpointRemoved -= OnBreakpointRemoved;
@@ -183,6 +184,7 @@ namespace MonoDevelop.Debugger
 			DebuggingService.PausedEvent -= OnDebuggerStatusCheck;
 			DebuggingService.ResumedEvent -= OnDebuggerStatusCheck;
 			DebuggingService.StoppedEvent -= OnDebuggerStatusCheck;
+			base.Dispose ();
 		}
 
 		void ShowPopup (Gdk.EventButton evt)
@@ -465,25 +467,16 @@ namespace MonoDevelop.Debugger
 			OnBpJumpTo ();
 		}
 		
-		public Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return control;
 			}
-		}
-
-		public string Id {
-			get { return "MonoDevelop.Debugger.BreakpointPad"; }
 		}
 
 		public string DefaultPlacement {
 			get { return "Bottom"; }
 		}
 
-		public void RedrawContent ()
-		{
-			UpdateDisplay ();
-		}
-		
 		protected void OnDeleteClicked (object o, EventArgs args)
 		{
 			OnDeleted ();

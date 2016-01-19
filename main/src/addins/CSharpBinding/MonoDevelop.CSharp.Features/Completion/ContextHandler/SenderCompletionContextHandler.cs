@@ -39,26 +39,25 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
 	class SenderCompletionContextHandler : CompletionContextHandler
 	{
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, CancellationToken cancellationToken)
+		protected override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			var position = completionContext.Position;
 			var document = completionContext.Document;
-			var ctx = await completionContext.GetSyntaxContextAsync (engine.Workspace, cancellationToken).ConfigureAwait (false);
 			var syntaxTree = ctx.SyntaxTree;
 			if (syntaxTree.IsInNonUserCode(position, cancellationToken) ||
 				syntaxTree.IsPreProcessorDirectiveContext(position, cancellationToken))
-				return Enumerable.Empty<CompletionData> ();
+				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 			if (!syntaxTree.IsRightOfDotOrArrowOrColonColon(position, cancellationToken))
-				return Enumerable.Empty<CompletionData> ();
+				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 			var ma = ctx.LeftToken.Parent as MemberAccessExpressionSyntax;
 			if (ma == null)
-				return Enumerable.Empty<CompletionData> ();
+				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 
 			var model = ctx.CSharpSyntaxContext.SemanticModel;
 
 			var symbolInfo = model.GetSymbolInfo (ma.Expression);
 			if (symbolInfo.Symbol == null || symbolInfo.Symbol.Kind != SymbolKind.Parameter)
-				return Enumerable.Empty<CompletionData> ();
+				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 			var list = new List<CompletionData> ();
 			var within = model.GetEnclosingNamedTypeOrAssembly(position, cancellationToken);
 			var addedSymbols = new HashSet<string> ();
@@ -71,7 +70,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				Analyze (engine, model, ma.Expression, within, list, ano.ParameterList, symbolInfo.Symbol, addedSymbols, cancellationToken);
 			}
 
-			return list;
+			return Task.FromResult ((IEnumerable<CompletionData>)list);
 		}
 
 		void Analyze (CompletionEngine engine,SemanticModel model, SyntaxNode node, ISymbol within, List<CompletionData> list, ParameterListSyntax parameterList, ISymbol symbol, HashSet<string> addedSymbols, CancellationToken cancellationToken)
@@ -102,7 +101,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 		static ITypeSymbol CheckParameterList (SemanticModel model, ParameterListSyntax listSyntax, ISymbol parameter, CancellationToken cancellationToken)
 		{
-			var param = listSyntax.Parameters.FirstOrDefault ();
+			var param = listSyntax?.Parameters.FirstOrDefault ();
 			if (param == null)
 				return null;
 			var declared = model.GetDeclaredSymbol (param, cancellationToken);

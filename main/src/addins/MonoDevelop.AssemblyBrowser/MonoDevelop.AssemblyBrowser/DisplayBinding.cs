@@ -53,14 +53,14 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			if (viewContent == null || viewContent.IsDisposed) {
 				viewContent = new AssemblyBrowserViewContent ();
-				viewContent.Control.Destroyed += HandleDestroyed;
+				viewContent.Disposed += HandleDestroyed;
 			}
 			return viewContent;
 		}
 
 		void HandleDestroyed (object sender, EventArgs e)
 		{
-			((Gtk.Widget)sender).Destroyed -= HandleDestroyed;
+			((AssemblyBrowserViewContent)sender).Disposed -= HandleDestroyed;
 			this.viewContent = null;
 		}
 		
@@ -71,7 +71,7 @@ namespace MonoDevelop.AssemblyBrowser
 				|| mimeType == "application/x-msdownload";
 		}
 		
-		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
+		public ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			return GetViewContent ();
 		}

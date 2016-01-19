@@ -26,13 +26,14 @@
 using System;
 using System.Collections.Generic;
 using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Projects.OptionPanels
 {
-	public class CodeAnalysisPanel : MultiConfigItemOptionsPanel
+	class CodeAnalysisPanel : MultiConfigItemOptionsPanel
 	{
 		CodeAnalysisPanelWidget widget;
 
@@ -46,7 +47,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			return ConfiguredProject is DotNetProject;
 		}
 
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return (widget = new CodeAnalysisPanelWidget ());
 		}
@@ -89,10 +90,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		{
 			enabledCheckBox = new CheckButton ();
 			enabledCheckBox.Label = GettextCatalog.GetString ("Enable Code Analysis on Build");
-			this.enabledCheckBox.CanFocus = true;
-			this.enabledCheckBox.DrawIndicator = true;
-			this.enabledCheckBox.UseUnderline = true;
-			this.PackStart (enabledCheckBox);
+			enabledCheckBox.CanFocus = true;
+			enabledCheckBox.DrawIndicator = true;
+			enabledCheckBox.UseUnderline = true;
+			enabledCheckBox.Toggled += (s, e) => enabledCheckBox.Inconsistent = false;
+			PackStart (enabledCheckBox);
 			ShowAll ();
 		}
 
@@ -116,7 +118,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			enabled = null;
 
 			foreach (DotNetProjectConfiguration conf in configs) {
-				var runCodeAnalysisEnabled = conf.ExtendedProperties.Contains ("RunCodeAnalysis") ? (bool)conf.ExtendedProperties ["RunCodeAnalysis"] : false;
+				var runCodeAnalysisEnabled = conf.Properties.HasProperty ("RunCodeAnalysis") ? conf.Properties.GetValue<bool> ("RunCodeAnalysis") : false;
 				if (!enabled.HasValue) {
 					enabled = runCodeAnalysisEnabled;
 				} else if (enabled.Value != runCodeAnalysisEnabled) {
@@ -139,7 +141,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			//If Inconsistent, don't do anything
 			if (!enabledCheckBox.Inconsistent) {
 				foreach (DotNetProjectConfiguration conf in configurations) {
-					conf.ExtendedProperties ["RunCodeAnalysis"] = enabledCheckBox.Active;
+					conf.Properties.SetValue ("RunCodeAnalysis", enabledCheckBox.Active ? "true" : "false", "false");
 				}
 			}
 		}

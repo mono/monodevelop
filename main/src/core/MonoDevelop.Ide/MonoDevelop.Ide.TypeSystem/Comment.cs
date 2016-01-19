@@ -93,7 +93,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		
 		public override string ToString ()
 		{
-			return string.Format ("[Comment: OpenTag={0}, ClosingTag={1}, Region={3}, IsDocumentation={4}, CommentStartsLine={5}, CommentType={6}]", OpenTag, ClosingTag, Text, Region, IsDocumentation, CommentStartsLine, CommentType);
+			return $"[Comment: OpenTag={OpenTag}, ClosingTag={ClosingTag}, Region={Region}, Text={Text}, IsDocumentation={IsDocumentation}, CommentStartsLine={CommentStartsLine}, CommentType={CommentType}]";
 		}
 	}
 }

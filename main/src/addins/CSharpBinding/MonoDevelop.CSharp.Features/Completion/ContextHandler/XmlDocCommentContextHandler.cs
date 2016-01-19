@@ -40,7 +40,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
 	class XmlDocCommentContextHandler : CompletionContextHandler
 	{
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, CancellationToken cancellationToken)
+		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			if (info.IsDebugger)
 			{
@@ -319,14 +319,14 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 
 		readonly Dictionary<string, string[]> _tagMap = new Dictionary<string, string[]> {
-			{ "exception", new[] { "<exception cref=\"", "\"" } },
+			{ "exception", new[] { "<exception cref=\"", "\">" } },
 			{ "!--", new[] { "<!--", "-->" } },
 			{ "![CDATA[", new[] { "<![CDATA[", "]]>" } },
 			{ "include", new[] { "<include file=\'", "\' path=\'[@name=\"\"]\'/>" } },
 			{ "permission", new[] { "<permission cref=\"", "\"" } },
 			{ "see", new[] { "<see cref=\"", "\"/>" } },
 			{ "seealso", new[] { "<seealso cref=\"", "\"/>" } },
-			{ "list", new[] { "<list type=\"", "\"" } },
+			{ "list", new[] { "<list type=\"", "\">" } },
 			{ "paramref", new[] { "<paramref name=\"", "\"/>" } },
 			{ "typeparamref", new[] { "<typeparamref name=\"", "\"/>" } },
 			{ "completionlist", new[] { "<completionlist cref=\"", "\"/>" } },
@@ -348,14 +348,14 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			if (_tagMap.ContainsKey(n))
 			{
 				var value = _tagMap[n];
-				return engine.Factory.CreateXmlDocCompletionData (this, n, null, value [0] + "$" + value [1]);
+				return engine.Factory.CreateXmlDocCompletionData (this, n, null, value [0] + "|" + value [1]);
 			}
 			return engine.Factory.CreateXmlDocCompletionData (this, n);
 		}
 
 		protected IEnumerable<CompletionData> GetAttributeItem(CompletionEngine engine, string n, TextSpan span)
 		{
-			var items = _attributeMap.Where(x => x[0] == n).Select(x => engine.Factory.CreateXmlDocCompletionData(this, x[1],null, x[2] + "$" + x[3]));
+			var items = _attributeMap.Where(x => x[0] == n).Select(x => engine.Factory.CreateXmlDocCompletionData(this, x[1],null, x[2] + "|" + x[3]));
 			if (items.Any ())
 				return items;
 			

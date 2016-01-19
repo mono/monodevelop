@@ -46,7 +46,7 @@ namespace MonoDevelop.VersionControl.Git
 		public override Repository GetRepositoryReference (FilePath path, string id)
 		{
 			GitRepository repo;
-			if (!repositories.TryGetValue (path.CanonicalPath, out repo))
+			if (!repositories.TryGetValue (path.CanonicalPath, out repo) || repo.Disposed)
 				repositories [path.CanonicalPath] = repo = new GitRepository (this, path, null);
 			return repo;
 		}

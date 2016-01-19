@@ -34,8 +34,10 @@ using System.Collections.Generic;
 
 using Mono.Addins;
 
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Components;
 
 namespace CBinding
 {
@@ -173,7 +175,7 @@ namespace CBinding
 		
 		protected virtual void OnCtagsBrowseClicked (object sender, System.EventArgs e)
 		{
-			OpenFileDialog dialog = new OpenFileDialog (GettextCatalog.GetString ("Choose ctags executable"), Gtk.FileChooserAction.Open);
+			OpenFileDialog dialog = new OpenFileDialog (GettextCatalog.GetString ("Choose ctags executable"), FileChooserAction.Open);
 			if (dialog.Run ())
 				ctagsEntry.Text = dialog.SelectedFile;
 		}
@@ -183,7 +185,7 @@ namespace CBinding
 	{
 		private GeneralOptionsPanel panel;
 		
-		public override Gtk.Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			panel = new GeneralOptionsPanel ();
 			return panel;

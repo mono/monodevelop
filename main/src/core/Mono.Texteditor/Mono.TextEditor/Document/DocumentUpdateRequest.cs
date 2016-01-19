@@ -83,7 +83,7 @@ namespace Mono.TextEditor
 		
 		public override void Update (MonoTextEditor editor)
 		{
-			editor.TextViewMargin.PurgeLayoutCache ();
+			//editor.TextViewMargin.PurgeLayoutCache ();
 			editor.RedrawLines (start, end);
 		}
 	}

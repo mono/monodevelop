@@ -43,7 +43,7 @@ using System.Threading;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
-	class QuickTaskOverviewMode : DrawingArea
+	class QuickTaskOverviewMode : DrawingArea, IMapMode
 	{
 		static Xwt.Drawing.Image searchImage = Xwt.Drawing.Image.FromResource ("issues-busy-16.png");
 		static Xwt.Drawing.Image okImage = Xwt.Drawing.Image.FromResource ("issues-ok-16.png");
@@ -79,7 +79,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		static readonly Cairo.Color win81Background = new Cairo.Color (240 / 255d, 240 / 255d, 240 / 255d);
 		static readonly Cairo.Color win81Slider = new Cairo.Color (205 / 255d, 205 / 255d, 205 / 255d);
 		static readonly Cairo.Color win81SliderPrelight = new Cairo.Color (166 / 255d, 166 / 255d, 166 / 255d);
-		static readonly Cairo.Color win81SliderActive = new Cairo.Color (96 / 255d, 96 / 255d, 96 / 255d);
+		//static readonly Cairo.Color win81SliderActive = new Cairo.Color (96 / 255d, 96 / 255d, 96 / 255d);
 
 		readonly int barPadding = MonoDevelop.Core.Platform.IsWindows ? 1 : 3;
 
@@ -163,10 +163,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		protected override void OnDestroyed ()
 		{
-			if (backgroundSurface != null) {
-				backgroundSurface.Dispose ();
-				backgroundSurface = null;
-			}
+			DestroyBackgroundSurface ();
 			RemoveIndicatorIdleHandler ();
 			DestroyIndicatorSwapSurface ();
 			DestroyIndicatorSurface ();
@@ -191,6 +188,14 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			vadjustment.ValueChanged -= RedrawOnVAdjustmentChange;
 			vadjustment.Changed -= RedrawOnVAdjustmentChange;
 			base.OnDestroyed ();
+		}
+
+		void DestroyBackgroundSurface ()
+		{
+			if (backgroundSurface != null) {
+				backgroundSurface.Dispose ();
+				backgroundSurface = null;
+			}
 		}
 
 		void DestroyIndicatorSurface ()
@@ -241,8 +246,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 			const ModifierType buttonMask = ModifierType.Button1Mask | ModifierType.Button2Mask |
 				ModifierType.Button3Mask | ModifierType.Button4Mask | ModifierType.Button5Mask;
-
-			if ((evnt.State & buttonMask & ModifierType.ShiftMask) == ModifierType.ShiftMask) {
+			if ((evnt.State & ModifierType.ShiftMask) == ModifierType.ShiftMask) {
 				int line = YToLine (evnt.Y);
 
 				line = Math.Max (1, line - 2);
@@ -908,7 +912,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			bool RunHandler ()
 			{
 				tokenExit:
-				if (token.IsCancellationRequested) {
+				if (token.IsCancellationRequested || mode.TextEditor.GetTextEditorData () == null) {
 					cr.Dispose ();
 					// if the surface was newly created dispose it otherwise it'll leak.
 					if (surface != mode.swapIndicatorSurface)
@@ -933,14 +937,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 						} else {
 							if (!Debugger.DebuggingService.IsDebugging) {
 								mode.DrawQuickTasks (cr, allUsages, allTasks, ref nextStep, ref severity, lineCache);
-							}
-						}
-
-						if (mode.TextEditor.HighlightSearchPattern) {
-							mode.DrawSearchResults (cr, searchResults, ref nextStep);
-						} else {
-							if (!Debugger.DebuggingService.IsDebugging) {
-								mode.DrawQuickTasks (cr, allUsages, allTasks, ref nextStep, ref severity, lineCache);
+							} else {
+								nextStep = true;
 							}
 						}
 					}
@@ -948,14 +946,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 						drawingStep++;
 					return true;
 				case 2:
-					if (mode.TextEditor.HighlightSearchPattern) {
-						mode.DrawSearchIndicator (cr);
-					} else {
-						if (!Debugger.DebuggingService.IsDebugging) {
-							mode.DrawIndicator (cr, severity);
-						}
-					}
-
 					if (mode.TextEditor.HighlightSearchPattern) {
 						mode.DrawSearchIndicator (cr);
 					} else {
@@ -971,6 +961,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					mode.indicatorSurface = surface;
 					mode.swapIndicatorSurface = tmp;
 					mode.QueueDraw ();
+
 					return false;
 				}
 			}
@@ -1058,6 +1049,15 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				}
 			}
 			DrawLeftBorder (cr);
+		}
+
+		public void ForceDraw ()
+		{
+			DestroyBackgroundSurface ();
+			DestroyIndicatorSwapSurface ();
+			DestroyIndicatorSurface ();
+
+			DrawIndicatorSurface (0);
 		}
 	}
 }

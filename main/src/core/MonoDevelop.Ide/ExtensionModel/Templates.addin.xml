@@ -69,11 +69,16 @@
 	<FileTemplate id = "EmptyResourceFile" resource = "EmptyResourceFile.xft.xml"/>
 	<FileTemplate id = "EmptyTextFile" resource = "EmptyTextFile.xft.xml"/>
 	<FileTemplate id = "EmptyXMLFile" resource = "EmptyXMLFile.xft.xml"/>
+
+	<Condition id="Platform" value="windows">
+		<FileTemplate id = "AppManifest" resource = "AppManifest.xft.xml"/>
+	</Condition>
 </Extension>
 
 <Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
 	<FileTemplateType name = "File" class = "MonoDevelop.Ide.Templates.TextFileDescriptionTemplate"/>
 	<FileTemplateType name = "RawFile" class = "MonoDevelop.Ide.Templates.RawFileDescriptionTemplate"/>
+	<FileTemplateType name = "Property" class = "MonoDevelop.Ide.Templates.PropertyDescriptionTemplate"/>
 	<FileTemplateType name = "CodeDomFile" class = "MonoDevelop.Ide.Templates.CodeDomFileDescriptionTemplate"/>
 	<FileTemplateType name = "ProjectResource" class = "MonoDevelop.Ide.Templates.ResourceFileDescriptionTemplate"/>
 	<FileTemplateType name = "CodeTranslationFile" class = "MonoDevelop.Ide.Templates.CodeTranslationFileDescriptionTemplate"/>
@@ -94,9 +99,9 @@
 </Extension>
 
 <Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
-	<Category id="crossplat" name="Cross-platform" icon="md-platform-cross-platform">
+	<Category id="multiplat" name="Multi-platform" icon="md-platform-cross-platform">
 			<Category id="library" name="Library">
-				<Category id="general" name="General" />
+				<Category id="general" name="General" mappedCategories="crossplat/library/general" />
 			</Category>
 		</Category>
 	<Category id="other" name="Other" icon="md-platform-other">

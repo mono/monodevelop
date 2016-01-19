@@ -260,7 +260,7 @@ namespace MonoDevelop.Components.Docking
 					if (floatRect.Equals (Gdk.Rectangle.Zero)) {
 						int x, y;
 						item.Widget.TranslateCoordinates (item.Widget.Toplevel, 0, 0, out x, out y);
-						Gtk.Window win = Frame.Toplevel as Window;
+						Gtk.Window win = Frame.Toplevel as Gtk.Window;
 						if (win != null) {
 							int wx, wy;
 							win.GetPosition (out wx, out wy);

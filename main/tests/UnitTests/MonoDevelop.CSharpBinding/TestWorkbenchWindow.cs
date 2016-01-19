@@ -62,8 +62,8 @@ namespace MonoDevelop.CSharpBinding
 			set {}
 		}
 		
-		IViewContent viewContent;
-		public IViewContent ViewContent {
+		ViewContent viewContent;
+		public ViewContent ViewContent {
 			get { return viewContent; }
 			set { viewContent = value; }
 		}
@@ -72,9 +72,9 @@ namespace MonoDevelop.CSharpBinding
 			get { return AddinManager.AddinEngine; }
 		}
 		
-		public IEnumerable<IAttachableViewContent> SubViewContents { get { return new IAttachableViewContent[0]; } }
+		public IEnumerable<BaseViewContent> SubViewContents { get { return new BaseViewContent[0]; } }
 
-		public IBaseViewContent ActiveViewContent {
+		public BaseViewContent ActiveViewContent {
 			get { return ViewContent;}
 			set {}
 		}
@@ -91,7 +91,7 @@ namespace MonoDevelop.CSharpBinding
 		public void SwitchView (int viewNumber)
 		{
 		}
-		public void SwitchView (IAttachableViewContent view)
+		public void SwitchView (BaseViewContent view)
 		{
 		}
 
@@ -104,17 +104,17 @@ namespace MonoDevelop.CSharpBinding
 			return -1;
 		}
 		
-		public void AttachViewContent (IAttachableViewContent subViewContent)
+		public void AttachViewContent (BaseViewContent subViewContent)
 		{
 			
 		}
 
-		public void InsertViewContent (int index, IAttachableViewContent subViewContent)
+		public void InsertViewContent (int index, BaseViewContent subViewContent)
 		{
 			
 		}
 
-		public DocumentToolbar GetToolbar (IBaseViewContent targetView)
+		public DocumentToolbar GetToolbar (BaseViewContent targetView)
 		{
 			throw new NotImplementedException ();
 		}
@@ -125,7 +125,7 @@ namespace MonoDevelop.CSharpBinding
 		public event ActiveViewContentEventHandler ActiveViewContentChanged;
 		public event EventHandler ViewsChanged;
 
-		DocumentToolbar IWorkbenchWindow.GetToolbar (IBaseViewContent targetView)
+		DocumentToolbar IWorkbenchWindow.GetToolbar (BaseViewContent targetView)
 		{
 			throw new System.NotImplementedException ();
 		}

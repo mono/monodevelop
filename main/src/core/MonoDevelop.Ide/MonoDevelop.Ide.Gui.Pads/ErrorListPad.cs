@@ -53,7 +53,7 @@ using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
-	class ErrorListPad : IPadContent
+	class ErrorListPad : PadContent
 	{
 		HPaned control;
 		ScrolledWindow sw;
@@ -70,7 +70,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		int warningCount;
 		int infoCount;
 		bool initialLogShow = true;
-		IPadWindow window;
 
 		Menu menu;
 		Dictionary<ToggleAction, int> columnsActions = new Dictionary<ToggleAction, int> ();
@@ -107,7 +106,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			internal const int Category    = 7;
 		}
 
-		public Gtk.Widget Control {
+		public override Control Control {
 			get {
 				if (control == null)
 					CreateControl ();
@@ -115,18 +114,17 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 
-		public string Id {
+		public override string Id {
 			get { return "MonoDevelop.Ide.Gui.Pads.ErrorListPad"; }
 		}
 
-		void IPadContent.Initialize (IPadWindow window)
+		protected override void Initialize (IPadWindow window)
 		{
-			this.window = window;
 			window.Title = GettextCatalog.GetString ("Errors");
 
-			DockItemToolbar toolbar = window.GetToolbar (PositionType.Top);
+			DockItemToolbar toolbar = window.GetToolbar (DockPositionType.Top);
 			
-			errorBtn = new ToggleButton ();
+			errorBtn = new ToggleButton { Name = "toggleErrors" };
 			errorBtn.Active = ShowErrors;
 			errorBtn.Image = new Gtk.Image (Stock.Error, Gtk.IconSize.Menu);
 			errorBtn.Image.Show ();
@@ -135,7 +133,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			UpdateErrorsNum();
 			toolbar.Add (errorBtn);
 			
-			warnBtn = new ToggleButton ();
+			warnBtn = new ToggleButton  { Name = "toggleWarnings" };
 			warnBtn.Active = ShowWarnings;
 			warnBtn.Image = new Gtk.Image (Stock.Warning, Gtk.IconSize.Menu);
 			warnBtn.Image.Show ();
@@ -143,8 +141,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			warnBtn.TooltipText = GettextCatalog.GetString ("Show Warnings");
 			UpdateWarningsNum();
 			toolbar.Add (warnBtn);
-			
-			msgBtn = new ToggleButton ();
+
+			msgBtn = new ToggleButton  { Name = "toggleMessages" };
 			msgBtn.Active = ShowMessages;
 			msgBtn.Image = new Gtk.Image (Stock.Information, Gtk.IconSize.Menu);
 			msgBtn.Image.Show ();
@@ -155,7 +153,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			toolbar.Add (new SeparatorToolItem ());
 			
-			logBtn = new ToggleButton ();
+			logBtn = new ToggleButton { Name = "toggleBuildOutput" };
 			logBtn.Label = GettextCatalog.GetString ("Build Output");
 			logBtn.Image = ImageService.GetImage ("md-message-log", Gtk.IconSize.Menu);
 			logBtn.Image.Show ();
@@ -231,10 +229,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			control.Add1 (sw);
 			
-			outputView = new LogView ();
+			outputView = new LogView { Name = "buildOutput" };
 			control.Add2 (outputView);
 			
-			Control.ShowAll ();
+			control.ShowAll ();
 			
 			control.SizeAllocated += HandleControlSizeAllocated;
 			
@@ -317,10 +315,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void StoreColumnsVisibility ()
 		{
 			PropertyService.Set ("Monodevelop.ErrorListColumns", string.Join (";", view.Columns.Select (c => c.Visible ? "TRUE" : "FALSE")));
-		}
-		
-		public void RedrawContent()
-		{
 		}
 
 		Gtk.Menu CreateMenu ()
@@ -727,10 +721,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			Clear();
 		}
 		
-		public void Dispose ()
-		{
-		}
-		
 		void OnRowActivated (object o, RowActivatedArgs args)
 		{
 			OnTaskJumpto (null, null);
@@ -883,11 +873,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void UpdatePadIcon ()
 		{
 			if (errorCount > 0)
-				window.Icon = "md-errors-list-has-errors";
+				Window.Icon = "md-errors-list-has-errors";
 			else if (warningCount > 0)
-				window.Icon = "md-errors-list-has-warnings";
+				Window.Icon = "md-errors-list-has-warnings";
 			else
-				window.Icon = "md-errors-list";
+				Window.Icon = "md-errors-list";
 		}
 		
 		private void ItemToggled (object o, ToggledArgs args)

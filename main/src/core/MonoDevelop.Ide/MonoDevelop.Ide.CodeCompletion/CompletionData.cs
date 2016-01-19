@@ -73,25 +73,41 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return Task.FromResult (tt);
 		}
 
-		public virtual bool HasOverloads { 
-			get {
-				return false;
-			}
-		}
 
 		public ICompletionDataKeyHandler KeyHandler { get; protected set; }
-		
-		public virtual IReadOnlyList<CompletionData> OverloadedData {
+
+		public virtual bool HasOverloads {
 			get {
-				throw new InvalidOperationException ();
+				return overloads != null;
 			}
 		}
 
-		public virtual void AddOverload (CompletionData data)
+		List<CompletionData> overloads;
+
+		public void AddOverload (CompletionData data)
 		{
-			throw new InvalidOperationException ();
+			if (overloads == null)
+				overloads = new List<CompletionData> ();
+			overloads.Add ((CompletionData)data);
+			sorted = null;
 		}
-		
+
+		List<CompletionData> sorted;
+
+		public virtual IReadOnlyList<CompletionData> OverloadedData {
+			get {
+				if (overloads == null)
+					return new CompletionData[] { this };
+
+				if (sorted == null) {
+					sorted = new List<CompletionData> (overloads);
+					sorted.Add (this);
+					// sorted.Sort (new OverloadSorter ());
+				}
+				return sorted;
+			}
+		}
+
 		public CompletionData (string text) : this (text, null, null) {}
 		public CompletionData (string text, IconId icon) : this (text, icon, null) {}
 		public CompletionData (string text, IconId icon, string description) : this (text, icon, description, text) {}
@@ -103,11 +119,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.Description = description;
 			this.CompletionText = completionText;
 		}
-		
-		public static string GetCurrentWord (CompletionListWindow window)
+
+		public static string GetCurrentWord (CompletionListWindow window, MonoDevelop.Ide.Editor.Extension.KeyDescriptor descriptor)
 		{
 			int partialWordLength = window.PartialWord != null ? window.PartialWord.Length : 0;
-			int replaceLength = window.CodeCompletionContext.TriggerWordLength + partialWordLength - window.InitialWordLength;
+			int replaceLength;
+			if (descriptor.SpecialKey == SpecialKey.Return || descriptor.SpecialKey == SpecialKey.Tab) {
+				replaceLength = window.CodeCompletionContext.TriggerWordLength + partialWordLength - window.InitialWordLength;
+			} else {
+				replaceLength = partialWordLength;
+			}
 			int endOffset = Math.Min (window.StartOffset + replaceLength, window.CompletionWidget.TextLength);
 			var result = window.CompletionWidget.GetText (window.StartOffset, endOffset);
 			return result;
@@ -115,7 +136,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public virtual void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
-			var currentWord = GetCurrentWord (window);
+			var currentWord = GetCurrentWord (window, descriptor);
 			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, currentWord, CompletionText);
 		}
 		

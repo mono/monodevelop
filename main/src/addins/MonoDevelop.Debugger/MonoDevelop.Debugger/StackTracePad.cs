@@ -45,7 +45,29 @@ using System.Linq;
 
 namespace MonoDevelop.Debugger
 {
-	public class StackTracePad : ScrolledWindow, IPadContent
+	public class StackTracePad : PadContent
+	{
+		StackTracePadWidget control;
+
+		public StackTracePad ()
+		{
+			Id = "MonoDevelop.Debugger.StackTracePad";
+			control = new StackTracePadWidget ();
+		}
+
+		protected override void Initialize (IPadWindow window)
+		{
+			control.Initialize (window);
+		}
+
+		public override Control Control {
+			get {
+				return control;
+			}
+		}
+	}
+
+	public class StackTracePadWidget : ScrolledWindow
 	{
 		const int IconColumn = 0;
 		const int MethodColumn = 1;
@@ -64,7 +86,7 @@ namespace MonoDevelop.Debugger
 
 		static Xwt.Drawing.Image pointerImage = Xwt.Drawing.Image.FromResource ("stack-pointer-16.png");
 
-		public StackTracePad ()
+		public StackTracePadWidget ()
 		{
 			this.ShadowType = ShadowType.None;
 
@@ -189,7 +211,7 @@ namespace MonoDevelop.Debugger
 			return !value.Contains (key);
 		}
 
-		void IPadContent.Initialize (IPadWindow window)
+		public void Initialize (IPadWindow window)
 		{
 			this.window = window;
 			window.PadContentShown += delegate {
@@ -342,25 +364,6 @@ namespace MonoDevelop.Debugger
 		void OnRowActivated (object o, RowActivatedArgs args)
 		{
 			ActivateFrame ();
-		}
-
-		public Widget Control {
-			get {
-				return this;
-			}
-		}
-
-		public string Id {
-			get { return "MonoDevelop.Debugger.StackTracePad"; }
-		}
-
-		public string DefaultPlacement {
-			get { return "Bottom"; }
-		}
-
-		public void RedrawContent ()
-		{
-			UpdateDisplay ();
 		}
 
 		void ShowPopup (Gdk.EventButton evt)

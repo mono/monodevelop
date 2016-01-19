@@ -217,7 +217,7 @@ namespace MonoDevelop.Projects
 				SolutionItem newItem;
 				try {
 					if (ParentSolution.IsSolutionItemEnabled (item.FileName))
-						newItem = await Services.ProjectService.ReadSolutionItem (monitor, item.FileName);
+						newItem = await Services.ProjectService.ReadSolutionItem (monitor, item.FileName, null, ctx:new SolutionLoadContext (ParentSolution));
 					else {
 						UnknownSolutionItem e = new UnloadedSolutionItem () {
 							FileName = item.FileName
@@ -244,7 +244,8 @@ namespace MonoDevelop.Projects
 
 				// Replace in the file list
 				Items.Replace (item, newItem);
-				
+
+				item.ParentFolder = null;
 				DisconnectChildEntryEvents (item);
 				ConnectChildEntryEvents (newItem);
 	
@@ -308,7 +309,7 @@ namespace MonoDevelop.Projects
 		public async Task<SolutionItem> AddItem (ProgressMonitor monitor, string filename, bool createSolutionConfigurations)
 		{
 			if (monitor == null) monitor = new ProgressMonitor ();
-			SolutionItem entry = await Services.ProjectService.ReadSolutionItem (monitor, filename);
+			SolutionItem entry = await Services.ProjectService.ReadSolutionItem (monitor, filename, null, ctx:new SolutionLoadContext (ParentSolution));
 			AddItem (entry, createSolutionConfigurations);
 			return entry;
 		}
@@ -564,6 +565,11 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 
+		bool IBuildTarget.CanBuild (ConfigurationSelector configuration)
+		{
+			return true;
+		}
+
 		public async Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext = null)
 		{
 			if (ParentSolution == null)
@@ -571,8 +577,6 @@ namespace MonoDevelop.Projects
 			SolutionConfiguration conf = ParentSolution.GetConfiguration (configuration);
 			if (conf == null)
 				return new BuildResult ();
-
-			var res = new BuildResult { BuildCount = 0 };
 
 			ReadOnlyCollection<SolutionItem> allProjects;
 			try {
@@ -591,7 +595,6 @@ namespace MonoDevelop.Projects
 			finally {
 				monitor.EndTask ();
 			}
-			return res;
 		}
 
 		class BuildStatus

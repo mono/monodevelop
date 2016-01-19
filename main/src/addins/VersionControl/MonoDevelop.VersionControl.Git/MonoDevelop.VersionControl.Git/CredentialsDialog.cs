@@ -31,7 +31,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	partial class CredentialsDialog : Dialog
+	partial class CredentialsDialog : Gtk.Dialog
 	{
 		uint r;
 		public CredentialsDialog (string uri, SupportedCredentialTypes type, Credentials cred)
@@ -40,7 +40,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			this.UseNativeContextMenus ();
 
-			labelTop.Text = string.Format (labelTop.Text, uri);
+			labelTop1.Text = string.Format (labelTop1.Text, uri);
 
 			var table = new Table (0, 0, false);
 			table.ColumnSpacing = 6;

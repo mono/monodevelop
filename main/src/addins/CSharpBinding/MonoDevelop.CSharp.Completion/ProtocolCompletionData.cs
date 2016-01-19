@@ -74,7 +74,7 @@ namespace MonoDevelop.CSharp.Completion
 			get {
 				if (displayText == null) {
 					var model = ext.ParsedDocument.GetAst<SemanticModel> ();
-					displayText = base.Symbol.ToMinimalDisplayString (model, ext.Editor.CaretOffset, overrideNameFormat);
+					displayText = RoslynCompletionData.SafeMinimalDisplayString (base.Symbol, model, ext.Editor.CaretOffset, overrideNameFormat);
 					if (!afterKeyword)
 						displayText = "override " + displayText;
 				}
@@ -87,7 +87,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			var model = ext.ParsedDocument.GetAst<SemanticModel> ();
 
-			var result = base.Symbol.ToMinimalDisplayString (model, declarationBegin, Ambience.LabelFormat) + " {...}";
+			var result = RoslynCompletionData.SafeMinimalDisplayString (base.Symbol, model, declarationBegin, Ambience.LabelFormat) + " {...}";
 			var idx = result.IndexOf (Symbol.Name);
 			if (idx >= 0) {
 				result = 

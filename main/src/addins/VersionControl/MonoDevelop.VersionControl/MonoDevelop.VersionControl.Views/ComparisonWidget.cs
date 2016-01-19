@@ -76,18 +76,40 @@ namespace MonoDevelop.VersionControl.Views
 			if (!viewOnly) {
 				originalComboBox = new DropDownBox ();
 				originalComboBox.WindowRequestFunc = CreateComboBoxSelector;
-				originalComboBox.Text = "Local";
+				originalComboBox.Text = "Loading...";
+				originalComboBox.Sensitive = false;
 				originalComboBox.Tag = editors[1];
 			
 				diffComboBox = new DropDownBox ();
 				diffComboBox.WindowRequestFunc = CreateComboBoxSelector;
-				diffComboBox.Text = "Base";
+				diffComboBox.Text = "Loading...";
+				diffComboBox.Sensitive = false;
 				diffComboBox.Tag = editors[0];
 			
 				this.headerWidgets = new [] { diffComboBox, originalComboBox };
 			}
 		}
-		
+
+		protected override void OnSetVersionControlInfo (VersionControlDocumentInfo info)
+		{
+			info.Updated += OnInfoUpdated;
+			MainEditor.Document.ReadOnly = false;
+			base.OnSetVersionControlInfo (info);
+		}
+
+		void OnInfoUpdated (object sender, EventArgs args)
+		{
+			originalComboBox.Text = "Local";
+			diffComboBox.Text = "Base";
+			originalComboBox.Sensitive = diffComboBox.Sensitive = true;
+		}
+
+		protected override void OnDestroyed ()
+		{
+			info.Updated -= OnInfoUpdated;
+			base.OnDestroyed ();
+		}
+
 		public ComparisonWidget ()
 		{
 		}
@@ -143,7 +165,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public override void CreateDiff () 
 		{
-			Diff = new List<Mono.TextEditor.Utils.Hunk> (DiffEditor.Document.Diff (OriginalEditor.Document));
+			Diff = new List<Mono.TextEditor.Utils.Hunk> (DiffEditor.Document.Diff (OriginalEditor.Document, includeEol: false));
 			ClearDiffCache ();
 			QueueDraw ();
 		}
@@ -155,7 +177,7 @@ namespace MonoDevelop.VersionControl.Views
 				Revision workingRevision = (Revision)e.Argument;
 				string text = null;
 				try {
-					text = info.Item.Repository.GetTextAtRevision (info.VersionInfo.LocalPath, workingRevision);
+					text = info.Item.Repository.GetTextAtRevision (info.Item.VersionInfo.LocalPath, workingRevision);
 				} catch (Exception ex) {
 					text = string.Format (GettextCatalog.GetString ("Error while getting the text of revision {0}:\n{1}"), workingRevision, ex.ToString ());
 					MessageService.ShowError (text);

@@ -59,7 +59,7 @@ namespace MonoDevelop.CodeIssues
 			widget = new CodeIssuePanelWidget ("text/x-csharp");
 		}
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			EnsureWidget ();
 			return widget;
@@ -284,7 +284,7 @@ namespace MonoDevelop.CodeIssues
 			col.Expand = false;
 
 			var comboBoxStore = new ListStore (typeof(string), typeof(DiagnosticSeverity));
-//			comboBoxStore.AppendValues (GetDescription (Severity.None), Severity.None);
+			comboBoxStore.AppendValues (GetDescription (DiagnosticSeverity.Hidden), DiagnosticSeverity.Hidden);
 			comboBoxStore.AppendValues (GetDescription (DiagnosticSeverity.Error), DiagnosticSeverity.Error);
 			comboBoxStore.AppendValues (GetDescription (DiagnosticSeverity.Warning), DiagnosticSeverity.Warning);
 			comboBoxStore.AppendValues (GetDescription (DiagnosticSeverity.Info), DiagnosticSeverity.Info);

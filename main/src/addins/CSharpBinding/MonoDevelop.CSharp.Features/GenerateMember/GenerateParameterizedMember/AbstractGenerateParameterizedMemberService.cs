@@ -221,7 +221,7 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateParameterizedMem
 
 			protected override async Task<Document> GetChangedDocumentAsync(CancellationToken cancellationToken)
 			{
-				var syntaxTree = await _document.GetSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
+				//var syntaxTree = await _document.GetSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
 				var syntaxFactory = _document.Project.Solution.Workspace.Services.GetLanguageServices(_state.TypeToGenerateIn.Language).GetService<SyntaxGenerator>();
 
 				if (_generateProperty)
@@ -387,9 +387,9 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateParameterizedMem
 					methodKind: State.MethodKind);
 
 				// Ensure no conflicts between type parameter names and parameter names.
-				var languageServiceProvider = this.Document.Project.Solution.Workspace.Services.GetLanguageServices(this.State.TypeToGenerateIn.Language);
+				//var languageServiceProvider = this.Document.Project.Solution.Workspace.Services.GetLanguageServices(this.State.TypeToGenerateIn.Language);
 
-				var equalityComparer = true ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
+				var equalityComparer = StringComparer.Ordinal;
 				var reservedParameterNames = this.DetermineParameterNames(cancellationToken).ToSet(equalityComparer);
 				var newTypeParameterNames = NameGenerator.EnsureUniqueness(
 					method.TypeParameters.Select(t => t.Name).ToList(), n => !reservedParameterNames.Contains(n));

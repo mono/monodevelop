@@ -23,12 +23,12 @@ namespace MonoDevelop.CSharp.Diagnostics.RemoveUnnecessaryImports
 		// The NotConfigurable custom tag ensures that user can't turn this diagnostic into a warning / error via
 		// ruleset editor or solution explorer. Setting messageFormat to empty string ensures that we won't display
 		// this diagnostic in the preview pane header.
-		private static readonly DiagnosticDescriptor s_fixableIdDescriptor =
-			new DiagnosticDescriptor(DiagnosticFixableId,
-				title: "", messageFormat: "", category: "",
-				defaultSeverity: DiagnosticSeverity.Hidden,
-				isEnabledByDefault: true,
-				customTags: WellKnownDiagnosticTags.NotConfigurable);
+		//private static readonly DiagnosticDescriptor s_fixableIdDescriptor =
+		//	new DiagnosticDescriptor(DiagnosticFixableId,
+		//		title: "", messageFormat: "", category: "",
+		//		defaultSeverity: DiagnosticSeverity.Hidden,
+		//		isEnabledByDefault: true,
+		//		customTags: WellKnownDiagnosticTags.NotConfigurable);
 
 		protected abstract LocalizableString GetTitleAndMessageFormatForClassificationIdDescriptor();
 

@@ -54,7 +54,6 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateFromMembers.GenerateConstructor
 
 		private class ConstructorDelegatingCodeAction : CodeAction
 		{
-			private readonly TService _service;
 			private readonly Document _document;
 			private readonly State _state;
 
@@ -63,7 +62,6 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateFromMembers.GenerateConstructor
 				Document document,
 				State state)
 			{
-				_service = service;
 				_document = document;
 				_state = state;
 			}
@@ -132,7 +130,6 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateFromMembers.GenerateConstructor
 
 		private class FieldDelegatingCodeAction : CodeAction
 		{
-			private readonly TService _service;
 			private readonly Document _document;
 			private readonly State _state;
 
@@ -141,7 +138,6 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateFromMembers.GenerateConstructor
 				Document document,
 				State state)
 			{
-				_service = service;
 				_document = document;
 				_state = state;
 			}

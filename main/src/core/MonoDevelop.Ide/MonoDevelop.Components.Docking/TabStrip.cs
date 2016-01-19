@@ -275,12 +275,12 @@ namespace MonoDevelop.Components.Docking
 				if (TabStrip.VisualStyle.TabStyle == DockTabStyle.Normal) {
 					var alloc = Allocation;
 					Gdk.GC gc = new Gdk.GC (GdkWindow);
-					gc.RgbFgColor = TabStrip.VisualStyle.InactivePadBackgroundColor.Value;
+					gc.RgbFgColor = TabStrip.VisualStyle.InactivePadBackgroundColor.Value.ToGdkColor ();
 					evnt.Window.DrawRectangle (gc, true, alloc);
 					gc.Dispose ();
 		
 					Gdk.GC bgc = new Gdk.GC (GdkWindow);
-					var c = TabStrip.VisualStyle.PadBackgroundColor.Value.ToXwtColor ();
+					var c = TabStrip.VisualStyle.PadBackgroundColor.Value;
 					c.Light *= 0.7;
 					bgc.RgbFgColor = c.ToGdkColor ();
 					evnt.Window.DrawLine (bgc, alloc.X, alloc.Y + alloc.Height - 1, alloc.X + alloc.Width - 1, alloc.Y + alloc.Height - 1);

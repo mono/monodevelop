@@ -202,10 +202,10 @@ namespace MonoDevelop.VersionControl
 				return null;
 
 			InternalRepositoryReference repoRef = (InternalRepositoryReference) entry.ExtendedProperties [typeof(InternalRepositoryReference)];
-			if (repoRef != null)
+			if (repoRef != null && !repoRef.Repo.Disposed)
 				return repoRef.Repo;
 			
-			Repository repo = VersionControlService.GetRepositoryReference (entry.BaseDirectory, entry.Name);
+			Repository repo = GetRepositoryReference (entry.BaseDirectory, entry.Name);
 			InternalRepositoryReference rref = null;
 			if (repo != null) {
 				repo.AddRef ();
@@ -380,7 +380,7 @@ namespace MonoDevelop.VersionControl
 		
 		internal static void NotifyPrepareCommit (Repository repo, ChangeSet changeSet)
 		{
-			if (!DispatchService.IsGuiThread) {
+			if (!Runtime.IsMainThread) {
 				Gtk.Application.Invoke (delegate {
 					NotifyPrepareCommit (repo, changeSet);
 				});
@@ -398,7 +398,7 @@ namespace MonoDevelop.VersionControl
 		
 		internal static void NotifyBeforeCommit (Repository repo, ChangeSet changeSet)
 		{
-			if (!DispatchService.IsGuiThread) {
+			if (!Runtime.IsMainThread) {
 				Gtk.Application.Invoke (delegate {
 					NotifyBeforeCommit (repo, changeSet);
 				});
@@ -416,7 +416,7 @@ namespace MonoDevelop.VersionControl
 		
 		internal static void NotifyAfterCommit (Repository repo, ChangeSet changeSet, bool success)
 		{
-			if (!DispatchService.IsGuiThread) {
+			if (!Runtime.IsMainThread) {
 				Gtk.Application.Invoke (delegate {
 					NotifyAfterCommit (repo, changeSet, success);
 				});
@@ -447,7 +447,7 @@ namespace MonoDevelop.VersionControl
 		
 		public static void NotifyFileStatusChanged (FileUpdateEventArgs args) 
 		{
-			if (!DispatchService.IsGuiThread)
+			if (!Runtime.IsMainThread)
 				Gtk.Application.Invoke (delegate {
 					NotifyFileStatusChanged (args);
 				});

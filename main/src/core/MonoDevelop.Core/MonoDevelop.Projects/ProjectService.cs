@@ -42,7 +42,7 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Projects.Extensions;
 using Mono.Unix;
 using System.Linq;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
@@ -233,9 +233,10 @@ namespace MonoDevelop.Projects
 						obj.ConvertToFormat (format);
 					await obj.SaveAsync (monitor);
 					var newFiles = obj.GetItemFiles (true);
-					
+					var resolvedTargetPath = new FilePath (targetPath).ResolveLinks ().FullPath;
+
 					foreach (FilePath f in newFiles) {
-						if (!f.IsChildPathOf (targetPath)) {
+						if (!f.IsChildPathOf (resolvedTargetPath)) {
 							if (obj is Solution)
 								monitor.ReportError ("The solution '" + obj.Name + "' is referencing the file '" + f.FileName + "' which is located outside the root solution directory.", null);
 							else

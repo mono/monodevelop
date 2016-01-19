@@ -41,6 +41,8 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.Ide.Editor;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -51,12 +53,7 @@ namespace MonoDevelop.SourceEditor
 		public DebugValueTooltipProvider ()
 		{
 			DebuggingService.CurrentFrameChanged += CurrentFrameChanged;
-			DebuggingService.DebugSessionStarted += DebugSessionStarted;
-		}
-
-		void DebugSessionStarted (object sender, EventArgs e)
-		{
-			DebuggingService.DebuggerSession.TargetExited += TargetProcessExited;
+			DebuggingService.StoppedEvent += TargetProcessExited;
 		}
 
 		void CurrentFrameChanged (object sender, EventArgs e)
@@ -76,7 +73,7 @@ namespace MonoDevelop.SourceEditor
 		#region ITooltipProvider implementation
 
 
-		public override TooltipItem GetItem (TextEditor editor, DocumentContext ctx, int offset)
+		public override async Task<TooltipItem> GetItem (TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default(CancellationToken))
 		{
 			if (offset >= editor.Length)
 				return null;
@@ -106,7 +103,7 @@ namespace MonoDevelop.SourceEditor
 				var data = doc.GetContent<SourceEditorView> ();
 
 				if (resolver != null) {
-					var result = resolver.ResolveExpressionAsync (editor, doc, offset, default(System.Threading.CancellationToken)).Result;
+					var result = await resolver.ResolveExpressionAsync (editor, doc, offset, token);
 					expression = result.Text;
 					startOffset = result.Span.Start;
 				} else {
@@ -134,12 +131,12 @@ namespace MonoDevelop.SourceEditor
 			return new TooltipItem (val, startOffset, expression.Length);
 		}
 
-		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Gdk.ModifierType modifierState)
+		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
 		{
 			return new DebugValueWindow (editor, offset, DebuggingService.CurrentFrame, (ObjectValue) item.Item, null);
 		}
 
-		public override void ShowTooltipWindow (TextEditor editor, Control tipWindow, TooltipItem item, Gdk.ModifierType modifierState, int mouseX, int mouseY)
+		public override void ShowTooltipWindow (TextEditor editor, Control tipWindow, TooltipItem item, Xwt.ModifierKeys modifierState, int mouseX, int mouseY)
 		{
 			var location = editor.OffsetToLocation (item.Offset);
 			var point = editor.LocationToPoint (location);
@@ -167,9 +164,7 @@ namespace MonoDevelop.SourceEditor
 			if (IsDisposed)
 				return;
 			DebuggingService.CurrentFrameChanged -= CurrentFrameChanged;
-			DebuggingService.DebugSessionStarted -= DebugSessionStarted;
-			if (DebuggingService.DebuggerSession != null)
-				DebuggingService.DebuggerSession.TargetExited -= TargetProcessExited;
+			DebuggingService.StoppedEvent -= TargetProcessExited;
 			base.Dispose ();
 		}
 	}

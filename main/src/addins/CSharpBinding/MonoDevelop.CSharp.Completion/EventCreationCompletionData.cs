@@ -52,9 +52,7 @@ namespace MonoDevelop.CSharp.Completion
 	{
 		readonly RoslynCodeCompletionFactory factory;
 		readonly ITypeSymbol delegateType;
-		readonly INamedTypeSymbol curType;
-		readonly string varName;
-		
+
 		public override Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken token)
 		{
 			return Task.FromResult (new TooltipInformation ());
@@ -62,8 +60,6 @@ namespace MonoDevelop.CSharp.Completion
 
 		public EventCreationCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, ITypeSymbol delegateType, string varName, INamedTypeSymbol curType) : base (keyHandler)
 		{
-			this.curType = curType;
-			this.varName = varName;
 			this.DisplayText = varName;
 			this.delegateType = delegateType;
 			this.factory = factory;
@@ -82,7 +78,7 @@ namespace MonoDevelop.CSharp.Completion
 
 
 			var document = IdeApp.Workbench.ActiveDocument;
-			var parsedDocument = document.UpdateParseDocument ();
+			var parsedDocument = document.UpdateParseDocument ().Result;
 			var semanticModel = parsedDocument.GetAst<SemanticModel> ();
 
 			var declaringType = semanticModel.GetEnclosingSymbol<INamedTypeSymbol> (position, default(CancellationToken));
@@ -97,7 +93,7 @@ namespace MonoDevelop.CSharp.Completion
 			var options = new InsertionModeOptions (
 				GettextCatalog.GetString ("Create new method"),
 				insertionPoints,
-				async point => {
+				point => {
 					if (!point.Success) 
 						return;
 					var indent = "\t";
@@ -115,7 +111,7 @@ namespace MonoDevelop.CSharp.Completion
 						if (k > 0) {
 							sb.Append(", ");
 						}
-						sb.Append (delegateMethod.Parameters [k].ToMinimalDisplayString (semanticModel, position, MonoDevelop.Ide.TypeSystem.Ambience.LabelFormat)); 
+						sb.Append (RoslynCompletionData.SafeMinimalDisplayString (delegateMethod.Parameters [k], semanticModel, position, MonoDevelop.Ide.TypeSystem.Ambience.LabelFormat)); 
 					}
 					sb.Append(")");
 

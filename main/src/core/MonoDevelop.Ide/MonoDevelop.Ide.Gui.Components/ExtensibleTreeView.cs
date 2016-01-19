@@ -1,4 +1,4 @@
-//
+﻿//
 // ExtensibleTreeView.cs
 //
 // Author:
@@ -46,7 +46,7 @@ using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
-	public partial class ExtensibleTreeView : CompactScrolledWindow
+	public partial class ExtensibleTreeView : Control, ICommandRouter
 	{
 		internal const int NodeInfoColumn = 0;
 		internal const int DataItemColumn = 1;
@@ -58,6 +58,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		Dictionary<Type, NodeBuilder[]> builderChains = new Dictionary<Type, NodeBuilder[]> ();
 		NodeHashtable nodeHash = new NodeHashtable ();
 
+		ExtensibleTreeViewWidget widget;
 		ExtensibleTreeViewTree tree;
 		Gtk.TreeStore store;
 		Gtk.TreeViewColumn complete_column;
@@ -91,22 +92,90 @@ namespace MonoDevelop.Ide.Gui.Components
 			set { contextMenuTypeNameAliases = value; }
 		}
 
-		public Gtk.TreeStore Store {
+		internal Gtk.TreeStore Store {
 			get {
 				return this.store;
 			}
 		}
 
-		public Gtk.TreeView Tree {
+		internal Gtk.TreeView Tree {
 			get {
 				return tree;
 			}
 		}
 
+		public event EventHandler SelectionChanged;
+
+		public bool AllowsMultipleSelection {
+			get {
+				return Tree.Selection.Mode == Gtk.SelectionMode.Multiple;
+			}
+			set {
+				if (value)
+					Tree.Selection.Mode = Gtk.SelectionMode.Multiple;
+				else
+					Tree.Selection.Mode = Gtk.SelectionMode.Single;
+			}
+		}
+
 		public string Id { get; set; }
+
+
+		class ExtensibleTreeViewWidget : CompactScrolledWindow, ICommandRouter
+		{
+			ExtensibleTreeView control;
+
+			public ExtensibleTreeViewWidget (ExtensibleTreeView control)
+			{
+				this.control = control;
+				ShadowType = Gtk.ShadowType.None;
+				ShowBorderLine = false;
+			}
+
+			protected override void OnStyleSet (Gtk.Style previous_style)
+			{
+				base.OnStyleSet (previous_style);
+				control.UpdateFont ();
+			}
+
+			protected override bool OnScrollEvent (Gdk.EventScroll evnt)
+			{
+				var modifier = !Platform.IsMac? Gdk.ModifierType.ControlMask
+				                    //Mac window manager already uses control-scroll, so use command
+				                    //Command might be either meta or mod1, depending on GTK version
+				                    : (Gdk.ModifierType.MetaMask | Gdk.ModifierType.Mod1Mask);
+
+				if ((evnt.State & modifier) !=0) {
+					if (evnt.Direction == Gdk.ScrollDirection.Up)
+						control.ZoomIn ();
+					else if (evnt.Direction == Gdk.ScrollDirection.Down)
+						control.ZoomOut ();
+
+					return true;
+				}
+				return base.OnScrollEvent (evnt);
+			}
+
+			protected override void OnDestroyed ()
+			{
+				control.Destroy ();
+				base.OnDestroyed ();
+			}
+
+			public object GetNextCommandTarget ()
+			{
+				return control;
+			}
+		}
+
+		protected override object CreateNativeWidget ()
+		{
+			return widget;
+		}
 
 		public ExtensibleTreeView ()
 		{
+			widget = new ExtensibleTreeViewWidget (this);
 			tree = new ExtensibleTreeViewTree (this);
 		}
 
@@ -126,18 +195,12 @@ namespace MonoDevelop.Ide.Gui.Components
 			tree.ColumnsAutosize ();
 		}
 
-		protected override void OnStyleSet (Gtk.Style previous_style)
+		public void Initialize (NodeBuilder [] builders, TreePadOption [] options, string contextMenuPath = null)
 		{
-			base.OnStyleSet (previous_style);
-			UpdateFont ();
+			OnInitialize (builders, options, contextMenuPath);
 		}
 
-		public void Initialize (NodeBuilder[] builders, TreePadOption[] options)
-		{
-			Initialize (builders, options, null);
-		}
-
-		public virtual void Initialize (NodeBuilder[] builders, TreePadOption[] options, string contextMenuPath)
+		protected virtual void OnInitialize (NodeBuilder[] builders, TreePadOption[] options, string contextMenuPath)
 		{
 			this.contextMenuPath = contextMenuPath;
 			builderContext = new TreeBuilderContext (this);
@@ -200,9 +263,11 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			if (!string.IsNullOrEmpty (Id))
 				Zoom = PropertyService.Get<double> ("MonoDevelop.Ide.ExtensibleTreeView.Zoom." + Id, 1d);
+			else
+				Zoom = 1d;
 
-			this.Add (tree);
-			this.ShowAll ();
+			widget.Add (tree);
+			widget.ShowAll ();
 
 #if TREE_VERIFY_INTEGRITY
 			GLib.Timeout.Add (3000, Checker);
@@ -503,7 +568,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				((Gtk.Menu)sender).Hidden -= HandleMenuHidden;
 			}
 			text_render.Pushed = false;
-			QueueDraw ();
+			widget.QueueDraw ();
 		}
 
 		internal void LockUpdates ()
@@ -539,7 +604,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			set { builders = value; }
 		}
 
-		public Gtk.TreeViewColumn CompleteColumn {
+		internal Gtk.TreeViewColumn CompleteColumn {
 			get {
 				return complete_column;
 			}
@@ -551,13 +616,13 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
-		public ITreeBuilderContext BuilderContext {
+		internal ITreeBuilderContext BuilderContext {
 			get {
 				return builderContext;
 			}
 		}
 
-		public object[] CopyObjects {
+		internal object[] CopyObjects {
 			get {
 				return copyObjects;
 			}
@@ -566,7 +631,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
-		public DragOperation CurrentTransferOperation {
+		internal DragOperation CurrentTransferOperation {
 			get {
 				return currentTransferOperation;
 			}
@@ -925,7 +990,12 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 
 		[CommandHandler (ViewCommands.Open)]
-		public virtual void ActivateCurrentItem ()
+		public void ActivateCurrentItem ()
+		{
+			OnActivateCurrentItem ();
+		}
+
+		protected virtual void OnActivateCurrentItem ()
 		{
 			try {
 				LockUpdates ();
@@ -939,13 +1009,18 @@ namespace MonoDevelop.Ide.Gui.Components
 							break;
 					}
 				}
-				OnCurrentItemActivated (EventArgs.Empty);
+				OnCurrentItemActivated ();
 			} finally {
 				UnlockUpdates ();
 			}
 		}
 
-		public virtual void DeleteCurrentItem ()
+		public void DeleteCurrentItem ()
+		{
+			OnDeleteCurrentItem ();
+		}
+
+		protected virtual void OnDeleteCurrentItem ()
 		{
 			try {
 				LockUpdates ();
@@ -990,7 +1065,12 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 
 		[CommandHandler (ViewCommands.RefreshTree)]
-		public virtual void RefreshCurrentItem ()
+		public void RefreshCurrentItem ()
+		{
+			OnRefreshCurrentItem ();
+		}
+
+		protected virtual void OnRefreshCurrentItem ()
 		{
 			try {
 				LockUpdates ();
@@ -1013,10 +1093,10 @@ namespace MonoDevelop.Ide.Gui.Components
 			RefreshTree ();
 		}
 
-		protected virtual void OnCurrentItemActivated (EventArgs args)
+		protected virtual void OnCurrentItemActivated ()
 		{
 			if (CurrentItemActivated != null)
-				CurrentItemActivated (this, args);
+				CurrentItemActivated (this, EventArgs.Empty);
 		}
 
 		public event EventHandler CurrentItemActivated;
@@ -1130,7 +1210,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 
 		[CommandUpdateHandler (EditCommands.Copy)]
-		protected void UpdateCopyCurrentItem (CommandInfo info)
+		internal void UpdateCopyCurrentItem (CommandInfo info)
 		{
 			if (editingText) {
 				info.Bypass = true;
@@ -1140,7 +1220,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 
 		[CommandUpdateHandler (EditCommands.Cut)]
-		protected void UpdateCutCurrentItem (CommandInfo info)
+		internal void UpdateCutCurrentItem (CommandInfo info)
 		{
 			if (editingText) {
 				info.Bypass = true;
@@ -1222,7 +1302,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 
 		[CommandUpdateHandler (EditCommands.Paste)]
-		protected void UpdatePasteToCurrentItem (CommandInfo info)
+		internal void UpdatePasteToCurrentItem (CommandInfo info)
 		{
 			if (editingText) {
 				info.Bypass = true;
@@ -1268,7 +1348,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			return (NodeInfo)store.GetValue (it, NodeInfoColumn);
 		}
 
-		public void StartLabelEditInternal()
+		void StartLabelEditInternal()
 		{
 			if (editingText)
 				return;
@@ -1472,7 +1552,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			return (TypeNodeBuilder) chain [0];
 		}
 
-		public NodeBuilder[] GetBuilderChain (Type type)
+		internal NodeBuilder[] GetBuilderChain (Type type)
 		{
 			NodeBuilder[] chain;
 			builderChains.TryGetValue (type, out chain);
@@ -1717,7 +1797,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			return nodeHash.ContainsKey (dataObject);
 		}
 
-		public void NotifyInserted (Gtk.TreeIter it, object dataObject)
+		internal void NotifyInserted (Gtk.TreeIter it, object dataObject)
 		{
 			if (callbacks.Count > 0) {
 				ArrayList list = callbacks [dataObject] as ArrayList;
@@ -1750,7 +1830,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			return sb.ToString ();
 		}
 
-		public void RefreshNode (Gtk.TreeIter iter)
+		void RefreshNode (Gtk.TreeIter iter)
 		{
 			ITreeBuilder builder = CreateBuilder (iter);
 			builder.UpdateAll ();
@@ -1810,7 +1890,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 
 		[CommandUpdateHandler (EditCommands.Rename)]
-		public void UpdateStartLabelEdit (CommandInfo info)
+		internal void UpdateStartLabelEdit (CommandInfo info)
 		{
 			if (editingText || GetSelectedNodes ().Length != 1) {
 				info.Visible = false;
@@ -1865,7 +1945,9 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		void ShowPopup (Gdk.EventButton evt)
 		{
-			var entryset = BuildEntrySet () ?? new CommandEntrySet ();
+			var entryset = BuildEntrySet ();
+			if (entryset == null)
+				return;
 
 			if (evt == null) {
 				var paths = tree.Selection.GetSelectedRows ();
@@ -1879,7 +1961,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
-		protected CommandEntrySet BuildEntrySet ()
+		CommandEntrySet BuildEntrySet ()
 		{
 			ITreeNavigator tnav = GetSelectedNode ();
 			if (tnav == null)
@@ -1914,7 +1996,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 
 		[CommandUpdateHandler (ViewCommands.TreeDisplayOptionList)]
-		protected void BuildTreeOptionsMenu (CommandArrayInfo info)
+		internal void BuildTreeOptionsMenu (CommandArrayInfo info)
 		{
 			foreach (TreePadOption op in options) {
 				CommandInfo ci = new CommandInfo (op.Label);
@@ -1924,14 +2006,14 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 
 		[CommandHandler (ViewCommands.TreeDisplayOptionList)]
-		protected void OptionToggled (string optionId)
+		internal void OptionToggled (string optionId)
 		{
 			globalOptions [optionId] = !globalOptions [optionId];
 			RefreshRoots ();
 		}
 
 		[CommandHandler (ViewCommands.ResetTreeDisplayOptions)]
-		protected void ResetOptions ()
+		public void ResetOptions ()
 		{
 			foreach (TreePadOption op in options)
 				globalOptions [op.Id] = op.DefaultValue;
@@ -1950,7 +2032,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			} while (store.IterNext (ref it));
 		}
 
-		protected void RefreshTree ()
+		public void RefreshTree ()
 		{
 			foreach (TreeNodeNavigator node in GetSelectedNodes ()) {
 				Gtk.TreeIter it = node.CurrentPosition._iter;
@@ -1962,7 +2044,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 
 		[CommandHandler (ViewCommands.CollapseAllTreeNodes)]
-		protected void CollapseTree ()
+		public void CollapseTree ()
 		{
 			tree.CollapseAll();
 		}
@@ -2032,25 +2114,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
-		protected override bool OnScrollEvent (Gdk.EventScroll evnt)
-		{
-			var modifier = !Platform.IsMac? Gdk.ModifierType.ControlMask
-				//Mac window manager already uses control-scroll, so use command
-				//Command might be either meta or mod1, depending on GTK version
-				: (Gdk.ModifierType.MetaMask | Gdk.ModifierType.Mod1Mask);
-
-			if ((evnt.State & modifier) !=0) {
-				if (evnt.Direction == Gdk.ScrollDirection.Up)
-					ZoomIn ();
-				else if (evnt.Direction == Gdk.ScrollDirection.Down)
-					ZoomOut ();
-
-				return true;
-			}
-			return base.OnScrollEvent (evnt);
-		}
-
-		protected virtual void OnNodeActivated (object sender, Gtk.RowActivatedArgs args)
+		void OnNodeActivated (object sender, Gtk.RowActivatedArgs args)
 		{
 			ActivateCurrentItem ();
 		}
@@ -2078,7 +2142,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
-		protected virtual void OnSelectionChanged (object sender, EventArgs args)
+		void OnSelectionChanged (object sender, EventArgs args)
 		{
 			UpdateSelectionPopupButton ();
 
@@ -2097,9 +2161,16 @@ namespace MonoDevelop.Ide.Gui.Components
 					node.MoveToPosition (pos);
 				}
 			}
+			OnSelectionChanged ();
 		}
 
-		protected override void OnDestroyed ()
+		protected virtual void OnSelectionChanged ()
+		{
+			if (SelectionChanged != null)
+				SelectionChanged (this, EventArgs.Empty);
+		}
+
+		void Destroy ()
 		{
 			IdeApp.Preferences.CustomPadFont.Changed -= CustomFontPropertyChanged;
 			if (pix_render != null) {
@@ -2132,8 +2203,11 @@ namespace MonoDevelop.Ide.Gui.Components
 				builders = null;
 			}
 			builderChains.Clear ();
+		}
 
-			base.OnDestroyed ();
+		object ICommandRouter.GetNextCommandTarget ()
+		{
+			return widget.Parent;
 		}
 
 		class PopupButton: Gtk.EventBox
@@ -2409,7 +2483,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				if (scaledFont == null) {
 					if (scaledFont != null)
 						scaledFont.Dispose ();
-					scaledFont = (customFont ?? parent.Style.FontDesc).Copy ();
+					scaledFont = (customFont ?? parent.widget.Style.FontDesc).Copy ();
 					scaledFont.Size = (int)(customFont.Size * Zoom);
 					if (layout != null)
 						layout.FontDescription = scaledFont;

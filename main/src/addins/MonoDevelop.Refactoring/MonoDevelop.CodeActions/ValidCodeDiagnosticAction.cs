@@ -31,6 +31,7 @@ using MonoDevelop.CodeActions;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.CodeIssues;
 using Microsoft.CodeAnalysis.Text;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.CodeActions
 {
@@ -39,14 +40,23 @@ namespace MonoDevelop.CodeActions
 	/// </summary>
 	class ValidCodeDiagnosticAction : ValidCodeAction
 	{
+		ImmutableArray<Diagnostic> validDiagnostics;
+
 		public CodeDiagnosticFixDescriptor Diagnostic {
 			get;
 			private set;
 		}
 
-		public ValidCodeDiagnosticAction (CodeDiagnosticFixDescriptor diagnostic, CodeAction codeAction, TextSpan validSegment) : base (codeAction, validSegment)
+		public ImmutableArray<Diagnostic> ValidDiagnostics {
+			get {
+				return validDiagnostics;
+			}
+		}
+
+		public ValidCodeDiagnosticAction (CodeDiagnosticFixDescriptor diagnostic, CodeAction codeAction, ImmutableArray<Diagnostic> validDiagnostics, TextSpan validSegment) : base (codeAction, validSegment)
 		{
 			this.Diagnostic = diagnostic;
+			this.validDiagnostics = validDiagnostics;
 		}
 	}
 }

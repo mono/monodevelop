@@ -52,21 +52,37 @@ namespace UserInterfaceTests
 
 		protected void SelectRemote (string remoteName, string remoteUrl = null)
 		{
+			ReproStep (string.Format ("Select a remote named '{0}' {1}", remoteName,
+			                          remoteUrl != null ? string.Format (" and Remote URL '{0}'", remoteUrl) : string.Empty));
 			Session.WaitForElement (c => remoteTreeName (c).Contains (remoteName));
-			Assert.IsTrue (Session.SelectElement (c => remoteTreeName (c).Contains (remoteName)));
+
+			try {
+				Assert.IsTrue (Session.SelectElement (c => remoteTreeName (c).Contains (remoteName)));
+			} catch (AssertionException) {
+				ReproFailedStep (string.Format ("Remote Name '{0}' exists", remoteName), string.Format ("Remote Name '{0}' does not exists", remoteName));
+				throw;
+			}
 			if (remoteUrl != null) {
-				Assert.IsTrue (Session.SelectElement (c => remoteTreeUrl (c).Contains (remoteUrl)));
+				try {
+					Assert.IsTrue (Session.SelectElement (c => remoteTreeUrl (c).Contains (remoteUrl)));
+				} catch (AssertionException) {
+					ReproFailedStep (string.Format ("Remote URL '{0}' with Name '{1}' exists", remoteUrl, remoteName),
+					                 string.Format ("Remote URL '{0}' with Name '{1}' does not exist", remoteUrl, remoteName));
+					throw;
+				}
 			}
 			TakeScreenShot (string.Format ("{0}-Remote-Selected", remoteName));
 		}
 
 		protected void EditRemote (string newRemoteName, string remoteUrl, string remotePushUrl = null)
 		{
+			ReproStep ("Click on Edit");
 			AddEditRemote ("buttonEditRemote", newRemoteName, remoteUrl, remotePushUrl);
 		}
 
 		protected void AddRemote (string newRemoteName, string remoteUrl, string remotePushUrl = null)
 		{
+			ReproStep ("Click on Add");
 			AddEditRemote ("buttonAddRemote", newRemoteName, remoteUrl, remotePushUrl);
 		}
 
@@ -75,7 +91,7 @@ namespace UserInterfaceTests
 			SelectRemote (remoteName);
 
 			Assert.IsEmpty (Session.Query (c => remoteTreeFullName (c).Contains (remoteName+"/")));
-			Assert.IsTrue (Session.ClickElement (c => IdeQuery.GitConfigurationDialog (c).Children ().Button ().Marked ("buttonFetch")));
+			Assert.IsTrue (Session.ClickElement (c => IdeQuery.GitConfigurationDialog (c).Children ().Button ().Text ("Fetch")));
 			TakeScreenShot ("Fetch-Remote");
 
 			SelectRemoteBranch (remoteName);
@@ -85,7 +101,15 @@ namespace UserInterfaceTests
 		{
 			Session.ClickElement (c => remoteTreeName (c).Contains (remoteName));
 			Assert.IsNotEmpty (Session.Query (c => remoteTreeFullName (c).Contains (remoteName+"/"+remoteBranchName)));
-			Assert.IsTrue (Session.SelectElement (c => remoteTreeFullName (c).Contains (remoteName+"/"+remoteBranchName).Index (0)));
+
+			var expected = string.Format ("Select the Remote with Name '{0}' and Remote Branch Name '{1}'", remoteName, remoteBranchName);
+			try {
+				ReproStep (expected);
+				Assert.IsTrue (Session.SelectElement (c => remoteTreeFullName (c).Contains (remoteName + "/" + remoteBranchName).Index (0)));
+			} catch (AssertionException) {
+				ReproFailedStep (expected, "Could not "+expected);
+				throw;
+			}
 			TakeScreenShot (string.Format ("{0}-Remote-Branch-Selected", remoteBranchName ?? "First"));
 		}
 
@@ -95,17 +119,21 @@ namespace UserInterfaceTests
 			Session.ClickElement (c => IdeQuery.GitConfigurationDialog (c).Children ().Button ().Marked (buttonName), false);
 			Session.WaitForElement (IdeQuery.EditRemoteDialog);
 
+			ReproStep (string.Format ("Enter Remote name as '{0}'", newRemoteName));
 			Func<AppQuery, AppQuery> EditRemoteDialogChildren = c => IdeQuery.EditRemoteDialog (c).Children ();
 			Assert.IsTrue (Session.EnterText (c => EditRemoteDialogChildren (c).Textfield ().Marked ("entryName"), newRemoteName));
 			Session.WaitForElement (c =>  EditRemoteDialogChildren (c).Textfield ().Marked ("entryName").Text (newRemoteName));
 
+			ReproStep (string.Format ("Enter Remote URL as '{0}'", remoteUrl));
 			Assert.IsTrue (Session.EnterText (c => EditRemoteDialogChildren (c).Textfield ().Marked ("entryUrl"), remoteUrl));
 			Session.WaitForElement (c =>  EditRemoteDialogChildren (c).Marked ("entryUrl").Text (remoteUrl));
 
+			ReproStep (string.Format ("Enter Remote Push URL as '{0}'", remotePushUrl ?? remoteUrl));
 			Assert.IsTrue (Session.EnterText (c =>  EditRemoteDialogChildren (c).Textfield ().Marked ("entryPushUrl"), remotePushUrl ?? remoteUrl));
 			Session.WaitForElement (c =>  EditRemoteDialogChildren (c).Textfield ().Marked ("entryPushUrl").Text (remotePushUrl ?? remoteUrl));
 			TakeScreenShot ("Remote-Details-Filled");
 
+			ReproStep ("Click on OK");
 			Assert.IsTrue (Session.ClickElement (c =>  EditRemoteDialogChildren (c).Button ().Marked ("buttonOk")));
 			Session.WaitForNoElement (IdeQuery.EditRemoteDialog);
 			Session.WaitForElement (IdeQuery.GitConfigurationDialog);
@@ -115,8 +143,11 @@ namespace UserInterfaceTests
 		protected void DeleteRemote (string remoteName)
 		{
 			Session.WaitForElement (c => remoteTreeName (c).Contains (remoteName));
-			Session.ClickElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Button ().Text ("Remove"), false);
+			ReproStep ("Click on Remove");
+            Session.ClickElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Button ().Text ("Remove"), false);
 			TakeScreenShot (string.Format ("Remove-Remote-{0}", remoteName));
+
+			ReproStep ("When prompted to confirm, click Delete");
 			Ide.ClickButtonAlertDialog ("Delete");
 			Session.WaitForElement (IdeQuery.GitConfigurationDialog);
 		}
@@ -136,28 +167,52 @@ namespace UserInterfaceTests
 
 		protected void SelectTag (string tagName)
 		{
-			Session.WaitForElement (c => tagTreeName (c).Text (tagName));
-			Assert.IsTrue (Session.SelectElement (c => tagTreeName (c).Text (tagName)), "Failed to select tag: "+tagName);
+			WaitForElement (c => tagTreeName (c).Text (tagName),
+			                string.Format ("Tag '{0}' should be available", tagName),
+			                string.Format ("Tag '{0}' it not available", tagName));
+			try {
+				Assert.IsTrue (Session.SelectElement (c => tagTreeName (c).Text (tagName)), "Failed to select tag: " + tagName);
+			} catch (AssertionException) {
+				ReproFailedStep (string.Format ("Tag '{0}' should be selected", tagName),
+				                 string.Format ("Tag '{0}' cannot be selected", tagName));
+				throw;
+			}
 			TakeScreenShot (string.Format ("{0}-Tag-Selected", tagName));
 		}
 
 		protected void DeleteTag (string tagName)
 		{
 			SelectTag (tagName);
-			Assert.IsTrue ((Session.ClickElement (c => IdeQuery.GitConfigurationDialog (c).Children ().Button ().Marked ("buttonRemoveTag"))));
+			ReproStep ("Click Delete");
+			try {
+				Assert.IsTrue ((Session.ClickElement (c => IdeQuery.GitConfigurationDialog (c).Children ().Button ().Marked ("buttonRemoveTag"))));
+			} catch (AssertionException) {
+				ReproFailedStep (string.Format ("Tag '{0}' should be removed", tagName), string.Format ("Tag '{0}' could not be removed", tagName));
+				throw;
+			}
 			Session.WaitForNoElement (c => tagTreeName (c).Text (tagName));
 		}
 
 		protected void AddNewTag (string tagName, string tagMessage = null, string commitMsg = null)
 		{
+			ReproStep ("Click on New");
 			Session.ClickElement (c => IdeQuery.GitConfigurationDialog (c).Children ().Button ().Marked ("buttonAddTag"), false);
-			Session.WaitForElement (c => c.Window ().Marked ("Select a revision"));
 
+			ReproStep ("Wait for 'Select a Revision' dialog to open");
+			try {
+				Session.WaitForElement (c => c.Window ().Marked ("Select a revision"));
+			} catch (AssertionException) {
+				ReproFailedStep ("'Select a Revision' dialog should open", "'Select a Revision' dialog did not open");
+				throw;
+			}
+
+			ReproStep ("Enter the Tag Name");
 			Session.EnterText (c => c.Window ().Marked ("Select a revision").Children ().Textfield ().Index (0), tagName);
 			Session.WaitForElement (c => c.Window ().Marked ("Select a revision").Children ().Textfield ().Index (0).Text (tagName));
 			TakeScreenShot ("Tag-Name-Entered");
 
 			if (!string.IsNullOrEmpty (tagMessage)) {
+				ReproStep ("Enter a Tag Message");
 				Session.EnterText (c => c.Window ().Marked ("Select a revision").Children ().Textfield ().Index (1), tagMessage);
 				Session.WaitForElement (c => c.Window ().Marked ("Select a revision").Children ().Textfield ().Index (1).Text (tagMessage));
 				TakeScreenShot ("Tag-Message-Entered");
@@ -165,12 +220,15 @@ namespace UserInterfaceTests
 
 			Func<AppQuery, AppQuery> revisionsTreeView = c => c.Window ().Marked ("Select a revision").Children ().TreeView ().Index (0).Model ().Children ();
 			if (!string.IsNullOrEmpty (commitMsg)) {
+				ReproStep (string.Format ("Select the commit with message '{0}'", commitMsg));
 				Session.SelectElement (c => revisionsTreeView (c).Text (commitMsg));
 			} else {
+				ReproStep ("Select the first commit");
 				Session.SelectElement (c => revisionsTreeView (c).Index (0));
 			}
 			TakeScreenShot ("Commit-Message-Selected");
 
+			ReproStep ("Click OK");
 			Session.ClickElement (c => c.Window ().Marked ("Select a revision").Children ().Button ().Text ("Ok"));
 			try {
 				Session.WaitForElement (IdeQuery.GitConfigurationDialog);
@@ -197,19 +255,23 @@ namespace UserInterfaceTests
 
 		protected void CreateNewBranch (string newBranchName)
 		{
+			ReproStep ("Click New");
 			CreateEditBranch ("buttonAddBranch", newBranchName);
 		}
 
 		protected void EditBranch (string oldBranchName, string newBranchName)
 		{
 			SelectBranch (oldBranchName);
+			ReproStep ("Click Edit");
 			CreateEditBranch ("buttonEditBranch", newBranchName);
 		}
 
 		protected void CreateEditBranch (string buttonName, string newBranchName)
 		{
 			Session.ClickElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Button ().Marked (buttonName), false);
-			Session.WaitForElement (IdeQuery.EditBranchDialog);
+
+			ReproStep ("Wait for Branch Properties dialog");
+			WaitForElement (IdeQuery.EditBranchDialog, "Branch Properties dialog opens", "Branch Properties dialog does not open");
 			TakeScreenShot ("Edit-Branch-Dialog-Opened");
 
 			EnterBranchName (newBranchName);
@@ -219,9 +281,12 @@ namespace UserInterfaceTests
 
 		protected void EnterBranchName (string newBranchName)
 		{
+			ReproStep ("Enter branch name");
 			Session.EnterText (c => IdeQuery.EditBranchDialog (c).Children ().Textfield ().Marked ("entryName"), newBranchName);
 			Session.WaitForElement (c => IdeQuery.EditBranchDialog (c).Children ().Textfield ().Marked ("entryName").Text (newBranchName));
 			TakeScreenShot ("Branch-Name-Entered");
+
+			ReproStep ("Click OK");
 			Assert.IsTrue (Session.ClickElement (c => IdeQuery.EditBranchDialog (c).Children ().Button ().Marked ("buttonOk")));
 		}
 
@@ -229,30 +294,52 @@ namespace UserInterfaceTests
 		{
 			SelectBranch (branchName);
 			TakeScreenShot (string.Format ("{0}-Branch-Selected", branchName));
+
+			ReproStep ("Click on 'Switch to Branch'");
 			Session.ClickElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Button ().Text ("Switch to Branch"), false);
 			CheckIfNameEmailNeeded ();
 			CheckIfUserConflict ();
-			Assert.IsTrue (IsBranchSwitched (branchName));
+			ReproStep ("Check if the selected branch is bold");
+			try {
+				Assert.IsTrue (IsBranchSwitched (branchName));
+			} catch (AssertionException) {
+				ReproFailedStep ("The selected branch should be bold", "The selected branch is not bold");
+				throw;
+			}
 			TakeScreenShot (string.Format ("Switched-To-{0}", branchName));
 		}
 
 		protected void SwitchTab (string tabName)
 		{
-			Assert.IsTrue (Session.SelectElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Notebook ().Marked ("notebook1").Text (tabName)));
+			ReproStep (string.Format ("Select the '{0}' tab", tabName));
+			try {
+				Assert.IsTrue (Session.SelectElement (c => IdeQuery.GitConfigurationDialog (c).Children ().Notebook ().Marked ("notebook1").Text (tabName)));
+			} catch (AssertionException) {
+				ReproFailedStep (string.Format ("Tab '{0}' is selected", tabName), string.Format ("Tab '{0}' is not selected", tabName));
+				throw;
+			}
 			TakeScreenShot (string.Format ("Tab-Changed-{0}", GenerateProjectName (tabName)));
 		}
 
 		protected void SelectBranch (string branchName)
 		{
-			Assert.IsTrue (Session.SelectElement (c => branchDisplayName (c).Contains (branchName)));
+			ReproStep (string.Format ("Select the '{0}' branch", branchName));
+			try {
+				Assert.IsTrue (Session.SelectElement (c => branchDisplayName (c).Contains (branchName)));
+			} catch (AssertionException) {
+				ReproFailedStep (string.Format ("Branch '{0}' is selected", branchName), string.Format ("Branch '{0}' is not selected", branchName));
+				throw;
+			}
 			TakeScreenShot (string.Format ("Selected-Branch-{0}", branchName.ToPathSafeString ()));
 		}
 
 		protected void DeleteBranch (string branchName)
 		{
-			Assert.IsTrue (Session.SelectElement (c => branchDisplayName (c).Contains (branchName)));
-			Session.ClickElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Button ().Text ("Delete"), false);
+			SelectBranch (branchName);
+			ReproStep ("Press Delete");
+			Session.ClickElement (c => IdeQuery.GitConfigurationDialog (c).Children ().Button ().Text ("Delete"), false);
 			TakeScreenShot (string.Format ("Delete-Branch-{0}", branchName));
+			ReproStep ("If prompted for confirmation, press Delete");
 			Ide.ClickButtonAlertDialog ("Delete");
 			Session.WaitForElement (IdeQuery.GitConfigurationDialog);
 		}
@@ -260,7 +347,9 @@ namespace UserInterfaceTests
 		protected bool IsBranchSwitched (string branchName)
 		{
 			try {
-				Session.WaitForElement (c => branchDisplayName (c).Text ("<b>" + branchName + "</b>"));
+				WaitForElement (c => branchDisplayName (c).Text ("<b>" + branchName + "</b>"),
+				                string.Format ("Branch '{0}' is checked out", branchName),
+				                string.Format ("Branch '{0}' is not checked out", branchName));
 				return true;
 			} catch (TimeoutException) {
 				return false;
@@ -271,15 +360,21 @@ namespace UserInterfaceTests
 
 		protected void OpenRepositoryConfiguration (string selectTab = null)
 		{
+			ReproStep ("Click Version Control > Manage Branches and Remotes");
 			Session.ExecuteCommand (MonoDevelop.VersionControl.Git.Commands.ManageBranches);
-			Session.WaitForElement (IdeQuery.GitConfigurationDialog);
+
+			WaitForElement (IdeQuery.GitConfigurationDialog,
+			                "Git Repository Configuration Dialog should open",
+			                "Git Repository Configuration Dialog did not open");
 			TakeScreenShot ("Repository-Configuration-Opened");
+
 			if (selectTab != null)
 				SwitchTab (selectTab);
 		}
 
 		protected void CloseRepositoryConfiguration ()
 		{
+			ReproStep ("Click on Close button of Git Repository Configuration Dialog");
 			Session.ClickElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Button ().Marked ("buttonOk"));
 			TakeScreenShot ("Git-Repository-Configuration-Closed");
 			Session.WaitForNoElement (IdeQuery.GitConfigurationDialog);
@@ -287,8 +382,14 @@ namespace UserInterfaceTests
 
 		protected void AssertButtonSensitivity (string buttonLabel, bool sensitivity)
 		{
-			Assert.IsNotEmpty (Session.Query (c => c.Button ().Text (buttonLabel).Sensitivity (sensitivity)),
-				string.Format ("{0} button is {1} enabled", buttonLabel, sensitivity ? notString : string.Empty));
+			var expected = string.Format ("{0} button is {1} enabled", buttonLabel, !sensitivity ? notString : string.Empty);
+			var actual = string.Format ("{0} button is {1} enabled", buttonLabel, sensitivity ? notString : string.Empty);
+			try {
+				Assert.IsNotEmpty (Session.Query (c => c.Button ().Text (buttonLabel).Sensitivity (sensitivity)), actual);
+			} catch (AssertionException) {
+				ReproFailedStep (expected, actual);
+				throw;
+			}
 		}
 
 		#endregion
@@ -300,13 +401,15 @@ namespace UserInterfaceTests
 
 		protected void OpenStashManager ()
 		{
+			ReproStep ("Click on Version Control > Manage Stashes");
 			Session.ExecuteCommand ("MonoDevelop.VersionControl.Git.Commands.ManageStashes");
-			Session.WaitForElement (c => c.Window ().Marked ("Stash Manager"));
+			WaitForElement (c => c.Window ().Marked ("Stash Manager"), "Stash Manager dialog should open", "Stash Manager dialog did not open");
 			TakeScreenShot ("StashManager-Opened");
 		}
 
 		protected void CloseStashManager ()
 		{
+			ReproStep ("On Stash Manager, click Close button");
 			Session.ClickElement (c => c.Window ().Marked ("Stash Manager").Children ().Text ("Close"));
 			Session.WaitForElement (IdeQuery.TextArea);
 			TakeScreenShot ("StashManager-Closed");
@@ -314,7 +417,8 @@ namespace UserInterfaceTests
 
 		protected void SelectStashEntry (int index = 0)
 		{
-			Session.WaitForElement (c => StashEntries (c).Index (index));
+			ReproStep ("Select the stash entry #{0}", index+1);
+			WaitForElement (c => StashEntries (c).Index (index), "Select stash entry: "+index+1, "Could not select that stash entry");
 			Session.SelectElement (c => StashEntries (c).Index (index));
 		}
 
@@ -322,7 +426,13 @@ namespace UserInterfaceTests
 		{
 			SelectStashEntry (index);
 			TakeScreenShot ("About-To-Click-Remove");
-			Session.ClickElement (c => c.Window ().Marked ("Stash Manager").Children ().Button ().Text ("Remove"));
+			try {
+				ReproStep ("Click on Remove");
+				Assert.IsTrue (Session.ClickElement (c => c.Window ().Marked ("Stash Manager").Children ().Button ().Text ("Remove")));
+			} catch (AssertionException) {
+				ReproFailedStep ("Stash should be removed", "Stash failed to remove");
+				throw;
+			}
 			Session.WaitForElement (c => c.Window ().Marked ("Stash Manager"));
 		}
 
@@ -330,20 +440,33 @@ namespace UserInterfaceTests
 		{
 			SelectStashEntry (index);
 			TakeScreenShot ("About-To-Click-Apply-and-Remove");
-			Session.ClickElement (c => c.Window ().Marked ("Stash Manager").Children ().Button ().Text ("Apply and Remove"));
+			try {
+				ReproStep ("Click on 'Apply and Remove'");
+				Assert.IsTrue (Session.ClickElement (c => c.Window ().Marked ("Stash Manager").Children ().Button ().Text ("Apply and Remove")));
+			} catch (AssertionException) {
+				ReproFailedStep ("Stash should be applied and removed from the list", "Stash failed to applied and removed from the list");
+				throw;
+			}
 		}
 
 		protected void ApplyStash (int index)
 		{
 			SelectStashEntry (index);
 			TakeScreenShot ("About-To-Click-Apply");
-			Session.ClickElement (c => c.Window ().Marked ("Stash Manager").Children ().Button ().Text ("Apply"));
+			try {
+				ReproStep ("Click on Apply");
+				Assert.IsTrue (Session.ClickElement (c => c.Window ().Marked ("Stash Manager").Children ().Button ().Text ("Apply")));
+			} catch (AssertionException) {
+				ReproFailedStep ("Stash should be applied", "Stash failed to apply");
+				throw;
+			}
 		}
 
 		protected void ComvertToBranch (int index, string branchName)
 		{
 			SelectStashEntry (index);
 			TakeScreenShot ("About-To-Click-Convert-To-Branch");
+			ReproStep ("Click on 'Convert to Branch'");
 			Session.ClickElement (c => c.Window ().Marked ("Stash Manager").Children ().Button ().Text ("Convert to Branch"), false);
 			EnterBranchName (branchName);
 			Ide.WaitForStatusMessage (new [] { "Stash successfully applied" });

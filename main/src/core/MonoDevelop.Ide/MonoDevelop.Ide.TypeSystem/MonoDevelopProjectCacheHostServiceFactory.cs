@@ -10,7 +10,7 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 //	[ExportWorkspaceServiceFactory(typeof(IProjectCacheHostService), ServiceLayer.Host)]
 //	[Shared]
-	internal partial class MonoDevelopProjectCacheHostServiceFactory : IWorkspaceServiceFactory
+/*	internal partial class MonoDevelopProjectCacheHostServiceFactory : IWorkspaceServiceFactory
 	{
 		private const int ImplicitCacheTimeoutInMS = 10000;
 
@@ -129,6 +129,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				_mostRecentActiveProjectId = null;
 			}
 		}
-	}
+	}*/
 }
 

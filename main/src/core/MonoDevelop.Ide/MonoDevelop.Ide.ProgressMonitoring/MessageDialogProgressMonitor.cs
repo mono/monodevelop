@@ -84,7 +84,6 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 			if (dialog != null) {
 				dialog.Message = CurrentTaskName;
 				dialog.Progress = Progress;
-				DispatchService.RunPendingEvents ();
 			}
 		}
 		
@@ -124,7 +123,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 
 		protected override void OnCompleted ()
 		{
-			DispatchService.GuiDispatch (ShowDialogs);
+			Runtime.RunInMainThread ((Action) ShowDialogs);
 			base.OnCompleted ();
 		}
 

@@ -26,7 +26,7 @@
 
 using System;
 using System.Linq;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using NUnit.Framework;
 
 namespace MonoDevelop.PackageManagement.Tests

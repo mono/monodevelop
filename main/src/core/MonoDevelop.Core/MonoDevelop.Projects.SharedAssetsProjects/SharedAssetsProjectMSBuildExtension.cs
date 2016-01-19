@@ -28,7 +28,7 @@ using System.Linq;
 using System.IO;
 using MonoDevelop.Core;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects.SharedAssetsProjects
 {
@@ -71,7 +71,18 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 					ip = MSBuildProjectService.ToMSBuildPath (Project.ItemDirectory, ip);
 					validProjitems.Add (ip);
 					if (!project.Imports.Any (im => im.Project == ip)) {
-						var im = project.AddNewImport (ip, beforeObject:project.Imports.FirstOrDefault (i => i.Label != "Shared"));
+						// If there is already a Shared import, place the new import in the same location
+						MSBuildObject before = project.Imports.FirstOrDefault (i => i.Label == "Shared" && i.Project.EndsWith (".projitems"));
+						if (before == null) {
+							var fsharpProject = project.ProjectTypeGuids.Contains("{F2A71F9B-5D33-465A-A702-920D77279786}");
+							if (fsharpProject)
+								//For F# use the first item group as the shared project files have to be listed first
+								before = project.ItemGroups.FirstOrDefault (i => i.Label != "Shared");
+							else
+								before = project.Imports.FirstOrDefault (i => i.Label != "Shared");
+						}
+						
+						var im = project.AddNewImport (ip, beforeObject: before);
 						im.Label = "Shared";
 						im.Condition = "Exists('" + ip + "')";
 					}

@@ -32,7 +32,7 @@ using System.IO;
 using System.Xml;
 using MonoDevelop.Projects.Policies;
 using System.Threading.Tasks;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects.SharedAssetsProjects
 {
@@ -46,6 +46,9 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 		MSBuildProject projitemsProject;
 		HashSet<MSBuildItem> usedMSBuildItems = new HashSet<MSBuildItem> ();
 
+		const string CSharptargets = @"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.CSharp.targets";
+		const string FSharptargets = @"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.FSharp.targets";
+
 		public SharedAssetsProject ()
 		{
 			Initialize (this);
@@ -56,22 +59,32 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			languageName = language;
 		}
 
+		protected override void OnNameChanged (SolutionItemRenamedEventArgs e)
+		{
+			if (!projItemsPath.IsNullOrEmpty && Path.GetFileNameWithoutExtension (e.OldName) == projItemsPath.FileNameWithoutExtension) {
+				// We are going to rename the projitems file, but before that, let's get all referencing projects, since they reference
+				// using the old path
+				string oldPath = ProjItemsPath;
+				var refProjects = GetReferencingProjects ().ToArray ();
+
+				// Set the new projitems file name
+				projItemsPath = projItemsPath.ParentDirectory.Combine (e.NewName) + projItemsPath.Extension;
+
+				// Update all referencing projects
+				foreach (var p in refProjects) {
+					var sr = p.References.FirstOrDefault (r => r.GetItemsProjectPath () == oldPath);
+					if (sr != null)
+						sr.SetItemsProjectPath (ProjItemsPath);
+				}
+			}
+			base.OnNameChanged (e);
+		}
+
 		protected override void OnInitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement projectOptions)
 		{
 			base.OnInitializeFromTemplate (projectCreateInfo, projectOptions);
 			languageName = projectOptions.GetAttribute ("language");
 			DefaultNamespace = projectCreateInfo.ProjectName;
-		}
-
-		protected override void OnPrepareForEvaluation (MSBuildProject project)
-		{
-			base.OnPrepareForEvaluation (project);
-
-			// Remove code sharing imports. Mono doesn't have them and we don't really need them to load the project in the IDE
-			foreach (var im in project.Imports.ToArray ()) {
-				if (im.Project.Contains (".CodeSharing."))
-					project.RemoveImport (im);
-			}
 		}
 
 		protected override void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
@@ -83,7 +96,19 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 				return;
 
 			// TODO: load the type from msbuild
-			LanguageName = "C#";
+			foreach (var item in msproject.Imports) {
+				if (item.Project.Equals (CSharptargets, StringComparison.OrdinalIgnoreCase)) {
+					LanguageName = "C#";
+					break;
+				}
+				if (item.Project.Equals (FSharptargets, StringComparison.OrdinalIgnoreCase)) {
+					LanguageName = "F#";
+					break;
+				}
+			}
+			//If for some reason the language name is empty default it to C#
+			if (String.IsNullOrEmpty(LanguageName))
+				LanguageName = "C#";
 
 			projItemsPath = MSBuildProjectService.FromMSBuildPath (msproject.BaseDirectory, import.Project);
 
@@ -106,7 +131,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			base.SaveProjectItems (monitor, projitemsProject, usedMSBuildItems, "$(MSBuildThisFileDirectory)");
 		}
 
-		protected override void OnWriteProject (ProgressMonitor monitor, MonoDevelop.Projects.Formats.MSBuild.MSBuildProject msproject)
+		protected override void OnWriteProject (ProgressMonitor monitor, MonoDevelop.Projects.MSBuild.MSBuildProject msproject)
 		{
 			if (projItemsPath == FilePath.Null)
 				projItemsPath = Path.ChangeExtension (FileName, ".projitems");
@@ -131,7 +156,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 
 			base.OnWriteProject (monitor, msproject);
 
-			var newProject = FileName == null || !File.Exists (FileName);
+			var newProject = FileName == null || projitemsProject.IsNewProject;
 			if (newProject) {
 				var grp = msproject.GetGlobalPropertyGroup ();
 				if (grp == null)
@@ -141,11 +166,23 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 				import.Condition = @"Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')";
 				msproject.AddNewImport (@"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.Common.Default.props");
 				msproject.AddNewImport (@"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.Common.props");
-				import = msproject.AddNewImport (Path.ChangeExtension (FileName.FileName, ".projitems"));
+				import = msproject.AddNewImport (MSBuildProjectService.ToMSBuildPath (FileName.ParentDirectory, projItemsPath));
 				import.Label = "Shared";
-				msproject.AddNewImport (@"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.CSharp.targets");
+				if (LanguageName.Equals("C#", StringComparison.OrdinalIgnoreCase)) {
+					msproject.AddNewImport (CSharptargets);
+				}
+				else if (LanguageName.Equals("F#", StringComparison.OrdinalIgnoreCase)) {
+					msproject.AddNewImport (FSharptargets);
+				}
+
 			} else {
-				msproject.Load (FileName);
+				var itemsImport = msproject.Imports.FirstOrDefault (i => i.Label == "Shared");
+				if (itemsImport != null)
+					itemsImport.Project = MSBuildProjectService.ToMSBuildPath (FileName.ParentDirectory, projItemsPath);
+				else {
+					var import = msproject.AddNewImport (MSBuildProjectService.ToMSBuildPath (FileName.ParentDirectory, projItemsPath));
+					import.Label = "Shared";
+				}
 			}
 
 			// having no ToolsVersion is equivalent to 2.0, roundtrip that correctly
@@ -270,6 +307,13 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			if (p != null)
 				// Maybe the new project already contains a reference to this shared project
 				ProcessProject (p);
+
+			var folder = e.SolutionItem as SolutionFolder;
+			if (folder != null) {
+				foreach (var proj in folder.GetAllItems<DotNetProject>()) {
+					ProcessProject (proj);
+				}
+			}
 		}
 
 		protected override void OnDispose ()
@@ -395,7 +439,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			if (ParentSolution == null)
 				return new DotNetProject[0];
 
-			return ParentSolution.GetAllItems<DotNetProject> ().Where (p => p.References.Any (r => r.GetItemsProjectPath () != null));
+			return ParentSolution.GetAllItems<DotNetProject> ().Where (p => p.References.Any (r => r.GetItemsProjectPath () == ProjItemsPath));
 		}
 	}
 

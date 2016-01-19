@@ -144,7 +144,7 @@ namespace MonoDevelop.SourceEditor
 
 		public override TextLineMarkerFlags Flags {
 			get {
-				if (LineSegment != null && LineSegment.Markers.Any (m => m is DebugTextMarker)) 
+				if (LineSegment != null && editor.Document.GetTextSegmentMarkersAt (LineSegment).Any (m => m is DebugTextMarker)) 
 					return TextLineMarkerFlags.None;
 
 				return TextLineMarkerFlags.DrawsSelection;
@@ -167,7 +167,6 @@ namespace MonoDevelop.SourceEditor
 				throw new ArgumentNullException ("cache");
 			this.cache = cache;
 			this.task = task;
-			this.IsVisible = true;
 			this.isError = isError;
 			AddError (task, isError, errorMessage);
 //			cache.Changed += (sender, e) => CalculateLineFit (editor, lineSegment);
@@ -352,6 +351,11 @@ namespace MonoDevelop.SourceEditor
 
 		#region IActionTextMarker implementation
 		public bool MousePressed (MonoTextEditor editor, MarginMouseEventArgs args)
+		{
+			return false;
+		}
+
+		bool IActionTextLineMarker.MouseReleased (MonoTextEditor editor, MarginMouseEventArgs args)
 		{
 			return false;
 		}
@@ -572,7 +576,7 @@ namespace MonoDevelop.SourceEditor
 			if (!IsVisible)
 				return false;
 			bool markerShouldDrawnAsHidden = cache.CurrentSelectedTextMarker != null && cache.CurrentSelectedTextMarker != this;
-			if (metrics.LineSegment.Markers.Any (m => m is DebugTextMarker))
+			if (editor.Document.GetTextSegmentMarkersAt (metrics.LineSegment).Any (m => m is DebugTextMarker))
 				return false;
 
 			EnsureLayoutCreated (editor);
@@ -655,6 +659,13 @@ namespace MonoDevelop.SourceEditor
 
 			foreach (var task in errors.Select (t => t.Task)) {
 				var column = (uint)(Math.Min (Math.Max (0, task.Column - 1), metrics.Layout.LineChars.Length));
+				var line = editor.GetLine (task.Line);
+				// skip possible white space locations 
+				while (column < line.Length && char.IsWhiteSpace (editor.GetCharAt (line.Offset + (int)column))) {
+					column++;
+				}
+				if (column >= line.Length)
+					continue;
 				int index = (int)metrics.Layout.TranslateToUTF8Index (column, ref curIndex, ref byteIndex);
 				var pos = metrics.Layout.Layout.IndexToPos (index);
 				var co = o + task.Column - 1;

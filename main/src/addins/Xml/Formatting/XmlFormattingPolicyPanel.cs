@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 
-using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Xml.Formatting
@@ -34,7 +34,7 @@ namespace MonoDevelop.Xml.Formatting
 	{
 		XmlFormattingPolicyPanelWidget panel;
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			panel = new XmlFormattingPolicyPanelWidget ();
 			return panel;

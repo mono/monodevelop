@@ -26,7 +26,7 @@
 
 using System;
 using System.Collections;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using System.Collections.Generic;
@@ -70,7 +70,9 @@ namespace MonoDevelop.PackageManagement
 
 		public async Task SaveAsync ()
 		{
-			await project.SaveAsync ();
+			using (var monitor = new ProgressMonitor ()) {
+				await project.SaveAsync (monitor);
+			}
 		}
 	}
 }

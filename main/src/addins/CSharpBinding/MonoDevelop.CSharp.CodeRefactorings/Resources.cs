@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 		public static string GenerateNewConstructorIn = "Generate constructor in '{0}'";
 
 		public static string GenerateAbstractMethod = "Generate abstract method '{0}' in '{1}'";
-		public static string GenerateAbstractProperty = "Generate abstract property '{0}' in '{1}&apos";
+		public static string GenerateAbstractProperty = "Generate abstract property '{0}' in '{1}'";
 		public static string GeneratePropertyIn = "Generate property '{1}.{0}'";
 		public static string GenerateMethodIn = "Generate method '{1}.{0}'";
 
@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 		public static string ImplementInterfaceAbstractly = "Implement interface abstractly";
 		public static string ImplementInterfaceExplicitly = "Implement interface explicitly";
 		public static string ImplementInterfaceExplicitlyWithDisposePattern = "Implement interface explicitly with Dispose pattern";
-		public static string ImplementInterfaceThrough = "Implement interface through '{0}&apos";
+		public static string ImplementInterfaceThrough = "Implement interface through '{0}'";
 		public static string ImplementInterfaceWithDisposePattern = "Implement interface with Dispose pattern";
 
 		public static string ImplicitConversionDisplayText = "Generate implicit conversion operator in '{0}'";
@@ -89,6 +89,10 @@ namespace ICSharpCode.NRefactory6.CSharp
 		public static string RemoveAndSortUsingsWithAccelerator = "Remove _and Sort Usings";
 		public static string SortUsingsWithAccelerator = "_Sort Usings";
 		public static string RemoveUnnecessaryUsingsWithAccelerator = "_Remove Unnecessary Usings";
+		public static string EncapsulateFieldsUsages = "Encapsulate fields (and use property)";
+		public static string EncapsulateFields = "Encapsulate fields (but still use field)";
+		public static string EncapsulateFieldUsages = "Encapsulate field: '{0}' (and use property)";
+		public static string EncapsulateField = "Encapsulate field: '{0}' (but still use field)";
 	}
 }
 

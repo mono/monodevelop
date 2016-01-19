@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.Templates
 				ProjectFile projectFile = project.AddFile (generatedFile, buildAction);
 				
 				if (!string.IsNullOrEmpty (dependsOn)) {
-					var model = GetTagModel (policyParent, project, language, name, generatedFile);
+					var model = CombinedTagModel.GetTagModel (ProjectTagModel, policyParent, project, language, name, generatedFile);
 					string parsedDepName = StringParserService.Parse (dependsOn, model);
 					if (projectFile.DependsOn != parsedDepName)
 						projectFile.DependsOn = parsedDepName;
@@ -185,7 +185,7 @@ namespace MonoDevelop.Ide.Templates
 		public override void Show ()
 		{
 			if (!suppressAutoOpen)
-				IdeApp.Workbench.OpenDocument (generatedFile);
+				IdeApp.Workbench.OpenDocument (generatedFile, project: null);
 		}
 		
 		// Creates a file and saves it to disk. Returns the path to the new file
@@ -221,29 +221,6 @@ namespace MonoDevelop.Ide.Templates
 			}
 			return file;
 		}
-
-		class CombinedTagModel : IStringTagModel
-		{
-			public IStringTagModel BaseModel;
-			public Dictionary<string, string> OverrideTags = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase);
-
-			public object GetValue (string name)
-			{
-				string val;
-				if (OverrideTags.TryGetValue (name, out val))
-					return val;
-				if (BaseModel != null)
-					return BaseModel.GetValue (name);
-				return null;
-			}
-		}
-
-		CombinedTagModel GetTagModel (SolutionFolderItem policyParent, Project project, string language, string identifier, string fileName)
-		{
-			var model = new CombinedTagModel { BaseModel = ProjectTagModel };
-			ModifyTags (policyParent, project, language, identifier, fileName, ref model.OverrideTags);
-			return model;
-		}
 		
 		// Returns the name of the file that this template generates.
 		// All parameters are optional (can be null)
@@ -256,7 +233,7 @@ namespace MonoDevelop.Ide.Templates
 			
 			//substitute tags
 			if ((name != null) && (name.Length > 0)) {
-				var model = GetTagModel (policyParent, project, language, entryName ?? name, null);
+				var model = CombinedTagModel.GetTagModel (ProjectTagModel, policyParent, project, language, entryName ?? name, null);
 				fileName = StringParserService.Parse (name, model);
 			}
 			
@@ -289,7 +266,7 @@ namespace MonoDevelop.Ide.Templates
 		// project and language parameters are optional
 		public virtual Stream CreateFileContent (SolutionFolderItem policyParent, Project project, string language, string fileName, string identifier)
 		{
-			var model = GetTagModel (policyParent, project, language, identifier, fileName);
+			var model = CombinedTagModel.GetTagModel (ProjectTagModel, policyParent, project, language, identifier, fileName);
 
 			//HACK: for API compat, CreateContent just gets the override, not the base model
 			// but ProcessContent gets the entire model
@@ -362,73 +339,7 @@ namespace MonoDevelop.Ide.Templates
 		public virtual void ModifyTags (SolutionFolderItem policyParent, Project project, string language,
 			string identifier, string fileName, ref Dictionary<string,string> tags)
 		{
-			//DotNetProject netProject = project as DotNetProject;
-			string languageExtension = "";
-			LanguageBinding binding = null;
-			if (!string.IsNullOrEmpty (language)) {
-				binding = GetLanguageBinding (language);
-				if (binding != null)
-					languageExtension = Path.GetExtension (binding.GetFileName ("Default")).Remove (0, 1);
-			}
-			
-			//need a default namespace or if there is no project, substitutions can get very messed up
-			string ns;
-			if (project is IDotNetFileContainer)
-				ns = ((IDotNetFileContainer)project).GetDefaultNamespace (fileName);
-			else
-				ns = "Application";
-			
-			//need an 'identifier' for tag substitution, e.g. class name or page name
-			//if not given an identifier, use fileName
-			if ((identifier == null) && (fileName != null))
-				identifier = Path.GetFileName (fileName);
-			 
-			 if (identifier != null) {
-			 	//remove all extensions
-				while (Path.GetExtension (identifier).Length > 0)
-					identifier = Path.GetFileNameWithoutExtension (identifier);
-			 	identifier = CreateIdentifierName (identifier);
-				tags ["Name"] = identifier;
-				tags ["FullName"] = ns.Length > 0 ? ns + "." + identifier : identifier;
-				
-				//some .NET languages may be able to use keywords as identifiers if they're escaped
-				if (binding != null) {
-					System.CodeDom.Compiler.CodeDomProvider provider = binding.GetCodeDomProvider ();
-					if (provider != null) {
-						tags ["EscapedIdentifier"] = provider.CreateEscapedIdentifier (identifier);
-					}
-				}
-			}
-			
-			tags ["Namespace"] = ns;
-			if (policyParent != null)
-				tags ["SolutionName"] = policyParent.Name;
-			if (project != null) {
-				tags ["ProjectName"] = project.Name;
-				tags ["SafeProjectName"] = CreateIdentifierName (project.Name);
-				var info = project.AuthorInformation ?? AuthorInformation.Default;
-				tags ["AuthorCopyright"] = info.Copyright;
-				tags ["AuthorCompany"] = info.Company;
-				tags ["AuthorTrademark"] = info.Trademark;
-				tags ["AuthorEmail"] = info.Email;
-				tags ["AuthorName"] = info.Name;
-			}
-			if ((language != null) && (language.Length > 0))
-				tags ["Language"] = language;
-			if (languageExtension.Length > 0)
-				tags ["LanguageExtension"] = languageExtension;
-			
-			if (fileName != FilePath.Null) {
-				FilePath fileDirectory = Path.GetDirectoryName (fileName);
-				if (project != null && project.BaseDirectory != FilePath.Null && fileDirectory.IsChildPathOf (project.BaseDirectory))
-					tags ["ProjectRelativeDirectory"] = fileDirectory.ToRelative (project.BaseDirectory);
-				else
-					tags ["ProjectRelativeDirectory"] = fileDirectory;
-				
-				tags ["FileNameWithoutExtension"] = Path.GetFileNameWithoutExtension (fileName); 
-				tags ["Directory"] = fileDirectory;
-				tags ["FileName"] = fileName;
-			}
+			FileTemplateTagsModifier.ModifyTags (policyParent, project, language, identifier, fileName, ref tags);
 		}
 		
 		static string CreateIdentifierName (string identifier)
@@ -446,7 +357,7 @@ namespace MonoDevelop.Ide.Templates
 		}
 
 		
-		protected LanguageBinding GetLanguageBinding (string language)
+		internal static LanguageBinding GetLanguageBinding (string language)
 		{
 			var binding = LanguageBindingService.GetBindingPerLanguageName (language);
 			if (binding == null)

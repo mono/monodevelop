@@ -90,7 +90,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/TypeSystem/Parser">
-		<Parser class = "MonoDevelop.Xml.MSBuild.MSBuildDocumentParser" mimeType = "application/x-msbuild" id = "XmlParser"/>
+		<Parser class = "MonoDevelop.Xml.MSBuild.MSBuildDocumentParser" mimeType = "application/x-msbuild" id = "MSBuildParser"/>
 		<Parser class = "MonoDevelop.Xml.Editor.XmlDocumentParser" mimeType = "application/xml" id = "XmlParser"/>
 	</Extension>
 

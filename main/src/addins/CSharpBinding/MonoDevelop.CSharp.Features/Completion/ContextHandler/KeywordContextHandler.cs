@@ -201,20 +201,19 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				IsStartingNewWord (text, position);
 		}
 
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, CancellationToken cancellationToken)
+		protected override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
-			var ctx = await completionContext.GetSyntaxContextAsync (engine.Workspace, cancellationToken).ConfigureAwait (false);
-			var model = await completionContext.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
+			var model = ctx.SemanticModel;
 			if (ctx.CSharpSyntaxContext.IsInNonUserCode) {
-				return Enumerable.Empty<CompletionData> ();
+				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 			}
 
 			if (ctx.TargetToken.IsKind (SyntaxKind.OverrideKeyword))
-				return Enumerable.Empty<CompletionData> ();
+				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 
 			if (info.CompletionTriggerReason == CompletionTriggerReason.CharTyped && info.TriggerCharacter == ' ') {
 				if (!ctx.CSharpSyntaxContext.IsEnumBaseListContext && !ctx.LeftToken.IsKind (SyntaxKind.EqualsToken) && !ctx.LeftToken.IsKind (SyntaxKind.EqualsEqualsToken))
-					return Enumerable.Empty<CompletionData> ();
+					return Task.FromResult (Enumerable.Empty<CompletionData> ());
 //				completionResult.AutoCompleteEmptyMatch = false;
 			}
 
@@ -238,7 +237,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 //			if (parent.IsKind(SyntaxKind.TypeParameterConstraintClause)) {
 //				result.Add(factory.CreateGenericData (this, "new()", GenericDataType.PreprocessorKeyword));
 //			}
-			return result;
+			return Task.FromResult ((IEnumerable<CompletionData>)result);
 		} 
 
 	}

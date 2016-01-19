@@ -134,10 +134,10 @@ namespace MonoDevelop.CodeGeneration
 			GetSize (out w, out h);
 			
 			int myMonitor = Screen.GetMonitorAtPoint (x, y);
-			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, myMonitor);
+			Xwt.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen.Number, myMonitor);
 
 			if (x + w > geometry.Right)
-				x = geometry.Right - w;
+				x = (int)geometry.Right - w;
 
 			if (y + h > geometry.Bottom)
 				y = y - completionContext.TriggerTextHeight - h;

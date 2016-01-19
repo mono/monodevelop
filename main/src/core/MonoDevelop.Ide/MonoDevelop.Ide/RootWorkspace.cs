@@ -53,7 +53,6 @@ namespace MonoDevelop.Ide
 //		IParserDatabase parserDatabase;
 		string activeConfiguration;
 		bool useDefaultRuntime;
-		string preferredActiveExecutionTarget;
 
 		internal RootWorkspace ()
 		{
@@ -124,11 +123,6 @@ namespace MonoDevelop.Ide
 		{
 			if (ActiveExecutionTargetChanged != null)
 				ActiveExecutionTargetChanged (this, EventArgs.Empty);
-		}
-
-		internal string PreferredActiveExecutionTarget {
-			get { return ActiveExecutionTarget != null ? ActiveExecutionTarget.Id : preferredActiveExecutionTarget; }
-			set { preferredActiveExecutionTarget = value; }
 		}
 
 		public ConfigurationSelector ActiveConfiguration {
@@ -232,7 +226,12 @@ namespace MonoDevelop.Ide
 				monitor.Dispose ();
 			}
 		}
-		
+
+		bool IBuildTarget.CanBuild (ConfigurationSelector configuration)
+		{
+			return true;
+		}
+
 		bool IBuildTarget.CanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
 			if (IdeApp.ProjectOperations.CurrentSelectedSolution != null)
@@ -494,7 +493,7 @@ namespace MonoDevelop.Ide
 			}
 			if (closedDocs != null) {
 				foreach (string doc in closedDocs) {
-					IdeApp.Workbench.OpenDocument (doc, false);
+					IdeApp.Workbench.OpenDocument (doc, null, false);
 				}
 			}
 		}
@@ -592,7 +591,6 @@ namespace MonoDevelop.Ide
 			try {
 				WorkspaceUserData data = item.UserProperties.GetValue<WorkspaceUserData> ("MonoDevelop.Ide.Workspace");
 				if (data != null) {
-					PreferredActiveExecutionTarget = data.PreferredExecutionTarget;
 					ActiveExecutionTarget = null;
 
 					if (GetConfigurations ().Contains (data.ActiveConfiguration))
@@ -661,8 +659,6 @@ namespace MonoDevelop.Ide
 			WorkspaceUserData data = new WorkspaceUserData ();
 			data.ActiveConfiguration = ActiveConfigurationId;
 			data.ActiveRuntime = UseDefaultRuntime ? null : ActiveRuntime.Id;
-			if (ActiveExecutionTarget != null)
-				data.PreferredExecutionTarget = ActiveExecutionTarget.Id;
 			item.UserProperties.SetValue ("MonoDevelop.Ide.Workspace", data);
 			
 			// Allow add-ins to fill-up data
@@ -710,25 +706,17 @@ namespace MonoDevelop.Ide
 				reloadingCount--;
 		}
 
-		void CheckWorkspaceItems (object sender, FileEventArgs args)
+		async void CheckWorkspaceItems (object sender, FileEventArgs args)
 		{
 			HashSet<FilePath> files = new HashSet<FilePath> (args.Select (e => e.FileName.CanonicalPath));
 			foreach (Solution s in GetAllSolutions ().Where (sol => sol.GetItemFiles (false).Any (f => files.Contains (f.CanonicalPath))))
-				OnCheckWorkspaceItem (s);
+				await OnCheckWorkspaceItem (s);
 			
 			foreach (Project p in GetAllProjects ().Where (proj => proj.GetItemFiles (false).Any (f => files.Contains (f.CanonicalPath))))
-				OnCheckProject (p);
+				await OnCheckProject (p);
 		}
 		
-		bool OnRunProjectChecks ()
-		{
-			// If any project has been modified, reload it
-			foreach (WorkspaceItem it in new List<WorkspaceItem> (Items))
-				OnCheckWorkspaceItem (it);
-			return true;
-		}
-
-		void OnCheckWorkspaceItem (WorkspaceItem item)
+		async Task OnCheckWorkspaceItem (WorkspaceItem item)
 		{
 			if (item.NeedsReload) {
 				IEnumerable<string> closedDocs;
@@ -739,14 +727,14 @@ namespace MonoDevelop.Ide
 							SetReloading (true);
 							SavePreferences ();
 							CloseWorkspaceItem (item, false);
-							OpenWorkspaceItem (file, false, false);
+							await OpenWorkspaceItem (file, false, false);
 						} finally {
 							SetReloading (false);
 						}
 					}
 					else {
 						using (ProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true)) {
-							item.ParentWorkspace.ReloadItem (m, item);
+							await item.ParentWorkspace.ReloadItem (m, item);
 							ReattachDocumentProjects (closedDocs);
 						}
 					}
@@ -760,15 +748,15 @@ namespace MonoDevelop.Ide
 				Workspace ws = (Workspace) item;
 				List<WorkspaceItem> items = new List<WorkspaceItem> (ws.Items);
 				foreach (WorkspaceItem it in items)
-					OnCheckWorkspaceItem (it);
+					await OnCheckWorkspaceItem (it);
 			}
 			else if (item is Solution) {
 				Solution sol = (Solution) item;
-				OnCheckProject (sol.RootFolder);
+				await OnCheckProject (sol.RootFolder);
 			}
 		}
 		
-		void OnCheckProject (SolutionFolderItem entry)
+		async Task OnCheckProject (SolutionFolderItem entry)
 		{
 			if (entry.NeedsReload) {
 				IEnumerable projects = null;
@@ -783,7 +771,7 @@ namespace MonoDevelop.Ide
 				if (AllowReload (projects, out closedDocs)) {
 					using (ProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
 						// Root folders never need to reload
-						entry.ParentFolder.ReloadItem (m, entry);
+						await entry.ParentFolder.ReloadItem (m, entry);
 						ReattachDocumentProjects (closedDocs);
 					}
 					return;
@@ -796,7 +784,7 @@ namespace MonoDevelop.Ide
 				foreach (SolutionFolderItem ce in ((SolutionFolder)entry).Items)
 					ens.Add (ce);
 				foreach (SolutionFolderItem ce in ens)
-					OnCheckProject (ce);
+					await OnCheckProject (ce);
 			}
 		}
 		
@@ -831,14 +819,9 @@ namespace MonoDevelop.Ide
 					hasUnsaved = true;
 				if (!doc.IsFile)
 					hasNoFiles = true;
-				ISupportsProjectReload pr = doc.GetContent<ISupportsProjectReload> ();
-				if (pr != null) {
-					ProjectReloadCapability c = pr.ProjectReloadCapability;
-					if ((int) c < (int) prc)
-						prc = c;
-				}
-				else
-					prc = ProjectReloadCapability.None;
+				var c = doc.ProjectReloadCapability;
+				if ((int) c < (int) prc)
+					prc = c;
 			}
 
 			string msg = null;
@@ -869,8 +852,7 @@ namespace MonoDevelop.Ide
 			foreach (Document doc in docs) {
 				if (doc.IsDirty)
 					hasUnsaved = true;
-				ISupportsProjectReload pr = doc.GetContent<ISupportsProjectReload> ();
-				if (pr != null)
+				if (doc.ProjectReloadCapability != ProjectReloadCapability.None)
 					doc.SetProject (null);
 				else {
 					FilePath file = doc.IsFile ? doc.FileName : FilePath.Null;
@@ -917,7 +899,7 @@ namespace MonoDevelop.Ide
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not load parser database.", ex);
 			}
-			if (DispatchService.IsGuiThread)
+			if (Runtime.IsMainThread)
 				NotifyItemAddedGui (item, IsReloading);
 			else {
 				bool reloading = IsReloading;
@@ -951,7 +933,7 @@ namespace MonoDevelop.Ide
 		
 		internal void NotifyItemRemoved (WorkspaceItem item)
 		{
-			if (DispatchService.IsGuiThread)
+			if (Runtime.IsMainThread)
 				NotifyItemRemovedGui (item, IsReloading);
 			else {
 				bool reloading = IsReloading;
@@ -976,11 +958,15 @@ namespace MonoDevelop.Ide
 			if (WorkspaceItemClosed != null)
 				WorkspaceItemClosed (this, args);
 
-			if (Items.Count == 0 && !reloading) {
+			bool lastWorkspaceItemClosing = Items.Count == 0 && !reloading;
+			if (lastWorkspaceItemClosing) {
 				if (LastWorkspaceItemClosed != null)
 					LastWorkspaceItemClosed (this, EventArgs.Empty);
 			}
 			MonoDevelop.Ide.TypeSystem.TypeSystemService.Unload (item);
+
+			if (lastWorkspaceItemClosing)
+				MonoDevelop.Ide.TypeSystem.MetadataReferenceCache.Clear ();
 
 			NotifyDescendantItemRemoved (this, args);
 		}
@@ -1079,20 +1065,23 @@ namespace MonoDevelop.Ide
 		
 		void NotifyItemRemovedFromSolution (object sender, SolutionItemChangeEventArgs args)
 		{
-			NotifyItemRemovedFromSolutionRec (sender, args.SolutionItem, args.Solution);
+			NotifyItemRemovedFromSolutionRec (sender, args.SolutionItem, args.Solution, args);
 		}
 		
-		void NotifyItemRemovedFromSolutionRec (object sender, SolutionFolderItem e, Solution sol)
+		void NotifyItemRemovedFromSolutionRec (object sender, SolutionFolderItem e, Solution sol, SolutionItemChangeEventArgs originalArgs)
 		{
 			if (e == IdeApp.ProjectOperations.CurrentSelectedSolutionItem)
 				IdeApp.ProjectOperations.CurrentSelectedSolutionItem = null;
 				
 			if (e is SolutionFolder) {
 				foreach (SolutionFolderItem ce in ((SolutionFolder)e).Items)
-					NotifyItemRemovedFromSolutionRec (sender, ce, sol);
+					NotifyItemRemovedFromSolutionRec (sender, ce, sol, null);
 			}
+
+			// For the root item send the original args, since they contain reload information
+
 			if (ItemRemovedFromSolution != null)
-				ItemRemovedFromSolution (sender, new SolutionItemChangeEventArgs (e, sol, false));
+				ItemRemovedFromSolution (sender, originalArgs ?? new SolutionItemChangeEventArgs (e, sol, false));
 		}
 		
 		void NotifyDescendantItemAdded (object s, WorkspaceItemEventArgs args)
@@ -1369,8 +1358,6 @@ namespace MonoDevelop.Ide
 		public string ActiveConfiguration;
 		[ItemProperty]
 		public string ActiveRuntime;
-		[ItemProperty]
-		public string PreferredExecutionTarget;
 	}
 	
 	public class ItemUnloadingEventArgs: EventArgs

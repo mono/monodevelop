@@ -1,5 +1,5 @@
 ﻿//
-// SharpDevelopPackageManagerTests.cs
+// MonoDevelopPackageManagerTests.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -27,7 +27,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 using NUnit.Framework;
 using MonoDevelop.PackageManagement.Tests.Helpers;
@@ -37,7 +37,7 @@ namespace MonoDevelop.PackageManagement.Tests
 	[TestFixture]
 	public class MonoDevelopPackageManagerTests
 	{
-		SharpDevelopPackageManager packageManager;
+		MonoDevelopPackageManager packageManager;
 		FakePackageRepository fakeFeedSourceRepository;
 		FakeSharedPackageRepository fakeSolutionSharedRepository;
 		FakeProject project;
@@ -70,7 +70,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			fakeSolutionPackageRepository.PackagePathResolver = pathResolver;
 			fakeSolutionPackageRepository.FakeSharedRepository = fakeSolutionSharedRepository;
 
-			packageManager = new SharpDevelopPackageManager (fakeFeedSourceRepository,
+			packageManager = new MonoDevelopPackageManager (fakeFeedSourceRepository,
 				packageRefRepositoryHelper.FakeProjectSystem,
 				fakeSolutionPackageRepository,
 				fakePackageOperationResolverFactory);

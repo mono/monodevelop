@@ -33,7 +33,7 @@ using System.Linq;
 
 using Gdk;
 using Gtk;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Ide;
 using NuGet;
 

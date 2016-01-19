@@ -132,7 +132,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		protected virtual void OnSyntaxModeChanged (Mono.TextEditor.SyntaxModeChangeEventArgs e)
+		protected virtual void OnSyntaxModeChanged (SyntaxModeChangeEventArgs e)
 		{
 			var handler = SyntaxModeChanged;
 			if (handler != null)
@@ -265,15 +265,17 @@ namespace Mono.TextEditor
 		public void Replace (int offset, int count, string value, ICSharpCode.NRefactory.Editor.AnchorMovementType anchorMovementType = AnchorMovementType.Default)
 		{
 			if (offset < 0)
-				throw new ArgumentOutOfRangeException ("offset", "must be > 0, was: " + offset);
+				throw new ArgumentOutOfRangeException (nameof (offset), "must be > 0, was: " + offset);
 			if (offset > TextLength)
-				throw new ArgumentOutOfRangeException ("offset", "must be <= Length, was: " + offset);
+				throw new ArgumentOutOfRangeException (nameof (offset), "must be <= TextLength(" + TextLength +"), was: " + offset);
 			if (count < 0)
-				throw new ArgumentOutOfRangeException ("count", "must be > 0, was: " + count);
+				throw new ArgumentOutOfRangeException (nameof (count), "must be > 0, was: " + count);
 
 			InterruptFoldWorker ();
 			//int oldLineCount = LineCount;
 			var args = new DocumentChangeEventArgs (offset, count > 0 ? GetTextAt (offset, count) : "", value, anchorMovementType);
+			if (value != null)
+				EnsureSegmentIsUnfolded (offset, value.Length);
 			OnTextReplacing (args);
 			value = args.InsertedText.Text;
 			UndoOperation operation = null;
@@ -651,11 +653,16 @@ namespace Mono.TextEditor
 			public override void Undo (TextDocument doc, bool fireEvent = true)
 			{
 				doc.currentAtomicUndoOperationType.Push (operationType);
-				for (int i = operations.Count - 1; i >= 0; i--) {
-					operations [i].Undo (doc, false);
-					doc.OnUndone (new UndoOperationEventArgs (operations[i]));
+				doc.atomicUndoLevel++;
+				try {
+					for (int i = operations.Count - 1; i >= 0; i--) {
+						operations [i].Undo (doc, false);
+						doc.OnUndone (new UndoOperationEventArgs (operations [i]));
+					}
+				} finally {
+					doc.atomicUndoLevel--;
+					doc.currentAtomicUndoOperationType.Pop ();
 				}
-				doc.currentAtomicUndoOperationType.Pop (); 
 				if (fireEvent)
 					OnUndoDone ();
 			}
@@ -1266,7 +1273,20 @@ namespace Mono.TextEditor
 				CommitDocumentUpdate ();
 			}
 		}
-		
+
+		public void EnsureSegmentIsUnfolded (int offset, int length)
+		{
+			bool needUpdate = false;
+			foreach (var fold in GetFoldingContaining (offset, length).Where (f => f.IsFolded)) {
+				needUpdate = true;
+				fold.IsFolded = false;
+			}
+			if (needUpdate) {
+				RequestUpdate (new UpdateAll ());
+				CommitDocumentUpdate ();
+			}
+		}
+
 		internal void InformFoldTreeUpdated ()
 		{
 			var handler = FoldTreeUpdated;
@@ -1415,7 +1435,13 @@ namespace Mono.TextEditor
 
 		#region Text segment markers
 
-		SegmentTree<TextSegmentMarker> textSegmentMarkerTree = new SegmentTree<TextSegmentMarker> (); 
+		int textSegmentInsertId = 0;
+		SegmentTree<TextSegmentMarker> textSegmentMarkerTree = new SegmentTree<TextSegmentMarker> ();
+
+		public static IEnumerable<TextSegmentMarker> OrderTextSegmentMarkersByInsertion (IEnumerable<TextSegmentMarker> enumerable)
+		{
+			return enumerable.OrderBy (m => m.insertId);
+		}
 
 		public IEnumerable<TextSegmentMarker> GetTextSegmentMarkersAt (DocumentLine line)
 		{
@@ -1435,6 +1461,7 @@ namespace Mono.TextEditor
 
 		public void AddMarker (TextSegmentMarker marker)
 		{
+			marker.insertId = textSegmentInsertId++;
 			textSegmentMarkerTree.Add (marker);
 			var startLine = OffsetToLineNumber (marker.Offset);
 			var endLine = OffsetToLineNumber (marker.EndOffset);

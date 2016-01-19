@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	{
 		SdkLocationWidget w;
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return w = new SdkLocationWidget (this);
 		}

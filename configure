@@ -52,6 +52,8 @@ usage ()
 	echo ""
 	echo "--enable-release"
 	echo "  Builds md in release mode"
+	echo "--enable-mac64"
+	echo "  Build for x64 on OS X"
 	echo ""
 	echo "--profile=PROFILE"
 	echo ""
@@ -159,6 +161,12 @@ configure_packages ()
 			enable_tests=" "
 		fi
 
+		if [ -z "$MONODEVELOP_64BIT_SAFE" ]; then	
+			enable_x64=--with-macarch=i386
+		else
+			enable_x64=--with-macarch=x86_64
+		fi
+
 		prefixarg="--prefix=$prefix"
 		builddir=`pwd`/$path/build
 
@@ -182,13 +190,16 @@ configure_packages ()
 		echo
 		echo "Configuration options: $ops"
 		if test -a $path/autogen.sh; then
-			sct="./autogen.sh $enable_tests"
+			sct="./autogen.sh $enable_tests $enable_x64"
 		elif test -a $path/configure; then
 			sct=./configure
 		elif test -a $path/configure.sh; then
 			sct=./configure.sh
 		else
-			echo Configuration script not found in directory: $p
+			echo -en '\033[0;31m'
+			echo Configuration script not found in directory: $path
+			echo Try running $ git submodule update --init --recursive
+			echo -en '\033[0m'
 			exit 1
 		fi
 		pushd $path > /dev/null
@@ -234,6 +245,9 @@ while test x$1 != x; do
 			;;
 		--enable-release)
 			release=yes
+			;;
+		--enable-mac64)
+			x64=yes
 			;;
 		--prefix=*)
 			prefix=`echo $1 | sed 's/--prefix=//'`

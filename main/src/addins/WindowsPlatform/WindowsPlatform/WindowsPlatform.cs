@@ -45,6 +45,13 @@ using System.Text;
 using MonoDevelop.Core;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using MonoDevelop.Ide;
+using MonoDevelop.Components.Windows;
+using WindowsPlatform.MainToolbar;
+using MonoDevelop.Components.Commands;
+using System.Windows.Controls;
+using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Input;
 
 namespace MonoDevelop.Platform
 {
@@ -64,8 +71,90 @@ namespace MonoDevelop.Platform
 			get { return "Windows"; }
 		}
 
+		#region Toolbar implementation
+		Components.Commands.CommandManager commandManager;
+		string commandMenuAddinPath;
+		string appMenuAddinPath;
+		public override bool SetGlobalMenu (Components.Commands.CommandManager commandManager, string commandMenuAddinPath, string appMenuAddinPath)
+		{
+			// Only store this information. Release it when creating the main toolbar.
+			this.commandManager = commandManager;
+			this.commandMenuAddinPath = commandMenuAddinPath;
+			this.appMenuAddinPath = appMenuAddinPath;
+
+			return true;
+		}
+
+		const int WM_SYSCHAR = 0x0106;
+        internal override void AttachMainToolbar (Gtk.VBox parent, Components.MainToolbar.IMainToolbarView toolbar)
+		{
+			titleBar = new TitleBar ();
+			var topMenu = new GtkWPFWidget (titleBar) {
+				HeightRequest = System.Windows.Forms.SystemInformation.CaptionHeight,
+			};
+			//commandManager.IncompleteKeyPressed += (sender, e) => {
+			//	if (e.Key == Gdk.Key.Alt_L) {
+			//		Keyboard.Focus(titleBar.DockTitle.Children[0]);
+			//	}
+			//};
+			parent.PackStart (topMenu, false, true, 0);
+			SetupMenu ();
+
+			parent.PackStart ((WPFToolbar)toolbar, false, true, 0);
+		}
+
+		void SetupMenu ()
+		{
+			// TODO: Use this?
+			CommandEntrySet appCes = commandManager.CreateCommandEntrySet (appMenuAddinPath);
+
+			CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
+			var mainMenu = new Menu {
+				IsMainMenu = true,
+				FocusVisualStyle = null,
+			};
+			foreach (CommandEntrySet ce in ces)
+			{
+				var item = new TitleMenuItem(commandManager, ce);
+				item.SubmenuClosing += (o, e) =>
+				{
+					bool shouldFocusIde = !mainMenu.Items.OfType<MenuItem>().Any(mi => mi.IsSubmenuOpen);
+					if (shouldFocusIde)
+						IdeApp.Workbench.RootWindow.Present();
+				};
+				mainMenu.Items.Add(item);
+			}
+
+			titleBar.DockTitle.Children.Add (mainMenu);
+			DockPanel.SetDock (mainMenu, Dock.Left);
+
+			commandManager = null;
+			commandMenuAddinPath = appMenuAddinPath = null;
+		}
+
+		TitleBar titleBar;
+		internal override Components.MainToolbar.IMainToolbarView CreateMainToolbar (Gtk.Window window)
+		{
+			return new WPFToolbar {
+				HeightRequest = 40,
+			};
+		}
+		#endregion
+
+		internal static Xwt.Toolkit WPFToolkit;
+
+		public override Xwt.Toolkit LoadNativeToolkit ()
+		{
+			var path = Path.GetDirectoryName (GetType ().Assembly.Location);
+			System.Reflection.Assembly.LoadFrom (Path.Combine (path, "Xwt.WPF.dll"));
+			return WPFToolkit = Xwt.Toolkit.Load (Xwt.ToolkitType.Wpf);
+		}
+
 		internal override void SetMainWindowDecorations (Gtk.Window window)
 		{
+			Uri uri = new Uri ("pack://application:,,,/WindowsPlatform;component/Styles.xaml");
+			Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary() { Source = uri });
+
 			// Only initialize elements for Win7+.
 			if (TaskbarManager.IsPlatformSupported) {
 				TaskbarManager.Instance.SetApplicationIdForSpecificWindow (GdkWin32.HgdiobjGet (window.GdkWindow), BrandingService.ApplicationName);
@@ -200,8 +289,9 @@ namespace MonoDevelop.Platform
 		[DllImport (Win32.USER32)]
 		extern static int GetMonitorInfoA (IntPtr hmonitor, ref MonitorInfo info);
 
-		public override Gdk.Rectangle GetUsableMonitorGeometry (Gdk.Screen screen, int monitor_id)
+		public override Xwt.Rectangle GetUsableMonitorGeometry (int screenNumber, int monitor_id)
 		{
+			var screen = Gdk.Display.Default.GetScreen (screenNumber);
 			Gdk.Rectangle geometry = screen.GetMonitorGeometry (monitor_id);
 			List<MonitorInfo> screens = new List<MonitorInfo> ();
 
@@ -232,7 +322,7 @@ namespace MonoDevelop.Platform
 			int y = geometry.Y + (visible.Top - frame.Top);
 			int height = visible.Height;
 
-			return new Gdk.Rectangle (x, y, width, height);
+			return new Xwt.Rectangle (x, y, width, height);
 		}
 
 		static ProcessStartInfo CreateConsoleStartInfo (

@@ -21,7 +21,6 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateDefaultConstruct
 		{
 			if (!cancellationToken.IsCancellationRequested)
 			{
-				var syntaxTree = document.SyntaxTree;
 				var node = document.Root.FindToken(textSpan.Start).GetAncestor<TypeSyntax>();
 				if (node != null)
 				{

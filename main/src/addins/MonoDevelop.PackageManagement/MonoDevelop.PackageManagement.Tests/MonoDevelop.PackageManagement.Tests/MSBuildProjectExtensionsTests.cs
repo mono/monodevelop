@@ -1,8 +1,8 @@
 ﻿
 using System;
 using System.Xml;
-using ICSharpCode.PackageManagement;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.PackageManagement;
+using MonoDevelop.Projects.MSBuild;
 using NuGet;
 using NUnit.Framework;
 using System.Linq;

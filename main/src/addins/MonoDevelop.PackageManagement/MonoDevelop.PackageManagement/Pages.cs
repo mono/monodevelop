@@ -29,7 +29,7 @@
 using System;
 using System.Collections.ObjectModel;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public class Pages : ObservableCollection<Page>
 	{

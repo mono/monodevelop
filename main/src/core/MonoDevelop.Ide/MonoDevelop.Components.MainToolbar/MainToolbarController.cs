@@ -108,9 +108,6 @@ namespace MonoDevelop.Components.MainToolbar
 			IdeApp.ProjectOperations.CurrentSelectedSolutionChanged += HandleCurrentSelectedSolutionChanged;
 
 			AddinManager.ExtensionChanged += OnExtensionChanged;
-			MonoDevelopWorkspace.LoadingFinished += delegate {
-				HandleSearchEntryChanged (null, EventArgs.Empty);
-			};
 		}
 
 		public void Initialize ()
@@ -345,6 +342,10 @@ namespace MonoDevelop.Components.MainToolbar
 		bool SelectActiveRuntime (ref bool selected, ref ExecutionTarget defaultTarget, ref int defaultIter)
 		{
 			var runtimes = ToolbarView.RuntimeModel.Cast<RuntimeModel> ().ToList ();
+			string lastRuntimeForProject = currentStartupProject?.UserProperties.GetValue<string> ("PreferredExecutionTarget", defaultValue: null);
+			var activeTarget = IdeApp.Workspace.ActiveExecutionTarget;
+			var activeTargetId = activeTarget != null ? activeTarget.Id : null;
+
 			for (int iter = 0; iter < runtimes.Count; ++iter) {
 				var item = runtimes [iter];
 				using (var model = item.GetMutableModel ()) {
@@ -360,12 +361,12 @@ namespace MonoDevelop.Components.MainToolbar
 					if (item.HasChildren)
 						continue;
 
-				if (defaultTarget == null) {
+				if (defaultTarget == null || lastRuntimeForProject == target.Id) {
 					defaultTarget = target;
 					defaultIter = iter;
 				}
 
-				if (target.Id == IdeApp.Workspace.PreferredActiveExecutionTarget) {
+				if (target.Id == activeTargetId) {
 					IdeApp.Workspace.ActiveExecutionTarget = target;
 					ToolbarView.ActiveRuntime = ToolbarView.RuntimeModel.ElementAt (iter);
 					UpdateBuildConfiguration ();
@@ -373,7 +374,7 @@ namespace MonoDevelop.Components.MainToolbar
 					return true;
 				}
 
-				if (target.Equals (IdeApp.Workspace.ActiveExecutionTarget)) {
+				if (target.Equals (activeTarget)) {
 					ToolbarView.ActiveRuntime = ToolbarView.RuntimeModel.ElementAt (iter);
 					UpdateBuildConfiguration ();
 					selected = true;
@@ -401,7 +402,6 @@ namespace MonoDevelop.Components.MainToolbar
 						UpdateBuildConfiguration ();
 					}
 				}
-
 			} finally {
 				ignoreRuntimeChangedCount--;
 			}
@@ -444,6 +444,9 @@ namespace MonoDevelop.Components.MainToolbar
 		void TrackStartupProject ()
 		{
 			if (currentStartupProject != null && ((currentSolution != null && currentStartupProject != currentSolution.StartupItem) || currentSolution == null)) {
+				var runtime = (RuntimeModel)ToolbarView.ActiveRuntime;
+				if (runtime != null && runtime.Command == null)
+					currentStartupProject.UserProperties.SetValue<string> ("PreferredExecutionTarget", runtime.TargetId);
 				currentStartupProject.ExecutionTargetsChanged -= executionTargetsChanged;
 				currentStartupProject.Saved -= HandleUpdateCombos;
 			}
@@ -480,7 +483,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			var info = IdeApp.CommandService.GetCommand (Commands.NavigateTo);
 			ToolbarView.SearchPlaceholderMessage = !string.IsNullOrEmpty (info.AccelKey) ?
-				GettextCatalog.GetString ("Press '{0}' to search", KeyBindingManager.BindingToDisplayLabel (info.AccelKey, false)) :
+				GettextCatalog.GetString ("Press \u2018{0}\u2019 to search", KeyBindingManager.BindingToDisplayLabel (info.AccelKey, false)) :
 				GettextCatalog.GetString ("Search solution");
 		}
 
@@ -567,9 +570,9 @@ namespace MonoDevelop.Components.MainToolbar
 		void HandleSearchEntryKeyPressed (object sender, Xwt.KeyEventArgs e)
 		{
 			if (e.Key == Xwt.Key.Escape) {
+				DestroyPopup();
 				var doc = IdeApp.Workbench.ActiveDocument;
 				if (doc != null) {
-					DestroyPopup ();
 					doc.Select ();
 				}
 				return;
@@ -585,8 +588,11 @@ namespace MonoDevelop.Components.MainToolbar
 			IdeApp.Workbench.Present ();
 			var text = lastSearchText;
 			var actDoc = IdeApp.Workbench.ActiveDocument;
-			if (actDoc != null && actDoc.Editor.IsSomethingSelected)
-				text = actDoc.Editor.SelectedText;
+			if (actDoc != null && actDoc.Editor.IsSomethingSelected) {
+				string selected = actDoc.Editor.SelectedText;
+				int whitespaceIndex = selected.TakeWhile (c => !char.IsWhiteSpace (c)).Count ();
+				text = selected.Substring (0, whitespaceIndex);
+			}
 
 			ToolbarView.SearchText = text;
 			ToolbarView.FocusSearchBar ();
@@ -828,6 +834,14 @@ namespace MonoDevelop.Components.MainToolbar
 				if (Command != null && IdeApp.CommandService.DispatchCommand (Command, CommandSource.ContextMenu))
 					return true;
 				return false;
+			}
+
+			internal string TargetId {
+				get {
+					if (ExecutionTarget == null)
+						return "";
+					return ExecutionTarget.Id;
+				}
 			}
 
 			public IRuntimeMutableModel GetMutableModel ()

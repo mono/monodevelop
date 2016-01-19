@@ -31,14 +31,6 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.Editor
 {
-	[Obsolete ("Use WordNavigationStyle")]
-	public enum ControlLeftRightMode
-	{
-		MonoDevelop,
-		Emacs,
-		SharpDevelop
-	}
-
 	public enum WordNavigationStyle
 	{
 		Unix,
@@ -86,6 +78,11 @@ namespace MonoDevelop.Ide.Editor
 			MonoDevelop.Projects.Policies.PolicyService.DefaultPolicies.PolicyChanged += instance.HandlePolicyChanged;
 
 			PlainEditor = new PlainEditorOptions ();
+		}
+
+		internal void FireChange ()
+		{
+			OnChanged (EventArgs.Empty);
 		}
 
 		class PlainEditorOptions : ITextEditorOptions
@@ -246,11 +243,8 @@ namespace MonoDevelop.Ide.Editor
 
 		DefaultSourceEditorOptions (TextStylePolicy currentPolicy)
 		{
-			var defaultControlMode = (ControlLeftRightMode)Enum.Parse (typeof(ControlLeftRightMode), DesktopService.DefaultControlLeftRightBehavior);
-			controlLeftRightMode = ConfigurationProperty.Create ("ControlLeftRightMode", defaultControlMode);
-			
 			WordNavigationStyle defaultWordNavigation = WordNavigationStyle.Unix;
-			if (Platform.IsWindows || controlLeftRightMode.Value == ControlLeftRightMode.SharpDevelop) {
+			if (Platform.IsWindows) {
 				defaultWordNavigation = WordNavigationStyle.Windows;
 			}
 			wordNavigationStyle = ConfigurationProperty.Create ("WordNavigationStyle", defaultWordNavigation);
@@ -380,7 +374,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		ConfigurationProperty<bool> enableHighlightUsages = ConfigurationProperty.Create ("EnableHighlightUsages", false);
+		ConfigurationProperty<bool> enableHighlightUsages = ConfigurationProperty.Create ("EnableHighlightUsages", true);
 		public bool EnableHighlightUsages {
 			get {
 				return enableHighlightUsages;
@@ -391,7 +385,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		ConfigurationProperty<LineEndingConversion> lineEndingConversion = ConfigurationProperty.Create("LineEndingConversion", LineEndingConversion.Ask);
+		ConfigurationProperty<LineEndingConversion> lineEndingConversion = ConfigurationProperty.Create("LineEndingConversion", LineEndingConversion.LeaveAsIs);
 		public LineEndingConversion LineEndingConversion {
 			get {
 				return lineEndingConversion;
@@ -403,17 +397,6 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		#endregion
-
-		ConfigurationProperty<bool> useViModes = ConfigurationProperty.Create ("UseViModes", false);
-		public bool UseViModes {
-			get {
-				return useViModes;
-			}
-			set {
-				if (useViModes.Set (value))
-					OnChanged (EventArgs.Empty);
-			}
-		}
 
 		ConfigurationProperty<bool> onTheFlyFormatting = ConfigurationProperty.Create ("OnTheFlyFormatting", true);
 		public bool OnTheFlyFormatting {
@@ -439,18 +422,6 @@ namespace MonoDevelop.Ide.Editor
 				}
 			}
 		}
-
-		ConfigurationProperty<ControlLeftRightMode> controlLeftRightMode;
-		[Obsolete("Use WordNavigationStyle")]
-		public ControlLeftRightMode ControlLeftRightMode {
-			get {
-				return controlLeftRightMode;
-			}
-			set {
-				if (controlLeftRightMode.Set (value))
-					OnChanged (EventArgs.Empty);
-			}
-		}
 		
 		ConfigurationProperty<WordNavigationStyle> wordNavigationStyle;
 		public WordNavigationStyle WordNavigationStyle {
@@ -465,9 +436,6 @@ namespace MonoDevelop.Ide.Editor
 
 		public WordFindStrategy WordFindStrategy {
 			get {
-				if (useViModes) {
-					return WordFindStrategy.Vim;
-				}
 				switch (WordNavigationStyle) {
 				case WordNavigationStyle.Windows:
 					return WordFindStrategy.SharpDevelop;

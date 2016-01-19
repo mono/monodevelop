@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 	/// <summary>
 	/// This class implements a project browser.
 	/// </summary>
-	public class TreeViewPad : AbstractPadContent, IMementoCapable, ICommandDelegatorRouter
+	public class TreeViewPad : PadContent, IMementoCapable, ICommandDelegatorRouter
 	{
 		internal Action Initializer;
 		
@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 		
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return treeView;
 			}
@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			treeView.Tree.EnableAutoTooltips ();
 		}
 		
-		public override void Initialize (IPadWindow container)
+		protected override void Initialize (IPadWindow container)
 		{
 			base.Initialize (container);
 			TreeView.Id = Id;

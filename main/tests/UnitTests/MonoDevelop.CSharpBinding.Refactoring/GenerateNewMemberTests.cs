@@ -37,13 +37,14 @@ using MonoDevelop.Core.ProgressMonitoring;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharpBinding.Refactoring
 {
 	[TestFixture()]
 	public class GenerateNewMemberTests : UnitTests.TestBase
 	{
-		static void TestInsertionPoints (string text)
+		static async Task TestInsertionPoints (string text)
 		{
 			var tww = new TestWorkbenchWindow ();
 			var content = new TestViewContent ();
@@ -122,10 +123,10 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			solution.AddConfiguration ("", true); 
 			solution.DefaultSolutionFolder.AddItem (project);
 			using (var monitor = new ProgressMonitor ())
-				TypeSystemService.Load (solution, monitor, false).Wait ();
+				await TypeSystemService.Load (solution, monitor);
 			content.Project = project;
 			doc.SetProject (project);
-			var parsedFile = doc.UpdateParseDocument ();
+			var parsedFile = await doc.UpdateParseDocument ();
 			var model = parsedFile.GetAst<SemanticModel> ();
 			var sym = model?.GetEnclosingSymbol (data.Text.IndexOf ('{'));
 			var type = sym as INamedTypeSymbol ?? sym?.ContainingType;
@@ -144,9 +145,9 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 		}
 		
 		[Test()]
-		public void TestBasicInsertionPoint ()
+		public async Task TestBasicInsertionPoint ()
 		{
-			TestInsertionPoints (@"
+			await TestInsertionPoints (@"
 class Test {
 @D	
 	void TestMe ()
@@ -158,9 +159,9 @@ class Test {
 		}
 		
 		[Test()]
-		public void TestBasicInsertionPoint2 ()
+		public async Task TestBasicInsertionPoint2 ()
 		{
-			TestInsertionPoints (@"
+			await TestInsertionPoints (@"
 class Test 
 {
 @D	
@@ -173,9 +174,9 @@ class Test
 		}
 		
 		
-		public void TestBasicInsertionPointWithoutEmpty ()
+		public async Task TestBasicInsertionPointWithoutEmpty ()
 		{
-			TestInsertionPoints (@"
+			await TestInsertionPoints (@"
 class Test {
 	@Tvoid TestMe ()
 	{
@@ -185,39 +186,39 @@ class Test {
 		}
 		
 		[Test()]
-		public void TestBasicInsertionPointOneLineCase ()
+		public async Task TestBasicInsertionPointOneLineCase ()
 		{
-			TestInsertionPoints (@"class Test {@tvoid TestMe () { }@v}");
+			await TestInsertionPoints (@"class Test {@tvoid TestMe () { }@v}");
 		}
 		
 		
 		[Test()]
-		public void TestEmptyClass ()
+		public async Task TestEmptyClass ()
 		{
-			TestInsertionPoints (@"class Test {@s}");
+			await TestInsertionPoints (@"class Test {@s}");
 		}
 		
 		[Test()]
-		public void TestEmptyClass2 ()
+		public async Task TestEmptyClass2 ()
 		{
-			TestInsertionPoints (@"class Test {
+			await TestInsertionPoints (@"class Test {
 @n
 }");
 		}
 		
 		[Test()]
-		public void TestEmptyClass3 ()
+		public async Task TestEmptyClass3 ()
 		{
-			TestInsertionPoints (@"class Test
+			await TestInsertionPoints (@"class Test
 {
 @n
 }");
 		}
 		
 		[Test()]
-		public void TestComplexInsertionPoint ()
+		public async Task TestComplexInsertionPoint ()
 		{
-			TestInsertionPoints (@"
+			await TestInsertionPoints (@"
 class Test {
 @D	
 	void TestMe ()
@@ -242,9 +243,9 @@ class Test {
 		}
 		
 		[Test()]
-		public void TestComplexInsertionPointCase2 ()
+		public async Task TestComplexInsertionPointCase2 ()
 		{
-			TestInsertionPoints (@"class MainClass {
+			await TestInsertionPoints (@"class MainClass {
 @D	static void A ()
 	{
 	}
@@ -267,13 +268,13 @@ class Test {
 		
 		
 		[Test()]
-		public void TestEmptyClassInsertion ()
+		public async Task TestEmptyClassInsertion ()
 		{
-			TestInsertionPoints (@"
+			await TestInsertionPoints (@"
 public class EmptyClass
 {@s}");
 			
-			TestInsertionPoints (@"
+			await TestInsertionPoints (@"
 public class EmptyClass : Base
 {@s}");
 
@@ -281,9 +282,9 @@ public class EmptyClass : Base
 
 		[Ignore()]
 		[Test()]
-		public void TestBrokenInsertionPoint ()
+		public async Task TestBrokenInsertionPoint ()
 		{
-			TestInsertionPoints (@"
+			await TestInsertionPoints (@"
 public class EmptyClass
 }");
 
@@ -294,9 +295,9 @@ public class EmptyClass
 		/// Bug 5682 - insert method inserts two trailing tabs after } and has no trailing blank line
 		/// </summary>
 		[Test()]
-		public void Bug5682 ()
+		public async Task Bug5682 ()
 		{
-			TestInsertionPoints (@"class MainClass {
+			await TestInsertionPoints (@"class MainClass {
 @D	static void A ()
 	{
 	}
@@ -310,9 +311,9 @@ public class EmptyClass
 		}
 
 		[Test]
-		public void TestComplexInsertionPOintCase3 ()
+		public async Task TestComplexInsertionPOintCase3 ()
 		{
-			TestInsertionPoints (@"using System;
+			await TestInsertionPoints (@"using System;
 class vaevle
 {
 @D    int fooBar = 0;

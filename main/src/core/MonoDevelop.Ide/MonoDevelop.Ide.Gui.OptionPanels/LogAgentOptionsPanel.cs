@@ -27,6 +27,7 @@
 using System;
 using Gtk;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core.LogReporting;
 
@@ -36,7 +37,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	{
 		LogAgentPanelWidget widget;
 
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return widget = new  LogAgentPanelWidget ();
 		}

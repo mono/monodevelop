@@ -24,7 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Editor;
@@ -41,7 +41,7 @@ namespace MonoDevelop.CSharp.Formatting
 			TextEditorDisplayBinding.InitSourceEditor ();
 		}
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return panel = new CSharpFormattingPolicyPanelWidget ();
 		}
@@ -60,6 +60,12 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			// return cloned policy
 			return panel.Policy;
+		}
+
+		protected override void OnPolicyStored ()
+		{
+			base.OnPolicyStored ();
+			DefaultSourceEditorOptions.Instance.FireChange ();
 		}
 	}
 }

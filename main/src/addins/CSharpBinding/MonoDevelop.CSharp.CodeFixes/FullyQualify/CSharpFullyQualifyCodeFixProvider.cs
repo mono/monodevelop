@@ -44,6 +44,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.CSharp.Completion;
 
 namespace MonoDevelop.CSharp.CodeFixes.FullyQualify
 {
@@ -163,7 +164,7 @@ namespace MonoDevelop.CSharp.CodeFixes.FullyQualify
 
 					foreach (var container in proposedContainers)
 					{
-						var containerName = container.ToMinimalDisplayString(semanticModel, node.SpanStart);
+						var containerName = RoslynCompletionData.SafeMinimalDisplayString (container, semanticModel, node.SpanStart);
 
 						string name;
 						int arity;
@@ -295,7 +296,6 @@ namespace MonoDevelop.CSharp.CodeFixes.FullyQualify
 
 		private static readonly ConditionalWeakTable<INamespaceOrTypeSymbol, IList<string>> s_symbolToNameMap =
 			new ConditionalWeakTable<INamespaceOrTypeSymbol, IList<string>>();
-		private static readonly ConditionalWeakTable<INamespaceOrTypeSymbol, IList<string>>.CreateValueCallback s_getNameParts = GetNameParts;
 
 		private static IList<string> GetNameParts(INamespaceOrTypeSymbol symbol)
 		{

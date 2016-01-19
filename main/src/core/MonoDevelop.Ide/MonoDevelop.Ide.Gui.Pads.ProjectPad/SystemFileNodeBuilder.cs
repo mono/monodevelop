@@ -100,7 +100,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			string newname = Path.Combine (Path.GetDirectoryName (oldname), newName);
 			if (newname != oldname) {
 				try {
-					if (!FileService.IsValidPath (newname)) {
+					if (!FileService.IsValidPath (newname) || ProjectFolderCommandHandler.ContainsDirectorySeparator (newName)) {
 						MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
 					} else if (File.Exists (newname) || Directory.Exists (newname)) {
 						MessageService.ShowWarning (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
@@ -118,7 +118,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void ActivateItem ()
 		{
 			SystemFile file = CurrentNode.DataItem as SystemFile;
-			IdeApp.Workbench.OpenDocument (file.Path);
+			IdeApp.Workbench.OpenDocument (file.Path, project: null);
 		}
 		
 		public override void DeleteMultipleItems ()

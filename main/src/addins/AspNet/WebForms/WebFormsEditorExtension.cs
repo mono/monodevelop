@@ -349,8 +349,9 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 		}*/
 
-		protected override void GetElementCompletions (CompletionDataList list)
+		protected override async Task<CompletionDataList> GetElementCompletions (CancellationToken token)
 		{
+			var list = new CompletionDataList ();
 			XName parentName = GetParentElementName (0);
 
 			INamedTypeSymbol controlClass = null;
@@ -368,7 +369,7 @@ namespace MonoDevelop.AspNet.WebForms
 				//root element?
 				if (!parentName.IsValid) {
 					if (aspDoc.Info.Subtype == WebSubtype.WebControl) {
-						AddHtmlTagCompletionData (list, Schema, new XName ("div"));
+						await AddHtmlTagCompletionData (list, Schema, new XName ("div"), token);
 						AddAspBeginExpressions (list);
 						list.AddRange (refman.GetControlCompletionData ());
 						AddMiscBeginTags (list);
@@ -379,9 +380,9 @@ namespace MonoDevelop.AspNet.WebForms
 				} else {
 					AddAspBeginExpressions (list);
 					list.AddRange (refman.GetControlCompletionData ());
-					base.GetElementCompletions (list);
+					list.AddRange (await base.GetElementCompletions (token));
 				}
-				return;
+				return list;
 			}
 
 			string defaultProp;
@@ -395,8 +396,8 @@ namespace MonoDevelop.AspNet.WebForms
 				list.AddRange (refman.GetControlCompletionData ());
 				AddMiscBeginTags (list);
 				//TODO: get correct parent for Content tags
-				AddHtmlTagCompletionData (list, Schema, new XName ("body"));
-				return;
+				await AddHtmlTagCompletionData (list, Schema, new XName ("body"), token);
+				return list;
 			}
 			
 			//children of properties
@@ -407,22 +408,22 @@ namespace MonoDevelop.AspNet.WebForms
 						.FirstOrDefault (x => string.Equals (propName, x.Name, StringComparison.OrdinalIgnoreCase));
 				
 				if (property == null)
-					return;
+					return list;
 				
 				//sanity checks on attributes
 				switch (GetPersistenceMode (property)) {
 				case System.Web.UI.PersistenceMode.Attribute:
 				case System.Web.UI.PersistenceMode.EncodedInnerDefaultProperty:
-					return;
+					return list;
 					
 				case System.Web.UI.PersistenceMode.InnerDefaultProperty:
 					if (!parentName.HasPrefix)
-						return;
+						return list;
 					break;
 					
 				case System.Web.UI.PersistenceMode.InnerProperty:
 					if (parentName.HasPrefix)
-						return;
+						return list;
 					break;
 				}
 				
@@ -430,9 +431,9 @@ namespace MonoDevelop.AspNet.WebForms
 				if (property.GetReturnType ().GetFullName () == "System.Web.UI.ITemplate") {
 					AddAspBeginExpressions (list);
 					AddMiscBeginTags (list);
-					AddHtmlTagCompletionData (list, Schema, new XName ("body"));
+					await AddHtmlTagCompletionData (list, Schema, new XName ("body"), token);
 					list.AddRange (refman.GetControlCompletionData ());
-					return;
+					return list;
 				}
 
 				//FIXME:unfortunately ASP.NET doesn't seem to have enough type information / attributes
@@ -442,7 +443,7 @@ namespace MonoDevelop.AspNet.WebForms
 				ITypeSymbol collectionType = property.GetReturnType ();
 				if (collectionType == null) {
 					list.AddRange (refman.GetControlCompletionData ());
-					return;
+					return list;
 				}
 
 				string addStr = "Add";
@@ -453,12 +454,12 @@ namespace MonoDevelop.AspNet.WebForms
 					INamedTypeSymbol type = refman.Compilation.GetTypeByMetadataName ("System.Web.UI.Control");
 					if (argType != null && type != null && argType.IsDerivedFromClass (type)) {
 						list.AddRange (refman.GetControlCompletionData (argType));
-						return;
+						return list;
 					}
 				}
 				
 				list.AddRange (refman.GetControlCompletionData ());
-				return;
+				return list;
 			}
 			
 			//properties as children of controls
@@ -466,15 +467,15 @@ namespace MonoDevelop.AspNet.WebForms
 				foreach (IPropertySymbol prop in GetUniqueMembers<IPropertySymbol> (controlClass.GetMembers ().OfType <IPropertySymbol> ()))
 					if (GetPersistenceMode (prop) != System.Web.UI.PersistenceMode.Attribute)
 						list.Add (prop.Name, prop.GetStockIcon (), Ambience.GetSummaryMarkup (prop));
-				return;
 			}
+			return list;
 		}
 		
-		protected override CompletionDataList GetAttributeCompletions (
+		protected override async Task<CompletionDataList> GetAttributeCompletions (
 			IAttributedXObject attributedOb,
-			Dictionary<string, string> existingAtts)
+			Dictionary<string, string> existingAtts, CancellationToken token)
 		{
-			var list = base.GetAttributeCompletions (attributedOb, existingAtts) ?? new CompletionDataList ();
+			var list = (await base.GetAttributeCompletions (attributedOb, existingAtts, token)) ?? new CompletionDataList ();
 			if (attributedOb is XElement) {
 				
 				if (!existingAtts.ContainsKey ("runat"))
@@ -503,9 +504,9 @@ namespace MonoDevelop.AspNet.WebForms
 			return list.Count > 0? list : null;
 		}
 		
-		protected override CompletionDataList GetAttributeValueCompletions (IAttributedXObject ob, XAttribute att)
+		protected override async Task<CompletionDataList> GetAttributeValueCompletions (IAttributedXObject ob, XAttribute att, CancellationToken token)
 		{
-			var list = base.GetAttributeValueCompletions (ob, att) ?? new CompletionDataList ();
+			var list = (await base.GetAttributeValueCompletions (ob, att, token)) ?? new CompletionDataList ();
 			if (ob is XElement) {
 				if (ob.Name.HasPrefix) {
 					string id = ob.GetId ();

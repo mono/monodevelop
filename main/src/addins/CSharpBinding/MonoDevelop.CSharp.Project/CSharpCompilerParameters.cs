@@ -33,7 +33,7 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using Mono.Collections.Generic;
 using System.Linq;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -63,8 +63,7 @@ namespace MonoDevelop.CSharp.Project
 		[ItemProperty ("NoWarn", DefaultValue = "")]
 		string noWarnings = String.Empty;
 		
-		[ItemProperty ("Optimize")]
-		bool optimize;
+		bool? optimize = false;
 		
 		[ItemProperty ("AllowUnsafeBlocks", DefaultValue = false)]
 		bool unsafecode = false;
@@ -93,16 +92,19 @@ namespace MonoDevelop.CSharp.Project
 		[ItemProperty("WarningsNotAsErrors", DefaultValue="")]
 		string warningsNotAsErrors = "";
 
-		protected override void Write (IPropertySet pset, string toolsVersion)
+		protected override void Write (IPropertySet pset)
 		{
 			pset.SetPropertyOrder ("DebugSymbols", "DebugType", "Optimize", "OutputPath", "DefineConstants", "ErrorReport", "WarningLevel", "TreatWarningsAsErrors", "DocumentationFile");
 
-			base.Write (pset, toolsVersion);
+			base.Write (pset);
+
+			if (optimize.HasValue)
+				pset.SetValue ("Optimize", optimize.Value);
 		}
 
-		protected override void Read (IMSBuildEvaluatedPropertyCollection pset, string toolsVersion)
+		protected override void Read (IPropertySet pset)
 		{
-			base.Read (pset, toolsVersion);
+			base.Read (pset);
 
 			var prop = pset.GetProperty ("GenerateDocumentation");
 			if (prop != null && documentationFile != null) {
@@ -111,6 +113,8 @@ namespace MonoDevelop.CSharp.Project
 				else
 					documentationFile = null;
 			}
+
+			optimize = pset.GetValue ("Optimize", (bool?)null);
 		}
 
 		public override Microsoft.CodeAnalysis.CompilationOptions CreateCompilationOptions ()
@@ -119,6 +123,7 @@ namespace MonoDevelop.CSharp.Project
 
 			return new Microsoft.CodeAnalysis.CSharp.CSharpCompilationOptions (
 				OutputKind.ConsoleApplication,
+				false,
 				null,
 				project.MainClass,
 				"Script",
@@ -204,10 +209,11 @@ namespace MonoDevelop.CSharp.Project
 		
 		public bool Optimize {
 			get {
-				return optimize;
+				return optimize ?? false;
 			}
 			set {
-				optimize = value;
+				if (value != Optimize)
+					optimize = value;
 			}
 		}
 		

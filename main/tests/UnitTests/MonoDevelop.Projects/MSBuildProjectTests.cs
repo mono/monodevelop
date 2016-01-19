@@ -26,8 +26,9 @@
 using System;
 using NUnit.Framework;
 using UnitTests;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using System.Linq;
+using ValueSet = MonoDevelop.Projects.ConditionedPropertyCollection.ValueSet;
 
 namespace MonoDevelop.Projects
 {
@@ -169,6 +170,15 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public void EvalExists ()
+		{
+			var p = LoadProject ();
+			p.Evaluate ();
+			var res = p.EvaluatedProperties.GetValue ("ExistsTest");
+			Assert.AreEqual ("OK", res);
+		}
+
+		[Test]
 		public void ImportGroups ()
 		{
 			string projectFile = Util.GetSampleProject ("project-with-import-groups", "import-group-test.csproj");
@@ -219,6 +229,91 @@ namespace MonoDevelop.Projects
 			p.Load (projectFile);
 			p.Evaluate ();
 			Assert.AreEqual (new [] {"Two"}, p.EvaluatedItems.Select (i => i.Include).ToArray ());
+		}
+
+		[Test]
+		public void FunctionProperties ()
+		{
+			string projectFile = Util.GetSampleProject ("msbuild-tests", "functions.csproj");
+			var p = new MSBuildProject ();
+			p.Load (projectFile);
+			p.Evaluate ();
+
+			Assert.AreEqual ("bcd", p.EvaluatedProperties.GetValue ("Substring"));
+			Assert.AreEqual ("ab", p.EvaluatedProperties.GetValue ("MethodWithParams1"));
+			Assert.AreEqual ("abc", p.EvaluatedProperties.GetValue ("MethodWithParams2"));
+			Assert.AreEqual ("abcd", p.EvaluatedProperties.GetValue ("MethodWithParams3"));
+			Assert.AreEqual ("abcdefghij", p.EvaluatedProperties.GetValue ("MethodWithParams4"));
+			Assert.AreEqual ("ab", p.EvaluatedProperties.GetValue ("MethodWithParams5"));
+			Assert.AreEqual ("255", p.EvaluatedProperties.GetValue ("MaxByte"));
+			Assert.AreEqual ("A", p.EvaluatedProperties.GetValue ("Upper1"));
+			Assert.AreEqual ("a'b'c5", p.EvaluatedProperties.GetValue ("Upper2"));
+			Assert.AreEqual ("a\"b\"c5", p.EvaluatedProperties.GetValue ("Upper3"));
+			Assert.AreEqual ("abc5", p.EvaluatedProperties.GetValue ("Upper4"));
+			Assert.AreEqual ("abcdefgh5", p.EvaluatedProperties.GetValue ("Upper5"));
+			Assert.AreEqual ("1234567890", p.EvaluatedProperties.GetValue ("FileContent"));
+			Assert.AreEqual ("00007fff", p.EvaluatedProperties.GetValue ("HexConv"));
+			Assert.AreEqual ("[1234567890]", p.EvaluatedProperties.GetValue ("ConcatFileContent"));
+
+			Assert.AreEqual ("5", p.EvaluatedProperties.GetValue ("MSBuildAdd"));
+			Assert.AreEqual ("5.5", p.EvaluatedProperties.GetValue ("MSBuildAddDouble"));
+			Assert.AreEqual ("abcdefgh", p.EvaluatedProperties.GetValue ("MSBuildValueOrDefault1"));
+			Assert.AreEqual ("empty", p.EvaluatedProperties.GetValue ("MSBuildValueOrDefault2"));
+			Assert.AreEqual ("a", p.EvaluatedProperties.GetValue ("CharTrim"));
+
+			var dir = System.IO.Path.GetFullPath (System.IO.Path.Combine (System.IO.Path.GetDirectoryName (projectFile), "foo"));
+			Assert.AreEqual (dir, p.EvaluatedProperties.GetValue ("FullPath"));
+		}
+
+		[Test]
+		public void ConditionedProperties ()
+		{
+			string projectFile = Util.GetSampleProject ("msbuild-tests", "conditioned-properties.csproj");
+			var p = new MSBuildProject ();
+			p.Load (projectFile);
+			p.Evaluate ();
+
+			Assert.That (new string [] { "cond1", "cond2", "cond9", "cond10", "cond13" }, Is.EquivalentTo (p.ConditionedProperties.GetAllProperties ().ToArray ()));
+
+			Assert.That (new string [] { "val1", "val14_1", "val14_4", "val14_5" }, Is.EquivalentTo (p.ConditionedProperties.GetAllPropertyValues ("cond1").ToArray ()));
+
+			Assert.That (new string [] { "val2_0", "val2_7", "val14_2", "val14_3", "val14_6" }, Is.EquivalentTo (p.ConditionedProperties.GetAllPropertyValues ("cond2").ToArray ()));
+
+			Assert.That (new string [] { "val9" }, Is.EquivalentTo (p.ConditionedProperties.GetAllPropertyValues ("cond9").ToArray ()));
+
+			Assert.That (new string [] { "val10_1", "val10_2" }, Is.EquivalentTo (p.ConditionedProperties.GetAllPropertyValues ("cond10").ToArray ()));
+
+			Assert.That (new string [] { "val13_4" }, Is.EquivalentTo (p.ConditionedProperties.GetAllPropertyValues ("cond13").ToArray ()));
+
+			// Combined values
+
+			Assert.That (new [] {
+				new ValueSet (new [] { "cond1" }, new [] { "val1" })
+			}, Is.EquivalentTo (p.ConditionedProperties.GetCombinedPropertyValues ("cond1").ToArray ()));
+
+			Assert.That (new [] {
+				new ValueSet (new [] { "cond2" }, new [] { "val2_0" }),
+				new ValueSet (new [] { "cond2" }, new [] { "val2_7" }),
+			}, Is.EquivalentTo (p.ConditionedProperties.GetCombinedPropertyValues ("cond2").ToArray ()));
+
+			Assert.That (new [] {
+				new ValueSet (new [] { "cond9" }, new [] { "val9" }),
+			}, Is.EquivalentTo (p.ConditionedProperties.GetCombinedPropertyValues ("cond9").ToArray ()));
+
+			Assert.That (new [] {
+				new ValueSet (new [] { "cond10" }, new [] { "val10_1" }),
+				new ValueSet (new [] { "cond10" }, new [] { "val10_2" }),
+			}, Is.EquivalentTo (p.ConditionedProperties.GetCombinedPropertyValues ("cond10").ToArray ()));
+
+			Assert.That (new [] {
+				new ValueSet (new [] { "cond13" }, new [] { "val13_4" }),
+			}, Is.EquivalentTo (p.ConditionedProperties.GetCombinedPropertyValues ("cond13").ToArray ()));
+
+			Assert.That (new [] {
+				new ValueSet (new [] { "cond1", "cond2" }, new [] { "val14_1", "val14_2" }),
+				new ValueSet (new [] { "cond1", "cond2" }, new [] { "val14_4", "val14_3" }),
+				new ValueSet (new [] { "cond1", "cond2" }, new [] { "val14_5", "val14_6" }),
+			}, Is.EquivalentTo (p.ConditionedProperties.GetCombinedPropertyValues ("cond1", "cond2").ToArray ()));
 		}
 	}
 }

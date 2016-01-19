@@ -43,6 +43,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Ide.Desktop;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Tasks
 {
@@ -387,9 +388,9 @@ namespace MonoDevelop.Ide.Tasks
 				this.task = task;
 			}
 			
-			protected override Document DoShow ()
+			protected override async Task<Document> DoShow ()
 			{
-				Document result = base.DoShow ();
+				Document result = await base.DoShow ();
 				TaskService.InformJumpToTask (task);
 				return result;
 			}

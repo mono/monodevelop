@@ -12,3 +12,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("MonoDevelop.CSharpBinding.AspNet")]
 [assembly: InternalsVisibleTo("MonoDevelop.CSharpBinding.Tests")]
 [assembly: InternalsVisibleTo("MonoDevelop.DocFood")]
+[assembly: InternalsVisibleTo("Xamarin.Forms.Addin")]

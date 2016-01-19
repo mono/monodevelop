@@ -1,6 +1,8 @@
+using System.Threading;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Xml.Tests.Schema
 {
@@ -12,84 +14,96 @@ namespace MonoDevelop.Xml.Tests.Schema
 		XmlElementPath shipToPath;
 		XmlElementPath shipOrderPath;
 		
-		public override void FixtureInit()
+		async Task Init ()
 		{
+			if (shipOrderAttributes != null)
+				return;
+			
 			// Get shipto attributes.
 			shipToPath = new XmlElementPath();
 			QualifiedName shipOrderName = new QualifiedName("shiporder", "http://www.w3schools.com");
 			shipToPath.Elements.Add(shipOrderName);
 			shipToPath.Elements.Add(new QualifiedName("shipto", "http://www.w3schools.com"));
 
-			shipToAttributes = SchemaCompletionData.GetAttributeCompletionData(shipToPath);
+			shipToAttributes = await SchemaCompletionData.GetAttributeCompletionData(shipToPath, CancellationToken.None);
 			
 			// Get shiporder attributes.
 			shipOrderPath = new XmlElementPath();
 			shipOrderPath.Elements.Add(shipOrderName);
 			
-			shipOrderAttributes = SchemaCompletionData.GetAttributeCompletionData(shipOrderPath);
+			shipOrderAttributes = await SchemaCompletionData.GetAttributeCompletionData(shipOrderPath, CancellationToken.None);
 			
 		}
 		
 		[Test]
-		public void OneShipOrderAttribute()
+		public async Task OneShipOrderAttribute()
 		{
+			await Init ();
 			Assert.AreEqual(1, shipOrderAttributes.Count, "Should only have one shiporder attribute.");
 		}		
 		
 		[Test]
-		public void ShipOrderAttributeName()
+		public async Task ShipOrderAttributeName()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(shipOrderAttributes,"id"),
 			                "Incorrect shiporder attribute name.");
 		}
 
 		[Test]
-		public void OneShipToAttribute()
+		public async Task OneShipToAttribute()
 		{
+			await Init ();
 			Assert.AreEqual(1, shipToAttributes.Count, "Should only have one shipto attribute.");
 		}
 		
 		[Test]
-		public void ShipToAttributeName()
+		public async Task ShipToAttributeName()
 		{
+			await Init ();
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(shipToAttributes, "address"),
 			                "Incorrect shipto attribute name.");
 		}					
 		
 		[Test]
-		public void ShipOrderChildElementsCount()
+		public async Task ShipOrderChildElementsCount()
 		{
-			Assert.AreEqual(1, SchemaCompletionData.GetChildElementCompletionData(shipOrderPath).Count, 
+			await Init ();
+			Assert.AreEqual(1, (await SchemaCompletionData.GetChildElementCompletionData(shipOrderPath, CancellationToken.None)).Count, 
 			                "Should be one child element.");
 		}
 		
 		[Test]
-		public void ShipOrderHasShipToChildElement()
+		public async Task ShipOrderHasShipToChildElement()
 		{
-			CompletionDataList data = SchemaCompletionData.GetChildElementCompletionData(shipOrderPath);
+			await Init ();
+			CompletionDataList data = await SchemaCompletionData.GetChildElementCompletionData(shipOrderPath, CancellationToken.None);
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(data, "shipto"), 
 			                "Incorrect child element name.");
 		}
 		
 		[Test]
-		public void ShipToChildElementsCount()
+		public async Task ShipToChildElementsCount()
 		{
-			Assert.AreEqual(2, SchemaCompletionData.GetChildElementCompletionData(shipToPath).Count, 
+			await Init ();
+			Assert.AreEqual(2, (await SchemaCompletionData.GetChildElementCompletionData(shipToPath, CancellationToken.None)).Count, 
 			                "Should be 2 child elements.");
 		}		
 		
 		[Test]
-		public void ShipToHasNameChildElement()
+		public async Task ShipToHasNameChildElement()
 		{
-			CompletionDataList data = SchemaCompletionData.GetChildElementCompletionData(shipToPath);
+			await Init ();
+			CompletionDataList data = await SchemaCompletionData.GetChildElementCompletionData(shipToPath, CancellationToken.None);
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(data, "name"), 
 			                "Incorrect child element name.");
 		}		
 		
 		[Test]
-		public void ShipToHasAddressChildElement()
+		public async Task ShipToHasAddressChildElement()
 		{
-			CompletionDataList data = SchemaCompletionData.GetChildElementCompletionData(shipToPath);
+			await Init ();
+			CompletionDataList data = await SchemaCompletionData.GetChildElementCompletionData(shipToPath, CancellationToken.None);
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(data, "address"), 
 			                "Incorrect child element name.");
 		}		

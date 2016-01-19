@@ -119,6 +119,13 @@ namespace MonoDevelop.Core.ProgressMonitoring
 					info.Monitor.Step (message, work);
 		}
 
+		protected override void OnBeginStep (string message, int work)
+		{
+			foreach (MonitorInfo info in monitors)
+				if ((info.ActionMask & MonitorAction.Tasks) != 0)
+					info.Monitor.BeginStep (message, work);
+		}
+
 		protected override ProgressMonitor CreateAsyncStepMonitor ()
 		{
 			return new AggregatedProgressMonitor ();

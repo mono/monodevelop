@@ -42,10 +42,8 @@ namespace MonoDevelop.Components.MainToolbar
 {
 	class FileSearchCategory : SearchCategory
 	{
-		Widget widget;
-		public FileSearchCategory (Widget widget) : base (GettextCatalog.GetString("Files"))
+		public FileSearchCategory () : base (GettextCatalog.GetString("Files"))
 		{
-			this.widget = widget;
 		}
 
 		IEnumerable<ProjectFile> AllFiles {
@@ -69,7 +67,7 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		string[] validTags = new [] { "file"};
+		string[] validTags = new [] { "file" , "f" };
 
 		public override string [] Tags {
 			get {
@@ -84,8 +82,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public override Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern pattern, CancellationToken token)
 		{
-			var files = AllFiles.ToList ();
 			return Task.Run (delegate {
+				var files = AllFiles.ToList ();
 				var matcher = StringMatcher.GetMatcher (pattern.Pattern, false);
 				savedMatches = new Dictionary<string, MatchResult> ();
 				foreach (ProjectFile file in files) {
@@ -101,7 +99,7 @@ namespace MonoDevelop.Components.MainToolbar
 					
 				}
 				savedMatches = null;
-			});
+			}, token);
 		}
 
 		bool MatchName (StringMatcher matcher, string name, out int matchRank)

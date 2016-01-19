@@ -39,6 +39,12 @@ using MonoDevelop.CodeActions;
 using MonoDevelop.CodeIssues;
 using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.Refactoring;
+using Microsoft.CodeAnalysis.CodeFixes;
+using System.Collections.Immutable;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -94,7 +100,10 @@ namespace MonoDevelop.CSharp.Refactoring
 
 				if (inspector.CanDisableWithPragma) {
 					var info = new CommandInfo (GettextCatalog.GetString ("_Suppress with #pragma"));
-					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableWithPragma (editor, ctx, fix.Location.SourceSpan)));
+					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableWithPragma (editor, ctx, fix)));
+
+					info = new CommandInfo (GettextCatalog.GetString ("_Suppress with file"));
+					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableWithFile (editor, ctx, fix)));
 				}
 
 				var configInfo = new CommandInfo (GettextCatalog.GetString ("_Configure Rule"));
@@ -107,6 +116,47 @@ namespace MonoDevelop.CSharp.Refactoring
 					});
 				}));
 
+				foreach (var fix2 in container.CodeFixActions) {
+
+					var provider = fix2.Diagnostic.GetCodeFixProvider ().GetFixAllProvider ();
+					if (provider == null)
+						continue;
+					if (!provider.GetSupportedFixAllScopes ().Contains (FixAllScope.Document))
+						continue;
+					var subMenu2 = new CommandInfoSet ();
+					subMenu2.Text = GettextCatalog.GetString ("Fix all");
+					var diagnosticAnalyzer = fix2.Diagnostic.GetCodeDiagnosticDescriptor (LanguageNames.CSharp).GetProvider ();
+					if (!diagnosticAnalyzer.SupportedDiagnostics.Contains (fix.Descriptor))
+						continue;
+
+					var info = new CommandInfo (GettextCatalog.GetString ("In _Document"));
+					subMenu2.CommandInfos.Add (info, new Action (async delegate {
+						
+						var fixAllDiagnosticProvider = new CodeActionEditorExtension.FixAllDiagnosticProvider (diagnosticAnalyzer.SupportedDiagnostics.Select (d => d.Id).ToImmutableHashSet (), async (Microsoft.CodeAnalysis.Document doc, ImmutableHashSet<string> diagnostics, CancellationToken token) => {
+
+							var model = await doc.GetSemanticModelAsync (token);
+							var compilationWithAnalyzer = model.Compilation.WithAnalyzers (new [] { diagnosticAnalyzer }.ToImmutableArray (), null, token);
+
+							return await compilationWithAnalyzer.GetAnalyzerSemanticDiagnosticsAsync (model, null, token);
+						}, (arg1, arg2, arg3, arg4) => {
+							return Task.FromResult ((IEnumerable<Diagnostic>)new Diagnostic[] { });
+						});
+						var ctx2 = new FixAllContext (
+							ctx.AnalysisDocument,
+							fix2.Diagnostic.GetCodeFixProvider (),
+							FixAllScope.Document,
+							fix2.CodeAction.EquivalenceKey,
+							diagnosticAnalyzer.SupportedDiagnostics.Select (d => d.Id),
+							fixAllDiagnosticProvider,
+							default (CancellationToken)
+						);
+						var fixAll = await provider.GetFixAsync (ctx2);
+						using (var undo = editor.OpenUndoGroup ()) {
+							CodeDiagnosticDescriptor.RunAction (ctx, fixAll, default (CancellationToken));
+						}
+					}));
+					subMenu.CommandInfos.Add (subMenu2);
+				}
 				result.CommandInfos.Add (subMenu);
 			}
 
@@ -160,8 +210,12 @@ namespace MonoDevelop.CSharp.Refactoring
 				added = true;
 			}
 
-			if (IdeApp.ProjectOperations.CanJumpToDeclaration (info.Symbol) || info.Symbol == null && IdeApp.ProjectOperations.CanJumpToDeclaration (info.CandidateSymbols.FirstOrDefault ())) {
-				var type = (info.Symbol ?? info.CandidateSymbols.FirstOrDefault ()) as INamedTypeSymbol;
+			var gotoDeclarationSymbol = info.Symbol;
+			if (gotoDeclarationSymbol == null && info.DeclaredSymbol != null && info.DeclaredSymbol.Locations.Length > 1)
+				gotoDeclarationSymbol = info.DeclaredSymbol;
+			if (IdeApp.ProjectOperations.CanJumpToDeclaration (gotoDeclarationSymbol) || gotoDeclarationSymbol == null && IdeApp.ProjectOperations.CanJumpToDeclaration (info.CandidateSymbols.FirstOrDefault ())) {
+				
+				var type = (gotoDeclarationSymbol ?? info.CandidateSymbols.FirstOrDefault ()) as INamedTypeSymbol;
 				if (type != null && type.Locations.Length > 1) {
 					var declSet = new CommandInfoSet ();
 					declSet.Text = GettextCatalog.GetString ("_Go to Declaration");

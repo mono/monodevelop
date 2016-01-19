@@ -115,6 +115,7 @@ namespace ICSharpCode.NRefactory6.CSharp.ParameterHinting
 						null,
 						new CSharpCompilationOptions (
 							OutputKind.DynamicallyLinkedLibrary,
+							false,
 							"",
 							"",
 							"Script",
@@ -1246,6 +1247,32 @@ class TestClass
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
 			Assert.AreEqual (1, provider.Count);
+		}
+
+		/// <summary>
+		/// Bug 19561 - Wrong completion for default parameter used with generics
+		/// </summary>
+		[Test]
+		public void TestBug19561 ()
+		{
+			var provider = CreateProvider (
+				@"using System;
+
+public static class Lib
+{
+	public static T Foo<T>(T x = default(T))
+	{
+		return x;
+	}
+		
+	public static void Foo2<U> () where U : struct
+	{
+		Console.WriteLine(""{0}"", $Lib.Foo<U>($));
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (1, provider.Count);
+			Assert.AreEqual ("M:Lib.Foo``1(``0)", provider[0].Symbol.GetDocumentationCommentId ());
 		}
 	}
 }

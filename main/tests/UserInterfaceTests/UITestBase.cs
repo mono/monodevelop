@@ -59,7 +59,23 @@ namespace UserInterfaceTests
 
 		protected UITestBase (string mdBinPath)
 		{
-			MonoDevelopBinPath = mdBinPath;
+			var installedXS = Environment.GetEnvironmentVariable ("USE_INSTALLED_XS");
+			if (!string.IsNullOrWhiteSpace(installedXS)) {
+				if (Platform.IsMac)
+					installedXS = Path.Combine(installedXS, "Contents/MacOS/XamarinStudio");
+				else if (Platform.IsWindows)
+					installedXS = Path.Combine(installedXS, @"bin\XamarinStudio.exe");
+			}
+
+			if (File.Exists (installedXS)) {
+				MonoDevelopBinPath = installedXS;
+				Console.WriteLine ("[UITEST] Using installed Xamarin Studio from this location: " + installedXS);
+			}
+			else {
+				Console.WriteLine ("[UITEST] Installed Xamarin Studio not found. Falling back to default behavior.");
+				MonoDevelopBinPath = mdBinPath;
+			}
+
 			currentWorkingDirectory = Directory.GetCurrentDirectory ();
 		}
 
@@ -93,36 +109,39 @@ namespace UserInterfaceTests
 		public virtual void Teardown ()
 		{
 			try {
-				if (TestContext.CurrentContext.Result.Status != TestStatus.Passed) {
-					var updateOpened = Session.Query (IdeQuery.XamarinUpdate);
-					if (updateOpened != null && updateOpened.Any ())
-						Assert.Inconclusive ("Xamarin Update is blocking the application focus");
-				}
-				ValidateIdeLogMessages ();
-
-				LoggingService.RemoveLogger (Logger.Name);
-				Logger.Dispose ();
-			} finally {
+				bool isInconclusive = false;
 				var testStatus = TestContext.CurrentContext.Result.Status;
 				if (testStatus != TestStatus.Passed) {
 					try {
+						var updateOpened = Session.Query (IdeQuery.XamarinUpdate);
+						if (updateOpened != null && updateOpened.Any ())
+							isInconclusive = true;
 						TakeScreenShot (string.Format ("{0}-Test-Failed", TestContext.CurrentContext.Test.Name));
 					} catch (Exception e) {
 						Session.DebugObject.Debug ("Final Screenshot failed");
+						Session.DebugObject.Debug (e.ToString ());
 					}
 				}
 
 				File.WriteAllText (Path.Combine (currentTestResultFolder, "MemoryUsage.json"),
-					JsonConvert.SerializeObject (Session.MemoryStats, Formatting.Indented));
+				                   JsonConvert.SerializeObject (Session.MemoryStats, Formatting.Indented));
 
 				Ide.CloseAll ();
 				TestService.EndSession ();
+
+				ValidateIdeLogMessages ();
 
 				OnCleanUp ();
 				if (testStatus == TestStatus.Passed) {
 					if (Directory.Exists (currentTestResultScreenshotFolder))
 						Directory.Delete (currentTestResultScreenshotFolder, true);
 				}
+
+				if (isInconclusive)
+					Assert.Inconclusive ("Xamarin Update is blocking the application focus");
+			} finally {
+				LoggingService.RemoveLogger (Logger.Name);
+				Logger.Dispose ();
 			}
 		}
 
@@ -194,6 +213,11 @@ namespace UserInterfaceTests
 				if (obj != null)
 					LoggingService.LogInfo (string.Format("@Repro-Info-{0:D2}: {1}", reproStepIndex, obj.ToString ()));
 			}
+		}
+
+		public void ReproFailedStep (string expected, string actual, params object [] info)
+		{
+			ReproStep (string.Format ("Expected: {0}\nActual: {1}", expected, actual), info);
 		}
 
 		protected virtual void OnCleanUp ()

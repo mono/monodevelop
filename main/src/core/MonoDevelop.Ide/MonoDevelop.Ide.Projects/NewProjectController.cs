@@ -32,9 +32,11 @@
 //
 
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Templates;
@@ -627,7 +629,7 @@ namespace MonoDevelop.Ide.Projects
 		bool CreateProject ()
 		{
 			if (!projectConfiguration.IsValid ()) {
-				MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, '.' or '_'."));
+				MessageService.ShowError (projectConfiguration.GetErrorMessage ());
 				return false;
 			}
 
@@ -638,6 +640,12 @@ namespace MonoDevelop.Ide.Projects
 
 			if (ParentWorkspace != null && SolutionAlreadyExistsInParentWorkspace ()) {
 				MessageService.ShowError (GettextCatalog.GetString ("A solution with that filename is already in your workspace"));
+				return false;
+			}
+
+			SolutionTemplate template = GetTemplateForProcessing ();
+			if (ProjectNameIsLanguageKeyword (template.Language, projectConfiguration.ProjectName)) {
+				MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nName cannot contain a language keyword."));
 				return false;
 			}
 
@@ -663,7 +671,7 @@ namespace MonoDevelop.Ide.Projects
 			DisposeExistingNewItems ();
 
 			try {
-				result = IdeApp.Services.TemplatingService.ProcessTemplate (GetTemplateForProcessing (), projectConfiguration, ParentFolder);
+				result = IdeApp.Services.TemplatingService.ProcessTemplate (template, projectConfiguration, ParentFolder);
 				if (!result.WorkspaceItems.Any ())
 					return false;
 			} catch (UserException ex) {
@@ -696,6 +704,50 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
+		static bool ProjectNameIsLanguageKeyword (string language, string projectName)
+		{
+			LanguageBinding binding = LanguageBindingService.GetBindingPerLanguageName (language);
+			if (binding != null) {
+				var codeDomProvider = binding.GetCodeDomProvider ();
+				if (codeDomProvider != null) {
+					projectName = SanitisePotentialNamespace (projectName);
+					if (projectName.Contains ('.')) {
+						return NameIsLanguageKeyword (codeDomProvider, projectName.Split ('.'));
+					}
+					return !codeDomProvider.IsValidIdentifier (projectName);
+				}
+			}
+
+			return false;
+		}
+
+		static bool NameIsLanguageKeyword (CodeDomProvider codeDomProvider, string[] names)
+		{
+			return names.Any (name => !codeDomProvider.IsValidIdentifier (name));
+		}
+
+		/// <summary>
+		/// Taken from DotNetProject. This is needed otherwise an invalid namespace
+		/// can still be used if digits are used as the start of the project name
+		/// (e.g. '2try').
+		/// </summary>
+		static string SanitisePotentialNamespace (string potential)
+		{
+			var sb = new StringBuilder ();
+			foreach (char c in potential) {
+				if (char.IsLetter (c) || c == '_' || (sb.Length > 0 && (char.IsLetterOrDigit (sb[sb.Length - 1]) || sb[sb.Length - 1] == '_') && (c == '.' || char.IsNumber (c)))) {
+					sb.Append (c);
+				}
+			}
+			if (sb.Length > 0) {
+				if (sb[sb.Length - 1] == '.')
+					sb.Remove (sb.Length - 1, 1);
+
+				return sb.ToString ();
+			} else
+				return "Application";
+		}
+
 		void InstallProjectTemplatePackages (Solution sol)
 		{
 			if (!processedTemplate.HasPackages ())
@@ -718,7 +770,7 @@ namespace MonoDevelop.Ide.Projects
 		static void RunTemplateActions (ProcessedTemplateResult templateResult)
 		{
 			foreach (string action in templateResult.Actions) {
-				IdeApp.Workbench.OpenDocument (Path.Combine (templateResult.ProjectBasePath, action));
+				IdeApp.Workbench.OpenDocument (Path.Combine (templateResult.ProjectBasePath, action), project: null);
 			}
 		}
 

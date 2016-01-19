@@ -264,7 +264,7 @@ namespace MonoDevelop.Components.MainToolbar
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
 			if (evnt.Button == 1 && evnt.Window == GdkWindow) {
-				var window = (Window)Toplevel;
+				var window = (Gtk.Window)Toplevel;
 				if (!DesktopService.GetIsFullscreen (window)) {
 					window.BeginMoveDrag (1, (int)evnt.XRoot, (int)evnt.YRoot, evnt.Time);
 					return true;
@@ -293,8 +293,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void HandleSearchEntryChanged (object sender, EventArgs e)
 		{
-			if (SearchEntryActivated != null)
-				SearchEntryChanged (sender, e);
+			SearchEntryChanged?.Invoke (sender, e);
 		}
 
 		void HandleSearchEntryActivated (object sender, EventArgs e)

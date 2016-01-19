@@ -26,6 +26,7 @@
 using System;
 using NUnit.Framework;
 using MonoDevelop.MacIntegration;
+using MonoDevelop.MacInterop;
 using MonoDevelop.Ide;
 using UnitTests;
 

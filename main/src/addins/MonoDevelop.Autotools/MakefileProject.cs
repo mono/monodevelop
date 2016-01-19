@@ -11,11 +11,9 @@ namespace MonoDevelop.Autotools
 		{
 		}
 		
-		protected override SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind)
+		protected override SolutionItemConfiguration OnCreateConfiguration (string id, ConfigurationKind kind)
 		{
-			MakefileProjectConfiguration conf = new MakefileProjectConfiguration ();
-			conf.Name = name;
-			return conf;
+			return new MakefileProjectConfiguration (id);
 		}
 
 		protected override void OnGetTypeTags (HashSet<string> types)
@@ -27,5 +25,8 @@ namespace MonoDevelop.Autotools
 	
 	public class MakefileProjectConfiguration: ProjectConfiguration
 	{
+		public MakefileProjectConfiguration (string id) : base (id)
+		{
+		}
 	}
 }

@@ -50,6 +50,8 @@ using MonoDevelop.Xml.Dom;
 using MonoDevelop.Xml.Parser;
 using System.Threading.Tasks;
 using System.Threading;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.Xml.Editor
 {
@@ -114,6 +116,9 @@ namespace MonoDevelop.Xml.Editor
 			if (IdeApp.Workspace == null) {
 				ownerProjects = new List<DotNetProject> ();
 				return;
+			}
+			if (DocumentContext == null) {
+				return;//This can happen if this object is disposed
 			}
 			var projects = new HashSet<DotNetProject> (IdeApp.Workspace.GetAllItems<DotNetProject> ().Where (p => p.IsFileInProject (DocumentContext.Name)));
 			if (ownerProjects == null || !projects.SetEquals (ownerProjects)) {
@@ -268,7 +273,7 @@ namespace MonoDevelop.Xml.Editor
 			return null;
 		}
 
-		protected virtual Task<ICompletionDataList> HandleCodeCompletion (
+		protected virtual async Task<ICompletionDataList> HandleCodeCompletion (
 			CodeCompletionContext completionContext, bool forced, CancellationToken token)
 		{
 			var buf = this.Editor;
@@ -284,7 +289,7 @@ namespace MonoDevelop.Xml.Editor
 			
 			//closing tag completion
 			if (tracker.Engine.CurrentState is XmlRootState && currentChar == '>')
-				return Task.FromResult (ClosingTagCompletion (buf, currentLocation));
+				return ClosingTagCompletion (buf, currentLocation);
 			
 			// Auto insert '>' when '/' is typed inside tag state (for quick tag closing)
 			//FIXME: avoid doing this when the next non-whitespace char is ">" or ignore the next ">" typed
@@ -314,16 +319,17 @@ namespace MonoDevelop.Xml.Editor
 				list.Add (">").CompletionText = "gt;";
 				list.Add ("&").CompletionText = "amp;";
 				
-				GetEntityCompletions (list);
-				return Task.FromResult ((ICompletionDataList)list);
+				var ecList = await GetEntityCompletions (token);
+				list.AddRange (ecList);
+				return list;
 			}
 			
 			//doctype completion
 			if (tracker.Engine.CurrentState is XmlDocTypeState) {
 				if (tracker.Engine.CurrentStateLength == 1) {
-					CompletionDataList list = GetDocTypeCompletions ();
+					CompletionDataList list = await GetDocTypeCompletions (token);
 					if (list != null && list.Count > 0)
-						return Task.FromResult ((ICompletionDataList)list);
+						return list;
 				}
 				return null;
 			}
@@ -344,10 +350,10 @@ namespace MonoDevelop.Xml.Editor
 
 					//if triggered by first letter of value or forced, grab those letters
 
-					var result = GetAttributeValueCompletions (attributedOb, att);
+					var result = await GetAttributeValueCompletions (attributedOb, att, token);
 					if (result != null) {
 						result.TriggerWordLength = Tracker.Engine.CurrentStateLength - 1;
-						return Task.FromResult ((ICompletionDataList)result);
+						return result;
 					}
 					return null;
 				}
@@ -373,11 +379,11 @@ namespace MonoDevelop.Xml.Editor
 					foreach (XAttribute att in attributedOb.Attributes) {
 						existingAtts [att.Name.FullName] = att.Value ?? string.Empty;
 					}
-					var result = GetAttributeCompletions (attributedOb, existingAtts);
+					var result = await GetAttributeCompletions (attributedOb, existingAtts, token);
 					if (result != null) {
 						if (!forced)
 							result.TriggerWordLength = 1;
-						return Task.FromResult ((ICompletionDataList)result);
+						return result;
 					}
 					return null;
 				}
@@ -391,16 +397,15 @@ namespace MonoDevelop.Xml.Editor
 			//element completion
 			if (currentChar == '<' && tracker.Engine.CurrentState is XmlRootState ||
 				(tracker.Engine.CurrentState is XmlNameState && forced)) {
-				var list = new CompletionDataList ();
-				GetElementCompletions (list);
+				var list = await GetElementCompletions (token);
 				AddCloseTag (list, Tracker.Engine.Nodes);
-				return Task.FromResult ((ICompletionDataList)(list.Count > 0? list : null));
+				return list.Count > 0 ? list : null;
 			}
 
 			if (forced && Tracker.Engine.CurrentState is XmlRootState) {
 				var list = new CompletionDataList ();
 				MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForFileName (DocumentContext.Name, list);
-				return Task.FromResult ((ICompletionDataList)(list.Count > 0? list : null));
+				return list.Count > 0? list : null;
 			}
 			
 			return null;
@@ -469,28 +474,30 @@ namespace MonoDevelop.Xml.Editor
 			return null;
 		}
 		
-		protected virtual void GetElementCompletions (CompletionDataList list)
+		protected virtual Task<CompletionDataList> GetElementCompletions (CancellationToken token)
 		{
+			return Task.FromResult (new CompletionDataList ());
 		}
 		
-		protected virtual CompletionDataList GetAttributeCompletions (IAttributedXObject attributedOb,
-			Dictionary<string, string> existingAtts)
+		protected virtual Task<CompletionDataList> GetAttributeCompletions (IAttributedXObject attributedOb,
+		                                                                    Dictionary<string, string> existingAtts, CancellationToken token)
 		{
-			return null;
+			return Task.FromResult (new CompletionDataList ());
 		}
 		
-		protected virtual CompletionDataList GetAttributeValueCompletions (IAttributedXObject attributedOb, XAttribute att)
+		protected virtual Task<CompletionDataList> GetAttributeValueCompletions (IAttributedXObject attributedOb, XAttribute att, CancellationToken token)
 		{
-			return null;
+			return Task.FromResult (new CompletionDataList ());
 		}
 		
-		protected virtual void GetEntityCompletions (CompletionDataList list)
+		protected virtual Task<CompletionDataList> GetEntityCompletions (CancellationToken token)
 		{
+			return Task.FromResult (new CompletionDataList ());
 		}
 		
-		protected virtual CompletionDataList GetDocTypeCompletions ()
+		protected virtual Task<CompletionDataList> GetDocTypeCompletions (CancellationToken token)
 		{
-			return null;
+			return Task.FromResult (new CompletionDataList ());
 		}
 		
 		protected string GetLineIndent (int line)
@@ -699,7 +706,7 @@ namespace MonoDevelop.Xml.Editor
 		
 		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
 		
-		public Widget CreatePathWidget (int index)
+		public Control CreatePathWidget (int index)
 		{
 			if (ownerProjects.Count > 1 && index == 0) {
 				var window = new DropDownBoxListWindow (new DataProvider (this));
@@ -959,7 +966,7 @@ namespace MonoDevelop.Xml.Editor
 		
 		void refillOutlineStore ()
 		{
-			DispatchService.AssertGuiThread ();
+			Runtime.AssertMainThread ();
 			Gdk.Threads.Enter ();
 			refreshingOutline = false;
 			if (outlineTreeStore == null || !outlineTreeView.IsRealized)
@@ -1023,5 +1030,95 @@ namespace MonoDevelop.Xml.Editor
 			EditorSelect (region);
 		}		
 		#endregion
+
+		[CommandUpdateHandler (EditCommands.AddCodeComment)]
+		[CommandUpdateHandler (EditCommands.RemoveCodeComment)]
+		[CommandUpdateHandler (EditCommands.ToggleCodeComment)]
+		void ToggleCodeCommentCommandUpdate (CommandInfo info)
+		{
+			info.Enabled = true;
+			info.Visible = true;
+		}
+
+		bool IsInComment ()
+		{
+			Tracker.UpdateEngine ();
+			if (Tracker.Engine.CurrentState is XmlCommentState) {
+				return true;
+			}
+			//If we are not in comment, try parsing 3 letters so in case we are just after
+			//"<" of <!-- we come inside... and state changes into XmlCommentState
+			var engineClone = Tracker.Engine.GetTreeParser ();
+			int j = 0;
+			for (int i = engineClone.Position; i < Editor.Length && j < 3; i++, j++) {
+				engineClone.Push (Editor.GetCharAt (engineClone.Position));
+			}
+			return engineClone.CurrentState is XmlCommentState;
+		}
+
+		[CommandHandler (EditCommands.AddCodeComment)]
+		public void AddCodeCommentCommand ()
+		{
+			if (!IsInComment ()) {
+				ToggleCodeCommentCommandInternal (false);
+			}
+		}
+
+		[CommandHandler (EditCommands.RemoveCodeComment)]
+		public void RemoveCodeCommentCommand ()
+		{
+			if (IsInComment ()) {
+				ToggleCodeCommentCommandInternal (true);
+			}
+		}
+
+		[CommandHandler (EditCommands.ToggleCodeComment)]
+		public void ToggleCodeCommentCommand ()
+		{
+			ToggleCodeCommentCommandInternal (IsInComment ());
+		}
+
+		void ToggleCodeCommentCommandInternal (bool remove)
+		{
+			if (remove) {
+				//We are guarenteed we are inside comment start
+				var treeParser = Tracker.Engine.GetTreeParser ();
+				XComment commentNode = treeParser.Nodes.Peek () as XComment;
+				//Keep parsing XML until end of file or until comment node is ended
+				for (int i = treeParser.Position; i < Editor.Length; i++) {
+					treeParser.Push (Editor.GetCharAt (i));
+					if (commentNode != null) {
+						if (commentNode.IsEnded) {
+							break;
+						}
+					} else {
+						commentNode = treeParser.Nodes.Peek () as XComment;
+					}
+				}
+				//Comment doesn't close until end of file
+				if (commentNode == null || !commentNode.IsEnded) {
+					return;
+				}
+				var startOffset = Editor.LocationToOffset (commentNode.Region.Begin);
+				var endOffset = Editor.LocationToOffset (commentNode.Region.End) - 3 - 4;//-3 because End is after "-->", -4 because removed "<!--" just before
+				using (Editor.OpenUndoGroup ()) {
+					Editor.RemoveText (startOffset, 4);//4 equals "<!--"
+					Editor.RemoveText (endOffset, 3);//3 equals "-->"
+				}
+			} else {
+				using (Editor.OpenUndoGroup ()) {
+					if (Editor.IsSomethingSelected) {
+						//end variable is also used because inserting start deselectes text and Editor.SelectionRange.EndOffset becomes invalid
+						var end = Editor.SelectionRange.EndOffset + 4;//+4 equals "<!--" inserted in next line
+						Editor.InsertText (Editor.SelectionRange.Offset, "<!--");
+						Editor.InsertText (end, "-->");
+					} else {
+						var currentLine = Editor.GetLine (Editor.CaretLine);
+						Editor.InsertText (currentLine.Offset, "<!--");
+						Editor.InsertText (currentLine.EndOffset, "-->");//currentLine.EndOffset updates automaticlly
+					}
+				}
+			}
+		}
 	}
 }

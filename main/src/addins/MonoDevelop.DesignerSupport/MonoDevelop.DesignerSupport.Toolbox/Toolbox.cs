@@ -66,7 +66,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			this.container = container;
 			
 			#region Toolbar
-			DockItemToolbar toolbar = container.GetToolbar (PositionType.Top);
+			DockItemToolbar toolbar = container.GetToolbar (DockPositionType.Top);
 		
 			filterEntry = new SearchEntry();
 			filterEntry.Ready = true;
@@ -228,7 +228,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public void Refresh ()
 		{
 			// GUI assert here is to catch Bug 434065 - Exception while going to the editor
-			DispatchService.AssertGuiThread ();
+			Runtime.AssertMainThread ();
 			
 			if (toolboxService.Initializing) {
 				toolboxWidget.CustomMessage = GettextCatalog.GetString ("Initializing...");

@@ -29,7 +29,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Core.Execution;
 using System.Xml;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using MonoDevelop.Projects.Extensions;
 using System.Threading.Tasks;
 using System.Linq;
@@ -135,9 +135,9 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal protected virtual SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind)
+		internal protected virtual SolutionItemConfiguration OnCreateConfiguration (string id, ConfigurationKind kind)
 		{
-			return next.OnCreateConfiguration (name, kind);
+			return next.OnCreateConfiguration (id, kind);
 		}
 
 		internal protected virtual ProjectFeatures OnGetSupportedFeatures ()

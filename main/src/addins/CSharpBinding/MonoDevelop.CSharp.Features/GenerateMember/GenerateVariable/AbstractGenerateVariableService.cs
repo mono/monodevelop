@@ -143,7 +143,7 @@ namespace Microsoft.CodeAnalysis.GenerateMember.GenerateVariable
 
 		private partial class GenerateVariableCodeAction : CodeAction
 		{
-			private readonly TService _service;
+			//private readonly TService _service;
 			private readonly State _state;
 			private readonly bool _generateProperty;
 			private readonly bool _isReadonly;
@@ -159,7 +159,7 @@ namespace Microsoft.CodeAnalysis.GenerateMember.GenerateVariable
 				bool isReadonly,
 				bool isConstant)
 			{
-				_service = service;
+				//_service = service;
 				_document = document;
 				_state = state;
 				_generateProperty = generateProperty;
@@ -170,7 +170,6 @@ namespace Microsoft.CodeAnalysis.GenerateMember.GenerateVariable
 
 			protected override async Task<Document> GetChangedDocumentAsync(CancellationToken cancellationToken)
 			{
-				var syntaxTree = await _document.GetSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
 				var generateUnsafe = _state.TypeMemberType.IsUnsafe() &&
 					!_state.IsContainedInUnsafeType;
 

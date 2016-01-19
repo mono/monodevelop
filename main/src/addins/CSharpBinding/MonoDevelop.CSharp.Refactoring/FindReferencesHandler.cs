@@ -37,6 +37,7 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Ide.Tasks;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -49,16 +50,26 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (workspace == null)
 				return;
 			var solution = workspace.CurrentSolution;
-			ThreadPool.QueueUserWorkItem (delegate {
+			Task.Run (async delegate {
 				try {
+					var antiDuplicatesSet = new HashSet<SearchResult> (new SearchResultComparer ());
 					foreach (var loc in symbol.Locations) {
 						if (!loc.IsInSource)
 							continue;
-						var sr = new SearchResult (new FileProvider (loc.SourceTree.FilePath), loc.SourceSpan.Start, loc.SourceSpan.Length);
+						var fileName = loc.SourceTree.FilePath;
+						var offset = loc.SourceSpan.Start;
+						string projectedName;
+						int projectedOffset;
+						if (workspace.TryGetOriginalFileFromProjection (fileName, offset, out projectedName, out projectedOffset)) {
+							fileName = projectedName;
+							offset = projectedOffset;
+						}
+						var sr = new SearchResult (new FileProvider (fileName), offset, loc.SourceSpan.Length);
+						antiDuplicatesSet.Add (sr);
 						monitor.ReportResult (sr);
 					}
 
-					foreach (var mref in SymbolFinder.FindReferencesAsync (symbol, solution).Result) {
+					foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, solution).ConfigureAwait (false)) {
 						foreach (var loc in mref.Locations) {
 							var fileName = loc.Document.FilePath;
 							var offset = loc.Location.SourceSpan.Start;
@@ -68,9 +79,10 @@ namespace MonoDevelop.CSharp.Refactoring
 								fileName = projectedName;
 								offset = projectedOffset;
 							}
-
 							var sr = new SearchResult (new FileProvider (fileName), offset, loc.Location.SourceSpan.Length);
-							monitor.ReportResult (sr);
+							if (antiDuplicatesSet.Add (sr)) {
+								monitor.ReportResult (sr);
+							}
 						}
 					}
 				} catch (Exception ex) {
@@ -118,15 +130,18 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (workspace == null)
 				return;
 			var solution = workspace.CurrentSolution;
-			ThreadPool.QueueUserWorkItem (delegate {
+			Task.Run (async delegate {
 				try {
+					var antiDuplicatesSet = new HashSet<SearchResult> (new SearchResultComparer ());
 					foreach (var simSym in SymbolFinder.FindSimilarSymbols (obj, compilation)) {
 						foreach (var loc in simSym.Locations) {
 							var sr = new SearchResult (new FileProvider (loc.SourceTree.FilePath), loc.SourceSpan.Start, loc.SourceSpan.Length);
-							monitor.ReportResult (sr);
+							if (antiDuplicatesSet.Add (sr)) {
+								monitor.ReportResult (sr);
+							}
 						}
 
-						foreach (var mref in SymbolFinder.FindReferencesAsync (simSym, solution).Result) {
+						foreach (var mref in await SymbolFinder.FindReferencesAsync (simSym, solution).ConfigureAwait (false)) {
 							foreach (var loc in mref.Locations) {
 								var fileName = loc.Document.FilePath;
 								var offset = loc.Location.SourceSpan.Start;
@@ -138,7 +153,9 @@ namespace MonoDevelop.CSharp.Refactoring
 								}
 
 								var sr = new SearchResult (new FileProvider (fileName), offset, loc.Location.SourceSpan.Length);
-								monitor.ReportResult (sr);
+								if (antiDuplicatesSet.Add (sr)) {
+									monitor.ReportResult (sr);
+								}
 							}
 						}
 					}
@@ -173,9 +190,27 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			var info = RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result;
 			var sym = info.Symbol ?? info.DeclaredSymbol;
-			var semanticModel = doc.ParsedDocument.GetAst<SemanticModel> ();
 			if (sym != null)
-				FindRefs (sym, semanticModel.Compilation);
+				FindRefs (sym, info.Model.Compilation);
+		}
+	}
+
+	class SearchResultComparer : IEqualityComparer<SearchResult>
+	{
+		public bool Equals (SearchResult x, SearchResult y)
+		{
+			return x.FileName == y.FileName &&
+				        x.Offset == y.Offset &&
+				        x.Length == y.Length;
+		}
+
+		public int GetHashCode (SearchResult obj)
+		{
+			int hash = 17;
+			hash = hash * 23 + obj.Offset.GetHashCode ();
+			hash = hash * 23 + obj.Length.GetHashCode ();
+			hash = hash * 23 + (obj.FileName ?? "").GetHashCode ();
+			return hash;
 		}
 	}
 }

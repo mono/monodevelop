@@ -496,13 +496,32 @@ namespace MonoDevelop.Components
 		public static void ShowContextMenu (Gtk.Menu menu, Gtk.Widget parent, Gdk.EventButton evt, Gdk.Rectangle caret)
 		{
 			int x, y;
-			var window = evt.Window;
+			uint time, button;
+
+			var window = evt != null ? evt.Window : parent.GdkWindow;
+
+			if (window == null)
+				return;
 
 			window.GetOrigin (out x, out y);
-			x += (int)evt.X;
-			y += (int)evt.Y;
 
-			ShowContextMenuInternal (menu, parent, x, y, caret, window, evt.Time, evt.Button);
+			if (evt == null) {
+				evt = Global.CurrentEvent as Gdk.EventButton;
+			}
+
+			if (evt != null) {
+				button = evt.Button;
+				time = evt.Time;
+				x += (int)evt.X;
+				y += (int)evt.Y;
+			} else {
+				button = 3;
+				time = 0;
+				x += caret.X;
+				y += caret.Y;
+			}
+
+			ShowContextMenuInternal (menu, parent, x, y, caret, window, time, button);
 		}
 
 		public static void ShowContextMenu (Gtk.Menu menu, Gtk.Widget parent, int ix, int iy, Gdk.Rectangle caret)
@@ -832,7 +851,7 @@ namespace MonoDevelop.Components
 			if (Platform.IsMac) {
 				try {
 					return gdk_window_has_embedded_nsview_focus (window.Handle);
-				} catch (Exception e) {
+				} catch (Exception) {
 					return false;
 				}
 			} else {

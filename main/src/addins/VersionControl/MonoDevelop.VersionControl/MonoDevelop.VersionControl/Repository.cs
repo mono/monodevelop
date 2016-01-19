@@ -95,8 +95,10 @@ namespace MonoDevelop.VersionControl
 				Dispose ();
 		}
 
+		internal bool Disposed { get; private set; }
 		public virtual void Dispose ()
 		{
+			Disposed = true;
 			if (!queryRunning)
 				return;
 
@@ -608,7 +610,11 @@ namespace MonoDevelop.VersionControl
 
 		public void Add (FilePath[] localPaths, bool recurse, ProgressMonitor monitor)
 		{
-			OnAdd (localPaths, recurse, monitor);
+			try {
+				OnAdd (localPaths, recurse, monitor);
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to add file", e);
+			}
 			ClearCachedVersionInfo (localPaths);
 		}
 
@@ -629,7 +635,12 @@ namespace MonoDevelop.VersionControl
 		public void MoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)
 		{
 			ClearCachedVersionInfo (localSrcPath, localDestPath);
-			OnMoveFile (localSrcPath, localDestPath, force, monitor);
+			try {
+				OnMoveFile (localSrcPath, localDestPath, force, monitor);
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to move file", e);
+				File.Move (localSrcPath, localDestPath);
+			}
 		}
 		
 		protected virtual void OnMoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)
@@ -642,7 +653,12 @@ namespace MonoDevelop.VersionControl
 		public void MoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)
 		{
 			ClearCachedVersionInfo (localSrcPath, localDestPath);
-			OnMoveDirectory (localSrcPath, localDestPath, force, monitor);
+			try {
+				OnMoveDirectory (localSrcPath, localDestPath, force, monitor);
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to move directory", e);
+				FileService.SystemDirectoryRename (localSrcPath, localDestPath);
+			}
 		}
 		
 		protected virtual void OnMoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)
@@ -659,7 +675,14 @@ namespace MonoDevelop.VersionControl
 
 		public void DeleteFiles (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal = true)
 		{
-			OnDeleteFiles (localPaths, force, monitor, keepLocal);
+			try {
+				OnDeleteFiles (localPaths, force, monitor, keepLocal);
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to delete file", e);
+				if (!keepLocal)
+					foreach (var path in localPaths)
+						File.Delete (path);
+			}
 			ClearCachedVersionInfo (localPaths);
 		}
 
@@ -672,7 +695,14 @@ namespace MonoDevelop.VersionControl
 
 		public void DeleteDirectories (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal = true)
 		{
-			OnDeleteDirectories (localPaths, force, monitor, keepLocal);
+			try {
+				OnDeleteDirectories (localPaths, force, monitor, keepLocal);
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to delete directory", e);
+				if (!keepLocal)
+					foreach (var path in localPaths)
+						Directory.Delete (path, true);
+			}
 			ClearCachedVersionInfo (localPaths);
 		}
 
@@ -822,18 +852,21 @@ namespace MonoDevelop.VersionControl
 			}
 			return list.ToArray ();
 		}
-		
+
 		/// <summary>
 		/// Retrieves annotations for a given path in the repository.
 		/// </summary>
 		/// <param name="repositoryPath">
 		/// A <see cref="FilePath"/>
 		/// </param>
+		/// <param name="since">
+		/// A <see cref="Revision"/>
+		/// </param>
 		/// <returns>
-		/// A <see cref="System.String"/> corresponding to each line 
+		/// A <see cref="Annotation"/> corresponding to each line 
 		/// of the file to which repositoryPath points.
 		/// </returns>
-		public virtual Annotation[] GetAnnotations (FilePath repositoryPath)
+		public virtual Annotation [] GetAnnotations (FilePath repositoryPath, Revision since)
 		{
 			return new Annotation[0];
 		}
@@ -872,9 +905,14 @@ namespace MonoDevelop.VersionControl
 	
 	public class Annotation
 	{
-		public string Revision {
+		public Revision Revision {
 			get;
 			private set;
+		}
+
+		string text;
+		public string Text {
+			get { return text != null ? text : Revision?.ToString (); }
 		}
 
 		public string Author {
@@ -900,19 +938,28 @@ namespace MonoDevelop.VersionControl
 			get { return Date != DateTime.MinValue; }
 		}
 
-		public Annotation (string revision, string author, DateTime date)
+		public Annotation (Revision revision, string author, DateTime date)
 		{
 			this.Revision = revision;
 			this.Author = author;
 			this.Date = date;
 		}
 
-		public Annotation (string revision, string author, DateTime date, string email)
+		public Annotation (Revision revision, string author, DateTime date, string email)
 		{
 			this.Revision = revision;
 			this.Author = author;
 			this.Date = date;
 			this.Email = email;
+		}
+
+		public Annotation (Revision revision, string author, DateTime date, string email, string text)
+		{
+			this.Revision = revision;
+			this.Author = author;
+			this.Date = date;
+			this.Email = email;
+			this.text = text;
 		}
 		
 		public override string ToString ()

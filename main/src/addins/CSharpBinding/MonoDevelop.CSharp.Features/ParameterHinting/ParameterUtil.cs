@@ -58,19 +58,37 @@ namespace ICSharpCode.NRefactory6.CSharp
 			List<string> usedNamedParameters = null;
 			var tree = await document.GetSyntaxTreeAsync (cancellationToken).ConfigureAwait (false);
 			var root = await tree.GetRootAsync (cancellationToken).ConfigureAwait (false);
+			if (startOffset >= root.Span.Length)
+				return ParameterIndexResult.Invalid;
 
 			var token = root.FindToken (startOffset);
 			if (token.Parent == null)
 				return ParameterIndexResult.Invalid;
 
-			var invocation = token.Parent.AncestorsAndSelf ().OfType<InvocationExpressionSyntax> ().FirstOrDefault ();
+			SyntaxNode argList = null;
 
-			if (invocation == null || invocation.ArgumentList == null)
+			var invocation = token.Parent.AncestorsAndSelf ().FirstOrDefault (n =>
+				n is InvocationExpressionSyntax ||
+			                 n is ObjectCreationExpressionSyntax ||
+			                 n is ElementAccessExpressionSyntax ||
+			                 n is ConstructorInitializerSyntax ||
+			                 n is AttributeSyntax);
+
+			if (invocation is InvocationExpressionSyntax) {
+				argList = ((InvocationExpressionSyntax)invocation).ArgumentList;
+			} else if (invocation is ObjectCreationExpressionSyntax) {
+				argList = ((ObjectCreationExpressionSyntax)invocation).ArgumentList;
+			} else if (invocation is ElementAccessExpressionSyntax) {
+				argList = ((ElementAccessExpressionSyntax)invocation).ArgumentList;
+			} else if (invocation is ConstructorInitializerSyntax) {
+				argList = ((ConstructorInitializerSyntax)invocation).ArgumentList;
+			} else if (invocation is AttributeSyntax) {
+				argList = ((AttributeSyntax)invocation).ArgumentList;
+			}
+			if (argList == null)
 				return ParameterIndexResult.Invalid;
-
 			int i = 0;
 			int j = 0;
-			var argList = invocation.ArgumentList;
 			if (caretOffset < argList.SpanStart || caretOffset > argList.Span.End)
 				return ParameterIndexResult.Invalid;
 			

@@ -32,6 +32,7 @@ using MonoDevelop.CSharp.Formatting;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.Core.Text;
+using MonoDevelop.CSharp.Completion;
 
 namespace MonoDevelop.CSharp
 {
@@ -55,47 +56,51 @@ namespace MonoDevelop.CSharp
 			if (context.ParsedDocument == null)
 				return await fallback.GetMatchingBracesAsync (editor, context, offset, cancellationToken);
 
-			var ast = context.ParsedDocument.GetAst<SemanticModel> ();
-			if (ast == null)
-				return await fallback.GetMatchingBracesAsync (editor, context, offset, cancellationToken);
-			var root = await ast.SyntaxTree.GetRootAsync (cancellationToken).ConfigureAwait (false);
-			if (offset < 0 || root.Span.Length <= offset)
+			var analysisDocument = context.AnalysisDocument;
+			if (analysisDocument == null)
+				return null;
+			var partialDoc = await CSharpCompletionTextEditorExtension.WithFrozenPartialSemanticsAsync (analysisDocument, cancellationToken).ConfigureAwait (false);
+			var root = await partialDoc.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
+			if (offset < 0 || root.Span.End <= offset)
 				return null;
 			var token = root.FindToken (offset);
+			var tokenSpan = token.Span;
+			if (offset < tokenSpan.Start || offset > tokenSpan.End)
+				return null;
 			for (int i = 0; i < tokenPairs.Length / 2; i++) {
 				var open = tokenPairs [i * 2];
 				var close = tokenPairs [i * 2 + 1];
 				SyntaxToken match;
 				if (token.IsKind (open)) {
 					if (TryFindMatchingToken (token, out match, open, close)) {
-						return new BraceMatchingResult (new TextSegment (token.Span.Start, token.Span.Length), new TextSegment (match.Span.Start, match.Span.Length), true);
+						return new BraceMatchingResult (new TextSegment (tokenSpan.Start, tokenSpan.Length), new TextSegment (match.Span.Start, match.Span.Length), true);
 					}
 				} else if (token.IsKind (close)) {
 					if (TryFindMatchingToken (token, out match, open, close)) {
-						return new BraceMatchingResult (new TextSegment (match.Span.Start, match.Span.Length), new TextSegment (token.Span.Start, token.Span.Length), false);
+						return new BraceMatchingResult (new TextSegment (match.Span.Start, match.Span.Length), new TextSegment (tokenSpan.Start, tokenSpan.Length), false);
 					}
 				}
 			}
 
 			if (token.IsKind (SyntaxKind.StringLiteralToken)) {
 				if (token.IsVerbatimStringLiteral ()) {
-					if (offset <= token.Span.Start)
-						return new BraceMatchingResult (new TextSegment (token.Span.Start, 2), new TextSegment (token.Span.End - 1, 1), true);
-					if (offset >= token.Span.End - 1)
-						return new BraceMatchingResult (new TextSegment (token.Span.Start, 2), new TextSegment (token.Span.End - 1, 1), false);
+					if (offset <= tokenSpan.Start)
+						return new BraceMatchingResult (new TextSegment (tokenSpan.Start, 2), new TextSegment (tokenSpan.End - 1, 1), true);
+					if (offset >= tokenSpan.End - 1)
+						return new BraceMatchingResult (new TextSegment (tokenSpan.Start, 2), new TextSegment (tokenSpan.End - 1, 1), false);
 				} else {
-					if (offset <= token.Span.Start)
-						return new BraceMatchingResult (new TextSegment (token.Span.Start, 1), new TextSegment (token.Span.End - 1, 1), true);
-					if (offset >= token.Span.End - 1)
-						return new BraceMatchingResult (new TextSegment (token.Span.Start, 1), new TextSegment (token.Span.End - 1, 1), false);
+					if (offset <= tokenSpan.Start)
+						return new BraceMatchingResult (new TextSegment (tokenSpan.Start, 1), new TextSegment (tokenSpan.End - 1, 1), true);
+					if (offset >= tokenSpan.End - 1)
+						return new BraceMatchingResult (new TextSegment (tokenSpan.Start, 1), new TextSegment (tokenSpan.End - 1, 1), false);
 				}
 			}
 
 			if (token.IsKind (SyntaxKind.CharacterLiteralToken)) {
-				if (offset <= token.Span.Start)
-					return new BraceMatchingResult (new TextSegment (token.Span.Start, 1), new TextSegment (token.Span.End - 1, 1), true);
-				if (offset >= token.Span.End - 1)
-					return new BraceMatchingResult (new TextSegment (token.Span.Start, 1), new TextSegment (token.Span.End - 1, 1), false);
+				if (offset <= tokenSpan.Start)
+					return new BraceMatchingResult (new TextSegment (tokenSpan.Start, 1), new TextSegment (tokenSpan.End - 1, 1), true);
+				if (offset >= tokenSpan.End - 1)
+					return new BraceMatchingResult (new TextSegment (tokenSpan.Start, 1), new TextSegment (tokenSpan.End - 1, 1), false);
 			}
 
 			return null;

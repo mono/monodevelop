@@ -90,7 +90,7 @@ namespace MonoDevelop.CSharp.Refactoring
 						doc.Editor.RemoveText (extractionResult.MethodDeclarationNode.SpanStart, "private ".Length);
 					}
 				}
-				doc.UpdateParseDocument ();
+				await doc.UpdateParseDocument ();
 				var info = RefactoringSymbolInfo.GetSymbolInfoAsync (doc, extractionResult.InvocationNameToken.Span.Start).Result;
 				var sym = info.DeclaredSymbol ?? info.Symbol;
 				if (sym != null)

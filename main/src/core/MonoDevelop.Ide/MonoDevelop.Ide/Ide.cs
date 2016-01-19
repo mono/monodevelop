@@ -204,8 +204,6 @@ namespace MonoDevelop.Ide
 			workbench.Initialize (monitor);
 			monitor.Step (1);
 			
-			InternalLog.EnableErrorNotification ();
-
 			MonoDevelop.Ide.WelcomePage.WelcomePageService.Initialize ();
 			MonoDevelop.Ide.WelcomePage.WelcomePageService.ShowWelcomePage ();
 
@@ -346,7 +344,7 @@ namespace MonoDevelop.Ide
 			
 			foreach (var file in filteredFiles) {
 				try {
-					Workbench.OpenDocument (file.FileName, file.Line, file.Column, file.Options);
+					Workbench.OpenDocument (file.FileName, null, file.Line, file.Column, file.Options);
 				} catch (Exception ex) {
 					MessageService.ShowError (GettextCatalog.GetString ("Could not open file: {0}", file.FileName), ex);
 				}
@@ -412,7 +410,6 @@ namespace MonoDevelop.Ide
 
 		static void OnInitialRun ()
 		{
-			Workbench.ResetToolbars ();
 			SetInitialLayout ();
 		}
 

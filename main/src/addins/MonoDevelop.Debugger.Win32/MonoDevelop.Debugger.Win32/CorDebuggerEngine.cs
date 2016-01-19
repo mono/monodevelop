@@ -66,7 +66,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		public DebuggerSession CreateSession ( )
 		{
-			return new CorDebuggerSession ();
+			return MtaThread.Run(() => new CorDebuggerSession());
 		}
 
 		public ProcessInfo[] GetAttachableProcesses ( )

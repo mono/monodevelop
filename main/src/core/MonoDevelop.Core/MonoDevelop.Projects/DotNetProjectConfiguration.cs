@@ -35,7 +35,7 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.StringParsing;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -52,37 +52,33 @@ namespace MonoDevelop.Projects
 		string sourcePath;
 		DotNetCompilerParameters compilationParameters;
 
-		public DotNetProjectConfiguration ()
+		public DotNetProjectConfiguration (string id): base (id)
 		{
 		}
 
-		public DotNetProjectConfiguration (string name): base (name)
+		internal protected override void Read (IPropertySet pset)
 		{
-		}
-
-		internal protected override void Read (IMSBuildEvaluatedPropertyCollection pset, string toolsVersion)
-		{
-			base.Read (pset, toolsVersion);
+			base.Read (pset);
 
 			assembly = pset.GetValue ("AssemblyName");
 			signAssembly = pset.GetValue<bool> ("SignAssembly");
 			delaySign = pset.GetValue<bool> ("DelaySign");
-			assemblyKeyFile = pset.GetPathValue ("AssemblyOriginatorKeyFile");
+			assemblyKeyFile = pset.GetPathValue ("AssemblyOriginatorKeyFile", FilePath.Empty);
 			if (string.IsNullOrEmpty (assemblyKeyFile))
-				assemblyKeyFile = pset.GetPathValue ("AssemblyKeyFile");
+				assemblyKeyFile = pset.GetPathValue ("AssemblyKeyFile", FilePath.Empty);
 			if (compilationParameters != null)
-				compilationParameters.Read (pset, toolsVersion);
+				compilationParameters.Read (pset);
 		}
 
-		internal protected override void Write (IPropertySet pset, string toolsVersion)
+		internal protected override void Write (IPropertySet pset)
 		{
-			base.Write (pset, toolsVersion);
+			base.Write (pset);
 			pset.SetValue ("AssemblyName", assembly, mergeToMainGroup: true);
 			pset.SetValue ("SignAssembly", signAssembly, defaultValue:false, mergeToMainGroup: true);
 			pset.SetValue ("DelaySign", delaySign, defaultValue:false, mergeToMainGroup:true);
-			pset.SetValue ("AssemblyOriginatorKeyFile", assemblyKeyFile, mergeToMainGroup:true);
+			pset.SetValue ("AssemblyOriginatorKeyFile", assemblyKeyFile, defaultValue:FilePath.Empty, mergeToMainGroup:true);
 			if (compilationParameters != null)
-				compilationParameters.Write (pset, toolsVersion);
+				compilationParameters.Write (pset);
 		}
 
 		private bool signAssembly = false;
@@ -182,9 +178,9 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public override void CopyFrom (ItemConfiguration configuration)
+		protected override void OnCopyFrom (ItemConfiguration configuration, bool isRename)
 		{
-			base.CopyFrom (configuration);
+			base.OnCopyFrom (configuration, isRename);
 			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) configuration;
 			
 			assembly = conf.assembly;

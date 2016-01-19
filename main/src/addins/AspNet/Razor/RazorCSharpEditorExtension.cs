@@ -515,7 +515,7 @@ namespace MonoDevelop.AspNet.Razor
 			}
 		}
 
-		protected override Task<ICompletionDataList> HandleCodeCompletion (
+		protected override async Task<ICompletionDataList> HandleCodeCompletion (
 			CodeCompletionContext completionContext, bool forced, CancellationToken token)
 		{
 			var currentLocation = new MonoDevelop.Ide.Editor.DocumentLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset);
@@ -524,28 +524,29 @@ namespace MonoDevelop.AspNet.Razor
 			var codeState = Tracker.Engine.CurrentState as RazorCodeFragmentState;
 			if (currentChar == '<' && codeState != null) {
 				if (!codeState.IsInsideParentheses && !codeState.IsInsideGenerics) {
-					var list = new CompletionDataList ();
-					GetElementCompletions (list);
-					return Task.FromResult((ICompletionDataList)list);
+					var list = await GetElementCompletions (token);
+					return list;
 				}
 			} else if (currentChar == '>' && Tracker.Engine.CurrentState is RazorCodeFragmentState)
-				return Task.FromResult(ClosingTagCompletion (Editor, currentLocation));
+				return ClosingTagCompletion (Editor, currentLocation);
 
-			return base.HandleCodeCompletion (completionContext, forced, token);
+			return await base.HandleCodeCompletion (completionContext, forced, token);
 		}
 
 		//we override to ensure we get parent element name even if there's a razor node in between
-		protected override void GetElementCompletions (CompletionDataList list)
+		protected override async Task<CompletionDataList> GetElementCompletions (CancellationToken token)
 		{
+			var list = new CompletionDataList ();
 			var el = Tracker.Engine.Nodes.OfType<XElement> ().FirstOrDefault ();
 			var parentName = el == null ? new XName () : el.Name;
 
-			AddHtmlTagCompletionData (list, Schema, parentName);
+			await AddHtmlTagCompletionData (list, Schema, parentName, token);
 			AddMiscBeginTags (list);
 
 			//FIXME: don't show this after any elements
 			if (DocType == null)
 				list.Add ("!DOCTYPE", "md-literal", MonoDevelop.Core.GettextCatalog.GetString ("Document type"));
+			return list;
 		}
 
 		public override Task<ICompletionDataList> CodeCompletionCommand (CodeCompletionContext completionContext)

@@ -32,7 +32,7 @@ namespace Mono.TextEditor
 {
 	public class TextSegmentMarker : TreeSegment
 	{
-
+		internal int insertId;
 		public virtual TextLineMarkerFlags Flags {
 			get;
 			set;

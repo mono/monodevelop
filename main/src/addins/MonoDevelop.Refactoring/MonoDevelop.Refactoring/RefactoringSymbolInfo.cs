@@ -69,6 +69,7 @@ namespace MonoDevelop.Refactoring
 		}
 
 		public SyntaxNode Node { get; private set; }
+		public SemanticModel Model { get; private set; }
 
 		public RefactoringSymbolInfo (SymbolInfo symbolInfo)
 		{
@@ -81,7 +82,7 @@ namespace MonoDevelop.Refactoring
 				throw new ArgumentNullException (nameof (document));
 			if (document.ParsedDocument == null)
 				return RefactoringSymbolInfo.Empty;
-			var unit = document.ParsedDocument.GetAst<SemanticModel> ();
+			var unit = await document.AnalysisDocument.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
 			if (unit != null) {
 				var root = await unit.SyntaxTree.GetRootAsync (cancellationToken).ConfigureAwait (false);
 				try {
@@ -91,7 +92,8 @@ namespace MonoDevelop.Refactoring
 					var symbol = unit.GetSymbolInfo (token.Parent);
 					return new RefactoringSymbolInfo (symbol) {
 						DeclaredSymbol = token.IsKind (SyntaxKind.IdentifierToken) ? unit.GetDeclaredSymbol (token.Parent) : null,
-						Node = token.Parent
+						Node = token.Parent,
+						Model = unit
 					};
 				} catch (Exception) {
 					return RefactoringSymbolInfo.Empty;

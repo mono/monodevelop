@@ -59,10 +59,9 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			new ObjectCreationContextHandler(),
 			new SenderCompletionContextHandler(),
 			new CastCompletionContextHandler(),
-			new PreProcessorExpressionContextHandler()
+			new PreProcessorExpressionContextHandler(), 
+			new RegexContextHandler()
 		};
-
-		static readonly ICompletionDataKeyHandler DefaultKeyHandler = new RoslynRecommendationsCompletionContextHandler ();
 
 		readonly ICompletionDataFactory factory;
 		readonly Workspace workspace;
@@ -105,9 +104,9 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			var document = completionContext.Document;
 			var semanticModel = await completionContext.GetSemanticModelAsync (cancellationToken).ConfigureAwait(false);
 			var position = completionContext.Position;
-
 			var text = await document.GetTextAsync (cancellationToken).ConfigureAwait (false);
-			var ctx = await completionContext.GetSyntaxContextAsync (workspace, cancellationToken).ConfigureAwait (false);
+			var ctx = await completionContext.GetSyntaxContextAsync (workspace, cancellationToken);
+			ctx.SemanticModel = semanticModel;
 
 			// case lambda parameter (n1, $
 			if (ctx.TargetToken.IsKind (SyntaxKind.CommaToken) &&
@@ -137,7 +136,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				}
 
 				foreach (var handler in exclusiveHandlers) {
-					var handlerResult = handler.GetCompletionDataAsync (result, this, completionContext, info, cancellationToken).Result;
+					var handlerResult = handler.GetCompletionDataAsync (result, this, completionContext, info, ctx, cancellationToken).Result;
 					//if (handlerResult != null) {
 					//	Console.WriteLine ("-----" + handler);
 					//	foreach (var item in handlerResult) {
@@ -152,7 +151,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 				if (result.Count == 0) {
 					foreach (var handler in nonExclusiveHandlers) {
-						var handlerResult = handler.GetCompletionDataAsync (result, this, completionContext, info, cancellationToken).Result;
+						var handlerResult = handler.GetCompletionDataAsync (result, this, completionContext, info, ctx, cancellationToken).Result;
 						//if (handlerResult != null) {
 						//	Console.WriteLine ("-----" + handler);
 						//	foreach (var item in handlerResult) {

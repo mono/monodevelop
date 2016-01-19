@@ -27,7 +27,11 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
+using System.Linq;
+
+using MonoDevelop.Core;
 using Foundation;
+using AppKit;
 
 namespace MonoDevelop.MacInterop
 {
@@ -89,119 +93,79 @@ namespace MonoDevelop.MacInterop
 	
 	public static class LaunchServices
 	{
-		const string APP_SERVICES = "/System/Library/Frameworks/ApplicationServices.framework/Versions/A/ApplicationServices";
-		const string CFLIB = "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation";
-		
-		[DllImport (APP_SERVICES)]
-		static extern OSStatus LSOpenApplication (ref LSApplicationParameters appParams, out ProcessSerialNumber psn);
-		
-		public static ProcessSerialNumber OpenApplication (string application)
+		public static int OpenApplication (string application)
 		{
 			return OpenApplication (new ApplicationStartInfo (application));
 		}
-			
-		public static ProcessSerialNumber OpenApplication (ApplicationStartInfo application)
+
+		// This function can be replaced by NSWorkspace.LaunchApplication but it currently doesn't work
+		// https://bugzilla.xamarin.com/show_bug.cgi?id=32540
+
+		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
+		static extern IntPtr IntPtr_objc_msgSend_IntPtr_UInt32_IntPtr_IntPtr (IntPtr receiver, IntPtr selector, IntPtr url, UInt32 options, IntPtr configuration, out IntPtr error);
+		static readonly IntPtr launchApplicationAtURLOptionsConfigurationErrorSelector = ObjCRuntime.Selector.GetHandle ("launchApplicationAtURL:options:configuration:error:");
+		public static int OpenApplication (ApplicationStartInfo application)
 		{
 			if (application == null)
 				throw new ArgumentNullException ("application");
-			
+
 			if (string.IsNullOrEmpty (application.Application) || !System.IO.Directory.Exists (application.Application))
 				throw new ArgumentException ("Application is not valid");
-			
-			var appParams = new LSApplicationParameters ();
-			if (application.NewInstance)
-				appParams.flags |= LSLaunchFlags.NewInstance;
-			if (application.Async)
-				appParams.flags |= LSLaunchFlags.Async;
-			
-			NSArray argv = null;
+
+			NSUrl appUrl = NSUrl.FromFilename (application.Application);
+
+			// TODO: Once the above bug is fixed, we can replace the code below with
+			//NSRunningApplication app = NSWorkspace.SharedWorkspace.LaunchApplication (appUrl, 0, new NSDictionary (), null);
+
+			var config = new NSMutableDictionary ();
 			if (application.Args != null && application.Args.Length > 0) {
-				var args = application.Args;
-				NSObject[] arr = new NSObject[args.Length];
-				for (int i = 0; i < args.Length; i++)
-					arr[i] = new NSString (args[i]);
-				argv = NSArray.FromNSObjects (arr);
-				appParams.argv = argv.Handle;
+				var args = new NSMutableArray ();
+				foreach (string arg in application.Args) {
+					args.Add (new NSString (arg));
+				}
+				config.Add (new NSString ("NSWorkspaceLaunchConfigurationArguments"), args);
 			}
-			
-			NSDictionary dict = null;
-			if (application.Environment.Count > 0) {
-				dict = new NSMutableDictionary ();
-				foreach (var kvp in application.Environment)
-					dict.SetValueForKey (new NSString (kvp.Value), new NSString (kvp.Key));
-				appParams.environment = dict.Handle;
+
+			if (application.Environment != null && application.Environment.Count > 0) {
+				var envValueStrings = application.Environment.Values.Select (t => new NSString (t)).ToArray ();
+				var envKeyStrings = application.Environment.Keys.Select (t => new NSString (t)).ToArray ();
+
+				var envDict = new NSMutableDictionary ();
+				for (int i = 0; i < envValueStrings.Length; i++) {
+					envDict.Add (envKeyStrings[i], envValueStrings[i]);
+				}
+
+				config.Add (new NSString ("NSWorkspaceLaunchConfigurationEnvironment"), envDict);
 			}
-			
-			var cfUrl = global::CoreFoundation.CFUrl.FromFile (application.Application);
-			ProcessSerialNumber psn;
-			
-			try {
-				appParams.application = Marshal.AllocHGlobal (Marshal.SizeOf (typeof (FSRef)));
-			
-				if (!CoreFoundation.CFURLGetFSRef (cfUrl.Handle, appParams.application))
-					throw new Exception ("Could not create FSRef from CFUrl");
-				
-				var status = LSOpenApplication (ref appParams, out psn);
-				if (status != OSStatus.Ok)
-					throw new LaunchServicesException ((int)status);
-			} finally {
-				if (appParams.application != IntPtr.Zero)
-					Marshal.FreeHGlobal (appParams.application);
-				appParams.application = IntPtr.Zero;
-				if (dict != null)
-					dict.Dispose (); //also ensures the NSDictionary is kept alive for the params
-				if (argv != null)
-					argv.Dispose (); //also ensures the NSArray is kept alive for the params
-			}
-			
-			return psn;
+
+			UInt32 options = 0;
+
+			if (application.Async)
+				options |= (UInt32) LaunchOptions.NSWorkspaceLaunchAsync;
+			if (application.NewInstance)
+				options |= (UInt32) LaunchOptions.NSWorkspaceLaunchNewInstance;
+
+			IntPtr error;
+			var appHandle = IntPtr_objc_msgSend_IntPtr_UInt32_IntPtr_IntPtr (NSWorkspace.SharedWorkspace.Handle, launchApplicationAtURLOptionsConfigurationErrorSelector, appUrl.Handle, options, config.Handle, out error);
+			NSRunningApplication app = (NSRunningApplication)ObjCRuntime.Runtime.GetNSObject (appHandle);
+
+			return app.ProcessIdentifier;
 		}
-		
-		struct LSApplicationParameters
-		{
-			public IntPtr version; // CFIndex, must be 0
-			public LSLaunchFlags flags;
-			public IntPtr application; //FSRef *
-			public IntPtr asyncLaunchRefCon; // void *
-			public IntPtr environment; // CFDictionaryRef
-			public IntPtr argv; // CFArrayRef
-			public IntPtr initialEvent; // AppleEvent *
-		}
-		
+
 		[Flags]
-		public enum LSLaunchFlags : uint
-		{
-			Defaults = 0x00000001,
-			AndPrint = 0x00000002,
-			AndDisplayErrors = 0x00000040,
-			InhibitBGOnly = 0x00000080,
-			DontAddToRecents = 0x00000100,
-			DontSwitch = 0x00000200,
-			NoParams = 0x00000800,
-			Async = 0x00010000,
-			StartClassic = 0x00020000,
-			InClassic = 0x00040000,
-			NewInstance = 0x00080000,
-			AndHide = 0x00100000,
-			AndHideOthers = 0x00200000,
-			HasUntrustedContents = 0x00400000
-		}
-		
-		static class CoreFoundation
-		{
-			[DllImport (CFLIB)]
-			public static extern bool CFURLGetFSRef (IntPtr urlPtr, IntPtr fsRefPtr);
-		}
-		
-		//this is an 80-byte opaque object
-		[StructLayout(LayoutKind.Sequential, Size = 80)]
-		struct FSRef
-		{
-		}
-		
-		enum OSStatus
-		{
-			Ok = 0
-		}
+		enum LaunchOptions {
+			NSWorkspaceLaunchAndPrint = 0x00000002,
+			NSWorkspaceLaunchWithErrorPresentation = 0x00000040,
+			NSWorkspaceLaunchInhibitingBackgroundOnly = 0x00000080,
+			NSWorkspaceLaunchWithoutAddingToRecents = 0x00000100,
+			NSWorkspaceLaunchWithoutActivation = 0x00000200,
+			NSWorkspaceLaunchAsync = 0x00010000,
+			NSWorkspaceLaunchAllowingClassicStartup = 0x00020000,
+			NSWorkspaceLaunchPreferringClassic = 0x00040000,
+			NSWorkspaceLaunchNewInstance = 0x00080000,
+			NSWorkspaceLaunchAndHide = 0x00100000,
+			NSWorkspaceLaunchAndHideOthers = 0x00200000,
+			NSWorkspaceLaunchDefault = NSWorkspaceLaunchAsync | NSWorkspaceLaunchAllowingClassicStartup
+		};
 	}
 }

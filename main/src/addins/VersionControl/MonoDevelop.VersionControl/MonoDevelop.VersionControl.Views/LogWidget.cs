@@ -52,7 +52,7 @@ namespace MonoDevelop.VersionControl.Views
 		ListStore logstore = new ListStore (typeof (Revision), typeof(string));
 		FileTreeView treeviewFiles;
 		TreeStore changedpathstore;
-		Gtk.Button revertButton, revertToButton, refreshButton;
+		DocumentToolButton revertButton, revertToButton, refreshButton;
 		SearchEntry searchEntry;
 		string currentFilter;
 		
@@ -124,11 +124,11 @@ namespace MonoDevelop.VersionControl.Views
 			vpaned1 = vpaned1.ReplaceWithWidget (new VPanedThin () { HandleWidget = separator }, true);
 
 			revertButton = new DocumentToolButton ("vc-revert-command", GettextCatalog.GetString ("Revert changes from this revision"));
-			revertButton.Sensitive = false;
+			revertButton.GetNativeWidget<Gtk.Widget> ().Sensitive = false;
 			revertButton.Clicked += new EventHandler (RevertRevisionClicked);
 
 			revertToButton = new DocumentToolButton ("vc-revert-command", GettextCatalog.GetString ("Revert to this revision"));
-			revertToButton.Sensitive = false;
+			revertToButton.GetNativeWidget<Gtk.Widget> ().Sensitive = false;
 			revertToButton.Clicked += new EventHandler (RevertToRevisionClicked);
 
 			refreshButton = new DocumentToolButton (Gtk.Stock.Refresh, GettextCatalog.GetString ("Refresh"));
@@ -315,10 +315,10 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			ShowLoading ();
 			info.Start (true);
-			revertButton.Sensitive = revertToButton.Sensitive = false;
+			revertButton.GetNativeWidget<Gtk.Widget> ().Sensitive = revertToButton.GetNativeWidget<Gtk.Widget> ().Sensitive = false;
 		}
 
-		void HandleTreeviewFilesDiffLineActivated (object sender, EventArgs e)
+		async void HandleTreeviewFilesDiffLineActivated (object sender, EventArgs e)
 		{
 			TreePath[] paths = treeviewFiles.Selection.GetSelectedRows ();
 			
@@ -332,7 +332,7 @@ namespace MonoDevelop.VersionControl.Views
 			int line = diffRenderer.GetSelectedLine (paths[0]);
 			if (line == -1)
 				line = 1;
-			var doc = IdeApp.Workbench.OpenDocument (fileName, line, 0, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
+			var doc = await IdeApp.Workbench.OpenDocument (fileName, line, 0, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
 			int i = 1;
 			foreach (var content in doc.Window.SubViewContents) {
 				DiffView diffView = content as DiffView;
@@ -485,7 +485,7 @@ namespace MonoDevelop.VersionControl.Views
 			} else {
 				day = rev.Time.ToShortDateString ();
 			}
-			renderer.Text = string.Format ("{0} {1:HH:MM}", day, rev.Time);
+			renderer.Text = string.Format ("{0} {1:HH:mm}", day, rev.Time);
 		}	
 		
 		static void GraphFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
@@ -630,7 +630,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (d == null)
 				return;
 
-			revertButton.Sensitive = revertToButton.Sensitive = true;
+			revertButton.GetNativeWidget<Gtk.Widget> ().Sensitive = revertToButton.GetNativeWidget<Gtk.Widget> ().Sensitive = true;
 			Gtk.TreeIter selectIter = Gtk.TreeIter.Zero;
 			bool select = false;
 			foreach (RevisionPath rp in info.Repository.GetRevisionChanges (d)) {

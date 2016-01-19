@@ -37,29 +37,29 @@ namespace MonoDevelop.Components
 	{
 		const string LastPathProperty = "MonoDevelop.FileSelector.LastPath";
 
-		public FileSelector () : this (GettextCatalog.GetString ("Open file..."), FileChooserAction.Open)
+		public FileSelector () : this (GettextCatalog.GetString ("Open file..."), Gtk.FileChooserAction.Open)
 		{
 		}
 
-		public FileSelector (string title) : this (title, FileChooserAction.Open)
+		public FileSelector (string title) : this (title, Gtk.FileChooserAction.Open)
 		{
 		}
 		
 		//for some reason GTK# needs this to create wrapper objects
 		protected FileSelector (IntPtr ptr) : base (ptr) {}
 
-		public FileSelector (string title, FileChooserAction action) : base (title, null, action)
+		public FileSelector (string title, Gtk.FileChooserAction action) : base (title, null, action)
 		{
 			switch (action) {
-				case FileChooserAction.Open:
+				case Gtk.FileChooserAction.Open:
 					AddButton (Gtk.Stock.Cancel, ResponseType.Cancel);
 					AddButton (Gtk.Stock.Open, ResponseType.Ok);
 					break;
-				case FileChooserAction.SelectFolder:
+				case Gtk.FileChooserAction.SelectFolder:
 					AddButton (Gtk.Stock.Cancel, ResponseType.Cancel);
 					AddButton (GettextCatalog.GetString ("Select Folder"), ResponseType.Ok);
 					break;
-				case FileChooserAction.Save:
+				case Gtk.FileChooserAction.Save:
 					AddButton (Gtk.Stock.Cancel, ResponseType.Cancel);
 					AddButton (Gtk.Stock.Save, ResponseType.Ok);
 					break;

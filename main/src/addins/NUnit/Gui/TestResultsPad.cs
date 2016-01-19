@@ -49,7 +49,7 @@ using MonoDevelop.NUnit.External;
 
 namespace MonoDevelop.NUnit
 {
-	public class TestResultsPad: IPadContent, ITestProgressMonitor
+	public class TestResultsPad: PadContent, ITestProgressMonitor
 	{
 		NUnitService testService = NUnitService.Instance;
 		
@@ -154,16 +154,16 @@ namespace MonoDevelop.NUnit
 					"/MonoDevelop/NUnit/ContextMenu/TestResultsPad");
 			};
 			
-			Control.ShowAll ();
+			panel.ShowAll ();
 			
 			outputViewScrolled.Hide ();
 		}
 		
-		void IPadContent.Initialize (IPadWindow window)
+		protected override void Initialize (IPadWindow window)
 		{
 			this.window = window;
 			
-			DockItemToolbar toolbar = window.GetToolbar (PositionType.Top);
+			DockItemToolbar toolbar = window.GetToolbar (DockPositionType.Top);
 			
 			buttonSuccess = new ToggleButton ();
 			buttonSuccess.Label = GettextCatalog.GetString ("Successful Tests");
@@ -228,7 +228,7 @@ namespace MonoDevelop.NUnit
 			
 			// Run panel
 			
-			DockItemToolbar runPanel = window.GetToolbar (PositionType.Bottom);
+			DockItemToolbar runPanel = window.GetToolbar (DockPositionType.Bottom);
 			
 			infoSep = new VSeparator ();
 			
@@ -251,12 +251,10 @@ namespace MonoDevelop.NUnit
 			
 			progressBar.HeightRequest = infoLabel.SizeRequest ().Height;
 			runPanel.ShowAll ();
+			progressBar.Hide ();
+			infoSep.Hide ();
 			resultSummary = new UnitTestResult ();
 			UpdateCounters ();
-		}
-		
-		public void Dispose ()
-		{
 		}
 		
 		public void OnTestSuiteChanged (object sender, EventArgs e)
@@ -290,7 +288,9 @@ namespace MonoDevelop.NUnit
 			progressBar.Text = "";
 			testsRun = 0;
 			resultSummary = new UnitTestResult ();
-			resultLabel.Markup = GetResultsMarkup ();
+			resultLabel.Markup = "";
+			resultLabel.Hide ();
+			labels.Show ();
 			UpdateCounters ();
 		}
 		
@@ -302,14 +302,10 @@ namespace MonoDevelop.NUnit
 			}
 		}
 		
-		public Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return panel;
 			}
-		}
-		
-		public void RedrawContent ()
-		{
 		}
 		
 		string GetResultsMarkup ()
@@ -513,19 +509,42 @@ namespace MonoDevelop.NUnit
 				Gtk.TreeIter iter;
 				if (!failuresTreeView.Selection.GetSelected (out foo, out iter))
 					return;
-				
+
 				int type = (int)failuresStore.GetValue (iter, 5);
 
 				var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
 				switch (type) {
-				case ErrorMessage:
+					case ErrorMessage:
 					clipboard.Text = last.Message;
 					break;
-				case StackTrace:
+					case StackTrace:
 					clipboard.Text = last.StackTrace;
 					break;
-				default:
+					default:
 					clipboard.Text = last.Message + Environment.NewLine + "Stack trace:" + Environment.NewLine + last.StackTrace;
+					break;
+				}
+			} else {
+				if (error == null)
+					return;
+				var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+
+				Gtk.TreeModel foo;
+				Gtk.TreeIter iter;
+				if (!failuresTreeView.Selection.GetSelected (out foo, out iter))
+					return;
+
+				int type = (int)failuresStore.GetValue (iter, 5);
+
+				switch (type) {
+				case ErrorMessage:
+					clipboard.Text = error.Message;
+					break;
+				case StackTrace:
+					clipboard.Text = error.StackTrace;
+					break;
+				default:
+					clipboard.Text = error.Message + Environment.NewLine + "Stack trace:" + Environment.NewLine + error.StackTrace;
 					break;
 				}
 			}
@@ -556,7 +575,7 @@ namespace MonoDevelop.NUnit
 					return;
 				}
 			}
-			info.Enabled = false;
+			info.Enabled = error != null;
 		}
 
 		[CommandHandler (TestCommands.SelectTestInTree)]
@@ -601,9 +620,19 @@ namespace MonoDevelop.NUnit
 			if (loc != null)
 				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column);
 		}
+
+		[CommandHandler (TestCommands.RerunTest)]
+		protected void OnRerunTest ()
+		{
+			UnitTest test = GetSelectedTest ();
+			if (test == null)
+				return;
+			NUnitService.Instance.RunTest (test, null);
+		}
 		
 		[CommandUpdateHandler (TestCommands.ShowTestCode)]
 		[CommandUpdateHandler (TestCommands.GoToFailure)]
+		[CommandUpdateHandler (TestCommands.RerunTest)]
 		protected void OnUpdateRunTest (CommandInfo info)
 		{
 			UnitTest test = GetSelectedTest ();
@@ -797,43 +826,43 @@ namespace MonoDevelop.NUnit
 		}
 		public void InitializeTestRun (UnitTest test)
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				pad.InitializeTestRun (test);
 			});
 		}
 		public void FinishTestRun ()
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				pad.FinishTestRun ();
 			});
 		}
 		public void Cancel ()
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				pad.Cancel ();
 			});
 		}
 		public void BeginTest (UnitTest test)
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				monitor.BeginTest (test);
 			});
 		}
 		public void EndTest (UnitTest test, UnitTestResult result)
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				monitor.EndTest (test, result);
 			});
 		}
 		public void ReportRuntimeError (string message, Exception exception)
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				monitor.ReportRuntimeError (message, exception);
 			});
 		}
 		public void WriteGlobalLog (string message)
 		{
-			DispatchService.GuiDispatch (delegate {
+			Runtime.RunInMainThread (delegate {
 				monitor.WriteGlobalLog (message);
 			});
 		}

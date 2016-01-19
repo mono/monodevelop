@@ -422,7 +422,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			//sort, sinking obsolete items to the bottoms
 			//the string comparison is ordinal as that makes it an order of magnitude faster, which 
 			//which makes completion triggering noticeably more responsive
-			var list = completionDataList as CompletionDataList;
 			if (!completionDataList.IsSorted)
 				completionDataList.Sort (GetComparerForCompletionList (completionDataList));
 
@@ -449,15 +448,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return;
 			
 			// Note: we add back the TextOffset here in case X and X+TextOffset are on different monitors.
-			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (X + TextOffset, Y));
+			Xwt.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (X + TextOffset, Y));
 			
 			previousHeight = h;
 			previousWidth = w;
 			
 			if (X + w > geometry.Right)
-				X = geometry.Right - w;
+				X = (int)geometry.Right - w;
 			else if (X < geometry.Left)
-				X = geometry.Left;
+				X = (int)geometry.Left;
 			
 			if (Y + h > geometry.Bottom || yPosition == WindowPositonY.Top) {
 				// Put the completion-list window *above* the cursor

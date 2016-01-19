@@ -32,6 +32,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Gtk;
 
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
@@ -87,8 +88,9 @@ namespace MonoDevelop.Ide.Tasks
 
 			MonoDevelopWorkspace.LoadingFinished += OnWorkspaceItemLoaded;
 			IdeApp.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
+			IdeApp.Workspace.LastWorkspaceItemClosed += LastWorkspaceItemClosed;
 			IdeApp.Workbench.DocumentOpened += WorkbenchDocumentOpened;
-			IdeApp.Workbench.DocumentClosed += WorkbenchDocumentClosed;;
+			IdeApp.Workbench.DocumentClosed += WorkbenchDocumentClosed;
 
 			highPrioColor = StringToColor (IdeApp.Preferences.UserTasksHighPrioColor);
 			normalPrioColor = StringToColor (IdeApp.Preferences.UserTasksNormalPrioColor);
@@ -271,18 +273,35 @@ namespace MonoDevelop.Ide.Tasks
 		void OnWorkspaceItemUnloaded (object sender, WorkspaceItemEventArgs e)
 		{
 			comments.RemoveItemTasks (e.Item, true);
-		}		
 
-		void OnCommentTasksChanged (object sender, CommentTasksChangedEventArgs e)
-		{
-			//because of parse queueing, it's possible for this event to come in after the solution is closed
-			//so we track which solutions are currently open so that we don't leak memory by holding 
-			// on to references to closed projects
-			if (e.Project != null && e.Project.ParentSolution != null && loadedSlns.Contains (e.Project.ParentSolution)) {
-				Application.Invoke (delegate {
-					UpdateCommentTags (e.Project.ParentSolution, e.FileName, e.TagComments);
-				});
+			var solution = e.Item as Solution;
+			if (solution != null) {
+				loadedSlns.Remove (solution);
+
+				foreach (Project p in solution.GetAllProjects ()) {
+					projectTags.Remove (p);
+				}
 			}
+		}
+		
+		void LastWorkspaceItemClosed (object sender, EventArgs e)
+		{
+			loadedSlns.Clear ();
+			projectTags.Clear ();
+		}
+
+		void OnCommentTasksChanged (object sender, CommentTasksChangedEventArgs args)
+		{
+			Application.Invoke (delegate {
+				foreach (var e in args.Changes) {
+					//because of parse queueing, it's possible for this event to come in after the solution is closed
+					//so we track which solutions are currently open so that we don't leak memory by holding 
+					// on to references to closed projects
+					if (e.Project != null && e.Project.ParentSolution != null && loadedSlns.Contains (e.Project.ParentSolution)) {
+						UpdateCommentTags (e.Project.ParentSolution, e.FileName, e.TagComments);
+					}
+				}
+			});
 		}
 		
 		void OnCommentTagsChanged (object sender, EventArgs e)
@@ -521,11 +540,11 @@ namespace MonoDevelop.Ide.Tasks
 			OnGenTaskJumpto (null, null);
 		}
 
-		void OnGenTaskDelete (object o, EventArgs args)
+		async void OnGenTaskDelete (object o, EventArgs args)
 		{
 			TaskListEntry task = SelectedTask;
 			if (task != null && ! String.IsNullOrEmpty (task.FileName)) {
-				var doc = IdeApp.Workbench.OpenDocument (task.FileName, Math.Max (1, task.Line), Math.Max (1, task.Column));
+				var doc = await IdeApp.Workbench.OpenDocument (task.FileName, null, Math.Max (1, task.Line), Math.Max (1, task.Column));
 				if (doc != null && doc.HasProject && doc.Project is DotNetProject) {
 					string[] commentTags = doc.CommentTags;
 					if (commentTags != null && commentTags.Length == 1) {
@@ -623,14 +642,14 @@ namespace MonoDevelop.Ide.Tasks
 		}
 		
 		#region ITaskListView members
-		TreeView ITaskListView.Content {
+		Control ITaskListView.Content {
 			get {
 				CreateView ();
 				return view; 
 			} 
 		}
 		
-		Widget[] ITaskListView.ToolBarItems {
+		Control[] ITaskListView.ToolBarItems {
 			get { return null; } 
 		}
 		#endregion

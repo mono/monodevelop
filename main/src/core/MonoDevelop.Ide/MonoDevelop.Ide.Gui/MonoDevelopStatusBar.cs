@@ -224,7 +224,7 @@ namespace MonoDevelop.Ide
 
 		public void ShowCaretState (int line, int column, int selectedChars, bool isInInsertMode)
 		{
-			DispatchService.AssertGuiThread ();
+			Runtime.AssertMainThread ();
 			string cursorText = selectedChars > 0 ? String.Format ("{0,3} : {1,-3} - {2}", line, column, selectedChars) : String.Format ("{0,3} : {1,-3}", line, column);
 			if (cursorLabel.Text != cursorText)
 				cursorLabel.Text = cursorText;

@@ -173,7 +173,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			if (IdeApp.Workspace.IsOpen) {
 				IBuildTarget buildTarget = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-				info.Enabled = (buildTarget != null) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted);
+				info.Enabled = (buildTarget != null) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted) && buildTarget.CanBuild (IdeApp.Workspace.ActiveConfiguration);
 				if (buildTarget != null) {
 					info.Text = GettextCatalog.GetString ("B_uild {0}", buildTarget.Name.Replace ("_","__"));
 					if (buildTarget is SolutionFolder)
@@ -214,7 +214,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			if (IdeApp.Workspace.IsOpen) {
 				IBuildTarget buildTarget = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-				info.Enabled = (buildTarget != null) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted);
+				info.Enabled = (buildTarget != null) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted) && buildTarget.CanBuild (IdeApp.Workspace.ActiveConfiguration);
 				if (buildTarget != null) {
 					info.Text = GettextCatalog.GetString ("R_ebuild {0}", IdeApp.ProjectOperations.CurrentSelectedBuildTarget.Name.Replace ("_","__"));
 					info.Description = GettextCatalog.GetString ("Rebuild {0}", IdeApp.ProjectOperations.CurrentSelectedBuildTarget.Name);
@@ -349,6 +349,7 @@ namespace MonoDevelop.Ide.Commands
 			if (IdeApp.ProjectOperations.CurrentSelectedBuildTarget == null)
 				info.Enabled = false;
 			else {
+				info.Enabled = IdeApp.ProjectOperations.CurrentSelectedBuildTarget.CanBuild (IdeApp.Workspace.ActiveConfiguration);
 				info.Text = GettextCatalog.GetString ("C_lean {0}", IdeApp.ProjectOperations.CurrentSelectedBuildTarget.Name.Replace ("_","__"));
 				info.Description = GettextCatalog.GetString ("Clean {0}", IdeApp.ProjectOperations.CurrentSelectedBuildTarget.Name);
 			}
@@ -501,8 +502,16 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Run ()
 		{
-			using (ApplyPolicyDialog dlg = new ApplyPolicyDialog ((IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolutionItem ?? (IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolution))
-				MessageService.ShowCustomDialog (dlg);
+			Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
+			Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			using (var dlg = new ApplyPolicyDialog ((IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolutionItem ?? (IPolicyProvider)solution)) {
+				if (MessageService.ShowCustomDialog (dlg) == (int)Gtk.ResponseType.Ok) {
+					if (project != null)
+						IdeApp.ProjectOperations.SaveAsync (project);
+					else
+						IdeApp.ProjectOperations.SaveAsync (solution);
+				}
+			}
 		}
 	}
 	

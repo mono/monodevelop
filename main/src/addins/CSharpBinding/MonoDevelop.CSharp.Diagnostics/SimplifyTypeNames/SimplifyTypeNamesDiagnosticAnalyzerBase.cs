@@ -47,7 +47,6 @@ namespace MonoDevelop.CSharp.Diagnostics.SimplifyTypeNames
 			isEnabledByDefault: true,
 			customTags: DiagnosticCustomTags.Unnecessary);
 
-		private OptionSet _lazyDefaultOptionSet;
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
 		{

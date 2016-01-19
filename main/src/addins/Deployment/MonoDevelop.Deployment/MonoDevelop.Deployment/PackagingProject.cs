@@ -35,11 +35,9 @@ namespace MonoDevelop.Deployment
 			get { return packages; }
 		}
 		
-		protected override SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind)
+		protected override SolutionItemConfiguration OnCreateConfiguration (string id, ConfigurationKind kind)
 		{
-			PackagingProjectConfiguration conf = new PackagingProjectConfiguration ();
-			conf.Name = name;
-			return conf;
+			return new PackagingProjectConfiguration (id);
 		}
 		
 		protected override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
@@ -75,5 +73,8 @@ namespace MonoDevelop.Deployment
 	
 	public class PackagingProjectConfiguration : SolutionItemConfiguration
 	{
+		public PackagingProjectConfiguration (string id) : base (id)
+		{
+		}
 	}
 }

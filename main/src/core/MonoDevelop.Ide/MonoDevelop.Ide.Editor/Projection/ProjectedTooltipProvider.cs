@@ -24,38 +24,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Editor.Projection
 {
 	sealed class ProjectedTooltipProvider  : TooltipProvider
 	{
-		readonly TextEditor editor;
-		readonly DocumentContext ctx;
 		readonly Projection projection;
 		readonly TooltipProvider projectedTooltipProvider;
 
-		public ProjectedTooltipProvider (TextEditor editor, DocumentContext ctx, Projection projection, TooltipProvider projectedTooltipProvider)
+		public ProjectedTooltipProvider (Projection projection, TooltipProvider projectedTooltipProvider)
 		{
-			if (editor == null)
-				throw new ArgumentNullException ("editor");
-			if (ctx == null)
-				throw new ArgumentNullException ("ctx");
 			if (projection == null)
 				throw new ArgumentNullException ("projection");
 			if (projectedTooltipProvider == null)
 				throw new ArgumentNullException ("projectedTooltipProvider");
 			this.projectedTooltipProvider = projectedTooltipProvider;
 			this.projection = projection;
-			this.editor = editor;
-			this.ctx = ctx;
 		}
 
-		public override TooltipItem GetItem (TextEditor editor, DocumentContext ctx, int offset)
+		public override async Task<TooltipItem> GetItem (TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default(CancellationToken))
 		{
 			foreach (var pseg in projection.ProjectedSegments) {
 				if (pseg.ContainsOriginal (offset)) {
-					var result = projectedTooltipProvider.GetItem (projection.ProjectedEditor, projection.ProjectedContext, pseg.FromOriginalToProjected (offset));
+					var result = await projectedTooltipProvider.GetItem (projection.ProjectedEditor, projection.ProjectedContext, pseg.FromOriginalToProjected (offset));
 					if (result == null)
 						return null;
 					result.Offset = pseg.FromProjectedToOriginal (result.Offset);
@@ -70,7 +64,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return projectedTooltipProvider.IsInteractive (editor, tipWindow);
 		}
 
-		public override void ShowTooltipWindow (TextEditor editor, Control tipWindow, TooltipItem item, Gdk.ModifierType modifierState, int mouseX, int mouseY)
+		public override void ShowTooltipWindow (TextEditor editor, Control tipWindow, TooltipItem item, Xwt.ModifierKeys modifierState, int mouseX, int mouseY)
 		{
 			projectedTooltipProvider.ShowTooltipWindow (editor, tipWindow, item, modifierState, mouseX, mouseY);
 		}
@@ -80,7 +74,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 			projectedTooltipProvider.GetRequiredPosition (editor, tipWindow, out requiredWidth, out xalign);
 		}
 
-		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Gdk.ModifierType modifierState)
+		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
 		{
 			foreach (var pseg in projection.ProjectedSegments) {
 				if (pseg.ContainsOriginal (offset)) {

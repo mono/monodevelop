@@ -27,6 +27,7 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core.Text;
+using System.Text.RegularExpressions;
 
 namespace ICSharpCode.NRefactory6.CSharp.Analysis
 {
@@ -85,6 +86,15 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 
 		protected TColor stringFormatItemColor;
 
+		protected TColor stringRegexCharacterClass;
+		protected TColor stringRegexGroupingConstructs;
+		protected TColor stringRegexSetConstructs;
+		protected TColor stringRegexComments;
+		protected TColor stringRegexEscapeCharacter;
+		protected TColor stringRegexAltEscapeCharacter;
+
+		protected TColor stringRegexErrors;
+
 		protected TextSpan region;
 
 		protected SemanticModel semanticModel;
@@ -92,7 +102,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 
 		protected abstract void Colorize (TextSpan span, TColor color);
 
-		protected SemanticHighlightingVisitor (SemanticModel semanticModel)
+		protected SemanticHighlightingVisitor (SemanticModel semanticModel) : base (SyntaxWalkerDepth.Trivia)
 		{
 			this.semanticModel = semanticModel;
 		}
@@ -167,34 +177,218 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 
 		public override void VisitInvocationExpression(InvocationExpressionSyntax node)
 		{
-			var symbolInfo = semanticModel.GetSymbolInfo(node.Expression, cancellationToken);
-			
-			if (IsInactiveConditional (symbolInfo.Symbol) || IsEmptyPartialMethod(symbolInfo.Symbol, cancellationToken)) {
+			var symbolInfo = semanticModel.GetSymbolInfo (node.Expression, cancellationToken);
+
+			if (IsInactiveConditional (symbolInfo.Symbol) || IsEmptyPartialMethod (symbolInfo.Symbol, cancellationToken)) {
 				// mark the whole invocation statement as inactive code
-				Colorize(node.Span, inactiveCodeColor);
+				Colorize (node.Span, inactiveCodeColor);
 				return;
 			}
 			if (node.Expression.IsKind (SyntaxKind.IdentifierName) && symbolInfo.Symbol == null) {
 				var id = (IdentifierNameSyntax)node.Expression;
 				if (id.Identifier.ValueText == "nameof") {
-					Colorize(id.Span, nameofKeywordColor);
+					Colorize (id.Span, nameofKeywordColor);
 				}
 			}
 
 			ExpressionSyntax fmtArgumets;
 			IList<ExpressionSyntax> args;
-			if (node.ArgumentList.Arguments.Count > 1 && FormatStringHelper.TryGetFormattingParameters(semanticModel, node, out fmtArgumets, out args, null, cancellationToken)) {
-				var expr = node.ArgumentList.Arguments.First(); 
+			if (node.ArgumentList.Arguments.Count > 1 && FormatStringHelper.TryGetFormattingParameters (semanticModel, node, out fmtArgumets, out args, null, cancellationToken)) {
+				var expr = node.ArgumentList.Arguments.First ();
 				if (expr != null) {
 					var literalExpressionSyntax = expr.Expression as LiteralExpressionSyntax;
 					if (literalExpressionSyntax != null)
-						HighlightStringFormatItems(literalExpressionSyntax);
+						HighlightStringFormatItems (literalExpressionSyntax);
 				}
 			}
 
-			base.VisitInvocationExpression(node);
+			var containingType = symbolInfo.Symbol?.ContainingType;
+			if (IsRegexMatchMethod (symbolInfo)) {
+				if (node.ArgumentList.Arguments.Count > 1) {
+					var pattern = node.ArgumentList.Arguments [1].Expression as LiteralExpressionSyntax;
+					if (pattern != null && pattern.IsKind (SyntaxKind.StringLiteralExpression)) {
+						ColorizeRegex (pattern);
+					}
+
+				}
+			}
+
+			base.VisitInvocationExpression (node);
 		}
-		
+
+		internal static bool IsRegexMatchMethod (SymbolInfo symbolInfo)
+		{
+			var symbol = symbolInfo.Symbol;
+			if (symbol == null)
+				return false;
+			return IsRegexType (symbol.ContainingType) && symbol.IsStatic && (symbol.Name == "IsMatch" || symbol.Name == "Match" || symbol.Name == "Matches");
+		}
+
+		public override void VisitObjectCreationExpression (ObjectCreationExpressionSyntax node)
+		{
+			base.VisitObjectCreationExpression (node);
+			var symbolInfo = semanticModel.GetSymbolInfo (node, cancellationToken);
+			if (IsRegexConstructor (symbolInfo)) {
+				if (node.ArgumentList.Arguments.Count > 0) {
+					var pattern = node.ArgumentList.Arguments [0].Expression as LiteralExpressionSyntax;
+					if (pattern != null && pattern.IsKind (SyntaxKind.StringLiteralExpression)) {
+						ColorizeRegex (pattern);
+					}
+				}
+			}
+		}
+
+		internal static bool IsRegexConstructor (SymbolInfo symbolInfo)
+		{
+			return symbolInfo.Symbol?.ContainingType is INamedTypeSymbol && IsRegexType (symbolInfo.Symbol.ContainingType);
+		}
+
+		internal static bool IsRegexType (INamedTypeSymbol containingType)
+		{
+			return containingType != null && containingType.Name == "Regex" && containingType.ContainingNamespace.GetFullName () == "System.Text.RegularExpressions";
+		}
+
+		void ColorizeRegex (LiteralExpressionSyntax literal)
+		{
+			string pattern = literal.Token.ToString ();
+			if (pattern.Length == 0)
+				return;
+			bool isVerbatim = pattern [0] == '@';
+			bool inSet = false, inGroup = false;
+			int lastEscape = -1;
+			for (int i = 1; i < pattern.Length - 1; i++) {
+				char ch = pattern [i];
+				switch (ch) {
+				case '\\':
+					var start = i;
+					i++;
+					if (!isVerbatim) {
+						if (pattern [i] == '\\') {
+							i++;
+						} else {
+							break;
+						}
+					}
+
+					switch (pattern[i]) {
+					case 'w':
+					case 'W':
+					case 's':
+					case 'S':
+					case 'd':
+					case 'D':
+						Colorize (new TextSpan (literal.SpanStart + start, i - start + 1), stringRegexCharacterClass);
+						break;
+					case 'A':
+					case 'Z':
+					case 'z':
+					case 'G':
+					case 'b':
+					case 'B': 
+						// Anchor
+						Colorize (new TextSpan (literal.SpanStart + start, i - start + 1), stringRegexCharacterClass);
+						break;
+					default:
+						if (lastEscape == literal.SpanStart + start) {
+							Colorize (new TextSpan (literal.SpanStart + start, i - start + 1), stringRegexAltEscapeCharacter);
+							lastEscape = -1;
+						} else {
+							Colorize (new TextSpan (literal.SpanStart + start, i - start + 1), stringRegexEscapeCharacter);
+							lastEscape = literal.SpanStart + i + 1;
+						}
+						break;
+					}
+					break;
+				case '^':
+					if (inSet) {
+						Colorize (new TextSpan (literal.SpanStart + i, 1), stringRegexSetConstructs);
+					} else {
+						Colorize (new TextSpan (literal.SpanStart + i, 1), stringRegexCharacterClass);
+					}
+					break;
+				case '$':
+					// Anchor
+					Colorize (new TextSpan (literal.SpanStart + i, 1), stringRegexCharacterClass);
+					break;
+				case '.':
+					Colorize (new TextSpan (literal.SpanStart + i, 1), stringRegexCharacterClass);
+					break;
+				case '|':
+					// Alternate
+					Colorize (new TextSpan (literal.SpanStart + i, 1), stringRegexCharacterClass);
+					break;
+				case '*':
+				case '+':
+				case '?':
+					// Quantifier
+					Colorize (new TextSpan (literal.SpanStart + i, 1), stringRegexCharacterClass);
+					break;
+				case '{': {
+					var closingIndex = pattern.IndexOf ('}', i + 1);
+					if (closingIndex >= 0) {
+						// Quantifier
+						Colorize (new TextSpan (literal.SpanStart + i, closingIndex - i + 1), stringRegexCharacterClass);
+						i = closingIndex;
+					} else {
+						Colorize (new TextSpan (literal.SpanStart + i, pattern.Length - i), stringRegexErrors);
+						i = pattern.Length;
+					}
+					break;
+				}
+				case '[': {
+						var closingIndex = pattern.IndexOf (']', i + 1);
+						if (closingIndex < 0) {
+							Colorize (new TextSpan (literal.SpanStart + i, pattern.Length - i), stringRegexErrors);
+							i = pattern.Length;
+							break;
+						}
+						inSet = true;
+						Colorize (new TextSpan (literal.SpanStart + i, 1), stringRegexSetConstructs);
+					}
+					break;
+				case ']':
+					inSet = false;
+					Colorize (new TextSpan (literal.SpanStart + i, 1), stringRegexSetConstructs);
+					break;
+				case '-':
+					if (inSet)
+						Colorize (new TextSpan (literal.SpanStart + i, 1), stringRegexSetConstructs);
+					break;
+				case '(':
+					if (i + 1 < pattern.Length && pattern[i + 1 ] == '?') {
+						if (i + 2 < pattern.Length && pattern[i + 2] == '#') {
+							var closingIndex = pattern.IndexOf (')', i + 2);
+							if (closingIndex < 0) {
+								Colorize (new TextSpan (literal.SpanStart + i, pattern.Length - i), stringRegexErrors);
+								i = pattern.Length;
+								break;
+							}
+							Colorize (new TextSpan (literal.SpanStart + i, closingIndex - i + 1), stringRegexComments);
+							i = closingIndex;
+							break;
+						}
+						Colorize (new TextSpan (literal.SpanStart + i, 2), stringRegexGroupingConstructs);
+						inGroup = true;
+						i++;
+						break;
+					}
+					Colorize (new TextSpan (literal.SpanStart + i, 1), stringRegexGroupingConstructs);
+					break;
+				case '<':
+				case '>':
+					if (inGroup) {
+						Colorize (new TextSpan (literal.SpanStart + i, 1), stringRegexGroupingConstructs);
+					}
+					break;
+				case ')':
+					inGroup = false;
+					Colorize (new TextSpan (literal.SpanStart + i, 1), stringRegexGroupingConstructs);
+					break;
+				}
+				
+			}
+		}
+
 		bool IsInactiveConditional(ISymbol member)
 		{
 			if (member == null || member.Kind != SymbolKind.Method)
@@ -274,8 +468,13 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 		
 		public override void VisitClassDeclaration(Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax node)
 		{
-			base.VisitClassDeclaration(node);
-			Colorize(node.Identifier, referenceTypeColor);
+			var symbol = semanticModel.GetDeclaredSymbol(node);
+			if (symbol != null && IsInactiveConditional (symbol)) {
+				Colorize (node, inactiveCodeColor);
+			} else {
+				base.VisitClassDeclaration (node);
+				Colorize (node.Identifier, referenceTypeColor);
+			}
 		}
 		
 		public override void VisitEnumDeclaration(Microsoft.CodeAnalysis.CSharp.Syntax.EnumDeclarationSyntax node)
@@ -304,8 +503,13 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 		
 		public override void VisitMethodDeclaration(Microsoft.CodeAnalysis.CSharp.Syntax.MethodDeclarationSyntax node)
 		{
-			base.VisitMethodDeclaration(node);
-			Colorize(node.Identifier, methodDeclarationColor);
+			var symbol = semanticModel.GetDeclaredSymbol(node);
+			if (symbol != null && IsInactiveConditional (symbol)) {
+				Colorize (node, inactiveCodeColor);
+			} else {
+				base.VisitMethodDeclaration (node);
+				Colorize (node.Identifier, methodDeclarationColor);
+			}
 		}
 		
 		public override void VisitPropertyDeclaration(Microsoft.CodeAnalysis.CSharp.Syntax.PropertyDeclarationSyntax node)
@@ -482,41 +686,12 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 				Colorize(declarations.Identifier, color);
 			}
 		}
-		
-//		public override void VisitComment(Comment comment)
-//		{
-//			if (comment.CommentType == CommentType.InactiveCode) {
-//				Colorize(comment, inactiveCodeColor);
-//			}
-//		}
-//
-//		public override void VisitPreProcessorDirective(PreProcessorDirective preProcessorDirective)
-//		{
-//		}
-		
-//		public override void VisitAttribute(Microsoft.CodeAnalysis.CSharp.Syntax.AttributeSyntax node)
-//		{
-//			var symbol = semanticModel.GetDeclaredSymbol(node) as INamedTypeSymbol;
-//			if (symbol != null && IsInactiveConditional(symbol)) {
-//				Colorize(attribute, inactiveCodeColor);
-//			} else {
-//				base.VisitAttribute(node);
-//			}
-//		}
-		
-		public override void VisitInitializerExpression(Microsoft.CodeAnalysis.CSharp.Syntax.InitializerExpressionSyntax node)
+
+		public override void VisitTrivia (SyntaxTrivia trivia)
 		{
-			base.VisitInitializerExpression(node);
-			
-			foreach (var a in node.Expressions) {
-				// TODO
-//				var namedElement = a as NamedExpression;
-//				if (namedElement != null) {
-//					var result = resolver.Resolve (namedElement, cancellationToken);
-//					if (result.IsError)
-//						Colorize (namedElement.NameToken, syntaxErrorColor);
-//					namedElement.Expression.AcceptVisitor (this);
-//				} 
+			base.VisitTrivia (trivia);
+			if (trivia.IsKind (SyntaxKind.DisabledTextTrivia)) {
+				Colorize(trivia.Span, inactiveCodeColor);
 			}
 		}
 

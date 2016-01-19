@@ -45,28 +45,39 @@ namespace MonoDevelop.Ide.Editor
 		/// The name of the document. It's the file name for files on disc. 
 		/// For unsaved files that name is different.
 		/// </summary>
-		public abstract string Name
-		{
+		public abstract string Name {
 			get;
 		}
 
 		/// <summary>
 		/// Project != null
 		/// </summary>
-		public virtual bool HasProject
-		{
+		public virtual bool HasProject {
 			get { return Project != null; }
+		}
+
+		internal virtual bool IsAdHocProject {
+			get { return false; }
 		}
 
 		/// <summary>
 		/// Gets the project this context is in.
 		/// </summary>
-		public abstract Project Project
-		{
+		public abstract Project Project {
 			get;
 		}
 
 		WorkspaceId workspaceId = WorkspaceId.Empty;
+
+		public virtual T GetPolicy<T> (IEnumerable<string> types) where T : class, IEquatable<T>, new ()
+		{
+			var project = Project;
+			if (project != null && project.Policies != null) {
+				return project.Policies.Get<T> (types);
+			}
+			return MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<T> (types);
+		}
+
 		public Microsoft.CodeAnalysis.Workspace RoslynWorkspace
 		{
 			get { return TypeSystemService.GetWorkspace (workspaceId); }
@@ -138,7 +149,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public abstract OptionSet GetOptionSet ();
 
-		public abstract ParsedDocument UpdateParseDocument ();
+		public abstract Task<ParsedDocument> UpdateParseDocument ();
 
 		// TODO: IMO that needs to be handled differently (this is atm only used in the ASP.NET binding)
 		// Maybe using the file service. Files can be changed/saved w/o beeing opened.

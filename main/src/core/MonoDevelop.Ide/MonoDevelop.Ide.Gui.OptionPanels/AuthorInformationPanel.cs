@@ -27,6 +27,7 @@
 //
 
 using System;
+using MonoDevelop.Components;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Gui.Dialogs;
@@ -37,8 +38,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	{
 		AuthorInformationPanelWidget widget;
 		Solution solution;
-		
-		public override Gtk.Widget CreatePanelWidget ()
+
+		public override Control CreatePanelWidget ()
 		{
 			return widget = new AuthorInformationPanelWidget (solution.LocalAuthorInformation);
 		}

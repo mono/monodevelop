@@ -148,10 +148,14 @@ namespace MonoDevelop.Components
 		const int spacing = arrowLeftPadding + arrowRightPadding + arrowSize;
 		const int minRegionSelectorWidth = 30;
 		
-		Func<int, Widget> createMenuForItem;
+		Func<int, Control> createMenuForItem;
 		Widget menuWidget;
-		
-		public PathBar (Func<int, Widget> createMenuForItem)
+		bool pressMenuWasVisible;
+		int pressHoverIndex;
+		int menuIndex;
+		uint hideTimeout;
+
+		public PathBar (Func<int, Control> createMenuForItem)
 		{
 			this.Events =  EventMask.ExposureMask | 
 				           EventMask.EnterNotifyMask |
@@ -433,6 +437,9 @@ namespace MonoDevelop.Components
 
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
+			pressMenuWasVisible = menuVisible;
+			pressHoverIndex = menuIndex;
+
 			HideMenu ();
 			if (hovering) {
 				pressed = true;
@@ -446,6 +453,8 @@ namespace MonoDevelop.Components
 			pressed = false;
 			if (hovering) {
 				QueueDraw ();
+				if (pressMenuWasVisible && pressHoverIndex == hoverIndex)
+					return true;
 				ShowMenu ();
 			}
 			return true;
@@ -457,18 +466,18 @@ namespace MonoDevelop.Components
 				return;
 
 			HideMenu ();
-
+			menuIndex = hoverIndex;
 			menuWidget = createMenuForItem (hoverIndex);
 			if (menuWidget == null)
 				return;
 			menuWidget.Hidden += delegate {
-				
 				menuVisible = false;
 				QueueDraw ();
 				
 				//FIXME: for some reason the menu's children don't get activated if we destroy 
 				//directly here, so use a timeout to delay it
-				GLib.Timeout.Add (100, delegate {
+				hideTimeout = GLib.Timeout.Add (100, delegate {
+					hideTimeout = 0;
 					HideMenu ();
 					return false;
 				});
@@ -490,6 +499,9 @@ namespace MonoDevelop.Components
 
 		public void HideMenu ()
 		{
+			if (hideTimeout != 0) {
+				GLib.Source.Remove (hideTimeout); 
+			}
 			if (menuWidget != null) {
 				menuWidget.Destroy ();
 				menuWidget = null;
@@ -531,18 +543,21 @@ namespace MonoDevelop.Components
 			int dy = oy + this.Allocation.Bottom;
 			
 			var req = widget.SizeRequest ();
-			
-			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (dx, dy));
+
+			Xwt.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (dx, dy));
+			int geomWidth = (int)geometry.Width;
+			int geomLeft = (int)geometry.Left;
+			int geomRight = (int)geometry.Right;
 			int width = System.Math.Max (req.Width, w);
-			if (width >= geometry.Width - spacing * 2) {
-				width = geometry.Width - spacing * 2;
-				dx = geometry.Left + spacing;
+			if (width >= geomWidth - spacing * 2) {
+				width = geomWidth - spacing * 2;
+				dx = geomLeft + spacing;
 			}
 			widget.WidthRequest = width;
 			if (dy + req.Height > geometry.Bottom)
 				dy = oy + this.Allocation.Y - req.Height;
-			if (dx + width > geometry.Right)
-				dx = geometry.Right - width;
+			if (dx + width > geomRight)
+				dx = geomRight - width;
 			(widget as Gtk.Window).Move (dx, dy);
 			(widget as Gtk.Window).Resize (width, req.Height);
 			widget.GrabFocus ();

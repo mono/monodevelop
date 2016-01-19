@@ -37,13 +37,14 @@ using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharpBinding
 {
 	[TestFixture]
 	public class OnTheFlyFormatterTests : UnitTests.TestBase
 	{
-		static void Simulate (string input, Action<TestViewContent, CSharpTextEditorIndentation> act)
+		static async Task Simulate (string input, Action<TestViewContent, CSharpTextEditorIndentation> act)
 		{
 			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
 			var content = new TestViewContent ();
@@ -103,7 +104,7 @@ namespace MonoDevelop.CSharpBinding
 			solution.AddConfiguration ("", true); 
 			solution.DefaultSolutionFolder.AddItem (project);
 			using (var monitor = new ProgressMonitor ())
-				TypeSystemService.Load (solution, monitor, false);
+				await TypeSystemService.Load (solution, monitor);
 			content.Project = project;
 			doc.SetProject (project);
 
@@ -116,7 +117,7 @@ namespace MonoDevelop.CSharpBinding
 			ext.Initialize (doc.Editor, doc);
 			content.Contents.Add (ext);
 			
-			doc.UpdateParseDocument ();
+			await doc.UpdateParseDocument ();
 			if (selectionStart >= 0 && selectionEnd >= 0)
 				content.GetTextEditorData ().SetSelection (selectionStart, selectionEnd);
 			try {
@@ -127,9 +128,9 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 		[Test]
-		public void TestSemicolon ()
+		public async Task TestSemicolon ()
 		{
-			Simulate (@"class Foo
+			await Simulate (@"class Foo
 {
 	void Test ()
 	{
@@ -150,9 +151,9 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 		[Test]
-		public void TestCloseBrace ()
+		public async Task TestCloseBrace ()
 		{
-			Simulate (@"class Foo
+			await Simulate (@"class Foo
 {
 	void Test ()
 	{
@@ -175,10 +176,10 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 		[Test]
-		public void TestCloseBraceIf ()
+		public async Task TestCloseBraceIf ()
 		{
 			//Notice that some text stay unformatted by design
-			Simulate (@"class Foo
+			await Simulate (@"class Foo
 {
 	void Test ()
 			{
@@ -207,10 +208,10 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 		[Test]
-		public void TestCloseBraceCatch ()
+		public async Task TestCloseBraceCatch ()
 		{
 			//Notice that some text stay unformatted by design
-			Simulate (@"class Foo
+			await Simulate (@"class Foo
 {
 	void Test ()
 			{
@@ -247,9 +248,9 @@ namespace MonoDevelop.CSharpBinding
 		/// Bug 5080 - Pressing tab types /t instead of tabbing
 		/// </summary>
 		[Test]
-		public void TestBug5080 ()
+		public async Task TestBug5080 ()
 		{
-			Simulate ("\"Hello\n\t$", (content, ext) => {
+			await Simulate ("\"Hello\n\t$", (content, ext) => {
 				ext.ReindentOnTab ();
 
 				var newText = content.Text;
@@ -259,9 +260,9 @@ namespace MonoDevelop.CSharpBinding
 
 
 		[Test]
-		public void TestVerbatimToNonVerbatimConversion ()
+		public async Task TestVerbatimToNonVerbatimConversion ()
 		{
-			Simulate ("@$\"\t\"", (content, ext) => {
+			await Simulate ("@$\"\t\"", (content, ext) => {
 				content.Data.RemoveText (0, 1);
 				var newText = content.Text;
 				Assert.AreEqual ("\"\\t\"", newText);
@@ -269,9 +270,9 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 		[Test]
-		public void TestNonVerbatimToVerbatimConversion ()
+		public async Task TestNonVerbatimToVerbatimConversion ()
 		{
-			Simulate ("$\"\\t\"", (content, ext) => {
+			await Simulate ("$\"\\t\"", (content, ext) => {
 				content.Data.InsertText (0, "@");
 				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
 				var newText = content.Text;
@@ -283,9 +284,9 @@ namespace MonoDevelop.CSharpBinding
 		/// Bug 14686 - Relative path strings containing backslashes have incorrect behavior when removing the @ symbol.
 		/// </summary>
 		[Test]
-		public void TestBug14686 ()
+		public async Task TestBug14686 ()
 		{
-			Simulate ("$\"\\\\\"", (content, ext) => {
+			await Simulate ("$\"\\\\\"", (content, ext) => {
 				content.Data.InsertText (0, "@");
 				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
 				var newText = content.Text;
@@ -294,16 +295,16 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 		[Test]
-		public void TestBug14686Case2 ()
+		public async Task TestBug14686Case2 ()
 		{
-			Simulate ("$\"\\\"", (content, ext) => {
+			await Simulate ("$\"\\\"", (content, ext) => {
 				content.Data.InsertText (0, "@");
 				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
 				var newText = content.Text;
 				Assert.AreEqual ("@\"\\\"", newText);
 			});
 
-			Simulate ("$\"\\\"a", (content, ext) => {
+			await Simulate ("$\"\\\"a", (content, ext) => {
 				content.Data.InsertText (0, "@");
 				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
 				var newText = content.Text;
@@ -312,9 +313,9 @@ namespace MonoDevelop.CSharpBinding
 
 		}
 		[Test]
-		public void TestCorrectReindentNextLine ()
+		public async Task TestCorrectReindentNextLine ()
 		{
-			Simulate (@"
+			await Simulate (@"
 class Foo
 {
 	void Bar ()
@@ -351,9 +352,9 @@ class Foo
 		/// Bug 16174 - Editor still inserting unwanted tabs
 		/// </summary>
 		[Test]
-		public void TestBug16174_AutoIndent ()
+		public async Task TestBug16174_AutoIndent ()
 		{
-			Simulate ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", (content, ext) => {
+			await Simulate ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", (content, ext) => {
 				var options = DefaultSourceEditorOptions.Instance;
 				options.IndentStyle = IndentStyle.Auto;
 				ext.Editor.Options = options;
@@ -370,9 +371,9 @@ class Foo
 		}
 
 		[Test]
-		public void TestBug16174_VirtualIndent ()
+		public async Task TestBug16174_VirtualIndent ()
 		{
-			Simulate ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", (content, ext) => {
+			await Simulate ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", (content, ext) => {
 				var options = DefaultSourceEditorOptions.Instance;
 				options.IndentStyle = IndentStyle.Virtual;
 				ext.Editor.Options = options;
@@ -393,9 +394,9 @@ class Foo
 		/// Bug 16283 - Wrong literal string addition
 		/// </summary>
 		[Test]
-		public void TestBug16283 ()
+		public async Task TestBug16283 ()
 		{
-			Simulate ("$\"\\dev\\null {0}\"", (content, ext) => {
+			await Simulate ("$\"\\dev\\null {0}\"", (content, ext) => {
 				content.Data.InsertText (0, "@");
 				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
 				var newText = content.Text;
@@ -407,9 +408,9 @@ class Foo
 		/// Bug 17765 - Format selection adding extra leading whitespace on function
 		/// </summary>
 		[Test]
-		public void TestBug17765 ()
+		public async Task TestBug17765 ()
 		{
-			Simulate (@"
+			await Simulate (@"
 namespace FormatSelectionTest
 {
 	public class EmptyClass
@@ -437,9 +438,9 @@ namespace FormatSelectionTest
 		}
 
 		[Test]
-		public void TestAfterCommentLine ()
+		public async Task TestAfterCommentLine ()
 		{
-			Simulate (@"class Foo
+			await Simulate (@"class Foo
 {
 	void Test ()
 	{

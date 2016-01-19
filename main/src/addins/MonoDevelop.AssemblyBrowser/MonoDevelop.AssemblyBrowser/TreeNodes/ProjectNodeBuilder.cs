@@ -68,7 +68,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			var project = (Project)dataObject;
 			
-			nodeInfo.Label = project.Name;
+			nodeInfo.Label = Ambience.EscapeText (project.Name);
 			nodeInfo.Icon = Context.GetIcon (project.StockIcon);
 		}
 		

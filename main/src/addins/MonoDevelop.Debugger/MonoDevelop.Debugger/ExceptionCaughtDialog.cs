@@ -43,7 +43,7 @@ using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Debugger
 {
-	class ExceptionCaughtDialog : Dialog
+	class ExceptionCaughtDialog : Gtk.Dialog
 	{
 		static readonly Xwt.Drawing.Image WarningIconPixbuf = Xwt.Drawing.Image.FromResource ("exception-48.png");
 		protected ObjectValueTreeView ExceptionValueTreeView { get; private set; }
@@ -675,7 +675,7 @@ namespace MonoDevelop.Debugger
 			dlg.Line = Line;
 		}
 
-		public override Widget CreateWidget ()
+		public override Control CreateWidget ()
 		{
 			var icon = Xwt.Drawing.Image.FromResource ("lightning-16.png");
 			var image = new Xwt.ImageView (icon).ToGtkWidget ();
@@ -763,7 +763,7 @@ namespace MonoDevelop.Debugger
 			dlg.Line = Line;
 		}
 
-		public override Widget CreateWidget ()
+		public override Control CreateWidget ()
 		{
 			var box = new EventBox ();
 			box.VisibleWindow = false;

@@ -61,44 +61,6 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		#region IActionTextLineMarker implementation
-		class TextEventArgsWrapper : TextMarkerMouseEventArgs
-		{
-			readonly MarginMouseEventArgs args;
-
-			public override double X {
-				get {
-					return args.X;
-				}
-			}
-
-			public override double Y {
-				get {
-					return args.Y;
-				}
-			}
-
-			public override object OverwriteCursor {
-				get;
-				set;
-			}
-
-			public override string TooltipMarkup {
-				get;
-				set;
-			}
-
-			public TextEventArgsWrapper (MarginMouseEventArgs args)
-			{
-				if (args == null)
-					throw new ArgumentNullException ("args");
-				this.args = args;
-			}
-
-			public override bool TriggersContextMenu ()
-			{
-				return args.TriggersContextMenu ();
-			}
-		}
 
 		bool IActionTextLineMarker.MousePressed (Mono.TextEditor.MonoTextEditor editor, MarginMouseEventArgs args)
 		{
@@ -108,6 +70,12 @@ namespace MonoDevelop.SourceEditor
 			return false;
 		}
 
+		bool IActionTextLineMarker.MouseReleased (MonoTextEditor editor, MarginMouseEventArgs args)
+		{
+			return false;
+		}
+
+
 		void IActionTextLineMarker.MouseHover (Mono.TextEditor.MonoTextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result)
 		{
 			if (args.Button != 0)
@@ -116,7 +84,7 @@ namespace MonoDevelop.SourceEditor
 			if (line == null)
 				return;
 			var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.TextStartPosition;
-			var y = editor.LineToY (line.LineNumber + 1) - editor.VAdjustment.Value;
+			//var y = editor.LineToY (line.LineNumber + 1) - editor.VAdjustment.Value;
 			const double xAdditionalSpace = tagMarkerWidth;
 			if (args.X - x >= -xAdditionalSpace * editor.Options.Zoom && 
 				args.X - x < (tagMarkerWidth + xAdditionalSpace) * editor.Options.Zoom /*&& 
@@ -143,15 +111,10 @@ namespace MonoDevelop.SourceEditor
 				y - y2 < (editor.LineHeight / 2) * editor.Options.Zoom;
 		}
 
-		bool ISmartTagMarker.IsInsideWindow (Gtk.MotionNotifyEventArgs args)
-		{
-			if (editor == null)
-				return false;
-			return args.Event.Window == editor.TextArea.GdkWindow;
-		}
-
 		public event EventHandler<TextMarkerMouseEventArgs> MousePressed;
+		#pragma warning disable 0067
 		public event EventHandler<TextMarkerMouseEventArgs> MouseHover;
+		#pragma warning restore 0067
 		public event EventHandler ShowPopup;
 		public event EventHandler CancelPopup;
 
@@ -160,5 +123,45 @@ namespace MonoDevelop.SourceEditor
 			set;
 		}
 	}
+
+	class TextEventArgsWrapper : TextMarkerMouseEventArgs
+	{
+		readonly MarginMouseEventArgs args;
+
+		public override double X {
+			get {
+				return args.X;
+			}
+		}
+
+		public override double Y {
+			get {
+				return args.Y;
+			}
+		}
+
+		public override object OverwriteCursor {
+			get;
+			set;
+		}
+
+		public override string TooltipMarkup {
+			get;
+			set;
+		}
+
+		public TextEventArgsWrapper (MarginMouseEventArgs args)
+		{
+			if (args == null)
+				throw new ArgumentNullException ("args");
+			this.args = args;
+		}
+
+		public override bool TriggersContextMenu ()
+		{
+			return args.TriggersContextMenu ();
+		}
+	}
+
 }
 

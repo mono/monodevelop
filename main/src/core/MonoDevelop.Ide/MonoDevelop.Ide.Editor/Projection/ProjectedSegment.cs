@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 		public bool ContainsProjected (int offset)
 		{
-			return ProjectedOffset <= offset && offset < ProjectedOffset + Length;
+			return ProjectedOffset <= offset && offset <= ProjectedOffset + Length;
 		}
 
 		public bool IsInOriginal (ISegment segment)

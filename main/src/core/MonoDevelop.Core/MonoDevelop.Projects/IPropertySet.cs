@@ -27,7 +27,7 @@ using System;
 using System.Xml;
 using MonoDevelop.Core;
 using System.Xml.Linq;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using System.Collections.Generic;
 
 namespace MonoDevelop.Projects
@@ -48,12 +48,11 @@ namespace MonoDevelop.Projects
 		IMetadataProperty GetProperty (string name);
 		IEnumerable<IMetadataProperty> GetProperties ();
 
-		void SetValue (string name, string value, string defaultValue = null, bool preserveExistingCase = false, bool mergeToMainGroup = false, string condition = null);
+		void SetValue (string name, string value, string defaultValue = null, bool preserveExistingCase = false, bool mergeToMainGroup = false, string condition = null, MSBuildValueType valueType = null);
 		void SetValue (string name, FilePath value, FilePath defaultValue = default(FilePath), bool relativeToProject = true, FilePath relativeToPath = default(FilePath), bool mergeToMainGroup = false, string condition = null);
 		void SetValue (string name, object value, object defaultValue = null, bool mergeToMainGroup = false, string condition = null);
 
 		bool RemoveProperty (string name);
-		void RemoveAllProperties ();
 
 		void SetPropertyOrder (params string[] propertyNames);
 	}

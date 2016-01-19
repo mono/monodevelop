@@ -39,12 +39,12 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
 	class AttributeNamedParameterContextHandler : CompletionContextHandler
 	{
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, CancellationToken cancellationToken)
+		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			var document = completionContext.Document;
 			var position = completionContext.Position;
 
-			var syntaxTree = await document.GetCSharpSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
+			var syntaxTree = ctx.SyntaxTree;
 			if (syntaxTree.IsInNonUserCode(position, cancellationToken))
 			{
 				return null;
@@ -86,11 +86,11 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return nameColonItems.Concat(nameEqualsItems);
 		}
 
-		protected async Task<bool> IsExclusiveAsync(Document document, int caretPosition, CompletionTriggerInfo triggerInfo, CancellationToken cancellationToken)
+		public override async Task<bool> IsExclusiveAsync(Document document, int position, CompletionTriggerInfo triggerInfo, CancellationToken cancellationToken)
 		{
 			var syntaxTree = await document.GetCSharpSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
-			var token = syntaxTree.FindTokenOnLeftOfPosition(caretPosition, cancellationToken)
-				.GetPreviousTokenIfTouchingWord(caretPosition);
+			var token = syntaxTree.FindTokenOnLeftOfPosition(position, cancellationToken)
+				.GetPreviousTokenIfTouchingWord(position);
 
 			return IsAfterNameColonArgument(token) || IsAfterNameEqualsArgument(token);
 		}

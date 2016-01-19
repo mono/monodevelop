@@ -27,6 +27,8 @@ using System;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.CodeCompletion;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -85,7 +87,7 @@ namespace MonoDevelop.Ide.Editor
 	// TODO: Improve tooltip API - that really looks messy
 	public abstract class TooltipProvider : IDisposable
 	{
-		public abstract TooltipItem GetItem (TextEditor editor, DocumentContext ctx, int offset);
+		public abstract Task<TooltipItem> GetItem (TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default(CancellationToken));
 
 		public virtual bool IsInteractive (TextEditor editor, Control tipWindow)
 		{
@@ -98,7 +100,7 @@ namespace MonoDevelop.Ide.Editor
 			xalign = 0.5;
 		}
 
-		public virtual Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Gdk.ModifierType modifierState)
+		public virtual Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
 		{
 			return null;
 		}
@@ -108,7 +110,7 @@ namespace MonoDevelop.Ide.Editor
 			return editor.GetContent<ITextEditorImpl> ().GetEditorAllocation ();
 		}
 
-		void ShowTipInfoWindow (TextEditor editor, TooltipInformationWindow tipWindow, TooltipItem item, Gdk.ModifierType modifierState, int mouseX, int mouseY)
+		void ShowTipInfoWindow (TextEditor editor, TooltipInformationWindow tipWindow, TooltipItem item, Xwt.ModifierKeys modifierState, int mouseX, int mouseY)
 		{
 			Gtk.Widget editorWidget = editor;
 
@@ -129,7 +131,7 @@ namespace MonoDevelop.Ide.Editor
 			tipWindow.ShowPopup (editorWidget, caret, PopupPosition.Top);
 		}
 
-		public virtual void ShowTooltipWindow (TextEditor editor, Control tipWindow, TooltipItem item, Gdk.ModifierType modifierState, int mouseX, int mouseY)
+		public virtual void ShowTooltipWindow (TextEditor editor, Control tipWindow, TooltipItem item, Xwt.ModifierKeys modifierState, int mouseX, int mouseY)
 		{
 			if (tipWindow == null)
 				return;

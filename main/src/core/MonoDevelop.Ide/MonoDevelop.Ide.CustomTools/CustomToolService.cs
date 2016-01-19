@@ -37,6 +37,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Projects;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.CustomTools
 {
@@ -73,6 +74,14 @@ namespace MonoDevelop.Ide.CustomTools
 					Update (e.ProjectFile, false);
 			};
 			IdeApp.Workspace.FilePropertyChangedInProject += delegate (object sender, ProjectFileEventArgs args) {
+				foreach (ProjectFileEventInfo e in args)
+					Update (e.ProjectFile, false);
+			};
+			IdeApp.Workspace.FileRemovedFromProject += delegate (object sender, ProjectFileEventArgs args) {
+				foreach (ProjectFileEventInfo e in args)
+					Update (e.ProjectFile, false);
+			};
+			IdeApp.Workspace.FileAddedToProject += delegate (object sender, ProjectFileEventArgs args) {
 				foreach (ProjectFileEventInfo e in args)
 					Update (e.ProjectFile, false);
 			};
@@ -150,7 +159,7 @@ namespace MonoDevelop.Ide.CustomTools
 					return false;
 				}
 				bool byDefault, require;
-				MonoDevelop.Projects.Formats.MSBuild.MSBuildProjectService.CheckHandlerUsesMSBuildEngine (file.Project, out byDefault, out require);
+				MonoDevelop.Projects.MSBuild.MSBuildProjectService.CheckHandlerUsesMSBuildEngine (file.Project, out byDefault, out require);
 				var usesMSBuild = require || (file.Project.UseMSBuildEngine ?? byDefault);
 				if (!usesMSBuild) {
 					return false;
@@ -250,32 +259,65 @@ namespace MonoDevelop.Ide.CustomTools
 			
 			TaskService.Errors.ClearByOwner (file);
 			
-			//if this file is already being run, cancel it
+			TaskInfo runningTask;
+			TaskCompletionSource<bool> newTask = new TaskCompletionSource<bool> ();
+			var result = new SingleFileCustomToolResult ();
+			Task existingTask = null;
+			CancellationTokenSource cs = new CancellationTokenSource ();
+
+			// if this file is already being run, cancel it
+
 			lock (runningTasks) {
-				TaskInfo runningTask;
 				if (runningTasks.TryGetValue (file.FilePath, out runningTask)) {
 					runningTask.CancellationTokenSource.Cancel ();
 					runningTasks.Remove (file.FilePath);
+					existingTask = runningTask.Task;
+				}
+				runningTask = new TaskInfo { Task = newTask.Task, CancellationTokenSource = cs, Result = result };
+				runningTasks.Add (file.FilePath, runningTask);
+			}
+
+			// If a task was already running, wait for it to finish. Running the same task in parallel may lead
+			// to file sharing violation errors
+
+			if (existingTask != null) {
+				try {
+					await existingTask;
+				} catch {
+					// Ignore exceptions, they are handled elsewhere
 				}
 			}
 
-			CancellationTokenSource cs = new CancellationTokenSource ();
+			// Maybe I was cancelled while I was waiting. In that case, the task has already been removed from
+			// the runningTasks collection
+
+			if (cs.IsCancellationRequested)
+				return;
+
+			// Execute the generator
+
+			Exception error = null;
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetToolOutputProgressMonitor (false).WithCancellationSource (cs);
-			var result = new SingleFileCustomToolResult ();
+
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Running generator '{0}' on file '{1}'...", file.Generator, file.Name), 1);
-				var op = tool.Generate (monitor, file, result);
-				lock (runningTasks) {
-					runningTasks.Add (file.FilePath, new TaskInfo { Task = op, CancellationTokenSource = cs, Result = result });
+
+				try {
+					await tool.Generate (monitor, file, result);
+				} catch (Exception ex) {
+					error = ex;
+					result.UnhandledException = ex;
 				}
-				await op;
+
+				// Generation has finished. Remove the task from the runningTasks collection
+
 				lock (runningTasks) {
-					TaskInfo runningTask;
-					if (runningTasks.TryGetValue (file.FilePath, out runningTask) && runningTask.Task == op) {
+					TaskInfo registeredTask;
+					if (runningTasks.TryGetValue (file.FilePath, out registeredTask) && registeredTask == runningTask) {
 						runningTasks.Remove (file.FilePath);
 						UpdateCompleted (monitor, file, genFile, result, false);
 					} else {
-						//it was cancelled because another was run for the same file, so just clean up
+						// it was cancelled because another was run for the same file, so just clean up
 						monitor.EndTask ();
 						monitor.ReportWarning (GettextCatalog.GetString ("Cancelled because generator ran again for the same file"));
 						monitor.Dispose ();
@@ -284,6 +326,12 @@ namespace MonoDevelop.Ide.CustomTools
 			} catch (Exception ex) {
 				result.UnhandledException = ex;
 				UpdateCompleted (monitor, file, genFile, result, false);
+			} finally {
+				if (error == null)
+					newTask.SetResult (true);
+				else {
+					newTask.SetException (error);
+				}
 			}
 		}
 		
@@ -329,7 +377,7 @@ namespace MonoDevelop.Ide.CustomTools
 				}
 				
 				if (result.Errors.Count > 0) {
-					DispatchService.GuiDispatch (delegate {
+					Runtime.RunInMainThread (delegate {
 						foreach (CompilerError err in result.Errors)
 							TaskService.Errors.Add (new TaskListEntry (file.FilePath, err.ErrorText, err.Column, err.Line,
 								err.IsWarning? TaskSeverity.Warning : TaskSeverity.Error,
@@ -408,7 +456,7 @@ namespace MonoDevelop.Ide.CustomTools
 			return ns;
 		}
 
-		public static bool WaitForRunningTools (ProgressMonitor monitor)
+		public static Task WaitForRunningTools (ProgressMonitor monitor)
 		{
 			TaskInfo[] operations;
 			lock (runningTasks) {
@@ -416,30 +464,30 @@ namespace MonoDevelop.Ide.CustomTools
 			}
 
 			if (operations.Length == 0)
-				return true;
+				return Task.FromResult (true);
 
 			monitor.BeginTask ("Waiting for custom tools...", operations.Length);
 
-			var evt = new AutoResetEvent (false);
+			List<Task> tasks = new List<Task> ();
 
 			foreach (var t in operations) {
-				t.Task.ContinueWith (ta => {
-					monitor.Step (1);
-					if (operations.All (op => op.Task.IsCompleted))
-						evt.Set ();
-				});
+				tasks.Add (t.Task.ContinueWith (ta => {
+					if (!monitor.CancellationToken.IsCancellationRequested)
+						monitor.Step (1);
+				}));
 			}
 
-			monitor.CancellationToken.Register (delegate {
-				evt.Set ();
+			var cancelTask = new TaskCompletionSource<bool> ();
+			var allDone = Task.WhenAll (tasks);
+
+			var cancelReg = monitor.CancellationToken.Register (() => {
+				cancelTask.SetResult (true);
 			});
 
-			evt.WaitOne ();
-
-			monitor.EndTask ();
-
-			//the tool operations display warnings themselves
-			return operations.Any (op => !op.Result.SuccessWithWarnings);
+			return Task.WhenAny (allDone, cancelTask.Task).ContinueWith (t => {
+				monitor.EndTask (); 
+				cancelReg.Dispose ();
+			});
 		}
 	}
 }

@@ -37,7 +37,7 @@ using System.ComponentModel;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.Assemblies;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -59,6 +59,7 @@ namespace MonoDevelop.Projects
 		DotNetProject ownerProject;
 		string reference = String.Empty;
 		bool? localCopy;
+		string projectGuid;
 		
 		// A project may reference assemblies which are not available
 		// in the system where it is opened. For example, opening
@@ -83,6 +84,8 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("Package", DefaultValue=null)]
 		internal string packageName {
 			get {
+				if (!string.IsNullOrEmpty (package))
+					return package;
 				SystemPackage sp = Package;
 				if (sp != null && !sp.IsGacPackage)
 					return sp.Name;
@@ -107,7 +110,7 @@ namespace MonoDevelop.Projects
 		public sealed override string Include {
 			get {
 				if (referenceType == ReferenceType.Project && OwnerProject != null) {
-					Project refProj = OwnerProject != null && OwnerProject.ParentSolution != null ? OwnerProject.ParentSolution.FindProjectByName (Reference) : null;
+					Project refProj = OwnerProject.ParentSolution != null ? ResolveProject (OwnerProject.ParentSolution) : null;
 					if (refProj != null)
 						return MSBuildProjectService.ToMSBuildPath (OwnerProject.ItemDirectory, refProj.FileName);
 					else
@@ -125,7 +128,7 @@ namespace MonoDevelop.Projects
 		
 		ProjectReference (Project referencedProject)
 		{
-			Init (ReferenceType.Project, referencedProject.Name, null);
+			Init (ReferenceType.Project, referencedProject.Name, null, referencedProject.ItemId);
 			specificVersion = true;
 		}
 
@@ -169,7 +172,7 @@ namespace MonoDevelop.Projects
 			return new ProjectReference (ReferenceType.Project, projectFile.FileNameWithoutExtension, null);
 		}
 
-		void Init (ReferenceType referenceType, string reference, string hintPath)
+		void Init (ReferenceType referenceType, string reference, string hintPath, string projectGuid = null)
 		{
 			if (referenceType == ReferenceType.Assembly) {
 				specificVersion = false;
@@ -210,6 +213,7 @@ namespace MonoDevelop.Projects
 			this.referenceType = referenceType;
 			this.reference = reference;
 			this.hintPath = hintPath;
+			this.projectGuid = projectGuid;
 			UpdatePackageReference ();
 
 			if (Include == null)
@@ -274,7 +278,8 @@ namespace MonoDevelop.Projects
 			// Get the project name from the path, since the Name attribute may other stuff other than the name
 			string path = MSBuildProjectService.FromMSBuildPath (project.ItemDirectory, buildItem.Include);
 			string name = buildItem.Metadata.GetValue ("Name", Path.GetFileNameWithoutExtension (path));
-			Init (ReferenceType.Project, name, null);
+			string projectGuid = buildItem.Metadata.GetValue ("Project");
+			Init (ReferenceType.Project, name, null, projectGuid);
 		}
 
 		internal protected override void Write (Project project, MSBuildItem buildItem)
@@ -310,7 +315,7 @@ namespace MonoDevelop.Projects
 				}
 			}
 			else if (ReferenceType == ReferenceType.Project) {
-				Project refProj = OwnerProject.ParentSolution != null ? OwnerProject.ParentSolution.FindProjectByName (Reference) : null;
+				Project refProj = OwnerProject.ParentSolution != null ? ResolveProject (OwnerProject.ParentSolution) : null;
 				if (refProj != null) {
 					buildItem.Metadata.SetValue ("Project", refProj.ItemId, preserveExistingCase:true);
 					buildItem.Metadata.SetValue ("Name", refProj.Name);
@@ -475,7 +480,7 @@ namespace MonoDevelop.Projects
 					}
 				} else if (ReferenceType == ReferenceType.Project) {
 					if (ownerProject != null && ownerProject.ParentSolution != null && ReferenceOutputAssembly) {
-						DotNetProject p = ownerProject.ParentSolution.FindProjectByName (reference) as DotNetProject;
+						DotNetProject p = ResolveProject (ownerProject.ParentSolution) as DotNetProject;
 						if (p != null) {
 							if (!ownerProject.TargetFramework.CanReferenceAssembliesTargetingFramework (p.TargetFramework))
 								return GettextCatalog.GetString ("Incompatible target framework ({0})", p.TargetFramework.Name);
@@ -561,10 +566,10 @@ namespace MonoDevelop.Projects
 					string file = AssemblyContext.GetAssemblyLocation (Reference, package, ownerProject != null? ownerProject.TargetFramework : null);
 					return file == null ? reference : file;
 				case ReferenceType.Project:
-					if (ownerProject != null) {
-						if (ownerProject.ParentSolution != null) {
-							Project p = ownerProject.ParentSolution.FindProjectByName (reference);
-							if (p != null) return p.GetOutputFileName (configuration);
+					if (ownerProject != null && ownerProject.ParentSolution != null) {
+						var p = ResolveProject (ownerProject.ParentSolution);
+						if (p != null) {
+							return p.GetOutputFileName (configuration);
 						}
 					}
 					return null;
@@ -669,9 +674,12 @@ namespace MonoDevelop.Projects
 				if (referenceType == ReferenceType.Package) {
 					if (cachedPackage != null)
 						return cachedPackage;
-					
-					if (!string.IsNullOrEmpty (package))
-						return AssemblyContext.GetPackage (package);
+
+					if (!string.IsNullOrEmpty (package)) {
+						var p = AssemblyContext.GetPackage (package);
+						if (p != null)
+							return p;
+					}
 
 					// No package is specified, get any of the registered assemblies, giving priority to gaced assemblies
 					// (because non-gac assemblies should have a package name set)
@@ -747,6 +755,12 @@ namespace MonoDevelop.Projects
 				throw new ArgumentNullException ("inSolution");
 			if (ReferenceType != ReferenceType.Project)
 				throw new InvalidOperationException ("ResolveProject is only definied for Project reference type.");
+			if (!string.IsNullOrEmpty (projectGuid)) {
+				var project = inSolution.GetSolutionItem (projectGuid) as Project;
+				if (project != null) {
+					return project;
+				}
+			}
 			return inSolution.FindProjectByName (Reference);
 		}
 	}

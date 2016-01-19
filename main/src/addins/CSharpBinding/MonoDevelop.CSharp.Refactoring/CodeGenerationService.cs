@@ -157,7 +157,7 @@ namespace MonoDevelop.Refactoring
 			if (systemVoid != null) newMember = newMember.ReplaceNode (systemVoid, SyntaxFactory.ParseTypeName ("void"));
 
 			var newRoot = root.ReplaceNode (typeDecl, typeDecl.AddMembers ((MemberDeclarationSyntax)newMember.WithAdditionalAnnotations (Simplifier.Annotation, Formatter.Annotation, insertedMemberAnnotation)));
-			var doc = IdeApp.Workbench.OpenDocument (part.SourceTree.FilePath, project, true);
+			var doc = await IdeApp.Workbench.OpenDocument (part.SourceTree.FilePath, project, true);
 
 			var policy = project.Policies.Get<CSharpFormattingPolicy> ("text/x-csharp");
 			var textPolicy = project.Policies.Get<TextStylePolicy> ("text/x-csharp");
@@ -171,17 +171,17 @@ namespace MonoDevelop.Refactoring
 
 			var node = root.GetAnnotatedNodes (insertedMemberAnnotation).Single ();
 
-			Application.Invoke (delegate {
+			Application.Invoke (async delegate {
 				var insertionPoints = InsertionPointService.GetInsertionPoints (
 					doc.Editor,
-					doc.UpdateParseDocument (),
+					await doc.UpdateParseDocument (),
 					type,
 					part.SourceSpan.Start
 				);
 				var options = new InsertionModeOptions (
 					operation,
 					insertionPoints,
-					async point => {
+					point => {
 						if (!point.Success)
 							return;
 						var text = node.ToString ();

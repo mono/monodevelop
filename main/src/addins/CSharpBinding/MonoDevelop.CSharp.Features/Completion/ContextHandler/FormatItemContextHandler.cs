@@ -35,6 +35,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.TypeSystem;
+using Microsoft.CodeAnalysis.Text;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
@@ -46,16 +47,19 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return ch == ':' || ch == '"';
 		}
 
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, CancellationToken cancellationToken)
+		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
-			var ctx = await completionContext.GetSyntaxContextAsync (engine.Workspace, cancellationToken).ConfigureAwait(false);
 			var document = completionContext.Document;
 			var position = completionContext.Position;
-			var semanticModel = await completionContext.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
+			var semanticModel = ctx.SemanticModel;
 
 			if (ctx.TargetToken.Parent != null && ctx.TargetToken.Parent.Parent != null && 
 			    ctx.TargetToken.Parent.Parent.IsKind(SyntaxKind.Argument)) {
-
+				SourceText text;
+				if (!completionContext.Document.TryGetText (out text)) {
+					text = await completionContext.Document.GetTextAsync ();
+				}
+				var currentChar = text [completionContext.Position - 1];
 				if (ctx.TargetToken.Parent == null || !ctx.TargetToken.Parent.IsKind(SyntaxKind.StringLiteralExpression) ||
 				    ctx.TargetToken.Parent.Parent == null || !ctx.TargetToken.Parent.Parent.IsKind(SyntaxKind.Argument) ||
 				    ctx.TargetToken.Parent.Parent.Parent == null || !ctx.TargetToken.Parent.Parent.Parent.IsKind(SyntaxKind.ArgumentList) ||
@@ -64,8 +68,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				}
 				var formatArgument = GetFormatItemNumber(document, position);
 				var invocationExpression = ctx.TargetToken.Parent.Parent.Parent.Parent as InvocationExpressionSyntax;
-				var symbolInfo = semanticModel.GetSymbolInfo(invocationExpression);
-				return GetFormatCompletionData(engine, semanticModel, invocationExpression, formatArgument, symbolInfo.Symbol);
+				return GetFormatCompletionData(engine, semanticModel, invocationExpression, formatArgument, currentChar);
 			}
 
 			return Enumerable.Empty<CompletionData> ();
@@ -228,17 +231,25 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return CompletionResult.Empty;
 		}
 
-		IEnumerable<CompletionData> GetFormatCompletionData(CompletionEngine engine, SemanticModel semanticModel, InvocationExpressionSyntax invocationExpression, int formatArgument, ISymbol symbol)
+		IEnumerable<CompletionData> GetFormatCompletionData(CompletionEngine engine, SemanticModel semanticModel, InvocationExpressionSyntax invocationExpression, int formatArgument, char currentChar)
 		{
+			var symbolInfo = semanticModel.GetSymbolInfo (invocationExpression);
+			var method = symbolInfo.Symbol as IMethodSymbol ?? symbolInfo.CandidateSymbols.OfType<IMethodSymbol> ().FirstOrDefault ();
 			var ma = invocationExpression.Expression as MemberAccessExpressionSyntax;
 
 			if (ma != null && ma.Name.ToString () == "ToString") {
-				return GetFormatCompletionForType(engine, symbol != null ? symbol.ContainingType : null);
-			} else {
-				var method = symbol as IMethodSymbol;
-				if (method == null)
+				if (method == null || currentChar != '"') {
 					return Enumerable.Empty<CompletionData> ();
-
+				}
+				if (method != null) {
+					return GetFormatCompletionForType (engine, method.ContainingType);
+				} else {
+					return Enumerable.Empty<CompletionData> ();
+				}
+			} else {
+				if(method == null || currentChar != ':') {
+					return Enumerable.Empty<CompletionData> ();
+				}
 				ExpressionSyntax fmtArgumets;
 				IList<ExpressionSyntax> args;
 				if (FormatStringHelper.TryGetFormattingParameters(semanticModel, invocationExpression, out fmtArgumets, out args, null)) {

@@ -82,10 +82,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 		}
 		
-		public OptionsDialog (Gtk.Window parentWindow, object dataObject, string extensionPath) : this (parentWindow, dataObject, extensionPath, true)
+		public OptionsDialog (MonoDevelop.Components.Window parentWindow, object dataObject, string extensionPath) : this (parentWindow, dataObject, extensionPath, true)
 		{}
 		
-		public OptionsDialog (Gtk.Window parentWindow, object dataObject, string extensionPath, bool removeEmptySections)
+		public OptionsDialog (MonoDevelop.Components.Window parentWindow, object dataObject, string extensionPath, bool removeEmptySections)
 		{
 			buttonCancel = new Gtk.Button (Gtk.Stock.Cancel);
 			AddActionWidget (this.buttonCancel, ResponseType.Cancel);
@@ -241,7 +241,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 		
-		protected Gtk.Widget MainBox {
+		protected Control MainBox {
 			get { return pageFrame; }
 		}
 		
@@ -459,6 +459,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (tree.Selection.GetSelected (out it)) {
 				OptionsDialogSection section = (OptionsDialogSection) store.GetValue (it, 0);
 				ShowPage (section);
+
+				this.UseNativeContextMenus ();
 			}
 		}
 		

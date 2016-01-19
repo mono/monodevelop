@@ -42,6 +42,7 @@ using System.Diagnostics;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis.Options;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Refactoring
 {
@@ -89,53 +90,69 @@ namespace MonoDevelop.Refactoring
 			var ws = TypeSystemService.Workspace as MonoDevelopWorkspace;
 			string originalName;
 			int originalOffset;
-
-			for (int i = 0; i < changes.Count; i++) {
-				var change = changes[i] as TextReplaceChange;
-				if (change == null)
-					continue;
-				
-				if (ws.TryGetOriginalFileFromProjection (change.FileName, change.Offset, out originalName, out originalOffset)) {
-					fileNames.Add (change.FileName);
-					change.FileName = originalName;
-					change.Offset = originalOffset;
-				}
-			}
-			if (changes.All (x => x is TextReplaceChange)) {
-				List<Change> newChanges = new List<Change> (changes);
-				newChanges.Sort ((Change x, Change y) => ((TextReplaceChange)x).Offset.CompareTo (((TextReplaceChange)y).Offset));
-				changes = newChanges;
-			}
-
-
-			for (int i = 0; i < changes.Count; i++) {
-				changes[i].PerformChange (monitor, rctx);
-				var replaceChange = changes[i] as TextReplaceChange;
-				if (replaceChange == null)
-					continue;
-
-				for (int j = i + 1; j < changes.Count; j++) {
-					var change = changes[j] as TextReplaceChange;
+			try {
+				for (int i = 0; i < changes.Count; i++) {
+					var change = changes [i] as TextReplaceChange;
 					if (change == null)
 						continue;
-					
-					fileNames.Add (change.FileName);
 
-					if (replaceChange.Offset >= 0 && change.Offset >= 0 && replaceChange.FileName == change.FileName) {
-						if (replaceChange.Offset < change.Offset) {
-							change.Offset -= replaceChange.RemovedChars;
-							if (!string.IsNullOrEmpty (replaceChange.InsertedText))
-								change.Offset += replaceChange.InsertedText.Length;
-						} else if (replaceChange.Offset < change.Offset + change.RemovedChars) {
-							change.RemovedChars = Math.Max (0, change.RemovedChars - replaceChange.RemovedChars);
-							change.Offset = replaceChange.Offset + (!string.IsNullOrEmpty (replaceChange.InsertedText) ? replaceChange.InsertedText.Length : 0);
+					if (ws.TryGetOriginalFileFromProjection (change.FileName, change.Offset, out originalName, out originalOffset)) {
+						fileNames.Add (change.FileName);
+						change.FileName = originalName;
+						change.Offset = originalOffset;
+					}
+				}
+				if (changes.All (x => x is TextReplaceChange)) {
+					List<Change> newChanges = new List<Change> (changes);
+					newChanges.Sort ((Change x, Change y) => ((TextReplaceChange)x).Offset.CompareTo (((TextReplaceChange)y).Offset));
+					changes = newChanges;
+				}
+
+
+				for (int i = 0; i < changes.Count; i++) {
+					changes [i].PerformChange (monitor, rctx);
+					var replaceChange = changes [i] as TextReplaceChange;
+					if (replaceChange == null)
+						continue;
+
+					for (int j = i + 1; j < changes.Count; j++) {
+						var change = changes [j] as TextReplaceChange;
+						if (change == null)
+							continue;
+
+						fileNames.Add (change.FileName);
+
+						if (replaceChange.Offset >= 0 && change.Offset >= 0 && replaceChange.FileName == change.FileName) {
+							if (replaceChange.Offset < change.Offset) {
+								change.Offset -= replaceChange.RemovedChars;
+								if (!string.IsNullOrEmpty (replaceChange.InsertedText))
+									change.Offset += replaceChange.InsertedText.Length;
+							} else if (replaceChange.Offset < change.Offset + change.RemovedChars) {
+								change.RemovedChars = Math.Max (0, change.RemovedChars - replaceChange.RemovedChars);
+								change.Offset = replaceChange.Offset + (!string.IsNullOrEmpty (replaceChange.InsertedText) ? replaceChange.InsertedText.Length : 0);
+							}
 						}
 					}
 				}
+
+				foreach (var renameChange in changes.OfType<RenameFileChange> ()) {
+					if (fileNames.Contains (renameChange.OldName)) {
+						fileNames.Remove (renameChange.OldName);
+						fileNames.Add (renameChange.NewName);
+					}
+				}
+
+				foreach (var doc in IdeApp.Workbench.Documents) {
+					fileNames.Remove (doc.FileName);
+				}
+
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while applying refactoring changes", e);
+			} finally {
+				FileService.NotifyFilesChanged (fileNames);
+				FileService.FileRenamed -= handler.FileRename;
+				TextReplaceChange.FinishRefactoringOperation ();
 			}
-			FileService.NotifyFilesChanged (fileNames);
-			FileService.FileRenamed -= handler.FileRename;
-			TextReplaceChange.FinishRefactoringOperation ();
 		}
 
 //		public static void QueueQuickFixAnalysis (Document doc, TextLocation loc, CancellationToken token, Action<List<CodeAction>> callback)
@@ -186,13 +203,13 @@ namespace MonoDevelop.Refactoring
 
 		//static readonly CodeAnalysisBatchRunner runner = new CodeAnalysisBatchRunner();
 
-		/// <summary>
-		/// Queues a code analysis job.
-		/// </summary>
-		/// <param name="job">The job to queue.</param>
-		/// <param name="progressMessage">
-		/// The message used for a progress monitor, or null if no progress monitor should be used.
-		/// </param>
+//		/// <summary>
+//		/// Queues a code analysis job.
+//		/// </summary>
+//		/// <param name="job">The job to queue.</param>
+//		/// <param name="progressMessage">
+//		/// The message used for a progress monitor, or null if no progress monitor should be used.
+//		/// </param>
 //		public static IJobContext QueueCodeIssueAnalysis(IAnalysisJob job, string progressMessage = null)
 //		{
 //			if (progressMessage != null)

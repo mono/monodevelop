@@ -914,7 +914,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 	
-		public void ScrollToCell (Gtk.TreePath treePath)
+		internal void ScrollToCell (Gtk.TreePath treePath)
 		{
 			Tree.ScrollToCell (treePath, null, true, 0, 0);
 		}

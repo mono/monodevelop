@@ -1,4 +1,4 @@
-// DisplayBindingService.cs
+﻿// DisplayBindingService.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -39,19 +39,37 @@ namespace MonoDevelop.Ide.Gui
 {
 	public static class DisplayBindingService
 	{
+		private static List<IDisplayBinding> runtimeBindings = new List<IDisplayBinding>();
+
 		public static IEnumerable<T> GetBindings<T> ()
 		{
-			return AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/DisplayBindings")
-				.OfType<T> ();
+			return runtimeBindings.OfType<T>().Concat(AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/DisplayBindings")
+				.OfType<T> ());
 		}
-		
+
+		public static void RegisterRuntimeDisplayBinding(IDisplayBinding binding)
+		{
+			runtimeBindings.Add(binding);
+		}
+
+		public static void DeregisterRuntimeDisplayBinding(IDisplayBinding binding)
+		{
+			runtimeBindings.Remove(binding);
+		}
+
 		internal static IEnumerable<IDisplayBinding> GetDisplayBindings (FilePath filePath, string mimeType, Project ownerProject)
 		{
 			if (mimeType == null && !filePath.IsNullOrEmpty)
 				mimeType = DesktopService.GetMimeTypeForUri (filePath);
 			
 			foreach (var b in GetBindings<IDisplayBinding> ()) {
-				if (b.CanHandle (filePath, mimeType, ownerProject))
+				bool canHandle = false;
+				try {
+					canHandle = b.CanHandle (filePath, mimeType, ownerProject);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error while getting display bindings", ex);
+				}
+				if (canHandle)
 					yield return b;
 			}
 		}
@@ -112,7 +130,7 @@ namespace MonoDevelop.Ide.Gui
 	//dummy binding, anchor point for extension tree
 	class DefaultDisplayBinding : IViewDisplayBinding
 	{
-		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
+		public ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			throw new InvalidOperationException ();
 		}

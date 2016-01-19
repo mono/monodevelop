@@ -18,6 +18,8 @@ all-local: vcrevision restore-packages sln_build
 clean: clean-local
 
 clean-local: sln_clean
+	cd external && $(MAKE) clean
+	cd build && $(MAKE) clean
 
 restore-packages:
 	nuget restore
@@ -116,45 +118,46 @@ endif
 
 run-bundle: $(PROGRAM)
 	$(MD_LAUNCH_SETUP) $(MD_LAUNCH_EXTRA_ENV) $(MD_BIN_PATH)/MonoDevelop --no-redirect
+run-64: run-sgen-64
 
 run-boehm: runmd
 
 run-sgen: runmd-sgen
 
 runmd: $(PROGRAM)
-	$(MD_LAUNCH) --debug $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
+	$(MD_LAUNCH)$(SGEN_SUFFIX) --debug $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
 
 runmd-sgen: $(PROGRAM)
-	$(MD_LAUNCH)-sgen --debug $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
+	$(MD_LAUNCH)-sgen$(SGEN_SUFFIX) --debug $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
 
 run-debug: $(PROGRAM)
-	MONODEVELOP_CONSOLE_LOG_LEVEL=All $(MD_LAUNCH) --debug=casts $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
+	MONODEVELOP_CONSOLE_LOG_LEVEL=All $(MD_LAUNCH)$(SGEN_SUFFIX) --debug=casts $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
 
 run-gdb: $(PROGRAM)
 	echo "run --debug $(MD_BIN_PATH)/MonoDevelop.exe" > gdb.commands
-	$(MD_LAUNCH_SETUP) gdb $(RUNTIME) -x gdb.commands
+	$(MD_LAUNCH_SETUP) gdb $(RUNTIME)$(SGEN_SUFFIX) -x gdb.commands
 	rm -f gdb.commands
 
 run-gdb-sgen: $(PROGRAM)
 	echo "run --debug $(MD_BIN_PATH)/MonoDevelop.exe" > gdb.commands
-	$(MD_LAUNCH_SETUP) gdb $(RUNTIME)-sgen -x gdb.commands
+	$(MD_LAUNCH_SETUP) gdb $(RUNTIME)-sgen$(SGEN_SUFFIX) -x gdb.commands
 	rm -f gdb.commands
 
 run-profile: $(PROGRAM)
-	$(MD_LAUNCH) --profile=log:calls $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
+	$(MD_LAUNCH)$(SGEN_SUFFIX) --profile=log:calls $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
 
 run-profile-stat: $(PROGRAM)
-	$(MD_LAUNCH) --profile=log:sample $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
+	$(MD_LAUNCH)$(SGEN_SUFFIX) --profile=log:sample $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
 
 run-trace: $(PROGRAM)
-	$(MD_LAUNCH_SETUP) MONODEVELOP_TRACE=1 exec strace -ttt -f -o md.strace mono $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
+	$(MD_LAUNCH_SETUP) MONODEVELOP_TRACE=1 exec strace -ttt -f -o md.strace mono$(SGEN_SUFFIX) $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
 
 plot-trace:
 	if [ ! -e 'plot-timeline.py' ]; then wget http://gitorious.org/performance-scripts/mainline/blobs/raw/master/plot-timeline.py; fi
 	python plot-timeline.py -o md-trace.png  md.strace
 
 run-profile-heap: $(PROGRAM)
-	$(MD_LAUNCH) --profile=log:heapshot=900000ms $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
+	$(MD_LAUNCH)$(SGEN_SUFFIX) --profile=log:heapshot=900000ms $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
 
 check-addins:
 	$(MDTOOL_RUN) setup reg-build -v
