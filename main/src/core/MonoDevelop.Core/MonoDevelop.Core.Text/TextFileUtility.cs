@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Core.Text
 {
@@ -233,6 +234,15 @@ namespace MonoDevelop.Core.Text
 		public static string GetText (string fileName)
 		{
 			return GetText (File.ReadAllBytes (fileName));
+		}
+
+		public static async Task<string> GetTextAsync (string fileName, CancellationToken token)
+		{
+			using (var fs = File.OpenRead (fileName)) {
+				var buf = new byte [(int)fs.Length];
+				await fs.ReadAsync (buf, 0, (int)fs.Length, token);
+				return GetText (buf);
+			}
 		}
 
 		public static string GetText (string fileName, out Encoding encoding, out bool hadBom)
