@@ -93,6 +93,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 		}
 
+		public override void MouseDown (NSEvent theEvent)
+		{
+			base.MouseDown (theEvent);
+			if (theEvent.ClickCount == 2) {
+				Window.Zoom (this);
+			}
+		}
+
 		public override CGRect Frame {
 			get {
 				return base.Frame;
