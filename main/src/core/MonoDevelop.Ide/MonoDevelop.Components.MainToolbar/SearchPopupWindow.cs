@@ -175,21 +175,22 @@ namespace MonoDevelop.Components.MainToolbar
 			base.OnDestroyed ();
 		}
 
-		internal void OpenFile ()
+		internal async void OpenFile ()
 		{
 			if (selectedItem == null || selectedItem.Item < 0 || selectedItem.Item >= selectedItem.DataSource.Count)
 				return;
 
 			if (selectedItem.DataSource[selectedItem.Item].CanActivate) {
-				Destroy ();
 				selectedItem.DataSource[selectedItem.Item].Activate ();
+				Destroy ();
 			}
 			else {
 				var region = SelectedItemRegion;
-				Destroy ();
-
-				if (string.IsNullOrEmpty (SelectedItemFileName))
+				if (string.IsNullOrEmpty (SelectedItemFileName)) {
+					Destroy ();
 					return;
+				}
+
 				if (region.Length <= 0) {
 					if (Pattern.LineNumber == 0) {
 						IdeApp.Workbench.OpenDocument (SelectedItemFileName, project: null);
@@ -197,10 +198,13 @@ namespace MonoDevelop.Components.MainToolbar
 						IdeApp.Workbench.OpenDocument (SelectedItemFileName, null, Pattern.LineNumber, Pattern.HasColumn ? Pattern.Column : 1);
 					}
 				} else {
-					IdeApp.Workbench.OpenDocument (new FileOpenInformation (SelectedItemFileName, null) {
+					await IdeApp.Workbench.OpenDocument (new FileOpenInformation (SelectedItemFileName, null) {
 						Offset = region.Offset
 					});
 				}
+				Destroy ();
+
+
 			}
 		}
 		SearchPopupSearchPattern pattern;
