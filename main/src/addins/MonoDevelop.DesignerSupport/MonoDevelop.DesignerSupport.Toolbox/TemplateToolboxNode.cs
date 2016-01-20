@@ -37,7 +37,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	{
 		public override string Name {
 			get {
-				return Template.Shortcut;
+				return GLib.Markup.EscapeText (Template.Shortcut);
 			}
 			set {
 				Template.Shortcut = value;

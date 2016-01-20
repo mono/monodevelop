@@ -2081,6 +2081,7 @@ namespace MonoDevelop.SourceEditor
 				item.Name = text.Length > 16 ? text.Substring (0, 16) + "..." : text;
 				item.Name = item.Name.Replace ("\t", "\\t");
 				item.Name = item.Name.Replace ("\n", "\\n");
+				item.Name = GLib.Markup.EscapeText (item.Name);
 				clipboardRing.Add (item);
 				while (clipboardRing.Count > 12) {
 					clipboardRing.RemoveAt (0);

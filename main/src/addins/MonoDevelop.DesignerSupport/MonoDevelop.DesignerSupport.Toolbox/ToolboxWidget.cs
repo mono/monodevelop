@@ -292,7 +292,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				}
 				if (listMode || !curCategory.CanIconizeItems)  {
 					cr.DrawImage (this, item.Icon, xpos + ItemLeftPadding, ypos + Math.Round ((itemDimension.Height - item.Icon.Height) / 2));
-					layout.SetText (item.Text);
+					layout.SetMarkup (item.Text);
 					int width, height;
 					layout.GetPixelSize (out width, out height);
 					cr.SetSourceColor (Style.Text (item != this.SelectedItem ? StateType.Normal : StateType.Selected).ToCairoColor ());
@@ -835,7 +835,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					int x, y = item.ItemHeight;
 
 					if (y == 0) {
-						layout.SetText (item.Text);
+						layout.SetMarkup (item.Text);
 						layout.GetPixelSize (out x, out y);
 						y = Math.Max (IconSize.Height, y);
 						y += ItemTopBottomPadding * 2;
