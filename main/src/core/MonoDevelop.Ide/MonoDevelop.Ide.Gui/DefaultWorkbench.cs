@@ -617,20 +617,24 @@ namespace MonoDevelop.Ide.Gui
 		
 		void CheckRemovedFile (object sender, FileEventArgs args)
 		{
-			foreach (FileEventInfo e in args) {
+			foreach (var e in args) {
 				if (e.IsDirectory) {
-					ViewContent[] views = new ViewContent [viewContentCollection.Count];
+					var views = new ViewContent [viewContentCollection.Count];
 					viewContentCollection.CopyTo (views, 0);
-					foreach (ViewContent content in views) {
-						if (content.ContentName.StartsWith (e.FileName)) {
-							((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true);
+					foreach (var content in views) {
+						if (content.ContentName.StartsWith (e.FileName, StringComparison.CurrentCulture)) {
+							content.UntitledName = content.ContentName;
+							content.ContentName = null;
+							content.IsDirty = true;
 						}
 					}
 				} else {
-					foreach (ViewContent content in viewContentCollection) {
+					foreach (var content in viewContentCollection) {
 						if (content.ContentName != null &&
 							content.ContentName == e.FileName) {
-							((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true);
+							content.UntitledName = content.ContentName;
+							content.ContentName = null;
+							content.IsDirty = true;
 							return;
 						}
 					}
