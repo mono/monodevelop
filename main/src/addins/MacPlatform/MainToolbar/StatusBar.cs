@@ -271,7 +271,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					buildImageId = ec > 0 ? "md-status-error-count" : "md-status-warning-count";
 					buildResults.IconImage = ImageService.GetIcon (buildImageId, Gtk.IconSize.Menu).ToNSImage ();
 
-					NeedsDisplay = true;
+					RepositionStatusIcons ();
 				});
 			};
 
