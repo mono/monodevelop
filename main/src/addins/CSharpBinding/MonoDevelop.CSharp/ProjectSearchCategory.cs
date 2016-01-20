@@ -91,7 +91,7 @@ namespace MonoDevelop.CSharp
 					var old = await SymbolInfoTask;
 					if (old != null)
 						old.Dispose ();
-				} catch (TaskCanceledException) {
+				} catch (OperationCanceledException) {
 					// Ignore
 				} catch (Exception ex) {
 					LoggingService.LogError ("UpdateSymbolInfos failed", ex);
@@ -133,9 +133,14 @@ namespace MonoDevelop.CSharp
 			{
 				if (project == null)
 					throw new ArgumentNullException (nameof (project));
-				foreach (var document in project.Documents) {
-					cancellationToken.ThrowIfCancellationRequested ();
-					await UpdateDocument (result, document, cancellationToken);
+				try {
+					foreach (var document in project.Documents) {
+						cancellationToken.ThrowIfCancellationRequested ();
+						await UpdateDocument (result, document, cancellationToken);
+					}
+				} catch (AggregateException ae) {
+					ae.Flatten ().Handle (ex => ex is OperationCanceledException);
+				} catch (OperationCanceledException) {
 				}
 			}
 
@@ -210,6 +215,9 @@ namespace MonoDevelop.CSharp
 						}
 						break;
 					}
+				} catch (AggregateException ae) {
+					ae.Flatten ().Handle (ex => ex is OperationCanceledException);
+				} catch (OperationCanceledException) {
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error while updating navigation symbol cache.", ex);
 				}
