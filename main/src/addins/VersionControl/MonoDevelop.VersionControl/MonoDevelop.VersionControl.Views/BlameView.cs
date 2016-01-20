@@ -25,9 +25,11 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using Mono.TextEditor;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -35,7 +37,7 @@ namespace MonoDevelop.VersionControl.Views
 	{	
 	}
 	
-	internal class BlameView : BaseView, IBlameView
+	internal class BlameView : BaseView, IBlameView, IUndoHandler, IClipboardHandler
 	{
 		BlameWidget widget;
 		VersionControlDocumentInfo info;
@@ -75,6 +77,96 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
+		#endregion
+		
+		#region IUndoHandler implementation
+		void IUndoHandler.Undo ()
+		{
+			this.widget.Editor.Document.Undo ();
+		}
+
+		void IUndoHandler.Redo ()
+		{
+			this.widget.Editor.Document.Redo ();
+		}
+		
+		IDisposable IUndoHandler.OpenUndoGroup ()
+		{
+			return this.widget.Editor.OpenUndoGroup ();
+		}
+
+		bool IUndoHandler.EnableUndo {
+			get {
+				return this.widget.Editor.Document.CanUndo;
+			}
+		}
+
+		bool IUndoHandler.EnableRedo {
+			get {
+				return this.widget.Editor.Document.CanRedo;
+			}
+		}
+		#endregion
+
+		#region IClipboardHandler implementation
+		void IClipboardHandler.Cut ()
+		{
+			this.widget.Editor.RunAction (ClipboardActions.Cut);
+		}
+
+		void IClipboardHandler.Copy ()
+		{
+			this.widget.Editor.RunAction (ClipboardActions.Copy);
+		}
+
+		void IClipboardHandler.Paste ()
+		{
+			this.widget.Editor.RunAction (ClipboardActions.Paste);
+		}
+
+		void IClipboardHandler.Delete ()
+		{
+			if (this.widget.Editor.IsSomethingSelected) {
+				this.widget.Editor.DeleteSelectedText ();
+			} else {
+				this.widget.Editor.RunAction (DeleteActions.Delete);
+			}
+		}
+
+		void IClipboardHandler.SelectAll ()
+		{
+			this.widget.Editor.RunAction (SelectionActions.SelectAll);
+		}
+
+		bool IClipboardHandler.EnableCut {
+			get {
+				return this.widget.Editor.IsSomethingSelected;
+			}
+		}
+
+		bool IClipboardHandler.EnableCopy {
+			get {
+				return this.widget.Editor.IsSomethingSelected;
+			}
+		}
+
+		bool IClipboardHandler.EnablePaste {
+			get {
+				return true;
+			}
+		}
+
+		bool IClipboardHandler.EnableDelete {
+			get {
+				return true;
+			}
+		}
+
+		bool IClipboardHandler.EnableSelectAll {
+			get {
+				return true;
+			}
+		}
 		#endregion
 	}
 }
