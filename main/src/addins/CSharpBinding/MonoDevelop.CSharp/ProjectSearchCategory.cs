@@ -129,17 +129,14 @@ namespace MonoDevelop.CSharp
 				}
 			}
 
-			static void SearchAsync (ConcurrentDictionary<Microsoft.CodeAnalysis.DocumentId, List<DeclaredSymbolInfo>> result, Microsoft.CodeAnalysis.Project project, CancellationToken cancellationToken)
+			static async void SearchAsync (ConcurrentDictionary<Microsoft.CodeAnalysis.DocumentId, List<DeclaredSymbolInfo>> result, Microsoft.CodeAnalysis.Project project, CancellationToken cancellationToken)
 			{
 				if (project == null)
 					throw new ArgumentNullException (nameof (project));
-				Parallel.ForEach (project.Documents, async delegate (Microsoft.CodeAnalysis.Document document) {
-					try {
-						cancellationToken.ThrowIfCancellationRequested ();
-						await UpdateDocument (result, document, cancellationToken).ConfigureAwait (false);
-					} catch (OperationCanceledException) {
-					}
-				});
+				foreach (var document in project.Documents) {
+					cancellationToken.ThrowIfCancellationRequested ();
+					await UpdateDocument (result, document, cancellationToken);
+				}
 			}
 
 			static async Task UpdateDocument (ConcurrentDictionary<DocumentId, List<DeclaredSymbolInfo>> result, Microsoft.CodeAnalysis.Document document, CancellationToken cancellationToken)
@@ -229,9 +226,9 @@ namespace MonoDevelop.CSharp
 				}
 				return result;
 			} catch (AggregateException ae) {
-				ae.Flatten ().Handle (ex => ex is TaskCanceledException);
+				ae.Flatten ().Handle (ex => ex is OperationCanceledException);
 				return SymbolCache.Empty;
-			} catch (TaskCanceledException) {
+			} catch (OperationCanceledException) {
 				return SymbolCache.Empty;
 			} finally {
 				getTypesTimer.EndTiming ();

@@ -423,9 +423,9 @@ namespace MonoDevelop.Core.Text
 			};
 		}
 
-		public static async Task<byte []> ReadAllBytesAsync (string file)
+		public static Task<byte []> ReadAllBytesAsync (string file)
 		{
-			return await ReadAllBytesAsync (file, CancellationToken.None);
+			return ReadAllBytesAsync (file, CancellationToken.None);
 		}
 
 		public static async Task<byte[]> ReadAllBytesAsync (string file, CancellationToken token)
@@ -434,7 +434,7 @@ namespace MonoDevelop.Core.Text
 				var res = new byte [f.Length];
 				int nr = 0;
 				int c = 0;
-				while (nr < res.Length && (c = await f.ReadAsync (res, nr, res.Length - nr, token)) > 0)
+				while (nr < res.Length && (c = await f.ReadAsync (res, nr, res.Length - nr, token).ConfigureAwait (false)) > 0)
 					nr += c;
 				return res;
 			}

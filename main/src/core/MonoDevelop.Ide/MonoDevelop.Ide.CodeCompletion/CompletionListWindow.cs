@@ -157,6 +157,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			CodeCompletionContext = null;
 			currentData = null;
 			Extension = null;
+			List.ResetState ();
 		}
 
 		protected override void OnDestroyed ()
@@ -535,6 +536,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected override void OnHidden ()
 		{
 			HideDeclarationView ();
+			ReleaseObjects ();
 			base.OnHidden ();
 		}
 
@@ -542,7 +544,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			Hide ();
 			HideDeclarationView ();
-			ReleaseObjects ();
 		}
 
 		protected override void DoubleClick ()
