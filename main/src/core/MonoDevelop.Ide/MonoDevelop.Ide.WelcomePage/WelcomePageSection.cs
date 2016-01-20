@@ -35,13 +35,20 @@ namespace MonoDevelop.Ide.WelcomePage
 	{
 		string title;
 
-		static readonly string headerFormat;
+		static string headerFormat;
 
+		Label label;
 		Alignment root = new Alignment (0, 0, 1f, 1f);
 		protected Gtk.Alignment ContentAlignment { get; private set; }
 		protected Gtk.Alignment TitleAlignment { get; private set; }
 
 		static WelcomePageSection ()
+		{
+			UpdateStyle ();
+			Gui.Styles.Changed += (sender, e) => UpdateStyle();
+		}
+
+		static void UpdateStyle ()
 		{
 			var face = Platform.IsMac ? Styles.WelcomeScreen.Pad.TitleFontFamilyMac : Styles.WelcomeScreen.Pad.TitleFontFamilyWindows;
 			headerFormat = Styles.GetFormatString (face, Styles.WelcomeScreen.Pad.LargeTitleFontSize, Styles.WelcomeScreen.Pad.LargeTitleFontColor);
@@ -62,6 +69,15 @@ namespace MonoDevelop.Ide.WelcomePage
 			TitleAlignment.SetPadding (p, Styles.WelcomeScreen.Pad.LargeTitleMarginBottom, p, p);
 			ContentAlignment = new Alignment (0f, 0f, 1f, 1f);
 			ContentAlignment.SetPadding (0, p, p, p);
+
+			Gui.Styles.Changed += UpdateStyle;
+		}
+
+		void UpdateStyle (object sender, EventArgs args)
+		{
+			if (label != null)
+				label.Markup = string.Format (headerFormat, title);
+			QueueDraw ();
 		}
 
 		public void SetContent (Gtk.Widget w)
@@ -75,7 +91,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 
 			var box = new VBox ();
-			var label = new Gtk.Label () { Markup = string.Format (headerFormat, title), Xalign = (uint) 0 };
+			label = new Label () { Markup = string.Format (headerFormat, title), Xalign = (uint) 0 };
 			TitleAlignment.Add (label);
 			box.PackStart (TitleAlignment, false, false, 0);
 			box.PackStart (ContentAlignment, false, false, 0);

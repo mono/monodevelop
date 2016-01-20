@@ -36,10 +36,10 @@ namespace MonoDevelop.Ide.WelcomePage
 {
 	class WelcomePageFeedItem : Gtk.EventBox
 	{
-		static readonly string linkUnderlinedFormat;
-		static readonly string linkFormat;
-		static readonly string descFormat;
-		static readonly string subtitleFormat;
+		static string linkUnderlinedFormat;
+		static string linkFormat;
+		static string descFormat;
+		static string subtitleFormat;
 
 		Label titleLabel;
 		Label subtitleLabel;
@@ -55,6 +55,12 @@ namespace MonoDevelop.Ide.WelcomePage
 		private static Gdk.Cursor hand_cursor = new Gdk.Cursor(Gdk.CursorType.Hand1);
 
 		static WelcomePageFeedItem ()
+		{
+			UpdateStyle ();
+			Gui.Styles.Changed += (sender, e) => UpdateStyle();
+		}
+
+		static void UpdateStyle ()
 		{
 			var face = Platform.IsMac ? Styles.WelcomeScreen.Pad.TitleFontFamilyMac : Styles.WelcomeScreen.Pad.TitleFontFamilyWindows;
 			linkUnderlinedFormat = Styles.GetFormatString (face, Styles.WelcomeScreen.Pad.MediumTitleFontSize, Styles.WelcomeScreen.Pad.News.Item.TitleHoverColor, Pango.Weight.Bold);
@@ -171,6 +177,13 @@ namespace MonoDevelop.Ide.WelcomePage
 			summaryLabel.Attributes.Insert (rise);
 
 			Add (box);
+
+			Gui.Styles.Changed += UpdateStyle;
+		}
+
+		void UpdateStyle (object sender, EventArgs args)
+		{
+			UpdateLabel (false);
 		}
 
 		int allocWidth;
@@ -364,6 +377,12 @@ namespace MonoDevelop.Ide.WelcomePage
 			} else {
 				return GettextCatalog.GetString ("Open {0}", link);
 			}
+		}
+
+		protected override void OnDestroyed ()
+		{
+			Gui.Styles.Changed -= UpdateStyle;
+			base.OnDestroyed ();
 		}
 	}
 }
