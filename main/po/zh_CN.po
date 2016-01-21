@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: MonoDevelop HEAD\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-15 15:35:25-0500\n"
-"PO-Revision-Date: 2016-01-09 18:12+0800\n"
+"PO-Revision-Date: 2016-01-21 09:12+0800\n"
 "Last-Translator: MysticBoy <mysticboy@live.com>\n"
 "Language-Team: Chinese (Simplified) <mysticboy@live.com>\n"
 "Language: zh_CN\n"
@@ -3806,29 +3806,24 @@ msgid "Failed to load version information."
 msgstr "版本信息加载失败。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs:4
-#, fuzzy
 msgid "{0} cannot start because a fatal error has been detected."
-msgstr "MonoDevelop 无法启动，检测到了致命错误。"
+msgstr "{0} 无法启动，因为已检测到一个致命的错误。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs:4
-#, fuzzy
 msgid ""
 "{0} can run without these add-ins, but the functionality they provide will "
 "be missing."
-msgstr "MoneDevelop 无需这些插件即可启动，但将缺少其提供的功能。"
+msgstr "{0} 可以运行没有这些加载项，但它们提供的功能将会丢失。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs:4
-#, fuzzy
 msgid ""
 "You can start {0} without these add-ins, but the functionality they provide "
 "will be missing. Do you wish to continue?"
-msgstr ""
-"MoneDevelop 无需这些插件即可启动，但将缺少其提供的功能。您是否想要继续？"
+msgstr "您可以启动 {0} 不加载这些加载项，但会确实功能，您要继续吗?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs:9
-#, fuzzy
 msgid "Invalid project path specified"
-msgstr "指定了无效的部署目标"
+msgstr "指定的项目路径无效"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs:10
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:25
@@ -3840,9 +3835,8 @@ msgid "Clear console"
 msgstr "清除控制台"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs:12
-#, fuzzy
 msgid "Pin output pad"
-msgstr "输出路径"
+msgstr "内容输出板"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs:7
 msgid "Mono Documentation"
@@ -3854,15 +3848,13 @@ msgid "Solution name may not contain any of the following characters: {0}"
 msgstr "解决方案名不能包含以下的字符：{0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs:9
-#, fuzzy
 msgid ""
 "Are you sure you want to move the item '{0}' to the solution folder '{1}'?"
-msgstr "您真的确定想要将文件夹“{0}”移动到文件夹“{1}”中吗？"
+msgstr "你确定你想要移动的项目\"{0}\"到解决方案文件夹 '{1}'?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs:9
-#, fuzzy
 msgid "Do you really want to remove the folder '{0}' from '{1}'?"
-msgstr "您真的确定想要将文件夹“{0}”移动到文件夹“{1}”中吗？"
+msgstr "你真的想要从\"{1}\"中删除文件夹\"{0}\"吗?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs:9
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:45
@@ -3892,9 +3884,8 @@ msgid "Do you really want to copy the folder '{0}' to the folder '{1}'?"
 msgstr "您真的确定想要将文件夹“{0}”移动到文件夹“{1}”中吗？"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:28
-#, fuzzy
 msgid "The file '{0}' already exists. Do you want to overwrite it?"
-msgstr "文件“{0}”已经存在。您是否想要替换它？"
+msgstr "文件 {0} 已存在。你想要覆盖现有文件吗?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:28
 msgid "Do you want to save the file '{0}' before the move operation?"
@@ -3928,7 +3919,7 @@ msgstr ""
 #: ../src/addins/MacPlatform/Dialogs/MacAlertDialogHandler.cs:7
 #: ../src/addins/MacPlatform/Dialogs/MacExceptionDialogHandler.cs:8
 msgid "Don't Save"
-msgstr ""
+msgstr "不保存"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:28
 msgid "Save operation failed."
@@ -3961,13 +3952,12 @@ msgstr "空目录。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:36
 msgid "Directory {0} is empty, no files have been added."
-msgstr ""
+msgstr "目录 {0} 是空的，没有文件被添加。 "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:37
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:45
-#, fuzzy
 msgid "Select files to add from {0}"
-msgstr "在树中选择测试"
+msgstr "选择要从 {0} 添加文件"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:39
 msgid "Add Existing Folder"
@@ -3975,71 +3965,66 @@ msgstr "添加现有文件夹"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:43
 msgid "There is already a file with the name '{0}' in the target directory"
-msgstr ""
+msgstr "目标文件夹中已经存在名为\"{0}\"的文件"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:44
 msgid "There is already a link with the name '{0}' in the target directory"
-msgstr ""
+msgstr "目标文件夹中已经存在名为\"{0}\"的链接"
 
 #  new file name with wildcard(*, ?) characters in it
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:16
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:7
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:9
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:4
-#, fuzzy
 msgid ""
 "The name you have chosen contains illegal characters. Please choose a "
 "different name."
-msgstr "您所选择的文件名包含无效字符。请选择一个不同的文件名。"
+msgstr "您选择的名称包含非法字符。请选择一个不同的名称。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:16
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:7
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:4
-#, fuzzy
 msgid ""
 "File or directory name is already in use. Please choose a different one."
-msgstr "已经存在同名的文件或目录，请选择一个不同的名称。"
+msgstr "文件或目录的名称已在使用。请选择不同名称。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:16
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:4
-#, fuzzy
 msgid "There was an error renaming the file."
-msgstr "连接数据库服务器时出现错误。"
+msgstr "重命名文件时出错。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:18
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:9
-#, fuzzy
 msgid "_Remove from Project"
-msgstr "从工程中删除(_R)"
+msgstr "从项目中删除(_R)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:19
 msgid ""
 "The Delete option permanently removes the file from your hard disk. Click "
 "Remove from Project if you only want to remove it from your current solution."
 msgstr ""
+"删除选项从您的硬盘上永久删除该文件。如果你只想要从当前解决方案中移除它，请单"
+"击从项目中的删除。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:19
-#, fuzzy
 msgid ""
 "Are you sure you want to remove the file {0} and its code-behind children "
 "from project {1}?"
-msgstr "您确定想要将文件 {0} 从工程 {1} 中删除吗？"
+msgstr "你确定你想要从项目 {1} 删除文件 {0} 和其后置代码?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:19
-#, fuzzy
 msgid ""
 "Are you sure you want to remove the selected files and their code-behind "
 "children from the project?"
-msgstr "您确定要删除此文件吗？"
+msgstr "你确定你想要从项目中移除选定的文件和后置代码?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:19
 msgid "Are you sure you want to remove file {0} from project {1}?"
-msgstr "您确定想要将文件 {0} 从工程 {1} 中删除吗？"
+msgstr "您确定想要将文件 {0} 从项目 {1} 中删除吗？"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:19
-#, fuzzy
 msgid "Are you sure you want to remove the selected files from the project?"
-msgstr "您确定要删除此文件吗？"
+msgstr "你确定你想要从项目中移除选定的文件?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:27
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:16
@@ -4057,9 +4042,8 @@ msgid "Open with '{0}'"
 msgstr "用 '{0}'打开"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:9
-#, fuzzy
 msgid "There was an error renaming the directory."
-msgstr "连接数据库服务器时出现错误。"
+msgstr "重命名目录时出错。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:9
 msgid ""
@@ -4067,43 +4051,39 @@ msgid ""
 "contains from your hard disk. Click Remove from Project if you only want to "
 "remove it from your current solution."
 msgstr ""
+"删除选项会永久删除您的硬盘上的目录和它包含的任何文件。如果你只想要从当前解决"
+"方案中移除它，请单击从项目中的删除。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:10
 msgid ""
 "The directory and any files it contains will be permanently removed from "
 "your hard disk. "
-msgstr ""
+msgstr "从您的硬盘上的目录和它包含的所有文件将被永久删除。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:12
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:14
-#, fuzzy
 msgid "Are you sure you want to remove directory {0}?"
-msgstr "您确定想要删除窗口“{0}”吗？"
+msgstr "你确定你想要删除目录 {0}?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:14
-#, fuzzy
 msgid "Are you sure you want to remove directory {0} from project {1}?"
-msgstr "您确定想要将文件 {0} 从工程 {1} 中删除吗？"
+msgstr "你确定要从项目 {1} 删除目录 {0}?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:15
-#, fuzzy
 msgid "The folder {0} could not be deleted from disk: {1}"
-msgstr "无法删除文件 {0}"
+msgstr "无法从磁盘删除文件夹 {0}: {1}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:7
-#, fuzzy
 msgid "Unknown language '{0}'"
-msgstr "未知语言：{0}"
+msgstr "未知语言\"{0}\""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:9
-#, fuzzy
 msgid "Invalid configuration mapping"
-msgstr "配置"
+msgstr "无效的配置映射"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:9
-#, fuzzy
 msgid "Project not built in active configuration"
-msgstr "此解决方案没有活动的配置。"
+msgstr "项目没有内置活动配置"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceFolderNodeBuilder.cs:3
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:1
@@ -4113,30 +4093,27 @@ msgstr "引用"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceFolderNodeBuilder.cs:12
 msgid "Cyclic project references are not allowed."
-msgstr ""
+msgstr "不允许循环项目引用。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:4
 msgid "Are you sure you want to permanently delete the file {0}?"
 msgstr "您确定想要永久删除文件 {0} 吗？"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:4
-#, fuzzy
 msgid "Are you sure you want to permanently delete all selected files?"
-msgstr "您确定想要永久删除文件 {0} 吗？"
+msgstr "你确定你想要永久删除所有选定的文件?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:4
 msgid "The file {0} could not be deleted"
 msgstr "无法删除文件 {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:4
-#, fuzzy
 msgid "Include to Solution"
-msgstr "添加到解决方案"
+msgstr "包含到解决方案"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:14
-#, fuzzy
 msgid "ApplicationIconId"
-msgstr "程序"
+msgstr "ApplicationIconId"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:58
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DocumentSwitcher.cs:11
@@ -4153,9 +4130,8 @@ msgid "Default Runtime"
 msgstr "默认运行时"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:35
-#, fuzzy
 msgid "The file could not be saved."
-msgstr "工程无法创建"
+msgstr "此文件无法保存。"
 
 #  using(SaveFileDialog fdiag = new SaveFileDialog()) {
 #  fdiag.OverwritePrompt = true;
@@ -4199,24 +4175,21 @@ msgid "File name {0} is invalid"
 msgstr "文件名 {0} 无效"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:38
-#, fuzzy
 msgid "File {0} already exists. Overwrite?"
-msgstr "文件 {0} 已经存在。是否覆盖？"
+msgstr "文件 {0} 已存在。是否覆盖?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Pad.cs:5
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DocumentSwitcher.cs:11
-#, fuzzy
 msgid "Pads"
-msgstr "粘贴"
+msgstr "板"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:5
 msgid "Initializing Main Window"
 msgstr "正在初始化主窗口"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:22
-#, fuzzy
 msgid "Save the changes to document '{0}' before creating a new solution?"
-msgstr "保存对打开文档的修改(_S)"
+msgstr "创建一个新解决方案之前保存更改至文档 '{0}' 吗？"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:43
 msgid "Opening {0}"
@@ -4230,16 +4203,15 @@ msgstr "选项"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:51
 msgid "Preferences"
-msgstr "选项"
+msgstr "配置"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:54
-#, fuzzy
 msgid "Save the changes to document '{0}' before closing?"
-msgstr "保存对打开文档的修改(_S)"
+msgstr "关闭之前保存更改至文档 '{0}' 吗?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:54
 msgid "If you don't save, all changes will be permanently lost."
-msgstr ""
+msgstr "如果你不保存，所有更改都将永久丢失。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:54
 msgid "Invalid file name"
@@ -4250,43 +4222,36 @@ msgid "{0} is a directory"
 msgstr "{0} 是一个目录"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:55
-#, fuzzy
 msgid "File '{0}' could not be opened"
-msgstr "无法装入文件“{0}”。"
+msgstr "文件 '{0}' 无法打开"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:67
-#, fuzzy
 msgid "Loading workspace documents"
-msgstr "正在打开解决方案：{0}"
+msgstr "正在加载工作区文档"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:100
-#, fuzzy
 msgid "The file '{0}' could not be opened."
-msgstr "无法装入文件“{0}”。"
+msgstr "文件 '{0}' 无法打开"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:100
-#, fuzzy
 msgid "The file '{0}' could not opened. {1}"
-msgstr "无法装入文件“{0}”。"
+msgstr "文件\"{0}\"不能打开。{1}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:100
-#, fuzzy
 msgid "The file '{0}' could not opened. File too large."
-msgstr "无法装入文件“{0}”。"
+msgstr "文件\"{0}\"不能打开。文件太大。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:5
 msgid "Building..."
-msgstr "正在构建..."
+msgstr "正在生成..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:5
-#, fuzzy
 msgid "Cleaning..."
-msgstr "正在保存..."
+msgstr "正在清理"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:5
-#, fuzzy
 msgid "Rebuilding..."
-msgstr "正在构建..."
+msgstr "正在重新生成..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:5
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:7
@@ -4294,9 +4259,8 @@ msgid "Application Output"
 msgstr "应用程序输出"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:5
-#, fuzzy
 msgid "Tool Output"
-msgstr "显示输出"
+msgstr "工具输出"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:5
 msgid "Saving..."
@@ -4308,34 +4272,32 @@ msgstr "搜索结果"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:3
 msgid "_Character Coding:"
-msgstr ""
+msgstr "字符编码(_C):"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:4
-#, fuzzy
 msgid "Open With:"
-msgstr "使用其他程序打开"
+msgstr "打开方式:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:4
 #: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:8
 msgid "Close current workspace"
-msgstr ""
+msgstr "关闭当前工作区"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:4
 #: ../src/addins/MacPlatform/Dialogs/SelectEncodingPopUpButton.cs:3
 #: ../src/addins/WindowsPlatform/WindowsPlatform/Dialogs/OpenFileDialogHandler.cs:191
 msgid "Auto Detected"
-msgstr ""
+msgstr "自动检测"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:4
 msgid "Add or _Remove..."
-msgstr ""
+msgstr "添加或删除(_R)..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:4
 #: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:11
 #: ../src/addins/WindowsPlatform/WindowsPlatform/Dialogs/OpenFileDialogHandler.cs:238
-#, fuzzy
 msgid "Solution Workbench"
-msgstr "加载 Workbench"
+msgstr "解决方案工作台"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:13
 msgid "Show Errors"
@@ -4351,32 +4313,28 @@ msgstr "显示信息"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:14
 msgid "Build Output"
-msgstr "构建输出"
+msgstr "生成输出"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:14
-#, fuzzy
 msgid "Show build output"
-msgstr "显示输出"
+msgstr "显示生成输出"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:27
-#, fuzzy
 msgid "Show Error Reference"
-msgstr "本地副本引用"
+msgstr "显示错误引用"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:28
 msgid "Copy task"
-msgstr ""
+msgstr "复制任务"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:29
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:43
-#, fuzzy
 msgid "_Go to"
-msgstr "转到行(_G)"
+msgstr "转至(_G)..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:29
-#, fuzzy
 msgid "Go to task"
-msgstr "转到基础"
+msgstr "转到任务"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:30
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:45
@@ -4439,9 +4397,8 @@ msgid "Toggle visibility of File column"
 msgstr "切换文件列"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:36
-#, fuzzy
 msgid "Toggle visibility of Project column"
-msgstr "切换路径列"
+msgstr "切换项目列"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:37
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:55
@@ -4467,9 +4424,8 @@ msgid "Category"
 msgstr "类别"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:38
-#, fuzzy
 msgid "Toggle visibility of Category column"
-msgstr "切换路径列"
+msgstr "切换分类列"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:69
 msgid "{0} Error"
@@ -4488,16 +4444,15 @@ msgstr[0] "{0} 条消息"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:42
 msgid "Copy comment task"
-msgstr ""
+msgstr "复制注释任务"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:43
 msgid "Go to comment task"
-msgstr ""
+msgstr "转到注释任务"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:44
-#, fuzzy
 msgid "Delete comment task"
-msgstr "选择命令"
+msgstr "删除注释任务"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:4
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:2
@@ -4512,146 +4467,130 @@ msgstr "中"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:4
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:2
-#, fuzzy
 msgid "Low"
-msgstr "日志"
+msgstr "低"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:6
 msgid "Priority"
-msgstr "重要"
+msgstr "优先级"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:7
-#, fuzzy
 msgid "New Task"
-msgstr "新建"
+msgstr "新建任务"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:7
-#, fuzzy
 msgid "Create New Task"
-msgstr "创建新文件夹"
+msgstr "创建新任务"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:8
-#, fuzzy
 msgid "Copy Task"
-msgstr "复制(_C)"
+msgstr "复制任务"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:8
-#, fuzzy
 msgid "Copy Task Description"
-msgstr "描述"
+msgstr "复制任务描述"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:8
-#, fuzzy
 msgid "Delete Task"
-msgstr "删除"
+msgstr "删除任务"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs:3
-#, fuzzy
 msgid ""
 "<span foreground='grey'>{0} <span size='small'>(Unavailable)</span></span>"
-msgstr "{0}·<span·foreground='red'·size='small'>(未知的语言·\"{1}\")</span>"
+msgstr "<span foreground='grey'>{0} <span size='small'>(不可用)</span></span>"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs:3
-#, fuzzy
 msgid "Load failed: "
-msgstr " (装入失败)"
+msgstr "加载失败:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs:8
-#, fuzzy
 msgid "Do you really want to remove project '{0}' from solution '{1}'"
-msgstr "您真的想要将工程 {0} 从解决方案 {1} 中删除吗？"
+msgstr "你真的想要从解决方案\"{1}\"删除项目\"{0}\"吗"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:3
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.DebugApplicationDialog.cs:2
-#, fuzzy
 msgid "Command"
-msgstr "命令(_C)："
+msgstr "命令"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:3
 msgid "Key Binding"
-msgstr ""
+msgstr "快捷键"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:5
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MimeTypePolicyOptionsSection.cs:6
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/PolicyOptionsPanel.cs:6
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:3
-#, fuzzy
 msgid "Custom"
-msgstr "剪切(_T)"
+msgstr "自定义"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:7
 msgid "_View Conflicts"
-msgstr ""
+msgstr "视图冲突(_V)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:22
 msgid "This key combination is already bound to command '{0}'"
-msgstr ""
+msgstr "这个组合键已绑定命令\"{0}\""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs:2
 msgid "Scheme:"
-msgstr ""
+msgstr "方案"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs:2
 msgid "The current scheme has conflicting key bindings"
-msgstr ""
+msgstr "现行的计划有冲突的键绑定"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs:2
 msgid "Edit Binding"
-msgstr ""
+msgstr "编辑绑定"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs:2
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.StashManagerDialog.cs:2
 msgid "Apply"
-msgstr ""
+msgstr "应用"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:17
-#, fuzzy
 msgid "Build project before running"
-msgstr "构建工程 {0}"
+msgstr "运行之前生成项目"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:17
-#, fuzzy
 msgid "Run project if build completed with warnings"
-msgstr "操作完成，但存在警告。"
+msgstr "运行项目，如果生成完成时出现警告"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:17
 msgid "Enable parallel build of projects"
-msgstr ""
+msgstr "启用并行生成的项目"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:17
 msgid "Build project before executing unit tests"
-msgstr ""
+msgstr "在执行单元测试前生成项目"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:17
 msgid "Log _verbosity:"
-msgstr ""
+msgstr "日志详细程度(_V):"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:17
 msgid "Quiet"
-msgstr ""
+msgstr "安静"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:17
 msgid "Minimal"
-msgstr ""
+msgstr "极简"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:17
-#, fuzzy
 msgid "Detailed"
-msgstr "细节"
+msgstr "详细"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:17
 msgid "Diagnostic"
-msgstr ""
+msgstr "诊断"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:17
-#, fuzzy
 msgid "<b>File Save Options Before Building</b>"
-msgstr "<b>常规选项</b>"
+msgstr "<b>生成之前文件保存选项</b>"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:17
-#, fuzzy
 msgid "_Save changes to open documents"
-msgstr "保存对打开文档的修改(_S)"
+msgstr "保存更改至文件(_S)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:17
 msgid "_Prompt to save changes to open documents"
@@ -4686,18 +4625,16 @@ msgid "Always create backup copy"
 msgstr "总是创建备份"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs:2
-#, fuzzy
 msgid "New Layout"
-msgstr "新建布局(_N)..."
+msgstr "新建布局"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs:2
 msgid "Layout name:"
 msgstr "布局名称："
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs:2
-#, fuzzy
 msgid "Create _Layout"
-msgstr "创建新文件夹"
+msgstr "创建布局(_L)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs:2
 #: ../src/addins/MacPlatform/Dialogs/SelectEncodingPanel.cs:5
@@ -4710,9 +4647,8 @@ msgid "Encodings shown in menu:"
 msgstr "在菜单中显示编码"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:2
-#, fuzzy
 msgid "_Token List:"
-msgstr "工具列表"
+msgstr "_Token 列表:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:2
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanelWidget.cs:2
@@ -4731,11 +4667,11 @@ msgstr "重要:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:2
 msgid "<i><b>Note:</b> Only Letters, Digits and Underscore are allowed.</i>"
-msgstr ""
+msgstr "<i><b>注:</b>允许只有字母、 数字和下划线。</i>"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:2
 msgid "<b>Task Priorities Foreground Colors</b>"
-msgstr ""
+msgstr "<b>任务的优先事项前景颜色</b>"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:2
 msgid "Did you know...?"
@@ -4750,43 +4686,38 @@ msgid "_Next Tip"
 msgstr "下一条提示(_N)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:2
-#, fuzzy
 msgid "Automatically check for updates:"
-msgstr "自动包含找到的文件(_I)"
+msgstr "自动检查更新:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:2
-#, fuzzy
 msgid "Every hour"
-msgstr "每"
+msgstr "每小时"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:2
-#, fuzzy
 msgid "Every day"
-msgstr "每"
+msgstr "每天"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:2
-#, fuzzy
 msgid "Every month"
-msgstr "每"
+msgstr "每月"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:2
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs:2
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs:22
-#, fuzzy
 msgid "Never"
-msgstr "删除"
+msgstr "从不"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:2
 msgid "Install unstable developer updates"
-msgstr ""
+msgstr "安装不稳定的开发人员更新"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:2
 msgid "Beta updates (weekly)"
-msgstr ""
+msgstr "试用版更新 (每周)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:2
 msgid "Alpha updates (very often, very unstable)"
-msgstr ""
+msgstr "阿尔法更新 (很多时候，很不稳定)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:2
 msgid "Test"
@@ -4805,9 +4736,8 @@ msgid "Control not found!"
 msgstr "找不到控件！"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:14
-#, fuzzy
 msgid "The command of tool \"{0}\" is not set."
-msgstr "工具“{0}”的命令无效。"
+msgstr "工具“{0}”的命令未设置。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:15
 msgid "The command of tool \"{0}\" is invalid."
@@ -4830,9 +4760,8 @@ msgid "_Title:"
 msgstr "标题(_T)："
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs:2
-#, fuzzy
 msgid "_Working directory:"
-msgstr "工作目录(_W)："
+msgstr "工作目录(_W):"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs:2
 msgid "_Prompt for arguments"
@@ -4843,7 +4772,6 @@ msgid "_Save current file"
 msgstr "保存当前文件(_S)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs:2
-#, fuzzy
 msgid "Use _output window"
 msgstr "使用输出窗口(_O)"
 
@@ -4864,7 +4792,7 @@ msgstr "(默认)"
 msgid ""
 "The user interface language change will take effect the next time you start "
 "{0}"
-msgstr ""
+msgstr "用户界面语言更改将下次您启动 {0} 时生效"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:2
 msgid "User Interface Language:"
@@ -4875,46 +4803,39 @@ msgid "User Interface Theme:"
 msgstr "界面主题:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionNodeBuilder.cs:9
-#, fuzzy
 msgid ""
 "Are you sure you want to move the item '{0}' to the root node of the "
 "solution?"
-msgstr "您真的确定想要将文件夹“{0}”移动到文件夹“{1}”中吗？"
+msgstr "你确定你想要将项目\"{0}\"移到根节点的解决方案?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionNodeBuilder.cs:9
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs:8
-#, fuzzy
 msgid "Do you really want to remove solution {0} from workspace {1}?"
-msgstr "您真的想要将解决方案 {0} 从解决方案 {1} 中删除吗？"
+msgstr "你真的想要从解决方案\"{1}\"删除项目\"{0}\"吗"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs:6
-#, fuzzy
 msgid "Are you sure you want to move the item '{0}' to the workspace '{1}'?"
-msgstr "您真的确定想要将文件夹“{0}”移动到文件夹“{1}”中吗？"
+msgstr "你确定你想要移动到工作区 '{1}' 项目 '{0}'?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs:7
-#, fuzzy
 msgid "Do you really want to remove the item '{0}' from workspace '{1}'?"
-msgstr "您真的想要将工程 {0} 从解决方案 {1} 中删除吗？"
+msgstr "你真的想要从工作区\"{1}\"删除项目\"{0}\"吗?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:262
 msgid "Display Options"
 msgstr "显示选项"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs:2
-#, fuzzy
 msgid "Standard _Header"
-msgstr "标准"
+msgstr "标准头(_H)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs:4
-#, fuzzy
 msgid "Templates"
-msgstr "模板"
+msgstr "模版"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanelWidget.cs:2
-#, fuzzy
 msgid "_Use custom author information for this solution"
-msgstr "为每个解决方案项选择一个目标配置："
+msgstr "此解决方案使用自定义作者信息(_U)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanelWidget.cs:2
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.GlobalAuthorInformationPanelWidget.cs:2
@@ -4938,7 +4859,7 @@ msgstr "商标(_T)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget.cs:8
 msgid "_Include standard header in new files"
-msgstr ""
+msgstr "包含标准头在新文件中(_I)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/TextStylePolicyPanel.cs:2
 msgid "Native"
@@ -4959,16 +4880,15 @@ msgstr "Microsoft Windows"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs:2
 msgid "Desired _file width:"
-msgstr ""
+msgstr "所需的文件宽度(_F):"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs:2
 msgid "columns"
 msgstr "列"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs:2
-#, fuzzy
 msgid "_Line endings:"
-msgstr "可用的编码："
+msgstr "行结尾(_L):"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs:2
 msgid "<b>Whitespace</b>"
@@ -6996,9 +6916,8 @@ msgid "S_trong Name File:"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CommonAssemblySigningPreferences.cs:2
-#, fuzzy
 msgid "_Delay sign assembly"
-msgstr "程序集"
+msgstr "延迟签名程序集(_D)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CustomCommandPanelWidget.cs:2
 msgid ""
@@ -7006,6 +6925,8 @@ msgid ""
 "as a replacement of common project operations. It is also possible to enter "
 "custom commands which will be available in the project or solution menu."
 msgstr ""
+"MonoDevelop 可以执行用户指定的命令或脚本之前、 之后或作为共同项目运作的替代"
+"品。它也是可以输入自定义的命令，这将是的项目或解决方案的菜单中可用。"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CustomCommandWidget.cs:2
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Execution.CustomExecutionModeWidget.cs:2
@@ -7100,6 +7021,8 @@ msgid ""
 "Visual Studio generates a default ID for embedded resources,\n"
 "instead of simply using the resource's filename."
 msgstr ""
+"<b>使用 _Visual Studio样式资源名称</b>\n"
+"Visual Studio 会生成一个默认 ID 为嵌入的资源，而不是简单地使用资源的文件名。"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanelWidget.cs:2
 msgid ""
@@ -7107,6 +7030,8 @@ msgid ""
 "Visual Studio generates a default ID for embedded resources, instead of "
 "simply using the resource's filename."
 msgstr ""
+"<b>使用 _Visual Studio样式资源名称</b>\n"
+"Visual Studio 会生成一个默认 ID 为嵌入的资源，而不是简单地使用资源的文件名。"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.OutputOptionsPanelWidget.cs:2
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:2
