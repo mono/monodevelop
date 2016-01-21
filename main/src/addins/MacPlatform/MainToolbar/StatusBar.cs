@@ -62,7 +62,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 			set {
 				base.Frame = value;
-				imageView.Frame = new CGRect (0, 0, value.Width, value.Height);
+				imageView.Frame = new CGRect (0.5, 0, value.Width, value.Height);
 			}
 		}
 
@@ -162,7 +162,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return;
 			}
 
-			iconImage.Draw (new CGRect (0, (Frame.Size.Height - iconImage.Size.Height) / 2 + 0.5, iconImage.Size.Width, iconImage.Size.Height));
+			iconImage.Draw (new CGRect (0.5, (Frame.Size.Height - iconImage.Size.Height) / 2, iconImage.Size.Width, iconImage.Size.Height));
 			resultString.DrawAtPoint (new CGPoint (iconImage.Size.Width, (Frame.Size.Height - resultString.Size.Height) / 2));
 		}
 
@@ -240,6 +240,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			textFieldArea = new NSTrackingArea (CGRect.Empty, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInKeyWindow | NSTrackingAreaOptions.InVisibleRect, this, null);
 			textField.AddTrackingArea (textFieldArea);
 
+			imageView.Frame = new CGRect (0.5, 0, 0, 0);
 			imageView.Image = ImageService.GetIcon (Stock.StatusSteady).ToNSImage ();
 
 			buildResults = new BuildResultsView ();
@@ -299,7 +300,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 
 			var x = LeftMostStatusItemX ();
-			var sepRect = new CGRect (x - 9, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 5 : 4, 1, 16);
+			var sepRect = new CGRect (x - 8.5, /*MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 5 : 4*/4, 1, 16);
 			if (!sepRect.IntersectsWith (dirtyRect)) {
 				return;
 			}
@@ -369,7 +370,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			foreach (var item in statusIcons) {
 				right -= item.Bounds.Width + 1;
-				item.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 5 : 4, item.Bounds.Width, item.Bounds.Height);
+				item.Frame = new CGRect (right, /*MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 4 : 4*/4, item.Bounds.Width, item.Bounds.Height);
 			}
 
 			PositionBuildResults (right);
