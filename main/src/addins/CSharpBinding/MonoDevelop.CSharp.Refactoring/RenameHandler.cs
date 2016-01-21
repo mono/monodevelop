@@ -83,7 +83,10 @@ namespace MonoDevelop.CSharp.Refactoring
 
 		internal async Task Run (TextEditor editor, DocumentContext ctx)
 		{
-			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (ctx, editor.CaretOffset);
+			var cts = new CancellationTokenSource ();
+			var getSymbolTask = RefactoringSymbolInfo.GetSymbolInfoAsync (ctx, editor.CaretOffset, cts.Token);
+			var message = GettextCatalog.GetString ("Waiting for rename operation to resolve symbol...");
+			var info = await MessageService.ExecuteTaskAndShowWaitDialog (getSymbolTask, message, cts);
 			var sym = info.DeclaredSymbol ?? info.Symbol;
 			if (!CanRename (sym))
 				return;

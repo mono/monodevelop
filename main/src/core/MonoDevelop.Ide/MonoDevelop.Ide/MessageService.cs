@@ -34,6 +34,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.Ide.Gui;
+using System.Threading.Tasks;
 
 #if MAC
 using AppKit;
@@ -503,6 +504,40 @@ namespace MonoDevelop.Ide
 		public static AlertButton GenericAlert (Window parent, GenericMessage message)
 		{
 			return messageService.GenericAlert (parent, message);
+		}
+
+		public static async Task<T> ExecuteTaskAndShowWaitDialog<T> (Task<T> task, string waitMessage, CancellationTokenSource cts)
+		{
+			bool taskFinished = false;
+			var dontExitMethodUntilDialogClosed = new TaskCompletionSource<bool> ();
+			var delayTask = Task.Delay (1000);//Don't show wait dialog immediately, wait 1 sec before showing
+			var finishedTask = await Task.WhenAny (delayTask, task).ConfigureAwait (false);
+			if (finishedTask == task)//If task finished before delayTask, great return value and never display dialog
+				return task.Result;
+			//cancelDialog is used to close dialog when task is finished
+			var cancelDialog = new CancellationTokenSource ();
+			Gtk.Application.Invoke (delegate {
+				if (cancelDialog.Token.IsCancellationRequested)
+					return;
+				var gm = new GenericMessage (waitMessage, null, cancelDialog.Token);
+				gm.Buttons.Add (AlertButton.Cancel);
+				gm.DefaultButton = 0;
+				GenericAlert (gm);
+				dontExitMethodUntilDialogClosed.SetResult (true);
+				if (!taskFinished) {
+					//Don't cancel if task finished already, we closed dialog via cancelDialog.Cancel ();
+					//caller of this method might reuse this cts for other tasks
+					cts.Cancel ();
+				}
+			});
+			try {
+				await task.ConfigureAwait (false);
+			} finally {
+				taskFinished = true;
+				cancelDialog.Cancel ();
+			}
+			await dontExitMethodUntilDialogClosed.Task.ConfigureAwait (false);
+			return task.Result;
 		}
 		
 		public static string GetTextResponse (string question, string caption, string initialValue)
