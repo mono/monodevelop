@@ -69,7 +69,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			result.Text = GettextCatalog.GetString ("Fix");
 			foreach (var diagnostic in container.CodeFixActions) {
 				var info = new CommandInfo (diagnostic.CodeAction.Title);
-				result.CommandInfos.Add (info, new Action (new CodeActionEditorExtension.ContextActionRunner (diagnostic.CodeAction, editor, ctx).Run));
+				result.CommandInfos.Add (info, new Action (async () => await new CodeActionEditorExtension.ContextActionRunner (diagnostic.CodeAction, editor, ctx).Run ()));
 			}
 			if (result.CommandInfos.Count == 0)
 				return result;
@@ -188,8 +188,8 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			bool canRename = RenameHandler.CanRename (info.Symbol ?? info.DeclaredSymbol);
 			if (canRename) {
-				ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.EditCommands.Rename), new Action (delegate {
-					new MonoDevelop.Refactoring.Rename.RenameRefactoring ().Rename (info.Symbol ?? info.DeclaredSymbol);
+				ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.EditCommands.Rename), new Action (async delegate {
+					await new MonoDevelop.Refactoring.Rename.RenameRefactoring ().Rename (info.Symbol ?? info.DeclaredSymbol);
 				}));
 				added = true;
 			}
@@ -199,7 +199,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					if (added & first && ciset.CommandInfos.Count > 0)
 						ciset.CommandInfos.AddSeparator ();
 					var info2 = new CommandInfo (fix.CodeAction.Title);
-					ciset.CommandInfos.Add (info2, new Action (new CodeActionEditorExtension.ContextActionRunner (fix.CodeAction, doc.Editor, doc).Run));
+					ciset.CommandInfos.Add (info2, new Action (async () => await new CodeActionEditorExtension.ContextActionRunner (fix.CodeAction, doc.Editor, doc).Run ()));
 					added = true;
 					first = false;
 				}
