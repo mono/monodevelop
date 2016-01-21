@@ -189,6 +189,12 @@ namespace MonoDevelop.Debugger
 			Sensitive = false,
 			TextAlignment = Alignment.End
 		};
+
+		readonly Label exceptionTypeTip = new Label (GettextCatalog.GetString ("Exception list is generated from currently selected project.")) {
+			Sensitive = false,
+			TextAlignment = Alignment.End
+		};
+
 		readonly Label conditionalExpressionTip = new Label (GettextCatalog.GetString ("A C# boolean expression. Scope is local to the breakpoint.")) {
 			Sensitive = false,
 			TextAlignment = Alignment.End
@@ -778,6 +784,7 @@ namespace MonoDevelop.Debugger
 				hboxException.PackEnd (warningException);
 
 				vboxException.PackStart (hboxException);
+				vboxException.PackStart (exceptionTypeTip);
 				vboxException.PackStart (checkIncludeSubclass);
 				whenToTakeActionRadioGroup.PackStart (vboxException);
 			}
