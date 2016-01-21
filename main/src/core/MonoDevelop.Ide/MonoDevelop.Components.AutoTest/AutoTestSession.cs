@@ -67,20 +67,11 @@ namespace MonoDevelop.Components.AutoTest
 			return null;
 		}
 
-		[Serializable]
-		public struct MemoryStats {
-			public long PrivateMemory;
-			public long PeakVirtualMemory;
-			public long PagedSystemMemory;
-			public long PagedMemory;
-			public long NonPagedSystemMemory;
-		};
-
-		public MemoryStats GetMemoryStats ()
+		public MemoryStatsDTO GetMemoryStats ()
 		{
-			MemoryStats stats;
+			MemoryStatsDTO stats;
 			using (Process proc = Process.GetCurrentProcess ()) {
-				stats = new MemoryStats {
+				stats = new MemoryStatsDTO {
 					PrivateMemory = proc.PrivateMemorySize64,
 					PeakVirtualMemory = proc.PeakVirtualMemorySize64,
 					PagedSystemMemory = proc.PagedSystemMemorySize64,
