@@ -56,5 +56,34 @@ namespace MonoDevelop.Components.AutoTest
 			set;
 		}
 	}
+
+	[Serializable]
+	public class MemoryStatsDTO
+	{
+		public long PrivateMemory {
+			get;
+			set;
+		}
+
+		public long PeakVirtualMemory {
+			get;
+			set;
+		}
+
+		public long PagedSystemMemory {
+			get;
+			set;
+		}
+
+		public long PagedMemory {
+			get;
+			set;
+		}
+
+		public long NonPagedSystemMemory {
+			get;
+			set;
+		}
+	};
 }
 

@@ -132,7 +132,7 @@ namespace MonoDevelop.Components.AutoTest
 				}
 		}
 
-		public AutoTestSession.MemoryStats MemoryStats {
+		public MemoryStatsDTO MemoryStats {
 			get {
 				return session.GetMemoryStats ();
 			}
