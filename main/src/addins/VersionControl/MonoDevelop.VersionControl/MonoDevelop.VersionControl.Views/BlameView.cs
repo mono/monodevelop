@@ -25,9 +25,11 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using Mono.TextEditor;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -35,7 +37,7 @@ namespace MonoDevelop.VersionControl.Views
 	{	
 	}
 	
-	internal class BlameView : BaseView, IBlameView
+	internal class BlameView : BaseView, IBlameView, IClipboardHandler
 	{
 		BlameWidget widget;
 		VersionControlDocumentInfo info;
@@ -75,6 +77,60 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
+		#endregion
+
+		#region IClipboardHandler implementation
+		void IClipboardHandler.Cut ()
+		{
+		}
+
+		void IClipboardHandler.Copy ()
+		{
+			this.widget.Editor.RunAction (ClipboardActions.Copy);
+		}
+
+		void IClipboardHandler.Paste ()
+		{
+		}
+
+		void IClipboardHandler.Delete ()
+		{
+		}
+
+		void IClipboardHandler.SelectAll ()
+		{
+			this.widget.Editor.RunAction (SelectionActions.SelectAll);
+		}
+
+		bool IClipboardHandler.EnableCut {
+			get {
+				return false;
+			}
+		}
+
+		bool IClipboardHandler.EnableCopy {
+			get {
+				return this.widget.Editor.IsSomethingSelected;
+			}
+		}
+
+		bool IClipboardHandler.EnablePaste {
+			get {
+				return false;
+			}
+		}
+
+		bool IClipboardHandler.EnableDelete {
+			get {
+				return false;
+			}
+		}
+
+		bool IClipboardHandler.EnableSelectAll {
+			get {
+				return true;
+			}
+		}
 		#endregion
 	}
 }

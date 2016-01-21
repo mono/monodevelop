@@ -298,6 +298,21 @@ namespace MonoDevelop.Ide.Gui.Pads
 				}
 			} while (view.Model.IterNext (ref it));
 		}
+
+		internal void SelectTaskListEntry (TaskListEntry taskListEntry)
+		{
+			TreeIter iter;
+			if (!view.Model.GetIterFirst (out iter))
+				return;
+			do {
+				var t = (TaskListEntry) view.Model.GetValue (iter, DataColumns.Task);
+				if (t == taskListEntry) {
+					view.Selection.SelectIter (iter);
+					view.ScrollToCell (view.Model.GetPath (iter), view.Columns[0], false, 0, 0);
+					return;
+				}
+			} while (view.Model.IterNext (ref iter));
+		}
 		
 		void LoadColumnsVisibility ()
 		{

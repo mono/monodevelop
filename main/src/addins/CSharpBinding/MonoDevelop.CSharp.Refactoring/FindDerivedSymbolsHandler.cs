@@ -88,7 +88,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		public void Update (CommandInfo info)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			info.Enabled = doc.ParsedDocument != null && doc.ParsedDocument.GetAst<SemanticModel> () != null;
+			info.Enabled = doc != null && doc.ParsedDocument != null && doc.ParsedDocument.GetAst<SemanticModel> () != null;
 		}
 
 		public async void Run (object data)

@@ -706,6 +706,9 @@ namespace MonoDevelop.Ide.Projects
 
 		static bool ProjectNameIsLanguageKeyword (string language, string projectName)
 		{
+			if (String.IsNullOrEmpty (language))
+				return false;
+
 			LanguageBinding binding = LanguageBindingService.GetBindingPerLanguageName (language);
 			if (binding != null) {
 				var codeDomProvider = binding.GetCodeDomProvider ();

@@ -91,7 +91,7 @@ namespace MonoDevelop.CSharp
 					var old = await SymbolInfoTask;
 					if (old != null)
 						old.Dispose ();
-				} catch (TaskCanceledException) {
+				} catch (OperationCanceledException) {
 					// Ignore
 				} catch (Exception ex) {
 					LoggingService.LogError ("UpdateSymbolInfos failed", ex);
@@ -129,17 +129,19 @@ namespace MonoDevelop.CSharp
 				}
 			}
 
-			static void SearchAsync (ConcurrentDictionary<Microsoft.CodeAnalysis.DocumentId, List<DeclaredSymbolInfo>> result, Microsoft.CodeAnalysis.Project project, CancellationToken cancellationToken)
+			static async void SearchAsync (ConcurrentDictionary<Microsoft.CodeAnalysis.DocumentId, List<DeclaredSymbolInfo>> result, Microsoft.CodeAnalysis.Project project, CancellationToken cancellationToken)
 			{
 				if (project == null)
 					throw new ArgumentNullException (nameof (project));
-				Parallel.ForEach (project.Documents, async delegate (Microsoft.CodeAnalysis.Document document) {
-					try {
+				try {
+					foreach (var document in project.Documents) {
 						cancellationToken.ThrowIfCancellationRequested ();
-						await UpdateDocument (result, document, cancellationToken).ConfigureAwait (false);
-					} catch (OperationCanceledException) {
+						await UpdateDocument (result, document, cancellationToken);
 					}
-				});
+				} catch (AggregateException ae) {
+					ae.Flatten ().Handle (ex => ex is OperationCanceledException);
+				} catch (OperationCanceledException) {
+				}
 			}
 
 			static async Task UpdateDocument (ConcurrentDictionary<DocumentId, List<DeclaredSymbolInfo>> result, Microsoft.CodeAnalysis.Document document, CancellationToken cancellationToken)
@@ -213,6 +215,9 @@ namespace MonoDevelop.CSharp
 						}
 						break;
 					}
+				} catch (AggregateException ae) {
+					ae.Flatten ().Handle (ex => ex is OperationCanceledException);
+				} catch (OperationCanceledException) {
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error while updating navigation symbol cache.", ex);
 				}
@@ -229,9 +234,9 @@ namespace MonoDevelop.CSharp
 				}
 				return result;
 			} catch (AggregateException ae) {
-				ae.Flatten ().Handle (ex => ex is TaskCanceledException);
+				ae.Flatten ().Handle (ex => ex is OperationCanceledException);
 				return SymbolCache.Empty;
-			} catch (TaskCanceledException) {
+			} catch (OperationCanceledException) {
 				return SymbolCache.Empty;
 			} finally {
 				getTypesTimer.EndTiming ();
