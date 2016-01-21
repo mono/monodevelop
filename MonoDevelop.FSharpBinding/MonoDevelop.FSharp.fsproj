@@ -115,6 +115,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Compile Include="Properties\AddinInfo.fs" />
+    <Compile Include="FSharpNavigationTextEditorExtension.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="pango-sharp" />
