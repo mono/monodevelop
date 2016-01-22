@@ -30,6 +30,7 @@ using AppKit;
 using CoreGraphics;
 using Foundation;
 using MonoDevelop.Components;
+using MonoDevelop.Components.Mac;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -63,8 +64,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public SelectorView ()
 		{
-			Title = "";
+			Cell = new ColoredButtonCell { BezelColor = Styles.BaseBackgroundColor.ToNSColor () };
 			BezelStyle = NSBezelStyle.TexturedRounded;
+			Title = "";
 
 			RealSelectorView = new PathSelectorView (new CGRect (6, 0, 1, 1));
 			RealSelectorView.UnregisterDraggedTypes ();
@@ -238,13 +240,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						Image = ImageService.GetIcon ("project").WithStyles ("disabled").ToBitmap ().ToNSImage (),
 						Title = ConfigurationPlaceholder,
 						Enabled = false,
-						TextColor = NSColor.FromRgba (0.34f, 0.34f, 0.34f, 1),
+						TextColor = Styles.BaseForegroundColor.ToNSColor (),
 					},
 					new NSPathComponentCell {
 						Image = ImageService.GetIcon ("device").WithStyles ("disabled").ToBitmap ().ToNSImage (),
 						Title = RuntimePlaceholder,
 						Enabled = false,
-						TextColor = NSColor.FromRgba (0.34f, 0.34f, 0.34f, 1),
+						TextColor = Styles.BaseForegroundColor.ToNSColor (),
 					}
 				};
 

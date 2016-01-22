@@ -30,6 +30,8 @@ using CoreGraphics;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
+using Xwt.Mac;
+using CoreImage;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -38,6 +40,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	{
 		NSImage stopIcon, continueIcon, buildIcon;
 		NSImage stopIconDisabled, continueIconDisabled, buildIconDisabled;
+		ColoredButtonCell cell;
+
 
 		public RunButton ()
 		{
@@ -47,6 +51,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			stopIconDisabled = ImageService.GetIcon ("stop").WithStyles("disabled").ToNSImage ();
 			continueIconDisabled = ImageService.GetIcon ("continue").WithStyles("disabled").ToNSImage ();
 			buildIconDisabled = ImageService.GetIcon ("build").WithStyles("disabled").ToNSImage ();
+
+			Cell = new ColoredButtonCell { BezelColor = Styles.BaseBackgroundColor.ToNSColor () };
 
 			icon = OperationIcon.Run;
 			ImagePosition = NSCellImagePosition.ImageOnly;
@@ -93,6 +99,42 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			get {
 				return new CGSize (38, 25);
 			}
+		}
+	}
+
+	class ColoredButtonCell : NSButtonCell
+	{
+		public NSColor BezelColor { get; set; }
+
+		public override void DrawBezelWithFrame (CGRect frame, NSView controlView)
+		{
+			if (BezelColor != null) {
+				if (controlView.Frame.Size.Width <= 0 || controlView.Frame.Size.Height <= 0)
+					return;
+				
+				var scaledSize = new CGSize (controlView.Frame.Size.Width * controlView.Window.Screen.BackingScaleFactor, controlView.Frame.Size.Height * controlView.Window.Screen.BackingScaleFactor);
+
+				var image = new NSImage(scaledSize);
+				image.LockFocusFlipped(!controlView.IsFlipped);
+				base.DrawBezelWithFrame (frame, controlView);
+				image.UnlockFocus();
+
+				// create Core image for transformation
+				var scaledRect = new CGRect(0, 0, scaledSize.Width, scaledSize.Height);
+				var ciImage = CIImage.FromCGImage(image.AsCGImage (ref scaledRect, NSGraphicsContext.CurrentContext, null));
+
+				var filter = new CIColorMonochrome();
+				filter.SetDefaults();
+				filter.Image = ciImage;
+				filter.Color = new CIColor(BezelColor);
+				filter.Intensity = 1.0f;
+				ciImage = (CIImage)filter.ValueForKey(new NSString("outputImage"));
+
+				var ciCtx = CIContext.FromContext(NSGraphicsContext.CurrentContext.GraphicsPort, null);
+
+				ciCtx.DrawImage (ciImage, new CGRect(0, 0, controlView.Frame.Size.Width, controlView.Frame.Size.Height), scaledRect);
+			} else
+				base.DrawBezelWithFrame (frame, controlView);
 		}
 	}
 }
