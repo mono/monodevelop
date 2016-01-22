@@ -76,22 +76,32 @@ namespace MonoDevelop.Refactoring
 			this.symbolInfo = symbolInfo;
 		}
 
-		public static async Task<RefactoringSymbolInfo> GetSymbolInfoAsync (DocumentContext document, int offset, CancellationToken cancellationToken = default(CancellationToken))
+		public static Task<RefactoringSymbolInfo> GetSymbolInfoAsync (DocumentContext document, int offset, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			if (document == null)
 				throw new ArgumentNullException (nameof (document));
-			if (document.ParsedDocument == null)
-				return RefactoringSymbolInfo.Empty;
-			var unit = await document.AnalysisDocument.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
+			if (document.AnalysisDocument == null)
+				return Task.FromResult (RefactoringSymbolInfo.Empty);
+
+			if (Runtime.IsMainThread) {//InternalGetSymbolInfoAsync can be CPU heavy, go to ThreadPool if we are on UI thread
+				return Task.Run (() => InternalGetSymbolInfoAsync (document.AnalysisDocument, offset, cancellationToken));
+			} else {
+				return InternalGetSymbolInfoAsync (document.AnalysisDocument, offset, cancellationToken);
+			}
+		}
+
+		static async Task<RefactoringSymbolInfo> InternalGetSymbolInfoAsync (Microsoft.CodeAnalysis.Document document, int offset, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			var unit = await document.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
 			if (unit != null) {
 				var root = await unit.SyntaxTree.GetRootAsync (cancellationToken).ConfigureAwait (false);
 				try {
 					var token = root.FindToken (offset);
 					if (!token.Span.IntersectsWith (offset))
 						return RefactoringSymbolInfo.Empty;
-					var symbol = unit.GetSymbolInfo (token.Parent);
+					var symbol = unit.GetSymbolInfo (token.Parent, cancellationToken);
 					return new RefactoringSymbolInfo (symbol) {
-						DeclaredSymbol = token.IsKind (SyntaxKind.IdentifierToken) ? unit.GetDeclaredSymbol (token.Parent) : null,
+						DeclaredSymbol = token.IsKind (SyntaxKind.IdentifierToken) ? unit.GetDeclaredSymbol (token.Parent, cancellationToken) : null,
 						Node = token.Parent,
 						Model = unit
 					};

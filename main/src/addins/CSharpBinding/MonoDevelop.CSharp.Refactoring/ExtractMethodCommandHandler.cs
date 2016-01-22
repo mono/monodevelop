@@ -95,7 +95,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				var info = RefactoringSymbolInfo.GetSymbolInfoAsync (doc, extractionResult.InvocationNameToken.Span.Start).Result;
 				var sym = info.DeclaredSymbol ?? info.Symbol;
 				if (sym != null)
-					new MonoDevelop.Refactoring.Rename.RenameRefactoring ().Rename (sym);
+					await new MonoDevelop.Refactoring.Rename.RenameRefactoring ().Rename (sym);
 			}
 			catch (Exception e) {
 				LoggingService.LogError ("Error while extracting method", e);
