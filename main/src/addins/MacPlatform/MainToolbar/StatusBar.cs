@@ -231,6 +231,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public StatusBar ()
 		{
 			AllowsEditingTextAttributes = Selectable = Editable = false;
+			LoadStyles ();
+
+			// We don't need to resize the Statusbar here as a style change will trigger a complete relayout of the Awesomebar
+			Ide.Gui.Styles.Changed += (o, e) => LoadStyles ();
 
 			textField.Cell = new VerticallyCenteredTextFieldCell (yOffset: -0.5f);
 			textField.Cell.StringValue = "";
@@ -246,10 +250,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			buildResults = new BuildResultsView ();
 			buildResults.Hidden = true;
 			AddSubview (buildResults);
-
-			// Fixes a render glitch of a whiter bg than the others.
-			if (MacSystemInformation.OsVersion >= MacSystemInformation.Yosemite)
-				BezelStyle = NSTextFieldBezelStyle.Rounded;
 
 			WantsLayer = true;
 			Layer.CornerRadius = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 6 : 4;
@@ -285,6 +285,24 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			AddSubview (textField);
 		}
 
+		void LoadStyles ()
+		{
+			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
+				DrawsBackground = true;
+				BackgroundColor = NSColor.DarkGray;
+				Bezeled = false;
+
+				// Even if Bezeled = false, the background won't be drawn if BezelStyle is Rounded.
+				// Because Cocoa is magic!
+				BezelStyle = NSTextFieldBezelStyle.Square;
+			} else {
+				Appearance = NSAppearance.GetAppearance (NSAppearance.NameAqua);
+				Bezeled = true;
+				if (MacSystemInformation.OsVersion >= MacSystemInformation.Yosemite)
+					BezelStyle = NSTextFieldBezelStyle.Rounded;
+			}
+		}
+
 		protected override void Dispose (bool disposing)
 		{
 			TaskService.Errors.TasksAdded -= updateHandler;
@@ -295,6 +313,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public override void DrawRect (CGRect dirtyRect)
 		{
 			base.DrawRect (dirtyRect);
+
 			if (statusIcons.Count == 0 || buildResults.Hidden) {
 				return;
 			}
@@ -370,7 +389,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			foreach (var item in statusIcons) {
 				right -= item.Bounds.Width + 1;
-				item.Frame = new CGRect (right, /*MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 4 : 4*/4, item.Bounds.Width, item.Bounds.Height);
+				item.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 5 : 3, item.Bounds.Width, item.Bounds.Height);
 			}
 
 			PositionBuildResults (right);
@@ -808,7 +827,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return base.Frame;
 			}
 			set {
-				base.Frame = value;
+				CGRect newFrame;
+				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
+					newFrame = new CGRect (value.X, value.Y + 0.5, value.Width, value.Height - 0.5);
+				} else {
+					newFrame = new CGRect (value.X, value.Y - 0.5, value.Width, value.Height + 0.5);
+				}
+				base.Frame = newFrame;
+
 				imageView.Frame = new CGRect (6, 0, 16, Frame.Height);
 				textField.Frame = new CGRect (imageView.Frame.Right, 0, Frame.Width - 16, Frame.Height);
 

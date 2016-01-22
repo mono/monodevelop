@@ -140,7 +140,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				var item = widget.Items[0];
 
 				var abFrameInWindow = awesomeBar.ConvertRectToView (awesomeBar.Frame, null);
-				var size = new CGSize (win.Frame.Width - abFrameInWindow.X - 4, 25);
+				var size = new CGSize (win.Frame.Width - abFrameInWindow.X - 4, 22);
 				item.MinSize = size;
 				item.MaxSize = size;
 			});

@@ -24,9 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+
 using AppKit;
-using Foundation;
 using CoreGraphics;
+
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -56,6 +58,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			SearchBar = new SearchBar ();
 			AddSubview (SearchBar);
+
+			Ide.Gui.Styles.Changed +=  (o, e) => UpdateLayout ();
 		}
 
 		const float toolbarPadding = 8.0f;
@@ -64,7 +68,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		const float maxStatusBarWidth = 700.0f;
 		const float minStatusBarWidth = 220.0f;
 		const float runButtonWidth = 38.0f;
-		public const float ToolbarWidgetHeight = 25.0f;
+		public const float ToolbarWidgetHeight = 22.0f;
 
 		void UpdateLayout ()
 		{
@@ -79,7 +83,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			// Gap + RunButton.Width + Gap + ButtonBar.Width + Gap + Half of StatusBar.Width
 			var spaceLeft = (Frame.Width / 2) - (toolbarPadding + runButtonWidth + toolbarPadding + ButtonBarContainer.Frame.Width + toolbarPadding + (statusbarWidth / 2));
 			StatusBar.Frame = new CGRect ((Frame.Width - statusbarWidth) / 2, 0, statusbarWidth, ToolbarWidgetHeight);
-			SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, 0, searchbarWidth, ToolbarWidgetHeight);
+
+			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
+				SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, -0.5, searchbarWidth, ToolbarWidgetHeight + 1);
+			} else {
+				SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, 0, searchbarWidth, ToolbarWidgetHeight);
+			}
 
 			var selectorSize = SelectorView.SizeThatFits (new CGSize (spaceLeft, ToolbarWidgetHeight));
 
