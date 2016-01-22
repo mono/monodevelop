@@ -104,22 +104,40 @@ namespace MonoDevelop.SourceEditor
 			tree.AddValue (value);
 			tree.Selection.UnselectAll ();
 			tree.SizeAllocated += OnTreeSizeChanged;
-			tree.PinStatusChanged += delegate {
-				Destroy ();
-			};
+			tree.PinStatusChanged += OnPinStatusChanged;
 
 			sw.ShowAll ();
 
-			tree.StartEditing += delegate {
-				Modal = true;
-			};
-
-			tree.EndEditing += delegate {
-				Modal = false;
-			};
+			tree.StartEditing += OnStartEditing;
+			tree.EndEditing += OnEndEditing;
 
 			ShowArrow = true;
 			Theme.CornerRadius = 3;
+		}
+
+		void OnStartEditing (object sender, EventArgs args)
+		{
+			Modal = true;
+		}
+
+		void OnEndEditing (object sender, EventArgs args)
+		{
+			Modal = false;
+		}
+
+		void OnPinStatusChanged (object sender, EventArgs args)
+		{
+			Destroy ();
+		}
+
+		protected override void OnDestroyed ()
+		{
+			tree.StartEditing -= OnStartEditing;
+			tree.EndEditing -= OnEndEditing;
+			tree.PinStatusChanged -= OnPinStatusChanged;
+			tree.SizeAllocated -= OnTreeSizeChanged;
+
+			base.OnDestroyed ();
 		}
 
 		protected override bool OnEnterNotifyEvent (EventCrossing evnt)
