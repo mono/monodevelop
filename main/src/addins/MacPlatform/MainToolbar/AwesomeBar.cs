@@ -28,6 +28,7 @@ using System;
 using AppKit;
 using CoreGraphics;
 
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
@@ -68,7 +69,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		const float maxStatusBarWidth = 700.0f;
 		const float minStatusBarWidth = 220.0f;
 		const float runButtonWidth = 38.0f;
-		public const float ToolbarWidgetHeight = 22.0f;
+		public static float ToolbarWidgetHeight {
+			get {
+				return MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 24.0f : 22.0f;
+			}
+		}
 
 		void UpdateLayout ()
 		{
@@ -87,7 +92,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
 				SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, -0.5, searchbarWidth, ToolbarWidgetHeight + 1);
 			} else {
-				SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, 0, searchbarWidth, ToolbarWidgetHeight);
+				nfloat elcapYOffset = 0;
+				nfloat elcapHOffset = 0;
+
+				if (MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan) {
+					elcapYOffset = -0.5f;
+					elcapHOffset = 1.0f;
+				}
+				SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, 0 + elcapYOffset, searchbarWidth, ToolbarWidgetHeight + elcapHOffset);
 			}
 
 			var selectorSize = SelectorView.SizeThatFits (new CGSize (spaceLeft, ToolbarWidgetHeight));

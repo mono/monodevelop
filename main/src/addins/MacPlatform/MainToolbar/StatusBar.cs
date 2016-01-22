@@ -319,7 +319,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 
 			var x = LeftMostStatusItemX ();
-			var sepRect = new CGRect (x - 8.5, /*MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 5 : 4*/4, 1, 16);
+			var sepRect = new CGRect (x - 8.5, 3, 1, 16);
 			if (!sepRect.IntersectsWith (dirtyRect)) {
 				return;
 			}
@@ -389,7 +389,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			foreach (var item in statusIcons) {
 				right -= item.Bounds.Width + 1;
-				item.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 5 : 3, item.Bounds.Width, item.Bounds.Height);
+				nfloat y = 3.0f;
+				if (MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan) {
+					y = IdeApp.Preferences.UserInterfaceSkin == Skin.Dark ? 3 : 4;
+				}
+				item.Frame = new CGRect (right, y, item.Bounds.Width, item.Bounds.Height);
 			}
 
 			PositionBuildResults (right);
@@ -829,9 +833,17 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			set {
 				CGRect newFrame;
 				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
-					newFrame = new CGRect (value.X, value.Y + 0.5, value.Width, value.Height - 0.5);
+					nfloat extraHeight = -0.5f;
+					nfloat yOffset = 0.5f;
+
+					if (MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan) {
+						extraHeight = -2.0f;
+						yOffset = 1.5f;
+					}
+					newFrame = new CGRect (value.X, value.Y + yOffset, value.Width, value.Height + extraHeight);
 				} else {
-					newFrame = new CGRect (value.X, value.Y - 0.5, value.Width, value.Height + 0.5);
+					var extraHeight = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 1.5 : 0.5;
+					newFrame = new CGRect (value.X, value.Y - 0.5, value.Width, value.Height + extraHeight);
 				}
 				base.Frame = newFrame;
 
