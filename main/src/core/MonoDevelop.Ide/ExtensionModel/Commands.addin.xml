@@ -337,7 +337,7 @@
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportSolution"
 			defaultHandler = "MonoDevelop.Ide.Commands.ExportSolutionHandler"
 			_description = "Convert selected solution to another format"
-			_label = "_Export..." />
+			_label = "Convert solution format..." />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.SelectActiveConfiguration"
 			type = "radio|array"
 			defaultHandler = "MonoDevelop.Ide.Commands.SelectActiveConfigurationHandler"
