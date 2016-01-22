@@ -212,8 +212,17 @@ namespace MonoDevelop.SourceEditor
 				if (oldPattern != SearchAndReplaceOptions.SearchPattern)
 					UpdateSearchEntry ();
 				var history = GetHistory (seachHistoryProperty);
+
+				// Don't do anything to the history if we have a blank search
+				if (string.IsNullOrWhiteSpace (SearchPattern)) {
+					return;
+				}
+
 				if (history.Count > 0 && history [0] == oldPattern) {
-					ChangeHistory (seachHistoryProperty, SearchAndReplaceOptions.SearchPattern);
+					// Only update the current history item if we're adding to the search string
+					if (!oldPattern.StartsWith (SearchPattern)) {
+						ChangeHistory (seachHistoryProperty, SearchAndReplaceOptions.SearchPattern);
+					}
 				} else {
 					UpdateSearchHistory (SearchAndReplaceOptions.SearchPattern);
 				}
