@@ -75,10 +75,7 @@ namespace MonoDevelop.Components
 					c.FocusChain = new [] { gtkWidget };
 					c.Show ();
 					nativeWidget = c;
-					c.Destroyed += delegate {
-						GC.SuppressFinalize (this);
-						Dispose (true);
-					};
+					c.Destroyed += OnGtkDestroyed;
 					toCache = c;
 				} else {
 					nativeWidget = w;
@@ -95,6 +92,12 @@ namespace MonoDevelop.Components
 				return (T)nativeWidget;
 			else
 				throw new NotSupportedException ();
+		}
+
+		void OnGtkDestroyed (object sender, EventArgs args)
+		{
+			GC.SuppressFinalize (this);
+			Dispose (true);
 		}
 
 		static object ConvertToType (Type t, object w)
@@ -186,8 +189,10 @@ namespace MonoDevelop.Components
 
 		public void Dispose ()
 		{
-			if (nativeWidget is Gtk.Widget) {
-				((Gtk.Widget)nativeWidget).Destroy ();
+			var gtkWidget = nativeWidget as Gtk.Widget;
+			if (gtkWidget != null) {
+				gtkWidget.Destroyed -= OnGtkDestroyed;
+				gtkWidget.Destroy ();
 				return;
 			}
 #if MAC
