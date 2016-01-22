@@ -820,15 +820,17 @@ namespace MonoDevelop.Components.MainToolbar
 				if (state.HasFlag (Xwt.ModifierKeys.Command))
 					goto case Xwt.Key.PageUp;
 				if (state.HasFlag (Xwt.ModifierKeys.Control))
-					goto case Xwt.Key.Home;
-				SelectItemUp ();
+					SelectFirstCategory ();
+				else
+					SelectItemUp ();
 				return true;
 			case Xwt.Key.Down:
 				if (state.HasFlag (Xwt.ModifierKeys.Command))
 					goto case Xwt.Key.PageDown;
 				if (state.HasFlag (Xwt.ModifierKeys.Control))
-					goto case Xwt.Key.End;
-				SelectItemDown ();
+					SelectLastCatgory ();
+				else
+					SelectItemDown ();
 				return true;
 			case (Xwt.Key)Gdk.Key.KP_Page_Down:
 			case Xwt.Key.PageDown:
@@ -837,12 +839,6 @@ namespace MonoDevelop.Components.MainToolbar
 			case (Xwt.Key)Gdk.Key.KP_Page_Up:
 			case Xwt.Key.PageUp:
 				SelectPrevCategory ();
-				return true;
-			case Xwt.Key.Home:
-				SelectFirstCategory ();
-				return true;
-			case Xwt.Key.End:
-				SelectLastCatgory ();
 				return true;
 			case Xwt.Key.Return:
 				OnItemActivated (EventArgs.Empty);
