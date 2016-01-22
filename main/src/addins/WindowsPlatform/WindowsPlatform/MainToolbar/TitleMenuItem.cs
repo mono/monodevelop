@@ -70,12 +70,6 @@ namespace WindowsPlatform.MainToolbar
 
 			Height = SystemParameters.CaptionHeight;
 			UseLayoutRounding = true;
-
-			SubmenuClosing += (o, e) => {
-				bool shouldFocusIde = !menu.Items.OfType<MenuItem> ().Any (mi => mi.IsSubmenuOpen);
-				if (shouldFocusIde)
-					IdeApp.Workbench.RootWindow.Present ();
-			};
 		}
 
 		Menu menu;
@@ -212,7 +206,7 @@ namespace WindowsPlatform.MainToolbar
 				Clear ();
 
 			if (!closingSent) {
-				SubmenuClosing?.Invoke (this, e);
+				OnSubmenuClosing ();
 				closingSent = false;
 			}
 
@@ -225,7 +219,7 @@ namespace WindowsPlatform.MainToolbar
 				return;
 
 			closingSent = true;
-			SubmenuClosing?.Invoke (this, e);
+			OnSubmenuClosing ();
 
 			Xwt.Application.Invoke(() => {
 				if (commandArrayInfo != null) {
@@ -241,7 +235,13 @@ namespace WindowsPlatform.MainToolbar
 			DesktopService.ShowUrl (menuLinkEntry.Url);
 		}
 
-		internal event EventHandler SubmenuClosing;
+		void OnSubmenuClosing ()
+		{
+			bool shouldFocusIde = !menu.Items.OfType<MenuItem> ().Any (mi => mi.IsSubmenuOpen);
+			if (shouldFocusIde)
+				IdeApp.Workbench.RootWindow.Present ();
+		}
+
 		readonly MonoDevelop.Components.Commands.CommandManager manager;
 		readonly object initialCommandTarget;
 		readonly CommandSource commandSource;
