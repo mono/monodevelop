@@ -40,6 +40,7 @@ using System.ComponentModel;
 using MonoDevelop.Ide.TypeSystem;
 using System.Threading;
 using MonoDevelop.Ide.Editor.Projection;
+using Xwt;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -112,9 +113,9 @@ namespace MonoDevelop.Ide.Editor
 			remove { ReadWriteTextDocument.TextChanged -= value; }
 		}
 
-		public event EventHandler BeginMouseHover {
-			add { textEditorImpl.BeginMouseHover += value; }
-			remove { textEditorImpl.BeginMouseHover -= value; }
+		public event EventHandler<MouseMovedEventArgs> MouseMoved {
+			add { textEditorImpl.MouseMoved += value; }
+			remove { textEditorImpl.MouseMoved -= value; }
 		}
 
 		internal event EventHandler VAdjustmentChanged {
@@ -1405,7 +1406,6 @@ namespace MonoDevelop.Ide.Editor
 			Runtime.AssertMainThread ();
 			textEditorImpl.UpdateBraceMatchingResult (result);
 		}
-
 
 		internal IEnumerable<IDocumentLine> VisibleLines { get { return textEditorImpl.VisibleLines; } }
 		internal event EventHandler<LineEventArgs> LineShown { add { textEditorImpl.LineShown += value; } remove { textEditorImpl.LineShown -= value; } }

@@ -103,7 +103,7 @@ namespace MonoDevelop.CodeActions
 			Editor.CaretPositionChanged -= HandleCaretPositionChanged;
 			Editor.SelectionChanged -= HandleSelectionChanged;
 			DocumentContext.DocumentParsed -= HandleDocumentDocumentParsed;
-			Editor.BeginMouseHover -= HandleBeginHover;
+			Editor.MouseMoved -= HandleBeginHover;
 			Editor.TextChanged -= Editor_TextChanged;
 			Editor.EndAtomicUndoOperation -= Editor_EndAtomicUndoOperation;
 			RemoveWidget ();
@@ -178,12 +178,12 @@ namespace MonoDevelop.CodeActions
 
 				var diagnosticsAtCaret =
 					Editor.GetTextSegmentMarkersAt (Editor.CaretOffset)
-					      .OfType<IGenericTextSegmentMarker> ()
-					      .Select (rm => rm.Tag)
-					      .OfType<DiagnosticResult> ()
-					      .Select (dr => dr.Diagnostic)
-					      .ToList ();
-				
+						  .OfType<IGenericTextSegmentMarker> ()
+						  .Select (rm => rm.Tag)
+						  .OfType<DiagnosticResult> ()
+						  .Select (dr => dr.Diagnostic)
+						  .ToList ();
+
 				var errorList = Editor
 					.GetTextSegmentMarkersAt (Editor.CaretOffset)
 					.OfType<IErrorMarker> ()
@@ -289,10 +289,8 @@ namespace MonoDevelop.CodeActions
 		{
 			readonly List<FixMenuEntry> items = new List<FixMenuEntry> ();
 
-			public IReadOnlyList<FixMenuEntry> Items
-			{
-				get
-				{
+			public IReadOnlyList<FixMenuEntry> Items {
+				get {
 					return items;
 				}
 			}
@@ -310,8 +308,7 @@ namespace MonoDevelop.CodeActions
 				items.Add (entry);
 			}
 
-			public object MotionNotifyEvent
-			{
+			public object MotionNotifyEvent {
 				get;
 				set;
 			}
@@ -325,10 +322,10 @@ namespace MonoDevelop.CodeActions
 			//ICSharpCode.NRefactory.CSharp.AstNode node;
 			int items = 0;
 
-//			if (AddPossibleNamespace != null) {
-//				AddPossibleNamespace (Editor, DocumentContext, menu);
-//				items = menu.Items.Count;
-//			}
+			//			if (AddPossibleNamespace != null) {
+			//				AddPossibleNamespace (Editor, DocumentContext, menu);
+			//				items = menu.Items.Count;
+			//			}
 
 			PopulateFixes (fixMenu, ref items);
 
@@ -399,11 +396,11 @@ namespace MonoDevelop.CodeActions
 		static string CreateLabel (string title, ref int mnemonic)
 		{
 			var escapedLabel = title.Replace ("_", "__");
-			#if MAC
+#if MAC
 			return escapedLabel;
-			#else
+#else
 			return (mnemonic <= 10) ? "_" + mnemonic++ % 10 + " \u2013 " + escapedLabel : "  " + escapedLabel;
-			#endif
+#endif
 		}
 
 		internal class FixAllDiagnosticProvider : FixAllContext.DiagnosticProvider
@@ -426,7 +423,7 @@ namespace MonoDevelop.CodeActions
 			/// </summary>
 			private readonly Func<Project, bool, ImmutableHashSet<string>, CancellationToken, Task<IEnumerable<Diagnostic>>> _getProjectDiagnosticsAsync;
 
-			public FixAllDiagnosticProvider(
+			public FixAllDiagnosticProvider (
 				ImmutableHashSet<string> diagnosticIds,
 				Func<Microsoft.CodeAnalysis.Document, ImmutableHashSet<string>, CancellationToken, Task<IEnumerable<Diagnostic>>> getDocumentDiagnosticsAsync,
 				Func<Project, bool, ImmutableHashSet<string>, CancellationToken, Task<IEnumerable<Diagnostic>>> getProjectDiagnosticsAsync)
@@ -436,19 +433,19 @@ namespace MonoDevelop.CodeActions
 				_getProjectDiagnosticsAsync = getProjectDiagnosticsAsync;
 			}
 
-			public override Task<IEnumerable<Diagnostic>> GetDocumentDiagnosticsAsync(Microsoft.CodeAnalysis.Document document, CancellationToken cancellationToken)
+			public override Task<IEnumerable<Diagnostic>> GetDocumentDiagnosticsAsync (Microsoft.CodeAnalysis.Document document, CancellationToken cancellationToken)
 			{
-				return _getDocumentDiagnosticsAsync(document, _diagnosticIds, cancellationToken);
+				return _getDocumentDiagnosticsAsync (document, _diagnosticIds, cancellationToken);
 			}
 
-			public override Task<IEnumerable<Diagnostic>> GetAllDiagnosticsAsync(Project project, CancellationToken cancellationToken)
+			public override Task<IEnumerable<Diagnostic>> GetAllDiagnosticsAsync (Project project, CancellationToken cancellationToken)
 			{
-				return _getProjectDiagnosticsAsync(project, true, _diagnosticIds, cancellationToken);
+				return _getProjectDiagnosticsAsync (project, true, _diagnosticIds, cancellationToken);
 			}
 
-			public override Task<IEnumerable<Diagnostic>> GetProjectDiagnosticsAsync(Project project, CancellationToken cancellationToken)
+			public override Task<IEnumerable<Diagnostic>> GetProjectDiagnosticsAsync (Project project, CancellationToken cancellationToken)
 			{
-				return _getProjectDiagnosticsAsync(project, false, _diagnosticIds, cancellationToken);
+				return _getProjectDiagnosticsAsync (project, false, _diagnosticIds, cancellationToken);
 			}
 		}
 		void PopulateFixes (FixMenuDescriptor menu, ref int items)
@@ -560,7 +557,7 @@ namespace MonoDevelop.CodeActions
 
 								return await compilationWithAnalyzer.GetAnalyzerSemanticDiagnosticsAsync (model, null, token);
 							}, (Project arg1, bool arg2, ImmutableHashSet<string> arg3, CancellationToken arg4) => {
-								return Task.FromResult ((IEnumerable<Diagnostic>)new Diagnostic[] { });
+								return Task.FromResult ((IEnumerable<Diagnostic>)new Diagnostic [] { });
 							});
 							var ctx = new FixAllContext (
 								this.DocumentContext.AnalysisDocument,
@@ -577,7 +574,7 @@ namespace MonoDevelop.CodeActions
 							}
 						});
 					subMenu2.Add (menuItem);
-					subMenu.Add (FixMenuEntry.Separator); 
+					subMenu.Add (FixMenuEntry.Separator);
 					subMenu.Add (subMenu2);
 				}
 
@@ -606,7 +603,7 @@ namespace MonoDevelop.CodeActions
 
 			internal async void Run ()
 			{
-				var token = default(CancellationToken);
+				var token = default (CancellationToken);
 				var insertionAction = act as InsertionAction;
 				if (insertionAction != null) {
 					var insertion = await insertionAction.CreateInsertion (token).ConfigureAwait (false);
@@ -677,10 +674,10 @@ namespace MonoDevelop.CodeActions
 					var document = newSolution.GetDocument (documentId);
 					var root = await document.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
 					SyntaxToken? renameTokenOpt = root.GetAnnotatedNodesAndTokens (RenameAnnotation.Kind)
-					                                  .Where (s => s.IsToken)
-					                                  .Select (s => s.AsToken ())
-					                                  .Cast<SyntaxToken?> ()
-					                                  .FirstOrDefault ();
+													  .Where (s => s.IsToken)
+													  .Select (s => s.AsToken ())
+													  .Cast<SyntaxToken?> ()
+													  .FirstOrDefault ();
 					if (renameTokenOpt.HasValue) {
 						var latestDocument = workspace.CurrentSolution.GetDocument (documentId);
 						var latestModel = await latestDocument.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
@@ -692,7 +689,7 @@ namespace MonoDevelop.CodeActions
 									return;
 								var info = latestModel.GetSymbolInfo (node);
 								var sym = info.Symbol ?? latestModel.GetDeclaredSymbol (node);
-								if (sym != null) 
+								if (sym != null)
 									new MonoDevelop.Refactoring.Rename.RenameRefactoring ().Rename (sym);
 							} catch (Exception ex) {
 								LoggingService.LogError ("Error while renaming " + renameTokenOpt.Value.Parent, ex);
@@ -723,11 +720,11 @@ namespace MonoDevelop.CodeActions
 				return;
 			}
 
-//			var container = editor.Parent;
-//			if (container == null) {
-//				RemoveWidget ();
-//				return;
-//			}
+			//			var container = editor.Parent;
+			//			if (container == null) {
+			//				RemoveWidget ();
+			//				return;
+			//			}
 			bool first = true;
 			var smartTagLocBegin = offset;
 			foreach (var fix in fixes.CodeFixActions.Concat (fixes.CodeRefactoringActions)) {
@@ -739,19 +736,19 @@ namespace MonoDevelop.CodeActions
 				}
 				first = false;
 			}
-//			if (smartTagLocBegin.Line != loc.Line)
-//				smartTagLocBegin = new DocumentLocation (loc.Line, 1);
+			//			if (smartTagLocBegin.Line != loc.Line)
+			//				smartTagLocBegin = new DocumentLocation (loc.Line, 1);
 			// got no fix location -> try to search word start
-//			if (first) {
-//				int offset = document.Editor.LocationToOffset (smartTagLocBegin);
-//				while (offset > 0) {
-//					char ch = document.Editor.GetCharAt (offset - 1);
-//					if (!char.IsLetterOrDigit (ch) && ch != '_')
-//						break;
-//					offset--;
-//				}
-//				smartTagLocBegin = document.Editor.OffsetToLocation (offset);
-//			}
+			//			if (first) {
+			//				int offset = document.Editor.LocationToOffset (smartTagLocBegin);
+			//				while (offset > 0) {
+			//					char ch = document.Editor.GetCharAt (offset - 1);
+			//					if (!char.IsLetterOrDigit (ch) && ch != '_')
+			//						break;
+			//					offset--;
+			//				}
+			//				smartTagLocBegin = document.Editor.OffsetToLocation (offset);
+			//			}
 
 			if (currentSmartTag != null && currentSmartTagBegin == smartTagLocBegin) {
 				return;
@@ -783,7 +780,7 @@ namespace MonoDevelop.CodeActions
 			base.Initialize ();
 			DocumentContext.DocumentParsed += HandleDocumentDocumentParsed;
 			Editor.SelectionChanged += HandleSelectionChanged;
-			Editor.BeginMouseHover += HandleBeginHover;
+			Editor.MouseMoved += HandleBeginHover;
 			Editor.CaretPositionChanged += HandleCaretPositionChanged;
 			Editor.TextChanged += Editor_TextChanged;
 			Editor.EndAtomicUndoOperation += Editor_EndAtomicUndoOperation;
@@ -832,7 +829,7 @@ namespace MonoDevelop.CodeActions
 			HandleCaretPositionChanged (null, EventArgs.Empty);
 		}
 
-		[CommandUpdateHandler(RefactoryCommands.QuickFix)]
+		[CommandUpdateHandler (RefactoryCommands.QuickFix)]
 		public void UpdateQuickFixCommand (CommandInfo ci)
 		{
 			if (AnalysisOptions.EnableFancyFeatures) {
@@ -846,13 +843,13 @@ namespace MonoDevelop.CodeActions
 		{
 			CancelSmartTagPopupTimeout ();
 			smartTagPopupTimeoutId = GLib.Timeout.Add (menuTimeout, delegate {
-				PopupQuickFixMenu (null, menu => {});
+				PopupQuickFixMenu (null, menu => { });
 				smartTagPopupTimeoutId = 0;
 				return false;
 			});
 		}
 
-		[CommandHandler(RefactoryCommands.QuickFix)]
+		[CommandHandler (RefactoryCommands.QuickFix)]
 		void OnQuickFixCommand ()
 		{
 			if (!AnalysisOptions.EnableFancyFeatures) {
