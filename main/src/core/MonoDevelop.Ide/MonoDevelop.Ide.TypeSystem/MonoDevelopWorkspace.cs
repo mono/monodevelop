@@ -548,7 +548,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (metadataReference == null)
 						continue;
 					result.Add (metadataReference);
-					addFacadeAssemblies |= MonoDevelop.Core.Assemblies.SystemAssemblyService.ContainsReferenceToSystemRuntime (fileName);
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while getting referenced assemblies", e);

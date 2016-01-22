@@ -182,12 +182,15 @@ namespace MonoDevelop.Ide.Editor.Extension
 					return;
 				}
 				visibleLines.Add (line);
-				foreach (var segment in await RequestLinksAsync (line.Offset, line.Length, default (CancellationToken))) {
-					var marker = Editor.TextMarkerFactory.CreateLinkMarker (Editor, segment.Offset, segment.Length, delegate { segment.Activate (); });
-					marker.OnlyShowLinkOnHover = true;
-					Editor.AddMarker (marker);
-					markers.Add (marker);
-				}
+				var segments = await RequestLinksAsync (line.Offset, line.Length, default (CancellationToken));
+				await Runtime.RunInMainThread (delegate {
+					foreach (var segment in segments) {
+						var marker = Editor.TextMarkerFactory.CreateLinkMarker (Editor, segment.Offset, segment.Length, delegate { segment.Activate (); });
+						marker.OnlyShowLinkOnHover = true;
+						Editor.AddMarker (marker);
+						markers.Add (marker);
+					}
+				});
 			}
 		}
 
