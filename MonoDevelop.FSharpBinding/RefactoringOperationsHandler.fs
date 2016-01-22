@@ -25,26 +25,30 @@ module Refactoring =
 
     let private performChanges (symbol:FSharpSymbolUse) (locations:array<string * Microsoft.CodeAnalysis.Text.TextSpan> ) =
         Func<_,_>(fun (renameProperties:Rename.RenameRefactoring.RenameProperties) -> 
-        let results =
-            use monitor = new ProgressMonitoring.MessageDialogProgressMonitor (true, false, false, true)
-            [|
-                if renameProperties.RenameFile && symbol.IsFromType then
+        async {
+            do! Async.SwitchToContext(Runtime.MainSynchronizationContext)
+
+            let results =
+                use monitor = new ProgressMonitoring.MessageDialogProgressMonitor (true, false, false, true)
+                [|
+                    if renameProperties.RenameFile && symbol.IsFromType then
+                        yield!
+                            // TODO check .fsi file in renames?
+                            Symbols.getLocationFromSymbolUse symbol
+                            |> List.map (fun part -> RenameFileChange (part.FileName, renameProperties.NewName) :> Change)
+                    
                     yield!
-                        // TODO check .fsi file in renames?
-                        Symbols.getLocationFromSymbolUse symbol
-                        |> List.map (fun part -> RenameFileChange (part.FileName, renameProperties.NewName) :> Change)
-                
-                yield!
-                    locations
-                    |> Array.map (fun (name, location) ->
-                        TextReplaceChange (FileName = name,
-                                           Offset = location.Start,
-                                           RemovedChars = location.Length,
-                                           InsertedText = renameProperties.NewName,
-                                           Description = String.Format ("Replace '{0}' with '{1}'", symbol.Symbol.DisplayName, renameProperties.NewName))
-                        :> Change) |]
-  
-        results :> IList<Change> )
+                        locations
+                        |> Array.map (fun (name, location) ->
+                            TextReplaceChange (FileName = name,
+                                               Offset = location.Start,
+                                               RemovedChars = location.Length,
+                                               InsertedText = renameProperties.NewName,
+                                               Description = String.Format ("Replace '{0}' with '{1}'", symbol.Symbol.DisplayName, renameProperties.NewName))
+                            :> Change) |]
+      
+            return results :> IList<Change> 
+        } |> Async.StartAsTask)
 
     let getDocumentationId (symbol:FSharpSymbol) =
         match symbol with
