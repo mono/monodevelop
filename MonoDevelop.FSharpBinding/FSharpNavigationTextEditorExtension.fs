@@ -31,10 +31,9 @@ type FSharpNavigationTextEditorExtension() =
                     let range = symbol.RangeAlternate
                     let startOffset = getOffset range.Start
                     let endOffset = getOffset range.End
-                     
                     AbstractNavigationExtension.NavigationSegment(startOffset, endOffset - startOffset, 
-                        (fun () -> Refactoring.jumpToDeclaration(editor, documentContext, symbol)))
-
+                        (fun () -> GLib.Timeout.Add (50u, fun () -> Refactoring.jumpToDeclaration(editor, documentContext, symbol)
+                                                                    false) |> ignore))
                 let filterSymbols (symbol: FSharpSymbolUse) =
                     symbol.RangeAlternate.StartLine = line
                     && Refactoring.Operations.canJump symbol editor.FileName documentContext.Project.ParentSolution
