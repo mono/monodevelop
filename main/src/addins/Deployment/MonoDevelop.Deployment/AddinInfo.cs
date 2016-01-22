@@ -7,7 +7,6 @@ using Mono.Addins.Description;
 	Namespace = "MonoDevelop",
 	Version = MonoDevelop.BuildInfo.Version,
     Category = "Deployment")]
-)]
 
 [assembly:AddinName ("Deployment Services Core")]
 [assembly:AddinDescription ("Provides basic deployment services")]
