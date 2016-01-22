@@ -1,6 +1,7 @@
 # F#
 [Bb]in/
 [Oo]bj/
+.fake/
 monodevelop/pack/*
 monodevelop/packages/*
 monodevelop/build-and*
