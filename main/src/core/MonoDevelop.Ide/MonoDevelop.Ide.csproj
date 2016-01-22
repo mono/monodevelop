@@ -2106,11 +2106,11 @@
     <EmbeddedResource Include="branding\welcome-tile%402x.png">
       <LogicalName>welcome-tile@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="branding\about.png">
-      <LogicalName>about.png</LogicalName>
+    <EmbeddedResource Include="branding\AboutImage.png">
+      <LogicalName>AboutImage.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="branding\about%402x.png">
-      <LogicalName>about@2x.png</LogicalName>
+    <EmbeddedResource Include="branding\AboutImage%402x.png">
+      <LogicalName>AboutImage@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\popup-close-16.png">
       <LogicalName>popup-close-16.png</LogicalName>

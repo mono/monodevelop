@@ -43,11 +43,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			BorderWidth = 0;
 
-			var aboutFile = BrandingService.GetFile ("about.png");
+			var aboutFile = BrandingService.GetFile ("AboutImage.png");
 			if (aboutFile != null)
 				imageSep = Xwt.Drawing.Image.FromFile (aboutFile);
 			else
-				imageSep = Xwt.Drawing.Image.FromResource ("about.png");
+				imageSep = Xwt.Drawing.Image.FromResource ("AboutImage.png");
 
 			PackStart (new ImageView (imageSep), false, false, 0);
 
