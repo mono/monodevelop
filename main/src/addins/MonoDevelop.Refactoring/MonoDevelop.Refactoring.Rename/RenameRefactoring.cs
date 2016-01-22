@@ -82,7 +82,7 @@ namespace MonoDevelop.Refactoring.Rename
 
 			var currentSolution = ws.CurrentSolution;
 			var cts = new CancellationTokenSource ();
-			var newSolution = await MessageService.ExecuteTaskAndShowWaitDialog (Task.Run (() => Renamer.RenameSymbolAsync (currentSolution, symbol, "_" + symbol.Name + "_", ws.Options, cts.Token)), GettextCatalog.GetString ("Waiting for rename operation to find all references..."), cts);
+			var newSolution = await MessageService.ExecuteTaskAndShowWaitDialog (Task.Run (() => Renamer.RenameSymbolAsync (currentSolution, symbol, "_" + symbol.Name + "_", ws.Options, cts.Token)), GettextCatalog.GetString ("Looking for all references"), cts);
 			var projectChanges = currentSolution.GetChanges (newSolution).GetProjectChanges ().ToList ();
 			var changedDocuments = new HashSet<string> ();
 			foreach (var change in projectChanges) {

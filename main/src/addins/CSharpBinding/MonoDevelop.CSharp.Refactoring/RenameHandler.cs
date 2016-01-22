@@ -85,7 +85,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			var cts = new CancellationTokenSource ();
 			var getSymbolTask = RefactoringSymbolInfo.GetSymbolInfoAsync (ctx, editor.CaretOffset, cts.Token);
-			var message = GettextCatalog.GetString ("Waiting for rename operation to resolve symbol...");
+			var message = GettextCatalog.GetString ("Resolving symbol…");
 			var info = await MessageService.ExecuteTaskAndShowWaitDialog (getSymbolTask, message, cts);
 			var sym = info.DeclaredSymbol ?? info.Symbol;
 			if (!CanRename (sym))
