@@ -14,13 +14,14 @@ namespace WindowsPlatform.MainToolbar
 {
 	public class TitleMenuItem : MenuItem
 	{
-		public TitleMenuItem (MonoDevelop.Components.Commands.CommandManager manager, CommandEntry entry, CommandInfo commandArrayInfo = null, CommandSource commandSource = CommandSource.MainMenu, object initialCommandTarget = null)
+		public TitleMenuItem (MonoDevelop.Components.Commands.CommandManager manager, CommandEntry entry, CommandInfo commandArrayInfo = null, CommandSource commandSource = CommandSource.MainMenu, object initialCommandTarget = null, Menu menu = null)
 		{
 			this.manager = manager;
 			this.initialCommandTarget = initialCommandTarget;
 			this.commandSource = commandSource;
 			this.commandArrayInfo = commandArrayInfo;
 
+			this.menu = menu;
 			menuEntry = entry;
 			menuEntrySet = entry as CommandEntrySet;
 			menuLinkEntry = entry as LinkCommandEntry;
@@ -34,7 +35,7 @@ namespace WindowsPlatform.MainToolbar
 						if (item.IsArraySeparator)
 							Items.Add (new Separator { UseLayoutRounding = true, });
 						else
-							Items.Add (new TitleMenuItem (manager, entry, item, commandSource, initialCommandTarget));
+							Items.Add (new TitleMenuItem (manager, entry, item, commandSource, initialCommandTarget, menu));
 					}
 				}
 			}
@@ -46,7 +47,7 @@ namespace WindowsPlatform.MainToolbar
 					if (item.CommandId == MonoDevelop.Components.Commands.Command.Separator) {
 						Items.Add (new Separator { UseLayoutRounding = true, });
 					} else
-						Items.Add (new TitleMenuItem (manager, item));
+						Items.Add (new TitleMenuItem (manager, item, menu: menu));
 				}
 			} else if (menuLinkEntry != null) {
 				Header = menuLinkEntry.Text;
@@ -69,7 +70,15 @@ namespace WindowsPlatform.MainToolbar
 
 			Height = SystemParameters.CaptionHeight;
 			UseLayoutRounding = true;
+
+			SubmenuClosing += (o, e) => {
+				bool shouldFocusIde = !menu.Items.OfType<MenuItem> ().Any (mi => mi.IsSubmenuOpen);
+				if (shouldFocusIde)
+					IdeApp.Workbench.RootWindow.Present ();
+			};
 		}
+
+		Menu menu;
 
 		/// <summary>
 		/// Updates a command entry. Should only be called from a toplevel node.
@@ -128,7 +137,7 @@ namespace WindowsPlatform.MainToolbar
 						if (child.IsArraySeparator) {
 							toAdd = new Separator ();
 						} else {
-							toAdd = new TitleMenuItem (manager, menuEntry, child);
+							toAdd = new TitleMenuItem (manager, menuEntry, child, menu: menu);
 						}
 
 						toRemoveFromParent.Add (toAdd);
@@ -185,18 +194,27 @@ namespace WindowsPlatform.MainToolbar
 			return ret;
 		}
 
+		static bool closingSent;
 		protected override void OnSubmenuOpened (RoutedEventArgs e)
 		{
-			if (Parent is Menu)
+			if (Parent is Menu) {
 				Update ();
+				closingSent = false;
+			}
 
 			base.OnSubmenuOpened (e);
 		}
+
 
 		protected override void OnSubmenuClosed (RoutedEventArgs e)
 		{
 			if (Parent is Menu)
 				Clear ();
+
+			if (!closingSent) {
+				SubmenuClosing?.Invoke (this, e);
+				closingSent = false;
+			}
 
 			base.OnSubmenuClosed (e);
 		}
@@ -206,6 +224,7 @@ namespace WindowsPlatform.MainToolbar
 			if (!hasCommand)
 				return;
 
+			closingSent = true;
 			SubmenuClosing?.Invoke (this, e);
 
 			Xwt.Application.Invoke(() => {
