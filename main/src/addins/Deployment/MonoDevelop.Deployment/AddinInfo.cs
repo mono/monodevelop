@@ -6,7 +6,14 @@ using Mono.Addins.Description;
 [assembly:Addin ("Deployment", 
 	Namespace = "MonoDevelop",
 	Version = MonoDevelop.BuildInfo.Version,
-    Category = "Deployment")]
+    Category = "Deployment",
+    EnabledByDefault =
+	#if GNOME
+		true
+	#else
+		false
+	#endif
+	)]
 
 [assembly:AddinName ("Deployment Services Core")]
 [assembly:AddinDescription ("Provides basic deployment services")]
