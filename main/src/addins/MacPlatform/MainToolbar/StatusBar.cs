@@ -253,7 +253,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			Ide.Gui.Styles.Changed += (o, e) => LoadStyles ();
 			textField.Cell = new VerticallyCenteredTextFieldCell (yOffset: -0.5f);
 			textField.Cell.StringValue = "";
-			textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, NSColor.DisabledControlText);
+			textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, ColorForType (MessageType.Ready));
 
 			// The rect is empty because we use InVisibleRect to track the whole of the view.
 			textFieldArea = new NSTrackingArea (CGRect.Empty, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInKeyWindow | NSTrackingAreaOptions.InVisibleRect, this, null);
@@ -351,7 +351,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			if (string.IsNullOrEmpty (text)) {
 				textField.AttributedStringValue = new NSAttributedString ("");
-				textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, NSColor.DisabledControlText);
+				textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, ColorForType (MessageType.Ready));
 				imageView.Image = ImageService.GetIcon (Stock.StatusSteady).ToNSImage ();
 			} else {
 				textField.AttributedStringValue = GetStatusString (text, textColor);
