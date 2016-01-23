@@ -40,7 +40,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	{
 		NSImage stopIcon, continueIcon, buildIcon;
 		NSImage stopIconDisabled, continueIconDisabled, buildIconDisabled;
-		ColoredButtonCell cell;
 
 
 		public RunButton ()
@@ -52,7 +51,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			continueIconDisabled = ImageService.GetIcon ("continue").WithStyles("disabled").ToNSImage ();
 			buildIconDisabled = ImageService.GetIcon ("build").WithStyles("disabled").ToNSImage ();
 
-			Cell = new ColoredButtonCell { BezelColor = Styles.BaseBackgroundColor.ToNSColor () };
+			//Cell = new ColoredButtonCell { BezelColor = Styles.BaseBackgroundColor.ToNSColor () };
 
 			icon = OperationIcon.Run;
 			ImagePosition = NSCellImagePosition.ImageOnly;
