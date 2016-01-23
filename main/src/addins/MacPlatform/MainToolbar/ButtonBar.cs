@@ -51,12 +51,13 @@ namespace MonoDevelop.MacIntegration
 				button.ImageChanged += (o, e) => {
 					if (!indexMap.ContainsKey (_button))
 						return;
-					SetImage (ImageService.GetIcon (_button.Image, Gtk.IconSize.Menu).ToNSImage (), indexMap [_button]);
+					LoadIcon (_button);
 					SetNeedsDisplay ();
 				};
 				button.EnabledChanged += (o, e) => {
 					if (!indexMap.ContainsKey (_button))
 						return;
+					LoadIcon (_button);
 					SetEnabled (_button.Enabled, indexMap [_button]);
 					SetNeedsDisplay ();
 				};
@@ -72,6 +73,16 @@ namespace MonoDevelop.MacIntegration
 			RebuildSegments ();
 			SegmentStyle = NSSegmentStyle.TexturedRounded;
 			Cell.TrackingMode = NSSegmentSwitchTracking.Momentary;
+		}
+
+		void LoadIcon (IButtonBarButton button)
+		{
+			if (!indexMap.ContainsKey (button))
+				return;
+			if (button.Enabled)
+				SetImage (ImageService.GetIcon (button.Image, Gtk.IconSize.Menu).ToNSImage (), indexMap [button]);
+			else
+				SetImage (ImageService.GetIcon (button.Image, Gtk.IconSize.Menu).WithStyles ("disabled").ToNSImage (), indexMap [button]);
 		}
 
 		public override nint SegmentCount {
@@ -109,17 +120,12 @@ namespace MonoDevelop.MacIntegration
 
 		void UpdateButton (IButtonBarButton button, int idx)
 		{
-			var img = ImageService.GetIcon (button.Image, Gtk.IconSize.Menu);
-			if (img.ToNSImage () != GetImage (idx)) {
-				SetImage (ImageService.GetIcon (button.Image, Gtk.IconSize.Menu).ToNSImage (), idx);
-				SetNeedsDisplay ();
-			}
-			if (button.Enabled != IsEnabled (idx)) {
+			LoadIcon (button);
+			if (button.Enabled != IsEnabled (idx))
 				SetEnabled (button.Enabled, idx);
-				SetNeedsDisplay ();
-			}
 			if (button.Tooltip != Cell.GetToolTip (idx))
 				Cell.SetToolTip (button.Tooltip, idx);
+			SetNeedsDisplay ();
 		}
 
 		public event EventHandler ResizeRequested;
