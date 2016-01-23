@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.Ide.Gui.Pads;
 
 namespace MonoDevelop.Ide.Tasks
 {
@@ -251,7 +252,17 @@ namespace MonoDevelop.Ide.Tasks
 			}
 			TaskService.InformJumpToTask (this);
 		}
-		
+
+		public void SelectInPad()
+		{
+			var pad = IdeApp.Workbench.GetPad<ErrorListPad> ();
+			if (pad == null)
+				return;
+			pad.BringToFront ();
+			var errorList = pad.Content as ErrorListPad;
+			errorList?.SelectTaskListEntry (this);
+		}
+
 		public bool BelongsToItem (WorkspaceObject item, bool checkHierarchy)
 		{
 			if (!checkHierarchy)

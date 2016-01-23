@@ -368,7 +368,7 @@ namespace MonoDevelop.VersionControl.Git
 			foreach (var entry in changes.Deleted)
 				paths.Add (new RevisionPath (rev.GitRepository.FromGitPath (entry.OldPath), RevisionAction.Delete, null));
 			foreach (var entry in changes.Renamed)
-				paths.Add (new RevisionPath (rev.GitRepository.FromGitPath (entry.Path), RevisionAction.Replace, null));
+				paths.Add (new RevisionPath (rev.GitRepository.FromGitPath (entry.Path), rev.GitRepository.FromGitPath (entry.OldPath), RevisionAction.Replace, null));
 			foreach (var entry in changes.Modified)
 				paths.Add (new RevisionPath (rev.GitRepository.FromGitPath (entry.Path), RevisionAction.Modify, null));
 			foreach (var entry in changes.TypeChanged)

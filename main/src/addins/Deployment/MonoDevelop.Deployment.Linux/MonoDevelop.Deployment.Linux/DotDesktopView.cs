@@ -1,10 +1,12 @@
 
 using System;
+using MonoDevelop.Components;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Deployment.Linux
 {
-	public class DotDesktopView: AbstractViewContent
+	public class DotDesktopView: ViewContent
 	{
 		DotDesktopViewWidget widget;
 		DesktopEntry entry;
@@ -25,20 +27,22 @@ namespace MonoDevelop.Deployment.Linux
 			}
 		}
 		
-		public override void Load (FileOpenInformation fileOpenInformation)
+		public override Task Load (FileOpenInformation fileOpenInformation)
 		{
 			ContentName = fileOpenInformation.FileName;
 			entry.Load (fileOpenInformation.FileName);
 			widget.DesktopEntry = entry;
+			return Task.FromResult (true);
 		}
 		
-		public override void Save (FileSaveInformation fileSaveInformation)
+		public override Task Save (FileSaveInformation fileSaveInformation)
 		{
 			entry.Save (fileSaveInformation.FileName);
 			IsDirty = false;
+			return Task.FromResult (true);
 		}
 		
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get { return widget; }
 		}
 	}

@@ -41,6 +41,7 @@ using MonoDevelop.Core.Serialization;
 using Mono.Addins;
 using Mono.PkgConfig;
 using MonoDevelop.Core.Instrumentation;
+using System.Linq;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -290,6 +291,16 @@ namespace MonoDevelop.Core.Assemblies
 					continue;
 
 				return Directory.GetFiles (facades, "*.dll");
+			}
+
+			//MonoDroid is special case because it's keeping Fascades in v1.0 folder
+			if (tx.Id.Identifier == TargetFrameworkMoniker.ID_MONODROID) {
+				var frameworkFolder = GetFrameworkFolders (tx).FirstOrDefault ();
+				if (frameworkFolder != null) {
+					var facades = Path.Combine (Path.Combine (Path.GetDirectoryName (frameworkFolder), "v1.0"), "Facades");
+					if (Directory.Exists (facades))
+						return Directory.GetFiles (facades, "*.dll");
+				}
 			}
 
 			return new string[0];

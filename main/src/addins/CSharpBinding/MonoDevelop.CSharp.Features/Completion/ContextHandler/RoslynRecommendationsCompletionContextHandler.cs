@@ -69,14 +69,14 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return IsException (type.BaseType);
 		}
 
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
+		protected override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			var semanticModel = ctx.SemanticModel;
 			var result = new List<CompletionData> ();
 			if (info.TriggerCharacter == ' ') {
 				var newExpression = ObjectCreationContextHandler.GetObjectCreationNewExpression (ctx.SyntaxTree, completionContext.Position, cancellationToken);
 				if (newExpression == null && info.CompletionTriggerReason == CompletionTriggerReason.CharTyped  && !ctx.LeftToken.IsKind (SyntaxKind.EqualsToken) && !ctx.LeftToken.IsKind (SyntaxKind.EqualsEqualsToken))
-					return Enumerable.Empty<CompletionData> ();
+					return Task.FromResult (Enumerable.Empty<CompletionData> ());
 
 				completionResult.AutoCompleteEmptyMatch = false;
 			}
@@ -87,8 +87,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			bool isInUsingDirective = parent != null && parent.Parent != null && parent.Parent.IsKind (SyntaxKind.UsingDirective) && !parent.IsKind (SyntaxKind.QualifiedName);
 			var isInQuery = ctx.CSharpSyntaxContext.IsInQuery;
 			var completionDataLookup = new Dictionary<Tuple<string, SymbolKind>, ISymbolCompletionData> ();
-			bool isInCatchTypeExpression = parent != null && (parent.IsKind (SyntaxKind.CatchDeclaration) || parent.IsKind (SyntaxKind.QualifiedName)) &&
-				parent.Parent != null && parent.Parent.IsKind (SyntaxKind.CatchDeclaration);
+			bool isInCatchTypeExpression = parent != null && parent.IsKind (SyntaxKind.CatchDeclaration) || 
+			                               parent.IsKind (SyntaxKind.QualifiedName) && parent.Parent != null && parent.Parent.IsKind (SyntaxKind.CatchDeclaration);
 			Action<ISymbolCompletionData> addData = d => {
 				var key = Tuple.Create (d.DisplayText, d.Symbol.Kind);
 				ISymbolCompletionData data;
@@ -142,7 +142,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				}
 				addData (newData);
 			}
-			return result;
+			return Task.FromResult ((IEnumerable<CompletionData>)result);
 		}
 
 		protected override async Task<bool> IsSemanticTriggerCharacterAsync(Document document, int characterPosition, CancellationToken cancellationToken)

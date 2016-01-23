@@ -41,7 +41,8 @@ namespace Mono.TextEditor
 		/// true, if the mouse press was handled - false otherwise.
 		/// </returns>
 		bool MousePressed (MonoTextEditor editor, MarginMouseEventArgs args);
-		
+		bool MouseReleased (MonoTextEditor editor, MarginMouseEventArgs args);
+
 		void MouseHover (MonoTextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result);
 	}
 	

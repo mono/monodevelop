@@ -124,9 +124,8 @@ namespace MonoDevelop.Components.MainToolbar
 			this.AllowShrink = false;
 			this.AllowGrow = false;
 
-			categories.Add (new FileSearchCategory (this));
-			categories.Add (new CommandSearchCategory (this));
-
+			categories.Add (new FileSearchCategory ());
+			categories.Add (new CommandSearchCategory ());
 			categories.Add (new SearchInSolutionSearchCategory ());
 			foreach (var cat in AddinManager.GetExtensionObjects<SearchCategory> ("/MonoDevelop/Ide/SearchCategories")) {
 				categories.Add (cat);
@@ -172,24 +171,26 @@ namespace MonoDevelop.Components.MainToolbar
 				src.Cancel ();
 			HideTooltip ();
 			this.declarationviewwindow.Destroy ();
+			selectedItem = topItem = null;
 			base.OnDestroyed ();
 		}
 
-		internal void OpenFile ()
+		internal async void OpenFile ()
 		{
 			if (selectedItem == null || selectedItem.Item < 0 || selectedItem.Item >= selectedItem.DataSource.Count)
 				return;
 
 			if (selectedItem.DataSource[selectedItem.Item].CanActivate) {
-				Destroy ();
 				selectedItem.DataSource[selectedItem.Item].Activate ();
+				Destroy ();
 			}
 			else {
 				var region = SelectedItemRegion;
-				Destroy ();
-
-				if (string.IsNullOrEmpty (SelectedItemFileName))
+				if (string.IsNullOrEmpty (SelectedItemFileName)) {
+					Destroy ();
 					return;
+				}
+
 				if (region.Length <= 0) {
 					if (Pattern.LineNumber == 0) {
 						IdeApp.Workbench.OpenDocument (SelectedItemFileName, project: null);
@@ -197,10 +198,13 @@ namespace MonoDevelop.Components.MainToolbar
 						IdeApp.Workbench.OpenDocument (SelectedItemFileName, null, Pattern.LineNumber, Pattern.HasColumn ? Pattern.Column : 1);
 					}
 				} else {
-					IdeApp.Workbench.OpenDocument (new FileOpenInformation (SelectedItemFileName, null) {
+					await IdeApp.Workbench.OpenDocument (new FileOpenInformation (SelectedItemFileName, null) {
 						Offset = region.Offset
 					});
 				}
+				Destroy ();
+
+
 			}
 		}
 		SearchPopupSearchPattern pattern;
@@ -384,8 +388,8 @@ namespace MonoDevelop.Components.MainToolbar
 			Gdk.Size retVal = new Gdk.Size ();
 			int ox, oy;
 			GetPosition (out ox, out oy);
-			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (ox, oy));
-			var maxHeight = geometry.Height * 4 / 5;
+			Xwt.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (ox, oy));
+			int maxHeight = (int)geometry.Height * 4 / 5;
 			double startY = yMargin + ChildAllocation.Y;
 			double y = startY;
 			calculatedItems = 0;
@@ -404,7 +408,7 @@ namespace MonoDevelop.Components.MainToolbar
 					calculatedItems++;
 				}
 			}
-			retVal.Width = Math.Min (geometry.Width * 4 / 5, 480);
+			retVal.Width = Math.Min ((int)geometry.Width * 4 / 5, 480);
 			if (Math.Abs (y - startY) < 1) {
 				layout.SetMarkup (GettextCatalog.GetString ("No matches"));
 				int w, h;
@@ -816,15 +820,17 @@ namespace MonoDevelop.Components.MainToolbar
 				if (state.HasFlag (Xwt.ModifierKeys.Command))
 					goto case Xwt.Key.PageUp;
 				if (state.HasFlag (Xwt.ModifierKeys.Control))
-					goto case Xwt.Key.Home;
-				SelectItemUp ();
+					SelectFirstCategory ();
+				else
+					SelectItemUp ();
 				return true;
 			case Xwt.Key.Down:
 				if (state.HasFlag (Xwt.ModifierKeys.Command))
 					goto case Xwt.Key.PageDown;
 				if (state.HasFlag (Xwt.ModifierKeys.Control))
-					goto case Xwt.Key.End;
-				SelectItemDown ();
+					SelectLastCatgory ();
+				else
+					SelectItemDown ();
 				return true;
 			case (Xwt.Key)Gdk.Key.KP_Page_Down:
 			case Xwt.Key.PageDown:
@@ -833,12 +839,6 @@ namespace MonoDevelop.Components.MainToolbar
 			case (Xwt.Key)Gdk.Key.KP_Page_Up:
 			case Xwt.Key.PageUp:
 				SelectPrevCategory ();
-				return true;
-			case Xwt.Key.Home:
-				SelectFirstCategory ();
-				return true;
-			case Xwt.Key.End:
-				SelectLastCatgory ();
 				return true;
 			case Xwt.Key.Return:
 				OnItemActivated (EventArgs.Empty);
@@ -1081,8 +1081,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 		string GetRowMarkup (SearchResult result)
 		{
-			string txt = "<span foreground=\"#606060\">" + result.GetMarkupText(this) +"</span>";
-			string desc = result.GetDescriptionMarkupText (this);
+			string txt = "<span foreground=\"#606060\">" + result.GetMarkupText() +"</span>";
+			string desc = result.GetDescriptionMarkupText ();
 			if (!string.IsNullOrEmpty (desc))
 				txt += "<span foreground=\"#8F8F8F\" size=\"small\">\n" + desc + "</span>";
 			return txt;

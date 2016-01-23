@@ -89,9 +89,9 @@ namespace MonoDevelop.CSharp.Refactoring
 		}
 
 		[CommandHandler (EditCommands.Rename)]
-		public void RenameCommand ()
+		public async void RenameCommand ()
 		{
-			new RenameHandler ().Run (Editor, DocumentContext);
+			await new RenameHandler ().Run (Editor, DocumentContext);
 		}
 
 		[CommandUpdateHandler (RefactoryCommands.GotoDeclaration)]

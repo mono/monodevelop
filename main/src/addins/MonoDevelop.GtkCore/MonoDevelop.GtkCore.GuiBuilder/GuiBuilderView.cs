@@ -38,17 +38,18 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
-using MonoDevelop.DesignerSupport.Toolbox; 
+using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.DesignerSupport;
 
 using Gtk;
 using Gdk;
 using MonoDevelop.Ide;
 using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class GuiBuilderView : CombinedDesignView, ISupportsProjectReload
+	public class GuiBuilderView : CombinedDesignView
 	{
 		Stetic.WidgetDesigner designer;
 		Stetic.ActionGroupDesigner actionsBox;
@@ -63,7 +64,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		string rootName;
 		object designerStatus;
 		
-		public GuiBuilderView (IViewContent content, GuiBuilderWindow window): base (content)
+		public GuiBuilderView (ViewContent content, GuiBuilderWindow window): base (content)
 		{
 			rootName = window.Name;
 			
@@ -86,14 +87,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			LoadDesigner ();
 		}
 		
-		ProjectReloadCapability ISupportsProjectReload.ProjectReloadCapability {
+		public override ProjectReloadCapability ProjectReloadCapability {
 			get {
 				return ProjectReloadCapability.Full;
 			}
 		}
-		
-		void ISupportsProjectReload.Update (MonoDevelop.Projects.Project project)
+
+		protected override void OnSetProject (Projects.Project project)
 		{
+			base.OnSetProject (project);
+
 			if (gproject != null && gproject.Project == project)
 				return;
 			
@@ -264,7 +267,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			codeBinder.TargetObject = designer.RootComponent;
 		}
 		
-		void OnComponentNameChanged (object s, Stetic.ComponentNameEventArgs args)
+		async void OnComponentNameChanged (object s, Stetic.ComponentNameEventArgs args)
 		{
 			try {
 				// Make sure the fields in the partial class are up to date.
@@ -275,7 +278,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				if (gproject.Project.UsePartialTypes)
 					GuiBuilderService.GenerateSteticCodeStructure ((DotNetProject)gproject.Project, designer.RootComponent, args, false, false);
 				
-				codeBinder.UpdateField (args.Component, args.OldName);
+				await codeBinder.UpdateField (args.Component, args.OldName);
 			}
 			catch (Exception ex) {
 				LoggingService.LogInternalError (ex);
@@ -296,21 +299,19 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnWindowModifiedChanged (object s, EventArgs args)
 		{
-			if (IsDirty)
-				OnContentChanged (args);
-			OnDirtyChanged (args);
+			OnDirtyChanged ();
 		}
 		
-		void OnBindWidgetField (object o, EventArgs a)
+		async void OnBindWidgetField (object o, EventArgs a)
 		{
 			if (designer.Selection != null)
-				codeBinder.BindToField (designer.Selection);
+				await codeBinder.BindToField (designer.Selection);
 		}
 		
-		void OnBindActionField (object o, EventArgs a)
+		async void OnBindActionField (object o, EventArgs a)
 		{
 			if (actionsBox.SelectedAction != null)
-				codeBinder.BindToField (actionsBox.SelectedAction);
+				await codeBinder.BindToField (actionsBox.SelectedAction);
 		}
 		
 		void OnSignalAdded (object sender, Stetic.ComponentSignalEventArgs args)
@@ -322,14 +323,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 		}
 
-		void OnSignalChanged (object sender, Stetic.ComponentSignalEventArgs args)
+		async void OnSignalChanged (object sender, Stetic.ComponentSignalEventArgs args)
 		{
-			codeBinder.UpdateSignal (args.OldSignal, args.Signal);
+			await codeBinder.UpdateSignal (args.OldSignal, args.Signal);
 		}
 		
-		public override void Save (FileSaveInformation fileSaveInformation)
+		public override async Task Save (FileSaveInformation fileSaveInformation)
 		{
-			base.Save (fileSaveInformation);
+			await base.Save (fileSaveInformation);
 			
 			if (designer == null)
 				return;

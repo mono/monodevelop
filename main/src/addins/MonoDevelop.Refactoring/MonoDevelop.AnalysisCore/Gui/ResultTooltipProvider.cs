@@ -51,7 +51,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 
 		}
 
-		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Gdk.ModifierType modifierState)
+		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
 		{
 			var result = item.Item as Result;
 
@@ -72,4 +72,3 @@ namespace MonoDevelop.AnalysisCore.Gui
 
 	}
 }
-

@@ -44,7 +44,7 @@ using System.Threading;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor.Highlighting;
-
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -828,9 +828,9 @@ namespace MonoDevelop.Ide.FindInFiles
 			{
 			}
 			
-			protected override Gui.Document DoShow ()
+			protected override async Task<Gui.Document> DoShow ()
 			{
-				var doc = base.DoShow ();
+				var doc = await base.DoShow ();
 				if (doc == null)
 					return null;
 				

@@ -29,14 +29,14 @@ using MonoDevelop.VersionControl.Views;
 
 namespace MonoDevelop.VersionControl
 {
-	public class DefaultLogViewHandler : ILogViewHandler
+	public class DefaultLogViewHandler : IVersionControlViewHandler
 	{
 		public bool CanHandle (VersionControlItem item, DocumentView primaryView)
 		{
 			return true;
 		}
 
-		public ILogView CreateView (VersionControlDocumentInfo info)
+		public BaseViewContent CreateView (VersionControlDocumentInfo info)
 		{
 			return new LogView (info);
 		}

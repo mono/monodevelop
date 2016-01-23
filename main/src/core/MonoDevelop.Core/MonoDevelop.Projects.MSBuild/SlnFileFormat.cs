@@ -178,7 +178,11 @@ namespace MonoDevelop.Projects.MSBuild
 			ICollection<SolutionFolder> folders = solution.RootFolder.GetAllItems<SolutionFolder> ().ToList ();
 			if (folders.Count > 1) {
 				// If folders ==1, that's the root folder
-				var sec = sln.Sections.GetOrCreateSection ("NestedProjects", SlnSectionType.PreProcess);
+				var sec = sln.Sections.GetSection ("NestedProjects", SlnSectionType.PreProcess);
+				if (sec == null) {
+					sec = sln.Sections.GetOrCreateSection ("NestedProjects", SlnSectionType.PreProcess);
+					sec.SkipIfEmpty = true; // don't write the section if there are no nested projects after all
+				}
 				foreach (SolutionFolder folder in folders) {
 					if (folder.IsRoot)
 						continue;

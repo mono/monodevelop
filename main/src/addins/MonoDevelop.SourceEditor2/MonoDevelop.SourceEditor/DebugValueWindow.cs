@@ -104,22 +104,40 @@ namespace MonoDevelop.SourceEditor
 			tree.AddValue (value);
 			tree.Selection.UnselectAll ();
 			tree.SizeAllocated += OnTreeSizeChanged;
-			tree.PinStatusChanged += delegate {
-				Destroy ();
-			};
+			tree.PinStatusChanged += OnPinStatusChanged;
 
 			sw.ShowAll ();
 
-			tree.StartEditing += delegate {
-				Modal = true;
-			};
-
-			tree.EndEditing += delegate {
-				Modal = false;
-			};
+			tree.StartEditing += OnStartEditing;
+			tree.EndEditing += OnEndEditing;
 
 			ShowArrow = true;
 			Theme.CornerRadius = 3;
+		}
+
+		void OnStartEditing (object sender, EventArgs args)
+		{
+			Modal = true;
+		}
+
+		void OnEndEditing (object sender, EventArgs args)
+		{
+			Modal = false;
+		}
+
+		void OnPinStatusChanged (object sender, EventArgs args)
+		{
+			Destroy ();
+		}
+
+		protected override void OnDestroyed ()
+		{
+			tree.StartEditing -= OnStartEditing;
+			tree.EndEditing -= OnEndEditing;
+			tree.PinStatusChanged -= OnPinStatusChanged;
+			tree.SizeAllocated -= OnTreeSizeChanged;
+
+			base.OnDestroyed ();
 		}
 
 		protected override bool OnEnterNotifyEvent (EventCrossing evnt)
@@ -167,11 +185,12 @@ namespace MonoDevelop.SourceEditor
 				this.GetPosition (out x, out y);
 				oldY = y;
 
-				Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x, y));
+				Xwt.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (x, y));
+				int top = (int)geometry.Top;
 				if (allocation.Height <= geometry.Height && y + allocation.Height >= geometry.Y + geometry.Height - edgeGap)
-					y = geometry.Top + (geometry.Height - allocation.Height - edgeGap);
-				if (y < geometry.Top + edgeGap)
-					y = geometry.Top + edgeGap;
+					y = top + ((int)geometry.Height - allocation.Height - edgeGap);
+				if (y < top + edgeGap)
+					y = top + edgeGap;
 
 				if (y != oldY) {
 					Move (x, y);

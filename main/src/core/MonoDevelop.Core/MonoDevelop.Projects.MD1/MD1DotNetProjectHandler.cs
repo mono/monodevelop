@@ -157,7 +157,7 @@ namespace MonoDevelop.Projects.MD1
 				if (!itemsToExclude.Contains (item) && (string.IsNullOrEmpty (item.Condition) || ConditionParser.ParseAndEvaluate (item.Condition, ctx)))
 					buildData.Items.Add (item);
 			}
-			buildData.Configuration = (DotNetProjectConfiguration) conf.Clone ();
+			buildData.Configuration = (DotNetProjectConfiguration) project.CloneConfiguration (conf, conf.Id);
 			buildData.Configuration.SetParentItem (project);
 			buildData.ConfigurationSelector = configuration;
 

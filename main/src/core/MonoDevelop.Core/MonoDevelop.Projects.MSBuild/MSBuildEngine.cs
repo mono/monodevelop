@@ -107,7 +107,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public abstract void RemoveGlobalProperty (object projectInstance, string property);
 
-		public abstract IDictionary<string, List<string>> GetConditionedProperties (object projectInstance);
+		public abstract ConditionedPropertyCollection GetConditionedProperties (object projectInstance);
 	}
 }
 

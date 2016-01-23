@@ -350,8 +350,8 @@ namespace MonoDevelop.Ide.Tasks
 		}
 		
 		#region ITaskListView members
-		TreeView ITaskListView.Content { get { return view; } }
-		Widget[] ITaskListView.ToolBarItems { get { return new Widget[] { newButton, delButton, copyButton }; } }
+		Control ITaskListView.Content { get { return view; } }
+		Control[] ITaskListView.ToolBarItems { get { return new Control[] { newButton, delButton, copyButton }; } }
 		#endregion
 	}
 }

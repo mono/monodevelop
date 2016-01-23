@@ -31,7 +31,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Commands
 {
-	public class CommandToolButton: Gtk.ToolButton, ICommandUserItem
+	class CommandToolButton: Gtk.ToolButton, ICommandUserItem
 	{
 		CommandManager commandManager;
 		object commandId;

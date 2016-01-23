@@ -49,7 +49,7 @@ using MonoDevelop.NUnit.External;
 
 namespace MonoDevelop.NUnit
 {
-	public class TestResultsPad: IPadContent, ITestProgressMonitor
+	public class TestResultsPad: PadContent, ITestProgressMonitor
 	{
 		NUnitService testService = NUnitService.Instance;
 		
@@ -154,16 +154,16 @@ namespace MonoDevelop.NUnit
 					"/MonoDevelop/NUnit/ContextMenu/TestResultsPad");
 			};
 			
-			Control.ShowAll ();
+			panel.ShowAll ();
 			
 			outputViewScrolled.Hide ();
 		}
 		
-		void IPadContent.Initialize (IPadWindow window)
+		protected override void Initialize (IPadWindow window)
 		{
 			this.window = window;
 			
-			DockItemToolbar toolbar = window.GetToolbar (PositionType.Top);
+			DockItemToolbar toolbar = window.GetToolbar (DockPositionType.Top);
 			
 			buttonSuccess = new ToggleButton ();
 			buttonSuccess.Label = GettextCatalog.GetString ("Successful Tests");
@@ -228,7 +228,7 @@ namespace MonoDevelop.NUnit
 			
 			// Run panel
 			
-			DockItemToolbar runPanel = window.GetToolbar (PositionType.Bottom);
+			DockItemToolbar runPanel = window.GetToolbar (DockPositionType.Bottom);
 			
 			infoSep = new VSeparator ();
 			
@@ -255,10 +255,6 @@ namespace MonoDevelop.NUnit
 			infoSep.Hide ();
 			resultSummary = new UnitTestResult ();
 			UpdateCounters ();
-		}
-		
-		public void Dispose ()
-		{
 		}
 		
 		public void OnTestSuiteChanged (object sender, EventArgs e)
@@ -306,14 +302,10 @@ namespace MonoDevelop.NUnit
 			}
 		}
 		
-		public Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return panel;
 			}
-		}
-		
-		public void RedrawContent ()
-		{
 		}
 		
 		string GetResultsMarkup ()
@@ -517,19 +509,42 @@ namespace MonoDevelop.NUnit
 				Gtk.TreeIter iter;
 				if (!failuresTreeView.Selection.GetSelected (out foo, out iter))
 					return;
-				
+
 				int type = (int)failuresStore.GetValue (iter, 5);
 
 				var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
 				switch (type) {
-				case ErrorMessage:
+					case ErrorMessage:
 					clipboard.Text = last.Message;
 					break;
-				case StackTrace:
+					case StackTrace:
 					clipboard.Text = last.StackTrace;
 					break;
-				default:
+					default:
 					clipboard.Text = last.Message + Environment.NewLine + "Stack trace:" + Environment.NewLine + last.StackTrace;
+					break;
+				}
+			} else {
+				if (error == null)
+					return;
+				var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+
+				Gtk.TreeModel foo;
+				Gtk.TreeIter iter;
+				if (!failuresTreeView.Selection.GetSelected (out foo, out iter))
+					return;
+
+				int type = (int)failuresStore.GetValue (iter, 5);
+
+				switch (type) {
+				case ErrorMessage:
+					clipboard.Text = error.Message;
+					break;
+				case StackTrace:
+					clipboard.Text = error.StackTrace;
+					break;
+				default:
+					clipboard.Text = error.Message + Environment.NewLine + "Stack trace:" + Environment.NewLine + error.StackTrace;
 					break;
 				}
 			}
@@ -560,7 +575,7 @@ namespace MonoDevelop.NUnit
 					return;
 				}
 			}
-			info.Enabled = false;
+			info.Enabled = error != null;
 		}
 
 		[CommandHandler (TestCommands.SelectTestInTree)]

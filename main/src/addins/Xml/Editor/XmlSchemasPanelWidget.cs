@@ -73,8 +73,7 @@ namespace MonoDevelop.Xml.Editor
 						: GettextCatalog.GetString ("User schema");
 			});
 			
-			registeredSchemasStore.SetSortFunc (0,
-				(model, a, b) => string.Compare (GetSchema (a).NamespaceUri, GetSchema (b).NamespaceUri, StringComparison.Ordinal));
+			registeredSchemasStore.SetSortFunc (0, SortSchemas);
 			
 			registeredSchemasStore.SetSortColumnId (0, SortType.Ascending);
 			
@@ -183,6 +182,11 @@ namespace MonoDevelop.Xml.Editor
 		
 		XmlSchemaCompletionData GetSchema (TreeIter iter)
 		{
+			return GetSchema (registeredSchemasStore, iter);
+		}
+
+		static XmlSchemaCompletionData GetSchema (ListStore registeredSchemasStore, TreeIter iter)
+		{
 			return (XmlSchemaCompletionData) registeredSchemasStore.GetValue (iter, 0);
 		}
 		
@@ -200,6 +204,12 @@ namespace MonoDevelop.Xml.Editor
 				yield return iter;
 				valid = model.IterNext (ref iter);
 			}
+		}
+
+		static int SortSchemas (TreeModel model, TreeIter a, TreeIter b)
+		{
+			var listStore = (ListStore)model;
+			return string.Compare (GetSchema (listStore, a).NamespaceUri, GetSchema (listStore, b).NamespaceUri, StringComparison.Ordinal);
 		}
 		
 		#region Schema accessors

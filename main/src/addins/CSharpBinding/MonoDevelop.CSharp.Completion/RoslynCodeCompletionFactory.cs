@@ -75,8 +75,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		ISymbolCompletionData ICompletionDataFactory.CreateEnumMemberCompletionData (ICompletionDataKeyHandler keyHandler, ISymbol alias, IFieldSymbol field)
 		{
-			var model = ext.ParsedDocument.GetAst<SemanticModel> ();
-			return new RoslynSymbolCompletionData (keyHandler, this, field, RoslynCompletionData.SafeMinimalDisplayString (alias ?? field.Type, model, ext.Editor.CaretOffset, Ambience.NameFormat) + "." + field.Name);
+			return new RoslynSymbolCompletionData (keyHandler, this, field, RoslynCompletionData.SafeMinimalDisplayString (alias ?? field.Type, semanticModel, ext.Editor.CaretOffset, Ambience.NameFormat) + "." + field.Name);
 		}
 		
 		class FormatItemCompletionData : RoslynCompletionData
@@ -137,7 +136,6 @@ namespace MonoDevelop.CSharp.Completion
 		class XmlDocCompletionData : RoslynCompletionData
 		{
 			//readonly CSharpCompletionTextEditorExtension ext;
-			readonly string title;
 			/*
 			#region IListData implementation
 
@@ -156,7 +154,7 @@ namespace MonoDevelop.CSharp.Completion
 			public XmlDocCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory ext, string title, string description, string insertText) : base (keyHandler, title, "md-keyword", description, insertText ?? title)
 			{
 				// this.ext = ext;
-				this.title = title;
+				//this.title = title;
 			}
 //			public override TooltipInformation CreateTooltipInformation (bool smartWrap)
 //			{

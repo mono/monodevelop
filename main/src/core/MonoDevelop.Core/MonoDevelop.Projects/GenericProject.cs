@@ -65,11 +65,7 @@ namespace MonoDevelop.Projects
 	[ProjectModelDataItem]
 	public class GenericProjectConfiguration: ProjectConfiguration
 	{
-		public GenericProjectConfiguration ()
-		{
-		}
-		
-		public GenericProjectConfiguration (string name): base (name)
+		public GenericProjectConfiguration (string id): base (id)
 		{
 		}
 	}

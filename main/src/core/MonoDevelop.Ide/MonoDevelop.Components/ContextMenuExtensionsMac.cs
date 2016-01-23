@@ -51,10 +51,10 @@ namespace MonoDevelop.Components
 			ShowContextMenu (parent, evt, menu, null);
 		}
 
-		public static void ShowContextMenu (Gtk.Widget parent, int x, int y, ContextMenu menu, Action closeHandler)
+		public static void ShowContextMenu (Gtk.Widget parent, int x, int y, ContextMenu menu, Action closeHandler, bool selectFirstItem = false)
 		{
 			var nsMenu = FromMenu (menu, closeHandler);
-			ShowContextMenu (parent, x, y, nsMenu);
+			ShowContextMenu (parent, x, y, nsMenu, selectFirstItem);
 		}
 
 		public static void ShowContextMenu (Gtk.Widget parent, int x, int y, ContextMenu menu)
@@ -62,7 +62,7 @@ namespace MonoDevelop.Components
 			ShowContextMenu (parent, x, y, menu, null);
 		}
 
-		public static void ShowContextMenu (Gtk.Widget parent, int x, int y, NSMenu menu)
+		public static void ShowContextMenu (Gtk.Widget parent, int x, int y, NSMenu menu, bool selectFirstItem = false)
 		{
 			if (parent == null)
 				throw new ArgumentNullException ("parent");
@@ -89,15 +89,21 @@ namespace MonoDevelop.Components
 					titleBarOffset = MonoDevelop.Components.Mac.GtkMacInterop.GetTitleBarHeight () + 12;
 				}
 
-				var pt = new CoreGraphics.CGPoint (x, nswindow.Frame.Height - y - titleBarOffset);
+				if (selectFirstItem) {
+					var pt = new CoreGraphics.CGPoint (x, y);
+					menu.PopUpMenu (menu.ItemAt (0), pt, nsview);
+				} else {
+					var pt = new CoreGraphics.CGPoint (x, nswindow.Frame.Height - y - titleBarOffset);
 
-				var tmp_event = NSEvent.MouseEvent (NSEventType.LeftMouseDown,
-					pt,
-					0, 0,
-					nswindow.WindowNumber,
-					null, 0, 0, 0);
+					var tmp_event = NSEvent.MouseEvent (NSEventType.LeftMouseDown,
+					                                pt,
+					                                0, 0,
+					                                nswindow.WindowNumber,
+					                                null, 0, 0, 0);
+					NSMenu.PopUpContextMenu (menu, tmp_event, nsview);
+				}
 
-				NSMenu.PopUpContextMenu (menu, tmp_event, nsview);
+
 			});
 		}
 

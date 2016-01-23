@@ -39,6 +39,9 @@ namespace MonoDevelop.Core.Assemblies
 	{
 		[ItemProperty]
 		string prefix;
+
+		[ItemProperty]
+		bool? force64or32bit;
 		
 		string monoVersion = "Unknown";
 		Dictionary<string,string> envVars = new Dictionary<string, string> ();
@@ -48,15 +51,20 @@ namespace MonoDevelop.Core.Assemblies
 		internal MonoRuntimeInfo ()
 		{
 		}
-		
-		public MonoRuntimeInfo (string prefix)
+
+		public MonoRuntimeInfo (string prefix, bool? force64or32bit = null)
 		{
+			this.force64or32bit = force64or32bit;
 			this.prefix = prefix;
 			Initialize ();
 		}
-		
+
 		public string Prefix {
 			get { return prefix; }
+		}
+
+		public bool? Force64or32bit {
+			get { return force64or32bit; }
 		}
 		
 		/// <summary>
@@ -70,7 +78,10 @@ namespace MonoDevelop.Core.Assemblies
 		}
 		
 		public string DisplayName {
-			get { return "Mono " + MonoVersion + " (" + prefix + ")"; }
+			get {
+				return "Mono " + MonoVersion + " (" + prefix + ")" +
+					(force64or32bit.HasValue ? (force64or32bit.Value ? " (64 bit)" : " (32 bit)") : "");
+			}
 		}
 		
 		public bool IsValidRuntime {
@@ -103,7 +114,7 @@ namespace MonoDevelop.Core.Assemblies
 			StringWriter output = new StringWriter ();
 			try {
 				string monoPath = Path.Combine (prefix, "bin");
-				monoPath = Path.Combine (monoPath, "mono");
+				monoPath = Path.Combine (monoPath, force64or32bit.HasValue ? (force64or32bit.Value ? "mono64" : "mono32") : "mono");
 				ProcessStartInfo pi = new ProcessStartInfo (monoPath, "--version");
 				pi.UseShellExecute = false;
 				pi.RedirectStandardOutput = true;

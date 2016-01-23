@@ -28,6 +28,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Core.Text;
+using System.IO;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -41,21 +42,29 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		#region implemented abstract members of TextLoader
-		TextAndVersion GetTextAndVersion (Workspace workspace, DocumentId documentId)
+		async Task<TextAndVersion> GetTextAndVersion (Workspace workspace, DocumentId documentId, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested ();
+
+			if (!File.Exists (fileName)) {
+				var document = ((MonoDevelopWorkspace)workspace).GetDocument (documentId);
+				if (document == null)
+					return null;
+				return TextAndVersion.Create (await document.GetTextAsync (cancellationToken), VersionStamp.Create ());
+			}
 			SourceText text;
 			if (workspace.IsDocumentOpen (documentId)) {
 				text = new MonoDevelopSourceText (TextFileProvider.Instance.GetTextEditorData (fileName).CreateDocumentSnapshot ());
 			}
 			else {
-				text = SourceText.From (MonoDevelop.Core.Text.TextFileUtility.GetText (fileName));
+				text = SourceText.From (await TextFileUtility.GetTextAsync (fileName, cancellationToken));
 			}
 			return TextAndVersion.Create (text, VersionStamp.Create ());
 		}
 
-		public override Task<TextAndVersion> LoadTextAndVersionAsync (Workspace workspace, DocumentId documentId, CancellationToken cancellationToken)
+		public override async Task<TextAndVersion> LoadTextAndVersionAsync (Workspace workspace, DocumentId documentId, CancellationToken cancellationToken)
 		{
-			return Task.FromResult (GetTextAndVersion (workspace, documentId));
+			return await GetTextAndVersion (workspace, documentId, cancellationToken);
 		}
 		#endregion
 

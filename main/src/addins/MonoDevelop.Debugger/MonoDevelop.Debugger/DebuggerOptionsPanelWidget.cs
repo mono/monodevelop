@@ -26,6 +26,7 @@
 
 using System;
 using Mono.Debugging.Client;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 using Xwt;
 using MonoDevelop.Core;
@@ -36,7 +37,7 @@ namespace MonoDevelop.Debugger
 	{
 		DebuggerOptionsPanelWidget w;
 
-		public override Gtk.Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			w = new DebuggerOptionsPanelWidget ();
 

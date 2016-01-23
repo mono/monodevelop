@@ -99,7 +99,7 @@ namespace MonoDevelop.Core.Assemblies
 		public override string DisplayName {
 			get {
 				if (!IsRunning)
-					return base.DisplayName + " (" + Prefix + ")";
+					return base.DisplayName + " (" + Prefix + ")" + (monoRuntimeInfo.Force64or32bit.HasValue ? monoRuntimeInfo.Force64or32bit.Value ? " (64bit)" : " (32bit)" : "");
 				else
 					return base.DisplayName;
 			}

@@ -30,6 +30,7 @@ using Gtk;
 using System.Linq;
 using Mono.Addins;
 
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
@@ -86,7 +87,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				isRoot = false;
 		}
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			HBox hbox = new HBox (false, 6);
 			Label label = new Label ();

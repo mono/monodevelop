@@ -24,11 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	public interface IMergeView : IAttachableViewContent
+	public interface IMergeView
 	{
 	}
 	
@@ -37,7 +39,7 @@ namespace MonoDevelop.VersionControl.Views
 		VersionControlDocumentInfo info;
 		MergeWidget widget;
 
-		public override Gtk.Widget Control { 
+		public override Control Control { 
 			get {
 				if (widget == null) {
 					widget = new MergeWidget ();
@@ -53,22 +55,10 @@ namespace MonoDevelop.VersionControl.Views
 			this.info = info;
 		}
 
-		public void Selected ()
+		protected override void OnSelected ()
 		{
 			widget.UpdateLocalText ();
 			widget.info.Start ();
-		}
-		
-		public void Deselected ()
-		{
-		}
-
-		public void BeforeSave ()
-		{
-		}
-
-		public void BaseContentChanged ()
-		{
 		}
 	}
 }

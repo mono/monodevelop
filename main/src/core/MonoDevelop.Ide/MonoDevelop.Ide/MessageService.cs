@@ -31,10 +31,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using MonoDevelop.Components;
-using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.Ide.Gui;
+using System.Threading.Tasks;
 
 #if MAC
 using AppKit;
@@ -331,13 +331,13 @@ namespace MonoDevelop.Ide
 			return ShowCustomDialog (dialog, null);
 		}
 		
-		public static int ShowCustomDialog (Dialog dialog, Window parent)
+		public static int ShowCustomDialog (Dialog dlg, Window parent)
 		{
+			Gtk.Dialog dialog = dlg;
 			try {
-				return RunCustomDialog (dialog, parent);
+				return RunCustomDialog (dlg, parent);
 			} finally {
-				if (dialog != null)
-					dialog.Destroy ();
+				dialog?.Destroy ();
 			}
 		}
 		
@@ -349,9 +349,10 @@ namespace MonoDevelop.Ide
 		/// <summary>
 		/// Places and runs a transient dialog. Does not destroy it, so values can be retrieved from its widgets.
 		/// </summary>
-		public static int RunCustomDialog (Dialog dialog, Window parent)
+		public static int RunCustomDialog (Dialog dlg, Window parent)
 		{
 			// if dialog is modal, make sure it's parented on any existing modal dialog
+			Gtk.Dialog dialog = dlg;
 			if (dialog.Modal) {
 				parent = GetDefaultModalParent ();
 			}
@@ -404,26 +405,27 @@ namespace MonoDevelop.Ide
 		/// </summary>
 		public static Window GetDefaultModalParent ()
 		{
-			foreach (Window w in Window.ListToplevels ())
+			foreach (Gtk.Window w in Gtk.Window.ListToplevels ())
 				if (w.Visible && w.HasToplevelFocus && w.Modal)
 					return w;
 			return GetFocusedToplevel ();
 		}
 
-		static Window GetFocusedToplevel ()
+		static Gtk.Window GetFocusedToplevel ()
 		{
-			return Window.ListToplevels ().FirstOrDefault (w => w.HasToplevelFocus) ?? RootWindow;
+			return Gtk.Window.ListToplevels ().FirstOrDefault (w => w.HasToplevelFocus) ?? RootWindow;
 		}
 		
 		/// <summary>
 		/// Positions a dialog relative to its parent on platforms where default placement is known to be poor.
 		/// </summary>
-		public static void PlaceDialog (Window child, Window parent)
+		public static void PlaceDialog (Window childControl, Window parent)
 		{
 			//HACK: this is a workaround for broken automatic window placement on Mac
 			if (!Platform.IsMac)
 				return;
 
+			Gtk.Window child = childControl;
 			//modal windows should always be placed o top of existing modal windows
 			if (child.Modal)
 				parent = GetDefaultModalParent ();
@@ -437,8 +439,10 @@ namespace MonoDevelop.Ide
 		}
 		
 		/// <summary>Centers a window relative to its parent.</summary>
-		static void CenterWindow (Window child, Window parent)
+		static void CenterWindow (Window childControl, Window parentControl)
 		{
+			Gtk.Window child = childControl;
+			Gtk.Window parent = parentControl;
 			child.Child.Show ();
 			int w, h, winw, winh, x, y, winx, winy;
 			child.GetSize (out w, out h);
@@ -500,6 +504,40 @@ namespace MonoDevelop.Ide
 		public static AlertButton GenericAlert (Window parent, GenericMessage message)
 		{
 			return messageService.GenericAlert (parent, message);
+		}
+
+		public static async Task<T> ExecuteTaskAndShowWaitDialog<T> (Task<T> task, string waitMessage, CancellationTokenSource cts)
+		{
+			bool taskFinished = false;
+			var dontExitMethodUntilDialogClosed = new TaskCompletionSource<bool> ();
+			var delayTask = Task.Delay (1000);//Don't show wait dialog immediately, wait 1 sec before showing
+			var finishedTask = await Task.WhenAny (delayTask, task).ConfigureAwait (false);
+			if (finishedTask == task)//If task finished before delayTask, great return value and never display dialog
+				return task.Result;
+			//cancelDialog is used to close dialog when task is finished
+			var cancelDialog = new CancellationTokenSource ();
+			Gtk.Application.Invoke (delegate {
+				if (cancelDialog.Token.IsCancellationRequested)
+					return;
+				var gm = new GenericMessage (waitMessage, null, cancelDialog.Token);
+				gm.Buttons.Add (AlertButton.Cancel);
+				gm.DefaultButton = 0;
+				GenericAlert (gm);
+				dontExitMethodUntilDialogClosed.SetResult (true);
+				if (!taskFinished) {
+					//Don't cancel if task finished already, we closed dialog via cancelDialog.Cancel ();
+					//caller of this method might reuse this cts for other tasks
+					cts.Cancel ();
+				}
+			});
+			try {
+				await task.ConfigureAwait (false);
+			} finally {
+				taskFinished = true;
+				cancelDialog.Cancel ();
+			}
+			await dontExitMethodUntilDialogClosed.Task.ConfigureAwait (false);
+			return task.Result;
 		}
 		
 		public static string GetTextResponse (string question, string caption, string initialValue)

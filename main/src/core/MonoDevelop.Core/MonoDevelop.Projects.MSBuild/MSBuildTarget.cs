@@ -39,7 +39,7 @@ using System.Threading.Tasks;
 namespace MonoDevelop.Projects.MSBuild
 {
 	
-	public class MSBuildTarget: MSBuildElement
+	public class MSBuildTarget: MSBuildElement, IMSBuildTargetEvaluated
 	{
 		string name;
 		string afterTargets;
@@ -57,7 +57,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return knownAttributes;
 		}
 
-		string AfterTargets {
+		public string AfterTargets {
 			get {
 				return this.afterTargets;
 			}
@@ -68,7 +68,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		string Inputs {
+		public string Inputs {
 			get {
 				return this.inputs;
 			}
@@ -79,7 +79,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		string Outputs {
+		public string Outputs {
 			get {
 				return this.outputs;
 			}
@@ -90,7 +90,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		string BeforeTargets {
+		public string BeforeTargets {
 			get {
 				return this.beforeTargets;
 			}
@@ -101,7 +101,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		string DependsOnTargets
+		public string DependsOnTargets
 		{
 			get {
 				return this.dependsOnTargets;
@@ -113,7 +113,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		string Returns {
+		public string Returns {
 			get {
 				return this.returns;
 			}
@@ -124,7 +124,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		string KeepDuplicateOutputs {
+		public string KeepDuplicateOutputs {
 			get {
 				return this.keepDuplicateOutputs;
 			}
@@ -224,5 +224,27 @@ namespace MonoDevelop.Projects.MSBuild
 			ChildNodes = ChildNodes.Remove (task);
 		}
 	}
-	
+
+	public interface IMSBuildTargetEvaluated
+	{
+		string AfterTargets { get; }
+
+		string Inputs { get; }
+
+		string Outputs { get; }
+
+		string BeforeTargets { get; }
+
+		string DependsOnTargets { get; }
+
+		string Returns { get; }
+
+		string KeepDuplicateOutputs { get; }
+
+		string Name { get; }
+
+		bool IsImported { get; }
+
+		IEnumerable<MSBuildTask> Tasks { get; }
+	}
 }

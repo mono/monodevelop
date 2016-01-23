@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 		/// This entry point should only be called from the actual Symbol classes. It should not be
 		/// used internally inside this type.  Instead, any time we need to get the <see cref="SymbolKey"/> for a
 		/// related symbol (i.e. the containing namespace of a namespace) we should call
-		/// <see cref="GetOrCreate"/>.  The benefit of this is twofold.  First of all, it keeps the size of the
+		/// GetOrCreate.  The benefit of this is twofold.  First of all, it keeps the size of the
 		/// <see cref="SymbolKey"/> small by allowing up to reuse parts we've already created.  For example, if we
 		/// have the <see cref="SymbolKey"/> for <c>Foo(int, int)</c>, then we will reuse the <see cref="SymbolKey"/>s for both <c>int</c>s.
 		/// Second, this allows us to deal with the recursive nature of MethodSymbols and

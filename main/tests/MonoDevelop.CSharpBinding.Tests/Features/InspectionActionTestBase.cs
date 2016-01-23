@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory6
 	public class InspectionActionTestBase
     {
         static MetadataReference mscorlib;
-//        static MetadataReference systemAssembly;
+        static MetadataReference systemAssembly;
 //        static MetadataReference systemXmlLinq;
         static MetadataReference systemCore;
 
@@ -57,12 +57,12 @@ namespace ICSharpCode.NRefactory6
         {
 			try {
 				mscorlib = MetadataReference.CreateFromFile (typeof(Console).Assembly.Location);
-				//systemAssembly = MetadataReference.CreateFromFile (typeof(System.ComponentModel.BrowsableAttribute).Assembly.Location);
+				systemAssembly = MetadataReference.CreateFromFile (typeof(System.Text.RegularExpressions.Regex).Assembly.Location);
 				//systemXmlLinq = MetadataReference.CreateFromFile (typeof(System.Xml.Linq.XElement).Assembly.Location);
 				systemCore = MetadataReference.CreateFromFile (typeof(Enumerable).Assembly.Location);
 				DefaultMetadataReferences = new [] {
 					mscorlib,
-					//systemAssembly,
+					systemAssembly,
 					systemCore,
 					//systemXmlLinq
 				};

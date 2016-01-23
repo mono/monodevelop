@@ -72,7 +72,7 @@ namespace MonoDevelop.PackageManagement
 				runner.Run (pattern.UnparsedPattern);
 			}
 
-			public override string GetMarkupText (Gtk.Widget widget)
+			public override string GetMarkupText ()
 			{
 				return GettextCatalog.GetString ("Search Packages...");
 			}

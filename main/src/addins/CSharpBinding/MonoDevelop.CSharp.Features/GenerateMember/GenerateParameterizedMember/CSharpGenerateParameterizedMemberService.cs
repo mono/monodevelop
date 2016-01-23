@@ -74,7 +74,7 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateParameterizedMem
 				// TODO(cyrusn): If we do capture method type variables, then we should probably
 				// capture their constraints as well.
 				var genericName = (GenericNameSyntax)this.State.SimpleNameOpt;
-				var semanticModel = this.Document.SemanticModel;
+				//var semanticModel = this.Document.SemanticModel;
 
 				if (genericName.TypeArgumentList.Arguments.Count == 1)
 				{

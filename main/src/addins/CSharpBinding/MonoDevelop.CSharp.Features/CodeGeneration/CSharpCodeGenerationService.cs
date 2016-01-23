@@ -179,7 +179,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeGeneration
 
 		/// <summary>
 		/// Returns a newly created event declaration node from the provided event.
-		/// </summary
+		/// </summary>
 		public SyntaxNode CreateEventDeclaration(IEventSymbol @event, CodeGenerationDestination destination = CodeGenerationDestination.Unspecified)
 		{
 			try {

@@ -413,8 +413,6 @@ namespace MonoDevelop.Debugger
 			createMsg = GettextCatalog.GetString ("Click here to add a new watch");
 			CompletionWindowManager.WindowClosed += HandleCompletionWindowClosed;
 			PreviewWindowManager.WindowClosed += HandlePreviewWindowClosed;
-			ScrollAdjustmentsSet += HandleScrollAdjustmentsSet;
-
 
 			expanderSize = (int)this.StyleGetProperty ("expander-size") + 4;//+4 is hardcoded in gtk.c code
 			horizontal_separator = (int)this.StyleGetProperty ("horizontal-separator");
@@ -499,10 +497,16 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		void HandleScrollAdjustmentsSet (object o, ScrollAdjustmentsSetArgs args)
+		protected override void OnSetScrollAdjustments (Adjustment hadj, Adjustment vadj)
 		{
-			Hadjustment.ValueChanged += UpdatePreviewPosition;
-			Vadjustment.ValueChanged += UpdatePreviewPosition;
+			// Unset existing adjustment event handlers, and set on new one which will be unset when Destroyed.
+			Hadjustment.ValueChanged -= UpdatePreviewPosition;
+			Vadjustment.ValueChanged -= UpdatePreviewPosition;
+
+			base.OnSetScrollAdjustments (hadj, vadj);
+
+			hadj.ValueChanged += UpdatePreviewPosition;
+			vadj.ValueChanged += UpdatePreviewPosition;
 		}
 
 		void UpdatePreviewPosition (object sender, EventArgs e)

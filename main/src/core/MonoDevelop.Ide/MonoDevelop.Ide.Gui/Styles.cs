@@ -36,6 +36,7 @@ namespace MonoDevelop.Ide.Gui
 		// General
 
 		public static readonly Gdk.Color ThinSplitterColor = new Gdk.Color (166, 166, 166);
+		public static readonly Xwt.Drawing.Color DimTextColor = Xwt.Drawing.Color.FromBytes (170, 170, 170);
 
 		// Document tab bar
 

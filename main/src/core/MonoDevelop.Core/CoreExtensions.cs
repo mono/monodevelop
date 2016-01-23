@@ -1,9 +1,10 @@
-// AbstractPadContent.cs
+//
+// CoreExtensions.cs
 //
 // Author:
-//   Viktoria Dudka (viktoriad@remobjects.com)
+//       Lluis Sanchez Gual <lluis@xamarin.com>
 //
-// Copyright (c) 2009 RemObjects Software
+// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,71 +23,18 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-
-using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using MonoDevelop.Core;
+using System.Linq;
 
-namespace MonoDevelop.Ide.Gui
+namespace System
 {
-	public abstract class AbstractPadContent : IPadContent
+	public static class CoreExtensions
 	{
-		protected AbstractPadContent () : this (null, null)
+		public static IEnumerable<T> Concat<T> (this IEnumerable<T> e, T item)
 		{
+			return e.Concat (Enumerable.Repeat (item, 1));
 		}
-
-		public AbstractPadContent (string title) : this (title, null)
-		{
-		}
-
-		private IconId icon;
-		private string title;
-		public AbstractPadContent (string title, IconId icon)
-		{
-			this.Id = GetType ().FullName;
-			this.icon = icon;
-			this.title = title;
-		}
-
-		public string Id { get; set; }
-
-		private IPadWindow window = null;
-		public IPadWindow Window {
-			get { return window; }
-		}
-
-		#region IPadContent Members
-
-		public virtual void Initialize (IPadWindow container)
-		{
-			if (title != null)
-				container.Title = title;
-
-			if (icon != IconId.Null)
-				container.Icon = icon;
-
-			window = container;
-		}
-
-		public abstract Gtk.Widget Control {
-			get;
-		}
-
-		public virtual void RedrawContent ()
-		{
-		}
-
-		#endregion
-
-		#region IDisposable Members
-
-		public virtual void Dispose ()
-		{
-		}
-
-		#endregion
 	}
 }
+

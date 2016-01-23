@@ -100,7 +100,7 @@ namespace MonoDevelop.Ide.Editor
 			xalign = 0.5;
 		}
 
-		public virtual Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Gdk.ModifierType modifierState)
+		public virtual Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
 		{
 			return null;
 		}
@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.Editor
 			return editor.GetContent<ITextEditorImpl> ().GetEditorAllocation ();
 		}
 
-		void ShowTipInfoWindow (TextEditor editor, TooltipInformationWindow tipWindow, TooltipItem item, Gdk.ModifierType modifierState, int mouseX, int mouseY)
+		void ShowTipInfoWindow (TextEditor editor, TooltipInformationWindow tipWindow, TooltipItem item, Xwt.ModifierKeys modifierState, int mouseX, int mouseY)
 		{
 			Gtk.Widget editorWidget = editor;
 
@@ -131,7 +131,7 @@ namespace MonoDevelop.Ide.Editor
 			tipWindow.ShowPopup (editorWidget, caret, PopupPosition.Top);
 		}
 
-		public virtual void ShowTooltipWindow (TextEditor editor, Control tipWindow, TooltipItem item, Gdk.ModifierType modifierState, int mouseX, int mouseY)
+		public virtual void ShowTooltipWindow (TextEditor editor, Control tipWindow, TooltipItem item, Xwt.ModifierKeys modifierState, int mouseX, int mouseY)
 		{
 			if (tipWindow == null)
 				return;

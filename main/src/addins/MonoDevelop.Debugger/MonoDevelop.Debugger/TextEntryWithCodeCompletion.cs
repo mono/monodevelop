@@ -52,6 +52,12 @@ namespace MonoDevelop.Debugger
 			CompletionWindowManager.WindowClosed += HandleWindowClosed;
 		}
 
+		protected override void Dispose (bool disposing)
+		{
+			CompletionWindowManager.WindowClosed -= HandleWindowClosed;
+			base.Dispose (disposing);
+		}
+
 		void HandleWindowClosed (object sender, EventArgs e)
 		{
 			ctx = null;

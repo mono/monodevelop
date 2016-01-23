@@ -35,7 +35,6 @@ using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Projects;
 
-using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Core.Setup;
 using MonoDevelop.Ide.Updater;
@@ -51,7 +50,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			return !AddinManager.IsAddinLoaded ("MonoDevelop.Xamarin.Ide");
 		}
 
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return widget = new  AddInsPanelWidget ();
 		}

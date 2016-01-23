@@ -60,23 +60,24 @@ namespace MonoDevelop.CSharp.Refactoring
 
 		public static void FindDerivedSymbols (ISymbol symbol)
 		{
-			Task.Run (delegate {
+			Task.Run (async delegate {
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-					IEnumerable<ISymbol> task;
-
+					IEnumerable<ISymbol> result;
 					if (symbol.ContainingType != null && symbol.ContainingType.TypeKind == TypeKind.Interface) {
-						task = SymbolFinder.FindImplementationsAsync (symbol, TypeSystemService.Workspace.CurrentSolution).Result; 
+						result = await SymbolFinder.FindImplementationsAsync (symbol, TypeSystemService.Workspace.CurrentSolution).ConfigureAwait (false); 
 					} else if (symbol.Kind == SymbolKind.NamedType) {
 						var type = (INamedTypeSymbol)symbol;
 						if (type.TypeKind == TypeKind.Interface) {
-							task = SymbolFinder.FindImplementationsAsync (symbol, TypeSystemService.Workspace.CurrentSolution).Result; 
+							result = (await type.FindDerivedInterfacesAsync (TypeSystemService.Workspace.CurrentSolution).ConfigureAwait (false)).Cast<ISymbol> ().Concat (
+								await SymbolFinder.FindImplementationsAsync (symbol, TypeSystemService.Workspace.CurrentSolution).ConfigureAwait (false) 
+							);
 						} else {
-							task = type.FindDerivedClassesAsync (TypeSystemService.Workspace.CurrentSolution).Result.Cast<ISymbol> ();
+							result = (await type.FindDerivedClassesAsync (TypeSystemService.Workspace.CurrentSolution).ConfigureAwait (false)).Cast<ISymbol> ();
 						}
 					} else {
-						task = SymbolFinder.FindOverridesAsync (symbol, TypeSystemService.Workspace.CurrentSolution).Result;
+						result = await SymbolFinder.FindOverridesAsync (symbol, TypeSystemService.Workspace.CurrentSolution).ConfigureAwait (false);
 					}
-					foreach (var foundSymbol in task) {
+					foreach (var foundSymbol in result) {
 						foreach (var loc in foundSymbol.Locations)
 							monitor.ReportResult (new MemberReference (foundSymbol, loc.SourceTree.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
 					}
@@ -84,15 +85,10 @@ namespace MonoDevelop.CSharp.Refactoring
 			});
 		}
 
-		public async void Update (CommandInfo info)
+		public void Update (CommandInfo info)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null || doc.ParsedDocument == null) {
-				info.Enabled = false;
-				return;
-			}
-			var rinfo = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset);
-			info.Enabled = rinfo.DeclaredSymbol != null;
+			info.Enabled = doc != null && doc.ParsedDocument != null && doc.ParsedDocument.GetAst<SemanticModel> () != null;
 		}
 
 		public async void Run (object data)

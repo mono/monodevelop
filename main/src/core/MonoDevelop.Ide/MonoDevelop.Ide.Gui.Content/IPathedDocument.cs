@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Gui.Content
 	{
 		PathEntry[] CurrentPath { get; }
 		
-		Gtk.Widget CreatePathWidget (int index);
+		Control CreatePathWidget (int index);
 		
 		event EventHandler<DocumentPathChangedEventArgs> PathChanged;
 	}

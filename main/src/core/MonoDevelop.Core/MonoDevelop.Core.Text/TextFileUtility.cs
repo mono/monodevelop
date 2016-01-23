@@ -28,6 +28,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Core.Text
 {
@@ -215,9 +217,28 @@ namespace MonoDevelop.Core.Text
 			}
 		}
 
+		public static async Task<TextContent> GetTextAsync (Stream inputStream)
+		{
+			if (inputStream == null)
+				throw new ArgumentNullException ("inputStream");
+			var tc = new TextContent ();
+			bool hadBom;
+			using (var stream = OpenStream (inputStream, out hadBom)) {
+				tc.Encoding = stream.CurrentEncoding;
+				tc.Text = await stream.ReadToEndAsync ();
+				tc.HasBom = hadBom;
+			}
+			return tc;
+		}
+
 		public static string GetText (string fileName)
 		{
 			return GetText (File.ReadAllBytes (fileName));
+		}
+
+		public static async Task<string> GetTextAsync (string fileName, CancellationToken token)
+		{
+			return GetText (await ReadAllBytesAsync (fileName, token));
 		}
 
 		public static string GetText (string fileName, out Encoding encoding, out bool hadBom)
@@ -230,25 +251,21 @@ namespace MonoDevelop.Core.Text
 		#endregion
 
 		#region file methods
-		public static void WriteText (string fileName, string text, Encoding encoding, bool hadBom)
+		static string WriteTextInit (string fileName, string text, Encoding encoding)
 		{
 			if (fileName == null)
-				throw new ArgumentNullException ("fileName");
+			throw new ArgumentNullException ("fileName");
 			if (text == null)
 				throw new ArgumentNullException ("text");
 			if (encoding == null)
 				throw new ArgumentNullException ("encoding");
 			// atomic rename only works in the same directory on linux. The tmp files may be on another partition -> breaks save.
 			string tmpPath = Path.Combine (Path.GetDirectoryName (fileName), ".#" + Path.GetFileName (fileName));
-			using (var stream = new FileStream (tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)) {
-				if (hadBom) {
-					var bom = encoding.GetPreamble ();
-					if (bom != null && bom.Length > 0)
-						stream.Write (bom, 0, bom.Length);
-				}
-				byte[] bytes = encoding.GetBytes (text);
-				stream.Write (bytes, 0, bytes.Length);
-			}
+			return tmpPath;
+		}
+
+		static void WriteTextFinal (string tmpPath, string fileName)
+		{
 			try {
 				SystemRename (tmpPath, fileName);
 			} catch (Exception) {
@@ -259,6 +276,36 @@ namespace MonoDevelop.Core.Text
 				}
 				throw;
 			}
+		}
+
+		public static void WriteText (string fileName, string text, Encoding encoding, bool hadBom)
+		{
+			var tmpPath = WriteTextInit (fileName, text, encoding);
+			using (var stream = new FileStream (tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)) {
+				if (hadBom) {
+					var bom = encoding.GetPreamble ();
+					if (bom != null && bom.Length > 0)
+						stream.Write (bom, 0, bom.Length);
+				}
+				byte[] bytes = encoding.GetBytes (text);
+				stream.Write (bytes, 0, bytes.Length);
+			}
+			WriteTextFinal (tmpPath, fileName);
+		}
+
+		public static async Task WriteTextAsync (string fileName, string text, Encoding encoding, bool hadBom)
+		{
+			var tmpPath = WriteTextInit (fileName, text, encoding);
+			using (var stream = new FileStream (tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)) {
+				if (hadBom) {
+					var bom = encoding.GetPreamble ();
+					if (bom != null && bom.Length > 0)
+						await stream.WriteAsync (bom, 0, bom.Length);
+				}
+				byte[] bytes = encoding.GetBytes (text);
+				await stream.WriteAsync (bytes, 0, bytes.Length);
+			}
+			WriteTextFinal (tmpPath, fileName);
 		}
 
 		/// <summary>
@@ -331,6 +378,22 @@ namespace MonoDevelop.Core.Text
 			return GetText (content, out encoding, out hadBom);
 		}
 
+		public static async Task<TextContent> ReadAllTextAsync (string fileName)
+		{
+			if (fileName == null)
+				throw new ArgumentNullException ("fileName");
+			byte[] content = await ReadAllBytesAsync (fileName);
+
+			bool hadBom;
+			Encoding encoding;
+			var txt = GetText (content, out encoding, out hadBom);
+			return new TextContent {
+				Text = txt,
+				HasBom = hadBom,
+				Encoding = encoding
+			};
+		}
+
 		public static string ReadAllText (string fileName, Encoding encoding, out bool hadBom)
 		{
 			if (fileName == null)
@@ -341,6 +404,42 @@ namespace MonoDevelop.Core.Text
 			byte[] content = File.ReadAllBytes (fileName);
 			return GetText (content, encoding, out hadBom); 
 		}
+
+		public static async Task<TextContent> ReadAllTextAsync (string fileName, Encoding encoding)
+		{
+			if (fileName == null)
+				throw new ArgumentNullException ("fileName");
+			if (encoding == null)
+				throw new ArgumentNullException ("encoding");
+
+			byte[] content = await ReadAllBytesAsync (fileName);
+
+			bool hadBom;
+			var txt = GetText (content, encoding, out hadBom); 
+			return new TextContent {
+				Text = txt,
+				HasBom = hadBom,
+				Encoding = encoding
+			};
+		}
+
+		public static Task<byte []> ReadAllBytesAsync (string file)
+		{
+			return ReadAllBytesAsync (file, CancellationToken.None);
+		}
+
+		public static async Task<byte[]> ReadAllBytesAsync (string file, CancellationToken token)
+		{
+			using (var f = File.OpenRead (file)) {
+				var res = new byte [f.Length];
+				int nr = 0;
+				int c = 0;
+				while (nr < res.Length && (c = await f.ReadAsync (res, nr, res.Length - nr, token).ConfigureAwait (false)) > 0)
+					nr += c;
+				return res;
+			}
+		}
+
 		#endregion
 
 		#region ASCII encoding check
@@ -849,5 +948,12 @@ namespace MonoDevelop.Core.Text
 			}
 		}
 		#endregion
+	}
+
+	public class TextContent
+	{
+		public string Text { get; internal set; }
+		public bool HasBom { get; internal set; }
+		public Encoding Encoding { get; internal set; }
 	}
 }

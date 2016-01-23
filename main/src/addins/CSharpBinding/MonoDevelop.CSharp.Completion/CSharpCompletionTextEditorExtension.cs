@@ -473,8 +473,7 @@ namespace MonoDevelop.CSharp.Completion
 				} catch (OperationCanceledException) {
 					return null;
 				} catch (AggregateException e) {
-					foreach (var inner in e.Flatten ().InnerExceptions)
-						LoggingService.LogError ("Error while getting C# recommendations", inner); 
+					e.Flatten ().Handle (f => f is OperationCanceledException);
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while getting C# recommendations", e); 
 				}

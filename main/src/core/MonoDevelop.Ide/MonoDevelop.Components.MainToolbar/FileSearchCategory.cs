@@ -42,7 +42,7 @@ namespace MonoDevelop.Components.MainToolbar
 {
 	class FileSearchCategory : SearchCategory
 	{
-		public FileSearchCategory (Widget widget) : base (GettextCatalog.GetString("Files"))
+		public FileSearchCategory () : base (GettextCatalog.GetString("Files"))
 		{
 		}
 
@@ -85,24 +85,23 @@ namespace MonoDevelop.Components.MainToolbar
 			return Task.Run (delegate {
 				var files = AllFiles.ToList ();
 				var matcher = StringMatcher.GetMatcher (pattern.Pattern, false);
-				savedMatches = new Dictionary<string, MatchResult> ();
+				var savedMatches = new Dictionary<string, MatchResult> ();
 				foreach (ProjectFile file in files) {
 					if (token.IsCancellationRequested)
 						break;
 					int rank;
 					string matchString = System.IO.Path.GetFileName (file.FilePath);
-					if (MatchName (matcher, matchString, out rank))
+					if (MatchName (savedMatches, matcher, matchString, out rank))
 						searchResultCallback.ReportResult (new FileSearchResult (pattern.Pattern, matchString, rank, file, true));
 					matchString = FileSearchResult.GetRelProjectPath (file);
-					if (MatchName (matcher, matchString, out rank)) 
+					if (MatchName (savedMatches, matcher, matchString, out rank)) 
 						searchResultCallback.ReportResult (new FileSearchResult (pattern.Pattern, matchString, rank, file, true));
 					
 				}
-				savedMatches = null;
-			}, token);
+ 			}, token);
 		}
 
-		bool MatchName (StringMatcher matcher, string name, out int matchRank)
+		static bool MatchName (Dictionary<string, MatchResult> savedMatches, StringMatcher matcher, string name, out int matchRank)
 		{
 			if (name == null) {
 				matchRank = -1;
@@ -118,7 +117,6 @@ namespace MonoDevelop.Components.MainToolbar
 			return savedMatch.Match;
 		}
 
-		Dictionary<string, MatchResult> savedMatches = new Dictionary<string, MatchResult> ();
 	}
 }
 

@@ -105,7 +105,11 @@
         { "name":"Message Bubble Warning Counter", "color":"white", "secondcolor":"#e68100" },
         { "name":"Message Bubble Warning IconMargin", "color":"#e68100", "bordercolor":"#c76f00" },
         { "name":"Message Bubble Warning Line", "color":"#fff1da" },
-        { "name":"Message Bubble Warning Tooltip", "color":"#D1590B" }
+        { "name":"Message Bubble Warning Tooltip", "color":"#D1590B" },
+
+    	{ "name":"Link Color", "color":"#0645ad" },
+    	{ "name":"Link Color(Active)", "color":"#faa700" }
+
     ],
 
     "text":[
@@ -130,6 +134,11 @@
         { "name":"String", "fore":"literal-orange" },
         { "name":"String(Escape)", "fore":"literal-escape" },
         { "name":"String(C# @ Verbatim)", "fore":"literal-orange" },
+        { "name":"String(Regex Set Constructs)", "fore":"#e5ae41" },
+        { "name":"String(Regex Character Class)", "fore":"#6fb3f8" },
+        { "name":"String(Regex Grouping Constructs)", "fore":"#2b922b" },
+        { "name":"String(Regex Escape Character)", "fore":"#ff0d80" },
+        { "name":"String(Regex Alt Escape Character)", "fore":"#faafba" },
 
         { "name":"Number", "fore":"literal-orange" },
 

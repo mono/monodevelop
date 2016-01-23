@@ -93,6 +93,7 @@ namespace MonoDevelop.VersionControl.Views
 		protected override void OnSetVersionControlInfo (VersionControlDocumentInfo info)
 		{
 			info.Updated += OnInfoUpdated;
+			MainEditor.Document.ReadOnly = false;
 			base.OnSetVersionControlInfo (info);
 		}
 

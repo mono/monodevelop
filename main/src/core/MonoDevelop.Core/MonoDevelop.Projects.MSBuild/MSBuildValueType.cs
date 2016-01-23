@@ -27,13 +27,14 @@ using System;
 
 namespace MonoDevelop.Projects.MSBuild
 {
-	class MSBuildValueType
+	public class MSBuildValueType
 	{
 		public static readonly MSBuildValueType Default = new MSBuildValueType ();
 		public static readonly MSBuildValueType DefaultPreserveCase = new PreserveCaseValueType ();
 		public static readonly MSBuildValueType Path = new PathValueType ();
 		public static readonly MSBuildValueType Boolean = new PreserveCaseValueType ();
-		public static readonly MSBuildValueType UnresolvedPath = new PathValueType ();
+		public static readonly MSBuildValueType Guid = new GuidValueType ();
+		internal static readonly MSBuildValueType UnresolvedPath = new PathValueType ();
 
 		public virtual bool Equals (string ob1, string ob2)
 		{
@@ -57,6 +58,16 @@ namespace MonoDevelop.Projects.MSBuild
 	{
 		public override bool Equals (string ob1, string ob2)
 		{
+			return ob1.Equals (ob2, StringComparison.OrdinalIgnoreCase);
+		}
+	}
+
+	class GuidValueType: MSBuildValueType
+	{
+		public override bool Equals (string ob1, string ob2)
+		{
+			ob1 = ob1.Trim ('{', '}');
+			ob2 = ob2.Trim ('{', '}');
 			return ob1.Equals (ob2, StringComparison.OrdinalIgnoreCase);
 		}
 	}

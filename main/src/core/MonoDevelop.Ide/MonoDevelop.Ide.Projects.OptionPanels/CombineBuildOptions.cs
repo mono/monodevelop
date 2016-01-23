@@ -24,6 +24,7 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
 
@@ -33,7 +34,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	{
 		CombineBuildOptionsWidget widget;
 		
-		public override Gtk.Widget CreatePanelWidget()
+		public override Control CreatePanelWidget()
 		{
 			return widget = new  CombineBuildOptionsWidget (ConfiguredSolution);
 		}

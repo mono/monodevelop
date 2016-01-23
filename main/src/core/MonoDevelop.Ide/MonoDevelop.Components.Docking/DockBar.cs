@@ -35,7 +35,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components.Docking
 {
-	public class DockBar: Gtk.EventBox
+	class DockBar: Gtk.EventBox
 	{
 		Gtk.PositionType position;
 		Box box;

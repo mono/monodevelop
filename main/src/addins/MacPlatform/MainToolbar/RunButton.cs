@@ -26,6 +26,7 @@
 using System;
 using AppKit;
 using Foundation;
+using CoreGraphics;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
@@ -65,6 +66,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					return;
 				icon = value;
 				Image = GetIcon ();
+			}
+		}
+
+		public override CGSize IntrinsicContentSize {
+			get {
+				return new CGSize (38, 25);
 			}
 		}
 	}

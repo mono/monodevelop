@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using Gtk;
@@ -67,7 +68,7 @@ namespace ILAsmBinding
 	{
 		CompilerParametersPanelWidget widget;
 		
-		public override Widget CreatePanelWidget()
+		public override Control CreatePanelWidget()
 		{
 			return widget = new CompilerParametersPanelWidget ();
 		}

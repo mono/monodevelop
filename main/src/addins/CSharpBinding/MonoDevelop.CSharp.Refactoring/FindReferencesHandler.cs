@@ -190,9 +190,8 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			var info = RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result;
 			var sym = info.Symbol ?? info.DeclaredSymbol;
-			var semanticModel = doc.ParsedDocument.GetAst<SemanticModel> ();
 			if (sym != null)
-				FindRefs (sym, semanticModel.Compilation);
+				FindRefs (sym, info.Model.Compilation);
 		}
 	}
 

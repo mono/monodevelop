@@ -28,10 +28,11 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Ide;
 using LibGit2Sharp;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	partial class StashManagerDialog : Dialog
+	partial class StashManagerDialog : Gtk.Dialog
 	{
 		readonly GitRepository repository;
 		readonly ListStore store;
@@ -103,7 +104,7 @@ namespace MonoDevelop.VersionControl.Git
 			return (Stash) store.GetValue (it, 0);
 		}
 
-		async void ApplyStashAndRemove(int s)
+		async Task ApplyStashAndRemove(int s)
 		{
 			using (IdeApp.Workspace.GetFileStatusTracker ()) {
 				if (await GitService.ApplyStash (repository, s))
@@ -130,7 +131,7 @@ namespace MonoDevelop.VersionControl.Git
 					if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
 						repository.CreateBranchFromCommit (dlg.BranchName, s.Base);
 						if (await GitService.SwitchToBranch (repository, dlg.BranchName))
-							ApplyStashAndRemove (stashIndex);
+							await ApplyStashAndRemove (stashIndex);
 					}
 				} finally {
 					dlg.Destroy ();
@@ -150,11 +151,11 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		protected void OnButtonApplyRemoveClicked (object sender, System.EventArgs e)
+		protected async void OnButtonApplyRemoveClicked (object sender, System.EventArgs e)
 		{
 			int s = GetSelectedIndex ();
 			if (s != -1) {
-				ApplyStashAndRemove (s);
+				await ApplyStashAndRemove (s);
 				Respond (ResponseType.Ok);
 			}
 		}

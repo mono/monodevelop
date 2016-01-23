@@ -189,7 +189,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		async Task<SolutionInfo> CreateSolutionInfo (MonoDevelop.Projects.Solution solution, CancellationToken token)
 		{
 			var projects = new ConcurrentBag<ProjectInfo> ();
-			var mdProjects = solution.GetAllProjects ();
+			var mdProjects = solution.GetAllProjects ().OfType<MonoDevelop.Projects.DotNetProject> ();
 			projectionList.Clear ();
 			solutionData = new SolutionData ();
 
@@ -294,6 +294,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			lock (projectIdMap) {
 				ProjectData result;
+
 				if (projectDataMap.TryGetValue (id, out result)) {
 					return result;
 				}
@@ -379,7 +380,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			project.Modified -= OnProjectModified;
 		}
 
-		Task<ProjectInfo> LoadProject (MonoDevelop.Projects.Project p, CancellationToken token)
+		Task<ProjectInfo> LoadProject (MonoDevelop.Projects.DotNetProject p, CancellationToken token)
 		{
 			if (!projectIdMap.ContainsKey (p)) {
 				p.FileAddedToProject += OnFileAdded;
@@ -519,18 +520,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		static async Task<List<MetadataReference>> CreateMetadataReferences (MonoDevelop.Projects.Project p, ProjectId projectId, CancellationToken token)
+		static async Task<List<MetadataReference>> CreateMetadataReferences (MonoDevelop.Projects.DotNetProject netProject, ProjectId projectId, CancellationToken token)
 		{
 			List<MetadataReference> result = new List<MetadataReference> ();
-
-			var netProject = p as MonoDevelop.Projects.DotNetProject;
-			if (netProject == null)
-				return result;
 			
 			var configurationSelector = IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default;
 			var hashSet = new HashSet<string> (FilePath.PathComparer);
-
-			bool addFacadeAssemblies = false;
 
 			try {
 				foreach (string file in await netProject.GetReferencedAssemblies (configurationSelector, false).ConfigureAwait (false)) {
@@ -545,28 +540,20 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (hashSet.Contains (fileName))
 						continue;
 					hashSet.Add (fileName);
-					if (!File.Exists (fileName))
+					if (!File.Exists (fileName)) {
+						LoggingService.LogError ("Error while getting referenced Assembly " + fileName + " for project " + netProject.Name + ": File doesn't exist"); 
 						continue;
-					result.Add (MetadataReferenceCache.LoadReference (projectId, fileName));
-					addFacadeAssemblies |= MonoDevelop.Core.Assemblies.SystemAssemblyService.ContainsReferenceToSystemRuntime (fileName);
+					}
+					var metadataReference = MetadataReferenceCache.LoadReference (projectId, fileName);
+					if (metadataReference == null)
+						continue;
+					result.Add (metadataReference);
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while getting referenced assemblies", e);
 			}
-			// HACK: Facade assemblies should be added by the project system. Remove that when the project system can do that.
-			if (addFacadeAssemblies) {
-				if (netProject != null) {
-					var runtime = netProject.TargetRuntime ?? MonoDevelop.Core.Runtime.SystemAssemblyService.DefaultRuntime;
-					var facades = runtime.FindFacadeAssembliesForPCL (netProject.TargetFramework);
-					foreach (var facade in facades) {
-						if (!File.Exists (facade))
-							continue;
-						result.Add (MetadataReferenceCache.LoadReference (projectId, facade));
-					}
-				}
-			}
 
-			foreach (var pr in p.GetReferencedItems (configurationSelector)) {
+			foreach (var pr in netProject.GetReferencedItems (configurationSelector)) {
 				if (token.IsCancellationRequested)
 					return result;
 				var referencedProject = pr as MonoDevelop.Projects.DotNetProject;
@@ -574,22 +561,23 @@ namespace MonoDevelop.Ide.TypeSystem
 					continue;
 				if (TypeSystemService.IsOutputTrackedProject (referencedProject)) {
 					var fileName = referencedProject.GetOutputFileName (configurationSelector);
-					if (!File.Exists (fileName))
+					if (!File.Exists (fileName)) {
+						LoggingService.LogError ("Error while getting project Reference (" + referencedProject.Name + ") " + fileName + " for project " + netProject.Name + ": File doesn't exist");
 						continue;
-					result.Add (MetadataReferenceCache.LoadReference (projectId, fileName));
+					}
+					var metadataReference = MetadataReferenceCache.LoadReference (projectId, fileName);
+					if (metadataReference != null)
+						result.Add (metadataReference);
 				}
 			}
 			return result;
 		}
 
-		IEnumerable<ProjectReference> CreateProjectReferences (MonoDevelop.Projects.Project p, CancellationToken token)
+		IEnumerable<ProjectReference> CreateProjectReferences (MonoDevelop.Projects.DotNetProject p, CancellationToken token)
 		{
-			foreach (var pr in p.GetReferencedItems (MonoDevelop.Projects.ConfigurationSelector.Default)) {
+			foreach (var referencedProject in p.GetReferencedAssemblyProjects (IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default)) {
 				if (token.IsCancellationRequested)
 					yield break;
-				var referencedProject = pr as MonoDevelop.Projects.DotNetProject;
-				if (referencedProject == null)
-					continue;
 				if (TypeSystemService.IsOutputTrackedProject (referencedProject))
 					continue;
 				yield return new ProjectReference (GetOrCreateProjectId (referencedProject));
@@ -617,11 +605,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		Document InternalInformDocumentOpen (DocumentId documentId, ITextDocument editor)
 		{
 			var document = this.GetDocument (documentId);
-			if (document == null) {
+			if (document == null || IsDocumentOpen (documentId)) {
 				return document;
 			}
-			if (IsDocumentOpen (documentId))
-				InformDocumentClose (documentId, document.FilePath);
 			var monoDevelopSourceTextContainer = new MonoDevelopSourceTextContainer (documentId, editor);
 			lock (openDocuments) {
 				openDocuments.Add (monoDevelopSourceTextContainer);
@@ -703,16 +689,20 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			bool isOpen;
 			var filePath = document.FilePath;
+			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out isOpen);
 
 			// Guard against already done changes in linked files.
 			// This shouldn't happen but the roslyn merging seems not to be working correctly in all cases :/
+			if (document.GetLinkedDocumentIds ().Length > 0 && isOpen && !(text.GetType ().FullName == "Microsoft.CodeAnalysis.Text.ChangedText")) {
+				return;
+			}
 			SourceText formerText;
 			if (changedFiles.TryGetValue (filePath, out formerText)) {
 				if (formerText.Length == text.Length && formerText.ToString () == text.ToString ())
 					return;
 			}
 			changedFiles [filePath] = text;
-
+		
 			Projection projection = null;
 			foreach (var entry in ProjectionList) {
 				var p = entry.Projections.FirstOrDefault (proj => FilePath.PathComparer.Equals (proj.Document.FileName, filePath));
@@ -722,11 +712,13 @@ namespace MonoDevelop.Ide.TypeSystem
 					break;
 				}
 			}
-
-			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out isOpen);
-			var oldFile = isOpen ? document.GetTextAsync ().Result : new MonoDevelopSourceText (data);
+			SourceText oldFile;
+			if (!isOpen || !document.TryGetText (out oldFile)) {
+				oldFile = new MonoDevelopSourceText (data);
+			}
 			var changes = text.GetTextChanges (oldFile).OrderByDescending (c => c.Span.Start).ToList ();
 			int delta = 0;
+
 			if (!isOpen) {
 				delta = ApplyChanges (projection, data, changes);
 				var formatter = CodeFormatterService.GetFormatter (data.MimeType);
@@ -765,7 +757,6 @@ namespace MonoDevelop.Ide.TypeSystem
 						foreach (var change in changes) {
 							delta -= change.Span.Length - change.NewText.Length;
 							var startOffset = change.Span.Start - delta;
-
 							if (projection != null) {
 								int originalOffset;
 								if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
@@ -994,7 +985,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			if (!args.Any (x => x.Hint == "TargetFramework" || x.Hint == "References"))
 				return;
-			var project = (MonoDevelop.Projects.Project)sender;
+			var project = sender as MonoDevelop.Projects.DotNetProject;
+			if (project == null)
+				return;
 			var projectId = GetProjectId (project);
 			if (CurrentSolution.ContainsProject (projectId)) {
 				OnProjectReloaded (await LoadProject (project, default(CancellationToken)).ConfigureAwait (false));

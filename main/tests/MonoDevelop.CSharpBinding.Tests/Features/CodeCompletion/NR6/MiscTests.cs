@@ -108,5 +108,37 @@ public class MyClass
 			Assert.IsNotNull (provider, "provider was not created.");
 			Assert.AreEqual (false, provider.AutoSelect);
 		}
+
+		/// <summary>
+		/// Bug 37573 - [roslyn] Excessive namespace prefix inserted by code completion
+		/// </summary>
+		[Test]
+		public void TestBug37573 ()
+		{
+			var provider = CreateProvider (
+				@"
+using System;
+
+namespace TestProject
+{
+	class TestClass
+	{
+		public enum FooBar { Foo, Bar }
+	}
+
+	class MainClass
+	{
+		void Test ()
+		{
+			TestClass.FooBar fb;
+			$if (fb == $
+		}
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.IsNull (provider.Find ("TestProject.TestClass.FooBar.Bar"));
+			Assert.IsNotNull (provider.Find ("TestClass.FooBar.Bar"));
+		}
 	}
 }

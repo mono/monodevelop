@@ -30,6 +30,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Components;
+using Xwt;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -78,13 +79,17 @@ namespace MonoDevelop.Ide.Editor
 		}
 	}
 
-	interface ITextEditorImpl : IViewContent, IDisposable
+	interface ITextEditorImpl : IDisposable
 	{
+		ViewContent ViewContent { get; }
+
+		string ContentName { get; set; }
+
 		EditMode EditMode { get; }
 
 		ITextEditorOptions Options { get; set; }
 
-		IReadonlyTextDocument Document { get; set; }
+		IReadonlyTextDocument Document { get; }
 
 		DocumentLocation CaretLocation { get; set; }
 
@@ -108,7 +113,7 @@ namespace MonoDevelop.Ide.Editor
 
 		event EventHandler CaretPositionChanged;
 
-		event EventHandler BeginMouseHover;
+		event EventHandler<MouseMovedEventArgs> MouseMoved;
 
 		event EventHandler VAdjustmentChanged;
 
@@ -156,8 +161,7 @@ namespace MonoDevelop.Ide.Editor
 
 		void CenterTo (int offset);
 
-		IList<SkipChar> SkipChars
-		{
+		IList<SkipChar> SkipChars {
 			get;
 		}
 
@@ -207,14 +211,12 @@ namespace MonoDevelop.Ide.Editor
 
 		#region Internal use only API (do not mirror in TextEditor)
 
-		TextEditorExtension EditorExtension
-		{
+		TextEditorExtension EditorExtension {
 			get;
 			set;
 		}
 
-		IEnumerable<TooltipProvider> TooltipProvider
-		{
+		IEnumerable<TooltipProvider> TooltipProvider {
 			get;
 		}
 
@@ -243,5 +245,8 @@ namespace MonoDevelop.Ide.Editor
 		void AddOverlay (Control messageOverlayContent, Func<int> sizeFunc);
 		void RemoveOverlay (Control messageOverlayContent);
 		void UpdateBraceMatchingResult (BraceMatchingResult? result);
+
+		IEnumerable<IDocumentLine> VisibleLines { get; }
+		event EventHandler<LineEventArgs> LineShown;
 	}
 }

@@ -7,8 +7,8 @@
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll" />
     <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
+    <widget-library name="../../../../external/xwt/Xwt.Gtk/bin/Debug/Xwt.Gtk.dll" />
     <widget-library name="../../../../build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel" design-size="454 364">
@@ -729,6 +729,22 @@
                   </widget>
                   <packing>
                     <property name="Position">5</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.CheckButton" id="checkbuttonEnableSelectionSurrounding">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="Label" translatable="yes">Enable _selection surrounding keys</property>
+                    <property name="DrawIndicator">True</property>
+                    <property name="HasLabel">True</property>
+                    <property name="UseUnderline">True</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">6</property>
                     <property name="AutoSize">True</property>
                     <property name="Expand">False</property>
                     <property name="Fill">False</property>
@@ -2414,6 +2430,7 @@
   <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel" design-size="427 423">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox1">
         <property name="MemberName" />

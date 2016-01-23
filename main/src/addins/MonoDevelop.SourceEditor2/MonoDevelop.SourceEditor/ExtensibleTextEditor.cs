@@ -57,7 +57,6 @@ namespace MonoDevelop.SourceEditor
 		internal object MemoryProbe = Counters.EditorsInMemory.CreateMemoryProbe ();
 		
 		SourceEditorView view;
-		ExtensionContext extensionContext;
 		Adjustment cachedHAdjustment, cachedVAdjustment;
 		
 		TextEditorExtension editorExtension;
@@ -217,7 +216,6 @@ namespace MonoDevelop.SourceEditor
 		{
 			IsDestroyed = true;
 			UnregisterAdjustments ();
-			extensionContext = null;
 			view = null;
 			var disposableSyntaxMode = Document.SyntaxMode as IDisposable;
 			if (disposableSyntaxMode != null)  {
@@ -515,11 +513,8 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		int           oldOffset = -1;
-
 		public Microsoft.CodeAnalysis.ISymbol GetLanguageItem (int offset, out MonoDevelop.Ide.Editor.DocumentRegion region)
 		{
-			oldOffset = offset;
 			region = MonoDevelop.Ide.Editor.DocumentRegion.Empty;
 
 			if (textEditorResolverProvider != null) {
@@ -547,8 +542,6 @@ namespace MonoDevelop.SourceEditor
 		
 		public Microsoft.CodeAnalysis.ISymbol GetLanguageItem (int offset, string expression)
 		{
-			oldOffset = offset;
-			
 			if (textEditorResolverProvider != null) {
 				return textEditorResolverProvider.GetLanguageItem (view.WorkbenchWindow.Document, offset, expression);
 			}

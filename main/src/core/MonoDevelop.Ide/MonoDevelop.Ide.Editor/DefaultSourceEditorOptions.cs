@@ -218,6 +218,12 @@ namespace MonoDevelop.Ide.Editor
 				}
 			}
 
+			bool ITextEditorOptions.EnableSelectionWrappingKeys {
+				get {
+					return DefaultSourceEditorOptions.Instance.EnableSelectionWrappingKeys;
+				}
+			}
+
 			ShowWhitespaces ITextEditorOptions.ShowWhitespaces {
 				get {
 					return ShowWhitespaces.Never;
@@ -385,7 +391,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		ConfigurationProperty<LineEndingConversion> lineEndingConversion = ConfigurationProperty.Create("LineEndingConversion", LineEndingConversion.Ask);
+		ConfigurationProperty<LineEndingConversion> lineEndingConversion = ConfigurationProperty.Create("LineEndingConversion", LineEndingConversion.LeaveAsIs);
 		public LineEndingConversion LineEndingConversion {
 			get {
 				return lineEndingConversion;
@@ -699,7 +705,18 @@ namespace MonoDevelop.Ide.Editor
 					OnChanged (EventArgs.Empty);
 			}
 		}
-		
+
+		ConfigurationProperty<bool> enableSelectionWrappingKeys = ConfigurationProperty.Create ("EnableSelectionWrappingKeys", false);
+		public bool EnableSelectionWrappingKeys {
+			get {
+				return enableSelectionWrappingKeys;
+			}
+			set {
+				if (enableSelectionWrappingKeys.Set (value))
+					OnChanged (EventArgs.Empty);
+			}
+		}
+
 		bool overrideDocumentEolMarker = false;
 		public bool OverrideDocumentEolMarker {
 			get {

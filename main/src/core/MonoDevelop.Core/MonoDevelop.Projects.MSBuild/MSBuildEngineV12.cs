@@ -175,10 +175,9 @@ namespace MonoDevelop.Projects.MSBuild
 			p.RemoveGlobalProperty (property);
 		}
 
-		public override IDictionary<string, List<string>> GetConditionedProperties (object project)
+		public override ConditionedPropertyCollection GetConditionedProperties (object project)
 		{
-			var p = (MSProject)project;
-			return p.ConditionedProperties;
+			throw new NotImplementedException ();
 		}
 	}
 

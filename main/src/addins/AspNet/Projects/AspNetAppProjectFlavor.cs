@@ -123,6 +123,10 @@ namespace MonoDevelop.AspNet.Projects
 
 		#region build/prebuild/execute
 
+		protected override ProjectFeatures OnGetSupportedFeatures ()
+		{
+			return base.OnGetSupportedFeatures () | ProjectFeatures.Execute;
+		}
 
 		protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
