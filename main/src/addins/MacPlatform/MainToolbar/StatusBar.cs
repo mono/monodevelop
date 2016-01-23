@@ -262,7 +262,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			AddSubview (buildResults);
 
 			WantsLayer = true;
-			Layer.CornerRadius = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 6 : 4;
+			Layer.CornerRadius = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 3 : 4;
 			ctxHandler = new StatusBarContextHandler (this);
 
 			updateHandler = delegate {
