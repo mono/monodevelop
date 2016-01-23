@@ -755,7 +755,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal static ColorScheme LoadFrom (Stream stream)
 		{
 			var result = new ColorScheme ();
-			var reader = System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonReader (stream, new System.Xml.XmlDictionaryReaderQuotas ());
+			byte [] bytes;
+			using (var sr = Core.Text.TextFileUtility.OpenStream (stream)) {
+				bytes = System.Text.Encoding.UTF8.GetBytes (sr.ReadToEnd ());
+			}
+
+			var reader = System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonReader (bytes, new System.Xml.XmlDictionaryReaderQuotas ());
 
 			var root = XElement.Load(reader);
 

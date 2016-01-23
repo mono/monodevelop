@@ -487,9 +487,10 @@ namespace Mono.TextEditor.Highlighting
 		static string ScanStyle (Stream stream)
 		{
 			try {
-				var file = new StreamReader (stream);
+				var file = Utils.TextFileUtility.OpenStream (stream);
 				file.ReadLine ();
 				var nameLine = file.ReadLine ();
+				file.Close ();
 				var match = nameRegex.Match (nameLine);
 				if (!match.Success)
 					return null;
