@@ -324,6 +324,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			void HandleStylesChanged (object sender, EventArgs e)
 			{
+				PathComponentCells [ConfigurationIdx].TextColor = Styles.BaseForegroundColor.ToNSColor ();
+				PathComponentCells [RuntimeIdx].TextColor = Styles.BaseForegroundColor.ToNSColor ();
 				UpdateImages ();
 			}
 
