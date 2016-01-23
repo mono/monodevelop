@@ -499,10 +499,19 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		Adjustment oldHadjustment;
+		Adjustment oldVadjustment;
+		//Don't convert this event handler to override OnSetScrollAdjustments as it causes problems
 		void HandleScrollAdjustmentsSet (object o, ScrollAdjustmentsSetArgs args)
 		{
-			Hadjustment.ValueChanged += UpdatePreviewPosition;
-			Vadjustment.ValueChanged += UpdatePreviewPosition;
+			if (oldHadjustment != null) {
+				oldHadjustment.ValueChanged -= UpdatePreviewPosition;
+				oldVadjustment.ValueChanged -= UpdatePreviewPosition;
+			}
+			oldHadjustment = Hadjustment;
+			oldVadjustment = Vadjustment;
+			oldHadjustment.ValueChanged += UpdatePreviewPosition;
+			oldVadjustment.ValueChanged += UpdatePreviewPosition;
 		}
 
 		void UpdatePreviewPosition (object sender, EventArgs e)
@@ -559,8 +568,13 @@ namespace MonoDevelop.Debugger
 			valueCol.RemoveNotification ("width", OnColumnWidthChanged);
 			expCol.RemoveNotification ("width", OnColumnWidthChanged);
 
-			Hadjustment.ValueChanged -= UpdatePreviewPosition;
-			Vadjustment.ValueChanged -= UpdatePreviewPosition;
+			ScrollAdjustmentsSet -= HandleScrollAdjustmentsSet;
+			if (oldHadjustment != null) {
+				oldHadjustment.ValueChanged -= UpdatePreviewPosition;
+				oldVadjustment.ValueChanged -= UpdatePreviewPosition;
+				oldHadjustment = null;
+				oldVadjustment = null;
+			}
 
 			values.Clear ();
 			valueNames.Clear ();
