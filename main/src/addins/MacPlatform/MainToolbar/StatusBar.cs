@@ -311,6 +311,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (MacSystemInformation.OsVersion >= MacSystemInformation.Yosemite)
 					BezelStyle = NSTextFieldBezelStyle.Rounded;
 			}
+
+			textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, ColorForType (MessageType.Ready));
 			textColor = ColorForType (messageType);
 			ReconstructString ();
 		}
