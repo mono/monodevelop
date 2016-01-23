@@ -1,4 +1,4 @@
-﻿ //
+﻿//
 // StatusBar.cs
 //
 // Author:
@@ -37,6 +37,7 @@ using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -186,12 +187,21 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	[Register]
 	class StatusBar : NSTextField, MonoDevelop.Ide.StatusBar
 	{
+		public enum MessageType
+		{
+			Ready,
+			Information,
+			Warning,
+			Error,
+		}
+
 		const string ProgressLayerFadingId = "ProgressLayerFading";
 		const string growthAnimationKey = "bounds";
 		StatusBarContextHandler ctxHandler;
 		Stack<double> progressMarks = new Stack<double> ();
 		bool currentTextIsMarkup;
 		string text;
+		MessageType messageType;
 		NSColor textColor;
 		NSImage image;
 		IconId icon;
@@ -234,7 +244,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			LoadStyles ();
 
 			// We don't need to resize the Statusbar here as a style change will trigger a complete relayout of the Awesomebar
-			Ide.Gui.Styles.Changed += (o, e) => LoadStyles ();
+			Ide.Gui.Styles.Changed += LoadStyles;
 
 			textField.Cell = new VerticallyCenteredTextFieldCell (yOffset: -0.5f);
 			textField.Cell.StringValue = "";
@@ -285,11 +295,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			AddSubview (textField);
 		}
 
-		void LoadStyles ()
+		void LoadStyles (object sender = null, EventArgs args = null)
 		{
 			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
 				DrawsBackground = true;
-				BackgroundColor = NSColor.DarkGray;
+				BackgroundColor = Styles.BaseBackgroundColor.ToNSColor();
 				Bezeled = false;
 
 				// Even if Bezeled = false, the background won't be drawn if BezelStyle is Rounded.
@@ -301,12 +311,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (MacSystemInformation.OsVersion >= MacSystemInformation.Yosemite)
 					BezelStyle = NSTextFieldBezelStyle.Rounded;
 			}
+			textColor = ColorForType (messageType);
+			ReconstructString ();
 		}
 
 		protected override void Dispose (bool disposing)
 		{
 			TaskService.Errors.TasksAdded -= updateHandler;
 			TaskService.Errors.TasksRemoved -= updateHandler;
+			Ide.Gui.Styles.Changed -= LoadStyles;
 			base.Dispose (disposing);
 		}
 
@@ -432,7 +445,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public void ShowReady ()
 		{
-			ShowMessage (null, "", false, NSColor.DisabledControlText);
+			ShowMessage (null, "", false, MessageType.Ready);
 		}
 
 		static Pad sourcePad;
@@ -443,45 +456,46 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public void ShowError (string error)
 		{
-			ShowMessage (Stock.StatusError, error, false, NSColor.FromRgba (0.98f, 0.33f, 0.20f, 1));
+			ShowMessage (Stock.StatusError, error, false, MessageType.Error);
+
 		}
 
 		public void ShowWarning (string warning)
 		{
-			ShowMessage (Stock.StatusWarning, warning, false, NSColor.FromRgba (0.91f, 0.74f, 0.05f, 1));
+			ShowMessage (Stock.StatusWarning, warning, false, MessageType.Warning);
 		}
 
 		public void ShowMessage (string message)
 		{
-			ShowMessage (null, message, false, NSColor.FromRgba (0.34f, 0.34f, 0.34f, 1));
+			ShowMessage (null, message, false, MessageType.Information);
 		}
 
 		public void ShowMessage (string message, bool isMarkup)
 		{
-			ShowMessage (null, message, true, NSColor.FromRgba (0.34f, 0.34f, 0.34f, 1));
+			ShowMessage (null, message, true, MessageType.Information);
 		}
 
 		public void ShowMessage (IconId image, string message)
 		{
-			ShowMessage (image, message, false, NSColor.FromRgba (0.34f, 0.34f, 0.34f, 1));
+			ShowMessage (image, message, false, MessageType.Information);
 		}
 
 		public void ShowMessage (IconId image, string message, bool isMarkup)
 		{
-			ShowMessage (image, message, isMarkup, NSColor.FromRgba (0.34f, 0.34f, 0.34f, 1));
+			ShowMessage (image, message, isMarkup, MessageType.Information);
 		}
 
-		public void ShowMessage (IconId image, string message, bool isMarkup, NSColor color)
+		public void ShowMessage (IconId image, string message, bool isMarkup, MessageType statusType)
 		{
 			Runtime.AssertMainThread ();
 
-			bool changed = LoadText (message, isMarkup, color);
+			bool changed = LoadText (message, isMarkup, statusType);
 			LoadPixbuf (image);
 			if (changed)
 				ReconstructString ();
 		}
 
-		bool LoadText (string message, bool isMarkup, NSColor color)
+		bool LoadText (string message, bool isMarkup, MessageType statusType)
 		{
 			message = message ?? "";
 			message = message.Replace (Environment.NewLine, " ").Replace ("\n", " ").Trim ();
@@ -491,9 +505,24 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			text = message;
 			currentTextIsMarkup = isMarkup;
-			textColor = color;
+			messageType = statusType;
+			textColor = ColorForType (statusType);
 
 			return true;
+		}
+
+		NSColor ColorForType (MessageType messageType)
+		{
+			switch (messageType) {
+				case MessageType.Error:
+					return Styles.StatusErrorTextColor.ToNSColor ();
+				case MessageType.Warning:
+					return Styles.StatusWarningTextColor.ToNSColor ();
+				case MessageType.Ready:
+					return Styles.StatusReadyTextColor.ToNSColor ();
+				default:
+					return Styles.BaseForegroundColor.ToNSColor ();
+			}
 		}
 
 		static bool iconLoaded;

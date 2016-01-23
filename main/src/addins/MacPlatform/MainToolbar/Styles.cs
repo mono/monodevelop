@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 using MonoDevelop.Ide;
 using Xwt.Drawing;
-using Stetic;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -33,6 +32,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	{
 		public static Color BaseBackgroundColor { get; private set; }
 		public static Color BaseForegroundColor { get; private set; }
+		public static Color StatusErrorTextColor { get; private set; }
+		public static Color StatusWarningTextColor { get; private set; }
+		public static Color StatusReadyTextColor { get; private set; }
 
 		static Styles ()
 		{
@@ -42,14 +44,18 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public static void LoadStyles ()
 		{
-			//BaseBackgroundColor = Ide.Gui.Styles.BaseBackgroundColor;
-			//BaseForegroundColor = Ide.Gui.Styles.BaseForegroundColor;
-			BaseBackgroundColor = new Color (0, 0, 1);
-			BaseForegroundColor = new Color (0, 1, 0);
-
 			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
+				BaseBackgroundColor = Ide.Gui.Styles.BaseBackgroundColor;
+				BaseForegroundColor = Ide.Gui.Styles.BaseForegroundColor;
+				StatusErrorTextColor = Color.FromName ("#fa5433");
+				StatusWarningTextColor = Color.FromName ("#e8bd0d");
+				StatusReadyTextColor = Color.FromName ("#7f7f7f");
 			} else {
-
+				BaseBackgroundColor = new Color (0, 0, 0);
+				BaseForegroundColor = new Color (1, 1, 1);
+				StatusErrorTextColor = Color.FromName ("#fa5433");
+				StatusWarningTextColor = Color.FromName ("#e8bd0d");
+				StatusReadyTextColor = Color.FromName ("#7f7f7f");
 			}
 		}
 	}
