@@ -191,9 +191,7 @@ namespace MonoDevelop.Components
 		{
 			var gtkWidget = nativeWidget as Gtk.Widget;
 			if (gtkWidget != null) {
-				gtkWidget.Destroyed -= OnGtkDestroyed;
 				gtkWidget.Destroy ();
-				return;
 			}
 #if MAC
 			else if (nativeWidget is NSView)
@@ -207,6 +205,11 @@ namespace MonoDevelop.Components
 		{
 			if (nativeWidget != null)
 				cache.Remove (nativeWidget);
+
+			var gtkWidget = nativeWidget as Gtk.Widget;
+			if (gtkWidget != null) {
+				gtkWidget.Destroyed -= OnGtkDestroyed;
+			}
 		}
 	}
 }
