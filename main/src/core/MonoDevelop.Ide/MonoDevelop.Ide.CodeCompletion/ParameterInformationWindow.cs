@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			Theme.SetSchemeColors (scheme);
 			Theme.Font = FontService.SansFont.CopyModified (Styles.FontScale11);
 			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor.ToCairoColor ();
-			foreColor = scheme.PlainText.Foreground;
+			foreColor = Styles.PopoverWindow.DefaultTextColor.ToCairoColor ();
 
 			headlabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
 			headlabel.FontDescription = FontService.GetFontDescription ("Editor").CopyModified (Styles.FontScale11);
