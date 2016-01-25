@@ -251,11 +251,6 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			IdeApp.Workbench.ActiveLocationList = this;
 			newStore = new ListStore (typeof (SearchResult), typeof (bool));
-			newStore.DefaultSortFunc = DefaultSortFunc;
-			newStore.SetSortFunc (1, CompareProjectFileNames);
-			newStore.SetSortFunc (2, CompareFileNames);
-			newStore.SetSortFunc (3, CompareFilePaths);
-			newStore.SetSortColumnId (2, SortType.Ascending); 
 			Reset ();
 			buttonStop.Sensitive = true;
 			treeviewSearchResults.FreezeChildNotify ();
@@ -266,6 +261,12 @@ namespace MonoDevelop.Ide.FindInFiles
 		public void EndProgress ()
 		{
 			buttonStop.Sensitive = false;
+
+			newStore.DefaultSortFunc = DefaultSortFunc;
+			newStore.SetSortFunc (1, CompareProjectFileNames);
+			newStore.SetSortFunc (2, CompareFileNames);
+			newStore.SetSortFunc (3, CompareFilePaths);
+			newStore.SetSortColumnId (2, SortType.Ascending); 
 			treeviewSearchResults.Model = newStore;
 
 			store.Dispose ();
