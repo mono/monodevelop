@@ -266,7 +266,8 @@ namespace MonoDevelop.Ide
 			}
 			
 			errorsList = null;
-			
+			AddinManager.AddinLoadError -= OnAddinError;
+
 			// FIXME: we should probably track the last 'selected' one
 			// and do this more cleanly
 			try {
@@ -298,7 +299,6 @@ namespace MonoDevelop.Ide
 			IdeApp.Customizer.OnCoreShutdown ();
 
 			InstrumentationService.Stop ();
-			AddinManager.AddinLoadError -= OnAddinError;
 			
 			return 0;
 		}
