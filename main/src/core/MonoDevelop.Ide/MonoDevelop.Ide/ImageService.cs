@@ -186,7 +186,7 @@ namespace MonoDevelop.Ide
 
 			if (string.IsNullOrEmpty (name)) {
 				LoggingService.LogWarning ("Empty icon requested. Stack Trace: " + Environment.NewLine + Environment.StackTrace);
-				icons [name] = img = CreateColorIcon ("#FF0000");
+				icons [name] = img = CreateColorIcon ("#FF00FF");
 				return img;
 			}
 
@@ -204,7 +204,7 @@ namespace MonoDevelop.Ide
 
 			if (generateDefaultIcon) {
 				LoggingService.LogWarning ("Unknown icon: " + name);
-				return CreateColorIcon ("#FF0000FF");
+				return CreateColorIcon ("#FF00FF");
 			}
 
 			return icons [name] = img = Xwt.Toolkit.CurrentEngine.WrapImage (name);
