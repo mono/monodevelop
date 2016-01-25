@@ -106,6 +106,7 @@
     <Compile Include="FSharpHighlightUsagesExtension.fs" />
     <Compile Include="UnformattedTextFileDescriptionTemplate.fs" />
     <Compile Include="FakeSearchCategory.fs" />
+    <Compile Include="FSharpNavigationTextEditorExtension.fs" />
     <EmbeddedResource Include="FSharpSyntaxMode.xml" />
     <EmbeddedResource Include="FSharpFormattingPolicy.xml" />
     <EmbeddedResource Include="FSharpStylePolicy.xml" />
