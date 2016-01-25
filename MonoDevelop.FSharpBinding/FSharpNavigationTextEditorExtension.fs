@@ -33,11 +33,20 @@ type FSharpNavigationTextEditorExtension() =
                         let range = symbol.RangeAlternate
                         let startOffset = getOffset range.Start
                         let endOffset = getOffset range.End
-                        AbstractNavigationExtension.NavigationSegment(startOffset, endOffset - startOffset, 
+                        let text = editor.GetTextBetween(startOffset, endOffset)
+                        let lastDot = text.LastIndexOf "."
+                        let correctedOffset = 
+                            if lastDot <> -1 then
+                                startOffset + lastDot + 1
+                            else
+                                startOffset
+
+                        AbstractNavigationExtension.NavigationSegment(correctedOffset, endOffset - correctedOffset, 
                             (fun () -> GLib.Timeout.Add (50u, fun () -> Refactoring.jumpToDeclaration(editor, documentContext, symbol)
                                                                         false) |> ignore))
                     let filterSymbols (symbol: FSharpSymbolUse) =
                         symbol.RangeAlternate.StartLine = line
+
                         && Refactoring.Operations.canJump symbol editor.FileName documentContext.Project.ParentSolution
 
                     return doc.AllSymbolsKeyed.Values
