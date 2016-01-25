@@ -29,6 +29,8 @@ using System.Threading;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Core.Text;
 using System.IO;
+using System.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -45,18 +47,12 @@ namespace MonoDevelop.Ide.TypeSystem
 		async Task<TextAndVersion> GetTextAndVersion (Workspace workspace, DocumentId documentId, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested ();
-
-			if (!File.Exists (fileName)) {
-				var document = ((MonoDevelopWorkspace)workspace).GetDocument (documentId);
-				if (document == null)
-					return null;
-				return TextAndVersion.Create (await document.GetTextAsync (cancellationToken), VersionStamp.Create ());
-			}
 			SourceText text;
-			if (workspace.IsDocumentOpen (documentId)) {
+			if (IdeApp.Workbench.Documents.Any (doc => FilePath.PathComparer.Compare (doc.FileName, fileName) == 0)) {
 				text = new MonoDevelopSourceText (TextFileProvider.Instance.GetTextEditorData (fileName).CreateDocumentSnapshot ());
-			}
-			else {
+			} else {
+				if (!File.Exists (fileName))
+					return TextAndVersion.Create (SourceText.From (""), VersionStamp.Create ()); ;
 				text = SourceText.From (await TextFileUtility.GetTextAsync (fileName, cancellationToken));
 			}
 			return TextAndVersion.Create (text, VersionStamp.Create ());
