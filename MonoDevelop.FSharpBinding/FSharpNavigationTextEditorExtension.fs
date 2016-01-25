@@ -8,6 +8,7 @@ open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
+open ExtCore.Control
 
 type FSharpNavigationTextEditorExtension() =
     inherit AbstractNavigationExtension()
@@ -18,29 +19,32 @@ type FSharpNavigationTextEditorExtension() =
         let documentContext = base.DocumentContext
 
         let computation = async {
-            let doc = documentContext.ParsedDocument :?> FSharpParsedDocument
-            match doc.TryGetAst () with
-            | None -> return Seq.empty
-            | Some _ast ->
-                let getOffset(pos: Range.pos) =
-                    editor.LocationToOffset (DocumentLocation(pos.Line, pos.Column + 1))
-                
-                let line = editor.OffsetToLineNumber offset
+            match documentContext.ParsedDocument |> Option.tryCast<FSharpParsedDocument> with
+            | Some doc ->
+                match doc.TryGetAst () with
+                | None -> return Seq.empty
+                | Some _ast ->
+                    let getOffset(pos: Range.pos) =
+                        editor.LocationToOffset (DocumentLocation(pos.Line, pos.Column + 1))
 
-                let segmentFromSymbol (symbol: FSharpSymbolUse) =
-                    let range = symbol.RangeAlternate
-                    let startOffset = getOffset range.Start
-                    let endOffset = getOffset range.End
-                    AbstractNavigationExtension.NavigationSegment(startOffset, endOffset - startOffset, 
-                        (fun () -> GLib.Timeout.Add (50u, fun () -> Refactoring.jumpToDeclaration(editor, documentContext, symbol)
-                                                                    false) |> ignore))
-                let filterSymbols (symbol: FSharpSymbolUse) =
-                    symbol.RangeAlternate.StartLine = line
-                    && Refactoring.Operations.canJump symbol editor.FileName documentContext.Project.ParentSolution
+                    let line = editor.OffsetToLineNumber offset
 
-                return doc.AllSymbolsKeyed.Values
-                       |> Seq.filter filterSymbols
-                       |> Seq.map segmentFromSymbol
+                    let segmentFromSymbol (symbol: FSharpSymbolUse) =
+                        let range = symbol.RangeAlternate
+                        let startOffset = getOffset range.Start
+                        let endOffset = getOffset range.End
+                        AbstractNavigationExtension.NavigationSegment(startOffset, endOffset - startOffset, 
+                            (fun () -> GLib.Timeout.Add (50u, fun () -> Refactoring.jumpToDeclaration(editor, documentContext, symbol)
+                                                                        false) |> ignore))
+                    let filterSymbols (symbol: FSharpSymbolUse) =
+                        symbol.RangeAlternate.StartLine = line
+                        && Refactoring.Operations.canJump symbol editor.FileName documentContext.Project.ParentSolution
+
+                    return doc.AllSymbolsKeyed.Values
+                        |> Seq.filter filterSymbols
+                        |> Seq.map segmentFromSymbol
+
+            | None -> return Seq.empty   
         }
 
         Async.StartAsTask(computation, cancellationToken = token)

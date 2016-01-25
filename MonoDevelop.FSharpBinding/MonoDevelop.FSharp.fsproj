@@ -106,6 +106,7 @@
     <Compile Include="FSharpHighlightUsagesExtension.fs" />
     <Compile Include="UnformattedTextFileDescriptionTemplate.fs" />
     <Compile Include="FakeSearchCategory.fs" />
+    <Compile Include="FSharpNavigationTextEditorExtension.fs" />
     <EmbeddedResource Include="FSharpSyntaxMode.xml" />
     <EmbeddedResource Include="FSharpFormattingPolicy.xml" />
     <EmbeddedResource Include="FSharpStylePolicy.xml" />
@@ -115,7 +116,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Compile Include="Properties\AddinInfo.fs" />
-    <Compile Include="FSharpNavigationTextEditorExtension.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="pango-sharp" />
