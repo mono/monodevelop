@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			cancellationToken.ThrowIfCancellationRequested ();
 			SourceText text;
-			if (IdeApp.Workbench.Documents.Any (doc => FilePath.PathComparer.Compare (doc.FileName, fileName) == 0)) {
+			if (IdeApp.Workbench?.Documents.Any (doc => FilePath.PathComparer.Compare (doc.FileName, fileName) == 0) == true) {
 				text = new MonoDevelopSourceText (TextFileProvider.Instance.GetTextEditorData (fileName).CreateDocumentSnapshot ());
 			} else {
 				if (!File.Exists (fileName))
