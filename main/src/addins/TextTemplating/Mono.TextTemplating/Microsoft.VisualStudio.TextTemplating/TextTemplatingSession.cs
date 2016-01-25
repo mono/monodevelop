@@ -31,13 +31,17 @@ using System.Runtime.Serialization;
 namespace Microsoft.VisualStudio.TextTemplating
 {
 	[Serializable]
-	public sealed class TextTemplatingSession : Dictionary<string, Object>, ITextTemplatingSession
+	public sealed class TextTemplatingSession : Dictionary<string, object>, ITextTemplatingSession
 	{
 		public TextTemplatingSession () : this (Guid.NewGuid ())
 		{
 		}
-		
-		public TextTemplatingSession (Guid id)
+
+        public TextTemplatingSession(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+
+        public TextTemplatingSession (Guid id)
 		{
 			this.Id = id;
 		}
