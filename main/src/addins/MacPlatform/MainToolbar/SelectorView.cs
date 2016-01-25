@@ -320,20 +320,30 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					}
 				};
 
-				Ide.Gui.Styles.Changed += HandleStylesChanged;
+				Ide.Gui.Styles.Changed += UpdateStyle;
 			}
 
-			void HandleStylesChanged (object sender, EventArgs e)
+			void UpdateStyle (object sender = null, EventArgs e = null)
 			{
-				PathComponentCells [ConfigurationIdx].TextColor = Styles.BaseForegroundColor.ToNSColor ();
-				PathComponentCells [RuntimeIdx].TextColor = Styles.BaseForegroundColor.ToNSColor ();
+				//if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
+					if (PathComponentCells [ConfigurationIdx].Enabled)
+						PathComponentCells [ConfigurationIdx].TextColor = Styles.BaseForegroundColor.ToNSColor ();
+					else
+						PathComponentCells [ConfigurationIdx].TextColor = Styles.DisabledForegroundColor.ToNSColor ();
+
+				if (PathComponentCells [RuntimeIdx].Enabled)
+					PathComponentCells [RuntimeIdx].TextColor = Styles.BaseForegroundColor.ToNSColor ();
+				else
+					PathComponentCells [RuntimeIdx].TextColor = Styles.DisabledForegroundColor.ToNSColor ();
+				//}
+
 				UpdateImages ();
 			}
 
 			protected override void Dispose (bool disposing)
 			{
 				if (disposing)
-					Ide.Gui.Styles.Changed -= HandleStylesChanged;
+					Ide.Gui.Styles.Changed -= UpdateStyle;
 				base.Dispose (disposing);
 			}
 
@@ -360,7 +370,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			void UpdatePathText (int idx, string text)
 			{
 				PathComponentCells [idx].Title = text;
-				UpdateImages ();
+				UpdateStyle ();
 			}
 
 			void UpdateImages ()
@@ -418,8 +428,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					if (count == 0) {
 						state |= CellState.ConfigurationShown;
 						UpdatePathText (ConfigurationIdx, ConfigurationPlaceholder);
-					} else
-						UpdateImages ();
+					}
+					UpdateStyle ();
 					OnSizeChanged ();
 				}
 			}
@@ -434,8 +444,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					if (count == 0) {
 						state |= CellState.RuntimeShown;
 						UpdatePathText (RuntimeIdx, RuntimePlaceholder);
-					} else
-						UpdateImages ();
+					}
+					UpdateStyle ();
 					OnSizeChanged ();
 				}
 			}
