@@ -106,7 +106,7 @@ type FSharpIndentationTracker(editor:TextEditor) =
             let indent =
               if line = null then "" else
                 getIndentString lineNumber
-            LoggingService.LogInfo ("FSharpIndentationTracker: indent: '{0}'", indent)
+            LoggingService.LogDebug ("FSharpIndentationTracker: indent: '{0}'", indent)
             indent
         with
         | ex ->   LoggingService.LogError ("FSharpIndentationTracker", ex)
