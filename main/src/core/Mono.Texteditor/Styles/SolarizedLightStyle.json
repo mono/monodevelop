@@ -63,9 +63,9 @@
         { "name":"Quick Diff(Dirty)", "color":"yellow" },
         { "name":"Quick Diff(Changed)", "color":"green" },
 
-        { "name":"Brace Matching(Rectangle)", "color":"base1", "secondcolor":"base3" },
-        { "name":"Usages(Rectangle)", "color":"base3", "secondcolor":"base3", "bordercolor":"base3" },
-        { "name":"Changing usages(Rectangle)", "color":"base3", "secondcolor":"base3", "bordercolor":"base3" },
+        { "name":"Brace Matching(Rectangle)", "color":"#fde5d6", "secondcolor":"#fde5d6" },
+        { "name":"Usages(Rectangle)", "color":"#B1DFF9", "secondcolor":"#B1DFF9", "bordercolor":"#B1DFF9" },
+        { "name":"Changing usages(Rectangle)", "color":"#FFD6DD", "secondcolor":"#FFD6DD", "bordercolor":"#FFD6DD" },
 
         { "name":"Breakpoint Marker", "color":"#f9dbda", "bordercolor":"#f9dbda" },
         { "name":"Breakpoint Marker(Disabled)", "color":"#e9e9e9", "bordercolor":"#e9e9e9" },
@@ -74,7 +74,7 @@
         { "name":"Current Line Marker", "color":"#f5eedd", "secondcolor":"#f5eedd"},
         { "name":"Current Line Marker(Inactive)", "color":"#f5eedd", "secondcolor":"#f5eedd"},
 
-        { "name":"Debugger Current Line Marker", "color":"#f8f4a1", "bordercolor":"#ede993" },
+        { "name":"Debugger Current Line Marker", "color":"#f8f4a1", "bordercolor":"#f8f4a1" },
         { "name":"Debugger Stack Line Marker", "color":"#ccfca6", "bordercolor":"#bff197" },
 
         { "name":"Primary Link", "color":"chameleon3", "secondcolor":"chameleon2"},

@@ -72,7 +72,7 @@
         { "name":"Quick Diff(Dirty)", "color":"orangesicle-light" },
         { "name":"Quick Diff(Changed)", "color":"orangesicle" },
 
-        { "name":"Brace Matching(Rectangle)", "color":"orangesicle", "secondcolor":"orangesicle-light" },
+        { "name":"Brace Matching(Rectangle)", "color":"#fde5d6", "secondcolor":"#fde5d6" },
         { "name":"Usages(Rectangle)", "color":"#B1DFF9", "secondcolor":"#B1DFF9", "bordercolor":"#B1DFF9" },
         { "name":"Changing usages(Rectangle)", "color":"#FFD6DD", "secondcolor":"#FFD6DD", "bordercolor":"#FFD6DD" },
 
@@ -83,7 +83,7 @@
         { "name":"Current Line Marker", "color":"#f7f7f7", "secondcolor":"#f7f7f7" },
         { "name":"Current Line Marker(Inactive)", "color":"#f7f7f7", "secondcolor":"#f7f7f7" },
 
-        { "name":"Debugger Current Line Marker", "color":"#f8f4a1", "bordercolor":"#ede993" },
+        { "name":"Debugger Current Line Marker", "color":"#f8f4a1", "bordercolor":"#f8f4a1" },
         { "name":"Debugger Stack Line Marker", "color":"#ccfca6", "bordercolor":"#bff197" },
 
         { "name":"Primary Link", "color":"chameleon3", "secondcolor":"chameleon2" },

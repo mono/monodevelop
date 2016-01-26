@@ -63,18 +63,18 @@
         { "name":"Quick Diff(Dirty)", "color":"yellow" },
         { "name":"Quick Diff(Changed)", "color":"green" },
 
-        { "name":"Brace Matching(Rectangle)", "color":"base1", "secondcolor":"base02" },
-        { "name":"Usages(Rectangle)", "color":"base02", "secondcolor":"base02", "bordercolor":"base02" },
-        { "name":"Changing usages(Rectangle)", "color":"base02", "secondcolor":"base02", "bordercolor":"base02" },
+        { "name":"Brace Matching(Rectangle)", "color":"#0e5465", "secondcolor":"#0e5465" },
+        { "name":"Usages(Rectangle)", "color":"#527F99", "secondcolor":"#527F99", "bordercolor":"#527F99" },
+        { "name":"Changing usages(Rectangle)", "color":"#996E75", "secondcolor":"#996E75", "bordercolor":"#996E75" },
 
-        { "name":"Breakpoint Marker", "color":"#6f3535", "bordercolor":"#7a3a3a" },
-        { "name":"Breakpoint Marker(Disabled)", "color":"#707070", "bordercolor":"#7b7b7b" },
-        { "name":"Breakpoint Marker(Invalid)", "color":"#604343", "bordercolor":"#6a4a4a" },
+        { "name":"Breakpoint Marker", "color":"#6f3535", "bordercolor":"#6f3535" },
+        { "name":"Breakpoint Marker(Disabled)", "color":"#4d4d4d", "bordercolor":"#4d4d4d" },
+        { "name":"Breakpoint Marker(Invalid)", "color":"#604343", "bordercolor":"#604343" },
 
         { "name":"Current Line Marker", "color":"#183842", "secondcolor":"#183842"},
         { "name":"Current Line Marker(Inactive)", "color":"#183842", "secondcolor":"#183842"},
 
-        { "name":"Debugger Current Line Marker", "color":"#69684c", "bordercolor":"#747354" },
+        { "name":"Debugger Current Line Marker", "color":"#69684c", "bordercolor":"#69684c" },
         { "name":"Debugger Stack Line Marker", "color":"#5c6b4d", "bordercolor":"#657655"},
 
         { "name":"Primary Link", "color":"chameleon3", "secondcolor":"chameleon2"},

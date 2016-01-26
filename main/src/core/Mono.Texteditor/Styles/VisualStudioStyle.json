@@ -27,7 +27,7 @@
         { "name":"Quick Diff(Dirty)", "color":"yellow" },
         { "name":"Quick Diff(Changed)", "color":"green" },
 
-        { "name":"Brace Matching(Rectangle)", "color":"#DBE0CC", "secondcolor":"#00000000" },
+        { "name":"Brace Matching(Rectangle)", "color":"#fde5d6", "secondcolor":"#fde5d6" },
         { "name":"Usages(Rectangle)", "color":"#B1DFF9", "secondcolor":"#B1DFF9", "bordercolor":"#B1DFF9" },
         { "name":"Changing usages(Rectangle)", "color":"#FFD6DD", "secondcolor":"#FFD6DD", "bordercolor":"#FFD6DD" },
 
@@ -37,6 +37,8 @@
 
         { "name":"Current Line Marker", "color":"#f7f7f7", "secondcolor":"#f7f7f7" },
         { "name":"Current Line Marker(Inactive)", "color":"#f7f7f7", "secondcolor":"#f7f7f7" },
+
+        { "name":"Debugger Current Line Marker", "color":"#f8f4a1", "bordercolor":"#f8f4a1" },
 
         { "name":"Indicator Margin", "color":"#f6f6f6" },
         { "name":"Indicator Margin(Separator)", "color":"#f6f6f6" },
