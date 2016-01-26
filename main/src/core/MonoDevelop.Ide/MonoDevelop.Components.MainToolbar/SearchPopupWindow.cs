@@ -48,6 +48,7 @@ namespace MonoDevelop.Components.MainToolbar
 		const int iconTextSpacing = 6;
 		const int categorySeparatorHeight = 8;
 		const int headerMarginSize = 100;
+		const int itemPadding = 4;
 
 		List<SearchCategory> categories = new List<SearchCategory> ();
 		List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> results = new List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> ();
@@ -1006,7 +1007,7 @@ namespace MonoDevelop.Components.MainToolbar
 				layout.GetPixelSize (out w, out h);
 				if (isSelected) {
 					context.SetSourceColor (selectionBackgroundColor);
-					context.Rectangle (alloc.X + headerMarginSize + 1, y - 2, Allocation.Width - adjustedMarginSize - 1, h + 4);
+					context.Rectangle (alloc.X + headerMarginSize + 1, y - itemPadding, Allocation.Width - adjustedMarginSize - 1, h + itemPadding * 2);
 					context.Fill ();
 					context.SetSourceRGB (1, 1, 1);
 				}
@@ -1015,7 +1016,7 @@ namespace MonoDevelop.Components.MainToolbar
 				if (px != null) {
 					if (isSelected)
 						px = px.WithStyles ("sel");
-					context.DrawImage (this, px, (int)x + marginIconSpacing, (int)(y + (h - px.Height) / 2));
+					context.DrawImage (this, px, (int)x + marginIconSpacing, (int)(y));
 					x += px.Width + iconTextSpacing + marginIconSpacing;
 				}
 
@@ -1023,7 +1024,7 @@ namespace MonoDevelop.Components.MainToolbar
 				context.SetSourceRGB (0, 0, 0);
 				Pango.CairoHelper.ShowLayout (context, layout);
 
-				y += h + itemSeparatorHeight;
+				y += h + itemSeparatorHeight + itemPadding * 2;
 
 			}
 
@@ -1058,7 +1059,7 @@ namespace MonoDevelop.Components.MainToolbar
 						break;
 					if (isSelected) {
 						context.SetSourceColor (selectionBackgroundColor);
-						context.Rectangle (alloc.X + headerMarginSize + 1, y - 2, Allocation.Width - adjustedMarginSize - 1, h + 4);
+						context.Rectangle (alloc.X + headerMarginSize + 1, y - itemPadding, Allocation.Width - adjustedMarginSize - 1, h + itemPadding * 2);
 						context.Fill ();
 						context.SetSourceRGB (1, 1, 1);
 					}
@@ -1067,7 +1068,7 @@ namespace MonoDevelop.Components.MainToolbar
 					if (px != null) {
 						if (isSelected)
 							px = px.WithStyles ("sel");
-						context.DrawImage (this, px, (int)x + marginIconSpacing, (int)(y + (h - px.Height) / 2));
+						context.DrawImage (this, px, (int)x + marginIconSpacing, (int)(y));
 						x += px.Width + iconTextSpacing + marginIconSpacing;
 					}
 
@@ -1075,7 +1076,7 @@ namespace MonoDevelop.Components.MainToolbar
 					context.SetSourceRGB (0, 0, 0);
 					Pango.CairoHelper.ShowLayout (context, layout);
 
-					y += h + itemSeparatorHeight;
+					y += h + itemSeparatorHeight + itemPadding * 2;
 				}
 				if (result != r.Last ()) {
 					y += categorySeparatorHeight;
