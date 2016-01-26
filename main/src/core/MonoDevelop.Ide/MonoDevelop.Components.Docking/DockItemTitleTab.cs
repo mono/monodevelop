@@ -157,9 +157,6 @@ namespace MonoDevelop.Components.Docking
 				labelWidget.ModifyText (StateType.Normal, (active ? visualStyle.PadTitleLabelColor.Value : visualStyle.InactivePadTitleLabelColor.Value).ToGdkColor ());
 			}
 
-			// TODO: VV: Please replicate the gradient from TabStrip.DrawTab () with total transparency
-			// so we have the same appearance of the label as on document tabs
-
 			var r = WidthRequest;
 			WidthRequest = -1;
 			labelWidth = SizeRequest ().Width + 1;
