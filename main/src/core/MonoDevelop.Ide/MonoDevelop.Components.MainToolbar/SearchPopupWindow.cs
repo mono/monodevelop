@@ -405,7 +405,7 @@ namespace MonoDevelop.Components.MainToolbar
 					layout.GetPixelSize (out w, out h);
 					if (y + h + itemSeparatorHeight > maxHeight)
 						break;
-					y += h + itemSeparatorHeight;
+					y += h + itemSeparatorHeight + itemPadding * 2;
 					calculatedItems++;
 				}
 			}
