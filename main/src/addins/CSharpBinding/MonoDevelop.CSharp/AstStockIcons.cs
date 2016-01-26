@@ -47,8 +47,10 @@ namespace MonoDevelop.CSharp
 		static readonly IconId Property = "md-property";
 		static readonly IconId Struct = "md-struct";
 		static readonly IconId Delegate = "md-delegate";
+		static readonly IconId Constant = "md-literal";
 		public static readonly IconId Namespace = "md-name-space";
 
+			
 		static void AdjustAccessibility (SyntaxTokenList modifiers, ref Accessibility acc, ref bool isStatic, ref bool result)
 		{
 			isStatic = modifiers.Any (mod => mod.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.StaticKeyword);
@@ -108,12 +110,24 @@ namespace MonoDevelop.CSharp
 				AdjustAccessibility (((BaseMethodDeclarationSyntax)element).Modifiers, ref acc, ref isStatic, ref result);
 			return result;
 		}
-		
+
+		static bool IsConst (SyntaxTokenList modifiers)
+		{
+			return modifiers.Any (mod => mod.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.ConstKeyword);
+		}
+
+		static bool IsConst (SyntaxNode element)
+		{
+			if (element is BaseFieldDeclarationSyntax)
+				return IsConst (((BaseFieldDeclarationSyntax)element).Modifiers);
+			if (element is LocalDeclarationStatementSyntax)
+				return IsConst (((LocalDeclarationStatementSyntax)element).Modifiers);
+			return false;
+		}
 		public static string GetStockIcon (this SyntaxNode element)
 		{
 			Accessibility acc = Accessibility.Public;
 			bool isStatic = false;
-
 			if (element is NamespaceDeclarationSyntax)
 				return Namespace;
 			
@@ -165,8 +179,18 @@ namespace MonoDevelop.CSharp
 				return "md-" + GetAccess (acc) + GetGlobal (isStatic) + "property";
 			if (element is EventDeclarationSyntax || element is EventFieldDeclarationSyntax)
 				return "md-" + GetAccess (acc) + GetGlobal (isStatic) + "event";
-			if (element.Parent is EnumDeclarationSyntax)
-				return "md-" + GetAccess (acc) + "enum";
+			if (element is EnumMemberDeclarationSyntax)
+				return "md-literal";
+			if (element?.Parent?.Parent is FieldDeclarationSyntax || element?.Parent?.Parent is LocalDeclarationStatementSyntax) {
+				if (IsConst (element.Parent.Parent))
+					return "md-" + GetAccess (acc) + "literal";
+			}
+
+			if (element is FieldDeclarationSyntax || element is LocalDeclarationStatementSyntax) {
+				if (IsConst (element))
+					return "md-" + GetAccess (acc) + "literal";
+			}
+
 			return "md-" + GetAccess (acc) + GetGlobal (isStatic) + "field";
 		}
 

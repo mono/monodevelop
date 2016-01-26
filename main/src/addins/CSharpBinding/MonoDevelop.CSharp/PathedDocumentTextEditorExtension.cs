@@ -699,7 +699,7 @@ namespace MonoDevelop.CSharp
 					return;
 				}
 
-				var curMember = node != null ? node.AncestorsAndSelf ().FirstOrDefault (m => m is VariableDeclaratorSyntax || (m is MemberDeclarationSyntax && !(m is NamespaceDeclarationSyntax))) : null;
+				var curMember = node != null ? node.AncestorsAndSelf ().FirstOrDefault (m => m is VariableDeclaratorSyntax && !(m.Parent?.Parent is LocalDeclarationStatementSyntax) || (m is MemberDeclarationSyntax && !(m is NamespaceDeclarationSyntax))) : null;
 				var curType = node != null ? node.AncestorsAndSelf ().FirstOrDefault (IsType) : null;
 
 				var curProject = ownerProjects != null && ownerProjects.Count > 1 ? DocumentContext.Project : null;
