@@ -28,65 +28,65 @@ module unitTestGatherer =
         sb.ToString ()
 
     let gatherUnitTests (editor: TextEditor, allSymbols:FSharpSymbolUse [] option) =
-      let tests = ResizeArray<UnitTestLocation>()
-   
-      let testSymbols = 
-          match allSymbols with
-          | None -> None
-          | Some symbols ->
-              symbols 
-              |> Array.filter
-                  (fun s -> match s.Symbol with
-                            | :? FSharpMemberOrFunctionOrValue as fom -> 
+        let tests = ResizeArray<UnitTestLocation>()
+        
+        let testSymbols = 
+            match allSymbols with
+            | None -> None
+            | Some symbols ->
+                symbols 
+                |> Array.filter
+                    (fun s -> match s.Symbol with
+                              | :? FSharpMemberOrFunctionOrValue as fom -> 
                                   fom.Attributes
                                   |> Seq.exists (hasAttributeNamed "NUnit.Framework.TestAttribute")
-                            | :? FSharpEntity as fse ->
+                              | :? FSharpEntity as fse ->
                                   fse.Attributes
                                   |> Seq.exists (hasAttributeNamed "NUnit.Framework.TestFixtureAttribute")
-                            | _ -> false )
-              |> Seq.distinctBy (fun su -> su.RangeAlternate)
-              |> Seq.choose
-                  (fun symbolUse -> 
-                         let range = symbolUse.RangeAlternate
-                         let startOffset = editor.LocationToOffset(range.StartLine, range.StartColumn+1)
-                         let test = UnitTestLocation(startOffset)
-                         match symbolUse.Symbol with
-                         | :? FSharpMemberOrFunctionOrValue as func -> 
-                              let typeName =
+                              | _ -> false )
+                |> Seq.distinctBy (fun su -> su.RangeAlternate)
+                |> Seq.choose
+                    (fun symbolUse -> 
+                        let range = symbolUse.RangeAlternate
+                        let startOffset = editor.LocationToOffset(range.StartLine, range.StartColumn+1)
+                        let test = UnitTestLocation(startOffset)
+                        match symbolUse.Symbol with
+                        | :? FSharpMemberOrFunctionOrValue as func -> 
+                            let typeName =
                                 match func.EnclosingEntitySafe with
                                 | Some ent -> ent.QualifiedName
                                 | None _ ->
-                                  MonoDevelop.Core.LoggingService.LogWarning(sprintf "F# GatherUnitTests: found a unit test method with no qualified name: %s" func.FullName)
-                                  func.CompiledName
-                              let methName = PrettyNaming.QuoteIdentifierIfNeeded func.CompiledName
-                              let isIgnored =
-                                  func.Attributes
-                                  |> Seq.exists (hasAttributeNamed "NUnit.Framework.IgnoreAttribute")
-                              //add test cases
-                              let testCases =
-                                  func.Attributes
-                                  |> Seq.filter (hasAttributeNamed "NUnit.Framework.TestCaseAttribute")
-                              testCases
-                              |> Seq.map createTestCase
-                              |> test.TestCases.AddRange
-                              test.UnitTestIdentifier <- typeName + "." + methName
-   
-                              test.IsIgnored <- isIgnored
-                              Some test
-                          | :? FSharpEntity as entity ->
-                              let typeName = entity.QualifiedName
-                              let isIgnored =
-                                  entity.Attributes
-                                  |> Seq.exists (hasAttributeNamed "NUnit.Framework.IgnoreAttribute")
-                              test.UnitTestIdentifier <- typeName
-                              test.IsIgnored <- isIgnored
-                              test.IsFixture <- true
-                              Some test
-                          | _ -> None)
-              |> Some
-      testSymbols
-      |> Option.iter tests.AddRange 
-      tests
+                                    MonoDevelop.Core.LoggingService.LogWarning(sprintf "F# GatherUnitTests: found a unit test method with no qualified name: %s" func.FullName)
+                                    func.CompiledName
+                            let methName = PrettyNaming.QuoteIdentifierIfNeeded func.CompiledName
+                            let isIgnored =
+                                func.Attributes
+                                |> Seq.exists (hasAttributeNamed "NUnit.Framework.IgnoreAttribute")
+                            //add test cases
+                            let testCases =
+                                func.Attributes
+                                |> Seq.filter (hasAttributeNamed "NUnit.Framework.TestCaseAttribute")
+                            testCases
+                            |> Seq.map createTestCase
+                            |> test.TestCases.AddRange
+                            test.UnitTestIdentifier <- typeName + "." + methName
+        
+                            test.IsIgnored <- isIgnored
+                            Some test
+                        | :? FSharpEntity as entity ->
+                            let typeName = entity.QualifiedName
+                            let isIgnored =
+                                entity.Attributes
+                                |> Seq.exists (hasAttributeNamed "NUnit.Framework.IgnoreAttribute")
+                            test.UnitTestIdentifier <- typeName
+                            test.IsIgnored <- isIgnored
+                            test.IsFixture <- true
+                            Some test
+                        | _ -> None)
+                |> Some
+        testSymbols
+        |> Option.iter tests.AddRange 
+        tests
 
 type FSharpUnitTestTextEditorExtension() =
     inherit AbstractUnitTestTextEditorExtension()
