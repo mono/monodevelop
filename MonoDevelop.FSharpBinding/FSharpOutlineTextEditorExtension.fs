@@ -54,9 +54,9 @@ type FSharpOutlineTextEditorExtension() as x =
         false
 
     member private x.updateDocumentOutline _ =
-      if not refreshingOutline then
-        refreshingOutline <- true
-        timerId <- GLib.Timeout.Add (1000u, (fun _ -> refillTree()))
+        if not refreshingOutline then
+            refreshingOutline <- true
+            timerId <- GLib.Timeout.Add (1000u, (fun _ -> refillTree()))
 
     override x.Initialize() =
         base.Initialize()

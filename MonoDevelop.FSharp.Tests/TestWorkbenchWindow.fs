@@ -10,7 +10,7 @@ type TestWorkbenchWindow(viewContent) =
     let closing = DelegateEvent<_>()
     let avcc = DelegateEvent<_>()
     let viewsChanged = DelegateEvent<_>()
-     
+
     interface IWorkbenchWindow with
         member x.SelectWindow () = ()
         member x.SwitchView (viewNumber:int) = ()

@@ -16,7 +16,7 @@ type FSharpFormattingPolicyPanel() =
     override __.LoadFrom(p : FSharpFormattingPolicy) =
         policy <- p.Clone()
         panel.SetFormat(policy)
-        
+
     override __.GetPolicy() =
         panel.CommitPendingChanges ()
         policy

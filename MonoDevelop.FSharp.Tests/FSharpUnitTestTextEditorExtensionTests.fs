@@ -7,12 +7,12 @@ open FsUnit
 [<TestFixture>]
 type FSharpUnitTestTextEditorExtensionTests() =
     let gatherTests (text:string) =
-      let editor = TestHelpers.createDoc text ""
-      let ast = editor.Ast
-      let symbols = ast.GetAllUsesOfAllSymbolsInFile() |> Async.RunSynchronously
+        let editor = TestHelpers.createDoc text ""
+        let ast = editor.Ast
+        let symbols = ast.GetAllUsesOfAllSymbolsInFile() |> Async.RunSynchronously
 
-      unitTestGatherer.gatherUnitTests (editor.Editor, symbols) 
-      |> Seq.toList
+        unitTestGatherer.gatherUnitTests (editor.Editor, symbols)
+        |> Seq.toList
 
     let gatherTestsWithReference (text:string) =
         let attributes = """

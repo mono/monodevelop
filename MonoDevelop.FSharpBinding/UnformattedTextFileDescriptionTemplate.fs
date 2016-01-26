@@ -46,7 +46,7 @@ type UnformattedTextFileDescriptionTemplate() =
     override x.CreateFileContent(policyParent, project, language, fileName, identifier) =
         let tags = new Dictionary<_, _> ()
         x.ModifyTags (policyParent, project, language, identifier, fileName, ref tags)
-                       
+
         let ms = new MemoryStream ()
 
         let bom = Encoding.UTF8.GetPreamble ()
@@ -61,16 +61,16 @@ type UnformattedTextFileDescriptionTemplate() =
             let content = x.CreateContent (project, tags, language)
             let content = StringParserService.Parse (content, tags)
             new Mono.TextEditor.TextDocument (Text = content)
-            
+
         let textPolicy =
             match policyParent with
             | null -> Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> "text/plain"
             | p -> p.Policies.Get<TextStylePolicy> "text/plain"
-             
+
         let eolMarker = TextStylePolicy.GetEolMarker textPolicy.EolMarker
         let eolMarkerBytes = Encoding.UTF8.GetBytes eolMarker
-                        
-           
+
+
         for line in doc.Lines do
             let lineText =
                 let lt = doc.GetTextAt (line.Offset, line.Length)
@@ -82,6 +82,6 @@ type UnformattedTextFileDescriptionTemplate() =
             let data = Encoding.UTF8.GetBytes lineText
             ms.Write (data, 0, data.Length)
             ms.Write (eolMarkerBytes, 0, eolMarkerBytes.Length)
-            
+
         ms.Position <- 0L
         ms :> _

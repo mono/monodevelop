@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------
-// Serializable types that store F# project parameters (build order) and 
+// Serializable types that store F# project parameters (build order) and
 // F# compiler parameters (debug mode, tail-calls, etc.)
 // --------------------------------------------------------------------------------------
 
@@ -10,15 +10,15 @@ open MonoDevelop.Projects
 open MonoDevelop.Core.Serialization
 
 /// Serializable type respresnting F# compiler parameters
-type FSharpCompilerParameters() = 
+type FSharpCompilerParameters() =
   inherit MonoDevelop.Projects.DotNetCompilerParameters()
 
   [<ItemProperty ("Optimize")>]
   let mutable optimize = true
-     
-  [<ItemProperty ("GenerateTailCalls", DefaultValue = false)>] 
+
+  [<ItemProperty ("GenerateTailCalls", DefaultValue = false)>]
   let mutable generateTailCalls = false
-    
+
   [<ItemProperty ("NoStdLib", DefaultValue = false)>]
   let mutable noStdLib = false
 
@@ -43,20 +43,20 @@ type FSharpCompilerParameters() =
   member x.PlatformTarget with get () = platformTarget and set v = platformTarget <- v
 
   override x.AddDefineSymbol(symbol) =
-    if System.String.IsNullOrEmpty x.DefineConstants then
-      x.DefineConstants <- symbol
-    else
-      x.DefineConstants <- x.DefineConstants + ";" + symbol
+      if System.String.IsNullOrEmpty x.DefineConstants then
+        x.DefineConstants <- symbol
+      else
+        x.DefineConstants <- x.DefineConstants + ";" + symbol
 
   override x.RemoveDefineSymbol(symbol) =
-    if x.DefineConstants = symbol then
-      x.DefineConstants <- ""
-    elif (String.IsNullOrWhiteSpace >> not) x.DefineConstants then
-      x.DefineConstants <- x.DefineConstants.Replace(";" + symbol, "")
-      
+      if x.DefineConstants = symbol then
+        x.DefineConstants <- ""
+      elif (String.IsNullOrWhiteSpace >> not) x.DefineConstants then
+        x.DefineConstants <- x.DefineConstants.Replace(";" + symbol, "")
+
   override x.GetDefineSymbols () =
-    x.DefineConstants.Split (';', ',', ' ', '\t')
-    |> Seq.where (String.IsNullOrWhiteSpace >> not)
+      x.DefineConstants.Split (';', ',', ' ', '\t')
+      |> Seq.where (String.IsNullOrWhiteSpace >> not)
 
   override x.CreateCompilationOptions () =
       null //TODO

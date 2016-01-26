@@ -8,7 +8,7 @@ open MonoDevelop.FSharp
 
 [<TestFixture>]
 type TestTooltipProvider() =
-    let stripHtml html = 
+    let stripHtml html =
         Regex.Replace(html, "<.*?>", "")
 
     let htmlDecode (s: string) =
@@ -17,28 +17,28 @@ type TestTooltipProvider() =
          .Replace("&apos;", "'")
 
     let getTooltip (source: string) =
-      let offset = source.IndexOf("§")
-      let source = source.Replace("§", "")
-      
-      let doc = TestHelpers.createDoc source ""
-      let line, col, lineStr = doc.Editor.GetLineInfoFromOffset offset
-      
-      let symbolUse = doc.Ast.GetSymbolAtLocation(line, col - 1, lineStr)
-                      |> Async.RunSynchronously
-                      |> Option.get
-                      
-      let tooltip = SymbolTooltips.getTooltipFromSymbolUse symbolUse
-      
-      let signature =
-          match tooltip with
-          | Some(tip, _, _) -> tip
-          | _ ->  ""
+        let offset = source.IndexOf("§")
+        let source = source.Replace("§", "")
 
-      signature |> stripHtml |> htmlDecode
+        let doc = TestHelpers.createDoc source ""
+        let line, col, lineStr = doc.Editor.GetLineInfoFromOffset offset
+
+        let symbolUse = doc.Ast.GetSymbolAtLocation(line, col - 1, lineStr)
+                        |> Async.RunSynchronously
+                        |> Option.get
+
+        let tooltip = SymbolTooltips.getTooltipFromSymbolUse symbolUse
+
+        let signature =
+            match tooltip with
+            | Some(tip, _, _) -> tip
+            | _ ->  ""
+
+        signature |> stripHtml |> htmlDecode
 
     [<Test>]
     member this.Formats_tooltip_arrows_right_aligned() =
-        let input = 
+        let input =
             """
             open System
             let toBeParti§allyApplied (datNumba: int) (thaString: string) (be: bool) =
@@ -57,12 +57,12 @@ type TestTooltipProvider() =
 
     [<Test>]
     member this.Formats_forall2_tooltip_arrows_right_aligned() =
-        let input = 
+        let input =
             """
             open System
             let allEqual coll = Seq.fora§ll2 (fun elem1 elem2 -> elem1 = elem2) coll
             """
-        
+
         let signature = getTooltip input
 
         let expected = """val forall2 :
@@ -70,18 +70,18 @@ type TestTooltipProvider() =
    source1  : seq<'T1>           ->
    source2  : seq<'T2>           
            -> bool"""
-        
+
         signature.ToString() |> shouldEqualIgnoringLineEndings expected
         // Base Type Constraint
 
     [<Test>]
     member this.Formats_base_type_constraint_tooltip() =
-        let input = 
+        let input =
             """
             type A§<'T when 'T :> System.Exception> =
                 class end
             """
-        
+
         let signature = getTooltip input
 
         let expected = """type A<'T when 'T :> System.Exception>"""
@@ -90,12 +90,12 @@ type TestTooltipProvider() =
 
     [<Test>]
     member this.Formats_interface_type_constraint_tooltip() =
-        let input = 
+        let input =
             """
-            type A§<'T when 'T :> System.IComparable> = 
+            type A§<'T when 'T :> System.IComparable> =
                 class end
             """
-        
+
         let signature = getTooltip input
 
         let expected = """type A<'T when 'T :> System.IComparable>"""
@@ -104,50 +104,50 @@ type TestTooltipProvider() =
 
     [<Test>]
     member this.Formats_null_type_constraint_tooltip() =
-        let input = 
+        let input =
             """
             type A§<'T when 'T : null> =
                 class end
             """
-        
+
         let signature = getTooltip input
 
         let expected = """type A<'T when 'T : null>"""
 
         signature.ToString() |> should startWith expected
-    
+
     [<Test>]
     member this.Formats_member_constraint_with_static_member_tooltip() =
-        let input = 
+        let input =
             """
             type A§<'T when 'T : (static member staticMethod1 : unit -> 'T) > =
                 class end
             """
-        
+
         let signature = getTooltip input
         let expected = """type A<^T when ^T : (static member staticMethod1 : unit -> ^T)>"""
         signature.ToString() |> should startWith expected
 
     [<Test>]
     member this.Formats_member_constraint_with_instance_member_tooltip() =
-        let input = 
+        let input =
             """
             type A§<'T when 'T : (member Method1 : 'T -> int)> =
                 class end
             """
-        
+
         let signature = getTooltip input
         let expected = """type A<^T when ^T : (member Method1 : ^T -> int)>"""
         signature.ToString() |> should startWith expected
 
     [<Test>]
     member this.Formats_member_constraint_with_property_tooltip() =
-        let input = 
+        let input =
             """
             type A§<'T when 'T : (member Property1 : int)> =
                 class end
             """
-        
+
         let signature = getTooltip input
 
         let expected = """type A<^T when ^T : (member Property1 : int)>"""
@@ -155,12 +155,12 @@ type TestTooltipProvider() =
 
     [<Test>]
     member this.Formats_constructor_constraint_tooltip() =
-        let input = 
+        let input =
             """
             type A§<'T when 'T : (new : unit -> 'T)>() =
                 class end
             """
-        
+
         let signature = getTooltip input
 
         let expected = """type A<'T when 'T : (new : unit -> 'T)>"""
@@ -168,12 +168,12 @@ type TestTooltipProvider() =
 
     [<Test>]
     member this.Formats_reference_type_constraint_tooltip() =
-        let input = 
+        let input =
             """
             type A§<'T when 'T : not struct> =
                 class end
             """
-        
+
         let signature = getTooltip input
 
         let expected = """type A<'T when 'T : not struct>"""
@@ -181,12 +181,12 @@ type TestTooltipProvider() =
 
     [<Test>]
     member this.Formats_enum_constraint_tooltip() =
-        let input = 
+        let input =
             """
             type A§<'T when 'T : enum<uint32>> =
                 class end
             """
-        
+
         let signature = getTooltip input
 
         let expected = """type A<'T when 'T : enum<uint32>>"""
@@ -194,12 +194,12 @@ type TestTooltipProvider() =
 
     [<Test>]
     member this.Formats_comparison_constraint_tooltip() =
-        let input = 
+        let input =
             """
             type A§<'T when 'T : comparison> =
                 class end
             """
-        
+
         let signature = getTooltip input
 
         let expected = """type A<'T when 'T : comparison>"""
@@ -207,12 +207,12 @@ type TestTooltipProvider() =
 
     [<Test>]
     member this.Formats_equality_constraint_tooltip() =
-        let input = 
+        let input =
             """
             type A§<'T when 'T : equality> =
                 class end
             """
-        
+
         let signature = getTooltip input
 
         let expected = """type A<'T when 'T : equality>"""
@@ -220,12 +220,12 @@ type TestTooltipProvider() =
 
     [<Test>]
     member this.Formats_delegate_constraint_tooltip() =
-        let input = 
+        let input =
             """
             type A§<'T when 'T : delegate<obj * System.EventArgs, unit>> =
                 class end
             """
-        
+
         let signature = getTooltip input
 
         let expected = """type A<'T when 'T : delegate<obj * System.EventArgs, unit>>"""
@@ -233,12 +233,12 @@ type TestTooltipProvider() =
 
     [<Test>]
     member this.Formats_unmanaged_constraint_tooltip() =
-        let input = 
+        let input =
             """
             type A§<'T when 'T : unmanaged> =
                 class end
             """
-        
+
         let signature = getTooltip input
 
         let expected = """type A<'T when 'T : unmanaged>"""
@@ -247,12 +247,12 @@ type TestTooltipProvider() =
     [<Test>]
     [<Ignore>]
     member this.Formats_member_constraints_with_two_type_parameters_tooltip() =
-        let input = 
+        let input =
             """
             let inline ad§d(value1 : ^T when ^T : (static member (+) : ^T * ^T -> ^T), value2: ^T) =
                 value1 + value2
             """
-        
+
         let signature = getTooltip input
 
         let expected = """???"""
@@ -261,39 +261,39 @@ type TestTooltipProvider() =
     [<Test>]
     [<Ignore>]
     member this.Formats_member_operator_constraint_tooltip() =
-        let input = 
+        let input =
             """
             let inline heterog§enousAdd(value1 : ^T when (^T or ^U) : (static member (+) : ^T * ^U -> ^T), value2 : ^U) =
                 value1 + value2
             """
-        
+
         let signature = getTooltip input
 
         let expected = """???"""
         signature.ToString() |> should startWith expected
-    
+
     [<Test>]
     member this.Formats_multiple_type_constraints_tooltip() =
-        let input = 
+        let input =
             """
             type A§<'T,'U when 'T : equality and 'U : equality> =
                 class end
             """
-        
+
         let signature = getTooltip input
         // not exactly right, but probably good enough for a tooltip
         // and I get this behaviour for free
         let expected = """type A<'T when 'T : equality,'U when 'U : equality>"""
         signature.ToString() |> should startWith expected
-        
+
     [<Test>]
     member this.``Formats backticked tooltip``() =
-        let input = 
+        let input =
             """
             let ``backt§icked method`` =
                 ()
             """
         let signature = getTooltip input
         let expected = """val ( backticked method ) : unit"""
-        
+
         signature.ToString() |> should startWith expected
