@@ -316,12 +316,19 @@ namespace MonoDevelop.SourceEditor
 
 			protected override void OnDestroyed ()
 			{
+				if (scrolledWindow == null)
+					return;
 				if (scrolledWindow.Child != null)
 					RemoveEvents ();
 				SetSuppressScrollbar (false);
 				QuickTaskStrip.EnableFancyFeatures.Changed -= FancyFeaturesChanged;
 				scrolledWindow.ButtonPressEvent -= PrepareEvent;
-
+				scrolledWindow.Vadjustment.Destroy ();
+				scrolledWindow.Hadjustment.Destroy ();
+				scrolledWindow.Destroy ();
+				scrolledWindow = null;
+				strip.Destroy ();
+				strip = null;
 				base.OnDestroyed ();
 			}
 			
