@@ -92,11 +92,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			case Microsoft.CodeAnalysis.SymbolKind.NetModule:
 			case Microsoft.CodeAnalysis.SymbolKind.PointerType:
-			case Microsoft.CodeAnalysis.SymbolKind.Parameter:
 			case Microsoft.CodeAnalysis.SymbolKind.RangeVariable:
 			case Microsoft.CodeAnalysis.SymbolKind.TypeParameter:
 			case Microsoft.CodeAnalysis.SymbolKind.Preprocessing:
 				return "field";
+			case Microsoft.CodeAnalysis.SymbolKind.Parameter:
+				return "variable";
 			case Microsoft.CodeAnalysis.SymbolKind.Field:
 				var field = (IFieldSymbol)symbol;
 				if (field.IsConst)
@@ -106,7 +107,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var local = (ILocalSymbol)symbol;
 				if (local.IsConst)
 					return "literal";
-				return "field";
+				return "variable";
 			case Microsoft.CodeAnalysis.SymbolKind.NamedType:
 				var namedTypeSymbol = (Microsoft.CodeAnalysis.INamedTypeSymbol)symbol;
 				switch (namedTypeSymbol.TypeKind) {
