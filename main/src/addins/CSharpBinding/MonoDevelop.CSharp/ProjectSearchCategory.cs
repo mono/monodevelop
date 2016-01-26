@@ -296,13 +296,12 @@ namespace MonoDevelop.CSharp
 
 		void AllResults (ISearchResultCallback searchResultCallback, WorkerResult lastResult, WorkerResult newResult, IReadOnlyList<DeclaredSymbolInfo> completeTypeList, CancellationToken token)
 		{
-			uint x = 0;
 			// Search Types
 			newResult.filteredSymbols = new List<DeclaredSymbolInfo> ();
 			bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern, StringComparison.Ordinal) && lastResult.filteredSymbols != null;
 			var allTypes = startsWithLastFilter ? lastResult.filteredSymbols : completeTypeList;
 			foreach (var type in allTypes) {
-				if (unchecked(x++) % 100 == 0 && token.IsCancellationRequested) {
+				if (token.IsCancellationRequested) {
 					newResult.filteredSymbols = null;
 					return;
 				}
