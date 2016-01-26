@@ -283,8 +283,9 @@ namespace MonoDevelop.Ide.Gui
 				if (searchMonitors.Count > 1) {
 					// Additional search pads will be destroyed when hidden
 					pad.Window.PadHidden += delegate {
-						lock (searchMonitors)
+						lock (searchMonitors) {
 							searchMonitors.Remove (pad);
+						}
 						pad.Destroy ();
 					};
 				}
