@@ -191,7 +191,6 @@ namespace MonoDevelop.Components.Docking
 
 			if (!string.IsNullOrEmpty (label)) {
 				labelWidget = new ExtendedLabel (label);
-				labelWidget.DropShadowVisible = true;
 				labelWidget.UseMarkup = true;
 				labelWidget.Yalign = 0.85f;
 				var alignLabel = new Alignment (0.0f, 1.0f, 1, 1);

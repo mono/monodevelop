@@ -29,8 +29,6 @@ namespace MonoDevelop.Components
 {
 	class ExtendedLabel: Gtk.Label
 	{
-		bool dropShadowVisible;
-
 		public ExtendedLabel ()
 		{
 		}
@@ -38,20 +36,9 @@ namespace MonoDevelop.Components
 		public ExtendedLabel (string text): base (text)
 		{
 		}
-
-		public bool DropShadowVisible {
-			get { return dropShadowVisible; }
-			set {
-				dropShadowVisible = value;
-				QueueDraw ();
-			}
-		}
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
-			if (!dropShadowVisible)
-				return base.OnExposeEvent (evnt);
-
 			Pango.Layout la = new Pango.Layout (PangoContext);
 			int w, h;
 			if (UseMarkup)
