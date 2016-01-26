@@ -1444,7 +1444,7 @@ namespace Mono.TextEditor
 				int index = highlightBracketOffset - offset;
 				Pango.Rectangle rect = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)index, ref curIndex, ref byteIndex));
 				
-				var bracketMatch = new Cairo.Rectangle (xPos + rect.X / Pango.Scale.PangoScale + 0.5, y + 0.5, (rect.Width / Pango.Scale.PangoScale) - 1, (rect.Height / Pango.Scale.PangoScale) - 1);
+				var bracketMatch = new Cairo.Rectangle (xPos + rect.X / Pango.Scale.PangoScale - 0.5, y + 0.5, (rect.Width / Pango.Scale.PangoScale) + 1, (rect.Height / Pango.Scale.PangoScale));
 				if (BackgroundRenderer == null) {
 					ctx.SetSourceColor (ColorStyle.BraceMatchingRectangle.Color);
 					ctx.Rectangle (bracketMatch);
