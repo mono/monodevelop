@@ -86,7 +86,7 @@ namespace MonoDevelop.VersionControl.Views
 		static readonly Cairo.Color lightBlue = new Cairo.Color (190 / 255.0, 190 / 255.0, 240 / 255.0);
 		static readonly Cairo.Color darkBlue = new Cairo.Color (133 / 255.0, 133 / 255.0, 168 / 255.0);
 		
-		protected abstract MonoTextEditor MainEditor {
+		protected internal abstract MonoTextEditor MainEditor {
 			get;
 		}
 		

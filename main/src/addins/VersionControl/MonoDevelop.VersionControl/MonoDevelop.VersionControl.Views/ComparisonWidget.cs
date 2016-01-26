@@ -55,7 +55,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		protected override MonoTextEditor MainEditor {
+		protected internal override MonoTextEditor MainEditor {
 			get {
 				return editors[1];
 			}
