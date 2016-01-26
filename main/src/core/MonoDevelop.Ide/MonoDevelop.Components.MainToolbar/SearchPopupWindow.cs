@@ -1012,7 +1012,9 @@ namespace MonoDevelop.Components.MainToolbar
 
 				var px = dataSrc[i].Icon;
 				if (px != null) {
-					context.DrawImage (this, px, (int)x + marginIconSpacing, (int)y + (h - px.Height) / 2);
+					if (selectedItem != null && selectedItem.Category == category && selectedItem.Item == i)
+						px = px.WithStyles ("sel");
+					context.DrawImage (this, px, (int)x + marginIconSpacing, (int)(y + (h - px.Height) / 2));
 					x += px.Width + iconTextSpacing + marginIconSpacing;
 				}
 
@@ -1061,7 +1063,9 @@ namespace MonoDevelop.Components.MainToolbar
 
 					var px = dataSrc[i].Icon;
 					if (px != null) {
-						context.DrawImage (this, px, (int)x + marginIconSpacing, (int)y + (h - px.Height) / 2);
+						if (selectedItem != null && selectedItem.Category == category && selectedItem.Item == i)
+							px = px.WithStyles ("sel");
+						context.DrawImage (this, px, (int)x + marginIconSpacing, (int)(y + (h - px.Height) / 2));
 						x += px.Width + iconTextSpacing + marginIconSpacing;
 					}
 
