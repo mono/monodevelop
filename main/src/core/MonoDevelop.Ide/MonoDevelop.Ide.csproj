@@ -351,6 +351,18 @@
     <EmbeddedResource Include="icons\pin-down-16~dark%402x.png">
       <LogicalName>pin-down-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\pin-down-16~sel.png">
+      <LogicalName>pin-down-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pin-down-16~sel%402x.png">
+      <LogicalName>pin-down-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pin-down-16~dark~sel.png">
+      <LogicalName>pin-down-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pin-down-16~dark~sel%402x.png">
+      <LogicalName>pin-down-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\pin-down-16~disabled.png">
       <LogicalName>pin-down-16~disabled.png</LogicalName>
     </EmbeddedResource>
@@ -374,6 +386,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pin-up-16~dark%402x.png">
       <LogicalName>pin-up-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pin-up-16~sel.png">
+      <LogicalName>pin-up-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pin-up-16~sel%402x.png">
+      <LogicalName>pin-up-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pin-up-16~dark~sel.png">
+      <LogicalName>pin-up-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pin-up-16~dark~sel%402x.png">
+      <LogicalName>pin-up-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pin-up-16~disabled.png">
       <LogicalName>pin-up-16~disabled.png</LogicalName>
