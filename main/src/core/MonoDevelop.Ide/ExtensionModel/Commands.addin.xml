@@ -246,7 +246,7 @@
 			icon  = "md-new-folder-icon" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeToProject"
 			_description = "Add existing file to the project"
-			_label = "_Include To Project" />
+			_label = "_Include in Project" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.BuildSolution"
 			defaultHandler = "MonoDevelop.Ide.Commands.BuildSolutionHandler"
 			_label = "_Build All"
