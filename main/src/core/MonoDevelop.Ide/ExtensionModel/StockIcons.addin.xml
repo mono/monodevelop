@@ -366,7 +366,7 @@
 	<StockIcon stockid="md-InternalAndProtected-static-method" icon="res:element-method-16.png|res:element-visibility-static-overlay-16.png|res:element-visibility-internal-an-protected-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-InternalAndProtected-static-property" icon="res:element-property-16.png|res:element-visibility-static-overlay-16.png|res:element-visibility-internal-an-protected-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-InternalAndProtected-struct" icon="res:element-structure-16.png|res:element-visibility-internal-an-protected-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-InternalAndProtected-literal" icon="res:element-constant-16.png|res:element-visibility-internal-an-protected-overlay-overlay-16.png" size="Menu" />
+	<StockIcon stockid="md-InternalAndProtected-literal" icon="res:element-constant-16.png|res:element-visibility-internal-an-protected-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-private-class" icon="res:element-class-16.png|res:element-visibility-private-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-private-delegate" icon="res:element-delegate-16.png|res:element-visibility-private-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-private-enum" icon="res:element-enumeration-16.png|res:element-visibility-private-overlay-16.png" size="Menu" />
