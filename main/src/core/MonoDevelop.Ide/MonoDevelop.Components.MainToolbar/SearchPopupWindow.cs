@@ -1006,7 +1006,7 @@ namespace MonoDevelop.Components.MainToolbar
 				layout.GetPixelSize (out w, out h);
 				if (isSelected) {
 					context.SetSourceColor (selectionBackgroundColor);
-					context.Rectangle (alloc.X + headerMarginSize + 1, y, Allocation.Width - adjustedMarginSize - 1, h);
+					context.Rectangle (alloc.X + headerMarginSize + 1, y - 2, Allocation.Width - adjustedMarginSize - 1, h + 4);
 					context.Fill ();
 					context.SetSourceRGB (1, 1, 1);
 				}
@@ -1058,7 +1058,7 @@ namespace MonoDevelop.Components.MainToolbar
 						break;
 					if (isSelected) {
 						context.SetSourceColor (selectionBackgroundColor);
-						context.Rectangle (alloc.X + headerMarginSize + 1, y, Allocation.Width - adjustedMarginSize - 1, h);
+						context.Rectangle (alloc.X + headerMarginSize + 1, y - 2, Allocation.Width - adjustedMarginSize - 1, h + 4);
 						context.Fill ();
 						context.SetSourceRGB (1, 1, 1);
 					}
