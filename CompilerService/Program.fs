@@ -29,9 +29,9 @@ let main argv =
     let normalizeOptions options =
         options
         |> Array.map (fun o -> match o with
-                              | Prefix "-r:" rest -> "-r:" + Path.GetFullPath(rest)
-                              | Prefix "--out:" rest -> "--out:" + Path.GetFullPath(rest)
-                              | _ -> o)
+                               | Prefix "-r:" rest -> "-r:" + Path.GetFullPath(rest)
+                               | Prefix "--out:" rest -> "--out:" + Path.GetFullPath(rest)
+                               | _ -> o)
 
     let rec normalizeProject (path, options) =
         let fullPath = Path.GetFullPath(path)

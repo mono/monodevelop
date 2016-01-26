@@ -114,27 +114,27 @@ type FSharpTooltipProvider() =
             null
 
     override x.CreateTooltipWindow (_editor, _context, item, _offset, _modifierState) =
-      let doc = IdeApp.Workbench.ActiveDocument
-      if (doc = null) then null else
-          match unbox item.Item with
-          | (signature, summary, footer) ->
-            let result = new TooltipInformationWindow(ShowArrow = true)
-            let toolTipInfo = new TooltipInformation(SignatureMarkup=signature, FooterMarkup=footer)
-            match summary with
-            | Full(summary) -> toolTipInfo.SummaryMarkup <- summary
-            | Lookup(key, potentialFilename) ->
-                let summary =
-                    maybe { let! filename = potentialFilename
-                            let! markup = TooltipXmlDoc.findDocForEntity(filename, key)
-                            let summary = TooltipsXml.getTooltipSummary Styles.simpleMarkup markup
-                            return summary }
-                summary |> Option.iter (fun summary -> toolTipInfo.SummaryMarkup <- summary)
-            | EmptyDoc -> ()
-            result.AddOverload(toolTipInfo)
-            result.RepositionWindow ()
-            Control.op_Implicit result
-          | _ -> LoggingService.LogError "TooltipProvider: Type mismatch"
-                 null
+        let doc = IdeApp.Workbench.ActiveDocument
+        if (doc = null) then null else
+            match unbox item.Item with
+            | (signature, summary, footer) ->
+                let result = new TooltipInformationWindow(ShowArrow = true)
+                let toolTipInfo = new TooltipInformation(SignatureMarkup=signature, FooterMarkup=footer)
+                match summary with
+                | Full(summary) -> toolTipInfo.SummaryMarkup <- summary
+                | Lookup(key, potentialFilename) ->
+                    let summary =
+                        maybe { let! filename = potentialFilename
+                                let! markup = TooltipXmlDoc.findDocForEntity(filename, key)
+                                let summary = TooltipsXml.getTooltipSummary Styles.simpleMarkup markup
+                                return summary }
+                    summary |> Option.iter (fun summary -> toolTipInfo.SummaryMarkup <- summary)
+                | EmptyDoc -> ()
+                result.AddOverload(toolTipInfo)
+                result.RepositionWindow ()
+                Control.op_Implicit result
+            | _ -> LoggingService.LogError "TooltipProvider: Type mismatch"
+                   null
 
     interface IDisposable with
         member x.Dispose() = killTooltipWindow()

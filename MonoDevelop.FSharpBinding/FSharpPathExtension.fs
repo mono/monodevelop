@@ -284,9 +284,9 @@ and FSharpDataProvider(ext:FSharpPathExtension, tag) =
         match tag with
         | :? array<FSharpNavigationTopLevelDeclaration> as navitems ->
             for decl in navitems do
-              memberList.Add(decl.Declaration)
+                memberList.Add(decl.Declaration)
         | :? FSharpNavigationTopLevelDeclaration as tld ->
-             memberList.AddRange(tld.Nested)
+            memberList.AddRange(tld.Nested)
         | _ -> ()
 
     do reset()
@@ -303,25 +303,25 @@ and FSharpDataProvider(ext:FSharpPathExtension, tag) =
             else memberList.[n] :> obj
 
         member x.ActivateItem(n) =
-          if tag :? DotNetProject then
-              ext.DocumentContext.AttachToProject (ext.OwnerProjects.[n])
-          else
-              let node = memberList.[n]
-              let extEditor = ext.DocumentContext.GetContent<Editor.TextEditor>()
-              if extEditor <> null then
-                  let (scol,sline) = node.Range.StartColumn+1, node.Range.StartLine
-                  extEditor.SetCaretLocation(max 1 sline, max 1 scol, true)
+            if tag :? DotNetProject then
+                ext.DocumentContext.AttachToProject (ext.OwnerProjects.[n])
+            else
+                let node = memberList.[n]
+                let extEditor = ext.DocumentContext.GetContent<Editor.TextEditor>()
+                if extEditor <> null then
+                    let (scol,sline) = node.Range.StartColumn+1, node.Range.StartLine
+                    extEditor.SetCaretLocation(max 1 sline, max 1 scol, true)
 
         member x.GetMarkup(n) =
-          if tag :? DotNetProject then
-              GLib.Markup.EscapeText (ext.OwnerProjects.[n].Name)
-          else
-              let node = memberList.[n]
-              ext.GetEntityMarkup (node)
+            if tag :? DotNetProject then
+                GLib.Markup.EscapeText (ext.OwnerProjects.[n].Name)
+            else
+                let node = memberList.[n]
+                ext.GetEntityMarkup (node)
 
         member x.GetIcon(n) =
-          if tag :? DotNetProject then
-              ImageService.GetIcon(ext.OwnerProjects.[n].StockIcon.Name, Gtk.IconSize.Menu)
-          else
-              let node = memberList.[n]
-              ImageService.GetIcon(ServiceUtils.getIcon node, Gtk.IconSize.Menu)
+            if tag :? DotNetProject then
+                ImageService.GetIcon(ext.OwnerProjects.[n].StockIcon.Name, Gtk.IconSize.Menu)
+            else
+                let node = memberList.[n]
+                ImageService.GetIcon(ServiceUtils.getIcon node, Gtk.IconSize.Menu)
