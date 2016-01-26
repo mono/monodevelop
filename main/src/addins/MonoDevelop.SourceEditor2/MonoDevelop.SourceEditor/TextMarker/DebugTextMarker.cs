@@ -118,7 +118,7 @@ namespace MonoDevelop.SourceEditor
 			to = Math.Max (to, editor.TextViewMargin.XOffset);
 			if (@from < to) {
 				cr.SetSourceColor (background.Color);
-				cr.RoundedRectangle (@from + 0.5, y + 1.5, to - @from - 1, editor.LineHeight - 2, editor.LineHeight / 4);
+				cr.RoundedRectangle (@from + 2.5, y + 0.5, to - @from, editor.LineHeight - 1, 2); // 2.5 to make space for the column guideline
 				cr.FillPreserve ();
 
 				if (background.HasBorderColor) {
