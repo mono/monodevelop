@@ -83,7 +83,7 @@ namespace MonoDevelop.Debugger
 				ObjectValueTreeValuesButtonBackground = Color.FromName ("#7c8695");
 				ObjectValueTreeValuesButtonText = Color.FromName ("#cbe5ff");
 				ObjectValueTreeValuesButtonBorder = Color.FromName ("#a4bbd5");
-				ObjectValueTreeValueErrorText = Color.FromName ("#ff00ff"); // TODO: VV: ff0000
+				ObjectValueTreeValueErrorText = Ide.Gui.Styles.StatusWarningBackgroundColor;
 				ObjectValueTreeValueDisabledText = Color.FromName ("#5a5a5a");
 				ObjectValueTreeValueModifiedText = Color.FromName ("#ff00ff"); // TODO: VV: 0000ff
 
