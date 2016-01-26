@@ -1523,7 +1523,11 @@ namespace MonoDevelop.Projects
 
 		protected virtual async Task OnExecuteCommand (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, ExecutionCommand executionCommand)
 		{
-			((DotNetExecutionCommand)executionCommand).UserAssemblyPaths = GetUserAssemblyPaths(configuration);
+			var dotNetExecutionCommand = executionCommand as DotNetExecutionCommand;
+			if (dotNetExecutionCommand != null) {
+				dotNetExecutionCommand.UserAssemblyPaths = GetUserAssemblyPaths (configuration);
+			}
+
 			var dotNetProjectConfig = GetConfiguration (configuration) as DotNetProjectConfiguration;
 			var console = dotNetProjectConfig.ExternalConsole
 			                                                  ? context.ExternalConsoleFactory.CreateConsole (!dotNetProjectConfig.PauseConsoleOutput, monitor.CancellationToken)
