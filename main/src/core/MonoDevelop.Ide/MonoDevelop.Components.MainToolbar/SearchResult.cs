@@ -56,9 +56,9 @@ namespace MonoDevelop.Components.MainToolbar
 	{
 		protected string match;
 		
-		public virtual string GetMarkupText ()
+		public virtual string GetMarkupText (bool selected)
 		{
-			return HighlightMatch (PlainText, match);
+			return HighlightMatch (PlainText, match, selected);
 		}
 
 		public virtual string GetDescriptionMarkupText ()
@@ -100,7 +100,7 @@ namespace MonoDevelop.Components.MainToolbar
 			Rank = rank;
 		}
 		
-		protected static string HighlightMatch (string text, string toMatch)
+		protected static string HighlightMatch (string text, string toMatch, bool selected)
 		{
 			var lane = StringMatcher.GetMatcher (toMatch, true).GetMatch (text);
 			StringBuilder result = new StringBuilder ();
@@ -110,7 +110,8 @@ namespace MonoDevelop.Components.MainToolbar
 					int pos = lane[n];
 					if (pos - lastPos > 0)
 						MarkupUtilities.AppendEscapedString (result, text.Substring (lastPos, pos - lastPos));
-					result.Append ("<span foreground=\"" + Styles.ColorGetHex (Styles.GlobalSearch.ResultMatchTextColor) + "\" font_weight=\"bold\">");
+					var matchColor = selected ? Styles.GlobalSearch.SelectedResultMatchTextColor : Styles.GlobalSearch.ResultMatchTextColor;
+					result.Append ("<span foreground=\"" + Styles.ColorGetHex (matchColor) + "\" font_weight=\"bold\">");
 					MarkupUtilities.AppendEscapedString (result, text[pos].ToString ());
 					result.Append ("</span>");
 					lastPos = pos + 1;
@@ -254,9 +255,9 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 		
-		public override string GetMarkupText ()
+		public override string GetMarkupText (bool selected)
 		{
-			return HighlightMatch (MatchedString, match);
+			return HighlightMatch (MatchedString, match, selected);
 		}
 
 		public override bool CanActivate {

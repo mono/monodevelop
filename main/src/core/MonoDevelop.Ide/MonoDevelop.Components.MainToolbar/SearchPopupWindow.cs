@@ -998,12 +998,13 @@ namespace MonoDevelop.Components.MainToolbar
 				var category = topItem.Category;
 				var dataSrc = topItem.DataSource;
 				var i = topItem.Item;
+				var isSelected = selectedItem != null && selectedItem.Category == category && selectedItem.Item == i;
 
 				double x = alloc.X + xMargin + headerMarginSize;
 				context.SetSourceRGB (0, 0, 0);
-				layout.SetMarkup (GetRowMarkup (dataSrc[i]));
+				layout.SetMarkup (GetRowMarkup (dataSrc[i], isSelected));
 				layout.GetPixelSize (out w, out h);
-				if (selectedItem != null && selectedItem.Category == category && selectedItem.Item == i) {
+				if (isSelected) {
 					context.SetSourceColor (selectionBackgroundColor);
 					context.Rectangle (alloc.X + headerMarginSize + 1, y, Allocation.Width - adjustedMarginSize - 1, h);
 					context.Fill ();
@@ -1012,7 +1013,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 				var px = dataSrc[i].Icon;
 				if (px != null) {
-					if (selectedItem != null && selectedItem.Category == category && selectedItem.Item == i)
+					if (isSelected)
 						px = px.WithStyles ("sel");
 					context.DrawImage (this, px, (int)x + marginIconSpacing, (int)(y + (h - px.Height) / 2));
 					x += px.Width + iconTextSpacing + marginIconSpacing;
@@ -1048,13 +1049,14 @@ namespace MonoDevelop.Components.MainToolbar
 				for (int i = 0; i < maxItems && i < dataSrc.Count; i++) {
 					if (topItem != null && topItem.Category == category && topItem.Item == i)
 						continue;
+					var isSelected = selectedItem != null && selectedItem.Category == category && selectedItem.Item == i;
 					double x = alloc.X + xMargin + headerMarginSize;
 					context.SetSourceRGB (0, 0, 0);
-					layout.SetMarkup (GetRowMarkup (dataSrc[i]));
+					layout.SetMarkup (GetRowMarkup (dataSrc[i], isSelected));
 					layout.GetPixelSize (out w, out h);
 					if (y + h + itemSeparatorHeight > Allocation.Height)
 						break;
-					if (selectedItem != null && selectedItem.Category == category && selectedItem.Item == i) {
+					if (isSelected) {
 						context.SetSourceColor (selectionBackgroundColor);
 						context.Rectangle (alloc.X + headerMarginSize + 1, y, Allocation.Width - adjustedMarginSize - 1, h);
 						context.Fill ();
@@ -1063,7 +1065,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 					var px = dataSrc[i].Icon;
 					if (px != null) {
-						if (selectedItem != null && selectedItem.Category == category && selectedItem.Item == i)
+						if (isSelected)
 							px = px.WithStyles ("sel");
 						context.DrawImage (this, px, (int)x + marginIconSpacing, (int)(y + (h - px.Height) / 2));
 						x += px.Width + iconTextSpacing + marginIconSpacing;
@@ -1087,12 +1089,14 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		string GetRowMarkup (SearchResult result)
+		string GetRowMarkup (SearchResult result, bool selected = false)
 		{
-			string txt = "<span foreground=\"" + Styles.ColorGetHex (Styles.GlobalSearch.ResultTextColor) + "\">" + result.GetMarkupText() +"</span>";
+			var resultFgColor = selected ? Styles.GlobalSearch.SelectedResultTextColor : Styles.GlobalSearch.ResultTextColor;
+			var descFgColor = selected ? Styles.GlobalSearch.SelectedResultDescriptionTextColor : Styles.GlobalSearch.ResultDescriptionTextColor;
+			string txt = "<span foreground=\"" + Styles.ColorGetHex (resultFgColor) + "\">" + result.GetMarkupText(selected) +"</span>";
 			string desc = result.GetDescriptionMarkupText ();
 			if (!string.IsNullOrEmpty (desc))
-				txt += "<span foreground=\"" + Styles.ColorGetHex (Styles.GlobalSearch.ResultDescriptionTextColor) + "\" size=\"small\">\n" + desc + "</span>";
+				txt += "<span foreground=\"" + Styles.ColorGetHex (descFgColor) + "\" size=\"small\">\n" + desc + "</span>";
 			return txt;
 		}
 	}

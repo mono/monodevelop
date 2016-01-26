@@ -525,9 +525,9 @@ namespace MonoDevelop.CSharp
 			}
 		}
 
-		public override string GetMarkupText ()
+		public override string GetMarkupText (bool selected)
 		{
-			return HighlightMatch (useFullName ? type.FullyQualifiedContainerName : type.Name, match);
+			return HighlightMatch (useFullName ? type.FullyQualifiedContainerName : type.Name, match, selected);
 		}
 
 		public DeclaredSymbolInfoResult (string match, string matchedString, int rank, DeclaredSymbolInfo type, bool useFullName)  : base (match, matchedString, rank)

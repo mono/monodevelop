@@ -72,7 +72,7 @@ namespace MonoDevelop.PackageManagement
 				runner.Run (pattern.UnparsedPattern);
 			}
 
-			public override string GetMarkupText ()
+			public override string GetMarkupText (bool selected)
 			{
 				return GettextCatalog.GetString ("Search Packages...");
 			}

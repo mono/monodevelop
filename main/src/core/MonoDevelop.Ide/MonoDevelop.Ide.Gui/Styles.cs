@@ -215,6 +215,9 @@ namespace MonoDevelop.Ide.Gui
 			public static Color ResultTextColor { get; internal set; }
 			public static Color ResultDescriptionTextColor { get; internal set; }
 			public static Color ResultMatchTextColor { get; internal set; }
+			public static Color SelectedResultTextColor { get; internal set; }
+			public static Color SelectedResultDescriptionTextColor { get; internal set; }
+			public static Color SelectedResultMatchTextColor { get; internal set; }
 		}
 
 		// New Project Dialog
@@ -361,6 +364,9 @@ namespace MonoDevelop.Ide.Gui
 			GlobalSearch.SelectionBackgroundColor = BaseSelectionBackgroundColor;
 			GlobalSearch.ResultTextColor = BaseTextColor;
 			GlobalSearch.ResultDescriptionTextColor = DimTextColor;
+			GlobalSearch.SelectedResultTextColor = BaseSelectionTextColor;
+			GlobalSearch.SelectedResultDescriptionTextColor = BaseSelectionTextColor;
+			GlobalSearch.SelectedResultMatchTextColor = BaseSelectionTextColor;
 
 			// New Project Dialog
 
