@@ -113,12 +113,16 @@ namespace MonoDevelop.CSharp.Formatting
 					var doc = Formatter.FormatAsync (analysisDocument, span, optionSet).Result;
 					var newTree = doc.GetSyntaxTreeAsync ().Result;
 					var caretOffset = editor.CaretOffset;
-					foreach (var change in newTree.GetChanges (syntaxTree).OrderByDescending (c => c.Span.Start) ) {
-						if (!exact && change.Span.Start >= caretOffset)
+
+					int delta = 0;
+					foreach (var change in newTree.GetChanges (syntaxTree)) {
+						if (!exact && change.Span.Start + delta >= caretOffset)
 							continue;
 						var newText = change.NewText;
-						editor.ReplaceText (change.Span.Start, change.Span.Length, newText); 
+						editor.ReplaceText (delta + change.Span.Start, change.Span.Length, newText);
+						delta = delta - change.Span.Length + newText.Length;
 					}
+					editor.CaretOffset = caretOffset + delta;
 					if (editor.CaretColumn == 1)
 						editor.CaretColumn = editor.GetVirtualIndentationColumn (editor.CaretLine);
 				} catch (Exception e) {

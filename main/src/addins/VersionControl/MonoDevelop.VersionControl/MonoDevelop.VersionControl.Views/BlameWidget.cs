@@ -574,11 +574,16 @@ namespace MonoDevelop.VersionControl.Views
 					}
 					
 					Runtime.RunInMainThread (delegate {
+						var location = widget.Editor.Caret.Location;
+						var adj = widget.editor.VAdjustment.Value;
 						if (widget.revision != null) {
 							document.Text = widget.VersionControlItem.Repository.GetTextAtRevision (widget.Document.FileName, widget.revision);
 						} else {
 							document.Text = widget.Document.Editor.Text;
 						}
+						widget.editor.Caret.Location = location;
+						widget.editor.VAdjustment.Value = adj;
+
 						ctx.AutoPulse = false;
 						ctx.Dispose ();
 						UpdateWidth ();

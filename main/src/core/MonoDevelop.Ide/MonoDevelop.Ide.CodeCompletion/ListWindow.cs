@@ -483,6 +483,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (descriptor.KeyChar == ' ' && (descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift)
 				return KeyActions.CloseWindow | KeyActions.Process;
 
+			if (char.IsDigit (descriptor.KeyChar) && string.IsNullOrEmpty (CurrentCompletionText))
+			    return KeyActions.CloseWindow | KeyActions.Process;
+
 			// special case end with punctuation like 'param:' -> don't input double punctuation, otherwise we would end up with 'param::'
 			if (char.IsPunctuation (descriptor.KeyChar) && descriptor.KeyChar != '_') {
 				if (descriptor.KeyChar == ':') {

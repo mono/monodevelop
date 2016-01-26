@@ -91,7 +91,7 @@ namespace MonoDevelop.NUnit
 				return null;
 			}
 			var ctx = task.Result;
-			var cls = ctx.Assembly.GetTypeByMetadataName (string.IsNullOrEmpty (fixtureTypeNamespace) ? fixtureTypeName : fixtureTypeNamespace + "." + fixtureTypeName);
+			var cls = ctx?.Assembly?.GetTypeByMetadataName (string.IsNullOrEmpty (fixtureTypeNamespace) ? fixtureTypeName : fixtureTypeNamespace + "." + fixtureTypeName);
 			if (cls == null)
 				return null;
 			

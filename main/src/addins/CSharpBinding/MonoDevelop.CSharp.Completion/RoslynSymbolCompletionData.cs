@@ -82,6 +82,8 @@ namespace MonoDevelop.CSharp.Completion
 			this.factory = factory;
 			this.text = text;
 			Symbol = symbol;
+			if (IsObsolete (Symbol))
+				DisplayFlags |= DisplayFlags.Obsolete;
 		}
 
 		static readonly SymbolDisplayFormat nameOnlyFormat =
@@ -437,35 +439,40 @@ namespace MonoDevelop.CSharp.Completion
 			return ret;
 		}
 
+		static bool IsObsolete (ISymbol symbol)
+		{
+			return symbol.GetAttributes ().Any (attr => attr.AttributeClass.Name == "ObsoleteAttribute" && attr.AttributeClass.ContainingNamespace.GetFullName () == "System");
+		}
 
-//		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IType type, bool smartWrap, bool createFooter = false)
-//		{
-//			var tooltipInfo = new TooltipInformation ();
-//			var resolver = file != null ? file.GetResolver (compilation, textEditorData.Caret.Location) : new CSharpResolver (compilation);
-//			var sig = new SignatureMarkupCreator (resolver, formattingPolicy.CreateOptions ());
-//			sig.BreakLineAfterReturnType = smartWrap;
-//			try {
-//				tooltipInfo.SignatureMarkup = sig.GetMarkup (type.IsParameterized ? type.GetDefinition () : type);
-//			} catch (Exception e) {
-//				LoggingService.LogError ("Got exception while creating markup for :" + type, e);
-//				return new TooltipInformation ();
-//			}
-//			if (type.IsParameterized) {
-//				var typeInfo = new StringBuilder ();
-//				for (int i = 0; i < type.TypeParameterCount; i++) {
-//					typeInfo.AppendLine (type.GetDefinition ().TypeParameters [i].Name + " is " + sig.GetTypeReferenceString (type.TypeArguments [i]));
-//				}
-//				tooltipInfo.AddCategory ("Type Parameters", typeInfo.ToString ());
-//			}
-//
-//			var def = type.GetDefinition ();
-//			if (def != null) {
-//				if (createFooter)
-//					tooltipInfo.FooterMarkup = sig.CreateFooter (def);
-//				tooltipInfo.SummaryMarkup = AmbienceService.GetSummaryMarkup (def) ?? "";
-//			}
-//			return tooltipInfo;
-//		}
+
+		//		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IType type, bool smartWrap, bool createFooter = false)
+		//		{
+		//			var tooltipInfo = new TooltipInformation ();
+		//			var resolver = file != null ? file.GetResolver (compilation, textEditorData.Caret.Location) : new CSharpResolver (compilation);
+		//			var sig = new SignatureMarkupCreator (resolver, formattingPolicy.CreateOptions ());
+		//			sig.BreakLineAfterReturnType = smartWrap;
+		//			try {
+		//				tooltipInfo.SignatureMarkup = sig.GetMarkup (type.IsParameterized ? type.GetDefinition () : type);
+		//			} catch (Exception e) {
+		//				LoggingService.LogError ("Got exception while creating markup for :" + type, e);
+		//				return new TooltipInformation ();
+		//			}
+		//			if (type.IsParameterized) {
+		//				var typeInfo = new StringBuilder ();
+		//				for (int i = 0; i < type.TypeParameterCount; i++) {
+		//					typeInfo.AppendLine (type.GetDefinition ().TypeParameters [i].Name + " is " + sig.GetTypeReferenceString (type.TypeArguments [i]));
+		//				}
+		//				tooltipInfo.AddCategory ("Type Parameters", typeInfo.ToString ());
+		//			}
+		//
+		//			var def = type.GetDefinition ();
+		//			if (def != null) {
+		//				if (createFooter)
+		//					tooltipInfo.FooterMarkup = sig.CreateFooter (def);
+		//				tooltipInfo.SummaryMarkup = AmbienceService.GetSummaryMarkup (def) ?? "";
+		//			}
+		//			return tooltipInfo;
+		//		}
 	}
 
 }

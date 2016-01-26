@@ -97,6 +97,25 @@ namespace MonoDevelop.VersionControl
 			}
 			return msg.TrimStart (' ', '\t');
 		}
+
+		public static bool operator ==(Revision a, Revision b)
+		{
+			if (System.Object.ReferenceEquals(a, b))
+			{
+				return true;
+			}
+
+			if (((object)a == null) || ((object)b == null))
+			{
+				return false;
+			}
+			return a.ToString () == b.ToString ();
+		}
+
+		public static bool operator !=(Revision a, Revision b)
+		{
+			return !(a == b);
+		}
 	}
 	
 	public class RevisionPath

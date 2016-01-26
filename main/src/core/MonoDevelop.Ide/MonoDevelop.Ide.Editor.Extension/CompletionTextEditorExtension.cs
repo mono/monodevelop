@@ -57,7 +57,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 			get { return completionWidget; }
 			set
 			{
+				if (completionWidget != null)
+					completionWidget.CompletionContextChanged -= OnCompletionContextChanged;
 				completionWidget = value;
+				if (completionWidget != null)
+					completionWidget.CompletionContextChanged += OnCompletionContextChanged;
 			}
 		}
 
@@ -592,8 +596,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 			base.Initialize ();
 			CompletionWindowManager.WindowClosed += HandleWindowClosed;
 			CompletionWidget = DocumentContext.GetContent <ICompletionWidget> () ?? CompletionWidget;
-			if (CompletionWidget != null)
-				CompletionWidget.CompletionContextChanged += OnCompletionContextChanged;
 			Editor.CaretPositionChanged += HandlePositionChanged;
 //			document.Editor.Paste += HandlePaste;
 //			if (document.Editor.Parent != null)
@@ -641,8 +643,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			Editor.CaretPositionChanged -= HandlePositionChanged;
 			CompletionWindowManager.WindowClosed -= HandleWindowClosed;
-			if (CompletionWidget != null)
-				CompletionWidget.CompletionContextChanged -= OnCompletionContextChanged;
+			CompletionWidget = null;
 		}
 	}
 

@@ -58,7 +58,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 			List<string> usedNamedParameters = null;
 			var tree = await document.GetSyntaxTreeAsync (cancellationToken).ConfigureAwait (false);
 			var root = await tree.GetRootAsync (cancellationToken).ConfigureAwait (false);
-			if (startOffset >= root.Span.Length)
+			if (startOffset >= root.FullSpan.Length)
 				return ParameterIndexResult.Invalid;
 
 			var token = root.FindToken (startOffset);
@@ -73,7 +73,6 @@ namespace ICSharpCode.NRefactory6.CSharp
 			                 n is ElementAccessExpressionSyntax ||
 			                 n is ConstructorInitializerSyntax ||
 			                 n is AttributeSyntax);
-
 			if (invocation is InvocationExpressionSyntax) {
 				argList = ((InvocationExpressionSyntax)invocation).ArgumentList;
 			} else if (invocation is ObjectCreationExpressionSyntax) {

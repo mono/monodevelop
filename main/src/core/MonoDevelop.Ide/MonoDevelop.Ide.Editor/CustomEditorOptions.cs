@@ -130,6 +130,11 @@ namespace MonoDevelop.Ide.Editor
 			set;
 		}
 
+		public bool EnableSelectionWrappingKeys {
+			get;
+			set;
+		}
+
 		public ShowWhitespaces ShowWhitespaces {
 			get;
 			set;
@@ -172,6 +177,7 @@ namespace MonoDevelop.Ide.Editor
 			ColorScheme = initializeFrom.ColorScheme;
 			DefaultEolMarker = initializeFrom.DefaultEolMarker;
 			GenerateFormattingUndoStep = initializeFrom.GenerateFormattingUndoStep;
+			EnableSelectionWrappingKeys = initializeFrom.EnableSelectionWrappingKeys;
 			ShowWhitespaces = initializeFrom.ShowWhitespaces;
 			IncludeWhitespaces = initializeFrom.IncludeWhitespaces;
 		}

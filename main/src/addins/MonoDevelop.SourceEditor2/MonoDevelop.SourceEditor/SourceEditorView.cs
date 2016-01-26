@@ -2468,7 +2468,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		event EventHandler ITextEditorImpl.BeginMouseHover {
+		event EventHandler<Xwt.MouseMovedEventArgs> ITextEditorImpl.MouseMoved {
 			add {
 				TextEditor.BeginHover += value;
 			}

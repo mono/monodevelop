@@ -623,18 +623,24 @@ namespace MonoDevelop.Ide.Gui
 					viewContentCollection.CopyTo (views, 0);
 					foreach (var content in views) {
 						if (content.ContentName.StartsWith (e.FileName, StringComparison.CurrentCulture)) {
-							content.UntitledName = content.ContentName;
-							content.ContentName = null;
-							content.IsDirty = true;
+							if (content.IsDirty) {
+								content.UntitledName = content.ContentName;
+								content.ContentName = null;
+							} else {
+								((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true);
+							}
 						}
 					}
 				} else {
 					foreach (var content in viewContentCollection) {
 						if (content.ContentName != null &&
 							content.ContentName == e.FileName) {
-							content.UntitledName = content.ContentName;
-							content.ContentName = null;
-							content.IsDirty = true;
+							if (content.IsDirty) {
+								content.UntitledName = content.ContentName;
+								content.ContentName = null;
+							} else {
+								((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true);
+							}
 							return;
 						}
 					}

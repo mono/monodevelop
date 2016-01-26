@@ -50,6 +50,8 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components;
 using System.Linq;
+using MonoDevelop.Components.AutoTest;
+using System.ComponentModel;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
@@ -189,6 +191,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 									   typeof (bool),       // read?
 									   typeof (TaskListEntry),       // read? -- use Pango weight
 									   typeof (string));
+			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("store__Type", "store__Read", "store__Task", "store__Description");
+			TypeDescriptor.AddAttributes (store, modelAttr);
 
 			TreeModelFilterVisibleFunc filterFunct = new TreeModelFilterVisibleFunc (FilterTasks);
 			filter = new TreeModelFilter (store, null);
@@ -297,6 +301,21 @@ namespace MonoDevelop.Ide.Gui.Pads
 					return;
 				}
 			} while (view.Model.IterNext (ref it));
+		}
+
+		internal void SelectTaskListEntry (TaskListEntry taskListEntry)
+		{
+			TreeIter iter;
+			if (!view.Model.GetIterFirst (out iter))
+				return;
+			do {
+				var t = (TaskListEntry) view.Model.GetValue (iter, DataColumns.Task);
+				if (t == taskListEntry) {
+					view.Selection.SelectIter (iter);
+					view.ScrollToCell (view.Model.GetPath (iter), view.Columns[0], false, 0, 0);
+					return;
+				}
+			} while (view.Model.IterNext (ref iter));
 		}
 		
 		void LoadColumnsVisibility ()

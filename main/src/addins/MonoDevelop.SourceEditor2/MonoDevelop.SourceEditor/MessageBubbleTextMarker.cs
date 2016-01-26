@@ -350,8 +350,14 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		#region IActionTextMarker implementation
+		int curError = 0;
 		public bool MousePressed (MonoTextEditor editor, MarginMouseEventArgs args)
 		{
+			if (bubbleDrawX < args.X && args.X < bubbleDrawX + bubbleWidth) {
+				errors [curError].Task.SelectInPad ();
+				curError = (curError + 1) % errors.Count;
+				return true;
+			}
 			return false;
 		}
 

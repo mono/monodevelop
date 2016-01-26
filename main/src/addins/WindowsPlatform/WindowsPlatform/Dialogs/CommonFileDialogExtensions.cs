@@ -55,7 +55,7 @@ namespace MonoDevelop.Platform
 			var fileDialog = dialog as CommonOpenFileDialog;
 			if (fileDialog != null) {
 				fileDialog.Multiselect = data.SelectMultiple;
-				if (data.Action == FileChooserAction.SelectFolder) {
+				if ((data.Action & FileChooserAction.SelectFolder) != 0) {
 					fileDialog.IsFolderPicker = true;
 					return;
 				}

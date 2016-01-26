@@ -239,6 +239,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 			bool success = true;
 			try {
+				if (File.Exists (newFileName)) {
+					MessageService.ShowError (string.Format (GettextCatalog.GetString ("Highlighting with the same name already exists. Remove {0} first."), System.IO.Path.GetFileNameWithoutExtension (newFileName)));
+					return;
+				}
+
 				File.Copy (dialog.SelectedFile.FullPath, newFileName);
 			} catch (Exception e) {
 				success = false;

@@ -78,7 +78,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		protected abstract MonoTextEditor MainEditor {
+		protected internal abstract MonoTextEditor MainEditor {
 			get;
 		}
 		

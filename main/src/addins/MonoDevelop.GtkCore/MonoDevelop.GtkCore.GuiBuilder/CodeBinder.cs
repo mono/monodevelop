@@ -135,7 +135,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return cls.GetMembers (signal.Handler).OfType<IMethodSymbol> ().FirstOrDefault ();
 		}
 
-		public void UpdateField (Stetic.Component obj, string oldName)
+		public async Task UpdateField (Stetic.Component obj, string oldName)
 		{
 			if (targetObject == null)
 				return;
@@ -152,7 +152,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (cls != null) {
 				var f = ClassUtils.FindWidgetField (cls, oldName);
 				if (f != null) {
-					MonoDevelop.Refactoring.Rename.RenameRefactoring.Rename (f, newName);
+					await MonoDevelop.Refactoring.Rename.RenameRefactoring.Rename (f, newName);
 				}
 			}
 		}
@@ -195,7 +195,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return cls.Locations.First ();
 		}
 
-		public void UpdateSignal (Stetic.Signal oldSignal, Stetic.Signal newSignal)
+		public async Task UpdateSignal (Stetic.Signal oldSignal, Stetic.Signal newSignal)
 		{
 			if (targetObject == null)
 				return;
@@ -209,7 +209,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			var met = FindSignalHandler (cls, oldSignal);
 			if (met == null)
 				return;
-			MonoDevelop.Refactoring.Rename.RenameRefactoring.Rename (met, newSignal.Handler);
+			await MonoDevelop.Refactoring.Rename.RenameRefactoring.Rename (met, newSignal.Handler);
 		}
 
 		/// Adds a field to the class

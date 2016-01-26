@@ -294,6 +294,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			lock (projectIdMap) {
 				ProjectData result;
+
 				if (projectDataMap.TryGetValue (id, out result)) {
 					return result;
 				}
@@ -526,8 +527,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			var configurationSelector = IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default;
 			var hashSet = new HashSet<string> (FilePath.PathComparer);
 
-			bool addFacadeAssemblies = false;
-
 			try {
 				foreach (string file in await netProject.GetReferencedAssemblies (configurationSelector, false).ConfigureAwait (false)) {
 					if (token.IsCancellationRequested)
@@ -541,25 +540,17 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (hashSet.Contains (fileName))
 						continue;
 					hashSet.Add (fileName);
-					if (!File.Exists (fileName))
+					if (!File.Exists (fileName)) {
+						LoggingService.LogError ("Error while getting referenced Assembly " + fileName + " for project " + netProject.Name + ": File doesn't exist"); 
 						continue;
-					result.Add (MetadataReferenceCache.LoadReference (projectId, fileName));
-					addFacadeAssemblies |= MonoDevelop.Core.Assemblies.SystemAssemblyService.ContainsReferenceToSystemRuntime (fileName);
+					}
+					var metadataReference = MetadataReferenceCache.LoadReference (projectId, fileName);
+					if (metadataReference == null)
+						continue;
+					result.Add (metadataReference);
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while getting referenced assemblies", e);
-			}
-			// HACK: Facade assemblies should be added by the project system. Remove that when the project system can do that.
-			if (addFacadeAssemblies) {
-				if (netProject != null) {
-					var runtime = netProject.TargetRuntime ?? MonoDevelop.Core.Runtime.SystemAssemblyService.DefaultRuntime;
-					var facades = runtime.FindFacadeAssembliesForPCL (netProject.TargetFramework);
-					foreach (var facade in facades) {
-						if (!File.Exists (facade))
-							continue;
-						result.Add (MetadataReferenceCache.LoadReference (projectId, facade));
-					}
-				}
 			}
 
 			foreach (var pr in netProject.GetReferencedItems (configurationSelector)) {
@@ -570,9 +561,13 @@ namespace MonoDevelop.Ide.TypeSystem
 					continue;
 				if (TypeSystemService.IsOutputTrackedProject (referencedProject)) {
 					var fileName = referencedProject.GetOutputFileName (configurationSelector);
-					if (!File.Exists (fileName))
+					if (!File.Exists (fileName)) {
+						LoggingService.LogError ("Error while getting project Reference (" + referencedProject.Name + ") " + fileName + " for project " + netProject.Name + ": File doesn't exist");
 						continue;
-					result.Add (MetadataReferenceCache.LoadReference (projectId, fileName));
+					}
+					var metadataReference = MetadataReferenceCache.LoadReference (projectId, fileName);
+					if (metadataReference != null)
+						result.Add (metadataReference);
 				}
 			}
 			return result;

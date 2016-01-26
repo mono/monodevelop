@@ -33,6 +33,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using Xwt.Drawing;
+using Mono.TextEditor.Utils;
 
 namespace Mono.TextEditor.Highlighting
 {
@@ -756,7 +757,12 @@ namespace Mono.TextEditor.Highlighting
 		public static ColorScheme LoadFrom (Stream stream)
 		{
 			var result = new ColorScheme ();
-			var reader = System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonReader (stream, new System.Xml.XmlDictionaryReaderQuotas ());
+			byte [] bytes;
+			using (var sr = TextFileUtility.OpenStream (stream)) {
+				bytes = System.Text.Encoding.UTF8.GetBytes (sr.ReadToEnd ());
+			}
+
+			var reader = System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonReader (bytes, new System.Xml.XmlDictionaryReaderQuotas ());
 
 			var root = XElement.Load(reader);
 			

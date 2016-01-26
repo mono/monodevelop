@@ -259,7 +259,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				cr.SetSourceColor (MonoDevelop.Ide.Gui.Styles.PadCategoryBorderColor.ToCairoColor ());
 				cr.Stroke ();
 
-				headerLayout.SetText (category.Text);
+				headerLayout.SetMarkup (category.Text);
 				int width, height;
 				cr.SetSourceColor (MonoDevelop.Ide.Gui.Styles.PadCategoryLabelColor.ToCairoColor ());
 				layout.GetPixelSize (out width, out height);
@@ -284,7 +284,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				}
 				if (listMode || !curCategory.CanIconizeItems)  {
 					cr.DrawImage (this, item.Icon, xpos + ItemLeftPadding, ypos + Math.Round ((itemDimension.Height - item.Icon.Height) / 2));
-					layout.SetText (item.Text);
+					layout.SetMarkup (item.Text);
 					int width, height;
 					layout.GetPixelSize (out width, out height);
 					cr.SetSourceColor (Style.Text (item != this.SelectedItem ? StateType.Normal : StateType.Selected).ToCairoColor ());
@@ -827,7 +827,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					int x, y = item.ItemHeight;
 
 					if (y == 0) {
-						layout.SetText (item.Text);
+						layout.SetMarkup (item.Text);
 						layout.GetPixelSize (out x, out y);
 						y = Math.Max (IconSize.Height, y);
 						y += ItemTopBottomPadding * 2;
@@ -867,7 +867,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					int x, y = category.ItemHeight;
 
 					if (y == 0) {
-						layout.SetText (category.Text);
+						layout.SetMarkup (category.Text);
 						layout.GetPixelSize (out x, out y);
 						y += CategoryTopBottomPadding * 2;
 						category.ItemHeight = y;
@@ -1126,8 +1126,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public string Text {
 			get {
-				if (node != null)
-					return node.Name;
+				if (node != null) {
+					var t = GLib.Markup.EscapeText (node.Name);
+					if (!string.IsNullOrEmpty (node.Source)) {
+						var c = MonoDevelop.Ide.Gui.Styles.DimTextColor.ToHexString ().Substring (0, 7);
+						t += string.Format (" <span size=\"smaller\" color=\"{1}\">{0}</span>", node.Source, c);
+					}
+					return t;
+				}
 				return text;
 			}
 		}
@@ -1174,7 +1180,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public Item (Xwt.Drawing.Image icon, string text, string tooltip, object tag)
 		{
 			this.icon    = icon;
-			this.text    = text;
+			this.text    = GLib.Markup.EscapeText (text);
 			this.tooltip = tooltip;
 			this.tag     = tag;
 		}

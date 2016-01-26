@@ -31,12 +31,18 @@ using System.Runtime.Serialization;
 namespace Microsoft.VisualStudio.TextTemplating
 {
 	[Serializable]
-	public sealed class TextTemplatingSession : Dictionary<string, Object>, ITextTemplatingSession
+	public sealed class TextTemplatingSession : Dictionary<string, Object>, ITextTemplatingSession, ISerializable
 	{
 		public TextTemplatingSession () : this (Guid.NewGuid ())
 		{
 		}
-		
+
+		TextTemplatingSession (SerializationInfo info, StreamingContext context)
+			: base (info, context)
+		{
+			Id = (Guid)info.GetValue ("Id", typeof (Guid));
+		}
+
 		public TextTemplatingSession (Guid id)
 		{
 			this.Id = id;
@@ -65,6 +71,12 @@ namespace Microsoft.VisualStudio.TextTemplating
 		public bool Equals (ITextTemplatingSession other)
 		{
 			return other != null && other.Id == this.Id;
+		}
+
+		void ISerializable.GetObjectData (SerializationInfo info, StreamingContext context)
+		{
+			base.GetObjectData (info, context);
+			info.AddValue ("Id", Id);
 		}
 	}
 }

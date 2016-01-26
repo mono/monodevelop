@@ -36,6 +36,7 @@ using System.Xml.Schema;
 using System.Linq;
 using Mono.Addins;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -103,6 +104,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					styles [name] = ColorScheme.LoadFrom (stream);
 				}
 			} catch (Exception e) {
+				LoggingService.LogError ("Error while loading style :" + name, e);
 				throw new IOException ("Error while loading style :" + name, e);
 			} finally {
 				stream.Close ();
@@ -168,9 +170,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		static string ScanStyle (Stream stream)
 		{
 			try {
-				var file = new StreamReader (stream);
+				var file = TextFileUtility.OpenStream (stream);
 				file.ReadLine ();
 				var nameLine = file.ReadLine ();
+				file.Close ();
 				var match = nameRegex.Match (nameLine);
 				if (!match.Success)
 					return null;

@@ -42,6 +42,7 @@
     <Compile Include="TemplatingEngineHelper.cs" />
     <Compile Include="TemplateEnginePreprocessTemplateTests.cs" />
     <Compile Include="GenerateIndentedClassCodeTests.cs" />
+    <Compile Include="TextTemplatingSessionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mono.TextTemplating\Mono.TextTemplating.csproj">

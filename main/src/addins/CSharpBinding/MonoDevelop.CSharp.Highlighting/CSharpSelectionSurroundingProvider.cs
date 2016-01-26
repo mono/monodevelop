@@ -110,14 +110,21 @@ namespace MonoDevelop.CSharp.Highlighting
 				var selectionRange = editor.SelectionRange;
 				int anchorOffset = selectionRange.Offset;
 				int leadOffset = selectionRange.EndOffset;
-
-				editor.InsertText (anchorOffset, start);
-				editor.InsertText (leadOffset >= anchorOffset ? leadOffset + start.Length : leadOffset, end);
-				//	textEditorData.SetSelection (anchorOffset + start.Length, leadOffset + start.Length);
-				if (CSharpTextEditorIndentation.OnTheFlyFormatting) {
-					var l1 = editor.GetLineByOffset (anchorOffset);
-					var l2 = editor.GetLineByOffset (leadOffset);
-					OnTheFlyFormatter.Format (editor, context, l1.Offset, l2.EndOffsetIncludingDelimiter);
+				var text = editor.GetTextAt (selectionRange);
+				if (editor.Options.GenerateFormattingUndoStep) {
+					using (var undo = editor.OpenUndoGroup ()) {
+						editor.ReplaceText (selectionRange, start);
+					}
+					using (var undo = editor.OpenUndoGroup ()) {
+						editor.ReplaceText (anchorOffset, 1, start + text + end);
+						editor.SetSelection (anchorOffset + start.Length, leadOffset + start.Length + end.Length);
+					}
+				} else {
+					using (var undo = editor.OpenUndoGroup ()) {
+						editor.InsertText (anchorOffset, start);
+						editor.InsertText (leadOffset >= anchorOffset ? leadOffset + start.Length : leadOffset, end);
+						editor.SetSelection (anchorOffset + start.Length, leadOffset + start.Length + end.Length);
+					}
 				}
 			}
 		}

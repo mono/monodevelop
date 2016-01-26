@@ -137,55 +137,44 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 	}
 
-	class FileSearchResult: SearchResult
+	class FileSearchResult : SearchResult
 	{
 		ProjectFile file;
-		bool useFileName;
 
 		public override SearchResultType SearchResultType { get { return SearchResultType.File; } }
 
 		public override string PlainText {
 			get {
-				if (useFileName)
-					return System.IO.Path.GetFileName (file.FilePath);
-				return GetRelProjectPath (file);
+				return System.IO.Path.GetFileName (file.FilePath);
 			}
 		}
-		 
+
 		public override string File {
 			get {
 				return file.FilePath;
 			}
 		}
-		
+
 		public override Xwt.Drawing.Image Icon {
 			get {
 				return DesktopService.GetIconForFile (file.FilePath, IconSize.Menu);
 			}
 		}
 
-		public override Task<TooltipInformation> GetTooltipInformation (CancellationToken token)
-		{
-			return Task.FromResult<TooltipInformation> (null);
-		}
-
 		public override string Description {
 			get {
-				if (useFileName)
-					return file.Project != null
-						? GettextCatalog.GetString ("file \"{0}\" in project \"{1}\"", GetRelProjectPath (file), file.Project.Name)
-						: GettextCatalog.GetString ("file \"{0}\"", GetRelProjectPath (file));
-				return file.Project != null ? GettextCatalog.GetString ("file in project \"{0}\"", file.Project.Name) : "";
+				return file.Project != null
+					? GettextCatalog.GetString ("file \"{0}\" in project \"{1}\"", GetRelProjectPath (file), file.Project.Name)
+					: GettextCatalog.GetString ("file \"{0}\"", GetRelProjectPath (file));
 			}
 		}
-		
-		public FileSearchResult (string match, string matchedString, int rank, ProjectFile file, bool useFileName)
+
+		public FileSearchResult (string match, string matchedString, int rank, ProjectFile file)
 							: base (match, matchedString, rank)
 		{
 			this.file = file;
-			this.useFileName = useFileName;
 		}
-		
+
 		internal static string GetRelProjectPath (ProjectFile file)
 		{
 			if (file.Project != null)
@@ -229,11 +218,6 @@ namespace MonoDevelop.Components.MainToolbar
 			get {
 				return ImageService.GetIcon ("md-command", IconSize.Menu);
 			}
-		}
-
-		public override Task<TooltipInformation> GetTooltipInformation (CancellationToken token)
-		{
-			return Task.FromResult<TooltipInformation> (null);
 		}
 
 		public override string Description {

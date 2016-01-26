@@ -52,7 +52,6 @@ namespace MonoDevelop.Components.MainToolbar
 
 		List<SearchCategory> categories = new List<SearchCategory> ();
 		List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> results = new List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> ();
-		List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> incompleteResults = new List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> ();
 		Pango.Layout layout, headerLayout;
 		CancellationTokenSource src;
 		Cairo.Color headerColor;
@@ -143,20 +142,6 @@ namespace MonoDevelop.Components.MainToolbar
 
 			Events = Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonMotionMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.ExposureMask | Gdk.EventMask.PointerMotionMask;
 			ItemActivated += (sender, e) => OpenFile ();
-			/*
-			SizeRequested += delegate(object o, SizeRequestedArgs args) {
-				if (inResize)
-					return;
-				if (args.Requisition.Width != Allocation.Width || args.Requisition.Height != Allocation.Height) {
-					inResize = true;
-//					Visible = false;
-					Resize (args.Requisition.Width, args.Requisition.Height);
-//					Visible = true;
-					if (!Visible)
-						Visible = true;
-					inResize = false;
-				}
-			};*/
 		}
 
 		bool inResize = false;
@@ -219,8 +204,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		class SearchResultCollector : ISearchResultCallback
 		{
-			readonly SearchPopupWindow parent;
-			ImmutableList<SearchResult> searchResults = ImmutableList<SearchResult>.Empty;
+			List<SearchResult> searchResults = new List<SearchResult> (maxItems);
 
 			public IReadOnlyList<SearchResult> Results {
 				get {
@@ -230,9 +214,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 			public SearchCategory Category { get; private set;}
 
-			public SearchResultCollector (SearchPopupWindow parent, SearchCategory cat)
+			public SearchResultCollector (SearchCategory cat)
 			{
-				this.parent = parent;
 				this.Category = cat;
 			}
 
@@ -241,46 +224,37 @@ namespace MonoDevelop.Components.MainToolbar
 			#region ISearchResultCallback implementation
 			void ISearchResultCallback.ReportResult (SearchResult result)
 			{
-				int i = Math.Min (maxItems, searchResults.Count);
-				while (i > 0) {
-					if (cmp.Compare (result, searchResults [i - 1]) > 0)
-						break;
-					i--;
+				if (maxItems == searchResults.Count) {
+					int i = searchResults.Count;
+					while (i > 0) {
+						if (cmp.Compare (result, searchResults [i - 1]) > 0)
+							break;
+						i--;
+					}
+					if (i == maxItems) {
+						return;//this means it's worse then current worst
+					} else {
+						if (!result.IsValid)
+							return;
+						searchResults.RemoveAt (maxItems - 1);
+						searchResults.Insert (i, result);
+					}
+				} else {
+					if (!result.IsValid)
+						return;
+					int i = searchResults.Count;
+					while (i > 0) {
+						if (cmp.Compare (result, searchResults [i - 1]) > 0)
+							break;
+						i--;
+					}
+					searchResults.Insert (i, result);
 				}
-
-				if (i >= maxItems || !result.IsValid)
-					return;
-				searchResults = searchResults.Insert (i, result);
-				Runtime.RunInMainThread (delegate {
-					parent.UpdateSearchCollectors ();
-				});
 			}
 
 			#endregion
 		}
-		uint timeout;
 
-		void UpdateSearchCollectors()
-		{
-			RemoveTimeout ();
-			timeout = GLib.Timeout.Add (200, delegate {
-				foreach (var col in collectors) {
-					ShowResult (col.Category, col.Results);
-				}
-				QueueResize ();
-				timeout = 0;
-				return false;
-			});
-		}
-
-		void RemoveTimeout ()
-		{
-			if (timeout == 0)
-				return;
-			GLib.Source.Remove (timeout);
-			timeout = 0;
-		}
-		List<SearchResultCollector> collectors = new List<SearchResultCollector> ();
 		public void Update (SearchPopupSearchPattern pattern)
 		{
 			// in case of 'string:' it's not clear if the user ment 'tag:pattern'  or 'pattern:line' therefore guess
@@ -292,95 +266,71 @@ namespace MonoDevelop.Components.MainToolbar
 			this.pattern = pattern;
 			if (src != null)
 				src.Cancel ();
-			RemoveTimeout ();
 			HideTooltip ();
 			src = new CancellationTokenSource ();
 			isInSearch = true;
 			if (results.Count == 0) {
 				QueueDraw ();
 			}
-			incompleteResults.Clear ();
 			var collectors = new List<SearchResultCollector> ();
 			var token = src.Token;
 			foreach (var _cat in categories) {
 				var cat = _cat;
 				if (!string.IsNullOrEmpty (pattern.Tag) && !cat.IsValidTag (pattern.Tag))
 					continue;
-				var col = new SearchResultCollector (this, _cat);
+				var col = new SearchResultCollector (_cat);
 				collectors.Add (col);
 				col.Task = cat.GetResults (col, pattern, token);
 			}
 
 			Task.WhenAll (collectors.Select (c => c.Task)).ContinueWith (t => {
-				if (t.IsCanceled)
-					return;
 				Application.Invoke (delegate {
-					RemoveTimeout ();
 					if (token.IsCancellationRequested)
 						return;
+					var newResults = new List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> (collectors.Count);
 					foreach (var col in collectors) {
 						if (col.Task.IsCanceled) {
 							continue;
 						} else if (col.Task.IsFaulted) {
 							LoggingService.LogError ($"Error getting search results for {col.Category}", col.Task.Exception);
 						} else {
-							ShowResult (col.Category, col.Results);
+							newResults.Add (Tuple.Create (col.Category, col.Results));
 						}
 					}
+					ShowResults (newResults);
 					isInSearch = false;
 					AnimatedResize ();
 				});
 			}, token);
 		}
 
-		void ShowResult (SearchCategory cat, IReadOnlyList<SearchResult> result)
+		void ShowResults (List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> newResults)
 		{
-			bool found = false;
-			for (int i = 0; i < incompleteResults.Count; i++) {
-				var ir = incompleteResults [i];
-				if (ir.Item1 == cat) {
-					incompleteResults[i] = Tuple.Create (cat, result);
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				incompleteResults.Add (Tuple.Create (cat, result));
-				incompleteResults.Sort ((x, y) => {
-					return categories.IndexOf (x.Item1).CompareTo (categories.IndexOf (y.Item1));
-				});
-			}
+			results = newResults;
+			List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> failedResults = null;
+			topItem = null;
 
-			//if (incompleteResults.Count == categories.Count) 
-			{
-				results.Clear ();
-				results.AddRange (incompleteResults);
-				List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> failedResults = null;
-				topItem = null;
-
-				for (int i = 0; i < results.Count; i++) {
-					var tuple = results [i];
-					try {
-						if (tuple.Item2.Count == 0)
-							continue;
-						if (topItem == null || topItem.DataSource[topItem.Item].Weight < tuple.Item2[0].Weight)
-							topItem = new ItemIdentifier(tuple.Item1, tuple.Item2, 0);
-					} catch (Exception e) {
-						LoggingService.LogError ("Error while showing result " + i, e);
-						if (failedResults == null)
-							failedResults = new List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> ();
-						failedResults.Add (results [i]);
+			for (int i = 0; i < results.Count; i++) {
+				var tuple = results [i];
+				try {
+					if (tuple.Item2.Count == 0)
 						continue;
-					}
+					if (topItem == null || topItem.DataSource [topItem.Item].Weight < tuple.Item2 [0].Weight)
+						topItem = new ItemIdentifier (tuple.Item1, tuple.Item2, 0);
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while showing result " + i, e);
+					if (failedResults == null)
+						failedResults = new List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> ();
+					failedResults.Add (results [i]);
+					continue;
 				}
-				selectedItem = topItem;
-
-				if (failedResults != null)
-					failedResults.ForEach (failedResult => results.Remove (failedResult));
-
-				ShowTooltip ();
-
 			}
+			selectedItem = topItem;
+
+			if (failedResults != null)
+				failedResults.ForEach (failedResult => results.Remove (failedResult));
+
+			ShowTooltip ();
 		}
 
 		int calculatedItems;
@@ -665,19 +615,19 @@ namespace MonoDevelop.Components.MainToolbar
 
 			TooltipInformation tooltip;
 			try {
-				tooltip = await currentSelectedItem.DataSource[i].GetTooltipInformation (token);
+				tooltip = await currentSelectedItem.DataSource [i].GetTooltipInformation (token);
+			} catch (OperationCanceledException) {
+				return;
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while creating search popup window tooltip", e);
 				return;
 			}
 			if (tooltip == null || string.IsNullOrEmpty (tooltip.SignatureMarkup) || token.IsCancellationRequested)
 				return;
-			Application.Invoke (delegate {
-				declarationviewwindow.Clear ();
-				declarationviewwindow.AddOverload (tooltip);
-				declarationviewwindow.CurrentOverload = 0;
-				declarationViewTimer = GLib.Timeout.Add (250, DelayedTooltipShow);
-			});
+			declarationviewwindow.Clear ();
+			declarationviewwindow.AddOverload (tooltip);
+			declarationviewwindow.CurrentOverload = 0;
+			declarationViewTimer = GLib.Timeout.Add (250, DelayedTooltipShow);
 		}
 
 		bool DelayedTooltipShow ()
@@ -821,15 +771,17 @@ namespace MonoDevelop.Components.MainToolbar
 				if (state.HasFlag (Xwt.ModifierKeys.Command))
 					goto case Xwt.Key.PageUp;
 				if (state.HasFlag (Xwt.ModifierKeys.Control))
-					goto case Xwt.Key.Home;
-				SelectItemUp ();
+					SelectFirstCategory ();
+				else
+					SelectItemUp ();
 				return true;
 			case Xwt.Key.Down:
 				if (state.HasFlag (Xwt.ModifierKeys.Command))
 					goto case Xwt.Key.PageDown;
 				if (state.HasFlag (Xwt.ModifierKeys.Control))
-					goto case Xwt.Key.End;
-				SelectItemDown ();
+					SelectLastCatgory ();
+				else
+					SelectItemDown ();
 				return true;
 			case (Xwt.Key)Gdk.Key.KP_Page_Down:
 			case Xwt.Key.PageDown:
@@ -838,12 +790,6 @@ namespace MonoDevelop.Components.MainToolbar
 			case (Xwt.Key)Gdk.Key.KP_Page_Up:
 			case Xwt.Key.PageUp:
 				SelectPrevCategory ();
-				return true;
-			case Xwt.Key.Home:
-				SelectFirstCategory ();
-				return true;
-			case Xwt.Key.End:
-				SelectLastCatgory ();
 				return true;
 			case Xwt.Key.Return:
 				OnItemActivated (EventArgs.Empty);
