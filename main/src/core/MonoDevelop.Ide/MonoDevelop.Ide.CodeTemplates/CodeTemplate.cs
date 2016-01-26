@@ -157,7 +157,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 		public static string GetTemplateShortcutBeforeCaret (TextEditor editor)
 		{
 			int offset = editor.CaretOffset;
-			int start  = FindPrevWordStart (editor, offset);
+			if (offset == 0)
+				return "";
+			int start  = FindPrevWordStart (editor, offset - 1);
 			return editor.GetTextBetween (start, offset);
 		}
 		
