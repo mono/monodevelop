@@ -277,14 +277,17 @@ namespace MonoDevelop.Ide.Gui
 			
 			pad = IdeApp.Workbench.ShowPad (monitorPad, newPadId, title, basePadId + "/Center Bottom", Stock.FindIcon);
 			pad.Sticky = true;
-			searchMonitors.Add (pad);
+			lock (searchMonitors) {
+				searchMonitors.Add (pad);
 
-			if (searchMonitors.Count > 1) {
-				// Additional search pads will be destroyed when hidden
-				pad.Window.PadHidden += delegate {
-					searchMonitors.Remove (pad);
-					pad.Destroy ();
-				};
+				if (searchMonitors.Count > 1) {
+					// Additional search pads will be destroyed when hidden
+					pad.Window.PadHidden += delegate {
+						lock (searchMonitors)
+							searchMonitors.Remove (pad);
+						pad.Destroy ();
+					};
+				}
 			}
 			
 			if (bringToFront)
