@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			if (filter.RegexSearch) {
 				try {
-					new Regex (pattern, RegexOptions.Compiled);
+					new Regex (pattern);
 					return true;
 				} catch (Exception) {
 					return false;
