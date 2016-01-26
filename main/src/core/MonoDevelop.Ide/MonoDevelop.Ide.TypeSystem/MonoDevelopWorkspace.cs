@@ -471,7 +471,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			public IReadOnlyList<Projection> Projections;
 		}
 
-		IEnumerable<DocumentInfo> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.ProjectFile[] sourceFiles)
+		IEnumerable<DocumentInfo> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.ProjectFile [] sourceFiles)
 		{
 			var duplicates = new HashSet<DocumentId> ();
 
@@ -485,39 +485,46 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (!duplicates.Add (projectData.GetOrCreateDocumentId (f.Name)))
 						continue;
 					yield return CreateDocumentInfo (solutionData, p.Name, projectData, f);
-					continue;
+				} else {
+					foreach (var projectedDocument in GenerateProjections (f, projectData, p)) {
+						yield return projectedDocument;
+					}
 				}
-				var mimeType = DesktopService.GetMimeTypeForUri (f.FilePath);
-				var node = TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
-				if (node == null || !node.Parser.CanGenerateProjection (mimeType, f.BuildAction, p.SupportedLanguages))
-					continue;
-				var options = new ParseOptions {
-					FileName = f.FilePath,
-					Project = p,
-					Content = StringTextSource.ReadFrom (f.FilePath),
-				};
-				var projections = node.Parser.GenerateProjections (options);
-				var entry = new ProjectionEntry ();
-				entry.File = f;
-				var list = new List<Projection> ();
-				entry.Projections = list;
-				foreach (var projection in projections.Result) {
-					list.Add (projection);
-					if (!duplicates.Add (projectData.GetOrCreateDocumentId (projection.Document.FileName)))
-						continue;
-					var plainName = projection.Document.FileName.FileName;
-					yield return DocumentInfo.Create (
-						projectData.GetOrCreateDocumentId (projection.Document.FileName),
-						plainName,
-						new [] { p.Name }.Concat (f.ProjectVirtualPath.ParentDirectory.ToString ().Split (Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)),
-						SourceCodeKind.Regular,
-						TextLoader.From (TextAndVersion.Create (new MonoDevelopSourceText (projection.Document), VersionStamp.Create (), projection.Document.FileName)),
-						projection.Document.FileName,
-						false
-					);
-				}
-				projectionList.Add (entry);
 			}
+		}
+
+		IEnumerable<DocumentInfo> GenerateProjections (MonoDevelop.Projects.ProjectFile f, ProjectData projectData, MonoDevelop.Projects.Project p, HashSet<DocumentId> duplicates = null)
+		{
+			var mimeType = DesktopService.GetMimeTypeForUri (f.FilePath);
+			var node = TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
+			if (node == null || !node.Parser.CanGenerateProjection (mimeType, f.BuildAction, p.SupportedLanguages))
+				yield break;
+			var options = new ParseOptions {
+				FileName = f.FilePath,
+				Project = p,
+				Content = StringTextSource.ReadFrom (f.FilePath),
+			};
+			var projections = node.Parser.GenerateProjections (options);
+			var entry = new ProjectionEntry ();
+			entry.File = f;
+			var list = new List<Projection> ();
+			entry.Projections = list;
+			foreach (var projection in projections.Result) {
+				list.Add (projection);
+				if (duplicates != null && !duplicates.Add (projectData.GetOrCreateDocumentId (projection.Document.FileName)))
+					continue;
+				var plainName = projection.Document.FileName.FileName;
+				yield return DocumentInfo.Create (
+					projectData.GetOrCreateDocumentId (projection.Document.FileName),
+					plainName,
+					new [] { p.Name }.Concat (f.ProjectVirtualPath.ParentDirectory.ToString ().Split (Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)),
+					SourceCodeKind.Regular,
+					TextLoader.From (TextAndVersion.Create (new MonoDevelopSourceText (projection.Document), VersionStamp.Create (), projection.Document.FileName)),
+					projection.Document.FileName,
+					false
+				);
+			}
+			projectionList.Add (entry);
 		}
 
 		static async Task<List<MetadataReference>> CreateMetadataReferences (MonoDevelop.Projects.DotNetProject netProject, ProjectId projectId, CancellationToken token)
@@ -925,11 +932,16 @@ namespace MonoDevelop.Ide.TypeSystem
 				var projectFile = fargs.ProjectFile;
 				if (projectFile.Subtype == MonoDevelop.Projects.Subtype.Directory)
 					continue;
-				if (!TypeSystemParserNode.IsCompileBuildAction (projectFile.BuildAction))
-					continue;
-				var projectId = GetProjectId (project);
-				var newDocument = CreateDocumentInfo(solutionData, project.Name, GetProjectData(projectId), projectFile);
-				OnDocumentAdded (newDocument);
+				var projectData = GetProjectData (GetProjectId (project));
+				if (TypeSystemParserNode.IsCompileBuildAction (projectFile.BuildAction)) {
+					var newDocument = CreateDocumentInfo (solutionData, project.Name, projectData, projectFile);
+					OnDocumentAdded (newDocument);
+				} else {
+					foreach (var projectedDocument in GenerateProjections (projectFile, projectData, project)) {
+						OnDocumentAdded (projectedDocument);
+					}
+				}
+
 			}
 		}
 
@@ -941,11 +953,25 @@ namespace MonoDevelop.Ide.TypeSystem
 			foreach (MonoDevelop.Projects.ProjectFileEventInfo fargs in args) {
 				var projectId = GetProjectId (project);
 				var data = GetProjectData (projectId);
-				var id = data.GetDocumentId (fargs.ProjectFile.FilePath); 
+				var id = data.GetDocumentId (fargs.ProjectFile.FilePath);
 				if (id != null) {
 					ClearDocumentData (id);
 					OnDocumentRemoved (id);
 					data.RemoveDocument (fargs.ProjectFile.FilePath);
+				} else {
+					foreach (var entry in ProjectionList) {
+						if (entry.File == fargs.ProjectFile) {
+							foreach (var projectedDocument in entry.Projections) {
+								id = data.GetDocumentId (projectedDocument.Document.FileName);
+								if (id != null) {
+									ClearDocumentData (id);
+									OnDocumentRemoved (id);
+									data.RemoveDocument (projectedDocument.Document.FileName);
+								}
+							}
+							break;
+						}
+					}
 				}
 			}
 		}
@@ -959,23 +985,40 @@ namespace MonoDevelop.Ide.TypeSystem
 				var projectFile = fargs.ProjectFile;
 				if (projectFile.Subtype == MonoDevelop.Projects.Subtype.Directory)
 					continue;
-				if (!TypeSystemParserNode.IsCompileBuildAction (projectFile.BuildAction))
-					continue;
-
 				var projectId = GetProjectId (project);
 				var data = GetProjectData (projectId);
-
-				var id = data.GetDocumentId (fargs.OldName); 
-				if (id != null) {
-					if (this.IsDocumentOpen (id)) {
-						this.InformDocumentClose (id, fargs.OldName);
+				if (TypeSystemParserNode.IsCompileBuildAction (projectFile.BuildAction)) {
+					var id = data.GetDocumentId (fargs.OldName);
+					if (id != null) {
+						if (this.IsDocumentOpen (id)) {
+							this.InformDocumentClose (id, fargs.OldName);
+						}
+						OnDocumentRemoved (id);
+						data.RemoveDocument (fargs.OldName);
 					}
-					OnDocumentRemoved (id);
-					data.RemoveDocument (fargs.OldName);
-				}
+					var newDocument = CreateDocumentInfo (solutionData, project.Name, GetProjectData (projectId), projectFile);
+					OnDocumentAdded (newDocument);
+				} else {
+					foreach (var entry in ProjectionList) {
+						if (entry.File == projectFile) {
+							foreach (var projectedDocument in entry.Projections) {
+								var id = data.GetDocumentId (projectedDocument.Document.FileName);
+								if (id != null) {
+									if (this.IsDocumentOpen (id)) {
+										this.InformDocumentClose (id, projectedDocument.Document.FileName);
+									}
+									OnDocumentRemoved (id);
+									data.RemoveDocument (projectedDocument.Document.FileName);
+								}
+							}
+							break;
+						}
+					}
 
-				var newDocument = CreateDocumentInfo (solutionData, project.Name, GetProjectData (projectId), projectFile);
-				OnDocumentAdded (newDocument);
+					foreach (var projectedDocument in GenerateProjections (fargs.ProjectFile, data, project)) {
+						OnDocumentAdded (projectedDocument);
+					}
+				}
 			}
 		}
 
