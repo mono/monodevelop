@@ -713,6 +713,9 @@ namespace MonoDevelop.VersionControl.Git
 					Revert (RootRepository.FromGitPath (conflictFile.Ancestor.Path), false, monitor);
 					break;
 				}
+				if (res == Git.ConflictResult.Continue) {
+					Add (RootRepository.FromGitPath (conflictFile.Ancestor.Path), false, monitor);
+				}
 			}
 			if (!string.IsNullOrEmpty (message)) {
 				var sig = GetSignature ();
