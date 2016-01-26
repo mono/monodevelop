@@ -782,7 +782,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		public void Merge (string branch, GitUpdateOptions options, ProgressMonitor monitor, FastForwardStrategy = FastForwardStrategy.Default)
+		public void Merge (string branch, GitUpdateOptions options, ProgressMonitor monitor, FastForwardStrategy strategy = FastForwardStrategy.Default)
 		{
 			int stashIndex = -1;
 			var oldHead = RootRepository.Head.Tip;
