@@ -10,7 +10,7 @@ open System.Xml
 open MonoDevelop.Core.Assemblies
 open ExtCore.Control
 
-type FSharpProject() as self = 
+type FSharpProject() as self =
     inherit DotNetProject()
     // Keep the platforms combo of CodeGenerationPanelWidget in sync with this list
     let supportedPlatforms = [| "anycpu"; "x86"; "x64"; "itanium" |]
@@ -28,24 +28,24 @@ type FSharpProject() as self =
                   "Profile259", ("3.259.3.1", true) ]
 
     let mutable initialisedAsPortable = false
-    
-    let invalidateProjectFile() =
-      try 
-        if File.Exists (self.FileName.ToString()) then
-          let options = languageService.GetProjectCheckerOptions(self.FileName.ToString(), [("Configuration", IdeApp.Workspace.ActiveConfigurationId)])
-          languageService.InvalidateConfiguration(options)
-          languageService.ClearProjectInfoCache()
-      with ex -> LoggingService.LogError ("Could not invalidate configuration", ex)
-    
-    let invalidateFiles (args:#ProjectFileEventInfo seq) =
-      for projectFileEvent in args do
-        if MDLanguageService.SupportedFileName (projectFileEvent.ProjectFile.FilePath.ToString()) then
-          invalidateProjectFile()
 
-    let isPortable (project:MSBuildProject) = 
-      project.EvaluatedProperties.Properties
-      |> Seq.tryFind (fun i -> i.UnevaluatedValue.Equals(".NETPortable"))
-      |> Option.isSome
+    let invalidateProjectFile() =
+        try
+            if File.Exists (self.FileName.ToString()) then
+                let options = languageService.GetProjectCheckerOptions(self.FileName.ToString(), [("Configuration", IdeApp.Workspace.ActiveConfigurationId)])
+                languageService.InvalidateConfiguration(options)
+                languageService.ClearProjectInfoCache()
+        with ex -> LoggingService.LogError ("Could not invalidate configuration", ex)
+
+    let invalidateFiles (args:#ProjectFileEventInfo seq) =
+        for projectFileEvent in args do
+            if MDLanguageService.SupportedFileName (projectFileEvent.ProjectFile.FilePath.ToString()) then
+                invalidateProjectFile()
+
+    let isPortable (project:MSBuildProject) =
+        project.EvaluatedProperties.Properties
+        |> Seq.tryFind (fun i -> i.UnevaluatedValue.Equals(".NETPortable"))
+        |> Option.isSome
 
     [<ProjectPathItemProperty ("TargetProfile", DefaultValue = "mscorlib")>]
     member val TargetProfile = "mscorlib" with get, set
@@ -54,120 +54,120 @@ type FSharpProject() as self =
     member val TargetFSharpCoreVersion = String.Empty with get, set
 
     override x.OnInitialize() =
-      base.OnInitialize()
+        base.OnInitialize()
 
     override x.OnReadProject(progress, project) =
-      initialisedAsPortable <- isPortable project
-      base.OnReadProject(progress, project)
+        initialisedAsPortable <- isPortable project
+        base.OnReadProject(progress, project)
 
     override x.OnReadProjectHeader(progress, project) =
-      initialisedAsPortable <- isPortable project
-      base.OnReadProjectHeader(progress, project)
+        initialisedAsPortable <- isPortable project
+        base.OnReadProjectHeader(progress, project)
 
     override x.OnSupportsFramework (framework) =
-      if isPortable self.MSBuildProject then
-        framework.Id.Identifier = TargetFrameworkMoniker.ID_PORTABLE && supportedPortableProfiles |> List.exists ((=) framework.Id.Profile)
-      else base.OnSupportsFramework (framework)
+        if isPortable self.MSBuildProject then
+            framework.Id.Identifier = TargetFrameworkMoniker.ID_PORTABLE && supportedPortableProfiles |> List.exists ((=) framework.Id.Profile)
+        else base.OnSupportsFramework (framework)
 
     override x.OnInitializeFromTemplate(createInfo, options) =
-      base.OnInitializeFromTemplate(createInfo, options)
-      if options.HasAttribute "FSharpPortable" then initialisedAsPortable <- true
-      if options.HasAttribute "TargetProfile" then x.TargetProfile <- options.GetAttribute "TargetProfile"
-      if options.HasAttribute "TargetFSharpCoreVersion" then x.TargetFSharpCoreVersion <- options.GetAttribute "TargetFSharpCoreVersion"
+        base.OnInitializeFromTemplate(createInfo, options)
+        if options.HasAttribute "FSharpPortable" then initialisedAsPortable <- true
+        if options.HasAttribute "TargetProfile" then x.TargetProfile <- options.GetAttribute "TargetProfile"
+        if options.HasAttribute "TargetFSharpCoreVersion" then x.TargetFSharpCoreVersion <- options.GetAttribute "TargetFSharpCoreVersion"
 
     override x.OnGetDefaultImports (imports) =
-      base.OnGetDefaultImports (imports)
-      // By default projects use the F# 3.1 targets file unless only 3.0 is available on the machine.
-      // New projects will be created with this targets file
-      // If FSharp 3.1 is available, use it. If not, use 3.0
-      if initialisedAsPortable then
-        if MSBuildProjectService.IsTargetsAvailable(FSharp31PortableImport) then imports.Add (FSharp31PortableImport)
-        else failwith "F# portable target not found"
-        
-      else
-        if MSBuildProjectService.IsTargetsAvailable(FSharp31Import) then imports.Add (FSharp31Import)
-        else imports.Add (FSharp3Import)
-    
+        base.OnGetDefaultImports (imports)
+        // By default projects use the F# 3.1 targets file unless only 3.0 is available on the machine.
+        // New projects will be created with this targets file
+        // If FSharp 3.1 is available, use it. If not, use 3.0
+        if initialisedAsPortable then
+            if MSBuildProjectService.IsTargetsAvailable(FSharp31PortableImport) then imports.Add (FSharp31PortableImport)
+            else failwith "F# portable target not found"
+
+        else
+            if MSBuildProjectService.IsTargetsAvailable(FSharp31Import) then imports.Add (FSharp31Import)
+            else imports.Add (FSharp3Import)
+
     override x.OnWriteProject(monitor, msproject) =
-      base.OnWriteProject(monitor, msproject)
+        base.OnWriteProject(monitor, msproject)
 
-      //Fix pcl netcore and TargetFSharpCoreVersion
-      let globalGroup = msproject.GetGlobalPropertyGroup()
+        //Fix pcl netcore and TargetFSharpCoreVersion
+        let globalGroup = msproject.GetGlobalPropertyGroup()
 
-      maybe {
-        let! targetFrameworkProfile = x.TargetFramework.Id.Profile |> Option.ofString
-        let! fsharpcoreversion, netcore = profileMap |> Map.tryFind targetFrameworkProfile
-        do globalGroup.SetValue ("TargetFSharpCoreVersion", fsharpcoreversion, "", true)
-        let targetProfile = if netcore then "netcore" else "mscorlib"
-        do globalGroup.SetValue ("TargetProfile", targetProfile, "mscorlib", true) } |> ignore
+        maybe {
+            let! targetFrameworkProfile = x.TargetFramework.Id.Profile |> Option.ofString
+            let! fsharpcoreversion, netcore = profileMap |> Map.tryFind targetFrameworkProfile
+            do globalGroup.SetValue ("TargetFSharpCoreVersion", fsharpcoreversion, "", true)
+            let targetProfile = if netcore then "netcore" else "mscorlib"
+            do globalGroup.SetValue ("TargetProfile", targetProfile, "mscorlib", true) } |> ignore
 
-      // This removes the old guid on saving the project
-      let removeGuid (innerText:string) guidToRemove =
-        innerText.Split ( [|';'|], StringSplitOptions.RemoveEmptyEntries)
-        |> Array.filter (fun guid -> not (guid.Equals (guidToRemove, StringComparison.OrdinalIgnoreCase)))
-        |> String.concat ";"
+        // This removes the old guid on saving the project
+        let removeGuid (innerText:string) guidToRemove =
+            innerText.Split ( [|';'|], StringSplitOptions.RemoveEmptyEntries)
+            |> Array.filter (fun guid -> not (guid.Equals (guidToRemove, StringComparison.OrdinalIgnoreCase)))
+            |> String.concat ";"
 
-      try 
-        let fsimportExists = 
-          msproject.Imports 
-          |> Seq.exists (fun import -> import.Project.EndsWith("FSharp.Targets", StringComparison.OrdinalIgnoreCase))
-        if fsimportExists then 
-          globalGroup.GetProperties()
-          |> Seq.tryFind (fun p -> p.Name = "ProjectTypeGuids")
-          |> Option.iter (fun currentGuids -> let newProjectTypeGuids = removeGuid currentGuids.Value oldFSharpProjectGuid
-                                              currentGuids.SetValue(newProjectTypeGuids))
-      with exn -> LoggingService.LogWarning("Failed to remove old F# guid", exn)
-    
-    override x.OnCompileSources(items, config, configSel, monitor) = 
-      CompilerService.Compile(items, config, configSel, monitor)
-    
-    override x.OnCreateCompilationParameters(config, kind) = 
-      let pars = new FSharpCompilerParameters()
-      // Set up the default options
-      if supportedPlatforms |> Array.exists (fun x -> x.Contains(config.Platform)) then pars.PlatformTarget <- config.Platform
-      match kind with
-      | ConfigurationKind.Debug -> 
-          pars.AddDefineSymbol "DEBUG"
-          pars.Optimize <- false
-          pars.GenerateTailCalls <- false
-      | ConfigurationKind.Release -> 
-          pars.Optimize <- true
-          pars.GenerateTailCalls <- true
-      | _ -> ()
-      //pars.DocumentationFile <- config.CompiledOutputName.FileNameWithoutExtension + ".xml"
-      pars :> DotNetCompilerParameters
-    
-    override x.OnGetSupportedClrVersions() = 
-      [| ClrVersion.Net_2_0; ClrVersion.Net_4_0; ClrVersion.Net_4_5; ClrVersion.Clr_2_1 |]
+        try
+            let fsimportExists =
+                msproject.Imports
+                |> Seq.exists (fun import -> import.Project.EndsWith("FSharp.Targets", StringComparison.OrdinalIgnoreCase))
+            if fsimportExists then
+                globalGroup.GetProperties()
+                |> Seq.tryFind (fun p -> p.Name = "ProjectTypeGuids")
+                |> Option.iter (fun currentGuids -> let newProjectTypeGuids = removeGuid currentGuids.Value oldFSharpProjectGuid
+                                                    currentGuids.SetValue(newProjectTypeGuids))
+        with exn -> LoggingService.LogWarning("Failed to remove old F# guid", exn)
+
+    override x.OnCompileSources(items, config, configSel, monitor) =
+        CompilerService.Compile(items, config, configSel, monitor)
+
+    override x.OnCreateCompilationParameters(config, kind) =
+        let pars = new FSharpCompilerParameters()
+        // Set up the default options
+        if supportedPlatforms |> Array.exists (fun x -> x.Contains(config.Platform)) then pars.PlatformTarget <- config.Platform
+        match kind with
+        | ConfigurationKind.Debug ->
+            pars.AddDefineSymbol "DEBUG"
+            pars.Optimize <- false
+            pars.GenerateTailCalls <- false
+        | ConfigurationKind.Release ->
+            pars.Optimize <- true
+            pars.GenerateTailCalls <- true
+        | _ -> ()
+        //pars.DocumentationFile <- config.CompiledOutputName.FileNameWithoutExtension + ".xml"
+        pars :> DotNetCompilerParameters
+
+    override x.OnGetSupportedClrVersions() =
+        [| ClrVersion.Net_2_0; ClrVersion.Net_4_0; ClrVersion.Net_4_5; ClrVersion.Clr_2_1 |]
 
     override x.OnFileAddedToProject(e) =
-      base.OnFileAddedToProject(e)
-      if not self.Loading then invalidateFiles(e)
+        base.OnFileAddedToProject(e)
+        if not self.Loading then invalidateFiles(e)
 
     override x.OnFileRemovedFromProject(e) =
-      base.OnFileRemovedFromProject(e)
-      if not self.Loading then invalidateFiles(e)
+        base.OnFileRemovedFromProject(e)
+        if not self.Loading then invalidateFiles(e)
 
     override x.OnFileRenamedInProject(e) =
-      base.OnFileRenamedInProject(e)
-      if not self.Loading then invalidateFiles(e)
+        base.OnFileRenamedInProject(e)
+        if not self.Loading then invalidateFiles(e)
 
     override x.OnFilePropertyChangedInProject(e) =
-      base.OnFilePropertyChangedInProject(e)
-      if not self.Loading then invalidateFiles(e)
+        base.OnFilePropertyChangedInProject(e)
+        if not self.Loading then invalidateFiles(e)
 
     override x.OnReferenceAddedToProject(e) =
-      base.OnReferenceAddedToProject(e)
-      if not self.Loading then invalidateProjectFile()
+        base.OnReferenceAddedToProject(e)
+        if not self.Loading then invalidateProjectFile()
 
     override x.OnReferenceRemovedFromProject(e) =
-      base.OnReferenceRemovedFromProject(e)
-      if not self.Loading then invalidateProjectFile()
+        base.OnReferenceRemovedFromProject(e)
+        if not self.Loading then invalidateProjectFile()
 
     override x.OnDispose () =
-      //if not self.Loading then invalidateProjectFile()
+        //if not self.Loading then invalidateProjectFile()
 
-      // FIXME: is it correct to do it every time a project is disposed?
-      //Should only be done on solution close
-      //langServ.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients()
-      base.OnDispose ()
+        // FIXME: is it correct to do it every time a project is disposed?
+        //Should only be done on solution close
+        //langServ.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients()
+        base.OnDispose ()

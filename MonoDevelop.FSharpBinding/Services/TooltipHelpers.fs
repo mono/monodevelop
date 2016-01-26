@@ -10,9 +10,9 @@ open MonoDevelop.Core
 open ExtCore.Control
 
 [<RequireQualifiedAccess>]
-type Style = 
-| Type of string 
-| Parameter of string 
+type Style =
+| Type of string
+| Parameter of string
 | Code of string
 | Exception of string
 
@@ -23,12 +23,12 @@ module Styles =
         | Style.Parameter name -> String.Format("<i>{0}</i> ", name)
         | Style.Code name -> String.Format("<tt>{0}</tt> ", name)
         | Style.Exception name -> String.Format("\n<i>{0}</i>", name)
-        
+
 module Linq2Xml =
     let xn = XName.op_Implicit
     let xs ns local = XName.Get(local, ns)
     let firstOrDefault seq = Enumerable.FirstOrDefault(seq)
-    let firstOrNone seq = 
+    let firstOrNone seq =
         let iter = Enumerable.FirstOrDefault(seq)
         match iter with null -> None | _ -> Some(iter)
 
@@ -39,20 +39,20 @@ module Linq2Xml =
     let descendants xs (element: XElement) = element.Descendants(xs)
     let previousNodeOrNone (element: XElement) =
         match element.PreviousNode with
-        | null -> None 
+        | null -> None
         | node -> Some(node)
-                                      
-module TooltipsXml = 
+
+module TooltipsXml =
     open Linq2Xml
-    let private strip start (str:string)= 
+    let private strip start (str:string)=
         if str.StartsWith start then str.Substring(start.Length)
         else str
-    
+
     let private trim (str:String) =
         str.Split([|'\n';'\r'|], StringSplitOptions.RemoveEmptyEntries)
         |> Array.map (fun s -> s.Trim() )
         |> String.concat(" ")
-            
+
     let private unqualifyName (txt:String) = txt.Substring(txt.LastIndexOf(".") + 1)
 
     let private elementValue (style: Style -> string) (element:XElement) =
@@ -65,41 +65,41 @@ module TooltipsXml =
                 | :? XElement as element ->
                        match element.Name.LocalName with
                        | "para" -> processNodes acc (element.Nodes())
-                       
+
                        | "see" -> match element |> attribute "cref" with
                                   | null -> acc
                                   | attrib -> let fragment = attrib.Value |> (strip "T:" >> unqualifyName >> Style.Type >> style)
                                               acc.Append(fragment)
-                                  
+
                        | "paramref" -> match element |> attribute "name" with
                                        | null -> acc
                                        | attrib -> let fragment = attrib.Value |> (Style.Parameter >> style)
                                                    acc.Append(fragment)
-                                          
+
                        | "c" -> let fragment = element.Value |> (GLib.Markup.EscapeText >> Style.Code >> style)
                                 acc.Append(fragment)
                        | "attribution" -> acc //skip attribution elements
-                       | unknown -> 
+                       | unknown ->
                            LoggingService.LogError("Error in Tooltip parsing, unknown element in summary: " + unknown)
                            processNodes acc (element.Nodes())
                 | :? XText as xt -> acc.AppendFormat("{0} ", xt.Value |> (GLib.Markup.EscapeText >> trim))
                 | _ -> acc )
         processNodes sb (element.Nodes())
 
-    let getTooltipSummary (style: Style -> string) (str:string) = 
+    let getTooltipSummary (style: Style -> string) (str:string) =
         try let xdoc =
                 if str.StartsWith("<?xml") then XElement.Parse(str)
                 else XElement.Parse("<Root>" + str + "</Root>")
-                
+
             //if no nodes were found then return the string verbatim
             let anyNodes = xdoc.Descendants() |> Enumerable.Any
             if not anyNodes then str else
             let summary = xdoc.Descendants(xn "summary") |> firstOrDefault |> elementValue style
 
             xdoc.Elements(xn "exception")
-            |> Seq.iteri (fun i element -> 
+            |> Seq.iteri (fun i element ->
                 if i = 0 then summary.Append("\n\nExceptions\n") |> ignore
-                match element |> attribute "cref" with 
+                match element |> attribute "cref" with
                 | null -> ()
                 | cref -> let exceptionType = cref.Value |> (strip "T:" >> unqualifyName >> Style.Exception >> style)
                           if i > 0 then summary.AppendLine() |> ignore
@@ -110,13 +110,13 @@ module TooltipsXml =
         with exn ->
             LoggingService.LogError("Error in Tooltip parsing:\n" + exn.ToString())
             GLib.Markup.EscapeText str
-       
+
     let getParameterTip (addStyle: Style -> string) (str:String) (param:String) =
-        let xdoc = 
+        let xdoc =
             if str.StartsWith("<?xml") then XElement.Parse(str)
             else XElement.Parse("<Root>" + str + "</Root>")
-        let par = xdoc.Descendants(xn "param") 
-                  |> where (fun element -> (element |> attribute "name").Value = param) 
+        let par = xdoc.Descendants(xn "param")
+                  |> where (fun element -> (element |> attribute "name").Value = param)
                   |> singleOrDefault
         if par = null then None else Some((elementValue addStyle par).ToString())
 
@@ -147,7 +147,7 @@ module TooltipXmlDoc =
   let findXmlDocProviderForAssembly file  =
       maybe {let! xmlFile = Option.coalesce (tryExt file "xml") (tryExt file "XML")
              return! xmlDocProvider xmlFile }
-            
+
   let findXmlDocProviderForEntity (file, key:string)  =
       maybe {let! docReader = findXmlDocProviderForAssembly file
              let doc = docReader.GetDocumentation key
@@ -281,18 +281,18 @@ module TooltipFormatting =
             commentB.Append(html) |> ignore
     | FSharpToolTipElement.Group(items) ->
         let items, msg =
-          if items.Length > 10 then
-            (items |> Seq.take 10 |> List.ofSeq), sprintf "   <i>(+%d other overloads)</i>" (items.Length - 10)
-          else items, null
+            if items.Length > 10 then
+                (items |> Seq.take 10 |> List.ofSeq), sprintf "   <i>(+%d other overloads)</i>" (items.Length - 10)
+            else items, null
         if (items.Length > 1) then
-          signatureB.AppendLine("Multiple overloads") |> ignore
+            signatureB.AppendLine("Multiple overloads") |> ignore
         items |> Seq.iteri (fun i (it,comment) ->
-          signatureB.Append(GLib.Markup.EscapeText (it))  |> ignore
-          if i = 0 then
-              let html = buildFormatComment comment
-              if not (String.IsNullOrWhiteSpace html) then
-                  commentB.AppendLine(html) |> ignore
-                  commentB.Append(GLib.Markup.EscapeText "\n")  |> ignore )
+            signatureB.Append(GLib.Markup.EscapeText (it))  |> ignore
+            if i = 0 then
+                let html = buildFormatComment comment
+                if not (String.IsNullOrWhiteSpace html) then
+                    commentB.AppendLine(html) |> ignore
+                    commentB.Append(GLib.Markup.EscapeText "\n")  |> ignore )
         if msg <> null then signatureB.Append(msg) |> ignore
     | FSharpToolTipElement.CompositionError(err) ->
         signatureB.Append("Composition error: " + GLib.Markup.EscapeText(err)) |> ignore
@@ -332,5 +332,3 @@ module TooltipFormatting =
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
   let extractParamTip paramName (FSharpToolTipText elements) =
       List.tryPick (extractParamTipFromElement paramName) elements
-        
-        

@@ -15,7 +15,7 @@ type TestViewContent() =
     let name = FilePath()
 
     let data = MonoDevelop.Ide.Editor.TextEditorFactory.CreateNewEditor ()
-   
+
     member val Contents = ResizeArray([data :> obj]) with get, set
     member val Data = data
 
@@ -66,7 +66,7 @@ type TestViewContent() =
         member x.GetText(s, e) = data.GetTextBetween (s, e)
         member x.GetCharAt(pos) = data.GetCharAt(pos)
         member x.GetPositionFromLineColumn(line, column) = data.LocationToOffset (line, column)
-        member x.GetLineColumnFromPosition(position, line, col) = 
+        member x.GetLineColumnFromPosition(position, line, col) =
             let loc = data.OffsetToLocation (position)
             line <- loc.Line
             col <- loc.Column

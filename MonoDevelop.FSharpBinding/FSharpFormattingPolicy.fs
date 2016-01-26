@@ -8,7 +8,7 @@ open MonoDevelop.Core.Serialization
 open System.ComponentModel
 open MonoDevelop.Projects.Policies
 
-type FSharpFormattingSettings() = 
+type FSharpFormattingSettings() =
     [<ItemProperty>]
     [<LocalizedCategory ("Layout")>]
     [<LocalizedDisplayName ("Indent on try/with")>]
@@ -57,7 +57,7 @@ type FSharpFormattingSettings() =
 type FSharpFormattingPolicy() =
     [<ItemProperty>]
     member val Formats = ResizeArray<FSharpFormattingSettings>() with get, set
-                
+
     [<ItemProperty>]
     member val DefaultFormat = FSharpFormattingSettings() with get, set
 
@@ -69,6 +69,6 @@ type FSharpFormattingPolicy() =
         clone
 
     interface IEquatable<FSharpFormattingPolicy> with
-        member this.Equals(other) = 
-            this.DefaultFormat = other.DefaultFormat 
+        member this.Equals(other) =
+            this.DefaultFormat = other.DefaultFormat
             && Seq.forall (fun f -> Seq.exists (fun f' -> f' = f) other.Formats) this.Formats

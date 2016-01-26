@@ -10,7 +10,7 @@ open System.Runtime.Serialization.Formatters.Binary
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 module internal ProjectCracking =
-  let runningOnMono = 
+  let runningOnMono =
       try match System.Type.GetType("Mono.Runtime") with null -> false | _ -> true
       with e -> false
 
@@ -26,7 +26,7 @@ module internal ProjectCracking =
     override x.Initialize(eventSource:IEventSource) =
       sb.Clear() |> ignore
       eventSource.AnyEventRaised.Add(log)
-    
+
     member x.Log = sb.ToString()
 
   type internal HostCompile() =
@@ -50,7 +50,7 @@ module internal ProjectCracking =
 
       let properties = defaultArg properties []
       let enableLogging = defaultArg enableLogging false
-      let mkAbsolute dir v = 
+      let mkAbsolute dir v =
           if Path.IsPathRooted v then v
           else Path.Combine(dir, v)
 
@@ -65,7 +65,7 @@ module internal ProjectCracking =
               None
 
       // Use the old API on Mono, with ToolsVersion = 12.0
-      let CrackProjectUsingOldBuildAPI(fsprojFile:string) = 
+      let CrackProjectUsingOldBuildAPI(fsprojFile:string) =
           let engine = new Microsoft.Build.BuildEngine.Engine(DefaultToolsVersion="4.0")
 
           Option.iter (fun l -> engine.RegisterLogger(l)) logOpt
@@ -88,7 +88,7 @@ module internal ProjectCracking =
           project.Build([| "ResolveReferences" |])  |> ignore
           let directory = Path.GetDirectoryName project.FullFileName
 
-          let getProp (p: Microsoft.Build.BuildEngine.Project) s = 
+          let getProp (p: Microsoft.Build.BuildEngine.Project) s =
               let v = p.GetEvaluatedProperty s
               if String.IsNullOrWhiteSpace v then None
               else Some v
@@ -98,7 +98,7 @@ module internal ProjectCracking =
               | None -> None
               | Some d -> mkAbsoluteOpt d (getProp project "TargetFileName")
 
-          let getItems s = 
+          let getItems s =
               let fs  = project.GetEvaluatedItemsByName(s)
               [ for f in fs -> mkAbsolute directory f.FinalItemSpec ]
 
@@ -107,7 +107,7 @@ module internal ProjectCracking =
                      yield mkAbsolute directory i.FinalItemSpec
               ]
 
-          let references = 
+          let references =
               [ for i in project.GetEvaluatedItemsByName("ReferencePath") do
                   yield i.FinalItemSpec
                 for i in project.GetEvaluatedItemsByName("ChildProjectReferences") do
@@ -122,7 +122,7 @@ module internal ProjectCracking =
           let fsprojFullPath = try Path.GetFullPath(fsprojFile) with _ -> fsprojFile
           let fsprojAbsDirectory = Path.GetDirectoryName fsprojFullPath
 
-          use _pwd = 
+          use _pwd =
               let dir = Environment.CurrentDirectory
               Environment.CurrentDirectory <- fsprojAbsDirectory
               { new System.IDisposable with member x.Dispose() = Environment.CurrentDirectory <- dir }
@@ -202,22 +202,22 @@ module internal ProjectCracking =
       let resources = getItems "Resource"
       let noaction = getItems "None"
       let content = getItems "Content"
-    
-      let split (s : string option) (cs : char []) = 
+
+      let split (s : string option) (cs : char []) =
           match s with
           | None -> [||]
-          | Some s -> 
+          | Some s ->
               if String.IsNullOrWhiteSpace s then [||]
               else s.Split(cs, StringSplitOptions.RemoveEmptyEntries)
-    
-      let getbool (s : string option) = 
+
+      let getbool (s : string option) =
           match s with
           | None -> false
-          | Some s -> 
+          | Some s ->
               match (Boolean.TryParse s) with
               | (true, result) -> result
               | (false, _) -> false
-    
+
       let fxVer = getProp "TargetFrameworkVersion"
       let optimize = getProp "Optimize" |> getbool
       let assemblyNameOpt = getProp "AssemblyName"
@@ -248,14 +248,14 @@ module internal ProjectCracking =
       let libPaths = split (getProp "ReferencePath") [| ';'; ',' |]
       let otherFlags = split (getProp "OtherFlags") [| ' ' |]
       let isLib = (outputTypeOpt = Some "Library")
-    
-      let docFileOpt = 
+
+      let docFileOpt =
           match docFileOpt with
           | None -> None
           | Some docFile -> Some(mkAbsolute directory docFile)
-    
-    
-      let options = 
+
+
+      let options =
           [   yield "--simpleresolution"
               yield "--noframework"
               match outFileOpt with
@@ -298,7 +298,7 @@ module internal ProjectCracking =
               yield "--fullpaths"
               yield "--flaterrors"
               if warnAsError then yield "--warnaserror"
-              yield 
+              yield
                   if isLib then "--target:library"
                   else "--target:exe"
               for symbol in defines do
@@ -315,13 +315,13 @@ module internal ProjectCracking =
                       else "--tailcalls-"
               match debugTypeOpt with
               | None -> ()
-              | Some debugType -> 
+              | Some debugType ->
                   match debugType.ToUpperInvariant() with
                   | "NONE" -> ()
                   | "PDBONLY" -> yield "--debug:pdbonly"
                   | "FULL" -> yield "--debug:full"
                   | _ -> ()
-              match platformOpt |> Option.map (fun o -> o.ToUpperInvariant()), prefer32bit, 
+              match platformOpt |> Option.map (fun o -> o.ToUpperInvariant()), prefer32bit,
                       targetTypeOpt |> Option.map (fun o -> o.ToUpperInvariant()) with
               | Some "ANYCPU", true, Some "EXE" | Some "ANYCPU", true, Some "WINEXE" -> yield "--platform:anycpu32bitpreferred"
               | Some "ANYCPU", _, _ -> yield "--platform:anycpu"
@@ -339,11 +339,11 @@ module internal ProjectCracking =
               for f in resources do
                   yield "--resource:" + f
               for i in libPaths do
-                  yield "--lib:" + mkAbsolute directory i 
+                  yield "--lib:" + mkAbsolute directory i
               for r in references do
-                  yield "-r:" + r 
+                  yield "-r:" + r
               yield! files ]
-    
+
       member x.Options = options
       member x.FrameworkVersion = fxVer
       member x.ProjectReferences = projectReferences
@@ -364,12 +364,12 @@ module internal ProjectCracking =
 
 type ProjectCracker =
 
-  static member private GetProjectOptionsFromCommandLineArgs(projectFileName, argv, ?loadedTimeStamp) = 
+  static member private GetProjectOptionsFromCommandLineArgs(projectFileName, argv, ?loadedTimeStamp) =
       let loadedTimeStamp = defaultArg loadedTimeStamp DateTime.MaxValue // Not 'now', we don't want to force reloading
       { ProjectFileName = projectFileName
         ProjectFileNames = [| |] // the project file names will be inferred from the ProjectOptions
-        OtherOptions = argv 
-        ReferencedProjects= [| |]  
+        OtherOptions = argv
+        ReferencedProjects= [| |]
         IsIncompleteTypeCheckEnvironment = false
         UseScriptResolutionRules = false
         LoadTime = loadedTimeStamp
@@ -383,7 +383,7 @@ type ProjectCracker =
           let newlogs =
             if enableLogging then Map.add file parsedProject.LogOutput logs
             else logs
-          let referencedProjectOptions, finalLogs = 
+          let referencedProjectOptions, finalLogs =
             parsedProject.ProjectReferences
             |> List.fold (fun (acc,logs) file ->
                             if Path.GetExtension(file) = ".fsproj" then

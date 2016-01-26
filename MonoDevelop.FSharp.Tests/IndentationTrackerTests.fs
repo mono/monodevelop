@@ -7,7 +7,7 @@ open Mono.TextEditor
 [<TestFixture>]
 type IndentationTrackerTests() =
 
-    let docWithCaretAt (content:string) = 
+    let docWithCaretAt (content:string) =
         let d = TestHelpers.createDoc(content.Replace("§", "")) ""
         d.Editor.SetIndentationTracker (FSharpIndentationTracker(d.Editor))
         do match content.IndexOf('§') with
@@ -17,37 +17,37 @@ type IndentationTrackerTests() =
         d
 
     let getIndent (content:string) =
-      let doc = docWithCaretAt content
-      let tracker = FSharpIndentationTracker(doc.Editor)
-      let caretLine = doc.Editor.CaretLine
-      tracker.GetIndentationString(caretLine).Length
-      
+        let doc = docWithCaretAt content
+        let tracker = FSharpIndentationTracker(doc.Editor)
+        let caretLine = doc.Editor.CaretLine
+        tracker.GetIndentationString(caretLine).Length
+
     let insertEnterAtSection (text:string) =
-      let idx = text.IndexOf ('§')
-      let doc = TextDocument(text.Replace("§", ""))
-      use data = new TextEditorData (doc)
-      data.Caret.Offset <- idx
-      MiscActions.InsertNewLine(data)
-      data.Document.Text 
+        let idx = text.IndexOf ('§')
+        let doc = TextDocument(text.Replace("§", ""))
+        use data = new TextEditorData (doc)
+        data.Caret.Offset <- idx
+        MiscActions.InsertNewLine(data)
+        data.Document.Text
 
     [<Test>]
     member x.``Basic indents``() =
-      let getIndent (doc:TestDocument, line:int, col) =
-          doc.Editor.SetCaretLocation (2, 2)
-          let column = doc.Editor.GetVirtualIndentationColumn (line)
-          column
+        let getIndent (doc:TestDocument, line:int, col) =
+            doc.Editor.SetCaretLocation (2, 2)
+            let column = doc.Editor.GetVirtualIndentationColumn (line)
+            column
 
-      let doc = "" |> TestHelpers.createDoc """
-let a = 
+        let doc = "" |> TestHelpers.createDoc """
+let a =
 
 let b = (fun a ->
 
   let b = a
 """
-      doc.Editor.SetIndentationTracker (FSharpIndentationTracker(doc.Editor))
-      getIndent (doc, 3, 1) |> should equal 5
-      getIndent (doc, 5, 1) |> should equal 5
-      getIndent (doc, 7, 1) |> should equal 3
+        doc.Editor.SetIndentationTracker (FSharpIndentationTracker(doc.Editor))
+        getIndent (doc, 3, 1) |> should equal 5
+        getIndent (doc, 5, 1) |> should equal 5
+        getIndent (doc, 7, 1) |> should equal 3
 
     [<Test>]
     member x.``Match expression``() =
@@ -62,7 +62,7 @@ let b = (fun a ->
         getIndent("""let m =
    match 123 with
     §""") |> should equal 3
-     
+
     [<Test>]
     member x.``Enter doesnt change indentation at indent position``() =
         let input = """  let a = 123
@@ -77,6 +77,6 @@ let b = (fun a ->
     member x.``Enter after equals indents``() =
         let input = """  let a = §123"""
         input
-        |> insertEnterAtSection 
+        |> insertEnterAtSection
         |> should equal """  let a = 
   123"""

@@ -35,13 +35,13 @@ type FSharpNavigationTextEditorExtension() =
                         let endOffset = getOffset range.End
                         let text = editor.GetTextBetween(startOffset, endOffset)
                         let lastDot = text.LastIndexOf "."
-                        let correctedOffset = 
+                        let correctedOffset =
                             if lastDot <> -1 then
                                 startOffset + lastDot + 1
                             else
                                 startOffset
 
-                        AbstractNavigationExtension.NavigationSegment(correctedOffset, endOffset - correctedOffset, 
+                        AbstractNavigationExtension.NavigationSegment(correctedOffset, endOffset - correctedOffset,
                             (fun () -> GLib.Timeout.Add (50u, fun () -> Refactoring.jumpToDeclaration(editor, documentContext, symbol)
                                                                         false) |> ignore))
                     let filterSymbols (symbol: FSharpSymbolUse) =
@@ -50,10 +50,10 @@ type FSharpNavigationTextEditorExtension() =
                         && Refactoring.Operations.canJump symbol editor.FileName documentContext.Project.ParentSolution
 
                     return doc.AllSymbolsKeyed.Values
-                        |> Seq.filter filterSymbols
-                        |> Seq.map segmentFromSymbol
+                           |> Seq.filter filterSymbols
+                           |> Seq.map segmentFromSymbol
 
-            | None -> return Seq.empty   
+            | None -> return Seq.empty
         }
 
         Async.StartAsTask(computation, cancellationToken = token)

@@ -15,42 +15,42 @@ module Parsing =
   // for a short identifier forward - this means that when you hover
   // 'B' in 'A.B.C', you will get intellisense for 'A.B' module)
   let findLongIdents (col, lineStr) =
-    if lineStr = "" then 
-      None
-    else
-      match Lexer.getSymbol lineStr 0 col lineStr SymbolLookupKind.ByLongIdent [||] Lexer.queryLexState with
-      | Some sym -> match sym.Text with
-                    | "" -> None
-                    | _ -> Some (sym.RightColumn, sym.Text.Split '.' |> Array.toList)
-      | _ -> None
+      if lineStr = "" then
+          None
+      else
+          match Lexer.getSymbol lineStr 0 col lineStr SymbolLookupKind.ByLongIdent [||] Lexer.queryLexState with
+          | Some sym -> match sym.Text with
+                        | "" -> None
+                        | _ -> Some (sym.RightColumn, sym.Text.Split '.' |> Array.toList)
+          | _ -> None
 
   /// find the identifier prior to a '(' or ',' once the method tip trigger '(' shows
   let findLongIdentsAtGetMethodsTrigger (col, lineStr) =
-    /// Create sequence that reads the string backwards
-    let createBackStringReader (str:string) from = seq {
-      for i in (min from (str.Length-1)) .. -1 .. 0 do yield str.[i], i }
+      /// Create sequence that reads the string backwards
+      let createBackStringReader (str:string) from = seq {
+          for i in (min from (str.Length-1)) .. -1 .. 0 do yield str.[i], i }
 
-    let _char, index = createBackStringReader lineStr col
-                       |> Seq.takeWhile (fun (c, _index) -> c <> ')')
-                       |> Seq.head
-    match findLongIdents(index-1, lineStr) with
-    | Some (_col, ident) -> Some(col, ident)
-    | _ -> None
+      let _char, index = createBackStringReader lineStr col
+                         |> Seq.takeWhile (fun (c, _index) -> c <> ')')
+                         |> Seq.head
+      match findLongIdents(index-1, lineStr) with
+      | Some (_col, ident) -> Some(col, ident)
+      | _ -> None
 
   let findLongIdentsAndResidue (col, lineStr:string) =
-    let lineStr = lineStr.Substring(0, col)
+      let lineStr = lineStr.Substring(0, col)
 
-    match Lexer.getSymbol lineStr 0 col lineStr SymbolLookupKind.ByLongIdent [||] Lexer.queryLexState with
-    | Some sym -> match sym.Text with
-                  | "" -> [], ""
-                  | _ -> let res = sym.Text.Split '.'
-                                   |> List.ofArray
-                                   |> List.rev
+      match Lexer.getSymbol lineStr 0 col lineStr SymbolLookupKind.ByLongIdent [||] Lexer.queryLexState with
+      | Some sym -> match sym.Text with
+                    | "" -> [], ""
+                    | _ -> let res = sym.Text.Split '.'
+                                    |> List.ofArray
+                                    |> List.rev
 
-                         if lineStr.[col - 1] = '.' then
-                           res |> List.rev, ""
-                         else
-                           match res with
-                           | head :: tail -> tail |> List.rev, head
-                           | [] -> [], ""
-    | _ -> [], ""
+                           if lineStr.[col - 1] = '.' then
+                               res |> List.rev, ""
+                           else
+                             match res with
+                             | head :: tail -> tail |> List.rev, head
+                             | [] -> [], ""
+      | _ -> [], ""

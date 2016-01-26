@@ -22,11 +22,11 @@ let localFour = localOne.Property|One"""
     let getOffset expr =
         let startOffset = content.IndexOf (expr, StringComparison.Ordinal)
         let previousMarkers =
-          content
-          |> String.toArray
-          |> Array.findIndices((=) '|')
-          |> Array.filter(fun i -> i < startOffset-1)
-          |> Array.length
+            content
+            |> String.toArray
+            |> Array.findIndices((=) '|')
+            |> Array.filter(fun i -> i < startOffset-1)
+            |> Array.length
         let offset = content.IndexOf('|',startOffset) - previousMarkers
         offset
 

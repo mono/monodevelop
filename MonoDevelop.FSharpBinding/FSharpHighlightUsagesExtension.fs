@@ -28,42 +28,42 @@ type HighlightUsagesExtension() =
         | null -> Task.FromResult(None)
         | doc when doc.FileName = FilePath.Null || doc.FileName <> x.Editor.FileName -> Task.FromResult(None)
         | _doc ->
+            LoggingService.LogDebug("HighlightUsagesExtension: ResolveAsync starting on {0}", x.DocumentContext.Name |> IO.Path.GetFileName )
+            Async.StartAsTask (
+                cancellationToken = token,
+                computation = async {
+                try
+                    let line, col, lineStr = x.Editor.GetLineInfoByCaretOffset ()
+                    let currentFile = x.DocumentContext.Name
+                    let source = x.Editor.Text
+                    let projectFile = x.DocumentContext.Project |> function null -> currentFile | project -> project.FileName.ToString()
+                    let! symbolReferences = languageService.GetUsesOfSymbolAtLocationInFile (projectFile, currentFile, 0, source, line, col, lineStr)
+                    return symbolReferences
+                with
+                | :? TaskCanceledException -> return None
+                | exn -> LoggingService.LogError("Unhandled Exception in F# HighlightingUsagesExtension", exn)
+                         return None })
 
-          LoggingService.LogDebug("HighlightUsagesExtension: ResolveAsync starting on {0}", x.DocumentContext.Name |> IO.Path.GetFileName )
-          Async.StartAsTask (
-              cancellationToken = token,
-              computation = async {
-              try
-                  let line, col, lineStr = x.Editor.GetLineInfoByCaretOffset ()
-                  let currentFile = x.DocumentContext.Name
-                  let source = x.Editor.Text
-                  let projectFile = x.DocumentContext.Project |> function null -> currentFile | project -> project.FileName.ToString()
-                  let! symbolReferences = languageService.GetUsesOfSymbolAtLocationInFile (projectFile, currentFile, 0, source, line, col, lineStr)
-                  return symbolReferences
-              with
-              | :? TaskCanceledException -> return None
-              | exn -> LoggingService.LogError("Unhandled Exception in F# HighlightingUsagesExtension", exn)
-                       return None })
-            
     override x.GetReferencesAsync(resolveResult, token) =
-      let references =
-        if token.IsCancellationRequested then Seq.empty else
-            try
-                match resolveResult with
-                | Some(fsSymbolName, references) ->
-                    LoggingService.LogDebug("HighlightUsagesExtension: GetReferences starting on {0}", x.DocumentContext.Name |> IO.Path.GetFileName)
-                    //TODO: Can we use the DisplayName from the symbol rather than the last element in ident islands?
-                    // If we could then we could remove the Parsing.findLongIdents in GetUsesOfSymbolAtLocationInFile.
-                    references
-                    |> Seq.map (fun symbolUse -> NRefactory.createMemberReference(x.Editor, x.DocumentContext, symbolUse, fsSymbolName))
-                | _ -> Seq.empty
-                                
-            with
-            | :? TaskCanceledException -> Seq.empty
-            | exn -> LoggingService.LogError("Unhandled Exception in F# HighlightingUsagesExtension", exn)
-                     Seq.empty
+        let references =
+            if token.IsCancellationRequested then Seq.empty else
 
-      Task.FromResult references
+                try
+                    match resolveResult with
+                    | Some(fsSymbolName, references) ->
+                        LoggingService.LogDebug("HighlightUsagesExtension: GetReferences starting on {0}", x.DocumentContext.Name |> IO.Path.GetFileName)
+                        //TODO: Can we use the DisplayName from the symbol rather than the last element in ident islands?
+                        // If we could then we could remove the Parsing.findLongIdents in GetUsesOfSymbolAtLocationInFile.
+                        references
+                        |> Seq.map (fun symbolUse -> NRefactory.createMemberReference(x.Editor, x.DocumentContext, symbolUse, fsSymbolName))
+                    | _ -> Seq.empty
+
+                with
+                | :? TaskCanceledException -> Seq.empty
+                | exn -> LoggingService.LogError("Unhandled Exception in F# HighlightingUsagesExtension", exn)
+                         Seq.empty
+
+        Task.FromResult references
 
     override x.Dispose () =
         x.Editor.SemanticHighlighting.Dispose()
