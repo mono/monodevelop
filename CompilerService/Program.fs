@@ -21,10 +21,10 @@ let main argv =
     let outstream = Console.OpenStandardOutput()
 
     let (|Prefix|_|) (p:string) (s:string) =
-      if s.StartsWith(p) then
-          Some(s.Substring(p.Length))
-      else
-          None
+        if s.StartsWith(p) then
+            Some(s.Substring(p.Length))
+        else
+            None
 
     let normalizeOptions options =
         options
@@ -53,4 +53,7 @@ let main argv =
         with
         | ex -> Choice2Of2 ex
     pickler.Serialize(outstream, result)
+    // Workaround to ensure that all msbuild threads are terminated.
+    // Without this, it hangs on the default Xamarin.Forms Android app
+    Environment.Exit 0 
     0
