@@ -152,7 +152,7 @@ namespace MonoDevelop.Components.Docking
 				tabIcon.Visible = visualStyle.ShowPadTitleIcon.Value;
 			}
 			if (IsRealized && labelWidget != null) {
-				var font = FontService.SansFont.CopyModified (Styles.FontScale11);
+				var font = FontService.SansFont.CopyModified (Styles.FontScale11, Pango.Weight.Bold);
 				labelWidget.ModifyFont (font);
 				labelWidget.ModifyText (StateType.Normal, (active ? visualStyle.PadTitleLabelColor.Value : visualStyle.InactivePadTitleLabelColor.Value).ToGdkColor ());
 			}
@@ -177,7 +177,7 @@ namespace MonoDevelop.Components.Docking
 			}
 			
 			Gtk.HBox box = new HBox ();
-			box.Spacing = 1;
+			box.Spacing = -2;
 			
 			if (icon != null) {
 				tabIcon = new ImageView (icon);
@@ -191,7 +191,7 @@ namespace MonoDevelop.Components.Docking
 				labelWidget.UseMarkup = true;
 				labelWidget.Yalign = 0.85f;
 				var alignLabel = new Alignment (0.0f, 1.0f, 1, 1);
-				alignLabel.BottomPadding = 1;
+				alignLabel.BottomPadding = 0;
 				alignLabel.RightPadding = 15;
 				alignLabel.Add (labelWidget);
 				box.PackStart (alignLabel, true, true, 0);
