@@ -14,6 +14,7 @@ type FSharpProject() as self =
     inherit DotNetProject()
     // Keep the platforms combo of CodeGenerationPanelWidget in sync with this list
     let supportedPlatforms = [| "anycpu"; "x86"; "x64"; "itanium" |]
+    let FSharp4Import          = "$(MSBuildExtensionsPath32)\\..\\Microsoft SDKs\\F#\\4.0\\Framework\\v4.0\\Microsoft.FSharp.Targets"
     let FSharp3Import          = "$(MSBuildExtensionsPath32)\\..\\Microsoft SDKs\\F#\\3.0\\Framework\\v4.0\\Microsoft.FSharp.Targets"
     let FSharp31Import         = "$(MSBuildExtensionsPath32)\\..\\Microsoft SDKs\\F#\\3.1\\Framework\\v4.0\\Microsoft.FSharp.Targets"
     let FSharp31PortableImport = "$(MSBuildExtensionsPath32)\\..\\Microsoft SDKs\\F#\\3.1\\Framework\\v4.0\\Microsoft.Portable.FSharp.Targets"
@@ -85,8 +86,13 @@ type FSharpProject() as self =
             else failwith "F# portable target not found"
 
         else
-            if MSBuildProjectService.IsTargetsAvailable(FSharp31Import) then imports.Add (FSharp31Import)
-            else imports.Add (FSharp3Import)
+            let import = 
+                [ FSharp4Import; FSharp31Import; FSharp3Import ] 
+                |> List.tryFind MSBuildProjectService.IsTargetsAvailable
+
+            match import with
+            | Some (import) -> imports.Add (import)
+            | _ -> failwith "F# target not found"
 
     override x.OnWriteProject(monitor, msproject) =
         base.OnWriteProject(monitor, msproject)
