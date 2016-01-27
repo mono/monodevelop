@@ -18,6 +18,7 @@ type FSharpProject() as self =
     let FSharp3Import          = "$(MSBuildExtensionsPath32)\\..\\Microsoft SDKs\\F#\\3.0\\Framework\\v4.0\\Microsoft.FSharp.Targets"
     let FSharp31Import         = "$(MSBuildExtensionsPath32)\\..\\Microsoft SDKs\\F#\\3.1\\Framework\\v4.0\\Microsoft.FSharp.Targets"
     let FSharp31PortableImport = "$(MSBuildExtensionsPath32)\\..\\Microsoft SDKs\\F#\\3.1\\Framework\\v4.0\\Microsoft.Portable.FSharp.Targets"
+    let FSharp4PortableImport  = "$(MSBuildExtensionsPath32)\\..\\Microsoft SDKs\\F#\\4.0\\Framework\\v4.0\\Microsoft.Portable.FSharp.Targets"
     let oldFSharpProjectGuid   = "{4925A630-B079-445D-BCD4-3A9C94FE9307}"
     let supportedPortableProfiles = ["Profile7";"Profile47";"Profile78";"Profile259"]
 
@@ -82,9 +83,13 @@ type FSharpProject() as self =
         // New projects will be created with this targets file
         // If FSharp 3.1 is available, use it. If not, use 3.0
         if initialisedAsPortable then
-            if MSBuildProjectService.IsTargetsAvailable(FSharp31PortableImport) then imports.Add (FSharp31PortableImport)
-            else failwith "F# portable target not found"
+            let import = 
+                [ FSharp4PortableImport; FSharp31PortableImport ] 
+                |> List.tryFind MSBuildProjectService.IsTargetsAvailable
 
+            match import with
+            | Some (import) -> imports.Add (import)
+            | _ -> failwith "F# portable target not found"
         else
             let import = 
                 [ FSharp4Import; FSharp31Import; FSharp3Import ] 
