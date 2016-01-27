@@ -938,7 +938,7 @@ namespace MonoDevelop.Components.MainToolbar
 			if (topItem != null) {
 				headerLayout.SetText (GettextCatalog.GetString ("Top Result"));
 				headerLayout.GetPixelSize (out w, out h);
-				context.MoveTo (alloc.Left + headerMarginSize - w - xMargin, y);
+				context.MoveTo (alloc.Left + headerMarginSize - w - xMargin, y + itemPadding);
 				context.SetSourceColor (headerColor);
 				Pango.CairoHelper.ShowLayout (context, headerLayout);
 
@@ -987,7 +987,7 @@ namespace MonoDevelop.Components.MainToolbar
 				if (y + h + itemPadding * 2 > Allocation.Height)
 					break;
 
-				context.MoveTo (alloc.X + headerMarginSize - w - xMargin, y);
+				context.MoveTo (alloc.X + headerMarginSize - w - xMargin, y + itemPadding);
 				context.SetSourceColor (headerColor);
 				Pango.CairoHelper.ShowLayout (context, headerLayout);
 
