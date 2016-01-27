@@ -64,7 +64,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public SelectorView ()
 		{
-			//Cell = new ColoredButtonCell { BezelColor = Styles.BaseBackgroundColor.ToNSColor () };
+			Cell = new ColoredButtonCell ();
 			BezelStyle = NSBezelStyle.TexturedRounded;
 			Title = "";
 

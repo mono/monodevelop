@@ -51,13 +51,22 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			continueIconDisabled = ImageService.GetIcon ("continue").WithStyles("disabled").ToNSImage ();
 			buildIconDisabled = ImageService.GetIcon ("build").WithStyles("disabled").ToNSImage ();
 
-			//Cell = new ColoredButtonCell { BezelColor = Styles.BaseBackgroundColor.ToNSColor () };
+			Ide.Gui.Styles.Changed +=  (o, e) => UpdateCell ();
+
+			Cell = new ColoredButtonCell ();
 
 			icon = OperationIcon.Run;
 			ImagePosition = NSCellImagePosition.ImageOnly;
 			BezelStyle = NSBezelStyle.TexturedRounded;
+
 			Enabled = false;
 			Cell.ImageDimsWhenDisabled = false;
+		}
+
+		void UpdateCell ()
+		{
+			Appearance = NSAppearance.GetAppearance (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark ? NSAppearance.NameVibrantDark : NSAppearance.NameAqua);
+			NeedsDisplay = true;
 		}
 
 		NSImage GetIcon ()
@@ -103,37 +112,26 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 	class ColoredButtonCell : NSButtonCell
 	{
-		public NSColor BezelColor { get; set; }
-
 		public override void DrawBezelWithFrame (CGRect frame, NSView controlView)
 		{
-			if (BezelColor != null) {
-				if (controlView.Frame.Size.Width <= 0 || controlView.Frame.Size.Height <= 0)
-					return;
-				
-				var scaledSize = new CGSize (controlView.Frame.Size.Width * controlView.Window.Screen.BackingScaleFactor, controlView.Frame.Size.Height * controlView.Window.Screen.BackingScaleFactor);
+			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
+				var inset = frame.Inset (0.25f, 0.25f);
 
-				var image = new NSImage(scaledSize);
-				image.LockFocusFlipped(!controlView.IsFlipped);
+				var path = NSBezierPath.FromRoundedRect (inset, 3, 3);
+				path.LineWidth = 0.5f;
+
+				// The first time the view is drawn it has a filter of some sort attached so that the colours set here
+				// are made lighter onscreen.
+				// NSColor.FromRgba (0.244f, 0.247f, 0.245f, 1).SetStroke ();
+				// would make the initial colour actually be .56,.56,.56
+				//
+				// However after switching theme this filter is removed and the colour set here is the actual colour
+				// displayed onscreen.
+				NSColor.FromRgba (0.56f, 0.56f, 0.56f, 1f).SetStroke ();
+				path.Stroke ();
+			} else {
 				base.DrawBezelWithFrame (frame, controlView);
-				image.UnlockFocus();
-
-				// create Core image for transformation
-				var scaledRect = new CGRect(0, 0, scaledSize.Width, scaledSize.Height);
-				var ciImage = CIImage.FromCGImage(image.AsCGImage (ref scaledRect, NSGraphicsContext.CurrentContext, null));
-
-				var filter = new CIColorMonochrome();
-				filter.SetDefaults();
-				filter.Image = ciImage;
-				filter.Color = new CIColor(BezelColor);
-				filter.Intensity = 1.0f;
-				ciImage = (CIImage)filter.ValueForKey(new NSString("outputImage"));
-
-				var ciCtx = CIContext.FromContext(NSGraphicsContext.CurrentContext.GraphicsPort, null);
-
-				ciCtx.DrawImage (ciImage, new CGRect(0, 0, controlView.Frame.Size.Width, controlView.Frame.Size.Height), scaledRect);
-			} else
-				base.DrawBezelWithFrame (frame, controlView);
+			}
 		}
 	}
 }

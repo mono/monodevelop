@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using AppKit;
 using CoreGraphics;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -60,6 +61,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public ButtonBarContainer ()
 		{
+			Ide.Gui.Styles.Changed += (o, e) => LayoutButtonBars ();
 		}
 
 		const float segmentWidth = 33.0f;
@@ -73,16 +75,25 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		void LayoutButtonBars ()
 		{
+			Console.WriteLine ("Layout button bars");
 			nfloat nextX = 0;
+			nfloat y = 0;
+			nfloat height = AwesomeBar.ToolbarWidgetHeight + 2;
+
+			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
+				y = 2;
+			} else {
+				y = 0;
+			}
 
 			foreach (ButtonBar bar in buttonBars) {
-				var frame = new CGRect (nextX, 0, extraPadding + (bar.SegmentCount * segmentWidth), AwesomeBar.ToolbarWidgetHeight);
+				var frame = new CGRect (nextX, y, extraPadding + (bar.SegmentCount * segmentWidth), height);
 				bar.Frame = frame;
 
 				nextX = frame.GetMaxX () + buttonBarSpacing;
 			}
 
-			SetFrameSize (new CGSize (nextX - buttonBarSpacing, AwesomeBar.ToolbarWidgetHeight));
+			SetFrameSize (new CGSize (nextX - buttonBarSpacing, height));
 
 			if (SizeChanged != null) {
 				SizeChanged (this, EventArgs.Empty);

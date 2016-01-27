@@ -122,8 +122,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				case AwesomeBarId:
 					return new NSToolbarItem (AwesomeBarId) {
 						View = awesomeBar,
-						MinSize = new CGSize (1024, 22),
-						MaxSize = new CGSize (1024, 22)
+						MinSize = new CGSize (1024, AwesomeBar.ToolbarWidgetHeight),
+						MaxSize = new CGSize (1024, AwesomeBar.ToolbarWidgetHeight)
 					};
 
 				default:
@@ -140,7 +140,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				var item = widget.Items[0];
 
 				var abFrameInWindow = awesomeBar.ConvertRectToView (awesomeBar.Frame, null);
-				var awesomebarHeight = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 24 : 22;
+				var awesomebarHeight = AwesomeBar.ToolbarWidgetHeight;//MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 24 : 22;
 				var size = new CGSize (win.Frame.Width - abFrameInWindow.X - 4, awesomebarHeight);
 				item.MinSize = size;
 				item.MaxSize = size;
@@ -257,7 +257,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				};
 				foreach (var item in value)
 					menu.AddItem (new NSMenuItem (item.DisplayString, (o, e) => item.NotifyActivated ()));
-
 				searchEntry.SearchMenuTemplate = menu;
 			}
 		}

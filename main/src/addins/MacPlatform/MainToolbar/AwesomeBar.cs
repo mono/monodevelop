@@ -78,7 +78,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		void UpdateLayout ()
 		{
 			RunButton.Frame = new CGRect (toolbarPadding, 0, runButtonWidth, ToolbarWidgetHeight);
-			var statusbarWidth = Math.Max (Math.Min (Frame.Width * 0.3, maxStatusBarWidth), minStatusBarWidth);
+			var statusbarWidth = Math.Max (Math.Min (Math.Round ( Frame.Width * 0.3), maxStatusBarWidth), minStatusBarWidth);
 			var searchbarWidth = maxSearchBarWidth;
 			if (statusbarWidth < searchbarWidth) {
 				searchbarWidth = minSearchBarWidth;
@@ -87,10 +87,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			// We only need to work out the width on the left side of the window because the statusbar is centred
 			// Gap + RunButton.Width + Gap + ButtonBar.Width + Gap + Half of StatusBar.Width
 			var spaceLeft = (Frame.Width / 2) - (toolbarPadding + runButtonWidth + toolbarPadding + ButtonBarContainer.Frame.Width + toolbarPadding + (statusbarWidth / 2));
-			StatusBar.Frame = new CGRect ((Frame.Width - statusbarWidth) / 2, 0, statusbarWidth, ToolbarWidgetHeight);
+
+			StatusBar.Frame = new CGRect (Math.Round((Frame.Width - statusbarWidth) / 2) + 0.5f, 0, statusbarWidth - 2, ToolbarWidgetHeight);
 
 			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
-				SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, -0.5, searchbarWidth, ToolbarWidgetHeight + 1);
+				//SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, -0.5, searchbarWidth, ToolbarWidgetHeight + 1);
+				SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, 0, searchbarWidth, ToolbarWidgetHeight);
 			} else {
 				nfloat elcapYOffset = 0;
 				nfloat elcapHOffset = 0;
@@ -104,9 +106,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			var selectorSize = SelectorView.SizeThatFits (new CGSize (spaceLeft, ToolbarWidgetHeight));
 
-			SelectorView.Frame = new CGRect (toolbarPadding + runButtonWidth + toolbarPadding, 0, selectorSize.Width, ToolbarWidgetHeight);
-
-			ButtonBarContainer.SetFrameOrigin (new CGPoint(SelectorView.Frame.GetMaxX () + toolbarPadding, 0));
+			SelectorView.Frame = new CGRect (toolbarPadding + runButtonWidth + toolbarPadding, 0, Math.Round (selectorSize.Width), ToolbarWidgetHeight);
+			ButtonBarContainer.SetFrameOrigin (new CGPoint(SelectorView.Frame.GetMaxX () + toolbarPadding, -2));
 
 			// Finally check if the StatusBar overlaps the ButtonBarContainer (and its padding) and adjust is accordingly
 			if (StatusBar.Frame.IntersectsWith (ButtonBarContainer.Frame.Inset (-toolbarPadding, 0))) {
