@@ -68,15 +68,17 @@ namespace MonoDevelop.Components.Windows
 		void RepositionWpfWindow ()
 		{
 			int x, y;
+			int scale = (int)GtkWorkarounds.GetScaleFactor (this);
+
 			if (TranslateCoordinates (Toplevel, 0, 0, out x, out y)) {
-				wpfWidgetHost.Left = x;
-				wpfWidgetHost.Top = y;
+				wpfWidgetHost.Left = x * scale;
+				wpfWidgetHost.Top = y * scale;
 			} else {
-				wpfWidgetHost.Left = Allocation.Left;
-				wpfWidgetHost.Top = Allocation.Top;
+				wpfWidgetHost.Left = Allocation.Left * scale;
+				wpfWidgetHost.Top = Allocation.Top * scale;
 			}
-			wpfWidgetHost.Width = Allocation.Width + 1;
-			wpfWidgetHost.Height = Allocation.Height + 1;
+			wpfWidgetHost.Width = (Allocation.Width + 1) * scale;
+			wpfWidgetHost.Height = (Allocation.Height + 1) * scale;
 		}
 
 		protected override void OnRealized ()
