@@ -870,26 +870,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			set {
 				base.Frame = value;
 
-				/*
-				CGRect newFrame;
-				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
-					nfloat extraHeight = 1.0f;
-					nfloat yOffset = -1.0f;
-
-					if (MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan) {
-						extraHeight = 3f;
-						yOffset = -2.0f;
-					}
-
-					newFrame = new CGRect (0, yOffset, value.Width, value.Height + extraHeight);
-				} else {
-					var extraHeight = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 1.5 : 0;
-					newFrame = new CGRect (0, 0, value.Width, value.Height + extraHeight);
-				}
-				realStatusbar.Frame = newFrame;
-*/
 				imageView.Frame = new CGRect (6, 0, 16, Frame.Height);
-				textField.Frame = new CGRect (imageView.Frame.Right, 0, Frame.Width - 16, Frame.Height);
+				textField.Frame = new CGRect (imageView.Frame.Right, 1, Frame.Width - 16, Frame.Height);
 
 				buildResults.Frame = new CGRect (buildResults.Frame.X, buildResults.Frame.Y, buildResults.Frame.Width, Frame.Height);
 				RepositionStatusIcons ();
