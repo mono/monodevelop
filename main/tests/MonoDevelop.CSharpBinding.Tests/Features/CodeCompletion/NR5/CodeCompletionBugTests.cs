@@ -65,12 +65,12 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 			Assert.IsNotNull (provider, "provider == null");
 			act (provider);
 		}
-		
+
 		public class TestFactory : ICompletionDataFactory
 		{
 			public class MyCompletionData : CompletionData
 			{
-				public MyCompletionData (string text) : base(text)
+				public MyCompletionData (string text) : base (text)
 				{
 				}
 			}
@@ -82,7 +82,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 					set;
 				}
 
-				public OverrideCompletionData (string text, int declarationBegin) : base(text)
+				public OverrideCompletionData (string text, int declarationBegin) : base (text)
 				{
 					this.DeclarationBegin = declarationBegin;
 				}
@@ -93,6 +93,11 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 				return new CompletionData (format);
 			}
 
+			CompletionData ICompletionDataFactory.CreateKeywordCompletion (ICompletionDataKeyHandler keyHandler, string data, SyntaxKind syntaxKind)
+			{
+				return new CompletionData (data);
+			}
+
 			CompletionData ICompletionDataFactory.CreateXmlDocCompletionData(ICompletionDataKeyHandler keyHandler, string tag, string description, string tagInsertionText)
 			{
 				return new CompletionData (tag);
@@ -100,7 +105,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 
 			CompletionData ICompletionDataFactory.CreateGenericData(ICompletionDataKeyHandler keyHandler, string data, GenericDataType genericDataType)
 			{
-				return new CompletionData(data);
+					return new CompletionData(data);
 			}
 			
 			ISymbolCompletionData ICompletionDataFactory.CreateEnumMemberCompletionData (ICompletionDataKeyHandler keyHandler, ISymbol typeAlias, IFieldSymbol field)
