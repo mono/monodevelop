@@ -310,6 +310,24 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (1, eventArgs.Count);
 			Assert.AreEqual (secondProject, eventArgs [0].Project);
 		}
+
+		[Test]
+		public void ProjectTargetFrameworkChanged_ProjectRemovedFromSolutionAndProjectTargetFrameworkChanged_EventDoesNotFire ()
+		{
+			CreateProjectTargetFrameworkMonitor ();
+			FakeDotNetProject originalProject = LoadSolutionWithOneProject ();
+			CaptureProjectTargetFrameworkChangedEvents ();
+			// Ensure IDotNetProject.Equals method is used since a new DotNetProjectProxy is
+			// created for the event so the object instances will be different and just removing
+			// the instance from the list matching the instance is incorrect. 
+			var project = new FakeDotNetProject ();
+			originalProject.EqualsAction = p => p == project;
+			solution.RaiseProjectRemovedEvent (project);
+
+			originalProject.RaiseModifiedEvent (originalProject, targetFrameworkPropertyName);
+
+			Assert.AreEqual (0, eventArgs.Count);
+		}
 	}
 }
 
