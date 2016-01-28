@@ -35,6 +35,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Ide.Editor;
 using System.Threading;
 using System;
+using System.Linq;
 using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.Refactoring
@@ -88,6 +89,18 @@ namespace MonoDevelop.Refactoring
 			} else {
 				return InternalGetSymbolInfoAsync (document.AnalysisDocument, offset, cancellationToken);
 			}
+		}
+
+		public static Task<RefactoringSymbolInfo> GetSymbolInfoAsync (DocumentContext document, TextEditor editor, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			if (editor.IsSomethingSelected) {
+				var selectionRange = editor.SelectionRange;
+				if (editor.GetTextAt (selectionRange).Any (ch => !char.IsLetterOrDigit (ch) && ch !='_')) {
+					return Task.FromResult (RefactoringSymbolInfo.Empty);
+				}
+				return GetSymbolInfoAsync (document, selectionRange.Offset, cancellationToken);
+			}
+			return GetSymbolInfoAsync (document, editor.CaretOffset, cancellationToken);
 		}
 
 		static async Task<RefactoringSymbolInfo> InternalGetSymbolInfoAsync (Microsoft.CodeAnalysis.Document document, int offset, CancellationToken cancellationToken = default (CancellationToken))
