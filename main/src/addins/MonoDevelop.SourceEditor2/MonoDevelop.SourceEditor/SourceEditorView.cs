@@ -816,15 +816,10 @@ namespace MonoDevelop.SourceEditor
 			}
 			else {
 				if (loadEncoding == null) {
-					var res = await MonoDevelop.Core.Text.TextFileUtility.ReadAllTextAsync (fileName);
-					text = res.Text;
-					hadBom = res.HasBom;
-					encoding = res.Encoding;
+					text = MonoDevelop.Core.Text.TextFileUtility.ReadAllText (fileName, out hadBom, out encoding);
 				} else {
 					encoding = loadEncoding;
-					var res = await MonoDevelop.Core.Text.TextFileUtility.ReadAllTextAsync (fileName, loadEncoding);
-					text = res.Text;
-					hadBom = res.HasBom;
+					text = MonoDevelop.Core.Text.TextFileUtility.ReadAllText (fileName, loadEncoding, out hadBom);
 				}
 				text = ProcessLoadText (text);
 				if (reload) {
