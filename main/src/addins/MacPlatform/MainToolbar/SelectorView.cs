@@ -30,6 +30,7 @@ using AppKit;
 using CoreGraphics;
 using Foundation;
 using MonoDevelop.Components;
+using MonoDevelop.Components.Mac;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -63,8 +64,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public SelectorView ()
 		{
-			Title = "";
+			Cell = new ColoredButtonCell ();
 			BezelStyle = NSBezelStyle.TexturedRounded;
+			Title = "";
 
 			RealSelectorView = new PathSelectorView (new CGRect (6, 0, 1, 1));
 			RealSelectorView.UnregisterDraggedTypes ();
@@ -238,13 +240,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						Image = ImageService.GetIcon ("project").WithStyles ("disabled").ToBitmap ().ToNSImage (),
 						Title = ConfigurationPlaceholder,
 						Enabled = false,
-						TextColor = NSColor.FromRgba (0.34f, 0.34f, 0.34f, 1),
+						TextColor = Styles.BaseForegroundColor.ToNSColor (),
 					},
 					new NSPathComponentCell {
 						Image = ImageService.GetIcon ("device").WithStyles ("disabled").ToBitmap ().ToNSImage (),
 						Title = RuntimePlaceholder,
 						Enabled = false,
-						TextColor = NSColor.FromRgba (0.34f, 0.34f, 0.34f, 1),
+						TextColor = Styles.BaseForegroundColor.ToNSColor (),
 					}
 				};
 
@@ -318,18 +320,30 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					}
 				};
 
-				Ide.Gui.Styles.Changed += HandleStylesChanged;
+				Ide.Gui.Styles.Changed += UpdateStyle;
 			}
 
-			void HandleStylesChanged (object sender, EventArgs e)
+			void UpdateStyle (object sender = null, EventArgs e = null)
 			{
+				//if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
+					if (PathComponentCells [ConfigurationIdx].Enabled)
+						PathComponentCells [ConfigurationIdx].TextColor = Styles.BaseForegroundColor.ToNSColor ();
+					else
+						PathComponentCells [ConfigurationIdx].TextColor = Styles.DisabledForegroundColor.ToNSColor ();
+
+				if (PathComponentCells [RuntimeIdx].Enabled)
+					PathComponentCells [RuntimeIdx].TextColor = Styles.BaseForegroundColor.ToNSColor ();
+				else
+					PathComponentCells [RuntimeIdx].TextColor = Styles.DisabledForegroundColor.ToNSColor ();
+				//}
+
 				UpdateImages ();
 			}
 
 			protected override void Dispose (bool disposing)
 			{
 				if (disposing)
-					Ide.Gui.Styles.Changed -= HandleStylesChanged;
+					Ide.Gui.Styles.Changed -= UpdateStyle;
 				base.Dispose (disposing);
 			}
 
@@ -356,7 +370,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			void UpdatePathText (int idx, string text)
 			{
 				PathComponentCells [idx].Title = text;
-				UpdateImages ();
+				UpdateStyle ();
 			}
 
 			void UpdateImages ()
@@ -414,8 +428,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					if (count == 0) {
 						state |= CellState.ConfigurationShown;
 						UpdatePathText (ConfigurationIdx, ConfigurationPlaceholder);
-					} else
-						UpdateImages ();
+					}
+					UpdateStyle ();
 					OnSizeChanged ();
 				}
 			}
@@ -430,8 +444,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					if (count == 0) {
 						state |= CellState.RuntimeShown;
 						UpdatePathText (RuntimeIdx, RuntimePlaceholder);
-					} else
-						UpdateImages ();
+					}
+					UpdateStyle ();
 					OnSizeChanged ();
 				}
 			}
