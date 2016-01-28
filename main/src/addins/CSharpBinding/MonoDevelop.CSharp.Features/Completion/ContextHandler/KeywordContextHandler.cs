@@ -43,12 +43,15 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
 	internal sealed class RecommendedKeyword
 	{
+		public SyntaxKind Kind { get; private set; }
 		public string Keyword { get; private set; }
 		public bool IsIntrinsic { get; private set; }
 		public bool ShouldFormatOnCommit { get; private set; }
 
-		public RecommendedKeyword (string keyword, bool isIntrinsic = false, bool shouldFormatOnCommit = false)
+
+		public RecommendedKeyword (string keyword, SyntaxKind kind, bool isIntrinsic = false, bool shouldFormatOnCommit = false)
 		{
+			this.Kind = kind;
 			this.Keyword = keyword;
 			this.IsIntrinsic = isIntrinsic;
 			this.ShouldFormatOnCommit = shouldFormatOnCommit;
@@ -224,7 +227,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				if (recommended == null)
 					continue;
 				foreach (var kw in recommended) {
-					result.Add (engine.Factory.CreateGenericData (this, kw.Keyword, GenericDataType.Keyword));
+					result.Add (engine.Factory.CreateKeywordCompletion (this, kw.Keyword, kw.Kind));
 				}
 			}
 		
