@@ -89,7 +89,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (ShowsFirstResponder) {
 					rect = new CGRect (rect.X + 26, 0, rect.Width - 52, 22);
 				} else {
-					rect = new CGRect (rect.X + 28, 3, rect.Width - 56, 22);
+					nfloat y = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 4 : 3;
+					rect = new CGRect (rect.X + 28, y, rect.Width - 56, 22);
 				}
 
 				return rect;
@@ -124,6 +125,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
 					xOffset = -1.5f;
 				}
+				// y does not appear to affect anything. Whatever value is set here for y will always be 1px below the
+				// placeholder text
 				aRect = new CGRect (aRect.X + xOffset, aRect.Y, aRect.Width, aRect.Height);
 				base.SelectWithFrame (aRect, inView, editor, delegateObject, selStart, selLength);
 			}

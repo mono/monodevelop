@@ -871,7 +871,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				base.Frame = value;
 
 				imageView.Frame = new CGRect (6, 0, 16, Frame.Height);
-				textField.Frame = new CGRect (imageView.Frame.Right, 1, Frame.Width - 16, Frame.Height);
+				textField.Frame = new CGRect (imageView.Frame.Right, 0, Frame.Width - 16, Frame.Height);
 
 				buildResults.Frame = new CGRect (buildResults.Frame.X, buildResults.Frame.Y, buildResults.Frame.Width, Frame.Height);
 				RepositionStatusIcons ();
