@@ -1062,7 +1062,7 @@ namespace MonoDevelop.Debugger
 			lock (breakpoints)
 				pinnedWatches.BindAll (breakpoints);
 			
-			return Task.CompletedTask;
+			return Task.FromResult (true);
 		}
 		
 		static void OnSolutionClosed (object s, EventArgs args)
