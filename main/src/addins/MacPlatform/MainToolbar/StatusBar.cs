@@ -324,7 +324,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	}
 
 	[Register]
-	class StatusBar : NSView, MonoDevelop.Ide.StatusBar
+	class StatusBar : NSButton, MonoDevelop.Ide.StatusBar
 	{
 		public enum MessageType
 		{
@@ -365,12 +365,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			Editable = false,
 		};
 
-		readonly NSTextField realStatusbar = new NSTextField {
-			AllowsEditingTextAttributes = false,
-			Selectable = false,
-			Editable = false
-		};
-
 		readonly NSTextField textField = new NSTextField {
 			AllowsEditingTextAttributes = true,
 			Bordered = false,
@@ -385,6 +379,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		TaskEventHandler updateHandler;
 		public StatusBar ()
 		{
+			Cell = new ColoredButtonCell ();
+			BezelStyle = NSBezelStyle.TexturedRounded;
+			Title = "";
+			Enabled = false;
+
 			LoadStyles ();
 
 			// We don't need to resize the Statusbar here as a style change will trigger a complete relayout of the Awesomebar
@@ -432,7 +431,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			TaskService.Errors.TasksAdded += updateHandler;
 			TaskService.Errors.TasksRemoved += updateHandler;
 
-			AddSubview (realStatusbar);
 			AddSubview (buildResults);
 			AddSubview (imageView);
 			AddSubview (textField);
@@ -445,23 +443,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
 				Appearance = NSAppearance.GetAppearance (NSAppearance.NameVibrantDark);
-				/*
-				realStatusbar.DrawsBackground = true;
-				realStatusbar.BackgroundColor = Styles.BaseBackgroundColor.ToNSColor();
-				realStatusbar.Bezeled = false;
-
-				// Even if Bezeled = false, the background won't be drawn if BezelStyle is Rounded.
-				// Because Cocoa is magic!
-				realStatusbar.BezelStyle = NSTextFieldBezelStyle.Square;
-				*/
-				//realStatusbar.WantsLayer = true;
-				//realStatusbar.Layer.CornerRadius = 5;
-				//realStatusbar.Bordered = true;
 			} else {
 				Appearance = NSAppearance.GetAppearance (NSAppearance.NameAqua);
-				realStatusbar.Bezeled = true;
-				if (MacSystemInformation.OsVersion >= MacSystemInformation.Yosemite)
-					realStatusbar.BezelStyle = NSTextFieldBezelStyle.Rounded;
 			}
 
 			textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, ColorForType (MessageType.Ready));
@@ -887,24 +870,24 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			set {
 				base.Frame = value;
 
+				/*
 				CGRect newFrame;
 				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
 					nfloat extraHeight = 1.0f;
 					nfloat yOffset = -1.0f;
 
-					/*
 					if (MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan) {
-						extraHeight = -2.0f;
-						yOffset = 1.5f;
+						extraHeight = 3f;
+						yOffset = -2.0f;
 					}
-					*/
+
 					newFrame = new CGRect (0, yOffset, value.Width, value.Height + extraHeight);
 				} else {
 					var extraHeight = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 1.5 : 0;
 					newFrame = new CGRect (0, 0, value.Width, value.Height + extraHeight);
 				}
 				realStatusbar.Frame = newFrame;
-
+*/
 				imageView.Frame = new CGRect (6, 0, 16, Frame.Height);
 				textField.Frame = new CGRect (imageView.Frame.Right, 0, Frame.Width - 16, Frame.Height);
 

@@ -91,7 +91,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			StatusBar.Frame = new CGRect (Math.Round((Frame.Width - statusbarWidth) / 2) + 0.5f, 0, statusbarWidth - 2, ToolbarWidgetHeight);
 
 			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
-				//SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, -0.5, searchbarWidth, ToolbarWidgetHeight + 1);
 				SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, 0, searchbarWidth, ToolbarWidgetHeight);
 			} else {
 				nfloat elcapYOffset = 0;
