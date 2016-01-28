@@ -75,7 +75,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		void LayoutButtonBars ()
 		{
-			Console.WriteLine ("Layout button bars");
 			nfloat nextX = 0;
 			nfloat y = 0;
 			nfloat height = AwesomeBar.ToolbarWidgetHeight + 2;
