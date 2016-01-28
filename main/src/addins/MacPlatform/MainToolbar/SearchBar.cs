@@ -55,7 +55,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
 					var inset = cellFrame.Inset (0.25f, 0.25f);
 					if (!ShowsFirstResponder) {
-						var path = NSBezierPath.FromRoundedRect (inset, 5, 5);
+						var path = NSBezierPath.FromRoundedRect (inset, 3, 3);
 						path.LineWidth = 0.5f;
 
 						NSColor.FromRgba (0.56f, 0.56f, 0.56f, 1f).SetStroke ();
