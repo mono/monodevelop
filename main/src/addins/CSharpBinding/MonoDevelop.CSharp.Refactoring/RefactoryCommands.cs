@@ -171,7 +171,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var semanticModel = doc.ParsedDocument.GetAst<SemanticModel> ();
 			if (semanticModel == null)
 				return;
-			var info = RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result;
+			var info = RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor).Result;
 			bool added = false;
 
 			var ext = doc.GetContent<CodeActionEditorExtension> ();

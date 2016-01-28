@@ -28,20 +28,19 @@
 
 using System;
 using System.IO;
-
+using Microsoft.CodeAnalysis;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
-	public class MemberNodeCommandHandler: NodeCommandHandler
+	public class MemberNodeCommandHandler : NodeCommandHandler
 	{
 		public override void ActivateItem ()
-		{			
-//			var member = CurrentNode.DataItem as IEntity;
-//			IdeApp.ProjectOperations.JumpToDeclaration(member);
+		{
+			var member = CurrentNode.DataItem as ISymbol;
+			IdeApp.ProjectOperations.JumpToDeclaration (member);
 		}
 	}
 }

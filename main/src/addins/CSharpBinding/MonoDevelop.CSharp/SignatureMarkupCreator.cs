@@ -1066,7 +1066,7 @@ namespace MonoDevelop.CSharp
 				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("delegate", colorStyle.KeywordDeclaration) + " result-type identifier ([formal-parameters]);");
 				result.SummaryMarkup = "A " + Highlight ("delegate", colorStyle.KeywordDeclaration) + " declaration defines a reference type that can be used to encapsulate a method with a specific signature.";
 				break;
-			case SyntaxKind.IdentifierName:
+			case SyntaxKind.IdentifierToken:
 				if (node.ToFullString () == "dynamic") {
 					result.SignatureMarkup = Highlight ("dynamic", colorStyle.KeywordContext) + keywordSign;
 					result.SummaryMarkup = "The " + Highlight ("dynamic", colorStyle.KeywordContext) + " type allows for an object to bypass compile-time type checking and resolve type checking during run-time.";

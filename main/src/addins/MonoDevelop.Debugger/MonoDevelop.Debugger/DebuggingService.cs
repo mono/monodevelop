@@ -1046,7 +1046,7 @@ namespace MonoDevelop.Debugger
 			args.Properties.SetValue ("MonoDevelop.Ide.DebuggingService.PinnedWatches", pinnedWatches);
 		}
 		
-		static void OnLoadUserPrefs (object s, UserPreferencesEventArgs args)
+		static Task OnLoadUserPrefs (object s, UserPreferencesEventArgs args)
 		{
 			var elem = args.Properties.GetValue<XmlElement> ("MonoDevelop.Ide.DebuggingService.Breakpoints") ?? args.Properties.GetValue<XmlElement> ("MonoDevelop.Ide.DebuggingService");
 
@@ -1061,6 +1061,8 @@ namespace MonoDevelop.Debugger
 
 			lock (breakpoints)
 				pinnedWatches.BindAll (breakpoints);
+			
+			return Task.FromResult (true);
 		}
 		
 		static void OnSolutionClosed (object s, EventArgs args)

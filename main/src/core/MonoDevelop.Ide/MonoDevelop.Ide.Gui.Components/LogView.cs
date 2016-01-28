@@ -563,7 +563,13 @@ namespace MonoDevelop.Ide.Gui.Components
 			else
 				addQueuedUpdate (new QueuedTextWrite (category + ": " + message, debugTag));
 		}
-		
+
+		bool ShouldAutoScroll ()
+		{
+			// we need to account for the page size as well for some reason
+			return scrollView.Vadjustment.Value + scrollView.Vadjustment.PageSize >= scrollView.Vadjustment.Upper;
+		}
+
 		protected void UnsafeAddText (string text, TextTag extraTag)
 		{
 			//don't allow the pad to hold more than MAX_BUFFER_LENGTH chars
@@ -575,7 +581,8 @@ namespace MonoDevelop.Ide.Gui.Components
 				buffer.Delete (ref start, ref end);
 			}
 
-			bool scrollToEnd = scrollView.Vadjustment.Value >= scrollView.Vadjustment.Upper - 2 * scrollView.Vadjustment.PageSize;
+			bool scrollToEnd = ShouldAutoScroll ();
+
 			TextIter it = buffer.EndIter;
 
 			if (extraTag != null)

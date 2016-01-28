@@ -122,7 +122,10 @@ namespace MonoDevelop.CSharp.Formatting
 						editor.ReplaceText (delta + change.Span.Start, change.Span.Length, newText);
 						delta = delta - change.Span.Length + newText.Length;
 					}
-					editor.CaretOffset = caretOffset + delta;
+
+					var caretEndOffset = caretOffset + delta;
+					if (0 <= caretEndOffset && caretEndOffset < editor.Length)
+						editor.CaretOffset = caretEndOffset;
 					if (editor.CaretColumn == 1)
 						editor.CaretColumn = editor.GetVirtualIndentationColumn (editor.CaretLine);
 				} catch (Exception e) {

@@ -131,10 +131,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				m.BeginTask (null, CurrentNodes.Length);
 				foreach (ITreeNavigator nav in CurrentNodes) {
 					UnknownSolutionItem p = (UnknownSolutionItem) nav.DataItem;
+					solutions.Add (p.ParentSolution);
 					p.Enabled = false;
 					p.ParentFolder.ReloadItem (m, p);
 					m.Step (1);
-					solutions.Add (p.ParentSolution);
 				}
 				m.EndTask ();
 			}

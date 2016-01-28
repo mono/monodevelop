@@ -84,7 +84,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		internal async Task Run (TextEditor editor, DocumentContext ctx)
 		{
 			var cts = new CancellationTokenSource ();
-			var getSymbolTask = RefactoringSymbolInfo.GetSymbolInfoAsync (ctx, editor.CaretOffset, cts.Token);
+			var getSymbolTask = RefactoringSymbolInfo.GetSymbolInfoAsync (ctx, editor, cts.Token);
 			var message = GettextCatalog.GetString ("Resolving symbol…");
 			var info = await MessageService.ExecuteTaskAndShowWaitDialog (getSymbolTask, message, cts);
 			var sym = info.DeclaredSymbol ?? info.Symbol;

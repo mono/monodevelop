@@ -32,26 +32,26 @@ using System.Collections;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
-	public class PropertyNodeBuilder: MemberNodeBuilder
+	public class PropertyNodeBuilder : MemberNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(IProperty); }
+			get { return typeof (IPropertySymbol); }
 		}
 
 		public override string ContextMenuAddinPath {
 			get { return "/MonoDevelop/Ide/ContextMenu/ClassPad/Property"; }
 		}
-		
+
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			// IProperty data = dataObject as IProperty;
-			// nodeInfo.Label = Ambience.GetString (data, OutputFlags.ClassBrowserEntries  | OutputFlags.IncludeMarkup);
-			// nodeInfo.Icon = Context.GetIcon (data.GetStockIcon ());
+			var data = dataObject as IPropertySymbol;
+			nodeInfo.Label = Ambience.EscapeText (((ISymbol)dataObject).ToDisplayString (Ambience.NameFormat));
+			nodeInfo.Icon = Context.GetIcon (data.GetStockIcon ());
 		}
 	}
 }

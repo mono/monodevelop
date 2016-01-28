@@ -1036,7 +1036,7 @@ namespace MonoDevelop.SourceEditor
 		public async void Reload ()
 		{
 			try {
-				if (!System.IO.File.Exists (view.ContentName))
+				if (!System.IO.File.Exists (view.ContentName) || this.isDisposed)
 					return;
 
 				view.StoreSettings ();

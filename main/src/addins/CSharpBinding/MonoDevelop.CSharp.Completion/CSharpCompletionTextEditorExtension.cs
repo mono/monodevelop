@@ -57,6 +57,8 @@ using Mono.Addins;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using MonoDevelop.Ide.TypeSystem;
+using RefactoringEssentials;
+using MonoDevelop.CSharp.Diagnostics.InconsistentNaming;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -153,7 +155,7 @@ namespace MonoDevelop.CSharp.Completion
 				snippets = newSnippets;
 				return Task.FromResult((IEnumerable<CompletionData>)newSnippets);
 			};
-
+			NameProposalService.Replace (new NameConventionRule.NamePropsalStrategy ());
 		}
 
 		public CSharpCompletionTextEditorExtension ()
