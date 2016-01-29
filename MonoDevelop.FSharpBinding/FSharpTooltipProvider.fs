@@ -111,7 +111,7 @@ type FSharpTooltipProvider() =
 
         with exn ->
             LoggingService.LogError ("TooltipProvider: Error retrieving tooltip", exn)
-            null
+            Task.FromResult null
 
     override x.CreateTooltipWindow (_editor, _context, item, _offset, _modifierState) =
         let doc = IdeApp.Workbench.ActiveDocument
