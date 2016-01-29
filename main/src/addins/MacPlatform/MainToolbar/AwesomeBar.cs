@@ -69,7 +69,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		void UpdateLayout ()
 		{
 			RunButton.Frame = new CGRect (toolbarPadding, 0, runButtonWidth, ToolbarWidgetHeight);
-			var statusbarWidth = Math.Max (Math.Min (Frame.Width * 0.3, maxStatusBarWidth), minStatusBarWidth);
+			var statusbarWidth = Math.Round (Math.Max (Math.Min (Frame.Width * 0.3, maxStatusBarWidth), minStatusBarWidth));
 			var searchbarWidth = maxSearchBarWidth;
 			if (statusbarWidth < searchbarWidth) {
 				searchbarWidth = minSearchBarWidth;
@@ -78,7 +78,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			// We only need to work out the width on the left side of the window because the statusbar is centred
 			// Gap + RunButton.Width + Gap + ButtonBar.Width + Gap + Half of StatusBar.Width
 			var spaceLeft = (Frame.Width / 2) - (toolbarPadding + runButtonWidth + toolbarPadding + ButtonBarContainer.Frame.Width + toolbarPadding + (statusbarWidth / 2));
-			StatusBar.Frame = new CGRect ((Frame.Width - statusbarWidth) / 2, 0, statusbarWidth, ToolbarWidgetHeight);
+			StatusBar.Frame = new CGRect ((Frame.Width - statusbarWidth) / 2 + 0.5, 0, statusbarWidth, ToolbarWidgetHeight);
 			SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, 0, searchbarWidth, ToolbarWidgetHeight);
 
 			var selectorSize = SelectorView.SizeThatFits (new CGSize (spaceLeft, ToolbarWidgetHeight));
