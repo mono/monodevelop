@@ -262,8 +262,10 @@ namespace MonoDevelop.Components
 			else
 				window.Appearance = NSAppearance.GetAppearance (NSAppearance.NameVibrantDark);
 
-			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
+				window.StyleMask &= ~NSWindowStyle.TexturedBackground;
 				return;
+			}
 
 			if (window is NSPanel)
 				window.BackgroundColor = MonoDevelop.Ide.Gui.Styles.BackgroundColor.ToNSColor ();
