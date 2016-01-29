@@ -27,14 +27,23 @@ type TestTooltipProvider() =
                         |> Async.RunSynchronously
                         |> Option.get
 
-        let tooltip = SymbolTooltips.getTooltipFromSymbolUse symbolUse
+        SymbolTooltips.getTooltipFromSymbolUse symbolUse
 
+    let getTooltipSignature (source: string) =
         let signature =
-            match tooltip with
-            | Some(tip, _, _) -> tip
+            match getTooltip source with
+            | Some(tip, _signature, footer) -> tip
             | _ ->  ""
 
         signature |> stripHtml |> htmlDecode
+
+    let getTooltipFooter (source: string) =
+        let footer =
+            match getTooltip source with
+            | Some(tip, _signature, footer) -> footer
+            | _ ->  ""
+
+        footer |> stripHtml |> htmlDecode
 
     [<Test>]
     member this.Formats_tooltip_arrows_right_aligned() =
@@ -45,7 +54,7 @@ type TestTooltipProvider() =
                 ()
             """
 
-        let signature = getTooltip input
+        let signature = getTooltipSignature input
 
         let expected = """val toBePartiallyApplied :
    datNumba : int    ->
@@ -63,7 +72,7 @@ type TestTooltipProvider() =
             let allEqual coll = Seq.fora§ll2 (fun elem1 elem2 -> elem1 = elem2) coll
             """
 
-        let signature = getTooltip input
+        let signature = getTooltipSignature input
 
         let expected = """val forall2 :
    predicate: 'T1 -> 'T2 -> bool ->
@@ -82,7 +91,7 @@ type TestTooltipProvider() =
                 class end
             """
 
-        let signature = getTooltip input
+        let signature = getTooltipSignature input
 
         let expected = """type A<'T when 'T :> System.Exception>"""
 
@@ -96,7 +105,7 @@ type TestTooltipProvider() =
                 class end
             """
 
-        let signature = getTooltip input
+        let signature = getTooltipSignature input
 
         let expected = """type A<'T when 'T :> System.IComparable>"""
 
@@ -110,7 +119,7 @@ type TestTooltipProvider() =
                 class end
             """
 
-        let signature = getTooltip input
+        let signature = getTooltipSignature input
 
         let expected = """type A<'T when 'T : null>"""
 
@@ -124,7 +133,7 @@ type TestTooltipProvider() =
                 class end
             """
 
-        let signature = getTooltip input
+        let signature = getTooltipSignature input
         let expected = """type A<^T when ^T : (static member staticMethod1 : unit -> ^T)>"""
         signature.ToString() |> should startWith expected
 
@@ -136,7 +145,7 @@ type TestTooltipProvider() =
                 class end
             """
 
-        let signature = getTooltip input
+        let signature = getTooltipSignature input
         let expected = """type A<^T when ^T : (member Method1 : ^T -> int)>"""
         signature.ToString() |> should startWith expected
 
@@ -148,7 +157,7 @@ type TestTooltipProvider() =
                 class end
             """
 
-        let signature = getTooltip input
+        let signature = getTooltipSignature input
 
         let expected = """type A<^T when ^T : (member Property1 : int)>"""
         signature.ToString() |> should startWith expected
@@ -161,7 +170,7 @@ type TestTooltipProvider() =
                 class end
             """
 
-        let signature = getTooltip input
+        let signature = getTooltipSignature input
 
         let expected = """type A<'T when 'T : (new : unit -> 'T)>"""
         signature.ToString() |> should startWith expected
@@ -174,7 +183,7 @@ type TestTooltipProvider() =
                 class end
             """
 
-        let signature = getTooltip input
+        let signature = getTooltipSignature input
 
         let expected = """type A<'T when 'T : not struct>"""
         signature.ToString() |> should startWith expected
@@ -187,7 +196,7 @@ type TestTooltipProvider() =
                 class end
             """
 
-        let signature = getTooltip input
+        let signature = getTooltipSignature input
 
         let expected = """type A<'T when 'T : enum<uint32>>"""
         signature.ToString() |> should startWith expected
@@ -200,7 +209,7 @@ type TestTooltipProvider() =
                 class end
             """
 
-        let signature = getTooltip input
+        let signature = getTooltipSignature input
 
         let expected = """type A<'T when 'T : comparison>"""
         signature.ToString() |> should startWith expected
@@ -213,7 +222,7 @@ type TestTooltipProvider() =
                 class end
             """
 
-        let signature = getTooltip input
+        let signature = getTooltipSignature input
 
         let expected = """type A<'T when 'T : equality>"""
         signature.ToString() |> should startWith expected
@@ -226,7 +235,7 @@ type TestTooltipProvider() =
                 class end
             """
 
-        let signature = getTooltip input
+        let signature = getTooltipSignature input
 
         let expected = """type A<'T when 'T : delegate<obj * System.EventArgs, unit>>"""
         signature.ToString() |> should startWith expected
@@ -239,7 +248,7 @@ type TestTooltipProvider() =
                 class end
             """
 
-        let signature = getTooltip input
+        let signature = getTooltipSignature input
 
         let expected = """type A<'T when 'T : unmanaged>"""
         signature.ToString() |> should startWith expected
@@ -253,7 +262,7 @@ type TestTooltipProvider() =
                 value1 + value2
             """
 
-        let signature = getTooltip input
+        let signature = getTooltipSignature input
 
         let expected = """???"""
         signature.ToString() |> should startWith expected
@@ -267,7 +276,7 @@ type TestTooltipProvider() =
                 value1 + value2
             """
 
-        let signature = getTooltip input
+        let signature = getTooltipSignature input
 
         let expected = """???"""
         signature.ToString() |> should startWith expected
@@ -280,7 +289,7 @@ type TestTooltipProvider() =
                 class end
             """
 
-        let signature = getTooltip input
+        let signature = getTooltipSignature input
         // not exactly right, but probably good enough for a tooltip
         // and I get this behaviour for free
         let expected = """type A<'T when 'T : equality,'U when 'U : equality>"""
@@ -293,7 +302,18 @@ type TestTooltipProvider() =
             let ``backt§icked method`` =
                 ()
             """
-        let signature = getTooltip input
+        let signature = getTooltipSignature input
         let expected = """val ( backticked method ) : unit"""
 
         signature.ToString() |> should startWith expected
+
+    [<Test>]
+    member this.``Displays member type and assembly``() =
+        let sequence = ["string"].Head
+        let input = """let se§quence = ["string"].Head"""
+        let footer = getTooltipFooter input
+        let expected = "From type:\tString\nAssembly:\tFSharp.Core"
+
+        footer.ToString() |> should equal expected
+
+ 

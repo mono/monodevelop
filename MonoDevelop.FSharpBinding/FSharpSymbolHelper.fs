@@ -713,39 +713,36 @@ module SymbolTooltips =
       | None -> apc.Group.OverallType.Format displayContext
 
     let footerForType (entity:FSharpSymbolUse) =
-      match entity with
-      | MemberFunctionOrValue m ->
-          let typeAndDesc =
-              m.EnclosingEntitySafe
-              |> Option.map (fun ent -> let parent = ent.UnAnnotate()
-                                        let parentType = parent.DisplayName |> escapeText
-                                        let parentDesc = if parent.IsFSharpModule then "module" else "type"
-                                        parentType, parentDesc)
-          match typeAndDesc with
-          | Some (typ, desc) ->
-              sprintf "<small>From %s:\t%s</small>%s<small>Assembly:\t%s</small>" desc typ Environment.NewLine m.Assembly.SimpleName
-          | None ->
-              sprintf "<small>Assembly:\t%s</small>" m.Assembly.SimpleName
-
-      | Entity c ->
-          let ns = c.Namespace |> Option.getOrElse (fun () -> c.AccessPath)
-          sprintf "<small>Namespace:\t%s</small>%s<small>Assembly:\t%s</small>" ns Environment.NewLine c.Assembly.SimpleName
-
-      | Field f ->
-          let parent = f.DeclaringEntity.UnAnnotate().DisplayName
-          sprintf "<small>From type:\t%s</small>%s<small>Assembly:\t%s</small>" parent Environment.NewLine f.Assembly.SimpleName
-
-      | ActivePatternCase ap ->
-        let parent =
-            ap.Group.EnclosingEntity
-            |> Option.map (fun enclosing -> enclosing.UnAnnotate().DisplayName |> escapeText)
-            |> Option.fill "None"
-        sprintf "<small>From type:\t%s</small>%s<small>Assembly:\t%s</small>" parent Environment.NewLine ap.Assembly.SimpleName
-
-      |  UnionCase uc ->
-          let parent = uc.ReturnType.TypeDefinition.UnAnnotate().DisplayName |> escapeText
-          sprintf "<small>From type:\t%s</small>%s<small>Assembly:\t%s</small>" parent Environment.NewLine uc.Assembly.SimpleName
-      | _ -> ""
+        match entity with
+        | MemberFunctionOrValue m ->
+            if m.FullType.HasTypeDefinition then
+                let ent = m.FullType.TypeDefinition
+                let parent = ent.UnAnnotate()
+                let parentType = parent.DisplayName |> escapeText
+                let parentDesc = if parent.IsFSharpModule then "module" else "type"
+                sprintf "<small>From %s:\t%s</small>%s<small>Assembly:\t%s</small>" parentDesc parentType Environment.NewLine ent.Assembly.SimpleName
+            else
+                sprintf "<small>Assembly:\t%s</small>" m.Assembly.SimpleName
+      
+        | Entity c ->
+            let ns = c.Namespace |> Option.getOrElse (fun () -> c.AccessPath)
+            sprintf "<small>Namespace:\t%s</small>%s<small>Assembly:\t%s</small>" ns Environment.NewLine c.Assembly.SimpleName
+      
+        | Field f ->
+            let parent = f.DeclaringEntity.UnAnnotate().DisplayName
+            sprintf "<small>From type:\t%s</small>%s<small>Assembly:\t%s</small>" parent Environment.NewLine f.Assembly.SimpleName
+      
+        | ActivePatternCase ap ->
+          let parent =
+              ap.Group.EnclosingEntity
+              |> Option.map (fun enclosing -> enclosing.UnAnnotate().DisplayName |> escapeText)
+              |> Option.fill "None"
+          sprintf "<small>From type:\t%s</small>%s<small>Assembly:\t%s</small>" parent Environment.NewLine ap.Assembly.SimpleName
+      
+        |  UnionCase uc ->
+            let parent = uc.ReturnType.TypeDefinition.UnAnnotate().DisplayName |> escapeText
+            sprintf "<small>From type:\t%s</small>%s<small>Assembly:\t%s</small>" parent Environment.NewLine uc.Assembly.SimpleName
+        | _ -> ""
 
     let getTooltipFromSymbolUse (symbol:FSharpSymbolUse) =
         match symbol with
