@@ -1,4 +1,3 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -11,7 +10,7 @@
     <AssemblyName>MonoDevelop.FSharp.Tests</AssemblyName>
     <UsePartialTypes>False</UsePartialTypes>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
+    <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
     <TestRunnerCommand>..\..\..\..\main\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
   </PropertyGroup>
@@ -127,7 +126,7 @@
     <Compile Include="FSharpUnitTestTextEditorExtensionTests.fs" />
     <Compile Include="SemanticHighlighting.fs" />
     <Compile Include="TestTooltipProvider.fs" />
-    <Compile Include="TestProjectNodeCommandHandler.fs" />
+    <Compile Include="ProjectTests.fs" />
     <Compile Include="ProjectCracking.fs" />
     <Compile Include="GlobalSearch.fs" />
     <Compile Include="ParsingTests.fs" />
@@ -285,8 +284,7 @@
   </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1')">
-      <ItemGroup>
-      </ItemGroup>
+      <ItemGroup></ItemGroup>
     </When>
   </Choose>
 </Project>
