@@ -13,14 +13,9 @@ open ExtCore.Control
 module Project =
     let FSharp3Import        = "$(MSBuildExtensionsPath32)\\..\\Microsoft SDKs\\F#\\3.0\\Framework\\v4.0\\Microsoft.FSharp.Targets"
     let FSharpImport         = @"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets"
-    let FSharpPortableImport = @"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.Portable.FSharp.Targets"
 
     let addConditionalTargets (msproject: MSBuildProject, isPortable) =
-        if isPortable then
-            let p = new MSBuildPropertyGroup()
-            p.SetValue("FSharpTargetsPath", FSharpPortableImport, null, false, null)
-            msproject.AddPropertyGroup(p, true, null)
-        else
+        if not isPortable then
             let p = new MSBuildPropertyGroup()
             p.SetValue("FSharpTargetsPath", FSharpImport, null, false, null)
             msproject.AddPropertyGroup(p, true, null)
@@ -95,10 +90,14 @@ type FSharpProject() as self =
 
     override x.OnGetDefaultImports (imports) =
         base.OnGetDefaultImports (imports)
-        // By default projects use the F# 3.1 targets file unless only 3.0 is available on the machine.
-        // New projects will be created with this targets file
-        // If FSharp 3.1 is available, use it. If not, use 3.0
-        Project.addConditionalTargets (base.MSBuildProject, initialisedAsPortable)
+
+        if initialisedAsPortable then
+            let fsharpPortableImport = 
+                @"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.Portable.FSharp.Targets"
+            imports.Add(fsharpPortableImport)
+        else
+            Project.addConditionalTargets (base.MSBuildProject, initialisedAsPortable)
+            imports.Add("$(FSharpTargetsPath)")
 
     override x.OnWriteProject(monitor, msproject) =
         base.OnWriteProject(monitor, msproject)
