@@ -543,7 +543,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan) {
 					y = IdeApp.Preferences.UserInterfaceSkin == Skin.Dark ? 3 : 4;
 				}
-				item.Frame = new CGRect (right, y, item.Bounds.Width, item.Bounds.Height);
+				item.Frame = new CGRect (right + 0.5, y, item.Bounds.Width, item.Bounds.Height);
 			}
 
 			PositionBuildResults (right);
