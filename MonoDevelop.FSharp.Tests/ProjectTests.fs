@@ -48,7 +48,7 @@ type ProjectTests() =
     [<Test>]
     member this.``Adds desktop conditional FSharp targets``() =
         let project = Services.ProjectService.CreateDotNetProject ("F#") :?> FSharpProject
-        Project.addConditionalTargets (project.MSBuildProject, false)
+        Project.addConditionalTargets project.MSBuildProject
         let s = project.MSBuildProject.SaveToString()
         s |> shouldEqualIgnoringLineEndings
             """<?xml version="1.0" encoding="utf-8"?>
