@@ -309,12 +309,14 @@ style "radio-check-box" = "button"
 
     bg[ACTIVE] = @bg_color
     fg[NORMAL]      = @fg_color
-    fg[PRELIGHT]    = @fg_color
+    fg[PRELIGHT]    = "#fff"
     fg[ACTIVE]      = @fg_color
 
-    base[NORMAL] = "#fff"
-    base[SELECTED] = "#fff"
-    text[SELECTED] = @base_color
+    base[NORMAL] = @base_color
+    base[ACTIVE] = @base_color
+    base[SELECTED] = @base_color
+    base[PRELIGHT] = @base_color
+    text[PRELIGHT] = "#fff"
 
     engine "xamarin" {
         focusstyle = 0
