@@ -104,14 +104,14 @@ type FSharpProject() as self =
         base.OnWriteProject(monitor, msproject)
         //Fix pcl netcore and TargetFSharpCoreVersion
         let globalGroup = msproject.GetGlobalPropertyGroup()
-        
+
         maybe {
             let! targetFrameworkProfile = x.TargetFramework.Id.Profile |> Option.ofString
             let! fsharpcoreversion, netcore = profileMap |> Map.tryFind targetFrameworkProfile
             do globalGroup.SetValue ("TargetFSharpCoreVersion", fsharpcoreversion, "", true)
             let targetProfile = if netcore then "netcore" else "mscorlib"
             do globalGroup.SetValue ("TargetProfile", targetProfile, "mscorlib", true) } |> ignore
-        
+
         // This removes the old guid on saving the project
         let removeGuid (innerText:string) guidToRemove =
             innerText.Split ( [|';'|], StringSplitOptions.RemoveEmptyEntries)
