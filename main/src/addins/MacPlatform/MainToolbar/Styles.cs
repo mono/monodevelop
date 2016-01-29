@@ -53,9 +53,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				StatusWarningTextColor = Color.FromName ("#e8bd0d");
 				StatusReadyTextColor = Color.FromName ("#7f7f7f");
 			} else {
-				BaseBackgroundColor = new Color (0, 0, 0);
-				BaseForegroundColor = new Color (1, 1, 1);
-				DisabledForegroundColor = Color.FromName ("#727272");
+				BaseBackgroundColor = Color.FromName ("#000000");
+				BaseForegroundColor = Color.FromName ("#ffffff");
+				DisabledForegroundColor = Color.FromName ("#e1e1e1");
 				StatusErrorTextColor = Color.FromName ("#fa5433");
 				StatusWarningTextColor = Color.FromName ("#e8bd0d");
 				StatusReadyTextColor = Color.FromName ("#7f7f7f");
