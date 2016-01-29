@@ -14,16 +14,15 @@ module Project =
     let FSharp3Import        = "$(MSBuildExtensionsPath32)\\..\\Microsoft SDKs\\F#\\3.0\\Framework\\v4.0\\Microsoft.FSharp.Targets"
     let FSharpImport         = @"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets"
 
-    let addConditionalTargets (msproject: MSBuildProject, isPortable) =
-        if not isPortable then
-            let p = new MSBuildPropertyGroup()
-            p.SetValue("FSharpTargetsPath", FSharpImport, null, false, null)
-            msproject.AddPropertyGroup(p, true, null)
+    let addConditionalTargets (msproject: MSBuildProject) =
+        let p = new MSBuildPropertyGroup()
+        p.SetValue("FSharpTargetsPath", FSharpImport, null, false, null)
+        msproject.AddPropertyGroup(p, true, null)
 
-            let p = new MSBuildPropertyGroup()
-            p.Condition <- "'$(VisualStudioVersion)' == '10.0' OR '$(VisualStudioVersion)' == '11.0'"
-            p.SetValue("FSharpTargetsPath", FSharp3Import, null, false, null)
-            msproject.AddPropertyGroup(p, true, null)
+        let p = new MSBuildPropertyGroup()
+        p.Condition <- "'$(VisualStudioVersion)' == '10.0' OR '$(VisualStudioVersion)' == '11.0'"
+        p.SetValue("FSharpTargetsPath", FSharp3Import, null, false, null)
+        msproject.AddPropertyGroup(p, true, null)
 
 type FSharpProject() as self =
     inherit DotNetProject()
@@ -96,7 +95,7 @@ type FSharpProject() as self =
                 @"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.Portable.FSharp.Targets"
             imports.Add(fsharpPortableImport)
         else
-            Project.addConditionalTargets (base.MSBuildProject, initialisedAsPortable)
+            Project.addConditionalTargets base.MSBuildProject
             imports.Add("$(FSharpTargetsPath)")
 
     override x.OnWriteProject(monitor, msproject) =
