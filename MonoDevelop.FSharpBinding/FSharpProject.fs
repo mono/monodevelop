@@ -10,15 +10,31 @@ open System.Xml
 open MonoDevelop.Core.Assemblies
 open ExtCore.Control
 
+module Project =
+    let FSharp3Import        = "$(MSBuildExtensionsPath32)\\..\\Microsoft SDKs\\F#\\3.0\\Framework\\v4.0\\Microsoft.FSharp.Targets"
+    let FSharpImport         = @"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets"
+    let FSharpPortableImport = @"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.Portable.FSharp.Targets"
+
+    let addConditionalTargets (msproject: MSBuildProject, isPortable) =
+        if isPortable then
+            let p = new MSBuildPropertyGroup()
+            p.SetValue("FSharpTargetsPath", FSharpPortableImport, null, false, null)
+            msproject.AddPropertyGroup(p, true, null)
+        else
+            let p = new MSBuildPropertyGroup()
+            p.SetValue("FSharpTargetsPath", FSharpImport, null, false, null)
+            msproject.AddPropertyGroup(p, true, null)
+
+            let p = new MSBuildPropertyGroup()
+            p.Condition <- "'$(VisualStudioVersion)' == '10.0' OR '$(VisualStudioVersion)' == '11.0'"
+            p.SetValue("FSharpTargetsPath", FSharp3Import, null, false, null)
+            msproject.AddPropertyGroup(p, true, null)
+
 type FSharpProject() as self =
     inherit DotNetProject()
     // Keep the platforms combo of CodeGenerationPanelWidget in sync with this list
     let supportedPlatforms = [| "anycpu"; "x86"; "x64"; "itanium" |]
-    let FSharp4Import          = "$(MSBuildExtensionsPath32)\\..\\Microsoft SDKs\\F#\\4.0\\Framework\\v4.0\\Microsoft.FSharp.Targets"
-    let FSharp3Import          = "$(MSBuildExtensionsPath32)\\..\\Microsoft SDKs\\F#\\3.0\\Framework\\v4.0\\Microsoft.FSharp.Targets"
-    let FSharp31Import         = "$(MSBuildExtensionsPath32)\\..\\Microsoft SDKs\\F#\\3.1\\Framework\\v4.0\\Microsoft.FSharp.Targets"
-    let FSharp31PortableImport = "$(MSBuildExtensionsPath32)\\..\\Microsoft SDKs\\F#\\3.1\\Framework\\v4.0\\Microsoft.Portable.FSharp.Targets"
-    let FSharp4PortableImport  = "$(MSBuildExtensionsPath32)\\..\\Microsoft SDKs\\F#\\4.0\\Framework\\v4.0\\Microsoft.Portable.FSharp.Targets"
+
     let oldFSharpProjectGuid   = "{4925A630-B079-445D-BCD4-3A9C94FE9307}"
     let supportedPortableProfiles = ["Profile7";"Profile47";"Profile78";"Profile259"]
 
@@ -82,25 +98,10 @@ type FSharpProject() as self =
         // By default projects use the F# 3.1 targets file unless only 3.0 is available on the machine.
         // New projects will be created with this targets file
         // If FSharp 3.1 is available, use it. If not, use 3.0
-        if initialisedAsPortable then
-            let import = 
-                [ FSharp4PortableImport; FSharp31PortableImport ] 
-                |> List.tryFind MSBuildProjectService.IsTargetsAvailable
+        Project.addConditionalTargets (base.MSBuildProject, initialisedAsPortable)
 
-            match import with
-            | Some (import) -> imports.Add (import)
-            | _ -> failwith "F# portable target not found"
-        else
-            let p = new MSBuildPropertyGroup()
-            p.SetValue("FSharpTargetsPath", @"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets", null, false, null)
-            base.MSBuildProject.AddPropertyGroup(p, true, null)
-
-            let p = new MSBuildPropertyGroup()
-            p.Condition <- "'$(VisualStudioVersion)' == '10.0' OR '$(VisualStudioVersion)' == '11.0'"
-            p.SetValue("FSharpTargetsPath", FSharp3Import, null, false, null)
-            base.MSBuildProject.AddPropertyGroup(p, true, null)
-
-    member x.OnWrite(msproject: MSBuildProject) =
+    override x.OnWriteProject(monitor, msproject) =
+        base.OnWriteProject(monitor, msproject)
         //Fix pcl netcore and TargetFSharpCoreVersion
         let globalGroup = msproject.GetGlobalPropertyGroup()
         
@@ -127,10 +128,6 @@ type FSharpProject() as self =
                 |> Option.iter (fun currentGuids -> let newProjectTypeGuids = removeGuid currentGuids.Value oldFSharpProjectGuid
                                                     currentGuids.SetValue(newProjectTypeGuids))
         with exn -> LoggingService.LogWarning("Failed to remove old F# guid", exn)
-
-    override x.OnWriteProject(monitor, msproject) =
-        base.OnWriteProject(monitor, msproject)
-        x.OnWrite(msproject)
 
     override x.OnCompileSources(items, config, configSel, monitor) =
         CompilerService.Compile(items, config, configSel, monitor)

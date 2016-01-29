@@ -10,7 +10,7 @@ open System
 open System.IO
 
 [<TestFixture>]
-type TestProjectNodeCommandHandler() =
+type ProjectTests() =
 
     [<Test>]
     member this.Can_reorder_nodes() =
@@ -46,10 +46,9 @@ type TestProjectNodeCommandHandler() =
             newXml |> should equal expected
 
     [<Test>]
-    member this.``Adds conditional FSharp targets``() =
+    member this.``Adds desktop conditional FSharp targets``() =
         let project = Services.ProjectService.CreateDotNetProject ("F#") :?> FSharpProject
-        project.OnWrite(project.MSBuildProject)
-
+        Project.addConditionalTargets (project.MSBuildProject, false)
         let s = project.MSBuildProject.SaveToString()
         s |> shouldEqualIgnoringLineEndings
             """<?xml version="1.0" encoding="utf-8"?>
@@ -60,5 +59,19 @@ type TestProjectNodeCommandHandler() =
   </PropertyGroup>
   <PropertyGroup Condition="'$(VisualStudioVersion)' == '10.0' OR '$(VisualStudioVersion)' == '11.0'">
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
+  </PropertyGroup>
+</Project>"""
+
+    [<Test>]
+    member this.``Adds portable FSharp targets``() =
+        let project = Services.ProjectService.CreateDotNetProject ("F#") :?> FSharpProject
+        Project.addConditionalTargets (project.MSBuildProject, true)
+        let s = project.MSBuildProject.SaveToString()
+        s |> shouldEqualIgnoringLineEndings
+            """<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup />
+  <PropertyGroup>
+    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.Portable.FSharp.Targets</FSharpTargetsPath>
   </PropertyGroup>
 </Project>"""
