@@ -91,27 +91,26 @@ type FSharpProject() as self =
             | Some (import) -> imports.Add (import)
             | _ -> failwith "F# portable target not found"
         else
-            let import = 
-                [ FSharp4Import; FSharp31Import; FSharp3Import ] 
-                |> List.tryFind MSBuildProjectService.IsTargetsAvailable
+            let p = new MSBuildPropertyGroup()
+            p.SetValue("FSharpTargetsPath", @"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets", null, false, null)
+            base.MSBuildProject.AddPropertyGroup(p, true, null)
 
-            match import with
-            | Some (import) -> imports.Add (import)
-            | _ -> failwith "F# target not found"
+            let p = new MSBuildPropertyGroup()
+            p.Condition <- "'$(VisualStudioVersion)' == '10.0' OR '$(VisualStudioVersion)' == '11.0'"
+            p.SetValue("FSharpTargetsPath", FSharp3Import, null, false, null)
+            base.MSBuildProject.AddPropertyGroup(p, true, null)
 
-    override x.OnWriteProject(monitor, msproject) =
-        base.OnWriteProject(monitor, msproject)
-
+    member x.OnWrite(msproject: MSBuildProject) =
         //Fix pcl netcore and TargetFSharpCoreVersion
         let globalGroup = msproject.GetGlobalPropertyGroup()
-
+        
         maybe {
             let! targetFrameworkProfile = x.TargetFramework.Id.Profile |> Option.ofString
             let! fsharpcoreversion, netcore = profileMap |> Map.tryFind targetFrameworkProfile
             do globalGroup.SetValue ("TargetFSharpCoreVersion", fsharpcoreversion, "", true)
             let targetProfile = if netcore then "netcore" else "mscorlib"
             do globalGroup.SetValue ("TargetProfile", targetProfile, "mscorlib", true) } |> ignore
-
+        
         // This removes the old guid on saving the project
         let removeGuid (innerText:string) guidToRemove =
             innerText.Split ( [|';'|], StringSplitOptions.RemoveEmptyEntries)
@@ -128,6 +127,10 @@ type FSharpProject() as self =
                 |> Option.iter (fun currentGuids -> let newProjectTypeGuids = removeGuid currentGuids.Value oldFSharpProjectGuid
                                                     currentGuids.SetValue(newProjectTypeGuids))
         with exn -> LoggingService.LogWarning("Failed to remove old F# guid", exn)
+
+    override x.OnWriteProject(monitor, msproject) =
+        base.OnWriteProject(monitor, msproject)
+        x.OnWrite(msproject)
 
     override x.OnCompileSources(items, config, configSel, monitor) =
         CompilerService.Compile(items, config, configSel, monitor)
