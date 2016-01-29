@@ -88,7 +88,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			// Gap + RunButton.Width + Gap + ButtonBar.Width + Gap + Half of StatusBar.Width
 			var spaceLeft = (Frame.Width / 2) - (toolbarPadding + runButtonWidth + toolbarPadding + ButtonBarContainer.Frame.Width + toolbarPadding + (statusbarWidth / 2));
 
-			StatusBar.Frame = new CGRect (Math.Round((Frame.Width - statusbarWidth) / 2) + 0.5f, 0, statusbarWidth - 2, ToolbarWidgetHeight);
+			StatusBar.Frame = new CGRect (Math.Round((Frame.Width - statusbarWidth) / 2), 0, statusbarWidth - 2, ToolbarWidgetHeight);
 
 			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
 				SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, 0, searchbarWidth, ToolbarWidgetHeight);
