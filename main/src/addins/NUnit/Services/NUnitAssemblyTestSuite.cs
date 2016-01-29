@@ -382,8 +382,8 @@ namespace MonoDevelop.NUnit
 			var runnerExe = GetCustomConsoleRunnerCommand ();
 			if (runnerExe != null)
 				return RunWithConsoleRunner (runnerExe, test, suiteName, pathName, testName, testContext);
-
-			ExternalTestRunner runner = (ExternalTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(ExternalTestRunner), testContext.ExecutionContext, UserAssemblyPaths);
+			var console = IdeApp.Workbench?.ProgressMonitors.ConsoleFactory.CreateConsole ();
+			ExternalTestRunner runner = (ExternalTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(ExternalTestRunner), testContext.ExecutionContext, UserAssemblyPaths, console);
 			LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, test, suiteName, testName != null);
 
 			ITestFilter filter = null;

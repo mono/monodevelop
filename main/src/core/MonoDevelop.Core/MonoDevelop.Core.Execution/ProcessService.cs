@@ -305,44 +305,25 @@ namespace MonoDevelop.Core.Execution
 				return externalProcess;
 			}
 		}
-		
-		public IDisposable CreateExternalProcessObject (Type type)
-		{
-			return CreateExternalProcessObject (type, true);
-		}
-		
+
 		void CheckRemoteType (Type type)
 		{
 			if (!typeof(IDisposable).IsAssignableFrom (type))
 				throw new ArgumentException ("The remote object type must implement IDisposable", "type");
 		}
 		
-		public IDisposable CreateExternalProcessObject (Type type, bool shared, IList<string> userAssemblyPaths = null)
+		public IDisposable CreateExternalProcessObject (Type type, bool shared = true, IList<string> userAssemblyPaths = null, OperationConsole console = null)
 		{
 			CheckRemoteType (type);
-			ProcessHostController hc = GetHost (type.ToString(), shared, null);
-			return (IDisposable) hc.CreateInstance (type.Assembly.Location, type.FullName, GetRequiredAddins (type), userAssemblyPaths);
+			var hc = GetHost (type.ToString(), shared, null);
+			return (IDisposable) hc.CreateInstance (type.Assembly.Location, type.FullName, GetRequiredAddins (type), userAssemblyPaths, console);
 		}
 
-		public IDisposable CreateExternalProcessObject (Type type, TargetRuntime runtime)
-		{
-			return CreateExternalProcessObject (type, runtime.GetExecutionHandler ());
-		}
-
-		public IDisposable CreateExternalProcessObject (Type type, IExecutionHandler executionHandler, IList<string> userAssemblyPaths = null)
+		public IDisposable CreateExternalProcessObject (Type type, IExecutionHandler executionHandler, IList<string> userAssemblyPaths = null, OperationConsole console = null)
 		{
 			CheckRemoteType (type);
-			return (IDisposable)GetHost (type.ToString (), false, executionHandler).CreateInstance (type.Assembly.Location, type.FullName, GetRequiredAddins (type), userAssemblyPaths);
-		}
-		
-		public IDisposable CreateExternalProcessObject (string assemblyPath, string typeName, bool shared, params string[] requiredAddins)
-		{
-			return (IDisposable) GetHost (typeName, shared, null).CreateInstance (assemblyPath, typeName, requiredAddins);
-		}
-		
-		public IDisposable CreateExternalProcessObject (string assemblyPath, string typeName, IExecutionHandler executionHandler, params string[] requiredAddins)
-		{
-			return (IDisposable) GetHost (typeName, false, executionHandler).CreateInstance (assemblyPath, typeName, requiredAddins);
+			var hc = GetHost (type.ToString (), false, executionHandler);
+			return (IDisposable)hc.CreateInstance (type.Assembly.Location, type.FullName, GetRequiredAddins (type), userAssemblyPaths, console);
 		}
 		
 		public bool IsValidForRemoteHosting (IExecutionHandler handler)
