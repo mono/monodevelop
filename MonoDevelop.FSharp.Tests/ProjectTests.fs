@@ -61,17 +61,3 @@ type ProjectTests() =
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
   </PropertyGroup>
 </Project>"""
-
-    [<Test>]
-    member this.``Adds portable FSharp targets``() =
-        let project = Services.ProjectService.CreateDotNetProject ("F#") :?> FSharpProject
-        Project.addConditionalTargets (project.MSBuildProject, true)
-        let s = project.MSBuildProject.SaveToString()
-        s |> shouldEqualIgnoringLineEndings
-            """<?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup />
-  <PropertyGroup>
-    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.Portable.FSharp.Targets</FSharpTargetsPath>
-  </PropertyGroup>
-</Project>"""
