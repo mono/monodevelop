@@ -41,23 +41,23 @@ module Tokens =
     let collapseTokens (tokenLines:TokenisedLine list) =
         let rec parseLine (tokens: _ list) lastToken =
             [match tokens with
-            | [] -> ()
-            | newToken::tail ->
-                match newToken, lastToken with
-                | CollapsableToken _, None ->
-                    yield! parseLine tail (Some newToken)
-                | _ , None ->
-                    yield newToken
-                    yield! parseLine tail None
-                | CollapsableToken newToken, Some lastToken ->
-                    if isSameType newToken lastToken then
-                        yield! parseLine tail (Some(mergeTokens newToken lastToken))
-                    else yield lastToken
-                         yield! parseLine tail (Some newToken)
-                | _, Some lastToken ->
-                    yield lastToken
-                    yield newToken
-                    yield! parseLine tail None ]
+             | [] -> ()
+             | newToken::tail ->
+                 match newToken, lastToken with
+                 | CollapsableToken _, None ->
+                     yield! parseLine tail (Some newToken)
+                 | _ , None ->
+                     yield newToken
+                     yield! parseLine tail None
+                 | CollapsableToken newToken, Some lastToken ->
+                     if isSameType newToken lastToken then
+                         yield! parseLine tail (Some(mergeTokens newToken lastToken))
+                     else yield lastToken
+                          yield! parseLine tail (Some newToken)
+                 | _, Some lastToken ->
+                     yield lastToken
+                     yield newToken
+                     yield! parseLine tail None ]
 
         [| for TokenisedLine(LineDetail(lineNo, offset, line), tokens, stateEOL) in tokenLines do
               let mergedTokens = parseLine tokens None
