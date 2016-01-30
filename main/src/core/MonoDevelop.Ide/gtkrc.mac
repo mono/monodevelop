@@ -247,6 +247,7 @@ style "treeview" = "default"
         roundness = 0
         gradient_shades = { 1.01, 1.01, 1.01, 1.01 }
         glazestyle = 1
+        focusstyle = 3
     }
 }
 
