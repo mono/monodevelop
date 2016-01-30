@@ -236,13 +236,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			{
 				PathComponentCells = new [] {
 					new NSPathComponentCell {
-						Image = ImageService.GetIcon ("project").WithStyles ("disabled").ToBitmap ().ToNSImage (),
+						Image = ImageService.GetIcon ("project").WithStyles ("disabled").ToBitmap (GtkWorkarounds.GetScaleFactor ()).ToNSImage (),
 						Title = ConfigurationPlaceholder,
 						Enabled = false,
 						TextColor = Styles.BaseForegroundColor.ToNSColor (),
 					},
 					new NSPathComponentCell {
-						Image = ImageService.GetIcon ("device").WithStyles ("disabled").ToBitmap ().ToNSImage (),
+						Image = ImageService.GetIcon ("device").WithStyles ("disabled").ToBitmap (GtkWorkarounds.GetScaleFactor ()).ToNSImage (),
 						Title = RuntimePlaceholder,
 						Enabled = false,
 						TextColor = Styles.BaseForegroundColor.ToNSColor (),
@@ -380,8 +380,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (!PathComponentCells [ConfigurationIdx].Enabled)
 					deviceImage = deviceImage.WithStyles ("disabled");
 				
-				PathComponentCells [ConfigurationIdx].Image = projectImage.ToBitmap ().ToNSImage ();
-				PathComponentCells [RuntimeIdx].Image = deviceImage.ToBitmap ().ToNSImage ();
+				PathComponentCells [ConfigurationIdx].Image = projectImage.ToBitmap (GtkWorkarounds.GetScaleFactor ()).ToNSImage ();
+				PathComponentCells [RuntimeIdx].Image = deviceImage.ToBitmap (GtkWorkarounds.GetScaleFactor ()).ToNSImage ();
 				RealignTexts ();
 			}
 
