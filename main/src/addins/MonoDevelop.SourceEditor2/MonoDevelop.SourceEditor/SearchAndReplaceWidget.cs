@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -803,8 +804,8 @@ But I leave it in in the case I've missed something. Mike
 			if (!valid || textEditor.TextViewMargin.SearchResultMatchCount == 0) {
 				//resultInformLabel.Markup = "<span foreground=\"#000000\" background=\"" + MonoDevelop.Components.PangoCairoHelper.GetColorString (GotoLineNumberWidget.errorColor) + "\">" + GettextCatalog.GetString ("Not found") + "</span>";
 				resultInformLabel.Text = GettextCatalog.GetString ("Not found");
-				resultInformLabelEventBox.ModifyBg (StateType.Normal, GotoLineNumberWidget.errorColor);
-				resultInformLabel.ModifyFg (StateType.Normal, searchEntry.Entry.Style.Foreground (StateType.Normal));
+				resultInformLabelEventBox.ModifyBg (StateType.Normal, Ide.Gui.Styles.Editor.SearchErrorBackgroundColor.ToGdkColor ());
+				resultInformLabel.ModifyFg (StateType.Normal, Ide.Gui.Styles.Editor.SearchErrorForegroundColor.ToGdkColor ());
 			} else {
 				int resultIndex = 0;
 				int foundIndex = -1;

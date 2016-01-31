@@ -245,6 +245,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			public static Color SmartTagMarkerColorLight { get; internal set; }
 			public static Color SmartTagMarkerColorDark { get; internal set; }
+			public static Color SearchErrorBackgroundColor { get; internal set; }
+			public static Color SearchErrorForegroundColor { get; internal set; }
 		}
 
 		// Helper methods
@@ -381,6 +383,8 @@ namespace MonoDevelop.Ide.Gui
 
 			Editor.SmartTagMarkerColorLight = Color.FromName ("#ff70fe").WithAlpha (.5);
 			Editor.SmartTagMarkerColorDark = Color.FromName ("#ffffff").WithAlpha (.5);
+			Editor.SearchErrorBackgroundColor = Color.FromName ("#ff6666");
+			Editor.SearchErrorForegroundColor = BaseForegroundColor;
 
 			if (Changed != null)
 				Changed (null, EventArgs.Empty);

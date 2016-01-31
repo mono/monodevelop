@@ -30,6 +30,7 @@ using System;
 using Gtk;
 
 using Mono.TextEditor;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -168,17 +169,15 @@ namespace MonoDevelop.SourceEditor
 				if (col > 0)
 					textEditor.Caret.Column = col;
 				textEditor.CenterToCaret ();
-			} catch (System.Exception) { 
+			} catch (System.Exception) { 
 			}
 		}
-		
-		internal static readonly Gdk.Color warningColor = new Gdk.Color (210, 210, 32);
-		internal static readonly Gdk.Color errorColor   = new Gdk.Color (255, 102, 102);
-		
+
 		void PreviewLine ()
 		{
 			if (String.IsNullOrEmpty (entryLineNumber.Text) || entryLineNumber.Text == "+" || entryLineNumber.Text == "-") {
 				this.entryLineNumber.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Normal));
+				this.entryLineNumber.ModifyText (Gtk.StateType.Normal, Style.Foreground (Gtk.StateType.Normal));
 				RestoreWidgetState ();
 				return;
 			}
@@ -189,11 +188,13 @@ namespace MonoDevelop.SourceEditor
 					
 				} else {
 					this.entryLineNumber.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Normal));
+					this.entryLineNumber.ModifyText (Gtk.StateType.Normal, Style.Foreground (Gtk.StateType.Normal));
 				}
 				textEditor.Caret.Line = targetLine;
 				textEditor.CenterToCaret ();
-			} catch (System.Exception) { 
-				this.entryLineNumber.ModifyBase (Gtk.StateType.Normal, errorColor);
+			} catch (System.Exception) {
+				this.entryLineNumber.ModifyBase (Gtk.StateType.Normal, Ide.Gui.Styles.Editor.SearchErrorBackgroundColor.ToGdkColor ());
+				this.entryLineNumber.ModifyText (Gtk.StateType.Normal, Ide.Gui.Styles.Editor.SearchErrorForegroundColor.ToGdkColor ());
 			}
 		}
 		
