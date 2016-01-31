@@ -152,14 +152,14 @@ namespace MonoDevelop.Projects
 			return new ProjectReference (asm);
 		}
 
-		public static ProjectReference CreateAssemblyReference (string assemblyName, string hintPath = null)
+		public static ProjectReference CreateAssemblyReference (string assemblyName)
 		{
-			return new ProjectReference (ReferenceType.Package, assemblyName, hintPath);
+			return new ProjectReference (ReferenceType.Package, assemblyName, null);
 		}
 
-		public static ProjectReference CreateAssemblyFileReference (FilePath path)
+		public static ProjectReference CreateAssemblyFileReference (FilePath path, string hintPath = null)
 		{
-			return new ProjectReference (ReferenceType.Assembly, path, null);
+			return new ProjectReference (ReferenceType.Assembly, path, hintPath);
 		}
 
 		public static ProjectReference CreateProjectReference (Project project)
