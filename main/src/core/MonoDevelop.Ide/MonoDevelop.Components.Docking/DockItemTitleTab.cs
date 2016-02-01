@@ -179,12 +179,12 @@ namespace MonoDevelop.Components.Docking
 			Gtk.HBox box = new HBox ();
 			box.Spacing = -2;
 			
-			if (icon != null) {
-				tabIcon = new ImageView (icon);
-				tabIcon.Show ();
-				box.PackStart (tabIcon, false, false, 3);
-			} else
-				tabIcon = null;
+			if (icon == null)
+				icon = ImageService.GetIcon ("md-empty");
+
+			tabIcon = new ImageView (icon);
+			tabIcon.Show ();
+			box.PackStart (tabIcon, false, false, 3);
 
 			if (!string.IsNullOrEmpty (label)) {
 				labelWidget = new ExtendedLabel (label);
