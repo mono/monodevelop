@@ -293,7 +293,7 @@ namespace MonoDevelop.VersionControl.Views
 					
 					// Finally draw the change symbol at the left margin
 					
-					DrawChangeSymbol (ctx, cell_area.X + 1, cell_area.Width - 2, block);
+					DrawChangeSymbol (ctx, widget, cell_area.X + 1, cell_area.Width - 2, block);
 				}
 				
 				// Finish the drawing of the code segment
@@ -445,55 +445,24 @@ namespace MonoDevelop.VersionControl.Views
 				ctx.Fill ();
 			}
 		}
+
+		static Xwt.Drawing.Image gutterAdded = Xwt.Drawing.Image.FromResource ("gutter-added-15.png");
+		static Xwt.Drawing.Image gutterRemoved = Xwt.Drawing.Image.FromResource ("gutter-removed-15.png");
 		
-		void DrawChangeSymbol (Cairo.Context ctx, double x, int width, BlockInfo block)
+		void DrawChangeSymbol (Cairo.Context ctx, Widget widget, double x, int width, BlockInfo block)
 		{
 			if (!IsChangeBlock (block.Type))
 				return;
-			
-			var color = block.Type == BlockType.Added ? Styles.LogView.DiffAddBackgroundColor : Styles.LogView.DiffRemoveBackgroundColor;
 
-			int ssize = 8;
-			int barSize = 3;
-			
-			if (ssize - 2 > lineHeight)
-				ssize = lineHeight - 2;
-			if (ssize <= 0)
-				return;
-
-			double inSize = (ssize / 2) - (barSize / 2);
-			double py = block.YStart + ((block.YEnd - block.YStart) / 2 - ssize / 2) + 0.5;
-			double px = x + (LeftPaddingBlock/2) - (ssize / 2) + 0.5;
-			
 			if (block.Type == BlockType.Added) {
-				ctx.MoveTo (px + inSize, py);
-				ctx.RelLineTo (barSize, 0);
-				ctx.RelLineTo (0, inSize);
-				ctx.RelLineTo (inSize, 0);
-				ctx.RelLineTo (0, barSize);
-				ctx.RelLineTo (-inSize, 0);
-				ctx.RelLineTo (0, inSize);
-				ctx.RelLineTo (-barSize, 0);
-				ctx.RelLineTo (0, -inSize);
-				ctx.RelLineTo (-inSize, 0);
-				ctx.RelLineTo (0, -barSize);
-				ctx.RelLineTo (inSize, 0);
-				ctx.RelLineTo (0, -inSize);
-				ctx.ClosePath ();
+				var ix = x + (LeftPaddingBlock/2) - (gutterAdded.Width / 2);
+				var iy = block.YStart + ((block.YEnd - block.YStart) / 2 - gutterAdded.Height / 2);
+				ctx.DrawImage (widget, gutterAdded, ix, iy);
 			} else {
-				ctx.MoveTo (px, py + inSize);
-				ctx.RelLineTo (ssize, 0);
-				ctx.RelLineTo (0, barSize);
-				ctx.RelLineTo (-ssize, 0);
-				ctx.RelLineTo (0, -barSize);
-				ctx.ClosePath ();
+				var ix = x + (LeftPaddingBlock/2) - (gutterRemoved.Width / 2);
+				var iy = block.YStart + ((block.YEnd - block.YStart) / 2 - gutterRemoved.Height / 2);
+				ctx.DrawImage (widget, gutterRemoved, ix, iy);
 			}
-			
-			ctx.SetSourceColor (color.ToCairoColor ());
-			ctx.FillPreserve ();
-			ctx.SetSourceColor (color.AddLight (-0.2).ToCairoColor ());
-			ctx.LineWidth = 1;
-			ctx.Stroke ();
 		}
 		
 		public override void GetSize (Widget widget, ref Rectangle cell_area, out int x_offset, out int y_offset, out int c_width, out int c_height)
