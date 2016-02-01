@@ -173,6 +173,9 @@ type FSharpProject() as self =
         base.OnReferenceRemovedFromProject(e)
         if not self.Loading then invalidateProjectFile()
 
+    override x.OnGetDefaultResourceId(projectFile) =
+        projectFile.FilePath.FileName
+
     override x.OnDispose () =
         //if not self.Loading then invalidateProjectFile()
 
