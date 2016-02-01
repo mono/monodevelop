@@ -515,7 +515,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		static IEnumerable<string> GetPossibleCacheDirNames (string baseName)
 		{
 			int i = 0;
-			while (i < 4096) {
+			while (i < 999999) {
 				yield return Path.Combine (baseName, i.ToString ());
 				i++;
 			}
