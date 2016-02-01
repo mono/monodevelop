@@ -218,7 +218,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				fontSize -= 1;
 			}
 
-			Console.WriteLine ("Font size: {0}", fontSize);
 			return new NSAttributedString (text, new NSStringAttributes {
 				ForegroundColor = color,
 				ParagraphStyle = new NSMutableParagraphStyle {
