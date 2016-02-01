@@ -76,7 +76,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			var fitSize = RealSelectorView.SizeThatFits (size);
 
-			return new CGSize (fitSize.Width + 12.0, size.Height);
+			return new CGSize (Math.Round (fitSize.Width) + 12.0, size.Height);
 		}
 
 		public override void SetFrameSize (CGSize newSize)
