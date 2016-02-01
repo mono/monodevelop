@@ -518,6 +518,21 @@ type CurrentRefactoringOperationsHandler() =
                             ainfo.Add (ciset, null)
                     | _ -> ()
 
+type FindReferencesHandler() =
+    inherit CommandHandler()
+
+    member x.Run (editor:TextEditor, ctx:DocumentContext) =
+        if MDLanguageService.SupportedFilePath editor.FileName then
+            match ctx.ParsedDocument.TryGetAst() with
+            | Some ast ->
+                match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
+                //Is this a double check, i.e. isnt update checking can rename?
+                | (_line, col, lineTxt), Some sym ->
+                    let lastIdent = Symbols.lastIdent col lineTxt
+                    Refactoring.findReferences (editor, ctx, sym, lastIdent)
+                | _ -> ()
+            | _ -> ()
+    
 type RenameHandler() =
     inherit CommandHandler()
 
@@ -548,7 +563,7 @@ type RenameHandler() =
         if doc <> null || doc.FileName <> FilePath.Null || not (MDLanguageService.SupportedFilePath doc.FileName) then
             x.Run (doc.Editor, doc)
 
-    member x.Run ( editor:TextEditor, ctx:DocumentContext) =
+    member x.Run (editor:TextEditor, ctx:DocumentContext) =
         if MDLanguageService.SupportedFilePath editor.FileName then
             match ctx.ParsedDocument.TryGetAst() with
             | Some ast ->
@@ -622,3 +637,7 @@ type FSharpCommandsTextEditorExtension () =
     [<CommandHandler ("MonoDevelop.Ide.Commands.EditCommands.Rename")>]
     member x.RenameCommand () =
         RenameHandler().Run (x.Editor, x.DocumentContext)
+
+    [<CommandHandler ("MonoDevelop.Refactoring.RefactoryCommands.FindReferences")>]
+    member x.FindReferences () =
+        FindReferencesHandler().Run(x.Editor, x.DocumentContext)
