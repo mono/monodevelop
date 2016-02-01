@@ -29,14 +29,14 @@ gtk-toolbar-icon-size = large-toolbar
 gtk-auto-mnemonics = 1
 gtk-error-bell = 0
 gtk-show-input-method-menu = 0
-gtk-font-name = "Helvetica Neue 13"
+gtk-font-name = "Helvetica Neue 12"
 
 
 style "default" {
     xthickness = 1
     ythickness = 1
 
-    font_name = "Helvetica Neue 13"
+    font_name = "Helvetica Neue 12"
 
     ### colours
 
@@ -136,7 +136,7 @@ style "button" = "default" {
     xthickness = 2
     ythickness = 4
 
-    font_name = "Helvetica Neue 13"
+    font_name = "Helvetica Neue 12"
 
     bg[NORMAL] = "#595959"
     bg[PRELIGHT] = "#595959" # Mac buttons have no hover state
@@ -191,7 +191,7 @@ style "menu" {
     xthickness = 1
     # ythickness = 0
 
-    font_name = "Helvetica Neue 14"
+    font_name = "Helvetica Neue 12"
 
     bg[PRELIGHT] = @selected_fg_color
     fg[PRELIGHT] = @selected_fg_color
