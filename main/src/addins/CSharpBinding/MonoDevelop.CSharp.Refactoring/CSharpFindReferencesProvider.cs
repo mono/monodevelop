@@ -107,9 +107,11 @@ namespace MonoDevelop.CSharp.Refactoring
 			var project = IdeApp.ProjectOperations.CurrentSelectedProject;
 			if (project != null) {
 				var prj = TypeSystemService.GetCodeAnalysisProject (project);
-				var result = await TryLookupSymbolInProject (prj, documentationCommentId, token);
-				if (result.Success)
-					return result;
+				if (prj != null) {
+					var result = await TryLookupSymbolInProject (prj, documentationCommentId, token);
+					if (result.Success)
+						return result;
+				}
 			}
 
 			foreach (var ws in TypeSystemService.AllWorkspaces) {
