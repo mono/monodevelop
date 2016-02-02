@@ -35,6 +35,7 @@ using Xwt.Motion;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.DockNotebook
 {
@@ -933,15 +934,23 @@ namespace MonoDevelop.Components.DockNotebook
 					color.A = 0;
 					lg.AddColorStop (1, color);
 					ctx.SetSource (lg);
-                    ctx.Save();
-                    ctx.MoveTo(textStart, tabBounds.Y + TopPadding + TextOffset * 2 + VerticalTextSize / 2);
-                    //ctx.Translate(0, 0 - VerticalTextSize * 2);
-                    ctx.Scale(2.0, 2.0);
-					Pango.CairoHelper.ShowLayoutLine (ctx, la.GetLine (0));
-                    ctx.Restore();
+
+					if (Platform.IsWindows) {
+						// For some reason this text is too small, probably related to the Pango hdpi hack.
+						// Once we fix that then we must revert this.
+						var scale = GtkWorkarounds.GetScaleFactor ();
+						ctx.Save ();
+						ctx.MoveTo (textStart, tabBounds.Y + TopPadding + TextOffset * scale + VerticalTextSize / scale);
+						ctx.Scale ((double)scale, (double)scale);
+						Pango.CairoHelper.ShowLayoutLine (ctx, la.GetLine (0));
+						ctx.Restore ();
+					} else {
+						Pango.CairoHelper.ShowLayoutLine (ctx, la.GetLine (0));
+					}
 				}
 			}
-            la.Dispose ();
+
+			la.Dispose ();
 		}
 
 		static void LayoutTabBorder (Context ctx, Gdk.Rectangle allocation, int contentWidth, int px, int margin, bool active = true)
