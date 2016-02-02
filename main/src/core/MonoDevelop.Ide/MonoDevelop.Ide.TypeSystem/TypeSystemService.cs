@@ -243,7 +243,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return ParseFile (project, data.FileName, data.MimeType, data, cancellationToken);
 		}
 
-		internal static Task<ParsedDocumentProjection> ParseProjection (ParseOptions options, string mimeType, CancellationToken cancellationToken = default(CancellationToken))
+		internal static async Task<ParsedDocumentProjection> ParseProjection (ParseOptions options, string mimeType, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (options == null)
 				throw new ArgumentNullException ("options");
@@ -252,18 +252,18 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			var parser = GetParser (mimeType, options.BuildAction);
 			if (parser == null || !parser.CanGenerateProjection (mimeType, options.BuildAction, options.Project?.SupportedLanguages))
-				return Task.FromResult ((ParsedDocumentProjection)null);
+				return null;
 
 			var t = Counters.ParserService.FileParsed.BeginTiming (options.FileName);
 			try {
-				var result = parser.GenerateParsedDocumentProjection (options, cancellationToken);
+				var result = await parser.GenerateParsedDocumentProjection (options, cancellationToken);
 				if (options.Project != null) {
 					var ws = workspaces.First () ;
 					var projectId = ws.GetProjectId (options.Project);
 
 					if (projectId != null) {
-						ws.UpdateProjectionEnntry (options.Project.GetProjectFile (options.FileName), result.Result.Projections);
-						foreach (var projection in result.Result.Projections) {
+						ws.UpdateProjectionEnntry (options.Project.GetProjectFile (options.FileName), result.Projections);
+						foreach (var projection in result.Projections) {
 							var docId = ws.GetDocumentId (projectId, projection.Document.FileName);
 							if (docId != null) {
 								ws.InformDocumentTextChange (docId, new MonoDevelopSourceText (projection.Document));
@@ -274,12 +274,12 @@ namespace MonoDevelop.Ide.TypeSystem
 				return result;
 			} catch (AggregateException ae) {
 				ae.Flatten ().Handle (x => x is OperationCanceledException);
-				return Task.FromResult ((ParsedDocumentProjection)null);
+				return null;
 			} catch (OperationCanceledException) {
-				return Task.FromResult ((ParsedDocumentProjection)null);
+				return null;
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception while parsing: " + e);
-				return Task.FromResult ((ParsedDocumentProjection)null);
+				return null;
 			} finally {
 				t.Dispose ();
 			}
