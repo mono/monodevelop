@@ -49,16 +49,6 @@ namespace MonoDevelop.CSharp.Formatting
 			Format (editor, context, 0, editor.Length);
 		}
 
-		//		public static void Format (TextEditor editor, DocumentContext context, TextLocation location)
-		//		{
-		//			Format (editor, context, location, location, false);
-		//		} 
-		//
-		//		public static void Format (TextEditor editor, DocumentContext context, TextLocation startLocation, TextLocation endLocation, bool exact = true)
-		//		{
-		//			Format (editor, context, editor.LocationToOffset (startLocation), editor.LocationToOffset (endLocation), exact);
-		//		}
-
 		public static void Format (TextEditor editor, DocumentContext context, int startOffset, int endOffset, bool exact = true, OptionSet optionSet = null)
 		{
 			var policyParent = context.Project != null ? context.Project.Policies : PolicyService.DefaultPolicies;
@@ -126,8 +116,11 @@ namespace MonoDevelop.CSharp.Formatting
 					var caretEndOffset = caretOffset + delta;
 					if (0 <= caretEndOffset && caretEndOffset < editor.Length)
 						editor.CaretOffset = caretEndOffset;
-					if (editor.CaretColumn == 1)
+					if (editor.CaretColumn == 1) {
+						if (editor.CaretLine > 1 && editor.GetLine (editor.CaretLine - 1).Length == 0)
+							editor.CaretLine--;
 						editor.CaretColumn = editor.GetVirtualIndentationColumn (editor.CaretLine);
+					}
 				} catch (Exception e) {
 					LoggingService.LogError ("Error in on the fly formatter", e);
 				}

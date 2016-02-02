@@ -212,6 +212,8 @@ namespace MonoDevelop.CSharpBinding
 			listWindow.CompletionWidget = widget;
 			listWindow.CodeCompletionContext = widget.CurrentCodeCompletionContext;
 			var model = ext.DocumentContext.ParsedDocument.GetAst<SemanticModel> ();
+			Ide.IdeApp.Preferences.AddParenthesesAfterCompletion.Set (true);
+			Ide.IdeApp.Preferences.AddOpeningOnly.Set (false);
 
 			var t = model.Compilation.GetTypeByMetadataName (type); 
 			var method = member != null ? t.GetMembers().First (m => m.Name == member) : t.GetMembers ().OfType<IMethodSymbol> ().First (m => m.MethodKind == MethodKind.Constructor);
