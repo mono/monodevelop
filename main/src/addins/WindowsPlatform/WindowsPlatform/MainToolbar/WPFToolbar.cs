@@ -102,7 +102,13 @@ namespace WindowsPlatform.MainToolbar
 			};
         }
 
-		void SendKeyPress(KeyEventArgs ka)
+        protected override void RepositionWpfWindow()
+        {
+            int scale = (int)MonoDevelop.Components.GtkWorkarounds.GetScaleFactor(this);
+            RepositionWpfWindow (scale);
+        }
+
+        void SendKeyPress(KeyEventArgs ka)
 		{
 			if (SearchEntryKeyPressed != null)
 				SearchEntryKeyPressed(this, ka);
