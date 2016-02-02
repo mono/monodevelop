@@ -45,6 +45,7 @@ namespace MonoDevelop.Ide.Gui
 		public static Color BaseSelectionTextColor { get; internal set; }
 		public static Color BaseIconColor { get; internal set; }
 		public static Color BaseTextColor { get; internal set; }
+		public static Color LinkForegroundColor { get; internal set; }
 		
 		public static Pango.FontDescription DefaultFont { get; internal set; }
 		public static string DefaultFontName { get; internal set; }
@@ -296,16 +297,24 @@ namespace MonoDevelop.Ide.Gui
 		internal static void LoadStyle ()
 		{
 			Gtk.Style defaultStyle;
-			if (IdeApp.Workbench == null || IdeApp.Workbench.RootWindow == null)
-				defaultStyle = new Gtk.Label (String.Empty).Style;
-			else
-				defaultStyle = Gtk.Rc.GetStyle (IdeApp.Workbench.RootWindow);
+			Gtk.Widget styledWidget;
+			if (IdeApp.Workbench == null || IdeApp.Workbench.RootWindow == null) {
+				styledWidget = new Gtk.Label (String.Empty);
+				defaultStyle = styledWidget.Style;
+			} else {
+				styledWidget = IdeApp.Workbench.RootWindow;
+				defaultStyle = Gtk.Rc.GetStyle (styledWidget);
+			}
 
 			BackgroundColor = defaultStyle.Background (Gtk.StateType.Normal).ToXwtColor ();	// must be the bg color from Gtkrc
 			BaseBackgroundColor = defaultStyle.Base (Gtk.StateType.Normal).ToXwtColor ();	// must be the base color from Gtkrc
 			BaseForegroundColor = defaultStyle.Foreground (Gtk.StateType.Normal).ToXwtColor ();	// must be the text color from Gtkrc
 			BaseSelectionBackgroundColor = defaultStyle.Base (Gtk.StateType.Selected).ToXwtColor ();
 			BaseSelectionTextColor = defaultStyle.Text (Gtk.StateType.Selected).ToXwtColor ();
+
+			LinkForegroundColor = ((Gdk.Color)styledWidget.StyleGetProperty ("link-color")).ToXwtColor ();
+			if (LinkForegroundColor == Colors.Black) // the style returs black when not initialized
+				LinkForegroundColor = Colors.Blue;   // set the link color to generic blue until initialization is finished
 
 			DefaultFont = defaultStyle.FontDescription.Copy ();
 			DefaultFontName = DefaultFont.ToString ();
