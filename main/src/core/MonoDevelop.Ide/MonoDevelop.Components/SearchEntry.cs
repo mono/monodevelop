@@ -136,12 +136,7 @@ namespace MonoDevelop.Components
 
 		private void BuildWidget ()
 		{
-			var yscale = 0f;
-
-			if (Platform.IsWindows)
-				yscale = (float)GtkWorkarounds.GetScaleFactor (this);
-
-			alignment = new Alignment (0.5f, 0.5f, 1f, yscale);
+			alignment = new Alignment (0.5f, 0.5f, 1f, 0f);
 			alignment.SetPadding (1, 1, 3, 3);
 			VisibleWindow = false;
 

@@ -1202,6 +1202,7 @@ namespace Mono.TextEditor
 			return GetScaleFactor (Gdk.Screen.Default, 0);
 		}
 
+        /*
 		public static double GetPixelScale ()
 		{
 			if (Platform.IsWindows)
@@ -1216,8 +1217,9 @@ namespace Mono.TextEditor
 
 			return (int)(size * scale);
 		}
-		
-		public static Gdk.Pixbuf RenderIcon (this Gtk.IconSet iconset, Gtk.Style style, Gtk.TextDirection direction, Gtk.StateType state, Gtk.IconSize size, Gtk.Widget widget, string detail, double scale)
+		*/
+
+        public static Gdk.Pixbuf RenderIcon (this Gtk.IconSet iconset, Gtk.Style style, Gtk.TextDirection direction, Gtk.StateType state, Gtk.IconSize size, Gtk.Widget widget, string detail, double scale)
 		{
 			if (scale == 1d)
 				return iconset.RenderIcon (style, direction, state, size, widget, detail);

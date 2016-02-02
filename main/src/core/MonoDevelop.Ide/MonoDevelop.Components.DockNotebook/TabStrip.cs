@@ -68,14 +68,13 @@ namespace MonoDevelop.Components.DockNotebook
 		public Button NextButton;
 		public MenuButton DropDownButton;
 
-		static readonly double PixelScale = GtkWorkarounds.GetPixelScale ();
-		static readonly int TopBarPadding = (int)(3 * PixelScale);
-		static readonly int BottomBarPadding = (int)(3 * PixelScale);
-		static readonly int LeftRightPadding = (int)(10 * PixelScale);
-		static readonly int TopPadding = (int)(8 * PixelScale);
-		static readonly int BottomPadding = (int)(8 * PixelScale);
-		static readonly int LeftBarPadding = (int)(58 * PixelScale);
-		static readonly int VerticalTextSize = (int)(11 * PixelScale);
+		const int TopBarPadding = 3;
+		const int BottomBarPadding = 3;
+		const int LeftRightPadding = 10;
+		const int TopPadding = 8;
+		const int BottomPadding = 8;
+		const int LeftBarPadding = 58;
+		const int VerticalTextSize = 11;
 		const int TabSpacing = -1;
 		const int Radius = 2;
 		const int LeanWidth = 18;
@@ -916,7 +915,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 			int textStart = tabBounds.X + padding;
 
-			ctx.MoveTo (textStart, tabBounds.Y + TopPadding + TextOffset + VerticalTextSize);
+            ctx.MoveTo (textStart, tabBounds.Y + TopPadding + TextOffset + VerticalTextSize);
 			if (!MonoDevelop.Core.Platform.IsMac && !MonoDevelop.Core.Platform.IsWindows) {
 				// This is a work around for a linux specific problem.
 				// A bug in the proprietary ATI driver caused TAB text not to draw.
@@ -934,10 +933,15 @@ namespace MonoDevelop.Components.DockNotebook
 					color.A = 0;
 					lg.AddColorStop (1, color);
 					ctx.SetSource (lg);
+                    ctx.Save();
+                    ctx.MoveTo(textStart, tabBounds.Y + TopPadding + TextOffset * 2 + VerticalTextSize / 2);
+                    //ctx.Translate(0, 0 - VerticalTextSize * 2);
+                    ctx.Scale(2.0, 2.0);
 					Pango.CairoHelper.ShowLayoutLine (ctx, la.GetLine (0));
+                    ctx.Restore();
 				}
 			}
-			la.Dispose ();
+            la.Dispose ();
 		}
 
 		static void LayoutTabBorder (Context ctx, Gdk.Rectangle allocation, int contentWidth, int px, int margin, bool active = true)
