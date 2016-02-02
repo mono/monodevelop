@@ -507,27 +507,31 @@ type FSharpTextEditorCompletion() =
     // -1 means the cursor is outside the method parameter list
     // 0 means no parameter entered
     // > 0 is the index of the parameter (1-based)
-    override x.GetCurrentParameterIndex (startOffset: int) =
-        let editor = x.Editor
-        let cursor = editor.CaretOffset
-        let i = startOffset // the original context
-        if (i < 0 || i >= editor.Length || editor.GetCharAt (i) = ')') then -1
-        elif (i + 1 = cursor && (match editor.GetCharAt(i) with '(' | '<' -> true | _ -> false)) then 0
-        else
-            // The first character is a '('
-            // Note this will be confused by comments.
-            let rec loop depth i parameterIndex =
-                if (i = cursor) then parameterIndex
-                elif (i > cursor) then -1
-                elif (i >= editor.Length) then  parameterIndex else
-                let ch = editor.GetCharAt(i)
-                if (ch = '(' || ch = '{' || ch = '[') then loop (depth+1) (i+1) parameterIndex
-                elif ((ch = ')' || ch = '}' || ch = ']') && depth > 1 ) then loop (depth-1) (i+1) parameterIndex
-                elif (ch = ',' && depth = 1) then loop depth (i+1) (parameterIndex+1)
-                elif (ch = ')' || ch = '>') then -1
-                else loop depth (i+1) parameterIndex
-            let res = loop 0 i 1
-            res
+    override x.GetCurrentParameterIndex (startOffset: int, token) =
+        let computation =
+            async {
+                let editor = x.Editor
+                let cursor = editor.CaretOffset
+                let i = startOffset // the original context
+                if (i < 0 || i >= editor.Length || editor.GetCharAt (i) = ')') then return -1
+                elif (i + 1 = cursor && (match editor.GetCharAt(i) with '(' | '<' -> true | _ -> false)) then return 0
+                else
+                    // The first character is a '('
+                    // Note this will be confused by comments.
+                    let rec loop depth i parameterIndex =
+                        if (i = cursor) then parameterIndex
+                        elif (i > cursor) then -1
+                        elif (i >= editor.Length) then  parameterIndex else
+                        let ch = editor.GetCharAt(i)
+                        if (ch = '(' || ch = '{' || ch = '[') then loop (depth+1) (i+1) parameterIndex
+                        elif ((ch = ')' || ch = '}' || ch = ']') && depth > 1 ) then loop (depth-1) (i+1) parameterIndex
+                        elif (ch = ',' && depth = 1) then loop depth (i+1) (parameterIndex+1)
+                        elif (ch = ')' || ch = '>') then -1
+                        else loop depth (i+1) parameterIndex
+                    let res = loop 0 i 1
+                    return res
+            }
+        Async.StartAsTask (computation = computation, cancellationToken = token)
 
     interface IDebuggerExpressionResolver with
         member x.ResolveExpressionAsync (doc, context, offset, cancellationToken) =
