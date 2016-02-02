@@ -76,7 +76,6 @@ namespace MonoDevelop.CSharp.Formatting
 			var analysisDocument = context.AnalysisDocument;
 			if (analysisDocument == null)
 				return;
-
 			using (var undo = editor.OpenUndoGroup (/*OperationType.Format*/)) {
 				try {
 					var syntaxTree = analysisDocument.GetSyntaxTreeAsync ().Result;
@@ -112,14 +111,15 @@ namespace MonoDevelop.CSharp.Formatting
 						editor.ReplaceText (delta + change.Span.Start, change.Span.Length, newText);
 						delta = delta - change.Span.Length + newText.Length;
 					}
-
-					var caretEndOffset = caretOffset + delta;
-					if (0 <= caretEndOffset && caretEndOffset < editor.Length)
-						editor.CaretOffset = caretEndOffset;
-					if (editor.CaretColumn == 1) {
-						if (editor.CaretLine > 1 && editor.GetLine (editor.CaretLine - 1).Length == 0)
-							editor.CaretLine--;
-						editor.CaretColumn = editor.GetVirtualIndentationColumn (editor.CaretLine);
+					if (startOffset < caretOffset) {
+						var caretEndOffset = caretOffset + delta;
+						if (0 <= caretEndOffset && caretEndOffset < editor.Length)
+							editor.CaretOffset = caretEndOffset;
+						if (editor.CaretColumn == 1) {
+							if (editor.CaretLine > 1 && editor.GetLine (editor.CaretLine - 1).Length == 0)
+								editor.CaretLine--;
+							editor.CaretColumn = editor.GetVirtualIndentationColumn (editor.CaretLine);
+						}
 					}
 				} catch (Exception e) {
 					LoggingService.LogError ("Error in on the fly formatter", e);
