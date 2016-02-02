@@ -64,7 +64,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			
 			ExternalLoader eloader;
 			if (!externalLoaders.TryGetValue (runtime, out eloader)) {
-				eloader = (ExternalLoader) Runtime.ProcessService.CreateExternalProcessObject (typeof(ExternalLoader), runtime);
+				eloader = (ExternalLoader) Runtime.ProcessService.CreateExternalProcessObject (typeof(ExternalLoader), runtime.GetExecutionHandler ());
 				externalLoaders [runtime] = eloader;
 				values [counter++] = eloader;
 			} else {

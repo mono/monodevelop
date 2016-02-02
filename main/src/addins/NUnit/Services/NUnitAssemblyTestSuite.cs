@@ -382,8 +382,8 @@ namespace MonoDevelop.NUnit
 			var runnerExe = GetCustomConsoleRunnerCommand ();
 			if (runnerExe != null)
 				return RunWithConsoleRunner (runnerExe, test, suiteName, pathName, testName, testContext);
-
-			ExternalTestRunner runner = (ExternalTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(ExternalTestRunner), testContext.ExecutionContext, UserAssemblyPaths);
+			var console = IdeApp.Workbench?.ProgressMonitors.ConsoleFactory.CreateConsole ();
+			ExternalTestRunner runner = (ExternalTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(ExternalTestRunner), testContext.ExecutionContext, UserAssemblyPaths, console);
 			LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, test, suiteName, testName != null);
 
 			ITestFilter filter = null;
@@ -471,8 +471,14 @@ namespace MonoDevelop.NUnit
 		UnitTestResult RunWithConsoleRunner (ProcessExecutionCommand cmd, UnitTest test, string suiteName, string pathName, string testName, TestContext testContext)
 		{
 			var outFile = Path.GetTempFileName ();
-			LocalConsole cons = new LocalConsole ();
-
+			var xmlOutputConsole = new LocalConsole ();
+			var appDebugOutputConsole = IdeApp.Workbench?.ProgressMonitors.ConsoleFactory.CreateConsole ();
+			OperationConsole cons;
+			if (appDebugOutputConsole != null) {
+				cons = new MultipleOperationConsoles (appDebugOutputConsole, xmlOutputConsole);
+			} else {
+				cons = xmlOutputConsole;
+			}
 			try {
 				MonoDevelop.NUnit.External.TcpTestListener tcpListener = null;
 				LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, test, suiteName, testName != null);
@@ -517,9 +523,9 @@ namespace MonoDevelop.NUnit
 				if (doc.Root != null) {
 					var root = doc.Root.Elements ("test-suite").FirstOrDefault ();
 					if (root != null) {
-						cons.SetDone ();
-						var ot = cons.OutReader.ReadToEnd ();
-						var et = cons.ErrorReader.ReadToEnd ();
+						xmlOutputConsole.SetDone ();
+						var ot = xmlOutputConsole.OutReader.ReadToEnd ();
+						var et = xmlOutputConsole.ErrorReader.ReadToEnd ();
 						testContext.Monitor.WriteGlobalLog (ot);
 						if (!string.IsNullOrEmpty (et)) {
 							testContext.Monitor.WriteGlobalLog ("ERROR:\n");
@@ -535,9 +541,9 @@ namespace MonoDevelop.NUnit
 				}
 				throw new Exception ("Test results could not be parsed.");
 			} catch (Exception ex) {
-				cons.SetDone ();
-				var ot = cons.OutReader.ReadToEnd ();
-				var et = cons.ErrorReader.ReadToEnd ();
+				xmlOutputConsole.SetDone ();
+				var ot = xmlOutputConsole.OutReader.ReadToEnd ();
+				var et = xmlOutputConsole.ErrorReader.ReadToEnd ();
 				testContext.Monitor.WriteGlobalLog (ot);
 				if (!string.IsNullOrEmpty (et)) {
 					testContext.Monitor.WriteGlobalLog ("ERROR:\n");

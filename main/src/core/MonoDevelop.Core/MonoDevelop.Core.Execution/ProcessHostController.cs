@@ -88,7 +88,7 @@ namespace MonoDevelop.Core.Execution
 			timer.Elapsed += new System.Timers.ElapsedEventHandler (WaitTimeout);
 		}
 
-		public void Start (IList<string> userAssemblyPaths = null)
+		public void Start (IList<string> userAssemblyPaths = null, OperationConsole console = null)
 		{
 			lock (this) {
 				if (starting)
@@ -129,7 +129,7 @@ namespace MonoDevelop.Core.Execution
 					if (userAssemblyPaths != null)
 						cmd.UserAssemblyPaths = userAssemblyPaths;
 					cmd.DebugMode = isDebugMode;
-					ProcessHostConsole cons = new ProcessHostConsole ();
+					OperationConsole cons = console ?? new ProcessHostConsole ();
 					var p = process = executionHandlerFactory.Execute (cmd, cons);
 					Counters.ExternalHostProcesses++;
 
@@ -182,12 +182,12 @@ namespace MonoDevelop.Core.Execution
 			}
 		}
 
-		public object CreateInstance (Type type, string[] addins, IList<string> userAssemblyPaths = null)
+		public object CreateInstance (Type type, string[] addins, IList<string> userAssemblyPaths = null, OperationConsole console = null)
 		{
 			lock (this) {
 				references++;
 				if (processHost == null)
-					Start (userAssemblyPaths);
+					Start (userAssemblyPaths, console);
 			}
 
 			if (!runningEvent.WaitOne (15000, false)) {
@@ -212,12 +212,12 @@ namespace MonoDevelop.Core.Execution
 			}
 		}
 		
-		public object CreateInstance (string assemblyPath, string typeName, string[] addins, IList<string> userAssemblyPaths = null)
+		public object CreateInstance (string assemblyPath, string typeName, string[] addins, IList<string> userAssemblyPaths = null, OperationConsole console = null)
 		{
 			lock (this) {
 				references++;
 				if (processHost == null)
-					Start (userAssemblyPaths);
+					Start (userAssemblyPaths, console);
 			}
 
 			if (!runningEvent.WaitOne (15000, false)) {
