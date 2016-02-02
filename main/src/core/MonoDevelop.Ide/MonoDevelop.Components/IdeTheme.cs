@@ -267,7 +267,7 @@ namespace MonoDevelop.Components
 				return;
 			}
 
-			if (window is NSPanel)
+			if (window is NSPanel || window.ContentView.Class.Name != "GdkQuartzView")
 				window.BackgroundColor = MonoDevelop.Ide.Gui.Styles.BackgroundColor.ToNSColor ();
 			else {
 				object[] platforms = Mono.Addins.AddinManager.GetExtensionObjects ("/MonoDevelop/Core/PlatformService");
@@ -277,10 +277,6 @@ namespace MonoDevelop.Components
 
 					window.IsOpaque = false;
 					window.BackgroundColor = NSColor.FromPatternImage (image.ToBitmap().ToNSImage());
-				}
-				if (window.ContentView.Class.Name != "GdkQuartzView") {
-					window.ContentView.WantsLayer = true;
-					window.ContentView.Layer.BackgroundColor = MonoDevelop.Ide.Gui.Styles.BackgroundColor.ToCGColor ();
 				}
 			}
 			window.StyleMask |= NSWindowStyle.TexturedBackground;
