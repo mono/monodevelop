@@ -45,6 +45,10 @@ namespace MonoDevelop.Ide.Gui
 		public static Color BaseSelectionTextColor { get; internal set; }
 		public static Color BaseIconColor { get; internal set; }
 		public static Color LinkForegroundColor { get; internal set; }
+
+		public static Color ErrorForegroundColor { get; internal set; }
+		public static Color WarningForegroundColor { get; internal set; }
+		public static Color InformationForegroundColor { get; internal set; }
 		
 		public static Pango.FontDescription DefaultFont { get; internal set; }
 		public static string DefaultFontName { get; internal set; }
@@ -407,6 +411,10 @@ namespace MonoDevelop.Ide.Gui
 			BrowserPadBackground = Color.FromName ("#ebedf0");
 			PropertyPadDividerColor = Color.FromName ("#efefef");
 
+			ErrorForegroundColor = Color.FromName ("#f56d4f");
+			WarningForegroundColor = Color.FromName ("#f1c40f");
+			InformationForegroundColor = Color.FromName ("#87b6f0");
+
 			// these colors need to match colors from status icons
 			StatusInformationBackgroundColor = Color.FromName ("#87b6f0");
 			StatusInformationTextColor = BaseBackgroundColor;
@@ -501,6 +509,10 @@ namespace MonoDevelop.Ide.Gui
 			DockBarPrelightColor = Color.FromName ("#666666");
 			BrowserPadBackground = Color.FromName ("#484b55");
 			PropertyPadDividerColor = SeparatorColor;
+
+			ErrorForegroundColor = Color.FromName ("#ff7152");
+			WarningForegroundColor = Color.FromName ("#ffcf0f");
+			InformationForegroundColor = Color.FromName ("#8fc1ff");
 
 			// these colors need to match colors from status icons
 			StatusInformationBackgroundColor = Color.FromName ("#8fc1ff");
