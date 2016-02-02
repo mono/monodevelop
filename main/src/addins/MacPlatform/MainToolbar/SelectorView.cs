@@ -231,15 +231,16 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				menu.AddItem (menuItem);
 			}
 
-
 			public PathSelectorView (CGRect frameRect) : base (frameRect)
 			{
 				PathComponentCells = new [] {
 					new NSPathComponentCell {
+						Image = MultiResImage.CreateMultiResImage ("project", "disabled"),
 						Title = ConfigurationPlaceholder,
 						Enabled = false,
 					},
 					new NSPathComponentCell {
+						Image = MultiResImage.CreateMultiResImage ("device", "disabled"),
 						Title = RuntimePlaceholder,
 						Enabled = false,
 					}
@@ -317,6 +318,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				};
 
 				Ide.Gui.Styles.Changed += UpdateStyle;
+				NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification,
+				                                                                notification => Runtime.RunInMainThread (() => {
+					// Force a redraw because NSPathControl does not redraw itself when switching to a different resolution
+					// and the icons need redrawn
+					NeedsDisplay = true;
+				}));
 			}
 
 			void UpdateStyle (object sender = null, EventArgs e = null)
@@ -362,14 +369,22 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			void UpdateImages ()
 			{
-				// HACK: NSPathControl does not support images with NSCustomImageRep used
-				//       by Xwt to draw custom/themed images. We have to convert them
-				//       to bitmaps, which has to be done after each theme/skin change.
-				var projectImage = ImageService.GetIcon ("project").ToBitmap (GtkWorkarounds.GetScaleFactor ()).ToNSImage ();
-				var deviceImage = ImageService.GetIcon ("device").ToBitmap (GtkWorkarounds.GetScaleFactor ()).ToNSImage ();
-				
-				PathComponentCells [ConfigurationIdx].Image = projectImage;
-				PathComponentCells [RuntimeIdx].Image = deviceImage;
+				string projectStyle = "";
+				string deviceStyle = "";
+				if (!PathComponentCells [ConfigurationIdx].Enabled)
+					projectStyle = "disabled";
+
+				if (!PathComponentCells [ConfigurationIdx].Enabled)
+					deviceStyle = "disabled";
+
+				// HACK
+				// For some reason NSPathControl does not like the images that ImageService provides. To use them it requires
+				// ToBitmap() to be called first. But a second problem is that ImageService only seems to provide a single resolution
+				// for its icons. It may be related to the images being initially loaded through the Gtk backend and then converted to NSImage
+				// at a later date.
+				// For whatever reason, we custom load the images here through NSImage, providing both 1x and 2x image reps.
+				PathComponentCells [ConfigurationIdx].Image = MultiResImage.CreateMultiResImage ("project", deviceStyle);
+				PathComponentCells [RuntimeIdx].Image = MultiResImage.CreateMultiResImage ("device", deviceStyle);
 				RealignTexts ();
 			}
 
