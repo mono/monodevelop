@@ -124,7 +124,7 @@ namespace MonoDevelop.VersionControl.Git
 				labelError.Show ();
 				buttonOk.Sensitive = false;
 			} else if (!Reference.IsValidName ("refs/" + entryName.Text)) {
-				labelError.Markup = "<span color='red'>" + GettextCatalog.GetString (@"A branch name can not:
+				labelError.Markup = "<span color='" + Ide.Gui.Styles.ErrorForegroundColor.ToHexString (false) + "'>" + GettextCatalog.GetString (@"A branch name can not:
 Start with '.' or end with '/' or '.lock'
 Contain a ' ', '..', '~', '^', ':', '\', '?', '['") + "</span>";
 				labelError.Show ();
