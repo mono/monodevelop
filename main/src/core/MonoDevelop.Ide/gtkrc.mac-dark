@@ -12,7 +12,7 @@ gtk-color-scheme =
 "bg_color: #333
 fg_color: #bfbfbf
 base_color: #222
-text_color: #bfbfbf
+text_color: @fg_color
 link_color: #56bbf0
 selected_bg_color: #5189ed
 selected_fg_color: #fff
@@ -52,8 +52,8 @@ style "default" {
     fg[INSENSITIVE] = darker (@fg_color)
     fg[ACTIVE] = @fg_color
 
-    text[NORMAL] = @text_color
-    text[PRELIGHT] = @text_color
+    text[NORMAL] = @fg_color
+    text[PRELIGHT] = @fg_color
     text[SELECTED] = @selected_fg_color
     text[INSENSITIVE] = darker (@text_color)
     text[ACTIVE] = @text_color

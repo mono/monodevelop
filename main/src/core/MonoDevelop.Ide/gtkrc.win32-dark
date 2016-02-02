@@ -10,9 +10,9 @@
 
 gtk-color-scheme =
 "bg_color: #333
-fg_color: #bfbfbf
+fg_color: #ccc
 base_color: #222
-text_color: #bfbfbf
+text_color: @fg_color
 link_color: #56bbf0
 selected_bg_color: #4c5e6e
 selected_fg_color: #bfbfbf
@@ -51,11 +51,11 @@ style "default" {
     fg[INSENSITIVE] = darker (@fg_color)
     fg[ACTIVE]      = @fg_color
 
-    text[NORMAL]      = @text_color
-    text[PRELIGHT]    = @text_color
+    text[NORMAL]      = @fg_color
+    text[PRELIGHT]    = @fg_color
     text[SELECTED]    = @selected_fg_color
-    text[INSENSITIVE] = darker (@text_color)
-    text[ACTIVE]      = @text_color
+    text[INSENSITIVE] = darker (@fg_color)
+    text[ACTIVE]      = @fg_color
 
     base[NORMAL]      = @base_color
     base[PRELIGHT]    = @selected_bg_color
@@ -308,9 +308,9 @@ style "radio-check-box" = "button"
     GtkCheckButton::indicator-size = 15
 
     bg[ACTIVE] = @bg_color
-    fg[NORMAL]      = @fg_color
-    fg[PRELIGHT]    = @fg_color
-    fg[ACTIVE]      = @fg_color
+    fg[NORMAL] = @fg_color
+    fg[PRELIGHT] = @fg_color
+    fg[ACTIVE] = @fg_color
 
     base[NORMAL] = "#fff"
     base[SELECTED] = "#fff"

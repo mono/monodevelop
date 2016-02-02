@@ -12,10 +12,10 @@ gtk-color-scheme =
 "bg_color: #f5f5f5
 fg_color: #000
 base_color: #fff
-text_color: #000
+text_color: @fg_color
 link_color: #5189ed
 selected_bg_color: #cce8ff
-selected_fg_color: #000
+selected_fg_color: @fg_color
 tooltip_bg_color: #f2f2f2
 tooltip_fg_color: #222222
 tooltip_border_color: #b2b2b2"
@@ -51,11 +51,11 @@ style "default" {
     fg[INSENSITIVE] = darker (@bg_color)
     fg[ACTIVE]      = @fg_color
 
-    text[NORMAL]      = @text_color
-    text[PRELIGHT]    = @text_color
+    text[NORMAL]      = @fg_color
+    text[PRELIGHT]    = @fg_color
     text[SELECTED]    = @selected_fg_color
     text[INSENSITIVE] = darker (@bg_color)
-    text[ACTIVE]      = @text_color
+    text[ACTIVE]      = @fg_color
 
     base[NORMAL]      = @base_color
     base[PRELIGHT]    = @selected_bg_color
@@ -231,8 +231,8 @@ style "icon-view" = "default"
 {
     bg[SELECTED] = "#f5f7fa"
     base[SELECTED] = "#f5f7fa"
-    fg[SELECTED] = "#000"
-    text[SELECTED] = "#000"
+    fg[SELECTED] = @fg_color
+    text[SELECTED] = @fg_color
 }
 
 style "toolbar-combo-box" = "button"

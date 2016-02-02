@@ -44,7 +44,6 @@ namespace MonoDevelop.Ide.Gui
 		public static Color BaseSelectionBackgroundColor { get; internal set; }
 		public static Color BaseSelectionTextColor { get; internal set; }
 		public static Color BaseIconColor { get; internal set; }
-		public static Color BaseTextColor { get; internal set; }
 		public static Color LinkForegroundColor { get; internal set; }
 		
 		public static Pango.FontDescription DefaultFont { get; internal set; }
@@ -321,9 +320,9 @@ namespace MonoDevelop.Ide.Gui
 			DockSeparatorColor = DockFrameBackground;
 			PropertyPadLabelBackgroundColor = PrimaryBackgroundColor;
 			PadCategoryBorderColor = SeparatorColor;
-			PadCategoryLabelColor = BaseTextColor;
+			PadCategoryLabelColor = BaseForegroundColor;
 			PadCategoryBackgroundColor = SecondaryBackgroundLighterColor;
-			PadLabelColor = BaseTextColor;
+			PadLabelColor = BaseForegroundColor;
 			SubTabBarActiveBackgroundColor = BaseSelectionBackgroundColor;
 			SubTabBarActiveTextColor = BaseSelectionTextColor;
 			SubTabBarSeparatorColor = SubTabBarTextColor;
@@ -333,15 +332,15 @@ namespace MonoDevelop.Ide.Gui
 
 			TabBarBackgroundColor = DockFrameBackground;
 			TabBarInactiveTextColor = InactivePadLabelColor;
-			TabBarActiveTextColor = BaseTextColor;
+			TabBarActiveTextColor = BaseForegroundColor;
 
 			// Breadcrumbs
 
-			BreadcrumbTextColor = BaseTextColor;
+			BreadcrumbTextColor = BaseForegroundColor;
 
 			// Document Subview Tabs
 
-			SubTabBarTextColor = BaseTextColor;
+			SubTabBarTextColor = BaseForegroundColor;
 
 			// Popover Window
 
@@ -364,7 +363,7 @@ namespace MonoDevelop.Ide.Gui
 			GlobalSearch.HeaderTextColor = DimTextColor;
 			GlobalSearch.SeparatorLineColor = SeparatorColor;
 			GlobalSearch.SelectionBackgroundColor = BaseSelectionBackgroundColor;
-			GlobalSearch.ResultTextColor = BaseTextColor;
+			GlobalSearch.ResultTextColor = BaseForegroundColor;
 			GlobalSearch.ResultDescriptionTextColor = DimTextColor;
 			GlobalSearch.SelectedResultTextColor = BaseSelectionTextColor;
 			GlobalSearch.SelectedResultDescriptionTextColor = BaseSelectionTextColor;
@@ -374,7 +373,7 @@ namespace MonoDevelop.Ide.Gui
 
 			NewProjectDialog.TemplateBackgroundColor = PrimaryBackgroundColor;
 			NewProjectDialog.TemplateLanguageButtonTriangle = BaseIconColor;
-			NewProjectDialog.ProjectConfigurationPreviewLabelColor = BaseTextColor;
+			NewProjectDialog.ProjectConfigurationPreviewLabelColor = BaseForegroundColor;
 			NewProjectDialog.CategoriesBackgroundColor = SecondaryBackgroundDarkerColor;
 			NewProjectDialog.ProjectConfigurationLeftHandBackgroundColor = SecondaryBackgroundDarkerColor;
 			NewProjectDialog.ProjectConfigurationRightHandBackgroundColor = PrimaryBackgroundColor;
@@ -393,7 +392,6 @@ namespace MonoDevelop.Ide.Gui
 		internal static void LoadLightStyle ()
 		{
 			BaseIconColor = Color.FromName ("#575757");
-			BaseTextColor = Color.FromName ("#555555");
 			ThinSplitterColor = Color.FromName ("#dadada");
 			SeparatorColor = Color.FromName ("#f2f2f4");
 			PrimaryBackgroundColor = Color.FromName ("#ffffff");
@@ -489,7 +487,6 @@ namespace MonoDevelop.Ide.Gui
 		internal static void LoadDarkStyle ()
 		{
 			BaseIconColor = Color.FromName ("#bfbfbf");
-			BaseTextColor = Color.FromName ("#bababa");
 			ThinSplitterColor = Color.FromName ("#282828");
 			SeparatorColor = Color.FromName ("#4e4e4e");
 			PrimaryBackgroundColor = Color.FromName ("#575757");
