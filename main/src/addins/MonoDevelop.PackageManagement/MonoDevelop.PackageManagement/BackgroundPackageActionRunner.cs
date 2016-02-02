@@ -79,7 +79,13 @@ namespace MonoDevelop.PackageManagement
 			AddInstallActionsToPendingQueue (actions);
 			packageManagementEvents.OnPackageOperationsStarting ();
 			runCount++;
-			BackgroundDispatch (() => TryRunActionsWithProgressMonitor (progressMessage, actions.ToList ()));
+
+			List<IPackageAction> actionsList = actions.ToList ();
+			BackgroundDispatch (() => {
+				TryRunActionsWithProgressMonitor (progressMessage, actionsList);
+				actionsList = null;
+				progressMessage = null;
+			});
 		}
 
 		void AddInstallActionsToPendingQueue (IEnumerable<IPackageAction> actions)
