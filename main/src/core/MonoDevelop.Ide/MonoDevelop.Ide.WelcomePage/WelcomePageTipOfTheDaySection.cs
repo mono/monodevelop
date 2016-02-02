@@ -53,17 +53,11 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			Gtk.VBox box = new Gtk.VBox (false, 12);
 
-			#if MAC
-			double fontScale = 0.84616;
-			#else
-			double fontScale = 0.92308;
-			#endif
-
 			label = new Gtk.Label ();
 			label.Xalign = 0;
 			label.Wrap = true;
 			label.WidthRequest = 200;
-			label.ModifyFont (FontService.SansFont.CopyModified (fontScale));
+			label.ModifyFont (FontService.SansFont.CopyModified (Gui.Styles.FontScale11));
 			label.SetPadding (0, 10);
 
 			label.Text = currentTip != -1 ? tips[currentTip] : "";
