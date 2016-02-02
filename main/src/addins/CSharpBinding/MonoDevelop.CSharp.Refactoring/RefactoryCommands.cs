@@ -238,7 +238,15 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			var sym = info.Symbol ?? info.DeclaredSymbol;
 			if (doc.HasProject && sym != null) {
-				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (() => RefactoringService.FindReferencesAsync (sym.GetDocumentationCommentId ())));
+				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (() => {
+
+					if (sym.Kind == SymbolKind.Local || sym.Kind == SymbolKind.Parameter || sym.Kind == SymbolKind.TypeParameter) {
+						FindReferencesHandler.FindRefs (sym);
+					} else {
+						RefactoringService.FindReferencesAsync (sym.GetDocumentationCommentId ());
+					}
+
+				}));
 				try {
 					if (Microsoft.CodeAnalysis.FindSymbols.SymbolFinder.FindSimilarSymbols (sym, semanticModel.Compilation).Count () > 1)
 						ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), new System.Action (() => RefactoringService.FindAllReferencesAsync (sym.GetDocumentationCommentId ())));

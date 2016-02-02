@@ -67,6 +67,8 @@ namespace MonoDevelop.CSharp.Refactoring
 
 		async Task<LookupResult> TryLookupSymbolInProject (Microsoft.CodeAnalysis.Project prj, string documentationCommentId, CancellationToken token)
 		{
+			if (string.IsNullOrEmpty (documentationCommentId))
+				return LookupResult.Failure;
 			bool searchNs = documentationCommentId[0] == 'N';
 			bool searchType = documentationCommentId[0] == 'T';
 			int reminderIndex = 2;
@@ -135,6 +137,8 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (typeId.Length < reminder)
 				return null;
 			if (string.CompareOrdinal (documentationCommentId, reminder, typeId, reminder, idx - reminder - 1) == 0) {
+				if (typeId.Length > idx)
+					return null;
 				foreach (var subType in current.GetTypeMembers ()) {
 					var child = LookupType (documentationCommentId, idx  + 1, subType);
 					if (child != null) {
