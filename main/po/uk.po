@@ -2,13 +2,13 @@
 # Copyright (C) 2014 Olexandr Pylypchuk <pilipchukap@rambler.ru>
 # This file is distributed under the same license as the MonoDevelop package.
 #
-# Olexandr Pylypchuk <pilipchukap@rambler.ru>, 2014.
+# Olexandr Pylypchuk <pilipchukap@rambler.ru>, 2014, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 2.4.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-15 15:35:25-0500\n"
-"PO-Revision-Date: 2014-11-20 19:02+0200\n"
+"PO-Revision-Date: 2016-02-02 10:52+0200\n"
 "Last-Translator: Olexandr Pylypchuk <pilipchukap@rambler.ru>\n"
 "Language-Team: Ukrainian <kde-i18n-doc@kde.org>\n"
 "Language: uk\n"
@@ -7332,9 +7332,8 @@ msgstr ""
 "використовується вбудований оглядач довідки."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/HelpOperations.cs:24
-#, fuzzy
 msgid "Help Viewer could not be opened"
-msgstr "Не вдалось відкрити файл {0}."
+msgstr "Не вдалось відкрити оглядач довідки"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:20
 msgid "Starting {0}"
@@ -8146,7 +8145,7 @@ msgstr "Показати попереднє"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.GtkProjectFolderPreviewWidget.cs:35
 msgid "<span weight='bold' foreground='#555555'>PREVIEW</span>"
-msgstr ""
+msgstr "<span weight='bold' foreground='#555555'>ПОПЕРЕДНІЙ ПЕРЕГЛЯД</span>"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkProjectConfigurationWidget.cs:215
 #, fuzzy
@@ -17660,15 +17659,15 @@ msgstr "Перегляд..."
 
 #: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:198
 msgid "Add an ASP.NET MVC view"
-msgstr ""
+msgstr "Додати представлення ASP.NET MVC"
 
 #: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:204
 msgid "Go To View"
-msgstr ""
+msgstr "Перейти до представлення"
 
 #: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:208
 msgid "Add View..."
-msgstr "Додати перегляд..."
+msgstr "Додати представлення..."
 
 #: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:212
 msgid "Go To Controller"
@@ -17720,7 +17719,7 @@ msgstr "Документ HTML"
 
 #: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:272
 msgid "Spark View template"
-msgstr ""
+msgstr "Шаблон представлення Spark"
 
 #: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:276
 msgid "Typescript source code"
@@ -18368,11 +18367,11 @@ msgstr "_Назва:"
 
 #: ../src/addins/AspNet/Commands/AddViewDialog.cs:31
 msgid "_View Engine:"
-msgstr ""
+msgstr "Рушій _представлень:"
 
 #: ../src/addins/AspNet/Commands/AddViewDialog.cs:36
 msgid "_Partial view"
-msgstr ""
+msgstr "_Часткове представлення"
 
 #: ../src/addins/AspNet/Commands/AddViewDialog.cs:36
 msgid "_Strongly typed"
@@ -18576,15 +18575,15 @@ msgstr "Створити сторінку макету MVC Razor."
 
 #: ../src/addins/AspNet/Templates/Mvc/PartialViewPageRazor.xft.xml:1
 msgid "ASP.NET MVC Partial View Page (Razor)"
-msgstr ""
+msgstr "Сторінка часткового представлення ASP.NET MVC Partial (Razor)"
 
 #: ../src/addins/AspNet/Templates/Mvc/PartialViewPageRazor.xft.xml:1
 msgid "Creates an MVC Razor Partial View page."
-msgstr ""
+msgstr "Створити сторінку часткового представлення MVC Razor."
 
 #: ../src/addins/AspNet/Templates/Mvc/UserControl.xft.xml:1
 msgid "ASP.NET MVC View User Control"
-msgstr ""
+msgstr "Елемент керування представлення ASP.NET MVC"
 
 #: ../src/addins/AspNet/Templates/Mvc/UserControl.xft.xml:1
 msgid "Creates an ASP.NET MVC User Control."
@@ -18592,11 +18591,11 @@ msgstr "Створити користувацький компонент ASP.NET
 
 #: ../src/addins/AspNet/Templates/Mvc/ViewContentPage.xft.xml:1
 msgid "ASP.NET MVC View Content"
-msgstr "Перегляд вмісту ASP.NET MVC"
+msgstr "Вмісту представлення ASP.NET MVC"
 
 #: ../src/addins/AspNet/Templates/Mvc/ViewContentPage.xft.xml:1
 msgid "Creates an ASP.NET MVC View Content page."
-msgstr "Створити сторінку перегляду вмісту ASP.NET MVC."
+msgstr "Створити сторінку вмісту представлення ASP.NET MVC."
 
 #: ../src/addins/AspNet/Templates/Mvc/ViewMasterPage.xft.xml:1
 msgid "ASP.NET MVC Master Page"
@@ -18608,29 +18607,27 @@ msgstr "Створити головну сторінку ASP.NET MVC."
 
 #: ../src/addins/AspNet/Templates/Mvc/ViewPage.xft.xml:1
 msgid "ASP.NET MVC View Page"
-msgstr "Сторінка перегляду ASP.NET MVC"
+msgstr "Сторінка представлення ASP.NET MVC"
 
 #: ../src/addins/AspNet/Templates/Mvc/ViewPage.xft.xml:1
 msgid "Creates an MVC View page."
-msgstr "Створити сторінку перегляду MVC."
+msgstr "Створити сторінку представлення MVC."
 
 #: ../src/addins/AspNet/Templates/Mvc/ViewPageRazor.xft.xml:1
 msgid "ASP.NET MVC View Page (Razor)"
-msgstr "Сторінка перегляду ASP.NET MVC (Razor)"
+msgstr "Сторінка представлення ASP.NET MVC (Razor)"
 
 #: ../src/addins/AspNet/Templates/Mvc/ViewPageRazor.xft.xml:1
 msgid "Creates an MVC Razor View page."
-msgstr "Створити сторінку перегляду MVC Razor."
+msgstr "Створити сторінку представлення MVC Razor."
 
 #: ../src/addins/AspNet/Templates/Mvc/WebConfigViews.xft.xml:4
-#, fuzzy
 msgid "ASP.NET MVC Views Configuration"
-msgstr "Перегляд вмісту ASP.NET MVC"
+msgstr "Конфігурація представлень ASP.NET MVC"
 
 #: ../src/addins/AspNet/Templates/Mvc/WebConfigViews.xft.xml:10
-#, fuzzy
 msgid "Creates an ASP.NET MVC Web.config file for the Views directory."
-msgstr "Створити файл ASP.NET web.config для підтеки."
+msgstr "Створити файл ASP.NET Web.config для теки представлень."
 
 #: ../src/addins/AspNet/Templates/WebConfig-Application.xft.xml:1
 msgid "Web Application Configuration"
@@ -18803,9 +18800,8 @@ msgid "ASP.NET MVC Project"
 msgstr "Проект ASP.NET MVC 2"
 
 #: ../src/addins/AspNet/Templates/Projects/MvcProject.xpt.xml:9
-#, fuzzy
 msgid "Creates an ASP.NET MVC Web Project with Razor Views."
-msgstr "Створити веб-проект ASP.NET MVC 2"
+msgstr "Створити веб-проект ASP.NET MVC з представленнями Razor."
 
 #: ../src/addins/AspNet/Templates/Projects/EmptyProject.xpt.xml:0
 #, fuzzy
@@ -19447,9 +19443,8 @@ msgid "New Exception Catchpoint"
 msgstr "Трапився виняток"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:11
-#, fuzzy
 msgid "View Breakpoints"
-msgstr "Контрольні точки"
+msgstr "Показати контрольні точки"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:11
 msgid "Remove Breakpoint"
@@ -19764,9 +19759,8 @@ msgid "<b>License</b>"
 msgstr "<b>Різне</b>"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:275
-#, fuzzy
 msgid "View License"
-msgstr "Переглянути список"
+msgstr "Показати ліцензію"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:284
 #, fuzzy
