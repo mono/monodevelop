@@ -258,6 +258,8 @@ namespace MonoDevelop.Projects
 			get { return (flags & DotNetProjectFlags.GeneratesDebugInfoFile) != 0; }
 		}
 
+		public bool SupportsRoslyn { get; protected set; }
+
 		protected virtual DotNetProjectFlags OnGetDotNetProjectFlags ()
 		{
 			return DotNetProjectFlags.GeneratesDebugInfoFile;

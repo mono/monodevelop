@@ -192,7 +192,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			foreach (var proj in mdProjects) {
 				if (token.IsCancellationRequested)
 					return null;
-				if (!proj.SupportsRoslyn ())
+				if (!proj.SupportsRoslyn)
 					continue;
 				var tp = LoadProject (proj, token).ContinueWith (t => {
 					if (!t.IsCanceled)
