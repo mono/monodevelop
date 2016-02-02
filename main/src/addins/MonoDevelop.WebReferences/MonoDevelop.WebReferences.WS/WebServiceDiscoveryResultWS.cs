@@ -35,6 +35,7 @@ using System.CodeDom.Compiler;
 using System.CodeDom;
 using MonoDevelop.Core;
 using WebReferencesDir = MonoDevelop.WebReferences.WS.WebReferences;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.WebReferences.WS
 {
@@ -78,43 +79,45 @@ namespace MonoDevelop.WebReferences.WS
 			}
 		}
 		
-		protected override string GenerateDescriptionFiles (DotNetProject dotNetProject, FilePath basePath)
+		protected override async Task<string> GenerateDescriptionFiles (DotNetProject dotNetProject, FilePath basePath)
 		{
 			if (!dotNetProject.Items.GetAll<WebReferencesDir> ().Any ()) {
 				var met = new WebReferencesDir (basePath.ParentDirectory);
 				dotNetProject.Items.Add (met);
 			}
-			
-			WebReferenceUrl wru = dotNetProject.Items.GetAll<WebReferenceUrl> ().FirstOrDefault (m => m.RelPath.CanonicalPath == basePath);
-			if (wru == null) {
-				wru = new WebReferenceUrl (protocol.Url);
-				wru.RelPath = basePath;
-				dotNetProject.Items.Add (wru);
-			}
-			
-			protocol.ResolveAll ();
-			DiscoveryClientResultCollection files = protocol.WriteAll (basePath, "Reference.map");
+
+			DiscoveryClientResultCollection files = await Task.Run (() => {
+				WebReferenceUrl wru = dotNetProject.Items.GetAll<WebReferenceUrl> ().FirstOrDefault (m => m.RelPath.CanonicalPath == basePath);
+				if (wru == null) {
+					wru = new WebReferenceUrl (protocol.Url);
+					wru.RelPath = basePath;
+					dotNetProject.Items.Add (wru);
+				}
+
+				protocol.ResolveAll ();
+				return protocol.WriteAll (basePath, "Reference.map");
+			});
 			
 			foreach (DiscoveryClientResult dr in files)
-				dotNetProject.AddFile (new FilePath (dr.Filename).ToAbsolute (basePath), BuildAction.None);
+				dotNetProject.AddFile (new FilePath (Path.GetFileName (dr.Filename)).ToAbsolute (basePath), BuildAction.None);
 			
 			return Path.Combine (basePath, "Reference.map");
 		}
 
-		public override void Update ()
+		public override async Task Update ()
 		{
 			WebReferenceUrl wru = Item.Project.Items.GetAll<WebReferenceUrl> ().FirstOrDefault (m => m.RelPath.CanonicalPath == Item.BasePath);
 			if (wru == null)
 				return;
-			
-			var wref = (WebServiceDiscoveryResultWS) WebReferencesService.WsEngine.Discover (wru.UpdateFromURL);
+
+			var wref = await Task.Run (() => (WebServiceDiscoveryResultWS)WebReferencesService.WsEngine.Discover (wru.UpdateFromURL));
 			if (wref == null)
 				return;
 			
 			protocol = wref.protocol;
 			
 			// Re-generate the proxy and map files
-			GenerateFiles (Item.Project, Item.Project.DefaultNamespace, Item.Name);
+			await GenerateFiles (Item.Project, Item.Project.DefaultNamespace, Item.Name);
 		}
 		
 		public override System.Collections.Generic.IEnumerable<string> GetAssemblyReferences ()
@@ -124,45 +127,48 @@ namespace MonoDevelop.WebReferences.WS
 			yield return "System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089";
 		}
 		
-		protected override string CreateProxyFile (DotNetProject dotNetProject, FilePath basePath, string proxyNamespace, string referenceName)
+		protected override Task<string> CreateProxyFile (DotNetProject dotNetProject, FilePath basePath, string proxyNamespace, string referenceName)
 		{
 			// Setup the proxy namespace and compile unit
 			CodeDomProvider codeProv = GetProvider (dotNetProject);
-			var codeNamespace = new CodeNamespace (proxyNamespace);
-			var urlConstructor = new CodeConstructor ();
-			var codeUnit = new CodeCompileUnit ();
-			codeUnit.Namespaces.Add (codeNamespace);
 
-			// Setup the importer and import the service description into the code unit
-			ServiceDescriptionImporter importer = Library.ReadServiceDescriptionImporter (protocol);
-			importer.CodeGenerationOptions = CodeGenerationOptions.GenerateNewAsync;
-			importer.Import (codeNamespace, codeUnit);
+			return Task.Run (() => {
+				var codeNamespace = new CodeNamespace (proxyNamespace);
+				var urlConstructor = new CodeConstructor ();
+				var codeUnit = new CodeCompileUnit ();
+				codeUnit.Namespaces.Add (codeNamespace);
 
-			// Add the new Constructor with Url as a paremeter
-			// Search for the class which inherit SoapHttpClientProtocol (Which is the Service Class)
-			foreach (CodeTypeDeclaration declarationType in codeUnit.Namespaces[0].Types) 
-				if (declarationType.IsClass) 
-					if (declarationType.BaseTypes.Count > 0)
-						// Is a Service Class
-						if (declarationType.BaseTypes [0].BaseType.IndexOf ("SoapHttpClientProtocol", System.StringComparison.Ordinal) > -1) {
-							// Create new public constructor with the Url as parameter
-							urlConstructor.Attributes = MemberAttributes.Public;
-							urlConstructor.Parameters.Add (new CodeParameterDeclarationExpression ("System.String", "url"));
-							urlConstructor.Statements.Add (new CodeAssignStatement (
-						                                                        new CodePropertyReferenceExpression (new CodeThisReferenceExpression(), 
-						                                                                                             "Url"),
-						                                                        new CodeVariableReferenceExpression ("url")));
-							declarationType.Members.Add (urlConstructor);
-						}
-			
-			// Generate the code and save the file
-			string fileSpec = Path.Combine (basePath, dotNetProject.LanguageBinding.GetFileName (referenceName));
-			var writer = new StreamWriter (fileSpec);
-			codeProv.GenerateCodeFromCompileUnit (codeUnit, writer, new CodeGeneratorOptions ());
-			
-			writer.Close ();
-			
-			return fileSpec;
+				// Setup the importer and import the service description into the code unit
+				ServiceDescriptionImporter importer = Library.ReadServiceDescriptionImporter (protocol);
+				importer.CodeGenerationOptions = CodeGenerationOptions.GenerateNewAsync;
+				importer.Import (codeNamespace, codeUnit);
+
+				// Add the new Constructor with Url as a paremeter
+				// Search for the class which inherit SoapHttpClientProtocol (Which is the Service Class)
+				foreach (CodeTypeDeclaration declarationType in codeUnit.Namespaces [0].Types)
+					if (declarationType.IsClass)
+						if (declarationType.BaseTypes.Count > 0)
+							// Is a Service Class
+							if (declarationType.BaseTypes [0].BaseType.IndexOf ("SoapHttpClientProtocol", System.StringComparison.Ordinal) > -1) {
+								// Create new public constructor with the Url as parameter
+								urlConstructor.Attributes = MemberAttributes.Public;
+								urlConstructor.Parameters.Add (new CodeParameterDeclarationExpression ("System.String", "url"));
+								urlConstructor.Statements.Add (new CodeAssignStatement (
+																					new CodePropertyReferenceExpression (new CodeThisReferenceExpression (),
+																														 "Url"),
+																					new CodeVariableReferenceExpression ("url")));
+								declarationType.Members.Add (urlConstructor);
+							}
+
+				// Generate the code and save the file
+				string fileSpec = Path.Combine (basePath, dotNetProject.LanguageBinding.GetFileName (referenceName));
+				var writer = new StreamWriter (fileSpec);
+				codeProv.GenerateCodeFromCompileUnit (codeUnit, writer, new CodeGeneratorOptions ());
+
+				writer.Close ();
+
+				return fileSpec;
+			});
 		}
 
 		public override string GetServiceURL ()

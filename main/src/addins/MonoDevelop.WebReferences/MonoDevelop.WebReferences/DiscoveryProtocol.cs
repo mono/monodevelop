@@ -45,7 +45,7 @@ namespace MonoDevelop.WebReferences
 				
 				var dr = (DiscoveryReference) Activator.CreateInstance(type);
 				dr.Url = dcr.Url;
-				var fs = new FileStream (Path.Combine(basePath, dcr.Filename), FileMode.Open, FileAccess.Read);
+				var fs = new FileStream (Path.Combine(basePath, Path.GetFileName (dcr.Filename)), FileMode.Open, FileAccess.Read);
 				Documents.Add (dr.Url, dr.ReadDocument (fs));
 				fs.Close ();
 				References.Add (dr.Url, dr);

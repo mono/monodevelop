@@ -40,6 +40,7 @@ using System.Xml.Schema;
 using System.Text;
 using Mono.ServiceContractTool;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.WebReferences.WCF
 {
@@ -94,7 +95,7 @@ namespace MonoDevelop.WebReferences.WCF
 			}
 		}
 		
-		protected override string GenerateDescriptionFiles (DotNetProject dotNetProject, FilePath basePath)
+		protected override async Task<string> GenerateDescriptionFiles (DotNetProject dotNetProject, FilePath basePath)
 		{
 			if (!dotNetProject.Items.GetAll<WCFMetadata> ().Any ()) {
 				var met = new WCFMetadata (basePath.ParentDirectory);
@@ -104,27 +105,31 @@ namespace MonoDevelop.WebReferences.WCF
 			WCFMetadataStorage metStor = dotNetProject.Items.GetAll<WCFMetadataStorage> ().FirstOrDefault (m => m.Path.CanonicalPath == basePath);
 			if (metStor == null)
 				dotNetProject.Items.Add (new WCFMetadataStorage (basePath));
-			
+
 			string file = Path.Combine (basePath, "Reference.svcmap");
-			if (protocol != null) {
-				protocol.ResolveAll ();
-				protocol.WriteAll (basePath, "Reference.svcmap");
-				refGroup = ConvertMapFile (file);
-			} else {
-				// TODO
-				var map = new ReferenceGroup ();
-				map.ClientOptions = defaultOptions;
-				map.Save (file);
-				map.ID = Guid.NewGuid ().ToString ();
-				refGroup = map;
-			}
+
+			await Task.Run (() => {
+				if (protocol != null) {
+					protocol.ResolveAll ();
+					protocol.WriteAll (basePath, "Reference.svcmap");
+					refGroup = ConvertMapFile (file);
+				} else {
+					// TODO
+					var map = new ReferenceGroup ();
+					map.ClientOptions = defaultOptions;
+					map.Save (file);
+					map.ID = Guid.NewGuid ().ToString ();
+					refGroup = map;
+				}
+			});
+
 			foreach (MetadataFile mfile in refGroup.Metadata)
 				dotNetProject.AddFile (new FilePath (mfile.FileName).ToAbsolute (basePath), BuildAction.None);
 			
 			return file;
 		}
 		
-		public override void Update ()
+		public override async Task Update ()
 		{
 			ReferenceGroup resfile = ReferenceGroup.Read (Item.MapFile.FilePath);
 			if (resfile.MetadataSources.Count == 0)
@@ -136,7 +141,7 @@ namespace MonoDevelop.WebReferences.WCF
 			
 			metadata = wref.metadata;
 			protocol = wref.protocol;
-			GenerateFiles (Item.Project, Item.Project.DefaultNamespace, Item.Name);
+			await GenerateFiles (Item.Project, Item.Project.DefaultNamespace, Item.Name);
 		}
 		
 		public override IEnumerable<string> GetAssemblyReferences ()
@@ -147,72 +152,73 @@ namespace MonoDevelop.WebReferences.WCF
 			yield return "System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089";
 		}
 		
-		protected override string CreateProxyFile (DotNetProject dotNetProject, FilePath basePath, string proxyNamespace, string referenceName)
+		protected override Task<string> CreateProxyFile (DotNetProject dotNetProject, FilePath basePath, string proxyNamespace, string referenceName)
 		{
-			var ccu = new CodeCompileUnit ();
-			var cns = new CodeNamespace (proxyNamespace);
-			ccu.Namespaces.Add (cns);
-			
+			CodeDomProvider code_provider = GetProvider (dotNetProject);
+
 			bool targetMoonlight = dotNetProject.TargetFramework.Id.Identifier == ("Silverlight");
 			bool targetMonoTouch = dotNetProject.TargetFramework.Id.Identifier == ("MonoTouch");
 			bool targetMonoDroid = dotNetProject.TargetFramework.Id.Identifier == ("MonoDroid");
-			
-			bool targetCoreClr = targetMoonlight || targetMonoDroid || targetMonoTouch;
-			bool generateSyncMethods = targetMonoDroid | targetMonoTouch;
-			
-			var generator = new ServiceContractGenerator (ccu);
-			generator.Options = ServiceContractGenerationOptions.ChannelInterface | ServiceContractGenerationOptions.ClientClass;
-			if (refGroup.ClientOptions.GenerateAsynchronousMethods || targetCoreClr)
-				generator.Options |= ServiceContractGenerationOptions.AsynchronousMethods;
-			if (refGroup.ClientOptions.GenerateEventBasedAsynchronousMethods)
-				generator.Options |= ServiceContractGenerationOptions.EventBasedAsynchronousMethods;
+
+			return Task.Run (() => {
+				var ccu = new CodeCompileUnit ();
+				var cns = new CodeNamespace (proxyNamespace);
+				ccu.Namespaces.Add (cns);
+
+				bool targetCoreClr = targetMoonlight || targetMonoDroid || targetMonoTouch;
+				bool generateSyncMethods = targetMonoDroid | targetMonoTouch;
+
+				var generator = new ServiceContractGenerator (ccu);
+				generator.Options = ServiceContractGenerationOptions.ChannelInterface | ServiceContractGenerationOptions.ClientClass;
+				if (refGroup.ClientOptions.GenerateAsynchronousMethods || targetCoreClr)
+					generator.Options |= ServiceContractGenerationOptions.AsynchronousMethods;
+				if (refGroup.ClientOptions.GenerateEventBasedAsynchronousMethods)
+					generator.Options |= ServiceContractGenerationOptions.EventBasedAsynchronousMethods;
 #if NET_4_5
 			if (refGroup.ClientOptions.GenerateTaskBasedAsynchronousMethod)
 				generator.Options |= ServiceContractGenerationOptions.TaskBasedAsynchronousMethod;
 #endif
-			if (refGroup.ClientOptions.GenerateInternalTypes)
-				generator.Options |= ServiceContractGenerationOptions.InternalTypes;
-			if (refGroup.ClientOptions.GenerateMessageContracts)
-				generator.Options |= ServiceContractGenerationOptions.TypedMessages;
-//			if (targetMoonlight || targetMonoTouch)
-//				generator.Options |= ServiceContractGenerationOptions.EventBasedAsynchronousMethods;
-			
-			MetadataSet mset;
-			mset = protocol != null ? ToMetadataSet (protocol) : metadata;
+				if (refGroup.ClientOptions.GenerateInternalTypes)
+					generator.Options |= ServiceContractGenerationOptions.InternalTypes;
+				if (refGroup.ClientOptions.GenerateMessageContracts)
+					generator.Options |= ServiceContractGenerationOptions.TypedMessages;
+				//			if (targetMoonlight || targetMonoTouch)
+				//				generator.Options |= ServiceContractGenerationOptions.EventBasedAsynchronousMethods;
 
-			CodeDomProvider code_provider = GetProvider (dotNetProject);
-			
-			var list = new List<IWsdlImportExtension> ();
-			list.Add (new TransportBindingElementImporter ());
-			list.Add (new XmlSerializerMessageContractImporter ());
-			
-			var importer = new WsdlImporter (mset);
-			try {
-				ConfigureImporter (importer);
-			} catch {
-			}
+				MetadataSet mset;
+				mset = protocol != null ? ToMetadataSet (protocol) : metadata;
 
-			Collection<ContractDescription> contracts = importer.ImportAllContracts ();
-			
-			foreach (ContractDescription cd in contracts) {
-				cd.Namespace = proxyNamespace;
-				if (targetCoreClr) {
-					var moonctx = new MoonlightChannelBaseContext ();
-					cd.Behaviors.Add (new MoonlightChannelBaseContractExtension (moonctx, generateSyncMethods));
-					foreach (var od in cd.Operations)
-						od.Behaviors.Add (new MoonlightChannelBaseOperationExtension (moonctx, generateSyncMethods));
-					generator.GenerateServiceContractType (cd);
-					moonctx.Fixup ();
+				var list = new List<IWsdlImportExtension> ();
+				list.Add (new TransportBindingElementImporter ());
+				list.Add (new XmlSerializerMessageContractImporter ());
+
+				var importer = new WsdlImporter (mset);
+				try {
+					ConfigureImporter (importer);
+				} catch {
 				}
-				else
-					generator.GenerateServiceContractType (cd);
-			}
-			
-			string fileSpec = Path.Combine (basePath, referenceName + "." + code_provider.FileExtension);
-			using (TextWriter w = File.CreateText (fileSpec)) {
-				code_provider.GenerateCodeFromCompileUnit (ccu, w, null);
-			}
-			return fileSpec;
+
+				Collection<ContractDescription> contracts = importer.ImportAllContracts ();
+
+				foreach (ContractDescription cd in contracts) {
+					cd.Namespace = proxyNamespace;
+					if (targetCoreClr) {
+						var moonctx = new MoonlightChannelBaseContext ();
+						cd.Behaviors.Add (new MoonlightChannelBaseContractExtension (moonctx, generateSyncMethods));
+						foreach (var od in cd.Operations)
+							od.Behaviors.Add (new MoonlightChannelBaseOperationExtension (moonctx, generateSyncMethods));
+						generator.GenerateServiceContractType (cd);
+						moonctx.Fixup ();
+					} else
+						generator.GenerateServiceContractType (cd);
+				}
+
+				string fileSpec = Path.Combine (basePath, referenceName + "." + code_provider.FileExtension);
+				using (TextWriter w = File.CreateText (fileSpec)) {
+					code_provider.GenerateCodeFromCompileUnit (ccu, w, null);
+				}
+				return fileSpec;
+			});
 		}
 
 		void ConfigureImporter (WsdlImporter importer)

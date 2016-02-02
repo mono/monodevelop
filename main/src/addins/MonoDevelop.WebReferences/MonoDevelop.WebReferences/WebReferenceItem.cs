@@ -1,6 +1,6 @@
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-
+using System.Threading.Tasks;
 
 namespace MonoDevelop.WebReferences
 {
@@ -38,10 +38,10 @@ namespace MonoDevelop.WebReferences
 		}
 		
 		/// <summary>Update the web reference item by using the map file.</summary>
-		public void Update()
+		public Task Update()
 		{
 			WebServiceDiscoveryResult service = engine.Load (this);
-			service.Update ();
+			return service.Update ();
 		}
 		
 		/// <summary>Delete the web reference from the project.</summary>
