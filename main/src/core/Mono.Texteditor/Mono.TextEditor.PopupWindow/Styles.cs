@@ -55,6 +55,9 @@ namespace Mono.TextEditor.PopupWindow
 		{
 			if (!Context.HasGlobalStyle ("dark")) { // light
 				
+				// TODO: VV: #555555 needs to be fg_color from gtkrc
+				// TODO: VV: #f2f2f2 needs to be tooltip_bg_color from gtkrc
+
 				ModeHelpWindowTokenOutlineColor = Color.FromName ("#666666"); // TODO: VV: review color
 				ModeHelpWindowTokenTextColor = Color.FromName ("#555555"); // TODO: VV: review color
 
