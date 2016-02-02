@@ -132,7 +132,7 @@ namespace MonoDevelop.Components.Docking
 			if (IdeApp.Preferences == null || IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
 				inactiveIconAlpha = 0.8;
 			else
-				inactiveIconAlpha = 0.45;
+				inactiveIconAlpha = 0.6;
 
 			if (labelWidget != null && label != null) {
 				if (visualStyle.UppercaseTitles.Value)

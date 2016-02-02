@@ -487,17 +487,17 @@ namespace MonoDevelop.Ide.Gui
 		internal static void LoadDarkStyle ()
 		{
 			BaseIconColor = Color.FromName ("#bfbfbf");
-			ThinSplitterColor = Color.FromName ("#282828");
-			SeparatorColor = Color.FromName ("#4e4e4e");
-			PrimaryBackgroundColor = Color.FromName ("#575757");
-			SecondaryBackgroundDarkerColor = Color.FromName ("#484b55");
-			SecondaryBackgroundLighterColor = Color.FromName ("#616161");
-			DimTextColor = Color.FromName ("#999999");
+			ThinSplitterColor = Color.FromName ("#2e2e2e");
+			SeparatorColor = Color.FromName ("#4b4b4b");
+			PrimaryBackgroundColor = BaseBackgroundColor;
+			SecondaryBackgroundDarkerColor = Color.FromName ("#434b54");
+			SecondaryBackgroundLighterColor = SeparatorColor;
+			DimTextColor = Color.FromName ("#777777");
 			PadBackground = Color.FromName ("#525252");
 			InactivePadBackground = Color.FromName ("#474747");
-			InactivePadLabelColor = Color.FromName ("#808080");
+			InactivePadLabelColor = Color.FromName ("#999999");
 			DockFrameBackground = Color.FromName ("#303030");
-			DockBarBackground = Color.FromName ("#5a5a5a");
+			DockBarBackground = PadBackground;
 			DockBarPrelightColor = Color.FromName ("#666666");
 			BrowserPadBackground = Color.FromName ("#484b55");
 			PropertyPadDividerColor = SeparatorColor;
@@ -516,14 +516,14 @@ namespace MonoDevelop.Ide.Gui
 
 			// Breadcrumb
 
-			BreadcrumbBackgroundColor = Color.FromName ("#525252");
-			BreadcrumbButtonFillColor = Color.FromName ("#616161");
+			BreadcrumbBackgroundColor = PadBackground;
+			BreadcrumbButtonFillColor = SecondaryBackgroundLighterColor;
 			BreadcrumbBottomBorderColor = BreadcrumbBackgroundColor;
 
 			// Document Subview Tabs
 
-			SubTabBarBackgroundColor = Color.FromName ("#525252");
-			SubTabBarHoverBackgroundColor = Color.FromName ("#616161");
+			SubTabBarBackgroundColor = PadBackground;
+			SubTabBarHoverBackgroundColor = SecondaryBackgroundLighterColor;
 
 			// Status area (GTK)
 			// FIXME: Will test after the preview build
@@ -551,7 +551,7 @@ namespace MonoDevelop.Ide.Gui
 
 			// Popover window
 
-			PopoverWindow.DefaultBackgroundColor = Color.FromName ("#5A5A5A");
+			PopoverWindow.DefaultBackgroundColor = DockBarBackground;
 			PopoverWindow.DefaultTextColor = Color.FromName ("#ffffff");
 			PopoverWindow.ShadowColor = Color.FromName ("#000000").WithAlpha (0); // transparent since dark skin doesn't need shadows
 
@@ -568,10 +568,10 @@ namespace MonoDevelop.Ide.Gui
 
 			// New Project Dialog
 
-			NewProjectDialog.BannerBackgroundColor = Color.FromName ("#77828c");
+			NewProjectDialog.BannerBackgroundColor = Color.FromName ("#537297");
 			NewProjectDialog.BannerLineColor = NewProjectDialog.BannerBackgroundColor;
 			NewProjectDialog.BannerForegroundColor = Color.FromName ("#ffffff");
-			NewProjectDialog.TemplateListBackgroundColor = Color.FromName ("#5a5a5a");
+			NewProjectDialog.TemplateListBackgroundColor = DockBarBackground;
 			NewProjectDialog.TemplateSectionSeparatorColor = ThinSplitterColor;
 			NewProjectDialog.TemplateLanguageButtonBackground = SecondaryBackgroundDarkerColor;
 			NewProjectDialog.ProjectConfigurationSeparatorColor = Color.FromName ("#5d616d");
