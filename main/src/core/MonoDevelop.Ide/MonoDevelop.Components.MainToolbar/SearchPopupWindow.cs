@@ -178,9 +178,9 @@ namespace MonoDevelop.Components.MainToolbar
 
 				if (region.Length <= 0) {
 					if (Pattern.LineNumber == 0) {
-						IdeApp.Workbench.OpenDocument (SelectedItemFileName, project: null);
+						await IdeApp.Workbench.OpenDocument (SelectedItemFileName, project: null);
 					} else {
-						IdeApp.Workbench.OpenDocument (SelectedItemFileName, null, Pattern.LineNumber, Pattern.HasColumn ? Pattern.Column : 1);
+						await IdeApp.Workbench.OpenDocument (SelectedItemFileName, null, Pattern.LineNumber, Pattern.HasColumn ? Pattern.Column : 1);
 					}
 				} else {
 					await IdeApp.Workbench.OpenDocument (new FileOpenInformation (SelectedItemFileName, null) {

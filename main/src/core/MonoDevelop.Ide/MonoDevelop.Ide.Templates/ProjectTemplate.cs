@@ -312,7 +312,7 @@ namespace MonoDevelop.Ide.Templates
 		{
 			if (await IdeApp.Workspace.OpenWorkspaceItem (createdSolutionName)) {
 				foreach (string action in actions)
-					IdeApp.Workbench.OpenDocument (Path.Combine (createdProjectInformation.ProjectBasePath, action), project:null);
+					await IdeApp.Workbench.OpenDocument (Path.Combine (createdProjectInformation.ProjectBasePath, action), project:null);
 				return true;
 			}
 			return false;
