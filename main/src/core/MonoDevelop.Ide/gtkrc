@@ -182,7 +182,7 @@ style "tooltip"
 
 style "treeview" = "default"
 {
-    GtkTreeView::odd-row-color = "#f5f5f5"
+    GtkTreeView::odd-row-color = @bg_color
 
     engine "xamarin" {
         roundness = 0
@@ -212,8 +212,8 @@ style "toolbar-combo-box" = "default"
 {
     fg[NORMAL] = "#616161"
     text[NORMAL] = @fg_color
-    bg[NORMAL] = "#fff"
-    base[NORMAL] = "#fff"
+    bg[NORMAL] = @bg_color
+    base[NORMAL] = "@bg_color
 
     ythickness = 4
     xthickness = 2
