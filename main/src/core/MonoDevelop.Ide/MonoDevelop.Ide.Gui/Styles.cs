@@ -394,7 +394,7 @@ namespace MonoDevelop.Ide.Gui
 			BaseIconColor = Color.FromName ("#575757");
 			ThinSplitterColor = Color.FromName ("#dadada");
 			SeparatorColor = Color.FromName ("#f2f2f4");
-			PrimaryBackgroundColor = Color.FromName ("#ffffff");
+			PrimaryBackgroundColor = BaseBackgroundColor;
 			SecondaryBackgroundDarkerColor = Color.FromName ("#e7eaee");
 			SecondaryBackgroundLighterColor = Color.FromName ("#f9f9fb");
 			DimTextColor = Color.FromName ("#aaaaaa");
@@ -409,11 +409,11 @@ namespace MonoDevelop.Ide.Gui
 
 			// these colors need to match colors from status icons
 			StatusInformationBackgroundColor = Color.FromName ("#87b6f0");
-			StatusInformationTextColor = Color.FromName ("#ffffff");
+			StatusInformationTextColor = BaseBackgroundColor;
 			StatusWarningBackgroundColor = Color.FromName ("#f1c40f");
-			StatusWarningTextColor = Color.FromName ("#ffffff");
+			StatusWarningTextColor = BaseBackgroundColor;
 			StatusErrorBackgroundColor = Color.FromName ("#f56d4f");
-			StatusErrorTextColor = Color.FromName ("#ffffff");
+			StatusErrorTextColor = BaseBackgroundColor;
 
 			// Tabs
 
@@ -421,13 +421,13 @@ namespace MonoDevelop.Ide.Gui
 
 			// Breadcrumb
 
-			BreadcrumbBackgroundColor = Color.FromName ("#fafafa");
+			BreadcrumbBackgroundColor = PadBackground;
 			BreadcrumbButtonFillColor = BaseSelectionBackgroundColor.WithAlpha (0.2);
-			BreadcrumbBottomBorderColor = Color.FromName ("#dddddd");
+			BreadcrumbBottomBorderColor = DockBarBackground;
 
 			// Document Subview Tabs
 
-			SubTabBarBackgroundColor = Color.FromName ("#fafafa");
+			SubTabBarBackgroundColor = PadBackground;
 			SubTabBarHoverBackgroundColor = BaseSelectionBackgroundColor.WithAlpha (0.2);
 
 			// WidgetBorderColor = Color.FromName ("#ff00ff"); // TODO: 8c8c8c - UNUSED (used for custom drawn `SearchEntry` but it isn’t used anymore, so its deprecated)
@@ -458,8 +458,8 @@ namespace MonoDevelop.Ide.Gui
 
 			// Popover Window
 
-			PopoverWindow.DefaultBackgroundColor = Color.FromName ("#f2f2f2");
-			PopoverWindow.DefaultTextColor = Color.FromName ("#888888");
+			PopoverWindow.DefaultBackgroundColor = Color.FromName ("#f2f2f2"); // gtkrc @tooltip_bg_color
+			PopoverWindow.DefaultTextColor = DimTextColor;
 			PopoverWindow.ShadowColor = Color.FromName ("#000000").WithAlpha (.05);
 
 			PopoverWindow.ParamaterWindows.GradientStartColor = Color.FromName ("#fffee6");
@@ -477,10 +477,10 @@ namespace MonoDevelop.Ide.Gui
 
 			NewProjectDialog.BannerBackgroundColor = Color.FromName ("#77828c");
 			NewProjectDialog.BannerLineColor = Color.FromName ("#707a83");
-			NewProjectDialog.BannerForegroundColor = Color.FromName ("#ffffff");
+			NewProjectDialog.BannerForegroundColor = BaseBackgroundColor;
 			NewProjectDialog.TemplateListBackgroundColor = Color.FromName ("#f9f9fa");
 			NewProjectDialog.TemplateSectionSeparatorColor = Color.FromName ("#e2e2e2");
-			NewProjectDialog.TemplateLanguageButtonBackground = Color.FromName ("#ffffff");
+			NewProjectDialog.TemplateLanguageButtonBackground = BaseBackgroundColor;
 			NewProjectDialog.ProjectConfigurationSeparatorColor = Color.FromName ("#d2d5d9");
 		}
 
