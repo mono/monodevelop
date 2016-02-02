@@ -293,15 +293,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 			autoHideCompletionWindow = autoHideParameterWindow = true;
 		}
 
-		public virtual Task<int> GetCurrentParameterIndex (int startOffset, CancellationToken token)
+		public virtual Task<int> GetCurrentParameterIndex (int startOffset, CancellationToken token = default(CancellationToken))
 		{
 			return Task.FromResult (-1);
-		}
-
-		[Obsolete("Use GetCurrentParameterIndex (int startOffset, CancellationToken token)")]
-		public virtual int GetCurrentParameterIndex (int startOffset)
-		{
-			return GetCurrentParameterIndex (startOffset, default(CancellationToken)).Result;
 		}
 
 		internal protected virtual void OnCompletionContextChanged (object o, EventArgs a)

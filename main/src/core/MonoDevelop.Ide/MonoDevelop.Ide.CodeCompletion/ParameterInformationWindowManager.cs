@@ -33,6 +33,7 @@ using Gtk;
 using Gdk;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Editor.Extension;
+using System.Threading;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -99,9 +100,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 		internal static void PostProcessKeyEvent (CompletionTextEditorExtension ext, ICompletionWidget widget, KeyDescriptor descriptor)
 		{
 		}
-
-		internal static void UpdateCursorPosition (CompletionTextEditorExtension ext, ICompletionWidget widget)
-		{	
+		static CancellationTokenSource updateSrc = new CancellationTokenSource ();
+		internal static async void UpdateCursorPosition (CompletionTextEditorExtension ext, ICompletionWidget widget)
+		{
+			updateSrc.Cancel ();
+			updateSrc = new CancellationTokenSource ();
+			var token = updateSrc.Token;
 			// Called after the key has been processed by the editor
 			if (methods.Count == 0)
 				return;
@@ -111,7 +115,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				// information window for that method.
 				
 				MethodData md = methods [n];
-				int pos = ext.GetCurrentParameterIndex (md.MethodProvider.StartOffset);
+				int pos = await ext.GetCurrentParameterIndex (md.MethodProvider.StartOffset, token);
 				if (pos == -1) {
 					methods.RemoveAt (n);
 					n--;
@@ -193,7 +197,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		static bool wasVisi;
 		static int lastW = -1, lastH = -1;
 
-		internal static void UpdateWindow (CompletionTextEditorExtension textEditorExtension, ICompletionWidget completionWidget)
+		internal static async void UpdateWindow (CompletionTextEditorExtension textEditorExtension, ICompletionWidget completionWidget)
 		{
 			// Updates the parameter information window from the information
 			// of the current method overload
@@ -217,7 +221,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 				wasAbove = false;
 				var lastMethod = methods [methods.Count - 1];
-				int curParam = window.Ext != null ? window.Ext.GetCurrentParameterIndex (lastMethod.MethodProvider.StartOffset) : 0;
+				int curParam = window.Ext != null ? await window.Ext.GetCurrentParameterIndex (lastMethod.MethodProvider.StartOffset) : 0;
 				var geometry2 = DesktopService.GetUsableMonitorGeometry (window.Screen.Number, window.Screen.GetMonitorAtPoint (X, Y));
 				window.ShowParameterInfo (lastMethod.MethodProvider, lastMethod.CurrentOverload, curParam - 1, (int)geometry2.Width);
 				PositionParameterInfoWindow (window.Allocation);
@@ -237,14 +241,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 
 	
-		static void PositionParameterInfoWindow (Rectangle allocation)
+		static async void PositionParameterInfoWindow (Rectangle allocation)
 		{
 			lastW = allocation.Width;
 			lastH = allocation.Height;
 			wasVisi = CompletionWindowManager.IsVisible;
 			var ctx = window.Widget.CurrentCodeCompletionContext;
 			var md = methods [methods.Count - 1];
-			int cparam = window.Ext != null ? window.Ext.GetCurrentParameterIndex (md.MethodProvider.StartOffset) : 0;
+			int cparam = window.Ext != null ? await window.Ext.GetCurrentParameterIndex (md.MethodProvider.StartOffset) : 0;
 
 			X = md.CompletionContext.TriggerXCoord;
 			if (CompletionWindowManager.IsVisible) {
