@@ -397,10 +397,10 @@ namespace MonoDevelop.Ide.Gui
 			PrimaryBackgroundColor = BaseBackgroundColor;
 			SecondaryBackgroundDarkerColor = Color.FromName ("#e7eaee");
 			SecondaryBackgroundLighterColor = Color.FromName ("#f9f9fb");
-			DimTextColor = Color.FromName ("#aaaaaa");
+			DimTextColor = Color.FromName ("#888888");
 			PadBackground = Color.FromName ("#fafafa");
 			InactivePadBackground = Color.FromName ("#e8e8e8");
-			InactivePadLabelColor = Color.FromName ("#888888");
+			InactivePadLabelColor = Color.FromName ("#777777");
 			DockFrameBackground = Color.FromName ("#bfbfbf");
 			DockBarBackground = Color.FromName ("#dddddd");
 			DockBarPrelightColor = Color.FromName ("#eeeeee");
