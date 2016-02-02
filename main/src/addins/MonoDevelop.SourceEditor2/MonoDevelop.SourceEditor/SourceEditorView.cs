@@ -669,7 +669,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 
-			FileRegistry.SuspendFileWatch = true;
+			FileRegistry.SkipNextChange (fileName);
 			try {
 				object attributes = null;
 				if (File.Exists (fileName)) {
@@ -739,11 +739,8 @@ namespace MonoDevelop.SourceEditor
 			} catch (UnauthorizedAccessException e) {
 				LoggingService.LogError ("Error while saving file", e);
 				MessageService.ShowError (GettextCatalog.GetString ("Can't save file - access denied"), e.Message);
-			} finally {
-				FileService.NotifyFileChanged (fileName);
-				FileRegistry.SuspendFileWatch = false;
 			}
-				
+
 //			if (encoding != null)
 //				se.Buffer.SourceEncoding = encoding;
 //			TextFileService.FireCommitCountChanges (this);
