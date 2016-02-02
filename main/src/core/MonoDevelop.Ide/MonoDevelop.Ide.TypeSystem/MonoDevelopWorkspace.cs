@@ -501,7 +501,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var options = new ParseOptions {
 				FileName = f.FilePath,
 				Project = p,
-				Content = StringTextSource.ReadFrom (f.FilePath),
+				Content = TextFileProvider.Instance.GetReadOnlyTextEditorData (f.FilePath),
 			};
 			var projections = node.Parser.GenerateProjections (options);
 			var entry = new ProjectionEntry ();
