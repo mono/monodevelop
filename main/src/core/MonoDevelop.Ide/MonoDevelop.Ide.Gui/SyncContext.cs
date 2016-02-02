@@ -41,11 +41,6 @@ namespace MonoDevelop.Ide.Gui
 		[ThreadStatic]
 		static SyncContext context;
 		
-		static Hashtable delegateFactories = new Hashtable ();
-		static ModuleBuilder module;
-		static AssemblyBuilder asmBuilder;
-		static int typeCounter;
-	
 		public static void SetContext (SyncContext ctx)
 		{
 			context = ctx;
@@ -66,4 +61,6 @@ namespace MonoDevelop.Ide.Gui
 			cb.BeginInvoke (ob, null, null);
 		}
 	}
+
+	public delegate void StatefulMessageHandler (object state);
 }
