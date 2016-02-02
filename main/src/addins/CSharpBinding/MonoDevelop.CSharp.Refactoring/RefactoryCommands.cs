@@ -238,10 +238,10 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			var sym = info.Symbol ?? info.DeclaredSymbol;
 			if (doc.HasProject && sym != null) {
-				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (() => FindReferencesHandler.FindRefs (sym)));
+				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (() => RefactoringService.FindReferencesAsync (sym.GetDocumentationCommentId ())));
 				try {
 					if (Microsoft.CodeAnalysis.FindSymbols.SymbolFinder.FindSimilarSymbols (sym, semanticModel.Compilation).Count () > 1)
-						ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), new System.Action (() => FindAllReferencesHandler.FindRefs (info.Symbol, semanticModel.Compilation)));
+						ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), new System.Action (() => RefactoringService.FindAllReferencesAsync (sym.GetDocumentationCommentId ())));
 				} catch (Exception) {
 					// silently ignore roslyn bug.
 				}

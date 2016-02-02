@@ -45,13 +45,24 @@ using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.Refactoring
-{
+{ 
 	public static class RefactoringService
 	{
 		internal static Func<TextEditor, DocumentContext, OptionSet> OptionSetCreation;
-
+		static List<FindReferencesProvider> findReferencesProvider = new List<FindReferencesProvider> ();
 		static RefactoringService ()
 		{
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/FindReferencesProvider", delegate(object sender, ExtensionNodeEventArgs args) {
+				var provider  = (FindReferencesProvider) args.ExtensionObject;
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					findReferencesProvider.Add (provider);
+					break;
+				case ExtensionChange.Remove:
+					findReferencesProvider.Remove (provider);
+					break;
+				}
+			});
 
 		}
 		
@@ -201,21 +212,44 @@ namespace MonoDevelop.Refactoring
 			return location;
 		}
 
-		//static readonly CodeAnalysisBatchRunner runner = new CodeAnalysisBatchRunner();
+		public static async Task FindReferencesAsync (string documentIdString, CancellationToken token = default(CancellationToken))
+		{
+			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
+			try {
+				foreach (var provider in findReferencesProvider) {
+					foreach (var result in await provider.FindReferences (documentIdString, token)) {
+						monitor.ReportResult (result);
+					}
+				}
+			} catch (Exception ex) {
+				if (monitor != null)
+					monitor.ReportError ("Error finding references", ex);
+				else
+					LoggingService.LogError ("Error finding references", ex);
+			} finally {
+				if (monitor != null)
+					monitor.Dispose ();
+			}
+		}
 
-//		/// <summary>
-//		/// Queues a code analysis job.
-//		/// </summary>
-//		/// <param name="job">The job to queue.</param>
-//		/// <param name="progressMessage">
-//		/// The message used for a progress monitor, or null if no progress monitor should be used.
-//		/// </param>
-//		public static IJobContext QueueCodeIssueAnalysis(IAnalysisJob job, string progressMessage = null)
-//		{
-//			if (progressMessage != null)
-//				job = new ProgressMonitorWrapperJob (job, progressMessage);
-//			return runner.QueueJob (job);
-//			return null;
-//		}
+		public static async Task FindAllReferencesAsync (string documentIdString, CancellationToken token = default(CancellationToken))
+		{
+			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
+			try {
+				foreach (var provider in findReferencesProvider) {
+					foreach (var result in await provider.FindAllReferences (documentIdString, token)) {
+						monitor.ReportResult (result);
+					}
+				}
+			} catch (Exception ex) {
+				if (monitor != null)
+					monitor.ReportError ("Error finding references", ex);
+				else
+					LoggingService.LogError ("Error finding references", ex);
+			} finally {
+				if (monitor != null)
+					monitor.Dispose ();
+			}
+		}
 	}
 }

@@ -170,6 +170,7 @@
     <Compile Include="MonoDevelop.CodeIssues\ISuppressionFixProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeFix.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CSharpSuppressionFixProvider.cs" />
+    <Compile Include="MonoDevelop.Refactoring\FindReferencesProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

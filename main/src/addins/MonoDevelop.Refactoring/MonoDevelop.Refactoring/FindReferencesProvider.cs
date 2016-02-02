@@ -24,13 +24,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Collections;
+using System.Collections.Generic;
+using MonoDevelop.Ide.FindInFiles;
+
 namespace MonoDevelop.Refactoring
 {
-	public class FindReferencesProvider
+	abstract class FindReferencesProvider
 	{
-		public FindReferencesProvider ()
-		{
-		}
+		public abstract Task<IEnumerable<SearchResult>> FindReferences (string documentationCommentId, CancellationToken token = default(CancellationToken));
+		public abstract Task<IEnumerable<SearchResult>> FindAllReferences (string documentationCommentId, CancellationToken token = default(CancellationToken));
 	}
 }
 

@@ -8,12 +8,16 @@
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeGenerators" name = "Code Generators">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/ASTProvider" name = "ASTProviders">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeDiagnosticProvider" name = "Code Diagnostic Provider">
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/Refactoring/FindReferencesProvider">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 
@@ -29,7 +33,7 @@
 		<Description>Analysis rules.</Description>
 		<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules" />
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/AnalysisCore/Types" name = "Analysis rule input/output types">
 		<Description>Analysis rule input/output types.</Description>
 		<ExtensionNode name="Type" type="MonoDevelop.AnalysisCore.Extensions.AnalysisTypeExtensionNode" />
