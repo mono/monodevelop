@@ -28,6 +28,8 @@ using AppKit;
 using Foundation;
 using CoreGraphics;
 
+using MonoDevelop.Core;
+
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
 	public class AwesomeBar : NSView
@@ -79,7 +81,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			// Gap + RunButton.Width + Gap + ButtonBar.Width + Gap + Half of StatusBar.Width
 			var spaceLeft = (Frame.Width / 2) - (toolbarPadding + runButtonWidth + toolbarPadding + ButtonBarContainer.Frame.Width + toolbarPadding + (statusbarWidth / 2));
 			StatusBar.Frame = new CGRect (Math.Round ((Frame.Width - statusbarWidth) / 2), 0, statusbarWidth, ToolbarWidgetHeight);
-			SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, 0, searchbarWidth, ToolbarWidgetHeight);
+			nfloat searchBarYOffset = 1;
+			nfloat searchBarHeightDelta = -2;
+
+			if (MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan) {
+				searchBarYOffset = 0;
+				searchBarHeightDelta = 0;
+			}
+
+			SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, 0 + searchBarYOffset, searchbarWidth, ToolbarWidgetHeight + searchBarHeightDelta);
 
 			var selectorSize = SelectorView.SizeThatFits (new CGSize (spaceLeft, ToolbarWidgetHeight));
 
