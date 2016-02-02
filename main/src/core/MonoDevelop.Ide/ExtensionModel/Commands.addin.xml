@@ -420,7 +420,10 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.CloseWorkspaceHandler"
 			_label = "C_lose Workspace"
 			_description = "Close all solutions open in the current workspace"
-			icon = "md-close-combine-icon" />
+			icon = "md-close-combine-icon"
+			shortcut = "Control|Alt|W" 
+			macShortcut = "Meta|Alt|W" 
+				/>
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseWorkspaceItem"
 			defaultHandler = "MonoDevelop.Ide.Commands.CloseWorkspaceHandler"
 			_label = "C_lose"
