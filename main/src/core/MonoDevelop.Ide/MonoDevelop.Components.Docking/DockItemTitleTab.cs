@@ -221,7 +221,7 @@ namespace MonoDevelop.Components.Docking
 
 			Gtk.Alignment al = new Alignment (0, 0.5f, 1, 1);
 			HBox btnBox = new HBox (false, 0);
-			btnBox.PackStart (btnDock, false, false, 0);
+			btnBox.PackStart (btnDock, false, false, 3);
 			btnBox.PackStart (btnClose, false, false, 1);
 			al.Add (btnBox);
 			box.PackEnd (al, false, false, 3);
