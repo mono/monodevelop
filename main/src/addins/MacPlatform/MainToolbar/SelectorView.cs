@@ -236,18 +236,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			{
 				PathComponentCells = new [] {
 					new NSPathComponentCell {
-						Image = ImageService.GetIcon ("project").WithStyles ("disabled").ToBitmap (GtkWorkarounds.GetScaleFactor ()).ToNSImage (),
 						Title = ConfigurationPlaceholder,
 						Enabled = false,
-						TextColor = Styles.BaseForegroundColor.ToNSColor (),
 					},
 					new NSPathComponentCell {
-						Image = ImageService.GetIcon ("device").WithStyles ("disabled").ToBitmap (GtkWorkarounds.GetScaleFactor ()).ToNSImage (),
 						Title = RuntimePlaceholder,
 						Enabled = false,
-						TextColor = Styles.BaseForegroundColor.ToNSColor (),
 					}
 				};
+				UpdateStyle ();
 
 				BackgroundColor = NSColor.Clear;
 				FocusRingType = NSFocusRingType.None;
@@ -324,15 +321,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			void UpdateStyle (object sender = null, EventArgs e = null)
 			{
-				if (PathComponentCells [ConfigurationIdx].Enabled)
-					PathComponentCells [ConfigurationIdx].TextColor = Styles.BaseForegroundColor.ToNSColor ();
-				else
-					PathComponentCells [ConfigurationIdx].TextColor = Styles.DisabledForegroundColor.ToNSColor ();
-
-				if (PathComponentCells [RuntimeIdx].Enabled)
-					PathComponentCells [RuntimeIdx].TextColor = Styles.BaseForegroundColor.ToNSColor ();
-				else
-					PathComponentCells [RuntimeIdx].TextColor = Styles.DisabledForegroundColor.ToNSColor ();
+				PathComponentCells [ConfigurationIdx].TextColor = Styles.BaseForegroundColor.ToNSColor ();
+				PathComponentCells [RuntimeIdx].TextColor = Styles.BaseForegroundColor.ToNSColor ();
 
 				UpdateImages ();
 			}
@@ -367,21 +357,19 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			void UpdatePathText (int idx, string text)
 			{
 				PathComponentCells [idx].Title = text;
-				UpdateStyle ();
+				UpdateImages ();
 			}
 
 			void UpdateImages ()
 			{
-				var projectImage = ImageService.GetIcon ("project");
-				if (!PathComponentCells [ConfigurationIdx].Enabled)
-					projectImage = projectImage.WithStyles ("disabled");
+				// HACK: NSPathControl does not support images with NSCustomImageRep used
+				//       by Xwt to draw custom/themed images. We have to convert them
+				//       to bitmaps, which has to be done after each theme/skin change.
+				var projectImage = ImageService.GetIcon ("project").ToBitmap (GtkWorkarounds.GetScaleFactor ()).ToNSImage ();
+				var deviceImage = ImageService.GetIcon ("device").ToBitmap (GtkWorkarounds.GetScaleFactor ()).ToNSImage ();
 				
-				var deviceImage = ImageService.GetIcon ("device");
-				if (!PathComponentCells [ConfigurationIdx].Enabled)
-					deviceImage = deviceImage.WithStyles ("disabled");
-				
-				PathComponentCells [ConfigurationIdx].Image = projectImage.ToBitmap (GtkWorkarounds.GetScaleFactor ()).ToNSImage ();
-				PathComponentCells [RuntimeIdx].Image = deviceImage.ToBitmap (GtkWorkarounds.GetScaleFactor ()).ToNSImage ();
+				PathComponentCells [ConfigurationIdx].Image = projectImage;
+				PathComponentCells [RuntimeIdx].Image = deviceImage;
 				RealignTexts ();
 			}
 
@@ -421,13 +409,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				set {
 					configurationModel = value;
 					int count = value.Count ();
-					PathComponentCells [ConfigurationIdx].Enabled = count > 1;
 					if (count == 0) {
 						state |= CellState.ConfigurationShown;
 						UpdatePathText (ConfigurationIdx, ConfigurationPlaceholder);
-					} else
-						UpdateImages ();
-					UpdateStyle ();
+					}
+					PathComponentCells [ConfigurationIdx].Enabled = count > 1;
 					OnSizeChanged ();
 				}
 			}
@@ -438,13 +424,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				set {
 					runtimeModel = value;
 					int count = value.Count ();
-					PathComponentCells [RuntimeIdx].Enabled = count > 1;
 					if (count == 0) {
 						state |= CellState.RuntimeShown;
 						UpdatePathText (RuntimeIdx, RuntimePlaceholder);
-					} else
-						UpdateImages ();
-					UpdateStyle ();
+					}
+					PathComponentCells [RuntimeIdx].Enabled = count > 1;
 					OnSizeChanged ();
 				}
 			}
