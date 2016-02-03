@@ -358,8 +358,8 @@ namespace Mono.TextEditor
 				MonoTextEditor editor = mode.editor;
 				
 				double y = editor.LineToY (mode.CurrentInsertionPoint.Line) - editor.VAdjustment.Value; 
-				double x = GetLineIndentationStart ();
-				double x2 = editor.Allocation.Width - mode.HelpWindow.Allocation.Width - InsertionCursorEditMode.HelpWindowMargin * 2;
+				double x = GetLineIndentationStart () - 3;
+				double x2 = editor.Allocation.Width - mode.HelpWindow.Allocation.Width - InsertionCursorEditMode.HelpWindowMargin * 2 + 4;
 				cr.MoveTo (x, y);
 				cr.LineTo (x2, y);
 

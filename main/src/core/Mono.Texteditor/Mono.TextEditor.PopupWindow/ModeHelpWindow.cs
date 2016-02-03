@@ -423,7 +423,7 @@ namespace Mono.TextEditor.PopupWindow
 
 			int h2 = descTexts.Sum (x => x.Height + x.Spacing);
 			int w2 = descTexts.Max (x => x.Width + x.Spacing * 2);
-			totalHeight += h2;
+			totalHeight += h2 + 4;
 			xSpacer = System.Math.Max (width, w2);
 
 			xSpacer += xDescriptionBorder * 2 + 1;
