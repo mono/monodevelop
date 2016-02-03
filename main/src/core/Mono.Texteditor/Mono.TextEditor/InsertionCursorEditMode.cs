@@ -143,8 +143,10 @@ namespace Mono.TextEditor
 			editor.SizeAllocated -= MoveHelpWindow;
 			editor.VScroll -= HandleVScroll;
 			editor.Destroyed -= HandleEditorDestroy;
+			HelpWindow.Hide ();
 			HelpWindow.Destroy ();
 			HelpWindow = null;
+			editor.QueueDraw ();
 		}
 		
 		void HandleEditorDestroy (object sender, EventArgs e)
