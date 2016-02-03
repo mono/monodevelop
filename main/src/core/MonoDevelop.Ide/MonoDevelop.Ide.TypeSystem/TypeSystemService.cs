@@ -262,7 +262,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var projectId = ws.GetProjectId (options.Project);
 
 					if (projectId != null) {
-						ws.UpdateProjectionEnntry (options.Project.GetProjectFile (options.FileName), result.Projections);
+						ws.UpdateProjectionEntry (options.Project.GetProjectFile (options.FileName), result.Projections);
 						foreach (var projection in result.Projections) {
 							var docId = ws.GetDocumentId (projectId, projection.Document.FileName);
 							if (docId != null) {

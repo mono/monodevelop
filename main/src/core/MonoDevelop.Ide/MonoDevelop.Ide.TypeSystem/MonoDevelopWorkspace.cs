@@ -418,7 +418,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}, token);
 		}
 
-		internal void UpdateProjectionEnntry (MonoDevelop.Projects.ProjectFile projectFile, IReadOnlyList<Projection> projections)
+		internal void UpdateProjectionEntry (MonoDevelop.Projects.ProjectFile projectFile, IReadOnlyList<Projection> projections)
 		{
 			foreach (var entry in projectionList) {
 				if (entry.File.FilePath == projectFile.FilePath) {
@@ -749,7 +749,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 				data.Save ();
-				OnDocumentTextChanged (id, new MonoDevelopSourceText (data), PreservationMode.PreserveValue);
+				if (projection != null) {
+					UpdateProjectionsDocuments (document, data);
+				} else {
+					OnDocumentTextChanged (id, new MonoDevelopSourceText (data), PreservationMode.PreserveValue);
+				}
 				FileService.NotifyFileChanged (filePath);
 			} else {
 				var formatter = CodeFormatterService.GetFormatter (data.MimeType);
@@ -777,12 +781,37 @@ namespace MonoDevelop.Ide.TypeSystem
 						}
 					}
 				}
-				OnDocumentTextChanged (id, new MonoDevelopSourceText (data.CreateDocumentSnapshot ()), PreservationMode.PreserveValue);
+				if (projection != null) {
+					UpdateProjectionsDocuments (document, data);
+				} else {
+					OnDocumentTextChanged (id, new MonoDevelopSourceText (data.CreateDocumentSnapshot ()), PreservationMode.PreserveValue);
+				}
 				Runtime.RunInMainThread (() => {
 					if (IdeApp.Workbench != null)
 						foreach (var w in IdeApp.Workbench.Documents)
 							w.StartReparseThread ();
 				});
+			}
+		}
+
+		void UpdateProjectionsDocuments (Document document, ITextDocument data)
+		{
+			var project = TypeSystemService.GetMonoProject (document.Project);
+			var file = project.Files.GetFile (data.FileName);
+			var node = TypeSystemService.GetTypeSystemParserNode (data.MimeType, file.BuildAction);
+			if (node != null && node.Parser.CanGenerateProjection (data.MimeType, file.BuildAction, project.SupportedLanguages)) {
+				var options = new ParseOptions {
+					FileName = file.FilePath,
+					Project = project,
+					Content = TextFileProvider.Instance.GetReadOnlyTextEditorData (file.FilePath),
+				};
+				var projections = node.Parser.GenerateProjections (options).Result;
+				UpdateProjectionEntry (file, projections);
+				var projectId = GetProjectId (project);
+				var projectdata = GetProjectData (projectId);
+				foreach (var projected in projections) {
+					OnDocumentTextChanged (projectdata.GetDocumentId (projected.Document.FileName), new MonoDevelopSourceText (projected.Document), PreservationMode.PreserveValue);
+				}
 			}
 		}
 
