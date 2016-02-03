@@ -304,5 +304,9 @@
 	<Extension path = "/MonoDevelop/Refactoring/JumpToDeclarationHandler">
 		<Class class="MonoDevelop.CSharp.Refactoring.CSharpJumpToDeclarationHandler" />
 	</Extension>
-	
+
+	<Extension path = "/MonoDevelop/NUnit/NUnitSourceCodeLocationFinder">
+		<Class class="MonoDevelop.CSharp.UnitTests.CSharpNUnitSourceCodeLocationFinder" />
+	</Extension>
+
 </ExtensionModel>

@@ -39,6 +39,10 @@
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/NUnit/NUnitSourceCodeLocationFinder">
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
+
 	<!-- Extensions -->
 
 	<Extension path = "/MonoDevelop/Ide/Pads">

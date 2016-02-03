@@ -79,43 +79,15 @@ namespace MonoDevelop.NUnit
 			return p.Reference.IndexOf ("GuiUnit", StringComparison.OrdinalIgnoreCase) != -1 || p.Reference.IndexOf ("nunit.framework") != -1 || p.Reference.IndexOf ("nunit.core") != -1 || p.Reference.IndexOf ("nunitlite") != -1;
 		}
 
-		protected override SourceCodeLocation GetSourceCodeLocation (string fixtureTypeNamespace, string fixtureTypeName, string methodName)
+		protected override SourceCodeLocation GetSourceCodeLocation (string fixtureTypeNamespace, string fixtureTypeName, string testName)
 		{
 			if (string.IsNullOrEmpty (fixtureTypeName) || string.IsNullOrEmpty (fixtureTypeName))
 				return null;
-			var csc = new CancellationTokenSource ();
-			var task = TypeSystemService.GetCompilationAsync (project, csc.Token);
-			task.Wait (2000);
-			if (!task.IsCompleted) {
-				csc.Cancel ();
+			var task = NUnitSourceCodeLocationFinder.TryGetSourceCodeLocationAsync (project, fixtureTypeNamespace, fixtureTypeName, testName);
+			if (!task.Wait (2000))
 				return null;
-			}
-			var ctx = task.Result;
-			var cls = ctx?.Assembly?.GetTypeByMetadataName (string.IsNullOrEmpty (fixtureTypeNamespace) ? fixtureTypeName : fixtureTypeNamespace + "." + fixtureTypeName);
-			if (cls == null)
-				return null;
-			
-			if (cls.Name != methodName) {
-				foreach (var met in cls.GetMembers ().OfType<IMethodSymbol> ()) {
-					if (met.Name == methodName) {
-						var loc = met.Locations.FirstOrDefault (l => l.IsInSource);
-						return ConvertToSourceCodeLocation (loc);
-					}
-				}
-				
-				int idx = methodName != null ? methodName.IndexOf ('(') : -1;
-				if (idx > 0) {
-					methodName = methodName.Substring (0, idx);
-					foreach (var met in cls.GetMembers ().OfType<IMethodSymbol> ()) {
-						if (met.Name == methodName){
-							var loc = met.Locations.FirstOrDefault (l => l.IsInSource);
-							return ConvertToSourceCodeLocation (loc);
-						}
-					}
-				}
-			}
-			var classLoc = cls.Locations.FirstOrDefault (l => l.IsInSource);
-			return ConvertToSourceCodeLocation (classLoc);
+			return task.Result;
+
 		}
 
 		SourceCodeLocation ConvertToSourceCodeLocation (Location loc)
@@ -123,7 +95,7 @@ namespace MonoDevelop.NUnit
 			var lineSpan = loc.GetLineSpan ();
 			return new SourceCodeLocation (loc.SourceTree.FilePath, lineSpan.StartLinePosition.Line, lineSpan.StartLinePosition.Character);
 		}
-		
+
 		public override void Dispose ()
 		{
 			project.NameChanged -= OnProjectRenamed;

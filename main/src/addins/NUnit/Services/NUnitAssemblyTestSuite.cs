@@ -126,7 +126,7 @@ namespace MonoDevelop.NUnit
 			return GetSourceCodeLocation (test.FixtureTypeNamespace, test.FixtureTypeName, test.Name);
 		}
 		
-		protected virtual SourceCodeLocation GetSourceCodeLocation (string fixtureTypeNamespace, string fixtureTypeName, string methodName)
+		protected virtual SourceCodeLocation GetSourceCodeLocation (string fixtureTypeNamespace, string fixtureTypeName, string testName)
 		{
 			return null;
 		}
