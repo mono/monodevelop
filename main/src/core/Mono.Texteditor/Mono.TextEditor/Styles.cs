@@ -54,32 +54,17 @@ namespace Mono.TextEditor.PopupWindow
 
 		public static void LoadStyles ()
 		{
-			if (!Context.HasGlobalStyle ("dark")) { // light
-				
-				// TODO: VV: #555555 needs to be fg_color from gtkrc
-				// TODO: VV: #f2f2f2 needs to be tooltip_bg_color from gtkrc
+			var bgColor = Color.FromName ("#5189ed");
+			var fgColor = Color.FromName ("#ffffff");
 
-				ModeHelpWindowTokenOutlineColor = Color.FromName ("#666666"); // TODO: VV: review color
-				ModeHelpWindowTokenTextColor = Color.FromName ("#555555"); // TODO: VV: review color
+			ModeHelpWindowTokenOutlineColor = fgColor;
+			ModeHelpWindowTokenTextColor = fgColor;
 
-				InsertionCursorBackgroundColor = Color.FromName ("#f2f2f2"); // TODO: VV: review color
-				InsertionCursorTitleTextColor = Color.FromName ("#242424"); // TODO: VV: review color
-				InsertionCursorBorderColor = Color.FromName ("#d5d5d5"); // TODO: VV: review color
-				InsertionCursorTextColor = Color.FromName ("#4c4c4c"); // TODO: VV: review color
-				InsertionCursorLineColor = Color.FromName ("#666666"); // TODO: VV: review color
-
-			} else { // dark
-
-				ModeHelpWindowTokenOutlineColor = Color.FromName ("#666666"); // TODO: VV: review color
-				ModeHelpWindowTokenTextColor = Color.FromName ("#555555"); // TODO: VV: review color
-
-				InsertionCursorBackgroundColor = Color.FromName ("#00f2f2"); // TODO: VV: review color
-				InsertionCursorTitleTextColor = Color.FromName ("#00ff00"); // TODO: VV: review color
-				InsertionCursorBorderColor = Color.FromName ("#d5d5d5"); // TODO: VV: review color
-				InsertionCursorTextColor = Color.FromName ("#0000ff"); // TODO: VV: review color
-				InsertionCursorLineColor = Color.FromName ("#666666");// TODO: VV: review color
-
-			}
+			InsertionCursorBackgroundColor = bgColor;
+			InsertionCursorBorderColor = InsertionCursorBackgroundColor;
+			InsertionCursorTitleTextColor = fgColor;
+			InsertionCursorTextColor = InsertionCursorTitleTextColor;
+			InsertionCursorLineColor = bgColor;
 
 			TableLayoutModeBackgroundColor = new Color (1, 1, 1);
 			TableLayoutModeTitleBackgroundColor = new Color (0.88, 0.88, 0.98);
