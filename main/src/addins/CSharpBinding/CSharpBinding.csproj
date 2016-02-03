@@ -795,6 +795,7 @@
     <Compile Include="Util\Glyph.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\RegexContextHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpFindReferencesProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpJumpToDeclarationHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -24,13 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace MonoDevelop.Refactoring
 {
-	public class JumpToDeclarationHandler
+	abstract class JumpToDeclarationHandler
 	{
-		public JumpToDeclarationHandler ()
-		{
-		}
+		public abstract Task<bool> TryJumpToDeclarationAsync (string documentIdString, Projects.Project hintProject, CancellationToken token = default(CancellationToken));
 	}
 }
 

@@ -32,6 +32,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.AspNet.Commands
 {
@@ -61,7 +62,7 @@ namespace MonoDevelop.AspNet.Commands
 			var controller = FindController (doc.Project, name);
 
 			if (controller != null)
-				IdeApp.ProjectOperations.JumpToDeclaration (controller, doc.Project);
+				RefactoringService.RoslynJumpToDeclaration (controller, doc.Project);
 			else
 				MessageService.ShowError ("Matching controller cannot be found.");
 		}

@@ -29,13 +29,14 @@ using System.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using MonoDevelop.Ide.FindInFiles;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Refactoring
 {
 	abstract class FindReferencesProvider
 	{
-		public abstract Task<IEnumerable<SearchResult>> FindReferences (string documentationCommentId, CancellationToken token = default(CancellationToken));
-		public abstract Task<IEnumerable<SearchResult>> FindAllReferences (string documentationCommentId, CancellationToken token = default(CancellationToken));
+		public abstract Task<IEnumerable<SearchResult>> FindReferences (string documentationCommentId, Project hintProject, CancellationToken token = default(CancellationToken));
+		public abstract Task<IEnumerable<SearchResult>> FindAllReferences (string documentationCommentId, Project hintProject, CancellationToken token = default(CancellationToken));
 	}
 }
 

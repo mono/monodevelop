@@ -21,6 +21,10 @@
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/Refactoring/JumpToDeclarationHandler">
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
+
 	<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules">
 		<ExtensionNode name="Category" type="MonoDevelop.Ide.Codons.CategoryNode">
 			<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules" />

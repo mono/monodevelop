@@ -43,6 +43,8 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.Ide;
+using MonoDevelop.Projects;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Refactoring
 { 
@@ -50,20 +52,33 @@ namespace MonoDevelop.Refactoring
 	{
 		internal static Func<TextEditor, DocumentContext, OptionSet> OptionSetCreation;
 		static List<FindReferencesProvider> findReferencesProvider = new List<FindReferencesProvider> ();
+		static List<JumpToDeclarationHandler> jumpToDeclarationHandler = new List<JumpToDeclarationHandler> ();
+
 		static RefactoringService ()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/FindReferencesProvider", delegate(object sender, ExtensionNodeEventArgs args) {
 				var provider  = (FindReferencesProvider) args.ExtensionObject;
 				switch (args.Change) {
-				case ExtensionChange.Add:
+					case ExtensionChange.Add:
 					findReferencesProvider.Add (provider);
 					break;
-				case ExtensionChange.Remove:
+					case ExtensionChange.Remove:
 					findReferencesProvider.Remove (provider);
 					break;
 				}
 			});
 
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/JumpToDeclarationHandler", delegate(object sender, ExtensionNodeEventArgs args) {
+				var provider  = (JumpToDeclarationHandler) args.ExtensionObject;
+				switch (args.Change) {
+					case ExtensionChange.Add:
+					jumpToDeclarationHandler.Add (provider);
+					break;
+					case ExtensionChange.Remove:
+					jumpToDeclarationHandler.Remove (provider);
+					break;
+				}
+			});
 		}
 		
 		class RenameHandler 
@@ -91,7 +106,19 @@ namespace MonoDevelop.Refactoring
 		{
 			AcceptChanges (monitor, changes, MonoDevelop.Ide.TextFileProvider.Instance);
 		}
-		
+
+		public static async Task RoslynJumpToDeclaration (ISymbol symbol, Projects.Project hintProject = null, CancellationToken token = default(CancellationToken))
+		{
+			if (symbol.Locations.Any (loc => loc.IsInSource)) { // all locals are in source.
+				IdeApp.ProjectOperations.JumpToDeclaration (symbol);
+				return;
+			}
+			var result = await TryJumpToDeclarationAsync (symbol.GetDocumentationCommentId (), hintProject, token).ConfigureAwait (false);
+			if (!result) {
+				IdeApp.ProjectOperations.JumpToDeclaration (symbol, hintProject);
+			}
+		}
+
 		public static void AcceptChanges (ProgressMonitor monitor, IList<Change> changes, MonoDevelop.Ide.ITextFileProvider fileProvider)
 		{
 			var rctx = new RefactoringOptions (null, null);
@@ -212,12 +239,14 @@ namespace MonoDevelop.Refactoring
 			return location;
 		}
 
-		public static async Task FindReferencesAsync (string documentIdString, CancellationToken token = default(CancellationToken))
+		public static async Task FindReferencesAsync (string documentIdString, Projects.Project hintProject = null, CancellationToken token = default(CancellationToken))
 		{
+			if (hintProject == null)
+				hintProject = IdeApp.Workbench.ActiveDocument?.Project;
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 			try {
 				foreach (var provider in findReferencesProvider) {
-					foreach (var result in await provider.FindReferences (documentIdString, token)) {
+					foreach (var result in await provider.FindReferences (documentIdString, hintProject, token)) {
 						monitor.ReportResult (result);
 					}
 				}
@@ -232,15 +261,19 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 
-		public static async Task FindAllReferencesAsync (string documentIdString, CancellationToken token = default(CancellationToken))
+		public static async Task FindAllReferencesAsync (string documentIdString, Projects.Project hintProject = null, CancellationToken token = default(CancellationToken))
 		{
+			if (hintProject == null)
+				hintProject = IdeApp.Workbench.ActiveDocument?.Project;
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 			try {
 				foreach (var provider in findReferencesProvider) {
-					foreach (var result in await provider.FindAllReferences (documentIdString, token)) {
+					foreach (var result in await provider.FindAllReferences (documentIdString, hintProject, token)) {
 						monitor.ReportResult (result);
 					}
 				}
+			} catch (OperationCanceledException) {
+
 			} catch (Exception ex) {
 				if (monitor != null)
 					monitor.ReportError ("Error finding references", ex);
@@ -250,6 +283,22 @@ namespace MonoDevelop.Refactoring
 				if (monitor != null)
 					monitor.Dispose ();
 			}
+		}
+
+		public static async Task<bool> TryJumpToDeclarationAsync (string documentIdString, Projects.Project hintProject = null, CancellationToken token = default(CancellationToken))
+		{
+			try {
+				if (hintProject == null)
+					hintProject = IdeApp.Workbench.ActiveDocument?.Project;
+				foreach (var handler in jumpToDeclarationHandler) {
+					if (await handler.TryJumpToDeclarationAsync (documentIdString, hintProject, token))
+						return true;
+				}
+			} catch (OperationCanceledException) {
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error finding references", ex);
+			}
+			return false;
 		}
 	}
 }

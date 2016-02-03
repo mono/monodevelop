@@ -46,6 +46,7 @@ using Gdk;
 using MonoDevelop.Ide;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -378,7 +379,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				.FirstOrDefault ();
 			if (met != null) {
 				ShowPage (0);
-				IdeApp.ProjectOperations.JumpToDeclaration (met);
+				RefactoringService.RoslynJumpToDeclaration (met);
 			}
 		}
 		

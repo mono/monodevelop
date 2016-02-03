@@ -23,13 +23,22 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
+using System.Threading.Tasks;
+using MonoDevelop.Refactoring;
+using MonoDevelop.Ide;
+using System.Linq;
+
 namespace MonoDevelop.CSharp.Refactoring
 {
-	public class CSharpJumpToDeclarationHandler
+	class CSharpJumpToDeclarationHandler : JumpToDeclarationHandler
 	{
-		public CSharpJumpToDeclarationHandler ()
+		public override async Task<bool> TryJumpToDeclarationAsync (string documentIdString, MonoDevelop.Projects.Project hintProject, System.Threading.CancellationToken token)
 		{
+			var lookup = await CSharpFindReferencesProvider.TryLookupSymbol (documentIdString, hintProject, token);
+			if (!lookup.Success || lookup.Symbol.Locations.First().IsInMetadata)
+				return false;
+			IdeApp.ProjectOperations.JumpToDeclaration (lookup.Symbol, lookup.MonoDevelopProject);
+			return true;
 		}
 	}
 }

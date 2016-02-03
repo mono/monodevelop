@@ -43,13 +43,14 @@ namespace MonoDevelop.CSharp.Refactoring
 {
 	class CSharpFindReferencesProvider : FindReferencesProvider
 	{
-		class LookupResult
+		internal class LookupResult
 		{
 			public static LookupResult Failure = new LookupResult ();
 
 			public bool Success  { get; private set; }
 			public ISymbol Symbol { get; private set; }
 			public Solution Solution { get; private set; }
+			public MonoDevelop.Projects.Project MonoDevelopProject { get; internal set; }
 			public Compilation Compilation { get; private set; }
 
 			public LookupResult ()
@@ -65,7 +66,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 		}
 
-		async Task<LookupResult> TryLookupSymbolInProject (Microsoft.CodeAnalysis.Project prj, string documentationCommentId, CancellationToken token)
+		static async Task<LookupResult> TryLookupSymbolInProject (Microsoft.CodeAnalysis.Project prj, string documentationCommentId, CancellationToken token)
 		{
 			if (string.IsNullOrEmpty (documentationCommentId))
 				return LookupResult.Failure;
@@ -102,30 +103,36 @@ namespace MonoDevelop.CSharp.Refactoring
 			return LookupResult.Failure;
 		}
 
-		async Task<LookupResult> TryLookupSymbol (string documentationCommentId, CancellationToken token)
+		internal static async Task<LookupResult> TryLookupSymbol (string documentationCommentId, MonoDevelop.Projects.Project hintProject, CancellationToken token)
 		{
-			var project = IdeApp.ProjectOperations.CurrentSelectedProject;
-			if (project != null) {
-				var prj = TypeSystemService.GetCodeAnalysisProject (project);
-				if (prj != null) {
-					var result = await TryLookupSymbolInProject (prj, documentationCommentId, token);
-					if (result.Success)
+			Microsoft.CodeAnalysis.Project codeAnalysisHintProject = null;
+			if (hintProject != null) {
+				codeAnalysisHintProject = TypeSystemService.GetCodeAnalysisProject (hintProject);
+				if (codeAnalysisHintProject != null) {
+					var result = await TryLookupSymbolInProject (codeAnalysisHintProject, documentationCommentId, token);
+					if (result.Success) {
+						result.MonoDevelopProject = hintProject;
 						return result;
+					}
 				}
 			}
 
 			foreach (var ws in TypeSystemService.AllWorkspaces) {
 				foreach (var prj in ws.CurrentSolution.Projects) {
+					if (prj == codeAnalysisHintProject)
+						continue;
 					var result = await TryLookupSymbolInProject (prj, documentationCommentId, token);
-					if (result.Success)
+					if (result.Success) {
+						result.MonoDevelopProject = TypeSystemService.GetMonoProject (prj);
 						return result;
+					}
 				}
 			}
 
 			return LookupResult.Failure;
 		}
 
-		INamedTypeSymbol LookupType (string documentationCommentId, int reminder, INamedTypeSymbol current)
+		static INamedTypeSymbol LookupType (string documentationCommentId, int reminder, INamedTypeSymbol current)
 		{
 			var idx = documentationCommentId.IndexOf ('.', reminder);
 			var exact = idx < 0;
@@ -175,7 +182,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			return current;
 		}
 
-		public override Task<IEnumerable<SearchResult>> FindReferences (string documentationCommentId, CancellationToken token)
+		public override Task<IEnumerable<SearchResult>> FindReferences (string documentationCommentId, MonoDevelop.Projects.Project hintProject, CancellationToken token)
 		{
 			var workspace = TypeSystemService.Workspace as MonoDevelopWorkspace;
 			if (workspace == null)
@@ -183,7 +190,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			 
 			return Task.Run (async delegate {
 				var result = new List<SearchResult> ();
-				var lookup = await TryLookupSymbol (documentationCommentId, token);
+				var lookup = await TryLookupSymbol (documentationCommentId, hintProject, token);
 				if (!lookup.Success) {
 					return result;
 				}
@@ -225,7 +232,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			});
 		}
 
-		public override Task<IEnumerable<SearchResult>> FindAllReferences (string documentationCommentId, CancellationToken token)
+		public override Task<IEnumerable<SearchResult>> FindAllReferences (string documentationCommentId, MonoDevelop.Projects.Project hintProject, CancellationToken token)
 		{
 			var workspace = TypeSystemService.Workspace as MonoDevelopWorkspace;
 			if (workspace == null)
@@ -233,7 +240,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			return Task.Run (async delegate {
 				var antiDuplicatesSet = new HashSet<SearchResult> (new SearchResultComparer ());
 				var result = new List<SearchResult> ();
-				var lookup = await TryLookupSymbol (documentationCommentId, token);
+				var lookup = await TryLookupSymbol (documentationCommentId, hintProject, token);
 				if (!lookup.Success)
 					return result;
 

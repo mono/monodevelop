@@ -300,5 +300,9 @@
 	<Extension path = "/MonoDevelop/Refactoring/FindReferencesProvider">
 		<Class class="MonoDevelop.CSharp.Refactoring.CSharpFindReferencesProvider" />
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Refactoring/JumpToDeclarationHandler">
+		<Class class="MonoDevelop.CSharp.Refactoring.CSharpJumpToDeclarationHandler" />
+	</Extension>
 	
 </ExtensionModel>
