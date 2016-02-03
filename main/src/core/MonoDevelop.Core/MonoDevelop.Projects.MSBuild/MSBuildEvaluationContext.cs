@@ -109,7 +109,46 @@ namespace MonoDevelop.Projects.MSBuild
 				properties.Add ("MSBuildFrameworkToolsPath", MSBuildProjectService.ToMSBuildPath (null, frameworkToolsPath));
 				properties.Add ("MSBuildFrameworkToolsPath32", MSBuildProjectService.ToMSBuildPath (null, frameworkToolsPath));
 
-				if (!String.IsNullOrEmpty (DefaultExtensionsPath)) {
+				if (Platform.IsWindows) {
+					// Taken from MSBuild source:
+					var programFiles = Environment.GetFolderPath (Environment.SpecialFolder.ProgramFiles);
+					var programFiles32 = Environment.GetFolderPath (Environment.SpecialFolder.ProgramFilesX86);
+					if (string.IsNullOrEmpty(programFiles32))
+						programFiles32 = programFiles; // 32 bit box
+					
+					string programFiles64;
+					if (programFiles == programFiles32) {
+						// either we're in a 32-bit window, or we're on a 32-bit machine.  
+						// if we're on a 32-bit machine, ProgramW6432 won't exist
+						// if we're on a 64-bit machine, ProgramW6432 will point to the correct Program Files. 
+						programFiles64 = Environment.GetEnvironmentVariable("ProgramW6432");
+					}
+					else {
+						// 64-bit window on a 64-bit machine; %ProgramFiles% points to the 64-bit 
+						// Program Files already. 
+						programFiles64 = programFiles;
+					}
+
+					var extensionsPath32 = MSBuildProjectService.ToMSBuildPath (null, Path.Combine (programFiles32, "MSBuild"));
+					properties.Add ("MSBuildExtensionsPath32", extensionsPath32);
+
+					if (programFiles64 != null)
+						properties.Add ("MSBuildExtensionsPath64", MSBuildProjectService.ToMSBuildPath (null, Path.Combine(programFiles64, "MSBuild")));
+					
+					// MSBuildExtensionsPath:  The way this used to work is that it would point to "Program Files\MSBuild" on both 
+					// 32-bit and 64-bit machines.  We have a switch to continue using that behavior; however the default is now for
+					// MSBuildExtensionsPath to always point to the same location as MSBuildExtensionsPath32. 
+
+					bool useLegacyMSBuildExtensionsPathBehavior = !String.IsNullOrEmpty(Environment.GetEnvironmentVariable("MSBUILDLEGACYEXTENSIONSPATH"));
+
+					string extensionsPath;
+					if (useLegacyMSBuildExtensionsPathBehavior)
+						extensionsPath = Path.Combine (programFiles, "MSBuild");
+					else
+						extensionsPath = extensionsPath32;
+					properties.Add ("MSBuildExtensionsPath", extensionsPath);
+				}
+				else if (!String.IsNullOrEmpty (DefaultExtensionsPath)) {
 					var ep = MSBuildProjectService.ToMSBuildPath (null, extensionsPath);
 					properties.Add ("MSBuildExtensionsPath", ep);
 					properties.Add ("MSBuildExtensionsPath32", ep);
@@ -147,6 +186,9 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal static IEnumerable<string> GetApplicableExtensionsPaths ()
 		{
+			// On windows there is a single extension path, which is already properly defined in the engine
+			if (Platform.IsWindows)
+				yield return null;
 			if (Platform.IsMac)
 				yield return MacOSXExternalXBuildDir;
 			yield return DotConfigExtensionsPath;

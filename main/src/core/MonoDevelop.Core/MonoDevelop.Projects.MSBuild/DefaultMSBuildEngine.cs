@@ -476,16 +476,19 @@ namespace MonoDevelop.Projects.MSBuild
 
 		string[] GetImportFiles (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImport import, string extensionsPath)
 		{
-			var tempCtx = new MSBuildEvaluationContext (context);
-			var mep = MSBuildProjectService.ToMSBuildPath (null, extensionsPath);
-			tempCtx.SetPropertyValue ("MSBuildExtensionsPath", mep);
-			tempCtx.SetPropertyValue ("MSBuildExtensionsPath32", mep);
-			tempCtx.SetPropertyValue ("MSBuildExtensionsPath64", mep);
+			if (extensionsPath != null) {
+				var tempCtx = new MSBuildEvaluationContext (context);
+				var mep = MSBuildProjectService.ToMSBuildPath (null, extensionsPath);
+				tempCtx.SetPropertyValue ("MSBuildExtensionsPath", mep);
+				tempCtx.SetPropertyValue ("MSBuildExtensionsPath32", mep);
+				tempCtx.SetPropertyValue ("MSBuildExtensionsPath64", mep);
+				context = tempCtx;
+			}
 
 			var pr = context.EvaluateString (import.Project);
 			project.Imports [import] = pr;
 
-			if (!string.IsNullOrEmpty (import.Condition) && !SafeParseAndEvaluate (project, tempCtx, import.Condition, true))
+			if (!string.IsNullOrEmpty (import.Condition) && !SafeParseAndEvaluate (project, context, import.Condition, true))
 				return null;
 
 			var path = MSBuildProjectService.FromMSBuildPath (project.Project.BaseDirectory, pr);
