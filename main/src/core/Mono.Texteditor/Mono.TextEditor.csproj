@@ -223,7 +223,7 @@
     <Compile Include="Mono.TextEditor\Document\LazyLineSplitter.cs" />
     <Compile Include="Mono.TextEditor.Utils\ImmutableText.cs" />
     <Compile Include="Mono.TextEditor.Utils\ImmutableTextTextReader.cs" />
-    <Compile Include="Mono.TextEditor.PopupWindow\Styles.cs" />
+    <Compile Include="Mono.TextEditor\Styles.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">
