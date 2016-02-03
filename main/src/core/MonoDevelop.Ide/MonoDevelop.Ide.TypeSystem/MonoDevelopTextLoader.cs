@@ -44,7 +44,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		#region implemented abstract members of TextLoader
-		async Task<TextAndVersion> GetTextAndVersion (Workspace workspace, DocumentId documentId, CancellationToken cancellationToken)
+
+		public override async Task<TextAndVersion> LoadTextAndVersionAsync (Workspace workspace, DocumentId documentId, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested ();
 			SourceText text;
@@ -58,10 +59,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			return TextAndVersion.Create (text, VersionStamp.Create ());
 		}
 
-		public override async Task<TextAndVersion> LoadTextAndVersionAsync (Workspace workspace, DocumentId documentId, CancellationToken cancellationToken)
-		{
-			return await GetTextAndVersion (workspace, documentId, cancellationToken);
-		}
 		#endregion
 
 		public static TextLoader CreateFromText (string text)

@@ -258,7 +258,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return null;
 		}
 
-		public static async Task<Compilation> GetCompilationAsync (MonoDevelop.Projects.Project project, CancellationToken cancellationToken = default(CancellationToken))
+		public static Task<Compilation> GetCompilationAsync (MonoDevelop.Projects.Project project, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
@@ -269,9 +269,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				var roslynProject = w.CurrentSolution.GetProject (projectId);
 				if (roslynProject == null)
 					continue;
-				return await roslynProject.GetCompilationAsync (cancellationToken).ConfigureAwait (false);
+				return roslynProject.GetCompilationAsync (cancellationToken);
 			}
-			return null;
+			return Task.FromResult<Compilation> (null);
 		}
 
 		static void OnWorkspaceItemAdded (object s, MonoDevelop.Projects.WorkspaceItemEventArgs args)
