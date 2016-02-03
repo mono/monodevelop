@@ -356,8 +356,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				textField.AttributedStringValue = GetStatusString (text, textColor);
 				imageView.Image = image;
 			}
-
-			DestroyPopover (null, null);
 		}
 
 		readonly List<StatusIcon> statusIcons = new List<StatusIcon> ();
