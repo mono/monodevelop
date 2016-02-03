@@ -629,7 +629,7 @@ namespace MonoDevelop.Components.MainToolbar
 			declarationviewwindow.CurrentOverload = 0;
 			declarationviewwindow.ShowArrow = true;
 			var rect = SelectedItemRectangle;
-			declarationviewwindow.ShowPopup (this, new Gdk.Rectangle (0, (int)rect.Y, Allocation.Width, (int)rect.Height), PopupPosition.Right);
+			declarationviewwindow.ShowPopup (this, new Gdk.Rectangle (113, (int)rect.Y - 5, Allocation.Width, (int)rect.Height), PopupPosition.Right);
 			return false;
 		}
 
