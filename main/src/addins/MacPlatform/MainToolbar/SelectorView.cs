@@ -435,6 +435,20 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			public event EventHandler ConfigurationChanged;
 			public event EventHandler<HandledEventArgs> RuntimeChanged;
+
+			public override bool Enabled {
+				get {
+					return base.Enabled;
+				}
+				set {
+					base.Enabled = value;
+
+					if (value) {
+						PathComponentCells [RuntimeIdx].Enabled = runtimeModel.Count () > 1;
+						PathComponentCells [ConfigurationIdx].Enabled = configurationModel.Count () > 1;
+					}
+				}
+			}
 		}
 		#endregion
 	}
