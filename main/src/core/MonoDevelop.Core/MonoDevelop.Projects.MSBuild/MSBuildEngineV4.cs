@@ -202,6 +202,11 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			throw new NotImplementedException ();
 		}
+
+		public override IEnumerable<MSBuildTarget> GetTargetsIgnoringCondition (object projectInstance)
+		{
+			throw new NotImplementedException ();
+		}
 	}
 	#endif
 }

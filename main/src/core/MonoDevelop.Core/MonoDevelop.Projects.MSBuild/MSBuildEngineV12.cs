@@ -163,6 +163,11 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
+		public override IEnumerable<MSBuildTarget> GetTargetsIgnoringCondition (object projectInstance)
+		{
+			throw new NotImplementedException ();
+		}
+
 		public override void SetGlobalProperty (object project, string property, string value)
 		{
 			var p = (MSProject)project;

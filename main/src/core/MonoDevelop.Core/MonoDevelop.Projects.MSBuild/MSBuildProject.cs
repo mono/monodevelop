@@ -626,6 +626,11 @@ namespace MonoDevelop.Projects.MSBuild
 			get { return mainProjectInstance.Targets; }
 		}
 
+		public IEnumerable<IMSBuildTargetEvaluated> EvaluatedTargetsIgnoringCondition
+		{
+			get { return mainProjectInstance.TargetsIgnoringCondition; }
+		}
+
 		public MSBuildPropertyGroup GetGlobalPropertyGroup ()
 		{
 			return PropertyGroups.FirstOrDefault (g => g.Condition.Length == 0);

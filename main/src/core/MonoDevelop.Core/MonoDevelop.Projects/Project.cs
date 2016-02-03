@@ -897,7 +897,7 @@ namespace MonoDevelop.Projects
 
 		protected virtual bool OnGetSupportsTarget (string target)
 		{
-			return sourceProject.EvaluatedTargets.Any (t => t.Name == target);
+			return sourceProject.EvaluatedTargetsIgnoringCondition.Any (t => t.Name == target);
 		}
 
 		/// <summary>

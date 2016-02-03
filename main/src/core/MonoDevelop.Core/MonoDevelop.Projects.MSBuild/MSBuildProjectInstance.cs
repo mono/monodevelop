@@ -39,6 +39,7 @@ namespace MonoDevelop.Projects.MSBuild
 		List<IMSBuildItemEvaluated> evaluatedItemsIgnoringCondition = new List<IMSBuildItemEvaluated> ();
 		MSBuildEvaluatedPropertyCollection evaluatedProperties;
 		MSBuildTarget[] targets = new MSBuildTarget[0];
+		MSBuildTarget[] targetsIgnoringCondition = new MSBuildTarget[0];
 		Dictionary<string,string> globalProperties = new Dictionary<string, string> ();
 		ConditionedPropertyCollection conditionedProperties;
 
@@ -164,6 +165,7 @@ namespace MonoDevelop.Projects.MSBuild
 					((MSBuildPropertyGroupEvaluated)it.Metadata).RemoveProperty (NodeIdPropertyName);
 
 				targets = e.GetTargets (project).ToArray ();
+				targetsIgnoringCondition = e.GetTargetsIgnoringCondition (project).ToArray ();
 			}
 
 			var props = new MSBuildEvaluatedPropertyCollection (msproject);
@@ -199,6 +201,12 @@ namespace MonoDevelop.Projects.MSBuild
 		public IEnumerable<IMSBuildTargetEvaluated> Targets {
 			get {
 				return targets;
+			}
+		}
+
+		public IEnumerable<IMSBuildTargetEvaluated> TargetsIgnoringCondition {
+			get {
+				return targetsIgnoringCondition;
 			}
 		}
 
