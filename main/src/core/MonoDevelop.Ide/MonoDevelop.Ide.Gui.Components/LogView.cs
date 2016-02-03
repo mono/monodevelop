@@ -122,17 +122,23 @@ namespace MonoDevelop.Ide.Gui.Components
 			[CommandHandler (EditCommands.Cut)]
 			void CutText ()
 			{
-				if (Buffer.HasSelection) {
+				if (!Buffer.HasSelection)
+					return;
+				if (Editable) {
 					var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
 					Buffer.CutClipboard (clipboard, false);
+				} else {
+					CopyText ();
 				}
 			}
 
 			[CommandHandler (EditCommands.Paste)]
 			void PasteText ()
 			{
-				var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
-				Buffer.PasteClipboard (clipboard);
+				if (Editable) {
+					var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+					Buffer.PasteClipboard (clipboard);
+				}
 			}
 
 			static readonly Regex lineRegex = new Regex ("\\b.*\\s(?<file>(\\w:)?[/\\\\].*):(\\w+\\s)?(?<line>\\d+)\\.?\\s*$", RegexOptions.Compiled);
