@@ -218,13 +218,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			return solutionInfo;
 		}
 
-		public Task<SolutionInfo> TryLoadSolution (MonoDevelop.Projects.Solution solution/*, IProgressMonitor progressMonitor*/)
+		public Task<SolutionInfo> TryLoadSolution (MonoDevelop.Projects.Solution solution, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			this.currentMonoDevelopSolution = solution;
-			CancelLoad ();
-			return CreateSolutionInfo (solution, src.Token);
+			return CreateSolutionInfo (solution, cancellationToken);
 		}
-		
+
 		public void UnloadSolution ()
 		{
 			OnSolutionRemoved (); 

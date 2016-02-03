@@ -107,6 +107,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 		void UpdateStyle ()
 		{
 			var scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			if (!scheme.FitsIdeSkin (IdeApp.Preferences.UserInterfaceSkin))
+				scheme = SyntaxModeService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceSkin);
+			
 			Theme.SetSchemeColors (scheme);
 			Theme.Font = FontService.SansFont.CopyModified (Styles.FontScale11);
 			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor.ToCairoColor ();

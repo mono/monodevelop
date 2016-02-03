@@ -76,6 +76,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static TypeSystemService ()
 		{
+			CleanupCache ();
 			parsers = AddinManager.GetExtensionNodes<TypeSystemParserNode> ("/MonoDevelop/TypeSystem/Parser");
 			bool initialLoad = true;
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/Parser", delegate (object sender, ExtensionNodeEventArgs args) {
@@ -515,7 +516,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		static IEnumerable<string> GetPossibleCacheDirNames (string baseName)
 		{
 			int i = 0;
-			while (i < 4096) {
+			while (i < 999999) {
 				yield return Path.Combine (baseName, i.ToString ());
 				i++;
 			}
@@ -598,24 +599,30 @@ namespace MonoDevelop.Ide.TypeSystem
 		static void CleanupCache ()
 		{
 			string derivedDataPath = UserProfile.Current.CacheDir.Combine ("DerivedData");
-			string[] subDirs;
+			string[] cacheDirectories;
 			
 			try {
 				if (!Directory.Exists (derivedDataPath))
 					return;
-				subDirs = Directory.GetDirectories (derivedDataPath);
+				cacheDirectories = Directory.GetDirectories (derivedDataPath);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while getting derived data directories.", e);
 				return;
 			}
-			
-			foreach (var subDir in subDirs) {
+			var now = DateTime.Now;
+			foreach (var cacheDirectory in cacheDirectories) {
 				try {
-					var days = Math.Abs ((DateTime.Now - Directory.GetLastWriteTime (subDir)).TotalDays);
-					if (days > 30)
-						Directory.Delete (subDir, true);
+					foreach (var subDir in Directory.GetDirectories (cacheDirectory)) {
+						try {
+							var days = Math.Abs ((now - Directory.GetLastWriteTime (subDir)).TotalDays);
+							if (days > 30)
+								Directory.Delete (subDir, true);
+						} catch (Exception e) {
+							LoggingService.LogError ("Error while removing outdated cache " + subDir, e);
+						}
+					}
 				} catch (Exception e) {
-					LoggingService.LogError ("Error while removing outdated cache " + subDir, e);
+					LoggingService.LogError ("Error while getting cache directories " + cacheDirectory, e);
 				}
 			}
 		}

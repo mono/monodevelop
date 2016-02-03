@@ -112,44 +112,51 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			public static void LoadStyles ()
 			{
+				var bgColor = Gui.Styles.BaseBackgroundColor.ToHexString (false);
+				var fgColor = Gui.Styles.BaseForegroundColor.ToHexString (false);
+				var dimColor = Gui.Styles.DimTextColor.ToHexString (false);
+				var padColor = Gui.Styles.PadBackground.ToHexString (false);
+				var hoverColor = Gui.Styles.DockBarPrelightColor.ToHexString (false);
+
 				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
-					BackgroundColor = "#fff";
-					InnerShadowColor = "#fff";
+					BackgroundColor = bgColor;
+					InnerShadowColor = bgColor;
 
-					Links.Color = "#888";
-					Links.HoverColor = "#555";
+					Links.Color = dimColor;
+					Links.HoverColor = fgColor;
 
-					Pad.BackgroundColor = "#fafafa";
-					Pad.BorderColor = "#fafafa";
-					Pad.TextColor = "#555";
-					Pad.ShadowColor = "#000";
-					Pad.LargeTitleFontColor = "#555";
-					Pad.MediumTitleColor = "#555";
-					Pad.SmallTitleColor = "#aaa";
+					Pad.BackgroundColor = padColor;
+					Pad.BorderColor = padColor;
+					Pad.TextColor = fgColor;
+					Pad.ShadowColor = "#000000";
+					Pad.LargeTitleFontColor = fgColor;
+					Pad.MediumTitleColor = fgColor;
+					Pad.SmallTitleColor = dimColor;
 
 					Pad.News.Item.TitleHoverColor = "#3496d9";
 
-					Pad.Solutions.SolutionTile.HoverBackgroundColor = "#eee";
-					Pad.Solutions.SolutionTile.HoverBorderColor = "#eee";
+					Pad.Solutions.SolutionTile.HoverBackgroundColor = hoverColor;
+					Pad.Solutions.SolutionTile.HoverBorderColor = hoverColor;
 				} else {
-					BackgroundColor = "#000";
-					InnerShadowColor = "#000";
+					// TODO: VV: A beeter background, for some peculiar reason only black works here
+					BackgroundColor = "#000000";
+					InnerShadowColor = "#000000";
 
 					Links.Color = "#868686";
-					Links.HoverColor = "#bebebe";
+					Links.HoverColor = fgColor;
 
-					Pad.BackgroundColor = "#222";
-					Pad.BorderColor = "#222";
-					Pad.TextColor = "#868686";
-					Pad.ShadowColor = "#000";
-					Pad.LargeTitleFontColor = "#868686";
-					Pad.MediumTitleColor = "#bdbdbd";
-					Pad.SmallTitleColor = "#666";
+					Pad.BackgroundColor = "#222222"; // TODO: VV: We can't use the padColor here because of the BackgroundColor bug, so override
+					Pad.BorderColor = "#222222";
+					Pad.TextColor = fgColor;
+					Pad.ShadowColor = "#000000";
+					Pad.LargeTitleFontColor = fgColor;
+					Pad.MediumTitleColor = fgColor;
+					Pad.SmallTitleColor = dimColor;
 
 					Pad.News.Item.TitleHoverColor = "#5babed";
 
-					Pad.Solutions.SolutionTile.HoverBackgroundColor = "#333";
-					Pad.Solutions.SolutionTile.HoverBorderColor = "#333";
+					Pad.Solutions.SolutionTile.HoverBackgroundColor = "#2b3e50";
+					Pad.Solutions.SolutionTile.HoverBorderColor = "#2b3e50";
 				}
 			}
 		}

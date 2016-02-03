@@ -1,7 +1,7 @@
 {
     "name":"Oblivion",
-    "version":"1.1.1",
-    "description":"'...where the soul at last is lost in utter peace'",
+    "version":"1.1.4",
+    "description":"‘...where the soul at last is lost in utter peace’",
     "originator":"Xamarin Inc. (http://xamarin.com)",
 
     "palette":[
@@ -41,15 +41,15 @@
         { "name":"Search result background", "color":"#006060" },
         { "name":"Search result background (highlighted)", "color":"#008080" },
 
-        { "name":"Column Ruler", "color":"aluminium5" },
+        { "name":"Column Ruler", "color":"#444a4d" },
 
         { "name":"Fold Square", "color":"white", "secondcolor":"aluminium7" },
         { "name":"Fold Cross", "color":"white", "secondcolor":"aluminium7" },
 
-        { "name":"Indentation Guide", "color":"aluminium5" },
+        { "name":"Indentation Guide", "color":"#444a4d" },
 
-        { "name":"Indicator Margin", "color":"aluminium7" },
-        { "name":"Indicator Margin(Separator)", "color":"aluminium7" },
+        { "name":"Indicator Margin", "color":"#2c2f30" },
+        { "name":"Indicator Margin(Separator)", "color":"#2c2f30" },
 
         { "name":"Tooltip Pager Top", "color":"aluminium5" },
         { "name":"Tooltip Pager Triangle", "color":"aluminium2" },
@@ -58,7 +58,7 @@
         { "name":"Notification Border", "color":"aluminium1" },
 
         { "name":"Completion Window", "color":"aluminium6", "bordercolor":"aluminium1" },
-		{ "name":"Completion Tooltip Window", "color":"aluminium5", "bordercolor":"aluminium1" },
+        { "name":"Completion Tooltip Window", "color":"aluminium5", "bordercolor":"aluminium1" },
         { "name":"Completion Selection Bar Border", "color":"aluminium5" },
         { "name":"Completion Selection Bar Border(Inactive)", "color":"aluminium7" },
         { "name":"Completion Selection Bar Background", "color":"aluminium5", "secondcolor":"aluminium5" },
@@ -82,59 +82,60 @@
         { "name":"Breakpoint Marker(Disabled)", "color":"#4d4d4d", "bordercolor":"#4d4d4d" },
         { "name":"Breakpoint Marker(Invalid)", "color":"#604343", "bordercolor":"#604343" },
 
-        { "name":"Current Line Marker", "color":"#2a2a2a", "secondcolor":"#2a2a2a"},
-        { "name":"Current Line Marker(Inactive)", "color":"#2a2a2a", "secondcolor":"#2a2a2a"},
+        { "name":"Current Line Marker", "color":"#3a3f42", "secondcolor":"#3a3f42" },
+        { "name":"Current Line Marker(Inactive)", "color":"#3a3f42", "secondcolor":"#3a3f42" },
 
         { "name":"Debugger Current Line Marker", "color":"#69684c", "bordercolor":"#69684c" },
-        { "name":"Debugger Stack Line Marker", "color":"#5c6b4d", "bordercolor":"#657655"},
+        { "name":"Debugger Stack Line Marker", "color":"#5c6b4d", "bordercolor":"#657655" },
 
-        { "name":"Primary Link", "color":"chocolate1", "secondcolor":"chocolate3"},
-        { "name":"Primary Link(Highlighted)", "color":"chocolate1", "secondcolor":"chocolate2"},
-        { "name":"Secondary Link", "color":"white", "secondcolor":"aluminium6"},
-        { "name":"Secondary Link(Highlighted)", "color":"aluminium1", "secondcolor":"aluminium5"},
+        { "name":"Primary Link", "color":"chocolate1", "secondcolor":"chocolate3" },
+        { "name":"Primary Link(Highlighted)", "color":"chocolate1", "secondcolor":"chocolate2" },
+        { "name":"Secondary Link", "color":"white", "secondcolor":"aluminium6" },
+        { "name":"Secondary Link(Highlighted)", "color":"aluminium1", "secondcolor":"aluminium5" },
 
-        { "name":"Message Bubble Error Marker", "color":"#b28d37"},
-        { "name":"Message Bubble Error Tag", "color":"#e3a6a1", "secondcolor":"black"},
-        { "name":"Message Bubble Error Counter", "color":"black", "secondcolor":"#e3a6a1"},
-        { "name":"Message Bubble Error IconMargin", "color":"#735c54", "bordercolor":"#805b4d"},
-        { "name":"Message Bubble Error Line", "color":"#7b645c"},
-        { "name":"Message Bubble Error Tooltip", "color":"#e3a6a1"},
+        { "name":"Message Bubble Error Marker", "color":"#b28d37" },
+        { "name":"Message Bubble Error Tag", "color":"#e3a6a1", "secondcolor":"black" },
+        { "name":"Message Bubble Error Counter", "color":"black", "secondcolor":"#e3a6a1" },
+        { "name":"Message Bubble Error IconMargin", "color":"#735c54", "bordercolor":"#805b4d" },
+        { "name":"Message Bubble Error Line", "color":"#7b645c" },
+        { "name":"Message Bubble Error Tooltip", "color":"#e3a6a1" },
 
-        { "name":"Message Bubble Warning Marker", "color":"#b28d37"},
-        { "name":"Message Bubble Warning Tag", "color":"#efe89d", "secondcolor":"black"},
-        { "name":"Message Bubble Warning Counter", "color":"black", "secondcolor":"#efe89d"},
-        { "name":"Message Bubble Warning IconMargin", "color":"#777553", "bordercolor":"#948e51"},
-        { "name":"Message Bubble Warning Line", "color":"#807e5c"},
-        { "name":"Message Bubble Warning Tooltip", "color":"#efe89d"}
+        { "name":"Message Bubble Warning Marker", "color":"#b28d37" },
+        { "name":"Message Bubble Warning Tag", "color":"#efe89d", "secondcolor":"black" },
+        { "name":"Message Bubble Warning Counter", "color":"black", "secondcolor":"#efe89d" },
+        { "name":"Message Bubble Warning IconMargin", "color":"#777553", "bordercolor":"#948e51" },
+        { "name":"Message Bubble Warning Line", "color":"#807e5c" },
+        { "name":"Message Bubble Warning Tooltip", "color":"#efe89d" }
     ],
 
     "text":[
         { "name":"Plain Text", "fore":"aluminium2", "back":"aluminium6" },
-        { "name":"Selected Text", "back":"aluminium5" },
-        { "name":"Selected Text(Inactive)", "back":"aluminium7" },
+        { "name":"Selected Text", "back":"#61677e" },
+        { "name":"Selected Text(Inactive)", "back":"#6f6f6f" },
 
         { "name":"Collapsed Text", "fore":"aluminium3", "back":"aluminium6" },
 
-        { "name":"Line Numbers", "fore":"aluminium5", "back":"aluminium6"},
+        { "name":"Line Numbers", "fore":"aluminium5", "back":"aluminium6" },
 
         { "name":"Punctuation", "fore":"aluminium2" },
         { "name":"Punctuation(Brackets)", "fore":"aluminium2" },
 
-        { "name":"Comment(Line)", "fore":"aluminium4" },
-        { "name":"Comment(Block)", "fore":"aluminium4" },
-        { "name":"Comment(Doc)", "fore":"aluminium4" },
-        { "name":"Comment(DocTag)", "fore":"aluminium4" },
-        { "name":"Comment Tag", "fore":"aluminium4", "back":"butter1", "weight":"bold" },
+        { "name":"Comment(Line)", "fore":"aluminium4", "style":"italic" },
+        { "name":"Comment(Block)", "fore":"aluminium4", "style":"italic" },
+        { "name":"Comment(Doc)", "fore":"#7ab8c8", "style":"italic" },
+        { "name":"Comment(DocTag)", "fore":"#79809e", "style":"italic" },
+        { "name":"Comment Tag", "fore":"#ff00ff", "weight":"bold" },
+
         { "name":"Excluded Code", "fore":"aluminium4" },
 
-        { "name":"String", "fore":"butter2"},
-        { "name":"String(Escape)", "fore":"butter3"},
-        { "name":"String(C# @ Verbatim)", "fore":"butter2"},
+        { "name":"String", "fore":"butter2" },
+        { "name":"String(Escape)", "fore":"butter3" },
+        { "name":"String(C# @ Verbatim)", "fore":"butter2" },
 
-        { "name":"Number", "fore":"butter2"},
+        { "name":"Number", "fore":"butter2" },
 
-        { "name":"Preprocessor", "fore":"skyblue1", "style":"italic" },
-        { "name":"Preprocessor(Region Name)", "fore":"skyblue1", "style":"italic" },
+        { "name":"Preprocessor", "fore":"skyblue1" },
+        { "name":"Preprocessor(Region Name)", "fore":"skyblue1" },
 
         { "name":"Xml Text", "fore":"aluminium2" },
         { "name":"Xml Delimiter", "fore":"aluminium2" },
@@ -160,30 +161,30 @@
 
         { "name":"Completion Text", "fore":"aluminium2" },
         { "name":"Completion Matching Substring", "fore":"plum1" },
-        
+
         { "name":"Completion Selected Text", "fore":"aluminium2" },
         { "name":"Completion Selected Matching Substring", "fore":"plum1" },
 
         { "name":"Completion Selected Text(Inactive)", "fore":"aluminium2" },
         { "name":"Completion Selected Matching Substring(Inactive)", "fore":"plum1" },
 
-        { "name":"Keyword(Access)", "fore":"plum1", "weight":"bold"  },
-        { "name":"Keyword(Type)", "fore":"plum1", "weight":"bold"  },
-        { "name":"Keyword(Operator)", "fore":"plum1", "weight":"bold"  },
-        { "name":"Keyword(Selection)", "fore":"white", "weight":"bold"  },
-        { "name":"Keyword(Iteration)", "fore":"plum1", "weight":"bold"  },
-        { "name":"Keyword(Jump)", "fore":"plum1", "weight":"bold"  },
-        { "name":"Keyword(Context)", "fore":"white", "weight":"bold"  },
-        { "name":"Keyword(Exception)", "fore":"white", "weight":"bold"  },
-        { "name":"Keyword(Modifiers)", "fore":"plum1", "weight":"bold"  },
-        { "name":"Keyword(Constants)", "fore":"orange3", "weight":"bold"  },
-        { "name":"Keyword(Void)", "fore":"plum1", "weight":"bold"  },
-        { "name":"Keyword(Namespace)", "fore":"plum1", "weight":"bold"  },
-        { "name":"Keyword(Property)", "fore":"plum1", "weight":"bold"  },
-        { "name":"Keyword(Declaration)", "fore":"plum1", "weight":"bold"  },
-        { "name":"Keyword(Parameter)", "fore":"white", "weight":"bold"  },
-        { "name":"Keyword(Operator Declaration)", "fore":"plum1", "weight":"bold"  },
-        { "name":"Keyword(Other)", "fore":"white", "weight":"bold"  },
+        { "name":"Keyword(Access)", "fore":"plum1", "weight":"bold" },
+        { "name":"Keyword(Type)", "fore":"plum1", "weight":"bold" },
+        { "name":"Keyword(Operator)", "fore":"plum1", "weight":"bold" },
+        { "name":"Keyword(Selection)", "fore":"white", "weight":"bold" },
+        { "name":"Keyword(Iteration)", "fore":"plum1", "weight":"bold" },
+        { "name":"Keyword(Jump)", "fore":"plum1", "weight":"bold" },
+        { "name":"Keyword(Context)", "fore":"white", "weight":"bold" },
+        { "name":"Keyword(Exception)", "fore":"white", "weight":"bold" },
+        { "name":"Keyword(Modifiers)", "fore":"plum1", "weight":"bold" },
+        { "name":"Keyword(Constants)", "fore":"orange3", "weight":"bold" },
+        { "name":"Keyword(Void)", "fore":"plum1", "weight":"bold" },
+        { "name":"Keyword(Namespace)", "fore":"plum1", "weight":"bold" },
+        { "name":"Keyword(Property)", "fore":"plum1", "weight":"bold" },
+        { "name":"Keyword(Declaration)", "fore":"plum1", "weight":"bold" },
+        { "name":"Keyword(Parameter)", "fore":"white", "weight":"bold" },
+        { "name":"Keyword(Operator Declaration)", "fore":"plum1", "weight":"bold" },
+        { "name":"Keyword(Other)", "fore":"white", "weight":"bold" },
 
         { "name":"User Types", "fore":"chameleon1" },
         { "name":"User Types(Enums)", "fore":"chameleon1" },
@@ -195,17 +196,17 @@
         { "name":"User Field Usage", "fore":"aluminium2", "style":"italic" },
         { "name":"User Field Declaration", "fore":"aluminium2", "style":"italic" },
 
-        { "name":"User Property Usage", "fore":"aluminium2", "style":"italic" },
-        { "name":"User Property Declaration", "fore":"aluminium2", "style":"italic" },
+        { "name":"User Property Usage", "fore":"aluminium2" },
+        { "name":"User Property Declaration", "fore":"aluminium2" },
 
-        { "name":"User Event Usage", "fore":"aluminium2", "style":"italic" },
-        { "name":"User Event Declaration", "fore":"aluminium2", "style":"italic" },
+        { "name":"User Event Usage", "fore":"aluminium2" },
+        { "name":"User Event Declaration", "fore":"aluminium2" },
 
-        { "name":"User Method Usage", "fore":"aluminium2", "style":"italic" },
-        { "name":"User Method Declaration", "fore":"aluminium2", "style":"italic" },
+        { "name":"User Method Usage", "fore":"aluminium2" },
+        { "name":"User Method Declaration", "fore":"aluminium2" },
 
-        { "name":"User Parameter Usage", "fore":"aluminium2" },
-        { "name":"User Parameter Declaration", "fore":"aluminium2" },
+        { "name":"User Parameter Usage", "fore":"aluminium2", "style":"italic" },
+        { "name":"User Parameter Declaration", "fore":"aluminium2", "style":"italic" },
 
         { "name":"User Variable Usage", "fore":"aluminium2" },
         { "name":"User Variable Declaration", "fore":"aluminium2" },
@@ -219,21 +220,21 @@
         { "name":"Debugger Current Statement", "fore":"white", "back":"#69684c" },
         { "name":"Debugger Stack Line", "fore":"white", "back":"#5c6b4d" },
 
-        { "name":"Diff Line(Added)", "fore":"butter2"  },
-        { "name":"Diff Line(Removed)", "fore":"skyblue1"  },
-        { "name":"Diff Line(Changed)", "fore":"plum1"  },
-        { "name":"Diff Header", "fore":"chameleon1", "weight":"bold"  },
-        { "name":"Diff Header(Separator)", "fore":"aluminium4"  },
-        { "name":"Diff Header(Old)", "fore":"chameleon1", "weight":"bold"  },
-        { "name":"Diff Header(New)", "fore":"chameleon1", "weight":"bold"  },
-        { "name":"Diff Location", "fore":"chameleon1", "weight":"bold"  },
+        { "name":"Diff Line(Added)", "fore":"butter2" },
+        { "name":"Diff Line(Removed)", "fore":"skyblue1" },
+        { "name":"Diff Line(Changed)", "fore":"plum1" },
+        { "name":"Diff Header", "fore":"chameleon1", "weight":"bold" },
+        { "name":"Diff Header(Separator)", "fore":"aluminium4" },
+        { "name":"Diff Header(Old)", "fore":"chameleon1", "weight":"bold" },
+        { "name":"Diff Header(New)", "fore":"chameleon1", "weight":"bold" },
+        { "name":"Diff Location", "fore":"chameleon1", "weight":"bold" },
 
-        { "name":"Css Comment", "fore":"aluminium4", "weight":"bold"  },
-        { "name":"Css Property Name", "fore":"aluminium2", "weight":"bold"  },
-        { "name":"Css Property Value", "fore":"butter2", "weight":"bold"  },
-        { "name":"Css Selector", "fore":"aluminium2", "weight":"bold"  },
-        { "name":"Css String Value", "fore":"butter2", "weight":"bold"  },
-        { "name":"Css Keyword", "fore":"plum1", "weight":"bold"  },
+        { "name":"Css Comment", "fore":"aluminium4", "weight":"bold" },
+        { "name":"Css Property Name", "fore":"aluminium2", "weight":"bold" },
+        { "name":"Css Property Value", "fore":"butter2", "weight":"bold" },
+        { "name":"Css Selector", "fore":"aluminium2", "weight":"bold" },
+        { "name":"Css String Value", "fore":"butter2", "weight":"bold" },
+        { "name":"Css Keyword", "fore":"plum1", "weight":"bold" },
 
         { "name":"Script Comment", "fore":"aluminium4" },
         { "name":"Script Identifier" },

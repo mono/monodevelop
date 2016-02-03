@@ -128,14 +128,7 @@ namespace Mono.TextEditor.PopupWindow
 		const int yBorder = 2;
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
-		{
-			Cairo.Color bgColor = new Cairo.Color (1, 1, 1);
-			Cairo.Color titleBgColor = new Cairo.Color (0.88, 0.88, 0.98);
-			Cairo.Color categoryBgColor = new Cairo.Color (0.58, 0.58, 0.98);
-			Cairo.Color borderColor = new Cairo.Color (0.4, 0.4, 0.6);
-			Cairo.Color textColor = new Cairo.Color (0.3, 0.3, 1);
-			Cairo.Color gridColor = new Cairo.Color (0.8, 0.8, 0.8);
-			
+		{	
 			using (var g = Gdk.CairoHelper.Create (args.Window)) {
 				g.Translate (Allocation.X, Allocation.Y);
 				g.LineWidth = 1;
@@ -146,26 +139,26 @@ namespace Mono.TextEditor.PopupWindow
 				layout.GetPixelSize (out width, out height);
 				width += xBorder * 2;
 				FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, true, false, 0.5, 0.5, height + yBorder * 2 + 1.5, width, height + yBorder * 2);
-				g.SetSourceColor (titleBgColor);
+				g.SetSourceColor (Styles.TableLayoutModeTitleBackgroundColor.ToCairoColor ());
 				g.FillPreserve ();
-				g.SetSourceColor (borderColor);
+				g.SetSourceColor (Styles.TableLayoutModeBorderColor.ToCairoColor ());
 				g.Stroke ();
 
 				g.Save ();
-				g.SetSourceColor (textColor);
+				g.SetSourceColor (Styles.TableLayoutModeTextColor.ToCairoColor ());
 				g.Translate (xBorder, yBorder);
 				g.ShowLayout (layout);
 				g.Restore ();
 
 				FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, false, true, 0.5, height * 2 + yBorder * 2 + 0.5, height, Allocation.Width - 1, Allocation.Height - height * 2 - yBorder * 2 - 1);
-				g.SetSourceColor (bgColor);
+				g.SetSourceColor (Styles.TableLayoutModeBackgroundColor.ToCairoColor ());
 				g.FillPreserve ();
-				g.SetSourceColor (borderColor);
+				g.SetSourceColor (Styles.TableLayoutModeBorderColor.ToCairoColor ());
 				g.Stroke ();
 				
 				g.MoveTo (xSpacer + 0.5, height * 2 + yBorder * 2);
 				g.LineTo (xSpacer + 0.5, Allocation.Height - 1);
-				g.SetSourceColor (gridColor);
+				g.SetSourceColor (Styles.TableLayoutModeGridColor.ToCairoColor ());
 				g.Stroke ();
 				
 				int y = height + yBorder * 2;
@@ -178,26 +171,26 @@ namespace Mono.TextEditor.PopupWindow
 					
 					if (i == 0) {
 						FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, false, true, false, false, 0, y + 0.5, height + 1.5, Allocation.Width, height);
-						g.SetSourceColor (categoryBgColor);
+						g.SetSourceColor (Styles.TableLayoutModeCategoryBackgroundColor.ToCairoColor ());
 						g.FillPreserve ();
-						g.SetSourceColor (borderColor);
+						g.SetSourceColor (Styles.TableLayoutModeBorderColor.ToCairoColor ());
 						g.Stroke ();
 						
 						g.MoveTo (xSpacer + 0.5, height + yBorder * 2 + 1);
 						g.LineTo (xSpacer + 0.5, height * 2 + yBorder * 2 + 1);
-						g.SetSourceColor (gridColor);
+						g.SetSourceColor (Styles.TableLayoutModeGridColor.ToCairoColor ());
 						g.Stroke ();
 					}
 					
-					gc.RgbFgColor = (HslColor)(i == 0 ? bgColor : textColor);
+					gc.RgbFgColor = (HslColor)(i == 0 ? Styles.TableLayoutModeBackgroundColor : Styles.TableLayoutModeTextColor).ToCairoColor ();
 					g.Save ();
-					g.SetSourceColor (textColor);
+					g.SetSourceColor (Styles.TableLayoutModeTextColor.ToCairoColor ());
 					g.Translate (xBorder, y);
 					g.ShowLayout (layout);
 					g.Restore ();
 
 					g.Save ();
-					g.SetSourceColor (textColor);
+					g.SetSourceColor (Styles.TableLayoutModeTextColor.ToCairoColor ());
 					g.Translate (xSpacer + xBorder, y);
 					layout.SetMarkup (pair.Value);
 					g.ShowLayout (layout);
@@ -207,7 +200,7 @@ namespace Mono.TextEditor.PopupWindow
 					if (i > 0) {
 						g.MoveTo (1, y + 0.5);
 						g.LineTo (Allocation.Width - 1, y + 0.5);
-						g.SetSourceColor (gridColor);
+						g.SetSourceColor (Styles.TableLayoutModeGridColor.ToCairoColor ());
 						g.Stroke ();
 					}
 					y += height;
@@ -231,8 +224,6 @@ namespace Mono.TextEditor.PopupWindow
 		const int outlinedFontSize = 8;
 		const int outlinePadding = 1;
 		const int textInnerPadding = 1;
-		static readonly Cairo.Color outlineColor = HslColor.Parse ("#666666"); // TODO: VV: Parametrize
-		static readonly Cairo.Color textColor = HslColor.Parse ("#555555"); // TODO: VV: Parametrize
 
 		Pango.Layout layout;
 		SymbolTokenType Symbol;
@@ -258,7 +249,7 @@ namespace Mono.TextEditor.PopupWindow
 			} else {
 				Symbol = SymbolTokenType.None;
 
-				var desc = ctx.FontDescription.Copy (); // TODO: VV: Use FontService
+				var desc = ctx.FontDescription.Copy ();
 				desc.AbsoluteSize = Pango.Units.FromPixels (Outlined ? outlinedFontSize : normalFontSize);
 				if (Outlined) {
 					desc.Weight = Pango.Weight.Bold;
@@ -293,7 +284,7 @@ namespace Mono.TextEditor.PopupWindow
 
 				cr.MoveTo (x, y);
 				cr.LineWidth = 1;
-				cr.SetSourceColor (outlineColor);
+				cr.SetSourceColor (Styles.ModeHelpWindowTokenOutlineColor.ToCairoColor());
 
 				if (Symbol == SymbolTokenType.None)
 					inner_padding = textInnerPadding;
@@ -316,7 +307,7 @@ namespace Mono.TextEditor.PopupWindow
 				}
 			} else {
 				cr.MoveTo (x, y);
-				cr.SetSourceColor (textColor);
+				cr.SetSourceColor (Styles.ModeHelpWindowTokenTextColor.ToCairoColor());
 				cr.ShowLayout (layout);
 			}
 		}
@@ -355,7 +346,7 @@ namespace Mono.TextEditor.PopupWindow
 			List<TokenRenderer> line = new List<TokenRenderer> ();
 			var currentLine = "";
 
-			var desc = ctx.FontDescription.Copy (); // TODO: VV: Use FontService
+			var desc = ctx.FontDescription.Copy ();
 			desc.AbsoluteSize = Pango.Units.FromPixels (14);
 			desc.Weight = Pango.Weight.Bold;
 			var layout = new Pango.Layout (ctx);
@@ -412,7 +403,7 @@ namespace Mono.TextEditor.PopupWindow
 			};
 
 			titleLayout = new Pango.Layout (PangoContext);
-			var desc = PangoContext.FontDescription.Copy (); // TODO: VV: Use FontService
+			var desc = PangoContext.FontDescription.Copy ();
 			desc.AbsoluteSize = Pango.Units.FromPixels (12);
 			desc.Weight = Pango.Weight.Bold;
 			titleLayout.FontDescription = desc;
@@ -432,7 +423,7 @@ namespace Mono.TextEditor.PopupWindow
 
 			int h2 = descTexts.Sum (x => x.Height + x.Spacing);
 			int w2 = descTexts.Max (x => x.Width + x.Spacing * 2);
-			totalHeight += h2;
+			totalHeight += h2 + 4;
 			xSpacer = System.Math.Max (width, w2);
 
 			xSpacer += xDescriptionBorder * 2 + 1;
@@ -460,11 +451,6 @@ namespace Mono.TextEditor.PopupWindow
 		const int yDescriptionBorder = 8;
 		const int yTitleBorder = 8;
 
-		static readonly Cairo.Color bgColor = HslColor.Parse ("#f2f2f2"); // TODO: VV: Parametrize
-		static readonly Cairo.Color titleTextColor = HslColor.Parse ("#242424"); // TODO: VV: Parametrize
-		static readonly Cairo.Color borderColor = HslColor.Parse ("#d5d5d5"); // TODO: VV: Parametrize
-		static readonly Cairo.Color textColor = HslColor.Parse ("#4c4c4c"); // TODO: VV: Parametrize
-
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
 			using (var g = Gdk.CairoHelper.Create (args.Window)) {
@@ -482,14 +468,14 @@ namespace Mono.TextEditor.PopupWindow
 				} else {
 					g.Rectangle (0, 0, Allocation.Width, height + yTitleBorder * 2);
 				}
-				g.SetSourceColor (bgColor);
+				g.SetSourceColor (Styles.InsertionCursorBackgroundColor.ToCairoColor ());
 				g.FillPreserve ();
-				g.SetSourceColor (borderColor);
+				g.SetSourceColor (Styles.InsertionCursorBorderColor.ToCairoColor ());
 				g.Stroke ();
 				
 
 				g.MoveTo (tw + xDescriptionBorder, yTitleBorder);
-				g.SetSourceColor (titleTextColor);
+				g.SetSourceColor (Styles.InsertionCursorTitleTextColor.ToCairoColor ());
 				g.ShowLayout (titleLayout);
 
 				if (SupportsAlpha) {
@@ -499,19 +485,19 @@ namespace Mono.TextEditor.PopupWindow
 					g.LineTo (tw + 5, Allocation.Height / 2 + th / 2);
 					g.LineTo (tw + 5, Allocation.Height / 2 - th / 2);
 					g.ClosePath ();
-					g.SetSourceColor (bgColor);
+					g.SetSourceColor (Styles.InsertionCursorBackgroundColor.ToCairoColor ());
 					g.Fill ();
 
 					g.MoveTo (tw, Allocation.Height / 2 - th / 2);
 					g.LineTo (0, Allocation.Height / 2);
 					g.LineTo (tw, Allocation.Height / 2 + th / 2);
-					g.SetSourceColor (borderColor);
+					g.SetSourceColor (Styles.InsertionCursorBorderColor.ToCairoColor ());
 					g.Stroke ();
 				}
 
 				int y = height + yTitleBorder + yDescriptionBorder;
 				int x = tw + xDescriptionBorder;
-				g.SetSourceColor (textColor);
+				g.SetSourceColor (Styles.InsertionCursorTextColor.ToCairoColor ());
 
 				foreach (var desc in descTexts) {
 					desc.Render (g, x, y + 4);

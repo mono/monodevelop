@@ -253,6 +253,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 		internal void SetDefaultScheme ()
 		{
 			var scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			if (!scheme.FitsIdeSkin (IdeApp.Preferences.UserInterfaceSkin))
+				scheme = SyntaxModeService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceSkin);
+
 			Theme.SetSchemeColors (scheme);
 			foreColor = Styles.PopoverWindow.DefaultTextColor.ToCairoColor ();
 			headLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());

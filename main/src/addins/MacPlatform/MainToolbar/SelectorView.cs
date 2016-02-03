@@ -64,9 +64,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public SelectorView ()
 		{
-			Cell = new ColoredButtonCell ();
-			BezelStyle = NSBezelStyle.TexturedRounded;
 			Title = "";
+			BezelStyle = NSBezelStyle.TexturedRounded;
 
 			RealSelectorView = new PathSelectorView (new CGRect (6, 0, 1, 1));
 			RealSelectorView.UnregisterDraggedTypes ();
@@ -77,7 +76,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			var fitSize = RealSelectorView.SizeThatFits (size);
 
-			return new CGSize (fitSize.Width + 12.0, size.Height);
+			return new CGSize (Math.Round (fitSize.Width) + 12.0, size.Height);
 		}
 
 		public override void SetFrameSize (CGSize newSize)
@@ -237,18 +236,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			{
 				PathComponentCells = new [] {
 					new NSPathComponentCell {
-						Image = ImageService.GetIcon ("project").WithStyles ("disabled").ToBitmap ().ToNSImage (),
 						Title = ConfigurationPlaceholder,
 						Enabled = false,
-						TextColor = Styles.BaseForegroundColor.ToNSColor (),
 					},
 					new NSPathComponentCell {
-						Image = ImageService.GetIcon ("device").WithStyles ("disabled").ToBitmap ().ToNSImage (),
 						Title = RuntimePlaceholder,
 						Enabled = false,
-						TextColor = Styles.BaseForegroundColor.ToNSColor (),
 					}
 				};
+				UpdateStyle ();
 
 				BackgroundColor = NSColor.Clear;
 				FocusRingType = NSFocusRingType.None;
@@ -325,17 +321,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			void UpdateStyle (object sender = null, EventArgs e = null)
 			{
-				//if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
-					if (PathComponentCells [ConfigurationIdx].Enabled)
-						PathComponentCells [ConfigurationIdx].TextColor = Styles.BaseForegroundColor.ToNSColor ();
-					else
-						PathComponentCells [ConfigurationIdx].TextColor = Styles.DisabledForegroundColor.ToNSColor ();
-
-				if (PathComponentCells [RuntimeIdx].Enabled)
-					PathComponentCells [RuntimeIdx].TextColor = Styles.BaseForegroundColor.ToNSColor ();
-				else
-					PathComponentCells [RuntimeIdx].TextColor = Styles.DisabledForegroundColor.ToNSColor ();
-				//}
+				PathComponentCells [ConfigurationIdx].TextColor = Styles.BaseForegroundColor.ToNSColor ();
+				PathComponentCells [RuntimeIdx].TextColor = Styles.BaseForegroundColor.ToNSColor ();
 
 				UpdateImages ();
 			}
@@ -370,21 +357,19 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			void UpdatePathText (int idx, string text)
 			{
 				PathComponentCells [idx].Title = text;
-				UpdateStyle ();
+				UpdateImages ();
 			}
 
 			void UpdateImages ()
 			{
-				var projectImage = ImageService.GetIcon ("project");
-				if (!PathComponentCells [ConfigurationIdx].Enabled)
-					projectImage = projectImage.WithStyles ("disabled");
+				// HACK: NSPathControl does not support images with NSCustomImageRep used
+				//       by Xwt to draw custom/themed images. We have to convert them
+				//       to bitmaps, which has to be done after each theme/skin change.
+				var projectImage = ImageService.GetIcon ("project").ToBitmap (GtkWorkarounds.GetScaleFactor ()).ToNSImage ();
+				var deviceImage = ImageService.GetIcon ("device").ToBitmap (GtkWorkarounds.GetScaleFactor ()).ToNSImage ();
 				
-				var deviceImage = ImageService.GetIcon ("device");
-				if (!PathComponentCells [ConfigurationIdx].Enabled)
-					deviceImage = deviceImage.WithStyles ("disabled");
-				
-				PathComponentCells [ConfigurationIdx].Image = projectImage.ToBitmap ().ToNSImage ();
-				PathComponentCells [RuntimeIdx].Image = deviceImage.ToBitmap ().ToNSImage ();
+				PathComponentCells [ConfigurationIdx].Image = projectImage;
+				PathComponentCells [RuntimeIdx].Image = deviceImage;
 				RealignTexts ();
 			}
 
@@ -424,12 +409,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				set {
 					configurationModel = value;
 					int count = value.Count ();
-					PathComponentCells [ConfigurationIdx].Enabled = count > 1;
 					if (count == 0) {
 						state |= CellState.ConfigurationShown;
 						UpdatePathText (ConfigurationIdx, ConfigurationPlaceholder);
 					}
-					UpdateStyle ();
+					PathComponentCells [ConfigurationIdx].Enabled = count > 1;
 					OnSizeChanged ();
 				}
 			}
@@ -440,18 +424,31 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				set {
 					runtimeModel = value;
 					int count = value.Count ();
-					PathComponentCells [RuntimeIdx].Enabled = count > 1;
 					if (count == 0) {
 						state |= CellState.RuntimeShown;
 						UpdatePathText (RuntimeIdx, RuntimePlaceholder);
 					}
-					UpdateStyle ();
+					PathComponentCells [RuntimeIdx].Enabled = count > 1;
 					OnSizeChanged ();
 				}
 			}
 
 			public event EventHandler ConfigurationChanged;
 			public event EventHandler<HandledEventArgs> RuntimeChanged;
+
+			public override bool Enabled {
+				get {
+					return base.Enabled;
+				}
+				set {
+					base.Enabled = value;
+
+					if (value) {
+						PathComponentCells [RuntimeIdx].Enabled = runtimeModel.Count () > 1;
+						PathComponentCells [ConfigurationIdx].Enabled = configurationModel.Count () > 1;
+					}
+				}
+			}
 		}
 		#endregion
 	}

@@ -158,6 +158,7 @@ namespace MonoDevelop.Components.MainToolbar
 			HideTooltip ();
 			this.declarationviewwindow.Destroy ();
 			selectedItem = topItem = null;
+			currentTooltip = null;
 			base.OnDestroyed ();
 		}
 
@@ -573,25 +574,12 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		TooltipInformationWindow declarationviewwindow = new TooltipInformationWindow ();
-		uint declarationViewTimer, declarationViewWindowOpacityTimer;
-		void RemoveDeclarationViewTimer ()
-		{
-			if (declarationViewWindowOpacityTimer != 0) {
-				GLib.Source.Remove (declarationViewWindowOpacityTimer);
-				declarationViewWindowOpacityTimer = 0;
-			}
-			if (declarationViewTimer != 0) {
-				GLib.Source.Remove (declarationViewTimer);
-				declarationViewTimer = 0;
-			}
-		}
+		TooltipInformation currentTooltip;
 
 		void HideTooltip ()
 		{
-			RemoveDeclarationViewTimer ();
 			if (declarationviewwindow != null) {
 				declarationviewwindow.Hide ();
-				declarationviewwindow.Opacity = 0;
 			}
 			if (tooltipSrc != null)
 				tooltipSrc.Cancel ();
@@ -600,10 +588,11 @@ namespace MonoDevelop.Components.MainToolbar
 		CancellationTokenSource tooltipSrc = null;
 		async void ShowTooltip ()
 		{
-			HideTooltip ();
 			var currentSelectedItem = selectedItem;
-			if (currentSelectedItem == null || currentSelectedItem.DataSource == null)
+			if (currentSelectedItem == null || currentSelectedItem.DataSource == null) {
+				HideTooltip ();
 				return;
+			}
 			var i = currentSelectedItem.Item;
 			if (i < 0 || i >= currentSelectedItem.DataSource.Count)
 				return;
@@ -613,63 +602,28 @@ namespace MonoDevelop.Components.MainToolbar
 			tooltipSrc = new CancellationTokenSource ();
 			var token = tooltipSrc.Token;
 
-			TooltipInformation tooltip;
 			try {
-				tooltip = await currentSelectedItem.DataSource [i].GetTooltipInformation (token);
+				currentTooltip = await currentSelectedItem.DataSource [i].GetTooltipInformation (token);
 			} catch (OperationCanceledException) {
+				HideTooltip ();
 				return;
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while creating search popup window tooltip", e);
+				HideTooltip ();
 				return;
 			}
-			if (tooltip == null || string.IsNullOrEmpty (tooltip.SignatureMarkup) || token.IsCancellationRequested)
+			if (currentTooltip == null || string.IsNullOrEmpty (currentTooltip.SignatureMarkup) || token.IsCancellationRequested) {
+				HideTooltip ();
 				return;
+			}
+			
 			declarationviewwindow.Clear ();
-			declarationviewwindow.AddOverload (tooltip);
+			declarationviewwindow.AddOverload (currentTooltip);
 			declarationviewwindow.CurrentOverload = 0;
-			declarationViewTimer = GLib.Timeout.Add (250, DelayedTooltipShow);
-		}
-
-		bool DelayedTooltipShow ()
-		{
 			declarationviewwindow.ShowArrow = true;
 			var rect = SelectedItemRectangle;
-
-			declarationviewwindow.ShowPopup (this, new Gdk.Rectangle (0, (int)rect.Y, Allocation.Width, (int)rect.Height), PopupPosition.Right);
-			if (declarationViewWindowOpacityTimer != 0) 
-				GLib.Source.Remove (declarationViewWindowOpacityTimer);
-			declarationViewWindowOpacityTimer = GLib.Timeout.Add (50, new OpacityTimer (this).Timer);
-			declarationViewTimer = 0;
-			return false;
+			declarationviewwindow.ShowPopup (this, new Gdk.Rectangle (0, (int)rect.Y - 5, Allocation.Width, (int)rect.Height), PopupPosition.Right);
 		}
-
-		class OpacityTimer
-		{
-			public double Opacity { get; private set; }
-			
-			SearchPopupWindow window;
-			//			static int num = 0;
-			//			int id;
-			public OpacityTimer (SearchPopupWindow window)
-			{
-				//				id = num++;
-				this.window = window;
-				Opacity = 0.0;
-				window.declarationviewwindow.Opacity = Opacity;
-			}
-			
-			public bool Timer ()
-			{
-				Opacity = System.Math.Min (1.0, Opacity + 0.33);
-				window.declarationviewwindow.Opacity = Opacity;
-				bool result = Math.Round (Opacity * 10.0) < 10;
-				if (!result)
-					window.declarationViewWindowOpacityTimer = 0;
-				return result;
-			}
-		}
-
-
 
 		void SelectNextCategory ()
 		{
@@ -710,6 +664,7 @@ namespace MonoDevelop.Components.MainToolbar
 					);
 				}
 			}
+			ShowTooltip ();
 			QueueDraw ();	
 		}
 
@@ -742,12 +697,14 @@ namespace MonoDevelop.Components.MainToolbar
 			} else {
 				selectedItem = topItem;
 			}
+			ShowTooltip ();
 			QueueDraw ();
 		}
 
 		void SelectFirstCategory ()
 		{
 			selectedItem = topItem;
+			ShowTooltip ();
 			QueueDraw ();
 		}
 
@@ -761,6 +718,7 @@ namespace MonoDevelop.Components.MainToolbar
 				r.Item2,
 				r.Item2.Count - 1
 			);
+			ShowTooltip ();
 			QueueDraw ();
 		}
 

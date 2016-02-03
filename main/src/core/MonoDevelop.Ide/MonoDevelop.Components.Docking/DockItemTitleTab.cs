@@ -130,9 +130,9 @@ namespace MonoDevelop.Components.Docking
 			double inactiveIconAlpha;
 
 			if (IdeApp.Preferences == null || IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
-				inactiveIconAlpha = 0.6;
+				inactiveIconAlpha = 0.8;
 			else
-				inactiveIconAlpha = 0.45;
+				inactiveIconAlpha = 0.6;
 
 			if (labelWidget != null && label != null) {
 				if (visualStyle.UppercaseTitles.Value)
@@ -179,12 +179,12 @@ namespace MonoDevelop.Components.Docking
 			Gtk.HBox box = new HBox ();
 			box.Spacing = -2;
 			
-			if (icon != null) {
-				tabIcon = new ImageView (icon);
-				tabIcon.Show ();
-				box.PackStart (tabIcon, false, false, 3);
-			} else
-				tabIcon = null;
+			if (icon == null)
+				icon = ImageService.GetIcon ("md-empty");
+
+			tabIcon = new ImageView (icon);
+			tabIcon.Show ();
+			box.PackStart (tabIcon, false, false, 3);
 
 			if (!string.IsNullOrEmpty (label)) {
 				labelWidget = new ExtendedLabel (label);
@@ -221,7 +221,7 @@ namespace MonoDevelop.Components.Docking
 
 			Gtk.Alignment al = new Alignment (0, 0.5f, 1, 1);
 			HBox btnBox = new HBox (false, 0);
-			btnBox.PackStart (btnDock, false, false, 0);
+			btnBox.PackStart (btnDock, false, false, 3);
 			btnBox.PackStart (btnClose, false, false, 1);
 			al.Add (btnBox);
 			box.PackEnd (al, false, false, 3);

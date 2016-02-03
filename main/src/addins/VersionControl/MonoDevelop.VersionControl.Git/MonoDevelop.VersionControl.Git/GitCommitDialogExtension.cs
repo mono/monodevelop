@@ -162,7 +162,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			this.textView = textView;
 			overflowTextTag = new Gtk.TextTag ("overflow");
-			overflowTextTag.Foreground = "red";
+			overflowTextTag.Foreground = Ide.Gui.Styles.ErrorForegroundColor.ToHexString (false);
 			overflowTextTag.ForegroundSet = true;
 			textView.Buffer.TagTable.Add (overflowTextTag);
 			textView.Buffer.Changed += OnTextChanged;
