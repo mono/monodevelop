@@ -57,12 +57,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		[Obsolete("Use StringTagModelExtensions.GetBoolValue")]
-		public bool GetBoolean (string name, bool defaultValue = false)
-		{
-			return ((IStringTagModel)this).GetBoolValue (name, defaultValue);
-		}
-
 		object IStringTagModel.GetValue (string name)
 		{
 			string result;

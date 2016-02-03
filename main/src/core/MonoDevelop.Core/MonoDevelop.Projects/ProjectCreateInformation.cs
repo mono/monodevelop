@@ -93,10 +93,10 @@ namespace MonoDevelop.Projects
 
 			string parameter = GetNotConditionParameterName (createCondition);
 			if (parameter != null) {
-				return !Parameters.GetBoolean (parameter);
+				return !Parameters.GetBoolValue (parameter);
 			}
 
-			return Parameters.GetBoolean (createCondition);
+			return Parameters.GetBoolValue (createCondition);
 		}
 
 		static string GetNotConditionParameterName (string createCondition)
