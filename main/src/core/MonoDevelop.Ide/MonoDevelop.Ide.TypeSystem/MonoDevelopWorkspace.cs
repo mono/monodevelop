@@ -823,11 +823,16 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				if (projection != null) {
 					int originalOffset;
-					if (projection.TryConvertFromProjectionToOriginal (offset, out originalOffset))
+					//If change is outside projection segments don't apply it...
+					if (projection.TryConvertFromProjectionToOriginal (offset, out originalOffset)) {
 						offset = originalOffset;
+						data.ReplaceText (offset, change.Span.Length, change.NewText);
+						delta += change.Span.Length - change.NewText.Length;
+					}
+				} else {
+					data.ReplaceText (offset, change.Span.Length, change.NewText);
+					delta += change.Span.Length - change.NewText.Length;
 				}
-				data.ReplaceText (offset, change.Span.Length, change.NewText);
-				delta += change.Span.Length - change.NewText.Length;
 			}
 
 			return delta;
