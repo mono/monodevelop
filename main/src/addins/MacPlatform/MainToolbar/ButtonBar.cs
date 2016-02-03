@@ -51,7 +51,9 @@ namespace MonoDevelop.MacIntegration
 				button.ImageChanged += (o, e) => {
 					if (!indexMap.ContainsKey (_button))
 						return;
-					SetImage (ImageService.GetIcon (_button.Image, Gtk.IconSize.Menu).ToNSImage (), indexMap [_button]);
+					var img = ImageService.GetIcon (_button.Image, Gtk.IconSize.Menu).ToNSImage ();
+					img.Template = true;
+					SetImage (img, indexMap [_button]);
 					SetNeedsDisplay ();
 				};
 				button.EnabledChanged += (o, e) => {
@@ -109,9 +111,10 @@ namespace MonoDevelop.MacIntegration
 
 		void UpdateButton (IButtonBarButton button, int idx)
 		{
-			var img = ImageService.GetIcon (button.Image, Gtk.IconSize.Menu);
-			if (img.ToNSImage () != GetImage (idx)) {
-				SetImage (ImageService.GetIcon (button.Image, Gtk.IconSize.Menu).ToNSImage (), idx);
+			var img = ImageService.GetIcon (button.Image, Gtk.IconSize.Menu).ToNSImage ();
+			img.Template = true;
+			if (img != GetImage (idx)) {
+				SetImage (img, idx);
 				SetNeedsDisplay ();
 			}
 			if (button.Enabled != IsEnabled (idx)) {
