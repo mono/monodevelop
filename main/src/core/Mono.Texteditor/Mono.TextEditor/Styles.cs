@@ -37,6 +37,7 @@ namespace Mono.TextEditor.PopupWindow
 		public static Color InsertionCursorTitleTextColor { get; internal set; }
 		public static Color InsertionCursorBorderColor { get; internal set; }
 		public static Color InsertionCursorTextColor { get; internal set; }
+		public static Color InsertionCursorLineColor { get; internal set; }
 
 		public static Color TableLayoutModeBackgroundColor { get; internal set; }
 		public static Color TableLayoutModeTitleBackgroundColor { get; internal set; }
@@ -65,6 +66,7 @@ namespace Mono.TextEditor.PopupWindow
 				InsertionCursorTitleTextColor = Color.FromName ("#242424"); // TODO: VV: review color
 				InsertionCursorBorderColor = Color.FromName ("#d5d5d5"); // TODO: VV: review color
 				InsertionCursorTextColor = Color.FromName ("#4c4c4c"); // TODO: VV: review color
+				InsertionCursorLineColor = Color.FromName ("#666666"); // TODO: VV: review color
 
 			} else { // dark
 
@@ -75,6 +77,7 @@ namespace Mono.TextEditor.PopupWindow
 				InsertionCursorTitleTextColor = Color.FromName ("#00ff00"); // TODO: VV: review color
 				InsertionCursorBorderColor = Color.FromName ("#d5d5d5"); // TODO: VV: review color
 				InsertionCursorTextColor = Color.FromName ("#0000ff"); // TODO: VV: review color
+				InsertionCursorLineColor = Color.FromName ("#666666");// TODO: VV: review color
 
 			}
 
