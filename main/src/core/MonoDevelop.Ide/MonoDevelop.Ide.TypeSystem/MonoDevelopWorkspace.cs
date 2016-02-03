@@ -690,6 +690,17 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			bool isOpen;
 			var filePath = document.FilePath;
+
+			Projection projection = null;
+			foreach (var entry in ProjectionList) {
+				var p = entry.Projections.FirstOrDefault (proj => FilePath.PathComparer.Equals (proj.Document.FileName, filePath));
+				if (p != null) {
+					filePath = entry.File.FilePath;
+					projection = p;
+					break;
+				}
+			}
+
 			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out isOpen);
 
 			// Guard against already done changes in linked files.
@@ -703,19 +714,10 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 			}
 			changedFiles [filePath] = text;
-		
-			Projection projection = null;
-			foreach (var entry in ProjectionList) {
-				var p = entry.Projections.FirstOrDefault (proj => FilePath.PathComparer.Equals (proj.Document.FileName, filePath));
-				if (p != null) {
-					filePath = entry.File.FilePath;
-					projection = p;
-					break;
-				}
-			}
+
 			SourceText oldFile;
 			if (!isOpen || !document.TryGetText (out oldFile)) {
-				oldFile = new MonoDevelopSourceText (data);
+				oldFile = document.GetTextAsync ().Result;
 			}
 			var changes = text.GetTextChanges (oldFile).OrderByDescending (c => c.Span.Start).ToList ();
 			int delta = 0;
@@ -723,55 +725,59 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (!isOpen) {
 				delta = ApplyChanges (projection, data, changes);
 				var formatter = CodeFormatterService.GetFormatter (data.MimeType);
-				var mp = GetMonoProject (CurrentSolution.GetProject (id.ProjectId));
-				string currentText = data.Text;
+				if (formatter.SupportsPartialDocumentFormatting) {
+					var mp = GetMonoProject (CurrentSolution.GetProject (id.ProjectId));
+					string currentText = data.Text;
 
-				foreach (var change in changes) {
-					delta -= change.Span.Length - change.NewText.Length;
-					var startOffset = change.Span.Start - delta;
+					foreach (var change in changes) {
+						delta -= change.Span.Length - change.NewText.Length;
+						var startOffset = change.Span.Start - delta;
 
-					if (projection != null) {
-						int originalOffset;
-						if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
-							startOffset = originalOffset;
+						if (projection != null) {
+							int originalOffset;
+							if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
+								startOffset = originalOffset;
+						}
+
+						string str;
+						if (change.NewText.Length == 0) {
+							str = formatter.FormatText (mp.Policies, currentText, TextSegment.FromBounds (Math.Max (0, startOffset - 1), Math.Min (data.Length, startOffset + 1)));
+						} else {
+							str = formatter.FormatText (mp.Policies, currentText, new TextSegment (startOffset, change.NewText.Length));
+						}
+						data.ReplaceText (startOffset, change.NewText.Length, str);
 					}
-
-					string str;
-					if (change.NewText.Length == 0) {
-						str = formatter.FormatText (mp.Policies, currentText, TextSegment.FromBounds (Math.Max (0, startOffset - 1), Math.Min (data.Length, startOffset + 1)));
-					} else {
-						str = formatter.FormatText (mp.Policies, currentText, new TextSegment (startOffset, change.NewText.Length));
-					}
-					data.ReplaceText (startOffset, change.NewText.Length, str);
 				}
 				data.Save ();
 				OnDocumentTextChanged (id, new MonoDevelopSourceText (data), PreservationMode.PreserveValue);
 				FileService.NotifyFileChanged (filePath);
 			} else {
-				var formatter = CodeFormatterService.GetFormatter (data.MimeType); 
+				var formatter = CodeFormatterService.GetFormatter (data.MimeType);
 				var documentContext = IdeApp.Workbench.Documents.FirstOrDefault (d => FilePath.PathComparer.Compare (d.FileName, filePath) == 0);
 				if (documentContext != null) {
 					var editor = (TextEditor)data;
 					using (var undo = editor.OpenUndoGroup ()) {
 						delta = ApplyChanges (projection, data, changes);
 
-						foreach (var change in changes) {
-							delta -= change.Span.Length - change.NewText.Length;
-							var startOffset = change.Span.Start - delta;
-							if (projection != null) {
-								int originalOffset;
-								if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
-									startOffset = originalOffset;
-							}
-							if (change.NewText.Length == 0) {
-								formatter.OnTheFlyFormat (editor, documentContext, TextSegment.FromBounds (Math.Max (0, startOffset - 1), Math.Min (data.Length, startOffset + 1)));
-							} else {
-								formatter.OnTheFlyFormat (editor, documentContext, new TextSegment (startOffset, change.NewText.Length));
+						if (formatter.SupportsOnTheFlyFormatting) {
+							foreach (var change in changes) {
+								delta -= change.Span.Length - change.NewText.Length;
+								var startOffset = change.Span.Start - delta;
+								if (projection != null) {
+									int originalOffset;
+									if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
+										startOffset = originalOffset;
+								}
+								if (change.NewText.Length == 0) {
+									formatter.OnTheFlyFormat (editor, documentContext, TextSegment.FromBounds (Math.Max (0, startOffset - 1), Math.Min (data.Length, startOffset + 1)));
+								} else {
+									formatter.OnTheFlyFormat (editor, documentContext, new TextSegment (startOffset, change.NewText.Length));
+								}
 							}
 						}
 					}
 				}
-				OnDocumentTextChanged (id, new MonoDevelopSourceText(data.CreateDocumentSnapshot ()), PreservationMode.PreserveValue);
+				OnDocumentTextChanged (id, new MonoDevelopSourceText (data.CreateDocumentSnapshot ()), PreservationMode.PreserveValue);
 				Runtime.RunInMainThread (() => {
 					if (IdeApp.Workbench != null)
 						foreach (var w in IdeApp.Workbench.Documents)
