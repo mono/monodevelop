@@ -589,8 +589,10 @@ namespace MonoDevelop.Components.MainToolbar
 		async void ShowTooltip ()
 		{
 			var currentSelectedItem = selectedItem;
-			if (currentSelectedItem == null || currentSelectedItem.DataSource == null)
+			if (currentSelectedItem == null || currentSelectedItem.DataSource == null) {
+				HideTooltip ();
 				return;
+			}
 			var i = currentSelectedItem.Item;
 			if (i < 0 || i >= currentSelectedItem.DataSource.Count)
 				return;
@@ -603,13 +605,17 @@ namespace MonoDevelop.Components.MainToolbar
 			try {
 				currentTooltip = await currentSelectedItem.DataSource [i].GetTooltipInformation (token);
 			} catch (OperationCanceledException) {
+				HideTooltip ();
 				return;
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while creating search popup window tooltip", e);
+				HideTooltip ();
 				return;
 			}
-			if (currentTooltip == null || string.IsNullOrEmpty (currentTooltip.SignatureMarkup) || token.IsCancellationRequested)
+			if (currentTooltip == null || string.IsNullOrEmpty (currentTooltip.SignatureMarkup) || token.IsCancellationRequested) {
+				HideTooltip ();
 				return;
+			}
 			
 			declarationviewwindow.Clear ();
 			declarationviewwindow.AddOverload (currentTooltip);
@@ -658,6 +664,7 @@ namespace MonoDevelop.Components.MainToolbar
 					);
 				}
 			}
+			ShowTooltip ();
 			QueueDraw ();	
 		}
 
@@ -690,12 +697,14 @@ namespace MonoDevelop.Components.MainToolbar
 			} else {
 				selectedItem = topItem;
 			}
+			ShowTooltip ();
 			QueueDraw ();
 		}
 
 		void SelectFirstCategory ()
 		{
 			selectedItem = topItem;
+			ShowTooltip ();
 			QueueDraw ();
 		}
 
@@ -709,6 +718,7 @@ namespace MonoDevelop.Components.MainToolbar
 				r.Item2,
 				r.Item2.Count - 1
 			);
+			ShowTooltip ();
 			QueueDraw ();
 		}
 
