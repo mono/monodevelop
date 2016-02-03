@@ -1,6 +1,6 @@
 {
     "name":"Nightshade",
-    "version":"1.1",
+    "version":"1.1.1",
     "description":"An inky scheme with vibrant highlights.",
     "originator":"Anirudh Sanjeev <anirudh@anirudhsanjeev.org>",
 
@@ -82,7 +82,7 @@
         { "name":"Notification Border", "color":"#989892" },
 
         { "name":"Completion Window", "color":"BlackVim", "bordercolor":"#989892" },
-		{ "name":"Completion Tooltip Window", "color":"#0a0a0a", "bordercolor":"#989892" },
+        { "name":"Completion Tooltip Window", "color":"#0a0a0a", "bordercolor":"#989892" },
         { "name":"Completion Selection Bar Border", "color":"#2647DD" },
         { "name":"Completion Selection Bar Border(Inactive)", "color":"aluminium4" },
         { "name":"Completion Selection Bar Background", "color":"#2647DD", "secondcolor":"#2647DD" },
@@ -106,30 +106,30 @@
         { "name":"Breakpoint Marker(Disabled)", "color":"#4d4d4d", "bordercolor":"#4d4d4d" },
         { "name":"Breakpoint Marker(Invalid)", "color":"#604343", "bordercolor":"#604343" },
 
-        { "name":"Current Line Marker", "color":"#2a2a2a", "secondcolor":"#2a2a2a"},
-        { "name":"Current Line Marker(Inactive)", "color":"#2a2a2a", "secondcolor":"#2a2a2a"},
+        { "name":"Current Line Marker", "color":"#2a2a2a", "secondcolor":"#2a2a2a" },
+        { "name":"Current Line Marker(Inactive)", "color":"#2a2a2a", "secondcolor":"#2a2a2a" },
 
         { "name":"Debugger Current Line Marker", "color":"#69684c", "bordercolor":"#69684c" },
-        { "name":"Debugger Stack Line Marker", "color":"#5c6b4d", "bordercolor":"#657655"},
+        { "name":"Debugger Stack Line Marker", "color":"#5c6b4d", "bordercolor":"#657655" },
 
-        { "name":"Primary Link", "color":"chocolate1", "secondcolor":"chocolate3"},
-        { "name":"Primary Link(Highlighted)", "color":"chocolate1", "secondcolor":"chocolate2"},
-        { "name":"Secondary Link", "color":"white", "secondcolor":"aluminium6"},
-        { "name":"Secondary Link(Highlighted)", "color":"aluminium1", "secondcolor":"aluminium5"},
+        { "name":"Primary Link", "color":"chocolate1", "secondcolor":"chocolate3" },
+        { "name":"Primary Link(Highlighted)", "color":"chocolate1", "secondcolor":"chocolate2" },
+        { "name":"Secondary Link", "color":"white", "secondcolor":"aluminium6" },
+        { "name":"Secondary Link(Highlighted)", "color":"aluminium1", "secondcolor":"aluminium5" },
 
-        { "name":"Message Bubble Error Marker", "color":"#b28d37"},
-        { "name":"Message Bubble Error Tag", "color":"#e3a6a1", "secondcolor":"black"},
-        { "name":"Message Bubble Error Counter", "color":"black", "secondcolor":"#e3a6a1"},
-        { "name":"Message Bubble Error IconMargin", "color":"#735c54", "bordercolor":"#805b4d"},
-        { "name":"Message Bubble Error Line", "color":"#7b645c"},
-        { "name":"Message Bubble Error Tooltip", "color":"#e3a6a1"},
+        { "name":"Message Bubble Error Marker", "color":"#b28d37" },
+        { "name":"Message Bubble Error Tag", "color":"#e3a6a1", "secondcolor":"black" },
+        { "name":"Message Bubble Error Counter", "color":"black", "secondcolor":"#e3a6a1" },
+        { "name":"Message Bubble Error IconMargin", "color":"#735c54", "bordercolor":"#805b4d" },
+        { "name":"Message Bubble Error Line", "color":"#7b645c" },
+        { "name":"Message Bubble Error Tooltip", "color":"#e3a6a1" },
 
-        { "name":"Message Bubble Warning Marker", "color":"#b28d37"},
-        { "name":"Message Bubble Warning Tag", "color":"#efe89d", "secondcolor":"black"},
-        { "name":"Message Bubble Warning Counter", "color":"black", "secondcolor":"#efe89d"},
-        { "name":"Message Bubble Warning IconMargin", "color":"#777553", "bordercolor":"#948e51"},
-        { "name":"Message Bubble Warning Line", "color":"#807e5c"},
-        { "name":"Message Bubble Warning Tooltip", "color":"#efe89d"}
+        { "name":"Message Bubble Warning Marker", "color":"#b28d37" },
+        { "name":"Message Bubble Warning Tag", "color":"#efe89d", "secondcolor":"black" },
+        { "name":"Message Bubble Warning Counter", "color":"black", "secondcolor":"#efe89d" },
+        { "name":"Message Bubble Warning IconMargin", "color":"#777553", "bordercolor":"#948e51" },
+        { "name":"Message Bubble Warning Line", "color":"#807e5c" },
+        { "name":"Message Bubble Warning Tooltip", "color":"#efe89d" }
     ],
 
     "text":[
@@ -139,23 +139,24 @@
 
         { "name":"Collapsed Text", "fore":"aluminium3", "back":"BlackVim" },
 
-        { "name":"Line Numbers", "fore":"LineNrVim", "back":"BlackVim"},
+        { "name":"Line Numbers", "fore":"LineNrVim", "back":"BlackVim" },
 
         { "name":"Punctuation", "fore":"StringVim" },
         { "name":"Punctuation(Brackets)", "fore":"StringVim" },
 
-        { "name":"Comment(Line)", "fore":"CommentVim" },
-        { "name":"Comment(Block)", "fore":"CommentVim" },
-        { "name":"Comment(Doc)", "fore":"CommentVim" },
-        { "name":"Comment(DocTag)", "fore":"CommentVim"},
-        { "name":"Comment Tag", "fore":"TodoVim", "weight":"bold" },
+        { "name":"Comment(Line)", "fore":"CommentVim", "style":"italic" },
+        { "name":"Comment(Block)", "fore":"CommentVim", "style":"italic" },
+        { "name":"Comment(Doc)", "fore":"CommentVim", "style":"italic" },
+        { "name":"Comment(DocTag)", "fore":"CommentVim", "style":"italic" },
+        { "name":"Comment Tag", "fore":"TodoVim", "weight":"bold", "style":"italic" },
+
         { "name":"Excluded Code", "fore":"CommentVim" },
 
-        { "name":"String", "fore":"StringVim"},
-        { "name":"String(Escape)", "fore":"StringVim"},
-        { "name":"String(C# @ Verbatim)", "fore":"StringVim"},
+        { "name":"String", "fore":"StringVim" },
+        { "name":"String(Escape)", "fore":"StringVim" },
+        { "name":"String(C# @ Verbatim)", "fore":"StringVim" },
 
-        { "name":"Number", "fore":"NumberVim"},
+        { "name":"Number", "fore":"NumberVim" },
 
         { "name":"Preprocessor", "fore":"PreProcVim" },
         { "name":"Preprocessor(Region Name)", "fore":"PreProcVim" },
@@ -184,30 +185,30 @@
 
         { "name":"Completion Text", "fore":"NormalVim" },
         { "name":"Completion Matching Substring", "fore":"StatementVim" },
-        
+
         { "name":"Completion Selected Text", "fore":"NormalVim" },
         { "name":"Completion Selected Matching Substring", "fore":"StatementVim" },
 
         { "name":"Completion Selected Text(Inactive)", "fore":"NormalVim" },
         { "name":"Completion Selected Matching Substring(Inactive)", "fore":"StatementVim" },
 
-        { "name":"Keyword(Access)", "fore":"TypeVim" },
-        { "name":"Keyword(Type)", "fore":"TypeVim" },
-        { "name":"Keyword(Operator)", "fore":"ConstantVim" },
-        { "name":"Keyword(Selection)", "fore":"StatementVim" },
-        { "name":"Keyword(Iteration)", "fore":"StatementVim" },
-        { "name":"Keyword(Jump)", "fore":"StatementVim" },
-        { "name":"Keyword(Context)", "fore":"StatementVim" },
-        { "name":"Keyword(Exception)", "fore":"StatementVim" },
-        { "name":"Keyword(Modifiers)", "fore":"TypeVim" },
-        { "name":"Keyword(Constants)", "fore":"SpecialVim" },
-        { "name":"Keyword(Void)", "fore":"SpecialVim" },
-        { "name":"Keyword(Namespace)", "fore":"TypeVim", "weight":"Bold" },
-        { "name":"Keyword(Property)", "fore":"TypeVim" },
-        { "name":"Keyword(Declaration)", "fore":"TypeVim", "weight":"Bold" },
-        { "name":"Keyword(Parameter)", "fore":"TypeVim" },
-        { "name":"Keyword(Operator Declaration)", "fore":"TypeVim", "weight":"Bold" },
-        { "name":"Keyword(Other)", "fore":"SpecialVim" },
+        { "name":"Keyword(Access)", "fore":"TypeVim", "weight":"bold" },
+        { "name":"Keyword(Type)", "fore":"TypeVim", "weight":"bold" },
+        { "name":"Keyword(Operator)", "fore":"ConstantVim", "weight":"bold" },
+        { "name":"Keyword(Selection)", "fore":"StatementVim", "weight":"bold" },
+        { "name":"Keyword(Iteration)", "fore":"StatementVim", "weight":"bold" },
+        { "name":"Keyword(Jump)", "fore":"StatementVim", "weight":"bold" },
+        { "name":"Keyword(Context)", "fore":"StatementVim", "weight":"bold" },
+        { "name":"Keyword(Exception)", "fore":"StatementVim", "weight":"bold" },
+        { "name":"Keyword(Modifiers)", "fore":"TypeVim", "weight":"bold" },
+        { "name":"Keyword(Constants)", "fore":"SpecialVim", "weight":"bold" },
+        { "name":"Keyword(Void)", "fore":"SpecialVim", "weight":"bold" },
+        { "name":"Keyword(Namespace)", "fore":"TypeVim", "weight":"bold" },
+        { "name":"Keyword(Property)", "fore":"TypeVim", "weight":"bold" },
+        { "name":"Keyword(Declaration)", "fore":"TypeVim", "weight":"bold" },
+        { "name":"Keyword(Parameter)", "fore":"TypeVim", "weight":"bold" },
+        { "name":"Keyword(Operator Declaration)", "fore":"TypeVim", "weight":"bold" },
+        { "name":"Keyword(Other)", "fore":"SpecialVim", "weight":"bold" },
 
         { "name":"User Types", "fore":"IdentifierVim" },
         { "name":"User Types(Enums)", "fore":"IdentifierVim" },
@@ -216,8 +217,8 @@
         { "name":"User Types(Value types)", "fore":"IdentifierVim" },
         { "name":"User Types(Type parameters)", "fore":"IdentifierVim" },
 
-        { "name":"User Field Usage", "fore":"NormalVim" },
-        { "name":"User Field Declaration", "fore":"NormalVim" },
+        { "name":"User Field Usage", "fore":"NormalVim", "style":"italic" },
+        { "name":"User Field Declaration", "fore":"NormalVim", "style":"italic" },
 
         { "name":"User Property Usage", "fore":"NormalVim" },
         { "name":"User Property Declaration", "fore":"NormalVim" },
@@ -228,8 +229,8 @@
         { "name":"User Method Usage", "fore":"NormalVim" },
         { "name":"User Method Declaration", "fore":"NormalVim" },
 
-        { "name":"User Parameter Usage", "fore":"NormalVim" },
-        { "name":"User Parameter Declaration", "fore":"NormalVim" },
+        { "name":"User Parameter Usage", "fore":"NormalVim", "style":"italic" },
+        { "name":"User Parameter Declaration", "fore":"NormalVim", "style":"italic" },
 
         { "name":"User Variable Usage", "fore":"NormalVim" },
         { "name":"User Variable Declaration", "fore":"NormalVim" },
@@ -243,21 +244,21 @@
         { "name":"Debugger Current Statement", "fore":"white", "back":"#69684c" },
         { "name":"Debugger Stack Line", "fore":"white", "back":"#5c6b4d" },
 
-        { "name":"Diff Line(Added)", "fore":"butter2"  },
-        { "name":"Diff Line(Removed)", "fore":"skyblue1"  },
-        { "name":"Diff Line(Changed)", "fore":"plum1"  },
+        { "name":"Diff Line(Added)", "fore":"butter2" },
+        { "name":"Diff Line(Removed)", "fore":"skyblue1" },
+        { "name":"Diff Line(Changed)", "fore":"plum1" },
         { "name":"Diff Header", "fore":"chameleon1", "weight":"bold" },
         { "name":"Diff Header(Separator)", "fore":"aluminium4" },
-        { "name":"Diff Header(Old)", "fore":"chameleon1", "weight":"bold"  },
-        { "name":"Diff Header(New)", "fore":"chameleon1", "weight":"bold"  },
-        { "name":"Diff Location", "fore":"chameleon1", "weight":"bold"  },
+        { "name":"Diff Header(Old)", "fore":"chameleon1", "weight":"bold" },
+        { "name":"Diff Header(New)", "fore":"chameleon1", "weight":"bold" },
+        { "name":"Diff Location", "fore":"chameleon1", "weight":"bold" },
 
-        { "name":"Css Comment", "fore":"CommentVim" },
-        { "name":"Css Property Name", "fore":"NormalVim" },
-        { "name":"Css Property Value", "fore":"StringVim" },
-        { "name":"Css Selector", "fore":"CommentVim" },
-        { "name":"Css String Value", "fore":"StringVim" },
-        { "name":"Css Keyword", "fore":"StatementVim" },
+        { "name":"Css Comment", "fore":"CommentVim", "weight":"bold" },
+        { "name":"Css Property Name", "fore":"NormalVim", "weight":"bold" },
+        { "name":"Css Property Value", "fore":"StringVim", "weight":"bold" },
+        { "name":"Css Selector", "fore":"CommentVim", "weight":"bold" },
+        { "name":"Css String Value", "fore":"StringVim", "weight":"bold" },
+        { "name":"Css Keyword", "fore":"StatementVim", "weight":"bold" },
 
         { "name":"Script Comment", "fore":"CommentVim" },
         { "name":"Script Identifier" },

@@ -1330,7 +1330,7 @@ namespace Mono.TextEditor
 
 		public event LineDecorator DecorateLineBg;
 
-		const double whitespaceMarkerAlpha = 0.3;
+		const double whitespaceMarkerAlpha = 0.12;
 
 		void InnerDecorateTabsAndSpaces (Cairo.Context ctx, LayoutWrapper layout, int offset, double x, double y, int selectionStart, int selectionEnd, char spaceOrTab)
 		{
@@ -1850,7 +1850,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			cr.SetSourceRGBA (col.R, col.G, col.B, whitespaceMarkerAlpha);
+			cr.SetSourceRGBA (col.R, col.G, col.B, whitespaceMarkerAlpha * 1.4); // needs to more opaque due to font rendering
 			cr.ShowLayout (layout);
 			cr.Restore ();
 		}
