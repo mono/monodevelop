@@ -1129,10 +1129,10 @@ namespace MonoDevelop.Components
 		static extern void gtk_icon_source_set_scale_wildcarded (IntPtr source, bool setting);
 
 		[DllImport (PangoUtil.LIBGTK, CallingConvention = CallingConvention.Cdecl)]
-		static extern double gtk_widget_get_scale_factor (IntPtr widget);
+		static extern int gtk_widget_get_scale_factor (IntPtr widget);
 
 		[DllImport (PangoUtil.LIBGDK, CallingConvention = CallingConvention.Cdecl)]
-		static extern double gdk_screen_get_monitor_scale_factor (IntPtr widget, int monitor);
+		static extern int gdk_screen_get_monitor_scale_factor (IntPtr widget, int monitor);
 
 		[DllImport (PangoUtil.LIBGOBJECT, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_object_get_data (IntPtr source, string name);
@@ -1206,7 +1206,7 @@ namespace MonoDevelop.Components
 			return 1;
 		}
 
-		public static double GetScaleFactor (this Gdk.Screen screen, int monitor)
+		public static int GetScaleFactor (this Gdk.Screen screen, int monitor)
 		{
 			if (!supportsHiResIcons)
 				return 1;
@@ -1220,7 +1220,7 @@ namespace MonoDevelop.Components
 			return 1;
 		}
 
-		public static double GetScaleFactor ()
+		public static int GetScaleFactor ()
 		{
 			return GetScaleFactor (Gdk.Screen.Default, 0);
 		}
