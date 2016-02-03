@@ -2,6 +2,7 @@
 open System
 open System.IO
 open System.Collections.Generic
+open System.Threading.Tasks
 open MonoDevelop
 open MonoDevelop.Core
 open MonoDevelop.Components
@@ -238,7 +239,7 @@ module Refactoring =
         let monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
         let findAsync = async {
             let dependentProjects = getDependentProjects ctx.Project symbolUse
-
+           
             let! symbolrefs =
                 languageService.GetUsesOfSymbolInProject(ctx.Project.FileName.ToString(), editor.FileName.ToString(), editor.Text, symbolUse.Symbol, dependentProjects)
 
@@ -274,7 +275,7 @@ module Refactoring =
         let onComplete _ = monitor.Dispose()
         Async.StartWithContinuations(findAsync, onComplete, onComplete, onComplete)
 
-    let findOverloads (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse, _lastIdent) =
+    let findOverloads (editor:TextEditor, _ctx:DocumentContext, symbolUse:FSharpSymbolUse, _lastIdent) =
         let monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
         let findAsync = async {
             //let dependentProjects = getDependentProjects ctx.Project symbolUse
@@ -480,11 +481,16 @@ type CurrentRefactoringOperationsHandler() =
                                         |> ignore
                                     ainfo.Add (declSet)
                             | _ -> ()
+                        
+                        let findReferences() =
+                            match symbolUse with
+                            | Val _local -> Refactoring.findReferences (doc.Editor, doc, symbolUse, lastIdent)
+                            | _ -> RefactoringService.FindReferencesAsync(symbolUse.Symbol.XmlDocSig) |> ignore
 
                         //find references
                         let findReferencesCommand = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences)
                         findReferencesCommand.Enabled <- true
-                        ainfo.Add (findReferencesCommand, Action (fun () -> Refactoring.findReferences (doc.Editor, doc, symbolUse, lastIdent)))
+                        ainfo.Add (findReferencesCommand, Action(fun () -> findReferences()))
 
                         //TODO: this one finds all overloads of a given symbol
                         //All that needs to happen here is to pass all dependent project infos
@@ -611,10 +617,43 @@ type GotoDeclarationHandler() =
             | Some ast ->
                 match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
                 | (_line, _col, _lineTxt), Some symbolUse when Refactoring.Operations.canJump symbolUse editor.FileName context.Project.ParentSolution ->
-                    //let lastIdent = Symbols.lastIdent col lineTxt
                     Refactoring.jumpToDeclaration (editor, context, symbolUse)
                 | _ -> ()
             | _ -> ()
+
+type FSharpFindReferencesProvider () =
+    inherit MonoDevelop.Refactoring.FindReferencesProvider ()
+
+    override x.FindReferences(documentationCommentId, _hintProject, token) =
+        let getAllProjectFiles() =
+            seq { 
+                for p in IdeApp.Workspace.GetAllProjects() do
+                    if p.SupportedLanguages |> Array.contains "F#"
+                    then yield p.FileName.FullPath.ToString() 
+            }
+
+        let results = asyncSeq {
+            for projectFile in getAllProjectFiles() do
+                let! allSymbols = Search.getAllProjectSymbols(projectFile)
+
+                let results =
+                    allSymbols
+                    |> Seq.filter (fun symbol -> symbol.Symbol.XmlDocSig = documentationCommentId)
+
+                for symbol in results do
+                    let (filename, startOffset, endOffset) = Symbols.getOffsetsTrimmed symbol.Symbol.DisplayName symbol
+                    yield SearchResult (FileProvider (filename), startOffset, endOffset-startOffset)
+        }
+
+        let computation = async {
+            return results |> AsyncSeq.toSeq
+        }
+
+        Async.StartAsTask(computation = computation, cancellationToken = token)
+
+    override x.FindAllReferences(documentationCommentId, hintProject, token) =
+        //TODO:
+        Task.FromResult Seq.empty
 
 type FSharpCommandsTextEditorExtension () =
     inherit Editor.Extension.TextEditorExtension ()
