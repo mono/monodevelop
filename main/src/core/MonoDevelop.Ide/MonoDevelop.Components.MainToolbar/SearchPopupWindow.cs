@@ -575,18 +575,9 @@ namespace MonoDevelop.Components.MainToolbar
 
 		TooltipInformationWindow declarationviewwindow = new TooltipInformationWindow ();
 		TooltipInformation currentTooltip;
-		uint declarationViewTimer;
-		void RemoveDeclarationViewTimer ()
-		{
-			if (declarationViewTimer != 0) {
-				GLib.Source.Remove (declarationViewTimer);
-				declarationViewTimer = 0;
-			}
-		}
 
 		void HideTooltip ()
 		{
-			RemoveDeclarationViewTimer ();
 			if (declarationviewwindow != null) {
 				declarationviewwindow.Hide ();
 			}
@@ -619,18 +610,13 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 			if (currentTooltip == null || string.IsNullOrEmpty (currentTooltip.SignatureMarkup) || token.IsCancellationRequested)
 				return;
-			declarationViewTimer = GLib.Timeout.Add (250, DelayedTooltipShow);
-		}
-
-		bool DelayedTooltipShow ()
-		{
+			
 			declarationviewwindow.Clear ();
 			declarationviewwindow.AddOverload (currentTooltip);
 			declarationviewwindow.CurrentOverload = 0;
 			declarationviewwindow.ShowArrow = true;
 			var rect = SelectedItemRectangle;
 			declarationviewwindow.ShowPopup (this, new Gdk.Rectangle (113, (int)rect.Y - 5, Allocation.Width, (int)rect.Height), PopupPosition.Right);
-			return false;
 		}
 
 		void SelectNextCategory ()
