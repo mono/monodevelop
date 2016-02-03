@@ -1,7 +1,7 @@
 {
     "name":"Oblivion",
-    "version":"1.1.2",
-    "description":"'...where the soul at last is lost in utter peace'",
+    "version":"1.1.4",
+    "description":"‘...where the soul at last is lost in utter peace’",
     "originator":"Xamarin Inc. (http://xamarin.com)",
 
     "palette":[
@@ -110,8 +110,8 @@
 
     "text":[
         { "name":"Plain Text", "fore":"aluminium2", "back":"aluminium6" },
-        { "name":"Selected Text", "back":"#484b55" },
-        { "name":"Selected Text(Inactive)", "back":"#484b55" },
+        { "name":"Selected Text", "back":"#61677e" },
+        { "name":"Selected Text(Inactive)", "back":"#6f6f6f" },
 
         { "name":"Collapsed Text", "fore":"aluminium3", "back":"aluminium6" },
 
@@ -124,7 +124,7 @@
         { "name":"Comment(Block)", "fore":"aluminium4", "style":"italic" },
         { "name":"Comment(Doc)", "fore":"#7ab8c8", "style":"italic" },
         { "name":"Comment(DocTag)", "fore":"#79809e", "style":"italic" },
-        { "name":"Comment Tag", "fore":"aluminium4", "back":"butter1", "weight":"bold", "style":"italic" },
+        { "name":"Comment Tag", "fore":"#ff00ff", "weight":"bold" },
 
         { "name":"Excluded Code", "fore":"aluminium4" },
 

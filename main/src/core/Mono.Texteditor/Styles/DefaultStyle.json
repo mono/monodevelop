@@ -1,6 +1,6 @@
 {
     "name":"Default",
-    "version":"1.3.4",
+    "version":"1.3.5",
     "description":"Bright and friendly, just like Xamarin.",
     "originator":"Xamarin Inc. (http://xamarin.com)",
 
@@ -125,7 +125,7 @@
         { "name":"Comment(Block)", "fore":"comment-gray", "style":"italic" },
         { "name":"Comment(Doc)", "fore":"#97b488", "style":"italic" },
         { "name":"Comment(DocTag)", "fore":"#c8b97c", "style":"italic" },
-        { "name":"Comment Tag", "fore":"comment-gray", "weight":"bold", "style":"italic" },
+        { "name":"Comment Tag", "fore":"#ff00ff", "weight":"bold" },
 
         { "name":"Excluded Code", "fore":"comment-gray" },
 

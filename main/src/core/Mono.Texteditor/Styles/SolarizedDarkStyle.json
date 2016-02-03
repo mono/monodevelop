@@ -1,6 +1,6 @@
 {
     "name":"Solarized Dark",
-    "version":"1.1.1",
+    "version":"1.1.2",
     "description":"An artful, dark scheme that's easy on the eyes.",
     "originator":"Xamarin Inc. (http://xamarin.com)",
 
@@ -113,7 +113,7 @@
         { "name":"Comment(Block)", "fore":"base01", "style":"italic" },
         { "name":"Comment(Doc)", "fore":"base01", "style":"italic" },
         { "name":"Comment(DocTag)", "fore":"base01", "style":"italic" },
-        { "name":"Comment Tag", "fore":"base01", "weight":"bold", "style":"italic" },
+        { "name":"Comment Tag", "fore":"#ff00ff", "weight":"bold" },
 
         { "name":"Excluded Code", "fore":"base01" },
 

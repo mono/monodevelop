@@ -1,6 +1,6 @@
 {
     "name":"Nightshade",
-    "version":"1.1.1",
+    "version":"1.1.2",
     "description":"An inky scheme with vibrant highlights.",
     "originator":"Anirudh Sanjeev <anirudh@anirudhsanjeev.org>",
 
@@ -148,7 +148,7 @@
         { "name":"Comment(Block)", "fore":"CommentVim", "style":"italic" },
         { "name":"Comment(Doc)", "fore":"CommentVim", "style":"italic" },
         { "name":"Comment(DocTag)", "fore":"CommentVim", "style":"italic" },
-        { "name":"Comment Tag", "fore":"TodoVim", "weight":"bold", "style":"italic" },
+        { "name":"Comment Tag", "fore":"#ff00ff", "weight":"bold" },
 
         { "name":"Excluded Code", "fore":"CommentVim" },
 
