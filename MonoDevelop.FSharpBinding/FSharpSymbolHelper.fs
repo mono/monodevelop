@@ -43,8 +43,10 @@ module Symbols =
         match IdeApp.Workbench.GetDocument (fileName) with
         | null ->
             let doc = Editor.TextEditorFactory.LoadDocument (fileName)
-            Editor.TextEditorFactory.CreateNewEditor (doc)
-        | doc -> doc.Editor
+            let editor = new TextEditorData()
+            editor.Text <- doc.Text
+            editor
+        | doc -> doc.Editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
 
     let getOffsets (range:Range.range) (editor:Editor.IReadonlyTextDocument) =
         let startOffset = editor.LocationToOffset (range.StartLine, range.StartColumn+1)

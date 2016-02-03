@@ -110,6 +110,16 @@ module FSharpSymbolExt =
             | :? FSharpField as m -> not m.Accessibility.IsPublic
             | _ -> false
 
+        member x.XmlDocSig =
+            match x with
+            | :? FSharpMemberOrFunctionOrValue as func -> func.XmlDocSig
+            | :? FSharpEntity as fse -> fse.XmlDocSig
+            | :? FSharpField as fsf -> fsf.XmlDocSig
+            | :? FSharpUnionCase as fsu -> fsu.XmlDocSig
+            | :? FSharpActivePatternCase as apc -> apc.XmlDocSig
+            | :? FSharpGenericParameter as gp -> ""
+            | _ -> ""
+
     type FSharpMemberOrFunctionOrValue with
       // FullType may raise exceptions (see https://github.com/fsharp/fsharp/issues/307).
         member x.FullTypeSafe = Option.attempt (fun _ -> x.FullType)

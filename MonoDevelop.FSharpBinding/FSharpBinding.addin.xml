@@ -173,7 +173,10 @@
     <Class class="MonoDevelop.FSharp.ProjectSearchCategory" />
     <Class class="MonoDevelop.FSharp.FakeSearchCategory" />
   </Extension>
-
+	
+  <Extension path = "/MonoDevelop/Refactoring/FindReferencesProvider">
+ 	<Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class="MonoDevelop.FSharp.FSharpFindReferencesProvider" />
+  </Extension>
   <!-- F# interactive -->
 
   <Extension path="/MonoDevelop/Ide/Pads">
