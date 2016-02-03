@@ -44,13 +44,6 @@ namespace MonoDevelop.Projects
 			parameters = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase);
 		}
 
-		public void MergeTo (IDictionary<string, string> other)
-		{
-			foreach (KeyValuePair<string, string> parameter in parameters) {
-				other [parameter.Key] = parameter.Value;
-			}
-		}
-
 		public string this [string name] {
 			get {
 				string result;
