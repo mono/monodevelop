@@ -112,8 +112,14 @@ namespace MonoDevelop.Ide.Projects
 		{
 			selection.Clear ();
 			configureProject = netProject;
-			SetTargetFramework (netProject.AssemblyContext, netProject.TargetFramework);
-			Reset ();
+			if (netProject != null) {
+				SetTargetFramework (netProject.AssemblyContext, netProject.TargetFramework);
+				Reset ();
+			} else {
+				targetContext = null;
+				targetVersion = null;
+				store.Clear ();
+			}
 		}
 		
 		public void SetFilter (string filter)

@@ -96,8 +96,11 @@ namespace MonoDevelop.Ide.Projects
 			this.configureProject = configureProject;
 			foreach (var p in panels)
 				p.SetProject (configureProject);
-			
+
 			((ListStore) ReferencesTreeView.Model).Clear ();
+
+			if (configureProject == null)
+				return;
 
 			foreach (ProjectReference refInfo in configureProject.References)
 				AppendReference (refInfo);

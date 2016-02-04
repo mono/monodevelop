@@ -198,6 +198,11 @@ namespace MonoDevelop.Ide.Projects
 			this.project = configureProject;
 			assemblies.Clear ();
 
+			if (configureProject == null) {
+				Reset ();
+				return;
+			}
+
 			nugetDir = configureProject.ParentSolution.ItemDirectory.Combine ("packages");
 
 			foreach (var asm in selectDialog.GetRecentFileReferences (project.ParentSolution.FileName)) {
