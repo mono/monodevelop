@@ -370,6 +370,10 @@ namespace MonoDevelop.Ide.Gui
 			// Or at least one that updates "soon".
 			TypeSystemService.TrackFileChanges = false;
 			try {
+				// Freeze the file change events. There can be several such events, and sending them all together
+				// is more efficient
+				FileService.FreezeEvents ();
+
 				if (Window.ViewContent.IsViewOnly || !Window.ViewContent.IsDirty)
 					return;
 	
@@ -396,13 +400,17 @@ namespace MonoDevelop.Ide.Gui
 						// save backup first						
 						if (IdeApp.Preferences.CreateFileBackupCopies) {
                             await Window.ViewContent.Save (fileName + "~");
-                            FileService.NotifyFileChanged (fileName);
+							FileService.NotifyFileChanged (fileName + "~");
 						}
 						await Window.ViewContent.Save (fileName);
+						FileService.NotifyFileChanged (fileName);
                         OnSaved(EventArgs.Empty);
 					}
 				}
 			} finally {
+				// Send all file change notifications
+				FileService.ThawEvents ();
+
 				// Set the file time of the current document after the file time of the written file, to prevent double file updates.
 				// Note that the parsed document may be overwritten by a background thread to a more recent one.
 				var doc = parsedDocument;
