@@ -1,11 +1,11 @@
 {
     "name":"Visual Studio",
-    "version":"1.1.4",
+    "version":"1.1.5",
     "description":"Reminiscent of Microsoft Visual Studio's default colors.",
     "originator":"Jeffrey Stedfast <fejj@novell.com>",
 
     "palette":[
-        { "name":"text-black", "value":"#444444" },
+        { "name":"text-black", "value":"#333333" },
         { "name":"comment-green", "value":"#008000" },
         { "name":"keyword-blue", "value":"#0000ff" },
         { "name":"semantic-type", "value":"#2B90AF" },

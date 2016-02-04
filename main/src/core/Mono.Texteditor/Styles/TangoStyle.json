@@ -1,11 +1,11 @@
 {
     "name":"Tango",
-    "version":"1.1.4",
+    "version":"1.1.5",
     "description":"A light scheme using colors from the Tango Project.",
     "originator":"Xamarin Inc. (http://xamarin.com)",
 
     "palette":[
-        { "name":"text-black", "value":"#444444" },
+        { "name":"text-black", "value":"#333333" },
         { "name":"comment-gray", "value":"#b0b0b0" },
         { "name":"butter1", "value":"#fce94f" },
         { "name":"butter2", "value":"#edd400" },

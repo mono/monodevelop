@@ -1,11 +1,11 @@
 {
     "name":"Default",
-    "version":"1.3.5",
+    "version":"1.3.6",
     "description":"Bright and friendly, just like Xamarin.",
     "originator":"Xamarin Inc. (http://xamarin.com)",
 
     "palette":[
-        { "name":"text-black", "value":"#444444" },
+        { "name":"text-black", "value":"#333333" },
         { "name":"comment-gray", "value":"#b0b0b0" },
         { "name":"butter2", "value":"#edd400" },
         { "name":"chameleon1", "value":"#8ae234" },
