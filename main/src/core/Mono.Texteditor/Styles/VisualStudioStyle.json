@@ -1,6 +1,6 @@
 {
     "name":"Visual Studio",
-    "version":"1.1.5",
+    "version":"1.1.6",
     "description":"Reminiscent of Microsoft Visual Studio's default colors.",
     "originator":"Jeffrey Stedfast <fejj@novell.com>",
 
@@ -17,8 +17,8 @@
 
         { "name":"Column Ruler", "color":"#eeeeee" },
 
-        { "name":"Fold Square", "color":"#A5A5A5" },
-        { "name":"Fold Cross", "color":"#555555", "secondcolor":"#E2E2E2" },
+        { "name":"Fold Square", "color":"#cdcecc", "secondcolor":"white" },
+        { "name":"Fold Cross", "color":"#b1b2b0", "secondcolor":"white" },
 
         { "name":"Indentation Guide", "color":"#e5e5e5" },
 

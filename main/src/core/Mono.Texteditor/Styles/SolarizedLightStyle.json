@@ -1,6 +1,6 @@
 {
     "name":"Solarized Light",
-    "version":"1.1.3",
+    "version":"1.1.4",
     "description":"An artful, light scheme that's easy on the eyes.",
     "originator":"Xamarin Inc. (http://xamarin.com)",
 
@@ -32,8 +32,8 @@
 
         { "name":"Column Ruler", "color":"#eae4d3" },
 
-        { "name":"Fold Square", "color":"base01", "secondcolor":"base3" },
-        { "name":"Fold Cross", "color":"base01", "secondcolor":"base3" },
+        { "name":"Fold Square", "color":"#dcd8c6", "secondcolor":"base3" },
+        { "name":"Fold Cross", "color":"#a3afb3", "secondcolor":"base3" },
 
         { "name":"Indentation Guide", "color":"#e2dccc" },
 
