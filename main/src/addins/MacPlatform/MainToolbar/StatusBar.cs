@@ -868,7 +868,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		void RepositionContents ()
 		{
 			nfloat yOffset = 0;
-			if (Window != null && Window.Screen.BackingScaleFactor == 1) {
+			if (Window != null && Window.Screen != null && Window.Screen.BackingScaleFactor == 1) {
 				yOffset = -1;
 			}
 
