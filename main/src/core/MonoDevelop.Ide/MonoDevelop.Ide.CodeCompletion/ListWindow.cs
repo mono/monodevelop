@@ -257,7 +257,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public bool IsUniqueMatch {
 			get {
-				list.FilterWords ();
 				return list.filteredItems.Count == 1;
 			}
 		}
