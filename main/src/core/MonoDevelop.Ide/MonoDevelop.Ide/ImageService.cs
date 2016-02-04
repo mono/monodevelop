@@ -542,6 +542,8 @@ namespace MonoDevelop.Ide
 
 		static string GetStockIdForImageSpec (RuntimeAddin addin, string filename, Gtk.IconSize size)
 		{
+			if (String.IsNullOrEmpty (filename))
+				return String.Empty;
 			if (filename.IndexOf ('|') == -1)
 				return PrivGetStockId (addin, filename, size);
 
