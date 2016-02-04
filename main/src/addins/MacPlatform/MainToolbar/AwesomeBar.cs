@@ -27,6 +27,7 @@ using System;
 using AppKit;
 using Foundation;
 using CoreGraphics;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -99,7 +100,24 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			var locationInSV = Superview.ConvertPointFromView (theEvent.LocationInWindow, null);
 			if (theEvent.ClickCount == 2 && HitTest (locationInSV) == this) {
-				Window.Zoom (this);
+				bool miniaturise = false;
+
+				if (MacSystemInformation.OsVersion < MacSystemInformation.ElCapitan) {
+					miniaturise = NSUserDefaults.StandardUserDefaults.BoolForKey ("AppleMiniaturizeOnDoubleClick");
+				} else {
+					var action = NSUserDefaults.StandardUserDefaults.StringForKey ("AppleActionOnDoubleClick");
+					if (action == "None") {
+						return;
+					} else if (action == "Minimize") {
+						miniaturise = true;
+					}
+				}
+
+				if (miniaturise) {
+					Window.Miniaturize (this);
+				} else {
+					Window.Zoom (this);
+				}
 			}
 		}
 
