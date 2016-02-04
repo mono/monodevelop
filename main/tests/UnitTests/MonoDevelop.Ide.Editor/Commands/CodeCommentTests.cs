@@ -243,6 +243,30 @@ namespace MonoDevelop.Ide.Editor
 }");
 		}
 
+
+		/// <summary>
+		/// Bug 38355 - comment selected lines puts a comment on too many lines! 
+		/// </summary>
+		[Test]
+		public void TestBug38355()
+		{
+			var editor = CreateTextEditor (@"class Foo
+{
+<-	void Bar ()
+	{
+->		Bar();
+	}
+}");
+			((TextEditorViewContent)editor.GetViewContent ()).ToggleCodeComment ();
+			AssertEditorState (editor, @"class Foo
+{
+	//void Bar ()
+	//{
+		Bar();
+	}
+}");
+		}
+
 	}
 }
 

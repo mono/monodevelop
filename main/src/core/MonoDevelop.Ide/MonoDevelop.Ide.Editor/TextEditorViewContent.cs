@@ -632,7 +632,7 @@ namespace MonoDevelop.Ide.Editor
             }
 			var selection = textEditor.SelectionRegion;
 			var line = textEditor.GetLine(selection.EndLine);
-			if (selection.EndColumn == 1 && textEditor.SelectionLeadOffset < textEditor.SelectionAnchorOffset)
+			if (selection.EndColumn == 1)
 				line = line.PreviousLine;
 			
 			while (line != null && line.LineNumber >= selection.BeginLine) {
