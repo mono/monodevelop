@@ -131,24 +131,24 @@ namespace MonoDevelop.Components
 			if (severity.HasValue) {
 				switch (severity.Value) {
 				case TaskSeverity.Information:
-					label.Markup = "<b><span color='" + Styles.ColorGetHex (Styles.PopoverWindow.InformationTextColor) + "'>" + msg + "</span></b>";
+					label.Markup = "<b><span font='" + Theme.Font.ToString () + "' color='" + Styles.ColorGetHex (Styles.PopoverWindow.InformationTextColor) + "'>" + msg + "</span></b>";
 					return;
 
 				case TaskSeverity.Comment:
-					label.Markup = "<b><span color='" + Styles.ColorGetHex (Styles.PopoverWindow.InformationTextColor) + "'>" + msg + "</span></b>";
+					label.Markup = "<b><span font='" + Theme.Font.ToString () + "' color='" + Styles.ColorGetHex (Styles.PopoverWindow.InformationTextColor) + "'>" + msg + "</span></b>";
 					return;
 
 				case TaskSeverity.Error:
-					label.Markup = "<b><span color='" + Styles.ColorGetHex (Styles.PopoverWindow.ErrorTextColor) + "'>" + msg + "</span></b>";
+					label.Markup = "<b><span font='" + Theme.Font.ToString () + "' color='" + Styles.ColorGetHex (Styles.PopoverWindow.ErrorTextColor) + "'>" + msg + "</span></b>";
 					return;
 
 				case TaskSeverity.Warning:
-					label.Markup = "<b><span color='" + Styles.ColorGetHex (Styles.PopoverWindow.WarningTextColor) + "'>" + msg + "</span></b>";
+					label.Markup = "<b><span font='" + Theme.Font.ToString () + "' color='" + Styles.ColorGetHex (Styles.PopoverWindow.WarningTextColor) + "'>" + msg + "</span></b>";
 					return;
 				}
 			}
 
-			label.Markup = "<span color='" + Styles.ColorGetHex (Styles.PopoverWindow.DefaultTextColor) + "'>" + msg + "</span>";
+			label.Markup = "<span font='" + Theme.Font.ToString () + "' color='" + Styles.ColorGetHex (Styles.PopoverWindow.DefaultTextColor) + "'>" + msg + "</span>";
 		}
 
 		void AdjustSize ()
