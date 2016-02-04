@@ -43,12 +43,12 @@ namespace Mono.TextEditor
 				int matchingBracketOffset = data.Document.GetMatchingBracketOffset (data.Caret.Offset);
 				if (matchingBracketOffset == -1 && data.Caret.Offset > 0)
 					matchingBracketOffset = data.Document.GetMatchingBracketOffset (data.Caret.Offset - 1);
-			
+
 				if (matchingBracketOffset != -1)
 					data.Caret.Offset = matchingBracketOffset;
 			}
 		}
-		
+
 		public static int RemoveTabInLine (TextEditorData data, DocumentLine line)
 		{
 			if (line.LengthIncludingDelimiter == 0)
@@ -116,7 +116,7 @@ namespace Mono.TextEditor
 					if (!removedFromLast)
 						lc = lead.Column;
 				} else {
-					if (!removedFromFirst)
+				if (!removedFromFirst)
 						lc = lead.Column;
 					if (!removedFromLast)
 						ac = anchor.Column;
@@ -135,10 +135,15 @@ namespace Mono.TextEditor
 				return;
 			}
 			var line = data.Document.GetLine (data.Caret.Line);
-			if (line != null)
-				RemoveTabInLine (data, line);
+			if (line != null) {
+				if (line.Length == 0 && data.Caret.Column > 1) {
+					data.Caret.Column = 1;
+				} else {
+					RemoveTabInLine (data, line);
+				}
+			}
 		}
-		
+
 		public static void GetSelectedLines (TextEditorData data, out int startLineNr, out int endLineNr)
 		{
 			if (data.IsSomethingSelected) {
