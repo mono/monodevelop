@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		readonly ITextDocument document;
 		bool isDisposed;
-		MonoDevelopSourceText currentText;
+		SourceText currentText;
 
 		public DocumentId Id {
 			get;
@@ -57,7 +57,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			this.document = document;
 			this.document.TextChanging += HandleTextReplacing;
-			this.document.TextChanged += Document_TextChanged;
 		}
 
 		void HandleTextReplacing (object sender, Core.Text.TextChangeEventArgs e)
@@ -66,13 +65,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (handler != null) {
 				var oldText = CurrentText;
 				var newText = oldText.Replace (e.Offset, e.RemovalLength, e.InsertedText.Text);
+				currentText = newText;
 				handler (this, new Microsoft.CodeAnalysis.Text.TextChangeEventArgs (oldText, newText, new TextChangeRange(TextSpan.FromBounds (e.Offset, e.Offset + e.RemovalLength), e.InsertionLength)));
 			}
-		}
-
-		void Document_TextChanged (object sender, Core.Text.TextChangeEventArgs e)
-		{
-			currentText = null;
 		}
 
 		public void Dispose ()
@@ -81,7 +76,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			currentText = null;
 			document.TextChanging -= HandleTextReplacing;
-			document.TextChanged -= Document_TextChanged;;
 			isDisposed = true;
 		}
 
