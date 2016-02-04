@@ -147,7 +147,7 @@ namespace MonoDevelop.Ide
 		}
 
 		internal static readonly string DefaultLightColorScheme = "Default";
-		internal static readonly string DefaultDarkColorScheme = "Monokai";
+		internal static readonly string DefaultDarkColorScheme = "Oblivion";
 
 		public readonly ConfigurationProperty<bool> EnableSourceAnalysis = ConfigurationProperty.Create ("MonoDevelop.AnalysisCore.AnalysisEnabled", true);
 		public readonly ConfigurationProperty<bool> EnableUnitTestEditorIntegration = ConfigurationProperty.Create ("Testing.EnableUnitTestEditorIntegration", false);
