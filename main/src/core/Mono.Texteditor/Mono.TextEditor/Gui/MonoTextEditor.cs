@@ -274,7 +274,7 @@ namespace Mono.TextEditor
 		void ResizeChild (Rectangle allocation, EditorContainerChild child)
 		{
 			Requisition req = child.Child.SizeRequest ();
-			var childRectangle = new Gdk.Rectangle (Allocation.X + child.X, Allocation.Y + child.Y, req.Width, req.Height);
+			var childRectangle = new Gdk.Rectangle (Allocation.X + child.X, Allocation.Y + child.Y, System.Math.Max (1, req.Width), System.Math.Max (1, req.Height));
 			if (!child.FixedPosition) {
 				double zoom = Options.Zoom;
 				childRectangle.X = Allocation.X + (int)(child.X * zoom - HAdjustment.Value);
