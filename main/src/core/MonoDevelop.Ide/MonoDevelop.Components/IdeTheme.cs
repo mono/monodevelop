@@ -126,6 +126,15 @@ namespace MonoDevelop.Components
 			// Use the bundled gtkrc only if the Xamarin theme is installed
 			if (File.Exists (Path.Combine (Gtk.Rc.ModuleDir, "libxamarin.so")) || File.Exists (Path.Combine (Gtk.Rc.ModuleDir, "libxamarin.dll")))
 				use_bundled_theme = true;
+			// on Windows we can't rely on Gtk.Rc.ModuleDir to be valid
+			// and test additionally the default installation dir
+			if (!use_bundled_theme && Platform.IsWindows) {
+				var gtkBasePath = Environment.GetEnvironmentVariable ("GTK_BASEPATH");
+				if (String.IsNullOrEmpty (gtkBasePath))
+					gtkBasePath = "C:\\Program Files (x86)\\GtkSharp\\2.12\\";
+				if (File.Exists (Path.Combine (gtkBasePath, "lib\\gtk-2.0\\2.10.0\\engines\\libxamarin.dll")))
+				    use_bundled_theme = true;
+			}
 			
 			if (use_bundled_theme) {
 				
@@ -147,7 +156,10 @@ namespace MonoDevelop.Components
 					File.Copy (gtkrc + ".win32", rc_theme_light, true);
 					File.Copy (gtkrc + ".win32-dark", rc_theme_dark, true);
 
-					Environment.SetEnvironmentVariable ("GTK_DATA_PREFIX", UserProfile.Current.ConfigDir);
+					var themeDir = UserProfile.Current.ConfigDir;
+					if (!themeDir.IsAbsolute)
+						themeDir = themeDir.ToAbsolute (Environment.CurrentDirectory);
+					Environment.SetEnvironmentVariable ("GTK_DATA_PREFIX", themeDir);
 
 					// set the actual theme and reset the environment only after Gtk has been fully
 					// initialized. See SetupGtkTheme ().
