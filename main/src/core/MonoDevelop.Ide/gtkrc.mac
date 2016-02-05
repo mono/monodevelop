@@ -320,12 +320,13 @@ style "combo-box-menu" = "menu" {
 style "notebook" = "default"
 {
     GtkNotebook::tab-overlap = 1
+    GtkNotebook::tab-curvature = 3
 
-    bg[ACTIVE] = @base_color
+    bg[ACTIVE] = "#e7e7e7"
     bg[NORMAL] = @base_color
 
     engine "xamarin" {
-        gradient_shades = { 0.945, 0.945, 0.945, 0.685 }
+		roundness = 0
     }
 }
 
