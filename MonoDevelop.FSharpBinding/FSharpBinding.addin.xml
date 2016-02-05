@@ -177,6 +177,10 @@
   <Extension path = "/MonoDevelop/Refactoring/FindReferencesProvider">
  	<Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class="MonoDevelop.FSharp.FSharpFindReferencesProvider" />
   </Extension>
+
+  <Extension path = "/MonoDevelop/Refactoring/JumpToDeclarationHandler">
+ 	<Class class="MonoDevelop.FSharp.FSharpJumpToDeclarationHandler" />
+  </Extension>
   <!-- F# interactive -->
 
   <Extension path="/MonoDevelop/Ide/Pads">

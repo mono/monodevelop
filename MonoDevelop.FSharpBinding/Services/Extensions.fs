@@ -117,7 +117,7 @@ module FSharpSymbolExt =
             | :? FSharpField as fsf -> fsf.XmlDocSig
             | :? FSharpUnionCase as fsu -> fsu.XmlDocSig
             | :? FSharpActivePatternCase as apc -> apc.XmlDocSig
-            | :? FSharpGenericParameter as gp -> ""
+            | :? FSharpGenericParameter -> ""
             | _ -> ""
 
     type FSharpMemberOrFunctionOrValue with

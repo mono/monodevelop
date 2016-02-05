@@ -49,6 +49,11 @@ module Search =
         let filtered = items |> filter tag
         filtered
 
+    let getAllProjectFiles() =
+      seq { for p in IdeApp.Workspace.GetAllProjects() do
+                if p.SupportedLanguages |> Array.contains "F#"
+                then yield p.FileName.ToString() }
+
     let getAllProjectSymbols projectFile =
         async {
             try
@@ -59,6 +64,15 @@ module Search =
             with ex ->
                 LoggingService.LogError("Global Search (F#) error", ex)
                 return Seq.empty }
+    
+
+    let getAllSymbolsInAllProjects() =
+        asyncSeq {
+            for projectFile in getAllProjectFiles() do
+                let! symbols = getAllProjectSymbols(projectFile)
+                for symbol in symbols do
+                    yield symbol
+        }
 
     /// constructors have a display name of ( .ctor ) use the enclosing entities display name
     let correctDisplayName (symbol:FSharpSymbolUse) =
@@ -172,12 +186,6 @@ type ProjectSearchCategory() =
     let memberTags = ["member"; "m"; "p"; "f"; "evt"; "ap"; "op"]
     let tags = lazy (List.concat [typeTags; memberTags] |> List.toArray)
 
-    let getAllProjectFiles() =
-      seq { for p in IdeApp.Workspace.GetAllProjects() do
-                if p.SupportedLanguages |> Array.contains "F#"
-                then yield p.FileName.ToString() }
-
-
     override x.get_Tags() = tags.Force()
 
     override x.IsValidTag tag =
@@ -187,7 +195,7 @@ type ProjectSearchCategory() =
         let cachingSearch = Search.byPattern (Dictionary<_,_>())
         Task.Run(
             (fun () -> async {
-                for projFile in getAllProjectFiles() do
+                for projFile in Search.getAllProjectFiles() do
                     try
                         let shortName = projFile |> IO.Path.GetFileName
                         LoggingService.LogInfo(sprintf "F# Global Search: Getting all project symbols for %s" shortName )

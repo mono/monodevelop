@@ -15,6 +15,7 @@ type FSharpTextPasteHandler(editor:TextEditor) =
 
     override x.PostFomatPastedText (_offset, _length) = ()
 
+
     override x.FormatPlainText(offset, text, copyData) =
         if editor.Options.IndentStyle = IndentStyle.Smart ||
            editor.Options.IndentStyle = IndentStyle.Virtual then

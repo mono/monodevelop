@@ -160,43 +160,52 @@ module Refactoring =
 
     let getJumpTypePartSearchResult (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse, location: Range.range) =
 
-            let provider = FindInFiles.FileProvider (location.FileName)
-            let doc = TextEditorFactory.CreateNewDocument ()
-            //TODO: This is unfinished...
-            //(doc :> ITextDocument).Text <- provider.ReadString ()
-            //let fileName, start, finish = Symbols.getTrimmedRangesForDeclarations lastIdent symbolUse
+        let provider = FindInFiles.FileProvider (location.FileName)
+        let doc = TextEditorFactory.CreateNewDocument ()
+        //TODO: This is unfinished...
+        //(doc :> ITextDocument).Text <- provider.ReadString ()
+        //let fileName, start, finish = Symbols.getTrimmedRangesForDeclarations lastIdent symbolUse
 
-            FindInFiles.SearchResult (provider, 0, 0)
+        FindInFiles.SearchResult (provider, 0, 0)
 
+    let jumpToDocId (ctx:DocumentContext) (symbol: FSharpSymbol) =
+        async {
+            let! jumped = RefactoringService.TryJumpToDeclarationAsync(symbol.XmlDocSig, ctx.Project)
+                          |> Async.AwaitTask
 
-    let jumpTo (editor:TextEditor, ctx:DocumentContext, symbolUse, location:Range.range) =
-            match getSymbolDeclarationLocation symbolUse editor.FileName ctx.Project.ParentSolution with
-            | SymbolDeclarationLocation.CurrentFile ->
-                IdeApp.Workbench.OpenDocument (Gui.FileOpenInformation (FilePath(location.FileName), ctx.Project, Line = location.StartLine, Column = location.StartColumn + 1))
-                |> ignore
+            if not jumped then
+                match symbol.Assembly.FileName with
+                | Some filename -> Runtime.RunInMainThread(new Action(fun() -> IdeApp.ProjectOperations.JumpToMetadata(filename, symbol.XmlDocSig)))
+                                   |> ignore
+                | None -> ()
+            ()
+        } |> Async.Start
 
-            | SymbolDeclarationLocation.Projects (_projects, _isSymbolLocal) ->
-                IdeApp.Workbench.OpenDocument (Gui.FileOpenInformation (FilePath(location.FileName), ctx.Project, Line = location.StartLine, Column = location.StartColumn + 1))
-                |> ignore
+    let jumpTo (editor:TextEditor, ctx:DocumentContext, symbol, location:Range.range) =
+        match getSymbolDeclarationLocation symbol editor.FileName ctx.Project.ParentSolution with
+        | SymbolDeclarationLocation.CurrentFile ->
+            IdeApp.Workbench.OpenDocument (Gui.FileOpenInformation (FilePath(location.FileName), ctx.Project, Line = location.StartLine, Column = location.StartColumn + 1))
+            |> ignore
 
-            | SymbolDeclarationLocation.External docId ->
-                match symbolUse.Assembly.FileName with
-                | Some filename ->
-                    IdeApp.ProjectOperations.JumpToMetadata(filename, docId)
-                | None ->
-                    ()
-            | _ -> ()
+        | SymbolDeclarationLocation.Projects (_projects, _isSymbolLocal) ->
+            IdeApp.Workbench.OpenDocument (Gui.FileOpenInformation (FilePath(location.FileName), ctx.Project, Line = location.StartLine, Column = location.StartColumn + 1))
+            |> ignore
+
+        | SymbolDeclarationLocation.External _docId ->
+            jumpToDocId ctx symbol
+
+        | _ -> ()
 
 
     let jumpToDeclaration (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse) =
-            match Symbols.getLocationFromSymbolUse symbolUse with
-            | [] -> ()
-            | [loc] -> jumpTo (editor, ctx, symbolUse.Symbol, loc)
-            | locations ->
-                    use monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
-                    for part in locations do
-                        monitor.ReportResult (getJumpTypePartSearchResult (editor, ctx, symbolUse, part))
-                        |> ignore
+        match Symbols.getLocationFromSymbolUse symbolUse with
+        | [] -> jumpToDocId ctx symbolUse.Symbol
+        | [loc] -> jumpTo (editor, ctx, symbolUse.Symbol, loc)
+        | locations ->
+                use monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
+                for part in locations do
+                    monitor.ReportResult (getJumpTypePartSearchResult (editor, ctx, symbolUse, part))
+                    |> ignore
 
     let getProjectOutputFilename config (p:Project) =
         p.GetOutputFileName(config).ToString() |> Path.GetFileNameWithoutExtension
@@ -329,23 +338,24 @@ module Refactoring =
             | _ -> true
 
         let canJump (symbolUse:FSharpSymbolUse) currentFile solution =
+            true
             //Reference:
             //For Roslyn the following symbol types *cant* be jumped to:
             //Alias, ArrayType, Assembly, DynamicType, ErrorType, NetModule, NameSpace, PointerType, PreProcessor
-            match symbolUse.Symbol with
-            | :? FSharpMemberOrFunctionOrValue
-            | :? FSharpUnionCase
-            | :? FSharpEntity
-            | :? FSharpField
-            | :? FSharpGenericParameter
-            | :? FSharpActivePatternCase
-            | :? FSharpParameter
-            | :? FSharpStaticParameter ->
-                match getSymbolDeclarationLocation symbolUse.Symbol currentFile solution with
-                | SymbolDeclarationLocation.External _ -> true
-                | SymbolDeclarationLocation.Unknown -> false
-                | _ -> true
-            | _ -> false
+            //match symbolUse.Symbol with
+            //| :? FSharpMemberOrFunctionOrValue
+            //| :? FSharpUnionCase
+            //| :? FSharpEntity
+            //| :? FSharpField
+            //| :? FSharpGenericParameter
+            //| :? FSharpActivePatternCase
+            //| :? FSharpParameter
+            //| :? FSharpStaticParameter ->
+            //    match getSymbolDeclarationLocation symbolUse.Symbol currentFile solution with
+            //    | SymbolDeclarationLocation.External _ -> true
+            //    | SymbolDeclarationLocation.Unknown -> false
+            //    | _ -> true
+            //| _ -> true
 
         let canGotoBase (symbolUse:FSharpSymbolUse) =
             match symbolUse.Symbol with
@@ -429,12 +439,14 @@ type CurrentRefactoringOperationsHandler() =
                         // goto to declaration
                         if Refactoring.Operations.canJump symbolUse doc.Editor.FileName doc.Project.ParentSolution then
                             let locations = Symbols.getLocationFromSymbolUse symbolUse
-                            match locations with
-                            | [] -> ()
-                            | [_location] ->
+                            let addCommand() =
                                 let commandInfo = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.GotoDeclaration)
                                 commandInfo.Enabled <- true
                                 ainfo.Add (commandInfo, Action (fun _ -> Refactoring.jumpToDeclaration (doc.Editor, doc, symbolUse) ))
+
+                            match locations with
+                            | [] -> addCommand()
+                            | [_location] -> addCommand()
                             | locations ->
                                 let declSet = CommandInfoSet (Text = getCatalogString "_Go to Declaration")
                                 for location in locations do
@@ -581,7 +593,6 @@ type RenameHandler() =
                 | _ -> ()
             | _ -> ()
 
-
 open ExtCore
 type GotoDeclarationHandler() =
     inherit CommandHandler()
@@ -621,32 +632,40 @@ type GotoDeclarationHandler() =
                 | _ -> ()
             | _ -> ()
 
+type FSharpJumpToDeclarationHandler () =
+    inherit JumpToDeclarationHandler ()
+
+    override x.TryJumpToDeclarationAsync(documentationIdString, _hintProject, token) =
+        let computation = 
+            async {
+                // We only need to run this when the editor isn't F#
+                match IdeApp.Workbench.ActiveDocument with
+                | null -> return false
+                | doc when MDLanguageService.SupportedFileName (doc.FileName.ToString()) -> return false
+                | _doc ->
+                    let result =
+                        Search.getAllSymbolsInAllProjects()
+                        |> AsyncSeq.toSeq
+                        |> Seq.tryFind (fun s -> s.Symbol.XmlDocSig = documentationIdString)
+                    match result with
+                    | Some symbol -> let doc = IdeApp.Workbench.ActiveDocument
+                                     Refactoring.jumpToDeclaration(doc.Editor, doc, symbol)
+                                     return true
+                    | _ -> return false
+            }
+        Async.StartAsTask(computation = computation, cancellationToken = token)
+
 type FSharpFindReferencesProvider () =
-    inherit MonoDevelop.Refactoring.FindReferencesProvider ()
+    inherit FindReferencesProvider ()
 
     override x.FindReferences(documentationCommentId, _hintProject, token) =
-        let getAllProjectFiles() =
-            seq { 
-                for p in IdeApp.Workspace.GetAllProjects() do
-                    if p.SupportedLanguages |> Array.contains "F#"
-                    then yield p.FileName.FullPath.ToString() 
-            }
-
-        let results = asyncSeq {
-            for projectFile in getAllProjectFiles() do
-                let! allSymbols = Search.getAllProjectSymbols(projectFile)
-
-                let results =
-                    allSymbols
-                    |> Seq.filter (fun symbol -> symbol.Symbol.XmlDocSig = documentationCommentId)
-
-                for symbol in results do
-                    let (filename, startOffset, endOffset) = Symbols.getOffsetsTrimmed symbol.Symbol.DisplayName symbol
-                    yield SearchResult (FileProvider (filename), startOffset, endOffset-startOffset)
-        }
-
         let computation = async {
-            return results |> AsyncSeq.toSeq
+            return
+                Search.getAllSymbolsInAllProjects()
+                |> AsyncSeq.toSeq
+                |> Seq.filter (fun symbol -> symbol.Symbol.XmlDocSig = documentationCommentId)
+                |> Seq.map (fun symbol -> let (filename, startOffset, endOffset) = Symbols.getOffsetsTrimmed symbol.Symbol.DisplayName symbol
+                                          SearchResult (FileProvider (filename), startOffset, endOffset-startOffset))
         }
 
         Async.StartAsTask(computation = computation, cancellationToken = token)
