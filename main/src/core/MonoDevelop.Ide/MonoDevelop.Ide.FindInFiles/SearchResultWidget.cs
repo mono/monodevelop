@@ -209,12 +209,24 @@ namespace MonoDevelop.Ide.FindInFiles
 			scrolledwindowLogView.Hide ();
 			treeviewSearchResults.FixedHeightMode = true;
 
+			UpdateStyles ();
+			IdeApp.Preferences.ColorScheme.Changed += UpdateStyles;
 		}
-		
-		protected override void OnRealized ()
+
+		void UpdateStyles (object sender = null, EventArgs e = null)
 		{
-			base.OnRealized ();
 			highlightStyle = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			if (!highlightStyle.FitsIdeSkin (IdeApp.Preferences.UserInterfaceSkin))
+				highlightStyle = SyntaxModeService.GetDefaultColorStyle (Ide.IdeApp.Preferences.UserInterfaceSkin);
+
+			if (markupCache != null)
+				markupCache = new List<Tuple<SearchResult, string>> ();
+			if (IsRealized) {
+				store.Foreach ((model, path, iter) => {
+					model.EmitRowChanged (path, iter);
+					return false;
+				});
+			}
 		}
 
 		void ButtonPinClicked (object sender, EventArgs e)
@@ -560,7 +572,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (col + searchResult.Length < lineText.Length)
 					lineText = doc.GetTextAt (line.Offset, line.Length);
 
-				var markup = doc.GetPangoMarkup (line.Offset + indent, line.Length - indent);
+				var markup = doc.GetPangoMarkup (line.Offset + indent, line.Length - indent, true);
 				markup = AdjustColors(markup);
 
 				if (col >= 0) {
