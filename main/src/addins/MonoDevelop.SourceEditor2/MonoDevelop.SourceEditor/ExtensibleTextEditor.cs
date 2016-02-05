@@ -243,6 +243,14 @@ namespace MonoDevelop.SourceEditor
 			UpdateEditMode ();
 			base.OptionsChanged (sender, args);
 		}
+
+		protected override string GetIdeColorStyleName ()
+		{
+			var scheme = Ide.Editor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			if (!scheme.FitsIdeSkin (IdeApp.Preferences.UserInterfaceSkin))
+				scheme = Ide.Editor.Highlighting.SyntaxModeService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceSkin);
+			return scheme.Name;
+		}
 		
 		bool isInKeyStroke = false;
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
