@@ -170,12 +170,13 @@ module Refactoring =
 
     let jumpToDocId (ctx:DocumentContext) (symbol: FSharpSymbol) =
         async {
+            do! Async.SwitchToContext(Runtime.MainSynchronizationContext)
             let! jumped = RefactoringService.TryJumpToDeclarationAsync(symbol.XmlDocSig, ctx.Project)
                           |> Async.AwaitTask
 
             if not jumped then
                 match symbol.Assembly.FileName with
-                | Some filename -> Runtime.RunInMainThread(new Action(fun() -> IdeApp.ProjectOperations.JumpToMetadata(filename, symbol.XmlDocSig)))
+                | Some filename -> IdeApp.ProjectOperations.JumpToMetadata(filename, symbol.XmlDocSig)
                                    |> ignore
                 | None -> ()
             ()
