@@ -51,7 +51,10 @@ namespace MonoDevelop.Components
 		{
 			DefaultGtkDataFolder = Environment.GetEnvironmentVariable ("GTK_DATA_PREFIX");
 			DefaultGtk2RcFiles = Environment.GetEnvironmentVariable ("GTK2_RC_FILES");
-			IdeApp.Preferences.UserInterfaceTheme.Changed += (sender, e) => UpdateGtkTheme ();
+			// FIXME: Immediate theme switching disabled, until:
+			//        MAC: NSAppearance issues are fixed
+			//        WIN: spradic Gtk crashes on theme realoding are fixed
+			//IdeApp.Preferences.UserInterfaceTheme.Changed += (sender, e) => UpdateGtkTheme ();
 		}
 
 		internal static void InitializeGtk (string progname, ref string[] args)
