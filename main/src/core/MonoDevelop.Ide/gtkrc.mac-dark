@@ -216,6 +216,9 @@ style "menu-item" = "menu" {
 
 style "menu-separator" = "menu-item" {
     ythickness = 3
+    engine "xamarin" {
+        contrast = 1.0
+    }
 }
 
 style "toolbar" = "default"
