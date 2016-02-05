@@ -34,7 +34,7 @@ using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.Components
 {
-	public class Control : IDisposable
+	public class Control : IDisposable, ICommandRouter
 	{
 		internal static Dictionary<object, WeakReference<Control>> cache = new Dictionary<object, WeakReference<Control>> ();
 		internal object nativeWidget;
@@ -210,6 +210,11 @@ namespace MonoDevelop.Components
 			if (gtkWidget != null) {
 				gtkWidget.Destroyed -= OnGtkDestroyed;
 			}
+		}
+
+		object ICommandRouter.GetNextCommandTarget ()
+		{
+			return nativeWidget;
 		}
 	}
 }

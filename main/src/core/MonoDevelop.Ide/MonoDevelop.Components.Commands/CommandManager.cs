@@ -906,7 +906,7 @@ namespace MonoDevelop.Components.Commands
 			object initialCommandTarget, EventHandler closeHandler)
 		{
 #if MAC
-			var menu = CreateNSMenu (entrySet, initialCommandTarget, closeHandler);
+			var menu = CreateNSMenu (entrySet, initialCommandTarget ?? parent, closeHandler);
 			ContextMenuExtensionsMac.ShowContextMenu (parent, evt, menu);
 #else
 			var menu = CreateMenu (entrySet, closeHandler);
@@ -929,7 +929,7 @@ namespace MonoDevelop.Components.Commands
 			object initialCommandTarget = null)
 		{
 #if MAC
-			var menu = CreateNSMenu (entrySet, initialCommandTarget);
+			var menu = CreateNSMenu (entrySet, initialCommandTarget ?? parent);
 			ContextMenuExtensionsMac.ShowContextMenu (parent, x, y, menu);
 #else
 			var menu = CreateMenu (entrySet);
