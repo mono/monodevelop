@@ -1,11 +1,11 @@
 {
     "name":"Default",
-    "version":"1.3.5",
+    "version":"1.3.7",
     "description":"Bright and friendly, just like Xamarin.",
     "originator":"Xamarin Inc. (http://xamarin.com)",
 
     "palette":[
-        { "name":"text-black", "value":"#444444" },
+        { "name":"text-black", "value":"#333333" },
         { "name":"comment-gray", "value":"#b0b0b0" },
         { "name":"butter2", "value":"#edd400" },
         { "name":"chameleon1", "value":"#8ae234" },
@@ -41,8 +41,8 @@
 
         { "name":"Column Ruler", "color":"#eeeeee" },
 
-        { "name":"Fold Square", "color":"aluminium4", "secondcolor":"white" },
-        { "name":"Fold Cross", "color":"aluminium4", "secondcolor":"white" },
+        { "name":"Fold Square", "color":"#cdcecc", "secondcolor":"white" },
+        { "name":"Fold Cross", "color":"#b1b2b0", "secondcolor":"white" },
 
         { "name":"Indentation Guide", "color":"#e5e5e5" },
 

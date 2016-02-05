@@ -330,7 +330,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 
 			var x = LeftMostStatusItemX ();
-			var sepRect = new CGRect (x - 9, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 5 : 4, 1, 16);
+			var sepRect = new CGRect (x - 6.5, 4, 1, 16);
 			if (!sepRect.IntersectsWith (dirtyRect)) {
 				return;
 			}
@@ -388,7 +388,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return right;
 			}
 
-			return right - 9;
+			return right - 12;
 		}
 
 		IconId buildImageId;
@@ -396,17 +396,17 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		void PositionBuildResults (nfloat right)
 		{
 			right = DrawSeparatorIfNeeded (right);
-			right -= (3 + buildResults.Frame.Width);
+			right -= buildResults.Frame.Width;
 			buildResults.SetFrameOrigin (new CGPoint (right, buildResults.Frame.Y));
 		}
 
 		internal void RepositionStatusIcons ()
 		{
-			nfloat right = Frame.Width - 3;
+			nfloat right = Frame.Width - 6;
 
 			foreach (var item in statusIcons) {
 				right -= item.Bounds.Width + 1;
-				item.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 5 : 4, item.Bounds.Width, item.Bounds.Height);
+				item.Frame = new CGRect (right, 4, item.Bounds.Width, item.Bounds.Height);
 			}
 
 			PositionBuildResults (right);
@@ -868,7 +868,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		void RepositionContents ()
 		{
 			nfloat yOffset = 0;
-			if (Window != null && Window.Screen.BackingScaleFactor == 1) {
+			if (Window != null && Window.Screen != null && Window.Screen.BackingScaleFactor == 1) {
 				yOffset = -1;
 			}
 

@@ -82,11 +82,9 @@ namespace MonoDevelop.Components
 					Theme.Padding = 3;
 					Theme.CornerRadius = 3;
 
-					alignment.SetPadding (4, 4, 6, 6);
+					alignment.SetPadding (4, 5, 4, 4);
 
-					var f = Style.FontDescription.Copy (); // TODO: VV: Use FontService
-					f.Size = ((f.Size / (int)Pango.Scale.PangoScale) - 1) * (int)Pango.Scale.PangoScale;
-					label.ModifyFont (f);
+					label.ModifyFont (FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11));
 
 					switch (severity.Value) {
 					case TaskSeverity.Information:
@@ -115,7 +113,7 @@ namespace MonoDevelop.Components
 		{
 			if (label == null) {
 				alignment = new Gtk.Alignment (0.5f, 0.5f, 1f, 1f);
-				alignment.SetPadding (6, 6, 6, 6);
+				alignment.SetPadding (4, 5, 4, 4);
 				label = new Gtk.Label ();
 				label.ModifyFont (Theme.Font);
 				alignment.Add (label);
@@ -131,24 +129,24 @@ namespace MonoDevelop.Components
 			if (severity.HasValue) {
 				switch (severity.Value) {
 				case TaskSeverity.Information:
-					label.Markup = "<b><span color='" + Styles.ColorGetHex (Styles.PopoverWindow.InformationTextColor) + "'>" + msg + "</span></b>";
+					label.Markup = "<span font='" + Theme.Font.ToString () + "' color='" + Styles.ColorGetHex (Styles.PopoverWindow.InformationTextColor) + "'>" + msg + "</span>";
 					return;
 
 				case TaskSeverity.Comment:
-					label.Markup = "<b><span color='" + Styles.ColorGetHex (Styles.PopoverWindow.InformationTextColor) + "'>" + msg + "</span></b>";
+					label.Markup = "<span font='" + Theme.Font.ToString () + "' color='" + Styles.ColorGetHex (Styles.PopoverWindow.InformationTextColor) + "'>" + msg + "</span>";
 					return;
 
 				case TaskSeverity.Error:
-					label.Markup = "<b><span color='" + Styles.ColorGetHex (Styles.PopoverWindow.ErrorTextColor) + "'>" + msg + "</span></b>";
+					label.Markup = "<span font='" + Theme.Font.ToString () + "' color='" + Styles.ColorGetHex (Styles.PopoverWindow.ErrorTextColor) + "'>" + msg + "</span>";
 					return;
 
 				case TaskSeverity.Warning:
-					label.Markup = "<b><span color='" + Styles.ColorGetHex (Styles.PopoverWindow.WarningTextColor) + "'>" + msg + "</span></b>";
+					label.Markup = "<span font='" + Theme.Font.ToString () + "' color='" + Styles.ColorGetHex (Styles.PopoverWindow.WarningTextColor) + "'>" + msg + "</span>";
 					return;
 				}
 			}
 
-			label.Markup = "<span color='" + Styles.ColorGetHex (Styles.PopoverWindow.DefaultTextColor) + "'>" + msg + "</span>";
+			label.Markup = "<span font='" + Theme.Font.ToString () + "' color='" + Styles.ColorGetHex (Styles.PopoverWindow.DefaultTextColor) + "'>" + msg + "</span>";
 		}
 
 		void AdjustSize ()

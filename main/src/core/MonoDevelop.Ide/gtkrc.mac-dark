@@ -12,7 +12,7 @@ gtk-color-scheme =
 "bg_color: #333
 fg_color: #ccc
 base_color: #404040
-text_color: @fg_color
+text_color: #ccc
 link_color: #56bbf0
 dim_color: #777777
 selected_bg_color: #5189ed
@@ -216,6 +216,9 @@ style "menu-item" = "menu" {
 
 style "menu-separator" = "menu-item" {
     ythickness = 3
+    engine "xamarin" {
+        contrast = 1.0
+    }
 }
 
 style "toolbar" = "default"
@@ -327,12 +330,13 @@ style "combo-box-menu" = "menu" {
 style "notebook" = "default"
 {
     GtkNotebook::tab-overlap = 1
+    GtkNotebook::tab-curvature = 3
 
-    bg[ACTIVE] = @base_color
-    bg[NORMAL] = @base_color
+    bg[ACTIVE] = "#3b3b3b"		# inactive tab color
+    bg[NORMAL] = @base_color	# active tab and notebook bg color
 
     engine "xamarin" {
-        gradient_shades = { 0.945, 0.945, 0.945, 0.685 }
+    	roundness = 0
     }
 }
 

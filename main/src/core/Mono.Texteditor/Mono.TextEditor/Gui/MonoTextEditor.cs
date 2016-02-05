@@ -173,6 +173,11 @@ namespace Mono.TextEditor
 			containerChildren.ForEach (c => c.Child.SizeRequest ());
 		}
 
+		internal protected virtual string GetIdeColorStyleName ()
+		{
+			return TextEditorOptions.DefaultColorStyle;
+		}
+
 		#region Container
 		public override ContainerChild this [Widget w] {
 			get {

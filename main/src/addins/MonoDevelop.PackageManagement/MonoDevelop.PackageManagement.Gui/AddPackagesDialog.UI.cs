@@ -184,7 +184,7 @@ namespace MonoDevelop.PackageManagement
 
 			packageNameLabel = new Label ();
 			packageNameLabel.Ellipsize = EllipsizeMode.End;
-			Font packageInfoSmallFont = packageNameLabel.Font.WithScaledSize (0.8);
+			Font packageInfoSmallFont = packageNameLabel.Font.WithSize (11);
 			packageNameHBox.PackStart (packageNameLabel, true);
 
 			packageVersionLabel = new Label ();
@@ -194,7 +194,7 @@ namespace MonoDevelop.PackageManagement
 			// Package description.
 			packageDescription = new Label ();
 			packageDescription.Wrap = WrapMode.Word;
-			packageDescription.Font = packageNameLabel.Font.WithScaledSize (0.9);
+			packageDescription.Font = packageNameLabel.Font.WithSize (11);
 			packageDescription.BackgroundColor = Styles.PackageInfoBackgroundColor;
 			packageInfoVBox.PackStart (packageDescription);
 

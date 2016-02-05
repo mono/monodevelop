@@ -1,6 +1,6 @@
 {
     "name":"Monokai",
-    "version":"1.2.2",
+    "version":"1.2.3",
     "description":"A smooth, dusky scheme.",
     "originator":"Xamarin Inc. (http://xamarin.com)",
 
@@ -32,7 +32,7 @@
         { "name":"Column Ruler", "color":"#575852" },
 
         { "name":"Fold Square", "color":"monokai-comment", "secondcolor":"monokai-background" },
-        { "name":"Fold Cross", "color":"white", "secondcolor":"monokai-background" },
+        { "name":"Fold Cross", "color":"#8f8c7e", "secondcolor":"monokai-background" },
 
         { "name":"Indentation Guide", "color":"monokai-comment" },
 

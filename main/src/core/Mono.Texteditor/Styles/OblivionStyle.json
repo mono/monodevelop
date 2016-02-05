@@ -1,6 +1,6 @@
 {
     "name":"Oblivion",
-    "version":"1.1.4",
+    "version":"1.1.5",
     "description":"‘...where the soul at last is lost in utter peace’",
     "originator":"Xamarin Inc. (http://xamarin.com)",
 
@@ -43,8 +43,8 @@
 
         { "name":"Column Ruler", "color":"#444a4d" },
 
-        { "name":"Fold Square", "color":"white", "secondcolor":"aluminium7" },
-        { "name":"Fold Cross", "color":"white", "secondcolor":"aluminium7" },
+        { "name":"Fold Square", "color":"#555653", "secondcolor":"aluminium6" },
+        { "name":"Fold Cross", "color":"#686e5c", "secondcolor":"aluminium6" },
 
         { "name":"Indentation Guide", "color":"#444a4d" },
 

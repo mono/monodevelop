@@ -104,6 +104,21 @@ namespace MonoDevelop.Components
 			}
 		}
 
+		bool IsParentDisabled ()
+		{
+			var parent = Parent;
+			if (parent != null) {
+				if (!parent.Sensitive)
+					return true;
+				// special case: Buttons with image and label align children with HBox and Alignment
+				//               Button -> Alignment -> HBox -> [ImageView|Label]
+				parent = parent.Parent.Parent as Gtk.Button;
+				if (parent != null && !parent.Sensitive)
+					return true;
+			}
+			return false;
+		}
+
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			if (image != null) {
@@ -114,7 +129,7 @@ namespace MonoDevelop.Components
 					var y = Math.Round (alloc.Y + (alloc.Height - image.Height * IconScale) * Yalign);
 					ctx.Save ();
 					ctx.Scale (IconScale, IconScale);
-					ctx.DrawImage (this, image, x / IconScale, y / IconScale);
+					ctx.DrawImage (this, IsParentDisabled () ? image.WithAlpha (0.4) : image, x / IconScale, y / IconScale);
 					ctx.Restore ();
 				}
 			}

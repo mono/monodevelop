@@ -193,7 +193,6 @@ namespace MonoDevelop.SourceEditor
 				textEditor.Caret.Line = targetLine;
 				textEditor.CenterToCaret ();
 			} catch (System.Exception) {
-				this.entryLineNumber.ModifyBase (Gtk.StateType.Normal, Ide.Gui.Styles.Editor.SearchErrorBackgroundColor.ToGdkColor ());
 				this.entryLineNumber.ModifyText (Gtk.StateType.Normal, Ide.Gui.Styles.Editor.SearchErrorForegroundColor.ToGdkColor ());
 			}
 		}

@@ -222,7 +222,7 @@ namespace MonoDevelop.Ide.Projects
 
 		void AddTopLevelTemplateCategory (TemplateCategory category)
 		{
-			Xwt.Drawing.Image icon = GetIcon (category.IconId, IconSize.Menu);
+			Xwt.Drawing.Image icon = GetIcon (category.IconId ?? "md-platform-other", IconSize.Menu);
 			categoryTextRenderer.CategoryIconWidth = (int)icon.Width;
 
 			templateCategoriesListStore.AppendValues (
