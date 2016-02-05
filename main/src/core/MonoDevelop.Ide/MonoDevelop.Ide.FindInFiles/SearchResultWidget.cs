@@ -323,10 +323,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			double delta = Math.Abs (b1 - b2);
 			if (delta < 0.1) {
 				HslColor color1 = color;
-				color1.L -= 0.5;
+				color1.L += IdeApp.Preferences.UserInterfaceSkin == Skin.Light ? -0.5 : 0.5;
 				if (Math.Abs (HslColor.Brightness (color1) - b2) < delta) {
 					color1 = color;
-					color1.L += 0.5;
+					color1.L += IdeApp.Preferences.UserInterfaceSkin == Skin.Light ? 0.5 : -0.5;
 				}
 				return color1;
 			}
@@ -572,7 +572,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (col + searchResult.Length < lineText.Length)
 					lineText = doc.GetTextAt (line.Offset, line.Length);
 
-				var markup = doc.GetPangoMarkup (line.Offset + indent, line.Length - indent, true);
+				var markup = doc.GetPangoMarkup (line.Offset + indent, line.Length - indent);
 				markup = AdjustColors(markup);
 
 				if (col >= 0) {
