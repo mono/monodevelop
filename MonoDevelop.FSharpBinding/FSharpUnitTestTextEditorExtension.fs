@@ -109,7 +109,7 @@ type FSharpUnitTestTextEditorExtension() =
                     false
             | _ -> false
 
-        if x.DocumentContext.ParsedDocument = null || not hasNUnitReference then
+        if x.DocumentContext = null || x.DocumentContext.ParsedDocument = null || not hasNUnitReference then
             Threading.Tasks.Task.FromResult (tests :> IList<_>)
         else
         Async.StartAsTask (
