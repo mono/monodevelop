@@ -53,7 +53,6 @@ module Search =
       seq { for p in IdeApp.Workspace.GetAllProjects() do
                 if p.SupportedLanguages |> Array.contains "F#"
                 then 
-                    LoggingService.LogDebug (p.FileName.ToString())
                     yield p.FileName.ToString() }
 
     let getAllProjectSymbols projectFile =
@@ -74,8 +73,6 @@ module Search =
             for projectFile in getAllProjectFiles() do
                 let! symbols = getAllProjectSymbols(projectFile)
                 for symbol in symbols do
-                    //LoggingService.LogDebug symbol.Symbol.DisplayName
-                    //LoggingService.LogDebug symbol.Symbol.FullName
                     yield symbol
         }
 

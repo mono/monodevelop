@@ -55,9 +55,9 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
             with :? TimeoutException -> None
         | None, _ -> None
 
-     /// Get the symbols for declarations at the current location in the specified document and the long ident residue
-     /// e.g. The incomplete ident One.Two.Th will return Th
-     member x.GetDeclarationSymbols(line, col, lineStr) =
+    /// Get the symbols for declarations at the current location in the specified document and the long ident residue
+    /// e.g. The incomplete ident One.Two.Th will return Th
+    member x.GetDeclarationSymbols(line, col, lineStr) =
         match infoOpt, parseResults with
         | Some checkResults, parseResults ->
               let longName,residue = Parsing.findLongIdentsAndResidue(col, lineStr)
@@ -69,9 +69,9 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
               with :? TimeoutException -> None
         | None, _ -> None
 
-     /// Get the tool-tip to be displayed at the specified offset (relatively
-     /// from the beginning of the current document)
-     member x.GetToolTip(line, col, lineStr) =
+    /// Get the tool-tip to be displayed at the specified offset (relatively
+    /// from the beginning of the current document)
+    member x.GetToolTip(line, col, lineStr) =
         async {
             match infoOpt with
             | Some checkResults ->
@@ -85,7 +85,7 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
                                                           Some (res, (start.Column, finish.Column)))
             | None -> return None }
 
-     member x.GetDeclarationLocation(line, col, lineStr) =
+    member x.GetDeclarationLocation(line, col, lineStr) =
         async {
             match infoOpt with
             | Some checkResults ->
@@ -94,7 +94,7 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
                 | Some(col,identIsland) -> return! checkResults.GetDeclarationLocationAlternate(line, col, lineStr, identIsland, false)
             | None -> return FSharpFindDeclResult.DeclNotFound FSharpFindDeclFailureReason.Unknown }
 
-     member x.GetMethods(line, col, lineStr) =
+    member x.GetMethods(line, col, lineStr) =
         async {
             match infoOpt with
             | Some checkResults ->
@@ -106,7 +106,7 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
                     return Some (res.MethodName, res.Methods)
             | None -> return None }
 
-     member x.GetSymbolAtLocation(line, col, lineStr) =
+    member x.GetSymbolAtLocation(line, col, lineStr) =
         async {
             match infoOpt with
             | Some (checkResults) ->
@@ -121,80 +121,80 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
                         return None
             | None -> return None }
 
-     member x.GetMethodsAsSymbols(line, col, lineStr) =
-         async {
-             match infoOpt with
-             | Some (checkResults) ->
-                 match Parsing.findLongIdentsAtGetMethodsTrigger(col, lineStr) with
-                 | None -> return None
-                 | Some(colu, identIsland) ->
-                     return! checkResults.GetMethodsAsSymbols(line, colu, lineStr, identIsland)
-             | None -> return None }
+    member x.GetMethodsAsSymbols(line, col, lineStr) =
+        async {
+            match infoOpt with
+            | Some (checkResults) ->
+                match Parsing.findLongIdentsAtGetMethodsTrigger(col, lineStr) with
+                | None -> return None
+                | Some(colu, identIsland) ->
+                    return! checkResults.GetMethodsAsSymbols(line, colu, lineStr, identIsland)
+            | None -> return None }
 
-     member x.GetUsesOfSymbolInFile(symbol) =
-         async {
-             match infoOpt with
-             | Some checkResults -> return! checkResults.GetUsesOfSymbolInFile(symbol)
-             | None -> return [| |] }
+    member x.GetUsesOfSymbolInFile(symbol) =
+        async {
+            match infoOpt with
+            | Some checkResults -> return! checkResults.GetUsesOfSymbolInFile(symbol)
+            | None -> return [| |] }
 
-     member x.GetAllUsesOfAllSymbolsInFile() =
-         async {
-             match infoOpt with
-             | Some checkResults ->
-                 let! allSymbols = checkResults.GetAllUsesOfAllSymbolsInFile()
-                 return Some allSymbols
-             | None -> return None }
+    member x.GetAllUsesOfAllSymbolsInFile() =
+        async {
+            match infoOpt with
+            | Some checkResults ->
+                let! allSymbols = checkResults.GetAllUsesOfAllSymbolsInFile()
+                return Some allSymbols
+            | None -> return None }
 
-     member x.PartialAssemblySignature =
-         async {
-             match infoOpt with
-             | Some (checkResults) ->
-                 return Some checkResults.PartialAssemblySignature
-             | None -> return None }
+    member x.PartialAssemblySignature =
+        async {
+            match infoOpt with
+            | Some (checkResults) ->
+                return Some checkResults.PartialAssemblySignature
+            | None -> return None }
 
-     member x.GetErrors() =
-         match infoOpt, parseResults with
-         | Some checkResults, Some parseResults ->
-             checkResults.Errors
-             |> Array.append parseResults.Errors
-             |> Seq.distinct
-         | Some checkResults, None -> checkResults.Errors |> Array.toSeq
-         | None, Some parseResults -> parseResults.Errors |> Array.toSeq
-         | None, None -> Seq.empty
+    member x.GetErrors() =
+        match infoOpt, parseResults with
+        | Some checkResults, Some parseResults ->
+            checkResults.Errors
+            |> Array.append parseResults.Errors
+            |> Seq.distinct
+        | Some checkResults, None -> checkResults.Errors |> Array.toSeq
+        | None, Some parseResults -> parseResults.Errors |> Array.toSeq
+        | None, None -> Seq.empty
 
-     member x.GetNavigationItems() =
-         match parseResults with
-         | None -> [| |]
-         | Some parseResults ->
-           // GetNavigationItems is not 100% solid and throws occasional exceptions
-             try parseResults.GetNavigationItems().Declarations
-             with _ ->
+    member x.GetNavigationItems() =
+        match parseResults with
+        | None -> [| |]
+        | Some parseResults ->
+          // GetNavigationItems is not 100% solid and throws occasional exceptions
+            try parseResults.GetNavigationItems().Declarations
+            with _ ->
                 Debug.Assert(false, "couldn't update navigation items, ignoring")
                 [| |]
 
-     member x.ParseTree =
+    member x.ParseTree =
         match parseResults with
         | Some parseResults -> parseResults.ParseTree
         | None -> None
 
-     member x.CheckResults = infoOpt
+    member x.CheckResults = infoOpt
 
-     member x.GetExtraColorizations() =
+    member x.GetExtraColorizations() =
         match infoOpt with
         | Some checkResults -> Some(checkResults.GetExtraColorizationsAlternate())
         | None -> None
 
-     member x.GetStringFormatterColours() =
+    member x.GetStringFormatterColours() =
         match infoOpt with
         | Some checkResults -> Some(checkResults.GetFormatSpecifierLocations())
         | None -> None
 
 [<RequireQualifiedAccess>]
 type AllowStaleResults =
-  // Allow checker results where the source doesn't even match
-  | MatchingFileName
-  // Allow checker results where the source matches but where the background builder may not have caught up yet after some other change
-  | MatchingSource
+    // Allow checker results where the source doesn't even match
+    | MatchingFileName
+    // Allow checker results where the source matches but where the background builder may not have caught up yet after some other change
+    | MatchingSource
 
 
 //type Debug = System.Console

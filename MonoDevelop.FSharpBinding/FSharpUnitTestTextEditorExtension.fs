@@ -8,6 +8,7 @@ open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
 open MonoDevelop.NUnit
+open MonoDevelop.Projects
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
@@ -89,29 +90,31 @@ module unitTestGatherer =
         |> Option.iter tests.AddRange 
         tests
 
+    let hasNUnitReference (p:Project)=
+        match p with
+        | null -> false
+        | :? MonoDevelop.Projects.DotNetProject as dnp ->
+            try
+                dnp.GetReferencedAssemblies(MonoDevelop.getConfig())
+                |> Async.AwaitTask
+                |> Async.RunSynchronously
+                |> Seq.toArray
+                |> Seq.exists (fun r -> r.EndsWith ("nunit.framework.dll", StringComparison.InvariantCultureIgnoreCase)) 
+            with ex ->
+                MonoDevelop.Core.LoggingService.LogInternalError ("FSharpUnitTestTextEditorExtension: GatherUnitTests failed", ex)
+                false
+        | _ -> false
+
 type FSharpUnitTestTextEditorExtension() =
     inherit AbstractUnitTestTextEditorExtension()
 
     override x.GatherUnitTests (cancellationToken) =
         let tests = ResizeArray<UnitTestLocation>()
 
-        let hasNUnitReference =
-            match x.DocumentContext.Project with
-            | null -> false
-            | :? MonoDevelop.Projects.DotNetProject as dnp ->
-                try
-                    dnp.GetReferencedAssemblies(MonoDevelop.getConfig())
-                    |> Async.AwaitTask
-                    |> Async.RunSynchronously
-                    |> Seq.toArray
-                    |> Seq.exists (fun r -> r.EndsWith ("nunit.framework.dll", StringComparison.InvariantCultureIgnoreCase)) 
-                with ex ->
-                    MonoDevelop.Core.LoggingService.LogInternalError ("FSharpUnitTestTextEditorExtension: GatherUnitTests failed", ex)
-                    false
-            | _ -> false
-
-        if x.DocumentContext = null || x.DocumentContext.ParsedDocument = null || not hasNUnitReference then
-            Threading.Tasks.Task.FromResult (tests :> IList<_>)
+        if x.DocumentContext = null || 
+            x.DocumentContext.ParsedDocument = null || 
+            not (unitTestGatherer.hasNUnitReference x.DocumentContext.Project) then
+                Threading.Tasks.Task.FromResult (tests :> IList<_>)
         else
         Async.StartAsTask (
             cancellationToken = cancellationToken,
