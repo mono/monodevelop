@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: MonoDevelop 2.4.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-15 15:35:25-0500\n"
-"PO-Revision-Date: 2016-02-06 10:23+0200\n"
+"PO-Revision-Date: 2016-02-06 11:39+0200\n"
 "Last-Translator: Olexandr Pylypchuk <pilipchukap@rambler.ru>\n"
 "Language-Team: Ukrainian <kde-i18n-doc@kde.org>\n"
 "Language: uk\n"
@@ -18101,11 +18101,11 @@ msgstr "Не знайдено веб-сервер {0}. Переконайтес�
 
 #: ../src/addins/AspNet/Execution/XspParameters.cs:3
 msgid "Please enter the password for your private key for the XSP Web Server"
-msgstr ""
+msgstr "Введіть пароль для вашого приватного ключа для веб-сервера XSP"
 
 #: ../src/addins/AspNet/Execution/XspParameters.cs:3
 msgid "XSP Private Key Password"
-msgstr ""
+msgstr "Пароль приватного ключа XSP"
 
 #: ../src/addins/AspNet/Execution/BrowserLauncher.cs:2
 msgid "Error launching web browser"
