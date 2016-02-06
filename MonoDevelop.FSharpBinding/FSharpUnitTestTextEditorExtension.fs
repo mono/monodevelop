@@ -4,6 +4,7 @@ namespace MonoDevelop.FSharp
 #else
 open System
 open System.Collections.Generic
+open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
 open MonoDevelop.NUnit
@@ -122,3 +123,34 @@ type FSharpUnitTestTextEditorExtension() =
                 | _ -> ()
                 return tests :> IList<_>})
     #endif
+
+type FSharpNUnitSourceCodeLocationFinder() =
+    inherit NUnitSourceCodeLocationFinder()
+
+    override x.GetSourceCodeLocationAsync(project, fixtureNamespace, fixtureTypeName, testName, token) =
+        let computation =
+            async {
+                let idx = testName.IndexOf("(")
+                let testName =
+                    if idx > - 1 then
+                        testName.Substring(idx)
+                    else
+                        testName
+                
+                let symbol = Search.getAllSymbolsInAllProjects()
+                             |> AsyncSeq.toSeq
+                             |> Seq.tryFind (fun sym -> 
+                                 match sym.Symbol with
+                                 | :? FSharpMemberOrFunctionOrValue as func ->
+                                    func.CompiledName = testName
+                                 | _ -> false)
+                             
+                
+                match symbol with
+                | Some sym ->
+                    let location = sym.RangeAlternate
+                    return SourceCodeLocation(location.FileName, location.StartLine, location.StartColumn + 1)
+                | _ -> return null //?
+            } 
+        Async.StartAsTask(computation = computation, cancellationToken = token)
+

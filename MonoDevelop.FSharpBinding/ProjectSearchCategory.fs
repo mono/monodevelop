@@ -52,7 +52,9 @@ module Search =
     let getAllProjectFiles() =
       seq { for p in IdeApp.Workspace.GetAllProjects() do
                 if p.SupportedLanguages |> Array.contains "F#"
-                then yield p.FileName.ToString() }
+                then 
+                    LoggingService.LogDebug (p.FileName.ToString())
+                    yield p.FileName.ToString() }
 
     let getAllProjectSymbols projectFile =
         async {
@@ -63,6 +65,7 @@ module Search =
                 | None -> return Seq.empty
             with ex ->
                 LoggingService.LogError("Global Search (F#) error", ex)
+
                 return Seq.empty }
     
 
@@ -71,6 +74,8 @@ module Search =
             for projectFile in getAllProjectFiles() do
                 let! symbols = getAllProjectSymbols(projectFile)
                 for symbol in symbols do
+                    //LoggingService.LogDebug symbol.Symbol.DisplayName
+                    //LoggingService.LogDebug symbol.Symbol.FullName
                     yield symbol
         }
 
