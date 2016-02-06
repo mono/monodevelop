@@ -30,6 +30,8 @@ using CoreGraphics;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
+using Xwt.Mac;
+using CoreImage;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -38,13 +40,19 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	{
 		NSImage stopIcon, continueIcon, buildIcon;
 
+
 		public RunButton ()
 		{
 			UpdateIcons ();
 
+			Ide.Gui.Styles.Changed +=  (o, e) => UpdateCell ();
+
+			Cell = new ColoredButtonCell ();
+
 			icon = OperationIcon.Run;
 			ImagePosition = NSCellImagePosition.ImageOnly;
 			BezelStyle = NSBezelStyle.TexturedRounded;
+
 			Enabled = false;
 		}
 
@@ -63,6 +71,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			// We can use Template images supported by NSButton, thus no reloading
 			// on theme/skin change is required.
 			stopIcon.Template = continueIcon.Template = buildIcon.Template = true;
+		}
+
+		void UpdateCell ()
+		{
+			Appearance = NSAppearance.GetAppearance (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark ? NSAppearance.NameVibrantDark : NSAppearance.NameAqua);
+			NeedsDisplay = true;
 		}
 
 		NSImage GetIcon ()
@@ -102,6 +116,31 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public override CGSize IntrinsicContentSize {
 			get {
 				return new CGSize (38, 25);
+			}
+		}
+	}
+
+	class ColoredButtonCell : NSButtonCell
+	{
+		public override void DrawBezelWithFrame (CGRect frame, NSView controlView)
+		{
+			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
+				var inset = frame.Inset (0.25f, 0.25f);
+
+				var path = NSBezierPath.FromRoundedRect (inset, 3, 3);
+				path.LineWidth = 0.5f;
+
+				// The first time the view is drawn it has a filter of some sort attached so that the colours set here
+				// are made lighter onscreen.
+				// NSColor.FromRgba (0.244f, 0.247f, 0.245f, 1).SetStroke ();
+				// would make the initial colour actually be .56,.56,.56
+				//
+				// However after switching theme this filter is removed and the colour set here is the actual colour
+				// displayed onscreen.
+				NSColor.FromRgba (0.56f, 0.56f, 0.56f, 1f).SetStroke ();
+				path.Stroke ();
+			} else {
+				base.DrawBezelWithFrame (frame, controlView);
 			}
 		}
 	}

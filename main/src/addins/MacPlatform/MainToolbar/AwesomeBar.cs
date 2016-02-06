@@ -24,11 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+
 using AppKit;
-using Foundation;
 using CoreGraphics;
 
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -58,6 +59,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			SearchBar = new SearchBar ();
 			AddSubview (SearchBar);
+
+			Ide.Gui.Styles.Changed +=  (o, e) => UpdateLayout ();
 		}
 
 		const float toolbarPadding = 8.0f;
@@ -66,12 +69,16 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		const float maxStatusBarWidth = 700.0f;
 		const float minStatusBarWidth = 220.0f;
 		const float runButtonWidth = 38.0f;
-		public const float ToolbarWidgetHeight = 25.0f;
+		public static float ToolbarWidgetHeight {
+			get {
+				return MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 24.0f : 22.0f;
+			}
+		}
 
 		void UpdateLayout ()
 		{
 			RunButton.Frame = new CGRect (toolbarPadding, 0, runButtonWidth, ToolbarWidgetHeight);
-			var statusbarWidth = Math.Round (Math.Max (Math.Min (Frame.Width * 0.3, maxStatusBarWidth), minStatusBarWidth));
+			var statusbarWidth = Math.Max (Math.Min (Math.Round ( Frame.Width * 0.3), maxStatusBarWidth), minStatusBarWidth);
 			var searchbarWidth = maxSearchBarWidth;
 			if (statusbarWidth < searchbarWidth) {
 				searchbarWidth = minSearchBarWidth;
@@ -80,22 +87,26 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			// We only need to work out the width on the left side of the window because the statusbar is centred
 			// Gap + RunButton.Width + Gap + ButtonBar.Width + Gap + Half of StatusBar.Width
 			var spaceLeft = (Frame.Width / 2) - (toolbarPadding + runButtonWidth + toolbarPadding + ButtonBarContainer.Frame.Width + toolbarPadding + (statusbarWidth / 2));
-			StatusBar.Frame = new CGRect (Math.Round ((Frame.Width - statusbarWidth) / 2), 0, statusbarWidth, ToolbarWidgetHeight);
-			nfloat searchBarYOffset = 1;
-			nfloat searchBarHeightDelta = -2;
 
-			if (MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan) {
-				searchBarYOffset = 0;
-				searchBarHeightDelta = 0;
+			StatusBar.Frame = new CGRect (Math.Round((Frame.Width - statusbarWidth) / 2), 0, statusbarWidth - 2, ToolbarWidgetHeight);
+
+			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
+				SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, 0, searchbarWidth, ToolbarWidgetHeight);
+			} else {
+				nfloat elcapYOffset = 0;
+				nfloat elcapHOffset = 0;
+
+				if (MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan) {
+					elcapYOffset = -0.5f;
+					elcapHOffset = 1.0f;
+				}
+				SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, 0 + elcapYOffset, searchbarWidth, ToolbarWidgetHeight + elcapHOffset);
 			}
-
-			SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, 0 + searchBarYOffset, searchbarWidth, ToolbarWidgetHeight + searchBarHeightDelta);
 
 			var selectorSize = SelectorView.SizeThatFits (new CGSize (spaceLeft, ToolbarWidgetHeight));
 
-			SelectorView.Frame = new CGRect (toolbarPadding + runButtonWidth + toolbarPadding, 0, selectorSize.Width, ToolbarWidgetHeight);
-
-			ButtonBarContainer.SetFrameOrigin (new CGPoint(SelectorView.Frame.GetMaxX () + toolbarPadding, 0));
+			SelectorView.Frame = new CGRect (toolbarPadding + runButtonWidth + toolbarPadding, 0, Math.Round (selectorSize.Width), ToolbarWidgetHeight);
+			ButtonBarContainer.SetFrameOrigin (new CGPoint(SelectorView.Frame.GetMaxX () + toolbarPadding, -2));
 
 			// Finally check if the StatusBar overlaps the ButtonBarContainer (and its padding) and adjust is accordingly
 			if (StatusBar.Frame.IntersectsWith (ButtonBarContainer.Frame.Inset (-toolbarPadding, 0))) {

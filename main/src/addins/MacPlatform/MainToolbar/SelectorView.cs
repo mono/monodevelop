@@ -64,8 +64,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public SelectorView ()
 		{
-			Title = "";
+			Cell = new ColoredButtonCell ();
 			BezelStyle = NSBezelStyle.TexturedRounded;
+			Title = "";
 
 			RealSelectorView = new PathSelectorView (new CGRect (6, 0, 1, 1));
 			RealSelectorView.UnregisterDraggedTypes ();
