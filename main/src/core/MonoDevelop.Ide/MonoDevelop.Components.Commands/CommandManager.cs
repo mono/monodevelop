@@ -637,6 +637,8 @@ namespace MonoDevelop.Components.Commands
 		public void UnregisterCommandTargetVisitor (ICommandTargetVisitor visitor)
 		{
 			visitors.Remove (visitor);
+
+			StopStatusUpdaterIfNeeded ();
 		}
 		
 		/// <summary>
@@ -1884,6 +1886,14 @@ namespace MonoDevelop.Components.Commands
 				toolbarUpdaterRunning = true;
 			}
 		}
+
+		void StopStatusUpdaterIfNeeded ()
+		{
+			if (toolbars.Count != 0 || visitors.Count != 0)
+				return;
+
+			StopStatusUpdater ();
+		}
 		
 		void StopStatusUpdater ()
 		{
@@ -1954,6 +1964,8 @@ namespace MonoDevelop.Components.Commands
 		public void UnregisterCommandBar (ICommandBar commandBar)
 		{
 			toolbars.Remove (commandBar);
+
+			StopStatusUpdaterIfNeeded ();
 		}
 		
 		void UpdateToolbars ()
