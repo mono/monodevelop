@@ -12,20 +12,20 @@ open MonoDevelop.Core
 open Nessos.FsPickler.Json
 
 module Symbol =
-  /// We always know the text of the identifier that resolved to symbol.
-  /// Trim the range of the referring text to only include this identifier.
-  /// This means references like A.B.C are trimmed to "C".  This allows renaming to just rename "C".
-  let trimSymbolRegion(symbolUse:FSharpSymbolUse) (lastIdentAtLoc:string) =
-      let m = symbolUse.RangeAlternate
-      let ((beginLine, beginCol), (endLine, endCol)) = ((m.StartLine, m.StartColumn), (m.EndLine, m.EndColumn))
-
-      let (beginLine, beginCol) =
-          if endCol >=lastIdentAtLoc.Length && (beginLine <> endLine || (endCol-beginCol) >= lastIdentAtLoc.Length) then
-              (endLine,endCol-lastIdentAtLoc.Length)
-          else
-              (beginLine, beginCol)
-      Range.mkPos beginLine beginCol, Range.mkPos endLine endCol
-      //(beginLine, beginCol), (endLine, endCol)
+    /// We always know the text of the identifier that resolved to symbol.
+    /// Trim the range of the referring text to only include this identifier.
+    /// This means references like A.B.C are trimmed to "C".  This allows renaming to just rename "C".
+    let trimSymbolRegion(symbolUse:FSharpSymbolUse) (lastIdentAtLoc:string) =
+        let m = symbolUse.RangeAlternate
+        let ((beginLine, beginCol), (endLine, endCol)) = ((m.StartLine, m.StartColumn), (m.EndLine, m.EndColumn))
+    
+        let (beginLine, beginCol) =
+            if endCol >=lastIdentAtLoc.Length && (beginLine <> endLine || (endCol-beginCol) >= lastIdentAtLoc.Length) then
+                (endLine,endCol-lastIdentAtLoc.Length)
+            else
+                (beginLine, beginCol)
+        Range.mkPos beginLine beginCol, Range.mkPos endLine endCol
+        //(beginLine, beginCol), (endLine, endCol)
 
 /// Contains settings of the F# language service
 module ServiceSettings =
@@ -87,12 +87,12 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
 
      member x.GetDeclarationLocation(line, col, lineStr) =
         async {
-          match infoOpt with
-          | Some checkResults ->
-              match Parsing.findLongIdents(col, lineStr) with
-              | None -> return FSharpFindDeclResult.DeclNotFound FSharpFindDeclFailureReason.Unknown
-              | Some(col,identIsland) -> return! checkResults.GetDeclarationLocationAlternate(line, col, lineStr, identIsland, false)
-          | None -> return FSharpFindDeclResult.DeclNotFound FSharpFindDeclFailureReason.Unknown }
+            match infoOpt with
+            | Some checkResults ->
+                match Parsing.findLongIdents(col, lineStr) with
+                | None -> return FSharpFindDeclResult.DeclNotFound FSharpFindDeclFailureReason.Unknown
+                | Some(col,identIsland) -> return! checkResults.GetDeclarationLocationAlternate(line, col, lineStr, identIsland, false)
+            | None -> return FSharpFindDeclResult.DeclNotFound FSharpFindDeclFailureReason.Unknown }
 
      member x.GetMethods(line, col, lineStr) =
         async {
