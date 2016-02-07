@@ -181,6 +181,10 @@
   <Extension path = "/MonoDevelop/Refactoring/JumpToDeclarationHandler">
  	<Class class="MonoDevelop.FSharp.FSharpJumpToDeclarationHandler" />
   </Extension>
+
+  <Extension path = "/MonoDevelop/NUnit/NUnitSourceCodeLocationFinder">
+ 	<Class class="MonoDevelop.FSharp.FSharpNUnitSourceCodeLocationFinder" />
+  </Extension>
   <!-- F# interactive -->
 
   <Extension path="/MonoDevelop/Ide/Pads">

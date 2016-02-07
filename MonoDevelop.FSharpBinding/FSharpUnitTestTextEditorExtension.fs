@@ -4,9 +4,11 @@ namespace MonoDevelop.FSharp
 #else
 open System
 open System.Collections.Generic
+open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
 open MonoDevelop.NUnit
+open MonoDevelop.Projects
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
@@ -88,29 +90,31 @@ module unitTestGatherer =
         |> Option.iter tests.AddRange 
         tests
 
+    let hasNUnitReference (p:Project)=
+        match p with
+        | null -> false
+        | :? MonoDevelop.Projects.DotNetProject as dnp ->
+            try
+                dnp.GetReferencedAssemblies(MonoDevelop.getConfig())
+                |> Async.AwaitTask
+                |> Async.RunSynchronously
+                |> Seq.exists (fun r -> r.EndsWith ("nunit.framework.dll", StringComparison.InvariantCultureIgnoreCase)
+                                        || r.EndsWith ("GuiUnit.exe", StringComparison.InvariantCultureIgnoreCase)) 
+            with ex ->
+                MonoDevelop.Core.LoggingService.LogInternalError ("FSharpUnitTestTextEditorExtension: GatherUnitTests failed", ex)
+                false
+        | _ -> false
+
 type FSharpUnitTestTextEditorExtension() =
     inherit AbstractUnitTestTextEditorExtension()
 
     override x.GatherUnitTests (cancellationToken) =
         let tests = ResizeArray<UnitTestLocation>()
 
-        let hasNUnitReference =
-            match x.DocumentContext.Project with
-            | null -> false
-            | :? MonoDevelop.Projects.DotNetProject as dnp ->
-                try
-                    dnp.GetReferencedAssemblies(MonoDevelop.getConfig())
-                    |> Async.AwaitTask
-                    |> Async.RunSynchronously
-                    |> Seq.toArray
-                    |> Seq.exists (fun r -> r.EndsWith ("nunit.framework.dll", StringComparison.InvariantCultureIgnoreCase)) 
-                with ex ->
-                    MonoDevelop.Core.LoggingService.LogInternalError ("FSharpUnitTestTextEditorExtension: GatherUnitTests failed", ex)
-                    false
-            | _ -> false
-
-        if x.DocumentContext = null || x.DocumentContext.ParsedDocument = null || not hasNUnitReference then
-            Threading.Tasks.Task.FromResult (tests :> IList<_>)
+        if x.DocumentContext = null || 
+            x.DocumentContext.ParsedDocument = null || 
+            not (unitTestGatherer.hasNUnitReference x.DocumentContext.Project) then
+                Threading.Tasks.Task.FromResult (tests :> IList<_>)
         else
         Async.StartAsTask (
             cancellationToken = cancellationToken,
@@ -122,3 +126,47 @@ type FSharpUnitTestTextEditorExtension() =
                 | _ -> ()
                 return tests :> IList<_>})
     #endif
+
+type FSharpNUnitSourceCodeLocationFinder() =
+    inherit NUnitSourceCodeLocationFinder()
+
+    override x.GetSourceCodeLocationAsync(_project, fixtureNamespace, fixtureTypeName, testName, token) =
+        let computation =
+            async {
+                let idx = testName.IndexOf("(")
+                let testName =
+                    if idx > - 1 then
+                        testName.Substring(idx)
+                    else
+                        testName
+
+                let matchesType (entity:FSharpEntity) =
+                    let matchesNamespace() = 
+                        match entity.Namespace with
+                        | Some ns -> ns = fixtureNamespace
+                        | _ -> fixtureNamespace = null
+
+                    entity.DisplayName = fixtureTypeName && matchesNamespace()
+
+                let symbol = 
+                    Search.getAllFSharpProjects()
+                    |> Seq.filter unitTestGatherer.hasNUnitReference
+                    |> Seq.map languageService.GetCachedProjectCheckResult
+                    |> Seq.choose (fun c -> c)
+                    |> Seq.filter (fun c -> not c.HasCriticalErrors)       
+                    |> Seq.collect (fun c -> c.AssemblySignature.Entities)
+                    |> Seq.filter matchesType
+                    |> Seq.collect (fun e -> e.MembersFunctionsAndValues)
+                    |> Seq.tryFind (fun m -> m.CompiledName = testName)
+                             
+                match symbol with
+                | Some sym ->
+                    let location = sym.ImplementationLocation
+                    match location with
+                    | Some loc ->
+                        return SourceCodeLocation(loc.FileName, loc.StartLine, loc.StartColumn + 1)
+                    | _ -> return null
+                | _ -> return null //?
+            } 
+        Async.StartAsTask(computation = computation, cancellationToken = token)
+

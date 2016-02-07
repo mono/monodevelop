@@ -9,6 +9,7 @@ open MonoDevelop.Core.Text
 open MonoDevelop.Components.MainToolbar
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui
+open MonoDevelop.Projects
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Symbols
 
@@ -49,26 +50,28 @@ module Search =
         let filtered = items |> filter tag
         filtered
 
-    let getAllProjectFiles() =
+    let getAllFSharpProjects() =
       seq { for p in IdeApp.Workspace.GetAllProjects() do
-                if p.SupportedLanguages |> Array.contains "F#"
-                then yield p.FileName.ToString() }
+                if p.SupportedLanguages |> Array.contains "F#" then 
+                    yield p }
 
-    let getAllProjectSymbols projectFile =
+    let getAllProjectSymbols project =
         async {
             try
-                match languageService.GetCachedProjectCheckResult projectFile with
+                let checkResult = languageService.GetCachedProjectCheckResult project
+                match checkResult with
                 | Some v -> let! allSymbols =  v.GetAllUsesOfAllSymbols()
                             return allSymbols |> Array.toSeq
                 | None -> return Seq.empty
             with ex ->
                 LoggingService.LogError("Global Search (F#) error", ex)
+
                 return Seq.empty }
     
 
     let getAllSymbolsInAllProjects() =
         asyncSeq {
-            for projectFile in getAllProjectFiles() do
+            for projectFile in getAllFSharpProjects() do
                 let! symbols = getAllProjectSymbols(projectFile)
                 for symbol in symbols do
                     yield symbol
@@ -195,9 +198,9 @@ type ProjectSearchCategory() =
         let cachingSearch = Search.byPattern (Dictionary<_,_>())
         Task.Run(
             (fun () -> async {
-                for projFile in Search.getAllProjectFiles() do
+                for projFile in Search.getAllFSharpProjects() do
                     try
-                        let shortName = projFile |> IO.Path.GetFileName
+                        let shortName = projFile.FileName |> string |> IO.Path.GetFileName
                         LoggingService.LogInfo(sprintf "F# Global Search: Getting all project symbols for %s" shortName )
                         let! allProjectSymbols = Search.getAllProjectSymbols projFile
             
