@@ -43,8 +43,15 @@ namespace MonoDevelop.CSharp.Parser
 			var fileName = options.FileName;
 			var project = options.Project;
 			var result = new CSharpParsedDocument (fileName);
-			result.Flags |= ParsedDocumentFlags.NonSerializable;
 
+			if (project != null) {
+				
+				var projectFile = project.Files.GetFile (fileName);
+				if (projectFile != null && !TypeSystemParserNode.IsCompileBuildAction (projectFile.BuildAction))
+					result.Flags |= ParsedDocumentFlags.NonSerializable;
+			}
+
+			var compilerArguments = GetCompilerArguments (project);
 			SyntaxTree unit = null;
 
 			if (project != null) {
@@ -63,23 +70,29 @@ namespace MonoDevelop.CSharp.Parser
 						unit = model.SyntaxTree;
 						result.Ast = model;
 					} catch (AggregateException ae) {
-						ae.Flatten ().Handle (x => x is OperationCanceledException);
+						ae.Flatten ().Handle (x => x is OperationCanceledException); 
 						return result;
 					} catch (OperationCanceledException) {
 						return result;
 					} catch (Exception e) {
-						LoggingService.LogError ("Error while getting the semantic model for " + fileName, e);
+						LoggingService.LogError ("Error while getting the semantic model for " + fileName, e); 
 					}
 				}
 			}
-			try {
-				if (unit == null) {
-					var compilerArguments = GetCompilerArguments (project);
-					unit = CSharpSyntaxTree.ParseText (SourceText.From (options.Content.Text), compilerArguments, fileName, cancellationToken);
-				}
-			} catch (OperationCanceledException) {
-			}
+
+			if (unit == null) {
+				unit = CSharpSyntaxTree.ParseText (SourceText.From (options.Content.Text), compilerArguments, fileName);
+			} 
+
 			result.Unit = unit;
+
+			DateTime time;
+			try {
+				time = System.IO.File.GetLastWriteTimeUtc (fileName);
+			} catch (Exception) {
+				time = DateTime.UtcNow;
+			}
+			result.LastWriteTimeUtc = time;
 			return result;
 		}
 
