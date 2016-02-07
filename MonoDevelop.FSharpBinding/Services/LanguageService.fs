@@ -9,6 +9,7 @@ open ExtCore.Control
 open ExtCore.Control.Collections
 open MonoDevelop.Core
 open MonoDevelop.Core
+open MonoDevelop.Projects
 open Nessos.FsPickler.Json
 
 module Symbol =
@@ -605,10 +606,10 @@ type LanguageService(dirtyNotify) as x =
     member x.ParseAndCheckProject options =
         checker.ParseAndCheckProject(options)
 
-    member x.GetCachedProjectCheckResult projectfile =
+    member x.GetCachedProjectCheckResult (project:Project) =
         //TODO clear cache on project invalidation
         //should we?  Or just wait for the checker to finish which will update it anyway.
-        match checkProjectResultsCache.TryGetValue projectfile with
+        match checkProjectResultsCache.TryGetValue (project.FileName.ToString()) with
         | true, v -> Some v
         | false, _ -> None
 

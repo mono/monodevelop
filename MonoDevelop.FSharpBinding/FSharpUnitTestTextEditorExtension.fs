@@ -98,8 +98,8 @@ module unitTestGatherer =
                 dnp.GetReferencedAssemblies(MonoDevelop.getConfig())
                 |> Async.AwaitTask
                 |> Async.RunSynchronously
-                |> Seq.toArray
-                |> Seq.exists (fun r -> r.EndsWith ("nunit.framework.dll", StringComparison.InvariantCultureIgnoreCase)) 
+                |> Seq.exists (fun r -> r.EndsWith ("nunit.framework.dll", StringComparison.InvariantCultureIgnoreCase)
+                                        || r.EndsWith ("GuiUnit.exe", StringComparison.InvariantCultureIgnoreCase)) 
             with ex ->
                 MonoDevelop.Core.LoggingService.LogInternalError ("FSharpUnitTestTextEditorExtension: GatherUnitTests failed", ex)
                 false
@@ -130,7 +130,7 @@ type FSharpUnitTestTextEditorExtension() =
 type FSharpNUnitSourceCodeLocationFinder() =
     inherit NUnitSourceCodeLocationFinder()
 
-    override x.GetSourceCodeLocationAsync(project, fixtureNamespace, fixtureTypeName, testName, token) =
+    override x.GetSourceCodeLocationAsync(_project, fixtureNamespace, fixtureTypeName, testName, token) =
         let computation =
             async {
                 let idx = testName.IndexOf("(")
@@ -139,20 +139,33 @@ type FSharpNUnitSourceCodeLocationFinder() =
                         testName.Substring(idx)
                     else
                         testName
-                
-                let symbol = Search.getAllSymbolsInAllProjects()
-                             |> AsyncSeq.toSeq
-                             |> Seq.tryFind (fun sym -> 
-                                 match sym.Symbol with
-                                 | :? FSharpMemberOrFunctionOrValue as func ->
-                                    func.CompiledName = testName
-                                 | _ -> false)
+
+                let matchesType (entity:FSharpEntity) =
+                    let matchesNamespace() = 
+                        match entity.Namespace with
+                        | Some ns -> ns = fixtureNamespace
+                        | _ -> fixtureNamespace = null
+
+                    entity.DisplayName = fixtureTypeName && matchesNamespace()
+
+                let symbol = 
+                    Search.getAllFSharpProjects()
+                    |> Seq.filter unitTestGatherer.hasNUnitReference
+                    |> Seq.map languageService.GetCachedProjectCheckResult
+                    |> Seq.choose (fun c -> c)
+                    |> Seq.filter (fun c -> not c.HasCriticalErrors)       
+                    |> Seq.collect (fun c -> c.AssemblySignature.Entities)
+                    |> Seq.filter matchesType
+                    |> Seq.collect (fun e -> e.MembersFunctionsAndValues)
+                    |> Seq.tryFind (fun m -> m.CompiledName = testName)
                              
-                
                 match symbol with
                 | Some sym ->
-                    let location = sym.RangeAlternate
-                    return SourceCodeLocation(location.FileName, location.StartLine, location.StartColumn + 1)
+                    let location = sym.ImplementationLocation
+                    match location with
+                    | Some loc ->
+                        return SourceCodeLocation(loc.FileName, loc.StartLine, loc.StartColumn + 1)
+                    | _ -> return null
                 | _ -> return null //?
             } 
         Async.StartAsTask(computation = computation, cancellationToken = token)

@@ -55,10 +55,10 @@ module Search =
                 if p.SupportedLanguages |> Array.contains "F#" then 
                     yield p }
 
-    let getAllProjectSymbols (project: Project) =
+    let getAllProjectSymbols project =
         async {
             try
-                let checkResult = languageService.GetCachedProjectCheckResult (project.FileName.ToString())
+                let checkResult = languageService.GetCachedProjectCheckResult project
                 match checkResult with
                 | Some v -> let! allSymbols =  v.GetAllUsesOfAllSymbols()
                             return allSymbols |> Array.toSeq
