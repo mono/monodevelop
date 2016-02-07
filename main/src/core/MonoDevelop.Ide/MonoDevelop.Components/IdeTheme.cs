@@ -51,7 +51,10 @@ namespace MonoDevelop.Components
 		{
 			DefaultGtkDataFolder = Environment.GetEnvironmentVariable ("GTK_DATA_PREFIX");
 			DefaultGtk2RcFiles = Environment.GetEnvironmentVariable ("GTK2_RC_FILES");
-			IdeApp.Preferences.UserInterfaceTheme.Changed += (sender, e) => UpdateGtkTheme ();
+			// FIXME: Immediate theme switching disabled, until:
+			//        MAC: NSAppearance issues are fixed
+			//        WIN: spradic Gtk crashes on theme realoding are fixed
+			//IdeApp.Preferences.UserInterfaceTheme.Changed += (sender, e) => UpdateGtkTheme ();
 		}
 
 		internal static void InitializeGtk (string progname, ref string[] args)
@@ -262,7 +265,12 @@ namespace MonoDevelop.Components
 			else
 				window.Appearance = NSAppearance.GetAppearance (NSAppearance.NameVibrantDark);
 
-			if (window is NSPanel)
+			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
+				window.StyleMask &= ~NSWindowStyle.TexturedBackground;
+				return;
+			}
+
+			if (window is NSPanel || window.ContentView.Class.Name != "GdkQuartzView")
 				window.BackgroundColor = MonoDevelop.Ide.Gui.Styles.BackgroundColor.ToNSColor ();
 			else {
 				object[] platforms = Mono.Addins.AddinManager.GetExtensionObjects ("/MonoDevelop/Core/PlatformService");
@@ -272,10 +280,6 @@ namespace MonoDevelop.Components
 
 					window.IsOpaque = false;
 					window.BackgroundColor = NSColor.FromPatternImage (image.ToBitmap().ToNSImage());
-				}
-				if (window.ContentView.Class.Name != "GdkQuartzView") {
-					window.ContentView.WantsLayer = true;
-					window.ContentView.Layer.BackgroundColor = MonoDevelop.Ide.Gui.Styles.BackgroundColor.ToCGColor ();
 				}
 			}
 			window.StyleMask |= NSWindowStyle.TexturedBackground;

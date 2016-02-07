@@ -99,7 +99,7 @@
 </Extension>
 
 <Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
-	<Category id="multiplat" name="Multi-platform" icon="md-platform-crossplatform">
+	<Category id="multiplat" name="Multiplatform" icon="md-platform-crossplatform">
 			<Category id="library" name="Library">
 				<Category id="general" name="General" mappedCategories="crossplat/library/general" />
 			</Category>

@@ -41,6 +41,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 	{
 		Minimpap minimap;
 		QuickTaskOverviewMode rightMap;
+		Adjustment vadjustment;
 
 		public QuickTaskMiniMapMode (QuickTaskStrip parent)
 		{
@@ -49,6 +50,23 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			
 			rightMap = new QuickTaskOverviewMode (parent);
 			PackStart (rightMap, true, true, 0);
+			vadjustment = parent.VAdjustment;
+
+			vadjustment.ValueChanged += RedrawOnVAdjustmentChange;
+
+		}
+
+
+		protected override void OnDestroyed ()
+		{
+			vadjustment.ValueChanged -= RedrawOnVAdjustmentChange;
+
+			base.OnDestroyed ();
+		}
+
+		void RedrawOnVAdjustmentChange (object sender, EventArgs e)
+		{
+			QueueDraw ();
 		}
 
 		public void ForceDraw ()

@@ -312,7 +312,7 @@ namespace MonoDevelop.SourceEditor
 							lg.AddColorStop (0, colorStyle.Color);
 							lg.AddColorStop (1, colorStyle.SecondColor);
 							cr.SetSource (lg);
-							cr.RoundedRectangle (@from + 0.5, y + 1.5, to - @from - 1, editor.LineHeight - 2, editor.LineHeight / 4);
+							cr.RoundedRectangle (@from - 0.5, y + 0.5, to - @from + 1, editor.LineHeight - 1, 2);
 							cr.FillPreserve ();
 						}
 

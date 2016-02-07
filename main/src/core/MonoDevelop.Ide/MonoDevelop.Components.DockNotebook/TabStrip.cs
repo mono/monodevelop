@@ -860,7 +860,7 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			var la = new Pango.Layout (PangoContext);
 			la.FontDescription = Ide.Fonts.FontService.SansFont.Copy ();
-			if (active && !Core.Platform.IsWindows)
+			if (!Core.Platform.IsWindows)
 				la.FontDescription.Weight = Pango.Weight.Bold;
 			la.FontDescription.AbsoluteSize = Pango.Units.FromPixels (VerticalTextSize);
 

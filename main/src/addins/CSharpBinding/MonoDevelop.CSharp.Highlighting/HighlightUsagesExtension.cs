@@ -86,7 +86,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (analysisDocument == null)
 				return new UsageData ();
 
-			var symbolInfo = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset, token);
+			var symbolInfo = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor, token);
 			if (symbolInfo.Symbol == null && symbolInfo.DeclaredSymbol == null)
 				return new UsageData ();
 			if (symbolInfo.Symbol != null && !symbolInfo.Node.IsKind (SyntaxKind.IdentifierName)) 

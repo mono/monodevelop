@@ -35,14 +35,15 @@ using MonoDevelop.Ide.ProgressMonitoring;
 using System.Linq;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Refactoring.Rename
 {
 	public partial class RenameItemDialog : Gtk.Dialog
 	{
-		Func<RenameRefactoring.RenameProperties, IList<Change>> rename;
+		Func<RenameRefactoring.RenameProperties, Task<IList<Change>>> rename;
 
-		public RenameItemDialog (string title, string currentName, Func<RenameRefactoring.RenameProperties, IList<Change>> renameOperation)
+		public RenameItemDialog (string title, string currentName, Func<RenameRefactoring.RenameProperties, Task<IList<Change>>> renameOperation)
 		{
 			this.Build ();
 			Init (title, currentName, renameOperation);
@@ -112,11 +113,11 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 
 
-			Init (title, symbol.Name, prop => { rename.PerformChanges (symbol, prop); return new List<Change> (); });
+			Init (title, symbol.Name, async prop => { await rename.PerformChangesAsync (symbol, prop); return new List<Change> (); });
 
 		}
 
-		void Init (string title, string currenName, Func<RenameRefactoring.RenameProperties, IList<Change>> rename)
+		void Init (string title, string currenName, Func<RenameRefactoring.RenameProperties, Task<IList<Change>>> rename)
 		{
 			this.Title = title;
 			this.rename = rename;
@@ -178,20 +179,20 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 		}
 		
-		void OnOKClicked (object sender, EventArgs e)
+		async void OnOKClicked (object sender, EventArgs e)
 		{
 			var properties = Properties;
 			((Widget)this).Destroy ();
-			var changes = this.rename (properties);
+			var changes = await this.rename (properties);
 			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (Title, null);
 			RefactoringService.AcceptChanges (monitor, changes);
 		}
 		
-		void OnPreviewClicked (object sender, EventArgs e)
+		async void OnPreviewClicked (object sender, EventArgs e)
 		{
 			var properties = Properties;
 			((Widget)this).Destroy ();
-			var changes = this.rename (properties);
+			var changes = await this.rename (properties);
 			using (var dlg = new RefactoringPreviewDialog (changes))
 				MessageService.ShowCustomDialog (dlg);
 		}

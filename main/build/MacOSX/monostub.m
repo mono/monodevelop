@@ -248,7 +248,8 @@ int main (int argc, char **argv)
 	
 	if (libmono == NULL) {
 		fprintf (stderr, "Failed to load libmono%s-2.0.dylib: %s\n", use_sgen ? "sgen" : "", dlerror ());
-		exit_with_message ("This application requires the Mono framework.", argv[0]);
+		NSString *msg = [NSString stringWithFormat:@"This application requires Mono %s or newer.", [req_mono_version UTF8String]]; 
+		exit_with_message ((char *)[msg UTF8String], argv[0]);
 	}
 	
 	mono_main _mono_main = (mono_main) dlsym (libmono, "mono_main");
@@ -270,8 +271,10 @@ int main (int argc, char **argv)
 	}
 	
 	char *mono_version = _mono_get_runtime_build_info ();
-	if (!check_mono_version (mono_version, [req_mono_version UTF8String]))
-		exit_with_message ("This application requires a newer version of the Mono framework.", argv[0]);
+	if (!check_mono_version (mono_version, [req_mono_version UTF8String])) {
+		NSString *msg = [NSString stringWithFormat:@"This application requires a newer version (%s+) of the Mono framework.", [req_mono_version UTF8String]]; 
+		exit_with_message ((char *)[msg UTF8String], argv[0]);
+	}
 	
 	extra_argv = get_mono_env_options (&extra_argc);
 	

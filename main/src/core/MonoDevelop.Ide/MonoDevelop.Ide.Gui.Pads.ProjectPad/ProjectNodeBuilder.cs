@@ -469,17 +469,18 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 
 		[CommandHandler (ProjectCommands.EditSolutionItem)]
+		[AllowMultiSelection]
 		public void OnEditProject ()
 		{
-			var project = (Project) CurrentNode.DataItem;
-			IdeApp.Workbench.OpenDocument (project.FileName, project);
+			foreach (var nav in CurrentNodes) {
+				IdeApp.Workbench.OpenDocument (((Project)nav.DataItem).FileName, (Project)nav.DataItem);
+			}
 		}
 
 		[CommandUpdateHandler (ProjectCommands.EditSolutionItem)]
 		public void OnEditProjectUpdate (CommandInfo info)
 		{
-			var project = (Project) CurrentNode.DataItem;
-			info.Visible = info.Enabled = !string.IsNullOrEmpty (project.FileName) && File.Exists (project.FileName);
+			info.Visible = info.Enabled = CurrentNodes.All (nav => File.Exists (((Project)nav.DataItem).FileName));
 		}
 		
 		public override DragOperation CanDragNode ()

@@ -1526,6 +1526,27 @@ namespace MonoDevelop.Projects
 			var refXml = File.ReadAllText (p.FileName.ChangeName ("project-with-duplicated-conf-saved"));
 			Assert.AreEqual (refXml, savedXml);
 		}
+
+		[Test]
+		public async Task ConditionedHintPath ()
+		{
+			// A reference with several hint paths with conditions. Only the hint path with the true condition
+			// will be used
+
+			string projFile = Util.GetSampleProject ("msbuild-tests", "conditioned-hintpath.csproj");
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+
+			Assert.AreEqual (2, p.References.Count);
+
+			Assert.AreEqual (p.ItemDirectory.Combine ("a.dll").ToString (), p.References[0].HintPath.ToString ());
+			Assert.AreEqual (p.ItemDirectory.Combine ("b.dll").ToString (), p.References[1].HintPath.ToString ());
+
+			var refXml = File.ReadAllText (p.FileName);
+			await p.SaveAsync (Util.GetMonitor ());
+
+			var savedXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (refXml, savedXml);
+		}
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode

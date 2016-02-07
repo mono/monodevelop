@@ -715,7 +715,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					result.Append (" ");
 				}
 				result.Append (CSharpAmbience.FilterName (p.Name));
-				if (p.HasExplicitDefaultValue) {
+				if (asParameterList && p.HasExplicitDefaultValue) {
 					result.Append (" = ");
 					if (p.ExplicitDefaultValue is Enum) {
 						var name = Enum.GetName (p.ExplicitDefaultValue.GetType (), p.ExplicitDefaultValue);
@@ -733,6 +733,8 @@ namespace MonoDevelop.CSharp.Refactoring
 						result.Append ("\"" + CSharpTextEditorIndentation.ConvertToStringLiteral ((string)p.ExplicitDefaultValue) + "\"");
 					} else if (p.ExplicitDefaultValue is bool) {
 						result.Append ((bool)p.ExplicitDefaultValue ? "true" : "false");
+					} else if (p.ExplicitDefaultValue == null) {
+						result.Append ("null");
 					} else {
 						result.Append (p.ExplicitDefaultValue);
 					}

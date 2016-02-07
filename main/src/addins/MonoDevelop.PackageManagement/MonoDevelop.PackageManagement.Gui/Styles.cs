@@ -55,7 +55,7 @@ namespace MonoDevelop.PackageManagement
 			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
 				CellBackgroundColor = Ide.Gui.Styles.PadBackground;
 			} else {
-				CellBackgroundColor = Xwt.Drawing.Color.FromName ("#272727");
+				CellBackgroundColor = Xwt.Drawing.Color.FromName ("#3c3c3c");
 			}
 
 			// Shared

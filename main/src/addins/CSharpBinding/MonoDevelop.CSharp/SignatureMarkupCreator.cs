@@ -77,7 +77,9 @@ namespace MonoDevelop.CSharp
 		public SignatureMarkupCreator (DocumentContext ctx, int offset)
 		{
 			this.offset = offset;
-			this.colorStyle = SyntaxModeService.GetColorStyle (MonoDevelop.Ide.IdeApp.Preferences.ColorScheme);
+			this.colorStyle = SyntaxModeService.GetColorStyle (Ide.IdeApp.Preferences.ColorScheme);
+			if (!this.colorStyle.FitsIdeSkin (Ide.IdeApp.Preferences.UserInterfaceSkin))
+				this.colorStyle = SyntaxModeService.GetDefaultColorStyle (Ide.IdeApp.Preferences.UserInterfaceSkin);
 			this.ctx = ctx;
 			if (ctx != null) {
 				if (ctx.ParsedDocument == null || ctx.AnalysisDocument == null) {
@@ -1066,7 +1068,10 @@ namespace MonoDevelop.CSharp
 				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("delegate", colorStyle.KeywordDeclaration) + " result-type identifier ([formal-parameters]);");
 				result.SummaryMarkup = "A " + Highlight ("delegate", colorStyle.KeywordDeclaration) + " declaration defines a reference type that can be used to encapsulate a method with a specific signature.";
 				break;
-			case SyntaxKind.IdentifierName:
+			case SyntaxKind.IdentifierToken:
+				if (node.ToFullString () == "nameof" && node.Parent?.Parent?.Kind () == SyntaxKind.InvocationExpression)
+					goto case SyntaxKind.NameOfKeyword;
+
 				if (node.ToFullString () == "dynamic") {
 					result.SignatureMarkup = Highlight ("dynamic", colorStyle.KeywordContext) + keywordSign;
 					result.SummaryMarkup = "The " + Highlight ("dynamic", colorStyle.KeywordContext) + " type allows for an object to bypass compile-time type checking and resolve type checking during run-time.";
@@ -1469,6 +1474,11 @@ namespace MonoDevelop.CSharp
 				result.SignatureMarkup = Highlight ("while", colorStyle.KeywordIteration) + keywordSign;
 				result.AddCategory ("Form", Highlight ("while", colorStyle.KeywordIteration) + " (expression) statement");
 				result.SummaryMarkup = "The " + Highlight ("while", colorStyle.KeywordIteration) + " statement executes a statement or a block of statements until a specified expression evaluates to false. ";
+				break;
+				case SyntaxKind.NameOfKeyword:
+				result.SignatureMarkup = Highlight ("nameof", colorStyle.KeywordDeclaration) + keywordSign;
+				result.AddCategory ("Form", Highlight ("nameof", colorStyle.KeywordDeclaration) + "(identifier)");
+				result.SummaryMarkup = "Used to obtain the simple (unqualified) string name of a variable, type, or member.";
 				break;
 			default:
 				return null;

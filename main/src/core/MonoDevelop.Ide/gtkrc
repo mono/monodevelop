@@ -1,5 +1,5 @@
-# Theme for Xamarin composed by Lanedo GmbH
-# Copyright 2012 Xamarin Inc.
+# Xamarin Studio GTK Theme
+# Copyright 2012-2016 Xamarin Inc.
 # Authors:
 #   Christian Kellner <christian.kellner@lanedo.com>
 #   Carlos Garnacho <carlos.garnacho@lanedo.com>
@@ -12,11 +12,11 @@ gtk-color-scheme =
 "bg_color: #f5f5f5
 fg_color: #000
 base_color: #fff
-text_color: #000
+text_color: @fg_color
 selected_bg_color: #649dd6
 selected_fg_color: #fff
 tooltip_bg_color: #fff9e5
-tooltip_fg_color: #000"
+tooltip_fg_color: @fg_color
 
 gtk-button-images = 0
 gtk-menu-images = 0
@@ -45,11 +45,11 @@ style "default" {
     fg[INSENSITIVE] = darker (@bg_color)
     fg[ACTIVE] = @fg_color
 
-    text[NORMAL] = @text_color
-    text[PRELIGHT] = @text_color
+    text[NORMAL] = @fg_color
+    text[PRELIGHT] = @fg_color
     text[SELECTED] = @selected_fg_color
     text[INSENSITIVE] = darker (@bg_color)
-    text[ACTIVE] = @text_color
+    text[ACTIVE] = @fg_color
 
     base[NORMAL] = @base_color
     base[PRELIGHT] = @selected_bg_color
@@ -182,7 +182,7 @@ style "tooltip"
 
 style "treeview" = "default"
 {
-    GtkTreeView::odd-row-color = "#f5f5f5"
+    GtkTreeView::odd-row-color = @bg_color
 
     engine "xamarin" {
         roundness = 0
@@ -204,16 +204,16 @@ style "icon-view" = "default"
 {
     bg[SELECTED] = "#f5f7fa"
     base[SELECTED] = "#f5f7fa"
-    fg[SELECTED] = "#000"
-    text[SELECTED] = "#000"
+    fg[SELECTED] = @fg_color
+    text[SELECTED] = @fg_color
 }
 
 style "toolbar-combo-box" = "default"
 {
     fg[NORMAL] = "#616161"
     text[NORMAL] = @fg_color
-    bg[NORMAL] = "#fff"
-    base[NORMAL] = "#fff"
+    bg[NORMAL] = @bg_color
+    base[NORMAL] = "@bg_color
 
     ythickness = 4
     xthickness = 2
@@ -269,9 +269,9 @@ style "radio-button" = "default"
 {
     GtkCheckButton::indicator-size = 15
 
-    text[NORMAL] = lighter (@text_color)
+    text[NORMAL] = lighter (@fg_color)
     base[NORMAL] = @base_color
-    text[ACTIVE] = lighter(@text_color)
+    text[ACTIVE] = lighter(@fg_color)
 }
 
 style "check-box" = "default"

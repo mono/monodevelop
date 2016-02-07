@@ -57,6 +57,8 @@ using Mono.Addins;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using MonoDevelop.Ide.TypeSystem;
+using RefactoringEssentials;
+using MonoDevelop.CSharp.Diagnostics.InconsistentNaming;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -153,7 +155,7 @@ namespace MonoDevelop.CSharp.Completion
 				snippets = newSnippets;
 				return Task.FromResult((IEnumerable<CompletionData>)newSnippets);
 			};
-
+			NameProposalService.Replace (new NameConventionRule.NamePropsalStrategy ());
 		}
 
 		public CSharpCompletionTextEditorExtension ()
@@ -308,6 +310,10 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
+		static bool IsIdentifierPart (char ch)
+		{
+			return char.IsLetterOrDigit (ch) || ch == '_';
+		}
 
 		public override Task<ICompletionDataList> HandleBackspaceOrDeleteCodeCompletionAsync (CodeCompletionContext completionContext, SpecialKey key, char triggerCharacter, CancellationToken token = default(CancellationToken))
 		{
@@ -318,13 +324,15 @@ namespace MonoDevelop.CSharp.Completion
 			//char completionChar = Editor.GetCharAt (completionContext.TriggerOffset - 1);
 			//Console.WriteLine ("completion char: " + completionChar);
 			//	var timer = Counters.ResolveTime.BeginTiming ();
+
+			if (key == SpecialKey.BackSpace || key == SpecialKey.Delete) {
+				char ch  = completionContext.TriggerOffset > 0 ? Editor.GetCharAt (completionContext.TriggerOffset - 1) : '\0';
+				char ch2 = completionContext.TriggerOffset < Editor.Length ? Editor.GetCharAt (completionContext.TriggerOffset) : '\0';
+				if (!IsIdentifierPart (ch) && !IsIdentifierPart (ch2))
+					return null;
+			}
 			try {
 				int triggerWordLength = 0;
-				//if (char.IsLetterOrDigit (completionChar) || completionChar == '_') {
-				//	if (completionContext.TriggerOffset > 1 && char.IsLetterOrDigit (Editor.GetCharAt (completionContext.TriggerOffset - 2)))
-				//		return null;
-				//	triggerWordLength = 1;
-				//}
 				return InternalHandleCodeCompletion (completionContext, triggerCharacter, true, triggerWordLength, token).ContinueWith ( t => {
 					var result = (CompletionDataList)t.Result;
 					if (result == null)

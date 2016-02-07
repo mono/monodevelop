@@ -556,6 +556,7 @@
     <Compile Include="CoreExtensions.cs" />
     <Compile Include="MonoDevelop.Core\FileWriteableState.cs" />
     <Compile Include="MonoDevelop.Projects\ConditionedPropertyCollection.cs" />
+    <Compile Include="MonoDevelop.Core\AsyncEventHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -41,6 +41,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Editor.Extension;
 using System.Linq;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Debugger
 {
@@ -480,10 +481,19 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		Adjustment oldHadjustment;
+		Adjustment oldVadjustment;
+		//Don't convert this event handler to override OnSetScrollAdjustments as it causes problems
 		void HandleScrollAdjustmentsSet (object o, ScrollAdjustmentsSetArgs args)
 		{
-			Hadjustment.ValueChanged += UpdatePreviewPosition;
-			Vadjustment.ValueChanged += UpdatePreviewPosition;
+			if (oldHadjustment != null) {
+				oldHadjustment.ValueChanged -= UpdatePreviewPosition;
+				oldVadjustment.ValueChanged -= UpdatePreviewPosition;
+			}
+			oldHadjustment = Hadjustment;
+			oldVadjustment = Vadjustment;
+			oldHadjustment.ValueChanged += UpdatePreviewPosition;
+			oldVadjustment.ValueChanged += UpdatePreviewPosition;
 		}
 
 		void UpdatePreviewPosition (object sender, EventArgs e)
@@ -540,8 +550,13 @@ namespace MonoDevelop.Debugger
 			valueCol.RemoveNotification ("width", OnColumnWidthChanged);
 			expCol.RemoveNotification ("width", OnColumnWidthChanged);
 
-			Hadjustment.ValueChanged -= UpdatePreviewPosition;
-			Vadjustment.ValueChanged -= UpdatePreviewPosition;
+			ScrollAdjustmentsSet -= HandleScrollAdjustmentsSet;
+			if (oldHadjustment != null) {
+				oldHadjustment.ValueChanged -= UpdatePreviewPosition;
+				oldVadjustment.ValueChanged -= UpdatePreviewPosition;
+				oldHadjustment = null;
+				oldVadjustment = null;
+			}
 
 			values.Clear ();
 			valueNames.Clear ();
@@ -727,12 +742,11 @@ namespace MonoDevelop.Debugger
 				compact = value;
 				Pango.FontDescription newFont;
 				if (compact) {
-					newFont = Style.FontDescription.Copy (); // TODO: VV: Use FontService
-					newFont.Size = (newFont.Size * 8) / 10;
+					newFont = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 					valueCol.MaxWidth = 800;
 					crpViewer.Image = ImageService.GetIcon (Stock.Edit).WithSize (12,12);
 				} else {
-					newFont = Style.FontDescription;
+					newFont = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale12);
 					valueCol.MaxWidth = int.MaxValue;
 				}
 				typeCol.Visible = !compact;

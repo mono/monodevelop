@@ -1,5 +1,5 @@
-# Mac Theme for Xamarin composed by Lanedo GmbH
-# Copyright 2012 Xamarin Inc.
+# Xamarin Studio Light Mac GTK Theme
+# Copyright 2012-2016 Xamarin Inc.
 # Authors:
 #   Christian Kellner <christian.kellner@lanedo.com>
 #   Carlos Garnacho <carlos.garnacho@lanedo.com>
@@ -10,9 +10,9 @@
 
 gtk-color-scheme =
 "bg_color: #f5f5f5
-fg_color: #000
+fg_color: #444
 base_color: #fff
-text_color: #555
+text_color: #444
 link_color: #5189ed
 selected_bg_color: #5189ed
 selected_fg_color: #fff
@@ -29,14 +29,14 @@ gtk-toolbar-icon-size = large-toolbar
 gtk-auto-mnemonics = 1
 gtk-error-bell = 0
 gtk-show-input-method-menu = 0
-gtk-font-name = "Helvetica Neue 13"
+gtk-font-name = "Helvetica Neue 12"
 
 
 style "default" {
     xthickness = 1
     ythickness = 1
 
-    font_name = "Helvetica Neue 13"
+    font_name = "Helvetica Neue 12"
 
     ### colours
 
@@ -52,11 +52,11 @@ style "default" {
     fg[INSENSITIVE] = darker (@bg_color)
     fg[ACTIVE] = @fg_color
 
-    text[NORMAL] = @text_color
-    text[PRELIGHT] = @text_color
+    text[NORMAL] = @fg_color
+    text[PRELIGHT] = @fg_color
     text[SELECTED] = @selected_fg_color
     text[INSENSITIVE] = darker (@bg_color)
-    text[ACTIVE] = @text_color
+    text[ACTIVE] = @fg_color
 
     base[NORMAL] = @base_color
     base[PRELIGHT] = @selected_bg_color
@@ -135,7 +135,7 @@ style "button" = "default" {
     xthickness = 2
     ythickness = 4
 
-    font_name = "Helvetica Neue 13"
+    font_name = "Helvetica Neue 12"
 
     bg[NORMAL] = @base_color
     bg[PRELIGHT] = @base_color # Mac buttons have no hover state
@@ -177,7 +177,7 @@ style "menu" {
     xthickness = 1
     # ythickness = 0
 
-    font_name = "Helvetica Neue 14"
+    font_name = "Helvetica Neue 12"
 
     bg[PRELIGHT] = @selected_fg_color
     fg[PRELIGHT] = @selected_fg_color
@@ -201,6 +201,9 @@ style "menu-item" = "menu" {
 
 style "menu-separator" = "menu-item" {
     ythickness = 3
+    engine "xamarin" {
+        contrast = 1.0
+    }
 }
 
 style "toolbar" = "default"
@@ -247,6 +250,7 @@ style "treeview" = "default"
         roundness = 0
         gradient_shades = { 1.01, 1.01, 1.01, 1.01 }
         glazestyle = 1
+        focusstyle = 3
     }
 }
 
@@ -267,8 +271,8 @@ style "toolbar-combo-box" = "default"
 {
     fg[NORMAL] = "#616161"
     text[NORMAL] = @fg_color
-    bg[NORMAL] = "#fff"
-    base[NORMAL] = "#fff"
+    bg[NORMAL] = @bg_color
+    base[NORMAL] = @bg_color
 
     ythickness = 4
     xthickness = 2
@@ -316,12 +320,13 @@ style "combo-box-menu" = "menu" {
 style "notebook" = "default"
 {
     GtkNotebook::tab-overlap = 1
+    GtkNotebook::tab-curvature = 3
 
-    bg[ACTIVE] = @base_color
+    bg[ACTIVE] = "#e7e7e7"
     bg[NORMAL] = @base_color
 
     engine "xamarin" {
-        gradient_shades = { 0.945, 0.945, 0.945, 0.685 }
+		roundness = 0
     }
 }
 
@@ -335,7 +340,7 @@ style "radio-or-check-box" = "default"
 
 style "propertygrid-radio-or-check-box" = "radio-or-check-box"
 {
-    base[ACTIVE]   = @base_color
+    base[ACTIVE] = @base_color
     base[SELECTED] = @base_color
     base[PRELIGHT] = @base_color
     text[SELECTED] = @fg_color
@@ -436,7 +441,7 @@ style "spin-button" = "wider"
 
 style "link-label-fix"
 {
-	base[PRELIGHT] = @bg_color # disable link hover background
+    base[PRELIGHT] = @bg_color # disable link hover background
 }
 
 

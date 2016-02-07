@@ -97,12 +97,21 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		
 		internal void AddData (CompletionData completionData)
 		{
+			var displayText = completionData.DisplayText;
+			foreach (var od in data) {
+				if (od.DisplayText == displayText) {
+					od.AddOverload (completionData);
+					return;
+				}
+			}
 			data.Add(completionData); 
 		}
 
 		internal void AddRange (IEnumerable<CompletionData> completionData)
 		{
-			data.AddRange(completionData); 
+			foreach (var cd in completionData) {
+				AddData (cd);
+			}
 		}
 
 		public static CompletionResult Create(IEnumerable<CompletionData> data)

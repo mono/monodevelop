@@ -209,12 +209,24 @@ namespace MonoDevelop.Ide.FindInFiles
 			scrolledwindowLogView.Hide ();
 			treeviewSearchResults.FixedHeightMode = true;
 
+			UpdateStyles ();
+			IdeApp.Preferences.ColorScheme.Changed += UpdateStyles;
 		}
-		
-		protected override void OnRealized ()
+
+		void UpdateStyles (object sender = null, EventArgs e = null)
 		{
-			base.OnRealized ();
 			highlightStyle = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			if (!highlightStyle.FitsIdeSkin (IdeApp.Preferences.UserInterfaceSkin))
+				highlightStyle = SyntaxModeService.GetDefaultColorStyle (Ide.IdeApp.Preferences.UserInterfaceSkin);
+
+			if (markupCache != null)
+				markupCache = new List<Tuple<SearchResult, string>> ();
+			if (IsRealized) {
+				store.Foreach ((model, path, iter) => {
+					model.EmitRowChanged (path, iter);
+					return false;
+				});
+			}
 		}
 
 		void ButtonPinClicked (object sender, EventArgs e)
@@ -311,10 +323,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			double delta = Math.Abs (b1 - b2);
 			if (delta < 0.1) {
 				HslColor color1 = color;
-				color1.L -= 0.5;
+				color1.L += IdeApp.Preferences.UserInterfaceSkin == Skin.Light ? -0.5 : 0.5;
 				if (Math.Abs (HslColor.Brightness (color1) - b2) < delta) {
 					color1 = color;
-					color1.L += 0.5;
+					color1.L += IdeApp.Preferences.UserInterfaceSkin == Skin.Light ? 0.5 : -0.5;
 				}
 				return color1;
 			}

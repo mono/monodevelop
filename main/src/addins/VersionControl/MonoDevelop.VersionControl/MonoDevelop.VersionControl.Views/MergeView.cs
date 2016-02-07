@@ -59,6 +59,14 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			widget.UpdateLocalText ();
 			widget.info.Start ();
+
+			var buffer = info.Document.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
+			if (buffer != null) {
+				var loc = buffer.CaretLocation;
+				int line = loc.Line < 1 ? 1 : loc.Line;
+				int column = loc.Column < 1 ? 1 : loc.Column;
+				widget.MainEditor.SetCaretTo (line, column);
+			}
 		}
 	}
 }

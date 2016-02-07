@@ -133,11 +133,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		void SetTheme (string theme)
 		{
 			if (theme.Length == 0 && Platform.IsLinux) {
-				theme = MonoDevelop.Components.IdeTheme.DefaultTheme;
-				IdeApp.Preferences.UserInterfaceTheme.Value = "";
-			}
-			else {
-				IdeApp.Preferences.UserInterfaceTheme.Value = theme;
+				currentTheme = "";
+			} else {
+				currentTheme = theme;
 			}
 		}
 
@@ -186,15 +184,16 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					)
 				);
 			}
-			currentTheme = comboTheme.Active == 0 && Platform.IsLinux ? String.Empty : comboTheme.ActiveText;
-			SetTheme ();
-		}
 
-		protected override void OnDestroyed ()
-		{
-			if (currentTheme != IdeApp.Preferences.UserInterfaceTheme)
-				SetTheme (currentTheme);
-			base.OnDestroyed ();
+			if (currentTheme != IdeApp.Preferences.UserInterfaceTheme.Value) {
+				IdeApp.Preferences.UserInterfaceTheme.Value = currentTheme;
+				MessageService.ShowMessage (
+					GettextCatalog.GetString (
+						"The user interface theme change will take effect the next time you start {0}",
+						BrandingService.ApplicationName
+					)
+				);
+			}
 		}
 
 		static string[] isoCodes = new string[] {

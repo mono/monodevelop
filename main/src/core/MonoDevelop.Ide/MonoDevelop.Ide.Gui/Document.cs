@@ -773,6 +773,13 @@ namespace MonoDevelop.Ide.Gui
 		}
 			
 		uint parseTimeout = 0;
+		CancellationTokenSource analysisDocumentSrc = new CancellationTokenSource ();
+
+		void CancelEnsureAnalysisDocumentIsOpen ()
+		{
+			analysisDocumentSrc.Cancel ();
+			analysisDocumentSrc = new CancellationTokenSource ();
+		}
 
 		Task EnsureAnalysisDocumentIsOpen ()
 		{
@@ -789,7 +796,9 @@ namespace MonoDevelop.Ide.Gui
 					TypeSystemService.InformDocumentOpen (analysisDocument, Editor);
 				}
 			} else {
+				CancelEnsureAnalysisDocumentIsOpen ();
 				lock (adhocProjectLock) {
+					var token = analysisDocumentSrc.Token;
 					if (adhocProject != null) {
 						return SpecializedTasks.EmptyTask;
 					}
@@ -814,9 +823,11 @@ namespace MonoDevelop.Ide.Gui
 						adhocSolution = new Solution ();
 						adhocSolution.AddConfiguration ("", true);
 						adhocSolution.DefaultSolutionFolder.AddItem (newProject);
-						return TypeSystemService.Load (adhocSolution, new ProgressMonitor ()).ContinueWith (task => {
+						return TypeSystemService.Load (adhocSolution, new ProgressMonitor (), token).ContinueWith (task => {
+							if (token.IsCancellationRequested)
+								return;
 							RoslynWorkspace = task.Result.FirstOrDefault(); // 1 solution loaded ->1 workspace as result
-							analysisDocument = TypeSystemService.GetDocumentId (RoslynWorkspace, adhocProject, adHocFile);
+							analysisDocument = TypeSystemService.GetDocumentId (RoslynWorkspace, newProject, adHocFile);
 							TypeSystemService.InformDocumentOpen (RoslynWorkspace, analysisDocument, Editor);
 						});
 					}
@@ -834,6 +845,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void UnloadAdhocProject ()
 		{
+			CancelEnsureAnalysisDocumentIsOpen ();
 			lock (adhocProjectLock) {
 				if (adhocProject == null)
 					return;

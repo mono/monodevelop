@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			this.comboboxentryMime.Entry.Text = template.MimeType ?? "";
 			this.entryDescription.Text = template.Description ?? "";
 			this.textEditor.MimeType = template.MimeType;
-			this.textEditor.Text = template.Code;
+			this.textEditor.Text = template.Code ?? "";
 			
 			checkbuttonExpansion.Active = (template.CodeTemplateType & CodeTemplateType.Expansion) == CodeTemplateType.Expansion;
 			checkbuttonSurroundWith.Active = (template.CodeTemplateType & CodeTemplateType.SurroundsWith) == CodeTemplateType.SurroundsWith;

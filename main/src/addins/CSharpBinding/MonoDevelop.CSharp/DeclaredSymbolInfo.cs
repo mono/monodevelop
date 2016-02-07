@@ -479,14 +479,16 @@ namespace MonoDevelop.CSharp
 			return TypeSystemService.GetCodeAnalysisDocument (type.DocumentId, token);
 		}
 
-		public override async Task<TooltipInformation> GetTooltipInformation (CancellationToken token)
+		public override Task<TooltipInformation> GetTooltipInformation (CancellationToken token)
 		{
-			var doc = GetDocument (token);
-			if (doc == null) {
-				return new TooltipInformation ();
-			}
-			var symbol = await type.GetSymbolAsync (doc, token);
-			return await Ambience.GetTooltip (token, symbol);
+			return Task.Run (async delegate {
+				var doc = GetDocument (token);
+				if (doc == null) {
+					return null;
+				}
+				var symbol = await type.GetSymbolAsync (doc, token);
+				return await Ambience.GetTooltip (token, symbol);
+			});
 		}
 
 		public override string Description {
@@ -525,9 +527,9 @@ namespace MonoDevelop.CSharp
 			}
 		}
 
-		public override string GetMarkupText ()
+		public override string GetMarkupText (bool selected)
 		{
-			return HighlightMatch (useFullName ? type.FullyQualifiedContainerName : type.Name, match);
+			return HighlightMatch (useFullName ? type.FullyQualifiedContainerName : type.Name, match, selected);
 		}
 
 		public DeclaredSymbolInfoResult (string match, string matchedString, int rank, DeclaredSymbolInfo type, bool useFullName)  : base (match, matchedString, rank)

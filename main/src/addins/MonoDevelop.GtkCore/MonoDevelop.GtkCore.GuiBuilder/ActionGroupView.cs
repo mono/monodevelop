@@ -197,9 +197,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			codeBinder.BindSignal (a.Signal);
 		}
 		
-		void OnSignalChanged (object s, Stetic.ComponentSignalEventArgs a)
+		async void OnSignalChanged (object s, Stetic.ComponentSignalEventArgs a)
 		{
-			codeBinder.UpdateSignal (a.OldSignal, a.Signal);
+			await codeBinder.UpdateSignal (a.OldSignal, a.Signal);
 		}
 		
 		async void OnBindField (object s, EventArgs args)

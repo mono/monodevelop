@@ -30,6 +30,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Components;
+using Xwt;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -83,7 +84,7 @@ namespace MonoDevelop.Ide.Editor
 		ViewContent ViewContent { get; }
 
 		string ContentName { get; set; }
-			
+
 		EditMode EditMode { get; }
 
 		ITextEditorOptions Options { get; set; }
@@ -112,7 +113,7 @@ namespace MonoDevelop.Ide.Editor
 
 		event EventHandler CaretPositionChanged;
 
-		event EventHandler BeginMouseHover;
+		event EventHandler<MouseMovedEventArgs> MouseMoved;
 
 		event EventHandler VAdjustmentChanged;
 
@@ -160,8 +161,7 @@ namespace MonoDevelop.Ide.Editor
 
 		void CenterTo (int offset);
 
-		IList<SkipChar> SkipChars
-		{
+		IList<SkipChar> SkipChars {
 			get;
 		}
 
@@ -199,7 +199,7 @@ namespace MonoDevelop.Ide.Editor
 
 		IEnumerable<IFoldSegment> GetFoldingsIn (int offset, int length);
 
-		string GetPangoMarkup (int offset, int length);
+		string GetPangoMarkup (int offset, int length, bool fitIdeStyle = false);
 
 		void SetIndentationTracker (IndentationTracker indentationTracker);
 		void SetSelectionSurroundingProvider (SelectionSurroundingProvider surroundingProvider);
@@ -211,14 +211,12 @@ namespace MonoDevelop.Ide.Editor
 
 		#region Internal use only API (do not mirror in TextEditor)
 
-		TextEditorExtension EditorExtension
-		{
+		TextEditorExtension EditorExtension {
 			get;
 			set;
 		}
 
-		IEnumerable<TooltipProvider> TooltipProvider
-		{
+		IEnumerable<TooltipProvider> TooltipProvider {
 			get;
 		}
 

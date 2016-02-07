@@ -102,10 +102,13 @@ namespace MonoDevelop.MacIntegration
 		{
 			if (!indexMap.ContainsKey (button))
 				return;
+			NSImage img;
 			if (button.Enabled)
-				SetImage (ImageService.GetIcon (button.Image, Gtk.IconSize.Menu).ToNSImage (), indexMap [button]);
+				img = ImageService.GetIcon (button.Image, Gtk.IconSize.Menu).ToNSImage ();
 			else
-				SetImage (ImageService.GetIcon (button.Image, Gtk.IconSize.Menu).WithStyles ("disabled").ToNSImage (), indexMap [button]);
+				img = ImageService.GetIcon (button.Image, Gtk.IconSize.Menu).WithStyles ("disabled").ToNSImage ();
+			img.Template = true;
+			SetImage (img, indexMap [button]);
 		}
 
 		public override nint SegmentCount {

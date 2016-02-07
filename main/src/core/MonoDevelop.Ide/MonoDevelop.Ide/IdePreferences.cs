@@ -146,16 +146,19 @@ namespace MonoDevelop.Ide
 			get { return MonoDevelop.Components.IdeTheme.UserInterfaceSkin; }
 		}
 
+		internal static readonly string DefaultLightColorScheme = "Default";
+		internal static readonly string DefaultDarkColorScheme = "Oblivion";
+
 		public readonly ConfigurationProperty<bool> EnableSourceAnalysis = ConfigurationProperty.Create ("MonoDevelop.AnalysisCore.AnalysisEnabled", true);
 		public readonly ConfigurationProperty<bool> EnableUnitTestEditorIntegration = ConfigurationProperty.Create ("Testing.EnableUnitTestEditorIntegration", false);
 
-		public readonly ConfigurationProperty<string> ColorScheme = new SkinConfigurationProperty<string> ("ColorScheme", "Default", "Monokai");
+		public readonly SkinConfigurationProperty<string> ColorScheme = new SkinConfigurationProperty<string> ("ColorScheme", DefaultLightColorScheme, DefaultDarkColorScheme);
 
-		public readonly ConfigurationProperty<string> UserTasksHighPrioColor = new SkinConfigurationProperty<string> ("Monodevelop.UserTasksHighPrioColor", "", "rgb:ffff/ffff/ffff");
-		public readonly ConfigurationProperty<string> UserTasksNormalPrioColor = new SkinConfigurationProperty<string> ("Monodevelop.UserTasksNormalPrioColor", "", "rgb:ffff/ffff/ffff");
-		public readonly ConfigurationProperty<string> UserTasksLowPrioColor = new SkinConfigurationProperty<string> ("Monodevelop.UserTasksLowPrioColor", "", "rgb:ffff/ffff/ffff");
+		public readonly SkinConfigurationProperty<string> UserTasksHighPrioColor = new SkinConfigurationProperty<string> ("Monodevelop.UserTasksHighPrioColor", "", "rgb:ffff/ffff/ffff");
+		public readonly SkinConfigurationProperty<string> UserTasksNormalPrioColor = new SkinConfigurationProperty<string> ("Monodevelop.UserTasksNormalPrioColor", "", "rgb:ffff/ffff/ffff");
+		public readonly SkinConfigurationProperty<string> UserTasksLowPrioColor = new SkinConfigurationProperty<string> ("Monodevelop.UserTasksLowPrioColor", "", "rgb:ffff/ffff/ffff");
 
-		class SkinConfigurationProperty<T>: ConfigurationProperty<T>
+		public class SkinConfigurationProperty<T>: ConfigurationProperty<T>
 		{
 			readonly ConfigurationProperty<T> lightConfiguration;
 			readonly ConfigurationProperty<T> darkConfiguration;
@@ -168,6 +171,18 @@ namespace MonoDevelop.Ide
 				lightConfiguration.Changed += (s,e) => OnChanged ();
 				darkConfiguration.Changed += (s,e) => OnChanged ();
 				MonoDevelop.Ide.Gui.Styles.Changed += (sender, e) => OnChanged ();
+			}
+
+			public T ValueForSkin (Skin skin)
+			{
+				switch (skin) {
+					case Skin.Light:
+						return lightConfiguration.Value;
+					case Skin.Dark:
+						return darkConfiguration.Value;
+					default:
+						throw new InvalidOperationException ();
+				}
 			}
 
 			protected override T OnGetValue ()

@@ -130,9 +130,9 @@ namespace MonoDevelop.Components.Docking
 			double inactiveIconAlpha;
 
 			if (IdeApp.Preferences == null || IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
-				inactiveIconAlpha = 0.6;
+				inactiveIconAlpha = 0.8;
 			else
-				inactiveIconAlpha = 0.45;
+				inactiveIconAlpha = 0.6;
 
 			if (labelWidget != null && label != null) {
 				if (visualStyle.UppercaseTitles.Value)
@@ -152,13 +152,10 @@ namespace MonoDevelop.Components.Docking
 				tabIcon.Visible = visualStyle.ShowPadTitleIcon.Value;
 			}
 			if (IsRealized && labelWidget != null) {
-				var font = FontService.SansFont.CopyModified (Styles.FontScale11);
+				var font = FontService.SansFont.CopyModified (Styles.FontScale11, Pango.Weight.Bold);
 				labelWidget.ModifyFont (font);
 				labelWidget.ModifyText (StateType.Normal, (active ? visualStyle.PadTitleLabelColor.Value : visualStyle.InactivePadTitleLabelColor.Value).ToGdkColor ());
 			}
-
-			// TODO: VV: Please replicate the gradient from TabStrip.DrawTab () with total transparency
-			// so we have the same appearance of the label as on document tabs
 
 			var r = WidthRequest;
 			WidthRequest = -1;
@@ -180,22 +177,21 @@ namespace MonoDevelop.Components.Docking
 			}
 			
 			Gtk.HBox box = new HBox ();
-			box.Spacing = 1;
+			box.Spacing = -2;
 			
-			if (icon != null) {
-				tabIcon = new ImageView (icon);
-				tabIcon.Show ();
-				box.PackStart (tabIcon, false, false, 3);
-			} else
-				tabIcon = null;
+			if (icon == null)
+				icon = ImageService.GetIcon ("md-empty");
+
+			tabIcon = new ImageView (icon);
+			tabIcon.Show ();
+			box.PackStart (tabIcon, false, false, 3);
 
 			if (!string.IsNullOrEmpty (label)) {
 				labelWidget = new ExtendedLabel (label);
-				labelWidget.DropShadowVisible = true;
 				labelWidget.UseMarkup = true;
 				labelWidget.Yalign = 0.85f;
 				var alignLabel = new Alignment (0.0f, 1.0f, 1, 1);
-				alignLabel.BottomPadding = 1;
+				alignLabel.BottomPadding = 0;
 				alignLabel.RightPadding = 15;
 				alignLabel.Add (labelWidget);
 				box.PackStart (alignLabel, true, true, 0);
@@ -225,7 +221,7 @@ namespace MonoDevelop.Components.Docking
 
 			Gtk.Alignment al = new Alignment (0, 0.5f, 1, 1);
 			HBox btnBox = new HBox (false, 0);
-			btnBox.PackStart (btnDock, false, false, 0);
+			btnBox.PackStart (btnDock, false, false, 3);
 			btnBox.PackStart (btnClose, false, false, 1);
 			al.Add (btnBox);
 			box.PackEnd (al, false, false, 3);

@@ -234,6 +234,8 @@ namespace MonoDevelop.Components
 			}
 
 			caret.Inflate (CaretSpacing, CaretSpacing);
+			if (!Core.Platform.IsWindows)
+				caret.Inflate (-1, -1);
 
 			Gtk.Requisition request = SizeRequest ();
 			var screen = parent.Screen;
@@ -408,7 +410,7 @@ namespace MonoDevelop.Components
 		void UpdatePadding ()
 		{
 			uint top,left,bottom,right;
-			top = left = bottom = right = (uint)Theme.Padding + 1;
+			top = left = bottom = right = (uint)(Theme.Padding + (Core.Platform.IsWindows ? 1 : 2));
 
 			if (ShowArrow) {
 				if ((position & PopupPosition.Top) != 0)
@@ -463,6 +465,16 @@ namespace MonoDevelop.Components
 					else if ((position & PopupPosition.Right) != 0) {
 						rect.Width -= Theme.ArrowLength;
 					}
+				}
+				if (!Core.Platform.IsWindows) {
+					if ((position & PopupPosition.Top) != 0)
+						rect.Y += 1;
+					else if ((position & PopupPosition.Bottom) != 0)
+						rect.Y -= 1;
+					else if ((position & PopupPosition.Left) != 0)
+						rect.X += 1;
+					else if ((position & PopupPosition.Right) != 0)
+						rect.X -= 1;
 				}
 				return rect;
 			}

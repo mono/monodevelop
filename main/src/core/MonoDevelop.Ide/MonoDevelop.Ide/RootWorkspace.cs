@@ -467,16 +467,18 @@ namespace MonoDevelop.Ide
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true);
 			bool reloading = IsReloading;
 
-			IdeApp.Workbench.LockGui ();
-
 			var cancellationSource = openingItemCancellationSource = new System.Threading.CancellationTokenSource ();
 			monitor = monitor.WithCancellationSource (cancellationSource);
 
-			var oper = BackgroundLoadWorkspace (monitor, file, loadPreferences, reloading);
-
+			IdeApp.Workbench.LockGui ();
+			ITimeTracker timer = Counters.OpenWorkspaceItemTimer.BeginTiming ();
 			try {
+				var oper = BackgroundLoadWorkspace (monitor, file, loadPreferences, reloading, timer);
 				return await oper;
 			} finally {
+				timer.End ();
+				monitor.Dispose ();
+				IdeApp.Workbench.UnlockGui ();
 				if (openingItemCancellationSource == cancellationSource)
 					openingItemCancellationSource = null;
 			}
@@ -498,25 +500,22 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		async Task<bool> BackgroundLoadWorkspace (ProgressMonitor monitor, FilePath file, bool loadPreferences, bool reloading)
+		async Task<bool> BackgroundLoadWorkspace (ProgressMonitor monitor, FilePath file, bool loadPreferences, bool reloading, ITimeTracker timer)
 		{
 			WorkspaceItem item = null;
-			ITimeTracker timer = Counters.OpenWorkspaceItemTimer.BeginTiming ();
-			
+
 			try {
 				if (reloading)
 					SetReloading (true);
 
 				if (!File.Exists (file)) {
 					monitor.ReportError (GettextCatalog.GetString ("File not found: {0}", file), null);
-					monitor.Dispose ();
 					return false;
 				}
 
 				if (!Services.ProjectService.IsWorkspaceItemFile (file)) {
 					if (!Services.ProjectService.IsSolutionItemFile (file)) {
 						monitor.ReportError (GettextCatalog.GetString ("File is not a project or solution: {0}", file), null);
-						monitor.Dispose ();
 						return false;
 					}
 
@@ -529,10 +528,8 @@ namespace MonoDevelop.Ide
 				if (item == null) {
 					timer.Trace ("Reading item");
 					item = await Services.ProjectService.ReadWorkspaceItem (monitor, file);
-					if (monitor.CancellationToken.IsCancellationRequested) {
-						monitor.Dispose ();
+					if (monitor.CancellationToken.IsCancellationRequested)
 						return false;
-					}
 				}
 
 				timer.Trace ("Registering to recent list");
@@ -542,41 +539,34 @@ namespace MonoDevelop.Ide
 				LoggingService.LogError ("Load operation failed", ex);
 				monitor.ReportError ("Load operation failed.", ex);
 				
-				// Don't use 'finally' to dispose the monitor, since it has to be disposed later
-				monitor.Dispose ();
 				if (item != null)
 					item.Dispose ();
-				timer.End ();
 				return false;
 			} finally {
-				Gtk.Application.Invoke ((s,o) => IdeApp.Workbench.UnlockGui ());
 				if (reloading)
 					SetReloading (false);
 			}
 
 			using (monitor) {
-				try {
-					// Add the item in the GUI thread. It is not safe to do it in the background thread.
-					if (!monitor.CancellationToken.IsCancellationRequested) {
-						item.SetShared ();
-						Items.Add (item);
-					}
-					else {
-						item.Dispose ();
-						return false;
-					}
-					if (IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem == null)
-						IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = GetAllSolutions ().FirstOrDefault ();
-					if (Items.Count == 1 && loadPreferences) {
-						timer.Trace ("Restoring workspace preferences");
-						RestoreWorkspacePreferences (item);
-					}
-					timer.Trace ("Reattaching documents");
-					ReattachDocumentProjects (null);
-					monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
-				} finally {
-					timer.End ();
+				// Add the item in the GUI thread. It is not safe to do it in the background thread.
+				if (!monitor.CancellationToken.IsCancellationRequested) {
+					item.SetShared ();
+					Items.Add (item);
 				}
+				else {
+					item.Dispose ();
+					return false;
+				}
+				if (IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem == null)
+					IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = GetAllSolutions ().FirstOrDefault ();
+				if (Items.Count == 1 && loadPreferences) {
+					timer.Trace ("Restoring workspace preferences");
+					await RestoreWorkspacePreferences (item);
+				}
+				timer.Trace ("Reattaching documents");
+				ReattachDocumentProjects (null);
+				monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
+
 				timer.Trace ("Reattaching documents");
 				ReattachDocumentProjects (null);
 				monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
@@ -584,7 +574,7 @@ namespace MonoDevelop.Ide
 			return true;
 		}
 
-		void RestoreWorkspacePreferences (WorkspaceItem item)
+		async Task RestoreWorkspacePreferences (WorkspaceItem item)
 		{
 			// Restore local configuration data
 			
@@ -622,7 +612,8 @@ namespace MonoDevelop.Ide
 			if (LoadingUserPreferences != null) {
 				UserPreferencesEventArgs args = new UserPreferencesEventArgs (item, item.UserProperties);
 				try {
-					LoadingUserPreferences (this, args);
+					foreach (AsyncEventHandler<UserPreferencesEventArgs> d in LoadingUserPreferences.GetInvocationList ())
+						await d (this, args);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Exception in LoadingUserPreferences.", ex);
 				}
@@ -1241,7 +1232,7 @@ namespace MonoDevelop.Ide
 		/// Add-ins can subscribe to this event to load preferences previously
 		/// stored in the StoringUserPreferences event.
 		/// </remarks>
-		public event EventHandler<UserPreferencesEventArgs> LoadingUserPreferences;
+		public event AsyncEventHandler<UserPreferencesEventArgs> LoadingUserPreferences;
 		
 		/// <summary>
 		/// Fired when an item (a project, solution or workspace) is going to be unloaded.

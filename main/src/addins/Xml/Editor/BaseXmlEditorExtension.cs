@@ -602,13 +602,36 @@ namespace MonoDevelop.Xml.Editor
 				elements.Add (el);
 			}
 		}
-		
+
+		//Prevents code completion on -, so <!-- doesn't code complete too soon
+		class IgnoreDashKeyHandler : ICompletionKeyHandler
+		{
+			public bool PreProcessKey (CompletionListWindow listWindow, KeyDescriptor descriptor, out KeyActions keyAction)
+			{
+				keyAction = KeyActions.None;
+				if (descriptor.KeyChar == '-') {
+					return true;
+				}
+				return false;
+			}
+
+			public bool PostProcessKey (CompletionListWindow listWindow, KeyDescriptor descriptor, out KeyActions keyAction)
+			{
+				keyAction = KeyActions.None;
+				if (descriptor.KeyChar == '-') {
+					return true;
+				}
+				return false;
+			}
+		}
+
 		/// <summary>
 		/// Adds CDATA and comment begin tags.
 		/// </summary>
 		protected static void AddMiscBeginTags (CompletionDataList list)
 		{
 			list.Add ("!--",  "md-literal", GettextCatalog.GetString ("Comment"));
+			list.AddKeyHandler (new IgnoreDashKeyHandler ());
 			list.Add ("![CDATA[", "md-literal", GettextCatalog.GetString ("Character data"));
 		}
 

@@ -350,13 +350,20 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		NSAttributedString GetStatusString (string text, NSColor color)
 		{
+			nfloat fontSize = NSFont.SystemFontSize;
+			if (Window != null) {
+				fontSize -= Window.Screen.BackingScaleFactor == 2 ? 2 : 1;
+			} else {
+				fontSize -= 1;
+			}
+
 			return new NSAttributedString (text, new NSStringAttributes {
 				ForegroundColor = color,
 				ParagraphStyle = new NSMutableParagraphStyle {
 					HeadIndent = imageView.Frame.Width,
 					LineBreakMode = NSLineBreakMode.TruncatingMiddle,
 				},
-				Font = NSFont.SystemFontOfSize (NSFont.SystemFontSize - 2),
+				Font = NSFont.SystemFontOfSize (fontSize),
 			});
 		}
 
@@ -391,7 +398,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			textField.Cell = new VerticallyCenteredTextFieldCell (yOffset: -0.5f);
 			textField.Cell.StringValue = "";
-			textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, NSColor.LightGray);
+			textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, ColorForType (MessageType.Ready));
 
 			// The rect is empty because we use InVisibleRect to track the whole of the view.
 			textFieldArea = new NSTrackingArea (CGRect.Empty, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInKeyWindow | NSTrackingAreaOptions.InVisibleRect, this, null);
@@ -427,6 +434,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			};
 
 			updateHandler (null, null);
+
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification,
+			                                                notification => Runtime.RunInMainThread (() => {
+																ReconstructString ();
+																RepositionContents ();
+															}));
 
 			TaskService.Errors.TasksAdded += updateHandler;
 			TaskService.Errors.TasksRemoved += updateHandler;
@@ -478,17 +491,23 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			NSBezierPath.FillRect (sepRect);
 		}
 
+		public override void ViewDidMoveToWindow ()
+		{
+			base.ViewDidMoveToWindow ();
+			ReconstructString ();
+			RepositionContents ();
+		}
+
 		void ReconstructString ()
 		{
 			if (string.IsNullOrEmpty (text)) {
 				textField.AttributedStringValue = new NSAttributedString ("");
+				textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, ColorForType (MessageType.Ready));
 				imageView.Image = ImageService.GetIcon (Stock.StatusSteady).ToNSImage ();
 			} else {
 				textField.AttributedStringValue = GetStatusString (text, textColor);
 				imageView.Image = image;
 			}
-
-			DestroyPopover (null, null);
 		}
 
 		readonly List<StatusIcon> statusIcons = new List<StatusIcon> ();
@@ -521,7 +540,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return right;
 			}
 
-			return right - 9;
+			return right - 12;
 		}
 
 		IconId buildImageId;
@@ -529,13 +548,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		void PositionBuildResults (nfloat right)
 		{
 			right = DrawSeparatorIfNeeded (right);
-			right -= (3 + buildResults.Frame.Width);
+			right -= buildResults.Frame.Width;
 			buildResults.SetFrameOrigin (new CGPoint (right, buildResults.Frame.Y));
 		}
 
 		internal void RepositionStatusIcons ()
 		{
-			nfloat right = Frame.Width - 3;
+			nfloat right = Frame.Width - 6;
 
 			foreach (var item in statusIcons) {
 				right -= item.Bounds.Width + 1;
@@ -543,7 +562,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan) {
 					y = IdeApp.Preferences.UserInterfaceSkin == Skin.Dark ? 3 : 4;
 				}
-				item.Frame = new CGRect (right, y, item.Bounds.Width, item.Bounds.Height);
+				item.Frame = new CGRect (right + 0.5, y, item.Bounds.Width, item.Bounds.Height);
 			}
 
 			PositionBuildResults (right);
@@ -869,15 +888,24 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 			set {
 				base.Frame = value;
-
-				imageView.Frame = new CGRect (6, 0, 16, Frame.Height);
-				textField.Frame = new CGRect (imageView.Frame.Right, 0, Frame.Width - 16, Frame.Height);
-
-				buildResults.Frame = new CGRect (buildResults.Frame.X, buildResults.Frame.Y, buildResults.Frame.Width, Frame.Height);
-				RepositionStatusIcons ();
-
-				progressView.Frame = new CGRect (0.5f, 1f, value.Width - 2, value.Height - 2);
+				RepositionContents ();
 			}
+		}
+
+		void RepositionContents ()
+		{
+			nfloat yOffset = 0;
+			if (Window != null && Window.Screen != null && Window.Screen.BackingScaleFactor == 1) {
+				yOffset = -1;
+			}
+
+			imageView.Frame = new CGRect (6, 0, 16, Frame.Height);
+			textField.Frame = new CGRect (imageView.Frame.Right, yOffset, Frame.Width - 16, Frame.Height);
+
+			buildResults.Frame = new CGRect (buildResults.Frame.X, buildResults.Frame.Y, buildResults.Frame.Width, Frame.Height);
+			RepositionStatusIcons ();
+
+			progressView.Frame = new CGRect (0.5f, 1f, Frame.Width - 2, Frame.Height - 2);
 		}
 	}
 }

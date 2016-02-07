@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -205,8 +206,17 @@ namespace MonoDevelop.SourceEditor
 				if (oldPattern != SearchAndReplaceOptions.SearchPattern)
 					UpdateSearchEntry ();
 				var history = GetHistory (seachHistoryProperty);
+
+				// Don't do anything to the history if we have a blank search
+				if (string.IsNullOrWhiteSpace (SearchPattern)) {
+					return;
+				}
+
 				if (history.Count > 0 && history [0] == oldPattern) {
-					ChangeHistory (seachHistoryProperty, SearchAndReplaceOptions.SearchPattern);
+					// Only update the current history item if we're adding to the search string
+					if (!oldPattern.StartsWith (SearchPattern)) {
+						ChangeHistory (seachHistoryProperty, SearchAndReplaceOptions.SearchPattern);
+					}
 				} else {
 					UpdateSearchHistory (SearchAndReplaceOptions.SearchPattern);
 				}
@@ -794,8 +804,7 @@ But I leave it in in the case I've missed something. Mike
 			if (!valid || textEditor.TextViewMargin.SearchResultMatchCount == 0) {
 				//resultInformLabel.Markup = "<span foreground=\"#000000\" background=\"" + MonoDevelop.Components.PangoCairoHelper.GetColorString (GotoLineNumberWidget.errorColor) + "\">" + GettextCatalog.GetString ("Not found") + "</span>";
 				resultInformLabel.Text = GettextCatalog.GetString ("Not found");
-				resultInformLabelEventBox.ModifyBg (StateType.Normal, GotoLineNumberWidget.errorColor);
-				resultInformLabel.ModifyFg (StateType.Normal, searchEntry.Entry.Style.Foreground (StateType.Normal));
+				resultInformLabel.ModifyFg (StateType.Normal, Ide.Gui.Styles.Editor.SearchErrorForegroundColor.ToGdkColor ());
 			} else {
 				int resultIndex = 0;
 				int foundIndex = -1;

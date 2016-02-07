@@ -1292,9 +1292,9 @@ namespace Mono.TextEditor
 		Margin oldMargin = null;
 		bool overChildWidget;
 
-		public event EventHandler BeginHover;
+		public event EventHandler<Xwt.MouseMovedEventArgs> BeginHover;
 
-		protected virtual void OnBeginHover (EventArgs e)
+		protected virtual void OnBeginHover (Xwt.MouseMovedEventArgs e)
 		{
 			var handler = BeginHover;
 			if (handler != null)
@@ -1303,7 +1303,7 @@ namespace Mono.TextEditor
 
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 		{
-			OnBeginHover (EventArgs.Empty);
+			OnBeginHover (new Xwt.MouseMovedEventArgs (e.Time, e.X, e.Y));
 			try {
 				// The coordinates have to be properly adjusted to the origin since
 				// the event may come from a child widget
@@ -1311,6 +1311,7 @@ namespace Mono.TextEditor
 				GdkWindow.GetOrigin (out rx, out ry);
 				double x = (int) e.XRoot - rx;
 				double y = (int) e.YRoot - ry;
+
 				overChildWidget = containerChildren.Any (w => w.Child.Allocation.Contains ((int)x, (int)y));
 
 				RemoveScrollWindowTimer ();

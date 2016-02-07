@@ -713,6 +713,9 @@ namespace MonoDevelop.VersionControl.Git
 					Revert (RootRepository.FromGitPath (conflictFile.Ancestor.Path), false, monitor);
 					break;
 				}
+				if (res == Git.ConflictResult.Continue) {
+					Add (RootRepository.FromGitPath (conflictFile.Ancestor.Path), false, monitor);
+				}
 			}
 			if (!string.IsNullOrEmpty (message)) {
 				var sig = GetSignature ();
@@ -779,7 +782,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		public void Merge (string branch, GitUpdateOptions options, ProgressMonitor monitor)
+		public void Merge (string branch, GitUpdateOptions options, ProgressMonitor monitor, FastForwardStrategy strategy = FastForwardStrategy.Default)
 		{
 			int stashIndex = -1;
 			var oldHead = RootRepository.Head.Tip;

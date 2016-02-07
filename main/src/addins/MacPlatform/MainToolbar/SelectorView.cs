@@ -77,7 +77,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			var fitSize = RealSelectorView.SizeThatFits (size);
 
-			return new CGSize (fitSize.Width + 12.0, size.Height);
+			return new CGSize (Math.Round (fitSize.Width) + 12.0, size.Height);
 		}
 
 		public override void SetFrameSize (CGSize newSize)
@@ -232,23 +232,21 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				menu.AddItem (menuItem);
 			}
 
-
 			public PathSelectorView (CGRect frameRect) : base (frameRect)
 			{
 				PathComponentCells = new [] {
 					new NSPathComponentCell {
-						Image = ImageService.GetIcon ("project").WithStyles ("disabled").ToBitmap ().ToNSImage (),
+						Image = MultiResImage.CreateMultiResImage ("project", "disabled"),
 						Title = ConfigurationPlaceholder,
 						Enabled = false,
-						TextColor = Styles.BaseForegroundColor.ToNSColor (),
 					},
 					new NSPathComponentCell {
-						Image = ImageService.GetIcon ("device").WithStyles ("disabled").ToBitmap ().ToNSImage (),
+						Image = MultiResImage.CreateMultiResImage ("device", "disabled"),
 						Title = RuntimePlaceholder,
 						Enabled = false,
-						TextColor = Styles.BaseForegroundColor.ToNSColor (),
 					}
 				};
+				UpdateStyle ();
 
 				BackgroundColor = NSColor.Clear;
 				FocusRingType = NSFocusRingType.None;
@@ -321,21 +319,18 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				};
 
 				Ide.Gui.Styles.Changed += UpdateStyle;
+				NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification,
+				                                                                notification => Runtime.RunInMainThread (() => {
+					// Force a redraw because NSPathControl does not redraw itself when switching to a different resolution
+					// and the icons need redrawn
+					NeedsDisplay = true;
+				}));
 			}
 
 			void UpdateStyle (object sender = null, EventArgs e = null)
 			{
-				//if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
-					if (PathComponentCells [ConfigurationIdx].Enabled)
-						PathComponentCells [ConfigurationIdx].TextColor = Styles.BaseForegroundColor.ToNSColor ();
-					else
-						PathComponentCells [ConfigurationIdx].TextColor = Styles.DisabledForegroundColor.ToNSColor ();
-
-				if (PathComponentCells [RuntimeIdx].Enabled)
-					PathComponentCells [RuntimeIdx].TextColor = Styles.BaseForegroundColor.ToNSColor ();
-				else
-					PathComponentCells [RuntimeIdx].TextColor = Styles.DisabledForegroundColor.ToNSColor ();
-				//}
+				PathComponentCells [ConfigurationIdx].TextColor = Styles.BaseForegroundColor.ToNSColor ();
+				PathComponentCells [RuntimeIdx].TextColor = Styles.BaseForegroundColor.ToNSColor ();
 
 				UpdateImages ();
 			}
@@ -370,21 +365,27 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			void UpdatePathText (int idx, string text)
 			{
 				PathComponentCells [idx].Title = text;
-				UpdateStyle ();
+				UpdateImages ();
 			}
 
 			void UpdateImages ()
 			{
-				var projectImage = ImageService.GetIcon ("project");
+				string projectStyle = "";
+				string deviceStyle = "";
 				if (!PathComponentCells [ConfigurationIdx].Enabled)
-					projectImage = projectImage.WithStyles ("disabled");
-				
-				var deviceImage = ImageService.GetIcon ("device");
+					projectStyle = "disabled";
+
 				if (!PathComponentCells [ConfigurationIdx].Enabled)
-					deviceImage = deviceImage.WithStyles ("disabled");
-				
-				PathComponentCells [ConfigurationIdx].Image = projectImage.ToBitmap ().ToNSImage ();
-				PathComponentCells [RuntimeIdx].Image = deviceImage.ToBitmap ().ToNSImage ();
+					deviceStyle = "disabled";
+
+				// HACK
+				// For some reason NSPathControl does not like the images that ImageService provides. To use them it requires
+				// ToBitmap() to be called first. But a second problem is that ImageService only seems to provide a single resolution
+				// for its icons. It may be related to the images being initially loaded through the Gtk backend and then converted to NSImage
+				// at a later date.
+				// For whatever reason, we custom load the images here through NSImage, providing both 1x and 2x image reps.
+				PathComponentCells [ConfigurationIdx].Image = MultiResImage.CreateMultiResImage ("project", deviceStyle);
+				PathComponentCells [RuntimeIdx].Image = MultiResImage.CreateMultiResImage ("device", deviceStyle);
 				RealignTexts ();
 			}
 
@@ -424,12 +425,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				set {
 					configurationModel = value;
 					int count = value.Count ();
-					PathComponentCells [ConfigurationIdx].Enabled = count > 1;
 					if (count == 0) {
 						state |= CellState.ConfigurationShown;
 						UpdatePathText (ConfigurationIdx, ConfigurationPlaceholder);
 					}
-					UpdateStyle ();
+					PathComponentCells [ConfigurationIdx].Enabled = count > 1;
 					OnSizeChanged ();
 				}
 			}
@@ -440,18 +440,31 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				set {
 					runtimeModel = value;
 					int count = value.Count ();
-					PathComponentCells [RuntimeIdx].Enabled = count > 1;
 					if (count == 0) {
 						state |= CellState.RuntimeShown;
 						UpdatePathText (RuntimeIdx, RuntimePlaceholder);
 					}
-					UpdateStyle ();
+					PathComponentCells [RuntimeIdx].Enabled = count > 1;
 					OnSizeChanged ();
 				}
 			}
 
 			public event EventHandler ConfigurationChanged;
 			public event EventHandler<HandledEventArgs> RuntimeChanged;
+
+			public override bool Enabled {
+				get {
+					return base.Enabled;
+				}
+				set {
+					base.Enabled = value;
+
+					if (value) {
+						PathComponentCells [RuntimeIdx].Enabled = runtimeModel.Count () > 1;
+						PathComponentCells [ConfigurationIdx].Enabled = configurationModel.Count () > 1;
+					}
+				}
+			}
 		}
 		#endregion
 	}

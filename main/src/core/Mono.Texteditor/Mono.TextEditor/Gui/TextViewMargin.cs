@@ -1330,7 +1330,7 @@ namespace Mono.TextEditor
 
 		public event LineDecorator DecorateLineBg;
 
-		const double whitespaceMarkerAlpha = 0.3;
+		const double whitespaceMarkerAlpha = 0.12;
 
 		void InnerDecorateTabsAndSpaces (Cairo.Context ctx, LayoutWrapper layout, int offset, double x, double y, int selectionStart, int selectionEnd, char spaceOrTab)
 		{
@@ -1444,7 +1444,7 @@ namespace Mono.TextEditor
 				int index = highlightBracketOffset - offset;
 				Pango.Rectangle rect = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)index, ref curIndex, ref byteIndex));
 				
-				var bracketMatch = new Cairo.Rectangle (xPos + rect.X / Pango.Scale.PangoScale + 0.5, y + 0.5, (rect.Width / Pango.Scale.PangoScale) - 1, (rect.Height / Pango.Scale.PangoScale) - 1);
+				var bracketMatch = new Cairo.Rectangle (xPos + rect.X / Pango.Scale.PangoScale - 0.5, y + 0.5, (rect.Width / Pango.Scale.PangoScale) + 1, (rect.Height / Pango.Scale.PangoScale));
 				if (BackgroundRenderer == null) {
 					ctx.SetSourceColor (ColorStyle.BraceMatchingRectangle.Color);
 					ctx.Rectangle (bracketMatch);
@@ -1850,7 +1850,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			cr.SetSourceRGBA (col.R, col.G, col.B, whitespaceMarkerAlpha);
+			cr.SetSourceRGBA (col.R, col.G, col.B, whitespaceMarkerAlpha * 1.4); // needs to more opaque due to font rendering
 			cr.ShowLayout (layout);
 			cr.Restore ();
 		}

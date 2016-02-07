@@ -283,7 +283,9 @@ namespace MonoDevelop.MacIntegration
 					Styles.LoadStyle();
 					PatchGtkTheme();
 				}));
-			IdeApp.Preferences.UserInterfaceTheme.Changed += (s,a) => PatchGtkTheme ();
+			
+			// FIXME: Immediate theme switching disabled, until NSAppearance issues are fixed 
+			//IdeApp.Preferences.UserInterfaceTheme.Changed += (s,a) => PatchGtkTheme ();
 		}
 
 		// VV/VK: Disable tint based color generation

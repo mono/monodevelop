@@ -113,17 +113,21 @@ namespace MonoDevelop.NUnit.External
 			return BuildTestInfo (rootTS);
 		}
 		
-		NunitTestInfo BuildTestInfo (Test test)
+		internal NunitTestInfo BuildTestInfo (Test test)
 		{
 			NunitTestInfo ti = new NunitTestInfo ();
 			// The name of inherited tests include the base class name as prefix.
 			// That prefix has to be removed
 			string tname = test.TestName.Name;
 			// Find the last index of the dot character that is not a part of the test parameters
-			int j = tname.IndexOf ('(');
-			int i = tname.LastIndexOf ('.', (j == -1) ? (tname.Length - 1) : j);
-			if (i != -1)
-				tname = tname.Substring (i + 1);
+			// Parameterized methods can contain '.' as class name & they don't seem to prefix base class name, so it's safe to skip them
+			if (!(test.Parent is ParameterizedMethodSuite)) {
+				int j = tname.IndexOf ('(');
+				int i = tname.LastIndexOf ('.', (j == -1) ? (tname.Length - 1) : j);
+				if (i != -1)
+					tname = tname.Substring (i + 1);
+			}
+
 			if (test.FixtureType != null) {
 				ti.FixtureTypeName = test.FixtureType.Name;
 				ti.FixtureTypeNamespace = test.FixtureType.Namespace;

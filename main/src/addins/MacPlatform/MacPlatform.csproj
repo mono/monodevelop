@@ -139,6 +139,7 @@
     <Compile Include="MainToolbar\AwesomeBar.cs" />
     <Compile Include="MainToolbar\ButtonBarContainer.cs" />
     <Compile Include="MainToolbar\Styles.cs" />
+    <Compile Include="MainToolbar\MultiResImage.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -1040,7 +1040,7 @@ namespace MonoDevelop.Ide.Gui
 			return dp;
 		}
 
-		async void OnLoadingWorkspaceUserPreferences (object s, UserPreferencesEventArgs args)
+		async Task OnLoadingWorkspaceUserPreferences (object s, UserPreferencesEventArgs args)
 		{
 			WorkbenchUserPrefs prefs = args.Properties.GetValue<WorkbenchUserPrefs> ("MonoDevelop.Ide.Workbench");
 			if (prefs == null)

@@ -32,25 +32,25 @@ using System.Collections;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
-	public abstract class MemberNodeBuilder: TypeNodeBuilder
+	public abstract class MemberNodeBuilder : TypeNodeBuilder
 	{
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return ((IMember)dataObject).Name;
+			return ((ISymbol)dataObject).ToDisplayString (Ambience.NameFormat);
 		}
 
 		public override Type CommandHandlerType {
-			get { return typeof(MemberNodeCommandHandler); }
+			get { return typeof (MemberNodeCommandHandler); }
 		}
-		
+
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			if (!(otherNode.DataItem is IMember)) return 1;
+			if (!(otherNode.DataItem is ISymbol)) return 1;
 
 			if (thisNode.Options ["GroupByType"]) {
 				int v1 = GetTypeSortValue (thisNode.DataItem);
@@ -59,23 +59,23 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 				else if (v1 > v2) return 1;
 			}
 			if (thisNode.Options ["GroupByAccess"]) {
-				int v1 = GetAccessSortValue (((IEntity)thisNode.DataItem).Accessibility);
-				int v2 = GetAccessSortValue (((IEntity)otherNode.DataItem).Accessibility);
+				int v1 = GetAccessSortValue (((ISymbol)thisNode.DataItem).DeclaredAccessibility);
+				int v2 = GetAccessSortValue (((ISymbol)otherNode.DataItem).DeclaredAccessibility);
 				if (v1 < v2) return -1;
 				else if (v1 > v2) return 1;
 			}
 			return DefaultSort;
 		}
-		
+
 		int GetTypeSortValue (object member)
 		{
-			if (member is IField) return 0;
-			if (member is IEvent) return 1;
-			if (member is IProperty) return 2;
-			if (member is IMethod) return 3;
+			if (member is IFieldSymbol) return 0;
+			if (member is IEventSymbol) return 1;
+			if (member is IPropertySymbol) return 2;
+			if (member is IMethodSymbol) return 3;
 			return 4;
 		}
-		
+
 		int GetAccessSortValue (Accessibility mods)
 		{
 			if ((mods & Accessibility.Private) != 0) return 0;

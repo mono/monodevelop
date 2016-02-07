@@ -36,6 +36,7 @@ using System.Xml.Schema;
 using System.Linq;
 using Mono.Addins;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -63,6 +64,31 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			get {
 				return GetColorStyle ("Default");
 			}
+		}
+
+		public static ColorScheme GetDefaultColorStyle (this Skin skin)
+		{
+			switch (skin) {
+				case Skin.Light:
+					return GetColorStyle (IdePreferences.DefaultLightColorScheme);
+				case Skin.Dark:
+					return GetColorStyle (IdePreferences.DefaultDarkColorScheme);
+				default:
+					throw new InvalidOperationException ();
+			}
+		}
+
+		public static ColorScheme GetUserColorStyle (this Skin skin)
+		{
+			var schemeName = IdeApp.Preferences.ColorScheme.ValueForSkin (skin);
+			return GetColorStyle (schemeName);
+		}
+
+		public static bool FitsIdeSkin (this ColorScheme scheme, Skin skin)
+		{
+			if (skin == Skin.Dark)
+				return (scheme.PlainText.Background.L <= 0.5);
+			return (scheme.PlainText.Background.L > 0.5);
 		}
 
 		public static ColorScheme GetColorStyle (string name)
@@ -103,6 +129,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					styles [name] = ColorScheme.LoadFrom (stream);
 				}
 			} catch (Exception e) {
+				LoggingService.LogError ("Error while loading style :" + name, e);
 				throw new IOException ("Error while loading style :" + name, e);
 			} finally {
 				stream.Close ();
@@ -168,9 +195,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		static string ScanStyle (Stream stream)
 		{
 			try {
-				var file = new StreamReader (stream);
+				var file = TextFileUtility.OpenStream (stream);
 				file.ReadLine ();
 				var nameLine = file.ReadLine ();
+				file.Close ();
 				var match = nameRegex.Match (nameLine);
 				if (!match.Success)
 					return null;

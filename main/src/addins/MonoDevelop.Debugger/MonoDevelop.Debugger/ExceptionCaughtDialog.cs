@@ -507,9 +507,8 @@ namespace MonoDevelop.Debugger
 
 			var markup = string.Format ("<span foreground='{0}'><b>{1}</b></span>", text_color, GLib.Markup.EscapeText (Frame.DisplayText));
 
-			string frame_text_color = selected ? text_color : parent.Style.Text(StateType.Insensitive).GetHex();
 			if (!string.IsNullOrEmpty (Frame.File)) {
-				markup += string.Format ("\n<span size='smaller' foreground='{0}'>{1}", frame_text_color, GLib.Markup.EscapeText (Frame.File));
+				markup += string.Format ("<span size='4096'>\n\n</span><span size='small' foreground='{0}'>{1}", text_color, GLib.Markup.EscapeText (Frame.File));
 				if (Frame.Line > 0) {
 					markup += ":" + Frame.Line;
 					if (Frame.Column > 0)

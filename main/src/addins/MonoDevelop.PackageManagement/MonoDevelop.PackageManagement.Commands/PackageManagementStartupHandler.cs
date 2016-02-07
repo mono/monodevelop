@@ -96,6 +96,7 @@ namespace MonoDevelop.PackageManagement.Commands
 				if (checkUpdatesAfterRestore && !restorer.RestoreFailed) {
 					CheckForUpdates ();
 				}
+				restorer = null;
 			});
 		}
 

@@ -99,6 +99,8 @@ namespace MonoDevelop.Ide.FindInFiles
 		protected override void Initialize (IPadWindow window)
 		{
 			window.Icon = Stock.FindIcon;
+
+			IdeApp.Workspace.LastWorkspaceItemClosed += (sender, e) => widget.Reset ();
 			base.Initialize (window);
 		}
 		

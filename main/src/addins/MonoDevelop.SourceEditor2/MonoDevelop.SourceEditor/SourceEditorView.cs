@@ -92,7 +92,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public TextDocument Document {
 			get {
-				return widget.TextEditor.Document;
+				return widget?.TextEditor?.Document;
 			}
 			set {
 				widget.TextEditor.Document = value;
@@ -795,7 +795,10 @@ namespace MonoDevelop.SourceEditor
 
 		public async Task Load (string fileName, Encoding loadEncoding, bool reload = false)
 		{
-			widget.TextEditor.Document.TextReplaced -= OnTextReplaced;
+			var document = Document;
+			if (document == null)
+				return;
+			document.TextReplaced -= OnTextReplaced;
 			
 			if (warnOverwrite) {
 				warnOverwrite = false;
@@ -813,23 +816,18 @@ namespace MonoDevelop.SourceEditor
 			}
 			else {
 				if (loadEncoding == null) {
-					var res = await MonoDevelop.Core.Text.TextFileUtility.ReadAllTextAsync (fileName);
-					text = res.Text;
-					hadBom = res.HasBom;
-					encoding = res.Encoding;
+					text = MonoDevelop.Core.Text.TextFileUtility.ReadAllText (fileName, out hadBom, out encoding);
 				} else {
 					encoding = loadEncoding;
-					var res = await MonoDevelop.Core.Text.TextFileUtility.ReadAllTextAsync (fileName, loadEncoding);
-					text = res.Text;
-					hadBom = res.HasBom;
+					text = MonoDevelop.Core.Text.TextFileUtility.ReadAllText (fileName, loadEncoding, out hadBom);
 				}
 				text = ProcessLoadText (text);
 				if (reload) {
-					Document.Replace (0, Document.TextLength, text);
-					Document.DiffTracker.Reset ();
+					document.Replace (0, Document.TextLength, text);
+					document.DiffTracker.Reset ();
 				} else {
-					Document.Text = text;
-					Document.DiffTracker.SetBaseDocument (Document.CreateDocumentSnapshot ());
+					document.Text = text;
+					document.DiffTracker.SetBaseDocument (Document.CreateDocumentSnapshot ());
 				}
 				didLoadCleanly = true;
 			}
@@ -847,8 +845,8 @@ namespace MonoDevelop.SourceEditor
 			if (didLoadCleanly) {
 				widget.EnsureCorrectEolMarker (fileName);
 			}
-			UpdateTextDocumentEncoding ();			
-			widget.TextEditor.Document.TextReplaced += OnTextReplaced;
+			UpdateTextDocumentEncoding ();
+			document.TextReplaced += OnTextReplaced;
 		}
 		
 		void HandleTextEditorVAdjustmentChanged (object sender, EventArgs e)
@@ -2468,7 +2466,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		event EventHandler ITextEditorImpl.BeginMouseHover {
+		event EventHandler<Xwt.MouseMovedEventArgs> ITextEditorImpl.MouseMoved {
 			add {
 				TextEditor.BeginHover += value;
 			}
@@ -2971,9 +2969,9 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		string ITextEditorImpl.GetPangoMarkup (int offset, int length)
+		string ITextEditorImpl.GetPangoMarkup (int offset, int length, bool fitIdeStyle)
 		{
-			return TextEditor.GetTextEditorData ().GetMarkup (offset, length, false, replaceTabs:false);
+			return TextEditor.GetTextEditorData ().GetMarkup (offset, length, false, replaceTabs:false, fitIdeStyle:fitIdeStyle);
 		}
 
 		void ITextEditorImpl.SetUsageTaskProviders (IEnumerable<UsageProviderEditorExtension> providers)

@@ -99,13 +99,16 @@ namespace MonoDevelop.AssemblyBrowser
 		static string GetGlobal (IEntity entity)
 		{
 			switch (entity.SymbolKind) {
-				case SymbolKind.Field:
-				case SymbolKind.Method:
-				case SymbolKind.Constructor:
-				case SymbolKind.Destructor:
-				case SymbolKind.Operator:
-				case SymbolKind.Property:
-				case SymbolKind.Indexer:
+			case SymbolKind.Field:
+				if (((IField)entity).IsConst)
+					return "";
+				return entity.IsStatic ? "static-" : "";
+			case SymbolKind.Method:
+			case SymbolKind.Constructor:
+			case SymbolKind.Destructor:
+			case SymbolKind.Operator:
+			case SymbolKind.Property:
+			case SymbolKind.Indexer:
 				return entity.IsStatic ? "static-" : "";
 			}
 			return "";
@@ -131,8 +134,11 @@ namespace MonoDevelop.AssemblyBrowser
 				}
 				return "class";
 			case SymbolKind.Field:
-			case SymbolKind.Event:
+				if (((IField)entity).IsConst)
+					return "literal";
 				return "field";
+			case SymbolKind.Event:
+				return "event";
 			case SymbolKind.Method:
 			case SymbolKind.Constructor:
 			case SymbolKind.Destructor:
@@ -207,7 +213,8 @@ namespace MonoDevelop.AssemblyBrowser
 				}
 				return "class";
 			case SymbolKind.Field:
-				return "field";
+				var field = (IUnresolvedField)entity;
+				return field.IsConst ? "literal" : "field";
 			case SymbolKind.Event:
 				return "event";
 			case SymbolKind.Method:

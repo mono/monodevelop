@@ -40,6 +40,7 @@ using System.ComponentModel;
 using MonoDevelop.Ide.TypeSystem;
 using System.Threading;
 using MonoDevelop.Ide.Editor.Projection;
+using Xwt;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -112,9 +113,9 @@ namespace MonoDevelop.Ide.Editor
 			remove { ReadWriteTextDocument.TextChanged -= value; }
 		}
 
-		public event EventHandler BeginMouseHover {
-			add { textEditorImpl.BeginMouseHover += value; }
-			remove { textEditorImpl.BeginMouseHover -= value; }
+		public event EventHandler<MouseMovedEventArgs> MouseMoved {
+			add { textEditorImpl.MouseMoved += value; }
+			remove { textEditorImpl.MouseMoved -= value; }
 		}
 
 		internal event EventHandler VAdjustmentChanged {
@@ -1163,16 +1164,16 @@ namespace MonoDevelop.Ide.Editor
 
 		#endregion
 
-		public string GetPangoMarkup (int offset, int length)
+		public string GetPangoMarkup (int offset, int length, bool fitIdeStyle = false)
 		{
-			return textEditorImpl.GetPangoMarkup (offset, length);
+			return textEditorImpl.GetPangoMarkup (offset, length, fitIdeStyle);
 		}
 
-		public string GetPangoMarkup (ISegment segment)
+		public string GetPangoMarkup (ISegment segment, bool fitIdeStyle = false)
 		{
 			if (segment == null)
 				throw new ArgumentNullException (nameof (segment));
-			return textEditorImpl.GetPangoMarkup (segment.Offset, segment.Length);
+			return textEditorImpl.GetPangoMarkup (segment.Offset, segment.Length, fitIdeStyle);
 		}
 
 		public static implicit operator Microsoft.CodeAnalysis.Text.SourceText (TextEditor editor)
@@ -1405,7 +1406,6 @@ namespace MonoDevelop.Ide.Editor
 			Runtime.AssertMainThread ();
 			textEditorImpl.UpdateBraceMatchingResult (result);
 		}
-
 
 		internal IEnumerable<IDocumentLine> VisibleLines { get { return textEditorImpl.VisibleLines; } }
 		internal event EventHandler<LineEventArgs> LineShown { add { textEditorImpl.LineShown += value; } remove { textEditorImpl.LineShown -= value; } }

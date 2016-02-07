@@ -5,6 +5,7 @@ using System.Threading;
 using Microsoft.CodeAnalysis.CSharp.Extensions.ContextQuery;
 using Microsoft.CodeAnalysis.CSharp.Utilities;
 using Roslyn.Utilities;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion.KeywordRecommenders
 {
@@ -25,7 +26,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion.KeywordRecommenders
         {
             if (IsValidContext(position, context, cancellationToken))
             {
-                yield return new RecommendedKeyword("dynamic");
+				yield return new RecommendedKeyword("dynamic", SyntaxKind.IdentifierToken);
             }
         }
 

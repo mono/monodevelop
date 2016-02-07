@@ -219,10 +219,7 @@ namespace MonoDevelop.Components
 			tree.ScrollEvent += HandleTreeScrollEvent;
 			tree.Hidden += HandleTreeHidden;
 			tree.Unrealized += HandleTreeHidden;
-			tree.Destroyed += delegate {
-				ResetTooltip (tree);
-				treeData.Remove (tree);
-			};
+			tree.Destroyed += HandleTreeDestroyed;
 		}
 		
 		static void ResetTooltip (Gtk.TreeView tree)
@@ -241,6 +238,14 @@ namespace MonoDevelop.Components
 		static void HandleTreeHidden (object sender, EventArgs e)
 		{
 			ResetTooltip ((Gtk.TreeView) sender);
+		}
+
+		static void HandleTreeDestroyed (object sender, EventArgs e)
+		{
+			var tree = (Gtk.TreeView)sender;
+
+			ResetTooltip (tree);
+			treeData.Remove (tree);
 		}
 
 		[GLib.ConnectBeforeAttribute]
