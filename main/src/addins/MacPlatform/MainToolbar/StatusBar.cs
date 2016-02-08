@@ -892,7 +892,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			nfloat yOffset = 1;
 			if (Window != null && Window.Screen != null && Window.Screen.BackingScaleFactor == 1) {
-				yOffset = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 0.5f : 0f;
+				yOffset = 0.5f;
 			}
 
 			imageView.Frame = new CGRect (6, 0, 16, Frame.Height);
