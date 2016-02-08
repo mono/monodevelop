@@ -136,7 +136,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 			set {
 				resultCount = value;
-				resultString = new NSAttributedString (value.ToString (), foregroundColor: NSColor.Text,
+				resultString = new NSAttributedString (value.ToString (), foregroundColor: Styles.BaseForegroundColor.ToNSColor (),
 					font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
 				ResizeToFit ();
 			}
