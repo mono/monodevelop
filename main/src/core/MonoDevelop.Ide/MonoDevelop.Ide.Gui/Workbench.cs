@@ -1189,6 +1189,8 @@ namespace MonoDevelop.Ide.Gui
 			ThreadPool.QueueUserWorkItem (delegate {
 //				t = DateTime.Now;
 				lock (fileStatusLock) {
+					if (fileStatus == null)
+						return;
 					foreach (FilePath file in files) {
 						try {
 							DateTime ft = File.GetLastWriteTimeUtc (file);
