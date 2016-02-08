@@ -65,18 +65,20 @@ namespace MonoDevelop.NUnit
 		{
 			UnitTest test = dataObject as UnitTest;
 			nodeInfo.Icon = test.StatusIcon;
-			
+
+			var title = RemoveMarkup(test.Title);
+
 			if (test.Status == TestStatus.Running) {
-				nodeInfo.Label = test.Title;
+				nodeInfo.Label = title;
 				return;
 			} else if (test.Status == TestStatus.Loading) {
-				nodeInfo.Label = test.Title + GettextCatalog.GetString (" (Loading)");
+				nodeInfo.Label = title + GettextCatalog.GetString (" (Loading)");
 				return;
 			} else if (test.Status == TestStatus.LoadError) {
-				nodeInfo.Label = test.Title + GettextCatalog.GetString (" (Load failed)");
+				nodeInfo.Label = title + GettextCatalog.GetString (" (Load failed)");
 				return;
 			} else {
-				nodeInfo.Label = test.Title;
+				nodeInfo.Label = title;
 
 				UnitTestResult res = test.GetLastResult ();
 				if (res != null && treeBuilder.Options ["ShowTestCounters"] && (test is UnitTestGroup)) {
@@ -130,6 +132,20 @@ namespace MonoDevelop.NUnit
 			ITreeBuilder tb = Context.GetTreeBuilder (sender);
 			if (tb != null) tb.Update ();
 		}
+
+		static string RemoveMarkup (string title)
+		{
+			var leftAngleIndex = title.IndexOf ('<');
+			if (leftAngleIndex > -1) {
+				var rightAngleIndex = title.IndexOf ('>');
+				if (rightAngleIndex > -1) {
+					title = title.Substring (0, leftAngleIndex) + title.Substring (rightAngleIndex + 1);
+				}
+			}
+
+			return title;
+		}
+
 	}
 	
 	class TestNodeCommandHandler: NodeCommandHandler
