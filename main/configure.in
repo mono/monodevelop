@@ -353,7 +353,6 @@ src/addins/Deployment/MonoDevelop.Deployment/Makefile
 src/addins/Deployment/MonoDevelop.Deployment.Linux/Makefile
 src/addins/MonoDevelop.Gettext/Makefile
 src/addins/MonoDevelop.RegexToolkit/Makefile
-src/addins/CBinding/Makefile
 src/addins/GnomePlatform/Makefile
 src/addins/MacPlatform/Makefile
 src/addins/WindowsPlatform/Makefile
