@@ -17,7 +17,7 @@ module unitTestGatherer =
         att.AttributeType.FullName.Contains name
    
     let createTestCase (tc:FSharpAttribute) =
-        let sb = Text.StringBuilder(32)
+        let sb = Text.StringBuilder()
         sb.Append "(" |> ignore
         tc.ConstructorArguments 
         |> Seq.iteri (fun i (_,arg) ->
@@ -41,7 +41,8 @@ module unitTestGatherer =
                     (fun s -> match s.Symbol with
                               | :? FSharpMemberOrFunctionOrValue as fom -> 
                                   fom.Attributes
-                                  |> Seq.exists (hasAttributeNamed "NUnit.Framework.TestAttribute")
+                                  |> Seq.exists (fun a -> hasAttributeNamed "NUnit.Framework.TestAttribute" a || 
+                                                          hasAttributeNamed "NUnit.Framework.TestCaseAttribute" a)
                               | :? FSharpEntity as fse ->
                                   fse.Attributes
                                   |> Seq.exists (hasAttributeNamed "NUnit.Framework.TestFixtureAttribute")
