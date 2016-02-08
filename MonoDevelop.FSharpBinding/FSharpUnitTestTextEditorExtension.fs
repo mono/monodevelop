@@ -134,10 +134,10 @@ type FSharpNUnitSourceCodeLocationFinder() =
     override x.GetSourceCodeLocationAsync(_project, fixtureNamespace, fixtureTypeName, testName, token) =
         let computation =
             async {
-                let idx = testName.IndexOf("(")
+                let idx = testName.IndexOf("<") //reasons
                 let testName =
                     if idx > - 1 then
-                        testName.Substring(idx)
+                        testName.Substring(0, idx)
                     else
                         testName
 
