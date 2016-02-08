@@ -58,6 +58,13 @@ namespace MonoDevelop.MacIntegration
 					base.DrawWithFrame (cellFrame, inView);
 				}
 			}
+
+			public override void DrawSegment (nint segment, CGRect frame, NSView controlView)
+			{
+				var img = base.GetImageForSegment (segment);
+				var rect = new CGRect (frame.X + ((frame.Width / 2) - (img.Size.Width  / 2)), frame.Y + ((frame.Height / 2) - (img.Size.Height  / 2)), img.Size.Width, img.Size.Height);
+				img.Draw (rect);
+			}
 		}
 
 		readonly Dictionary<IButtonBarButton, int> indexMap = new Dictionary<IButtonBarButton, int> ();
@@ -107,7 +114,6 @@ namespace MonoDevelop.MacIntegration
 				img = ImageService.GetIcon (button.Image, Gtk.IconSize.Menu).ToNSImage ();
 			else
 				img = ImageService.GetIcon (button.Image, Gtk.IconSize.Menu).WithStyles ("disabled").ToNSImage ();
-			img.Template = true;
 			SetImage (img, indexMap [button]);
 		}
 
