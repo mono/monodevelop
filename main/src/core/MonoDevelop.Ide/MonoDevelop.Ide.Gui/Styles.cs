@@ -1,4 +1,4 @@
-//
+ //
 // Styles.cs
 //
 // Author:
@@ -496,7 +496,7 @@ namespace MonoDevelop.Ide.Gui
 			ThinSplitterColor = Color.FromName ("#2e2e2e");
 			SeparatorColor = Color.FromName ("#4b4b4b");
 			PrimaryBackgroundColor = BaseBackgroundColor;
-			SecondaryBackgroundDarkerColor = Color.FromName ("#434b54");
+			SecondaryBackgroundDarkerColor = Color.FromName ("#484848");
 			SecondaryBackgroundLighterColor = SeparatorColor;
 			DimTextColor = Color.FromName ("#777777");
 			PadBackground = Color.FromName ("#525252");
@@ -578,7 +578,7 @@ namespace MonoDevelop.Ide.Gui
 
 			// New Project Dialog
 
-			NewProjectDialog.BannerBackgroundColor = Color.FromName ("#537297");
+			NewProjectDialog.BannerBackgroundColor = Color.FromName ("#6a737e");
 			NewProjectDialog.BannerLineColor = NewProjectDialog.BannerBackgroundColor;
 			NewProjectDialog.BannerForegroundColor = Color.FromName ("#ffffff");
 			NewProjectDialog.TemplateListBackgroundColor = DockBarBackground;
