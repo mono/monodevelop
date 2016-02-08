@@ -70,7 +70,7 @@ namespace MonoDevelop.PackageManagement
 			PackageSourceUrlSelectedTextColor = PackageSourceUrlTextColor;
 			PackageSourceErrorSelectedTextColor = PackageSourceErrorTextColor;
 			PackageInfoBackgroundColor = Ide.Gui.Styles.SecondaryBackgroundLighterColor;
-			PackageSourceErrorTextColor = Ide.Gui.Styles.StatusErrorBackgroundColor;
+			PackageSourceErrorTextColor = Ide.Gui.Styles.ErrorForegroundColor;
 			PackageSourceUrlTextColor = Ide.Gui.Styles.DimTextColor;
 
 			LineBorderColor = Ide.Gui.Styles.SeparatorColor;

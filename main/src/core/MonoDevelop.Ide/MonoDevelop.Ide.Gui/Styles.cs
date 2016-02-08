@@ -385,7 +385,7 @@ namespace MonoDevelop.Ide.Gui
 
 			Editor.SmartTagMarkerColorLight = Color.FromName ("#ff70fe").WithAlpha (.5);
 			Editor.SmartTagMarkerColorDark = Color.FromName ("#ffffff").WithAlpha (.5);
-			Editor.SearchErrorForegroundColor = StatusErrorBackgroundColor;
+			Editor.SearchErrorForegroundColor = ErrorForegroundColor;
 
 			if (Changed != null)
 				Changed (null, EventArgs.Empty);
@@ -409,9 +409,9 @@ namespace MonoDevelop.Ide.Gui
 			BrowserPadBackground = Color.FromName ("#ebedf0");
 			PropertyPadDividerColor = Color.FromName ("#efefef");
 
-			ErrorForegroundColor = Color.FromName ("#f56d4f");
-			WarningForegroundColor = Color.FromName ("#f1c40f");
-			InformationForegroundColor = Color.FromName ("#87b6f0");
+			ErrorForegroundColor = Color.FromName ("#db6246");
+			WarningForegroundColor = Color.FromName ("#a08000");
+			InformationForegroundColor = Color.FromName ("#5785bd");
 
 			// these colors need to match colors from status icons
 			StatusInformationBackgroundColor = Color.FromName ("#87b6f0");
@@ -508,9 +508,9 @@ namespace MonoDevelop.Ide.Gui
 			BrowserPadBackground = Color.FromName ("#484b55");
 			PropertyPadDividerColor = SeparatorColor;
 
-			ErrorForegroundColor = Color.FromName ("#ff7152");
-			WarningForegroundColor = Color.FromName ("#ffcf0f");
-			InformationForegroundColor = Color.FromName ("#8fc1ff");
+			ErrorForegroundColor = Color.FromName ("#ff866b");
+			WarningForegroundColor = Color.FromName ("#ffd21c");
+			InformationForegroundColor = Color.FromName ("#9cc8ff");
 
 			// these colors need to match colors from status icons
 			StatusInformationBackgroundColor = Color.FromName ("#8fc1ff");

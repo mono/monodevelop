@@ -68,7 +68,6 @@ namespace MonoDevelop.Debugger
 				ObjectValueTreeValuesButtonBackground = Color.FromName ("#e9f2fc");
 				ObjectValueTreeValuesButtonText = Color.FromName ("#5294eb");
 				ObjectValueTreeValuesButtonBorder = Color.FromName ("#5294eb");
-				ObjectValueTreeValueErrorText = Color.FromName ("#FA6B46");
 				ObjectValueTreeValueDisabledText = Color.FromName ("#7f7f7f");
 				ObjectValueTreeValueModifiedText = Color.FromName ("#85B7F3");
 
@@ -83,7 +82,6 @@ namespace MonoDevelop.Debugger
 				ObjectValueTreeValuesButtonBackground = Color.FromName ("#7c8695");
 				ObjectValueTreeValuesButtonText = Color.FromName ("#cbe5ff");
 				ObjectValueTreeValuesButtonBorder = Color.FromName ("#a4bbd5");
-				ObjectValueTreeValueErrorText = Ide.Gui.Styles.StatusWarningBackgroundColor;
 				ObjectValueTreeValueDisabledText = Color.FromName ("#5a5a5a");
 				ObjectValueTreeValueModifiedText = Color.FromName ("#ff00ff"); // TODO: VV: 0000ff
 
@@ -97,6 +95,8 @@ namespace MonoDevelop.Debugger
 			}
 
 			// Shared
+
+			ObjectValueTreeValueErrorText = Ide.Gui.Styles.WarningForegroundColor;
 
 			PreviewVisualizerBackgroundColor = MonoDevelop.Ide.Gui.Styles.PopoverWindow.DefaultBackgroundColor;
 			PreviewVisualizerTextColor = MonoDevelop.Ide.Gui.Styles.PopoverWindow.DefaultTextColor;
