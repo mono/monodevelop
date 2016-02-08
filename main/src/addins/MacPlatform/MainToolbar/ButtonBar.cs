@@ -31,11 +31,12 @@ using CoreGraphics;
 using Foundation;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Components.Mac;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
-namespace MonoDevelop.MacIntegration
+namespace MonoDevelop.MacIntegration.MainToolbar
 {
 	[Register]
 	class ButtonBar : NSSegmentedControl
@@ -50,7 +51,7 @@ namespace MonoDevelop.MacIntegration
 
 					var path = NSBezierPath.FromRoundedRect (inset, 3, 3);
 					path.LineWidth = 0.5f;
-					NSColor.FromRgba (0.56f, 0.56f, 0.56f, 1f).SetStroke ();
+					Styles.DarkBorderColor.ToNSColor ().SetStroke ();
 					path.Stroke ();
 
 					base.DrawInteriorWithFrame (inset, inView);

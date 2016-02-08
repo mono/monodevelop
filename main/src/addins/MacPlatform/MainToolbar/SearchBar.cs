@@ -58,7 +58,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						var path = NSBezierPath.FromRoundedRect (inset, 3, 3);
 						path.LineWidth = 0.5f;
 
-						NSColor.FromRgba (0.56f, 0.56f, 0.56f, 1f).SetStroke ();
+						Styles.DarkBorderColor.ToNSColor ().SetStroke ();
 						path.Stroke ();
 					}
 

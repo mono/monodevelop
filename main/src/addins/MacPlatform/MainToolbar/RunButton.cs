@@ -137,7 +137,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				//
 				// However after switching theme this filter is removed and the colour set here is the actual colour
 				// displayed onscreen.
-				NSColor.FromRgba (0.56f, 0.56f, 0.56f, 1f).SetStroke ();
+				Styles.DarkBorderBrokenColor.ToNSColor ().SetStroke ();
 				path.Stroke ();
 			} else {
 				base.DrawBezelWithFrame (frame, controlView);
