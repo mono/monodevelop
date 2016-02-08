@@ -482,7 +482,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 
 			var x = LeftMostStatusItemX ();
-			var sepRect = new CGRect (x - 8.5, 3, 1, 16);
+			var sepRect = new CGRect (x - 6.5, 4, 1, 16);
 			if (!sepRect.IntersectsWith (dirtyRect)) {
 				return;
 			}
@@ -558,11 +558,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			foreach (var item in statusIcons) {
 				right -= item.Bounds.Width + 1;
-				nfloat y = 3.0f;
-				if (MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan) {
-					y = IdeApp.Preferences.UserInterfaceSkin == Skin.Dark ? 3 : 4;
-				}
-				item.Frame = new CGRect (right + 0.5, y, item.Bounds.Width, item.Bounds.Height);
+				item.Frame = new CGRect (right + 0.5, 4, item.Bounds.Width, item.Bounds.Height);
 			}
 
 			PositionBuildResults (right);
