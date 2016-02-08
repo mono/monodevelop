@@ -80,7 +80,27 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					}
 				} else {
 					if (inView.Window.Screen.BackingScaleFactor == 2) {
-						cellFrame = new CGRect (cellFrame.X, cellFrame.Y + 1f, cellFrame.Width, cellFrame.Height - 1f);
+						nfloat yOffset = 0f;
+						nfloat hOffset = 0f;
+
+						if (MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan) {
+							if (inView.Window.IsKeyWindow) {
+								yOffset = 0.5f;
+								hOffset = -0.5f;
+							} else {
+								yOffset = 0f;
+								hOffset = 1.0f;
+							}
+						} else {
+							yOffset = 1f;
+							hOffset = -1f;
+						}
+						cellFrame = new CGRect (cellFrame.X, cellFrame.Y + yOffset, cellFrame.Width, cellFrame.Height + hOffset);
+					} else {
+						nfloat yOffset = 0f;
+						nfloat hOffset = 0f;
+
+						cellFrame = new CGRect (cellFrame.X, cellFrame.Y + yOffset, cellFrame.Width, cellFrame.Height + hOffset);
 					}
 					base.DrawWithFrame (cellFrame, inView);
 				}

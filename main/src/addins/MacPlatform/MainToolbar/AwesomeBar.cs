@@ -97,7 +97,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				nfloat elcapHOffset = 0;
 
 				if (MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan) {
-					elcapYOffset = -0.5f;
+					nfloat scaleFactor = 1;
+
+					if (Window != null && Window.Screen != null) {
+						scaleFactor = Window.Screen.BackingScaleFactor;
+					}
+					elcapYOffset = scaleFactor == 2 ? -0.5f : -1;
 					elcapHOffset = 1.0f;
 				}
 				SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, 0 + elcapYOffset, searchbarWidth, ToolbarWidgetHeight + elcapHOffset);

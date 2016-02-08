@@ -482,7 +482,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 
 			var x = LeftMostStatusItemX ();
-			var sepRect = new CGRect (x - 6.5, 3, 1, 16);
+			var sepRect = new CGRect (x - 6.5, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 4 : 3, 1, 16);
 			if (!sepRect.IntersectsWith (dirtyRect)) {
 				return;
 			}
@@ -558,7 +558,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			foreach (var item in statusIcons) {
 				right -= item.Bounds.Width + 1;
-				item.Frame = new CGRect (right, 3, item.Bounds.Width, item.Bounds.Height);
+				item.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 4 : 3, item.Bounds.Width, item.Bounds.Height);
 			}
 
 			PositionBuildResults (right);
@@ -892,7 +892,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			nfloat yOffset = 1;
 			if (Window != null && Window.Screen != null && Window.Screen.BackingScaleFactor == 1) {
-				yOffset = 0;
+				yOffset = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 0.5f : 0f;
 			}
 
 			imageView.Frame = new CGRect (6, 0, 16, Frame.Height);
