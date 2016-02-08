@@ -649,8 +649,15 @@ type FSharpJumpToDeclarationHandler () =
                         |> AsyncSeq.toSeq
                         |> Seq.tryFind (fun s -> s.Symbol.XmlDocSig = documentationIdString)
                     match result with
-                    | Some symbol -> let doc = IdeApp.Workbench.ActiveDocument
-                                     Refactoring.jumpToDeclaration(doc.Editor, doc, symbol)
+                    | Some symbol -> let location = symbol.RangeAlternate
+                                     let project = Search.getAllFSharpProjects()
+                                                   |> Seq.find(fun p -> p.Files |> Seq.exists (fun f -> f.FilePath.ToString () = location.FileName))
+                                     
+                                     let context = System.Threading.SynchronizationContext.Current
+                                     do! Async.SwitchToContext(Runtime.MainSynchronizationContext)
+                                     IdeApp.Workbench.OpenDocument (Gui.FileOpenInformation (FilePath(location.FileName), project, Line = location.StartLine, Column = location.StartColumn + 1))
+                                     |> ignore
+                                     do! Async.SwitchToContext(context)
                                      return true
                     | _ -> return false
             }
