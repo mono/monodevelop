@@ -79,6 +79,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						CancelButtonCell.DrawWithFrame (CancelButtonRectForBounds (inset), inView);
 					}
 				} else {
+					if (inView.Window.Screen.BackingScaleFactor == 2) {
+						cellFrame = new CGRect (cellFrame.X, cellFrame.Y + 1f, cellFrame.Width, cellFrame.Height - 1f);
+					}
 					base.DrawWithFrame (cellFrame, inView);
 				}
 			}
@@ -99,7 +102,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			// The rect for the search icon
 			public override CGRect SearchButtonRectForBounds (CGRect rect)
 			{
-				rect = new CGRect (0, -1, 26, rect.Height);
+				rect = new CGRect (0, 0, 26, rect.Height);
 				return rect;
 			}
 

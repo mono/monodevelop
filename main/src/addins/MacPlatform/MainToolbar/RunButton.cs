@@ -140,8 +140,17 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				Styles.DarkBorderBrokenColor.ToNSColor ().SetStroke ();
 				path.Stroke ();
 			} else {
+				if (controlView.Window.Screen.BackingScaleFactor == 2) {
+					frame = new CGRect (frame.X, frame.Y + 0.5f, frame.Width, frame.Height);
+				}
 				base.DrawBezelWithFrame (frame, controlView);
 			}
+		}
+
+		public override void DrawInteriorWithFrame (CGRect cellFrame, NSView inView)
+		{
+			cellFrame = new CGRect (cellFrame.X, cellFrame.Y + 0.5f, cellFrame.Width, cellFrame.Height);
+			base.DrawInteriorWithFrame (cellFrame, inView);
 		}
 	}
 }

@@ -64,7 +64,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 			set {
 				base.Frame = value;
-				imageView.Frame = new CGRect (0.5, 0, value.Width, value.Height);
+				imageView.Frame = new CGRect (0, 0, value.Width, value.Height);
 			}
 		}
 
@@ -164,7 +164,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return;
 			}
 
-			iconImage.Draw (new CGRect (0.5, (Frame.Size.Height - iconImage.Size.Height) / 2, iconImage.Size.Width, iconImage.Size.Height));
+			iconImage.Draw (new CGRect (0, (Frame.Size.Height - iconImage.Size.Height) / 2, iconImage.Size.Width, iconImage.Size.Height));
 			resultString.DrawAtPoint (new CGPoint (iconImage.Size.Width, (Frame.Size.Height - resultString.Size.Height) / 2));
 		}
 
@@ -482,7 +482,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 
 			var x = LeftMostStatusItemX ();
-			var sepRect = new CGRect (x - 6.5, 4, 1, 16);
+			var sepRect = new CGRect (x - 6.5, 3, 1, 16);
 			if (!sepRect.IntersectsWith (dirtyRect)) {
 				return;
 			}
@@ -558,7 +558,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			foreach (var item in statusIcons) {
 				right -= item.Bounds.Width + 1;
-				item.Frame = new CGRect (right + 0.5, 4, item.Bounds.Width, item.Bounds.Height);
+				item.Frame = new CGRect (right, 3, item.Bounds.Width, item.Bounds.Height);
 			}
 
 			PositionBuildResults (right);
@@ -890,9 +890,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		void RepositionContents ()
 		{
-			nfloat yOffset = 0;
+			nfloat yOffset = 1;
 			if (Window != null && Window.Screen != null && Window.Screen.BackingScaleFactor == 1) {
-				yOffset = -1;
+				yOffset = 0;
 			}
 
 			imageView.Frame = new CGRect (6, 0, 16, Frame.Height);
@@ -901,7 +901,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			buildResults.Frame = new CGRect (buildResults.Frame.X, buildResults.Frame.Y, buildResults.Frame.Width, Frame.Height);
 			RepositionStatusIcons ();
 
-			progressView.Frame = new CGRect (0.5f, 1f, Frame.Width - 2, Frame.Height - 2);
+			progressView.Frame = new CGRect (0.5f, 3f, Frame.Width - 2, Frame.Height - 2);
 		}
 	}
 }

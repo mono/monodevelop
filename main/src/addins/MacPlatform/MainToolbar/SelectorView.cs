@@ -86,6 +86,29 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			RealSelectorView.SetFrameSize (newSize);
 		}
 
+		public override void ViewDidMoveToWindow ()
+		{
+			base.ViewDidMoveToWindow ();
+			UpdateLayout ();
+		}
+
+		void UpdateLayout ()
+		{
+			// Correct the offset position for the screen
+			nfloat yOffset = 1f;
+			if (Window.Screen != null && Window.Screen.BackingScaleFactor == 2) {
+				yOffset = 0.5f;
+			}
+
+			RealSelectorView.Frame = new CGRect (RealSelectorView.Frame.X, yOffset, RealSelectorView.Frame.Width, RealSelectorView.Frame.Height);
+		}
+
+		public override void DidChangeBackingProperties ()
+		{
+			base.DidChangeBackingProperties ();
+			UpdateLayout ();
+		}
+
 		internal void OnSizeChanged ()
 		{
 			if (SizeChanged != null) {
@@ -319,12 +342,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				};
 
 				Ide.Gui.Styles.Changed += UpdateStyle;
-				NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification,
-				                                                                notification => Runtime.RunInMainThread (() => {
-					// Force a redraw because NSPathControl does not redraw itself when switching to a different resolution
-					// and the icons need redrawn
-					NeedsDisplay = true;
-				}));
+			}
+
+			public override void DidChangeBackingProperties ()
+			{
+				base.DidChangeBackingProperties ();
+
+				// Force a redraw because NSPathControl does not redraw itself when switching to a different resolution
+				// and the icons need redrawn
+				NeedsDisplay = true;
 			}
 
 			void UpdateStyle (object sender = null, EventArgs e = null)
