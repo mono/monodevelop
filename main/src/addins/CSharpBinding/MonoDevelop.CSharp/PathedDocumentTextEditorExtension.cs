@@ -53,6 +53,7 @@ namespace MonoDevelop.CSharp
 	{
 		public override void Dispose ()
 		{
+			CancelDocumentParsedUpdate ();
 			CancelUpdatePathTimeout ();
 			CancelUpdatePath ();
 			Editor.TextChanging -= Editor_TextChanging;
@@ -121,9 +122,28 @@ namespace MonoDevelop.CSharp
 			updatePathTimeoutId = 0;
 		}
 
+		CancellationTokenSource documentParsedCancellationTokenSource = new CancellationTokenSource ();
+
 		void DocumentContext_DocumentParsed (object sender, EventArgs e)
 		{
 			SubscribeCaretPositionChange ();
+
+			// Fixes a potential memory leak see: https://bugzilla.xamarin.com/show_bug.cgi?id=38041
+			if (ownerProjects.Count > 1) {
+				var currentOwners = ownerProjects.Where (p => p != DocumentContext.Project).Select (p => TypeSystemService.GetCodeAnalysisProject (p)).ToList ();
+				CancelDocumentParsedUpdate ();
+				var token = documentParsedCancellationTokenSource.Token;
+				Task.Run (async delegate {
+					foreach (var otherProject in currentOwners)
+						await otherProject.GetCompilationAsync (token).ConfigureAwait (false);
+				});
+			}
+		}
+
+		void CancelDocumentParsedUpdate ()
+		{
+			documentParsedCancellationTokenSource.Cancel ();
+			documentParsedCancellationTokenSource = new CancellationTokenSource ();
 		}
 
 		void SubscribeCaretPositionChange ()
