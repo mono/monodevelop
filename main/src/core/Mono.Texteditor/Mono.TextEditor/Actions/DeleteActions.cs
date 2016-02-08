@@ -288,7 +288,10 @@ namespace Mono.TextEditor
 			var prevLineIsEmpty = prevLine != null && prevLine.Length == 0;
 
 			var startOffset = prevLine != null ? prevLine.EndOffset : 0;
-			data.Remove (startOffset, data.Caret.Offset - startOffset);
+			var count = data.Caret.Offset - startOffset;
+			if (count < 0)
+				return;
+			data.Remove (startOffset, count);
 			if (prevLine != null) {
 				if (prevLineIsEmpty) {
 					if (line.Length - data.Caret.Column - 1 > 0 && data.HasIndentationTracker) {
