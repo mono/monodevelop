@@ -39,7 +39,7 @@ module Symbols =
         let endOffset = doc.LocationToOffset(finish.Line, finish.Column+1)
         MonoDevelop.Core.Text.TextSegment.FromBounds(startOffset, endOffset)
 
-    let getEditorForFileName (fileName:string) =
+    let getEditorDataForFileName (fileName:string) =
         match IdeApp.Workbench.GetDocument (fileName) with
         | null ->
             let doc = Editor.TextEditorFactory.LoadDocument (fileName)
@@ -68,7 +68,7 @@ module Symbols =
         let trimmedSymbols = getTrimmedRangesForDeclarations lastIdent symbolUse
         trimmedSymbols
         |> List.map (fun (fileName, start, finish) ->
-            let editor = getEditorForFileName fileName
+            let editor = getEditorDataForFileName fileName
             let startOffset = editor.LocationToOffset (start.Line, start.Column+1)
             let endOffset = editor.LocationToOffset (finish.Line, finish.Column+1)
             //if startOffset < 0 then argOutOfRange "startOffset" "broken"
@@ -79,7 +79,7 @@ module Symbols =
         let trimmedSymbols = getTrimmedRangesForDeclarations lastIdent symbolUse
         trimmedSymbols
         |> List.map (fun (fileName, start, finish) ->
-            let editor = getEditorForFileName fileName
+            let editor = getEditorDataForFileName fileName
             let startOffset = editor.LocationToOffset (start.Line, start.Column+1)
             let endOffset = editor.LocationToOffset (finish.Line, finish.Column+1)
             let ts = Microsoft.CodeAnalysis.Text.TextSpan.FromBounds (startOffset, endOffset)
@@ -89,14 +89,14 @@ module Symbols =
 
     let getOffsetsTrimmed lastIdent (symbolUse:FSharpSymbolUse) =
         let filename = symbolUse.RangeAlternate.FileName
-        let editor = getEditorForFileName filename
+        let editor = getEditorDataForFileName filename
         let start, finish = Symbol.trimSymbolRegion symbolUse lastIdent
         let startOffset = editor.LocationToOffset (start.Line, start.Column+1)
         let endOffset = editor.LocationToOffset (finish.Line, finish.Column+1)
         filename, startOffset, endOffset
 
     let getOffsetAndLength lastIdent (symbolUse:FSharpSymbolUse) =
-        let editor = getEditorForFileName symbolUse.RangeAlternate.FileName
+        let editor = getEditorDataForFileName symbolUse.RangeAlternate.FileName
         let start, finish = Symbol.trimSymbolRegion symbolUse lastIdent
         let startOffset = editor.LocationToOffset (start.Line, start.Column+1)
         let endOffset = editor.LocationToOffset (finish.Line, finish.Column+1)
