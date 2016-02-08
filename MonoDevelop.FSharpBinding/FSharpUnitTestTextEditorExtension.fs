@@ -17,7 +17,7 @@ module unitTestGatherer =
         att.AttributeType.FullName.Contains name
    
     let createTestCase (tc:FSharpAttribute) =
-        let sb = Text.StringBuilder(32)
+        let sb = Text.StringBuilder()
         sb.Append "(" |> ignore
         tc.ConstructorArguments 
         |> Seq.iteri (fun i (_,arg) ->
@@ -41,7 +41,8 @@ module unitTestGatherer =
                     (fun s -> match s.Symbol with
                               | :? FSharpMemberOrFunctionOrValue as fom -> 
                                   fom.Attributes
-                                  |> Seq.exists (hasAttributeNamed "NUnit.Framework.TestAttribute")
+                                  |> Seq.exists (fun a -> hasAttributeNamed "NUnit.Framework.TestAttribute" a || 
+                                                          hasAttributeNamed "NUnit.Framework.TestCaseAttribute" a)
                               | :? FSharpEntity as fse ->
                                   fse.Attributes
                                   |> Seq.exists (hasAttributeNamed "NUnit.Framework.TestFixtureAttribute")
@@ -133,10 +134,10 @@ type FSharpNUnitSourceCodeLocationFinder() =
     override x.GetSourceCodeLocationAsync(_project, fixtureNamespace, fixtureTypeName, testName, token) =
         let computation =
             async {
-                let idx = testName.IndexOf("(")
+                let idx = testName.IndexOf("<") //reasons
                 let testName =
                     if idx > - 1 then
-                        testName.Substring(idx)
+                        testName.Substring(0, idx)
                     else
                         testName
 

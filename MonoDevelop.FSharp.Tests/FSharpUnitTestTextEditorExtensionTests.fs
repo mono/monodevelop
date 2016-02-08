@@ -18,14 +18,18 @@ type FSharpUnitTestTextEditorExtensionTests() =
         let attributes = """
 namespace NUnit.Framework
 open System
-type TestAttribute() =
-  inherit Attribute()
+type TestAttribute =
+  inherit Attribute
+  new() = { inherit Attribute() }
+  new(name) = { inherit Attribute() }
 type TestFixtureAttribute() =
   inherit Attribute()
 type IgnoreAttribute() =
   inherit Attribute()
-type TestCaseAttribute() =
-  inherit Attribute()
+type TestCaseAttribute =
+  inherit TestAttribute
+  new() = { inherit Attribute() }
+  new(name) = { inherit Attribute() }
 """
         gatherTests (attributes + text)
 
@@ -130,3 +134,22 @@ type Test() =
         let tests = gatherTests normalAndDoubleTick
 
         tests.Length |> should equal 0
+
+    [<Test>]
+    member x.``Test cases`` () =
+        let nestedTests = """
+open System
+open NUnit.Framework
+module Test =
+    [<TestFixture>]
+    type Test() =
+        [<TestCase("a string")>]
+        member x.TestOne(s:string) = ()
+        """
+        let tests = gatherTestsWithReference nestedTests
+
+        match tests with
+        | [fixture;t1] -> 
+            t1.UnitTestIdentifier |> should equal "NUnit.Framework.Test+Test.TestOne"
+            t1.IsIgnored |> should equal false
+        | _ -> NUnit.Framework.Assert.Fail "invalid number of tests returned"

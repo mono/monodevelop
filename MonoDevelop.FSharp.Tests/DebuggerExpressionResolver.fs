@@ -35,7 +35,6 @@ let localFour = localOne.Property|One"""
         Async.AwaitTask (resolver.ResolveExpressionAsync(doc.Editor, doc, offset, Async.DefaultCancellationToken))
         |> Async.RunSynchronously
 
-    [<Test>]
     [<TestCase("local|One","localOne")>]
     [<TestCase("local|Two", "localTwo")>]
     [<TestCase("localOne.Prope|rtyOne", "localOne.PropertyOne")>]
