@@ -5,7 +5,7 @@
     "originator":"Xamarin Inc. (http://xamarin.com)",
 
     "palette":[
-        { "name":"text-black", "value":"#333333" },
+        { "name":"text-black", "value":"#222222" },
         { "name":"comment-gray", "value":"#b0b0b0" },
         { "name":"butter2", "value":"#edd400" },
         { "name":"chameleon1", "value":"#8ae234" },
@@ -162,7 +162,7 @@
         { "name":"Html Tag Delimiter", "fore":"skyblue2" },
         { "name":"Razor Code", "fore":"text-black", "back":"#fdfaed" },
 
-        { "name":"Tooltip Text", "fore":"#333", "back":"#fafae3" },
+        { "name":"Tooltip Text", "fore":"text-black", "back":"#fafae3" },
         { "name":"Notification Text", "fore":"text-black", "back":"#feffe9" },
 
         { "name":"Completion Text", "fore":"#434343" },
@@ -237,7 +237,7 @@
         { "name":"Diff Location", "fore":"plum2", "weight":"bold" },
 
         { "name":"Css Comment", "fore":"comment-gray", "weight":"bold" },
-        { "name":"Css Property Name", "fore":"black", "weight":"bold" },
+        { "name":"Css Property Name", "fore":"text-black", "weight":"bold" },
         { "name":"Css Property Value", "fore":"literal-orange", "weight":"bold" },
         { "name":"Css Selector", "fore":"comment-gray", "weight":"bold" },
         { "name":"Css String Value", "fore":"literal-orange", "weight":"bold" },

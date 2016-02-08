@@ -5,7 +5,7 @@
     "originator":"Xamarin Inc. (http://xamarin.com)",
 
     "palette":[
-        { "name":"text-black", "value":"#333333" },
+        { "name":"text-black", "value":"#222222" },
         { "name":"comment-gray", "value":"#b0b0b0" },
         { "name":"butter1", "value":"#fce94f" },
         { "name":"butter2", "value":"#edd400" },
@@ -112,8 +112,8 @@
 
         { "name":"Line Numbers", "fore":"aluminium4", "back":"white" },
 
-        { "name":"Punctuation", "fore":"black" },
-        { "name":"Punctuation(Brackets)", "fore":"black" },
+        { "name":"Punctuation", "fore":"text-black" },
+        { "name":"Punctuation(Brackets)", "fore":"text-black" },
 
         { "name":"Comment(Line)", "fore":"comment-gray", "style":"italic" },
         { "name":"Comment(Block)", "fore":"comment-gray", "style":"italic" },
@@ -130,10 +130,10 @@
         { "name":"Number", "fore":"scarletred3" },
 
         { "name":"Preprocessor", "fore":"butter3" },
-        { "name":"Preprocessor(Region Name)", "fore":"black" },
+        { "name":"Preprocessor(Region Name)", "fore":"text-black" },
 
-        { "name":"Xml Text", "fore":"black" },
-        { "name":"Xml Delimiter", "fore":"black" },
+        { "name":"Xml Text", "fore":"text-black" },
+        { "name":"Xml Delimiter", "fore":"text-black" },
         { "name":"Xml Name", "fore":"skyblue3" },
         { "name":"Xml Attribute", "fore":"orange2" },
         { "name":"Xml Attribute Quotes", "fore":"scarletred3" },
@@ -147,12 +147,12 @@
         { "name":"Html Element Name", "fore":"skyblue3" },
         { "name":"Html Entity", "fore":"#c12dad" },
         { "name":"Html Operator", "fore":"skyblue3" },
-        { "name":"Html Server-Side Script", "fore":"black", "back":"#fdf0bd" },
+        { "name":"Html Server-Side Script", "fore":"text-black", "back":"#fdf0bd" },
         { "name":"Html Tag Delimiter", "fore":"skyblue2" },
-        { "name":"Razor Code", "fore":"black", "back":"#fdfaed" },
+        { "name":"Razor Code", "fore":"text-black", "back":"#fdfaed" },
 
-        { "name":"Tooltip Text", "fore":"#333", "back":"#fafae3" },
-        { "name":"Notification Text", "fore":"black", "back":"#feffe9" },
+        { "name":"Tooltip Text", "fore":"text-black", "back":"#fafae3" },
+        { "name":"Notification Text", "fore":"text-black", "back":"#feffe9" },
 
         { "name":"Keyword(Access)", "fore":"skyblue2", "weight":"bold" },
         { "name":"Keyword(Type)", "fore":"skyblue2", "weight":"bold" },
@@ -179,23 +179,23 @@
         { "name":"User Types(Value types)", "fore":"plum2" },
         { "name":"User Types(Type parameters)", "fore":"plum2" },
 
-        { "name":"User Field Usage", "fore":"black", "style":"italic" },
-        { "name":"User Field Declaration", "fore":"black", "style":"italic" },
+        { "name":"User Field Usage", "fore":"text-black", "style":"italic" },
+        { "name":"User Field Declaration", "fore":"text-black", "style":"italic" },
 
-        { "name":"User Property Usage", "fore":"black" },
-        { "name":"User Property Declaration", "fore":"black" },
+        { "name":"User Property Usage", "fore":"text-black" },
+        { "name":"User Property Declaration", "fore":"text-black" },
 
         { "name":"User Event Usage", "fore":"orange3" },
         { "name":"User Event Declaration", "fore":"orange3" },
 
-        { "name":"User Method Usage", "fore":"black" },
-        { "name":"User Method Declaration", "fore":"black" },
+        { "name":"User Method Usage", "fore":"text-black" },
+        { "name":"User Method Declaration", "fore":"text-black" },
 
-        { "name":"User Parameter Usage", "fore":"black", "style":"italic" },
-        { "name":"User Parameter Declaration", "fore":"black", "style":"italic" },
+        { "name":"User Parameter Usage", "fore":"text-black", "style":"italic" },
+        { "name":"User Parameter Declaration", "fore":"text-black", "style":"italic" },
 
-        { "name":"User Variable Usage", "fore":"black" },
-        { "name":"User Variable Declaration", "fore":"black" },
+        { "name":"User Variable Usage", "fore":"text-black" },
+        { "name":"User Variable Declaration", "fore":"text-black" },
 
         { "name":"Syntax Error", "fore":"scarletred1" },
 
@@ -216,7 +216,7 @@
         { "name":"Diff Location", "fore":"plum2", "weight":"bold" },
 
         { "name":"Css Comment", "fore":"chameleon3", "weight":"bold" },
-        { "name":"Css Property Name", "fore":"black", "weight":"bold" },
+        { "name":"Css Property Name", "fore":"text-black", "weight":"bold" },
         { "name":"Css Property Value", "fore":"literal-orange", "weight":"bold" },
         { "name":"Css Selector", "fore":"chameleon3", "weight":"bold" },
         { "name":"Css String Value", "fore":"literal-orange", "weight":"bold" },

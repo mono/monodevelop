@@ -5,7 +5,7 @@
     "originator":"Jeffrey Stedfast <fejj@novell.com>",
 
     "palette":[
-        { "name":"text-black", "value":"#333333" },
+        { "name":"text-black", "value":"#222222" },
         { "name":"comment-green", "value":"#008000" },
         { "name":"keyword-blue", "value":"#0000ff" },
         { "name":"semantic-type", "value":"#2B90AF" },
@@ -159,6 +159,6 @@
         { "name":"Script Operator" },
         { "name":"Script String" },
 
-        { "name":"Tooltip Text", "fore":"#333", "back":"#fafae3" }
+        { "name":"Tooltip Text", "fore":"text-black", "back":"#fafae3" }
     ]
 }

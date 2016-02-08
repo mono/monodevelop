@@ -10,9 +10,9 @@
 
 gtk-color-scheme =
 "bg_color: #333
-fg_color: #ccc
+fg_color: #d7d7d7
 base_color: #404040
-text_color: #ccc
+text_color: #d7d7d7
 link_color: #56bbf0
 dim_color: #777777
 selected_bg_color: #4c5e6e
