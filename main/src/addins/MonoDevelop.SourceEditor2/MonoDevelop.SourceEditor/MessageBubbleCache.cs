@@ -132,7 +132,7 @@ namespace MonoDevelop.SourceEditor
 							w += (int)cache.warningPixbuf.Width + iconTextSpacing;
 
 						requisition.Width = Math.Max (w + textBorder * 2, requisition.Width);
-						y += h + verticalTextSpace;
+						y += h + verticalTextSpace - 3;
 					}
 				}
 
