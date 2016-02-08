@@ -176,17 +176,23 @@ namespace MonoDevelop.Projects
 				sourceProject.FileName = FileName;
 			}
 
+			var ggroup = sourceProject.GetGlobalPropertyGroup ();
+			// Avoid crash if there is not global group
+			if (ggroup == null)
+				ggroup = sourceProject.AddNewPropertyGroup (false);
+
+			// Load the evaluated properties
+			InitMainGroupProperties (ggroup);
+		}
+
+		void InitMainGroupProperties (MSBuildPropertyGroup globalGroup)
+		{
 			// Create a project instance to be used for comparing old and new values in the global property group
 			// We use a dummy configuration and platform to avoid loading default values from the configurations
 			// while evaluating
 			var c = Guid.NewGuid ().ToString ();
-			using (var pi = CreateProjectInstaceForConfiguration (c, c)) {
-				var globalGroup = sourceProject.GetGlobalPropertyGroup ();
-				// Avoid crash if there is not global group
-				if (globalGroup == null)
-					globalGroup = sourceProject.AddNewPropertyGroup (false);
+			using (var pi = CreateProjectInstaceForConfiguration (c, c))
 				mainGroupProperties = pi.GetPropertiesLinkedToGroup (globalGroup);
-			}
 		}
 
 		protected override void OnExtensionChainInitialized ()
@@ -256,8 +262,10 @@ namespace MonoDevelop.Projects
 		{
 			var conf = (ProjectConfiguration)args.Configuration;
 
-			// Initialize the property group
-			if (!Loading)
+			// Initialize the property group only if the project is not being loaded (in which case it will
+			// be initialized by the ReadProject method) or if the project is new (because it will be initialized
+			// after the project is fully written, since only then all imports are in place
+			if (!Loading && !sourceProject.IsNewProject)
 				InitConfiguration (conf);
 
 			base.OnConfigurationAdded (args);
@@ -2002,6 +2010,16 @@ namespace MonoDevelop.Projects
 				var globalGroup = sourceProject.GetGlobalPropertyGroup ();
 				globalGroup.PurgeDefaultProperties ();
 				globalGroup.ResetIsNewFlags ();
+
+				if (sourceProject.IsNewProject) {
+					// If the project is new, the evaluated properties lists are empty. Now that the project is saved,
+					// those lists can be filled, so that the project is left in the same state it would have if it
+					// was just loaded.
+					sourceProject.Evaluate ();
+					InitMainGroupProperties (globalGroup);
+					foreach (ProjectConfiguration conf in Configurations)
+						InitConfiguration (conf);
+				}
 
 				sourceProject.IsNewProject = false;
 			} finally {
