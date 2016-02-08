@@ -744,7 +744,22 @@ namespace MonoDevelop.Ide.Gui
 		{
 			return Parent;
 		}
-		
+
+		class ArrayMultiCastCommandRouter: IMultiCastCommandRouter
+		{
+			object[] targets;
+
+			public ArrayMultiCastCommandRouter (params object[] targets)
+			{
+				this.targets = targets;
+			}
+
+			public IEnumerable GetCommandTargets ()
+			{
+				return targets;
+			}
+		}
+
 		object ICommandDelegatorRouter.GetDelegatedCommandTarget ()
 		{
 			// If command checks are flowing through this view, it means the view's notebook
@@ -756,7 +771,15 @@ namespace MonoDevelop.Ide.Gui
 				DockNotebook.ActiveNotebook = (SdiDragNotebook)Parent.Parent;
 
 			// Route commands to the view
-			return ActiveViewContent;
+			var view = ActiveViewContent;
+			if (view is MonoDevelop.Ide.Editor.TextEditorViewContent) {
+				//Special case for TextEditorViewContent so text editor extensions are considered before
+				//generic implementation of command in TextEditorViewContent
+				var textEditorView = (MonoDevelop.Ide.Editor.TextEditorViewContent)view;
+				return new ArrayMultiCastCommandRouter (textEditorView.GetTextEditorExtensionChain (), textEditorView);
+			} else {
+				return view;
+			}
 		}
 
 		void SetDockNotebookTabTitle ()

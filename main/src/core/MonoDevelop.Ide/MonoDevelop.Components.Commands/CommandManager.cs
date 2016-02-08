@@ -1690,7 +1690,7 @@ namespace MonoDevelop.Components.Commands
 				cmdTarget = null;
 			
 			if (cmdTarget == null || !visitedTargets.Add (cmdTarget)) {
-				if (delegatorStack.Count > 0) {
+				while (delegatorStack.Count > 0) {
 					var del = delegatorStack.Pop ();
 					if (del is ICommandDelegatorRouter)
 						cmdTarget = ((ICommandDelegatorRouter)del).GetNextCommandTarget ();
