@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		Gtk.Label labelTitle;
 		Gtk.HBox pageFrame;
 		Gtk.Button buttonCancel;
-		Gtk.Button buttonOk;
+		Gtk.Button buttonSave;
 		OptionsDialogHeader imageHeader;
 		Gtk.Alignment textHeader;
 
@@ -90,9 +90,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			buttonCancel = new Gtk.Button (Gtk.Stock.Cancel);
 			AddActionWidget (this.buttonCancel, ResponseType.Cancel);
 
-			buttonOk = new Gtk.Button (Gtk.Stock.Ok);
-			this.ActionArea.PackStart (buttonOk);
-			buttonOk.Clicked += OnButtonOkClicked;
+			buttonSave = new Gtk.Button (Gtk.Stock.Save);
+			this.ActionArea.PackStart (buttonSave);
+			buttonSave.Clicked += OnButtonSaveClicked;
 
 			mainHBox = new HBox ();
 			tree = new TreeView ();
@@ -741,7 +741,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 
-		protected virtual void OnButtonOkClicked (object sender, System.EventArgs e)
+		protected virtual void OnButtonSaveClicked (object sender, System.EventArgs e)
 		{
 			// Validate changes before saving
 			if (!ValidateChanges ())
