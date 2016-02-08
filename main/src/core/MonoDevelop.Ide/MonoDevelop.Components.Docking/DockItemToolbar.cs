@@ -208,7 +208,7 @@ namespace MonoDevelop.Components.Docking
 			button.Image.Show ();
 		}
 
-		protected override object CreateNativeWidget ()
+		protected override object CreateNativeWidget<T> ()
 		{
 			return button;
 		}
@@ -230,7 +230,7 @@ namespace MonoDevelop.Components.Docking
 				this.image = image;
 			}
 
-			protected override object CreateNativeWidget ()
+			protected override object CreateNativeWidget<T> ()
 			{
 				return image;
 			}

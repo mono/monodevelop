@@ -42,7 +42,7 @@ namespace MonoDevelop.Components.Chart
 			widget = new ChartWidget ();
 		}
 
-		protected override object CreateNativeWidget ()
+		protected override object CreateNativeWidget<T> ()
 		{
 			return widget;
 		}

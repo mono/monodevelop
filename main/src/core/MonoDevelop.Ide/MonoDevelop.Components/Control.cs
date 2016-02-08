@@ -51,7 +51,7 @@ namespace MonoDevelop.Components
 			cache.Add (nativeWidget, new WeakReference<Control> (this));
 		}
 
-		protected virtual object CreateNativeWidget ()
+		protected virtual object CreateNativeWidget<T> ()
 		{
 			throw new NotSupportedException ();
 		}
@@ -60,7 +60,7 @@ namespace MonoDevelop.Components
 		{
 			if (nativeWidget == null) {
 				var toCache = this;
-				var w = CreateNativeWidget ();
+				var w = CreateNativeWidget<T> ();
 				if (!(w is T)) {
 					var temp = w as Control;
 					while (temp != null) {

@@ -168,7 +168,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
-		protected override object CreateNativeWidget ()
+		protected override object CreateNativeWidget<T> ()
 		{
 			return widget;
 		}

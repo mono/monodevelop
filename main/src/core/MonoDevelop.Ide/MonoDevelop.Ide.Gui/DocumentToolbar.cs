@@ -210,7 +210,7 @@ namespace MonoDevelop.Ide.Gui
 			button.Image.Show ();
 		}
 
-		protected override object CreateNativeWidget ()
+		protected override object CreateNativeWidget<T> ()
 		{
 			return button;
 		}
@@ -232,7 +232,7 @@ namespace MonoDevelop.Ide.Gui
 				this.image = image;
 			}
 
-			protected override object CreateNativeWidget ()
+			protected override object CreateNativeWidget<T> ()
 			{
 				return image;
 			}
