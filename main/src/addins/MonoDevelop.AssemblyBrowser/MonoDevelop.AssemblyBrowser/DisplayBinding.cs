@@ -52,10 +52,8 @@ namespace MonoDevelop.AssemblyBrowser
 		internal AssemblyBrowserViewContent GetViewContent ()
 		{
 			if (viewContent == null || viewContent.IsDisposed) {
-				Runtime.RunInMainThread (delegate {
-					viewContent = new AssemblyBrowserViewContent ();
-					viewContent.Disposed += HandleDestroyed;
-				}).Wait ();
+				viewContent = new AssemblyBrowserViewContent ();
+				viewContent.Disposed += HandleDestroyed;
 			}
 			return viewContent;
 		}
