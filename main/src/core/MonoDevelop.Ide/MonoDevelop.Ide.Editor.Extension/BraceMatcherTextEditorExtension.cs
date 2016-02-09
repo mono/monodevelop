@@ -94,9 +94,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 			Task.Run (async delegate() {
 				BraceMatchingResult? result;
 				try {
-					result = await matcher.GetMatchingBracesAsync (snapshot, ctx, caretOffset, token).ConfigureAwait (false);
+					result = await matcher.GetMatchingBracesAsync (snapshot, ctx, caretOffset - 1, token).ConfigureAwait (false);
 					if (result == null && caretOffset > 0)
-						result = await matcher.GetMatchingBracesAsync (snapshot, ctx, caretOffset - 1, token).ConfigureAwait (false);
+						result = await matcher.GetMatchingBracesAsync (snapshot, ctx, caretOffset, token).ConfigureAwait (false);
 					if (result == null)
 						return;
 				} catch (OperationCanceledException) {

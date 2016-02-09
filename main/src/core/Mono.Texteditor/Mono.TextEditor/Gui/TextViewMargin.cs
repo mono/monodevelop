@@ -50,17 +50,7 @@ namespace Mono.TextEditor
 		Pango.Rectangle[] eolMarkerLayoutRect;
 
 		internal double charWidth;
-		int highlightBracketOffset = -1;
 
-		public int HighlightBracketOffset {
-			get {
-				return highlightBracketOffset;
-			}
-			set {
-				highlightBracketOffset = value;
-			}
-		}
-		
 		double LineHeight {
 			get {
 				return textEditor.LineHeight;
@@ -437,10 +427,6 @@ namespace Mono.TextEditor
 				layout.GetPixelExtents (out logRect, out tRect);
 				eolMarkerLayoutRect [i] = tRect;
 			}
-
-			DecorateLineBg -= DecorateMatchingBracket;
-			if (textEditor.Options.HighlightMatchingBracket && !Document.ReadOnly)
-				DecorateLineBg += DecorateMatchingBracket;
 
 			if (tabArray != null) {
 				tabArray.Dispose ();
@@ -1434,24 +1420,6 @@ namespace Mono.TextEditor
 			}
 			if (textEditor.Options.IncludeWhitespaces.HasFlag (IncludeWhitespaces.Tab)) {
 				InnerDecorateTabsAndSpaces (ctx, layout, offset, x, y, selectionStart, selectionEnd, '\t');
-			}
-		}
-
-		void DecorateMatchingBracket (Cairo.Context ctx, LayoutWrapper layout, int offset, int length, double xPos, double y, int selectionStart, int selectionEnd)
-		{
-			uint curIndex = 0, byteIndex = 0;
-			if (offset <= highlightBracketOffset && highlightBracketOffset <= offset + length) {
-				int index = highlightBracketOffset - offset;
-				Pango.Rectangle rect = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)index, ref curIndex, ref byteIndex));
-				
-				var bracketMatch = new Cairo.Rectangle (xPos + rect.X / Pango.Scale.PangoScale + 0.5, y + 0.5, (rect.Width / Pango.Scale.PangoScale) - 1, (rect.Height / Pango.Scale.PangoScale) - 1);
-				if (BackgroundRenderer == null) {
-					ctx.SetSourceColor (ColorStyle.BraceMatchingRectangle.Color);
-					ctx.Rectangle (bracketMatch);
-					ctx.FillPreserve ();
-					ctx.SetSourceColor (ColorStyle.BraceMatchingRectangle.SecondColor);
-					ctx.Stroke ();
-				}
 			}
 		}
 
