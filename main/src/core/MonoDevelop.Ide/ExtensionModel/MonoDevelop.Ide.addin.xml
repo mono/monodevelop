@@ -75,7 +75,7 @@
 		<ExtensionNode name="FileFilter" type="MonoDevelop.Ide.Codons.FileFilterCodon"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/Ide/TextEditorExtensions" name = "Text editor extensions">
+	<ExtensionPoint path = "/MonoDevelop/Ide/TextEditorExtensions" name = "Text editor extensions" defaultInsertAfter = "MidStep">
 		<Description>Extensions to the text editor. Classes must be a subclass of TextEditorExtension.</Description>
 		<ExtensionNode name="Class" type="MonoDevelop.Ide.Extensions.TextEditorExtensionNode"/>
 	</ExtensionPoint>
