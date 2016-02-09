@@ -953,7 +953,10 @@ namespace MonoDevelop.Components.Chart
 					selectionStart = selectionEnd;
 					selectionEnd = tmp;
 				}
-				chart.OnSelectionChanged ();
+
+				if (chart != null) {
+					chart.OnSelectionChanged ();
+				}
 			}
 		}
 		
