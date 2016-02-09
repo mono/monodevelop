@@ -110,12 +110,16 @@ namespace MonoDevelop.Refactoring
 		public static async Task RoslynJumpToDeclaration (ISymbol symbol, Projects.Project hintProject = null, CancellationToken token = default(CancellationToken))
 		{
 			if (symbol.Locations.Any (loc => loc.IsInSource)) { // all locals are in source.
-				IdeApp.ProjectOperations.JumpToDeclaration (symbol);
+				await Runtime.RunInMainThread (delegate {
+					IdeApp.ProjectOperations.JumpToDeclaration (symbol);
+				});
 				return;
 			}
 			var result = await TryJumpToDeclarationAsync (symbol.GetDocumentationCommentId (), hintProject, token).ConfigureAwait (false);
 			if (!result) {
-				IdeApp.ProjectOperations.JumpToDeclaration (symbol, hintProject);
+				await Runtime.RunInMainThread (delegate {
+					IdeApp.ProjectOperations.JumpToDeclaration (symbol, hintProject);
+				});
 			}
 		}
 
