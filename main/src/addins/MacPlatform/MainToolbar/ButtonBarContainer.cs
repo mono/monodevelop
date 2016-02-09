@@ -77,12 +77,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			nfloat nextX = 0;
 			nfloat y = 0;
-			nfloat height = AwesomeBar.ToolbarWidgetHeight + 2;
+			nfloat height = AwesomeBar.ToolbarWidgetHeight;
 
 			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
 				y = 2;
+				height += 2;
 			} else {
-				y = 0;
+				height += 5;
+				y = -1;
 			}
 
 			foreach (ButtonBar bar in buttonBars) {
