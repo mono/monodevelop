@@ -740,7 +740,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			try {
 				await EnsureAnalysisDocumentIsOpen ();
-				string currentParseFile = FileName;
+				string currentParseFile = GetCurrentParseFileName();
 				var editor = Editor;
 				if (editor == null || string.IsNullOrEmpty (currentParseFile))
 					return null;
@@ -874,7 +874,7 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void StartReparseThread ()
 		{
-			string currentParseFile = adhocProject != null ? adHocFile : FileName;
+			string currentParseFile = GetCurrentParseFileName ();
 			if (string.IsNullOrEmpty (currentParseFile))
 				return;
 			CancelParseTimeout ();
@@ -884,6 +884,12 @@ namespace MonoDevelop.Ide.Gui
 				parseTimeout = 0;
 				return false;
 			});
+		}
+
+		string GetCurrentParseFileName ()
+		{
+			string result = adhocProject != null ? adHocFile : Editor.FileName;
+			return result ?? FileName;
 		}
 
 		async void StartReparseThreadDelayed (FilePath currentParseFile)
