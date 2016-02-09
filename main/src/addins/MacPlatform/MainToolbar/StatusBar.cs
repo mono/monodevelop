@@ -213,6 +213,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			progressLayer.BorderWidth = 0;
 			progressLayer.FillMode = CAFillMode.Forwards;
 			progressLayer.Frame = new CGRect (0, 0, 0, barHeight);
+			progressLayer.AnchorPoint = new CGPoint (0, 0);
 		}
 
 		public void BeginProgress ()
@@ -221,7 +222,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			progressLayer.Hidden = false;
 			progressLayer.Opacity = 1;
 			progressLayer.Frame = new CGRect (0, 0, 0, barHeight);
-			progressLayer.AnchorPoint = new CGPoint (0, 0);
 		}
 
 		public void SetProgressFraction (double work)
