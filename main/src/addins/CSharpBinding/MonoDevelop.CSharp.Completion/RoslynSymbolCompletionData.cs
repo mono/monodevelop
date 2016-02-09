@@ -113,11 +113,6 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public static Task<TooltipInformation> CreateTooltipInformation (CancellationToken ctoken, MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, ISymbol entity, bool smartWrap, bool createFooter = false, SemanticModel model = null)
 		{
-			if (ctx != null) {
-				if (ctx.ParsedDocument == null || ctx.AnalysisDocument == null)
-					LoggingService.LogError ("Signature markup creator created with invalid context." + Environment.NewLine + Environment.StackTrace);
-			}
-
 			var tooltipInfo = new TooltipInformation ();
 //			if (resolver == null)
 //				resolver = file != null ? file.GetResolver (compilation, textEditorData.Caret.Location) : new CSharpResolver (compilation);

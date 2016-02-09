@@ -80,9 +80,6 @@ namespace MonoDevelop.CSharp
 			this.colorStyle = SyntaxModeService.GetColorStyle (MonoDevelop.Ide.IdeApp.Preferences.ColorScheme);
 			this.ctx = ctx;
 			if (ctx != null) {
-				if (ctx.ParsedDocument == null || ctx.AnalysisDocument == null) {
-					LoggingService.LogError ("Signature markup creator created with invalid context." + Environment.NewLine + Environment.StackTrace);
-				}
 				this.options = ctx.GetOptionSet ();
 			} else {
 				this.options = MonoDevelop.Ide.TypeSystem.TypeSystemService.Workspace.Options;
@@ -107,7 +104,7 @@ namespace MonoDevelop.CSharp
 				if (model == null) {
 					var parsedDocument = ctx.ParsedDocument;
 					if (parsedDocument != null) {
-						model = parsedDocument.GetAst<SemanticModel> () ?? ctx.AnalysisDocument.GetSemanticModelAsync ().Result;
+						model = parsedDocument.GetAst<SemanticModel> () ?? ctx.AnalysisDocument?.GetSemanticModelAsync ().Result;
 					}
 				}
 				//Math.Min (model.SyntaxTree.Length, offset)) is needed in case parsedDocument.GetAst<SemanticModel> () is outdated
