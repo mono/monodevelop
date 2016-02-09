@@ -32,6 +32,8 @@ using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
+using MonoDevelop.Components.AutoTest;
+using System.ComponentModel;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -100,17 +102,20 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		Control IOptionsPanel.CreatePanelWidget ()
 		{
 			Gtk.VBox cbox = new Gtk.VBox (false, 6);
-			Gtk.HBox combosBox = new Gtk.HBox (false, 6);
+			Gtk.HBox combosBox = new Gtk.HBox (false, 6) { Name = "panelWidgetCombosBox" };
 			cbox.PackStart (combosBox, false, false, 0);
 			combosBox.PackStart (new Gtk.Label (GettextCatalog.GetString ("Configuration:")), false, false, 0);
 			configListStore = new Gtk.ListStore (typeof(string), typeof(string));
-			configCombo = new Gtk.ComboBox (configListStore);
+			configCombo = new Gtk.ComboBox (configListStore) { Name = "panelWidgetConfigurationCombo" };
+			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("configListStore__DisplayName", "configListStore__ConfigName");
+			TypeDescriptor.AddAttributes (configListStore, modelAttr);
 			var cell = new Gtk.CellRendererText ();
 			configCombo.PackStart (cell, true);
 			configCombo.AddAttribute (cell, "text", 0);
 			combosBox.PackStart (configCombo, false, false, 0);
 			combosBox.PackStart (new Gtk.Label (GettextCatalog.GetString ("Platform:")), false, false, 0);
 			platformCombo = Gtk.ComboBox.NewText ();
+			platformCombo.Name = "panelWidgetPlatformCombo";
 			combosBox.PackStart (platformCombo, false, false, 0);
 			cbox.PackStart (new Gtk.HSeparator (), false, false, 0);
 			cbox.ShowAll ();
