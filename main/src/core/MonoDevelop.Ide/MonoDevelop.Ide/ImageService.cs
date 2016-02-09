@@ -186,7 +186,7 @@ namespace MonoDevelop.Ide
 
 			if (string.IsNullOrEmpty (name)) {
 				LoggingService.LogWarning ("Empty icon requested. Stack Trace: " + Environment.NewLine + Environment.StackTrace);
-				icons [name] = img = CreateColorIcon ("#FF00FF");
+				icons [name] = img = GetMissingIcon ();
 				return img;
 			}
 
@@ -204,10 +204,31 @@ namespace MonoDevelop.Ide
 
 			if (generateDefaultIcon) {
 				LoggingService.LogWarning ("Unknown icon: " + name);
-				return CreateColorIcon ("#FF00FF");
+				return GetMissingIcon ();
 			}
 
 			return icons [name] = img = Xwt.Toolkit.CurrentEngine.WrapImage (name);
+		}
+
+		static Xwt.Drawing.Image GetMissingIcon ()
+		{
+			Xwt.Drawing.Image img;
+			if (icons.TryGetValue ("gtk-missing-image", out img))
+				return img;
+
+			EnsureStockIconIsLoaded ("gtk-missing-image");
+
+			// Try again since it may have already been registered
+			if (icons.TryGetValue ("gtk-missing-image", out img))
+				return img;
+
+			// fallback to default Gtk icon if the Gtk theme has one
+			if (Gtk.IconTheme.Default.HasIcon ("gtk-missing-image"))
+				return icons ["gtk-missing-image"] = img = GtkUtil.GtkToolkit.WrapImage ("gtk-missing-image");
+
+			// we should never end up here, log an error
+			LoggingService.LogError ("Loading gtk-missing-image icon failed. Stack Trace: " + Environment.NewLine + Environment.StackTrace);
+			return CreateColorIcon ("#FF00FF");
 		}
 
 		public static Xwt.Drawing.Image GetImageResource (this RuntimeAddin addin, string resource)

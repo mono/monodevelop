@@ -41,7 +41,7 @@ namespace MonoDevelop.Components
 
 		static Xwt.Toolkit gtkToolkit;
 
-		static Xwt.Toolkit GtkToolkit {
+		internal static Xwt.Toolkit GtkToolkit {
 			get {
 				if (gtkToolkit == null)
 					gtkToolkit = Xwt.Toolkit.LoadedToolkits.FirstOrDefault (t => t.Type == Xwt.ToolkitType.Gtk);
