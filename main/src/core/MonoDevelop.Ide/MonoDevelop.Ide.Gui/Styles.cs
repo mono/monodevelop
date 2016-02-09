@@ -478,7 +478,7 @@ namespace MonoDevelop.Ide.Gui
 			CodeCompletion.TextColor = Color.FromName ("#646566");
 			CodeCompletion.CategoryColor = DimTextColor;
 			CodeCompletion.HighlightColor = Color.FromName ("#ba3373");
-			CodeCompletion.SelectionBackgroundInactiveColor = Color.FromName ("#bbbbbb");
+			CodeCompletion.SelectionBackgroundInactiveColor = Color.FromName ("#7e96c0");
 			CodeCompletion.SelectionHighlightColor = CodeCompletion.HighlightColor;
 
 			// New Project Dialog
@@ -576,7 +576,7 @@ namespace MonoDevelop.Ide.Gui
 			CodeCompletion.TextColor = Color.FromName ("#c3c5c6");
 			CodeCompletion.CategoryColor = Color.FromName ("#a1a1a1");
 			CodeCompletion.HighlightColor = Color.FromName ("#f9d33c");
-			CodeCompletion.SelectionBackgroundInactiveColor = Color.FromName ("#bbbbbb");
+			CodeCompletion.SelectionBackgroundInactiveColor = Color.FromName ("#7e96c0");
 			CodeCompletion.SelectionHighlightColor = CodeCompletion.HighlightColor;
 
 			// New Project Dialog
