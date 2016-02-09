@@ -102,19 +102,21 @@ type FSharpParameterHintingData (symbol:FSharpSymbolUse) =
 
     override x.IsParameterListAllowed =
         match symbol.Symbol with
-        | :? FSharpMemberOrFunctionOrValue as fsm ->
-            //TODO: How do we handle non tupled arguments?
-            let last = fsm.CurriedParameterGroups.[0] |> Seq.last
-            last.IsParamArrayArg
+        | :? FSharpMemberOrFunctionOrValue as fsm 
+            when fsm.CurriedParameterGroups.Count > 0 ->
+                //TODO: How do we handle non tupled arguments?
+                let last = fsm.CurriedParameterGroups.[0] |> Seq.last
+                last.IsParamArrayArg
         | _ -> false
 
     override x.GetParameterName i =
         match symbol.Symbol with
-        | :? FSharpMemberOrFunctionOrValue as fsm ->
-            //TODO: How do we handle non tupled arguments?
-            let group = fsm.CurriedParameterGroups.[0]
-            let param = group.[i]
-            match param.Name with
+        | :? FSharpMemberOrFunctionOrValue as fsm 
+            when fsm.CurriedParameterGroups.Count > 0  ->
+                //TODO: How do we handle non tupled arguments?
+                let group = fsm.CurriedParameterGroups.[0]
+                let param = group.[i]
+                match param.Name with
             | Some n -> n
             | None -> param.DisplayName
         | _ -> ""
