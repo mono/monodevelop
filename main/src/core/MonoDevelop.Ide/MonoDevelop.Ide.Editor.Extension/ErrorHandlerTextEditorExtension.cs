@@ -147,10 +147,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 						}
 						RemoveErrorUnderlines ();
 						// Else we underline the error
-						Console.WriteLine ("-------------");
 						if (errors != null) {
 							foreach (var error in errors) {
-								Console.WriteLine ("error id :" + error.Id);
 								if (ctx.IsAdHocProject && !lexicalError.Contains (error.Id))
 									continue;
 								UnderLineError (error);
