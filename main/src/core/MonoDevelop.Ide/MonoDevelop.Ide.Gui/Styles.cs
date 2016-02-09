@@ -584,7 +584,7 @@ namespace MonoDevelop.Ide.Gui
 			NewProjectDialog.TemplateListBackgroundColor = DockBarBackground;
 			NewProjectDialog.TemplateSectionSeparatorColor = ThinSplitterColor;
 			NewProjectDialog.TemplateLanguageButtonBackground = SecondaryBackgroundDarkerColor;
-			NewProjectDialog.ProjectConfigurationSeparatorColor = Color.FromName ("#5d616d");
+			NewProjectDialog.ProjectConfigurationSeparatorColor = Color.FromName ("#6e6e6e");
 		}
 	}
 }
