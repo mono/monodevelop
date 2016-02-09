@@ -53,8 +53,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				text = new MonoDevelopSourceText (TextFileProvider.Instance.GetTextEditorData (fileName).CreateDocumentSnapshot ());
 			} else {
 				if (!File.Exists (fileName))
-					return TextAndVersion.Create (SourceText.From (""), VersionStamp.Create ()); ;
-				text = SourceText.From (await TextFileUtility.GetTextAsync (fileName, cancellationToken));
+					return TextAndVersion.Create (SourceText.From (""), VersionStamp.Create ());
+				text = SourceText.From (await TextFileUtility.GetTextAsync (fileName, cancellationToken).ConfigureAwait(false));
 			}
 			return TextAndVersion.Create (text, VersionStamp.Create ());
 		}
