@@ -850,13 +850,13 @@ module SymbolTooltips =
               MonoDevelop.Core.LoggingService.LogError ("F# Tooltip error", ex)
               return TooltipInformation() }
 
-    let getParameterTooltipInformation symbol parameter =
+    let getParameterTooltipInformation symbol parameterIndex =
         match symbol with
         | MemberFunctionOrValue m ->
           let parameterName =
             match m.CurriedParameterGroups |> Seq.toList with
-            | [single] ->
-                let param = single.[parameter]
+            | [single] when parameterIndex < single.Count ->
+                let param = single.[parameterIndex]
                 match param.Name with
                 | Some n -> n
                 | _ -> param.DisplayName
