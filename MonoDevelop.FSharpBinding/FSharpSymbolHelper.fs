@@ -864,7 +864,6 @@ module SymbolTooltips =
           let signature = getFuncSignatureWithFormat symbol.DisplayContext m {Indent=3;Highlight=Some(parameterName)}
           let summary = getSummaryFromSymbol m
 
-
           let summary, parameterInfo =
               match summary with
               | Full(summary) ->

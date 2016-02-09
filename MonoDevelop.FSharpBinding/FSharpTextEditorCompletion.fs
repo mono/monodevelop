@@ -105,14 +105,19 @@ type FSharpParameterHintingData (symbol:FSharpSymbolUse) =
         | :? FSharpMemberOrFunctionOrValue as fsm 
             when fsm.CurriedParameterGroups.Count > 0 ->
                 //TODO: How do we handle non tupled arguments?
-                let last = fsm.CurriedParameterGroups.[0] |> Seq.last
-                last.IsParamArrayArg
+                let group = fsm.CurriedParameterGroups.[0] 
+                if group.Count > 0 then
+                    let last = group |> Seq.last
+                    last.IsParamArrayArg
+                else
+                    false
         | _ -> false
 
     override x.GetParameterName i =
         match symbol.Symbol with
         | :? FSharpMemberOrFunctionOrValue as fsm 
-            when fsm.CurriedParameterGroups.Count > 0  ->
+            when fsm.CurriedParameterGroups.Count > 0 &&
+                 fsm.CurriedParameterGroups.[0].Count > 0 ->
                 //TODO: How do we handle non tupled arguments?
                 let group = fsm.CurriedParameterGroups.[0]
                 let param = group.[i]
@@ -123,7 +128,7 @@ type FSharpParameterHintingData (symbol:FSharpSymbolUse) =
 
     /// Returns the markup to use to represent the method overload in the parameter information window.
     override x.CreateTooltipInformation (_editor, _context, paramIndex:int, _smartWrap:bool, cancel) =
-        Async.StartAsTask(getTooltipInformation symbol paramIndex, cancellationToken = cancel)
+        Async.StartAsTask(getTooltipInformation symbol (Math.Max(paramIndex, 0)), cancellationToken = cancel)
 
 
 /// Implements text editor extension for MonoDevelop that shows F# completion
