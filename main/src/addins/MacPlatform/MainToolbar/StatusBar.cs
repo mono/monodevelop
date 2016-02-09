@@ -901,7 +901,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			buildResults.Frame = new CGRect (buildResults.Frame.X, buildResults.Frame.Y, buildResults.Frame.Width, Frame.Height);
 			RepositionStatusIcons ();
 
-			progressView.Frame = new CGRect (0.5f, 3f, Frame.Width - 2, Frame.Height - 2);
+			progressView.Frame = new CGRect (0.5f, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 1f : 3f, Frame.Width - 2, Frame.Height - 2);
 		}
 	}
 }
