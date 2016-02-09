@@ -7,7 +7,7 @@ namespace MonoDevelop.FSharp
 #nowarn "40"
 
 open System
-open System.Collections.Generic
+open System.Collections.Immutable
 open System.Collections.ObjectModel
 open System.IO
 open System.Xml
@@ -72,7 +72,7 @@ type MDLanguageService() =
   static let mutable vfs =
       lazy (let originalFs = Shim.FileSystem
             let fs = new FileSystem(originalFs, (fun () -> seq { yield! match IdeApp.Workbench with
-                                                                        | null -> new ReadOnlyCollection<_>([||])
+                                                                        | null -> Seq.empty.ToImmutableList()
                                                                         | _ -> IdeApp.Workbench.Documents }))
             Shim.FileSystem <- fs
             fs :> IFileSystem)
