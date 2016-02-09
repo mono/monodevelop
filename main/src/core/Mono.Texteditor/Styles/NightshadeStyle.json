@@ -1,6 +1,6 @@
 {
     "name":"Nightshade",
-    "version":"1.1.3",
+    "version":"1.1.4",
     "description":"An inky scheme with vibrant highlights.",
     "originator":"Anirudh Sanjeev <anirudh@anirudhsanjeev.org>",
 
@@ -110,7 +110,7 @@
         { "name":"Current Line Marker(Inactive)", "color":"#2a2a2a", "secondcolor":"#2a2a2a" },
 
         { "name":"Debugger Current Line Marker", "color":"#69684c", "bordercolor":"#69684c" },
-        { "name":"Debugger Stack Line Marker", "color":"#5c6b4d", "bordercolor":"#657655" },
+        { "name":"Debugger Stack Line Marker", "color":"#4a6429", "bordercolor":"#4a6429" },
 
         { "name":"Primary Link", "color":"chocolate1", "secondcolor":"chocolate3" },
         { "name":"Primary Link(Highlighted)", "color":"chocolate1", "secondcolor":"chocolate2" },

@@ -1,6 +1,6 @@
 {
     "name":"Monokai",
-    "version":"1.2.3",
+    "version":"1.2.4",
     "description":"A smooth, dusky scheme.",
     "originator":"Xamarin Inc. (http://xamarin.com)",
 
@@ -74,7 +74,7 @@
         { "name":"Current Line Marker(Inactive)", "color":"#393933", "secondcolor":"#393933" },
 
         { "name":"Debugger Current Line Marker", "color":"#69684c", "bordercolor":"#69684c" },
-        { "name":"Debugger Stack Line Marker", "color":"#5c6b4d", "bordercolor":"#657655" },
+        { "name":"Debugger Stack Line Marker", "color":"#618336", "bordercolor":"#618336" },
 
         { "name":"Primary Link", "color":"monokai-white", "secondcolor":"#7f4a81" },
         { "name":"Primary Link(Highlighted)", "color":"monokai-white", "secondcolor":"#b167b3" },

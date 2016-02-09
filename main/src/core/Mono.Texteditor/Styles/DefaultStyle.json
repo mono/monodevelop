@@ -1,6 +1,6 @@
 {
     "name":"Default",
-    "version":"1.3.7",
+    "version":"1.3.8",
     "description":"Bright and friendly, just like Xamarin.",
     "originator":"Xamarin Inc. (http://xamarin.com)",
 
@@ -84,7 +84,7 @@
         { "name":"Current Line Marker(Inactive)", "color":"#f7f7f7", "secondcolor":"#f7f7f7" },
 
         { "name":"Debugger Current Line Marker", "color":"#f8f4a1", "bordercolor":"#f8f4a1" },
-        { "name":"Debugger Stack Line Marker", "color":"#ccfca6", "bordercolor":"#bff197" },
+        { "name":"Debugger Stack Line Marker", "color":"#d0efa9", "bordercolor":"#d0efa9" },
 
         { "name":"Primary Link", "color":"chameleon3", "secondcolor":"chameleon2" },
         { "name":"Primary Link(Highlighted)", "color":"chameleon3", "secondcolor":"chameleon1" },

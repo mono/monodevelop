@@ -1,6 +1,6 @@
 {
     "name":"Solarized Light",
-    "version":"1.1.4",
+    "version":"1.1.5",
     "description":"An artful, light scheme that's easy on the eyes.",
     "originator":"Xamarin Inc. (http://xamarin.com)",
 
@@ -75,7 +75,7 @@
         { "name":"Current Line Marker(Inactive)", "color":"#f5eedd", "secondcolor":"#f5eedd" },
 
         { "name":"Debugger Current Line Marker", "color":"#f8f4a1", "bordercolor":"#f8f4a1" },
-        { "name":"Debugger Stack Line Marker", "color":"#ccfca6", "bordercolor":"#bff197" },
+        { "name":"Debugger Stack Line Marker", "color":"#c9e1a9", "bordercolor":"#c9e1a9" },
 
         { "name":"Primary Link", "color":"chameleon3", "secondcolor":"chameleon2" },
         { "name":"Primary Link(Highlighted)", "color":"chameleon3", "secondcolor":"chameleon1" },
