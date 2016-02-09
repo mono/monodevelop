@@ -63,7 +63,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			public override void DrawSegment (nint segment, CGRect frame, NSView controlView)
 			{
 				var img = base.GetImageForSegment (segment);
-				var rect = new CGRect (Math.Round (frame.X + ((frame.Width / 2) - (img.Size.Width  / 2))), Math.Floor (frame.Y + ((frame.Height / 2) - (img.Size.Height  / 2))), img.Size.Width, img.Size.Height);
+				var rect = new CGRect (Math.Round (frame.X + ((frame.Width / 2) - (img.Size.Width  / 2))), Math.Round (frame.Y + ((frame.Height / 2) - (img.Size.Height  / 2))), img.Size.Width, img.Size.Height);
 
 				img.Draw (rect);
 			}
