@@ -372,13 +372,16 @@ namespace MonoDevelop.CSharp.Completion
 		static bool HasNonMethodMembersWithSameName (ISymbol member)
 		{
 			var method = member as IMethodSymbol;
-			if (method != null && method.MethodKind == MethodKind.Constructor)
+			if (method == null)
+				return true;
+			if (method == null || method.MethodKind == MethodKind.Constructor)
 				return false;
-			if (member.ContainingType == null)
-				return false;
-			return member.ContainingType
-				.GetMembers ()
-				.Any (e => e.Kind != SymbolKind.Method && e.Name == member.Name);
+			var type = method.ReceiverType ?? method.ContainingType;
+			foreach (var m in type.GetMembers ().Where (m => m.Kind != SymbolKind.Method)) {
+				if (m.Name == member.Name)
+					return true;
+			}
+			return false;
 		}
 
 		static bool RequireGenerics (IMethodSymbol method)
