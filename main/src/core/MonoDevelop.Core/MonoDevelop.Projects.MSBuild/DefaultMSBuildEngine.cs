@@ -498,7 +498,10 @@ namespace MonoDevelop.Projects.MSBuild
 				return File.Exists (path) ? new [] { path } : null;
 			}
 			else {
-				var files = Directory.GetFiles (Path.GetDirectoryName (path), fileName);
+				path = Path.GetDirectoryName (path);
+				if (!Directory.Exists (path))
+					return null;
+				var files = Directory.GetFiles (path, fileName);
 				Array.Sort (files);
 				return files;
 			}
