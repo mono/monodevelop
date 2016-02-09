@@ -191,6 +191,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			public static Color BackgroundColor { get; internal set; }
 			public static Color TextColor { get; internal set; }
+			public static Color CategoryColor { get; internal set; }
 			public static Color HighlightColor { get; internal set; }
 			public static Color SelectionBackgroundColor { get; internal set; }
 			public static Color SelectionBackgroundInactiveColor { get; internal set; }
@@ -475,6 +476,7 @@ namespace MonoDevelop.Ide.Gui
 
 			CodeCompletion.BackgroundColor = Color.FromName ("#eef1f2");
 			CodeCompletion.TextColor = Color.FromName ("#646566");
+			CodeCompletion.CategoryColor = DimTextColor;
 			CodeCompletion.HighlightColor = Color.FromName ("#ba3373");
 			CodeCompletion.SelectionBackgroundInactiveColor = Color.FromName ("#bbbbbb");
 			CodeCompletion.SelectionHighlightColor = CodeCompletion.HighlightColor;
@@ -572,6 +574,7 @@ namespace MonoDevelop.Ide.Gui
 
 			CodeCompletion.BackgroundColor = Color.FromName ("#5b6365");
 			CodeCompletion.TextColor = Color.FromName ("#c3c5c6");
+			CodeCompletion.CategoryColor = Color.FromName ("#a1a1a1");
 			CodeCompletion.HighlightColor = Color.FromName ("#f9d33c");
 			CodeCompletion.SelectionBackgroundInactiveColor = Color.FromName ("#bbbbbb");
 			CodeCompletion.SelectionHighlightColor = CodeCompletion.HighlightColor;

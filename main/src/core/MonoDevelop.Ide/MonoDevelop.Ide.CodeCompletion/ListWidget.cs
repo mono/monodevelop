@@ -148,10 +148,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 				noMatchFont.Dispose ();
 
 			itemFont = FontService.MonospaceFont.Copy ();
-			categoryFont = FontService.MonospaceFont.Copy ();
-			noMatchFont = FontService.SansFont.Copy ();
+			categoryFont = FontService.SansFont.CopyModified (Styles.FontScale11);
+			noMatchFont = FontService.SansFont.CopyModified (Styles.FontScale11);
 
-			// VV: prepared for further font tweaks when we have new fonts in
 			var newItemFontSize = itemFont.Size;
 			var newCategoryFontSize = categoryFont.Size;
 			var newNoMatchFontSize = noMatchFont.Size;
@@ -452,6 +451,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				context.Rectangle (args.Area.X, args.Area.Y, args.Area.Width, args.Area.Height);
 				var backgroundColor = Styles.CodeCompletion.BackgroundColor.ToCairoColor ();
 				var textColor = Styles.CodeCompletion.TextColor.ToCairoColor ();
+				var categoryColor = Styles.CodeCompletion.CategoryColor.ToCairoColor ();
 				context.SetSourceColor (backgroundColor);
 				context.Fill ();
 				int xpos = iconTextSpacing;
@@ -496,7 +496,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					int px, py;
 					categoryLayout.GetPixelSize (out px, out py);
 					context.MoveTo (x, ypos + (rowHeight - py) / 2);
-					context.SetSourceColor (textColor);
+					context.SetSourceColor (categoryColor);
 					Pango.CairoHelper.ShowLayout (context, categoryLayout);
 				}, delegate (Category curCategory, int item, int itemidx, int ypos) {
 					if (ypos >= height)
