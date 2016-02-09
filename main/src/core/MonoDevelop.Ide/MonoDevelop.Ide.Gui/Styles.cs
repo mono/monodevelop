@@ -466,7 +466,7 @@ namespace MonoDevelop.Ide.Gui
 			// Popover Window
 
 			PopoverWindow.DefaultBackgroundColor = Color.FromName ("#f2f2f2"); // gtkrc @tooltip_bg_color
-			PopoverWindow.DefaultTextColor = DimTextColor;
+			PopoverWindow.DefaultTextColor = Color.FromName ("#555555");
 			PopoverWindow.ShadowColor = Color.FromName ("#000000").WithAlpha (.05);
 
 			PopoverWindow.ParamaterWindows.GradientStartColor = Color.FromName ("#fffee6");
@@ -563,8 +563,8 @@ namespace MonoDevelop.Ide.Gui
 
 			// Popover window
 
-			PopoverWindow.DefaultBackgroundColor = DockBarBackground;
-			PopoverWindow.DefaultTextColor = Color.FromName ("#ffffff");
+			PopoverWindow.DefaultBackgroundColor = Color.FromName ("#5e5e5e");
+			PopoverWindow.DefaultTextColor = Color.FromName ("#bdc1c1");
 			PopoverWindow.ShadowColor = Color.FromName ("#000000").WithAlpha (0); // transparent since dark skin doesn't need shadows
 
 			PopoverWindow.ParamaterWindows.GradientStartColor = Color.FromName ("#fffee6");
@@ -572,7 +572,7 @@ namespace MonoDevelop.Ide.Gui
 
 			// Code Completion
 
-			CodeCompletion.BackgroundColor = Color.FromName ("#5b6365");
+			CodeCompletion.BackgroundColor = PopoverWindow.DefaultBackgroundColor;
 			CodeCompletion.TextColor = Color.FromName ("#c3c5c6");
 			CodeCompletion.CategoryColor = Color.FromName ("#a1a1a1");
 			CodeCompletion.HighlightColor = Color.FromName ("#f9d33c");

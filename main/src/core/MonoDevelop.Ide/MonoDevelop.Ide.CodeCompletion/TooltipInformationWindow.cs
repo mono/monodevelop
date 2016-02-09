@@ -232,7 +232,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 
 			contentLabel.Wrap = Pango.WrapMode.WordChar;
-			contentLabel.Spacing = 3;
+			contentLabel.Spacing = 1;
 			contentLabel.BreakOnCamelCasing = false;
 			contentLabel.BreakOnPunctuation = false;
 			contentLabel.MaxWidth = 400;
