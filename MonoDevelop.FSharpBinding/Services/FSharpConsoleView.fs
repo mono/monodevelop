@@ -49,10 +49,13 @@ type FSharpConsoleView() as x =
     let buffer = textView.Buffer
     let inputBeginMark = buffer.CreateMark (null, buffer.EndIter, true)
 
+    let colorToStr (c:Cairo.Color) =
+        sprintf "#%04d%04d%04d" (c.R |> int) (c.G |> int) (c.B |> int)
+
     let getTextTag (chunkStyle:ChunkStyle) =
         new TextTag (chunkStyle.Name,
-                    Foreground=ColorScheme.ColorToMarkup chunkStyle.Foreground,
-                    Background=ColorScheme.ColorToMarkup chunkStyle.Background)
+                    Foreground=colorToStr chunkStyle.Foreground,
+                    Background=colorToStr chunkStyle.Background)
 
     let mutable lastLineState = 0L //used as last lines state
     let mutable tempState = 0L //used as the last stet for an in process line
