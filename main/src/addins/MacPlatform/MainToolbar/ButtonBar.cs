@@ -54,7 +54,19 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					Styles.DarkBorderColor.ToNSColor ().SetStroke ();
 					path.Stroke ();
 
-					base.DrawInteriorWithFrame (inset, inView);
+					inset = new CGRect (inset.X + 3, inset.Y, inset.Width, inset.Height);
+					DrawInteriorWithFrame (inset, inView);
+
+					path = new NSBezierPath ();
+
+					// Draw the separators
+					for (int segment = 1; segment < SegmentCount; segment++) {
+						nfloat x = inset.X + (33 * segment);
+						path.MoveTo (new CGPoint (x, 0));
+						path.LineTo (new CGPoint (x, inset.Y + inset.Height));
+					}
+					path.LineWidth = 0.5f;
+					path.Stroke ();
 				} else {
 					base.DrawWithFrame (cellFrame, inView);
 				}
