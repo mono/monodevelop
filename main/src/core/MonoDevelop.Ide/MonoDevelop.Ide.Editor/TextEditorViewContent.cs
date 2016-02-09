@@ -325,11 +325,6 @@ namespace MonoDevelop.Ide.Editor
 
 		#region ICommandRouter implementation
 
-		internal object GetTextEditorExtensionChain ()
-		{
-			return textEditor.TextEditorExtensionChain;
-		}
-
 		object ICommandRouter.GetNextCommandTarget ()
 		{
 			return textEditorImpl;
