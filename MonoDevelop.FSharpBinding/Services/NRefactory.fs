@@ -66,7 +66,7 @@ module NRefactory =
             member x.ConstantValue = null
 
     /// Build an NRefactory symbol for an F# symbol.
-    let createSymbol (doc, context:MonoDevelop.Ide.Editor.DocumentContext, fsSymbol: FSharpSymbol, lastIdent, region) =
+    let createSymbol (fsSymbol: FSharpSymbol, lastIdent, region) =
         match fsSymbol with
 
         // Type Definitions, Type Abbreviations, Exception Definitions and Modules
@@ -174,13 +174,13 @@ module NRefactory =
     /// Create an NRefactory MemberReference for an F# symbol.
     ///
     /// symbolDeclLocOpt is used to modify the MemberReferences ReferenceUsageType in the case of highlight usages
-    let createMemberReference(doc:MonoDevelop.Ide.Editor.TextEditor, context:MonoDevelop.Ide.Editor.DocumentContext, symbolUse: FSharpSymbolUse, lastIdentAtLoc:string) =
+    let createMemberReference(doc:MonoDevelop.Ide.Editor.TextEditor, symbolUse: FSharpSymbolUse, lastIdentAtLoc:string) =
         let start, finish = Symbol.trimSymbolRegion symbolUse lastIdentAtLoc
         let filename = doc.FileName.ToString()
         let offset = doc.LocationToOffset(start.Line, start.Column+1)
         let domRegion = DomRegion(filename, start.Line, start.Column+1, finish.Line, finish.Column+1)
 
-        let symbol = createSymbol(doc, context, symbolUse.Symbol, lastIdentAtLoc, domRegion)
+        let symbol = createSymbol(symbolUse.Symbol, lastIdentAtLoc, domRegion)
         let memberRef = MemberReference(symbol, filename, offset, lastIdentAtLoc.Length)
 
         //if the current range is a symbol range and the fileNameOfRefs match change the ReferenceUsageType

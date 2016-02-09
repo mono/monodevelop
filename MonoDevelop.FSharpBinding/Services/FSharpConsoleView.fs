@@ -214,7 +214,7 @@ type FSharpConsoleView() as x =
         textView.PopulatePopup.Subscribe(x.TextViewPopulatePopup)
         |> addDisposable
 
-    member x.TextInserted e =
+    member x.TextInserted _ =
         if not !inputBeingProcessed then
             using (startInputProcessing()) (fun _ ->
             let line : string = x.InputLine
@@ -238,15 +238,15 @@ type FSharpConsoleView() as x =
 
     //fired on context menu copy
     [<GLib.ConnectBeforeAttribute>]
-    member x.HandleCopy(_o:obj, e: EventArgs) =
+    member x.HandleCopy(_o:obj, _e: EventArgs) =
         ()
 
     //fired on context menu paste
     [<GLib.ConnectBeforeAttribute>]
-    member x.HandlePaste(_o:obj, e:EventArgs) =
+    member x.HandlePaste(_o:obj, _e:EventArgs) =
         ()
 
-    member x.TextViewPopulatePopup sender args =
+    member x.TextViewPopulatePopup _sender args =
         let item = new MenuItem (Mono.Unix.Catalog.GetString ("Clear"))
         let sep = new SeparatorMenuItem ()
 

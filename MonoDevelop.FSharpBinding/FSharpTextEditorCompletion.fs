@@ -117,8 +117,8 @@ type FSharpParameterHintingData (symbol:FSharpSymbolUse) =
                 let group = fsm.CurriedParameterGroups.[0]
                 let param = group.[i]
                 match param.Name with
-            | Some n -> n
-            | None -> param.DisplayName
+                | Some n -> n
+                | None -> param.DisplayName
         | _ -> ""
 
     /// Returns the markup to use to represent the method overload in the parameter information window.
