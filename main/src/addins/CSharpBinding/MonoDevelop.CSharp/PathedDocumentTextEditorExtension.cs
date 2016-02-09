@@ -134,8 +134,11 @@ namespace MonoDevelop.CSharp
 				CancelDocumentParsedUpdate ();
 				var token = documentParsedCancellationTokenSource.Token;
 				Task.Run (async delegate {
-					foreach (var otherProject in currentOwners)
+					foreach (var otherProject in currentOwners) {
+						if (otherProject == null)
+							continue;
 						await otherProject.GetCompilationAsync (token).ConfigureAwait (false);
+					}
 				});
 			}
 		}
