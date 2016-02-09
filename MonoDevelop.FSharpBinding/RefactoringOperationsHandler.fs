@@ -158,10 +158,10 @@ module Refactoring =
             MessageService.ShowCustomDialog (Dialog.op_Implicit (new Rename.RenameItemDialog("Rename Item", symbol.Symbol.DisplayName, performChanges symbol locations)))
             |> ignore
 
-    let getJumpTypePartSearchResult (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse, location: Range.range) =
+    let getJumpTypePartSearchResult (location: Range.range) =
 
         let provider = FindInFiles.FileProvider (location.FileName)
-        let doc = TextEditorFactory.CreateNewDocument ()
+        //let doc = TextEditorFactory.CreateNewDocument ()
         //TODO: This is unfinished...
         //(doc :> ITextDocument).Text <- provider.ReadString ()
         //let fileName, start, finish = Symbols.getTrimmedRangesForDeclarations lastIdent symbolUse
@@ -205,7 +205,7 @@ module Refactoring =
         | locations ->
                 use monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
                 for part in locations do
-                    monitor.ReportResult (getJumpTypePartSearchResult (editor, ctx, symbolUse, part))
+                    monitor.ReportResult (getJumpTypePartSearchResult (part))
                     |> ignore
 
     let getProjectOutputFilename config (p:Project) =
@@ -338,7 +338,7 @@ module Refactoring =
             | SymbolDeclarationLocation.Unknown -> false
             | _ -> true
 
-        let canJump (symbolUse:FSharpSymbolUse) currentFile solution =
+        let canJump (_symbolUse:FSharpSymbolUse) _currentFile _solution =
             true
             //Reference:
             //For Roslyn the following symbol types *cant* be jumped to:
@@ -678,7 +678,7 @@ type FSharpFindReferencesProvider () =
 
         Async.StartAsTask(computation = computation, cancellationToken = token)
 
-    override x.FindAllReferences(documentationCommentId, hintProject, token) =
+    override x.FindAllReferences(_documentationCommentId, _hintProject, _token) =
         //TODO:
         Task.FromResult Seq.empty
 

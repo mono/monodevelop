@@ -55,7 +55,7 @@ type HighlightUsagesExtension() =
                         //TODO: Can we use the DisplayName from the symbol rather than the last element in ident islands?
                         // If we could then we could remove the Parsing.findLongIdents in GetUsesOfSymbolAtLocationInFile.
                         references
-                        |> Seq.map (fun symbolUse -> NRefactory.createMemberReference(x.Editor, x.DocumentContext, symbolUse, fsSymbolName))
+                        |> Seq.map (fun symbolUse -> NRefactory.createMemberReference(x.Editor, symbolUse, fsSymbolName))
                     | _ -> Seq.empty
 
                 with

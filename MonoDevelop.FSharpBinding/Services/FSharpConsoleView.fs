@@ -49,10 +49,13 @@ type FSharpConsoleView() as x =
     let buffer = textView.Buffer
     let inputBeginMark = buffer.CreateMark (null, buffer.EndIter, true)
 
+    let colorToStr (c:Cairo.Color) =
+        sprintf "#%04d%04d%04d" (c.R |> int) (c.G |> int) (c.B |> int)
+
     let getTextTag (chunkStyle:ChunkStyle) =
         new TextTag (chunkStyle.Name,
-                    Foreground=ColorScheme.ColorToMarkup chunkStyle.Foreground,
-                    Background=ColorScheme.ColorToMarkup chunkStyle.Background)
+                    Foreground=colorToStr chunkStyle.Foreground,
+                    Background=colorToStr chunkStyle.Background)
 
     let mutable lastLineState = 0L //used as last lines state
     let mutable tempState = 0L //used as the last stet for an in process line
@@ -211,7 +214,7 @@ type FSharpConsoleView() as x =
         textView.PopulatePopup.Subscribe(x.TextViewPopulatePopup)
         |> addDisposable
 
-    member x.TextInserted e =
+    member x.TextInserted _ =
         if not !inputBeingProcessed then
             using (startInputProcessing()) (fun _ ->
             let line : string = x.InputLine
@@ -235,15 +238,15 @@ type FSharpConsoleView() as x =
 
     //fired on context menu copy
     [<GLib.ConnectBeforeAttribute>]
-    member x.HandleCopy(_o:obj, e: EventArgs) =
+    member x.HandleCopy(_o:obj, _e: EventArgs) =
         ()
 
     //fired on context menu paste
     [<GLib.ConnectBeforeAttribute>]
-    member x.HandlePaste(_o:obj, e:EventArgs) =
+    member x.HandlePaste(_o:obj, _e:EventArgs) =
         ()
 
-    member x.TextViewPopulatePopup sender args =
+    member x.TextViewPopulatePopup _sender args =
         let item = new MenuItem (Mono.Unix.Catalog.GetString ("Clear"))
         let sep = new SeparatorMenuItem ()
 

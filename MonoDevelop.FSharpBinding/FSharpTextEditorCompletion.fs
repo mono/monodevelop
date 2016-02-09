@@ -102,26 +102,33 @@ type FSharpParameterHintingData (symbol:FSharpSymbolUse) =
 
     override x.IsParameterListAllowed =
         match symbol.Symbol with
-        | :? FSharpMemberOrFunctionOrValue as fsm ->
-            //TODO: How do we handle non tupled arguments?
-            let last = fsm.CurriedParameterGroups.[0] |> Seq.last
-            last.IsParamArrayArg
+        | :? FSharpMemberOrFunctionOrValue as fsm 
+            when fsm.CurriedParameterGroups.Count > 0 ->
+                //TODO: How do we handle non tupled arguments?
+                let group = fsm.CurriedParameterGroups.[0] 
+                if group.Count > 0 then
+                    let last = group |> Seq.last
+                    last.IsParamArrayArg
+                else
+                    false
         | _ -> false
 
     override x.GetParameterName i =
         match symbol.Symbol with
-        | :? FSharpMemberOrFunctionOrValue as fsm ->
-            //TODO: How do we handle non tupled arguments?
-            let group = fsm.CurriedParameterGroups.[0]
-            let param = group.[i]
-            match param.Name with
-            | Some n -> n
-            | None -> param.DisplayName
+        | :? FSharpMemberOrFunctionOrValue as fsm 
+            when fsm.CurriedParameterGroups.Count > 0 &&
+                 fsm.CurriedParameterGroups.[0].Count > 0 ->
+                //TODO: How do we handle non tupled arguments?
+                let group = fsm.CurriedParameterGroups.[0]
+                let param = group.[i]
+                match param.Name with
+                | Some n -> n
+                | None -> param.DisplayName
         | _ -> ""
 
     /// Returns the markup to use to represent the method overload in the parameter information window.
     override x.CreateTooltipInformation (_editor, _context, paramIndex:int, _smartWrap:bool, cancel) =
-        Async.StartAsTask(getTooltipInformation symbol paramIndex, cancellationToken = cancel)
+        Async.StartAsTask(getTooltipInformation symbol (Math.Max(paramIndex, 0)), cancellationToken = cancel)
 
 
 /// Implements text editor extension for MonoDevelop that shows F# completion
