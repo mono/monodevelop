@@ -494,6 +494,10 @@ type LanguageService(dirtyNotify) as x =
 
           return allSymbolUses }
 
+    member x.MatchingBraces(filename, projectFilename, source) =
+        let opts = x.GetCheckerOptions(filename, projectFilename, source)
+        checker.MatchBracesAlternate(filename, source, opts)
+
     /// Get all symbols derived from the specified symbol in the current project and optionally all dependent projects
     member x.GetDerivedSymbolsInProject(projectFilename, file, source, symbolAtCaret:FSharpSymbol, ?dependentProjects) =
         let predicate (symbolUse: FSharpSymbolUse) =

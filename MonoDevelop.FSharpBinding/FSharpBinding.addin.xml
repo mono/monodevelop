@@ -151,6 +151,10 @@
     <Panel id = "FSharpFormatting" _label = "F# Formatting" mimeType="text/x-fsharp" class = "MonoDevelop.FSharp.FSharpFormattingPolicyPanel" />
   </Extension>
 
+  <Extension path = "/MonoDevelop/Ide/BraceMatcher">
+    <Class class="MonoDevelop.FSharp.FSharpBraceMatcher" />
+  </Extension>
+
   <Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
     <Class fileExtensions=".fs,.fsi,.fsx,.fsscript" class="MonoDevelop.FSharp.FSharpTextEditorCompletion" />
     <Class fileExtensions = ".fs,.fsx" class = "MonoDevelop.FSharp.FSharpPathExtension" />
