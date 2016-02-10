@@ -34,7 +34,8 @@ module ServiceSettings =
     /// When making blocking calls from the GUI, we specify this value as the timeout, so that the GUI is not blocked forever
     let blockingTimeout = getEnvInteger "FSharpBinding_BlockingTimeout" 1000
     let maximumTimeout = getEnvInteger "FSharpBinding_MaxTimeout" 10000
-
+    let idleBackgroundCheckTime = getEnvInteger "FSharpBinding_IdleBackgroundCheckTime" 2000
+ 
 // --------------------------------------------------------------------------------------
 /// Wraps the result of type-checking and provides methods for implementing
 /// various IntelliSense functions (such as completion & tool tips).
@@ -252,6 +253,7 @@ type LanguageService(dirtyNotify) as x =
     // and its time to re-typecheck the current file.
     let checker =
         let checker = FSharpChecker.Create()
+        checker.PauseBeforeBackgroundWork <- ServiceSettings.idleBackgroundCheckTime
         checker.BeforeBackgroundFileCheck.Add dirtyNotify
 #if DEBUG
         checker.FileParsed.Add (fun filename -> LoggingService.LogDebug(sprintf "LanguageService: File parsed: %s" filename))
@@ -369,6 +371,7 @@ type LanguageService(dirtyNotify) as x =
                     | Choice1Of2(optsNew, _log: Map<string,string>) ->
                       //let opts = checker.GetProjectOptionsFromProjectFile(projFilename, properties)
                         projectInfoCache := cache.Add (key, optsNew)
+                        LoggingService.LogDebug ("LanguageService: GetProjectCheckerOptions: Generation complete for:{0}", Path.GetFileName(projFilename))
                         optsNew
                     | Choice2Of2 (ex) -> raise ex
                 with ex -> LoggingService.LogDebug("LanguageService: GetProjectCheckerOptions Exception: {0}", ex.ToString())
