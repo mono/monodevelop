@@ -8,6 +8,7 @@ open MonoDevelop.Projects
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui.Pads.ProjectPad
 open System.Linq
+open System.Xml
 open System.Xml.Linq
 open Linq2Xml
 
@@ -73,7 +74,10 @@ type FSharpProjectNodeCommandHandler() =
             //get the add function using the position
             let add = addFunction moveTo position
             add(moving)
-            xdoc.Save(projectFile)
+
+            let settings = XmlWriterSettings(OmitXmlDeclaration = true, Indent = true)
+            use writer = XmlWriter.Create(projectFile, settings)
+            xdoc.Save(writer);
         | _ -> ()//If we cant find both nodes or the position isnt before or after we dont continue
 
     /// Implement drag and drop of nodes in F# projects in the solution explorer.
