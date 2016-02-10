@@ -284,7 +284,7 @@ namespace MonoDevelop.Ide.Gui
 			if (Core.Platform.IsWindows)
 				TooltipInfoSpacing = 0;
 			else
-				TooltipInfoSpacing = -5;
+				TooltipInfoSpacing = -4;
 			LoadStyle ();
 		}
 
