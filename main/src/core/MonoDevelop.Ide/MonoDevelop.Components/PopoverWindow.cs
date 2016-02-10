@@ -467,14 +467,20 @@ namespace MonoDevelop.Components
 					}
 				}
 				if (!Core.Platform.IsWindows) {
-					if ((position & PopupPosition.Top) != 0)
+					if ((position & PopupPosition.Top) != 0) {
 						rect.Y += 1;
-					else if ((position & PopupPosition.Bottom) != 0)
-						rect.Y -= 1;
-					else if ((position & PopupPosition.Left) != 0)
+						rect.Height -= 1;
+					}
+					else if ((position & PopupPosition.Bottom) != 0) {
+						rect.Height -= 1;
+					}
+					else if ((position & PopupPosition.Left) != 0) {
 						rect.X += 1;
-					else if ((position & PopupPosition.Right) != 0)
-						rect.X -= 1;
+						rect.Width -= 1;
+					}
+					else if ((position & PopupPosition.Right) != 0) {
+						rect.Width -= 1;
+					}
 				}
 				return rect;
 			}
