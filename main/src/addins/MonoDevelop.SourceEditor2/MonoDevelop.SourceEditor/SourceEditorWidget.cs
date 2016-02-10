@@ -1177,7 +1177,7 @@ namespace MonoDevelop.SourceEditor
 			SetReplacePatternToSelection ();
 		}
 
-		void ShowSearchReplaceWidget (bool replace)
+		void ShowSearchReplaceWidget (bool replace, bool switchFocus = true)
 		{
 			if (searchAndReplaceWidget == null) {
 				KillWidgets ();
@@ -1212,7 +1212,8 @@ namespace MonoDevelop.SourceEditor
 					this.FindNext ();
 				}
 			}
-			searchAndReplaceWidget.Focus ();
+			if (switchFocus)
+				searchAndReplaceWidget.Focus ();
 		}
 		
 		public void ShowGotoLineNumberWidget ()
@@ -1244,6 +1245,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public SearchResult FindNext (bool focus)
 		{
+			if (searchAndReplaceWidget == null)
+				ShowSearchReplaceWidget (false, false);
 			return SearchAndReplaceWidget.FindNext (TextEditor);
 		}
 		
@@ -1254,6 +1257,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public SearchResult FindPrevious (bool focus)
 		{
+			if (searchAndReplaceWidget == null)
+				ShowSearchReplaceWidget (false, false);
 			return SearchAndReplaceWidget.FindPrevious (TextEditor);
 		}
 
