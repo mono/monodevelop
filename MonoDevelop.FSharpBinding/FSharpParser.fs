@@ -15,11 +15,19 @@ open System.Text
 open System.Threading
 
 type FSharpParsedDocument(fileName) =
-    inherit DefaultParsedDocument(fileName)
+    inherit DefaultParsedDocument(fileName,Flags = ParsedDocumentFlags.NonSerializable)
     member val Tokens = None with get,set
     member val AllSymbolsKeyed = Dictionary<_,_>() with get, set
 
 module ParsedDocument =
+    /// Format errors for the given line (if there are multiple, we collapse them into a single one)
+    let private formatError (error : FSharpErrorInfo) =
+      // Single error for this line
+        let errorType =
+            if error.Severity = FSharpErrorSeverity.Error then ErrorType.Error
+            else ErrorType.Warning
+        Error(errorType, String.wrapText error.Message 80, DocumentRegion (error.StartLineAlternate, error.StartColumn + 1, error.EndLineAlternate, error.EndColumn + 1))
+        
     let create (parseOptions: ParseOptions) (parseResults: ParseAndCheckResults) defines =
       //Try creating tokens
         async {
@@ -35,19 +43,13 @@ module ParsedDocument =
                         yield Tokens.LineDetail(line.LineNumber, line.Offset, readOnlyDoc.GetTextAt(line.Offset, line.Length)) ]
                 let tokens = Tokens.getTokens lineDetails fileName defines
                 doc.Tokens <- Some(tokens)
+                LoggingService.LogDebug ("FSharpParser: Tokens processed for: {0}", shortFilename)
             with ex ->
               LoggingService.LogWarning ("FSharpParser: Couldn't update token information", ex)
 
             //Get all the symboluses now rather than in semantic highlighting
             LoggingService.LogDebug ("FSharpParser: Processing symbol uses on {0}", shortFilename)
 
-            /// Format errors for the given line (if there are multiple, we collapse them into a single one)
-            let formatError (error : FSharpErrorInfo) =
-              // Single error for this line
-                let errorType =
-                    if error.Severity = FSharpErrorSeverity.Error then ErrorType.Error
-                    else ErrorType.Warning
-                Error(errorType, String.wrapText error.Message 80, DocumentRegion (error.StartLineAlternate, error.StartColumn + 1, error.EndLineAlternate, error.EndColumn + 1))
             parseResults.GetErrors() |> (Seq.map formatError >> doc.AddRange)
             let! allSymbolUses = parseResults.GetAllUsesOfAllSymbolsInFile()
             allSymbolUses |> Option.iter (fun symbolUses ->
@@ -95,6 +97,29 @@ type FSharpParser() =
                 | doc -> let file = doc.FileName.FullPath.ToString()
                          if file = "" then None else Some file
 
+    let isObsolete filename version (token:CancellationToken) =
+        SourceCodeServices.IsResultObsolete(fun () ->
+            let shortFilename = Path.GetFileName filename
+            try
+                if not token.IsCancellationRequested then
+                    match MonoDevelop.tryGetVisibleDocument filename with
+                    | Some doc ->
+                        let newVersion = doc.Editor.Version
+                        if newVersion.BelongsToSameDocumentAs(version) && newVersion.CompareAge(version) = 0 then
+                            false
+                        else
+                            LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled, file has changed", shortFilename)
+                            true
+                    | None ->
+                        LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled, file no longer visible", shortFilename)
+                        true
+                else
+                    LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled by cancellationToken", shortFilename)
+                    true
+            with ex ->
+                LoggingService.LogDebug ("FSharpParser: Parse {0} unable to determine cancellation due to exception", shortFilename, ex)
+                false )
+                
     override x.Parse(parseOptions, cancellationToken) =
         let fileName = parseOptions.FileName
         let content = parseOptions.Content
@@ -108,29 +133,6 @@ type FSharpParser() =
         let shortFilename = Path.GetFileName fileName
         LoggingService.LogDebug ("FSharpParser: Parse starting on {0}", shortFilename)
 
-        let isObsolete filename version (token:CancellationToken) =
-            SourceCodeServices.IsResultObsolete(fun () ->
-                let shortFilename = Path.GetFileName filename
-                try
-                    if not token.IsCancellationRequested then
-                        match MonoDevelop.tryGetVisibleDocument filename with
-                        | Some doc ->
-                            let newVersion = doc.Editor.Version
-                            if newVersion.BelongsToSameDocumentAs(version) && newVersion.CompareAge(version) = 0 then
-                                false
-                            else
-                                LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled, file has changed", shortFilename)
-                                true
-                        | None ->
-                            LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled, file no longer visible", shortFilename)
-                            true
-                    else
-                        LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled by cancellationToken", shortFilename)
-                        true
-                with ex ->
-                    LoggingService.LogDebug ("FSharpParser: Parse {0} unable to determine cancellation due to exception", shortFilename, ex)
-                    false )
-
         Async.StartAsTask(
             cancellationToken = cancellationToken,
             computation =
@@ -142,13 +144,13 @@ type FSharpParser() =
                         let obsolete = isObsolete parseOptions.FileName parseOptions.Content.Version cancellationToken
                         try
                             let! pendingParseResults = Async.StartChild(languageService.ParseAndCheckFileInProject(projectFile, filePath, 0, content.Text, obsolete), ServiceSettings.maximumTimeout)
-                            //if you ever want to see the current parse tree
-                            //let pt = match results.ParseTree with Some pt -> sprintf "%A" pt | _ -> ""
                             LoggingService.LogDebug ("FSharpParser: Parse and check results retieved on {0}", shortFilename)
                             let defines = CompilerArguments.getDefineSymbols filePath (proj |> Option.ofNull)
                             let! results = pendingParseResults
+                            //if you ever want to see the current parse tree
+                            //let pt = match results.ParseTree with Some pt -> sprintf "%A" pt | _ -> ""
                             return! ParsedDocument.create parseOptions results defines
                         with exn ->
                             LoggingService.LogError ("FSharpParser: Error ParsedDocument on {0}", shortFilename, exn)
-                            return FSharpParsedDocument(fileName, Flags = ParsedDocumentFlags.NonSerializable) :> _
-                    | None -> return FSharpParsedDocument(fileName, Flags = ParsedDocumentFlags.NonSerializable) :> _ })
+                            return FSharpParsedDocument(fileName) :> _
+                    | None -> return FSharpParsedDocument(fileName) :> _ })
