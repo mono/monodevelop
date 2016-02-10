@@ -3,6 +3,7 @@ open System
 open System.Text
 open System.IO
 open Microsoft.FSharp.Compiler.SourceCodeServices
+open MonoDevelop.Core
 open MonoDevelop.Ide.Editor
 open ExtCore
 
@@ -233,3 +234,10 @@ module AsyncChoiceCE =
 module Async =
     let inline startAsPlainTask (work : Async<unit>) =
         System.Threading.Tasks.Task.Factory.StartNew(fun () -> work |> Async.RunSynchronously)
+
+module LoggingService =
+    let inline private log f = Printf.kprintf f
+    //let logDebug format = log (log LoggingService.LogDebug "[F# Addin] %s") format
+    let logDebug format = log LoggingService.LogDebug format
+    let logError format = log LoggingService.LogError format
+    let logInfo format = log LoggingService.LogInfo format
