@@ -15,15 +15,6 @@ module Object =
         | :? 'a as y -> compare (f x) (f y)
         | _          -> invalidArg "yobj" "Cannot compare elements of incompatible types"
 
-module List =
-    let toStringWithDelims (fr: String) (sep: String) (bk: String) (xs: List<'a>) : String =
-        let rec toSWD acc ys =
-            match ys with
-            | []       -> acc
-            | [z]      -> sprintf "%s%A" acc z
-            | y::z::zs -> toSWD (sprintf "%s%A%s" acc y sep) (z::zs)
-        fr + toSWD "" xs + bk
-
 type Digraph<'n> when 'n : comparison =
     Map<'n, Set<'n>>
 
