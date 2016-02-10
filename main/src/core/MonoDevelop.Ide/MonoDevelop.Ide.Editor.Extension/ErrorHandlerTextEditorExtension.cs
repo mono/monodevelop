@@ -52,6 +52,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 			if (isDisposed)
 				return;
 			isDisposed = true;
+
+			this.tasks = ImmutableArray<QuickTask>.Empty;
+			OnTasksUpdated (EventArgs.Empty);
+
+			RemoveErrorUnderlines ();
 			RemoveErrorUndelinesResetTimerId ();
 			CancelDocumentParsedUpdate ();
 			DocumentContext.DocumentParsed -= DocumentContext_DocumentParsed;
