@@ -79,7 +79,7 @@ namespace MonoDevelop.Components.DockNotebook
 		const int TabSpacing = -1;
 		const int Radius = 2;
 		const int LeanWidth = 18;
-		const int CloseButtonSize = 14;
+		const int ButtonSize = 14;
 
 		const int TextOffset = 1;
 
@@ -497,6 +497,7 @@ namespace MonoDevelop.Components.DockNotebook
 			return base.OnMotionNotifyEvent (evnt);
 		}
 
+		bool overPinOnPress;
 		bool overCloseOnPress;
 		bool allowDoubleClick;
 
@@ -516,6 +517,13 @@ namespace MonoDevelop.Components.DockNotebook
 					return true;
 				}
 				overCloseOnPress = false;
+
+				// Don't select the tab if we are clicking the pin button
+				if (IsOverPinButton (t, (int)evnt.X, (int)evnt.Y)) {
+					overPinOnPress = true;
+					return true;
+				}
+				overPinOnPress = false;
 
 				if (evnt.Type == EventType.TwoButtonPress) {
 					if (allowDoubleClick) {
@@ -548,15 +556,23 @@ namespace MonoDevelop.Components.DockNotebook
 				return base.OnButtonReleaseEvent (evnt);
 			}
 
-			if (!draggingTab && overCloseOnPress) {
+			if (!draggingTab) {
 				var t = FindTab ((int)evnt.X, (int)evnt.Y);
-				if (t != null && IsOverCloseButton (t, (int)evnt.X, (int)evnt.Y)) {
+				if (t != null && overCloseOnPress && IsOverCloseButton (t, (int)evnt.X, (int)evnt.Y)) {
 					notebook.OnCloseTab (t);
 					allowDoubleClick = false;
 					return true;
+				} else if (t != null && overPinOnPress && IsOverPinButton (t, (int)evnt.X, (int)evnt.Y)) {
+					t.IsPinned = !t.IsPinned ;
+					notebook.OnPinTab (t);
+					allowDoubleClick = false;
+					return true;
 				}
-			}
+			} 
+
 			overCloseOnPress = false;
+			overPinOnPress = false;
+
 			allowDoubleClick = true;
 			if (dragX != 0)
 				this.Animate ("EndDrag",
@@ -574,6 +590,7 @@ namespace MonoDevelop.Components.DockNotebook
 			// Cancel drag operations and animations
 			buttonPressedOnTab = false;
 			overCloseOnPress = false;
+			overPinOnPress = false;
 			allowDoubleClick = true;
 			draggingTab = false;
 			dragX = 0;
@@ -607,6 +624,11 @@ namespace MonoDevelop.Components.DockNotebook
 		static bool IsOverCloseButton (DockNotebookTab tab, int x, int y)
 		{
 			return tab != null && tab.CloseButtonAllocation.Contains (x, y);
+		}
+
+		static bool IsOverPinButton (DockNotebookTab tab, int x, int y)
+		{
+			return tab != null && tab.PinButtonAllocation.Contains (x, y);
 		}
 
 		public void Update ()
@@ -683,7 +705,6 @@ namespace MonoDevelop.Components.DockNotebook
 					animationTarget = targetOffset;
 				}
 			}
-
 			return tabStartX - renderOffset;
 		}
 
@@ -848,6 +869,93 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 		}
 
+		static void DrawPinButton (Context context, Gdk.Point center, bool hovered, double opacity, bool pinned, double animationProgress)
+		{
+			int barSize = 4;
+
+			if (hovered) {
+				const double radius = 6;
+				context.Arc (center.X, center.Y, radius, 0, Math.PI * 2);
+				context.SetSourceRGBA (.6, .6, .6, opacity);
+				context.Fill ();
+
+				context.SetSourceRGBA (0.95, 0.95, 0.95, opacity);
+				context.LineWidth = 2;
+
+				if (pinned) {
+					context.MoveTo (center.X, center.Y - barSize);
+					context.LineTo (center.X, center.Y + barSize);
+					context.MoveTo (center.X, center.Y + barSize);
+					context.LineTo (center.X, center.Y - barSize);
+				} else {
+					context.MoveTo (center.X - barSize, center.Y);
+					context.LineTo (center.X + barSize, center.Y);
+					context.MoveTo (center.X + barSize, center.Y);
+					context.LineTo (center.X - barSize, center.Y);
+				}
+				context.Stroke ();
+			} else {
+				double lineColor = .63 - .1 * animationProgress;
+				const double fillColor = .74;
+
+				double heightMod = Math.Max (0, 1.0 - animationProgress * 2);
+
+				if (pinned) {
+					context.MoveTo (center.X, center.Y - barSize * heightMod);
+					context.LineTo (center.X, center.Y + barSize * heightMod);
+					context.MoveTo (center.X, center.Y + barSize * heightMod);
+					context.LineTo (center.X, center.Y - barSize * heightMod);
+				} else {
+					context.MoveTo (center.X - barSize * heightMod, center.Y);
+					context.LineTo (center.X + barSize * heightMod, center.Y);
+					context.MoveTo (center.X + barSize * heightMod, center.Y);
+					context.LineTo (center.X - barSize * heightMod, center.Y);
+				}
+
+				context.LineWidth = 2;
+				context.SetSourceRGBA (lineColor, lineColor, lineColor, opacity);
+				context.Stroke ();
+
+				if (animationProgress > 0.5) {
+					double partialProg = (animationProgress - 0.5) * 2;
+
+					if (pinned) {
+						context.MoveTo (center.X - barSize, center.Y);
+						context.LineTo (center.X + barSize, center.Y);
+					} else {
+						context.MoveTo (center.X, center.Y - barSize);
+						context.LineTo (center.X, center.Y + barSize);
+					}
+
+					context.LineWidth = 2 - partialProg;
+					context.SetSourceRGBA (lineColor, lineColor, lineColor, opacity);
+					context.Stroke ();
+
+					double radius = partialProg * 3.5;
+
+					// Background
+					context.Arc (center.X, center.Y, radius, 0, Math.PI * 2);
+					context.SetSourceRGBA (fillColor, fillColor, fillColor, opacity);
+					context.Fill ();
+
+					// Inset shadow
+					using (var lg = new LinearGradient (0, center.Y - 5, 0, center.Y)) {
+						context.Arc (center.X, center.Y + 1, radius, 0, Math.PI * 2);
+						lg.AddColorStop (0, new Cairo.Color (0, 0, 0, 0.2 * opacity));
+						lg.AddColorStop (1, new Cairo.Color (0, 0, 0, 0));
+						context.SetSource (lg);
+						context.Stroke ();
+					}
+
+					// Outline
+					context.Arc (center.X, center.Y, radius, 0, Math.PI * 2);
+					context.SetSourceRGBA (lineColor, lineColor, lineColor, opacity);
+					context.Stroke ();
+
+				}
+			}
+		}
+
 		void DrawTab (Context ctx, DockNotebookTab tab, Gdk.Rectangle allocation, Gdk.Rectangle tabBounds, bool highlight, bool active, bool dragging, Pango.Layout la)
 		{
 			// This logic is stupid to have here, should be in the caller!
@@ -862,12 +970,16 @@ namespace MonoDevelop.Components.DockNotebook
 			LayoutTabBorder (ctx, allocation, tabBounds.Width, tabBounds.X, 0, active);
 			ctx.ClosePath ();
 			using (var gr = new LinearGradient (tabBounds.X, TopBarPadding, tabBounds.X, allocation.Bottom)) {
-				if (active) {
-					gr.AddColorStop (0, Styles.BreadcrumbGradientStartColor.MultiplyAlpha (tab.Opacity));
-					gr.AddColorStop (1, Styles.BreadcrumbBackgroundColor.MultiplyAlpha (tab.Opacity));
+				if (tab.IsPinned) {
+					gr.AddColorStop (0, CairoExtensions.ParseColor ("B4D6F5").MultiplyAlpha (tab.Opacity));
 				} else {
-					gr.AddColorStop (0, CairoExtensions.ParseColor ("f4f4f4").MultiplyAlpha (tab.Opacity));
-					gr.AddColorStop (1, CairoExtensions.ParseColor ("cecece").MultiplyAlpha (tab.Opacity));
+					if (active) {
+						gr.AddColorStop (0, Styles.BreadcrumbGradientStartColor.MultiplyAlpha (tab.Opacity));
+						gr.AddColorStop (1, Styles.BreadcrumbBackgroundColor.MultiplyAlpha (tab.Opacity));
+					} else {
+						gr.AddColorStop (0, CairoExtensions.ParseColor ("f4f4f4").MultiplyAlpha (tab.Opacity));
+						gr.AddColorStop (1, CairoExtensions.ParseColor ("cecece").MultiplyAlpha (tab.Opacity));
+					}
 				}
 				ctx.SetSource (gr);
 			}
@@ -894,25 +1006,15 @@ namespace MonoDevelop.Components.DockNotebook
 				ctx.NewPath ();
 			}
 
-			// Render Close Button (do this first so we can tell how much text to render)
-
-			var ch = allocation.Height - TopBarPadding - BottomBarPadding + CloseImageTopOffset;
-			var crect = new Gdk.Rectangle (tabBounds.Right - padding - CloseButtonSize + 3,
-				            tabBounds.Y + TopBarPadding + (ch - CloseButtonSize) / 2,
-				            CloseButtonSize, CloseButtonSize);
-			tab.CloseButtonAllocation = crect;
-			tab.CloseButtonAllocation.Inflate (2, 2);
-
-			bool closeButtonHovered = tracker.Hovered && tab.CloseButtonAllocation.Contains (tracker.MousePosition) && tab.WidthModifier >= 1.0f;
-			bool drawCloseButton = tabBounds.Width > 60 || highlight || closeButtonHovered;
-			if (drawCloseButton) {
-				DrawCloseButton (ctx, new Gdk.Point (crect.X + crect.Width / 2, crect.Y + crect.Height / 2), closeButtonHovered, tab.Opacity, tab.DirtyStrength);
-			}
+			var drawPinButton = DrawButton (ctx, tab, allocation, tabBounds, padding, 1, la, highlight, TabButton.Close );
+			var drawCloseButton = DrawButton (ctx, tab, allocation, tabBounds, padding, 2, la, highlight, TabButton.Pin );
 
 			// Render Text
-			int w = tabBounds.Width - (padding * 2 + CloseButtonSize);
+			int w = tabBounds.Width - (padding * 2 + ButtonSize);
 			if (!drawCloseButton)
-				w += CloseButtonSize;
+				w += ButtonSize;
+			if (!drawPinButton)
+				w += ButtonSize;
 
 			int textStart = tabBounds.X + padding;
 
@@ -937,7 +1039,40 @@ namespace MonoDevelop.Components.DockNotebook
 					Pango.CairoHelper.ShowLayoutLine (ctx, la.GetLine (0));
 				}
 			}
+
 			la.Dispose ();
+		}
+
+		enum TabButton
+		{
+			Close, Pin
+		}
+
+		bool DrawButton(Context ctx, DockNotebookTab tab, Gdk.Rectangle allocation, Gdk.Rectangle tabBounds, int padding, int position, Pango.Layout la, bool highlight, TabButton button) {
+
+			// Render Close Button (do this first so we can tell how much text to render)
+			var ch = allocation.Height - TopBarPadding - BottomBarPadding + CloseImageTopOffset;
+			var crect = new Gdk.Rectangle (
+				tabBounds.Right - ((padding + ButtonSize - 3)*position),
+				tabBounds.Y + TopBarPadding + (ch - ButtonSize) / 2,
+				ButtonSize, ButtonSize);
+
+			if (button == TabButton.Pin) {
+				tab.PinButtonAllocation = crect; tab.PinButtonAllocation.Inflate (2, 2);
+			} else {
+				tab.CloseButtonAllocation = crect; tab.CloseButtonAllocation.Inflate (2, 2);
+			}
+		
+			bool buttonHovered = tracker.Hovered && (button == TabButton.Pin ? tab.PinButtonAllocation : tab.CloseButtonAllocation).Contains (tracker.MousePosition) && tab.WidthModifier >= 1.0f;
+			bool drawCloseButton = tabBounds.Width > 60 || highlight || buttonHovered;
+			if (drawCloseButton) {
+				if (button == TabButton.Pin)
+					DrawPinButton (ctx, new Gdk.Point (crect.X + crect.Width / 2, crect.Y + crect.Height / 2), buttonHovered, tab.Opacity, tab.IsPinned, tab.DirtyStrength);
+				else
+					DrawCloseButton (ctx, new Gdk.Point (crect.X + crect.Width / 2, crect.Y + crect.Height / 2), buttonHovered, tab.Opacity, tab.DirtyStrength);
+			}
+
+			return drawCloseButton;
 		}
 
 		static void LayoutTabBorder (Context ctx, Gdk.Rectangle allocation, int contentWidth, int px, int margin, bool active = true)
