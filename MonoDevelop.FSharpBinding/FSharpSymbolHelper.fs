@@ -15,14 +15,12 @@ module Symbols =
     let getLocationFromSymbolUse (s: FSharpSymbolUse) =
         [s.Symbol.DeclarationLocation; s.Symbol.SignatureLocation]
         |> List.choose id
-        |> Seq.distinctBy (fun r -> r.FileName)
-        |> Seq.toList
+        |> List.distinctBy (fun r -> r.FileName)
 
     let getLocationFromSymbol (s:FSharpSymbol) =
         [s.DeclarationLocation; s.SignatureLocation]
         |> List.choose id
-        |> Seq.distinctBy (fun r -> r.FileName)
-        |> Seq.toList
+        |> List.distinctBy (fun r -> r.FileName)
 
     ///Given a column and line string returns the identifier portion of the string
     let lastIdent column lineString =
@@ -333,7 +331,7 @@ module PrintParameter =
 
 
 module SymbolTooltips =
-
+    let maxPadding = 20
     type NestedFunctionParams =
     | GenericParam of FSharpGenericParameter
     | TupleParam of IList<FSharpType>
@@ -572,7 +570,7 @@ module SymbolTooltips =
                 |> List.map (fun p -> match p.Name with Some name -> name.Length | None -> p.DisplayName.Length)
             match allLengths with
             | [] -> 0
-            | l -> l |> List.max
+            | l -> l |> List.maxUnderThreshold maxPadding
 
         let formatName indent padding (parameter:FSharpParameter) =
             let name = match parameter.Name with Some name -> name | None -> parameter.DisplayName
@@ -603,10 +601,10 @@ module SymbolTooltips =
         | many ->
               let allParamsLengths =
                   many |> List.map (List.map (fun p -> (p.Type.Format displayContext).Length) >> List.sum)
-              let maxLength = allParamsLengths |> List.map ((+) 1) |> List.max
+              let maxLength = (allParamsLengths |> List.maxUnderThreshold maxPadding)+1
 
               let parameterTypeWithPadding (p: FSharpParameter) length =
-                  escapeText (p.Type.Format displayContext) + (String.replicate (maxLength - length) " ")
+                  escapeText (p.Type.Format displayContext) + (String.replicate (if length >= maxLength then 1 else maxLength - length) " ")
 
               let allParams =
                   List.zip many allParamsLengths
