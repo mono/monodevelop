@@ -1,3 +1,4 @@
+#nowarn "44" // Don't warn about obsolete code. Monodoc.Generators isn't available on Windows
 namespace MonoDevelop.FSharp
 open System
 open System.IO
@@ -121,7 +122,6 @@ module TooltipsXml =
         if par = null then None else Some((elementValue addStyle par).ToString())
 
 module TooltipXmlDoc =
-    let rawGenerator = new Monodoc.Generators.RawGenerator()
     ///lru based memoize
     let private memoize f n =
         let lru = ref (ExtCore.Caching.LruCache.create n)
@@ -159,13 +159,9 @@ module TooltipXmlDoc =
       let helpTree = MonoDevelop.Projects.HelpService.HelpTree
       if helpTree = null then None else
       try
-          let rendered = helpTree.RenderUrl(key, rawGenerator)
-          if rendered = null then
-              None
-          else
-              let doc = XmlDocument()
-              doc.LoadXml rendered
-              Some doc
+
+          let helpxml = helpTree.GetHelpXml(key)
+          if helpxml = null then None else Some(helpxml)
       with ex ->
           LoggingService.LogError ("GetHelpXml failed for key {0}", key, ex)
           None
