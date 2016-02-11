@@ -51,8 +51,7 @@ type FSharpConsoleView() as x =
 
     let getTextTag (chunkStyle:ChunkStyle) =
         new TextTag (chunkStyle.Name,
-                    Foreground=ColorScheme.ColorToMarkup chunkStyle.Foreground,
-                    Background=ColorScheme.ColorToMarkup chunkStyle.Background)
+                    Foreground=ColorScheme.ColorToMarkup chunkStyle.Foreground)
 
     let mutable lastLineState = 0L //used as last lines state
     let mutable tempState = 0L //used as the last stet for an in process line
