@@ -33,9 +33,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public static Color BaseBackgroundColor { get; private set; }
 		public static Color BaseForegroundColor { get; private set; }
 		public static Color DisabledForegroundColor { get; private set; }
+
 		public static Color StatusErrorTextColor { get; private set; }
 		public static Color StatusWarningTextColor { get; private set; }
 		public static Color StatusReadyTextColor { get; private set; }
+
+		// Dark workaround colors
+		public static Color DarkBorderColor { get; private set; }
+		public static Color DarkBorderBrokenColor { get; private set; }
 
 		static Styles ()
 		{
@@ -59,6 +64,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				StatusErrorTextColor = Color.FromName ("#fa5433");
 				StatusWarningTextColor = Color.FromName ("#e8bd0d");
 				StatusReadyTextColor = Color.FromName ("#7f7f7f");
+
+				DarkBorderColor = Color.FromName ("#8f8f8f");
+
+				// With the NSAppearance.NameVibrantDark appearance the first time a NSButtonCell
+				// is drawn it has a filter of some sort attached so that the colours are made lighter onscreen.
+				// To get the DarkBorderColor we need to use a workaround.
+				// See comment in ColoredButtonCell.DrawBezelWithFrame (RunButton.cs)
+				DarkBorderBrokenColor = Color.FromName ("#3e3e3e");
 			}
 		}
 	}
