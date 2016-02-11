@@ -129,7 +129,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			// The rect for the cancel button
 			public override CGRect CancelButtonRectForBounds (CGRect rect)
 			{
-				rect = new CGRect (rect.X + rect.Width - 26.0, -1, 26, 22);
+				rect = new CGRect (rect.X + rect.Width - 26.0, 0, 26, rect.Height);
 
 				return rect;
 			}
