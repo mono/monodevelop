@@ -98,7 +98,7 @@ namespace MonoDevelop.SourceEditor
 			if (insertMatchingBracket) {
 				using (var undo = editor.OpenUndoGroup ()) {
 					editor.EnsureCaretIsNotVirtual ();
-					editor.InsertAtCaret (descriptor.KeyChar +"" + insertionChar);
+					editor.InsertAtCaret (insertionChar.ToString ());
 					editor.CaretOffset--;
 					editor.StartSession (new SkipCharSession (insertionChar));
 				}

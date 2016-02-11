@@ -247,11 +247,6 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
-		{
-			// ignore
-		}
-
 		public double ZoomLevel {
 			get {
 				return 1d;

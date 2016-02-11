@@ -23,14 +23,46 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-namespace Sessions
+// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+
+using System.Threading;
+using ICSharpCode.NRefactory6.CSharp;
+using Microsoft.CodeAnalysis.CSharp;
+using MonoDevelop.Ide.Editor;
+
+namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 {
-	public class StringLiteralCompletionSession
+	internal class StringLiteralCompletionSession : AbstractTokenBraceCompletionSession
 	{
-		public StringLiteralCompletionSession ()
+		private const char VerbatimStringPrefix = '@';
+
+		public StringLiteralCompletionSession(DocumentContext ctx)
+			: base(ctx, (int)SyntaxKind.StringLiteralToken, (int)SyntaxKind.StringLiteralToken, '\"')
 		{
+		}
+
+		public override bool CheckOpeningPoint(TextEditor editor, DocumentContext ctx, CancellationToken cancellationToken)
+		{
+			var snapshot = CurrentSnapshot;
+			var position = StartOffset;
+			var token = FindToken(snapshot, position, cancellationToken);
+
+			if (!IsValidToken(token) || token.RawKind != OpeningTokenKind)
+			{
+				return false;
+			}
+
+			if (token.SpanStart == position)
+			{
+				return true;
+			}
+
+			return token.SpanStart + 1 == position && Editor.GetCharAt (token.SpanStart) == VerbatimStringPrefix;
+		}
+
+		public override bool AllowOverType(CancellationToken cancellationToken)
+		{
+			return true;
 		}
 	}
 }
-

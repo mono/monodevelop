@@ -5,6 +5,7 @@
 //       Mike Krüger <mkrueger@xamarin.com>
 //
 // Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,16 +25,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading;
+using Microsoft.CodeAnalysis.CSharp;
+using MonoDevelop.Ide.Editor;
+
 namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 {
 	class CharLiteralCompletionSession : AbstractTokenBraceCompletionSession
 	{
-		public CharLiteralCompletionSession(ISyntaxFactsService syntaxFactsService)
-			: base(syntaxFactsService, (int)SyntaxKind.CharacterLiteralToken, (int)SyntaxKind.CharacterLiteralToken)
+		public CharLiteralCompletionSession(DocumentContext ctx)
+			: base(ctx, (int)SyntaxKind.CharacterLiteralToken, (int)SyntaxKind.CharacterLiteralToken, '\'')
 		{
 		}
 
-		public override bool AllowOverType(IBraceCompletionSession session, CancellationToken cancellationToken)
+		public override bool AllowOverType(CancellationToken cancellationToken)
 		{
 			return true;
 		}

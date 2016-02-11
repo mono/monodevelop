@@ -164,10 +164,9 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/AutoInsertBracketHandler">
-		<Class id = "DefaultHandler" class="MonoDevelop.SourceEditor.DefaultAutoInsertBracketHandler" />
+		<Class id = "Default" class="MonoDevelop.SourceEditor.DefaultAutoInsertBracketHandler" />
 	</Extension>
 
-	
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">
 		<!-- 2.4 -->
 		<Migration sourceVersion="2.4" kind="UserData" path="syntaxmodes" targetPath="HighlightingSchemes" isDirectory="true" />

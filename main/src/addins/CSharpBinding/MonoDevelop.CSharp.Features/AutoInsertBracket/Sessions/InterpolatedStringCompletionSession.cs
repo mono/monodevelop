@@ -23,14 +23,64 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-namespace Sessions
+// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+
+using System.Threading;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.CSharp.Extensions.ContextQuery;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using Roslyn.Utilities;
+using MonoDevelop.Ide.Editor;
+using ICSharpCode.NRefactory6.CSharp;
+
+namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 {
-	public class InterpolatedStringCompletionSession
+	internal class InterpolatedStringCompletionSession : SkipCharSession, ICheckPointEditSession
 	{
-		public InterpolatedStringCompletionSession ()
+		public InterpolatedStringCompletionSession() : base ('"')
 		{
+		}
+
+		public bool CheckOpeningPoint(TextEditor editor, DocumentContext ctx, CancellationToken cancellationToken)
+		{
+			var snapshot = ctx.AnalysisDocument.GetSyntaxTreeAsync (cancellationToken).WaitAndGetResult(cancellationToken);
+			var position = editor.CaretOffset - 1;
+			var token = AbstractTokenBraceCompletionSession.FindToken(snapshot, position, cancellationToken);
+
+			return token.IsKind(SyntaxKind.InterpolatedStringStartToken, SyntaxKind.InterpolatedVerbatimStringStartToken)
+				        && token.Span.End - 1 == position;
+		}
+
+		public static bool IsContext(TextEditor editor, DocumentContext ctx, int position, CancellationToken cancellationToken)
+		{
+			// Check to see if we're to the right of an $ or an @$
+			var start = position - 1;
+			if (start < 0)
+			{
+				return false;
+			}
+
+			if (editor[start] == '@')
+			{
+				start--;
+
+				if (start < 0)
+				{
+					return false;
+				}
+			}
+
+			if (editor[start] != '$')
+			{
+				return false;
+			}
+
+			var tree = ctx.AnalysisDocument.GetSyntaxTreeAsync (cancellationToken).WaitAndGetResult(cancellationToken);
+			var token = tree.GetRoot(cancellationToken).FindTokenOnLeftOfPosition(start);
+
+			return tree.IsExpressionContext(start, token, attributes: false, cancellationToken: cancellationToken)
+				       || tree.IsStatementContext(start, token, cancellationToken);
 		}
 	}
 }
-

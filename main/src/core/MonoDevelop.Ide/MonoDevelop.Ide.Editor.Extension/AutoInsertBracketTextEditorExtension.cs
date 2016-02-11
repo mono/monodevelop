@@ -58,12 +58,14 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
+			var result = base.KeyPress (descriptor);
+
 			if (DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket && !Editor.IsSomethingSelected) {
 				var handler = allHandlers.FirstOrDefault(h => h.CanHandle (Editor));
 				if (handler != null && handler.Handle (Editor, DocumentContext, descriptor))
 					return false;
 			}
-			return base.KeyPress (descriptor);
+			return result;
 		}
 	}
 }

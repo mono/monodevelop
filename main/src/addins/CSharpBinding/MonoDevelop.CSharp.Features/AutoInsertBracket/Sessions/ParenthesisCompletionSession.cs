@@ -23,14 +23,48 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-namespace Sessions
+// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+
+using System.Threading;
+using ICSharpCode.NRefactory6.CSharp;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using MonoDevelop.Ide.Editor;
+
+namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 {
-	public class ParenthesisCompletionSession
+	internal class ParenthesisCompletionSession : AbstractTokenBraceCompletionSession
 	{
-		public ParenthesisCompletionSession ()
+		public ParenthesisCompletionSession(DocumentContext ctx)
+			: base(ctx, (int)SyntaxKind.OpenParenToken, (int)SyntaxKind.CloseParenToken, ')')
 		{
+		}
+
+		public override bool CheckOpeningPoint(TextEditor editor, DocumentContext ctx, CancellationToken cancellationToken)
+		{
+			var snapshot = CurrentSnapshot;
+			var position = StartOffset;
+			var token = FindToken(snapshot, position, cancellationToken);
+
+			// check token at the opening point first
+			if (!IsValidToken(token) ||
+			    token.RawKind != OpeningTokenKind ||
+			    token.SpanStart != position || token.Parent == null)
+			{
+				return false;
+			}
+
+			// now check whether parser think whether there is already counterpart closing parenthesis
+			var pair = token.Parent.GetParentheses();
+
+			// if pair is on the same line, then the closing parenthesis must belong to other tracker.
+			// let it through
+			if (Editor.GetLineByOffset (pair.Item1.SpanStart).LineNumber == Editor.GetLineByOffset(pair.Item2.Span.End).LineNumber)
+			{
+				return true;
+			}
+
+			return (int)pair.Item2.Kind() != ClosingTokenKind || pair.Item2.Span.Length == 0;
 		}
 	}
 }
-

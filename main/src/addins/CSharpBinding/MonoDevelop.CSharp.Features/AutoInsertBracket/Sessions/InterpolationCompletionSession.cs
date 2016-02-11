@@ -23,14 +23,78 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-namespace Sessions
+// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+
+using System.Threading;
+using ICSharpCode.NRefactory6.CSharp;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using MonoDevelop.Ide.Editor;
+using Roslyn.Utilities;
+
+namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 {
-	public class InterpolationCompletionSession
+	interface ICheckPointEditSession
 	{
-		public InterpolationCompletionSession ()
+		bool CheckOpeningPoint (TextEditor editor, DocumentContext ctx, CancellationToken cancellationToken);
+	}
+
+	internal class InterpolationCompletionSession : SkipCharSession, ICheckPointEditSession
+	{
+		public InterpolationCompletionSession() : base('}')
 		{
+		}
+
+		public bool CheckOpeningPoint(TextEditor editor, DocumentContext ctx, CancellationToken cancellationToken)
+		{
+			var snapshot = ctx.AnalysisDocument.GetSyntaxTreeAsync (cancellationToken).WaitAndGetResult(cancellationToken);
+			var position = editor.CaretOffset - 1;
+			var token = AbstractTokenBraceCompletionSession.FindToken(snapshot, position, cancellationToken);
+
+			return token.IsKind(SyntaxKind.OpenBraceToken)
+				        && token.SpanStart == position;
+		}
+
+		public static bool IsContext(TextEditor editor, DocumentContext ctx,  int position, CancellationToken cancellationToken)
+		{
+			// First, check to see if the character to the left of the position is an open curly. If it is,
+			// we shouldn't complete because the user may be trying to escape a curly.
+			var index = position - 1;
+			var openCurlyCount = 0;
+			while (index >= 0)
+			{
+				if (editor[index] == '{')
+				{
+					openCurlyCount++;
+				}
+				else
+				{
+					break;
+				}
+
+				index--;
+			}
+
+			if (openCurlyCount > 0 && openCurlyCount % 2 == 1)
+			{
+				return false;
+			}
+
+			// Next, check to see if we're typing in an interpolated string
+			var tree = ctx.AnalysisDocument.GetSyntaxTreeAsync(cancellationToken).WaitAndGetResult(cancellationToken);
+			var token = tree.GetRoot(cancellationToken).FindTokenOnLeftOfPosition(position);
+
+			if (!token.Span.IntersectsWith(position))
+			{
+				return false;
+			}
+
+			return token.IsKind(
+				SyntaxKind.InterpolatedStringStartToken,
+				SyntaxKind.InterpolatedVerbatimStringStartToken,
+				SyntaxKind.InterpolatedStringTextToken,
+				SyntaxKind.InterpolatedStringEndToken);
 		}
 	}
 }
-

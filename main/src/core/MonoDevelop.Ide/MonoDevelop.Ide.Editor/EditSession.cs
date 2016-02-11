@@ -30,11 +30,20 @@ namespace MonoDevelop.Ide.Editor
 {
 	public abstract class EditSession : IDisposable
 	{
-		protected TextEditor editor;
+		private TextEditor editor;
 		ITextSourceVersion version;
 
-		public int StartOffset { get; protected set; }
-		public int EndOffset  { get; protected set; }
+		protected int startOffset, endOffset;
+
+		public int StartOffset { get { return version.MoveOffsetTo (editor.Version, startOffset); } }
+
+		public int EndOffset  { get { return version.MoveOffsetTo (editor.Version, endOffset); } }
+
+		public TextEditor Editor {
+			get {
+				return editor;
+			}
+		}
 
 		public EditSession()
 		{
@@ -42,8 +51,8 @@ namespace MonoDevelop.Ide.Editor
 
 		public EditSession (int startOffset, int endOffset)
 		{
-			StartOffset = startOffset;
-			EndOffset = endOffset;
+			this.startOffset = startOffset;
+			this.endOffset = endOffset;
 		}
 
 		internal void SetEditor(TextEditor editor)
@@ -63,7 +72,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (editor == null)
 				throw new InvalidOperationException ("Session not yet started.");
-			if (version.MoveOffsetTo (editor.Version, StartOffset)  > editor.CaretOffset || version.MoveOffsetTo (editor.Version, EndOffset) < editor.CaretOffset) {
+			if (StartOffset  > editor.CaretOffset || EndOffset < editor.CaretOffset) {
 				editor.EndSession ();
 				return false;
 			}
@@ -142,9 +151,9 @@ namespace MonoDevelop.Ide.Editor
 		public override void BeforeType (char ch, out bool handledCommand)
 		{
 			if (CheckIsValid() && ch == this.ch) {
-				editor.CaretOffset++;
+				Editor.CaretOffset++;
 				handledCommand = true;
-				editor.EndSession ();
+				Editor.EndSession ();
 				return;
 			}
 			handledCommand = false;
@@ -152,8 +161,8 @@ namespace MonoDevelop.Ide.Editor
 
 		protected override void OnEditorSet ()
 		{
-			StartOffset = editor.CaretOffset;
-			EndOffset = StartOffset + 1;
+			startOffset = Editor.CaretOffset;
+			endOffset = StartOffset + 1;
 		}
 	}
 }

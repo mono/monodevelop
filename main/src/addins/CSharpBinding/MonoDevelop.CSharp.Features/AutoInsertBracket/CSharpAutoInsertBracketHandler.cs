@@ -24,13 +24,147 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-namespace AutoInsertBracket
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.CSharp.Formatting;
+using MonoDevelop.Ide.TypeSystem;
+using System.Threading;
+using ICSharpCode.NRefactory6.CSharp;
+
+namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 {
-	public class CSharpAutoInsertBracketHandler
+	class CSharpAutoInsertBracketHandler : AutoInsertBracketHandler
 	{
-		public CSharpAutoInsertBracketHandler ()
+		public override bool CanHandle (TextEditor editor)
 		{
+			
+			return editor.MimeType == CSharpFormatter.MimeType;
+		}
+
+		public override bool Handle (TextEditor editor, DocumentContext ctx, KeyDescriptor descriptor)
+		{
+			char closingBrace;
+			if (!IsSupportedOpeningBrace (descriptor.KeyChar, out closingBrace)  || !CheckCodeContext (editor, ctx, editor.CaretOffset - 1, descriptor.KeyChar, default (CancellationToken)))
+				return false;
+			
+			var session = CreateEditorSession (editor, ctx, editor.CaretOffset, descriptor.KeyChar, default (CancellationToken));
+			session.SetEditor (editor);
+			if (session == null | !((ICheckPointEditSession)session).CheckOpeningPoint (editor, ctx, default (CancellationToken)))
+				return false;
+			using (var undo = editor.OpenUndoGroup ()) {
+				editor.EnsureCaretIsNotVirtual ();
+				editor.InsertAtCaret (closingBrace.ToString ());
+				editor.CaretOffset--;
+				editor.StartSession (session);
+			}
+			return true;
+		}
+
+		protected virtual bool CheckCodeContext(TextEditor editor, DocumentContext ctx, int position, char openingBrace, CancellationToken cancellationToken)
+		{
+			// SPECIAL CASE: Allow in curly braces in string literals to support interpolated strings.
+			if (openingBrace == CurlyBrace.OpenCharacter &&
+			    InterpolationCompletionSession.IsContext(editor, ctx, position, cancellationToken))
+			{
+				return true;
+			}
+
+			if (openingBrace == DoubleQuote.OpenCharacter &&
+			    InterpolatedStringCompletionSession.IsContext(editor, ctx, position, cancellationToken))
+			{
+				return true;
+			}
+		
+			// check that the user is not typing in a string literal or comment
+			var tree = ctx.AnalysisDocument.GetSyntaxTreeAsync(cancellationToken).Result;
+
+			return !tree.IsInNonUserCode(position, cancellationToken);
+		}
+
+		EditSession CreateEditorSession(TextEditor editor, DocumentContext ctx, int openingPosition, char openingBrace, CancellationToken cancellationToken)
+		{
+			switch (openingBrace)
+			{
+				case CurlyBrace.OpenCharacter:
+				return InterpolationCompletionSession.IsContext(editor, ctx, openingPosition, cancellationToken)
+					? (EditSession)new InterpolationCompletionSession()
+						: new CurlyBraceCompletionSession(ctx);
+
+				case DoubleQuote.OpenCharacter:
+				return InterpolatedStringCompletionSession.IsContext(editor, ctx, openingPosition, cancellationToken)
+					? (EditSession)new InterpolatedStringCompletionSession()
+						: new StringLiteralCompletionSession(ctx);
+
+				case Bracket.OpenCharacter: return new BracketCompletionSession(ctx);
+				case Parenthesis.OpenCharacter: return new ParenthesisCompletionSession(ctx);
+				case SingleQuote.OpenCharacter: return new CharLiteralCompletionSession(ctx);
+				case LessAndGreaterThan.OpenCharacter: return new LessAndGreaterThanCompletionSession(ctx);
+			}
+
+			return null;
+		}
+
+
+		protected bool IsSupportedOpeningBrace (char openingBrace, out char closingBrace)
+		{
+			switch (openingBrace) {
+			case Bracket.OpenCharacter:
+				closingBrace = Bracket.CloseCharacter;
+				return true;
+			case CurlyBrace.OpenCharacter:
+				closingBrace = CurlyBrace.CloseCharacter;
+				return true;
+			case Parenthesis.OpenCharacter:
+				closingBrace = Parenthesis.CloseCharacter;
+				return true;
+			case SingleQuote.OpenCharacter:
+				closingBrace = SingleQuote.CloseCharacter;
+				return true;
+			case DoubleQuote.OpenCharacter:
+				closingBrace = DoubleQuote.CloseCharacter;
+				return true;
+			case LessAndGreaterThan.OpenCharacter:
+				closingBrace = LessAndGreaterThan.CloseCharacter;
+				return true;
+			}
+			closingBrace = openingBrace;
+			return false;
+		}
+
+		public static class CurlyBrace
+		{
+			public const char OpenCharacter = '{';
+			public const char CloseCharacter = '}';
+		}
+
+		public static class Parenthesis
+		{
+			public const char OpenCharacter = '(';
+			public const char CloseCharacter = ')';
+		}
+
+		public static class Bracket
+		{
+			public const char OpenCharacter = '[';
+			public const char CloseCharacter = ']';
+		}
+
+		public static class LessAndGreaterThan
+		{
+			public const char OpenCharacter = '<';
+			public const char CloseCharacter = '>';
+		}
+
+		public static class DoubleQuote
+		{
+			public const char OpenCharacter = '"';
+			public const char CloseCharacter = '"';
+		}
+
+		public static class SingleQuote
+		{
+			public const char OpenCharacter = '\'';
+			public const char CloseCharacter = '\'';
 		}
 	}
 }
-

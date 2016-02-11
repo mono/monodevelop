@@ -309,4 +309,7 @@
 		<Class class="MonoDevelop.CSharp.UnitTests.CSharpNUnitSourceCodeLocationFinder" />
 	</Extension>
 
+	<Extension path = "/MonoDevelop/Ide/AutoInsertBracketHandler">
+		<Class class="MonoDevelop.CSharp.Features.AutoInsertBracket.CSharpAutoInsertBracketHandler" insertbefore="Default"/>
+	</Extension>
 </ExtensionModel>
