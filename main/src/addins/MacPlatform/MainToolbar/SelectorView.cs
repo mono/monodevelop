@@ -277,7 +277,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 								ActiveConfiguration = configurationModel.First (c => c.OriginalId == _configuration.OriginalId);
 								if (ConfigurationChanged != null)
 									ConfigurationChanged (o2, e2);
-								UpdatePathText (ConfigurationIdx, _configuration.DisplayString);
 							}) {
 								Enabled = true,
 								IndentationLevel = 1,
