@@ -55,9 +55,8 @@ namespace MonoDevelop.Components
 		int padding;
 		int arrowWidth;
 		int arrowLength;
-		Cairo.Color topColor;
-		Cairo.Color bottomColor;
-		Cairo.Color borderColor;
+		Cairo.Color backgroundColor;
+		Cairo.Color shadowColor;
 		Pango.FontDescription font;
 		int currentPage;
 		int pages;
@@ -65,58 +64,37 @@ namespace MonoDevelop.Components
 		bool pagerVertical;
 		bool showArrow;
 		PopupPosition targetPosition;
+		static readonly int pagerArrowPadding = 4;
 
 		public event EventHandler RedrawNeeded;
 
 		/// <summary>
-		/// Gets or sets the color of the top of the gradient used to render the background.
+		/// Gets or sets the color of the background.
 		/// </summary>
-		public Cairo.Color TopColor { 
-			get { return topColor; }
-			set { SetAndEmit (value, topColor, ref topColor); }
+		public Cairo.Color BackgroundColor { 
+			get { return backgroundColor; }
+			set { SetAndEmit (value, backgroundColor, ref backgroundColor); }
 		}
 
+		Cairo.Color pagerBackgroundColor = CairoExtensions.ParseColor ("ffffff");
 		/// <summary>
-		/// Gets or sets the color of the bottom of the gradient used to render the background.
+		/// Gets or sets the color of the background color of the pager.
 		/// </summary>
-		public Cairo.Color BottomColor { 
-			get { return bottomColor; }
-			set { SetAndEmit (value, bottomColor, ref bottomColor); } 
+		public Cairo.Color PagerBackgroundColor {
+			get {
+				return pagerBackgroundColor;
+			}
+			set {
+				pagerBackgroundColor = value;
+			}
 		}
 
 		/// <summary>
 		/// Gets or sets the color of the border of the entire window. Set to transparent to disable border drawing.
 		/// </summary>
-		public Cairo.Color BorderColor { 
-			get { return borderColor; }
-			set { SetAndEmit (value, borderColor, ref borderColor); } 
-		}
-
-
-		Cairo.Color pagerBackgroundColorTop = CairoExtensions.ParseColor ("ffffff");
-		/// <summary>
-		/// Gets or sets the color of the top background color of the pager.
-		/// </summary>
-		public Cairo.Color PagerBackgroundColorTop {
-			get {
-				return pagerBackgroundColorTop;
-			}
-			set {
-				pagerBackgroundColorTop = value;
-			}
-		}
-
-		Cairo.Color pagerBackgroundColorBottom = CairoExtensions.ParseColor ("f5f5f5");
-		/// <summary>
-		/// Gets or sets the color of the bottom background color of the pager.
-		/// </summary>
-		public Cairo.Color PagerBackgroundColorBottom {
-			get {
-				return pagerBackgroundColorBottom;
-			}
-			set {
-				pagerBackgroundColorBottom = value;
-			}
+		public Cairo.Color ShadowColor { 
+			get { return shadowColor; }
+			set { SetAndEmit (value, shadowColor, ref shadowColor); } 
 		}
 
 		Cairo.Color pagerTriangleColor = CairoExtensions.ParseColor ("737373");
@@ -141,10 +119,11 @@ namespace MonoDevelop.Components
 		public Cairo.Color PagerTextColor {
 			get {
 				if (!pagerColorSet) {
-					return new Cairo.Color (BorderColor.R * .7,
-					                        BorderColor.G * .7,
-					                        BorderColor.B * .7,
-					                        BorderColor.A);
+					// FIXME: VV: Sane value!
+					//return new Cairo.Color (BorderColor.R * .7,
+					//                        BorderColor.G * .7,
+					//                        BorderColor.B * .7,
+					//                        BorderColor.A);
 				}
 				return pagerTextColor;
 			}
@@ -244,12 +223,11 @@ namespace MonoDevelop.Components
 		public int ArrowOffset { private get; set; }
 
 		/// <summary>
-		/// Convenience method to set the top and bottom color to the same color.
+		/// Set the background color.
 		/// </summary>
-		public void SetFlatColor (Cairo.Color color)
+		public void SetBackgroundColor (Cairo.Color color)
 		{
-			TopColor = color;
-			BottomColor = color;
+			BackgroundColor = color;
 		}
 
 		public PopoverWindowTheme ()
@@ -258,21 +236,17 @@ namespace MonoDevelop.Components
 			Padding = 6;
 			ArrowWidth = 10;
 			ArrowLength = 5;
-			TopColor = new Cairo.Color (1, 1, 1);
-			BottomColor = new Cairo.Color (1, 1, 1);
-			BorderColor = new Cairo.Color (0.7, 0.7, 0.7);
+			BackgroundColor = Styles.PopoverWindow.DefaultBackgroundColor.ToCairoColor ();
+			ShadowColor = Styles.PopoverWindow.ShadowColor.ToCairoColor ();
 
 			Font = Pango.FontDescription.FromString ("Normal");
 		}
 
 		public void SetSchemeColors (ColorScheme scheme)
 		{
-			TopColor = scheme.TooltipText.Background.AddLight (0.03);
-			BottomColor = scheme.TooltipText.Background;
-			BorderColor = scheme.TooltipBorder.Color;
+			BackgroundColor = scheme.TooltipText.Background;
 			PagerTextColor = scheme.TooltipPagerText.Color;
-			PagerBackgroundColorTop = scheme.TooltipPagerTop.Color;
-			PagerBackgroundColorBottom = scheme.TooltipPagerBottom.Color;
+			PagerBackgroundColor = scheme.TooltipPager.Color;
 			PagerTriangleColor = scheme.TooltipPagerTriangle.Color;
 		}
 		
@@ -293,9 +267,34 @@ namespace MonoDevelop.Components
 		public virtual void RenderBorder (Cairo.Context context, Gdk.Rectangle region, PopupPosition arrowPosition)
 		{
 			SetBorderPath (context, region, arrowPosition);
-			context.SetSourceColor (BorderColor);
+			context.SetSourceColor (BackgroundColor);
 			context.LineWidth = 1;
 			context.Stroke ();
+		}
+
+		public virtual void RenderShadow (Cairo.Context context, Gdk.Rectangle region, PopupPosition arrowPosition)
+		{
+			RenderBorder (context, region, arrowPosition);
+			double r = CornerRadius;
+			double x = region.X + 0.5, y = region.Y + 0.5, w = region.Width - 1, h = region.Height - 1;
+			context.MoveTo(x + w, y + h - r);
+			context.Arc(x + w - r, y + h - r, r, 0, Math.PI * 0.5);
+			if (ShowArrow && (arrowPosition & PopupPosition.Bottom) != 0) {
+				double apos = ArrowOffset;
+				context.LineTo (x + apos + ArrowWidth / 2, y + h);
+				context.RelLineTo (-ArrowWidth / 2, ArrowLength);
+				context.RelLineTo (-ArrowWidth / 2, -ArrowLength);
+			}
+			context.Arc(x + r, y + h - r, r, Math.PI * 0.5, Math.PI);
+
+			// FIXME: VV: Remove gradient features
+			using (var lg = new Cairo.LinearGradient (0, y + h - r, 0, y + h)) {
+				lg.AddColorStop (0.5, ShadowColor.MultiplyAlpha (0.0));
+				lg.AddColorStop (1, ShadowColor);
+				context.SetSource (lg);
+				context.LineWidth = 1;
+				context.Stroke ();
+			}
 		}
 
 		object setBorderPathLastArgs;
@@ -353,13 +352,9 @@ namespace MonoDevelop.Components
 		/// </summary>
 		public virtual void RenderBackground (Cairo.Context context, Gdk.Rectangle region)
 		{
-			using (var lg = new Cairo.LinearGradient (0, region.Y, 0, region.Y + region.Height)) {
-				lg.AddColorStop (0, TopColor);
-				lg.AddColorStop (1, BottomColor);
-				context.Rectangle (region.X, region.Y, region.Width, region.Height);
-				context.SetSource (lg);
-				context.Fill ();
-			}
+			context.Rectangle (region.X, region.Y, region.Width, region.Height);
+			context.SetSourceColor (BackgroundColor);
+			context.Fill ();
 		}
 
 		/// <summary>
@@ -371,33 +366,60 @@ namespace MonoDevelop.Components
 			CairoExtensions.RoundedRectangle (context, region.X, region.Y, region.Width, region.Height, CornerRadius);
 			context.Clip ();
 
-			Pango.Layout layout = SetupPagerText (context, pangoContext);
+			Pango.Layout layout = SetupPagerText (pangoContext);
+			var boundingBox = GetPagerBounds (layout, region);
+
+			RenderPagerBackground (context, boundingBox);
+
+			Gdk.Rectangle arrowRect = new Gdk.Rectangle (boundingBox.X + pagerArrowPadding, 
+			                                             boundingBox.Y + (boundingBox.Height - Styles.PopoverWindow.PagerTriangleSize) / 2,
+			                                             Styles.PopoverWindow.PagerTriangleSize,
+			                                             Styles.PopoverWindow.PagerTriangleSize);
+
+			RenderPagerArrow (context, arrowRect, PagerVertical ? ArrowType.Up : ArrowType.Left);
+			arrowRect.X = boundingBox.X + boundingBox.Width - (pagerArrowPadding + Styles.PopoverWindow.PagerTriangleSize);
+			RenderPagerArrow (context, arrowRect, PagerVertical ? ArrowType.Down : ArrowType.Right);
+
+			RenderPagerText (context, layout, boundingBox);
+		}
+
+		Gdk.Rectangle GetPagerBounds (Pango.Layout layout, Gdk.Rectangle region)
+		{
 			int textWidth, textHeight;
 			layout.GetPixelSize (out textWidth, out textHeight);
 
 			int width = textWidth + Styles.PopoverWindow.PagerTriangleSize * 2 + 20;
 			int height = Styles.PopoverWindow.PagerHeight;
 
-			Gdk.Rectangle boundingBox = new Gdk.Rectangle (region.X + region.Width - width, 0, width, height);
-			RenderPagerBackground (context, boundingBox);
+			return new Gdk.Rectangle (region.X + region.Width - width, 0, width, height);
+		}
 
-			int arrowPadding = 4;
-			Gdk.Rectangle arrowRect = new Gdk.Rectangle (boundingBox.X + arrowPadding, 
-			                                             boundingBox.Y + (boundingBox.Height - Styles.PopoverWindow.PagerTriangleSize) / 2,
-			                                             Styles.PopoverWindow.PagerTriangleSize,
-			                                             Styles.PopoverWindow.PagerTriangleSize);
+		public bool HitTestPagerLeftArrow (Pango.Context pangoContext, Gdk.Rectangle region, Gdk.Point hitPoint)
+		{
+			Pango.Layout layout = SetupPagerText (pangoContext);
+			var boundingBox = GetPagerBounds (layout, region);
+			Gdk.Rectangle arrowActiveRect = new Gdk.Rectangle (boundingBox.X,
+			                                                   boundingBox.Y,
+			                                                   Styles.PopoverWindow.PagerTriangleSize + (pagerArrowPadding * 2),
+			                                                   boundingBox.Height);
+			return arrowActiveRect.Contains (hitPoint);
+		}
 
-			RenderPagerArrow (context, arrowRect, PagerVertical ? ArrowType.Up : ArrowType.Left);
-			arrowRect.X = boundingBox.X + boundingBox.Width - (arrowPadding + Styles.PopoverWindow.PagerTriangleSize);
-			RenderPagerArrow (context, arrowRect, PagerVertical ? ArrowType.Down : ArrowType.Right);
-
-			RenderPagerText (context, layout, boundingBox);
+		public bool HitTestPagerRightArrow (Pango.Context pangoContext, Gdk.Rectangle region, Gdk.Point hitPoint)
+		{
+			Pango.Layout layout = SetupPagerText (pangoContext);
+			var boundingBox = GetPagerBounds (layout, region);
+			Gdk.Rectangle arrowActiveRect = new Gdk.Rectangle (boundingBox.X + boundingBox.Width - (pagerArrowPadding * 2 + Styles.PopoverWindow.PagerTriangleSize),
+			                                                   boundingBox.Y,
+			                                                   Styles.PopoverWindow.PagerTriangleSize + (pagerArrowPadding * 2),
+			                                                   boundingBox.Height);
+			return arrowActiveRect.Contains (hitPoint);
 		}
 
 		/// <summary>
 		/// Sets the Pango.Layout for pager text as it will be rendered. This will be used to perform sizing on the rest of the pager.
 		/// </summary>
-		protected virtual Pango.Layout SetupPagerText (Cairo.Context context, Pango.Context pangoContext)
+		protected virtual Pango.Layout SetupPagerText (Pango.Context pangoContext)
 		{
 			Pango.Layout pl = new Pango.Layout (pangoContext);
 			pl.SetText (string.Format ("{0} of {1}", CurrentPage + 1, NumPages));
@@ -430,31 +452,15 @@ namespace MonoDevelop.Components
 		{
 			// draw background
 			CairoExtensions.RoundedRectangle (context, 
-			                                  bounds.X, 
-			                                  bounds.Y, 
-			                                  bounds.Width, 
-			                                  bounds.Height, 
-			                                  CornerRadius, 
-			                                  CairoCorners.BottomLeft);
-			using (var lg = new Cairo.LinearGradient (0, bounds.Y, 0, bounds.Y + bounds.Height)) {
-				lg.AddColorStop (0, PagerBackgroundColorTop);
-				lg.AddColorStop (1, PagerBackgroundColorBottom);
-
-				context.SetSource (lg);
-				context.Fill ();
-			}
-
-			// draw outline
-			CairoExtensions.RoundedRectangle (context, 
-			                                  bounds.X + .5, 
-			                                  bounds.Y + .5, 
-			                                  bounds.Width - 1, 
+			                                  bounds.X + 1, 
+			                                  bounds.Y + 1, 
+			                                  bounds.Width - 2, 
 			                                  bounds.Height - 1, 
 			                                  CornerRadius, 
-			                                  CairoCorners.BottomLeft);
-			context.LineWidth = 1;
-			context.SetSourceColor (BorderColor);
-			context.Stroke ();
+                                              CairoCorners.All);
+			
+			context.SetSourceColor (PagerBackgroundColor);
+			context.Fill ();
 		}
 
 		/// <summary>

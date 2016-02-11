@@ -542,6 +542,11 @@ namespace MonoDevelop.Components
 			return img;
 		}
 
+		public static Cairo.Color WithAlpha (Cairo.Color c, double alpha)
+		{
+			return new Cairo.Color (c.R, c.G, c.B, alpha);
+		}
+
 		public static Cairo.Color MultiplyAlpha (this Cairo.Color self, double alpha)
 		{
 			return new Cairo.Color (self.R, self.G, self.B, self.A * alpha);

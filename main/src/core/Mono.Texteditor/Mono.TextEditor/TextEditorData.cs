@@ -368,10 +368,10 @@ namespace Mono.TextEditor
 			return result.ToString ();
 		}
 		
-		public string GetMarkup (int offset, int length, bool removeIndent, bool useColors = true, bool replaceTabs = true)
+		public string GetMarkup (int offset, int length, bool removeIndent, bool useColors = true, bool replaceTabs = true, bool fitIdeStyle = false)
 		{
 			ISyntaxMode mode = Document.SyntaxMode;
-			var style = ColorStyle;
+			var style = fitIdeStyle ? SyntaxModeService.GetColorStyle(Parent.GetIdeColorStyleName()) : ColorStyle;
 
 			if (style == null) {
 				var str = Document.GetTextAt (offset, length);

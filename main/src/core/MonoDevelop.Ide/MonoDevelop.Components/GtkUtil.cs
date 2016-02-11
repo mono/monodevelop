@@ -39,7 +39,15 @@ namespace MonoDevelop.Components
 	{
 		static Dictionary<TreeView, TreeViewTooltipsData> treeData = new Dictionary<TreeView, TreeViewTooltipsData> ();
 
-		static readonly Xwt.Toolkit gtkToolkit = Xwt.Toolkit.LoadedToolkits.First (t => t.Type == Xwt.ToolkitType.Gtk);
+		static Xwt.Toolkit gtkToolkit;
+
+		internal static Xwt.Toolkit GtkToolkit {
+			get {
+				if (gtkToolkit == null)
+					gtkToolkit = Xwt.Toolkit.LoadedToolkits.FirstOrDefault (t => t.Type == Xwt.ToolkitType.Gtk);
+				return gtkToolkit;
+			}
+		}
 
 		public static Cairo.Color ToCairoColor (this Gdk.Color color)
 		{
@@ -53,6 +61,11 @@ namespace MonoDevelop.Components
 			return new Xwt.Drawing.Color ((double)color.Red / ushort.MaxValue,
 				(double)color.Green / ushort.MaxValue,
 				(double)color.Blue / ushort.MaxValue);
+		}
+
+		public static string GetHex (this Gdk.Color color)
+		{
+			return String.Format("#{0:x2}{1:x2}{2:x2}", (byte)(color.Red), (byte)(color.Green), (byte)(color.Blue));
 		}
 
 		public static Gdk.Color ToGdkColor (this Cairo.Color color)
@@ -109,64 +122,70 @@ namespace MonoDevelop.Components
 			return c.ToCairoColor ();
 		}
 
+		/// <summary>
+		/// Makes a color lighter or darker
+		/// </summary>
+		/// <param name='lightAmount'>
+		/// Amount of lightness to add. If the value is positive, the color will be lighter,
+		/// if negative it will be darker. Value must be between 0 and 1.
+		/// </param>
+		public static Xwt.Drawing.Color AddLight (this Xwt.Drawing.Color color, double lightAmount)
+		{
+			color.Light += lightAmount;
+			return color;
+		}
+
 		public static Xwt.Drawing.Context CreateXwtContext (this Gtk.Widget w)
 		{
 			var c = Gdk.CairoHelper.Create (w.GdkWindow);
-			return gtkToolkit.WrapContext (w, c);
+			return GtkToolkit.WrapContext (w, c);
 		}
 
 		public static Gtk.Widget ToGtkWidget (this Xwt.Widget widget)
 		{
-			return (Gtk.Widget) gtkToolkit.GetNativeWidget (widget);
+			return (Gtk.Widget) GtkToolkit.GetNativeWidget (widget);
 		}
 
 		public static void DrawImage (this Cairo.Context s, Gtk.Widget widget, Xwt.Drawing.Image image, double x, double y)
 		{
-			gtkToolkit.RenderImage (widget, s, image, x, y);
+			GtkToolkit.RenderImage (widget, s, image, x, y);
 		}
 
 		public static Xwt.Drawing.Image ToXwtImage (this Gdk.Pixbuf pix)
 		{
-			return gtkToolkit.WrapImage (pix);
+			return GtkToolkit.WrapImage (pix);
 		}
 
 		public static Gdk.Pixbuf ToPixbuf (this Xwt.Drawing.Image image)
 		{
-			return (Gdk.Pixbuf)gtkToolkit.GetNativeImage (image);
+			return (Gdk.Pixbuf)GtkToolkit.GetNativeImage (image);
 		}
 
 		public static Gdk.Pixbuf ToPixbuf (this Xwt.Drawing.Image image, Gtk.IconSize size)
 		{
-			return (Gdk.Pixbuf)gtkToolkit.GetNativeImage (image.WithSize (size));
+			return (Gdk.Pixbuf)GtkToolkit.GetNativeImage (image.WithSize (size));
 		}
 
 		public static Xwt.Drawing.Image WithSize (this Xwt.Drawing.Image image, Gtk.IconSize size)
 		{
 			int w, h;
-			if (!Gtk.Icon.SizeLookup (size, out w, out h))
-				return image;
-			if (size == IconSize.Menu)
-				w = h = 16;
+			size.GetSize (out w, out h);
 			return image.WithSize (w, h);
 		}
 
-		public static Xwt.Drawing.Image GetImageResource (this RuntimeAddin addin, string resource)
+		public static Xwt.Size GetSize (this IconSize size)
 		{
-			using (var s = addin.GetResource (resource)) {
-				var img = Xwt.Drawing.Image.FromStream (s);
-				int i = resource.LastIndexOf ('.');
-				if (i != -1) {
-					var resource2x = resource.Substring (0, i) + "@2x" + resource.Substring (i);
-					var s2x = addin.GetResource (resource2x);
-					if (s2x != null) {
-						using (s2x) {
-							var img2x = Xwt.Drawing.Image.FromStream (s2x);
-							return Xwt.Drawing.Image.CreateMultiSizeIcon (new Xwt.Drawing.Image[] {img, img2x});
-						}
-					}
-				}
-				return img;
-			}
+			int w, h;
+			size.GetSize (out w, out h);
+			return new Xwt.Size (w, h);
+		}
+
+		public static void GetSize (this IconSize size, out int width, out int height)
+		{
+			if (!Icon.SizeLookup (size, out width, out height))
+				return;
+			if (size == IconSize.Menu)
+				width = height = 16;
 		}
 
 		public static Gdk.Point GetScreenCoordinates (this Gtk.Widget w, Gdk.Point p)

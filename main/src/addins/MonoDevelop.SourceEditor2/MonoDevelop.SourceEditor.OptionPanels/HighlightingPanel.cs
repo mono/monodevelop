@@ -60,6 +60,12 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			styleTreeview.AppendColumn (col);
 			styleTreeview.Model = styleStore;
 			schemeName = DefaultSourceEditorOptions.Instance.ColorScheme;
+			MonoDevelop.Ide.Gui.Styles.Changed += HandleSkinChanged;
+		}
+
+		void HandleSkinChanged (object sender, EventArgs e)
+		{
+			ShowStyles ();
 		}
 		
 		protected override void OnDestroyed ()
@@ -70,6 +76,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				styleStore.Dispose ();
 				styleStore = null;
 			}
+
+			MonoDevelop.Ide.Gui.Styles.Changed -= HandleSkinChanged;
 			base.OnDestroyed ();
 		}
 
@@ -178,7 +186,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				if (style.Name == DefaultSourceEditorOptions.Instance.ColorScheme)
 					selectedIter = iter;
 			}
-			styleTreeview.Selection.SelectIter (selectedIter); 
+			if (styleTreeview.Selection != null)
+				styleTreeview.Selection.SelectIter (selectedIter); 
 		}
 		
 		void RemoveColorScheme (object sender, EventArgs args)

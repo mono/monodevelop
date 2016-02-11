@@ -93,7 +93,7 @@ namespace MonoDevelop.Components.MainToolbar
 				FindInFilesDialog.SearchReplace (pattern.Pattern, null, new WholeSolutionScope (), options, null);
 			}
 
-			public override string GetMarkupText ()
+			public override string GetMarkupText (bool selected)
 			{
 				return GettextCatalog.GetString ("Search in Solution...");
 			}

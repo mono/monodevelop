@@ -757,7 +757,11 @@ namespace Mono.TextEditor
 				if (parent != null) {
 					parent.ModifyBg (StateType.Normal, (HslColor)this.textEditorData.ColorStyle.PlainText.Background);
 				}
-				
+
+				// set additionally the real parent background for gtk themes that use the content background
+				// to draw the scrollbar slider trough.
+				this.Parent.ModifyBg (StateType.Normal, (HslColor)this.textEditorData.ColorStyle.PlainText.Background);
+
 				this.ModifyBg (StateType.Normal, (HslColor)this.textEditorData.ColorStyle.PlainText.Background);
 				settingWidgetBg = false;
 			}
@@ -2668,6 +2672,8 @@ namespace Mono.TextEditor
 
 				//draw the highlight rectangle
 				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 0, 0, corner, width, height);
+
+				// FIXME: VV: Remove gradient features
 				using (var gradient = new Cairo.LinearGradient (0, 0, 0, height)) {
 					color = ColorLerp (
 						TextViewMargin.DimColor (Editor.ColorStyle.SearchResultMain.Color, 1.1),

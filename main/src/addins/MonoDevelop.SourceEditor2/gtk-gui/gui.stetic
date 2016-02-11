@@ -1171,16 +1171,10 @@
                 <property name="Type">Custom</property>
                 <property name="Relief">None</property>
                 <child>
-                  <widget class="Gtk.EventBox" id="eventbox2">
+                  <widget class="MonoDevelop.Components.ImageView" id="image2">
                     <property name="MemberName" />
-                    <property name="AboveChild">True</property>
-                    <property name="VisibleWindow">False</property>
-                    <child>
-                      <widget class="Gtk.Image" id="image2">
-                        <property name="MemberName" />
-                        <property name="Pixbuf">stock:gtk-go-up Menu</property>
-                      </widget>
-                    </child>
+                    <property name="IconId">gtk-go-up</property>
+                    <property name="IconSize">Menu</property>
                   </widget>
                 </child>
               </widget>
@@ -1198,16 +1192,10 @@
                 <property name="Type">Custom</property>
                 <property name="Relief">None</property>
                 <child>
-                  <widget class="Gtk.EventBox" id="eventbox3">
+                  <widget class="MonoDevelop.Components.ImageView" id="image3">
                     <property name="MemberName" />
-                    <property name="AboveChild">True</property>
-                    <property name="VisibleWindow">False</property>
-                    <child>
-                      <widget class="Gtk.Image" id="image3">
-                        <property name="MemberName" />
-                        <property name="Pixbuf">stock:gtk-go-down Menu</property>
-                      </widget>
-                    </child>
+                    <property name="IconId">gtk-go-down</property>
+                    <property name="IconSize">Menu</property>
                   </widget>
                 </child>
               </widget>
@@ -1225,16 +1213,10 @@
                 <property name="Type">Custom</property>
                 <property name="Relief">None</property>
                 <child>
-                  <widget class="Gtk.EventBox" id="eventbox4">
+                  <widget class="MonoDevelop.Components.ImageView" id="image4">
                     <property name="MemberName" />
-                    <property name="AboveChild">True</property>
-                    <property name="VisibleWindow">False</property>
-                    <child>
-                      <widget class="Gtk.Image" id="image4">
-                        <property name="MemberName" />
-                        <property name="Pixbuf">stock:gtk-close Menu</property>
-                      </widget>
-                    </child>
+                    <property name="IconId">gtk-close</property>
+                    <property name="IconSize">Menu</property>
                   </widget>
                 </child>
               </widget>
@@ -1281,16 +1263,10 @@
                 <property name="Type">Custom</property>
                 <property name="Relief">None</property>
                 <child>
-                  <widget class="Gtk.EventBox" id="eventbox5">
+                  <widget class="MonoDevelop.Components.ImageView" id="image5">
                     <property name="MemberName" />
-                    <property name="AboveChild">True</property>
-                    <property name="VisibleWindow">False</property>
-                    <child>
-                      <widget class="Gtk.Image" id="image5">
-                        <property name="MemberName" />
-                        <property name="Pixbuf">stock:gtk-find-and-replace Menu</property>
-                      </widget>
-                    </child>
+                    <property name="IconId">gtk-find-and-replace</property>
+                    <property name="IconSize">Menu</property>
                   </widget>
                 </child>
               </widget>
@@ -1312,16 +1288,10 @@
                     <property name="MemberName" />
                     <property name="Spacing">6</property>
                     <child>
-                      <widget class="Gtk.EventBox" id="eventbox6">
+                      <widget class="MonoDevelop.Components.ImageView" id="image6">
                         <property name="MemberName" />
-                        <property name="AboveChild">True</property>
-                        <property name="VisibleWindow">False</property>
-                        <child>
-                          <widget class="Gtk.Image" id="image6">
-                            <property name="MemberName" />
-                            <property name="Pixbuf">stock:gtk-find-and-replace Menu</property>
-                          </widget>
-                        </child>
+                        <property name="IconId">gtk-find-and-replace</property>
+                        <property name="IconSize">Menu</property>
                       </widget>
                       <packing>
                         <property name="Position">0</property>
@@ -1397,16 +1367,10 @@
             <property name="Type">Custom</property>
             <property name="Relief">None</property>
             <child>
-              <widget class="Gtk.EventBox" id="eventbox2">
+              <widget class="MonoDevelop.Components.ImageView" id="image2">
                 <property name="MemberName" />
-                <property name="AboveChild">True</property>
-                <property name="VisibleWindow">False</property>
-                <child>
-                  <widget class="Gtk.Image" id="image2">
-                    <property name="MemberName" />
-                    <property name="Pixbuf">stock:gtk-jump-to Menu</property>
-                  </widget>
-                </child>
+                <property name="IconId">gtk-jump-to</property>
+                <property name="IconSize">Menu</property>
               </widget>
             </child>
           </widget>
@@ -1424,16 +1388,10 @@
             <property name="Type">Custom</property>
             <property name="Relief">None</property>
             <child>
-              <widget class="Gtk.EventBox" id="eventbox1">
+              <widget class="MonoDevelop.Components.ImageView" id="image1">
                 <property name="MemberName" />
-                <property name="AboveChild">True</property>
-                <property name="VisibleWindow">False</property>
-                <child>
-                  <widget class="Gtk.Image" id="image1">
-                    <property name="MemberName" />
-                    <property name="Pixbuf">stock:gtk-close Menu</property>
-                  </widget>
-                </child>
+                <property name="IconId">gtk-close</property>
+                <property name="IconSize">Menu</property>
               </widget>
             </child>
           </widget>

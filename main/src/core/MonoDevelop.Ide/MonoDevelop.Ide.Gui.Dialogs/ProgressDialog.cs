@@ -50,6 +50,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		public ProgressDialog (MonoDevelop.Components.Window parent, bool allowCancel, bool showDetails)
 		{
+			MonoDevelop.Components.IdeTheme.ApplyTheme (this);
 			this.Build ();
 			this.Title = BrandingService.ApplicationName;
 			HasSeparator = false;

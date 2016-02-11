@@ -285,7 +285,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 							declarationviewwindow.OverloadLeft ();
 						else
 							declarationviewwindow.OverloadRight ();
-						UpdateDeclarationView ();
 					} else {
 						CompletionWindowManager.HideWindow ();
 						OnWindowClosed (EventArgs.Empty);
@@ -618,10 +617,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			} else {
 				declarationviewwindow.SetDefaultScheme ();
 			}
-			var style = Editor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
-			declarationviewwindow.Theme.SetFlatColor (style.CompletionTooltipWindow.Color);
-			if (style.CompletionWindow.HasBorderColor)
-				declarationviewwindow.Theme.BorderColor = style.CompletionTooltipWindow.BorderColor;
+			declarationviewwindow.CaretSpacing = Gui.Styles.TooltipInfoSpacing;
+			declarationviewwindow.Theme.SetBackgroundColor (Gui.Styles.CodeCompletion.BackgroundColor.ToCairoColor ());
 		}
 
 		void RepositionDeclarationViewWindow ()
@@ -642,7 +639,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			base.GdkWindow.GetOrigin (out ox, out oy);
 			declarationviewwindow.MaximumYTopBound = oy;
 			int y = rect.Y + Theme.Padding - (int)List.vadj.Value;
-			declarationviewwindow.ShowPopup (this, new Gdk.Rectangle (Gui.Styles.TooltipInfoSpacing, Math.Min (Allocation.Height, Math.Max (0, y)), Allocation.Width, rect.Height), PopupPosition.Left);
+			declarationviewwindow.ShowPopup (this, new Gdk.Rectangle (0, Math.Min (Allocation.Height, Math.Max (0, y)), Allocation.Width, rect.Height), PopupPosition.Left);
 			declarationViewHidden = false;
 		}
 
@@ -797,7 +794,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				box.PackStart (new HSeparator (), false, false, 0);
 				var hbox = new HBox ();
 				hbox.BorderWidth = 3;
-				hbox.PackStart (new Image ("md-parser", IconSize.Menu), false, false, 0);
+				hbox.PackStart (new ImageView ("md-parser", IconSize.Menu), false, false, 0);
 				var lab = new Label (GettextCatalog.GetString ("Gathering class information..."));
 				lab.Xalign = 0;
 				hbox.PackStart (lab, true, true, 3);

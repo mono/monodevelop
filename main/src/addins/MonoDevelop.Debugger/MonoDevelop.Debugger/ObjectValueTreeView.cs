@@ -41,6 +41,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Editor.Extension;
 using System.Linq;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Debugger
 {
@@ -88,10 +89,6 @@ namespace MonoDevelop.Debugger
 		readonly TreeViewColumn valueCol;
 		readonly TreeViewColumn typeCol;
 		readonly TreeViewColumn pinCol;
-		
-		const string errorColor = "red";
-		const string modifiedColor = "blue";
-		const string disabledColor = "gray";
 		
 		static readonly CommandEntrySet menuSet;
 		
@@ -255,9 +252,9 @@ namespace MonoDevelop.Debugger
 							cell_area.Height - TopBottomPadding * 2 - 1,
 							(cell_area.Height - (TopBottomPadding * 2)) / 2);
 						cr.LineWidth = 1;
-						cr.SetSourceRGB (233 / 255.0, 242 / 255.0, 252 / 255.0);
+						cr.SetSourceColor (Styles.ObjectValueTreeValuesButtonBackground.ToCairoColor ());
 						cr.FillPreserve ();
-						cr.SetSourceRGB (82 / 255.0, 148 / 255.0, 235 / 255.0);
+						cr.SetSourceColor (Styles.ObjectValueTreeValuesButtonBorder.ToCairoColor ());
 						cr.Stroke ();
 
 						int YOffset = (cell_area.Height - h) / 2;
@@ -266,7 +263,7 @@ namespace MonoDevelop.Debugger
 						window.DrawLayoutWithColors (widget.Style.TextGC (StateType.Normal),
 							cell_area.X + (cell_area.Height - TopBottomPadding * 2 + 1) / 2 + xpad,
 							cell_area.Y + YOffset,
-							layout, new Gdk.Color (82, 148, 235), new Gdk.Color (233, 242, 252));
+							layout, Styles.ObjectValueTreeValuesButtonText.ToGdkColor(), Styles.ObjectValueTreeValuesButtonBackground.ToGdkColor());
 					}
 				}
 			}
@@ -302,7 +299,7 @@ namespace MonoDevelop.Debugger
 			Selection.Changed += HandleSelectionChanged;
 			ResetColumnSizes ();
 			
-			Pango.FontDescription newFont = Style.FontDescription.Copy ();
+			Pango.FontDescription newFont = Style.FontDescription.Copy (); // TODO: VV: Use FontService
 			newFont.Size = (newFont.Size * 8) / 10;
 
 			liveIcon = ImageService.GetIcon (Stock.Execute, IconSize.Menu);
@@ -473,8 +470,6 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		Dictionary<TreeIter, bool> evalSpinnersIcons = new Dictionary<TreeIter, bool>();
-
 		void HandleSelectionChanged (object sender, EventArgs e)
 		{
 			if (!currentHoverIter.Equals (TreeIter.Zero) && store.IterIsValid (currentHoverIter)) {
@@ -482,19 +477,6 @@ namespace MonoDevelop.Debugger
 					SetPreviewButtonIcon (PreviewButtonIcons.Selected, currentHoverIter);
 				} else {
 					SetPreviewButtonIcon (iconBeforeSelected, currentHoverIter);
-				}
-			}
-			foreach (var s in evalSpinnersIcons.ToArray()) {
-				if (store.IterIsValid (s.Key) && Selection.IterIsSelected (s.Key)) {
-					if (!s.Value) {
-						store.LoadIcon (s.Key, EvaluateStatusIconColumn, "md-spinner-selected-16", IconSize.Menu);
-						evalSpinnersIcons [s.Key] = true;
-					}
-				} else {
-					if (s.Value) {
-						store.LoadIcon (s.Key, EvaluateStatusIconColumn, "md-spinner-normal-16", IconSize.Menu);
-						evalSpinnersIcons [s.Key] = false;
-					}
 				}
 			}
 		}
@@ -760,12 +742,11 @@ namespace MonoDevelop.Debugger
 				compact = value;
 				Pango.FontDescription newFont;
 				if (compact) {
-					newFont = Style.FontDescription.Copy ();
-					newFont.Size = (newFont.Size * 8) / 10;
+					newFont = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 					valueCol.MaxWidth = 800;
 					crpViewer.Image = ImageService.GetIcon (Stock.Edit).WithSize (12,12);
 				} else {
-					newFont = Style.FontDescription;
+					newFont = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale12);
 					valueCol.MaxWidth = int.MaxValue;
 				}
 				typeCol.Visible = !compact;
@@ -901,7 +882,7 @@ namespace MonoDevelop.Debugger
 				ShowExpanders = true;
 			
 			if (AllowAdding)
-				store.AppendValues (createMsg, "", "", null, true, true, null, disabledColor, disabledColor);
+				store.AppendValues (createMsg, "", "", null, true, true, null, Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText), Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText));
 
 			LoadState ();
 		}
@@ -1148,7 +1129,7 @@ namespace MonoDevelop.Debugger
 			if (val.IsUnknown) {
 				if (frame != null) {
 					strval = GettextCatalog.GetString ("The name '{0}' does not exist in the current context.", val.Name);
-					nameColor = disabledColor;
+					nameColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText);
 					canEdit = false;
 				} else {
 					canEdit = !val.IsReadOnly;
@@ -1161,27 +1142,22 @@ namespace MonoDevelop.Debugger
 				int i = strval.IndexOf ('\n');
 				if (i != -1)
 					strval = strval.Substring (0, i);
-				valueColor = errorColor;
+				valueColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueErrorText);
 				canEdit = false;
 			} else if (val.IsNotSupported) {
 				strval = "";//val.Value; with new "Show Value" button we don't want to display message "Implicit evaluation is disabled"
-				valueColor = disabledColor;
+				valueColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText);
 				if (val.CanRefresh)
 					valueButton = GettextCatalog.GetString ("Show Value");
 				canEdit = false;
 			} else if (val.IsEvaluating) {
 				strval = GettextCatalog.GetString ("Evaluating...");
 
-				if (Selection.IterIsSelected (it)) {
-					evalSpinnersIcons [it] = true;
-					evaluateStatusIcon = "md-spinner-selected-16";
-				} else {
-					evalSpinnersIcons [it] = false;
-					evaluateStatusIcon = "md-spinner-normal-16";
-				}
-				valueColor = disabledColor;
+				evaluateStatusIcon = "md-spinner-16";
+
+				valueColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText);
 				if (val.IsEvaluatingGroup) {
-					nameColor = disabledColor;
+					nameColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText);
 					name = val.Name;
 				}
 				canEdit = false;
@@ -1206,7 +1182,7 @@ namespace MonoDevelop.Debugger
 					strval = val.DisplayValue ?? "(null)";
 				}
 				if (oldValue != null && strval != oldValue)
-					nameColor = valueColor = modifiedColor;
+					nameColor = valueColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueModifiedText);
 			}
 
 			strval = strval.Replace ("\r\n", " ").Replace ("\n", " ");
@@ -1222,9 +1198,6 @@ namespace MonoDevelop.Debugger
 			store.SetValue (it, IconColumn, icon);
 			store.SetValue (it, NameColorColumn, nameColor);
 			store.SetValue (it, ValueColorColumn, valueColor);
-			if (evaluateStatusIcon != "md-spinner-normal-16" && evaluateStatusIcon != "md-spinner-selected-16") {
-				evalSpinnersIcons.Remove (it);
-			}
 			store.SetValue (it, EvaluateStatusIconVisibleColumn, evaluateStatusIcon != null);
 			store.LoadIcon (it, EvaluateStatusIconColumn, evaluateStatusIcon, IconSize.Menu);
 			store.SetValue (it, ValueButtonVisibleColumn, valueButton != null);
@@ -1509,7 +1482,7 @@ namespace MonoDevelop.Debugger
 			string oldValue;
 			if (oldValues.TryGetValue (valPath, out oldValue)) {
 				if (oldValue != val.Value)
-					newColor = modifiedColor;
+					newColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueModifiedText);
 			}
 			
 			store.SetValue (it, NameColorColumn, newColor);

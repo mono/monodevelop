@@ -77,9 +77,11 @@ namespace MonoDevelop.Components.MainToolbar
 				context.Clip ();
 				int x1 = arg.Allocation.X + arg.MousePosition.X - 200;
 				int x2 = x1 + 400;
+
+				// FIXME: VV: Remove gradient features
 				using (Cairo.LinearGradient gradient = new LinearGradient (x1, 0, x2, 0))
 				{
-					Cairo.Color targetColor = Styles.StatusBarFill1Color;
+					Cairo.Color targetColor = Styles.StatusBarFill1Color.ToCairoColor ();
 					Cairo.Color transparentColor = targetColor;
 					targetColor.A = .7;
 					transparentColor.A = 0;
@@ -201,12 +203,12 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			LayoutRoundedRectangle (context, region, -1, -1);
 			context.LineWidth = 1;
-			context.SetSourceColor (Styles.StatusBarInnerColor);
+			context.SetSourceColor (Styles.StatusBarInnerColor.ToCairoColor ());
 			context.Stroke ();
 
 			LayoutRoundedRectangle (context, region);
 			context.LineWidth = 1;
-			context.SetSourceColor (Styles.StatusBarBorderColor);
+			context.SetSourceColor (Styles.StatusBarBorderColor.ToCairoColor ());
 			context.StrokePreserve ();
 		}
 
@@ -216,8 +218,8 @@ namespace MonoDevelop.Components.MainToolbar
 			context.ClipPreserve ();
 
 			using (LinearGradient lg = new LinearGradient (region.X, region.Y, region.X, region.Y + region.Height)) {
-				lg.AddColorStop (0, Styles.StatusBarFill1Color);
-				lg.AddColorStop (1, Styles.StatusBarFill4Color);
+				lg.AddColorStop (0, Styles.StatusBarFill1Color.ToCairoColor ());
+				lg.AddColorStop (1, Styles.StatusBarFill4Color.ToCairoColor ());
 
 				context.SetSource (lg);
 				context.FillPreserve ();
@@ -229,8 +231,8 @@ namespace MonoDevelop.Components.MainToolbar
 			context.Translate (midX, midY);
 
 			using (RadialGradient rg = new RadialGradient (0, 0, 0, 0, 0, region.Height * 1.2)) {
-				rg.AddColorStop (0, Styles.StatusBarFill1Color);
-				rg.AddColorStop (1, Styles.WithAlpha (Styles.StatusBarFill1Color, 0));
+				rg.AddColorStop (0, Styles.StatusBarFill1Color.ToCairoColor ());
+				rg.AddColorStop (1, Styles.StatusBarFill1Color.WithAlpha (0).ToCairoColor ());
 
 				context.Scale (region.Width / (double)region.Height, 1.0);
 				context.SetSource (rg);
@@ -239,8 +241,8 @@ namespace MonoDevelop.Components.MainToolbar
 			context.Restore ();
 
 			using (LinearGradient lg = new LinearGradient (0, region.Y, 0, region.Y + region.Height)) {
-				lg.AddColorStop (0, Styles.StatusBarShadowColor1);
-				lg.AddColorStop (1, Styles.WithAlpha (Styles.StatusBarShadowColor1, Styles.StatusBarShadowColor1.A * 0.2));
+				lg.AddColorStop (0, Styles.StatusBarShadowColor1.ToCairoColor ());
+				lg.AddColorStop (1, Styles.StatusBarShadowColor1.WithAlpha (Styles.StatusBarShadowColor1.Alpha * 0.2).ToCairoColor ());
 
 				LayoutRoundedRectangle (context, region, 0, -1);
 				context.LineWidth = 1;
@@ -249,8 +251,8 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 
 			using (LinearGradient lg = new LinearGradient (0, region.Y, 0, region.Y + region.Height)) {
-				lg.AddColorStop (0, Styles.StatusBarShadowColor2);
-				lg.AddColorStop (1, Styles.WithAlpha (Styles.StatusBarShadowColor2, Styles.StatusBarShadowColor2.A * 0.2));
+				lg.AddColorStop (0, Styles.StatusBarShadowColor2.ToCairoColor ());
+				lg.AddColorStop (1, Styles.StatusBarShadowColor2.WithAlpha (Styles.StatusBarShadowColor2.Alpha * 0.2).ToCairoColor ());
 
 				LayoutRoundedRectangle (context, region, 0, -2);
 				context.LineWidth = 1;
@@ -285,10 +287,10 @@ namespace MonoDevelop.Components.MainToolbar
 			                    draw: (c, o) => {
 				// The smaller the pixel range of our gradient the less error there will be in it.
 				using (var lg = new LinearGradient (surfaceWidth - 250, 0, surfaceWidth, 0)) {
-					lg.AddColorStop (0.00, Styles.WithAlpha (Styles.StatusBarErrorColor, 0.15 * o));
-					lg.AddColorStop (0.10, Styles.WithAlpha (Styles.StatusBarErrorColor, 0.15 * o));
-					lg.AddColorStop (0.88, Styles.WithAlpha (Styles.StatusBarErrorColor, 0.30 * o));
-					lg.AddColorStop (1.00, Styles.WithAlpha (Styles.StatusBarErrorColor, 0.00 * o));
+					lg.AddColorStop (0.00, Styles.StatusBarErrorColor.WithAlpha (0.15 * o).ToCairoColor ());
+					lg.AddColorStop (0.10, Styles.StatusBarErrorColor.WithAlpha (0.15 * o).ToCairoColor ());
+					lg.AddColorStop (0.88, Styles.StatusBarErrorColor.WithAlpha (0.30 * o).ToCairoColor ());
+					lg.AddColorStop (1.00, Styles.StatusBarErrorColor.WithAlpha (0.00 * o).ToCairoColor ());
 
 					c.SetSource (lg);
 					c.Paint ();
@@ -303,12 +305,12 @@ namespace MonoDevelop.Components.MainToolbar
 			context.Clip ();
 
 			LayoutRoundedRectangle (context, bounding, 0, 0, 1);
-			context.SetSourceColor (Styles.WithAlpha (Styles.StatusBarProgressBackgroundColor, Styles.StatusBarProgressBackgroundColor.A * arg.ProgressBarAlpha));
+			context.SetSourceColor (Styles.StatusBarProgressBackgroundColor.WithAlpha (Styles.StatusBarProgressBackgroundColor.Alpha * arg.ProgressBarAlpha).ToCairoColor ());
 			context.FillPreserve ();
 
 			context.ResetClip ();
 
-			context.SetSourceColor (Styles.WithAlpha (Styles.StatusBarProgressOutlineColor, Styles.StatusBarProgressOutlineColor.A * arg.ProgressBarAlpha));
+			context.SetSourceColor (Styles.StatusBarProgressOutlineColor.WithAlpha (Styles.StatusBarProgressOutlineColor.Alpha * arg.ProgressBarAlpha).ToCairoColor ());
 			context.LineWidth = 1;
 			context.Stroke ();
 		}
@@ -321,7 +323,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		protected virtual Cairo.Color FontColor ()
 		{
-			return Styles.StatusBarTextColor;
+			return Styles.StatusBarTextColor.ToCairoColor ();
 		}
 
 		void DrawString (string text, bool isMarkup, Cairo.Context context, int x, int y, int width, double opacity, Pango.Context pango, StatusArea.RenderArg arg)
@@ -347,7 +349,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			// Subtract off remainder instead of drop to prefer higher centering when centering an odd number of pixels
 			context.MoveTo (x, y - h / 2 - (h % 2));
-			context.SetSourceColor (Styles.WithAlpha (FontColor (), opacity));
+			context.SetSourceColor (CairoExtensions.WithAlpha (FontColor (), opacity));
 
 			Pango.CairoHelper.ShowLayout (context, pl);
 

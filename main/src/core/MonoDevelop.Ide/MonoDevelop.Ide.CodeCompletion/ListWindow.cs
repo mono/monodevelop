@@ -89,25 +89,44 @@ namespace MonoDevelop.Ide.CodeCompletion
 			list.ScrollEvent += new ScrollEventHandler (OnScrolled);
 
 			scrollbar = new MonoDevelop.Components.CompactScrolledWindow ();
+			scrollbar.Name = "CompletionScrolledWindow"; // use a different gtkrc style for GtkScrollBar
 			scrollbar.Child = list;
 			list.ButtonPressEvent += delegate(object o, ButtonPressEventArgs args) {
 				if (args.Event.Button == 1 && args.Event.Type == Gdk.EventType.TwoButtonPress)
 					DoubleClick ();
 			};
 			vbox.PackEnd (scrollbar, true, true, 0);
-			ContentBox.Add (vbox);
+			var colorBox = new EventBox ();
+			colorBox.Add (vbox);
+			ContentBox.Add (colorBox);
 			this.AutoSelect = true;
 			this.TypeHint = WindowTypeHint.Menu;
-			Theme.CornerRadius = 4;
+			Theme.CornerRadius = 0;
+			Theme.Padding = 0;
+
+			UpdateStyle ();
+			Gui.Styles.Changed += HandleSkinChanged;
+			IdeApp.Preferences.ColorScheme.Changed += HandleSkinChanged;
 		}
 
-		protected override void OnShown ()
+		void HandleSkinChanged (object sender, EventArgs e)
 		{
-			var style = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
-			Theme.SetFlatColor (style.CompletionWindow.Color);
-			if (style.CompletionWindow.HasBorderColor)
-				Theme.BorderColor = style.CompletionWindow.BorderColor;
-			base.OnShown ();
+			UpdateStyle ();
+		}
+
+		void UpdateStyle ()
+		{
+			Theme.SetBackgroundColor (Gui.Styles.CodeCompletion.BackgroundColor.ToCairoColor ());
+			Theme.ShadowColor = Gui.Styles.PopoverWindow.ShadowColor.ToCairoColor ();
+			ContentBox.Child.ModifyBg (StateType.Normal, Gui.Styles.CodeCompletion.BackgroundColor.ToGdkColor ());
+			list.ModifyBg (StateType.Normal, Gui.Styles.CodeCompletion.BackgroundColor.ToGdkColor ());
+		}
+
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			Gui.Styles.Changed -= HandleSkinChanged;
+			IdeApp.Preferences.ColorScheme.Changed -= HandleSkinChanged;
 		}
 
 		protected virtual void DoubleClick ()

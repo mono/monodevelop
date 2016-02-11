@@ -37,9 +37,9 @@ namespace MonoDevelop.PackageManagement
 		{
 			CellWidth = 260;
 
-			BackgroundColor = Color.FromBytes (243, 246, 250);
-			StrongSelectionColor = Color.FromBytes (49, 119, 216);
-			SelectionColor = Color.FromBytes (204, 204, 204);
+			BackgroundColor = Styles.CellBackgroundColor;
+			StrongSelectionColor = Styles.CellStrongSelectionColor;
+			SelectionColor = Styles.CellSelectionColor;
 
 			UseStrongSelectionColor = true;
 		}
@@ -88,6 +88,7 @@ namespace MonoDevelop.PackageManagement
 
 			// Package Id.
 			var packageIdTextLayout = new TextLayout ();
+			packageIdTextLayout.Font = packageIdTextLayout.Font.WithSize (12);
 			packageIdTextLayout.Markup = packageViewModel.GetNameMarkup ();
 			packageIdTextLayout.Trimming = TextTrimming.WordElipsis;
 			Size packageIdTextSize = packageIdTextLayout.GetSize ();
@@ -99,7 +100,7 @@ namespace MonoDevelop.PackageManagement
 
 			// Package description.
 			var descriptionTextLayout = new TextLayout ();
-			descriptionTextLayout.Font = descriptionTextLayout.Font.WithScaledSize (0.9);
+			descriptionTextLayout.Font = descriptionTextLayout.Font.WithSize (11);
 			descriptionTextLayout.Width = cellArea.Width - packageDescriptionPadding.HorizontalSpacing - packageDescriptionLeftOffset;
 			descriptionTextLayout.Height = cellArea.Height - packageIdTextSize.Height - packageDescriptionPadding.VerticalSpacing;
 			descriptionTextLayout.Text = packageViewModel.Summary;
@@ -114,9 +115,9 @@ namespace MonoDevelop.PackageManagement
 		void UpdateTextColor (Context ctx)
 		{
 			if (UseStrongSelectionColor && Selected) {
-				ctx.SetColor (Colors.White);
+				ctx.SetColor (Styles.CellTextSelectionColor);
 			} else {
-				ctx.SetColor (Colors.Black);
+				ctx.SetColor (Styles.CellTextColor);
 			}
 		}
 
@@ -230,6 +231,9 @@ namespace MonoDevelop.PackageManagement
 				image = defaultPackageImage;
 			}
 
+			if (Selected)
+				image = image.WithStyles ("sel");
+
 			if (PackageImageNeedsResizing (image)) {
 				Point imageLocation = GetPackageImageLocation (maxPackageImageSize, cellArea);
 				ctx.DrawImage (
@@ -263,7 +267,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			var layout = new TextLayout ();
 			layout.Text = "W";
-			layout.Font = layout.Font.WithScaledSize (0.9);
+			layout.Font = layout.Font.WithSize (11);
 			Size size = layout.GetSize ();
 			return new Size (CellWidth, size.Height * linesDisplayedCount + packageDescriptionPaddingHeight + packageDescriptionPadding.VerticalSpacing);
 		}
@@ -317,7 +321,7 @@ namespace MonoDevelop.PackageManagement
 		Image checkedCheckBoxWithBackgroundColorImage;
 		Image uncheckedCheckBoxWithBackgroundColorImage;
 
-		static readonly Image defaultPackageImage = Image.FromResource (typeof(PackageCellView), "reference-48.png");
+		static readonly Image defaultPackageImage = Image.FromResource (typeof(PackageCellView), "package-48.png");
 	}
 }
 

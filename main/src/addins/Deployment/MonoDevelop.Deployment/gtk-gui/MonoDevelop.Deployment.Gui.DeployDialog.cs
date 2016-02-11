@@ -5,57 +5,109 @@ namespace MonoDevelop.Deployment.Gui
 	internal partial class DeployDialog
 	{
 		private global::Gtk.HBox hbox1;
+		
 		private global::Gtk.VBox vbox2;
-		private global::Gtk.Image image2;
+		
+		private global::MonoDevelop.Components.ImageView image2;
+		
 		private global::Gtk.Notebook notebook;
+		
 		private global::Gtk.VBox vbox3;
+		
 		private global::Gtk.Label labelTitle;
+		
 		private global::Gtk.HSeparator hseparator2;
+		
 		private global::Gtk.Label label1;
+		
 		private global::Gtk.ScrolledWindow scrolledwindow2;
+		
 		private global::Gtk.TreeView targetsTree;
+		
 		private global::Gtk.Label label2;
+		
 		private global::Gtk.VBox pageSelectProject;
+		
 		private global::Gtk.Label labelTitle1;
+		
 		private global::Gtk.HSeparator hseparator4;
+		
 		private global::Gtk.Label label4;
+		
 		private global::MonoDevelop.Deployment.Gui.EntrySelectionTree entryTree;
+		
 		private global::Gtk.Label label3;
+		
 		private global::Gtk.VBox vbox4;
+		
 		private global::Gtk.Label label5;
+		
 		private global::Gtk.HSeparator hseparator3;
+		
 		private global::Gtk.EventBox editorBox;
+		
 		private global::Gtk.HSeparator saveSeparator;
+		
 		private global::Gtk.HBox hbox2;
+		
 		private global::Gtk.CheckButton checkSave;
+		
 		private global::Gtk.Label label6;
+		
 		private global::Gtk.VBox pageSave;
+		
 		private global::Gtk.Label label7;
+		
 		private global::Gtk.HSeparator hseparator5;
+		
 		private global::Gtk.VBox vbox7;
+		
 		private global::Gtk.Label label14;
+		
 		private global::Gtk.HBox hbox4;
+		
 		private global::Gtk.Label label13;
+		
 		private global::Gtk.Entry entrySaveName;
+		
 		private global::Gtk.VBox vboxSaveProject;
+		
 		private global::Gtk.HSeparator hseparator6;
+		
 		private global::Gtk.Label label15;
+		
 		private global::Gtk.RadioButton radioCreateProject;
+		
 		private global::Gtk.HBox hbox5;
+		
 		private global::Gtk.Label label9;
+		
 		private global::Gtk.Table tableNewProject;
+		
 		private global::Gtk.ComboBox comboCreateProject;
+		
 		private global::Gtk.Entry entryProjectName;
+		
 		private global::Gtk.Label label11;
+		
 		private global::Gtk.Label label16;
+		
 		private global::Gtk.RadioButton radioAddProject;
+		
 		private global::Gtk.HBox boxAddProject;
+		
 		private global::Gtk.Label label10;
+		
 		private global::Gtk.Label label12;
+		
 		private global::Gtk.ComboBox comboSelProject;
+		
 		private global::Gtk.Label label8;
+		
 		private global::Gtk.Button buttonCancel;
+		
 		private global::Gtk.Button buttonBack;
+		
 		private global::Gtk.Button buttonNext;
 
 		protected virtual void Build ()
@@ -80,9 +132,10 @@ namespace MonoDevelop.Deployment.Gui
 			this.vbox2 = new global::Gtk.VBox ();
 			this.vbox2.Name = "vbox2";
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.image2 = new global::Gtk.Image ();
+			this.image2 = new global::MonoDevelop.Components.ImageView ();
 			this.image2.Name = "image2";
-			this.image2.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("package-48.png");
+			this.image2.IconId = "md-package";
+			this.image2.IconSize = ((global::Gtk.IconSize)(6));
 			this.vbox2.Add (this.image2);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.image2]));
 			w2.Position = 0;

@@ -42,7 +42,7 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 		public override Control GetVisualizerWidget (ObjectValue val)
 		{
 			string value = val.Value;
-			Gdk.Color col = new Gdk.Color (85, 85, 85);
+			Gdk.Color col = Styles.PreviewVisualizerTextColor.ToGdkColor ();
 
 			if (!val.IsNull && (val.TypeName == "string" || val.TypeName == "char[]"))
 				value = '"' + GetString (val) + '"';
@@ -51,7 +51,7 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 
 			var label = new Gtk.Label ();
 			label.Text = value;
-			var font = label.Style.FontDescription.Copy ();
+			var font = label.Style.FontDescription.Copy (); // TODO: VV: Use FontService
 
 			if (font.SizeIsAbsolute) {
 				font.AbsoluteSize = font.Size - 1;

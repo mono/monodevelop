@@ -45,7 +45,6 @@ namespace MonoDevelop.Ide.WelcomePage
 		static readonly Gdk.Point IconPosition = new Gdk.Point (WidgetSize.Width - 220 - Padding, WidgetSize.Height / 2);
 		static readonly double PreviewSize = 350;
 
-		Xwt.Drawing.Image starburst;
 		Xwt.Drawing.Image brandedIcon;
 
 		MouseTracker tracker;
@@ -80,7 +79,6 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			VisibleWindow = false;
 			SetSizeRequest (WidgetSize.Width, WidgetSize.Height);
-			starburst = Xwt.Drawing.Image.FromResource ("starburst.png");
 
 			string iconFile = BrandingService.GetString ("ApplicationIcon");
 			if (iconFile != null) {
@@ -142,16 +140,9 @@ namespace MonoDevelop.Ide.WelcomePage
 				context.FillPreserve ();
 			}
 
-			context.Save ();
-			context.Translate (IconPosition.X, IconPosition.Y);
-			context.Scale (0.75, 0.75);
-			context.DrawImage (this, starburst, -starburst.Width / 2, -starburst.Height / 2);
-			context.Restore ();
-
 			context.LineWidth = 1;
 			context.SetSourceRGB (.29, .47, .67);
 			context.Stroke ();
-
 		}
 
 		void RenderPreview (Cairo.Context context, Gdk.Point position, double opacity)

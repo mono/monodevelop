@@ -63,8 +63,12 @@ namespace WindowsPlatform.MainToolbar
 				if (actionCommand.KeyBinding != null)
 					InputGestureText = actionCommand.KeyBinding.ToString ();
 				
-				if (!actionCommand.Icon.IsNull)
-					Icon = new Image { Source = actionCommand.Icon.GetImageSource (Xwt.IconSize.Small) };
+				try {
+					if (!actionCommand.Icon.IsNull)
+						Icon = new ImageBox (actionCommand.Icon.GetStockIcon ().WithSize (Xwt.IconSize.Small));
+				} catch (Exception ex) {
+					MonoDevelop.Core.LoggingService.LogError ("Failed loading menu icon: " + actionCommand.Icon, ex);
+				}
 				Click += OnMenuClicked;
 			}
 
@@ -149,7 +153,12 @@ namespace WindowsPlatform.MainToolbar
 		{
 			hasCommand = true;
 			Header = info.Text;
-			Icon = new Image { Source = info.Icon.GetImageSource (Xwt.IconSize.Small) };
+			try {
+				if (!info.Icon.IsNull)
+					Icon = new ImageBox (info.Icon.GetStockIcon ().WithSize (Xwt.IconSize.Small));
+			} catch (Exception ex) {
+				MonoDevelop.Core.LoggingService.LogError ("Failed loading menu icon: " + info.Icon, ex);
+			}
 			IsEnabled = info.Enabled;
 			Visibility = info.Visible && (menuEntry.DisabledVisible || IsEnabled) ?
 				Visibility.Visible : Visibility.Collapsed;

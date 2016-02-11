@@ -139,6 +139,14 @@ namespace MonoDevelop.Components.Docking
 				}
 			}
 		}
+
+		internal DockItemTitleTab CurrentTitleTab {
+			get {
+				if (currentTab != -1)
+					return (DockItemTitleTab)box.Children [currentTab];
+				return null;
+			}
+		}
 		
 		new public Gtk.Widget CurrentPage {
 			get {
@@ -269,22 +277,14 @@ namespace MonoDevelop.Components.Docking
 		internal class TabStripBox: HBox
 		{
 			public TabStrip TabStrip;
+			static Xwt.Drawing.Image tabbarBackImage = Xwt.Drawing.Image.FromResource ("tabbar-back.9.png");
 
 			protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 			{
 				if (TabStrip.VisualStyle.TabStyle == DockTabStyle.Normal) {
-					var alloc = Allocation;
-					Gdk.GC gc = new Gdk.GC (GdkWindow);
-					gc.RgbFgColor = TabStrip.VisualStyle.InactivePadBackgroundColor.Value.ToGdkColor ();
-					evnt.Window.DrawRectangle (gc, true, alloc);
-					gc.Dispose ();
-		
-					Gdk.GC bgc = new Gdk.GC (GdkWindow);
-					var c = TabStrip.VisualStyle.PadBackgroundColor.Value;
-					c.Light *= 0.7;
-					bgc.RgbFgColor = c.ToGdkColor ();
-					evnt.Window.DrawLine (bgc, alloc.X, alloc.Y + alloc.Height - 1, alloc.X + alloc.Width - 1, alloc.Y + alloc.Height - 1);
-					bgc.Dispose ();
+					using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
+						ctx.DrawImage (this, tabbarBackImage.WithSize (Allocation.Width, Allocation.Height), 0, 0);
+					}
 				}	
 				return base.OnExposeEvent (evnt);
 			}

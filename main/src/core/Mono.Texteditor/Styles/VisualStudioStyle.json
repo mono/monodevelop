@@ -1,10 +1,11 @@
 {
     "name":"Visual Studio",
-    "version":"1.1",
+    "version":"1.1.8",
     "description":"Reminiscent of Microsoft Visual Studio's default colors.",
     "originator":"Jeffrey Stedfast <fejj@novell.com>",
 
     "palette":[
+        { "name":"text-black", "value":"#222222" },
         { "name":"comment-green", "value":"#008000" },
         { "name":"keyword-blue", "value":"#0000ff" },
         { "name":"semantic-type", "value":"#2B90AF" },
@@ -14,10 +15,12 @@
     "colors":[
         { "name":"Background(Read Only)", "color":"#FFFFFF" },
 
-        { "name":"Fold Square", "color":"#A5A5A5" },
-        { "name":"Fold Cross", "color":"#555555", "secondcolor":"#E2E2E2" },
+        { "name":"Column Ruler", "color":"#eeeeee" },
 
-        { "name":"Indentation Guide", "color":"aluminium2" },
+        { "name":"Fold Square", "color":"#cdcecc", "secondcolor":"white" },
+        { "name":"Fold Cross", "color":"#b1b2b0", "secondcolor":"white" },
+
+        { "name":"Indentation Guide", "color":"#e5e5e5" },
 
         { "name":"Underline(Error)", "color":"#FF0000" },
         { "name":"Underline(Warning)", "color":"comment-green" },
@@ -25,19 +28,30 @@
         { "name":"Quick Diff(Dirty)", "color":"yellow" },
         { "name":"Quick Diff(Changed)", "color":"green" },
 
-        { "name":"Brace Matching(Rectangle)", "color":"#DBE0CC", "secondcolor":"#00000000" },
+        { "name":"Brace Matching(Rectangle)", "color":"#fde5d6", "secondcolor":"#fde5d6" },
         { "name":"Usages(Rectangle)", "color":"#B1DFF9", "secondcolor":"#B1DFF9", "bordercolor":"#B1DFF9" },
         { "name":"Changing usages(Rectangle)", "color":"#FFD6DD", "secondcolor":"#FFD6DD", "bordercolor":"#FFD6DD" },
 
-        { "name":"Current Line Marker", "color":"white", "secondcolor":"gray"},
-        { "name":"Current Line Marker(Inactive)", "color":"white", "secondcolor":"gray"},
+        { "name":"Breakpoint Marker", "color":"#f9dbda", "bordercolor":"#f9dbda" },
+        { "name":"Breakpoint Marker(Disabled)", "color":"#e9e9e9", "bordercolor":"#e9e9e9" },
+        { "name":"Breakpoint Marker(Invalid)", "color":"#f1e3e3", "bordercolor":"#f1e3e3" },
 
-        { "name":"Indicator Margin", "color":"#F0F0F0" },
-        { "name":"Indicator Margin(Separator)", "color":"#F0F0F0" }
+        { "name":"Current Line Marker", "color":"#f7f7f7", "secondcolor":"#f7f7f7" },
+        { "name":"Current Line Marker(Inactive)", "color":"#f7f7f7", "secondcolor":"#f7f7f7" },
+
+        { "name":"Debugger Current Line Marker", "color":"#f8f4a1", "bordercolor":"#f8f4a1" },
+        { "name":"Debugger Stack Line Marker", "color":"#d0efa9", "bordercolor":"#d0efa9" },
+
+        { "name":"Indicator Margin", "color":"#f6f6f6" },
+        { "name":"Indicator Margin(Separator)", "color":"#f6f6f6" },
+
+        { "name":"Message Bubble Error IconMargin", "color":"#d83f3f", "bordercolor":"#d83f3f" },
+
+        { "name":"Message Bubble Warning IconMargin", "color":"#e68100", "bordercolor":"#e68100" }
     ],
 
     "text":[
-        { "name":"Plain Text", "fore":"#000000", "back":"#FFFFFF" },
+        { "name":"Plain Text", "fore":"text-black", "back":"#FFFFFF" },
         { "name":"Selected Text", "fore":"white", "back":"#3298FF" },
         { "name":"Selected Text(Inactive)", "fore":"white", "back":"#BFCDDB" },
 
@@ -48,11 +62,12 @@
         { "name":"Punctuation" },
         { "name":"Punctuation(Brackets)", "fore":"#000000", "back":"#FFFFFF" },
 
-        { "name":"Comment(Line)", "fore":"comment-green" },
-        { "name":"Comment(Block)", "fore":"comment-green" },
-        { "name":"Comment(Doc)", "fore":"comment-green" },
-        { "name":"Comment(DocTag)", "fore":"#808080" },
-        { "name":"Comment Tag", "fore":"comment-green" },
+        { "name":"Comment(Line)", "fore":"comment-green", "style":"italic" },
+        { "name":"Comment(Block)", "fore":"comment-green", "style":"italic" },
+        { "name":"Comment(Doc)", "fore":"#97b488", "style":"italic" },
+        { "name":"Comment(DocTag)", "fore":"#c8b97c", "style":"italic" },
+        { "name":"Comment Tag", "fore":"#ff00ff", "weight":"bold" },
+
         { "name":"Excluded Code", "fore":"comment-green" },
 
         { "name":"String", "fore":"#A31515" },
@@ -107,8 +122,8 @@
         { "name":"User Types(Delegates)", "fore":"semantic-type" },
         { "name":"User Types(Value types)", "fore":"semantic-type" },
 
-        { "name":"User Field Usage" },
-        { "name":"User Field Declaration" },
+        { "name":"User Field Usage", "style":"italic" },
+        { "name":"User Field Declaration", "style":"italic" },
 
         { "name":"User Property Usage" },
         { "name":"User Property Declaration" },
@@ -119,8 +134,8 @@
         { "name":"User Method Usage" },
         { "name":"User Method Declaration" },
 
-        { "name":"User Parameter Usage" },
-        { "name":"User Parameter Declaration" },
+        { "name":"User Parameter Usage", "style":"italic" },
+        { "name":"User Parameter Declaration", "style":"italic" },
 
         { "name":"User Variable Usage" },
         { "name":"User Variable Declaration" },
@@ -131,18 +146,20 @@
 
         { "name":"Debugger Current Statement", "fore":"#000000", "back":"#FFEE61" },
 
-        { "name":"Css Comment", "fore":"#006400" },
-        { "name":"Css Property Name", "fore":"#FF0000" },
-        { "name":"Css Property Value", "fore":"keyword-blue" },
-        { "name":"Css Selector", "fore":"#800000" },
-        { "name":"Css String Value", "fore":"keyword-blue" },
-        { "name":"Css Keyword", "fore":"keyword-blue" },
+        { "name":"Css Comment", "fore":"#006400", "weight":"bold" },
+        { "name":"Css Property Name", "fore":"#FF0000", "weight":"bold" },
+        { "name":"Css Property Value", "fore":"keyword-blue", "weight":"bold" },
+        { "name":"Css Selector", "fore":"#800000", "weight":"bold" },
+        { "name":"Css String Value", "fore":"keyword-blue", "weight":"bold" },
+        { "name":"Css Keyword", "fore":"keyword-blue", "weight":"bold" },
 
         { "name":"Script Comment", "fore":"comment-green" },
         { "name":"Script Identifier" },
         { "name":"Script Keyword", "fore":"keyword-blue" },
         { "name":"Script Number" },
         { "name":"Script Operator" },
-        { "name":"Script String" }
+        { "name":"Script String" },
+
+        { "name":"Tooltip Text", "fore":"text-black", "back":"#fafae3" }
     ]
 }

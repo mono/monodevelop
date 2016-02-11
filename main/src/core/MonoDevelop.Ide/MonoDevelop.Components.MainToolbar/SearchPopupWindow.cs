@@ -43,11 +43,12 @@ namespace MonoDevelop.Components.MainToolbar
 	{
 		const int yMargin = 0;
 		const int xMargin = 6;
-		const int itemSeparatorHeight = 2;
+		const int itemSeparatorHeight = 0;
 		const int marginIconSpacing = 4;
 		const int iconTextSpacing = 6;
 		const int categorySeparatorHeight = 8;
 		const int headerMarginSize = 100;
+		const int itemPadding = 4;
 
 		List<SearchCategory> categories = new List<SearchCategory> ();
 		List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> results = new List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> ();
@@ -111,11 +112,11 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 		public SearchPopupWindow ()
 		{
-			headerColor = CairoExtensions.ParseColor ("8c8c8c");
-			separatorLine = CairoExtensions.ParseColor ("dedede");
-			lightSearchBackground = CairoExtensions.ParseColor ("ffffff");
-			darkSearchBackground = CairoExtensions.ParseColor ("f7f7f7");
-			selectionBackgroundColor = CairoExtensions.ParseColor ("cccccc");
+			headerColor = Styles.GlobalSearch.HeaderTextColor.ToCairoColor ();
+			separatorLine = Styles.GlobalSearch.SeparatorLineColor.ToCairoColor ();
+			lightSearchBackground = Styles.GlobalSearch.HeaderBackgroundColor.ToCairoColor ();
+			darkSearchBackground = Styles.GlobalSearch.BackgroundColor.ToCairoColor ();
+			selectionBackgroundColor = Styles.GlobalSearch.SelectionBackgroundColor.ToCairoColor ();
 			TypeHint = Gdk.WindowTypeHint.Combo;
 			this.SkipTaskbarHint = true;
 			this.SkipPagerHint = true;
@@ -157,6 +158,7 @@ namespace MonoDevelop.Components.MainToolbar
 			HideTooltip ();
 			this.declarationviewwindow.Destroy ();
 			selectedItem = topItem = null;
+			currentTooltip = null;
 			base.OnDestroyed ();
 		}
 
@@ -352,9 +354,9 @@ namespace MonoDevelop.Components.MainToolbar
 					layout.SetMarkup (GetRowMarkup (dataSrc[i]));
 					int w, h;
 					layout.GetPixelSize (out w, out h);
-					if (y + h + itemSeparatorHeight > maxHeight)
+					if (y + h + itemSeparatorHeight + itemPadding * 2 > maxHeight)
 						break;
-					y += h + itemSeparatorHeight;
+					y += h + itemSeparatorHeight + itemPadding * 2;
 					calculatedItems++;
 				}
 			}
@@ -363,7 +365,7 @@ namespace MonoDevelop.Components.MainToolbar
 				layout.SetMarkup (GettextCatalog.GetString ("No matches"));
 				int w, h;
 				layout.GetPixelSize (out w, out h);
-				var realHeight = h + itemSeparatorHeight + 4;
+				var realHeight = h + itemSeparatorHeight + 4 + itemPadding * 2;
 				y += realHeight;
 			} else {
 				y -= itemSeparatorHeight;
@@ -396,7 +398,7 @@ namespace MonoDevelop.Components.MainToolbar
 				layout.SetMarkup (GetRowMarkup (topItem.DataSource[topItem.Item]));
 				int w, h;
 				layout.GetPixelSize (out w, out h);
-				y += h + itemSeparatorHeight;
+				y += h + itemSeparatorHeight + itemPadding * 2;
 				if (y > py)
 					return new ItemIdentifier (topItem.Category, topItem.DataSource, topItem.Item);
 			}
@@ -411,7 +413,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 					int w, h;
 					layout.GetPixelSize (out w, out h);
-					y += h + itemSeparatorHeight;
+					y += h + itemSeparatorHeight + itemPadding * 2;
 					if (y > py){
 						return new ItemIdentifier (category, dataSrc, i);
 					}
@@ -572,25 +574,12 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		TooltipInformationWindow declarationviewwindow = new TooltipInformationWindow ();
-		uint declarationViewTimer, declarationViewWindowOpacityTimer;
-		void RemoveDeclarationViewTimer ()
-		{
-			if (declarationViewWindowOpacityTimer != 0) {
-				GLib.Source.Remove (declarationViewWindowOpacityTimer);
-				declarationViewWindowOpacityTimer = 0;
-			}
-			if (declarationViewTimer != 0) {
-				GLib.Source.Remove (declarationViewTimer);
-				declarationViewTimer = 0;
-			}
-		}
+		TooltipInformation currentTooltip;
 
 		void HideTooltip ()
 		{
-			RemoveDeclarationViewTimer ();
 			if (declarationviewwindow != null) {
 				declarationviewwindow.Hide ();
-				declarationviewwindow.Opacity = 0;
 			}
 			if (tooltipSrc != null)
 				tooltipSrc.Cancel ();
@@ -599,10 +588,11 @@ namespace MonoDevelop.Components.MainToolbar
 		CancellationTokenSource tooltipSrc = null;
 		async void ShowTooltip ()
 		{
-			HideTooltip ();
 			var currentSelectedItem = selectedItem;
-			if (currentSelectedItem == null || currentSelectedItem.DataSource == null)
+			if (currentSelectedItem == null || currentSelectedItem.DataSource == null) {
+				HideTooltip ();
 				return;
+			}
 			var i = currentSelectedItem.Item;
 			if (i < 0 || i >= currentSelectedItem.DataSource.Count)
 				return;
@@ -612,63 +602,28 @@ namespace MonoDevelop.Components.MainToolbar
 			tooltipSrc = new CancellationTokenSource ();
 			var token = tooltipSrc.Token;
 
-			TooltipInformation tooltip;
 			try {
-				tooltip = await currentSelectedItem.DataSource [i].GetTooltipInformation (token);
+				currentTooltip = await currentSelectedItem.DataSource [i].GetTooltipInformation (token);
 			} catch (OperationCanceledException) {
+				HideTooltip ();
 				return;
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while creating search popup window tooltip", e);
+				HideTooltip ();
 				return;
 			}
-			if (tooltip == null || string.IsNullOrEmpty (tooltip.SignatureMarkup) || token.IsCancellationRequested)
+			if (currentTooltip == null || string.IsNullOrEmpty (currentTooltip.SignatureMarkup) || token.IsCancellationRequested) {
+				HideTooltip ();
 				return;
+			}
+			
 			declarationviewwindow.Clear ();
-			declarationviewwindow.AddOverload (tooltip);
+			declarationviewwindow.AddOverload (currentTooltip);
 			declarationviewwindow.CurrentOverload = 0;
-			declarationViewTimer = GLib.Timeout.Add (250, DelayedTooltipShow);
-		}
-
-		bool DelayedTooltipShow ()
-		{
 			declarationviewwindow.ShowArrow = true;
 			var rect = SelectedItemRectangle;
-
-			declarationviewwindow.ShowPopup (this, new Gdk.Rectangle (0, (int)rect.Y, Allocation.Width, (int)rect.Height), PopupPosition.Right);
-			if (declarationViewWindowOpacityTimer != 0) 
-				GLib.Source.Remove (declarationViewWindowOpacityTimer);
-			declarationViewWindowOpacityTimer = GLib.Timeout.Add (50, new OpacityTimer (this).Timer);
-			declarationViewTimer = 0;
-			return false;
+			declarationviewwindow.ShowPopup (this, new Gdk.Rectangle (0, (int)rect.Y - 5, Allocation.Width, (int)rect.Height), PopupPosition.Right);
 		}
-
-		class OpacityTimer
-		{
-			public double Opacity { get; private set; }
-			
-			SearchPopupWindow window;
-			//			static int num = 0;
-			//			int id;
-			public OpacityTimer (SearchPopupWindow window)
-			{
-				//				id = num++;
-				this.window = window;
-				Opacity = 0.0;
-				window.declarationviewwindow.Opacity = Opacity;
-			}
-			
-			public bool Timer ()
-			{
-				Opacity = System.Math.Min (1.0, Opacity + 0.33);
-				window.declarationviewwindow.Opacity = Opacity;
-				bool result = Math.Round (Opacity * 10.0) < 10;
-				if (!result)
-					window.declarationViewWindowOpacityTimer = 0;
-				return result;
-			}
-		}
-
-
 
 		void SelectNextCategory ()
 		{
@@ -709,6 +664,7 @@ namespace MonoDevelop.Components.MainToolbar
 					);
 				}
 			}
+			ShowTooltip ();
 			QueueDraw ();	
 		}
 
@@ -741,12 +697,14 @@ namespace MonoDevelop.Components.MainToolbar
 			} else {
 				selectedItem = topItem;
 			}
+			ShowTooltip ();
 			QueueDraw ();
 		}
 
 		void SelectFirstCategory ()
 		{
 			selectedItem = topItem;
+			ShowTooltip ();
 			QueueDraw ();
 		}
 
@@ -760,6 +718,7 @@ namespace MonoDevelop.Components.MainToolbar
 				r.Item2,
 				r.Item2.Count - 1
 			);
+			ShowTooltip ();
 			QueueDraw ();
 		}
 
@@ -872,8 +831,8 @@ namespace MonoDevelop.Components.MainToolbar
 					int w, h;
 					layout.GetPixelSize (out w, out h);
 					if (topItem.Category == selectedItem.Category && topItem.Item == selectedItem.Item)
-						return new Cairo.Rectangle (0, y, Allocation.Width, h + itemSeparatorHeight);
-					y += h + itemSeparatorHeight;
+						return new Cairo.Rectangle (0, y, Allocation.Width, h + itemSeparatorHeight + itemPadding * 2);
+					y += h + itemSeparatorHeight + itemPadding * 2;
 				}
 				foreach (var result in results) {
 					var category = result.Item1;
@@ -888,8 +847,8 @@ namespace MonoDevelop.Components.MainToolbar
 						layout.GetPixelSize (out w, out h);
 
 						if (selectedItem.Category == category && selectedItem.DataSource == dataSrc && selectedItem.Item == i)
-							return new Cairo.Rectangle (0, y, Allocation.Width, h + itemSeparatorHeight);
-						y += h + itemSeparatorHeight;
+							return new Cairo.Rectangle (0, y, Allocation.Width, h + itemSeparatorHeight + itemPadding * 2);
+						y += h + itemSeparatorHeight + itemPadding * 2;
 
 //						var region = dataSrc.GetRegion (i);
 //						if (!region.IsEmpty) {
@@ -927,7 +886,7 @@ namespace MonoDevelop.Components.MainToolbar
 				context.SetSourceColor (separatorLine);
 				context.Stroke ();
 			} else {
-				context.SetSourceRGB (1, 1, 1);
+				context.SetSourceColor (darkSearchBackground);
 				context.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
 				context.Fill ();
 			}
@@ -937,36 +896,39 @@ namespace MonoDevelop.Components.MainToolbar
 			if (topItem != null) {
 				headerLayout.SetText (GettextCatalog.GetString ("Top Result"));
 				headerLayout.GetPixelSize (out w, out h);
-				context.MoveTo (alloc.Left + headerMarginSize - w - xMargin, y);
+				context.MoveTo (alloc.Left + headerMarginSize - w - xMargin, y + itemPadding);
 				context.SetSourceColor (headerColor);
 				Pango.CairoHelper.ShowLayout (context, headerLayout);
 
 				var category = topItem.Category;
 				var dataSrc = topItem.DataSource;
 				var i = topItem.Item;
+				var isSelected = selectedItem != null && selectedItem.Category == category && selectedItem.Item == i;
 
 				double x = alloc.X + xMargin + headerMarginSize;
 				context.SetSourceRGB (0, 0, 0);
-				layout.SetMarkup (GetRowMarkup (dataSrc[i]));
+				layout.SetMarkup (GetRowMarkup (dataSrc[i], isSelected));
 				layout.GetPixelSize (out w, out h);
-				if (selectedItem != null && selectedItem.Category == category && selectedItem.Item == i) {
+				if (isSelected) {
 					context.SetSourceColor (selectionBackgroundColor);
-					context.Rectangle (alloc.X + headerMarginSize, y, Allocation.Width - adjustedMarginSize, h);
+					context.Rectangle (alloc.X + headerMarginSize + 1, y, Allocation.Width - adjustedMarginSize - 1, h + itemPadding * 2);
 					context.Fill ();
 					context.SetSourceRGB (1, 1, 1);
 				}
 
 				var px = dataSrc[i].Icon;
 				if (px != null) {
-					context.DrawImage (this, px, (int)x + marginIconSpacing, (int)y + (h - px.Height) / 2);
+					if (isSelected)
+						px = px.WithStyles ("sel");
+					context.DrawImage (this, px, (int)x + marginIconSpacing, (int)(y + itemPadding));
 					x += px.Width + iconTextSpacing + marginIconSpacing;
 				}
 
-				context.MoveTo (x, y);
+				context.MoveTo (x, y + itemPadding);
 				context.SetSourceRGB (0, 0, 0);
 				Pango.CairoHelper.ShowLayout (context, layout);
 
-				y += h + itemSeparatorHeight;
+				y += h + itemSeparatorHeight + itemPadding * 2;
 
 			}
 
@@ -980,10 +942,10 @@ namespace MonoDevelop.Components.MainToolbar
 				headerLayout.SetText (category.Name);
 				headerLayout.GetPixelSize (out w, out h);
 
-				if (y + h > Allocation.Height)
+				if (y + h + itemPadding * 2 > Allocation.Height)
 					break;
 
-				context.MoveTo (alloc.X + headerMarginSize - w - xMargin, y);
+				context.MoveTo (alloc.X + headerMarginSize - w - xMargin, y + itemPadding);
 				context.SetSourceColor (headerColor);
 				Pango.CairoHelper.ShowLayout (context, headerLayout);
 
@@ -992,49 +954,54 @@ namespace MonoDevelop.Components.MainToolbar
 				for (int i = 0; i < maxItems && i < dataSrc.Count; i++) {
 					if (topItem != null && topItem.Category == category && topItem.Item == i)
 						continue;
+					var isSelected = selectedItem != null && selectedItem.Category == category && selectedItem.Item == i;
 					double x = alloc.X + xMargin + headerMarginSize;
 					context.SetSourceRGB (0, 0, 0);
-					layout.SetMarkup (GetRowMarkup (dataSrc[i]));
+					layout.SetMarkup (GetRowMarkup (dataSrc[i], isSelected));
 					layout.GetPixelSize (out w, out h);
-					if (y + h + itemSeparatorHeight > Allocation.Height)
+					if (y + h + itemSeparatorHeight + itemPadding * 2 > Allocation.Height)
 						break;
-					if (selectedItem != null && selectedItem.Category == category && selectedItem.Item == i) {
+					if (isSelected) {
 						context.SetSourceColor (selectionBackgroundColor);
-						context.Rectangle (alloc.X + headerMarginSize, y, Allocation.Width - adjustedMarginSize, h);
+						context.Rectangle (alloc.X + headerMarginSize + 1, y, Allocation.Width - adjustedMarginSize - 1, h + itemPadding * 2);
 						context.Fill ();
 						context.SetSourceRGB (1, 1, 1);
 					}
 
 					var px = dataSrc[i].Icon;
 					if (px != null) {
-						context.DrawImage (this, px, (int)x + marginIconSpacing, (int)y + (h - px.Height) / 2);
+						if (isSelected)
+							px = px.WithStyles ("sel");
+						context.DrawImage (this, px, (int)x + marginIconSpacing, (int)(y + itemPadding));
 						x += px.Width + iconTextSpacing + marginIconSpacing;
 					}
 
-					context.MoveTo (x, y);
+					context.MoveTo (x, y + itemPadding);
 					context.SetSourceRGB (0, 0, 0);
 					Pango.CairoHelper.ShowLayout (context, layout);
 
-					y += h + itemSeparatorHeight;
+					y += h + itemSeparatorHeight + itemPadding * 2;
 				}
 				if (result != r.Last ()) {
 					y += categorySeparatorHeight;
 				}
 			}
 			if (y == alloc.Y + yMargin) {
-				context.SetSourceRGB (0, 0, 0);
+				context.SetSourceColor (Styles.GlobalSearch.ResultTextColor.ToCairoColor ());
 				layout.SetMarkup (isInSearch ? GettextCatalog.GetString ("Searching...") : GettextCatalog.GetString ("No matches"));
 				context.MoveTo (alloc.X + xMargin, y);
 				Pango.CairoHelper.ShowLayout (context, layout);
 			}
 		}
 
-		string GetRowMarkup (SearchResult result)
+		string GetRowMarkup (SearchResult result, bool selected = false)
 		{
-			string txt = "<span foreground=\"#606060\">" + result.GetMarkupText() +"</span>";
+			var resultFgColor = selected ? Styles.GlobalSearch.SelectedResultTextColor : Styles.GlobalSearch.ResultTextColor;
+			var descFgColor = selected ? Styles.GlobalSearch.SelectedResultDescriptionTextColor : Styles.GlobalSearch.ResultDescriptionTextColor;
+			string txt = "<span foreground=\"" + Styles.ColorGetHex (resultFgColor) + "\">" + result.GetMarkupText(selected) +"</span>";
 			string desc = result.GetDescriptionMarkupText ();
 			if (!string.IsNullOrEmpty (desc))
-				txt += "<span foreground=\"#8F8F8F\" size=\"small\">\n" + desc + "</span>";
+				txt += "<span foreground=\"" + Styles.ColorGetHex (descFgColor) + "\" size=\"small\">\n" + desc + "</span>";
 			return txt;
 		}
 	}

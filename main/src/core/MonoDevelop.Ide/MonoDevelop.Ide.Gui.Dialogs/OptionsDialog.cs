@@ -37,7 +37,7 @@ using MonoDevelop.Components;
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	
-	public partial class OptionsDialog : Gtk.Dialog
+	public partial class OptionsDialog : IdeDialog
 	{
 		Gtk.HBox mainHBox;
 		Gtk.TreeView tree;
@@ -140,6 +140,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				c.Light += 0.09;
 				fboxHeader.BackgroundColor = c.ToGdkColor ();
 			};
+			StyleSet += delegate {
+				if (IsRealized) {
+					var c = Style.Background (Gtk.StateType.Normal).ToXwtColor ();
+					c.Light += 0.09;
+					fboxHeader.BackgroundColor = c.ToGdkColor ();
+				}
+			};
 			vbox.PackStart (fboxHeader, false, false, 0);
 
 			pageFrame = new HBox ();
@@ -191,6 +198,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			FillTree ();
 			ExpandCategories ();
 			this.DefaultResponse = Gtk.ResponseType.Ok;
+
+			buttonOk.CanDefault = true;
+			buttonOk.GrabDefault ();
 
 			DefaultWidth = 960;
 			DefaultHeight = 680;

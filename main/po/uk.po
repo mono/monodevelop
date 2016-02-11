@@ -14795,7 +14795,7 @@ msgid "Print operation failed."
 msgstr "Трапився збій під час друку."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:185
-msgid "Press 'F2' for focus"
+msgid "Press F2 to focus"
 msgstr "Натисніть 'F2' для фокусування"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:185

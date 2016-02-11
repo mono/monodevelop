@@ -70,14 +70,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		[ColorDescription("Indicator Margin(Separator)", VSSetting="color=Indicator Margin/Background")]
 		public AmbientColor IndicatorMarginSeparator { get; private set; }
 
-		[ColorDescription("Tooltip Border")]
-		public AmbientColor TooltipBorder { get; private set; }
-
 		[ColorDescription("Tooltip Pager Top")]
-		public AmbientColor TooltipPagerTop { get; private set; }
-
-		[ColorDescription("Tooltip Pager Bottom")]
-		public AmbientColor TooltipPagerBottom { get; private set; }
+		public AmbientColor TooltipPager { get; private set; }
 
 		[ColorDescription("Tooltip Pager Triangle")]
 		public AmbientColor TooltipPagerTriangle { get; private set; }
@@ -1044,17 +1038,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			h.L += 0.01;
 			result.TooltipText.Background = h;
 
-			result.TooltipPagerTop = new AmbientColor ();
-			result.TooltipPagerTop.Colors.Add (Tuple.Create ("color", result.TooltipText.Background));
-
-			result.TooltipPagerBottom = new AmbientColor ();
-			result.TooltipPagerBottom.Colors.Add (Tuple.Create ("color", result.TooltipText.Background));
+			result.TooltipPager = new AmbientColor ();
+			result.TooltipPager.Colors.Add (Tuple.Create ("color", result.TooltipText.Background));
 
 			result.TooltipPagerTriangle = new AmbientColor ();
 			result.TooltipPagerTriangle.Colors.Add (Tuple.Create ("color", AlphaBlend (result.PlainText.Foreground, result.PlainText.Background, 0.8)));
-
-			result.TooltipBorder = new AmbientColor ();
-			result.TooltipBorder.Colors.Add (Tuple.Create ("color", AlphaBlend (result.PlainText.Foreground, result.PlainText.Background, 0.5)));
 
 			var defaultStyle = SyntaxModeService.GetColorStyle (HslColor.Brightness (result.PlainText.Background) < 0.5 ? "Monokai" : "Default");
 

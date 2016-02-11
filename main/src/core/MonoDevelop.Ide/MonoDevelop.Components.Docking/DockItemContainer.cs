@@ -123,6 +123,11 @@ namespace MonoDevelop.Components.Docking
 				item.GetToolbar (DockPositionType.Left).SetStyle (VisualStyle);
 				item.GetToolbar (DockPositionType.Right).SetStyle (VisualStyle);
 				item.GetToolbar (DockPositionType.Bottom).SetStyle (VisualStyle);
+
+				if (VisualStyle.TabStyle == DockTabStyle.Normal)
+					ModifyBg (StateType.Normal, VisualStyle.PadBackgroundColor.Value.ToGdkColor ());
+				else 
+					ModifyBg (StateType.Normal, Style.Background(StateType.Normal));
 			}
 		}
 
@@ -181,7 +186,8 @@ namespace MonoDevelop.Components.Docking
 		int rightPadding;
 
 		Gdk.Color backgroundColor;
-		bool backgroundColorSet;
+		Gdk.Color borderColor;
+		bool backgroundColorSet, borderColorSet;
 		
 		public CustomFrame ()
 		{
@@ -190,6 +196,13 @@ namespace MonoDevelop.Components.Docking
 		public CustomFrame (int topMargin, int bottomMargin, int leftMargin, int rightMargin)
 		{
 			SetMargins (topMargin, bottomMargin, leftMargin, rightMargin);
+		}
+
+		protected override void OnStyleSet (Style previous_style)
+		{
+			base.OnStyleSet (previous_style);
+			if (!borderColorSet)
+				borderColor = Style.Dark (Gtk.StateType.Normal);
 		}
 		
 		public void SetMargins (int topMargin, int bottomMargin, int leftMargin, int rightMargin)
@@ -213,6 +226,11 @@ namespace MonoDevelop.Components.Docking
 		public Gdk.Color BackgroundColor {
 			get { return backgroundColor; }
 			set { backgroundColor = value; backgroundColorSet = true; }
+		}
+
+		public Gdk.Color BorderColor {
+			get { return borderColor; }
+			set { borderColor = value; borderColorSet = true; }
 		}
 
 		protected override void OnAdded (Widget widget)
@@ -272,6 +290,8 @@ namespace MonoDevelop.Components.Docking
 					cr.RelLineTo (-rect.Width, 0);
 					cr.RelLineTo (0, -rect.Height);
 					cr.ClosePath ();
+
+					// FIXME: VV: Remove gradient features
 					using (Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, bottom)) {
 						pat.AddColorStop (0, bcolor.ToCairoColor ());
 						Xwt.Drawing.Color gcol = bcolor.ToXwtColor ();
@@ -295,7 +315,7 @@ namespace MonoDevelop.Components.Docking
 			base.OnExposeEvent (evnt);
 
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
-				cr.SetSourceColor (Style.Dark (Gtk.StateType.Normal).ToCairoColor ());
+				cr.SetSourceColor (BorderColor.ToCairoColor ());
 				
 				double y = rect.Y + topMargin / 2d;
 				cr.LineWidth = topMargin;

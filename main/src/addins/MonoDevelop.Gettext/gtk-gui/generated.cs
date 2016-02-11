@@ -17,6 +17,7 @@ namespace Stetic
 	internal class BinContainer
 	{
 		private Gtk.Widget child;
+		
 		private Gtk.UIManager uimanager;
 
 		public static BinContainer Attach (Gtk.Bin bin)
@@ -58,7 +59,8 @@ namespace Stetic
 			if ((this.uimanager != null)) {
 				Gtk.Widget w;
 				w = this.child.Toplevel;
-				if (((w != null) && typeof(Gtk.Window).IsInstanceOfType (w))) {
+				if (((w != null)
+				    && typeof(Gtk.Window).IsInstanceOfType (w))) {
 					((Gtk.Window)(w)).AddAccelGroup (this.uimanager.AccelGroup);
 					this.uimanager = null;
 				}

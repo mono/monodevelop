@@ -22,11 +22,6 @@ namespace MonoDevelop.VersionControl.Views
 		TreePath path;
 		int RightPadding = 4;
 		
-//		Gdk.Color baseAddColor = new Gdk.Color (133, 168, 133);
-//		Gdk.Color baseRemoveColor = new Gdk.Color (178, 140, 140);
-		Gdk.Color baseAddColor = new Gdk.Color (123, 200, 123).AddLight (0.1);
-		Gdk.Color baseRemoveColor = new Gdk.Color (200, 140, 140).AddLight (0.1);
-		
 		int RoundedSectionRadius = 4;
 		int LeftPaddingBlock = 19;
 		
@@ -143,10 +138,10 @@ namespace MonoDevelop.VersionControl.Views
 				Gdk.GC normalGC = widget.Style.TextGC (StateType.Normal);
 				Gdk.GC removedGC = new Gdk.GC (window);
 				removedGC.Copy (normalGC);
-				removedGC.RgbFgColor = baseRemoveColor.AddLight (-0.3);
+				removedGC.RgbFgColor = Styles.LogView.DiffRemoveBackgroundColor.AddLight (-0.3).ToGdkColor ();
 				Gdk.GC addedGC = new Gdk.GC (window);
 				addedGC.Copy (normalGC);
-				addedGC.RgbFgColor = baseAddColor.AddLight (-0.3);
+				addedGC.RgbFgColor = Styles.LogView.DiffAddBackgroundColor.AddLight (-0.3).ToGdkColor ();
 				Gdk.GC infoGC = new Gdk.GC (window);
 				infoGC.Copy (normalGC);
 				infoGC.RgbFgColor = widget.Style.Text (StateType.Normal).AddLight (0.2);
@@ -266,11 +261,11 @@ namespace MonoDevelop.VersionControl.Views
 						double xrow = cell_area.X + LeftPaddingBlock;
 						int wrow = cell_area.Width - 1 - LeftPaddingBlock;
 						if (block.Type == BlockType.Added)
-							ctx.SetSourceColor (baseAddColor.AddLight (0.1).ToCairoColor ());
+							ctx.SetSourceColor (Styles.LogView.DiffAddBackgroundColor.AddLight (0.1).ToCairoColor ());
 						else if (block.Type == BlockType.Removed)
-							ctx.SetSourceColor (baseRemoveColor.AddLight (0.1).ToCairoColor ());
+							ctx.SetSourceColor (Styles.LogView.DiffRemoveBackgroundColor.AddLight (0.1).ToCairoColor ());
 						else {
-							ctx.SetSourceColor (widget.Style.Base (Gtk.StateType.Prelight).AddLight (0.1).ToCairoColor ());
+							ctx.SetSourceColor (Styles.LogView.DiffHighlightColor.ToCairoColor ());
 							xrow -= LeftPaddingBlock;
 							wrow += LeftPaddingBlock;
 						}
@@ -298,7 +293,7 @@ namespace MonoDevelop.VersionControl.Views
 					
 					// Finally draw the change symbol at the left margin
 					
-					DrawChangeSymbol (ctx, cell_area.X + 1, cell_area.Width - 2, block);
+					DrawChangeSymbol (ctx, widget, cell_area.X + 1, cell_area.Width - 2, block);
 				}
 				
 				// Finish the drawing of the code segment
@@ -353,16 +348,16 @@ namespace MonoDevelop.VersionControl.Views
 			int bottomSpacing = (lineHeight - spacing) / 2;
 			
 			ctx.Rectangle (x + shadowSize + 0.5, firstBlock.YStart + bottomSpacing + spacing - shadowSize + 0.5, width - shadowSize*2, shadowSize);
-			ctx.SetSourceRGB (0.9, 0.9, 0.9);
+			ctx.SetSourceColor (Styles.LogView.DiffBoxSplitterColor.ToCairoColor ());
 			ctx.LineWidth = 1;
 			ctx.Fill ();
 			
 			ctx.Rectangle (x + shadowSize + 0.5, lastBlock.YEnd + bottomSpacing + 0.5, width - shadowSize*2, shadowSize);
-			ctx.SetSourceRGB (0.9, 0.9, 0.9);
+			ctx.SetSourceColor (Styles.LogView.DiffBoxSplitterColor.ToCairoColor ());
 			ctx.Fill ();
 			
 			ctx.Rectangle (x + 0.5, firstBlock.YStart + bottomSpacing + spacing + 0.5, width, lastBlock.YEnd - firstBlock.YStart - spacing);
-			ctx.SetSourceRGB (0.7,0.7,0.7);
+			ctx.SetSourceColor (Styles.LogView.DiffBoxBorderColor.ToCairoColor ());
 			ctx.Stroke ();
 			
 			string text = lines[firstBlock.FirstLine].Replace ("@","").Replace ("-","");
@@ -380,7 +375,7 @@ namespace MonoDevelop.VersionControl.Views
 			ctx.LineWidth = 1;
 			ctx.SetSourceColor (widget.Style.Base (StateType.Normal).ToCairoColor ());
 			ctx.FillPreserve ();
-			ctx.SetSourceRGB (0.7, 0.7, 0.7);
+			ctx.SetSourceColor (Styles.LogView.DiffBoxBorderColor.ToCairoColor ());
 			ctx.Stroke ();
 				
 			window.DrawLayout (gc, (int)(x + 2 + LeftPaddingBlock), firstBlock.YStart + dy, layout);
@@ -400,7 +395,7 @@ namespace MonoDevelop.VersionControl.Views
 			ctx.LineWidth = 1;
 			ctx.SetSourceColor (widget.Style.Base (Gtk.StateType.Normal).ToCairoColor ());
 			ctx.FillPreserve ();
-			ctx.SetSourceRGB (0.7, 0.7, 0.7);
+			ctx.SetSourceColor (Styles.LogView.DiffBoxBorderColor.ToCairoColor ());
 			ctx.Stroke ();
 
 			window.DrawLayout (gc, right - tw - 1, top + dy, layout);
@@ -411,7 +406,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (!IsChangeBlock (block.Type))
 				return;
 			
-			Gdk.Color color = block.Type == BlockType.Added ? baseAddColor : baseRemoveColor;
+			var color = block.Type == BlockType.Added ? Styles.LogView.DiffAddBackgroundColor : Styles.LogView.DiffRemoveBackgroundColor;
 			double y = block.YStart;
 			int height = block.YEnd - block.YStart;
 			
@@ -441,6 +436,8 @@ namespace MonoDevelop.VersionControl.Views
 			ctx.Fill ();
 			
 			ctx.Rectangle (markerx, y, width - markerx, height);
+
+			// FIXME: VV: Remove gradient features
 			using (Cairo.Gradient pat = new Cairo.LinearGradient (x, y, x + width, y)) {
 				pat.AddColorStop (0, color.AddLight (0.21).ToCairoColor ());
 				pat.AddColorStop (1, color.AddLight (0.3).ToCairoColor ());
@@ -448,55 +445,24 @@ namespace MonoDevelop.VersionControl.Views
 				ctx.Fill ();
 			}
 		}
+
+		static Xwt.Drawing.Image gutterAdded = Xwt.Drawing.Image.FromResource ("gutter-added-15.png");
+		static Xwt.Drawing.Image gutterRemoved = Xwt.Drawing.Image.FromResource ("gutter-removed-15.png");
 		
-		void DrawChangeSymbol (Cairo.Context ctx, double x, int width, BlockInfo block)
+		void DrawChangeSymbol (Cairo.Context ctx, Widget widget, double x, int width, BlockInfo block)
 		{
 			if (!IsChangeBlock (block.Type))
 				return;
-			
-			Gdk.Color color = block.Type == BlockType.Added ? baseAddColor : baseRemoveColor;
 
-			int ssize = 8;
-			int barSize = 3;
-			
-			if (ssize - 2 > lineHeight)
-				ssize = lineHeight - 2;
-			if (ssize <= 0)
-				return;
-
-			double inSize = (ssize / 2) - (barSize / 2);
-			double py = block.YStart + ((block.YEnd - block.YStart) / 2 - ssize / 2) + 0.5;
-			double px = x + (LeftPaddingBlock/2) - (ssize / 2) + 0.5;
-			
 			if (block.Type == BlockType.Added) {
-				ctx.MoveTo (px + inSize, py);
-				ctx.RelLineTo (barSize, 0);
-				ctx.RelLineTo (0, inSize);
-				ctx.RelLineTo (inSize, 0);
-				ctx.RelLineTo (0, barSize);
-				ctx.RelLineTo (-inSize, 0);
-				ctx.RelLineTo (0, inSize);
-				ctx.RelLineTo (-barSize, 0);
-				ctx.RelLineTo (0, -inSize);
-				ctx.RelLineTo (-inSize, 0);
-				ctx.RelLineTo (0, -barSize);
-				ctx.RelLineTo (inSize, 0);
-				ctx.RelLineTo (0, -inSize);
-				ctx.ClosePath ();
+				var ix = x + (LeftPaddingBlock/2) - (gutterAdded.Width / 2);
+				var iy = block.YStart + ((block.YEnd - block.YStart) / 2 - gutterAdded.Height / 2);
+				ctx.DrawImage (widget, gutterAdded, ix, iy);
 			} else {
-				ctx.MoveTo (px, py + inSize);
-				ctx.RelLineTo (ssize, 0);
-				ctx.RelLineTo (0, barSize);
-				ctx.RelLineTo (-ssize, 0);
-				ctx.RelLineTo (0, -barSize);
-				ctx.ClosePath ();
+				var ix = x + (LeftPaddingBlock/2) - (gutterRemoved.Width / 2);
+				var iy = block.YStart + ((block.YEnd - block.YStart) / 2 - gutterRemoved.Height / 2);
+				ctx.DrawImage (widget, gutterRemoved, ix, iy);
 			}
-			
-			ctx.SetSourceColor (color.ToCairoColor ());
-			ctx.FillPreserve ();
-			ctx.SetSourceColor (color.AddLight (-0.2).ToCairoColor ());
-			ctx.LineWidth = 1;
-			ctx.Stroke ();
 		}
 		
 		public override void GetSize (Widget widget, ref Rectangle cell_area, out int x_offset, out int y_offset, out int c_width, out int c_height)

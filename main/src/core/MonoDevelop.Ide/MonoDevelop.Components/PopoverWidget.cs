@@ -173,12 +173,11 @@ namespace MonoDevelop.Components
 				if (Theme.DrawPager) {
 					Theme.RenderPager (context, 
 					                   PangoContext,
-					                   new Gdk.Rectangle (Allocation.X, Allocation.Y, paintSize.Width, paintSize.Height));
+					                   BorderAllocation);
 				}
 
-				Theme.RenderBorder (context, BorderAllocation, position);
+				Theme.RenderShadow (context, BorderAllocation, position);
 				context.Restore ();
-
 			}
 			return base.OnExposeEvent (evnt);
 		}

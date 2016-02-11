@@ -204,7 +204,7 @@ namespace MonoDevelop.NUnit
 			buttonOutput = new ToggleButton ();
 			buttonOutput.Label = GettextCatalog.GetString ("Output");
 			buttonOutput.Active = false;
-			buttonOutput.Image = ImageService.GetImage (MonoDevelop.Ide.Gui.Stock.OutputIcon, IconSize.Menu);
+			buttonOutput.Image = new ImageView (MonoDevelop.Ide.Gui.Stock.OutputIcon, IconSize.Menu);
 			buttonOutput.Image.Show ();
 			buttonOutput.Toggled += new EventHandler (OnShowOutputToggled);
 			buttonOutput.TooltipText = GettextCatalog.GetString ("Show Output");
@@ -214,12 +214,12 @@ namespace MonoDevelop.NUnit
 			
 			buttonRun = new Button ();
 			buttonRun.Label = GettextCatalog.GetString ("Rerun Tests");
-			buttonRun.Image = new ImageView (ImageService.GetIcon ("nunit-run", IconSize.Menu));
+			buttonRun.Image = new ImageView ("md-execute-all", IconSize.Menu);
 			buttonRun.Image.Show ();
 			buttonRun.Sensitive = false;
 			toolbar.Add (buttonRun);
 			
-			buttonStop = new Button (new Gtk.Image (Ide.Gui.Stock.Stop, Gtk.IconSize.Menu));
+			buttonStop = new Button (new ImageView (Ide.Gui.Stock.Stop, Gtk.IconSize.Menu));
 			toolbar.Add (buttonStop);
 			toolbar.ShowAll ();
 			

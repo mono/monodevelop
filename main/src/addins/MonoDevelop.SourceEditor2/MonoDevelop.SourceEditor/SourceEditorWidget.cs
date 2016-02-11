@@ -64,6 +64,10 @@ namespace MonoDevelop.SourceEditor
 		TextEditorData textEditorData;
 		
 		const uint CHILD_PADDING = 0;
+
+		// VV: I removed the animation since it was very slow especially on @2x
+		// TODO: Maybe the AddAnimationWidget () shouldn't be used at all
+		const uint ANIMATION_DURATION = 0; // 300
 		
 //		bool shouldShowclassBrowser;
 //		bool canShowClassBrowser;
@@ -201,6 +205,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			SourceEditorWidget parent;
 			ScrolledWindow scrolledWindow;
+			EventBox scrolledBackground;
 			
 			QuickTaskStrip strip;
 			
@@ -227,9 +232,11 @@ namespace MonoDevelop.SourceEditor
 				this.parent = parent;
 				this.strip = new QuickTaskStrip ();
 
+				scrolledBackground = new EventBox ();
 				scrolledWindow = new CompactScrolledWindow ();
 				scrolledWindow.ButtonPressEvent += PrepareEvent;
-				PackStart (scrolledWindow, true, true, 0);
+				scrolledBackground.Add (scrolledWindow);
+				PackStart (scrolledBackground, true, true, 0);
 				strip.VAdjustment = scrolledWindow.Vadjustment;
 				PackEnd (strip, false, true, 0);
 
@@ -341,7 +348,7 @@ namespace MonoDevelop.SourceEditor
 			{
 				scrolledWindow.Child = container;
 				this.strip.TextEditor = container;
-//				container.TextEditorWidget.EditorOptionsChanged += OptionsChanged;
+				container.EditorOptionsChanged += OptionsChanged;
 				container.Caret.ModeChanged += parent.UpdateLineColOnEventHandler;
 				container.Caret.PositionChanged += parent.CaretPositionChanged;
 				container.SelectionChanged += parent.UpdateLineColOnEventHandler;
@@ -349,8 +356,8 @@ namespace MonoDevelop.SourceEditor
 			
 			void OptionsChanged (object sender, EventArgs e)
 			{
-				var editor = (Mono.TextEditor.MonoTextEditor)sender;
-				scrolledWindow.ModifyBg (StateType.Normal, (HslColor)editor.ColorStyle.PlainText.Background);
+				var editor = (Mono.TextEditor.MonoTextEditor)scrolledWindow.Child;
+				scrolledBackground.ModifyBg (StateType.Normal, (HslColor)editor.ColorStyle.PlainText.Background);
 			}
 			
 			void RemoveEvents ()
@@ -361,7 +368,7 @@ namespace MonoDevelop.SourceEditor
 					LoggingService.LogError ("can't remove events from text editor container.");
 					return;
 				}
-//				container.TextEditorWidget.EditorOptionsChanged -= OptionsChanged;
+				container.EditorOptionsChanged -= OptionsChanged;
 				container.Caret.ModeChanged -= parent.UpdateLineColOnEventHandler;
 				container.Caret.PositionChanged -= parent.CaretPositionChanged;
 				container.SelectionChanged -= parent.UpdateLineColOnEventHandler;
@@ -714,7 +721,7 @@ namespace MonoDevelop.SourceEditor
 					EllipsizeMiddle (Document.FileName, 50), BrandingService.ApplicationName));
 				
 				var b1 = new Button (GettextCatalog.GetString ("_Reload from disk"));
-				b1.Image = ImageService.GetImage (Gtk.Stock.Refresh, IconSize.Button);
+				b1.Image = new ImageView (Gtk.Stock.Refresh, IconSize.Button);
 				b1.Clicked += delegate {
 					Reload ();
 					view.TextEditor.GrabFocus ();
@@ -722,7 +729,7 @@ namespace MonoDevelop.SourceEditor
 				messageBar.ActionArea.Add (b1);
 				
 				var b2 = new Button (GettextCatalog.GetString ("_Keep changes"));
-				b2.Image = ImageService.GetImage (Gtk.Stock.Cancel, IconSize.Button);
+				b2.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
 				b2.Clicked += delegate {
 					RemoveMessageBar ();
 					view.LastSaveTimeUtc = System.IO.File.GetLastWriteTimeUtc (view.ContentName);
@@ -732,14 +739,14 @@ namespace MonoDevelop.SourceEditor
 
 				if (multiple) {
 					var b3 = new Button (GettextCatalog.GetString ("_Reload all"));
-					b3.Image = ImageService.GetImage (Gtk.Stock.Cancel, IconSize.Button);
+					b3.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
 					b3.Clicked += delegate {
 						FileRegistry.ReloadAllChangedFiles ();
 					};
 					messageBar.ActionArea.Add (b3);
 	
 					var b4 = new Button (GettextCatalog.GetString ("_Ignore all"));
-					b4.Image = ImageService.GetImage (Gtk.Stock.Cancel, IconSize.Button);
+					b4.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
 					b4.Clicked += delegate {
 						FileRegistry.IgnoreAllChangedFiles ();
 					};
@@ -967,7 +974,7 @@ namespace MonoDevelop.SourceEditor
 					    "Do you want to use the original file, or load from the autosave file?")));
 				
 				Button b1 = new Button (GettextCatalog.GetString("_Use original file"));
-				b1.Image = ImageService.GetImage (Gtk.Stock.Refresh, IconSize.Button);
+				b1.Image = new ImageView (Gtk.Stock.Refresh, IconSize.Button);
 				b1.Clicked += delegate {
 					try {
 						AutoSave.RemoveAutoSaveFile (fileName);
@@ -983,7 +990,7 @@ namespace MonoDevelop.SourceEditor
 				messageBar.ActionArea.Add (b1);
 				
 				Button b2 = new Button (GettextCatalog.GetString("_Load from autosave"));
-				b2.Image = ImageService.GetImage (Gtk.Stock.RevertToSaved, IconSize.Button);
+				b2.Image = new ImageView (Gtk.Stock.RevertToSaved, IconSize.Button);
 				b2.Clicked += delegate {
 					try {
 						var content = AutoSave.LoadAndRemoveAutoSave (fileName);
@@ -1188,7 +1195,7 @@ namespace MonoDevelop.SourceEditor
 				searchAndReplaceWidgetFrame.Child = searchAndReplaceWidget = new SearchAndReplaceWidget (TextEditor, searchAndReplaceWidgetFrame);
 				searchAndReplaceWidget.Destroyed += (sender, e) => RemoveSearchWidget ();
 				searchAndReplaceWidgetFrame.ShowAll ();
-				this.TextEditor.AddAnimatedWidget (searchAndReplaceWidgetFrame, 300, Mono.TextEditor.Theatrics.Easing.ExponentialInOut, Blocking.Downstage, TextEditor.Allocation.Width - 400, -searchAndReplaceWidget.Allocation.Height);
+				this.TextEditor.AddAnimatedWidget (searchAndReplaceWidgetFrame, ANIMATION_DURATION, Mono.TextEditor.Theatrics.Easing.ExponentialInOut, Blocking.Downstage, TextEditor.Allocation.Width - 400, -searchAndReplaceWidget.Allocation.Height);
 //				this.PackEnd (searchAndReplaceWidget);
 //				this.SetChildPacking (searchAndReplaceWidget, false, false, CHILD_PADDING, PackType.End);
 				//		searchAndReplaceWidget.ShowAll ();
@@ -1229,7 +1236,7 @@ namespace MonoDevelop.SourceEditor
 				gotoLineNumberWidgetFrame.Child = gotoLineNumberWidget = new GotoLineNumberWidget (textEditor, gotoLineNumberWidgetFrame);
 				gotoLineNumberWidget.Destroyed += (sender, e) => RemoveSearchWidget ();
 				gotoLineNumberWidgetFrame.ShowAll ();
-				TextEditor.AddAnimatedWidget (gotoLineNumberWidgetFrame, 300, Mono.TextEditor.Theatrics.Easing.ExponentialInOut, Mono.TextEditor.Theatrics.Blocking.Downstage, this.TextEditor.Allocation.Width - 400, -gotoLineNumberWidget.Allocation.Height);
+				TextEditor.AddAnimatedWidget (gotoLineNumberWidgetFrame, ANIMATION_DURATION, Mono.TextEditor.Theatrics.Easing.ExponentialInOut, Mono.TextEditor.Theatrics.Blocking.Downstage, this.TextEditor.Allocation.Width - 400, -gotoLineNumberWidget.Allocation.Height);
 				
 				ResetFocusChain ();
 			}

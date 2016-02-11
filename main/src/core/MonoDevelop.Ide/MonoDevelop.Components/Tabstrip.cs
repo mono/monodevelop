@@ -31,15 +31,13 @@ using System.Drawing.Design;
 using Cairo;
 using Gtk;
 using System.Linq;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Components
 {
 	class Tabstrip : DrawingArea
 	{
-		static readonly Cairo.Color BackgroundGradientStart = new Cairo.Color (241d / 255d, 241d / 255d, 241d / 255d);
-		static readonly Cairo.Color BackgroundGradientEnd = BackgroundGradientStart;//new Cairo.Color (224d / 255d, 224d / 255d, 224d / 255d);
-		internal static readonly Cairo.Color ActiveGradientStart = new Cairo.Color (92d / 255d, 93d / 255d, 94d / 255d);
-		internal static readonly Cairo.Color ActiveGradientEnd = new Cairo.Color (134d / 255d, 136d / 255d, 137d / 255d);
 
 		readonly List<Tab> tabs = new List<Tab> ();
 		readonly List<Cairo.PointD> tabSizes = new List<Cairo.PointD> ();
@@ -180,18 +178,8 @@ namespace MonoDevelop.Components
 		{
 			using (var cr = Gdk.CairoHelper.Create (evnt.Window)) {
 				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				using (LinearGradient gr = new LinearGradient (0, 0, 0, Allocation.Height)) {
-					gr.AddColorStop (0, BackgroundGradientStart);
-					gr.AddColorStop (1, BackgroundGradientEnd);
-					cr.SetSource (gr);
-				}
+				cr.SetSourceColor (Styles.SubTabBarBackgroundColor.ToCairoColor ());
 				cr.Fill ();
-
-				cr.MoveTo (0.5, 0.5);
-				cr.Line (0.5, 0.5, Allocation.Width - 1, 0.5);
-				cr.SetSourceRGB (1,1,1);
-				cr.LineWidth = 1;
-				cr.Stroke ();
 
 				for (int i = tabs.Count; i --> 0;) {
 					if (i == ActiveTab)
@@ -274,7 +262,9 @@ namespace MonoDevelop.Components
 		{
 			this.parent = parent;
 			this.Label = label;
+
 			layout = PangoUtil.CreateLayout (parent);
+			layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11);
 			layout.SetText (label);
 			layout.Alignment = Pango.Alignment.Center;
 			layout.GetPixelSize (out w, out h);
@@ -288,9 +278,9 @@ namespace MonoDevelop.Components
 		public Cairo.PointD Size {
 			get {
 				if (IsSeparator)
-					return new Cairo.PointD (w, h + Padding*2);
+					return new Cairo.PointD (w, h + Padding * 2);
 				else
-					return new Cairo.PointD (Math.Max (45, w + SpacerWidth * 2), h + Padding*2);
+					return new Cairo.PointD (Math.Max (45, w + SpacerWidth * 2), h + Padding * 2);
 			}
 		}
 		
@@ -302,7 +292,7 @@ namespace MonoDevelop.Components
 				cr.MoveTo (x, rectangle.Y + 0.5 + 2);
 				cr.RelLineTo (0, rectangle.Height - 1 - 4);
 				cr.ClosePath ();
-				cr.SetSourceColor (parent.Style.Dark (StateType.Normal).ToCairoColor ());
+				cr.SetSourceColor (Styles.SubTabBarSeparatorColor.ToCairoColor ());
 				cr.LineWidth = 1;
 				cr.Stroke ();
 				return;
@@ -311,50 +301,26 @@ namespace MonoDevelop.Components
 			if (Active || HoverPosition.X >= 0) {
 				if (Active) {
 					cr.Rectangle (rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
-					using (var gr = new LinearGradient (rectangle.X, rectangle.Y, rectangle.X, rectangle.Y + rectangle.Height)) {
-						gr.AddColorStop (0, Tabstrip.ActiveGradientStart);
-						gr.AddColorStop (1, Tabstrip.ActiveGradientEnd);
-						cr.SetSource (gr);
-					}
+					cr.SetSourceColor (Styles.SubTabBarActiveBackgroundColor.ToCairoColor ());
 					cr.Fill ();
-					cr.Rectangle (rectangle.X + 0.5, rectangle.Y + 0.5, rectangle.Width - 1, rectangle.Height - 1);
-					cr.SetSourceRGBA (1, 1, 1, 0.05);
-					cr.LineWidth = 1;
-					cr.Stroke ();
 				} else if (HoverPosition.X >= 0) {
 					cr.Rectangle (rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
-					using (var gr = new LinearGradient (rectangle.X, rectangle.Y, rectangle.X, rectangle.Y + rectangle.Height)) {
-						var c1 = Tabstrip.ActiveGradientStart;
-						var c2 = Tabstrip.ActiveGradientEnd;
-						c1.A = 0.2;
-						c2.A = 0.2;
-						gr.AddColorStop (0, c1);
-						gr.AddColorStop (1, c2);
-						cr.SetSource (gr);
-					}
+					cr.SetSourceColor (Styles.SubTabBarHoverBackgroundColor.ToCairoColor ());
 					cr.Fill ();
 				}
 			}
 
-			if (Active)
-				cr.SetSourceRGB (1, 1, 1);
-			else
-				cr.SetSourceColor (parent.Style.Text (StateType.Normal).ToCairoColor ());
+			if (Active) {
+				cr.SetSourceColor (Styles.SubTabBarActiveTextColor.ToCairoColor ());
+				layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11, Pango.Weight.Bold);
+			} else {
+				cr.SetSourceColor (Styles.SubTabBarTextColor.ToCairoColor ());
+				layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11);
+			}
 
-			if (layout.Width != (int)rectangle.Width)
-				layout.Width = (int)rectangle.Width;
+			layout.Width = (int)rectangle.Width;
 
-			#if MAC
-			/* On Cocoa, Pango doesn't render text correctly using layout width/height computation.
-			 * For instance here we need to balance some kind of internal padding by two pixels which
-			 * only happens on Mac.
-			 */
-			const int verticalOffset = -2;
-			#else
-			const int verticalOffset = 0;
-			#endif
-
-			cr.MoveTo (rectangle.X + (int)(rectangle.Width / 2), (rectangle.Height - h) / 2 + verticalOffset);
+			cr.MoveTo (rectangle.X + (int)(rectangle.Width / 2), (rectangle.Height - h) / 2 - 1);
 			Pango.CairoHelper.ShowLayout (cr, layout);
 		}
 		

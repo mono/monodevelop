@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -179,13 +180,6 @@ namespace MonoDevelop.SourceEditor
 			};
 			FilterHistory (seachHistoryProperty);
 			FilterHistory (replaceHistoryProperty);
-			//HACK: GTK rendering issue on Mac, images don't repaint unless we put them in visible eventboxes
-			if (Platform.IsMac) {
-				foreach (var eb in new [] { eventbox2, eventbox3, eventbox4, eventbox5, eventbox6 }) {
-					eb.VisibleWindow = true;
-					eb.ModifyBg (StateType.Normal, new Gdk.Color (245, 245, 245));
-				}
-			}
 
 			if (String.IsNullOrEmpty (textEditor.SearchPattern)) {
 				textEditor.SearchPattern = SearchAndReplaceOptions.SearchPattern;
@@ -312,7 +306,7 @@ namespace MonoDevelop.SourceEditor
 			resultInformLabelEventBox.BorderWidth = 2;
 			resultInformLabel.Xpad = 2;
 			resultInformLabel.Show ();
-			searchEntry.FilterButtonPixbuf = Xwt.Drawing.Image.FromResource ("searchoptions.png");
+			searchEntry.FilterButtonPixbuf = Xwt.Drawing.Image.FromResource ("find-options-22x32.png");
 
 			if (textEditor.IsSomethingSelected) {
 				if (textEditor.MainSelection.MinLine == textEditor.MainSelection.MaxLine || ClipboardContainsSelection()) {
@@ -810,8 +804,7 @@ But I leave it in in the case I've missed something. Mike
 			if (!valid || textEditor.TextViewMargin.SearchResultMatchCount == 0) {
 				//resultInformLabel.Markup = "<span foreground=\"#000000\" background=\"" + MonoDevelop.Components.PangoCairoHelper.GetColorString (GotoLineNumberWidget.errorColor) + "\">" + GettextCatalog.GetString ("Not found") + "</span>";
 				resultInformLabel.Text = GettextCatalog.GetString ("Not found");
-				resultInformLabelEventBox.ModifyBg (StateType.Normal, GotoLineNumberWidget.errorColor);
-				resultInformLabel.ModifyFg (StateType.Normal, searchEntry.Entry.Style.Foreground (StateType.Normal));
+				resultInformLabel.ModifyFg (StateType.Normal, Ide.Gui.Styles.Editor.SearchErrorForegroundColor.ToGdkColor ());
 			} else {
 				int resultIndex = 0;
 				int foundIndex = -1;

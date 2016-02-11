@@ -66,6 +66,31 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
+		public static ColorScheme GetDefaultColorStyle (this Skin skin)
+		{
+			switch (skin) {
+				case Skin.Light:
+					return GetColorStyle (IdePreferences.DefaultLightColorScheme);
+				case Skin.Dark:
+					return GetColorStyle (IdePreferences.DefaultDarkColorScheme);
+				default:
+					throw new InvalidOperationException ();
+			}
+		}
+
+		public static ColorScheme GetUserColorStyle (this Skin skin)
+		{
+			var schemeName = IdeApp.Preferences.ColorScheme.ValueForSkin (skin);
+			return GetColorStyle (schemeName);
+		}
+
+		public static bool FitsIdeSkin (this ColorScheme scheme, Skin skin)
+		{
+			if (skin == Skin.Dark)
+				return (scheme.PlainText.Background.L <= 0.5);
+			return (scheme.PlainText.Background.L > 0.5);
+		}
+
 		public static ColorScheme GetColorStyle (string name)
 		{
 			if (styles.ContainsKey (name))

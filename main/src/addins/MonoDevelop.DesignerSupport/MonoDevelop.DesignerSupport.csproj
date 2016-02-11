@@ -172,11 +172,35 @@
     <EmbeddedResource Include="icons\compact-display-16%402x.png">
       <LogicalName>compact-display-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\compact-display-16~dark.png">
+      <LogicalName>compact-display-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\compact-display-16~dark%402x.png">
+      <LogicalName>compact-display-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-properties-16.png">
       <LogicalName>pad-properties-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-properties-16%402x.png">
       <LogicalName>pad-properties-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-properties-16~dark.png">
+      <LogicalName>pad-properties-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-properties-16~dark%402x.png">
+      <LogicalName>pad-properties-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-properties-16~sel.png">
+      <LogicalName>pad-properties-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-properties-16~sel%402x.png">
+      <LogicalName>pad-properties-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-properties-16~dark~sel.png">
+      <LogicalName>pad-properties-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-properties-16~dark~sel%402x.png">
+      <LogicalName>pad-properties-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-toolbox-16.png">
       <LogicalName>pad-toolbox-16.png</LogicalName>
@@ -184,11 +208,47 @@
     <EmbeddedResource Include="icons\pad-toolbox-16%402x.png">
       <LogicalName>pad-toolbox-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-toolbox-16~dark.png">
+      <LogicalName>pad-toolbox-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-toolbox-16~dark%402x.png">
+      <LogicalName>pad-toolbox-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-toolbox-16~sel.png">
+      <LogicalName>pad-toolbox-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-toolbox-16~sel%402x.png">
+      <LogicalName>pad-toolbox-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-toolbox-16~dark~sel.png">
+      <LogicalName>pad-toolbox-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-toolbox-16~dark~sel%402x.png">
+      <LogicalName>pad-toolbox-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-document-outline-16.png">
       <LogicalName>pad-document-outline-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-document-outline-16%402x.png">
       <LogicalName>pad-document-outline-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-document-outline-16~dark.png">
+      <LogicalName>pad-document-outline-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-document-outline-16~dark%402x.png">
+      <LogicalName>pad-document-outline-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-document-outline-16~sel.png">
+      <LogicalName>pad-document-outline-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-document-outline-16~sel%402x.png">
+      <LogicalName>pad-document-outline-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-document-outline-16~dark~sel.png">
+      <LogicalName>pad-document-outline-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-document-outline-16~dark~sel%402x.png">
+      <LogicalName>pad-document-outline-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

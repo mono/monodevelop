@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (Style != null) {
 				if (toolbar.IconSize == Gtk.IconSize.Menu || toolbar.IconSize == Gtk.IconSize.SmallToolbar) {
-					Pango.FontDescription fd = Style.FontDescription.Copy ();
+					Pango.FontDescription fd = Style.FontDescription.Copy (); // TODO: VV: Use FontService
 					fd.Size = (int) (fd.Size * Pango.Scale.Small);
 					ctx.FontDesc = fd;
 				} else {

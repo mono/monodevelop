@@ -2051,7 +2051,7 @@ namespace MonoDevelop.SourceEditor
 		
 		static SourceEditorView ()
 		{
-			CodeSegmentPreviewWindow.CodeSegmentPreviewInformString = GettextCatalog.GetString ("Press 'F2' for focus");
+			CodeSegmentPreviewWindow.CodeSegmentPreviewInformString = GettextCatalog.GetString ("Press F2 to focus");
 			ClipboardActions.CopyOperation.Copy += delegate (string text) {
 				if (String.IsNullOrEmpty (text))
 					return;
@@ -2966,9 +2966,9 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		string ITextEditorImpl.GetPangoMarkup (int offset, int length)
+		string ITextEditorImpl.GetPangoMarkup (int offset, int length, bool fitIdeStyle)
 		{
-			return TextEditor.GetTextEditorData ().GetMarkup (offset, length, false, replaceTabs:false);
+			return TextEditor.GetTextEditorData ().GetMarkup (offset, length, false, replaceTabs:false, fitIdeStyle:fitIdeStyle);
 		}
 
 		void ITextEditorImpl.SetUsageTaskProviders (IEnumerable<UsageProviderEditorExtension> providers)

@@ -73,6 +73,7 @@ namespace MonoDevelop.Components.Commands
 		}
 		
 		IconId stockId = null;
+		ImageView iconWidget;
 		
 		void Update (CommandInfo cmdInfo)
 		{
@@ -91,8 +92,10 @@ namespace MonoDevelop.Components.Commands
 				Label = cmdInfo.Text;
 			if (cmdInfo.Icon != stockId) {
 				stockId = cmdInfo.Icon;
-				this.IconWidget = new Gtk.Image (cmdInfo.Icon, Gtk.IconSize.Menu);
+				this.IconWidget = iconWidget = new ImageView (cmdInfo.Icon, Gtk.IconSize.Menu);
 			}
+			if (IconWidget != null && cmdInfo.Enabled != Sensitive)
+				iconWidget.Image = iconWidget.Image.WithStyles (cmdInfo.Enabled ? "" : "disabled").WithAlpha (cmdInfo.Enabled ? 1.0 : 0.4);
 			if (cmdInfo.Enabled != Sensitive)
 				Sensitive = cmdInfo.Enabled;
 			if (cmdInfo.Visible != Visible)

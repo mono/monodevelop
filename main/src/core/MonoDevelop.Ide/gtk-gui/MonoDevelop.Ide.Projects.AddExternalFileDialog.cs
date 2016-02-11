@@ -5,22 +5,39 @@ namespace MonoDevelop.Ide.Projects
 	internal partial class AddExternalFileDialog
 	{
 		private global::Gtk.HBox hbox1;
+		
 		private global::Gtk.VBox vbox3;
-		private global::Gtk.Image image23;
+		
+		private global::MonoDevelop.Components.ImageView iconQuestion;
+		
 		private global::Gtk.VBox vbox2;
+		
 		private global::Gtk.Label labelTitle;
+		
 		private global::Gtk.Alignment alignment1;
+		
 		private global::Gtk.VBox vbox4;
+		
 		private global::Gtk.RadioButton radioKeep;
+		
 		private global::Gtk.Label labelKeep;
+		
 		private global::Gtk.RadioButton radioCopy;
+		
 		private global::Gtk.Label label4;
+		
 		private global::Gtk.RadioButton radioMove;
+		
 		private global::Gtk.Label label5;
+		
 		private global::Gtk.RadioButton radioLink;
+		
 		private global::Gtk.Label label6;
+		
 		private global::Gtk.CheckButton checkApplyAll;
+		
 		private global::Gtk.Button buttonCancel;
+		
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -44,11 +61,12 @@ namespace MonoDevelop.Ide.Projects
 			this.vbox3.Name = "vbox3";
 			this.vbox3.Spacing = 6;
 			// Container child vbox3.Gtk.Box+BoxChild
-			this.image23 = new global::Gtk.Image ();
-			this.image23.Name = "image23";
-			this.image23.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-question", global::Gtk.IconSize.Dialog);
-			this.vbox3.Add (this.image23);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.image23]));
+			this.iconQuestion = new global::MonoDevelop.Components.ImageView ();
+			this.iconQuestion.Name = "iconQuestion";
+			this.iconQuestion.IconId = "gtk-dialog-question";
+			this.iconQuestion.IconSize = ((global::Gtk.IconSize)(6));
+			this.vbox3.Add (this.iconQuestion);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.iconQuestion]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;

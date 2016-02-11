@@ -89,18 +89,20 @@ namespace MonoDevelop.Components.PropertyGrid
 			toolbar = tb;
 			
 			catButton = new RadioButton ((Gtk.RadioButton)null);
+			catButton.Name = "MonoDevelop.PropertyGridToolbar.GtkRadioButton";
 			catButton.DrawIndicator = false;
 			catButton.Relief = ReliefStyle.None;
-			catButton.Image = new Gtk.Image (MonoDevelop.Ide.Gui.Stock.GroupByCategory, IconSize.Menu);
+			catButton.Image = new ImageView (MonoDevelop.Ide.Gui.Stock.GroupByCategory, IconSize.Menu);
 			catButton.Image.Show ();
 			catButton.TooltipText = GettextCatalog.GetString ("Sort in categories");
 			catButton.Toggled += new EventHandler (toolbarClick);
 			toolbar.Insert (catButton, 0);
 			
 			alphButton = new RadioButton (catButton);
+			alphButton.Name = "MonoDevelop.PropertyGridToolbar.GtkRadioButton";
 			alphButton.DrawIndicator = false;
 			alphButton.Relief = ReliefStyle.None;
-			alphButton.Image = new Gtk.Image (MonoDevelop.Ide.Gui.Stock.SortAlphabetically, IconSize.Menu);
+			alphButton.Image = new ImageView (MonoDevelop.Ide.Gui.Stock.SortAlphabetically, IconSize.Menu);
 			alphButton.Image.Show ();
 			alphButton.TooltipText = GettextCatalog.GetString ("Sort alphabetically");
 			alphButton.Clicked += new EventHandler (toolbarClick);
@@ -378,7 +380,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			descTextView.LeftMargin = 5;
 			descTextView.RightMargin = 5;
 			
-			Pango.FontDescription font = Style.FontDescription.Copy ();
+			Pango.FontDescription font = Style.FontDescription.Copy (); // TODO: VV: Use FontService
 			font.Size = (font.Size * 8) / 10;
 			descTextView.ModifyFont (font);
 			
@@ -449,6 +451,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			DrawIndicator = false;
 			Relief = ReliefStyle.None;
 			NoShowAll = true;
+			Name = "MonoDevelop.PropertyGridToolbar.GtkRadioButton";
 		}
 		
 		public PropertyTab Tab;

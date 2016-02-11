@@ -70,6 +70,38 @@ namespace MonoDevelop.SourceEditor
 		ObjectValueTreeView tree;
 		ScrolledWindow sw;
 
+		static readonly string innerTreeName = "MonoDevelop.SourceEditor.DebugValueWindow.ObjectValueTreeView";
+		static string currentBgColor;
+
+		static DebugValueWindow ()
+		{
+			UpdateTreeStyle (Ide.Gui.Styles.PopoverWindow.DefaultBackgroundColor.ToCairoColor ());
+			Ide.Gui.Styles.Changed += (sender, e) => UpdateTreeStyle (Ide.Gui.Styles.PopoverWindow.DefaultBackgroundColor.ToCairoColor ());
+		}
+
+		static void UpdateTreeStyle (Cairo.Color newBgColor)
+		{
+			string oddRowColor, bgColor;
+
+			bgColor = CairoExtensions.ColorGetHex (newBgColor);
+			if (bgColor == currentBgColor)
+				return;
+
+			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+				oddRowColor = CairoExtensions.ColorGetHex (newBgColor.AddLight (-0.02));
+			else
+				oddRowColor = CairoExtensions.ColorGetHex (newBgColor.AddLight (-0.02));
+
+			string rc = "style \"" + innerTreeName + "\" = \"treeview\" {\n";
+			rc += string.Format ("GtkTreeView::odd-row-color = \"{0}\"\n", oddRowColor);
+			rc += string.Format ("base[NORMAL] = \"{0}\"\n", bgColor);
+			rc += "\n}\n";
+			rc += string.Format ("widget \"*.{0}\" style \"{0}\" ", innerTreeName);
+
+			Rc.ParseString (rc);
+			currentBgColor = bgColor;
+		}
+
 		public DebugValueWindow (TextEditor editor, int offset, StackFrame frame, ObjectValue value, PinnedWatch watch) : base (Gtk.WindowType.Toplevel)
 		{
 			this.TypeHint = WindowTypeHint.PopupMenu;
@@ -85,7 +117,10 @@ namespace MonoDevelop.SourceEditor
 			sw.HscrollbarPolicy = PolicyType.Never;
 			sw.VscrollbarPolicy = PolicyType.Never;
 
+			UpdateTreeStyle (Theme.BackgroundColor);
 			tree = new ObjectValueTreeView ();
+			tree.Name = innerTreeName;
+
 			sw.Add (tree);
 			ContentBox.Add (sw);
 

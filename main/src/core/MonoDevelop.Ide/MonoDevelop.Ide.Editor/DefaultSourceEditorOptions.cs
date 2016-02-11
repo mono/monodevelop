@@ -258,6 +258,8 @@ namespace MonoDevelop.Ide.Editor
 			UpdateStylePolicy (currentPolicy);
 			FontService.RegisterFontChangedCallback ("Editor", UpdateFont);
 			FontService.RegisterFontChangedCallback ("MessageBubbles", UpdateFont);
+
+			IdeApp.Preferences.ColorScheme.Changed += OnColorSchemeChanged;
 		}
 
 		void UpdateFont ()
@@ -690,9 +692,13 @@ namespace MonoDevelop.Ide.Editor
 				return colorScheme;
 			}
 			set {
-				if (colorScheme.Set (value))
-					OnChanged (EventArgs.Empty);
+				colorScheme.Set (value);
 			}
+		}
+
+		void OnColorSchemeChanged (object sender, EventArgs e)
+		{
+			OnChanged (EventArgs.Empty);
 		}
 		
 		ConfigurationProperty<bool> generateFormattingUndoStep = ConfigurationProperty.Create ("GenerateFormattingUndoStep", false);
@@ -756,6 +762,7 @@ namespace MonoDevelop.Ide.Editor
 		public void Dispose ()
 		{
 			FontService.RemoveCallback (UpdateFont);
+			IdeApp.Preferences.ColorScheme.Changed -= OnColorSchemeChanged;
 		}
 
 		protected void OnChanged (EventArgs args)

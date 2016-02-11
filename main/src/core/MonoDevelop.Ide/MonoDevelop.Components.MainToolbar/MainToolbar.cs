@@ -355,14 +355,8 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 				context.MoveTo (0, Allocation.Height - 0.5);
 				context.RelLineTo (Allocation.Width, 0);
-				context.SetSourceColor (Styles.ToolbarBottomBorderColor);
+				context.SetSourceColor (Styles.ToolbarBottomBorderColor.ToCairoColor ());
 				context.Stroke ();
-
-				context.MoveTo (0, Allocation.Height - 1.5);
-				context.RelLineTo (Allocation.Width, 0);
-				context.SetSourceColor (Styles.ToolbarBottomGlowColor);
-				context.Stroke ();
-
 			}
 			return base.OnExposeEvent (evnt);
 		}
