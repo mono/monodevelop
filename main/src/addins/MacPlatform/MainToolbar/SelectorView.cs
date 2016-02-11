@@ -275,8 +275,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 							var _configuration = configuration;
 							menu.AddItem (new NSMenuItem (configuration.DisplayString, (o2, e2) => {
 								ActiveConfiguration = configurationModel.First (c => c.OriginalId == _configuration.OriginalId);
-								if (ConfigurationChanged != null)
-									ConfigurationChanged (o2, e2);
 							}) {
 								Enabled = true,
 								IndentationLevel = 1,
@@ -360,6 +358,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				set {
 					activeConfiguration = value;
 					state |= CellState.ConfigurationShown;
+					if (ConfigurationChanged != null)
+						ConfigurationChanged (this, EventArgs.Empty);
 					UpdatePathText (ConfigurationIdx, value.DisplayString);
 					OnSizeChanged ();
 				}
