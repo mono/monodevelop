@@ -87,7 +87,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 			// check if it's the first parameter and set autoselect == false if a parameterless version exists.
 			if (token.IsKind (SyntaxKind.OpenParenToken)) {
-				var symbolInfo = model.GetSymbolInfo (token.Parent.Parent);
+				var parent = token.Parent?.Parent;
+				if (parent == null)
+					return Enumerable.Empty<CompletionData> ();
+				var symbolInfo = model.GetSymbolInfo (parent);
 				foreach (var symbol in new [] { symbolInfo.Symbol }.Concat (symbolInfo.CandidateSymbols)) {
 					if (symbol != null && symbol.IsKind (SymbolKind.Method)) {
 						if (symbol.GetParameters ().Length == 0) {
