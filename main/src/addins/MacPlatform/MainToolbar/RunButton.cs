@@ -58,15 +58,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		void UpdateIcons (object sender = null, EventArgs e = null)
 		{
-			// HACK: NSButton does not support images with NSCustomImageRep used
-			//       by Xwt to draw custom/themed images. We have to convert them
-			//       to bitmaps, which has to be done after each theme/skin change,
-			//       but does not support custom per Image styles (ToBitmap does
-			//       not support images with different tags, only global styles are
-			//       supported)
-			stopIcon = ImageService.GetIcon ("stop").ToBitmap (GtkWorkarounds.GetScaleFactor ()).ToNSImage ();
-			continueIcon = ImageService.GetIcon ("continue").ToBitmap (GtkWorkarounds.GetScaleFactor ()).ToNSImage ();
-			buildIcon = ImageService.GetIcon ("build").ToBitmap (GtkWorkarounds.GetScaleFactor ()).ToNSImage ();
+			stopIcon = MultiResImage.CreateMultiResImage ("stop", "");
+			continueIcon = MultiResImage.CreateMultiResImage ("continue", "");
+			buildIcon = MultiResImage.CreateMultiResImage ("build", "");
 
 			// We can use Template images supported by NSButton, thus no reloading
 			// on theme/skin change is required.
