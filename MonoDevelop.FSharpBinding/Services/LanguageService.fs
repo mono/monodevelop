@@ -371,7 +371,7 @@ type LanguageService(dirtyNotify) as x =
                     | Choice1Of2(optsNew, _log: Map<string,string>) ->
                       //let opts = checker.GetProjectOptionsFromProjectFile(projFilename, properties)
                         projectInfoCache := cache.Add (key, optsNew)
-                        LoggingService.logDebug "LanguageService: GetProjectCheckerOptions: Generation complete for:%s", (Path.GetFileName(projFilename))
+                        LoggingService.logDebug "LanguageService: GetProjectCheckerOptions: Generation complete for:%s" (Path.GetFileName(projFilename))
                         optsNew
                     | Choice2Of2 (ex) -> raise ex
                 with ex -> LoggingService.LogDebug("LanguageService: GetProjectCheckerOptions Exception", ex)
