@@ -348,6 +348,9 @@
     <EmbeddedResource Include="SyntaxModes\LessSyntaxMode.xml">
       <LogicalName>LessSyntaxMode.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Styles\TangoDarkStyle.json">
+      <LogicalName>TangoDarkStyle.json</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
