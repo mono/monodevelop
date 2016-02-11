@@ -30,6 +30,7 @@
 using System;
 using Gtk;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components
@@ -731,7 +732,7 @@ namespace MonoDevelop.Components
 
 				if (layout == null) {
 					layout = new Pango.Layout (PangoContext);
-					layout.FontDescription = PangoContext.FontDescription.Copy ();
+					layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11);
 				}
 
 				int width, height;

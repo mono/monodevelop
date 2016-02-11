@@ -44,6 +44,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Components.PropertyGrid.PropertyEditors;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Components.PropertyGrid
 {
@@ -379,10 +380,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			descTextView.Editable = false;
 			descTextView.LeftMargin = 5;
 			descTextView.RightMargin = 5;
-			
-			Pango.FontDescription font = Style.FontDescription.Copy (); // TODO: VV: Use FontService
-			font.Size = (font.Size * 8) / 10;
-			descTextView.ModifyFont (font);
+			descTextView.ModifyFont (FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11));
 			
 			textScroll.Add (descTextView);
 			
