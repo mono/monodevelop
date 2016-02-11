@@ -72,7 +72,7 @@ type FSharpResolverProvider() =
 
                     let roslynLocs =
                         Symbols.getTrimmedTextSpanForDeclarations lastIdent symbolUse
-                        |> List.map (fun (fileName, ts, ls) -> Microsoft.CodeAnalysis.Location.Create(fileName, ts, ls))
+                        |> Seq.map (fun (fileName, ts, ls) -> Microsoft.CodeAnalysis.Location.Create(fileName, ts, ls))
                         |> System.Collections.Immutable.ImmutableArray.ToImmutableArray
                     let roslynSymbol = Roslyn.FsharpSymbol (symbolUse, roslynLocs)
                     roslynSymbol :> _
