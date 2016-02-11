@@ -4,21 +4,26 @@ open ICSharpCode.NRefactory.TypeSystem
 open Microsoft.FSharp.Compiler
 open MonoDevelop.Core
 open MonoDevelop.Ide
-open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.TypeSystem
 open System
 open System.Collections.Generic
-open System.Diagnostics
 open System.IO
-open System.Text
 open System.Threading
 
 type FSharpParsedDocument(fileName) =
     inherit DefaultParsedDocument(fileName,Flags = ParsedDocumentFlags.NonSerializable)
     member val Tokens = None with get,set
     member val AllSymbolsKeyed = Dictionary<_,_>() with get, set
-
+    
+[<AutoOpen>]
+module DocumentContextExt =
+    open MonoDevelop
+    type DocumentContext with
+        member x.TryGetFSharpParsedDocumentTokens() =
+            x.TryGetParsedDocument()
+            |> Option.bind (function :? FSharpParsedDocument as fpd -> fpd.Tokens | _ -> None)
+            
 module ParsedDocument =
     /// Format errors for the given line (if there are multiple, we collapse them into a single one)
     let private formatError (error : FSharpErrorInfo) =

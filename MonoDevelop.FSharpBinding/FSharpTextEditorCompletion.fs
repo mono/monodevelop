@@ -6,8 +6,6 @@ namespace MonoDevelop.FSharp
 
 open System
 open System.Collections.Generic
-open System.Diagnostics
-open Symbols
 open MonoDevelop
 open MonoDevelop.Core
 open MonoDevelop.Debugger
@@ -15,14 +13,8 @@ open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Ide.Gui
-open MonoDevelop.Ide.Gui.Content
 open MonoDevelop.Ide.CodeCompletion
-open MonoDevelop.Ide.CodeTemplates
-open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open MonoDevelop.FSharp.NRefactory
-open ICSharpCode.NRefactory.TypeSystem
-open ExtCore.Control
 
 type internal FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FSharpSymbolUse list) =
     inherit CompletionData(CompletionText = PrettyNaming.QuoteIdentifierIfNeeded name,
@@ -343,51 +335,6 @@ type FSharpTextEditorCompletion() =
                 result.AutoCompleteUniqueMatch <- true
             return result :> ICompletionDataList }
 
-
-    let isCurrentTokenInvalid (editor:TextEditor) (parsedDocument:TypeSystem.ParsedDocument) project offset =
-        try
-            let line, col, lineStr = editor.GetLineInfoFromOffset offset
-            let filepath = (editor.FileName.ToString())
-            let defines = CompilerArguments.getDefineSymbols filepath (project |> Option.ofNull)
-
-            let quickLine =
-                maybe {
-                    let! parsedDoc = parsedDocument |> Option.ofNull
-                    let! fsparsedDoc = parsedDoc |> Option.tryCast<FSharpParsedDocument>
-                    let! tokenisedLines = fsparsedDoc.Tokens
-                    let (Tokens.TokenisedLine(_lineDetail, _tokens, state)) = tokenisedLines.[line-1]
-                    let linedetail = Seq.singleton (Tokens.LineDetail(line, offset, lineStr))
-                    return Tokens.getTokensWithInitialState state linedetail filepath defines }
-
-            let isTokenAtOffset col t = col-1 >= t.LeftColumn && col-1 <= t.RightColumn
-
-            let caretToken =
-                match quickLine with
-                | Some line ->
-                    //we have a line
-                    match line with
-                    | [single] ->
-                        let (Tokens.TokenisedLine(_lineDetail, lineTokens, _state)) = single
-                        lineTokens |> List.tryFind (isTokenAtOffset col)
-                    | _ -> None //should only be one
-                | None ->
-                    let lineDetails =
-                        [ for i in 1..line do
-                              let line = editor.GetLine(i)
-                              yield Tokens.LineDetail(line.LineNumber, line.Offset, editor.GetTextAt(line.Offset, line.Length)) ]
-                    let tokens = Tokens.getTokens lineDetails filepath defines
-                    let (Tokens.TokenisedLine(_lineDetail, lineTokens, _state)) = tokens.[line-1]
-                    lineTokens |> List.tryFind (isTokenAtOffset col)
-
-            let isTokenInvalid =
-                match caretToken with
-                | Some token -> token.ColorClass = FSharpTokenColorKind.Comment ||
-                                token.ColorClass = FSharpTokenColorKind.String ||
-                                token.ColorClass = FSharpTokenColorKind.Text
-                | None -> true
-            isTokenInvalid
-        with ex -> true
-
     let isValidParamCompletionDecriptor (d:KeyDescriptor) =
         d.KeyChar = '(' || d.KeyChar = '<' || d.KeyChar = ',' || (d.KeyChar = ' ' && d.ModifierKeys = ModifierKeys.Control)
 
@@ -496,9 +443,9 @@ type FSharpTextEditorCompletion() =
         if completionChar <> '.' then null else
         let computation =
             async {
-                if isCurrentTokenInvalid x.Editor x.DocumentContext.ParsedDocument x.DocumentContext.Project x.Editor.CaretOffset then return null else
-                return! codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, true, false, completionChar)
-            }
+                let cachedTokens = x.DocumentContext.TryGetFSharpParsedDocumentTokens()
+                if Tokens.isCurrentTokenInvalid x.Editor cachedTokens x.DocumentContext.Project x.Editor.CaretOffset then return null else
+                return! codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, true, false, completionChar) }
         Async.StartAsTask (computation =computation, cancellationToken = token)
 
     /// Completion was triggered explicitly using Ctrl+Space or by the function above
@@ -507,7 +454,8 @@ type FSharpTextEditorCompletion() =
         let completionIsDot = completionChar = '.'
         Async.StartAsTask(
             async {
-              if isCurrentTokenInvalid x.Editor x.DocumentContext.ParsedDocument x.DocumentContext.Project x.Editor.CaretOffset then return null
+              let cachedTokens = x.DocumentContext.TryGetFSharpParsedDocumentTokens()
+              if Tokens.isCurrentTokenInvalid x.Editor cachedTokens x.DocumentContext.Project x.Editor.CaretOffset then return null
               else return! codeCompletionCommandImpl(x.Editor, x.DocumentContext,context, completionIsDot, true, completionChar) } )
 
     // Returns the index of the parameter where the cursor is currently positioned.

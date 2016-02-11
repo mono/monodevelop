@@ -1,7 +1,8 @@
 ﻿namespace MonoDevelop.FSharp
 open System
-open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
+open MonoDevelop
+open ExtCore.Control
 
 module Tokens =
     type LineDetail = LineDetail of linenumber:int * lineOffset:int * text:string
@@ -94,3 +95,46 @@ module Tokens =
                         | Some other -> yield other
                         | _ -> ()]
               yield TokenisedLine(LineDetail(lineNumber, lineOffset, lineText), parseLine None, !state) |]
+              
+    let isCurrentTokenInvalid (editor:MonoDevelop.Ide.Editor.TextEditor) (tokenisedLines:TokenisedLine list option) project offset =
+        try
+            let line, col, lineStr = editor.GetLineInfoFromOffset offset
+            let filepath = (editor.FileName.ToString())
+            let defines = CompilerArguments.getDefineSymbols filepath (project |> Option.ofNull)
+
+            let quickLine =
+                maybe {
+                    let! tokenisedLines = tokenisedLines
+                    let (TokenisedLine(_lineDetail, _tokens, lastLineState)) = tokenisedLines.[line-1]
+                    let linedetail = Seq.singleton (LineDetail(line, offset, lineStr))
+                    return getTokensWithInitialState lastLineState linedetail filepath defines }
+
+            let isTokenAtOffset col t = col-1 >= t.LeftColumn && col-1 <= t.RightColumn
+
+            let caretToken =
+                match quickLine with
+                | Some line ->
+                    //we have a line
+                    match line with
+                    | [single] ->
+                        let (TokenisedLine(_lineDetail, lineTokens, _state)) = single
+                        lineTokens |> List.tryFind (isTokenAtOffset col)
+                    | _ -> None //should only be one
+                | None ->
+                    let lineDetails =
+                        [ for i in 1..line do
+                              let line = editor.GetLine(i)
+                              yield LineDetail(line.LineNumber, line.Offset, editor.GetTextAt(line.Offset, line.Length)) ]
+                    let tokens = getTokens lineDetails filepath defines
+                    let (TokenisedLine(_lineDetail, lineTokens, _state)) = tokens.[line-1]
+                    lineTokens |> List.tryFind (isTokenAtOffset col)
+
+            let isTokenInvalid =
+                match caretToken with
+                | Some token -> token.ColorClass = FSharpTokenColorKind.Comment ||
+                                token.ColorClass = FSharpTokenColorKind.String ||
+                                token.ColorClass = FSharpTokenColorKind.Text ||
+                                token.ColorClass = FSharpTokenColorKind.InactiveCode
+                | None -> true
+            isTokenInvalid
+        with ex -> true
