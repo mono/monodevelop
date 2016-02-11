@@ -15,12 +15,14 @@ module Symbols =
     let getLocationFromSymbolUse (s: FSharpSymbolUse) =
         [s.Symbol.DeclarationLocation; s.Symbol.SignatureLocation]
         |> List.choose id
-        |> List.distinctBy (fun r -> r.FileName)
+        |> List.toSeq
+        |> Seq.distinctBy (fun r -> r.FileName)
 
     let getLocationFromSymbol (s:FSharpSymbol) =
         [s.DeclarationLocation; s.SignatureLocation]
         |> List.choose id
-        |> List.distinctBy (fun r -> r.FileName)
+        |> List.toSeq
+        |> Seq.distinctBy (fun r -> r.FileName)
 
     ///Given a column and line string returns the identifier portion of the string
     let lastIdent column lineString =
