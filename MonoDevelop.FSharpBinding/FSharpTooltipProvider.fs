@@ -59,7 +59,7 @@ type FSharpTooltipProvider() =
             let line, col, lineStr = editor.GetLineInfoFromOffset offset
 
             let cachedTokens = context.TryGetFSharpParsedDocumentTokens()
-            if Tokens.isCurrentTokenInvalid editor cachedTokens context.Project col then null else
+            if Tokens.isCurrentTokenInvalid editor cachedTokens context.Project offset then null else
 
             let tooltipComputation =
                 asyncChoice {
