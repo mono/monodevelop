@@ -188,7 +188,7 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
 
     member x.GetStringFormatterColours() =
         match infoOpt with
-        | Some checkResults -> Some(checkResults.GetFormatSpecifierLocations())
+        | Some checkResults -> Some(checkResults.GetFormatSpecifierLocationsAndArity())
         | None -> None
 
 [<RequireQualifiedAccess>]
@@ -197,7 +197,6 @@ type AllowStaleResults =
     | MatchingFileName
     // Allow checker results where the source matches but where the background builder may not have caught up yet after some other change
     | MatchingSource
-
 
 //type Debug = System.Console
 

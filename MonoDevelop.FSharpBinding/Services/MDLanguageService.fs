@@ -7,6 +7,7 @@ namespace MonoDevelop.FSharp
 #nowarn "40"
 
 open System
+open System.Collections.Generic
 open System.Collections.Immutable
 open System.Collections.ObjectModel
 open System.IO
@@ -21,8 +22,10 @@ open MonoDevelop.Core
 open MonoDevelop.Projects
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler.AbstractIL.Internal.Library
+open MonoDevelop.Ide.TypeSystem
 
 module MonoDevelop =
+
     type TextEditor with
         member x.GetLineInfoFromOffset (offset) =
             let loc  = x.OffsetToLocation(offset)
@@ -34,6 +37,9 @@ module MonoDevelop =
         member x.GetLineInfoByCaretOffset () =
             x.GetLineInfoFromOffset x.CaretOffset
            
+    let inline private (>>=) a b = Option.bind b a
+    let inline private (!) a = Option.ofNull a
+    
     type TypeSystem.ParsedDocument with
         member x.TryGetAst() =
             match x.Ast with
@@ -43,12 +49,12 @@ module MonoDevelop =
             | _ -> None
 
     type DocumentContext with
+        member x.TryGetParsedDocument() =
+            !x >>=(fun pd -> !pd.ParsedDocument)
+            
         member x.TryGetAst() =
-            maybe { 
-                let! context = x |> Option.ofNull
-                let! parsedDocument = context.ParsedDocument |> Option.ofNull
-                return! parsedDocument.TryGetAst()
-            }
+            x.TryGetParsedDocument() >>= (fun pd -> pd.TryGetAst())
+
 
     let internal getConfig () =
         match IdeApp.Workspace with

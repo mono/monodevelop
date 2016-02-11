@@ -24,15 +24,6 @@ module TooltipImpl =
               return single
             | _ -> return! None }
 
-    let commentStringOrText t =
-        t.CharClass = FSharpTokenCharKind.Comment || t.CharClass = FSharpTokenCharKind.String || t.CharClass = FSharpTokenCharKind.Text
-
-    let isTokenAsPosInvalid tokens col pred =
-        tokens
-        |> List.tryFind (fun t -> col >= t.LeftColumn && col <= t.RightColumn)
-        |> Option.map pred
-        |> Option.fill true
-
 module MDTooltip =
     let keywordToTooltip (editor:TextEditor) line col (keyword:string) =
         async {
@@ -41,7 +32,6 @@ module MDTooltip =
             let segment = Text.TextSegment.FromBounds(startOffset, endOffset)
             let tip = SymbolTooltips.getKeywordTooltip keyword
             return  TooltipItem( tip, segment :> Text.ISegment) }
-
 
 /// Resolves locations to tooltip items, and orchestrates their display.
 type FSharpTooltipProvider() =
@@ -52,14 +42,6 @@ type FSharpTooltipProvider() =
 
     let killTooltipWindow() =
         enterNotify |> Option.iter (fun en -> en.Dispose ())
-
-    let isTokenInvalid parsedDocument line col=
-        maybe {
-            let! pd = Option.tryCast<FSharpParsedDocument> parsedDocument
-            let! tokens = pd.Tokens
-            let (Tokens.TokenisedLine(_lineDetail, lineTokens, _state)) = tokens.[line-1]
-            return TooltipImpl.isTokenAsPosInvalid lineTokens col TooltipImpl.commentStringOrText }
-        |> Option.fill false
 
     override x.GetItem (editor, context, offset, cancellationToken) =
         try
@@ -76,7 +58,8 @@ type FSharpTooltipProvider() =
 
             let line, col, lineStr = editor.GetLineInfoFromOffset offset
 
-            if isTokenInvalid context.ParsedDocument line col then null else
+            let cachedTokens = context.TryGetFSharpParsedDocumentTokens()
+            if Tokens.isCurrentTokenInvalid editor cachedTokens context.Project col then null else
 
             let tooltipComputation =
                 asyncChoice {
