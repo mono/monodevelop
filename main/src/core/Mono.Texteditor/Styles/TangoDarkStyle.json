@@ -51,7 +51,7 @@
 
         { "name":"Indentation Guide", "color":"#444a4d" },
 
-        { "name":"Indicator Margin", "color":"#2c2f30" },
+        { "name":"Indicator Margin", "color":"aluminium6" },
         { "name":"Indicator Margin(Separator)", "color":"#2c2f30" },
 
         { "name":"Tooltip Pager Top", "color":"aluminium5" },
@@ -70,16 +70,16 @@
         { "name":"Bookmarks", "color":"aluminium1", "secondcolor":"aluminium4" },
 
         { "name":"Underline(Error)", "color":"scarletred2" },
-        { "name":"Underline(Warning)", "color":"butter1" },
+        { "name":"Underline(Warning)", "color":"butter2" },
         { "name":"Underline(Suggestion)", "color":"chameleon3" },
-        { "name":"Underline(Hint)", "color":"chameleon1" },
+        { "name":"Underline(Hint)", "color":"chameleon2" },
 
         { "name":"Quick Diff(Dirty)", "color":"butter2" },
         { "name":"Quick Diff(Changed)", "color":"chameleon2" },
 
         { "name":"Brace Matching(Rectangle)", "color":"aluminium4", "secondcolor":"aluminium4" },
-        { "name":"Usages(Rectangle)", "color":"#527F99", "secondcolor":"#527F99", "bordercolor":"#527F99" },
-        { "name":"Changing usages(Rectangle)", "color":"#996E75", "secondcolor":"#996E75", "bordercolor":"#996E75" },
+        { "name":"Usages(Rectangle)", "color":"skyblue3", "secondcolor":"skyblue3", "bordercolor":"aluminium4" },
+        { "name":"Changing usages(Rectangle)", "color":"chameleon3", "secondcolor":"chameleon3", "bordercolor":"aluminium4" },
 
         { "name":"Breakpoint Marker", "color":"#6f3535", "bordercolor":"#6f3535" },
         { "name":"Breakpoint Marker(Disabled)", "color":"#4d4d4d", "bordercolor":"#4d4d4d" },
@@ -112,13 +112,13 @@
     ],
 
     "text":[
-        { "name":"Plain Text", "fore":"aluminium1", "back":"aluminium6" },
-        { "name":"Selected Text", "back":"#31375e" },
-        { "name":"Selected Text(Inactive)", "back":"#6f6f6f" },
+        { "name":"Plain Text", "fore":"aluminium1", "back":"#2c2f30" },
+        { "name":"Selected Text", "back":"#245176" },
+        { "name":"Selected Text(Inactive)", "back":"aluminium5" },
 
         { "name":"Collapsed Text", "fore":"aluminium4", "back":"aluminium6" },
 
-        { "name":"Line Numbers", "fore":"aluminium5", "back":"aluminium6" },
+        { "name":"Line Numbers", "fore":"aluminium5", "back":"#2c2f30" },
 
         { "name":"Punctuation", "fore":"aluminium1" },
         { "name":"Punctuation(Brackets)", "fore":"aluminium1" },
@@ -180,7 +180,7 @@
         { "name":"Keyword(Context)", "fore":"skyblue1" },
         { "name":"Keyword(Exception)", "fore":"skyblue1" },
         { "name":"Keyword(Modifiers)", "fore":"skyblue1" },
-        { "name":"Keyword(Constants)", "fore":"#b8d7a3" },
+        { "name":"Keyword(Constants)", "fore":"skyblue1" },
         { "name":"Keyword(Void)", "fore":"skyblue1" },
         { "name":"Keyword(Namespace)", "fore":"skyblue1" },
         { "name":"Keyword(Property)", "fore":"skyblue1" },
