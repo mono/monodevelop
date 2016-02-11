@@ -41,6 +41,7 @@ using MonoDevelop.Ide.TypeSystem;
 using System.Threading;
 using MonoDevelop.Ide.Editor.Projection;
 using Xwt;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -892,21 +893,27 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.SetTextPasteHandler (textPasteHandler);
 		}
 
-		public IList<SkipChar> SkipChars
-		{
-			get
-			{
-				return textEditorImpl.SkipChars;
+		public EditSession CurrentSession {
+			get {
+				return textEditorImpl.CurrentSession;
 			}
 		}
 
-		/// <summary>
-		/// Skip chars are 
-		/// </summary>
-		public void AddSkipChar (int offset, char ch)
+		public void StartSession (EditSession session)
 		{
+			if (session == null)
+				throw new ArgumentNullException (nameof (session));
 			Runtime.AssertMainThread ();
-			textEditorImpl.AddSkipChar (offset, ch);
+			session.SetEditor (this);
+			textEditorImpl.StartSession (session);
+		}
+
+		internal void EndSession ()
+		{
+			if (CurrentSession == null)
+				throw new InvalidOperationException ("No session started.");
+			Runtime.AssertMainThread ();
+			textEditorImpl.EndSession ();
 		}
 
 		bool isDisposed;
@@ -1409,5 +1416,7 @@ namespace MonoDevelop.Ide.Editor
 
 		internal IEnumerable<IDocumentLine> VisibleLines { get { return textEditorImpl.VisibleLines; } }
 		internal event EventHandler<LineEventArgs> LineShown { add { textEditorImpl.LineShown += value; } remove { textEditorImpl.LineShown -= value; } }
+
+		internal ITextEditorImpl Implementation { get { return this.textEditorImpl; } }
 	}
 }

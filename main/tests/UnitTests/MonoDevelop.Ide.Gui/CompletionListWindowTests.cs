@@ -122,10 +122,6 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 
-			void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
-			{
-				// ignore
-			}
 			#endregion
 			public void AddChar (char ch)
 			{

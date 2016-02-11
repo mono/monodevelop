@@ -202,11 +202,6 @@ namespace MonoDevelop.Ide.Editor.Projection
 				completionWidget.SetCompletionText (ImportContext (ctx, projection), partial_word, complete_word, completeWordOffset);
 			}
 
-			void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
-			{
-				completionWidget.AddSkipChar (ProjectOffset (cursorPosition), c);
-			}
-
 			CodeCompletionContext ICompletionWidget.CurrentCodeCompletionContext {
 				get {
 					return ConvertContext (completionWidget.CurrentCodeCompletionContext, projection);

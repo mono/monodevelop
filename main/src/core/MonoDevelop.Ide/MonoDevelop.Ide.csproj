@@ -7744,6 +7744,8 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\FoldingTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\ErrorHandlerTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\DefaultCommandTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\EditSession.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\AutoInsertBracketTextEditorExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -162,6 +162,11 @@
 	<Extension path = "/MonoDevelop/SourceEditor2/EditorFactory">
 		<Class id = "SourceEditor" class="MonoDevelop.SourceEditor.EditorFactory" />
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/AutoInsertBracketHandler">
+		<Class id = "DefaultHandler" class="MonoDevelop.SourceEditor.DefaultAutoInsertBracketHandler" />
+	</Extension>
+
 	
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">
 		<!-- 2.4 -->

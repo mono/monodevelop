@@ -277,10 +277,6 @@ namespace MonoDevelop.Ide.Editor
 				}
 			}
 
-			void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
-			{
-			}
-
 			CodeCompletionContext ICompletionWidget.CreateCodeCompletionContext (int triggerOffset)
 			{
 				return new CodeCompletionContext () { TriggerOffset = editor.CaretOffset };

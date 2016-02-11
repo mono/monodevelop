@@ -450,10 +450,20 @@ namespace MonoDevelop.CSharp.Formatting
 					DoPreInsertionSmartIndent (descriptor.SpecialKey);
 				}
 				wasInStringLiteral = stateTracker.IsInsideStringLiteral;
+
+
+				bool returnBetweenBraces =
+					descriptor.SpecialKey == SpecialKey.Return && 
+					descriptor.ModifierKeys == ModifierKeys.None && 
+					          Editor.CaretOffset > 0 && Editor.CaretOffset < Editor.Length && 
+					          Editor.GetCharAt (Editor.CaretOffset - 1) == '{' && Editor.GetCharAt (Editor.CaretOffset) == '}' && !stateTracker.IsInsideOrdinaryCommentOrString;
+
 				bool automaticReindent;
 				// need to be outside of an undo group - otherwise it interferes with other text editor extension
 				// esp. the documentation insertion undo steps.
 				retval = base.KeyPress (descriptor);
+
+				
 				//handle inserted characters
 				if (Editor.CaretOffset <= 0 || Editor.IsSomethingSelected)
 					return retval;
@@ -462,6 +472,14 @@ namespace MonoDevelop.CSharp.Formatting
 				if (lastCharInserted == '\0')
 					return retval;
 				using (var undo = Editor.OpenUndoGroup ()) {
+
+					if (returnBetweenBraces) {
+						var oldOffset = Editor.CaretOffset;
+						Editor.InsertAtCaret (Editor.EolMarker);
+						DoReSmartIndent ();
+						Editor.CaretOffset = oldOffset;
+					}
+
 					SafeUpdateIndentEngine (Editor.CaretOffset);
 
 					if (descriptor.SpecialKey == SpecialKey.Return && descriptor.ModifierKeys == ModifierKeys.Control) {

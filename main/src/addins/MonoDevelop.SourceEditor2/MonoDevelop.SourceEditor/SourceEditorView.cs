@@ -2878,15 +2878,28 @@ namespace MonoDevelop.SourceEditor
 			data.TextPasteHandler = new TextPasteHandlerWrapper (data, textPasteHandler);
 		}
 
-		public IList<SkipChar> SkipChars {
+		internal Stack<EditSession> editSessions = new Stack<EditSession> ();
+
+		public EditSession CurrentSession {
 			get {
-				return TextEditor.GetTextEditorData ().SkipChars.Select (sk => new SkipChar (sk.Offset, sk.Char)).ToList ();
+				return editSessions.Count () > 0 ? editSessions.Peek () : null;
 			}
 		}
 
-		public void AddSkipChar (int offset, char ch)
+		public void StartSession (EditSession session)
 		{
-			TextEditor.GetTextEditorData ().SetSkipChar (offset, ch);
+			if (session == null)
+				throw new ArgumentNullException (nameof (session));
+			editSessions.Push (session);
+			session.SessionStarted ();
+		}
+
+		public void EndSession ()
+		{
+			if (editSessions.Count == 0)
+				throw new InvalidOperationException ("No edit session was started.");
+			var session = editSessions.Pop ();
+			session.Dispose ();
 		}
 
 		void ITextEditorImpl.ScrollTo (int offset)

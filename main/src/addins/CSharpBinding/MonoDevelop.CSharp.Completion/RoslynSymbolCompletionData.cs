@@ -37,6 +37,7 @@ using Xwt;
 using MonoDevelop.Ide;
 using System.Threading.Tasks;
 using System.Threading;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -253,14 +254,6 @@ namespace MonoDevelop.CSharp.Completion
 							}
 						}
 					}
-					if (descriptor.KeyChar == '(') {
-						var skipCharList = Editor.SkipChars;
-						if (skipCharList.Count > 0) {
-							var lastSkipChar = skipCharList[skipCharList.Count - 1];
-							if (lastSkipChar.Offset == (window.CodeCompletionContext.TriggerOffset + partialWord.Length) && lastSkipChar.Char == ')')
-								Editor.RemoveText (lastSkipChar.Offset, 1);
-						}
-					}
 				}
 				if (descriptor.KeyChar == ';') {
 					insertionText += addSpace ? " ()" : "()";
@@ -282,8 +275,8 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, insertionText);
 			int offset = Editor.CaretOffset;
-			for (int i = 0; i < skipChars; i++) {
-				Editor.AddSkipChar (offset, Editor.GetCharAt (offset));
+			for (int i = skipChars - 1; i --> 0;) {
+				Editor.StartSession (new SkipCharSession (Editor.GetCharAt (offset)));
 				offset++;
 			}
 
