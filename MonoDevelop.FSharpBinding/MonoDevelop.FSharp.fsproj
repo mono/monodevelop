@@ -16,6 +16,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
     <OutputPath>..\bin\</OutputPath>
@@ -23,7 +24,7 @@
     <WarningLevel>3</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <StartAction>Program</StartAction>
-    <OtherFlags>--warnon:1182</OtherFlags>
+    <OtherFlags>--warnon:1182 /warnaserror</OtherFlags>
     <StartAction>Program</StartAction>
     <StartProgram>$(MSBuildProjectDirectory)\..\..\..\build\bin\MonoDevelop.exe</StartProgram>
     <StartWorkingDirectory>$(MSBuildProjectDirectory)\..\..\..\build</StartWorkingDirectory>
