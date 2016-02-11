@@ -8,7 +8,7 @@ open ExtCore
 open ExtCore.Control
 open ExtCore.Control.Collections
 open MonoDevelop.Core
-open MonoDevelop.Core
+open MonoDevelop.Ide.Editor
 open MonoDevelop.Projects
 open Nessos.FsPickler.Json
 

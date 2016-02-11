@@ -3,6 +3,7 @@
 open System
 open ExtCore.Control
 open Gtk
+open MonoDevelop
 open MonoDevelop.Components
 open MonoDevelop.Core
 open MonoDevelop.DesignerSupport
@@ -22,16 +23,12 @@ type FSharpOutlineTextEditorExtension() as x =
     let refillTree() =
         match treeView with
         | Some(treeView) ->
-            let ast = maybe { let! context = x.DocumentContext |> Option.ofNull
-                              let! parsedDocument = context.ParsedDocument |> Option.ofNull
-                              let! ast = parsedDocument.Ast |> Option.tryCast<ParseAndCheckResults>
-                              return ast }
 
             Runtime.AssertMainThread()
             refreshingOutline <- false
 
             if treeView.IsRealized then
-                ast |> Option.iter (fun ast ->
+                x.DocumentContext.TryGetAst() |> Option.iter (fun ast ->
                     let treeStore = treeView.Model :?> TreeStore
                     treeStore.Clear()
                     let toplevel = ast.GetNavigationItems()
