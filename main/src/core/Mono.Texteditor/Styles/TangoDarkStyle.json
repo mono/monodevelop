@@ -189,12 +189,12 @@
         { "name":"Keyword(Operator Declaration)", "fore":"skyblue1" },
         { "name":"Keyword(Other)", "fore":"skyblue1" },
 
-        { "name":"User Types", "fore":"#b8d7a3" },
-        { "name":"User Types(Enums)", "fore":"#4ec9b0" },
-        { "name":"User Types(Interfaces)", "fore":"#4ec9b0" },
-        { "name":"User Types(Delegates)", "fore":"#b8d7a3" },
-        { "name":"User Types(Value types)", "fore":"#b8d7a3" },
-        { "name":"User Types(Type parameters)", "fore":"#b8d7a3" },
+        { "name":"User Types", "fore":"#66d9ef" },
+        { "name":"User Types(Enums)", "fore":"#b8d7a3" },
+        { "name":"User Types(Interfaces)", "fore":"#b8d7a3" },
+        { "name":"User Types(Delegates)", "fore":"#66d9ef" },
+        { "name":"User Types(Value types)", "fore":"#66d9ef" },
+        { "name":"User Types(Type parameters)", "fore":"#66d9ef" },
 
         { "name":"User Field Usage", "fore":"aluminium1", "style":"italic" },
         { "name":"User Field Declaration", "fore":"aluminium1", "style":"italic" },
@@ -205,8 +205,8 @@
         { "name":"User Event Usage", "fore":"aluminium1", "weight":"bold" },
         { "name":"User Event Declaration", "fore":"aluminium1", "weight":"bold" },
 
-        { "name":"User Method Usage", "fore":"#66d9ef" },
-        { "name":"User Method Declaration", "fore":"#66d9ef" },
+        { "name":"User Method Usage", "fore":"aluminium1" },
+        { "name":"User Method Declaration", "fore":"aluminium1" },
 
         { "name":"User Parameter Usage", "fore":"aluminium1" },
         { "name":"User Parameter Declaration", "fore":"aluminium1" },
