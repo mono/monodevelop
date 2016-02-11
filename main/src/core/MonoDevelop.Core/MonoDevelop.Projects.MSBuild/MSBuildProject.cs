@@ -416,6 +416,8 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public void Evaluate ()
 		{
+			if (mainProjectInstance != null)
+				mainProjectInstance.Dispose ();
 			mainProjectInstance = new MSBuildProjectInstance (this);
 			mainProjectInstance.Evaluate ();
 			conditionedProperties = mainProjectInstance.GetConditionedProperties ();
@@ -423,6 +425,8 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public Task EvaluateAsync ()
 		{
+			if (mainProjectInstance != null)
+				mainProjectInstance.Dispose ();
 			mainProjectInstance = new MSBuildProjectInstance (this);
 			return mainProjectInstance.EvaluateAsync ().ContinueWith (t => {
 				conditionedProperties = mainProjectInstance.GetConditionedProperties ();
@@ -624,6 +628,11 @@ namespace MonoDevelop.Projects.MSBuild
 		public IEnumerable<IMSBuildTargetEvaluated> EvaluatedTargets
 		{
 			get { return mainProjectInstance.Targets; }
+		}
+
+		public IEnumerable<IMSBuildTargetEvaluated> EvaluatedTargetsIgnoringCondition
+		{
+			get { return mainProjectInstance.TargetsIgnoringCondition; }
 		}
 
 		public MSBuildPropertyGroup GetGlobalPropertyGroup ()

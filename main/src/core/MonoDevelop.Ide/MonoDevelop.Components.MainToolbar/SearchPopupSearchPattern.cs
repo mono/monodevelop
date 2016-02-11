@@ -34,6 +34,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeCompletion;
+using System.Text.RegularExpressions;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -65,8 +66,44 @@ namespace MonoDevelop.Components.MainToolbar
 			UnparsedPattern = unparsedPattern;
 		}
 
+		static readonly Regex githubRegex = new Regex ("((?<tag>.*):)?(?<pattern>[^#]+)#L(?<line>\\d+)$", RegexOptions.Compiled); // for example: ExceptionCaughtDialog.cs#L510
+		static readonly Regex lineRegex = new Regex ("((?<tag>[^:]*):)?(?<pattern>[^0-:][^:]*):[a-zA-Z]*\\s*(?<line>\\d+)$", RegexOptions.Compiled); // for example: ExceptionCaughtDialog.cs:line 510
+
 		public static SearchPopupSearchPattern ParsePattern (string searchPattern)
 		{
+			var githubMatch = githubRegex.Match (searchPattern);
+			if (githubMatch.Success) {
+				int parsedLine;
+				try {
+					parsedLine = int.Parse (githubMatch.Groups ["line"].Value);
+				} catch (Exception) {
+					parsedLine = -1;
+				}
+				return new SearchPopupSearchPattern (githubMatch.Groups["tag"].Success ? githubMatch.Groups["tag"].Value : null, 
+				                                     githubMatch.Groups["pattern"].Success ? githubMatch.Groups["pattern"].Value : null,
+				                                     parsedLine,
+				                                     -1, 
+				                                     searchPattern);
+
+			}
+
+
+			var lineRegexMatch = lineRegex.Match (searchPattern);
+			if (lineRegexMatch.Success) {
+				int parsedLine;
+				try {
+					parsedLine = int.Parse (lineRegexMatch.Groups ["line"].Value);
+				} catch (Exception) {
+					parsedLine = -1;
+				}
+				return new SearchPopupSearchPattern (lineRegexMatch.Groups["tag"].Success ? lineRegexMatch.Groups["tag"].Value : null, 
+				                                     lineRegexMatch.Groups["pattern"].Value,
+				                                     parsedLine,
+				                                     -1, 
+				                                     searchPattern);
+
+			}
+
 			string tag = null;
 			string pattern = null;
 			int lineNumber = -1;

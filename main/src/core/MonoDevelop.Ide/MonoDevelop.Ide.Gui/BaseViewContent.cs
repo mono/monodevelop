@@ -33,7 +33,6 @@ using MonoDevelop.Components;
 using MonoDevelop.Core;
 using System.Collections.Immutable;
 using MonoDevelop.Projects;
-using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui
 {

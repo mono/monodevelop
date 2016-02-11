@@ -10,7 +10,6 @@ abs_top_builddir ?= $(top_builddir)
 MD_BIN_PATH=$(abs_top_builddir)/build/bin
 
 MD_LAUNCH_SETUP= \
-	MONODEVELOP_LOCALE_PATH="$(abs_top_builddir)/build/locale" \
-	MONODEVELOP_PROFILE="$(MD_BIN_PATH)/test-profile"
+	MONODEVELOP_LOCALE_PATH="$(abs_top_builddir)/build/locale"
 
 MDTOOL_RUN=$(MD_LAUNCH_SETUP) exec -a "mdtool" $(RUNTIME)$(SGEN_SUFFIX) --debug "$(MD_BIN_PATH)/mdtool.exe"

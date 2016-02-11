@@ -113,11 +113,6 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public static Task<TooltipInformation> CreateTooltipInformation (CancellationToken ctoken, MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, ISymbol entity, bool smartWrap, bool createFooter = false, SemanticModel model = null)
 		{
-			if (ctx != null) {
-				if (ctx.ParsedDocument == null || ctx.AnalysisDocument == null)
-					LoggingService.LogError ("Signature markup creator created with invalid context." + Environment.NewLine + Environment.StackTrace);
-			}
-
 			var tooltipInfo = new TooltipInformation ();
 //			if (resolver == null)
 //				resolver = file != null ? file.GetResolver (compilation, textEditorData.Caret.Location) : new CSharpResolver (compilation);
@@ -372,13 +367,16 @@ namespace MonoDevelop.CSharp.Completion
 		static bool HasNonMethodMembersWithSameName (ISymbol member)
 		{
 			var method = member as IMethodSymbol;
-			if (method != null && method.MethodKind == MethodKind.Constructor)
+			if (method == null)
+				return true;
+			if (method == null || method.MethodKind == MethodKind.Constructor)
 				return false;
-			if (member.ContainingType == null)
-				return false;
-			return member.ContainingType
-				.GetMembers ()
-				.Any (e => e.Kind != SymbolKind.Method && e.Name == member.Name);
+			var type = method.ReceiverType ?? method.ContainingType;
+			foreach (var m in type.GetMembers ().Where (m => m.Kind != SymbolKind.Method)) {
+				if (m.Name == member.Name)
+					return true;
+			}
+			return false;
 		}
 
 		static bool RequireGenerics (IMethodSymbol method)

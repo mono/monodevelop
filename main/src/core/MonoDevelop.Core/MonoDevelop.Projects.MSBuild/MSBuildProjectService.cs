@@ -949,8 +949,11 @@ namespace MonoDevelop.Projects.MSBuild
 							string responseKey = "[MonoDevelop]";
 							string sref = null;
 							p.ErrorDataReceived += (sender, e) => {
-								if (e.Data == null)
+								if (e.Data == null) {
+									if (string.IsNullOrEmpty (sref))
+										LoggingService.LogError ("The MSBuild builder exited before initializing");
 									return;
+								}
 
 								if (e.Data.StartsWith (responseKey, StringComparison.Ordinal)) {
 									sref = e.Data.Substring (responseKey.Length);

@@ -32,28 +32,8 @@ using System.IO;
 
 namespace MonoDevelop.Core.Logging
 {
-	class AssertLoggingTraceListener : TraceListener
+	class AssertLoggingTraceListener : DefaultTraceListener
 	{
-		public override void Write (string message)
-		{
-			//ignore
-		}
-
-		public override void WriteLine (string message)
-		{
-			//ignore
-		}
-
-		public override void TraceData (TraceEventCache eventCache, string source, TraceEventType eventType, int id, params object[] data)
-		{
-			//ignore
-		}
-
-		public override void TraceData (TraceEventCache eventCache, string source, TraceEventType eventType, int id, object data)
-		{
-			//ignore
-		}
-
 		public override void Fail (string message, string detailMessage)
 		{
 			var frames = new StackTrace (1, true).GetFrames ();

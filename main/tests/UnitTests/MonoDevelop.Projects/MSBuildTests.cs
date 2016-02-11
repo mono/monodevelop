@@ -1547,6 +1547,27 @@ namespace MonoDevelop.Projects
 			var savedXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (refXml, savedXml);
 		}
+
+		[Test]
+		public async Task MSBuildPropertiesSetWhenSaving ()
+		{
+			Solution sol = TestProjectsChecks.CreateConsoleSolution ("console-project-msbuild");
+			sol.ConvertToFormat (MSBuildFileFormat.VS2010);
+
+			var p = sol.GetAllProjects ().First ();
+			var c = (ProjectConfiguration) p.Configurations [0];
+			Assert.IsFalse (p.ProjectProperties.HasProperty ("TargetName"));
+			Assert.IsFalse (p.MSBuildProject.EvaluatedProperties.HasProperty ("TargetName"));
+			Assert.IsFalse (c.Properties.HasProperty ("TargetName"));
+
+			await sol.SaveAsync (Util.GetMonitor ());
+
+			// MSBuild properties defined in imported targets are loaded after saving a project for the first time
+
+			Assert.IsTrue (p.ProjectProperties.HasProperty ("TargetName"));
+			Assert.IsTrue (p.MSBuildProject.EvaluatedProperties.HasProperty ("TargetName"));
+			Assert.IsTrue (c.Properties.HasProperty ("TargetName"));
+		}
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode

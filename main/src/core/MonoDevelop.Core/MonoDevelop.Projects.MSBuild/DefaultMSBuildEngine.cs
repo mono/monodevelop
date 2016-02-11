@@ -56,6 +56,7 @@ namespace MonoDevelop.Projects.MSBuild
 			public Dictionary<MSBuildImport,string> Imports = new Dictionary<MSBuildImport, string> ();
 			public Dictionary<string,string> GlobalProperties = new Dictionary<string, string> ();
 			public List<MSBuildTarget> Targets = new List<MSBuildTarget> ();
+			public List<MSBuildTarget> TargetsIgnoringCondition = new List<MSBuildTarget> ();
 			public List<MSBuildProject> ReferencedProjects = new List<MSBuildProject> ();
 			public Dictionary<MSBuildImport, List<ProjectInfo>> ImportedProjects = new Dictionary<MSBuildImport, List<ProjectInfo>> ();
 			public ConditionedPropertyCollection ConditionedProperties = new ConditionedPropertyCollection ();
@@ -141,6 +142,7 @@ namespace MonoDevelop.Projects.MSBuild
 			pi.Properties.Clear ();
 			pi.Imports.Clear ();
 			pi.Targets.Clear ();
+			pi.TargetsIgnoringCondition.Clear ();
 
 			// Unload referenced projects after evaluating to avoid unnecessary unload + load
 			var oldRefProjects = pi.ReferencedProjects;
@@ -450,6 +452,10 @@ namespace MonoDevelop.Projects.MSBuild
 						t.IsImported = true;
 						project.Targets.Add (t);
 					}
+					foreach (var t in p.TargetsIgnoringCondition) {
+						t.IsImported = true;
+						project.TargetsIgnoringCondition.Add (t);
+					}
 					project.ConditionedProperties.Append (p.ConditionedProperties);
 				}
 				return;
@@ -470,16 +476,19 @@ namespace MonoDevelop.Projects.MSBuild
 
 		string[] GetImportFiles (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImport import, string extensionsPath)
 		{
-			var tempCtx = new MSBuildEvaluationContext (context);
-			var mep = MSBuildProjectService.ToMSBuildPath (null, extensionsPath);
-			tempCtx.SetPropertyValue ("MSBuildExtensionsPath", mep);
-			tempCtx.SetPropertyValue ("MSBuildExtensionsPath32", mep);
-			tempCtx.SetPropertyValue ("MSBuildExtensionsPath64", mep);
+			if (extensionsPath != null) {
+				var tempCtx = new MSBuildEvaluationContext (context);
+				var mep = MSBuildProjectService.ToMSBuildPath (null, extensionsPath);
+				tempCtx.SetPropertyValue ("MSBuildExtensionsPath", mep);
+				tempCtx.SetPropertyValue ("MSBuildExtensionsPath32", mep);
+				tempCtx.SetPropertyValue ("MSBuildExtensionsPath64", mep);
+				context = tempCtx;
+			}
 
 			var pr = context.EvaluateString (import.Project);
 			project.Imports [import] = pr;
 
-			if (!string.IsNullOrEmpty (import.Condition) && !SafeParseAndEvaluate (project, tempCtx, import.Condition, true))
+			if (!string.IsNullOrEmpty (import.Condition) && !SafeParseAndEvaluate (project, context, import.Condition, true))
 				return null;
 
 			var path = MSBuildProjectService.FromMSBuildPath (project.Project.BaseDirectory, pr);
@@ -489,7 +498,10 @@ namespace MonoDevelop.Projects.MSBuild
 				return File.Exists (path) ? new [] { path } : null;
 			}
 			else {
-				var files = Directory.GetFiles (Path.GetDirectoryName (path), fileName);
+				path = Path.GetDirectoryName (path);
+				if (!Directory.Exists (path))
+					return null;
+				var files = Directory.GetFiles (path, fileName);
 				Array.Sort (files);
 				return files;
 			}
@@ -528,17 +540,18 @@ namespace MonoDevelop.Projects.MSBuild
 
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildTarget target)
 		{
-			if (SafeParseAndEvaluate (project, context, target.Condition)) {
-				var newTarget = new MSBuildTarget (target.Name, target.Tasks);
-				newTarget.AfterTargets = context.EvaluateString (target.AfterTargets);
-				newTarget.Inputs = context.EvaluateString (target.Inputs);
-				newTarget.Outputs = context.EvaluateString (target.Outputs);
-				newTarget.BeforeTargets = context.EvaluateString (target.BeforeTargets);
-				newTarget.DependsOnTargets = context.EvaluateString (target.DependsOnTargets);
-				newTarget.Returns = context.EvaluateString (target.Returns);
-				newTarget.KeepDuplicateOutputs = context.EvaluateString (target.KeepDuplicateOutputs);
+			bool condIsTrue = SafeParseAndEvaluate (project, context, target.Condition);
+			var newTarget = new MSBuildTarget (target.Name, target.Tasks);
+			newTarget.AfterTargets = context.EvaluateString (target.AfterTargets);
+			newTarget.Inputs = context.EvaluateString (target.Inputs);
+			newTarget.Outputs = context.EvaluateString (target.Outputs);
+			newTarget.BeforeTargets = context.EvaluateString (target.BeforeTargets);
+			newTarget.DependsOnTargets = context.EvaluateString (target.DependsOnTargets);
+			newTarget.Returns = context.EvaluateString (target.Returns);
+			newTarget.KeepDuplicateOutputs = context.EvaluateString (target.KeepDuplicateOutputs);
+			project.TargetsIgnoringCondition.Add (newTarget);
+			if (condIsTrue)
 				project.Targets.Add (newTarget);
-			}
 		}
 
 		static bool SafeParseAndEvaluate (ProjectInfo project, MSBuildEvaluationContext context, string condition, bool collectConditionedProperties = false)
@@ -649,6 +662,11 @@ namespace MonoDevelop.Projects.MSBuild
 		public override IEnumerable<MSBuildTarget> GetTargets (object projectInstance)
 		{
 			return ((ProjectInfo)projectInstance).Targets;
+		}
+
+		public override IEnumerable<MSBuildTarget> GetTargetsIgnoringCondition (object projectInstance)
+		{
+			return ((ProjectInfo)projectInstance).TargetsIgnoringCondition;
 		}
 
 		public override void SetGlobalProperty (object projectInstance, string property, string value)

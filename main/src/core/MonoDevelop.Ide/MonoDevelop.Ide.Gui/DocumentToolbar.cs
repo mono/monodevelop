@@ -206,7 +206,7 @@ namespace MonoDevelop.Ide.Gui
 			Image.Show ();
 		}
 
-		protected override object CreateNativeWidget ()
+		protected override object CreateNativeWidget<T> ()
 		{
 			return button;
 		}
@@ -217,6 +217,30 @@ namespace MonoDevelop.Ide.Gui
 			}
 			remove {
 				button.Clicked -= value;
+			}
+		}
+
+		public class DocumentToolButtonImage : Control
+		{
+			ImageView image;
+			internal DocumentToolButtonImage (ImageView image)
+			{
+				this.image = image;
+			}
+
+			protected override object CreateNativeWidget<T> ()
+			{
+				return image;
+			}
+
+			public static implicit operator Gtk.Widget (DocumentToolButtonImage d)
+			{
+				return d.GetNativeWidget<Gtk.Widget> ();
+			}
+
+			public static implicit operator DocumentToolButtonImage (ImageView d)
+			{
+				return new DocumentToolButtonImage (d);
 			}
 		}
 	}

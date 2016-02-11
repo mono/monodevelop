@@ -734,7 +734,11 @@ namespace MonoDevelop.CSharp.Refactoring
 					} else if (p.ExplicitDefaultValue is bool) {
 						result.Append ((bool)p.ExplicitDefaultValue ? "true" : "false");
 					} else if (p.ExplicitDefaultValue == null) {
-						result.Append ("null");
+						if (p.Type.IsValueType && p.Type.SpecialType != SpecialType.System_String) {
+							result.Append ("default(" + p.Type.ToMinimalDisplayString (options.SemanticModel, options.Part.SourceSpan.Start) + ")");
+						} else {
+							result.Append ("null");
+						}
 					} else {
 						result.Append (p.ExplicitDefaultValue);
 					}

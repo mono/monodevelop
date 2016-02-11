@@ -44,6 +44,7 @@ using Gtk;
 using MonoDevelop.Ide;
 using MonoDevelop.CSharp;
 using MonoDevelop.Components.MainToolbar;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp
 {
@@ -552,7 +553,7 @@ namespace MonoDevelop.CSharp
 			if (doc != null) {
 				var symbol = await type.GetSymbolAsync (doc, token);
 				var project = TypeSystemService.GetMonoProject (doc.Id);
-				IdeApp.ProjectOperations.JumpToDeclaration (symbol, project);
+				RefactoringService.RoslynJumpToDeclaration (symbol, project);
 			}
 		}
 	}

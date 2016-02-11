@@ -388,7 +388,7 @@ namespace MonoDevelop.CSharp.Formatting
 {
 }");
 
-			AddOption (spacingOptions, category, "SpaceWithinMethodDeclarationParenthesis", GettextCatalog.GetString ("Insert space withing argument list parentheses"), 
+			AddOption (spacingOptions, category, "SpaceWithinMethodDeclarationParenthesis", GettextCatalog.GetString ("Insert space within argument list parentheses"), 
 				@"void Example(int i, int j)
 {
 }");
@@ -401,7 +401,7 @@ namespace MonoDevelop.CSharp.Formatting
 {
 	Test();
 }");
-			AddOption (spacingOptions, category, "SpaceWithinMethodCallParentheses", GettextCatalog.GetString ("Insert space withing argument list parentheses"), @"void Example()
+			AddOption (spacingOptions, category, "SpaceWithinMethodCallParentheses", GettextCatalog.GetString ("Insert space within argument list parentheses"), @"void Example()
 {
 	Test(1, 2);
 }");

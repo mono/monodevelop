@@ -43,7 +43,7 @@ namespace MonoDevelop.Components.Chart
 			widget = new ChartWidget ();
 		}
 
-		protected override object CreateNativeWidget ()
+		protected override object CreateNativeWidget<T> ()
 		{
 			return widget;
 		}
@@ -956,7 +956,10 @@ namespace MonoDevelop.Components.Chart
 					selectionStart = selectionEnd;
 					selectionEnd = tmp;
 				}
-				chart.OnSelectionChanged ();
+
+				if (chart != null) {
+					chart.OnSelectionChanged ();
+				}
 			}
 		}
 		

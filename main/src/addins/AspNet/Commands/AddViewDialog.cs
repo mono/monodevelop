@@ -27,6 +27,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using PP = System.IO.Path;
 
 using Gtk;
@@ -281,12 +282,13 @@ namespace MonoDevelop.AspNet.Commands
 			Validate ();
 		}
 		
-		protected void UpdateTypePanelSensitivity (object sender, EventArgs e)
+		protected async void UpdateTypePanelSensitivity (object sender, EventArgs e)
 		{
 			bool enabled = typePanel.Sensitive = stronglyTypedCheck.Active;
 
 			if (enabled && classDataProvider == null) {
-				classDataProvider = new TypeDataProvider (project);
+				classDataProvider = new TypeDataProvider ();
+				await classDataProvider.GetTypes (project);
 				dataClassStore = new ListStore (typeof (string));
 				foreach (var item in classDataProvider.TypeNamesList)
 					dataClassStore.AppendValues (item);
@@ -351,7 +353,7 @@ namespace MonoDevelop.AspNet.Commands
 			}
 		}
 		
-		protected virtual void MasterChanged (object sender, EventArgs e)
+		protected virtual async void MasterChanged (object sender, EventArgs e)
 		{
 			if (IsPartialView || !HasMaster)
 				return;
@@ -367,7 +369,7 @@ namespace MonoDevelop.AspNet.Commands
 			if (!File.Exists (realPath))
 				return;
 			
-			var pd = TypeSystemService.ParseFile (project, realPath).Result as WebFormsParsedDocument;
+			var pd = await TypeSystemService.ParseFile (project, realPath) as WebFormsParsedDocument;
 			
 			if (pd != null) {
 				try {
@@ -474,10 +476,10 @@ namespace MonoDevelop.AspNet.Commands
 			public List<INamedTypeSymbol> TypesList { get; private set; }
 			public List<string> TypeNamesList { get; private set; }
 
-			public TypeDataProvider (MonoDevelop.Projects.DotNetProject project)
+			public async Task GetTypes (MonoDevelop.Projects.DotNetProject project)
 			{
 				TypeNamesList = new List<string> ();
-				var ctx = TypeSystemService.GetCompilationAsync (project).Result;
+				var ctx = await TypeSystemService.GetCompilationAsync (project);
 				TypesList = new List<INamedTypeSymbol> (ctx.GetAllTypesInMainAssembly ());
 				foreach (var typeDef in TypesList) {
 					TypeNamesList.Add (Ambience.EscapeText (typeDef.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat)));

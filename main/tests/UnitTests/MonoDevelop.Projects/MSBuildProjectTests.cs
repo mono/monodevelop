@@ -167,6 +167,22 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (tn.Contains ("Clean"));
 			Assert.IsTrue (tn.Contains ("ResolveReferences"));
 			Assert.IsTrue (tn.Contains ("GetReferenceAssemblyPaths"));
+			Assert.IsFalse (tn.Contains ("Conditioned"));
+		}
+
+		[Test]
+		public void TargetsIgnoringCondition ()
+		{
+			var p = LoadProject ();
+			p.Evaluate ();
+			var tn = p.EvaluatedTargetsIgnoringCondition.Select (t => t.Name).ToArray ();
+
+			// Verify that some of the imported targets are returned
+			Assert.IsTrue (tn.Contains ("Build"));
+			Assert.IsTrue (tn.Contains ("Clean"));
+			Assert.IsTrue (tn.Contains ("ResolveReferences"));
+			Assert.IsTrue (tn.Contains ("GetReferenceAssemblyPaths"));
+			Assert.IsTrue (tn.Contains ("Conditioned"));
 		}
 
 		[Test]

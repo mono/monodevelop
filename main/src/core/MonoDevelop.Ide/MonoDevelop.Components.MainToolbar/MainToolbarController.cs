@@ -402,6 +402,10 @@ namespace MonoDevelop.Components.MainToolbar
 						UpdateBuildConfiguration ();
 					}
 
+					if (currentStartupProject == null) {
+						return;
+					}
+
 					var runtime = (RuntimeModel)ToolbarView.ActiveRuntime;
 					if (runtime != null && runtime.Command == null) {
 						currentStartupProject.UserProperties.SetValue<string> ("PreferredExecutionTarget", runtime.TargetId);

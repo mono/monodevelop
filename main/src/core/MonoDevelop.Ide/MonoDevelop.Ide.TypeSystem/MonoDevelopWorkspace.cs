@@ -180,11 +180,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		}
 
-		static bool SupportsRoslyn (MonoDevelop.Projects.Project proj)
-		{
-			return string.Equals (proj.TypeGuid, "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", StringComparison.OrdinalIgnoreCase) || string.Equals (proj.TypeGuid, "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}", StringComparison.OrdinalIgnoreCase);
-		}
-
 		SolutionData solutionData;
 		async Task<SolutionInfo> CreateSolutionInfo (MonoDevelop.Projects.Solution solution, CancellationToken token)
 		{
@@ -197,7 +192,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			foreach (var proj in mdProjects) {
 				if (token.IsCancellationRequested)
 					return null;
-				if (!SupportsRoslyn (proj))
+				if (!proj.SupportsRoslyn)
 					continue;
 				var tp = LoadProject (proj, token).ContinueWith (t => {
 					if (!t.IsCanceled)
@@ -423,7 +418,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}, token);
 		}
 
-		internal void UpdateProjectionEnntry (MonoDevelop.Projects.ProjectFile projectFile, IReadOnlyList<Projection> projections)
+		internal void UpdateProjectionEntry (MonoDevelop.Projects.ProjectFile projectFile, IReadOnlyList<Projection> projections)
 		{
 			foreach (var entry in projectionList) {
 				if (entry.File.FilePath == projectFile.FilePath) {
@@ -501,7 +496,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var options = new ParseOptions {
 				FileName = f.FilePath,
 				Project = p,
-				Content = StringTextSource.ReadFrom (f.FilePath),
+				Content = TextFileProvider.Instance.GetReadOnlyTextEditorData (f.FilePath),
 			};
 			var projections = node.Parser.GenerateProjections (options);
 			var entry = new ProjectionEntry ();
@@ -695,6 +690,17 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			bool isOpen;
 			var filePath = document.FilePath;
+
+			Projection projection = null;
+			foreach (var entry in ProjectionList) {
+				var p = entry.Projections.FirstOrDefault (proj => FilePath.PathComparer.Equals (proj.Document.FileName, filePath));
+				if (p != null) {
+					filePath = entry.File.FilePath;
+					projection = p;
+					break;
+				}
+			}
+
 			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out isOpen);
 
 			// Guard against already done changes in linked files.
@@ -708,19 +714,10 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 			}
 			changedFiles [filePath] = text;
-		
-			Projection projection = null;
-			foreach (var entry in ProjectionList) {
-				var p = entry.Projections.FirstOrDefault (proj => FilePath.PathComparer.Equals (proj.Document.FileName, filePath));
-				if (p != null) {
-					filePath = entry.File.FilePath;
-					projection = p;
-					break;
-				}
-			}
+
 			SourceText oldFile;
 			if (!isOpen || !document.TryGetText (out oldFile)) {
-				oldFile = new MonoDevelopSourceText (data);
+				oldFile = document.GetTextAsync ().Result;
 			}
 			var changes = text.GetTextChanges (oldFile).OrderByDescending (c => c.Span.Start).ToList ();
 			int delta = 0;
@@ -728,60 +725,93 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (!isOpen) {
 				delta = ApplyChanges (projection, data, changes);
 				var formatter = CodeFormatterService.GetFormatter (data.MimeType);
-				var mp = GetMonoProject (CurrentSolution.GetProject (id.ProjectId));
-				string currentText = data.Text;
+				if (formatter.SupportsPartialDocumentFormatting) {
+					var mp = GetMonoProject (CurrentSolution.GetProject (id.ProjectId));
+					string currentText = data.Text;
 
-				foreach (var change in changes) {
-					delta -= change.Span.Length - change.NewText.Length;
-					var startOffset = change.Span.Start - delta;
+					foreach (var change in changes) {
+						delta -= change.Span.Length - change.NewText.Length;
+						var startOffset = change.Span.Start - delta;
 
-					if (projection != null) {
-						int originalOffset;
-						if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
-							startOffset = originalOffset;
+						if (projection != null) {
+							int originalOffset;
+							if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
+								startOffset = originalOffset;
+						}
+
+						string str;
+						if (change.NewText.Length == 0) {
+							str = formatter.FormatText (mp.Policies, currentText, TextSegment.FromBounds (Math.Max (0, startOffset - 1), Math.Min (data.Length, startOffset + 1)));
+						} else {
+							str = formatter.FormatText (mp.Policies, currentText, new TextSegment (startOffset, change.NewText.Length));
+						}
+						data.ReplaceText (startOffset, change.NewText.Length, str);
 					}
-
-					string str;
-					if (change.NewText.Length == 0) {
-						str = formatter.FormatText (mp.Policies, currentText, TextSegment.FromBounds (Math.Max (0, startOffset - 1), Math.Min (data.Length, startOffset + 1)));
-					} else {
-						str = formatter.FormatText (mp.Policies, currentText, new TextSegment (startOffset, change.NewText.Length));
-					}
-					data.ReplaceText (startOffset, change.NewText.Length, str);
 				}
 				data.Save ();
-				OnDocumentTextChanged (id, new MonoDevelopSourceText (data), PreservationMode.PreserveValue);
+				if (projection != null) {
+					UpdateProjectionsDocuments (document, data);
+				} else {
+					OnDocumentTextChanged (id, new MonoDevelopSourceText (data), PreservationMode.PreserveValue);
+				}
 				FileService.NotifyFileChanged (filePath);
 			} else {
-				var formatter = CodeFormatterService.GetFormatter (data.MimeType); 
+				var formatter = CodeFormatterService.GetFormatter (data.MimeType);
 				var documentContext = IdeApp.Workbench.Documents.FirstOrDefault (d => FilePath.PathComparer.Compare (d.FileName, filePath) == 0);
 				if (documentContext != null) {
 					var editor = (TextEditor)data;
 					using (var undo = editor.OpenUndoGroup ()) {
 						delta = ApplyChanges (projection, data, changes);
 
-						foreach (var change in changes) {
-							delta -= change.Span.Length - change.NewText.Length;
-							var startOffset = change.Span.Start - delta;
-							if (projection != null) {
-								int originalOffset;
-								if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
-									startOffset = originalOffset;
-							}
-							if (change.NewText.Length == 0) {
-								formatter.OnTheFlyFormat (editor, documentContext, TextSegment.FromBounds (Math.Max (0, startOffset - 1), Math.Min (data.Length, startOffset + 1)));
-							} else {
-								formatter.OnTheFlyFormat (editor, documentContext, new TextSegment (startOffset, change.NewText.Length));
+						if (formatter.SupportsOnTheFlyFormatting) {
+							foreach (var change in changes) {
+								delta -= change.Span.Length - change.NewText.Length;
+								var startOffset = change.Span.Start - delta;
+								if (projection != null) {
+									int originalOffset;
+									if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
+										startOffset = originalOffset;
+								}
+								if (change.NewText.Length == 0) {
+									formatter.OnTheFlyFormat (editor, documentContext, TextSegment.FromBounds (Math.Max (0, startOffset - 1), Math.Min (data.Length, startOffset + 1)));
+								} else {
+									formatter.OnTheFlyFormat (editor, documentContext, new TextSegment (startOffset, change.NewText.Length));
+								}
 							}
 						}
 					}
 				}
-				OnDocumentTextChanged (id, new MonoDevelopSourceText(data.CreateDocumentSnapshot ()), PreservationMode.PreserveValue);
+				if (projection != null) {
+					UpdateProjectionsDocuments (document, data);
+				} else {
+					OnDocumentTextChanged (id, new MonoDevelopSourceText (data.CreateDocumentSnapshot ()), PreservationMode.PreserveValue);
+				}
 				Runtime.RunInMainThread (() => {
 					if (IdeApp.Workbench != null)
 						foreach (var w in IdeApp.Workbench.Documents)
 							w.StartReparseThread ();
 				});
+			}
+		}
+
+		void UpdateProjectionsDocuments (Document document, ITextDocument data)
+		{
+			var project = TypeSystemService.GetMonoProject (document.Project);
+			var file = project.Files.GetFile (data.FileName);
+			var node = TypeSystemService.GetTypeSystemParserNode (data.MimeType, file.BuildAction);
+			if (node != null && node.Parser.CanGenerateProjection (data.MimeType, file.BuildAction, project.SupportedLanguages)) {
+				var options = new ParseOptions {
+					FileName = file.FilePath,
+					Project = project,
+					Content = TextFileProvider.Instance.GetReadOnlyTextEditorData (file.FilePath),
+				};
+				var projections = node.Parser.GenerateProjections (options).Result;
+				UpdateProjectionEntry (file, projections);
+				var projectId = GetProjectId (project);
+				var projectdata = GetProjectData (projectId);
+				foreach (var projected in projections) {
+					OnDocumentTextChanged (projectdata.GetDocumentId (projected.Document.FileName), new MonoDevelopSourceText (projected.Document), PreservationMode.PreserveValue);
+				}
 			}
 		}
 
@@ -793,11 +823,16 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				if (projection != null) {
 					int originalOffset;
-					if (projection.TryConvertFromProjectionToOriginal (offset, out originalOffset))
+					//If change is outside projection segments don't apply it...
+					if (projection.TryConvertFromProjectionToOriginal (offset, out originalOffset)) {
 						offset = originalOffset;
+						data.ReplaceText (offset, change.Span.Length, change.NewText);
+						delta += change.Span.Length - change.NewText.Length;
+					}
+				} else {
+					data.ReplaceText (offset, change.Span.Length, change.NewText);
+					delta += change.Span.Length - change.NewText.Length;
 				}
-				data.ReplaceText (offset, change.Span.Length, change.NewText);
-				delta += change.Span.Length - change.NewText.Length;
 			}
 
 			return delta;

@@ -163,7 +163,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			return result;
 		}
 
-		protected override void Update (CommandArrayInfo ainfo)
+		protected override async void Update (CommandArrayInfo ainfo)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null || doc.ParsedDocument == null)
@@ -171,7 +171,10 @@ namespace MonoDevelop.CSharp.Refactoring
 			var semanticModel = doc.ParsedDocument.GetAst<SemanticModel> ();
 			if (semanticModel == null)
 				return;
-			var info = RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor).Result;
+			var task = RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor);
+			if (!task.Wait (2000))
+				return;
+			var info = task.Result;
 			bool added = false;
 
 			var ext = doc.GetContent<CodeActionEditorExtension> ();
@@ -238,10 +241,18 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			var sym = info.Symbol ?? info.DeclaredSymbol;
 			if (doc.HasProject && sym != null) {
-				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (() => FindReferencesHandler.FindRefs (sym)));
+				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (() => {
+
+					if (sym.Kind == SymbolKind.Local || sym.Kind == SymbolKind.Parameter || sym.Kind == SymbolKind.TypeParameter) {
+						FindReferencesHandler.FindRefs (sym);
+					} else {
+						RefactoringService.FindReferencesAsync (sym.GetDocumentationCommentId ());
+					}
+
+				}));
 				try {
 					if (Microsoft.CodeAnalysis.FindSymbols.SymbolFinder.FindSimilarSymbols (sym, semanticModel.Compilation).Count () > 1)
-						ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), new System.Action (() => FindAllReferencesHandler.FindRefs (info.Symbol, semanticModel.Compilation)));
+						ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), new System.Action (() => RefactoringService.FindAllReferencesAsync (sym.GetDocumentationCommentId ())));
 				} catch (Exception) {
 					// silently ignore roslyn bug.
 				}

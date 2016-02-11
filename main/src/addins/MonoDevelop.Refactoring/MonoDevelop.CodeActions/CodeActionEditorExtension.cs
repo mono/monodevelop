@@ -149,7 +149,7 @@ namespace MonoDevelop.CodeActions
 			if (Editor.IsInAtomicUndo)
 				return;
 			CancelQuickFixTimer ();
-			if (AnalysisOptions.EnableFancyFeatures && DocumentContext.ParsedDocument != null && !Debugger.DebuggingService.IsDebugging) {
+			if (AnalysisOptions.EnableFancyFeatures && DocumentContext.ParsedDocument != null) {
 				var token = quickFixCancellationTokenSource.Token;
 				var curOffset = Editor.CaretOffset;
 				if (HasCurrentFixes) {

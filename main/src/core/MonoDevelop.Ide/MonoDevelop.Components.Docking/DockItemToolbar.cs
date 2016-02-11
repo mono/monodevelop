@@ -209,7 +209,7 @@ namespace MonoDevelop.Components.Docking
 			Image.Show ();
 		}
 
-		protected override object CreateNativeWidget ()
+		protected override object CreateNativeWidget<T> ()
 		{
 			return button;
 		}
@@ -220,6 +220,30 @@ namespace MonoDevelop.Components.Docking
 			}
 			remove {
 				button.Clicked -= value;
+			}
+		}
+
+		public class DockToolButtonImage : Control
+		{
+			ImageView image;
+			internal DockToolButtonImage (ImageView image)
+			{
+				this.image = image;
+			}
+
+			protected override object CreateNativeWidget<T> ()
+			{
+				return image;
+			}
+
+			public static implicit operator Gtk.Widget (DockToolButtonImage d)
+			{
+				return d.GetNativeWidget<Gtk.Widget> ();
+			}
+
+			public static implicit operator DockToolButtonImage (ImageView d)
+			{
+				return new DockToolButtonImage (d);
 			}
 		}
 	}

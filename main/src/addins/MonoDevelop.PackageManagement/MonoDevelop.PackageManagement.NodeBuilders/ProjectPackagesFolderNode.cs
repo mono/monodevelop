@@ -139,6 +139,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		{
 			return reference.IsPackageInstalled (project.DotNetProject);
 		}
+
+		public void ClearPackageReferences ()
+		{
+			packageReferences = null;
+		}
 	}
 }
 

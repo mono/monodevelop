@@ -34,7 +34,6 @@ namespace MonoDevelop.Ide.Templates
 	{
 		public static bool EvaluateCondition (IStringTagModel model, string condition)
 		{
-			// This logic is duplicated in the ProjectCreateInformation.ShouldCreate method.
 			if (string.IsNullOrWhiteSpace (condition))
 				return true;
 

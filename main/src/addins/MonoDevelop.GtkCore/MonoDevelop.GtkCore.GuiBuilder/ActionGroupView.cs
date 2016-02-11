@@ -38,6 +38,7 @@ using MonoDevelop.DesignerSupport;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide;
 using System.Threading.Tasks;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -183,7 +184,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			var met = cls.GetMembers (signal.Handler).OfType<IMethodSymbol> ().FirstOrDefault ();
 			if (met != null) { 
 				ShowPage (1);
-				IdeApp.ProjectOperations.JumpToDeclaration (met);
+				RefactoringService.RoslynJumpToDeclaration(met);
 			}
 		}
 		

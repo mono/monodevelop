@@ -99,11 +99,18 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		static List<Tuple<string, string, ProjectFile>> allFilesCache;
+		static object allFilesLock = new object ();
 
 		public override Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern pattern, CancellationToken token)
 		{
 			return Task.Run (delegate {
-				var files = allFilesCache = allFilesCache ?? GenerateAllFiles ();
+				List<Tuple<string, string, ProjectFile>> files;
+				//This lock is here in case user quickly types 5 letters which triggers 5 threads
+				//we don't want to use all CPU doing same thing, instead 1st one will create cache, others will wait here
+				//and then all will use cached version...
+				lock (allFilesLock) {
+					files = allFilesCache = allFilesCache ?? GenerateAllFiles ();
+				}
 				var matcher = StringMatcher.GetMatcher (pattern.Pattern, false);
 				var savedMatches = new Dictionary<string, MatchResult> ();
 				foreach (var file in files) {

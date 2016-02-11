@@ -926,7 +926,7 @@ namespace MonoDevelop.Ide.Editor
 			base.Dispose (disposing);
 		}
 
-		protected override object CreateNativeWidget ()
+		protected override object CreateNativeWidget<T> ()
 		{
 			return textEditorImpl.CreateNativeControl ();
 		}

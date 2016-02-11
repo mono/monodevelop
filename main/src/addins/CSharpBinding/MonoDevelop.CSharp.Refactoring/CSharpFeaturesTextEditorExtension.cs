@@ -46,7 +46,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		static CSharpFeaturesTextEditorExtension ()
 		{
 			GoToDefinitionService.TryNavigateToSymbol = delegate (ISymbol symbol, Microsoft.CodeAnalysis.Project project, bool usePreviewTab) {
-				IdeApp.ProjectOperations.JumpToDeclaration (symbol, TypeSystemService.GetMonoProject (project));
+				RefactoringService.RoslynJumpToDeclaration (symbol, TypeSystemService.GetMonoProject (project));
 				return true;
 			};
 

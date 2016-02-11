@@ -82,6 +82,10 @@
       <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Composition.AttributedModel.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

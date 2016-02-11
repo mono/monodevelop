@@ -43,7 +43,7 @@ namespace MonoDevelop.CSharp.Refactoring
 {
 	class FindReferencesHandler
 	{
-		public static void FindRefs (ISymbol symbol)
+		internal static void FindRefs (ISymbol symbol)
 		{
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 			var workspace = TypeSystemService.Workspace as MonoDevelopWorkspace;
@@ -95,7 +95,7 @@ namespace MonoDevelop.CSharp.Refactoring
 						monitor.Dispose ();
 				}
 			});
-		}
+		}		
 
 		public void Update (CommandInfo info)
 		{
@@ -116,60 +116,20 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			var info = RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor).Result;
 			var sym = info.Symbol ?? info.DeclaredSymbol;
-			if (sym != null)
-				FindRefs (sym);
+			if (sym != null) {
+				if (sym.Kind == SymbolKind.Local || sym.Kind == SymbolKind.Parameter || sym.Kind == SymbolKind.TypeParameter) {
+					FindRefs (sym);
+				} else {
+					RefactoringService.FindReferencesAsync (sym.GetDocumentationCommentId ());
+				}
+			}
 		}
 	}
 
+	
+
 	class FindAllReferencesHandler
 	{
-		public static void FindRefs (ISymbol obj, Compilation compilation)
-		{
-			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
-			var workspace = TypeSystemService.Workspace as MonoDevelopWorkspace;
-			if (workspace == null)
-				return;
-			var solution = workspace.CurrentSolution;
-			Task.Run (async delegate {
-				try {
-					var antiDuplicatesSet = new HashSet<SearchResult> (new SearchResultComparer ());
-					foreach (var simSym in SymbolFinder.FindSimilarSymbols (obj, compilation)) {
-						foreach (var loc in simSym.Locations) {
-							var sr = new SearchResult (new FileProvider (loc.SourceTree.FilePath), loc.SourceSpan.Start, loc.SourceSpan.Length);
-							if (antiDuplicatesSet.Add (sr)) {
-								monitor.ReportResult (sr);
-							}
-						}
-
-						foreach (var mref in await SymbolFinder.FindReferencesAsync (simSym, solution).ConfigureAwait (false)) {
-							foreach (var loc in mref.Locations) {
-								var fileName = loc.Document.FilePath;
-								var offset = loc.Location.SourceSpan.Start;
-								string projectedName;
-								int projectedOffset;
-								if (workspace.TryGetOriginalFileFromProjection (fileName, offset, out projectedName, out projectedOffset)) {
-									fileName = projectedName;
-									offset = projectedOffset;
-								}
-
-								var sr = new SearchResult (new FileProvider (fileName), offset, loc.Location.SourceSpan.Length);
-								if (antiDuplicatesSet.Add (sr)) {
-									monitor.ReportResult (sr);
-								}
-							}
-						}
-					}
-				} catch (Exception ex) {
-					if (monitor != null)
-						monitor.ReportError ("Error finding references", ex);
-					else
-						LoggingService.LogError ("Error finding references", ex);
-				} finally {
-					if (monitor != null)
-						monitor.Dispose ();
-				}
-			});
-		}
 
 		public void Update (CommandInfo info)
 		{
@@ -190,8 +150,13 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			var info = RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor).Result;
 			var sym = info.Symbol ?? info.DeclaredSymbol;
-			if (sym != null)
-				FindRefs (sym, info.Model.Compilation);
+			if (sym != null) {
+				if (sym.Kind == SymbolKind.Local || sym.Kind == SymbolKind.Parameter || sym.Kind == SymbolKind.TypeParameter) {
+					FindReferencesHandler.FindRefs (sym);
+				} else {
+					RefactoringService.FindAllReferencesAsync (sym.GetDocumentationCommentId ());
+				}
+			}
 		}
 	}
 
