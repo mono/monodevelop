@@ -420,7 +420,7 @@ type CurrentRefactoringOperationsHandler() =
         | Some doc ->
             if not (MDLanguageService.SupportedFileName (doc.FileName.ToString())) then ()
             else
-                match doc.ParsedDocument.TryGetAst () with
+                match doc.TryGetAst () with
                 | None -> ()
                 | Some ast ->
                     match Refactoring.getSymbolAndLineInfoAtCaret ast doc.Editor with
@@ -542,7 +542,7 @@ type FindReferencesHandler() =
 
     member x.Run (editor:TextEditor, ctx:DocumentContext) =
         if MDLanguageService.SupportedFilePath editor.FileName then
-            match ctx.ParsedDocument.TryGetAst() with
+            match ctx.TryGetAst() with
             | Some ast ->
                 match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
                 //Is this a double check, i.e. isnt update checking can rename?
@@ -564,7 +564,7 @@ type RenameHandler() =
         else
             if not (MDLanguageService.SupportedFilePath editor.FileName) then ci.Bypass <- true
             else
-                match doc.ParsedDocument.TryGetAst() with
+                match doc.TryGetAst() with
                 | Some ast ->
                     match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
                     //set bypass is we cant rename
@@ -584,7 +584,7 @@ type RenameHandler() =
 
     member x.Run (editor:TextEditor, ctx:DocumentContext) =
         if MDLanguageService.SupportedFilePath editor.FileName then
-            match ctx.ParsedDocument.TryGetAst() with
+            match ctx.TryGetAst() with
             | Some ast ->
                 match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
                 //Is this a double check, i.e. isnt update checking can rename?
@@ -608,7 +608,7 @@ type GotoDeclarationHandler() =
         if editor = null || editor.FileName = FilePath.Null then ci.Bypass <- true
         elif not (MDLanguageService.SupportedFilePath editor.FileName) then ci.Bypass <- true
         else
-            match doc.ParsedDocument.TryGetAst() with
+            match doc.TryGetAst() with
             | Some ast ->
                 match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
                 //set bypass as we cant jump
@@ -625,7 +625,7 @@ type GotoDeclarationHandler() =
 
     member x.Run(editor, context:DocumentContext) =
         if MDLanguageService.SupportedFileName (editor.FileName.ToString()) then
-            match context.ParsedDocument.TryGetAst() with
+            match context.TryGetAst() with
             | Some ast ->
                 match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
                 | (_line, _col, _lineTxt), Some symbolUse when Refactoring.Operations.canJump symbolUse editor.FileName context.Project.ParentSolution ->

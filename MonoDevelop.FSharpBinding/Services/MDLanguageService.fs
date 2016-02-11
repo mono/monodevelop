@@ -13,6 +13,7 @@ open System.IO
 open System.Xml
 open System.Text
 open System.Diagnostics
+open ExtCore.Control
 open Mono.TextEditor
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
@@ -32,8 +33,8 @@ module MonoDevelop =
 
         member x.GetLineInfoByCaretOffset () =
             x.GetLineInfoFromOffset x.CaretOffset
-
-    type MonoDevelop.Ide.TypeSystem.ParsedDocument with
+           
+    type TypeSystem.ParsedDocument with
         member x.TryGetAst() =
             match x.Ast with
             | null -> None
@@ -41,12 +42,20 @@ module MonoDevelop =
                 -> Some ast
             | _ -> None
 
+    type DocumentContext with
+        member x.TryGetAst() =
+            maybe { 
+                let! context = x |> Option.ofNull
+                let! parsedDocument = context.ParsedDocument |> Option.ofNull
+                return! parsedDocument.TryGetAst()
+            }
+
     let internal getConfig () =
-        match MonoDevelop.Ide.IdeApp.Workspace with
-        | null -> MonoDevelop.Projects.ConfigurationSelector.Default
+        match IdeApp.Workspace with
+        | null -> ConfigurationSelector.Default
         | ws ->
            match ws.ActiveConfiguration with
-           | null -> MonoDevelop.Projects.ConfigurationSelector.Default
+           | null -> ConfigurationSelector.Default
            | config -> config
 
 

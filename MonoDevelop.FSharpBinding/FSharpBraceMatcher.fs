@@ -17,7 +17,7 @@ type FSharpBraceMatcher() =
     override x.GetMatchingBracesAsync (editor, context, caretOffset, cancellationToken) =
         match editor.GetCharAt(caretOffset) with
         | '(' | ')' ->
-            match context.ParsedDocument.TryGetAst() with
+            match context.TryGetAst() with
             | Some _ast -> 
                 let computation = async {
                     let getOffset (range:Range.range) =

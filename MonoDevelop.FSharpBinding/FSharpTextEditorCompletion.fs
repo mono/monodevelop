@@ -543,7 +543,7 @@ type FSharpTextEditorCompletion() =
     interface IDebuggerExpressionResolver with
         member x.ResolveExpressionAsync (doc, context, offset, cancellationToken) =
             let computation = async {
-                let ast = context.ParsedDocument.TryGetAst()
+                let ast = context.TryGetAst()
                 let location =
                     match ast with
                     | None -> None
