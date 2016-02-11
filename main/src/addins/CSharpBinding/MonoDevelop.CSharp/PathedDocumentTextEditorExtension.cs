@@ -742,14 +742,15 @@ namespace MonoDevelop.CSharp
 
 				var result = new List<PathEntry>();
 
-				if (ownerProjects != null && ownerProjects.Count > 1) {
-					// Current project if there is more than one
-					result.Add (new PathEntry (ImageService.GetIcon (DocumentContext.Project.StockIcon, Gtk.IconSize.Menu), GLib.Markup.EscapeText (DocumentContext.Project.Name)) { Tag = DocumentContext.Project });
+				if (curProject != null) {
+					// Current project if there is more than one 
+					result.Add (new PathEntry (ImageService.GetIcon (curProject.StockIcon, Gtk.IconSize.Menu), GLib.Markup.EscapeText (curProject.Name)) { Tag = curProject });
 				}
+
 				if (curType == null) {
-					if (CurrentPath != null && CurrentPath.Length == 1 && CurrentPath [0].Tag is CSharpSyntaxTree)
+					if (CurrentPath != null && CurrentPath.Length == 1 && CurrentPath [0]?.Tag is CSharpSyntaxTree)
 						return;
-					if (CurrentPath != null && CurrentPath.Length == 2 && CurrentPath [1].Tag is CSharpSyntaxTree)
+					if (CurrentPath != null && CurrentPath.Length == 2 && CurrentPath [1]?.Tag is CSharpSyntaxTree)
 						return;
 					var prevPath = CurrentPath;
 					result.Add (new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit });
