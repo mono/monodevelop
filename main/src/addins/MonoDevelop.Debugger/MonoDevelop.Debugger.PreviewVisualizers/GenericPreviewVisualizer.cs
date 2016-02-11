@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.Components;
 using Mono.Debugging.Client;
 using Gtk;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Debugger.PreviewVisualizers
 {
@@ -51,15 +52,7 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 
 			var label = new Gtk.Label ();
 			label.Text = value;
-			var font = label.Style.FontDescription.Copy (); // TODO: VV: Use FontService
-
-			if (font.SizeIsAbsolute) {
-				font.AbsoluteSize = font.Size - 1;
-			} else {
-				font.Size -= (int)(Pango.Scale.PangoScale);
-			}
-
-			label.ModifyFont (font);
+			label.ModifyFont (FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11));
 			label.ModifyFg (StateType.Normal, col);
 			label.SetPadding (4, 4);
 

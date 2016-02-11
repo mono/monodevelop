@@ -164,7 +164,7 @@ namespace MonoDevelop.Debugger
 				if (!icon.IsNull) {
 					using (var ctx = Gdk.CairoHelper.Create (window)) {
 						using (var layout = new Pango.Layout (widget.PangoContext)) {
-							layout.FontDescription = FontDesc.Copy ();
+							layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 							layout.FontDescription.Family = Family;
 							layout.SetText (Text);
 							int w, h;
@@ -298,9 +298,8 @@ namespace MonoDevelop.Debugger
 			Selection.Mode = Gtk.SelectionMode.Multiple;
 			Selection.Changed += HandleSelectionChanged;
 			ResetColumnSizes ();
-			
-			Pango.FontDescription newFont = Style.FontDescription.Copy (); // TODO: VV: Use FontService
-			newFont.Size = (newFont.Size * 8) / 10;
+
+			Pango.FontDescription newFont = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 
 			liveIcon = ImageService.GetIcon (Stock.Execute, IconSize.Menu);
 			noLiveIcon = liveIcon.WithAlpha (0.5);

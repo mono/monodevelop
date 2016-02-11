@@ -31,6 +31,7 @@ using Gdk;
 using Gtk;
 using MonoDevelop.Ide;
 using MonoDevelop.Debugger.PreviewVisualizers;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Debugger
 {
@@ -65,7 +66,7 @@ namespace MonoDevelop.Debugger
 
 			var headerTitle = new Label ();
 			headerTitle.ModifyFg (StateType.Normal, Styles.PreviewVisualizerHeaderTextColor.ToGdkColor ());
-			var font = headerTitle.Style.FontDescription.Copy (); // TODO: VV: Use FontService
+			var font = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale12);
 			font.Weight = Pango.Weight.Bold;
 			headerTitle.ModifyFont (font);
 			headerTitle.Text = val.TypeName;
