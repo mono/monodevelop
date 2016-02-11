@@ -34,7 +34,8 @@
         { "name":"aluminium3", "value":"#babdb6" },
         { "name":"aluminium4", "value":"#888a85" },
         { "name":"aluminium5", "value":"#555753" },
-        { "name":"aluminium6", "value":"#2e3436" }
+        { "name":"aluminium6", "value":"#2e3436" },
+        { "name":"aluminium7", "value":"#0e1416" }
     ],
 
     "colors":[
@@ -45,8 +46,8 @@
 
         { "name":"Column Ruler", "color":"#444a4d" },
 
-        { "name":"Fold Square", "color":"#555653", "secondcolor":"aluminium6" },
-        { "name":"Fold Cross", "color":"#686e5c", "secondcolor":"aluminium6" },
+        { "name":"Fold Square", "color":"aluminium4", "secondcolor":"aluminium6" },
+        { "name":"Fold Cross", "color":"aluminium4", "secondcolor":"aluminium6" },
 
         { "name":"Indentation Guide", "color":"#444a4d" },
 
@@ -76,7 +77,7 @@
         { "name":"Quick Diff(Dirty)", "color":"butter2" },
         { "name":"Quick Diff(Changed)", "color":"chameleon2" },
 
-        { "name":"Brace Matching(Rectangle)", "color":"#517297", "secondcolor":"#517297" },
+        { "name":"Brace Matching(Rectangle)", "color":"aluminium4", "secondcolor":"aluminium4" },
         { "name":"Usages(Rectangle)", "color":"#527F99", "secondcolor":"#527F99", "bordercolor":"#527F99" },
         { "name":"Changing usages(Rectangle)", "color":"#996E75", "secondcolor":"#996E75", "bordercolor":"#996E75" },
 
@@ -84,8 +85,8 @@
         { "name":"Breakpoint Marker(Disabled)", "color":"#4d4d4d", "bordercolor":"#4d4d4d" },
         { "name":"Breakpoint Marker(Invalid)", "color":"#604343", "bordercolor":"#604343" },
 
-        { "name":"Current Line Marker", "color":"#3a3f42", "secondcolor":"#3a3f42" },
-        { "name":"Current Line Marker(Inactive)", "color":"#3a3f42", "secondcolor":"#3a3f42" },
+        { "name":"Current Line Marker", "color":"#1a1f22", "secondcolor":"#1a1f22" },
+        { "name":"Current Line Marker(Inactive)", "color":"#1a1f22", "secondcolor":"#1a1f22" },
 
         { "name":"Debugger Current Line Marker", "color":"#69684c", "bordercolor":"#69684c" },
         { "name":"Debugger Stack Line Marker", "color":"#5f7247", "bordercolor":"#5f7247" },
@@ -115,9 +116,9 @@
         { "name":"Selected Text", "back":"#61677e" },
         { "name":"Selected Text(Inactive)", "back":"#6f6f6f" },
 
-        { "name":"Collapsed Text", "fore":"aluminium3", "back":"aluminium6" },
+        { "name":"Collapsed Text", "fore":"chameleon3", "back":"aluminium6" },
 
-        { "name":"Line Numbers", "fore":"aluminium5", "back":"aluminium6" },
+        { "name":"Line Numbers", "fore":"aluminium4", "back":"aluminium6" },
 
         { "name":"Punctuation", "fore":"aluminium1" },
         { "name":"Punctuation(Brackets)", "fore":"aluminium1" },
@@ -141,17 +142,17 @@
 
         { "name":"Xml Text", "fore":"aluminium1" },
         { "name":"Xml Delimiter", "fore":"aluminium1" },
-        { "name":"Xml Name", "fore":"plum1" },
-        { "name":"Xml Attribute", "fore":"skyblue1" },
-        { "name":"Xml Attribute Quotes", "fore":"butter2" },
-        { "name":"Xml Attribute Value", "fore":"butter2" },
-        { "name":"Xml Comment", "fore":"aluminium4" },
+        { "name":"Xml Name", "fore":"skyblue1" },
+        { "name":"Xml Attribute", "fore":"aluminium1" },
+        { "name":"Xml Attribute Quotes", "fore":"orange1" },
+        { "name":"Xml Attribute Value", "fore":"orange1" },
+        { "name":"Xml Comment", "fore":"chameleon3" },
         { "name":"Xml CData Section", "fore":"aluminium1" },
 
         { "name":"Html Attribute Name", "fore":"aluminium1" },
-        { "name":"Html Attribute Value", "fore":"butter2" },
+        { "name":"Html Attribute Value", "fore":"orange1" },
         { "name":"Html Comment", "fore":"aluminium4" },
-        { "name":"Html Element Name", "fore":"plum1" },
+        { "name":"Html Element Name", "fore":"skyblue1" },
         { "name":"Html Entity", "fore":"skyblue1" },
         { "name":"Html Operator", "fore":"aluminium1" },
         { "name":"Html Server-Side Script", "fore":"butter2", "back":"black" },
