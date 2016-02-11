@@ -15,14 +15,18 @@ module Symbols =
     let getLocationFromSymbolUse (s: FSharpSymbolUse) =
         [s.Symbol.DeclarationLocation; s.Symbol.SignatureLocation]
         |> List.choose id
+        // temp until Windows bots get F#4
         |> List.toSeq
         |> Seq.distinctBy (fun r -> r.FileName)
+        |> Seq.toList
 
     let getLocationFromSymbol (s:FSharpSymbol) =
         [s.DeclarationLocation; s.SignatureLocation]
         |> List.choose id
+        // temp until Windows bots get F#4
         |> List.toSeq
         |> Seq.distinctBy (fun r -> r.FileName)
+        |> Seq.toList
 
     ///Given a column and line string returns the identifier portion of the string
     let lastIdent column lineString =
@@ -60,14 +64,14 @@ module Symbols =
     let getTrimmedRangesForDeclarations lastIdent (symbolUse:FSharpSymbolUse) =
         symbolUse
         |> getLocationFromSymbolUse
-        |> List.map (fun range ->
+        |> Seq.map (fun range ->
             let start, finish = Symbol.trimSymbolRegion symbolUse lastIdent
             range.FileName, start, finish)
 
     let getTrimmedOffsetsForDeclarations lastIdent (symbolUse:FSharpSymbolUse) =
         let trimmedSymbols = getTrimmedRangesForDeclarations lastIdent symbolUse
         trimmedSymbols
-        |> List.map (fun (fileName, start, finish) ->
+        |> Seq.map (fun (fileName, start, finish) ->
             let editor = getEditorDataForFileName fileName
             let startOffset = editor.LocationToOffset (start.Line, start.Column+1)
             let endOffset = editor.LocationToOffset (finish.Line, finish.Column+1)
@@ -78,7 +82,7 @@ module Symbols =
     let getTrimmedTextSpanForDeclarations lastIdent (symbolUse:FSharpSymbolUse) =
         let trimmedSymbols = getTrimmedRangesForDeclarations lastIdent symbolUse
         trimmedSymbols
-        |> List.map (fun (fileName, start, finish) ->
+        |> Seq.map (fun (fileName, start, finish) ->
             let editor = getEditorDataForFileName fileName
             let startOffset = editor.LocationToOffset (start.Line, start.Column+1)
             let endOffset = editor.LocationToOffset (finish.Line, finish.Column+1)
