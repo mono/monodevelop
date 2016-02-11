@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Ide;
-using MonoDevelop.Components;
 using Xwt.Drawing;
 
 namespace MonoDevelop.Debugger
@@ -57,7 +56,7 @@ namespace MonoDevelop.Debugger
 		static Styles ()
 		{
 			LoadStyles ();
-			MonoDevelop.Ide.Gui.Styles.Changed +=  (o, e) => LoadStyles ();
+			Ide.Gui.Styles.Changed +=  (o, e) => LoadStyles ();
 		}
 
 		public static void LoadStyles ()
@@ -71,8 +70,6 @@ namespace MonoDevelop.Debugger
 				ObjectValueTreeValueDisabledText = Color.FromName ("#7f7f7f");
 				ObjectValueTreeValueModifiedText = Color.FromName ("#85B7F3");
 
-				PreviewVisualizerHeaderTextColor = Color.FromName ("#242424");
-
 				ExceptionCaughtDialog.InfoFrameBackgroundColor = Color.FromName ("#fbefce");
 				ExceptionCaughtDialog.InfoFrameBorderColor = Color.FromName ("#f0e4c2");
 				ExceptionCaughtDialog.LineNumberBackgroundColor = Color.FromName ("#c4c4c4");
@@ -83,9 +80,7 @@ namespace MonoDevelop.Debugger
 				ObjectValueTreeValuesButtonText = Color.FromName ("#cbe5ff");
 				ObjectValueTreeValuesButtonBorder = Color.FromName ("#a4bbd5");
 				ObjectValueTreeValueDisabledText = Color.FromName ("#5a5a5a");
-				ObjectValueTreeValueModifiedText = Color.FromName ("#ff00ff"); // TODO: VV: 0000ff
-
-				PreviewVisualizerHeaderTextColor = Color.FromName ("#ff00ff"); // TODO: VV: dbdbdb
+				ObjectValueTreeValueModifiedText = Color.FromName ("#4283d2");
 
 				ExceptionCaughtDialog.InfoFrameBackgroundColor = Color.FromName ("#675831");
 				ExceptionCaughtDialog.InfoFrameBorderColor = Color.FromName ("#7a6a3d");
@@ -98,10 +93,11 @@ namespace MonoDevelop.Debugger
 
 			ObjectValueTreeValueErrorText = Ide.Gui.Styles.WarningForegroundColor;
 
-			PreviewVisualizerBackgroundColor = MonoDevelop.Ide.Gui.Styles.PopoverWindow.DefaultBackgroundColor;
-			PreviewVisualizerTextColor = MonoDevelop.Ide.Gui.Styles.PopoverWindow.DefaultTextColor;
+			PreviewVisualizerBackgroundColor = Ide.Gui.Styles.PopoverWindow.DefaultBackgroundColor;
+			PreviewVisualizerTextColor = Ide.Gui.Styles.PopoverWindow.DefaultTextColor;
+			PreviewVisualizerHeaderTextColor = Ide.Gui.Styles.PopoverWindow.DefaultTextColor;
 
-			ExceptionCaughtDialog.TreeBackgroundColor = MonoDevelop.Ide.Gui.Styles.PrimaryBackgroundColor;
+			ExceptionCaughtDialog.TreeBackgroundColor = Ide.Gui.Styles.PrimaryBackgroundColor;
 		}
 	}
 }
