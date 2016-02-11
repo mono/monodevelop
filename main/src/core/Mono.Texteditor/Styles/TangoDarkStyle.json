@@ -46,8 +46,8 @@
 
         { "name":"Column Ruler", "color":"#444a4d" },
 
-        { "name":"Fold Square", "color":"aluminium4", "secondcolor":"aluminium6" },
-        { "name":"Fold Cross", "color":"aluminium4", "secondcolor":"aluminium6" },
+        { "name":"Fold Square", "color":"aluminium5", "secondcolor":"aluminium6" },
+        { "name":"Fold Cross", "color":"aluminium5", "secondcolor":"aluminium6" },
 
         { "name":"Indentation Guide", "color":"#444a4d" },
 
@@ -113,23 +113,23 @@
 
     "text":[
         { "name":"Plain Text", "fore":"aluminium1", "back":"aluminium6" },
-        { "name":"Selected Text", "back":"#61677e" },
+        { "name":"Selected Text", "back":"#31375e" },
         { "name":"Selected Text(Inactive)", "back":"#6f6f6f" },
 
-        { "name":"Collapsed Text", "fore":"chameleon3", "back":"aluminium6" },
+        { "name":"Collapsed Text", "fore":"aluminium4", "back":"aluminium6" },
 
-        { "name":"Line Numbers", "fore":"aluminium4", "back":"aluminium6" },
+        { "name":"Line Numbers", "fore":"aluminium5", "back":"aluminium6" },
 
         { "name":"Punctuation", "fore":"aluminium1" },
         { "name":"Punctuation(Brackets)", "fore":"aluminium1" },
 
-        { "name":"Comment(Line)", "fore":"chameleon3" },
-        { "name":"Comment(Block)", "fore":"chameleon3" },
-        { "name":"Comment(Doc)", "fore":"chameleon1" },
-        { "name":"Comment(DocTag)", "fore":"chameleon3" },
-        { "name":"Comment Tag", "fore":"chameleon3" },
+        { "name":"Comment(Line)", "fore":"aluminium4" },
+        { "name":"Comment(Block)", "fore":"aluminium4" },
+        { "name":"Comment(Doc)", "fore":"aluminium2" },
+        { "name":"Comment(DocTag)", "fore":"aluminium4" },
+        { "name":"Comment Tag", "fore":"aluminium4" },
 
-        { "name":"Excluded Code", "fore":"chameleon3" },
+        { "name":"Excluded Code", "fore":"aluminium4" },
 
         { "name":"String", "fore":"orange1" },
         { "name":"String(Escape)", "fore":"orange3" },
@@ -146,7 +146,7 @@
         { "name":"Xml Attribute", "fore":"aluminium1" },
         { "name":"Xml Attribute Quotes", "fore":"orange1" },
         { "name":"Xml Attribute Value", "fore":"orange1" },
-        { "name":"Xml Comment", "fore":"chameleon3" },
+        { "name":"Xml Comment", "fore":"aluminium4" },
         { "name":"Xml CData Section", "fore":"aluminium1" },
 
         { "name":"Html Attribute Name", "fore":"aluminium1" },
@@ -208,8 +208,8 @@
         { "name":"User Method Usage", "fore":"aluminium1" },
         { "name":"User Method Declaration", "fore":"aluminium1" },
 
-        { "name":"User Parameter Usage", "fore":"aluminium1", "style":"italic" },
-        { "name":"User Parameter Declaration", "fore":"aluminium1", "style":"italic" },
+        { "name":"User Parameter Usage", "fore":"aluminium1" },
+        { "name":"User Parameter Declaration", "fore":"aluminium1" },
 
         { "name":"User Variable Usage", "fore":"aluminium1" },
         { "name":"User Variable Declaration", "fore":"aluminium1" },
