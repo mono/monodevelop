@@ -125,7 +125,7 @@
 
         { "name":"Comment(Line)", "fore":"aluminium4" },
         { "name":"Comment(Block)", "fore":"aluminium4" },
-        { "name":"Comment(Doc)", "fore":"aluminium2" },
+        { "name":"Comment(Doc)", "fore":"aluminium3" },
         { "name":"Comment(DocTag)", "fore":"aluminium4" },
         { "name":"Comment Tag", "fore":"aluminium4" },
 
@@ -135,9 +135,9 @@
         { "name":"String(Escape)", "fore":"#A6AB34" },
         { "name":"String(C# @ Verbatim)", "fore":"#E6DB74" },
 
-        { "name":"Number", "fore":"plum1" },
+        { "name":"Number", "fore":"chameleon1" },
 
-        { "name":"Preprocessor", "fore":"chameleon1" },
+        { "name":"Preprocessor", "fore":"plum1" },
         { "name":"Preprocessor(Region Name)", "fore":"aluminium1" },
 
         { "name":"Xml Text", "fore":"aluminium1" },
@@ -189,12 +189,12 @@
         { "name":"Keyword(Operator Declaration)", "fore":"skyblue1" },
         { "name":"Keyword(Other)", "fore":"skyblue1" },
 
-        { "name":"User Types", "fore":"#66d9ef" },
+        { "name":"User Types", "fore":"#4ec9b0" },
         { "name":"User Types(Enums)", "fore":"#b8d7a3" },
         { "name":"User Types(Interfaces)", "fore":"#b8d7a3" },
-        { "name":"User Types(Delegates)", "fore":"#66d9ef" },
-        { "name":"User Types(Value types)", "fore":"#66d9ef" },
-        { "name":"User Types(Type parameters)", "fore":"#66d9ef" },
+        { "name":"User Types(Delegates)", "fore":"#4ec9b0" },
+        { "name":"User Types(Value types)", "fore":"#4ec9b0" },
+        { "name":"User Types(Type parameters)", "fore":"#4ec9b0" },
 
         { "name":"User Field Usage", "fore":"aluminium1", "style":"italic" },
         { "name":"User Field Declaration", "fore":"aluminium1", "style":"italic" },
