@@ -44,7 +44,7 @@ namespace MonoDevelop.UnitTesting
 		}
 		
 		public override string ContextMenuAddinPath {
-			get { return "/MonoDevelop/NUnit/ContextMenu/TestPad"; }
+			get { return "/MonoDevelop/UnitTesting/ContextMenu/TestPad"; }
 		}
 			
 		public override Type NodeDataType {

@@ -26,7 +26,7 @@
 using System;
 using MonoDevelop.Refactoring;
 using System.Collections.Generic;
-using MonoDevelop.NUnit;
+using MonoDevelop.UnitTesting;
 using MonoDevelop.Core;
 using System.Text;
 using System.Threading;

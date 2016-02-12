@@ -39,7 +39,7 @@ using NUnit.Core;
 using NUnit.Framework;
 using NUnit.Core.Filters;
 
-namespace MonoDevelop.NUnit.External
+namespace MonoDevelop.UnitTesting.NUnit.External
 {
 	public class NUnitTestRunner: MarshalByRefObject
 	{

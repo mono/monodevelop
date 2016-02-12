@@ -42,7 +42,7 @@ using NUnit.Util;
 using NF = NUnit.Framework;
 using NC = NUnit.Core;
 
-namespace MonoDevelop.UnitTesting.External
+namespace MonoDevelop.UnitTesting.NUnit.External
 {
 	class ExternalTestRunner: RemoteProcessObject
 	{

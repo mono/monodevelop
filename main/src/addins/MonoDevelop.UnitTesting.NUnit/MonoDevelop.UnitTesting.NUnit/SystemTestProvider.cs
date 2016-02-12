@@ -39,8 +39,6 @@ namespace MonoDevelop.UnitTesting.NUnit
 			
 			if (entry is DotNetProject)
 				test = NUnitProjectTestSuite.CreateTest ((DotNetProject)entry);
-			if (entry is NUnitAssemblyGroupProject)
-				test = ((NUnitAssemblyGroupProject)entry).RootTest;
 			
 			UnitTestGroup grp = test as UnitTestGroup;
 			if (grp != null && !grp.HasTests) {

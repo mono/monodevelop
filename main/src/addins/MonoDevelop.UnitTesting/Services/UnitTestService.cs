@@ -62,7 +62,7 @@ namespace MonoDevelop.UnitTesting
 			IdeApp.Workspace.ReferenceAddedToProject += OnReferenceChangedInProject;;
 			IdeApp.Workspace.ReferenceRemovedFromProject += OnReferenceChangedInProject;
 
-			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/NUnit/TestProviders", OnExtensionChange);
+			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/UnitTesting/TestProviders", OnExtensionChange);
 		}
 
 		public static UnitTestService Instance {

@@ -40,7 +40,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using NUnit.Core;
 using NUnit.Core.Filters;
-using MonoDevelop.NUnit.External;
+using MonoDevelop.UnitTesting.NUnit.External;
 using MonoDevelop.Ide;
 using System.Xml.Linq;
 using System.Linq;
@@ -84,7 +84,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 			}
 			base.Dispose ();
 		}
-		
+
 		public override bool HasTests {
 			get {
 				return true;
@@ -480,7 +480,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 				cons = xmlOutputConsole;
 			}
 			try {
-				MonoDevelop.NUnit.External.TcpTestListener tcpListener = null;
+				MonoDevelop.UnitTesting.NUnit.External.TcpTestListener tcpListener = null;
 				LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, test, suiteName, testName != null);
 
 				if (!string.IsNullOrEmpty (cmd.Arguments))
@@ -491,7 +491,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 				if (!string.IsNullOrEmpty(pathName))
 					cmd.Arguments += " -run=\"" + test.TestId + "\"";
 				if (automaticUpdates) {
-					tcpListener = new MonoDevelop.NUnit.External.TcpTestListener (localMonitor, suiteName);
+					tcpListener = new MonoDevelop.UnitTesting.NUnit.External.TcpTestListener (localMonitor, suiteName);
 					cmd.Arguments += " -port=" + tcpListener.Port;
 				}
 

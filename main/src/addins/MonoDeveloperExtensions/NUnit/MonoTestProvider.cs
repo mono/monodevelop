@@ -30,7 +30,8 @@ using System;
 using System.IO;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
-using MonoDevelop.NUnit;
+using MonoDevelop.UnitTesting;
+using MonoDevelop.UnitTesting.NUnit;
 
 namespace MonoDeveloper
 {	

@@ -38,6 +38,7 @@ using System;
 using Microsoft.CodeAnalysis;
 using System.Threading;
 using ProjectReference = MonoDevelop.Projects.ProjectReference;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.UnitTesting.NUnit
 {
@@ -46,6 +47,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 		DotNetProject project;
 		string resultsPath;
 		string storeId;
+		bool building;
 
 		public override IList<string> UserAssemblyPaths {
 			get {
@@ -56,13 +58,24 @@ namespace MonoDevelop.UnitTesting.NUnit
 		public NUnitProjectTestSuite (DotNetProject project): base (project.Name, project)
 		{
 			storeId = Path.GetFileName (project.FileName);
-			resultsPath = MonoDevelop.NUnit.RootTest.GetTestResultsDirectory (project.BaseDirectory);
+			resultsPath = UnitTestService.GetTestResultsDirectory (project.BaseDirectory);
 			ResultsStore = new BinaryResultsStore (resultsPath, storeId);
 			this.project = project;
 			project.NameChanged += OnProjectRenamed;
 			IdeApp.ProjectOperations.EndBuild += OnProjectBuilt;
 		}
-		
+
+		protected override async Task OnBuild ()
+		{
+			try {
+				building = true;
+				await IdeApp.ProjectOperations.Build (project).Task;
+			} finally {
+				building = false;
+			}
+			OnProjectBuilt (null, null);
+		}
+
 		public static NUnitProjectTestSuite CreateTest (DotNetProject project)
 		{
 			if (!project.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration).BuildEnabledForItem (project))
@@ -112,13 +125,8 @@ namespace MonoDevelop.UnitTesting.NUnit
 		
 		void OnProjectBuilt (object s, BuildEventArgs args)
 		{
-			if (RefreshRequired) {
+			if (RefreshRequired)
 				UpdateTests ();
-			} else {
-				Gtk.Application.Invoke (delegate {
-					OnProjectBuiltWithoutTestChange (EventArgs.Empty);
-				});
-			}
 		}
 
 		public override void GetCustomTestRunner (out string assembly, out string type)
@@ -169,15 +177,6 @@ namespace MonoDevelop.UnitTesting.NUnit
 					}
 				}
 			}
-		}
-
-		public event EventHandler ProjectBuiltWithoutTestChange;
-
-		protected virtual void OnProjectBuiltWithoutTestChange (EventArgs e)
-		{
-			var handler = ProjectBuiltWithoutTestChange;
-			if (handler != null)
-				handler (this, e);
 		}
 	}
 }

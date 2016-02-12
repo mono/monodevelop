@@ -115,11 +115,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Xml.Tests", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Xml", "src\addins\Xml\MonoDevelop.Xml.csproj", "{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MonoDevelop.UnitTesting", "MonoDevelop.UnitTesting", "{DE462010-393D-4655-A42C-2C78BB14D2FA}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTesting", "UnitTesting", "{DE462010-393D-4655-A42C-2C78BB14D2FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.UnitTesting", "src\addins\NUnit\MonoDevelop.UnitTesting.csproj", "{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.UnitTesting", "src\addins\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.csproj", "{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitRunner", "src\addins\NUnit\NUnitRunner\NUnitRunner.csproj", "{0AF16AF1-0876-413E-9803-08BD33C19E00}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitRunner", "src\addins\MonoDevelop.UnitTesting.NUnit\NUnitRunner\NUnitRunner.csproj", "{0AF16AF1-0876-413E-9803-08BD33C19E00}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MacPlatform", "src\addins\MacPlatform\MacPlatform.csproj", "{50D6768C-C072-4E79-AFC5-C1C40767EF45}"
 EndProject
@@ -296,9 +296,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.CSharpBinding.T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Projects.Formats.MSBuild.dotnet.v14.0", "src\core\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.dotnet.v14.0.csproj", "{8EE5A588-9445-48EC-97BD-BF066E7FFD51}"
 EndProject
-Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "po", "po\po.mdproj", "{1ACD6137-2097-4A16-8B69-B2F48B2EA5BF}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.UnitTesting.NUnit", "src\addins\MonoDevelop.UnitTesting.NUnit\MonoDevelop.UnitTesting.NUnit.csproj", "{6224D87E-2AC1-4D9F-91ED-714F797297BF}"
+EndProject
+Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "po", "po\po.mdproj", "{FFA0B9E0-BF18-4ED2-985F-B91786C1A086}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1922,15 +1922,6 @@ Global
 		{8EE5A588-9445-48EC-97BD-BF066E7FFD51}.Debug|x86.Build.0 = Debug|Any CPU
 		{8EE5A588-9445-48EC-97BD-BF066E7FFD51}.Release|x86.ActiveCfg = Release|Any CPU
 		{8EE5A588-9445-48EC-97BD-BF066E7FFD51}.Release|x86.Build.0 = Release|Any CPU
-		{1ACD6137-2097-4A16-8B69-B2F48B2EA5BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1ACD6137-2097-4A16-8B69-B2F48B2EA5BF}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
-		{1ACD6137-2097-4A16-8B69-B2F48B2EA5BF}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
-		{1ACD6137-2097-4A16-8B69-B2F48B2EA5BF}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
-		{1ACD6137-2097-4A16-8B69-B2F48B2EA5BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1ACD6137-2097-4A16-8B69-B2F48B2EA5BF}.DebugGnome|Any CPU.ActiveCfg = DebugGnome|Any CPU
-		{1ACD6137-2097-4A16-8B69-B2F48B2EA5BF}.ReleaseMac|Any CPU.ActiveCfg = ReleaseMac|Any CPU
-		{1ACD6137-2097-4A16-8B69-B2F48B2EA5BF}.ReleaseWin32|Any CPU.ActiveCfg = ReleaseWin32|Any CPU
-		{1ACD6137-2097-4A16-8B69-B2F48B2EA5BF}.ReleaseGnome|Any CPU.ActiveCfg = ReleaseGnome|Any CPU
 		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
@@ -1951,6 +1942,15 @@ Global
 		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.Debug|x86.Build.0 = Debug|Any CPU
 		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.Release|x86.ActiveCfg = Release|Any CPU
 		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.Release|x86.Build.0 = Release|Any CPU
+		{FFA0B9E0-BF18-4ED2-985F-B91786C1A086}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFA0B9E0-BF18-4ED2-985F-B91786C1A086}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFA0B9E0-BF18-4ED2-985F-B91786C1A086}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFA0B9E0-BF18-4ED2-985F-B91786C1A086}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{FFA0B9E0-BF18-4ED2-985F-B91786C1A086}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFA0B9E0-BF18-4ED2-985F-B91786C1A086}.DebugGnome|Any CPU.ActiveCfg = DebugGnome|Any CPU
+		{FFA0B9E0-BF18-4ED2-985F-B91786C1A086}.ReleaseMac|Any CPU.ActiveCfg = ReleaseMac|Any CPU
+		{FFA0B9E0-BF18-4ED2-985F-B91786C1A086}.ReleaseWin32|Any CPU.ActiveCfg = ReleaseWin32|Any CPU
+		{FFA0B9E0-BF18-4ED2-985F-B91786C1A086}.ReleaseGnome|Any CPU.ActiveCfg = ReleaseGnome|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7525BB88-6142-4A26-93B9-A30C6983390A} = {9D360D43-0C05-49D6-84DB-4E7AB2F38F82}
@@ -2095,7 +2095,7 @@ Global
 		$2.TabsToSpaces = False
 		$2.inheritsSet = null
 		$2.inheritsScope = text/plain
-		$2.scope = application/json
+		$2.scope = application/config+xml
 		$0.DotNetNamingPolicy = $3
 		$3.DirectoryNamespaceAssociation = Flat
 		$3.ResourceNamePolicy = FileName
@@ -2131,8 +2131,8 @@ Global
 		$12.inheritsSet = null
 		$12.scope = image/svg+xml
 		$0.XmlFormattingPolicy = $13
-		$13.inheritsSet = null
-		$13.scope = application/config+xml
+		$13.inheritsSet = Mono
+		$13.scope = application/xml
 		$13.inheritsScope = application/xml
 		$0.TextStylePolicy = $14
 		$14.TabsToSpaces = False

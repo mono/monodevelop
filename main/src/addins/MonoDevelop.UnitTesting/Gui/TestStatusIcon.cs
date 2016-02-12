@@ -33,7 +33,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.UnitTesting
 {
-	static class TestStatusIcon
+	public static class TestStatusIcon
 	{
 		public static readonly Xwt.Drawing.Image Running;
 		public static readonly Xwt.Drawing.Image None;

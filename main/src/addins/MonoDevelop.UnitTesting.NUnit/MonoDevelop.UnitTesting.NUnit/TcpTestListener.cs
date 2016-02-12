@@ -27,7 +27,7 @@
 using System;
 using System.Net;
 using System.Net.Sockets;
-using MonoDevelop.NUnit.External;
+using MonoDevelop.UnitTesting.NUnit.External;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;

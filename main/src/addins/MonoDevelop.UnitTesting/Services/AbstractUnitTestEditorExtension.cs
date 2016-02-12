@@ -27,7 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using MonoDevelop.NUnit;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using Gtk;
@@ -35,6 +34,7 @@ using MonoDevelop.Components;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.UnitTesting
 {
@@ -175,47 +175,47 @@ namespace MonoDevelop.UnitTesting
 				var menu = new ContextMenu ();
 				if (unitTest.IsFixture) {
 					var menuItem = new ContextMenuItem ("_Run All");
-					menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, false).Run;
+					menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, ext.DocumentContext.Project, false).Run;
 					menu.Add (menuItem);
 					if (debugModeSet != null) {
 						menuItem = new ContextMenuItem ("_Debug All");
-						menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, true).Run;
+						menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, ext.DocumentContext.Project, true).Run;
 						menu.Add (menuItem);
 					}
 					menuItem = new ContextMenuItem ("_Select in Test Pad");
-					menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, true).Select;
+					menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, ext.DocumentContext.Project, true).Select;
 					menu.Add (menuItem);
 				} else {
 					if (unitTest.TestCases.Count == 0) {
 						var menuItem = new ContextMenuItem ("_Run");
-						menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, false).Run;
+						menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, ext.DocumentContext.Project, false).Run;
 						menu.Add (menuItem);
 						if (debugModeSet != null) {
 							menuItem = new ContextMenuItem ("_Debug");
-							menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, true).Run;
+							menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, ext.DocumentContext.Project, true).Run;
 							menu.Add (menuItem);
 						}
 						menuItem = new ContextMenuItem ("_Select in Test Pad");
-						menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, true).Select;
+						menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, ext.DocumentContext.Project, true).Select;
 						menu.Add (menuItem);
 					} else {
 						var menuItem = new ContextMenuItem ("_Run All");
-						menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, false).Run;
+						menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, ext.DocumentContext.Project, false).Run;
 						menu.Add (menuItem);
 						if (debugModeSet != null) {
 							menuItem = new ContextMenuItem ("_Debug All");
-							menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, true).Run;
+							menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, ext.DocumentContext.Project, true).Run;
 							menu.Add (menuItem);
 						}
 						menu.Add (new SeparatorContextMenuItem ());
 						foreach (var id in unitTest.TestCases) {
 							var submenu = new ContextMenu ();
 							menuItem = new ContextMenuItem ("_Run");
-							menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier + id, false).Run;
+							menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier + id, ext.DocumentContext.Project, false).Run;
 							submenu.Add (menuItem);
 							if (debugModeSet != null) {
 								menuItem = new ContextMenuItem ("_Debug");
-								menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier + id, true).Run;
+								menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier + id, ext.DocumentContext.Project, true).Run;
 								submenu.Add (menuItem);
 							}
 
@@ -231,7 +231,7 @@ namespace MonoDevelop.UnitTesting
 							}
 
 							menuItem = new ContextMenuItem ("_Select in Test Pad");
-							menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier + id, true).Select;
+							menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier + id, ext.DocumentContext.Project, true).Select;
 							submenu.Add (menuItem);
 
 							var subMenuItem = new ContextMenuItem (label);
@@ -251,11 +251,13 @@ namespace MonoDevelop.UnitTesting
 			{
 				readonly string testCase;
 				readonly bool debug;
+				IBuildTarget project;
 
-				public TestRunner (string testCase, bool debug)
+				public TestRunner (string testCase, IBuildTarget project, bool debug)
 				{
 					this.testCase = testCase;
 					this.debug = debug;
+					this.project = project;
 				}
 
 				bool TimeoutHandler ()
@@ -270,8 +272,7 @@ namespace MonoDevelop.UnitTesting
 					return false;
 				}
 
-				List<NUnitProjectTestSuite> testSuites = new List<NUnitProjectTestSuite>();
-				internal void Run (object sender, EventArgs e)
+				internal async void Run (object sender, EventArgs e)
 				{
 					if (IdeApp.ProjectOperations.IsBuilding (IdeApp.ProjectOperations.CurrentSelectedSolution) || 
 						IdeApp.ProjectOperations.IsRunning (IdeApp.ProjectOperations.CurrentSelectedSolution))
@@ -283,45 +284,11 @@ namespace MonoDevelop.UnitTesting
 						return;
 					}
 
-					var tests = new Stack<UnitTest> ();
-					foreach (var test in UnitTestService.Instance.RootTests) {
-						tests.Push (test);
-					}
-					while (tests.Count > 0) {
-						var test = tests.Pop ();
+					await IdeApp.ProjectOperations.Build (project).Task;
 
-						var solutionFolderTestGroup = test as SolutionFolderTestGroup;
-						if (solutionFolderTestGroup != null) {
-							foreach (var test2 in solutionFolderTestGroup.Tests) {
-								tests.Push (test2); 
-							}
-							continue;
-						}
-						var nUnitProjectTestSuite = test as NUnitProjectTestSuite;
-						if (nUnitProjectTestSuite != null)
-							testSuites.Add (nUnitProjectTestSuite); 
-					}
-
-					foreach (var test in testSuites) {
-						test.TestChanged += HandleTestChanged;
-						test.ProjectBuiltWithoutTestChange += HandleTestChanged;
-					}
-
-					IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentSelectedSolution);
-				}
-
-				void HandleTestChanged (object sender, EventArgs e)
-				{
-					var foundTest = UnitTestService.Instance.SearchTestById (testCase);
-					if (foundTest != null) {
-						foreach (var test in testSuites) {
-							test.TestChanged -= HandleTestChanged;
-							test.ProjectBuiltWithoutTestChange -= HandleTestChanged;
-						}
-						testSuites.Clear ();
-
-						RunTest (foundTest); 
-					}
+					foundTest = UnitTestService.Instance.SearchTestById (testCase);
+					if (foundTest != null)
+						RunTest (foundTest);
 				}
 
 				internal void Select (object sender, EventArgs e)

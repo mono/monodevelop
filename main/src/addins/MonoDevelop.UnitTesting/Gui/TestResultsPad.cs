@@ -45,7 +45,6 @@ using MonoDevelop.Components;
 using System.Threading;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Fonts;
-using MonoDevelop.NUnit.External;
 
 namespace MonoDevelop.UnitTesting
 {
@@ -151,7 +150,7 @@ namespace MonoDevelop.UnitTesting
 			failuresTreeView.Selection.Changed += OnRowSelected;
 			failuresTreeView.DoPopupMenu = delegate (EventButton evt) {
 				IdeApp.CommandService.ShowContextMenu (failuresTreeView, evt,
-					"/MonoDevelop/NUnit/ContextMenu/TestResultsPad");
+					"/MonoDevelop/UnitTesting/ContextMenu/TestResultsPad");
 			};
 			
 			panel.ShowAll ();

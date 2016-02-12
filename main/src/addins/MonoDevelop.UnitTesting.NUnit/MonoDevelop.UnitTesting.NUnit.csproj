@@ -5,10 +5,10 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</ProjectGuid>
+    <ProjectGuid>{6224D87E-2AC1-4D9F-91ED-714F797297BF}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AssemblyName>MonoDevelop.NUnit</AssemblyName>
-    <RootNamespace>MonoDevelop.NUnit</RootNamespace>
+    <AssemblyName>MonoDevelop.UnitTesting.NUnit</AssemblyName>
+    <RootNamespace>MonoDevelop.UnitTesting.NUnit</RootNamespace>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -23,7 +23,7 @@
     </Execution>
     <DefineConstants>DEBUG</DefineConstants>
     <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\AddIns\NUnit\MonoDevelop.NUnit.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.UnitTesting\MonoDevelop.NUnit.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,7 +36,7 @@
     </Execution>
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\AddIns\NUnit\MonoDevelop.NUnit.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.UnitTesting\MonoDevelop.NUnit.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -119,28 +119,54 @@
       <Name>ICSharpCode.NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.csproj">
+      <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
+      <Name>MonoDevelop.UnitTesting</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
+    <EmbeddedResource Include="MonoDevelopNUnit.addin.xml">
+      <LogicalName>MonoDevelopNUnit.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\nunit-library-project.png">
+      <LogicalName>nunit-library-project.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\nunit-library-project%402x.png">
+      <LogicalName>nunit-library-project@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\nunit-library-project~dark.png">
+      <LogicalName>nunit-library-project~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\nunit-library-project~dark%402x.png">
+      <LogicalName>nunit-library-project~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\NUnitAssemblyGroup.xpt.xml">
+      <LogicalName>NUnitAssemblyGroup.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\NUnitProject.xpt.xml">
+      <LogicalName>NUnitProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\NUnitProjectVBNet.xpt.xml">
+      <LogicalName>NUnitProjectVBNet.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\NUnitTestClass.xft.xml">
+      <LogicalName>NUnitTestClass.xft.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="MonoDevelop.UnitTesting.NUnit\AbstractUnitTestEditorExtension.cs" />
     <Compile Include="MonoDevelop.UnitTesting.NUnit\ExternalTestRunner.cs" />
-    <Compile Include="MonoDevelop.UnitTesting.NUnit\NUnitAssemblyGroupConfigurationNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.UnitTesting.NUnit\NUnitAssemblyGroupNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.UnitTesting.NUnit\NUnitAssemblyGroupProject.cs" />
     <Compile Include="MonoDevelop.UnitTesting.NUnit\NUnitAssemblyTestSuite.cs" />
     <Compile Include="MonoDevelop.UnitTesting.NUnit\NUnitProjectTestSuite.cs" />
     <Compile Include="MonoDevelop.UnitTesting.NUnit\NUnitTestCase.cs" />
     <Compile Include="MonoDevelop.UnitTesting.NUnit\NUnitTestSuite.cs" />
     <Compile Include="MonoDevelop.UnitTesting.NUnit\SystemTestProvider.cs" />
     <Compile Include="MonoDevelop.UnitTesting.NUnit\TcpTestListener.cs" />
-    <Compile Include="MonoDevelop.UnitTesting.NUnit\TestAssembly.cs" />
-    <Compile Include="MonoDevelop.UnitTesting.NUnit\TestAssemblyCollection.cs" />
-    <Compile Include="MonoDevelop.UnitTesting.NUnit\TestAssemblyNodeBuilder.cs" />
+    <Compile Include="AddinInfo.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MonoDevelop.UnitTesting.NUnit\InitCommand.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="templates\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

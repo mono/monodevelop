@@ -53,8 +53,6 @@ namespace MonoDevelop.UnitTesting
 			if (c.IsRoot) {
 				folder.ParentSolution.SolutionItemAdded += OnEntryChanged;
 				folder.ParentSolution.SolutionItemRemoved += OnEntryChanged;
-				IdeApp.Workspace.ReferenceAddedToProject += OnReferenceChanged;
-				IdeApp.Workspace.ReferenceRemovedFromProject += OnReferenceChanged;
 			}
 		}
 		
@@ -69,18 +67,10 @@ namespace MonoDevelop.UnitTesting
 			if (folder.IsRoot) {
 				folder.ParentSolution.SolutionItemAdded -= OnEntryChanged;
 				folder.ParentSolution.SolutionItemRemoved -= OnEntryChanged;
-				IdeApp.Workspace.ReferenceAddedToProject -= OnReferenceChanged;
-				IdeApp.Workspace.ReferenceRemovedFromProject -= OnReferenceChanged;
 			}
 			base.Dispose ();
 		}
 
-		void OnReferenceChanged (object s, ProjectReferenceEventArgs args)
-		{
-			if (args.Project.ParentSolution == folder.ParentSolution && NUnitProjectTestSuite.IsNUnitReference (args.ProjectReference))
-				UpdateTests ();
-		}
-		
 		void OnEntryChanged (object sender, SolutionItemEventArgs e)
 		{
 			UpdateTests ();

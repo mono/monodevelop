@@ -7,8 +7,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AssemblyName>MonoDevelop.NUnit</AssemblyName>
-    <RootNamespace>MonoDevelop.NUnit</RootNamespace>
+    <AssemblyName>MonoDevelop.UnitTesting</AssemblyName>
+    <RootNamespace>MonoDevelop.UnitTesting</RootNamespace>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -23,7 +23,7 @@
     </Execution>
     <DefineConstants>DEBUG</DefineConstants>
     <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\AddIns\NUnit\MonoDevelop.NUnit.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.UnitTesting\MonoDevelop.NUnit.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,7 +36,7 @@
     </Execution>
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\AddIns\NUnit\MonoDevelop.NUnit.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.UnitTesting\MonoDevelop.NUnit.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -99,11 +99,6 @@
       <Name>MonoDevelop.Ide</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="NUnitRunner\NUnitRunner.csproj">
-      <Project>{0AF16AF1-0876-413E-9803-08BD33C19E00}</Project>
-      <Name>NUnitRunner</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
       <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
       <Name>Mono.Addins</Name>
@@ -121,9 +116,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="templates\NUnitAssemblyGroup.xpt.xml">
-      <LogicalName>NUnitAssemblyGroup.xpt.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="Gui\icons\unit-running-16.png">
       <LogicalName>unit-running-16.png</LogicalName>
     </EmbeddedResource>
@@ -202,14 +194,8 @@
     <EmbeddedResource Include="Gui\icons\unit-success-16%402x.png">
       <LogicalName>unit-success-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\NUnitTestClass.xft.xml">
-      <LogicalName>NUnitTestClass.xft.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelopNUnit.addin.xml">
       <LogicalName>MonoDevelopNUnit.addin.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\NUnitProject.xpt.xml">
-      <LogicalName>NUnitProject.xpt.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32.png">
       <LogicalName>project-nunit-overlay-32.png</LogicalName>
@@ -274,21 +260,6 @@
     <EmbeddedResource Include="Gui\icons\unit-inconclusive-16~dark%402x.png">
       <LogicalName>unit-inconclusive-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\NUnitProjectVBNet.xpt.xml">
-      <LogicalName>NUnitProjectVBNet.xpt.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\nunit-library-project.png">
-      <LogicalName>nunit-library-project.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\nunit-library-project%402x.png">
-      <LogicalName>nunit-library-project@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\nunit-library-project~dark.png">
-      <LogicalName>nunit-library-project~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\nunit-library-project~dark%402x.png">
-      <LogicalName>nunit-library-project~dark@2x.png</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -320,13 +291,11 @@
     <Compile Include="Services\BinaryResultsStore.cs" />
     <Compile Include="Services\NUnitSourceCodeLocationFinder.cs" />
     <Compile Include="Services\RemoteUnhandledException.cs" />
+    <Compile Include="Services\AbstractUnitTestEditorExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Folder Include="templates\images\" />
-  </ItemGroup>
 </Project>

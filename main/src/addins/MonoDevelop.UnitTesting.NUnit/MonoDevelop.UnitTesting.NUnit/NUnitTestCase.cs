@@ -28,7 +28,7 @@
 
 
 
-using MonoDevelop.NUnit.External;
+using MonoDevelop.UnitTesting.NUnit.External;
 
 namespace MonoDevelop.UnitTesting.NUnit
 {

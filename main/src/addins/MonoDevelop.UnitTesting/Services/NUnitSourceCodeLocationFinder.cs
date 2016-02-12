@@ -28,10 +28,9 @@ using System.Threading.Tasks;
 using System.Threading;
 using Mono.Addins;
 using System.Collections.Generic;
-using MonoDevelop.NUnit;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.UnitTesting
 {
 	public abstract class NUnitSourceCodeLocationFinder
 	{

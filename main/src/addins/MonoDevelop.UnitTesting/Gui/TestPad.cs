@@ -49,7 +49,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.UnitTesting
 {
-	public class TestPad : TreeViewPad
+	class TestPad : TreeViewPad
 	{
 		UnitTestService testService = UnitTestService.Instance;
 		
@@ -753,7 +753,7 @@ namespace MonoDevelop.UnitTesting
 		void OnChartButtonPress (object o, Gtk.ButtonPressEventArgs args)
 		{
 			if (args.Event.TriggersContextMenu ()) {
-				IdeApp.CommandService.ShowContextMenu (Control, args.Event, "/MonoDevelop/NUnit/ContextMenu/TestChart");
+				IdeApp.CommandService.ShowContextMenu (Control, args.Event, "/MonoDevelop/UnitTesting/ContextMenu/TestChart");
 				args.RetVal = true;
 			}
 		}

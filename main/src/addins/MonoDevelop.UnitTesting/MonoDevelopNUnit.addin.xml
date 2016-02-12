@@ -1,41 +1,21 @@
 <ExtensionModel>
 
-	<Runtime>
-		<Import assembly="MonoDevelop.NUnit.dll" />
-		<Import assembly="nunit.core.dll" />
-		<Import assembly="nunit.core.interfaces.dll" />
-		<Import assembly="nunit.framework.dll" />
-		<Import assembly="nunit.util.dll" />
-	</Runtime>
-
 	<!-- Extension Points -->
 
-	<ExtensionPoint path = "/MonoDevelop/NUnit/TestProviders" name = "Test providers">
+	<ExtensionPoint path = "/MonoDevelop/UnitTesting/TestProviders" name = "Test providers">
 		<Description>Test providers. Specified classes must implement ITestProvider.</Description>
 		<ExtensionNode name ="Class" />
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/TestChart">
+	<ExtensionPoint path = "/MonoDevelop/UnitTesting/ContextMenu/TestChart">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/TestPad">
+	<ExtensionPoint path = "/MonoDevelop/UnitTesting/ContextMenu/TestPad">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/TestResultsPad">
-		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
-	</ExtensionPoint>
-
-	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/ProjectPad/NUnitAssemblyGroup">
-		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
-	</ExtensionPoint>
-
-	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/ProjectPad/TestAssembly">
-		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
-	</ExtensionPoint>
-
-	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/ProjectPad/NUnitAssemblyGroupConfiguration">
+	<ExtensionPoint path = "/MonoDevelop/UnitTesting/ContextMenu/TestResultsPad">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
@@ -46,29 +26,23 @@
 	<!-- Extensions -->
 
 	<Extension path = "/MonoDevelop/Ide/Pads">
-		<SolutionPad id = "MonoDevelop.NUnit.TestPad" defaultLayout="*" defaultPlacement = "Right" defaultStatus="AutoHide" _label = "Unit Tests" icon = "nunit-pad-icon" class = "MonoDevelop.NUnit.TestPad">
+		<SolutionPad id = "MonoDevelop.UnitTesting.TestPad" defaultLayout="*" defaultPlacement = "Right" defaultStatus="AutoHide" _label = "Unit Tests" icon = "nunit-pad-icon" class = "MonoDevelop.UnitTesting.TestPad">
 			<PadOption id = "ShowTestTime" _label = "Show Test Time" defaultValue = "False" />
 			<PadOption id = "ShowTestCounters" _label = "Show Test Counters" defaultValue = "False" />
-			<NodeBuilder id = "TestNode" class = "MonoDevelop.NUnit.TestNodeBuilder"/>
+			<NodeBuilder id = "TestNode" class = "MonoDevelop.UnitTesting.TestNodeBuilder"/>
 		</SolutionPad>
-		<Pad id="MonoDevelop.NUnit.TestResultsPad" _label="Test Results" icon="nunit-pad-icon" class="MonoDevelop.NUnit.TestResultsPad" defaultPlacement = "Bottom" defaultLayout="UnitTesting" defaultStatus="AutoHide"/>
+		<Pad id="MonoDevelop.UnitTesting.TestResultsPad" _label="Test Results" icon="nunit-pad-icon" class="MonoDevelop.NUnit.TestResultsPad" defaultPlacement = "Bottom" defaultLayout="UnitTesting" defaultStatus="AutoHide"/>
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/WorkbenchLayouts">
 		<Layout id="UnitTesting" _name="Unit Testing">
-			<LayoutPad id="MonoDevelop.NUnit.TestPad" status="Dockable" />
-			<LayoutPad id="MonoDevelop.NUnit.TestResultsPad" status="Dockable" />
+			<LayoutPad id="MonoDevelop.UnitTesting.TestPad" status="Dockable" />
+			<LayoutPad id="MonoDevelop.UnitTesting.TestResultsPad" status="Dockable" />
 		</Layout>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
-		<NodeBuilder id = "NUnitAssemblyGroupNodeBuilder" class = "MonoDevelop.NUnit.NUnitAssemblyGroupNodeBuilder"/>
-		<NodeBuilder id = "NUnitAssemblyGroupConfigurationNodeBuilder" class = "MonoDevelop.NUnit.NUnitAssemblyGroupConfigurationNodeBuilder"/>
-		<NodeBuilder id = "TestAssemblyNodeBuilder" class = "MonoDevelop.NUnit.TestAssemblyNodeBuilder"/>
-	</Extension>
-
 	<Extension path = "/MonoDevelop/Ide/Commands">
-		<Category _name = "NUnit" id = "NUnit">
+		<Category _name = "Unit Testing" id = "UnitTesting">
 		<Command id = "MonoDevelop.UnitTesting.Commands.TestCommands.RunAllTests"
 			_label = "Run Unit Tests"
 			icon = "md-run-unit-tests"
@@ -95,7 +69,6 @@
 		<Command id = "MonoDevelop.UnitTesting.Commands.TestChartCommands.ShowSuccessfulTests" _label = "Show successful tests" type="check"/>
 		<Command id = "MonoDevelop.UnitTesting.Commands.TestChartCommands.ShowFailedTests" _label = "Show failed tests" type="check"/>
 		<Command id = "MonoDevelop.UnitTesting.Commands.TestChartCommands.ShowIgnoredTests" _label = "Show ignored tests" type="check"/>
-		<Command id = "MonoDevelop.UnitTesting.Commands.NUnitProjectCommands.AddAssembly" _label = "Add assembly..."/>
 		</Category>
 	</Extension>
 
@@ -103,19 +76,7 @@
 		<CommandItem id = "MonoDevelop.UnitTesting.Commands.TestCommands.RunAllTests" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/NUnit/ContextMenu/ProjectPad/NUnitAssemblyGroup">
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
-	</Extension>
-
-	<Extension path = "/MonoDevelop/NUnit/ContextMenu/ProjectPad/NUnitAssemblyGroupConfiguration">
-		<CommandItem id = "MonoDevelop.UnitTesting.Commands.NUnitProjectCommands.AddAssembly" />
-	</Extension>
-
-	<Extension path = "/MonoDevelop/NUnit/ContextMenu/ProjectPad/TestAssembly">
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
-	</Extension>
-
-	<Extension path = "/MonoDevelop/NUnit/ContextMenu/TestPad">
+	<Extension path = "/MonoDevelop/UnitTesting/ContextMenu/TestPad">
 		<CommandItem id = "MonoDevelop.UnitTesting.Commands.TestCommands.RunTest" />
 		<CommandItem id = "MonoDevelop.UnitTesting.Commands.TestCommands.DebugTest" />
 		<ItemSet id = "RunTestWith" _label = "Run Test With">
@@ -127,7 +88,7 @@
 		<CommandItem id = "MonoDevelop.UnitTesting.Commands.TestCommands.ShowTestDetails" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/NUnit/ContextMenu/TestResultsPad">
+	<Extension path = "/MonoDevelop/UnitTesting/ContextMenu/TestResultsPad">
 		<CommandItem id = "MonoDevelop.UnitTesting.Commands.TestCommands.GoToFailure" />
 		<CommandItem id = "MonoDevelop.UnitTesting.Commands.TestCommands.ShowTestCode" />
 		<CommandItem id = "MonoDevelop.UnitTesting.Commands.TestCommands.SelectTestInTree" />
@@ -136,7 +97,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/NUnit/ContextMenu/TestChart">
+	<Extension path = "/MonoDevelop/UnitTesting/ContextMenu/TestChart">
 		<CommandItem id = "MonoDevelop.UnitTesting.Commands.TestChartCommands.ShowResults" />
 		<CommandItem id = "MonoDevelop.UnitTesting.Commands.TestChartCommands.ShowTime" />
 		<SeparatorItem id = "s1" />
@@ -148,17 +109,7 @@
 		<CommandItem id = "MonoDevelop.UnitTesting.Commands.TestChartCommands.SingleDayResult" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
-<!--		<ProjectTemplate id = "NUnitAssemblyGroup" resource = "NUnitAssemblyGroup.xpt.xml"/>-->
-		<ProjectTemplate id = "NUnitProject" resource = "NUnitProject.xpt.xml"/>
-		<ProjectTemplate id = "NUnitProjectVBNet" resource = "NUnitProjectVBNet.xpt.xml"/>
-	</Extension>
-
-  	<Extension path = "/MonoDevelop/Ide/FileTemplates">
-		<FileTemplate id = "NUnitTestClass" resource = "NUnitTestClass.xft.xml"/>
-	</Extension>
-
-	<Extension path = "/MonoDevelop/NUnit/TestProviders">
+	<Extension path = "/MonoDevelop/UnitTesting/TestProviders">
 		<Class id="SystemTestProvider" class="MonoDevelop.NUnit.SystemTestProvider" />
 	</Extension>
 
@@ -167,14 +118,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
-		<Class class = "MonoDevelop.NUnit.NUnitProjectServiceExtension" />
+		<Class class = "MonoDevelop.UnitTesting.UnitTestProjectServiceExtension" />
 	</Extension>
-
-	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
-		<DataType class = "MonoDevelop.NUnit.NUnitAssemblyGroupProject" />
-	</Extension>
-
-	<Extension path="/MonoDevelop/Ide/TemplateImages">
-		<Image id="md-nunit-library-project" resource="nunit-library-project.png" />
-	</Extension>
+	
 </ExtensionModel>
