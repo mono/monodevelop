@@ -120,11 +120,14 @@ namespace MonoDevelop.SourceEditor
 			if (@from < to) {
 				cr.SetSourceColor (background(editor).Color);
 				cr.RoundedRectangle (@from + 2.5, y + 0.5, to - @from, editor.LineHeight - 1, 2); // 2.5 to make space for the column guideline
-				cr.FillPreserve ();
 
 				if (background(editor).HasBorderColor) {
+					cr.FillPreserve ();
+
 					cr.SetSourceColor (background(editor).BorderColor);
 					cr.Stroke ();
+				} else {
+					cr.Fill ();
 				}
 			}
 		}
