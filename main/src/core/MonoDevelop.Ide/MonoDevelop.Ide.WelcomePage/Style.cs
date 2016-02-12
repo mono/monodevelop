@@ -1,4 +1,5 @@
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
@@ -40,18 +41,18 @@ namespace MonoDevelop.Ide.WelcomePage
 				public const int ShadowSize = 2;
 				public const int ShadowVerticalOffset = 1;
 
-				public const int LargeTitleFontSize = 22;
+				public static int LargeTitleFontSize = Platform.IsLinux ? 24 : 22;
 				public static string LargeTitleFontColor { get; internal set; }
 				public const int LargeTitleMarginBottom = 22;
 
 				public static string MediumTitleColor { get; internal set; }
-				public const int MediumTitleFontSize = 12;
+				public static int MediumTitleFontSize = Platform.IsLinux ? 13 : 12;
 				public const int MediumTitleMarginBottom = 7;
 
 				public static string SmallTitleColor { get; internal set; }
-				public const int SmallTitleFontSize = 10;
+				public static int SmallTitleFontSize = Platform.IsLinux ? 11 : 10;
 
-				public const int SummaryFontSize = 11;
+				public static int SummaryFontSize = Platform.IsLinux ? 12 : 11;
 				public const string SummaryFontFamily = "Sans";
 				public const int SummaryLineHeight = 19; // TODO: VV: Seems to be unused
 				public const int SummaryParagraphMarginTop = 8;
