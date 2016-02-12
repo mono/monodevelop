@@ -103,12 +103,10 @@ namespace MonoDevelop.CSharp.Highlighting
 					Document = analysisDocument,
 					Offset = doc.Editor.CaretOffset
 				};
-			if (symbolInfo.Symbol != null && !symbolInfo.Node.IsKind (SyntaxKind.IdentifierName)) 
-				return new UsageData  {
-					Document = analysisDocument,
-					Offset = doc.Editor.CaretOffset
-				};
 			
+			if (symbolInfo.Symbol != null && !symbolInfo.Node.IsKind (SyntaxKind.IdentifierName) && !symbolInfo.Node.IsKind (SyntaxKind.GenericName)) 
+				return new UsageData ();
+
 			return new UsageData {
 				Document = analysisDocument,
 				SymbolInfo = symbolInfo,
@@ -151,8 +149,9 @@ namespace MonoDevelop.CSharp.Highlighting
 
 			foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, TypeSystemService.Workspace.CurrentSolution, documents, token)) {
 				foreach (var loc in mref.Locations) {
-					result.Add (new MemberReference (symbol, doc.FilePath, loc.Location.SourceSpan.Start, loc.Location.SourceSpan.Length) {
-						ReferenceUsageType = GetUsage (loc.Location.SourceTree.GetRoot ().FindNode (loc.Location.SourceSpan))
+					var node = loc.Location.SourceTree.GetRoot ().FindNode (loc.Location.SourceSpan);
+					result.Add (new MemberReference (symbol, doc.FilePath, node.Span.Start, node.Span.Length) {
+						ReferenceUsageType = GetUsage (node)
 					});
 				}
 			}
