@@ -713,8 +713,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				HslColor color;
 				if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Declariton) != 0) {
 					color = TextEditor.ColorStyle.ChangingUsagesRectangle.Color;
+					if (color.Alpha == 0.0)
+						color = TextEditor.ColorStyle.UsagesRectangle.Color;
 				} else if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Write) != 0) {
 					color = TextEditor.ColorStyle.ChangingUsagesRectangle.Color;
+					if (color.Alpha == 0.0)
+						color = TextEditor.ColorStyle.UsagesRectangle.Color;
 				} else if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Read) != 0 || (usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Keyword) != 0) {
 					color = TextEditor.ColorStyle.UsagesRectangle.Color;
 				} else {

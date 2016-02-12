@@ -82,6 +82,8 @@ namespace MonoDevelop.SourceEditor
 				if ((usage.UsageType & ReferenceUsageType.Write) == ReferenceUsageType.Write ||
 					(usage.UsageType & ReferenceUsageType.Declariton) == ReferenceUsageType.Declariton) {
 					colorStyle = editor.ColorStyle.ChangingUsagesRectangle;
+					if (colorStyle.Color.A == 0.0)
+						colorStyle = editor.ColorStyle.UsagesRectangle;
 				} else {
 					colorStyle = editor.ColorStyle.UsagesRectangle;
 				}
