@@ -15,7 +15,8 @@ type FSharpBraceMatcher() =
         MDLanguageService.SupportedFileName (editor.FileName.ToString())
 
     override x.GetMatchingBracesAsync (editor, context, caretOffset, cancellationToken) =
-        match editor.GetCharAt(caretOffset) with
+        let offset = Math.Min(caretOffset, editor.Text.Length - 1)
+        match editor.GetCharAt(offset) with
         | '(' | ')' ->
             match context.TryGetAst() with
             | Some _ast -> 
@@ -30,9 +31,9 @@ type FSharpBraceMatcher() =
                                           let startOffset = getOffset startRange
                                           let endOffset = getOffset endRange
                                           match (startOffset, endOffset) with
-                                          | (startOffset, endOffset) when startOffset = caretOffset 
+                                          | (startOffset, endOffset) when startOffset = offset 
                                               -> Some (startOffset, endOffset, true)
-                                          | (startOffset, endOffset) when endOffset = caretOffset
+                                          | (startOffset, endOffset) when endOffset = offset
                                               -> Some (startOffset, endOffset, false)
                                           | _ -> None)
                                |> Seq.tryHead
