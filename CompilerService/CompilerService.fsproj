@@ -33,6 +33,9 @@
     <DefineConstants>
     </DefineConstants>
   </PropertyGroup>
+  <Target Name="Clean">
+    <RemoveDir Directories=".\bin\" />
+  </Target>
   <ItemGroup>
     <Reference Include="Microsoft.Build.Framework, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="Microsoft.Build.Engine, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
