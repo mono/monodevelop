@@ -52,7 +52,7 @@ type FSharpTooltipProvider() =
             let file = doc.FileName.FullPath.ToString()
             let projectFile = context.Project |> function null -> file | project -> project.FileName.ToString()
 
-            if not (MDLanguageService.SupportedFileName file) then noTooltip else
+            if not (FileService.supportedFileName file) then noTooltip else
 
             let source = editor.Text
             if source = null || offset >= source.Length || offset < 0 then noTooltip else

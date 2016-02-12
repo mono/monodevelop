@@ -48,7 +48,7 @@ type FSharpInteractivePad() as this =
     let mutable activeDoc : IDisposable option = None
 
     let getCorrectDirectory () =
-        if IdeApp.Workbench.ActiveDocument <> null && MDLanguageService.IsInsideFSharpFile() then
+        if IdeApp.Workbench.ActiveDocument <> null && FileService.isInsideFSharpFile() then
             let doc = IdeApp.Workbench.ActiveDocument.FileName.ToString()
             if doc <> null then Path.GetDirectoryName(doc) |> Some else None
         else None
@@ -286,7 +286,7 @@ type FSharpInteractivePad() as this =
 
     override x.Update(info:CommandInfo) =
         info.Enabled <- true
-        info.Visible <- MDLanguageService.IsInsideFSharpFile()
+        info.Visible <- FileService.isInsideFSharpFile()
     override x.Run() =
         FSharpInteractivePad.Fsi
         |> Option.iter (fun fsi -> command fsi
