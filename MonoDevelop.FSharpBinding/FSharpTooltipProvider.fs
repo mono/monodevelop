@@ -45,21 +45,22 @@ type FSharpTooltipProvider() =
 
     override x.GetItem (editor, context, offset, cancellationToken) =
         try
+            let noTooltip = Task.FromResult null
             let doc = IdeApp.Workbench.ActiveDocument
-            if doc = null then null else
+            if doc = null then noTooltip else
 
             let file = doc.FileName.FullPath.ToString()
             let projectFile = context.Project |> function null -> file | project -> project.FileName.ToString()
 
-            if not (MDLanguageService.SupportedFileName file) then null else
+            if not (MDLanguageService.SupportedFileName file) then noTooltip else
 
             let source = editor.Text
-            if source = null || offset >= source.Length || offset < 0 then null else
+            if source = null || offset >= source.Length || offset < 0 then noTooltip else
 
             let line, col, lineStr = editor.GetLineInfoFromOffset offset
 
             let cachedTokens = context.TryGetFSharpParsedDocumentTokens()
-            if Tokens.isCurrentTokenInvalid editor cachedTokens context.Project offset then null else
+            if Tokens.isCurrentTokenInvalid editor cachedTokens context.Project offset then noTooltip else
 
             let tooltipComputation =
                 asyncChoice {
