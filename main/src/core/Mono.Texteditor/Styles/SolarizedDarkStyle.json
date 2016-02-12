@@ -109,11 +109,11 @@
         { "name":"Punctuation", "fore":"base00" },
         { "name":"Punctuation(Brackets)", "fore":"base00" },
 
-        { "name":"Comment(Line)", "fore":"base01", "style":"italic" },
-        { "name":"Comment(Block)", "fore":"base01", "style":"italic" },
-        { "name":"Comment(Doc)", "fore":"base01", "style":"italic" },
-        { "name":"Comment(DocTag)", "fore":"base01", "style":"italic" },
-        { "name":"Comment Tag", "fore":"#ff00ff", "weight":"bold" },
+        { "name":"Comment(Line)", "fore":"base01" },
+        { "name":"Comment(Block)", "fore":"base01" },
+        { "name":"Comment(Doc)", "fore":"base01" },
+        { "name":"Comment(DocTag)", "fore":"base01" },
+        { "name":"Comment Tag", "fore":"#ff00ff" },
 
         { "name":"Excluded Code", "fore":"base01" },
 
@@ -194,8 +194,8 @@
         { "name":"User Method Usage", "fore":"blue" },
         { "name":"User Method Declaration", "fore":"blue" },
 
-        { "name":"User Parameter Usage", "fore":"base00", "style":"italic" },
-        { "name":"User Parameter Declaration", "fore":"base00", "style":"italic" },
+        { "name":"User Parameter Usage", "fore":"base00" },
+        { "name":"User Parameter Declaration", "fore":"base00" },
 
         { "name":"User Variable Usage", "fore":"base00" },
         { "name":"User Variable Declaration", "fore":"base00" },

@@ -108,11 +108,11 @@
         { "name":"Punctuation", "fore":"monokai-white" },
         { "name":"Punctuation(Brackets)", "fore":"monokai-white" },
 
-        { "name":"Comment(Line)", "fore":"monokai-comment", "style":"italic" },
-        { "name":"Comment(Block)", "fore":"monokai-comment", "style":"italic" },
-        { "name":"Comment(Doc)", "fore":"monokai-comment", "style":"italic" },
-        { "name":"Comment(DocTag)", "fore":"monokai-comment", "style":"italic" },
-        { "name":"Comment Tag", "fore":"#ff00ff", "weight":"bold" },
+        { "name":"Comment(Line)", "fore":"monokai-comment" },
+        { "name":"Comment(Block)", "fore":"monokai-comment" },
+        { "name":"Comment(Doc)", "fore":"monokai-comment" },
+        { "name":"Comment(DocTag)", "fore":"monokai-comment" },
+        { "name":"Comment Tag", "fore":"#ff00ff" },
 
         { "name":"Excluded Code", "fore":"monokai-comment" },
 
@@ -193,8 +193,8 @@
         { "name":"User Method Usage", "fore":"monokai-functionargument" },
         { "name":"User Method Declaration", "fore":"monokai-functionargument" },
 
-        { "name":"User Parameter Usage", "fore":"monokai-white", "style":"italic" },
-        { "name":"User Parameter Declaration", "fore":"monokai-white", "style":"italic" },
+        { "name":"User Parameter Usage", "fore":"monokai-white" },
+        { "name":"User Parameter Declaration", "fore":"monokai-white" },
 
         { "name":"User Variable Usage", "fore":"monokai-white" },
         { "name":"User Variable Declaration", "fore":"monokai-white" },

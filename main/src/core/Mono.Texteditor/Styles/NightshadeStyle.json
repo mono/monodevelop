@@ -144,11 +144,11 @@
         { "name":"Punctuation", "fore":"StringVim" },
         { "name":"Punctuation(Brackets)", "fore":"StringVim" },
 
-        { "name":"Comment(Line)", "fore":"CommentVim", "style":"italic" },
-        { "name":"Comment(Block)", "fore":"CommentVim", "style":"italic" },
-        { "name":"Comment(Doc)", "fore":"CommentVim", "style":"italic" },
-        { "name":"Comment(DocTag)", "fore":"CommentVim", "style":"italic" },
-        { "name":"Comment Tag", "fore":"#ff00ff", "weight":"bold" },
+        { "name":"Comment(Line)", "fore":"CommentVim" },
+        { "name":"Comment(Block)", "fore":"CommentVim" },
+        { "name":"Comment(Doc)", "fore":"CommentVim" },
+        { "name":"Comment(DocTag)", "fore":"CommentVim" },
+        { "name":"Comment Tag", "fore":"#ff00ff" },
 
         { "name":"Excluded Code", "fore":"CommentVim" },
 
@@ -229,8 +229,8 @@
         { "name":"User Method Usage", "fore":"NormalVim" },
         { "name":"User Method Declaration", "fore":"NormalVim" },
 
-        { "name":"User Parameter Usage", "fore":"NormalVim", "style":"italic" },
-        { "name":"User Parameter Declaration", "fore":"NormalVim", "style":"italic" },
+        { "name":"User Parameter Usage", "fore":"NormalVim" },
+        { "name":"User Parameter Declaration", "fore":"NormalVim" },
 
         { "name":"User Variable Usage", "fore":"NormalVim" },
         { "name":"User Variable Declaration", "fore":"NormalVim" },

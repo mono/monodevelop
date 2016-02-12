@@ -121,11 +121,11 @@
         { "name":"Punctuation", "fore":"text-black" },
         { "name":"Punctuation(Brackets)", "fore":"text-black" },
 
-        { "name":"Comment(Line)", "fore":"comment-gray", "style":"italic" },
-        { "name":"Comment(Block)", "fore":"comment-gray", "style":"italic" },
-        { "name":"Comment(Doc)", "fore":"#97b488", "style":"italic" },
-        { "name":"Comment(DocTag)", "fore":"#c8b97c", "style":"italic" },
-        { "name":"Comment Tag", "fore":"#ff00ff", "weight":"bold" },
+        { "name":"Comment(Line)", "fore":"comment-gray" },
+        { "name":"Comment(Block)", "fore":"comment-gray" },
+        { "name":"Comment(Doc)", "fore":"#97b488" },
+        { "name":"Comment(DocTag)", "fore":"#c8b97c" },
+        { "name":"Comment Tag", "fore":"#ff00ff" },
 
         { "name":"Excluded Code", "fore":"comment-gray" },
 
@@ -212,8 +212,8 @@
         { "name":"User Method Usage", "fore":"text-black" },
         { "name":"User Method Declaration", "fore":"text-black" },
 
-        { "name":"User Parameter Usage", "fore":"text-black", "style":"italic" },
-        { "name":"User Parameter Declaration", "fore":"text-black", "style":"italic" },
+        { "name":"User Parameter Usage", "fore":"text-black" },
+        { "name":"User Parameter Declaration", "fore":"text-black" },
 
         { "name":"User Variable Usage", "fore":"text-black" },
         { "name":"User Variable Declaration", "fore":"text-black" },
