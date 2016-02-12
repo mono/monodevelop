@@ -38,6 +38,8 @@ using MonoDevelop.Ide;
 using System.Threading.Tasks;
 using System.Threading;
 using MonoDevelop.Ide.Editor;
+using ICSharpCode.NRefactory6.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -169,7 +171,7 @@ namespace MonoDevelop.CSharp.Completion
 			var Policy = ext.FormattingPolicy;
 			string insertionText = this.GetInsertionText();
 
-			if (addParens && !IsDelegateExpected && method != null && !HasNonMethodMembersWithSameName (Symbol) && !IsBracketAlreadyInserted (ext, method)) {
+			if (addParens && !IsDelegateExpected && method != null && !HasNonMethodMembersWithSameName (window, Symbol) && !IsBracketAlreadyInserted (ext, method)) {
 				var line = Editor.GetLine (Editor.CaretLine);
 				//var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
 				//var end = line.Offset + line.Length;
@@ -357,14 +359,24 @@ namespace MonoDevelop.CSharp.Completion
 				.Any (m => m.Name == method.Name && m.Parameters.Length > 0);
 		}
 
-		static bool HasNonMethodMembersWithSameName (ISymbol member)
+		bool HasNonMethodMembersWithSameName (CompletionListWindow window, ISymbol member)
 		{
 			var method = member as IMethodSymbol;
 			if (method == null)
 				return true;
 			if (method == null || method.MethodKind == MethodKind.Constructor)
 				return false;
-			var type = method.ReceiverType ?? method.ContainingType;
+
+			ITypeSymbol type = null;
+			var model = ext.DocumentContext.AnalysisDocument.GetSemanticModelAsync ().WaitAndGetResult(default(CancellationToken));
+			var token = model.SyntaxTree.FindTokenOnLeftOfPosition (window.StartOffset, default (CancellationToken));
+			var node = token.Parent as MemberAccessExpressionSyntax;
+			if (node != null) {
+				type = model.GetTypeInfo (node.Expression, default (CancellationToken)).Type;
+			}
+
+			if (type == null)
+				type = method.ReceiverType ?? method.ContainingType;
 			foreach (var m in type.GetMembers ().Where (m => m.Kind != SymbolKind.Method)) {
 				if (m.Name == member.Name)
 					return true;
