@@ -396,7 +396,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			// We don't need to resize the Statusbar here as a style change will trigger a complete relayout of the Awesomebar
 			Ide.Gui.Styles.Changed += LoadStyles;
 
-			textField.Cell = new VerticallyCenteredTextFieldCell (yOffset: -0.5f);
+			textField.Cell = new VerticallyCenteredTextFieldCell (0f);
 			textField.Cell.StringValue = "";
 			textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, ColorForType (MessageType.Ready));
 
@@ -435,12 +435,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			updateHandler (null, null);
 
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification,
-			                                                notification => Runtime.RunInMainThread (() => {
-																ReconstructString ();
-																RepositionContents ();
-															}));
-
 			TaskService.Errors.TasksAdded += updateHandler;
 			TaskService.Errors.TasksRemoved += updateHandler;
 
@@ -450,6 +444,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			progressView = new ProgressView ();
 			AddSubview (progressView);
+		}
+
+		public override void DidChangeBackingProperties ()
+		{
+			base.DidChangeBackingProperties ();
+			ReconstructString ();
+			RepositionContents ();
 		}
 
 		void LoadStyles (object sender = null, EventArgs args = null)
@@ -890,8 +891,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		void RepositionContents ()
 		{
-			nfloat yOffset = 1;
-			if (Window != null && Window.Screen != null && Window.Screen.BackingScaleFactor == 1) {
+			nfloat yOffset = 0f;
+			if (Window != null && Window.Screen != null && Window.Screen.BackingScaleFactor == 2) {
 				yOffset = 0.5f;
 			}
 
