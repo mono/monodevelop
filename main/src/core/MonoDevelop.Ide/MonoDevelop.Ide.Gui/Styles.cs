@@ -440,20 +440,19 @@ namespace MonoDevelop.Ide.Gui
 			// WidgetBorderColor = Color.FromName ("#ff00ff"); // TODO: 8c8c8c - UNUSED (used for custom drawn `SearchEntry` but it isn’t used anymore, so its deprecated)
 
 			// Status area (GTK)
-			// FIXME: VV: Will test after the preview build
 
-			StatusBarBorderColor = Color.FromName ("#ff00ff"); // TODO: VV: 919191
-			StatusBarFill1Color = Color.FromName ("#ff00ff"); // TODO: VV: f5fafc
-			StatusBarFill2Color = Color.FromName ("#ff00ff"); // TODO: VV: e9f1f3
-			StatusBarFill3Color = Color.FromName ("#ff00ff"); // TODO: VV: d8e7ea
-			StatusBarFill4Color = Color.FromName ("#ff00ff"); // TODO: VV: d1e3e7
-			StatusBarErrorColor = Color.FromName ("#ff00ff"); // TODO: VV: FF6363
-			StatusBarInnerColor = Color.FromName ("#ff00ff").WithAlpha (.08); // TODO: VV: 000000
-			StatusBarShadowColor1 = Color.FromName ("#ff00ff").WithAlpha (.06); // TODO: VV: 000000
-			StatusBarShadowColor2 = Color.FromName ("#ff00ff").WithAlpha (.02); // TODO: VV: 000000
-			StatusBarTextColor = BaseForegroundColor; // TODO: VV
-			StatusBarProgressBackgroundColor = Color.FromName ("#ff00ff").WithAlpha (.1); // TODO: VV: 000000
-			StatusBarProgressOutlineColor = Color.FromName ("#ff00ff").WithAlpha (.1); // TODO: VV: 000000
+			StatusBarBorderColor = Color.FromName ("#919191");
+			StatusBarFill1Color = Color.FromName ("#fcfcfc"); // f5fafc
+			StatusBarFill2Color = Color.FromName ("#f2f2f2"); // e9f1f3
+			StatusBarFill3Color = Color.FromName ("#ebebeb"); // d8e7ea
+			StatusBarFill4Color = Color.FromName ("#e8e8e8"); // d1e3e7
+			StatusBarErrorColor = ErrorForegroundColor;
+			StatusBarInnerColor = Color.FromName ("#000000").WithAlpha (.08);
+			StatusBarShadowColor1 = Color.FromName ("#000000").WithAlpha (.06);
+			StatusBarShadowColor2 = Color.FromName ("#000000").WithAlpha (.02);
+			StatusBarTextColor = BaseForegroundColor;
+			StatusBarProgressBackgroundColor = Color.FromName ("#000000").WithAlpha (.1);
+			StatusBarProgressOutlineColor = Color.FromName ("#000000").WithAlpha (.1);
 
 			// Toolbar
 
@@ -538,20 +537,19 @@ namespace MonoDevelop.Ide.Gui
 			SubTabBarHoverBackgroundColor = SecondaryBackgroundLighterColor;
 
 			// Status area (GTK)
-			// FIXME: Will test after the preview build
 
-			StatusBarBorderColor = Color.FromName ("#ff00ff"); // TODO: VV: 919191
-			StatusBarFill1Color = Color.FromName ("#ff00ff"); // TODO: VV: f5fafc
-			StatusBarFill2Color = Color.FromName ("#ff00ff"); // TODO: VV: e9f1f3
-			StatusBarFill3Color = Color.FromName ("#ff00ff"); // TODO: VV: d8e7ea
-			StatusBarFill4Color = Color.FromName ("#ff00ff"); // TODO: VV: d1e3e7
-			StatusBarErrorColor = Color.FromName ("#ff00ff"); // TODO: VV: FF6363
-			StatusBarInnerColor = Color.FromName ("#ff00ff").WithAlpha (.08); // TODO: VV: 000000
-			StatusBarShadowColor1 = Color.FromName ("#ff00ff").WithAlpha (.06); // TODO: VV: 000000
-			StatusBarShadowColor2 = Color.FromName ("#ff00ff").WithAlpha (.02); // TODO: VV: 000000
-			StatusBarTextColor = BaseForegroundColor; // TODO: VV
-			StatusBarProgressBackgroundColor = Color.FromName ("#ff00ff").WithAlpha (.1); // TODO: VV: 000000
-			StatusBarProgressOutlineColor = Color.FromName ("#ff00ff").WithAlpha (.1); // TODO: VV: 000000
+			StatusBarBorderColor = Color.FromName ("#222222");
+			StatusBarFill1Color = Color.FromName ("#282828");
+			StatusBarFill2Color = Color.FromName ("#000000").WithAlpha (0); //e9f1f3 
+			StatusBarFill3Color = Color.FromName ("#000000").WithAlpha (0); // d8e7ea 
+			StatusBarFill4Color = Color.FromName ("#222222"); // d1e3e7
+			StatusBarErrorColor = ErrorForegroundColor;
+			StatusBarInnerColor = Color.FromName ("#000000").WithAlpha (.08);
+			StatusBarShadowColor1 = Color.FromName ("#000000").WithAlpha (.06);
+			StatusBarShadowColor2 = Color.FromName ("#000000").WithAlpha (.02);
+			StatusBarTextColor = BaseForegroundColor;
+			StatusBarProgressBackgroundColor = Color.FromName ("#ffffff").WithAlpha (.1);
+			StatusBarProgressOutlineColor = Color.FromName ("#ffffff").WithAlpha (.1);
 
 			// Toolbar
 
