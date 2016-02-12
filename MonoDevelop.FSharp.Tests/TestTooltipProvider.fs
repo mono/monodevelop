@@ -314,6 +314,6 @@ type TestTooltipProvider() =
         let footer = getTooltipFooter input
         let expected = "From type:\tString\nAssembly:\tFSharp.Core"
 
-        footer.ToString() |> should equal expected
+        footer.ToString() |> shouldEqualIgnoringLineEndings expected
 
  
