@@ -418,7 +418,7 @@ type CurrentRefactoringOperationsHandler() =
         match tryGetValidDoc() with
         | None -> ()
         | Some doc ->
-            if not (MDLanguageService.SupportedFileName (doc.FileName.ToString())) then ()
+            if not (FileService.supportedFileName (doc.FileName.ToString())) then ()
             else
                 match doc.TryGetAst () with
                 | None -> ()
@@ -541,7 +541,7 @@ type FindReferencesHandler() =
     inherit CommandHandler()
 
     member x.Run (editor:TextEditor, ctx:DocumentContext) =
-        if MDLanguageService.SupportedFilePath editor.FileName then
+        if FileService.supportedFilePath editor.FileName then
             match ctx.TryGetAst() with
             | Some ast ->
                 match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
@@ -562,7 +562,7 @@ type RenameHandler() =
         if editor = null || editor.FileName = FilePath.Null
         then ci.Bypass <- false
         else
-            if not (MDLanguageService.SupportedFilePath editor.FileName) then ci.Bypass <- true
+            if not (FileService.supportedFilePath editor.FileName) then ci.Bypass <- true
             else
                 match doc.TryGetAst() with
                 | Some ast ->
@@ -579,11 +579,11 @@ type RenameHandler() =
 
     override x.Run (_data) =
         let doc = IdeApp.Workbench.ActiveDocument
-        if doc <> null || doc.FileName <> FilePath.Null || not (MDLanguageService.SupportedFilePath doc.FileName) then
+        if doc <> null || doc.FileName <> FilePath.Null || not (FileService.supportedFilePath doc.FileName) then
             x.Run (doc.Editor, doc)
 
     member x.Run (editor:TextEditor, ctx:DocumentContext) =
-        if MDLanguageService.SupportedFilePath editor.FileName then
+        if FileService.supportedFilePath editor.FileName then
             match ctx.TryGetAst() with
             | Some ast ->
                 match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
@@ -606,7 +606,7 @@ type GotoDeclarationHandler() =
         let editor = doc.Editor
         //skip if theres no editor or filename
         if editor = null || editor.FileName = FilePath.Null then ci.Bypass <- true
-        elif not (MDLanguageService.SupportedFilePath editor.FileName) then ci.Bypass <- true
+        elif not (FileService.supportedFilePath editor.FileName) then ci.Bypass <- true
         else
             match doc.TryGetAst() with
             | Some ast ->
@@ -620,11 +620,11 @@ type GotoDeclarationHandler() =
 
     override x.Run (_data) =
         let doc = IdeApp.Workbench.ActiveDocument
-        if doc <> null || doc.FileName <> FilePath.Null || not (MDLanguageService.SupportedFilePath doc.FileName) then
+        if doc <> null || doc.FileName <> FilePath.Null || not (FileService.supportedFilePath doc.FileName) then
             x.Run(doc.Editor, doc)
 
     member x.Run(editor, context:DocumentContext) =
-        if MDLanguageService.SupportedFileName (editor.FileName.ToString()) then
+        if FileService.supportedFileName (editor.FileName.ToString()) then
             match context.TryGetAst() with
             | Some ast ->
                 match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
@@ -642,7 +642,7 @@ type FSharpJumpToDeclarationHandler () =
                 // We only need to run this when the editor isn't F#
                 match IdeApp.Workbench.ActiveDocument with
                 | null -> return false
-                | doc when MDLanguageService.SupportedFileName (doc.FileName.ToString()) -> return false
+                | doc when FileService.supportedFileName (doc.FileName.ToString()) -> return false
                 | _doc ->
                     let result =
                         Search.getAllSymbolsInAllProjects()
@@ -684,9 +684,11 @@ type FSharpFindReferencesProvider () =
 
 type FSharpCommandsTextEditorExtension () =
     inherit Editor.Extension.TextEditorExtension ()
+    static member SupportedFileExtensions =
+        [".fsscript"; ".fs"; ".fsx"; ".fsi"; ".sketchfs"]
 
     override x.IsValidInContext (context) =
-        context.Name <> null && MDLanguageService.SupportedFileName context.Name
+        context.Name <> null && FileService.supportedFileName context.Name
 
     [<CommandUpdateHandler("MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration")>]
     member x.GotoDeclarationCommand_Update(ci:CommandInfo) =

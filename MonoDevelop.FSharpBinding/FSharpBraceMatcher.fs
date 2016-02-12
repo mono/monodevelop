@@ -12,7 +12,7 @@ type FSharpBraceMatcher() =
     let defaultMatcher = new DefaultBraceMatcher()
 
     override x.CanHandle editor =
-        MDLanguageService.SupportedFileName (editor.FileName.ToString())
+        FileService.supportedFileName (editor.FileName.ToString())
 
     override x.GetMatchingBracesAsync (editor, context, caretOffset, cancellationToken) =
         let offset = Math.Min(caretOffset, editor.Text.Length - 1)

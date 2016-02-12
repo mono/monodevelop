@@ -133,7 +133,7 @@ type FSharpParser() =
 
         let doc = MonoDevelop.tryGetVisibleDocument fileName
 
-        if doc.IsNone || not (MDLanguageService.SupportedFileName (fileName)) then null else
+        if doc.IsNone || not (FileService.supportedFileName (fileName)) then null else
 
         let shortFilename = Path.GetFileName fileName
         LoggingService.LogDebug ("FSharpParser: Parse starting on {0}", shortFilename)

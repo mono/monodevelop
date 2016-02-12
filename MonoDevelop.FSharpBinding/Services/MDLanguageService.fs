@@ -111,24 +111,25 @@ type MDLanguageService() =
   static member DisableVirtualFileSystem() =
       vfs <- lazy (Shim.FileSystem)
 
-  static member SupportedFileExtensions =
-      [".fsscript"; ".fs"; ".fsx"; ".fsi"; ".sketchfs"]
-
-  /// Is the specified extension supported F# file?
-  static member SupportedFileName fileName =
-      let ext = Path.GetExtension(fileName).ToLower()
-      MDLanguageService.SupportedFileExtensions
-      |> List.exists ((=) ext)
-
-  static member IsInsideFSharpFile () =
-      if IdeApp.Workbench.ActiveDocument = null ||
-        IdeApp.Workbench.ActiveDocument.FileName.FileName = null then false
-      else
-        let file = IdeApp.Workbench.ActiveDocument.FileName.ToString()
-        MDLanguageService.SupportedFileName (file)
-
-  static member SupportedFilePath (filePath:FilePath) =
-      MDLanguageService.SupportedFileName (filePath.ToString())
+module FileService =
+    let supportedFileExtensions =
+        [".fsscript"; ".fs"; ".fsx"; ".fsi"; ".sketchfs"]
+    
+    /// Is the specified extension supported F# file?
+    let supportedFileName fileName =
+        let ext = Path.GetExtension(fileName).ToLower()
+        supportedFileExtensions
+        |> List.exists ((=) ext)
+    
+    let isInsideFSharpFile () =
+        if IdeApp.Workbench.ActiveDocument = null ||
+            IdeApp.Workbench.ActiveDocument.FileName.FileName = null then false
+        else
+            let file = IdeApp.Workbench.ActiveDocument.FileName.ToString()
+            supportedFileName (file)
+    
+    let supportedFilePath (filePath:FilePath) =
+        supportedFileName (filePath.ToString())
 
 [<AutoOpen>]
 module MDLanguageServiceImpl =

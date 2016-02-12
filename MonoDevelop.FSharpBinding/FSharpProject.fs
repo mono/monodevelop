@@ -51,7 +51,7 @@ type FSharpProject() as self =
 
     let invalidateFiles (args:#ProjectFileEventInfo seq) =
         for projectFileEvent in args do
-            if MDLanguageService.SupportedFileName (projectFileEvent.ProjectFile.FilePath.ToString()) then
+            if FileService.supportedFileName (projectFileEvent.ProjectFile.FilePath.ToString()) then
                 invalidateProjectFile()
 
     let isPortable (project:MSBuildProject) =
