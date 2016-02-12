@@ -368,7 +368,9 @@ namespace MonoDevelop.CSharp.Completion
 				return false;
 
 			ITypeSymbol type = null;
-			var model = ext.DocumentContext.AnalysisDocument.GetSemanticModelAsync ().WaitAndGetResult(default(CancellationToken));
+			var model = ext.DocumentContext.AnalysisDocument?.GetSemanticModelAsync ().WaitAndGetResult(default(CancellationToken));
+			if (model == null)
+				return false;
 			var token = model.SyntaxTree.FindTokenOnLeftOfPosition (window.StartOffset, default (CancellationToken));
 			var node = token.Parent as MemberAccessExpressionSyntax;
 			if (node != null) {
