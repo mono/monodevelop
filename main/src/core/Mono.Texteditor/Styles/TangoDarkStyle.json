@@ -120,8 +120,8 @@
 
         { "name":"Line Numbers", "fore":"aluminium5", "back":"#2c2f30" },
 
-        { "name":"Punctuation", "fore":"aluminium3" },
-        { "name":"Punctuation(Brackets)", "fore":"aluminium3" },
+        { "name":"Punctuation", "fore":"aluminium1" },
+        { "name":"Punctuation(Brackets)", "fore":"aluminium1" },
 
         { "name":"Comment(Line)", "fore":"aluminium4" },
         { "name":"Comment(Block)", "fore":"aluminium4" },
