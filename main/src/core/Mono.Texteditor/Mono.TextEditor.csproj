@@ -351,6 +351,9 @@
     <EmbeddedResource Include="Styles\TangoDarkStyle.json">
       <LogicalName>TangoDarkStyle.json</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Styles\GruvboxStyle.json">
+      <LogicalName>GruvboxStyle.json</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
