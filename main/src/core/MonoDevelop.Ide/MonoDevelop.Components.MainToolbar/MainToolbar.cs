@@ -206,7 +206,6 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry.Ready = true;
 			matchEntry.Visible = true;
 			matchEntry.IsCheckMenu = true;
-			matchEntry.Entry.ModifyBase (StateType.Normal, Style.White);
 			matchEntry.WidthRequest = 240;
 			if (!Platform.IsMac && !Platform.IsWindows)
 				matchEntry.Entry.ModifyFont (Pango.FontDescription.FromString ("Sans 9")); // TODO: VV: "Segoe UI 9"
