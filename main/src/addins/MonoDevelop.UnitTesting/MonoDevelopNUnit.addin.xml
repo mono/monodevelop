@@ -19,7 +19,7 @@
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/NUnit/NUnitSourceCodeLocationFinder">
+	<ExtensionPoint path = "/MonoDevelop/UnitTesting/NUnitSourceCodeLocationFinder">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 
@@ -31,7 +31,7 @@
 			<PadOption id = "ShowTestCounters" _label = "Show Test Counters" defaultValue = "False" />
 			<NodeBuilder id = "TestNode" class = "MonoDevelop.UnitTesting.TestNodeBuilder"/>
 		</SolutionPad>
-		<Pad id="MonoDevelop.UnitTesting.TestResultsPad" _label="Test Results" icon="nunit-pad-icon" class="MonoDevelop.NUnit.TestResultsPad" defaultPlacement = "Bottom" defaultLayout="UnitTesting" defaultStatus="AutoHide"/>
+		<Pad id="MonoDevelop.UnitTesting.TestResultsPad" _label="Test Results" icon="nunit-pad-icon" class="MonoDevelop.UnitTesting.TestResultsPad" defaultPlacement = "Bottom" defaultLayout="UnitTesting" defaultStatus="AutoHide"/>
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/WorkbenchLayouts">
@@ -110,7 +110,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/UnitTesting/TestProviders">
-		<Class id="SystemTestProvider" class="MonoDevelop.NUnit.SystemTestProvider" />
+		<Class id="SystemTestProvider" class="MonoDevelop.UnitTesting.SystemTestProvider" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">

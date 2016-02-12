@@ -38,7 +38,7 @@ namespace MonoDevelop.UnitTesting
 
 		static NUnitSourceCodeLocationFinder ()
 		{
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/NUnit/NUnitSourceCodeLocationFinder", delegate(object sender, ExtensionNodeEventArgs args) {
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/UnitTesting/NUnitSourceCodeLocationFinder", delegate(object sender, ExtensionNodeEventArgs args) {
 				var provider  = (NUnitSourceCodeLocationFinder) args.ExtensionObject;
 				switch (args.Change) {
 				case ExtensionChange.Add:
