@@ -65,7 +65,7 @@ namespace MonoDevelop.CSharp
 				return null;
 			var token = root.FindToken (offset);
 			var tokenSpan = token.Span;
-			if (offset < tokenSpan.Start || offset > tokenSpan.End)
+			if (offset < tokenSpan.Start || offset >= tokenSpan.End)
 				return null;
 			for (int i = 0; i < tokenPairs.Length / 2; i++) {
 				var open = tokenPairs [i * 2];
