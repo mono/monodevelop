@@ -42,6 +42,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
 using ICSharpCode.NRefactory6.CSharp;
+using Microsoft.CodeAnalysis.Editor.CSharp.KeywordHighlighting.KeywordHighlighters;
+using Microsoft.CodeAnalysis.Editor.Implementation.Highlighting;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -49,6 +51,7 @@ namespace MonoDevelop.CSharp.Highlighting
 	{
 		public RefactoringSymbolInfo SymbolInfo;
 		public Document Document;
+		public int Offset;
 
 		public ISymbol Symbol {
 			get { return SymbolInfo != null ? SymbolInfo.Symbol ?? SymbolInfo.DeclaredSymbol : null; }
@@ -58,7 +61,15 @@ namespace MonoDevelop.CSharp.Highlighting
 	class HighlightUsagesExtension : AbstractUsagesExtension<UsageData>
 	{
 		CSharpSyntaxMode syntaxMode;
+		static IHighlighter [] highlighters;
 
+		static HighlightUsagesExtension ()
+		{
+			highlighters = typeof (HighlightUsagesExtension).Assembly
+				.GetTypes ()
+				.Where (t => !t.IsAbstract && typeof (IHighlighter).IsAssignableFrom (t))
+				.Select (t => (IHighlighter)Activator.CreateInstance (t)).ToArray ();
+		}
 		protected override void Initialize ()
 		{
 			base.Initialize ();
@@ -88,20 +99,46 @@ namespace MonoDevelop.CSharp.Highlighting
 
 			var symbolInfo = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor, token);
 			if (symbolInfo.Symbol == null && symbolInfo.DeclaredSymbol == null)
-				return new UsageData ();
+				return new UsageData {
+					Document = analysisDocument,
+					Offset = doc.Editor.CaretOffset
+				};
 			if (symbolInfo.Symbol != null && !symbolInfo.Node.IsKind (SyntaxKind.IdentifierName)) 
-				return new UsageData ();
+				return new UsageData  {
+					Document = analysisDocument,
+					Offset = doc.Editor.CaretOffset
+				};
+			
 			return new UsageData {
 				Document = analysisDocument,
-				SymbolInfo = symbolInfo
+				SymbolInfo = symbolInfo,
+				Offset = doc.Editor.CaretOffset
 			};
 		}
 
 		protected override async Task<IEnumerable<MemberReference>> GetReferencesAsync (UsageData resolveResult, CancellationToken token)
 		{
 			var result = new List<MemberReference> ();
-			if (resolveResult.Symbol == null)
+			if (resolveResult.Symbol == null) {
+				if (resolveResult.Document == null)
+					return result;
+				var root = await resolveResult.Document.GetSyntaxRootAsync (token).ConfigureAwait (false);
+				var doc2 = resolveResult.Document;
+
+				foreach (var highlighter in highlighters) {
+					try {
+						foreach (var span in highlighter.GetHighlights (root, resolveResult.Offset, token)) {
+							result.Add (new MemberReference (span, doc2.FilePath, span.Start, span.Length) {
+								ReferenceUsageType = ReferenceUsageType.Keyword
+							});
+						}
+					} catch (Exception e) {
+						LoggingService.LogError ("Highlighter " + highlighter + " threw exception.", e);
+					}
+				}
 				return result;
+			}
+
 			var doc = resolveResult.Document;
 			var documents = ImmutableHashSet.Create (doc); 
 			var symbol = resolveResult.Symbol;
@@ -118,6 +155,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					});
 				}
 			}
+
 			return result;
 		}
 

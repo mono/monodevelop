@@ -807,6 +807,27 @@
     <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\ParenthesisCompletionSession.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\StringLiteralCompletionSession.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\InterpolationCompletionSession.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\AbstractAsyncHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\AsyncAnonymousMethodHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\AsyncMethodHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\AsyncParenthesizedLambdaHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\AsyncSimpleLambdaHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\AwaitHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\CheckedExpressionHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\CheckedStatementHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\ConditionalPreprocessorHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\IfStatementHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\LockStatementHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\LoopHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\RegionHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\ReturnStatementHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\SwitchStatementHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\TryStatementHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\UnsafeStatementHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\UsingStatementHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\YieldStatementHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\AbstractKeywordHighlighter.cs" />
+    <Compile Include="Util\DirectiveSyntaxExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -862,5 +883,6 @@
     <Folder Include="MonoDevelop.CSharp.CodeFixes\EncapsulateField\" />
     <Folder Include="MonoDevelop.CSharp.Features\AutoInsertBracket\" />
     <Folder Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\" />
+    <Folder Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\" />
   </ItemGroup>
 </Project>

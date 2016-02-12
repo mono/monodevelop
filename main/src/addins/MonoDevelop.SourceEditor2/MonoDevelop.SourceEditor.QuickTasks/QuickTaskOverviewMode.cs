@@ -715,7 +715,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					color = TextEditor.ColorStyle.ChangingUsagesRectangle.Color;
 				} else if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Write) != 0) {
 					color = TextEditor.ColorStyle.ChangingUsagesRectangle.Color;
-				} else if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Read) != 0) {
+				} else if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Read) != 0 || (usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Keyword) != 0) {
 					color = TextEditor.ColorStyle.UsagesRectangle.Color;
 				} else {
 					color = usageColor;
