@@ -365,7 +365,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			if (editor.Options.EnableQuickDiff) {
+			if (editor.Options.EnableQuickDiff && state != TextDocument.LineState.Unchanged) {
 				var prevState = lineSegment?.PreviousLine != null ? editor.Document.GetLineState (lineSegment.PreviousLine) : TextDocument.LineState.Unchanged;
 				var nextState = lineSegment?.NextLine != null ? editor.Document.GetLineState (lineSegment.NextLine) : TextDocument.LineState.Unchanged;
 

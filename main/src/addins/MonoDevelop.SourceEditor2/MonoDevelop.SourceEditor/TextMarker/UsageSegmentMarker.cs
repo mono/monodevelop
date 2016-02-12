@@ -88,7 +88,7 @@ namespace MonoDevelop.SourceEditor
 					colorStyle = editor.ColorStyle.UsagesRectangle;
 				}
 
-				using (var lg = new LinearGradient (@from + 1, y + 1, to , y + editor.LineHeight)) {
+				using (var lg = new LinearGradient (@from + 1, y + 1.5, to , y + editor.LineHeight - 1)) {
 					lg.AddColorStop (0, colorStyle.Color);
 					lg.AddColorStop (1, colorStyle.SecondColor);
 					cr.SetSource (lg);
