@@ -49,10 +49,8 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.UnitTesting
 {
-	class TestPad : TreeViewPad
+	public class TestPad : TreeViewPad
 	{
-		UnitTestService testService = UnitTestService.Instance;
-		
 		AsyncOperation runningTestOperation;
 		VPaned paned;
 		TreeView detailsTree;
@@ -86,7 +84,7 @@ namespace MonoDevelop.UnitTesting
 		{
 			base.Initialize (builders, options, menuPath);
 			
-			testService.TestSuiteChanged += OnTestSuiteChanged;
+			UnitTestService.TestSuiteChanged += OnTestSuiteChanged;
 			paned = new VPaned ();
 			
 			VBox vbox = new VBox ();
@@ -339,16 +337,16 @@ namespace MonoDevelop.UnitTesting
 			regressionTree.RowActivated += new Gtk.RowActivatedHandler (OnRegressionTestActivated);
 			failedTree.RowActivated += new Gtk.RowActivatedHandler (OnFailedTestActivated);
 			
-			foreach (UnitTest t in testService.RootTests)
+			foreach (UnitTest t in UnitTestService.RootTests)
 				TreeView.AddChild (t);
 		}
 		
 		void OnTestSuiteChanged (object sender, EventArgs e)
 		{
-			if (testService.RootTests.Length > 0) {
+			if (UnitTestService.RootTests.Length > 0) {
 				var s = TreeView.SaveTreeState ();
 				TreeView.Clear ();
-				foreach (UnitTest t in testService.RootTests)
+				foreach (UnitTest t in UnitTestService.RootTests)
 					TreeView.AddChild (t);
 				TreeView.RestoreTreeState (s);
 			}
@@ -496,7 +494,7 @@ namespace MonoDevelop.UnitTesting
 
 			if (bringToFront)
 				IdeApp.Workbench.GetPad<TestPad> ().BringToFront ();
-			runningTestOperation = testService.RunTest (test, mode);
+			runningTestOperation = UnitTestService.RunTest (test, mode);
 			runningTestOperation.Task.ContinueWith (t => OnTestSessionCompleted (), TaskScheduler.FromCurrentSynchronizationContext ());
 			return runningTestOperation;
 		}

@@ -67,9 +67,9 @@ namespace MonoDevelop.UnitTesting.Commands
 		{
 			WorkspaceObject ob = IdeApp.ProjectOperations.CurrentSelectedObject;
 			if (ob != null) {
-				UnitTest test = UnitTestService.Instance.FindRootTest (ob);
+				UnitTest test = UnitTestService.FindRootTest (ob);
 				if (test != null)
-					UnitTestService.Instance.RunTest (test, null);
+					UnitTestService.RunTest (test, null);
 			}
 		}
 		
@@ -77,7 +77,7 @@ namespace MonoDevelop.UnitTesting.Commands
 		{
 			WorkspaceObject ob = IdeApp.ProjectOperations.CurrentSelectedObject;
 			if (ob != null) {
-				UnitTest test = UnitTestService.Instance.FindRootTest (ob);
+				UnitTest test = UnitTestService.FindRootTest (ob);
 				info.Enabled = (test != null);
 			} else
 				info.Enabled = false;

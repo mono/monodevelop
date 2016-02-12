@@ -74,9 +74,8 @@ namespace MonoDevelop.UnitTesting
 		
 		protected override void OnCreateTests ()
 		{
-			UnitTestService testService = UnitTestService.Instance;
 			foreach (WorkspaceItem e in workspace.Items) {
-				UnitTest t = testService.BuildTest (e);
+				UnitTest t = UnitTestService.BuildTest (e);
 				if (t != null)
 					Tests.Add (t);
 			}

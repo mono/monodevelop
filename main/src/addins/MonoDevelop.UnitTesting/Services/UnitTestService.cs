@@ -44,14 +44,12 @@ using System.IO;
 
 namespace MonoDevelop.UnitTesting
 {
-	public class UnitTestService
+	public static class UnitTestService
 	{
-		static UnitTestService instance;
+		static ArrayList providers = new ArrayList ();
+		static UnitTest[] rootTests;
 		
-		ArrayList providers = new ArrayList ();
-		UnitTest[] rootTests;
-		
-		private UnitTestService ()
+		static UnitTestService ()
 		{
 			IdeApp.Workspace.WorkspaceItemOpened += OnWorkspaceChanged;
 			IdeApp.Workspace.WorkspaceItemClosed += OnWorkspaceChanged;
@@ -63,19 +61,11 @@ namespace MonoDevelop.UnitTesting
 			IdeApp.Workspace.ReferenceRemovedFromProject += OnReferenceChangedInProject;
 
 			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/UnitTesting/TestProviders", OnExtensionChange);
+
+			RebuildTests ();
 		}
 
-		public static UnitTestService Instance {
-			get {
-				if (instance == null) {
-					instance = new UnitTestService ();
-					instance.RebuildTests ();
-				}
-				return instance;
-			}
-		}
-
-		void OnExtensionChange (object s, ExtensionNodeEventArgs args)
+		static void OnExtensionChange (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add) {
 				ProjectService ps = MonoDevelop.Projects.Services.ProjectService;
@@ -92,20 +82,20 @@ namespace MonoDevelop.UnitTesting
 			}
 		}
 		
-		public AsyncOperation RunTest (UnitTest test, IExecutionHandler context)
+		public static AsyncOperation RunTest (UnitTest test, IExecutionHandler context)
 		{
 			var result = RunTest (test, context, IdeApp.Preferences.BuildBeforeRunningTests);
 			result.Task.ContinueWith (t => OnTestSessionCompleted (), TaskScheduler.FromCurrentSynchronizationContext ());
 			return result;
 		}
 		
-		public AsyncOperation RunTest (UnitTest test, IExecutionHandler context, bool buildOwnerObject)
+		public static AsyncOperation RunTest (UnitTest test, IExecutionHandler context, bool buildOwnerObject)
 		{
 			var cs = new CancellationTokenSource ();
 			return new AsyncOperation (RunTest (test, context, buildOwnerObject, true, cs), cs);
 		}
 
-		internal async Task RunTest (UnitTest test, IExecutionHandler context, bool buildOwnerObject, bool checkCurrentRunOperation, CancellationTokenSource cs)
+		internal static async Task RunTest (UnitTest test, IExecutionHandler context, bool buildOwnerObject, bool checkCurrentRunOperation, CancellationTokenSource cs)
 		{
 			string testName = test.FullName;
 			
@@ -157,12 +147,12 @@ namespace MonoDevelop.UnitTesting
 			}
 		}
 		
-		public Task RefreshTests (CancellationToken ct)
+		public static Task RefreshTests (CancellationToken ct)
 		{
 			return Task.WhenAll (RootTests.Select (t => t.Refresh (ct)));
 		}
 		
-		public UnitTest SearchTest (string fullName)
+		public static UnitTest SearchTest (string fullName)
 		{
 			foreach (UnitTest t in RootTests) {
 				UnitTest r = SearchTest (t, fullName);
@@ -172,7 +162,7 @@ namespace MonoDevelop.UnitTesting
 			return null;
 		}
 
-		public UnitTest SearchTestById (string id)
+		public static UnitTest SearchTestById (string id)
 		{
 			foreach (UnitTest t in RootTests) {
 				UnitTest r = SearchTestById (t, id);
@@ -183,7 +173,7 @@ namespace MonoDevelop.UnitTesting
 		}
 
 		
-		UnitTest SearchTest (UnitTest test, string fullName)
+		static UnitTest SearchTest (UnitTest test, string fullName)
 		{
 			if (test == null)
 				return null;
@@ -201,7 +191,7 @@ namespace MonoDevelop.UnitTesting
 			return null;
 		}
 
-		UnitTest SearchTestById (UnitTest test, string id)
+		static UnitTest SearchTestById (UnitTest test, string id)
 		{
 			if (test == null)
 				return null;
@@ -219,12 +209,12 @@ namespace MonoDevelop.UnitTesting
 			return null;
 		}
 
-		public UnitTest FindRootTest (WorkspaceObject item)
+		public static UnitTest FindRootTest (WorkspaceObject item)
 		{
 			return FindRootTest (RootTests, item);
 		}
 		
-		public UnitTest FindRootTest (IEnumerable<UnitTest> tests, WorkspaceObject item)
+		public static UnitTest FindRootTest (IEnumerable<UnitTest> tests, WorkspaceObject item)
 		{
 			foreach (UnitTest t in tests) {
 				if (t.OwnerObject == item)
@@ -239,24 +229,24 @@ namespace MonoDevelop.UnitTesting
 			return null;
 		}
 		
-		void OnWorkspaceChanged (object sender, EventArgs e)
+		static void OnWorkspaceChanged (object sender, EventArgs e)
 		{
 			RebuildTests ();
 		}
 
-		void OnReferenceChangedInProject (object sender, ProjectReferenceEventArgs e)
+		static void OnReferenceChangedInProject (object sender, ProjectReferenceEventArgs e)
 		{
 			if (!IsSolutionGroupPresent (e.Project.ParentSolution, rootTests))
 				RebuildTests ();
 		}
 
-		void OnItemsChangedInSolution (object sender, SolutionItemChangeEventArgs e)
+		static void OnItemsChangedInSolution (object sender, SolutionItemChangeEventArgs e)
 		{
 			if (!IsSolutionGroupPresent (e.Solution, rootTests))
 				RebuildTests ();
 		}
 
-		bool IsSolutionGroupPresent (Solution sol, IEnumerable<UnitTest> tests)
+		static bool IsSolutionGroupPresent (Solution sol, IEnumerable<UnitTest> tests)
 		{
 			foreach (var t in tests) {
 				var tg = t as SolutionFolderTestGroup;
@@ -271,7 +261,7 @@ namespace MonoDevelop.UnitTesting
 			return false;
 		}
 
-		void RebuildTests ()
+		static void RebuildTests ()
 		{
 			if (rootTests != null) {
 				foreach (IDisposable t in rootTests)
@@ -289,7 +279,7 @@ namespace MonoDevelop.UnitTesting
 			NotifyTestSuiteChanged ();
 		}
 		
-		public UnitTest BuildTest (WorkspaceObject entry)
+		public static UnitTest BuildTest (WorkspaceObject entry)
 		{
 			foreach (ITestProvider p in providers) {
 				try {
@@ -325,15 +315,15 @@ namespace MonoDevelop.UnitTesting
 		}
 
 
-		public UnitTest[] RootTests {
+		public static UnitTest[] RootTests {
 			get { return rootTests; }
 		}
 		
-		void NotifyTestSuiteChanged ()
+		static void NotifyTestSuiteChanged ()
 		{
 			Runtime.RunInMainThread (() => {
 				if (TestSuiteChanged != null)
-					TestSuiteChanged (this, EventArgs.Empty);
+					TestSuiteChanged (null, EventArgs.Empty);
 			});
 		}
 
@@ -349,27 +339,27 @@ namespace MonoDevelop.UnitTesting
 				ResetResult (t);
 		}
 
-		public event EventHandler TestSuiteChanged;
+		public static event EventHandler TestSuiteChanged;
 
-		void OnTestSessionCompleted ()
+		static void OnTestSessionCompleted ()
 		{
 			var handler = TestSessionCompleted;
 			if (handler != null)
-				handler (this, EventArgs.Empty);
+				handler (null, EventArgs.Empty);
 		}
 
-		public event EventHandler TestSessionCompleted;
+		public static event EventHandler TestSessionCompleted;
 
-		void OnTestSessionStarting (TestSessionEventArgs args)
+		static void OnTestSessionStarting (TestSessionEventArgs args)
 		{
 			if (TestSessionStarting != null)
-				TestSessionStarting (this, args);
+				TestSessionStarting (null, args);
 		}
 
 		/// <summary>
 		/// Occurs just before a test session is started
 		/// </summary>
-		public event EventHandler<TestSessionEventArgs> TestSessionStarting;
+		public static event EventHandler<TestSessionEventArgs> TestSessionStarting;
 	}
 	
 

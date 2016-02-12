@@ -50,8 +50,6 @@ namespace MonoDevelop.UnitTesting
 {
 	public class TestResultsPad: PadContent, ITestProgressMonitor
 	{
-		UnitTestService testService = UnitTestService.Instance;
-		
 		IPadWindow window;
 		VBox panel;
 		HPaned book;
@@ -104,7 +102,7 @@ namespace MonoDevelop.UnitTesting
 		
 		public TestResultsPad ()
 		{
-			testService.TestSuiteChanged += new EventHandler (OnTestSuiteChanged);
+			UnitTestService.TestSuiteChanged += new EventHandler (OnTestSuiteChanged);
 			IdeApp.Workspace.WorkspaceItemClosed += OnWorkspaceItemClosed;
 			
 			panel = new VBox ();
@@ -259,7 +257,7 @@ namespace MonoDevelop.UnitTesting
 		public void OnTestSuiteChanged (object sender, EventArgs e)
 		{
 			if (rootTest != null) {
-				rootTest = testService.SearchTest (rootTest.FullName);
+				rootTest = UnitTestService.SearchTest (rootTest.FullName);
 				if (rootTest == null)
 					buttonRun.Sensitive = false;
 			}
@@ -461,7 +459,7 @@ namespace MonoDevelop.UnitTesting
 		{
 			if (rootTest == null)
 				return;
-			UnitTestService.Instance.RunTest (rootTest, null);
+			UnitTestService.RunTest (rootTest, null);
 		}
 
 		void OnRowActivated (object s, EventArgs a)
@@ -626,7 +624,7 @@ namespace MonoDevelop.UnitTesting
 			UnitTest test = GetSelectedTest ();
 			if (test == null)
 				return;
-			UnitTestService.Instance.RunTest (test, null);
+			UnitTestService.RunTest (test, null);
 		}
 		
 		[CommandUpdateHandler (TestCommands.ShowTestCode)]

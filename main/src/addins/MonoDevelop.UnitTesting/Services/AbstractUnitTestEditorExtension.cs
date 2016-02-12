@@ -46,7 +46,7 @@ namespace MonoDevelop.UnitTesting
 			DocumentContext.DocumentParsed += HandleDocumentParsed; 
 			if (IdeApp.Workbench == null)
 				return;
-			UnitTestService.Instance.TestSessionCompleted += HandleTestSessionCompleted;
+			UnitTestService.TestSessionCompleted += HandleTestSessionCompleted;
 		}
 
 		void HandleTestSessionCompleted (object sender, EventArgs e)
@@ -58,7 +58,7 @@ namespace MonoDevelop.UnitTesting
 		public override void Dispose ()
 		{
 			src.Cancel ();
-			UnitTestService.Instance.TestSessionCompleted -= HandleTestSessionCompleted;
+			UnitTestService.TestSessionCompleted -= HandleTestSessionCompleted;
 			RemoveHandler ();
 			DocumentContext.DocumentParsed -= HandleDocumentParsed; 
 			base.Dispose ();
@@ -135,7 +135,7 @@ namespace MonoDevelop.UnitTesting
 
 			public override Xwt.Drawing.Image GetStatusIcon (string unitTestIdentifier, string caseId = null)
 			{
-				var test = UnitTestService.Instance.SearchTestById (unitTestIdentifier + caseId);
+				var test = UnitTestService.SearchTestById (unitTestIdentifier + caseId);
 				if (test != null)
 					return test.StatusIcon;
 				return TestStatusIcon.None;
@@ -143,7 +143,7 @@ namespace MonoDevelop.UnitTesting
 
 			public override bool IsFailure (string unitTestIdentifier, string caseId = null)
 			{
-				var test = UnitTestService.Instance.SearchTestById (unitTestIdentifier + caseId);
+				var test = UnitTestService.SearchTestById (unitTestIdentifier + caseId);
 				if (test != null) {
 					var result = test.GetLastResult ();
 					if (result != null)
@@ -154,7 +154,7 @@ namespace MonoDevelop.UnitTesting
 
 			public override string GetMessage (string unitTestIdentifier, string caseId = null)
 			{
-				var test = UnitTestService.Instance.SearchTestById (unitTestIdentifier + caseId);
+				var test = UnitTestService.SearchTestById (unitTestIdentifier + caseId);
 				if (test != null) {
 					var result = test.GetLastResult ();
 					if (result != null)
@@ -165,7 +165,7 @@ namespace MonoDevelop.UnitTesting
 
 			public override bool HasResult (string unitTestIdentifier, string caseId = null)
 			{
-				return UnitTestService.Instance.SearchTestById (unitTestIdentifier + caseId) != null;
+				return UnitTestService.SearchTestById (unitTestIdentifier + caseId) != null;
 			}
 
 			public override void PopupContextMenu (UnitTestLocation unitTest, int x, int y)
@@ -221,7 +221,7 @@ namespace MonoDevelop.UnitTesting
 
 							var label = "Test" + id;
 							string tooltip = null;
-							var test = UnitTestService.Instance.SearchTestById (unitTest.UnitTestIdentifier + id);
+							var test = UnitTestService.SearchTestById (unitTest.UnitTestIdentifier + id);
 							if (test != null) {
 								var result = test.GetLastResult ();
 								if (result != null && result.IsFailure) {
@@ -262,7 +262,7 @@ namespace MonoDevelop.UnitTesting
 
 				bool TimeoutHandler ()
 				{
-					var test = UnitTestService.Instance.SearchTestById (testCase);
+					var test = UnitTestService.SearchTestById (testCase);
 					if (test != null) {
 						RunTest (test); 
 						timeoutHandler = 0;
@@ -278,7 +278,7 @@ namespace MonoDevelop.UnitTesting
 						IdeApp.ProjectOperations.IsRunning (IdeApp.ProjectOperations.CurrentSelectedSolution))
 						return;
 
-					var foundTest = UnitTestService.Instance.SearchTestById (testCase);
+					var foundTest = UnitTestService.SearchTestById (testCase);
 					if (foundTest != null) {
 						RunTest (foundTest);
 						return;
@@ -286,14 +286,14 @@ namespace MonoDevelop.UnitTesting
 
 					await IdeApp.ProjectOperations.Build (project).Task;
 
-					foundTest = UnitTestService.Instance.SearchTestById (testCase);
+					foundTest = UnitTestService.SearchTestById (testCase);
 					if (foundTest != null)
 						RunTest (foundTest);
 				}
 
 				internal void Select (object sender, EventArgs e)
 				{
-					var test = UnitTestService.Instance.SearchTestById (testCase);
+					var test = UnitTestService.SearchTestById (testCase);
 					if (test == null)
 						return;
 					var pad = IdeApp.Workbench.GetPad<TestPad> ();

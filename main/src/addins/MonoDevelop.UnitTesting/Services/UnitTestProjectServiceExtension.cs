@@ -51,14 +51,14 @@ namespace MonoDevelop.UnitTesting
 		{
 			base.Initialize ();
 			if (IdeApp.IsInitialized)
-				UnitTestService.Instance.TestSuiteChanged += TestSuiteChanged;
+				UnitTestService.TestSuiteChanged += TestSuiteChanged;
 		}
 
 		public override void Dispose ()
 		{
 			base.Dispose ();
 			if (IdeApp.IsInitialized)
-				UnitTestService.Instance.TestSuiteChanged -= TestSuiteChanged;
+				UnitTestService.TestSuiteChanged -= TestSuiteChanged;
 		}
 
 		void TestSuiteChanged (object sender, System.EventArgs e)
@@ -70,7 +70,7 @@ namespace MonoDevelop.UnitTesting
 		UnitTest FindRootTest ()
 		{
 			if (!unitTestChecked) {
-				unitTestFound = UnitTestService.Instance.FindRootTest (Project);
+				unitTestFound = UnitTestService.FindRootTest (Project);
 				unitTestChecked = true;
 			}
 			return unitTestFound;
@@ -97,7 +97,7 @@ namespace MonoDevelop.UnitTesting
 			if (test != null) {
 				var cs = new CancellationTokenSource ();
 				using (monitor.CancellationToken.Register (cs.Cancel))
-					await UnitTestService.Instance.RunTest (test, context.ExecutionHandler, false, false, cs);
+					await UnitTestService.RunTest (test, context.ExecutionHandler, false, false, cs);
 			}
 		}
 

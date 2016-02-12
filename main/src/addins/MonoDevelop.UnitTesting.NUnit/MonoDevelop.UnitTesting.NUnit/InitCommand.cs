@@ -42,7 +42,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 		void OnReferenceChanged (object s, ProjectReferenceEventArgs args)
 		{
 			if (NUnitProjectTestSuite.IsNUnitReference (args.ProjectReference))
-				UnitTestService.Instance.RefreshTests (CancellationToken.None);
+				UnitTestService.RefreshTests (CancellationToken.None);
 		}
 	}
 }
