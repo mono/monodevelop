@@ -12,7 +12,7 @@
     <UsePartialTypes>False</UsePartialTypes>
     <RestorePackages>true</RestorePackages>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
+    <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -202,7 +202,7 @@
       <HintPath>..\..\..\build\bin\Xamarin.Mac.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="FSharp.Core">
+    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion)">
       <Private>True</Private>
     </Reference>
   </ItemGroup>
