@@ -14,7 +14,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/UnitTesting/TestProviders">
-		<Class id="SystemTestProvider" class="MonoDevelop.NUnit.SystemTestProvider" />
+		<Class id="SystemTestProvider" class="MonoDevelop.UnitTesting.NUnit.SystemTestProvider" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">

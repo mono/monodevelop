@@ -285,6 +285,7 @@ namespace MonoDevelop.UnitTesting
 					}
 
 					await IdeApp.ProjectOperations.Build (project).Task;
+					await UnitTestService.RefreshTests (CancellationToken.None);
 
 					foundTest = UnitTestService.SearchTestById (testCase);
 					if (foundTest != null)
