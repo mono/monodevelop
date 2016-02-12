@@ -180,17 +180,8 @@ namespace MonoDevelop.MacIntegration
 
 			mimeTimer.BeginTiming ();
 			try {
-				using (var file = File.OpenRead ("/etc/apache2/mime.types")) {
-					using (var reader = new StreamReader (file)) {
-						var mime = new Regex ("([a-zA-Z]+/[a-zA-z0-9+-_.]+)\t+([a-zA-Z]+)", RegexOptions.Compiled);
-						string line;
-						while ((line = reader.ReadLine ()) != null) {
-							Match m = mime.Match (line);
-							if (m.Success)
-								map ["." + m.Groups [2].Captures [0].Value] = m.Groups [1].Captures [0].Value;
-						}
-					}
-				}
+				var loader = new MimeMapLoader (map);
+				loader.LoadMimeMap ("/etc/apache2/mime.types");
 			} catch (Exception ex){
 				LoggingService.LogError ("Could not load Apache mime database", ex);
 			}

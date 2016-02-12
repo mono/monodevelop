@@ -140,6 +140,7 @@
     <Compile Include="MainToolbar\ButtonBarContainer.cs" />
     <Compile Include="MainToolbar\Styles.cs" />
     <Compile Include="MainToolbar\MultiResImage.cs" />
+    <Compile Include="MimeMapLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
