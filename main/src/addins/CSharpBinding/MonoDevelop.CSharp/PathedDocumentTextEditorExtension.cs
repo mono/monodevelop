@@ -498,6 +498,8 @@ namespace MonoDevelop.CSharp
 					var node = memberList [n];
 					if (node is MemberDeclarationSyntax) {
 						icon = ((MemberDeclarationSyntax)node).GetStockIcon ();
+					} else if (node is VariableDeclaratorSyntax) {
+						icon = node.Parent.Parent.GetStockIcon ();
 					} else {
 						icon = node.Parent.GetStockIcon ();
 					}

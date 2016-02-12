@@ -366,8 +366,8 @@ namespace Mono.TextEditor
 			}
 
 			if (editor.Options.EnableQuickDiff) {
-				var prevState = lineSegment.PreviousLine != null ? editor.Document.GetLineState (lineSegment.PreviousLine) : TextDocument.LineState.Unchanged;
-				var nextState = lineSegment.NextLine != null ? editor.Document.GetLineState (lineSegment.NextLine) : TextDocument.LineState.Unchanged;
+				var prevState = lineSegment?.PreviousLine != null ? editor.Document.GetLineState (lineSegment.PreviousLine) : TextDocument.LineState.Unchanged;
+				var nextState = lineSegment?.NextLine != null ? editor.Document.GetLineState (lineSegment.NextLine) : TextDocument.LineState.Unchanged;
 
 				if (state == TextDocument.LineState.Changed) {
 					cr.SetSourceColor (lineStateChangedGC);
