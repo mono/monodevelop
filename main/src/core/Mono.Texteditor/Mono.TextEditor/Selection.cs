@@ -185,5 +185,10 @@ namespace Mono.TextEditor
 		{
 			return string.Format("[Selection: Anchor={0}, Lead={1}, MinLine={2}, MaxLine={3}, SelectionMode={4}]", Anchor, Lead, MinLine, MaxLine, SelectionMode);
 		}
+
+		internal bool ContainsLine (int lineNr)
+		{
+			return anchor.Line <= lineNr && lineNr <= lead.Line || lead.Line <= lineNr && lineNr <= anchor.Line;
+		}
 	}
 }

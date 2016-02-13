@@ -2734,6 +2734,7 @@ namespace Mono.TextEditor
 				!this.HideSelection && 
 				textEditor.IsSomethingSelected && 
 				textEditor.SelectionMode == SelectionMode.Normal && 
+				textEditor.MainSelection.ContainsLine (lineNr) &&
 				textEditor.MainSelection.Contains (lineNr + 1, 1);
 
 			var lx = (int)position;
