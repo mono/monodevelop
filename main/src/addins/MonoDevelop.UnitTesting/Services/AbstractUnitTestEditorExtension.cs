@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading;
 using MonoDevelop.Core;
@@ -35,11 +36,25 @@ using System.Threading.Tasks;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Projects;
+using Mono.Addins;
 
 namespace MonoDevelop.UnitTesting
 {
 	public abstract class AbstractUnitTestTextEditorExtension : TextEditorExtension
 	{
+		const string TestMarkersPath = "/MonoDevelop/UnitTesting/UnitTestMarkers";
+		static IUnitTestMarkers [] unitTestMarkers;
+
+		static AbstractUnitTestTextEditorExtension ()
+		{
+			AddinManager.AddExtensionNodeHandler (TestMarkersPath, HandleExtensionNodeEventHandler);
+		}
+
+		static void HandleExtensionNodeEventHandler (object sender, ExtensionNodeEventArgs args)
+		{
+			unitTestMarkers = AddinManager.GetExtensionNodes (TestMarkersPath).OfType<IUnitTestMarkers> ().ToArray ();
+		}
+
 		protected override void Initialize ()
 		{
 			base.Initialize ();
@@ -66,7 +81,7 @@ namespace MonoDevelop.UnitTesting
 
 		CancellationTokenSource src = new CancellationTokenSource ();
 
-		public abstract Task<IList<UnitTestLocation>> GatherUnitTests (CancellationToken token);
+		public abstract Task<IList<UnitTestLocation>> GatherUnitTests (IUnitTestMarkers[] unitTestMarkers, CancellationToken token);
 
 		void HandleDocumentParsed (object sender, EventArgs e)
 		{
@@ -79,7 +94,7 @@ namespace MonoDevelop.UnitTesting
 				if (token.IsCancellationRequested || DocumentContext == null)
 					return;
 				try {
-					GatherUnitTests (token).ContinueWith (task => {
+					GatherUnitTests (unitTestMarkers, token).ContinueWith (task => {
 						var foundTests = task.Result;
 						if (foundTests == null || DocumentContext == null)
 							return;
@@ -297,10 +312,7 @@ namespace MonoDevelop.UnitTesting
 					var test = UnitTestService.SearchTestById (testCase);
 					if (test == null)
 						return;
-					var pad = IdeApp.Workbench.GetPad<TestPad> ();
-					pad.BringToFront ();
-					var content = (TestPad)pad.Content;
-					content.SelectTest (test);
+					UnitTestService.CurrentSelectedTest = test;
 				}
 
 				void RunTest (UnitTest test)
@@ -322,6 +334,36 @@ namespace MonoDevelop.UnitTesting
 				}
 			}
 		}
+	}
+
+	/// <summary>
+	/// Markers that can be used to identify a method as a unit test
+	/// </summary>
+	public interface IUnitTestMarkers
+	{
+		/// <summary>
+		/// Type of attribute that a method needs to have to be considered to be a test method
+		/// </summary>
+		/// <value>The test method attribute marker.</value>
+		string TestMethodAttributeMarker { get; }
+
+		/// <summary>
+		/// Type of attribute that describes a test case for a test method. It has to be applied to a test method.
+		/// </summary>
+		/// <value>The test method attribute marker.</value>
+		string TestCaseMethodAttributeMarker { get; }
+
+		/// <summary>
+		/// Type of attribute used to mark a test method to be ignored
+		/// </summary>
+		/// <value>The ignore test method attribute marker.</value>
+		string IgnoreTestMethodAttributeMarker { get; }
+
+		/// <summary>
+		/// Type of attribute used to mark a test class to be ignored
+		/// </summary>
+		/// <value>The ignore test method attribute marker.</value>
+		string IgnoreTestClassAttributeMarker { get; }
 	}
 }
 

@@ -23,6 +23,11 @@
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/UnitTesting/UnitTestMarkers" name = "Unit Test Markers">
+		<Description>Unit test markers are used to identify test methods in soure code.</Description>
+		<ExtensionNode name ="TestMarkers" type="MonoDevelop.UnitTesting.UnitTestMarkersExtension"/>
+	</ExtensionPoint>
+
 	<!-- Extensions -->
 
 	<Extension path = "/MonoDevelop/Ide/Pads">

@@ -29,4 +29,14 @@
 	<Extension path="/MonoDevelop/Ide/TemplateImages">
 		<Image id="md-nunit-library-project" resource="nunit-library-project.png" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/UnitTesting/UnitTestMarkers">
+		<TestMarkers
+				testMethodAttributeMarker="NUnit.Framework.TestAttribute"
+				testCaseMethodAttributeMarker="NUnit.Framework.TestCaseAttribute"
+				ignoreTestMethodAttributeMarker="NUnit.Framework.IgnoreAttribute"
+				ignoreTestClassAttributeMarker="NUnit.Framework.IgnoreAttribute"
+			/>
+	</Extension>
+	
 </ExtensionModel>
