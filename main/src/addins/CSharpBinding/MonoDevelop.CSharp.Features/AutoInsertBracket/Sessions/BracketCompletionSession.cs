@@ -34,7 +34,7 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 	{
 		
 		public BracketCompletionSession(DocumentContext ctx)
-			: base(ctx, (int)SyntaxKind.OpenBracketToken, (int)SyntaxKind.CloseBracketToken, ')')
+			: base(ctx, (int)SyntaxKind.OpenBracketToken, (int)SyntaxKind.CloseBracketToken, ']')
 		{
 		}
 	}
