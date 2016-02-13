@@ -2734,7 +2734,8 @@ namespace Mono.TextEditor
 				!this.HideSelection && 
 				textEditor.IsSomethingSelected && 
 				textEditor.SelectionMode == SelectionMode.Normal && 
-				(line.DelimiterLength > 0 && textEditor.SelectionRange.Contains (line.EndOffsetIncludingDelimiter));
+				textEditor.MainSelection.Contains (lineNr + 1, 1);
+
 			var lx = (int)position;
 			lineArea = new Cairo.Rectangle (lx,
 				lineArea.Y,
