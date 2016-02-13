@@ -19,10 +19,12 @@
         { "name":"chameleon1", "value":"#8ae234" },
         { "name":"chameleon2", "value":"#73d216" },
         { "name":"chameleon3", "value":"#4e9a06" },
+        { "name":"chameleon4", "value":"#356904" },
         { "name":"skyblue0", "value":"#92BfFf" },
         { "name":"skyblue1", "value":"#729fcf" },
         { "name":"skyblue2", "value":"#3465a4" },
         { "name":"skyblue3", "value":"#204a87" },
+        { "name":"skyblue4", "value":"#193969" },
         { "name":"plum1", "value":"#ad7fa8" },
         { "name":"plum2", "value":"#75507b" },
         { "name":"plum3", "value":"#5c3566" },
@@ -78,8 +80,8 @@
         { "name":"Quick Diff(Changed)", "color":"chameleon2" },
 
         { "name":"Brace Matching(Rectangle)", "color":"aluminium4", "secondcolor":"aluminium4" },
-        { "name":"Usages(Rectangle)", "color":"skyblue3", "secondcolor":"skyblue3", "bordercolor":"aluminium4" },
-        { "name":"Changing usages(Rectangle)", "color":"chameleon3", "secondcolor":"chameleon3", "bordercolor":"aluminium4" },
+        { "name":"Usages(Rectangle)", "color":"skyblue3", "secondcolor":"skyblue3", "bordercolor":"skyblue2" },
+        { "name":"Changing usages(Rectangle)", "color":"chameleon4", "secondcolor":"chameleon4", "bordercolor":"chameleon3" },
 
         { "name":"Breakpoint Marker", "color":"#6f3535", "bordercolor":"#6f3535" },
         { "name":"Breakpoint Marker(Disabled)", "color":"#4d4d4d", "bordercolor":"#4d4d4d" },
