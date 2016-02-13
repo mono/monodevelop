@@ -31,7 +31,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.UnitTesting
 {
-	public class SystemTestProvider: ITestProvider
+	class SystemTestProvider: ITestProvider
 	{
 		public UnitTest CreateUnitTest (WorkspaceObject entry)
 		{

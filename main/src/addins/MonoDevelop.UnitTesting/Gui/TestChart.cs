@@ -34,7 +34,7 @@ using MonoDevelop.Components.Chart;
 
 namespace MonoDevelop.UnitTesting
 {
-	public enum TestChartType {
+	enum TestChartType {
 		Results,
 		Time
 	}
@@ -61,7 +61,7 @@ namespace MonoDevelop.UnitTesting
 		}
 	}
 	
-	public class TestChart: BasicChart
+	class TestChart: BasicChart
 	{
 		Serie serieFailed;
 		Serie serieSuccess;

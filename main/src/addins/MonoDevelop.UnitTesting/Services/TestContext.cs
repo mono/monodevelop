@@ -41,7 +41,7 @@ namespace MonoDevelop.UnitTesting
 		object contextData;
 		IExecutionHandler executionContext;
 
-		public TestContext (ITestProgressMonitor monitor, TestResultsPad resultsPad, IExecutionHandler executionContext, DateTime testDate)
+		internal TestContext (ITestProgressMonitor monitor, TestResultsPad resultsPad, IExecutionHandler executionContext, DateTime testDate)
 		{
 			this.monitor = monitor;
 			if (executionContext == null)

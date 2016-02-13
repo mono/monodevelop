@@ -48,7 +48,7 @@ using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.UnitTesting
 {
-	public class TestResultsPad: PadContent, ITestProgressMonitor
+	class TestResultsPad: PadContent, ITestProgressMonitor
 	{
 		IPadWindow window;
 		VBox panel;

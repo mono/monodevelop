@@ -49,7 +49,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.UnitTesting
 {
-	public class TestPad : TreeViewPad
+	class TestPad : TreeViewPad
 	{
 		AsyncOperation runningTestOperation;
 		VPaned paned;

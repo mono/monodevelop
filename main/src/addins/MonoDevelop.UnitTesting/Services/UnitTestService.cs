@@ -41,6 +41,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using MonoDevelop.Ide.TypeSystem;
 using System.IO;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.UnitTesting
 {
@@ -81,7 +82,25 @@ namespace MonoDevelop.UnitTesting
 				// This is not a big issue anyway.
 			}
 		}
-		
+
+		public static UnitTest CurrentSelectedTest {
+			get {
+				var pad = IdeApp.Workbench.GetPad<TestPad> ();
+				pad.BringToFront ();
+				TestPad testPad = (TestPad)pad.Content;
+				ITreeNavigator nav = testPad.TreeView.GetSelectedNode ();
+				if (nav != null)
+					return nav.DataItem as UnitTest;
+				return null;
+			}
+			set {
+				var pad = IdeApp.Workbench.GetPad<TestPad> ();
+				pad.BringToFront ();
+				var content = (TestPad)pad.Content;
+				content.SelectTest (value);
+			}
+		}
+
 		public static AsyncOperation RunTest (UnitTest test, IExecutionHandler context)
 		{
 			var result = RunTest (test, context, IdeApp.Preferences.BuildBeforeRunningTests);

@@ -37,7 +37,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.UnitTesting
 {
-	public class TestNodeBuilder: TypeNodeBuilder
+	class TestNodeBuilder: TypeNodeBuilder
 	{
 		public override Type CommandHandlerType {
 			get { return typeof(TestNodeCommandHandler); }
@@ -151,18 +151,18 @@ namespace MonoDevelop.UnitTesting
 	class TestNodeCommandHandler: NodeCommandHandler
 	{
 		[CommandHandler (TestCommands.ShowTestCode)]
-		protected void OnShowTest ()
+		protected async void OnShowTest ()
 		{
 			UnitTest test = CurrentNode.DataItem as UnitTest;
 			SourceCodeLocation loc = null;
 //			UnitTestResult res = test.GetLastResult ();
 			loc = test.SourceCodeLocation;
 			if (loc != null)
-				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column);
+				await IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column);
 		}
 		
 		[CommandHandler (TestCommands.GoToFailure)]
-		protected void OnShowFailure ()
+		protected async void OnShowFailure ()
 		{
 			UnitTest test = CurrentNode.DataItem as UnitTest;
 			SourceCodeLocation loc = null;
@@ -172,7 +172,7 @@ namespace MonoDevelop.UnitTesting
 			if (loc == null)
 				loc = test.SourceCodeLocation;
 			if (loc != null)
-				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column);
+				await IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column);
 		}
 		
 		[CommandUpdateHandler (TestCommands.ShowTestCode)]
