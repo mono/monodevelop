@@ -68,7 +68,7 @@ namespace Mono.TextEditor.Tests
 		public void TestSpans ()
 		{
 			TestOutput ("/* TestMe */",
-			            "<span foreground=\"#B0B0B0\" style=\"Italic\">/*</span><span foreground=\"#B0B0B0\" style=\"Italic\"> </span><span foreground=\"#B0B0B0\" style=\"Italic\">TestMe</span><span foreground=\"#B0B0B0\" style=\"Italic\"> </span><span foreground=\"#B0B0B0\" style=\"Italic\">*/</span>");
+			            "<span foreground=\"#B0B0B0\">/* TestMe */</span>");
 		}
 		
 		[Test]
@@ -130,7 +130,7 @@ namespace Mono.TextEditor.Tests
 		public void TestBug603 ()
 		{
 			TestOutput ("///<summary>foo bar</summary>",
-			            "<span foreground=\"#C8B97B\" style=\"Italic\">///</span><span foreground=\"#C8B97B\" style=\"Italic\">&lt;</span><span foreground=\"#C8B97B\" style=\"Italic\">summary</span><span foreground=\"#C8B97B\" style=\"Italic\">&gt;</span><span foreground=\"#97B488\" style=\"Italic\">foo bar</span><span foreground=\"#C8B97B\" style=\"Italic\">&lt;</span><span foreground=\"#C8B97B\" style=\"Italic\">/</span><span foreground=\"#C8B97B\" style=\"Italic\">summary</span><span foreground=\"#C8B97B\" style=\"Italic\">&gt;</span>");
+			            "<span foreground=\"#C8B97B\">///&lt;summary&gt;</span><span foreground=\"#97B488\">foo bar</span><span foreground=\"#C8B97B\">&lt;/summary&gt;</span>");
 		}
 
 		[Test]
