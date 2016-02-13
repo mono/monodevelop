@@ -1,6 +1,7 @@
 ﻿namespace MonoDevelop.FSharp
 
 open System
+open System.Threading.Tasks
 open MonoDevelop
 open MonoDevelop.Core.Text
 open MonoDevelop.Ide.Editor
@@ -15,8 +16,11 @@ type FSharpBraceMatcher() =
         FileService.supportedFileName (editor.FileName.ToString())
 
     override x.GetMatchingBracesAsync (editor, context, caretOffset, cancellationToken) =
-        let offset = Math.Min(caretOffset, editor.Text.Length - 1)
-        match editor.GetCharAt(offset) with
+        if caretOffset = -1 || caretOffset >= editor.Length then
+            Task.FromResult(Nullable())
+        else
+
+        match editor.GetCharAt(caretOffset) with
         | '(' | ')' ->
             match context.TryGetAst() with
             | Some _ast -> 
@@ -31,9 +35,9 @@ type FSharpBraceMatcher() =
                                           let startOffset = getOffset startRange
                                           let endOffset = getOffset endRange
                                           match (startOffset, endOffset) with
-                                          | (startOffset, endOffset) when startOffset = offset 
+                                          | (startOffset, endOffset) when startOffset = caretOffset 
                                               -> Some (startOffset, endOffset, true)
-                                          | (startOffset, endOffset) when endOffset = offset
+                                          | (startOffset, endOffset) when endOffset = caretOffset
                                               -> Some (startOffset, endOffset, false)
                                           | _ -> None)
                                |> Seq.tryHead
