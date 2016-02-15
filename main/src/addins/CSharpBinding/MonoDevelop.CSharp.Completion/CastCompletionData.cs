@@ -73,5 +73,10 @@ namespace MonoDevelop.CSharp.Completion
 				editor.ReplaceText (span.Start, span.Length, "((" + type + ")" + nodeToCast + ")");
 			}
 		}
+
+		public override bool IsOverload (CompletionData other)
+		{
+			return false;
+		}
 	}
 }

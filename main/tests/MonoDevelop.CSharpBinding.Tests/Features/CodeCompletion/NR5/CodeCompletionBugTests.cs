@@ -86,6 +86,11 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 				{
 					this.DeclarationBegin = declarationBegin;
 				}
+
+				public override bool IsOverload (CompletionData other)
+				{
+					return false;
+				}
 			}
 
 			CompletionData ICompletionDataFactory.CreateFormatItemCompletionData (ICompletionDataKeyHandler keyHandler, string format, string description, object example)
