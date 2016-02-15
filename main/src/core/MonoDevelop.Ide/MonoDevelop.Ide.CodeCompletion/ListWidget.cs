@@ -46,8 +46,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 	public class ListWidget : Gtk.DrawingArea
 	{
 		int listWidth = minSize;
-		const int minSize = 300;
-		const int maxListWidth = 600;
+		const int minSize = 400;
+		const int maxListWidth = 800;
 		const int rows = 10;
 		Pango.Layout layout, categoryLayout, noMatchLayout;
 		ListWindow win;
