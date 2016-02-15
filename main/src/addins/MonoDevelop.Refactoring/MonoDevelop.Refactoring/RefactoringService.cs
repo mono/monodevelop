@@ -111,7 +111,7 @@ namespace MonoDevelop.Refactoring
 		{
 			if (symbol.Locations.Any (loc => loc.IsInSource)) { // all locals are in source.
 				await Runtime.RunInMainThread (delegate {
-					IdeApp.ProjectOperations.JumpToDeclaration (symbol);
+					IdeApp.ProjectOperations.JumpToDeclaration (symbol, hintProject);
 				});
 				return;
 			}
