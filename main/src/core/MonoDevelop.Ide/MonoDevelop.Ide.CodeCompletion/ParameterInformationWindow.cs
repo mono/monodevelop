@@ -136,6 +136,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		int lastParam = -2;
 		TooltipInformation currentTooltipInformation;
+		ParameterHintingResult lastProvider;
 		CancellationTokenSource cancellationTokenSource;
 
 		public async void ShowParameterInfo (ParameterHintingResult provider, int overload, int _currentParam, int maxSize)
@@ -146,9 +147,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var currentParam = System.Math.Min (_currentParam, numParams - 1);
 			if (numParams > 0 && currentParam < 0)
 				currentParam = 0;
-			if (lastParam == currentParam && (currentTooltipInformation != null)) {
+			if (lastParam == currentParam && (currentTooltipInformation != null) && lastProvider == provider) {
 				return;
 			}
+			lastProvider = provider;
 
 			lastParam = currentParam;
 			var parameterHintingData = (ParameterHintingData)provider [overload];
