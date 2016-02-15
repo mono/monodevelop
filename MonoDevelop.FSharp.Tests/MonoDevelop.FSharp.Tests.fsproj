@@ -96,9 +96,9 @@
     <Reference Include="MonoDevelop.Projects.Formats.MSBuild">
       <HintPath>..\..\..\build\bin\MonoDevelop.Projects.Formats.MSBuild.dll</HintPath>
     </Reference>
-    <Reference Include="MonoDevelop.NUnit">
+    <Reference Include="MonoDevelop.UnitTesting">
       <Private>False</Private>
-      <HintPath>..\..\..\build\AddIns\NUnit\MonoDevelop.NUnit.dll</HintPath>
+      <HintPath>..\..\..\build\AddIns\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.dll</HintPath>
     </Reference>
     <Reference Include="GuiUnit">
       <HintPath>..\..\guiunit\bin\net_4_5\GuiUnit.exe</HintPath>
