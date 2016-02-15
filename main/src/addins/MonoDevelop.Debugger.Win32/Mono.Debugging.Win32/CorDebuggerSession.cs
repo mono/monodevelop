@@ -83,11 +83,10 @@ namespace Mono.Debugging.Win32
 
 		public override void Dispose ( )
 		{
-			MtaThread.Run (delegate
-			{
+			MtaThread.Run (() => {
 				TerminateDebugger ();
-				ObjectAdapter.Dispose ();
 			});
+			ObjectAdapter.Dispose();
 
 			base.Dispose ();
 
@@ -132,15 +131,17 @@ namespace Mono.Debugging.Win32
 
 				terminated = true;
 
-				ThreadPool.QueueUserWorkItem (delegate
-				{
-					if (process != null) {
-						// Process already running. Stop it. In the ProcessExited event the
-						// debugger engine will be terminated
-						process.Stop (4000);
+				if (process != null) {
+					// Process already running. Stop it. In the ProcessExited event the
+					// debugger engine will be terminated
+					process.Stop (4000);
+					if (attaching) {
+						process.Detach ();
+					}
+					else {
 						process.Terminate (1);
 					}
-				});
+				}
 			}
 		}
 
@@ -701,8 +702,7 @@ namespace Mono.Debugging.Win32
 		{
 			MtaThread.Run (delegate
 			{
-				process.Stop(1000);
-				process.Detach();
+				TerminateDebugger ();
 			});
 		}
 
