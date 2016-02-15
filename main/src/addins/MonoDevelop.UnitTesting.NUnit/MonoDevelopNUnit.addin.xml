@@ -9,10 +9,6 @@
 
 	<!-- Extensions -->
 	
-	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
-		<Class class = "MonoDevelop.UnitTesting.NUnit.InitCommand"/>
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/UnitTesting/TestProviders">
 		<Class id="SystemTestProvider" class="MonoDevelop.UnitTesting.NUnit.SystemTestProvider" />
 	</Extension>

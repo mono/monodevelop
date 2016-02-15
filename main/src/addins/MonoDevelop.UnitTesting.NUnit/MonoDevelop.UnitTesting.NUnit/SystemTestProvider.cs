@@ -27,12 +27,19 @@
 //
 
 using System;
+using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.UnitTesting.NUnit
 {
 	public class SystemTestProvider: ITestProvider
 	{
+		public SystemTestProvider ()
+		{
+			IdeApp.Workspace.ReferenceAddedToProject += OnReferenceChanged;
+			IdeApp.Workspace.ReferenceRemovedFromProject += OnReferenceChanged;
+		}
+
 		public UnitTest CreateUnitTest (WorkspaceObject entry)
 		{
 			UnitTest test = null;
@@ -47,6 +54,18 @@ namespace MonoDevelop.UnitTesting.NUnit
 			}
 			
 			return test;
+		}
+
+		void OnReferenceChanged (object s, ProjectReferenceEventArgs args)
+		{
+			if (NUnitProjectTestSuite.IsNUnitReference (args.ProjectReference))
+				UnitTestService.ReloadTests ();
+		}
+
+		public void Dispose ()
+		{
+			IdeApp.Workspace.ReferenceAddedToProject -= OnReferenceChanged;
+			IdeApp.Workspace.ReferenceRemovedFromProject -= OnReferenceChanged;
 		}
 	}
 }

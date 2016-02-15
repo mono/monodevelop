@@ -52,6 +52,10 @@ namespace MonoDevelop.UnitTesting
 			
 			return test;
 		}
+
+		public void Dispose ()
+		{
+		}
 	}
 }
 

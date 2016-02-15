@@ -163,7 +163,6 @@
     <Compile Include="MonoDevelop.UnitTesting.NUnit\TcpTestListener.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="MonoDevelop.UnitTesting.NUnit\InitCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="templates\" />

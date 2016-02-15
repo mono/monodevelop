@@ -32,7 +32,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.UnitTesting
 {
-	public interface ITestProvider
+	public interface ITestProvider: IDisposable
 	{
 		UnitTest CreateUnitTest (WorkspaceObject entry);
 	}

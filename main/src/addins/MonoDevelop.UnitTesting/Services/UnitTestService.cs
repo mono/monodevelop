@@ -76,10 +76,7 @@ namespace MonoDevelop.UnitTesting
 			else {
 				ITestProvider provider = args.ExtensionObject as ITestProvider;
 				providers.Remove (provider);
-				
-				// The types returned by provider.GetOptionTypes should probably be unregistered
-				// from the DataContext, but DataContext does not allow unregisterig.
-				// This is not a big issue anyway.
+				provider.Dispose ();
 			}
 		}
 
@@ -165,12 +162,24 @@ namespace MonoDevelop.UnitTesting
 				resultsPad.Sticky = false;
 			}
 		}
-		
+
+		/// <summary>
+		/// For each node already in the test tree, it checks if there is any change. If there is, it reloads the test.
+		/// </summary>
 		public static Task RefreshTests (CancellationToken ct)
 		{
 			return Task.WhenAll (RootTests.Select (t => t.Refresh (ct)));
 		}
-		
+
+		/// <summary>
+		/// Reloads the test tree, creating new test branches if necessary
+		/// </summary>
+		public static void ReloadTests ()
+		{
+			foreach (var t in RootTests.OfType<UnitTestGroup> ())
+				t.UpdateTests ();
+		}
+
 		public static UnitTest SearchTest (string fullName)
 		{
 			foreach (UnitTest t in RootTests) {

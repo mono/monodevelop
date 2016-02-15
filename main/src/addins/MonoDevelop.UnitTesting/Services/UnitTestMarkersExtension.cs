@@ -28,7 +28,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.UnitTesting
 {
-	class UnitTestMarkersExtension
+	class UnitTestMarkersExtension: ExtensionNode, IUnitTestMarkers
 	{
 		[NodeAttribute ("testMethodAttributeMarker")]
 		public string TestMethodAttributeMarker { get; set; }
