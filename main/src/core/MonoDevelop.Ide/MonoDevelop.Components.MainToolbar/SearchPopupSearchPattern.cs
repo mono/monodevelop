@@ -67,7 +67,7 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		static readonly Regex githubRegex = new Regex ("((?<tag>.*):)?(?<pattern>[^#]+)#L(?<line>\\d+)$", RegexOptions.Compiled); // for example: ExceptionCaughtDialog.cs#L510
-		static readonly Regex lineRegex = new Regex ("((?<tag>[^:]*):)?(?<pattern>[^0-:][^:]*):[a-zA-Z]*\\s*(?<line>\\d+)$", RegexOptions.Compiled); // for example: ExceptionCaughtDialog.cs:line 510
+		static readonly Regex lineRegex = new Regex ("((?<tag>[^:]*\\S)\\s*:)?\\s*(?<pattern>[^0-:][^:\\s]*)\\s*:[a-zA-Z]*\\s*(?<line>\\d+)$", RegexOptions.Compiled); // for example: ExceptionCaughtDialog.cs:line 510
 
 		public static SearchPopupSearchPattern ParsePattern (string searchPattern)
 		{

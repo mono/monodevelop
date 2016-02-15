@@ -157,6 +157,14 @@ namespace MonoDevelop.Ide.Gui
 			var pattern = SearchPopupSearchPattern.ParsePattern ("id:json");
 			Assert.AreEqual ("id:json", pattern.UnparsedPattern);
 		}
+
+		[Test]
+		public void TestIgnoreSpaces ()
+		{
+			var pattern = SearchPopupSearchPattern.ParsePattern ("foo : bar : 12");
+			Assert.AreEqual (new SearchPopupSearchPattern ("foo", "bar", 12), pattern);
+		}
+
 	}
 }
 
