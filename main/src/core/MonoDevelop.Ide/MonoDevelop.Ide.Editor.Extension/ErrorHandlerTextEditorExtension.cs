@@ -74,10 +74,15 @@ namespace MonoDevelop.Ide.Editor.Extension
 			CancelDocumentParsedUpdate ();
 			var token = src.Token;
 			var caretLocation = Editor.CaretLocation;
+			var parsedDocument = DocumentContext.ParsedDocument;
 			Task.Run (async () => {
 				try {
-					await UpdateErrorUndelines (DocumentContext, DocumentContext.ParsedDocument, token);
-					await UpdateQuickTasks (DocumentContext, DocumentContext.ParsedDocument, token);
+					var ctx = DocumentContext;
+					if (ctx == null)
+						return;
+					await UpdateErrorUndelines (ctx, parsedDocument, token);
+					token.ThrowIfCancellationRequested ();
+					await UpdateQuickTasks (ctx, parsedDocument, token);
 				} catch (OperationCanceledException) {
 					// ignore
 				}
