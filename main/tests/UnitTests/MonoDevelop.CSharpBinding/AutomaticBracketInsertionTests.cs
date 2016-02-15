@@ -346,7 +346,7 @@ class MyClass
 		$
 	}
 }", "MyClass", "FooBar", (Gdk.Key)'.');
-			Assert.AreEqual ("FooBar().|", completion); 
+			Assert.AreEqual ("FooBar()", completion); 
 		}
 
 
@@ -418,7 +418,7 @@ class MyClass
 		$
 	}
 }", "MyClass", "FooBar", (Gdk.Key)'.');
-			Assert.AreEqual ("FooBar<>().|", completion); 
+			Assert.AreEqual ("FooBar<>()", completion); 
 		}
 
 		[Test]

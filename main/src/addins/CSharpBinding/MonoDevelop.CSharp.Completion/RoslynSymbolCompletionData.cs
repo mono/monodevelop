@@ -250,9 +250,9 @@ namespace MonoDevelop.CSharp.Completion
 						} else {
 							if (descriptor.KeyChar == '.') {
 								if (RequireGenerics (method)) {
-									insertionText += addSpace ? "<> ().|" : "<>().|";
+									insertionText += addSpace ? "<> ()" : "<>()";
 								} else {
-									insertionText += addSpace ? " ().|" : "().|";
+									insertionText += addSpace ? " ()" : "()";
 								}
 								skipChars = 0;
 							} else {
