@@ -109,7 +109,7 @@ namespace MonoDevelop.VersionControl
 			{
 				return false;
 			}
-			return a.ToString () == b.ToString ();
+			return a.Equals(b);
 		}
 
 		public static bool operator !=(Revision a, Revision b)
