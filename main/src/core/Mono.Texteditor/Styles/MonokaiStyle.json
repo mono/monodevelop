@@ -21,6 +21,9 @@
         { "name":"chameleon1", "value":"#8ae234" },
         { "name":"chameleon2", "value":"#73d216" },
         { "name":"chameleon3", "value":"#4e9a06" }
+        { "name":"orange1", "value":"#fcaf3e" },
+        { "name":"orange2", "value":"#f57900" },
+        { "name":"plum1", "value":"#ad7fa8" }
     ],
 
     "colors":[
@@ -119,6 +122,12 @@
         { "name":"String", "fore":"monokai-string" },
         { "name":"String(Escape)", "fore":"#A6AB34" },
         { "name":"String(C# @ Verbatim)", "fore":"monokai-string" },
+    	
+    	{ "name":"String(Regex Set Constructs)", "fore":"chameleon2" },
+        { "name":"String(Regex Character Class)", "fore":"skyblue1" },
+        { "name":"String(Regex Grouping Constructs)", "fore":"plum1" },
+        { "name":"String(Regex Escape Character)", "fore":"orange2" },
+        { "name":"String(Regex Alt Escape Character)", "fore":"orange1" },
 
         { "name":"Number", "fore":"monokai-constant" },
 

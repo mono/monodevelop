@@ -155,6 +155,11 @@
         { "name":"String", "fore":"StringVim" },
         { "name":"String(Escape)", "fore":"StringVim" },
         { "name":"String(C# @ Verbatim)", "fore":"StringVim" },
+    	{ "name":"String(Regex Set Constructs)", "fore":"chameleon2" },
+        { "name":"String(Regex Character Class)", "fore":"skyblue1" },
+        { "name":"String(Regex Grouping Constructs)", "fore":"plum1" },
+        { "name":"String(Regex Escape Character)", "fore":"orange2" },
+        { "name":"String(Regex Alt Escape Character)", "fore":"orange1" },
 
         { "name":"Number", "fore":"NumberVim" },
 

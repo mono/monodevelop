@@ -120,6 +120,12 @@
         { "name":"String", "fore":"cyan" },
         { "name":"String(Escape)", "fore":"lightcyan" },
         { "name":"String(C# @ Verbatim)", "fore":"cyan" },
+    	{ "name":"String(Regex Set Constructs)", "fore":"yellow" },
+        { "name":"String(Regex Character Class)", "fore":"orange" },
+        { "name":"String(Regex Grouping Constructs)", "fore":"magenta" },
+        { "name":"String(Regex Escape Character)", "fore":"cyan" },
+        { "name":"String(Regex Alt Escape Character)", "fore":"green" },
+
 
         { "name":"Number", "fore":"violet" },
 
