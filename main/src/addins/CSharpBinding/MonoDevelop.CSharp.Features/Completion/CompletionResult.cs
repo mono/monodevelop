@@ -63,6 +63,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			set;
 		}
 
+		internal SyntaxContext SyntaxContext;
+
 		public readonly List<IMethodSymbol> PossibleDelegates = new List<IMethodSymbol>();
 
 		#region IReadOnlyList<ICompletionData> implemenation
@@ -99,7 +101,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		{
 			var displayText = completionData.DisplayText;
 			foreach (var od in data) {
-				if (od.DisplayText == displayText) {
+				if (od.IsOverload (completionData) && completionData.IsOverload (od)) {
 					od.AddOverload (completionData);
 					return;
 				}

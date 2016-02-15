@@ -26,9 +26,9 @@
 
 using System;
 using System.Linq;
+using MonoDevelop.Core;
 using System.Collections.Generic;
 
-using MonoDevelop.Core;
 using MonoDevelop.Debugger;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.CodeGeneration;
@@ -55,10 +55,11 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MonoDevelop.Ide;
 using Mono.Addins;
 using System.Reflection;
-using System.Runtime.ExceptionServices;
+using System.Runtime.ExceptionServices;   
 using MonoDevelop.Ide.TypeSystem;
 using RefactoringEssentials;
 using MonoDevelop.CSharp.Diagnostics.InconsistentNaming;
+using RefactoringEssentials.CSharp.Diagnostics;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -363,7 +364,7 @@ namespace MonoDevelop.CSharp.Completion
 		}
 
 
-		void AddImportCompletionData (CSharpCompletionDataList result, SemanticModel semanticModel, int position, CancellationToken cancellationToken = default(CancellationToken))
+		void AddImportCompletionData (CompletionResult completionResult, CSharpCompletionDataList result, RoslynCodeCompletionFactory factory, SemanticModel semanticModel, int position, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (result.Count == 0)
 				return;
@@ -372,14 +373,28 @@ namespace MonoDevelop.CSharp.Completion
 			var syntaxTree = root.SyntaxTree;
 
 			if (syntaxTree.IsInNonUserCode(position, cancellationToken) || 
-				syntaxTree.IsRightOfDotOrArrowOrColonColon(position, cancellationToken) || 
 				syntaxTree.GetContainingTypeOrEnumDeclaration(position, cancellationToken) is EnumDeclarationSyntax ||
 				syntaxTree.IsPreProcessorDirectiveContext(position, cancellationToken))
 				return;
 
+			var extensionMethodImport =  syntaxTree.IsRightOfDotOrArrowOrColonColon (position, cancellationToken);
+			ITypeSymbol extensionType = null;
+
+
+			if (extensionMethodImport) {
+				var memberAccess = completionResult.SyntaxContext.TargetToken.Parent as MemberAccessExpressionSyntax;
+				if (memberAccess != null) {
+					extensionType = completionResult.SyntaxContext.SemanticModel.GetTypeInfo (memberAccess.Expression).Type;
+					if (extensionType == null) {
+						return;
+					}
+				}
+			}
+
 			var tokenLeftOfPosition = syntaxTree.FindTokenOnLeftOfPosition (position, cancellationToken);
 
-			if (syntaxTree.IsGlobalStatementContext (position, cancellationToken) ||
+			if (extensionMethodImport ||
+			    syntaxTree.IsGlobalStatementContext (position, cancellationToken) ||
 			    syntaxTree.IsExpressionContext (position, tokenLeftOfPosition, true, cancellationToken) ||
 			    syntaxTree.IsStatementContext (position, tokenLeftOfPosition, cancellationToken) ||
 			    syntaxTree.IsTypeContext (position, cancellationToken) ||
@@ -396,7 +411,7 @@ namespace MonoDevelop.CSharp.Completion
 				var stack = new Stack<INamespaceOrTypeSymbol>();
 				foreach (var member in semanticModel.Compilation.GlobalNamespace.GetNamespaceMembers ())
 					stack.Push (member);
-
+				var extMethodDict = extensionMethodImport ? new Dictionary<INamespaceSymbol, List<ImportSymbolCompletionData>> () : null;
 				while (stack.Count > 0) {
 					if (cancellationToken.IsCancellationRequested)
 						break;
@@ -406,7 +421,7 @@ namespace MonoDevelop.CSharp.Completion
 						var currentNsName = currentNs.GetFullName ();
 						if (usedNamespaces.Contains (currentNsName) ||
 							enclosingNamespaceName == currentNsName ||
-							(enclosingNamespaceName.StartsWith (currentNsName) &&
+							(enclosingNamespaceName.StartsWith (currentNsName, StringComparison.Ordinal) &&
 							enclosingNamespaceName [currentNsName.Length] == '.')) {
 							foreach (var member in currentNs.GetNamespaceMembers ())
 								stack.Push (member);
@@ -424,7 +439,27 @@ namespace MonoDevelop.CSharp.Completion
 							if (!type.IsAccessibleWithin (semanticModel.Compilation.Assembly))
 								continue;
 						}
-						result.Add (new ImportSymbolCompletionData (this, type, false));
+						if (extensionMethodImport && type.MightContainExtensionMethods) {
+							foreach (var extMethod in type.GetMembers ().OfType<IMethodSymbol> ().Where (method => method.IsExtensionMethod)) {
+								var reducedMethod = extMethod.ReduceExtensionMethod (extensionType);
+								if (reducedMethod != null) {
+									List<ImportSymbolCompletionData> importSymbolList;
+									if (!extMethodDict.TryGetValue (type.ContainingNamespace, out importSymbolList)) {
+										extMethodDict.Add (type.ContainingNamespace, importSymbolList = new List<ImportSymbolCompletionData> ());
+									}
+									var newData = new ImportSymbolCompletionData (this, factory, reducedMethod, false);
+									var existingItem = importSymbolList.FirstOrDefault (data => data.Symbol.Name == extMethod.Name);
+									if (existingItem != null) {
+										existingItem.AddOverload (newData);
+									} else {
+										result.Add (newData);
+										importSymbolList.Add (newData);
+									}
+								}
+							}
+						} else {
+							result.Add (new ImportSymbolCompletionData (this, factory, type, false));
+						}
 					}
 				}
 			}
@@ -467,8 +502,8 @@ namespace MonoDevelop.CSharp.Completion
 						list.Add ((Ide.CodeCompletion.CompletionData)symbol); 
 					}
 
-					if (forceSymbolCompletion || (IdeApp.Preferences.AddImportedItemsToCompletionList.Value && list.OfType<RoslynSymbolCompletionData> ().Any (cd => cd.Symbol is ITypeSymbol))) {
-						AddImportCompletionData (list, semanticModel, offset, token);
+					if (forceSymbolCompletion || (IdeApp.Preferences.AddImportedItemsToCompletionList.Value && list.OfType<RoslynSymbolCompletionData> ().Any (cd => cd.Symbol is ITypeSymbol || cd.Symbol is IMethodSymbol))) {
+						AddImportCompletionData (completionResult, list, roslynCodeCompletionFactory, semanticModel, offset, token);
 					}
 
 					list.AutoCompleteEmptyMatch = completionResult.AutoCompleteEmptyMatch;

@@ -450,6 +450,17 @@ namespace MonoDevelop.CSharp.Completion
 		}
 
 
+		public override bool IsOverload (CompletionData other)
+		{
+			var os = other as RoslynSymbolCompletionData;
+			if (os != null) {
+				return Symbol.Kind == os.Symbol.Kind && 
+					   Symbol.Name == os.Symbol.Name;
+			}
+
+			return false;
+		}
+
 		//		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IType type, bool smartWrap, bool createFooter = false)
 		//		{
 		//			var tooltipInfo = new TooltipInformation ();
