@@ -112,6 +112,6 @@ type SemanticHighlighting() =
     [<TestCase("let add = §(§+)", "Punctuation(Brackets)")>]
     [<TestCase("let §simpleBinding§ = 1", "User Field Declaration")>]
     [<TestCase("let simpleBinding = §1§", "Number")>]
+    [<TestCase("§type§ x() = ()", "Keyword(Iteration)")>]
     member x.Semantic_highlighting(source, expectedStyle) =
-        printf "%s" source
         getStyle source |> should equal expectedStyle
