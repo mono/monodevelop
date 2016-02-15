@@ -130,7 +130,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 				currentMethodGroup = actualMethodGroup;
 
 			int pos = await ext.GetCurrentParameterIndex (currentMethodGroup.MethodProvider.StartOffset, token);
-			Console.WriteLine ("pos :" + pos);
 			if (pos == -1) {
 				if (actualMethodGroup.MethodProvider == null) {
 					currentMethodGroup = null;

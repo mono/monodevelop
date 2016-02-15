@@ -53,6 +53,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		
 		public async Task<ParameterHintingResult> GetParameterDataProviderAsync(Document document, SemanticModel semanticModel, int position, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (position == 0)
+				return ParameterHintingResult.Empty;
 			var tree = await document.GetSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
 			var tokenLeftOfPosition = tree.FindTokenOnLeftOfPosition (position, cancellationToken);
 			if (tokenLeftOfPosition.IsKind (SyntaxKind.LessThanToken)) {
@@ -62,6 +64,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		
 			var context = SyntaxContext.Create(workspace, document, semanticModel, position, cancellationToken);
 			var targetParent = context.TargetToken.Parent;
+			if (context.TargetToken.IsKind (SyntaxKind.IdentifierName)) {
+				targetParent = targetParent.Parent;
+			}
+			
 			if (context.TargetToken.IsKind (SyntaxKind.CloseParenToken) || context.TargetToken.IsKind (SyntaxKind.CloseBracketToken) || context.TargetToken.IsKind (SyntaxKind.GreaterThanToken))
 				targetParent = targetParent.Parent;
 			var node = targetParent.Parent;
@@ -78,8 +84,15 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				}
 				return ParameterHintingResult.Empty;
 			}
-			if (node.IsKind (SyntaxKind.Argument))
+			if (node.IsKind (SyntaxKind.Argument)) {
 				node = node.Parent.Parent;
+			} else {
+				if (!(targetParent is BaseArgumentListSyntax) && !(targetParent is AttributeArgumentListSyntax) && !(targetParent is InitializerExpressionSyntax)) {
+					if (position == targetParent.Span.Start)
+						return ParameterHintingResult.Empty;
+					return await GetParameterDataProviderAsync (document, semanticModel, targetParent.Span.Start, cancellationToken).ConfigureAwait (false);
+				}
+			}
 			switch (node.Kind()) {
 				case SyntaxKind.Attribute:
 					return HandleAttribute(semanticModel, node, cancellationToken);					
