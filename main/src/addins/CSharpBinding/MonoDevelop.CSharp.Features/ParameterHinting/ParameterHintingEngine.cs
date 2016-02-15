@@ -55,7 +55,6 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		{
 			var tree = await document.GetSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
 			var tokenLeftOfPosition = tree.FindTokenOnLeftOfPosition (position, cancellationToken);
-
 			if (tokenLeftOfPosition.IsKind (SyntaxKind.LessThanToken)) {
 				var startToken = tokenLeftOfPosition.GetPreviousToken();
 				return HandleTypeParameterCase(semanticModel, startToken.Parent, cancellationToken);
@@ -63,7 +62,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		
 			var context = SyntaxContext.Create(workspace, document, semanticModel, position, cancellationToken);
 			var targetParent = context.TargetToken.Parent;
+			if (context.TargetToken.IsKind (SyntaxKind.CloseParenToken) || context.TargetToken.IsKind (SyntaxKind.CloseBracketToken) || context.TargetToken.IsKind (SyntaxKind.GreaterThanToken))
+				targetParent = targetParent.Parent;
 			var node = targetParent.Parent;
+
 			// case: identifier<arg1,|
 			if (node == null) {
 				if (context.LeftToken.Kind() == SyntaxKind.CommaToken) {
