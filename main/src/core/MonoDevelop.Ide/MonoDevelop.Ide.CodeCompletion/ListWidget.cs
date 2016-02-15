@@ -648,15 +648,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 			} else {
 				categories.Insert (0, result);
 			}
+
 			return result;
 		}
-		
+
 		string oldCompletionString = null;
 		public void FilterWords ()
 		{
 			var newCategories = new List<Category> ();
 			var matcher = CompletionMatcher.CreateCompletionMatcher (CompletionString);
-			if (oldCompletionString == null || !CompletionString.StartsWith (oldCompletionString)) {
+			if (oldCompletionString == null || !CompletionString.StartsWith (oldCompletionString, StringComparison.Ordinal)) {
 				filteredItems.Clear ();
 				for (int newSelection = 0; newSelection < win.DataProvider.ItemCount; newSelection++) {
 					if (string.IsNullOrEmpty (CompletionString) || matcher.IsMatch (win.DataProvider.GetText (newSelection))) {
@@ -676,10 +677,53 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 				}
 			}
-
 			filteredItems.Sort (delegate (int left, int right) {
-				return win.DataProvider.CompareTo (left, right);
+				if (string.IsNullOrEmpty (CompletionString))
+					return win.DataProvider.CompareTo (left, right);
+				int rank1, rank2;
+				var data1 = win.DataProvider.GetCompletionData (left);
+				var data2 = win.DataProvider.GetCompletionData (right);
+				if (data1 == null || data2 == null)
+					return 0;
+				if (data1.PriorityGroup != data2.PriorityGroup)
+					return data2.PriorityGroup.CompareTo (data1.PriorityGroup);
+
+				if (!matcher.CalcMatchRank (data1.CompletionText, out rank1))
+					return 0;
+				if (!matcher.CalcMatchRank (data2.CompletionText, out rank2))
+					return 0;
+
+				return rank2.CompareTo (rank1);
 			});
+
+			// put the item from a lower priority group with the highest match rank always to position #2
+			if (filteredItems.Count > 0) {
+				int idx = 0;
+				int rank;
+				var data = win.DataProvider.GetCompletionData (filteredItems [0]);
+				int firstGrp = data.PriorityGroup;
+				matcher.CalcMatchRank (data.CompletionText, out rank);
+				for (int i = 1; i < filteredItems.Count; i++) {
+					var curData = win.DataProvider.GetCompletionData (filteredItems [i]);
+					if (curData.PriorityGroup == firstGrp)
+						continue;
+					int curRank;
+					matcher.CalcMatchRank (curData.CompletionText, out curRank);
+					if (curRank > rank) {
+						idx = i;
+						rank = curRank;
+					}
+				}
+
+				if (idx != 0) {
+					var tmp = filteredItems [idx];
+					for (int i = idx; i > 1; i--) {
+						filteredItems [i] = filteredItems [i - 1];
+					}
+					filteredItems [1] = tmp;
+				}
+			}
+
 			newCategories.Sort (delegate (Category left, Category right) {
 				return left.CompletionCategory != null ? left.CompletionCategory.CompareTo (right.CompletionCategory) : -1;
 			});
