@@ -34,6 +34,10 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.NR6
 	[TestFixture]
 	public class CastCompletionContextHandlerTests: CompletionTestBase
 	{
+		internal override CompletionContextHandler CreateContextHandler ()
+		{
+			return new CastCompletionContextHandler ();
+		}
 		[Test]
 		public void TestSimple()
 		{
@@ -55,5 +59,39 @@ class FooBar
 }
 ", "Bar");
 		}
+
+
+
+		[Test]
+		public void TestNoUpcastAvailable()
+		{
+			VerifyNoItemsExist (@"
+class A 
+{
+	public int Foo;
+	public void Bar (){}
+	public string FooBar { get ; set; }
+	public event FooEvt;
+}
+
+class B : A
+{
+
+}
+
+class TestClass
+{
+	public TestClass(A a)
+	{
+		if (a is B) {
+			a.$$
+		}
+}
+}	");
+		}
+
+
+
+
 	}
 }

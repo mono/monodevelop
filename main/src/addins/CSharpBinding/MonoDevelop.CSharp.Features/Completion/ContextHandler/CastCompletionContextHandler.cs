@@ -73,7 +73,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				if (leftSymbol.Symbol == symbolInfo.Symbol) {
 					var type = model.GetTypeInfo (isExpr.Right).Type;
 					if (type != null) {
-						Analyze (engine, ma.Expression, type, within, list, addedSymbols, cancellationToken);
+						Analyze (engine, ma.Expression, type, model.GetTypeInfo (isExpr.Left).Type, within, list, addedSymbols, cancellationToken);
 					}
 				}
 			}
@@ -81,11 +81,11 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return Task.FromResult ((IEnumerable<CompletionData>)list);
 		}
 
-		void Analyze (CompletionEngine engine, SyntaxNode node, ITypeSymbol type, ISymbol within, List<CompletionData> list, HashSet<string> addedSymbols, CancellationToken cancellationToken)
+		void Analyze (CompletionEngine engine, SyntaxNode node, ITypeSymbol type, ITypeSymbol stopAt, ISymbol within, List<CompletionData> list, HashSet<string> addedSymbols, CancellationToken cancellationToken)
 		{
 			var startType = type;
 
-			while (type != null && type.SpecialType != SpecialType.System_Object) {
+			while (type != null && type.SpecialType != SpecialType.System_Object && type != stopAt) {
 				foreach (var member in type.GetMembers ()) {
 					cancellationToken.ThrowIfCancellationRequested ();
 					if (member.IsImplicitlyDeclared || member.IsStatic)
