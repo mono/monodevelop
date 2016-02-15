@@ -66,8 +66,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		static CompletionWindowManager ()
 		{
-			if (IdeApp.Workbench != null)
+			if (IdeApp.Workbench != null) {
 				IdeApp.Workbench.RootWindow.Destroyed += (sender, e) => DestroyWindow ();
+				IdeApp.Workbench.RootWindow.WindowStateEvent += (o, args) => HideWindow ();
+			}
 			
 			IdeApp.Preferences.ForceSuggestionMode.Changed += (s,a) => {
 				if (wnd != null)
