@@ -87,6 +87,17 @@ namespace MonoDevelop.CSharp.Completion
 			Symbol = symbol;
 			if (IsObsolete (Symbol))
 				DisplayFlags |= DisplayFlags.Obsolete;
+			rightSideDescription = new Lazy<string> (delegate {
+				var returnType = symbol.GetReturnType ();
+				if (returnType == null)
+					return null;
+				try {
+					return "<span size='x-small'>" + SafeMinimalDisplayString (returnType, factory.SemanticModel, ext.Editor.CaretOffset) + "</span>";
+				} catch (Exception e) {
+					LoggingService.LogError ("Format error.", e);
+				}
+				return null;
+			});
 		}
 
 		static readonly SymbolDisplayFormat nameOnlyFormat =
@@ -108,6 +119,13 @@ namespace MonoDevelop.CSharp.Completion
 				return text;
 			return Symbol.ToDisplayString (nameOnlyFormat);
 		}
+
+		Lazy<string> rightSideDescription;
+		public override string GetRightSideDescription (bool isSelected)
+		{
+			return rightSideDescription.Value;
+		}
+
 
 		public override Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken ctoken)
 		{
