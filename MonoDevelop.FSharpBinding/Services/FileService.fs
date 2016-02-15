@@ -57,3 +57,24 @@ type FileSystem (defaultFileSystem : IFileSystem, openDocuments: unit -> Documen
         member x.FileDelete fileName = defaultFileSystem.FileDelete fileName
         member x.AssemblyLoadFrom fileName = defaultFileSystem.AssemblyLoadFrom fileName
         member x.AssemblyLoad(assemblyName) = defaultFileSystem.AssemblyLoad assemblyName
+
+module FileService =
+    let supportedFileExtensions =
+        [".fsscript"; ".fs"; ".fsx"; ".fsi"; ".sketchfs"]
+    
+    /// Is the specified extension supported F# file?
+    let supportedFileName fileName =
+        let ext = Path.GetExtension(fileName).ToLower()
+        supportedFileExtensions
+        |> List.exists ((=) ext)
+    
+    let isInsideFSharpFile () =
+        if IdeApp.Workbench.ActiveDocument = null ||
+            IdeApp.Workbench.ActiveDocument.FileName.FileName = null then false
+        else
+            let file = IdeApp.Workbench.ActiveDocument.FileName.ToString()
+            supportedFileName (file)
+    
+    let supportedFilePath (filePath:FilePath) =
+        supportedFileName (filePath.ToString())
+
