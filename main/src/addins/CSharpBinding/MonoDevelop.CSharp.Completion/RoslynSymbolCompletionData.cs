@@ -92,7 +92,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (returnType == null)
 					return null;
 				try {
-					return "<span size='x-small'>" + SafeMinimalDisplayString (returnType, factory.SemanticModel, ext.Editor.CaretOffset) + "</span>";
+					return "<span font='Sans' size='x-small'>" + SafeMinimalDisplayString (returnType, factory.SemanticModel, ext.Editor.CaretOffset) + "</span>";
 				} catch (Exception e) {
 					LoggingService.LogError ("Format error.", e);
 				}
