@@ -380,7 +380,6 @@ namespace MonoDevelop.CSharp.Completion
 			var extensionMethodImport =  syntaxTree.IsRightOfDotOrArrowOrColonColon (position, cancellationToken);
 			ITypeSymbol extensionType = null;
 
-
 			if (extensionMethodImport) {
 				var memberAccess = completionResult.SyntaxContext.TargetToken.Parent as MemberAccessExpressionSyntax;
 				if (memberAccess != null) {
@@ -388,6 +387,8 @@ namespace MonoDevelop.CSharp.Completion
 					if (extensionType == null) {
 						return;
 					}
+				} else {
+					return;
 				}
 			}
 
@@ -439,7 +440,9 @@ namespace MonoDevelop.CSharp.Completion
 							if (!type.IsAccessibleWithin (semanticModel.Compilation.Assembly))
 								continue;
 						}
-						if (extensionMethodImport && type.MightContainExtensionMethods) {
+						if (extensionMethodImport) {
+							if (!type.MightContainExtensionMethods)
+								continue;
 							foreach (var extMethod in type.GetMembers ().OfType<IMethodSymbol> ().Where (method => method.IsExtensionMethod)) {
 								var reducedMethod = extMethod.ReduceExtensionMethod (extensionType);
 								if (reducedMethod != null) {
