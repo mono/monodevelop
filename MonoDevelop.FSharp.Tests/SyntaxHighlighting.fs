@@ -52,6 +52,7 @@ type SyntaxHighlighting() =
     [<TestCase("§(§", "Punctuation(Brackets)")>]
     [<TestCase("§<§", "Punctuation(Brackets)")>]
     [<TestCase("§[§", "Punctuation(Brackets)")>]
+    [<TestCase("§{§", "Punctuation(Brackets)")>]
     [<TestCase("do Something() |> §ignore§", "User Method Declaration")>]
     [<TestCase("let §mutable§ x = 1", "Keyword(Modifiers)")>]
     [<TestCase("let mutable §x§ = 1", "User Field Declaration")>]
@@ -64,7 +65,13 @@ type SyntaxHighlighting() =
     [<TestCase("§override§ x.Something()", "Keyword(Modifiers)")>]
     [<TestCase("member x.§``some identifier``§", "User Method Declaration")>]
     [<TestCase("let mutable §vbox4§ : Gtk.VBox = null", "User Field Declaration")>]
+    [<TestCase("§return§ x", "Keyword(Iteration)")>]
+    [<TestCase("§return!§ x", "Keyword(Iteration)")>]
+    [<TestCase("member val IndentOnTryWith = false with §get, set§", "Plain Text")>]
+    [<TestCase("| Some §funion§ -> ", "User Field Declaration")>]
+    [<TestCase("yield §sprintf§ \"%A\"", "User Method Declaration")>]
 
+    
     //[<TestCase("override x.§CanHandle$ editor", "User Method Declaration")>]
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
