@@ -92,8 +92,7 @@
 
 	
 	<Match color="Number">CSharpNumber</Match>
-	<Match color="Keyword(Iteration)">(use|yield|return|do)(!)?\b</Match>
-<!--	<Match color="Keyword(Iteration)">(let|use|yield|return|do)(!)?$</Match>-->
+	<Match color="Keyword(Iteration)" ignorecase="False">((use|yield|return|do)(!?))\b?</Match>
 
 	<!-- reserved-ident-keyword F# spec v3.0 section 3.4 -->
 	<Match color="Keyword(Other)" ignorecase="False">(atomic|break|checked|component|const|constraint|constructor|continue|eager|fixed|fori|functor|include|measure|method|mixin|object|parallel|params|process|protected|pure|recursive|sealed|tailcall|trait|virtual|volatile)[!#]?\s</Match>
@@ -116,8 +115,6 @@
 		<Word>mutable</Word>
 		<Word>rec</Word>
 	</Keywords>
-
-
 
 	<Keywords color="Keyword(Operator)">
 		<Word>as</Word>
@@ -194,7 +191,7 @@
 		<Keywords color = "Punctuation">
 			<Word>==</Word>
 			<Word>!=</Word>
-			<Word>!</Word>
+<!--			<Word>!</Word>-->
 			<Word>&amp;&amp;</Word>
 			<Word>||</Word>
 		</Keywords>
@@ -206,6 +203,8 @@
 			<Word>]</Word>
 			<Word>&lt;</Word>
 			<Word>&gt;</Word>
+			<Word>{</Word>
+			<Word>}</Word>
 		</Keywords>
 
 
@@ -266,6 +265,7 @@
 			<End>&gt;</End>
 		</Span>
 	</Rule>
+	<Match color="Plain Text">\b(get|set)\b</Match>
 
 	<!-- |> |< << >> <= >= <- -> :?> -->
 	<Match color="Plain Text">(\|&gt;|\|&lt;|&lt;&lt;|&gt;&gt;|&lt;=|&gt;=|&lt;-|-&gt;|:\?&gt;)</Match>
@@ -314,15 +314,11 @@
 
 	<Match color="Keyword(Jump)" ignorecase="False">(function|fun|new)\b</Match>
 
-	<Match expression="(fun)" ignorecase="False">
-		<Group color="Keyword(Jump)"/>
-	</Match>
-
 	<Match color="Keyword(Iteration)" ignorecase="False">(async|maybe|asyncMaybe|asyncSeq|seq|query|let|finally|try|with|val|while|for|begin|done|elif|else|end|if|match|then|when|void|global|base|inherit|member|type|module|of|class|delegate|exception|interface|struct|as)\b</Match>
 
-<!--	<Match expression="([\w]+)\s(?!(?:with|in|as))[\w]+">
+    <Match expression="([a-z]{1}\w*)\s\&quot;">
 		<Group color="User Method Declaration"/>
-	</Match>-->
+	</Match>
 
 	<Match expression="(\|>\s?)([a-z]{1}\w*)" ignorecase="False">
 		<Group color="Plain Text" />
@@ -340,6 +336,7 @@
 		<Group color="Plain Text" />
 		<Group color="User Method Declaration"/>
 	</Match>
+
 	
 	<Match expression="([a-z]{1}\w*)" ignorecase="False">
 		<Group color="User Field Declaration"/>
@@ -349,5 +346,4 @@
 		<Group color="Plain Text" />
 		<Group color="User Field Declaration"/>
 	</Match>
-
 </SyntaxMode>
