@@ -38,8 +38,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using NUnit.Core;
-using NUnit.Core.Filters;
 using MonoDevelop.UnitTesting.NUnit.External;
 using MonoDevelop.Ide;
 using System.Xml.Linq;
@@ -386,12 +384,12 @@ namespace MonoDevelop.UnitTesting.NUnit
 			ExternalTestRunner runner = (ExternalTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(ExternalTestRunner), testContext.ExecutionContext, UserAssemblyPaths, console);
 			LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, test, suiteName, testName != null);
 
-			ITestFilter filter = null;
+			string[] filter = null;
 			if (test != null) {
 				if (test is UnitTestGroup) {
-					filter = new TestNameFilter (CollectTests ((UnitTestGroup)test));
+					filter = CollectTests ((UnitTestGroup)test);
 				} else {
-					filter = new TestNameFilter (test.TestId);
+					filter = new string [] { test.TestId };
 				}
 			}
 

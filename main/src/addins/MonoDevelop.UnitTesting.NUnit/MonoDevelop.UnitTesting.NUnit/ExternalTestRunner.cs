@@ -37,209 +37,29 @@ using System.Text;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using NUnit.Core;
-using NUnit.Util;
-using NF = NUnit.Framework;
-using NC = NUnit.Core;
 
 namespace MonoDevelop.UnitTesting.NUnit.External
 {
 	class ExternalTestRunner: RemoteProcessObject
 	{
-		NUnitTestRunner runner;
+		RemoteNUnitTestRunner runner;
 
 		public ExternalTestRunner ()
 		{
-			// In some cases MS.NET can't properly resolve assemblies even if they
-			// are already loaded. For example, when deserializing objects from remoting.
-			AppDomain.CurrentDomain.AssemblyResolve += delegate (object s, ResolveEventArgs args) {
-				foreach (Assembly am in AppDomain.CurrentDomain.GetAssemblies ()) {
-					if (am.GetName ().FullName == args.Name)
-						return am;
-				}
-				return null;
-			};
-			
-			// Add standard services to ServiceManager
-			ServiceManager.Services.AddService (new DomainManager ());
-			ServiceManager.Services.AddService (new ProjectService ());
-			ServiceManager.Services.AddService (new AddinRegistry ());
-			ServiceManager.Services.AddService (new AddinManager ());
-			ServiceManager.Services.AddService (new TestAgency ());
-			
-			// Initialize services
-			ServiceManager.Services.InitializeServices ();
-			
-			// Preload the runner assembly. Required because TestNameFilter is implemented there
-			string asm = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), "NUnitRunner.dll");
-			Assembly.LoadFrom (asm);
+			runner = new RemoteNUnitTestRunner ();
 		}
 
-		public UnitTestResult Run (IRemoteEventListener listener, ITestFilter filter, string path, string suiteName, List<string> supportAssemblies, string testRunnerType, string testRunnerAssembly, string crashLogFile)
+		public UnitTestResult Run (IRemoteEventListener listener, string[] nameFilter, string path, string suiteName, List<string> supportAssemblies, string testRunnerType, string testRunnerAssembly, string crashLogFile)
 		{
-			NUnitTestRunner runner = GetRunner (path);
-			EventListenerWrapper listenerWrapper = listener != null ? new EventListenerWrapper (listener) : null;
-			
-			UnhandledExceptionEventHandler exceptionHandler = (object sender, UnhandledExceptionEventArgs e) => {
-				
-				var ex = new RemoteUnhandledException ((Exception) e.ExceptionObject);
-				File.WriteAllText (crashLogFile, ex.Serialize ());
-			};
-
-			AppDomain.CurrentDomain.UnhandledException += exceptionHandler;
-			try {
-				TestResult res = runner.Run (listenerWrapper, filter, path, suiteName, supportAssemblies, testRunnerType, testRunnerAssembly);
-				return listenerWrapper.GetLocalTestResult (res);
-			} finally {
-				AppDomain.CurrentDomain.UnhandledException -= exceptionHandler;
-			}
+			return runner.Run (listener, nameFilter, path, suiteName, supportAssemblies, testRunnerType, testRunnerAssembly, crashLogFile); 
 		}
 		
 		public NunitTestInfo GetTestInfo (string path, List<string> supportAssemblies)
 		{
-			NUnitTestRunner runner = GetRunner (path);
 			return runner.GetTestInfo (path, supportAssemblies);
 		}
-		
-		NUnitTestRunner GetRunner (string assemblyPath)
-		{
-			TestPackage package = new TestPackage (assemblyPath);
-			package.Settings ["ShadowCopyFiles"] = false;
-			
-			AppDomain domain = Services.DomainManager.CreateDomain (package);
-			string asm = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), "NUnitRunner.dll");
-			runner = (NUnitTestRunner)domain.CreateInstanceFromAndUnwrap (asm, "MonoDevelop.UnitTesting.NUnit.External.NUnitTestRunner");
-			runner.PreloadAssemblies (typeof(NF.Assert).Assembly.Location, typeof (NC.TestSuiteBuilder).Assembly.Location, typeof(NC.Test).Assembly.Location);
-			runner.Initialize ();
-			return runner;
-		}
 	}
-	
-	class EventListenerWrapper: MarshalByRefObject, EventListener
-	{
-		IRemoteEventListener wrapped;
-		StringBuilder consoleOutput;
-		StringBuilder consoleError;
-		
-		public EventListenerWrapper (IRemoteEventListener wrapped)
-		{
-			this.wrapped = wrapped;
-		}
-		
-		public void RunFinished (Exception exception)
-		{
-		}
-		
-		public void RunFinished (TestResult results)
-		{
-		}
-		
-		public void RunStarted (string name, int testCount)
-		{
-		}
-		
-		public void SuiteFinished (TestResult result)
-		{
-			wrapped.SuiteFinished (GetTestName (result.Test), GetLocalTestResult (result));
-		}
 
-		public void SuiteStarted (TestName suite)
-		{
-			wrapped.SuiteStarted (GetTestName (suite));
-		}
-		
-		public void TestFinished (TestResult result)
-		{
-			wrapped.TestFinished (GetTestName (result.Test), GetLocalTestResult (result));
-		}
-		
-		public void TestOutput (TestOutput testOutput)
-		{
-			if (consoleOutput == null) {
-				Console.WriteLine (testOutput.Text);
-				return;
-			}
-			else if (testOutput.Type == TestOutputType.Out)
-				consoleOutput.Append (testOutput.Text);
-			else
-				consoleError.Append (testOutput.Text);
-		}
-		
-		public void TestStarted (TestName testCase)
-		{
-			wrapped.TestStarted (GetTestName (testCase));
-			consoleOutput = new StringBuilder ();
-			consoleError = new StringBuilder ();
-		}
-		
-		public override object InitializeLifetimeService ()
-		{
-			return null;
-		}
-		
-		string GetTestName (ITest t)
-		{
-			if (t == null)
-				return null;
-			return t.TestName.FullName;
-		}
-		
-		public string GetTestName (TestName t)
-		{
-			if (t == null)
-				return null;
-			return t.FullName;
-		}
-		
-		public UnitTestResult GetLocalTestResult (TestResult t)
-		{
-
-			UnitTestResult res = new UnitTestResult ();
-			var summary = new ResultSummarizer (t);
-			res.Failures = summary.Failures;
-			res.Errors = summary.Errors;
-			res.Ignored = summary.Ignored;
-			res.Inconclusive = summary.Inconclusive;
-			res.NotRunnable = summary.NotRunnable;
-			res.Passed = summary.Passed;
-			res.StackTrace = t.StackTrace;
-			res.Time = TimeSpan.FromSeconds (t.Time);
-
-			res.Message = t.Message;
-			if (string.IsNullOrEmpty (res.Message)) {
-				if (res.IsFailure)
-					res.Message = GettextCatalog.GetString ("Test failed");
-				else if (!t.Executed)
-					res.Message = GettextCatalog.GetString ("Test ignored");
-				else {
-					res.Message = GettextCatalog.GetString ("Test successful") + "\n\n";
-					res.Message += GettextCatalog.GetString ("Execution time: {0:0.00}ms", t.Time);
-				}
-			}
-
-			if (consoleOutput != null) {
-				res.ConsoleOutput = consoleOutput.ToString ();
-				res.ConsoleError = consoleError.ToString ();
-				consoleOutput = null;
-				consoleError = null;
-			}
-			
-			return res;
-		}
-
-		public void UnhandledException (Exception exception)
-		{
-		}
-	}
-	
-	interface IRemoteEventListener
-	{
-		void TestStarted (string testCase);
-		void TestFinished (string test, UnitTestResult result);
-		void SuiteStarted (string suite);
-		void SuiteFinished (string suite, UnitTestResult result);
-	}
-	
 	class LocalTestMonitor: MarshalByRefObject, IRemoteEventListener
 	{
 		TestContext context;
@@ -286,11 +106,28 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 			context.Monitor.BeginTest (t);
 			t.Status = TestStatus.Running;
 		}
+
+		void ProcessResult (UnitTestResult res)
+		{
+			if (string.IsNullOrEmpty (res.Message)) {
+				if (res.IsFailure)
+					res.Message = GettextCatalog.GetString ("Test failed");
+				else if (res.IsNotRun)
+					res.Message = GettextCatalog.GetString ("Test ignored");
+				else {
+					res.Message = GettextCatalog.GetString ("Test successful") + "\n\n";
+					res.Message += GettextCatalog.GetString ("Execution time: {0:0.00}ms", res.Time);
+				}
+			}
+		}
 			
 		void IRemoteEventListener.TestFinished (string test, UnitTestResult result)
 		{
 			if (Canceled)
 				return;
+
+			ProcessResult (result);
+
 			if (singleTestRun) {
 				SingleTestResult = result;
 				return;
@@ -324,6 +161,8 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 			if (singleTestRun || Canceled)
 				return;
 			
+			ProcessResult (result);
+
 			UnitTest t = GetLocalTest (suite);
 			if (t == null)
 				return;

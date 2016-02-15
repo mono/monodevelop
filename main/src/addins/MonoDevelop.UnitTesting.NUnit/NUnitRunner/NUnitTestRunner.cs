@@ -45,6 +45,12 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 	{
 		public NUnitTestRunner ()
 		{
+			var path = Path.GetDirectoryName (GetType ().Assembly.Location);
+			string nunitPath = Path.Combine (path, "nunit.framework.dll");
+			string nunitCorePath = Path.Combine (path, "nunit.core.dll");
+			string nunitCoreInterfacesPath = Path.Combine (path, "nunit.core.interfaces.dll");
+
+			PreloadAssemblies (nunitPath, nunitCorePath, nunitCoreInterfacesPath);
 		}
 
 		public void PreloadAssemblies (string nunitPath, string nunitCorePath, string nunitCoreInterfacesPath)
@@ -78,12 +84,13 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 				CoreExtensions.Host.InitializeService();
 		}
 		
-		public TestResult Run (EventListener listener, ITestFilter filter, string path, string suiteName, List<string> supportAssemblies, string testRunnerType, string testRunnerAssembly)
+		public TestResult Run (EventListener listener, string[] nameFilter, string path, string suiteName, List<string> supportAssemblies, string testRunnerType, string testRunnerAssembly)
 		{
 			InitSupportAssemblies (supportAssemblies);
-			
-			if (filter == null)
-				filter = TestFilter.Empty;
+
+			ITestFilter filter = TestFilter.Empty;
+			if (nameFilter != null && nameFilter.Length > 0)
+				filter = new TestNameFilter (nameFilter);
 
 			TestRunner tr;
 			if (!string.IsNullOrEmpty (testRunnerType)) {

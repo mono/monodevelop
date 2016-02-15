@@ -1,12 +1,5 @@
 <ExtensionModel>
 
-	<Runtime>
-		<Import assembly="nunit.core.dll" />
-		<Import assembly="nunit.core.interfaces.dll" />
-		<Import assembly="nunit.framework.dll" />
-		<Import assembly="nunit.util.dll" />
-	</Runtime>
-
 	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/UnitTesting/TestProviders">

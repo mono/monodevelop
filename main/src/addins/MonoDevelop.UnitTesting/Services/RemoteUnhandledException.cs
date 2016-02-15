@@ -34,10 +34,6 @@ using System.Text;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using NUnit.Core;
-using NUnit.Util;
-using NF = NUnit.Framework;
-using NC = NUnit.Core;
 
 namespace MonoDevelop.UnitTesting
 {
