@@ -17,7 +17,7 @@ let mdtool args =
     if isWindows then
       Shell.Exec (mdpath, args)
     else
-      Shell.Exec ("mono", mdpath + " " + args)
+      Shell.Exec ("mono64", mdpath + " " + args)
   result |> ignore
 
 let test() =
