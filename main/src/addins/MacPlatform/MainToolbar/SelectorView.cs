@@ -96,7 +96,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			// Correct the offset position for the screen
 			nfloat yOffset = 1f;
-			if (Window.Screen != null && Window.Screen.BackingScaleFactor == 2) {
+			if (Window?.Screen?.BackingScaleFactor == 2) {
 				yOffset = 0.5f;
 			}
 
