@@ -56,7 +56,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		public override string ToString()
 		{
-			return Rev.ToString();
+			return $"{Rev}+{Kind}";
 		}
 		
 		public override Revision GetPrevious()
