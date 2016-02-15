@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -124,6 +124,7 @@
     <Compile Include="Checker.fs" />
     <Compile Include="IndentationTrackerTests.fs" />
     <Compile Include="FSharpUnitTestTextEditorExtensionTests.fs" />
+    <Compile Include="SyntaxHighlighting.fs" />
     <Compile Include="SemanticHighlighting.fs" />
     <Compile Include="TestTooltipProvider.fs" />
     <Compile Include="ProjectTests.fs" />
