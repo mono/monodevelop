@@ -43,7 +43,7 @@ namespace MonoDevelop.Components.MainToolbar
 		Cairo.Color fill2Color;
 		Cairo.Color fill3Color;*/
 
-		Xwt.Drawing.Image btnNormal/*, btnInactive, btnHover, btnPressed*/;
+		Xwt.Drawing.Image btnNormal, btnInactive, btnHover, btnPressed;
 
 		Xwt.Drawing.Image iconRunNormal, iconRunDisabled;
 		Xwt.Drawing.Image iconStopNormal, iconStopDisabled;
@@ -57,9 +57,9 @@ namespace MonoDevelop.Components.MainToolbar
 			SetSizeRequest (height, height);
 
 			btnNormal = Xwt.Drawing.Image.FromResource (GetType (), "btn-execute-normal-32.png");
-//			btnInactive = new LazyImage ("btn-execute-disabled-32.png");
-//			btnPressed = new LazyImage ("btn-execute-pressed-32.png");
-//			btnHover = new LazyImage ("btn-execute-hover-32.png");
+			btnInactive = Xwt.Drawing.Image.FromResource (GetType (), "btn-execute-disabled-32.png");
+			btnPressed = Xwt.Drawing.Image.FromResource (GetType (), "btn-execute-pressed-32.png");
+			btnHover = Xwt.Drawing.Image.FromResource (GetType (), "btn-execute-hover-32.png");
 
 			iconRunNormal = Xwt.Drawing.Image.FromResource (GetType (), "ico-execute-normal-32.png");
 			iconRunDisabled = Xwt.Drawing.Image.FromResource (GetType (), "ico-execute-disabled-32.png");
@@ -71,7 +71,7 @@ namespace MonoDevelop.Components.MainToolbar
 			iconBuildDisabled = Xwt.Drawing.Image.FromResource (GetType (), "ico-build-disabled-32.png");
 		}
 
-		StateType hoverState = StateType.Normal;
+		StateType hoverState = StateType.Prelight;
 
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
 		{
@@ -154,43 +154,23 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void DrawBackground (Cairo.Context context, Gdk.Rectangle region, int radius, StateType state)
 		{
-			double rad = radius - 0.5;
-			int centerX = region.X + region.Width / 2;
-			int centerY = region.Y + region.Height / 2;
+			int x = region.X + region.Width / 2;
+			int y = region.Y + region.Height / 2;
 
-			context.MoveTo (centerX + rad, centerY);
-			context.Arc (centerX, centerY, rad, 0, Math.PI * 2);
-
-			double high;
-			double low;
+			var img = btnNormal;
 			switch (state) {
-			case StateType.Selected:
-				high = 0.85;
-				low = 1.0;
-				break;
-			case StateType.Prelight:
-				high = 1.0;
-				low = 0.9;
-				break;
 			case StateType.Insensitive:
-				high = 0.95;
-				low = 0.83;
-				break;
-			default:
-				high = 1.0;
-				low = 0.85;
-				break;
-			}
-			using (var lg = new LinearGradient (0, centerY - rad, 0, centerY +rad)) {
-				lg.AddColorStop (0, new Cairo.Color (high, high, high));
-				lg.AddColorStop (1, new Cairo.Color (low, low, low));
-				context.SetSource (lg);
-				context.FillPreserve ();
+				img = btnInactive; break;
+			case StateType.Prelight:
+				img = btnHover; break;
+			case StateType.Selected:
+				img = btnPressed; break;
 			}
 
-			context.SetSourceRGBA (0, 0, 0, 0.4);
-			context.LineWidth = 1;
-			context.Stroke ();
+			x -= (int) img.Width / 2;
+			y -= (int) img.Height / 2;
+
+			context.DrawImage (this, img, x, y);
 		}
 
 		public event EventHandler Clicked;
@@ -209,6 +189,21 @@ namespace MonoDevelop.Components.MainToolbar
 			if (btnNormal != null) {
 				btnNormal.Dispose ();
 				btnNormal = null;
+			}
+
+			if (btnInactive != null) {
+				btnInactive.Dispose ();
+				btnInactive = null;
+			}
+
+			if (btnPressed != null) {
+				btnPressed.Dispose ();
+				btnPressed = null;
+			}
+
+			if (btnHover != null) {
+				btnHover.Dispose ();
+				btnHover = null;
 			}
 
 			if (iconRunNormal != null) {
