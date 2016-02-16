@@ -1,4 +1,4 @@
-﻿#define DEBUG_MESSAGES
+﻿//#define DEBUG_MESSAGES
 
 using System;
 using System.Threading;
@@ -24,7 +24,7 @@ namespace MonoDevelop.Core.Execution
 		ProcessAsyncOperation process;
 		ConnectionStatus status;
 		bool disposed;
-		CancellationTokenSource initSource;
+		CancellationTokenSource mainCancelSource;
 		List<BinaryMessage> messageQueue = new List<BinaryMessage> ();
 		Dictionary<string, Type> messageTypes = new Dictionary<string, Type> ();
 
@@ -74,6 +74,7 @@ namespace MonoDevelop.Core.Execution
 			this.exePath = exePath;
 			this.syncContext = syncContext;
 			this.console = console;
+			mainCancelSource = new CancellationTokenSource ();
 		}
 
 		public ConnectionStatus Status {
@@ -149,12 +150,16 @@ namespace MonoDevelop.Core.Execution
 
 				var newList = new List<MessageListener> (listeners);
 				newList.Add (lis);
+				RegisterMessageTypes (lis.GetMessageTypes ());
 				listeners = newList;
 			}
 		}
 
 		public void Disconnect (bool waitUntilDone)
 		{
+			mainCancelSource.Cancel ();
+			mainCancelSource = new CancellationTokenSource ();
+
 			try {
 				StopRemoteProcess ();
 			} catch {
@@ -170,8 +175,6 @@ namespace MonoDevelop.Core.Execution
 			AbortPendingMessages ();
 			if (listener != null && !disposed) {
 				// Disconnect the current session and reconnect
-				if (initSource != null)
-					initSource.Cancel ();
 				Disconnect (true);
 			}
 			return StartConnecting ();
@@ -179,11 +182,10 @@ namespace MonoDevelop.Core.Execution
 
 		Task StartConnecting ()
 		{
-			var source = initSource = new CancellationTokenSource ();
 			processDisconnectedEvent.Reset ();
 			disposed = false;
 			SetStatus (ConnectionStatus.Connecting, "Connecting");
-			return DoConnect (source.Token);
+			return DoConnect (mainCancelSource.Token);
 		}
 
 		async Task DoConnect (CancellationToken token)
@@ -453,38 +455,68 @@ namespace MonoDevelop.Core.Execution
 					return;
 				}
 
-				ReadMessage ();
+				ReadMessages ();
 			}
 		}
 
-		void ReadMessage ()
+		async void ReadMessages ()
 		{
 			byte[] buffer = new byte [1];
-			connectionStream.BeginRead (buffer, 0, 1, delegate (IAsyncResult rr) {
+
+			while (!disposed && connectionStream != null)
+			{
+				BinaryMessage msg;
+				byte type;
+
 				try {
-					if (disposed || connectionStream == null)
+					int nr = await connectionStream.ReadAsync (buffer, 0, 1, mainCancelSource.Token).ConfigureAwait (false);
+					if (nr == 0) {
+						StopRemoteProcess (isAsync: true);
 						return;
-					if (connectionStream.EndRead (rr) > 0) {
-						try {
-							byte type = buffer [0];
-							var msg = BinaryMessage.Read (connectionStream);
-							if (type == 0)
-								ProcessResponse (msg);
-							else
-								ProcessRemoteMessage (msg);
-						} finally {
-							ReadMessage ();
-						}
 					}
-					StopRemoteProcess (isAsync: true);
-				}
-				catch (Exception ex) {
+					type = buffer [0];
+					msg = BinaryMessage.Read (connectionStream);
+				} catch (Exception ex) {
+					if (disposed)
+						return;
 					LoggingService.LogError ("ReadMessage failed", ex);
 					StopRemoteProcess (isAsync: true);
 					PostSetStatus (ConnectionStatus.ConnectionFailed, "Connection to layout renderer failed.");
+					return;
 				}
-			},
-			                            null);
+
+				lock (pendingMessageTasks) {
+					var t = Task.Run (() => {
+						msg = LoadMessageData (msg);
+						if (type == 0)
+							ProcessResponse (msg);
+						else
+							ProcessRemoteMessage (msg);
+					});
+					t.ContinueWith (ta => {
+						pendingMessageTasks.Remove (ta);
+					});
+					pendingMessageTasks.Add (t);
+				}
+			}
+		}
+
+		List<Task> pendingMessageTasks = new List<Task> ();
+
+		public Task ProcessPendingMessages ()
+		{
+			return Task.WhenAll (pendingMessageTasks.ToArray ());
+		}
+
+		BinaryMessage LoadMessageData (BinaryMessage msg)
+		{
+			Type type;
+			if (messageTypes.TryGetValue (msg.Name, out type)) {
+				var res = (BinaryMessage)Activator.CreateInstance (type);
+				res.CopyFrom (msg);
+				return res;
+			}
+			return msg;
 		}
 
 		void ProcessResponse (BinaryMessage msg)

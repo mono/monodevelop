@@ -25,7 +25,9 @@ namespace MonoDevelop.Core.Execution
 			Int16 = 9,
 			Int32 = 10,
 			Int64 = 11,
-			Byte = 12
+			Byte = 12,
+			DateTime = 13,
+			TimeSpan = 14,
 		}
 
 		static object dataTypesLock = new object ();
@@ -169,6 +171,9 @@ namespace MonoDevelop.Core.Execution
 			else if (val is Array) {
 				bw.Write ((byte)TypeCode.Array);
 				WriteArray (bw, val);
+			} else if (val is byte) {
+				bw.Write ((byte)TypeCode.Byte);
+				bw.Write ((byte)val);
 			} else if (val is short) {
 				bw.Write ((byte)TypeCode.Int16);
 				bw.Write ((short)val);
@@ -190,6 +195,12 @@ namespace MonoDevelop.Core.Execution
 			} else if (val is bool) {
 				bw.Write ((byte)TypeCode.Boolean);
 				bw.Write ((bool)val);
+			} else if (val is DateTime) {
+				bw.Write ((byte)TypeCode.DateTime);
+				bw.Write (((DateTime)val).Ticks);
+			} else if (val is TimeSpan) {
+				bw.Write ((byte)TypeCode.TimeSpan);
+				bw.Write (((TimeSpan)val).Ticks);
 			} else if (val is IDictionary<string, object>) {
 				bw.Write ((byte)TypeCode.Map);
 				var dict = (IDictionary<string, object>)val;
@@ -207,7 +218,7 @@ namespace MonoDevelop.Core.Execution
 					WriteValue (bw, e.Value);
 				}
 			} else if (val.GetType ().IsEnum) {
-				WriteValue (bw, (ulong)val);
+				WriteValue (bw, Convert.ToInt64(val));
 			} else {
 				var d = WriteMessageData (val);
 				WriteValue (bw, d);
@@ -252,6 +263,14 @@ namespace MonoDevelop.Core.Execution
 				bw.Write ((byte)TypeCode.Boolean);
 				foreach (var v in (bool [])val)
 					bw.Write (v);
+			} else if (et == typeof(DateTime)) {
+				bw.Write ((byte)TypeCode.DateTime);
+				foreach (var v in (DateTime [])val)
+					bw.Write (v.Ticks);
+			} else if (et == typeof(TimeSpan)) {
+				bw.Write ((byte)TypeCode.TimeSpan);
+				foreach (var v in (TimeSpan [])val)
+					bw.Write (v.Ticks);
 			} else {
 				bw.Write ((byte)TypeCode.Object);
 				foreach (var elem in array)
@@ -291,6 +310,8 @@ namespace MonoDevelop.Core.Execution
 				}
 			case TypeCode.Double:
 				return br.ReadDouble ();
+			case TypeCode.Byte:
+				return br.ReadByte ();
 			case TypeCode.Int16:
 				return br.ReadInt16 ();
 			case TypeCode.Int32:
@@ -303,6 +324,10 @@ namespace MonoDevelop.Core.Execution
 				return br.ReadString ();
 			case TypeCode.Boolean:
 				return br.ReadBoolean ();
+			case TypeCode.DateTime:
+				return new DateTime (br.ReadInt64 ());
+			case TypeCode.TimeSpan:
+				return new TimeSpan (br.ReadInt64 ());
 			case TypeCode.Map: {
 					Dictionary<string, object> dict = new Dictionary<string, object> ();
 					int size = br.ReadInt32 ();
@@ -320,57 +345,70 @@ namespace MonoDevelop.Core.Execution
 		static object ReadArray (BinaryReader br, TypeCode type, int count)
 		{
 			switch (type) {
-				case TypeCode.Object: {
+			case TypeCode.Object: {
 					var a = new object [count];
 					for (int n = 0; n < count; n++)
 						a [n] = ReadValue (br);
 					return a;
 				}
-				case TypeCode.Double: {
+			case TypeCode.Double: {
 					var a = new double [count];
 					for (int n = 0; n < count; n++)
 						a [n] = br.ReadDouble ();
 					return a;
 				}
-				case TypeCode.Byte: {
+			case TypeCode.Byte: {
 					return br.ReadBytes (count);
 				}
-				case TypeCode.Int16: {
+			case TypeCode.Int16: {
 					var a = new short [count];
 					for (int n = 0; n < count; n++)
 						a [n] = br.ReadInt16 ();
 					return a;
 				}
-				case TypeCode.Int32: {
+			case TypeCode.Int32: {
 					var a = new int [count];
 					for (int n = 0; n < count; n++)
 						a [n] = br.ReadInt32 ();
 					return a;
 				}
-				case TypeCode.Int64: {
+			case TypeCode.Int64: {
 					var a = new long [count];
 					for (int n = 0; n < count; n++)
 						a [n] = br.ReadInt64 ();
 					return a;
 				}
-				case TypeCode.Single: {
+			case TypeCode.Single: {
 					var a = new float [count];
 					for (int n = 0; n < count; n++)
 						a [n] = br.ReadSingle ();
 					return a;
 				}
-				case TypeCode.String: {
+			case TypeCode.String: {
 					var a = new string [count];
 					for (int n = 0; n < count; n++)
 						a [n] = br.ReadString ();
 					return a;
 				}
-				case TypeCode.Boolean: {
+			case TypeCode.Boolean: {
 					var a = new bool [count];
 					for (int n = 0; n < count; n++)
 						a [n] = br.ReadBoolean ();
 					return a;
-				}}
+				}
+			case TypeCode.DateTime: {
+					var a = new DateTime [count];
+					for (int n = 0; n < count; n++)
+						a [n] = new DateTime (br.ReadInt64 ());
+					return a;
+				}
+			case TypeCode.TimeSpan: {
+					var a = new TimeSpan [count];
+					for (int n = 0; n < count; n++)
+						a [n] = new TimeSpan (br.ReadInt64 ());
+					return a;
+				}
+			}
 			throw new NotSupportedException ("Array of " + type);
 		}
 
@@ -494,6 +532,10 @@ namespace MonoDevelop.Core.Execution
 		{
 			if (ob is IDictionary<string, object> && IsSerializableType (type))
 				return ReadMessageData (type, (IDictionary<string, object>)ob);
+
+			if (type.IsEnum && !ob.GetType ().IsEnum) {
+				return Enum.ToObject (type, ob);
+			}
 			
 			var array = ob as Array;
 			if (array != null) {
@@ -582,7 +624,7 @@ namespace MonoDevelop.Core.Execution
 				var att = (MessageHandlerAttribute) Attribute.GetCustomAttribute (m, typeof (MessageHandlerAttribute));
 				if (att != null) {
 					var pars = m.GetParameters ();
-					if (pars.Length != 1 || !typeof (BinaryMessage).IsAssignableFrom (pars [0].ParameterType) || !typeof (BinaryMessage).IsAssignableFrom (m.ReturnType))
+					if (pars.Length != 1 || !typeof (BinaryMessage).IsAssignableFrom (pars [0].ParameterType))
 						continue;
 					var name = att.Name;
 					if (name == null) {
@@ -604,9 +646,23 @@ namespace MonoDevelop.Core.Execution
 		internal BinaryMessage ProcessMessage (BinaryMessage msg)
 		{
 			MethodInfo m;
-			if (handlers.TryGetValue (msg.Name, out m))
-				return (BinaryMessage)m.Invoke (target, new object [] { msg });
+			if (handlers.TryGetValue (msg.Name, out m)) {
+				var r = m.Invoke (target, new object [] { msg });
+				if (r is BinaryMessage)
+					return (BinaryMessage)r;
+				else
+					return msg.CreateResponse ();
+			}
 			return null;
+		}
+
+		internal Type [] GetMessageTypes ()
+		{
+			HashSet<Type> res = new HashSet<Type> ();
+			foreach (var h in handlers.Values) {
+				res.Add (h.GetParameters () [0].ParameterType);
+			}
+			return res.ToArray ();
 		}
 	}
 

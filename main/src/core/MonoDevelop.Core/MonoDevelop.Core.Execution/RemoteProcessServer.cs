@@ -121,6 +121,7 @@ namespace MonoDevelop.Core.Execution
 				var li = new MessageListenerHandler (listener);
 				li.InitListener (this);
 				listeners [li.TargetId] = li;
+				RegisterMessageTypes (li.Listener.GetMessageTypes ());
 			}
 		}
 
@@ -209,7 +210,11 @@ namespace MonoDevelop.Core.Execution
 				if (DebugMode)
 					Console.WriteLine ("XS << RP " + type + " [" + msg.ProcessingTime + "ms] " + msg);
 				outStream.WriteByte (type);
-				msg.Write (outStream);
+				try {
+					msg.Write (outStream);
+				} catch (Exception ex) {
+					msg.CreateErrorResponse (ex.ToString (), true).Write (outStream);
+				}
 			}
 		}
 
@@ -252,6 +257,12 @@ namespace MonoDevelop.Core.Execution
 			public object Target {
 				get {
 					return target;
+				}
+			}
+
+			public MessageListener Listener {
+				get {
+					return listener;
 				}
 			}
 
