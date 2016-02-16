@@ -172,10 +172,10 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return completionTextEditorExtension.ParameterCompletionCommand (completionContext);
 		}
 
-		public override int GuessBestMethodOverload (CodeCompletion.ParameterHintingResult provider, int currentOverload)
+		public override Task<int> GuessBestMethodOverload (CodeCompletion.ParameterHintingResult provider, int currentOverload, System.Threading.CancellationToken token)
 		{
-			if (!IsActiveExtension()) return -1;
-			return completionTextEditorExtension.GuessBestMethodOverload (provider, currentOverload);
+			if (!IsActiveExtension()) return Task.FromResult (-1);
+			return completionTextEditorExtension.GuessBestMethodOverload (provider, currentOverload, token);
 		}
 
 		internal protected override void OnCompletionContextChanged (object o, EventArgs a)

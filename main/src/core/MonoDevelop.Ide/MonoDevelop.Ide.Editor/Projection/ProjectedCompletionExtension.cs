@@ -294,12 +294,12 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return projectedExtension.GetCurrentParameterIndex (startOffset, token);
 		}
 
-		public override int GuessBestMethodOverload (ParameterHintingResult provider, int currentOverload)
+		public override Task<int> GuessBestMethodOverload (ParameterHintingResult provider, int currentOverload, System.Threading.CancellationToken token)
 		{
 			var projectedExtension = GetCurrentExtension ();
 			if (projectedExtension == null)
-				return -1;
-			return projectedExtension.GuessBestMethodOverload (provider, currentOverload);
+				return Task.FromResult (-1);
+			return projectedExtension.GuessBestMethodOverload (provider, currentOverload, token);
 		}
 
 		public override System.Threading.Tasks.Task<MonoDevelop.Ide.CodeCompletion.ICompletionDataList> HandleCodeCompletionAsync (MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext, char completionChar, System.Threading.CancellationToken token)

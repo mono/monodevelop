@@ -113,6 +113,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		internal static void PostProcessKeyEvent (CompletionTextEditorExtension ext, ICompletionWidget widget, KeyDescriptor descriptor)
 		{
 		}
+
 		static CancellationTokenSource updateSrc = new CancellationTokenSource ();
 		internal static async void UpdateCursorPosition (CompletionTextEditorExtension ext, ICompletionWidget widget)
 		{
@@ -141,7 +142,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			// If the user enters more parameters than the current overload has,
 			// look for another overload with more parameters.
-			UpdateOverload (ext, widget);
+			UpdateOverload (ext, widget, token);
 			
 			// Refresh.
 			UpdateWindow (ext, widget);
@@ -166,7 +167,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			md.CurrentOverload = 0;
 			md.CompletionContext = ctx;
 			currentMethodGroup = md;
-			UpdateOverload (ext, widget);
+			UpdateOverload (ext, widget, default (CancellationToken));
 			UpdateWindow (ext, widget);
 		}
 		
@@ -192,7 +193,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return currentMethodGroup.MethodProvider;
 		}
 		
-		static void UpdateOverload (CompletionTextEditorExtension ext, ICompletionWidget widget)
+		static async void UpdateOverload (CompletionTextEditorExtension ext, ICompletionWidget widget, CancellationToken token)
 		{
 			if (currentMethodGroup == null || window == null)
 				return;
@@ -200,7 +201,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			// If the user enters more parameters than the current overload has,
 			// look for another overload with more parameters.
 
-			int bestOverload = ext.GuessBestMethodOverload (currentMethodGroup.MethodProvider, currentMethodGroup.CurrentOverload);
+			int bestOverload = await ext.GuessBestMethodOverload (currentMethodGroup.MethodProvider, currentMethodGroup.CurrentOverload, token);
 			if (bestOverload != -1) {
 				currentMethodGroup.CurrentOverload = bestOverload;
 				window.ChangeOverload ();

@@ -544,11 +544,10 @@ namespace MonoDevelop.Ide.Editor.Extension
 			return null;
 		}
 
-		public virtual int GuessBestMethodOverload (ParameterHintingResult provider, int currentOverload)
+		public virtual async Task<int> GuessBestMethodOverload (ParameterHintingResult provider, int currentOverload, System.Threading.CancellationToken token)
 		{
-			int cparam = GetCurrentParameterIndex (provider.StartOffset, default(CancellationToken)).Result;
-
 			var currentHintingData = provider [currentOverload];
+			int cparam = await GetCurrentParameterIndex (provider.StartOffset, token).ConfigureAwait (false);
 			if (cparam > currentHintingData.ParameterCount && !currentHintingData.IsParameterListAllowed) {
 				// Look for an overload which has more parameters
 				int bestOverload = -1;
