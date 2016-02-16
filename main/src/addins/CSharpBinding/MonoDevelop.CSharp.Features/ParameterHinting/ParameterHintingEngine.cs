@@ -64,6 +64,9 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		
 			var context = SyntaxContext.Create(workspace, document, semanticModel, position, cancellationToken);
 			var targetParent = context.TargetToken.Parent;
+			if (targetParent == null)
+				return ParameterHintingResult.Empty;
+			
 			if (context.TargetToken.IsKind (SyntaxKind.IdentifierName)) {
 				targetParent = targetParent.Parent;
 			}
