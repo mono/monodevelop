@@ -57,6 +57,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 	[MessageDataType]
 	public class RunResponse : BinaryMessage
 	{
+		[MessageDataProperty]
 		public RemoteTestResult Result { get; set; }
 	}
 
