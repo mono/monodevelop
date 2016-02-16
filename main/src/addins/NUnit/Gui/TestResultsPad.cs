@@ -638,15 +638,6 @@ namespace MonoDevelop.NUnit
 			NUnitService.Instance.RunTest (test, null);
 		}
 		
-		[CommandUpdateHandler (TestCommands.ShowTestCode)]
-		[CommandUpdateHandler (TestCommands.GoToFailure)]
-		[CommandUpdateHandler (TestCommands.RerunTest)]
-		protected void OnUpdateRunTest (CommandInfo info)
-		{
-			UnitTest test = GetSelectedTest ();
-			info.Enabled = true;
-		}
-		
 		UnitTest GetSelectedTest ()
 		{
 			Gtk.TreeModel foo;
