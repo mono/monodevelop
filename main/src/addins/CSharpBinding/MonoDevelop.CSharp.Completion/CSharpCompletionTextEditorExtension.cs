@@ -552,13 +552,13 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			return true;
 		}
-		
-		public override int GuessBestMethodOverload (MonoDevelop.Ide.CodeCompletion.ParameterHintingResult provider, int currentOverload)
+
+		public override async Task<int> GuessBestMethodOverload (MonoDevelop.Ide.CodeCompletion.ParameterHintingResult provider, int currentOverload, CancellationToken token)
 		{
 			var analysisDocument = DocumentContext.AnalysisDocument;
 			if (analysisDocument == null)
 				return -1;
-			var result = ICSharpCode.NRefactory6.CSharp.ParameterUtil.GetCurrentParameterIndex (analysisDocument, provider.StartOffset, Editor.CaretOffset).Result;
+			var result = await ICSharpCode.NRefactory6.CSharp.ParameterUtil.GetCurrentParameterIndex (analysisDocument, provider.StartOffset, Editor.CaretOffset);
 			var cparam = result.ParameterIndex;
 			var list = result.UsedNamespaceParameters;
 			if (cparam > provider[currentOverload].ParameterCount && !provider[currentOverload].IsParameterListAllowed || !HasAllUsedParameters (provider[currentOverload], list)) {
