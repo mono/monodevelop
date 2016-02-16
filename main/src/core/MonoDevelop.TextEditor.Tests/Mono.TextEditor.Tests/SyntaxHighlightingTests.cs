@@ -48,7 +48,7 @@ namespace Mono.TextEditor.Tests
 		{
 			var data = new TextEditorData (new TextDocument (input));
 			data.Document.SyntaxMode = SyntaxModeService.GetSyntaxMode (data.Document, syntaxMode);
-			data.ColorStyle = SyntaxModeService.GetColorStyle ("TangoLight");
+			data.ColorStyle = SyntaxModeService.GetColorStyle ("Light");
 			return data.GetMarkup (0, data.Length, false);
 		}
 
