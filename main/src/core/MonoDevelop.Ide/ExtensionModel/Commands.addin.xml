@@ -634,6 +634,7 @@
 			_label = "_Normal Size"
 			icon = "gtk-zoom-100"
 			shortcut = "Control|0"
+			macShortcut = "Meta|0"
 			_description = "Resets zoom to default" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.SideBySideMode"
 			defaultHandler = "MonoDevelop.Ide.Commands.SideBySideModeHandler"
